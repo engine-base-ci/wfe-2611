@@ -1160,8 +1160,8 @@
   },
   {
    "id": 48,
-   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）",
-   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all",
+   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）",
+   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report",
    "job": "web",
    "blocking": true
   },
@@ -1211,6 +1211,14 @@
    "id": 60,
    "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）",
    "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 61,
+   "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
+   "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\"",
+   "env": "          CI_LEDGER_BASE: ${{ needs.static.outputs.base }}\n",
    "job": "spec",
    "blocking": true
   }

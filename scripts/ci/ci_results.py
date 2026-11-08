@@ -1,0 +1,349 @@
+#!/usr/bin/env python3
+"""試験の結果の欄を CI の記録から機械で書く・手で書いた PASS を赤にする（K-143・D-129.50・D-129.51・ai-driven-process.md §8）。
+
+スキル ai-team-delivery の scripts/gates/result_gate.py の形（record・write・check・印「PASS（CI <7 字>）」・記録 <sha>.json）を
+Kaname の入力に合わせたもの。違いは 3 つ：
+  ・record は JUnit の XML ではなく、Playwright（"suites"）と Vitest（"testResults"）の JSON 報告を読む（op_gate の load_report と同じ読み方）
+  ・check は台帳（まだ流し直していない印の無い PASS・07_qa/test-plan/result-ledger.json）を持ち、台帳は減らすだけ（本線の版と比べる）
+  ・行 ID の形は scripts/ci/op_gate.py の ID_RE と同じ。形でない PASS は記録と結べないので赤
+
+  python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json [--report …] --sha "$GITHUB_SHA" --records 07_qa/ci-results
+  python3 scripts/ci/ci_results.py write  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --sha <その回>
+  python3 scripts/ci/ci_results.py check  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results \\
+      --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref <本線との分かれ目>
+  python3 scripts/ci/ci_results.py ledger --specs '07_qa/test-specs/**/*.md' --out 07_qa/test-plan/result-ledger.json   # 入れた時点の 1 回だけ
+
+結果の欄は CI の段の中では書かない（まっさらな写しは残らない）。取り込みの台本（pm_merge.sh）が、緑だった回の記録を
+07_qa/ci-results/ に写し、write で書いて、そのチケットの番号でコミットしてから本線に入れる（ai-team.yaml の results）。
+"""
+from __future__ import annotations
+
+import argparse
+import datetime
+import glob
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+# 行 ID の形（scripts/ci/op_gate.py の ID_RE と同じ）
+ID_PATTERN = re.compile(r"\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}(?:-[ABC])?\b")
+ID_FULL = re.compile(r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}(?:-[ABC])?")
+# CI の回の印（write が書く形だけを印と読む）
+MARK = re.compile(r"（CI ([0-9a-f]{7,40})）")
+CELL_SPLIT = re.compile(r"(?<!\\)\|")
+ID_COL, RESULT_COL = "ID", "結果"
+MADE_BY = "ci_results.py record"
+
+
+# ---------------------------------------------------------------- 表を読む
+def _cells(line: str) -> list[str] | None:
+    s = line.strip()
+    if not (s.startswith("|") and s.endswith("|")) or len(s) < 2:
+        return None
+    return [c.strip() for c in CELL_SPLIT.split(s[1:-1])]
+
+
+def spec_rows(text: str):
+    """試験の仕様の表のうち、列 ID と結果を持つ行を (行番号, 行 ID, 結果, 結果の列の位置) で返す"""
+    head = None
+    for i, line in enumerate(text.split("\n")):
+        cells = _cells(line)
+        if cells is None:
+            head = None
+            continue
+        if head is None:
+            head = cells
+            continue
+        if all(re.fullmatch(r":?-{2,}:?", c) for c in cells if c):
+            continue
+        if ID_COL not in head or RESULT_COL not in head:
+            continue
+        ci, ri = head.index(ID_COL), head.index(RESULT_COL)
+        if max(ci, ri) >= len(cells):
+            continue
+        yield i, cells[ci], cells[ri], ri
+
+
+def spec_files(patterns: list[str]) -> list[str]:
+    out: set[str] = set()
+    for p in patterns:
+        out.update(os.path.normpath(x) for x in glob.glob(p, recursive=True) if os.path.isfile(x))
+    return sorted(out)
+
+
+def is_pass(res: str) -> bool:
+    return res.startswith("PASS")
+
+
+# ---------------------------------------------------------------- 記録
+def load_records(d: Path) -> dict[str, dict]:
+    recs: dict[str, dict] = {}
+    if not d.is_dir():
+        return recs
+    for p in sorted(d.glob("*.json")):
+        try:
+            r = json.loads(p.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        if isinstance(r, dict) and isinstance(r.get("sha"), str) and isinstance(r.get("rows"), dict):
+            recs[r["sha"]] = r
+    return recs
+
+
+def find_records(recs: dict[str, dict], short: str) -> list[dict]:
+    return [r for s, r in recs.items() if s.startswith(short)]
+
+
+def _worse(cur: str | None, new: str) -> str:
+    return "fail" if cur == "fail" or new == "fail" else "pass"
+
+
+def _read_report(p: Path) -> dict | None:
+    try:
+        rep = json.loads(p.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return None
+    return rep if isinstance(rep, dict) else None
+
+
+def record(reports: list[Path], sha: str, records: Path) -> int:
+    """Playwright・Vitest の JSON 報告から records/<sha>.json を書く。報告が 1 つでも無い・読めないなら 1（何も書かない）"""
+    if not reports or not re.fullmatch(r"[0-9a-f]{7,40}", sha or ""):
+        print(f"★ 報告か sha が無い（報告 {len(reports)}・sha「{sha}」）。記録を書かない")
+        return 1
+    loaded = []
+    for p in reports:
+        rep = _read_report(Path(p))
+        if rep is None:
+            print(f"★ 報告が無いか読めない: {p}。記録を書かない（空の記録で流れていないことにしない）")
+            return 1
+        loaded.append(rep)
+    rows: dict[str, str] = {}
+
+    def walk(s: dict, path: list[str]) -> None:
+        for sp in s.get("specs", []):
+            title = " ".join(path + [sp.get("title", "")])
+            ok = bool(sp.get("tests"))
+            for t in sp.get("tests", []):
+                res = t.get("results") or []
+                if not res or res[-1].get("status") != "passed":
+                    ok = False
+            for rid in set(ID_PATTERN.findall(title)):
+                rows[rid] = _worse(rows.get(rid), "pass" if ok else "fail")
+        for c in s.get("suites", []):
+            walk(c, path + [s.get("title", "")])
+
+    for rep in loaded:
+        for s in rep.get("suites", []):
+            walk(s, [])
+        for f in rep.get("testResults", []):
+            for a in f.get("assertionResults", []):
+                title = " ".join(a.get("ancestorTitles", []) + [a.get("title", "")])
+                for rid in set(ID_PATTERN.findall(title)):
+                    rows[rid] = _worse(rows.get(rid), "pass" if a.get("status") == "passed" else "fail")
+    records.mkdir(parents=True, exist_ok=True)
+    out = {"sha": sha, "made_by": MADE_BY, "at": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
+           "rows": dict(sorted(rows.items()))}
+    (records / f"{sha}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"記録を書いた: {records / (sha + '.json')}（行 {len(rows)}・落ちた {sum(1 for v in rows.values() if v == 'fail')}）")
+    return 0
+
+
+# ---------------------------------------------------------------- write
+def _replace_cell(line: str, ri: int, new: str) -> str:
+    """表の行の結果の欄だけを替える（ほかの欄の書き方はそのまま）"""
+    lead = line[: len(line) - len(line.lstrip())]
+    body = line.strip()
+    parts = CELL_SPLIT.split(body[1:-1])
+    parts[ri] = f" {new} "
+    return lead + "|" + "|".join(parts) + "|"
+
+
+def write(specs: list[str], records: Path, sha: str) -> int:
+    hit = find_records(load_records(records), sha or "")
+    if len(sha or "") < 7 or len(hit) != 1:
+        why = "短い sha" if len(sha or "") < 7 else ("記録が無い" if not hit else f"{len(hit)} つの記録に当たる（1 つに決まらない）")
+        print(f"★ {sha}：{why}（{records}）。何も書かない")
+        return 1
+    r = hit[0]
+    short = r["sha"][:7]
+    changes: list[tuple[str, str]] = []
+    n = 0
+    for f in spec_files(specs):
+        text = Path(f).read_text(encoding="utf-8")
+        lines = text.split("\n")
+        changed = False
+        for i, rid, res, ri in spec_rows(text):
+            v = r["rows"].get(rid)
+            if v not in ("pass", "fail"):
+                continue
+            new = f"{'PASS' if v == 'pass' else 'FAIL'}（CI {short}）"
+            if res != new:
+                lines[i] = _replace_cell(lines[i], ri, new)
+                changed = True
+                n += 1
+        if changed:
+            changes.append((f, "\n".join(lines)))
+    for f, t in changes:
+        Path(f).write_text(t, encoding="utf-8")
+    print(f"結果の欄を {n} 行書いた（CI {short} の記録から・{len(changes)} ファイル）")
+    return 0
+
+
+# ---------------------------------------------------------------- check
+def _key(file: str, rid: str) -> tuple[str, str]:
+    return os.path.normpath(file), rid
+
+
+def _check(specs: list[str], records: Path, ledger: dict | None, ledger_base: dict | None,
+           trusted: set[tuple[str, str, str]] | None = None) -> tuple[list[str], int]:
+    recs: dict[str, dict] | None = None
+    led = {_key(x["file"], x["id"]) for x in (ledger or {}).get("rows", [])}
+    unmarked: set[tuple[str, str]] = set()
+    bad: list[str] = []
+    n = 0
+    for f in spec_files(specs):
+        for i, rid, res, _ in spec_rows(Path(f).read_text(encoding="utf-8")):
+            if not is_pass(res):
+                continue
+            n += 1
+            where = f"{f}:{i + 1} {rid}"
+            m = MARK.search(res)
+            if not m:
+                unmarked.add(_key(f, rid))
+                if _key(f, rid) not in led:
+                    bad.append(f"{where}：PASS に CI の回の印が無い（手で書いた PASS）。ci_results.py write で CI の記録から書く")
+                continue
+            if not ID_FULL.fullmatch(rid):
+                bad.append(f"{where}：行 ID が形（op_gate の ID_RE）でない。記録と結べない")
+                continue
+            if trusted is not None and (os.path.normpath(f), rid, res) in trusted:
+                continue   # 本線の版で同じ印のまま（本線に入るときに確かめた）
+            if recs is None:
+                recs = load_records(records)
+            hit = find_records(recs, m.group(1))
+            if not hit:
+                bad.append(f"{where}：印の回 {m.group(1)} の記録が {records} に無い")
+            elif len(hit) > 1:
+                bad.append(f"{where}：印の回 {m.group(1)} が {len(hit)} つの記録に当たる（1 つに決まらない）")
+            elif hit[0]["rows"].get(rid) != "pass":
+                bad.append(f"{where}：回 {m.group(1)} の記録では {rid} は {hit[0]['rows'].get(rid, '記録に行が無い（流れていない）')}")
+    if ledger is not None:
+        for k in sorted(led - unmarked):
+            bad.append(f"{k[0]} {k[1]}：台帳の行が、もう印の無い PASS でない（印が付いた・空になった・行が無い）。台帳から消す")
+    if ledger_base is not None:
+        base = {_key(x["file"], x["id"]) for x in ledger_base.get("rows", [])}
+        for k in sorted(led - base):
+            bad.append(f"{k[0]} {k[1]}：本線の台帳に無い行を台帳に足した（台帳は減らすだけ）")
+    return bad, n
+
+
+def check(specs: list[str], records: Path, ledger: dict | None = None, ledger_base: dict | None = None) -> list[str]:
+    return _check(specs, Path(records), ledger, ledger_base)[0]
+
+
+# ---------------------------------------------------------------- 本線の版（--ledger-base-ref）
+def _git(*args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", *args], capture_output=True, text=True, check=False)
+
+
+def _show(ref: str, path: str) -> str | None:
+    r = _git("show", f"{ref}:./{path}")
+    return r.stdout if r.returncode == 0 else None
+
+
+def base_view(ref: str, ledger_path: str, ledger: dict | None, specs: list[str]):
+    """本線の版を読む。返り値：(本線の台帳 or None, 本線で同じ印の行の集合, 問題の一覧)"""
+    if not ref:
+        return None, set(), ["本線の ref が空（static の段が本線との分かれ目を出せなかった）。台帳を本線と比べられないので止める"]
+    if _git("rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode != 0:
+        return None, set(), [f"本線の ref「{ref}」が読めない。台帳を本線と比べられないので止める"]
+    trusted: set[tuple[str, str, str]] = set()
+    base_unmarked: set[tuple[str, str]] = set()
+    files = set(spec_files(specs)) | {os.path.normpath(x["file"]) for x in (ledger or {}).get("rows", [])}
+    for f in sorted(files):
+        txt = _show(ref, os.path.relpath(f))
+        if txt is None:
+            continue
+        for _, rid, res, _ in spec_rows(txt):
+            if not is_pass(res):
+                continue
+            if MARK.search(res):
+                trusted.add((f, rid, res))
+            else:
+                base_unmarked.add(_key(f, rid))
+    raw = _show(ref, os.path.relpath(ledger_path))
+    if raw is not None:
+        try:
+            return json.loads(raw), trusted, []
+        except ValueError:
+            return None, trusted, [f"本線（{ref}）の台帳が JSON でない"]
+    # 台帳を入れる回：台帳の行は、本線の版で「CI の印の無い PASS」の行だけ
+    bad = [f"{os.path.normpath(x['file'])} {x['id']}：台帳を入れる回だが、本線（{ref[:12]}）の版では印の無い PASS の行でない（入れる回に紛れて足せない）"
+           for x in (ledger or {}).get("rows", []) if _key(x["file"], x["id"]) not in base_unmarked]
+    return {"rows": (ledger or {}).get("rows", [])}, trusted, bad
+
+
+def make_ledger(specs: list[str], out: Path) -> int:
+    rows = []
+    for f in spec_files(specs):
+        for _, rid, res, _ in spec_rows(Path(f).read_text(encoding="utf-8")):
+            if is_pass(res) and not MARK.search(res):
+                rows.append({"file": f, "id": rid})
+    data = {"_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。"
+                    "流し直して印を付けたら行を消す（K-150）。行を足さない",
+            "made_by": "ci_results.py ledger", "at": datetime.datetime.now().astimezone().date().isoformat(), "count": len(rows), "rows": rows}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(f"台帳を書いた: {out}（{len(rows)} 行・{len({r['file'] for r in rows})} ファイル）")
+    return 0
+
+
+# ---------------------------------------------------------------- コマンド
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("cmd", choices=["record", "write", "check", "ledger"])
+    ap.add_argument("--specs", action="append", default=[], help="試験の仕様の Markdown（glob・何度でも）")
+    ap.add_argument("--records", default="07_qa/ci-results")
+    ap.add_argument("--report", action="append", default=[], help="record：Playwright・Vitest の JSON 報告（何度でも）")
+    ap.add_argument("--sha", default="")
+    ap.add_argument("--ledger", default="")
+    ap.add_argument("--ledger-base-ref", default=None)
+    ap.add_argument("--out", default="07_qa/test-plan/result-ledger.json")
+    a = ap.parse_args()
+    if a.cmd == "record":
+        return record([Path(p) for p in a.report], a.sha, Path(a.records))
+    if not a.specs:
+        ap.error("--specs が要る")
+    if a.cmd == "write":
+        return write(a.specs, Path(a.records), a.sha)
+    if a.cmd == "ledger":
+        return make_ledger(a.specs, Path(a.out))
+    ledger = None
+    if a.ledger:
+        try:
+            ledger = json.loads(Path(a.ledger).read_text(encoding="utf-8"))
+        except (ValueError, OSError) as e:
+            print(f"  ★ 台帳が読めない: {a.ledger}（{e}）")
+            print("FAIL — 台帳が読めない")
+            return 1
+    base, trusted, bad0 = None, None, []
+    if a.ledger_base_ref is not None:
+        if not a.ledger:
+            ap.error("--ledger-base-ref には --ledger が要る")
+        base, trusted, bad0 = base_view(a.ledger_base_ref, a.ledger, ledger, a.specs)
+    bad, n = _check(a.specs, Path(a.records), ledger, base, trusted)
+    bad = bad0 + bad
+    for x in bad:
+        print("  ★ " + x)
+    nl = len((ledger or {}).get("rows", []))
+    print(f"PASS {n} 行を見た（台帳 {nl} 行）")
+    print(f"PASS — 結果の欄の PASS {n} 行は、どれも CI の記録か台帳と合う" if not bad else f"FAIL — {len(bad)} 件")
+    return 0 if not bad else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

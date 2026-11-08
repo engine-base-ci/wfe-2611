@@ -8,7 +8,7 @@
      結果が PASS なら **その行 ID を名前に含む Playwright のテストが、直近の JSON 報告で passed** でなければ赤。
      説明文だけの PASS・テストが無い PASS・落ちたテストの PASS は全部赤。
      API の層の行（E-…-A の「エラーが出る」等）は、本物の DB の上で流した vitest の JSON 報告（名前に行 ID）も証拠に数える（op-gate.json の reports に並べる）。
-  O2 結果が空の行は「未実施」で赤。BLOCKED は理由（結果か備考に「（…）」）が無ければ赤。N/A は観点「操作」には書けない（要素がモックにある）。
+  O2 結果が空の行は「未実施」で赤（--pending-from-report のときは、今の回の報告で passed なら緑・落ちていれば赤・K-143）。BLOCKED は理由（結果か備考に「（…）」）が無ければ赤。N/A は観点「操作」には書けない（要素がモックにある）。
   O3 「発注者確認」の行は、手順ファイル（テスト項目に書いてある .md）の末尾に「OK: 日付 名前」があるときだけ PASS。無ければ BLOCKED（発注者の確認待ち）だけを許す。
   O4 報告が無い・空・仕様より古い（行の結果が書かれた後に流していない）なら、その旨を赤で出す。
 観点の集合は <spec>/op-gate.json（{"evidence_views": [...], "report_max_age_h": 48}）で足せる。プロジェクト名は持たない。
@@ -100,6 +100,8 @@ def main() -> int:
     # 本物の画面ができるまでは、前の画面の正本の不合格を記録にして、記録に無い不合格が出たら赤（D-128.117・緑にするのは KN-37）
     ap.add_argument("--baseline", default="")
     ap.add_argument("--record", action="store_true")
+    # 結果の欄は取り込みの台本が CI の記録から書く（K-143・D-129.51）。CI の回では、結果が空の行を今の回の報告で確かめる
+    ap.add_argument("--pending-from-report", action="store_true")
     a = ap.parse_args()
     cfg = {}
     cp = os.path.join(a.spec, "op-gate.json")
@@ -166,7 +168,14 @@ def main() -> int:
                     fails.append(f"{tid} {rid}: 発注者確認が未実施（{why}）。BLOCKED（発注者の確認待ち）か OK が要る")
                 continue
             if not res:
-                fails.append(f"{tid} {rid} [{v}]: 未実施（結果が空）"); continue
+                st = by_id.get(rid) if a.pending_from_report else None
+                if st == "passed":
+                    stats["evidenced"] += 1   # 今の回の報告で通った。結果の欄は取り込みの台本が書く（K-143）
+                elif st is not None:
+                    fails.append(f"{tid} {rid} [{v}]: 結果が空で、今の回の報告ではテストは {st}")
+                else:
+                    fails.append(f"{tid} {rid} [{v}]: 未実施（結果が空）")
+                continue
             if res.startswith("BLOCKED"):
                 if "（" in res or r["note"]:
                     stats["blocked"] += 1

@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 58 本（.github/workflows/v3-gate.yml）
+## CI ゲート 59 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -143,7 +143,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G46 | 使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123） | `python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py` | spec |  |
 | G47 | 書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123） | `python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py` | spec |  |
 | G51 | 利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127） | `python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py` | spec |  |
-| G48 | 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36） | `BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all` | web |  |
+| G48 | 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143） | `BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha "$GITHUB_SHA" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report` | web |  |
 | G59 | 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から） | `BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton` | web |  |
 | G53 | 試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140） | `python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py` | spec |  |
 | G54 | 決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147） | `cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py` | spec |  |
@@ -151,6 +151,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G56 | 取り込む順（depends_on の実装が先に枝にある・K-94） | `python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py` | spec |  |
 | G57 | チケットの CI の範囲の台本の試験（K-107） | `python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py` | spec |  |
 | G60 | 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014） | `python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` | spec |  |
+| G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE"` | spec |  |
 
 ## マージ可能の判断
 

@@ -102,7 +102,7 @@ SPEC_GATES = [
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
     {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
-    {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
+    {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report", "job": "web", "blocking": True},
     {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton", "job": "web", "blocking": True},
 ]
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
@@ -111,6 +111,9 @@ SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチ�
 SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の試験（K-107）", "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）", "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130", "job": "spec", "blocking": True})
+# 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
+#   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
+SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\"", "env": "          CI_LEDGER_BASE: ${{ needs.static.outputs.base }}\n", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
@@ -218,6 +221,8 @@ jobs:
 {NODE}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
 {UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
+    # G61 が static の段の G0 の出す本線との分かれ目（base）を読む（K-143）
+    needs: [static]
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
 {pg(5439)}    steps:
 {NODE}      - uses: actions/setup-python@v5
