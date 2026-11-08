@@ -38,6 +38,7 @@ SCHEMAS = OA["components"]["schemas"]
 DBC = json.loads((ROOT / "08_api" / "db-columns.json").read_text(encoding="utf-8"))["tables"]
 EPS = json.loads((ROOT / "08_api" / "endpoints.json").read_text(encoding="utf-8"))["endpoints"]
 ZOD = (ROOT / "packages" / "contracts" / "src" / "schemas.ts").read_text(encoding="utf-8")
+REGISTRY = (ROOT / "packages" / "contracts" / "src" / "registry.ts").read_text(encoding="utf-8")
 TYPES = (ROOT / "08_api" / "types.ts").read_text(encoding="utf-8")
 
 # INPUTS・RESPONSES の欄の型の名前として作り手（05_flow/build_api.py の _ftype）が表せるもの。後ろの ? は null を許す（any には付けない）
@@ -248,6 +249,54 @@ class ContractShapeTest(unittest.TestCase):
                 if k.endswith("_ids") and not (p.get("type") == "array" and is_uuid(p.get("items") or {})):
                     bad.append(f"{name}.{k}")
         self.assertEqual(bad, [], "uuid の形を契約に書いていない id の欄")
+
+    @staticmethod
+    def _id_params() -> list[tuple[str, str, str, dict]]:
+        """契約の全部の口（まだ作っていない口も）の、id の道の値と問い合わせ：道は名前が id か id で終わるもの（:id・:qid・:pid・:mid）、
+        問い合わせは名前が *_id・*_ids のもの（口ごとの QUERIES と一覧の scope_id）"""
+        out = []
+        for path, methods in OA["paths"].items():
+            for _m, op in methods.items():
+                if not isinstance(op, dict):
+                    continue
+                for x in op.get("parameters", []):
+                    n = x["name"]
+                    if (x["in"] == "path" and n.endswith("id")) or (x["in"] == "query" and re.search(r"_ids?$", n)):
+                        out.append((op["operationId"], x["in"], n, x["schema"]))
+        return out
+
+    def test_K144_SHAPE_015_every_id_path_value_and_query_is_uuid(self) -> None:
+        """回 2 の差し戻し（R1 #5）：道の値（:id だけでなく :qid・:pid・:mid）と問い合わせの *_id（listTickets の kind_id・stage_id・assignee_id・client_id、
+        listAuditEvents の member_id・ticket_id、listCredentials の tenant_id など）も、契約に format: uuid（*_ids は uuid の並び）。作り手の決まりで全部の口に"""
+        params = self._id_params()
+        names = {(i, n) for _o, i, n, _s in params}
+        for must in [("path", "qid"), ("path", "pid"), ("path", "mid"), ("query", "kind_id"), ("query", "assignee_id"),
+                     ("query", "actor_member_id"), ("query", "tenant_id"), ("query", "plan_id"), ("query", "parent_id")]:
+            self.assertIn(must, names, f"{must} を拾えていない（拾い方が壊れたか、口が消えた）")
+        bad = [f"{o} {i}:{n}" for o, i, n, sc in params
+               if not (is_uuid(sc) if not n.endswith("_ids") else sc.get("type") == "array" and is_uuid(sc.get("items") or {}))]
+        self.assertEqual(bad, [], "uuid の形を契約に書いていない道の値・問い合わせ")
+
+    def test_K144_SHAPE_016_registry_carries_uuid_params_for_the_entrance(self) -> None:
+        """入口（apps/api/src/contract/op.ts）が道の値と問い合わせの uuid を確かめられるよう、作り手（scripts/ci/contract.mjs）が
+        registry の口ごとに uuidParams（契約で format: uuid の道の値と問い合わせの名前）を出している。契約と 1 対 1"""
+        want: dict[str, set[str]] = {}
+        for o, _i, n, sc in self._id_params():
+            if is_uuid(sc) or is_uuid(sc.get("items") or {}):
+                want.setdefault(o, set()).add(n)
+        blocks = re.split(r'\n  \{\n', REGISTRY)
+        got: dict[str, set[str]] = {}
+        for b in blocks:
+            m = re.search(r'"operationId":\s*"(\w+)"', b)
+            if not m:
+                continue
+            u = re.search(r'"uuidParams":\s*\[([^\]]*)\]', b)
+            self.assertIsNotNone(u, f"registry の {m.group(1)} に uuidParams が無い")
+            got[m.group(1)] = set(re.findall(r'"(\w+)"', u.group(1)))  # type: ignore[union-attr]
+        self.assertTrue(got, "registry を読めない")
+        diff = sorted(f"{o}: 契約 {sorted(want.get(o, set()))} ／ registry {sorted(got.get(o, set()))}"
+                      for o in set(want) | set(got) if want.get(o, set()) != got.get(o, set()))
+        self.assertEqual(diff, [], "registry の uuidParams が契約と合わない")
 
     def test_K144_SHAPE_005_known_uuid_fields_and_nullability(self) -> None:
         """口が uuid として確かめている欄（全文検索で洗い出したもの）は全部 format: uuid。送らなくてよい印の machine_id だけ null を許す"""
