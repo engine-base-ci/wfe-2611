@@ -4,6 +4,8 @@
 --   (3) 会話の名前を変える：送った名前を切らない
 --   ほかの式・権限は 0041・0043 のまま。search_path に pg_temp を足し、execute は kaname_app だけ（D-128.171）
 
+-- 大きさの決まりは決める人の決定 D-130.3 で外す。この表を書くのは app.ticket_draft_save だけで、大きさの守りは入口の送る量 1MB（op.ts）が持つ
+-- squawk-ignore ban-drop-constraint
 alter table app.ticket_drafts drop constraint if exists ticket_drafts_body_check;
 
 create or replace function app.agent_memory_edit(p_member uuid, p_memory uuid, p_title text, p_body text) returns boolean
