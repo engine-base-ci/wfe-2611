@@ -32,7 +32,8 @@
   scripts/ci/stack_gate.py
     LOCK_DATES：記録の置き場（<ROOT>/scripts/ci/lock_dates.json）
     lock_sha(lock_text) -> str：lockfile の中身の sha256（16 進）
-    lock_age(lock, ws_text, record, fetch, now) -> (fails, record_out, asked)：
+    lock_age(lock, ws_text, record, fetch, now, in_ci=False) -> (fails, record_out, asked)：
+        in_ci（環境 CI の中）で sha が違えば、registry に聞いて判定したうえで S7 の赤（「lock_dates.json」「stack_gate.py」を含む文・D-133.1）を足す。手元では足さない。
         record は {"_doc", "lockfile_sha256", "asked_on", "dates": {"名前@版": ISO}}（None・形が違えば無いのと同じ）。
         sha が同じなら fetch を呼ばず asked == []・record_out は record のまま。違えば lockfile にあって記録に無い名前@版の
         名前だけ fetch(names) に聞き（asked はその名前の並び）、record_out は lockfile の名前@版だけ（無い物は落とす）・
@@ -401,6 +402,23 @@ class LockDatesTest(unittest.TestCase):
         self.assertEqual(len(fails), 2)
         self.assertTrue(all(f.startswith("S6") and "聞けない" in f for f in fails), fails)
 
+    def test_K156_CI_038_stale_record_in_ci_is_red(self) -> None:
+        times = {"@s/b": {"2.0.0": "2025-10-01T00:00:00Z"}}
+        rec = record(LOCK_OLD, {"a@1.0.0": "2025-12-01T00:00:00Z", "c@0.1.0": "2025-11-01T00:00:00Z"})
+        calls: list[list[str]] = []
+        fails, out, asked = stack_gate.lock_age(LOCK, "x: 1\n", rec, self.fetch(calls, times), NOW, in_ci=True)
+        s7 = [f for f in fails if f.startswith("S7")]
+        self.assertEqual(len(s7), 1, fails)
+        self.assertIn("lock_dates.json", s7[0])
+        self.assertIn("stack_gate.py", s7[0])
+        self.assertEqual(calls, [["@s/b"]])   # 赤でも判定はする（聞く）
+        self.assertEqual(out["dates"]["@s/b@2.0.0"], "2025-10-01T00:00:00Z")
+        fails_local, _, _ = stack_gate.lock_age(LOCK, "x: 1\n", rec, self.fetch([], times), NOW, in_ci=False)
+        self.assertFalse([f for f in fails_local if f.startswith("S7")])
+        same = record(LOCK, {"a@1.0.0": "2025-12-01T00:00:00Z", "@s/b@2.0.0": "2025-10-01T00:00:00Z"})
+        fails_same, _, _ = stack_gate.lock_age(LOCK, "x: 1\n", same, self.fetch([], times), NOW, in_ci=True)
+        self.assertFalse([f for f in fails_same if f.startswith("S7")])
+
     def test_K156_CI_024_record_shape_and_place(self) -> None:
         _, out, _ = stack_gate.lock_age(LOCK, "x: 1\n", None, self.fetch([], {"a": {"1.0.0": "2025-01-01T00:00:00Z"}, "@s/b": {"2.0.0": "2025-01-01T00:00:00Z"}}), NOW)
         self.assertEqual(set(out), {"_doc", "lockfile_sha256", "asked_on", "dates"})
@@ -440,6 +458,13 @@ class WorkflowTest(unittest.TestCase):
         sq = [s for s in db["steps"] if "run-squawk" in s.get("run", "")]
         self.assertEqual(len(sq), 1)
         self.assertIn("needs.static.outputs.base", sq[0]["env"].get("CI_BASE", ""))
+
+    def test_K156_CI_039_hook_timeout_is_three_times_measured_max(self) -> None:
+        text = (ROOT / "vitest.config.ts").read_text(encoding="utf-8")
+        m = re.search(r"\bhookTimeout\s*:\s*([\d_]+)", text)
+        self.assertIsNotNone(m)
+        self.assertEqual(int(m.group(1).replace("_", "")), 6000)   # 1.9 秒 × 3（D-133.2）
+        self.assertIn("× 3", text)
 
     def test_K156_CI_029_hook_timeout_in_one_place_with_measurement(self) -> None:
         text = (ROOT / "vitest.config.ts").read_text(encoding="utf-8")
