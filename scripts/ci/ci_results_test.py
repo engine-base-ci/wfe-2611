@@ -146,6 +146,31 @@ class WriteTest(Base):
         self.assertEqual(cr.write([str(self.spec)], self.rec, "abcdef1"), 1)
         self.assertEqual(self.spec.read_text(encoding="utf-8"), before)
 
+    def test_K143_CI_034_write_shrinks_ledger_rows_it_marks(self):
+        """K143-CI-034 write が台帳に載った印の無い PASS の行に印を付けたら、同じ実行でその行を台帳から消す（台帳は減らすだけ・
+        取り込みの台本の write → check の順で、直後の check が「台帳の行が、もう印の無い PASS でない」で赤にならない）。
+        記録に無い行は印も付かず台帳に残る。--ledger を渡さなければ台帳は触らない（テスター Q 回 8 の追加-1）"""
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS") + row("K57-UI-002", "PASS") + row("K57-UI-003"), encoding="utf-8")
+        self.record_of({"K57-UI-001": "pass", "K57-UI-003": "pass"})
+        ledger = self.t / "ledger.json"
+        rows = [{"file": str(self.spec), "id": "K57-UI-001"}, {"file": str(self.spec), "id": "K57-UI-002"}]
+        ledger.write_text(json.dumps({"rows": rows, "count": 2}), encoding="utf-8")
+        # 台帳を渡さない write は台帳を触らない（印は付く）
+        self.assertEqual(cr.write([str(self.spec)], self.rec, SHA), 0)
+        self.assertEqual(json.loads(ledger.read_text(encoding="utf-8"))["rows"], rows)
+        # 台帳を渡した write は、印を付けた行（001）を台帳から消し、記録に無い行（002）は残す
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS") + row("K57-UI-002", "PASS") + row("K57-UI-003"), encoding="utf-8")
+        self.assertEqual(cr.write([str(self.spec)], self.rec, SHA, ledger), 0)
+        txt = self.spec.read_text(encoding="utf-8")
+        self.assertIn("| K57-UI-001 | tickets | 操作 | 項目 | 前提 | 操作 | 期待 | PASS（CI abcdef1） |", txt)
+        self.assertIn("| K57-UI-003 | tickets | 操作 | 項目 | 前提 | 操作 | 期待 | PASS（CI abcdef1） |", txt)
+        self.assertIn(row("K57-UI-002", "PASS").strip(), txt)
+        after = json.loads(ledger.read_text(encoding="utf-8"))
+        self.assertEqual(after["rows"], [{"file": str(self.spec), "id": "K57-UI-002"}])
+        self.assertEqual(after["count"], 1)
+        # 直後の check（本線の台帳 ＝ write の前の台帳）は緑：減らしただけで、増えも「もう印の無い PASS でない行」も無い
+        self.assertEqual(self.problems(after, {"rows": rows}), [])
+
 
 class CheckTest(Base):
     def test_K143_CI_006_unmarked_pass_is_red(self):

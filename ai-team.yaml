@@ -93,7 +93,10 @@ merge:
 
 # ── 試験の結果の欄（K-143・D-129.51・ai-driven-process.md §8）。結果の欄は手で書かない。取り込みの台本（pm_merge.sh）が
 #    緑だった CI の回の記録を records に写し、`<script> write --specs <specs> --records <records> --sha <その回>` で書き、
-#    そのチケットの番号でコミットしてから本線に入れる。記録は CI の web の段（G48）が `<script> record --report <report>… --sha <回>` で作る。
+#    本文に `Results-Written-By: ci_results.py write CI <40 字の sha>` を持つ、そのチケットの番号のコミットにし、
+#    `<script> check --specs <specs> --ledger <ledger> --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>` が緑のときだけ本線に入れる
+#    （順：写す → write → Results-Written-By つきでコミット → check → 本線へ・PM の判断 2026-11-08 17:40 ⑤）。write は印を付けた行を台帳から消す（台帳は減らすだけ・K143-CI-034）。
+#    記録は CI の web の段（G48）が `<script> record --report <report>… --sha <回>` で作る。
 #    pm_merge.sh がこの設定を読む口は PM がスキル側で足す（K-143 の外）
 results:
   script: "python3 scripts/ci/ci_results.py"
