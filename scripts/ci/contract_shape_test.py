@@ -612,20 +612,43 @@ class ContractShapeTest(unittest.TestCase):
         self.assertEqual(loose, [], "本物の試験が別のファイルにある口の、入口の 503 の生成の試験が covers に結ばれていない（it.todo のまま）")
 
     def test_K144_SHAPE_019_no_hand_rolled_loose_uuid_check(self) -> None:
-        """回 6（類 B の続き・L-008）：画面（apps/web）と口（apps/api/src）は、id の形を自前の緩い正規表現（[0-9a-f-]{36}）で確かめない。
-        入口と同じ正式な uuid の確かめ（版と variant の桁まで）を使う。緩いと、入口が 422 で断る id を画面は「ある」とみなし、
-        「見つからない」でなく「読み込めない」を出す（/tickets/<版の桁が 0 の 36 字>）。前の道すじ apps/api/src/auth は K-145 の受け持ちなので外す"""
+        """回 6（類 B の続き・L-008）・K-145 で広げた：画面（apps/web）・口（apps/api/src・前の道すじ apps/api/src/auth を含む）・Bridge（apps/bridge/src）・
+        部品（packages/*/src）は、id の形を自前の緩い正規表現で確かめない。拾う形は 2 つ：
+          (1) 緩い 36 字 `[0-9a-f-]{36}`（36 個のハイフンが通る）  (2) 版の桁を見ない 8-4-4-4-12 `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-`（版の桁 0 が通る）
+        正式な形の手書きの正規表現（`-[1-8][0-9a-f]{3}-[89ab]…`）は、依存を持てない層の正本 2 ファイル（packages/db/src/id.ts・apps/bridge/src/pairing.ts）にしか無く、
+        2 つの文字列は同じ（決まりが分かれない）。ほかは契約の isUuid（z.uuid()）か、その正本を import する。
+        緩いと、入口が 422 で断る id を画面は「ある」とみなし、「見つからない」でなく「読み込めない」を出す（/tickets/<版の桁が 0 の 36 字>）。
+        試験のファイル（.test・.spec・/test/・/tests/）と生成物は見ない"""
         loose = re.compile(r"\[0-9a-f(?:A-F)?-\]\{36\}")
-        bad = []
-        for base in ("apps/web", "apps/api/src"):
-            for f in sorted((ROOT / base).rglob("*.ts*")):
+        no_version = re.compile(r"\[0-9a-f(?:A-F)?\]\{8\}-\[0-9a-f(?:A-F)?\]\{4\}-\[0-9a-f(?:A-F)?\]\{4\}-")
+        strict = re.compile(r"\[0-9a-f(?:A-F)?\]\{8\}-\[0-9a-f(?:A-F)?\]\{4\}-\[1-8\]\[0-9a-f(?:A-F)?\]\{3\}-")
+        canon = {"packages/db/src/id.ts", "apps/bridge/src/pairing.ts"}
+        # 拾い方そのものの見本（壊して確かめる）：緩い 2 形は拾い、正式な形は拾わない
+        self.assertTrue(loose.search("const UUID = /^[0-9a-f-]{36}$/i;"))
+        self.assertTrue(no_version.search("/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/"))
+        self.assertFalse(no_version.search("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"))
+        self.assertTrue(strict.search("/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i"))
+        bad: list[str] = []
+        strict_sources: dict[str, str] = {}
+        bases = [ROOT / "apps/web", ROOT / "apps/api/src", ROOT / "apps/bridge/src"] + sorted((ROOT / "packages").glob("*/src"))
+        for base in bases:
+            for f in sorted(base.rglob("*.ts*")):
                 rel = f.relative_to(ROOT).as_posix()
-                if "node_modules" in rel or "/.next/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel) or rel.startswith("apps/api/src/auth/"):
+                if "node_modules" in rel or "/.next/" in rel or "/dist/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel):
                     continue
                 for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
-                    if loose.search(line):
+                    if loose.search(line) or no_version.search(line):
                         bad.append(f"{rel}:{i}")
-        self.assertEqual(bad, [], "id の形を緩い正規表現で確かめている（入口と同じ isUuid を使う）")
+                    m = strict.search(line)
+                    if m:
+                        if rel not in canon:
+                            bad.append(f"{rel}:{i}（正式な形でも手書きは正本の外：isUuid か UUID_RE を import する）")
+                        else:
+                            lit = re.search(r"/\^.*\$/[a-z]*", line)
+                            strict_sources[rel] = lit.group(0) if lit else line.strip()
+        self.assertEqual(bad, [], "id の形を手書きの正規表現で確かめている（入口と同じ isUuid か、正本の UUID_RE を使う）")
+        self.assertEqual(set(strict_sources), canon, "正本の 2 ファイルに正式な形の UUID_RE が無い")
+        self.assertEqual(len(set(strict_sources.values())), 1, f"正本 2 つの文字列が違う：{strict_sources}")
 
     # ---- 必須の欄（類 E・回 9・Q5 回 8 追加-1）
     @staticmethod

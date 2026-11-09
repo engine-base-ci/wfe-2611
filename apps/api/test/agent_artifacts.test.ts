@@ -261,9 +261,9 @@ describe("成果物（D-106）", () => {
     expect((await json<Art>(req("GET", `/agent/artifacts/${a.id}`, undefined, boss.H))).current_version).toBe(1);
   });
 
-  it("未ログインは 401・id の形が違えば 404", async () => {
+  it("未ログインは 401・id の形が違えば 422（入口で正式な uuid として確かめる・D-129.42・K-145。前は 404）", async () => {
     expect((await req("GET", "/agent/artifacts")).status).toBe(401);
     const { H } = await signUp();
-    expect((await req("GET", "/agent/artifacts/nope", undefined, H)).status).toBe(404);
+    expect((await req("GET", "/agent/artifacts/nope", undefined, H)).status).toBe(422);
   });
 });
