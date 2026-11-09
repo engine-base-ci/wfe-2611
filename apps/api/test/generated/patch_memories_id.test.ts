@@ -32,6 +32,10 @@ describe("PATCH /api/v1/memories/:id", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
     const who = e.auth === "ops" ? "ops" : "boss"; if (e.kind === "list") { const r = await h.call(e, who, { query: { limit: "0" } }); expect(r.status).toBe(422); return; } if (e.kind === "get" || e.kind === "delete") { const r = await h.call(e, who, { id: "not-a-uuid" }); expect(r.status).toBe(422); return; } const a = await args(h, e, who); const before = await h.count(e.table); const r = await h.call(e, who, { ...a, body: { __unknown_field: "x", id: 12345 } }); expect(r.status).toBe(422); const b = (await r.json()) as { code: string; details: unknown[] }; expect(b.code).toBe("VALIDATION_ERROR"); expect(b.details.length).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); const r2 = await h.call(e, who, { ...a, body: "{not json" }); expect(r2.status).toBe(422);
   });
+  it("test_patch_memories_id_too_large", async () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    const who = e.auth === "ops" ? "ops" : "boss"; const a = await args(h, e, who); const before = await h.count(e.table); const r = await h.call(e, who, { ...a, body: JSON.stringify({ x: "a".repeat(1_048_577) }) }); expect(r.status).toBe(413); const b = (await r.json()) as { code: string; message: string }; expect(b.code).toBe("PAYLOAD_TOO_LARGE"); expect(b.message).toBe("送る内容が大きすぎます"); expect(await h.count(e.table)).toBe(before);
+  });
   it("test_patch_memories_id_rate_limited", async () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     const who = e.auth === "ops" ? "ops" : "boss"; h.limits["updateMemory"] = 2; const a = await args(h, e, who); await h.call(e, who, a); await h.call(e, who, a); const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(429); const b = (await r.json()) as { code: string; retry_after_sec: number }; expect(b.code).toBe("RATE_LIMITED"); expect(b.retry_after_sec).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); delete h.limits["updateMemory"];
@@ -39,6 +43,10 @@ describe("PATCH /api/v1/memories/:id", () => {
   it("test_patch_memories_id_terms_pending", async () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
+  });
+  it("test_patch_memories_id_session_unresolved", async () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "down", a); expect(r.status).toBe(503); expect(((await r.json()) as { code: string }).code).toBe("E-PAGE-003"); expect(await h.count(e.table)).toBe(before);
   });
   it("test_patch_memories_id_shape", async () => {
     // UBIQUITOUS: PATCH /api/v1/memories/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

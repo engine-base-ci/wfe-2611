@@ -17,6 +17,8 @@ describe("DELETE /api/v1/members/:id", () => {
   it.todo("test_delete_members_id_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_delete_members_id_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_delete_members_id_session_unresolved");
   // UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を返し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）
   it.todo("test_delete_members_id_rejected_422_2");
   // UBIQUITOUS: DELETE /api/v1/members/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

@@ -916,6 +916,72 @@ row(R["K60-UI-029"], async (page) => {
   }
 });
 
+// K-144（D-129.42）：入口は正式な uuid でない道の値に 422 を返す。画面は入口と同じ基準で先に確かめ、口を呼ばずに「見つからない」にする
+row(R["K144-UI-001"], async (page) => {
+  await mockApi(page);
+  const asked: string[] = [];
+  // 本物の入口と同じく、詳細の口は uuid でない道の値に 422（この差し替えが先に効く）
+  await page.route(/\/api\/v1\/tickets\/[^/?]+$/, (route) => {
+    asked.push(new URL(route.request().url()).pathname);
+    return route.fulfill({
+      status: 422,
+      contentType: "application/json",
+      body: JSON.stringify({
+        error: "validation_failed",
+        code: "VALIDATION_ERROR",
+        details: [{ field: "id", message: "uuid" }],
+      }),
+    });
+  });
+  for (const bad of ["3fa85f64-5717-0562-b3fc-2c963f66afa6", "------------------------------------", "not-a-uuid"]) {
+    await page.goto(`/tickets/${bad}`);
+    const err = page.locator('[data-state="error"]');
+    await expect(err, bad).toHaveAttribute("data-code", "E-PAGE-001");
+    await expect(err.getByText("見つかりませんでした", { exact: false }), bad).toBeVisible();
+  }
+  expect(asked, "uuid でない道の値で詳細の口を呼んだ").toEqual([]);
+});
+
+row(R["K144-UI-002"], async (page) => {
+  const m = await mockApi(page);
+  // 送る量の守り（D-130.1）：作る口が 413 を返す
+  m.on.create = () => ({
+    status: 413,
+    body: { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" },
+  });
+  await open(page);
+  await fillAll(page);
+  await create(page).click();
+  await expect(page.getByText("送る内容が大きすぎます").first()).toBeVisible();
+  await expect(page.getByText(/読み込めません/)).toHaveCount(0);
+  await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("請求書を送る");
+  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
+});
+
+row(R["K144-UI-003"], async (page) => {
+  // 下書きの自動保存で送る量が 1MB を超えた（D-130.5）：作るときと同じ「送る内容が大きすぎます」を出し、書いたものは残す。小さくして残せたら消える
+  const m = await mockApi(page);
+  let big = true;
+  m.on.saveDraft = () =>
+    big
+      ? {
+          status: 413,
+          body: { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" },
+        }
+      : null;
+  await open(page);
+  await loaded(page);
+  await titleBox(page).fill("大きすぎる下書き");
+  const notice = page.getByText("送る内容が大きすぎます").first();
+  await expect(notice).toBeVisible();
+  await expect(page.getByText(/読み込めません/)).toHaveCount(0);
+  await expect(titleBox(page)).toHaveValue("大きすぎる下書き");
+  big = false;
+  await titleBox(page).fill("小さくした下書き");
+  await expect.poll(() => JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])])).toContain("小さくした下書き");
+  await expect(page.getByText("送る内容が大きすぎます")).toHaveCount(0);
+});
+
 row(R["K60-UI-030"], async (page) => {
   await mockApi(page);
   await page.goto(`/tickets/${ID}`);

@@ -4,7 +4,7 @@
    入力: 07_functional/{screens,features,entities,traceability-matrix}.json・05_flow/flow.json・03_architecture/choke-points.json・07_qa/test-specs/errors.json
    出力: 08_api/endpoints.json（信頼源）・openapi.yaml・types.ts・api-decisions.json・ears-ac-seed.json・lint-mapping.json・screen-api-coverage.json・api-field-consumption.json・API-SPEC.md・api-spec.html
    各 endpoint に acts / screens / choke_points / source（decision-traceability・screen-derivation・choke-points の責務）。"""
-import json, re, os, datetime, yaml
+import copy, json, re, os, datetime, yaml
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
 F = json.load(open("05_flow/flow.json", encoding="utf-8")); BP = F["blueprint"]
 S = json.load(open("07_functional/screens.json", encoding="utf-8"))["items"]; FE = json.load(open("07_functional/features.json", encoding="utf-8"))["items"]
@@ -52,11 +52,15 @@ def four(e):
             if hit: out[hit[0]] = {**dict(x), "_generic": False}
             else: out.append({**dict(x), "_generic": False})
         for y in out: y.pop("_generic", None)
+    # 送る量の守り（K-144 ㉚・D-130.1）：体を受ける口は全部、1 回に送る内容が 1MB を超えたら入口（op.ts）の一番最初で 413
+    if e["method"] in ("POST", "PATCH", "PUT"): out.append({"status": 413, "code": "PAYLOAD_TOO_LARGE", "body": {"error": "payload_too_large", "code": "PAYLOAD_TOO_LARGE"}, "trigger": "1 回に送る内容が 1MB を超えた（送る量の守り・D-130.1）", "ears_form": "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない"})
     out.append({"status": 429, "code": "RATE_LIMITED", "body": {"error": "rate_limited", "retry_after_sec": 60}, "trigger": e["rate_limit"], "ears_form": f"UNWANTED: IF {e['rate_limit']} を超えたら、Kaname は 429 と retry_after_sec を返す"})
     if e["choke_points"] & {"C1", "C3", "C5"}: out.append({"status": 502, "code": "EXTERNAL_FAILED", "body": {"error": "external_failed"}, "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった", "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"})
     # 同意し直し（K-53・D-125.162）：ログインの要る口は、同意し直しの印が立ったセッションでは 403・E-AUTH-010。規則で足す（口ごとに手で足さない）。
     #   PC の印の口（device）には印が立たない（D-128.137）。規約の 2 つの口・ログアウト・自分の取得は止めない（正本は screen_api.py の TERMS_OPEN_OPS・契約の termsOpen）
     if auth and e["auth"]["role"] != "device" and e.get("operation_id") not in _sa.TERMS_OPEN_OPS: out.append({"status": 403, "code": "E-AUTH-010", "body": {"error": "forbidden", "code": "E-AUTH-010"}, "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）", "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"})
+    # 入口でセッションを解けない（K-53・K-144 ⑬）：全部の口で止める側に倒して 503・E-PAGE-003。口ごとの ERRORS_4XX の後に足す（前に足すと 503 E-PAGE-007 の行に置き換えられて消える）
+    out.append({"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）", "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"})
     return out
 def ears(e):
     out = []
@@ -159,13 +163,18 @@ for e in E:
     props = {k: (dbtype(dbc[k]) if k in dbc else v) for k, v in props.items()}
     resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
     schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
-    schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}}
-def _ftype(v):   # 型の後ろの ? は null を許す（K-51）
+    schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}, "additionalProperties": False}   # 知らない項目は許さない（D-129.42）
+_FTYPES = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
+def _ftype(v):   # 型の後ろの ? は null を許す（K-51）。uuid・uuid[] は正式な uuid の形（D-129.42・K-144）。知らない名前は黙って string にしない
     base = v[:-1] if v.endswith("?") else v
-    t = {"type": "array", "items": {"type": "object"}} if base == "array" else {"type": base}
+    if base not in _FTYPES: raise SystemExit(f"05_flow/screen_api.py の型の名前 {v!r} を作り手が表せない（{sorted(_FTYPES)} のどれか）")
+    if base == "array": t = {"type": "array", "items": {"type": "object"}}
+    elif base == "uuid": t = {"type": "string", "format": "uuid"}
+    elif base == "uuid[]": t = {"type": "array", "items": {"type": "string", "format": "uuid"}}
+    else: t = {"type": base}
     return {**t, "nullable": True} if v.endswith("?") else t
-for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）
-    schemas[_n] = {"type": "object", "properties": {k: ({} if v == "any" else {"type": "array"} if v == "array" else _ftype(v)) for k, v in _props.items()}, "x-operation": _op}   # any：形を問わず受け、口が扱う（K-57）
+for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）。知らない項目は許さない（入口の z.strictObject と同じ・D-129.42）
+    schemas[_n] = {"type": "object", "properties": {k: ({} if v == "any" else {"type": "array"} if v == "array" else _ftype(v)) for k, v in _props.items()}, "additionalProperties": False, "x-operation": _op}   # any：形を問わず受け、口が扱う（K-57）
 for _op, (_n, _props) in _sa.RESPONSES.items():   # 表の行ではない答えの形（D-128.78）
     schemas[_n] = {"type": "object", "properties": {k: _ftype(v) for k, v in _props.items()}, "x-operation": _op}
 # 列の名前は英小文字と _ だけ（ER 図で 2 つの列を「・」でつないだまま 1 つの名前になり、型のファイルが画面の組み立て（SWC）で読めなくなった・2026-11-03）
@@ -178,28 +187,64 @@ def qtype(q, table):
     cols = sorted(_DBC.get(table, {}))
     if q == "limit": return {"type": "integer", "minimum": 1, "maximum": 200}
     if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
-    if q == "scope_id": return {"type": "string", "format": "uuid"}
+    if q.endswith("_id"): return {"type": "string", "format": "uuid"}   # *_id は正式な uuid（scope_id も・D-129.42・K-144）
+    if q.endswith("_ids"): return {"type": "array", "items": {"type": "string", "format": "uuid"}}
     if q == "cursor": return {"type": "string", "pattern": "^[0-9]{1,9}$"}
     return {"type": "string"}
 def qparams(names, table):
     has = _DBC.get(table)
     names = list(dict.fromkeys(names))   # 同じ名前を二度出さない（画面の問い合わせに sort が入っていると、一覧の共通の分と重なっていた）
     return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
+# 口ごとの入力の形（K-144 ⑰・㉑）：必須の欄（REQUIRED_INPUTS）と値域（VALUE_RANGES）を、その口の入力の形に書く。
+#   同じ形を必須か値域の違う口と分け合っているなら、その口に自分の形 <operationId の頭を大文字>Input を作る（欄は同じ・知らない項目は許さない）。
+#   写しは copy.deepcopy（同じ辞書を 2 か所に置くと YAML の別名が出て、contract.mjs が欄を読めない。表の入力の欄は答えの形と辞書を分け合っている）
+_REQ = getattr(_sa, "REQUIRED_INPUTS", {}); _RANGES = getattr(_sa, "VALUE_RANGES", {})
+def _in_name(e):
+    tname = e.get("table") or e["path"].split("/")[3]
+    return getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), ("".join(w.capitalize() for w in tname.split("_")) + "Input",))[0]
+_body_ops = [(e["implementation_path"].split("::")[1], _in_name(e)) for e in endpoints if e["method"] in ("POST", "PATCH")]
+_in_of = dict(_body_ops)
+for _op in list(_REQ) + list(_RANGES):
+    if _op not in _in_of: raise SystemExit(f"05_flow/screen_api.py の REQUIRED_INPUTS・VALUE_RANGES の口 {_op} が、体を受ける口に無い")
+_sig = lambda o: json.dumps([_REQ.get(o, []), _RANGES.get(o, {})], ensure_ascii=False, sort_keys=True)
+_EMPTY = _sig("")
+for _name in dict.fromkeys(n for _, n in _body_ops):
+    _sharers = [o for o, n in _body_ops if n == _name]
+    _keep = _EMPTY if any(_sig(o) == _EMPTY for o in _sharers) else _sig(_sharers[0])
+    for _op in _sharers:
+        if _sig(_op) == _EMPTY: continue
+        _own = _name if _sig(_op) == _keep else _op[0].upper() + _op[1:] + "Input"
+        if _own != _name:
+            if _own in schemas: raise SystemExit(f"自分の入力の形 {_own} が既にある")
+            schemas[_own] = copy.deepcopy(schemas[_name]); schemas[_own]["x-operation"] = _op; _in_of[_op] = _own
+        sc = schemas[_own] = copy.deepcopy(schemas[_own])
+        for _k in _REQ.get(_op, []) + list(_RANGES.get(_op, {})):
+            if _k not in sc["properties"]: raise SystemExit(f"{_op} の欄 {_k} が入力の形 {_own} に無い")
+        if _op in _REQ: sc["required"] = list(_REQ[_op]); sc["x-required-by"] = "hooks"   # 無いときの答えは口の振る舞い（入口の zod は .optional() のまま）
+        for _k, _words in _RANGES.get(_op, {}).items(): sc["properties"][_k] = {**copy.deepcopy(sc["properties"][_k]), **copy.deepcopy(_words)}
 paths = {}
 for e in endpoints:
     tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}
-    op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n == "id" else {"type": "string"}} for n in e["path_params"]]
+    _pp = getattr(_sa, "PATH_PATTERNS", {}).get(e.get("operation_id"), {})   # 道の値を口が値域つきで断る口（K-144 ⑲）
+    for _n in _pp:
+        if _n not in e["path_params"]: raise SystemExit(f"05_flow/screen_api.py の PATH_PATTERNS の {e.get('operation_id')}.{_n} が道の値に無い")
+    op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n.endswith("id") else ({"type": "string", "pattern": _pp[n]} if n in _pp else {"type": "string"})} for n in e["path_params"]]   # :id・:qid・:pid・:mid は uuid（D-129.42）
     if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname)
     elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname)
     op["parameters"] += [{"name": h, "in": "header", "required": True, "schema": {"type": "string", "minLength": 32}} for h in getattr(_sa, "HEADERS", {}).get(e.get("operation_id"), [])]   # 頭で受ける値（K-51）
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
-    _in = getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
+    _in = _in_of.get(op["operationId"]) or getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
     ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: {"type": v} for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
+    if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"]["application/octet-stream"] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる
     op["responses"] = {str(e["outputs_2xx"]["status"]): ok, **{k: {"description": "／".join(dict.fromkeys(v)), "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}} for k, v in _codes.items()}}
+    _unx = getattr(_sa, "UNEXPRESSIBLE_422", {}).get(op["operationId"])   # 契約に書けない値の決まり（K-144 ㉑）：口の振る舞いのまま 422
+    if _unx:
+        if "422" not in op["responses"]: raise SystemExit(f"{op['operationId']} に 422 が無いのに UNEXPRESSIBLE_422 がある")
+        op["responses"]["422"]["description"] += f"（契約に書けない値の決まり：{'・'.join(_unx)}）"; op["responses"]["422"]["x-unexpressible-422"] = list(_unx)
     paths.setdefault(re.sub(r":(\w+)", r"{\1}", e["path"]), {})[e["method"].lower()] = op
 openapi = {"openapi": "3.0.3", "info": {"title": "Kaname API", "version": "1.0.0", "description": f"Mock-Driven Contract Generation。{TODAY} 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる"},
            "servers": [{"url": BASE}], "components": {"securitySchemes": {"session": {"type": "http", "scheme": "bearer", "description": "Better Auth のセッション。sessions 表を見て失効を判定"}}, "schemas": schemas}, "paths": paths}

@@ -35,6 +35,7 @@ export type CallErrorKind =
   | "conflict"
   | "rate_limited"
   | "not_built"
+  | "too_large"
   | "failed";
 export interface CallErr {
   ok: false;
@@ -58,6 +59,7 @@ function kindOf(status: number, code: string): CallErrorKind {
   if (status === 403) return code === "STEP_UP_REQUIRED" ? "step_up" : "forbidden";
   if (status === 404) return "not_found";
   if (status === 409) return "conflict";
+  if (status === 413) return "too_large"; // 送る内容が 1MB を超えた（D-130.1）。答えの message（「送る内容が大きすぎます」）を出す
   if (status === 422) return "invalid";
   if (status === 429) return "rate_limited";
   if (status === 501) return "not_built";

@@ -16,14 +16,9 @@ const invalid = (field: string, message: string): HookReply => ({
 /** 契約では文字で来る（"true"／"false"）。それ以外は「変えない」 */
 const flag = (v: unknown): boolean | null =>
   v === "true" || v === true ? true : v === "false" || v === false ? false : null;
-const text = (v: unknown, n: number): string | null => {
-  const s =
-    typeof v === "string"
-      ? v
-          .replace(/[\r\n]+/g, " ")
-          .trim()
-          .slice(0, n)
-      : "";
+/** 1 行の文（改行を空白にして前後を落とす）。人が書いたものを黙って切らない（D-130.4・K-144 ㉞）。守りは入口の送る量 1MB だけ */
+const text = (v: unknown): string | null => {
+  const s = typeof v === "string" ? v.replace(/[\r\n]+/g, " ").trim() : "";
   return s || null;
 };
 
@@ -39,7 +34,7 @@ export function agentHooks(pool: pg.Pool): Record<string, Hook> {
     },
     updateConversation: {
       before: async (a) => {
-        const title = a.input["title"] === undefined ? null : text(a.input["title"], 80);
+        const title = a.input["title"] === undefined ? null : text(a.input["title"]);
         if (a.input["title"] !== undefined && !title) return invalid("title", "名前が空です");
         const ok = await setConversation(pool, user(a), a.id!, {
           title,
@@ -59,9 +54,9 @@ export function agentHooks(pool: pg.Pool): Record<string, Hook> {
     },
     updateMemory: {
       before: async (a) => {
-        const body = typeof a.input["body"] === "string" ? a.input["body"].trim().slice(0, 2000) : "";
+        const body = typeof a.input["body"] === "string" ? a.input["body"].trim() : "";
         if (!body) return invalid("body", "覚えることが空です");
-        const ok = await editMemory(pool, user(a), a.id!, text(a.input["title"], 80), body);
+        const ok = await editMemory(pool, user(a), a.id!, text(a.input["title"]), body);
         return ok
           ? { status: 200, body: { data: { id: a.id, ok: true } } }
           : unwritable(a, notFound("MEMORY_NOT_FOUND", "直せる記憶が見つかりません（自分の記憶だけ直せます）"));

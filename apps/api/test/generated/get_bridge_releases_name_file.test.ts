@@ -20,9 +20,24 @@ describe("GET /api/v1/bridge/releases/:name/file", () => {
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-055");
   });
   it("test_get_bridge_releases_name_file_rejected_422", () => {
-    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+    // UNWANTED: IF 名前が小文字だけで mac・win のどちらでもないなら、Kaname は 422 と欄 name を返す
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-023」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-023");
+  });
+  it("test_get_bridge_releases_name_file_not_found", () => {
+    // UNWANTED: IF 名前が目録に無いか置き場の外を指すなら、Kaname は 404 と NOT_FOUND を返し、ファイルを渡さない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-002」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-002");
+  });
+  it("test_get_bridge_releases_name_file_not_found_2", () => {
+    // UNWANTED: IF その OS の配布物が無いなら、Kaname は 404 と E-CONN-014 を返す
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-001");
+  });
+  it("test_get_bridge_releases_name_file_unavailable", () => {
+    // UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-004」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-004");
   });
   it("test_get_bridge_releases_name_file_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
@@ -38,6 +53,11 @@ describe("GET /api/v1/bridge/releases/:name/file", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-050」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-050");
+  });
+  it("test_get_bridge_releases_name_file_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
   it("test_get_bridge_releases_name_file_shape", () => {
     // UBIQUITOUS: GET /api/v1/bridge/releases/:name/file の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
