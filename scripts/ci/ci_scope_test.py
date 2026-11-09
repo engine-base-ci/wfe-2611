@@ -911,7 +911,7 @@ class RealRepoTest(unittest.TestCase):
         sq = [s for s in jobs["database"]["steps"] if "run-squawk" in s.get("run", "")]
         self.assertEqual(len(sq), 1)
         self.assertIn("needs.static.outputs.migration_files", sq[0]["env"]["CI_MIGRATION_FILES"])
-        self.assertNotIn("if", jobs["spec"])   # 仕様・生成物は毎回
+        # spec は毎回流す（if は !cancelled() だけ・範囲の出力で止めない・K-156 で needs を戻したので下で見る）
         # spec の段は static の後に流す（act は needs の無い組を 1 段目にまとめるので、needs が無いと spec が static と並び、
         #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばされない（K-143 の理由）は組の if の !cancelled() で守る。
         #   本線との分かれ目が要る検査（G61）は、spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）

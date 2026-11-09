@@ -38,7 +38,7 @@
         sha が同じなら fetch を呼ばず asked == []・record_out は record のまま。違えば lockfile にあって記録に無い名前@版の
         名前だけ fetch(names) に聞き（asked はその名前の並び）、record_out は lockfile の名前@版だけ（無い物は落とす）・
         lockfile_sha256 は新しい sha・asked_on は now の日付。判定（21 日・minimumReleaseAgeExclude）はいつも now で。
-        fetch の答えに _err があれば S6 の赤（今までどおり）
+        fetch の答えに _err があれば、その名前だけ S6 の赤（今までどおり）。record_out には聞けた分だけ入る（次は残りだけ聞く）
     check_lock_age(lock, ws_text, times, now)：今までの引数のまま残す（--selftest がそのまま通る）
   scripts/ci/ci_scope.py（migration の lint・PM の追加 2026-11-09）
     plan：scope=full でも base が 40 桁で有効なら変えたファイルを読み、migration_files と wide の db を出してから全部に倒す。
@@ -419,6 +419,23 @@ class LockDatesTest(unittest.TestCase):
         fails_same, _, _ = stack_gate.lock_age(LOCK, "x: 1\n", same, self.fetch([], times), NOW, in_ci=True)
         self.assertFalse([f for f in fails_same if f.startswith("S7")])
 
+    def test_K156_CI_040_partial_registry_error(self) -> None:
+        lock3 = LOCK.replace("\nsnapshots:\n", "\n  c@3.0.0:\n    resolution: {integrity: x}\n\nsnapshots:\n")
+        rec = record(LOCK_OLD, {"a@1.0.0": "2025-12-01T00:00:00Z"})
+        calls: list[list[str]] = []
+        def fetch(names: list[str]) -> dict:
+            calls.append(sorted(names))
+            return {"@s/b": {"2.0.0": "2025-10-01T00:00:00Z"}, "c": {"_err": "網が無い"}}
+        fails, out, asked = stack_gate.lock_age(lock3, "x: 1\n", rec, fetch, NOW)
+        self.assertEqual(calls, [["@s/b", "c"]])
+        self.assertEqual(asked, ["@s/b", "c"])
+        s6 = [f for f in fails if f.startswith("S6")]
+        self.assertEqual(len(s6), 1, fails)
+        self.assertIn("c", s6[0])
+        self.assertEqual(out["dates"], {"a@1.0.0": "2025-12-01T00:00:00Z", "@s/b@2.0.0": "2025-10-01T00:00:00Z"})   # 聞けた分だけ
+        fails_ci, _, _ = stack_gate.lock_age(lock3, "x: 1\n", rec, fetch, NOW, in_ci=True)
+        self.assertTrue([f for f in fails_ci if f.startswith("S7")], fails_ci)
+
     def test_K156_CI_024_record_shape_and_place(self) -> None:
         _, out, _ = stack_gate.lock_age(LOCK, "x: 1\n", None, self.fetch([], {"a": {"1.0.0": "2025-01-01T00:00:00Z"}, "@s/b": {"2.0.0": "2025-01-01T00:00:00Z"}}), NOW)
         self.assertEqual(set(out), {"_doc", "lockfile_sha256", "asked_on", "dates"})
@@ -451,7 +468,14 @@ class WorkflowTest(unittest.TestCase):
         self.assertIn("!cancelled()", str(ups[0].get("if", "")))
         path = str(ups[0]["with"]["path"])
         self.assertIn("apps/web/playwright-report/", path)
+        self.assertIn("apps/web/playwright-report-skeleton/", path)
         self.assertIn("apps/web/pw-reports/", path)
+
+    def test_K156_CI_041_skeleton_report_does_not_overwrite_k_report(self) -> None:
+        web = self.wf()["web"]
+        g59 = [s for s in web["steps"] if str(s.get("name", "")).startswith("G59 ")]
+        self.assertEqual(len(g59), 1)
+        self.assertIn("PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton", g59[0]["run"])
 
     def test_K156_CI_037_squawk_step_knows_base(self) -> None:
         db = self.wf()["database"]
