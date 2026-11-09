@@ -29,6 +29,11 @@ describe("POST /api/v1/bridge/pairing-codes", () => {
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-031」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-031");
   });
+  it("test_post_bridge_pairing_codes_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_post_bridge_pairing_codes_rate_limited", () => {
     // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-039」（同じ CI の G3 で流れる）
@@ -40,6 +45,11 @@ describe("POST /api/v1/bridge/pairing-codes", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-050」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-050");
+  });
+  it("test_post_bridge_pairing_codes_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
   it("test_post_bridge_pairing_codes_shape", () => {
     // UBIQUITOUS: POST /api/v1/bridge/pairing-codes の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

@@ -23,12 +23,22 @@ describe("POST /api/v1/me/ticket-drafts", () => {
   });
   // 本物の試験はまだ無い（apps/api/test/features/F4/create-ticket.test.ts）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_post_me_ticket_drafts_rejected_422_2");
+  it("test_post_me_ticket_drafts_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F4/create-ticket.test.ts）：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_me_ticket_drafts_rate_limited");
   it("test_post_me_ticket_drafts_terms_pending", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     // 本物の試験：apps/api/test/features/F4/create-ticket.test.ts の「K60-API-043」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/create-ticket.test.ts", "utf8")).toContain("K60-API-043");
+  });
+  it("test_post_me_ticket_drafts_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
   it("test_post_me_ticket_drafts_shape", () => {
     // UBIQUITOUS: POST /api/v1/me/ticket-drafts の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

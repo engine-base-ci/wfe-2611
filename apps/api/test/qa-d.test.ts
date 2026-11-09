@@ -1134,15 +1134,10 @@ for (const [key, aspects] of Object.entries(MAP.ep)) {
         await bad({ id, body: "{not json" }, "body");
         const tf = typedField(e);
         if (tf) await bad({ id, body: { ...ok, [tf]: "x-不正" } }, tf);
-        // 値域：文字列の上限（契約 maxLength 10000）を 1 文字超える
-        const s = SCHEMAS[e.input!] as unknown as {
-          shape: Record<string, unknown>;
-          safeParse: (v: unknown) => { success: boolean };
-        };
-        const lk = Object.keys(s.shape).find(
-          (k) => s.safeParse({ [k]: "a" }).success && !s.safeParse({ [k]: "a".repeat(10001) }).success,
-        );
-        if (lk) await bad({ id, body: { ...ok, [lk]: "a".repeat(10001) } }, lk);
+        // 送る量の守り（D-130.1・K-144 回 11）：自由に書く欄に一律の文字数の上限は無く（入口の 10000 字は外した）、1 回に送る内容全体が 1MB を超えたら 413
+        const big = await call(A.app, e, w, { id, body: JSON.stringify({ ...ok, x: "a".repeat(1_048_576) }) });
+        expect(big.status, `${e.operationId} の 1MB を超える体`).toBe(413);
+        expect((await json(big))["code"]).toBe("PAYLOAD_TOO_LARGE");
         if (e.kind === "update") await bad({ id: "not-a-uuid", body: ok }, "id");
         // 表記ゆらぎ：文字列の項目を全角＋前後の空白にしても、正規化されて同じ値で受け付ける
         const sk = Object.keys(ok).find((k) => typeof ok[k] === "string" && /^[!-~]+$/.test(ok[k] as string));

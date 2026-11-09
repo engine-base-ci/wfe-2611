@@ -17,4 +17,6 @@ describe("GET /api/v1/invoices/:id/pdf", () => {
   it.todo("test_get_invoices_id_pdf_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_get_invoices_id_pdf_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_get_invoices_id_pdf_session_unresolved");
 });

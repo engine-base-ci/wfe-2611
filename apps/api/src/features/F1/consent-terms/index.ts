@@ -2,7 +2,8 @@
 //   「今の版」は kind ごとに、公開の時刻を過ぎた、取り下げていない一番新しい版（DB の app.current_terms()）。同意をもらうのは
 //   利用規約（terms）とプライバシーポリシー（privacy）の 2 つだけ（特商法の表示は見せるだけ・D-128.137）。
 //   同意は 1 つのトランザクションで「版ごとに terms_consents へ 1 行（同じ人・同じ版は 1 行だけ）→ その人の画面のセッションの印を下ろす」。
-//   どちらかが落ちたら両方戻る。テナントと人はセッションから決め、体の tenant_id・member_id などは無視する（行の守り terms_consents_self_add）。
+//   どちらかが落ちたら両方戻る。テナントと人はセッションから決める（行の守り terms_consents_self_add）。体の知らない項目（tenant_id・member_id など）は
+//   落とさず入口の strict な形に渡し、422 にする（D-129.42・K-144）。
 //   ログに IP とメールを出さない
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
@@ -63,7 +64,8 @@ const toItem = (r: Record<string, unknown>): TermsItem => ({
   published_at: new Date(r["published_at"] as string | Date).toISOString(),
 });
 
-/** 同意の体を確かめる（契約の入口の形の確かめの代わり）。同意の印が無ければ E-VAL-019。版の ID は形だけ（中身は before で見る）。ほかの項目は無視 */
+/** 同意の体の前処理。同意の印が無ければ E-VAL-019。版の ID は形だけ（中身は before で見る）。
+ *  知らない項目は落とさない：このあと入口が契約の strict な形（正式な uuid も）で確かめ、422 にする（D-129.42・K-144） */
 export function parseConsent(raw: unknown): { input: Row } | { reply: HookReply } {
   const b = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : null;
   if (!b) return { reply: invalid([{ field: "body", message: "JSON の形" }]) };
@@ -82,7 +84,7 @@ export function parseConsent(raw: unknown): { input: Row } | { reply: HookReply 
     };
   }
   const details: { field: string; message: string }[] = [];
-  const input: Row = { agree: true };
+  const input: Row = { ...b, agree: true };
   for (const { field } of REQUIRED) {
     const v = b[field];
     if (typeof v !== "string" || !v) details.push({ field, message: "同意する版の ID が要る" });

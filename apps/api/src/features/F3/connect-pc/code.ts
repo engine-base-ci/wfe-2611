@@ -26,7 +26,7 @@ export type CodeCheck = { ok: true; code: string } | { ok: false; message: strin
 /** 表記ゆらぎ（全角半角・大文字小文字・前後と途中の空白・区切りの「-」）を揃えてから形を見る（サーバーが最後の砦） */
 export function normalizeCode(raw: unknown): CodeCheck {
   if (typeof raw !== "string" || raw.trim() === "") return { ok: false, message: "接続コードを入れてください" };
-  if (raw.length > CODE_INPUT_MAX) return { ok: false, message: "接続コードが長すぎます（英数字 6 けた）" };
+  if ([...raw].length > CODE_INPUT_MAX) return { ok: false, message: "接続コードが長すぎます（英数字 6 けた）" };
   const code = raw
     .normalize("NFKC")
     .toUpperCase()

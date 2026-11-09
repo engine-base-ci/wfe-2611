@@ -784,24 +784,25 @@ describe("K-53 入力", () => {
     }
   });
 
-  it("K53-API-021 他のテナント・他の人の ID を体に入れる：無視する。テナントと人はセッションから決める", async () => {
+  it("K53-API-021 他のテナント・他の人の ID を体に入れる：知らない項目なので 422（入力の形は契約で知らない項目を許さない・D-129.42・K-144）。同意の行はどちらにも書かない", async () => {
     const me = await person("me");
     const them = await person("them");
     const v = await publishBoth("v2-ids");
     try {
       const t = await login(me);
-      const r = await consent(t, {
-        ...agreeTo(v),
-        tenant_id: them.tenantId,
-        member_id: them.memberId,
-        auth_user_id: them.userId,
-      });
-      expect(r.status, await r.clone().text()).toBe(201);
+      for (const extra of [{ tenant_id: them.tenantId }, { member_id: them.memberId }, { auth_user_id: them.userId }]) {
+        const r = await consent(t, { ...agreeTo(v), ...extra });
+        expect(r.status, JSON.stringify(extra)).toBe(422);
+      }
+      expect((await consentsOf(me.userId)).map((x) => x.terms_version_id)).not.toContain(v.terms);
+      expect((await consentsOf(them.userId)).map((x) => x.terms_version_id)).not.toContain(v.terms);
+      // 知らない項目を外せば、自分の同意として書く（テナントと人はセッションから決める）
+      const ok = await consent(t, agreeTo(v));
+      expect(ok.status, await ok.clone().text()).toBe(201);
       const mine = (await consentsOf(me.userId)).filter((x) => x.terms_version_id === v.terms);
       expect(mine).toHaveLength(1);
       expect(mine[0]!.tenant_id).toBe(me.tenantId);
       expect(mine[0]!.member_id).toBe(me.memberId);
-      expect((await consentsOf(them.userId)).map((x) => x.terms_version_id)).not.toContain(v.terms);
     } finally {
       await withdraw(v.terms, v.privacy);
     }

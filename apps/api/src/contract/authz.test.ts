@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { Hono } from "hono";
-import { ENDPOINTS, type EndpointDef } from "@kaname/contracts";
+import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
@@ -82,7 +82,11 @@ function appFor(e: EndpointDef, role: Role, opsAllowed = false, withHook = true,
   app[m](e.path, op(deps, e.operationId));
   return { app, reached: () => reached };
 }
-const urlOf = (e: EndpointDef) => e.path.replace(/:(\w+)/g, (_, n: string) => (n === "id" ? A : `x-${n}`));
+/** 道の値を埋める。契約で format: uuid の道の値（registry の uuidParams・:id・:qid・:pid・:mid）は正式な uuid で埋める。
+ *  入口が 3.0 で uuid を確かめる（D-129.42・K-144）ので、uuid でない値で埋めると 422 で止まり、権限の言葉・501・行の守りの段に届かない。
+ *  uuid でない道の値（:v・:token・:name・:ref・:key）は今のまま x-<名前> */
+const urlOf = (e: EndpointDef) =>
+  e.path.replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? A : `x-${n}`));
 async function hit(e: EndpointDef, role: Role, opsAllowed = false, withHook = true, o: Opts = {}) {
   const { app, reached } = appFor(e, role, opsAllowed, withHook, o);
   const init: RequestInit = { method: e.method, headers: { "content-type": "application/json" } };
@@ -99,6 +103,43 @@ const MUST_STOP: Record<EndpointDef["auth"], Role[]> = {
   client: ["anonymous", "member", "ops", "device"],
   device: ["anonymous", "member", "ops", "client"],
 };
+
+describe("権限の試験：道の値の埋め方（K-144）", () => {
+  // 入口の uuid の確かめ（op.ts 3.0）に先に止められると、下の 403・404・501 の守りの行が確かめられなくなる（回 5 の 6 本）
+  const paramsOf = (e: EndpointDef) => [...e.path.matchAll(/:(\w+)/g)].map((m) => m[1]!);
+  it("名前が id で終わる道の値は、全部 registry の uuidParams にある（契約の format: uuid と同じ）", () => {
+    const bad = ENDPOINTS.flatMap((e) =>
+      paramsOf(e)
+        .filter((n) => /id$/.test(n) && !e.uuidParams.includes(n))
+        .map((n) => `${e.method} ${e.path} の :${n}`),
+    );
+    expect(bad).toEqual([]);
+  });
+  it("urlOf は uuidParams の道の値を正式な uuid で埋め、ほかの道の値は uuid にしない", () => {
+    const bad: string[] = [];
+    let uuidSlots = 0;
+    for (const e of ENDPOINTS) {
+      const names = paramsOf(e);
+      if (!names.length) continue;
+      const re = new RegExp(`^${e.path.replace(/:(\w+)/g, "([^/]+)")}$`);
+      const got = re.exec(urlOf(e));
+      if (!got) {
+        bad.push(`${e.method} ${e.path}：urlOf が道の形に合わない`);
+        continue;
+      }
+      names.forEach((n, i) => {
+        const v = got[i + 1]!;
+        if (e.uuidParams.includes(n)) {
+          uuidSlots++;
+          if (!isUuid(v)) bad.push(`${e.method} ${e.path} の :${n} が uuid でない（${v}）`);
+        } else if (isUuid(v)) bad.push(`${e.method} ${e.path} の :${n} が uuid で埋まった`);
+      });
+    }
+    expect(bad).toEqual([]);
+    // :qid・:pid・:mid も数に入る（:id だけではない）
+    expect(uuidSlots).toBeGreaterThan(ENDPOINTS.filter((e) => e.path.includes(":id")).length);
+  });
+});
 
 describe("権限の試験：役の段（契約の全 API）", () => {
   it("契約の API は全部「誰が呼べるか」を持ち、役と権限の言葉が合っている", () => {

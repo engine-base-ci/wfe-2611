@@ -16,6 +16,11 @@ describe("GET /api/v1/auth/sign-up/status", () => {
   });
   // 本物の試験はまだ無い（apps/api/test/features/F1/sign-up.test.ts）：UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_auth_sign_up_status_rate_limited");
+  it("test_get_auth_sign_up_status_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F1/sign-up.test.ts）：UBIQUITOUS: GET /api/v1/auth/sign-up/status の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_auth_sign_up_status_shape");
 });

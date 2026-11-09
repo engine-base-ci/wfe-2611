@@ -1,7 +1,7 @@
-// 契約の 1 operation を Hono の handler にする。順序は固定：上限（429）→ 認証（401）→ 認可（403）→ 入力の検証（422・表記ゆらぎの正規化）→ 冪等（409／再送は最初の結果）→ hooks.before → 副作用（hooks.effect・失敗は 502 で記録しない）→ 記録（関門 C2）→ hooks.after
+// 契約の 1 operation を Hono の handler にする。順序は固定：送る量（413・1MB）→ 上限（429）→ 認証（401）→ 認可（403）→ 入力の検証（422・表記ゆらぎの正規化）→ 冪等（409／再送は最初の結果）→ hooks.before → 副作用（hooks.effect・失敗は 502 で記録しない）→ 記録（関門 C2）→ hooks.after
 import { createHash } from "node:crypto";
 import type { Context } from "hono";
-import { ENDPOINTS, type EndpointDef } from "@kaname/contracts";
+import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
@@ -57,6 +57,48 @@ export const sessionUnresolved = (c: Context, where: string, e: unknown) => {
   return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
 };
 
+/** 入口の uuid（D-129.42・K-144）：契約で format: uuid の道の値と問い合わせ（registry の uuidParams）が正式な uuid か。
+ *  道の値は届いたまま確かめる（中で使う値と同じもの）。問い合わせの空の値（?x=）は指定なし。*_ids はカンマ区切りの中身を 1 つずつ */
+function uuidParamIssues(c: Ctx, def: EndpointDef): { field: string; message: string }[] {
+  const out: { field: string; message: string }[] = [];
+  for (const name of def.uuidParams) {
+    const inPath = def.path.includes(`:${name}`);
+    const v = inPath ? (c.req.param(name) ?? "") : (c.req.query(name) ?? "");
+    if (!inPath && v === "") continue;
+    const values = !inPath && name.endsWith("_ids") ? v.split(",") : [v];
+    if (!values.every(isUuid)) out.push({ field: name, message: "uuid" });
+  }
+  return out;
+}
+/** 送る量の守り（D-130.1・K-144 ㉚㊱）：体を受ける口（POST・PATCH・PUT）が 1 回に受ける内容全体の上限。自由に書く欄の上限ではなく、サーバーを守るためだけ */
+export const BODY_MAX_BYTES = 1_048_576;
+const TOO_LARGE = { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" } as const;
+/** 体を読みながら数える。上限を超えたら読むのをやめて（流れを取り消して）null。content-length の頭が上限を超えていれば 1 バイトも読まない。
+ *  頭が無い・小さく偽っていても、読んだ量で止める（全部を読んでから数えない・1 回の要求のメモリを上限と読みかけの 1 かたまりまでにする・G-16） */
+async function readBodyLimited(c: Ctx): Promise<string | null> {
+  const declared = Number(c.req.header("content-length"));
+  if (Number.isFinite(declared) && declared > BODY_MAX_BYTES) return null;
+  const stream = c.req.raw.body;
+  if (!stream) return "";
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > BODY_MAX_BYTES) {
+      await reader.cancel().catch(() => undefined);
+      return null;
+    }
+    chunks.push(value);
+  }
+  return new TextDecoder().decode(Buffer.concat(chunks));
+}
+/** 体の確かめの理由：uuid の形で落ちた欄は "uuid"（道の値と同じ。zod の英語の文を出さない）。ほかは zod のまま */
+const issueMessage = (i: { code: string; message: string; format?: string }) =>
+  i.code === "invalid_format" && i.format === "uuid" ? "uuid" : i.message;
+
 export function op(deps: ContractDeps, operationId: string) {
   const e = ENDPOINTS.find((x) => x.operationId === operationId);
   if (!e) throw new Error(`契約に無い operation: ${operationId}`);
@@ -64,6 +106,14 @@ export function op(deps: ContractDeps, operationId: string) {
   const schema = def.input ? SCHEMAS[def.input] : null;
   if (def.input && !schema) throw new Error(`schema が無い: ${def.input}`);
   return async (c: Ctx) => {
+    // 0) 送る量の守り（D-130.1・K-144 ㉚㊱）：上限・認証・権限・501 より前の一番最初。超えたら振る舞いに届かず何も書かない。
+    //    読んだ体は 4) の JSON の読みに使い（2 回読まない）、hooks が c.req.json() で読んでも同じ中身になるよう Hono の器に入れる
+    let bodyText: string | null = null;
+    if (def.kind === "create" || def.kind === "update") {
+      bodyText = await readBodyLimited(c);
+      if (bodyText === null) return c.json(TOO_LARGE, 413);
+      (c.req.bodyCache as unknown as { text?: Promise<string> }).text = Promise.resolve(bodyText);
+    }
     const perMinute = deps.limits?.[operationId] ?? def.rateLimit.perMinute;
     const ctx = c.get("ctx");
     const repo = c.get("repo");
@@ -91,6 +141,10 @@ export function op(deps: ContractDeps, operationId: string) {
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
     }
+    // 3.0) 入口の uuid（D-129.42・K-144）：道の値と問い合わせの id を、id で行を引く権限の確かめ（3.1・4.1）とまだ作っていない口の 501 より前に
+    //      正式な uuid か確かめる。形の違う id が DB の ::uuid に届いて 500 にならないように
+    const badIds = uuidParamIssues(c, def);
+    if (badIds.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badIds });
     // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
@@ -105,9 +159,8 @@ export function op(deps: ContractDeps, operationId: string) {
     if (!deps.hooks[operationId] && (!def.generic || !repo.hasColumn(def.table as TableName, "id")))
       return err(c, 501, "not_implemented", "NOT_IMPLEMENTED", { message: "契約にある口だが、まだ作っていない" });
     // 4) 入力
+    //    道の id は 3.0 で正式な uuid と確かめ済み（:id は契約で format: uuid）
     const id = def.path.includes(":id") ? (c.req.param("id") ?? "") : null;
-    if (id !== null && !/^[0-9a-f-]{36}$/i.test(id))
-      return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "id", message: "uuid" }] });
     // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
     //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
     if (id !== null && def.perm.row && def.auth === "member") {
@@ -119,17 +172,17 @@ export function op(deps: ContractDeps, operationId: string) {
     if (def.kind === "create" || def.kind === "update") {
       let raw: unknown;
       try {
-        raw = normalize(await c.req.json());
+        raw = normalize(JSON.parse(bodyText ?? ""));
       } catch {
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message: "JSON" }] });
       }
-      // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す・体の余計な項目を落とす）。前処理の後も、必ず契約の strict な形で確かめる
+      // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す）。前処理の後も、必ず契約の strict な形で確かめる（知らない項目は 422・K-144）
       const pre = deps.hooks[operationId]?.input?.(raw);
       if (pre && "reply" in pre) return c.json(pre.reply.body, pre.reply.status as 400);
       const parsed = schema!.safeParse(pre ? pre.input : raw);
       if (!parsed.success)
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", {
-          details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: i.message })),
+          details: parsed.error.issues.map((i) => ({ field: i.path.join(".") || "body", message: issueMessage(i) })),
         });
       input = parsed.data as Row;
     }
@@ -143,8 +196,7 @@ export function op(deps: ContractDeps, operationId: string) {
       if (!Number.isInteger(limit) || limit < 1 || limit > LIMIT_MAX)
         details.push({ field: "limit", message: `1〜${LIMIT_MAX}` });
       if (offset === null) details.push({ field: "cursor", message: "不正" });
-      if (q["scope_id"] !== undefined && !/^[0-9a-f-]{36}$/i.test(q["scope_id"]))
-        details.push({ field: "scope_id", message: "uuid" });
+      if (q["scope_id"] !== undefined && !isUuid(q["scope_id"])) details.push({ field: "scope_id", message: "uuid" });
       else if (q["scope_id"] !== undefined && !def.ignoresScope && !repo.hasColumn(def.table as TableName, "scope_id"))
         details.push({ field: "scope_id", message: "この一覧はグループで絞れない" });
       if (
@@ -208,6 +260,8 @@ export function op(deps: ContractDeps, operationId: string) {
 export type Reply = { status: number; body: unknown; raw?: Response };
 /** 同じ冪等キーで処理中の要求（キーに会社・本人を含む）。終わったら消え、結果は idempotency の器に残る */
 const INFLIGHT = new Map<string, Promise<(Reply & { hash: string }) | undefined>>();
+/** 入力が DB の決まりに合わないときの番号：外部キー・形・null・数の桁あふれ・check 違反 */
+const DB_INPUT_CODES = new Set(["23503", "22P02", "23502", "22003", "23514"]);
 const fail = (status: number, error: string, code: string, extra: Partial<ErrBody> = {}): Reply => ({
   status,
   body: { error, code, ...extra },
@@ -264,10 +318,21 @@ async function execute(
     if (code === "23505") return fail(409, "conflict", "CONFLICT", { message: "既に登録済み" });
     if (/決まった承認は変えられません/.test(String(ex)))
       return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
-    if (code === "23503" || code === "22P02" || code === "23502" || /許可されていない識別子/.test(String(ex)))
+    // 入力が DB の決まりに合わない（外部キー・形・null・桁あふれ・check・許されない識別子）：422。答えには決まった文だけを出し（D-130.2）、
+    //   ログには DB の答えの番号と制約の名前だけを残す（K-144 ㉓㉙㊳）。DB の文・詳しい説明は送った値を含むので出さない
+    if (DB_INPUT_CODES.has(code) || /許可されていない識別子/.test(String(ex))) {
+      const constraint = (ex as { constraint?: unknown }).constraint;
+      console.error(
+        "[api] 422",
+        def.method,
+        def.path,
+        code || "identifier",
+        ...(typeof constraint === "string" && constraint ? [constraint] : []),
+      );
       return fail(422, "validation_failed", "VALIDATION_ERROR", {
-        details: [{ field: "body", message: String((ex as Error).message).slice(0, 200) }],
+        details: [{ field: "body", message: "入力内容を確認してください" }],
       });
+    }
     throw ex;
   }
   if (hook?.after) {

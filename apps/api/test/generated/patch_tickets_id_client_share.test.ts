@@ -13,10 +13,14 @@ describe("PATCH /api/v1/tickets/:id/client-share", () => {
   it.todo("test_patch_tickets_id_client_share_not_found");
   // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_patch_tickets_id_client_share_rejected_422");
+  // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+  it.todo("test_patch_tickets_id_client_share_too_large");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_patch_tickets_id_client_share_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_patch_tickets_id_client_share_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_patch_tickets_id_client_share_session_unresolved");
   // UBIQUITOUS: PATCH /api/v1/tickets/:id/client-share の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_patch_tickets_id_client_share_shape");
 });
