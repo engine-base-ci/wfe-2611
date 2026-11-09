@@ -39,6 +39,10 @@
         lockfile_sha256 は新しい sha・asked_on は now の日付。判定（21 日・minimumReleaseAgeExclude）はいつも now で。
         fetch の答えに _err があれば S6 の赤（今までどおり）
     check_lock_age(lock, ws_text, times, now)：今までの引数のまま残す（--selftest がそのまま通る）
+  scripts/ci/ci_scope.py（migration の lint・PM の追加 2026-11-09）
+    plan：scope=full でも base が 40 桁で有効なら変えたファイルを読み、migration_files と wide の db を出してから全部に倒す。
+        git の R（名前を変えた migration）の新しい名前を added_mig に数え、並びの付け替え（古い名前の行を消し新しい名前の行を足す）は DB の範囲
+    squawk_plan(files, base) -> (argv | None, message)：空なら base 無し「比べる元が無いので流さない」／base あり「変えた migration が無い（比べる元 <10 字>）」
 """
 from __future__ import annotations
 
@@ -175,6 +179,43 @@ class ScopeTest(unittest.TestCase):
             self.assertEqual(ticket_order_gate.generator_scripts(str(d / "none")), set())
         finally:
             shutil.rmtree(d, ignore_errors=True)
+
+
+MIG_RENAMED = 'export const MIGRATIONS = [\n  "0002.sql",\n];\nexport const a = 1;\n'
+
+
+class MigrationLintTest(k107.Base):
+    """足した・名前を変えた migration は必ず lint（G58）に乗る（PM の追加・K-62 の TS の見つけもの）"""
+
+    def test_K156_CI_034_full_scope_still_lists_migrations(self) -> None:
+        self.r.commit("K-1 feat: mig", packages__a__migrations__0002_sql="select 2;\n", packages__a__src__index_ts=k107.MIG2,
+                      **{"11_tickets__K-1.md": k107.ticket("K-1", ["a"], ["db"])})
+        p = self.r.plan(scope="full")
+        self.assertEqual(p["mode"], "full")
+        self.assertIn("requested", {c for c, _ in p["full_reasons"]})
+        self.assertEqual(p["migration_files"], ["packages/a/migrations/0002.sql"])
+        self.assertIn("db", {c for c, _ in p["wide_reasons"]})
+
+    def test_K156_CI_035_renamed_migration_is_db_range(self) -> None:
+        self.r.commit("K-1 feat: renumber", packages__a__migrations__0001_sql=None, packages__a__migrations__0002_sql="select 1;\n",
+                      packages__a__src__index_ts=MIG_RENAMED, **{"11_tickets__K-1.md": k107.ticket("K-1", ["a"], ["db"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertIn("db", {c for c, _ in p["wide_reasons"]})
+        self.assertNotIn("shared", {c for c, _ in p["wide_reasons"]})
+        self.assertEqual(p["migration_files"], ["packages/a/migrations/0002.sql"])
+
+    def test_K156_CI_036_squawk_message_tells_no_base_from_no_change(self) -> None:
+        argv, msg = ci_scope.squawk_plan([], "")
+        self.assertIsNone(argv)
+        self.assertIn("比べる元が無い", msg)
+        sha = "2b53f5e30d59b3523fd2391ce434931bb07b7c8a"
+        argv, msg = ci_scope.squawk_plan([], sha)
+        self.assertIsNone(argv)
+        self.assertIn("変えた migration が無い", msg)
+        self.assertIn(sha[:10], msg)
+        argv, _ = ci_scope.squawk_plan(["packages/db/migrations/0092.sql"], sha)
+        self.assertEqual(argv, ["pnpm", "exec", "squawk", "packages/db/migrations/0092.sql"])
 
 
 class RealScopeTest(unittest.TestCase):
@@ -393,6 +434,12 @@ class WorkflowTest(unittest.TestCase):
         path = str(ups[0]["with"]["path"])
         self.assertIn("apps/web/playwright-report/", path)
         self.assertIn("apps/web/pw-reports/", path)
+
+    def test_K156_CI_037_squawk_step_knows_base(self) -> None:
+        db = self.wf()["database"]
+        sq = [s for s in db["steps"] if "run-squawk" in s.get("run", "")]
+        self.assertEqual(len(sq), 1)
+        self.assertIn("needs.static.outputs.base", sq[0]["env"].get("CI_BASE", ""))
 
     def test_K156_CI_029_hook_timeout_in_one_place_with_measurement(self) -> None:
         text = (ROOT / "vitest.config.ts").read_text(encoding="utf-8")
