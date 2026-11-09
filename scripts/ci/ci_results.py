@@ -337,8 +337,13 @@ def _show(ref: str, path: str) -> str | None:
 
 
 def _resolve(ref: str) -> str | None:
-    r = _git("rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}")
-    return r.stdout.strip() if r.returncode == 0 and r.stdout.strip() else None
+    """ref をコミットの sha に。枝の名前は、手元の枝 → origin の枝（CI のまっさらな写しは clone なので取り込む先の枝は
+    refs/remotes/origin/<名前> にだけある）の順に引く。どちらにも無ければ None"""
+    for cand in (ref, f"refs/remotes/origin/{ref}"):
+        r = _git("rev-parse", "--verify", "--quiet", f"{cand}^{{commit}}")
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    return None
 
 
 def _refs_ok(ref: str, target: str | None) -> list[str]:
