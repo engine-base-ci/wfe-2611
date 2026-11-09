@@ -1402,7 +1402,9 @@
    "milestone": "基盤",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-12",
+   "due": "2026-11-10",
+   "estimate_hours": "6",
+   "estimate_basis": "K-143（実測 チケット 283 分＋取り込み 142 分）から、staging の作り方のコード（infra/provision）と配る道すじと最初の通し・人の準備（K-78〜K-82）は済み。K-133 の後に入る",
    "decisions": [
     "D-128.113",
     "D-125.167",
@@ -5830,7 +5832,9 @@
    "milestone": "基盤",
    "area": "環境",
    "assignee": "実装",
-   "due": "",
+   "due": "2026-11-10",
+   "estimate_hours": "4",
+   "estimate_basis": "K-144（取り込み済み・実測 チケット 956 分）と K-143（実測 チケット 283 分）の直近 2 本の平均のうち、直す所が 2 ファイル（infra/provision/bucket.ts・packages/storage）と試験 4 行の小さいチケットとして下側の K-143 から引いた",
    "decisions": [
     "D-097",
     "D-128.144",
