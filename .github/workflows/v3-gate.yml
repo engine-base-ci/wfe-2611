@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 58 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 59 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
@@ -15,6 +15,10 @@ on:
         default: full
       base:
         description: "比べる元（40 桁のコミット。auto のときだけ使う）"
+        type: string
+        default: ''
+      target:
+        description: "取り込む先の枝の名前（G61 が比べる元の先祖かを確かめる。act_ci.sh が台の側で決めて渡す・枝の中のファイルから読まない・K-143）"
         type: string
         default: ''
 concurrency:
@@ -403,6 +407,8 @@ jobs:
           python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report .vitest-reports/merged.json
   spec:
     runs-on: ubuntu-latest
+    # static を待たない（static の赤で仕様の層の検査が丸ごと飛ばされない・K-143）。G61 が要る本線との分かれ目（base）は、
+    #   この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
     services:
       postgres:
@@ -423,6 +429,12 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: pip install pyyaml
+      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
+        id: scope
+        env:
+          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
+          CI_BASE_INPUT: ${{ inputs.base }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G27 層の棚卸し（G21）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/layer_audit.py --run
@@ -471,6 +483,12 @@ jobs:
       - name: "G60 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130
+      - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}
+          CI_TARGET_REF: ${{ inputs.target }}
+        run: python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"
 
   task-gate:
     runs-on: ubuntu-latest
@@ -539,12 +557,16 @@ jobs:
           (pnpm --filter @kaname/web start:test > /tmp/web.log 2>&1 &)
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
           cat /tmp/web.log; exit 1
-      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）"
+      - name: "G48 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）"
         if: ${{ !cancelled() }}
-        run: BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all
+        run: BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha "$GITHUB_SHA" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report
       - name: "G59 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）"
         if: ${{ !cancelled() }}
         run: BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton
+      - uses: actions/upload-artifact@v4
+        # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
+        if: ${{ !cancelled() }}
+        with: { name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }
       - uses: actions/upload-artifact@v4
         if: failure()
         with: { name: playwright-report-web, path: apps/web/playwright-report/ }

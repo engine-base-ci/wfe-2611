@@ -912,6 +912,12 @@ class RealRepoTest(unittest.TestCase):
         self.assertEqual(len(sq), 1)
         self.assertIn("needs.static.outputs.migration_files", sq[0]["env"]["CI_MIGRATION_FILES"])
         self.assertNotIn("if", jobs["spec"])   # 仕様・生成物は毎回
+        # spec の段は static を待たない（static の赤で丸ごと飛ばされない）。本線との分かれ目が要る検査（G61）は、
+        #   spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）
+        self.assertNotIn("needs", jobs["spec"])
+        sp_scope = [s for s in jobs["spec"]["steps"] if "scripts/ci/ci_scope.py" in s.get("run", "") and "--github-output" in s.get("run", "")]
+        self.assertEqual(len(sp_scope), 1)
+        self.assertIn("inputs.base", sp_scope[0]["env"]["CI_BASE_INPUT"])
         g57 = [s for s in jobs["spec"]["steps"] if s.get("name", "").startswith("G57 ")]
         self.assertEqual(len(g57), 1)
         self.assertIn("python3 scripts/ci/ci_scope_test.py", g57[0]["run"])

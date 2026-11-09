@@ -1425,7 +1425,7 @@
    ],
    "sections": {
     "目的": "流れの試験と 5 つの題材を通すステージング（selected-stack.json の environments.staging）を、コードで作れるようにそろえる。",
-    "完了の条件": "- [ ] ステージングの作り方がコードにある（infra/provision）\n- [ ] ステージングで API・画面・DB が動く\n- [ ] 秘密は預け先にだけ置く（コードに書かない）\n- [ ] CI が緑",
+    "完了の条件": "- [ ] ステージングの作り方がコードにある（infra/provision）\n- [ ] ステージングで API・画面・DB が動く\n- [ ] 秘密は預け先にだけ置く（コードに書かない）\n- [ ] 本物のデータを入れる前に、準備（K-78〜K-81）の途中でチャットに出た staging の秘密を全部取り替える（DB の 3 役のパスワード・AUTH_SECRET・SECRETS_MASTER_KEY・Infisical の Client Secret・置き場の鍵・Resend の鍵）。取り替えた後に /health と CORS と migration が通ることを確かめる（値はチケット・チャットに書かない）\n- [ ] CI が緑",
     "前提と制約": "- 前の画面は少しずつ直さず、新しく作ってから外す（D-128.78）",
     "実施事項": "- [ ] ステージングの構成をコードに\n- [ ] 配る道すじ（main に入ったらステージングへ）\n- [ ] 最初の通し",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| ステージングが立つ | ① 機械 | `python3 scripts/ci/pipeline-next.py check-staging` | |\n| ステージングで画面が開く | ③ 人 | ステージングの記録 | |",
@@ -2684,7 +2684,7 @@
    "depends_on": [],
    "sections": {
     "目的": "流れ F5「AI に任せて、確かめて、終える」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
-    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
+    "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている\n- [ ] 止める口（stopActionRun）を切るとき：止めた後に PC から「終わった」が届いても承認待ちにしない行を表に入れる（K-62 の finishBridgeJob は stop_requested_at を見ていない。K-62 の作る役が見つけた・2026-11-08）",
     "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-13・KN-14・KN-81・KN-83・KN-84・KN-85・KN-86・KN-89・KN-91・KN-92・KN-93（11_tickets/_old/ に残す。切るときに目録として読む）"
    },
    "file": "11_tickets/K-61.md"
@@ -2726,8 +2726,19 @@
     "D-128.121",
     "D-128.131",
     "D-128.133",
+    "D-128.137",
     "D-128.138",
     "D-128.163",
+    "D-128.171",
+    "D-128.176",
+    "D-128.177",
+    "D-125.155",
+    "D-128.125",
+    "D-128.130",
+    "D-128.143",
+    "D-128.156",
+    "D-128.178",
+    "D-128.179",
     "D-129.1",
     "D-129.2",
     "D-129.3",
@@ -2736,7 +2747,15 @@
     "D-129.10",
     "D-129.11",
     "D-129.12",
-    "D-129.16"
+    "D-129.16",
+    "D-095",
+    "D-128.113",
+    "D-128.147",
+    "D-129.43",
+    "D-129.44",
+    "D-129.46",
+    "D-129.7",
+    "D-129.47"
    ],
    "split": "",
    "choke_points": [
@@ -2877,7 +2896,7 @@
     "成果物": "- 画面 `apps/web/features/F5/approve-complete/`・口 `apps/api/src/features/F5/approve-complete/`・migration 1 本（承認・差し戻し・完了の関数と 24 時間の聞き直し）・単体のテスト（apps/api/test/generated の 5 本を本物に・packages/db/test・apps/web/tests）",
     "決定ログ": "- 決める人の決定（2026-11-08・D-129・PM が推奨で決めていたことを決める人が確かめた）：このチケットに効く文は D-129.5（承認できるのは今の担当者だけ）・D-129.6（任せた人は承認待ちを読める・承認はできない）・D-129.7（任せた人が使えなくなったら実行を止め作業中に戻す）・D-129.8（24 時間・消されたチケットの実行の片付けは読む口で）・D-129.9（書けない人の承認・差し戻しは 403）・D-129.10（承認待ち・承認の後・完了は K-63 の帯だけ）・D-129.11（様子の文は K-63 の帯）・D-129.12（差し戻しの理由は K-62 の帯に文字で）\n- 聞きたいことの答え（D-128.138）：完了は、**そのチケットを直せる権限の人なら誰でも**できる（誰がしたかは記録に残る）。承認・差し戻しは今までどおり承認する人。検査は骨格の後（F4・F5）で作り、それまでは「検査なし（まだ流していません）」の印を付けて承認待ちに出す。ナレッジの候補は「まだ出していません」と残す。終わっていない子があるときは親を完了にできない（子の一覧を出す・422）。申し送りの切り出しは骨格では確かめない\n\n- K-51 の形で切った（D-128.125・D-128.133）。決まっていることは決定に従った（上の decisions）。決まっていないことは下の「聞きたいこと」に書いた",
     "リスクと懸念": "- 承認カードのボタンは決定では 4 つだが、骨格では 承認する・差し戻す の 2 つだけを出す。自分で直す・止める が入るまで、間違った成果物を止める道は「差し戻す」だけになる\n- 実行（送る）は取り消せない。24 時間の聞き直しと本人確認の取り直しを、本物の DB の時刻で境目の前後まで確かめる\n- 聞きたいこと 1：完了にできる人。決定は「担当者だけ」（D-125.59・D-128.25）だが、契約は「担当者とマネージャー」、行の決まりは作った人も通す。**推奨：担当者だけ**（決定に合わせ、契約の説明と行の決まりを直す）\n- 聞きたいこと 2：完了のときのナレッジの候補（D-125.110：候補を出し、作らない理由も残す）。候補を出すのは AI で、骨格にはまだ無い。**推奨：骨格では候補の段を出さず、完了の記録に「候補はまだ出していません」と残す。候補の段は後の F5 のチケットで足す**\n- 聞きたいこと 3：終わっていない子があるチケットを完了にできるか（決定が無い）。**推奨：できない。422 で終わっていない子の一覧を出す**（親が先に閉じると、子の承認・実行が宙に浮くため）\n- 聞きたいこと 4：決定 D-125.33「申し送りがあるときは先にそのチケットを切らないと完了にできない」を骨格で守るか。種別「タスク」の区画に申し送りが無い。**推奨：骨格では判定しない。区画を足すときに判定も足す**",
-    "申し送り": "- 自分で直す（editApproval）・止める（stopApproval）・取り下げ（withdrawApproval）・まとめて承認（bulkApprove・previewBulkApproval）・履歴（listApprovalHistory）・人が見る項目のチェック（markHumanCheck・D-125.85）は、後の F5 のチケットに K-61 から切る\n- 実行の後に先方の画面で確かめる（D-125.76）・ナレッジの候補（D-125.110）は後の F5 のチケット\n- 承認待ちになったことの知らせ（承認する人へ・D-125.41）は K-62 の聞きたいこと 4 と一緒に決める"
+    "申し送り": "- 次の作るの段で、K-146 の問いのページ 01_hearing/聞くこと_K-146.md の ④ の表（K-63 の行・ファイル:行@sha → チケットの行）をこのチケットに写す（K-146・PM の判断 2026-11-08）\n- 自分で直す（editApproval）・止める（stopApproval）・取り下げ（withdrawApproval）・まとめて承認（bulkApprove・previewBulkApproval）・履歴（listApprovalHistory）・人が見る項目のチェック（markHumanCheck・D-125.85）は、後の F5 のチケットに K-61 から切る\n- 実行の後に先方の画面で確かめる（D-125.76）・ナレッジの候補（D-125.110）は後の F5 のチケット\n- 承認待ちになったことの知らせ（承認する人へ・D-125.41）は K-62 の聞きたいこと 4 と一緒に決める"
    },
    "file": "11_tickets/K-63.md"
   },
@@ -2915,7 +2934,7 @@
     "成果物": "- `apps/e2e/tests/skeleton/m3-delegate-approve-complete.spec.ts`・試験の記録（落ちたときの画面の写し）",
     "決定ログ": "- 決める人の決定（2026-11-08・D-129・PM が推奨で決めていたことを決める人が確かめた）：このチケットに効く文は D-129.14（本物の Bridge の通しは K-97 の後に統合テスト K-65 の正常の 1 本で持つ）・D-129.15（任せた人と承認する人が別の人の画面の通しは F2 の口ができてから足す。それまでは口と DB の試験で受ける）\n- 中間・統合テストの組は flows.json の walking_skeleton（D-128.131）",
     "リスクと懸念": "- 承認には 15 分以内の本人確認が要る。試験の準備で本人確認を済ませる道具が要る（目録で探し、無ければ作る）",
-    "申し送り": "- 統合テスト（K-65）は、この筋の「正常」を終わりに置く"
+    "申し送り": "- 次の作るの段で、K-146 の問いのページ 01_hearing/聞くこと_K-146.md の ④ の表（K-64 の行・ファイル:行@sha → チケットの行）をこのチケットに写す（K-146・PM の判断 2026-11-08）\n- 統合テスト（K-65）は、この筋の「正常」を終わりに置く"
    },
    "file": "11_tickets/K-64.md"
   },
@@ -3963,7 +3982,7 @@
    "id": "K-78",
    "title": "staging：Supabase のプロジェクトを作り、DB と置き場の接続を Vercel に入れる",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "完了",
    "parent": "K-77",
    "milestone": "基盤",
    "area": "環境",
@@ -3994,7 +4013,7 @@
    "id": "K-79",
    "title": "staging：Infisical（顧客の資格情報の預け先）の口座と機械の身元を作る",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "完了",
    "parent": "K-77",
    "milestone": "基盤",
    "area": "環境",
@@ -4024,7 +4043,7 @@
    "id": "K-80",
    "title": "staging：Vercel に API のプロジェクトを作り、環境変数を入れる",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "完了",
    "parent": "K-77",
    "milestone": "基盤",
    "area": "環境",
@@ -4057,7 +4076,7 @@
    "id": "K-81",
    "title": "staging：Resend（メール）の staging 用の鍵を作る",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "完了",
    "parent": "K-77",
    "milestone": "基盤",
    "area": "環境",
@@ -4087,7 +4106,7 @@
    "id": "K-82",
    "title": "staging：Vercel に画面のプロジェクトを作り、API とつなぐ",
    "kind": "タスク",
-   "stage": "未着手",
+   "stage": "完了",
    "parent": "K-77",
    "milestone": "基盤",
    "area": "環境",
@@ -4139,7 +4158,7 @@
    ],
    "sections": {
     "目的": "顧客に触らせる前に、本番の DB・置き場・資格情報の預け先・API・画面を staging と同じ手順で作る。本番はスモークだけ（D-128.144）。",
-    "完了の条件": "- [ ] Supabase の本番プロジェクト（Pro）\n- [ ] Infisical の prod 環境と本番用の Machine Identity\n- [ ] Vercel の本番の環境変数（Pro）\n- [ ] 本番のスモークが緑",
+    "完了の条件": "- [ ] Supabase の本番プロジェクト（Pro）\n- [ ] Infisical の prod 環境と本番用の Machine Identity\n- [ ] staging の Machine Identity（`kaname-api-staging`）を Staging だけに絞る。2026-11-08 の K-79 では、Infisical の無料の枠で役割を環境ごとに絞れず（自分の役割・Folder Access は有料）、決める人の判断で Member のまま進めた（Production にはまだ秘密が無い）。本番の秘密を入れる前に、有料の枠で Folder Access を使うか、プロジェクトを環境ごとに分けて、staging の鍵が本番に届かない形にする\n- [ ] Vercel の本番の環境変数（Pro）\n- [ ] 本番のスモークが緑",
     "前提と制約": "- 料金：Vercel Pro 月 20 USD・Supabase Pro 月 25 USD 前後（実際の料金は各社の画面で確認）\n- 鍵・パスワード・接続文字列の値は、チャット・ファイル・コミットに書かない。入れる先は Vercel の環境変数（Sensitive）か Infisical だけ（infra/STAGING.md §1）\n- 回数の制限を信頼できる IP と DB の全台共通の数にする K-132 が終わってから（最初の公開の前に必ず・決める人の判断 2026-11-07）",
     "実施事項": "- K-78〜K-82 と同じ手順を、名前 `kaname-prod`・環境 `prod` で行う",
     "テスト仕様と確認の結果": "- 確かめは本番のスモーク（prod-smoke.md の行）",
@@ -4872,6 +4891,9 @@
     "D-128.131",
     "D-128.168",
     "D-128.173",
+    "D-129.48",
+    "D-129.49",
+    "D-129.50",
     "D-132.1",
     "D-132.2",
     "D-132.3",
@@ -6019,6 +6041,50 @@
    "file": "11_tickets/K-142.md"
   },
   {
+   "id": "K-143",
+   "title": "試験の仕様の「結果」の欄を手で書く形が残っている（sign-up・terms・verify-email の前書き）。手で書いた PASS を赤にする検査（result_gate）が Kaname の CI に入っていない",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-32",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-09",
+   "estimate_hours": "5",
+   "estimate_basis": "K-143 の回 4 の実測から引き直した（2026-11-08）：実装の役の報告 15:56 → テスター 4 人の報告 17:40〜17:42 で、テスター 1 周は約 1 時間 45 分。実装の役の時間は報告の時刻から引けない（報告の置き場を写した時刻が残る）ので、回 5 の直し 9 件（実施事項の「回 4 の確かめで出た直し」）を仮に 2 時間、CI と取り込みを 1 時間 15 分と見て 5 時間",
+   "decisions": [
+    "D-095",
+    "D-128.147",
+    "D-129.50",
+    "D-129.51"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の仕様の前書きと結果の欄・CI の検査の台本と段を直すだけ。製品のコードと関門に触らない",
+   "depends_on": [
+    "K-144"
+   ],
+   "tests": [
+    "scripts/ci/ci_results_test.py"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "決まり（ai-driven-process.md §8・2026-11-08）は「試験の結果の欄は CI の記録から機械で書く。結果の欄の PASS は CI の回の印が付いたものだけで、手で書いた PASS は検査で赤」。決める人の決定 D-129.51 は、検査を 07_qa/test-specs のどの仕様のファイルにも掛け、今ある印の無い PASS は「まだ流し直していない行」の台帳に載せ（台帳は減らすだけ）、結果の欄は取り込みの台本（pm_merge.sh）が CI の記録から書く、とした。D-129.50 で K-62 の前に入れる（仕組みが無いと K-62 の CI が G48 の「結果が空」で赤になり取り込めない）。ところが Kaname では次が残っている。\n\n1. 試験の仕様の中に「PASS に書き換える」（手で結果を書く形）が 26 か所ある：`07_qa/test-specs/k/sign-up.md:7`・`terms.md:9`・`verify-email.md:8` の前書き（K-51〜K-53 の仕様）と、`07_qa/test-specs/errors.md` の 23 行（例：:14 E-AUTH-003-A の「CI の報告で緑になってから PASS に書き換える」）。K-62 の仕様（delegate.md:6）は精査 R1 の差し戻しで直した\n2. 手で書いた PASS を赤にする検査（スキル ai-team-delivery の `scripts/gates/result_gate.py` の形）が、Kaname の `.github/workflows/v3-gate.yml` の段に無い（K-103 で decision_source_gate（G60）は入れたが result_gate は入れなかった・PM の入れ漏れ）\n3. 結果の欄を CI の記録から書く台本が無い。CI はまっさらな写しで流すので、写しの中で書いた結果は残らない\n\nこのままだと、手で書いた PASS が CI を通り、流していない試験が「通った」に見える。",
+    "完了の条件": "- [ ] Kaname の台本 `scripts/ci/ci_results.py`（record・write・check）と、op_gate の `--pending-from-report` を作り、`scripts/ci/ci_results_test.py` の K143-CI-001〜033 が緑（K-107 の K107-CS-034 も緑）\n- [ ] 26 か所の「PASS に書き換える」を、delegate.md:6 と同じ「結果の列は手で書かない。取り込む前の CI の記録から機械で書く（CI の回の印つき）」の形に直す（前書き 3 つ・errors.md の 23 行）。`grep -rn \"PASS に書き換える\" 07_qa/` が 0 件\n- [ ] 台帳 `07_qa/test-plan/result-ledger.json` を作る（今ある印の無い PASS：36 ファイル・2593 行。`grep -rc \"| PASS\" 07_qa/test-specs --include=*.md` の合計）。流し直して印を付けるのは K-150\n- [ ] v3-gate.yml の段：web の段（G48）を `e2e:k → ci_results.py record → op_gate.py --pending-from-report` にし、記録 `07_qa/ci-results` を artifacts に出す段（upload-artifact・緑の回も）を足す。spec の段は needs を持たず（static の赤で飛ばされない）、段の中で scope の台本（scripts/ci/ci_scope.py・static の G0 と同じ入力）を流して本線との分かれ目を出し、`ci_results.py check --specs '07_qa/test-specs/**/*.md' --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"` を env `CI_LEDGER_BASE: ${{ steps.<その段の id>.outputs.base }}`・`CI_TARGET_REF: ${{ inputs.target }}`（workflow_dispatch に入力 target を足す。act_ci.sh が台の側で決める比べる元の枝の名前で、枝の中のファイルから読まない）で流す（run の文字に `${{ … }}` を入れない・K107-CS-034）と自己試験を足す。段の一覧は `05_flow/build_testplan.py` に足して生成物を作り直す\n- [ ] 取り込みの台本 pm_merge.sh が呼ぶ設定（ai-team.yaml の `results`）を置く。台本の順は「緑の回の記録を写す → write → `Results-Written-By` つきでそのチケットの番号でコミット → check（--ledger-base-ref・--target-ref つき）→ 本線へ」（PM の判断 17:40 ⑤）。pm_merge.sh に口を足すのは PM がスキル側でする（このチケットの外）\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- 決まりの正本：ai-driven-process.md §8「試験の結果の欄は CI の記録から機械で書く」・D-129.50・D-129.51\n- 直すのは試験の仕様の前書きと結果の書き方・CI の検査の台本と段だけ。製品のコードと、試験そのもの（期待結果）は変えない\n- 手で PASS を書かない（人も AI も）。台帳の行を足さない（減らすだけ）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | スキルの `result_gate.py`（record・write・check・印の形「PASS（CI <7 字>）」・記録 `<sha>.json` の形）を写して Kaname の入力に合わせる（新しい形は作らない）。行 ID の形は `scripts/ci/op_gate.py:20` の ID_RE と同じ。報告の読み方は op_gate の load_report（Playwright の suites・Vitest の testResults）と同じ |\n| 作るもの | `scripts/ci/ci_results.py`：① `record --report <JSON>…（何度でも） --sha <sha> --records 07_qa/ci-results`：Playwright の JSON（apps/web/pw-reports/k.json・07_qa/test-specs/k/op-gate.json の reports）と Vitest の JSON（--reporter=json）を読み、名前に行 ID を持つ試験から `<sha>.json` を書く（同じ行の試験が 1 つでも passed でなければ fail・skipped／todo／timedOut も fail・形でない名前は数えない・報告が無い／読めないなら exit 1 で書かない）。スキルの record は JUnit の XML を読むが、Kaname の報告は JSON なので JSON を読む ② `write --specs … --records … --sha <sha>`：スキルの write と同じ（記録の pass／fail だけを「PASS（CI <7 字>）」「FAIL（CI <7 字>）」に書く・記録に無い行は変えない・前の印は書き換える・記録が無い／短い sha が 2 つに当たるなら exit 1 で何も書かない）③ `check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"${{ needs.static.outputs.base }}\"`（CI の spec の段は必ず `--ledger-base-ref` を付ける・PM の判断 2026-11-08 15:37）（読む ref は main の名前ではなく、static の段の G0（scope・scripts/ci/ci_scope.py）が出す本線との分かれ目 `needs.static.outputs.base`〔v3-gate.yml:38・40 字の sha〕。手元の CI の写しは clone して detach するので `main` の名前が無いことがあるが、分かれ目は HEAD の先祖のコミットなので、fetch-depth: 0 で取った写しの履歴に必ずある。spec の段は `needs: [static]` を持つ。base が空〔分かれ目を出せなかった〕なら読めない ref と同じに赤・PM の判断 2026-11-08）：スキルの check（PASS の行が無ければ記録が無くても緑・印の回の記録が無い／1 つに決まらない／fail なら赤）に、台帳（印の無い PASS を許す行・本線の台帳に無い行を足したら赤・もう印の無い PASS でない行が残っていたら赤。本線の台帳は `git show <ref>:<台帳>` で読み、ref が読めなければ赤。本線に台帳が無い回〔台帳を入れる回〕は、台帳の行がどれも本線の版の試験の仕様〔`git show <ref>:<ファイル>`〕で「CI の印の無い PASS」の行に当たるときだけ通し、それ以外の行は赤）と、行 ID の形の検査を足す ④ `ledger --specs … --out 07_qa/test-plan/result-ledger.json`：入れた時点の台帳を作る（1 回だけ）　⑤ 回 5 で足す決まり（PM の判断 2026-11-08 15:58・17:40）：(a) 読む行と PASS の読み方は qa-ladder と同じ読み手にそろえる〔見出しの ID の列は「ID」「行 ID」「ＩＤ」「Id」、結果の列は「結果」を含む名前と「status」「Status」・外側の「|」が無い表と末尾の「|」が無い行も読む・ドットの付いたディレクトリも読む・PASS と読むのは NFKC で揃えて大小を問わず PASS／FIXED／OK／合格／完了（**PASS**・✅ PASS も）・印つきの形は「PASS（CI <sha>）」「FAIL（CI <sha>）」ちょうどだけで、ほかの PASS らしい書き方は手で書いた PASS〕(b)「PASS（該当なし…）」は該当なし（N/A）と読み、PASS に数えず台帳にも載せない（op_gate と同じ・qa-ladder の status_of も na に直す）(c) 同じファイル・同じ行 ID の PASS が 2 行以上あれば赤（台帳の鍵で新しい行を通さない）(d) `--target-ref <取り込む先>` を持ち、`--ledger-base-ref` が取り込む先の先祖で HEAD と違うことを確かめる（違えば・読めなければ赤）(e) `--ledger-base-ref` を付けたときだけ、本線の版と同じ印のまま（同じファイル・行 ID・結果の文字）の行は記録を見直さない（取り込みの台本が write の後に check を流してから本線に入れたので確かめ済み）(f) 枝で足した・変えた印と `--records` の記録のファイルの追加・変更は、`<ref>..HEAD` のコミットのうち本文に「Results-Written-By: ci_results.py write CI <40 字の sha>」を持つコミット（取り込みの台本の書き込み）で入ったものだけ通し、それ以外は赤（手で置いた記録・古い印への戻しを止める） |\n| 記録の置き場 | `07_qa/ci-results/<40 字の sha>.json`。版に入れる（結果の欄の印が指す記録が本線に無いと、check が赤になるため）。CI の段は写しの中で record して artifacts に出し、取り込みの台本が CI の記録の置き場（act_ci.sh の回の記録）から写す |\n| 書く人と時点（D-129.51） | 結果の欄は CI の段の中では書かない（写しは残らない）。web の段が記録 `07_qa/ci-results/<sha>.json` を artifacts に出し（act_ci.sh は --artifact-server-path の置き場だけを残す）、取り込みの台本（pm_merge.sh）が、緑だった CI の回の記録をそこから `07_qa/ci-results/` に写し、`ci_results.py write --sha <その回>` で結果の欄を書き、本文に `Results-Written-By: ci_results.py write CI <40 字の sha>` を持つ**そのチケットの番号の**コミットにし、`ci_results.py check --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>` が緑のときだけ本線に入れる（PM の判断 17:40 ⑤）。本線の版と同じ印の行を次から記録で見直さない（⑤(e)）のは、この write → check の順が前提。pm_merge.sh はスキル ai-team-delivery の台本でプロジェクトから差す口が無いので、Kaname は ai-team.yaml に設定 `results` を置き、pm_merge.sh がこの設定を読んで呼ぶ口は PM がスキル側で足す |\n| G48（op_gate）との順番 | web の段：`e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report`。op_gate に `--pending-from-report` を足す：結果が空の行は、今の回の報告で passed なら未実施にしない（取り込みの台本が後で書く）。failed なら赤・報告に無いなら前のとおり「未実施（結果が空）」（scripts/ci/op_gate.py:169） |\n| 直すファイル | 前書き `07_qa/test-specs/k/sign-up.md:7`・`terms.md:9`・`verify-email.md:8`、`07_qa/test-specs/errors.md` の 23 行、`scripts/ci/op_gate.py`・`05_flow/build_testplan.py`（段）・生成物（v3-gate.yml・test-plan）・`ai-team.yaml`（results の設定）、`scripts/ci/test_owner_gate.py`（CI の段が直に流す検査の自己試験 `python3 scripts/ci/<名前>_test.py` を tests: に書けるようにし、持ち主の無いものは TO1 にしない。G53 の TO3 を避けるのに要る・K-62 の精査で入れた変更をこの枝で持つ・テスター Q 回 8 の追加-2） |\n| 消す・変える物を使っている所 | `grep -rn \"PASS に書き換える\" 07_qa/` で 26 か所（errors.md 23・sign-up.md 1・terms.md 1・verify-email.md 1）。op_gate.py を呼ぶ所は v3-gate.yml の G48 の 1 か所（`grep -rn \"op_gate.py\" .github 05_flow`）。ほかのチケットの持ち物で K-143 が変えるもの：`scripts/ci/ci_scope_test.py` の K107-CS-034（K-107 の試験・作る役が spec の段の needs 無しと段の中の scope の段を足した）と、`scripts/ci/qa-ladder.py` の status_of（L1 の関門 task-gate が使う・実装の役が「PASS（該当なし…）」を na にする・K143-CI-027）。`scripts/ci/test_owner_gate.py` を呼ぶ所は v3-gate.yml の G53 の 1 か所（自己試験 --selftest も同じ段） |\n| 入れた時点の影響 | 印の無い PASS は空に戻さず、台帳に載せて残す（D-129.51）。07_qa/test-specs/k の PASS 114 行（connect-pc.md 23・create-ticket.md 38・showcase.md 53）も台帳に載る。取り込み済みの K-57・K-60 の行は PASS のまま残るので、op_gate --all は前のとおり今の回の報告で確かめ、「未実施（結果が空）」にならない |\n| 回 4 の確かめで出た直し（実装の役・テストは先に書いた） | ① v3-gate.yml（作り手 05_flow/build_testplan.py）：spec の段から `needs: [static]` を外し、段の中に scope の台本の段（`id` を付け、env `CI_SCOPE_INPUT`・`CI_BASE_INPUT` は static の G0 と同じ）を置き、G61 の check に env `CI_LEDGER_BASE: ${{ steps.<id>.outputs.base }}` と `CI_TARGET_REF: ${{ inputs.target }}` を渡し、run は `--ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"`（workflow_dispatch に入力 target〔string・default ''〕を足す）（K143-CI-016・022・K107-CS-034）。② web の段に、record の後で `07_qa/ci-results` を出す upload-artifact（`if: ${{ !cancelled() }}`）を足す（K143-CI-016）。③ ci_results.py の読み手を qa-ladder とそろえる（⑤(a)・K143-CI-023〜026・027）。④「PASS（該当なし…）」を N/A に（⑤(b)・K143-CI-030）。台帳から該当なしの 149 行を外して作り直す（K143-CI-014）。qa-ladder.py の status_of も「PASS（該当なし」を na にする（K143-CI-027）。⑤ 同じ行 ID の PASS の重なりを赤に（⑤(c)・K143-CI-028）。⑥ `--target-ref` と比べる元の確かめ（⑤(d)・K143-CI-032）。⑦ 本線と同じ印の扱い（⑤(e)・K143-CI-033）。⑧ 書き込みのコミットの印でない印・記録の追加と変更を赤に（⑤(f)・K143-CI-029・031）。⑨ ai-team.yaml の results に台本の順（写す → write → Results-Written-By つきでコミット → check → 本線）を書く ⑩ write が印を付けた台帳の行を同じ実行で台帳から消す（取り込みの台本の write → check の順で、直後の check が「台帳の行が、もう印の無い PASS でない」で赤にならないように。--ledger を省けば既定の台帳 07_qa/test-plan/result-ledger.json があればそれを減らす・テスター Q 回 8 の追加-1・K143-CI-034） |",
+    "テスト仕様と確認の結果": "テストの行 ID：`scripts/ci/ci_results_test.py` の K143-CI-…（試験の名前の頭）。\n\n| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | record：Playwright と Vitest の JSON 報告に、同じ行の試験が passed・failed・timedOut・skipped・todo で混ざる。行 ID の形でない名前がある | 記録 `<sha>.json` に行 ID → pass／fail。1 つでも passed でなければ fail。形でない名前は数えない | K143-CI-001 |\n| 失敗 | record：報告のファイルが無い・JSON でない | exit 1。記録を書かない | K143-CI-002 |\n| 入力 | write：記録の pass・fail・記録に無い行・BLOCKED の行 | 「PASS（CI abcdef1）」「FAIL（CI abcdef1）」を書く。記録に無い行・BLOCKED は変えない | K143-CI-003 |\n| 時間の流れ | write：前の回の印がある行を新しい回で書く | 新しい回の印に書き換える（前の印は残らない） | K143-CI-004 |\n| 失敗 | write：その回の記録が無い・短い sha が 2 つの記録に当たる | exit 1。仕様を 1 字も変えない | K143-CI-005 |\n| 守り | check：印の無い PASS が 1 行ある（台帳に無い） | 赤。ファイルと行 ID を出す | K143-CI-006 |\n| 守り | check：印のある PASS で、その回の記録が pass。空・BLOCKED・FAIL の行もある | 緑（PASS の行だけを見る） | K143-CI-007 |\n| 守り | check：印の回の記録で fail・記録に行が無い・印の回の記録のファイルが無い | どれも赤（その回の記録での状態か、記録が無いことを出す） | K143-CI-008 |\n| 守り | check：印の短い sha が 2 つの記録に当たる | 赤（1 つに決まらない） | K143-CI-009 |\n| 入力 | check：行 ID が op_gate の形でない PASS | 赤（記録と結べない） | K143-CI-010 |\n| 失敗 | check：PASS の行が無く、記録の置き場も無い | 緑（記録は PASS を確かめるときだけ要る・スキルの check と同じ。前の「記録が無ければ赤」は取り下げた） | K143-CI-011 |\n| 守り | 台帳：載った印の無い PASS・載っていない印の無い PASS | 載った行は緑、載っていない行は赤 | K143-CI-012 |\n| 守り | 台帳を増やす・印が付いた行を台帳に残す・台帳から行を消す | 本線の台帳に無い行を足したら赤。印が付いた行が残っていたら赤（消す）。減らすのは緑 | K143-CI-013 |\n| 時間の流れ | 取り込みの台本の write が、台帳に載った印の無い PASS の行に印を付ける（直後に check が流れる） | 印を付けた行を同じ実行で台帳から消す（台帳は減らすだけ・直後の check が緑）。記録に無い行は印も付かず台帳に残る。--ledger を渡さない write は台帳を触らない。pm_merge.sh は --ledger を渡さないので、既定の台帳 07_qa/test-plan/result-ledger.json があればそれを減らす | K143-CI-034 |\n| 守り | 本物の作業場所（07_qa/test-specs の全部・台帳つき） | 緑。見た PASS の行の数を出し、台帳の行の数以上（何も見ずに緑にしない）。K-57・K-60 の印の無い PASS は台帳に載って PASS のまま残る。台帳は 2593 行以下で、ファイルは作業場所の頭からの道（まっさらな写しと手元で同じ） | K143-CI-014 |\n| 入口 | check をコマンドで流す | 赤なら「★」で行を出して exit 1、緑なら PASS と数で exit 0 | K143-CI-015 |\n| 守り | CI から回る | web の段で e2e:k → record → op_gate --pending-from-report の順・記録 07_qa/ci-results を artifacts に出す（緑の回も）。spec の段は自分の中で scope の台本を流して本線との分かれ目を出し、check を `--ledger`・`--ledger-base-ref \"$CI_LEDGER_BASE\"`（env で `steps.<id>.outputs.base` を渡す・run の文字に `${{ … }}` を入れない）・`--target-ref` つきで流し、自己試験も流す。段の一覧は build_testplan.py | K143-CI-016 |\n| 失敗 | static の段が赤（lint・型などが落ちた回） | spec の段は needs を持たず if も無いので流れ、G61 ほか仕様の層の検査の赤もその回に出る（落ちたものを 1 回でまとめて出せる） | K143-CI-022 |\n| 入力 | PASS の別の書き方（**PASS**・pass・Pass・ＰＡＳＳ・✅ PASS・OK・合格・FIXED・完了）・飾った印（**PASS**（CI …）） | どれも手で書いた PASS として赤（qa-ladder が passed と数える書き方は全部見る） | K143-CI-023 |\n| 入力 | 見出しの名前（行 ID・ＩＤ・Id・結果（CI）・結果列・status） | 読む。印の無い PASS は赤 | K143-CI-024 |\n| 入力 | 外側の「|」が無い表・末尾の「|」が無い行 | 読む。印の無い PASS は赤 | K143-CI-025 |\n| 入力 | ドットの付いたディレクトリの中の試験の仕様 | 読む。印の無い PASS は赤 | K143-CI-026 |\n| 守り | qa-ladder が passed と数える行 | どれも G61 も PASS と読む（qa-ladder が読む行 ⊂ G61 が読む行）。「PASS（該当なし…）」は両方とも N/A | K143-CI-027 |\n| 守り | 台帳の行と同じ番号の新しい行（同じファイル・同じ行 ID の PASS が 2 行） | 赤（台帳の鍵で新しい行を通さない） | K143-CI-028 |\n| 時間の流れ | 本線で「FAIL（CI 新しい回）」の行を、枝の普通のコミットで前の回の「PASS（CI 古い回）」に戻す | 赤（古い回の記録が pass でも） | K143-CI-029 |\n| 入力 | 「PASS（該当なし…）」の行（149 行） | N/A と読む：PASS に数えず、印も台帳も要らない。台帳に載っていたら赤（台帳から消す） | K143-CI-030 |\n| 守り | 記録の出どころ：普通のコミットで記録のファイルを置き印を書く／取り込みの台本の書き込みのコミット（Results-Written-By）で入れる | 前は赤（手で置いた記録で通さない）。後は緑 | K143-CI-031 |\n| 守り | 比べる元のすり替え：--ledger-base-ref が HEAD・取り込む先の先祖でない・--target-ref が無い／読めない | どれも赤 | K143-CI-032 |\n| 守り | 取り込む先（--target-ref）の出どころ | CI の段は workflow_dispatch の入力 target（act_ci.sh が台の側で決める枝の名前）を env で渡し、枝の中のファイル（.act-ci.env・ai-team.yaml）から読まない。入力が空なら check は赤（K143-CI-032）。CI の段の確かめは補助 | K143-CI-016 |\n| 守り | 取り込みの台本 pm_merge.sh の口（results の設定を読み、自分の --base〔取り込む先〕で write の後に check を流す）がスキル側に入るまで | それまでは K-143 を取り込まない：pm_merge.sh が ai-team.yaml の results を読めなければ取り込みを止め、K-143 は本線に入らない（本当の守りは pm_merge.sh の check・PM の判断 17:52）。act_ci.sh が入力 target を渡すまでは CI の段の G61 も赤のまま（取り込まない） | このチケット（それまでの間）・PM（スキル側の pm_merge.sh・act_ci.sh の口） |\n| 守り | 本線の版と同じ印のまま（同じファイル・行 ID・結果の文字）で、枝の写しに記録が無い | --ledger-base-ref を付けたときは緑（記録を見直さない・取り込みの台本が write の後に check を流したので確かめ済み）。付けないときは記録と照らして赤 | K143-CI-033 |\n| 守り | 台帳は減らすだけ（本線に台帳がある）：作業の枝で台帳に行を足す・減らす | コマンドで流すと、足した行を「★」で名指しして exit 1。減らすのは exit 0（PM の判断 2026-11-08 15:37） | K143-CI-019 |\n| 失敗 | 本線の ref が読めない（無い ref・空の ref＝static の段が分かれ目を出せなかった） | 台帳が正しくても赤（ref の名前か「空」を出す・守りの所で読めないなら止める側） | K143-CI-020 |\n| 守り | 台帳を入れる回（本線に台帳が無い）：台帳の行が本線の版で印の無い PASS の行だけ／本線では空・印つき・無い行も入れた | 前は exit 0。後は、本線で印の無い PASS でなかった行を名指しして exit 1（入れる回に紛れて増やせない）。本線で印の無い PASS だった行は赤にしない | K143-CI-021 |\n| 操作の揺れ | op_gate --pending-from-report：結果が空の行が、今の回の報告で passed・failed・報告に無い | passed は緑（未実施にしない）。failed は赤。報告に無いなら「未実施（結果が空）」で赤 | K143-CI-017 |\n| 入力 | 日本語の名前の試験の仕様のファイル | 読み落とさない（印の無い PASS を赤にする） | K143-CI-018 |\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K143-CI-018 |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K143-CI-006（印の無い PASS を 1 行入れると赤）・K143-CI-014（見た PASS の行の数を出す）・K143-CI-027（qa-ladder が passed と数える行を 1 つ以上見る） |\n| TP-TOOL-03 容れ物の中と手元で違う | K143-CI-014（台帳のファイルは頭からの道・記録は sha の名前） |\n| G-11〜G-16 | G-11：外の資源を使わない（N/A：記録は版の中のファイル）。G-12：前の回の印の書き換え（K143-CI-004）。G-13：op_gate と record の順（K143-CI-016・017）。G-14：N/A（口座を扱わない）。G-15：報告が無い・読めないときに空の記録を書かない（K143-CI-002）。G-16：記録は回ごとに 1 ファイル（行 ID → 状態だけ・大きさは行の数）・台帳は減るだけ |",
+    "成果物": "- `scripts/ci/ci_results.py`・`scripts/ci/ci_results_test.py`・op_gate の `--pending-from-report`・台帳 `07_qa/test-plan/result-ledger.json`・記録の置き場 `07_qa/ci-results/`・v3-gate.yml の段・ai-team.yaml の results・26 か所の直し",
+    "決定ログ": "- D-129.50：K-143 を K-62 の前に入れる（K-62 の CI が「結果が空」で赤になり取り込めないため・手で PASS を書くのは禁止）\n- D-129.51：検査は 07_qa/test-specs のどの仕様のファイルにも掛ける。今ある印の無い PASS（36 ファイル・2593 行）は台帳に載せ、台帳は減らすだけ。流し直しは K-150。結果の欄は CI の記録から取り込みの台本が書き、そのチケットの番号でコミットしてから本線に入れる\n- PM の判断（pm-decisions-2026-11-08.md）：17:52 depends_on に K-144（K-144 を先に取り込む）・--target-ref は workflow_dispatch の入力 target から（CI の段は補助・本当の守りは pm_merge.sh の check・口が入るまで K-143 を取り込まない）。15:58 本線の版と同じ印の行は記録を見直さない（--ledger-base-ref を付けたときだけ）。17:40 spec の段は static を待たず段の中で分かれ目を出す・「PASS（該当なし…）」は N/A・G61 のすり抜けを塞ぐ ①〜⑤・CI の記録を web の段で artifacts に出す\n- 途中で見つけた前からある別の場所の問題は、その場で直さず起票して列の後ろに積む（D-128.147・D-129.32）",
+    "リスクと懸念": "- pm_merge.sh に結果を書く口が足されるまでは、K-62 の行の結果の欄は空のまま本線に入る（op_gate は --pending-from-report で今の回の報告を見るので CI は赤にならない）。口はスキル側で PM が足す\n- 台帳の 2593 行は、流し直すまで「印の無い PASS」のまま残る（K-150）",
+    "申し送り": "- K-150：台帳の行を流し直して印を付け、台帳を減らす\n- PM（スキル側）：pm_merge.sh に ai-team.yaml の results を読んで record の写し・write・コミットをする口を足す"
+   },
+   "file": "11_tickets/K-143.md"
+  },
+  {
    "id": "K-144",
    "title": "K-57・K-60 の口で、契約（openapi）と実際の振る舞いが食い違っている（fuzz を広げて見つかった 4 件と、同じ形のずれ全部）",
    "kind": "課題",
@@ -6104,14 +6170,17 @@
     "K-62"
    ],
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/bridge",
+    "@kaname/storage",
+    "@kaname/web"
    ],
    "ci_wide": [],
    "sections": {
-    "目的": "決める人の決定 D-129.42（ゼロトラスト：入力の id は入口で正式な uuid として確かめ、正しくない値は 422。中で 500 になる道を残さない）に対して、契約の口の外にある前の道すじが、id を `/^[0-9a-f-]{36}$/i` で確かめている（`apps/api/src/auth/artifacts.ts:24`・`apps/api/src/auth/agent.ts:29`・`agent.ts:456` の KEY_SHAPE）。ハイフンだけの 36 字など uuid でない値が通り、DB の `::uuid` で 500 になるおそれがある。K-144 の作る役が見つけた（2026-11-08）。前からある別の場所の問題なので、その場で直さず起票した（D-129.32）。",
-    "完了の条件": "- [ ] K-62 の取り込みの後に残った前の道すじ（K-62 が消した `/bridge/*` を除く）で、id を確かめている所を全文検索で全部出し、正式な uuid の確かめ（契約の口と同じ部品）にそろえる。正しくない値は 422\n- [ ] 消せる道すじ（契約の口に移し終えたもの）は消す\n- [ ] 試験：uuid でない 36 字（ハイフンだけ・g を含む・版の桁が違う）が 422 になり、500 にならない\n- [ ] チケットの CI（act）が緑",
+    "目的": "決める人の決定 D-129.42（ゼロトラスト：入力の id は入口で正式な uuid として確かめ、正しくない値は 422。中で 500 になる道を残さない）に対して、契約の口の外にある前の道すじが、id を `/^[0-9a-f-]{36}$/i` で確かめている（`apps/api/src/auth/artifacts.ts:24`・`apps/api/src/auth/agent.ts:29`・`agent.ts:456` の KEY_SHAPE）。ハイフンだけの 36 字など uuid でない値が通り、DB の `::uuid` で 500 になるおそれがある。K-144 の作る役が見つけた（2026-11-08）。前からある別の場所の問題なので、その場で直さず起票した（D-129.32）。\n\nK-144 のテスター回 8（Q1・Q2）が、同じ類を次の所でも見つけた（2026-11-08・PM がこのチケットに足した）：`apps/api/src/auth/ext.ts:416・462・501`・`apps/api/src/auth/memory.ts:94`・`apps/bridge/src/vault.ts:32`・`packages/storage/src/index.ts:56`・`apps/web/features/F4/create-ticket/draft.ts:31`（版と variant の桁を見ない）・`apps/api/src/features/F4/create-ticket/input.ts:5`（口の中の重ねの確かめ・K-144 のテスター Q2 回 14 が見つけた）。",
+    "完了の条件": "- [ ] K-62 の取り込みの後に残った前の道すじ（K-62 が消した `/bridge/*` を除く）で、id を確かめている所を全文検索で全部出し、正式な uuid の確かめ（契約の口と同じ部品）にそろえる。正しくない値は 422\n- [ ] apps/bridge・packages/storage・apps/web の同じ類（上の目的の一覧）も同じ確かめにそろえ、K144-SHAPE-019 の拾い方を広げて、緩い確かめが残っていたら赤にする\n- [ ] 画面の口（apps/api/src/auth/agent.ts:99・:392・:440）が記憶の本文と会話の名前を 2000・80 字で黙って切っているのをやめ、上限も外す（決める人の決定 D-130.4・K-144 の作る役 回 12 が見つけた）。長い本文と名前が読み戻して一字も欠けていない試験\n- [ ] 前の道すじ（apps/api/src/auth/*.ts・ログインの要らない /api/auth-ext/sign-in（ext.ts:133）を含む）は契約の入口（op.ts）を通らず、体を上限なしに全部読む。決める人の決定 D-130.1 の「送る内容全体 1MB の守り」を前の道すじと node のサーバーにも効かせ（読みながら数え、超えた時点で 413・「送る内容が大きすぎます」）、ログインせずに大きな体を送ってもメモリを使い切らせない（K-144 のテスター Q3 回 13 が見つけた）。試験：前の道すじの口に 1MB を超える体（頭を偽る・頭の無い流れ）を送ると 413\n- [ ] 消せる道すじ（契約の口に移し終えたもの）は消す\n- [ ] 試験：uuid でない 36 字（ハイフンだけ・g を含む・版の桁が違う）が 422 になり、500 にならない\n- [ ] チケットの CI（act）が緑",
     "前提と制約": "分類: PERM\n\n- K-62 が `/bridge/take`・`progress`・`finish`・`control`・`tool` を消す。残る所だけを直すので、K-62 の取り込みの後にする（depends_on）\n- 見込みは列に入れるときに、直近の取り込みの実測から引いて書く",
-    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 契約の口の uuid の確かめ（K-144 で z.uuid() にそろえる部品）を使う。新しく作らない |\n| 直すファイル | apps/api/src/auth/artifacts.ts・agent.ts（K-62 の後に残る所）。全文検索 `\\[0-9a-f-\\]\\{36\\}` |",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 契約の口の uuid の確かめ（K-144 で z.uuid() にそろえる部品）を使う。新しく作らない |\n| 直すファイル | apps/api/src/auth/artifacts.ts・agent.ts・ext.ts・memory.ts（K-62 の後に残る所）・apps/bridge/src/vault.ts・packages/storage/src/index.ts・apps/web/features/F4/create-ticket/draft.ts。全文検索 `\\[0-9a-f-\\]\\{36\\}` と、版と variant の桁を見ない uuid の正規表現 |\n| 二度と出さない検査 | K-144 の形の試験 K144-SHAPE-019 の拾い方を、版と variant の桁を見ない正規表現まで広げ、見る場所に apps/bridge/src・packages を足す（今は apps/api と apps/web だけ） |",
     "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | uuid でない 36 字 | 422・中の処理に入らない | 作る役が行 ID を振る |\n| 入力 | 正しい uuid | 今までどおり | 作る役が行 ID を振る |\n| 守り | 上流の確かめを外して DB に渡る | DB で止まり 500 でなく 422 か 404 に倒れる（2 層目） | 作る役が行 ID を振る |",
     "成果物": "- 前の道すじの id の確かめの直しと試験",
     "決定ログ": "- 途中で見つけた前からある別の場所の問題は、その場で直さず起票して列の後ろに積む（D-128.147・D-129.32）",
@@ -6119,6 +6188,281 @@
     "申し送り": "- なし"
    },
    "file": "11_tickets/K-145.md"
+  },
+  {
+   "id": "K-146",
+   "title": "チケットを切る時点で決める人に聞くことを出し切る（共通の決まりを 1 枚に・曖昧な期待結果と別チケットの前提を機械で赤に・先にある実装との突き合わせ・K-63/K-64 の洗い直し）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-32",
+   "milestone": "基盤",
+   "area": "進め方",
+   "assignee": "作る",
+   "due": "2026-11-09",
+   "estimate_hours": "5",
+   "estimate_basis": "K-143 の回 4 の実測（実装の役の報告 15:56 → テスター 4 人の報告 17:40〜17:42・テスター 1 周 約 1 時間 45 分）から引いた。スキル側はもう入っている（②③⑤⑥⑦）ので残りは Kaname 側：写し 2 本と CI の段・ticket_rows_ci 0.5 時間、入れた時点の赤（取り込む前に ticket_rows_ci が出すもの・件数は決め打ちしない）の直し 0.5 時間、① の行と問いのページ 1 時間（答えを待つ間を除く）、④ K-63・K-64 の突き合わせ 1 時間、テスター 1 周 1 時間 45 分、CI と取り込み 15 分で 5 時間",
+   "decisions": [
+    "D-129.32",
+    "D-129.42",
+    "D-129.43",
+    "D-129.44",
+    "D-129.52",
+    "D-129.53"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "進め方の検査（チケットの形の検査）と決まりの文書を足すだけ。製品のコードと関門に触らない",
+   "depends_on": [
+    "K-143",
+    "K-62"
+   ],
+   "prior_impl": "なし",
+   "tests": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "2026-11-08、K-62・K-144 の実装の途中で、決める人に聞くことが 4 つ出た（入力の id の確かめ方 D-129.42・契約と実装のずれ K-144・消したチケットの記録 D-129.43・AI の許可の求め D-129.44）。どれもチケットを切る時点で出るべきものだった。決める人：「チケットの時点で実装の設計とかはちゃんと組むはず、その時に気づくはず」。原因は 3 つ：\n\n1. 全体に効く決まり（入力の確かめ方・口の契約の検査範囲・消したものの扱い）を最初に決めていなかった\n2. チケットの検査が欄の有無しか見ず、期待結果が「片付ける」のように結果の決まらない言葉でも、チケットの中で別のチケットに回した機能を前提にしていても通った\n3. 先に実装があったチケット（K-62・K-63・K-64）で、コードの中で黙って決めた振る舞いとチケットの文を突き合わせていなかった\n\n決める人の決定：①〜④を全部入れる（D-129.52・answer=8f3de60561a4）。③は精査の手順と、した証拠の検査（D-129.53・answer=8c4749f97c42）。",
+    "完了の条件": "済み（スキルと決まりの正本の側・2026-11-08 に入った。このチケットでは作り直さない）：\n- [x] ② チケットの形の検査：`~/.claude/skills/ticket-planning/scripts/ticket_rows_gate.py`（K13 曖昧な期待結果・K14 別のチケットに回した機能の間・`--selftest`）\n- [x] ③ 精査の手順：`~/.claude/skills/ai-team-delivery/references/roles/r1-ticket-review.md:18`（決まっていない振る舞い）・`assets/brief/types.yaml:63`・`~/.claude/skills/ticket-planning/SKILL.md:35`\n- [x] ⑤ 答えの記録を和で移す台本：`~/.claude/skills/ai-team-delivery/scripts/gates/answers_merge.py`（merge・check・`--selftest`）\n- [x] ⑥ found own の表示：`~/.claude/skills/ai-team-delivery/scripts/flow.py:484`（f 文字列で `{tid}` が埋まる）\n- [x] ③ の「した証拠」の検査（D-129.53・スキル側・PM が入れた）：`state.py` は設定 `review.prior_impl_field` があるとき、頭に `prior_impl:`（`なし` か `<枝>@<sha>`）が無いチケットを精査に入れない。`scripts/gates/review_map_gate.py` が R1／R2 の報告の「## 突き合わせた分かれ道」の表をその sha で確かめ、verdict_check から呼ばれる（スキルの試験 107 本緑）\n- [x] ⑦ 教訓：`~/.claude/rules/common/lessons-learned.md:674` の L-015 と `~/.claude/rules/common/ai-driven-process.md:69` の 4 点\n\n残り（Kaname 側・このチケットで作る）：\n- [ ] ① 共通の決まり（聞くことが 0 件なら問いのページに「聞くことなし」と理由を書く・答え待ちの問いが残っている間は K-146 を取り込まない）：`03_architecture/共通の決まり.md` に、入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる（D-095・K-62 の fuzz_targets）・消したものの扱い（D-129.43 を一般化）の行を足す。ほかに全体に効く項目を洗い出し、決める人に聞く項目は 1 枚のページ `01_hearing/聞くこと_K-146.md`（表の列「問い」「答えの決定」）でまとめて出し、答えを決定ログに書いてページに番号を書く（K146-CI-007）\n- [ ] ② と ⑤ の検査を Kaname の CI に入れる：写し `scripts/ci/ticket_rows_gate.py`・`scripts/ci/answers_merge.py`、着手前のチケットだけに当てる `scripts/ci/ticket_rows_ci.py`、spec の段に G60 の隣の 2 段（K146-CI-001〜006）\n- [ ] 入れた時点の赤を直す：取り込む前に `python3 scripts/ci/ticket_rows_ci.py` が出す着手前のチケットの赤を全部直す（件数は決め打ちしない。今は K-63・K-74・K-89。K-62 は K-62 の枝で直してあり先に入る）。K-63 は本線の版の行を最小で直し、k63-cut の書き直しが入るときはその版が勝つ（そちらも CI で同じ検査を通る・K146-CI-003）\n- [ ] ③ の Kaname 側：`ai-team.yaml` に `review: {prior_impl_field: prior_impl}` を足す（K-146 の頭は `prior_impl: なし`・K146-CI-009）\n- [ ] ④ K-63・K-64 を ①〜③ で洗い直す：先にある実装（k63-impl・k64-make の版）と突き合わせた結果を、問いのページ `01_hearing/聞くこと_K-146.md` の表（列「チケット」「ファイル:行@sha」「チケットの行」）に書く（K-63.md・K-64.md には書かない。それぞれの作る役が次の作るの段で写す）。聞くことは同じページにまとめて 1 回で出す（K146-CI-008）\n- [ ] answers_merge の check は、比べる版が読めないなら赤・base が空（全部を流す回）なら取り込む先の枝（--target・CI_TARGET_REF）と比べ、両方空なら赤（写しとスキルの両方・スキル側は PM。K146-CI-005）\n- [ ] スキルを直したら、スキルの試験を流して緑・skills の zip を作り直す（.pytest_cache を入れない・PM）\n- [ ] `scripts/ci/ticket_process_test.py` の K146-CI-001〜009 が緑・チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- ①の答え（決める人の決定）が出るまで、②の検査は今の決定だけで作る。③④は ①②の後\n- 今の K-62・K-144 は止めない（このチケットの前に取り込む）。spec の段の中の scope の段（本線との分かれ目を出す）は K-143 が置くので、K-143 の後に取り込む（depends_on: K-143）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 検査はスキルにある ticket_rows_gate.py・answers_merge.py を使う（新しく作らない）。CI の写しの中にはスキルが無いので、decision_source_gate（G60）と同じく `scripts/ci/` に写して置く。写しの頭に「スキル ai-team-delivery／ticket-planning の <パス> の写し・直すときはスキルと両方」を書く |\n| ② の置き場（ticket_rows_ci） | `scripts/ci/ticket_rows_ci.py`：`targets(tickets_dir)` が 11_tickets/K-*.md のうち頭の `stage: 未着手` のものだけを返し、`ticket_rows_gate.check_text` を当てる。作業中・確認中・保留・完了は当てない（取り込み済みを赤にしない）。CLI `python3 scripts/ci/ticket_rows_ci.py [--dir 11_tickets]` は赤の行を出して exit 1、無ければ PASS と当てた枚数で exit 0 |\n| ⑤ の置き場（answers_merge check） | spec の段の G60（decision_source_gate）の隣に `python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base \"$CI_ANSWERS_BASE\" --target \"$CI_TARGET_REF\"`。env `CI_ANSWERS_BASE: ${{ steps.<spec の段の scope の段の id>.outputs.base }}`（K-143 が spec の段に置く scope の段が出す本線との分かれ目）・`CI_TARGET_REF: ${{ inputs.target }}`（K-143 が足す workflow_dispatch の入力）。run の文字に `${{ … }}` を入れない（K107-CS-034）。base が空なら --target と比べ、両方空・読めない版なら赤（写しに --target を足す） |\n| CI の段の一覧 | `05_flow/build_testplan.py` の SPEC_GATES に、G60 の隣の 2 段（answers_merge check・ticket_rows_ci）と自己試験 `python3 scripts/ci/ticket_process_test.py` を足し、作り手で v3-gate.yml を作り直す |\n| ③ の「した証拠」の検査（D-129.53） | スキル側は PM が入れた（state.py の review.prior_impl_field・gates/review_map_gate.py・verdict_check から呼ぶ）。Kaname 側は `ai-team.yaml` に `review: {prior_impl_field: prior_impl}` を足すだけ。prior_impl の欄は全チケットに一度に足さず、精査に入れるときに無ければ state.py が止める（K-146 の頭は `prior_impl: なし`）。review_map_gate は prior_impl が `<枝>@<sha>` のときに効く |\n| ① の問いのページ | `01_hearing/聞くこと_K-146.md`：問いの表（列「問い」「なぜ今聞くか」「答えの決定」）と、④ の突き合わせの表（列「チケット」「ファイル:行@sha」「チケットの行」）。問いはまとめて 1 回で出し、答えが来たら決定ログに D の行を書いて「答えの決定」に番号を入れる。聞くことが 0 件なら「聞くことなし」と理由を書く |\n| ④ の洗い直しの出力 | 問いのページの ④ の表：コードの分かれ道ごとに 1 行、`<パス>:<行>@<sha>`（sha は突き合わせた版：K-63 は枝 k63-impl、K-64 は枝 k64-make のコミット）→ チケットの行。チケットに無い分かれ道は問いの表に足す。K-63.md・K-64.md には書かない（両方とも切る枝で書き直し中。それぞれの作る役が次の作るの段で写す）。CI-008 は、そのチケットが着手前の間は sha の在りかとファイル:行まで確かめ、取り込み済み（完了）になったら形だけを見る。控えの枝（k63-impl・k64-make）はそのチケットを取り込むまで消さない（スキル側の片付けの手順・PM） |\n| 直すファイル | 03_architecture/共通の決まり.md・01_hearing/聞くこと_K-146.md・scripts/ci/ticket_rows_gate.py・scripts/ci/answers_merge.py・scripts/ci/ticket_rows_ci.py・05_flow/build_testplan.py と生成物・ai-team.yaml（review）・取り込む前に ticket_rows_ci が赤にした着手前のチケットの行（今は 11_tickets/K-63.md・K-74.md・K-89.md）・11_tickets/K-63.md・K-64.md の申し送りの 1 行 |\n| 消す・変える物を使っている所 | spec の段の G60 の並び（v3-gate.yml）。ほかのチケットの持ち物で変えるもの：11_tickets/K-63.md・K-74.md・K-89.md の行の書き方（起きる結果に直すだけ・期待の意味は変えない）と、K-63.md・K-64.md の申し送りの 1 行。K-62.md は直さない（K-62 の枝で直してあり先に入る） |",
+    "テスト仕様と確認の結果": "テストの行 ID：`scripts/ci/ticket_process_test.py` の K146-CI-…（試験の名前の頭）。スキル側の試験は各スキルの `--selftest`。\n\n| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 期待結果が「片付ける」「適切に扱う」だけの行（着手前のチケット） | ticket_rows_ci がファイルと行を出して exit 1 | K146-CI-001 |\n| 入力 | 期待結果に状態コード・文・DB の変化がある行だけ | PASS と当てた枚数で exit 0 | K146-CI-002 |\n| 守り | 別のチケットに回した機能を、同じ行の期待結果が前提にし、このチケットの間の振る舞いが無い行 | ticket_rows_gate が赤（写しの自己試験の K14） | K146-CI-004 |\n| 守り | 作業中・確認中・保留・完了のチケットの曖昧な行 | 当てない（取り込み済みを赤にしない） | K146-CI-001 |\n| 守り | 本物の 11_tickets の着手前のチケット | 緑（取り込む前に ticket_rows_ci が出す赤を全部直してから入れる・件数は決め打ちしない） | K146-CI-003 |\n| 入口 | CI から回る | spec の段で G60 の隣に answers_merge check と ticket_rows_ci。answers_merge の --base は spec の段の scope の段の base を、--target は入力 target を env で。自己試験も流す。段の一覧は build_testplan.py | K146-CI-006 |\n| 失敗 | ⑤ 本線の版にあった答えの id を今の記録が落とした／和で足した／比べる版が読めない／base が空（全部を流す回） | 落とした id を出して exit 1／exit 0／赤／取り込む先（--target）と比べ、両方空なら赤 | K146-CI-005 |\n| 入力 | ① 共通の決まりの行と問いのページ | 入力の確かめ方（D-129.42）・fuzz・消したもの（D-129.43）の行がある。問いにはどれも決定ログにある答えの決定の番号が付く | K146-CI-007 |\n| 操作の揺れ | ④ 先にある実装（K-63・K-64）のコードの分かれ道 | 問いのページに「ファイル:行@sha → チケットの行」がどちらも 1 行以上。そのチケットが着手前の間は、sha が git に在り（無ければ赤・黙って飛ばさない）、ファイル:行 がその版に在ることまで確かめる。取り込み済み（stage: 完了）になったら形（ファイル:行@sha・チケットの行が空でない）だけを見る（控えの枝は取り込みで消えてよい・PM の判断「K-146 精査回 3 #2」）。K-63.md・K-64.md には書かない。チケットに無い分かれ道は問いの表に出る | K146-CI-008 |\n| 守り | ③ R1／R2 の報告に突き合わせた分かれ道の表が無い・sha の行が無い（チケットの prior_impl が <枝>@<sha>）／チケットの頭に prior_impl が無い | review_map_gate が赤で verdict_check が報告を受け付けない／state.py が精査に入れない（スキル側の試験・PM が入れた） | スキル ai-team-delivery の review_map_gate.py --selftest・tests/test_prior_impl.py |\n| 入口 | ③ の Kaname 側の設定 | ai-team.yaml の review.prior_impl_field が prior_impl。K-146 の頭に prior_impl: があり、値は「なし」か「<枝>@<sha>」（無ければ赤） | K146-CI-009 |\n| 入力 | ① 問いのページの聞くことが 0 件／答え待ちの問いが残る | 「聞くことなし」と理由があれば緑／答えの決定が決定ログに無い問いが残る間は赤で、K-146 を取り込まない | K146-CI-007 |\n| 入力 | ⑥ found --kind own の表示 | `{tid}` が埋まった文が出る（済み） | スキル ai-team-delivery の flow.py の試験 |\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K146-CI-007（01_hearing/聞くこと_K-146.md・03_architecture/共通の決まり.md を読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K146-CI-001（曖昧な行を入れると赤）・K146-CI-002（当てた枚数を出す） |\n| TP-TOOL-03 容れ物の中と手元で違う | K146-CI-004（CI の写しの中にスキルが無くても、scripts/ci の写しで流れる） |\n| G-11〜G-16 | G-11：外の資源を使わない（N/A：検査はファイルと git だけ）。G-12：N/A（時間の切り替わりを扱わない）。G-13：G60 と answers_merge の並び（K146-CI-006）。G-14：N/A（口座を扱わない）。G-15：比べる版が読めないときに黙って通さない（K146-CI-005）。G-16：着手前のチケットだけを読む（K146-CI-001） |",
+    "成果物": "- 共通の決まりの行・問いのページ・Kaname の CI の 2 段（写し 2 本と ticket_rows_ci）・問いのページの突き合わせの表（K-63・K-64 のファイル:行@sha → チケットの行）・入れた時点の赤の直し",
+    "決定ログ": "- 決める人の決定（2026-11-08・answer=8f3de60561a4）：①〜④を全部入れる（D-129.52）\n- 決める人の決定（2026-11-08・answer=8c4749f97c42）：③は精査の手順と、した証拠の検査。R1 の報告に突き合わせた分かれ道（ファイル:行 → チケットの行）の一覧が無ければ精査を受け付けない（D-129.53）",
+    "リスクと懸念": "- ②の検査を今あるチケットに当てると赤が出る。着手前のチケットだけに当て、取り込む前に ticket_rows_ci が出す赤を全部直す（件数は決め打ちしない）。取り込み済みのチケットは赤にしない\n- 答え待ちの問いが残っている間は K-146 を取り込まない（聞くことが残っている実装はコミットしない）\n- answers_merge の check の --base は K-143 の spec の段の scope の段に頼る。K-143 の後に取り込む",
+    "申し送り": "- PM（スキル側）：answers_merge.py の読めない版を赤に・--target の足し・skills の zip の作り直し（review_map_gate と state.py の prior_impl は入った）\n- K-63・K-64 の作る役：問いのページ 01_hearing/聞くこと_K-146.md の ④ の表を、次の作るの段でチケットに写す"
+   },
+   "file": "11_tickets/K-146.md"
+  },
+  {
+   "id": "K-147",
+   "title": "見た目の最初を「明るい」にする（Mac などのシステムの設定に引っ張られない）。切り替えは自分の設定で、設定はアカウントに持たせる",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "画面の土台",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（K-24 の見た目の切り替え〈lib/theme.ts・styles/k-tokens.css・components/k/theme.tsx〉の既定を替えるだけ。試験 3 行。K-144・K-62 の実測で引き直す）",
+   "decisions": [
+    "D-128.55",
+    "D-129.45"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の見た目の既定を替えるだけ。外への出口（関門）に触らない",
+   "depends_on": [],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "sections": {
+    "目的": "決める人の決定 D-129.45（2026-11-08）：見た目の最初は「システムに合わせる」ではなく**明るい**に統一する。いまは K-24 の作りで、選んでいない人（cookie が無い人）は OS（Mac など）の設定に合わせて暗くなる（`apps/web/lib/theme.ts` の `parseTheme` の既定が `system`・`styles/k-tokens.css:220` の `@media (prefers-color-scheme: dark)`）。staging の登録の画面を見た決める人が「なんで暗くなっているの」と気づいた。\n\n切り替え（システム・明るい・暗い）は残す（D-128.55）。設定はアカウントに持たせ、web も後で作るアプリも同じ設定を読む。",
+    "完了の条件": "- [ ] 見た目を選んでいない人（cookie もアカウントの設定も無い）は、OS が暗くても明るい画面になる\n- [ ] 「暗い」を選んだ人は暗い画面、「システム」を選んだ人は OS に合わせる（今と同じ）\n- [ ] ログインの前の画面（登録・ログイン・メールの確認など）も、選んでいなければ明るい\n- [ ] 試験：OS を暗くしたブラウザ（Playwright の colorScheme: dark）で、選んでいない人の画面が明るい／暗いを選ぶと暗い／システムを選ぶと暗い\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- アカウントに見た目を持たせる口（自分の設定）がまだ無いなら、このチケットでは cookie の既定だけを替え、アカウントへの保存は自分の設定を作るチケットで入れる（そのチケットに足す）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | K-24 の `apps/web/lib/theme.ts`（THEMES・parseTheme・themeAttr）・`components/k/theme.tsx`・`styles/k-tokens.css` を使う。新しく作らない |\n| 直す所 | 選んでいないときの既定を `light` にする（`parseTheme` の既定と、`<html data-theme>` を付けない場合の CSS の扱い）。`prefers-color-scheme` で暗くするのは「システム」を選んだときだけにする |\n| 消す・変える物を使っている所 | `apps/web/test/k-tokens.test.ts`・`app/layout.tsx`・`app/(dev)/dev/k/*`。全文検索 `parseTheme\\|themeAttr\\|prefers-color-scheme` |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 利用者の状態 | 選んでいない・OS は暗い | 明るい画面（`<html>` の背景が明るいトークンの色） | 作る役が行 ID を振る |\n| 入力 | 「暗い」を選んだ | 暗い画面。再読み込みしても暗い | 作る役が行 ID を振る |\n| 入力 | 「システム」を選んだ・OS は暗い | 暗い画面 | 作る役が行 ID を振る |\n| 入口 | ログインの前の画面（登録）を開く・OS は暗い | 明るい画面 | 作る役が行 ID を振る |",
+    "成果物": "- 見た目の既定の直しと試験",
+    "決定ログ": "- 決める人の決定（2026-11-08・answer=7cbe625aaa51）：最初は明るいに統一（D-129.45）",
+    "リスクと懸念": "- すでに暗い画面に慣れた人はいない（まだ公開前）",
+    "申し送り": "- アカウントに見た目を保存する口は、自分の設定のチケットで作る"
+   },
+   "file": "11_tickets/K-147.md"
+  },
+  {
+   "id": "K-148",
+   "title": "止められた人の PC で、走っている Claude Code が止まらない（Bridge が止めの知らせを受けても今の実行を終わらせない）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "守り",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "2",
+   "estimate_basis": "実測なし・仮（K-62 回 3 の作る役の実測 約 8 分×差分の大きさと、Bridge の直しが 1 ファイル・試験 3 行として引いた。K-62 の取り込みの実測で引き直す）",
+   "decisions": [
+    "D-129.7",
+    "D-128.138"
+   ],
+   "split": "",
+   "choke_points": [
+    "C5"
+   ],
+   "depends_on": [
+    "K-62"
+   ],
+   "affects": [
+    "@kaname/bridge"
+   ],
+   "ci_wide": [],
+   "sections": {
+    "目的": "押した人が止められた（停止・退会・権限を外された）とき、サーバーは実行を止めて段を作業中に戻す（D-129.7・K-62 の K62-API-018）。ところがその人の PC の Bridge は、すでに走っている Claude Code の実行を終わらせない（`apps/bridge/src/main.ts`・`runner.ts` の stopCurrent は画面の止めるボタンからしか呼ばれない）。サーバー側では止まっているのに、PC 側の実行が最後まで走り続ける。K-62 の作る役が見つけた（2026-11-08）。K-62 と関係なく前からある Bridge の問題なので、その場で直さず起票した。",
+    "完了の条件": "- [ ] Bridge が、仕事の止めの知らせ（getJobControl の止めた・鍵が効かない 401）を受けたら、走っている Claude Code の実行を止める（stopCurrent）\n- [ ] 止めたあと、結果を送らない（送っても届かない形で、承認待ちにしない）\n- [ ] 試験：止められた後の 0 秒・知らせを見る間隔の内側・次の見に行きで、実行が止まる（G-12）\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: AI, EXT\n\n- 止めの知らせの口（getJobControl）は K-62 が作る。そのあとにする（depends_on）\n- 見込みは列に入れるときに、直近の取り込みの実測から引き直す",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | Bridge の stopCurrent（apps/bridge/src/runner.ts）と K-62 の getJobControl を使う。新しく作らない |\n| 直すファイル | apps/bridge/src/loop.ts（知らせを見る所）・runner.ts |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 利用者の状態 | 押した人が止められた直後（0 秒） | 次の知らせの見に行きで実行が止まり、結果を送らない | 作る役が行 ID を振る |\n| 失敗 | 知らせの口が 401 を返す | 実行を止め、結果を送らない | 作る役が行 ID を振る |\n| 対象の状態 | 止められていない | 今までどおり最後まで走り、結果を送る | 作る役が行 ID を振る |",
+    "成果物": "- Bridge の止めの直しと試験",
+    "決定ログ": "- 途中で見つけた前からある別の場所の問題は、その場で直さず起票して列の後ろに積む（D-128.147・D-129.32）",
+    "リスクと懸念": "- 止めの判断を PC 側だけに頼らない。サーバー側（K-62）で止めて段を戻すのが 1 層目、PC 側の止めが 2 層目",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-148.md"
+  },
+  {
+   "id": "K-149",
+   "title": "workflow が流す CI の自己試験 4 本に持ち主のチケットが無い（G53 で持ち主の無さを赤にする）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（K-62 回 3 で test_owner_gate.py を広げた作業の大きさから、tests: の書き足し 4 本と検査の強めとして引いた。K-62 の取り込みの実測で引き直す）",
+   "decisions": [
+    "D-128.140"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の持ち主の欄と検査を直すだけ。外への出口（関門）に触らない",
+   "depends_on": [
+    "K-62"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "workflow が流す `scripts/ci/ci_scope_test.py`・`contract_shape_test.py`・`static_screens_test.py`・`ticket_affects_test.py` の 4 本が、どのチケットの tests: にも載っていない。このため K-62 で G53（試験の持ち主の検査・test_owner_gate.py）を、workflow の自己試験を数えるように広げたとき、持ち主の無さを赤にできなかった。K-62 の作る役が見つけた（2026-11-08）。どのチケットも持っていなかったもの（持ち主）なので、分類に 1 枚を起票した。",
+    "完了の条件": "- [ ] 4 本を、それぞれ受け持つチケットの tests: に書く（contract_shape_test.py は K-144、ほかは作ったチケットを git log で探して書く）\n- [ ] G53 が、workflow の流す試験のうち持ち主の無いものを赤にする\n- [ ] 試験：持ち主の無い自己試験を 1 本足すと G53 が赤、tests: に書くと緑\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- K-62 が test_owner_gate.py を広げる。そのあとにする（depends_on）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | scripts/ci/test_owner_gate.py（K-62 で広げたもの）を使う |\n| 直すファイル | scripts/ci/test_owner_gate.py・各チケットの tests: |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 持ち主の無い自己試験がある | G53 が赤・どのファイルかを出す | 作る役が行 ID を振る |\n| 入力 | 全部に持ち主がある | G53 が緑 | 作る役が行 ID を振る |",
+    "成果物": "- 4 本の持ち主の書き足しと検査の強め",
+    "決定ログ": "- どのチケットも持っていなかったものは、近いチケットに足すか分類に 1 枚を起票する（ai-driven-process.md §3）",
+    "リスクと懸念": "- なし",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-149.md"
+  },
+  {
+   "id": "K-150",
+   "title": "CI の印の無い試験の結果（台帳の 36 ファイル・2593 行）を流し直して印を付け、台帳を 0 にする",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-32",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "実装",
+   "due": "2026-11-14",
+   "estimate_hours": "4",
+   "estimate_basis": "実測なし・仮（K-143 で作る結果を書く仕組みが入ってから、ファイルごとに CI の範囲を流して印を付ける。36 ファイルを 1 回の全部の CI と書き込みで受ける見込み。K-143 の実測で引き直す）",
+   "decisions": [
+    "D-129.51"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の結果の欄と台帳を直すだけ。外への出口（関門）に触らない",
+   "depends_on": [
+    "K-143"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "決める人の決定 D-129.51：手で書いた PASS の検査（result_gate）は全部の試験の仕様に掛け、今ある CI の印の無い PASS（36 ファイル・2593 行。rls-matrix 250・errors 88・bridge 71・prod-smoke 83 など）は「まだ流し直していない行」の台帳に載せ、減らすだけにする。このチケットで、その台帳の行を全部 CI で流し直して印を付け、台帳を 0 にする。K-143 の精査（2026-11-08）で見つかった。",
+    "完了の条件": "- [ ] 台帳の行を、CI の記録から取り込みの台本が書く形（K-143 の仕組み）で全部書き直す。CI で通らなかった行は FAIL のまま残し、その行の受け持ちのチケットに戻す\n- [ ] 流せない行（本番のスモークなど、その環境が無いもの）は BLOCKED と理由にする（PASS にしない）\n- [ ] 台帳が 0 になり、result_gate が台帳なしで緑\n- [ ] チケットの CI（act・全部）が緑",
+    "前提と制約": "分類: TOOL\n\n- K-143 の結果を書く仕組みと台帳が入ってから（depends_on）\n- 手で PASS を書かない（D-129.51）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | K-143 で作る結果を書く台本・result_gate・台帳を使う。新しく作らない |\n| 直すファイル | 台帳に載った 07_qa の試験の仕様（36 ファイル）の結果の欄と台帳。書くのは取り込みの台本で、手では書かない |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 台帳の行が CI で通った | 結果の欄が PASS と CI の回の印になり、台帳から消える | K-143 の result_gate の自己試験で受ける |\n| 失敗 | 台帳の行が CI で落ちた | 結果の欄が FAIL になり、台帳から消え、受け持ちのチケットに戻す | K-143 の result_gate の自己試験で受ける |\n| 失敗 | 流す環境が無い | BLOCKED と理由が入り、PASS にならない | K-143 の result_gate の自己試験で受ける |",
+    "成果物": "- 書き直した試験の仕様の結果の欄と、空になった台帳",
+    "決定ログ": "- D-129.51",
+    "リスクと懸念": "- 流し直して落ちる行が多いと、受け持ちのチケットへの戻しが増える。落ちた行は前からある別の場所の問題として起票する",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-150.md"
+  },
+  {
+   "id": "K-151",
+   "title": "画面の「選ぶ」の選択肢が 320・375・768 の幅で作る面の下に隠れて選べない（apps/web/components/k/select.tsx の Positioner と .k-select-popup に重なりの順が無い）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "画面",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "1.5",
+   "estimate_basis": "実測なし・仮（K-144 の画面の直し ⑭ の実測から、直す所が部品 1 つ・css 1 か所・実ブラウザの試験 4 幅として引いた。K-144 の取り込みの実測で引き直す）",
+   "decisions": [
+    "D-129.32"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の部品の見た目の重なりを直すだけ。外への出口（関門）に触らない",
+   "depends_on": [],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "prior_impl": "なし",
+   "sections": {
+    "目的": "K-144 の完成確認（Q5 回 8・2026-11-09）が、実 Chrome で作る面（create-ticket）を触ったときに見つけた。種別・担当者・優先度の「選ぶ」を開くと、320・375・768 の幅では選択肢の一覧が作る面の下に隠れ、どれも選べない（1440 では選べる）。原因と見ているのは `apps/web/components/k/select.tsx:56` の `S.Positioner` と `apps/web/components/k/k.css:196` の `.k-select-popup` に重なりの順（z-index）が無く、作る面（k.css:401・406 の z-index 80・81）より下に出ること。K-144 の差分とは関係なく前からある別の場所の問題なので、K-144 に入れず起票した（D-129.32・PM の判断 2026-11-09）。",
+    "完了の条件": "- [ ] 「選ぶ」の選択肢の一覧が、それを開いた面（作る面・ほかの重なる面）より上に出る。重なりの順は共通の値（css の変数）で 1 か所に置き、面ごとに数を書かない\n- [ ] 同じ部品（apps/web/components/k の Positioner を使う部品：選ぶ・メニュー・ツールチップ など）を全文検索で全部出し、同じ形の重なりの抜けをそろえる\n- [ ] 実 Chrome（本番の形で組み立てた画面）で、作る面の種別・担当者・優先度を 320・375・768・1440 の 4 幅で開き、選択肢を押して値が入る試験が緑\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: UI\n\n- 見た目の重なりだけを直す。選ぶ部品の振る舞い（値・キーボードの操作）は変えない",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 画面の部品の目録（03_architecture/catalog.json）の k/select・k/menu。新しく作らない |\n| 直すファイル | apps/web/components/k/k.css（重なりの順の変数と .k-select-popup ほか）・apps/web/components/k/select.tsx（必要なら Positioner に class）・同じ形の部品 |\n| 試験 | apps/web/tests/features/F4/create-ticket.spec.ts に 4 幅の行を足す（行 ID は作る役が振る） |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 320・375・768・1440 の幅で作る面の種別の「選ぶ」を開いて選択肢を押す | 選択肢の一覧が作る面の上に見え、押した値が欄に入る | 作る役が行 ID を振る（実 Chrome） |\n| 入力 | 担当者・優先度の「選ぶ」 | 同じく値が入る | 作る役が行 ID を振る（実 Chrome） |\n| 守り | 重なる面が 2 つ（作る面の上に確かめの面） | 選択肢の一覧は開いた面より上に出て、下の面の上には漏れない | 作る役が行 ID を振る（実 Chrome） |",
+    "成果物": "- 画面の部品の重なりの直しと 4 幅の試験",
+    "決定ログ": "",
+    "申し送り": "- 見つけたのは K-144 の Q5 回 8（報告 .ai-team-out/K-144/r8/Q5.md・写真は PM の置き場）"
+   },
+   "file": "11_tickets/K-151.md"
+  },
+  {
+   "id": "K-152",
+   "title": "字数を UTF-16 の単位で数える・黙って切る所が残っている（パスワードの再設定の画面・会話の字数の上限・会話と記憶の切り詰め・会社の名前を DB が 80 字で切る）。口と DB はコードポイントで数えるので、絵文字などで判定がずれる",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "守り",
+   "assignee": "作る",
+   "due": "2026-11-13",
+   "estimate_hours": "2",
+   "estimate_basis": "実測なし・仮（K-144 の㉘ 長さの数え方の直し（2 ファイル）の見込みから、直す所が 4 ファイル・試験 4 行として引いた。K-144 の取り込みの実測で引き直す）",
+   "decisions": [
+    "D-129.32",
+    "D-129.42"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "字数の数え方を直すだけ。外への出口（関門）に触らない",
+   "depends_on": [
+    "K-144"
+   ],
+   "affects": [
+    "@kaname/web",
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "prior_impl": "なし",
+   "sections": {
+    "目的": "K-144 の作る役（回 10・2026-11-09）が、長さで断る所を全部洗い出したときに見つけた。K-144 で口と入口の数え方をコードポイント（契約の maxLength・Postgres の文字数と同じ）にそろえるが、K-144 の口ではない次の所が UTF-16 の単位で数える・切るまま残る。4 バイトの字（絵文字など）を含む値で、画面と口の判定がずれたり、字の途中で切れたりする。前からある別の場所の問題なので、K-144 に入れず起票した（D-129.32・PM の判断 2026-11-09）。\n\n- `apps/web/app/(outside)/password-reset/page.tsx:34`：パスワードの長さを `pw.length` で数える（登録の画面と口はコードポイント）\n- `apps/web/lib/agent.ts:224`・`apps/web/components/ai/composer.tsx:249`：会話の字数の上限 MAX_SAY を UTF-16 で数える\n- `packages/db/migrations/0021_owner_role.sql:13` の `app.create_company`：会社の名前を `left(trim(p_display_name), 80)` で黙って切る。口と契約は 100 字まで受け、決定 D-128.58 も「名前は 100 文字まで」なので、81〜100 字の名前が登録でエラーにならず 80 字で保存される（書いたものが消える・K-144 の精査 回 13 が見つけた）\n- `apps/api/src/hooks/agent.ts` の text() と updateMemory の `slice(0, 2000)`：UTF-16 の単位で切るので、4 バイトの字の途中で切れうる",
+    "完了の条件": "- [ ] 上の所と、DB の関数が人の書く欄を `left(` で切る所（全文検索で全部）をそろえ、黙って切る所を機械で拾う検査（K-144 の SHAPE-027 の拾い方を全部の DB の関数に広げる）を足す\n- [ ] 上の 3 か所と、全文検索（`.length` と `slice(` で字数を扱う所）で出た同じ形を、コードポイントで数える・切る形にそろえる（数えの部品は 1 つにまとめる）\n- [ ] 試験：4 バイトの字を含む上限ちょうどの値が通り、上限＋1 が画面と口で同じ扱いになる。切り詰めた結果が字の途中で切れていない（壊れた字が残らない）\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: UI, AI\n\n- 上限の数そのものは変えない。数え方だけをそろえる\n- K-144 の取り込みの後にする（K-144 が口と入口の数え方をそろえるので、その部品を使う）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | K-144 で入口に出す字数の部品（schemas.ts の str(N)）と同じ数え方を使う。新しく作らない |\n| 直すファイル | apps/web/app/(outside)/password-reset/page.tsx・apps/web/lib/agent.ts・apps/web/components/ai/composer.tsx・apps/api/src/hooks/agent.ts と全文検索で出た所 |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | パスワードの再設定の画面で 😀 を含む上限ちょうどの値 | 画面の判定が口と同じ（通る）。上限＋1 は画面と口の両方で同じ文で断る | 作る役が行 ID を振る（実 Chrome） |\n| 入力 | 会話の字数の上限ちょうど（😀 を含む） | 送れる。上限＋1 は送る前に画面が同じ文で止める | 作る役が行 ID を振る（実 Chrome） |\n| 入力 | 記憶・会話の本文が 2000 字を超え、2000 字目が 4 バイトの字 | 保存された本文の最後の字が壊れていない（コードポイントで 2000 字） | 作る役が行 ID を振る（本物の DB） |",
+    "成果物": "- 字数の数え方・切り方の直しと試験",
+    "決定ログ": "",
+    "申し送り": "- 見つけたのは K-144 の作る役 回 10（報告 .ai-team-out/K-144/r10/S1.md）"
+   },
+   "file": "11_tickets/K-152.md"
   },
   {
    "id": "K-153",
@@ -6201,6 +6545,45 @@
     "申し送り": "- 見つけたのは K-144 のテスター Q3 回 13（報告 .ai-team-out/K-144/r13/Q3.md・探りの試験は PM の置き場の q3probe.test.ts）"
    },
    "file": "11_tickets/K-154.md"
+  },
+  {
+   "id": "K-155",
+   "title": "試験のファイルが型の検査（tsc）に入っていない（apps/api の tsconfig の include が src だけ）。試験の型の誤りが CI で見つからない",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-32",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-14",
+   "estimate_hours": "2",
+   "estimate_basis": "実測なし・仮（tsconfig 1 つと CI の段 1 つ・今ある型の誤りの直しとして引いた。直す件数が分かったら引き直す）",
+   "decisions": [
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "型の検査の範囲を広げるだけ。外への出口（関門）に触らない",
+   "depends_on": [
+    "K-144"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "prior_impl": "なし",
+   "sections": {
+    "目的": "K-144 の作る役（回 14・2026-11-09）が見つけた。`apps/api/test/features/F4/create-ticket.test.ts:575` に型の誤り（TS2345）があるのに、apps/api の tsconfig の include が src だけなので、CI の型の検査に出ない。試験のファイルの型の誤りは、試験が思った所を確かめていない（何でも通る形になる）原因になる。前からある別の場所の問題なので起票した（D-129.32・PM の判断 2026-11-09）。",
+    "完了の条件": "- [ ] apps/api・apps/web の試験のファイル（test/・tests/）を型の検査に入れる（試験用の tsconfig を足し、CI の static の段で流す）\n- [ ] 入れた時点で出る型の誤りを全部直す（試験の期待は変えない。型だけ直す）。直せないものは理由を書いて作る役に戻す\n- [ ] 試験：試験のファイルに型の誤りを 1 つ入れると CI の static の段が赤になる（検査の自己試験）\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- K-144 の取り込みの後にする（K-144 で試験のファイルが大きく変わる）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 今の型の検査の段（.github/workflows/v3-gate.yml の static）と apps/api・apps/web の tsconfig。新しい道具は入れない |\n| 直すファイル | apps/api/tsconfig.test.json（新）・apps/web の同じ形・.github/workflows/v3-gate.yml（05_flow/build_testplan.py の段の一覧から作る）・型の誤りの出た試験のファイル |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 試験のファイルに型の誤りがある | CI の static の段が赤（どのファイルの何行かが出る） | 作る役が行 ID を振る（検査の自己試験） |\n| 入力 | 試験のファイルに型の誤りが無い | static の段が緑 | 作る役が行 ID を振る |",
+    "成果物": "- 試験のファイルの型の検査と、今ある型の誤りの直し",
+    "決定ログ": "",
+    "申し送り": "- 見つけたのは K-144 の作る役 回 14（報告 .ai-team-out/K-144/r14/T1.md）"
+   },
+   "file": "11_tickets/K-155.md"
   }
  ]
 }

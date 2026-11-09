@@ -299,6 +299,10 @@
   "D-128.173",
   "D-128.174",
   "D-128.175",
+  "D-128.176",
+  "D-128.177",
+  "D-128.178",
+  "D-128.179",
   "D-128.20",
   "D-128.25",
   "D-128.26",
@@ -366,7 +370,18 @@
   "D-129.32",
   "D-129.4",
   "D-129.42",
+  "D-129.43",
+  "D-129.44",
+  "D-129.45",
+  "D-129.46",
+  "D-129.47",
+  "D-129.48",
+  "D-129.49",
   "D-129.5",
+  "D-129.50",
+  "D-129.51",
+  "D-129.52",
+  "D-129.53",
   "D-129.6",
   "D-129.7",
   "D-129.8",
@@ -375,7 +390,12 @@
   "D-130.2",
   "D-130.3",
   "D-130.4",
-  "D-130.5"
+  "D-130.5",
+  "D-132.1",
+  "D-132.2",
+  "D-132.3",
+  "D-132.4",
+  "D-132.5"
  ],
  "inputs": {
   "tickets": 218,
@@ -1152,8 +1172,8 @@
   },
   {
    "id": 48,
-   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）",
-   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all",
+   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）",
+   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report",
    "job": "web",
    "blocking": true
   },
@@ -1203,6 +1223,14 @@
    "id": 60,
    "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）",
    "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 61,
+   "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
+   "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"",
+   "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n",
    "job": "spec",
    "blocking": true
   }
