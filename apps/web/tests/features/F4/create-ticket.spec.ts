@@ -942,6 +942,22 @@ row(R["K144-UI-001"], async (page) => {
   expect(asked, "uuid でない道の値で詳細の口を呼んだ").toEqual([]);
 });
 
+row(R["K144-UI-002"], async (page) => {
+  const m = await mockApi(page);
+  // 送る量の守り（D-130.1）：作る口が 413 を返す
+  m.on.create = () => ({
+    status: 413,
+    body: { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" },
+  });
+  await open(page);
+  await fillAll(page);
+  await create(page).click();
+  await expect(page.getByText("送る内容が大きすぎます").first()).toBeVisible();
+  await expect(page.getByText(/読み込めません/)).toHaveCount(0);
+  await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("請求書を送る");
+  await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
+});
+
 row(R["K60-UI-030"], async (page) => {
   await mockApi(page);
   await page.goto(`/tickets/${ID}`);

@@ -913,12 +913,12 @@ describe("K-144 ⑳ セッションの人がその会社のメンバーでない
   });
 });
 
-describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-1・追加-2）：入口と口は文字をコードポイントで数え、契約の maxLength と同じ", () => {
+describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）：欄ごとの上限はコードポイントで数え、自由に書く欄に上限は無い", () => {
   beforeAll(() => {
     for (const op of ["createTicket", "claimPairingCode", "createPairingCode"]) f.limits[op] = 10_000;
   });
 
-  it("K144-API-040 4 バイトの字（😀）で上限ちょうどは通り、上限＋1 は 422：区画 20000・入口の文字の欄 10000（priority_reason）・題名 200。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
+  it("K144-API-040 4 バイトの字（😀）で欄ごとの上限ちょうどは通り、上限＋1 は 422（区画 20000・題名 200）。自由に書く欄（priority_reason）は 10001 字でも 422 にしない（D-130.1）。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
     const E = "😀";
     const bad: string[] = [];
     const sentTicket = async (extra: Record<string, unknown>) => create(ticketBody(extra));
@@ -927,8 +927,8 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-1・追加-2）
     for (const [label, extra, field, ok] of [
       ["区画 20000 字", { sections: { purpose: E.repeat(20000), done: "完了", todo: "実施" } }, "sections", true],
       ["区画 20001 字", { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } }, "sections", false],
-      ["入口の上限 10000 字", { priority_reason: E.repeat(10000) }, "priority_reason", true],
-      ["入口の上限 10001 字", { priority_reason: E.repeat(10001) }, "priority_reason", false],
+      ["自由に書く欄 10001 字（😀）", { priority_reason: E.repeat(10001) }, "priority_reason", true],
+      ["自由に書く欄 50000 字", { priority_reason: "あ".repeat(50000) }, "priority_reason", true],
       ["題名 200 字", { title: E.repeat(200) }, "title", true],
       ["題名 201 字", { title: E.repeat(201) }, "title", false],
     ] as const) {
@@ -953,7 +953,7 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-1・追加-2）
 });
 
 describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09・op.ts の表の素の書き込みの 422）", () => {
-  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも同じ決まった文で、DB の文・表や制約の名前を答えに出さない。DB の文はログにだけ残す", async () => {
+  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも決まった文「入力内容を確認してください」（D-130.2）で、DB の文・表や制約の名前を答えに出さない。DB の文はログにだけ残す", async () => {
     f.limits["createMemory"] = 10_000;
     await f.admin.query(
       "alter table memories add constraint k144_test_ck check (coalesce(title, '') <> 'k144-check') not valid",
@@ -1007,6 +1007,61 @@ describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09�
     }
     expect(bad).toEqual([]);
     expect(new Set(messages).size, `答えの文がそろっていない：${JSON.stringify(messages)}`).toBe(1);
-    expect(messages[0]).not.toBe("");
+    expect(messages[0]).toBe("入力内容を確認してください"); // D-130.2
+  });
+});
+
+// 送る量の守り（D-130.1）：1 回に送る内容全体で 1MB（1,048,576 バイト）まで
+const BODY_MAX = 1_048_576;
+/** ちょうど n バイトの JSON の体（{"x":"aaa…"}） */
+const bodyOfBytes = (n: number) => JSON.stringify({ x: "a".repeat(n - 8) });
+
+describe("K-144 ㉓ 送る量の守り（D-130.1・PM の判断 2026-11-09）：体を受ける口は全部、1MB を超える体を 413 で断り、振る舞いに届かない", () => {
+  it("K144-API-042 契約の体を受ける口の全部（まだ作っていない口・ログインしていない口も）：1,048,577 バイトの体は 413・PAYLOAD_TOO_LARGE・「送る内容が大きすぎます」で振る舞い（hooks）に届かない。1,048,576 バイトちょうどは 413 にしない。本物の口（記憶を作る）でも 413 で行を作らない", async () => {
+    expect(Buffer.byteLength(bodyOfBytes(BODY_MAX))).toBe(BODY_MAX);
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({ version: "test", repo: {} as never, resolve: async () => null, contract: { hooks } });
+    const writes = ENDPOINTS.filter((e) => ["POST", "PATCH", "PUT"].includes(e.method) && e.input);
+    expect(writes.map((e) => e.operationId)).toContain("createTicket");
+    const send = (e: (typeof writes)[number], body: string) =>
+      app.request(
+        `http://localhost${e.path.replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : `x-${n}`))}`,
+        { method: e.method, headers: { "content-type": "application/json", "x-forwarded-for": nextIp() }, body },
+      );
+    const bad: string[] = [];
+    for (const e of writes) {
+      const r = await send(e, bodyOfBytes(BODY_MAX + 1));
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+      if (r.status !== 413 || j["code"] !== "PAYLOAD_TOO_LARGE" || j["message"] !== "送る内容が大きすぎます")
+        bad.push(`${e.operationId}：${r.status} ${JSON.stringify(j).slice(0, 80)}`);
+      if (!e.errors.includes(413)) bad.push(`${e.operationId}：契約の並び（${e.errors.join(",")}）に 413 が無い`);
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "1MB を超える体で振る舞いに届いた").toBe(0);
+    const edge = writes.find((e) => e.operationId === "createSignup")!;
+    const atLimit = await send(edge, bodyOfBytes(BODY_MAX));
+    expect(atLimit.status, "1MB ちょうどは 413 にしない").not.toBe(413);
+    // 本物の口（表の素の書き込み）：413 で記憶を作らない
+    f.limits["createMemory"] = 10_000;
+    const n = () => count("select count(*) as n from memories where tenant_id = $1", [T.tenantId]);
+    const before = await n();
+    const big = await f.req("POST", "/memories", {
+      body: JSON.stringify({ title: "a".repeat(BODY_MAX) }),
+      headers: writer.auth,
+    });
+    expect(big.status).toBe(413);
+    expect(((await json(big)) as Record<string, unknown>)["message"]).toBe("送る内容が大きすぎます");
+    expect(await n()).toBe(before);
   });
 });

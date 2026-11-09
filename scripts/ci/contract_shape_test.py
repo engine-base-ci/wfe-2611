@@ -817,7 +817,7 @@ class ContractShapeTest(unittest.TestCase):
             for k in fields:
                 line = re.search(rf"\n  {k}: ([^\n]*),", m.group(1))  # type: ignore[union-attr]
                 self.assertIsNotNone(line, f"schemas.ts の {name} に {k} が無い")
-                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte|max)\(|z\.enum|z\.literal|\bstr\((?!10000\))",  # type: ignore[union-attr]
+                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte|max)\(|z\.enum|z\.literal|\bstr\(",  # type: ignore[union-attr]
                                     f"schemas.ts の {name}.{k} に値域が入った（入口が先に断ると今のエラー ID と文言が変わる）")
         self.assertEqual(bad, [], "口が値で断るのに、契約の欄に値域が無い（または違う）")
         self.assertNotEqual(bodies["updateConversation"], bodies["createConversation"], "updateConversation が createConversation と同じ入力の形のまま（値域が違う）")
@@ -872,14 +872,14 @@ class ContractShapeTest(unittest.TestCase):
                 self.assertTrue(is_uuid(p) if t == "uuid" else p.get("type") == t, f"{name}.{k} の型が {t} でない")
                 self.assertFalse(p.get("nullable"), f"{name}.{k} は null を返さない")
 
-    # ---- 入口の文字の上限と数え方（精査 R1 回 10 追加-1・追加-2・PM の判断 2026-11-09）
-    def test_K144_SHAPE_026_entrance_string_limit_is_in_the_contract_and_counts_code_points(self) -> None:
-        """入口の zod は文字の欄を全部 10000 字までで断る（作り手 scripts/ci/contract.mjs の zodOf）。数え方は契約（JSON Schema の maxLength）と DB と同じコードポイント：
-        schemas.ts の頭に `const str = (n: number) => z.string().refine((s) => [...s].length <= n, …)` があり、文字の欄は全部 `str(10000)`（`z.string().max(` は 1 つも無い。zod の .max は UTF-16 の単位で数える）。
-        契約の入力の形（体を受ける口の全部・まだ作っていない口も）の文字の欄（format が無い type: string）は maxLength を持ち、その値は入口の 10000 と口の値域（VALUE_RANGES の maxLength）の小さい方。
-        答えの形には maxLength を足さない（答えの長さは入口の上限と関係ない）"""
-        self.assertRegex(ZOD, r"\nconst str = \(n: number\) => z\.string\(\)\.refine\(\(s\) => \[\.\.\.s\]\.length <= n", "schemas.ts にコードポイントで数える str が無い")
-        self.assertNotIn("z.string().max(", ZOD, "UTF-16 の単位で数える z.string().max( が残っている")
+    # ---- 入口の文字の上限と送る量の守り（精査 R1 回 10・D-130.1・PM の判断 2026-11-09）
+    def test_K144_SHAPE_026_free_text_has_no_limit_and_bodies_declare_413(self) -> None:
+        """D-130.1：自由に書く欄（その欄だけの上限を持たない欄）には文字数の上限を置かない。入口の zod の文字の欄は `z.string()`（`.max(` も一律の上限も無い）。
+        契約の入力の形の文字の欄（format の無い type: string）は、口の値域（VALUE_RANGES の maxLength：題名 200 など）がある欄だけ maxLength を持ち、ほかは持たない。
+        サーバーを守るため、体を受ける口（POST・PATCH・PUT）は全部、1 回に送る内容が 1MB（1,048,576 バイト）を超えたら 413・PAYLOAD_TOO_LARGE を返す：
+        契約の responses に 413（説明に PAYLOAD_TOO_LARGE）、endpoints.json の outputs_4xx に EARS の文つきの 413。本物の試験が別のファイルにある口の 413 の生成の試験は covers に結ばれている"""
+        self.assertNotIn("z.string().max(", ZOD, "入口に一律の文字の上限 z.string().max( が残っている（D-130.1）")
+        self.assertNotRegex(ZOD, r"\bstr\(", "入口に一律の文字の上限 str( が残っている（D-130.1）")
         bodies = self._bodies()
         ops_of: dict[str, list[str]] = {}
         for o, n in bodies.items():
@@ -893,21 +893,39 @@ class ContractShapeTest(unittest.TestCase):
                 if p.get("type") != "string" or p.get("format"):
                     continue
                 checked += 1
-                z = re.search(rf"\n  {k}: str\((\d+)\)", m.group(1))  # type: ignore[union-attr]
-                if not z:
-                    bad.append(f"{name}.{k}: 入口の zod が str(N) でない")
-                    continue
-                entrance = int(z.group(1))
-                narrower = [VALUE_RANGES.get(o, {}).get(k, {}).get("maxLength") for o in ops]
-                want = min([entrance] + [x for x in narrower if x is not None])
+                if not re.search(rf"\n  {k}: z\.string\(\)(?:\.nullable\(\))?\.optional\(\),", m.group(1)):  # type: ignore[union-attr]
+                    bad.append(f"{name}.{k}: 入口の zod が z.string() でない")
+                narrower = [x for x in (VALUE_RANGES.get(o, {}).get(k, {}).get("maxLength") for o in ops) if x is not None]
+                want = min(narrower) if narrower else None
                 if p.get("maxLength") != want:
-                    bad.append(f"{name}.{k}: 契約 maxLength {p.get('maxLength')} ／ 入口 {entrance}・口 {narrower}")
+                    bad.append(f"{name}.{k}: 契約 maxLength {p.get('maxLength')} ／ 口の値域 {want}")
         self.assertGreater(checked, 150, "入力の文字の欄を拾えていない")
-        self.assertEqual(bad, [], "入口の文字の上限が契約の maxLength と合わない")
-        inputs = set(ops_of)
-        leaked = sorted(f"{n}.{k}" for n, sc in SCHEMAS.items() if n not in inputs
+        self.assertEqual(bad, [], "自由に書く欄に上限がある、または口の値域の上限が契約と合わない")
+        leaked = sorted(f"{n}.{k}" for n, sc in SCHEMAS.items() if n not in ops_of
                         for k, p in sc.get("properties", {}).items() if isinstance(p, dict) and p.get("maxLength") == 10000)
-        self.assertEqual(leaked, [], "答えの形に入口の上限 maxLength 10000 が入った（入力の欄を写さずに書き換えた）")
+        self.assertEqual(leaked, [], "答えの形に一律の上限 maxLength 10000 が入った")
+        missing = []
+        for path, methods in OA["paths"].items():
+            for method, op in methods.items():
+                if not isinstance(op, dict) or method not in ("post", "patch", "put") or "requestBody" not in op:
+                    continue
+                r = op.get("responses", {}).get("413")
+                if not r or "PAYLOAD_TOO_LARGE" not in r.get("description", ""):
+                    missing.append(op["operationId"])
+        self.assertEqual(missing, [], "体を受けるのに契約の 413（PAYLOAD_TOO_LARGE）が無い口")
+        no_ears = [e.get("operation_id") or e["implementation_path"].split("::")[1] for e in EPS
+                   if e["method"] in ("POST", "PATCH", "PUT")
+                   and not any(x["status"] == 413 and x.get("code") == "PAYLOAD_TOO_LARGE" and "413" in x.get("ears_form", "") for x in e["outputs_4xx"])]
+        self.assertEqual(no_ears, [], "endpoints.json の outputs_4xx に 413（EARS の文つき）が無い口")
+        mapping = json.loads((ROOT / "07_qa/test-plan/ears-test-mapping.json").read_text(encoding="utf-8"))["mappings"]
+        away = json.loads((ROOT / "07_qa/test-plan/ears-elsewhere.json").read_text(encoding="utf-8"))["ops"]
+        op_of = {f"{e['method']} {e['path']}": e["implementation_path"].split("::")[1] for e in EPS}
+        loose = [m["test_function"] for m in mapping
+                 if m["http_code"] == "413" and op_of.get(m["endpoint"]) in away
+                 and m["test_function"] not in away[op_of[m["endpoint"]]].get("covers", {})]
+        self.assertEqual(loose, [], "本物の試験が別のファイルにある口の 413 の生成の試験が covers に結ばれていない")
+        self.assertTrue(all(m["test_function"].endswith("_too_large") or re.search(r"_too_large_\d+$", m["test_function"]) for m in mapping if m["http_code"] == "413"),
+                        "413 の生成の試験の名前が too_large でない（05_flow/build_testplan.py の classify）")
 
 
 if __name__ == "__main__":
