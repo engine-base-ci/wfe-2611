@@ -1,20 +1,18 @@
-// 中間テスト 3（K-64）の道具：試験の PC に仕事を運ばせる・チケットと人を用意する・承認の時刻を進める。
+// 中間テスト 3（K-64）の道具：試験の PC に仕事を運ばせる・承認の時刻を進める・F5 の記録（承認・実行・成果物・やり取り・段）を DB から読む。
 //   PC は K-58 の _lib/test-pc.ts（本物の Bridge の引き取り・生きている知らせ）をそのまま使い、その PC の印で契約の口
 //   （takeBridgeJob・reportJobProgress・getJobControl・finishBridgeJob・K-62）を、Bridge の輪（apps/bridge/src/loop.ts）と同じ形で 1 回ずつ呼ぶ。
-//   AI は決まった答えを返す差し替え（finish に決まった文を入れる）。本物の AI・Claude Code は呼ばない。
+//   AI は決まった答えを返す差し替え（finish に決まった文を入れる）。本物の AI・Claude Code は呼ばない（本物の Bridge の輪の通しは K-97 の後の K-65・D-129.14）。
 //   輪そのものを回さない理由は K-58 と同じ（60 秒ごとの知らせ・20 秒の待ち受けで、時刻と順番を試験が決められない）。輪が契約の口を呼ぶことは K-62 の
 //   apps/bridge/test/delegate.test.ts（K62-BRG-…）が持つ。
 //   探したもの：apps/web/tests/_lib/api.ts の bridgeTake・bridgeFinish・bridgeProgress（前の道すじ /api/auth-ext/bridge/… を叩く。K-62 で消える）・
 //   apps/api/test/features/F5/delegate-kit.ts（口の単体の試験の道具。土台 fixture.ts の上で動き、画面の試験からは使えない）。どれも使えないので作った。
-//   人を作る・PC をつなぐ・時刻を進めるは K-58 の道具（newcomer.ts・test-pc.ts・clock.ts）を使い、写しは置かない。
+//   人を作る・PC をつなぐ・チケットを作る・時刻を進めるは _lib の道具（newcomer.ts・prep.ts・test-pc.ts・clock.ts）を使い、写しは置かない。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { createRequire } from "node:module";
-import { randomBytes } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { API, PW, admin, agreeCurrentTerms, sha256, uniqEmail } from "./api";
-import type { Newcomer } from "./newcomer";
-import { testPc, type TestPc } from "./test-pc";
+import { API, admin } from "./api";
+import type { TestPc } from "./test-pc";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 
@@ -35,7 +33,7 @@ export const AI = {
   empty: "   ",
 } as const;
 
-/** 契約の口の答え（{ data } の中身） */
+/** 契約の口の答え（{ data } の中身・takeBridgeJob の job） */
 type Body = Record<string, unknown>;
 export interface Job {
   job_id: string;
@@ -54,7 +52,7 @@ export interface PcWork {
   take: (o?: { idle?: boolean }) => Promise<Job | null>;
   progress: (jobId: string, seq: number, text: string) => Promise<number>;
   control: (jobId: string) => Promise<{ stop: boolean; reason: string | null }>;
-  /** 終わりを返す。返すのは口の番号と outcome（awaiting_approval・stopped・done） */
+  /** 終わりを返す。返すのは口の番号と outcome（作る段：awaiting_approval・stopped。実行の段の言葉は K-62・K-63 のどちらも決めていないので、筋は DB で見る） */
   finish: (
     jobId: string,
     b: { state: "done" | "stopped" | "cancelled"; result?: string; reason?: string; agent_session_id?: string },
@@ -100,82 +98,6 @@ export function workOf(pc: TestPc): PcWork {
       return { status: r.status, outcome: (r.data?.["outcome"] as string | undefined) ?? null };
     },
   };
-}
-
-/** 人のログインの印で契約の口を呼ぶ（準備と、画面の外から口を叩く筋だけ） */
-export async function asPerson(token: string, method: "GET" | "POST", path: string, body?: Body) {
-  const r = await fetch(`${API}/api/v1${path}`, {
-    method,
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${token}`,
-      ...(method === "POST" ? { "idempotency-key": `k64-${randomBytes(8).toString("hex")}` } : {}),
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  });
-  const j = (await r.json().catch(() => ({}))) as { data?: Body; code?: string };
-  return { status: r.status, data: j.data ?? null, code: j.code ?? null };
-}
-
-/** PC をつなぐ（接続コードは口で出し、引き取りは本物の Bridge の claimCode・最初の知らせ 1 回）。画面でつなぐ道は K-58 が持つ */
-export async function pairedPc(token: string, label: string): Promise<TestPc> {
-  const c = await asPerson(token, "POST", "/bridge/pairing-codes", {});
-  if (c.status !== 201) throw new Error(`接続コードの口が ${c.status}`);
-  const pc = testPc(label);
-  const got = await pc.enterCode(String(c.data?.["code"]));
-  if (!got.ok) throw new Error(`引き取れない：${got.message}`);
-  const b = await pc.beat();
-  if (b >= 300) throw new Error(`最初の知らせが ${b}`);
-  return pc;
-}
-
-/** チケットを口で 1 枚作る（作る画面は K-60・K-58 が持つ）。実施事項は 2 項目（完了の小窓のチェックになる） */
-export async function ticketOf(me: Newcomer, title: string): Promise<string> {
-  const scope = await admin<{ s: string }>("select scope_id as s from members where id = $1", [me.memberId]);
-  const kinds = await asPerson(me.token, "GET", "/ticket_kinds");
-  const list = (kinds.data as unknown as { id: string; name: string }[] | null) ?? [];
-  const kind = list.find((k) => k.name === "タスク");
-  if (!kind) throw new Error("チケットの種類「タスク」が無い");
-  const jst = new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10);
-  const r = await asPerson(me.token, "POST", "/tickets", {
-    scope_id: scope[0]!.s,
-    kind_id: kind.id,
-    title,
-    assignee_member_id: me.memberId,
-    due_on: jst,
-    sections: {
-      purpose: "先方に出す見積のたたき台を作って送る（中間テスト 3）",
-      done: "先方が見積を受け取った",
-      todo: "- 見積を作る\n- 先方に送る",
-    },
-  });
-  if (r.status !== 201) throw new Error(`チケットを作る口が ${r.status}`);
-  return String(r.data?.["id"]);
-}
-
-/** 同じ会社のもう 1 人（招待を受けた人）。画面は使わず、ログインの印だけ返す（その人の PC をつなぐため）。
- *  作り方は api.ts の viewerViaApi と同じ（招待の行を置き、受ける口を通す）。役は member */
-export async function teammate(me: Newcomer): Promise<{ memberId: string; token: string }> {
-  const tenant = await admin<{ t: string }>("select tenant_id as t from members where id = $1", [me.memberId]);
-  const token = randomBytes(24).toString("base64url");
-  const email = uniqEmail();
-  await admin(
-    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'member', $3, now() + interval '7 days', $4)",
-    [tenant[0]!.t, email, sha256(token), me.memberId],
-  );
-  const r = await fetch(`${API}/api/auth-ext/invitations/${token}/accept`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name: "中間3 同僚", password: PW }),
-  });
-  if (r.status !== 200 && r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
-  const j = (await r.json()) as { data: { token: string } };
-  const u = await admin<{ id: string; m: string }>(
-    `select u.id, m.id as m from kaname_auth."user" u join members m on m.auth_user_id = u.id where u.email = $1`,
-    [email],
-  );
-  await agreeCurrentTerms(u[0]!.id);
-  return { memberId: u[0]!.m, token: j.data.token };
 }
 
 /** 承認（approvals.decided_at）を「いまから ago 前」に置く（＝承認してから ago たった・D-128.98 の 24 時間）。動かした行の数 */
@@ -233,6 +155,15 @@ export const artifactsOf = (ticketId: string) =>
       where s.ticket_id = $1 and s.section_key = 'artifacts' order by v.version`,
     [ticketId],
   );
+/** DB：実施事項（todo）の区画の最新の版の本文 */
+export const todoNow = async (ticketId: string): Promise<string> =>
+  (
+    await admin<{ t: string }>(
+      `select v.body->>'text' as t from ticket_section_versions v join ticket_sections s on s.id = v.section_id
+        where s.ticket_id = $1 and s.section_key = 'todo' order by v.version desc limit 1`,
+      [ticketId],
+    )
+  )[0]!.t;
 /** DB：やり取りの 1 行（kind system・古い順） */
 export const systemLines = async (ticketId: string): Promise<string[]> =>
   (
@@ -255,4 +186,8 @@ export async function setStage(ticketId: string, key: string): Promise<void> {
     `update tickets set stage_id = (select id from ticket_stages where tenant_id = tickets.tenant_id and key = $2) where id = $1`,
     [ticketId, key],
   );
+}
+/** DB：チケットを消す（消す口は後の F4。行の消した時刻と人だけを置く・K-62・K-63 の単体の試験と同じ置き方） */
+export async function deleteTicketRow(ticketId: string, by: string): Promise<void> {
+  await admin("update tickets set deleted_at = now(), deleted_by = $2 where id = $1", [ticketId, by]);
 }

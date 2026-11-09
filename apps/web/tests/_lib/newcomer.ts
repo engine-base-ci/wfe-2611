@@ -1,7 +1,8 @@
-// 使い始めた人（K-58）：中間テスト 1（K-54）の正常の筋と同じ道で、登録 → 受け箱のメールのリンク → 「続ける」 → 使い始めの画面（/tickets）まで通した人を作る。
+// 使い始めた人（K-58・K-64 で 1 つにした）：中間テスト 1（K-54）の正常の筋と同じ道で、登録 → 受け箱のメールのリンク → 「続ける」 → 使い始めの画面（/tickets）まで通した人を作る。
 //   準備の道具は K-54 と同じもの（受け箱 mailbox.ts・本物の口・本物の DB）。口は網の手前で差し替えない（届く頭 x-forwarded-for だけを足す）。
-//   似たもの：K-54 の試験のファイルの中の signUpByForm（そのファイルの中だけ）・api.ts の signupViaApi（API のログからリンクを拾い、画面を通らない）。
-//   ここは画面とメールを通して、ログインの印を持った人を返す（中間テスト 2 以降の筋の頭に置く）
+//   登録の画面で入れて送る所（signUpByForm）は、K-54 の試験（m1-signup-verify-terms.spec.ts）もここから読む（同じ組み立てを 2 か所に持たない・K-128 → K-64 の受け持ち・L-008）。
+//   K-54 の筋そのもの（待つ画面・リンク・同意の画面を 1 つずつ見る）は道具に隠さず、その試験の中に残す。
+//   似たもの：api.ts の signupViaApi（API のログからリンクを拾い、画面を通らない）。ここは画面とメールを通して、ログインの印を持った人を返す（中間テスト 2 以降の筋の頭に置く）
 import { expect, type BrowserContext, type Page } from "@playwright/test";
 import { API, PW, admin, uniq, uniqEmail } from "./api";
 import { linkIn, type Mailbox } from "./mailbox";
@@ -17,18 +18,15 @@ export async function ownIp(ctx: BrowserContext, net = 58): Promise<void> {
   );
 }
 
-export interface Newcomer {
+/** 登録する人（画面に入れる 3 つ） */
+export interface Who {
   email: string;
   name: string;
   company: string;
-  memberId: string;
-  /** ブラウザが持つログインの印（kaname.token） */
-  token: string;
 }
 
-/** 登録の画面から入り、届いたメールのリンクを開き、「続ける」で使い始めの画面（/tickets）に入った人 */
-export async function newcomer(page: Page, box: Mailbox, tag: string): Promise<Newcomer> {
-  const w = { email: uniqEmail(), name: `中間2 ${tag}`, company: `中間テスト 2 の会社 ${tag} ${uniq()}` };
+/** 登録の画面で入れて送る → 待つ画面（確認メールを送りました）。K-54 の正常の筋の最初の 1 歩（中間テスト 1〜3 が同じ道を通る） */
+export async function signUpByForm(page: Page, w: Who): Promise<void> {
   await page.goto("/signup");
   await page.getByLabel("メール", { exact: true }).fill(w.email);
   await page.getByLabel("名前", { exact: true }).fill(w.name);
@@ -36,6 +34,29 @@ export async function newcomer(page: Page, box: Mailbox, tag: string): Promise<N
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "次へ（メールを確かめる）" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "確認メールを送りました" })).toBeVisible();
+  await expect(page).toHaveURL(/\/verify-email$/);
+}
+
+export interface Newcomer extends Who {
+  memberId: string;
+  /** ブラウザが持つログインの印（kaname.token） */
+  token: string;
+}
+
+/** 登録の画面から入り、届いたメールのリンクを開き、「続ける」で使い始めの画面（/tickets）に入った人。
+ *  名前と会社は、呼ぶ試験が `who` で決める（決めなければ K-58 の形「中間2 <tag>」） */
+export async function newcomer(
+  page: Page,
+  box: Mailbox,
+  tag: string,
+  who: Partial<Pick<Who, "name" | "company">> = {},
+): Promise<Newcomer> {
+  const w: Who = {
+    email: uniqEmail(),
+    name: who.name ?? `中間2 ${tag}`,
+    company: who.company ?? `中間テスト 2 の会社 ${tag} ${uniq()}`,
+  };
+  await signUpByForm(page, w);
   const res = await page.goto(linkIn(await box.waitFor(w.email), "/verify-email"));
   expect(res?.status(), "メールのリンクの先が開ける").toBe(200);
   await expect(page.getByRole("heading", { level: 1, name: "登録できました" })).toBeVisible();

@@ -4,11 +4,13 @@
 //   口は網の手前で差し替えない（page.route で答えを作らない）。届いたメールは試験用の受け箱（_lib/mailbox.ts）から本文のリンクを取り出して開く。
 //   時刻は DB の時刻を進める（_lib/clock.ts・待たない）。規約の新しい版は DB に直に出し、試験の終わりに必ず取り下げる（ほかの試験の人を止めない・G-10）。
 //   ★前提：API を RESEND_API_KEY（試験の値）と RESEND_BASE_URL=http://127.0.0.1:<QA_MAILBOX_PORT> で立てる（CI の web の組の G59）
+//   登録の画面で入れて送る所（signUpByForm）は _lib/newcomer.ts と 1 つ（K-64 で寄せた・K-128）。筋そのもの（待つ画面・リンク・同意の画面）はここに残す。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { API, PW, admin, uniq, uniqEmail } from "../_lib/api";
 import { elapseSignup } from "../_lib/clock";
 import { Mailbox, linkIn } from "../_lib/mailbox";
+import { signUpByForm, type Who } from "../_lib/newcomer";
 
 const box = new Mailbox();
 test.beforeAll(() => box.open());
@@ -37,28 +39,12 @@ async function browserOf(b: Browser): Promise<{ ctx: BrowserContext; page: Page 
   await ownIp(ctx);
   return { ctx, page: await ctx.newPage() };
 }
-interface Who {
-  email: string;
-  name: string;
-  company: string;
-}
 const person = (tag: string): Who => ({
   email: uniqEmail(),
   name: `中間 ${tag}`,
   company: `中間テストの会社 ${tag} ${uniq()}`,
 });
 
-/** 登録の画面で入れて送る → 待つ画面（確認メールを送りました） */
-async function signUpByForm(page: Page, w: Who): Promise<void> {
-  await page.goto("/signup");
-  await page.getByLabel("メール", { exact: true }).fill(w.email);
-  await page.getByLabel("名前", { exact: true }).fill(w.name);
-  await page.getByLabel("会社・チームの名前", { exact: true }).fill(w.company);
-  await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "次へ（メールを確かめる）" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "確認メールを送りました" })).toBeVisible();
-  await expect(page).toHaveURL(/\/verify-email$/);
-}
 /** 受け箱に届いた n 通目の確認のメールから、本文のリンクを取り出す */
 const linkOf = async (w: Who, n = 1): Promise<string> => linkIn(await box.waitFor(w.email, n), "/verify-email");
 /** メールのリンクを開く（本文のリンクのまま。宛先の画面の場所もメールが決める） */
