@@ -817,7 +817,7 @@ class ContractShapeTest(unittest.TestCase):
             for k in fields:
                 line = re.search(rf"\n  {k}: ([^\n]*),", m.group(1))  # type: ignore[union-attr]
                 self.assertIsNotNone(line, f"schemas.ts の {name} に {k} が無い")
-                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte)\(|z\.enum|z\.literal|\.max\((?!10000\))",  # type: ignore[union-attr]
+                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte|max)\(|z\.enum|z\.literal|\bstr\((?!10000\))",  # type: ignore[union-attr]
                                     f"schemas.ts の {name}.{k} に値域が入った（入口が先に断ると今のエラー ID と文言が変わる）")
         self.assertEqual(bad, [], "口が値で断るのに、契約の欄に値域が無い（または違う）")
         self.assertNotEqual(bodies["updateConversation"], bodies["createConversation"], "updateConversation が createConversation と同じ入力の形のまま（値域が違う）")
@@ -871,6 +871,43 @@ class ContractShapeTest(unittest.TestCase):
                 p = prop(name, k)
                 self.assertTrue(is_uuid(p) if t == "uuid" else p.get("type") == t, f"{name}.{k} の型が {t} でない")
                 self.assertFalse(p.get("nullable"), f"{name}.{k} は null を返さない")
+
+    # ---- 入口の文字の上限と数え方（精査 R1 回 10 追加-1・追加-2・PM の判断 2026-11-09）
+    def test_K144_SHAPE_026_entrance_string_limit_is_in_the_contract_and_counts_code_points(self) -> None:
+        """入口の zod は文字の欄を全部 10000 字までで断る（作り手 scripts/ci/contract.mjs の zodOf）。数え方は契約（JSON Schema の maxLength）と DB と同じコードポイント：
+        schemas.ts の頭に `const str = (n: number) => z.string().refine((s) => [...s].length <= n, …)` があり、文字の欄は全部 `str(10000)`（`z.string().max(` は 1 つも無い。zod の .max は UTF-16 の単位で数える）。
+        契約の入力の形（体を受ける口の全部・まだ作っていない口も）の文字の欄（format が無い type: string）は maxLength を持ち、その値は入口の 10000 と口の値域（VALUE_RANGES の maxLength）の小さい方。
+        答えの形には maxLength を足さない（答えの長さは入口の上限と関係ない）"""
+        self.assertRegex(ZOD, r"\nconst str = \(n: number\) => z\.string\(\)\.refine\(\(s\) => \[\.\.\.s\]\.length <= n", "schemas.ts にコードポイントで数える str が無い")
+        self.assertNotIn("z.string().max(", ZOD, "UTF-16 の単位で数える z.string().max( が残っている")
+        bodies = self._bodies()
+        ops_of: dict[str, list[str]] = {}
+        for o, n in bodies.items():
+            ops_of.setdefault(n, []).append(o)
+        bad = []
+        checked = 0
+        for name, ops in sorted(ops_of.items()):
+            m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
+            self.assertIsNotNone(m, f"schemas.ts に {name} が無い")
+            for k, p in SCHEMAS[name]["properties"].items():
+                if p.get("type") != "string" or p.get("format"):
+                    continue
+                checked += 1
+                z = re.search(rf"\n  {k}: str\((\d+)\)", m.group(1))  # type: ignore[union-attr]
+                if not z:
+                    bad.append(f"{name}.{k}: 入口の zod が str(N) でない")
+                    continue
+                entrance = int(z.group(1))
+                narrower = [VALUE_RANGES.get(o, {}).get(k, {}).get("maxLength") for o in ops]
+                want = min([entrance] + [x for x in narrower if x is not None])
+                if p.get("maxLength") != want:
+                    bad.append(f"{name}.{k}: 契約 maxLength {p.get('maxLength')} ／ 入口 {entrance}・口 {narrower}")
+        self.assertGreater(checked, 150, "入力の文字の欄を拾えていない")
+        self.assertEqual(bad, [], "入口の文字の上限が契約の maxLength と合わない")
+        inputs = set(ops_of)
+        leaked = sorted(f"{n}.{k}" for n, sc in SCHEMAS.items() if n not in inputs
+                        for k, p in sc.get("properties", {}).items() if isinstance(p, dict) and p.get("maxLength") == 10000)
+        self.assertEqual(leaked, [], "答えの形に入口の上限 maxLength 10000 が入った（入力の欄を写さずに書き換えた）")
 
 
 if __name__ == "__main__":

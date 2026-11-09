@@ -901,6 +901,8 @@ describe("K-144 ⑳ セッションの人がその会社のメンバーでない
           bad.push(`${label} ${e.operationId}：${r.status}（契約の並び ${[e.success, ...e.errors].join(",")}）`);
         if (e.operationId === "createPairingCode") {
           const j = await json(r);
+          if (JSON.stringify(j).includes("その会社のメンバーの行だけ"))
+            bad.push(`${label} createPairingCode：答えに DB の文が出た`);
           if (r.status !== 403 || j["code"] !== "FORBIDDEN")
             bad.push(`${label} createPairingCode：${r.status} ${String(j["code"])}（403・FORBIDDEN のはず）`);
         }
@@ -908,5 +910,103 @@ describe("K-144 ⑳ セッションの人がその会社のメンバーでない
     }
     expect(bad).toEqual([]);
     expect(await codes(), "接続コードを作った").toBe(before);
+  });
+});
+
+describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-1・追加-2）：入口と口は文字をコードポイントで数え、契約の maxLength と同じ", () => {
+  beforeAll(() => {
+    for (const op of ["createTicket", "claimPairingCode", "createPairingCode"]) f.limits[op] = 10_000;
+  });
+
+  it("K144-API-040 4 バイトの字（😀）で上限ちょうどは通り、上限＋1 は 422：区画 20000・入口の文字の欄 10000（priority_reason）・題名 200。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
+    const E = "😀";
+    const bad: string[] = [];
+    const sentTicket = async (extra: Record<string, unknown>) => create(ticketBody(extra));
+    const named = async (r: Response, field: string) =>
+      r.status === 422 && fields(await json(r)).some((x) => x === field || x.startsWith(`${field}.`));
+    for (const [label, extra, field, ok] of [
+      ["区画 20000 字", { sections: { purpose: E.repeat(20000), done: "完了", todo: "実施" } }, "sections", true],
+      ["区画 20001 字", { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } }, "sections", false],
+      ["入口の上限 10000 字", { priority_reason: E.repeat(10000) }, "priority_reason", true],
+      ["入口の上限 10001 字", { priority_reason: E.repeat(10001) }, "priority_reason", false],
+      ["題名 200 字", { title: E.repeat(200) }, "title", true],
+      ["題名 201 字", { title: E.repeat(201) }, "title", false],
+    ] as const) {
+      const r = await sentTicket(extra);
+      statusInContract("createTicket", r);
+      const no = await named(r, field);
+      if (ok && no) bad.push(`${label}：422（${await r.clone().text()}）`);
+      if (!ok && !no) bad.push(`${label}：${r.status}（422・欄 ${field} のはず）`);
+    }
+    for (const [n, message] of [
+      [17, "接続コードは英数字 6 けたです"],
+      [33, "接続コードが長すぎます（英数字 6 けた）"],
+    ] as const) {
+      const r = await claim(E.repeat(n));
+      statusInContract("claimPairingCode", r);
+      const d = (await json(r)).details ?? [];
+      if (r.status !== 422 || d.find((x) => x.field === "code")?.message !== message)
+        bad.push(`接続コード ${n} 字：${r.status} ${JSON.stringify(d)}（${message} のはず）`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09・op.ts の表の素の書き込みの 422）", () => {
+  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも同じ決まった文で、DB の文・表や制約の名前を答えに出さない。DB の文はログにだけ残す", async () => {
+    f.limits["createMemory"] = 10_000;
+    await f.admin.query(
+      "alter table memories add constraint k144_test_ck check (coalesce(title, '') <> 'k144-check') not valid",
+    );
+    const logs: string[] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      logs.push(
+        a
+          .map((x) => (x instanceof Error ? `${x.message} ${(x as { code?: string }).code ?? ""}` : String(x)))
+          .join(" "),
+      );
+    });
+    const messages: string[] = [];
+    const bad: string[] = [];
+    try {
+      for (const [pg, body, mark] of [
+        ["23503", { kind_id: "k144-無い種類" }, "kind_id"],
+        ["22P02", { confidence: "abc" }, "abc"],
+        ["22003", { confidence: "10" }, "numeric"],
+        ["23514", { title: "k144-check" }, "k144_test_ck"],
+      ] as const) {
+        const before = logs.length;
+        const r = await f.req("POST", "/memories", { body, headers: writer.auth });
+        const text = await r.clone().text();
+        if (r.status !== 422) bad.push(`${pg}：${r.status} ${text}`);
+        const d = (await json(r)).details ?? [];
+        const m = d.find((x) => x.field === "body")?.message ?? "";
+        messages.push(m);
+        for (const leak of [
+          "violates",
+          "constraint",
+          "foreign key",
+          "invalid input",
+          "numeric",
+          "memories",
+          "kind_id",
+          "k144_test_ck",
+          "syntax",
+          "overflow",
+          "fkey",
+          "_ck",
+        ])
+          if (text.includes(leak)) bad.push(`${pg}：答えに「${leak}」が出た（${text.slice(0, 120)}）`);
+        const logged = logs.slice(before).join("\n");
+        if (!logged.includes(pg)) bad.push(`${pg}：ログに DB の答え（${pg}）が残っていない`);
+        if (pg === "23514" && !logged.includes(mark)) bad.push(`23514：ログに制約の名前（${mark}）が残っていない`);
+      }
+    } finally {
+      spy.mockRestore();
+      await f.admin.query("alter table memories drop constraint if exists k144_test_ck");
+    }
+    expect(bad).toEqual([]);
+    expect(new Set(messages).size, `答えの文がそろっていない：${JSON.stringify(messages)}`).toBe(1);
+    expect(messages[0]).not.toBe("");
   });
 });
