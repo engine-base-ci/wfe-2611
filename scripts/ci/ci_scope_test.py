@@ -912,9 +912,11 @@ class RealRepoTest(unittest.TestCase):
         self.assertEqual(len(sq), 1)
         self.assertIn("needs.static.outputs.migration_files", sq[0]["env"]["CI_MIGRATION_FILES"])
         self.assertNotIn("if", jobs["spec"])   # 仕様・生成物は毎回
-        # spec の段は static を待たない（static の赤で丸ごと飛ばされない）。本線との分かれ目が要る検査（G61）は、
-        #   spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）
-        self.assertNotIn("needs", jobs["spec"])
+        # spec の段は static の後に流す（act は needs の無い組を 1 段目にまとめるので、needs が無いと spec が static と並び、
+        #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばされない（K-143 の理由）は組の if の !cancelled() で守る。
+        #   本線との分かれ目が要る検査（G61）は、spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）
+        self.assertEqual(jobs["spec"].get("needs"), ["static"])
+        self.assertIn("!cancelled()", str(jobs["spec"].get("if", "")))
         sp_scope = [s for s in jobs["spec"]["steps"] if "scripts/ci/ci_scope.py" in s.get("run", "") and "--github-output" in s.get("run", "")]
         self.assertEqual(len(sp_scope), 1)
         self.assertIn("inputs.base", sp_scope[0]["env"]["CI_BASE_INPUT"])
