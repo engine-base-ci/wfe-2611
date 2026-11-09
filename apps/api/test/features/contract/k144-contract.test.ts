@@ -723,3 +723,190 @@ describe("K-144 ⑰ 類 F（回 9）：配布物の受け取りの道の値 name
     expect(bad).toEqual([]);
   });
 });
+
+// 類 G（回 9 の続き・PM の判断 2026-11-09）：契約に書ける体の値の値域。値ごとに、口がその欄で 422 にするか（false）しないか（true）。
+//   scripts/ci/contract_shape_test.py の K144-SHAPE-023 が、同じ値を契約の欄の形（VALUE_RANGES）で判定して 1 対 1 で見る。
+//   @today は今日（日本時間）、@code:* は本物の接続コードの書き方（そのまま・小文字・全角・区切りと前後の空白）。1 行 1 値（形の試験が行で読む）
+type RangeCase = readonly [string, string, unknown, boolean];
+// prettier-ignore
+export const RANGE_CASES: RangeCase[] = [
+  ["createTicket", "title", "題", true],
+  ["createTicket", "title", "", false],
+  ["createTicket", "title", "   ", false],
+  ["createTicket", "title", "x".repeat(200), true],
+  ["createTicket", "title", "x".repeat(201), false],
+  ["createTicket", "due_on", "2099-12-31", true],
+  ["createTicket", "due_on", "2099/12/31", false],
+  ["createTicket", "due_on", "", false],
+  ["createTicket", "start_on", "", true],
+  ["createTicket", "start_on", "@today", true],
+  ["createTicket", "start_on", "2026/01/01", false],
+  ["createTicket", "priority", "", true],
+  ["createTicket", "priority", "mid", true],
+  ["createTicket", "priority", "high", true],
+  ["createTicket", "priority", "low", false],
+  ["createTicket", "estimate_minutes", 0, true],
+  ["createTicket", "estimate_minutes", 100000, true],
+  ["createTicket", "estimate_minutes", 100001, false],
+  ["createTicket", "estimate_minutes", -1, false],
+  ["createTicket", "estimate_minutes", "120", true],
+  ["createTicket", "estimate_minutes", "100001", false],
+  ["createTicket", "estimate_minutes", "", true],
+  ["createTicket", "estimate_minutes", null, true],
+  ["createTicket", "estimate_minutes", 1.5, false],
+  ["createTicket", "estimate_minutes", "1.5", false],
+  ["createTicket", "estimate_minutes", true, false],
+  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施"}, true],
+  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施", "Bad": "a"}, false],
+  ["createTicket", "notify_member_ids", [], true],
+  ["createTicket", "notify_member_ids", Array.from({ length: 21 }, () => randomUUID()), false],
+  ["claimPairingCode", "code", "@code:plain", true],
+  ["claimPairingCode", "code", "@code:lower", true],
+  ["claimPairingCode", "code", "@code:fullwidth", true],
+  ["claimPairingCode", "code", "@code:spaced", true],
+  ["claimPairingCode", "code", "", false],
+  ["claimPairingCode", "code", "ABCDE", false],
+  ["claimPairingCode", "code", "ABCDEFG", false],
+  ["claimPairingCode", "code", "ABC10O", false],
+  ["claimPairingCode", "code", "x".repeat(33), false],
+  ["updateConversation", "title", "名前", true],
+  ["updateConversation", "title", "   ", false],
+  ["updateConversation", "title", "a\nb", true],
+  ["updateMemory", "body", "覚える", true],
+  ["updateMemory", "body", "  ", false],
+  ["createMemory", "confidence", "9.99", true],
+  ["createMemory", "confidence", "0", true],
+  ["createMemory", "confidence", "-9.5", true],
+  ["createMemory", "confidence", "10", false],
+  ["createMemory", "confidence", "99", false],
+  ["createMemory", "confidence", "abc", false],
+];
+/** その欄で 422 にしたか（表の素の書き込み createMemory は DB の答えを欄 body で返す） */
+const rejects = async (op: string, field: string, r: Response) =>
+  r.status === 422 &&
+  fields(await json(r)).some(
+    (x) => x === field || x.startsWith(`${field}.`) || (op === "createMemory" && x === "body"),
+  );
+const valueOf = (v: unknown, code: string): unknown => {
+  if (v === "@today") return jst(0);
+  if (v === "@code:plain") return code;
+  if (v === "@code:lower") return code.toLowerCase();
+  if (v === "@code:fullwidth") return fullWidth(code);
+  if (v === "@code:spaced") return ` ${code.slice(0, 3).toLowerCase()}-${code.slice(3).toLowerCase()} `;
+  return v;
+};
+
+describe("K-144 ⑱ 類 G（回 9 の続き）：契約に書ける体の値の値域が、口の答えと同じ", () => {
+  beforeAll(() => {
+    for (const op of [
+      "createTicket",
+      "claimPairingCode",
+      "createPairingCode",
+      "createConversation",
+      "updateConversation",
+      "createMemory",
+      "updateMemory",
+    ])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-039 RANGE_CASES の値ごとに、口はその欄で 422 にする（契約に合わない値）か、しない（合う値）。答えは契約の並び", async () => {
+    const bad: string[] = [];
+    for (const [op, field, v, fits] of RANGE_CASES) {
+      const s = await fullBody(op);
+      const code = typeof s.body["code"] === "string" ? (s.body["code"] as string) : "ABC234";
+      const value = valueOf(v, code);
+      const r = await send(s, { ...s.body, [field]: value });
+      statusInContract(op, r);
+      const no = await rejects(op, field, r);
+      if (fits && no)
+        bad.push(
+          `${op}.${field}=${JSON.stringify(value).slice(0, 40)}：契約に合うのに 422（${await r.clone().text()}）`,
+        );
+      if (!fits && !no)
+        bad.push(`${op}.${field}=${JSON.stringify(value).slice(0, 40)}：契約に合わないのに ${r.status}`);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("K144-API-038 表の素の書き込み（createMemory）の確かさ confidence が DB の桁（numeric(3,2)）を超える：500 にせず 422・欄 body。記憶は増えない。9.99 は 201", async () => {
+    const n = () => count("select count(*) as n from memories where tenant_id = $1", [T.tenantId]);
+    const before = await n();
+    for (const c of ["10", "99", "-9.999", "123.45"]) {
+      const r = await f.req("POST", "/memories", { body: { title: "確かさ", confidence: c }, headers: writer.auth });
+      statusInContract("createMemory", r);
+      expect(r.status, `${c}：${await r.clone().text()}`).toBe(422);
+      expect(fields(await json(r))).toContain("body");
+    }
+    expect(await n()).toBe(before);
+    const ok = await f.req("POST", "/memories", {
+      body: { title: "確かさ", confidence: "9.99" },
+      headers: writer.auth,
+    });
+    expect(ok.status).toBe(201);
+  });
+});
+
+describe("K-144 ⑲ 会話と記憶の口の成功の答え（回 9 の続き・類 C/D）：口が返すとおりの形が契約にある", () => {
+  it("K144-API-037 会話を作る・名前を変える・記憶を直す・会話を消す・記憶を作るの成功の答えが、契約の形（strict）に合う", async () => {
+    const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+    expect(c.status).toBe(201);
+    await conforms("createConversation", c);
+    const id = ((await json(c)).data as { id: string }).id;
+    const u = await f.req("PATCH", `/conversations/${id}`, { body: { title: "会話の名前" }, headers: writer.auth });
+    expect(u.status).toBe(200);
+    await conforms("updateConversation", u);
+    const m = await f.req("POST", "/memories", { body: { title: "題" }, headers: writer.auth });
+    expect(m.status).toBe(201);
+    await conforms("createMemory", m);
+    const mid = ((await json(m)).data as { id: string }).id;
+    const um = await f.req("PATCH", `/memories/${mid}`, { body: { body: "覚えること" }, headers: writer.auth });
+    expect(um.status).toBe(200);
+    await conforms("updateMemory", um);
+    const d = await f.req("DELETE", `/conversations/${id}`, { headers: writer.auth });
+    expect(d.status).toBe(200);
+    await conforms("deleteConversation", d);
+  });
+});
+
+describe("K-144 ⑳ セッションの人がその会社のメンバーでない（回 9 の続き・類 C）：作った口が契約に無い 500 を返さない", () => {
+  it("K144-API-036 別の会社のメンバー・無い人のセッション（入口の解決は通る）で作った口を全部呼ぶ：どれも契約の並びの答え。接続コードを出す口は 403・FORBIDDEN でコードを作らない（前は DB の app.people_same_tenant が 22023 を上げて 500）", async () => {
+    const other = await f.company("K144 の別の会社", "KO");
+    const stranger = await f.person(other.tenantId, other.rootScope, { name: "別の会社の人" });
+    const cols = JSON.parse(readFileSync("08_api/db-columns.json", "utf8")) as {
+      tables: Record<string, Record<string, unknown>>;
+    };
+    const built = ENDPOINTS.filter(
+      (e) => f.hooks[e.operationId] || (e.generic && "id" in (cols.tables[e.table] ?? {})),
+    );
+    expect(built.map((e) => e.operationId)).toContain("createPairingCode");
+    const codes = () => count("select count(*) as n from bridge_pairing_codes where tenant_id = $1", [T.tenantId]);
+    const before = await codes();
+    const bad: string[] = [];
+    for (const [label, who] of [
+      ["別の会社のメンバー", stranger.id],
+      ["無い人", randomUUID()],
+    ] as const) {
+      const headers = { authorization: `Bearer fake:member:${T.tenantId}:${who}` };
+      for (const e of built) {
+        f.limits[e.operationId] = 10_000;
+        const path = e.path
+          .replace(/^\/api\/v1/, "")
+          .replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : "mac"));
+        const r = await f.req(e.method, path, {
+          headers,
+          ...(["POST", "PATCH", "PUT"].includes(e.method) ? { body: {} } : {}),
+        });
+        if (![e.success, ...e.errors].includes(r.status))
+          bad.push(`${label} ${e.operationId}：${r.status}（契約の並び ${[e.success, ...e.errors].join(",")}）`);
+        if (e.operationId === "createPairingCode") {
+          const j = await json(r);
+          if (r.status !== 403 || j["code"] !== "FORBIDDEN")
+            bad.push(`${label} createPairingCode：${r.status} ${String(j["code"])}（403・FORBIDDEN のはず）`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+    expect(await codes(), "接続コードを作った").toBe(before);
+  });
+});

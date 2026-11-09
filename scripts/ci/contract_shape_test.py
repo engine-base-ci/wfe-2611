@@ -72,6 +72,59 @@ PATH_PATTERNS: dict[tuple[str, str], str] = {
     ("downloadBridgeRelease", "name"): r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$",
 }
 
+# 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。
+#   値域は口が受ける値の集合より狭く書かない（狭いと契約の外の値を口が受けて fuzz の ST201）。書けない分だけ広く、その分は UNEXPRESSIBLE_422 に理由を書く
+CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
+CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+VALUE_RANGES: dict[str, dict[str, dict]] = {
+    "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
+        "title": {"pattern": "\\S", "maxLength": 200},                                  # :28〜30（前後の空白を落として空は 422・200 字まで）
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},                           # :37〜41（日付の形。今日より前・暦に無い日は書けない）
+        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},                    # :42〜46（空は「無し」）
+        "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
+        "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
+                                       {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
+        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
+                     "additionalProperties": {"type": "string", "maxLength": 20000}},     # :63〜74
+        "notify_member_ids": {"maxItems": 20},                                           # :75〜81
+    },
+    "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
+        "code": {"maxLength": 32, "pattern": f"^[{CODE_SEP}]*(?:[{CODE_CHAR}][{CODE_SEP}]*){{6}}$"},
+    },
+    "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts:42〜43（改行を空白にして前後を落とし、空は 422）
+    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
+    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
+        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "name": {"pattern": "\\S", "maxLength": 100},
+        "company_name": {"maxLength": 100},
+        "password": {"minLength": 12},
+    },
+    "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
+    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
+}
+# 契約に書けない値の決まり（口の振る舞いのまま 422）。422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
+UNEXPRESSIBLE_422: dict[str, list[str]] = {
+    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
+                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
+                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名・区画"],
+    "saveMyTicketDraft": ["下書きの中身が 180,000 バイトを超える（文字数でなくバイト数）"],
+    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "updateConversation": ["名前が null（空と同じ）"],
+    "updateMemory": ["覚えることが null（空と同じ）"],
+    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "consentToTerms": ["無い版の ID（版の ID の在りか）"],
+}
+# 会話と記憶の口（hooks/agent.ts）の成功の答えの形（類 C/D の続き）：表の行ではなく、口が返すとおりの形
+AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
+    "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),   # hooks/agent.ts:37
+    "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),             # hooks/agent.ts:50
+    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),                          # hooks/agent.ts:66
+}
+
 # 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
 HOOKS_DIR = ROOT / "apps/api/src/hooks"
 # 共通の処理（apps/api/src/contract/op.ts）のうち、hooks から呼ばれて状態コードを返すもの
@@ -640,7 +693,7 @@ class ContractShapeTest(unittest.TestCase):
             sharers = sorted(o for o, n in bodies.items() if n == name and o != op_id)
             self.assertEqual([o for o in sharers if REQUIRED_INPUTS.get(o, set()) != fields], [], f"{name} を必須の違う口と分け合っている")
         self.assertNotEqual(bodies["updateMemory"], bodies["createMemory"], "updateMemory が createMemory と同じ入力の形のまま（必須が違う）")
-        self.assertEqual(SCHEMAS[bodies["updateMemory"]]["properties"], SCHEMAS[bodies["createMemory"]]["properties"], "updateMemory の形の欄は createMemory と同じ（受ける欄を変えない）")
+        self.assertEqual(SCHEMAS[bodies["updateMemory"]]["properties"].keys(), SCHEMAS[bodies["createMemory"]]["properties"].keys(), "updateMemory の形の欄の名前は createMemory と同じ（受ける欄を変えない・値域は口ごと＝K144-SHAPE-023）")
         self.assertIs(SCHEMAS[bodies["updateMemory"]].get("additionalProperties"), False)
         self.assertNotIn("required", SCHEMAS[bodies["createMemory"]])
 
@@ -680,6 +733,144 @@ class ContractShapeTest(unittest.TestCase):
                     bad.append(f"{op_id} {n}")
         self.assertIn(("downloadBridgeRelease", "name"), found, "道の値を値域つきで断る口を拾えていない（拾い方が壊れた）")
         self.assertEqual(bad, [], "口が値域つきで 422 にするのに、契約の形に値域が無い道の値・問い合わせ")
+
+    # ---- 体の値の値域（類 G・回 9 の続き・PM の判断 2026-11-09）
+    @staticmethod
+    def _fits(v: object, sc: dict) -> bool:
+        """契約の欄の形（このチケットで使う言葉だけ）に値が合うか。pattern は JSON Schema と同じく「どこかに合う」（re.search）"""
+        if v is None:
+            return bool(sc.get("nullable"))
+        if "anyOf" in sc:
+            return any(ContractShapeTest._fits(v, x) for x in sc["anyOf"])
+        if "enum" in sc and v not in sc["enum"]:
+            return False
+        t = sc.get("type")
+        if t == "string":
+            if not isinstance(v, str):
+                return False
+            if "pattern" in sc and not re.search(sc["pattern"], v):
+                return False
+            if len(v) > sc.get("maxLength", 10**9) or len(v) < sc.get("minLength", 0):
+                return False
+        elif t == "integer":
+            if isinstance(v, bool) or not (isinstance(v, int) or (isinstance(v, float) and v.is_integer())):
+                return False
+            if v < sc.get("minimum", -10**18) or v > sc.get("maximum", 10**18):
+                return False
+        elif t == "boolean":
+            return isinstance(v, bool) and ("enum" not in sc or v in sc["enum"])
+        elif t == "object":
+            if not isinstance(v, dict):
+                return False
+            pn = (sc.get("propertyNames") or {}).get("pattern")
+            ap = sc.get("additionalProperties")
+            for k, x in v.items():
+                if pn and not re.search(pn, k):
+                    return False
+                if isinstance(ap, dict) and not ContractShapeTest._fits(x, ap):
+                    return False
+        elif t == "array":
+            if not isinstance(v, list) or len(v) > sc.get("maxItems", 10**9):
+                return False
+        return True
+
+    @staticmethod
+    def _range_cases() -> list[tuple[str, str, object, bool]]:
+        """本物の DB の試験の RANGE_CASES（k144-contract.test.ts）。値は JSON。@today・@code:* は見本の値に置き換える"""
+        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
+        block = re.search(r"RANGE_CASES: RangeCase\[\] = \[(.*?)\n\];", src, re.S)
+        assert block, "k144-contract.test.ts に RANGE_CASES が無い"
+        out = []
+        for op, field, raw, ok in re.findall(r'\[\s*"(\w+)",\s*"(\w+)",\s*(.+?),\s*(true|false)\s*\],?\s*(?://[^\n]*)?\n', block.group(1)):
+            raw = raw.strip()
+            m = re.fullmatch(r'"(.*)"\.repeat\((\d+)\)', raw)
+            if m:
+                v: object = json.loads(f'"{m.group(1)}"') * int(m.group(2))
+            elif raw == "Array.from({ length: 21 }, () => randomUUID())":
+                v = ["00000000-0000-4000-8000-000000000000"] * 21
+            else:
+                v = json.loads(raw)
+            sample = {"@today": "2026-01-01", "@code:plain": "ABC234", "@code:lower": "abc234", "@code:fullwidth": "ＡＢＣ２３４",
+                      "@code:spaced": " abc-234 "}
+            if isinstance(v, str) and v in sample:
+                v = sample[v]
+            out.append((op, field, v, ok == "true"))
+        assert len(out) >= 30, "RANGE_CASES を読めない"
+        return out
+
+    def test_K144_SHAPE_023_body_value_ranges_are_in_the_contract(self) -> None:
+        """口が値で断る欄のうち書けるもの（VALUE_RANGES）は、その口の入力の形の欄に同じ値域がある。type・format・nullable は変えず、
+        入口の zod（schemas.ts）はその欄に値域を足さない（今のエラー ID と文言のまま）。分け合う形は、値域の違う口に自分の形を持たせる（updateConversation）。
+        本物の DB の試験の RANGE_CASES（K144-API-039）の値ごとに、契約の判定（合う／合わない）と口の答え（その欄で 422 にしない／する）が 1 対 1"""
+        bodies = self._bodies()
+        bad = []
+        for op_id, fields in sorted(VALUE_RANGES.items()):
+            name = bodies[op_id]
+            props = SCHEMAS[name]["properties"]
+            for k, want in fields.items():
+                got = props.get(k, {})
+                for key, val in want.items():
+                    if got.get(key) != val:
+                        bad.append(f"{op_id}（{name}）.{k}.{key}: 契約 {got.get(key)!r} ／ 口 {val!r}")
+            m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
+            self.assertIsNotNone(m, f"schemas.ts に {name} が無い")
+            for k in fields:
+                line = re.search(rf"\n  {k}: ([^\n]*),", m.group(1))  # type: ignore[union-attr]
+                self.assertIsNotNone(line, f"schemas.ts の {name} に {k} が無い")
+                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte)\(|z\.enum|z\.literal|\.max\((?!10000\))",  # type: ignore[union-attr]
+                                    f"schemas.ts の {name}.{k} に値域が入った（入口が先に断ると今のエラー ID と文言が変わる）")
+        self.assertEqual(bad, [], "口が値で断るのに、契約の欄に値域が無い（または違う）")
+        self.assertNotEqual(bodies["updateConversation"], bodies["createConversation"], "updateConversation が createConversation と同じ入力の形のまま（値域が違う）")
+        self.assertEqual(SCHEMAS[bodies["updateConversation"]]["properties"].keys(), SCHEMAS[bodies["createConversation"]]["properties"].keys())
+        self.assertNotIn("pattern", SCHEMAS[bodies["createConversation"]]["properties"]["title"], "createConversation の title に値域（口は読まない）")
+        self.assertNotIn("pattern", SCHEMAS["Conversations"]["properties"]["title"], "答えの形に値域が入った（入力の欄を写さずに書き換えた）")
+        self.assertNotEqual(SCHEMAS["Memories"]["properties"]["confidence"].get("pattern"), VALUE_RANGES["createMemory"]["confidence"]["pattern"], "答えの形に入力の値域が入った（入力の欄を写さずに書き換えた）")
+        wrong = []
+        for op_id, field, v, ok in self._range_cases():
+            sc = SCHEMAS[bodies[op_id]]["properties"][field]
+            if self._fits(v, sc) != ok:
+                wrong.append(f"{op_id}.{field}={str(v)[:40]!r}: 契約は{'合う' if self._fits(v, sc) else '合わない'}・口は{'受ける' if ok else '断る'}")
+        self.assertEqual(wrong, [], "契約の値域の判定が、口の答え（RANGE_CASES）と合わない")
+        self.assertEqual(sorted({o for o, *_ in self._range_cases()}), ["claimPairingCode", "createMemory", "createTicket", "updateConversation", "updateMemory"])
+
+    def test_K144_SHAPE_024_unexpressible_rejections_are_explained_in_the_422(self) -> None:
+        """契約に書けない値の決まり（今日より前の期限・外部キーの在りか・条件つき など）は、口の振る舞いのまま 422。
+        その口の 422 の説明に理由を全部書き、x-unexpressible-422 に同じ並びを持つ（fuzz での扱いは K-62 の受け持ち）。ほかの口は x-unexpressible-422 を持たない"""
+        bad = []
+        for path, methods in OA["paths"].items():
+            for _m, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                o = op["operationId"]
+                r = op.get("responses", {}).get("422", {})
+                want = UNEXPRESSIBLE_422.get(o)
+                if want is None:
+                    if "x-unexpressible-422" in r:
+                        bad.append(f"{o}: 表に無いのに x-unexpressible-422")
+                    continue
+                if not r:
+                    bad.append(f"{o}: 422 が無い")
+                    continue
+                if r.get("x-unexpressible-422") != want:
+                    bad.append(f"{o}: x-unexpressible-422 {r.get('x-unexpressible-422')} ／ 表 {want}")
+                missing = [x for x in want if x not in r.get("description", "")]
+                if missing:
+                    bad.append(f"{o}: 422 の説明に無い理由 {missing}")
+        self.assertEqual(bad, [], "契約に書けない値の決まりが 422 に書かれていない")
+
+    # ---- 会話と記憶の口の成功の答えの形（類 C/D の続き・回 9）
+    def test_K144_SHAPE_025_agent_answers_are_the_shape_the_hooks_return(self) -> None:
+        """会話と記憶の口（hooks/agent.ts）の成功の答えは、表の行（Conversations・Memories）ではなく、口が返すとおりの形（AGENT_ANSWERS）。
+        本物の答えが形（strict）に合うかは K144-API-037"""
+        for op_id, (name, fields) in AGENT_ANSWERS.items():
+            r = operation(op_id)[2]["responses"]
+            ok = next(v for k, v in r.items() if k.startswith("2"))
+            self.assertEqual(ref_name(ok["content"]["application/json"]["schema"]["properties"]["data"]), name, f"{op_id} の成功の答えの形")
+            self.assertEqual(SA.RESPONSES.get(op_id), (name, fields), f"screen_api.py の RESPONSES の {op_id}")
+            for k, t in fields.items():
+                p = prop(name, k)
+                self.assertTrue(is_uuid(p) if t == "uuid" else p.get("type") == t, f"{name}.{k} の型が {t} でない")
+                self.assertFalse(p.get("nullable"), f"{name}.{k} は null を返さない")
 
 
 if __name__ == "__main__":
