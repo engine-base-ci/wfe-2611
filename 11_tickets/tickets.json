@@ -1425,7 +1425,7 @@
    ],
    "sections": {
     "目的": "流れの試験と 5 つの題材を通すステージング（selected-stack.json の environments.staging）を、コードで作れるようにそろえる。",
-    "完了の条件": "- [ ] ステージングの作り方がコードにある（infra/provision）\n- [ ] ステージングで API・画面・DB が動く\n- [ ] 秘密は預け先にだけ置く（コードに書かない）\n- [ ] 本物のデータを入れる前に、準備（K-78〜K-81）の途中でチャットに出た staging の秘密を全部取り替える（DB の 3 役のパスワード・AUTH_SECRET・SECRETS_MASTER_KEY・Infisical の Client Secret・置き場の鍵・Resend の鍵）。取り替えた後に /health と CORS と migration が通ることを確かめる（値はチケット・チャットに書かない）\n- [ ] CI が緑",
+    "完了の条件": "- [ ] ステージングの作り方がコードにある（infra/provision）\n- [ ] ステージングで API・画面・DB が動く\n- [ ] 秘密は預け先にだけ置く（コードに書かない）\n- [ ] 本物のデータを入れる前に、準備（K-78〜K-81）の途中でチャットに出た staging の秘密を全部取り替える（DB の 3 役のパスワード・AUTH_SECRET・SECRETS_MASTER_KEY・Infisical の Client Secret・置き場の鍵・Resend の鍵）。取り替えた後に /health と CORS と migration が通ることを確かめる（値はチケット・チャットに書かない）\n- [ ] 統合テスト（K-65）が staging を指せる：CI の台の秘密のファイル（~/.config/act/kaname.secrets・リポジトリに置かない）に STAGING_BASE_URL・STAGING_API_BASE・STAGING_DATABASE_ADMIN_URL（読むだけの役）・STAGING_MAILBOX_URL・QA_MAILBOX_KEY の 5 つの名前があり、.act-ci.env の ACT_STAGING=1 で e2e の段が起きる（決める人の答え 2026-11-09・K-65 の決まり 1〜3・ai-team-delivery references/ci.md §3）\n- [ ] CI が緑",
     "前提と制約": "- 前の画面は少しずつ直さず、新しく作ってから外す（D-128.78）",
     "実施事項": "- [ ] ステージングの構成をコードに\n- [ ] 配る道すじ（main に入ったらステージングへ）\n- [ ] 最初の通し",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| ステージングが立つ | ① 機械 | `python3 scripts/ci/pipeline-next.py check-staging` | |\n| ステージングで画面が開く | ③ 人 | ステージングの記録 | |",
@@ -4063,7 +4063,7 @@
     "目的": "staging の API を出す場所を用意する（infra/STAGING.md S2）。Build のたびに migration と置き場の用意が流れる（本番と同じコード）。",
     "完了の条件": "- [ ] Vercel のプロジェクト `kaname-api`（Root Directory `apps/api`）がある\n- [ ] 環境変数を Production と Preview の両方に Sensitive で入れた（名前は infra/STAGING.md §3 の表。値はここに書かない）\n- [ ] 最初の Deploy が通った",
     "前提と制約": "- リポジトリは GitHub の engine-base/Kaname（あり）\n- 料金：Hobby で始める。顧客に触らせる前に Pro（月 20 USD・Hobby は商用不可）\n- 鍵・パスワード・接続文字列の値は、チャット・ファイル・コミットに書かない。入れる先は Vercel の環境変数（Sensitive）か Infisical だけ（infra/STAGING.md §1）",
-    "実施事項": "1. Vercel → Add New → Project → engine-base/Kaname → Root Directory `apps/api`・Framework Preset `Other`（Build は apps/api/vercel.json が決める）\n2. 役割のパスワード 2 つ（`KANAME_APP_DB_PASSWORD`・`KANAME_AUTH_DB_PASSWORD`）・`AUTH_SECRET`・`SECRETS_MASTER_KEY` を乱数で作る（`openssl rand -base64 32`）。K-78 の接続のパスワードにも同じ値\n3. Settings → Environment Variables に、K-78・K-79・K-81 の値と上の乱数を入れる（Production と Preview・Sensitive）\n4. `NODE_ENV=staging`・`BASE_URL`（この API の URL）・`WEB_BASE_URL`（K-82 の後）\n5. Deploy",
+    "実施事項": "1. Vercel → Add New → Project → engine-base/Kaname → Root Directory `apps/api`・Framework Preset `Other`（Build は apps/api/vercel.json が決める）\n2. 役割のパスワード 2 つ（`KANAME_APP_DB_PASSWORD`・`KANAME_AUTH_DB_PASSWORD`）・`AUTH_SECRET`・`SECRETS_MASTER_KEY` を乱数で作る（`openssl rand -base64 32`）。K-78 の接続のパスワードにも同じ値\n3. Settings → Environment Variables に、K-78・K-79・K-81 の値と上の乱数を入れる（Production と Preview・Sensitive）\n4. `NODE_ENV=staging`・`BASE_URL`（この API の URL）・`WEB_BASE_URL`（K-82 の後）\n4b. `RESEND_BASE_URL` を CI の台（K-87）の受け箱の URL にする（本番と同じ SDK・同じテンプレートのまま行き先だけ変える。統合テスト K-65 がメールのリンクをここから読む。決める人の答え 2026-11-09「本番さながら」・K-65 の決まり 1）。受け箱の鍵は `QA_MAILBOX_KEY`（名前だけ・値は預け先）\n5. Deploy",
     "テスト仕様と確認の結果": "- 確かめは K-37（/health が 200・起動時の確認 5／5）",
     "成果物": "- Vercel のプロジェクト `kaname-api`",
     "決定ログ": "- 人の準備もプロジェクトのチケットとして切る（D-128.145）。どこでどのテストを流すかは D-128.144",
@@ -4285,9 +4285,9 @@
    "depends_on": [],
    "sections": {
     "目的": "手元の CI（act・GitHub と同じ workflow の全部）を、借り物ではない台（Mac か Intel・AMD の PC）で回せるようにする。",
-    "完了の条件": "- [ ] 台を決めた（Mac なら Apple シリコンでも可）\n- [ ] Docker（Mac は colima か Docker Desktop）を入れ、起動したら立ち上がる\n- [ ] `dagci setup` を流した\n- [ ] リポジトリで `dagci smoke` が緑",
+    "完了の条件": "- [ ] 台を決めた（Mac なら Apple シリコンでも可）\n- [ ] Docker（Mac は colima か Docker Desktop）を入れ、起動したら立ち上がる\n- [ ] act を入れ、台ごとの設定（~/.actrc・ai-team-delivery references/ci.md §3：台の像・同時の数・pnpm の置き場・action の手元の写し）を書いた\n- [ ] リポジトリで `act_ci.sh <本線の先頭>` が緑（workflow の全部）\n- [ ] 統合テスト（K-65）の受け箱が台で動き、外（staging の API）から届く：`QA_MAILBOX_HOST=0.0.0.0`・鍵 `QA_MAILBOX_KEY`・URL を `STAGING_MAILBOX_URL` として ~/.config/act/kaname.secrets に（名前だけ・値はここに書かない）",
     "前提と制約": "- Mac は amd64 を Rosetta で動かす設定が要る（Linux 版 Chrome は amd64 だけ・ci.yaml の toolbox.platform）",
-    "実施事項": "1. Mac：`brew install colima docker` → `colima start --vm-type vz --vz-rosetta`（ログインしたら起動する設定にする）。Docker Desktop なら設定の「Use Rosetta for x86/amd64 emulation」をオン\n2. スキル ai-team-delivery を入れる\n3. `~/.claude/skills/ai-team-delivery/scripts/ci/dagci/dagci setup`\n4. リポジトリで `dagci smoke`",
+    "実施事項": "1. Mac：`brew install colima docker` → `colima start --vm-type vz --vz-rosetta`（ログインしたら起動する設定にする）。Docker Desktop なら設定の「Use Rosetta for x86/amd64 emulation」をオン\n2. スキル ai-team-delivery を入れる\n3. `brew install act flock`。台の像（GitHub の ubuntu-latest に Chrome を足したもの）を作り、~/.actrc を references/ci.md §3 のとおり書く（Docker の記憶 8GB 以上・同時の数 3）\n4. リポジトリで `bash ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh <本線の先頭の sha>` が緑\n5. 統合テストの受け箱（apps/web/tests/_lib/mailbox.ts の受け口）を台で常時動かす：`QA_MAILBOX_HOST=0.0.0.0`・鍵は `QA_MAILBOX_KEY`。staging の API から届く URL を `STAGING_MAILBOX_URL` として秘密のファイルに（K-80 の `RESEND_BASE_URL` と対）。dagci（自作の実行器）は 2026-11-09 に廃止（L-009）",
     "テスト仕様と確認の結果": "- 確かめは `dagci smoke` が緑・`dagci run --all` が緑",
     "成果物": "- 台",
     "決定ログ": "- 人の準備もプロジェクトのチケットとして切る（D-128.145）。どこでどのテストを流すかは D-128.144",
@@ -4723,7 +4723,7 @@
    "depends_on": [],
    "sections": {
     "目的": "前の画面の試験 SCR-BRIDGE-SETUP-103 は、組み立てた Bridge（apps/bridge/dist/runner.js・apps/web/tests/_lib/agent-bridge.ts 23 行が読む）が無いと動かない。手元にも CI にも組み立てる段が無い（K-57・K-60 の取り込みの途中で見つけた。途中で見つけたものはその場で直さずチケットにする・D-128.147）。",
-    "完了の条件": "- [ ] workflow に Bridge を組み立てる段があり、その試験の前に流れる\n- [ ] SCR-BRIDGE-SETUP-103 が組み立てた Bridge で流れる\n- [ ] workflow の全部（act）が緑",
+    "完了の条件": "- [ ] workflow に Bridge を組み立てる段があり、その試験の前に流れる\n- [ ] SCR-BRIDGE-SETUP-103 が組み立てた Bridge で流れる\n- [ ] K-65 の統合テスト K65-INT-05（本物の Bridge の輪・組み立てた Bridge が要るので K-65 では BLOCKED）を、この段の後に流して緑にする（決める人の答え 2026-11-09・K-65 の決まり 5）\n- [ ] workflow の全部（act）が緑",
     "前提と制約": "- 組み立ては本番の配布と同じ手順を使う：本番の配布の台本 `apps/bridge/scripts/release.mjs` は 43 行で `pnpm -s build`（apps/bridge の package.json の build ＝ `tsc -p tsconfig.json && node scripts/copy-renderer.mjs`）を流してから electron-builder で包む。試験に要るのは包む前の dist なので、CI はこの `pnpm -s build` までを同じ命令で流す（包む electron-builder は流さない・OS ごとの入れ物は試験に要らない）",
     "実施事項": "- [ ] 命令：`pnpm --filter @kaname/bridge build`（＝ release.mjs の 43 行と同じ build）。終わったら `test -f apps/bridge/dist/runner.js && test -f apps/bridge/dist/loop.js` で確かめる\n- [ ] workflow の段：.github/workflows/v3-gate.yml は 05_flow/build_testplan.py の生成物なので、作り手に `web` の job（と、前の画面の試験を流す job）の「画面を立ち上げる」の前の段 `Bridge を組み立てる（本番の配布と同じ build・K-97）` を足して作り直す（手で直さない）\n- [ ] 手元：`scripts/dev/up.sh`（開発の立ち上げ）に同じ命令を足す",
     "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 組み立てた Bridge で SCR-103 が流れる | ② 結合 | workflow の全部（act） | |\n| 組み立てを外すと SCR-103 が「runner.js が無い」で赤に戻る | ② 結合 | 段を外して 1 回流す | |",
@@ -6584,6 +6584,122 @@
     "申し送り": "- 見つけたのは K-144 の作る役 回 14（報告 .ai-team-out/K-144/r14/T1.md）"
    },
    "file": "11_tickets/K-155.md"
+  },
+  {
+   "id": "K-156",
+   "title": "チケットの CI が毎回「全部」で 23 分かかる（範囲の表に生成物と作り手が無い・spec の段で検査を流し直す・毎回 registry に聞く）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-10",
+   "estimate_hours": "3",
+   "estimate_basis": "実測なし・仮（K-143 の CI の台本の直し〔ci_results.py・試験 34 本〕の実測 1 日のうち台本の直しの部分から、直す所が 3 ファイル・試験 6 行として引いた。K-62 の実測で引き直す）",
+   "decisions": [
+    "D-128.123",
+    "D-128.124",
+    "D-128.169"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "CI の台本と範囲の表の直しだけ。外への出口（関門）に触らない（registry への問い合わせは既にある G46 のもので、回数を減らすだけ）",
+   "depends_on": [
+    "K-143"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "決める人の決定 D-128.169（チケットごとの CI は機械で出した影響の範囲に絞る）は K-107 で仕組みが入ったのに、2026-11-09 の取り込み 2 回（K-144・K-143）はどちらも「範囲：全部」で流れ、1 回 23.5 分かかった（11 組を順に 1 つずつ・段の合計 20.1 分）。決める人「なんでそんなに CI が時間かかるの」「更新部分とか影響部分だけ流してそうなんだ本気で？？」。act の回の記録を実測して原因を 3 つに切り分けた。\n\n1. **範囲の表の抜け**：`scripts/ci/ci_scope.json` に生成物（07_functional/*・08_api/*・07_qa/test-plan/*・11_tickets/tickets.json・01_hearing/要件一覧.md ほか `scripts/ci/generated.json` の outputs）と、その作り手（05_flow/*.py）が載っていない。載っていないファイルは unmapped として「全部」に倒れる。どのチケットも取り込みの前に生成物を作り直すので、実質どのチケットも全部になる（K-144 の回の理由：unmapped（05_flow/build_api.py・07_functional/features.json・08_api/api-decisions.json …））\n2. **spec の G27（層の棚卸し）3.5 分**：`layer_audit.py --run` が 62 の検査を全部流し直す。中に `pnpm -s type-check` 8 回・bridge の build 2 回・trace_gate 6 回など、static の段（G1・G2）や spec の他の段で既に流している検査の繰り返しが入っている\n3. **spec の G46（部品の確かめ）2.6 分**：`stack_gate.py` の S6 が毎回 npm の registry に lockfile の全部（約 1,000 個）の出た日を聞きに行く。lockfile が変わっていない回でも同じ答えを取りに行く",
+    "完了の条件": "- [ ] 範囲の表に生成物とその作り手を載せ、普通のチケット（アプリの部品だけを変える）の CI が「触った部品の単体の試験 ＋ static ＋ spec」だけになる。act の static の段の「チケットの CI の範囲：」の行で確かめる（全部にならない）\n- [ ] G27 は「static と spec の他の段で流していない検査だけ」を流す（繰り返しは一覧に残し「○○の段で流す」と印を付ける）。G27 の時間が 1 分未満\n- [ ] G46 の S6 は lockfile の内容の印（sha）が前回と同じなら記録（リポジトリの中の JSON）から答え、違うときだけ registry に聞く。記録には聞いた日を書き、21 日の決まり（D-128.124）の判定は今日の日付で行う。G46 の時間が 10 秒未満（lockfile が変わらない回）\n- [ ] act の並べ方に合わせて組の依存（needs）を整える：act は「needs の無い組」を 1 段目、それを待つ組を 2 段目…と段ごとに流し、段の中の全部が終わるまで次の段を始めない（GitHub は組ごとに needs が揃い次第始める）。いま spec は needs が無いので 1 段目で static と並び、spec が終わるまで database・unit・web が始まらない（2026-11-09 22:10 の実測：static が 1 分 20 秒で緑の後、spec だけが 1 本で走っていた）。spec に `needs: [static]` を足す（GitHub でも意味は変わらない・static は 1 分台）。act の段の並びは act.log の Start image の時刻で確かめる\n- [ ] 組を同時に流しても成果物（upload-artifact）が落ちない：3 組同時にすると、組の容れ物（Docker の VM・host network）から Mac の LAN の IP（act の成果物サーバー 192.168.0.120:34567）への接続が EHOSTUNREACH で落ちる（2026-11-09 の実測：4 回目は 5 組・5 回目は 7 組全部。1 組ずつの回は今日 3 回とも届いた。落ちた後に同じ住所へ curl すると 200）。原因の候補は台の負荷（Docker 4 CPU・Mac 10 CPU）で VM の網が詰まること。Docker の CPU を 6 に・同時 2 で測る → それでも落ちるなら、成果物を act のサーバーに上げずに作業場の置き場（--artifact-server-path の下）へ直に書く形（workflow の upload を act のときだけ cp にする composite action）を検討する。測った数字を報告に書く\n- [ ] 全部を流す回（取り込み 5 本ごと・CI の設定を触った回）が 3 組同時で 8 分以内、普通のチケットの回が 3 分以内（act の run.json の start/end で実測して報告に書く）\n- [ ] 範囲の判定の試験（ci_scope_test.py）に「生成物だけを変えたら spec だけ」「作り手を変えたら spec だけ」の行を足す。G27 の絞り込みと G46 の記録の試験を足す\n- [ ] web の組で、行ごとの押した証拠（スクリーンショット）と Playwright の HTML 報告を成果物（upload-artifact）として残し、act の回の置き場から見られる（決める人 2026-11-09「ブラウザのテストって実際に操作しているってことよね？？なんか見れないけど」）\n- [ ] 生成試験（apps/api/test/generated/*）の beforeAll（makeHarness）の 10 秒の上限は、台の負荷で割れる（2026-11-09 21:30 の回で unit-2 が時間切れ・同じ日に 3 回は緑）。起動にかかる時間を CI の記録から測り、上限を「実測の最大 × 3」の形で決めて 1 か所（vitest.config の hookTimeout）に置く。時間で隠すのではなく測って決める\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- workflow（.github/workflows/v3-gate.yml）は GitHub と同じものを使う決まり（正本 §9）。直すのは検査の台本と決まりの表で、組の形は変えない\n- 台の側（Docker の記憶・act の同時の数・action の手元の写し）は PM が ~/.actrc と Docker Desktop で直す（このチケットの外・ai-team-delivery の references/ci.md §3）\n- 見込みは列に入れるときに、直近の取り込みの実測から引いて書く",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 範囲の判定は `scripts/ci/ci_scope.py`＋`ci_scope.json`（K-107）、生成物の目録は `scripts/ci/generated.json`（K-38）、層の棚卸しは `scripts/ci/layer_audit.py`＋`spec-dependencies.yaml`、部品の確かめは `scripts/ci/stack_gate.py`（K-44）。新しく作らない |\n| 直すファイル | scripts/ci/ci_scope.json（生成物と作り手 → spec）・scripts/ci/ci_scope.py（generated.json の outputs を読んで表に足す形でもよい）・spec-dependencies.yaml の layer_checks（繰り返しの印）か layer_audit.py（印の読み）・scripts/ci/stack_gate.py（S6 の記録）・scripts/ci/ci_scope_test.py・stack_gate の自己試験 |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 生成物だけを変えた枝 | 範囲は spec（と static）だけ。理由に unmapped が出ない | 作る役が行 ID を振る |\n| 入力 | 作り手（05_flow/*.py）だけを変えた枝 | 範囲は spec だけ | 作る役が行 ID を振る |\n| 入力 | CI の設定（v3-gate.yml・scripts/ci/*）を変えた枝 | 今までどおり全部 | 作る役が行 ID を振る |\n| 対象の状態 | lockfile の印が前回と同じ | S6 は registry に聞かず記録で判定する | 作る役が行 ID を振る |\n| 時間の流れ | 記録に「20 日前に出た」と書かれた版が、今日 21 日を過ぎた | 記録のまま緑になる（出た日は変わらない・判定は今日の日付） | 作る役が行 ID を振る |\n| 対象の状態 | lockfile の印が違う | registry に聞いて記録を書き直す | 作る役が行 ID を振る |\n| 失敗 | registry に聞けない（網が無い）・記録も無い | 赤（S6 は今までどおり止める） | 作る役が行 ID を振る |\n| 守り | G27 の一覧から外した検査 | 「○○の段で流す」の印があり、その段が実際に流している（ci_wiring_gate で結ぶ） | 作る役が行 ID を振る |",
+    "成果物": "- 範囲の表の直しと範囲の判定の試験・G27 の絞り込み・G46 の記録・実測の報告",
+    "決定ログ": "- チケットごとの CI は影響の範囲に絞る（D-128.169）。見つけたら同じ種類を止める検査を足すまで閉じない（D-128.123）。21 日の決まり（D-128.124）",
+    "リスクと懸念": "- 範囲を絞り過ぎると、生成物の作り手の変更が unit の試験に効く場合を見落とす。取り込み 5 本ごとの「まとめの全部」が拾う（正本 §9）\n- S6 の記録をリポジトリに置くと、その更新のコミットが増える。lockfile が変わる回だけ書き直すので、部品を上げたチケットと同じコミットに乗る",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-156.md"
+  },
+  {
+   "id": "K-157",
+   "title": "apps/e2e（統合テストの置き場）が土台から外れている（tsc の対象外・結果の書き出しが J 番号しか拾わない・既定の番号が CI の容れ物と違う）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-13",
+   "estimate_hours": "2",
+   "estimate_basis": "実測なし・仮（K-155〔試験のファイルを tsc に入れる〕と同じ型の直しが 3 つ。K-155 の実測で引き直す）",
+   "decisions": [
+    "D-128.123",
+    "D-128.131",
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の土台（型の検査の範囲・結果の書き出し・設定の既定値）の直しだけ。外への出口（関門）に触らない",
+   "depends_on": [
+    "K-65"
+   ],
+   "affects": [],
+   "ci_wide": [],
+   "sections": {
+    "目的": "K-65（統合テスト：歩く骨格を端から端まで）の作る段で、`apps/e2e` の土台に前からある 3 つの穴が見つかった（2026-11-09・K-65 の TS）。K-65 の受け持ちではない別の場所の問題なので、その場で直さず起票した（D-128.147）。\n\n1. `apps/e2e` に tsconfig が無く、根の references にも無いので、統合テストのコードが型の検査（tsc）に入っていない。K-155（apps/api の試験のファイルが tsc に入っていない）と同じ型の穴。入れると古い道（`/api/auth-ext`・`/today`）を使う j01・j02 が赤になる見込み\n2. `apps/e2e/write_results.mjs` が行 ID を `J\\d{2}-\\d{2}` でしか拾わないので、K-65 の行（K65-INT-xx）の結果を 07_qa に機械で書く道が無い（結果の欄は手で書かない決まり・D-129.51）\n3. `apps/e2e/playwright.config.ts` の既定の BASE_URL が 3123（next dev）で、手元の CI の容れ物の画面（3124）と違う。CI では環境で上書きしているので動くが、既定のまま手元で流すと別の画面に当たる",
+    "完了の条件": "- [ ] apps/e2e が tsc の対象（tsconfig と根の references）に入り、`pnpm type-check` が緑。j01・j02 の古い道は、いまの道に直すか、使っていないなら消す（どちらかを決定ログの行で選ぶ）\n- [ ] write_results.mjs が `K\\d+-INT-\\d+` の行も拾い、07_qa/test-specs の該当の行に CI の記録から書ける（ci_results.py の record の形と合わせる）\n- [ ] playwright.config.ts の既定の BASE_URL を CI の容れ物と同じ番号にそろえるか、既定を無くして環境を必須にする（無いときは理由つきで止まる）\n- [ ] 試験：型の赤が出る統合テストのコードを 1 つ作って tsc が赤になる・K65-INT の行が結果に書かれる・BASE_URL が無いときの止まり方\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- K-65 の試験（apps/e2e/journeys/k65-walking-skeleton.spec.ts）が取り込まれてから（depends_on）。それまでは K-65 の行は test-plan 側の BLOCKED のまま\n- 見込みは列に入れるときに、直近の取り込みの実測から引いて書く",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 型の検査の範囲は K-155 の直し方（apps/api の tsconfig に test を入れる）と同じ形。結果の書き出しは `scripts/ci/ci_results.py`（K-143）の record を使い、write_results.mjs は行 ID の読み方だけ直す。新しく作らない |\n| 直すファイル | apps/e2e/tsconfig.json（新規）・tsconfig.json（references）・apps/e2e/write_results.mjs・apps/e2e/playwright.config.ts・apps/e2e/journeys/j01*・j02*（古い道） |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | 統合テストのコードに型の誤り | `pnpm type-check` が赤 | 作る役が行 ID を振る |\n| 入力 | K65-INT-01 の結果 | 07_qa の該当の行に CI の回の印つきで書かれる | 作る役が行 ID を振る |\n| 入力 | J01-01 の結果（今までの形） | 今までどおり書かれる | 作る役が行 ID を振る |\n| 失敗 | BASE_URL が無い | 理由つきで止まる（別の画面に当たらない） | 作る役が行 ID を振る |",
+    "成果物": "- apps/e2e の tsconfig・references・write_results.mjs・playwright.config.ts の直しと試験",
+    "決定ログ": "- 見つけたら同じ種類を止める検査を足すまで閉じない（D-128.123）。別の場所の問題は起票して列の後ろ（D-128.147）",
+    "リスクと懸念": "- j01・j02 を消すと、歩く骨格の前の道すじの試験が無くなる。K-65 の筋 5 本がそれを置き換えているかを K-65 の精査で確かめる",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-157.md"
+  },
+  {
+   "id": "K-158",
+   "title": "人が同じ試験を手で確かめる「確認表」を、実ブラウザの試験の行から機械で作り、機械の結果（CI の記録）と人の結果を並べる",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "試験",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "3",
+   "estimate_basis": "実測なし・仮（build_qa_xlsx.py は 10 月に 1 日で作った実績。源を手順ファイルから仕様の表に替え、列を 2 つ足し、CI の記録を読むので同じくらい。K-156 の実測で引き直す）",
+   "decisions": [
+    "D-128.113",
+    "D-129.51",
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の表と CI の記録から確認表（xlsx）を作るだけ。外への出口（関門）に触らない。Google のシートへの取り込みは人（PM）が手でする",
+   "depends_on": [
+    "K-143"
+   ],
+   "affects": [],
+   "ci_wide": [],
+   "sections": {
+    "目的": "実ブラウザの試験（Playwright）は act の容れ物の中で画面無し（headless）で動くので、決める人が見られない。決める人（2026-11-09）：「僕も実機の操作のテストは僕自身でも人間でもするので、そこがわかる表もちゃんと作っておいて。動作テストがいる場合の時だけでいいので、人間が確認できる同じようなテスト項目をずらっと並べて、あなたと僕とがそれぞれ同じテストを進めるみたいな感じで」。\n\n人が手で触って OK／NG を付ける正本は Google スプレッドシート「確認」（1 タブ＝1 チケット・`scripts/ci/build_qa_xlsx.py` が作る xlsx を取り込んで育てる）。いまの作り手は 10 月の手順ファイル（07_tasks/handoff/T-A-xx.md）を源にしていて、K-51〜K-65 の実ブラウザの試験の行（07_qa/test-specs/k/*.md の K*-UI-*・歩く骨格の中間テスト K54-M1／K58-M2／K64-M3・統合テスト K65-INT）が載っていない。機械の結果の欄も無い。",
+    "完了の条件": "- [ ] 源を仕様の表にする：07_qa/test-specs/k/*.md と journeys の行のうち、実ブラウザで人が同じ操作をできる行（操作手順と期待結果がある K*-UI-*・K*-M*-*・K*-INT-*。口だけの行 K*-API-* と「操作要素の漏れ」の機械だけの行 *-000 は載せない）を、使う流れの順（flow.json の背骨・build_qa_xlsx.py の既存の並べ方）に 1 タブ＝1 画面（か 1 チケット）で出す\n- [ ] 列：ID／画面／前提条件／操作手順／期待結果／**機械の結果**（07_qa/ci-results の記録から：PASS・FAIL・未実行と、CI の回の印と日付・K-143 の ci_results.py を読む）／**人の結果**（OK・NG・未）／人の気づき／確かめた日・名前。機械の列は手で書かない（CI の記録から機械で埋める・D-129.51）\n- [ ] 「はじめに」のタブに、立ち上げ方（手元の URL・試験用の人のログイン・Bridge の有無）と、表の読み方（機械と人の結果が違う行が見つけもの）を書く\n- [ ] 前に書かれた人の結果・気づき・列幅・タブ名を引き継ぐ（`--out` に今のシートの xlsx を渡す既存の形。消さない）\n- [ ] 機械と人の結果が違う行を数えて「はじめに」に出す（これが実機でしか出ない欠陥の候補・L-003）\n- [ ] 作り手の試験：UI の行だけが載る・API の行は載らない・機械の結果が記録どおり・前の答えが残る\n- [ ] PM が Google シート「確認」に取り込む手順（memory の sheet-edit-in-place・File → Import → Replace spreadsheet）を 07_tasks/handoff/README.md に写す（PM の手順は版に入れる）\n- [ ] チケットの CI（act）が緑",
+    "前提と制約": "分類: TOOL\n\n- 対象は「動作テストが要る行」だけ（決める人の言葉）。口の試験・静的検査は載せない\n- Google のシートへの取り込みは人（PM）が手でする（Drive の API で xlsx を上げると壊れる・memory）。このチケットは xlsx までを機械で作る\n- 見込みは列に入れるときに、直近の取り込みの実測から引いて書く",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | 作り手 `scripts/ci/build_qa_xlsx.py`（タブ・はじめに・答えの引き継ぎ・流れの順）はそのまま使い、源の読み方を足す。仕様の表の読み方は `scripts/ci/op_gate.py`（11 列の行を読む）、CI の記録の読み方は `scripts/ci/ci_results.py`（K-143）。新しく作らない |\n| 直すファイル | scripts/ci/build_qa_xlsx.py（源に 07_qa/test-specs を足す・列 2 つ・機械の結果）・その試験・07_tasks/handoff/README.md（取り込みの手順） |",
+    "テスト仕様と確認の結果": "| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 入力 | K57-UI-001（実ブラウザの行） | 「PC をつなぐ」のタブに載る。操作手順と期待結果が仕様の表と同じ文 | 作る役が行 ID を振る |\n| 入力 | K57-API-001（口の行）・K57-UI-000（機械だけの行） | 載らない | 作る役が行 ID を振る |\n| 入力 | CI の記録に K57-UI-001 が PASS（回 179ccfb5） | 機械の結果の列が「PASS・179ccfb5・2026-11-09」 | 作る役が行 ID を振る |\n| 対象の状態 | 記録に無い行 | 機械の結果が「未実行」（空にしない） | 作る役が行 ID を振る |\n| 対象の状態 | 前の xlsx に人の結果「NG」と気づきがある行 | 作り直しても残る | 作る役が行 ID を振る |\n| 守り | 機械の結果の列を手で書いた xlsx を --out に渡す | 機械の列は記録で上書きされる（手の値は残さない） | 作る役が行 ID を振る |",
+    "成果物": "- 確認表の xlsx（07_tasks/handoff/確認.xlsx）と作り手の直し・取り込みの手順",
+    "決定ログ": "- 操作要素 1 つ＝1 行（D-128.113）。結果の欄は手で書かない・CI の記録から（D-129.51）。別の場所の見つけものは起票（D-128.147）",
+    "リスクと懸念": "- 行が 140 本を超えるので、人が全部を 1 回で確かめるのは重い。タブ（画面）ごとに「今日はここまで」と区切れる形にする\n- 機械の記録の行 ID と仕様の表の行 ID がずれると「未実行」が増える。op_gate.py の突き合わせ（G28）がそれを別に赤にする",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-158.md"
   }
  ]
 }
