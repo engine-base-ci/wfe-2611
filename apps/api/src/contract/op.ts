@@ -319,9 +319,16 @@ async function execute(
     if (/決まった承認は変えられません/.test(String(ex)))
       return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
     // 入力が DB の決まりに合わない（外部キー・形・null・桁あふれ・check・許されない識別子）：422。答えには決まった文だけを出し（D-130.2）、
-    //   DB の答えの番号と文（表や制約の名前を含む）はログにだけ残す（K-144 ㉓㉙）
+    //   ログには DB の答えの番号と制約の名前だけを残す（K-144 ㉓㉙㊳）。DB の文・詳しい説明は送った値を含むので出さない
     if (DB_INPUT_CODES.has(code) || /許可されていない識別子/.test(String(ex))) {
-      console.error("[api] 422", def.method, def.path, code || "identifier", String((ex as Error).message));
+      const constraint = (ex as { constraint?: unknown }).constraint;
+      console.error(
+        "[api] 422",
+        def.method,
+        def.path,
+        code || "identifier",
+        ...(typeof constraint === "string" && constraint ? [constraint] : []),
+      );
       return fail(422, "validation_failed", "VALIDATION_ERROR", {
         details: [{ field: "body", message: "入力内容を確認してください" }],
       });
