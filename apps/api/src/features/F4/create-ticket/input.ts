@@ -1,7 +1,6 @@
 // チケットを作る（K-60）の入力の形の確かめ。同じ会社か・書けるか・必須の区画は DB（app.ticket_create）が確かめる。
 //   表記ゆらぎ（全角半角・前後の空白）は入口（op.ts の normalize）が揃えた後。前後の空白だけの題名は空
 export const TITLE_MAX = 200;
-export const SECTION_MAX = 20_000;
 export const NOTIFY_MAX = 20;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -68,9 +67,7 @@ export function checkCreate(input: Record<string, unknown>, today: string): Chec
     for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
       if (!/^[a-z][a-z0-9_]{0,40}$/.test(k)) d.push({ field: `sections.${k}`, message: "区画の名前が違います" });
       else if (typeof v !== "string") d.push({ field: `sections.${k}`, message: "区画は文字で書いてください" });
-      else if (v.length > SECTION_MAX)
-        d.push({ field: `sections.${k}`, message: `区画は ${SECTION_MAX} 文字までです` });
-      else sections[k] = v.trim();
+      else sections[k] = v.trim(); // 区画の中身に上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
     }
   const notify = input["notify_member_ids"] ?? [];
   if (

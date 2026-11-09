@@ -13,7 +13,8 @@ import { createApp } from "../src/app.js";
 import type { ContractDeps, Hook } from "../src/contract/deps.js";
 
 /** pending：boss と同じ人で、同意し直しの印（K-53 の termsPending）が立ったセッション。生成の試験の terms_pending の型が使う */
-export type Who = "boss" | "staff" | "ops" | "opsB" | "pending" | "anon";
+/** down：セッションを解く所が落ちる（resolve が例外を投げる）。生成の試験の session_unresolved の型が使う（K-53・K-144） */
+export type Who = "boss" | "staff" | "ops" | "opsB" | "pending" | "down" | "anon";
 // 接続先は DATABASE_URL だけ（vitest は vitest.config.ts が決める・契約 fuzz は fuzz.sh を呼ぶ人が渡す）。手元の DB に黙って当てない
 const DB_URL =
   process.env["DATABASE_URL"] ??
@@ -69,7 +70,7 @@ export async function makeHarness(): Promise<Harness> {
   }
   const app = createPool({ databaseUrl: APP_URL, max: 3 });
   const repo = await createRepository(app);
-  const who: Record<Exclude<Who, "anon">, TenantContext> = {
+  const who: Record<Exclude<Who, "anon" | "down">, TenantContext> = {
     boss: { tenantId: S.tenantA, userId: S.bossA, role: "member", stepUpAt: new Date() }, // 直前に本人確認を取り直した
     staff: { tenantId: S.tenantA, userId: S.staffA, role: "member" },
     ops: { tenantId: S.opsTenant, userId: S.opsId, role: "ops", stepUpAt: new Date() }, // 対象の会社は x-tenant-id（call が表に合わせて入れる）。会社 a は許可あり
@@ -85,6 +86,7 @@ export async function makeHarness(): Promise<Harness> {
     // 印（termsPending）も返すので resolve（Resolved を返す形・K-53）で解く。印が立つのは pending だけ
     resolve: async (headers) => {
       const t = headers.get("authorization")?.replace(/^Bearer\s+/i, "") as Exclude<Who, "anon"> | undefined;
+      if (t === "down") throw new Error("試験：セッションを解けない");
       return t && who[t] ? { ctx: who[t], sessionId: "", authUserId: "", termsPending: t === "pending" } : null;
     },
     contract: deps,

@@ -24,10 +24,10 @@ export const newDeviceToken = (): string => `kpc_${randomBytes(32).toString("bas
 
 export type CodeCheck = { ok: true; code: string } | { ok: false; message: string };
 /** 表記ゆらぎ（全角半角・大文字小文字・前後と途中の空白・区切りの「-」）を揃えてから形を見る（サーバーが最後の砦） */
-export function normalizeCode(value: unknown): CodeCheck {
-  if (typeof value !== "string" || value.trim() === "") return { ok: false, message: "接続コードを入れてください" };
-  if (value.length > CODE_INPUT_MAX) return { ok: false, message: "接続コードが長すぎます（英数字 6 けた）" };
-  const code = value
+export function normalizeCode(raw: unknown): CodeCheck {
+  if (typeof raw !== "string" || raw.trim() === "") return { ok: false, message: "接続コードを入れてください" };
+  if ([...raw].length > CODE_INPUT_MAX) return { ok: false, message: "接続コードが長すぎます（英数字 6 けた）" };
+  const code = raw
     .normalize("NFKC")
     .toUpperCase()
     .replace(/[\s\-‐‑‒–—―ー−]/g, "");
@@ -36,9 +36,9 @@ export function normalizeCode(value: unknown): CodeCheck {
 }
 
 /** PC の名前：制御文字は消し、80 文字で切り、空なら「この PC」 */
-export function cleanLabel(value: unknown): string {
-  if (typeof value !== "string") return LABEL_DEFAULT;
-  const s = [...value.replace(/\p{Cc}/gu, "").trim()].slice(0, LABEL_MAX).join("").trim();
+export function cleanLabel(raw: unknown): string {
+  if (typeof raw !== "string") return LABEL_DEFAULT;
+  const s = [...raw.replace(/\p{Cc}/gu, "").trim()].slice(0, LABEL_MAX).join("").trim();
   return s || LABEL_DEFAULT;
 }
 
@@ -46,10 +46,10 @@ export function cleanLabel(value: unknown): string {
  *  大文字は小文字にそろえる（表記ゆらぎ）。UUID の形でなければ止める */
 const MACHINE_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export type MachineCheck = { ok: true; machineId: string | null } | { ok: false; message: string };
-export function normalizeMachineId(value: unknown): MachineCheck {
-  if (value === undefined || value === null) return { ok: true, machineId: null };
-  if (typeof value !== "string") return { ok: false, message: "この PC の印の形が違います" };
-  const v = value.trim().toLowerCase();
+export function normalizeMachineId(raw: unknown): MachineCheck {
+  if (raw === undefined || raw === null) return { ok: true, machineId: null };
+  if (typeof raw !== "string") return { ok: false, message: "この PC の印の形が違います" };
+  const v = raw.trim().toLowerCase();
   if (!MACHINE_ID_RE.test(v)) return { ok: false, message: "この PC の印の形が違います" };
   return { ok: true, machineId: v };
 }

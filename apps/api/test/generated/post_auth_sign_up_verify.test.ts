@@ -24,12 +24,25 @@ describe("POST /api/v1/auth/sign-up/verify", () => {
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-005 保留中（期限切れ・30 分を過ぎた）」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-005 保留中（期限切れ・30 分を過ぎた）");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F1/verify-email.test.ts）：UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない
-  it.todo("test_post_auth_sign_up_verify_server_error");
+  it("test_post_auth_sign_up_verify_server_error", () => {
+    // UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない
+    // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-022」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-022");
+  });
+  it("test_post_auth_sign_up_verify_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   it("test_post_auth_sign_up_verify_rate_limited", () => {
     // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F1/verify-email.test.ts の「K52-API-027 1 分に 11 回（同じ IP）」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/verify-email.test.ts", "utf8")).toContain("K52-API-027 1 分に 11 回（同じ IP）");
+  });
+  it("test_post_auth_sign_up_verify_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
   it("test_post_auth_sign_up_verify_shape", () => {
     // UBIQUITOUS: POST /api/v1/auth/sign-up/verify の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

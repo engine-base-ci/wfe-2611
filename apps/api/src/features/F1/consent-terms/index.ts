@@ -66,8 +66,8 @@ const toItem = (r: Record<string, unknown>): TermsItem => ({
 
 /** 同意の体の前処理。同意の印が無ければ E-VAL-019。版の ID は形だけ（中身は before で見る）。
  *  知らない項目は落とさない：このあと入口が契約の strict な形（正式な uuid も）で確かめ、422 にする（D-129.42・K-144） */
-export function parseConsent(value: unknown): { input: Row } | { reply: HookReply } {
-  const b = value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : null;
+export function parseConsent(raw: unknown): { input: Row } | { reply: HookReply } {
+  const b = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : null;
   if (!b) return { reply: invalid([{ field: "body", message: "JSON の形" }]) };
   if (b["agree"] !== true) {
     const e = kanameError("E-VAL-019").toJSON() as { message?: string };

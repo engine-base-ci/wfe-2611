@@ -40,6 +40,10 @@ describe("DELETE /api/v1/conversations/:id", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
   });
+  it("test_delete_conversations_id_session_unresolved", async () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "down", a); expect(r.status).toBe(503); expect(((await r.json()) as { code: string }).code).toBe("E-PAGE-003"); expect(await h.count(e.table)).toBe(before);
+  });
   it("test_delete_conversations_id_shape", async () => {
     // UBIQUITOUS: DELETE /api/v1/conversations/:id の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     const who = e.auth === "ops" ? "ops" : "boss"; const r = await h.call(e, who, await args(h, e, who)); const b = (await r.json()) as Record<string, unknown>; if (r.status < 300) { expect(b).toHaveProperty("data"); if (e.kind === "list") { expect(Array.isArray(b["data"])).toBe(true); expect(b["meta"]).toHaveProperty("limit"); } } else { expect(b).toHaveProperty("error"); expect(b).toHaveProperty("code"); }

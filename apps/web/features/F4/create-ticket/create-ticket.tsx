@@ -26,6 +26,8 @@ export interface Choices {
 }
 type Fields = Record<string, string>;
 const TITLE_MAX = 200;
+/** 送る内容が 1MB を超えたときの文（入口の 413 の message と同じ・D-130.1・D-130.5） */
+const TOO_LARGE = "送る内容が大きすぎます";
 const todayJst = () => new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10);
 const EMPTY: DraftBody = { priority: "mid", sections: {}, notify_member_ids: [] };
 
@@ -76,6 +78,8 @@ export function CreateTicket({
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [wait, setWait] = useState<number | null>(null);
+  /** 作る口が 413（送る内容が 1MB を超えた・D-130.1）を返したときの答えの文。書いたものは残す */
+  const [tooLarge, setTooLarge] = useState<string | null>(null);
   const loaded = useRef(false);
   /** 続きの下書きを読み終えたか。読み終えるまで欄を出さない（読み終えた中身で、先に書いた欄を上書きしない・K-60） */
   const [ready, setReady] = useState(false);
@@ -131,6 +135,7 @@ export function CreateTicket({
   const fromServer = (r: CallErr) => {
     if (r.kind === "unauthenticated") return onExpired();
     if (r.kind === "rate_limited") return setWait(r.retryAfterSec ?? 60);
+    if (r.kind === "too_large") return setTooLarge(r.message ?? TOO_LARGE);
     const code = r.code;
     if (
       code === "E-VAL-014" ||
@@ -155,6 +160,7 @@ export function CreateTicket({
     if (sending.current) return;
     setProblem(null);
     setWait(null);
+    setTooLarge(null);
     const f = checkForm(d, kind);
     setFields(f);
     if (Object.keys(f).length) return;
@@ -339,6 +345,16 @@ export function CreateTicket({
         {wait !== null ? (
           <Callout tone="warn" title="少し待ってください">
             続けて作りました。{wait} 秒たってから、もう一度押してください。書いたものは残っています。
+          </Callout>
+        ) : null}
+        {tooLarge !== null ? (
+          <Callout tone="danger" title={tooLarge}>
+            書いたものはこの画面に残っています。区画を短くしてから、もう一度「作る」を押してください。
+          </Callout>
+        ) : null}
+        {saveState === "too_large" ? (
+          <Callout tone="warn" title={TOO_LARGE}>
+            下書きをサーバーに残せませんでした。書いたものはこの画面に残っています。区画を短くすると、もう一度残します。
           </Callout>
         ) : null}
         {saveState === "failed" ? (

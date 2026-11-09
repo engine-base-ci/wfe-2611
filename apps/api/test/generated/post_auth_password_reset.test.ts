@@ -9,8 +9,12 @@ describe("POST /api/v1/auth/password/reset", () => {
   it.todo("test_post_auth_password_reset_rejected_422");
   // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_post_auth_password_reset_rejected_422_2");
+  // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+  it.todo("test_post_auth_password_reset_too_large");
   // UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_auth_password_reset_rate_limited");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_auth_password_reset_session_unresolved");
   // UBIQUITOUS: POST /api/v1/auth/password/reset の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_auth_password_reset_shape");
 });

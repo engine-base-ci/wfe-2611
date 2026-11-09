@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:27abecf0c9be707b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8d3ab089892fe948
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -89,9 +89,9 @@ export interface Ops {
   countKnows: { params: never; query: never; body: never; data: T.KnowsCounts };
   getCloneNow: { params: never; query: never; body: never; data: T.CloneNow };
   listConversations: { params: never; query: { "q"?: string | number; "starred"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
-  createConversation: { params: never; query: never; body: T.ConversationsInput; data: T.Conversations };
+  createConversation: { params: never; query: never; body: T.ConversationsInput; data: T.ConversationCreated };
   getConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
-  updateConversation: { params: { id: string }; query: never; body: T.ConversationsInput; data: T.Conversations };
+  updateConversation: { params: { id: string }; query: never; body: T.UpdateConversationInput; data: T.ConversationUpdated };
   deleteConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
   createConversationAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Messages[] };
@@ -195,7 +195,7 @@ export interface Ops {
   resetMemberTwoFactor: { params: { id: string }; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
   listMemories: { params: never; query: { "kind"?: string | number; "since"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Memories[] };
   createMemory: { params: never; query: never; body: T.MemoriesInput; data: T.Memories };
-  updateMemory: { params: { id: string }; query: never; body: T.MemoriesInput; data: T.Memories };
+  updateMemory: { params: { id: string }; query: never; body: T.UpdateMemoryInput; data: T.MemoryUpdated };
   deleteMemory: { params: { id: string }; query: never; body: never; data: T.Memories };
   promoteMemoryToRule: { params: { id: string }; query: never; body: T.PoliciesInput; data: T.Policies };
   createArtifactFromMessage: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };

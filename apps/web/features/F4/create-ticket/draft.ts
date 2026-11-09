@@ -24,7 +24,8 @@ export interface DraftOwner {
   member: string;
 }
 /** 下書きをサーバーに残せたか（残せなかったら画面が知らせる・D-128.62） */
-export type SaveState = "saved" | "failed" | "expired";
+/** too_large：送る内容が 1MB を超えた（413・D-130.5）。書いたものは画面に残し、作るときと同じ文を出す */
+export type SaveState = "saved" | "failed" | "expired" | "too_large";
 
 const TAB_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}-id:${o.workspace}:${o.member}`;
 const COPY_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}:${o.workspace}:${o.member}`;
@@ -164,7 +165,13 @@ export class DraftStore {
         screenId: "tickets",
         ...(ac ? { signal: ac.signal } : {}),
       });
-      state = r.ok ? "saved" : r.kind === "unauthenticated" ? "expired" : "failed";
+      state = r.ok
+        ? "saved"
+        : r.kind === "unauthenticated"
+          ? "expired"
+          : r.kind === "too_large"
+            ? "too_large"
+            : "failed";
     } catch {
       state = "failed";
     } finally {

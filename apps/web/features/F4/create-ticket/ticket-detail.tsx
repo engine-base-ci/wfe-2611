@@ -2,6 +2,7 @@
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。番号・題名・種別・段・担当者・期限と、区画の本文（版 1）。
 //   本文は文字として出す（HTML やスクリプトを動かさない）。直す・AI に任せるは後のチケット（K-62 が上の帯にボタンを足す）
 import { useEffect, useState } from "react";
+import { isUuid } from "@kaname/contracts";
 import { Badge, ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
@@ -41,7 +42,8 @@ function DetailBody({ id }: { id: string }) {
       window.location.replace(`/login?next=${encodeURIComponent(here)}`);
       return;
     }
-    if (!/^[0-9a-f-]{36}$/i.test(id)) {
+    // 入口と同じ正式な uuid の確かめ（版と variant の桁まで・D-129.42・K-144）。違えば口を呼ばずに「見つからない」
+    if (!isUuid(id)) {
       setCode(PAGE_ERROR.notFound);
       return;
     }

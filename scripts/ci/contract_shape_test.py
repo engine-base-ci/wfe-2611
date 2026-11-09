@@ -44,6 +44,86 @@ TYPES = (ROOT / "08_api" / "types.ts").read_text(encoding="utf-8")
 # INPUTS・RESPONSES の欄の型の名前として作り手（05_flow/build_api.py の _ftype）が表せるもの。後ろの ? は null を許す（any には付けない）
 VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
 
+# 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする入力の欄（必須の欄）。読んで洗い出した根拠つき。
+#   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。
+#   ここに無い口の入力の形は required を持たない（条件つきで要る欄＝stepUp の code・種別ごとの必須の区画は required にしない）
+REQUIRED_INPUTS: dict[str, set[str]] = {
+    "createSignup": {"email", "name", "password"},     # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005。無いと空と同じ）。company_name は空でよい（D-125.135）
+    "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
+    "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
+    "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
+    "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい
+    "saveMyTicketDraft": {"draft_id"},                 # apps/api/src/features/F4/create-ticket/hooks.ts:170
+    "createTicket": {"title", "scope_id", "kind_id", "assignee_member_id", "due_on"},   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
+    "updateMemory": {"body"},                          # apps/api/src/hooks/agent.ts:63（覚えることが空です）。作る createMemory は {} で 201
+}
+# 体を受ける作った口のうち、無いことで 422 にする欄を持たないもの（理由つき。新しく作った口はどちらかに載せる）
+NO_REQUIRED_INPUTS: dict[str, str] = {
+    "createPairingCode": "体は空の形（K-57）。{} で 201",
+    "sendHeartbeat": "health・protocol・version はどれも無くてよい（無ければ空の並び・古い印として扱う・connect-pc/hooks.ts:136〜145）",
+    "resendSignupEmail": "体は空の形。申し込みの印は頭 x-signup-token で受ける（D-128.142）",
+    "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
+    "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
+    "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
+}
+# 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
+PATH_PATTERNS: dict[tuple[str, str], str] = {
+    # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（それ以外の英小文字だけの名前は 422）・202〜204（ほかは目録の名前か 404）
+    ("downloadBridgeRelease", "name"): r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$",
+}
+
+# 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。
+#   値域は口が受ける値の集合より狭く書かない（狭いと契約の外の値を口が受けて fuzz の ST201）。書けない分だけ広く、その分は UNEXPRESSIBLE_422 に理由を書く
+CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
+CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+VALUE_RANGES: dict[str, dict[str, dict]] = {
+    "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
+        "title": {"pattern": "\\S", "maxLength": 200},                                  # :28〜30（前後の空白を落として空は 422・200 字まで）
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},                           # :37〜41（日付の形。今日より前・暦に無い日は書けない）
+        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},                    # :42〜46（空は「無し」）
+        "priority": {"enum": ["", "mid", "high"]},                                       # :47〜48（空は中）
+        "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
+                                       {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
+        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
+                     "additionalProperties": {"type": "string"}},     # :63〜74（区画の中身の上限 20,000 字は外した・D-130.3。守りは送る量 1MB だけ）
+        "notify_member_ids": {"maxItems": 20},                                           # :75〜81
+    },
+    "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
+        "code": {"maxLength": 32, "pattern": f"^[{CODE_SEP}]*(?:[{CODE_CHAR}][{CODE_SEP}]*){{6}}$"},
+    },
+    "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts:42〜43（改行を空白にして前後を落とし、空は 422）
+    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
+    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
+        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "name": {"pattern": "\\S", "maxLength": 100},
+        "company_name": {"maxLength": 100},
+        "password": {"minLength": 12},
+    },
+    "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
+    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
+}
+# 契約に書けない値の決まり（口の振る舞いのまま 422）。422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
+UNEXPRESSIBLE_422: dict[str, list[str]] = {
+    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
+                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
+                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
+    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "updateConversation": ["名前が null（空と同じ）"],
+    "updateMemory": ["覚えることが null（空と同じ）"],
+    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "consentToTerms": ["無い版の ID（版の ID の在りか）"],
+}
+# 会話と記憶の口（hooks/agent.ts）の成功の答えの形（類 C/D の続き）：表の行ではなく、口が返すとおりの形
+AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
+    "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),   # hooks/agent.ts:37
+    "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),             # hooks/agent.ts:50
+    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),                          # hooks/agent.ts:66
+}
+
 # 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
 HOOKS_DIR = ROOT / "apps/api/src/hooks"
 # 共通の処理（apps/api/src/contract/op.ts）のうち、hooks から呼ばれて状態コードを返すもの
@@ -204,6 +284,17 @@ def statuses_in(block: str, cat: dict[str, int], defs: dict[str, str] | None = N
                 s |= statuses_in(body, cat, defs, depth - 1)
     return s
 
+
+
+def returns_raw(text: str) -> bool:
+    """返す答え（status の鍵を持つ物の書き方）に鍵 raw があるか。`raw: <値>` と省略形 `raw`（, か } が続く）の両方を拾う。
+    引数・変数の名前の raw、型の `raw?:`（; で区切る型の書き方）は拾わない（K144-SHAPE-011・回 6）"""
+    for obj in re.findall(r"\{[^{}]*\}", text):
+        if not re.search(r"(?:^\{|,)\s*status\s*:", obj):
+            continue
+        if re.search(r"(?:^\{|,)\s*raw\s*(?::|,|\})", obj):
+            return True
+    return False
 
 class ContractShapeTest(unittest.TestCase):
     # ---- 作り手が書ける形（R1 #3）
@@ -384,15 +475,26 @@ class ContractShapeTest(unittest.TestCase):
         self.assertEqual(missing, [], "口が返すのに契約に無い状態コード")
 
     def test_K144_SHAPE_011_raw_answers_declare_a_non_json_content(self) -> None:
-        """JSON でなくファイルそのものを返す口（振る舞いに raw: がある）は、200 に JSON 以外の中身の形を書いている"""
-        bad = []
+        """JSON でなくファイルそのものを返す口（返す答え HookReply に鍵 raw がある）は、200 に JSON 以外の中身の形を書いている。
+        回 6：拾うのは「status の鍵を持つ物の中の raw の鍵」だけ（`raw: r` と省略形 `{ raw }`・`, raw }`）。引数や変数の名前 raw・型の `raw?:` は数えない"""
+        # 拾い方そのものの確かめ（前の拾い方 \braw: は引数の名前を拾い、省略形を見落とした）
+        for sample in ("return { status: 200, body: null, raw: r };", "return { status: 200, body: null, raw };",
+                       "return { raw, status: 200, body: null };"):
+            self.assertTrue(returns_raw(sample), f"返す答えの raw を拾えていない：{sample}")
+        for sample in ("export function parse(raw: unknown) { return { status: 422, body: {} }; }",
+                       "const raw = a.input.x; return { status: 200, body: raw };",
+                       "type R = { status: number; body: unknown; raw?: Response };"):
+            self.assertFalse(returns_raw(sample), f"答えでない raw を拾った：{sample}")
+        bad: list[str] = []
+        found: list[str] = []
         for op_id, (block, defs) in hook_regions().items():
             text = block + "".join(v for k, v in defs.items() if re.search(rf"\b{k}\(", block))
-            if re.search(r"\braw:", text):
+            if returns_raw(text):
+                found.append(op_id)
                 ok = operation(op_id)[2]["responses"].get("200", {}).get("content", {})
                 if not any(k != "application/json" for k in ok):
                     bad.append(op_id)
-        self.assertIn("downloadBridgeRelease", [o for o, (b, d) in hook_regions().items() if "give(" in b])
+        self.assertIn("downloadBridgeRelease", found, "ファイルを返す口を拾えていない（拾い方が壊れた）")
         self.assertEqual(bad, [], "ファイルを返すのに 200 が JSON だけ")
 
     def test_K144_SHAPE_017_every_built_op_has_an_entrance_uuid_row(self) -> None:
@@ -463,7 +565,434 @@ class ContractShapeTest(unittest.TestCase):
     def test_K144_SHAPE_014_types_follow_the_contract(self) -> None:
         """画面とサーバーの型（08_api/types.ts）も契約に合う：色は null がある・下書きの id は文字"""
         self.assertRegex(TYPES, r"export type TicketKindChoice = \{[^}]*\bcolor\?: string \| null;")
-        self.assertRegex(TYPES, r"export type TicketDraftInput = \{[^}]*\bdraft_id\?: string;")
+        self.assertRegex(TYPES, r"export type TicketDraftInput = \{[^}]*\bdraft_id: string;")   # 回 9：必須の欄（類 E）なので ? が付かない
+
+    def test_K144_SHAPE_018_every_op_declares_the_entrance_503(self) -> None:
+        """回 6（類 C の続き）：/api/* の全部の口が通る入口（apps/api/src/middleware の tenantContext）が返す状態コード（セッションを解けないときの
+        503・E-PAGE-003＝op.ts の sessionUnresolved）を、契約の全部の口の responses と endpoints.json の outputs_4xx（EARS の文つき）に書いている。
+        生成の試験で本物の試験が別のファイルにある口（ears-elsewhere）は、その 503 の文の試験を covers に結んでいる（it.todo にしない）"""
+        op_src = (ROOT / "apps/api/src/contract/op.ts").read_text(encoding="utf-8")
+        mw = "".join(f.read_text(encoding="utf-8") for f in sorted((ROOT / "apps/api/src/middleware").glob("*.ts")) if ".test." not in f.name)
+        helpers = set(re.findall(r"export const (\w+) = \(c: Context", op_src))
+        statuses: dict[int, set[str]] = {}
+        for h in helpers:
+            if not re.search(rf"\b{h}\(", mw):
+                continue
+            body = re.search(rf"export const {h} = \(c: Context.*?\n\}};", op_src, re.S)
+            self.assertIsNotNone(body, f"op.ts の {h} の中身を読めない")
+            codes = set(re.findall(r'code: "([A-Z]-[A-Z]+-\d{3}|[A-Z_]+)"', body.group(0))) | set(re.findall(r'kanameError\("([A-Z]-[A-Z]+-\d{3})"\)', body.group(0)))  # type: ignore[union-attr]
+            for st in re.findall(r"\},\s*(\d{3})\s*\)", body.group(0)):  # type: ignore[union-attr]
+                statuses.setdefault(int(st), set()).update(codes)
+        statuses |= {int(st): set() for st in re.findall(r"c\.json\([^;]*?,\s*(\d{3})\s*\)", mw)}
+        self.assertIn(503, statuses, "入口（middleware）の 503 を拾えていない（拾い方が壊れた）")
+        self.assertIn("E-PAGE-003", statuses[503])
+        missing = []
+        for path, methods in OA["paths"].items():
+            if not path.startswith("/"):
+                continue
+            for method, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                for st, codes in statuses.items():
+                    r = op.get("responses", {}).get(str(st))
+                    if r is None:
+                        missing.append(f"{op['operationId']} {st}")
+                    elif not all(c in r.get("description", "") for c in codes):
+                        missing.append(f"{op['operationId']} {st} の説明に {'・'.join(sorted(codes))} が無い")
+        self.assertEqual(missing, [], "入口が全部の口で返すのに契約に無い状態コード")
+        no_ears = [e.get("operation_id") or e["implementation_path"].split("::")[1] for e in EPS
+                   if not any(x["status"] == 503 and x.get("code") == "E-PAGE-003" and "503" in x.get("ears_form", "") for x in e["outputs_4xx"])]
+        self.assertEqual(no_ears, [], "endpoints.json の outputs_4xx に入口の 503・E-PAGE-003（EARS の文つき）が無い口")
+        mapping = json.loads((ROOT / "07_qa/test-plan/ears-test-mapping.json").read_text(encoding="utf-8"))["mappings"]
+        away = json.loads((ROOT / "07_qa/test-plan/ears-elsewhere.json").read_text(encoding="utf-8"))["ops"]
+        op_of = {f"{e['method']} {e['path']}": e["implementation_path"].split("::")[1] for e in EPS}
+        loose = [m["test_function"] for m in mapping
+                 if m["http_code"] == "503" and "E-PAGE-003" in m["ears_text"] and op_of.get(m["endpoint"]) in away
+                 and m["test_function"] not in away[op_of[m["endpoint"]]].get("covers", {})]
+        self.assertEqual(loose, [], "本物の試験が別のファイルにある口の、入口の 503 の生成の試験が covers に結ばれていない（it.todo のまま）")
+
+    def test_K144_SHAPE_019_no_hand_rolled_loose_uuid_check(self) -> None:
+        """回 6（類 B の続き・L-008）：画面（apps/web）と口（apps/api/src）は、id の形を自前の緩い正規表現（[0-9a-f-]{36}）で確かめない。
+        入口と同じ正式な uuid の確かめ（版と variant の桁まで）を使う。緩いと、入口が 422 で断る id を画面は「ある」とみなし、
+        「見つからない」でなく「読み込めない」を出す（/tickets/<版の桁が 0 の 36 字>）。前の道すじ apps/api/src/auth は K-145 の受け持ちなので外す"""
+        loose = re.compile(r"\[0-9a-f(?:A-F)?-\]\{36\}")
+        bad = []
+        for base in ("apps/web", "apps/api/src"):
+            for f in sorted((ROOT / base).rglob("*.ts*")):
+                rel = f.relative_to(ROOT).as_posix()
+                if "node_modules" in rel or "/.next/" in rel or re.search(r"(\.test\.|\.spec\.|/tests?/)", rel) or rel.startswith("apps/api/src/auth/"):
+                    continue
+                for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+                    if loose.search(line):
+                        bad.append(f"{rel}:{i}")
+        self.assertEqual(bad, [], "id の形を緩い正規表現で確かめている（入口と同じ isUuid を使う）")
+
+    # ---- 必須の欄（類 E・回 9・Q5 回 8 追加-1）
+    @staticmethod
+    def _bodies() -> dict[str, str]:
+        """体を受ける口の全部（まだ作っていない口も）→ その入力の形の名前"""
+        return {op["operationId"]: ref_name(op["requestBody"]["content"]["application/json"]["schema"])
+                for methods in OA["paths"].values() for op in methods.values()
+                if isinstance(op, dict) and "requestBody" in op}
+
+    def test_K144_SHAPE_020_required_fields_match_what_the_behaviour_rejects(self) -> None:
+        """口が「無い」ことで 422 にする欄（REQUIRED_INPUTS）は、その口の入力の形の required とちょうど同じ。ほかの口（まだ作っていない口も）の入力の形は required を持たない。
+        体を受ける作った口（hooks の口と表の素の書き込み）は、REQUIRED_INPUTS か NO_REQUIRED_INPUTS のどちらかに載っている（新しく作った口を見落とさない）。
+        本物の DB の答え（{} と 1 欄ずつ抜いた体）は k144-contract.test.ts の REQUIRED_CASES（K144-API-033・034）で、この表と 1 対 1"""
+        bodies = self._bodies()
+        bad = []
+        for op_id, name in sorted(bodies.items()):
+            sc = SCHEMAS[name]
+            got = set(sc.get("required", []))
+            want = REQUIRED_INPUTS.get(op_id, set())
+            if got != want:
+                bad.append(f"{op_id}（{name}）: 契約 {sorted(got)} ／ 口 {sorted(want)}")
+            missing = sorted(got - set(sc["properties"]))
+            if missing:
+                bad.append(f"{name} の required に無い欄 {missing}")
+        self.assertEqual(bad, [], "必須の欄が口の振る舞いと合わない")
+        built = set(hook_regions())
+        for b in re.split(r"\n  \{\n", REGISTRY):
+            m = re.search(r'"operationId":\s*"(\w+)"', b)
+            g = re.search(r'"generic":\s*true', b)
+            t = re.search(r'"table":\s*"(\w+)"', b)
+            if m and g and t and "id" in DBC.get(t.group(1), {}):
+                built.add(m.group(1))
+        unlisted = sorted(o for o in built & set(bodies) if o not in REQUIRED_INPUTS and o not in NO_REQUIRED_INPUTS)
+        self.assertEqual(unlisted, [], "体を受ける作った口が REQUIRED_INPUTS にも NO_REQUIRED_INPUTS にも無い（無いと 422 にする欄を読んで載せる）")
+        self.assertEqual(sorted(set(REQUIRED_INPUTS) & set(NO_REQUIRED_INPUTS)), [])
+        self.assertEqual(sorted(o for o in list(REQUIRED_INPUTS) + list(NO_REQUIRED_INPUTS) if o not in bodies), [], "表に体を受けない口がある")
+        # 本物の DB の試験の表（REQUIRED_CASES）と 1 対 1
+        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
+        block = re.search(r"REQUIRED_CASES = \[(.*?)\] as const;", src, re.S)
+        self.assertIsNotNone(block, "k144-contract.test.ts に REQUIRED_CASES が無い")
+        cases = {op: set(re.findall(r'"(\w+)"', fs)) for op, fs in re.findall(r'\["(\w+)",\s*\[([^\]]*)\]', block.group(1))}  # type: ignore[union-attr]
+        self.assertTrue(cases, "REQUIRED_CASES を読めない")
+        diff = sorted(f"{o}: 試験 {sorted(fs)} ／ 表 {sorted(REQUIRED_INPUTS.get(o, set()))}" for o, fs in cases.items() if fs != REQUIRED_INPUTS.get(o, set()))
+        self.assertEqual(diff, [], "本物の DB の試験の必須の欄が、この表と合わない")
+        for o in ("claimPairingCode", "saveMyTicketDraft", "createTicket", "updateMemory", "createPairingCode", "createConversation", "updateConversation", "createMemory"):
+            self.assertIn(o, cases, f"REQUIRED_CASES に {o} が無い（試験の土台で動かせる口は全部本物で確かめる）")
+
+    def test_K144_SHAPE_021_required_inputs_keep_the_behaviours_error_and_own_shape(self) -> None:
+        """必須の欄を書いた入力の形は x-required-by: hooks を持ち、入口の zod（packages/contracts/src/schemas.ts）ではその欄を .optional() のままにする
+        （無いときの答えは口の振る舞いの正本のエラーのまま：登録 E-VAL-004・確認 E-PAGE-006・同意 E-VAL-019。入口が先に VALIDATION_ERROR にしない）。
+        型（08_api/types.ts）は必須の欄に ? が付かない。2 つの口が分け合う形（MemoriesInput）は、必須の違う口（updateMemory）に自分の形を持たせる"""
+        bodies = self._bodies()
+        for op_id, fields in sorted(REQUIRED_INPUTS.items()):
+            name = bodies[op_id]
+            sc = SCHEMAS[name]
+            self.assertEqual(sc.get("x-required-by"), "hooks", f"{name} に x-required-by: hooks が無い")
+            m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
+            self.assertIsNotNone(m, f"schemas.ts に {name} が無い")
+            t = re.search(rf"export type {name} = \{{([^}}]*)\}};", TYPES)
+            self.assertIsNotNone(t, f"types.ts に {name} が無い")
+            for k in sorted(fields):
+                self.assertRegex(m.group(1), rf"\n  {k}: [^\n]*\.optional\(\),", f"schemas.ts の {name}.{k} が .optional() でない（無いときの答えを口に任せる）")  # type: ignore[union-attr]
+                self.assertRegex(t.group(1), rf"(?:^\s*|;\s*){k}: ", f"types.ts の {name}.{k} に ? が付いている")  # type: ignore[union-attr]
+            sharers = sorted(o for o, n in bodies.items() if n == name and o != op_id)
+            self.assertEqual([o for o in sharers if REQUIRED_INPUTS.get(o, set()) != fields], [], f"{name} を必須の違う口と分け合っている")
+        self.assertNotEqual(bodies["updateMemory"], bodies["createMemory"], "updateMemory が createMemory と同じ入力の形のまま（必須が違う）")
+        self.assertEqual(SCHEMAS[bodies["updateMemory"]]["properties"].keys(), SCHEMAS[bodies["createMemory"]]["properties"].keys(), "updateMemory の形の欄の名前は createMemory と同じ（受ける欄を変えない・値域は口ごと＝K144-SHAPE-023）")
+        self.assertIs(SCHEMAS[bodies["updateMemory"]].get("additionalProperties"), False)
+        self.assertNotIn("required", SCHEMAS[bodies["createMemory"]])
+
+    # ---- 道の値の値域（類 F・回 9・Q5 回 8 追加-2）
+    def test_K144_SHAPE_022_path_values_the_behaviour_rejects_carry_a_range(self) -> None:
+        """口が道の値を値域つきで断る（422）なら、契約の道の値の形に値域（pattern）がある。
+        downloadBridgeRelease の name：mac・win・英小文字だけでない名前は契約に合い、それ以外の英小文字だけの名前（linux・seed）は合わない。
+        見本の名前は本物の DB の試験の RELEASE_NAMES（K144-API-035）と同じ並びで、口の答え（422 か否か）と pattern の判定が 1 対 1。
+        ほかの口で、口が道の値・問い合わせを読んでその名前の欄で 422 を返すものは、契約の形に値域（pattern・enum・format・minimum・maximum）がある（機械の洗い出し）"""
+        for (op_id, pname), pat in PATH_PATTERNS.items():
+            ps = {x["name"]: x for x in operation(op_id)[2].get("parameters", []) if x["in"] == "path"}
+            self.assertIn(pname, ps, f"{op_id} に道の値 {pname} が無い")
+            self.assertEqual(ps[pname]["schema"].get("pattern"), pat, f"{op_id} の {pname} の値域が違う")
+        pat = re.compile(PATH_PATTERNS[("downloadBridgeRelease", "name")])
+        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
+        block = re.search(r"RELEASE_NAMES = \[(.*?)\] as const;", src, re.S)
+        self.assertIsNotNone(block, "k144-contract.test.ts に RELEASE_NAMES が無い")
+        rows = re.findall(r'\[\s*"((?:[^"\\]|\\.)*)",\s*(true|false)\s*\]', block.group(1))  # type: ignore[union-attr]
+        self.assertGreaterEqual(len(rows), 8, "RELEASE_NAMES を読めない")
+        wrong = [f"{n!r} は契約に{'合う' if ok == 'true' else '合わない'}はず" for n, ok in rows
+                 if bool(pat.fullmatch(json.loads(f'"{n}"'))) != (ok == "true")]
+        self.assertEqual(wrong, [], "pattern の判定が口の答え（422 か否か）と合わない")
+        for must in ("mac", "win", "linux", "seed"):
+            self.assertIn(must, [json.loads(f'"{n}"') for n, _ in rows])
+        # 機械の洗い出し：口が読む道の値・問い合わせのうち、その名前の欄で 422 を返すもの
+        bad = []
+        found = []
+        for op_id, (block_src, defs) in hook_regions().items():
+            text = block_src + "".join(v for k, v in defs.items() if re.search(rf"\b{k}\(", block_src))
+            reads = set(re.findall(r'req\.(?:param|query)\("(\w+)"\)', text))
+            for n in sorted(reads):
+                if not re.search(rf'(?:invalid\(\s*"{n}"|field:\s*"{n}")', text):
+                    continue
+                found.append((op_id, n))
+                sc = next((x["schema"] for x in operation(op_id)[2].get("parameters", []) if x["name"] == n), None)
+                if sc is None or not any(k in sc for k in ("pattern", "enum", "format", "minimum", "maximum")):
+                    bad.append(f"{op_id} {n}")
+        self.assertIn(("downloadBridgeRelease", "name"), found, "道の値を値域つきで断る口を拾えていない（拾い方が壊れた）")
+        self.assertEqual(bad, [], "口が値域つきで 422 にするのに、契約の形に値域が無い道の値・問い合わせ")
+
+    # ---- 体の値の値域（類 G・回 9 の続き・PM の判断 2026-11-09）
+    @staticmethod
+    def _fits(v: object, sc: dict) -> bool:
+        """契約の欄の形（このチケットで使う言葉だけ）に値が合うか。pattern は JSON Schema と同じく「どこかに合う」（re.search）"""
+        if v is None:
+            return bool(sc.get("nullable"))
+        if "anyOf" in sc:
+            return any(ContractShapeTest._fits(v, x) for x in sc["anyOf"])
+        if "enum" in sc and v not in sc["enum"]:
+            return False
+        t = sc.get("type")
+        if t == "string":
+            if not isinstance(v, str):
+                return False
+            if "pattern" in sc and not re.search(sc["pattern"], v):
+                return False
+            if len(v) > sc.get("maxLength", 10**9) or len(v) < sc.get("minLength", 0):
+                return False
+        elif t == "integer":
+            if isinstance(v, bool) or not (isinstance(v, int) or (isinstance(v, float) and v.is_integer())):
+                return False
+            if v < sc.get("minimum", -10**18) or v > sc.get("maximum", 10**18):
+                return False
+        elif t == "boolean":
+            return isinstance(v, bool) and ("enum" not in sc or v in sc["enum"])
+        elif t == "object":
+            if not isinstance(v, dict):
+                return False
+            pn = (sc.get("propertyNames") or {}).get("pattern")
+            ap = sc.get("additionalProperties")
+            for k, x in v.items():
+                if pn and not re.search(pn, k):
+                    return False
+                if isinstance(ap, dict) and not ContractShapeTest._fits(x, ap):
+                    return False
+        elif t == "array":
+            if not isinstance(v, list) or len(v) > sc.get("maxItems", 10**9):
+                return False
+        return True
+
+    @staticmethod
+    def _range_cases() -> list[tuple[str, str, object, bool]]:
+        """本物の DB の試験の RANGE_CASES（k144-contract.test.ts）。値は JSON。@today・@code:* は見本の値に置き換える"""
+        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
+        block = re.search(r"RANGE_CASES: RangeCase\[\] = \[(.*?)\n\];", src, re.S)
+        assert block, "k144-contract.test.ts に RANGE_CASES が無い"
+        out = []
+        for op, field, raw, ok in re.findall(r'\[\s*"(\w+)",\s*"(\w+)",\s*(.+?),\s*(true|false)\s*\],?\s*(?://[^\n]*)?\n', block.group(1)):
+            raw = raw.strip()
+            m = re.fullmatch(r'"(.*)"\.repeat\((\d+)\)', raw)
+            if m:
+                v: object = json.loads(f'"{m.group(1)}"') * int(m.group(2))
+            elif raw == "Array.from({ length: 21 }, () => randomUUID())":
+                v = ["00000000-0000-4000-8000-000000000000"] * 21
+            else:
+                v = json.loads(raw)
+            sample = {"@today": "2026-01-01", "@code:plain": "ABC234", "@code:lower": "abc234", "@code:fullwidth": "ＡＢＣ２３４",
+                      "@code:spaced": " abc-234 "}
+            if isinstance(v, str) and v in sample:
+                v = sample[v]
+            out.append((op, field, v, ok == "true"))
+        assert len(out) >= 30, "RANGE_CASES を読めない"
+        return out
+
+    def test_K144_SHAPE_023_body_value_ranges_are_in_the_contract(self) -> None:
+        """口が値で断る欄のうち書けるもの（VALUE_RANGES）は、その口の入力の形の欄に同じ値域がある。type・format・nullable は変えず、
+        入口の zod（schemas.ts）はその欄に値域を足さない（今のエラー ID と文言のまま）。分け合う形は、値域の違う口に自分の形を持たせる（updateConversation）。
+        本物の DB の試験の RANGE_CASES（K144-API-039）の値ごとに、契約の判定（合う／合わない）と口の答え（その欄で 422 にしない／する）が 1 対 1"""
+        bodies = self._bodies()
+        bad = []
+        for op_id, fields in sorted(VALUE_RANGES.items()):
+            name = bodies[op_id]
+            props = SCHEMAS[name]["properties"]
+            for k, want in fields.items():
+                got = props.get(k, {})
+                for key, val in want.items():
+                    if got.get(key) != val:
+                        bad.append(f"{op_id}（{name}）.{k}.{key}: 契約 {got.get(key)!r} ／ 口 {val!r}")
+            m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
+            self.assertIsNotNone(m, f"schemas.ts に {name} が無い")
+            for k in fields:
+                line = re.search(rf"\n  {k}: ([^\n]*),", m.group(1))  # type: ignore[union-attr]
+                self.assertIsNotNone(line, f"schemas.ts の {name} に {k} が無い")
+                self.assertNotRegex(line.group(1), r"\.(?:regex|min|length|int\(\)\.min|enum|literal|gte|lte|max)\(|z\.enum|z\.literal|\bstr\(",  # type: ignore[union-attr]
+                                    f"schemas.ts の {name}.{k} に値域が入った（入口が先に断ると今のエラー ID と文言が変わる）")
+        self.assertEqual(bad, [], "口が値で断るのに、契約の欄に値域が無い（または違う）")
+        self.assertNotEqual(bodies["updateConversation"], bodies["createConversation"], "updateConversation が createConversation と同じ入力の形のまま（値域が違う）")
+        self.assertEqual(SCHEMAS[bodies["updateConversation"]]["properties"].keys(), SCHEMAS[bodies["createConversation"]]["properties"].keys())
+        self.assertNotIn("pattern", SCHEMAS[bodies["createConversation"]]["properties"]["title"], "createConversation の title に値域（口は読まない）")
+        self.assertNotIn("pattern", SCHEMAS["Conversations"]["properties"]["title"], "答えの形に値域が入った（入力の欄を写さずに書き換えた）")
+        self.assertNotEqual(SCHEMAS["Memories"]["properties"]["confidence"].get("pattern"), VALUE_RANGES["createMemory"]["confidence"]["pattern"], "答えの形に入力の値域が入った（入力の欄を写さずに書き換えた）")
+        wrong = []
+        for op_id, field, v, ok in self._range_cases():
+            sc = SCHEMAS[bodies[op_id]]["properties"][field]
+            if self._fits(v, sc) != ok:
+                wrong.append(f"{op_id}.{field}={str(v)[:40]!r}: 契約は{'合う' if self._fits(v, sc) else '合わない'}・口は{'受ける' if ok else '断る'}")
+        self.assertEqual(wrong, [], "契約の値域の判定が、口の答え（RANGE_CASES）と合わない")
+        self.assertEqual(sorted({o for o, *_ in self._range_cases()}), ["claimPairingCode", "createMemory", "createTicket", "updateConversation", "updateMemory"])
+
+    def test_K144_SHAPE_024_unexpressible_rejections_are_explained_in_the_422(self) -> None:
+        """契約に書けない値の決まり（今日より前の期限・外部キーの在りか・条件つき など）は、口の振る舞いのまま 422。
+        その口の 422 の説明に理由を全部書き、x-unexpressible-422 に同じ並びを持つ（fuzz での扱いは K-62 の受け持ち）。ほかの口は x-unexpressible-422 を持たない"""
+        bad = []
+        for path, methods in OA["paths"].items():
+            for _m, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                o = op["operationId"]
+                r = op.get("responses", {}).get("422", {})
+                want = UNEXPRESSIBLE_422.get(o)
+                if want is None:
+                    if "x-unexpressible-422" in r:
+                        bad.append(f"{o}: 表に無いのに x-unexpressible-422")
+                    continue
+                if not r:
+                    bad.append(f"{o}: 422 が無い")
+                    continue
+                if r.get("x-unexpressible-422") != want:
+                    bad.append(f"{o}: x-unexpressible-422 {r.get('x-unexpressible-422')} ／ 表 {want}")
+                missing = [x for x in want if x not in r.get("description", "")]
+                if missing:
+                    bad.append(f"{o}: 422 の説明に無い理由 {missing}")
+        self.assertEqual(bad, [], "契約に書けない値の決まりが 422 に書かれていない")
+
+    # ---- 会話と記憶の口の成功の答えの形（類 C/D の続き・回 9）
+    def test_K144_SHAPE_025_agent_answers_are_the_shape_the_hooks_return(self) -> None:
+        """会話と記憶の口（hooks/agent.ts）の成功の答えは、表の行（Conversations・Memories）ではなく、口が返すとおりの形（AGENT_ANSWERS）。
+        本物の答えが形（strict）に合うかは K144-API-037"""
+        for op_id, (name, fields) in AGENT_ANSWERS.items():
+            r = operation(op_id)[2]["responses"]
+            ok = next(v for k, v in r.items() if k.startswith("2"))
+            self.assertEqual(ref_name(ok["content"]["application/json"]["schema"]["properties"]["data"]), name, f"{op_id} の成功の答えの形")
+            self.assertEqual(SA.RESPONSES.get(op_id), (name, fields), f"screen_api.py の RESPONSES の {op_id}")
+            for k, t in fields.items():
+                p = prop(name, k)
+                self.assertTrue(is_uuid(p) if t == "uuid" else p.get("type") == t, f"{name}.{k} の型が {t} でない")
+                self.assertFalse(p.get("nullable"), f"{name}.{k} は null を返さない")
+
+    # ---- 入口の文字の上限と送る量の守り（精査 R1 回 10・D-130.1・PM の判断 2026-11-09）
+    def test_K144_SHAPE_026_free_text_has_no_limit_and_bodies_declare_413(self) -> None:
+        """D-130.1：自由に書く欄（その欄だけの上限を持たない欄）には文字数の上限を置かない。入口の zod の文字の欄は `z.string()`（`.max(` も一律の上限も無い）。
+        契約の入力の形の文字の欄（format の無い type: string）は、口の値域（VALUE_RANGES の maxLength：題名 200 など）がある欄だけ maxLength を持ち、ほかは持たない。
+        サーバーを守るため、体を受ける口（POST・PATCH・PUT）は全部、1 回に送る内容が 1MB（1,048,576 バイト）を超えたら 413・PAYLOAD_TOO_LARGE を返す：
+        契約の responses に 413（説明に PAYLOAD_TOO_LARGE）、endpoints.json の outputs_4xx に EARS の文つきの 413。本物の試験が別のファイルにある口の 413 の生成の試験は covers に結ばれている"""
+        self.assertNotIn("z.string().max(", ZOD, "入口に一律の文字の上限 z.string().max( が残っている（D-130.1）")
+        self.assertNotRegex(ZOD, r"\bstr\(", "入口に一律の文字の上限 str( が残っている（D-130.1）")
+        bodies = self._bodies()
+        ops_of: dict[str, list[str]] = {}
+        for o, n in bodies.items():
+            ops_of.setdefault(n, []).append(o)
+        bad = []
+        checked = 0
+        for name, ops in sorted(ops_of.items()):
+            m = re.search(rf"export const {name} = z\.strictObject\(\{{(.*?)\n\}}\);", ZOD, re.S)
+            self.assertIsNotNone(m, f"schemas.ts に {name} が無い")
+            for k, p in SCHEMAS[name]["properties"].items():
+                if p.get("type") != "string" or p.get("format"):
+                    continue
+                checked += 1
+                if not re.search(rf"\n  {k}: z\.string\(\)(?:\.nullable\(\))?\.optional\(\),", m.group(1)):  # type: ignore[union-attr]
+                    bad.append(f"{name}.{k}: 入口の zod が z.string() でない")
+                narrower = [x for x in (VALUE_RANGES.get(o, {}).get(k, {}).get("maxLength") for o in ops) if x is not None]
+                want = min(narrower) if narrower else None
+                if p.get("maxLength") != want:
+                    bad.append(f"{name}.{k}: 契約 maxLength {p.get('maxLength')} ／ 口の値域 {want}")
+        self.assertGreater(checked, 150, "入力の文字の欄を拾えていない")
+        self.assertEqual(bad, [], "自由に書く欄に上限がある、または口の値域の上限が契約と合わない")
+        leaked = sorted(f"{n}.{k}" for n, sc in SCHEMAS.items() if n not in ops_of
+                        for k, p in sc.get("properties", {}).items() if isinstance(p, dict) and p.get("maxLength") == 10000)
+        self.assertEqual(leaked, [], "答えの形に一律の上限 maxLength 10000 が入った")
+        missing = []
+        for path, methods in OA["paths"].items():
+            for method, op in methods.items():
+                if not isinstance(op, dict) or method not in ("post", "patch", "put") or "requestBody" not in op:
+                    continue
+                r = op.get("responses", {}).get("413")
+                if not r or "PAYLOAD_TOO_LARGE" not in r.get("description", ""):
+                    missing.append(op["operationId"])
+        self.assertEqual(missing, [], "体を受けるのに契約の 413（PAYLOAD_TOO_LARGE）が無い口")
+        no_ears = [e.get("operation_id") or e["implementation_path"].split("::")[1] for e in EPS
+                   if e["method"] in ("POST", "PATCH", "PUT")
+                   and not any(x["status"] == 413 and x.get("code") == "PAYLOAD_TOO_LARGE" and "413" in x.get("ears_form", "") for x in e["outputs_4xx"])]
+        self.assertEqual(no_ears, [], "endpoints.json の outputs_4xx に 413（EARS の文つき）が無い口")
+        mapping = json.loads((ROOT / "07_qa/test-plan/ears-test-mapping.json").read_text(encoding="utf-8"))["mappings"]
+        away = json.loads((ROOT / "07_qa/test-plan/ears-elsewhere.json").read_text(encoding="utf-8"))["ops"]
+        op_of = {f"{e['method']} {e['path']}": e["implementation_path"].split("::")[1] for e in EPS}
+        loose = [m["test_function"] for m in mapping
+                 if m["http_code"] == "413" and op_of.get(m["endpoint"]) in away
+                 and m["test_function"] not in away[op_of[m["endpoint"]]].get("covers", {})]
+        self.assertEqual(loose, [], "本物の試験が別のファイルにある口の 413 の生成の試験が covers に結ばれていない")
+        self.assertTrue(all(m["test_function"].endswith("_too_large") or re.search(r"_too_large_\d+$", m["test_function"]) for m in mapping if m["http_code"] == "413"),
+                        "413 の生成の試験の名前が too_large でない（05_flow/build_testplan.py の classify）")
+
+    # ---- 黙った切り捨てと、決めていない上限（精査 R1 回 12 追加-3・D-130.3・D-130.4）
+    # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
+    #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
+    SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
+        "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
+        "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],
+        "apps/api/src/features/F3/connect-pc/code.ts": [("slice(0, LABEL_MAX)", "Bridge が送る PC の名前（人が書く欄でない・D-130.4 の外。報告で PM に申し送り）")],
+        "apps/api/src/features/F3/connect-pc/hooks.ts": [("[...v].slice(0, max)", "Bridge が送る自己診断の 1 行の名前・詳しく・直し方・番号（人が書く欄でない）"),
+                                                         ("slice(0, HEALTH_MAX)", "Bridge が送る点検の並び（人が書く欄でない）"),
+                                                         ("slice(0, 40)", "Bridge が送る版の名前（人が書く欄でない）")],
+    }
+
+    def _migration_texts(self) -> list[tuple[str, str]]:
+        idx = (ROOT / "packages/db/src/index.ts").read_text(encoding="utf-8")
+        m = re.search(r"export const MIGRATIONS = \[(.*?)\]", idx, re.S)
+        self.assertIsNotNone(m, "packages/db/src/index.ts に MIGRATIONS が無い")
+        names = re.findall(r'"(\d{4}_[^"]+\.sql)"', m.group(1))  # type: ignore[union-attr]
+        return [(n, (ROOT / "packages/db/migrations" / n).read_text(encoding="utf-8")) for n in names]
+
+    def _last_function(self, name: str) -> str:
+        body = ""
+        for _n, t in self._migration_texts():
+            for mm in re.finditer(rf"create or replace function {re.escape(name)}\(.*?\nend \$\$;", t, re.S | re.I):
+                body = mm.group(0)
+        self.assertTrue(body, f"{name} の定義が migration に無い")
+        return body
+
+    def test_K144_SHAPE_027_free_text_is_not_silently_cut_and_has_no_undecided_limit(self) -> None:
+        """D-130.3・D-130.4：区画の 20,000 字・下書きの 180,000 バイトの上限を外し、記憶の本文と題・会話の名前を黙って切らない（上限も置かない）。守りは送る量 1MB だけ。
+        (1) 契約の口の振る舞い（hooks と features）の `.slice(0, …)` は SLICE_ALLOWED（理由つき）にあるものだけ
+        (2) 作る口に区画と下書きの上限（SECTION_MAX・DRAFT_MAX_BYTES・バイト数の比べ）が無い
+        (3) 効いている（MIGRATIONS の順で最後の）app.agent_memory_edit・app.agent_conversation_set が本文と名前を left( で切らない
+            （記憶の題が無いときに本文の頭 80 字から題を作るのは、書いたものを消さないので残してよい）
+        (4) app.ticket_drafts の大きさの決まり（ticket_drafts_body_check：pg_column_size(body) <= 200000）を、0090 より後の migration が外す
+        本物の DB で長い区画・下書き・記憶・会話の名前が一字も欠けずに残るかは K144-API-043"""
+        bad = []
+        files = sorted([*(ROOT / "apps/api/src/hooks").glob("*.ts"), *(ROOT / "apps/api/src/features").rglob("*.ts")])
+        for f in files:
+            if ".test." in f.name:
+                continue
+            rel = f.relative_to(ROOT).as_posix()
+            allowed = self.SLICE_ALLOWED.get(rel, [])
+            for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+                if not re.search(r"\.(?:slice|substring|substr)\(\s*0\s*,", line):
+                    continue
+                if not any(a in line for a, _why in allowed):
+                    bad.append(f"{rel}:{i}: {line.strip()[:100]}")
+        self.assertEqual(bad, [], "契約の口で入力を黙って切っている（D-130.4）。人が書く欄でないなら SLICE_ALLOWED に理由つきで載せる")
+        ct = "".join((ROOT / "apps/api/src/features/F4/create-ticket" / n).read_text(encoding="utf-8") for n in ("input.ts", "hooks.ts"))
+        for word in ("SECTION_MAX", "DRAFT_MAX_BYTES", "byteLength"):
+            self.assertNotIn(word, ct, f"作る口に区画・下書きの上限 {word} が残っている（D-130.3）")
+        mem = self._last_function("app.agent_memory_edit")
+        set_line = re.search(r"update memories set (.*?)\n\s*where", mem, re.S)
+        self.assertIsNotNone(set_line, "app.agent_memory_edit の update が読めない")
+        sets = set_line.group(1)  # type: ignore[union-attr]
+        body_expr = re.search(r"\bbody = (.*?)(?:, updated_by\b|\n|$)", sets)
+        self.assertIsNotNone(body_expr, "app.agent_memory_edit が body を書いていない")
+        self.assertNotIn("left(", body_expr.group(1), "app.agent_memory_edit が記憶の本文を left( で切っている（D-130.4）")  # type: ignore[union-attr]
+        self.assertNotRegex(sets, r"\btitle = left\(", "app.agent_memory_edit が記憶の題を left( で切っている（D-130.4）")
+        conv = self._last_function("app.agent_conversation_set")
+        title_line = re.search(r"\btitle = (case .*?end),", conv, re.S)
+        self.assertIsNotNone(title_line, "app.agent_conversation_set の title が読めない")
+        self.assertNotIn("left(", title_line.group(1), "app.agent_conversation_set が会話の名前を left( で切っている（D-130.4）")  # type: ignore[union-attr]
+        later = [n for n, t in self._migration_texts() if n > "0090"
+                 and re.search(r"alter table app\.ticket_drafts\s+drop constraint (?:if exists )?ticket_drafts_body_check", t, re.I)]
+        self.assertTrue(later, "app.ticket_drafts の大きさの決まり（pg_column_size(body) <= 200000）を外す migration が無い（D-130.3）")
 
 
 if __name__ == "__main__":

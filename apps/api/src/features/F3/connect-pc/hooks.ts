@@ -96,11 +96,20 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
     createPairingCode: {
       before: async (a: HookArgs) => {
         const code = newCode();
-        const r = await d.appPool.query<{ exp: Date }>("select app.bridge_code_new($1, $2, $3) as exp", [
-          a.ctx.tenantId,
-          a.ctx.userId,
-          sha256(code),
-        ]);
+        let r: { rows: { exp: Date }[] };
+        try {
+          r = await d.appPool.query<{ exp: Date }>("select app.bridge_code_new($1, $2, $3) as exp", [
+            a.ctx.tenantId,
+            a.ctx.userId,
+            sha256(code),
+          ]);
+        } catch (e) {
+          // セッションの人がその会社のメンバーでない（DB の app.people_same_tenant が 22023）：コードを作らず 403（K-144 ㉔）。
+          //   答えに DB の文を出さない（D-130.2）。ほかの失敗はそのまま上げる
+          if ((e as { code?: string }).code !== "22023") throw e;
+          console.error("[bridge] 接続コードを作れなかった（その会社のメンバーでない・22023）");
+          return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
+        }
         return { status: 201, body: { data: { code, expires_at: new Date(r.rows[0]!.exp).toISOString() } } };
       },
     },

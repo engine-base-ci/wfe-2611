@@ -609,6 +609,69 @@ NOT_NULL_ANSWERS = {
     "claimPairingCode.device_label": "口が cleanLabel で空なら「この PC」にそろえて返し、null にはしない（sessions.device_label は null 可）",
     "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
 }
+# 類 E（K-144 ⑯・回 9）：口が「無い」ことで 422 にする入力の欄（必須の欄）。契約の入力の形の required と x-required-by: hooks になる
+#   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
+#   条件つきで要る欄（stepUp の code・種別ごとの必須の区画・優先度「高」の理由）は載せない
+REQUIRED_INPUTS = {
+    "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
+    "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
+    "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
+    "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
+    "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
+    "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
+    "createTicket": ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"],   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
+    "updateMemory": ["body"],                                            # apps/api/src/hooks/agent.ts:63（覚えることが空です）
+}
+# 類 F（K-144 ⑲）：道の値を口が値域つきで断る口（operationId → 道の値の名前 → pattern）。名前が id で終わる道の値は uuid のまま
+PATH_PATTERNS = {
+    # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（ほかの英小文字だけは 422）・202〜204（ほかは目録の名前か 404）
+    "downloadBridgeRelease": {"name": r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$"},
+}
+# 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
+#   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
+_CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
+_CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+VALUE_RANGES = {
+    "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
+        "title": {"pattern": "\\S", "maxLength": 200},
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},
+        "priority": {"enum": ["", "mid", "high"]},
+        "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
+                                       {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},
+        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
+                     "additionalProperties": {"type": "string"}},   # 区画の中身の上限は置かない（D-130.3）。守りは送る量 1MB だけ
+        "notify_member_ids": {"maxItems": 20},
+    },
+    "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
+        "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
+    },
+    "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
+    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
+    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
+        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "name": {"pattern": "\\S", "maxLength": 100},
+        "company_name": {"maxLength": 100},
+        "password": {"minLength": 12},
+    },
+    "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
+    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
+}
+# 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
+UNEXPRESSIBLE_422 = {
+    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
+                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
+                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
+    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "updateConversation": ["名前が null（空と同じ）"],
+    "updateMemory": ["覚えることが null（空と同じ）"],
+    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "consentToTerms": ["無い版の ID（版の ID の在りか）"],
+}
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
     "getSignupStatus": ["x-signup-token"],
@@ -641,6 +704,10 @@ RESPONSES = {
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
+    # 会話と記憶の口（K-144 ㉒）：表の行ではなく、口（apps/api/src/hooks/agent.ts）が返すとおりの形
+    "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),
+    "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),
+    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),

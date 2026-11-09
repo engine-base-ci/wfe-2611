@@ -627,37 +627,8 @@ describe("K-60 書きかけの下書き（サーバーに残す・D-128.138）",
     expect(await ticketsIn(T.tenantId)).toBe(before);
   });
 
-  it("K60-API-045 日本語で大きな下書き（文字数は 100,000 より少ないが、UTF-8 のバイト数が DB の上限 200,000 を越える）：500 でなく 422。残らない", async () => {
-    const id = randomUUID();
-    // くり返しの無い日本語（漢字を決まった順に散らす・縮めても小さくならない）80,000 文字。UTF-8 で 240,000 バイト
-    let x = 12345;
-    const text = Array.from({ length: 80_000 }, () => {
-      x = (x * 1103515245 + 12345) % 2147483648;
-      return String.fromCodePoint(0x4e00 + (x % 0x5000));
-    }).join("");
-    const big = { title: "大きな下書き", sections: { purpose: text } };
-    expect(JSON.stringify(big).length).toBeLessThan(100_000);
-    expect(Buffer.byteLength(JSON.stringify(big), "utf8")).toBeGreaterThan(200_000);
-    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    let r: Response;
-    try {
-      r = await f.req("POST", "/me/ticket-drafts", { body: { draft_id: id, body: big }, headers: writer.auth });
-    } finally {
-      spy.mockRestore();
-    }
-    expect(r.status, await r.clone().text()).toBe(422);
-    expect(fields(await json(r))).toContain("body");
-    const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
-      draft_id: string;
-    }[];
-    expect(list.map((d) => d.draft_id)).not.toContain(id);
-    // 英数字なら同じくらいの文字数でも残せる（止めるのはバイト数）
-    const ok = await f.req("POST", "/me/ticket-drafts", {
-      body: { draft_id: randomUUID(), body: { title: "a", sections: { purpose: "a".repeat(80_000) } } },
-      headers: writer.auth,
-    });
-    expect(ok.status, await ok.clone().text()).toBe(201);
-  });
+  // K60-API-045（日本語で大きな下書きは 422）は決める人の決定 D-130.3 で下書きの大きさの上限を外したので消した。
+  // 受けは K-144 の K144-API-043（DB の上限 200,000 バイトを越える日本語の下書きも 201 で残り読み戻せる・1MB を超える体は 413 で残らない）
 
   it("K60-API-046 作る前に送った保存が、作った後に処理される：作るときに使った draft_id・source_draft_id にもう一度保存しても、下書きは残らない", async () => {
     const tab = randomUUID();

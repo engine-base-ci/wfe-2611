@@ -4,14 +4,15 @@
 //   成功の data の形は入口と同じ zod（packages/contracts/src/schemas.ts・z.strictObject。知らない欄も、null を許さない欄の null も赤）。
 //   契約そのもの（openapi の additionalProperties・format: uuid・応答の並び）は scripts/ci/contract_shape_test.py が見る。
 //   決まり（D-129.42）：uuid の欄は入口で正式な uuid の形を確かめ、違えば 422（欄の名前・理由 "uuid"）。中で 500 にしない。知らない項目も 422
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { randomUUID } from "node:crypto";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { randomBytes, randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ENDPOINTS } from "@kaname/contracts/registry";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
+import { createApp } from "../../../src/app.js";
 import { agentHooks } from "../../../src/hooks/agent.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
@@ -518,5 +519,809 @@ describe("K-144 ⑫ 入口が uuid の道の値と問い合わせを確かめる
     expect(uuidReason(await json(bad), name)).toBe("uuid");
     const good = await hit(op, where, name, randomUUID());
     expect(good.status).toBe(501);
+  });
+});
+
+describe("K-144 ⑬ 類 C（回 6）：入口がセッションを解けないとき、全部の口が 503・E-PAGE-003 で止まる。契約の 503 にある", () => {
+  it("K144-API-032 セッションを解く所が落ちる（apps/api/src/middleware/tenant.ts → sessionUnresolved）：契約の全部の口（public も）が 503・E-PAGE-003。中の理由を出さず、振る舞い（hooks）に届かない。どの口の契約の並びにも 503 がある", async () => {
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({
+      version: "test",
+      repo: {} as never, // セッションを解く所で止まるので、表には届かない
+      resolve: async () => {
+        throw new Error("K-144 の試験：セッションを解けない");
+      },
+      contract: { hooks },
+    });
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const bad: string[] = [];
+    try {
+      for (const e of ENDPOINTS) {
+        const path = e.path.replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : `x-${n}`));
+        const r = await app.request(`http://localhost${path}`, {
+          method: e.method,
+          headers: { "content-type": "application/json", authorization: "Bearer k144" },
+          ...(["POST", "PATCH", "PUT"].includes(e.method) ? { body: "{}" } : {}),
+        });
+        const text = await r.text();
+        const code = (() => {
+          try {
+            return (JSON.parse(text) as { code?: string }).code;
+          } catch {
+            return undefined;
+          }
+        })();
+        if (r.status !== 503 || code !== "E-PAGE-003")
+          bad.push(`${e.operationId}：${r.status} ${code ?? text.slice(0, 40)}`);
+        if (text.includes("K-144 の試験")) bad.push(`${e.operationId}：中の理由が答えに出た`);
+        if (!e.errors.includes(503)) bad.push(`${e.operationId}：契約の並び（${e.errors.join(",")}）に 503 が無い`);
+      }
+    } finally {
+      spy.mockRestore();
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "振る舞い（hooks）に届いた").toBe(0);
+  });
+});
+
+// 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする欄（必須の欄）。契約の入力の形の required とちょうど同じ
+//   （scripts/ci/contract_shape_test.py の K144-SHAPE-020 が、この表と契約の required と口の読み取りの表 REQUIRED_INPUTS を 1 対 1 で見る）。
+//   試験の土台（K-57・K-60・会話と記憶の口）で動かせる口の全部。登録・確認・同意・本人確認の取り直しは、それぞれの試験（K51・K52・K53・two_factor）の土台で動く
+export const REQUIRED_CASES = [
+  ["claimPairingCode", ["code"]],
+  ["saveMyTicketDraft", ["draft_id"]],
+  ["createTicket", ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"]],
+  ["updateMemory", ["body"]],
+  ["createPairingCode", []],
+  ["createConversation", []],
+  ["updateConversation", []],
+  ["createMemory", []],
+] as const;
+// 類 F（回 9・Q5 回 8 追加-2）：配布物の受け取りの道の値 name。true は契約の値域（pattern）に合う名前で、口は 422 にしない（mac・win・英小文字だけでない名前）。
+//   false は合わない名前（mac・win 以外の英小文字だけ）で、口は 422・欄 name（K144-SHAPE-022 が、この並びと契約の pattern の判定を 1 対 1 で見る）
+export const RELEASE_NAMES = [
+  ["mac", true],
+  ["win", true],
+  ["MAC", true],
+  ["mac1", true],
+  ["Kaname-Bridge-1.4.0-arm64.dmg", true],
+  ["kaname-bridge.json", true],
+  ["Other-1.0.0.dmg", true],
+  ["seed", false],
+  ["linux", false],
+  ["a", false],
+  ["macwin", false],
+] as const;
+
+type Sent = { method: "POST" | "PATCH"; path: string; body: Record<string, unknown>; headers?: Record<string, string> };
+/** 口ごとに、全部の欄を正しく埋めた体を作る（1 回ごとに新しく：接続コードは 1 回で使い終わり・下書きの id は毎回別） */
+const fullBody = async (op: string): Promise<Sent> => {
+  switch (op) {
+    case "claimPairingCode":
+      return {
+        method: "POST",
+        path: "/bridge/claim",
+        body: { code: await pair(await newPerson()), device_label: "試験の PC", machine_id: randomUUID() },
+      };
+    case "saveMyTicketDraft":
+      return {
+        method: "POST",
+        path: "/me/ticket-drafts",
+        body: { draft_id: randomUUID(), body: { title: "下書き" }, discard: false },
+        headers: writer.auth,
+      };
+    case "createTicket":
+      return { method: "POST", path: "/tickets", body: ticketBody(), headers: writer.auth };
+    case "updateMemory": {
+      const m = await f.req("POST", "/memories", { body: {}, headers: writer.auth });
+      expect(m.status, await m.clone().text()).toBe(201);
+      const id = ((await json(m)).data as { id: string }).id;
+      return {
+        method: "PATCH",
+        path: `/memories/${id}`,
+        body: { title: "題", body: "覚えること" },
+        headers: writer.auth,
+      };
+    }
+    case "createPairingCode":
+      return { method: "POST", path: "/bridge/pairing-codes", body: {}, headers: (await newPerson()).auth };
+    case "createConversation":
+      return { method: "POST", path: "/conversations", body: { incognito: false }, headers: writer.auth };
+    case "updateConversation": {
+      const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+      expect(c.status, await c.clone().text()).toBe(201);
+      const id = ((await json(c)).data as { id: string }).id;
+      return { method: "PATCH", path: `/conversations/${id}`, body: { title: "会話の名前" }, headers: writer.auth };
+    }
+    case "createMemory":
+      return { method: "POST", path: "/memories", body: { title: "題" }, headers: writer.auth };
+    default:
+      throw new Error(`REQUIRED_CASES の ${op} の体の作り方が無い`);
+  }
+};
+const send = (s: Sent, body: Record<string, unknown>) =>
+  f.req(s.method, s.path, { body, ...(s.headers ? { headers: s.headers } : {}), ip: nextIp() });
+/** 状態コードが契約の並びにあるか（答えの中身の形は見ない：会話と記憶の口の成功の答えは表の行の形でない＝別の場所の前からのずれで、このチケットの外。報告に書いた） */
+const statusInContract = (op: string, r: Response) => {
+  const d = def(op);
+  expect([d.success, ...d.errors], `${op} が ${r.status} を返したが、契約の並びに無い`).toContain(r.status);
+};
+const without = (b: Record<string, unknown>, k: string) =>
+  Object.fromEntries(Object.entries(b).filter(([x]) => x !== k));
+
+describe("K-144 ⑯ 類 E（回 9）：口が「無い」ことで 422 にする欄は契約の required とちょうど同じ", () => {
+  beforeAll(() => {
+    for (const op of ["claimPairingCode", "createConversation", "createMemory", "updateMemory", "updateConversation"])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-033 体が {}：必須の欄がある口は 422 で、details の欄が必須の欄とちょうど同じ（チケット・下書きは増えない）。必須の欄が無い口は 422 にしない（成功の状態コード）", async () => {
+    const t0 = await ticketsOf();
+    const d0 = await draftsOf();
+    for (const [op, req] of REQUIRED_CASES) {
+      const s = await fullBody(op);
+      const r = await send(s, {});
+      statusInContract(op, r);
+      if (req.length) {
+        expect(r.status, `${op} {}`).toBe(422);
+        expect(new Set(fields(await json(r))), `${op} {} の欄`).toEqual(new Set(req));
+      } else {
+        expect(r.status, `${op} {}：${await r.clone().text()}`).toBe(def(op).success);
+      }
+    }
+    expect(await ticketsOf()).toBe(t0);
+    expect(await draftsOf()).toBe(d0);
+  });
+
+  it("K144-API-034 正しい体から 1 欄ずつ抜く：必須の欄を抜くと 422・その欄の名前。必須でない欄を抜いても、その欄の名前で 422 にしない（契約の並びの答え）", async () => {
+    const bad: string[] = [];
+    for (const [op, req] of REQUIRED_CASES) {
+      const keys = Object.keys((await fullBody(op)).body);
+      for (const k of keys) {
+        const s = await fullBody(op);
+        const r = await send(s, without(s.body, k));
+        statusInContract(op, r);
+        const named = r.status === 422 && fields(await json(r)).includes(k);
+        if ((req as readonly string[]).includes(k)) {
+          if (!named)
+            bad.push(`${op} から ${k} を抜いた：${r.status} ${await r.clone().text()}（422・欄 ${k} のはず）`);
+        } else if (named) bad.push(`${op} から ${k} を抜いた：422・欄 ${k}（契約で必須でない）`);
+      }
+      // 全部埋めた体は通る（抜いた差だけを見ている確かめ）
+      const s = await fullBody(op);
+      const ok = await send(s, s.body);
+      if (ok.status !== def(op).success) bad.push(`${op} の正しい体：${ok.status} ${await ok.clone().text()}`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+describe("K-144 ⑰ 類 F（回 9）：配布物の受け取りの道の値 name の値域が、口の答えと契約で同じ", () => {
+  it("K144-API-035 契約の値域に合う名前（mac・win・英小文字だけでない名前）は 422 にしない（200・404 のどれか）。合わない名前（seed・linux ほか英小文字だけ）は 422・欄 name", async () => {
+    setRelease(RELEASE().dir);
+    const p = await newPerson();
+    const bad: string[] = [];
+    for (const [name, fits] of RELEASE_NAMES) {
+      const r = await f.req("GET", `/bridge/releases/${encodeURIComponent(name)}/file`, { headers: p.auth });
+      await conforms("downloadBridgeRelease", r);
+      const is422 = r.status === 422;
+      if (fits && is422) bad.push(`${name}：契約に合うのに 422`);
+      if (!fits && !(is422 && fields(await json(r)).includes("name")))
+        bad.push(`${name}：契約に合わないのに ${r.status}`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+// 類 G（回 9 の続き・PM の判断 2026-11-09）：契約に書ける体の値の値域。値ごとに、口がその欄で 422 にするか（false）しないか（true）。
+//   scripts/ci/contract_shape_test.py の K144-SHAPE-023 が、同じ値を契約の欄の形（VALUE_RANGES）で判定して 1 対 1 で見る。
+//   @today は今日（日本時間）、@code:* は本物の接続コードの書き方（そのまま・小文字・全角・区切りと前後の空白）。1 行 1 値（形の試験が行で読む）
+type RangeCase = readonly [string, string, unknown, boolean];
+// prettier-ignore
+export const RANGE_CASES: RangeCase[] = [
+  ["createTicket", "title", "題", true],
+  ["createTicket", "title", "", false],
+  ["createTicket", "title", "   ", false],
+  ["createTicket", "title", "x".repeat(200), true],
+  ["createTicket", "title", "x".repeat(201), false],
+  ["createTicket", "due_on", "2099-12-31", true],
+  ["createTicket", "due_on", "2099/12/31", false],
+  ["createTicket", "due_on", "", false],
+  ["createTicket", "start_on", "", true],
+  ["createTicket", "start_on", "@today", true],
+  ["createTicket", "start_on", "2026/01/01", false],
+  ["createTicket", "priority", "", true],
+  ["createTicket", "priority", "mid", true],
+  ["createTicket", "priority", "high", true],
+  ["createTicket", "priority", "low", false],
+  ["createTicket", "estimate_minutes", 0, true],
+  ["createTicket", "estimate_minutes", 100000, true],
+  ["createTicket", "estimate_minutes", 100001, false],
+  ["createTicket", "estimate_minutes", -1, false],
+  ["createTicket", "estimate_minutes", "120", true],
+  ["createTicket", "estimate_minutes", "100001", false],
+  ["createTicket", "estimate_minutes", "", true],
+  ["createTicket", "estimate_minutes", null, true],
+  ["createTicket", "estimate_minutes", 1.5, false],
+  ["createTicket", "estimate_minutes", "1.5", false],
+  ["createTicket", "estimate_minutes", true, false],
+  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施"}, true],
+  ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施", "Bad": "a"}, false],
+  ["createTicket", "notify_member_ids", [], true],
+  ["createTicket", "notify_member_ids", Array.from({ length: 21 }, () => randomUUID()), false],
+  ["claimPairingCode", "code", "@code:plain", true],
+  ["claimPairingCode", "code", "@code:lower", true],
+  ["claimPairingCode", "code", "@code:fullwidth", true],
+  ["claimPairingCode", "code", "@code:spaced", true],
+  ["claimPairingCode", "code", "", false],
+  ["claimPairingCode", "code", "ABCDE", false],
+  ["claimPairingCode", "code", "ABCDEFG", false],
+  ["claimPairingCode", "code", "ABC10O", false],
+  ["claimPairingCode", "code", "x".repeat(33), false],
+  ["updateConversation", "title", "名前", true],
+  ["updateConversation", "title", "   ", false],
+  ["updateConversation", "title", "a\nb", true],
+  ["updateMemory", "body", "覚える", true],
+  ["updateMemory", "body", "  ", false],
+  ["createMemory", "confidence", "9.99", true],
+  ["createMemory", "confidence", "0", true],
+  ["createMemory", "confidence", "-9.5", true],
+  ["createMemory", "confidence", "10", false],
+  ["createMemory", "confidence", "99", false],
+  ["createMemory", "confidence", "abc", false],
+];
+/** その欄で 422 にしたか（表の素の書き込み createMemory は DB の答えを欄 body で返す） */
+const rejects = async (op: string, field: string, r: Response) =>
+  r.status === 422 &&
+  fields(await json(r)).some(
+    (x) => x === field || x.startsWith(`${field}.`) || (op === "createMemory" && x === "body"),
+  );
+const valueOf = (v: unknown, code: string): unknown => {
+  if (v === "@today") return jst(0);
+  if (v === "@code:plain") return code;
+  if (v === "@code:lower") return code.toLowerCase();
+  if (v === "@code:fullwidth") return fullWidth(code);
+  if (v === "@code:spaced") return ` ${code.slice(0, 3).toLowerCase()}-${code.slice(3).toLowerCase()} `;
+  return v;
+};
+
+describe("K-144 ⑱ 類 G（回 9 の続き）：契約に書ける体の値の値域が、口の答えと同じ", () => {
+  beforeAll(() => {
+    for (const op of [
+      "createTicket",
+      "claimPairingCode",
+      "createPairingCode",
+      "createConversation",
+      "updateConversation",
+      "createMemory",
+      "updateMemory",
+    ])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-039 RANGE_CASES の値ごとに、口はその欄で 422 にする（契約に合わない値）か、しない（合う値）。答えは契約の並び", async () => {
+    const bad: string[] = [];
+    for (const [op, field, v, fits] of RANGE_CASES) {
+      const s = await fullBody(op);
+      const code = typeof s.body["code"] === "string" ? (s.body["code"] as string) : "ABC234";
+      const value = valueOf(v, code);
+      const r = await send(s, { ...s.body, [field]: value });
+      statusInContract(op, r);
+      const no = await rejects(op, field, r);
+      if (fits && no)
+        bad.push(
+          `${op}.${field}=${JSON.stringify(value).slice(0, 40)}：契約に合うのに 422（${await r.clone().text()}）`,
+        );
+      if (!fits && !no)
+        bad.push(`${op}.${field}=${JSON.stringify(value).slice(0, 40)}：契約に合わないのに ${r.status}`);
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("K144-API-038 表の素の書き込み（createMemory）の確かさ confidence が DB の桁（numeric(3,2)）を超える：500 にせず 422・欄 body。記憶は増えない。9.99 は 201", async () => {
+    const n = () => count("select count(*) as n from memories where tenant_id = $1", [T.tenantId]);
+    const before = await n();
+    for (const c of ["10", "99", "-9.999", "123.45"]) {
+      const r = await f.req("POST", "/memories", { body: { title: "確かさ", confidence: c }, headers: writer.auth });
+      statusInContract("createMemory", r);
+      expect(r.status, `${c}：${await r.clone().text()}`).toBe(422);
+      expect(fields(await json(r))).toContain("body");
+    }
+    expect(await n()).toBe(before);
+    const ok = await f.req("POST", "/memories", {
+      body: { title: "確かさ", confidence: "9.99" },
+      headers: writer.auth,
+    });
+    expect(ok.status).toBe(201);
+  });
+});
+
+describe("K-144 ⑲ 会話と記憶の口の成功の答え（回 9 の続き・類 C/D）：口が返すとおりの形が契約にある", () => {
+  it("K144-API-037 会話を作る・名前を変える・記憶を直す・会話を消す・記憶を作るの成功の答えが、契約の形（strict）に合う", async () => {
+    const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+    expect(c.status).toBe(201);
+    await conforms("createConversation", c);
+    const id = ((await json(c)).data as { id: string }).id;
+    const u = await f.req("PATCH", `/conversations/${id}`, { body: { title: "会話の名前" }, headers: writer.auth });
+    expect(u.status).toBe(200);
+    await conforms("updateConversation", u);
+    const m = await f.req("POST", "/memories", { body: { title: "題" }, headers: writer.auth });
+    expect(m.status).toBe(201);
+    await conforms("createMemory", m);
+    const mid = ((await json(m)).data as { id: string }).id;
+    const um = await f.req("PATCH", `/memories/${mid}`, { body: { body: "覚えること" }, headers: writer.auth });
+    expect(um.status).toBe(200);
+    await conforms("updateMemory", um);
+    const d = await f.req("DELETE", `/conversations/${id}`, { headers: writer.auth });
+    expect(d.status).toBe(200);
+    await conforms("deleteConversation", d);
+  });
+});
+
+describe("K-144 ⑳ セッションの人がその会社のメンバーでない（回 9 の続き・類 C）：作った口が契約に無い 500 を返さない", () => {
+  it("K144-API-036 別の会社のメンバー・無い人のセッション（入口の解決は通る）で作った口を全部呼ぶ：どれも契約の並びの答え。接続コードを出す口は 403・FORBIDDEN でコードを作らない（前は DB の app.people_same_tenant が 22023 を上げて 500）", async () => {
+    const other = await f.company("K144 の別の会社", "KO");
+    const stranger = await f.person(other.tenantId, other.rootScope, { name: "別の会社の人" });
+    const cols = JSON.parse(readFileSync("08_api/db-columns.json", "utf8")) as {
+      tables: Record<string, Record<string, unknown>>;
+    };
+    const built = ENDPOINTS.filter(
+      (e) => f.hooks[e.operationId] || (e.generic && "id" in (cols.tables[e.table] ?? {})),
+    );
+    expect(built.map((e) => e.operationId)).toContain("createPairingCode");
+    const codes = () => count("select count(*) as n from bridge_pairing_codes where tenant_id = $1", [T.tenantId]);
+    const before = await codes();
+    const bad: string[] = [];
+    for (const [label, who] of [
+      ["別の会社のメンバー", stranger.id],
+      ["無い人", randomUUID()],
+    ] as const) {
+      const headers = { authorization: `Bearer fake:member:${T.tenantId}:${who}` };
+      for (const e of built) {
+        f.limits[e.operationId] = 10_000;
+        const path = e.path
+          .replace(/^\/api\/v1/, "")
+          .replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : "mac"));
+        const r = await f.req(e.method, path, {
+          headers,
+          ...(["POST", "PATCH", "PUT"].includes(e.method) ? { body: {} } : {}),
+        });
+        if (![e.success, ...e.errors].includes(r.status))
+          bad.push(`${label} ${e.operationId}：${r.status}（契約の並び ${[e.success, ...e.errors].join(",")}）`);
+        if (e.operationId === "createPairingCode") {
+          const j = await json(r);
+          if (JSON.stringify(j).includes("その会社のメンバーの行だけ"))
+            bad.push(`${label} createPairingCode：答えに DB の文が出た`);
+          if (r.status !== 403 || j["code"] !== "FORBIDDEN")
+            bad.push(`${label} createPairingCode：${r.status} ${String(j["code"])}（403・FORBIDDEN のはず）`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+    expect(await codes(), "接続コードを作った").toBe(before);
+  });
+});
+
+describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）：欄ごとの上限はコードポイントで数え、自由に書く欄に上限は無い", () => {
+  beforeAll(() => {
+    for (const op of ["createTicket", "claimPairingCode", "createPairingCode"]) f.limits[op] = 10_000;
+  });
+
+  it("K144-API-040 4 バイトの字（😀）で欄ごとの上限ちょうどは通り、上限＋1 は 422（題名 200）。自由に書く欄（priority_reason・区画）は上限が無く、10001 字・20001 字・50000 字でも 422 にしない（D-130.1・D-130.3）。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
+    const E = "😀";
+    const bad: string[] = [];
+    const sentTicket = async (extra: Record<string, unknown>) => create(ticketBody(extra));
+    const named = async (r: Response, field: string) =>
+      r.status === 422 && fields(await json(r)).some((x) => x === field || x.startsWith(`${field}.`));
+    for (const [label, extra, field, ok] of [
+      ["区画 20000 字", { sections: { purpose: E.repeat(20000), done: "完了", todo: "実施" } }, "sections", true],
+      [
+        "区画 20001 字（D-130.3 で上限を外した）",
+        { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } },
+        "sections",
+        true,
+      ],
+      [
+        "区画 50000 字（D-130.3）",
+        { sections: { purpose: "あ".repeat(50000), done: "完了", todo: "実施" } },
+        "sections",
+        true,
+      ],
+      ["自由に書く欄 10001 字（😀）", { priority_reason: E.repeat(10001) }, "priority_reason", true],
+      ["自由に書く欄 50000 字", { priority_reason: "あ".repeat(50000) }, "priority_reason", true],
+      ["題名 200 字", { title: E.repeat(200) }, "title", true],
+      ["題名 201 字", { title: E.repeat(201) }, "title", false],
+    ] as const) {
+      const r = await sentTicket(extra);
+      statusInContract("createTicket", r);
+      const no = await named(r, field);
+      if (ok && no) bad.push(`${label}：422（${await r.clone().text()}）`);
+      if (!ok && !no) bad.push(`${label}：${r.status}（422・欄 ${field} のはず）`);
+    }
+    for (const [n, message] of [
+      [17, "接続コードは英数字 6 けたです"],
+      [33, "接続コードが長すぎます（英数字 6 けた）"],
+    ] as const) {
+      const r = await claim(E.repeat(n));
+      statusInContract("claimPairingCode", r);
+      const d = (await json(r)).details ?? [];
+      if (r.status !== 422 || d.find((x) => x.field === "code")?.message !== message)
+        bad.push(`接続コード ${n} 字：${r.status} ${JSON.stringify(d)}（${message} のはず）`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09・op.ts の表の素の書き込みの 422）", () => {
+  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも決まった文「入力内容を確認してください」（D-130.2）で、DB の文・表や制約の名前を答えに出さない。DB の答えの番号（23514 は制約の名前も）はログにだけ残す（文はログにも出さない＝K144-API-045）", async () => {
+    f.limits["createMemory"] = 10_000;
+    await f.admin.query(
+      "alter table memories add constraint k144_test_ck check (coalesce(title, '') <> 'k144-check') not valid",
+    );
+    const logs: string[] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      logs.push(
+        a
+          .map((x) => (x instanceof Error ? `${x.message} ${(x as { code?: string }).code ?? ""}` : String(x)))
+          .join(" "),
+      );
+    });
+    const messages: string[] = [];
+    const bad: string[] = [];
+    try {
+      for (const [pg, body, mark] of [
+        ["23503", { kind_id: "k144-無い種類" }, "kind_id"],
+        ["22P02", { confidence: "abc" }, "abc"],
+        ["22003", { confidence: "10" }, "numeric"],
+        ["23514", { title: "k144-check" }, "k144_test_ck"],
+      ] as const) {
+        const before = logs.length;
+        const r = await f.req("POST", "/memories", { body, headers: writer.auth });
+        const text = await r.clone().text();
+        if (r.status !== 422) bad.push(`${pg}：${r.status} ${text}`);
+        const d = (await json(r)).details ?? [];
+        const m = d.find((x) => x.field === "body")?.message ?? "";
+        messages.push(m);
+        for (const leak of [
+          "violates",
+          "constraint",
+          "foreign key",
+          "invalid input",
+          "numeric",
+          "memories",
+          "kind_id",
+          "k144_test_ck",
+          "syntax",
+          "overflow",
+          "fkey",
+          "_ck",
+        ])
+          if (text.includes(leak)) bad.push(`${pg}：答えに「${leak}」が出た（${text.slice(0, 120)}）`);
+        const logged = logs.slice(before).join("\n");
+        if (!logged.includes(pg)) bad.push(`${pg}：ログに DB の答え（${pg}）が残っていない`);
+        if (pg === "23514" && !logged.includes(mark)) bad.push(`23514：ログに制約の名前（${mark}）が残っていない`);
+      }
+    } finally {
+      spy.mockRestore();
+      await f.admin.query("alter table memories drop constraint if exists k144_test_ck");
+    }
+    expect(bad).toEqual([]);
+    expect(new Set(messages).size, `答えの文がそろっていない：${JSON.stringify(messages)}`).toBe(1);
+    expect(messages[0]).toBe("入力内容を確認してください"); // D-130.2
+  });
+
+  it("K144-API-045 表の素の書き込みの 422 のログ（テスター回 13・㊳）：DB の答えの番号と制約の名前だけが残り、DB の文（22P02 の文は送った値を含む）・DB の詳しい説明（Key (…)=(…)・Failing row contains）・送った値はログのどこにも出ない", async () => {
+    f.limits["createMemory"] = 10_000;
+    await f.admin.query(
+      "alter table memories add constraint k144_log_ck check (coalesce(title, '') <> 'k144送った題-check') not valid",
+    );
+    const logs: string[] = [];
+    const take =
+      (k: string) =>
+      (...a: unknown[]) =>
+        void logs.push(
+          `${k} ` +
+            a
+              .map((x) =>
+                x instanceof Error
+                  ? `${x.message} ${JSON.stringify(x, Object.getOwnPropertyNames(x))}`
+                  : typeof x === "string"
+                    ? x
+                    : JSON.stringify(x),
+              )
+              .join(" "),
+        );
+    const spies = (["error", "warn", "log", "info", "debug"] as const).map((k) =>
+      vi.spyOn(console, k).mockImplementation(take(k)),
+    );
+    const bad: string[] = [];
+    try {
+      for (const [pg, body, sent, constraint] of [
+        ["22P02", { confidence: "k144送った値abc" }, "k144送った値abc", null],
+        ["23503", { kind_id: "k144送った種類" }, "k144送った種類", null],
+        ["22003", { confidence: "99.5" }, "99.5", null],
+        ["23514", { title: "k144送った題-check" }, "k144送った題-check", "k144_log_ck"],
+      ] as const) {
+        const before = logs.length;
+        const r = await f.req("POST", "/memories", { body, headers: writer.auth });
+        if (r.status !== 422) bad.push(`${pg}：${r.status}（422 のはず）`);
+        const logged = logs.slice(before).join("\n");
+        if (!logged.includes(pg)) bad.push(`${pg}：ログに DB の答えの番号が無い`);
+        if (constraint && !logged.includes(constraint)) bad.push(`${pg}：ログに制約の名前（${constraint}）が無い`);
+        if (logged.includes(sent)) bad.push(`${pg}：ログに送った値（${sent}）が出た：${logged.slice(0, 200)}`);
+        for (const dbText of [
+          "invalid input",
+          "syntax",
+          "violates",
+          "out of range",
+          "overflow",
+          "Key (",
+          "Failing row",
+          "is not present",
+          "precision",
+        ])
+          if (logged.includes(dbText))
+            bad.push(`${pg}：ログに DB の文（「${dbText}」）が出た：${logged.slice(0, 200)}`);
+      }
+    } finally {
+      for (const s of spies) s.mockRestore();
+      await f.admin.query("alter table memories drop constraint if exists k144_log_ck");
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+// 送る量の守り（D-130.1）：1 回に送る内容全体で 1MB（1,048,576 バイト）まで
+const BODY_MAX = 1_048_576;
+/** ちょうど n バイトの JSON の体（{"x":"aaa…"}） */
+const bodyOfBytes = (n: number) => JSON.stringify({ x: "a".repeat(n - 8) });
+
+describe("K-144 ㉓ 送る量の守り（D-130.1・PM の判断 2026-11-09）：体を受ける口は全部、1MB を超える体を 413 で断り、振る舞いに届かない", () => {
+  it("K144-API-042 契約の体を受ける口の全部（まだ作っていない口・ログインしていない口も）：1,048,577 バイトの体は 413・PAYLOAD_TOO_LARGE・「送る内容が大きすぎます」で振る舞い（hooks）に届かない。1,048,576 バイトちょうどは 413 にしない。本物の口（記憶を作る）でも 413 で行を作らない", async () => {
+    expect(Buffer.byteLength(bodyOfBytes(BODY_MAX))).toBe(BODY_MAX);
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({ version: "test", repo: {} as never, resolve: async () => null, contract: { hooks } });
+    const writes = ENDPOINTS.filter((e) => ["POST", "PATCH", "PUT"].includes(e.method) && e.input);
+    expect(writes.map((e) => e.operationId)).toContain("createTicket");
+    const send = (e: (typeof writes)[number], body: string) =>
+      app.request(
+        `http://localhost${e.path.replace(/:(\w+)/g, (_, n: string) => (e.uuidParams.includes(n) ? randomUUID() : `x-${n}`))}`,
+        { method: e.method, headers: { "content-type": "application/json", "x-forwarded-for": nextIp() }, body },
+      );
+    const bad: string[] = [];
+    for (const e of writes) {
+      const r = await send(e, bodyOfBytes(BODY_MAX + 1));
+      const j = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+      if (r.status !== 413 || j["code"] !== "PAYLOAD_TOO_LARGE" || j["message"] !== "送る内容が大きすぎます")
+        bad.push(`${e.operationId}：${r.status} ${JSON.stringify(j).slice(0, 80)}`);
+      if (!e.errors.includes(413)) bad.push(`${e.operationId}：契約の並び（${e.errors.join(",")}）に 413 が無い`);
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "1MB を超える体で振る舞いに届いた").toBe(0);
+    const edge = writes.find((e) => e.operationId === "createSignup")!;
+    const atLimit = await send(edge, bodyOfBytes(BODY_MAX));
+    expect(atLimit.status, "1MB ちょうどは 413 にしない").not.toBe(413);
+    // 本物の口（表の素の書き込み）：413 で記憶を作らない
+    f.limits["createMemory"] = 10_000;
+    const n = () => count("select count(*) as n from memories where tenant_id = $1", [T.tenantId]);
+    const before = await n();
+    const big = await f.req("POST", "/memories", {
+      body: JSON.stringify({ title: "a".repeat(BODY_MAX) }),
+      headers: writer.auth,
+    });
+    expect(big.status).toBe(413);
+    expect(((await json(big)) as Record<string, unknown>)["message"]).toBe("送る内容が大きすぎます");
+    expect(await n()).toBe(before);
+  });
+});
+
+/** 縮まない（DB の圧縮で小さくならない）n 字の文：漢字（U+4E00〜U+9FFF・NFKC で変わらない）と 4 バイトの字を混ぜる */
+const noisy = (n: number): string => {
+  const b = randomBytes(n * 2);
+  let s = "";
+  for (let i = 0; i < n; i++) s += i % 97 === 0 ? "😀" : String.fromCharCode(0x4e00 + (b.readUInt16LE(i * 2) % 0x5200));
+  return s;
+};
+
+describe("K-144 ㉔ 自由に書く欄の上限を外す（D-130.3・D-130.4・精査 R1 回 12 追加-3）：長い区画・下書き・記憶・会話の名前は、そのまま残り、読み戻して一字も欠けない", () => {
+  beforeAll(() => {
+    for (const op of [
+      "createTicket",
+      "saveMyTicketDraft",
+      "listMyTicketDrafts",
+      "createConversation",
+      "updateConversation",
+      "createMemory",
+      "updateMemory",
+    ])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-043 区画 30000 字（前の上限 20000 を超える）・下書き 450KB ほど（前の上限 180,000 バイトと DB の pg_column_size 200000 を超える・縮まない文）・文字数は 100,000 より少ないが 200,000 バイトを越える日本語の下書き（もとの K60-API-045）・記憶の本文 5000 字と題 300 字（前は 2000・80 で黙って切った）・会話の名前 300 字（前は 80）は、どれも 201／200 で、DB と読む口から読み戻すと送った文と一字も違わない。1MB を超える下書きは 413・PAYLOAD_TOO_LARGE で残らない", async () => {
+    const bad: string[] = [];
+    // 区画（チケットの本文）
+    const section = noisy(30000);
+    const t = await create(ticketBody({ sections: { purpose: section, done: "完了", todo: "実施" } }));
+    if (t.status !== 201) bad.push(`区画 30000 字：${t.status} ${(await t.clone().text()).slice(0, 200)}`);
+    else {
+      const tid = ((await json(t)).data as { id: string }).id;
+      const got = (
+        await f.admin.query<{ v: string | null }>(
+          "select body->>'text' as v from ticket_sections where ticket_id = $1 and section_key = 'purpose'",
+          [tid],
+        )
+      ).rows[0]?.v;
+      if (got !== section)
+        bad.push(`区画 30000 字：読み戻すと ${got === undefined || got === null ? "無い" : `${[...got].length} 字`}`);
+    }
+    // 下書き
+    const draftId = randomUUID();
+    const draft = { title: "長い下書き", sections: { purpose: noisy(150000) } };
+    expect(Buffer.byteLength(JSON.stringify(draft))).toBeGreaterThan(400_000);
+    const s = await saveDraft({ draft_id: draftId, body: draft });
+    if (s.status !== 201) bad.push(`下書き 450KB：${s.status} ${(await s.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("saveMyTicketDraft", s);
+      const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+        draft_id: string;
+        body: unknown;
+      }[];
+      const mine = list.find((x) => x.draft_id === draftId);
+      if (JSON.stringify(mine?.body) !== JSON.stringify(draft))
+        bad.push("下書き 450KB：読む口から読み戻すと中身が違う");
+    }
+    // 下書き：文字数は 100,000 より少ないが UTF-8 のバイト数が DB の上限 200,000 を越える日本語（もとの K60-API-045 の形・D-130.3 で 422 → 201）
+    let x = 12345;
+    const ja = Array.from({ length: 80_000 }, () => {
+      x = (x * 1103515245 + 12345) % 2147483648;
+      return String.fromCodePoint(0x4e00 + (x % 0x5000));
+    }).join("");
+    const jaDraft = { title: "大きな下書き", sections: { purpose: ja } };
+    expect(JSON.stringify(jaDraft).length).toBeLessThan(100_000);
+    expect(Buffer.byteLength(JSON.stringify(jaDraft), "utf8")).toBeGreaterThan(200_000);
+    const jaId = randomUUID();
+    const sj = await saveDraft({ draft_id: jaId, body: jaDraft });
+    if (sj.status !== 201) bad.push(`日本語の下書き 240KB：${sj.status} ${(await sj.clone().text()).slice(0, 200)}`);
+    // 下書き：1MB を超える体は 413・PAYLOAD_TOO_LARGE で残らない（D-130.1）
+    const hugeId = randomUUID();
+    const huge = { title: "大きすぎる下書き", sections: { purpose: noisy(400_000) } };
+    expect(Buffer.byteLength(JSON.stringify({ draft_id: hugeId, body: huge }))).toBeGreaterThan(1_048_576);
+    const sh = await saveDraft({ draft_id: hugeId, body: huge });
+    if (sh.status !== 413) bad.push(`下書き 1MB 超え：${sh.status}（413 のはず）`);
+    else if (((await json(sh)) as Record<string, unknown>)["code"] !== "PAYLOAD_TOO_LARGE")
+      bad.push("下書き 1MB 超え：code が PAYLOAD_TOO_LARGE でない");
+    {
+      // 別の GET で読み戻す：日本語の下書きは同じ中身で残り、1MB 超えの下書きは無い
+      const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+        draft_id: string;
+        body: unknown;
+      }[];
+      const got = list.find((d) => d.draft_id === jaId);
+      if (JSON.stringify(got?.body) !== JSON.stringify(jaDraft))
+        bad.push("日本語の下書き 240KB：読む口から読み戻すと中身が違う（無い）");
+      if (list.some((d) => d.draft_id === hugeId)) bad.push("下書き 1MB 超え：413 なのに残った");
+    }
+    // 記憶の本文と題
+    const m = await f.req("POST", "/memories", { body: { title: "題" }, headers: writer.auth });
+    expect(m.status).toBe(201);
+    const mid = ((await json(m)).data as { id: string }).id;
+    const body = noisy(5000);
+    const title = noisy(300);
+    const um = await f.req("PATCH", `/memories/${mid}`, { body: { body, title }, headers: writer.auth });
+    if (um.status !== 200) bad.push(`記憶 5000 字：${um.status} ${(await um.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("updateMemory", um);
+      const row = (
+        await f.admin.query<{ title: string; body: string }>("select title, body from memories where id = $1", [mid])
+      ).rows[0]!;
+      if (row.body !== body)
+        bad.push(`記憶の本文：読み戻すと ${[...row.body].length} 字（5000 字のはず・黙って切った）`);
+      if (row.title !== title)
+        bad.push(`記憶の題：読み戻すと ${[...row.title].length} 字（300 字のはず・黙って切った）`);
+    }
+    // 会話の名前
+    const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+    expect(c.status).toBe(201);
+    const cid = ((await json(c)).data as { id: string }).id;
+    const name = noisy(300);
+    const uc = await f.req("PATCH", `/conversations/${cid}`, { body: { title: name }, headers: writer.auth });
+    if (uc.status !== 200) bad.push(`会話の名前 300 字：${uc.status} ${(await uc.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("updateConversation", uc);
+      const got = (await f.admin.query<{ title: string }>("select title from conversations where id = $1", [cid]))
+        .rows[0]!.title;
+      if (got !== name) bad.push(`会話の名前：読み戻すと ${[...got].length} 字（300 字のはず・黙って切った）`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+/** 読んだバイト数を数える流れの体（a の字を chunk ずつ total まで出す。読まれた分だけ出す） */
+const countingBody = (total: number, chunk = 65_536) => {
+  let pulled = 0;
+  let cancelled = false;
+  const piece = new TextEncoder().encode("a".repeat(chunk));
+  const stream = new ReadableStream<Uint8Array>(
+    {
+      pull(c) {
+        if (pulled >= total) return c.close();
+        const n = Math.min(chunk, total - pulled);
+        c.enqueue(n === chunk ? piece : piece.slice(0, n));
+        pulled += n;
+      },
+      cancel() {
+        cancelled = true;
+      },
+    },
+    { highWaterMark: 0 },
+  );
+  return { stream, pulled: () => pulled, cancelled: () => cancelled, chunk };
+};
+
+describe("K-144 ㉕ 送る量の守りは読む量で止める（精査 R1 回 12 追加-1・D-130.1・G-16）：体を読みながら数え、1,048,577 バイト目を読んだ時点で読むのをやめて 413", () => {
+  it("K144-API-044 (a) content-length を小さく偽った 5MB の流れの体 (b) content-length の頭が無い 5MB の流れの体（chunked）：どちらも 413・PAYLOAD_TOO_LARGE・「送る内容が大きすぎます」で振る舞いに届かず、読んだのは 1MB と 2 かたまり（128KB・流れの読み先の 1 かたまりを許す）まで（5MB を全部読まない）。(c) content-length の頭だけが 1MB を超える小さな体：読まずに 413（1 バイトも読まない）。ログインの要る口（作る）と要らない口（登録）の両方", async () => {
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({ version: "test", repo: {} as never, resolve: async () => null, contract: { hooks } });
+    const bad: string[] = [];
+    const TOTAL = 5 * BODY_MAX;
+    for (const op of ["createSignup", "createTicket"]) {
+      const e = ENDPOINTS.find((x) => x.operationId === op)!;
+      const url = `http://localhost${e.path}`;
+      for (const [label, length, total, maxRead] of [
+        ["(a) content-length を 100 と偽った", "100", TOTAL, "limit"],
+        ["(b) content-length の頭が無い", null, TOTAL, "limit"],
+        ["(c) content-length の頭だけが 1,048,577", String(BODY_MAX + 1), 2, "none"],
+      ] as const) {
+        const b = countingBody(total);
+        const headers: Record<string, string> = { "content-type": "application/json", "x-forwarded-for": nextIp() };
+        if (length !== null) headers["content-length"] = length;
+        const req = new Request(url, { method: e.method, headers, body: b.stream, duplex: "half" } as RequestInit);
+        const r = await app.request(req);
+        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+        if (r.status !== 413 || j["code"] !== "PAYLOAD_TOO_LARGE" || j["message"] !== "送る内容が大きすぎます")
+          bad.push(`${op} ${label}：${r.status} ${JSON.stringify(j).slice(0, 80)}`);
+        if (maxRead === "none" && b.pulled() !== 0)
+          bad.push(`${op} ${label}：読まずに断るはずが ${b.pulled()} バイト読んだ`);
+        if (maxRead === "limit" && b.pulled() > BODY_MAX + 2 * b.chunk)
+          bad.push(
+            `${op} ${label}：${b.pulled()} バイト読んだ（1,048,577 バイト目で読むのをやめるはず・上限は ${BODY_MAX + 2 * b.chunk}）`,
+          );
+      }
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "1MB を超える体で振る舞いに届いた").toBe(0);
   });
 });
