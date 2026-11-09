@@ -19,6 +19,8 @@
       answers_merge の --base は、spec の段の中の scope の段（K-143 で置く・ci_scope.py --github-output）が出す base を
       env CI_ANSWERS_BASE で、取り込む先は workflow_dispatch の入力 target を env CI_TARGET_REF で渡す（run の文字に ${{ … }} を入れない・K107-CS-034）
   03_architecture/共通の決まり.md：入力の確かめ方（D-129.42）・作った口は全部契約の fuzz に当てる・消したものの扱い（D-129.43 を一般化）の行
+  ai-team.yaml：review: {prior_impl_field: prior_impl}（D-129.53 の Kaname 側。スキルの state.py が精査に入れる前にこの欄を見る）。
+      K-146 の頭は prior_impl: なし（なし か <枝>@<sha>）
   01_hearing/聞くこと_K-146.md：決める人に聞く項目の 1 枚のページ。表の列「問い」「答えの決定」。答えの決定は決定ログにある D-… の番号。
       聞くことが 0 件なら、ページに「聞くことなし」と理由（1 文）を書く。
       ④ の突き合わせの結果も同じページの表（列「チケット」「ファイル:行@sha」「チケットの行」）に書く。sha は突き合わせた版（k63-impl・k64-make）のコミット。
@@ -84,7 +86,7 @@ class RowsCiTest(unittest.TestCase):
         self.assertEqual([p.name for p in ticket_rows_ci.targets(self.d)], ["K-902.md"])
         code, out = self.run_ci()
         self.assertEqual(code, 1, out)
-        self.assertIn("K-902.md", out)
+        self.assertRegex(out, r"K-902\.md:\d+", "ファイルと行を出す")
         for i in range(4):
             self.assertNotIn(f"K-91{i}.md", out)
 
@@ -109,6 +111,15 @@ class RepoTest(unittest.TestCase):
         for name in ("ticket_rows_gate.py", "answers_merge.py"):
             r = subprocess.run([sys.executable, str(HERE / name), "--selftest"], capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, f"{name}: {r.stdout}{r.stderr}")
+        # 自己試験の緑だけに頼らない：写しの check_text が K14（別のチケットに回した機能の間が無い行）を本当に赤にし、間を書いた行は通す
+        sys.path.insert(0, str(HERE))
+        import ticket_rows_gate  # noqa: PLC0415
+
+        head = "| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n"
+        bad = head + "| 確認待ち | AI が聞いた | 押した人 | 本人が答える | 許可に答える（K-61 から切る） | — |\n"
+        good = head + "| 確認待ち | AI が聞いた | 押した人 | 答える口ができるまでは断る（実行しない） | このチケット。本人が答える形は K-61 から切る | K903-BRG-001 |\n"
+        self.assertIn("K14", [g for g, _ in ticket_rows_gate.check_text(bad, "K903")])
+        self.assertEqual(ticket_rows_gate.check_text(good, "K903"), [])
 
     def test_K146_CI_006_wired_next_to_g60(self):
         """K146-CI-006 CI から回る：spec の段で G60 の隣に answers_merge check と ticket_rows_ci を流す。answers_merge の --base は、spec の段の中の scope の段が出す base を
@@ -123,6 +134,7 @@ class RepoTest(unittest.TestCase):
         rc = [i for i, st in idx.items() if "ticket_rows_ci.py" in st.get("run", "")]
         self.assertEqual((len(g60), len(am), len(rc)), (1, 1, 1))
         self.assertLessEqual(abs(am[0] - g60[0]), 2, "answers_merge check は G60 の隣")
+        self.assertLessEqual(abs(rc[0] - g60[0]), 2, "ticket_rows_ci は G60 の隣")
         scope = [st for st in steps if "scripts/ci/ci_scope.py" in st.get("run", "") and "--github-output" in st.get("run", "")]
         self.assertEqual(len(scope), 1, "spec の段の中の scope の段（K-143）")
         run = steps[am[0]]["run"]
@@ -208,6 +220,19 @@ class RepoTest(unittest.TestCase):
         for t in ("K-63", "K-64"):
             self.assertNotIn("## 先にある実装との突き合わせ", (ROOT / f"11_tickets/{t}.md").read_text(encoding="utf-8"),
                              f"{t}.md には書かない（作る役が次の作るの段で写す）")
+
+    def test_K146_CI_009_prior_impl_field_configured(self):
+        """K146-CI-009 ③ の Kaname 側：ai-team.yaml の review.prior_impl_field が prior_impl（スキルの state.py が精査に入れる前に見る欄の名前）。
+        K-146 の頭に prior_impl: があり、値は「なし」か「<枝>@<sha>」"""
+        import yaml  # noqa: PLC0415
+
+        cfg = yaml.safe_load((ROOT / "ai-team.yaml").read_text(encoding="utf-8"))
+        self.assertEqual((cfg.get("review") or {}).get("prior_impl_field"), "prior_impl")
+        head = (ROOT / "11_tickets/K-146.md").read_text(encoding="utf-8").split("\n---", 1)[0]
+        m = re.search(r"^prior_impl:\s*(\S+)\s*$", head, re.M)
+        self.assertTrue(m, "K-146 の頭に prior_impl: が無い")
+        self.assertRegex(m.group(1), r"^(なし|[^@\s]+@[0-9a-f]{7,40})$")
+
 
 class AnswersTest(unittest.TestCase):
     def test_K146_CI_005_answers_check_finds_dropped_ids(self):
