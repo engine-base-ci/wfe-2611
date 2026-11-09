@@ -24,8 +24,6 @@ const fromCatalog = (code: string, field: string, message?: string): HookReply =
   };
 };
 const LIST_MAX = 200;
-/** 下書きの大きさの上限（UTF-8 のバイト数）。DB の上限（pg_column_size(body) <= 200,000）より小さいところで 422 にする（文字数では測らない） */
-const DRAFT_MAX_BYTES = 180_000;
 
 export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
@@ -172,11 +170,8 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
             details: [{ field: "draft_id", message: "uuid" }],
           });
         const discard = a.input["discard"] === true;
+        // 下書きの大きさに上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
         const body = a.input["body"] ?? {};
-        if (!discard && Buffer.byteLength(JSON.stringify(body), "utf8") > DRAFT_MAX_BYTES)
-          return fail(422, "validation_failed", "VALIDATION_ERROR", {
-            details: [{ field: "body", message: "下書きが大きすぎます" }],
-          });
         const v = await withTenant(
           appPool,
           a.ctx,

@@ -87,11 +87,14 @@ export function parseComponents(yaml) {
     if (/^\S/.test(l)) break;
     if (/^  \w+:$/.test(l)) { inSchemas = l === "  schemas:"; name = null; continue; }
     if (!inSchemas) continue;
-    if ((m = /^    (\w+):$/.exec(l))) { name = m[1]; out[name] = { props: {}, required: [], table: null }; sec = null; prop = null; continue; }
+    if ((m = /^    (\w+):$/.exec(l))) { name = m[1]; out[name] = { props: {}, required: [], table: null, requiredBy: null }; sec = null; prop = null; continue; }
     if (!name) continue;
     if (/^      properties:/.test(l)) { sec = "props"; continue; }
     if (/^      required:/.test(l)) { sec = "req"; continue; }
     if ((m = /^      x-table: (\S+)/.exec(l))) { out[name].table = m[1]; continue; }
+    // 必須の欄の無いときの答えを口の振る舞いが持つ形（K-144 ⑱）：zod ではその欄を .optional() のままにする
+    if ((m = /^      x-required-by: (\S+)/.exec(l))) { out[name].requiredBy = m[1]; sec = null; continue; }
+    if (/^      [\w-]+:/.test(l) && !/^      (properties|required):/.test(l)) { sec = null; continue; }
     if (sec === "req" && (m = /^      - (\w+)/.exec(l))) { out[name].required.push(m[1]); continue; }
     if (sec === "props" && (m = /^        (\w+):(?: &(\w+))?$/.exec(l))) { prop = m[1]; propAnchor = m[2] ?? null; out[name].props[prop] = {}; if (propAnchor) anchors[propAnchor] = out[name].props[prop]; continue; }
     if (sec === "props" && (m = /^        (\w+):(?: &(\w+))? \{\}$/.exec(l))) { out[name].props[m[1]] = {}; if (m[2]) anchors[m[2]] = out[name].props[m[1]]; prop = null; continue; } // 形を問わない欄（z.unknown()・K-57）。別名つき（payload: &id324 {}）も落とさない（K-144）
@@ -120,7 +123,7 @@ function zodOf(p) {
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
-  if (p.type === "string") return "z.string().max(10000)";
+  if (p.type === "string") return "z.string()"; // 自由に書く欄に一律の上限を置かない（D-130.1）。守りは入口の送る量 1MB（op.ts）
   if (p.type === "integer") return "z.number().int()";
   if (p.type === "number") return "z.number()";
   if (p.type === "boolean") return "z.boolean()";
@@ -249,7 +252,7 @@ export const OPENAPI_HASH = "${h}";
   const zl = [`// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:${h}`, `import { z } from "zod";`, ""];
   for (const [name, c] of Object.entries(comps)) {
     if (name === "Error") continue;
-    const props = Object.entries(c.props).map(([k, p]) => `  ${k}: ${zodOf(p)}${c.required.includes(k) ? "" : ".optional()"},`);
+    const props = Object.entries(c.props).map(([k, p]) => `  ${k}: ${zodOf(p)}${c.required.includes(k) && c.requiredBy !== "hooks" ? "" : ".optional()"},`);
     zl.push(`export const ${name} = z.strictObject({\n${props.join("\n")}\n});`);
   }
   zl.push("", `export const SCHEMAS: Record<string, z.ZodType> = { ${Object.keys(comps).filter((n) => n !== "Error").join(", ")} };`, "");

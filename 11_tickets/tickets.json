@@ -6043,7 +6043,9 @@
    "depends_on": [],
    "affects": [
     "@kaname/api",
-    "@kaname/contracts"
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/web"
    ],
    "ci_wide": [
     "ci"

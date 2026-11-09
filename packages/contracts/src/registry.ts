@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a458c48f95e7ee91
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:8d3ab089892fe948
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -68,6 +68,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -174,6 +175,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -229,6 +231,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -284,6 +287,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -389,6 +393,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -443,6 +448,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -497,6 +503,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -552,6 +559,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -609,6 +617,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -661,6 +670,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -709,6 +719,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -902,6 +913,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -956,6 +968,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -1095,6 +1108,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1142,6 +1156,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1188,6 +1203,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1233,6 +1249,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1320,6 +1337,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1367,6 +1385,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1413,6 +1432,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       500,
+      413,
       429,
       503
     ],
@@ -1459,6 +1479,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1549,6 +1570,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       410,
       500,
+      413,
       429,
       503
     ],
@@ -1596,6 +1618,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -1645,6 +1668,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       500,
+      413,
       429,
       503
     ],
@@ -1733,6 +1757,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1780,6 +1805,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      413,
       429,
       502,
       503
@@ -1832,6 +1858,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1880,6 +1907,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       503
     ],
@@ -1979,6 +2007,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       502,
       403,
@@ -2134,6 +2163,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2186,6 +2216,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       503
     ],
@@ -2238,6 +2269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2339,6 +2371,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2392,6 +2425,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2445,6 +2479,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2497,6 +2532,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2599,6 +2635,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2649,6 +2686,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       502,
       503
@@ -2748,6 +2786,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -2897,6 +2936,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       503
     ],
@@ -2947,6 +2987,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -3046,6 +3087,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -3155,6 +3197,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -3309,6 +3352,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       502,
       403,
@@ -3365,6 +3409,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -3421,6 +3466,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -3477,6 +3523,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -3577,6 +3624,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -3679,6 +3727,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -3785,6 +3834,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -3890,6 +3940,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -4034,6 +4085,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       502,
       403,
@@ -4128,6 +4180,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -4339,7 +4392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "create",
     "input": "ConversationsInput",
     "success": 201,
-    "output": "Conversations",
+    "output": "ConversationCreated",
     "outputList": false,
     "generic": true,
     "auth": "member",
@@ -4357,6 +4410,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -4439,9 +4493,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateConversation",
     "table": "conversations",
     "kind": "update",
-    "input": "ConversationsInput",
+    "input": "UpdateConversationInput",
     "success": 200,
-    "output": "Conversations",
+    "output": "ConversationUpdated",
     "outputList": false,
     "generic": true,
     "auth": "member",
@@ -4460,6 +4514,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -4569,6 +4624,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -4680,6 +4736,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -4738,6 +4795,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -4795,6 +4853,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -4951,6 +5010,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5002,6 +5062,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -5111,6 +5172,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5166,6 +5228,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5218,6 +5281,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5411,6 +5475,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5514,6 +5579,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5569,6 +5635,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5621,6 +5688,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5670,6 +5738,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5773,6 +5842,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5822,6 +5892,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5918,6 +5989,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -5966,6 +6038,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6152,6 +6225,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6206,6 +6280,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6347,6 +6422,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6449,6 +6525,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6549,6 +6626,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6650,6 +6728,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -6704,6 +6783,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6758,6 +6838,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -6811,6 +6892,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -6969,6 +7051,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7125,6 +7208,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7179,6 +7263,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7233,6 +7318,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7338,6 +7424,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7443,6 +7530,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7494,6 +7582,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7544,6 +7633,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -7641,6 +7731,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7696,6 +7787,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7751,6 +7843,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7805,6 +7898,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7899,6 +7993,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -7947,6 +8042,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -7996,6 +8092,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8044,6 +8141,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8092,6 +8190,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8186,6 +8285,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -8234,6 +8334,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8285,6 +8386,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -8384,6 +8486,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -8578,6 +8681,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8673,6 +8777,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8766,6 +8871,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8862,6 +8968,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -8911,6 +9018,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9204,6 +9312,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -9256,6 +9365,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9306,6 +9416,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -9405,6 +9516,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9455,6 +9567,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -9506,6 +9619,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9558,6 +9672,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9652,6 +9767,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9681,9 +9797,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateMemory",
     "table": "memories",
     "kind": "update",
-    "input": "MemoriesInput",
+    "input": "UpdateMemoryInput",
     "success": 200,
-    "output": "Memories",
+    "output": "MemoryUpdated",
     "outputList": false,
     "generic": true,
     "auth": "member",
@@ -9702,6 +9818,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -9809,6 +9926,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9865,6 +9983,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -9964,6 +10083,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10064,6 +10184,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -10115,6 +10236,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10259,6 +10381,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -10311,6 +10434,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10363,6 +10487,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10459,6 +10584,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10507,6 +10633,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10555,6 +10682,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10651,6 +10779,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10702,6 +10831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -10847,6 +10977,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -10946,6 +11077,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -10998,6 +11130,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11050,6 +11183,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11293,6 +11427,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11345,6 +11480,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -11398,6 +11534,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11501,6 +11638,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11554,6 +11692,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11791,6 +11930,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -11840,6 +11980,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12041,6 +12182,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12093,6 +12235,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12431,6 +12574,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12482,6 +12626,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12533,6 +12678,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12584,6 +12730,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12635,6 +12782,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12686,6 +12834,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12734,6 +12883,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12879,6 +13029,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -12928,6 +13079,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13022,6 +13174,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13122,6 +13275,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13171,6 +13325,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13317,6 +13472,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13420,6 +13576,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -13524,6 +13681,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13619,6 +13777,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13669,6 +13828,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -13820,6 +13980,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -13870,6 +14031,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -14107,6 +14269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       502,
       403,
@@ -14216,6 +14379,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -14270,6 +14434,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -14323,6 +14488,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -14425,6 +14591,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -14524,6 +14691,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -14620,6 +14788,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -14724,6 +14893,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -14833,6 +15003,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -14982,6 +15153,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       404,
+      413,
       429,
       403,
       503
@@ -15085,6 +15257,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -15196,6 +15369,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -15304,6 +15478,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -15361,6 +15536,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -15470,6 +15646,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -15576,6 +15753,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -15631,6 +15809,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -15736,6 +15915,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -15792,6 +15972,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -15900,6 +16081,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -15956,6 +16138,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16115,6 +16298,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16170,6 +16354,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16275,6 +16460,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16382,6 +16568,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -16489,6 +16676,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -16545,6 +16733,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -16601,6 +16790,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -16758,6 +16948,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16861,6 +17052,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -16957,6 +17149,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -17062,6 +17255,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -17117,6 +17311,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       502,
       403,
@@ -17173,6 +17368,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -17229,6 +17425,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -17285,6 +17482,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      413,
       429,
       502,
       403,
@@ -17433,6 +17631,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -17525,6 +17724,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -17573,6 +17773,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -17667,6 +17868,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -17717,6 +17919,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -17815,6 +18018,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -17863,6 +18067,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -17955,6 +18160,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -18003,6 +18209,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -18141,6 +18348,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -18191,6 +18399,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      413,
       429,
       403,
       503
@@ -18333,6 +18542,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      413,
       429,
       403,
       503
@@ -18381,6 +18591,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      413,
       429,
       403,
       503
@@ -18405,4 +18616,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "a458c48f95e7ee91";
+export const OPENAPI_HASH = "8d3ab089892fe948";
