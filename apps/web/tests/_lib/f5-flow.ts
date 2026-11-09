@@ -100,10 +100,11 @@ export function workOf(pc: TestPc): PcWork {
   };
 }
 
-/** 承認（approvals.decided_at）を「いまから ago 前」に置く（＝承認してから ago たった・D-128.98 の 24 時間）。動かした行の数 */
+/** 承認（approvals.decided_at）を「いまから ago 前」に置く（＝承認してから ago たった・D-128.98 の 24 時間）。動かした行の数。
+ *  K-63 は 24 時間を decided_at から数える。resolved_at は触らない（決まった承認の resolved_at は DB の引き金 app.approval_once（0063）が変えさせない） */
 export async function approvedAgo(approvalId: string, ago: string): Promise<number> {
   const r = await admin<{ id: string }>(
-    "update approvals set decided_at = now() - $2::interval, resolved_at = now() - $2::interval where id = $1 returning id",
+    "update approvals set decided_at = now() - $2::interval where id = $1 returning id",
     [approvalId, ago],
   );
   return r.length;

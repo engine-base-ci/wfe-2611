@@ -3,9 +3,9 @@
 //   画面でつなぐ道（K-58 の openConnect・connectByCode）と画面で作る道（K-58 の createTicket）はその試験の筋なので、ここには寄せない。
 //   口は網の手前で差し替えない。中間テスト 3（K-64）と統合テスト（K-65）がここを使う。
 //   探したが無かった：目録（03_architecture/catalog.json）の共通の処理・apps/web/tests/_lib に、人の印で契約の口を呼んで PC とチケットを用意する道具は無い。
-//   似たもの：api.ts の claimBridge（前の道すじの口を直に叩くだけで Bridge の名乗りも通らない）・viewerViaApi（招待で入る人を作るが役は viewer・会社も新しく作る）
+//   使うもの：api.ts の invitedViaApi（招待で入る人を作る 1 か所。viewerViaApi もこれを使う）。似たもの：api.ts の claimBridge（前の道すじの口を直に叩くだけで Bridge の名乗りも通らない）
 import { randomBytes } from "node:crypto";
-import { API, PW, admin, agreeCurrentTerms, sha256, uniqEmail } from "./api";
+import { API, admin, invitedViaApi } from "./api";
 import type { Newcomer } from "./newcomer";
 import { testPc, type TestPc } from "./test-pc";
 
@@ -67,26 +67,9 @@ export async function ticketOf(me: Newcomer, title: string, sections: TicketSect
 }
 
 /** 同じ会社のもう 1 人（招待を受けた人・役は member）。画面は使わず、ログインの印だけ返す（その人の PC をつなぐため）。
- *  作り方は api.ts の viewerViaApi と同じ（招待の行を置き、受ける口を通す）。招待の受ける口は前の道すじ（/api/auth-ext）のまま */
+ *  作る道は api.ts の invitedViaApi の 1 か所（viewerViaApi と同じ）。ここは会社と招く人を本人から引くだけ */
 export async function teammate(me: Newcomer, name = "同僚"): Promise<{ memberId: string; token: string }> {
   const tenant = await admin<{ t: string }>("select tenant_id as t from members where id = $1", [me.memberId]);
-  const token = randomBytes(24).toString("base64url");
-  const email = uniqEmail();
-  await admin(
-    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'member', $3, now() + interval '7 days', $4)",
-    [tenant[0]!.t, email, sha256(token), me.memberId],
-  );
-  const r = await fetch(`${API}/api/auth-ext/invitations/${token}/accept`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name, password: PW }),
-  });
-  if (r.status !== 200 && r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
-  const j = (await r.json()) as { data: { token: string } };
-  const u = await admin<{ id: string; m: string }>(
-    `select u.id, m.id as m from kaname_auth."user" u join members m on m.auth_user_id = u.id where u.email = $1`,
-    [email],
-  );
-  await agreeCurrentTerms(u[0]!.id);
-  return { memberId: u[0]!.m, token: j.data.token };
+  const v = await invitedViaApi({ tenantId: tenant[0]!.t, memberId: me.memberId }, "member", name);
+  return { memberId: v.memberId, token: v.token };
 }

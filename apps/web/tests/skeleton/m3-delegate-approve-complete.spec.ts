@@ -500,8 +500,9 @@ test("K64-M3-09 承認の記録は取り消せない：2 つのタブで承認�
   const job = await delegateAndTake(page, r);
   await makeToApproval(page, r, job);
   const tabB = await context.newPage();
+  await tabB.clock.install(); // B の読み直しも本物の 3 秒に任せない（A の承認の後に B が勝手に読み直して「承認して送る」が消えないように）
   // B を確かな順で押せるのは、A の承認が決まるのを expect.poll で待ってから押すことと、
-  // 承認待ちの間は動いている実行が無いので B は読み直さないこと（K-62・K-63 の読み直しの決まり・K62-UI-017）による
+  // 承認待ちの間は動いている実行が無いので B は読み直さないこと（K-62・K-63 の読み直しの決まり・K62-UI-017）と、B の時計を進めないことによる
   await openTicket(tabB, r.t);
   await expect(approvalBand(tabB)).toBeVisible();
   await approveBtn(page).click();

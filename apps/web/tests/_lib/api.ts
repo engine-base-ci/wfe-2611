@@ -146,23 +146,33 @@ export const bridgeRow = (u: { tenantId: string; memberId: string }) =>
 
 /** 閲覧のみ（R4）で参加した人。招待を作って受ける（権限で見えない画面の検査に使う） */
 export async function viewerViaApi() {
-  const { randomBytes } = await import("node:crypto");
   const boss = await signupViaApi("招く会社");
+  const v = await invitedViaApi(boss, "viewer", "閲覧のみ QA");
+  return { ...boss, token: v.token, email: v.email };
+}
+/** 招待で入る人を 1 人作る（招待の行を置き、受ける口を通し、今の版の規約に同意させる）。役は viewer か member。
+ *  招待の受ける口は前の道すじ（/api/auth-ext）のまま。viewerViaApi（閲覧のみ）と prep.ts の teammate（同じ会社の member）がここを使う（同じ組み立てを 2 か所に持たない） */
+export async function invitedViaApi(
+  boss: { tenantId: string; memberId: string },
+  role: "viewer" | "member",
+  name: string,
+): Promise<{ token: string; email: string; memberId: string; userId: string }> {
+  const { randomBytes } = await import("node:crypto");
   const token = randomBytes(24).toString("base64url");
   const email = uniqEmail();
   await admin(
-    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'viewer', $3, now() + interval '7 days', $4)",
-    [boss.tenantId, email, sha256(token), boss.memberId],
+    "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, $3, $4, now() + interval '7 days', $5)",
+    [boss.tenantId, email, role, sha256(token), boss.memberId],
   );
-  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, {
-    name: "閲覧のみ QA",
-    password: PW,
-  });
+  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, { name, password: PW });
   if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
   // 招待で入る人の同意は K-55 の受け持ち。それまでは、この道具が今の版への同意を入れる（K-53 の同意し直しで止まらないように）
-  const u = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
+  const u = await admin<{ id: string; m: string }>(
+    `select u.id, m.id as m from kaname_auth."user" u join members m on m.auth_user_id = u.id where u.email = $1`,
+    [email],
+  );
   await agreeCurrentTerms(u[0]!.id);
-  return { ...boss, token: r.json.data.token, email };
+  return { token: r.json.data.token, email, memberId: u[0]!.m, userId: u[0]!.id };
 }
 
 /** 今の版の利用規約とプライバシーポリシーに同意済みにし、その人のセッションの同意し直しの印を下ろす（K-53）。
