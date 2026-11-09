@@ -85,7 +85,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},   # :52〜61
         "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
-                     "additionalProperties": {"type": "string", "maxLength": 20000}},     # :63〜74
+                     "additionalProperties": {"type": "string"}},     # :63〜74（区画の中身の上限 20,000 字は外した・D-130.3。守りは送る量 1MB だけ）
         "notify_member_ids": {"maxItems": 20},                                           # :75〜81
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
@@ -108,8 +108,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
 UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
                      "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
-                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名・区画"],
-    "saveMyTicketDraft": ["下書きの中身が 180,000 バイトを超える（文字数でなくバイト数）"],
+                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
     "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
     "updateConversation": ["名前が null（空と同じ）"],
     "updateMemory": ["覚えることが null（空と同じ）"],
@@ -926,6 +925,74 @@ class ContractShapeTest(unittest.TestCase):
         self.assertEqual(loose, [], "本物の試験が別のファイルにある口の 413 の生成の試験が covers に結ばれていない")
         self.assertTrue(all(m["test_function"].endswith("_too_large") or re.search(r"_too_large_\d+$", m["test_function"]) for m in mapping if m["http_code"] == "413"),
                         "413 の生成の試験の名前が too_large でない（05_flow/build_testplan.py の classify）")
+
+    # ---- 黙った切り捨てと、決めていない上限（精査 R1 回 12 追加-3・D-130.3・D-130.4）
+    # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
+    #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
+    SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
+        "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
+        "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],
+        "apps/api/src/features/F3/connect-pc/code.ts": [("slice(0, LABEL_MAX)", "Bridge が送る PC の名前（人が書く欄でない・D-130.4 の外。報告で PM に申し送り）")],
+        "apps/api/src/features/F3/connect-pc/hooks.ts": [("[...v].slice(0, max)", "Bridge が送る自己診断の 1 行の名前・詳しく・直し方・番号（人が書く欄でない）"),
+                                                         ("slice(0, HEALTH_MAX)", "Bridge が送る点検の並び（人が書く欄でない）"),
+                                                         ("slice(0, 40)", "Bridge が送る版の名前（人が書く欄でない）")],
+    }
+
+    def _migration_texts(self) -> list[tuple[str, str]]:
+        idx = (ROOT / "packages/db/src/index.ts").read_text(encoding="utf-8")
+        m = re.search(r"export const MIGRATIONS = \[(.*?)\];", idx, re.S)
+        self.assertIsNotNone(m, "packages/db/src/index.ts に MIGRATIONS が無い")
+        names = re.findall(r'"(\d{4}_[^"]+\.sql)"', m.group(1))  # type: ignore[union-attr]
+        return [(n, (ROOT / "packages/db/migrations" / n).read_text(encoding="utf-8")) for n in names]
+
+    def _last_function(self, name: str) -> str:
+        body = ""
+        for _n, t in self._migration_texts():
+            for mm in re.finditer(rf"create or replace function {re.escape(name)}\(.*?\nend \$\$;", t, re.S | re.I):
+                body = mm.group(0)
+        self.assertTrue(body, f"{name} の定義が migration に無い")
+        return body
+
+    def test_K144_SHAPE_027_free_text_is_not_silently_cut_and_has_no_undecided_limit(self) -> None:
+        """D-130.3・D-130.4：区画の 20,000 字・下書きの 180,000 バイトの上限を外し、記憶の本文と題・会話の名前を黙って切らない（上限も置かない）。守りは送る量 1MB だけ。
+        (1) 契約の口の振る舞い（hooks と features）の `.slice(0, …)` は SLICE_ALLOWED（理由つき）にあるものだけ
+        (2) 作る口に区画と下書きの上限（SECTION_MAX・DRAFT_MAX_BYTES・バイト数の比べ）が無い
+        (3) 効いている（MIGRATIONS の順で最後の）app.agent_memory_edit・app.agent_conversation_set が本文と名前を left( で切らない
+            （記憶の題が無いときに本文の頭 80 字から題を作るのは、書いたものを消さないので残してよい）
+        (4) app.ticket_drafts の大きさの決まり（ticket_drafts_body_check：pg_column_size(body) <= 200000）を、0090 より後の migration が外す
+        本物の DB で長い区画・下書き・記憶・会話の名前が一字も欠けずに残るかは K144-API-043"""
+        bad = []
+        files = sorted([*(ROOT / "apps/api/src/hooks").glob("*.ts"), *(ROOT / "apps/api/src/features").rglob("*.ts")])
+        for f in files:
+            if ".test." in f.name:
+                continue
+            rel = f.relative_to(ROOT).as_posix()
+            allowed = self.SLICE_ALLOWED.get(rel, [])
+            for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+                if not re.search(r"\.(?:slice|substring|substr)\(\s*0\s*,", line):
+                    continue
+                if not any(a in line for a, _why in allowed):
+                    bad.append(f"{rel}:{i}: {line.strip()[:100]}")
+        self.assertEqual(bad, [], "契約の口で入力を黙って切っている（D-130.4）。人が書く欄でないなら SLICE_ALLOWED に理由つきで載せる")
+        ct = "".join((ROOT / "apps/api/src/features/F4/create-ticket" / n).read_text(encoding="utf-8") for n in ("input.ts", "hooks.ts"))
+        for word in ("SECTION_MAX", "DRAFT_MAX_BYTES", "byteLength"):
+            self.assertNotIn(word, ct, f"作る口に区画・下書きの上限 {word} が残っている（D-130.3）")
+        mem = self._last_function("app.agent_memory_edit")
+        set_line = re.search(r"update memories set (.*?)\n\s*where", mem, re.S)
+        self.assertIsNotNone(set_line, "app.agent_memory_edit の update が読めない")
+        sets = set_line.group(1)  # type: ignore[union-attr]
+        body_expr = re.search(r"\bbody = (.*?)(?:, updated_by\b|\n|$)", sets)
+        self.assertIsNotNone(body_expr, "app.agent_memory_edit が body を書いていない")
+        self.assertNotIn("left(", body_expr.group(1), "app.agent_memory_edit が記憶の本文を left( で切っている（D-130.4）")  # type: ignore[union-attr]
+        self.assertNotRegex(sets, r"\btitle = left\(", "app.agent_memory_edit が記憶の題を left( で切っている（D-130.4）")
+        conv = self._last_function("app.agent_conversation_set")
+        title_line = re.search(r"\btitle = (case .*?end),", conv, re.S)
+        self.assertIsNotNone(title_line, "app.agent_conversation_set の title が読めない")
+        self.assertNotIn("left(", title_line.group(1), "app.agent_conversation_set が会話の名前を left( で切っている（D-130.4）")  # type: ignore[union-attr]
+        later = [n for n, t in self._migration_texts() if n > "0090"
+                 and re.search(r"alter table app\.ticket_drafts\s+drop constraint (?:if exists )?ticket_drafts_body_check", t, re.I)]
+        self.assertTrue(later, "app.ticket_drafts の大きさの決まり（pg_column_size(body) <= 200000）を外す migration が無い（D-130.3）")
 
 
 if __name__ == "__main__":

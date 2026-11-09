@@ -5,7 +5,7 @@
 //   契約そのもの（openapi の additionalProperties・format: uuid・応答の並び）は scripts/ci/contract_shape_test.py が見る。
 //   決まり（D-129.42）：uuid の欄は入口で正式な uuid の形を確かめ、違えば 422（欄の名前・理由 "uuid"）。中で 500 にしない。知らない項目も 422
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -918,7 +918,7 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）�
     for (const op of ["createTicket", "claimPairingCode", "createPairingCode"]) f.limits[op] = 10_000;
   });
 
-  it("K144-API-040 4 バイトの字（😀）で欄ごとの上限ちょうどは通り、上限＋1 は 422（区画 20000・題名 200）。自由に書く欄（priority_reason）は 10001 字でも 422 にしない（D-130.1）。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
+  it("K144-API-040 4 バイトの字（😀）で欄ごとの上限ちょうどは通り、上限＋1 は 422（題名 200）。自由に書く欄（priority_reason・区画）は上限が無く、10001 字・20001 字・50000 字でも 422 にしない（D-130.1・D-130.3）。接続コードは 32 字を超えるときだけ「長すぎます」", async () => {
     const E = "😀";
     const bad: string[] = [];
     const sentTicket = async (extra: Record<string, unknown>) => create(ticketBody(extra));
@@ -926,7 +926,18 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）�
       r.status === 422 && fields(await json(r)).some((x) => x === field || x.startsWith(`${field}.`));
     for (const [label, extra, field, ok] of [
       ["区画 20000 字", { sections: { purpose: E.repeat(20000), done: "完了", todo: "実施" } }, "sections", true],
-      ["区画 20001 字", { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } }, "sections", false],
+      [
+        "区画 20001 字（D-130.3 で上限を外した）",
+        { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } },
+        "sections",
+        true,
+      ],
+      [
+        "区画 50000 字（D-130.3）",
+        { sections: { purpose: "あ".repeat(50000), done: "完了", todo: "実施" } },
+        "sections",
+        true,
+      ],
       ["自由に書く欄 10001 字（😀）", { priority_reason: E.repeat(10001) }, "priority_reason", true],
       ["自由に書く欄 50000 字", { priority_reason: "あ".repeat(50000) }, "priority_reason", true],
       ["題名 200 字", { title: E.repeat(200) }, "title", true],
@@ -1063,5 +1074,163 @@ describe("K-144 ㉓ 送る量の守り（D-130.1・PM の判断 2026-11-09）：
     expect(big.status).toBe(413);
     expect(((await json(big)) as Record<string, unknown>)["message"]).toBe("送る内容が大きすぎます");
     expect(await n()).toBe(before);
+  });
+});
+
+/** 縮まない（DB の圧縮で小さくならない）n 字の文：漢字（U+4E00〜U+9FFF・NFKC で変わらない）と 4 バイトの字を混ぜる */
+const noisy = (n: number): string => {
+  const b = randomBytes(n * 2);
+  let s = "";
+  for (let i = 0; i < n; i++) s += i % 97 === 0 ? "😀" : String.fromCharCode(0x4e00 + (b.readUInt16LE(i * 2) % 0x5200));
+  return s;
+};
+
+describe("K-144 ㉔ 自由に書く欄の上限を外す（D-130.3・D-130.4・精査 R1 回 12 追加-3）：長い区画・下書き・記憶・会話の名前は、そのまま残り、読み戻して一字も欠けない", () => {
+  beforeAll(() => {
+    for (const op of [
+      "createTicket",
+      "saveMyTicketDraft",
+      "listMyTicketDrafts",
+      "createConversation",
+      "updateConversation",
+      "createMemory",
+      "updateMemory",
+    ])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-043 区画 30000 字（前の上限 20000 を超える）・下書き 450KB ほど（前の上限 180,000 バイトと DB の pg_column_size 200000 を超える・縮まない文）・記憶の本文 5000 字と題 300 字（前は 2000・80 で黙って切った）・会話の名前 300 字（前は 80）は、どれも 201／200 で、DB と読む口から読み戻すと送った文と一字も違わない", async () => {
+    const bad: string[] = [];
+    // 区画（チケットの本文）
+    const section = noisy(30000);
+    const t = await create(ticketBody({ sections: { purpose: section, done: "完了", todo: "実施" } }));
+    if (t.status !== 201) bad.push(`区画 30000 字：${t.status} ${(await t.clone().text()).slice(0, 200)}`);
+    else {
+      const tid = ((await json(t)).data as { id: string }).id;
+      const got = (
+        await f.admin.query<{ v: string | null }>(
+          "select body->>'text' as v from ticket_sections where ticket_id = $1 and section_key = 'purpose'",
+          [tid],
+        )
+      ).rows[0]?.v;
+      if (got !== section)
+        bad.push(`区画 30000 字：読み戻すと ${got === undefined || got === null ? "無い" : `${[...got].length} 字`}`);
+    }
+    // 下書き
+    const draftId = randomUUID();
+    const draft = { title: "長い下書き", sections: { purpose: noisy(150000) } };
+    expect(Buffer.byteLength(JSON.stringify(draft))).toBeGreaterThan(400_000);
+    const s = await saveDraft({ draft_id: draftId, body: draft });
+    if (s.status !== 201) bad.push(`下書き 450KB：${s.status} ${(await s.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("saveMyTicketDraft", s);
+      const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+        draft_id: string;
+        body: unknown;
+      }[];
+      const mine = list.find((x) => x.draft_id === draftId);
+      if (JSON.stringify(mine?.body) !== JSON.stringify(draft))
+        bad.push("下書き 450KB：読む口から読み戻すと中身が違う");
+    }
+    // 記憶の本文と題
+    const m = await f.req("POST", "/memories", { body: { title: "題" }, headers: writer.auth });
+    expect(m.status).toBe(201);
+    const mid = ((await json(m)).data as { id: string }).id;
+    const body = noisy(5000);
+    const title = noisy(300);
+    const um = await f.req("PATCH", `/memories/${mid}`, { body: { body, title }, headers: writer.auth });
+    if (um.status !== 200) bad.push(`記憶 5000 字：${um.status} ${(await um.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("updateMemory", um);
+      const row = (
+        await f.admin.query<{ title: string; body: string }>("select title, body from memories where id = $1", [mid])
+      ).rows[0]!;
+      if (row.body !== body)
+        bad.push(`記憶の本文：読み戻すと ${[...row.body].length} 字（5000 字のはず・黙って切った）`);
+      if (row.title !== title)
+        bad.push(`記憶の題：読み戻すと ${[...row.title].length} 字（300 字のはず・黙って切った）`);
+    }
+    // 会話の名前
+    const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+    expect(c.status).toBe(201);
+    const cid = ((await json(c)).data as { id: string }).id;
+    const name = noisy(300);
+    const uc = await f.req("PATCH", `/conversations/${cid}`, { body: { title: name }, headers: writer.auth });
+    if (uc.status !== 200) bad.push(`会話の名前 300 字：${uc.status} ${(await uc.clone().text()).slice(0, 200)}`);
+    else {
+      await conforms("updateConversation", uc);
+      const got = (await f.admin.query<{ title: string }>("select title from conversations where id = $1", [cid]))
+        .rows[0]!.title;
+      if (got !== name) bad.push(`会話の名前：読み戻すと ${[...got].length} 字（300 字のはず・黙って切った）`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+/** 読んだバイト数を数える流れの体（a の字を chunk ずつ total まで出す。読まれた分だけ出す） */
+const countingBody = (total: number, chunk = 65_536) => {
+  let pulled = 0;
+  let cancelled = false;
+  const piece = new TextEncoder().encode("a".repeat(chunk));
+  const stream = new ReadableStream<Uint8Array>(
+    {
+      pull(c) {
+        if (pulled >= total) return c.close();
+        const n = Math.min(chunk, total - pulled);
+        c.enqueue(n === chunk ? piece : piece.slice(0, n));
+        pulled += n;
+      },
+      cancel() {
+        cancelled = true;
+      },
+    },
+    { highWaterMark: 0 },
+  );
+  return { stream, pulled: () => pulled, cancelled: () => cancelled, chunk };
+};
+
+describe("K-144 ㉕ 送る量の守りは読む量で止める（精査 R1 回 12 追加-1・D-130.1・G-16）：体を読みながら数え、1,048,577 バイト目を読んだ時点で読むのをやめて 413", () => {
+  it("K144-API-044 (a) content-length を小さく偽った 5MB の流れの体 (b) content-length の頭が無い 5MB の流れの体（chunked）：どちらも 413・PAYLOAD_TOO_LARGE・「送る内容が大きすぎます」で振る舞いに届かず、読んだのは 1MB と 2 かたまり（128KB・流れの読み先の 1 かたまりを許す）まで（5MB を全部読まない）。(c) content-length の頭だけが 1MB を超える小さな体：読まずに 413（1 バイトも読まない）。ログインの要る口（作る）と要らない口（登録）の両方", async () => {
+    let reached = 0;
+    const hooks = Object.fromEntries(
+      ENDPOINTS.map((e) => [
+        e.operationId,
+        {
+          before: async () => {
+            reached++;
+            return { status: 418, body: {} };
+          },
+        },
+      ]),
+    );
+    const app = createApp({ version: "test", repo: {} as never, resolve: async () => null, contract: { hooks } });
+    const bad: string[] = [];
+    const TOTAL = 5 * BODY_MAX;
+    for (const op of ["createSignup", "createTicket"]) {
+      const e = ENDPOINTS.find((x) => x.operationId === op)!;
+      const url = `http://localhost${e.path}`;
+      for (const [label, length, total, maxRead] of [
+        ["(a) content-length を 100 と偽った", "100", TOTAL, "limit"],
+        ["(b) content-length の頭が無い", null, TOTAL, "limit"],
+        ["(c) content-length の頭だけが 1,048,577", String(BODY_MAX + 1), 2, "none"],
+      ] as const) {
+        const b = countingBody(total);
+        const headers: Record<string, string> = { "content-type": "application/json", "x-forwarded-for": nextIp() };
+        if (length !== null) headers["content-length"] = length;
+        const req = new Request(url, { method: e.method, headers, body: b.stream, duplex: "half" } as RequestInit);
+        const r = await app.request(req);
+        const j = (await r.json().catch(() => ({}))) as Record<string, unknown>;
+        if (r.status !== 413 || j["code"] !== "PAYLOAD_TOO_LARGE" || j["message"] !== "送る内容が大きすぎます")
+          bad.push(`${op} ${label}：${r.status} ${JSON.stringify(j).slice(0, 80)}`);
+        if (maxRead === "none" && b.pulled() !== 0)
+          bad.push(`${op} ${label}：読まずに断るはずが ${b.pulled()} バイト読んだ`);
+        if (maxRead === "limit" && b.pulled() > BODY_MAX + 2 * b.chunk)
+          bad.push(
+            `${op} ${label}：${b.pulled()} バイト読んだ（1,048,577 バイト目で読むのをやめるはず・上限は ${BODY_MAX + 2 * b.chunk}）`,
+          );
+      }
+    }
+    expect(bad).toEqual([]);
+    expect(reached, "1MB を超える体で振る舞いに届いた").toBe(0);
   });
 });

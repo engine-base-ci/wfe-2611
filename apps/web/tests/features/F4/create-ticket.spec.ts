@@ -958,6 +958,30 @@ row(R["K144-UI-002"], async (page) => {
   await expect(page.getByRole("textbox", { name: "目的", exact: true })).toHaveValue("月末の請求を出す");
 });
 
+row(R["K144-UI-003"], async (page) => {
+  // 下書きの自動保存で送る量が 1MB を超えた（D-130.5）：作るときと同じ「送る内容が大きすぎます」を出し、書いたものは残す。小さくして残せたら消える
+  const m = await mockApi(page);
+  let big = true;
+  m.on.saveDraft = () =>
+    big
+      ? {
+          status: 413,
+          body: { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" },
+        }
+      : null;
+  await open(page);
+  await loaded(page);
+  await titleBox(page).fill("大きすぎる下書き");
+  const notice = page.getByText("送る内容が大きすぎます").first();
+  await expect(notice).toBeVisible();
+  await expect(page.getByText(/読み込めません/)).toHaveCount(0);
+  await expect(titleBox(page)).toHaveValue("大きすぎる下書き");
+  big = false;
+  await titleBox(page).fill("小さくした下書き");
+  await expect.poll(() => JSON.stringify([...(m.drafts.get(WS_A)?.values() ?? [])])).toContain("小さくした下書き");
+  await expect(page.getByText("送る内容が大きすぎます")).toHaveCount(0);
+});
+
 row(R["K60-UI-030"], async (page) => {
   await mockApi(page);
   await page.goto(`/tickets/${ID}`);
