@@ -574,3 +574,152 @@ describe("K-144 ⑬ 類 C（回 6）：入口がセッションを解けない�
     expect(reached, "振る舞い（hooks）に届いた").toBe(0);
   });
 });
+
+// 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする欄（必須の欄）。契約の入力の形の required とちょうど同じ
+//   （scripts/ci/contract_shape_test.py の K144-SHAPE-020 が、この表と契約の required と口の読み取りの表 REQUIRED_INPUTS を 1 対 1 で見る）。
+//   試験の土台（K-57・K-60・会話と記憶の口）で動かせる口の全部。登録・確認・同意・本人確認の取り直しは、それぞれの試験（K51・K52・K53・two_factor）の土台で動く
+export const REQUIRED_CASES = [
+  ["claimPairingCode", ["code"]],
+  ["saveMyTicketDraft", ["draft_id"]],
+  ["createTicket", ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"]],
+  ["updateMemory", ["body"]],
+  ["createPairingCode", []],
+  ["createConversation", []],
+  ["updateConversation", []],
+  ["createMemory", []],
+] as const;
+// 類 F（回 9・Q5 回 8 追加-2）：配布物の受け取りの道の値 name。true は契約の値域（pattern）に合う名前で、口は 422 にしない（mac・win・英小文字だけでない名前）。
+//   false は合わない名前（mac・win 以外の英小文字だけ）で、口は 422・欄 name（K144-SHAPE-022 が、この並びと契約の pattern の判定を 1 対 1 で見る）
+export const RELEASE_NAMES = [
+  ["mac", true],
+  ["win", true],
+  ["MAC", true],
+  ["mac1", true],
+  ["Kaname-Bridge-1.4.0-arm64.dmg", true],
+  ["kaname-bridge.json", true],
+  ["Other-1.0.0.dmg", true],
+  ["seed", false],
+  ["linux", false],
+  ["a", false],
+  ["macwin", false],
+] as const;
+
+type Sent = { method: "POST" | "PATCH"; path: string; body: Record<string, unknown>; headers?: Record<string, string> };
+/** 口ごとに、全部の欄を正しく埋めた体を作る（1 回ごとに新しく：接続コードは 1 回で使い終わり・下書きの id は毎回別） */
+const fullBody = async (op: string): Promise<Sent> => {
+  switch (op) {
+    case "claimPairingCode":
+      return {
+        method: "POST",
+        path: "/bridge/claim",
+        body: { code: await pair(await newPerson()), device_label: "試験の PC", machine_id: randomUUID() },
+      };
+    case "saveMyTicketDraft":
+      return {
+        method: "POST",
+        path: "/me/ticket-drafts",
+        body: { draft_id: randomUUID(), body: { title: "下書き" }, discard: false },
+        headers: writer.auth,
+      };
+    case "createTicket":
+      return { method: "POST", path: "/tickets", body: ticketBody(), headers: writer.auth };
+    case "updateMemory": {
+      const m = await f.req("POST", "/memories", { body: {}, headers: writer.auth });
+      expect(m.status, await m.clone().text()).toBe(201);
+      const id = ((await json(m)).data as { id: string }).id;
+      return {
+        method: "PATCH",
+        path: `/memories/${id}`,
+        body: { title: "題", body: "覚えること" },
+        headers: writer.auth,
+      };
+    }
+    case "createPairingCode":
+      return { method: "POST", path: "/bridge/pairing-codes", body: {}, headers: (await newPerson()).auth };
+    case "createConversation":
+      return { method: "POST", path: "/conversations", body: { incognito: false }, headers: writer.auth };
+    case "updateConversation": {
+      const c = await f.req("POST", "/conversations", { body: {}, headers: writer.auth });
+      expect(c.status, await c.clone().text()).toBe(201);
+      const id = ((await json(c)).data as { id: string }).id;
+      return { method: "PATCH", path: `/conversations/${id}`, body: { title: "会話の名前" }, headers: writer.auth };
+    }
+    case "createMemory":
+      return { method: "POST", path: "/memories", body: { title: "題" }, headers: writer.auth };
+    default:
+      throw new Error(`REQUIRED_CASES の ${op} の体の作り方が無い`);
+  }
+};
+const send = (s: Sent, body: Record<string, unknown>) =>
+  f.req(s.method, s.path, { body, ...(s.headers ? { headers: s.headers } : {}), ip: nextIp() });
+/** 状態コードが契約の並びにあるか（答えの中身の形は見ない：会話と記憶の口の成功の答えは表の行の形でない＝別の場所の前からのずれで、このチケットの外。報告に書いた） */
+const statusInContract = (op: string, r: Response) => {
+  const d = def(op);
+  expect([d.success, ...d.errors], `${op} が ${r.status} を返したが、契約の並びに無い`).toContain(r.status);
+};
+const without = (b: Record<string, unknown>, k: string) =>
+  Object.fromEntries(Object.entries(b).filter(([x]) => x !== k));
+
+describe("K-144 ⑯ 類 E（回 9）：口が「無い」ことで 422 にする欄は契約の required とちょうど同じ", () => {
+  beforeAll(() => {
+    for (const op of ["claimPairingCode", "createConversation", "createMemory", "updateMemory", "updateConversation"])
+      f.limits[op] = 10_000;
+  });
+
+  it("K144-API-033 体が {}：必須の欄がある口は 422 で、details の欄が必須の欄とちょうど同じ（チケット・下書きは増えない）。必須の欄が無い口は 422 にしない（成功の状態コード）", async () => {
+    const t0 = await ticketsOf();
+    const d0 = await draftsOf();
+    for (const [op, req] of REQUIRED_CASES) {
+      const s = await fullBody(op);
+      const r = await send(s, {});
+      statusInContract(op, r);
+      if (req.length) {
+        expect(r.status, `${op} {}`).toBe(422);
+        expect(new Set(fields(await json(r))), `${op} {} の欄`).toEqual(new Set(req));
+      } else {
+        expect(r.status, `${op} {}：${await r.clone().text()}`).toBe(def(op).success);
+      }
+    }
+    expect(await ticketsOf()).toBe(t0);
+    expect(await draftsOf()).toBe(d0);
+  });
+
+  it("K144-API-034 正しい体から 1 欄ずつ抜く：必須の欄を抜くと 422・その欄の名前。必須でない欄を抜いても、その欄の名前で 422 にしない（契約の並びの答え）", async () => {
+    const bad: string[] = [];
+    for (const [op, req] of REQUIRED_CASES) {
+      const keys = Object.keys((await fullBody(op)).body);
+      for (const k of keys) {
+        const s = await fullBody(op);
+        const r = await send(s, without(s.body, k));
+        statusInContract(op, r);
+        const named = r.status === 422 && fields(await json(r)).includes(k);
+        if ((req as readonly string[]).includes(k)) {
+          if (!named)
+            bad.push(`${op} から ${k} を抜いた：${r.status} ${await r.clone().text()}（422・欄 ${k} のはず）`);
+        } else if (named) bad.push(`${op} から ${k} を抜いた：422・欄 ${k}（契約で必須でない）`);
+      }
+      // 全部埋めた体は通る（抜いた差だけを見ている確かめ）
+      const s = await fullBody(op);
+      const ok = await send(s, s.body);
+      if (ok.status !== def(op).success) bad.push(`${op} の正しい体：${ok.status} ${await ok.clone().text()}`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
+
+describe("K-144 ⑰ 類 F（回 9）：配布物の受け取りの道の値 name の値域が、口の答えと契約で同じ", () => {
+  it("K144-API-035 契約の値域に合う名前（mac・win・英小文字だけでない名前）は 422 にしない（200・404 のどれか）。合わない名前（seed・linux ほか英小文字だけ）は 422・欄 name", async () => {
+    setRelease(RELEASE().dir);
+    const p = await newPerson();
+    const bad: string[] = [];
+    for (const [name, fits] of RELEASE_NAMES) {
+      const r = await f.req("GET", `/bridge/releases/${encodeURIComponent(name)}/file`, { headers: p.auth });
+      await conforms("downloadBridgeRelease", r);
+      const is422 = r.status === 422;
+      if (fits && is422) bad.push(`${name}：契約に合うのに 422`);
+      if (!fits && !(is422 && fields(await json(r)).includes("name")))
+        bad.push(`${name}：契約に合わないのに ${r.status}`);
+    }
+    expect(bad).toEqual([]);
+  });
+});
