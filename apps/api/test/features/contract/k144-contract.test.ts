@@ -964,7 +964,7 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）�
 });
 
 describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09・op.ts の表の素の書き込みの 422）", () => {
-  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも決まった文「入力内容を確認してください」（D-130.2）で、DB の文・表や制約の名前を答えに出さない。DB の文はログにだけ残す", async () => {
+  it("K144-API-041 外部キー（23503）・形（22P02）・桁あふれ（22003）・check 違反（23514）の 422 は、どれも決まった文「入力内容を確認してください」（D-130.2）で、DB の文・表や制約の名前を答えに出さない。DB の答えの番号（23514 は制約の名前も）はログにだけ残す（文はログにも出さない＝K144-API-045）", async () => {
     f.limits["createMemory"] = 10_000;
     await f.admin.query(
       "alter table memories add constraint k144_test_ck check (coalesce(title, '') <> 'k144-check') not valid",
@@ -1019,6 +1019,66 @@ describe("K-144 ㉒ DB の答えを外に出さない（PM の判断 2026-11-09�
     expect(bad).toEqual([]);
     expect(new Set(messages).size, `答えの文がそろっていない：${JSON.stringify(messages)}`).toBe(1);
     expect(messages[0]).toBe("入力内容を確認してください"); // D-130.2
+  });
+
+  it("K144-API-045 表の素の書き込みの 422 のログ（テスター回 13・㊳）：DB の答えの番号と制約の名前だけが残り、DB の文（22P02 の文は送った値を含む）・DB の詳しい説明（Key (…)=(…)・Failing row contains）・送った値はログのどこにも出ない", async () => {
+    f.limits["createMemory"] = 10_000;
+    await f.admin.query(
+      "alter table memories add constraint k144_log_ck check (coalesce(title, '') <> 'k144送った題-check') not valid",
+    );
+    const logs: string[] = [];
+    const take =
+      (k: string) =>
+      (...a: unknown[]) =>
+        void logs.push(
+          `${k} ` +
+            a
+              .map((x) =>
+                x instanceof Error
+                  ? `${x.message} ${JSON.stringify(x, Object.getOwnPropertyNames(x))}`
+                  : typeof x === "string"
+                    ? x
+                    : JSON.stringify(x),
+              )
+              .join(" "),
+        );
+    const spies = (["error", "warn", "log", "info", "debug"] as const).map((k) =>
+      vi.spyOn(console, k).mockImplementation(take(k)),
+    );
+    const bad: string[] = [];
+    try {
+      for (const [pg, body, sent, constraint] of [
+        ["22P02", { confidence: "k144送った値abc" }, "k144送った値abc", null],
+        ["23503", { kind_id: "k144送った種類" }, "k144送った種類", null],
+        ["22003", { confidence: "99.5" }, "99.5", null],
+        ["23514", { title: "k144送った題-check" }, "k144送った題-check", "k144_log_ck"],
+      ] as const) {
+        const before = logs.length;
+        const r = await f.req("POST", "/memories", { body, headers: writer.auth });
+        if (r.status !== 422) bad.push(`${pg}：${r.status}（422 のはず）`);
+        const logged = logs.slice(before).join("\n");
+        if (!logged.includes(pg)) bad.push(`${pg}：ログに DB の答えの番号が無い`);
+        if (constraint && !logged.includes(constraint)) bad.push(`${pg}：ログに制約の名前（${constraint}）が無い`);
+        if (logged.includes(sent)) bad.push(`${pg}：ログに送った値（${sent}）が出た：${logged.slice(0, 200)}`);
+        for (const dbText of [
+          "invalid input",
+          "syntax",
+          "violates",
+          "out of range",
+          "overflow",
+          "Key (",
+          "Failing row",
+          "is not present",
+          "precision",
+        ])
+          if (logged.includes(dbText))
+            bad.push(`${pg}：ログに DB の文（「${dbText}」）が出た：${logged.slice(0, 200)}`);
+      }
+    } finally {
+      for (const s of spies) s.mockRestore();
+      await f.admin.query("alter table memories drop constraint if exists k144_log_ck");
+    }
+    expect(bad).toEqual([]);
   });
 });
 
@@ -1099,7 +1159,7 @@ describe("K-144 ㉔ 自由に書く欄の上限を外す（D-130.3・D-130.4・�
       f.limits[op] = 10_000;
   });
 
-  it("K144-API-043 区画 30000 字（前の上限 20000 を超える）・下書き 450KB ほど（前の上限 180,000 バイトと DB の pg_column_size 200000 を超える・縮まない文）・記憶の本文 5000 字と題 300 字（前は 2000・80 で黙って切った）・会話の名前 300 字（前は 80）は、どれも 201／200 で、DB と読む口から読み戻すと送った文と一字も違わない", async () => {
+  it("K144-API-043 区画 30000 字（前の上限 20000 を超える）・下書き 450KB ほど（前の上限 180,000 バイトと DB の pg_column_size 200000 を超える・縮まない文）・文字数は 100,000 より少ないが 200,000 バイトを越える日本語の下書き（もとの K60-API-045）・記憶の本文 5000 字と題 300 字（前は 2000・80 で黙って切った）・会話の名前 300 字（前は 80）は、どれも 201／200 で、DB と読む口から読み戻すと送った文と一字も違わない。1MB を超える下書きは 413・PAYLOAD_TOO_LARGE で残らない", async () => {
     const bad: string[] = [];
     // 区画（チケットの本文）
     const section = noisy(30000);
@@ -1131,6 +1191,37 @@ describe("K-144 ㉔ 自由に書く欄の上限を外す（D-130.3・D-130.4・�
       const mine = list.find((x) => x.draft_id === draftId);
       if (JSON.stringify(mine?.body) !== JSON.stringify(draft))
         bad.push("下書き 450KB：読む口から読み戻すと中身が違う");
+    }
+    // 下書き：文字数は 100,000 より少ないが UTF-8 のバイト数が DB の上限 200,000 を越える日本語（もとの K60-API-045 の形・D-130.3 で 422 → 201）
+    let x = 12345;
+    const ja = Array.from({ length: 80_000 }, () => {
+      x = (x * 1103515245 + 12345) % 2147483648;
+      return String.fromCodePoint(0x4e00 + (x % 0x5000));
+    }).join("");
+    const jaDraft = { title: "大きな下書き", sections: { purpose: ja } };
+    expect(JSON.stringify(jaDraft).length).toBeLessThan(100_000);
+    expect(Buffer.byteLength(JSON.stringify(jaDraft), "utf8")).toBeGreaterThan(200_000);
+    const jaId = randomUUID();
+    const sj = await saveDraft({ draft_id: jaId, body: jaDraft });
+    if (sj.status !== 201) bad.push(`日本語の下書き 240KB：${sj.status} ${(await sj.clone().text()).slice(0, 200)}`);
+    // 下書き：1MB を超える体は 413・PAYLOAD_TOO_LARGE で残らない（D-130.1）
+    const hugeId = randomUUID();
+    const huge = { title: "大きすぎる下書き", sections: { purpose: noisy(400_000) } };
+    expect(Buffer.byteLength(JSON.stringify({ draft_id: hugeId, body: huge }))).toBeGreaterThan(1_048_576);
+    const sh = await saveDraft({ draft_id: hugeId, body: huge });
+    if (sh.status !== 413) bad.push(`下書き 1MB 超え：${sh.status}（413 のはず）`);
+    else if (((await json(sh)) as Record<string, unknown>)["code"] !== "PAYLOAD_TOO_LARGE")
+      bad.push("下書き 1MB 超え：code が PAYLOAD_TOO_LARGE でない");
+    {
+      // 別の GET で読み戻す：日本語の下書きは同じ中身で残り、1MB 超えの下書きは無い
+      const list = (await json(await f.req("GET", "/me/ticket-drafts", { headers: writer.auth }))).data as unknown as {
+        draft_id: string;
+        body: unknown;
+      }[];
+      const got = list.find((d) => d.draft_id === jaId);
+      if (JSON.stringify(got?.body) !== JSON.stringify(jaDraft))
+        bad.push("日本語の下書き 240KB：読む口から読み戻すと中身が違う（無い）");
+      if (list.some((d) => d.draft_id === hugeId)) bad.push("下書き 1MB 超え：413 なのに残った");
     }
     // 記憶の本文と題
     const m = await f.req("POST", "/memories", { body: { title: "題" }, headers: writer.auth });
