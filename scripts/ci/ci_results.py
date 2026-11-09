@@ -10,7 +10,8 @@ Kaname の入力に合わせたもの。違いは 4 つ：
     PASS/FIXED/OK/合格/完了・「PASS（該当なし…）」は該当なし）。印は「PASS（CI <sha>）」「FAIL（CI <sha>）」ちょうどだけ
 
   python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json [--report …] --sha "$GITHUB_SHA" --records 07_qa/ci-results
-  python3 scripts/ci/ci_results.py write  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --sha <その回>
+  python3 scripts/ci/ci_results.py write  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --sha <その回> [--ledger <台帳>]
+      （印を付けた行は同じ実行で台帳から消す。--ledger を省けば既定の台帳 07_qa/test-plan/result-ledger.json があればそれを減らす・K143-CI-034）
   python3 scripts/ci/ci_results.py check  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results \\
       --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>
   python3 scripts/ci/ci_results.py ledger --specs '07_qa/test-specs/**/*.md' --out 07_qa/test-plan/result-ledger.json   # 入れた時点の 1 回だけ
@@ -231,7 +232,29 @@ def _replace_cell(line: str, ri: int, new: str) -> str:
     return lead + ("|" if lead_pipe else "") + out + ("|" if trail_pipe else "")
 
 
-def write(specs: list[str], records: Path, sha: str) -> int:
+DEFAULT_LEDGER = "07_qa/test-plan/result-ledger.json"
+
+
+def shrink_ledger(ledger: Path, marked: set[tuple[str, str]]) -> int:
+    """write が印を付けた行を台帳から消す（台帳は減らすだけ・K143-CI-034）。消した数を返す"""
+    try:
+        data = json.loads(ledger.read_text(encoding="utf-8"))
+    except (ValueError, OSError) as e:
+        print(f"★ 台帳が読めない: {ledger}（{e}）。台帳は変えない")
+        return 0
+    rows = data.get("rows", [])
+    keep = [x for x in rows if _key(x["file"], x["id"]) not in marked]
+    if len(keep) == len(rows):
+        return 0
+    data["rows"] = keep
+    if "count" in data:
+        data["count"] = len(keep)
+    ledger.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    return len(rows) - len(keep)
+
+
+def write(specs: list[str], records: Path, sha: str, ledger: Path | None = None) -> int:
+    """記録から結果の欄を書く。ledger を渡せば、印を付けた行を同じ実行で台帳から消す（直後の check が緑・K143-CI-034）"""
     hit = find_records(load_records(records), sha or "")
     if len(sha or "") < 7 or len(hit) != 1:
         why = "短い sha" if len(sha or "") < 7 else ("記録が無い" if not hit else f"{len(hit)} つの記録に当たる（1 つに決まらない）")
@@ -240,6 +263,7 @@ def write(specs: list[str], records: Path, sha: str) -> int:
     r = hit[0]
     short = r["sha"][:7]
     changes: list[tuple[str, str]] = []
+    marked: set[tuple[str, str]] = set()
     n = 0
     for f in spec_files(specs):
         text = Path(f).read_text(encoding="utf-8")
@@ -254,11 +278,15 @@ def write(specs: list[str], records: Path, sha: str) -> int:
                 lines[i] = _replace_cell(lines[i], ri, new)
                 changed = True
                 n += 1
+            marked.add(_key(f, rid))
         if changed:
             changes.append((f, "\n".join(lines)))
     for f, t in changes:
         Path(f).write_text(t, encoding="utf-8")
     print(f"結果の欄を {n} 行書いた（CI {short} の記録から・{len(changes)} ファイル）")
+    if ledger is not None and Path(ledger).is_file():
+        gone = shrink_ledger(Path(ledger), marked)
+        print(f"台帳から {gone} 行を消した（印を付けた行・台帳は減らすだけ）: {ledger}")
     return 0
 
 
@@ -464,7 +492,9 @@ def main() -> int:
     if not a.specs:
         ap.error("--specs が要る")
     if a.cmd == "write":
-        return write(a.specs, Path(a.records), a.sha)
+        # 台帳：--ledger があればそれ、無ければ既定の台帳があるときだけ（pm_merge.sh は write に --ledger を渡さない）
+        led = a.ledger or (DEFAULT_LEDGER if Path(DEFAULT_LEDGER).is_file() else "")
+        return write(a.specs, Path(a.records), a.sha, Path(led) if led else None)
     if a.cmd == "ledger":
         return make_ledger(a.specs, Path(a.out))
     ledger = None
