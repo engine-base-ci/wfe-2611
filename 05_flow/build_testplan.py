@@ -116,7 +116,7 @@ SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の�
 SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）", "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130", "job": "spec", "blocking": True})
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
-SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\"", "env": "          CI_LEDGER_BASE: ${{ needs.static.outputs.base }}\n", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
@@ -137,6 +137,10 @@ UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が�
 SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
               "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n"
               '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+# spec の段が自分で出す本線との分かれ目（static を待たないため。入力は static の G0 と同じ・値は env で渡す・K-143）
+SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"\n        id: scope\n'
+                   "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n"
+                   '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base"))
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
@@ -205,6 +209,10 @@ on:
         description: "比べる元（40 桁のコミット。auto のときだけ使う）"
         type: string
         default: ''
+      target:
+        description: "取り込む先の枝の名前（G61 が比べる元の先祖かを確かめる。act_ci.sh が台の側で決めて渡す・枝の中のファイルから読まない・K-143）"
+        type: string
+        default: ''
 concurrency:
   group: ${{{{ github.workflow }}}}-${{{{ github.ref }}}}
   cancel-in-progress: true
@@ -224,14 +232,14 @@ jobs:
 {NODE}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
 {UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
-    # G61 が static の段の G0 の出す本線との分かれ目（base）を読む（K-143）
-    needs: [static]
+    # static を待たない（static の赤で仕様の層の検査が丸ごと飛ばされない・K-143）。G61 が要る本線との分かれ目（base）は、
+    #   この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
 {pg(5439)}    steps:
 {NODE}      - uses: actions/setup-python@v5
         with: {{ python-version: '3.12' }}
       - run: pip install pyyaml
-{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}
+{SPEC_SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}
   task-gate:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
@@ -294,6 +302,10 @@ jobs:
           for i in $(seq 1 60); do curl -sf -o /dev/null http://127.0.0.1:3124/dev/k/showcase && exit 0; sleep 2; done
           cat /tmp/web.log; exit 1
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'web')}      - uses: actions/upload-artifact@v4
+        # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
+        if: ${{{{ !cancelled() }}}}
+        with: {{ name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }}
+      - uses: actions/upload-artifact@v4
         if: failure()
         with: {{ name: playwright-report-web, path: apps/web/playwright-report/ }}
   e2e:

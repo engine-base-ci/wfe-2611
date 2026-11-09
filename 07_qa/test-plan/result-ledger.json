@@ -1,8 +1,8 @@
 {
- "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない",
+ "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
- "at": "2026-11-08",
- "count": 2593,
+ "at": "2026-11-09",
+ "count": 2444,
  "rows": [
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -1354,23 +1354,7 @@
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-05-003"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-05-004"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
    "id": "FND-05-005"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-05-006"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-05-007"
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
@@ -1386,15 +1370,7 @@
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-06-004"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
    "id": "FND-06-005"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-06-006"
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
@@ -1410,15 +1386,7 @@
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-08-004"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
    "id": "FND-08-005"
-  },
-  {
-   "file": "07_qa/test-specs/prod-smoke.md",
-   "id": "FND-08-006"
   },
   {
    "file": "07_qa/test-specs/prod-smoke.md",
@@ -1578,23 +1546,7 @@
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "FND-07-003"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "FND-07-004"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
    "id": "FND-07-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "FND-07-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "FND-07-007"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -1635,26 +1587,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D01-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D01-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D01-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D01-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D01-012"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D01-013"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -1702,26 +1634,6 @@
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D02-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D02-012"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D02-013"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D02-014"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D02-015"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D02-016"
   },
   {
@@ -1743,26 +1655,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D03-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D03-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D03-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D03-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D03-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D03-010"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -1803,26 +1695,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D04-018"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D04-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D04-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D04-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D04-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D04-012"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -1879,26 +1751,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D05-013"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D05-014"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D05-015"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D05-016"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D05-017"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D05-018"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -1970,26 +1822,6 @@
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D06-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D06-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D06-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D06-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D06-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D06-010"
   },
   {
@@ -1999,26 +1831,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D07-002"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D07-003"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D07-004"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D07-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D07-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D07-007"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2039,26 +1851,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D08-004"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D08-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D08-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D08-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D08-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D08-009"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2091,26 +1883,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D09-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D09-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D09-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D09-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D09-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D09-012"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2155,26 +1927,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D10-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D10-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D10-012"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D10-013"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D10-014"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D10-015"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2258,26 +2010,6 @@
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D11-021"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D11-022"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D11-023"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D11-024"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D11-025"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D11-026"
   },
   {
@@ -2310,26 +2042,6 @@
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D12-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D12-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D12-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D12-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D12-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D12-012"
   },
   {
@@ -2347,26 +2059,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D13-004"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D13-005"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D13-006"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D13-007"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D13-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D13-009"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2403,26 +2095,6 @@
   {
    "file": "07_qa/test-specs/rls-matrix.md",
    "id": "RLS-D14-008"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D14-009"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D14-010"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D14-011"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D14-012"
-  },
-  {
-   "file": "07_qa/test-specs/rls-matrix.md",
-   "id": "RLS-D14-013"
   },
   {
    "file": "07_qa/test-specs/rls-matrix.md",
@@ -2555,10 +2227,6 @@
   {
    "file": "07_qa/test-specs/screens/account-close.md",
    "id": "API-15-032"
-  },
-  {
-   "file": "07_qa/test-specs/screens/account-close.md",
-   "id": "API-15-033"
   },
   {
    "file": "07_qa/test-specs/screens/account-close.md",
@@ -3490,10 +3158,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/account.md",
-   "id": "API-12-036"
-  },
-  {
-   "file": "07_qa/test-specs/screens/account.md",
    "id": "API-12-038"
   },
   {
@@ -3603,10 +3267,6 @@
   {
    "file": "07_qa/test-specs/screens/account.md",
    "id": "API-20-024"
-  },
-  {
-   "file": "07_qa/test-specs/screens/account.md",
-   "id": "API-20-025"
   },
   {
    "file": "07_qa/test-specs/screens/account.md",
@@ -3743,10 +3403,6 @@
   {
    "file": "07_qa/test-specs/screens/ai-activity.md",
    "id": "API-07-065"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ai-activity.md",
-   "id": "API-07-036"
   },
   {
    "file": "07_qa/test-specs/screens/ai-activity.md",
@@ -4138,10 +3794,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/ai-activity.md",
-   "id": "API-06-031"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ai-activity.md",
    "id": "API-06-033"
   },
   {
@@ -4350,10 +4002,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/ai-activity.md",
-   "id": "API-21-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ai-activity.md",
    "id": "API-21-021"
   },
   {
@@ -4387,10 +4035,6 @@
   {
    "file": "07_qa/test-specs/screens/ai-activity.md",
    "id": "API-23-011"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ai-activity.md",
-   "id": "API-23-012"
   },
   {
    "file": "07_qa/test-specs/screens/audit.md",
@@ -4586,10 +4230,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/audit.md",
-   "id": "API-19-023"
-  },
-  {
-   "file": "07_qa/test-specs/screens/audit.md",
    "id": "API-19-025"
   },
   {
@@ -4758,10 +4398,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/billing.md",
-   "id": "API-18-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/billing.md",
    "id": "API-18-020"
   },
   {
@@ -4835,30 +4471,6 @@
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "SCR-BRIDGE-SETUP-017"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-020"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-021"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-022"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "SCR-BRIDGE-SETUP-023"
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
@@ -5090,10 +4702,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/bridge-setup.md",
-   "id": "API-01-028"
-  },
-  {
-   "file": "07_qa/test-specs/screens/bridge-setup.md",
    "id": "API-01-030"
   },
   {
@@ -5247,10 +4855,6 @@
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "API-04-017"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "API-04-033"
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
@@ -6882,10 +6486,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "API-10-037"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "API-16-007"
   },
   {
@@ -6911,10 +6511,6 @@
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "API-16-024"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "API-16-025"
   },
   {
    "file": "07_qa/test-specs/screens/clone-memory.md",
@@ -7154,10 +6750,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/company-model.md",
-   "id": "API-14-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/company-model.md",
    "id": "API-14-021"
   },
   {
@@ -7227,14 +6819,6 @@
   {
    "file": "07_qa/test-specs/screens/credentials.md",
    "id": "SCR-CREDENTIALS-023"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-024"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-025"
   },
   {
    "file": "07_qa/test-specs/screens/credentials.md",
@@ -7498,10 +7082,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/goal-edit.md",
-   "id": "API-11-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/goal-edit.md",
    "id": "API-11-021"
   },
   {
@@ -7531,10 +7111,6 @@
   {
    "file": "07_qa/test-specs/screens/invite-accept.md",
    "id": "API-02-004"
-  },
-  {
-   "file": "07_qa/test-specs/screens/invite-accept.md",
-   "id": "API-02-005"
   },
   {
    "file": "07_qa/test-specs/screens/invite-accept.md",
@@ -7603,14 +7179,6 @@
   {
    "file": "07_qa/test-specs/screens/invite-accept.md",
    "id": "SCR-INVITE-ACCEPT-013"
-  },
-  {
-   "file": "07_qa/test-specs/screens/invite-accept.md",
-   "id": "SCR-INVITE-ACCEPT-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/invite-accept.md",
-   "id": "SCR-INVITE-ACCEPT-015"
   },
   {
    "file": "07_qa/test-specs/screens/invite-accept.md",
@@ -7902,10 +7470,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/ledger-def.md",
-   "id": "API-09-030"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ledger-def.md",
    "id": "API-09-032"
   },
   {
@@ -7991,14 +7555,6 @@
   {
    "file": "07_qa/test-specs/screens/login.md",
    "id": "SCR-LOGIN-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/login.md",
-   "id": "SCR-LOGIN-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/login.md",
-   "id": "SCR-LOGIN-020"
   },
   {
    "file": "07_qa/test-specs/screens/login.md",
@@ -8090,10 +7646,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/login.md",
-   "id": "API-03-007"
-  },
-  {
-   "file": "07_qa/test-specs/screens/login.md",
    "id": "API-03-009"
   },
   {
@@ -8155,14 +7707,6 @@
   {
    "file": "07_qa/test-specs/screens/mfa-setup.md",
    "id": "SCR-MFA-SETUP-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/mfa-setup.md",
-   "id": "SCR-MFA-SETUP-015"
-  },
-  {
-   "file": "07_qa/test-specs/screens/mfa-setup.md",
-   "id": "SCR-MFA-SETUP-016"
   },
   {
    "file": "07_qa/test-specs/screens/mfa-setup.md",
@@ -8279,14 +7823,6 @@
   {
    "file": "07_qa/test-specs/screens/onboard-draft.md",
    "id": "SCR-ONBOARD-DRAFT-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-draft.md",
-   "id": "SCR-ONBOARD-DRAFT-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-draft.md",
-   "id": "SCR-ONBOARD-DRAFT-020"
   },
   {
    "file": "07_qa/test-specs/screens/onboard-draft.md",
@@ -8442,31 +7978,11 @@
   },
   {
    "file": "07_qa/test-specs/screens/onboard-golive.md",
-   "id": "SCR-ONBOARD-GOLIVE-013"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-golive.md",
-   "id": "SCR-ONBOARD-GOLIVE-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-golive.md",
-   "id": "SCR-ONBOARD-GOLIVE-015"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-golive.md",
    "id": "SCR-ONBOARD-GOLIVE-016"
   },
   {
    "file": "07_qa/test-specs/screens/onboard-golive.md",
    "id": "SCR-ONBOARD-GOLIVE-017"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-golive.md",
-   "id": "SCR-ONBOARD-GOLIVE-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-golive.md",
-   "id": "SCR-ONBOARD-GOLIVE-019"
   },
   {
    "file": "07_qa/test-specs/screens/onboard-golive.md",
@@ -8567,10 +8083,6 @@
   {
    "file": "07_qa/test-specs/screens/onboard-interview.md",
    "id": "SCR-ONBOARD-INTERVIEW-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-interview.md",
-   "id": "SCR-ONBOARD-INTERVIEW-020"
   },
   {
    "file": "07_qa/test-specs/screens/onboard-interview.md",
@@ -8798,34 +8310,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-015"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-016"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-017"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
-   "id": "SCR-ONBOARD-TESTRUN-020"
-  },
-  {
-   "file": "07_qa/test-specs/screens/onboard-testrun.md",
    "id": "SCR-ONBOARD-TESTRUN-022"
   },
   {
@@ -8935,10 +8419,6 @@
   {
    "file": "07_qa/test-specs/screens/ops-audit.md",
    "id": "API-22-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ops-audit.md",
-   "id": "API-22-019"
   },
   {
    "file": "07_qa/test-specs/screens/ops-audit.md",
@@ -9110,10 +8590,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/ops-home.md",
-   "id": "API-17-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/ops-home.md",
    "id": "API-17-020"
   },
   {
@@ -9187,14 +8663,6 @@
   {
    "file": "07_qa/test-specs/screens/password-reset.md",
    "id": "SCR-PASSWORD-RESET-015"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-016"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-017"
   },
   {
    "file": "07_qa/test-specs/screens/password-reset.md",
@@ -9306,10 +8774,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/policies.md",
-   "id": "API-08-013"
-  },
-  {
-   "file": "07_qa/test-specs/screens/policies.md",
    "id": "API-08-015"
   },
   {
@@ -9375,14 +8839,6 @@
   {
    "file": "07_qa/test-specs/screens/signup.md",
    "id": "SCR-SIGNUP-013"
-  },
-  {
-   "file": "07_qa/test-specs/screens/signup.md",
-   "id": "SCR-SIGNUP-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/signup.md",
-   "id": "SCR-SIGNUP-015"
   },
   {
    "file": "07_qa/test-specs/screens/signup.md",
@@ -9670,10 +9126,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/tasks.md",
-   "id": "API-05-025"
-  },
-  {
-   "file": "07_qa/test-specs/screens/tasks.md",
    "id": "API-05-027"
   },
   {
@@ -9759,10 +9211,6 @@
   {
    "file": "07_qa/test-specs/screens/tasks.md",
    "id": "API-13-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/tasks.md",
-   "id": "API-13-019"
   },
   {
    "file": "07_qa/test-specs/screens/tasks.md",
@@ -9922,26 +9370,6 @@
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-00-006"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-00-007"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-00-008"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-00-009"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-00-010"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-00-011"
   },
   {
@@ -10026,10 +9454,6 @@
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-01-003"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-01-004"
   },
   {
@@ -10099,10 +9523,6 @@
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-02-002"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-02-003"
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
@@ -10186,10 +9606,6 @@
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-03-003"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-03-004"
   },
   {
@@ -10215,10 +9631,6 @@
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-04-002"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-04-003"
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
@@ -10250,10 +9662,6 @@
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-05-003"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-05-004"
   },
   {
@@ -10279,10 +9687,6 @@
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",
    "id": "USH-06-002"
-  },
-  {
-   "file": "07_qa/test-specs/visual-fidelity-audit.md",
-   "id": "USH-06-003"
   },
   {
    "file": "07_qa/test-specs/visual-fidelity-audit.md",

@@ -39,7 +39,7 @@ PASS = re.compile(r"\b(PASS|FIXED)\b|完了")
 BLOCKED = re.compile(r"\bBLOCKED\b")
 FAIL = re.compile(r"\b(FAIL|NG)\b")
 # 「該当 / N/A + 理由」で判定する観点（G-11〜G-16：test-ladder §4）だけ、理由つきの N/A を消化とみなす。操作の行は N/A にできない（L-018）
-NA = re.compile(r"^\s*N/A\s*[（(]")
+NA = re.compile(r"^\s*(?:N/A\s*[（(]|PASS（該当なし)")   # 「PASS（該当なし…）」も該当なし（N/A・K-143・PM の判断 2026-11-08 17:40）
 NA_ASPECT = re.compile(r"G-1[1-6]")
 LEVEL = re.compile(r"\bL([1-5])\b")
 
@@ -68,10 +68,10 @@ def status_of(result: str) -> str:
         return "failed"
     if BLOCKED.search(result):
         return "blocked"
+    if NA.match(result):   # PASS より先（「PASS（該当なし…）」は passed でなく na・K143-CI-027）
+        return "na"
     if PASS.search(result):
         return "passed"
-    if NA.match(result):
-        return "na"
     return "planned"
 
 
