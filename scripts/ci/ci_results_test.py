@@ -578,9 +578,16 @@ class LedgerBaseTest(unittest.TestCase):
         git(self.t, "switch", "-q", "atk")
         code, out = self.check(stray)   # 台帳の増えは無い。先祖の確かめだけで赤になること
         self.assertEqual(code, 1, out)
-        code, out = self.check("main", target=None)
+        # --target-ref 無し／読めない の 2 つは、台帳が main と同じ枝（clean）から流す。
+        # atk から流すと台帳の増えでも赤になり、--target-ref の確かめを外した実装でも緑にならない（精査 回 8 の NG #31 の続き）
+        git(self.t, "switch", "-q", "-c", "clean", "main")
+        (self.t / "y.txt").write_text("台帳と仕様は本線のまま。別のファイルだけ足す", encoding="utf-8")
+        self.commit("枝：台帳も仕様も変えない")
+        code, out = self.check("main", target="main")   # 対照：台帳の増えが無く target も読めるなら緑
+        self.assertEqual(code, 0, out)
+        code, out = self.check("main", target=None)   # --target-ref 無し だけで赤になること
         self.assertEqual(code, 1, out)
-        code, out = self.check("main", target="無い-枝")
+        code, out = self.check("main", target="無い-枝")   # 読めない --target-ref だけで赤になること
         self.assertEqual(code, 1, out)
 
 
