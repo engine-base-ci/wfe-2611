@@ -487,7 +487,7 @@ class WorkflowTest(unittest.TestCase):
         text = (ROOT / "vitest.config.ts").read_text(encoding="utf-8")
         m = re.search(r"\bhookTimeout\s*:\s*([\d_]+)", text)
         self.assertIsNotNone(m)
-        self.assertEqual(int(m.group(1).replace("_", "")), 6000)   # 1.9 秒 × 3（D-133.2）
+        self.assertEqual(int(m.group(1).replace("_", "")), 11000)   # 全部のファイルの最大 3.6 秒 × 3 を切り上げ（D-133.2・2026-11-10 answer=5185823099d3）
         self.assertIn("× 3", text)
 
     def test_K156_CI_029_hook_timeout_in_one_place_with_measurement(self) -> None:
