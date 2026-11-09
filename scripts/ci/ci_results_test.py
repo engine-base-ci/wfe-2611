@@ -568,11 +568,15 @@ class LedgerBaseTest(unittest.TestCase):
         code, out = self.check(head)   # 比べる元を枝の先（HEAD）にすり替える
         self.assertEqual(code, 1, out)
         git(self.t, "switch", "-q", "-c", "other", "main")
+        # stray の台帳と仕様は枝（atk）の HEAD と同じにして、台帳の増えでは赤にならない形にする。
+        # こうすると赤の理由は「--ledger-base-ref が取り込む先（--target-ref）の先祖でない」だけになる（精査 回 8 の NG #31）
+        self.spec.write_text(HEAD + row("K57-UI-001", "PASS") + row("K57-UI-002", "PASS"), encoding="utf-8")
+        self.put_ledger(["K57-UI-001", "K57-UI-002"])
         (self.t / "x.txt").write_text("取り込む先に無いコミット", encoding="utf-8")
-        self.commit("取り込む先の先祖でないコミット")
+        self.commit("取り込む先の先祖でないコミット（台帳と仕様は枝と同じ）")
         stray = git(self.t, "rev-parse", "HEAD").strip()
         git(self.t, "switch", "-q", "atk")
-        code, out = self.check(stray)
+        code, out = self.check(stray)   # 台帳の増えは無い。先祖の確かめだけで赤になること
         self.assertEqual(code, 1, out)
         code, out = self.check("main", target=None)
         self.assertEqual(code, 1, out)
