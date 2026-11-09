@@ -41,13 +41,13 @@ export function parsePaths(yaml) {
   const out = {}; // path → { method: { required, responseFields, operationId, tag, input, success } }
   const lines = yaml.split("\n");
   let i = lines.findIndex((l) => l === "paths:");
-  let path = null, method = null, section = null, resCode = 0, lastParam = null;
+  let path = null, method = null, section = null, resCode = 0, lastParam = null, lastIn = null;
   for (i = i + 1; i < lines.length; i++) {
     const l = lines[i];
     if (/^\S/.test(l)) break;
     let m;
     if ((m = /^  (\/[^:]+):$/.exec(l))) { path = m[1]; out[path] = {}; continue; }
-    if ((m = /^    (get|post|put|patch|delete):$/.exec(l))) { method = m[1].toUpperCase(); out[path][method] = { required: [], responseFields: [], operationId: "", tag: "", input: null, success: 200, output: null, outputList: false, query: [] }; section = null; resCode = 0; continue; }
+    if ((m = /^    (get|post|put|patch|delete):$/.exec(l))) { method = m[1].toUpperCase(); out[path][method] = { required: [], responseFields: [], operationId: "", tag: "", input: null, success: 200, output: null, outputList: false, query: [], uuidParams: [] }; section = null; resCode = 0; lastIn = null; continue; }
     if (!path || !method) continue;
     const cur = out[path][method];
     if ((m = /^      operationId: (\S+)/.exec(l))) cur.operationId = m[1];
@@ -60,6 +60,9 @@ export function parsePaths(yaml) {
     // 問い合わせの名前（in: query のもの）。口ごとの型（ops.ts）の query に出す
     if (section === "params" && (m = /^      - name: (\S+)/.exec(l))) lastParam = m[1];
     if (section === "params" && /^        in: query/.test(l) && lastParam) cur.query.push(lastParam);
+    if (section === "params" && (m = /^        in: (\w+)/.exec(l))) lastIn = m[1];
+    // 契約で正式な uuid の道の値と問い合わせ（並びなら中身が uuid）。入口（apps/api/src/contract/op.ts）が確かめる（D-129.42・K-144）
+    if (section === "params" && lastParam && (lastIn === "path" || lastIn === "query") && /^ {10}( {2})?format: uuid$/.test(l) && !cur.uuidParams.includes(lastParam)) cur.uuidParams.push(lastParam);
     if (section === "req" && (m = /\$ref: '#\/components\/schemas\/(\w+)'/.exec(l))) cur.input = m[1];
     if ((m = /^\s+required: \[(.*)\]/.exec(l)) && section === "req") cur.required.push(...m[1].split(",").map((s) => s.trim().replace(/['"]/g, "")).filter(Boolean));
     if ((m = /^\s+- (\w+)$/.exec(l)) && section === "req" && lines[i - 1] && /required:$/.test(lines[i - 1].trim())) cur.required.push(m[1]);
@@ -84,17 +87,22 @@ export function parseComponents(yaml) {
     if (/^\S/.test(l)) break;
     if (/^  \w+:$/.test(l)) { inSchemas = l === "  schemas:"; name = null; continue; }
     if (!inSchemas) continue;
-    if ((m = /^    (\w+):$/.exec(l))) { name = m[1]; out[name] = { props: {}, required: [], table: null }; sec = null; prop = null; continue; }
+    if ((m = /^    (\w+):$/.exec(l))) { name = m[1]; out[name] = { props: {}, required: [], table: null, requiredBy: null }; sec = null; prop = null; continue; }
     if (!name) continue;
     if (/^      properties:/.test(l)) { sec = "props"; continue; }
     if (/^      required:/.test(l)) { sec = "req"; continue; }
     if ((m = /^      x-table: (\S+)/.exec(l))) { out[name].table = m[1]; continue; }
+    // 必須の欄の無いときの答えを口の振る舞いが持つ形（K-144 ⑱）：zod ではその欄を .optional() のままにする
+    if ((m = /^      x-required-by: (\S+)/.exec(l))) { out[name].requiredBy = m[1]; sec = null; continue; }
+    if (/^      [\w-]+:/.test(l) && !/^      (properties|required):/.test(l)) { sec = null; continue; }
     if (sec === "req" && (m = /^      - (\w+)/.exec(l))) { out[name].required.push(m[1]); continue; }
     if (sec === "props" && (m = /^        (\w+):(?: &(\w+))?$/.exec(l))) { prop = m[1]; propAnchor = m[2] ?? null; out[name].props[prop] = {}; if (propAnchor) anchors[propAnchor] = out[name].props[prop]; continue; }
+    if (sec === "props" && (m = /^        (\w+):(?: &(\w+))? \{\}$/.exec(l))) { out[name].props[m[1]] = {}; if (m[2]) anchors[m[2]] = out[name].props[m[1]]; prop = null; continue; } // 形を問わない欄（z.unknown()・K-57）。別名つき（payload: &id324 {}）も落とさない（K-144）
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
     if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }
     if (sec === "props" && prop && (m = /^            type: (\S+)/.exec(l))) { out[name].props[prop].items = m[1]; continue; }
+    if (sec === "props" && prop && (m = /^            format: (\S+)/.exec(l))) { out[name].props[prop].itemsFormat = m[1]; continue; } // 並びの中身の形（uuid の並び・K-144）
   }
   return out;
 }
@@ -115,10 +123,11 @@ function zodOf(p) {
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
-  if (p.type === "string") return "z.string().max(10000)";
+  if (p.type === "string") return "z.string()"; // 自由に書く欄に一律の上限を置かない（D-130.1）。守りは入口の送る量 1MB（op.ts）
   if (p.type === "integer") return "z.number().int()";
   if (p.type === "number") return "z.number()";
   if (p.type === "boolean") return "z.boolean()";
+  if (p.type === "array" && p.items === "string" && p.itemsFormat === "uuid") return "z.array(z.uuid())";
   if (p.type === "array") return p.items === "string" ? "z.array(z.string())" : "z.array(z.unknown())";
   if (p.type === "object") return "z.record(z.string(), z.unknown())";
   return "z.unknown()";
@@ -166,6 +175,7 @@ export function gen(root = ROOT) {
       // 表の素の読み書き（/表 と /表/:id）だけが共通の処理で動いてよい。それ以外（/表/:id/approve など）は hooks に振る舞いを書くまで 501（D-128.113）
       generic: GENERIC_OK.has(`${m} ${hono}`),
       auth: e.auth?.role ?? "member", rateLimit: { perMinute: Number(rl?.[1] ?? 60), key: rl?.[2] ?? "user" },
+      uuidParams: d.uuidParams,
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
       perm: permOf({ ...e, path: hono }, d.tag || slug(p).split("_")[0], m),
       termsOpen: e.terms_open === true,
@@ -195,6 +205,8 @@ export interface EndpointDef {
   outputList: boolean;
   auth: "member" | "ops" | "client" | "device" | "public";
   rateLimit: { perMinute: number; key: "user" | "ip" };
+  /** 契約で format: uuid の道の値と問い合わせの名前（入口が正式な uuid か確かめる・D-129.42・K-144） */
+  uuidParams: string[];
   chokePoints: string[];
   errors: number[];
   acts: string[];
@@ -240,7 +252,7 @@ export const OPENAPI_HASH = "${h}";
   const zl = [`// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:${h}`, `import { z } from "zod";`, ""];
   for (const [name, c] of Object.entries(comps)) {
     if (name === "Error") continue;
-    const props = Object.entries(c.props).map(([k, p]) => `  ${k}: ${zodOf(p)}${c.required.includes(k) ? "" : ".optional()"},`);
+    const props = Object.entries(c.props).map(([k, p]) => `  ${k}: ${zodOf(p)}${c.required.includes(k) && c.requiredBy !== "hooks" ? "" : ".optional()"},`);
     zl.push(`export const ${name} = z.strictObject({\n${props.join("\n")}\n});`);
   }
   zl.push("", `export const SCHEMAS: Record<string, z.ZodType> = { ${Object.keys(comps).filter((n) => n !== "Error").join(", ")} };`, "");

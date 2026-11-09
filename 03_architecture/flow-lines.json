@@ -26,6 +26,7 @@
   "skill_versions",
   "skills",
   "status_incidents",
+  "tenant_memberships",
   "tenants",
   "ticket_kinds",
   "ticket_messages",
@@ -681,11 +682,15 @@
   },
   "tenant_memberships": {
    "writes": [
-    "F10"
+    "F10",
+    "F4"
    ],
    "reads": [],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F10→F4",
+    "F4→F10"
+   ]
   },
   "tenants": {
    "writes": [

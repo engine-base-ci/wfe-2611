@@ -40,9 +40,28 @@ let onUnauthorized: (() => void) | null = null;
 export const setUnauthorizedHandler = (fn: (() => void) | null): void => {
   onUnauthorized = fn;
 };
-/** 「入っていない」と分かった（API が 401）。手元の鍵を捨てて入り直しへ（auth-ext の口も同じ扱い・D-086.4） */
+/** この PC に置いた書きかけの写し（チケットの下書き・K-60）の鍵の頭。ログアウトとログイン切れで全部消す（共有の PC で次の人に見せない） */
+export const DRAFT_COPY_PREFIX = "kaname.ticket-draft";
+export const clearDraftCopies = (): void => {
+  for (const store of ["localStorage", "sessionStorage"] as const) {
+    try {
+      const s = window[store];
+      const keys: string[] = [];
+      for (let i = 0; i < s.length; i++) {
+        const k = s.key(i);
+        if (k?.startsWith(DRAFT_COPY_PREFIX)) keys.push(k);
+      }
+      for (const k of keys) s.removeItem(k);
+    } catch {
+      /* 読めない置き場（非公開の窓）には写しも無い */
+    }
+  }
+};
+/** 「入っていない」と分かった（API が 401）。手元の鍵と書きかけの写しを捨てて入り直しへ（auth-ext の口も同じ扱い・D-086.4）。
+ *  書きかけはサーバーの下書きに残してある（作る前にすぐ残す・K-60） */
 export const notifyUnauthorized = (): void => {
   setToken(null);
+  clearDraftCopies();
   onUnauthorized?.();
 };
 

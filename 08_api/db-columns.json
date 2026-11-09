@@ -5822,7 +5822,15 @@
    }
   },
   "sessions": {
+   "alive_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "auth_session_id": {
+    "type": "text",
+    "nullable": true
+   },
+   "bridge_version": {
     "type": "text",
     "nullable": true
    },
@@ -5858,6 +5866,10 @@
     "type": "text",
     "nullable": true
    },
+   "device_token_hash": {
+    "type": "text",
+    "nullable": true
+   },
    "health": {
     "type": "jsonb",
     "nullable": true
@@ -5889,6 +5901,10 @@
    "last_seen_at": {
     "type": "timestamp with time zone",
     "nullable": false
+   },
+   "machine_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "member_id": {
     "type": "uuid",

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 363（作った 10・後のフェーズの行為だけ 20）・前の道すじ 39・表 142・画面の部品 13・共通の処理 13・エラー 151・部品 52・設定 39
+API 365（作った 22・後のフェーズの行為だけ 20）・前の道すじ 33・表 144・画面の部品 13・共通の処理 13・エラー 157・部品 53・設定 39
 
 ## 共通の処理
 
@@ -112,12 +112,14 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 | `support_access_grants` | skeleton | F12 |  |  |
 | `target_kinds` | internal |  |  |  |
 | `tenant_distributions` | skeleton |  | F9 |  |
-| `tenant_memberships` | skeleton | F10 |  |  |
+| `tenant_memberships` | skeleton | F10,F4 |  | ○ |
 | `tenants` | skeleton | F10 | F12 | ○ |
 | `terms_consents` | skeleton | F1 |  |  |
 | `terms_versions` | skeleton |  | F1 |  |
 | `test_specs` | skeleton | F4 |  |  |
 | `ticket_decisions` | skeleton | F6 |  |  |
+| `ticket_drafts` | internal |  |  |  |
+| `ticket_drafts_used` | internal |  |  |  |
 | `ticket_handovers` | skeleton | F8 |  |  |
 | `ticket_imports` | skeleton | F4 |  |  |
 | `ticket_kinds` | skeleton | F9 | F4 | ○ |
@@ -291,38 +293,40 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 | `changePlan` | POST /api/v1/workspace/plan | 作成・実行（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `listWorkspacePlans` | GET /api/v1/workspace/plans | 取得（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 契約だけ（501） |  |
-| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-90 |
 | `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-91 |
-| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
-| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-57 |
+| `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
+| `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 契約だけ（501） | K-60 |
+| `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 作った | K-60 |
 | `getArtifactVersion` | GET /api/v1/artifact_versions/:id | 取得（artifact_versions）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listClassAxes` | GET /api/v1/class_axes | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `createConversation` | POST /api/v1/conversations | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分のAIとの会話を分けて始める・一覧から選んで続きを話 | F4 | 作った | K-59 |
 | `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | K-59 |
+| `listMyTicketDrafts` | GET /api/v1/me/ticket-drafts | 取得（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
+| `saveMyTicketDraft` | POST /api/v1/me/ticket-drafts | 作成・実行（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
 | `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-60 |
 | `updateTestSpec` | PATCH /api/v1/test_specs/:id | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `deleteTestSpec` | DELETE /api/v1/test_specs/:id | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `createTicketImport` | POST /api/v1/ticket_imports | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `getTicketImport` | GET /api/v1/ticket_imports/:id | 取得（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
-| `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-60 |
+| `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-60 |
 | `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
-| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-60 |
+| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
 | `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 契約だけ（501） | K-67 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -452,7 +456,7 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 | `updateRule` | PATCH /api/v1/rules/:id | 更新（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `deleteRule` | DELETE /api/v1/rules/:id | 削除（rules）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） |  |
 | `checkRule` | POST /api/v1/rules/check | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ／ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
-| `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） | K-60 |
+| `listScopes` | GET /api/v1/scopes | 取得（scopes）— グループを作る・直す（メンバーの中） | F9 | 作った | K-60 |
 | `createScope` | POST /api/v1/scopes | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
@@ -511,16 +515,10 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 - `/bridge/answer`
 - `/bridge/ask`
 - `/bridge/browser`
-- `/bridge/claim`
 - `/bridge/code`
 - `/bridge/credentials/check-result`
 - `/bridge/credentials/resolve`
-- `/bridge/download`
-- `/bridge/file/:name`
 - `/bridge/finish`
-- `/bridge/heartbeat`
-- `/bridge/latest`
-- `/bridge/pair`
 - `/bridge/progress`
 - `/bridge/state`
 - `/bridge/take`
@@ -590,6 +588,7 @@ API 363（作った 10・後のフェーズの行為だけ 20）・前の道す�
 |---|---|
 | `@base-ui/react` | 画面の部品の土台（動き・読み上げ） |
 | `@aws-sdk/client-s3` | ファイルの置き場（S3 互換） |
+| `@aws-sdk/s3-request-presigner` | 外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160） |
 | `@better-auth/utils` | ログインの部品の中の道具 |
 | `@eslint/js` | 書き方の検査（G1） |
 | `@fontsource-variable/noto-sans-jp` | 記録にある名前のまま |

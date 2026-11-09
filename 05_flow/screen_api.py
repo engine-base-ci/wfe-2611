@@ -25,6 +25,9 @@ SCREEN_API = {
         ("POST", "/tickets/:id/restore", "A116", T, "restoreTicket", ["audit_events"]),
         ("POST", "/tickets/:id/complete", "A106", T, "completeTicket", ["knowledge_pages", "ticket_decisions"]),
         ("POST", "/tickets/bulk", "A103|A113", T, "bulkUpdateTickets", ["ticket_messages"]),
+        # 書きかけの下書き（D-128.138：サーバーに残し、どの端末でも続きが書ける。作った本人のワークスペースごと）
+        ("GET", "/me/ticket-drafts", "A99", "tenant_memberships", "listMyTicketDrafts", []),
+        ("POST", "/me/ticket-drafts", "A99", "tenant_memberships", "saveMyTicketDraft", []),
         ("POST", "/ticket_imports", "A99", "ticket_imports", "createTicketImport", []),
         ("GET", "/ticket_imports/:id", "A99", "ticket_imports", "getTicketImport", []),
         ("POST", "/ticket_imports/:id/commit", "A99", "ticket_imports", "commitTicketImport", [T]),
@@ -486,7 +489,7 @@ SCREEN_API = {
 }
 
 
-# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／boolean／object／array
+# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]（後ろの ? は null 可）
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
     "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
@@ -497,7 +500,17 @@ INPUTS = {
     # 確認のリンクで確定する（K-52）：届いたメールのリンクの手がかりだけ。表の列（pw_iv など）は入力に出さない
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
-    "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "string", "privacy_version_id": "string"}),
+    "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
+    # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
+    "createPairingCode": ("PairingCodeInput", {}),
+    "claimPairingCode": ("BridgeClaimInput", {"code": "string", "device_label": "string", "machine_id": "uuid?"}),   # machine_id：この PC の印（UUID・D-128.174）。古い Bridge は送らない（null も受ける）
+    "sendHeartbeat": ("BridgeHeartbeatInput", {"health": "any", "protocol": "any", "version": "string"}),
+    # K-60：チケットを作る。番号・消した人・取り込みの下書きは入れさせない。区画は鍵 → 本文。知らせる人は最初から選べる（D-128.138）
+    "createTicket": ("TicketCreateInput", {"scope_id": "uuid", "kind_id": "uuid", "title": "string", "assignee_member_id": "uuid",
+                                           "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
+                                           "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
+                                           "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
+    "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -527,6 +540,9 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-019"],
          "trigger": "同意の印（agree=true）が無い・版の ID が空か形が違うか無い版・利用規約とプライバシーポリシーの片方だけ",
          "ears_form": "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "同意を書く DB（今の版を読む・同意の行を書く）が落ちた",
+         "ears_form": "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない"},
     ],
     # 今の版を読む（K-53）。DB が落ちたら中身を返さない
     "getCurrentTerms": [
@@ -545,7 +561,116 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-PAGE-006"],
          "trigger": "手がかりが無い・空（前後の空白を除いて空）",
          "ears_form": "UNWANTED: IF 手がかりが無いか空なら、Kaname は 422 を返し、申し込みには触らない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "確定の途中で DB か認証の仕組みが落ちた",
+         "ears_form": "UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない"},
     ],
+    # 登録の申し込み（K-51・K-144）。規約の版を読む DB が落ちたら申し込みを作らない（汎用の 409・422 はそのまま）
+    "createSignup": [
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "規約の版を読む DB か申し込みを書く DB が落ちた",
+         "ears_form": "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない"},
+    ],
+    # 配布物を受け取る（K-57・K-144）。目録に無い名前・その OS の配布物が無い・知らない名前・置き場に届かない
+    "downloadBridgeRelease": [
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},
+         "trigger": "目録に無い名前・置き場の外を指す名前",
+         "ears_form": "UNWANTED: IF 名前が目録に無いか置き場の外を指すなら、Kaname は 404 と NOT_FOUND を返し、ファイルを渡さない"},
+        {"status": 404, "code": "E-CONN-014", "body": {"error": "not_found", "code": "E-CONN-014"}, "errors": ["E-CONN-014"],
+         "trigger": "その OS（mac・win）の配布物が無い",
+         "ears_form": "UNWANTED: IF その OS の配布物が無いなら、Kaname は 404 と E-CONN-014 を返す"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []},
+         "trigger": "小文字だけの知らない名前（mac・win のどちらでもない）",
+         "ears_form": "UNWANTED: IF 名前が小文字だけで mac・win のどちらでもないなら、Kaname は 422 と欄 name を返す"},
+        {"status": 503, "code": "E-PAGE-007", "body": {"error": "unavailable", "code": "E-PAGE-007"}, "errors": ["E-PAGE-007"],
+         "trigger": "配布物の置き場に届かない",
+         "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、空を成功にしない"},
+    ],
+    # 新しい版を見る（K-57・K-144）。置き場に届かなければ 503（空を「配っていない」にしない）
+    "getLatestBridgeRelease": [
+        {"status": 503, "code": "E-PAGE-007", "body": {"error": "unavailable", "code": "E-PAGE-007"}, "errors": ["E-PAGE-007"],
+         "trigger": "配布物の置き場に届かない",
+         "ears_form": "UNWANTED: IF 配布物の置き場に届かないなら、Kaname は 503 と E-PAGE-007 を返し、「配っていない」と答えない"},
+    ],
+    # チケットを作る（K-60・K-144）。親が無い・見えない
+    "createTicket": [
+        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
+         "trigger": "親のチケットが無い・消えた・見えない",
+         "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"},
+    ],
+}
+# JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
+RAW_200 = {
+    "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
+}
+# 答えの欄が、その口の表の null を許す列と同じ名前でも null を返さないもの（"op.欄" → 理由）。ここに無い欄は表のとおり null 可にする（K-144）
+NOT_NULL_ANSWERS = {
+    "listMyDevices.health": "口が coalesce で空の並び [] を返し、null にはしない（sessions.health は null 可）",
+    "claimPairingCode.device_label": "口が cleanLabel で空なら「この PC」にそろえて返し、null にはしない（sessions.device_label は null 可）",
+    "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
+}
+# 類 E（K-144 ⑯・回 9）：口が「無い」ことで 422 にする入力の欄（必須の欄）。契約の入力の形の required と x-required-by: hooks になる
+#   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
+#   条件つきで要る欄（stepUp の code・種別ごとの必須の区画・優先度「高」の理由）は載せない
+REQUIRED_INPUTS = {
+    "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
+    "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
+    "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
+    "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
+    "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
+    "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
+    "createTicket": ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"],   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
+    "updateMemory": ["body"],                                            # apps/api/src/hooks/agent.ts:63（覚えることが空です）
+}
+# 類 F（K-144 ⑲）：道の値を口が値域つきで断る口（operationId → 道の値の名前 → pattern）。名前が id で終わる道の値は uuid のまま
+PATH_PATTERNS = {
+    # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（ほかの英小文字だけは 422）・202〜204（ほかは目録の名前か 404）
+    "downloadBridgeRelease": {"name": r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$"},
+}
+# 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
+#   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
+_CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
+_CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+VALUE_RANGES = {
+    "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
+        "title": {"pattern": "\\S", "maxLength": 200},
+        "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},
+        "priority": {"enum": ["", "mid", "high"]},
+        "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
+                                       {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},
+        "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
+                     "additionalProperties": {"type": "string"}},   # 区画の中身の上限は置かない（D-130.3）。守りは送る量 1MB だけ
+        "notify_member_ids": {"maxItems": 20},
+    },
+    "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
+        "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
+    },
+    "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
+    "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
+    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
+        "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
+        "name": {"pattern": "\\S", "maxLength": 100},
+        "company_name": {"maxLength": 100},
+        "password": {"minLength": 12},
+    },
+    "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
+    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
+}
+# 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
+UNEXPRESSIBLE_422 = {
+    "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
+                     "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
+                     "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
+    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "updateConversation": ["名前が null（空と同じ）"],
+    "updateMemory": ["覚えることが null（空と同じ）"],
+    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "consentToTerms": ["無い版の ID（版の ID の在りか）"],
 }
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
@@ -557,11 +682,11 @@ RESPONSES = {
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
-    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array", "run": "object"}),
+    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
-    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
+    "listApprovalQueue": ("ApprovalQueueItem", {"kind": "string", "id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "from_member_id": "string", "check_summary": "string", "due_on": "string", "decide_inline": "boolean", "primary_action": "string", "secondary_action": "string"}),
     "getApproval": ("ApprovalDetail", {"approval": "object", "ticket": "object", "operation": "object", "message_text": "string", "artifact_version": "object", "checks": "array", "cautions": "array", "irreversible": "boolean", "chain": "array"}),
     "previewBulkApproval": ("BulkApprovalPreview", {"eligible": "array", "excluded": "array"}),
     "bulkApprove": ("BulkResult", {"updated": "array", "skipped": "array"}),
@@ -579,6 +704,10 @@ RESPONSES = {
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
+    # 会話と記憶の口（K-144 ㉒）：表の行ではなく、口（apps/api/src/hooks/agent.ts）が返すとおりの形
+    "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),
+    "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),
+    "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "sessions": "array", "recent_events": "array"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
@@ -587,15 +716,23 @@ RESPONSES = {
     "getMe": ("Me", {"member": "object", "workspaces": "array"}),
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
-    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string", "urgent_override": "array", "events": "array"}),
+    "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
-    "getLatestBridgeRelease": ("BridgeRelease", {"version": "string", "files": "array", "sha256": "object", "released_at": "string"}),
-    "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string"}),
+    "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null
+    "claimPairingCode": ("BridgeClaim", {"device_token": "string", "device_id": "string", "member_id": "string", "device_label": "string"}),
+    # 置き場が外なら短い期限の署名 URL（D-128.153）。手元のフォルダならファイルそのもの（JSON ではない）
+    "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
+    "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean"}),
+    "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "revoke_reason": "string?"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?"}),
+    "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
+    "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
+    "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
     "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
-    "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string"}),
-    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string"}),
-    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string", "by_workspace": "array"}),
+    "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string?"}),
+    "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string?"}),
+    "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
     "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
     "getWorkspaceMembers": ("WorkspaceMembers", {"groups": "array", "invitations": "array", "alerts": "array", "count": "integer"}),
     "createInvitationLink": ("InvitationLink", {"url": "string", "expires_at": "string"}),
@@ -603,12 +740,12 @@ RESPONSES = {
     "previewMemberRemoval": ("MemberRemovalPreview", {"tickets": "array", "handovers_cancelled": "array", "approvals_reassigned": "array", "sole_approver": "array", "deleted": "array", "kept": "array", "restorable_until": "string"}),
     "getWorkspaceRules": ("WorkspaceRules", {"rules": "array", "rules_by_layer": "array", "escalations": "array", "work_types": "array"}),
     "previewEscalationRule": ("EscalationPreview", {"matched_last_month": "integer", "examples": "array"}),
-    "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string"}),
+    "getExport": ("ExportStatus", {"status": "string", "url": "string", "expires_at": "string?"}),
     "getWorkspaceSettings": ("WorkspaceSettings", {"workspace": "object", "plan": "object", "subscription": "object", "price_change": "object", "permissions": "array", "fixed_rules": "array", "deletion": "object"}),
-    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string", "price_monthly": "integer", "limits": "object", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
+    "listWorkspacePlans": ("PlanChoice", {"plan_id": "string", "name": "string?", "price_monthly": "integer?", "limits": "object?", "current": "boolean", "can_choose": "boolean", "reason": "string", "effective_from": "string"}),
     "getBilling": ("Billing", {"payee": "object", "billing_contact": "object", "terms": "string", "invoices": "array"}),
     "downloadInvoicePdf": ("SignedUrl", {"url": "string", "expires_at": "string"}),
-    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
+    "listClients": ("ClientRow", {"id": "string", "name": "string", "summary": "string", "groups": "array", "owner_member_id": "string?", "visibility": "string", "active_tickets": "integer", "open_requests": "integer", "waiting_acceptances": "integer", "last_activity_at": "string"}),
     "listClientLinkCandidates": ("ClientLinkCandidate", {"ticket_id": "string", "number": "string", "title": "string", "reason": "string"}),
     "getClient": ("ClientDetail", {"client": "object", "groups": "array", "contacts": "array", "todo": "array", "rules": "array", "knowledge": "array", "counts": "object"}),
     "listClientActivity": ("ClientActivityItem", {"at": "string", "actor": "object", "kind": "string", "text": "string", "ticket_id": "string", "client_visible": "boolean"}),
@@ -617,8 +754,8 @@ RESPONSES = {
     "getPortalHome": ("PortalHome", {"to_review": "array", "requests": "array", "tickets": "array"}),
     "askPortalRequestQuestions": ("PortalQuestions", {"available": "boolean", "questions": "array"}),
     "getPortalRequest": ("PortalRequest", {"request": "object", "messages": "array"}),
-    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string", "artifacts": "array", "messages": "array", "sections": "array"}),
-    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string", "due_on": "string"}),
+    "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
+    "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
     "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
@@ -645,11 +782,16 @@ RESPONSES = {
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
 META = {
     "listTickets": {"counts": "object"},
+    "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},
     "listOpsInquiries": {"counts": "object"},
     "listOpsInvoices": {"summary": "object"},
+}
+# 上限の差し替え（operationId → 1 分あたりの回数と鍵）。無い口は public 10/ip・GET 120/user・それ以外 60/user
+RATES = {
+    "claimPairingCode": "5/min/ip",   # 総当たりを防ぐ（D-089）
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
 QUERIES = {
@@ -671,6 +813,7 @@ QUERIES = {
     "listPlanProposals": ["state"],
     "listPlanHistory": ["plan_id"],
     "getNotificationSettings": ["tenant_id"],
+    "getLatestBridgeRelease": ["os", "arch"],   # 一覧でない口の問い合わせ（K-144）。値が違えば update: null
     "listAuditEvents": ["q", "kind", "member_id", "ticket_id", "from", "to"],
     "listScopes": ["layer_id"],
     "listClientActivity": ["client_visible"],
@@ -706,6 +849,8 @@ PERMS = {
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("assignee", "担当者とマネージャー", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
+    "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
+    "saveMyTicketDraft": ("self", "自分の下書きだけ", False),
     "createTicketImport": ("write", "取り込む先のグループに書ける人", False),
     "getTicketImport": ("self", "取り込んだ本人", False),
     "commitTicketImport": ("self", "取り込んだ本人（確定のときに取り込む先の権限をもう一度確かめる）", False),
@@ -878,10 +1023,10 @@ PERMS = {
     "listMyDevices": ("self", "自分の PC だけ", False),
     "updateMyDevice": ("self", "自分の PC だけ（名前・いつも使う）", False),
     "revokeMyDevice": ("self", "自分の PC だけ。外すとその PC の仕事は止まり、預けたログイン情報も取り出せなくなる", True),
-    "getLatestBridgeRelease": ("self", "ログインしている人（版と指紋を返す・D-109）", False),
-    "downloadBridgeRelease": ("self", "ログインしている人（期限つきの署名 URL）", False),
+    "getLatestBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（PC が自分で新しい版を見に来る・D-109・D-128.137）", False),
+    "downloadBridgeRelease": ("self_or_device", "ログインしている人と、つないだ PC の印（D-128.137）。置き場が外なら短い期限の署名 URL（D-128.153）", False),
     # PC（Bridge）が呼ぶ。本人のセッションに結ばれた PC の印で呼び、本人が切られたら止まる
-    "claimPairingCode": ("device", "接続コードを持つ PC（1 回だけ・10 分）。つないだら本人に知らせる", False),
+    "claimPairingCode": ("public", "接続コードを持つ PC（まだ PC の印が無い。コードそのものが鍵：1 回だけ・10 分・1 分に 5 回まで・D-089・D-128.93）。つないだら本人に知らせる", False),
     "sendHeartbeat": ("device", "その人の PC", False),
     "reportUsage": ("device", "その人の PC（その人の使った量だけ）", False),
     "takeBridgeJob": ("device", "その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す", False),

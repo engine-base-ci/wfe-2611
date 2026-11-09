@@ -15,6 +15,8 @@ describe("GET /api/v1/ops/inquiries", () => {
   it.todo("test_get_ops_inquiries_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_get_ops_inquiries_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_get_ops_inquiries_session_unresolved");
   // UBIQUITOUS: GET /api/v1/ops/inquiries の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_ops_inquiries_shape");
 });

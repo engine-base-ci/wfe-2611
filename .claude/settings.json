@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent|Task|SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/skills/ai-team-delivery/scripts/gates/brief_gate.py\" --config \"$CLAUDE_PROJECT_DIR/ai-team.yaml\" || exit 2"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.claude/skills/ai-team-delivery/scripts/gates/decider_log.py\" --out \"$CLAUDE_PROJECT_DIR/01_hearing/decider-answers.jsonl\""
+          }
+        ]
+      }
+    ]
+  }
+}

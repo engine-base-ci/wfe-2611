@@ -98,6 +98,9 @@ export async function admin<T extends Record<string, unknown>>(sql: string, para
   }
 }
 export const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+/** PC の印（"kpc_…"・K-57）から、その PC の sessions の行の id を引く（DB に印は無くハッシュだけ・D-128.137） */
+export const deviceRowId = async (token: string): Promise<string> =>
+  (await admin<{ id: string }>("select id from sessions where device_token_hash = $1", [sha256(token)]))[0]!.id;
 /** TOTP（RFC 6238・SHA1・30 秒・6 桁）。認証アプリの代わり */
 export function totp(secretBase32: string, at = Date.now()): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -137,7 +140,7 @@ export async function noOverflow(page: Page, path: string) {
 /** Bridge の行を前提として置く（claim の実体は T-I-02。画面は sessions の行で「つながった」を判定する） */
 export const bridgeRow = (u: { tenantId: string; memberId: string }) =>
   admin(
-    "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'MacBook Pro（QA）', $3)",
+    "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id, alive_at) values ($1, $2, 'bridge', 'MacBook Pro（QA）', $3, now())",
     [u.tenantId, u.memberId, `qa-${Date.now()}`],
   );
 
@@ -218,19 +221,21 @@ export const setupStep = (memberId: string, n: number) =>
   admin("select app.setup_step_done($1, $2::smallint)", [memberId, n]);
 
 // ---- Bridge の実物の経路（D-090・T-B-02／T-B-03）。画面から見た振る舞いを確かめるための前提を、本物の口で作る
-/** 接続コードを出して引き取る＝この PC を端末として登録する。返るのは Bridge の鍵（session の id） */
+/** 接続コードを出して引き取る＝この PC を端末として登録する（契約の口・K-57）。返るのは PC の印（"kpc_…"・x-bridge-session に載せる） */
 export async function claimBridge(token: string, label = "MacBook Pro（QA）"): Promise<string> {
-  const p = await api<{ data: { code: string } }>("/api/auth-ext/bridge/pair", {}, token);
-  if (p.status !== 201) throw new Error(`bridge/pair ${p.status}`);
-  const c = await api<{ data: { session_id: string } }>("/api/auth-ext/bridge/claim", {
+  const p = await api<{ data: { code: string } }>("/api/v1/bridge/pairing-codes", {}, token);
+  if (p.status !== 201) throw new Error(`bridge/pairing-codes ${p.status}`);
+  const c = await api<{ data: { device_token: string } }>("/api/v1/bridge/claim", {
     code: p.json.data.code,
     device_label: label,
   });
   if (c.status !== 201) throw new Error(`bridge/claim ${c.status} ${JSON.stringify(c.json)}`);
-  return c.json.data.session_id;
+  return c.json.data.device_token;
 }
 const asBridge = async <T>(sid: string, path: string, body: unknown) => {
-  const r = await fetch(`${API}/api/auth-ext${path}`, {
+  // 生きている知らせは契約の口（/api/v1・K-57）。仕事の口はまだ前の道すじ（F5 で移す）
+  const url = path === "/bridge/heartbeat" ? `${API}/api/v1${path}` : `${API}/api/auth-ext${path}`;
+  const r = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json", "x-bridge-session": sid },
     body: JSON.stringify(body),

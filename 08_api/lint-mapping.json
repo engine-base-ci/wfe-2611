@@ -1907,6 +1907,28 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/me/ticket-drafts",
+   "implementation_path": "apps/api/src/routes/tenant_memberships.ts::listMyTicketDrafts",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A99"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/me/ticket-drafts",
+   "implementation_path": "apps/api/src/routes/tenant_memberships.ts::saveMyTicketDraft",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A99"
+   ]
+  },
+  {
    "method": "DELETE",
    "path": "/api/v1/me/two-factor",
    "implementation_path": "apps/api/src/routes/security_events.ts::disableTwoFactor",

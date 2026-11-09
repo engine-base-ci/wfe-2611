@@ -20,11 +20,34 @@ export interface StoreOptions {
   maxBytes?: number; // 既定 50MB（E-LIM-002）
   signingSecret: string;
   defaultRetentionDays?: number | null;
+  /** 外の置き場の期限つき URL を、置き場の仕組み（S3 の署名つき URL）で作る口（D-128.160）。無ければ外の置き場の URL は出さない */
+  externalSigner?: ExternalSigner;
+}
+/** 外の置き場（S3 互換）のファイルの期限つき URL を、置き場自身の署名（SigV4）で作る。置き場の外の URL なら null（作らない） */
+export interface ExternalSigner {
+  presignGet(url: URL, ttlSeconds: number): Promise<string | null>;
 }
 export type Outcome<T> =
   | { status: "done"; value: T; auditId?: string | undefined }
   | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string | undefined };
 export const MAX_BYTES_DEFAULT = 50 * 1024 * 1024;
+/** 外の置き場の署名 URL の既定の期限（5 分・D-128.153） */
+export const EXTERNAL_TTL_SEC = 300;
+const EXTERNAL_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$/;
+
+/** 期限つき URL の期限：署名の時刻（X-Amz-Date）＋長さ（X-Amz-Expires）。読めなければ呼んだ時刻＋ttl */
+function expiresOf(url: string, at: number, ttl: number): Date {
+  try {
+    const q = new URL(url).searchParams;
+    const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(q.get("X-Amz-Date") ?? "");
+    const sec = Number(q.get("X-Amz-Expires"));
+    if (m && Number.isInteger(sec) && sec > 0)
+      return new Date(Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!, +m[4]!, +m[5]!, +m[6]!) + sec * 1000);
+  } catch {
+    // 下で呼んだ時刻から出す
+  }
+  return new Date(at + ttl * 1000);
+}
 
 /** 参照は必ずテナントの名前空間の中（tenants/<tenant_id>/<uuid>）。文字列連結で他社の鍵を作れない */
 export function refOf(tenantId: string, id: string): string {
@@ -140,6 +163,41 @@ export class ObjectStore {
       auditId: await this.audit(ctx, "sign", ref, { exp }),
     };
   }
+  /** 外の置き場（運営の配布物・BRIDGE_RELEASE_BASE）のファイルへの短い期限の URL（D-128.153）。
+   *  署名は Kaname の鍵ではなく置き場の仕組み（S3 の期限つき URL）で作る（D-128.160）。
+   *  名前は目録に載ったものだけを呼び手が渡す（英数と . _ - だけ）。誰に出したかを証跡に残す */
+  async signExternal(
+    ctx: TenantContext,
+    base: string,
+    name: string,
+    ttlSeconds = EXTERNAL_TTL_SEC,
+  ): Promise<Outcome<{ url: string; expiresAt: Date }>> {
+    if (!base || !EXTERNAL_NAME.test(name) || name.includes(".."))
+      return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
+    if (!this.o.externalSigner)
+      return { status: "failed", reason: "外の置き場の URL を作れません", handoff: "運営に問い合わせる" };
+    const ttl = Math.min(Math.max(Math.floor(ttlSeconds), 10), 3600);
+    let target: URL;
+    try {
+      target = new URL(`${base.replace(/\/$/, "")}/${encodeURIComponent(name)}`);
+    } catch {
+      return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
+    }
+    const at = Date.now();
+    const url = await this.o.externalSigner.presignGet(target, ttl);
+    // 置き場の頭（BRIDGE_RELEASE_BASE）が置き場の出どころの下に無い・path-style でない＝設定の誤り。配っていない（404）と混ぜず、届かない側に倒す
+    if (!url)
+      return {
+        status: "failed",
+        reason: "外の置き場の設定が置き場と合いません",
+        handoff: "運営が置き場の設定を確かめる",
+      };
+    return {
+      status: "done",
+      value: { url, expiresAt: expiresOf(url, at, ttl) },
+      auditId: await this.audit(ctx, "sign_external", null, { name, ttl }),
+    };
+  }
   private sign(ref: string, exp: number): string {
     return createHmac("sha256", this.o.signingSecret).update(`${ref}\n${exp}`).digest("base64url");
   }
@@ -152,4 +210,4 @@ export class ObjectStore {
   }
 }
 
-export { s3Client, s3Driver, ensureBucket, type S3Settings, type S3Like } from "./s3.js";
+export { s3Client, s3Driver, s3Presigner, ensureBucket, type S3Settings, type S3Like } from "./s3.js";

@@ -15,10 +15,14 @@ describe("POST /api/v1/ops/work_types/:id/versions/:v/rollback", () => {
   it.todo("test_post_ops_work_types_id_versions_v_rollback_rejected_422");
   // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_post_ops_work_types_id_versions_v_rollback_rejected_422_2");
+  // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+  it.todo("test_post_ops_work_types_id_versions_v_rollback_too_large");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_ops_work_types_id_versions_v_rollback_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_ops_work_types_id_versions_v_rollback_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_ops_work_types_id_versions_v_rollback_session_unresolved");
   // UNWANTED: IF スキルの一式に資格情報・会社名・個人名が混ざっている、テストの場面が 1 つでも失敗している、または版のメモが空のまま「出す」を押した THEN Kaname は「この版は出せません。テストで失敗した場面があります（外部サービスの規約変更）。直して再テストしてください」を返し、失敗した場面を見る／直して「上げてテストで動かす」（E-ACT-041）
   it.todo("test_post_ops_work_types_id_versions_v_rollback_rejected_422_3");
   // UBIQUITOUS: POST /api/v1/ops/work_types/:id/versions/:v/rollback の副作用は関門 C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

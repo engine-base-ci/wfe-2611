@@ -8,7 +8,8 @@ import {
   S3Client,
   type S3ClientConfig,
 } from "@aws-sdk/client-s3";
-import type { ObjectMeta, StorageDriver } from "./index.js";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import type { ExternalSigner, ObjectMeta, StorageDriver } from "./index.js";
 
 export interface S3Settings {
   endpoint: string;
@@ -94,4 +95,25 @@ export async function ensureBucket(client: S3Like, bucket: string): Promise<"exi
     await client.send(new CreateBucketCommand({ Bucket: bucket }));
     return "created";
   }
+}
+
+/** 外の置き場の期限つき URL（D-128.160）：置き場の仕組み（S3 の署名つき URL・SigV4）で作る。Kaname の鍵では署名しない。
+ *  URL は置き場の出どころ（endpoint・道の頭まで）の下で、道が「/<バケット>/<鍵>」（path-style）のものだけ。ほかは作らない（null） */
+export function s3Presigner(client: S3Client, endpoint: string): ExternalSigner {
+  const ep = new URL(endpoint);
+  const head = ep.pathname.replace(/\/$/, "");
+  return {
+    async presignGet(url, ttlSeconds) {
+      if (url.origin !== ep.origin || !url.pathname.startsWith(`${head}/`)) return null;
+      const rest = url.pathname
+        .slice(head.length + 1)
+        .split("/")
+        .map(decodeURIComponent);
+      const [bucket, ...key] = rest;
+      if (!bucket || key.length === 0 || key.some((k) => !k || k === "." || k === "..")) return null;
+      return getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key.join("/") }), {
+        expiresIn: ttlSeconds,
+      });
+    },
+  };
 }

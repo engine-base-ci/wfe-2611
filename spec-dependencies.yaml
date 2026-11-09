@@ -3392,7 +3392,8 @@ decision_traceability:
   - file: 08_schedule/sprint.md
     ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
   - file: 07_qa/test-plan/test-plan.md
-    ref_regex: \b(D-\d{3}(?:\.\d+)?)\b
+    # 「--since D-xxx」は検査の起点（その番号から先を照らす・G60）で、根拠の参照ではないので拾わない（K-103）
+    ref_regex: (?<!--since )\b(D-\d{3}(?:\.\d+)?)\b
   - file: 10_skills/catalog.json
     elements:
     - skills[*]

@@ -22,6 +22,8 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.delete("/api/v1/me/sessions/:id", op(deps, "revokeMySession"));
   app.get("/api/v1/me/setup-tasks", op(deps, "listSetupTasks"));
   app.post("/api/v1/me/setup-tasks/dismiss", op(deps, "dismissSetupTasks"));
+  app.get("/api/v1/me/ticket-drafts", op(deps, "listMyTicketDrafts"));
+  app.post("/api/v1/me/ticket-drafts", op(deps, "saveMyTicketDraft"));
   app.delete("/api/v1/me/two-factor", op(deps, "disableTwoFactor"));
   app.post("/api/v1/me/two-factor/confirm", op(deps, "confirmTwoFactor"));
   app.post("/api/v1/me/two-factor/enable", op(deps, "startTwoFactor"));

@@ -1,0 +1,90 @@
+# ai-team.yaml — Kaname の ai-team-delivery の設定（2026-11-08・K-103 で入れた・決める人の決定 D-129）
+# スキル：~/.claude/skills/ai-team-delivery（雛形 assets/ai-team.example.yaml）
+
+project: Kaname
+state_dir: .ai-team # .gitignore に .ai-team/ と .ai-team-out/ を足す（doctor が見る）
+base_branch: claude/modest-lamport-77ue02
+
+tickets: 11_tickets/tickets.json # build_index.py が作る一覧（手で直さない）
+ticket_fields:
+  list: tickets
+  id: id
+  depends: depends_on
+  rows: l1_rows # Kaname のチケットには無い（行は 07_qa/test-specs の表）。無くても動く
+  group: area
+
+# いまの段階（2026-11-08 決める人）：段 1 歩く骨格＝K-103 の子のチケット
+scope:
+  field: parent
+  value: K-103
+  label: 段 1 歩く骨格
+
+# ── 進める順番（B1〜B7・2026-11-08 決める人の決定。2026-11-09 D-132 で 1 チケット＝1 セッションに）
+flow:
+  decider: 決める人 # 承認・順の入れ替え・割り込みの --by に書く役名（Kaname の決める人は高本さん）
+  limits: { ticket: 3, merge: 1 } # D-132（2026-11-09）：1 チケット＝1 セッション。同時に走るチケット 3・取り込み 1（D-129 の 作る 1・実装 2 は廃止）
+  daily_target: 10 # 1 日に取り込む目標の本数（B5）。予定が届かないときは plan propose --note に差の理由
+  order:
+    parent_field: parent # 大分類の題名の「段 N」から、やる順の段を出す（K-50「段 2 …」など）
+    title_field: title
+    done_values: [完了, 確認中] # 取り込み済み（確認中＝決める人の実機の確かめ待ち）は列に入れない
+  status:
+    field: stage # tickets.json の状態の欄の名前
+    mode: rows # B4：版に入らない置き場（.ai-team/status.json）。盤とチケットの一覧はそこから作る
+    words: { ready: 未着手, ticket: 作業中, merge: 確認中, done: 完了, blocked: 保留 }
+  # board: .ai-team/board.html   # 既定のまま（版に入れる所に置かない）
+  id_pattern: '\bK-\d+\b'
+  # pm_decisions: .ai-team      # PM が決めたこと（pm-decisions-<日付>.md）。既定のまま。1 日の報告に必ず載る
+  # 決める人への問い合わせの答えの記録：01_hearing/decider-answers.jsonl（.claude/settings.json の decider_log が追記・CI の G60 が照らす）
+  # 決める人の役名は「決める人」。Kaname の決める人は高本さん（決定ログの行の終わりの名前）
+
+# ── 役に出す指示（C1〜C7・L-013）。PM が手で書いていた「役の共通の決まり.md」はやめ、中身をここへ移した（C5）
+brief:
+  sections: [目的, 完了の条件, 決めた判断]
+  sections_field: sections
+  file_field: file
+  ticket_fields: [tests, decisions, depends_on, screens, apis, choke_points]
+  tests_field: tests
+  ports: # C4：役とチケットごとに機械で割る。使ってはいけない番号は役の共通の決まり.md（2026-11-07）から
+    reserved: [5432-5440, 5450, 5461, 5471, 3011, 3021, 3031, 3041, 3124, 3134, 3144, 3191-3195, 8790]
+    kinds: { db: 5481, api: 3051, web: 3154 }
+    step: 10
+  common_extra:
+    - "試験の DB は docker の pgvector/pgvector:pg16 を、割り当てられた番号で立て、DATABASE_URL で指す。終わったら止めて消す。docker が止まっていたら nohup dockerd >/dev/null 2>&1 & で立ち上げてよい"
+    - "画面を組み立てると apps/web/tsconfig.json が書き換わる。組み立ての前に写しを取り、終わったら写しで戻す（git で戻さない）"
+    - "生成物（flow.json・openapi・registry・test-plan・catalog・要件一覧）は直に直さず、作り手（05_flow/phase1.py → build_flow.py、screen_api.py → build_api.py → build_testplan.py、contract.mjs gen、build_catalog.py）を回す"
+    - "migration を足した・直したときは、取り込む順の次の空き番号で packages/db/src/index.ts の MIGRATIONS に足し、空の DB に当てて pnpm db:columns → python3 05_flow/build_api.py → pnpm ci:contract:gen を回す"
+    - "試験の結果の欄（07_qa/test-specs の「結果」）は手で書かない。CI の記録から機械で書く"
+    - "作ったチケットの tests: と screens: に、作った試験と画面を書く（G53・G14）"
+  role_extra:
+    ticket:
+      - "これまでのレビューで何度も出た指摘の型を最初から守る：戻る先・next は new URL(next, location.origin) で読み origin が同じときだけ使う／守りの所で例外になったら止める側（503）に倒す／セッションや人は「最新の 1 つ」「その人の全部」で選ばず、その要求のものを直に指す／security definer の関数は search_path に pg_temp・execute は要る役だけ（D-128.171）／入力は契約の strict な形で必ず確かめる／時間で隠さない（猶予の秒・再試行・waitForTimeout）／追記だけの記録は消さない・ログにメール・IP・トークンを出さない"
+      - "試験は仕様から書く。何でも通る形にしない（new Date(null) が 0 など）。決定ログの決まりとずれていないか、チケットの decisions を読み直す"
+      - "テストは実装より先に「<チケット> test:」のコミットで積む。実装に入った後にテストを直すときは、コミットの文に Tests-Changed: <理由> を書く（無いと取り込みで止まる・D-132）"
+      - "テスターに渡す前に本線（claude/modest-lamport-77ue02）を自分の枝に取り込み、衝突は自分の作業場所で解く（取り込んでいない枝は pm_merge が受けない・D-132）"
+  required_extra: {}
+
+brief_gate:
+  tools: [Agent, Task, SendMessage] # C1
+  after_max: 1500 # C7
+  allow: [] # C2：止めない例外は作らない
+  forbid: []
+
+evidence_dir: 07_qa/evidence
+
+ci:
+  act_ci: ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh
+  workflows: .github/workflows
+verify: bash ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh # CI は act（取り込みの判定は pm_merge.sh）
+
+# レーンは使わない（2026-11-09 D-132）。作業場所はチケットごと（.claude/worktrees/<名前>）。成果物の重なりは state.py start が警告し、pm_merge の守りが止める
+
+lock_exempt: [packages/db/src/index.ts] # MIGRATIONS の 1 行ずつ足す台帳（重なりは pm_merge.sh が止める）
+required_rules: [test-ladder.md, lessons-learned.md, ai-driven-process.md, choke-points.md]
+scan_ignore_files: [eslint.config.mjs] # .claude/** の除外は K-103 で足した
+
+coverage_required: true
+coverage_min: 80
+limits: { l1_rows_per_session: 25, screens_per_session: 1, max_loops: 3 }
+merge:
+  pm_may_merge: true # 2026-11-08 決める人：今までどおり。テスターの OK と、そのチケットの CI の緑の後だけ

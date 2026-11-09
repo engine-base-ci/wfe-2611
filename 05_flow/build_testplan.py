@@ -32,17 +32,20 @@ TIER_MAP = [
 def slug(ep):
     m, p = ep.split(" ", 1); return (m.lower() + "_" + re.sub(r"[^a-z0-9]+", "_", p.lower().replace("/api/v1/", "")).strip("_"))
 def classify(line):
-    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|422|429|500|502)\b", line); code = s.group(1) if s else ""
+    form = line.split(":")[0]; s = re.search(r"\b(401|403|404|409|410|413|422|429|500|502|503)\b", line); code = s.group(1) if s else ""
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
     if "E-AUTH-010" in line: return form, code, "access（同意し直し・K-53）", "backend-access-matrix", "terms_pending"   # 役の 403 と混ぜない
     if code in ("401", "403"): return form, code, "access", "backend-access-matrix", "rejected_" + code
     if code == "429": return form, code, "unit", "backend-coverage", "rate_limited"
+    if code == "413": return form, code, "unit（送る量の守り・1MB・D-130.1）", "backend-coverage", "too_large"   # K-144 回 11：体を受ける口の全部
     if code == "502": return form, code, "integration（外部を切る・G-15）", "backend-coverage", "upstream_failed"
     if code == "409": return form, code, "unit（冪等）", "backend-coverage", "conflict"
     if code == "404": return form, code, "unit", "backend-coverage", "not_found"
     if code == "410": return form, code, "unit（期限・使い終わり）", "backend-coverage", "gone"
     if code == "500": return form, code, "unit（途中の失敗・全部戻す）", "backend-coverage", "server_error"
+    if code == "503" and "E-PAGE-003" in line: return form, code, "unit（入口でセッションを解けない・止める側に倒す・K-53）", "backend-coverage", "session_unresolved"   # 全部の口（K-144 回 6）
+    if code == "503": return form, code, "結合（届かない・止める側に倒す・G-15）", "backend-coverage", "unavailable"   # K-144 回 6：前は 422 に分けていた
     return form, code, "unit（検証・表記ゆらぎ）", "backend-coverage", "rejected_422"
 task_by_text = {}
 for t in TASKS:
@@ -100,7 +103,7 @@ SPEC_GATES = [
     {"id": 37, "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）", "script": "python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part", "job": "spec", "blocking": True},
     {"id": 38, "name": "生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）", "script": "python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py", "job": "spec", "blocking": True},
     {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
-    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py", "job": "spec", "blocking": True},
+    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all", "job": "web", "blocking": True},
     {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton", "job": "web", "blocking": True},
@@ -110,6 +113,7 @@ SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決
 SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の試験（K-107）", "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）", "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。

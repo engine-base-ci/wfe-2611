@@ -103,7 +103,7 @@ let cutAt = -1; // この大きさまで送って接続を切る（-1 は切ら�
 beforeAll(async () => {
   server = createServer((req, res) => {
     const u = new URL(req.url ?? "/", "http://x");
-    if (u.pathname === "/api/auth-ext/bridge/latest") {
+    if (u.pathname === "/api/v1/bridge/releases/latest") {
       res.setHeader("content-type", "application/json");
       return res.end(JSON.stringify({ data: latest }));
     }
@@ -173,7 +173,7 @@ describe("BRG-06-014 G-15 配布の外のプロセスが完了の合図を出さ
       version: "0.261001.1201",
       update: {
         name: "Kaname-Bridge-0.261001.1201-arm64.zip",
-        url: "/api/auth-ext/bridge/file/x",
+        url: "/api/v1/bridge/releases/x/file",
         sha256: sha(body),
         size: body.length,
       },

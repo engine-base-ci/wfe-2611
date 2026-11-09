@@ -29,3 +29,7 @@ __pycache__/
 *.pyc
 *.tsbuildinfo
 .schemathesis/
+
+# ai-team-delivery の状態と出力（版に入れない・D-129.20）
+.ai-team/
+.ai-team-out/

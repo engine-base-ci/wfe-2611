@@ -5368,7 +5368,8 @@
    "backstage": "Bridge と本人を結ぶ。つながったら自分の AI が話せる",
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C4"
    ],
    "source": [
     "D-125.143",

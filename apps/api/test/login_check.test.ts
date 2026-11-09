@@ -18,6 +18,7 @@ import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
+import { pairForTest } from "./bridge_pair.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -95,11 +96,8 @@ async function ready(opts: { bridge?: boolean } = { bridge: true }) {
   const H = { authorization: `Bearer ${ver.token}` };
   let B: Record<string, string> = {};
   if (opts.bridge) {
-    const pair = await json<{ code: string }>(post("/bridge/pair", {}, H));
-    const claim = await json<{ session_id: string }>(
-      post("/bridge/claim", { code: pair.code, device_label: "QA の PC" }),
-    );
-    B = { "x-bridge-session": claim.session_id };
+    const bp = await pairForTest(admin, email);
+    B = { "x-bridge-session": bp.token };
   }
   const store = (service_name = "http://127.0.0.1:3124/dev/fake-login") =>
     post("/vault/credentials", { service_name, login: "me@example.com", password: "S3cret-Plain!" }, H);

@@ -128,9 +128,12 @@ row(R["K52-UI-001"], async (page) => {
 
 // ---- 確定する ----
 row(R["K52-UI-002"], async (page) => {
-  await mockApi(page);
+  const m = await mockApi(page);
   await openLink(page);
   await expect(done(page)).toBeVisible();
+  // 確定した後は新しいアカウントでログイン中。/tickets は本物の画面（K-60）なので、そこで読む口（自分の取得・一覧など）も通す
+  m.on.me = () => ({ status: 200, body: { data: { id: "u-new", email: "takamoto@example.com", name: "高本" } } });
+  m.on.other = () => ({ status: 200, body: { data: [] } });
   await button(page, "続ける").click();
   await expect(page).toHaveURL(/\/tickets/);
   expect(await storedToken(page)).toBe(NEW_TOKEN);

@@ -15,12 +15,16 @@ describe("POST /api/v1/conversations/:id/permissions/:pid", () => {
   it.todo("test_post_conversations_id_permissions_pid_rejected_422");
   // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_post_conversations_id_permissions_pid_rejected_422_2");
+  // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+  it.todo("test_post_conversations_id_permissions_pid_too_large");
   // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_conversations_id_permissions_pid_rate_limited");
   // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
   it.todo("test_post_conversations_id_permissions_pid_upstream_failed");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_conversations_id_permissions_pid_terms_pending");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_post_conversations_id_permissions_pid_session_unresolved");
   // UBIQUITOUS: POST /api/v1/conversations/:id/permissions/:pid の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_conversations_id_permissions_pid_shape");
 });

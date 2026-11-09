@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。151 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。157 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2744,6 +2744,117 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "*",
       "state": "offline"
+    }
+  },
+  "E-CONN-013": {
+    "id": "E-CONN-013",
+    "cls": "validation",
+    "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
+    "action": "画面の新しいコードを入れ直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "CONN-013",
+    "must_not": false,
+    "layers": [
+      "Bridge",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "code_invalid"
+    }
+  },
+  "E-CONN-014": {
+    "id": "E-CONN-014",
+    "cls": "not_found",
+    "message": "まだ配布していません。署名と置き場の用意ができたら、ここから入れられるようになります",
+    "action": "待つ（用意ができたら知らせる）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONN-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "not_released"
+    }
+  },
+  "E-VAL-012": {
+    "id": "E-VAL-012",
+    "cls": "validation",
+    "message": "期限は今日か、それより後の日にしてください",
+    "action": "期限を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
+    }
+  },
+  "E-VAL-013": {
+    "id": "E-VAL-013",
+    "cls": "validation",
+    "message": "この区画は書かないと作れません",
+    "action": "区画を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
+    }
+  },
+  "E-VAL-014": {
+    "id": "E-VAL-014",
+    "cls": "validation",
+    "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
+    "action": "選び直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "VAL-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
+    }
+  },
+  "E-VAL-015": {
+    "id": "E-VAL-015",
+    "cls": "validation",
+    "message": "チケットの親子は 3 段までです。ほかの親を選んでください",
+    "action": "親を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
     }
   }
 };

@@ -15,6 +15,8 @@ describe("GET /api/v1/bridge/mirror-targets", () => {
   it.todo("test_get_bridge_mirror_targets_rate_limited");
   // UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す
   it.todo("test_get_bridge_mirror_targets_upstream_failed");
+  // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+  it.todo("test_get_bridge_mirror_targets_session_unresolved");
   // UBIQUITOUS: GET /api/v1/bridge/mirror-targets の副作用は関門 C3・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_get_bridge_mirror_targets_shape");
 });

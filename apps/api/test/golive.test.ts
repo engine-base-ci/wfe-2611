@@ -111,7 +111,7 @@ async function signUp(bridge = true) {
   await admin.query("select app.setup_step_done($1, 5::smallint)", [me.member_id]);
   if (bridge)
     await admin.query(
-      "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'QA の PC', $3)",
+      "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id, alive_at) values ($1, $2, 'bridge', 'QA の PC', $3, now())",
       [me.tenant_id, me.member_id, uniq()],
     );
   return { H, member: me.member_id, tenant: me.tenant_id, scope };
@@ -183,7 +183,7 @@ describe("本番に切り替える（D-116.5・E-DEP-004）", () => {
     const acct = await employee(u, "経理社員", "請求書を下書きする");
     await goalFor(u, [acct.memberId]);
     await admin.query(
-      "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id) values ($1, $2, 'bridge', 'QA の PC', $3)",
+      "insert into sessions (tenant_id, member_id, kind_id, device_label, auth_session_id, alive_at) values ($1, $2, 'bridge', 'QA の PC', $3, now())",
       [u.tenant, u.member, uniq()],
     );
     await credential(u, "発注ナビ", "ok");
