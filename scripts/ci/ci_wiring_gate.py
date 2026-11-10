@@ -10,18 +10,36 @@
   W2 壊れていると記録した検査（known_broken）が、もう緑（記録を外して CI に入れる）
   W3 目録に書いたのに、もう無い検査（目録から外す）
   W4 台本が git ls-files を -z 無しで読む（日本語の名前が "\343..." と化けて開けず、黙って飛ばす。G38・G43 で 68 本を見ていなかった・2026-11-04）
+  W5 層の棚卸し（spec-dependencies.yaml の layer_checks）で「別の段で流す」（elsewhere: G<N>）と印を付けた層の命令を、
+     その段が本当に流していない（段が無い・run に台本のパスも pnpm の名前も無い・範囲で決まる組の段なのに層のファイルが範囲の決まりに無い）。
+     印の付いた層の check は「層の棚卸しから回る」に数えない（K-156）
 由来：検査を書いたのに CI で回しておらず、壊れたまま気づかなかった（contract・env_audit の自己試験）。
 """
 from __future__ import annotations
 import glob, json, os, re, subprocess, sys
 
+import yaml
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 J = lambda p: json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
+GATE = re.compile(r"\bG\d+\b")
+SCRIPT_TOKEN = re.compile(r"\S+\.(?:py|mjs|js|sh|ts)\b")
+PNPM_NAME = re.compile(r"\bpnpm\s+(?:-s\s+)?(?:run\s+)?([A-Za-z][\w:.-]*)")
 
 
-def wired_text() -> str:
+def spec_deps() -> dict:
+    return yaml.safe_load(open(os.path.join(ROOT, "spec-dependencies.yaml"), encoding="utf-8")) or {}
+
+
+def wired_text(layers: list[dict] | None = None) -> str:
+    """CI（.github/workflows）の文字＋層の棚卸しの文字。elsewhere の印の付いた層の check は入れない（その命令は別の段が流す・W5 が見る）"""
     t = "".join(open(f, encoding="utf-8").read() for f in glob.glob(os.path.join(ROOT, ".github/workflows/*.yml")))
-    return t + open(os.path.join(ROOT, "spec-dependencies.yaml"), encoding="utf-8").read()
+    cfg = spec_deps()
+    layers = cfg.get("layer_checks", []) if layers is None else layers
+    rest = {k: v for k, v in cfg.items() if k != "layer_checks"}
+    own = "\n".join(c["check"] for c in layers if c.get("check") and not c.get("elsewhere"))
+    return t + yaml.safe_dump(rest, allow_unicode=True) + "\n" + own + "\n"
 
 
 def items(extra: dict[str, str] | None = None) -> dict[str, str]:
@@ -75,11 +93,75 @@ def script_texts() -> dict[str, str]:
     return out
 
 
-def check(extra: dict[str, str] | None = None) -> list[str]:
+def _glob_sample(pat: str) -> str:
+    return re.sub(r"\*+", "x", pat).split("#", 1)[0]
+
+
+def _expand(run: str, pkg_scripts: dict[str, str]) -> str:
+    """段の run に、pnpm の名前の中身（package.json の scripts）を足した文字"""
+    return run + "\n" + "\n".join(pkg_scripts.get(n, "") for n in PNPM_NAME.findall(run))
+
+
+def _part_ok(part: str, run: str, pkg_scripts: dict[str, str]) -> bool:
+    names = PNPM_NAME.findall(part)
+    if names:
+        return all(re.search(rf"\bpnpm\s+(?:-s\s+)?(?:run\s+)?{re.escape(n)}(?![\w:.-])", run)
+                   or (pkg_scripts.get(n) and pkg_scripts[n] in _expand(run, pkg_scripts)) for n in names)
+    m = SCRIPT_TOKEN.search(part)
+    if m:
+        return m.group(0) in _expand(run, pkg_scripts)
+    return part in _expand(run, pkg_scripts)
+
+
+def check_elsewhere(layers: list[dict], jobs: dict, pkg_scripts: dict[str, str], scope_rules: dict) -> list[str]:
+    """W5：elsewhere の印の段が、層の check の命令を本当に流しているか（K-156）"""
+    from ci_scope import match  # noqa: PLC0415  目録の物（範囲の glob の読み方を 2 つ作らない）
+    steps = [(jname, j or {}, st) for jname, j in (jobs or {}).items() for st in ((j or {}).get("steps") or [])]
+    fails = []
+    for c in layers:
+        if not c.get("elsewhere"):
+            continue
+        f, chk = c.get("file", ""), str(c.get("check") or "")
+        for g in GATE.findall(str(c["elsewhere"])) or [str(c["elsewhere"])]:
+            hit = [(jn, j, st) for jn, j, st in steps if str(st.get("name", "")).startswith(g + " ")]
+            if not hit:
+                fails.append(f"W5 {f}：elsewhere {g} の段が workflow に無い（印を外して層の棚卸しで流すか、段の番号を直す）")
+                continue
+            # 段の番号は組をまたいで重なることがある（static の G28 と spec の G28）。どれか 1 つの段が流していればよい
+            why = []
+            for jn, j, st in hit:
+                run = str(st.get("run") or "")
+                missing = [x.strip() for x in chk.split("&&") if x.strip() and not _part_ok(x.strip(), run, pkg_scripts)]
+                if missing:
+                    why.append(f"{jn} の段が {' と '.join(missing)} を流していない")
+                    continue
+                if "needs.static.outputs." in str(j.get("if", "")):
+                    key = "db.paths" if jn == "database" or jn.startswith("unit") else f"jobs.{jn}.paths"
+                    pats = (scope_rules.get("db", {}).get("paths", []) if key == "db.paths"
+                            else scope_rules.get("jobs", {}).get(jn, {}).get("paths", []))
+                    if not match(_glob_sample(f), pats):
+                        why.append(f"範囲で決まる組 {jn} の段なのに、層のファイルが ci_scope.json の {key} に無い（変えても流れない）")
+                        continue
+                why = []
+                break
+            if why:
+                fails.append(f"W5 {f}：elsewhere {g}：" + "／".join(why))
+    return fails
+
+
+def workflow_jobs() -> dict:
+    jobs: dict = {}
+    for wf in sorted(glob.glob(os.path.join(ROOT, ".github/workflows/*.yml"))):
+        jobs.update((yaml.safe_load(open(wf, encoding="utf-8")) or {}).get("jobs") or {})
+    return jobs
+
+
+def check(extra: dict[str, str] | None = None, layers: list[dict] | None = None) -> list[str]:
     cfg = J("scripts/ci/ci_scripts.json")
     listed = {**cfg.get("generator", {}), **cfg.get("manual", {})}
     broken = cfg.get("known_broken", {})
-    text = wired_text()
+    layers = spec_deps().get("layer_checks", []) if layers is None else layers
+    text = wired_text(layers)
     it = items(extra)
     fails = []
     for name, cmd in sorted(it.items()):
@@ -95,7 +177,8 @@ def check(extra: dict[str, str] | None = None) -> list[str]:
     for name in [*listed, *broken]:
         if name not in it and not os.path.exists(os.path.join(ROOT, name)):
             fails.append(f"W3 目録に書いたのに、もう無い {name}")
-    return fails + ls_files_without_z(script_texts())
+    w5 = check_elsewhere(layers, workflow_jobs(), J("package.json").get("scripts", {}), J("scripts/ci/ci_scope.json"))
+    return fails + w5 + ls_files_without_z(script_texts())
 
 
 def main() -> int:
@@ -104,6 +187,11 @@ def main() -> int:
         w4 = ls_files_without_z({"a.py": 'subprocess.run(["git", "ls-files"])', "b.mjs": 'execSync("git ls-files")',
                                  "ok.py": 'subprocess.run(["git", "ls-files", "-z"])', "ok.mjs": 'execSync("git ls-files -z --others")'})
         hit = hit and [x.split()[1] for x in w4] == ["a.py", "b.mjs"]
+        jobs = {"static": {"steps": [{"name": "G2 type check", "run": "pnpm type-check"}]}}
+        w5_bad = check_elsewhere([{"file": "a", "check": "python3 scripts/ci/x.py", "elsewhere": "G2"},
+                                  {"file": "b", "check": "pnpm -s type-check", "elsewhere": "G99"}], jobs, {}, {})
+        w5_ok = check_elsewhere([{"file": "c", "check": "pnpm -s type-check", "elsewhere": "G2"}], jobs, {}, {})
+        hit = hit and len(w5_bad) == 2 and all(x.startswith("W5") for x in w5_bad) and w5_ok == []
         print("PASS — どこからも回らない検査を見つけた" if hit else "FAIL — どこからも回らない検査を見つけられない")
         return 0 if hit else 1
     fails = check()

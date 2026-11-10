@@ -13,6 +13,9 @@
     check-count --report <vitest の json>   env CI_UNIT_FILES・CI_FULL（絞った回だけ、決めた試験と流れた試験を比べる）
 
   全部に倒す理由：requested・base・empty・ci・lockfile・shared・unmapped・badpath・tool・ticket・no-declaration・integration・mismatch
+  static と spec だけ（K-156）：決まりの spec（spec.paths・spec.generated のときは generated.json の生成物と作り手）の物は、全部に倒さず組も足さない。
+    読む試験・src があれば no_test_path_reads（CS-044）が赤にする（data_links に書く）
+  migration の lint（K-156）：scope=full でも比べる元が有効なら migration_files を出す。名前を変えた migration（git の R）も足した物に数える
   DB の範囲（migration・SQL・行の守り・権限）：全部にはせず、database の組＋変えた migration の lint＋DB を使う試験を全部
   依存の地図：パッケージは pnpm のワークスペース（package.json の workspace:）、試験の import は vitest の Node の口（vitest_related.mjs）
 """
@@ -35,7 +38,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
 
 from ticket_commit_gate import TICKET  # noqa: E402  目録の物（同じものを 2 つ作らない）
-from ticket_order_gate import generated_outputs, is_doc_only  # noqa: E402
+from ticket_order_gate import generated_outputs, generator_scripts, is_doc_only  # noqa: E402
 from build_index import parse as parse_ticket  # noqa: E402
 
 MAX_SHARDS = 6
@@ -232,6 +235,11 @@ def load_rules(path: str) -> dict:
     re.compile(ml["entry"])
     if set(r["full"]) - {"ci", "lockfile"} or not all(isinstance(v, list) for v in r["full"].values()):
         raise ValueError(f"{path}: full は ci・lockfile の glob の並びだけ")
+    sp = r.get("spec")
+    if sp is not None and not (isinstance(sp, dict) and isinstance(sp.get("paths", []), list)
+                               and all(isinstance(x, str) for x in sp.get("paths", []))
+                               and isinstance(sp.get("generated", False), bool)):
+        raise ValueError(f"{path}: spec は {{\"paths\": [glob…], \"generated\": true|false}}（K-156）")
     for job, j in r["jobs"].items():
         if not (isinstance(j, dict) and isinstance(j.get("packages"), list) and isinstance(j.get("paths"), list)):
             raise ValueError(f"{path}: jobs.{job} は packages・paths")
@@ -247,8 +255,16 @@ def human_generated(repo: str) -> list[str]:
     return [g for g in generated_outputs(repo) if g.lower().endswith(HUMAN_EXT)]
 
 
+def is_spec(path: str, rules: dict, repo: str) -> bool:
+    """static と spec の段だけが見る物（K-156）：spec.paths、または spec.generated のとき generated.json の生成物と作り手の台本"""
+    sp = rules.get("spec") or {}
+    if match(path, sp.get("paths", [])):
+        return True
+    return bool(sp.get("generated")) and (match(path, sorted(generated_outputs(repo))) or path in generator_scripts(repo))
+
+
 def root_kind(path: str, rules: dict, repo: str) -> str:
-    """どのパッケージにも入らないファイルの種類：db → data → doc → unmapped（jobs の paths はここに数えない）"""
+    """どのパッケージにも入らないファイルの種類：db → data → doc → spec → unmapped（jobs の paths はここに数えない）"""
     if match(path, rules["db"]["paths"]):
         return "db"
     if any(match(path, l["paths"]) for l in rules["data_links"]):
@@ -257,6 +273,8 @@ def root_kind(path: str, rules: dict, repo: str) -> str:
         return "doc"
     if path.lower().endswith(HUMAN_EXT) and match(path, human_generated(repo)):
         return "doc"
+    if is_spec(path, rules, repo):
+        return "spec"
     return "unmapped"
 
 
@@ -300,12 +318,21 @@ def _paths_in(text: str) -> set[str]:
 
 
 def no_test_path_reads(repo: str, rules: dict) -> list[tuple[str, str]]:
-    """試験・src が、試験が読まないと決めた文書（root_kind が doc になる物）を指す文字を持つ [(ファイル, 読んだパス)]"""
+    """試験・src が、試験が読まないと決めた物（root_kind が doc か spec になる物）を指す文字を持つ [(ファイル, 読んだパス)]"""
     web_paths = rules["jobs"].get("web", {}).get("paths", [])
     out = []
+    declared: dict[str, set[str]] = {}
+    for l in rules["data_links"]:
+        for who in list(l.get("tests", [])) + list(l.get("readers", [])):
+            declared.setdefault(who, set()).update(l["paths"])
     for f in walk_files(repo, SCAN_EXT):
-        for p in sorted(_paths_in(_read(repo, f))):
-            if root_kind(p, rules, repo) != "doc":
+        found = _paths_in(_read(repo, f))
+        for p in sorted(found):
+            # join(ROOT, "08_api", "endpoints.json") の "08_api" は読んだパスの一部。読んだ物は全部のパス（同じファイルの文字か、
+            #   data_links にこのファイルが読むと書いた物）で見る（入れ子の括弧の join は文字を拾えないため・K-156）
+            if any(q.startswith(p + "/") for q in found | declared.get(f, set())):
+                continue
+            if root_kind(p, rules, repo) not in ("doc", "spec"):
                 continue
             # 実ブラウザの試験が jobs.web.paths の物を読むのは、その物を変えると web の組が流れるので赤にしない
             if f.startswith(WEB_E2E_PREFIX) and match(p, web_paths):
@@ -343,8 +370,8 @@ def check_answer(ans, files: list[str]) -> dict[str, list[str]]:
 
 
 # ---------------------------------------------------------------- 決める
-def _migration_list_only(repo: str, base: str, head: str, rules: dict, added: set[str]) -> bool:
-    """並びのファイルの変更が、足した migration の名前の行を足しただけか"""
+def _migration_list_only(repo: str, base: str, head: str, rules: dict, added: set[str], renamed_from: set[str] = frozenset()) -> bool:
+    """並びのファイルの変更が、足した migration の名前の行を足しただけか（名前を変えた migration の古い名前の行を消すのは許す・K-156）"""
     ml = rules["db"]["migration_list"]
     entry = re.compile(ml["entry"])
     diff = git(repo, "diff", "-U0", f"{base}...{head}", "--", ml["file"]).stdout.decode("utf-8", "replace")
@@ -353,13 +380,40 @@ def _migration_list_only(repo: str, base: str, head: str, rules: dict, added: se
         if line.startswith(("+++", "---")):
             continue
         if line.startswith("-"):
-            return False
+            m = entry.match(line[1:])
+            if not (m and m.group(1) in renamed_from):
+                return False
+            continue
         if line.startswith("+"):
             m = entry.match(line[1:])
             if not m:
                 return False
             names.append(m.group(1))
     return bool(names) and len(names) == len(set(names)) and set(names) == added
+
+
+def _migrations(changes: list[Change], db: dict) -> tuple[set[str], set[str], list[str]]:
+    """(足した・名前を変えた先の migration の名前, 名前を変えた元の名前, lint に渡す migration のパス)。K-156"""
+    added = {os.path.basename(c.path) for c in changes if c.status[0] in "AR" and match(c.path, db["migrations"])}
+    renamed_from = {os.path.basename(c.old) for c in changes if c.status[0] == "R" and c.old and match(c.path, db["migrations"])}
+    files = sorted({c.path for c in changes if not c.status.startswith("D") and match(c.path, db["migrations"])})
+    return added, renamed_from, files
+
+
+def _full_scope_migrations(p: dict, repo: str, base: str, head: str, rules: dict) -> None:
+    """全部の回でも、比べる元が有効なら migration の lint に足した migration を渡す（K-156・PM の追加）"""
+    try:
+        changes = changed_files(repo, base, head)
+    except BaseError:
+        p["base"] = ""
+        return
+    db = rules["db"]
+    _, _, files = _migrations(changes, db)
+    p["migration_files"] = files
+    for c in changes:
+        for x in [c.path] + ([c.old] if c.old else []):
+            if match(x, db["paths"]):
+                p["wide_reasons"].append(("db", x))
 
 
 def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list[str], list[str], list[str]]:
@@ -431,18 +485,21 @@ def _full_plan(p: dict) -> dict:
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
          list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list]) -> dict:
-    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "base": base if isinstance(base, str) else "",
+    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
                "migration_files": [], "coverage_args": []}
     full: list[tuple[str, str]] = p["full_reasons"]
 
     def done() -> dict:
-        p["reasons"] = [f"全部：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
+        p["spec_only"] = sorted(set(p["spec_only"]))
+        p["reasons"] = ([f"全部：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
+                        + [f"static と spec だけ：{x}" for x in p["spec_only"]])
         return _full_plan(p) if full else p
 
     if scope not in ("auto", "full") or scope == "full":
         full.append(("requested", scope if scope in ("auto", "full") else "決まった形でない scope"))
+        _full_scope_migrations(p, repo, base, head, rules)
         return done()
     try:
         changes = changed_files(repo, base, head)
@@ -459,7 +516,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     shared = shared_packages(ws, rules["shared_min_dependents"])
     db = rules["db"]
     wide: list[tuple[str, str]] = p["wide_reasons"]
-    added_mig = {os.path.basename(c.path) for c in changes if c.status == "A" and match(c.path, db["migrations"])}
+    added_mig, renamed_mig, mig_files = _migrations(changes, db)
     changed_pk: set[str] = set()
     code_pk: set[str] = set()
     vitest_in: set[str] = set()          # list_tests に渡すファイル
@@ -493,7 +550,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                 if pk:
                     changed_pk.add(pk)
                 continue
-            if x == db["migration_list"]["file"] and not gone and c.status == "M" and _migration_list_only(repo, base, head, rules, added_mig):
+            if x == db["migration_list"]["file"] and not gone and c.status == "M" and _migration_list_only(repo, base, head, rules, added_mig, renamed_mig):
                 db_range = True
                 wide.append(("db", x))
                 if pk:
@@ -516,6 +573,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
             kind = root_kind(x, rules, repo)
             if kind == "unmapped":
                 full.append(("unmapped", x))
+            elif kind == "spec":
+                p["spec_only"].append(x)
     for cat, x in full:
         if cat in ("ci", "lockfile") and (cat, x) not in wide:
             wide.append((cat, x))
@@ -523,7 +582,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     aff = affected(code_pk, ws)
     p["affected"] = sorted(aff)
     if db_range:
-        p["migration_files"] = sorted({c.path for c in changes if not c.status.startswith("D") and match(c.path, db["migrations"])})
+        p["migration_files"] = mig_files
 
     # チケット
     ids = ticket_ids(repo, base, head)
@@ -597,6 +656,16 @@ def merge_argv(coverage: list[str]) -> list[str]:
 
 def squawk_argv(files: list[str]) -> list[str] | None:
     return ["pnpm", "exec", "squawk", *files] if files else None
+
+
+def squawk_plan(files: list[str], base: str) -> tuple[list[str] | None, str]:
+    """migration の lint の命令と、流さないときの文（比べる元が無い回と、変えた migration が無い回を言い分ける・K-156）"""
+    argv = squawk_argv(files)
+    if argv:
+        return argv, f"migration の lint：{len(files)} 本（比べる元 {base[:10] or 'なし'}）"
+    if not (isinstance(base, str) and SHA.fullmatch(base)):
+        return None, "migration の lint：比べる元が無いので流さない（全部の回・GitHub で手で押した回）"
+    return None, f"migration の lint：変えた migration が無い（比べる元 {base[:10]}）"
 
 
 def count_check(report: dict, expected: list[str] | None, root: str) -> list[str]:
@@ -708,9 +777,9 @@ def main(argv: list[str] | None = None) -> int:
     if cmd == "run-merge":
         return subprocess.run(merge_argv(_env_list("CI_COVERAGE_ARGS"))).returncode
     if cmd == "run-squawk":
-        sq = squawk_argv(_env_list("CI_MIGRATION_FILES"))
+        sq, msg = squawk_plan(_env_list("CI_MIGRATION_FILES"), os.environ.get("CI_BASE", ""))
+        print(msg)
         if sq is None:
-            print("migration の lint：変えた migration が無い")
             return 0
         return subprocess.run(sq).returncode
     if cmd == "check-count":

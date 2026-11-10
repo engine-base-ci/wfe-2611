@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-11-09",
+ "created_at": "2026-11-10",
  "skill": "test-verification",
  "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない",
  "source": [
@@ -395,7 +395,11 @@
   "D-132.2",
   "D-132.3",
   "D-132.4",
-  "D-132.5"
+  "D-132.5",
+  "D-133.1",
+  "D-133.2",
+  "D-133.3",
+  "D-133.4"
  ],
  "inputs": {
   "tickets": 218,
@@ -1180,7 +1184,7 @@
   {
    "id": 59,
    "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）",
-   "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton",
+   "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton",
    "job": "web",
    "blocking": true
   },
@@ -1209,6 +1213,13 @@
    "id": 56,
    "name": "取り込む順（depends_on の実装が先に枝にある・K-94）",
    "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 62,
+   "name": "CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156）",
+   "script": "python3 scripts/ci/ci_lean_test.py",
    "job": "spec",
    "blocking": true
   },

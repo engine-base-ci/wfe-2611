@@ -3493,8 +3493,10 @@ layer_checks:
   check: python3 scripts/ci/canvas_gate.py
 - file: 05_flow/flows.json
   check: python3 scripts/ci/flow_db_gate.py
+  elsewhere: G51
 - file: 03_architecture/db-catalog.json
   check: python3 scripts/ci/flow_db_gate.py
+  elsewhere: G51
 - file: 07_qa/test-patterns.local.json
   manual: テストの型の Kaname の足し分（D-128.134）。形の検査は test-verification のスキルの pattern_gate.py が、新しい形のチケットを切るときに読む。今は空
 - file: .qa/skill-patches/test-verification-test-patterns.patch
@@ -3521,12 +3523,16 @@ layer_checks:
   manual: 技術選定は決め打ち禁止（user 合意で確定）。決定で新しい基盤が要るときだけ AskUserQuestion で確認してから更新
 - file: 01_hearing/ヒアリングサマリー.md
   check: python3 scripts/ci/trace_gate.py
+  elsewhere: G54
 - file: 01_hearing/第1フェーズ_要件定義書_v1.md
   check: python3 scripts/ci/trace_gate.py
+  elsewhere: G54
 - file: 01_hearing/第1フェーズ_画面と面_20261101.md
   check: python3 scripts/ci/trace_gate.py
+  elsewhere: G54
 - file: 01_hearing/要件一覧.md
   check: python3 scripts/ci/trace_gate.py
+  elsewhere: G54
 - file: 00_research/影響マップ.md
   manual: 決定 × 影響レイヤーの調査記録。§2b に D-073〜D-077。新しい決定の節を足すときに行を足す
 - file: 00_research/自前実装リスト.md
@@ -3535,8 +3541,10 @@ layer_checks:
   manual: 調査記録（D-067 で確定）。更新しない
 - file: 07_qa/test-specs/errors.json
   check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+  elsewhere: G29
 - file: 07_qa/test-specs/errors.md
   check: python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json
+  elsewhere: G29
 - file: 05_flow/使ってもらい方.md
   check: python3 scripts/ci/spec_check.py
 - file: 01_hearing/決定ログ_進行中.md
@@ -3581,14 +3589,18 @@ layer_checks:
   manual: JSON からの機械生成の写し（05_flow/build_waves.py）。手で直さない
 - file: 07_qa/test-plan/test-plan.json
   check: python3 scripts/ci/tv_gate.py
+  elsewhere: G31
 - file: 07_qa/test-plan/ears-test-mapping.json
   check: python3 scripts/ci/tv_gate.py
+  elsewhere: G31
 - file: 07_qa/test-plan/ears-elsewhere.json
   check: bash -c 'node scripts/ci/gen_ears_tests.mjs >/dev/null && git diff --quiet -- apps/api/test/generated && pnpm -s ci:ears-mapping -- --mapping 07_qa/test-plan/ears-test-mapping.json'   # 本物の試験が別のファイルにある口。生成の試験が最新で、全部の文に試験がある
 - file: 07_qa/test-plan/access-matrix.json
   check: python3 scripts/ci/tv_gate.py
+  elsewhere: G31
 - file: .github/workflows/v3-gate.yml
   check: python3 scripts/ci/tv_gate.py
+  elsewhere: G31
 - file: 07_qa/test-plan/test-plan.md
   manual: JSON からの機械生成の写し（05_flow/build_testplan.py）。手で直さない
 - file: 07_qa/test-plan/test-plan.html
@@ -3597,14 +3609,18 @@ layer_checks:
   manual: architecture-design 時点の 26 本の原案。正は .github/workflows/v3-gate.yml（build_testplan.py が foundation_gates.json から生成）
 - file: 10_skills/*/SKILL.md
   check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+  elsewhere: G30
 - file: 10_skills/catalog.json
   check: python3 scripts/ci/skill_pkg_gate.py 10_skills
+  elsewhere: G30
 - file: 07_tasks/tickets_plan.json
   manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_qa/test-specs/screens/*.md
   check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+  elsewhere: G28
 - file: 07_qa/test-specs/journeys/plan.json
   check: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
+  elsewhere: G28
 - file: 07_qa/test-specs/ops/*.json
   check: python3 scripts/ci/derive_ops.py --screens 07_functional/screens.json --out 07_qa/test-specs/ops --flow 05_flow/flow.json --shell-from today
 - file: 07_qa/test-specs/screens/*.md#操作
@@ -3619,20 +3635,27 @@ layer_checks:
   check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled && DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:no-vendor-sql && pnpm exec vitest run packages/db/test --no-file-parallelism --reporter=dot'  # 並列だと kaname_test の接続を食い合って時間切れになる（2026-10-20）
 - file: packages/*/package.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: packages/*/tsconfig.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: apps/*/package.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: apps/*/tsconfig.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: package.json
   check: pnpm -s type-check && node scripts/ci/boundary.mjs --all
 - file: tsconfig.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: tsconfig.base.json
   check: pnpm -s type-check
+  elsewhere: G2
 - file: pnpm-workspace.yaml
   check: pnpm -s type-check
+  elsewhere: G2
 - file: pnpm-lock.yaml
   manual: pnpm が管理する生成物。CI（v3-gate.yml）の pnpm install --frozen-lockfile が合っていることを検査する
 - file: apps/api/vercel.json
@@ -3685,6 +3708,7 @@ layer_checks:
   manual: ADR の起票候補（architecture-design の出力）。決定は決定ログ、技術選定は selected-stack.json が正本
 - file: 03_architecture/colrules.json
   check: node scripts/ci/contract.mjs check
+  elsewhere: G11
 - file: 03_architecture/foundation_gates.json
   check: python3 -c "import json,os,sys; g=json.load(open('03_architecture/foundation_gates.json')); gs=g.get('gates') or g.get('foundation_gates') or g; n=len(gs) if isinstance(gs,(list,dict)) else 0; print('foundation gates', n); sys.exit(0 if n else 1)"
 - file: 03_architecture/判断ログ.json
@@ -3724,6 +3748,7 @@ layer_checks:
 # ---- Tier P（project_audit.py）：見ない層と、追いつかなくてよい層。理由の無い除外は書けない ----
 - file: 11_tickets/K-*.md
   check: python3 scripts/tickets/build_index.py --check
+  elsewhere: G45
 - file: 11_tickets/renumber-map.json
   manual: 古い番号 KN- と新しい番号 K- の対応（D-128.139）。振り直した時に 1 回だけ作る。古い記録を読むときに引く
 - file: 11_tickets/README.md
@@ -3766,14 +3791,19 @@ layer_checks:
   manual: coverage_review.py が読む SaaS の面の参照（入力）。成果物ではない
 - file: scripts/ci/zt_baseline.json
   check: python3 scripts/ci/zt_gate.py
+  elsewhere: G40
 - file: scripts/ci/generated.json
   check: python3 scripts/ci/generated_gate.py
+  elsewhere: G38
 - file: scripts/ci/ci_scripts.json
   check: python3 scripts/ci/ci_wiring_gate.py
+  elsewhere: G47
 - file: scripts/ci/env_baseline.json
   check: node scripts/ci/env_audit.mjs
+  elsewhere: G13
 - file: scripts/ci/deprecated_baseline.json
   check: python3 scripts/ci/stack_gate.py
+  elsewhere: G46
 - file: scripts/spec-sync/*.py
   check: python3 scripts/spec-sync/spec-validator.py --project-root . --tier g --pre-commit && python3 scripts/spec-sync/spec-validator.py --project-root . --tier h --pre-commit
 - file: scripts/spec-sync/audit-manifest.yaml
