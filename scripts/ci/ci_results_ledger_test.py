@@ -86,7 +86,8 @@ class LedgerDriftTest(Base):
                   row("K57-UI-003", "PASS"))
         entered = led((self.f, "K57-UI-001"), (self.f, "K57-UI-002"), (self.f, "K57-UI-003"))
         self.assertEqual(cr.ledger_drift(led((self.f, "K57-UI-003")), entered, self.root, cap=2593), [])
-        self.assertEqual(cr.ledger_drift(led(), entered, self.root, cap=2593), [], "台帳が空になっても緑（台帳は減って空になるのがゴール・K-150）")
+        marked = led((self.f, "K57-UI-001"), (self.f, "K57-UI-002"))
+        self.assertEqual(cr.ledger_drift(led(), marked, self.root, cap=2593), [], "台帳が空になっても緑（印つきだけが消えた・台帳は減って空になるのがゴール・K-150）")
 
     def test_K159_CI_004_removed_rows_by_result(self):
         """K159-CI-004 守り：消えた行のうち、結果の欄が印の無い PASS（PASS・OK・合格・飾った印「**PASS（CI …）**」）のものだけ赤。
