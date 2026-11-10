@@ -89,6 +89,8 @@ scan_ignore_files: [eslint.config.mjs] # .claude/** の除外は K-103 で足し
 coverage_required: true
 coverage_min: 80
 limits: { l1_rows_per_session: 25, screens_per_session: 1, max_loops: 3 }
+# ③ の「した証拠」（D-129.53・K-146）：チケットの頭の prior_impl（なし か <枝>@<sha>）が無いチケットは state.py が精査に入れない。<枝>@<sha> のときは review_map_gate が R の報告の「## 突き合わせた分かれ道」をその版で確かめる
+review: { prior_impl_field: prior_impl }
 merge:
   pm_may_merge: true # 2026-11-08 決める人：今までどおり。テスターの OK と、そのチケットの CI の緑の後だけ
 
