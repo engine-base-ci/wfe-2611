@@ -848,10 +848,11 @@ class RealRepoTest(unittest.TestCase):
         self.assertIs(ci_scope.generated_outputs, ticket_order_gate.generated_outputs)
         self.assertIs(ci_scope.parse_ticket, build_index.parse)
         rules = ci_scope.load_rules(str(ROOT / "scripts/ci/ci_scope.json"))
-        # 文書の見分け（DOC_PATTERNS）に当たる根の .md は文書、同じ所の .json は地図に出ない（data_links が先・文書より先）
+        # 文書の見分け（DOC_PATTERNS）に当たる根の .md は文書、同じ所の .json は文書にしない（data_links が先・文書より先）。
+        #   K-156 から 08_api/** は決まりの spec（static と spec の段だけ）。文書ではないので、読む試験があれば CS-044 が赤にする
         self.assertTrue(ci_scope.root_kind("08_api/README.md", rules, str(ROOT)) == "doc")
         self.assertTrue(ci_scope.root_kind("07_qa/test-plan/access-matrix.json", rules, str(ROOT)) in ("data", "db"))
-        self.assertEqual(ci_scope.root_kind("08_api/nai.json", rules, str(ROOT)), "unmapped")
+        self.assertEqual(ci_scope.root_kind("08_api/nai.json", rules, str(ROOT)), "spec")
 
     def test_K107_CS_053_vitest_related_real(self) -> None:
         self.need("node")

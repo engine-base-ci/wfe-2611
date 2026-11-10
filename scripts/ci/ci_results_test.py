@@ -417,13 +417,17 @@ class RepoTest(unittest.TestCase):
         self.assertIn("ci_results.py", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
 
     def test_K143_CI_022_spec_runs_even_if_static_is_red(self):
-        """K143-CI-022 static の段が赤でも spec の段の検査は流れる：spec の段は needs を持たず（static を待たない）、組の if も置かない（K107-CS-034 の決まり）。
+        """K143-CI-022 static の段が赤でも spec の段の検査は流れる。K-156 で spec は static の後に流すことにした（needs: [static]・
+        act は needs の無い組を 1 段目にまとめるので）。static が赤でも飛ばさないのは組の if の !cancelled() で守る（needs の結果を見ない）。
         段の中の検査にも static の結果を見る if が無い"""
         import yaml  # noqa: PLC0415
 
         spec = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]["spec"]
-        self.assertNotIn("needs", spec, "spec の段は static を待たない（static の赤で丸ごと飛ばされない）")
-        self.assertNotIn("if", spec)
+        self.assertIn(spec.get("needs"), (None, ["static"]), "spec が待つのは static だけ")
+        if "needs" in spec:
+            cond = str(spec.get("if", ""))
+            self.assertIn("!cancelled()", cond, "static の赤で丸ごと飛ばされない（success() の既定にしない）")
+            self.assertNotIn("needs.static", cond, "static の結果・出力で spec を止めない")
         for st in spec["steps"]:
             self.assertNotIn("needs.static", str(st.get("if", "")), st.get("name"))
 

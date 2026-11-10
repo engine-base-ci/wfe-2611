@@ -72,7 +72,9 @@ import ticket_order_gate  # noqa: E402
 # 作りものの決まり：K-107 の物に spec を足す。05_flow は paths に入れず、generated.json の作り手として当たることを見る
 SPEC_RULES = copy.deepcopy(k107.RULES)
 SPEC_RULES["spec"] = {"generated": True, "paths": ["03_architecture/**", "scripts/ci/x.py", "08_api/**", "07_qa/**", "07_functional/**"]}
-GENERATED = {"generators": [{"name": "機能の分解", "run": "python3 05_flow/build_api.py", "outputs": ["07_functional/*"]},
+# K-107 の Repo.commit は引数の名前の最後の部分を NAMES の表で直す（main_ts → main.ts）。この試験で使う名前を足す
+k107.NAMES.update({"features_json": "features.json", "build_api_py": "build_api.py", "0001_sql": "0001.sql", "x_py": "x.py"})
+GENERATED = {"generators":[{"name": "機能の分解", "run": "python3 05_flow/build_api.py", "outputs": ["07_functional/*"]},
                             {"name": "使ってもらい方", "run": "cd 05_flow && python3 build_md.py", "outputs": ["05_flow/使ってもらい方.md"]}]}
 
 
