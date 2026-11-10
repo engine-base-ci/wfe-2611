@@ -18,13 +18,22 @@ export const REPLY_MAX = 200_000;
 /** 途中の 1 行の上限 */
 export const LINE_MAX = 400;
 
+/** 片割れの字（孤立したサロゲート）。jsonb に入らない（Postgres が断って 500 になる）ので U+FFFD に置き換える */
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+/** 文字の列を、片割れの字の無い形にする */
+export const wellFormed = (s: string): string => s.replace(LONE_SURROGATE, "\uFFFD");
+/** 字数を文字（コードポイント）で数える。契約の maxLength と同じ単位（K-144・K144-API-040） */
+export const charLength = (s: string): number => [...s].length;
+/** 文字（コードポイント）の単位で max 字に切る。切り目で片割れを作らない（テスター回 11 の #12） */
+export const clip = (s: string, max: number): string => [...wellFormed(s)].slice(0, max).join("");
+
 /** 道具の呼び出し 1 回（D-100.2）：名前・対象・成功／失敗・時間だけ。入力や返り値の全文は持たない */
 export const toolRecord = (v: unknown) => {
   const t = (v ?? {}) as Record<string, unknown>;
   const ms = Number(t["ms"]);
   return {
-    name: String(t["name"] ?? "").slice(0, 60),
-    target: String(t["target"] ?? "").slice(0, 160),
+    name: clip(String(t["name"] ?? ""), 60),
+    target: clip(String(t["target"] ?? ""), 160),
     ok: t["ok"] === true,
     ms: Number.isFinite(ms) && ms >= 0 ? Math.round(ms) : null,
   };
@@ -50,7 +59,7 @@ export const planRecord = (v: unknown) => ({
     const t = (x ?? {}) as Record<string, unknown>;
     const s = String(t["status"] ?? "pending");
     return {
-      content: String(t["content"] ?? t["activeForm"] ?? "").slice(0, 200),
+      content: clip(String(t["content"] ?? t["activeForm"] ?? ""), 200),
       status: ["pending", "in_progress", "completed"].includes(s) ? s : "pending",
     };
   }),
@@ -59,10 +68,10 @@ export const planRecord = (v: unknown) => ({
 export const blockedRecord = (v: unknown) => {
   const x = (v ?? {}) as Record<string, unknown>;
   return {
-    tool: String(x["tool"] ?? "").slice(0, 80),
-    domain: String(x["domain"] ?? "").slice(0, 200),
-    service: String(x["service"] ?? "").slice(0, 120),
-    target: String(x["target"] ?? "").slice(0, 300),
+    tool: clip(String(x["tool"] ?? ""), 80),
+    domain: clip(String(x["domain"] ?? ""), 200),
+    service: clip(String(x["service"] ?? ""), 120),
+    target: clip(String(x["target"] ?? ""), 300),
   };
 };
 /** 使用量（D-104.16）：枠・割合・戻る時刻 だけ */
@@ -84,7 +93,7 @@ export function progressPayload(kind: ProgressKind, b: Record<string, unknown>):
   switch (kind) {
     case "init":
       return {
-        agent_session_id: typeof b["agent_session_id"] === "string" ? b["agent_session_id"].slice(0, 200) : null,
+        agent_session_id: typeof b["agent_session_id"] === "string" ? clip(b["agent_session_id"], 200) : null,
         model: typeof b["model"] === "string" && /^[a-z0-9.-]{1,60}$/i.test(b["model"]) ? b["model"] : null,
       };
     case "tool":
@@ -96,10 +105,10 @@ export function progressPayload(kind: ProgressKind, b: Record<string, unknown>):
     case "limit":
       return limitRecord(b["windows"]);
     case "reply":
-      return { text: text.slice(0, REPLY_MAX) };
+      return { text: clip(text, REPLY_MAX) };
     case "blocked":
       return blockedRecord(b["blocked"]);
     default:
-      return { text: text.slice(0, LINE_MAX) };
+      return { text: clip(text, LINE_MAX) };
   }
 }

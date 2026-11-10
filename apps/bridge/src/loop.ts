@@ -457,8 +457,8 @@ export function startLoop(d: LoopDeps): () => void {
     await sent;
     // 使った量（D-100.1）は結末より先に届ける（結末の後は仕事が閉じて受け取られない）
     if (f.usage) await post(jobPath(job.job_id, "progress"), { seq: ++seq, kind: "usage", usage: f.usage });
-    // 結果が長すぎるものは送らずに止まったとする（Kaname は 200000 字まで受ける・K-62）
-    const tooLong = f.state === "done" && (f.result ?? "").length > RESULT_MAX;
+    // 結果が長すぎるものは送らずに止まったとする（Kaname は 200000 字まで受ける・K-62）。字数は Kaname の契約と同じく文字（コードポイント）で数える
+    const tooLong = f.state === "done" && [...(f.result ?? "")].length > RESULT_MAX;
     await finish(job.job_id, {
       state: tooLong ? "stopped" : f.state,
       ...(f.state === "done" && !tooLong

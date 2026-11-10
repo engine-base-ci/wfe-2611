@@ -9,7 +9,7 @@ import { issueToolToken } from "../../../auth/agent-tools.js";
 import { AGENT_CONVENTIONS } from "../../../auth/conventions.js";
 import { parseDigest, takeRemember } from "../../../auth/memory.js";
 import { BRIDGE_PROTOCOL_MIN } from "../../F3/connect-pc/hooks.js";
-import { PROGRESS_KINDS, REPLY_MAX, progressPayload, type ProgressKind } from "./records.js";
+import { PROGRESS_KINDS, REPLY_MAX, charLength, progressPayload, type ProgressKind } from "./records.js";
 
 /** 待ち受けは最長 20 秒・中で 1 秒ごとに見る・動いていないときは 5 秒あける（前の道すじと同じ・D-097） */
 const TAKE_WAIT_MAX_SEC = 20;
@@ -154,7 +154,7 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
         const reason = b["reason"];
         if (result !== undefined && result !== null && typeof result !== "string") return invalid("result", "文字");
         if (reason !== undefined && reason !== null && typeof reason !== "string") return invalid("reason", "文字");
-        if (typeof result === "string" && result.length > REPLY_MAX)
+        if (typeof result === "string" && charLength(result) > REPLY_MAX)
           return invalid("result", `結果は ${REPLY_MAX} 字までです`);
         const agentSession = typeof a.input["agent_session_id"] === "string" ? a.input["agent_session_id"] : null;
         // 記憶の毎朝のまとめの仕事なら、答え（JSON）を読んで記憶に入れる（D-105.4）
