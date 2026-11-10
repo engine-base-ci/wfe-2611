@@ -126,7 +126,7 @@ class PerCommitTest(Case):
         """K159-CI-014 時間の流れ（G-12 切り替わりの瞬間）：実装と一緒に depends_on に K-1 を足したコミット（K-62 の 3637c890 の形）は、
         足した後として裁く → K-1 が祖先に無ければそのコミットを名指しで赤"""
         self.r.tickets({"K-1": [], "K-2": ["K-1"]})
-        c1 = self.r.commit("K-2 feat: 作り、依存に K-1 を足す", {"apps/a.ts": "a"})
+        c1 = self.r.commit("K-2 feat: 作り、依存を足す", {"apps/a.ts": "a"})   # 文に依存の番号を書かない（3637c890 の文は K-62 だけ）
         self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
         bad, _, _ = self.check()
         self.assertEqual(len(bad), 1, bad)
