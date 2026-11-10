@@ -13,6 +13,12 @@
   S6 lockfile の版が、どれも出てから 21 日を過ぎている（例外に書いた「名前@版」を除く）。出た日は npm の registry に聞く（K-44）。
      CI の pnpm install --frozen-lockfile は版を解き直さないので、pnpm の minimumReleaseAge だけでは lockfile に入った若い版を止められない
   S4 lockfile で上流が「非推奨」にした部品が、記録（scripts/ci/deprecated_baseline.json）に無い。記録の物が lockfile から消えたら記録から外す（K-41）
+  S6 の出た日は記録（scripts/ci/lock_dates.json：lockfile の sha256・聞いた日・名前@版 → 出た日）から答え、lockfile の sha が違うときだけ
+     記録に無い名前@版の名前を registry に聞く（K-156）。21 日の判定はいつも今日の日付で（記録を書いた日では判定しない・D-128.124）
+  S7 CI の中（環境 CI）で記録が lockfile と合わない（部品を上げた・消した枝で記録を直していない）。registry に聞いて判定したうえで赤にする。
+     手元では赤にせず記録を書き直す（聞く名前が無くても・部品を消しただけでも sha と行を直す・D-133.1）
+  S8 CI の中で、比べる元（--base-ref・取り込む先との分かれ目）の記録から足した・変えた行の出た日が registry と違う（記録を手で書き換えた）。
+     足した・変えた行の名前だけを registry に聞き直す（比べる元に記録が無ければ全部の行・K-156 のテスター Q の指摘）
 @types/* は、元の部品が記録にあれば要らない。workspace の部品（@kaname/*）は見ない。
 """
 from __future__ import annotations
@@ -20,6 +26,9 @@ import glob, json, os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 REG = os.path.join(ROOT, "02_tech_stack/selected-stack.json")
+LOCK_DATES = os.path.join(ROOT, "scripts/ci/lock_dates.json")
+LOCK_DOC = ("部品の出た日の記録（K-156・D-133.1）。stack_gate.py の S6 が読む。lockfile の sha256 が変わったときだけ、無い名前@版を "
+            "registry に聞いて書き直す（手元で python3 scripts/ci/stack_gate.py を流してコミットする）。CI は記録が lockfile と合わなければ赤（S7）")
 BUILTIN_TYPES = {"node"}
 
 
@@ -183,6 +192,94 @@ def check_lock_age(lock: str | None = None, ws_text: str | None = None, times: d
     return fails
 
 
+def lock_sha(lock_text: str) -> str:
+    import hashlib
+    return hashlib.sha256(lock_text.encode("utf-8")).hexdigest()
+
+
+def _valid_record(record) -> bool:
+    return (isinstance(record, dict) and isinstance(record.get("lockfile_sha256"), str)
+            and isinstance(record.get("dates"), dict) and all(isinstance(v, str) for v in record["dates"].values()))
+
+
+def lock_age(lock: str, ws_text: str, record, fetch, now: str | None = None, in_ci: bool = False) -> tuple[list[str], dict, list[str]]:
+    """(赤の文, 書く記録, registry に聞いた名前)。記録の sha が lockfile と同じなら聞かない（K-156）。判定は now で"""
+    import datetime
+    pk = lock_packages(lock)
+    keys = {f"{n}@{v}" for n, v in pk}
+    sha = lock_sha(lock)
+    t_now = datetime.datetime.fromisoformat(now) if now else datetime.datetime.now(datetime.timezone.utc)
+    errs: dict[str, str] = {}
+    if _valid_record(record) and record["lockfile_sha256"] == sha:
+        dates, out, asked = dict(record["dates"]), record, []
+    else:
+        kept = {k: v for k, v in (record["dates"].items() if _valid_record(record) else []) if k in keys}
+        asked = sorted({n for n, v in pk if f"{n}@{v}" not in kept})
+        got = fetch(asked) if asked else {}
+        dates = dict(kept)
+        for n in asked:
+            tm = got.get(n) or {}
+            if "_err" in tm:
+                errs[n] = str(tm["_err"])
+                continue
+            for name, v in pk:
+                if name == n and v in tm:
+                    dates[f"{n}@{v}"] = tm[v]
+        out = {"_doc": LOCK_DOC, "lockfile_sha256": sha, "asked_on": t_now.date().isoformat(), "dates": dict(sorted(dates.items()))}
+    cut = t_now - datetime.timedelta(days=21)
+    ex = excluded(ws_text)
+    fails = []
+    for n, v in sorted(pk):
+        key = f"{n}@{v}"
+        if key not in dates:
+            fails.append(f"S6 {n} の出た日を registry に聞けない（{errs[n][:80]}）" if n in errs else f"S6 {key} の出た日が registry に無い")
+            continue
+        d = datetime.datetime.fromisoformat(dates[key].replace("Z", "+00:00"))
+        if d > cut and key not in ex:
+            fails.append(f"S6 {key} は {dates[key][:10]} に出て 21 日を過ぎていない（21 日を過ぎた版に解き直すか、例外に「名前@版」と出た日を書く）")
+    if in_ci and record is not out:
+        fails.append("S7 記録 scripts/ci/lock_dates.json が lockfile と合わない（部品を変えた枝で記録を直していない）。"
+                     "手元で python3 scripts/ci/stack_gate.py を流して記録をコミットする（D-133.1）")
+    return fails, out, asked
+
+
+def verify_changed(record: dict, base_record, fetch) -> tuple[list[str], list[str]]:
+    """(赤の文, 聞いた名前)。比べる元の記録から足した・変えた行だけ、出た日を registry に聞き直す（記録の手での書き換えを止める・S8）"""
+    base_dates = base_record["dates"] if _valid_record(base_record) else {}
+    changed = sorted(k for k, v in record["dates"].items() if base_dates.get(k) != v)
+    names = sorted({k.rpartition("@")[0] for k in changed})
+    got = fetch(names) if names else {}
+    fails = []
+    for k in changed:
+        n, _, v = k.rpartition("@")
+        tm = got.get(n) or {}
+        if "_err" in tm:
+            fails.append(f"S8 {k} の出た日を registry に聞き直せない（{str(tm['_err'])[:80]}）")
+        elif tm.get(v) != record["dates"][k]:
+            fails.append(f"S8 {k} の記録の出た日 {record['dates'][k][:10]} が registry の {str(tm.get(v))[:10]} と違う"
+                         "（記録を手で書き換えない。python3 scripts/ci/stack_gate.py を流して書き直す）")
+    return fails, names
+
+
+def base_record(base: str):
+    """比べる元の版の記録（無い・読めないなら None）"""
+    import re, subprocess
+    if not re.fullmatch(r"[0-9a-f]{40}", base or ""):
+        return None
+    r = subprocess.run(["git", "-C", ROOT, "show", f"{base}:scripts/ci/lock_dates.json"], capture_output=True, text=True)
+    try:
+        return json.loads(r.stdout) if r.returncode == 0 else None
+    except ValueError:
+        return None
+
+
+def _load_record():
+    try:
+        return json.load(open(LOCK_DATES, encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 def main() -> int:
     if "--selftest" in sys.argv:
         hit = any("kaname-selftest-pkg" in f for f in check({"kaname-selftest-pkg": ["(試験)"]}))
@@ -199,7 +296,25 @@ def main() -> int:
         ok = hit and hit4 and hit5 and hit6
         print("PASS — 記録に無い部品・記録に無い非推奨・21 日の決まりの外れ・lockfile の若い版を見つけた" if ok else "FAIL — 見つけられない")
         return 0 if ok else 1
-    fails = check() + check_deprecated() + check_release_age() + check_lock_age()
+    lock = open(os.path.join(ROOT, "pnpm-lock.yaml"), encoding="utf-8").read()
+    ws_text = open(os.path.join(ROOT, "pnpm-workspace.yaml"), encoding="utf-8").read()
+    in_ci = bool(os.environ.get("CI"))
+    base = sys.argv[sys.argv.index("--base-ref") + 1] if "--base-ref" in sys.argv[:-1] else ""
+    rec = _load_record()
+    fails6, record, asked = lock_age(lock, ws_text, rec, registry_times, in_ci=in_ci)
+    stale = record is not rec
+    if stale and not in_ci:
+        with open(LOCK_DATES, "w", encoding="utf-8") as fh:
+            json.dump(record, fh, ensure_ascii=False, indent=1)
+            fh.write("\n")
+        print(f"  note S6 記録 scripts/ci/lock_dates.json を直した（{len(asked)} 件を registry に聞いた）。コミットする")
+    elif not stale:
+        print("  note S6 記録 scripts/ci/lock_dates.json から答えた（registry に聞いていない）")
+    if in_ci and _valid_record(rec):
+        fails8, names8 = verify_changed(rec, base_record(base), registry_times)
+        fails6 += fails8
+        print(f"  note S8 比べる元（{base[:10] or 'なし'}）の記録から足した・変えた行の名前 {len(names8)} 件を registry に聞き直した")
+    fails = check() + check_deprecated() + check_release_age() + fails6
     for n in NOTES:
         print("  note", n)
     for f in fails:

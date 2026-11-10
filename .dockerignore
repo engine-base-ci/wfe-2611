@@ -26,6 +26,7 @@ apps/bridge/release
 apps/web/.next
 apps/web/.next-prod
 apps/web/playwright-report
+apps/web/playwright-report-skeleton
 apps/web/test-results
 apps/web/pw-reports
 .dev-logs

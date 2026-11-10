@@ -653,12 +653,15 @@ class DocsAndJobsTest(Base):
         self.assertIn("apps/x/test/main.test.ts", p["unit_files"])
 
     def test_K107_CS_061_tickets_json_runs_web(self) -> None:
-        # 11_tickets/tickets.json は web の組の G48（op_gate.py --tickets 11_tickets/tickets.json）が読む。変えたら web の組を流す
+        # 11_tickets/tickets.json は web の組の G48（op_gate.py --tickets 11_tickets/tickets.json）が読む。画面を持つチケットの行が
+        #   変わったら web の組を流す（K-156 で当てはめを変えた：画面を持たないチケットの行だけなら流さない・D-133.5）
         real = ci_scope.load_rules(str(ROOT / "scripts/ci/ci_scope.json"))
-        self.assertIn("11_tickets/tickets.json", real["jobs"]["web"]["paths"])
+        self.assertEqual(real["jobs"]["web"]["ticket_rows"]["file"], "11_tickets/tickets.json")
         rules = json.loads(json.dumps(RULES))
         rules["jobs"]["web"]["paths"] = list(real["jobs"]["web"]["paths"])
-        self.r.commit("K-1 docs: 一覧", **{"11_tickets__tickets.json": '{"tickets": []}\n', "11_tickets__K-1.md": ticket("K-1", [])})
+        rules["jobs"]["web"]["ticket_rows"] = dict(real["jobs"]["web"]["ticket_rows"])
+        self.r.commit("K-1 docs: 一覧", **{"11_tickets__tickets.json": '{"tickets": [{"id": "K-9", "screens": ["login"]}]}\n',
+                                         "11_tickets__K-1.md": ticket("K-1", [])})
         p = ci_scope.plan(str(self.r.dir), self.r.base, "HEAD", "auto", rules=rules, tickets_dir=str(self.r.dir / "11_tickets"),
                           list_tests=lambda files: {f: [] for f in files}, db_tests=lambda: [])
         self.assertEqual(p["mode"], "scoped", p["reasons"])
@@ -825,7 +828,9 @@ class RealRepoTest(unittest.TestCase):
                          {"@kaname/db", "@kaname/config", "@kaname/contracts", "@kaname/errors"})
         self.assertEqual(set(rules["jobs"]), {"database", "web"})
         for job, j in rules["jobs"].items():
-            self.assertEqual(set(j), {"packages", "paths"}, job)
+            # packages・paths は要る。ticket_rows（画面の組とチケットの一覧・K-156・D-133.5）は任意
+            self.assertLessEqual({"packages", "paths"}, set(j), job)
+            self.assertLessEqual(set(j), {"packages", "paths", "ticket_rows"}, job)
             for name in j["packages"]:
                 self.assertIn(name, ws, f"jobs.{job} のパッケージが無い: {name}")
         self.assertEqual(rules["jobs"]["web"]["packages"], ["@kaname/web"])
@@ -848,10 +853,11 @@ class RealRepoTest(unittest.TestCase):
         self.assertIs(ci_scope.generated_outputs, ticket_order_gate.generated_outputs)
         self.assertIs(ci_scope.parse_ticket, build_index.parse)
         rules = ci_scope.load_rules(str(ROOT / "scripts/ci/ci_scope.json"))
-        # 文書の見分け（DOC_PATTERNS）に当たる根の .md は文書、同じ所の .json は地図に出ない（data_links が先・文書より先）
+        # 文書の見分け（DOC_PATTERNS）に当たる根の .md は文書、同じ所の .json は文書にしない（data_links が先・文書より先）。
+        #   K-156 から 08_api/** は決まりの spec（static と spec の段だけ）。文書ではないので、読む試験があれば CS-044 が赤にする
         self.assertTrue(ci_scope.root_kind("08_api/README.md", rules, str(ROOT)) == "doc")
         self.assertTrue(ci_scope.root_kind("07_qa/test-plan/access-matrix.json", rules, str(ROOT)) in ("data", "db"))
-        self.assertEqual(ci_scope.root_kind("08_api/nai.json", rules, str(ROOT)), "unmapped")
+        self.assertEqual(ci_scope.root_kind("08_api/nai.json", rules, str(ROOT)), "spec")
 
     def test_K107_CS_053_vitest_related_real(self) -> None:
         self.need("node")
@@ -911,10 +917,12 @@ class RealRepoTest(unittest.TestCase):
         sq = [s for s in jobs["database"]["steps"] if "run-squawk" in s.get("run", "")]
         self.assertEqual(len(sq), 1)
         self.assertIn("needs.static.outputs.migration_files", sq[0]["env"]["CI_MIGRATION_FILES"])
-        self.assertNotIn("if", jobs["spec"])   # 仕様・生成物は毎回
-        # spec の段は static を待たない（static の赤で丸ごと飛ばされない）。本線との分かれ目が要る検査（G61）は、
-        #   spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）
-        self.assertNotIn("needs", jobs["spec"])
+        # spec は毎回流す（if は !cancelled() だけ・範囲の出力で止めない・K-156 で needs を戻したので下で見る）
+        # spec の段は static の後に流す（act は needs の無い組を 1 段目にまとめるので、needs が無いと spec が static と並び、
+        #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばされない（K-143 の理由）は組の if の !cancelled() で守る。
+        #   本線との分かれ目が要る検査（G61）は、spec の段の中で同じ scope の台本を流して自分で出す（K-143・PM の判断 2026-11-08 17:40）
+        self.assertEqual(jobs["spec"].get("needs"), ["static"])
+        self.assertIn("!cancelled()", str(jobs["spec"].get("if", "")))
         sp_scope = [s for s in jobs["spec"]["steps"] if "scripts/ci/ci_scope.py" in s.get("run", "") and "--github-output" in s.get("run", "")]
         self.assertEqual(len(sp_scope), 1)
         self.assertIn("inputs.base", sp_scope[0]["env"]["CI_BASE_INPUT"])

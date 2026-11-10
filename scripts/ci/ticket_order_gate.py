@@ -57,6 +57,32 @@ def generated_outputs(root: str) -> set[str]:
     return {o for g in d.get("generators", []) for o in g.get("outputs", [])}
 
 
+SCRIPT_EXT = (".py", ".mjs", ".js", ".sh")
+
+
+def generator_scripts(root: str) -> set[str]:
+    """generated.json の作り手の台本（run を && で分け、cd <dir> を追い、台本の拡張子で終わる語のうち在るファイル・根からの相対）。K-156"""
+    p = os.path.join(root, "scripts", "ci", "generated.json")
+    try:
+        d = json.load(open(p, encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    out: set[str] = set()
+    for g in d.get("generators", []):
+        cwd = ""
+        for part in str(g.get("run", "")).split("&&"):
+            words = part.split()
+            if len(words) >= 2 and words[0] == "cd":
+                cwd = os.path.normpath(os.path.join(cwd, words[1]))
+                continue
+            for w in words:
+                if w.endswith(SCRIPT_EXT):
+                    rel = os.path.normpath(os.path.join(cwd, w)).replace(os.sep, "/")
+                    if os.path.isfile(os.path.join(root, rel)):
+                        out.add(rel)
+    return out
+
+
 def _generated_of(raw: bytes | None) -> set[str]:
     try:
         d = json.loads(raw.decode("utf-8")) if raw is not None else {}

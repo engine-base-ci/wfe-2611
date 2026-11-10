@@ -20,6 +20,9 @@ export default defineConfig({
       "apps/*/test/**/*.test.ts",
     ],
     fileParallelism: false, // DB のテストは同じ表を種で入れ替えるので直列（RLS は実表・モックしない）
+    // 起動（beforeAll・makeHarness など）の上限。式は「実測の最大 × 3」（D-133.2）：実測は CI の記録（2026-11-09 の緑の 3 回の vitest の blob・
+    //   流れた 276 ファイル全部）の beforeAll の最大 3.6 秒（packages/auth/test/session_watch.test.ts）× 3 ＝ 10.7 秒 → 11 秒。CI の記録が変わったら引き直す
+    hookTimeout: 11_000,
     env: databaseUrl ? { DATABASE_URL: databaseUrl } : {},
     // 別の vitest（別の段・別の端末）が同じ DB を同時に使わないよう、試験の間は DB に勧告ロックを持つ（取れるまで待つ）
     globalSetup: ["packages/db/test/global-lock.ts"],

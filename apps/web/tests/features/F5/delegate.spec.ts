@@ -625,7 +625,7 @@ row(R["K62-UI-031"], async (page) => {
 });
 
 row(R["K62-UI-032"], async (page) => {
-  // 決める人の決定 D-133.1：待っている（queued）かつ PC が起きている間は「任せました。PC が受け取るのを待っています」。PC が受け取ったら「作っています」
+  // 決める人の決定 D-134.1：待っている（queued）かつ PC が起きている間は「任せました。PC が受け取るのを待っています」。PC が受け取ったら「作っています」
   await page.clock.install();
   const m = await mockApi(page, mock()); // 既定：任せる口は 201（queued・pc live）、実行の 1 件は queued
   await open(page);
