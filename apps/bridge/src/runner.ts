@@ -154,7 +154,10 @@ export interface Job {
   /** AI が使うブラウザ（D-119）：chrome＝本人の Chrome（Claude in Chrome）／off＝使わない。無ければ使わない（古い Kaname） */
   browser?: "chrome" | "dedicated" | "off" | null;
   /** 仕事の種類（D-117.1）：login_check＝預けたログイン情報で 1 回だけ入ってみる（AI は起こさない）。無ければ会話 */
-  kind?: "chat" | "login_check" | null;
+  kind?: "chat" | "login_check" | "ticket" | null;
+  /** チケットの仕事（K-62）：任されたチケットと段（make＝成果物を作る・execute＝承認の後の実行） */
+  ticket_id?: string | null;
+  phase?: "make" | "execute" | null;
   credential_id?: string | null;
 }
 
@@ -189,6 +192,8 @@ export interface Answer {
   allow: boolean;
   note?: string | null;
   answers?: Record<string, string> | null;
+  /** 本人に聞かずに断るときの文（そのまま Claude に渡す・「本人が許可しませんでした」を付けない・D-129.44） */
+  deny?: string | null;
 }
 
 /** 動かしている間に Kaname へ返すもの（D-093.3・D-093.7・D-104.8）。無ければ黙って動く */
@@ -244,6 +249,8 @@ type Outcome = Finish & { resumeLost?: boolean };
 
 /** いま動いている 1 件。人が「止める」を押したら殺す／「止めずに直す」なら次の区切りで伝える（D-104.9） */
 let current: { kill: (reason?: string) => void; steer: (text: string) => boolean } | null = null;
+/** 完了の合図（result）を出さずに・中身なしで終わったときの理由（E-SIG-002） */
+export const NO_SIGNAL_REASON = "Claude Code が何も返さずに終わりました";
 export const stopCurrent = (reason?: string): void => current?.kill(reason);
 /** 動いている仕事に、止めずに方向を直す一言を渡す。渡せなかった（もう終わっていた）ら false */
 export const steerCurrent = (text: string): boolean => current?.steer(text) ?? false;
@@ -293,7 +300,7 @@ export function buildArgs(
   if (chrome) args.push("--chrome");
   // Kaname の道具（D-110）と Bridge 専用のブラウザ（D-119）を 1 本の設定で渡す。
   // --mcp-config は可変長なので、すぐ後ろに別の引数（--append-system-prompt 等）が来る位置に置く
-  const kaname = kanameServer(tools, job.tool_token);
+  const kaname = kanameServer(tools, job.tool_token, job.kind ?? "chat");
   const own = job.browser === "dedicated" && dedicated ? dedicatedServer(dedicated) : null;
   args.push(...mcpArgs({ kaname, [DEDICATED_SERVER]: own }));
   // 会話の仕事にだけ Kaname の書き方を渡す（記憶のまとめなど会話の無い仕事は、渡した文の指示だけで動く）
@@ -493,7 +500,9 @@ function runOnce(
           waitingHuman -= 1;
           arm();
           if (!settled)
-            p.stdin.write(controlResponse(e.requestId, a.allow, e.input, a.note ?? null, a.answers ?? null));
+            p.stdin.write(
+              controlResponse(e.requestId, a.allow, e.input, a.note ?? null, a.answers ?? null, a.deny ?? null),
+            );
         });
       } else if (e.type === "result") {
         if (e.session) session = e.session;
@@ -537,10 +546,7 @@ function runOnce(
           });
         done({
           state: "stopped",
-          reason:
-            e.reason === "empty"
-              ? "Claude Code が何も返さずに終わりました"
-              : whyStopped(JSON.stringify(e.raw), err, null, limits),
+          reason: e.reason === "empty" ? NO_SIGNAL_REASON : whyStopped(JSON.stringify(e.raw), err, null, limits),
           agent_session_id: session,
           usage: e.usage,
         });
@@ -572,7 +578,13 @@ function runOnce(
         if (e) handle(e);
       }
       // result（完了信号）が来ないまま終わったものを成功にしない（G-15）
-      if (!settled) done({ state: "stopped", reason: whyStopped("", err, code), agent_session_id: session });
+      // 終了コード 0 で何も言わずに終わった（stderr も空）＝合図なし。何も返さずに終わったと出す（E-SIG-002・K-62）
+      if (!settled)
+        done({
+          state: "stopped",
+          reason: code === 0 && !err.trim() ? NO_SIGNAL_REASON : whyStopped("", err, code),
+          agent_session_id: session,
+        });
     });
     // 人が言ったことを渡す。入力はこの後も開けたままにする（確認の答え・止めずに直す一言を渡すため）
     p.stdin.on("error", () => undefined);

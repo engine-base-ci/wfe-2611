@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -18,6 +18,9 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -28,12 +31,17 @@ const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const X = "/api/auth-ext";
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -62,7 +70,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -102,7 +112,7 @@ async function running() {
   const a = await json<{ job_id: string; conversation_id: string }>(
     post("/agent/say", { text: "会社のことを聞いて" }, r.H),
   );
-  await post("/bridge/take", { protocol: 4 }, r.B);
+  await post("/bridge/take", { protocol: 5 }, r.B);
   const msgs = async () =>
     (
       await json<{ messages: Msg[] }>(req("GET", `/agent/state?conversation_id=${a.conversation_id}`, undefined, r.H))
@@ -163,7 +173,7 @@ describe("自分のAI の文を記録と同じ id で写す（D-112）", () => {
       { job_id: a.job_id, seq: 1, kind: "init", agent_session_id: "386d5cb2-fc77-4cb1-a91f-6ecb032a2a57" },
       B,
     );
-    await post("/bridge/take", { protocol: 4, idle: true }, B); // Bridge が止まって戻ってきた → 仕事は止まる
+    await post("/bridge/take", { protocol: 5, idle: true }, B); // Bridge が止まって戻ってきた → 仕事は止まる
     const t = await json<{ conversation_id: string; agent_session_id: string }[]>(
       post("/bridge/mirror-targets", {}, B),
     );
@@ -341,7 +351,7 @@ describe("区切りに間に合わなかった一言を捨てない（D-112）",
     ]);
     expect(jobs.rows[1].prompt).toContain("全部やって");
     // 本人が止めた仕事では並べない
-    const b2 = await json<{ job_id: string }>(post("/bridge/take", { protocol: 4 }, B));
+    const b2 = await json<{ job_id: string }>(post("/bridge/take", { protocol: 5 }, B));
     await post("/agent/steer", { job_id: b2.job_id, text: "やっぱりこれも" }, H);
     await post("/bridge/finish", { job_id: b2.job_id, state: "stopped", reason: "あなたが止めました" }, B);
     const after = await admin.query("select count(*)::int n from bridge_jobs where conversation_id = $1", [

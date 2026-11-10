@@ -142,7 +142,7 @@ test("SCR-ONBOARD-INTERVIEW-054 止まりました：理由だけが出て、ボ
     job_id: first.job_id,
     state: "stopped",
     reason: "本人のサブスクの上限に当たりました",
-    agent_session_id: "s-int",
+    agent_session_id: "5f1e2d3c-0000-4000-8000-00000000d001",
   });
   await expect(page.locator("[data-state='stp']")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator("[data-stopped-reason]")).toContainText("本人のサブスクの上限に当たりました");
@@ -151,5 +151,5 @@ test("SCR-ONBOARD-INTERVIEW-054 止まりました：理由だけが出て、ボ
   await box.fill("続けて");
   await page.getByRole("button", { name: "送る" }).click();
   const second = await takeNext();
-  expect(second.agent_session_id, "続けては同じ続き（session）で動く").toBe("s-int");
+  expect(second.agent_session_id, "続けては同じ続き（session）で動く").toBe("5f1e2d3c-0000-4000-8000-00000000d001");
 });

@@ -101,6 +101,7 @@ export function parseComponents(yaml) {
     if (sec === "props" && (m = /^        (\w+): \*(\w+)$/.exec(l))) { out[name].props[m[1]] = anchors[m[2]] ?? {}; prop = null; continue; }
     if (sec === "props" && prop && (m = /^          (type|format): (\S+)/.exec(l))) { out[name].props[prop][m[1]] = m[2]; continue; }
     if (sec === "props" && prop && /^          nullable: true/.test(l)) { out[name].props[prop].nullable = true; continue; }
+    if (sec === "props" && prop && (m = /^          maxLength: (\d+)/.exec(l))) { out[name].props[prop].maxLength = Number(m[1]); continue; } // 長い文（K-62・string:N）
     if (sec === "props" && prop && (m = /^            type: (\S+)/.exec(l))) { out[name].props[prop].items = m[1]; continue; }
     if (sec === "props" && prop && (m = /^            format: (\S+)/.exec(l))) { out[name].props[prop].itemsFormat = m[1]; continue; } // 並びの中身の形（uuid の並び・K-144）
   }
@@ -123,7 +124,7 @@ function zodOf(p) {
   if (p.type === "string" && p.format === "uuid") return "z.uuid()";
   if (p.type === "string" && p.format === "date-time") return "z.iso.datetime({ offset: true })";
   if (p.type === "string" && p.format === "date") return "z.iso.date()";
-  if (p.type === "string") return "z.string()"; // 自由に書く欄に一律の上限を置かない（D-130.1）。守りは入口の送る量 1MB（op.ts）
+  if (p.type === "string") return "z.string()"; // 自由に書く欄に一律の上限を置かない（D-130.1）。守りは入口の送る量 1MB（op.ts）。欄の上限（maxLength）は契約の側に書き、口が断る（K-144 ㉓・K-62）
   if (p.type === "integer") return "z.number().int()";
   if (p.type === "number") return "z.number()";
   if (p.type === "boolean") return "z.boolean()";

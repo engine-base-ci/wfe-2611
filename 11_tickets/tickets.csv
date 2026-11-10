@@ -286,16 +286,17 @@ K-61,段 6 F5 AI に任せて、確かめて、終える（歩く骨格の後の
 - [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている
 - [ ] この流れの中間テストの組と統合テストが決まっている
 - [ ] 止める口（stopActionRun）を切るとき：止めた後に PC から「終わった」が届いても承認待ちにしない行を表に入れる（K-62 の finishBridgeJob は stop_requested_at を見ていない。K-62 の作る役が見つけた・2026-11-08）"
-K-62,AI に任せる（押した人の AI が、その人のつないだ PC でチケットの成果物を作り、承認待ちまで運ぶ）,タスク,K-103,未着手,実装,2026-11-08,F5・AI,"チケットの担当者が、チケットの詳細で「AI に任せる」を押すと、**その担当者の AI**（本人の PC の Bridge が動かす本人の Claude Code）に仕事が渡る。PC が仕事を受け取り、途中の様子を返し、要るときは Kaname の道具でチケットを読み、作ったもの（成果物）を返す。返ってきた成果物はチケットの「成果物」の区画に版つきで入り、チケットは **承認待ち** になる。
+K-62,AI に任せる（押した人の AI が、その人のつないだ PC でチケットの成果物を作り、承認待ちまで運ぶ）,タスク,K-103,未着手,実装,2026-11-09,F5・AI,"チケットを直せる人が、チケットの詳細で「AI に任せる」を押すと、**押した人の AI**（その人の PC の Bridge が動かすその人の Claude Code）に仕事が渡る（D-128.138）。PC が仕事を受け取り、途中の様子を返し、要るときは Kaname の道具でチケットを読み、作ったもの（成果物）を返す。返ってきた成果物はチケットの「成果物」の区画に版つきで入り、チケットは **承認待ち** になる（承認するのは担当者・D-128.25）。
 
 **このチケットは外に何も出さない。** 送る・応募するなど外に出る実行は、人が承認してから（次のチケット「承認して完了する」K-63）。
 
-確定の時点は 2 つ。① 任せたことが確定するのは、仕事（bridge_jobs の行）と実行の記録（action_runs の行）を 1 回の書き込みで作り、チケットを「実行中」にした時点。② 成果物が確定するのは、PC から「終わった」と**中身のある結果**が届き、成果物の区画の新しい版と承認待ちの行を作った時点。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
-- 契約の口 8 本（delegateTicket・takeBridgeJob・reportJobProgress・getJobControl・callKanameTool・finishBridgeJob・getActionRun・listTicketRuns）が 501 でない
-- 前の道すじ `POST /api/auth-ext/bridge/take`・`/bridge/progress`・`/bridge/finish`（apps/api/src/auth/ext.ts）・`/bridge/control`（apps/api/src/auth/agent.ts）・`/bridge/tool`（apps/api/src/auth/agent-tools.ts）が消え、Bridge（apps/bridge/src/loop.ts・kaname-tools.ts）が契約の口を呼んでいる。会話（chat）とログインの試し（login_check）の仕事も、前と同じに動く
-- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑。Bridge の側は apps/bridge/test で緑
+確定の時点は 2 つ。① 任せたことが確定するのは、仕事（bridge_jobs の行）と実行の記録（action_runs の行）とチケットの段（実行中）とやり取りの 1 行を **1 つの処理で** 書いた時点（`app.ticket_delegate`）。② 成果物が確定するのは、PC から「終わった」と**中身のある結果**が届き、成果物の区画の新しい版と承認待ちの行とチケットの段（承認待ち）を 1 つの処理で書いた時点（`app.bridge_finish_job` のチケットの分かれ道）。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑（表の「テスト」の列の行 ID がどれも緑）：口と DB は `apps/api/test/features/F5/delegate.test.ts`・`delegate-bridge.test.ts` の K62-API-…（82 行）、Bridge は `apps/bridge/test/delegate.test.ts`・`tool-relay.test.ts` の K62-BRG-…（20 行）、画面は `apps/web/tests/features/F5/delegate.spec.ts` の K62-UI-…（33 行・仕様の表 `07_qa/test-specs/k/delegate.md`）
+- 契約の口 8 本（delegateTicket・takeBridgeJob・reportJobProgress・getJobControl・callKanameTool・finishBridgeJob・getActionRun・listTicketRuns）が 501 でなく、下の「契約を直す」の形で生成し直されている。`apps/api/test/generated/` の 8 本の生成の試験が、`07_qa/test-plan/ears-elsewhere.json` の covers で本物の試験（上の行 ID）を指している。残る `it.todo` は、同じファイルの na に「当てはまらない理由」を書いたものだけ（サーバーの外を呼ばない口の upstream_failed 7 本と、道具の口の not_found 1 本。理由の無い it.todo は 0）
+- 前の道すじ `POST /api/auth-ext/bridge/take`・`/bridge/progress`・`/bridge/finish`（apps/api/src/auth/ext.ts）・`/bridge/control`（apps/api/src/auth/agent.ts）・`/bridge/tool`（apps/api/src/auth/agent-tools.ts）が消え、Bridge（apps/bridge/src/loop.ts・kaname-tools.ts）が契約の口を呼んでいる。会話（chat）とログインの試し（login_check）の仕事も、契約の口の上で前と同じに動く（K62-API-043 と、下の「試験の道具と影響」の向け直した既存の試験）
+- 単体のテストが本物の DB（試験の DB・migration を全部当てる）と本物のブラウザ（実 Chrome）の上で緑
 - 中間テスト 3「AI に任せる → 承認して完了する」（K-64）は、揃える最後のチケット K-63 が取り込む前に流す（このチケットの完了の条件には入れない）
-- 手元の CI（act・GitHub と同じ workflow の全部）が緑"
+- 契約の fuzz（G36）の的 `apps/api/test/fuzz/server.ts` に、K-57（bridgeHooks）・K-60（ticketHooks）・K-62（delegateHooks）の hooks が差してあり、本物のサーバーが差す hooks のうち的に無いもの（理由つきの外す台帳を除く）を `scripts/ci/fuzz_targets.py` が赤にする。`scripts/ci/fuzz_targets_test.py` の K62-CI-001〜010 が緑・広げた範囲で `pnpm ci:schemathesis`（scripts/ci/fuzz.sh）が緑（K-134 を K-62 に戻した分・D-095・D-128.113・D-128.147）
+- 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・そのチケットの範囲）が緑。migration に触るので、CI が DB の組と、DB を使う試験のどれもを流す（ci_wide: db）"
 K-63,承認して完了する（AI の成果物を承認か差し戻しで決め、承認したら実行し、直せる人が完了にする）,タスク,K-103,未着手,実装,2026-11-08,F5・AI,"AI に任せたチケット（K-62）の成果物が承認待ちに並ぶ。承認する人（そのチケットの担当者）は、承認待ちの画面かチケットの詳細の帯で中身を見て、**承認する**か、理由を書いて**差し戻す**。承認したら、AI が外に出す実行（送る・応募する など）をする。実行が終わったら、担当者が完了の条件を確かめて**完了にする**。
 
 確定の時点は 3 つ。① 承認が確定するのは、承認の行に決めたこと（decision）と時刻が入った時点。決まった承認は変えられない（migration 0063 の approvals_once）。② 実行が確定するのは、承認の後の仕事を PC が「終わった」と返した時点。③ 完了が確定するのは、チケットが完了の段（done）になった時点。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑

@@ -11,7 +11,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -21,6 +21,9 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -31,12 +34,17 @@ const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const X = "/api/auth-ext";
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -65,7 +73,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -170,7 +180,7 @@ describe("長い会話（D-104.18）", () => {
   it("いまは新しい 200 件。上へ戻ると、それより前を 100 件ずつ読み込める。他人の会話は読めない", async () => {
     const { H, B } = await ready();
     const s = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "はじめ" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post("/bridge/finish", { job_id: s.job_id, state: "done", result: "はい" }, B);
     await admin.query(
       "insert into messages (tenant_id, conversation_id, body, kind, created_at) select c.tenant_id, c.id, '古い ' || g, 'ai', now() - interval '1 day' + g * interval '1 second' from conversations c, generate_series(1, 250) g where c.id = $1",
@@ -209,23 +219,23 @@ describe("同じ会話は 1 本ずつ・書きながらの返事・止める・�
   it("動いている間の 2 通目は順番待ちで、前が終わるまで Bridge に渡らない", async () => {
     const { H, B } = await ready();
     const a = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "1 つ目" }, H));
-    expect((await json<Take>(post("/bridge/take", { protocol: 4 }, B)))?.job_id).toBe(a.job_id);
+    expect((await json<Take>(post("/bridge/take", { protocol: 5 }, B)))?.job_id).toBe(a.job_id);
     const b = await json<{ job_id: string }>(
       post("/agent/say", { text: "2 つ目", conversation_id: a.conversation_id }, H),
     );
     expect(
-      await json<Take>(post("/bridge/take", { protocol: 4 }, B)),
+      await json<Take>(post("/bridge/take", { protocol: 5 }, B)),
       "同じ会話の前が動いている間は渡さない",
     ).toBeNull();
     const st = await json<State>(req("GET", `/agent/state?conversation_id=${a.conversation_id}`, undefined, H));
     expect(st.queued.map((q) => q.text)).toEqual(["2 つ目"]);
     expect((await post("/bridge/finish", { job_id: a.job_id, state: "done", result: "済" }, B)).status).toBe(200);
-    expect((await json<Take>(post("/bridge/take", { protocol: 4 }, B)))?.job_id).toBe(b.job_id);
+    expect((await json<Take>(post("/bridge/take", { protocol: 5 }, B)))?.job_id).toBe(b.job_id);
   });
   it("書きながらの返事・何をしているか・手順・使用量が いま に出て、終わると返事と作業の記録（ops・ms）が残る", async () => {
     const { H, B } = await ready();
     const a = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "台帳を見て" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     expect((await post("/bridge/partial", { job_id: a.job_id, text: "台帳を" }, B)).status).toBe(200);
     await post("/bridge/progress", { job_id: a.job_id, seq: 1, kind: "status", text: "読んでいます：/w/台帳.csv" }, B);
     await post(
@@ -282,7 +292,7 @@ describe("同じ会話は 1 本ずつ・書きながらの返事・止める・�
   it("止めずに直す：一言は順番待ちに入り（取り消せる）、区切りで Bridge が取ったときに吹き出しになる。取った後は取り消せない。終わった仕事には 409", async () => {
     const { H, B } = await ready();
     const a = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "見積を作って" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     expect((await post("/agent/steer", { job_id: a.job_id, text: "税込で" }, H)).status).toBe(201);
     expect((await post("/agent/steer", { job_id: a.job_id, text: "やっぱり今のは無し" }, H)).status).toBe(201);
     const st0 = await json<State & { queued: { id: string; kind: string; text: string }[] }>(
@@ -333,7 +343,7 @@ describe("同じ会話は 1 本ずつ・書きながらの返事・止める・�
   it("止める：動いているものは Bridge に合図が出て、止まった理由だけが残る。順番待ちはそのまま取り消す。他人は止められない", async () => {
     const { H, B } = await ready();
     const a = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "長い仕事" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     const q = await json<{ job_id: string }>(
       post("/agent/say", { text: "次の仕事", conversation_id: a.conversation_id }, H),
     );
@@ -357,7 +367,7 @@ describe("引用して続ける（D-104.17）", () => {
     const s = await json<{ conversation_id: string; job_id: string }>(
       post("/agent/say", { text: "ここを詳しく", quote: { text: "1 件が送付済み", message_id: null } }, H),
     );
-    const t = await json<{ prompt: string } | null>(post("/bridge/take", { protocol: 4 }, B));
+    const t = await json<{ prompt: string } | null>(post("/bridge/take", { protocol: 5 }, B));
     expect(t?.prompt).toContain("1 件が送付済み");
     expect(t?.prompt).toContain("ここを詳しく");
     const st = await json<State>(req("GET", `/agent/state?conversation_id=${s.conversation_id}`, undefined, H));
@@ -369,12 +379,12 @@ describe("直して送り直す（D-104.17）", () => {
   it("新しい会話ができ、直した文より前のやりとりが写り、自分のAI にも添わる。元の会話は残る", async () => {
     const { H, B } = await ready();
     const a = await json<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "売上を見て" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post("/bridge/finish", { job_id: a.job_id, state: "done", result: "今月は 120 万円です" }, B);
     const b2 = await json<{ job_id: string }>(
       post("/agent/say", { text: "先月と比べて", conversation_id: a.conversation_id }, H),
     );
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post("/bridge/finish", { job_id: b2.job_id, state: "done", result: "先月は 100 万円でした" }, B);
     const st = await json<State & { messages: { id: string; who: string; text: string }[] }>(
       req("GET", `/agent/state?conversation_id=${a.conversation_id}`, undefined, H),
@@ -385,7 +395,7 @@ describe("直して送り直す（D-104.17）", () => {
     );
     expect(r.conversation_id).not.toBe(a.conversation_id);
     const t = await json<{ prompt: string; agent_session_id: string | null } | null>(
-      post("/bridge/take", { protocol: 4 }, B),
+      post("/bridge/take", { protocol: 5 }, B),
     );
     expect(t?.agent_session_id, "新しいセッション").toBeNull();
     expect(t?.prompt).toContain("今月は 120 万円です");
@@ -401,7 +411,7 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
   it("選んだモード・モデル・強さが仕事に乗る。知らない値は捨て、既定は毎回聞く", async () => {
     const { H, B } = await ready();
     await post("/agent/say", { text: "a", permission_mode: "acceptEdits", model: "sonnet", effort: "high" }, H);
-    expect(await json<Take>(post("/bridge/take", { protocol: 4 }, B))).toMatchObject({
+    expect(await json<Take>(post("/bridge/take", { protocol: 5 }, B))).toMatchObject({
       permission_mode: "acceptEdits",
       model: "sonnet",
       effort: "high",
@@ -413,7 +423,7 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
         H,
       ),
     );
-    const t = await json<Take>(post("/bridge/take", { protocol: 4 }, B));
+    const t = await json<Take>(post("/bridge/take", { protocol: 5 }, B));
     expect(t?.job_id === b.job_id || t === null).toBe(true); // 別の会話なので並んで取れる
     const row = (await admin.query("select permission_mode, model, effort from bridge_jobs where id = $1", [b.job_id]))
       .rows[0];
@@ -424,7 +434,7 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
     const s = await json<{ job_id: string }>(
       post("/agent/say", { text: "全部やって", permission_mode: "bypassPermissions" }, H),
     );
-    expect(await json<Take>(post("/bridge/take", { protocol: 4 }, B))).toMatchObject({
+    expect(await json<Take>(post("/bridge/take", { protocol: 5 }, B))).toMatchObject({
       job_id: s.job_id,
       permission_mode: "bypassPermissions",
     });
@@ -441,7 +451,7 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
   it("しない＋一言は理由として Bridge に渡る。いつも許可はルールになり、次の仕事の許可に乗る。取り消すと外れる", async () => {
     const { H, B } = await ready();
     const a = await json<{ job_id: string }>(post("/agent/say", { text: "ビルドして" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post(
       "/bridge/ask",
       {
@@ -474,14 +484,14 @@ describe("許可のモードと 3 択（D-104.13・D-104.14）", () => {
     );
     expect(rules.rules.map((r) => `${r.tool}(${r.target})`)).toEqual(["Bash(npm test)"]);
     await post("/agent/say", { text: "もう一回" }, H);
-    expect((await json<Take>(post("/bridge/take", { protocol: 4 }, B)))?.allowed_tools).toEqual(["Bash(npm test)"]);
+    expect((await json<Take>(post("/bridge/take", { protocol: 5 }, B)))?.allowed_tools).toEqual(["Bash(npm test)"]);
     expect((await req("DELETE", `/agent/permission-rules/${rules.rules[0]!.id}`, undefined, H)).status).toBe(200);
     expect((await json<{ rules: unknown[] }>(req("GET", "/agent/permission-rules", undefined, H))).rules).toEqual([]);
   });
   it("問い合わせ（AskUserQuestion）の答えは Bridge にそのまま渡り、いつも許可のルールにはならない", async () => {
     const { H, B } = await ready();
     const a = await json<{ job_id: string }>(post("/agent/say", { text: "請求書" }, H));
-    await post("/bridge/take", { protocol: 4 }, B);
+    await post("/bridge/take", { protocol: 5 }, B);
     await post(
       "/bridge/ask",
       {
@@ -519,7 +529,7 @@ describe("資料を付ける（D-104.11）", () => {
     const att = ((await up.json()) as { data: { id: string; name: string; size: number } }).data;
     expect(att).toMatchObject({ name: "台帳.csv", size: new TextEncoder().encode("日付,金額\n9/1,1000\n").length });
     const s = await json<{ job_id: string }>(post("/agent/say", { text: "これを見て", attachment_ids: [att.id] }, H));
-    const t = await json<Take>(post("/bridge/take", { protocol: 4 }, B));
+    const t = await json<Take>(post("/bridge/take", { protocol: 5 }, B));
     expect(t?.attachments).toEqual([expect.objectContaining({ id: att.id, name: "台帳.csv" })]);
     const sr = await post("/bridge/attachment", { job_id: s.job_id, attachment_id: att.id }, B);
     const sb = (await sr.json()) as { data: { url: string; name: string } };

@@ -168,6 +168,7 @@ export function label(tool: string): string {
   if (tool === "TodoWrite") return "手順を立てています";
   // Kaname の道具（D-110）。たたき台に置いている・直している
   const KANAME: Record<string, string> = {
+    ticket_read: "チケットを読んでいます",
     draft_read: "たたき台を読んでいます",
     goal_set: "たたき台に目標を置いています",
     goal_remove: "目標を外しています",
@@ -372,6 +373,7 @@ export const controlResponse = (
   input?: unknown,
   note?: string | null,
   answers?: Record<string, string> | null,
+  denyMessage?: string | null,
 ): string =>
   `${JSON.stringify({
     type: "control_response",
@@ -383,7 +385,15 @@ export const controlResponse = (
             behavior: "allow",
             ...(input !== undefined ? { updatedInput: answers ? { ...(input as J), answers } : input } : {}),
           }
-        : { behavior: "deny", message: note ? `本人が許可しませんでした：${note}` : "本人が許可しませんでした" },
+        : {
+            behavior: "deny",
+            // 本人に聞いていない断り（チケットの仕事・D-129.44）は、その文をそのまま渡す（「本人が」と書かない）
+            message: denyMessage
+              ? denyMessage
+              : note
+                ? `本人が許可しませんでした：${note}`
+                : "本人が許可しませんでした",
+          },
     },
   })}\n`;
 

@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth, type Auth } from "@kaname/auth";
-import { createSessionResolver, signOut } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver, signOut } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { createMemberHub, type MemberHub } from "@kaname/db/listen";
@@ -21,6 +21,9 @@ import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { agentStreamRoutes } from "../src/auth/agent-stream.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -35,12 +38,17 @@ let appPool: pg.Pool;
 let auth: Auth;
 let hub: MemberHub;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -68,7 +76,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -238,7 +248,7 @@ describe("会話の表に書くと、その人に知らせが出る（0054 の t
     for (let i = 0; i < 50 && n === 0; i++) await sleep(20);
     expect(n).toBeGreaterThan(0);
     const afterSay = n;
-    await req("POST", "/bridge/take", { protocol: 4 }, r.B);
+    await req("POST", "/bridge/take", { protocol: 5 }, r.B);
     for (let i = 0; i < 50 && n === afterSay; i++) await sleep(20);
     expect(n).toBeGreaterThan(afterSay);
     const afterTake = n;

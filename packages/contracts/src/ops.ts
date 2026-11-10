@@ -1,10 +1,10 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8d3ab089892fe948
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2db60703621ed448
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
   remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
-  getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRuns };
+  getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
   retryActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
@@ -50,12 +50,12 @@ export interface Ops {
   reportBrowserState: { params: { id: string }; query: never; body: T.BridgeJobEventsInput; data: T.BridgeJobEvents };
   getJobControl: { params: { id: string }; query: never; body: never; data: T.JobControl };
   mirrorConversationEntries: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  finishBridgeJob: { params: { id: string }; query: never; body: T.BridgeJobsInput; data: T.BridgeJobs };
-  reportJobProgress: { params: { id: string }; query: never; body: T.BridgeJobEventsInput; data: T.BridgeJobEvents };
+  finishBridgeJob: { params: { id: string }; query: never; body: T.BridgeFinishInput; data: T.BridgeFinish };
+  reportJobProgress: { params: { id: string }; query: never; body: T.BridgeProgressInput; data: T.BridgeJobEvents };
   askFromBridge: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   getBridgeQuestionAnswer: { params: { id: string; qid: string }; query: never; body: never; data: T.Messages };
-  callKanameTool: { params: { id: string; name: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
-  takeBridgeJob: { params: never; query: never; body: T.BridgeJobsInput; data: T.BridgeJob };
+  callKanameTool: { params: { id: string; name: string }; query: never; body: T.BridgeToolInput; data: T.BridgeToolResult };
+  takeBridgeJob: { params: never; query: never; body: T.BridgeTakeInput; data: T.BridgeJob };
   listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
   createPairingCode: { params: never; query: never; body: T.PairingCodeInput; data: T.PairingCode };
   downloadBridgeRelease: { params: { name: string }; query: never; body: never; data: T.BridgeReleaseLink };
@@ -316,7 +316,7 @@ export interface Ops {
   completeTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.TicketCompletion };
   listTicketDecisions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDecisions[] };
   createTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionsInput; data: T.TicketDecisions };
-  delegateTicket: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  delegateTicket: { params: { id: string }; query: never; body: T.TicketDelegateInput; data: T.TicketDelegation };
   previewTicketDelete: { params: { id: string }; query: never; body: never; data: T.TicketDeletePreview };
   dryRunTicket: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoversInput; data: T.TicketHandovers };
@@ -326,7 +326,7 @@ export interface Ops {
   createTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
   listTicketReferences: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ReferenceLogs[] };
   restoreTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
-  listTicketRuns: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActionRuns[] };
+  listTicketRuns: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActionRunView[] };
   updateTicketSection: { params: { id: string; key: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
   listTestSpecs: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TestSpecs[] };
   createTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };

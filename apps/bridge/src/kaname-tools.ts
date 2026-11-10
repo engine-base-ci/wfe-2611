@@ -1,5 +1,6 @@
 // 自分のAI に渡す Kaname の道具（D-110）。本人の Claude Code に MCP の「kaname」として渡す。
-//   道具を呼ぶと、この仕事の間だけ効く鍵で Kaname の API（/bridge/tool）に書く。資格情報は渡さない（D-110.6）
+//   道具を呼ぶと、この仕事の間だけ効く鍵で Bridge の手元の口（tool-relay.ts・127.0.0.1）に送り、Bridge が PC の印を足して
+//   契約の口（callKanameTool）へ回す。道具のサーバーは PC の印を持たない（K-62・決める人の答え 3）。資格情報は渡さない（D-110.6）
 //   道具のサーバーは素の node で動く小さな台本（stdio・JSON-RPC）。Bridge が一時フォルダに書き、Electron の node で動かす
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -15,6 +16,12 @@ const ID = s("直す・外すときの id（draft_read か、置いたときの�
 
 /** 道具の一覧（名前・説明・入力の形）。説明は自分のAI が読む */
 export const TOOL_DEFS: ToolDef[] = [
+  {
+    name: "ticket_read",
+    description:
+      "任されたチケット（1 枚）の区画（目的・完了の条件・前提と制約・相手・実施事項 など）を読む。チケットの仕事のときだけ使える",
+    inputSchema: { type: "object", properties: {} },
+  },
   {
     name: "draft_read",
     description: "いまのたたき台（会社の目標・台帳・担当業務とAI社員）を読む。置く前・直す前に見る",
@@ -103,12 +110,25 @@ export const TOOL_DEFS: ToolDef[] = [
     },
   },
 ];
+/** 仕事の種類（K-62）。チケットの仕事は ticket_read だけ、会話の仕事は会話の道具（ticket_read 以外） */
+export type ToolJobKind = "ticket" | "chat" | "login_check";
+const TICKET_TOOL_NAMES = ["ticket_read"];
+/** その仕事の種類で自分のAI に見せる道具（呼べない道具は見せない・K62-BRG-012）。手元の口の 403 が 2 層目 */
+export function toolDefsFor(kind: ToolJobKind | null | undefined): ToolDef[] {
+  if (kind === "ticket") return TOOL_DEFS.filter((t) => TICKET_TOOL_NAMES.includes(t.name));
+  if (kind === "login_check") return [];
+  return TOOL_DEFS.filter((t) => !TICKET_TOOL_NAMES.includes(t.name));
+}
+
 /** 許可のモードに関わらず聞かずに使える道具（本人の会社のたたき台に書くだけ・外に出ない・D-110.4） */
 export const KANAME_TOOL_RULE = "mcp__kaname";
 
 /** 道具のサーバー（stdio・JSON-RPC 2.0）。1 行 1 通。呼ばれたら Kaname の API に書く */
-export const MCP_SERVER_SOURCE = `// Kaname Bridge が書いた道具のサーバー（D-110）。手で直さない
-const TOOLS = ${JSON.stringify(TOOL_DEFS)};
+export const MCP_SERVER_SOURCE = `// Kaname Bridge が書いた道具のサーバー（D-110・K-62）。手で直さない。送り先は Bridge の手元の口（道具の鍵だけを持つ）
+const ALL_TOOLS = ${JSON.stringify(TOOL_DEFS)};
+// その仕事の道具の名前（KANAME_TOOLS・カンマ区切り）。あればそれだけを見せて呼べる（K-62）
+const ONLY = (process.env.KANAME_TOOLS || "").split(",").map((x) => x.trim()).filter(Boolean);
+const TOOLS = ONLY.length ? ALL_TOOLS.filter((t) => ONLY.includes(t.name)) : ALL_TOOLS;
 const API = process.env.KANAME_API_BASE || "";
 const TOKEN = process.env.KANAME_TOOL_TOKEN || "";
 let rest = "";
@@ -117,7 +137,7 @@ const reply = (id, result) => send({ jsonrpc: "2.0", id, result });
 const text = (t, isError) => ({ content: [{ type: "text", text: t }], ...(isError ? { isError: true } : {}) });
 async function call(id, name, input) {
   try {
-    const r = await fetch(API + "/api/auth-ext/bridge/tool", {
+    const r = await fetch(API + "/tools/" + encodeURIComponent(name), {
       method: "POST",
       headers: { "content-type": "application/json", "x-kaname-tool-token": TOKEN },
       body: JSON.stringify({ name, input: input || {} }),
@@ -211,6 +231,7 @@ export interface KanameTools {
 export function kanameServer(
   k: KanameTools | null | undefined,
   token: string | null | undefined,
+  kind?: ToolJobKind | null,
 ): Record<string, unknown> | null {
   if (!k || !token) return null;
   return {
@@ -219,6 +240,14 @@ export function kanameServer(
     env: {
       KANAME_API_BASE: k.apiBase,
       KANAME_TOOL_TOKEN: token,
+      // 仕事の種類を渡されたら、その仕事の道具の名前だけを道具のサーバーに渡す（tools/list がそれだけを返す・K-62）
+      ...(kind
+        ? {
+            KANAME_TOOLS: toolDefsFor(kind)
+              .map((t) => t.name)
+              .join(","),
+          }
+        : {}),
       ...(process.versions["electron"] ? { ELECTRON_RUN_AS_NODE: "1" } : {}),
     },
   };
