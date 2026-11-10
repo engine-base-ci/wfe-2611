@@ -151,6 +151,24 @@ def changed_files(repo: str, base: str, head: str) -> list[Change]:
     return out
 
 
+DATE = re.compile(rb"\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?")   # generated_gate.py の DATE と同じ伏せ方（ずれたら K156-CI-062 が赤）
+
+
+def date_only(repo: str, base: str, head: str, changes: list[Change]) -> list[str]:
+    """生成物（generated.json の outputs）で状態が M のうち、比べる元と先頭の中身が日付を伏せると同じもの。
+    作り手が今日の日付を書き、取り込みの前に作り直すので、どのチケットでも日付だけ変わる（テスター Q 回 2・K-156）"""
+    outs = sorted(generated_outputs(repo))
+    found = []
+    for c in changes:
+        if c.status != "M" or not match(c.path, outs):
+            continue
+        a = git(repo, "show", f"{base}:{c.path}", check=False)
+        b = git(repo, "show", f"{head}:{c.path}", check=False)
+        if a.returncode == 0 and b.returncode == 0 and DATE.sub(b"D", a.stdout) == DATE.sub(b"D", b.stdout):
+            found.append(c.path)
+    return found
+
+
 def ticket_ids(repo: str, base: str, head: str) -> list[str]:
     text = git(repo, "log", "--format=%B", f"{base}..{head}").stdout.decode("utf-8", "replace")
     seen: list[str] = []
@@ -517,7 +535,7 @@ def _full_plan(p: dict) -> dict:
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
          list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list]) -> dict:
-    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
+    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
                "migration_files": [], "coverage_args": [], "db_range": False}
@@ -527,6 +545,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         p["spec_only"] = sorted(set(p["spec_only"]))
         p["reasons"] = ([f"全部：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
+                        + [f"日付だけ：{x}" for x in p["date_only"]]
                         + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
         return _full_plan(p) if full else p
 
@@ -541,7 +560,9 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         full.append(("base", str(e)))
         return done()
     p["changes"] = changes
-    if not changes:
+    p["date_only"] = date_only(repo, base, head, changes)
+    changes = [c for c in changes if c.path not in p["date_only"]]   # 日付だけの生成物は範囲に数えない
+    if not p["changes"]:
         full.append(("empty", "変えたファイルが無い"))
         return done()
 
