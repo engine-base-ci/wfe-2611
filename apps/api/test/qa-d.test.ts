@@ -20,6 +20,7 @@ import { assertApiStartup, startupChecks } from "../src/startup.js";
 import type { Hook } from "../src/contract/deps.js";
 import { makeHarness, type Harness } from "./harness.js";
 import { agreeCurrentTerms } from "./_pending.js";
+import { ticketHooks } from "../src/hooks/tickets.js";
 
 const DB_URL = process.env["DATABASE_URL"]!;
 const APP_URL = DB_URL.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
@@ -1444,6 +1445,9 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
   });
   const triggers = ["権限の変更", "パスワードの変更", "退会（人が抜ける）"] as const;
   let n = 0;
+  /** 権限の変更の行で、task の口が読むだけのときに代わりに使う「書ける人だけが通る」書き込みの口：チケットを作る（K-60・グループに書ける人だけ） */
+  const CREATE_TICKET = ENDPOINTS.find((e) => e.operationId === "createTicket")!;
+  let probeSeq = 0;
   for (const [task, rows] of Object.entries(MAP.g["G-14"] ?? {})) {
     if (retiredTask(task)) {
       describe.skip(`${task}（口が全部、決定 ${retiredTask(task)} で契約から外れた。作業の分解から作り直す）`, () =>
@@ -1451,85 +1455,159 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
       continue;
     }
     const trig = triggers[n++ % triggers.length]!;
-    it(`${ids(rows)} ${task}：${trig}の直後、別端末（画面）と Bridge のセッションが 0 秒で 401。sessions が revoked`, async () => {
-      const eps = taskEps(task);
-      expect(eps.length).toBeGreaterThan(0);
-      // 権限の揃った代表を 1 人作り（権限は先に付ける＝付けた時点の失効を避ける）、画面と Bridge の 2 端末でログイン
-      const m = (
+    // 権限の変更では画面のセッションだけを切り、PC（Bridge）のつながりは残す。PC からの新しい権限の外の操作は断られる（D-128.179）
+    const title =
+      trig === "権限の変更"
+        ? `${ids(rows)} ${task}：権限を下げた直後、画面のセッションは 0 秒で 401。Bridge のつながりは残り、新しい権限の外の書き込みは断られる（D-128.179）`
+        : `${ids(rows)} ${task}：${trig}の直後、別端末（画面）と Bridge のセッションが 0 秒で 401。sessions が revoked`;
+    it(
+      title,
+      async () => {
+        const eps = taskEps(task);
+        expect(eps.length).toBeGreaterThan(0);
+        // 権限の揃った代表を 1 人作り（権限は先に付ける＝付けた時点の失効を避ける）、画面と Bridge の 2 端末でログイン
+        const m = (
+          await admin.query(
+            "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', 'G-14') returning id",
+            [h.S.tenantA, h.S.scopeRootA],
+          )
+        ).rows[0].id as string;
         await admin.query(
-          "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', 'G-14') returning id",
-          [h.S.tenantA, h.S.scopeRootA],
-        )
-      ).rows[0].id as string;
-      await admin.query(
-        "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id) select $1, $2, key, 'edit' from target_kinds",
-        [h.S.tenantA, m],
-      );
-      const email = `g14-${task.toLowerCase()}-${Date.now()}@example.test`;
-      const pw = "correct-horse-battery-staple";
-      const su = await auth.api.signUpEmail({ body: { name: "G-14", email, password: pw } });
-      await admin.query("update members set auth_user_id = $1 where id = $2", [su.user.id, m]);
-      await agreeCurrentTerms(su.user.id); // 今の版に同意済みの人にする（K-53 の同意し直しで止まらないように）
-      const web = await signIn(auth, email, pw);
-      const bridge = await signIn(auth, email, pw, "Kaname-Bridge/0.1 (macOS)");
-      const kinds = (
-        await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [m])
-      ).rows
-        .map((r) => r.kind_id)
-        .sort();
-      expect(kinds).toEqual(["bridge", "web"]);
-      const live = createApp({
-        version: "qa-d",
-        repo: h.repo,
-        resolve: createSessionResolver(auth, livePool),
-        contract: { limits: Object.fromEntries(ENDPOINTS.map((e) => [e.operationId, BIG])) },
-      });
-      const hit = async (e: EndpointDef, token: string) => {
-        const o = await argsFor(e, "boss");
-        const path = e.path.replace(":id", o.id ?? "00000000-0000-4000-8000-000000000000");
-        const qs = o.query ? "?" + new URLSearchParams(o.query).toString() : "";
-        return live.request(`http://localhost${path}${qs}`, {
-          method: e.method,
-          headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-          ...(o.body ? { body: JSON.stringify(o.body) } : {}),
-        });
-      };
-      for (const e of eps) {
-        expect((await hit(e, web.token!)).status, `前：画面 ${e.operationId}`).not.toBe(401);
-        expect((await hit(e, bridge.token!)).status, `前：Bridge ${e.operationId}`).not.toBe(401);
-      }
-      if (trig === "権限の変更")
-        await admin.query(
-          "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id) values ($1, $2, 'goal', 'view')",
+          "insert into permissions (tenant_id, grantee_member_id, target_kind_id, ability_id) select $1, $2, key, 'edit' from target_kinds",
           [h.S.tenantA, m],
         );
-      else if (trig === "パスワードの変更")
-        await changePassword(
-          auth,
-          livePool,
-          new Headers({ authorization: `Bearer ${web.token}` }),
-          pw,
-          "another-long-passphrase-42",
-        );
-      else await admin.query("update members set deleted_at = now() where id = $1", [m]);
-      const after: string[] = [];
-      for (const e of eps)
-        for (const [label, tk] of [
-          ["画面", web.token!],
-          ["Bridge", bridge.token!],
-        ] as const) {
-          const r = await hit(e, tk);
-          const code = r.status === 401 ? ((await r.json()) as { code: string }).code : "";
-          if (r.status !== 401 || code !== "UNAUTHENTICATED") after.push(`${label} ${e.operationId}=${r.status}`);
+        const email = `g14-${task.toLowerCase()}-${Date.now()}@example.test`;
+        const pw = "correct-horse-battery-staple";
+        const su = await auth.api.signUpEmail({ body: { name: "G-14", email, password: pw } });
+        await admin.query("update members set auth_user_id = $1 where id = $2", [su.user.id, m]);
+        await agreeCurrentTerms(su.user.id); // 今の版に同意済みの人にする（K-53 の同意し直しで止まらないように）
+        const web = await signIn(auth, email, pw);
+        const bridge = await signIn(auth, email, pw, "Kaname-Bridge/0.1 (macOS)");
+        const kinds = (
+          await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [m])
+        ).rows
+          .map((r) => r.kind_id)
+          .sort();
+        expect(kinds).toEqual(["bridge", "web"]);
+        const live = createApp({
+          version: "qa-d",
+          repo: h.repo,
+          resolve: createSessionResolver(auth, livePool),
+          contract: {
+            limits: Object.fromEntries(ENDPOINTS.map((e) => [e.operationId, BIG])),
+            hooks: ticketHooks(livePool), // 権限の変更の行の書き込みの口（チケットを作る）
+          },
+        });
+        const kind = (
+          await admin.query<{ id: string }>(
+            "select id from ticket_kinds where tenant_id = $1 and name = 'タスク' and deleted_at is null",
+            [h.S.tenantA],
+          )
+        ).rows[0]?.id;
+        /** チケットを作る体。毎回新しい題名（前に作った行と重ならない） */
+        const ticketBody = () => ({
+          scope_id: h.S.scopeRootA,
+          kind_id: kind,
+          title: `G-14 ${task} ${++probeSeq}`,
+          assignee_member_id: m,
+          due_on: new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10),
+          sections: { purpose: "権限の確かめ", done: "作れる", todo: "- 作る" },
+        });
+        const hit = async (e: EndpointDef, token: string) => {
+          if (e.operationId === "createTicket")
+            return live.request("http://localhost/api/v1/tickets", {
+              method: "POST",
+              headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+              body: JSON.stringify(ticketBody()),
+            });
+          const o = await argsFor(e, "boss");
+          const path = e.path.replace(":id", o.id ?? "00000000-0000-4000-8000-000000000000");
+          const qs = o.query ? "?" + new URLSearchParams(o.query).toString() : "";
+          return live.request(`http://localhost${path}${qs}`, {
+            method: e.method,
+            headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+            ...(o.body ? { body: JSON.stringify(o.body) } : {}),
+          });
+        };
+        const bridgeBefore = new Map<string, number>();
+        for (const e of eps) {
+          expect((await hit(e, web.token!)).status, `前：画面 ${e.operationId}`).not.toBe(401);
+          const b = (await hit(e, bridge.token!)).status;
+          expect(b, `前：Bridge ${e.operationId}`).not.toBe(401);
+          bridgeBefore.set(e.operationId, b);
         }
-      expect(after, "失効の後に 401 UNAUTHENTICATED にならなかった口").toEqual([]);
-      if (trig !== "退会（人が抜ける）") {
-        const alive = await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [
-          m,
-        ]);
-        expect(alive.rowCount, "sessions が全部 revoked").toBe(0);
-      }
-    }, 60_000);
+        if (trig === "権限の変更") {
+          // 下げる前に Bridge で通った（2xx）書き込みの口。これが 1 本も無ければ、下げた後に断られることを見られない
+          let writes = eps.filter((e) => {
+            const b = bridgeBefore.get(e.operationId) ?? 0;
+            return e.method !== "GET" && b >= 200 && b < 300;
+          });
+          // task の口が読むだけ（GET だけ）なら、書ける人だけが通る作る口を代わりに 1 本選び、下げる前に Bridge で通ることを確かめる
+          // task の口が読むだけ（GET だけ）なら、書ける人だけが通る作る口（チケットを作る）を代わりに使い、下げる前に Bridge で通ることを確かめる
+          if (!writes.length) {
+            const b = (await hit(CREATE_TICKET, bridge.token!)).status;
+            bridgeBefore.set(CREATE_TICKET.operationId, b);
+            if (b >= 200 && b < 300) writes = [CREATE_TICKET];
+          }
+          expect(
+            writes.map((e) => e.operationId),
+            `${task}：下げる前に Bridge で通った書き込みの口が要る（前の状態：${JSON.stringify(Object.fromEntries(bridgeBefore))}）`,
+          ).not.toEqual([]);
+          // 権限を下げる（書けるものを全部、見るだけに）
+          await admin.query("update permissions set ability_id = 'view' where grantee_member_id = $1", [m]);
+          const after: string[] = [];
+          for (const e of eps) {
+            const w = await hit(e, web.token!);
+            const code = w.status === 401 ? ((await w.json()) as { code: string }).code : "";
+            if (w.status !== 401 || code !== "UNAUTHENTICATED") after.push(`画面 ${e.operationId}=${w.status}`);
+            if (e.method === "GET") {
+              const b = (await hit(e, bridge.token!)).status;
+              if (b === 401) after.push(`Bridge ${e.operationId}=401（つながりが切れた）`);
+            }
+          }
+          // 前に通った書き込みを、新しい体（hit が毎回作り直す：作る口は新しい体、直す口は新しく作った行）で送ると 403 FORBIDDEN
+          //   （409・404・422 で「通らなかった」と数えない。権限の外は入力の確かめより前に 403 で止まる）
+          for (const e of writes) {
+            const r = await hit(e, bridge.token!);
+            const code = r.status === 403 ? ((await r.json()) as { code: string }).code : "";
+            if (r.status !== 403 || code !== "FORBIDDEN")
+              after.push(`Bridge ${e.operationId}=${r.status} ${code}（403 FORBIDDEN でない）`);
+          }
+          expect(after, "権限を下げた後の画面と Bridge").toEqual([]);
+          const live = (
+            await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [m])
+          ).rows.map((r) => r.kind_id);
+          expect(live, "画面のセッションだけが切れ、Bridge のつながりは残る").toEqual(["bridge"]);
+          return;
+        } else if (trig === "パスワードの変更")
+          await changePassword(
+            auth,
+            livePool,
+            new Headers({ authorization: `Bearer ${web.token}` }),
+            pw,
+            "another-long-passphrase-42",
+          );
+        else await admin.query("update members set deleted_at = now() where id = $1", [m]);
+        const after: string[] = [];
+        for (const e of eps)
+          for (const [label, tk] of [
+            ["画面", web.token!],
+            ["Bridge", bridge.token!],
+          ] as const) {
+            const r = await hit(e, tk);
+            const code = r.status === 401 ? ((await r.json()) as { code: string }).code : "";
+            if (r.status !== 401 || code !== "UNAUTHENTICATED") after.push(`${label} ${e.operationId}=${r.status}`);
+          }
+        expect(after, "失効の後に 401 UNAUTHENTICATED にならなかった口").toEqual([]);
+        if (trig !== "退会（人が抜ける）") {
+          const alive = await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [
+            m,
+          ]);
+          expect(alive.rowCount, "sessions が全部 revoked").toBe(0);
+        }
+      },
+      60_000,
+    );
   }
 });
 

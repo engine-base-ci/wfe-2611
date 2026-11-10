@@ -20,6 +20,8 @@ import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
 import { withDevice } from "../src/middleware/tenant.js";
 import { bridgeHooks } from "../src/hooks/bridge.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 /** 生きている知らせ（契約の口 POST /api/v1/bridge/heartbeat・K-57） */
 const heartbeat = (body: unknown, h: Record<string, string>) =>
   app.request("http://localhost/api/v1/bridge/heartbeat", {
@@ -37,12 +39,17 @@ const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 const X = "/api/auth-ext";
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -73,7 +80,9 @@ beforeAll(async () => {
     auth,
     // 生きている知らせは契約の口（K-57）。PC の印で解き、振る舞いは connect-pc の hooks
     resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
-    contract: { hooks: bridgeHooks({ appPool, release: { dir: "", base: "" }, objects }) },
+    contract: {
+      hooks: { ...delegateHooks(appPool), ...bridgeHooks({ appPool, release: { dir: "", base: "" }, objects }) },
+    },
     authExt: authExt({
       auth,
       appPool,
@@ -121,7 +130,7 @@ describe("禁止の宛先を Bridge に渡す・止めた記録（D-107）", () 
       const { H, B, member } = await ready();
       const s = await json<{ job_id: string }>(post("/agent/say", { text: "銀行の入出金" }, H));
       const job = await json<{ job_id: string; blocked: { domain: string; service: string; verdict: string }[] }>(
-        post("/bridge/take", { protocol: 4 }, B),
+        post("/bridge/take", { protocol: 5 }, B),
       );
       expect(job.job_id).toBe(s.job_id);
       const mine = job.blocked.filter((x) => x.domain.endsWith(d));
@@ -174,9 +183,9 @@ describe("古い Bridge には仕事を渡さない（E-CONN-012）", () => {
     );
     expect(st.health).toEqual(expect.arrayContaining([expect.objectContaining({ ok: false, fix: "update" })]));
     // 新しい版なら同じ仕事が渡り、「古い」は消える
-    const job = await json<{ job_id: string }>(post("/bridge/take", { protocol: 4 }, B));
+    const job = await json<{ job_id: string }>(post("/bridge/take", { protocol: 5 }, B));
     expect(job.job_id).toBe(s.job_id);
-    await heartbeat({ health: [{ name: "Claude Code", ok: true }], protocol: 4 }, B);
+    await heartbeat({ health: [{ name: "Claude Code", ok: true }], protocol: 5 }, B);
     const st2 = await json<{ health: { fix?: string }[] }>(req("GET", "/bridge/state", undefined, H));
     expect(st2.health.some((h) => h.fix === "update")).toBe(false);
   });
@@ -188,7 +197,7 @@ describe("Bridge からの知らせ（D-119.4）", () => {
     const s = await json<{ job_id: string; conversation_id: string }>(
       post("/agent/say", { text: "example.com を開いて" }, H),
     );
-    await json(post("/bridge/take", { protocol: 4 }, B));
+    await json(post("/bridge/take", { protocol: 5 }, B));
     const text =
       "AI が Chrome を使えませんでした。Chrome を開き、拡張機能「Claude in Chrome」が入っていてこの Claude と同じアカウントでログインしているか確かめてください。ブラウザを使わない作業はそのまま続けます";
     expect((await post("/bridge/progress", { job_id: s.job_id, seq: 1, kind: "notice", text }, B)).status).toBe(200);
@@ -214,20 +223,20 @@ describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
   it("CHT-37-009 既定は自分の Chrome。PC の画面で選んだ値が次の仕事に渡り、Bridge の窓でも同じ値を変えられ、心拍の返事で窓に写る。会話の無い仕事には渡らない", async () => {
     const { H, B } = await ready();
     const s1 = await json<{ job_id: string }>(post("/agent/say", { text: "開いて" }, H));
-    const j1 = await json<{ job_id: string; browser: string }>(post("/bridge/take", { protocol: 4 }, B));
+    const j1 = await json<{ job_id: string; browser: string }>(post("/bridge/take", { protocol: 5 }, B));
     expect(j1).toMatchObject({ job_id: s1.job_id, browser: "chrome" });
     await post("/bridge/finish", { job_id: s1.job_id, state: "done", result: "はい" }, B);
     expect(await json(post("/agent/browser", { browser: "off" }, H))).toEqual({ browser: "off" });
     expect((await post("/agent/browser", { browser: "firefox" }, H)).status).toBe(422);
     const st = await json<{ browser: string }>(req("GET", "/bridge/state", undefined, H));
     expect(st.browser).toBe("off");
-    expect(await json(heartbeat({ health: [], protocol: 4 }, B))).toEqual({
+    expect(await json(heartbeat({ health: [], protocol: 5 }, B))).toEqual({
       ok: true,
       browser: "off",
       outdated: false,
     });
     const s2 = await json<{ job_id: string }>(post("/agent/say", { text: "もう一度" }, H));
-    expect(await json(post("/bridge/take", { protocol: 4 }, B))).toMatchObject({ job_id: s2.job_id, browser: "off" });
+    expect(await json(post("/bridge/take", { protocol: 5 }, B))).toMatchObject({ job_id: s2.job_id, browser: "off" });
     await post("/bridge/finish", { job_id: s2.job_id, state: "done", result: "はい" }, B);
     // Bridge の窓から変える
     expect(await json(post("/bridge/browser", { browser: "dedicated" }, B))).toEqual({ browser: "dedicated" });
@@ -236,13 +245,13 @@ describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
   });
   it("CHT-37-011 もう一度確かめるは会話に属さない Chrome の仕事になり、押し重ねても 1 件。PC が閉じていれば断る", async () => {
     const { H, B, member } = await ready();
-    await heartbeat({ health: [], protocol: 4 }, B);
+    await heartbeat({ health: [], protocol: 5 }, B);
     const a = await post("/agent/browser-check", {}, H);
     expect(a.status).toBe(201);
     const { job_id } = ((await a.json()) as { data: { job_id: string } }).data;
     expect(await json(post("/agent/browser-check", {}, H))).toEqual({ job_id });
     const job = await json<{ job_id: string; browser: string; conversation_id: string | null; prompt: string }>(
-      post("/bridge/take", { protocol: 4 }, B),
+      post("/bridge/take", { protocol: 5 }, B),
     );
     expect(job).toMatchObject({ job_id, browser: "chrome", conversation_id: null });
     expect(job.prompt).toContain("tabs_context_mcp");

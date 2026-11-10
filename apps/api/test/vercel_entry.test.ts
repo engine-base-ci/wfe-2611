@@ -56,7 +56,7 @@ describe("本物の組み立てを Node の HTTP で", () => {
     await migrateAuth(ADMIN);
   }, 60_000);
   afterAll(async () => close?.());
-  it("/health は 200、死んだ Bridge の鍵は 410", async () => {
+  it("/health は 200、死んだ Bridge の鍵は 401（契約の口・K-62）", async () => {
     const config = loadConfig({
       NODE_ENV: "test",
       DATABASE_URL: ADMIN.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@"),
@@ -79,11 +79,12 @@ describe("本物の組み立てを Node の HTTP で", () => {
     };
     const base = `http://127.0.0.1:${(srv.address() as AddressInfo).port}`;
     expect((await fetch(`${base}/health`)).status).toBe(200);
-    const t = await fetch(`${base}/api/auth-ext/bridge/take`, {
+    // 仕事を取る口は契約の口（K-62）。死んだ PC の印は 401（K-57 と同じ。Bridge は鍵を捨てる）
+    const t = await fetch(`${base}/api/v1/bridge/jobs/take`, {
       method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": "00000000-0000-4000-8000-000000000000" },
-      body: JSON.stringify({ wait_sec: 20 }),
+      headers: { "content-type": "application/json", "x-bridge-session": `kpc_${"Z".repeat(43)}` },
+      body: JSON.stringify({ wait_sec: 20, protocol: 5, idle: false }),
     });
-    expect(t.status).toBe(410);
+    expect(t.status).toBe(401);
   }, 60_000);
 });
