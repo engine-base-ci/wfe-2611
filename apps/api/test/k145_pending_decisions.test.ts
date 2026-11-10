@@ -61,6 +61,30 @@ describe("K-145 D-135.4：形違いの id を黙って捨てる所も 422（D-12
     expect((await post("/agent/say", { text: "x", quote: { text: "引用", message_id: null } }, r.H)).status).toBe(201);
   }, 120_000);
 
+  it("K145-API-002（続き 2）attachment_ids が並びでない（文字・物）・quote が物でない（文字）ときも黙って捨てずに 422・その欄。仕事は増えない（テスター回 2 #11）", async () => {
+    const r = await ready();
+    const job = await newJob(r, "running");
+    const jobs = await jobsOf(r.member);
+    const good = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+    for (const [path, extra] of [
+      ["/agent/say", { text: "x" }],
+      ["/agent/steer", { job_id: job.job_id, text: "直して" }],
+    ] as const) {
+      for (const v of [good, { id: good }])
+        await expectBadId(
+          await post(path, { ...extra, attachment_ids: v }, r.H),
+          "attachment_ids",
+          `${path} attachment_ids=${JSON.stringify(v)}`,
+        );
+      const q = await post(path, { ...extra, quote: "引用の文" }, r.H);
+      expect(q.status, `${path} quote が文字`).toBe(422);
+      const j = (await q.json()) as { field?: string; details?: { field: string; message: string }[] };
+      expect(j.field).toBe("quote");
+      expect(j.details?.[0]).toEqual({ field: "quote", message: "object" });
+    }
+    expect(await jobsOf(r.member)).toBe(jobs);
+  }, 60_000);
+
   it("K145-API-003（続き）/agent/artifacts の ?conversation_id が形違いなら 422・field conversation_id。空は指定なし（200・[]）", async () => {
     const r = await ready();
     for (const bad of BAD_IDS.filter((v) => v !== ""))

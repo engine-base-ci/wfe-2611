@@ -384,9 +384,14 @@ describe("K-145 送る量の守り（D-130.1・G-16）を前の道すじと node
         ["(a) content-length を 100 と偽った", "100", TOTAL, "limit"],
         ["(b) content-length の頭が無い", null, TOTAL, "limit"],
         ["(c) content-length の頭だけが 1,048,577", String(BODY_MAX + 1), 2, "none"],
+        // 守りの外は道で決める：資料の口でない口に multipart の頭を付けても守りは外れない（テスター回 2 #6）
+        ["(d) multipart の頭を付けた頭の無い 5MB の流れ", null, TOTAL, "limit"],
       ] as const) {
         const b = countingBody(total);
-        const h: Record<string, string> = { "content-type": "application/json", ...headers };
+        const h: Record<string, string> = {
+          "content-type": label.startsWith("(d)") ? "multipart/form-data; boundary=k145" : "application/json",
+          ...headers,
+        };
         if (length !== null) h["content-length"] = length;
         const res = await app.request(
           new Request(`http://localhost${X}${path}`, {

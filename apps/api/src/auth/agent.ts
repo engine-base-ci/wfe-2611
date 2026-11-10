@@ -37,12 +37,14 @@ const line = (v: unknown): string =>
 /** 画面の選択肢の道具名（AI に渡す選択の名前・人が書く欄ではない・D-135.2）だけは長さを抑える */
 const toolName = (v: unknown): string => line(v).slice(0, 60);
 
-/** 仕事に持たせる選択のうち、形の違う id の欄（黙って捨てずに 422・D-135.4）。無ければ null */
+/** 仕事に持たせる選択のうち、形の違う id の欄（黙って捨てずに 422・D-135.4）。無ければ null。
+ *  資料の id は並びでない値も、引用は物でない値（文字など）も形違い（黙って捨てると資料・引用が付かないまま 201 になる） */
 export function jobOptionsIssue(b: Record<string, unknown>): string | null {
-  if (b["attachment_ids"] !== undefined && b["attachment_ids"] !== null && idList(b["attachment_ids"]) === false)
-    return "attachment_ids";
-  const q = b["quote"] as { message_id?: unknown } | undefined | null;
-  if (q && typeof q === "object" && idOrNull(q.message_id) === false) return "quote.message_id";
+  if (idList(b["attachment_ids"]) === false) return "attachment_ids";
+  const q = b["quote"];
+  if (q === undefined || q === null) return null;
+  if (typeof q !== "object" || Array.isArray(q)) return "quote";
+  if (idOrNull((q as { message_id?: unknown }).message_id) === false) return "quote.message_id";
   return null;
 }
 
@@ -167,7 +169,7 @@ export function agentRoutes(d: AgentDeps): Hono {
     const job = idOrNull(b.job_id);
     if (job === false) return badId(c, "job_id");
     const issue = jobOptionsIssue(b);
-    if (issue) return badId(c, issue);
+    if (issue) return badId(c, issue, issue === "quote" ? "object" : "uuid");
     if (!job || !text) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と言うことが要ります");
     // 送ったときに選んでいたモード・モデル（区切りに間に合わず次の仕事になったときに使う・D-112）
     const r = await q1<{ ok: boolean }>("select app.agent_steer($1, $2, $3, $4::jsonb) as ok", [

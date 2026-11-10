@@ -118,7 +118,9 @@ export function authExt(d: AuthExtDeps): Hono {
     if (!["POST", "PUT", "PATCH", "DELETE"].includes(c.req.method)) return next();
     const path = c.req.path.replace(/^\/api\/auth-ext(?=\/|$)/, "") || "/";
     const type = c.req.header("content-type") ?? "";
-    if (/^multipart\/form-data/i.test(type) || path === "/bridge/artifact") return next();
+    // 外すのは道で決める（頭だけで外すと、ログインしていない口にも multipart の頭を付けて守りを抜けられる・K-145 テスター回 2）
+    if ((path === "/agent/attachments" && /^multipart\/form-data/i.test(type)) || path === "/bridge/artifact")
+      return next();
     const text = await readBodyLimited(c);
     if (text === null)
       // 成果物の本文を受ける口（書き出す・直して保存）は、今までどおり成果物の上限の答え（E-ART-001「1 MB まで」・画面が出す文）で断る
@@ -340,7 +342,7 @@ export function authExt(d: AuthExtDeps): Hono {
     const branchFrom = idOrNull(b.branch_from);
     if (branchFrom === false) return badId(c, "branch_from");
     const issue = jobOptionsIssue(b);
-    if (issue) return badId(c, issue);
+    if (issue) return badId(c, issue, issue === "quote" ? "object" : "uuid");
     const text = (b.text ?? "").trim();
     if (!text) return bad(c, 422, "VALIDATION_FAILED", "言うことが空です", { field: "text" });
     // どこで話しかけられたか（D-103）：会話は同じ 1 本で、自分のAI に渡す指示にだけ前置きする。会話に出す言葉は本人が書いたまま

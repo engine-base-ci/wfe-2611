@@ -34,6 +34,7 @@ const LABEL: Record<string, string> = {
   message_id: "文の id",
   "quote.message_id": "引用元の文の id",
   attachment_ids: "資料の id",
+  quote: "引用",
   attachment_id: "資料の id",
   credential_id: "資格情報の id",
   service_id: "サービスの id",
@@ -42,14 +43,18 @@ const LABEL: Record<string, string> = {
 };
 
 /** 形の違う id の答え（前の道すじの 422 の形＝error・code・message・field に、契約の口と同じ details を足す） */
-export function badId(c: { json: (b: unknown, s: number) => Response }, field: string): Response {
+export function badId(
+  c: { json: (b: unknown, s: number) => Response },
+  field: string,
+  reason: "uuid" | "object" = "uuid",
+): Response {
   return c.json(
     {
       error: "validation_failed",
       code: "VALIDATION_FAILED",
       message: `${LABEL[field] ?? field}の形が違います`,
       field,
-      details: [{ field, message: "uuid" }],
+      details: [{ field, message: reason }],
     },
     422,
   );
@@ -59,9 +64,10 @@ export function badId(c: { json: (b: unknown, s: number) => Response }, field: s
 export const isBridgeKeyShape = (v: string | null | undefined): boolean =>
   typeof v === "string" && (/^kpc_[A-Za-z0-9_-]{43}$/.test(v) || isUuid(v));
 
-/** 仕事に付ける資料の id の並び：並びでなければ空、どれか 1 つでも形が違えば false（黙って捨てない・D-135.4） */
+/** 仕事に付ける資料の id の並び：送らない・null は空、並びでない・どれか 1 つでも形が違えば false（黙って捨てない・D-135.4） */
 export function idList(v: unknown): string[] | false {
-  if (!Array.isArray(v)) return [];
+  if (v === undefined || v === null) return [];
+  if (!Array.isArray(v)) return false;
   const out: string[] = [];
   for (const x of v) {
     const id = idOf(x);
