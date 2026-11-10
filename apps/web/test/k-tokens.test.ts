@@ -84,7 +84,7 @@ describe("部品に生の値が無い（K-24・design_gate の D1〜D4 と同じ
 });
 
 describe("見た目の切り替え（D-128.55）", () => {
-  it("K147-WEB-001 知らない値・無い値は明るい（D-129.45・OS に引っ張られない）。選んだ値はそのまま", () => {
+  it("知らない値・無い値は明るい（D-129.45・OS に引っ張られない）。選んだ値はそのまま", () => {
     expect(parseTheme(undefined)).toBe("light");
     expect(parseTheme("")).toBe("light");
     expect(parseTheme("blue")).toBe("light");
