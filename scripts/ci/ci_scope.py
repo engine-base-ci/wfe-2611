@@ -15,6 +15,8 @@
   全部に倒す理由：requested・base・empty・ci・lockfile・shared・unmapped・badpath・tool・ticket・no-declaration・integration・mismatch
   static と spec だけ（K-156）：決まりの spec（spec.paths・spec.generated のときは generated.json の生成物と作り手）の物は、全部に倒さず組も足さない。
     読む試験・src があれば no_test_path_reads（CS-044）が赤にする（data_links に書く）
+  画面の組とチケットの一覧（K-156・D-133.5）：jobs.web.ticket_rows のファイル（11_tickets/tickets.json）が変わったら、比べる元と先頭を
+    id で比べ、変わった・足した・消した行のチケットが画面を持つ（screens・apps/web の tests）ときだけ web の組。読めないなら流す
   migration の lint（K-156）：scope=full でも比べる元が有効なら migration_files を出す。名前を変えた migration（git の R）も足した物に数える
   DB の範囲（migration・SQL・行の守り・権限）：全部にはせず、database の組＋変えた migration の lint＋DB を使う試験を全部
   依存の地図：パッケージは pnpm のワークスペース（package.json の workspace:）、試験の import は vitest の Node の口（vitest_related.mjs）
@@ -243,6 +245,9 @@ def load_rules(path: str) -> dict:
     for job, j in r["jobs"].items():
         if not (isinstance(j, dict) and isinstance(j.get("packages"), list) and isinstance(j.get("paths"), list)):
             raise ValueError(f"{path}: jobs.{job} は packages・paths")
+        tr = j.get("ticket_rows")
+        if tr is not None and not (isinstance(tr, dict) and isinstance(tr.get("file"), str) and isinstance(tr.get("list"), str)):
+            raise ValueError(f"{path}: jobs.{job}.ticket_rows は {{\"file\": パス, \"list\": 一覧の鍵}}（K-156）")
     for link in r["data_links"]:
         if not isinstance(link.get("paths"), list) or not (link.get("tests") or link.get("readers")):
             raise ValueError(f"{path}: data_links の 1 つに paths と tests か readers が要る: {link}")
@@ -416,6 +421,32 @@ def _full_scope_migrations(p: dict, repo: str, base: str, head: str, rules: dict
                 p["wide_reasons"].append(("db", x))
 
 
+def _rows_at(repo: str, rev: str, cfg: dict):
+    """その版のチケットの一覧の {id: 行}。ファイルが無ければ {}・JSON でない・形が違うなら None"""
+    r = git(repo, "show", f"{rev}:{cfg['file']}", check=False)
+    if r.returncode != 0:
+        return {}
+    try:
+        rows = json.loads(r.stdout.decode("utf-8"))[cfg["list"]]
+        return {str(x["id"]): x for x in rows}
+    except (ValueError, KeyError, TypeError):
+        return None
+
+
+def _has_screen(row: dict) -> bool:
+    tests = row.get("tests") or []
+    return bool(row.get("screens")) or any(str(x).startswith("apps/web/") for x in (tests if isinstance(tests, list) else [tests]))
+
+
+def web_ticket_rows(repo: str, base: str, head: str, cfg: dict) -> list[str]:
+    """チケットの一覧で、変わった・足した・消した行のうち画面を持つチケットの番号（読めないなら ["?"]・D-133.5）"""
+    old, new = _rows_at(repo, base, cfg), _rows_at(repo, head, cfg)
+    if old is None or new is None:
+        return ["?"]
+    changed = {k for k in set(old) | set(new) if old.get(k) != new.get(k)}
+    return sorted(k for k in changed if _has_screen(new.get(k) or {}) or _has_screen(old.get(k) or {}))
+
+
 def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list[str], list[str], list[str]]:
     """このチケットで depends_on がそろう kind: QA のチケット → (番号, 試験のファイル, tests が無い番号)"""
     ids, files, empty = [], [], []
@@ -485,7 +516,7 @@ def _full_plan(p: dict) -> dict:
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
          list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list]) -> dict:
-    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "base": base if isinstance(base, str) else "",
+    p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
                "migration_files": [], "coverage_args": []}
@@ -494,7 +525,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     def done() -> dict:
         p["spec_only"] = sorted(set(p["spec_only"]))
         p["reasons"] = ([f"全部：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
-                        + [f"static と spec だけ：{x}" for x in p["spec_only"]])
+                        + [f"static と spec だけ：{x}" for x in p["spec_only"]]
+                        + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
         return _full_plan(p) if full else p
 
     if scope not in ("auto", "full") or scope == "full":
@@ -629,9 +661,13 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p["coverage_args"] = [f"--coverage.include={s}" for s in sorted(src_live)] or ["--coverage.enabled=false"]
 
     jd, jw = rules["jobs"].get("database", {}), rules["jobs"].get("web", {})
+    tr = jw.get("ticket_rows")
+    if tr and tr["file"] in any_path:
+        p["web_ticket_rows"] = web_ticket_rows(repo, base, head, tr)
     p["jobs"] = {"unit": bool(files),
                  "database": db_range or bool(aff & set(jd.get("packages", []))) or any(match(x, jd.get("paths", [])) for x in any_path),
                  "web": bool(aff & set(jw.get("packages", []))) or any(match(x, jw.get("paths", [])) for x in any_path)
+                 or bool(p["web_ticket_rows"])
                  or any(f.startswith(WEB_E2E_PREFIX) for f in itests)}
     if not p["jobs"]["unit"]:
         p["unit_shards"] = 0

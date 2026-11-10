@@ -410,13 +410,16 @@
     "05_flow/flow.json",
     "04_design/**",
     "07_qa/test-specs/errors.json",
-    "11_tickets/tickets.json",
     "apps/api/src/**",
     "packages/auth/src/**",
     "packages/db/src/**",
     "packages/db/migrations/**",
     "packages/db/policies/**"
-   ]
+   ],
+   "ticket_rows": {
+    "file": "11_tickets/tickets.json",
+    "list": "tickets"
+   }
   }
  }
 }
