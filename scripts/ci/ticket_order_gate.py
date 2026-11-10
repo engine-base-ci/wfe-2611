@@ -13,7 +13,9 @@
 
 どの依存で裁くか（K-159・後から足した依存で過去のコミットを赤にしない）：
   ・コミットごと：各実装のコミットを、そのコミットの版の 11_tickets/tickets.json の depends_on で裁く。その版の一覧が無い・
-    読めない・そのチケットが載っていないときは、rev（枝の先頭）の版の depends_on で裁く（前と同じ・緩めない）
+    読めない・そのチケットが載っていないときは、rev（枝の先頭）の版の depends_on で裁く（前と同じ・緩めない）。
+    あわせて、rev の版の depends_on のうち START の版か枝の中のそれより前の版に一度でも載っていたものも足す
+    （外して先に実装し後で戻す道を通さない・テスター Q 回 1 の #2・PM の判断 (ア)）
   ・枝の先頭：実装のコミットを持つチケットの、rev の版の depends_on が全部 START..rev の実装にあること（原則 11）。
     同じ（チケット, 依存）をコミットごとで既に出していれば重ねない
   ・rev の一覧・stage・生成物の一覧（scripts/ci/generated.json）は作業場所でなく rev の版から読む。rev の一覧が読めなければ止める
@@ -128,16 +130,41 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
         files = [f for f in git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", sha, cwd=root).splitlines() if f]
         if not _not_impl(files, gen):
             impl.append((sha, set(TICKET.findall(subj))))
-    raw_at = read_versions(root, [f"{sha}:{TICKETS_JSON}" for sha, _ in impl])
+    start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
+    order = [start_sha] + [sha for sha, _ in rows]
+    raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order])
     parsed: dict[bytes, dict[str, dict] | None] = {}
 
-    def deps_at(sha: str, tid: str) -> list[str]:
-        raw = raw_at.get(f"{sha}:{TICKETS_JSON}")
-        if raw is not None and raw not in parsed:
+    def version(c: str) -> dict[str, dict] | None:
+        raw = raw_at.get(f"{c}:{TICKETS_JSON}")
+        if raw is None:
+            return None
+        if raw not in parsed:
             parsed[raw] = _tickets_of(raw)
-        then = parsed.get(raw) if raw is not None else None
+        return parsed[raw]
+
+    # 外して戻した依存を通さない（テスター Q 回 1 の #2・PM の判断 (ア)）：START の版と、枝の中のそれより前の版に一度でも
+    # 載っていた依存を、実装のコミットごとに覚える（git log の順。並んだ枝の版も数えるので、緩む側には倒れない）
+    impl_ids = dict(impl)
+    seen: dict[str, set[str]] = {}
+    seen_before: dict[str, dict[str, frozenset[str]]] = {}
+    last_raw: bytes | None = None
+    for c in order:
+        if c in impl_ids:
+            seen_before[c] = {tid: frozenset(seen.get(tid, ())) for tid in impl_ids[c]}
+        raw = raw_at.get(f"{c}:{TICKETS_JSON}")
+        if raw is None or raw == last_raw:
+            continue
+        last_raw = raw
+        for tid, tk in (version(c) or {}).items():
+            seen.setdefault(tid, set()).update(tk.get("depends_on") or [])
+
+    def deps_at(sha: str, tid: str) -> list[str]:
+        then = version(sha)
         src = then if then is not None and tid in then else tickets
-        return list(src.get(tid, {}).get("depends_on") or [])
+        own = list(src.get(tid, {}).get("depends_on") or [])
+        back = [d for d in tickets.get(tid, {}).get("depends_on") or [] if d in seen_before.get(sha, {}).get(tid, ()) and d not in own]
+        return own + back
 
     def legacy_ok(dep: str) -> bool:
         return dep not in mentioned and tickets.get(dep, {}).get("stage") in DONE_STAGES
