@@ -621,6 +621,96 @@ class EntryPointTest(unittest.TestCase):
         self.assertEqual(len(ci_wiring_gate.check_elsewhere(layer, jobs, {}, {})), 1)
 
 
+class TesterFindingsTest(unittest.TestCase):
+    """テスター Q 回 1 の差し戻し（追加-1〜3）。どれも類で受ける（K-156）"""
+
+    def fetch(self, calls: list[list[str]], times: dict | None = None):
+        def f(names: list[str]) -> dict:
+            calls.append(sorted(names))
+            return {n: (times or {}).get(n, {}) for n in names}
+        return f
+
+    def test_K156_CI_048_stale_record_without_new_names(self) -> None:
+        # 類：書き直す・赤にする条件は「記録が lockfile と合わない」で決める（途中の値＝聞いた名前の有無で決めない）
+        rec = record(LOCK + "# 注釈\n", {"a@1.0.0": "2025-12-01T00:00:00Z", "@s/b@2.0.0": "2025-10-01T00:00:00Z", "gone@1.0.0": "2025-01-01T00:00:00Z"})
+        calls: list[list[str]] = []
+        fails, out, asked = stack_gate.lock_age(LOCK, "x: 1\n", rec, self.fetch(calls), NOW, in_ci=True)
+        self.assertEqual(calls, [])
+        self.assertEqual(asked, [])
+        self.assertIsNot(out, rec)
+        self.assertEqual(out["lockfile_sha256"], stack_gate.lock_sha(LOCK))
+        self.assertNotIn("gone@1.0.0", out["dates"])     # 部品を消した行は落ちる
+        self.assertTrue([f for f in fails if f.startswith("S7")], fails)
+        fails_local, _, _ = stack_gate.lock_age(LOCK, "x: 1\n", rec, self.fetch([]), NOW, in_ci=False)
+        self.assertFalse([f for f in fails_local if f.startswith("S7")])
+        # 入口：手元では書き直し、CI では書かずに S7
+        from unittest import mock
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        try:
+            real = open(stack_gate.ROOT + "/pnpm-lock.yaml", encoding="utf-8").read()
+            dates = {f"{n}@{v}": "2025-01-01T00:00:00Z" for n, v in stack_gate.lock_packages(real)}
+            stale = {"_doc": "試し", "lockfile_sha256": "0" * 64, "asked_on": "2026-01-01", "dates": dates}
+            path = d / "lock_dates.json"
+            path.write_text(json.dumps(stale), encoding="utf-8")
+            ep = EntryPointTest()
+            with mock.patch.object(stack_gate, "LOCK_DATES", str(path)), mock.patch.object(stack_gate, "registry_times", self.fetch([])):
+                rc, out_ci = ep.run_main(stack_gate.main, ["stack_gate.py"], {"CI": "true"})
+                self.assertEqual(rc, 1, out_ci)
+                self.assertIn("S7", out_ci)
+                self.assertNotIn("から答えた", out_ci)
+                self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["lockfile_sha256"], "0" * 64)
+                rc, out_local = ep.run_main(stack_gate.main, ["stack_gate.py"], {"CI": None})
+                self.assertEqual(rc, 0, out_local)
+                self.assertIn("を直した（0 件を registry に聞いた）", out_local)
+                self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["lockfile_sha256"], stack_gate.lock_sha(real))
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_K156_CI_049_changed_rows_are_rechecked_against_registry(self) -> None:
+        # 類：守りの検査が書き換えられる記録だけで判定しない。比べる元から足した・変えた行は registry で独立に確かめる（S8）
+        base = record(LOCK, {"a@1.0.0": "2025-12-01T00:00:00Z", "@s/b@2.0.0": "2026-01-30T00:00:00Z"})
+        tampered = record(LOCK, {"a@1.0.0": "2025-12-01T00:00:00Z", "@s/b@2.0.0": "2020-01-01T00:00:00Z"})
+        reg = {"@s/b": {"2.0.0": "2026-01-30T00:00:00Z"}, "a": {"1.0.0": "2025-12-01T00:00:00Z"}}
+        calls: list[list[str]] = []
+        fails, names = stack_gate.verify_changed(tampered, base, self.fetch(calls, reg))
+        self.assertEqual(calls, [["@s/b"]])                # 変えていない a は聞かない
+        self.assertEqual(names, ["@s/b"])
+        self.assertEqual(len(fails), 1)
+        self.assertTrue(fails[0].startswith("S8") and "@s/b@2.0.0" in fails[0] and "2020-01-01" in fails[0], fails)
+        self.assertEqual(stack_gate.verify_changed(base, base, self.fetch([], reg)), ([], []))   # 変えていなければ聞かない
+        calls = []
+        fails, names = stack_gate.verify_changed(base, None, self.fetch(calls, reg))   # 比べる元に記録が無い：全部の行
+        self.assertEqual(calls, [["@s/b", "a"]])
+        self.assertEqual(fails, [])
+        fails, _ = stack_gate.verify_changed(tampered, base, lambda names: {n: {"_err": "網が無い"} for n in names})
+        self.assertTrue(fails and fails[0].startswith("S8") and "聞き直せない" in fails[0])
+        self.assertIsNone(stack_gate.base_record(""))
+        self.assertIsNone(stack_gate.base_record("0" * 40))   # 無い版
+
+    def test_K156_CI_050_g46_knows_base(self) -> None:
+        import yaml
+        spec = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]["spec"]
+        g46 = [s for s in spec["steps"] if str(s.get("name", "")).startswith("G46 ")]
+        self.assertEqual(len(g46), 1)
+        self.assertIn('--base-ref "$CI_BASE"', g46[0]["run"])
+        self.assertEqual(g46[0]["env"]["CI_BASE"].replace(" ", ""), "${{steps.scope.outputs.base}}")
+
+    def test_K156_CI_051_uploaded_dirs_are_tracked_or_ignored(self) -> None:
+        # 類：成果物の置き場を足したら、版に入れる物か無視の決まりに入れた物のどちらか（取り違えてコミットしない）
+        import yaml
+        wf = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))
+        paths = sorted({p.strip().rstrip("/") for j in wf["jobs"].values() for s in (j.get("steps") or [])
+                        if str(s.get("uses", "")).startswith("actions/upload-artifact")
+                        for p in str(s["with"]["path"]).split("\n") if p.strip()})
+        self.assertIn("apps/web/playwright-report-skeleton", paths)
+        for rel in paths:
+            tracked = bool(subprocess.run(["git", "-C", str(ROOT), "ls-files", "--", rel], capture_output=True, text=True).stdout.strip())
+            ignored = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "-q", rel + "/x"]).returncode == 0
+            self.assertTrue(tracked or ignored, f"{rel}：版にも無視の決まりにも入っていない")
+        eslint = (ROOT / "eslint.config.mjs").read_text(encoding="utf-8")
+        self.assertIn('"**/playwright-report-skeleton/**"', eslint)
+
+
 class FullScopeBaseTest(k107.Base):
     def test_K156_CI_046_full_scope_without_base_does_not_break(self) -> None:
         self.r.commit("K-1 feat: mig", packages__a__migrations__0002_sql="select 2;\n", packages__a__src__index_ts=k107.MIG2,
