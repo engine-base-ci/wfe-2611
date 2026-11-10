@@ -6244,7 +6244,9 @@
     "K-62"
    ],
    "prior_impl": "なし",
-   "tests": [],
+   "tests": [
+    "scripts/ci/ticket_process_test.py"
+   ],
    "affects": [],
    "ci_wide": [
     "ci"
