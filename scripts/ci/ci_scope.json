@@ -392,6 +392,8 @@
   "apps/api/test/features/F3/connect-pc.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリのファイルは読まない",
   "apps/bridge/src/pairing.ts": "同上（apps/bridge/src/**）。この PC の印（userData の machine-id）を読む",
   "apps/web/test/k60-draft-signout.test.ts": "試験の中で lib/auth/session・lib/api/client を動的 import する（vi.mock の後に読むため）。ファイルは読まない",
+  "apps/web/test/k145-draft-id.test.ts": "試験の中で features/F4/create-ticket/draft を動的 import する（vi.stubGlobal の後に読むため・K-145）。ファイルは読まない",
+  "apps/bridge/test/k145-uuid.test.ts": "自分で作った一時のファイル（この PC の印の置き場・K-145）を読む。リポジトリのファイルは読まない",
   "apps/api/test/features/contract/k144-contract.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリの物は 08_api/db-columns.json だけで、data_links で結ぶ（K-144・K-156）"
  },
  "jobs": {
