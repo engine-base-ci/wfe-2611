@@ -14,6 +14,8 @@ Kaname の入力に合わせたもの。違いは 4 つ：
       （印を付けた行は同じ実行で台帳から消す。--ledger を省けば既定の台帳 07_qa/test-plan/result-ledger.json があればそれを減らす・K143-CI-034）
   python3 scripts/ci/ci_results.py check  --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results \\
       --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>
+  ledger_at・ledger_drift（K-159）：台帳を「本線に入った版」（LEDGER_ENTERED_REF）と比べる。増えない・入れた時点の LEDGER_CAP 行を
+      超えない・同じ鍵が 2 行無い・消えた行はもう印の無い PASS でない（印の無い PASS のまま消すのは赤）。K143-CI-014 が本物の作業場所で使う
   python3 scripts/ci/ci_results.py ledger --specs '07_qa/test-specs/**/*.md' --out 07_qa/test-plan/result-ledger.json   # 入れた時点の 1 回だけ
 
 --ledger-base-ref <ref> --target-ref <取り込む先>（PM の判断 2026-11-08 15:37・15:58・17:40 ①②）：
@@ -295,6 +297,12 @@ def _key(file: str, rid: str) -> tuple[str, str]:
     return os.path.normpath(file), rid
 
 
+def added_rows(led: set[tuple[str, str]], base: dict, what: str) -> list[str]:
+    """台帳の鍵の集合 led のうち、比べる元の台帳 base に無い行（台帳は減らすだけ・check と ledger_drift が使う）"""
+    known = {_key(x["file"], x["id"]) for x in base.get("rows", [])}
+    return [f"{k[0]} {k[1]}：{what}に無い行を台帳に足した（台帳は減らすだけ）" for k in sorted(led - known)]
+
+
 def _check(specs: list[str], records: Path, ledger: dict | None, ledger_base: dict | None,
            trusted: set[tuple[str, str, str]] | None = None,
            written: set[tuple[str, str, str]] | None = None) -> tuple[list[str], int]:
@@ -344,9 +352,7 @@ def _check(specs: list[str], records: Path, ledger: dict | None, ledger_base: di
         for k in sorted(led - unmarked):
             bad.append(f"{k[0]} {k[1]}：台帳の行が、もう印の無い PASS でない（印が付いた・空になった・該当なしになった・行が無い）。台帳から消す")
     if ledger_base is not None:
-        base = {_key(x["file"], x["id"]) for x in ledger_base.get("rows", [])}
-        for k in sorted(led - base):
-            bad.append(f"{k[0]} {k[1]}：本線の台帳に無い行を台帳に足した（台帳は減らすだけ）")
+        bad += added_rows(led, ledger_base, "本線の台帳")
     return bad, n
 
 
@@ -355,13 +361,56 @@ def check(specs: list[str], records: Path, ledger: dict | None = None, ledger_ba
 
 
 # ---------------------------------------------------------------- 本線の版（--ledger-base-ref・--target-ref）
-def _git(*args: str) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", *args], capture_output=True, text=True, check=False)
+def _git(*args: str, cwd: str | os.PathLike | None = None) -> subprocess.CompletedProcess:
+    try:
+        return subprocess.run(["git", *args], capture_output=True, text=True, check=False, cwd=cwd)
+    except OSError as e:   # cwd が無いなど
+        return subprocess.CompletedProcess(["git", *args], 1, "", str(e))
 
 
-def _show(ref: str, path: str) -> str | None:
-    r = _git("show", f"{ref}:./{path}")
+def _show(ref: str, path: str, cwd: str | os.PathLike | None = None) -> str | None:
+    r = _git("show", f"{ref}:./{path}", cwd=cwd)
     return r.stdout if r.returncode == 0 else None
+
+
+# ---------------------------------------------------------------- 台帳を本線に入った版と比べる（K-159）
+LEDGER_ENTERED_REF = "fb2998f7cfd368ffa77880fe6f9e7c1acdba0b24"   # 台帳が本線に入った版（K-143 の取り込み・2444 行）
+LEDGER_CAP = 2593                                                  # 台帳を入れた時点の行の数（D-129.51）
+
+
+def ledger_at(ref: str, path: str, cwd: str | os.PathLike | None = None) -> dict | None:
+    """git の版の台帳。ref が無い・その版に台帳が無い・JSON でない・git でない置き場なら None（呼ぶ側が止める）"""
+    raw = _show(ref, path, cwd=cwd)
+    if raw is None:
+        return None
+    try:
+        d = json.loads(raw)
+    except ValueError:
+        return None
+    return d if isinstance(d, dict) else None
+
+
+def ledger_drift(ledger: dict, entered: dict, root: str | os.PathLike, cap: int = LEDGER_CAP) -> list[str]:
+    """台帳は減らすだけ（D-129.51）を、台帳が本線に入った版 entered と比べる。問題の一覧（空なら緑）"""
+    rows = (ledger or {}).get("rows", [])
+    keys = Counter(_key(x["file"], x["id"]) for x in rows)
+    bad: list[str] = []
+    if len(rows) > cap:
+        bad.append(f"台帳の行が {len(rows)} 行で、入れた時点の {cap} 行を超えた（台帳は減らすだけ）")
+    bad += [f"{k[0]} {k[1]}：台帳に同じ行が {n} 行ある（重なると減らすだけの比べ方をすり抜ける）"
+            for k, n in sorted(keys.items()) if n > 1]
+    bad += added_rows(set(keys), entered or {}, "台帳が本線に入った版")
+    gone = {_key(x["file"], x["id"]) for x in (entered or {}).get("rows", [])} - set(keys)
+    cache: dict[str, list[tuple[str, str]]] = {}
+    for f, rid in sorted(gone):
+        if f not in cache:
+            try:
+                cache[f] = [(r, res) for _, r, res, _ in spec_rows((Path(root) / f).read_text(encoding="utf-8"))]
+            except OSError:
+                cache[f] = []   # ファイルが無い（移した・消した）：もう印の無い PASS でない
+        if any(r == rid and classify(res) == "pass" for r, res in cache[f]):
+            bad.append(f"{f} {rid}：印の無い PASS のまま台帳から消した（CI で流し直して印を付けてから消す・台帳は減らすだけ）")
+    return bad
 
 
 def _resolve(ref: str) -> str | None:
