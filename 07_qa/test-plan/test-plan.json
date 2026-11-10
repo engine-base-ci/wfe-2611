@@ -407,7 +407,12 @@
   "D-135.2",
   "D-135.3",
   "D-135.4",
-  "D-135.5"
+  "D-135.5",
+  "D-136.1",
+  "D-136.2",
+  "D-136.3",
+  "D-136.4",
+  "D-136.5"
  ],
  "inputs": {
   "tickets": 218,
@@ -1244,6 +1249,21 @@
    "id": 60,
    "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）",
    "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 63,
+   "name": "決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146）",
+   "script": "python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base \"$CI_ANSWERS_BASE\" --target \"$CI_TARGET_REF\"",
+   "env": "          CI_ANSWERS_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 64,
+   "name": "着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）",
+   "script": "python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py",
    "job": "spec",
    "blocking": true
   },
