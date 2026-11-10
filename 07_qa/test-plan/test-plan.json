@@ -1167,8 +1167,8 @@
   },
   {
    "id": 47,
-   "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）",
-   "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py",
+   "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験・D-128.123）",
+   "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py && python3 scripts/ci/fuzz_targets_test.py",
    "job": "spec",
    "blocking": true
   },
