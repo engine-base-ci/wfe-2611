@@ -36,7 +36,7 @@
 2. Connect から接続文字列を取る。**Direct connection は IPv6 だけなので Vercel から届かない。全部 pooler を使う**
    - **Session pooler**（`aws-…pooler.supabase.com:5432`・ユーザー `postgres.<ref>`）＝ migration 用（管理者）→ `DATABASE_ADMIN_URL`
    - **Transaction pooler**（同じ host の `:6543`）＝ 実行時。ユーザー名を `kaname_app.<ref>`／`kaname_auth.<ref>`、パスワードを S2-3 で作る値に置き換えて `DATABASE_URL`／`AUTH_DATABASE_URL`
-3. Storage → Settings → S3 Connection：S3 access keys を作る → `STORAGE_ACCESS_KEY_ID`／`STORAGE_SECRET_ACCESS_KEY`。Endpoint（`https://<ref>.storage.supabase.co/storage/v1/s3`）→ `STORAGE_ENDPOINT`、Region → `STORAGE_REGION`、`STORAGE_FORCE_PATH_STYLE=true`、`STORAGE_BUCKET=kaname-staging`
+3. Storage → Settings → S3 Connection：S3 access keys を作る → `STORAGE_ACCESS_KEY_ID`／`STORAGE_SECRET_ACCESS_KEY`。Endpoint（`https://<ref>.storage.supabase.co/storage/v1/s3`）→ `STORAGE_ENDPOINT`、Region → `STORAGE_REGION`、`STORAGE_FORCE_PATH_STYLE=true`、`STORAGE_BUCKET=kaname-staging`。**バケットは非公開のまま（公開にしない）**。`pnpm provision:bucket` が確かめ用の物で非公開を確かめ、公開なら止まる（K-133）。Bridge の配布物の頭は `BRIDGE_RELEASE_BASE=<STORAGE_ENDPOINT>/<STORAGE_BUCKET>/<頭>`（S3 の口の下・path-style。provision が置き場の下かを確かめる）
 4. 無料枠は 1 週間使わないと休止し、バックアップが無い。**顧客のデータを入れる前に Pro**（D-097.7）
 
 ### S1b Infisical（顧客の資格情報の預かり先・D-101）

@@ -92,7 +92,11 @@ export async function readManifest(cfg: {
  *  届かないときは覚えない（次の要求でもう一度見に行く）。壊れた目録・形が違う目録は配っていない扱い */
 export type ReleaseState =
   { state: "ok"; m: ReleaseManifest; from: "dir" | "base" } | { state: "none" } | { state: "unreachable" };
-export async function releaseState(cfg: { dir?: string; base?: string }): Promise<ReleaseState> {
+/** 目録を署名つきで読むための口（K-133）。URL を返す＝その URL で読む／null＝その頭に署名を作れない（開発・置き場の外の URL）ので署名なしで読む／
+ *  例外＝署名を作るのが失敗した（届かない側に倒す） */
+export type ManifestSigner = (name: string, ttlSeconds: number) => Promise<string | null>;
+const MANIFEST_TTL_SEC = 60;
+export async function releaseState(cfg: { dir?: string; base?: string; sign?: ManifestSigner }): Promise<ReleaseState> {
   if (cfg.dir) {
     try {
       const m = parseManifest(JSON.parse(readFileSync(join(cfg.dir, MANIFEST), "utf8")));
@@ -106,8 +110,11 @@ export async function releaseState(cfg: { dir?: string; base?: string }): Promis
   if (cached && cached.base === base && Date.now() - cached.at <= CACHE_MS)
     return cached.m ? { state: "ok", m: cached.m, from: "base" } : { state: "none" };
   try {
-    const r = await fetch(`${base}/${MANIFEST}`, { signal: AbortSignal.timeout(5_000) });
+    const signed = cfg.sign ? await cfg.sign(MANIFEST, MANIFEST_TTL_SEC) : null;
+    const r = await fetch(signed ?? `${base}/${MANIFEST}`, { signal: AbortSignal.timeout(5_000) });
     if (r.status >= 500) return { state: "unreachable" };
+    // 署名つきの読みが断られた（鍵の誤り・期限切れ）は「読めない」。「配っていない」に化けない（D-138.1・覚えない）
+    if (signed && !r.ok && r.status !== 404) return { state: "unreachable" };
     const m = r.ok ? parseManifest(await r.json().catch(() => null)) : null;
     cached = { base, at: Date.now(), m };
     return m ? { state: "ok", m, from: "base" } : { state: "none" };

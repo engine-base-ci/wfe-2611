@@ -52,8 +52,8 @@
         },
         {
           "path": "apps/api/src/auth/bridge-release.ts",
-          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
-          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない。K-133 から目録は関門 C4 の signExternal が作った署名 URL で読む（置き場の中身は全部非公開）",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。置き場の目録は関門 C4 の signExternal が作った署名 URL（期限 60 秒）で読み、署名を作れない頭（開発・置き場の外）だけ署名なしで読む。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
           "expires_at": null
         },
         {
@@ -193,8 +193,8 @@
         },
         {
           "path": "apps/api/src/auth/bridge-release.ts",
-          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない",
-          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
+          "reason": "Bridge の配布物の目録（kaname-bridge.json）を運営の置き場から読むのは配布の口そのもの（D-109）。業務の外部送信・利用者のファイルではない。K-133 から目録は関門 C4 の signExternal が作った署名 URL で読む（置き場の中身は全部非公開）",
+          "compensating_control": "読む先は設定の BRIDGE_RELEASE_DIR／BRIDGE_RELEASE_BASE だけ。置き場の目録は関門 C4 の signExternal が作った署名 URL（期限 60 秒）で読み、署名を作れない頭（開発・置き場の外）だけ署名なしで読む。利用者由来のパスを受け取らず、配るのは目録に載った名前（英数と . _ - だけ）のファイルだけ。書かない",
           "expires_at": null
         },
         {

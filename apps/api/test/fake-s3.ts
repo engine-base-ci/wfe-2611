@@ -1,6 +1,6 @@
 // 試験の偽の S3（path-style・GET だけ）。期限つき URL（SigV4 の query の署名）を、AWS の仕様のとおりに自分で計算し直して確かめる
 //   （AWS SDK の署名の部品は使わない＝署名した側と別の作りで確かめる）。署名が合わない・期限を過ぎた・形が違うは 403。
-//   目録（kaname-bridge.json）だけは署名なしで読める（公開の読み・置き場の頭の下）。
+//   public を付けた物だけ署名なしで読める（K-133 から目録も署名つきで読む。public は前からの試験の置き方）。
 //   仕様：https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
 import { createHash, createHmac } from "node:crypto";
 import { createServer, type Server } from "node:http";

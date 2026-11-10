@@ -177,6 +177,7 @@ export class ObjectStore {
     base: string,
     name: string,
     ttlSeconds = EXTERNAL_TTL_SEC,
+    opts: { audit?: boolean } = {},
   ): Promise<Outcome<{ url: string; expiresAt: Date }>> {
     if (!base || !EXTERNAL_NAME.test(name) || name.includes(".."))
       return { status: "denied", reason: "このファイルは渡せません", handoff: "運営に問い合わせる" };
@@ -201,7 +202,8 @@ export class ObjectStore {
     return {
       status: "done",
       value: { url, expiresAt: expiresOf(url, at, ttl) },
-      auditId: await this.audit(ctx, "sign_external", null, { name, ttl }),
+      // 目録（運営の中身）を読むための署名は証跡を残さない（D-138.2・K-133）。入れ物を渡すときは残す
+      auditId: opts.audit === false ? undefined : await this.audit(ctx, "sign_external", null, { name, ttl }),
     };
   }
   private sign(ref: string, exp: number): string {
@@ -216,4 +218,15 @@ export class ObjectStore {
   }
 }
 
-export { s3Client, s3Driver, s3Presigner, ensureBucket, type S3Settings, type S3Like } from "./s3.js";
+export {
+  s3Client,
+  s3Driver,
+  s3Presigner,
+  ensureBucket,
+  bucketPublicUrl,
+  checkBucketPrivate,
+  provisionBucket,
+  type S3Settings,
+  type S3Like,
+  type PrivateCheck,
+} from "./s3.js";
