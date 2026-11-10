@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）を、各実装のコミットの時点の depends_on で裁く形に直す試験（K-159）。
-行 ID（K159-CI-011〜027）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+行 ID（K159-CI-011〜028）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
 
 由来：検査は HEAD の tickets.json の depends_on を START..HEAD の全部の実装のコミットに当てていた。K-62 が回 3 で depends_on に
 K-143 を足すと、それより前の K-62 の実装のコミットまで「K-143 の実装が祖先に無い」で赤になった（依存を後から足すたびに過去が赤）。
@@ -10,6 +10,9 @@ K-143 を足すと、それより前の K-62 の実装のコミットまで「K-
     依存の実装のコミット（番号を持つ、文書だけでないコミット）が祖先にあるか、同じコミットに依存の番号もあれば緑。
     依存を足したコミットそのものも、足した後として裁く（そのコミットの版に依存がある）。
     赤の文は「<sha の頭 10 字> <チケット> は <依存> に依存するが…」（前と同じ形）
+  ・外して戻した依存（テスター Q 回 1 の #2・PM の判断 (ア)）：各コミットは「その版の depends_on」に、「rev の版の depends_on のうち、
+    START の版か、枝の中のそれより前の版に一度でも載っていたもの」を足して裁く（初めて足した依存は過去のコミットを赤にしない・
+    外して実装し後で戻した依存は、外していた間の実装のコミットを赤にする）
   ・その版の tickets.json が無い（ファイルが無い）・JSON でない・そのチケットが載っていない → rev の版の depends_on で裁く（前と同じ・緩めない）
   ・載っているが depends_on の欄が無い・null → 依存なし（[]・前と同じ）。rev の版でも同じ
   ・rev の版の tickets.json が無い・JSON でない・"tickets" が無い → RuntimeError（main は FAIL・exit 1。読めなければ空として緑にしない）
@@ -253,6 +256,29 @@ class PerCommitTest(Case):
         self.assertIs(ci_scope.generated_outputs, g.generated_outputs)
         self.r.write("scripts/ci/generated.json", json.dumps({"generators": [{"outputs": ["docs/作られた.md", "apps/x.ts"]}]}))
         self.assertEqual(g.generated_outputs(self.tmp.name), {"docs/作られた.md", "apps/x.ts"})
+
+    def test_K159_CI_028_dep_removed_then_restored_is_red(self):
+        """K159-CI-028 守り（L-014 迂回の道）：depends_on から依存を外して先に実装し、依存を作った後で戻す → 外していた間の実装のコミットを
+        名指しで赤（前の検査と同じ）。外したのが START の版でも、枝の中で一度足した後でも同じ。初めて足した依存（K159-CI-011）は緑のまま"""
+        for label, at_start in (("START の版にあった", True), ("枝の中で一度足した", False)):
+            with self.subTest(label=label):
+                with tempfile.TemporaryDirectory() as t:
+                    r = Repo(t)
+                    r.tickets({"K-1": [], "K-2": ["K-1"] if at_start else []})
+                    start = r.commit("K-0 base", {"README.md": "x"})
+                    if not at_start:
+                        r.tickets({"K-1": [], "K-2": ["K-1"]})
+                        r.commit("K-2 docs: 依存を足す")
+                    r.tickets({"K-1": [], "K-2": []})
+                    a = r.commit("K-2 feat: 依存を外して先に作る", {"apps/a.ts": "a"})
+                    r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
+                    r.tickets({"K-1": [], "K-2": ["K-1"]})
+                    r.commit("K-2 docs: 依存を戻す")
+                    bad, _, n = g.check(t, "HEAD", start)
+                    self.assertEqual(n, 2)
+                    self.assertEqual(len(bad), 1, bad)
+                    self.assertTrue(bad[0].startswith(a[:10]), bad)
+                    self.assertIn("K-2 は K-1", bad[0])
 
     def test_K159_CI_021_git_failure_raises(self):
         """K159-CI-021 失敗：START が無い（浅い写し・違うリポジトリ）など git が失敗 → RuntimeError（止める側・main は FAIL で exit 1）"""
