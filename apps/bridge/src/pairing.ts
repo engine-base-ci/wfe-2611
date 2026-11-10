@@ -12,7 +12,10 @@ export const DEVICE_TOKEN_RE = /^kpc_[A-Za-z0-9_-]{43}$/;
 
 /** この PC の印を置くファイル（userData の中・bridge.json とは別なので、PC の印を捨ててもこの印は変わらない・D-128.174） */
 export const MACHINE_ID_FILE = "machine-id";
-const MACHINE_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+/** 正式な uuid の形（K-145）。Bridge は workspace の部品を持たないので、DB の層の正本（packages/db/src/id.ts の UUID_RE）と同じ文字列をここに 1 つ置く。
+ *  契約の isUuid（zod 4 の z.uuid()）と同じ決まり：版と variant の桁を見る・nil と max は通す・大文字は通す（K144-SHAPE-019 が文字列の一致を見る） */
+export const UUID_RE =
+  /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/;
 /** PC の名前の既定（D-128.174）：この PC のホスト名そのもの。前後の空白は落とし、空なら「この PC」 */
 export const DEFAULT_LABEL = "この PC";
 export function defaultDeviceLabel(host: string = hostname()): string {
@@ -25,7 +28,7 @@ export function loadMachineId(dir: string): string {
   const file = join(dir, MACHINE_ID_FILE);
   try {
     const v = readFileSync(file, "utf8").trim().toLowerCase();
-    if (MACHINE_ID_RE.test(v)) return v;
+    if (UUID_RE.test(v)) return v;
   } catch {
     // 無ければ作る
   }

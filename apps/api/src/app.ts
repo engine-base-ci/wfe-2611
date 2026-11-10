@@ -9,7 +9,7 @@ import { DEVICE_TOKEN_HEADER, type Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { registerAll } from "./routes/index.js";
-import { sessionUnresolved, termsRequired } from "./contract/op.js";
+import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 
@@ -149,6 +149,19 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
         }
       }
       return c.json({ ...err.toJSON(), event_id: eventId }, err.status as 400);
+    }
+    // 2 層目（K-145・D-130.2）：入口の確かめをすり抜けた値が DB の決まりに合わずに落ちた（形の違う uuid＝22P02 ほか）。500 でなく 422・決まった文。
+    //   記録は番号と制約の名前だけ。道は道の型（routePath）で書く（実際の道には送った値＝形違いの id が入る）。DB の文も送った値を含むので出さない
+    const dbIn = dbInputFailure(err);
+    if (dbIn) {
+      console.error(
+        "[api] 422",
+        c.req.method,
+        c.req.routePath,
+        dbIn.code,
+        ...(dbIn.constraint ? [dbIn.constraint] : []),
+      );
+      return c.json(DB_INPUT_REPLY, 422);
     }
     console.error("[api] 500", c.req.method, c.req.path, err instanceof Error ? (err.stack ?? err.message) : err); // 詳細はログにだけ（応答には出さない）
     return c.json(

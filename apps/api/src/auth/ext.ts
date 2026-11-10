@@ -4,18 +4,20 @@
 import { agentToolRoutes } from "./agent-tools.js";
 import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
 import { Hono } from "hono";
+import { CATALOG } from "@kaname/errors";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createDeviceResolver, createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
-import { sessionUnresolved, termsRequired } from "../contract/op.js";
+import { readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
 import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { ObjectStore } from "@kaname/storage";
-import { agentRoutes, jobOptions } from "./agent.js";
+import { agentRoutes, jobOptions, jobOptionsIssue } from "./agent.js";
+import { badId, idOf, idOrNull, isBridgeKeyShape, queryId } from "./ids.js";
 import { agentStreamRoutes } from "./agent-stream.js";
 import type { MemberHub } from "@kaname/db/listen";
 
@@ -92,6 +94,8 @@ export function hostOf(v: string): string | null {
 /** この版より古い Bridge には仕事を渡さない（定義は features/F3/connect-pc/hooks.ts・K-57 に移した） */
 export { BRIDGE_PROTOCOL_MIN };
 /** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・ログイン・2 段階の確認・招待の下見と受諾（ログアウトは契約の口 signOut） */
+/** 成果物の本文を受ける口（書き出す・直して保存）。送る量の守りで断るときも成果物の上限の答え（E-ART-001）にする（K-145） */
+const ARTIFACT_BODY = /^\/agent\/artifacts(\/[^/]+\/versions)?$/;
 const TERMS_OPEN_EXT = [/^\/me$/, /^\/sign-in$/, /^\/two-factor\/verify$/, /^\/invitations\/[^/]+(\/accept)?$/];
 export function authExt(d: AuthExtDeps): Hono {
   const app = new Hono();
@@ -106,6 +110,26 @@ export function authExt(d: AuthExtDeps): Hono {
     seen.set(h, p);
     return p;
   };
+  // 送る量の守り（D-130.1・K-145）：前の道すじは契約の入口（op.ts）を通らないので、全部の route より前（ログイン・同意し直しより前）に置く。
+  //   読みながら数え、1MB を超えた時点で読むのをやめて 413（頭を偽っても・頭が無くても）。頭が 1MB を超えていれば 1 バイトも読まない。
+  //   読んだ体は Hono の器に入れ、各 route の c.req.json() が同じ中身を読む（2 回読まない）。
+  //   ファイルを受ける口（資料＝multipart・成果物＝ファイルそのもの）は守りの外（D-135.1・ファイルの上限は置き場と口が持つ）
+  app.use("*", async (c, next) => {
+    if (!["POST", "PUT", "PATCH", "DELETE"].includes(c.req.method)) return next();
+    const path = c.req.path.replace(/^\/api\/auth-ext(?=\/|$)/, "") || "/";
+    const type = c.req.header("content-type") ?? "";
+    // 外すのは道で決める（頭だけで外すと、ログインしていない口にも multipart の頭を付けて守りを抜けられる・K-145 テスター回 2）
+    if ((path === "/agent/attachments" && /^multipart\/form-data/i.test(type)) || path === "/bridge/artifact")
+      return next();
+    const text = await readBodyLimited(c);
+    if (text === null)
+      // 成果物の本文を受ける口（書き出す・直して保存）は、今までどおり成果物の上限の答え（E-ART-001「1 MB まで」・画面が出す文）で断る
+      return ARTIFACT_BODY.test(path)
+        ? c.json({ error: "e-art-001", code: "E-ART-001", message: CATALOG["E-ART-001"]?.message ?? "E-ART-001" }, 413)
+        : c.json(TOO_LARGE, 413);
+    (c.req.bodyCache as unknown as { text?: Promise<string> }).text = Promise.resolve(text);
+    return next();
+  });
   // 同意し直し（K-53・D-125.162）：印が立ったセッションは、止めない道のほかを 403・E-AUTH-010 で止める（契約の口の入口 op.ts と同じ決まり）。
   //   全部の route より前に 1 つだけ置く。PC のセッション（x-bridge-session）は Better Auth のセッションでないので印を見ない（D-128.137）
   app.use("*", async (c, next) => {
@@ -312,6 +336,13 @@ export function authExt(d: AuthExtDeps): Hono {
       branch_from?: string;
       context?: { screen?: unknown; screen_name?: unknown; selected?: unknown };
     } & Record<string, unknown>;
+    // id の欄は正式な uuid で確かめる（D-129.42・K-145）。送らない・null は「無し」。形違いは黙って捨てずに 422（D-135.4）
+    const convIn = idOrNull(b.conversation_id);
+    if (convIn === false) return badId(c, "conversation_id");
+    const branchFrom = idOrNull(b.branch_from);
+    if (branchFrom === false) return badId(c, "branch_from");
+    const issue = jobOptionsIssue(b);
+    if (issue) return badId(c, issue, issue === "quote" ? "object" : "uuid");
     const text = (b.text ?? "").trim();
     if (!text) return bad(c, 422, "VALIDATION_FAILED", "言うことが空です", { field: "text" });
     // どこで話しかけられたか（D-103）：会話は同じ 1 本で、自分のAI に渡す指示にだけ前置きする。会話に出す言葉は本人が書いたまま
@@ -331,14 +362,14 @@ export function authExt(d: AuthExtDeps): Hono {
     const q = (b["quote"] ?? null) as { text?: unknown } | null;
     const quoted =
       q && typeof q.text === "string" && q.text.trim()
-        ? `（あなたの返事のこの部分について）\n> ${q.text.trim().slice(0, 2000).replace(/\n/g, "\n> ")}`
+        ? `（あなたの返事のこの部分について）\n> ${q.text.trim().replace(/\n/g, "\n> ")}`
         : "";
     // はじめの設定の聞き取り（D-114）：分かった事実はその場で覚える。決まりだけだと効かなかったので、毎回の依頼にも添える（2026-09-29 実例）
     const interview = screenId === "onboard-interview" ? ONBOARD_REMEMBER : "";
     const context = [where, interview, quoted].filter(Boolean).join("\n");
     const conv = await d.appPool.query<{ conv_id: string; agent_session: string | null }>(
       "select * from app.agent_open_conversation($1, $2, $3, $4)",
-      [ses.ctx.userId, b.conversation_id ?? null, b.branch_from ?? null, text.slice(0, 40)],
+      [ses.ctx.userId, convIn, branchFrom, text.slice(0, 40)],
     );
     const cv = conv.rows[0];
     if (!cv)
@@ -346,7 +377,7 @@ export function authExt(d: AuthExtDeps): Hono {
     const convId = cv.conv_id;
     // 直して送り直す（D-104.17）：新しいセッションなので、写したやりとりを短くまとめて自分のAI に添える（無いと何の続きか分からない）
     let earlier = "";
-    if (b.branch_from) {
+    if (branchFrom) {
       const st = await d.appPool.query<{ s: { messages?: { who: string; text: string }[] } }>(
         "select app.agent_state($1, $2) as s",
         [ses.ctx.userId, convId],
@@ -358,7 +389,7 @@ export function authExt(d: AuthExtDeps): Hono {
           .join("\n")}`;
     }
     // 本人が答えたのに届かないまま止まった問い合わせの答え（Bridge が途中で止まった等）。聞き直させずに渡す（2026-09-28 実例）
-    const carried = b.branch_from
+    const carried = branchFrom
       ? ""
       : carriedAnswers(
           (
@@ -394,12 +425,14 @@ export function authExt(d: AuthExtDeps): Hono {
   app.post("/agent/resume", async (c) => {
     const ses = await resolve(c.req.raw.headers);
     if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: string; how?: string };
-    if (!b.job_id || !["continue", "restart", "cancel"].includes(b.how ?? ""))
+    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; how?: string };
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || !["continue", "restart", "cancel"].includes(b.how ?? ""))
       return bad(c, 422, "VALIDATION_FAILED", "仕事の id と 続きから／やり直す／やめる が要ります");
     const r = await d.appPool.query<{ id: string | null }>("select app.bridge_resume_job($1, $2, $3) as id", [
       ses.ctx.userId,
-      b.job_id,
+      job,
       b.how,
     ]);
     if (!r.rows[0]?.id) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は止まっていません");
@@ -411,9 +444,8 @@ export function authExt(d: AuthExtDeps): Hono {
   app.get("/agent/state", async (c) => {
     const ses = await resolve(c.req.raw.headers);
     if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const conv = c.req.query("conversation_id") ?? null;
-    if (conv !== null && !/^[0-9a-f-]{36}$/i.test(conv))
-      return bad(c, 422, "VALIDATION_FAILED", "会話の id の形が違います", { field: "conversation_id" });
+    const conv = queryId(c.req.query("conversation_id"));
+    if (conv === false) return badId(c, "conversation_id");
     const r = await d.appPool.query<{ s: unknown }>("select app.agent_state($1, $2) as s", [ses.ctx.userId, conv]);
     return c.json({ data: r.rows[0]!.s });
   });
@@ -422,10 +454,12 @@ export function authExt(d: AuthExtDeps): Hono {
   app.post("/agent/new", async (c) => {
     const ses = await resolve(c.req.raw.headers);
     if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { conversation_id?: string };
+    const b = (await c.req.json().catch(() => ({}))) as { conversation_id?: unknown };
+    const conv = idOrNull(b.conversation_id);
+    if (conv === false) return badId(c, "conversation_id");
     const r = await d.appPool.query<{ ok: boolean }>("select app.agent_close_conversation($1, $2) as ok", [
       ses.ctx.userId,
-      b.conversation_id ?? null,
+      conv,
     ]);
     return c.json({ data: { closed: r.rows[0]?.ok ?? false } }, 201);
   });
@@ -458,8 +492,9 @@ export function authExt(d: AuthExtDeps): Hono {
     const ses = await resolve(c.req.raw.headers);
     if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
     const b = (await c.req.json().catch(() => ({}))) as { session_id?: unknown };
-    if (typeof b.session_id !== "string" || !/^[0-9a-f-]{36}$/i.test(b.session_id))
-      return bad(c, 422, "VALIDATION_FAILED", "外す端末の id が要ります");
+    const sessionId = idOrNull(b.session_id);
+    if (sessionId === false) return badId(c, "session_id");
+    if (!sessionId) return bad(c, 422, "VALIDATION_FAILED", "外す端末の id が要ります");
     const n = await withTenant(
       d.appPool,
       ses.ctx,
@@ -467,7 +502,7 @@ export function authExt(d: AuthExtDeps): Hono {
         (
           await cl.query<{ n: number }>(
             "select coalesce(sum(app.revoke_own_session(s.id, 'logout')), 0)::int as n from sessions s where s.id = $1 and s.kind_id = 'bridge' and s.revoked_at is null",
-            [b.session_id],
+            [sessionId],
           )
         ).rows[0]!.n,
     );
@@ -497,11 +532,10 @@ export function authExt(d: AuthExtDeps): Hono {
   // PC の印（K-57）：引き取りで 1 回だけ渡した印のハッシュで、生きている PC の行を引く。sessions の id は鍵にしない（画面の一覧に出る値なので）
   const resolveDevice = createDeviceResolver(d.appPool);
   // PC の印の形か、前の形（sessions の id）の鍵なら、解けなければ 410（Bridge は捨ててつなぎ直す）。それ以外の形は 401
-  const KEY_SHAPE = /^(kpc_[A-Za-z0-9_-]{43}|[0-9a-f-]{36})$/i;
   //   頭が無ければ null（401）。頭があるのに解けない印（切れた・外した・知らない）は、無い PC の行を指す（各口の「生きているか」で 410 になり、Bridge は印を捨てる・G-14）
   const NO_DEVICE = "00000000-0000-4000-8000-000000000000";
   const bridgeSession = async (c: { req: { raw: Request } }) =>
-    KEY_SHAPE.test(c.req.raw.headers.get("x-bridge-session") ?? "")
+    isBridgeKeyShape(c.req.raw.headers.get("x-bridge-session"))
       ? ((await resolveDevice(c.req.raw.headers))?.sessionId ?? NO_DEVICE)
       : null;
   /** 鍵が生きているか。切れた・退会した・つなぎ直した鍵は 410（Bridge はこれで鍵を捨てる・G-14）。
@@ -531,13 +565,15 @@ export function authExt(d: AuthExtDeps): Hono {
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     if (!(await bridgeAlive(sid))) return GONE(c);
     const b = (await c.req.json().catch(() => ({}))) as {
-      job_id?: string;
+      job_id?: unknown;
       request_id?: string;
       tool?: string;
       input?: unknown;
       summary?: string;
     };
-    if (!b.job_id || !b.request_id) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || !b.request_id) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
     const payload = {
       tool: String(b.tool ?? "道具").slice(0, 80),
       input: b.input ?? null,
@@ -545,7 +581,7 @@ export function authExt(d: AuthExtDeps): Hono {
     };
     const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_ask($1, $2, $3, $4::jsonb) as ok", [
       sid,
-      b.job_id,
+      job,
       b.request_id,
       JSON.stringify(payload),
     ]);
@@ -576,11 +612,13 @@ export function authExt(d: AuthExtDeps): Hono {
     const sid = await bridgeSession(c);
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: string; request_id?: string };
-    if (!b.job_id || !b.request_id) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
+    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; request_id?: string };
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || !b.request_id) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
     const r = await d.appPool.query<{ a: string | null }>("select app.bridge_take_answer($1, $2, $3) as a", [
       sid,
-      b.job_id,
+      job,
       b.request_id,
     ]);
     return c.json({ data: { answer: r.rows[0]?.a ?? null } });
@@ -589,12 +627,14 @@ export function authExt(d: AuthExtDeps): Hono {
   app.post("/agent/answer", async (c) => {
     const ses = await resolve(c.req.raw.headers);
     if (!ses?.ctx.tenantId || !ses.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const b = (await c.req.json().catch(() => ({}))) as { job_id?: string; request_id?: string; allow?: boolean };
-    if (!b.job_id || !b.request_id || typeof b.allow !== "boolean")
+    const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; request_id?: string; allow?: boolean };
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || !b.request_id || typeof b.allow !== "boolean")
       return bad(c, 422, "VALIDATION_FAILED", "仕事の id・request_id・許可するか が要ります");
     const r = await d.appPool.query<{ ok: boolean }>("select app.agent_answer($1, $2, $3, $4) as ok", [
       ses.ctx.userId,
-      b.job_id,
+      job,
       b.request_id,
       b.allow,
     ]);
@@ -633,7 +673,6 @@ export function authExt(d: AuthExtDeps): Hono {
   });
 
   // 資格情報を預ける（T-U-10・関門 C8）：平文はここで暗号化して vault へ。表（credentials）には参照 ID だけ。AI には渡らない
-  const UUID_RE_CRED = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   app.post("/vault/credentials", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
@@ -643,13 +682,16 @@ export function authExt(d: AuthExtDeps): Hono {
     const b = (await c.req.json().catch(() => ({}))) as {
       service_name?: string;
       service_domain?: string;
-      service_id?: string;
+      service_id?: unknown;
       kind_id?: string;
       login?: string;
       password?: string;
       totp_secret?: string;
       two_factor?: string;
     };
+    // 台帳のサービスの id（uuid の列へ書く）は預かり先（関門 C8）に書く前に確かめる（K-145・形違いは 422・何も預けない）
+    const serviceId = idOrNull(b.service_id);
+    if (serviceId === false) return badId(c, "service_id");
     // 2 段階認証の種類（D-117.2）：なし／認証アプリ（鍵が要る）／SMS／メール／スマホで承認。鍵だけ入れて種類が無ければ認証アプリ
     const twoFactor = ["none", "totp", "sms", "email", "push"].includes(String(b.two_factor ?? ""))
       ? String(b.two_factor)
@@ -700,13 +742,13 @@ export function authExt(d: AuthExtDeps): Hono {
     const ref = typeof stored.value === "string" ? stored.value : stored.value.ref;
     const me = await d.repo.table("members").get(s.ctx, s.ctx.userId);
     // 入れたサービス名と宛先を残し、台帳に同じサービスがあれば結ぶ（D-108.4）
+    // 人が打つサービス名は黙って切らない（D-135.5・D-130.4）
     const name = String(b.service_name ?? "")
       .normalize("NFKC")
-      .trim()
-      .slice(0, 120);
+      .trim();
     const domain = hostOf(name) ?? hostOf(String(b.service_domain ?? ""));
     const svc =
-      b.service_id ??
+      serviceId ??
       (await d.appPool.query<{ id: string | null }>("select app.credential_service($1, $2) as id", [name, domain]))
         .rows[0]?.id ??
       null;
@@ -737,8 +779,8 @@ export function authExt(d: AuthExtDeps): Hono {
   app.post("/vault/credentials/:id/login-check", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const id = c.req.param("id");
-    if (!UUID_RE_CRED.test(id)) return bad(c, 422, "VALIDATION_FAILED", "資格情報の id が要ります");
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const job =
       (
         await d.appPool.query<{ id: string | null }>("select app.credential_login_check_retry($1, $2) as id", [
@@ -759,9 +801,10 @@ export function authExt(d: AuthExtDeps): Hono {
   app.post("/vault/credentials/:id/answer", async (c) => {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
-    const id = c.req.param("id");
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const b = (await c.req.json().catch(() => ({}))) as { request_id?: unknown; code?: unknown; approved?: unknown };
-    if (!UUID_RE_CRED.test(id) || typeof b.request_id !== "string")
+    if (typeof b.request_id !== "string")
       return bad(c, 422, "VALIDATION_FAILED", "資格情報の id と request_id が要ります");
     const code =
       b.approved === true ? "approved" : typeof b.code === "string" ? b.code.normalize("NFKC").replace(/\s+/g, "") : "";
@@ -783,13 +826,15 @@ export function authExt(d: AuthExtDeps): Hono {
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     if (!(await bridgeAlive(sid))) return GONE(c);
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; request_id?: unknown };
-    if (typeof b.job_id !== "string" || !UUID_RE_CRED.test(b.job_id) || typeof b.request_id !== "string")
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || typeof b.request_id !== "string")
       return bad(c, 422, "VALIDATION_FAILED", "仕事の id と request_id が要ります");
     const code =
       (
         await d.appPool.query<{ v: string | null }>("select app.bridge_take_code($1, $2, $3) as v", [
           sid,
-          b.job_id,
+          job,
           b.request_id,
         ])
       ).rows[0]?.v ?? null;
@@ -812,12 +857,9 @@ export function authExt(d: AuthExtDeps): Hono {
       "stopped",
       "no_answer",
     ];
-    if (
-      typeof b.job_id !== "string" ||
-      !UUID_RE_CRED.test(b.job_id) ||
-      typeof b.state !== "string" ||
-      !states.includes(b.state)
-    )
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    if (!job || typeof b.state !== "string" || !states.includes(b.state))
       return bad(
         c,
         422,
@@ -829,7 +871,7 @@ export function authExt(d: AuthExtDeps): Hono {
       (
         await d.appPool.query<{ v: { tenant_id: string; member_id: string; credential_id: string } | null }>(
           "select app.bridge_login_check_result($1, $2, $3, $4) as v",
-          [sid, b.job_id, b.state, detail],
+          [sid, job, b.state, detail],
         )
       ).rows[0]?.v ?? null;
     if (!r) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
@@ -839,7 +881,7 @@ export function authExt(d: AuthExtDeps): Hono {
       "credentials",
       r.credential_id,
       "C1",
-      { job_id: b.job_id, state: b.state },
+      { job_id: job, state: b.state },
     );
     return c.json({ data: { ok: true } });
   });
@@ -851,13 +893,11 @@ export function authExt(d: AuthExtDeps): Hono {
     if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
     if (!(await bridgeAlive(sid))) return GONE(c);
     const b = (await c.req.json().catch(() => ({}))) as { job_id?: unknown; credential_id?: unknown };
-    if (
-      typeof b.job_id !== "string" ||
-      !UUID_RE_CRED.test(b.job_id) ||
-      typeof b.credential_id !== "string" ||
-      !UUID_RE_CRED.test(b.credential_id)
-    )
-      return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資格情報の id が要ります");
+    const job = idOrNull(b.job_id);
+    if (job === false) return badId(c, "job_id");
+    const cred = idOrNull(b.credential_id);
+    if (cred === false) return badId(c, "credential_id");
+    if (!job || !cred) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と資格情報の id が要ります");
     const row = (
       await d.appPool.query<{
         tenant_id: string;
@@ -868,20 +908,20 @@ export function authExt(d: AuthExtDeps): Hono {
         two_factor: string;
         revoked: boolean;
         job_ok: boolean;
-      }>("select * from app.bridge_credential($1, $2, $3)", [sid, b.job_id, b.credential_id])
+      }>("select * from app.bridge_credential($1, $2, $3)", [sid, job, cred])
     ).rows[0];
     if (!row || !row.vault_ref) return bad(c, 404, "CREDENTIAL_NOT_FOUND", "預けたログイン情報が見つかりません");
     const ctx = { tenantId: row.tenant_id, userId: row.member_id, role: "member" as const };
     if (!row.job_ok) {
-      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", b.credential_id, "C8", {
-        job_id: b.job_id,
+      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", cred, "C8", {
+        job_id: job,
         reason: "job_not_running",
       });
       return bad(c, 403, "JOB_NOT_RUNNING", "動いている仕事のためにだけ受け取れます", { handoff: "仕事を始めてから" });
     }
     if (row.revoked) {
-      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", b.credential_id, "C8", {
-        job_id: b.job_id,
+      await d.repo.audit(ctx, "credential.bridge_denied", "credentials", cred, "C8", {
+        job_id: job,
         reason: "revoked",
       });
       return bad(c, 403, "CREDENTIAL_REVOKED", "このログイン情報は失効しています。預け直してください", {
@@ -911,8 +951,8 @@ export function authExt(d: AuthExtDeps): Hono {
       });
     }
     // 受け取った仕事と資格情報の結びつきだけを証跡に（値は書かない）
-    await d.repo.audit(ctx, "credential.bridge_resolve", "credentials", b.credential_id, "C8", {
-      job_id: b.job_id,
+    await d.repo.audit(ctx, "credential.bridge_resolve", "credentials", cred, "C8", {
+      job_id: job,
       service_name: row.service_name,
     });
     return c.json({
@@ -952,12 +992,10 @@ export function authExt(d: AuthExtDeps): Hono {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
     const b = (await c.req.json().catch(() => ({}))) as { run_id?: unknown };
-    if (typeof b.run_id !== "string" || !UUID_RE_CRED.test(b.run_id))
-      return bad(c, 422, "VALIDATION_FAILED", "どの実行をやめるかが要ります", { field: "run_id" });
-    const r = await d.appPool.query<{ ok: boolean }>("select app.testrun_cancel($1, $2) as ok", [
-      s.ctx.userId,
-      b.run_id,
-    ]);
+    const run = idOrNull(b.run_id);
+    if (run === false) return badId(c, "run_id");
+    if (!run) return bad(c, 422, "VALIDATION_FAILED", "どの実行をやめるかが要ります", { field: "run_id" });
+    const r = await d.appPool.query<{ ok: boolean }>("select app.testrun_cancel($1, $2) as ok", [s.ctx.userId, run]);
     if (!r.rows[0]?.ok) return bad(c, 404, "NOT_FOUND", "やめられる実行がありません（止まった・実行中のテストだけ）");
     return c.json({ data: { ok: true } });
   });
@@ -989,13 +1027,14 @@ export function authExt(d: AuthExtDeps): Hono {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
     const b = (await c.req.json().catch(() => ({}))) as { employee_id?: unknown; paused?: unknown; reason?: unknown };
-    if (typeof b.employee_id !== "string" || !UUID_RE_CRED.test(b.employee_id))
-      return bad(c, 422, "VALIDATION_FAILED", "どの AI社員かが要ります", { field: "employee_id" });
+    const employee = idOrNull(b.employee_id);
+    if (employee === false) return badId(c, "employee_id");
+    if (!employee) return bad(c, 422, "VALIDATION_FAILED", "どの AI社員かが要ります", { field: "employee_id" });
     if (typeof b.paused !== "boolean")
       return bad(c, 422, "VALIDATION_FAILED", "止めるか動かすかが要ります", { field: "paused" });
     const r = await d.appPool.query<{ ok: boolean }>("select app.golive_pause($1, $2, $3, $4) as ok", [
       s.ctx.userId,
-      b.employee_id,
+      employee,
       b.paused,
       typeof b.reason === "string" ? b.reason : "",
     ]);

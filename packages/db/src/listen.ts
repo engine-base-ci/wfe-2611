@@ -5,6 +5,7 @@
 //   黙って止まらない（G-15）：自分宛ての知らせを定期的に打って戻ってくるか確かめ、戻らなければ落ちたことにして
 //   全部の流れに伝える（画面は見に行く形に戻る）。次に誰かが流れを開いたらつなぎ直す。
 import pg from "pg";
+import { UUID_RE } from "./id.js";
 
 export const AGENT_CHANNEL = "kaname_agent";
 /** DB の側から見分ける名前（見張り・試験で「知らせの接続」だけを指す） */
@@ -34,7 +35,7 @@ export interface HubOptions {
   connectTimeoutMs?: number;
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = UUID_RE; // 正式な uuid の正本（id.ts・K-145）
 
 export function createMemberHub(o: HubOptions): MemberHub {
   const channel = o.channel ?? AGENT_CHANNEL;

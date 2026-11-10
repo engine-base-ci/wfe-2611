@@ -1,6 +1,7 @@
 // テナント文脈（関門 C2）。要求ごとに 1 トランザクションを開き、SET LOCAL app.tenant_id / app.user_id / app.role を入れてから中を実行する。
 // これを通らない読み書きは RLS で 0 行（FND-02-002 上流を故意に壊す）。
 import type pg from "pg";
+import { UUID_RE } from "./id.js";
 
 export interface TenantContext {
   tenantId: string | null; // null = 運営（会社をまたぐ）
@@ -12,7 +13,7 @@ export interface TenantContext {
   sessionId?: string | null;
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = UUID_RE; // 正式な uuid の正本（id.ts・K-145）
 
 export function assertContext(ctx: TenantContext): void {
   if (ctx.tenantId !== null && !UUID.test(ctx.tenantId)) throw new Error("tenantId が uuid でない");

@@ -15,11 +15,11 @@ describe("takeRemember（D-105.1）", () => {
 describe("parseDigest（D-105.4）", () => {
   it("```json の囲みを読み、知らない形の要素は捨てる", () => {
     const r = parseDigest(
-      '前置き\n```json\n{"remembered":[{"title":"t","body":"b","kind":"rule"},{"title":"空"}],"merged":[{"memory_ids":["x","00000000-0000-0000-0000-000000000001"],"body":"m"}],"propose":[],"discarded":[{"text":"d"}]}\n```',
+      '前置き\n```json\n{"remembered":[{"title":"t","body":"b","kind":"rule"},{"title":"空"}],"merged":[{"memory_ids":["x","00000000-0000-0000-0000-000000000001","3fa85f64-5717-4562-b3fc-2c963f66afa6"],"body":"m"}],"propose":[],"discarded":[{"text":"d"}]}\n```',
     );
     expect(r).toEqual({
       remembered: [{ title: "t", body: "b", kind: "rule", source: "" }],
-      merged: [{ memory_ids: ["00000000-0000-0000-0000-000000000001"], title: "", body: "m", kind: "" }],
+      merged: [{ memory_ids: ["3fa85f64-5717-4562-b3fc-2c963f66afa6"], title: "", body: "m", kind: "" }], // 版の桁 0 の id は正式な uuid でないので捨てる（D-129.42・K-145）
       propose: [],
       discarded: [{ text: "d", why: "" }],
     });
