@@ -653,6 +653,41 @@ describe("K-62 AI に任せる：PC の口の入力・失敗・操作の揺れ�
     ]);
   });
 
+  it("K62-API-081 入力：finish の結果の字数は文字（コードポイント）で数える（契約の maxLength と同じ）。4 バイトの字（😀）で 200001 字は 422・200000 字ちょうどは受けて承認待ちになり、成果物に全部入る", async () => {
+    const { p, pc } = await fresh("絵文字の結果の人");
+    const { t, d } = await started(p, pc);
+    const over = await k.finish(pc, d.job_id, { state: "done", result: "😀".repeat(200_001) });
+    expect(over.status).toBe(422);
+    expect((await runRow(d.run_id))["status_id"]).toBe("running");
+    const ok = await k.finish(pc, d.job_id, { state: "done", result: "😀".repeat(200_000) });
+    expect(ok.status).toBe(201);
+    expect(await data(ok)).toMatchObject({ ok: true, outcome: "awaiting_approval" });
+    expect(await artifactVersions(t)).toHaveLength(1);
+    expect(await k.stageOf(t)).toBe("awaiting_approval");
+  });
+
+  it("K62-API-082 入力：progress の文を切る所が 4 バイトの字の途中・文に片割れの字（孤立したサロゲート）がある：500 にせず、文字の単位で切って入れる（片割れは U+FFFD に置き換える）", async () => {
+    const { p, pc } = await fresh("絵文字の様子の人");
+    const { d } = await started(p, pc);
+    expect((await k.progress(pc, d.job_id, { seq: 1, kind: "status", text: "a" + "😀".repeat(300) })).status).toBe(201);
+    expect((await k.progress(pc, d.job_id, { seq: 2, kind: "reply", text: "a" + "😀".repeat(100_000) })).status).toBe(
+      201,
+    );
+    expect((await k.progress(pc, d.job_id, { seq: 3, kind: "status", text: "前\ud83d後" })).status).toBe(201);
+    const ev = await k.q<{ kind: string; text: string }>(
+      "select kind, payload->>'text' as text from bridge_job_events where job_id = $1 order by seq",
+      [d.job_id],
+    );
+    expect(ev.map((e) => [e.kind, [...e.text].length])).toEqual([
+      ["status", 400],
+      ["reply", 100_001],
+      ["status", 3],
+    ]);
+    expect(ev[0]!.text).toBe("a" + "😀".repeat(399));
+    expect(ev[2]!.text).toBe("前�後");
+    expect((await runRow(d.run_id))["status_id"]).toBe("running");
+  });
+
   it("K62-API-035 守り：同じ finish が 2 回届く（同じ冪等キー・回線で送り直し）：1 回分だけ。2 回目は 1 回目と同じ中身。鍵なしの 3 回目は終わった仕事として 404", async () => {
     const { p, pc } = await fresh("2 回送る人");
     const { t, d } = await started(p, pc);

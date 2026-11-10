@@ -179,6 +179,17 @@ describe("K-62 Bridge が契約の口でチケットの仕事を運ぶ", { timeo
     expect(String(fin.body["result"] ?? "").length).toBeLessThanOrEqual(200_000);
   });
 
+  it("K62-BRG-020 結果の字数は文字（コードポイント）で数える（Kaname の契約と同じ）：4 バイトの字（😀）15 万字は UTF-16 では 30 万でも送る・20 万字を超えたら送らずに止まった", async () => {
+    const ok = await runOne(ticketJob("😀".repeat(150_000)), finished);
+    const f1 = finishes(ok)[0]!;
+    expect(f1.body["state"]).toBe("done");
+    expect(String(f1.body["result"])).toContain("😀".repeat(150_000));
+    const over = await runOne(ticketJob("😀".repeat(200_001)), finished);
+    const f2 = finishes(over)[0]!;
+    expect(f2.body["state"]).toBe("stopped");
+    expect(String(f2.body["reason"])).toContain("結果が長すぎて受け取れません");
+  });
+
   it("K62-BRG-006 PC の口が 401（PC の接続が切れた・人が外された）：覚えている印を捨てる（G-14）", async () => {
     takeGone = true;
     let gone = 0;
