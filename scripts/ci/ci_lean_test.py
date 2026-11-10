@@ -502,5 +502,145 @@ class WorkflowTest(unittest.TestCase):
         self.assertEqual(len(re.findall(r"hookTimeout", (ROOT / "apps/api/test/harness.ts").read_text(encoding="utf-8"))), 0)
 
 
+
+class EntryPointTest(unittest.TestCase):
+    """入口（コマンドとして流したとき）。CI の G27・G46・G47・G58 はこの入口を流す（実装の段のカバレッジで足りないと分かった行・K-156）"""
+
+    def run_main(self, fn, argv: list[str], env: dict[str, str | None] | None = None) -> tuple[int, str]:
+        import contextlib, io
+        from unittest import mock
+        out = io.StringIO()
+        patched = {k: v for k, v in (env or {}).items() if v is not None}
+        drop = [k for k, v in (env or {}).items() if v is None]
+        with mock.patch.object(sys, "argv", argv), mock.patch.dict(os.environ, patched), contextlib.redirect_stdout(out):
+            for k in drop:
+                os.environ.pop(k, None)
+            try:
+                rc = fn()
+            except SystemExit as e:
+                rc = e.code
+        return rc, out.getvalue()
+
+    def fake_registry(self, calls: list[list[str]]):
+        def f(names: list[str]) -> dict:
+            calls.append(list(names))
+            return {n: {v: "2025-01-01T00:00:00Z" for _, v in [(0, ver) for nm, ver in stack_gate.lock_packages(open(stack_gate.ROOT + "/pnpm-lock.yaml", encoding="utf-8").read()) if nm == n]} for n in names}
+        return f
+
+    def test_K156_CI_042_stack_gate_writes_record_locally_then_reads_it(self) -> None:
+        from unittest import mock
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        try:
+            rec_path = str(d / "lock_dates.json")
+            calls: list[list[str]] = []
+            with mock.patch.object(stack_gate, "LOCK_DATES", rec_path), mock.patch.object(stack_gate, "registry_times", self.fake_registry(calls)):
+                rc, out = self.run_main(stack_gate.main, ["stack_gate.py"], {"CI": None})
+                self.assertEqual(rc, 0, out)
+                self.assertIn("を直した", out)
+                rec = json.load(open(rec_path, encoding="utf-8"))
+                lock = open(stack_gate.ROOT + "/pnpm-lock.yaml", encoding="utf-8").read()
+                self.assertEqual(rec["lockfile_sha256"], stack_gate.lock_sha(lock))
+                self.assertEqual(len(rec["dates"]), len(stack_gate.lock_packages(lock)))
+                self.assertEqual(len(calls), 1)
+                rc2, out2 = self.run_main(stack_gate.main, ["stack_gate.py"], {"CI": None})
+                self.assertEqual(rc2, 0, out2)
+                self.assertIn("から答えた", out2)
+                self.assertEqual(len(calls), 1)   # 2 回目は聞かない
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_K156_CI_043_stack_gate_in_ci_with_stale_record_is_red_and_keeps_record(self) -> None:
+        from unittest import mock
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        try:
+            rec_path = d / "lock_dates.json"
+            stale = {"_doc": "試し", "lockfile_sha256": "0" * 64, "asked_on": "2026-01-01", "dates": {}}
+            rec_path.write_text(json.dumps(stale), encoding="utf-8")
+            with mock.patch.object(stack_gate, "LOCK_DATES", str(rec_path)), mock.patch.object(stack_gate, "registry_times", self.fake_registry([])):
+                rc, out = self.run_main(stack_gate.main, ["stack_gate.py"], {"CI": "true"})
+            self.assertEqual(rc, 1, out)
+            self.assertIn("S7", out)
+            self.assertEqual(json.loads(rec_path.read_text(encoding="utf-8")), stale)   # CI では書かない
+            self.assertIsNone(stack_gate._load_record() if False else None)
+            with mock.patch.object(stack_gate, "LOCK_DATES", str(d / "無い.json")):
+                self.assertIsNone(stack_gate._load_record())
+            (d / "壊れた.json").write_text("{", encoding="utf-8")
+            with mock.patch.object(stack_gate, "LOCK_DATES", str(d / "壊れた.json")):
+                self.assertIsNone(stack_gate._load_record())
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_K156_CI_044_layer_audit_main_run_json_manual_and_warn(self) -> None:
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        cwd = os.getcwd()
+        try:
+            (d / "log.md").write_text("<!-- decision: D-002\n     status: confirmed -->\n", encoding="utf-8")
+            (d / "old.md").write_text("D-001 を見た\n", encoding="utf-8")
+            layers = [{"file": "a.json", "check": "python3 -c \"print('ok')\""},
+                      {"file": "b.json", "check": "pnpm -s type-check", "elsewhere": "G2"},
+                      {"file": "old.md", "manual": "手で見る"},
+                      {"file": "c.md", "manual": "手で見る"}]
+            cfg = {"decision_traceability": {"products": [], "sources": [{"file": "log.md"}]}, "layer_checks": layers}
+            (d / "map.yaml").write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
+            os.chdir(d)
+            rc, out = self.run_main(layer_audit.main, ["layer_audit.py", "--map", "map.yaml", "--run"])
+            self.assertEqual(rc, 0, out)
+            self.assertIn("OK（G2 の段で流す）", out)
+            self.assertIn("warn 古いかもしれない（最新の参照 D-001 < 正本 D-002）", out)
+            self.assertIn("流した命令 1", out)
+            self.assertIn("PASS — G21", out)
+            rc, out = self.run_main(layer_audit.main, ["layer_audit.py", "--map", "map.yaml", "--run", "--json"])
+            j = json.loads(out)
+            self.assertTrue(j["pass"])
+            self.assertEqual(j["latest"], 2)
+            self.assertIn("sec", [r for r in j["rows"] if r["file"] == "a.json"][0])
+            rc, out = self.run_main(layer_audit.main, ["layer_audit.py", "--map", "map.yaml"])
+            self.assertIn("（--run で実行）", out)
+            cfg["layer_checks"].append({"file": "d.md", "manual": ""})
+            cfg["layer_checks"].append({"file": "e.json", "check": "python3 -c \"import sys; print('★ だめ'); sys.exit(3)\""})
+            (d / "map.yaml").write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
+            rc, out = self.run_main(layer_audit.main, ["layer_audit.py", "--map", "map.yaml", "--run"])
+            self.assertEqual(rc, 2, out)
+            self.assertIn("★ manual の理由が無い", out)
+            self.assertIn("│ ★ だめ", out)
+            self.assertIn("FAIL — G21 検査の無い層 2", out)
+        finally:
+            os.chdir(cwd)
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_K156_CI_045_wiring_main_and_plain_command_part(self) -> None:
+        rc, out = self.run_main(ci_wiring_gate.main, ["ci_wiring_gate.py"])
+        self.assertEqual(rc, 0, out)
+        self.assertIn("PASS — 書いた検査は全部", out)
+        rc, out = self.run_main(ci_wiring_gate.main, ["ci_wiring_gate.py", "--selftest"])
+        self.assertEqual(rc, 0, out)
+        jobs = {"static": {"steps": [{"name": "G9 何か", "run": "docker compose -f infra/docker-compose.dev.yml config -q"}]}}
+        layer = [{"file": "infra/docker-compose.dev.yml", "check": "docker compose -f infra/docker-compose.dev.yml config -q", "elsewhere": "G9"}]
+        self.assertEqual(ci_wiring_gate.check_elsewhere(layer, jobs, {}, {}), [])
+        layer[0]["check"] = "docker compose -f other.yml config -q"
+        self.assertEqual(len(ci_wiring_gate.check_elsewhere(layer, jobs, {}, {})), 1)
+
+
+class FullScopeBaseTest(k107.Base):
+    def test_K156_CI_046_full_scope_without_base_does_not_break(self) -> None:
+        self.r.commit("K-1 feat: mig", packages__a__migrations__0002_sql="select 2;\n", packages__a__src__index_ts=k107.MIG2,
+                      **{"11_tickets__K-1.md": k107.ticket("K-1", ["a"], ["db"])})
+        for base in ("", "zzz"):
+            p = self.r.plan(scope="full", base=base)
+            self.assertEqual(p["mode"], "full")
+            self.assertEqual(p["base"], "")
+            self.assertEqual(p["migration_files"], [])
+
+    def test_K156_CI_047_run_squawk_command(self) -> None:
+        import contextlib, io
+        from unittest import mock
+        for base, want in (("", "比べる元が無い"), ("2b53f5e30d59b3523fd2391ce434931bb07b7c8a", "変えた migration が無い（比べる元 2b53f5e30d）")):
+            out = io.StringIO()
+            with mock.patch.dict(os.environ, {"CI_MIGRATION_FILES": "[]", "CI_BASE": base}), contextlib.redirect_stdout(out):
+                rc = ci_scope.main(["run-squawk"])
+            self.assertEqual(rc, 0)
+            self.assertIn(want, out.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
