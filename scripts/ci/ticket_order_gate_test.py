@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）を、各実装のコミットの時点の depends_on で裁く形に直す試験（K-159）。
-行 ID（K159-CI-011〜021）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+行 ID（K159-CI-011〜025）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
 
 由来：検査は HEAD の tickets.json の depends_on を START..HEAD の全部の実装のコミットに当てていた。K-62 が回 3 で depends_on に
 K-143 を足すと、それより前の K-62 の実装のコミットまで「K-143 の実装が祖先に無い」で赤になった（依存を後から足すたびに過去が赤）。
@@ -10,7 +10,10 @@ K-143 を足すと、それより前の K-62 の実装のコミットまで「K-
     依存の実装のコミット（番号を持つ、文書だけでないコミット）が祖先にあるか、同じコミットに依存の番号もあれば緑。
     依存を足したコミットそのものも、足した後として裁く（そのコミットの版に依存がある）。
     赤の文は「<sha の頭 10 字> <チケット> は <依存> に依存するが…」（前と同じ形）
-  ・その版の tickets.json が読めない・JSON でない・そのチケットが載っていない → rev の版の depends_on で裁く（前と同じ・緩めない）
+  ・その版の tickets.json が無い（ファイルが無い）・JSON でない・そのチケットが載っていない → rev の版の depends_on で裁く（前と同じ・緩めない）
+  ・載っているが depends_on の欄が無い・null → 依存なし（[]・前と同じ）。rev の版でも同じ
+  ・rev の版の tickets.json が無い・JSON でない・"tickets" が無い → RuntimeError（main は FAIL・exit 1。読めなければ空として緑にしない）
+  ・文書だけかを決める生成物の一覧（scripts/ci/generated.json）も rev の版から読む（作業場所の未コミットの一覧は見ない）
   ・枝の先頭（rev）：実装のコミットを持つチケットの、rev の版の depends_on が全部、START..rev の実装のコミットにあること
     （依存が取り込まれていない実装を取り込まない・原則 11）。赤の文は「枝の先頭」と「<チケット> は <依存> に依存する」を含む。
     同じ（チケット, 依存）をコミットごとの赤で既に出していれば、枝の先頭の赤は重ねて出さない（前からの自己試験の数が変わらない）
@@ -127,15 +130,20 @@ class PerCommitTest(Case):
         self.assertTrue(bad[0].startswith(c1[:10]), bad)
 
     def test_K159_CI_015_unreadable_or_missing_falls_back_to_head(self):
-        """K159-CI-015 失敗：そのコミットの版の tickets.json が JSON でない・そのチケットが載っていない → 枝の先頭の depends_on で裁く
+        """K159-CI-015 失敗：そのコミットの版の tickets.json が無い・JSON でない・そのチケットが載っていない → 枝の先頭の depends_on で裁く
         （前と同じ・緩めない）。K-1 が祖先に無いそのコミットを名指しで赤"""
-        for label, broken in (("JSON でない", "{"), ("載っていない", json.dumps({"tickets": [{"id": "K-1", "depends_on": []}]}))):
+        for label, broken in (("JSON でない", "{"), ("載っていない", json.dumps({"tickets": [{"id": "K-1", "depends_on": []}]})),
+                              ("ファイルが無い", None)):
             with self.subTest(label=label):
                 with tempfile.TemporaryDirectory() as t:
                     r = Repo(t)
                     r.tickets({"K-1": [], "K-2": []})
                     start = r.commit("K-0 base", {"README.md": "x"})
-                    c1 = r.commit("K-2 feat: 作る", {"apps/a.ts": "a", "11_tickets/tickets.json": broken})
+                    if broken is None:
+                        os.remove(os.path.join(t, "11_tickets", "tickets.json"))
+                        c1 = r.commit("K-2 feat: 作る", {"apps/a.ts": "a"})
+                    else:
+                        c1 = r.commit("K-2 feat: 作る", {"apps/a.ts": "a", "11_tickets/tickets.json": broken})
                     r.tickets({"K-1": [], "K-2": ["K-1"]})
                     r.commit("K-2 docs: 直す")
                     r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
@@ -185,6 +193,41 @@ class PerCommitTest(Case):
         bad, _, n = self.check()
         self.assertEqual((bad, n), ([], 0))
         c = self.r.commit("K-3 feat: 設定と一緒に作る", {"ai-team.yaml": "flow: {a: 1}\n", "apps/a.ts": "a"})
+        bad, _, n = self.check()
+        self.assertEqual(n, 1)
+        self.assertTrue(any(b.startswith(c[:10]) and "K-3 は K-1" in b for b in bad), bad)
+
+    def test_K159_CI_023_unreadable_head_tickets_raises(self):
+        """K159-CI-023 失敗（TP-TOOL-02）：rev の版の tickets.json が無い・JSON でない・"tickets" が無い → RuntimeError
+        （読めなければ空として全部緑にしない・main は FAIL で exit 1）"""
+        for label, content in (("JSON でない", "{"), ("tickets が無い", json.dumps({"items": []})), ("ファイルが無い", None)):
+            with self.subTest(label=label):
+                with tempfile.TemporaryDirectory() as t:
+                    r = Repo(t)
+                    r.tickets({"K-1": [], "K-2": ["K-1"]})
+                    start = r.commit("K-0 base", {"README.md": "x"})
+                    r.commit("K-2 feat: 作る", {"apps/a.ts": "a"})
+                    if content is None:
+                        os.remove(os.path.join(t, "11_tickets", "tickets.json"))
+                        r.commit("K-2 chore: 一覧を消す")
+                    else:
+                        r.commit("K-2 chore: 一覧を壊す", {"11_tickets/tickets.json": content})
+                    with self.assertRaises(RuntimeError):
+                        g.check(t, "HEAD", start)
+
+    def test_K159_CI_024_missing_or_null_depends_on_is_no_deps(self):
+        """K159-CI-024 入力：そのコミットの版・rev の版で、チケットは載っているが depends_on の欄が無い・null → 依存なし（前と同じ）。緑"""
+        self.r.write("11_tickets/tickets.json", json.dumps({"tickets": [{"id": "K-1"}, {"id": "K-2", "depends_on": None}]}))
+        self.r.commit("K-2 feat: 作る", {"apps/a.ts": "a"})
+        bad, _, n = self.check()
+        self.assertEqual((bad, n), ([], 1))
+
+    def test_K159_CI_025_generated_list_is_read_from_the_version(self):
+        """K159-CI-025 入口（TP-TOOL-03）：文書だけかを決める生成物の一覧（scripts/ci/generated.json）は rev の版から読む。
+        作業場所に未コミットで apps/a.ts を生成物と書いても、apps/a.ts に触る K-3 の実装のコミットは実装に数え、依存が無ければ赤"""
+        self.r.tickets({"K-1": [], "K-2": [], "K-3": ["K-1"]})
+        c = self.r.commit("K-3 feat: 作る", {"apps/a.ts": "a"})
+        self.r.write("scripts/ci/generated.json", json.dumps({"generators": [{"outputs": ["apps/a.ts"]}]}))   # コミットしない
         bad, _, n = self.check()
         self.assertEqual(n, 1)
         self.assertTrue(any(b.startswith(c[:10]) and "K-3 は K-1" in b for b in bad), bad)

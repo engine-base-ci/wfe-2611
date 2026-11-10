@@ -315,7 +315,7 @@ class RepoTest(unittest.TestCase):
         """K143-CI-014 本物の作業場所：07_qa/test-specs の全部に掛けて、台帳（07_qa/test-plan/result-ledger.json）込みで緑。
         台帳は減らすだけ（D-129.51）：取り込みの write が印を付けた行は台帳から消える。K-159 で直した ── 特定のチケット（K57-・K60-）の
         行が残ることは求めず、台帳が本線に入った版（K-143 の取り込み fb2998f7・2444 行）と比べて、増えていない・入れた時点の 2593 行を
-        超えない・消えた行はどれも結果の欄に CI の回の印がある（ci_results.ledger_drift が空）。台帳が空になっても赤にしない（K-150 のゴール）"""
+        超えない・同じ鍵が 2 行無い・消えた行はどれも、もう印の無い PASS でない（ci_results.ledger_drift が空・PM の判断 (ロ)）。台帳が空になっても赤にしない（K-150 のゴール）"""
         r = subprocess.run([sys.executable, str(HERE / "ci_results.py"), "check", "--specs", "07_qa/test-specs/**/*.md",
                             "--records", "07_qa/ci-results", "--ledger", "07_qa/test-plan/result-ledger.json"],
                            cwd=ROOT, capture_output=True, text=True)
