@@ -57,6 +57,12 @@
     main：--db-range true|false（既定 true＝安全な側。空の文字も true）。それ以外の値は終わり方 2 と「--db-range」を含む文
     本物：spec-dependencies.yaml の layer_checks で check に DATABASE_URL か packages/db/test を持ち elsewhere の無い層は全部 db: true。
         spec の組の G27 の段は CI_DB_RANGE（steps.scope.outputs.db_range）を --db-range に渡す
+  scripts/ci/ci_scope.py（日付だけ変わった生成物・テスター Q 回 2）
+    DATE：generated_gate.DATE と同じ形（日付を伏せて比べる）
+    date_only(repo, base, head, changes) -> list[str]：changes のうち、generated.json の outputs に当たり、状態が M で、
+        比べる元と先頭の中身が DATE を伏せると同じもの（作り手が書く「今日の日付」だけの違い）
+    plan：date_only の物は changes から外して数える（範囲・DB の範囲・組の paths・spec_only のどれにも数えない）。
+        p["date_only"] にその並び、reasons に「日付だけ：<パス>」。生成物でないファイル・日付の外も変わった物は外さない
 """
 from __future__ import annotations
 
@@ -86,7 +92,7 @@ import ticket_order_gate  # noqa: E402
 SPEC_RULES = copy.deepcopy(k107.RULES)
 SPEC_RULES["spec"] = {"generated": True, "paths": ["03_architecture/**", "scripts/ci/x.py", "08_api/**", "07_qa/**", "07_functional/**"]}
 # K-107 の Repo.commit は引数の名前の最後の部分を NAMES の表で直す（main_ts → main.ts）。この試験で使う名前を足す
-k107.NAMES.update({"features_json": "features.json", "build_api_py": "build_api.py", "0001_sql": "0001.sql", "x_py": "x.py"})
+k107.NAMES.update({"features_json": "features.json", "build_api_py": "build_api.py", "0001_sql": "0001.sql", "x_py": "x.py", "a_md": "a.md", "new_json": "new.json"})
 GENERATED = {"generators":[{"name": "機能の分解", "run": "python3 05_flow/build_api.py", "outputs": ["07_functional/*"]},
                             {"name": "使ってもらい方", "run": "cd 05_flow && python3 build_md.py", "outputs": ["05_flow/使ってもらい方.md"]}]}
 
@@ -926,6 +932,55 @@ class DbRangePlanTest(k107.Base):
         p = self.r.plan(scope="full")                                    # 全部の回は真（全部流す）
         self.assertIs(p["db_range"], True)
         self.assertEqual(ci_scope.outputs(p)["db_range"], "true")
+
+
+class DateOnlyTest(unittest.TestCase):
+    """作り手が今日の日付を書くので、取り込みの前に作り直すと生成物が日付だけ変わる（テスター Q 回 2）。
+    日付だけの違いは範囲に数えない（generated_gate.py と同じ伏せ方）"""
+
+    FEAT = '{"generated_at": "2026-11-09", "items": [1, 2]}\n'
+
+    def setUp(self) -> None:
+        self.r = SpecRepo()
+        self.r.commit("K-0 chore: 日付つきの生成物", **{"07_functional__features_json": self.FEAT})
+        self.r.base = k107.git(self.r.dir, "rev-parse", "HEAD")
+        self.rules = copy.deepcopy(SPEC_RULES)
+        self.rules["db"]["paths"] = list(self.rules["db"]["paths"]) + ["07_functional/features.json"]
+
+    def tearDown(self) -> None:
+        self.r.close()
+
+    def plan(self) -> dict:
+        return ci_scope.plan(str(self.r.dir), self.r.base, "HEAD", "auto", rules=self.rules, tickets_dir=str(self.r.dir / "11_tickets"),
+                             list_tests=lambda files: {f: [] for f in files}, db_tests=lambda: ["packages/a/test/rows.test.ts"])
+
+    def test_K156_CI_060_date_only_generated_is_not_counted(self) -> None:
+        self.r.commit("K-3 docs: 作り直し", **{"07_functional__features_json": self.FEAT.replace("2026-11-09", "2026-11-10T01:02:03Z")})
+        p = self.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertEqual(p["date_only"], ["07_functional/features.json"])
+        self.assertIs(p["db_range"], False)                     # DB の範囲の生成物でも、日付だけなら DB の範囲にしない
+        self.assertEqual(p["jobs"], {"unit": False, "database": False, "web": False})
+        self.assertEqual(p["spec_only"], [])
+        self.assertTrue(any("日付だけ" in x and "07_functional/features.json" in x for x in p["reasons"]), p["reasons"])
+
+    def test_K156_CI_061_real_change_besides_date_is_counted(self) -> None:
+        self.r.commit("K-3 docs: 中身", **{"07_functional__features_json": self.FEAT.replace("2026-11-09", "2026-11-10").replace("[1, 2]", "[1, 2, 3]")})
+        p = self.plan()
+        self.assertEqual(p["date_only"], [])
+        self.assertIs(p["db_range"], True)
+
+    def test_K156_CI_062_non_generated_or_added_is_not_dropped(self) -> None:
+        # 生成物でないファイルは日付だけでも外さない・足した生成物（M でない）も外さない
+        self.r.commit("K-0 chore: 文書", **{"03_architecture__a_md": "決めた日 2026-11-09\n"})
+        self.r.base = k107.git(self.r.dir, "rev-parse", "HEAD")
+        self.r.commit("K-3 docs: 日付", **{"03_architecture__a_md": "決めた日 2026-11-10\n", "07_functional__new_json": '{"d": "2026-11-10"}\n'})
+        p = self.plan()
+        self.assertEqual(p["date_only"], [])
+        self.assertIn("03_architecture/a.md", p["spec_only"])
+        self.assertIn("07_functional/new.json", p["spec_only"])
+        import generated_gate  # noqa: PLC0415
+        self.assertEqual(ci_scope.DATE.pattern, generated_gate.DATE.pattern)   # 伏せ方は generated_gate と同じ（ずれたら赤）
 
 
 if __name__ == "__main__":
