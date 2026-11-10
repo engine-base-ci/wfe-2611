@@ -16,6 +16,8 @@ TMP="$(mktemp -d)"
 PORT="${FUZZ_PORT:-4791}"
 
 pnpm -s exec tsx packages/db/src/cli.ts columns --check 08_api/db-columns.json
+# 的に、本物のサーバーが差す hooks が全部入っているか（外すのは理由つきの台帳だけ・K-62・D-095）
+python3 scripts/ci/fuzz_targets.py
 
 FUZZ_BUILT="$TMP/built.json" FUZZ_PORT="$PORT" pnpm -s exec tsx apps/api/test/fuzz/server.ts > "$TMP/server.log" 2>&1 &
 SRV=$!
@@ -30,5 +32,5 @@ echo "[G36] 作った口 ${#OPS[@]} 本を回す（例 $N 個ずつ）"
 [ "${#OPS[@]}" -eq 0 ] && { echo "[G36] 作った口が無い"; exit 0; }
 INC=()
 for o in "${OPS[@]}"; do INC+=(--include-operation-id "$o"); done
-"$ST" run 08_api/openapi.yaml -u "http://127.0.0.1:$PORT" -H "Authorization: Bearer boss" "${INC[@]}" \
+"$ST" --config-file scripts/ci/schemathesis.toml run 08_api/openapi.yaml -u "http://127.0.0.1:$PORT" -H "Authorization: Bearer boss" "${INC[@]}" \
   -n "$N" -w 2 --seed 20261103 --no-color

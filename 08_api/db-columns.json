@@ -194,6 +194,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "approval_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "bridge_job_id": {
     "type": "uuid",
     "nullable": true
@@ -238,6 +242,10 @@
     "type": "text",
     "nullable": true
    },
+   "phase": {
+    "type": "text",
+    "nullable": true
+   },
    "procedure_id": {
     "type": "uuid",
     "nullable": true
@@ -265,6 +273,10 @@
    "tenant_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "tokens_in": {
     "type": "integer",
@@ -1002,6 +1014,10 @@
    },
    "stopped_reason": {
     "type": "text",
+    "nullable": true
+   },
+   "taken_session_id": {
+    "type": "uuid",
     "nullable": true
    },
    "tenant_id": {

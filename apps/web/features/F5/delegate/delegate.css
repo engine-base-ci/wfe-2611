@@ -1,0 +1,39 @@
+/* AI に任せる（K-62）：上の帯と右の実行の記録。狭い幅では縦に並ぶ（横にはみ出さない・K62-UI-020） */
+.k62-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--k-space-5, 20px);
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .k62-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    align-items: start;
+  }
+}
+.k62-band,
+.k62-runlog {
+  display: grid;
+  gap: var(--k-space-3, 12px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k62-band-line {
+  margin: 0;
+}
+.k62-runlog ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--k-space-2, 8px);
+}
+.k62-runlog li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-space-2, 8px);
+  align-items: baseline;
+}
+.k62-runlog time {
+  font-variant-numeric: tabular-nums;
+}

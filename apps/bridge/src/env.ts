@@ -70,7 +70,10 @@ export function bridgeEnv(name: BridgeEnvKey): string | undefined {
   return process.env[name];
 }
 
-/** 子プロセスに渡す環境。PATH は本人のシェルのもの。extra は Bridge が決めた値（KANAME_* 等）だけ */
+/** PC の印（kpc_…）の形。子（Claude Code・道具のサーバー）に渡る環境には、名前に関わらず入れない（K-62） */
+const DEVICE_TOKEN_VALUE = /kpc_[A-Za-z0-9_-]{20,}/;
+
+/** 子プロセスに渡す環境。PATH は本人のシェルのもの。extra は Bridge が決めた値（KANAME_* 等）だけ。PC の印の値は落とす */
 export function childEnv(
   path: string,
   extra: Record<string, string> = {},
@@ -78,10 +81,10 @@ export function childEnv(
 ): NodeJS.ProcessEnv {
   const out: NodeJS.ProcessEnv = {};
   for (const [k, v] of Object.entries(from)) {
-    if (v === undefined || DENY.test(k)) continue;
+    if (v === undefined || DENY.test(k) || DEVICE_TOKEN_VALUE.test(v)) continue;
     if ((ALLOW as readonly string[]).includes(k) || ALLOW_PREFIX.some((p) => k.startsWith(p))) out[k] = v;
   }
   out["PATH"] = path;
-  for (const [k, v] of Object.entries(extra)) if (!DENY.test(k)) out[k] = v;
+  for (const [k, v] of Object.entries(extra)) if (!DENY.test(k) && !DEVICE_TOKEN_VALUE.test(v)) out[k] = v;
   return out;
 }

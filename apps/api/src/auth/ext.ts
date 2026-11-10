@@ -1,8 +1,8 @@
 // 認証の拡張ルート（/api/auth-ext/*・境界 B2 の外側の口）。Better Auth の /api/auth/* に無い「Kaname としての段取り」：
 //   登録（会社を作る hook はパッケージ側）・ロック付きログイン・招待の下見と受諾・Bridge の接続コード・資格情報を預ける（関門 C8）
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
-import { agentToolRoutes, issueToolToken } from "./agent-tools.js";
-import { AGENT_CONVENTIONS, BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
+import { agentToolRoutes } from "./agent-tools.js";
+import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
 import { Hono } from "hono";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
@@ -18,7 +18,6 @@ import type { ObjectStore } from "@kaname/storage";
 import { agentRoutes, jobOptions } from "./agent.js";
 import { agentStreamRoutes } from "./agent-stream.js";
 import type { MemberHub } from "@kaname/db/listen";
-import { parseDigest, takeRemember } from "./memory.js";
 
 export interface AuthExtDeps {
   auth: Auth;
@@ -510,10 +509,7 @@ export function authExt(d: AuthExtDeps): Hono {
   const bridgeAlive = async (sid: string): Promise<boolean> =>
     // 生の select は行レベルの制御に弾かれて 0 件になる。判定は関数の中で（0036）
     (await d.appPool.query<{ ok: boolean }>("select app.bridge_session_alive($1) as ok", [sid])).rows[0]?.ok === true;
-  /** 仕事の問い合わせ（D-097）。待ち受けは最長 20 秒（関数の上限より十分短く）・中で 1 秒ごとに見る・動いていないときは 5 秒あける */
-  const TAKE_WAIT_MAX_SEC = 20;
-  const TAKE_TICK_MS = 1_000;
-  const TAKE_IDLE_MS = 5_000;
+  // 仕事を取る・途中の様子・結末を返す・止める合図・道具は契約の口（/api/v1/bridge/jobs/…）に移した（K-62・apps/api/src/features/F5/delegate/）
   const GONE = (c: Parameters<typeof bad>[0]) =>
     bad(c, 410, "SESSION_GONE", "この端末の接続は切れています。つなぎ直してください");
 
@@ -529,238 +525,6 @@ export function authExt(d: AuthExtDeps): Hono {
     return c.json({ data: { browser: b.browser } });
   });
 
-  // 仕事を 1 件もらう（無ければ空）。1 回の問い合わせで「生きている」も知らせる（D-097）。
-  // 仕事が動いている最中（直近 5 分に入った・終わった）だけ、wait_sec まで待ち受けて、入ったらすぐ返す。
-  // それ以外はすぐ返し、次に聞くまでの間（next_ms）を伝える。画面も API も Vercel なので、回数と長さがそのまま費用になる
-  const takeJob = async (sid: string) =>
-    (
-      await d.appPool.query<{
-        job_id: string;
-        prompt: string;
-        agent_session_id: string | null;
-        conversation_id: string | null;
-        permission_mode: string;
-        model: string | null;
-        effort: string | null;
-        tools: string[] | null;
-        allowed_tools: string[] | null;
-        attachments: { id: string; name: string; mime: string; size: number }[];
-        kind: "chat" | "login_check";
-        credential_id: string | null;
-      }>("select * from app.bridge_take_job($1)", [sid])
-    ).rows[0] ?? null;
-  app.post("/bridge/take", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    const b = (await c.req.json().catch(() => ({}))) as { wait_sec?: unknown; protocol?: unknown; idle?: unknown };
-    const wait = Math.max(0, Math.min(TAKE_WAIT_MAX_SEC, Number(b.wait_sec) || 0));
-    const poll = await d.appPool.query<{ hot: boolean | null }>("select app.bridge_poll($1) as hot", [sid]);
-    const hot = poll.rows[0]?.hot;
-    if (hot === null || hot === undefined) return GONE(c);
-    // 古い Bridge には仕事を渡さない（答えを落とす・関門が無い）。生きている知らせだけ受ける（E-CONN-012）
-    if (!(Number(b.protocol) >= BRIDGE_PROTOCOL_MIN))
-      return c.json({ data: null, next_ms: TAKE_IDLE_MS, outdated: true });
-    // Bridge が「いま何も動かしていない」と言って来たら、動いたまま残った仕事（途中で止まった Bridge の残り）を理由つきで止める
-    if (b.idle === true) await d.appPool.query("select app.bridge_sweep_orphans($1)", [sid]);
-    const until = Date.now() + (hot ? wait * 1000 : 0);
-    for (;;) {
-      const job = await takeJob(sid);
-      if (job) {
-        // 会話の仕事には、効かせる記憶（上の層の決まり → 本人の好み）を一緒に渡す（D-105.7・D-105.8）
-        const mem = job.conversation_id
-          ? ((await d.appPool.query<{ v: unknown }>("select app.bridge_job_memories($1, $2) as v", [sid, job.job_id]))
-              .rows[0]?.v ?? [])
-          : [];
-        // 台帳で禁止・銀行のドメイン（D-107.1）。どの仕事にも渡す（全部許可でも PC の上で止める）。資格情報は渡さない（D-107.7）
-        const blocked =
-          (await d.appPool.query<{ v: unknown }>("select app.bridge_blocked_domains() as v")).rows[0]?.v ?? [];
-        // 会話の仕事には Kaname の道具の鍵を付ける（D-110.3）。その仕事の間だけ・本人の会社にだけ書ける
-        const tool_token = job.conversation_id ? await issueToolToken(d.appPool, sid, job.job_id) : null;
-        // 会話の決まりも一緒に渡す（Kaname が正本。Bridge を配り直さずに直せる）
-        const conventions = job.conversation_id ? AGENT_CONVENTIONS : null;
-        // AI が使うブラウザ（D-120.1）：仕事の指定 → 会話の仕事なら端末の選択 → それ以外は使わない
-        const browser =
-          (await d.appPool.query<{ b: string | null }>("select app.bridge_job_browser($1, $2) as b", [sid, job.job_id]))
-            .rows[0]?.b ?? "off";
-        return c.json({ data: { ...job, memories: mem, blocked, tool_token, conventions, browser }, next_ms: 0 });
-      }
-      if (Date.now() >= until) break;
-      await new Promise((r) => setTimeout(r, TAKE_TICK_MS));
-    }
-    // 待ち受けた後は間をあけずに聞き直してもらう。動いていないときは間をあける（最初の 1 件は最大この間だけ遅れる）
-    return c.json({ data: null, next_ms: hot && wait > 0 ? 0 : TAKE_IDLE_MS });
-  });
-
-  // 結末を返す。止まったものは stopped のまま置く（自動で戻さない・D-090）
-  app.post("/bridge/finish", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as {
-      job_id?: string;
-      state?: string;
-      result?: string;
-      reason?: string;
-      agent_session_id?: string;
-    };
-    if (!b.job_id || !b.state) return bad(c, 422, "VALIDATION_FAILED", "仕事の id と結末が要ります");
-    // 記憶の毎朝のまとめの仕事なら、答え（JSON）を読んで記憶に入れる（D-105.4）。会話には出さない
-    const dg = await d.appPool.query<{ id: string | null }>("select app.digest_of_job($1, $2) as id", [sid, b.job_id]);
-    const digestId = dg.rows[0]?.id ?? null;
-    // 「覚えて」の印は返事から消し、個人の記憶に入れる（D-105.1）
-    const rem =
-      b.state === "done" && b.result && !digestId
-        ? takeRemember(b.result)
-        : { text: b.result ?? null, items: [] as string[] };
-    const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_finish_job($1, $2, $3, $4, $5, $6) as ok", [
-      sid,
-      b.job_id,
-      b.state,
-      rem.text ?? null,
-      b.reason ?? null,
-      b.agent_session_id ?? null,
-    ]);
-    if (!r.rows[0]?.ok) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は見つかりません");
-    // この仕事で道具から渡した成果物を、書かれた返事に結ぶ（返事の下にカードが並ぶ・D-121.3）
-    await d.appPool.query("select app.artifact_attach_job($1)", [b.job_id]);
-    if (rem.items.length) await d.appPool.query("select app.agent_remember($1, $2, $3)", [sid, b.job_id, rem.items]);
-    if (digestId) {
-      const parsed = b.state === "done" && b.result ? parseDigest(b.result) : null;
-      await d.appPool.query("select app.agent_digest_apply($1, $2, $3, $4::jsonb, $5)", [
-        sid,
-        digestId,
-        !!parsed,
-        parsed ? JSON.stringify(parsed) : null,
-        parsed
-          ? null
-          : b.state === "done"
-            ? "自分のAI の答えが決まった形（JSON）ではありませんでした。もう一度押してください"
-            : (b.reason ?? "止まりました"),
-      ]);
-    }
-    return c.json({ data: { ok: true } });
-  });
-
-  // ---- 1 行 1 イベント（D-093）：途中経過・会話の id・確認 を Bridge が流し、本人が答える
-  /** 道具の呼び出し 1 回（D-100.2）：名前・対象・成功／失敗・時間だけ。入力や返り値の全文は持たない */
-  const toolRecord = (v: unknown) => {
-    const t = (v ?? {}) as Record<string, unknown>;
-    const ms = Number(t["ms"]);
-    return {
-      name: String(t["name"] ?? "").slice(0, 60),
-      target: String(t["target"] ?? "").slice(0, 160),
-      ok: t["ok"] === true,
-      ms: Number.isFinite(ms) && ms >= 0 ? Math.round(ms) : null,
-    };
-  };
-  /** 使った量（D-100.1）：数だけ。知らない欄は捨てる */
-  const usageRecord = (v: unknown) => {
-    const u = (v ?? {}) as Record<string, unknown>;
-    const n = (k: string) => (Number.isFinite(Number(u[k])) && u[k] !== null && u[k] !== "" ? Number(u[k]) : null);
-    return {
-      turns: n("turns"),
-      duration_ms: n("duration_ms"),
-      api_ms: n("api_ms"),
-      input_tokens: n("input_tokens"),
-      output_tokens: n("output_tokens"),
-      cache_read_tokens: n("cache_read_tokens"),
-      cache_write_tokens: n("cache_write_tokens"),
-      cost_usd: n("cost_usd"),
-    };
-  };
-  /** 手順のチェックリスト（D-104.8）：中身・済んだか だけ */
-  const planRecord = (v: unknown) => ({
-    todos: (Array.isArray(v) ? v : []).slice(0, 30).map((x) => {
-      const t = (x ?? {}) as Record<string, unknown>;
-      const s = String(t["status"] ?? "pending");
-      return {
-        content: String(t["content"] ?? t["activeForm"] ?? "").slice(0, 200),
-        status: ["pending", "in_progress", "completed"].includes(s) ? s : "pending",
-      };
-    }),
-  });
-  /** 台帳で止めた道具（D-107.4・D-107.5）：道具の名前・宛先のドメイン・サービス・対象（切る） */
-  const blockedRecord = (v: unknown) => {
-    const x = (v ?? {}) as Record<string, unknown>;
-    return {
-      tool: String(x["tool"] ?? "").slice(0, 80),
-      domain: String(x["domain"] ?? "").slice(0, 200),
-      service: String(x["service"] ?? "").slice(0, 120),
-      target: String(x["target"] ?? "").slice(0, 300),
-    };
-  };
-  /** 使用量（D-104.16）：枠・割合・戻る時刻 だけ */
-  const limitRecord = (v: unknown) => ({
-    windows: (Array.isArray(v) ? v : []).slice(0, 4).flatMap((x) => {
-      const w = (x ?? {}) as Record<string, unknown>;
-      const win = String(w["window"] ?? "");
-      const u = Number(w["utilization"]);
-      const r = Number(w["resets_at"]);
-      return ["five_hour", "week"].includes(win) && Number.isFinite(u) && Number.isFinite(r)
-        ? [{ window: win, utilization: Math.max(0, Math.min(1, u)), resets_at: r }]
-        : [];
-    }),
-  });
-  // 途中経過（D-093.7）と会話の id（D-093.4）。届かなくても Bridge は仕事を続ける
-  app.post("/bridge/progress", async (c) => {
-    const sid = await bridgeSession(c);
-    if (!sid) return bad(c, 401, "UNAUTHENTICATED", "この Bridge は分かりません");
-    if (!(await bridgeAlive(sid))) return GONE(c);
-    const b = (await c.req.json().catch(() => ({}))) as {
-      job_id?: string;
-      seq?: number;
-      kind?: string;
-      text?: string;
-      agent_session_id?: string;
-      model?: unknown;
-      tool?: unknown;
-      usage?: unknown;
-      todos?: unknown;
-      windows?: unknown;
-      blocked?: unknown;
-    };
-    if (
-      !b.job_id ||
-      !["init", "progress", "tool", "usage", "status", "plan", "limit", "reply", "blocked", "notice"].includes(
-        b.kind ?? "",
-      )
-    )
-      return bad(
-        c,
-        422,
-        "VALIDATION_FAILED",
-        "仕事の id と kind（init／progress／tool／usage／status／plan／limit／reply／blocked／notice）が要ります",
-      );
-    // 中身の全文は受け取らない（D-100.3）。決めた欄だけを取り出し、長さも切る
-    const payload =
-      b.kind === "init"
-        ? {
-            agent_session_id: b.agent_session_id ?? null,
-            model: typeof b.model === "string" && /^[a-z0-9.-]{1,60}$/i.test(b.model) ? b.model : null,
-          }
-        : b.kind === "tool"
-          ? toolRecord(b.tool)
-          : b.kind === "usage"
-            ? usageRecord(b.usage)
-            : b.kind === "plan"
-              ? planRecord(b.todos)
-              : b.kind === "limit"
-                ? limitRecord(b.windows)
-                : b.kind === "reply"
-                  ? { text: String(b.text ?? "").slice(0, 200000) }
-                  : b.kind === "blocked"
-                    ? blockedRecord(b.blocked)
-                    : { text: String(b.text ?? "").slice(0, 400) };
-    const r = await d.appPool.query<{ ok: boolean }>("select app.bridge_progress($1, $2, $3, $4, $5::jsonb) as ok", [
-      sid,
-      b.job_id,
-      Number(b.seq ?? 0),
-      b.kind,
-      JSON.stringify(payload),
-    ]);
-    if (!r.rows[0]?.ok) return bad(c, 404, "JOB_NOT_FOUND", "その仕事は動いていません");
-    return c.json({ data: { ok: true } });
-  });
   // 確認（D-093.3）：CLI が「これを実行していいか」と聞いた。画面に出して本人の答えを待つ
   app.post("/bridge/ask", async (c) => {
     const sid = await bridgeSession(c);

@@ -511,6 +511,14 @@ INPUTS = {
                                            "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
                                            "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
+    # K-62：AI に任せる。任せる体は空（担当者・人・プロンプトは入れさせない・押した人の AI が動く・D-128.138）。PC の口は仕事の id を道すじで受ける（体に入れない）
+    "delegateTicket": ("TicketDelegateInput", {}),
+    "takeBridgeJob": ("BridgeTakeInput", {"wait_sec": "integer", "protocol": "integer", "idle": "boolean"}),
+    "reportJobProgress": ("BridgeProgressInput", {"seq": "integer", "kind": "string", "text": "string", "agent_session_id": "uuid", "model": "string",
+                                                  "tool": "any", "usage": "any", "todos": "any", "windows": "any", "blocked": "any"}),
+    # 返事・結果・途中の様子の文は自由に書く欄で、契約の形に上限を置かない（D-130.1・守りは入口の送る量 1MB）。result だけは口が 200000 字で断る（VALUE_RANGES）。途中の様子の文は口が 200000 字（返事）・400 字（1 行）に切る（人が書く欄でない Bridge の知らせ）。止まった理由（reason）は上限を置かない（D-130.4）。agent_session_id は Claude Code のセッションの id（uuid・D-129.42）
+    "finishBridgeJob": ("BridgeFinishInput", {"state": "string", "result": "string", "reason": "string", "agent_session_id": "uuid"}),
+    "callKanameTool": ("BridgeToolInput", {"input": "any"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -532,6 +540,15 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    # AI に任せる（K-62・D-128.138）。PC をつないでいない（積まない）・走っている実行がある（今の run_id）・承認待ち／完了。冪等キーは汎用のまま
+    "delegateTicket": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-013", "run_id": ""}, "errors": ["E-CONN-001", "E-CONF-013", "E-CONF-014"],
+         "trigger": "PC を一度もつないでいない・外した（E-CONN-001）／同じチケットに走っている実行がある（E-CONF-013・今の run_id）／承認待ち・完了（E-CONF-014）",
+         "ears_form": "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）",
+         "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"},
+    ],
     # 規約に同意する（K-53・D-128.146）。版が古い（409・今の版の並び current）・同意の印が無い（422）。冪等キーは使わない（同じ版の 2 回目は 1 回目の行のまま）
     "consentToTerms": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-012", "current": []}, "errors": ["E-CONF-012"],
@@ -608,6 +625,11 @@ NOT_NULL_ANSWERS = {
     "listMyDevices.health": "口が coalesce で空の並び [] を返し、null にはしない（sessions.health は null 可）",
     "claimPairingCode.device_label": "口が cleanLabel で空なら「この PC」にそろえて返し、null にはしない（sessions.device_label は null 可）",
     "stepUp.step_up_at": "口が本人確認を取り直したその時刻を返し、null にはしない（sessions.step_up_at は null 可）",
+    # K-62：実行の 1 件は、任せる関数（phase make）と K-63 の承認の関数（phase execute）が ticket_id・phase を必ず入れた行だけを返す（action_runs の列は会話の実行のために null 可）
+    "getActionRun.ticket_id": "チケットの実行だけを読む口。任せる関数と承認の関数が ticket_id を必ず入れる（action_runs.ticket_id は会話の実行のために null 可）",
+    "getActionRun.phase": "チケットの実行だけを読む口。任せる関数が make・承認の関数が execute を必ず入れる（action_runs.phase は会話の実行のために null 可）",
+    "listTicketRuns.ticket_id": "チケットの実行の一覧。どの行も ticket_id を持つ（action_runs.ticket_id は会話の実行のために null 可）",
+    "listTicketRuns.phase": "チケットの実行の一覧。どの行も make か execute を持つ（action_runs.phase は会話の実行のために null 可）",
 }
 # 類 E（K-144 ⑯・回 9）：口が「無い」ことで 422 にする入力の欄（必須の欄）。契約の入力の形の required と x-required-by: hooks になる
 #   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
@@ -621,11 +643,15 @@ REQUIRED_INPUTS = {
     "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
     "createTicket": ["title", "scope_id", "kind_id", "assignee_member_id", "due_on"],   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
     "updateMemory": ["body"],                                            # apps/api/src/hooks/agent.ts:63（覚えることが空です）
+    "reportJobProgress": ["kind"],                                       # apps/api/src/features/F5/delegate/bridge.ts（kind が無い・決まった値でないは 422・K62-API-032）
+    "finishBridgeJob": ["state"],                                        # apps/api/src/features/F5/delegate/bridge.ts（state が無い・done／stopped／cancelled 以外は 422・K62-API-032）
 }
 # 類 F（K-144 ⑲）：道の値を口が値域つきで断る口（operationId → 道の値の名前 → pattern）。名前が id で終わる道の値は uuid のまま
 PATH_PATTERNS = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（ほかの英小文字だけは 422）・202〜204（ほかは目録の名前か 404）
     "downloadBridgeRelease": {"name": r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$"},
+    # apps/api/src/features/F5/delegate/tools.ts（道具の名前は ticket_read と会話の道具 8 つだけ。それ以外は 422・K62-API-032）
+    "callKanameTool": {"name": "^(?:ticket_read|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$"},
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
@@ -658,6 +684,7 @@ VALUE_RANGES = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
+    "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
@@ -676,6 +703,8 @@ UNEXPRESSIBLE_422 = {
 HEADERS = {
     "getSignupStatus": ["x-signup-token"],
     "resendSignupEmail": ["x-signup-token"],
+    # K-62：道具の鍵（その仕事の間だけ・DB にはハッシュだけ）。PC の印（x-bridge-session）と両方が要る（D-110）
+    "callKanameTool": ["x-kaname-tool-token"],
 }
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
@@ -693,7 +722,7 @@ RESPONSES = {
     "getCloneNow": ("CloneNow", {"current": "object", "next": "array", "waiting_approvals": "integer", "stopped": "integer"}),
     "getCloneGrowth": ("CloneGrowth", {"delegated": "integer", "passed_without_edit_rate": "number", "saved_hours": "number", "trend": "array", "often_fixed": "array"}),
     "countKnows": ("KnowsCounts", {"rules": "integer", "work_types": "integer", "memories": "integer", "candidates": "integer"}),
-    "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string", "used": "array", "result": "string"}),
+    "listCloneActivity": ("ActivityItem", {"kind": "string", "at": "string", "title": "string", "ticket_id": "string?", "used": "array", "result": "string"}),   # action_runs.ticket_id は null 可（K-62 が足した列）
     # 型の後ろの ? は null を許す（申し込みが無い・期限が無いときは null）
     "createSignup": ("SignupCreated", {"email": "string", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "expires_at": "string", "signup_token": "string"}),
     "resendSignupEmail": ("SignupResent", {"email": "string?", "sent": "boolean", "mail_error": "string?", "mail_error_kind": "string?", "pending": "boolean", "registered": "boolean", "expired": "boolean"}),
@@ -724,12 +753,25 @@ RESPONSES = {
     "downloadBridgeRelease": ("BridgeReleaseLink", {"url": "string", "expires_at": "string"}),
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "revoke_reason": "string?"}),
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?"}),
+    # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object"}),
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
-    "takeBridgeJob": ("BridgeJob", {"job": "object", "allowed_tools": "array", "forbidden_domains": "array", "rules": "array"}),
-    "getJobControl": ("JobControl", {"stop": "boolean", "steers": "array"}),
+    # K-62：仕事は行の中身をそのまま job に（無ければ null）。古い Bridge には渡さず outdated（E-CONN-012）
+    "takeBridgeJob": ("BridgeJob", {"job": "object?", "forbidden_domains": "array", "next_ms": "integer", "outdated": "boolean"}),
+    "getJobControl": ("JobControl", {"stop": "boolean", "reason": "string?", "steers": "array"}),   # 止める理由が無ければ null（K-62・Q2 回 2）
+    "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
+    "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
+    "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
+    # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。
+    #   まだ無い時刻・途中の 1 行・止まった理由・差し戻しの理由は null（? は null を許す・Q2 回 2）
+    "getActionRun": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
+                                        "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
+                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "checks": "object"}),
+    "listTicketRuns": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
+                                          "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
+                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "checks": "object"}),
     "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string?"}),
     "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string?"}),
     "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
@@ -866,7 +908,7 @@ PERMS = {
     "lintTestSpecs": ("write", "そのグループの人", False),
     "listChecks": ("read", "そのチケットを見られる人", False),
     "markHumanCheck": ("approver", "③ 人の確認を割り当てられた人（承認する人）", False),
-    "delegateTicket": ("assignee", "担当者だけが自分の分身に任せられる", False),
+    "delegateTicket": ("write", "そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）", False),
     "dryRunTicket": ("assignee", "担当者（宛先は自分に差し替える）", False),
     "listTicketRuns": ("read", "そのチケットを見られる人", False),
     "getActionRun": ("read", "そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ", False),
