@@ -7,6 +7,7 @@ import { beforeAll, afterAll, describe, expect, it } from "vitest";
 import { issueToolToken } from "../src/auth/agent-tools.js";
 import {
   BAD_IDS,
+  newConversation,
   X,
   admin,
   app,
@@ -264,5 +265,97 @@ describe("K-145 D-134.5：人が打つ資格情報のサービス名と資料の
     expect(
       (await admin.query<{ name: string }>("select name from attachments where id = $1", [att.id])).rows[0]!.name,
     ).toBe(fileName);
+  }, 60_000);
+});
+
+describe("K-145 PM の判断（D-130.4・D-134.5 の適用・精査 R 回 1 追加-3）：成果物の名前・会話の検索語・止めた理由も黙って切らない", () => {
+  it("K145-API-020 成果物を名前 300 字で書き出すと答え・一覧・DB の名前が一字も欠けない。名前を 300 字で変えても同じ（app.artifact_rename の left 80 を外す）", async () => {
+    const r = await ready();
+    const conv = await newConversation(r.H);
+    const msg = (
+      await admin.query<{ id: string }>(
+        "insert into messages (tenant_id, conversation_id, body, kind) values ($1, $2, $3, 'ai') returning id",
+        [r.tenant, conv, "# 見出し\n本文"],
+      )
+    ).rows[0]!.id;
+    const t1 = `成果物の名前${"け".repeat(290)}終わり`;
+    expect([...t1].length).toBe(300);
+    const c = await post("/agent/artifacts", { message_id: msg, text: "# 見出し\n本文", title: t1 }, r.H);
+    expect(
+      c.status,
+      await c
+        .clone()
+        .text()
+        .then((t) => t.slice(0, 120)),
+    ).toBe(201);
+    const art = ((await c.json()) as { data: { id: string; title: string } }).data;
+    expect(art.title).toBe(t1);
+    expect(
+      (await admin.query<{ title: string }>("select title from artifacts where id = $1", [art.id])).rows[0]!.title,
+    ).toBe(t1);
+    const t2 = `変えた名前${"こ".repeat(291)}終わり`;
+    expect([...t2].length).toBe(300);
+    expect((await req("PATCH", `/agent/artifacts/${art.id}`, { title: t2 }, r.H)).status).toBe(200);
+    expect(
+      (await admin.query<{ title: string }>("select title from artifacts where id = $1", [art.id])).rows[0]!.title,
+    ).toBe(t2);
+    const list = await data<{ id: string; title: string }[]>(
+      req("GET", `/agent/artifacts?conversation_id=${conv}`, undefined, r.H),
+    );
+    expect(list.find((a) => a.id === art.id)?.title).toBe(t2);
+  }, 60_000);
+
+  it("K145-API-021 会話の検索語 90 字は全部で探す（頭の 80 字が同じ別の会話は出ない）。止めたまま本番への理由 300 字は ai_employees と証跡に一字も欠けずに残る", async () => {
+    const r = await ready();
+    const head = `検索の頭${"さ".repeat(76)}`;
+    expect([...head].length).toBe(80);
+    const a = await newConversation(r.H);
+    const b = await newConversation(r.H);
+    const ta = `${head}${"甲".repeat(10)}`;
+    expect((await req("PATCH", `/agent/conversations/${a}`, { title: ta }, r.H)).status).toBe(200);
+    expect((await req("PATCH", `/agent/conversations/${b}`, { title: `${head}${"乙".repeat(10)}` }, r.H)).status).toBe(
+      200,
+    );
+    const hits = await data<{ id: string }[]>(
+      req("GET", `/agent/conversations?q=${encodeURIComponent(ta)}`, undefined, r.H),
+    );
+    expect(hits.map((x) => x.id)).toContain(a);
+    expect(
+      hits.map((x) => x.id),
+      "頭の 80 字だけで探している",
+    ).not.toContain(b);
+    const m = (
+      await admin.query<{ id: string }>(
+        "insert into members (tenant_id, scope_id, kind_id, display_name, role_id) values ($1, $2, 'ai_employee', 'K145 の AI社員', 'staff') returning id",
+        [r.tenant, r.scope],
+      )
+    ).rows[0]!.id;
+    const ai = (
+      await admin.query<{ id: string }>(
+        "insert into ai_employees (tenant_id, scope_id, member_id, created_by) values ($1, $2, $3, $4) returning id",
+        [r.tenant, r.scope, m, r.member],
+      )
+    ).rows[0]!.id;
+    const reason = `止める理由${"し".repeat(291)}終わり`;
+    expect([...reason].length).toBe(300);
+    const x = await post("/onboard/golive/pause", { employee_id: ai, paused: true, reason }, r.H);
+    expect(
+      x.status,
+      await x
+        .clone()
+        .text()
+        .then((t) => t.slice(0, 120)),
+    ).toBe(200);
+    expect(
+      (await admin.query<{ paused_reason: string }>("select paused_reason from ai_employees where id = $1", [ai]))
+        .rows[0]!.paused_reason,
+    ).toBe(reason);
+    const ev = (
+      await admin.query<{ payload: { reason: string } }>(
+        "select payload from audit_events where target_id = $1 and action = 'golive.employee_paused' order by created_at desc limit 1",
+        [ai],
+      )
+    ).rows[0]!;
+    expect(ev.payload.reason).toBe(reason);
   }, 60_000);
 });
