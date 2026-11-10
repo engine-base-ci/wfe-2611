@@ -49,6 +49,14 @@
     plan：scope=full でも base が 40 桁で有効なら変えたファイルを読み、migration_files と wide の db を出してから全部に倒す。
         git の R（名前を変えた migration）の新しい名前を added_mig に数え、並びの付け替え（古い名前の行を消し新しい名前の行を足す）は DB の範囲
     squawk_plan(files, base) -> (argv | None, message)：空なら base 無し「比べる元が無いので流さない」／base あり「変えた migration が無い（比べる元 <10 字>）」
+  scripts/ci/ci_scope.py と layer_audit.py（G27 の DB の層は DB を触った回だけ・2026-11-10 answer=d72d35c329ba・D-133.6）
+    plan：p["db_range"]（真偽）＝ DB の範囲（db.paths：migration・行の守りの SQL・権限の表・引き金）を触った回。全部の回は真。
+        outputs(p)["db_range"] は "true" / "false"
+    audit(cfg, run, runner=…, db_range=True)：層の `db: true` は db_range が偽なら流さず kind「範囲」・result に「DB の範囲を触っていない」・
+        bad に数えない。真なら今までどおり流す。`db` が真偽でない層は kind「無」で bad（形の誤り）
+    main：--db-range true|false（既定 true＝安全な側。空の文字も true）。それ以外の値は終わり方 2 と「--db-range」を含む文
+    本物：spec-dependencies.yaml の layer_checks で check に DATABASE_URL か packages/db/test を持ち elsewhere の無い層は全部 db: true。
+        spec の組の G27 の段は CI_DB_RANGE（steps.scope.outputs.db_range）を --db-range に渡す
 """
 from __future__ import annotations
 
@@ -809,6 +817,115 @@ class FullScopeBaseTest(k107.Base):
                 rc = ci_scope.main(["run-squawk"])
             self.assertEqual(rc, 0)
             self.assertIn(want, out.getvalue())
+
+
+class DbRangeLayerTest(unittest.TestCase):
+    """G27 の DB の層は DB を触った回だけ（決める人 2026-11-10 answer=d72d35c329ba・D-133.6）"""
+
+    DB_CMD = "bash -c 'pnpm exec vitest run packages/db/test'"
+
+    def cfg(self, layers: list[dict]) -> dict:
+        return {"decision_traceability": {"products": [], "sources": [{"file": ""}]}, "layer_checks": layers}
+
+    def runner(self, calls: list[str]):
+        def run(cmd, **kw):
+            calls.append(cmd)
+            return subprocess.CompletedProcess(cmd, 0, "ok\n", "")
+        return run
+
+    def test_K156_CI_056_db_layer_runs_only_in_db_range(self) -> None:
+        layers = [{"file": "packages/db/migrations/*.sql", "check": self.DB_CMD, "db": True},
+                  {"file": "b.json", "check": "python3 scripts/ci/b.py"}]
+        calls: list[str] = []
+        rows, bad = layer_audit.audit(self.cfg(layers), True, runner=self.runner(calls), db_range=False)
+        self.assertEqual(calls, ["python3 scripts/ci/b.py"])          # DB の層は流さない
+        self.assertEqual(bad, 0)
+        self.assertEqual(rows[1]["kind"], "範囲")
+        self.assertIn("DB の範囲を触っていない", rows[1]["result"])
+        self.assertNotIn("ran", rows[1])
+        calls = []
+        rows, bad = layer_audit.audit(self.cfg(layers), True, runner=self.runner(calls), db_range=True)
+        self.assertEqual(calls, ["python3 scripts/ci/b.py", self.DB_CMD])   # 触った回（と全部の回）は今までどおり流す
+        self.assertEqual(bad, 0)
+        self.assertEqual(rows[1]["result"], "OK")
+        calls = []
+        layer_audit.audit(self.cfg(layers), True, runner=self.runner(calls))   # 既定は流す（安全な側）
+        self.assertIn(self.DB_CMD, calls)
+        rows, bad = layer_audit.audit(self.cfg([{"file": "c.sql", "check": self.DB_CMD, "db": "yes"}]), True,
+                                      runner=self.runner([]), db_range=False)
+        self.assertEqual(bad, 1)                                        # db は真偽だけ（形の誤りで流さないことにしない）
+        self.assertEqual(rows[0]["kind"], "無")
+
+    def test_K156_CI_057_main_db_range_flag(self) -> None:
+        import contextlib, io
+        from unittest import mock
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        cwd = os.getcwd()
+        try:
+            (d / "log.md").write_text("<!-- decision: D-001\n     status: confirmed -->\n", encoding="utf-8")
+            cfg = self.cfg([{"file": "x.sql", "check": "python3 -c \"print('db-ran')\"", "db": True}])
+            cfg["decision_traceability"]["sources"] = [{"file": "log.md"}]
+            (d / "map.yaml").write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
+            os.chdir(d)
+
+            def run(*extra: str) -> tuple[int, str]:
+                out = io.StringIO()
+                with mock.patch.object(sys, "argv", ["layer_audit.py", "--map", "map.yaml", "--run", *extra]), contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+                    try:
+                        rc = layer_audit.main()
+                    except SystemExit as e:
+                        rc = e.code
+                return rc, out.getvalue()
+
+            rc, out = run("--db-range", "false")
+            self.assertEqual(rc, 0, out)
+            self.assertIn("DB の範囲を触っていない", out)
+            self.assertIn("流した命令 0", out)
+            for extra in (("--db-range", "true"), ("--db-range", ""), ()):
+                rc, out = run(*extra)
+                self.assertEqual(rc, 0, out)
+                self.assertIn("流した命令 1", out, extra)
+            rc, out = run("--db-range", "yes")
+            self.assertEqual(rc, 2, out)
+            self.assertIn("--db-range", out)
+        finally:
+            os.chdir(cwd)
+            shutil.rmtree(d, ignore_errors=True)
+
+    def test_K156_CI_059_real_db_layers_and_workflow(self) -> None:
+        import yaml
+        cfg = yaml.safe_load((ROOT / "spec-dependencies.yaml").read_text(encoding="utf-8"))
+        uses_db = [l for l in cfg["layer_checks"] if not l.get("elsewhere")
+                   and ("DATABASE_URL" in str(l.get("check", "")) or "packages/db/test" in str(l.get("check", "")))]
+        self.assertGreaterEqual(len(uses_db), 2)                        # migrations と policies の 2 層（2026-11-10）
+        self.assertEqual([l["file"] for l in uses_db if l.get("db") is not True], [])
+        spec = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]["spec"]
+        g27 = [s for s in spec["steps"] if str(s.get("name", "")).startswith("G27 ")]
+        self.assertEqual(len(g27), 1)
+        self.assertIn("steps.scope.outputs.db_range", str((g27[0].get("env") or {}).get("CI_DB_RANGE", "")))
+        self.assertIn("--db-range", g27[0]["run"])
+        self.assertIn("CI_DB_RANGE", g27[0]["run"])
+
+
+class DbRangePlanTest(k107.Base):
+    """範囲の答えの db_range（G27 が読む）"""
+
+    def test_K156_CI_058_plan_db_range(self) -> None:
+        self.r.commit("K-1 feat: x", apps__x__src__main_ts="export const x = 6;\n", **{"11_tickets__K-1.md": k107.ticket("K-1", ["x"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertIs(p["db_range"], False)
+        self.assertEqual(ci_scope.outputs(p)["db_range"], "false")
+        self.r.base = k107.git(self.r.dir, "rev-parse", "HEAD")
+        self.r.commit("K-1 feat: mig", packages__a__migrations__0002_sql="select 2;\n", packages__a__src__index_ts=k107.MIG2,
+                      **{"11_tickets__K-1.md": k107.ticket("K-1", ["a"], ["db"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertIs(p["db_range"], True)
+        self.assertEqual(ci_scope.outputs(p)["db_range"], "true")
+        p = self.r.plan(scope="full")                                    # 全部の回は真（全部流す）
+        self.assertIs(p["db_range"], True)
+        self.assertEqual(ci_scope.outputs(p)["db_range"], "true")
 
 
 if __name__ == "__main__":
