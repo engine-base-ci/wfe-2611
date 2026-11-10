@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { bucketPublicUrl, checkBucketPrivate, ensureBucket, provisionBucket } from "../src/s3.js";
 
-const PROBE = ".kaname-private-probe";
+const PROBE = /^\.kaname-private-probe-[0-9a-f-]{36}$/; // 鍵に乱数（同じ置き場で provision が同時に流れても、ほかの確かめを壊さない）
 
 /** 偽の S3（送った命令を数える）と偽の署名の口と偽の fetch（受けた URL と頭を残す） */
 function rig(o: { publicStatus?: number; signedStatus?: number; hasBucket?: boolean; fetchThrows?: boolean } = {}) {
@@ -52,20 +52,23 @@ describe("K-133 置き場は非公開", () => {
   it("K133-CI-002 確かめ用の物を置き、署名つきで読めて（200）、署名なしの公開の口では読めない（400）なら private。公開の口は頭なしで叩き、物は後で消す", async () => {
     const r = rig({ publicStatus: 400 });
     expect(await checkBucketPrivate({ ...r, endpoint: SB, bucket: "kaname-staging" })).toBe("private");
-    expect(r.keys).toEqual([`PutObjectCommand:${PROBE}`, `DeleteObjectCommand:${PROBE}`]);
+    expect(r.keys.map((k) => k.split(":")[0])).toEqual(["PutObjectCommand", "DeleteObjectCommand"]);
+    const key = r.keys[0]!.slice("PutObjectCommand:".length);
+    expect(key).toMatch(PROBE);
+    expect(r.keys[1]).toBe(`DeleteObjectCommand:${key}`); // 置いた物を消す
     const pub = r.seen.find((s) => !s.url.includes("X-Amz-Signature"));
-    expect(pub).toEqual({ url: bucketPublicUrl(SB, "kaname-staging", PROBE), auth: null });
-    expect(r.seen.some((s) => s.url.startsWith(`${SB}/kaname-staging/${PROBE}?`))).toBe(true);
+    expect(pub).toEqual({ url: bucketPublicUrl(SB, "kaname-staging", key), auth: null });
+    expect(r.seen.some((s) => s.url.startsWith(`${SB}/kaname-staging/${key}?`))).toBe(true);
   });
   it("K133-CI-003 在る物が署名なしの公開の口で読める（200）なら public。物は消す", async () => {
     const r = rig({ publicStatus: 200 });
     expect(await checkBucketPrivate({ ...r, endpoint: SB, bucket: "kaname-staging" })).toBe("public");
-    expect(r.keys).toContain(`DeleteObjectCommand:${PROBE}`);
+    expect(r.keys.some((k) => k.startsWith("DeleteObjectCommand:.kaname-private-probe-"))).toBe(true);
   });
   it("K133-CI-004 確かめ用の物を署名つきで読めない（403）なら確かめられないので例外（private と言わない）。物は消す", async () => {
     const r = rig({ signedStatus: 403 });
     await expect(checkBucketPrivate({ ...r, endpoint: SB, bucket: "kaname-staging" })).rejects.toThrow(/確かめ/);
-    expect(r.keys).toContain(`DeleteObjectCommand:${PROBE}`);
+    expect(r.keys.some((k) => k.startsWith("DeleteObjectCommand:.kaname-private-probe-"))).toBe(true);
   });
   it("K133-CI-005 置き場に届かないときは例外（黙って通さない）", async () => {
     const r = rig({ fetchThrows: true });
@@ -116,6 +119,16 @@ describe("K-133 置き場は非公開", () => {
       }),
     ).toBe(1);
     expect(out.join("\n")).toContain("BRIDGE_RELEASE_BASE");
+    const near = rig({ publicStatus: 400 }); // 名前が前方一致する隣のバケット（末尾の / を落とした比べ方を落とす）
+    expect(
+      await provisionBucket({
+        ...near,
+        endpoint: SB,
+        bucket: "kaname-staging",
+        releaseBase: `${SB}/kaname-staging2/bridge`,
+        log: () => {},
+      }),
+    ).toBe(1);
     const ok = rig({ publicStatus: 400 });
     expect(
       await provisionBucket({
@@ -126,5 +139,14 @@ describe("K-133 置き場は非公開", () => {
         log: () => {},
       }),
     ).toBe(0);
+  });
+  it("K133-CI-009 provisionBucket：非公開を確かめられない（確かめ用の物を署名つきで読めない）なら 1 と理由（private と言わない）", async () => {
+    const out: string[] = [];
+    const r = rig({ signedStatus: 403 });
+    expect(
+      await provisionBucket({ ...r, endpoint: SB, bucket: "kaname-staging", releaseBase: "", log: (s) => out.push(s) }),
+    ).toBe(1);
+    expect(out.join("\n")).toContain("確かめ");
+    expect(out.join("\n")).not.toContain("・private");
   });
 });

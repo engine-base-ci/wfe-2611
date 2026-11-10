@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { s3Client, s3Presigner } from "@kaname/storage";
-import { makeFixture, type Fixture } from "../../fixture.js";
+import { makeFixture, type Fixture } from "../fixture.js";
 import { FAKE_S3, startFakeS3, type FakeS3 } from "../../fake-s3.js";
 
 const FIXED_IP = "198.51.100.133";
@@ -62,7 +62,7 @@ describe("K-133 PC をつなぐ画面の口は、非公開の置き場の目録�
     expect(d["released"]).toBe(true);
     expect(d["version"]).toBe("1.4.0");
   });
-  it("K133-API-009 目録を読むための署名は証跡（object.sign_external）を残さない（決める人 answer=005e60e70a71）", async () => {
+  it("K133-API-009 目録を読むための署名は証跡（object.sign_external）を残さず、入れ物の署名は今までどおり 1 行残す（決める人 answer=005e60e70a71）", async () => {
     const prefix = `k133-${randomUUID()}`;
     fake.objects.set(`k133-bridge/${prefix}/kaname-bridge.json`, { body: Buffer.from(MANIFEST) });
     f.release.dir = "";
@@ -70,11 +70,13 @@ describe("K-133 PC をつなぐ画面の口は、非公開の置き場の目録�
     const p = await newPerson();
     const r = await f.req("GET", "/bridge/releases/latest?os=mac&arch=arm64", { headers: p.auth, ip: FIXED_IP });
     expect(r.status).toBe(200);
-    const n = await f.admin.query<{ n: string }>(
-      "select count(*)::text as n from audit_events where actor_member_id = $1 and action = 'object.sign_external'",
+    const rows = await f.admin.query<{ name: string | null }>(
+      "select payload->>'name' as name from audit_events where actor_member_id = $1 and action = 'object.sign_external'",
       [p.id],
     );
-    expect(n.rows[0]!.n).toBe("0");
+    const names = rows.rows.map((x) => x.name);
+    expect(names.filter((n) => n === "kaname-bridge.json")).toHaveLength(0); // 目録の署名は残さない（D-138.2）
+    expect(names.filter((n) => n === "Kaname-Bridge-1.4.0-arm64-mac.zip")).toHaveLength(1); // 入れ物の署名は今までどおり残す
   });
   it("K133-API-010 置き場が目録の署名つきの読みを断る（鍵の誤り）と、新しい版の口は 503・E-PAGE-007（「読み込めませんでした」）。「まだ配布していません」と混ぜない", async () => {
     const prefix = `k133-${randomUUID()}`;
