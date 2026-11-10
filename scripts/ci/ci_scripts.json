@@ -13,7 +13,8 @@
   "ci:handoff": "前の作業の仕組み（07_tasks）の作り手。しまった（D-128.114）",
   "scripts/ci/build_test_xlsx.py": "テストの表を xlsx に書き出す道具（検査ではない）",
   "scripts/ci/gen_ears_tests.mjs": "作り手（名前に test が入るだけ）。G38 が回す",
-  "scripts/ci/ticket_affects_test.py --selftest": "試験のファイル（K-107 の K8）。--selftest の文字は scripts/tickets/build_index.py --selftest を呼ぶため。試験は G57 が python3 scripts/ci/ticket_affects_test.py で回す"
+  "scripts/ci/ticket_affects_test.py --selftest": "試験のファイル（K-107 の K8）。--selftest の文字は scripts/tickets/build_index.py --selftest を呼ぶため。試験は G57 が python3 scripts/ci/ticket_affects_test.py で回す",
+  "scripts/ci/ci_lean_test.py --selftest": "試験のファイル（K-156）。--selftest の文字は説明の文（stack_gate.py の --selftest がそのまま通る）にあるだけ。試験は G62 が python3 scripts/ci/ci_lean_test.py で回す"
  },
  "known_broken": {}
 }

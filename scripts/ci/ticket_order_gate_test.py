@@ -240,12 +240,15 @@ class PerCommitTest(Case):
 
     def test_K159_CI_026_shared_is_doc_only_is_not_loosened(self):
         """K159-CI-026 守り：取り込む順の検査で ai-team.yaml を実装に数えないことは、共有の is_doc_only に入れない。
-        is_doc_only(["ai-team.yaml"]) は False のまま、ci_scope.py の root_kind("ai-team.yaml") は "unmapped"（追えない変更で全部を流す）のまま"""
+        is_doc_only(["ai-team.yaml"]) は False のまま。ci_scope.py の root_kind で ai-team.yaml を doc にするのは
+        ci_scope.json の no_test_paths に書いた行だけ（K-156 の決まり・試験が読まない設定）で、is_doc_only からは漏れない：
+        no_test_paths からその行を抜いた決まりでは root_kind("ai-team.yaml") は "unmapped"（全部を流す）"""
         import ci_scope  # noqa: PLC0415
 
         self.assertFalse(g.is_doc_only(["ai-team.yaml"], set()))
         rules = ci_scope.load_rules(str(HERE / "ci_scope.json"))
-        self.assertEqual(ci_scope.root_kind("ai-team.yaml", rules, str(ROOT)), "unmapped")
+        without = {**rules, "no_test_paths": [p for p in rules["no_test_paths"] if p != "ai-team.yaml"]}
+        self.assertEqual(ci_scope.root_kind("ai-team.yaml", without, str(ROOT)), "unmapped")
         self.assertEqual(ci_scope.root_kind("11_tickets/K-1.md", rules, str(ROOT)), "doc")
 
     def test_K159_CI_027_shared_generated_outputs_is_unchanged(self):
