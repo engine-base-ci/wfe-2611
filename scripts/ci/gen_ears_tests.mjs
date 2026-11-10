@@ -73,6 +73,9 @@ export function gen(root = ROOT) {
         const c = away.covers?.[x.test_function];
         const mark = typeof c === "string" ? c : c?.mark;
         const file = typeof c === "object" && c?.file ? c.file : away.file;
+        // 当てはまらない型（na：試験の名前 → 理由・K-62）。理由が空なら「まだ無い」と同じに扱う
+        const na = String(away.na?.[x.test_function] ?? "").trim();
+        if (!mark && na) return `  // 当てはまらない（${na}）：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
         if (!mark) return `  // 本物の試験はまだ無い（${away.file}）：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
         if (!existsSync(join(root, file))) throw new Error(`ears-elsewhere の ${op}.covers.${x.test_function} が指すファイルが無い：${file}`);
         return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${file} の「${mark}」（同じ CI の G3 で流れる）\n    expect(readFileSync(${q(file)}, "utf8")).toContain(${q(mark)});\n  });`;

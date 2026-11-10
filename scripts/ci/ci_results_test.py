@@ -313,18 +313,23 @@ class NameTest(Base):
 class RepoTest(unittest.TestCase):
     def test_K143_CI_014_real_workspace_is_green_with_ledger(self):
         """K143-CI-014 本物の作業場所：07_qa/test-specs の全部に掛けて、台帳（07_qa/test-plan/result-ledger.json）込みで緑。
-        取り込み済みの K-57・K-60 の印の無い PASS は台帳に載り、空に戻さない（op_gate --all が赤にならない）"""
+        台帳は減らすだけ（D-129.51）：取り込みの write が印を付けた行は台帳から消える。K-159 で直した ── 特定のチケット（K57-・K60-）の
+        行が残ることは求めず、台帳が本線に入った版（K-143 の取り込み fb2998f7・2444 行）と比べて、増えていない・入れた時点の 2593 行を
+        超えない・同じ鍵が 2 行無い・消えた行はどれも、もう印の無い PASS でない（ci_results.ledger_drift が空・PM の判断 (ロ)）。台帳が空になっても赤にしない（K-150 のゴール）"""
         r = subprocess.run([sys.executable, str(HERE / "ci_results.py"), "check", "--specs", "07_qa/test-specs/**/*.md",
                             "--records", "07_qa/ci-results", "--ledger", "07_qa/test-plan/result-ledger.json"],
                            cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         ledger = json.loads((ROOT / "07_qa/test-plan/result-ledger.json").read_text(encoding="utf-8"))
-        ids = {x["id"] for x in ledger["rows"]}
-        self.assertTrue(any(i.startswith("K57-") for i in ids) and any(i.startswith("K60-") for i in ids))
         self.assertLessEqual(len(ledger["rows"]), 2593, "台帳は入れた時点の 2593 行より増えない")
-        # 何も見ていないのに緑にしない：PASS の行を数えて出す（台帳の行も数える）
+        entered = cr.ledger_at("fb2998f7cfd368ffa77880fe6f9e7c1acdba0b24", "07_qa/test-plan/result-ledger.json", ROOT)
+        self.assertIsNotNone(entered, "台帳が本線に入った版を git から読めない（守りの所で読めないなら止める側）")
+        # 何も見ていないのに緑にしない：入った版の 2444 行と比べる
+        self.assertEqual(len(entered["rows"]), 2444)
+        self.assertEqual(cr.ledger_drift(ledger, entered, ROOT, cap=2593), [])
+        # 何も見ていないのに緑にしない：PASS の行を数えて出す（台帳の行は全部、印の無い PASS として数えられている）
         m = re.search(r"PASS (\d+) 行", r.stdout)
-        self.assertTrue(m and int(m.group(1)) >= len(ledger["rows"]) > 0, r.stdout)
+        self.assertTrue(m and int(m.group(1)) >= len(ledger["rows"]), r.stdout)
         # 容れ物の中（まっさらな写し）と手元で同じ結果：台帳のファイルは作業場所の頭からの道で持つ（/ で始めない）
         self.assertTrue(all(not x["file"].startswith("/") for x in ledger["rows"]))
         # 「PASS（該当なし…）」の行は台帳に載せない（N/A と読む・PM の判断 17:40）
@@ -417,13 +422,17 @@ class RepoTest(unittest.TestCase):
         self.assertIn("ci_results.py", (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8"))
 
     def test_K143_CI_022_spec_runs_even_if_static_is_red(self):
-        """K143-CI-022 static の段が赤でも spec の段の検査は流れる：spec の段は needs を持たず（static を待たない）、組の if も置かない（K107-CS-034 の決まり）。
+        """K143-CI-022 static の段が赤でも spec の段の検査は流れる。K-156 で spec は static の後に流すことにした（needs: [static]・
+        act は needs の無い組を 1 段目にまとめるので）。static が赤でも飛ばさないのは組の if の !cancelled() で守る（needs の結果を見ない）。
         段の中の検査にも static の結果を見る if が無い"""
         import yaml  # noqa: PLC0415
 
         spec = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]["spec"]
-        self.assertNotIn("needs", spec, "spec の段は static を待たない（static の赤で丸ごと飛ばされない）")
-        self.assertNotIn("if", spec)
+        self.assertIn(spec.get("needs"), (None, ["static"]), "spec が待つのは static だけ")
+        if "needs" in spec:
+            cond = str(spec.get("if", ""))
+            self.assertIn("!cancelled()", cond, "static の赤で丸ごと飛ばされない（success() の既定にしない）")
+            self.assertNotIn("needs.static", cond, "static の結果・出力で spec を止めない")
         for st in spec["steps"]:
             self.assertNotIn("needs.static", str(st.get("if", "")), st.get("name"))
 

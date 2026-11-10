@@ -90,7 +90,7 @@ json.dump({"version": "v3", "created_at": TODAY, "_doc": "entities.json の acce
            "counts": {"entities": len(EN), "policies": sum(len(e["access_control_policies"]) for e in EN), "cases": len(am)}, "cases": am}, open(f"{OUT}/access-matrix.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- CI ゲート（26 ＋ 仕様の層 ＋ タスク）
 SPEC_GATES = [
-    {"id": 27, "name": "層の棚卸し（G21）", "script": "python3 scripts/ci/layer_audit.py --run", "job": "spec", "blocking": True},
+    {"id": 27, "name": "層の棚卸し（G21）", "script": "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\"", "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n", "job": "spec", "blocking": True},   # DB の層は DB の範囲を触った回だけ（空は true＝流す・D-133.6）
     {"id": 28, "name": "正本 ↔ tickets の参照整合（qa-ladder validate）", "script": "python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json", "job": "spec", "blocking": True},
     {"id": 29, "name": "エラー一覧 E1〜E9（引数を省かない）", "script": "python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json", "job": "spec", "blocking": True},
     {"id": 30, "name": "スキル一式 SK1〜SK6", "script": "python3 scripts/ci/skill_pkg_gate.py 10_skills", "job": "spec", "blocking": True},
@@ -102,21 +102,22 @@ SPEC_GATES = [
     {"id": 36, "name": "契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）", "script": "pip install -q schemathesis==4.33.0 && pnpm ci:schemathesis", "job": "database", "blocking": True},
     {"id": 37, "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）", "script": "python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part", "job": "spec", "blocking": True},
     {"id": 38, "name": "生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）", "script": "python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py", "job": "spec", "blocking": True},
-    {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py", "job": "spec", "blocking": True},
-    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py", "job": "spec", "blocking": True},
+    {"id": 46, "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）", "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True},
+    {"id": 47, "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験・D-128.123）", "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py && python3 scripts/ci/fuzz_targets_test.py", "job": "spec", "blocking": True},
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）", "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report", "job": "web", "blocking": True},
-    {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton", "job": "web", "blocking": True},
+    {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton", "job": "web", "blocking": True},
 ]
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md /tmp/req.md && python3 scripts/ci/trace_gate.py --index && cmp /tmp/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
-SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 62, "name": "CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156）", "script": "python3 scripts/ci/ci_lean_test.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の試験（K-107）", "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）", "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130", "job": "spec", "blocking": True})
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
-SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n", "job": "spec", "blocking": True})
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
@@ -144,7 +145,7 @@ SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の�
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base"))
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
-               f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n"
+               f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
                "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
 def unit_if(i): return f"!cancelled() && {SO}.unit == 'true'" + (f" && fromJSON({SO}.unit_shards) >= {i}" if i > 1 else "")
 ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in (4, 6, 12) else ("e2e" if g["id"] == 15 else "static"))} for g in FG["merge_gates"]] + SPEC_GATES
@@ -232,8 +233,11 @@ jobs:
 {NODE}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}
 {UNIT_JOBS}  spec:
     runs-on: ubuntu-latest
-    # static を待たない（static の赤で仕様の層の検査が丸ごと飛ばされない・K-143）。G61 が要る本線との分かれ目（base）は、
-    #   この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
+    # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
+    #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばさない（K-143）のは if の !cancelled() で守る。
+    #   G61 が要る本線との分かれ目（base）は、この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
+    needs: [static]
+    if: ${{{{ !cancelled() }}}}
     # 仕様の層の検査は Python だけでなく pnpm の検査と DB の検査も呼ぶ（層の棚卸し G21）。database と同じ Postgres を付ける
 {pg(5439)}    steps:
 {NODE}      - uses: actions/setup-python@v5
@@ -306,8 +310,15 @@ jobs:
         if: ${{{{ !cancelled() }}}}
         with: {{ name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }}
       - uses: actions/upload-artifact@v4
-        if: failure()
-        with: {{ name: playwright-report-web, path: apps/web/playwright-report/ }}
+        # 行ごとの押した証拠（<行 ID>.png・apps/web/tests/_lib/row.ts）が入った HTML の報告と JSON の報告。緑の回にも残す（決める人 2026-11-09・K-156）。
+        #   G59 は別の置き場（playwright-report-skeleton）に書くので G48 の報告を上書きしない
+        if: ${{{{ !cancelled() }}}}
+        with:
+          name: playwright-report-web
+          path: |
+            apps/web/playwright-report/
+            apps/web/playwright-report-skeleton/
+            apps/web/pw-reports/
   e2e:
     runs-on: ubuntu-latest
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')

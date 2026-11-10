@@ -99,7 +99,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
     }).toEqual(before);
   }, 120_000);
 
-  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／bridge-revoke の session_id／undo の memory_id／send の target_scope_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-134.4・k145_pending_decisions.test.ts）", async () => {
+  it("K145-API-002 体の id の欄（say の conversation_id・branch_from／resume・stop・steer・answer・answer2 の job_id／new の conversation_id／bridge-revoke の session_id／undo の memory_id／send の target_scope_id／artifacts の message_id／testrun/cancel の run_id／golive/pause の employee_id）が形違いなら 422・その欄の名前。仕事・会話・成果物は増えない（黙って捨てる所〔attachment_ids・quote.message_id・target_scope_id〕は D-135.4・k145_pending_decisions.test.ts）", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
     const conv = await newConversation(r.H);
@@ -159,7 +159,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
     void conv;
   }, 120_000);
 
-  it("K145-API-003 問い合わせの id（/agent/state・/agent/messages の ?conversation_id）が形違いなら 422・field conversation_id。空（?conversation_id=）は指定なし（/agent/artifacts の ?conversation_id は黙って無視 → 422 は D-134.4・k145_pending_decisions.test.ts）", async () => {
+  it("K145-API-003 問い合わせの id（/agent/state・/agent/messages の ?conversation_id）が形違いなら 422・field conversation_id。空（?conversation_id=）は指定なし（/agent/artifacts の ?conversation_id は黙って無視 → 422 は D-135.4・k145_pending_decisions.test.ts）", async () => {
     const r = await ready();
     for (const bad of BAD_IDS.filter((v) => v !== "")) {
       const q = encodeURIComponent(bad);

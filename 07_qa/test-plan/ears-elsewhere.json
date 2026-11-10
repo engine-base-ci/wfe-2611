@@ -1,5 +1,5 @@
 {
- "_doc": "生成の試験（apps/api/test/generated）の土台は偽のセッションなので、本物のログインの部品が要る口の振る舞いは別のファイルで確かめる。ここに書いた口の生成の試験は、covers（試験の名前 → 本物の試験の題）に書いた行は、その本物の試験があることを確かめ、無い場合は it.todo のまま残す（scripts/ci/gen_ears_tests.mjs）。理由が空の行は使わない。covers の値は本物の試験の題（file の中）か、{file, mark}（同じ口の本物の試験が別のファイルにあるとき・K-144）",
+ "_doc": "生成の試験（apps/api/test/generated）の土台は偽のセッションなので、本物のログインの部品が要る口の振る舞いは別のファイルで確かめる。ここに書いた口の生成の試験は、covers（試験の名前 → 本物の試験の題）に書いた行は、その本物の試験があることを確かめ、無い場合は it.todo のまま残す（scripts/ci/gen_ears_tests.mjs）。理由が空の行は使わない。covers の値は本物の試験の題（file の中）か、{file, mark}（同じ口の本物の試験が別のファイルにあるとき・K-144）。外に何も呼ばない口など、その型が当てはまらないものは na（試験の名前 → 理由）に書く。na の行は理由つきの it.todo になり、理由の無い it.todo は「まだ無い」の印（K-62）",
  "ops": {
   "stepUp": {
    "file": "apps/api/test/step_up.test.ts",
@@ -353,6 +353,191 @@
      "mark": "K144-API-032"
     },
     "test_post_me_ticket_drafts_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "delegateTicket": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_tickets_id_delegate_ok": "K62-API-001",
+    "test_post_tickets_id_delegate_rejected_401": "K62-API-025",
+    "test_post_tickets_id_delegate_rejected_403": "K62-API-024",
+    "test_post_tickets_id_delegate_not_found": "K62-API-026",
+    "test_post_tickets_id_delegate_conflict": "K62-API-020",
+    "test_post_tickets_id_delegate_rejected_422": "K62-API-030",
+    "test_post_tickets_id_delegate_rate_limited": "K62-API-034",
+    "test_post_tickets_id_delegate_shape": "K62-API-001",
+    "test_post_tickets_id_delegate_terms_pending": "K62-API-060",
+    "test_post_tickets_id_delegate_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_delegate_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_delegate_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "getActionRun": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_action_runs_id_ok": "K62-API-027",
+    "test_get_action_runs_id_rejected_401": "K62-API-025",
+    "test_get_action_runs_id_not_found": "K62-API-026",
+    "test_get_action_runs_id_rejected_422": "K62-API-030",
+    "test_get_action_runs_id_rate_limited": "K62-API-034",
+    "test_get_action_runs_id_shape": "K62-API-027",
+    "test_get_action_runs_id_rejected_403": "K62-API-028",
+    "test_get_action_runs_id_terms_pending": "K62-API-060",
+    "test_get_action_runs_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_action_runs_id_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "listTicketRuns": {
+   "file": "apps/api/test/features/F5/delegate.test.ts",
+   "reason": "K-62 の人の口は、任せる関数（app.ticket_delegate）がチケットの段・走っている実行・押した人の PC（アカウント全体）を本物の DB で確かめ、仕事・実行の記録・段・やり取りを 1 つの処理で書く。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_tickets_id_runs_ok": "K62-API-027",
+    "test_get_tickets_id_runs_rejected_401": "K62-API-025",
+    "test_get_tickets_id_runs_not_found": "K62-API-026",
+    "test_get_tickets_id_runs_rate_limited": "K62-API-034",
+    "test_get_tickets_id_runs_shape": "K62-API-027",
+    "test_get_tickets_id_runs_rejected_403": "K62-API-028",
+    "test_get_tickets_id_runs_rejected_422": "K62-API-030",
+    "test_get_tickets_id_runs_terms_pending": "K62-API-060",
+    "test_get_tickets_id_runs_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_runs_upstream_failed": "この口はサーバーの外を呼ばない（関門 C3・C5 はつないだ PC の上・D-097）。外の完了信号が無いことの扱いは finishBridgeJob の空の結果（K62-API-011）と 10 分の知らせ（K62-API-013）が受ける"
+   }
+  },
+  "takeBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_take_ok": "K62-API-029",
+    "test_post_bridge_jobs_take_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_take_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_take_shape": "K62-API-029",
+    "test_post_bridge_jobs_take_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_take_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_take_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_take_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_take_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_take_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "reportJobProgress": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_progress_ok": "K62-API-008",
+    "test_post_bridge_jobs_id_progress_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_progress_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_progress_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_progress_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_progress_shape": "K62-API-008",
+    "test_post_bridge_jobs_id_progress_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_id_progress_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_id_progress_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_progress_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_progress_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "getJobControl": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_get_bridge_jobs_id_control_ok": "K62-API-015",
+    "test_get_bridge_jobs_id_control_rejected_401": "K62-API-039",
+    "test_get_bridge_jobs_id_control_not_found": "K62-API-050",
+    "test_get_bridge_jobs_id_control_rate_limited": "K62-API-053",
+    "test_get_bridge_jobs_id_control_shape": "K62-API-015",
+    "test_get_bridge_jobs_id_control_rejected_403": "K62-API-062",
+    "test_get_bridge_jobs_id_control_rejected_422": "K62-API-032",
+    "test_get_bridge_jobs_id_control_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_bridge_jobs_id_control_upstream_failed": "この口はサーバーの外を呼ばない（PC から届いた知らせを DB に書くだけ・D-097）。PC が完了信号を出さない・空を返すことの扱いは K62-API-011・K62-API-013・K62-BRG-003 が受ける"
+   }
+  },
+  "callKanameTool": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_tools_name_ok": "K62-API-009",
+    "test_post_bridge_jobs_id_tools_name_rejected_401": "K62-API-018",
+    "test_post_bridge_jobs_id_tools_name_rejected_403": "K62-API-036",
+    "test_post_bridge_jobs_id_tools_name_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_tools_name_shape": "K62-API-009",
+    "test_post_bridge_jobs_id_tools_name_rejected_422": "K62-API-061",
+    "test_post_bridge_jobs_id_tools_name_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_tools_name_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_tools_name_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_tools_name_not_found": "道具の口は道具の鍵と PC の印の両方で守る。仕事が無い・他の人や他の PC の仕事の id は、鍵が合わないので 404 ではなく 403 で返し、仕事があるかを漏らさない（K62-API-036・K62-API-050）",
+    "test_post_bridge_jobs_id_tools_name_upstream_failed": "道具 ticket_read は DB の 1 枚を読むだけで、サーバーの外を呼ばない（D-097）"
+   }
+  },
+  "finishBridgeJob": {
+   "file": "apps/api/test/features/F5/delegate-bridge.test.ts",
+   "reason": "K-62 の PC の口は、本物の PC の印（引き取りで返った kpc_…）と、その仕事を受け取った PC（taken_session_id）・道具の鍵・チケットの区画を本物の DB で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-62）",
+   "covers": {
+    "test_post_bridge_jobs_id_finish_ok": "K62-API-010",
+    "test_post_bridge_jobs_id_finish_rejected_401": "K62-API-039",
+    "test_post_bridge_jobs_id_finish_not_found": "K62-API-050",
+    "test_post_bridge_jobs_id_finish_rejected_422": "K62-API-035",
+    "test_post_bridge_jobs_id_finish_rejected_422_2": "K62-API-032",
+    "test_post_bridge_jobs_id_finish_shape": "K62-API-010",
+    "test_post_bridge_jobs_id_finish_rejected_403": "K62-API-062",
+    "test_post_bridge_jobs_id_finish_rate_limited": "K62-API-053",
+    "test_post_bridge_jobs_id_finish_upstream_failed": "K62-API-011",
+    "test_post_bridge_jobs_id_finish_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_jobs_id_finish_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
     }

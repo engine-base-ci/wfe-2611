@@ -1,0 +1,6 @@
+# 契約 fuzz（G36・scripts/ci/fuzz.sh）の設定。schemathesis 4.33 の既定に 413 だけを足す（K-62・テスター回 10 の #5）。
+#   入口（apps/api/src/contract/op.ts）は 1 回に送る内容が 1MB を超えたら 413・PAYLOAD_TOO_LARGE で断る（D-130.1・K-144）。
+#   欄の上限（例：finishBridgeJob の result 200000 字）を超える体は、字によっては 1MB も超えるので、口より先に入口が 413 で断る。
+#   契約の responses にも 413 がある。断ったのに「受け付けた」（ST201）と数えないよう、断った状態コードの並びに 413 を入れる
+[checks.negative_data_rejection]
+expected-statuses = ["400", "401", "403", "404", "405", "406", "409", "413", "415", "422", "428", "429", "5xx"]

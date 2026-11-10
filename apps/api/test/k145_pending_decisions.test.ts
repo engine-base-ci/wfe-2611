@@ -1,7 +1,7 @@
-// K-145 のうち、決める人の答え（D-134・2026-11-10・answer=ffef5862874b「推奨どおり」）を待ってから積んだ行（聞くことが残っている間はコミットしない・正本 §1-11）。
-//   D-134.1 ファイルを受ける口は送る量 1MB の守りの外（K145-API-011）／D-134.3 一言・問い合わせの答え・指示を切らない（K145-API-015・migration は K-62 の 0092 の次）／
-//   D-134.5 資格情報のサービス名・資料のファイル名も切らない（K145-API-019・answer=3e67d8fb452f）／
-//   D-134.4 形違いの id を黙って捨てる所（say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id、/agent/artifacts の ?conversation_id）も 422（K145-API-002・003 の続き）
+// K-145 のうち、決める人の答え（D-135・2026-11-10・answer=ffef5862874b「推奨どおり」）を待ってから積んだ行（聞くことが残っている間はコミットしない・正本 §1-11）。
+//   D-135.1 ファイルを受ける口は送る量 1MB の守りの外（K145-API-011）／D-135.3 一言・問い合わせの答え・指示を切らない（K145-API-015・migration は K-62 の 0092 の次）／
+//   D-135.5 資格情報のサービス名・資料のファイル名も切らない（K145-API-019・answer=3e67d8fb452f）／
+//   D-135.4 形違いの id を黙って捨てる所（say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id、/agent/artifacts の ?conversation_id）も 422（K145-API-002・003 の続き）
 //   土台（組み立て・ready・newJob ほか）と BAD_IDS は k145_fixture.ts（試験のファイルどうしで import しない・精査 R 回 1 追加-1）
 import { beforeAll, afterAll, describe, expect, it } from "vitest";
 import { issueToolToken } from "../src/auth/agent-tools.js";
@@ -27,7 +27,7 @@ import {
 beforeAll(bootK145, 60_000);
 afterAll(closeK145);
 
-describe("K-145 D-134.4：形違いの id を黙って捨てる所も 422（D-129.42）", () => {
+describe("K-145 D-135.4：形違いの id を黙って捨てる所も 422（D-129.42）", () => {
   it("K145-API-002（続き）say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id が形違いなら 422・その欄。仕事は増えない。null は「無し」で通す", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
@@ -74,8 +74,8 @@ describe("K-145 D-134.4：形違いの id を黙って捨てる所も 422（D-12
   }, 60_000);
 });
 
-describe("K-145 D-134.1：ファイルを受ける口は送る量 1MB の守りの外", () => {
-  it("K145-API-011 ファイルを受ける口は送る量 1MB の守りの外（D-134.1）：資料（multipart・1.5MB）は 201、成果物（/bridge/artifact・1.5MB の PNG・道具の鍵）も 201。置き場の上限（試験は 4MB）はそのまま", async () => {
+describe("K-145 D-135.1：ファイルを受ける口は送る量 1MB の守りの外", () => {
+  it("K145-API-011 ファイルを受ける口は送る量 1MB の守りの外（D-135.1）：資料（multipart・1.5MB）は 201、成果物（/bridge/artifact・1.5MB の PNG・道具の鍵）も 201。置き場の上限（試験は 4MB）はそのまま", async () => {
     const r = await ready();
     const big = new Uint8Array(1_572_864).fill(0x61);
     const fd = new FormData();
@@ -126,8 +126,8 @@ describe("K-145 D-134.1：ファイルを受ける口は送る量 1MB の守り�
   }, 60_000);
 });
 
-describe("K-145 D-134.3：一言・問い合わせの答え・指示を切らない（API と DB の関数・D-130.4）", () => {
-  it("K145-API-015 許可の答えの一言 5000 字・問い合わせの答えの値 5000 字（/agent/answer2）と、止めずに直す指示 30000 字（/agent/steer）は、出来事（bridge_job_events）に一字も欠けずに残る（D-134.3）", async () => {
+describe("K-145 D-135.3：一言・問い合わせの答え・指示を切らない（API と DB の関数・D-130.4）", () => {
+  it("K145-API-015 許可の答えの一言 5000 字・問い合わせの答えの値 5000 字（/agent/answer2）と、止めずに直す指示 30000 字（/agent/steer）は、出来事（bridge_job_events）に一字も欠けずに残る（D-135.3）", async () => {
     const r = await ready();
     const asking = await newJob(r, "asking");
     const job = (
@@ -186,7 +186,7 @@ describe("K-145 D-134.3：一言・問い合わせの答え・指示を切らな
       )
     ).rows[0]!;
     expect(st.payload.text).toBe(text);
-    // 引用（D-134.3）：/agent/say の quote.text 5000 字は、保存する引用（messages.quote）と自分のAI への指示（bridge_jobs.prompt）の両方で欠けない。
+    // 引用（D-135.3）：/agent/say の quote.text 5000 字は、保存する引用（messages.quote）と自分のAI への指示（bridge_jobs.prompt）の両方で欠けない。
     //   /agent/steer の引用も一言の出来事（payload.opts.quote）で欠けない（精査 R 回 1 #5）
     const quoteText = `引用${"き".repeat(4996)}まで`;
     const said = await data<{ job_id: string; conversation_id: string }>(
@@ -223,7 +223,7 @@ describe("K-145 D-134.3：一言・問い合わせの答え・指示を切らな
   }, 60_000);
 });
 
-describe("K-145 D-134.5：人が打つ資格情報のサービス名と資料のファイル名も黙って切らない（上限も外す・D-130.4）", () => {
+describe("K-145 D-135.5：人が打つ資格情報のサービス名と資料のファイル名も黙って切らない（上限も外す・D-130.4）", () => {
   it("K145-API-019 資格情報を預ける（/vault/credentials）サービス名 300 字と、資料を付ける（/agent/attachments）ファイル名 300 字は、答えと DB から読み戻して一字も欠けない（前は 120・200 字で黙って切った）", async () => {
     const r = await ready();
     const service = `サービス${"く".repeat(294)}終わり`;
@@ -268,7 +268,7 @@ describe("K-145 D-134.5：人が打つ資格情報のサービス名と資料の
   }, 60_000);
 });
 
-describe("K-145 PM の判断（D-130.4・D-134.5 の適用・精査 R 回 1 追加-3）：成果物の名前・会話の検索語・止めた理由も黙って切らない", () => {
+describe("K-145 PM の判断（D-130.4・D-135.5 の適用・精査 R 回 1 追加-3）：成果物の名前・会話の検索語・止めた理由も黙って切らない", () => {
   it("K145-API-020 成果物を名前 300 字で書き出すと答え・一覧・DB の名前が一字も欠けない。名前を 300 字で変えても同じ（app.artifact_rename の left 80 を外す）", async () => {
     const r = await ready();
     const conv = await newConversation(r.H);

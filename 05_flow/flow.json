@@ -5320,7 +5320,7 @@
    "human": "出てきたたたき台を見る",
    "screen": "onboard-draft",
    "auto": "自分のAIが目標・台帳定義・担当業務・AI社員の初期案を作り、Kaname の道具（MCP・その仕事の間だけの鍵）で置く",
-   "backstage": "会社モデルの下書きを保存（道具の口 /bridge/tool が DB の関数で書き、証跡に残す）",
+   "backstage": "会社モデルの下書きを保存（契約の口 callKanameTool（POST /api/v1/bridge/jobs/:id/tools/:name）が DB の関数で書き、証跡に残す）",
    "choke_points": [
     "C3",
     "C2"

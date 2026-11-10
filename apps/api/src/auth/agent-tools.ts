@@ -1,4 +1,4 @@
-// 自分のAI が Kaname の道具でたたき台に置く口（D-110）。/api/auth-ext/bridge/tool。
+// 自分のAI が Kaname の道具でたたき台に置く道具の中身（D-110）。呼ぶ口は契約の callKanameTool（K-62）。/api/auth-ext/bridge/artifact はここ。
 //   呼ぶのは本人の PC の Claude Code に渡した道具（MCP の kaname）。鍵は仕事を渡すたびに作った「その仕事の間だけ」のもの。
 //   書くのは DB の関数（security definer）。会社をまたがない・動いていない仕事の鍵では書けない（判定は関数の中）
 import { createHash, randomBytes } from "node:crypto";
@@ -118,38 +118,21 @@ export const TOOLS: Record<string, Call> = {
 
 export function agentToolRoutes(d: AgentToolDeps): Hono {
   const app = new Hono();
-  app.post("/bridge/tool", async (c) => {
-    const token = c.req.header("x-kaname-tool-token") ?? "";
-    if (token.length < 20) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵は分かりません");
-    const job = (
-      await d.appPool.query<{ job_id: string; member_id: string }>(
-        "select job_id, member_id from app.bridge_tool_job($1)",
-        [hashToolToken(token)],
-      )
-    ).rows[0];
-    // 終わった仕事・別の人の鍵は通さない（D-110.3）
-    if (!job) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵はもう使えません（仕事が終わっています）");
-    const b = (await c.req.json().catch(() => ({}))) as { name?: unknown; input?: unknown };
-    const name = typeof b.name === "string" ? b.name : "";
-    const call = TOOLS[name];
-    if (!call) return bad(c, 422, "VALIDATION_FAILED", `その道具はありません（${name || "名前なし"}）`);
-    const input = b.input && typeof b.input === "object" ? (b.input as Record<string, unknown>) : {};
-    const v = (await call(d.appPool, job.member_id, job.job_id, input)) as { error?: string } | null;
-    if (v && typeof v === "object" && "error" in v && v.error) return bad(c, 422, "VALIDATION_FAILED", String(v.error));
-    return c.json({ data: v ?? null });
-  });
+  // 道具を呼ぶ口は契約の口 POST /api/v1/bridge/jobs/:id/tools/:name に移した（K-62・apps/api/src/features/F5/delegate/tools.ts）。TOOLS はそこから使う
   // 自分のAI が作ったファイル・調べた結果を成果物として渡す（D-121）。中身はそのまま本文で届く（道具のサーバーが PC のファイルを読んで送る）。
   // 置き場（C4）に置いてから台帳を書く。台帳を書けなければ（仕事が終わっていた等）置いた中身は消す
   app.post("/bridge/artifact", async (c) => {
     const token = c.req.header("x-kaname-tool-token") ?? "";
     if (token.length < 20) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵は分かりません");
     const job = (
-      await d.appPool.query<{ job_id: string; member_id: string; tenant_id: string }>(
-        "select job_id, member_id, tenant_id from app.bridge_tool_job($1)",
+      await d.appPool.query<{ job_id: string; member_id: string; tenant_id: string; kind: string }>(
+        "select job_id, member_id, tenant_id, kind from app.bridge_tool_job($1)",
         [hashToolToken(token)],
       )
     ).rows[0];
     if (!job) return bad(c, 401, "UNAUTHENTICATED", "この道具の鍵はもう使えません（仕事が終わっています）");
+    // チケットの仕事で使える道具は ticket_read だけ（契約の口と同じ決め）。成果物の口は会話の仕事の鍵だけ通す（K62-API-070・D-129.44）
+    if (job.kind === "ticket") return bad(c, 403, "FORBIDDEN", "この仕事ではその道具を使えません");
     const name = decodeURIComponent(c.req.header("x-artifact-name") ?? "").trim();
     const ext = (/\.([A-Za-z0-9]{1,5})$/.exec(name)?.[1] ?? "").toLowerCase();
     const contentType = ARTIFACT_PUT_TYPES[ext];
