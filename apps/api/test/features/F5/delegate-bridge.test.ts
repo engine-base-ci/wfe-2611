@@ -669,7 +669,7 @@ describe("K-62 AI に任せる：PC の口の入力・失敗・操作の揺れ�
   it("K62-API-082 入力：progress の文を切る所が 4 バイトの字の途中・文に片割れの字（孤立したサロゲート）がある：500 にせず、文字の単位で切って入れる（片割れは U+FFFD に置き換える）", async () => {
     const { p, pc } = await fresh("絵文字の様子の人");
     const { d } = await started(p, pc);
-    expect((await k.progress(pc, d.job_id, { seq: 1, kind: "status", text: "a" + "😀".repeat(300) })).status).toBe(201);
+    expect((await k.progress(pc, d.job_id, { seq: 1, kind: "status", text: "a" + "😀".repeat(500) })).status).toBe(201);
     expect((await k.progress(pc, d.job_id, { seq: 2, kind: "reply", text: "a" + "😀".repeat(100_000) })).status).toBe(
       201,
     );

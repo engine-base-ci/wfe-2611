@@ -946,16 +946,9 @@ class ContractShapeTest(unittest.TestCase):
                                                          ("slice(0, HEALTH_MAX)", "Bridge が送る点検の並び（人が書く欄でない）"),
                                                          ("slice(0, 40)", "Bridge が送る版の名前（人が書く欄でない）")],
         # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
-        "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 60)", "Bridge が送る道具の名前（人が書く欄でない）"),
-                                                          ("slice(0, 160)", "Bridge が送る道具の対象（人が書く欄でない）"),
-                                                          ("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
-                                                          ("slice(0, 200)", "Bridge が送る todo の文・止めた先の名前・Claude Code のセッションの id（人が書く欄でない）"),
-                                                          ("slice(0, 80)", "Bridge が送る止めた道具の名前（人が書く欄でない）"),
-                                                          ("slice(0, 120)", "Bridge が送る止めた先のサービス名（人が書く欄でない）"),
-                                                          ("slice(0, 300)", "Bridge が送る止めた先の対象（人が書く欄でない）"),
+        "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
-                                                          ("slice(0, REPLY_MAX)", "返事の上限は契約の結果の上限（200000）と同じ。Bridge は超える前に止まったにする（K62-BRG-005）"),
-                                                          ("slice(0, LINE_MAX)", "途中の様子の 1 行（400 字・人が書く欄でない・K62-API-033）")],
+                                                          ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:
