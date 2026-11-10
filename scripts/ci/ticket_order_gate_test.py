@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）を、各実装のコミットの時点の depends_on で裁く形に直す試験（K-159）。
-行 ID（K159-CI-011〜026）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+行 ID（K159-CI-011〜027）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
 
 由来：検査は HEAD の tickets.json の depends_on を START..HEAD の全部の実装のコミットに当てていた。K-62 が回 3 で depends_on に
 K-143 を足すと、それより前の K-62 の実装のコミットまで「K-143 の実装が祖先に無い」で赤になった（依存を後から足すたびに過去が赤）。
@@ -14,6 +14,8 @@ K-143 を足すと、それより前の K-62 の実装のコミットまで「K-
   ・載っているが depends_on の欄が無い・null → 依存なし（[]・前と同じ）。rev の版でも同じ
   ・rev の版の tickets.json が無い・JSON でない・"tickets" が無い → RuntimeError（main は FAIL・exit 1。読めなければ空として緑にしない）
   ・文書だけかを決める生成物の一覧（scripts/ci/generated.json）も rev の版から読む（作業場所の未コミットの一覧は見ない）
+    ただし共有の generated_outputs(root)（ci_scope.py の human_generated が使う）は変えない（作業場所から読むまま・引数 1 つ）。
+    この検査は版から読む別の関数を使う
   ・枝の先頭（rev）：実装のコミットを持つチケットの、rev の版の depends_on が全部、START..rev の実装のコミットにあること
     （依存が取り込まれていない実装を取り込まない・原則 11）。赤の文は「枝の先頭」と「<チケット> は <依存> に依存する」を含む。
     同じ（チケット, 依存）をコミットごとの赤で既に出していれば、枝の先頭の赤は重ねて出さない（前からの自己試験の数が変わらない）
@@ -242,6 +244,15 @@ class PerCommitTest(Case):
         rules = ci_scope.load_rules(str(HERE / "ci_scope.json"))
         self.assertEqual(ci_scope.root_kind("ai-team.yaml", rules, str(ROOT)), "unmapped")
         self.assertEqual(ci_scope.root_kind("11_tickets/K-1.md", rules, str(ROOT)), "doc")
+
+    def test_K159_CI_027_shared_generated_outputs_is_unchanged(self):
+        """K159-CI-027 守り：共有の generated_outputs(root) は変えない ── 引数 1 つで呼べて、作業場所の scripts/ci/generated.json
+        （未コミットでも）を読む。ci_scope.py が取り込む関数と同じもの（ci_scope の human_generated の読み元が変わらない）"""
+        import ci_scope  # noqa: PLC0415
+
+        self.assertIs(ci_scope.generated_outputs, g.generated_outputs)
+        self.r.write("scripts/ci/generated.json", json.dumps({"generators": [{"outputs": ["docs/作られた.md", "apps/x.ts"]}]}))
+        self.assertEqual(g.generated_outputs(self.tmp.name), {"docs/作られた.md", "apps/x.ts"})
 
     def test_K159_CI_021_git_failure_raises(self):
         """K159-CI-021 失敗：START が無い（浅い写し・違うリポジトリ）など git が失敗 → RuntimeError（止める側・main は FAIL で exit 1）"""
