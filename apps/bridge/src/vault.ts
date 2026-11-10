@@ -2,7 +2,7 @@
 //   Kaname の関門 C8 が解いた値を「いま動いている仕事」のためだけに受け取り、使う間（use の中）だけ持ち、終わったら捨てる。
 //   ディスクに書かない・ログに出さない・AI には渡さない（AI が持つのは参照 ID だけ。道具の引数にも載せない：guard.ts D-107.7）。
 //   受け取りが途中で切れた・中身が欠けている・届かないときは成功にしない（G-15・G-11）。理由は値を含まない文で返す
-import { BRIDGE_UA } from "./pairing";
+import { BRIDGE_UA, UUID_RE } from "./pairing";
 export interface Credential {
   login: string;
   password: string;
@@ -29,13 +29,12 @@ export class CredentialError extends Error {
     super(message);
   }
 }
-const UUID = /^[0-9a-f-]{36}$/i;
 
 /** 受け取り口（Kaname）から 1 件を取る。値はここでしか扱わない */
 async function fetchCredential(d: VaultDeps, jobId: string, credentialId: string): Promise<Credential> {
   const sid = d.sessionId();
   if (!sid) throw new CredentialError("この端末の接続は切れています。つなぎ直してください", "gone");
-  if (!UUID.test(credentialId) || !UUID.test(jobId))
+  if (!UUID_RE.test(credentialId) || !UUID_RE.test(jobId))
     throw new CredentialError("資格情報の指定が正しくありません", "notfound");
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), d.timeoutMs ?? 15_000);

@@ -8,6 +8,7 @@ import type pg from "pg";
 import type { TenantContext } from "@kaname/db/context";
 import type { ObjectStore } from "@kaname/storage";
 import { CATALOG } from "@kaname/errors";
+import { badId, idOf, idOrNull, queryId } from "./ids.js";
 
 type Resolve = (h: Headers) => Promise<{ ctx: TenantContext } | null>;
 export interface ArtifactDeps {
@@ -21,7 +22,6 @@ const bad = (c: Json, status: number, code: string, message: string, extra: Reco
   c.json({ error: code.toLowerCase(), code, message, ...extra }, status);
 const fromCatalog = (c: Json, status: number, id: "E-ART-001" | "E-ART-002") =>
   bad(c, status, id, CATALOG[id]?.message ?? id);
-const UUID = /^[0-9a-f-]{36}$/i;
 /** 横で直せる本文の上限（D-106.6）。これを超えると作らない */
 export const ARTIFACT_TEXT_MAX = 1024 * 1024;
 const FORMATS = ["md", "csv"] as const;
@@ -111,11 +111,10 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.get("/agent/artifacts", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const conv = c.req.query("conversation_id");
-    const r = await q1<{ v: unknown }>("select app.artifact_list($1, $2) as v", [
-      ctx.userId,
-      conv && UUID.test(conv) ? conv : null,
-    ]);
+    // 形違いの会話の id は黙って無視せず 422（D-135.4）。空は指定なし
+    const conv = queryId(c.req.query("conversation_id"));
+    if (conv === false) return badId(c, "conversation_id");
+    const r = await q1<{ v: unknown }>("select app.artifact_list($1, $2) as v", [ctx.userId, conv]);
     return c.json({ data: r?.v ?? [] });
   });
 
@@ -129,8 +128,9 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
       format?: unknown;
       title?: unknown;
     };
-    if (typeof b.message_id !== "string" || !UUID.test(b.message_id))
-      return bad(c, 422, "VALIDATION_FAILED", "どの返事から書き出すかが要ります", { field: "message_id" });
+    const msg = idOrNull(b.message_id);
+    if (msg === false) return badId(c, "message_id");
+    if (!msg) return bad(c, 422, "VALIDATION_FAILED", "どの返事から書き出すかが要ります", { field: "message_id" });
     if (typeof b.text !== "string" || !b.text.trim())
       return bad(c, 422, "VALIDATION_FAILED", "書き出す中身がありません", { field: "text" });
     const format: Format = FORMATS.includes(b.format as Format) ? (b.format as Format) : "md";
@@ -140,7 +140,7 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
       typeof b.title === "string" && b.title.trim() ? b.title : titleOf(b.text, format === "csv" ? "表" : "成果物");
     const r = await q1<{ id: string | null }>("select app.artifact_create($1, $2, $3, $4, $5, $6) as id", [
       ctx.userId,
-      b.message_id,
+      msg,
       title,
       format,
       p.ref,
@@ -158,8 +158,8 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.get("/agent/artifacts/:id", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const id = c.req.param("id");
-    if (!UUID.test(id)) return GONE(c);
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const m = await q1<{ v: Meta | null }>("select app.artifact_get($1, $2) as v", [ctx.userId, id]);
     if (!m?.v) return GONE(c);
     const ver = Number(c.req.query("version"));
@@ -177,10 +177,10 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.patch("/agent/artifacts/:id", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const id = c.req.param("id");
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const b = (await c.req.json().catch(() => ({}))) as { title?: unknown };
-    if (!UUID.test(id) || typeof b.title !== "string")
-      return bad(c, 422, "VALIDATION_FAILED", "名前が要ります", { field: "title" });
+    if (typeof b.title !== "string") return bad(c, 422, "VALIDATION_FAILED", "名前が要ります", { field: "title" });
     const r = await q1<{ ok: boolean }>("select app.artifact_rename($1, $2, $3) as ok", [ctx.userId, id, b.title]);
     return r?.ok ? c.json({ data: { ok: true } }) : GONE(c);
   });
@@ -189,8 +189,8 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.post("/agent/artifacts/:id/versions", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const id = c.req.param("id");
-    if (!UUID.test(id)) return GONE(c);
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const b = (await c.req.json().catch(() => ({}))) as { text?: unknown };
     if (typeof b.text !== "string") return bad(c, 422, "VALIDATION_FAILED", "中身が要ります", { field: "text" });
     const m = await q1<{ v: Meta | null }>("select app.artifact_get($1, $2) as v", [ctx.userId, id]);
@@ -213,10 +213,11 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.post("/agent/artifacts/:id/revert", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const id = c.req.param("id");
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const b = (await c.req.json().catch(() => ({}))) as { version?: unknown };
     const ver = Number(b.version);
-    if (!UUID.test(id) || !Number.isInteger(ver) || ver < 1)
+    if (!Number.isInteger(ver) || ver < 1)
       return bad(c, 422, "VALIDATION_FAILED", "戻す版が要ります", { field: "version" });
     const r = await q1<{ v: Ref | null }>("select app.artifact_version_ref($1, $2, $3) as v", [ctx.userId, id, ver]);
     if (!r?.v) return bad(c, 404, "NOT_FOUND", "その版はありません");
@@ -240,8 +241,8 @@ export function artifactRoutes(d: ArtifactDeps): Hono {
   app.get("/agent/artifacts/:id/download", async (c) => {
     const ctx = await me(c);
     if (!ctx) return NO(c);
-    const id = c.req.param("id");
-    if (!UUID.test(id)) return GONE(c);
+    const id = idOf(c.req.param("id"));
+    if (!id) return badId(c, "id");
     const ver = Number(c.req.query("version"));
     const r = await q1<{ v: Ref | null }>("select app.artifact_version_ref($1, $2, $3) as v", [
       ctx.userId,

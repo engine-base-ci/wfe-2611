@@ -2,6 +2,7 @@
 //   写しとタブの下書きの id の鍵は「ワークスペース × 本人」（共有の PC で別の人に見せない・H1）。本人が分かるまでは読まない・書かない。
 //   ログアウトとログイン切れで kaname.ticket-draft で始まる鍵は全部消す（lib/api/client の clearDraftCopies）。
 //   タブごとに下書きの id を持つ（sessionStorage）。2 つのタブで上書きし合わない。作れたら消し、作った後に届く保存は送らない
+import { isUuid } from "@kaname/contracts";
 import { call } from "@/lib/api/call";
 import { DRAFT_COPY_PREFIX } from "@/lib/api/client";
 
@@ -29,7 +30,6 @@ export type SaveState = "saved" | "failed" | "expired" | "too_large";
 
 const TAB_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}-id:${o.workspace}:${o.member}`;
 const COPY_KEY = (o: DraftOwner) => `${DRAFT_COPY_PREFIX}:${o.workspace}:${o.member}`;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuid = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -75,7 +75,7 @@ function readCopy(o: DraftOwner): { id: string; body: DraftBody } | null {
 /** このタブの下書きの id（無ければ作る） */
 export function tabDraftId(o: DraftOwner): string {
   const have = read(TAB_KEY(o), session);
-  if (have && UUID.test(have)) return have;
+  if (have && isUuid(have)) return have; // 入口と同じ決まり（z.uuid()・K-145）。合わなければ作り直す
   const id = uuid();
   write(TAB_KEY(o), id, session);
   return id;

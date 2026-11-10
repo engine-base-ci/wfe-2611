@@ -5,6 +5,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { Hono } from "hono";
 import type pg from "pg";
 import type { ObjectStore } from "@kaname/storage";
+import { idOf } from "./ids.js";
 
 export interface AgentToolDeps {
   appPool: pg.Pool;
@@ -41,7 +42,6 @@ export const ARTIFACT_PUT_TYPES: Record<string, string> = {
 type Json = { json: (b: unknown, s: number) => Response };
 const bad = (c: Json, status: number, code: string, message: string) =>
   c.json({ error: code.toLowerCase(), code, message }, status);
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export const hashToolToken = (t: string): string => createHash("sha256").update(t).digest("hex");
@@ -59,7 +59,8 @@ export async function issueToolToken(pool: pg.Pool, session: string, jobId: stri
 
 const str = (v: unknown, max = 200): string | null =>
   typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null;
-const id = (v: unknown): string | null => (typeof v === "string" && UUID.test(v) ? v : null);
+/** 道具の入力（AI の出力）の id：正式な uuid でなければ null（今までどおり。断る口は契約の callKanameTool・K-62） */
+const id = (v: unknown): string | null => idOf(v);
 const date = (v: unknown): string | null => (typeof v === "string" && DATE.test(v) ? v : null);
 const num = (v: unknown): number | null => {
   const n = typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v.replace(/[,，]/g, "")) : NaN;
