@@ -26,6 +26,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 from typing import Callable
 
 import yaml
@@ -57,14 +58,18 @@ def _refs(paths: list[str]) -> list[int]:
     return [int(x) for x in re.findall(r"\bD-(\d{3})", text)]
 
 
-def _run_once(cmd: str, runner: Callable, cache: dict) -> tuple[int, str, list[str]]:
+def _run_once(cmd: str, runner: Callable, cache: dict) -> tuple[int, str, list[str], float]:
+    """(終わり方, 最後の行, 赤の要点, 秒)。同じ文字の命令は 1 回だけ流し、2 回目からは秒を 0 にする（G27 の時間の内訳・K-156）"""
+    if cmd in cache:
+        return (*cache[cmd][:3], 0.0)
     if cmd not in cache:
+        t0 = time.monotonic()
         r = runner(cmd, shell=True, capture_output=True, text=True, cwd=os.getcwd())
         out = ((r.stdout or "") + (r.stderr or "")).strip()
         note = out.splitlines()[-1][:120] if out else ""
         # 落ちた検査は、何が落ちたかを読めるように要点を残す（CI のログで最後の 1 行しか見えないと原因が追えない）
         detail = [ln for ln in out.splitlines() if re.search(r"FAIL|×|✗|Error|expected|AssertionError|★", ln) and "UTC [" not in ln][:40] if r.returncode else []
-        cache[cmd] = (r.returncode, note, detail)
+        cache[cmd] = (r.returncode, note, detail, time.monotonic() - t0)
     return cache[cmd]
 
 
@@ -93,7 +98,8 @@ def audit(cfg: dict, run: bool, runner: Callable | None = None) -> tuple[list[di
         elif c and c.get("check"):
             row["kind"] = "機械"
             if run:
-                rc, note, detail = _run_once(c["check"], runner, cache)
+                rc, note, detail, sec = _run_once(c["check"], runner, cache)
+                row["sec"] = round(sec, 1)
                 row["result"] = "OK" if rc == 0 else "★ FAIL"
                 row["note"] = note
                 if rc:
@@ -133,9 +139,12 @@ def main() -> int:
     else:
         print(f"層の棚卸し {len(rows)} ファイル（正本の最新 confirmed: D-{latest:03d}）")
         for r in rows:
-            print(f'  {r["kind"]:2s} {r["result"]:<44s} {r["newest_ref"]:>6s}  {r["file"]}' + (f'  ← {r["note"]}' if r["note"] else ""))
+            sec = f'{r["sec"]:5.1f}s ' if "sec" in r else ""
+            print(f'  {r["kind"]:2s} {r["result"]:<44s} {sec}{r["newest_ref"]:>6s}  {r["file"]}' + (f'  ← {r["note"]}' if r["note"] else ""))
             for d in r.get("detail", []):
                 print(f"      │ {d[:300]}")
+        if a.run:
+            print(f"流した命令 {sum(1 for r in rows if r.get('sec'))}・合計 {sum(r.get('sec', 0) for r in rows):.1f} 秒（別の段で流す層 {sum(1 for r in rows if r['kind'] == '別')} は流していない）")
         print("PASS — G21 全部の層に検査（機械か理由つきの手か別の段）がある" if not bad else f"FAIL — G21 検査の無い層 {bad}")
     return 0 if not bad else 2
 

@@ -3646,7 +3646,7 @@ layer_checks:
   check: pnpm -s type-check
   elsewhere: G2
 - file: package.json
-  check: pnpm -s type-check && node scripts/ci/boundary.mjs --all
+  check: node scripts/ci/boundary.mjs --all  # 型の検査（pnpm -s type-check）は static の G2 が流す（K-156・同じ検査を 2 回流さない）
 - file: tsconfig.json
   check: pnpm -s type-check
   elsewhere: G2
@@ -3663,7 +3663,7 @@ layer_checks:
 - file: apps/bridge/electron-builder.yml
   check: (cd apps/bridge && pnpm -s build) && python3 -c "import yaml; yaml.safe_load(open('apps/bridge/electron-builder.yml'))"
 - file: apps/bridge/src/renderer/index.html
-  check: (cd apps/bridge && pnpm -s build)
+  check: (cd apps/bridge && pnpm -s build) && python3 -c "import yaml; yaml.safe_load(open('apps/bridge/electron-builder.yml'))"  # electron-builder.yml の層と同じ文字にして 1 回だけ組み立てる（K-156）
 - file: 07_tasks/schedule.html
   manual: しまった（D-128.114）。前の作業の分解は記録として残し、Kaname を作る仕事は 11_tickets で一から切り直した。機械の検査は 11_tickets の G45・G14（coverage_gate）・G26・G31 TV4 が持つ（D-128.117 で読む先を替えた）
 - file: 07_tasks/schedule.md
