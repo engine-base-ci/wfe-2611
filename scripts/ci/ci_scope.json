@@ -26,7 +26,7 @@
   "ci": [
    ".github/**",
    "05_flow/build_testplan.py",
-   "scripts/**",
+   "scripts/dev/**", "scripts/spec-sync/**",
    ".act-ci.env",
    "vitest.config.ts",
    "apps/*/playwright.config.ts",
@@ -66,7 +66,7 @@
    ".prettierignore",
    "infra/docker-compose.dev.yml",
    "infra/*.md",
-   "infra/provision/README.md"
+   "infra/provision/README.md", "scripts/ci/**", "scripts/tickets/**"
   ]
  },
  "shared_min_dependents": 2,
@@ -108,6 +108,10 @@
   ".claude/settings.json"
  ],
  "data_links": [
+  { "paths": ["scripts/ci/chat_one.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
+  { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
+  { "paths": ["scripts/ci/row_rules.mjs"], "tests": ["apps/api/test/authz_rows.test.ts"] },
+  { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   {
    "paths": [
     "07_qa/test-plan/access-matrix.json"

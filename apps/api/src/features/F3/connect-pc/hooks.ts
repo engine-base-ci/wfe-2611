@@ -77,6 +77,16 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
     return { ok: false as const, reply: s.status === "failed" ? fromCatalog("E-PAGE-007") : null };
   };
   /** 新しい版の中身の受け取り先：手元のフォルダなら Kaname の口、外の置き場なら期限つき URL */
+  /** 目録を署名つきで読む口（K-133）：置き場の仕組みの署名（期限 60 秒・証跡は残さない D-138.2）。
+   *  failed（その頭に署名を作れない＝開発・置き場の外の URL）は null で、今までどおり署名なしで読む。denied は例外（届かない側） */
+  const manifestSigner =
+    (ctx: HookArgs["ctx"]) =>
+    async (name: string, ttl: number): Promise<string | null> => {
+      const r = await d.objects.signExternal(ctx, d.release.base, name, ttl, { audit: false });
+      if (r.status === "done") return r.value.url;
+      if (r.status === "failed") return null;
+      throw new Error(r.reason);
+    };
   const fileUrl = async (ctx: TenantContext, from: "dir" | "base", name: string) => {
     if (from === "dir") return { ok: true as const, url: `/api/v1/bridge/releases/${encodeURIComponent(name)}/file` };
     return signed(ctx, name);
@@ -171,7 +181,7 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
     },
     getLatestBridgeRelease: {
       before: async (a: HookArgs) => {
-        const s = await releaseState(d.release);
+        const s = await releaseState({ ...d.release, sign: manifestSigner(a.ctx) });
         if (s.state === "unreachable") return fromCatalog("E-PAGE-007");
         if (s.state === "none") return { status: 200, body: { data: { released: false } } };
         const os = a.c.req.query("os") ?? "";
@@ -195,7 +205,7 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
     downloadBridgeRelease: {
       before: async (a: HookArgs) => {
         const name = a.c.req.param("name") ?? "";
-        const s = await releaseState(d.release);
+        const s = await releaseState({ ...d.release, sign: manifestSigner(a.ctx) });
         if (s.state === "unreachable") return fromCatalog("E-PAGE-007");
         if (OS.has(name)) {
           // 人が受け取るインストーラ（目録にあれば目録のもの。目録にあるのにファイルが無ければ前の探し方に落とす）

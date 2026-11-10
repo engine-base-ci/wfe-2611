@@ -5848,7 +5848,7 @@
   },
   {
    "id": "K-133",
-   "title": "staging：置き場の公開の範囲（Bridge の目録 kaname-bridge.json だけ公開・入れ物は非公開）をプロビジョニングのコードで作る",
+   "title": "staging：置き場の中身を全部非公開にし、目録も署名 URL で読む（provision が非公開を確かめ、公開なら止める）",
    "kind": "タスク",
    "stage": "未着手",
    "parent": "K-77",
@@ -5856,33 +5856,42 @@
    "area": "環境",
    "assignee": "実装",
    "due": "2026-11-10",
-   "estimate_hours": "4",
-   "estimate_basis": "K-144（取り込み済み・実測 チケット 956 分）と K-143（実測 チケット 283 分）の直近 2 本の平均のうち、直す所が 2 ファイル（infra/provision/bucket.ts・packages/storage）と試験 4 行の小さいチケットとして下側の K-143 から引いた",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（K-161 の実装の実測 12 分〔口 2・画面 1・migration 1〕より小さい：直すのは関数 2 つと台本 1 つ・試験 10 行。判定とレビューと取り込みを入れて 1 時間以内）",
    "decisions": [
     "D-097",
     "D-128.144",
     "D-128.153",
-    "D-128.160"
+    "D-128.160",
+    "D-138.1",
+    "D-138.2"
    ],
    "split": "",
+   "prior_impl": "なし",
    "choke_points": [
     "C4"
    ],
    "depends_on": [
     "K-78"
    ],
+   "tests": [
+    "apps/api/test/k133_release_private.test.ts",
+    "apps/api/test/features/F3/k133-release-wire.test.ts",
+    "packages/storage/test/k133_private.test.ts"
+   ],
    "affects": [
-    "@kaname/storage"
+    "@kaname/storage",
+    "@kaname/api"
    ],
    "ci_wide": [],
    "sections": {
-    "目的": "Bridge の配布物は置き場に置く。目録 `kaname-bridge.json` は誰でも読めてよい（公開）が、入れ物（インストーラーの本体）は非公開にし、受け取りは置き場の仕組みの期限つき署名 URL で渡す（D-128.153・D-128.160）。いまのプロビジョニング（infra/provision/bucket.ts・`pnpm provision:bucket`）は置き場を作るだけで、この公開の範囲を作っていない。手で置き場の画面から設定すると、staging と本番で食い違い、作り直したときに消える（外部リソースの実在・G-11）。K-57 のテスターが見つけた。",
-    "完了の条件": "- [ ] `pnpm provision:bucket` が、置き場を作るのと同じく冪等に、目録 `kaname-bridge.json` だけを公開にし、入れ物を非公開にする（ほかの物は非公開のまま）\n- [ ] 本番と同じコードで staging に作る（D-097・API の Build Command の `pnpm db:migrate && pnpm provision:bucket`）。手で置き場の画面から設定しない\n- [ ] 確かめ：staging で、目録は署名なしで読める・入れ物は署名なしで読めない（403）・署名 URL では期限の間だけ読める\n- [ ] 起動時確認（storage:bucket）か provision の出力に、公開の範囲が合っていることが出る\n- [ ] チケットの CI（act）が緑",
-    "前提と制約": "- 依存：K-78（staging の Supabase と置き場の接続）。staging をそろえるチケット K-37 はこのチケットに依存する\n- 置き場は関門 C4（packages/storage の ObjectStore）を通す。生の S3 の呼び出しを関門の外に書かない\n- 鍵の値はチャット・ファイル・コミットに書かない（infra/STAGING.md §1）\n- 手元の置き場の試験の役（apps/api/test/fake-s3.ts）でも、公開の範囲の分岐を受けられるかを切るときに決める",
-    "実施事項": "- [ ] 作る役：置き場（Supabase の S3 互換）で、1 つのファイルだけ公開にする方法（バケットの方針・公開のバケットを分ける など）を調べて決め、実装の詳細に書く\n- [ ] 作る役：分岐（初めて作る・2 回目・既に公開になっている入れ物を非公開に戻す・目録がまだ無い）と試験の行\n- [ ] 実装：infra/provision/bucket.ts と packages/storage の ensureBucket を直し、staging で流して確かめを記録する",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 目録だけ公開・入れ物は非公開 | ② 統合（staging） | staging の置き場に署名なしで目録と入れ物を取りに行き、200 と 403 | |\n| 2 回流しても同じ | ① 単体 | provision を 2 回流し、2 回目に何も変えない | |",
+    "目的": "Bridge の配布物は置き場（Supabase の S3 互換）に置く。入れ物（インストーラーの本体）は非公開にし、受け取りは置き場の仕組みの期限つき署名 URL で渡す（D-128.153・D-128.160）。K-57 のテスターが「目録 kaname-bridge.json だけ公開・入れ物は非公開の範囲が、プロビジョニングのコードで作られていない（手で設定すると staging と本番で食い違い、作り直すと消える・G-11）」と見つけた。\n\n切る段で調べて、作り方を変えた（PM の判断 2026-11-10・精査 R 回 1 が一次資料で確かめた）：\n- 目録を読むのは API だけ（apps/api/src/auth/bridge-release.ts の releaseState）。Bridge 本体は置き場を直に読まない\n- Supabase の公開・非公開はバケット単位。S3 の口は ACL を受けない（1 つのファイルだけ公開は作れない）\n- だから **目録も入れ物と同じく署名 URL で読み、置き場の中身は全部非公開にする**。公開の範囲を作らない\n- provision は、作る（冪等）に加えて、置き場が非公開であることを**在る物で**確かめ（Supabase の公開の読みの口は、非公開のバケットでも公開のバケットで物が無いときでも 400 を返すので、物が無いと見分けられない）、公開なら止める。配布物の頭（BRIDGE_RELEASE_BASE）が作って確かめた置き場の下にあることも確かめる（別のバケットを指すと作られず確かめられない・G-11 の元の見つけもの）",
+    "完了の条件": "- [ ] API は目録を関門 C4 の署名（signExternal・期限 60 秒・証跡は残さない）で読む。署名つきの読みが断られた（403 など）・署名を作るのが例外になったときは「読み込めませんでした」（unreachable・E-PAGE-007）で、覚えない。署名の口がその頭に署名を作れない（置き場の外の URL・開発）ときだけ、今までどおり署名なしで読む（K133-API-001〜010）\n- [ ] `pnpm provision:bucket` が冪等に置き場を作り、在る物で非公開を確かめて「<バケット> @ <口>: <created|exists>・private」を出す。公開・確かめられない・配布物の頭が置き場の下に無い、はどれも exit 1（K133-CI-001〜009）\n- [ ] `scripts/ci/ci_scope.json` の data_links に `infra/provision/**` を足し、このチケットの CI が全部に倒れない（チケットの CI はこのチケットの受け持ち）\n- [ ] 本番と同じコードで staging に作る（D-097・Build Command の `pnpm db:migrate && pnpm provision:bucket`）。手で置き場の画面から設定しない\n- [ ] 前からの K-57・K-144 の試験（connect-pc・bridge_release・k144-contract）が緑のまま\n- [ ] チケットの CI が緑（取り込みの CI で見る）",
+    "前提と制約": "- 依存：K-78（staging の Supabase と置き場の接続）。staging をそろえる K-37 はこのチケットに依存する\n- 置き場は関門 C4（packages/storage）を通す。生の S3 の呼び出しを関門の外に書かない。provision の確かめ（物を置く・署名つきで読む・公開の口を叩く・消す）は関門の中（packages/storage/src/s3.ts）に置く\n- 鍵の値はチャット・ファイル・コミットに書かない（infra/STAGING.md §1）\n- 公開の口：Supabase の S3 の口（…/storage/v1/s3）なら …/storage/v1/object/public/<バケット>/<鍵>。ほかの S3 互換（MinIO・試験の偽の S3）は <口>/<バケット>/<鍵>\n- readManifest（apps/api/src/auth/bridge-release.ts:64）は呼び手が 0 件。このチケットでは触らない（使われていないものに分かれ道を足さない）",
+    "実施事項": "1. `packages/storage/src/s3.ts` に足し、`packages/storage/src/index.ts` から出す：\n   - `bucketPublicUrl(endpoint, bucket, key): string`（上の公開の口の形）\n   - `checkBucketPrivate({ client, presigner, endpoint, bucket, fetchImpl = fetch }): Promise<\"private\" | \"public\">`：確かめ用の物 `.kaname-private-probe-<乱数の uuid>` を PutObject で置く（鍵に乱数：同じ置き場で Preview と本番の provision が同時に流れても、互いの確かめを壊さない） → `presigner.presignGet(<口>/<バケット>/<物>, 60)` を fetch して 200 でなければ例外（「非公開を確かめられない」）→ 公開の口を頭なしで fetch し、200 なら public・それ以外は private → 最後に必ず DeleteObject で物を消す（finally）。届かなければ例外のまま\n   - `provisionBucket({ client, presigner, endpoint, bucket, releaseBase, fetchImpl, log }): Promise<0 | 1>`：ensureBucket → releaseBase が空でなく `<口>/<バケット>/` の下（末尾の / まで比べる：`kaname-staging2/…` は下でない）でなければ「BRIDGE_RELEASE_BASE が置き場（<口>/<バケット>）の下にありません」を出して 1 → checkBucketPrivate が public なら「置き場が公開になっています。置き場の画面でバケットを非公開に戻す」を出して 1、例外なら理由を出して 1 → `[provision bucket] <バケット> @ <口>: <created|exists>・private` を出して 0\n2. `infra/provision/bucket.ts`：provisionBucket を呼び、返した番号で終わる（s3Client・s3Presigner・config の storage と bridgeReleaseBase を渡す）\n3. `packages/storage/src/index.ts` の signExternal に、5 つ目の引数 `opts: { audit?: boolean } = {}` を足す。`audit: false` なら証跡（object.sign_external）を書かない（決める人 answer=005e60e70a71・目録は運営の中身で利用者の操作ではない）。入れ物を渡すときは今までどおり書く\n4. `apps/api/src/auth/bridge-release.ts` の releaseState の設定に `sign?: (name: string, ttlSeconds: number) => Promise<string | null>` を足す：\n   - sign が URL を返す → その URL で読む。2xx は目録として読む（壊れていれば none）・404 は none・それ以外（400・401・403・5xx）は unreachable で覚えない\n   - sign が null（その頭に署名を作れない）→ 今までどおり `${base}/${MANIFEST}` を署名なしで読む（5xx は unreachable・ほかの 4xx は none）\n   - sign が例外 → unreachable で覚えない\n   - 1 分の覚えは ok と none だけ（今と同じ）\n5. `apps/api/src/features/F3/connect-pc/hooks.ts` の releaseState の呼び出し 2 か所（:174・:198）に sign を渡す：`signExternal(ctx, d.release.base, name, ttl, { audit: false })` の done は URL、failed（署名の口がその頭に作れない）は null、denied は例外\n6. `03_architecture/choke-points.json` の bridge-release.ts の例外 2 か所（C1・C4）と `03_architecture/choke-point-exceptions.md` の X-006・X-007 の理由と compensating_control を書き直す：「置き場の目録は関門 C4 の signExternal が作った署名 URL で読む。署名を作れない頭（開発・置き場の外）だけ署名なしで読む」\n7. `infra/STAGING.md` の置き場の手順に足す：バケットは非公開のまま（公開にしない・provision が確かめて公開なら止まる）。`BRIDGE_RELEASE_BASE=<STORAGE_ENDPOINT>/<STORAGE_BUCKET>/<頭>`（S3 の口の下・path-style。provision が置き場の下かを確かめる）\n8. `apps/api/test/fake-s3.ts` の先頭の注（「目録だけは署名なしで読める」）を「public を付けた物だけ署名なしで読める（K-133 から目録も署名つきで読む）」に直す（注だけ・振る舞いは変えない）\n\n```search\n- name: 目録を署名なしで読んでいる所（readManifest の 1 か所は触らない・releaseState の 1 か所を直す）\n  cmd: git grep -n -F 'fetch(`${base}/${MANIFEST}`' -- apps/api/src\n  count: 2\n- name: 目録を読む口（定義 2・hooks.ts の呼び出し 2＝sign を渡す所）\n  cmd: git grep -n -E \"releaseState\\\\(|readManifest\\\\(\" -- apps/api/src\n  count: 4\n- name: 関門の台帳の bridge-release.ts の例外（書き直す所）\n  cmd: git grep -n -F 'apps/api/src/auth/bridge-release.ts' -- 03_architecture/choke-points.json 03_architecture/choke-point-exceptions.md\n  count: 4\n```",
+    "テスト仕様と確認の結果": "分類: FILE\n\nテストの行 ID：`apps/api/test/k133_release_private.test.ts` の K133-API-001〜006・008・`apps/api/test/features/F3/k133-release-wire.test.ts` の K133-API-007・009・010・`packages/storage/test/k133_private.test.ts` の K133-CI-001〜009（試験の名前の頭）。\n\n| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 対象の状態 | 目録が非公開の置き場にある | 署名なしの GET は 403。releaseState は署名 URL で読み、state ok・版 1.4.0 | K133-API-001 |\n| 対象の状態 | 目録がまだ無い | state none（「まだ配布していません」） | K133-API-002 |\n| 失敗 | 置き場に届かない | state unreachable。覚えない | K133-API-003 |\n| 入口 | 署名の口がその頭に署名を作れない（sign が null） | 署名なしで読み、public なら state ok（K-57 の形） | K133-API-004 |\n| 守り | 目録の署名 URL の期限 | 60 秒 | K133-API-005 |\n| 失敗 | 署名つきの読みが断られた（403：鍵の誤り・期限切れ） | state unreachable（「読み込めませんでした」）。覚えず、直った次の要求で ok | K133-API-006 |\n| 入口 | PC をつなぐ画面の口（GET /bridge/releases/latest）・目録は非公開 | 200・released:true・版 1.4.0（hooks.ts が sign を渡している） | K133-API-007 |\n| 失敗 | 署名を作るのが例外 | state unreachable。署名なしの読みに落とさない | K133-API-008 |\n| 守り | 目録を読むための署名・入れ物の署名 | 目録の名前の証跡（object.sign_external）は 0 行・入れ物の名前は 1 行 | K133-API-009 |\n| 失敗 | 画面の口・置き場が目録の署名つきの読みを断る | 503・E-PAGE-007（「まだ配布していません」と混ぜない） | K133-API-010 |\n| 入力 | 公開の口の形（Supabase の S3 の口・ほか） | /storage/v1/object/public/<バケット>/<鍵>・<口>/<バケット>/<鍵> | K133-CI-001 |\n| 守り | 在る物：署名つき 200・公開の口 400 | private。公開の口は頭なしで叩く。物は置いて消す | K133-CI-002 |\n| 守り | 在る物：公開の口 200 | public。物は消す | K133-CI-003 |\n| 失敗 | 在る物を署名つきで読めない（403） | 例外（private と言わない）。物は消す | K133-CI-004 |\n| 失敗 | 置き場に届かない | 例外 | K133-CI-005 |\n| 時間の流れ | provision を 2 回流す | 2 回目は作らない（CreateBucket は 1 回） | K133-CI-006 |\n| 守り | provisionBucket：非公開・公開 | 0 と「<バケット> @ <口>: created・private」／1 と「置き場が公開になっています」 | K133-CI-007 |\n| 守り | 配布物の頭が置き場の下に無い（別のバケット・名前が前方一致する隣のバケット） | 1 と「BRIDGE_RELEASE_BASE」の理由。下にあれば 0 | K133-CI-008 |\n| 失敗 | provisionBucket：非公開を確かめられない（確かめ用の物を署名つきで読めない） | 1 と「確かめられない」理由。private とは出さない | K133-CI-009 |\n| 環境 | staging の置き場で、目録と入れ物は署名なしの公開の口で 200 以外（Supabase は 400）・署名 URL では期限の間だけ 200・provision の出力が private | 人が staging で確かめる（K-37 をそろえた後） | K133-ST-001 |\n\n| 分類の型 | 受け方 |\n|---|---|\n| TP-FILE-01 大きさの上限・0 バイト | 要らない：このチケットは利用者の物を上げない（上げるのは apps/bridge の release と運営の手順）。確かめ用の物は固定の小さい中身。目録の形と大きさは K-57 の parseManifest が受けている |\n| TP-FILE-02 拡張子と中身の種類が違う | 要らない：利用者のファイルを受け取らない。配る入れ物は目録の sha256 で Bridge が確かめる（K-57・D-109） |\n| TP-FILE-03 名前（日本語・記号・とても長い・同じ名前） | 要らない：読む名前は固定の kaname-bridge.json と .kaname-private-probe-<uuid> だけ。目録に載った名前の形は K-57 の NAME の正規表現と signExternal の EXTERNAL_NAME が受けている |\n| TP-FILE-04 上げる途中で切れた・同時に上げる | 要らない：利用者は上げない。読む途中で切れた・届かないは K133-API-003・K133-CI-005 |\n| TP-FILE-05 他の人のファイルの URL を直接開く | K133-API-001（非公開の置き場は署名なしで 403）・K133-CI-002・003・007（公開なら provision が止める）・K133-ST-001 |\n\n```judge-skip\n- K133-ST-001: staging の置き場は鍵が要り、CI の容れ物からは当てない。K-37（ステージングをそろえる）の後に人が確かめ、provision の出力（private）を証拠にする\n```",
     "成果物": "",
-    "決定ログ": "- 決定に従った：D-097・D-128.144・D-128.153・D-128.160"
+    "決定ログ": "- 決定に従った：D-097・D-128.144・D-128.153・D-128.160\n- D-138.1・D-138.2（2026-11-10 高本さん・answer=005e60e70a71）：目録の署名つきの読みが断られたら「読み込めませんでした」／目録を読むための署名は証跡を残さない\n- PM の判断（2026-11-10）：目録も署名つきで読み、置き場の中身は全部非公開にする（公開の範囲を作らない）"
    },
    "file": "11_tickets/K-133.md"
   },
