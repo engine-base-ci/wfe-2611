@@ -73,7 +73,7 @@ describe("K-133 目録も非公開の置き場から署名つきで読む", () =
     const s = await releaseState({ base: b, sign: async () => `${b}/kaname-bridge.json?X-Amz-Signature=x` });
     expect(s.state).toBe("unreachable");
   });
-  it("K133-API-004 署名を作れない置き場（置き場の外の URL・sign が null）だけ署名なしで読む（今の K-57 の形を壊さない）", async () => {
+  it("K133-API-004 署名の口が無い（開発・置き場の外の URL：sign が null）ときだけ署名なしで読む（今の K-57 の形を壊さない）", async () => {
     const b = base();
     fake.objects.set(`${b.slice(fake.endpoint.length + 1)}/kaname-bridge.json`, {
       body: Buffer.from(MANIFEST),
@@ -81,6 +81,28 @@ describe("K-133 目録も非公開の置き場から署名つきで読む", () =
     });
     const s = await releaseState({ base: b, sign: async () => null });
     expect(s.state).toBe("ok");
+  });
+  it("K133-API-006 署名つきの読みが断られた（403：鍵の誤り・期限切れ）ときは unreachable（「読み込めませんでした」・決める人 answer=005e60e70a71）。「配っていない」（none）に化けない。覚えない", async () => {
+    const b = base();
+    fake.objects.set(`${b.slice(fake.endpoint.length + 1)}/kaname-bridge.json`, { body: Buffer.from(MANIFEST) });
+    const broken = async (name: string, ttl: number) => {
+      const u = new URL((await signer.presignGet(new URL(`${b}/${name}`), ttl))!);
+      u.searchParams.set("X-Amz-Signature", "0".repeat(64)); // 鍵の誤りと同じく、置き場が署名を断る
+      return u.toString();
+    };
+    expect((await releaseState({ base: b, sign: broken })).state).toBe("unreachable");
+    expect((await releaseState({ base: b, sign: sign(b) })).state).toBe("ok"); // 覚えていない（直った次の要求で読める）
+  });
+  it("K133-API-008 署名を作るのが失敗した（設定の誤り：sign が例外）ときは unreachable。署名なしの読みに落とさない", async () => {
+    const b = base();
+    fake.objects.set(`${b.slice(fake.endpoint.length + 1)}/kaname-bridge.json`, {
+      body: Buffer.from(MANIFEST),
+      public: true,
+    });
+    const failing = async () => {
+      throw new Error("外の置き場の設定が置き場と合いません");
+    };
+    expect((await releaseState({ base: b, sign: failing })).state).toBe("unreachable");
   });
   it("K133-API-005 目録の署名 URL の期限は 60 秒（入れ物と同じく短い）", async () => {
     const b = base();
