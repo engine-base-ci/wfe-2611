@@ -35,6 +35,10 @@ DOC_PREFIXES = ("01_hearing/", "11_tickets/", "07_qa/test-plan/", "README.md")
 DOC_PATTERNS = (re.compile(r"^07_qa/test-specs/.+\.md$"), re.compile(r"^03_architecture/catalog\.[a-z]+$"),
                 re.compile(r"^08_api/[^/]+\.md$"))
 DONE_STAGES = {"確認中", "完了"}
+# 人がする準備のチケット（担当が役でなく人・アカウントや外のサービスの準備で、実装のコミットを持たない・正本 §6.1）は、
+#   stage が完了なら依存として満たす（K-133 が K-78〔staging の Supabase を作る・高本さん〕に依存して赤になった・2026-11-10）。
+#   担当が役（実装・作る など）のチケットは、今までどおり実装のコミットを求める
+ROLE_ASSIGNEES = {"実装", "作る", "精査", "テスター", "PM", "TS", "CS", "R", "Q"}
 TICKETS_JSON = "11_tickets/tickets.json"
 GENERATED_JSON = "scripts/ci/generated.json"
 PROCESS_CONFIG = ("ai-team.yaml",)   # この検査の中だけ実装に数えない（K-159）。is_doc_only には入れない
@@ -195,6 +199,11 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
     def legacy_ok(dep: str) -> bool:
         return dep not in mentioned and tickets.get(dep, {}).get("stage") in DONE_STAGES
 
+    def human_prep_ok(dep: str) -> bool:
+        t = tickets.get(dep, {})
+        who = str(t.get("assignee") or "").strip()
+        return t.get("stage") == "完了" and bool(who) and who not in ROLE_ASSIGNEES
+
     bad, legacy = [], []
     reported: set[tuple[str, str]] = set()
     for i, (sha, ids) in enumerate(impl):
@@ -207,6 +216,9 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
                 if legacy_ok(dep):
                     legacy.append(f"{dep}（{tid} の依存・決まりの前に入った）")
                     continue
+                if human_prep_ok(dep):
+                    legacy.append(f"{dep}（{tid} の依存・人の準備で完了）")
+                    continue
                 reported.add((tid, dep))
                 bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
@@ -216,6 +228,9 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
                 continue
             if legacy_ok(dep):
                 legacy.append(f"{dep}（{tid} の依存・決まりの前に入った）")
+                continue
+            if human_prep_ok(dep):
+                legacy.append(f"{dep}（{tid} の依存・人の準備で完了）")
                 continue
             bad.append(f"{head_sha[:10]} 枝の先頭：{tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（枝の先頭の depends_on）")
     return bad, sorted(set(legacy)), len(impl)
@@ -261,8 +276,19 @@ def selftest() -> int:
         commit("K-2 feat: 後から", "apps/a.ts", "a")
         commit("K-4 feat: 決まりの前に入った依存", "apps/c.ts", "c")
         bad3, legacy3, n3 = check(d, "HEAD", start)
+        # 人の準備（担当が人・完了・文書のコミットだけ）は通す。担当が役で完了でも実装のコミットが無ければ赤（K-133・2026-11-10）
+        run("checkout", "-q", "-b", "prep", start)
+        tickets({"K-1": {"depends_on": [], "stage": "未着手"}, "K-8": {"depends_on": [], "stage": "完了", "assignee": "高本さん"},
+                 "K-7": {"depends_on": [], "stage": "完了", "assignee": "実装"},
+                 "K-5": {"depends_on": ["K-8"], "stage": "未着手"}, "K-6": {"depends_on": ["K-7"], "stage": "未着手"}})
+        commit("K-1 K-7 K-8 docs: 一覧", "11_tickets/K-8.md", "x")
+        commit("K-5 feat: 人の準備に依存", "apps/d.ts", "d")
+        commit("K-6 feat: 役のチケットに依存", "apps/e.ts", "e")
+        bad4, legacy4, _ = check(d, "HEAD", start)
         ok = (len(bad1) == 1 and "K-2 は K-1" in bad1[0] and len(bad2) == 1 and not bad3 and n3 == 3
-              and legacy3 == ["K-9（K-4 の依存・決まりの前に入った）"])
+              and legacy3 == ["K-9（K-4 の依存・決まりの前に入った）"]
+              and any("K-6 は K-7" in b for b in bad4) and not any("K-5" in b for b in bad4)
+              and "K-8（K-5 の依存・人の準備で完了）" in legacy4)
         print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3}")
         return 0 if ok else 1
 
