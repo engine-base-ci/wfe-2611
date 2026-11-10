@@ -1,8 +1,10 @@
 // チケットを作る（K-60）の入力の形の確かめ。同じ会社か・書けるか・必須の区画は DB（app.ticket_create）が確かめる。
 //   表記ゆらぎ（全角半角・前後の空白）は入口（op.ts の normalize）が揃えた後。前後の空白だけの題名は空
+import { isUuid } from "@kaname/contracts";
 export const TITLE_MAX = 200;
 export const NOTIFY_MAX = 20;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
+const UUID = { test: (v: string): boolean => isUuid(v) };
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 export interface Detail {

@@ -16,4 +16,7 @@ export function uuidv7(now: number = Date.now()): string {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
-export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** 正式な uuid の形（依存を持てない層の正本・K-145）。契約の isUuid（zod 4 の z.uuid()）と同じ文字列：版（1〜8）と variant（8・9・a・b）の桁を見る・
+ *  nil と max は通す・大文字は通す・前後の空白は通さない。apps/bridge/src/pairing.ts に同じ文字列を 1 つ置く（K144-SHAPE-019 が同じことを見る） */
+export const UUID_RE =
+  /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$/;

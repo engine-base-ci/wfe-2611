@@ -1,5 +1,6 @@
 // 記憶（D-105）：「覚えて」の印を読む／毎朝のまとめに渡す文を組む／まとめの答え（JSON）を読む。
 // 判定は DB の関数（agent_digest_apply ほか）。ここは文を作る・読むだけで、DB には触らない（単体で試せる）
+import { idOf } from "./ids.js";
 export interface DigestSource {
   conversations: { id: string; title: string | null; messages: { who: "me" | "ai"; text: string }[] | null }[];
   approvals: { status: string | null; note: string | null; at: string }[];
@@ -90,9 +91,10 @@ export function parseDigest(text: string): DigestResult | null {
       .filter((x) => x.body),
     merged: arr(j["merged"])
       .map((x) => ({
-        memory_ids: (Array.isArray(x["memory_ids"]) ? x["memory_ids"] : []).filter(
-          (i): i is string => typeof i === "string" && /^[0-9a-f-]{36}$/i.test(i),
-        ),
+        // AI の答えの id は正式な uuid だけを残す（合わないものは捨てる・DB に届けない・K-145）
+        memory_ids: (Array.isArray(x["memory_ids"]) ? x["memory_ids"] : [])
+          .map(idOf)
+          .filter((i): i is string => i !== null),
         title: str(x["title"], 80),
         body: str(x["body"], 2000),
         kind: str(x["kind"], 20),
@@ -103,7 +105,7 @@ export function parseDigest(text: string): DigestResult | null {
         title: str(x["title"], 80),
         body: str(x["body"], 2000),
         kind: str(x["kind"], 20),
-        target_scope_id: str(x["target_scope_id"], 40),
+        target_scope_id: idOf(x["target_scope_id"]) ?? "",
         why: str(x["why"], 500),
         source: str(x["source"], 120),
       }))

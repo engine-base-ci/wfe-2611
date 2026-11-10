@@ -1,5 +1,6 @@
 // PC をつなぐ（K-57）の小さな決まり：接続コード・PC の印・PC の名前。乱数とハッシュは node:crypto（D-128.137）
 import { createHash, randomBytes, randomInt } from "node:crypto";
+import { isUuid } from "@kaname/contracts";
 
 /** 見分けにくい字（0・O・1・I・L）を除いた英数字（D-128.137） */
 export const CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
@@ -44,7 +45,8 @@ export function cleanLabel(raw: unknown): string {
 
 /** この PC の印（machine_id・D-128.174）。Bridge が入れたときに PC の中で作る UUID。送らない古い Bridge は null（何も切らない）。
  *  大文字は小文字にそろえる（表記ゆらぎ）。UUID の形でなければ止める */
-const MACHINE_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+/** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
+const MACHINE_ID_RE = { test: (v: string): boolean => isUuid(v) };
 export type MachineCheck = { ok: true; machineId: string | null } | { ok: false; message: string };
 export function normalizeMachineId(raw: unknown): MachineCheck {
   if (raw === undefined || raw === null) return { ok: true, machineId: null };

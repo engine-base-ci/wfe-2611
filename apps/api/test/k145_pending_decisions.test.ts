@@ -226,7 +226,7 @@ describe("K-145 D-135.3：一言・問い合わせの答え・指示を切らな
 describe("K-145 D-135.5：人が打つ資格情報のサービス名と資料のファイル名も黙って切らない（上限も外す・D-130.4）", () => {
   it("K145-API-019 資格情報を預ける（/vault/credentials）サービス名 300 字と、資料を付ける（/agent/attachments）ファイル名 300 字は、答えと DB から読み戻して一字も欠けない（前は 120・200 字で黙って切った）", async () => {
     const r = await ready();
-    const service = `サービス${"く".repeat(294)}終わり`;
+    const service = `サービス${"く".repeat(293)}終わり`;
     expect([...service].length).toBe(300);
     const c = await post(
       "/vault/credentials",
@@ -278,7 +278,7 @@ describe("K-145 PM の判断（D-130.4・D-135.5 の適用・精査 R 回 1 追�
         [r.tenant, conv, "# 見出し\n本文"],
       )
     ).rows[0]!.id;
-    const t1 = `成果物の名前${"け".repeat(290)}終わり`;
+    const t1 = `成果物の名前${"け".repeat(291)}終わり`;
     expect([...t1].length).toBe(300);
     const c = await post("/agent/artifacts", { message_id: msg, text: "# 見出し\n本文", title: t1 }, r.H);
     expect(
@@ -293,7 +293,7 @@ describe("K-145 PM の判断（D-130.4・D-135.5 の適用・精査 R 回 1 追�
     expect(
       (await admin.query<{ title: string }>("select title from artifacts where id = $1", [art.id])).rows[0]!.title,
     ).toBe(t1);
-    const t2 = `変えた名前${"こ".repeat(291)}終わり`;
+    const t2 = `変えた名前${"こ".repeat(292)}終わり`;
     expect([...t2].length).toBe(300);
     expect((await req("PATCH", `/agent/artifacts/${art.id}`, { title: t2 }, r.H)).status).toBe(200);
     expect(
@@ -336,7 +336,7 @@ describe("K-145 PM の判断（D-130.4・D-135.5 の適用・精査 R 回 1 追�
         [r.tenant, r.scope, m, r.member],
       )
     ).rows[0]!.id;
-    const reason = `止める理由${"し".repeat(291)}終わり`;
+    const reason = `止める理由${"し".repeat(292)}終わり`;
     expect([...reason].length).toBe(300);
     const x = await post("/onboard/golive/pause", { employee_id: ai, paused: true, reason }, r.H);
     expect(

@@ -3,7 +3,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
-import { uuidv7 } from "@kaname/db/id";
+import { UUID_RE, uuidv7 } from "@kaname/db/id";
 
 export interface ObjectMeta {
   size: number;
@@ -53,7 +53,13 @@ function expiresOf(url: string, at: number, ttl: number): Date {
 export function refOf(tenantId: string, id: string): string {
   return `tenants/${tenantId}/${id}`;
 }
-const REF = /^tenants\/([0-9a-f-]{36})\/([0-9a-z-]+)$/i;
+/** 参照を会社と物に分ける。会社も物も正式な uuid（@kaname/db/id の UUID_RE・契約の isUuid と同じ決まり・K-145）でなければ null（denied） */
+export function parseRef(ref: string): { tenantId: string; id: string } | null {
+  const parts = ref.split("/");
+  if (parts.length !== 3 || parts[0] !== "tenants") return null;
+  const [, tenantId, id] = parts as [string, string, string];
+  return UUID_RE.test(tenantId) && UUID_RE.test(id) ? { tenantId, id } : null;
+}
 
 export class ObjectStore {
   constructor(
@@ -62,8 +68,8 @@ export class ObjectStore {
     private readonly o: StoreOptions,
   ) {}
   private allowed(ref: string, ctx: TenantContext): boolean {
-    const m = REF.exec(ref);
-    return !!m && !!ctx.tenantId && m[1] === ctx.tenantId;
+    const p = parseRef(ref);
+    return !!p && !!ctx.tenantId && p.tenantId === ctx.tenantId;
   }
   private async audit(
     ctx: TenantContext,

@@ -4,8 +4,10 @@ import type { Context } from "hono";
 import type { TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import { sessionUnresolved } from "../contract/op.js";
+import { isUuid } from "@kaname/contracts";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
+const UUID = { test: (v: string): boolean => isUuid(v) };
 /** 要求の解決の答え：テナントの文脈と、同意し直しの印（K-53。立っている間は契約の入口 op.ts が止める） */
 export type SessionResolver = (c: Context) => Promise<{ ctx: TenantContext; termsPending: boolean } | null>;
 export type Vars = { Variables: { ctx: TenantContext; repo: Repository; termsPending: boolean } };

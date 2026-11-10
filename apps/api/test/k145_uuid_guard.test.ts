@@ -148,12 +148,12 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ]),
       "形違いの service_id で預かり先に書いた",
     ).toBe(stores);
-    // null・送らない は「無し」（conversation_id なら新しい会話）
+    // 形違いの要求では会話が増えていない
+    expect(await count("select count(*) as n from conversations where owner_member_id = $1", [r.member])).toBe(convs);
+    // null・送らない は「無し」：仕事は積まれる（会話は開いている 1 本を使う＝app.agent_open_conversation の決まり。開いていなければ作る）
     expect((await post("/agent/say", { text: "x" }, r.H)).status).toBe(201);
     expect(await jobsOf(r.member)).toBe(jobs + 1);
-    expect(await count("select count(*) as n from conversations where owner_member_id = $1", [r.member])).toBe(
-      convs + 1,
-    );
+    expect(await count("select count(*) as n from conversations where owner_member_id = $1", [r.member])).toBe(convs);
     expect(await eventsOf(job.job_id)).toBe(events);
     expect((await req("GET", `/agent/conversations`, undefined, r.H)).status).toBe(200);
     void conv;
@@ -309,7 +309,9 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
     const spy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
       logged.push(a.map((x) => (x instanceof Error ? `${x.message} ${x.stack ?? ""}` : String(x))).join(" "));
     });
-    for (const bad of BAD_PATH_IDS) {
+    // DB の uuid の型が断る形だけ（①36 個のハイフン・③g を含む・⑦形違い・⑧37 字）。版や variant の桁だけが違う②④⑤は、
+    //   Postgres の uuid の型が通す（16 進 32 桁なら受ける）ので 22P02 にならない。それを断るのは 1 層目（入口の isUuid）
+    for (const bad of [0, 2, 5, 6].map((i) => BAD_PATH_IDS[i]!)) {
       logged.length = 0;
       const x = await app2.request(`http://localhost${X}/k145/cast/${encodeURIComponent(bad)}`);
       expect(logged.join("\n"), `${bad}: 記録に番号が無い`).toContain("22P02");

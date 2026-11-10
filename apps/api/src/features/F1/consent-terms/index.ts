@@ -9,6 +9,7 @@ import { withTenant, type TenantContext } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { Row } from "@kaname/db/repository";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
+import { isUuid } from "@kaname/contracts";
 
 /** 関門 C2 の withTenant に渡す業務の接続（kaname_app） */
 export type AppPool = Parameters<typeof withTenant>[0];
@@ -27,7 +28,8 @@ const REQUIRED = [
   { kind: "terms", field: "terms_version_id" },
   { kind: "privacy", field: "privacy_version_id" },
 ] as const;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
+const UUID = { test: (v: string): boolean => isUuid(v) };
 
 const errName = (e: unknown) => (e as Error)?.name ?? "Error";
 const fromCatalog = (status: number, code: string, error: string, extra: Record<string, unknown> = {}): HookReply => {

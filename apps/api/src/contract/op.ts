@@ -72,10 +72,14 @@ function uuidParamIssues(c: Ctx, def: EndpointDef): { field: string; message: st
 }
 /** 送る量の守り（D-130.1・K-144 ㉚㊱）：体を受ける口（POST・PATCH・PUT）が 1 回に受ける内容全体の上限。自由に書く欄の上限ではなく、サーバーを守るためだけ */
 export const BODY_MAX_BYTES = 1_048_576;
-const TOO_LARGE = { error: "payload_too_large", code: "PAYLOAD_TOO_LARGE", message: "送る内容が大きすぎます" } as const;
+export const TOO_LARGE = {
+  error: "payload_too_large",
+  code: "PAYLOAD_TOO_LARGE",
+  message: "送る内容が大きすぎます",
+} as const;
 /** 体を読みながら数える。上限を超えたら読むのをやめて（流れを取り消して）null。content-length の頭が上限を超えていれば 1 バイトも読まない。
  *  頭が無い・小さく偽っていても、読んだ量で止める（全部を読んでから数えない・1 回の要求のメモリを上限と読みかけの 1 かたまりまでにする・G-16） */
-async function readBodyLimited(c: Ctx): Promise<string | null> {
+export async function readBodyLimited(c: Pick<Context, "req">): Promise<string | null> {
   const declared = Number(c.req.header("content-length"));
   if (Number.isFinite(declared) && declared > BODY_MAX_BYTES) return null;
   const stream = c.req.raw.body;
@@ -262,6 +266,20 @@ export type Reply = { status: number; body: unknown; raw?: Response };
 const INFLIGHT = new Map<string, Promise<(Reply & { hash: string }) | undefined>>();
 /** 入力が DB の決まりに合わないときの番号：外部キー・形・null・数の桁あふれ・check 違反 */
 const DB_INPUT_CODES = new Set(["23503", "22P02", "23502", "22003", "23514"]);
+/** 入力が DB の決まりに合わずに落ちた例外なら、記録に書く番号（と制約の名前）を返す。違えば null。
+ *  契約の口（下の execute）と口の外（app.ts の onError・前の道すじの 2 層目・K-145）で同じ写しを使う */
+export function dbInputFailure(ex: unknown): { code: string; constraint: string | null } | null {
+  const code = pgCode(ex);
+  if (!DB_INPUT_CODES.has(code) && !/許可されていない識別子/.test(String(ex))) return null;
+  const constraint = (ex as { constraint?: unknown }).constraint;
+  return { code: code || "identifier", constraint: typeof constraint === "string" && constraint ? constraint : null };
+}
+/** DB の決まりに合わないときの答え（D-130.2）：決まった文だけ。DB の文・送った値は出さない */
+export const DB_INPUT_REPLY = {
+  error: "validation_failed",
+  code: "VALIDATION_ERROR",
+  details: [{ field: "body", message: "入力内容を確認してください" }],
+} as const;
 const fail = (status: number, error: string, code: string, extra: Partial<ErrBody> = {}): Reply => ({
   status,
   body: { error, code, ...extra },
@@ -320,18 +338,10 @@ async function execute(
       return fail(409, "conflict", "CONFLICT", { message: "この承認はもう決まっています" });
     // 入力が DB の決まりに合わない（外部キー・形・null・桁あふれ・check・許されない識別子）：422。答えには決まった文だけを出し（D-130.2）、
     //   ログには DB の答えの番号と制約の名前だけを残す（K-144 ㉓㉙㊳）。DB の文・詳しい説明は送った値を含むので出さない
-    if (DB_INPUT_CODES.has(code) || /許可されていない識別子/.test(String(ex))) {
-      const constraint = (ex as { constraint?: unknown }).constraint;
-      console.error(
-        "[api] 422",
-        def.method,
-        def.path,
-        code || "identifier",
-        ...(typeof constraint === "string" && constraint ? [constraint] : []),
-      );
-      return fail(422, "validation_failed", "VALIDATION_ERROR", {
-        details: [{ field: "body", message: "入力内容を確認してください" }],
-      });
+    const dbIn = dbInputFailure(ex);
+    if (dbIn) {
+      console.error("[api] 422", def.method, def.path, dbIn.code, ...(dbIn.constraint ? [dbIn.constraint] : []));
+      return { status: 422, body: DB_INPUT_REPLY };
     }
     throw ex;
   }
