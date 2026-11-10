@@ -5880,7 +5880,8 @@
     "packages/storage/test/k133_private.test.ts"
    ],
    "affects": [
-    "@kaname/storage"
+    "@kaname/storage",
+    "@kaname/api"
    ],
    "ci_wide": [],
    "sections": {
