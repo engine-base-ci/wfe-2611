@@ -6,211 +6,45 @@
 //     ・D-130.2 DB の決まりに合わず断るときの文は「入力内容を確認してください」（2 層目・22P02）
 //     ・D-130.4 人が自由に書く欄（会話の名前・記憶・一言・指示）を黙って切らない
 //   K-62 が消す口（/bridge/take・finish・progress・control・tool）はここでは触らない
-import { beforeAll, afterAll, describe, expect, it } from "vitest";
-import pg from "pg";
+import { beforeAll, afterAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { request as httpRequest } from "node:http";
-import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
 import { Hono } from "hono";
 import { serve, type ServerType } from "@hono/node-server";
-import { migrate } from "@kaname/db/migrate";
-import { migrateAuth } from "@kaname/auth/migrate";
-import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
-import { createPool } from "@kaname/db/pool";
-import { createRepository } from "@kaname/db/repository";
-import { MemoryVault, SecretsGateway } from "@kaname/secrets";
-import { ObjectStore } from "@kaname/storage";
-import { localDriver } from "@kaname/storage/local";
 import { isUuid } from "@kaname/contracts";
 import { createApp } from "../src/app.js";
-import { authExt } from "../src/auth/ext.js";
 import { parseDigest } from "../src/auth/memory.js";
-import { keepAuth, verifiedUser } from "./_pending.js";
-import { pairForTest } from "./bridge_pair.js";
+import {
+  BAD_IDS,
+  BAD_PATH_IDS,
+  BODY_MAX,
+  GOOD_IDS,
+  X,
+  admin,
+  app,
+  appPool,
+  bootK145,
+  closeK145,
+  count,
+  countingBody,
+  data,
+  eventsOf,
+  expectBadId,
+  fullWidth,
+  jobsOf,
+  jsonOf,
+  newConversation,
+  newJob,
+  newMemory,
+  newProposal,
+  post,
+  ready,
+  req,
+  type Json,
+} from "./k145_fixture.js";
 
-const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
-const ADMIN = process.env["DATABASE_URL"]!;
-const APP_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
-const AUTH_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
-const PW = "Str0ng-Passw0rd!";
-const X = "/api/auth-ext";
-const BODY_MAX = 1_048_576;
-let app: ReturnType<typeof createApp>;
-let admin: pg.Pool;
-let appPool: pg.Pool;
-
-// 正式な uuid でない値（D-129.42・全部の層の試験で同じ並び。K-144 の NOT_UUID に variant・版 9・g を足した）
-export const BAD_IDS = [
-  "------------------------------------", // ① 36 個のハイフン（前の緩い正規表現が通していた）
-  "3fa85f64-5717-0562-b3fc-2c963f66afa6", // ② 版の桁が 0
-  "3fa85f64-5717-4562-b3fc-2c963f66afag", // ③ g を含む
-  "3fa85f64-5717-4562-c3fc-2c963f66afa6", // ④ variant の桁が c
-  "3fa85f64-5717-9562-b3fc-2c963f66afa6", // ⑤ 版の桁が 9
-  "", // ⑥ 空
-  "not-a-uuid", // ⑦ 形が違う
-  "3fa85f64-5717-4562-b3fc-2c963f66afa60", // ⑧ 37 字
-] as const;
-/** 道の値に置ける形違い（空は道にならない） */
-const BAD_PATH_IDS = BAD_IDS.filter((v) => v !== "");
-// 正式な uuid（入口の形 z.uuid() が通す）：v4・v7・nil・max・大文字
-const GOOD_IDS = [
-  "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "0193c5a0-5f3e-7c0a-9d4e-0b1a2c3d4e5f",
-  "00000000-0000-0000-0000-000000000000",
-  "ffffffff-ffff-ffff-ffff-ffffffffffff",
-  "3FA85F64-5717-4562-B3FC-2C963F66AFA6",
-] as const;
-const fullWidth = (s: string) =>
-  [...s]
-    .map((c) => (c === "-" ? "－" : /[0-9a-f]/.test(c) ? String.fromCharCode(c.charCodeAt(0) + 0xfee0) : c))
-    .join("");
-
-type Json = Record<string, unknown> & {
-  code?: string;
-  field?: string;
-  message?: string;
-  details?: { field: string; message: string }[];
-  data?: unknown;
-};
-const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: typeof body === "string" ? body : JSON.stringify(body) }),
-  });
-const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
-const jsonOf = async (r: Response) =>
-  (await r
-    .clone()
-    .json()
-    .catch(() => ({}))) as Json;
-const data = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
-const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-const count = async (sql: string, p: unknown[] = []) => Number((await admin.query<{ n: string }>(sql, p)).rows[0]!.n);
-
-/** 422 の答えが「その欄の形が違う」と言っている（契約の入口と同じ理由 "uuid"・前の道すじの field）。500 ではない */
-async function expectBadId(r: Response, field: string, label: string) {
-  const j = await jsonOf(r);
-  expect(r.status, `${label}: ${JSON.stringify(j).slice(0, 160)}`).toBe(422);
-  expect(j.code, label).toBe("VALIDATION_FAILED");
-  expect(j.field, label).toBe(field);
-  expect(j.details?.find((d) => d.field === field)?.message, label).toBe("uuid");
-}
-
-beforeAll(async () => {
-  await migrate(ADMIN, DB_PKG);
-  await migrateAuth(ADMIN);
-  admin = new pg.Pool({ connectionString: ADMIN, max: 3 });
-  appPool = createPool({ databaseUrl: APP_URL, max: 4 });
-  const repo = await createRepository(appPool);
-  const { auth } = keepAuth(
-    createAuth({
-      authDatabaseUrl: AUTH_URL,
-      appPool,
-      secret: "test-secret-0123456789-abcdefghijklmnop",
-      baseURL: "http://localhost:3001",
-      webBaseURL: "http://localhost:3123",
-      mailer: async () => undefined,
-    }),
-  );
-  const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
-  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "k145-obj-"))), {
-    signingSecret: "test-files",
-    maxBytes: 4 * 1024 * 1024, // 置き場の上限（送る量 1MB の守りの外にあることを見るため、1MB より大きく）
-  });
-  app = createApp({
-    repo,
-    auth,
-    resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({
-      auth,
-      appPool,
-      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
-      repo,
-      secrets,
-      objects,
-      mailer: async () => undefined,
-      config: {
-        secretsMasterKey: "test-master",
-        baseUrl: "http://localhost:3001",
-        webBaseUrl: "http://localhost:3123",
-        opsEmail: "ops@example.com",
-        env: "test" as const,
-      },
-    }),
-  });
-}, 60_000);
-afterAll(async () => {
-  await appPool?.end();
-  await admin?.end();
-});
-
-/** 登録した人（確認済み）と、その人の本物の PC の印 */
-async function ready() {
-  const email = `${uniq()}@example.com`;
-  const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K145" });
-  const H = { authorization: `Bearer ${ver.token}` };
-  const bp = await pairForTest(admin, email);
-  const B = { "x-bridge-session": bp.token };
-  const row = (await admin.query<{ scope_id: string }>("select scope_id from members where id = $1", [bp.member]))
-    .rows[0]!;
-  return { H, B, member: bp.member, tenant: bp.tenant, scope: row.scope_id, sid: bp.sid };
-}
-type Ready = Awaited<ReturnType<typeof ready>>;
-const newConversation = async (H: Record<string, string>) =>
-  (await data<{ conversation_id: string }>(post("/agent/conversations", {}, H))).conversation_id;
-/** 仕事を 1 つ積む（PC はつないである）。状態を置き換えられる */
-async function newJob(r: Ready, state: "queued" | "running" | "asking" = "queued") {
-  const s = await data<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "K-145 の仕事" }, r.H));
-  if (state !== "queued") await admin.query("update bridge_jobs set state_id = $2 where id = $1", [s.job_id, state]);
-  return s;
-}
-/** 自分の記憶を 1 つ置く */
-const newMemory = async (r: Ready) =>
-  (
-    await admin.query<{ id: string }>(
-      "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'preference', $3, 'K-145', '前の本文') returning id",
-      [r.tenant, r.scope, r.member],
-    )
-  ).rows[0]!.id;
-/** 自分が確認者の候補（sent）を 1 つ置く */
-async function newProposal(r: Ready) {
-  const mem = await newMemory(r);
-  return (
-    await admin.query<{ id: string }>(
-      "insert into memory_proposals (tenant_id, scope_id, memory_id, target_scope_id, proposer_member_id, reviewer_member_id, state_id) values ($1, $2, $3, $2, $4, $4, 'sent') returning id",
-      [r.tenant, r.scope, mem, r.member],
-    )
-  ).rows[0]!.id;
-}
-const eventsOf = (job: string) => count("select count(*) as n from bridge_job_events where job_id = $1", [job]);
-const jobsOf = (member: string) => count("select count(*) as n from bridge_jobs where member_id = $1", [member]);
-
-/** 流れの体（K144-API-044 と同じ）：読まれた量を数え、cancel を記録する */
-const countingBody = (total: number, chunk = 65_536) => {
-  let pulled = 0;
-  let cancelled = false;
-  const piece = new TextEncoder().encode("a".repeat(chunk));
-  const stream = new ReadableStream<Uint8Array>(
-    {
-      pull(c) {
-        if (pulled >= total) return c.close();
-        const n = Math.min(chunk, total - pulled);
-        c.enqueue(n === chunk ? piece : piece.slice(0, n));
-        pulled += n;
-      },
-      cancel() {
-        cancelled = true;
-      },
-    },
-    { highWaterMark: 0 },
-  );
-  return { stream, pulled: () => pulled, cancelled: () => cancelled, chunk };
-};
+beforeAll(bootK145, 60_000);
+afterAll(closeK145);
 
 describe("K-145 画面の口（ログインの要る前の道すじ）の id は正式な uuid で確かめる（D-129.42）", () => {
   it("K145-API-001 道の値 :id（会話・一言・許可・まとめ・記憶・候補・成果物・資格情報）が正式な uuid でない 7 種は 422・field id・理由 uuid。500 にならず、行は増えない・変わらない", async () => {
@@ -286,7 +120,15 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ["POST", "/agent/artifacts", "message_id", (bad) => ({ message_id: bad, text: "# 表\n中身" })],
       ["POST", "/onboard/testrun/cancel", "run_id", (bad) => ({ run_id: bad })],
       ["POST", "/onboard/golive/pause", "employee_id", (bad) => ({ employee_id: bad, paused: true })],
+      // 資格情報を預ける口の service_id（確かめ無しで credentials.service_id〔uuid の列〕へ書いていた・精査 R 回 1 #1）
+      [
+        "POST",
+        "/vault/credentials",
+        "service_id",
+        (bad) => ({ service_name: "発注ナビ", login: "me@example.com", password: "pw-k145-123", service_id: bad }),
+      ],
     ];
+    const creds = await count("select count(*) as n from credentials where owner_member_id = $1", [r.member]);
     for (const [method, path, field, body] of cases)
       for (const bad of BAD_IDS)
         await expectBadId(
@@ -294,6 +136,7 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
           field,
           `${method} ${path} ${field}=${JSON.stringify(bad)}`,
         );
+    expect(await count("select count(*) as n from credentials where owner_member_id = $1", [r.member])).toBe(creds);
     // null・送らない は「無し」（conversation_id なら新しい会話）
     expect((await post("/agent/say", { text: "x" }, r.H)).status).toBe(201);
     expect(await jobsOf(r.member)).toBe(jobs + 1);
@@ -334,11 +177,12 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       r.H,
     );
     expect(m.status).toBe(422);
+    expect((await jsonOf(m)).message).toContain("会話の id と、いつより前か");
   }, 60_000);
 });
 
 describe("K-145 PC の口（x-bridge-session）の id も同じ部品で確かめる", () => {
-  it("K145-API-004 ask・answer・partial・steers・answer2・code・check-result の job_id、entries の conversation_id・job_id、attachment の job_id・attachment_id、credentials/resolve の job_id・credential_id が形違いなら 422・その欄。出来事・証跡は増えない。「生きているか」より前に止まる", async () => {
+  it("K145-API-004 ask・answer・partial・steers・answer2・code・check-result の job_id、entries の conversation_id・job_id、attachment の job_id・attachment_id、credentials/resolve の job_id・credential_id が形違いなら 422・その欄。出来事・証跡は増えない（形違いの id と印の順は K145-API-018）", async () => {
     const r = await ready();
     const job = await newJob(r, "running");
     const events = await eventsOf(job.job_id);
@@ -449,8 +293,17 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       return c.json({ data: r.rows[0]!.v });
     });
     const app2 = createApp({ version: "test", authExt: leaky });
+    // 記録（console.error）には番号（22P02）だけ。送った値と DB の文は出さない（K-144 ㊳ と同じ・精査 R 回 1 #4）
+    const logged: string[] = [];
+    const spy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      logged.push(a.map((x) => (x instanceof Error ? `${x.message} ${x.stack ?? ""}` : String(x))).join(" "));
+    });
     for (const bad of BAD_PATH_IDS) {
+      logged.length = 0;
       const x = await app2.request(`http://localhost${X}/k145/cast/${encodeURIComponent(bad)}`);
+      expect(logged.join("\n"), `${bad}: 記録に番号が無い`).toContain("22P02");
+      expect(logged.join("\n"), `${bad}: 記録に DB の文が出た`).not.toMatch(/invalid input syntax/i);
+      expect(logged.join("\n"), `${bad}: 記録に送った値が出た`).not.toContain(bad);
       const text = await x.clone().text();
       expect(x.status, `${bad}: ${text.slice(0, 120)}`).toBe(422);
       const j = (await x.json()) as Json;
@@ -458,8 +311,49 @@ describe("K-145 正しい uuid は今までどおり中へ（500 にしない）
       expect(j.details?.[0]?.message).toBe("入力内容を確認してください");
       expect(text).not.toMatch(/invalid input syntax|uuid/i);
     }
+    spy.mockRestore();
     const ok = await app2.request(`http://localhost${X}/k145/cast/${GOOD_IDS[0]}`);
     expect(ok.status).toBe(200);
+  }, 60_000);
+
+  it("K145-API-018 断る順（契約の入口 op.ts と同じく、だれかが先・形が後）：画面の口はログインしていなければ形違いの id でも 401。PC の口は 印の頭が無い・印の形が違う → 401、印の形は合うが外した・知らない印 → 410、生きている印 → 422（id の形）。どれも何も書かない", async () => {
+    const r = await ready();
+    const job = await newJob(r, "running");
+    const bad = BAD_PATH_IDS[0]!;
+    // 画面の口：ログインしていない（頭なし）
+    for (const [method, path, body] of [
+      ["PATCH", `/agent/conversations/${encodeURIComponent(bad)}`, { title: "x" }],
+      ["GET", `/agent/artifacts/${encodeURIComponent(bad)}`, undefined],
+      ["POST", "/agent/say", { text: "x", conversation_id: bad }],
+      ["POST", "/agent/answer", { job_id: bad, request_id: "r1", allow: true }],
+      ["GET", `/agent/state?conversation_id=${encodeURIComponent(bad)}`, undefined],
+      ["POST", "/vault/credentials", { login: "a", password: "b", service_id: bad }],
+    ] as const) {
+      const x = await req(method, path, body);
+      expect(x.status, `${method} ${path}`).toBe(401);
+      expect((await jsonOf(x)).code).toBe("UNAUTHENTICATED");
+    }
+    // PC の口：頭なし・形の違う印 → 401
+    const events = await eventsOf(job.job_id);
+    const pcCases: [string, (id: string) => unknown][] = [
+      ["/bridge/ask", (id) => ({ job_id: id, request_id: "r1", tool: "Bash", summary: "ls" })],
+      ["/bridge/partial", (id) => ({ job_id: id, text: "途中" })],
+      ["/bridge/answer2", (id) => ({ job_id: id, request_id: "r1" })],
+      ["/bridge/credentials/resolve", (id) => ({ job_id: id, credential_id: randomUUID() })],
+    ];
+    for (const [path, body] of pcCases) {
+      expect((await post(path, body(bad))).status, `${path} 頭なし`).toBe(401);
+      expect((await post(path, body(bad), { "x-bridge-session": "not-a-key" })).status, `${path} 形の違う印`).toBe(401);
+      expect((await post(path, body(bad), r.B)).status, `${path} 生きている印`).toBe(422);
+    }
+    // 外した印（形は合う）→ 形違いの id でも 410（Bridge は印を捨てる）
+    expect((await post("/agent/bridge-revoke", { session_id: r.sid }, r.H)).status).toBe(200);
+    for (const [path, body] of pcCases) {
+      const x = await post(path, body(bad), r.B);
+      expect(x.status, `${path} 外した印`).toBe(410);
+      expect((await jsonOf(x)).code).toBe("SESSION_GONE");
+    }
+    expect(await eventsOf(job.job_id)).toBe(events);
   }, 60_000);
 });
 

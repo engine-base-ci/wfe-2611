@@ -1,134 +1,30 @@
 // K-145 のうち、決める人の答え（D-134・2026-11-10・answer=ffef5862874b「推奨どおり」）を待ってから積んだ行（聞くことが残っている間はコミットしない・正本 §1-11）。
 //   D-134.1 ファイルを受ける口は送る量 1MB の守りの外（K145-API-011）／D-134.3 一言・問い合わせの答え・指示を切らない（K145-API-015・migration は K-62 の 0092 の次）／
+//   D-134.5 資格情報のサービス名・資料のファイル名も切らない（K145-API-019・answer=3e67d8fb452f）／
 //   D-134.4 形違いの id を黙って捨てる所（say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id、/agent/artifacts の ?conversation_id）も 422（K145-API-002・003 の続き）
-//   土台（組み立て・ready・newJob ほか）は k145_uuid_guard.test.ts と同じ
+//   土台（組み立て・ready・newJob ほか）と BAD_IDS は k145_fixture.ts（試験のファイルどうしで import しない・精査 R 回 1 追加-1）
 import { beforeAll, afterAll, describe, expect, it } from "vitest";
-import pg from "pg";
-import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
-import { migrate } from "@kaname/db/migrate";
-import { migrateAuth } from "@kaname/auth/migrate";
-import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
-import { createPool } from "@kaname/db/pool";
-import { createRepository } from "@kaname/db/repository";
-import { MemoryVault, SecretsGateway } from "@kaname/secrets";
-import { ObjectStore } from "@kaname/storage";
-import { localDriver } from "@kaname/storage/local";
-import { createApp } from "../src/app.js";
-import { authExt } from "../src/auth/ext.js";
 import { issueToolToken } from "../src/auth/agent-tools.js";
-import { keepAuth, verifiedUser } from "./_pending.js";
-import { pairForTest } from "./bridge_pair.js";
-import { BAD_IDS } from "./k145_uuid_guard.test.js";
+import {
+  BAD_IDS,
+  X,
+  admin,
+  app,
+  appPool,
+  bootK145,
+  closeK145,
+  data,
+  expectBadId,
+  jobsOf,
+  newJob,
+  newMemory,
+  post,
+  ready,
+  req,
+} from "./k145_fixture.js";
 
-const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
-const ADMIN = process.env["DATABASE_URL"]!;
-const APP_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_app:kaname_app@");
-const AUTH_URL = ADMIN.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@");
-const PW = "Str0ng-Passw0rd!";
-const X = "/api/auth-ext";
-let app: ReturnType<typeof createApp>;
-let admin: pg.Pool;
-let appPool: pg.Pool;
-type Json = Record<string, unknown> & { code?: string; field?: string; details?: { field: string; message: string }[] };
-const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
-const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
-const jsonOf = async (r: Response) =>
-  (await r
-    .clone()
-    .json()
-    .catch(() => ({}))) as Json;
-const data = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
-const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-const count = async (sql: string, p: unknown[] = []) => Number((await admin.query<{ n: string }>(sql, p)).rows[0]!.n);
-async function expectBadId(r: Response, field: string, label: string) {
-  const j = await jsonOf(r);
-  expect(r.status, `${label}: ${JSON.stringify(j).slice(0, 160)}`).toBe(422);
-  expect(j.code, label).toBe("VALIDATION_FAILED");
-  expect(j.field, label).toBe(field);
-  expect(j.details?.find((d) => d.field === field)?.message, label).toBe("uuid");
-}
-
-beforeAll(async () => {
-  await migrate(ADMIN, DB_PKG);
-  await migrateAuth(ADMIN);
-  admin = new pg.Pool({ connectionString: ADMIN, max: 3 });
-  appPool = createPool({ databaseUrl: APP_URL, max: 4 });
-  const repo = await createRepository(appPool);
-  const { auth } = keepAuth(
-    createAuth({
-      authDatabaseUrl: AUTH_URL,
-      appPool,
-      secret: "test-secret-0123456789-abcdefghijklmnop",
-      baseURL: "http://localhost:3001",
-      webBaseURL: "http://localhost:3123",
-      mailer: async () => undefined,
-    }),
-  );
-  const secrets = new SecretsGateway(repo, new MemoryVault(), Buffer.alloc(32, 9));
-  const objects = new ObjectStore(repo, localDriver(mkdtempSync(join(tmpdir(), "k145p-obj-"))), {
-    signingSecret: "test-files",
-    maxBytes: 4 * 1024 * 1024,
-  });
-  app = createApp({
-    repo,
-    auth,
-    resolve: createSessionResolver(auth, appPool),
-    authExt: authExt({
-      auth,
-      appPool,
-      authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
-      repo,
-      secrets,
-      objects,
-      mailer: async () => undefined,
-      config: {
-        secretsMasterKey: "test-master",
-        baseUrl: "http://localhost:3001",
-        webBaseUrl: "http://localhost:3123",
-        opsEmail: "ops@example.com",
-        env: "test" as const,
-      },
-    }),
-  });
-}, 60_000);
-afterAll(async () => {
-  await appPool?.end();
-  await admin?.end();
-});
-
-async function ready() {
-  const email = `${uniq()}@example.com`;
-  const ver = await verifiedUser(AUTH_URL, { email, password: PW, companyName: "K145" });
-  const H = { authorization: `Bearer ${ver.token}` };
-  const bp = await pairForTest(admin, email);
-  const B = { "x-bridge-session": bp.token };
-  const row = (await admin.query<{ scope_id: string }>("select scope_id from members where id = $1", [bp.member]))
-    .rows[0]!;
-  return { H, B, member: bp.member, tenant: bp.tenant, scope: row.scope_id, sid: bp.sid };
-}
-type Ready = Awaited<ReturnType<typeof ready>>;
-async function newJob(r: Ready, state: "queued" | "running" | "asking" = "queued") {
-  const s = await data<{ conversation_id: string; job_id: string }>(post("/agent/say", { text: "K-145 の仕事" }, r.H));
-  if (state !== "queued") await admin.query("update bridge_jobs set state_id = $2 where id = $1", [s.job_id, state]);
-  return s;
-}
-const newMemory = async (r: Ready) =>
-  (
-    await admin.query<{ id: string }>(
-      "insert into memories (tenant_id, scope_id, kind_id, owner_member_id, title, body) values ($1, $2, 'preference', $3, 'K-145', '前の本文') returning id",
-      [r.tenant, r.scope, r.member],
-    )
-  ).rows[0]!.id;
-const jobsOf = (member: string) => count("select count(*) as n from bridge_jobs where member_id = $1", [member]);
+beforeAll(bootK145, 60_000);
+afterAll(closeK145);
 
 describe("K-145 D-134.4：形違いの id を黙って捨てる所も 422（D-129.42）", () => {
   it("K145-API-002（続き）say・steer の attachment_ids の要素・quote.message_id、proposals/send の target_scope_id が形違いなら 422・その欄。仕事は増えない。null は「無し」で通す", async () => {
@@ -192,6 +88,9 @@ describe("K-145 D-134.1：ファイルを受ける口は送る量 1MB の守り�
         .then((t) => t.slice(0, 120)),
     ).toBe(201);
     const job = await newJob(r, "running");
+    // K-62（0092）の後、道具の鍵は「その仕事を受け取った PC」（bridge_jobs.taken_session_id）にだけ作れる。
+    //   この試験は K-62 の取り込みの後に流すので、受け取った形にしてから鍵を作る（精査 R 回 1 #22）
+    await admin.query("update bridge_jobs set taken_session_id = $2 where id = $1", [job.job_id, r.sid]);
     const token = await issueToolToken(appPool, r.sid, job.job_id);
     expect(token).toBeTruthy();
     const png = new Uint8Array(1_572_864);
@@ -286,5 +185,84 @@ describe("K-145 D-134.3：一言・問い合わせの答え・指示を切らな
       )
     ).rows[0]!;
     expect(st.payload.text).toBe(text);
+    // 引用（D-134.3）：/agent/say の quote.text 5000 字は、保存する引用（messages.quote）と自分のAI への指示（bridge_jobs.prompt）の両方で欠けない。
+    //   /agent/steer の引用も一言の出来事（payload.opts.quote）で欠けない（精査 R 回 1 #5）
+    const quoteText = `引用${"き".repeat(4996)}まで`;
+    const said = await data<{ job_id: string; conversation_id: string }>(
+      post("/agent/say", { text: "ここを詳しく", quote: { text: quoteText, message_id: null } }, r.H),
+    );
+    const msg = (
+      await admin.query<{ quote: { text: string } }>(
+        "select quote from messages where job_id = $1 and kind = 'human'",
+        [said.job_id],
+      )
+    ).rows[0]!;
+    expect(msg.quote.text).toBe(quoteText);
+    const prompt = (
+      await admin.query<{ prompt: string }>("select prompt from bridge_jobs where id = $1", [said.job_id])
+    ).rows[0]!.prompt;
+    expect(prompt).toContain(quoteText);
+    const running2 = await newJob(r, "running");
+    expect(
+      (
+        await post(
+          "/agent/steer",
+          { job_id: running2.job_id, text: "直して", quote: { text: quoteText, message_id: null } },
+          r.H,
+        )
+      ).status,
+    ).toBe(201);
+    const st2 = (
+      await admin.query<{ payload: { opts?: { quote?: { text: string } } } }>(
+        "select payload from bridge_job_events where job_id = $1 and kind = 'steer'",
+        [running2.job_id],
+      )
+    ).rows[0]!;
+    expect(st2.payload.opts?.quote?.text).toBe(quoteText);
+  }, 60_000);
+});
+
+describe("K-145 D-134.5：人が打つ資格情報のサービス名と資料のファイル名も黙って切らない（上限も外す・D-130.4）", () => {
+  it("K145-API-019 資格情報を預ける（/vault/credentials）サービス名 300 字と、資料を付ける（/agent/attachments）ファイル名 300 字は、答えと DB から読み戻して一字も欠けない（前は 120・200 字で黙って切った）", async () => {
+    const r = await ready();
+    const service = `サービス${"く".repeat(294)}終わり`;
+    expect([...service].length).toBe(300);
+    const c = await post(
+      "/vault/credentials",
+      { service_name: service, login: "me@example.com", password: "pw-k145-123" },
+      r.H,
+    );
+    expect(
+      c.status,
+      await c
+        .clone()
+        .text()
+        .then((t) => t.slice(0, 120)),
+    ).toBe(201);
+    const created = (await c.json()) as { data: { id: string; service_name: string } };
+    expect(created.data.service_name).toBe(service);
+    const row = (
+      await admin.query<{ service_name: string }>("select service_name from credentials where id = $1", [
+        created.data.id,
+      ])
+    ).rows[0]!;
+    expect(row.service_name).toBe(service);
+    const fileName = `${"資料の名前".repeat(59)}末.txt`;
+    expect([...fileName].length).toBe(300);
+    const fd = new FormData();
+    fd.append("file", new File([new TextEncoder().encode("中身")], fileName, { type: "text/plain" }));
+    const up = await app.request(`http://localhost${X}/agent/attachments`, { method: "POST", headers: r.H, body: fd });
+    expect(
+      up.status,
+      await up
+        .clone()
+        .text()
+        .then((t) => t.slice(0, 120)),
+    ).toBe(201);
+    const att = ((await up.json()) as { data: { id: string; name: string } }).data;
+    expect(att.name).toBe(fileName);
+    expect(
+      (await admin.query<{ name: string }>("select name from attachments where id = $1", [att.id])).rows[0]!.name,
+    ).toBe(fileName);
   }, 60_000);
 });
