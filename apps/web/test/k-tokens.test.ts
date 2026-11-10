@@ -84,10 +84,13 @@ describe("部品に生の値が無い（K-24・design_gate の D1〜D4 と同じ
 });
 
 describe("見た目の切り替え（D-128.55）", () => {
-  it("知らない値・無い値はシステムに合わせる", () => {
-    expect(parseTheme(undefined)).toBe("system");
-    expect(parseTheme("blue")).toBe("system");
+  it("知らない値・無い値は明るい（D-129.45・OS に引っ張られない）。選んだ値はそのまま", () => {
+    expect(parseTheme(undefined)).toBe("light");
+    expect(parseTheme("")).toBe("light");
+    expect(parseTheme("blue")).toBe("light");
+    expect(parseTheme("system")).toBe("system");
     expect(parseTheme("dark")).toBe("dark");
+    expect(themeAttr(parseTheme(undefined))).toBe("light"); // 選んでいない人にも data-theme=light を付ける（CSS の prefers-color-scheme が効かない）
   });
   it("システムのときは data-theme を付けない（CSS の prefers-color-scheme に任せる）", () => {
     expect(themeAttr("system")).toBeUndefined();

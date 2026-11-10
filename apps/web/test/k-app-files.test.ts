@@ -18,7 +18,7 @@ describe("落ちたとき・無いときの受け皿（K-30）", () => {
   });
   it("根で落ちたときの受け皿は、自分で <html> を持ち、見た目と書体を読む（根の layout が読まれないため）", () => {
     const s = readFileSync(join(APP, "global-error.tsx"), "utf8");
-    expect(s).toMatch(/<html lang="ja">/);
+    expect(s).toMatch(/<html lang="ja"/);
     expect(s).toMatch(/import "\.\/globals\.css"/);
     expect(s).toMatch(/import "@fontsource(-variable)?\//);
   });
