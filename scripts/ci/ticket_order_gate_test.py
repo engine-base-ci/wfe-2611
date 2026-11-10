@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）を、各実装のコミットの時点の depends_on で裁く形に直す試験（K-159）。
-行 ID（K159-CI-011〜025）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+行 ID（K159-CI-011〜026）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
 
 由来：検査は HEAD の tickets.json の depends_on を START..HEAD の全部の実装のコミットに当てていた。K-62 が回 3 で depends_on に
 K-143 を足すと、それより前の K-62 の実装のコミットまで「K-143 の実装が祖先に無い」で赤になった（依存を後から足すたびに過去が赤）。
@@ -22,6 +22,7 @@ K-143 を足すと、それより前の K-62 の実装のコミットまで「K-
   ・git が失敗したら RuntimeError（main が FAIL・exit 1）
   ・ai-team.yaml（進め方の設定）は文書・設定の扱い：11_tickets などと ai-team.yaml だけに触るコミットは実装に数えない
     （PM の判断 2026-11-10：設定は製品の実装ではない。3fdbb37f の形）。ai-team.yaml と実装のファイルの両方に触るコミットは実装に数える
+    ただし is_doc_only（ci_scope.py と共有）は変えない：ai-team.yaml は ci_scope では今までどおり「追えない変更」で全部を流す（緩めない）
 使い方: python3 scripts/ci/ticket_order_gate_test.py
 """
 import contextlib, io, json, os, subprocess, sys, tempfile, time, unittest
@@ -231,6 +232,16 @@ class PerCommitTest(Case):
         bad, _, n = self.check()
         self.assertEqual(n, 1)
         self.assertTrue(any(b.startswith(c[:10]) and "K-3 は K-1" in b for b in bad), bad)
+
+    def test_K159_CI_026_shared_is_doc_only_is_not_loosened(self):
+        """K159-CI-026 守り：取り込む順の検査で ai-team.yaml を実装に数えないことは、共有の is_doc_only に入れない。
+        is_doc_only(["ai-team.yaml"]) は False のまま、ci_scope.py の root_kind("ai-team.yaml") は "unmapped"（追えない変更で全部を流す）のまま"""
+        import ci_scope  # noqa: PLC0415
+
+        self.assertFalse(g.is_doc_only(["ai-team.yaml"], set()))
+        rules = ci_scope.load_rules(str(HERE / "ci_scope.json"))
+        self.assertEqual(ci_scope.root_kind("ai-team.yaml", rules, str(ROOT)), "unmapped")
+        self.assertEqual(ci_scope.root_kind("11_tickets/K-1.md", rules, str(ROOT)), "doc")
 
     def test_K159_CI_021_git_failure_raises(self):
         """K159-CI-021 失敗：START が無い（浅い写し・違うリポジトリ）など git が失敗 → RuntimeError（止める側・main は FAIL で exit 1）"""
