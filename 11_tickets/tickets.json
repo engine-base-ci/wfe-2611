@@ -6328,6 +6328,9 @@
     "apps/web/test/k-tokens.test.ts"
    ],
    "prior_impl": "なし",
+   "changes": [
+    "apps/web/lib/theme.ts"
+   ],
    "affects": [
     "@kaname/web"
    ],
