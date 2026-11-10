@@ -1,6 +1,6 @@
 // K-64 中間テスト 3：AI に任せる（K-62）→ 承認して完了する（K-63）を、本物のブラウザ・本物の DB・本物の口と、試験の PC でつなぐ（D-128.131）。
 //   中の 1 本 1 本の分岐は単体の試験（K-62：apps/api/test/features/F5/delegate*.test.ts・apps/web/tests/features/F5/delegate.spec.ts・
-//   apps/bridge/test/delegate.test.ts、K-63：apps/api/test/features/F5/approve-complete.test.ts・apps/web/tests/features/F5/approve-complete.spec.ts）が持つ。
+//   apps/bridge/test/delegate.test.ts、K-63（孫 K-161〜K-166）：apps/api/test/features/F5/approve-complete-*.test.ts・apps/web/tests/features/F5/approve-complete-*.spec.ts）が持つ。
 //   ここは「つないだときにだけ出るもの」を見る：PC の結果が承認待ちに正しく渡るか・承認が実行の仕事になって任せた人の PC に届くか・
 //   完了でチケットとセッション（続きの id）が閉じるか・差し戻しで作り直しに戻るか・別の人の PC には届かないか・承認の記録が取り消せない扱いで残るか。
 //   口は網の手前で差し替えない（page.route で答えを作らない。届く頭 x-forwarded-for だけを足す）。AI は決まった答え（_lib/f5-flow.ts の AI）。
@@ -9,6 +9,7 @@
 //   ★前提：CI の web の組の G59 と同じ（API を試験の受け箱へ・画面は 127.0.0.1:3124）。K-58・K-62・K-63 がこの枝に入っていること。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { expect, test, type Page } from "@playwright/test";
+import { admin } from "../_lib/api";
 import { lastBeatAgo } from "../_lib/clock";
 import {
   AI,
@@ -59,6 +60,7 @@ const MSG = {
   expired24h: "承認から 24 時間を過ぎたので、実行の前にもう一度確かめます", // K-63 が止めた前の仕事の理由（D-131.14）
   todoLeft: "実施事項がまだ残っています", // E-VAL-022
   ticketDeleted: "チケットが消されたので止めました", // K-62 の合図・K-63 の片付け
+  noWrite: "このチケットを直す権限が無くなったので止めました", // K-62 の止める理由（D-129.1・K62-API-019）
   execHint: "承認された成果物を実行してください", // K-63 の承認の関数の足し書き
   returnedHint: "差し戻されました。理由：", // K-63 の差し戻しの足し書き（作り直しの仕事の prompt）
   returnedOnBand: "差し戻しの理由：", // K-62 の帯（作り直しの間・D-129.12）
@@ -578,4 +580,46 @@ test("K64-M3-10 完了の条件と閉じ方：実施事項が残っていると�
   await delegateBtn(page).click();
   const fresh = await r.w.take();
   expect(fresh).toMatchObject({ phase: "make", agent_session_id: null });
+});
+
+test("K64-M3-11 途中で権限が無くなる：任せたあと担当を同僚に替え、任せた人を見るだけにする → PC が結果を返す → 遅れた結果は捨てられ、承認待ちに出ない（G-14・D-128.179）", async ({
+  page,
+}) => {
+  const r = await ready(page, "権限");
+  const mate = await teammate(r.me, "中間3 新しい担当");
+  const job = await delegateAndTake(page, r);
+  // 担当を替える口（F4）と権限を変える口（F2）はまだ無いので、DB に直に置く（K62-API-019 と同じ置き方）
+  await admin("update tickets set assignee_member_id = $2 where id = $1", [r.t, mate.memberId]);
+  const changed = await admin<{ id: string }>(
+    "update permissions set ability_id = 'view' where grantee_member_id = $1 and target_kind_id = 'tickets' and revoked_at is null and deleted_at is null returning id",
+    [r.me.memberId],
+  );
+  expect(changed.length, "任せた人のチケットの権限を見るだけにした").toBeGreaterThan(0);
+  const sessions = await admin<{ kind: string | null; revoked: boolean }>(
+    "select kind_id as kind, revoked_at is not null as revoked from sessions where member_id = $1",
+    [r.me.memberId],
+  );
+  expect(
+    sessions.filter((x) => x.kind !== "bridge").every((x) => x.revoked),
+    "画面のログインは切れる（D-128.179）",
+  ).toBe(true);
+  expect(
+    sessions.some((x) => x.kind === "bridge" && !x.revoked),
+    "PC のつながりは切れない（D-128.179）",
+  ).toBe(true);
+  expect(await r.w.finish(job.job_id, { state: "done", result: AI.made, agent_session_id: "sess-k64" })).toEqual({
+    status: 201,
+    outcome: "stopped",
+  });
+  expect(await artifactsOf(r.t), "遅れた結果は成果物にしない").toHaveLength(0);
+  expect(await approvalsOf(r.t), "承認待ちに出さない").toHaveLength(0);
+  const runs = await runsOf(r.t);
+  expect(runs).toHaveLength(1);
+  expect(runs[0]).toMatchObject({ phase: "make", status_id: "stopped" });
+  const why = await admin<{ e: string | null }>("select error_summary as e from action_runs where id = $1", [
+    runs[0]!.id,
+  ]);
+  expect(why[0]!.e).toBe(MSG.noWrite);
+  expect((await ticketState(r.t)).stage).toBe("doing");
+  expect((await systemLines(r.t)).at(-1)).toContain("止まりました");
 });
