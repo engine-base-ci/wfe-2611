@@ -129,6 +129,11 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
       ],
     ];
     const creds = await count("select count(*) as n from credentials where owner_member_id = $1", [r.member]);
+    // 預かり先（関門 C8・vault）にも書かない：形の確かめは d.secrets.store より前（store も store_failed も証跡が増えない・精査 R 回 1 の気づき）
+    const stores = await count(
+      "select count(*) as n from audit_events where tenant_id = $1 and action like 'secret.store%'",
+      [r.tenant],
+    );
     for (const [method, path, field, body] of cases)
       for (const bad of BAD_IDS)
         await expectBadId(
@@ -137,6 +142,12 @@ describe("K-145 画面の口（ログインの要る前の道すじ）の id は
           `${method} ${path} ${field}=${JSON.stringify(bad)}`,
         );
     expect(await count("select count(*) as n from credentials where owner_member_id = $1", [r.member])).toBe(creds);
+    expect(
+      await count("select count(*) as n from audit_events where tenant_id = $1 and action like 'secret.store%'", [
+        r.tenant,
+      ]),
+      "形違いの service_id で預かり先に書いた",
+    ).toBe(stores);
     // null・送らない は「無し」（conversation_id なら新しい会話）
     expect((await post("/agent/say", { text: "x" }, r.H)).status).toBe(201);
     expect(await jobsOf(r.member)).toBe(jobs + 1);
