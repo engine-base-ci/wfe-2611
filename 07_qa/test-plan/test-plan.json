@@ -1074,7 +1074,8 @@
   {
    "id": 27,
    "name": "層の棚卸し（G21）",
-   "script": "python3 scripts/ci/layer_audit.py --run",
+   "script": "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\"",
+   "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n",
    "job": "spec",
    "blocking": true
   },

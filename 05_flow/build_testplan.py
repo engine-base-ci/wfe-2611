@@ -90,7 +90,7 @@ json.dump({"version": "v3", "created_at": TODAY, "_doc": "entities.json の acce
            "counts": {"entities": len(EN), "policies": sum(len(e["access_control_policies"]) for e in EN), "cases": len(am)}, "cases": am}, open(f"{OUT}/access-matrix.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- CI ゲート（26 ＋ 仕様の層 ＋ タスク）
 SPEC_GATES = [
-    {"id": 27, "name": "層の棚卸し（G21）", "script": "python3 scripts/ci/layer_audit.py --run", "job": "spec", "blocking": True},
+    {"id": 27, "name": "層の棚卸し（G21）", "script": "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\"", "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n", "job": "spec", "blocking": True},   # DB の層は DB の範囲を触った回だけ（空は true＝流す・D-133.6）
     {"id": 28, "name": "正本 ↔ tickets の参照整合（qa-ladder validate）", "script": "python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json", "job": "spec", "blocking": True},
     {"id": 29, "name": "エラー一覧 E1〜E9（引数を省かない）", "script": "python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json", "job": "spec", "blocking": True},
     {"id": 30, "name": "スキル一式 SK1〜SK6", "script": "python3 scripts/ci/skill_pkg_gate.py 10_skills", "job": "spec", "blocking": True},

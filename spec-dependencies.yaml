@@ -3633,6 +3633,7 @@ layer_checks:
 # ---- 2026-10-20 project_audit（Tier P）で出た穴：ディスクにあるのに検査の無い層 ----
 - file: packages/db/migrations/*.sql
   check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled && DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:no-vendor-sql && pnpm exec vitest run packages/db/test --no-file-parallelism --reporter=dot'  # 並列だと kaname_test の接続を食い合って時間切れになる（2026-10-20）
+  db: true   # DB を使う層。DB の範囲（migration・SQL・行の守り・権限・引き金）を触った回と全部の回だけ流す（D-133.6）
 - file: packages/*/package.json
   check: pnpm -s type-check
   elsewhere: G2
@@ -3739,6 +3740,7 @@ layer_checks:
 
 - file: packages/db/policies/*.sql
   check: bash -c 'DATABASE_URL=${DATABASE_URL:-postgres://kaname_app:kaname_app@127.0.0.1:55433/kaname_dev} AUTH_DATABASE_URL=${AUTH_DATABASE_URL:-postgres://kaname_auth:kaname_auth@127.0.0.1:55433/kaname_dev} pnpm -s ci:rls-enabled'
+  db: true   # DB を使う層。DB の範囲（migration・SQL・行の守り・権限・引き金）を触った回と全部の回だけ流す（D-133.6）
 - file: packages/db/README.md
   manual: データ層の使い方の説明。正は migrations／policies と gen_ddl（ER図から機械生成）
 - file: packages/gateways/README.md

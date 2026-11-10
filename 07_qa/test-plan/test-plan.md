@@ -128,7 +128,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G43 | 秘密の混入（鍵・トークン・秘密鍵・パスワード入りの DB の URL・.env） | `pnpm ci:secret-scan` | static | ★ |
 | G44 | 部品の弱点（本番で使う部品に high 以上の弱点が無い） | `pnpm ci:deps-audit` | static |  |
 | G45 | Kaname を作るためのチケットの形（番号・親子 3 段・区画・決定 ID・先に要るもの） | `pnpm ci:tickets` | static |  |
-| G27 | 層の棚卸し（G21） | `python3 scripts/ci/layer_audit.py --run` | spec |  |
+| G27 | 層の棚卸し（G21） | `python3 scripts/ci/layer_audit.py --run --db-range "${CI_DB_RANGE:-true}"` | spec |  |
 | G28 | 正本 ↔ tickets の参照整合（qa-ladder validate） | `python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json` | spec |  |
 | G29 | エラー一覧 E1〜E9（引数を省かない） | `python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json` | spec |  |
 | G30 | スキル一式 SK1〜SK6 | `python3 scripts/ci/skill_pkg_gate.py 10_skills` | spec |  |

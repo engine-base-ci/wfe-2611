@@ -9,13 +9,17 @@
      - file: apps/a/package.json
        check: pnpm -s type-check
        elsewhere: G2      # 同じ命令を CI の別の段（static・spec の無条件の段）が流している。ここでは流さない（K-156）
+     - file: packages/db/migrations/*.sql
+       check: bash -c '… pnpm exec vitest run packages/db/test'
+       db: true           # DB を使う層。--db-range false（DB の範囲を触っていない回）では流さない（D-133.6）
      - file: 04_design/DESIGN-kaname.md
        manual: 色・書体のトークンは D-072 が最新。決定でトークンが増えたら手で更新（理由を書く）
    検査：decision_traceability.products の全ファイルが layer_checks にある／check は実行して exit 0／manual は理由あり。
    同じ check の文字を持つ層は 1 回だけ流し、答えを使い回す（K-156）。elsewhere の印が段の命令を本当に流しているかは
    ci_wiring_gate.py の W5 が見る（印を付けただけで「流れている」にしない）。
    鮮度：ファイルが参照する最大の決定 ID が正本の最新 confirmed より小さいとき warn（manual の層は「古いかもしれない」と出す）。
-使い方: python3 layer_audit.py [--map spec-dependencies.yaml] [--run] [--json]
+使い方: python3 layer_audit.py [--map spec-dependencies.yaml] [--run] [--json] [--db-range true|false]
+   --db-range：CI の spec の段が範囲の答え（ci_scope.py の db_range）を渡す。既定と空は true（流す・安全な側）
 """
 from __future__ import annotations
 
@@ -73,8 +77,11 @@ def _run_once(cmd: str, runner: Callable, cache: dict) -> tuple[int, str, list[s
     return (*cache[cmd], True)
 
 
-def audit(cfg: dict, run: bool, runner: Callable | None = None) -> tuple[list[dict], int]:
-    """(行, 赤の数)。run のときだけ check を流す（同じ文字は 1 回・elsewhere の層は流さない）"""
+DB_SKIP = "OK（DB の範囲を触っていないので流さない・D-133.6）"
+
+
+def audit(cfg: dict, run: bool, runner: Callable | None = None, db_range: bool = True) -> tuple[list[dict], int]:
+    """(行, 赤の数)。run のときだけ check を流す（同じ文字は 1 回・elsewhere の層は流さない・db: true の層は db_range のときだけ）"""
     runner = runner or _default_runner
     products = [p.get("file", "") for p in cfg.get("decision_traceability", {}).get("products", [])]   # glob はそのまま 1 層
     checks = {c["file"]: c for c in cfg.get("layer_checks", [])}
@@ -89,12 +96,20 @@ def audit(cfg: dict, run: bool, runner: Callable | None = None) -> tuple[list[di
         newest = max(refs) if refs else 0
         row = {"file": f, "exists": exists, "newest_ref": f"D-{newest:03d}" if newest else "—", "latest": f"D-{latest:03d}",
                "kind": "", "result": "", "note": ""}
-        if c and c.get("elsewhere"):
+        if c and "db" in c and not isinstance(c["db"], bool):
+            row["kind"] = "無"
+            row["result"] = f"★ db は true か false（{c['db']!r}）"
+            bad += 1
+        elif c and c.get("elsewhere"):
             gates = elsewhere_gates(c)
             row["kind"] = "別"
             row["elsewhere"] = c["elsewhere"]
             row["result"] = f"OK（{'・'.join(gates) or c['elsewhere']} の段で流す）"
             row["note"] = c.get("check", "")[:120]
+        elif c and c.get("check") and c.get("db") is True and not db_range:
+            row["kind"] = "範囲"
+            row["result"] = DB_SKIP
+            row["note"] = c["check"][:120]
         elif c and c.get("check"):
             row["kind"] = "機械"
             if run:
@@ -131,9 +146,13 @@ def main() -> int:
     ap.add_argument("--map", default="spec-dependencies.yaml")
     ap.add_argument("--run", action="store_true", help="check を実行する（既定は一覧だけ）")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--db-range", default="true", help="DB の範囲を触った回か（true・false。空は true）")
     a = ap.parse_args()
+    if a.db_range not in ("true", "false", ""):
+        print(f"layer_audit: --db-range は true か false（{a.db_range!r}）", file=sys.stderr)
+        return 2
     cfg = yaml.safe_load(open(a.map, encoding="utf-8"))
-    rows, bad = audit(cfg, a.run)
+    rows, bad = audit(cfg, a.run, db_range=a.db_range != "false")
     latest = _latest(cfg)
     if a.json:
         print(json.dumps({"pass": not bad, "latest": latest, "rows": rows}, ensure_ascii=False, indent=1))
@@ -145,7 +164,7 @@ def main() -> int:
             for d in r.get("detail", []):
                 print(f"      │ {d[:300]}")
         if a.run:
-            print(f"流した命令 {sum(1 for r in rows if r.get('ran'))}・合計 {sum(r.get('sec', 0) for r in rows):.1f} 秒（別の段で流す層 {sum(1 for r in rows if r['kind'] == '別')} は流していない）")
+            print(f"流した命令 {sum(1 for r in rows if r.get('ran'))}・合計 {sum(r.get('sec', 0) for r in rows):.1f} 秒（別の段で流す層 {sum(1 for r in rows if r['kind'] == '別')}・DB の範囲の外の層 {sum(1 for r in rows if r['kind'] == '範囲')} は流していない）")
         print("PASS — G21 全部の層に検査（機械か理由つきの手か別の段）がある" if not bad else f"FAIL — G21 検査の無い層 {bad}")
     return 0 if not bad else 2
 

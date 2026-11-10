@@ -441,7 +441,9 @@ jobs:
         run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G27 層の棚卸し（G21）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/layer_audit.py --run
+        env:
+          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}
+        run: "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\""
       - name: "G28 正本 ↔ tickets の参照整合（qa-ladder validate）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json

@@ -19,6 +19,7 @@
     id で比べ、変わった・足した・消した行のチケットが画面を持つ（screens・apps/web の tests）ときだけ web の組。読めないなら流す
   migration の lint（K-156）：scope=full でも比べる元が有効なら migration_files を出す。名前を変えた migration（git の R）も足した物に数える
   DB の範囲（migration・SQL・行の守り・権限）：全部にはせず、database の組＋変えた migration の lint＋DB を使う試験を全部
+    答えの db_range（出力 db_range）はこの範囲を触った回だけ真（全部の回も真）。G27 の DB の層はこれで流すかを決める（D-133.6）
   依存の地図：パッケージは pnpm のワークスペース（package.json の workspace:）、試験の import は vitest の Node の口（vitest_related.mjs）
 """
 from __future__ import annotations
@@ -510,7 +511,7 @@ def _shards(n: int, per: int) -> int:
 
 
 def _full_plan(p: dict) -> dict:
-    return {**p, "mode": "full", "jobs": {"unit": True, "database": True, "web": True}, "unit_shards": MAX_SHARDS,
+    return {**p, "mode": "full", "jobs": {"unit": True, "database": True, "web": True}, "db_range": True, "unit_shards": MAX_SHARDS,
             "unit_files": [], "coverage_args": []}
 
 
@@ -519,7 +520,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
-               "migration_files": [], "coverage_args": []}
+               "migration_files": [], "coverage_args": [], "db_range": False}
     full: list[tuple[str, str]] = p["full_reasons"]
 
     def done() -> dict:
@@ -613,6 +614,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p["changed_packages"] = sorted(changed_pk)
     aff = affected(code_pk, ws)
     p["affected"] = sorted(aff)
+    p["db_range"] = db_range   # G27 の DB の層は DB の範囲を触った回だけ（全部の回は _full_plan が真にする・D-133.6）
     if db_range:
         p["migration_files"] = mig_files
 
@@ -746,6 +748,7 @@ def outputs(p: dict) -> dict[str, str]:
     j = lambda v: json.dumps(v, ensure_ascii=False)  # noqa: E731
     return {"full": "true" if p["mode"] == "full" else "false", "unit": str(p["jobs"]["unit"]).lower(),
             "database": str(p["jobs"]["database"]).lower(), "web": str(p["jobs"]["web"]).lower(),
+            "db_range": "true" if p.get("db_range") else "false",
             "unit_shards": str(p["unit_shards"]), "unit_files": j(p["unit_files"]), "migration_files": j(p["migration_files"]),
             "coverage_args": j(p["coverage_args"]), "base": p["base"] if SHA.fullmatch(p.get("base") or "") else "",
             "reasons": j(p["reasons"] + p["mismatches"] + p["errors"])}
