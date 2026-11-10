@@ -17,6 +17,8 @@ K-143 を足すと、それより前の K-62 の実装のコミットまで「K-
   ・rev の depends_on・stage も git の版（rev）から読む。作業場所の未コミットの tickets.json は見ない
   ・決まりの前に入った依存（START..rev のどのコミットにも番号が無く、rev の版の stage が確認中・完了）は前と同じく通す
   ・git が失敗したら RuntimeError（main が FAIL・exit 1）
+  ・ai-team.yaml（進め方の設定）は文書・設定の扱い：11_tickets などと ai-team.yaml だけに触るコミットは実装に数えない
+    （PM の判断 2026-11-10：設定は製品の実装ではない。3fdbb37f の形）。ai-team.yaml と実装のファイルの両方に触るコミットは実装に数える
 使い方: python3 scripts/ci/ticket_order_gate_test.py
 """
 import contextlib, io, json, os, subprocess, sys, tempfile, time, unittest
@@ -174,6 +176,18 @@ class PerCommitTest(Case):
         self.r.commit("K-1 K-2 feat: まとめて作る", {"apps/a.ts": "a"})
         bad, _, n = self.check()
         self.assertEqual((bad, n), ([], 1))
+
+    def test_K159_CI_022_process_config_is_not_implementation(self):
+        """K159-CI-022 入力：11_tickets と ai-team.yaml だけに触る段取りのコミット（3fdbb37f「K-77 K-37 K-133 chore」の形）は、
+        番号のチケットの依存が未完了でも実装に数えない（0 本・緑）。ai-team.yaml と実装のファイルの両方に触るコミットは実装に数え、赤"""
+        self.r.tickets({"K-1": [], "K-2": [], "K-3": ["K-1"]})
+        self.r.commit("K-3 chore: 段階の範囲と見込みを書く", {"ai-team.yaml": "flow: {}\n", "11_tickets/K-3.md": "x"})
+        bad, _, n = self.check()
+        self.assertEqual((bad, n), ([], 0))
+        c = self.r.commit("K-3 feat: 設定と一緒に作る", {"ai-team.yaml": "flow: {a: 1}\n", "apps/a.ts": "a"})
+        bad, _, n = self.check()
+        self.assertEqual(n, 1)
+        self.assertTrue(any(b.startswith(c[:10]) and "K-3 は K-1" in b for b in bad), bad)
 
     def test_K159_CI_021_git_failure_raises(self):
         """K159-CI-021 失敗：START が無い（浅い写し・違うリポジトリ）など git が失敗 → RuntimeError（止める側・main は FAIL で exit 1）"""
