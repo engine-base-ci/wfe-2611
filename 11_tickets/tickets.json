@@ -2210,7 +2210,8 @@
    "sections": {
     "目的": "流れ F3「使い始めの準備」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
     "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
-    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-9・KN-66・KN-67・KN-69・KN-70（11_tickets/_old/ に残す。切るときに目録として読む）\n- 切ったチケット：K-57 PC をつなぐ・K-89 Claude Code を入れてログインする・K-90 AI が使うブラウザを選ぶ（updateMyDevice）・K-91 端末を外す（revokeMyDevice）（D-128.150）"
+    "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-9・KN-66・KN-67・KN-69・KN-70（11_tickets/_old/ に残す。切るときに目録として読む）\n- 切ったチケット：K-57 PC をつなぐ・K-89 Claude Code を入れてログインする・K-90 AI が使うブラウザを選ぶ（updateMyDevice）・K-91 端末を外す（revokeMyDevice）（D-128.150）",
+    "K-147 からの申し送り（2026-11-11）": "- 自分の設定で見た目（システム・明るい・暗い）をアカウントに持たせるとき：`members.theme` の列の既定を `light` に替える migration を入れ、今ある 'system' は選んでいない扱いで `light` に替える（D-139.1・answer=731a86e168e4）。\n- cookie（`k-theme`）とアカウントの設定がずれたときは、アカウントを正にする（ログインした後にアカウントの値で cookie を書き直す）。\n- K-147 は cookie の既定だけを `light` にした（D-129.45）。"
    },
    "file": "11_tickets/K-56.md"
   },
@@ -6305,7 +6306,7 @@
   },
   {
    "id": "K-147",
-   "title": "見た目の最初を「明るい」にする（Mac などのシステムの設定に引っ張られない）。切り替えは自分の設定で、設定はアカウントに持たせる",
+   "title": "見た目の最初を「明るい」にする（Mac などのシステムの設定に引っ張られない）。アカウントへの保存は K-56",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-1",
@@ -6317,7 +6318,8 @@
    "estimate_basis": "実測 K-133（2026-11-10・切る 18 分・実装 3 分・範囲だけの CI 10 分）から、直す所 1 行・試験 6 行の小さいチケットとして引いた",
    "decisions": [
     "D-128.55",
-    "D-129.45"
+    "D-129.45",
+    "D-139.1"
    ],
    "split": "",
    "choke_points": [],
@@ -6325,11 +6327,13 @@
    "depends_on": [],
    "tests": [
     "apps/web/tests/k147-theme.spec.ts",
-    "apps/web/test/k-tokens.test.ts"
+    "apps/web/test/k-tokens.test.ts",
+    "apps/web/test/k-app-files.test.ts"
    ],
    "prior_impl": "なし",
    "changes": [
-    "apps/web/lib/theme.ts"
+    "apps/web/lib/theme.ts",
+    "apps/web/app/global-error.tsx"
    ],
    "affects": [
     "@kaname/web"
@@ -6339,8 +6343,8 @@
     "目的": "決める人の決定 D-129.45（2026-11-08）：見た目の最初は「システムに合わせる」ではなく**明るい**に統一する。いまは K-24 の作りで、選んでいない人（cookie が無い人）は OS（Mac など）の設定に合わせて暗くなる（`apps/web/lib/theme.ts` の `parseTheme` の既定が `system`・`styles/k-tokens.css:220` の `@media (prefers-color-scheme: dark)`）。staging の登録の画面を見た決める人が「なんで暗くなっているの」と気づいた。\n\n切り替え（システム・明るい・暗い）は残す（D-128.55）。設定はアカウントに持たせ、web も後で作るアプリも同じ設定を読む。",
     "完了の条件": "- [ ] 見た目を選んでいない人（cookie もアカウントの設定も無い）は、OS が暗くても明るい画面になる\n- [ ] 「暗い」を選んだ人は暗い画面、「システム」を選んだ人は OS に合わせる（今と同じ）\n- [ ] ログインの前の画面（登録・ログイン・メールの確認など）も、選んでいなければ明るい\n- [ ] 試験：OS を暗くしたブラウザ（Playwright の colorScheme: dark）で、選んでいない人の画面が明るい／暗いを選ぶと暗い／システムを選ぶと暗い\n- [ ] チケットの CI（act）が緑",
     "前提と制約": "分類: TOOL\n\n- アカウントに見た目を持たせる口（自分の設定）がまだ無いなら、このチケットでは cookie の既定だけを替え、アカウントへの保存は自分の設定を作るチケットで入れる（そのチケットに足す）",
-    "実施事項": "作り方（切る段で決めた）：選んでいない人の既定を `system` から `light` にする。明るいときはサーバーが `<html data-theme=\"light\">` を付け、今の CSS（`apps/web/styles/k-tokens.css:221` の `:root:not([data-theme=\"light\"])`）が OS の暗さを無視する。「システム」を選んだ人は今までどおり data-theme を付けず OS に合わせる。CSS は変えない。\n\n1. `apps/web/lib/theme.ts` の `parseTheme`：知らない値・無い値の既定を `\"light\"` にする（先頭の注も「選んでいなければ明るい（D-129.45）」に直す）\n2. 試験：`apps/web/tests/k147-theme.spec.ts`（新・画面 5 行）・`apps/web/test/k-tokens.test.ts`（既定の 1 行を K147-WEB-001 に直す）\n\n使っている所（直さない・振る舞いが変わる所を確かめた）：`apps/web/app/layout.tsx:19`（根で data-theme を付ける・light が付くようになる）・`apps/web/components/k/theme.tsx`（押した値を付ける・変わらない）・`apps/web/app/(dev)/dev/k/page.tsx`・`shell/page.tsx`・`showcase/page.tsx`（切り替えの最初の選び・「明るい」が選ばれるようになる）。前からの画面の試験 `apps/web/tests/components.spec.ts` の KN104-009 と `apps/web/tests/k/showcase.spec.ts` の KSC-03-001 は「システムを押すと data-theme が無い」を見ていて、変わらない。\n\nアカウントに見た目を持たせる（`members.theme`・`packages/db/migrations/0078_people_tenant_ops.sql` の既定 'system'）は、口がまだ無い。このチケットでは触らず、自分の設定を作るチケットで既定を `light` にする（申し送り）。\n\n```search\n- name: parseTheme・themeAttr・prefers-color-scheme を使っている所（lib/theme.ts の外）\n  cmd: git grep -n -E \"parseTheme|themeAttr|prefers-color-scheme\" -- apps packages ':!apps/web/lib/theme.ts' ':!apps/web/test' ':!apps/web/tests'\n  count: 11\n```",
-    "テスト仕様と確認の結果": "分類: TOOL\n\nテストの行 ID：`apps/web/tests/k147-theme.spec.ts` の K147-UI-001〜005・`apps/web/test/k-tokens.test.ts` の K147-WEB-001。\n\n| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 利用者の状態 | 選んでいない（cookie 無し）・OS は暗い・見本の画面 | `<html data-theme=\"light\">`・`--k-scheme` が light・切り替えの「明るい」が選ばれている | K147-UI-001 |\n| 入力 | 「暗い」を選ぶ・開き直す | data-theme=dark・`--k-scheme` が dark。開き直しても dark | K147-UI-002 |\n| 入力 | 「システム」を選ぶ・開き直す | data-theme が無い。OS が暗いと dark・明るいと light | K147-UI-003 |\n| 入口 | ログインの前の画面（/signup）・選んでいない・OS は暗い | data-theme=light・`--k-scheme` が light | K147-UI-004 |\n| 入力 | cookie が知らない値（blue）・OS は暗い | data-theme=light・`--k-scheme` が light | K147-UI-005 |\n| 入力 | parseTheme に無い値・空・知らない値・system・dark | light・light・light・system・dark。無い値の themeAttr は light | K147-WEB-001 |\n\n| 分類の型 | 受け方 |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：直すのは `apps/web/lib/theme.ts` の 1 か所で、名前を読む台本ではない |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K147-UI-001〜005 は data-theme と計算された `--k-scheme` の両方を見る（属性だけ・色だけで緑にしない）。K147-WEB-001 は無い値・知らない値・選んだ値を全部見る |\n| TP-TOOL-03 容れ物の中と手元で設定・証明書・版が違う | 要らない：OS の暗さは Playwright の emulateMedia で決めるので、容れ物と手元で同じ |",
+    "実施事項": "作り方（切る段で決めた）：選んでいない人の既定を `system` から `light` にする。明るいときはサーバーが `<html data-theme=\"light\">` を付け、今の CSS（`apps/web/styles/k-tokens.css:221` の `:root:not([data-theme=\"light\"])`）が OS の暗さを無視する。「システム」を選んだ人は今までどおり data-theme を付けず OS に合わせる。CSS は変えない。\n\n1. `apps/web/lib/theme.ts` の `parseTheme`：知らない値・無い値の既定を `\"light\"` にする（先頭の注も「選んでいなければ明るい（D-129.45）」に直す）\n2. `apps/web/app/global-error.tsx`（根の layout で落ちたときの画面・自分で `<html>` を持つ・\"use client\"）：`document.cookie` の `k-theme` を読み、根の layout と同じ `themeAttr(parseTheme(…))` で `<html data-theme>` を付ける（選んでいなければ light）\n3. 試験：`apps/web/tests/k147-theme.spec.ts`（新・画面 5 行）・`apps/web/test/k-tokens.test.ts`（既定の 1 行を K147-WEB-001 に直す）\n\n使っている所（直さない・振る舞いが変わる所を確かめた）：`apps/web/app/layout.tsx:19`（根で data-theme を付ける・light が付くようになる）・`apps/web/components/k/theme.tsx`（押した値を付ける・変わらない）・`apps/web/app/(dev)/dev/k/page.tsx`・`shell/page.tsx`・`showcase/page.tsx`（切り替えの最初の選び・「明るい」が選ばれるようになる）。前からの画面の試験 `apps/web/tests/components.spec.ts` の KN104-009 と `apps/web/tests/k/showcase.spec.ts` の KSC-03-001 は「システムを押すと data-theme が無い」を見ていて、変わらない。\n\nアカウントに見た目を持たせる（`members.theme`・`packages/db/migrations/0078_people_tenant_ops.sql` の既定 'system'）は、口がまだ無い。このチケットでは触らない。受け持つのは **K-56**（段 4 F3 使い始めの準備・自分の設定）：K-56 に申し送りを書いた（列の既定を light に替える migration・今ある 'system' は選んでいない扱いで light に替える〔D-139.1・answer=731a86e168e4〕・cookie とアカウントの設定がずれたときはアカウントを正にする）。\n\n```search\n- name: 自分で <html> を描く所（根の layout と根で落ちたときの画面・どちらも data-theme を付ける）\n  cmd: git grep -n -F '<html lang=' -- apps/web/app\n  count: 2\n- name: parseTheme・themeAttr・prefers-color-scheme を使っている所（lib/theme.ts の外）\n  cmd: git grep -n -E \"parseTheme|themeAttr|prefers-color-scheme\" -- apps packages ':!apps/web/lib/theme.ts' ':!apps/web/test' ':!apps/web/tests'\n  count: 11\n```",
+    "テスト仕様と確認の結果": "分類: TOOL\n\nテストの行 ID：`apps/web/tests/k147-theme.spec.ts` の K147-UI-001〜005・`apps/web/test/k-tokens.test.ts` の K147-WEB-001・`apps/web/test/k-app-files.test.ts` の K147-WEB-002・K147-UI-006。\n\n| 観点 | 分岐 | 期待結果 | テスト |\n|---|---|---|---|\n| 利用者の状態 | 選んでいない（cookie 無し）・OS は暗い・見本の画面 | `<html data-theme=\"light\">`・`--k-scheme` が light・切り替えの「明るい」が選ばれている | K147-UI-001 |\n| 入力 | 「暗い」を選ぶ・開き直す | data-theme=dark・`--k-scheme` が dark。開き直しても dark | K147-UI-002 |\n| 入力 | 「システム」を選ぶ・開き直す | data-theme が無い。OS が暗いと dark・明るいと light | K147-UI-003 |\n| 入口 | ログインの前の画面（/signup）・選んでいない・OS は暗い | data-theme=light・`--k-scheme` が light | K147-UI-004 |\n| 入力 | cookie が知らない値（blue）・OS は暗い | data-theme=light・`--k-scheme` が light | K147-UI-005 |\n| 失敗 | 根の layout で落ちたときの画面（global-error）・選んでいない・OS は暗い／「暗い」を選んでいる | data-theme=light・`--k-scheme` が light／data-theme=dark・dark | K147-UI-006 |\n| 入力 | 根で落ちたときの画面のコード | 自分で `<html lang=\"ja\"` を持ち、`themeAttr(parseTheme(` で data-theme を付ける | K147-WEB-002 |\n| 入力 | parseTheme に無い値・空・知らない値・system・dark | light・light・light・system・dark。無い値の themeAttr は light | K147-WEB-001 |\n\n| 分類の型 | 受け方 |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：直すのは `apps/web/lib/theme.ts` の 1 か所で、名前を読む台本ではない |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K147-UI-001〜005 は data-theme と計算された `--k-scheme` の両方を見る（属性だけ・色だけで緑にしない）。K147-WEB-001 は無い値・知らない値・選んだ値を全部見る |\n| TP-TOOL-03 容れ物の中と手元で設定・証明書・版が違う | 要らない：OS の暗さは Playwright の emulateMedia で決めるので、容れ物と手元で同じ |",
     "成果物": "- 見た目の既定の直しと試験",
     "決定ログ": "- 決める人の決定（2026-11-08・answer=7cbe625aaa51）：最初は明るいに統一（D-129.45）",
     "リスクと懸念": "- すでに暗い画面に慣れた人はいない（まだ公開前）",

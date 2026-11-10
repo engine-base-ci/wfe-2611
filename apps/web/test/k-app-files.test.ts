@@ -16,9 +16,12 @@ describe("落ちたとき・無いときの受け皿（K-30）", () => {
       expect(s, f).toMatch(/ErrorPage code=\{PAGE_ERROR\.\w+\}/);
     }
   });
-  it("根で落ちたときの受け皿は、自分で <html> を持ち、見た目と書体を読む（根の layout が読まれないため）", () => {
+  it("K147-WEB-002 根で落ちたときの受け皿は、自分で <html> を持ち、見た目と書体を読む（根の layout が読まれないため）。見た目は根の layout と同じ既定（選んでいなければ明るい）", () => {
     const s = readFileSync(join(APP, "global-error.tsx"), "utf8");
-    expect(s).toMatch(/<html lang="ja">/);
+    expect(s).toMatch(/<html lang="ja"/);
+    // K147-WEB-002 根で落ちたときの画面も、選んでいなければ明るい（cookie を画面側で読み、根の layout と同じ parseTheme・themeAttr で data-theme を付ける）
+    expect(s).toMatch(/themeAttr\(parseTheme\(/);
+    expect(s).toMatch(/data-theme/);
     expect(s).toMatch(/import "\.\/globals\.css"/);
     expect(s).toMatch(/import "@fontsource(-variable)?\//);
   });

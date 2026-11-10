@@ -52,3 +52,22 @@ test("K147-UI-005 cookie が知らない値（k-theme=blue）・OS は暗い：�
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   expect(await scheme(page)).toBe("light");
 });
+
+test("K147-UI-006 根の layout で落ちたときの画面（global-error）も、選んでいない・OS は暗いなら明るい。「暗い」を選んでいれば暗い", async ({
+  page,
+  context,
+  baseURL,
+}) => {
+  const url = baseURL ?? "http://127.0.0.1:3123";
+  await context.addCookies([{ name: "k-boom-root", value: "1", url }]);
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/dev/k");
+  await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(await scheme(page)).toBe("light");
+  await context.addCookies([{ name: "k-theme", value: "dark", url }]);
+  await page.goto("/dev/k");
+  await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  expect(await scheme(page)).toBe("dark");
+});
