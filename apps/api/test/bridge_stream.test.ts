@@ -111,7 +111,7 @@ describe("途中経過と会話の id（D-093.4・D-093.7）", () => {
       (
         await post(
           "/api/auth-ext/bridge/progress",
-          { job_id: job, seq: 1, kind: "init", agent_session_id: "s-init-1" },
+          { job_id: job, seq: 1, kind: "init", agent_session_id: "5f1e2d3c-0000-4000-8000-00000000b001" },
           B,
         )
       ).status,
@@ -126,9 +126,11 @@ describe("途中経過と会話の id（D-093.4・D-093.7）", () => {
       ).status,
     ).toBe(200);
     const j = await admin.query("select agent_session_id from bridge_jobs where id = $1", [job]);
-    expect(j.rows[0].agent_session_id).toBe("s-init-1");
+    expect(j.rows[0].agent_session_id).toBe("5f1e2d3c-0000-4000-8000-00000000b001");
     const c = await admin.query("select agent_session_id from conversations where id = $1", [conv]);
-    expect(c.rows[0].agent_session_id, "落ちても続きからが引き継げるよう、会話にも写す").toBe("s-init-1");
+    expect(c.rows[0].agent_session_id, "落ちても続きからが引き継げるよう、会話にも写す").toBe(
+      "5f1e2d3c-0000-4000-8000-00000000b001",
+    );
     const st = (await (await get("/api/auth-ext/agent/state", H)).json()) as {
       data: { progress: { text: string }[]; running_job_id: string };
     };
