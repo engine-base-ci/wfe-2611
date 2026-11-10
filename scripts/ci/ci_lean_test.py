@@ -758,7 +758,7 @@ class WebTicketRowsTest(unittest.TestCase):
         p = self.change(self.K1, {**self.K2, "stage": "作業中"}, self.K3)
         self.assertTrue(p["jobs"]["web"])
         self.assertEqual(p["web_ticket_rows"], ["K-2"])
-        p = self.change(self.K1, {**self.K2, "stage": "作業中"}, {**self.K3, "stage": "作業中"})   # apps/web の試験を持つチケット
+        p = self.change(self.K1, self.K2, {**self.K3, "stage": "作業中"})   # apps/web の試験を持つチケットの行だけ（K-2 は比べる元のまま）
         self.assertTrue(p["jobs"]["web"])
         self.assertEqual(p["web_ticket_rows"], ["K-3"])
 

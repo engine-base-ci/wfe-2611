@@ -828,7 +828,9 @@ class RealRepoTest(unittest.TestCase):
                          {"@kaname/db", "@kaname/config", "@kaname/contracts", "@kaname/errors"})
         self.assertEqual(set(rules["jobs"]), {"database", "web"})
         for job, j in rules["jobs"].items():
-            self.assertEqual(set(j), {"packages", "paths"}, job)
+            # packages・paths は要る。ticket_rows（画面の組とチケットの一覧・K-156・D-133.5）は任意
+            self.assertLessEqual({"packages", "paths"}, set(j), job)
+            self.assertLessEqual(set(j), {"packages", "paths", "ticket_rows"}, job)
             for name in j["packages"]:
                 self.assertIn(name, ws, f"jobs.{job} のパッケージが無い: {name}")
         self.assertEqual(rules["jobs"]["web"]["packages"], ["@kaname/web"])
