@@ -311,12 +311,6 @@
    "to": "getBridgeQuestionAnswer"
   },
   {
-   "file": "apps/api/src/auth/agent.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/control",
-   "to": "getJobControl"
-  },
-  {
    "file": "apps/api/src/auth/ext.ts",
    "method": "POST",
    "route": "/api/auth-ext/bridge/credentials/check-result",
@@ -335,12 +329,6 @@
    "to": "mirrorConversationEntries"
   },
   {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/finish",
-   "to": "finishBridgeJob"
-  },
-  {
    "file": "apps/api/src/auth/agent.ts",
    "method": "POST",
    "route": "/api/auth-ext/bridge/mirror-targets",
@@ -354,12 +342,6 @@
   },
   {
    "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/progress",
-   "to": "reportJobProgress"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
    "method": "GET",
    "route": "/api/auth-ext/bridge/state",
    "to": "listMyDevices"
@@ -369,18 +351,6 @@
    "method": "POST",
    "route": "/api/auth-ext/bridge/steers",
    "to": "getJobControl"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/take",
-   "to": "takeBridgeJob"
-  },
-  {
-   "file": "apps/api/src/auth/agent-tools.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/bridge/tool",
-   "to": "callKanameTool"
   },
   {
    "file": "apps/api/src/auth/agent.ts",

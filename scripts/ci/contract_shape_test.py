@@ -56,6 +56,8 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "saveMyTicketDraft": {"draft_id"},                 # apps/api/src/features/F4/create-ticket/hooks.ts:170
     "createTicket": {"title", "scope_id", "kind_id", "assignee_member_id", "due_on"},   # apps/api/src/features/F4/create-ticket/input.ts:28〜38
     "updateMemory": {"body"},                          # apps/api/src/hooks/agent.ts:63（覚えることが空です）。作る createMemory は {} で 201
+    "reportJobProgress": {"kind"},                     # apps/api/src/features/F5/delegate/bridge.ts（kind が無い・決まった値でないは 422・K62-API-032）
+    "finishBridgeJob": {"state"},                      # apps/api/src/features/F5/delegate/bridge.ts（state が無い・3 つ以外は 422・K62-API-032）
 }
 # 体を受ける作った口のうち、無いことで 422 にする欄を持たないもの（理由つき。新しく作った口はどちらかに載せる）
 NO_REQUIRED_INPUTS: dict[str, str] = {
@@ -65,11 +67,16 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
     "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
+    "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
+    "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
+    "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
     # apps/api/src/features/F3/connect-pc/hooks.ts:191（mac・win）・200（それ以外の英小文字だけの名前は 422）・202〜204（ほかは目録の名前か 404）
     ("downloadBridgeRelease", "name"): r"^(?:mac|win|[\s\S]*[^a-z][\s\S]*)$",
+    # apps/api/src/features/F5/delegate/tools.ts:40（ticket_read と会話の道具 8 つ以外は 422・K-62）
+    ("callKanameTool", "name"): r"^(?:ticket_read|draft_read|goal_set|goal_remove|ledger_set|ledger_remove|duty_set|duty_remove|remember)$",
 }
 
 # 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。
@@ -102,6 +109,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
@@ -937,6 +945,10 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F3/connect-pc/hooks.ts": [("[...v].slice(0, max)", "Bridge が送る自己診断の 1 行の名前・詳しく・直し方・番号（人が書く欄でない）"),
                                                          ("slice(0, HEALTH_MAX)", "Bridge が送る点検の並び（人が書く欄でない）"),
                                                          ("slice(0, 40)", "Bridge が送る版の名前（人が書く欄でない）")],
+        # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
+        "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
+                                                          ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
+                                                          ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:

@@ -1,5 +1,5 @@
 {
- "_doc": "チケットの CI の範囲の決まり（K-107・D-128.169）。scripts/ci/ci_scope.py が読む。full＝触ったら全部・db＝DB の範囲（DB の組＋変えた migration の lint＋DB を使う試験を全部）・data_links＝import に出ないつながり（読む物 → 流す試験 tests か、読む src readers）・reads_ok＝ファイルを読む・子プロセスを起こすが data_links に書かなくてよい試験と src（理由つき）・no_test_paths＝試験が読まない文書（読んでいたら CS-044 が赤）。書いていない読み手は CS-029・CS-032 が赤",
+ "_doc": "チケットの CI の範囲の決まり（K-107・D-128.169）。scripts/ci/ci_scope.py が読む。full＝触ったら全部・db＝DB の範囲（DB の組＋変えた migration の lint＋DB を使う試験を全部）・data_links＝import に出ないつながり（読む物 → 流す試験 tests か、読む src readers）・reads_ok＝ファイルを読む・子プロセスを起こすが data_links に書かなくてよい試験と src（理由つき）・no_test_paths＝試験が読まない文書（読んでいたら CS-044 が赤）。書いていない読み手は CS-029・CS-032 が赤。spec＝static と spec の段だけが見る物（K-156）：paths と、generated が真なら generated.json の生成物と作り手の台本。全部に倒さない。読む試験・src があれば CS-044 が赤（data_links に書く）",
  "db": {
   "paths": [
    "packages/db/migrations/**",
@@ -43,6 +43,32 @@
    ".npmrc"
   ]
  },
+ "spec": {
+  "generated": true,
+  "paths": [
+   "05_flow/*.py",
+   "05_flow/*.json",
+   "05_flow/*.html",
+   "04_design/**",
+   "03_architecture/**",
+   "07_functional/**",
+   "08_api/**",
+   "07_qa/test-specs/**",
+   "07_qa/ci-results/**",
+   "07_qa/test-patterns.local.json",
+   "07_qa/xlsx/**",
+   "spec-dependencies.yaml",
+   "design-gate.json",
+   "product-reach-exempt.json",
+   "skill-pipeline.yaml",
+   ".env.example",
+   ".prettierrc",
+   ".prettierignore",
+   "infra/docker-compose.dev.yml",
+   "infra/*.md",
+   "infra/provision/README.md"
+  ]
+ },
  "shared_min_dependents": 2,
  "files_per_shard": 40,
  "affects_required_from": 108,
@@ -67,7 +93,19 @@
   "08_schedule/**",
   "09_dispatch/**",
   "10_skills/**",
-  "README.md"
+  "README.md",
+  "07_tasks/**",
+  "09_features/**",
+  ".qa/**",
+  ".spec-sync/**",
+  ".artifact/**",
+  "ai-team.yaml",
+  ".gitignore",
+  ".dockerignore",
+  ".nvmrc",
+  "packages/gateways/README.md",
+  ".claude/launch.json",
+  ".claude/settings.json"
  ],
  "data_links": [
   {
@@ -258,6 +296,46 @@
     "apps/api/test/generated/post_me_ticket_drafts.test.ts",
     "apps/api/test/generated/post_tickets.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/delegate.test.ts",
+    "apps/api/test/features/F5/delegate-bridge.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_action_runs_id.test.ts",
+    "apps/api/test/generated/get_bridge_jobs_id_control.test.ts",
+    "apps/api/test/generated/get_tickets_id_runs.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_finish.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_progress.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_take.test.ts",
+    "apps/api/test/generated/post_tickets_id_delegate.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "08_api/db-columns.json"
+   ],
+   "tests": [
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/journeys/plan.json"
+   ],
+   "readers": [
+    "apps/e2e/write_results.mjs"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs"
+   ],
+   "readers": [
+    "apps/web/write_results.mjs"
+   ]
   }
  ],
  "reads_ok": {
@@ -314,7 +392,7 @@
   "apps/api/test/features/F3/connect-pc.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリのファイルは読まない",
   "apps/bridge/src/pairing.ts": "同上（apps/bridge/src/**）。この PC の印（userData の machine-id）を読む",
   "apps/web/test/k60-draft-signout.test.ts": "試験の中で lib/auth/session・lib/api/client を動的 import する（vi.mock の後に読むため）。ファイルは読まない",
-  "apps/api/test/features/contract/k144-contract.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリのファイルは読まない（K-144）"
+  "apps/api/test/features/contract/k144-contract.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリの物は 08_api/db-columns.json だけで、data_links で結ぶ（K-144・K-156）"
  },
  "jobs": {
   "database": {
@@ -348,13 +426,16 @@
     "05_flow/flow.json",
     "04_design/**",
     "07_qa/test-specs/errors.json",
-    "11_tickets/tickets.json",
     "apps/api/src/**",
     "packages/auth/src/**",
     "packages/db/src/**",
     "packages/db/migrations/**",
     "packages/db/policies/**"
-   ]
+   ],
+   "ticket_rows": {
+    "file": "11_tickets/tickets.json",
+    "list": "tickets"
+   }
   }
  }
 }

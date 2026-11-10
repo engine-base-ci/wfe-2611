@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。157 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。161 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2855,6 +2855,81 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "create"
+    }
+  },
+  "E-CONF-013": {
+    "id": "E-CONF-013",
+    "cls": "conflict",
+    "message": "このチケットはいま自分のAI が作っています。今の実行の様子を見てください",
+    "action": "今の実行の様子を見る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-013",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
+    }
+  },
+  "E-CONF-014": {
+    "id": "E-CONF-014",
+    "cls": "conflict",
+    "message": "いまの段のチケットは AI に任せられません（承認待ち・確認中・実行中・完了）。チケットの帯で次の一手を選んでください",
+    "action": "承認の帯で決める",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-014",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-SIG-004": {
+    "id": "E-SIG-004",
+    "cls": "no_signal",
+    "message": "自分のAI が結果を返さずに終わりました。完了とは見なしていません",
+    "action": "もう一度 AI に任せる／自分でやる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "SIG-004",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB",
+      "UI"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-TO-005": {
+    "id": "E-TO-005",
+    "cls": "timeout",
+    "message": "PC から 10 分知らせがありません。止まったとみなしています。PC の Bridge が動いているか確かめてください",
+    "action": "PC の Bridge が動いているか確かめる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "TO-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "UI"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "running"
     }
   }
 };

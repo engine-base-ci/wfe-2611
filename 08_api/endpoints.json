@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-09",
-  "frozen_at": "2026-11-09",
+  "created_at": "2026-11-10",
+  "frozen_at": "2026-11-10",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -49156,10 +49156,17 @@
      "status": 409,
      "code": "CONFLICT",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-013",
+      "run_id": ""
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONN-001",
+      "E-CONF-013",
+      "E-CONF-014"
+     ],
+     "trigger": "PC を一度もつないでいない・外した（E-CONN-001）／同じチケットに走っている実行がある（E-CONF-013・今の run_id）／承認待ち・完了（E-CONF-014）",
+     "ears_form": "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない"
     },
     {
      "status": 422,
@@ -49168,8 +49175,9 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）",
+     "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"
     },
     {
      "status": 413,
@@ -49226,8 +49234,8 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない",
+    "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -49245,8 +49253,8 @@
    "description": "作成・実行（tickets）— AI に任せる",
    "implementation_path": "apps/api/src/routes/action_runs.ts::delegateTicket",
    "permission": {
-    "who": "assignee",
-    "scope": "担当者だけが自分の分身に任せられる",
+    "who": "write",
+    "scope": "そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）",
     "step_up": false
    },
    "path_params": [

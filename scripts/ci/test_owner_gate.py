@@ -8,6 +8,9 @@
 
 持ち主の決め方:
   ・試験のファイル → tests: にそのファイル（glob も可）を書いたチケット
+  ・CI の段が直に流す検査の自己試験（workflow の `python3 scripts/ci/<名前>_test.py`）も tests: に書ける（K-62）。
+    書いたら当たり（TO3 にしない）・2 つ以上のチケットが書けば TO2。ただし持ち主の無いものは、いまは TO1 にしない
+    （前からある自己試験に持ち主が無いため。持ち主を付けたら TO1 に入れる）
   ・口ごとの権限の試験（apps/api/src/contract/authz.test.ts の「POST /api/v1/…」の行） → その口の生成した試験
     （apps/api/test/generated/<口>.test.ts）を持つチケット。チケットの apis: の口は、そのチケットが持つ
   ・まだ切っていないまとまり（split: これから）が持つ試験は、そのまとまりを切るまでチケットの実行に入らない
@@ -81,6 +84,11 @@ def workflow_globs(wf: str) -> list[str]:
     return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
 
 
+def ci_py_tests(wf: str) -> list[str]:
+    """workflow の段が直に流す検査の自己試験（`python3 scripts/ci/<名前>_test.py`・K-62）"""
+    return sorted(set(re.findall(r"python3 (scripts/ci/[A-Za-z0-9_]+_test\.py)", wf)))
+
+
 def test_files(files: list[str] | None = None, pats: list[str] | None = None) -> list[str]:
     files = repo_files() if files is None else files
     pats = unit_globs() + e2e_globs() if pats is None else pats
@@ -112,11 +120,16 @@ def owners(tickets: list[dict], files: list[str]) -> tuple[dict[str, list[str]],
     return out, dead
 
 
-def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None], endpoints: list[str]) -> list[str]:
-    """tickets：チケット（id・split・apis・tests）／files：試験のファイル／gen_ops：生成した試験 → 口／endpoints：契約の口"""
-    own, bad = owners(tickets, files)
-    for f in files:
+def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None], endpoints: list[str],
+          optional: list[str] | None = None) -> list[str]:
+    """tickets：チケット（id・split・apis・tests）／files：試験のファイル／gen_ops：生成した試験 → 口／endpoints：契約の口／
+    optional：tests: に書けるが持ち主が無くても TO1 にしない試験（CI の段が流す検査の自己試験）"""
+    opt = [f for f in (optional or []) if f not in files]
+    own, bad = owners(tickets, files + opt)
+    for f in files + opt:
         k = own.get(f, [])
+        if not k and f in opt:
+            continue
         if not k:
             bad.append(f"TO1 {f} がどのチケットにも属さない（作ったチケットの tests: に書く）")
         elif len(k) > 1:
@@ -139,6 +152,12 @@ def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None],
             for op in extra:
                 bad.append(f"TO6 {t['id']}（切ったチケット）が apis: に無い口 {op} の生成した試験を持つ")
     return bad
+
+
+def ci_py() -> list[str]:
+    """いまの workflow（v3-gate.yml）の段が流す検査の自己試験のうち、在るもの"""
+    wf = open(os.path.join(ROOT, ".github/workflows/v3-gate.yml"), encoding="utf-8").read()
+    return [f for f in ci_py_tests(wf) if os.path.exists(os.path.join(ROOT, f))]
 
 
 def load() -> tuple[list[dict], list[str], dict[str, str | None], list[str]]:
@@ -184,6 +203,22 @@ def selftest() -> int:
         hit = got == want
         ok &= hit
         print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")
+    # CI の段が直に流す検査の自己試験（K-62）：workflow から読み、tests: に書けば当たる。持ち主が無くても TO1 にしない。2 つが書けば TO2
+    wf_py = "run: python3 scripts/ci/x_test.py && python3 scripts/ci/y_test.py\n"
+    py = ci_py_tests(wf_py)
+    py_cases = {"緑（CI の自己試験を tests: に書く）": (good + [{"id": "K-6", "tests": ["scripts/ci/x_test.py"]}], wf_py, set()),
+                "緑（CI の自己試験に持ち主が無い）": (good, wf_py, set()),
+                "TO3（workflow に無い自己試験を tests: に書く）": (good + [{"id": "K-6", "tests": ["scripts/ci/z_test.py"]}], wf_py, {"TO3"}),
+                "TO2（2 つのチケットが同じ自己試験を書く）": (good + [{"id": "K-6", "tests": ["scripts/ci/x_test.py"]},
+                                                          {"id": "K-7", "tests": ["scripts/ci/x_test.py"]}], wf_py, {"TO2"})}
+    hit_list = py == ["scripts/ci/x_test.py", "scripts/ci/y_test.py"]
+    ok &= hit_list
+    print(f"  {'緑' if hit_list else '★ 赤'} workflow の自己試験の読み方：{py}")
+    for name, (ts, wf, want) in py_cases.items():
+        got = {b.split()[0] for b in check(ts, files, gen, ["opP", "opQ"], ci_py_tests(wf))}
+        hit = got == want
+        ok &= hit
+        print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")
     print("PASS — 壊した写しはどれも赤、正しい写しは緑" if ok else "FAIL — 赤になるべきものが赤にならない")
     return 0 if ok else 1
 
@@ -192,8 +227,9 @@ def main() -> int:
     if "--selftest" in sys.argv:
         return selftest()
     tickets, files, gen, eps = load()
-    bad = check(tickets, files, gen, eps)
-    own, _ = owners(tickets, files)
+    opt = ci_py()
+    bad = check(tickets, files, gen, eps, opt)
+    own, _ = owners(tickets, files + [f for f in opt if f not in files])
     per: dict[str, int] = {}
     for f, k in own.items():
         for x in k:

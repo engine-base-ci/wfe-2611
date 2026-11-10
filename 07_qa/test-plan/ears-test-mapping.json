@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-11-09",
+ "created_at": "2026-11-10",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -134734,11 +134734,11 @@
     "tickets"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "",
-   "ears_text": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない",
    "test_file": "apps/api/test/generated/post_tickets_id_delegate.test.ts",
-   "test_function": "test_post_tickets_id_delegate_rejected_422",
-   "test_level": "unit（検証・表記ゆらぎ）",
+   "test_function": "test_post_tickets_id_delegate_conflict",
+   "test_level": "unit（冪等）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []
@@ -134755,9 +134755,9 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "422",
-   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "ears_text": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない",
    "test_file": "apps/api/test/generated/post_tickets_id_delegate.test.ts",
-   "test_function": "test_post_tickets_id_delegate_rejected_422_2",
+   "test_function": "test_post_tickets_id_delegate_rejected_422",
    "test_level": "unit（検証・表記ゆらぎ）",
    "gate": "backend-coverage",
    "ladder": "L1",

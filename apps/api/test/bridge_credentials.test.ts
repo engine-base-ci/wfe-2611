@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway, type StoredSecret } from "@kaname/secrets";
@@ -19,6 +19,9 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -30,12 +33,17 @@ let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
 let secrets: SecretsGateway;
 const X = "/api/auth-ext";
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const req = (method: string, path: string, body?: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${X}${path}`, {
-    method,
-    headers: { "content-type": "application/json", ...headers },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${X}${path}`, {
+        method,
+        headers: { "content-type": "application/json", ...headers },
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      });
 const post = (path: string, body: unknown, h: Record<string, string> = {}) => req("POST", path, body, h);
 const json = async <T>(r: Response | Promise<Response>) => ((await (await r).json()) as { data: T }).data;
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
@@ -74,7 +82,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -119,7 +129,7 @@ async function ready(opts: { job?: boolean } = { job: true }) {
   if (opts.job) {
     // 預けた直後に積まれる「1 回だけログインを試す」仕事（T-B-38）が、この人の動いている仕事になる。Bridge が取る
     const job = await json<{ job_id: string; kind: string; credential_id: string }>(
-      post("/bridge/take", { protocol: 4 }, B),
+      post("/bridge/take", { protocol: 5 }, B),
     );
     expect(job).toMatchObject({ kind: "login_check", credential_id: credId });
     jobId = job.job_id;
@@ -198,7 +208,7 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
     }
     // 自分の仕事でも、終わっていれば出ない
     const s = await json<{ job_id: string }>(post("/agent/say", { text: "x" }, r.H));
-    await json(post("/bridge/take", { protocol: 4 }, r.B));
+    await json(post("/bridge/take", { protocol: 5 }, r.B));
     await admin.query("update bridge_jobs set state_id = 'done', finished_at = now() where id = $1", [s.job_id]);
     expect((await r.resolve({ job_id: s.job_id, credential_id: r.credId })).status).toBe(403);
     const a = await auditsOf(r.member.tenant_id, r.credId);
@@ -238,7 +248,7 @@ describe("BRG-05-004 鍵を受け取る：本人の Bridge・動いている仕�
       expect(JSON.stringify(o)).not.toContain("S3cret-Plain!");
     }
     // 道具（AI が呼ぶ口）の一覧に、資格情報を解く道具が無い
-    const job = await json<{ tool_token: string | null }>(post("/bridge/take", { protocol: 4 }, r.B)).catch(() => null);
+    const job = await json<{ tool_token: string | null }>(post("/bridge/take", { protocol: 5 }, r.B)).catch(() => null);
     void job;
     const src = await import("node:fs/promises").then((fs) =>
       fs.readFile(join(dirname(fileURLToPath(import.meta.url)), "..", "src", "auth", "agent-tools.ts"), "utf8"),

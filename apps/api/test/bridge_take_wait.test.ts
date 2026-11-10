@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -18,6 +18,9 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -27,12 +30,17 @@ const PW = "Str0ng-Passw0rd!";
 const sent: { to: string; url: string; kind: string }[] = [];
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json", ...headers },
-    body: JSON.stringify(body),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", ...headers },
+        body: JSON.stringify(body),
+      });
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 type Take = { data: { job_id: string } | null; next_ms: number };
 
@@ -56,7 +64,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -85,7 +95,7 @@ async function paired() {
 }
 const take = async (B: Record<string, string>, body: unknown) => {
   const t0 = Date.now();
-  const r = await post("/api/auth-ext/bridge/take", { protocol: 4, ...(body as object) }, B);
+  const r = await post("/api/auth-ext/bridge/take", { protocol: 5, ...(body as object) }, B);
   return { status: r.status, body: (await r.json()) as Take, ms: Date.now() - t0 };
 };
 
@@ -109,9 +119,9 @@ describe("仕事が動いていないとき（D-097）", () => {
     expect((await take(B, {})).ms).toBeLessThan(1_500);
     expect((await take(B, { wait_sec: -5 })).ms).toBeLessThan(1_500);
   });
-  it("死んだ鍵は 410（Bridge は鍵を捨てる・G-14）", async () => {
+  it("死んだ鍵は 401（契約の口・K-57 と同じ。Bridge は鍵を捨てる・G-14）", async () => {
     const r = await take({ "x-bridge-session": "00000000-0000-4000-8000-000000000000" }, { wait_sec: 20 });
-    expect(r.status).toBe(410);
+    expect(r.status).toBe(401);
   });
 });
 

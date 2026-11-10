@@ -101,12 +101,12 @@ test("BRG-03-006 返事が会話に出て、2 回目からは同じ続き（sess
     job_id: j1.json.data!.job_id,
     state: "done",
     result: "分かりました。案件はどこから来ますか？",
-    agent_session_id: "qa-session-0001",
+    agent_session_id: "5f1e2d3c-0000-4000-8000-00000000c001",
   });
   await expect(page.locator('[data-who="ai"]').last()).toContainText("案件はどこから来ますか");
   await say(page, "紹介と発注ナビです");
   const j2 = await bridgeTake(sid);
-  expect(j2.json.data?.agent_session_id, "2 回目は同じ続きを引き継ぐ").toBe("qa-session-0001");
+  expect(j2.json.data?.agent_session_id, "2 回目は同じ続きを引き継ぐ").toBe("5f1e2d3c-0000-4000-8000-00000000c001");
   const convs = await jobStates(u.memberId);
   expect(convs.length).toBe(2);
 });
@@ -136,14 +136,14 @@ test("BRG-03-009 BRG-03-012 止まった後に「続けて」と送ると同じ�
     job_id: j.json.data!.job_id,
     state: "stopped",
     reason: STOP,
-    agent_session_id: "qa-session-0002",
+    agent_session_id: "5f1e2d3c-0000-4000-8000-00000000c002",
   });
   await expect(page.locator("[data-stopped-reason]")).toContainText("上限");
   await say(page, "続けて");
   await expect(page.locator("[data-stopped-reason]"), "止まった記録は履歴として残る").toContainText("上限");
   await expect(page.locator("[data-choose]"), "押せないボタンは最初から無い").toHaveCount(0);
   const j2 = await bridgeTake(sid);
-  expect(j2.json.data?.agent_session_id, "続けては同じ続きを引き継ぐ").toBe("qa-session-0002");
+  expect(j2.json.data?.agent_session_id, "続けては同じ続きを引き継ぐ").toBe("5f1e2d3c-0000-4000-8000-00000000c002");
   expect((await jobStates(u.memberId)).map((x) => x.state_id)).toEqual(["stopped", "running"]);
 });
 
@@ -156,7 +156,7 @@ test("BRG-03-010 最初からやり直すときは「新しく話す」。続き
     job_id: j.json.data!.job_id,
     state: "stopped",
     reason: STOP,
-    agent_session_id: "qa-session-0003",
+    agent_session_id: "5f1e2d3c-0000-4000-8000-00000000c003",
   });
   await page.locator("[data-new-conversation]").click();
   await expect(page.locator('[data-who="me"]'), "新しい会話は空から").toHaveCount(0);
@@ -565,7 +565,12 @@ test("BRG-03-031 init で会話の id を先に覚えるので、途中で落ち
   await page.goto("/ai/chat");
   await say(page, "見積を作って");
   const j = await bridgeTake(sid);
-  await bridgeProgress(sid, { job_id: j.json.data!.job_id, seq: 1, kind: "init", agent_session_id: "qa-session-init" });
+  await bridgeProgress(sid, {
+    job_id: j.json.data!.job_id,
+    seq: 1,
+    kind: "init",
+    agent_session_id: "5f1e2d3c-0000-4000-8000-00000000c004",
+  });
   // 落ちた：result も session も無いまま止まる
   await bridgeFinish(sid, {
     job_id: j.json.data!.job_id,
@@ -574,7 +579,9 @@ test("BRG-03-031 init で会話の id を先に覚えるので、途中で落ち
   });
   await say(page, "続けて");
   const j2 = await bridgeTake(sid);
-  expect(j2.json.data?.agent_session_id, "init で覚えた id を「続けて」が引き継ぐ").toBe("qa-session-init");
+  expect(j2.json.data?.agent_session_id, "init で覚えた id を「続けて」が引き継ぐ").toBe(
+    "5f1e2d3c-0000-4000-8000-00000000c004",
+  );
 });
 
 test("BRG-03-032 result の is_error は失敗。終了コード 0 でも「終わった」にならず理由が出る", async ({ page }) => {

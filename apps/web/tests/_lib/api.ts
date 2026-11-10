@@ -243,19 +243,31 @@ export async function claimBridge(token: string, label = "MacBook Pro（QA）"):
   return c.json.data.device_token;
 }
 const asBridge = async <T>(sid: string, path: string, body: unknown) => {
-  // 生きている知らせは契約の口（/api/v1・K-57）。仕事の口はまだ前の道すじ（F5 で移す）
-  const url = path === "/bridge/heartbeat" ? `${API}/api/v1${path}` : `${API}/api/auth-ext${path}`;
+  // 生きている知らせ（K-57）と仕事の取る・様子・終わる（K-62）は契約の口（/api/v1）。仕事の id は道すじに入れ、体からは外す。
+  //   取るの答えは契約の形（data.job）なので、前の形（data が仕事そのもの）に戻して返す（呼ぶ側の期待は前のまま）
+  const b = { ...((body ?? {}) as Record<string, unknown>) };
+  const job = typeof b["job_id"] === "string" ? (b["job_id"] as string) : "";
+  const moved: Record<string, string> = {
+    "/bridge/take": "/bridge/jobs/take",
+    "/bridge/progress": `/bridge/jobs/${job}/progress`,
+    "/bridge/finish": `/bridge/jobs/${job}/finish`,
+  };
+  if (moved[path] && path !== "/bridge/take") delete b["job_id"];
+  const url =
+    path === "/bridge/heartbeat" || moved[path] ? `${API}/api/v1${moved[path] ?? path}` : `${API}/api/auth-ext${path}`;
   const r = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json", "x-bridge-session": sid },
-    body: JSON.stringify(body),
+    body: JSON.stringify(b),
   });
-  return { status: r.status, json: (await r.json().catch(() => ({}))) as T };
+  const raw = (await r.json().catch(() => ({}))) as { data?: { job?: unknown } };
+  const json = (path === "/bridge/take" && r.ok ? { ...raw, data: raw.data?.job ?? null } : raw) as T;
+  return { status: r.status === 201 ? 200 : r.status, json };
 };
 /** Bridge が仕事を 1 件もらう */
 export const bridgeTake = (sid: string) =>
   asBridge<{ data: { job_id: string; prompt: string; agent_session_id: string | null } | null }>(sid, "/bridge/take", {
-    protocol: 4,
+    protocol: 5, // 約束の版（K-62 で 5）
   });
 /** Bridge が結末を返す（done／stopped／cancelled）。止まったものは止まったまま置かれる */
 export const bridgeFinish = (
@@ -270,7 +282,7 @@ export const bridgeFinish = (
 ) => asBridge<{ data: { ok: boolean } }>(sid, "/bridge/finish", b);
 /** 生きていると知らせる（自己診断の報告も一緒に返す） */
 export const bridgeBeat = (sid: string, health?: { name: string; ok: boolean; detail?: string }[]) =>
-  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/heartbeat", health ? { health, protocol: 4 } : { protocol: 4 });
+  asBridge<{ data: { ok: boolean } }>(sid, "/bridge/heartbeat", health ? { health, protocol: 5 } : { protocol: 5 });
 /** 知らせが来なくなった状態を作る（PC を閉じた・Bridge を終了した）。75 秒で「切れている」 */
 export const bridgeAsleep = (sid: string) =>
   admin("update sessions set last_seen_at = now() - interval '5 minutes' where id = $1", [sid]);

@@ -3,7 +3,7 @@
 // 期待は正本（packages/errors のエラー一覧・決定ログ D-090／D-104.15／D-104.8・モック）から書く（G-09）。
 // Bridge は本物の輪（apps/bridge の loop）を回し、CLI だけ偽物（scripts/dev/fake-claude-demo.mjs）に差す。
 // D-128.150：自己診断の表・Claude Code のログイン・受け取りの部品を見る試験は、前の「PC をつなぐ」画面（/setup/bridge/legacy）を開く。
-//   生きている知らせは K-57 の契約の口（/api/v1/bridge/heartbeat）。仕事の口（/api/auth-ext/bridge/take ほか）は F5 で移す
+//   生きている知らせは K-57 の契約の口（/api/v1/bridge/heartbeat）。仕事を取る口も契約の口（/api/v1/bridge/jobs/take・K-62）
 // 偽の CLI に無い振る舞い（ログインしていない）は、この試験の中で一時フォルダに小さな CLI を書いて差す（本物の行の形・stream.ts の実測）。
 // 本人の本物の Bridge は止めない。画面からだけ見えなくする（hideRealBridge）。
 import { chmodSync, mkdirSync, writeFileSync } from "node:fs";
@@ -442,13 +442,14 @@ const oldBeat = (sid: string) =>
     body: JSON.stringify({ health: [] }),
   });
 const oldTake = async (sid: string) =>
-  (await (
-    await fetch(`${API}/api/auth-ext/bridge/take`, {
+  (await // 仕事を取る口は契約の口（K-62）。約束の版を送らない古い Bridge には渡さない（答えは data.job・outdated）
+  (
+    await fetch(`${API}/api/v1/bridge/jobs/take`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-bridge-session": sid },
       body: JSON.stringify({}),
     })
-  ).json()) as { data: unknown; outdated?: boolean };
+  ).json()) as { data: { job: unknown; outdated?: boolean } };
 /** 古い Bridge がつながっている人が会話モードを開く */
 async function outdated(page: Page) {
   const u = await signupViaApi();
@@ -488,8 +489,8 @@ test("E-CONN-012-A E-CONN-012-B 約束の版を送らない Bridge には仕事�
   await say(page, "請求書をまとめて");
   await expect(page.locator('.msg[data-who="me"], [data-queued]').first()).toBeVisible();
   const taken = await oldTake(sid);
-  expect(taken.data, "古い Bridge には仕事を渡さない（API の層）").toBeNull();
-  expect(taken.outdated).toBe(true);
+  expect(taken.data.job, "古い Bridge には仕事を渡さない（API の層）").toBeNull();
+  expect(taken.data.outdated).toBe(true);
   expect(
     (await jobs(u.memberId)).map((j) => j.state_id),
     "書いたことは溜まっている",

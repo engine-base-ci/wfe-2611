@@ -14,10 +14,13 @@ ticket_fields:
   group: area
 
 # いまの段階（2026-11-08 決める人）：段 1 歩く骨格＝K-103 の子のチケット
+# 2026-11-08 決める人：段階を広げて土台（K-1 の子孫）も入れる（D-129.49）
+# 2026-11-10 決める人：staging（K-77 の子の K-37・K-133）も含めて今日の 10 本（answer=b86a2f3639a6）
 scope:
   field: parent
-  value: K-103
-  label: 段 1 歩く骨格
+  values: [K-103, K-1, K-77]
+  descendants: true
+  label: 段 1 歩く骨格と土台と環境
 
 # ── 進める順番（B1〜B7・2026-11-08 決める人の決定。2026-11-09 D-132 で 1 チケット＝1 セッションに）
 flow:
@@ -88,3 +91,17 @@ coverage_min: 80
 limits: { l1_rows_per_session: 25, screens_per_session: 1, max_loops: 3 }
 merge:
   pm_may_merge: true # 2026-11-08 決める人：今までどおり。テスターの OK と、そのチケットの CI の緑の後だけ
+
+# ── 試験の結果の欄（K-143・D-129.51・ai-driven-process.md §8）。結果の欄は手で書かない。取り込みの台本（pm_merge.sh）が
+#    緑だった CI の回の記録を records に写し、`<script> write --specs <specs> --records <records> --sha <その回>` で書き、
+#    本文に `Results-Written-By: ci_results.py write CI <40 字の sha>` を持つ、そのチケットの番号のコミットにし、
+#    `<script> check --specs <specs> --ledger <ledger> --ledger-base-ref <本線との分かれ目> --target-ref <取り込む先>` が緑のときだけ本線に入れる
+#    （順：写す → write → Results-Written-By つきでコミット → check → 本線へ・PM の判断 2026-11-08 17:40 ⑤）。write は印を付けた行を台帳から消す（台帳は減らすだけ・K143-CI-034）。
+#    記録は CI の web の段（G48）が `<script> record --report <report>… --sha <回>` で作る。
+#    pm_merge.sh がこの設定を読む口は PM がスキル側で足す（K-143 の外）
+results:
+  script: "python3 scripts/ci/ci_results.py"
+  records: 07_qa/ci-results
+  specs: "07_qa/test-specs/**/*.md"
+  report: [apps/web/pw-reports/k.json]
+  ledger: 07_qa/test-plan/result-ledger.json # まだ流し直していない印の無い PASS（減らすだけ・流し直しは K-150）

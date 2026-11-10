@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-11-09",
+ "created_at": "2026-11-10",
  "skill": "test-verification",
  "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない",
  "source": [
@@ -299,6 +299,10 @@
   "D-128.173",
   "D-128.174",
   "D-128.175",
+  "D-128.176",
+  "D-128.177",
+  "D-128.178",
+  "D-128.179",
   "D-128.20",
   "D-128.25",
   "D-128.26",
@@ -366,7 +370,18 @@
   "D-129.32",
   "D-129.4",
   "D-129.42",
+  "D-129.43",
+  "D-129.44",
+  "D-129.45",
+  "D-129.46",
+  "D-129.47",
+  "D-129.48",
+  "D-129.49",
   "D-129.5",
+  "D-129.50",
+  "D-129.51",
+  "D-129.52",
+  "D-129.53",
   "D-129.6",
   "D-129.7",
   "D-129.8",
@@ -375,7 +390,19 @@
   "D-130.2",
   "D-130.3",
   "D-130.4",
-  "D-130.5"
+  "D-130.5",
+  "D-132.1",
+  "D-132.2",
+  "D-132.3",
+  "D-132.4",
+  "D-132.5",
+  "D-133.1",
+  "D-133.2",
+  "D-133.3",
+  "D-133.4",
+  "D-133.5",
+  "D-133.6",
+  "D-134.1"
  ],
  "inputs": {
   "tickets": 218,
@@ -385,7 +412,7 @@
   "entities": 142,
   "policies": 410,
   "access_cases": 1530,
-  "errors": 157,
+  "errors": 161,
   "journey_rows": 88,
   "critical_tasks": 88
  },
@@ -1048,7 +1075,8 @@
   {
    "id": 27,
    "name": "層の棚卸し（G21）",
-   "script": "python3 scripts/ci/layer_audit.py --run",
+   "script": "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\"",
+   "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n",
    "job": "spec",
    "blocking": true
   },
@@ -1132,14 +1160,15 @@
   {
    "id": 46,
    "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）",
-   "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py",
+   "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py --base-ref \"$CI_BASE\"",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
    "job": "spec",
    "blocking": true
   },
   {
    "id": 47,
-   "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験 7 本・D-128.123）",
-   "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py",
+   "name": "書いた検査が CI から回る・検査の自己試験（ci_wiring_gate・エラーの参照・自己試験・D-128.123）",
+   "script": "python3 scripts/ci/ci_wiring_gate.py --selftest && python3 scripts/ci/ci_wiring_gate.py && pnpm -s ci:errors-used && pnpm -s ci:errors-used:selftest && pnpm -s ci:sql-guard:selftest && pnpm -s ci:chat-one:selftest && pnpm -s ci:contract:selftest && pnpm -s ci:env-audit:selftest && python3 scripts/ci/qa_delta.py --selftest && python3 scripts/ci/static_screens_test.py && python3 scripts/ci/contract_shape_test.py && python3 scripts/ci/fuzz_targets_test.py",
    "job": "spec",
    "blocking": true
   },
@@ -1152,15 +1181,15 @@
   },
   {
    "id": 48,
-   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36）",
-   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all",
+   "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）",
+   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report",
    "job": "web",
    "blocking": true
   },
   {
    "id": 59,
    "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）",
-   "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json pnpm --filter @kaname/web exec playwright test tests/skeleton",
+   "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton",
    "job": "web",
    "blocking": true
   },
@@ -1188,7 +1217,14 @@
   {
    "id": 56,
    "name": "取り込む順（depends_on の実装が先に枝にある・K-94）",
-   "script": "python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py",
+   "script": "python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 62,
+   "name": "CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156）",
+   "script": "python3 scripts/ci/ci_lean_test.py",
    "job": "spec",
    "blocking": true
   },
@@ -1203,6 +1239,14 @@
    "id": 60,
    "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）",
    "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 61,
+   "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
+   "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"",
+   "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target }}\n",
    "job": "spec",
    "blocking": true
   }

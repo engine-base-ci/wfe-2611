@@ -14,6 +14,7 @@ import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
 import { createApp } from "../../../src/app.js";
 import { agentHooks } from "../../../src/hooks/agent.js";
+import { delegateHooks } from "../../../src/hooks/delegate.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
@@ -23,6 +24,8 @@ let T: { tenantId: string; rootScope: string };
 let writer: Person;
 let mate: Person;
 let task: { id: string };
+/** PC の印（device の口を叩く。K-62 の口は PC の印で入る・D-128.163） */
+let pcToken = "";
 
 // 正式な uuid でない値（D-129.42）。前の口の正規表現（/^[0-9a-f-]{36}$/i）は 1・2 を通していた
 const NOT_UUID = [
@@ -129,7 +132,8 @@ const ticketsOf = () => count("select count(*) as n from tickets where tenant_id
 const draftsOf = () => count("select count(*) as n from app.ticket_drafts where member_id = $1", [writer.id]);
 
 beforeAll(async () => {
-  f = await makeFixture([ticketHooks, agentHooks]);
+  // 本物のサーバー（apps/api/src/server.ts）と同じ順：K-60 の工場の後に K-62 の工場（作った口の uuid の行を叩くため・K-62）
+  f = await makeFixture([ticketHooks, agentHooks, delegateHooks]);
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -142,6 +146,18 @@ beforeAll(async () => {
     name: string;
   }[];
   task = kinds.find((k) => k.name === "タスク")!;
+  // 書く人の PC をつなぐ（接続コード → 引き取り）。PC の口（device）の uuid の行を PC の印で叩く（K-62）
+  const code = String(
+    (
+      (await json(await f.req("POST", "/bridge/pairing-codes", { body: {}, headers: writer.auth }))).data as {
+        code: string;
+      }
+    ).code,
+  );
+  const claimed = (
+    await json(await f.req("POST", "/bridge/claim", { body: { code, device_label: "K144 の PC" }, ip: nextIp() }))
+  ).data as { device_token: string };
+  pcToken = claimed.device_token;
 }, 60_000);
 afterAll(async () => {
   await f?.close();
@@ -462,20 +478,46 @@ export const UUID_PARAM_CASES = [
   ["K144-API-027", "listScopes", "query", "layer_id"],
   ["K144-API-028", "listAuditEvents", "query", "member_id"],
   ["K144-API-029", "listAuditEvents", "query", "ticket_id"],
+  // K-62 が作った口（PC の口は画面のセッションだと 403 だが、入口の uuid の確かめ（422）はその前・D-129.42）
+  ["K144-API-046", "delegateTicket", "path", "id"],
+  ["K144-API-047", "getActionRun", "path", "id"],
+  ["K144-API-048", "listTicketRuns", "path", "id"],
+  ["K144-API-049", "listTicketRuns", "query", "scope_id"],
+  ["K144-API-050", "reportJobProgress", "path", "id"],
+  ["K144-API-051", "getJobControl", "path", "id"],
+  ["K144-API-052", "callKanameTool", "path", "id"],
+  ["K144-API-053", "finishBridgeJob", "path", "id"],
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
-const BODIES: Record<string, unknown> = { updateConversation: { title: "名前" }, updateMemory: { body: "覚えること" } };
+const BODIES: Record<string, unknown> = {
+  updateConversation: { title: "名前" },
+  updateMemory: { body: "覚えること" },
+  // K-62 の口：必須の欄（REQUIRED_INPUTS）を入れて、正しい uuid では 422 にならない体（無い仕事・チケットは 404）
+  reportJobProgress: { seq: 1, kind: "status", text: "見ています" },
+  finishBridgeJob: { state: "stopped" },
+};
+/** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
+const OTHER_PATH: Record<string, string> = { name: "ticket_read" };
+/** 頭で受ける値（HEADERS）。callKanameTool の道具の鍵は 32 字以上（合わない鍵は口が 403）・K-62 */
+const OTHER_HEADERS: Record<string, Record<string, string>> = {
+  callKanameTool: { "x-kaname-tool-token": "t".repeat(43) },
+};
 /** その口を、uuid の値 name を value にして叩く（ほかの道の値は正しい uuid） */
 const hit = (op: string, where: "path" | "query", name: string, value: string) => {
   const d = def(op);
   let path = d.path.replace(/^\/api\/v1/, "");
   path = path.replace(/:(\w+)/g, (_m, p: string) =>
-    where === "path" && p === name ? encodeURIComponent(value) : randomUUID(),
+    where === "path" && p === name ? encodeURIComponent(value) : (OTHER_PATH[p] ?? randomUUID()),
   );
   if (where === "query") path += `?${name}=${encodeURIComponent(value)}`;
   const body = d.method === "GET" || d.method === "DELETE" ? undefined : (BODIES[op] ?? {});
-  return f.req(d.method, path, { headers: writer.auth, ...(body === undefined ? {} : { body }) });
+  // PC の口（auth device）は PC の印で入る。画面のセッションだと役が合わず 403（入口の uuid の確かめより前・op.ts の順）
+  const who = d.auth === "device" ? { "x-bridge-session": pcToken } : writer.auth;
+  return f.req(d.method, path, {
+    headers: { ...who, ...(OTHER_HEADERS[op] ?? {}) },
+    ...(body === undefined ? {} : { body }),
+  });
 };
 
 describe("K-144 ⑫ 入口が uuid の道の値と問い合わせを確かめる（registry の uuidParams・権限の確かめより前・D-129.42）", () => {

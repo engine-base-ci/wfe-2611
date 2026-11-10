@@ -187,7 +187,7 @@ describe("K-57 PC をつなぐ：状態 × 入口 × 利用者の状態（口・
     ]);
     const before = new Date(String((await sessionRow(d.device_id))["last_seen_at"])).getTime();
     const health = [{ name: "Claude Code", ok: true, detail: "入っている" }];
-    const r = await beat(d.device_token, { health, protocol: 4, version: "1.4.0" });
+    const r = await beat(d.device_token, { health, protocol: 5, version: "1.4.0" }); // 約束の版は K-62 で 5
     expect(r.status, await r.clone().text()).toBe(201);
     expect((await json(r)).data).toMatchObject({ ok: true, outdated: false });
     const s = await sessionRow(d.device_id);

@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth, type Mail } from "@kaname/auth";
-import { createSessionResolver } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
@@ -18,6 +18,9 @@ import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 import { pairForTest } from "./bridge_pair.js";
+import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
+import { withDevice } from "../src/middleware/tenant.js";
+import { delegateHooks } from "../src/hooks/delegate.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
 const ADMIN = process.env["DATABASE_URL"]!;
@@ -28,12 +31,17 @@ const mails: Mail[] = [];
 const sent: { to: string; url: string; kind: string }[] = []; // 確認メールは authExt の mailer から出る（D-088）
 let app: ReturnType<typeof createApp>;
 let admin: pg.Pool;
+// 前の道すじ 5 本（take・progress・finish・control・tool）は契約の口へ向け直す（K-62・apps/api/test/bridge_contract.ts）
+let ob: OldBridge | undefined;
+const viaContract = (): OldBridge => (ob ??= oldBridge(app));
 const post = (path: string, body: unknown, headers: Record<string, string> = {}) =>
-  app.request(`http://localhost${path}`, {
-    method: "POST",
-    headers: { "content-type": "application/json", ...headers },
-    body: JSON.stringify(body),
-  });
+  isMovedBridgePath(path)
+    ? viaContract().call(path, body, headers)
+    : app.request(`http://localhost${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", ...headers },
+        body: JSON.stringify(body),
+      });
 const get = (path: string, headers: Record<string, string> = {}) => app.request(`http://localhost${path}`, { headers });
 const uniq = () => `qa-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
@@ -57,7 +65,9 @@ beforeAll(async () => {
   app = createApp({
     repo,
     auth,
-    resolve: createSessionResolver(auth, appPool),
+    // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
+    resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
+    contract: { hooks: delegateHooks(appPool) },
     authExt: authExt({
       auth,
       appPool,
@@ -87,7 +97,7 @@ async function ready() {
   const say = (await (await post("/api/auth-ext/agent/say", { text: "請求書を送っておいて" }, H)).json()) as {
     data: { job_id: string; conversation_id: string };
   };
-  const take = (await (await post("/api/auth-ext/bridge/take", { protocol: 4 }, B)).json()) as {
+  const take = (await (await post("/api/auth-ext/bridge/take", { protocol: 5 }, B)).json()) as {
     data: { job_id: string };
   };
   expect(take.data.job_id).toBe(say.data.job_id);
@@ -101,7 +111,7 @@ describe("途中経過と会話の id（D-093.4・D-093.7）", () => {
       (
         await post(
           "/api/auth-ext/bridge/progress",
-          { job_id: job, seq: 1, kind: "init", agent_session_id: "s-init-1" },
+          { job_id: job, seq: 1, kind: "init", agent_session_id: "5f1e2d3c-0000-4000-8000-00000000b001" },
           B,
         )
       ).status,
@@ -116,9 +126,11 @@ describe("途中経過と会話の id（D-093.4・D-093.7）", () => {
       ).status,
     ).toBe(200);
     const j = await admin.query("select agent_session_id from bridge_jobs where id = $1", [job]);
-    expect(j.rows[0].agent_session_id).toBe("s-init-1");
+    expect(j.rows[0].agent_session_id).toBe("5f1e2d3c-0000-4000-8000-00000000b001");
     const c = await admin.query("select agent_session_id from conversations where id = $1", [conv]);
-    expect(c.rows[0].agent_session_id, "落ちても続きからが引き継げるよう、会話にも写す").toBe("s-init-1");
+    expect(c.rows[0].agent_session_id, "落ちても続きからが引き継げるよう、会話にも写す").toBe(
+      "5f1e2d3c-0000-4000-8000-00000000b001",
+    );
     const st = (await (await get("/api/auth-ext/agent/state", H)).json()) as {
       data: { progress: { text: string }[]; running_job_id: string };
     };
