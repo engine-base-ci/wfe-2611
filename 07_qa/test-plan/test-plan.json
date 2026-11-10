@@ -1156,7 +1156,8 @@
   {
    "id": 46,
    "name": "使っている部品が技術の選定の記録と合う（package.json と selected-stack.json の packages を 1 対 1・D-128.123）",
-   "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py",
+   "script": "python3 scripts/ci/stack_gate.py --selftest && python3 scripts/ci/stack_gate.py --base-ref \"$CI_BASE\"",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
    "job": "spec",
    "blocking": true
   },
