@@ -108,6 +108,7 @@
   ".claude/settings.json"
  ],
  "data_links": [
+  { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   {
    "paths": [
     "07_qa/test-plan/access-matrix.json"
