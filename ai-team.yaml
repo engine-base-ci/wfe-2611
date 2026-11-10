@@ -112,4 +112,11 @@ results:
 ci_scope:
   cmd: "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope auto"
   block: ["全部：unmapped", "全部：mismatch", "★ 食い違い", "全部：no-declaration", "全部：ticket"]
-  prechecks: ["python3 scripts/ci/ticket_order_gate.py", "python3 scripts/tickets/build_index.py --check", "python3 scripts/ci/trace_gate.py"]
+  prechecks:
+    [
+      "python3 scripts/ci/ticket_order_gate.py",
+      "python3 scripts/tickets/build_index.py --check",
+      "python3 scripts/ci/trace_gate.py",
+      "git diff --name-only --diff-filter=d {base}...HEAD | grep -E '\\.(ts|tsx|mjs|json|yml|yaml|md)$' | xargs -r npx prettier --check",
+      "git diff --name-only --diff-filter=d {base}...HEAD | grep -E '\\.(ts|tsx|mjs)$' | xargs -r npx eslint",
+    ]
