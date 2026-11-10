@@ -135,7 +135,7 @@ class LedgerDriftTest(Base):
         self.assertIn("K57-UI-001", got[0])
         self.assertIn("a.md", got[0])
         # 道の書き方が違うだけの同じ鍵（./ つき）も重なりとして数える
-        dup2 = led((self.f, "K57-UI-001"), ("./" + self.f, "K57-UI-001"))
+        dup2 = led((self.f, "K57-UI-001"), ("./" + self.f, "K57-UI-001"), (self.f, "K57-UI-002"))
         self.assertEqual(len(cr.ledger_drift(dup2, entered, self.root, cap=2593)), 1)
 
 
