@@ -476,7 +476,7 @@ jobs:
         run: python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py
       - name: "G56 取り込む順（depends_on の実装が先に枝にある・K-94）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py
+        run: python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py
       - name: "G57 チケットの CI の範囲の台本の試験（K-107）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py
@@ -488,7 +488,7 @@ jobs:
         env:
           CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}
           CI_TARGET_REF: ${{ inputs.target }}
-        run: python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"
+        run: python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"
 
   task-gate:
     runs-on: ubuntu-latest
