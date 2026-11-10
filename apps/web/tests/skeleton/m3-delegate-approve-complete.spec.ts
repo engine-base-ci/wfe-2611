@@ -595,13 +595,15 @@ test("K64-M3-11 途中で権限が無くなる：任せたあと担当を同僚�
     [r.me.memberId],
   );
   expect(changed.length, "任せた人のチケットの権限を見るだけにした").toBeGreaterThan(0);
-  const sessions = await admin<{ kind: string | null; revoked: boolean }>(
-    "select kind_id as kind, revoked_at is not null as revoked from sessions where member_id = $1",
+  const sessions = await admin<{ kind: string | null; revoked: boolean; reason: string | null }>(
+    "select kind_id as kind, revoked_at is not null as revoked, revoke_reason_id as reason from sessions where member_id = $1",
     [r.me.memberId],
   );
+  const web = sessions.filter((x) => x.kind !== "bridge");
+  expect(web.length, "画面のセッションがある（0 本で緑にしない）").toBeGreaterThan(0);
   expect(
-    sessions.filter((x) => x.kind !== "bridge").every((x) => x.revoked),
-    "画面のログインは切れる（D-128.179）",
+    web.every((x) => x.revoked && x.reason === "permission_changed"),
+    "画面のログインは権限の変化で切れる（D-128.179）",
   ).toBe(true);
   expect(
     sessions.some((x) => x.kind === "bridge" && !x.revoked),
