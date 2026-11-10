@@ -62,12 +62,12 @@ test("K147-UI-006 根の layout で落ちたときの画面（global-error）も
   await context.addCookies([{ name: "k-boom-root", value: "1", url }]);
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/dev/k");
-  await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "読み込めませんでした。" })).toBeVisible(); // 根で落ちたときの画面（global-error）が出ている
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   expect(await scheme(page)).toBe("light");
   await context.addCookies([{ name: "k-theme", value: "dark", url }]);
   await page.goto("/dev/k");
-  await expect(page.getByRole("button", { name: "もう一度" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "読み込めませんでした。" })).toBeVisible(); // 根で落ちたときの画面（global-error）が出ている
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await scheme(page)).toBe("dark");
 });
