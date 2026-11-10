@@ -5865,6 +5865,7 @@
     "D-128.160"
    ],
    "split": "",
+   "prior_impl": "なし",
    "choke_points": [
     "C4"
    ],
