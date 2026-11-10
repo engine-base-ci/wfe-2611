@@ -40,6 +40,11 @@
         lockfile_sha256 は新しい sha・asked_on は now の日付。判定（21 日・minimumReleaseAgeExclude）はいつも now で。
         fetch の答えに _err があれば、その名前だけ S6 の赤（今までどおり）。record_out には聞けた分だけ入る（次は残りだけ聞く）
     check_lock_age(lock, ws_text, times, now)：今までの引数のまま残す（--selftest がそのまま通る）
+  scripts/ci/ci_scope.py（画面の組と tickets.json・D-133.5・2026-11-10 answer=a224738a2ce5）
+    決まりの jobs.web.ticket_rows = {"file": "11_tickets/tickets.json", "list": "tickets"}（jobs.web.paths には tickets.json を入れない）
+    plan：そのファイルが変わったら、比べる元と先頭の JSON を id ごとに比べ、変わった・足した・消した行のチケットが画面を持つ
+        （screens が空でない・tests に apps/web/ の物がある）ときだけ web の組。p["web_ticket_rows"] にその番号の並び。
+        JSON が読めない（形が違う）ときは web を流す（安全な側）。比べる元にファイルが無ければ空の一覧と比べる
   scripts/ci/ci_scope.py（migration の lint・PM の追加 2026-11-09）
     plan：scope=full でも base が 40 桁で有効なら変えたファイルを読み、migration_files と wide の db を出してから全部に倒す。
         git の R（名前を変えた migration）の新しい名前を added_mig に数え、並びの付け替え（古い名前の行を消し新しい名前の行を足す）は DB の範囲
@@ -709,6 +714,80 @@ class TesterFindingsTest(unittest.TestCase):
             self.assertTrue(tracked or ignored, f"{rel}：版にも無視の決まりにも入っていない")
         eslint = (ROOT / "eslint.config.mjs").read_text(encoding="utf-8")
         self.assertIn('"**/playwright-report-skeleton/**"', eslint)
+
+
+TICKET_ROWS = {"file": "11_tickets/tickets.json", "list": "tickets"}
+
+
+def tickets_json(*rows: dict) -> str:
+    return json.dumps({"tickets": list(rows)}, ensure_ascii=False) + "\n"
+
+
+class WebTicketRowsTest(unittest.TestCase):
+    """画面の組は、tickets.json の変わった行が画面を持つチケットのときだけ（D-133.5・決める人 2026-11-10 answer=a224738a2ce5）"""
+
+    K1 = {"id": "K-1", "screens": [], "tests": ["scripts/ci/x_test.py"], "stage": "未着手"}
+    K2 = {"id": "K-2", "screens": ["login"], "tests": [], "stage": "未着手"}
+    K3 = {"id": "K-3", "screens": [], "tests": ["apps/web/tests/x.spec.ts"], "stage": "未着手"}
+
+    def setUp(self) -> None:
+        self.r = k107.Repo()
+        self.rules = copy.deepcopy(k107.RULES)
+        self.rules["jobs"]["web"]["ticket_rows"] = dict(TICKET_ROWS)
+        self.r.commit("K-0 chore: 一覧", **{"11_tickets__tickets.json": tickets_json(self.K1, self.K2, self.K3)})
+        self.r.base = k107.git(self.r.dir, "rev-parse", "HEAD")
+
+    def tearDown(self) -> None:
+        self.r.close()
+
+    def plan(self) -> dict:
+        return ci_scope.plan(str(self.r.dir), self.r.base, "HEAD", "auto", rules=self.rules, tickets_dir=str(self.r.dir / "11_tickets"),
+                             list_tests=lambda files: {f: [] for f in files}, db_tests=lambda: [])
+
+    def change(self, *rows: dict) -> dict:
+        self.r.commit("K-1 docs: 一覧", **{"11_tickets__tickets.json": tickets_json(*rows), "11_tickets__K-1.md": k107.ticket("K-1", [])})
+        return self.plan()
+
+    def test_K156_CI_052_non_screen_ticket_row_does_not_run_web(self) -> None:
+        p = self.change({**self.K1, "stage": "作業中"}, self.K2, self.K3)
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertFalse(p["jobs"]["web"])
+        self.assertEqual(p["web_ticket_rows"], [])
+
+    def test_K156_CI_053_screen_ticket_row_runs_web(self) -> None:
+        p = self.change(self.K1, {**self.K2, "stage": "作業中"}, self.K3)
+        self.assertTrue(p["jobs"]["web"])
+        self.assertEqual(p["web_ticket_rows"], ["K-2"])
+        p = self.change(self.K1, {**self.K2, "stage": "作業中"}, {**self.K3, "stage": "作業中"})   # apps/web の試験を持つチケット
+        self.assertTrue(p["jobs"]["web"])
+        self.assertEqual(p["web_ticket_rows"], ["K-3"])
+
+    def test_K156_CI_054_added_removed_and_unreadable(self) -> None:
+        p = self.change(self.K1, self.K2, self.K3, {"id": "K-4", "screens": ["today"], "tests": []})   # 足した画面のチケット
+        self.assertEqual(p["web_ticket_rows"], ["K-4"])
+        self.assertTrue(p["jobs"]["web"])
+        p = self.change(self.K1, self.K2)   # 比べる元（K-1・K-2・K-3）から、画面の試験を持つ K-3 を消した
+        self.assertEqual(p["web_ticket_rows"], ["K-3"])
+        self.assertTrue(p["jobs"]["web"])
+        self.r.commit("K-1 docs: 壊れた一覧", **{"11_tickets__tickets.json": "{ 壊れた\n", "11_tickets__K-1.md": k107.ticket("K-1", [])})
+        self.r.base = k107.git(self.r.dir, "rev-parse", "HEAD~1")
+        p = self.plan()
+        self.assertTrue(p["jobs"]["web"])            # 読めないなら流す（安全な側）
+        self.assertEqual(p["web_ticket_rows"], ["?"])
+
+    def test_K156_CI_055_real_rules(self) -> None:
+        real = ci_scope.load_rules(str(ROOT / "scripts/ci/ci_scope.json"))
+        self.assertNotIn("11_tickets/tickets.json", real["jobs"]["web"]["paths"])
+        self.assertEqual(real["jobs"]["web"]["ticket_rows"], TICKET_ROWS)
+        bad = copy.deepcopy(k107.RULES)
+        bad["jobs"]["web"]["ticket_rows"] = {"file": 1}
+        d = pathlib.Path(tempfile.mkdtemp(prefix="k156-"))
+        try:
+            (d / "r.json").write_text(json.dumps(bad), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                ci_scope.load_rules(str(d / "r.json"))
+        finally:
+            shutil.rmtree(d, ignore_errors=True)
 
 
 class FullScopeBaseTest(k107.Base):

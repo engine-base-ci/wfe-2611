@@ -653,12 +653,15 @@ class DocsAndJobsTest(Base):
         self.assertIn("apps/x/test/main.test.ts", p["unit_files"])
 
     def test_K107_CS_061_tickets_json_runs_web(self) -> None:
-        # 11_tickets/tickets.json は web の組の G48（op_gate.py --tickets 11_tickets/tickets.json）が読む。変えたら web の組を流す
+        # 11_tickets/tickets.json は web の組の G48（op_gate.py --tickets 11_tickets/tickets.json）が読む。画面を持つチケットの行が
+        #   変わったら web の組を流す（K-156 で当てはめを変えた：画面を持たないチケットの行だけなら流さない・D-133.5）
         real = ci_scope.load_rules(str(ROOT / "scripts/ci/ci_scope.json"))
-        self.assertIn("11_tickets/tickets.json", real["jobs"]["web"]["paths"])
+        self.assertEqual(real["jobs"]["web"]["ticket_rows"]["file"], "11_tickets/tickets.json")
         rules = json.loads(json.dumps(RULES))
         rules["jobs"]["web"]["paths"] = list(real["jobs"]["web"]["paths"])
-        self.r.commit("K-1 docs: 一覧", **{"11_tickets__tickets.json": '{"tickets": []}\n', "11_tickets__K-1.md": ticket("K-1", [])})
+        rules["jobs"]["web"]["ticket_rows"] = dict(real["jobs"]["web"]["ticket_rows"])
+        self.r.commit("K-1 docs: 一覧", **{"11_tickets__tickets.json": '{"tickets": [{"id": "K-9", "screens": ["login"]}]}\n',
+                                         "11_tickets__K-1.md": ticket("K-1", [])})
         p = ci_scope.plan(str(self.r.dir), self.r.base, "HEAD", "auto", rules=rules, tickets_dir=str(self.r.dir / "11_tickets"),
                           list_tests=lambda files: {f: [] for f in files}, db_tests=lambda: [])
         self.assertEqual(p["mode"], "scoped", p["reasons"])
