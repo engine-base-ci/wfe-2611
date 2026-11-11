@@ -42,7 +42,7 @@ RULES = {
         "markers": [r"from\s+['\"]pg['\"]", r"\bDATABASE_URL\b"],   # 関門を通らずに DB に触る試験（文字で見分ける）
     },
     "full": {
-        "ci": [".github/**", "scripts/ci/**", "vitest.config.ts"],
+        "ci": [".github/**", "scripts/ci/**", "vitest.config.ts", "**/tsconfig*.json"],  # 本物と同じくパッケージの tsconfig も ci の類（K170-CS-013）
         "lockfile": ["pnpm-lock.yaml", "pnpm-workspace.yaml", "package.json", "**/package.json"],
     },
     "shared_min_dependents": 2,
@@ -64,7 +64,7 @@ RULES = {
 }
 
 # 引数の名前に . や - を書けないので、ファイルの名前だけ表で直す
-NAMES = {"main_ts": "main.ts", "page_ts": "page.ts", "index_ts": "index.ts", "i_ts": "i.ts", "0002_sql": "0002.sql",
+NAMES = {"tsconfig_json": "tsconfig.json", "main_ts": "main.ts", "page_ts": "page.ts", "index_ts": "index.ts", "i_ts": "i.ts", "0002_sql": "0002.sql",
          "q_sql": "q.sql", "package_json": "package.json", "main_test_ts": "main.test.ts", "README_md": "README.md",
          "pnpm_lock_yaml": "pnpm-lock.yaml", "p_sql": "p.sql", "new_ts": "new.ts"}
 
@@ -880,6 +880,21 @@ class TicketOnlyTest(Base):
         p = self.r.plan(tests=[])
         self.assertEqual(p["mode"], "scoped", p["reasons"])
         self.assertEqual(p["unit_files"], ["apps/w/test/flow.test.ts", "apps/w/test/page.test.ts", "packages/b/test/b.test.ts"])
+        self.assertNotIn("apps/x/test/main.test.ts", p["unit_files"])
+        self.assertTrue(p["jobs"]["web"], "使い手 w の画面の組が流れない")              # Q #4：組も使い手まで（K-170 の前は全部で流れていた）
+        self.assertTrue(p["jobs"]["database"], "b を使う DB の組が流れない")
+        self.assertIn("lockfile", {c for c, _ in p["full_reasons"]})
+        self.assertFalse(any(r.startswith("全部：") for r in p["reasons"]), p["reasons"])   # Q #8：続ける理由を「全部」と書かない
+
+    def test_K170_CS_013_package_config_runs_package_and_users(self) -> None:
+        # パッケージの中の tsconfig・playwright.config（ci の類）は、そのパッケージと使い手まで（D-133.7 ④の当てはめ・PM の判断 2026-11-11）
+        self.r.commit("K-1 chore: 設定", apps__w__tsconfig_json="{}\n",
+                      **{"11_tickets__K-1.md": self.tk(tests="[]", affects=["w"], ci_wide=["ci"])})
+        p = self.r.plan(tests=[])
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertIn(("ci", "apps/w/tsconfig.json"), set(p["full_reasons"]))   # ci の類に当たってから、そのパッケージで続ける
+        self.assertEqual(p["unit_files"], ["apps/w/test/flow.test.ts", "apps/w/test/page.test.ts"])
+        self.assertTrue(p["jobs"]["web"])
         self.assertNotIn("apps/x/test/main.test.ts", p["unit_files"])
 
     def test_K170_CS_005_undecidable_stops_not_full(self) -> None:
