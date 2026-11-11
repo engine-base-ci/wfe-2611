@@ -6945,7 +6945,9 @@
     "scripts/ci/vitest_related.mjs",
     "ai-team.yaml",
     "01_hearing/決定ログ_進行中.md",
-    "01_hearing/要件一覧.md"
+    "01_hearing/要件一覧.md",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md"
    ],
    "affects": [],
    "ci_wide": [],
