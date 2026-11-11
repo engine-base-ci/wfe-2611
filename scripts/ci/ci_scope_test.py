@@ -857,6 +857,16 @@ class TicketOnlyTest(Base):
         self.assertEqual(p["unit_files"], ["apps/x/test/main.test.ts"])
         self.assertEqual(p["errors"], [])
 
+    def test_K170_CS_012_python_only_tests_do_not_stop(self) -> None:
+        # vitest の試験が 1 本も残らない（.py だけ）のは「当たらない」ではない。止めずに、spec の組に任せる
+        write(self.r.dir, "scripts/ci/x_test.py", "print(1)\n")
+        self.r.commit("K-1 chore: CI", **{".github__workflows__gate.yml": "name: gate\n",
+                                          "11_tickets__K-1.md": self.tk(tests="[scripts/ci/x_test.py]", ci_wide=["ci"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertEqual(p["errors"], [])
+        self.assertNotIn("scripts/ci/x_test.py", p["unit_files"])
+
     def test_K170_CS_010_ticket_tests_glob_without_match_stops(self) -> None:
         self.r.commit("K-1 chore: CI", **{".github__workflows__gate.yml": "name: gate\n",
                                           "11_tickets__K-1.md": self.tk(tests="[apps/x/test/nai*.test.ts]", ci_wide=["ci"])})
