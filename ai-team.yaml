@@ -122,7 +122,9 @@ local:
   skip: [pnpm install, pip install, playwright install]
   skip_steps: {}
   deps_dirs: [node_modules, .venv]
-# 試験の 3 つの役の役 3（CI の記録で行が全部緑かを機械が判定）。入れるのは K-167（決める人 2026-11-10「この形で決める」）
+# 試験の 3 つの役の役 3（CI の記録で行が全部緑かを機械が判定・決める人 2026-11-10「この形で決める」）。
+#   judge の設定は K-167 が enabled: false のまま入れ、記録の出どころをそろえて true にするのは K-168（PM の判断 2026-11-10 21:59）。
+#   K-167 は本線を取り込むとき、この節を消して自分の judge: に置き換える（2 つ残さない）
 judge:
   enabled: false
-  reason: "役 3 は K-167 で入れる（試験の結果の記録の形と judge の設定を K-167 が足す）。それまでは ran.py の記録の関門で見る"
+  reason: "記録の出どころ（vitest・中間・node と python の試験）がまだ画面の試験だけ。true にするのは K-168（PM の判断 2026-11-10 21:59）。それまでは ran.py の記録の関門で見る"
