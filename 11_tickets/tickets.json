@@ -6899,7 +6899,9 @@
    "changes": [
     "ai-team.yaml",
     "ci-gates.yaml",
-    "scripts/ci/ci_scope.json"
+    "scripts/ci/ci_scope.json",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md"
    ],
    "affects": [],
    "ci_wide": [],
