@@ -880,4 +880,5 @@ Kaname の設定は前の書き方のままなので、`state.py doctor` が赤 
 - [ ] 出す前の検査は `local:`（v3-gate.yml の static・spec をそのまま手元で）。prechecks の命令の一覧は消す（同じ検査は static・spec の段に入っている）
 - [ ] ci-gates.yaml を置き、`order: {unused: <理由>}`（Kaname の取り込む順は scripts/ci/ticket_order_gate.py が CI の G56 で見る・スキルの order_gate との一本化は監査 #20 で決める人に聞く）
 - [ ] ci-gates.yaml を CI の範囲の地図の no_test_paths に足す（足さないと地図に無いファイルで CI が全部に倒れる）
+- [ ] scope_files.always に、チケットを直すたびに作り直す一覧（11_tickets/tickets.json・tickets.csv・README.md）と決める人の答えの記録（01_hearing/decider-answers.jsonl）を足す（スキルの雛形と同じ種類の道。足さないとチケットの文を直すだけで範囲の外として止まる）
 - [ ] 手元の CI の段（local_jobs で static・spec）が緑・チケットの CI（act）が緑"
