@@ -6927,15 +6927,15 @@
    "estimate_hours": "1",
    "estimate_basis": "実測 K-155（2026-11-11・切る 4.5 分・実装 1 分・試験 1 分）から、台本 1 本と試験 1 本の直しとして引いた",
    "decisions": [
-    "D-133"
+    "D-133",
+    "D-133.7"
    ],
    "split": "",
    "choke_points": [],
    "choke_none": "CI の範囲を決める台本だけ。製品の外への出口（関門）に触らない",
    "depends_on": [],
    "tests": [
-    "scripts/ci/ci_scope_test.py",
-    "scripts/ci/ci_lean_test.py"
+    "scripts/ci/ci_scope_test.py"
    ],
    "prior_impl": "なし",
    "changes": [
