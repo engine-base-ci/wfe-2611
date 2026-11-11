@@ -570,7 +570,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
 
     def done() -> dict:
         p["spec_only"] = sorted(set(p["spec_only"]))
-        p["reasons"] = ([f"全部：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
+        p["reasons"] = ([f"{'全部' if scope == 'full' else '範囲を広げる理由（全部にはしない）'}：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
                         + [f"日付だけ：{x}" for x in p["date_only"]]
                         + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
@@ -625,8 +625,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                 full += [(cat, x) for cat in cats]
                 if pk:
                     changed_pk.add(pk)
-                    if "lockfile" in cats and not gone:
-                        whole_pk.add(pk)   # パッケージの package.json：そのパッケージと使い手の試験まで（D-133.7 ④）
+                    if not gone:
+                        whole_pk.add(pk)   # パッケージの中の設定（package.json・tsconfig など）：そのパッケージと使い手まで（D-133.7 ④）
                 continue
             for l in rules["data_links"]:
                 if match(x, l["paths"]):
@@ -697,6 +697,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         if miss:
             return done()
         direct.update(t for t in tt if match(t, TEST_GLOBS))   # .py などは spec の組が流す
+        p["ticket_web_tests"] = [t for t in tt if t.startswith(WEB_E2E_PREFIX)]   # 画面の試験は web の組が流す（K170-CS-014）
 
     # 試験を決める
     try:
@@ -725,14 +726,16 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p["coverage_args"] = [f"--coverage.include={s}" for s in sorted(src_live)] or ["--coverage.enabled=false"]
 
     jd, jw = rules["jobs"].get("database", {}), rules["jobs"].get("web", {})
+    jaff = aff | affected(whole_pk, ws)   # 組も、パッケージの中の設定・消したファイルの使い手まで（K-170 Q #4）
     tr = jw.get("ticket_rows")
     if tr and tr["file"] in any_path:
         p["web_ticket_rows"] = web_ticket_rows(repo, base, head, tr)
     p["jobs"] = {"unit": bool(files),
-                 "database": db_range or bool(aff & set(jd.get("packages", []))) or any(match(x, jd.get("paths", [])) for x in any_path),
-                 "web": bool(aff & set(jw.get("packages", []))) or any(match(x, jw.get("paths", [])) for x in any_path)
+                 "database": db_range or bool(jaff & set(jd.get("packages", []))) or any(match(x, jd.get("paths", [])) for x in any_path),
+                 "web": bool(jaff & set(jw.get("packages", []))) or any(match(x, jw.get("paths", [])) for x in any_path)
                  or bool(p["web_ticket_rows"])
-                 or any(f.startswith(WEB_E2E_PREFIX) for f in itests)}
+                 or any(f.startswith(WEB_E2E_PREFIX) for f in itests)
+                 or bool(p.get("ticket_web_tests"))}
     if not p["jobs"]["unit"]:
         p["unit_shards"] = 0
     return done()
