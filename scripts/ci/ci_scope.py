@@ -570,7 +570,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
 
     def done() -> dict:
         p["spec_only"] = sorted(set(p["spec_only"]))
-        p["reasons"] = ([f"{'全部' if scope == 'full' else '範囲を広げる理由（全部にはしない）'}：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
+        p["reasons"] = ([f"{'全部' if scope == 'full' else ('止める理由' if c in STOP_KINDS else '範囲を広げる理由（全部にはしない）')}：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
                         + [f"日付だけ：{x}" for x in p["date_only"]]
                         + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
