@@ -128,3 +128,7 @@ local:
 judge:
   enabled: false
   reason: "記録の出どころ（vitest・中間・node と python の試験）がまだ画面の試験だけ。true にするのは K-168（PM の判断 2026-11-10 21:59）。それまでは ran.py の記録の関門で見る"
+# 切ったチケットに書いていないファイルを実装で変えたら止める（スキルの scope_files_gate）。いつでも通す道：
+#   チケットを直すたびに作り直す一覧（build_index.py の生成物）と、決める人の答えの記録（2026-11-11・K-169）
+scope_files:
+  always: [11_tickets/tickets.json, 11_tickets/tickets.csv, 11_tickets/README.md, 01_hearing/decider-answers.jsonl]
