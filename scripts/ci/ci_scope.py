@@ -5,14 +5,16 @@
     python3 scripts/ci/ci_scope.py --base <40 桁の sha> --head HEAD --scope auto|full
         [--rules scripts/ci/ci_scope.json] [--tickets 11_tickets] [--github-output FILE] [--json] [--no-vitest] [--repo .]
       scope の既定は workflow の入力の既定と同じ full（全部）。auto のときだけ絞る。
-      終わり方：チケットとの食い違い・試験の無いコードがあれば 1（そのときも --github-output は全部に倒した値で書く）、ほかは 0
+      終わり方：チケットとの食い違い・試験の無いコード・範囲を決められない理由があれば 1（そのときは --github-output に組を流さない値を書く・K-170）、ほかは 0
   組の中で流す（外から来る値は env の JSON で受け取り、shell を通さずに引数の並びで流す）:
     run-unit --shard <i>   env CI_UNIT_FILES・CI_COVERAGE_ARGS・CI_UNIT_SHARDS
     run-merge              env CI_COVERAGE_ARGS
     run-squawk             env CI_MIGRATION_FILES（空なら何もしない）
     check-count --report <vitest の json>   env CI_UNIT_FILES・CI_FULL（絞った回だけ、決めた試験と流れた試験を比べる）
 
-  全部に倒す理由：requested・base・empty・ci・lockfile・shared・unmapped・badpath・tool・ticket・no-declaration・integration・mismatch
+  K-170（2026-11-11・D-133.7）：scope=auto は全部に倒さない。全部は scope=full（大分類の終わり）だけ。
+  止める理由（errors・組は流さない）：requested・base・empty・badpath・ticket・ticket-tests・integration・tool・mismatch
+  続ける理由（full_reasons に残し、チケットの範囲で続ける）：ci・lockfile・shared・unmapped・no-declaration
   static と spec だけ（K-156）：決まりの spec（spec.paths・spec.generated のときは generated.json の生成物と作り手）の物は、全部に倒さず組も足さない。
     読む試験・src があれば no_test_path_reads（CS-044）が赤にする（data_links に書く）
   画面の組とチケットの一覧（K-156・D-133.5）：jobs.web.ticket_rows のファイル（11_tickets/tickets.json）が変わったら、比べる元と先頭を
@@ -493,6 +495,21 @@ def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list
     return ids, sorted(set(files)), empty
 
 
+def _ticket_tests(repo: str, tickets_dir: str, tid: str) -> tuple[list[str], list[str]]:
+    """チケットの .md の tests:（glob は開く）→ (ファイル, 何にも当たらない glob)。チケットの CI はこれを必ず流す（K-170）"""
+    path = os.path.join(tickets_dir, f"{tid}.md")
+    if not os.path.isfile(path):
+        return [], []
+    tests = parse_ticket(path).get("tests") or []
+    files, miss = set(), []
+    for g in (tests if isinstance(tests, list) else [tests]):
+        got = [os.path.relpath(x, repo).replace(os.sep, "/") for x in globmod.glob(os.path.join(repo, g), recursive=True) if os.path.isfile(x)]
+        files.update(got)
+        if not got:
+            miss.append(g)
+    return sorted(files), miss
+
+
 def _num(tid: str) -> int:
     return int(tid.split("-")[1])
 
@@ -528,6 +545,16 @@ def _shards(n: int, per: int) -> int:
     return 0 if n == 0 else max(1, min(MAX_SHARDS, math.ceil(n / per)))
 
 
+# K-170（2026-11-11・決める人「チケットの時はチケットだけ。フォールバックもチケットごと」）：scope=auto は全部に倒さない。
+#   範囲を決められない理由は止める（組は流さない）。ほかの理由（CI の設定・部品の版・地図に無い・共通の部品・宣言なし）はチケットの範囲で続ける
+STOP_KINDS = {"requested", "base", "empty", "badpath", "ticket", "ticket-tests", "integration", "tool", "mismatch"}
+
+
+def _stop_plan(p: dict) -> dict:
+    return {**p, "mode": "scoped", "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0,
+            "unit_files": [], "migration_files": [], "coverage_args": ["--coverage.enabled=false"]}
+
+
 def _full_plan(p: dict) -> dict:
     return {**p, "mode": "full", "jobs": {"unit": True, "database": True, "web": True}, "db_range": True, "unit_shards": MAX_SHARDS,
             "unit_files": [], "coverage_args": []}
@@ -547,7 +574,12 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
                         + [f"日付だけ：{x}" for x in p["date_only"]]
                         + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
-        return _full_plan(p) if full else p
+        if scope == "full":
+            return _full_plan(p)
+        stops = [(c, d) for c, d in full if c in STOP_KINDS]
+        for c, d in stops:
+            p["errors"].append(f"範囲を決められない（{c}：{d}）。全部には倒さず止める")
+        return _stop_plan(p) if stops else p
 
     if scope not in ("auto", "full") or scope == "full":
         full.append(("requested", scope if scope in ("auto", "full") else "決まった形でない scope"))
@@ -593,6 +625,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                 full += [(cat, x) for cat in cats]
                 if pk:
                     changed_pk.add(pk)
+                    if "lockfile" in cats and not gone:
+                        whole_pk.add(pk)   # パッケージの package.json：そのパッケージと使い手の試験まで（D-133.7 ④）
                 continue
             for l in rules["data_links"]:
                 if match(x, l["paths"]):
@@ -654,8 +688,15 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
             full.append(("integration", f"{e} の tests が無い（何にも当たらない）"))
         direct.update(itests)
 
-    if full:
+    if any(c in STOP_KINDS for c, _ in full):
         return done()
+    if len(ids) == 1:
+        tt, miss = _ticket_tests(repo, tickets_dir, ids[0])
+        for g in miss:
+            full.append(("ticket-tests", f"{ids[0]} の tests: の {g} が何にも当たらない"))
+        if miss:
+            return done()
+        direct.update(t for t in tt if match(t, TEST_GLOBS))   # .py などは spec の組が流す
 
     # 試験を決める
     try:
@@ -803,7 +844,7 @@ def _decide(argv: list[str]) -> int:
             return sorted({t for v in got.values() for t in v} | set(db_tests_by_text(repo, rules)))
     p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt)
     red = bool(p["mismatches"] or p["errors"])
-    out = _full_plan(p) if red else p
+    out = _stop_plan(p) if red else p   # K-170：赤でも全部に倒さず、組を流さない
     if a.github_output:
         gh_output(a.github_output, outputs(out))
     show = {**out, "changes": [c._asdict() for c in p["changes"]]}

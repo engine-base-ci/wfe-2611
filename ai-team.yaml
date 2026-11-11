@@ -109,7 +109,7 @@ results:
   ledger: 07_qa/test-plan/result-ledger.json # まだ流し直していない印の無い PASS（減らすだけ・流し直しは K-150）
 # CI に出す前の範囲の検査（2026-11-10・K-133 で affects の書き漏れと地図の抜けが CI まで行き、全部に倒れて 15 分を無駄にした）。
 #   state.py が impl → check の前に流す。範囲の道具の JSON の full_reasons の種類が block_kinds にあれば止める（このチケットのせいで全部に倒れる）。
-#   全部は大分類の最後の 1 回だけ（正本 §8.2）。種類は scripts/ci/ci_scope.py の頭の「全部に倒す理由」（2026-11-11・K-169：文の一部で当てるのをやめた）
+#   全部は大分類の最後の 1 回だけ（正本 §8.2）。種類は scripts/ci/ci_scope.py の頭の「止める理由」と「続ける理由」（2026-11-11・K-169：文の一部で当てるのをやめた）
 ci_scope:
   cmd: "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope auto --json"
   block_kinds: [unmapped, mismatch, no-declaration, ticket]
