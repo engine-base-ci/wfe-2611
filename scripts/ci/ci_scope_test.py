@@ -316,6 +316,8 @@ class FullTest(Base):
         self.assertIn(cat, {c for c, _ in p["full_reasons"]}, p["full_reasons"])
         self.assertTrue(p["jobs"]["unit"] and p["jobs"]["database"] and p["jobs"]["web"])
         self.assertEqual(p["unit_shards"], 6)
+        self.assertEqual(p["unit_files"], [])   # 全部は絞り込みの指定を渡さない（チケットの tests: も足さない）
+        self.assertEqual(p["coverage_args"], [])   # 全部は vitest.config.ts の coverage のまま
 
     def assert_ticket(self, p: dict, cat: str) -> None:   # 全部に倒さず、チケットの範囲で続ける
         self.assertEqual(p["mode"], "scoped", p["reasons"])
@@ -331,21 +333,23 @@ class FullTest(Base):
         self.assertEqual(p["unit_shards"], 0)
 
     def test_K107_CS_005_lockfile(self) -> None:
-        self.r.commit(pnpm_lock_yaml="lockfileVersion: '9.0'\n# 版を上げた\n")
+        self.r.commit(pnpm_lock_yaml="lockfileVersion: '9.0'\n# 版を上げた\n", **{"11_tickets__K-1.md": ticket("K-1", [], ["lockfile"])})
         self.assert_ticket(self.r.plan(), "lockfile")
 
     def test_K107_CS_006_package_json_in_package(self) -> None:
-        self.r.commit(apps__x__package_json=json.dumps({"name": "x", "version": "0.0.1"}))
+        self.r.commit(apps__x__package_json=json.dumps({"name": "x", "version": "0.0.1"}),
+                      **{"11_tickets__K-1.md": ticket("K-1", ["x"], ["lockfile"])})
         self.assert_ticket(self.r.plan(), "lockfile")
 
     def test_K107_CS_007_new_package(self) -> None:
-        self.r.commit(apps__n__package_json=pkg("n", []), apps__n__src__i_ts="export {};\n")
+        self.r.commit(apps__n__package_json=pkg("n", []), apps__n__src__i_ts="export {};\n",
+                      **{"11_tickets__K-1.md": ticket("K-1", ["n"], ["lockfile"])})
         p = self.r.plan()
         self.assert_ticket(p, "lockfile")
         self.assertIn("n", set(p["changed_packages"]))
 
     def test_K107_CS_008_ci_settings(self) -> None:
-        self.r.commit(**{".github__workflows__gate.yml": "name: gate\n"})
+        self.r.commit(**{".github__workflows__gate.yml": "name: gate\n", "11_tickets__K-1.md": ticket("K-1", [], ["ci"])})
         self.assert_ticket(self.r.plan(), "ci")
 
     def test_K107_CS_012_no_changes(self) -> None:
@@ -354,7 +358,7 @@ class FullTest(Base):
 
     def test_K107_CS_014_unmapped_root_file(self) -> None:
         # どのパッケージにも、no_test_paths にも、data_links にも無い。jobs.database.paths に当たっても地図には数えない（unmapped が先）
-        self.r.commit(**{"08_api__openapi.yaml": "openapi: 3.1.0\n"})
+        self.r.commit(**{"08_api__openapi.yaml": "openapi: 3.1.0\n", "11_tickets__K-1.md": ticket("K-1", [], [])})
         self.assert_ticket(self.r.plan(), "unmapped")
 
     def test_K107_CS_017_scope_full_input(self) -> None:
@@ -833,13 +837,40 @@ class TicketOnlyTest(Base):
         self.assertEqual(p["unit_files"], ["apps/x/test/main.test.ts"])
 
     def test_K170_CS_004_shared_part_runs_dependents_not_all(self) -> None:
-        self.r.commit("K-1 feat: b", packages__b__src__index_ts="export const b = 9;\n",
-                      **{"11_tickets__K-1.md": self.tk(tests="[]", affects=["b"])})
-        p = self.r.plan(tests={"packages/b/src/index.ts": ["packages/b/test/b.test.ts", "apps/w/test/page.test.ts"]})
+        # a は b と（b を通して）w に使われる＝共通の部品
+        self.r.commit("K-1 feat: a", packages__a__src__more_ts="export const m = 1;\n",
+                      **{"11_tickets__K-1.md": self.tk(tests="[]", affects=["a"], ci_wide=["shared"])})
+        p = self.r.plan(tests={"packages/a/src/more.ts": ["packages/b/test/b.test.ts", "apps/w/test/page.test.ts"]})
         self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertIn("shared", {c for c, _ in p["full_reasons"]})
         self.assertIn("apps/w/test/page.test.ts", p["unit_files"])
         self.assertNotIn("apps/x/test/main.test.ts", p["unit_files"])   # 関係の無い所は流さない
         self.assertNotEqual(p["unit_shards"], 6)
+
+    def test_K170_CS_009_ticket_tests_only_vitest_files(self) -> None:
+        # tests: の .py（scripts/ci の試験）は vitest に渡さない（spec の組が流す）。.ts だけを unit_files に
+        write(self.r.dir, "scripts/ci/x_test.py", "print(1)\n")
+        self.r.commit("K-1 chore: CI", **{".github__workflows__gate.yml": "name: gate\n",
+                                          "11_tickets__K-1.md": self.tk(tests="[scripts/ci/x_test.py, apps/x/test/main.test.ts]", ci_wide=["ci"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertEqual(p["unit_files"], ["apps/x/test/main.test.ts"])
+        self.assertEqual(p["errors"], [])
+
+    def test_K170_CS_010_ticket_tests_glob_without_match_stops(self) -> None:
+        self.r.commit("K-1 chore: CI", **{".github__workflows__gate.yml": "name: gate\n",
+                                          "11_tickets__K-1.md": self.tk(tests="[apps/x/test/nai*.test.ts]", ci_wide=["ci"])})
+        p = self.r.plan()
+        self.assertTrue(any("範囲を決められない（ticket-tests：" in e and "全部には倒さず止める" in e for e in p["errors"]), p["errors"])
+        self.assertEqual(p["jobs"], {"unit": False, "database": False, "web": False})
+
+    def test_K170_CS_011_package_json_runs_package_and_users(self) -> None:
+        self.r.commit("K-1 chore: 版", packages__b__package_json=json.dumps({"name": "b", "version": "0.0.2", "dependencies": {"a": "workspace:*"}}),
+                      **{"11_tickets__K-1.md": self.tk(tests="[]", affects=["b"], ci_wide=["lockfile"])})
+        p = self.r.plan(tests=[])
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertEqual(p["unit_files"], ["apps/w/test/flow.test.ts", "apps/w/test/page.test.ts", "packages/b/test/b.test.ts"])
+        self.assertNotIn("apps/x/test/main.test.ts", p["unit_files"])
 
     def test_K170_CS_005_undecidable_stops_not_full(self) -> None:
         cases = {
@@ -865,7 +896,7 @@ class TicketOnlyTest(Base):
             raise ci_scope.ToolError("vitest_related.mjs が 1 で終わった")
         p = self.r.plan(list_tests=boom)
         self.assertEqual(p["mode"], "scoped")
-        self.assertTrue(any("全部には倒さず止める" in e and "tool" in e for e in p["errors"]), p["errors"])
+        self.assertTrue(any(e.startswith("範囲を決められない（tool：") and e.endswith("全部には倒さず止める") for e in p["errors"]), p["errors"])
         self.assertEqual(p["unit_shards"], 0)
 
     def test_K170_CS_007_red_output_does_not_run_everything(self) -> None:

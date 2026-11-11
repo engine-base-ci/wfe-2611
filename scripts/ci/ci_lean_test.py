@@ -145,10 +145,10 @@ class ScopeTest(unittest.TestCase):
         self.assertEqual(p["spec_only"], ["05_flow/build_api.py"])
 
     def test_K156_CI_003_ci_settings_win_over_spec(self) -> None:
-        # scripts/ci/x.py は spec.paths にもあるが、full.ci が先（追えない変更は全部）
+        # scripts/ci/x.py は spec.paths にもあるが、full.ci が先。K-170：チケットの CI は全部に倒さない（理由は残す）
         self.r.commit("K-3 chore: 台本", **{"scripts__ci__x_py": "print(1)\n"})
         p = spec_plan(self.r)
-        self.assertEqual(p["mode"], "full")
+        self.assertNotEqual(p["mode"], "full")
         self.assertIn("ci", {c for c, _ in p["full_reasons"]})
         self.assertEqual(ci_scope.root_kind("scripts/ci/x.py", SPEC_RULES, str(self.r.dir)), "spec")   # 種類としては spec（順は plan が決める）
 
