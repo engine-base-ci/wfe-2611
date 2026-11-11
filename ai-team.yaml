@@ -108,15 +108,27 @@ results:
   report: [apps/web/pw-reports/k.json]
   ledger: 07_qa/test-plan/result-ledger.json # まだ流し直していない印の無い PASS（減らすだけ・流し直しは K-150）
 # CI に出す前の範囲の検査（2026-11-10・K-133 で affects の書き漏れと地図の抜けが CI まで行き、全部に倒れて 15 分を無駄にした）。
-#   state.py が impl → check の前に流す。block の文字を含む行が出たら止める（このチケットのせいで全部に倒れる）。全部は大分類の最後の 1 回だけ（正本 §8.2）
+#   state.py が impl → check の前に流す。範囲の道具の JSON の full_reasons の種類が block_kinds にあれば止める（このチケットのせいで全部に倒れる）。
+#   全部は大分類の最後の 1 回だけ（正本 §8.2）。種類は scripts/ci/ci_scope.py の頭の「全部に倒す理由」（2026-11-11・K-169：文の一部で当てるのをやめた）
 ci_scope:
-  cmd: "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope auto"
-  block: ["全部：unmapped", "全部：mismatch", "★ 食い違い", "全部：no-declaration", "全部：ticket"]
-  prechecks:
-    [
-      "python3 scripts/ci/ticket_order_gate.py",
-      "python3 scripts/tickets/build_index.py --check",
-      "python3 scripts/ci/trace_gate.py",
-      "git diff --name-only --diff-filter=d {base}...HEAD | grep -E '\\.(ts|tsx|mjs|json|yml|yaml|md)$' | xargs -r npx prettier --check",
-      "git diff --name-only --diff-filter=d {base}...HEAD | grep -E '\\.(ts|tsx|mjs)$' | xargs -r npx eslint",
-    ]
+  cmd: "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope auto --json"
+  block_kinds: [unmapped, mismatch, no-declaration, ticket]
+# CI の速い段（static・spec）を、CI に出す前に手元で同じに流す（スキルの local_jobs・2026-11-11・K-169）。
+#   前の prechecks（命令の一覧）は、同じ検査が static・spec の段に入っているので消した（取り込む順 G56・一覧・トレース・整形・lint）
+local:
+  workflow: .github/workflows/v3-gate.yml
+  jobs: [static, spec]
+  inputs: { scope: auto, base: "{base}", target: "{base_branch}" }
+  skip: [pnpm install, pip install, playwright install]
+  skip_steps: {}
+  deps_dirs: [node_modules, .venv]
+# 試験の 3 つの役の役 3（CI の記録で行が全部緑かを機械が判定・決める人 2026-11-10「この形で決める」）。
+#   judge の設定は K-167 が enabled: false のまま入れ、記録の出どころをそろえて true にするのは K-168（PM の判断 2026-11-10 21:59）。
+#   K-167 は本線を取り込むとき、judge: を 1 つにまとめる：K-167 の鍵にこの reason を残す（2 つ残さない・reason を落とすと doctor が赤）
+judge:
+  enabled: false
+  reason: "記録の出どころ（vitest・中間・node と python の試験）がまだ画面の試験だけ。true にするのは K-168（PM の判断 2026-11-10 21:59）。それまでは ran.py の記録の関門で見る"
+# 切ったチケットに書いていないファイルを実装で変えたら止める（スキルの scope_files_gate）。いつでも通す道：
+#   チケットを直すたびに作り直す一覧（build_index.py の生成物）と、決める人の答えの記録（2026-11-11・K-169）
+scope_files:
+  always: [11_tickets/tickets.json, 11_tickets/tickets.csv, 11_tickets/README.md, 01_hearing/decider-answers.jsonl]

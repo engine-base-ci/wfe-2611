@@ -872,3 +872,13 @@ K-156 の実測（.ai-team-out/K-156/r2/TS.md・act の回 20261110-060728-eedcd
 3. **普通の回の一本道**：static（62 秒）→ spec（207 秒：G27 72 秒・G57 範囲の台本の試験 38 秒・pnpm install 22 秒）→ unit（33 秒）が順に並ぶ。spec だけで 3.5 分ある","- [ ] 切る時点で、上の 3 つそれぞれの手（部品の置き場の使い回し〔act の台の側か workflow の側か〕・画面の組を分ける・spec の重い段を範囲で決まる組へ移すか並べる）を測って選び、決める人に目標の数を出してすり合わせる（このチケットの目標の数は、切る時点で決める）
 - [ ] 選んだ手を入れ、act の run.json の start/end で、全部の回と普通の回を K-156 の数（17.2 分・5.7 分）と並べて出す
 - [ ] チケットの CI（act）が緑"
+K-169,進め方の設定を新しいスキルの形に移す（判定の役 3 を使うか・範囲の止め方を理由の種類で・出す前の検査を CI の定義から・取り込む順の検査を決める）,課題,K-1,未着手,作る,2026-11-11,基盤・進め方の設定,"スキル ai-team-delivery を 2026-11-11 に直した（監査 W1・L-021）。新しいスキルは「無いと黙って外れる設定」を決めて書くまで止める。
+Kaname の設定は前の書き方のままなので、`state.py doctor` が赤 5 件、取り込みの台本（pm_merge.sh）は取り込む順の検査の設定（ci-gates.yaml の order:）が無くて止まる。
+このままでは**どのチケットも取り込めない**（割り込みの kind：blocks-current）。","- [ ] `python3 ~/.claude/skills/ai-team-delivery/scripts/state.py doctor --config ai-team.yaml` に、設定の決めていない・古い書き方の NG が 0 件（judge・ci_scope.block_kinds・ci_scope.block・ci_scope.prechecks・local）
+- [ ] judge は `enabled: false` と理由（judge の設定は K-167 が false のまま入れ、true にするのは K-168・PM の判断 2026-11-10 21:59）
+- [ ] ci_scope は `--json` を出す命令と `block_kinds: [unmapped, mismatch, no-declaration, ticket]`（今の block の 5 つの文字と同じ止め方：`★ 食い違い` は mismatch の行）
+- [ ] 出す前の検査は `local:`（v3-gate.yml の static・spec をそのまま手元で）。prechecks の命令の一覧は消す（同じ検査は static・spec の段に入っている）
+- [ ] ci-gates.yaml を置き、`order: {unused: <理由>}`（Kaname の取り込む順は scripts/ci/ticket_order_gate.py が CI の G56 で見る・スキルの order_gate との一本化は監査 #20 で決める人に聞く）
+- [ ] ci-gates.yaml を CI の範囲の地図の no_test_paths に足す（足さないと地図に無いファイルで CI が全部に倒れる）
+- [ ] scope_files.always に、チケットを直すたびに作り直す一覧（11_tickets/tickets.json・tickets.csv・README.md）と決める人の答えの記録（01_hearing/decider-answers.jsonl）を足す（スキルの雛形と同じ種類の道。足さないとチケットの文を直すだけで範囲の外として止まる）
+- [ ] 手元の CI の段（local_jobs で static・spec）が緑・チケットの CI（act）が緑"
