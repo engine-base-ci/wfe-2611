@@ -886,6 +886,16 @@ class TicketOnlyTest(Base):
         self.assertIn("lockfile", {c for c, _ in p["full_reasons"]})
         self.assertFalse(any(r.startswith("全部：") for r in p["reasons"]), p["reasons"])   # Q #8：続ける理由を「全部」と書かない
 
+    def test_K170_CS_014_ticket_web_tests_turn_on_web_job(self) -> None:
+        # チケットの tests: に画面の試験があれば、ci の類だけの変更でも web の組を流す（チケットの試験は必ず流す）
+        write(self.r.dir, "apps/web/tests/k1.spec.ts", "// 画面の試験\n")
+        self.r.commit("K-1 chore: CI", **{".github__workflows__gate.yml": "name: gate\n",
+                                          "11_tickets__K-1.md": self.tk(tests="[apps/web/tests/k1.spec.ts]", ci_wide=["ci"])})
+        p = self.r.plan()
+        self.assertEqual(p["mode"], "scoped", p["reasons"])
+        self.assertTrue(p["jobs"]["web"], p["jobs"])
+        self.assertEqual(p["errors"], [])
+
     def test_K170_CS_013_package_config_runs_package_and_users(self) -> None:
         # パッケージの中の tsconfig・playwright.config（ci の類）は、そのパッケージと使い手まで（D-133.7 ④の当てはめ・PM の判断 2026-11-11）
         self.r.commit("K-1 chore: 設定", apps__w__tsconfig_json="{}\n",
