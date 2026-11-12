@@ -47,13 +47,14 @@ class FlowConfig(unittest.TestCase):
             self.assertTrue((ROOT / path).is_file(), path)
 
     def test_K174_CF_002_preflight_has_fast_checks(self):
+        # K-178 から：速い検査は CI の定義の組（preflight_jobs）をそのまま手元で流す。手の一覧（preflight）は部品を入れるだけ
         pre = [p.strip() for p in CFG.get("preflight") or []]
         self.assertTrue(any(p.startswith("pnpm install") for p in pre), "部品を入れる")
-        self.assertIn("pnpm -s lint", pre, "整形（命令そのもの）")
+        wf = yaml.safe_load((ROOT / ".github/workflows" / CFG["ci"]["workflow"]).read_text(encoding="utf-8"))
+        runs = pre + [str(s.get("run", "")) for j in CFG.get("preflight_jobs") or [] for s in wf["jobs"][j]["steps"]]
+        self.assertTrue(any(re.search(r"\bpnpm (-s )?lint\b", r) for r in runs), "整形")
         for need in ("generated_gate.py", "test_owner_gate.py", "ci_wiring_gate.py"):
-            self.assertTrue(any(re.fullmatch(rf"python3 scripts/ci/{re.escape(need)}( .*)?", p) for p in pre), f"出す前に流す：{need}")
-        for path in re.findall(r"scripts/[\w/.-]+\.(?:py|sh)", "\n".join(pre)):
-            self.assertTrue((ROOT / path).is_file(), path)
+            self.assertTrue(any(f"scripts/ci/{need}" in r for r in runs), f"出す前に流す：{need}")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
