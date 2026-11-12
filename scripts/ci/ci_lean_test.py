@@ -719,7 +719,7 @@ class TesterFindingsTest(unittest.TestCase):
         import yaml
         wf = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))
         paths = sorted({p.strip().rstrip("/") for j in wf["jobs"].values() for s in (j.get("steps") or [])
-                        if str(s.get("uses", "")).startswith("actions/upload-artifact")
+                        if str(s.get("uses", "")).startswith("actions/upload-artifact") and "path" in (s.get("with") or {})   # まとめる段（merge）は path を持たない・K-172
                         for p in str(s["with"]["path"]).split("\n") if p.strip()})
         self.assertIn("apps/web/playwright-report-skeleton", paths)
         for rel in paths:

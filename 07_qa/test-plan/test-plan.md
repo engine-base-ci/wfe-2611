@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 62 本（.github/workflows/v3-gate.yml）
+## CI ゲート 63 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -154,6 +154,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G60 | 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014） | `python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` | spec |  |
 | G63 | 決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146） | `python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base "$CI_ANSWERS_BASE" --target "$CI_TARGET_REF"` | spec |  |
 | G64 | 着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52） | `python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py` | spec |  |
+| G65 | CI の形の試験（自分の Mac の台・DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172） | `python3 scripts/ci/k172_ci_shape_test.py` | spec |  |
 | G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"` | spec |  |
 
 ## マージ可能の判断

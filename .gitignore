@@ -34,3 +34,5 @@ __pycache__/
 # ai-team-delivery の状態と出力（版に入れない・D-129.20）
 .ai-team/
 .ai-team-out/
+# CI の JUnit の記録（K-172・artifact で出す）
+junit/

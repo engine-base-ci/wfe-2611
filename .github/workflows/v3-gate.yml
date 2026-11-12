@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 62 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 63 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
@@ -488,7 +488,7 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           CI_PY_TESTS: ${{ steps.scope.outputs.py_tests }}
-        run: python3 -c 'import json,os,subprocess,sys; f=json.loads(os.environ.get("CI_PY_TESTS") or "[]"); sys.exit(subprocess.call([sys.executable,"scripts/ci/junit_unittest.py","--out","junit/spec-py.xml",*f]))'
+        run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
       - name: "G27 層の棚卸し（G21）"
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',27,')) }}
         env:
@@ -553,6 +553,9 @@ jobs:
       - name: "G64 着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
+      - name: "G65 CI の形の試験（自分の Mac の台・DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172）"
+        if: ${{ !cancelled() }}
+        run: python3 scripts/ci/k172_ci_shape_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:

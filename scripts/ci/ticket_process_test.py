@@ -139,7 +139,7 @@ class RepoTest(unittest.TestCase):
         self.assertEqual(len(scope), 1, "spec の段の中の scope の段（K-143）")
         run = steps[am[0]]["run"]
         self.assertRegex(run, r'answers_merge\.py check 01_hearing/decider-answers\.jsonl --base "\$CI_ANSWERS_BASE" --target "\$CI_TARGET_REF"')
-        self.assertEqual(steps[am[0]]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target}}")
+        self.assertEqual(steps[am[0]]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target||github.event.repository.default_branch}}")   # K-172：空なら既定の枝
         self.assertNotRegex(run, r"\$\{\{")
         self.assertEqual(steps[am[0]]["env"]["CI_ANSWERS_BASE"].replace(" ", ""), "${{steps.%s.outputs.base}}" % scope[0]["id"])
         self.assertIn("python3 scripts/ci/ticket_process_test.py", "\n".join(st.get("run", "") for st in steps))

@@ -33,6 +33,7 @@ ON = WF.get("on", WF.get(True))   # YAML 1.1 は on を真偽に読むことが�
 UNIT = [f"unit-{i}" for i in range(1, 7)]
 DB_JOBS = ["database", "spec", "web"] + UNIT
 JUNIT_JOBS = UNIT + ["spec", "web"]
+RELEASE = yaml.safe_load((ROOT / ".github" / "workflows" / "release-gate.yml").read_text(encoding="utf-8"))["jobs"]
 # 重い検査は組と名前の頭で特定する（G27 の番号は static にも別の段がある）
 HEAVY = {"27": ("spec", "G27 層の棚卸し"), "36": ("database", "G36 "), "38": ("spec", "G38 "), "47": ("spec", "G47 "),
          "56": ("spec", "G56 "), "57": ("spec", "G57 "), "62": ("spec", "G62 ")}
@@ -48,7 +49,7 @@ def text(job: str) -> str:
 
 class Shape(unittest.TestCase):
     def test_K172_CI_001_all_jobs_on_self_hosted_mac(self):
-        for name, job in JOBS.items():
+        for name, job in list(JOBS.items()) + [(f"release-gate/{k}", v) for k, v in RELEASE.items()]:
             with self.subTest(name):
                 self.assertEqual(job["runs-on"], ["self-hosted", "macOS"])
 
@@ -212,7 +213,15 @@ class ScopeScript(unittest.TestCase):
                                        "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: [scripts/ci/k9_test.py]\n---\n"})
         out = ci_scope.outputs(self.plan(ticket="K-9"))
         self.assertIn("scripts/ci/k9_test.py", json.loads(out["py_tests"]))
-        self.assertIn("py_tests", text("spec"))
+        scope = [s for s in steps("spec") if s.get("id") == "scope"]
+        self.assertEqual(len(scope), 1)
+        self.assertIn("ci_scope.py", scope[0]["run"])
+        run = [s for s in steps("spec") if "py_tests" in str(s.get("env", ""))]
+        self.assertEqual(len(run), 1, "py_tests を読む段は 1 つ")
+        self.assertIn("steps.scope.outputs.py_tests", str(run[0]["env"]))
+        self.assertIn("scripts/ci/junit_unittest.py", run[0]["run"])
+        self.assertIn("CI_PY_TESTS", run[0]["run"], "読んだ py_tests を junit_unittest.py に渡す")
+        self.assertIn("!cancelled()", str(run[0].get("if")))
 
 
 class WebCleanup(unittest.TestCase):

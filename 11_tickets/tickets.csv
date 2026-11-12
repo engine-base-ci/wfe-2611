@@ -891,7 +891,7 @@ K-170,チケットの CI を全部に倒さない（scope=auto はどんな変�
 - [ ] 試験 K170-CS-001〜014 と ci_lean_test.py の K156-CI-003（中間の試験が空・改行を含むパスで止めるのは K107-CS-041・058・049 の直した行が受ける） が緑・ci_scope_test.py の残りの行が緑・チケットの CI が緑（このチケット自身も全部に倒れない）"
 K-172,CI を ticket-flow の形にする（自分の Mac の台・DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録）,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"CI を GitHub Actions に移し、自分の Mac の self-hosted runner で流す（決める人 2026-11-12・answer=871f1796a76a・0702e79f90b8）。
 手元の act では 1 本 15 分、GitHub の台では約 4 分だった（K-170 の実測）。台は Mac に、検査はチケットの範囲だけにして、さらに縮める。
-ticket-flow（~/.claude/skills/ticket-flow）の CI の契約（references/ci-contract.md）に合わせる。","- [ ] 全部の組が `runs-on: [self-hosted, macOS]`
+ticket-flow（~/.claude/skills/ticket-flow）の CI の契約（references/ci-contract.md）に合わせる。","- [ ] 全部の組（v3-gate.yml と release-gate.yml）が `runs-on: [self-hosted, macOS]`
 - [ ] DB は組の中で立てる：容れ物の名前に回と組の印・番号は空いているもの（決め打ちしない・直書きしない）・pg_isready で待ち時間切れは赤・終わったら必ず消す。DATABASE_URL は GITHUB_ENV だけで渡す（`services:` を使わない）
 - [ ] Python の部品は台に置いた venv（scripts/ci/ci_venv.sh・回をまたいで使い回す）。組の中で `pip install` しない・`setup-python` を使わない
 - [ ] 回の間の物は `$RUNNER_TEMP` に置く（`/tmp` を使わない）

@@ -1052,7 +1052,7 @@ class RealRepoTest(unittest.TestCase):
         on = wf.get("on", wf.get(True))   # PyYAML は on を True と読む
         inputs = on["workflow_dispatch"]["inputs"]
         self.assertEqual(inputs["scope"]["default"], "full")   # GitHub で手で押したとき・入力を渡さないときは全部
-        self.assertEqual(set(inputs["scope"]["options"]), {"full", "auto"})
+        self.assertEqual(set(inputs["scope"]["options"]), {"full", "ticket"})   # K-172：ticket-flow の入口
         self.assertIn("base", inputs)
         jobs = wf["jobs"]
         # ★外から来る値（inputs・組の出力）を run の命令の文字に直に入れない。env に渡し、台本が読む（命令の注入を防ぐ）
@@ -1060,8 +1060,8 @@ class RealRepoTest(unittest.TestCase):
             for st in job.get("steps", []):
                 run = st.get("run", "")
                 self.assertNotRegex(run, r"\$\{\{\s*(inputs\.|needs\.static\.outputs\.|steps\.scope\.outputs\.)", f"{name}: {st.get('name')}")
-        scope = jobs["static"]["steps"][4]
-        self.assertEqual(scope.get("id"), "scope")   # install の直後・lint より前
+        scope = jobs["static"]["steps"][5]
+        self.assertEqual(scope.get("id"), "scope")   # install と Python の部品（ci_venv.sh・K-172）の直後・lint より前
         self.assertIn("inputs.scope", scope["env"]["CI_SCOPE_INPUT"])
         self.assertIn("inputs.base", scope["env"]["CI_BASE_INPUT"])
         for k in ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base"):

@@ -62,7 +62,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("files", nargs="*")   # 0 本なら空の記録を書く（チケットに Python の試験が無い回）
+    ap.add_argument("--files-json", default="", help="試験のファイルの JSON の並び（CI の範囲の台本の出力 py_tests）")
     a = ap.parse_args()
+    if a.files_json.strip():
+        import json  # noqa: PLC0415
+        a.files = [*a.files, *json.loads(a.files_json)]
     suites = ET.Element("testsuites")
     bad = 0
     for f in a.files:

@@ -413,7 +413,7 @@ class RepoTest(unittest.TestCase):
         on = yaml.safe_load(wf).get("on") or yaml.safe_load(wf).get(True)
         self.assertIn("target", on["workflow_dispatch"]["inputs"], "workflow_dispatch に入力 target がある")
         self.assertRegex(run, r'--target-ref "\$CI_TARGET_REF"')
-        self.assertEqual(g61[0]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target}}")
+        self.assertEqual(g61[0]["env"]["CI_TARGET_REF"].replace(" ", ""), "${{inputs.target||github.event.repository.default_branch}}")   # K-172：空なら既定の枝
         step_text = json.dumps(g61[0], ensure_ascii=False)
         for f in (".act-ci.env", "ai-team.yaml"):
             self.assertNotIn(f, step_text, f"取り込む先を枝の中の {f} から読まない")
