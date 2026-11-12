@@ -197,10 +197,16 @@ class Run(unittest.TestCase):
         self.assertEqual(sc59[0][-1], "tests/skeleton/m2.spec.ts")
         self.assertEqual(web_run.commands("g59", full=False, specs=[], tasks=[]), [])
         self.assertEqual(sum(1 for c in sc48 if "op_gate.py" in " ".join(c)), 1, "照らすのは 1 回")
-        for part in ("g48", "g59"):   # 範囲の回で一覧が空なのに web の組が動いた＝壊れている：黙って緑にしない
-            r = subprocess.run([sys.executable, str(HERE / "web_run.py"), part], cwd=ROOT, capture_output=True, text=True,
-                               env={**__import__("os").environ, "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_TASKS": "[]"})
+        import os
+        for part in ("g48", "g59"):
+            def run(other):
+                return subprocess.run([sys.executable, str(HERE / "web_run.py"), part], cwd=ROOT, capture_output=True, text=True,
+                                      env={**os.environ, "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_OTHER": other, "CI_WEB_TASKS": "[]"})
+            r = run("[]")   # 範囲の回で G48 も G59 も空なのに web の組が動いた＝壊れている：黙って緑にしない
             self.assertEqual(r.returncode, 1, part)
+            self.assertIn("空", r.stdout + r.stderr, f"{part}：赤の理由を出す")
+            r = run('["apps/web/tests/k/showcase.spec.ts"]')   # もう片方の段には流す物がある：この段は流さず 0
+            self.assertEqual(r.returncode, 0, part + r.stdout + r.stderr)
         e48, e59 = web_run.env_for("g48", {"X": "1"}), web_run.env_for("g59", {"PLAYWRIGHT_JUNIT_OUTPUT_NAME": "/w/junit/web-skeleton.xml"})
         self.assertEqual(e48["PW_REPORT"], "pw-reports/k.json", "op_gate と ci_results が読む報告")
         self.assertEqual((e59["PW_REPORT"], e59["PLAYWRIGHT_HTML_OUTPUT_DIR"]), ("pw-reports/skeleton.json", "playwright-report-skeleton"))
@@ -249,6 +255,8 @@ class Workflow(unittest.TestCase):
             env = s.get("env") or {}
             self.assertIn(f"needs.static.outputs.{key}", str(env.get("CI_WEB_SPECS")), g)
             self.assertIn("needs.static.outputs.full", str(env.get("CI_FULL")), g)
+            other = "web_g59" if g == "G48" else "web_g48"
+            self.assertIn(f"needs.static.outputs.{other}", str(env.get("CI_WEB_OTHER")), f"{g}：もう片方の段の一覧も渡す")
         self.assertIn("needs.static.outputs.web_tasks", str((steps["G48"].get("env") or {}).get("CI_WEB_TASKS")))
 
 
