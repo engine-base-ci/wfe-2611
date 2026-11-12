@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:91235ca1d3649d47
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:c245a36bac6d984b
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -88,7 +88,7 @@ export type Credentials = { service_id?: string | null; service_name?: string | 
 export type CredentialsInput = { service_id?: string | null; service_name?: string | null; service_domain?: string | null; kind_id?: string | null; provider_id?: string; owner_member_id?: string | null; revoked_at?: string | null };
 export type Conversations = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null; deleted_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; scope_id?: string; updated_by?: string | null };
 export type ConversationsInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
-export type BridgeJobs = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; credential_id?: string | null; deleted_at?: string | null; kind?: string; scope_id?: string | null; stop_requested_at?: string | null; taken_session_id?: string | null; updated_by?: string | null };
+export type BridgeJobs = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; credential_id?: string | null; deleted_at?: string | null; kind?: string; resume_session_id?: string | null; scope_id?: string | null; stop_requested_at?: string | null; taken_session_id?: string | null; updated_by?: string | null };
 export type BridgeJobsInput = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null };
 export type BridgeJobStates = { key?: string; label?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type BridgeJobStatesInput = { key?: string; label?: string };
@@ -301,6 +301,7 @@ export type BridgeTakeInput = { wait_sec?: number; protocol?: number; idle?: boo
 export type BridgeProgressInput = { seq?: number; kind: string; text?: string; agent_session_id?: string; model?: string; tool?: unknown; usage?: unknown; todos?: unknown; windows?: unknown; blocked?: unknown };
 export type BridgeFinishInput = { state: string; result?: string; reason?: string; agent_session_id?: string };
 export type BridgeToolInput = { input?: unknown };
+export type ApprovalApproveInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
@@ -338,12 +339,13 @@ export type BridgeClaim = { device_token?: string; device_id?: string; member_id
 export type BridgeReleaseLink = { url?: string; expires_at?: string };
 export type BridgeHeartbeat = { ok?: boolean; browser?: string | null; outdated?: boolean };
 export type BridgeDevice = { id?: string; device_label?: string | null; state?: string; last_seen_at?: string | null; connected_at?: string; version?: string | null; health?: string[]; revoke_reason?: string | null };
-export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown> };
+export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null };
 export type TicketKindChoice = { id?: string; name?: string; color?: string | null; position?: number; is_builtin?: boolean; sections?: string[] };
 export type TicketDraft = { draft_id?: string; body?: Record<string, unknown> | null; saved_at?: string | null };
 export type BridgeJob = { job?: Record<string, unknown> | null; forbidden_domains?: string[]; next_ms?: number; outdated?: boolean };
 export type JobControl = { stop?: boolean; reason?: string | null; steers?: string[] };
 export type TicketDelegation = { run_id?: string; job_id?: string; status?: string; pc?: string };
+export type ApprovalDecided = { id?: string; decision?: string; decided_at?: string; status_id?: string; ticket_id?: string; run_id?: string; pc?: string };
 export type BridgeFinish = { ok?: boolean; outcome?: string };
 export type BridgeToolResult = { result?: Record<string, unknown> | null };
 export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; checks?: Record<string, unknown> };

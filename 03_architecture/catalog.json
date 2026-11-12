@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 32,
+  "api_built": 33,
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
@@ -129,7 +129,7 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-162"
    ]

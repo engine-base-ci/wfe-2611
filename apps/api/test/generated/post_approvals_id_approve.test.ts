@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/approvals/:id/approve", () => {
   it("test_post_approvals_id_approve_ok", () => {
-    // EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/approve が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認つき）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
+    // EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/approve が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認は取り直さない・D-128.177）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
     // 本物の試験：apps/api/test/features/F5/approve-complete-approve.test.ts の「K63-API-002」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-approve.test.ts", "utf8")).toContain("K63-API-002");
   });
@@ -15,10 +15,17 @@ describe("POST /api/v1/approvals/:id/approve", () => {
   it.todo("test_post_approvals_id_approve_rejected_403");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_post_approvals_id_approve_not_found");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+  it("test_post_approvals_id_approve_conflict", () => {
+    // UNWANTED: IF もう処理された承認がもう一度来たら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない
+    // 本物の試験：apps/api/test/features/F5/approve-complete-approve.test.ts の「K63-API-016」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-approve.test.ts", "utf8")).toContain("K63-API-016");
+  });
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない
   it.todo("test_post_approvals_id_approve_rejected_422");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない
   it.todo("test_post_approvals_id_approve_rejected_422_2");
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
+  it.todo("test_post_approvals_id_approve_unavailable");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
   it.todo("test_post_approvals_id_approve_too_large");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す

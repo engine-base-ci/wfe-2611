@@ -301,7 +301,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-CONF-003": {
     "id": "E-CONF-003",
     "cls": "conflict",
-    "message": "この承認はもう処理されています（山田さんが 1 分前に承認）",
+    "message": "この承認はもう処理されています",
     "action": "動きを見る",
     "undo": false,
     "severity": "critical",

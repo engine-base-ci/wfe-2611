@@ -519,6 +519,8 @@ INPUTS = {
     # 返事・結果・途中の様子の文は自由に書く欄で、契約の形に上限を置かない（D-130.1・守りは入口の送る量 1MB）。result だけは口が 200000 字で断る（VALUE_RANGES）。途中の様子の文は口が 200000 字（返事）・400 字（1 行）に切る（人が書く欄でない Bridge の知らせ）。止まった理由（reason）は上限を置かない（D-130.4）。agent_session_id は Claude Code のセッションの id（uuid・D-129.42）
     "finishBridgeJob": ("BridgeFinishInput", {"state": "string", "result": "string", "reason": "string", "agent_session_id": "uuid"}),
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
+    # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
+    "approveApproval": ("ApprovalApproveInput", {}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -540,6 +542,21 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    # 承認する（K-162）。決まった・取り下げた承認（409・E-CONF-003）・入力の 422（体に知らない欄・id が uuid でない）・守りの判定で例外（503・E-PAGE-003）
+    "approveApproval": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-003"}, "errors": ["E-CONF-003"],
+         "trigger": "もう決まった（承認・差し戻し）か取り下げた承認をもう一度承認する",
+         "ears_form": "UNWANTED: IF もう処理された承認がもう一度来たら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "本文に知らない欄（承認の体は空のオブジェクト・strict）",
+         "ears_form": "UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "承認の id が uuid でない",
+         "ears_form": "UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか）の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
+    ],
     # AI に任せる（K-62・D-128.138）。PC をつないでいない（積まない）・走っている実行がある（今の run_id）・承認待ち／完了。冪等キーは汎用のまま
     "delegateTicket": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-013", "run_id": ""}, "errors": ["E-CONN-001", "E-CONF-013", "E-CONF-014"],
@@ -754,7 +771,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object"}),
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
@@ -762,6 +779,8 @@ RESPONSES = {
     "takeBridgeJob": ("BridgeJob", {"job": "object?", "forbidden_domains": "array", "next_ms": "integer", "outdated": "boolean"}),
     "getJobControl": ("JobControl", {"stop": "boolean", "reason": "string?", "steers": "array"}),   # 止める理由が無ければ null（K-62・Q2 回 2）
     "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
+    # K-162：承認した答え（pc は任せた人の PC が 75 秒以内に知らせていれば live・K-62 と同じ式）。差し戻し（K-163）も同じ形
+    "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string", "decided_at": "string", "status_id": "string", "ticket_id": "string", "run_id": "string", "pc": "string"}),
     "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
     "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
     # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。
@@ -946,7 +965,7 @@ PERMS = {
     # 承認待ち
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
-    "approveApproval": ("approver", "承認する人だけ。取り消せない操作は直前の本人確認", "irreversible"),
+    "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
     "editApproval": ("approver", "承認する人", False),
     "returnApproval": ("approver", "承認する人（理由が必須）", False),
     "stopApproval": ("approver", "承認する人・担当者・マネージャー", False),

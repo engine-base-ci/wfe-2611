@@ -3,7 +3,7 @@
 import { describe, it } from "vitest";
 
 describe("POST /api/v1/approvals/:id/stop", () => {
-  // EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/stop が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認つき）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
+  // EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/stop が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認は取り直さない・D-128.177）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
   it.todo("test_post_approvals_id_stop_ok");
   // EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/stop が「止める／取り下げる」として呼ばれたとき THEN Kaname は「止めた記録を残す」を行い 2xx を返す
   it.todo("test_post_approvals_id_stop_ok_2");

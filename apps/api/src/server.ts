@@ -157,7 +157,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...ticketHooks(appPool),
         // AI に任せる（K-62）。getTicket は K-60 の詳細に can.delegate を足したものに置き換わる
         ...delegateHooks(appPool),
-        // 承認して完了する（K-63 の孫）。K-161 は承認待ちの一覧と 1 件
+        // 承認して完了する（K-63 の孫）。K-161 は承認待ちの一覧と 1 件・K-162 は承認する
         ...approveHooks(appPool),
       },
     },

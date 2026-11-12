@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 
 describe("GET /api/v1/approvals/queue", () => {
   it("test_get_approvals_queue_ok", () => {
-    // EVENT-DRIVEN: WHEN GET /api/v1/approvals/queue が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認つき）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
+    // EVENT-DRIVEN: WHEN GET /api/v1/approvals/queue が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認は取り直さない・D-128.177）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す
     // 本物の試験：apps/api/test/features/F5/approve-complete-queue.test.ts の「K63-API-001」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-queue.test.ts", "utf8")).toContain("K63-API-001");
   });
