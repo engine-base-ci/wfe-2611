@@ -385,12 +385,27 @@ class RepoTest(unittest.TestCase):
         wf = (ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8")
         jobs = yaml.safe_load(wf)["jobs"]
         web = "\n".join(st.get("run", "") for st in jobs["web"]["steps"])
-        i_e2e = web.find("e2e:k")
-        i_rec = web.find("scripts/ci/ci_results.py record", i_e2e)
-        i_op = web.find("scripts/ci/op_gate.py", i_e2e)
-        self.assertGreater(i_rec, i_e2e, "e2e:k の後に record")
-        self.assertGreater(i_op, i_rec, "record の後に op_gate")
-        self.assertRegex(web, r"op_gate\.py[^\n]*--pending-from-report")
+        if "scripts/ci/web_run.py g48" in web:   # K-177：G48 の命令は web_run.py が組み立てる（全部の回・範囲の回の両方で順を見る）
+            import sys  # noqa: PLC0415
+            sys.path.insert(0, str(ROOT / "scripts/ci"))
+            import web_run  # noqa: PLC0415
+            for cmds in (web_run.commands("g48", full=True, specs=[], tasks=[]),
+                         web_run.commands("g48", full=False, specs=["apps/web/tests/k/showcase.spec.ts"], tasks=["K-36"])):
+                web = "\n".join(" ".join(c) for c in cmds)
+                i_e2e = max(web.find("e2e:k"), web.find("playwright test"))
+                i_rec = web.find("scripts/ci/ci_results.py record", i_e2e)
+                i_op = web.find("scripts/ci/op_gate.py", i_e2e)
+                self.assertGreaterEqual(i_e2e, 0, "試験を流す")
+                self.assertGreater(i_rec, i_e2e, "試験の後に record")
+                self.assertGreater(i_op, i_rec, "record の後に op_gate")
+                self.assertRegex(web, r"op_gate\.py[^\n]*--pending-from-report")
+        else:
+            i_e2e = web.find("e2e:k")
+            i_rec = web.find("scripts/ci/ci_results.py record", i_e2e)
+            i_op = web.find("scripts/ci/op_gate.py", i_e2e)
+            self.assertGreater(i_rec, i_e2e, "e2e:k の後に record")
+            self.assertGreater(i_op, i_rec, "record の後に op_gate")
+            self.assertRegex(web, r"op_gate\.py[^\n]*--pending-from-report")
         up = [st for st in jobs["web"]["steps"] if "upload-artifact" in str(st.get("uses", "")) and "07_qa/ci-results" in str(st.get("with", {}).get("path", ""))]
         self.assertEqual(len(up), 1, "web の段は記録（07_qa/ci-results）を artifacts に出す（取り込みの台本が写す元）")
         self.assertNotIn("failure()", str(up[0].get("if", "")), "記録は緑の回にこそ要る（落ちた回だけにしない）")

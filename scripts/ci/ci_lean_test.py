@@ -496,7 +496,15 @@ class WorkflowTest(unittest.TestCase):
         web = self.wf()["web"]
         g59 = [s for s in web["steps"] if str(s.get("name", "")).startswith("G59 ")]
         self.assertEqual(len(g59), 1)
-        self.assertIn("PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton", g59[0]["run"])
+        if "scripts/ci/web_run.py g59" in g59[0]["run"]:   # K-177：置き場は web_run.py が env で渡す
+            import sys  # noqa: PLC0415
+            sys.path.insert(0, str(ROOT / "scripts/ci"))
+            import web_run  # noqa: PLC0415
+            e59, e48 = web_run.env_for("g59", {}), web_run.env_for("g48", {})
+            self.assertEqual(e59["PLAYWRIGHT_HTML_OUTPUT_DIR"], "playwright-report-skeleton")
+            self.assertNotEqual(e59["PW_REPORT"], e48["PW_REPORT"], "G59 の報告が G48 の報告を上書きしない")
+        else:
+            self.assertIn("PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton", g59[0]["run"])
 
     def test_K156_CI_037_squawk_step_knows_base(self) -> None:
         db = self.wf()["database"]
