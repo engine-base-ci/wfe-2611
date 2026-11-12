@@ -189,7 +189,9 @@ DB_STOP = """      - name: DB を消す（赤でも必ず）
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
 """
 # Python の部品は台に置いた venv（回をまたいで使い回す・組の中で pip install しない）
-VENV = "      - run: bash scripts/ci/ci_venv.sh\n"
+VENV = ("      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）\n"
+        "        with: { python-version: '3.14' }\n"
+        "      - run: bash scripts/ci/ci_venv.sh\n")
 def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
         if: always()
         with: {{ name: junit-{job}, path: junit/, if-no-files-found: error, retention-days: 7 }}
@@ -197,7 +199,7 @@ def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
 NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）\n      - run: pnpm install --frozen-lockfile\n" + VENV
 PYS = "      - uses: actions/checkout@v4\n" + VENV
 UNIT_JOBS = "".join(f"""  unit-{i}:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{{{ {unit_if(i)} }}}}
@@ -210,7 +212,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
         if: ${{{{ !cancelled() }}}}
         with: {{ name: vitest-blob-{i}, path: {UNIT_DIR}/, include-hidden-files: true, retention-days: 1 }}
 {junit_up(f"unit-{i}")}{DB_STOP}""" for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
     needs: [static, {", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
     if: ${{{{ !cancelled() }}}}
@@ -254,17 +256,17 @@ env:
   PNPM_VERSION: '10'
 jobs:
   static:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
 {SCOPE_OUTPUTS}    steps:
 {NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}
   database:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     needs: [static]
     if: ${{{{ !cancelled() && {SO}.database == 'true' }}}}
     steps:
 {NODE}{DB_START}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}{DB_STOP}
 {UNIT_JOBS}  spec:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
     #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばさない（K-143）のは if の !cancelled() で守る。
     #   G61 が要る本線との分かれ目（base）は、この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
@@ -279,7 +281,7 @@ jobs:
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{junit_up("spec")}{DB_STOP}
   task-gate:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
     needs: [spec]
     steps:
@@ -287,7 +289,7 @@ jobs:
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
   web:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     if: ${{{{ !cancelled() && {SO}.web == 'true' }}}}
@@ -357,7 +359,7 @@ jobs:
           # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
 {DB_STOP}  junit:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
     needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, spec, web]
     if: always()
@@ -365,7 +367,7 @@ jobs:
       - uses: actions/upload-artifact/merge@v4
         with: {{ name: junit, pattern: junit-*, delete-merged: false }}
   e2e:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')
     needs: [static, database, unit, spec]
     env:
@@ -376,7 +378,7 @@ jobs:
         if: failure()
         with: {{ name: playwright-report, path: apps/web/playwright-report/ }}
   auto-merge:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     needs: [static, database, unit, spec, task-gate]
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
     permissions: {{ contents: write, pull-requests: write }}
@@ -402,7 +404,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   release-gate:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     steps:
 {NODE}      - name: "ゼロトラストの実装の残りが 0（--strict）"
         run: pnpm ci:zt:strict

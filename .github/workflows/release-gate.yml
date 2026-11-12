@@ -12,7 +12,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   release-gate:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -21,6 +21,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: "ゼロトラストの実装の残りが 0（--strict）"
         run: pnpm ci:zt:strict

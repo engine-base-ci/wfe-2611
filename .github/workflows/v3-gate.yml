@@ -33,7 +33,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   static:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     outputs:
       full: ${{ steps.scope.outputs.full }}
       unit: ${{ steps.scope.outputs.unit }}
@@ -54,6 +54,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"
         id: scope
@@ -157,7 +159,7 @@ jobs:
         run: pnpm ci:resource-static
 
   database:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.database == 'true' }}
     steps:
@@ -168,6 +170,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -207,7 +211,7 @@ jobs:
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
 
   unit-1:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 1/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' }}
@@ -219,6 +223,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -246,7 +252,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit-2:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 2/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 2 }}
@@ -258,6 +264,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -285,7 +293,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit-3:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 3/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 3 }}
@@ -297,6 +305,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -324,7 +334,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit-4:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 4/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 4 }}
@@ -336,6 +346,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -363,7 +375,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit-5:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 5/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 5 }}
@@ -375,6 +387,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -402,7 +416,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit-6:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 単体の試験の 6/6（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.unit == 'true' && fromJSON(needs.static.outputs.unit_shards) >= 6 }}
@@ -414,6 +428,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -441,7 +457,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   unit:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
     needs: [static, unit-1, unit-2, unit-3, unit-4, unit-5, unit-6]
     if: ${{ !cancelled() }}
@@ -453,6 +469,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - uses: actions/download-artifact@v4
         if: ${{ needs.static.outputs.unit == 'true' }}
@@ -471,7 +489,7 @@ jobs:
           [ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }
           python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report .vitest-reports/merged.json
   spec:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
     #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばさない（K-143）のは if の !cancelled() で守る。
     #   G61 が要る本線との分かれ目（base）は、この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
@@ -486,6 +504,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -589,11 +609,13 @@ jobs:
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
 
   task-gate:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
     needs: [spec]
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
         run: echo "TASK_ID=${{ github.head_ref }}" | sed 's#task/##' >> "$GITHUB_ENV"
@@ -602,7 +624,7 @@ jobs:
         run: python3 scripts/ci/qa-ladder.py gate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json --task "$TASK_ID"
 
   web:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     if: ${{ !cancelled() && needs.static.outputs.web == 'true' }}
@@ -634,6 +656,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
@@ -694,7 +718,7 @@ jobs:
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
   junit:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
     needs: [unit-1, unit-2, unit-3, unit-4, unit-5, unit-6, spec, web]
     if: always()
@@ -702,7 +726,7 @@ jobs:
       - uses: actions/upload-artifact/merge@v4
         with: { name: junit, pattern: junit-*, delete-merged: false }
   e2e:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     if: contains(github.event.pull_request.labels.*.name, 'has-ui')
     needs: [static, database, unit, spec]
     env:
@@ -715,6 +739,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
       - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
       - name: "G15 E2E（Playwright）"
@@ -724,7 +750,7 @@ jobs:
         if: failure()
         with: { name: playwright-report, path: apps/web/playwright-report/ }
   auto-merge:
-    runs-on: [self-hosted, macOS]
+    runs-on: [self-hosted, linux-vm]
     needs: [static, database, unit, spec, task-gate]
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
     permissions: { contents: write, pull-requests: write }
