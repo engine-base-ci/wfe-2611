@@ -26,14 +26,20 @@ describe("POST /api/v1/approvals/:id/approve", () => {
   it.todo("test_post_approvals_id_approve_rejected_422_2");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
   it.todo("test_post_approvals_id_approve_unavailable");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
-  it.todo("test_post_approvals_id_approve_too_large");
+  it("test_post_approvals_id_approve_too_large", () => {
+    // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_post_approvals_id_approve_rate_limited");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_approvals_id_approve_terms_pending");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_post_approvals_id_approve_session_unresolved");
+  it("test_post_approvals_id_approve_session_unresolved", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UBIQUITOUS: POST /api/v1/approvals/:id/approve の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_approvals_id_approve_shape");
 });

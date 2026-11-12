@@ -10197,12 +10197,16 @@ components:
           type: string
         decision:
           type: string
+          nullable: true
         decided_at:
           type: string
+          nullable: true
         status_id:
           type: string
+          nullable: true
         ticket_id:
           type: string
+          nullable: true
         run_id:
           type: string
         pc:
