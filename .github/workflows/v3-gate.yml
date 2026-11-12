@@ -59,6 +59,7 @@ jobs:
         env:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
+          CI_TICKET_INPUT: ${{ inputs.ticket }}
         run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G1 lint"
         if: ${{ !cancelled() }}
@@ -169,6 +170,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -218,6 +220,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -255,6 +258,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -292,6 +296,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -329,6 +334,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -366,6 +372,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -403,6 +410,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -472,6 +480,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -618,6 +627,7 @@ jobs:
       - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -666,8 +676,9 @@ jobs:
       - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
         if: always()
         run: |
-          for f in "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"; do [ -f "$f" ] && pkill -P "$(cat "$f")" 2>/dev/null; [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null; done
-          true
+          bash scripts/ci/kill_tree.sh "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"   # 孫以下（node・next-server）まで
+          # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
+          for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
       - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true

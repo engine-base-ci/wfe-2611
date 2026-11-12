@@ -142,7 +142,7 @@ UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が�
               '[ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }\n'
               f"python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report {UNIT_DIR}/merged.json\n")
 SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
-              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n"
+              "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
               '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 # spec の段が自分で出す本線との分かれ目（static を待たないため。入力は static の G0 と同じ・値は env で渡す・K-143）
 SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"\n        id: scope\n'
@@ -177,6 +177,7 @@ def pg(port):
 DB_START = """      - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
+          python3 scripts/ci/ci_db_sweep.py --keep "$PG_NAME"   # 台が落ちた回の残りを消す（6 時間を過ぎた kaname-ci- だけ）
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
           for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
@@ -352,8 +353,9 @@ jobs:
 {junit_up("web")}      - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
         if: always()
         run: |
-          for f in "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"; do [ -f "$f" ] && pkill -P "$(cat "$f")" 2>/dev/null; [ -f "$f" ] && kill "$(cat "$f")" 2>/dev/null; done
-          true
+          bash scripts/ci/kill_tree.sh "$RUNNER_TEMP/api.pid" "$RUNNER_TEMP/web.pid"   # 孫以下（node・next-server）まで
+          # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
+          for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
 {DB_STOP}  junit:
     runs-on: [self-hosted, macOS]
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
