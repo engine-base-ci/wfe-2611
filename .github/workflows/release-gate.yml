@@ -12,7 +12,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   release-gate:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS]
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -20,6 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
       - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci/ci_venv.sh
       - name: "ゼロトラストの実装の残りが 0（--strict）"
         run: pnpm ci:zt:strict
       - name: "権限の試験（契約の全 API）"

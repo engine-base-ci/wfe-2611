@@ -560,12 +560,22 @@ def _full_plan(p: dict) -> dict:
             "unit_files": [], "coverage_args": []}
 
 
+def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
+    """重い検査（決まり gates：番号 → 関係するファイルの glob）のうち、流すもの（K-172）。全部の回は全部"""
+    g = rules.get("gates") or {}
+    if full:
+        return sorted(g, key=int)
+    return sorted((k for k, globs in g.items() if any(match(x, globs) for x in changes)), key=int)
+
+
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
-         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list]) -> dict:
+         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "") -> dict:
+    if scope == "ticket":
+        scope = "auto"   # K-172：ticket-flow の入口の名前。絞り方は auto と同じ
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
                "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
-               "migration_files": [], "coverage_args": [], "db_range": False}
+               "migration_files": [], "coverage_args": [], "db_range": False, "gates": [], "py_tests": []}
     full: list[tuple[str, str]] = p["full_reasons"]
 
     def done() -> dict:
@@ -574,6 +584,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
                         + [f"日付だけ：{x}" for x in p["date_only"]]
                         + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
+        p["gates"] = gates_for([c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old], rules, full=scope == "full")
         if scope == "full":
             return _full_plan(p)
         stops = [(c, d) for c, d in full if c in STOP_KINDS]
@@ -678,6 +689,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     p["tickets"] = ids
     if len(ids) != 1:
         full.append(("ticket", f"コミットのチケットの番号が {len(ids)} 個（{', '.join(ids) or 'なし'}）"))
+    elif ticket and ids != [ticket]:
+        full.append(("ticket", f"入力のチケット {ticket} とコミットのチケットの番号 {ids[0]} が違う"))
     else:
         mism, fr = _ticket_check(tickets_dir, ids[0], rules, changed_pk, {c for c, _ in wide})
         p["mismatches"] = mism
@@ -697,6 +710,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         if miss:
             return done()
         direct.update(t for t in tt if match(t, TEST_GLOBS))   # .py などは spec の組が流す
+        p["py_tests"] = sorted(t for t in tt if t.endswith(".py"))   # spec の組が junit_unittest.py で流す（K-172）
         p["ticket_web_tests"] = [t for t in tt if t.startswith(WEB_E2E_PREFIX)]   # 画面の試験は web の組が流す（K170-CS-014）
 
     # 試験を決める
@@ -749,7 +763,7 @@ REPORTS = ".vitest-reports"
 def unit_argv(files: list[str], shard: int, shards: int, coverage: list[str]) -> list[str]:
     return ["pnpm", "exec", "vitest", "run", *files, "--passWithNoTests", "--coverage", f"--shard={shard}/{shards}",
             "--reporter=default", "--reporter=blob", f"--outputFile.blob={REPORTS}/blob-{shard}-{shards}.json",
-            "--coverage.reporter=text-summary", *THRESH0, *coverage]
+            "--coverage.reporter=text-summary", "--reporter=junit", f"--outputFile.junit=junit/unit-{shard}.xml", *THRESH0, *coverage]
 
 
 def merge_argv(coverage: list[str]) -> list[str]:
@@ -816,7 +830,8 @@ def outputs(p: dict) -> dict[str, str]:
             "db_range": "true" if p.get("db_range") else "false",
             "unit_shards": str(p["unit_shards"]), "unit_files": j(p["unit_files"]), "migration_files": j(p["migration_files"]),
             "coverage_args": j(p["coverage_args"]), "base": p["base"] if SHA.fullmatch(p.get("base") or "") else "",
-            "reasons": j(p["reasons"] + p["mismatches"] + p["errors"])}
+            "reasons": j(p["reasons"] + p["mismatches"] + p["errors"]),
+            "gates": "," + ",".join(p.get("gates") or []) + ",", "py_tests": j(p.get("py_tests") or [])}
 
 
 def _decide(argv: list[str]) -> int:
@@ -825,6 +840,7 @@ def _decide(argv: list[str]) -> int:
     ap.add_argument("--base", default="")
     ap.add_argument("--head", default="HEAD")
     ap.add_argument("--scope", default="full")
+    ap.add_argument("--ticket", default="")
     ap.add_argument("--rules", default=None)
     ap.add_argument("--tickets", default=None)
     ap.add_argument("--github-output", default=None)
@@ -845,7 +861,7 @@ def _decide(argv: list[str]) -> int:
             gw = [f for f in walk_files(repo, CODE_EXT) if match(f, rules["db"]["gateway"])]
             got = check_answer(lt(gw), gw) if gw else {}
             return sorted({t for v in got.values() for t in v} | set(db_tests_by_text(repo, rules)))
-    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt)
+    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket)
     red = bool(p["mismatches"] or p["errors"])
     out = _stop_plan(p) if red else p   # K-170：赤でも全部に倒さず、組を流さない
     if a.github_output:
