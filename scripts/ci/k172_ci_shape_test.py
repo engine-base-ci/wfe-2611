@@ -3,13 +3,16 @@
 
   python3 scripts/ci/k172_ci_shape_test.py
 
-行 ID は K172-CI-NNN（11_tickets/K-172.md の表と 1 対 1）。作り手（05_flow/build_testplan.py）が作った workflow を読んで形を確かめる。
+行 ID は K172-CI-NNN（11_tickets/K-172.md の表と 1 対 1）。作り手（05_flow/build_testplan.py）が作った workflow と、
+範囲の台本（scripts/ci/ci_scope.py）・JUnit の台本（scripts/ci/junit_unittest.py）を確かめる。
 """
 from __future__ import annotations
 
 import json
 import os
 import pathlib
+import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,19 +26,24 @@ ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE))
 import ci_scope  # noqa: E402
 
-WF = yaml.safe_load((ROOT / ".github" / "workflows" / "v3-gate.yml").read_text(encoding="utf-8"))
+WF_TEXT = (ROOT / ".github" / "workflows" / "v3-gate.yml").read_text(encoding="utf-8")
+WF = yaml.safe_load(WF_TEXT)
 JOBS = WF["jobs"]
 ON = WF.get("on", WF.get(True))   # YAML 1.1 は on を真偽に読むことがある
-HEAVY = ["27", "36", "38", "47", "56", "57", "62"]
-DB_JOBS = ["database", "spec", "web"] + [f"unit-{i}" for i in range(1, 7)]
+UNIT = [f"unit-{i}" for i in range(1, 7)]
+DB_JOBS = ["database", "spec", "web"] + UNIT
+JUNIT_JOBS = UNIT + ["spec", "web"]
+# 重い検査は組と名前の頭で特定する（G27 の番号は static にも別の段がある）
+HEAVY = {"27": ("spec", "G27 層の棚卸し"), "36": ("database", "G36 "), "38": ("spec", "G38 "), "47": ("spec", "G47 "),
+         "56": ("spec", "G56 "), "57": ("spec", "G57 "), "62": ("spec", "G62 ")}
 
 
 def steps(job: str) -> list[dict]:
     return JOBS[job].get("steps", [])
 
 
-def run_text(job: str) -> str:
-    return "\n".join(str(s.get("run", "")) + str(s.get("uses", "")) for s in steps(job))
+def text(job: str) -> str:
+    return yaml.safe_dump(JOBS[job], allow_unicode=True)
 
 
 class Shape(unittest.TestCase):
@@ -44,79 +52,177 @@ class Shape(unittest.TestCase):
             with self.subTest(name):
                 self.assertEqual(job["runs-on"], ["self-hosted", "macOS"])
 
-    def test_K172_CI_002_db_in_job_and_always_removed(self):
+    def test_K172_CI_002_db_in_job_free_port_waited_and_always_removed(self):
+        self.assertIsNone(re.search(r"localhost:54\d\d", WF_TEXT), "DB の番号を直書きしない")
         for name in DB_JOBS:
             with self.subTest(name):
-                self.assertNotIn("services", JOBS[name])
+                job = JOBS[name]
+                self.assertNotIn("services", job)
+                self.assertNotIn("DATABASE_URL", job.get("env") or {}, "DATABASE_URL は GITHUB_ENV だけで渡す")
                 start = [s for s in steps(name) if "docker run" in str(s.get("run", ""))]
                 stop = [s for s in steps(name) if "docker rm -f" in str(s.get("run", ""))]
                 self.assertEqual(len(start), 1, "DB を立てる段が 1 つ")
-                self.assertIn("GITHUB_ENV", start[0]["run"], "DATABASE_URL を後の段に渡す")
+                run = start[0]["run"]
+                self.assertIn("github.run_id", run + str(start[0].get("env", "")), "容れ物の名前に回の印")
+                self.assertIn("github.job", run + str(start[0].get("env", "")), "容れ物の名前に組の印")
+                self.assertIn("127.0.0.1::5432", run, "番号は空いているもの")
+                self.assertIn("pg_isready", run, "立ち上がりを待つ")
+                self.assertRegex(run, r"exit 1", "時間切れは赤")
+                self.assertIn("GITHUB_ENV", run)
                 self.assertEqual(len(stop), 1, "DB を消す段が 1 つ")
                 self.assertEqual(stop[0].get("if"), "always()", "赤でも必ず消す")
                 self.assertGreater(steps(name).index(stop[0]), steps(name).index(start[0]))
 
-    def test_K172_CI_003_no_setup_python(self):
+    def test_K172_CI_003_no_setup_python_no_pip_uses_venv(self):
         for name in JOBS:
             with self.subTest(name):
-                self.assertNotIn("actions/setup-python", run_text(name))
+                t = text(name)
+                self.assertNotIn("actions/setup-python", t)
+                self.assertNotIn("pip install", t)
+                if "python3" in t:
+                    self.assertIn("ci_venv.sh", t, "Python の部品は台に置いた venv")
+        venv = (HERE / "ci_venv.sh").read_text(encoding="utf-8")
+        self.assertIn("GITHUB_PATH", venv)
 
-    def test_K172_CI_004_dispatch_inputs(self):
+    def test_K172_CI_004_dispatch_inputs_and_target_fallback(self):
         inputs = ON["workflow_dispatch"]["inputs"]
-        for k in ("scope", "ticket", "base"):
+        self.assertEqual(set(inputs["scope"]["options"]), {"ticket", "full"})
+        for k in ("ticket", "base", "target"):
             self.assertIn(k, inputs)
+        for m in re.finditer(r"inputs\.target[^}]*", WF_TEXT):
+            self.assertIn("default_branch", m.group(0), "target が空なら既定の枝")
 
     def test_K172_CI_005_junit_from_every_test_job_merged_even_when_red(self):
-        for name in [f"unit-{i}" for i in range(1, 7)] + ["spec"]:
+        for name in JUNIT_JOBS:
             with self.subTest(name):
-                up = [s for s in steps(name) if "upload-artifact" in str(s.get("uses", "")) and str(s.get("with", {}).get("name", "")).startswith("junit-")]
+                up = [s for s in steps(name) if "upload-artifact" in str(s.get("uses", ""))
+                      and str((s.get("with") or {}).get("name", "")).startswith("junit-")]
                 self.assertEqual(len(up), 1, "組ごとに junit-<組> を出す")
                 self.assertIn("always()", str(up[0].get("if")))
+                self.assertEqual(up[0]["with"].get("if-no-files-found"), "error", "記録が空なら赤")
+        self.assertIn("junit", text("spec"))
+        self.assertIn("junit_unittest.py", text("spec"))
+        self.assertIn("PLAYWRIGHT_JUNIT_OUTPUT_NAME", text("web"))
+        unit_cmd = " ".join(ci_scope.unit_argv(["a.test.ts"], 1, 6, []))
+        self.assertIn("--reporter=junit", unit_cmd)
+        self.assertIn("--outputFile.junit=", unit_cmd)
         merge = JOBS["junit"]
+        self.assertTrue(set(JUNIT_JOBS) <= set(merge["needs"]), "まとめる組は JUnit を出す組を全部待つ")
         self.assertIn("always()", str(merge.get("if")))
         m = [s for s in merge["steps"] if "upload-artifact/merge" in str(s.get("uses", ""))]
-        self.assertEqual(m[0]["with"]["name"], "junit")
-        self.assertEqual(m[0]["with"]["pattern"], "junit-*")
+        self.assertEqual((m[0]["with"]["name"], m[0]["with"]["pattern"]), ("junit", "junit-*"))
 
     def test_K172_CI_006_heavy_gates_only_when_relevant_on_ticket_scope(self):
-        found = {}
-        for name, job in JOBS.items():
-            for s in job.get("steps", []):
-                for g in HEAVY:
-                    if str(s.get("name", "")).startswith(f"G{g} "):
-                        found[g] = str(s.get("if", ""))
-        self.assertEqual(sorted(found), sorted(HEAVY))
-        for g, cond in found.items():
+        for g, (job, prefix) in HEAVY.items():
             with self.subTest(g):
+                hits = [s for s in steps(job) if str(s.get("name", "")).startswith(prefix)]
+                self.assertEqual(len(hits), 1, f"{job} の {prefix} が 1 つ")
+                cond = str(hits[0].get("if", ""))
+                self.assertIn("!cancelled()", cond, "前の段が赤でも流す")
                 self.assertIn(".full == 'true'", cond, "scope=full では必ず流す")
-                self.assertIn(f",{g},", cond, "scope=ticket では gates に入っているときだけ")
+                self.assertIn(f"',{g},'", cond, "scope=ticket では gates に入っているときだけ")
+                src = re.search(r"(steps\.scope|needs\.static)\.outputs\.gates", cond)
+                self.assertIsNotNone(src, "gates の出所")
+                if src.group(1) == "steps.scope":
+                    self.assertTrue(any(s.get("id") == "scope" for s in steps(job)), "同じ組に scope の段がある")
+                else:
+                    self.assertIn("gates", JOBS["static"]["outputs"], "static の出力に gates がある")
 
 
 class JUnitRunner(unittest.TestCase):
-    def test_K172_CI_007_unittest_to_junit_with_row_ids(self):
+    def run_junit(self, body: str, name="x_test.py"):
         d = pathlib.Path(tempfile.mkdtemp(prefix="k172-"))
-        t = d / "x_test.py"
-        t.write_text("import unittest\nclass T(unittest.TestCase):\n"
-                     "    def test_K9_CI_001_ok(self):\n        pass\n"
-                     "    def test_K9_CI_002_bad(self):\n        self.fail('落ちた')\n", encoding="utf-8")
+        self.addCleanup(shutil.rmtree, d, True)
+        t = d / name
+        t.write_text(body, encoding="utf-8")
         out = d / "py.xml"
         r = subprocess.run([sys.executable, str(HERE / "junit_unittest.py"), "--out", str(out), str(t)], capture_output=True, text=True)
-        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
         cases = {tc.get("name"): [c.tag for c in tc] for tc in ET.parse(out).getroot().iter("testcase")}
-        ok = next(k for k in cases if "K9_CI_001" in k)
-        bad = next(k for k in cases if "K9_CI_002" in k)
-        self.assertEqual(cases[ok], [])
-        self.assertIn("failure", cases[bad])
+        return r.returncode, cases
+
+    def test_K172_CI_007_unittest_to_junit_with_row_ids(self):
+        rc, cases = self.run_junit("import unittest\nclass T(unittest.TestCase):\n    def test_K9_CI_001_ok(self):\n        pass\n")
+        self.assertEqual(rc, 0, "全部通れば 0")
+        self.assertEqual([v for k, v in cases.items() if "K9_CI_001" in k], [[]])
+        rc, cases = self.run_junit("import unittest\nclass T(unittest.TestCase):\n"
+                                   "    def test_K9_CI_002_bad(self):\n        self.fail('落ちた')\n"
+                                   "    def test_K9_CI_003_boom(self):\n        raise RuntimeError('x')\n"
+                                   "    @unittest.skip('後で')\n    def test_K9_CI_004_skip(self):\n        pass\n")
+        self.assertEqual(rc, 1, "落ちたら 1")
+        tags = {k.split(".")[-1]: v for k, v in cases.items()}
+        self.assertIn("failure", tags["test_K9_CI_002_bad"])
+        self.assertIn("error", tags["test_K9_CI_003_boom"])
+        self.assertIn("skipped", tags["test_K9_CI_004_skip"])
+        rc, cases = self.run_junit("import no_such_module_k172\n")
+        self.assertEqual(rc, 1, "読み込めないファイルは 1")
+        self.assertTrue(any("error" in v for v in cases.values()))
 
 
-class Gates(unittest.TestCase):
+class ScopeScript(unittest.TestCase):
+    """範囲の台本：作りものの git の写しで plan を流す"""
+
+    def setUp(self):
+        self.rules = json.loads((ROOT / "scripts" / "ci" / "ci_scope.json").read_text(encoding="utf-8"))
+        self.d = pathlib.Path(tempfile.mkdtemp(prefix="k172-repo-"))
+        self.addCleanup(shutil.rmtree, self.d, True)
+        env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.invalid",
+               "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.invalid"}
+        self.g = lambda *a: subprocess.run(["git", "-C", str(self.d), *a], check=True, capture_output=True, text=True, env=env).stdout.strip()
+        self.g("init", "-q", "-b", "main")
+        (self.d / "README.md").write_text("x\n")
+        self.g("add", "-A"); self.g("commit", "-qm", "K-0 chore: 土台")
+        self.base = self.g("rev-parse", "HEAD")
+
+    def commit(self, msg: str, files: dict) -> None:
+        for k, v in files.items():
+            p = self.d / k
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(v)
+        self.g("add", "-A"); self.g("commit", "-qm", msg)
+
+    def plan(self, scope="ticket", ticket=""):
+        return ci_scope.plan(str(self.d), self.base, "HEAD", scope, self.rules, str(self.d / "11_tickets"),
+                             lambda files: {f: [] for f in files}, lambda: [], ticket=ticket)
+
     def test_K172_CI_008_gates_for_changed_files(self):
-        rules = json.loads((ROOT / "scripts" / "ci" / "ci_scope.json").read_text(encoding="utf-8"))
-        self.assertEqual(sorted(rules["gates"]), sorted(HEAVY), "重い検査は全部、関係するファイルを持つ")
-        self.assertIn("57", ci_scope.gates_for(["scripts/ci/ci_scope.py"], rules, full=False))
-        self.assertNotIn("57", ci_scope.gates_for(["apps/web/app/page.tsx"], rules, full=False))
-        self.assertEqual(set(ci_scope.gates_for([], rules, full=True)), set(HEAVY))
-        self.assertEqual(ci_scope.gates_for(["README.md"], rules, full=False), [])
+        self.assertEqual(sorted(self.rules["gates"]), sorted(HEAVY), "重い検査は全部、関係するファイルを持つ")
+        self.assertIn("57", ci_scope.gates_for(["scripts/ci/ci_scope.py"], self.rules, full=False))
+        self.assertNotIn("57", ci_scope.gates_for(["apps/web/app/page.tsx"], self.rules, full=False))
+        self.assertEqual(set(ci_scope.gates_for([], self.rules, full=True)), set(HEAVY))
+        self.assertEqual(ci_scope.gates_for(["README.md"], self.rules, full=False), [])
+        self.commit("K-9 chore: 範囲", {"scripts/ci/ci_scope.py": "# x\n", "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: []\n---\n"})
+        out = ci_scope.outputs(self.plan())
+        self.assertIn(",57,", out["gates"])
+
+    def test_K172_CI_009_scope_ticket_like_auto_and_unknown_stops(self):
+        self.commit("K-9 docs: 文", {"README.md": "y\n", "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: []\n---\n"})
+        self.assertEqual(self.plan("ticket")["mode"], "scoped")
+        p = self.plan("x")
+        self.assertEqual(p["mode"], "scoped")
+        self.assertTrue(any("全部には倒さず止める" in e for e in p["errors"]), p["errors"])
+
+    def test_K172_CI_010_ticket_input_must_match_commits(self):
+        self.commit("K-9 docs: 文", {"README.md": "y\n", "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: []\n---\n"})
+        self.assertEqual(self.plan(ticket="K-9")["errors"], [])
+        p = self.plan(ticket="K-8")
+        self.assertTrue(any("K-8" in e and "全部には倒さず止める" in e for e in p["errors"]), p["errors"])
+
+    def test_K172_CI_011_ticket_python_tests_are_output(self):
+        self.commit("K-9 test: 試験", {"scripts/ci/k9_test.py": "import unittest\n",
+                                       "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: [ci]\ntests: [scripts/ci/k9_test.py]\n---\n"})
+        out = ci_scope.outputs(self.plan(ticket="K-9"))
+        self.assertIn("scripts/ci/k9_test.py", json.loads(out["py_tests"]))
+        self.assertIn("py_tests", text("spec"))
+
+
+class WebCleanup(unittest.TestCase):
+    def test_K172_CI_012_web_cleans_up_and_no_shared_tmp(self):
+        self.assertNotIn("/tmp/", WF_TEXT, "回の間の物は $RUNNER_TEMP に置く")
+        web = JOBS["web"]
+        self.assertIn("group", web.get("concurrency") or {}, "web の組は同時に 1 つ")
+        stop = [s for s in steps("web") if "kill" in str(s.get("run", ""))]
+        self.assertEqual(len(stop), 1)
+        self.assertEqual(stop[0].get("if"), "always()")
 
 
 if __name__ == "__main__":
