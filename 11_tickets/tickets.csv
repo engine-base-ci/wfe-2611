@@ -911,3 +911,8 @@ K-174,ticket-flow の設定に CI の台（組ごとの Linux の VM）と、出
 あわせて、K-172 で CI に出してから赤を返された検査（整形・生成物・試験の持ち主・配線）を、出す前に手元で流す（preflight）。","- [ ] ticket-flow.yaml の vm: が vm.py の検査を通る（登録のアカウント・コアの合計が台のコア数まで）・vm.label が workflow の runs-on と同じ
 - [ ] preflight が、K-172・K-173 で CI に出してから赤になった検査（整形・生成物・試験の持ち主・配線）を持ち、どの命令も実在する台本を指す
 - [ ] 試験 K174-CF-001〜002 が緑・チケットの CI が緑"
+K-175,CI の台の元の像に実ブラウザを入れ、出す前の検査に CI の範囲の台本を足す,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"K-171 の CI（2026-11-12）で、web の組が Playwright の Chromium を毎回取りに行き、時間切れで赤になった（cdn.playwright.dev に 30 秒で届かない）。
+組ごとの VM はまっさらなので、ブラウザも元の像に入れておく（GitHub の台と同じく、毎回取りに行かない）。
+あわせて、K-171 で CI に出してから「チケットの ci_wide に無い」で止まった。CI の範囲の台本（ci_scope.py）を出す前に手元で流す（ticket-flow の preflight が {ticket}・{base} を渡せるようになった）。","- [ ] vm.warm が Playwright の Chromium を依存の部品ごと入れる（web の組の playwright install が取りに行かない）
+- [ ] preflight が CI の範囲の台本を、チケットの番号と本線の先頭で流す
+- [ ] 試験 K175-CF-001〜002 が緑・チケットの CI が緑"

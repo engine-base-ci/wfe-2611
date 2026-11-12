@@ -7113,6 +7113,52 @@
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K174-CF-001 | 入力 | ticket-flow.yaml の vm: | account が空でない・slots×cpu が VM を出す台（この Mac・10 コア・K-173 で測った台）のコア数以下（試験を流す台のコア数ではない）・runs-on が [self-hosted, label] の形で、v3-gate.yml と release-gate.yml の全部の組（1 つ以上）で label が同じ・tools の python が workflow の setup-python の版と同じ・tools の node が workflow の NODE_VERSION と同じ・warm が pnpm install と ci_venv.sh を持ち、warm の中の scripts/ の台本が実在する |\n| K174-CF-002 | 入力 | ticket-flow.yaml の preflight | 命令を 1 つずつ見て、部品を入れる（pnpm install で始まる）・整形（pnpm -s lint そのもの）・生成物（generated_gate.py）・試験の持ち主（test_owner_gate.py）・配線（ci_wiring_gate.py）を持ち、命令の中の scripts/ の台本がどれも実在する |"
    },
    "file": "11_tickets/K-174.md"
+  },
+  {
+   "id": "K-175",
+   "title": "CI の台の元の像に実ブラウザを入れ、出す前の検査に CI の範囲の台本を足す",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "0.5",
+   "estimate_basis": "K-174 の実測（約 5 分・CI 1 回）。中身は設定と形の試験だけ",
+   "decisions": [
+    "D-133"
+   ],
+   "choke_points": [],
+   "choke_none": "進め方の設定だけ。製品の外への出口に触らない",
+   "depends_on": [
+    "K-174"
+   ],
+   "tests": [
+    "scripts/ci/k175_flow_config_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "ticket-flow.yaml",
+    "scripts/ci/k175_flow_config_test.py",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "K-171 の CI（2026-11-12）で、web の組が Playwright の Chromium を毎回取りに行き、時間切れで赤になった（cdn.playwright.dev に 30 秒で届かない）。\n組ごとの VM はまっさらなので、ブラウザも元の像に入れておく（GitHub の台と同じく、毎回取りに行かない）。\nあわせて、K-171 で CI に出してから「チケットの ci_wide に無い」で止まった。CI の範囲の台本（ci_scope.py）を出す前に手元で流す（ticket-flow の preflight が {ticket}・{base} を渡せるようになった）。",
+    "完了の条件": "- [ ] vm.warm が Playwright の Chromium を依存の部品ごと入れる（web の組の playwright install が取りに行かない）\n- [ ] preflight が CI の範囲の台本を、チケットの番号と本線の先頭で流す\n- [ ] 試験 K175-CF-001〜002 が緑・チケットの CI が緑",
+    "前提と制約": "- 前提：ticket-flow の preflight の {ticket}・{base}（2026-11-12）・vm.py build-image（設定の warm を本線の中身で流す）\n- 元の像は取り込んだ後に `vm.py build-image` で作り直す（人の操作は要らない）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 設定 | ticket-flow.yaml：vm.warm に `pnpm --filter @kaname/web exec playwright install --with-deps chromium`・preflight に `python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope ticket --ticket {ticket}` |\n| 配線 | G65 の段に k175_flow_config_test.py を足す |",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K175-CF-001 | 入力 | ticket-flow.yaml の vm.warm と workflow の web の組 | warm に `playwright install --with-deps chromium` が pnpm install の後にある・workflow の web の組の playwright install が同じ Chromium（chromium）を指す |\n| K175-CF-002 | 入力 | ticket-flow.yaml の preflight | `python3 scripts/ci/ci_scope.py` を `--base {base}`・`--scope ticket`・`--ticket {ticket}` で流す命令が 1 つある・台本が実在する |"
+   },
+   "file": "11_tickets/K-175.md"
   }
  ]
 }
