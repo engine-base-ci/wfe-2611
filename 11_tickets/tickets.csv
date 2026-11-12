@@ -920,7 +920,7 @@ K-174,ticket-flow の設定に CI の台（組ごとの Linux の VM）と、出
 K-175,CI の台の元の像に実ブラウザを入れ、出す前の検査に CI の範囲の台本を足す,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"K-171 の CI（2026-11-12）で、web の組が Playwright の Chromium を毎回取りに行き、時間切れで赤になった（cdn.playwright.dev に 30 秒で届かない）。
 組ごとの VM はまっさらなので、ブラウザも元の像に入れておく（GitHub の台と同じく、毎回取りに行かない）。
 あわせて、K-171 で CI に出してから「チケットの ci_wide に無い」で止まった。CI の範囲の台本（ci_scope.py）を出す前に手元で流す（ticket-flow の preflight が {ticket}・{base} を渡せるようになった）。","- [ ] vm.warm が Playwright の Chromium を依存の部品ごと入れる（web の組の playwright install が取りに行かない）
-- [ ] preflight が CI の範囲の台本を、チケットの番号と本線の先頭で流す
+- [ ] CI の範囲の台本が、出す前に手元で 1 回流れる（preflight か、K-178 からは preflight_jobs の組＝CI の定義をそのまま）
 - [ ] 試験 K175-CF-001〜002 が緑・チケットの CI が緑"
 K-176,web の組の実ブラウザの試験の JUnit の記録を出す（K-172 の抜け）,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"K-171 の CI（2026-11-12）で、web の組の試験は全部通った（262 本・14 本）のに、JUnit の記録を上げる段（junit-web・記録が無ければ赤）で赤になった。
 K-172 で web の組に `PLAYWRIGHT_JUNIT_OUTPUT_NAME` を置いたが、apps/web/playwright.config.ts に junit の reporter を足しておらず、記録が出ていなかった。
