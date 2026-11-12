@@ -440,8 +440,7 @@ class BlobRoots(unittest.TestCase):
 
     def setUp(self):
         self.tmp = pathlib.Path(tempfile.mkdtemp())
-        self.rep = self.tmp / ci_scope.REPORTS
-        self.rep.mkdir()
+        self.rep = self.tmp / ci_scope.REPORTS   # 作るのは各試験（run-unit の試験は無い状態から）
         self.cwd = os.getcwd()
 
     def tearDown(self):
@@ -450,6 +449,7 @@ class BlobRoots(unittest.TestCase):
 
     def test_K172_CI_018_merge_rebases_each_blob_root_to_own_root(self):
         a, b, me = "/r/engine-base-Kaname/_work/K/K", "/r/engine-base-Kaname-2/_work/K/K", str(self.tmp)
+        self.rep.mkdir()
         (self.rep / "blob-1-2.json").write_text(f'["{a}/apps/api/test/x.test.ts",{{"f":"{a}/packages/db/src/y.ts"}}]')
         (self.rep / "root-1.txt").write_text(a + "\n")
         (self.rep / "blob-2-2.json").write_text(f'["{b}/apps/api/test/z.test.ts"]')
@@ -465,20 +465,31 @@ class BlobRoots(unittest.TestCase):
         self.assertNotIn(b, two)
 
     def test_K172_CI_018_blob_without_root_is_red_before_vitest(self):
-        (self.rep / "blob-1-1.json").write_text('["/elsewhere/a.test.ts"]')
-        self.assertTrue(ci_scope.rebase_blob_roots(self.rep, str(self.tmp)), "根の書き置きが無い blob は誤り")
+        import contextlib
+        import io
+        self.rep.mkdir()
+        body = '["/elsewhere/a.test.ts"]'
+        (self.rep / "blob-1-1.json").write_text(body)
+        errs = ci_scope.rebase_blob_roots(self.rep, str(self.tmp))
+        self.assertTrue(errs and "root-1.txt" in errs[0], "根の書き置きが無い blob は誤り（どの書き置きか言う）")
         os.chdir(self.tmp)
         called = []
         real = ci_scope.subprocess.run
         ci_scope.subprocess.run = lambda *a, **k: called.append(a) or subprocess.CompletedProcess(a, 0)
+        out = io.StringIO()
         try:
-            rc = ci_scope.main(["run-merge"])
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+                rc = ci_scope.main(["run-merge"])
         finally:
             ci_scope.subprocess.run = real
-        self.assertNotEqual(rc, 0)
+        self.assertEqual(rc, 1)
         self.assertEqual(called, [], "vitest を呼ばない")
+        self.assertIn("blob-1-1.json", out.getvalue(), "赤の理由に blob の名前")
+        self.assertIn("root-1.txt", out.getvalue(), "赤の理由に足りない書き置き")
+        self.assertEqual((self.rep / "blob-1-1.json").read_text(), body, "誤りのときは blob を書き換えない")
 
     def test_K172_CI_018_run_unit_writes_own_root(self):
+        self.assertFalse(self.rep.exists(), "新しい作業場所には結果の置き場がまだ無い（vitest が作るのは後）")
         os.chdir(self.tmp)
         old = {k: os.environ.get(k) for k in ("CI_UNIT_SHARDS", "CI_UNIT_FILES", "CI_COVERAGE_ARGS")}
         os.environ.update({"CI_UNIT_SHARDS": "2", "CI_UNIT_FILES": '["apps/api/test/x.test.ts"]', "CI_COVERAGE_ARGS": "[]"})
