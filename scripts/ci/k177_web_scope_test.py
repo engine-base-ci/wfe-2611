@@ -55,6 +55,8 @@ class Select(unittest.TestCase):
         r = sel(["README.md"], ticket="K-36")   # K-36 は依存なし
         self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"], "変えていなくても自分の試験は流す")
         self.assertEqual(r["tasks"], ["K-36"])
+        r = web_select.select(["README.md"], ["K-36", "K-54"], TICKETS, G48, G59, IMP, CFG)   # チケットが複数：どれの試験も選ぶ
+        self.assertEqual((r["g48"], r["g59"]), (["apps/web/tests/k/showcase.spec.ts"], ["apps/web/tests/skeleton/m1.spec.ts"]))
 
     def test_K177_WS_002_depends_on_one_level(self):
         r = sel(["packages/db/migrations/0094_x.sql"], ticket="K-90")   # K-90 は K-57 に依存（K-57 は K-51 に依存）
@@ -164,7 +166,7 @@ class ScopeOutputs(unittest.TestCase):
         empty = {"g48": [], "g59": [], "tasks": [], "reasons": ["web：当たる試験が無い"]}
         p = ci_scope.with_web_selection(self.base(), empty)
         self.assertFalse(p["jobs"]["web"], "選べなければ web の組を流さない")
-        self.assertIn("web：当たる試験が無い", p["reasons"])
+        self.assertTrue(p["errors"] and "web" in p["errors"][0], "web の組を流すはずの変更なのに選べない：黙って止めず、止めて理由を出す（D-133.7）")
         hit = {"g48": ["apps/web/tests/k/showcase.spec.ts"], "g59": [], "tasks": ["K-36"], "reasons": []}
         p = ci_scope.with_web_selection(self.base(), hit)
         self.assertTrue(p["jobs"]["web"])
@@ -186,18 +188,51 @@ class Run(unittest.TestCase):
         self.assertIn("playwright", sc48[0])
         last = sc48[-1]
         self.assertNotIn("--all", last)
-        self.assertEqual([last[i + 1] for i, a in enumerate(last) if a == "--task"], ["K-36", "K-24"])
+        self.assertNotIn("--task", last, "照らす行は持ち主でなく、流した試験のファイルに書かれた行で決める")
+        self.assertEqual([last[i + 1] for i, a in enumerate(last) if a == "--rows-in"], ["apps/web/tests/k/showcase.spec.ts"])
         self.assertEqual(web_run.commands("g48", full=False, specs=[], tasks=[]), [], "空なら流さない")
         full59 = web_run.commands("g59", full=True, specs=[], tasks=[])
         self.assertEqual(full59[0][-1], "tests/skeleton")
         sc59 = web_run.commands("g59", full=False, specs=["apps/web/tests/skeleton/m2.spec.ts"], tasks=[])
         self.assertEqual(sc59[0][-1], "tests/skeleton/m2.spec.ts")
         self.assertEqual(web_run.commands("g59", full=False, specs=[], tasks=[]), [])
-        self.assertEqual(sum(1 for c in sc48 if "op_gate.py" in " ".join(c)), 1, "照らすのは 1 回（持ち主を全部 --task で）")
+        self.assertEqual(sum(1 for c in sc48 if "op_gate.py" in " ".join(c)), 1, "照らすのは 1 回")
+        for part in ("g48", "g59"):   # 範囲の回で一覧が空なのに web の組が動いた＝壊れている：黙って緑にしない
+            r = subprocess.run([sys.executable, str(HERE / "web_run.py"), part], cwd=ROOT, capture_output=True, text=True,
+                               env={**__import__("os").environ, "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_TASKS": "[]"})
+            self.assertEqual(r.returncode, 1, part)
         e48, e59 = web_run.env_for("g48", {"X": "1"}), web_run.env_for("g59", {"PLAYWRIGHT_JUNIT_OUTPUT_NAME": "/w/junit/web-skeleton.xml"})
         self.assertEqual(e48["PW_REPORT"], "pw-reports/k.json", "op_gate と ci_results が読む報告")
         self.assertEqual((e59["PW_REPORT"], e59["PLAYWRIGHT_HTML_OUTPUT_DIR"]), ("pw-reports/skeleton.json", "playwright-report-skeleton"))
         self.assertEqual(e59["PLAYWRIGHT_JUNIT_OUTPUT_NAME"], "/w/junit/web-skeleton.xml", "組の段の JUnit の置き場を消さない")
+
+
+class OpGateRowsIn(unittest.TestCase):
+    def test_K177_WS_016_op_gate_checks_only_rows_written_in_given_specs(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            spec = tmp / "spec"
+            spec.mkdir()
+            head = "| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |\n|---|---|---|---|---|---|---|---|---|---|---|\n"
+            row = lambda rid, task: f"| {rid} | 画面 | 操作 | 押す | - | 押す | 出る |  |  | {task} | L1 |\n"  # noqa: E731
+            (spec / "k.md").write_text(head + row("K36-UI-001", "K-36") + row("K36-UI-002", "K-36") + row("K40-UI-001", "K-40"))
+            (tmp / "tickets.json").write_text(json.dumps({"tickets": [{"id": "K-36"}, {"id": "K-40"}]}))
+            sp = tmp / "a.spec.ts"
+            sp.write_text("test('K36-UI-001 出る', ...); test('K40-UI-001 出る', ...);\n")   # 持ち主（K-36）でない行 K40 も書かれている
+            def report(states):
+                f = tmp / "r.json"
+                f.write_text(json.dumps({"suites": [{"specs": [{"title": f"{rid} 出る", "tests": [{"results": [{"status": st}]}]} for rid, st in states.items()]}]}))
+                return str(f)
+            def gate(rep):
+                return subprocess.run([sys.executable, str(HERE / "op_gate.py"), "--spec", str(spec), "--tickets", str(tmp / "tickets.json"),
+                                       "--report", rep, "--rows-in", str(sp), "--pending-from-report"], capture_output=True, text=True)
+            ok = gate(report({"K36-UI-001": "passed", "K40-UI-001": "passed"}))
+            self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)   # K36-UI-002 は流していない spec の行：照らさない
+            bad = gate(report({"K36-UI-001": "passed", "K40-UI-001": "failed"}))
+            self.assertNotEqual(bad.returncode, 0, "書かれた行は持ち主のチケットでなくても照らす")
+            self.assertIn("K40-UI-001", bad.stdout + bad.stderr)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 class Workflow(unittest.TestCase):
