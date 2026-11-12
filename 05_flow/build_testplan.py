@@ -173,13 +173,14 @@ def pg(port):
     """K-172：services は Linux の台でしか動かない。DB は組の中で立てる（DB_START・DB_STOP）。組の頭には何も足さない"""
     return ""
 # 容れ物の名前に回と組の印・番号は空いているもの・pg_isready で待つ（時間切れは赤）・DATABASE_URL は GITHUB_ENV だけで渡す
+# 待つのは TCP で（初めの立ち上げの仮の server は socket だけで「準備よし」を返し、その後止まる・K-172 の CI で踏んだ）
 DB_START = """      - name: DB を立てる（組の中・空いている番号・K-172）
         env: { PG_NAME: "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" }
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
 """
 DB_STOP = """      - name: DB を消す（赤でも必ず）

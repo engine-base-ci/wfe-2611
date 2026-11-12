@@ -171,8 +171,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"
         if: ${{ !cancelled() }}
@@ -220,8 +220,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.1 単体の試験の 1 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -257,8 +257,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.2 単体の試験の 2 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -294,8 +294,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.3 単体の試験の 3 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -331,8 +331,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.4 単体の試験の 4 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -368,8 +368,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.5 単体の試験の 5 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -405,8 +405,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "G3.6 単体の試験の 6 組目（自分の DB の上で。coverage の閾値は合わせた後に当てる）"
         if: ${{ !cancelled() }}
@@ -474,8 +474,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"
         id: scope
@@ -620,8 +620,8 @@ jobs:
         run: |
           docker run -d --rm --name "$PG_NAME" -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=kaname_test -p 127.0.0.1::5432 pgvector/pgvector:pg16 >/dev/null
           port=$(docker port "$PG_NAME" 5432/tcp | head -1 | sed 's/.*://')
-          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -U postgres -q && break; sleep 1; done
-          docker exec "$PG_NAME" pg_isready -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
+          for i in $(seq 1 60); do docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q && break; sleep 1; done
+          docker exec "$PG_NAME" pg_isready -h 127.0.0.1 -U postgres -q || { echo "★ DB が 60 秒で立ち上がらない"; exit 1; }
           { echo "PG_NAME=$PG_NAME"; echo "PGPORT=$port"; echo "DATABASE_URL=postgres://postgres:postgres@localhost:$port/kaname_test"; echo "DATABASE_URL_ADMIN=postgres://postgres:postgres@localhost:$port/kaname_test"; } >> "$GITHUB_ENV"
       - run: pnpm --filter @kaname/web exec playwright install chromium
       - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
