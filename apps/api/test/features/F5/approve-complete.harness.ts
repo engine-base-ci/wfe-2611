@@ -132,7 +132,11 @@ export const finish = async (
 };
 /** PC の最後の知らせを今から sec 秒前に置く（75 秒で「閉じている」） */
 export const lastSeen = (sid: string, sec: number) =>
-  f.admin.query("update sessions set last_seen_at = now() - make_interval(secs => $2) where id = $1", [sid, sec]);
+  // 最後の知らせを sec 秒前に。PC は一度は生きている知らせを送った（alive_at・K-62 の 0092 の式は alive_at が無ければ live にしない）
+  f.admin.query(
+    "update sessions set last_seen_at = now() - make_interval(secs => $2), alive_at = coalesce(alive_at, now() - make_interval(secs => $2)) where id = $1",
+    [sid, sec],
+  );
 
 // ---- 種を置く ----
 export const stageOf = async (tenant: string, key: string) =>
