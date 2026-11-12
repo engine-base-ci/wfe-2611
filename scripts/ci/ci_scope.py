@@ -31,6 +31,7 @@ import glob as globmod
 import json
 import math
 import os
+import pathlib
 import re
 import secrets
 import subprocess
@@ -766,6 +767,27 @@ def unit_argv(files: list[str], shard: int, shards: int, coverage: list[str]) ->
             "--coverage.reporter=text-summary", "--reporter=junit", f"--outputFile.junit=junit/unit-{shard}.xml", *THRESH0, *coverage]
 
 
+def rebase_blob_roots(reports: pathlib.Path | str, cwd: str) -> list[str]:
+    """各 blob の根を、まとめる組の根に置き換える（K-172）。
+
+    同じ台に runner がいくつもあると、単体の試験の組とまとめる組の置き場の根が違う
+    （…/engine-base-Kaname/_work/… と …-Kaname-2/_work/…）。vitest の blob は試験ファイルと coverage の絶対パスを持つので、
+    そのままでは --merge-reports が「No test files found」で落ちる。各組が試験の前に書いた root-<組>.txt の根を、今の根に置き換える。
+    根の書き置きが無い blob は置き換えられないので誤りとして返す（vitest を呼ばずに赤）。"""
+    rep = pathlib.Path(reports)
+    errs: list[str] = []
+    for blob in sorted(rep.glob("blob-*-*.json")):
+        shard = blob.stem.split("-")[1]
+        rf = rep / f"root-{shard}.txt"
+        if not rf.exists():
+            errs.append(f"{blob.name}：根の書き置き {rf.name} が無い（置き場が違う runner の結果をまとめられない）")
+            continue
+        root = rf.read_text(encoding="utf-8").strip()
+        if root and root != cwd:
+            blob.write_text(blob.read_text(encoding="utf-8").replace(root, cwd), encoding="utf-8")
+    return errs
+
+
 def merge_argv(coverage: list[str]) -> list[str]:
     return ["pnpm", "exec", "vitest", "run", f"--merge-reports={REPORTS}", "--coverage", "--reporter=default", "--reporter=json",
             f"--outputFile.json={REPORTS}/merged.json", *coverage]
@@ -893,8 +915,16 @@ def main(argv: list[str] | None = None) -> int:
         if not shards_raw.isdigit() or not 1 <= a.shard <= int(shards_raw):
             raise SystemExit(f"★ CI_UNIT_SHARDS（{shards_raw!r}）と --shard {a.shard} が合わない")
         argv2 = unit_argv(_env_list("CI_UNIT_FILES"), a.shard, int(shards_raw), _env_list("CI_COVERAGE_ARGS"))
+        rep = pathlib.Path(REPORTS)
+        rep.mkdir(parents=True, exist_ok=True)
+        (rep / f"root-{a.shard}.txt").write_text(os.getcwd() + "\n", encoding="utf-8")   # まとめる組が根を置き換える（K-172）
         return subprocess.run(argv2).returncode
     if cmd == "run-merge":
+        errs = rebase_blob_roots(REPORTS, os.getcwd())
+        if errs:
+            for e in errs:
+                print("★ " + e)
+            return 1
         return subprocess.run(merge_argv(_env_list("CI_COVERAGE_ARGS"))).returncode
     if cmd == "run-squawk":
         sq, msg = squawk_plan(_env_list("CI_MIGRATION_FILES"), os.environ.get("CI_BASE", ""))
