@@ -94,10 +94,10 @@ class Select(unittest.TestCase):
     def test_K177_WS_008_nothing_hits(self):
         r = sel(["docs/notes.md"])
         self.assertEqual((r["g48"], r["g59"], r["tasks"]), ([], [], []))
-        r = sel(["docs/notes.md", "apps/web/tests/k/showcase.spec.ts"])   # 消した・名前を変えた元の道も変えたファイルとして渡る（呼ぶ側）
-        self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"])
         self.assertEqual(len(r["reasons"]), 1)
         self.assertIn("当たる", r["reasons"][0])
+        r = sel(["docs/notes.md", "apps/web/tests/k/showcase.spec.ts"])   # 消した・名前を変えた元の道も変えたファイルとして渡る（呼ぶ側）
+        self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"])
 
     def test_K177_WS_009_g59_and_outside_domain(self):
         r = sel(["README.md"], ticket="K-54")   # K-54 は依存なし・試験は skeleton
@@ -109,7 +109,7 @@ class Select(unittest.TestCase):
         self.assertEqual(r["g48"] + r["g59"], [])
 
     def test_K177_WS_010_tasks_are_owners_of_g48(self):
-        r = sel(["apps/web/tests/_lib/row.ts", "apps/web/components/k/Button.tsx"])
+        r = sel(["apps/web/tests/_lib/row.ts", "apps/web/app/signup/page.tsx"])
         self.assertEqual(r["tasks"], ["K-24", "K-51"], "重なりなし・並び順。g59 だけの持ち主（照らす一覧の外）は入れない")
         t = dict(TICKETS)
         t["K-93"] = {"tests": ["apps/web/tests/components.spec.ts"], "changes": [], "depends_on": []}   # 持ち主が 2 つ
