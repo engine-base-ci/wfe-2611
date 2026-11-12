@@ -422,5 +422,18 @@ esac
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
+class PnpmPerRunner(unittest.TestCase):
+    def test_K172_CI_017_pnpm_setup_dest_is_per_runner(self):
+        seen = 0
+        for wf, doc in ALL_WF.items():
+            for job, j in doc["jobs"].items():
+                for st in j.get("steps", []):
+                    if str(st.get("uses", "")).startswith("pnpm/action-setup"):
+                        seen += 1
+                        dest = str((st.get("with") or {}).get("dest", ""))
+                        self.assertIn("runner.tool_cache", dest, f"{wf} {job}：台で共有の ~/setup-pnpm を使うと、同時の組がぶつかる")
+        self.assertGreater(seen, 0)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
