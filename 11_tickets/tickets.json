@@ -7037,14 +7037,13 @@
     "K-172"
    ],
    "tests": [
-    "scripts/ci/k173_vm_test.py",
-    "scripts/ci/k172_ci_shape_test.py",
-    "scripts/ci/ci_scope_test.py"
+    "scripts/ci/k173_vm_test.py"
    ],
    "prior_impl": "なし",
    "changes": [
     "05_flow/build_testplan.py",
     "scripts/ci/ci_scope_test.py",
+    "scripts/ci/k172_ci_shape_test.py",
     ".github/workflows/v3-gate.yml",
     ".github/workflows/release-gate.yml",
     "scripts/ci/k173_vm_test.py",
