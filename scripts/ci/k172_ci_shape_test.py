@@ -245,15 +245,34 @@ class TicketInput(unittest.TestCase):
                 for s in j.get("steps", []):
                     if "$CI_TICKET_INPUT" in str(s.get("run", "")):
                         seen += 1
-                        env = s.get("env") or {}
+                        env = {**(j.get("env") or {}), **(s.get("env") or {})}   # 組の env でも段の env でもよい
                         self.assertIn("CI_TICKET_INPUT", env, f"{wf} {job} {s.get('name')}")
                         self.assertIn("inputs.ticket", str(env["CI_TICKET_INPUT"]))
         self.assertGreaterEqual(seen, 2, "static の G0 と spec の分かれ目")
 
 
+def fake_bin(d: pathlib.Path, name: str, body: str) -> None:
+    f = d / name
+    f.write_text("#!/usr/bin/env bash\n" + body)
+    f.chmod(0o755)
+
+
+def gone(pid: int, secs: float = 3.0) -> bool:
+    import time
+    t = time.time() + secs
+    while time.time() < t:
+        st = subprocess.run(["ps", "-o", "stat=", "-p", str(pid)], capture_output=True, text=True).stdout.strip()
+        if not st or st.startswith("Z"):   # 居ない・引き取られる前のゾンビ
+            return True
+        time.sleep(0.1)
+    return False
+
+
 class KillTree(unittest.TestCase):
     def test_K172_CI_014_kill_tree_stops_grandchildren_and_ports_checked(self):
+        import time
         tmp = pathlib.Path(tempfile.mkdtemp())
+        g = 0
         try:
             pidf = tmp / "p.pid"
             # 親 → 子 → 孫（pnpm → node → next-server の形）
@@ -262,42 +281,101 @@ class KillTree(unittest.TestCase):
             for _ in range(50):
                 if (tmp / "g.pid").exists() and (tmp / "g.pid").read_text().strip():
                     break
-                import time; time.sleep(0.1)
+                time.sleep(0.1)
             g = int((tmp / "g.pid").read_text())
             r = subprocess.run(["bash", str(HERE / "kill_tree.sh"), str(pidf)], capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
             p.wait(timeout=10)
-            import time; time.sleep(0.3)
-            alive = subprocess.run(["kill", "-0", str(g)], capture_output=True).returncode == 0
-            self.assertFalse(alive, "孫が残った")
+            self.assertTrue(gone(g), "孫が残った")
         finally:
+            if g:
+                subprocess.run(["kill", "-9", str(g)], capture_output=True)
             shutil.rmtree(tmp, ignore_errors=True)
-        stop = [s for s in steps("web") if "kill_tree.sh" in str(s.get("run", ""))]
+
+    def test_K172_CI_014_stop_step_uses_started_pid_files_and_is_red_when_port_left(self):
+        web = steps("web")
+        runs = "\n".join(str(st.get("run", "")) for st in web)   # 段の命令そのもの（YAML に書き直すと長い行が折れる）
+        written = set(re.findall(r"echo \$! > \$RUNNER_TEMP/(\w+\.pid)", runs))
+        self.assertEqual(written, {"api.pid", "web.pid"}, "起動の段が書く pid のファイル")
+        stop = [s for s in web if "kill_tree.sh" in str(s.get("run", ""))]
         self.assertEqual(len(stop), 1)
+        self.assertEqual(stop[0].get("if"), "always()")
         run = stop[0]["run"]
-        for port in ("3011", "3124", "3191"):
-            self.assertIn(port, run, "止めた後に番号が空いたかを見る")
-        self.assertIn("exit 1", run, "残れば赤")
+        self.assertEqual(set(re.findall(r"\$RUNNER_TEMP/(\w+\.pid)", run)), written, "止める段が同じ pid のファイルを渡す")
+        # 段をそのまま動かす：lsof を偽物にし、番号が残っていれば赤・空いていれば緑
+        for busy, want in (("3124", 1), ("", 0)):
+            tmp = pathlib.Path(tempfile.mkdtemp())
+            try:
+                fake_bin(tmp, "lsof", f'[ "$2" = "tcp:{busy}" ] && {{ echo 999; exit 0; }}; exit 1\n' if busy else "exit 1\n")
+                env = {**os.environ, "PATH": f"{tmp}:{os.environ['PATH']}", "RUNNER_TEMP": str(tmp)}
+                r = subprocess.run(["bash", "-e", "-c", run], cwd=ROOT, env=env, capture_output=True, text=True)
+                self.assertEqual(r.returncode, want, f"番号 {busy or 'なし'}：{r.stdout}{r.stderr}")
+            finally:
+                shutil.rmtree(tmp, ignore_errors=True)
 
 
 class VenvLock(unittest.TestCase):
+    def setUp(self):
+        self.tmp = pathlib.Path(tempfile.mkdtemp())
+        self.venv = self.tmp / "venv"
+        self.lock = pathlib.Path(str(self.venv) + ".lock")
+        self.req = self.tmp / "req.txt"
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def env(self, wait: str = "60") -> dict:
+        return {**os.environ, "KANAME_CI_VENV": str(self.venv), "KANAME_CI_REQ": str(self.req),
+                "KANAME_CI_LOCK_WAIT": wait, "GITHUB_PATH": str(self.tmp / "gp")}
+
+    def sh(self, wait: str = "60", **kw):
+        return subprocess.Popen(["bash", str(HERE / "ci_venv.sh")], env=self.env(wait), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, **kw)
+
     def test_K172_CI_015_concurrent_venv_setup_is_serialized(self):
-        tmp = pathlib.Path(tempfile.mkdtemp())
-        try:
-            req = tmp / "req.txt"
-            req.write_text("# 空（網に出ない）\n")
-            env = {**os.environ, "KANAME_CI_VENV": str(tmp / "venv"), "KANAME_CI_REQ": str(req), "GITHUB_PATH": str(tmp / "gp")}
-            ps = [subprocess.Popen(["bash", str(HERE / "ci_venv.sh")], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(4)]
-            outs = [p.communicate(timeout=300) for p in ps]
-            for p, (o, e) in zip(ps, outs):
-                self.assertEqual(p.returncode, 0, e)
-            r = subprocess.run([str(tmp / "venv" / "bin" / "python3"), "-c", "print(1)"], capture_output=True, text=True)
-            self.assertEqual(r.stdout.strip(), "1")
-            self.assertFalse((tmp / "venv.lock").exists(), "ロックが残らない")
-        finally:
-            shutil.rmtree(tmp, ignore_errors=True)
-        src = (HERE / "ci_venv.sh").read_text(encoding="utf-8")
-        self.assertIn("mkdir", src, "ロックで入れ直しを 1 つずつ")
+        self.req.write_text("# 空（網に出ない）\n")
+        ps = [self.sh() for _ in range(4)]
+        for p in ps:
+            o, e = p.communicate(timeout=300)
+            self.assertEqual(p.returncode, 0, e)
+        r = subprocess.run([str(self.venv / "bin" / "python3"), "-c", "print(1)"], capture_output=True, text=True)
+        self.assertEqual(r.stdout.strip(), "1")
+        self.assertFalse(self.lock.exists(), "ロックが残らない")
+
+    def test_K172_CI_015_waits_for_lock_held_by_live_owner(self):
+        self.req.write_text("# 空\n")
+        self.lock.mkdir(parents=True)
+        (self.lock / "pid").write_text(str(os.getpid()))   # 持ち主は生きている（この試験）
+        p = self.sh(wait="2")
+        o, e = p.communicate(timeout=60)
+        self.assertNotEqual(p.returncode, 0, "生きた持ち主のロックは取らない（待ちの上限で赤）")
+        self.assertFalse(self.venv.exists(), "ロックを取れないうちは venv に触らない")
+
+    def test_K172_CI_015_rechecks_stamp_after_lock(self):
+        import hashlib
+        import time
+        # 入れようとすれば網に出て落ちる一覧。先に入れた組の印があれば入れ直さない＝0 で終わる
+        self.req.write_text("kaname-no-such-package-zzz==0.0.0\n")
+        self.lock.mkdir(parents=True)
+        (self.lock / "pid").write_text(str(os.getpid()))
+        p = self.sh(wait="60")
+        time.sleep(1.0)
+        self.assertIsNone(p.poll(), "ロックを待っている")
+        subprocess.run([sys.executable, "-m", "venv", str(self.venv)], check=True)
+        (self.venv / ".requirements.sha").write_text(hashlib.sha256(self.req.read_bytes()).hexdigest() + "\n")
+        shutil.rmtree(self.lock)
+        o, e = p.communicate(timeout=60)
+        self.assertEqual(p.returncode, 0, e)
+
+    def test_K172_CI_015_takes_over_lock_of_dead_owner(self):
+        self.req.write_text("# 空\n")
+        dead = subprocess.Popen(["true"])
+        dead.wait()
+        self.lock.mkdir(parents=True)
+        (self.lock / "pid").write_text(str(dead.pid))   # 台が落ちた組の残したロック
+        p = self.sh(wait="20")
+        o, e = p.communicate(timeout=120)
+        self.assertEqual(p.returncode, 0, e)
+        self.assertFalse(self.lock.exists())
 
 
 class DbSweep(unittest.TestCase):
@@ -312,8 +390,37 @@ class DbSweep(unittest.TestCase):
         self.assertEqual(got, ["kaname-ci-1-1-unit-1"])
         for job in DB_JOBS:
             start = [s for s in steps(job) if "docker run" in str(s.get("run", ""))]
-            self.assertIn("ci_db_sweep.py", start[0]["run"], job)
+            run = start[0]["run"]
+            self.assertIn("ci_db_sweep.py", run, job)
+            self.assertLess(run.index("ci_db_sweep.py"), run.index("docker run"), f"{job}：立てる前に消す")
 
+    def test_K172_CI_016_cli_reads_docker_times_and_removes_only_old(self):
+        import datetime as dt
+        now = dt.datetime.now(dt.timezone.utc)
+        iso = lambda d: (now - d).strftime("%Y-%m-%dT%H:%M:%S.123456789Z")
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            log = tmp / "rm.log"
+            fake_bin(tmp, "docker", f"""case "$1" in
+  ps) printf 'a1\\na2\\na3\\n' ;;
+  inspect) printf '/kaname-ci-9-1-unit-1 {iso(dt.timedelta(hours=7))}\\n/kaname-ci-8-1-web {iso(dt.timedelta(hours=1))}\\n/kaname-ci-7-1-spec {iso(dt.timedelta(hours=9))}\\n' ;;
+  rm) echo "$@" >> "{log}" ;;
+esac
+""")
+            env = {**os.environ, "PATH": f"{tmp}:/usr/bin:/bin"}
+            r = subprocess.run([sys.executable, str(HERE / "ci_db_sweep.py"), "--keep", "kaname-ci-7-1-spec"], env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertEqual(log.read_text().split(), ["rm", "-f", "kaname-ci-9-1-unit-1"], "7 時間前の物だけ（UTC で読む）")
+            # docker が無い台・docker が落ちている台では消さずに 0（DB を立てる段で赤になる）
+            for body in (None, "exit 1\n"):
+                d = tmp / ("none" if body is None else "down")
+                d.mkdir()
+                if body is not None:
+                    fake_bin(d, "docker", body)
+                r = subprocess.run([sys.executable, str(HERE / "ci_db_sweep.py")], env={**os.environ, "PATH": f"{d}:/usr/bin:/bin"}, capture_output=True, text=True)
+                self.assertEqual(r.returncode, 0, r.stderr)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
