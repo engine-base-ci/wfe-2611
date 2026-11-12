@@ -463,6 +463,8 @@ class BlobRoots(unittest.TestCase):
         self.assertIn(f"{me}/apps/api/test/z.test.ts", two)
         self.assertNotIn(a, one)
         self.assertNotIn(b, two)
+        self.assertEqual(sorted(x.name for x in self.rep.iterdir()), ["blob-1-2.json", "blob-2-2.json"],
+                         "置き場には blob だけ（vitest は置き場の全部のファイルを結果として読む）")
 
     def test_K172_CI_018_blob_without_root_is_red_before_vitest(self):
         import contextlib
