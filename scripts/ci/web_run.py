@@ -26,7 +26,7 @@ def commands(part: str, full: bool, specs: list[str], tasks: list[str]) -> list[
             if not rel:
                 return []
             run = ["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", *rel]
-            gate = [x for t in tasks for x in ("--task", t)]
+            gate = [x for sp in specs for x in ("--rows-in", sp)]   # 流した試験に書かれた行だけを照らす（持ち主で決めない・K-177）
         return [run,
                 ["python3", "scripts/ci/ci_results.py", "record", "--report", "apps/web/pw-reports/k.json",
                  "--sha", os.environ.get("GITHUB_SHA", ""), "--records", "07_qa/ci-results"],
@@ -53,8 +53,13 @@ def main() -> int:
     tasks = json.loads(os.environ.get("CI_WEB_TASKS") or "[]")
     cmds = commands(part, full, specs, tasks)
     if not cmds:
-        print(f"{part}：チケットの範囲に当たる画面の試験が無い（流さない）")
-        return 0
+        other = json.loads(os.environ.get("CI_WEB_OTHER") or "[]")
+        if other:   # もう片方の段（G48／G59）には流す物がある。この段は選ばれなかっただけ
+            print(f"{part}：この段に当たる画面の試験は無い（もう片方の段だけ流す）")
+            return 0
+        # web の組が動いているのに両方の段の一覧が空＝範囲の台本の出力が渡っていない（壊れている）。黙って緑にしない
+        print(f"★ {part}：web の組が動いているのに、流す画面の試験の一覧が両方の段で空（範囲の台本の出力 web_g48・web_g59 が渡っていない）")
+        return 1
     env = env_for(part, dict(os.environ))
     for c in cmds:
         print("$ " + " ".join(c), flush=True)

@@ -102,6 +102,8 @@ def main() -> int:
     ap.add_argument("--record", action="store_true")
     # 結果の欄は取り込みの台本が CI の記録から書く（K-143・D-129.51）。CI の回では、結果が空の行を今の回の報告で確かめる
     ap.add_argument("--pending-from-report", action="store_true")
+    ap.add_argument("--rows-in", action="append", default=[],
+                    help="このファイル（流した試験）に書かれた行 ID の行だけを照らす。照らすチケットは行の「タスク」列から（K-177）")
     a = ap.parse_args()
     cfg = {}
     cp = os.path.join(a.spec, "op-gate.json")
@@ -121,6 +123,17 @@ def main() -> int:
     else:
         tasks = {t["id"]: t for t in tj["tasks"]}
     targets = list(a.task)
+    only: set[str] | None = None
+    if a.rows_in:   # チケットの範囲の回（K-177）：流した試験に書かれた行だけ。持ち主のチケットでない行も照らす
+        text = "\n".join(open(f, encoding="utf-8", errors="replace").read() for f in a.rows_in)
+        rows_all = load_rows(a.spec)
+        only = {rid for rid in rows_all if re.search(rf"\b{re.escape(rid)}\b", text)}
+        for rid in only:
+            t = rows_all[rid]["task"]
+            tasks.setdefault(t, {"id": t, "deliverable_layer": "ui", "status": "done", "qa_rows": {"l1": []}})
+            if rid not in tasks[t]["qa_rows"]["l1"]:
+                tasks[t]["qa_rows"]["l1"].append(rid)
+        targets = sorted({rows_all[rid]["task"] for rid in only})
     if a.wave:
         ws = json.load(open(a.waves, encoding="utf-8"))
         for w in (ws.get("waves", ws) if isinstance(ws, dict) else ws):
@@ -129,6 +142,8 @@ def main() -> int:
     if a.all:
         targets = [t for t, x in tasks.items() if x.get("status") == "done"]
     if not targets:
+        if a.rows_in:
+            print("流した試験のファイルに、仕様の行 ID が 1 つも無い（照らす行が無い）"); return 0
         print("対象のタスクが無い（--task / --wave / --all）"); return 2
     rows = load_rows(a.spec)
     # 報告の一覧は op-gate.json に 1 つだけ持つ。--report を書かなければそれを使う（呼ぶ側に書き写すと足し忘れる）
@@ -148,6 +163,8 @@ def main() -> int:
         if t.get("deliverable_layer") not in layers:
             continue
         for rid in t.get("qa_rows", {}).get("l1", []):
+            if only is not None and rid not in only:
+                continue
             r = rows.get(rid)
             if not r:
                 fails.append(f"{tid} {rid}: 正本に行が無い"); continue

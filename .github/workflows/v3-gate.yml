@@ -693,6 +693,7 @@ jobs:
         env:
           CI_FULL: ${{ needs.static.outputs.full }}
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
           CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
         run: BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48
       - name: "G59 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）"
@@ -700,6 +701,7 @@ jobs:
         env:
           CI_FULL: ${{ needs.static.outputs.full }}
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-skeleton.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59
       - uses: actions/upload-artifact@v4
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）

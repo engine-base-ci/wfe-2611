@@ -47,9 +47,10 @@ def select(changed: list[str], ticket: str, tickets: dict, g48: list[str], g59: 
     def built_by(f: str) -> set[str]:
         return {x for tid, t in tickets.items() if any(f == c or _match(f, c) for c in t.get("changes") or []) for x in tests_of(tid)}
 
-    pick |= tests_of(ticket)
-    for d in (tickets.get(ticket) or {}).get("depends_on") or []:
-        pick |= tests_of(d)
+    for tid in ([ticket] if isinstance(ticket, str) else list(ticket or [])):   # 範囲のチケットが複数でも全部（K-177 レビュー）
+        pick |= tests_of(tid)
+        for d in (tickets.get(tid) or {}).get("depends_on") or []:
+            pick |= tests_of(d)
     for f in changed:
         if _any(f, cfg.get("all_on") or []):
             every = True

@@ -1198,7 +1198,7 @@
    "id": 48,
    "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）",
    "script": "BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48",
-   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}\n",
+   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}\n",
    "job": "web",
    "blocking": true
   },
@@ -1206,7 +1206,7 @@
    "id": 59,
    "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）",
    "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59",
-   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}\n",
+   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}\n",
    "job": "web",
    "blocking": true
   },

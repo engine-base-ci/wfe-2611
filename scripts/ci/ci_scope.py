@@ -570,7 +570,7 @@ def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     return sorted((k for k, globs in g.items() if any(match(x, globs) for x in changes)), key=int)
 
 
-def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str) -> dict:
+def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list[str]) -> dict:
     """web の組で流す画面の試験（チケットの範囲・K-177）"""
     tk = {}
     for f in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
@@ -590,8 +590,12 @@ def with_web_selection(p: dict, sel: dict) -> dict:
     if p["mode"] == "full":
         return {**p, "web_g48": [], "web_g59": [], "web_tasks": []}
     hit = bool(sel["g48"] or sel["g59"])
+    errs = list(p.get("errors") or [])
+    if p["jobs"]["web"] and not hit:   # web の組を流すはずの変更なのに選べない：黙って飛ばさず止める（D-133.7・K-177 レビュー）
+        errs.append("web の組を流すはずの変更なのに、流す画面の試験を決められない。チケットの tests: に画面の試験を書くか、"
+                    "画面の試験を持つチケットを depends_on に書く（" + "・".join(sel["reasons"]) + "）")
     return {**p, "jobs": {**p["jobs"], "web": p["jobs"]["web"] and hit}, "web_g48": sel["g48"], "web_g59": sel["g59"],
-            "web_tasks": sel["tasks"], "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
+            "web_tasks": sel["tasks"], "errors": errs, "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
 
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
@@ -780,7 +784,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     if not p["jobs"]["unit"]:
         p["unit_shards"] = 0
     if p["jobs"]["web"] and (web_select.domain_g48(repo) or web_select.domain_g59(repo)):   # 画面の試験があるリポジトリだけ
-        p = with_web_selection(p, _web_pick(repo, tickets_dir, rules, p, ids[0] if len(ids) == 1 else ""))
+        p = with_web_selection(p, _web_pick(repo, tickets_dir, rules, p, list(ids)))
     return done()
 
 
