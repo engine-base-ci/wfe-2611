@@ -48,7 +48,7 @@ class WebJunit(unittest.TestCase):
             name, run = str(st.get("name", "")), str(st.get("run", ""))
             if not (name.startswith("G48 ") or name.startswith("G59 ")):
                 continue
-            self.assertIn("playwright", run + str(st.get("env", "")) + ("e2e:k" if "e2e:k" in run else ""), name)
+            self.assertTrue("playwright test" in run or "e2e:k" in run, f"{name}：実ブラウザの試験を流す段")   # e2e:k は playwright test の別名（apps/web/package.json）
             m = re.search(r'PLAYWRIGHT_JUNIT_OUTPUT_NAME="?([^"\s]+)"?', run)
             out = m.group(1) if m else str((st.get("env") or {}).get("PLAYWRIGHT_JUNIT_OUTPUT_NAME", default))
             self.assertRegex(out, r"^(\$\{\{ github\.workspace \}\}|\$GITHUB_WORKSPACE)/junit/[\w-]+\.xml$", f"{name}：{out}")
