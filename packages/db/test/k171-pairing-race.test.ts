@@ -93,20 +93,34 @@ describe("K-171 コードの取り合い", () => {
   });
 
   it("K171-DB-002 同じアカウント（auth_user_id が同じ）の別の会社の人が同時に出すと、アカウントで生きたコードは 1 行だけ", async () => {
+    // members.auth_user_id は全体で 1 つ。2 つ目の会社に入る人は tenant_memberships で表す（app.account_members の見方の 2 つの枝を両方受ける）
     const au = randomUUID();
     const a = await newMember(S.tenantA, au);
-    const b = await newMember(S.tenantB, au);
+    const b = await newMember(S.tenantB, null);
+    await admin.query(
+      "insert into tenant_memberships (tenant_id, member_id, auth_user_id, status) values ($1, $2, $3, 'active')",
+      [S.tenantB, b, au],
+    );
     await overlap({ tenant: S.tenantA, member: a }, { tenant: S.tenantB, member: b });
+    expect(await liveCodes([a, b])).toBe(1);
+    await overlap({ tenant: S.tenantB, member: b }, { tenant: S.tenantA, member: a }); // 逆の向き（tenant_memberships の側が先に鍵を取る）
     expect(await liveCodes([a, b])).toBe(1);
   });
 
-  it("K171-DB-003 別のアカウントの 2 人が同時に出すと、それぞれ 1 行ずつ生きる", async () => {
+  it("K171-DB-003 別のアカウントの 2 人が同時に出すと、それぞれ 1 行ずつ生きる（片方の確定を待たない）", async () => {
     const a = await newMember(S.tenantA, randomUUID());
     const b = await newMember(S.tenantA, randomUUID());
-    await issueAtOnce([
-      { tenant: S.tenantA, member: a },
-      { tenant: S.tenantA, member: b },
-    ]);
+    const c = await admin.connect();
+    try {
+      await c.query("begin");
+      await c.query("select app.bridge_code_new($1, $2, $3)", [S.tenantA, a, hash(randomUUID())]); // a の鍵を持ったまま確定しない
+      const t = Date.now();
+      await admin.query("select app.bridge_code_new($1, $2, $3)", [S.tenantA, b, hash(randomUUID())]); // 別の接続から b
+      expect(Date.now() - t).toBeLessThan(1500); // a の確定を待たずに返る（鍵が全員で 1 つなら、ここで止まって時間切れ）
+      await c.query("commit");
+    } finally {
+      c.release();
+    }
     expect(await liveCodes([a])).toBe(1);
     expect(await liveCodes([b])).toBe(1);
   });
@@ -114,17 +128,21 @@ describe("K-171 コードの取り合い", () => {
   it("K171-DB-004 鍵を取った取引が途中で失敗して戻っても、次の発行は待たずに通り、生きたコードは 1 行", async () => {
     const m = await newMember(S.tenantA, null);
     const c = await admin.connect();
+    const other = await admin.connect(); // 次の発行は必ず別の接続から（同じ接続だと、取引の外に残った鍵を自分で取り直せて待たない）
     try {
       await c.query("begin");
       await c.query("select app.bridge_code_new($1, $2, $3)", [S.tenantA, m, hash(randomUUID())]);
       await expect(c.query("select 1 / 0")).rejects.toThrow();
       await c.query("rollback");
+      const t = Date.now();
+      await other.query("set statement_timeout = 2000");
+      await other.query("select app.bridge_code_new($1, $2, $3)", [S.tenantA, m, hash(randomUUID())]);
+      expect(Date.now() - t).toBeLessThan(2000);
     } finally {
       c.release();
+      await other.query("reset statement_timeout");
+      other.release();
     }
-    const t = Date.now();
-    await admin.query("select app.bridge_code_new($1, $2, $3)", [S.tenantA, m, hash(randomUUID())]);
-    expect(Date.now() - t).toBeLessThan(2000);
     expect(await liveCodes([m])).toBe(1);
   });
 });
