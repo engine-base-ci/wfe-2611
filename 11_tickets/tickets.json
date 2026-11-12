@@ -7076,7 +7076,8 @@
     "@kaname/errors"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "sections": {
     "目的": "（2026-11-13 切り直し）この孫は DB と口だけ。画面（承認するボタン・チケットの帯）は K-180 が作る（重さの上限：画面と DB を 1 本で触らない）。古い枝の中身を材料に main から作り直した。\n\n\n承認する人（今の担当者）が承認待ちの行の「承認する」か、チケットの詳細の帯の「承認して送る」を押すと、承認が確定し、任せた人の PC に実行の仕事（phase execute・許可は auto）が積まれ、チケットは実行中になる。PC が閉じていれば答えの pc が asleep で実行待ち（開いて取りに来たら任せた人の PC にだけ渡る）。本人確認は取り直さない（D-128.177）。\n\n確定の時点：承認の行に決めたこと（approve）・時刻（decided_at）・状態（approved）・解いた時刻（resolved_at）を 1 回の書き込みで入れた時点。決まった承認は変えられない（migration 0063 の approvals_once）。チケットの詳細の帯（承認待ちで決められる人・決められない人・担当者がいない・409 など）は K-180 が置く。この孫が持つのは、帯が読む口（getTicket の approval と stage.key）まで。",
@@ -7087,7 +7088,7 @@
     "成果物": "- 口 decide.ts（承認）・getTicket の approval と stage.key・row_rules.mjs の OP_RULES.approveApproval／migration `_approve_decide.sql`（① の承認・③・帯の関数・resume_session_id・approvals_step_up_ck を外す）／契約の INPUTS・RESPONSES・PERMS／errors の E-CONF-003 の文／zt_gate.py\n- 単体のテスト：`apps/api/test/features/F5/approve-complete-approve.test.ts`（行 16）",
     "決定ログ": "- 2026-11-10 親 K-63 を孫に分けた（決める人の答え answer=2372305498fb「K-63 だけ孫に分ける」・葉の大きさの決まり 2026-11-10）。行と試験は親の版 c86b9d70（精査 R 回 4 合格）から中身を変えずに移した。決めたことの経緯は親 K-63 の「決定ログ」",
     "リスクと懸念": "- 承認の関数（① app.approval_decide）は K-163 が create or replace で差し戻しを足す。K-163 はこの孫の取り込み後の本線の本体から写す（承認の分かれ道を変えない）\n- 実行（送る）は取り消せない。承認では本人確認を取り直さないので、承認する人を口と関数の 2 層で守る（K63-API-023・051）",
-    "申し送り": "- 帯の「差し戻す」は K-163、帯の実行の状態（③〜⑤）は K-164、完了（⑥⑦）と can.complete は K-165 が band.tsx・getTicket に足す"
+    "申し送り": "- 共通の入口（apps/api/src/contract/op.ts・packages/db/src/repository.ts）を触った：会社から抜けた・止められた人は、行の確かめで 404 でなく 403（D-131.7・全部の口・app.member_gone）。手元の使い捨て DB で apps/api・packages/db の試験 3,233 本が緑\n\n- 帯の「差し戻す」は K-163、帯の実行の状態（③〜⑤）は K-164、完了（⑥⑦）と can.complete は K-165 が band.tsx・getTicket に足す"
    },
    "file": "11_tickets/K-162.md"
   },
