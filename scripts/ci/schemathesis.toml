@@ -4,3 +4,10 @@
 #   契約の responses にも 413 がある。断ったのに「受け付けた」（ST201）と数えないよう、断った状態コードの並びに 413 を入れる
 [checks.negative_data_rejection]
 expected-statuses = ["400", "401", "403", "404", "405", "406", "409", "413", "415", "422", "428", "429", "5xx"]
+
+# K-161：一覧の「続きの印」（cursor）は、口が前の答えで渡した鍵の文字列（base64url）だけを受ける。形（pattern）は合っていても、
+#   復号できない・3 つに分かれない印は 422（欄 cursor）で断る（D-131.9・K63-API-040）。形だけでは書けない決まりなので、
+#   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "listApprovalQueue"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
