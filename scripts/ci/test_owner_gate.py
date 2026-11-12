@@ -81,7 +81,11 @@ def workflow_globs(wf: str) -> list[str]:
     args = []
     for m in re.finditer(r"--filter @kaname/web exec playwright test ([^\n&|;]+)", wf):
         args += [a for a in m.group(1).split() if not a.startswith("-")]
-    return [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
+    out = [WEB + (a if a.endswith(".ts") else a.rstrip("/") + "/**/*.spec.ts") for a in args]
+    if re.search(r"scripts/ci/web_run\.py g59\b", wf):   # K-177：G59 は web_run.py が中間の試験の置き場を流す
+        from web_select import SKELETON
+        out.append(SKELETON + "**/*.spec.ts")
+    return out
 
 
 def ci_py_tests(wf: str) -> list[str]:
