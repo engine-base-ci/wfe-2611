@@ -51,7 +51,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"
@@ -163,7 +163,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -212,7 +212,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -249,7 +249,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -286,7 +286,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -323,7 +323,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -360,7 +360,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -397,7 +397,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -434,7 +434,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - uses: actions/download-artifact@v4
@@ -466,7 +466,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -612,7 +612,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: DB を立てる（組の中・空いている番号・K-172）
@@ -690,7 +690,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium

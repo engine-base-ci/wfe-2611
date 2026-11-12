@@ -18,7 +18,7 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '${{ env.NODE_VERSION }}', cache: pnpm }
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
       - run: pnpm install --frozen-lockfile
       - run: bash scripts/ci/ci_venv.sh
       - name: "ゼロトラストの実装の残りが 0（--strict）"
