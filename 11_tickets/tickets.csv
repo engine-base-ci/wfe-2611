@@ -906,3 +906,8 @@ Mac の上で Tart の VM を組ごとに複製して起こし、GitHub の 1 �
 - [ ] Python の部品を使う組は、ci_venv.sh の前に actions/setup-python で 3.14 を用意する（VM の Python は 3.12。GitHub の台と同じやり方）
 - [ ] K-172 の試験 K172-CI-001（台の印）と K172-CI-003（setup-python を使わない）を新しい形に合わせる
 - [ ] 試験 K173-CI-001〜002 が緑・チケットの CI が VM の台で緑"
+K-174,ticket-flow の設定に CI の台（組ごとの Linux の VM）と、出す前の手元の検査を書く,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"K-173 で CI の台を組ごとの Linux の VM にした。その台（元の像・待ち受けの台数とコア・登録に使うアカウント・像に入れる道具・温める命令）を、
+手で作ったままにせず ticket-flow.yaml の vm: に書き、どの PC でも `vm.py build-image`・`install-pool` で同じものを作れるようにする。
+あわせて、K-172 で CI に出してから赤を返された検査（整形・生成物・試験の持ち主・配線）を、出す前に手元で流す（preflight）。","- [ ] ticket-flow.yaml の vm: が vm.py の検査を通る（登録のアカウント・コアの合計が台のコア数まで）・vm.label が workflow の runs-on と同じ
+- [ ] preflight が、K-172・K-173 で CI に出してから赤になった検査（整形・生成物・試験の持ち主・配線）を持ち、どの命令も実在する台本を指す
+- [ ] 試験 K174-CF-001〜002 が緑・チケットの CI が緑"

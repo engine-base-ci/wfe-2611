@@ -7067,6 +7067,52 @@
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもの（VM の台）で確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K173-CI-001 | 入力 | 作り手から作った workflow（v3-gate・release-gate）の全部の組 | runs-on が [self-hosted, linux-vm]・macOS の印はどこにも無い |\n| K173-CI-002 | 入力 | ci_venv.sh を流す組 | その段より前に actions/setup-python があり、python-version が 3.14 |"
    },
    "file": "11_tickets/K-173.md"
+  },
+  {
+   "id": "K-174",
+   "title": "ticket-flow の設定に CI の台（組ごとの Linux の VM）と、出す前の手元の検査を書く",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "0.5",
+   "estimate_basis": "K-173 の実測（53 分・うち原因探し 44 分）。中身は設定と形の試験だけ",
+   "decisions": [
+    "D-133"
+   ],
+   "choke_points": [],
+   "choke_none": "進め方の設定だけ。製品の外への出口に触らない",
+   "depends_on": [
+    "K-173"
+   ],
+   "tests": [
+    "scripts/ci/k174_flow_config_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "ticket-flow.yaml",
+    "scripts/ci/k174_flow_config_test.py",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "K-173 で CI の台を組ごとの Linux の VM にした。その台（元の像・待ち受けの台数とコア・登録に使うアカウント・像に入れる道具・温める命令）を、\n手で作ったままにせず ticket-flow.yaml の vm: に書き、どの PC でも `vm.py build-image`・`install-pool` で同じものを作れるようにする。\nあわせて、K-172 で CI に出してから赤を返された検査（整形・生成物・試験の持ち主・配線）を、出す前に手元で流す（preflight）。",
+    "完了の条件": "- [ ] ticket-flow.yaml の vm: が vm.py の検査を通る（登録のアカウント・コアの合計が台のコア数まで）・vm.label が workflow の runs-on と同じ\n- [ ] preflight が、K-172・K-173 で CI に出してから赤になった検査（整形・生成物・試験の持ち主・配線）を持ち、どの命令も実在する台本を指す\n- [ ] 試験 K174-CF-001〜002 が緑・チケットの CI が緑",
+    "前提と制約": "- 前提：ticket-flow の vm.py・preflight（スキルの側・2026-11-12）\n- 値（コア・台数）は K-173 の実測：3 台×3 コアで全体 約 3 分・10 コアの Mac",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 設定 | ticket-flow.yaml に vm:（label linux-vm・image tf-golden・slots 3・cpu 3・memory 4096・account engine-base・tools python 3.14・node 22・warm pnpm install と ci_venv.sh）と preflight（pnpm install・lint・生成物・試験の持ち主・配線） |\n| 配線 | G65 の段に k174_flow_config_test.py を足す |",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K174-CF-001 | 入力 | ticket-flow.yaml の vm: | account が空でない・slots×cpu が 10 以下・label が v3-gate.yml と release-gate.yml の全部の組の runs-on の 2 つ目と同じ・tools の python が workflow の setup-python の版と同じ |\n| K174-CF-002 | 入力 | ticket-flow.yaml の preflight | 整形（pnpm lint）・生成物（generated_gate.py）・試験の持ち主（test_owner_gate.py）・配線（ci_wiring_gate.py）を持ち、命令の中の scripts/ の台本がどれも実在する |"
+   },
+   "file": "11_tickets/K-174.md"
   }
  ]
 }
