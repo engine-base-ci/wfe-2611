@@ -82,6 +82,7 @@
    "**/*.d.ts",
    "**/cli.ts",
    "packages/contracts/src/types.ts",
+   "packages/contracts/src/ops.ts",
    "packages/errors/src/catalog.ts"
   ]
  },
@@ -327,6 +328,15 @@
     "apps/api/test/generated/post_bridge_jobs_id_tools_name.test.ts",
     "apps/api/test/generated/post_bridge_jobs_take.test.ts",
     "apps/api/test/generated/post_tickets_id_delegate.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/approve-complete-queue.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_approvals_id.test.ts",
+    "apps/api/test/generated/get_approvals_queue.test.ts"
    ]
   },
   {

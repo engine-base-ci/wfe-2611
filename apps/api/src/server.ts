@@ -12,6 +12,7 @@ import { withDevice } from "./middleware/tenant.js";
 import { bridgeHooks } from "./hooks/bridge.js";
 import { ticketHooks } from "./hooks/tickets.js";
 import { delegateHooks } from "./hooks/delegate.js";
+import { approveHooks } from "./hooks/approve-complete.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { authExt } from "./auth/ext.js";
@@ -156,6 +157,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...ticketHooks(appPool),
         // AI に任せる（K-62）。getTicket は K-60 の詳細に can.delegate を足したものに置き換わる
         ...delegateHooks(appPool),
+        // 承認して完了する（K-63 の孫）。K-161 は承認待ちの一覧と 1 件
+        ...approveHooks(appPool),
       },
     },
   });

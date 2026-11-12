@@ -183,18 +183,21 @@ if _badnames: raise SystemExit(f"列の名前が英小文字と _ だけでな�
 schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}, "code": {"type": "string"}, "message": {"type": "string"}, "details": {"type": "array", "items": {"type": "object"}}, "retry_after_sec": {"type": "integer"}}, "required": ["error"]}
 # 問い合わせの値の形（入口 op.ts が確かめるのと同じ。K-35）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
-def qtype(q, table):
+# 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
+KEY_CURSOR_OPS = {"listApprovalQueue"}
+def qtype(q, table, op=None):
     cols = sorted(_DBC.get(table, {}))
     if q == "limit": return {"type": "integer", "minimum": 1, "maximum": 200}
     if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
     if q.endswith("_id"): return {"type": "string", "format": "uuid"}   # *_id は正式な uuid（scope_id も・D-129.42・K-144）
     if q.endswith("_ids"): return {"type": "array", "items": {"type": "string", "format": "uuid"}}
+    if q == "cursor" and op in KEY_CURSOR_OPS: return {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,200}$"}   # 鍵の文字列（base64url）
     if q == "cursor": return {"type": "string", "pattern": "^[0-9]{1,9}$"}
     return {"type": "string"}
-def qparams(names, table):
+def qparams(names, table, op=None):
     has = _DBC.get(table)
     names = list(dict.fromkeys(names))   # 同じ名前を二度出さない（画面の問い合わせに sort が入っていると、一覧の共通の分と重なっていた）
-    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
+    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table, op)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
 # 口ごとの入力の形（K-144 ⑰・㉑）：必須の欄（REQUIRED_INPUTS）と値域（VALUE_RANGES）を、その口の入力の形に書く。
 #   同じ形を必須か値域の違う口と分け合っているなら、その口に自分の形 <operationId の頭を大文字>Input を作る（欄は同じ・知らない項目は許さない）。
 #   写しは copy.deepcopy（同じ辞書を 2 か所に置くと YAML の別名が出て、contract.mjs が欄を読めない。表の入力の欄は答えの形と辞書を分け合っている）
@@ -229,8 +232,8 @@ for e in endpoints:
     for _n in _pp:
         if _n not in e["path_params"]: raise SystemExit(f"05_flow/screen_api.py の PATH_PATTERNS の {e.get('operation_id')}.{_n} が道の値に無い")
     op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n.endswith("id") else ({"type": "string", "pattern": _pp[n]} if n in _pp else {"type": "string"})} for n in e["path_params"]]   # :id・:qid・:pid・:mid は uuid（D-129.42）
-    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname)
-    elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname)
+    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname, e.get("operation_id"))
+    elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname, e.get("operation_id"))
     op["parameters"] += [{"name": h, "in": "header", "required": True, "schema": {"type": "string", "minLength": 32}} for h in getattr(_sa, "HEADERS", {}).get(e.get("operation_id"), [])]   # 頭で受ける値（K-51）
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))

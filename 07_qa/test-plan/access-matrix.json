@@ -6449,7 +6449,8 @@
    "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id =",
    "source": [
     "D-128.86",
-    "D-128.115"
+    "D-128.115",
+    "D-128.25"
    ]
   },
   {
@@ -6464,7 +6465,8 @@
    "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id =",
    "source": [
     "D-128.86",
-    "D-128.115"
+    "D-128.115",
+    "D-128.25"
    ]
   },
   {
@@ -6479,7 +6481,8 @@
    "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id =",
    "source": [
     "D-128.86",
-    "D-128.115"
+    "D-128.115",
+    "D-128.25"
    ]
   },
   {
@@ -6494,7 +6497,8 @@
    "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid)) OR approver_member_id =",
    "source": [
     "D-128.86",
-    "D-128.115"
+    "D-128.115",
+    "D-128.25"
    ]
   },
   {

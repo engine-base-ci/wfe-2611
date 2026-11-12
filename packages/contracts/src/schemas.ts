@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:2db60703621ed448
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:91235ca1d3649d47
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3540,11 +3540,15 @@ export const ApprovalQueueItem = z.strictObject({
   ticket_number: z.string().optional(),
   title: z.string().optional(),
   from_member_id: z.string().optional(),
+  from_name: z.string().optional(),
   check_summary: z.string().optional(),
-  due_on: z.string().optional(),
+  due_on: z.string().nullable().optional(),
   decide_inline: z.boolean().optional(),
+  irreversible: z.boolean().optional(),
   primary_action: z.string().optional(),
   secondary_action: z.string().optional(),
+  note: z.string().nullable().optional(),
+  created_at: z.string().optional(),
 });
 export const ApprovalDetail = z.strictObject({
   approval: z.record(z.string(), z.unknown()).optional(),
@@ -3553,8 +3557,10 @@ export const ApprovalDetail = z.strictObject({
   message_text: z.string().optional(),
   artifact_version: z.record(z.string(), z.unknown()).optional(),
   checks: z.array(z.unknown()).optional(),
+  check_summary: z.string().optional(),
   cautions: z.array(z.unknown()).optional(),
   irreversible: z.boolean().optional(),
+  can_decide: z.boolean().optional(),
   chain: z.array(z.unknown()).optional(),
 });
 export const BulkApprovalPreview = z.strictObject({
