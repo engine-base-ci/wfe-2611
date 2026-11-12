@@ -251,15 +251,25 @@ export class Repository {
 
   /** 行に結ぶ言葉の確かめ（K-15）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
    *  条件は契約の生成（scripts/ci/row_rules.mjs）が出した式だけ（利用者の入力は $1 の id だけ） */
-  async rowAllowed(ctx: TenantContext, table: string, id: string, sql: string): Promise<"ok" | "missing" | "denied"> {
+  async rowAllowed(
+    ctx: TenantContext,
+    table: string,
+    id: string,
+    sql: string,
+  ): Promise<"ok" | "missing" | "denied" | "gone"> {
     if (!this.columns.has(table as TableName)) return "missing";
     return withTenant(this.pool, ctx, async (c) => {
       const r = await c.query<{ ok: boolean | null }>(
         `select (${sql}) as ok from ${ident(table)} where id = $1 limit 1`,
         [id],
       );
-      if (!r.rows[0]) return "missing";
-      return r.rows[0].ok === true ? "ok" : "denied";
+      if (r.rows[0]?.ok === true) return "ok";
+      // 会社から抜けた・止められた人は、無い（404）でなく権限なし（403）と答える（D-131.7・全部の口・K-162）
+      if (ctx.role === "member") {
+        const g = await c.query<{ gone: boolean }>("select app.member_gone() as gone");
+        if (g.rows[0]?.gone === true) return "gone";
+      }
+      return r.rows[0] ? "denied" : "missing";
     });
   }
 

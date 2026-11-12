@@ -89,7 +89,7 @@ export const OP_RULES = {
   getApproval: `(approver_member_id = ${ME} or requested_by = ${ME} or app.ticket_assignee_is_me(ticket_id) or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
   // 承認する人＝そのチケットの今の担当者だけ（K-162・D-128.25・D-128.138）。RULES.approver は替えない（ほかの口に効かせない）。
   //   関数 app.approval_decide も中で同じ判定をする（守りは 2 層）
-  approveApproval: `exists (select 1 from tickets t where t.id = ticket_id and t.assignee_member_id = ${ME})`,
+  approveApproval: `app.ticket_assignee_is_me(ticket_id)`,
   // 承認する人・担当者・マネージャー
   stopApproval: `(approver_member_id = ${ME} or app.manages_scope(scope_id) or ${VIA_TICKET()})`,
   // 取り消せる業務の型は、見えるものなら誰でも自分用に複製できる

@@ -174,7 +174,7 @@ export function op(deps: ContractDeps, operationId: string) {
     if (id !== null && def.perm.row && def.auth === "member") {
       const r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
       if (r === "missing") return err(c, 404, "not_found", "NOT_FOUND");
-      if (r === "denied") return err(c, 403, "forbidden", "FORBIDDEN");
+      if (r === "denied" || r === "gone") return err(c, 403, "forbidden", "FORBIDDEN"); // gone：会社から抜けた人（D-131.7）
     }
     let input: Row = {};
     if (def.kind === "create" || def.kind === "update") {

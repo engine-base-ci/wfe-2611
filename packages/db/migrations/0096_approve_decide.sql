@@ -24,6 +24,15 @@ language sql stable security definer set search_path = public, app, pg_temp as $
 $$;
 revoke all on function app.approval_member_now() from public;
 
+-- 会社から抜けた・止められた人か（メンバーの行があり、消されたか止められた）。全部の口の行の確かめで 404 でなく 403 にする（D-131.7）
+create or replace function app.member_gone() returns boolean
+language sql stable security definer set search_path = public, app, pg_temp as $$
+  select exists (select 1 from members m where m.id = app.user_id() and m.tenant_id = app.tenant_id()
+                   and (m.deleted_at is not null or m.suspended_at is not null))
+$$;
+revoke all on function app.member_gone() from public;
+grant execute on function app.member_gone() to kaname_app;
+
 -- 任せた人（作る段の仕事を動かした人）が実行に使えるか。使えなければ止める理由の文（D-128.176）。使えれば null
 create or replace function app.ticket_delegator_stop(p_ticket uuid, p_member uuid) returns text
 language sql stable security definer set search_path = public, app, pg_temp as $$
