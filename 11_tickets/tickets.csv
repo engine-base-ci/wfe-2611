@@ -876,8 +876,8 @@ K-161,承認待ちの口（一覧と 1 件・DB と API）（K-63 の孫）,タ�
 
 承認する人（そのチケットの今の担当者）が `/approvals` を開くと、自分が決める AI の成果物の承認待ちが、期限の早い順（期限なしは最後）に 1 回 20 件ずつ並び、見出しの横と左のメニューに同じ数が出る。行の題名からチケットの詳細へ移れ、取り消せない行は「中身を見る」でチケットの詳細の帯へ行く。1 件の口（getApproval）は、成果物の版・検査なしの印・取り消せないの注意・決められるか（can_decide）を返す。
 
-この孫は読むだけ。行の「承認する」は K-162、「差し戻す」は K-163 が足す。読む前の片付け（24 時間を過ぎた待ちの仕事を止める）は K-164 が足す。確定の時点は無い（一覧と数は呼んだ時点の DB の値。並びの鍵は due_on・created_at・id）。","- 下の表の、この孫の行（口 6 行。画面の 8 行は K-179 が持つ・重さの上限で口と画面を分けた・2026-11-12）が全部緑：K63-API-001・K63-API-040・K63-API-046・K63-API-050・K63-API-064・K63-API-066・K-179 の UI-001・K-179 の UI-011・K-179 の UI-016・K-179 の UI-046・K-179 の UI-047・K-179 の UI-048・K-179 の UI-050・K-179 の UI-054
-- 単体のテスト：`apps/api/test/features/F5/approve-complete-queue.test.ts` が緑（試験の土台は `apps/api/test/features/F5/approve-complete.harness.ts`・`apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から 1 文字も変えずに移した）
+この孫は読むだけ。行の「承認する」は K-162、「差し戻す」は K-163 が足す。読む前の片付け（24 時間を過ぎた待ちの仕事を止める）は K-164 が足す。確定の時点は無い（一覧と数は呼んだ時点の DB の値。並びの鍵は due_on・created_at・id）。","- 下の表の、この孫の行（口 6 行。画面の 8 行は K-179 が持つ・重さの上限で口と画面を分けた・2026-11-12）が全部緑：K63-API-001・K63-API-040・K63-API-046・K63-API-050・K63-API-064・K63-API-066
+- 単体のテスト：`apps/api/test/features/F5/approve-complete-queue.test.ts` が緑（試験の土台は `apps/api/test/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から 1 文字も変えずに移した）
 - 口 listApprovalQueue・getApproval が 501 でなく、契約の形が作り手で作り直されている。生成の試験のうち、この孫の行を指すもの（下の「生成の試験の対応」）が本物の試験を指している
 - 前の孫（depends_on）の試験も緑のまま（この孫の migration・関数の写しが前の孫の分かれ道を変えていない）
 - 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑"
