@@ -454,6 +454,7 @@ class BlobRoots(unittest.TestCase):
         (self.rep / "root-1.txt").write_text(a + "\n")
         (self.rep / "blob-2-2.json").write_text(f'["{b}/apps/api/test/z.test.ts"]')
         (self.rep / "root-2.txt").write_text(b + "\n")
+        (self.rep / "root-3.txt").write_text("/r/old\n")   # blob の無い書き置き（前の回の残り・blob を出さずに終わった組）
         errs = ci_scope.rebase_blob_roots(self.rep, me)
         self.assertEqual(errs, [])
         one = (self.rep / "blob-1-2.json").read_text()
@@ -470,10 +471,15 @@ class BlobRoots(unittest.TestCase):
         import contextlib
         import io
         self.rep.mkdir()
+        good = '["/r/a/x.test.ts"]'
         body = '["/elsewhere/a.test.ts"]'
-        (self.rep / "blob-1-1.json").write_text(body)
+        (self.rep / "blob-1-2.json").write_text(good)   # 根がある（先に並ぶ）
+        (self.rep / "root-1.txt").write_text("/r/a\n")
+        (self.rep / "blob-2-2.json").write_text(body)   # 根が無い
         errs = ci_scope.rebase_blob_roots(self.rep, str(self.tmp))
-        self.assertTrue(errs and "root-1.txt" in errs[0], "根の書き置きが無い blob は誤り（どの書き置きか言う）")
+        self.assertTrue(errs and "root-2.txt" in errs[0], "根の書き置きが無い blob は誤り（どの書き置きか言う）")
+        self.assertEqual((self.rep / "blob-1-2.json").read_text(), good, "誤りのときは、根のある blob も書き換えない")
+        self.assertTrue((self.rep / "root-1.txt").exists(), "誤りのときは書き置きを消さない")
         os.chdir(self.tmp)
         called = []
         real = ci_scope.subprocess.run
@@ -486,9 +492,10 @@ class BlobRoots(unittest.TestCase):
             ci_scope.subprocess.run = real
         self.assertEqual(rc, 1)
         self.assertEqual(called, [], "vitest を呼ばない")
-        self.assertIn("blob-1-1.json", out.getvalue(), "赤の理由に blob の名前")
-        self.assertIn("root-1.txt", out.getvalue(), "赤の理由に足りない書き置き")
-        self.assertEqual((self.rep / "blob-1-1.json").read_text(), body, "誤りのときは blob を書き換えない")
+        self.assertIn("blob-2-2.json", out.getvalue(), "赤の理由に blob の名前")
+        self.assertIn("root-2.txt", out.getvalue(), "赤の理由に足りない書き置き")
+        self.assertEqual((self.rep / "blob-2-2.json").read_text(), body, "誤りのときは blob を書き換えない")
+        self.assertEqual((self.rep / "blob-1-2.json").read_text(), good)
 
     def test_K172_CI_018_run_unit_writes_own_root(self):
         self.assertFalse(self.rep.exists(), "新しい作業場所には結果の置き場がまだ無い（vitest が作るのは後）")
