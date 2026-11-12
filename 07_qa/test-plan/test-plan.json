@@ -1197,14 +1197,16 @@
   {
    "id": 48,
    "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）",
-   "script": "BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web e2e:k && python3 scripts/ci/ci_results.py record --report apps/web/pw-reports/k.json --sha \"$GITHUB_SHA\" --records 07_qa/ci-results && python3 scripts/ci/op_gate.py --spec 07_qa/test-specs/k --tickets 11_tickets/tickets.json --all --pending-from-report",
+   "script": "BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48",
+   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}\n",
    "job": "web",
    "blocking": true
   },
   {
    "id": 59,
    "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）",
-   "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\" BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton",
+   "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59",
+   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}\n",
    "job": "web",
    "blocking": true
   },
@@ -1275,7 +1277,7 @@
   {
    "id": 65,
    "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）",
-   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py",
+   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py",
    "job": "spec",
    "blocking": true
   },

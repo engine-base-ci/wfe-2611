@@ -412,6 +412,13 @@
   "apps/bridge/test/k145-uuid.test.ts": "自分で作った一時のファイル（この PC の印の置き場・K-145）を読む。リポジトリのファイルは読まない",
   "apps/api/test/features/contract/k144-contract.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリの物は 08_api/db-columns.json だけで、data_links で結ぶ（K-144・K-156）"
  },
+ "web_select": {
+  "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場",
+  "registry": ["packages/db/src/index.ts", "11_tickets/**", "07_qa/**", "08_api/**", "07_functional/**", "05_flow/**", "01_hearing/**", "scripts/ci/ci_scope.json", ".github/**"],
+  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py"],
+  "web_own": ["apps/web/app/**"],
+  "web_tests": ["apps/web/tests/**"]
+ },
  "jobs": {
   "database": {
    "packages": [
@@ -440,6 +447,8 @@
     "@kaname/web"
    ],
    "paths": [
+    "scripts/ci/web_run.py",
+    "scripts/ci/web_select.py",
     "07_qa/test-specs/k/**",
     "05_flow/flow.json",
     "04_design/**",

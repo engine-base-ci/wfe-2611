@@ -46,6 +46,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
 from ticket_commit_gate import TICKET  # noqa: E402  目録の物（同じものを 2 つ作らない）
 from ticket_order_gate import generated_outputs, generator_scripts, is_doc_only  # noqa: E402
 from build_index import parse as parse_ticket  # noqa: E402
+import web_select  # noqa: E402  web の組で流す試験を選ぶ（K-177）
 
 MAX_SHARDS = 6
 SHA = re.compile(r"[0-9a-f]{40}")
@@ -569,6 +570,30 @@ def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     return sorted((k for k, globs in g.items() if any(match(x, globs) for x in changes)), key=int)
 
 
+def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str) -> dict:
+    """web の組で流す画面の試験（チケットの範囲・K-177）"""
+    tk = {}
+    for f in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
+        try:
+            t = parse_ticket(f)
+        except (SystemExit, OSError, ValueError):
+            continue
+        lst = lambda v: v if isinstance(v, list) else ([v] if v else [])  # noqa: E731
+        tk[t.get("id")] = {"tests": lst(t.get("tests")), "changes": lst(t.get("changes")), "depends_on": lst(t.get("depends_on"))}
+    changed = [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old]
+    return web_select.select(changed, tid, tk, web_select.domain_g48(repo), web_select.domain_g59(repo),
+                             web_select.importers(repo), rules.get("web_select") or {})
+
+
+def with_web_selection(p: dict, sel: dict) -> dict:
+    """選んだ画面の試験を出力に。チケットの範囲の回で 1 本も当たらなければ web の組を流さない（理由つき）。全部の回は今と同じ"""
+    if p["mode"] == "full":
+        return {**p, "web_g48": [], "web_g59": [], "web_tasks": []}
+    hit = bool(sel["g48"] or sel["g59"])
+    return {**p, "jobs": {**p["jobs"], "web": p["jobs"]["web"] and hit}, "web_g48": sel["g48"], "web_g59": sel["g59"],
+            "web_tasks": sel["tasks"], "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
+
+
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
          list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "") -> dict:
     if scope == "ticket":
@@ -584,7 +609,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         p["reasons"] = ([f"{'全部' if scope == 'full' else ('止める理由' if c in STOP_KINDS else '範囲を広げる理由（全部にはしない）')}：{c}（{d}）" for c, d in full] + [f"範囲を広げる：{c}（{d}）" for c, d in p["wide_reasons"]]
                         + [f"static と spec だけ：{x}" for x in p["spec_only"]]
                         + [f"日付だけ：{x}" for x in p["date_only"]]
-                        + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else []))
+                        + ([f"画面の組：画面を持つチケットの行 {'・'.join(p['web_ticket_rows'])}"] if p["web_ticket_rows"] else [])
+                        + list(p.get("web_reasons") or []))
         p["gates"] = gates_for([c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old], rules, full=scope == "full")
         if scope == "full":
             return _full_plan(p)
@@ -753,6 +779,8 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                  or bool(p.get("ticket_web_tests"))}
     if not p["jobs"]["unit"]:
         p["unit_shards"] = 0
+    if p["jobs"]["web"] and (web_select.domain_g48(repo) or web_select.domain_g59(repo)):   # 画面の試験があるリポジトリだけ
+        p = with_web_selection(p, _web_pick(repo, tickets_dir, rules, p, ids[0] if len(ids) == 1 else ""))
     return done()
 
 
@@ -860,7 +888,8 @@ def outputs(p: dict) -> dict[str, str]:
             "unit_shards": str(p["unit_shards"]), "unit_files": j(p["unit_files"]), "migration_files": j(p["migration_files"]),
             "coverage_args": j(p["coverage_args"]), "base": p["base"] if SHA.fullmatch(p.get("base") or "") else "",
             "reasons": j(p["reasons"] + p["mismatches"] + p["errors"]),
-            "gates": "," + ",".join(p.get("gates") or []) + ",", "py_tests": j(p.get("py_tests") or [])}
+            "gates": "," + ",".join(p.get("gates") or []) + ",", "py_tests": j(p.get("py_tests") or []),
+            "web_g48": j(p.get("web_g48") or []), "web_g59": j(p.get("web_g59") or []), "web_tasks": j(p.get("web_tasks") or [])}
 
 
 def _decide(argv: list[str]) -> int:

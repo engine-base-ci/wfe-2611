@@ -48,7 +48,7 @@ class WebJunit(unittest.TestCase):
             name, run = str(st.get("name", "")), str(st.get("run", ""))
             if not (name.startswith("G48 ") or name.startswith("G59 ")):
                 continue
-            self.assertTrue("playwright test" in run or "e2e:k" in run, f"{name}：実ブラウザの試験を流す段")   # e2e:k は playwright test の別名（apps/web/package.json）
+            self.assertTrue("playwright test" in run or "e2e:k" in run or "web_run.py" in run, f"{name}：実ブラウザの試験を流す段")   # e2e:k は playwright test の別名・K-177 から web_run.py が流す
             m = re.search(r'PLAYWRIGHT_JUNIT_OUTPUT_NAME="?([^"\s]+)"?', run)
             out = m.group(1) if m else str((st.get("env") or {}).get("PLAYWRIGHT_JUNIT_OUTPUT_NAME", default))
             self.assertRegex(out, r"^(\$\{\{ github\.workspace \}\}|\$GITHUB_WORKSPACE)/junit/[\w-]+\.xml$", f"{name}：{out}")
