@@ -30,6 +30,7 @@ preflight:
     "python3 scripts/ci/generated_gate.py",
     "python3 scripts/ci/test_owner_gate.py",
     "python3 scripts/ci/ci_wiring_gate.py",
+    "python3 scripts/ci/ci_scope.py --base {base} --head HEAD --scope ticket --ticket {ticket}",
   ]
 # CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
 vm:
@@ -41,4 +42,10 @@ vm:
   memory: 4096
   account: engine-base
   tools: { python: ["3.14"], node: ["22"] }
-  warm: ["npm i -g pnpm@10 --prefix ~/.local", "pnpm install --frozen-lockfile", "bash scripts/ci/ci_venv.sh"]
+  warm:
+    [
+      "npm i -g pnpm@10 --prefix ~/.local",
+      "pnpm install --frozen-lockfile",
+      "bash scripts/ci/ci_venv.sh",
+      "pnpm --filter @kaname/web exec playwright install --with-deps chromium",
+    ]

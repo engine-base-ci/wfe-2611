@@ -594,7 +594,7 @@ jobs:
         run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
       - name: "G65 CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py
+        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
