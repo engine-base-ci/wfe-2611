@@ -1,0 +1,25 @@
+/* 承認待ち（K-161）：見出しの横の数・期限ごとの表。狭い幅では表が自分の枠の中で横に送る（本文ははみ出さない） */
+.k63-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--k-s-sm);
+  flex-wrap: wrap;
+}
+.k63-count {
+  color: var(--k-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.k63-queue {
+  display: grid;
+  gap: var(--k-s-lg);
+  min-width: 0;
+}
+.k63-title {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k63-more {
+  justify-self: start;
+}
