@@ -7336,15 +7336,22 @@
    ],
    "prior_impl": "なし",
    "changes": [
-    "ticket-flow.yaml"
+    "ticket-flow.yaml",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
    ],
    "affects": [],
-   "ci_wide": [],
+   "ci_wide": [
+    "ci"
+   ],
    "sections": {
     "目的": "K-161 で、CI に出してから赤で戻るのを 4 回くり返し、約 1 時間かかった。出す前の手元の検査が手で選んだ 6 つの命令だけで、CI の定義（v3-gate.yml）の static・spec の組にある検査（口の形の試験・fuzz の的の検査など）を流していなかったため。\nまた K-161 は 1 本で DB・共通の型・画面を全部触り、CI 1 回が 17 分かかった。\nticket-flow のスキルに、CI の定義の組をそのまま手元で流す仕組み（preflight_jobs）と、重すぎるチケットを書く段で止める仕組み（weight）を入れた（2026-11-12・決める人）。Kaname の設定でそれを使う。",
     "完了の条件": "- [ ] ticket-flow.yaml の preflight_jobs が v3-gate.yml の static と spec を指し、手で選んだ命令の一覧（preflight）は依存を入れる 1 つだけ\n- [ ] weight が web（apps/web）と db（packages/db）を重い組にし、1 本が触ってよいのは 1 つ\n- [ ] changes_ignore が、作り手が作り直す生成物だけを挙げる\n- [ ] 試験 K178-CF-001〜003 が緑・チケットの CI が緑",
     "前提と制約": "- 手元で流すのは CI と同じく、コミットした版のまっさらな写し（スキルの local_jobs.py）。DB は CI と同じく組の中で使い捨ての入れ物を立てて消す（開発の DB には触らない）",
-    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 設定 | ticket-flow.yaml：preflight を依存の取り込み 1 つに・preflight_jobs [static, spec]・weight（groups web・db・max 1）・changes_ignore（生成物） |",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| CI の定義 | 05_flow/build_testplan.py：G65 に k178_flow_config_test.py（作り直して v3-gate.yml）|\n| 設定 | ticket-flow.yaml：preflight を依存の取り込み 1 つに・preflight_jobs [static, spec]・weight（groups web・db・max 1）・changes_ignore（生成物） |",
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K178-CF-001 | 入力 | ticket-flow.yaml の preflight_jobs と preflight | preflight_jobs は v3-gate.yml の jobs にある static と spec。preflight は依存を入れる命令 1 つだけ（CI の検査を手で写さない） |\n| K178-CF-002 | 入力 | ticket-flow.yaml の weight | groups に web（apps/web/**）と db（packages/db/**）・max は 1 |\n| K178-CF-003 | 入力 | ticket-flow.yaml の changes_ignore | どれも生成物の一覧（scripts/ci/generated.json の outputs）か、決める人の答えの記録か、チケットの一覧に当たる。製品のコード（apps/ と packages/ の src）は入っていない |"
    },
    "file": "11_tickets/K-178.md"

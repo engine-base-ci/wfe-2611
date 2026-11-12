@@ -1277,7 +1277,7 @@
   {
    "id": 65,
    "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）",
-   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py",
+   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py",
    "job": "spec",
    "blocking": true
   },
