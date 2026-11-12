@@ -37,3 +37,4 @@ __pycache__/
 .ticket-flow/
 .worktrees/
 .ticket-flow-out/
+junit/
