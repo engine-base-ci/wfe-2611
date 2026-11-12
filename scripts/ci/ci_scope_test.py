@@ -1065,9 +1065,12 @@ class RealRepoTest(unittest.TestCase):
         self.assertEqual(len(idx), 1)
         scope = st_steps[idx[0]]
         venv_i = [i for i, st in enumerate(st_steps) if "ci_venv.sh" in str(st.get("run", ""))]
-        lint_i = [i for i, st in enumerate(st_steps) if "lint" in str(st.get("run", "")) or "lint" in str(st.get("name", "")).lower()]
-        self.assertTrue(venv_i and venv_i[0] < idx[0], "Python の部品（ci_venv.sh・K-172）の後")   # 段の番号で決め打ちしない（K-173）
-        self.assertTrue(not lint_i or idx[0] < lint_i[0], "lint より前")
+        lint_i = [i for i, st in enumerate(st_steps) if str(st.get("run", "")).strip() == "pnpm lint" or str(st.get("name", "")).startswith("G1 lint")]
+        inst_i = [i for i, st in enumerate(st_steps) if str(st.get("run", "")).startswith("pnpm install")]
+        self.assertTrue(inst_i and inst_i[0] < idx[0], "部品を入れた（pnpm install）後")   # 段の番号で決め打ちしない（K-173）
+        self.assertTrue(venv_i and venv_i[0] < idx[0], "Python の部品（ci_venv.sh・K-172）の後")
+        self.assertTrue(lint_i, "lint の段がある（無ければ「lint より前」を確かめられない）")
+        self.assertLess(idx[0], lint_i[0], "lint より前")
         self.assertIn("inputs.scope", scope["env"]["CI_SCOPE_INPUT"])
         self.assertIn("inputs.base", scope["env"]["CI_BASE_INPUT"])
         for k in ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base"):
