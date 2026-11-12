@@ -48,10 +48,10 @@ def text(job: str) -> str:
 
 
 class Shape(unittest.TestCase):
-    def test_K172_CI_001_all_jobs_on_self_hosted_mac(self):
+    def test_K172_CI_001_all_jobs_on_self_hosted_mac(self):   # K-173 で台を組ごとの Linux の VM に変えた
         for name, job in list(JOBS.items()) + [(f"release-gate/{k}", v) for k, v in RELEASE.items()]:
             with self.subTest(name):
-                self.assertEqual(job["runs-on"], ["self-hosted", "macOS"])
+                self.assertEqual(job["runs-on"], ["self-hosted", "linux-vm"])
 
     def test_K172_CI_002_db_in_job_free_port_waited_and_always_removed(self):
         self.assertIsNone(re.search(r"localhost:54\d\d", WF_TEXT), "DB の番号を直書きしない")
@@ -78,8 +78,7 @@ class Shape(unittest.TestCase):
         for name in JOBS:
             with self.subTest(name):
                 t = text(name)
-                self.assertNotIn("actions/setup-python", t)
-                self.assertNotIn("pip install", t)
+                self.assertNotIn("pip install", t)   # setup-python は K-173 から使う（VM の Python は 3.12）
                 if "python3" in t:
                     self.assertIn("ci_venv.sh", t, "Python の部品は台に置いた venv")
         venv = (HERE / "ci_venv.sh").read_text(encoding="utf-8")

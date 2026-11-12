@@ -900,3 +900,9 @@ ticket-flow（~/.claude/skills/ticket-flow）の CI の契約（references/ci-co
 - [ ] 試験の結果を JUnit で出す（単体の組＝vitest の junit・web の組＝Playwright の junit・spec の組＝チケットの Python の試験を junit_unittest.py で）。組ごとに junit-<組>（記録が無ければ赤）を出し、最後の組が全部を待って artifact「junit」にまとめる（落ちた組があってもまとめる）
 - [ ] 重い検査（static 以外の組の G27 層の棚卸し・G36・G38・G47・G56・G57・G62）は、scope=ticket のとき範囲の台本の出力 gates に入っているときだけ流す（scope=full は全部・前の段が赤でも流す）
 - [ ] 試験 K172-CI-001〜012 が緑・チケットの CI が緑"
+K-173,CI の組を、組ごとに使い捨ての Linux の VM で流す（GitHub の台と同じ形・無料）,課題,K-1,未着手,作る,2026-11-12,基盤・CI,"K-172 で CI を自分の Mac の runner 4 台に移したら、1 台の Mac を全部の組で使い回すために、GitHub の台では起きない赤が続いた（置き場の取り合い・パスのずれ・残るプロセス）。
+GitHub の台と同じく、組ごとにまっさらな Linux の機械を出して捨てる形にする（決める人 2026-11-12「無料でできる、かつ完璧に」）。
+Mac の上で Tart の VM を組ごとに複製して起こし、GitHub の 1 回限りの登録（JIT）で runner を 1 組だけ動かし、終わったら VM ごと消す。試しで、services の DB に localhost で届く・置き場は /home/runner/work/Kaname/Kaname・VM の起動は約 10 秒・1 台の使うメモリは最大 1.8GB を確かめた。","- [ ] 全部の組（v3-gate.yml と release-gate.yml）が `runs-on: [self-hosted, linux-vm]`（Mac の runner には載らない）
+- [ ] Python の部品を使う組は、ci_venv.sh の前に actions/setup-python で 3.14 を用意する（VM の Python は 3.12。GitHub の台と同じやり方）
+- [ ] K-172 の試験 K172-CI-001（台の印）と K172-CI-003（setup-python を使わない）を新しい形に合わせる
+- [ ] 試験 K173-CI-001〜002 が緑・チケットの CI が VM の台で緑"
