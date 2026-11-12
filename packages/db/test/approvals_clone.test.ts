@@ -82,16 +82,15 @@ describe("承認（D-128.86・D-128.87・D-128.115）", () => {
     await q(staff, "update approvals set decision = 'self_edit', decided_at = now() where id = $1", [a]);
     expect(await rows(staff, "tickets", t)).toBe(0);
   });
-  it("取り返しのつかない承認は、直前の本人確認が要る", async () => {
+  // D-128.177（K-63）：AI の成果物の承認では本人確認を取り直さない。承認は全部「取り消せない」で記録するので、
+  //   取り消せない承認に step_up_at を求める制約（approvals_step_up_ck・0077・D-125.139 の承認の分）は 0096 で外した
+  it("取り返しのつかない承認も、本人確認の時刻なしで決められる（D-128.177）", async () => {
     const a = await ask(await ticket(), "irreversible", [true]);
-    expect(
-      await fails(staff, "update approvals set decision = 'approve', decided_at = now() where id = $1", [a]),
-    ).toMatch(/check/);
     expect(
       (
         await q(
           staff,
-          "update approvals set decision = 'approve', decided_at = now(), step_up_at = now() where id = $1 returning id",
+          "update approvals set decision = 'approve', decided_at = now() where id = $1 returning id, step_up_at",
           [a],
         )
       ).length,
