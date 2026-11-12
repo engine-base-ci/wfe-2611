@@ -1,12 +1,14 @@
 "use client";
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。番号・題名・種別・段・担当者・期限と、区画の本文（版 1）。
-//   本文は文字として出す（HTML やスクリプトを動かさない）。見出しの下に AI に任せるの帯、右に実行の記録（K-62・apps/web/features/F5/delegate/）
+//   本文は文字として出す（HTML やスクリプトを動かさない）。見出しの下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と
+//   AI に任せるの帯、右に実行の記録（K-62・apps/web/features/F5/delegate/）
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { Badge, ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
+import { ApproveBand } from "@/features/F5/approve-complete/band";
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { RunLog } from "@/features/F5/delegate/run-log";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
@@ -28,8 +30,14 @@ interface Detail {
   assignee: { display_name: string } | null;
   /** 見ている人ができること（K-62 が delegate を足す） */
   can?: { delegate?: boolean } | null;
-  /** 承認待ちの承認（K-63 が足す）。can_decide＝見ている人が承認する人か */
-  approval?: { id: string; can_decide: boolean } | null;
+  /** 承認待ちの承認（K-162 が足す）。can_decide＝見ている人が承認する人か */
+  approval?: {
+    id: string;
+    can_decide: boolean;
+    irreversible?: boolean;
+    note?: string | null;
+    approver_name?: string | null;
+  } | null;
 }
 
 /** 前からある外枠（AppShell）に載せる（D-128.151） */
@@ -74,10 +82,20 @@ function DetailBody({ id }: { id: string }) {
       />
     );
   if (!d) return <Loading />;
-  return <DetailView id={id} d={d} reload={load} />;
+  return <DetailView id={id} d={d} reload={load} onTicket={setD} />;
 }
 
-function DetailView({ id, d, reload }: { id: string; d: Detail; reload: () => Promise<void> }) {
+function DetailView({
+  id,
+  d,
+  reload,
+  onTicket,
+}: {
+  id: string;
+  d: Detail;
+  reload: () => Promise<void>;
+  onTicket: (d: Detail) => void;
+}) {
   const runs = useRuns(id);
   // 動いていた実行が終わった・止まった読み直しで、チケットの詳細（段・can.delegate・成果物の区画）も読み直す（K62-UI-029・030・G-12）
   const status = runs.current?.status ?? null;
@@ -102,6 +120,15 @@ function DetailView({ id, d, reload }: { id: string; d: Detail; reload: () => Pr
           {t.start_on ? `・開始 ${t.start_on}` : ""}・優先度 {t.priority === "high" ? "高" : "中"}
         </p>
       </header>
+      <ApproveBand
+        ticketId={id}
+        ticket={d}
+        run={runs.current}
+        onTicket={onTicket}
+        onChanged={async () => {
+          await Promise.all([reload(), runs.reload()]);
+        }}
+      />
       <DelegateBand
         ticket={{
           id,
