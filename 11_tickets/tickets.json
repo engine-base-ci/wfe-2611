@@ -7159,6 +7159,54 @@
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K175-CF-001 | 入力 | ticket-flow.yaml の vm.warm と workflow の web の組 | warm に `playwright install --with-deps chromium` が pnpm install の後にある・workflow の web と e2e の組の playwright install が同じ Chromium（chromium）を指す |\n| K175-CF-002 | 入力 | ticket-flow.yaml の preflight | `python3 scripts/ci/ci_scope.py` を `--base {base}`・`--scope ticket`・`--ticket {ticket}` で流す命令が 1 つある・台本が実在する |"
    },
    "file": "11_tickets/K-175.md"
+  },
+  {
+   "id": "K-176",
+   "title": "web の組の実ブラウザの試験の JUnit の記録を出す（K-172 の抜け）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "0.5",
+   "estimate_basis": "K-175 の実測（約 10 分・CI 1 回）。中身は設定 2 か所と形の試験",
+   "decisions": [
+    "D-133"
+   ],
+   "choke_points": [],
+   "choke_none": "CI の定義と画面の試験の設定だけ。製品の外への出口に触らない",
+   "depends_on": [
+    "K-175"
+   ],
+   "tests": [
+    "scripts/ci/k176_web_junit_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "apps/web/playwright.config.ts",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "scripts/ci/k176_web_junit_test.py",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "K-171 の CI（2026-11-12）で、web の組の試験は全部通った（262 本・14 本）のに、JUnit の記録を上げる段（junit-web・記録が無ければ赤）で赤になった。\nK-172 で web の組に `PLAYWRIGHT_JUNIT_OUTPUT_NAME` を置いたが、apps/web/playwright.config.ts に junit の reporter を足しておらず、記録が出ていなかった。\nK-172 のときは web の組がチケットの範囲に入らず流れなかったので、見つからなかった。あわせて、web の組は 2 回（G48・G59）試験を流すので、同じ名前だと後の回が前の記録を上書きする。",
+    "完了の条件": "- [ ] playwright.config.ts が、PLAYWRIGHT_JUNIT_OUTPUT_NAME があるときだけ junit の reporter をその置き場に出す（無いときは今と同じ）\n- [ ] web の組の G48 と G59 が、根の junit/ に別々の名前（web.xml・web-skeleton.xml）で記録を出す（置き場は組の作業場所の絶対の道）\n- [ ] 試験 K176-CI-001〜002 が緑・チケットの CI が緑（web の組が流れる）",
+    "前提と制約": "- Playwright の reporter の outputFile は設定のファイルの置き場（apps/web）からの道になるので、絶対の道で渡す",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 画面の試験の設定 | apps/web/playwright.config.ts：reporter に junit（PLAYWRIGHT_JUNIT_OUTPUT_NAME があるときだけ） |\n| 作り手 | 05_flow/build_testplan.py：web の組の env を `${{ github.workspace }}/junit/web.xml`・G59 の命令の頭で `PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\"`。G65 の段に k176_web_junit_test.py |",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K176-CI-001 | 入力 | playwright.config.ts を PLAYWRIGHT_JUNIT_OUTPUT_NAME あり・なしで読み込む | ありのときは reporter に junit がその outputFile で入る・なしのときは junit が入らない（list・html・json は両方で同じ） |\n| K176-CI-002 | 入力 | web の組の G48 と G59 | どちらも playwright を流し、JUnit の置き場が別々（web.xml・web-skeleton.xml）で、どちらも組の作業場所の絶対の道（github.workspace か GITHUB_WORKSPACE）の junit/ の下 |"
+   },
+   "file": "11_tickets/K-176.md"
   }
  ]
 }
