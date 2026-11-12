@@ -299,7 +299,6 @@ jobs:
       # 画面の試験が本物の口を叩く先（apps/web/tests/_lib/api.ts の API_BASE・DATABASE_URL_ADMIN・KANAME_API_LOG）。画面は組み立てのときに口の先を埋める
       API_BASE: http://127.0.0.1:3011
       NEXT_PUBLIC_API_BASE: http://127.0.0.1:3011
-      KANAME_API_LOG: ${{{{ runner.temp }}}}/api.log
       PLAYWRIGHT_JUNIT_OUTPUT_NAME: junit/web.xml
       # 試験用の受け箱（apps/web/tests/_lib/mailbox.ts・K-54）。API は Resend の SDK の行き先（RESEND_BASE_URL）をここにして、本物の送出の道でメールを出す
       QA_MAILBOX_PORT: '3191'
@@ -315,6 +314,7 @@ jobs:
       - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
         run: |
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 番号 $port が使われている（手元の開発のサーバーなど）。止めてから流し直す"; exit 1; fi; done
+          echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # 口の記録の置き場（画面の試験が読む・回ごとの置き場）
       - name: DB に migration を当て、API を立ち上げる（本物の口の画面の試験・K-53。メールは試験用の受け箱へ・K-54）
         run: |
           pnpm db:migrate
