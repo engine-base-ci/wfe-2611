@@ -209,7 +209,7 @@ class ScopeScript(unittest.TestCase):
 
     def test_K172_CI_011_ticket_python_tests_are_output(self):
         self.commit("K-9 test: 試験", {"scripts/ci/k9_test.py": "import unittest\n",
-                                       "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: [ci]\ntests: [scripts/ci/k9_test.py]\n---\n"})
+                                       "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: [scripts/ci/k9_test.py]\n---\n"})
         out = ci_scope.outputs(self.plan(ticket="K-9"))
         self.assertIn("scripts/ci/k9_test.py", json.loads(out["py_tests"]))
         self.assertIn("py_tests", text("spec"))
