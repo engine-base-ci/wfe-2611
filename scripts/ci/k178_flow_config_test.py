@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import sys
 import unittest
 
 import yaml
@@ -11,7 +10,6 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CFG = yaml.safe_load((ROOT / "ticket-flow.yaml").read_text(encoding="utf-8"))
 WF = yaml.safe_load((ROOT / ".github/workflows" / CFG["ci"]["workflow"]).read_text(encoding="utf-8"))
-SKILL = pathlib.Path.home() / ".claude/skills/ticket-flow/scripts"
 
 
 class FlowConfigTest(unittest.TestCase):
@@ -25,21 +23,11 @@ class FlowConfigTest(unittest.TestCase):
             self.assertIn(cmd, runs, f"前の手の一覧にあった {cmd} が static・spec の組から外れている")
 
     def test_K178_CF_002_weight_stops_web_and_db_in_one_ticket(self) -> None:
+        # 止める動きそのものはスキルの試験（ticket-flow tests/test_e2e.py test_27）が持つ。ここは設定がその形か
         w = CFG.get("weight") or {}
         self.assertIs(type(w.get("max")), int)
         self.assertEqual(w["max"], 1)
-        if not (SKILL / "flow.py").is_file():
-            self.skipTest("ticket-flow のスキルが無い台")
-        sys.path.insert(0, str(SKILL))
-        import flow  # noqa: PLC0415
-        from common import FlowError  # noqa: PLC0415
-
-        class C:
-            cfg = CFG
-        flow.check_weight(C, "K-x", {"changes": ["apps/web/app/x/page.tsx", "apps/api/src/a.ts"]})
-        flow.check_weight(C, "K-x", {"changes": ["packages/db/migrations/0100_x.sql", "apps/api/src/a.ts"]})
-        with self.assertRaises(FlowError):
-            flow.check_weight(C, "K-x", {"changes": ["apps/web/app/x/page.tsx", "packages/db/migrations/0100_x.sql"]})
+        self.assertEqual(w.get("groups"), {"web": ["apps/web/**"], "db": ["packages/db/**"]})
 
     def test_K178_CF_003_changes_ignore_is_exactly_generated_and_records(self) -> None:
         gen = json.loads((ROOT / "scripts/ci/generated.json").read_text(encoding="utf-8"))
