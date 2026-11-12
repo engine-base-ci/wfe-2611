@@ -435,5 +435,64 @@ class PnpmPerRunner(unittest.TestCase):
         self.assertGreater(seen, 0)
 
 
+class BlobRoots(unittest.TestCase):
+    """runner ごとに置き場の根が違う（…/engine-base-Kaname/_work と …-Kaname-2/_work）。vitest の blob は絶対パスを持つ"""
+
+    def setUp(self):
+        self.tmp = pathlib.Path(tempfile.mkdtemp())
+        self.rep = self.tmp / ci_scope.REPORTS
+        self.rep.mkdir()
+        self.cwd = os.getcwd()
+
+    def tearDown(self):
+        os.chdir(self.cwd)
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_K172_CI_018_merge_rebases_each_blob_root_to_own_root(self):
+        a, b, me = "/r/engine-base-Kaname/_work/K/K", "/r/engine-base-Kaname-2/_work/K/K", str(self.tmp)
+        (self.rep / "blob-1-2.json").write_text(f'["{a}/apps/api/test/x.test.ts",{{"f":"{a}/packages/db/src/y.ts"}}]')
+        (self.rep / "root-1.txt").write_text(a + "\n")
+        (self.rep / "blob-2-2.json").write_text(f'["{b}/apps/api/test/z.test.ts"]')
+        (self.rep / "root-2.txt").write_text(b + "\n")
+        errs = ci_scope.rebase_blob_roots(self.rep, me)
+        self.assertEqual(errs, [])
+        one = (self.rep / "blob-1-2.json").read_text()
+        two = (self.rep / "blob-2-2.json").read_text()
+        self.assertIn(f"{me}/apps/api/test/x.test.ts", one)
+        self.assertIn(f"{me}/packages/db/src/y.ts", one)
+        self.assertIn(f"{me}/apps/api/test/z.test.ts", two)
+        self.assertNotIn(a, one)
+        self.assertNotIn(b, two)
+
+    def test_K172_CI_018_blob_without_root_is_red_before_vitest(self):
+        (self.rep / "blob-1-1.json").write_text('["/elsewhere/a.test.ts"]')
+        self.assertTrue(ci_scope.rebase_blob_roots(self.rep, str(self.tmp)), "根の書き置きが無い blob は誤り")
+        os.chdir(self.tmp)
+        called = []
+        real = ci_scope.subprocess.run
+        ci_scope.subprocess.run = lambda *a, **k: called.append(a) or subprocess.CompletedProcess(a, 0)
+        try:
+            rc = ci_scope.main(["run-merge"])
+        finally:
+            ci_scope.subprocess.run = real
+        self.assertNotEqual(rc, 0)
+        self.assertEqual(called, [], "vitest を呼ばない")
+
+    def test_K172_CI_018_run_unit_writes_own_root(self):
+        os.chdir(self.tmp)
+        old = {k: os.environ.get(k) for k in ("CI_UNIT_SHARDS", "CI_UNIT_FILES", "CI_COVERAGE_ARGS")}
+        os.environ.update({"CI_UNIT_SHARDS": "2", "CI_UNIT_FILES": '["apps/api/test/x.test.ts"]', "CI_COVERAGE_ARGS": "[]"})
+        real = ci_scope.subprocess.run
+        ci_scope.subprocess.run = lambda *a, **k: subprocess.CompletedProcess(a, 1)   # 試験が赤でも書く
+        try:
+            rc = ci_scope.main(["run-unit", "--shard", "2"])
+        finally:
+            ci_scope.subprocess.run = real
+            for k, v in old.items():
+                os.environ.pop(k, None) if v is None else os.environ.__setitem__(k, v)
+        self.assertEqual(rc, 1)
+        self.assertEqual((self.rep / "root-2.txt").read_text().strip(), os.path.realpath(self.tmp))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
