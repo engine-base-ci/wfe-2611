@@ -7038,11 +7038,13 @@
    ],
    "tests": [
     "scripts/ci/k173_vm_test.py",
-    "scripts/ci/k172_ci_shape_test.py"
+    "scripts/ci/k172_ci_shape_test.py",
+    "scripts/ci/ci_scope_test.py"
    ],
    "prior_impl": "なし",
    "changes": [
     "05_flow/build_testplan.py",
+    "scripts/ci/ci_scope_test.py",
     ".github/workflows/v3-gate.yml",
     ".github/workflows/release-gate.yml",
     "scripts/ci/k173_vm_test.py",
@@ -7062,7 +7064,7 @@
     "目的": "K-172 で CI を自分の Mac の runner 4 台に移したら、1 台の Mac を全部の組で使い回すために、GitHub の台では起きない赤が続いた（置き場の取り合い・パスのずれ・残るプロセス）。\nGitHub の台と同じく、組ごとにまっさらな Linux の機械を出して捨てる形にする（決める人 2026-11-12「無料でできる、かつ完璧に」）。\nMac の上で Tart の VM を組ごとに複製して起こし、GitHub の 1 回限りの登録（JIT）で runner を 1 組だけ動かし、終わったら VM ごと消す。試しで、services の DB に localhost で届く・置き場は /home/runner/work/Kaname/Kaname・VM の起動は約 10 秒・1 台の使うメモリは最大 1.8GB を確かめた。",
     "完了の条件": "- [ ] 全部の組（v3-gate.yml と release-gate.yml）が `runs-on: [self-hosted, linux-vm]`（Mac の runner には載らない）\n- [ ] Python の部品を使う組は、ci_venv.sh の前に actions/setup-python で 3.14 を用意する（VM の Python は 3.12。GitHub の台と同じやり方）\n- [ ] K-172 の試験 K172-CI-001（台の印）と K172-CI-003（setup-python を使わない）を新しい形に合わせる\n- [ ] 試験 K173-CI-001〜002 が緑・チケットの CI が VM の台で緑",
     "前提と制約": "- 前提：VM の待ち受け（ticket-flow の vm_pool）が動いている（人の準備は済み。Tart は公式の 2.41.1・元の像は tf-golden）\n- workflow の中の Mac の台への対応（DB を組の中で立てる・pid で止める・pnpm の置き場）は VM でもそのまま動くので、このチケットでは変えない",
-    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 作り手 | 05_flow/build_testplan.py：runs-on を [self-hosted, linux-vm] に。VENV の前に setup-python（3.14） |\n| 作り直し | 作り手を回して workflow・test-plan を作り直す（07_functional・08_api は変えない）・チケットの一覧 |\n| 今ある試験 | k172_ci_shape_test の K172-CI-001 を新しい印に・K172-CI-003 から setup-python を使わないを外す。K-172.md の行の文も |",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 作り手 | 05_flow/build_testplan.py：runs-on を [self-hosted, linux-vm] に。VENV の前に setup-python（3.14） |\n| 作り直し | 作り手を回して workflow・test-plan を作り直す（07_functional・08_api は変えない）・チケットの一覧 |\n| 今ある試験 | k172_ci_shape_test の K172-CI-001 を新しい印に・K172-CI-003 から setup-python を使わないを外す。K-172.md の行の文も。ci_scope_test の K107-CS-034 は段の番号で決め打ちせず id と順で見る |\n| 配線 | G65 の段に k173_vm_test.py を足す（書いた検査が CI から回る） |",
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもの（VM の台）で確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K173-CI-001 | 入力 | 作り手から作った workflow（v3-gate・release-gate）の全部の組 | runs-on が [self-hosted, linux-vm]・macOS の印はどこにも無い |\n| K173-CI-002 | 入力 | ci_venv.sh を流す組 | その段より前に actions/setup-python があり、python-version が 3.14 |"
    },
    "file": "11_tickets/K-173.md"
