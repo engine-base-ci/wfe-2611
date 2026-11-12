@@ -7254,6 +7254,57 @@
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K176-CI-001 | 入力 | playwright.config.ts を PLAYWRIGHT_JUNIT_OUTPUT_NAME あり・なしで読み込む | ありのときは reporter に junit がその outputFile で入る・なしのときは junit が入らない（list・html・json は両方で同じ） |\n| K176-CI-002 | 入力 | web の組の G48 と G59 | どちらも playwright を流し、JUnit の置き場が別々（web.xml・web-skeleton.xml）で、どちらも組の作業場所の絶対の道（github.workspace か GITHUB_WORKSPACE）の junit/ の下 |"
    },
    "file": "11_tickets/K-176.md"
+  },
+  {
+   "id": "K-177",
+   "title": "web の組の実ブラウザの試験も、チケットの範囲だけを流す",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "1",
+   "estimate_basis": "K-176 の実測（10 分・CI 1 回）と K-170（範囲の台本の直し・半日）の間。新しい台本 2 つと範囲の台本の出力",
+   "decisions": [
+    "D-133",
+    "D-133.7"
+   ],
+   "choke_points": [],
+   "choke_none": "CI の定義と台本だけ。製品の外への出口に触らない",
+   "depends_on": [
+    "K-176"
+   ],
+   "tests": [
+    "scripts/ci/k177_web_scope_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "scripts/ci/web_select.py",
+    "scripts/ci/web_run.py",
+    "scripts/ci/ci_scope.py",
+    "scripts/ci/ci_scope.json",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "scripts/ci/k176_web_junit_test.py",
+    "scripts/ci/k177_web_scope_test.py",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "画面に効くチケットの CI は約 9 分かかり、そのうち約 6 分が web の組（実ブラウザの試験）だった（K-171・K-176 の実測）。\nweb の組は、チケットに関係なく決まった一覧の試験（G48：11 ファイル・262 本、G59：2 ファイル・14 本）を全部流していた。\n決まり（D-133.7）は「チケットの CI はチケットの範囲だけ・全部は大分類の終わりだけ」。単体の試験は範囲で絞っているが、web の組は絞っていなかった。\n画面の試験のファイルはどれも 1 つのチケットが持つ（試験の持ち主の検査）。チケットは depends_on と changes（作ったファイル）を持つ。これで流す試験を決める。",
+    "完了の条件": "- [ ] チケットの CI（scope=ticket）では、web の組は選んだ画面の試験だけを流し、結果の照らし（op_gate）はその持ち主のチケットの行だけ\n- [ ] 選び方：チケット自身の試験・depends_on のチケットの試験・変えた試験のファイルと、変えた試験の共通部品を読み込む試験・変えたファイルを作ったチケットの試験（みんなが書き足す一覧のファイルは除く）・画面の試験の設定を変えたら全部\n- [ ] 当たる試験が無ければ web の組を流さず、理由を出す\n- [ ] 全部の回（scope=full）は今と同じ（全部を流し、全部を照らす）\n- [ ] 試験 K177-WS-001〜014 が緑・チケットの CI が緑",
+    "前提と制約": "- 選ぶ試験の置き場（G48 の一覧）は apps/web/package.json の e2e:k から読む（一覧を 2 か所に持たない）。G59 は apps/web/tests/skeleton\n- 選び方の設定（除く一覧・全部にする物）は scripts/ci/ci_scope.json の web_select に書く\n- 範囲の台本（ci_scope.py）は大きいので、選ぶ仕組みは別のファイル（web_select.py）にする",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 選ぶ | scripts/ci/web_select.py：select(changed, ticket, tickets, g48, g59, importers, cfg) → g48・g59・tasks・reasons。domain_g48（package.json の e2e:k から）・importers（apps/web/tests の import を逆にたどる） |\n| 範囲の台本 | scripts/ci/ci_scope.py：チケットの範囲の回で選ぶ。出力 web_g48・web_g59・web_tasks。当たる試験が無ければ jobs.web を偽にし理由を出す |\n| 決まり | scripts/ci/ci_scope.json：web_select（registry：作った人で選ばない一覧のファイル・all_on：変えたら全部の物） |\n| 流す | scripts/ci/web_run.py g48／g59：全部の回は今の命令、範囲の回は選んだ試験だけと op_gate --task、空なら流さない |\n| 作り手 | 05_flow/build_testplan.py：G48・G59 を web_run.py に・static の出力に web_g48・web_g59・web_tasks。G65 に k177_web_scope_test.py |\n| 今ある試験 | k176_web_junit_test の K176-CI-002 を web_run.py の形に合わせる |",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K177-WS-001 | 入力 | チケットが画面の試験を持つ | その試験が選ばれ、そのチケットが照らす対象に入る |\n| K177-WS-002 | 入力 | depends_on のチケットが画面の試験を持つ | その試験が選ばれる（依存の依存はたどらない） |\n| K177-WS-003 | 入力 | 画面の試験のファイルそのものを変えた | そのファイルが選ばれる |\n| K177-WS-004 | 入力 | 試験の共通部品（apps/web/tests/_lib の物）を変えた | それを直に・間に挟んで読み込む試験が全部選ばれ、読み込まない試験は選ばれない |\n| K177-WS-005 | 入力 | 画面・口のコードを変えた | そのファイルを changes に持つチケットの試験が選ばれる |\n| K177-WS-006 | 入力 | みんなが書き足す一覧のファイル（web_select.registry）だけを変えた | 作った人では選ばない |\n| K177-WS-007 | 入力 | 画面の試験の設定（web_select.all_on：playwright.config.ts など）を変えた | G48 と G59 の試験が全部選ばれる |\n| K177-WS-008 | 入力 | どれにも当たらない | 何も選ばれず、理由が 1 つ出る |\n| K177-WS-009 | 入力 | 選ばれた試験が G59（skeleton）の置き場にある | g59 に入り g48 には入らない・G48 の一覧の外の試験（screens など）は選ばれない |\n| K177-WS-010 | 入力 | 照らす対象 | 選んだ g48 の試験の持ち主のチケット（重なりなし・並び順） |\n| K177-WS-011 | 入力 | G48 の一覧 | apps/web/package.json の e2e:k の引数のファイル・置き場から開いた spec の一覧 |\n| K177-WS-012 | 入力 | 範囲の台本の出力 | web_g48・web_g59・web_tasks を JSON で出す・チケットの範囲で選べなければ jobs.web が偽で理由がある・全部の回は jobs.web が真 |\n| K177-WS-013 | 入力 | web_run.py の命令（g48・g59） | 全部の回は今の命令（e2e:k と op_gate --all・skeleton 全部）・範囲の回は選んだ試験だけと op_gate --task（持ち主ごと）・空なら何も流さず 0 |\n| K177-WS-014 | 入力 | workflow の web の組 | G48・G59 が web_run.py を流し、env に static の出力 web_g48・web_g59・web_tasks・full・static の outputs に 3 つがある |"
+   },
+   "file": "11_tickets/K-177.md"
   }
  ]
 }
