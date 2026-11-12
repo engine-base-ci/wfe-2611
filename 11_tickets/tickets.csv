@@ -940,5 +940,5 @@ K-178,CI に出す前に CI の定義の速い組を手元でそのまま流し�
 また K-161 は 1 本で DB・共通の型・画面を全部触り、CI 1 回が 17 分かかった。
 ticket-flow のスキルに、CI の定義の組をそのまま手元で流す仕組み（preflight_jobs）と、重すぎるチケットを書く段で止める仕組み（weight）を入れた（2026-11-12・決める人）。Kaname の設定でそれを使う。","- [ ] ticket-flow.yaml の preflight_jobs が v3-gate.yml の static と spec を指し、手で選んだ命令の一覧（preflight）は依存を入れる 1 つだけ
 - [ ] weight が web（apps/web）と db（packages/db）を重い組にし、1 本が触ってよいのは 1 つ
-- [ ] changes_ignore が、作り手が作り直す生成物だけを挙げる
+- [ ] changes_ignore が、作り手が作り直す生成物と答えの記録とちょうど同じ
 - [ ] 試験 K178-CF-001〜003 が緑・チケットの CI が緑"
