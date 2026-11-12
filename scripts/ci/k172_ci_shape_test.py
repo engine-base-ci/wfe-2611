@@ -234,5 +234,86 @@ class WebCleanup(unittest.TestCase):
         self.assertEqual(stop[0].get("if"), "always()")
 
 
+ALL_WF = {n: yaml.safe_load((ROOT / ".github" / "workflows" / n).read_text(encoding="utf-8")) for n in ("v3-gate.yml", "release-gate.yml")}
+
+
+class TicketInput(unittest.TestCase):
+    def test_K172_CI_013_every_step_using_ticket_input_has_it_in_env(self):
+        seen = 0
+        for wf, doc in ALL_WF.items():
+            for job, j in doc["jobs"].items():
+                for s in j.get("steps", []):
+                    if "$CI_TICKET_INPUT" in str(s.get("run", "")):
+                        seen += 1
+                        env = s.get("env") or {}
+                        self.assertIn("CI_TICKET_INPUT", env, f"{wf} {job} {s.get('name')}")
+                        self.assertIn("inputs.ticket", str(env["CI_TICKET_INPUT"]))
+        self.assertGreaterEqual(seen, 2, "static の G0 と spec の分かれ目")
+
+
+class KillTree(unittest.TestCase):
+    def test_K172_CI_014_kill_tree_stops_grandchildren_and_ports_checked(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            pidf = tmp / "p.pid"
+            # 親 → 子 → 孫（pnpm → node → next-server の形）
+            p = subprocess.Popen(["bash", "-c", "bash -c 'sleep 300 & echo $! > " + str(tmp / "g.pid") + "; wait' & wait"])
+            pidf.write_text(str(p.pid))
+            for _ in range(50):
+                if (tmp / "g.pid").exists() and (tmp / "g.pid").read_text().strip():
+                    break
+                import time; time.sleep(0.1)
+            g = int((tmp / "g.pid").read_text())
+            r = subprocess.run(["bash", str(HERE / "kill_tree.sh"), str(pidf)], capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            p.wait(timeout=10)
+            import time; time.sleep(0.3)
+            alive = subprocess.run(["kill", "-0", str(g)], capture_output=True).returncode == 0
+            self.assertFalse(alive, "孫が残った")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        stop = [s for s in steps("web") if "kill_tree.sh" in str(s.get("run", ""))]
+        self.assertEqual(len(stop), 1)
+        run = stop[0]["run"]
+        for port in ("3011", "3124", "3191"):
+            self.assertIn(port, run, "止めた後に番号が空いたかを見る")
+        self.assertIn("exit 1", run, "残れば赤")
+
+
+class VenvLock(unittest.TestCase):
+    def test_K172_CI_015_concurrent_venv_setup_is_serialized(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            req = tmp / "req.txt"
+            req.write_text("# 空（網に出ない）\n")
+            env = {**os.environ, "KANAME_CI_VENV": str(tmp / "venv"), "KANAME_CI_REQ": str(req), "GITHUB_PATH": str(tmp / "gp")}
+            ps = [subprocess.Popen(["bash", str(HERE / "ci_venv.sh")], env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(4)]
+            outs = [p.communicate(timeout=300) for p in ps]
+            for p, (o, e) in zip(ps, outs):
+                self.assertEqual(p.returncode, 0, e)
+            r = subprocess.run([str(tmp / "venv" / "bin" / "python3"), "-c", "print(1)"], capture_output=True, text=True)
+            self.assertEqual(r.stdout.strip(), "1")
+            self.assertFalse((tmp / "venv.lock").exists(), "ロックが残らない")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        src = (HERE / "ci_venv.sh").read_text(encoding="utf-8")
+        self.assertIn("mkdir", src, "ロックで入れ直しを 1 つずつ")
+
+
+class DbSweep(unittest.TestCase):
+    def test_K172_CI_016_sweep_only_old_kaname_ci_containers(self):
+        import importlib
+        sweep = importlib.import_module("ci_db_sweep")
+        now = 1_000_000_000.0
+        h = 3600
+        got = sweep.stale([("kaname-ci-1-1-unit-1", now - 7 * h), ("kaname-ci-2-1-web", now - 1 * h),
+                           ("kaname-pg", now - 100 * h), ("kaname-ci-3-1-spec", now - 7 * h)],
+                          now=now, hours=6, keep="kaname-ci-3-1-spec")
+        self.assertEqual(got, ["kaname-ci-1-1-unit-1"])
+        for job in DB_JOBS:
+            start = [s for s in steps(job) if "docker run" in str(s.get("run", ""))]
+            self.assertIn("ci_db_sweep.py", start[0]["run"], job)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
