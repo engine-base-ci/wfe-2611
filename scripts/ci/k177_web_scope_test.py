@@ -32,6 +32,7 @@ TICKETS = {
     "K-51": {"tests": ["apps/web/tests/features/F1/sign-up.spec.ts"], "changes": ["apps/web/app/signup/page.tsx", "packages/db/src/index.ts"], "depends_on": []},
     "K-57": {"tests": ["apps/web/tests/features/F3/connect-pc.spec.ts"], "changes": ["apps/api/src/bridge/*.ts", "packages/db/src/index.ts"], "depends_on": ["K-51"]},
     "K-58": {"tests": ["apps/web/tests/skeleton/m2.spec.ts"], "changes": [], "depends_on": ["K-57"]},
+    "K-54": {"tests": ["apps/web/tests/skeleton/m1.spec.ts"], "changes": [], "depends_on": []},
     "K-36": {"tests": ["apps/web/tests/k/showcase.spec.ts"], "changes": [], "depends_on": []},
     "K-90": {"tests": ["packages/db/test/x.test.ts"], "changes": [], "depends_on": ["K-57"]},
     "K-91": {"tests": ["apps/web/tests/screens/old.spec.ts"], "changes": ["apps/web/app/old/page.tsx"], "depends_on": []},
@@ -39,7 +40,8 @@ TICKETS = {
 IMP = {"apps/web/tests/_lib/api.ts": {"apps/web/tests/features/F1/sign-up.spec.ts", "apps/web/tests/skeleton/m1.spec.ts"},
        "apps/web/tests/_lib/row.ts": {"apps/web/tests/components.spec.ts", "apps/web/tests/features/F1/sign-up.spec.ts",
                                       "apps/web/tests/skeleton/m1.spec.ts"}}
-CFG = {"registry": ["packages/db/src/index.ts", "11_tickets/**"], "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json"]}
+CFG = {"registry": ["packages/db/src/index.ts", "11_tickets/**"], "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml"],
+       "web_own": ["apps/web/app/**"], "web_tests": ["apps/web/tests/**"]}
 
 
 def sel(changed, ticket="K-99", tickets=None):
@@ -50,19 +52,18 @@ def sel(changed, ticket="K-99", tickets=None):
 
 class Select(unittest.TestCase):
     def test_K177_WS_001_own_tests(self):
-        r = sel(["apps/web/tests/features/F3/connect-pc.spec.ts"], ticket="K-57")
-        self.assertIn("apps/web/tests/features/F3/connect-pc.spec.ts", r["g48"])
-        r = sel(["README.md"], ticket="K-57")
-        self.assertEqual(r["g48"], ["apps/web/tests/features/F3/connect-pc.spec.ts"], "変えていなくても自分の試験は流す")
-        self.assertIn("K-57", r["tasks"])
+        r = sel(["README.md"], ticket="K-36")   # K-36 は依存なし
+        self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"], "変えていなくても自分の試験は流す")
+        self.assertEqual(r["tasks"], ["K-36"])
 
     def test_K177_WS_002_depends_on_one_level(self):
         r = sel(["packages/db/migrations/0094_x.sql"], ticket="K-90")   # K-90 は K-57 に依存（K-57 は K-51 に依存）
         self.assertEqual(r["g48"], ["apps/web/tests/features/F3/connect-pc.spec.ts"], "依存の依存（K-51）はたどらない")
 
     def test_K177_WS_003_changed_spec(self):
-        r = sel(["apps/web/tests/k/showcase.spec.ts"])
+        r = sel(["apps/web/tests/k/showcase.spec.ts", "apps/web/tests/skeleton/m2.spec.ts"])
         self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"])
+        self.assertEqual(r["g59"], ["apps/web/tests/skeleton/m2.spec.ts"])
 
     def test_K177_WS_004_changed_test_helper_selects_importers(self):
         r = sel(["apps/web/tests/_lib/api.ts"])
@@ -71,47 +72,86 @@ class Select(unittest.TestCase):
         self.assertNotIn("apps/web/tests/components.spec.ts", r["g48"], "読み込まない試験は選ばない")
 
     def test_K177_WS_005_built_by(self):
-        r = sel(["apps/web/components/k/Button.tsx"])
-        self.assertEqual(r["g48"], ["apps/web/tests/components.spec.ts"])
-        r = sel(["apps/api/src/bridge/pair.ts"])   # changes の glob で当たる
+        r = sel(["apps/web/app/signup/page.tsx"])   # 画面ごとのコード：作ったチケットの試験
+        self.assertEqual(r["g48"], ["apps/web/tests/features/F1/sign-up.spec.ts"])
+        r = sel(["apps/api/src/bridge/pair.ts"])   # 画面の外：changes の glob で当たる
         self.assertEqual(r["g48"], ["apps/web/tests/features/F3/connect-pc.spec.ts"])
+        r = sel(["apps/web/components/k/Button.tsx"])   # 共通の画面のコード（app/ と tests/ の外）：どの画面が使うか決められないので全部
+        self.assertEqual((r["g48"], r["g59"]), (sorted(G48), sorted(G59)))
+        r = sel(["apps/web/app/brand-new/page.tsx"])   # 画面ごとのコードで、作ったチケットの試験に当たらない：黙って飛ばさず全部
+        self.assertEqual((r["g48"], r["g59"]), (sorted(G48), sorted(G59)))
+        self.assertTrue(any("当たらない" in w for w in r["reasons"]))
 
     def test_K177_WS_006_registry_files_do_not_select_by_builder(self):
         r = sel(["packages/db/src/index.ts", "11_tickets/tickets.json"])
         self.assertEqual(r["g48"] + r["g59"], [])
 
     def test_K177_WS_007_all_on(self):
-        r = sel(["apps/web/playwright.config.ts"])
-        self.assertEqual(r["g48"], sorted(G48))
-        self.assertEqual(r["g59"], sorted(G59))
+        for f in ("apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "apps/web/tests/global-setup.ts"):
+            r = sel([f])   # global-setup は試験の置き場の spec でない物で、どの spec も読み込まない＝設定と同じく全部
+            self.assertEqual((r["g48"], r["g59"]), (sorted(G48), sorted(G59)), f)
 
     def test_K177_WS_008_nothing_hits(self):
         r = sel(["docs/notes.md"])
         self.assertEqual((r["g48"], r["g59"], r["tasks"]), ([], [], []))
+        r = sel(["docs/notes.md", "apps/web/tests/k/showcase.spec.ts"])   # 消した・名前を変えた元の道も変えたファイルとして渡る（呼ぶ側）
+        self.assertEqual(r["g48"], ["apps/web/tests/k/showcase.spec.ts"])
         self.assertEqual(len(r["reasons"]), 1)
         self.assertIn("当たる", r["reasons"][0])
 
     def test_K177_WS_009_g59_and_outside_domain(self):
-        r = sel(["README.md"], ticket="K-58")
-        self.assertEqual(r["g59"], ["apps/web/tests/skeleton/m2.spec.ts"])
+        r = sel(["README.md"], ticket="K-54")   # K-54 は依存なし・試験は skeleton
+        self.assertEqual(r["g59"], ["apps/web/tests/skeleton/m1.spec.ts"])
         self.assertEqual(r["g48"], [])
-        r = sel(["apps/web/app/old/page.tsx"])   # 作ったチケットの試験が G48 の一覧の外（screens）
+        t = dict(TICKETS)
+        t["K-92"] = {"tests": ["apps/web/tests/screens/x.spec.ts"], "changes": ["apps/api/src/x.ts"], "depends_on": []}
+        r = sel(["apps/api/src/x.ts"], tickets=t)   # 作ったチケットの試験が G48 の一覧の外（screens）：選ばない
         self.assertEqual(r["g48"] + r["g59"], [])
 
     def test_K177_WS_010_tasks_are_owners_of_g48(self):
         r = sel(["apps/web/tests/_lib/row.ts", "apps/web/components/k/Button.tsx"])
         self.assertEqual(r["tasks"], ["K-24", "K-51"], "重なりなし・並び順。g59 だけの持ち主（照らす一覧の外）は入れない")
+        t = dict(TICKETS)
+        t["K-93"] = {"tests": ["apps/web/tests/components.spec.ts"], "changes": [], "depends_on": []}   # 持ち主が 2 つ
+        r = sel(["apps/web/tests/components.spec.ts"], tickets=t)
+        self.assertEqual(r["tasks"], ["K-24", "K-93"])
 
 
 class Domain(unittest.TestCase):
     def test_K177_WS_011_g48_from_package_json(self):
-        d = web_select.domain_g48(str(ROOT))
-        args = json.loads((ROOT / "apps/web/package.json").read_text(encoding="utf-8"))["scripts"]["e2e:k"]
-        self.assertTrue(d and all(x.startswith("apps/web/tests/") and x.endswith(".spec.ts") for x in d), d)
-        self.assertIn("apps/web/tests/components.spec.ts", d)
-        self.assertTrue(any(x.startswith("apps/web/tests/features/") for x in d), "置き場（tests/features）を開く")
-        self.assertFalse(any(x.startswith("apps/web/tests/screens/") for x in d), "一覧の外は入れない")
-        self.assertIn("tests/features", args)
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            w = tmp / "apps/web"
+            for f in ("tests/a.spec.ts", "tests/dir/b.spec.ts", "tests/dir/sub/c.spec.ts", "tests/dir/helper.ts", "tests/other/d.spec.ts"):
+                (w / f).parent.mkdir(parents=True, exist_ok=True)
+                (w / f).write_text("//\n")
+            (w / "package.json").write_text(json.dumps({"scripts": {"e2e:k": "PW_REPORT=x playwright test tests/a.spec.ts tests/dir --workers 1"}}))
+            self.assertEqual(web_select.domain_g48(str(tmp)),
+                             ["apps/web/tests/a.spec.ts", "apps/web/tests/dir/b.spec.ts", "apps/web/tests/dir/sub/c.spec.ts"],
+                             "ファイルと置き場（下まで）を開く・spec でない物・一覧の外・オプションは入れない")
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        self.assertTrue(web_select.domain_g48(str(ROOT)), "本物の package.json からも読める")
+
+    def test_K177_WS_015_importers_transitive_on_real_files(self):
+        tmp = pathlib.Path(tempfile.mkdtemp())
+        try:
+            t = tmp / "apps/web/tests"
+            files = {"_lib/base.ts": "export const x = 1;\n",
+                     "_lib/mid.ts": "import { x } from './base';\nexport const y = x;\n",
+                     "_lib/idx/index.ts": "export const z = 1;\n",
+                     "a.spec.ts": "import { y } from './_lib/mid';\n",
+                     "b.spec.ts": "import { z } from './_lib/idx';\nconst m = await import('./_lib/base.ts');\n",
+                     "c.spec.ts": "import { test } from '@playwright/test';\n"}
+            for f, body in files.items():
+                (t / f).parent.mkdir(parents=True, exist_ok=True)
+                (t / f).write_text(body)
+            imp = web_select.importers(str(tmp))
+            self.assertEqual(imp["apps/web/tests/_lib/base.ts"], {"apps/web/tests/a.spec.ts", "apps/web/tests/b.spec.ts"}, "間に挟んで（mid）・動的な import")
+            self.assertEqual(imp["apps/web/tests/_lib/idx/index.ts"], {"apps/web/tests/b.spec.ts"}, "置き場の index")
+            self.assertNotIn("apps/web/tests/c.spec.ts", set().union(*imp.values()))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
 
 class ScopeOutputs(unittest.TestCase):
@@ -153,6 +193,11 @@ class Run(unittest.TestCase):
         sc59 = web_run.commands("g59", full=False, specs=["apps/web/tests/skeleton/m2.spec.ts"], tasks=[])
         self.assertEqual(sc59[0][-1], "tests/skeleton/m2.spec.ts")
         self.assertEqual(web_run.commands("g59", full=False, specs=[], tasks=[]), [])
+        self.assertEqual(sum(1 for c in sc48 if "op_gate.py" in " ".join(c)), 1, "照らすのは 1 回（持ち主を全部 --task で）")
+        e48, e59 = web_run.env_for("g48", {"X": "1"}), web_run.env_for("g59", {"PLAYWRIGHT_JUNIT_OUTPUT_NAME": "/w/junit/web-skeleton.xml"})
+        self.assertEqual(e48["PW_REPORT"], "pw-reports/k.json", "op_gate と ci_results が読む報告")
+        self.assertEqual((e59["PW_REPORT"], e59["PLAYWRIGHT_HTML_OUTPUT_DIR"]), ("pw-reports/skeleton.json", "playwright-report-skeleton"))
+        self.assertEqual(e59["PLAYWRIGHT_JUNIT_OUTPUT_NAME"], "/w/junit/web-skeleton.xml", "組の段の JUnit の置き場を消さない")
 
 
 class Workflow(unittest.TestCase):
@@ -161,7 +206,8 @@ class Workflow(unittest.TestCase):
         outs = wf["jobs"]["static"]["outputs"]
         for k in ("web_g48", "web_g59", "web_tasks"):
             self.assertIn(k, outs)
-        steps = {str(s.get("name", ""))[:3]: s for s in wf["jobs"]["web"]["steps"] if str(s.get("name", "")).startswith(("G48", "G59"))}
+        steps = {g: s for s in wf["jobs"]["web"]["steps"] for g in ("G48", "G59") if str(s.get("name", "")).startswith(g + " ")}
+        self.assertEqual(set(steps), {"G48", "G59"}, "web の組に G48 と G59 の段がある")
         for g, part, key in (("G48", "g48", "web_g48"), ("G59", "g59", "web_g59")):
             s = steps[g]
             self.assertIn(f"web_run.py {part}", s["run"], g)
