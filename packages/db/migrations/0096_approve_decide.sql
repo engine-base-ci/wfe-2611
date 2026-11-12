@@ -1,5 +1,5 @@
 -- 0096 承認する（K-162・K-63 の孫・D-012・D-125.19・D-125.102・D-125.107・D-127.9・D-128.25・D-128.36・D-128.98・D-128.138・D-128.156・D-128.171・D-128.176・D-128.177・D-128.178・D-131.3・D-131.5・D-131.11・D-131.14）
---   番号は取り込む順の次の空き番号（K-161 が先に入ったら、その次に付け替える）。新しい表は作らない。足すのは列 bridge_jobs.resume_session_id と関数。
+--   番号は取り込む順の次の空き番号（K-161 の 0095 の次・付け替え済み）。新しい表は作らない。足すのは列 bridge_jobs.resume_session_id と関数。
 --   確定の時点：承認の行に決めたこと（approve）・時刻（decided_at）・状態（approved）・解いた時刻（resolved_at）を、
 --     実行の記録と仕事・チケットの段・やり取りの 1 行・証跡と一緒に 1 つの処理で書いた時点（app.approval_decide）。決まった承認は変えられない（0063 の approvals_once）。
 --   差し戻し（return）は K-163 が app.approval_decide を create or replace で足す。この孫では approve 以外は bad_decision。
@@ -73,19 +73,26 @@ begin
     return jsonb_build_object('error', 'decided');
   end if;
 
+  -- 実行するのは、作る段の仕事を動かした人（任せた人）の AI・その人の PC（D-128.176）。
+  --   承認の行の作る段の実行 → そのチケットの最新の作る段の実行 → 承認の requested_by（作る段の実行が無い承認）の順に引く。
+  --   任せた人の状態の確かめも守りの判定なので、書き込みの前に、例外なら guard_failed（503・何も書かない・K63-API-059）
+  begin
+    select r.created_by into v_by from action_runs r where r.id = a.action_run_id and r.phase = 'make';
+    if v_by is null then
+      select r.created_by into v_by from action_runs r
+       where r.ticket_id = t.id and r.phase = 'make' and r.deleted_at is null order by r.created_at desc limit 1;
+    end if;
+    v_by := coalesce(v_by, a.requested_by);
+    v_why := app.ticket_delegator_stop(t.id, v_by);
+  exception when others then
+    return jsonb_build_object('error', 'guard_failed');
+  end;
+
   -- 決める（1 回の書き込み。承認する人は決めた時点の担当者に書き直す。承認は全部「取り消せない」の印・D-128.177）
   update approvals set decision = 'approve', decided_at = now(), resolved_at = now(), status_id = 'approved',
          irreversible = true, approver_member_id = v_me, updated_by = v_me
    where id = a.id returning * into a;
 
-  -- 実行するのは、作る段の仕事を動かした人（任せた人）の AI・その人の PC（D-128.176）。
-  --   承認の行の作る段の実行 → そのチケットの最新の作る段の実行 → 承認の requested_by（作る段の実行が無い承認）の順に引く
-  select r.created_by into v_by from action_runs r where r.id = a.action_run_id and r.phase = 'make';
-  if v_by is null then
-    select r.created_by into v_by from action_runs r
-     where r.ticket_id = t.id and r.phase = 'make' and r.deleted_at is null order by r.created_at desc limit 1;
-  end if;
-  v_by := coalesce(v_by, a.requested_by);
   -- 仕事の中身は K-62 の 1 か所（app.ticket_job_context）で組み、足し書きを付ける。続きの id は同じ人のときだけ（D-129.46）
   v_ctx := app.ticket_job_context(t.id);
   v_sess := case when (v_ctx->>'agent_member_id')::uuid = v_by then v_ctx->>'agent_session_id' end;
@@ -96,7 +103,6 @@ begin
      where r.ticket_id = t.id and r.phase = 'make' and j.agent_session_id = v_sess
      order by r.created_at desc limit 1;
   end if;
-  v_why := app.ticket_delegator_stop(t.id, v_by);
   insert into bridge_jobs (tenant_id, scope_id, member_id, state_id, prompt, agent_session_id, resume_session_id, kind,
                            permission_mode, stopped_reason, finished_at, created_by)
     values (t.tenant_id, t.scope_id, v_by, case when v_why is null then 'queued' else 'stopped' end,

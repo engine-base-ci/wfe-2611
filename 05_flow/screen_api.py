@@ -554,7 +554,7 @@ ERRORS_4XX = {
          "trigger": "承認の id が uuid でない",
          "ears_form": "UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
-         "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか）の所で例外になった",
+         "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
          "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
     ],
     # AI に任せる（K-62・D-128.138）。PC をつないでいない（積まない）・走っている実行がある（今の run_id）・承認待ち／完了。冪等キーは汎用のまま
