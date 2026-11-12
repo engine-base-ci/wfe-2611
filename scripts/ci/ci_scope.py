@@ -773,18 +773,25 @@ def rebase_blob_roots(reports: pathlib.Path | str, cwd: str) -> list[str]:
     同じ台に runner がいくつもあると、単体の試験の組とまとめる組の置き場の根が違う
     （…/engine-base-Kaname/_work/… と …-Kaname-2/_work/…）。vitest の blob は試験ファイルと coverage の絶対パスを持つので、
     そのままでは --merge-reports が「No test files found」で落ちる。各組が試験の前に書いた root-<組>.txt の根を、今の根に置き換える。
-    根の書き置きが無い blob は置き換えられないので誤りとして返す（vitest を呼ばずに赤）。"""
+    根の書き置きが無い blob は置き換えられないので誤りとして返す（vitest を呼ばずに赤）。
+    誤りが無ければ書き置きを置き場から消す（vitest は置き場の全部のファイルを blob として読み、書き置きで落ちる）。"""
     rep = pathlib.Path(reports)
     errs: list[str] = []
-    for blob in sorted(rep.glob("blob-*-*.json")):
+    plan: list[tuple[pathlib.Path, str]] = []
+    for blob in sorted(rep.glob("blob-*-*.json")):   # 先に全部を確かめる（誤りが 1 つでもあれば何も変えない）
         shard = blob.stem.split("-")[1]
         rf = rep / f"root-{shard}.txt"
         if not rf.exists():
             errs.append(f"{blob.name}：根の書き置き {rf.name} が無い（置き場が違う runner の結果をまとめられない）")
             continue
-        root = rf.read_text(encoding="utf-8").strip()
+        plan.append((blob, rf.read_text(encoding="utf-8").strip()))
+    if errs:
+        return errs
+    for blob, root in plan:
         if root and root != cwd:
             blob.write_text(blob.read_text(encoding="utf-8").replace(root, cwd), encoding="utf-8")
+    for rf in rep.glob("root-*.txt"):   # blob の無い書き置きも含めて消す（vitest は置き場の全部のファイルを結果として読む）
+        rf.unlink()
     return errs
 
 
