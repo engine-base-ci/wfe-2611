@@ -22,3 +22,23 @@ notices:
     ]
   build: ["npx prettier --check --ignore-unknown {changed}", "npx eslint --no-warn-ignored {changed}"]
 answers: 01_hearing/decider-answers.jsonl
+# GitHub に出す前に手元で流す速い検査（K-172・K-173 で CI に出してから赤を返されたもの）
+preflight:
+  [
+    "pnpm install --frozen-lockfile --prefer-offline --silent",
+    "pnpm -s lint",
+    "python3 scripts/ci/generated_gate.py",
+    "python3 scripts/ci/test_owner_gate.py",
+    "python3 scripts/ci/ci_wiring_gate.py",
+  ]
+# CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
+vm:
+  label: linux-vm
+  image: tf-golden
+  base: ghcr.io/cirruslabs/ubuntu:latest
+  slots: 3
+  cpu: 3
+  memory: 4096
+  account: engine-base
+  tools: { python: ["3.14"], node: ["22"] }
+  warm: ["npm i -g pnpm@10 --prefix ~/.local", "pnpm install --frozen-lockfile", "bash scripts/ci/ci_venv.sh"]
