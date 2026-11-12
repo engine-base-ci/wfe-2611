@@ -194,7 +194,7 @@ def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
         if: always()
         with: {{ name: junit-{job}, path: junit/, if-no-files-found: error, retention-days: 7 }}
 """
-NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）\n      - run: pnpm install --frozen-lockfile\n" + VENV
+NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）\n      - run: pnpm install --frozen-lockfile\n" + VENV
 PYS = "      - uses: actions/checkout@v4\n" + VENV
 UNIT_JOBS = "".join(f"""  unit-{i}:
     runs-on: [self-hosted, macOS]
