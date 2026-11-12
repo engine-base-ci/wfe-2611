@@ -1,0 +1,20 @@
+# ticket-flow の設定（~/.claude/skills/ticket-flow・2026-11-12）
+mainline: claude/modest-lamport-77ue02
+remote: origin
+remote_mainline: main
+wip: 3
+tickets:
+  dir: 11_tickets
+  file: "{id}.md"
+  row_pattern: '{nodash}-[A-Z0-9]+-\d+'
+  fields: {tests: tests, changes: changes, depends_on: depends_on}
+tests_pattern: '(^|/)(tests?|__tests__)/|\.(test|spec)\.(m|c)?(ts|tsx|js|jsx)$|(^|/)test_[^/]+\.py$|_test\.py$'
+ci:
+  workflow: v3-gate.yml
+  artifact: junit
+  timeout_min: 30
+  inputs: {scope: scope, ticket: ticket, base: base}
+notices:
+  write: ["npx prettier --check --ignore-unknown {changed}", "python3 ~/.claude/skills/test-verification/scripts/pattern_gate.py 11_tickets/*.md --local 07_qa/test-patterns.local.json"]
+  build: ["npx prettier --check --ignore-unknown {changed}", "npx eslint --no-warn-ignored {changed}"]
+answers: 01_hearing/decider-answers.jsonl
