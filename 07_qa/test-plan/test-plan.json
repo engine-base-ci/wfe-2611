@@ -1204,7 +1204,7 @@
   {
    "id": 59,
    "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）",
-   "script": "BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton",
+   "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\" BASE_URL=http://127.0.0.1:3124 PW_REPORT=pw-reports/skeleton.json PLAYWRIGHT_HTML_OUTPUT_DIR=playwright-report-skeleton pnpm --filter @kaname/web exec playwright test tests/skeleton",
    "job": "web",
    "blocking": true
   },
@@ -1275,7 +1275,7 @@
   {
    "id": 65,
    "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）",
-   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py",
+   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py",
    "job": "spec",
    "blocking": true
   },

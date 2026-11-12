@@ -12,6 +12,10 @@ export default defineConfig({
     ["list"],
     ["html", { open: "never" }],
     ["json", { outputFile: process.env["PW_REPORT"] ?? "test-results/report.json" }],
+    // CI の記録（ticket-flow が行 ID で判定する JUnit）。置き場は組の作業場所の絶対の道で渡す（K-176）
+    ...(process.env["PLAYWRIGHT_JUNIT_OUTPUT_NAME"]
+      ? [["junit", { outputFile: process.env["PLAYWRIGHT_JUNIT_OUTPUT_NAME"] }] as const]
+      : []),
   ], // json は op_gate.py と write_results.mjs が読む
   use: { baseURL: base ?? "http://127.0.0.1:3123", trace: "retain-on-failure" },
   // ローカルでダウンロードできないときは入っている Google Chrome を使う（PW_CHANNEL=chrome）。CI は playwright install chromium
