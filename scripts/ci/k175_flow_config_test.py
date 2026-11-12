@@ -30,13 +30,15 @@ class FlowConfig2(unittest.TestCase):
             self.assertRegex(run, r"playwright install( --with-deps)? chromium\b", f"{job} の組が使うブラウザも chromium")
 
     def test_K175_CF_002_scope_script_in_preflight(self):
-        pre = [p.strip() for p in CFG.get("preflight") or []]
-        hit = [p for p in pre if p.startswith("python3 scripts/ci/ci_scope.py ")]
+        # K-178 から：CI の範囲の台本は、CI の定義の組（preflight_jobs）をそのまま手元で流すときに 1 回流れる
+        wf = yaml.safe_load((ROOT / ".github/workflows" / CFG["ci"]["workflow"]).read_text(encoding="utf-8"))
+        runs = [p.strip() for p in CFG.get("preflight") or []] + [
+            str(s.get("run", "")) for j in (CFG.get("preflight_jobs") or [])[:1] for s in wf["jobs"][j]["steps"]]
+        hit = [r for r in runs if "python3 scripts/ci/ci_scope.py " in r]
         self.assertEqual(len(hit), 1, "CI の範囲の台本を出す前に 1 回")
-        for need in ("--base {base}", "--scope ticket", "--ticket {ticket}"):
+        for need in ("--base", "--scope", "--ticket"):
             self.assertIn(need, hit[0])
         self.assertTrue((ROOT / "scripts/ci/ci_scope.py").is_file())
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
