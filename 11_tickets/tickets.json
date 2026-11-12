@@ -7309,6 +7309,45 @@
     "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K177-WS-001 | 入力 | チケット（依存なし）が画面の試験を持ち、画面のファイルは変えていない・範囲のチケットが複数 | その試験だけが選ばれる・複数ならどのチケットの試験も選ぶ |\n| K177-WS-002 | 入力 | depends_on のチケットが画面の試験を持つ | その試験が選ばれる（依存の依存はたどらない） |\n| K177-WS-003 | 入力 | 画面の試験のファイルそのもの（G48 の物・G59 の物）を変えた | それぞれの置き場で、そのファイルが選ばれる |\n| K177-WS-004 | 入力 | 試験の共通部品（apps/web/tests/_lib の物）を変えた | それを直に・間に挟んで読み込む試験が全部選ばれ、読み込まない試験は選ばれない |\n| K177-WS-005 | 入力 | 画面ごとのコード（apps/web/app）・画面の外のコード（口・DB）・共通の画面のコード（apps/web の app と tests の外） | 画面ごと・画面の外は、そのファイルを changes に持つチケットの試験・共通の画面のコードは全部（どの画面が使うか決められない）・画面ごとのコードで作ったチケットの試験に当たらなければ、黙って飛ばさず全部（理由つき） |\n| K177-WS-006 | 入力 | みんなが書き足す一覧のファイル（web_select.registry）だけを変えた | 作った人では選ばない |\n| K177-WS-007 | 入力 | 画面の試験の設定（web_select.all_on：playwright.config.ts・apps/web/package.json・lockfile）・どの spec も読み込まない試験の置き場の物（global-setup など）を変えた | G48 と G59 の試験が全部選ばれる |\n| K177-WS-008 | 入力 | 画面の外の変更で、どれにも当たらない・消した／名前を変えた試験の元の道 | 何も選ばれず理由が 1 つ出る・元の道も変えたファイルとして当たる |\n| K177-WS-009 | 入力 | 選ばれた試験が G59（skeleton）の置き場にある・画面の外の変更を作ったチケットの試験が G48 の一覧の外（screens など） | g59 に入り g48 には入らない・一覧の外の試験は選ばれない |\n| K177-WS-010 | 入力 | 照らす対象（持ち主が 1 つ・2 つ） | 選んだ g48 の試験の持ち主のチケットを全部（重なりなし・番号の順） |\n| K177-WS-011 | 入力 | G48 の一覧 | apps/web/package.json の e2e:k の「playwright test」の後の引数のファイル・置き場（下の置き場まで）を開いた spec（spec でない物・オプション・一覧の外は入れない） |\n| K177-WS-012 | 入力 | 範囲の台本の出力 | web_g48・web_g59・web_tasks を JSON で出す・web の組を流すはずの変更なのに選べなければ、jobs.web を偽にし止める（errors に理由・終わり方 1・D-133.7）・全部の回は jobs.web が真 |\n| K177-WS-013 | 入力 | web_run.py の命令と env（g48・g59） | 全部の回は今の命令（e2e:k と op_gate --all・skeleton 全部）・範囲の回は選んだ試験だけと op_gate 1 回（流した試験のファイルを --rows-in で・--task も --all も使わない）・範囲の回で G48 も G59 も空なら赤（1・理由の文）・片方だけ空ならその段は流さず 0・PW_REPORT（と g59 の HTML の置き場）を付け、組の段の JUnit の置き場は消さない |\n| K177-WS-014 | 入力 | workflow の web の組 | G48・G59 が web_run.py を流し、env に static の出力（自分の段の一覧・もう片方の段の一覧・web_tasks・full）・static の outputs に web_g48・web_g59・web_tasks がある |\n| K177-WS-015 | 入力 | 試験の共通部品の逆引き（本物のファイル） | 間に挟んで読み込む・動的な import・置き場の index を読み込む spec を全部返し、読み込まない spec は返さない |\n| K177-WS-016 | 入力 | op_gate --rows-in（流した試験のファイル） | そのファイルに書かれた行 ID の行だけを照らす（持ち主のチケットでない行も照らす・流していないファイルの行は照らさない）・照らす行が落ちていれば赤 |"
    },
    "file": "11_tickets/K-177.md"
+  },
+  {
+   "id": "K-178",
+   "title": "CI に出す前に CI の定義の速い組を手元でそのまま流し、重すぎるチケットを書く段で止める",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "0.5",
+   "estimate_basis": "設定 1 ファイルと試験 1 ファイル。K-176（10 分・CI 1 回）より小さい",
+   "decisions": [
+    "D-133",
+    "D-133.7"
+   ],
+   "choke_points": [],
+   "choke_none": "進め方の設定（ticket-flow.yaml）だけ。製品の外への出口に触らない",
+   "depends_on": [
+    "K-177"
+   ],
+   "tests": [
+    "scripts/ci/k178_flow_config_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "ticket-flow.yaml"
+   ],
+   "affects": [],
+   "ci_wide": [],
+   "sections": {
+    "目的": "K-161 で、CI に出してから赤で戻るのを 4 回くり返し、約 1 時間かかった。出す前の手元の検査が手で選んだ 6 つの命令だけで、CI の定義（v3-gate.yml）の static・spec の組にある検査（口の形の試験・fuzz の的の検査など）を流していなかったため。\nまた K-161 は 1 本で DB・共通の型・画面を全部触り、CI 1 回が 17 分かかった。\nticket-flow のスキルに、CI の定義の組をそのまま手元で流す仕組み（preflight_jobs）と、重すぎるチケットを書く段で止める仕組み（weight）を入れた（2026-11-12・決める人）。Kaname の設定でそれを使う。",
+    "完了の条件": "- [ ] ticket-flow.yaml の preflight_jobs が v3-gate.yml の static と spec を指し、手で選んだ命令の一覧（preflight）は依存を入れる 1 つだけ\n- [ ] weight が web（apps/web）と db（packages/db）を重い組にし、1 本が触ってよいのは 1 つ\n- [ ] changes_ignore が、作り手が作り直す生成物だけを挙げる\n- [ ] 試験 K178-CF-001〜003 が緑・チケットの CI が緑",
+    "前提と制約": "- 手元で流すのは CI と同じく、コミットした版のまっさらな写し（スキルの local_jobs.py）。DB は CI と同じく組の中で使い捨ての入れ物を立てて消す（開発の DB には触らない）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 設定 | ticket-flow.yaml：preflight を依存の取り込み 1 つに・preflight_jobs [static, spec]・weight（groups web・db・max 1）・changes_ignore（生成物） |",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-01 ファイルの名前の扱いは変えない\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K178-CF-001 | 入力 | ticket-flow.yaml の preflight_jobs と preflight | preflight_jobs は v3-gate.yml の jobs にある static と spec。preflight は依存を入れる命令 1 つだけ（CI の検査を手で写さない） |\n| K178-CF-002 | 入力 | ticket-flow.yaml の weight | groups に web（apps/web/**）と db（packages/db/**）・max は 1 |\n| K178-CF-003 | 入力 | ticket-flow.yaml の changes_ignore | どれも生成物の一覧（scripts/ci/generated.json の outputs）か、決める人の答えの記録か、チケットの一覧に当たる。製品のコード（apps/ と packages/ の src）は入っていない |"
+   },
+   "file": "11_tickets/K-178.md"
   }
  ]
 }
