@@ -6961,6 +6961,52 @@
    "file": "11_tickets/K-170.md"
   },
   {
+   "id": "K-171",
+   "title": "PC をつなぐコードを同時に 2 回出すと、まれに生きたコードが 2 つできる（取り合い）を直す",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "PC をつなぐ",
+   "assignee": "作る",
+   "due": "2026-11-12",
+   "estimate_hours": "1",
+   "estimate_basis": "実測 K-170（2026-11-11・切る 5 分＋精査の往復・実装 1 分）から、関数 1 つの直しと migration 1 本・試験 1 行として引いた",
+   "decisions": [
+    "D-128.93"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "depends_on": [
+    "K-57"
+   ],
+   "tests": [
+    "packages/db/test/k171-pairing-race.test.ts"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "packages/db/migrations/0094_bridge_code_new_lock.sql",
+    "packages/db/src/index.ts",
+    "packages/db/test/k171-pairing-race.test.ts"
+   ],
+   "affects": [
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "sections": {
+    "目的": "K-155 の取り込み前の CI（2026-11-11）で、K-57 の試験 K57-API-034「つなぐの 2 回押し：コードは最後の 1 つだけが生きる」が、台の混んだときに 1 回落ちた（生きたコードが 2 つ）。手元では 6 回とも通る＝たまにだけ起きる取り合い。\n原因は `app.bridge_code_new`（packages/db/migrations/0089_bridge_pairing_codes.sql:38）：「その人（アカウント）の使っていないコードを無効にしてから 1 行足す」を、同時に呼ばれた 2 つの取引が、相手の行が見えないうちにそれぞれ行う。\n決める人の答え：先に直すチケットを切る（2026-11-12・answer=bc3917317a43）。",
+    "完了の条件": "- [ ] 同じアカウントのコードを同時にいくつ出しても、生きたコード（used_at・deleted_at が空）は 1 つだけになる\n- [ ] 別のアカウントのコードの発行は待たせない（アカウントごとの鍵）\n- [ ] 前に出したコードの無効化（今の振る舞い）は変えない\n- [ ] 試験 K171-DB-001〜004 が緑・K57-API-034 が緑・チケットの CI が緑",
+    "前提と制約": "- 決定：D-128.93（接続コードは 10 分・1 回だけ・前のコードは使えなくする）。振る舞いは変えず、同時に呼ばれたときも同じ結果にする\n- 関門 C2（永続化）：書き込みは関数 app.bridge_code_new の中だけ（今と同じ）\n- migration は取り込む順の次の空き番号（0094）。packages/db/src/index.ts の MIGRATIONS に足す",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 目録で探した結果 | `app.bridge_code_new`（0089）を `create or replace` で直す。鍵は `pg_advisory_xact_lock`（取引の終わりで外れる・他の表の鍵と混ざらないよう 2 つの数の形 `(classid, objid)` に、この関数専用の数とアカウントの印のハッシュ） |\n| アカウントの印 | `app.account_members(p_member)` と同じ見方：members.auth_user_id、無ければ tenant_memberships の auth_user_id、どちらも無ければ member の id |\n| 変えるファイル | `packages/db/migrations/0094_bridge_code_new_lock.sql`（関数の直し）・`packages/db/src/index.ts`（MIGRATIONS に 0094） |",
+    "テスト仕様と確認の結果": "分類: CRUD\n\n- 要らない: TP-CRUD-02 消したものを開く口は無い（コードは画面に出さず、出し直すだけ）\n- 要らない: TP-CRUD-03 消す・戻すの口は無い（無効化は出し直しの中だけ）\n- 要らない: TP-CRUD-06 書きかけは無い（コードを出す 1 回の呼び出しだけ）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K171-DB-001 | 操作の揺れ | 同じ人のコードを、1 つ目の確定前に 2 つ目を出す・続けて同時に 6 回出す（TP-CRUD-04 2 回押し） | 2 つ目は 1 つ目の確定を待ち、生きたコードは 1 行だけ・残り 7 行は deleted_at が入る |\n| K171-DB-002 | 操作の揺れ | 同じアカウントの別のワークスペースの人（auth_user_id が同じ）が、相手の確定前に出す（TP-CRUD-01 2 人が同時に） | 生きたコードはアカウントで 1 行だけ |\n| K171-DB-003 | 操作の揺れ | 別のアカウントの 2 人が同時に出す | それぞれ 1 行ずつ生きる（待たせても消し合わない） |\n| K171-DB-004 | 失敗 | 鍵を取った取引が途中で失敗して戻る（TP-CRUD-05） | 鍵は残らず、次のコードの発行は 2 秒以内に通り、生きたコードは 1 行 |"
+   },
+   "file": "11_tickets/K-171.md"
+  },
+  {
    "id": "K-172",
    "title": "CI を ticket-flow の形にする（自分の Mac の台・DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録）",
    "kind": "課題",
