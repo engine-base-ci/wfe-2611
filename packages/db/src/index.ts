@@ -98,6 +98,7 @@ export const MIGRATIONS = [
   "0091_free_text_limits.sql",
   "0092_ticket_delegate.sql",
   "0093_free_text_limits_2.sql",
+  "0094_bridge_code_new_lock.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */
