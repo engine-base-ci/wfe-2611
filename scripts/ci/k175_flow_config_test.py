@@ -25,8 +25,9 @@ class FlowConfig2(unittest.TestCase):
         inst = [i for i, w in enumerate(warm) if w.startswith("pnpm install")]
         self.assertTrue(pw, "元の像に Chromium を依存の部品ごと入れる")
         self.assertTrue(inst and inst[0] < pw[0], "部品を入れた後（playwright は部品の中にある）")
-        web = "\n".join(str(s.get("run", "")) for s in WF["jobs"]["web"].get("steps", []))
-        self.assertRegex(web, r"playwright install( --with-deps)? chromium", "web の組が使うブラウザも chromium")
+        for job in ("web", "e2e"):   # ブラウザを使う組（どちらも元の像の Chromium で足りる）
+            run = "\n".join(str(st.get("run", "")) for st in WF["jobs"][job].get("steps", []))
+            self.assertRegex(run, r"playwright install( --with-deps)? chromium\b", f"{job} の組が使うブラウザも chromium")
 
     def test_K175_CF_002_scope_script_in_preflight(self):
         pre = [p.strip() for p in CFG.get("preflight") or []]
