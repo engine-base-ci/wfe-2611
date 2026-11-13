@@ -64,11 +64,13 @@ class CutTake(unittest.TestCase):
                 *TAIL]),
             EARS: json.dumps({"ops": {
                 "oldOp": {"file": "t/old.test.ts", "covers": {"a": "X", "b": {"file": "t/gone.test.ts", "mark": "M"}}},
-                "myOp": {"file": "t/k5.test.ts", "covers": {"c": "K5-API-001", "d": {"file": "t/gone.test.ts", "mark": "M"}}},
+                "myOp": {"file": "t/k5.test.ts", "covers": {"c": "K5-API-001", "d": {"file": "t/gone.test.ts", "mark": "M"},
+                                                            "f": {"file": SHARED, "mark": "const other = 2"},      # 外した行を指す
+                                                            "g": {"file": SHARED, "mark": "const mine = 1"}, "h": "無い題"}},
                 "laterOp": {"file": "t/k6.test.ts", "covers": {"e": "K6-API-001"}}}}),
             "11_tickets/K-5.md": ticket("K-5", ["t/k5.test.ts", "apps/api/test/generated/x.test.ts"], ["docs/仕様 の表.md"]),
             "11_tickets/K-6.md": ticket("K-6", ["t/k6.test.ts"]),
-            "t/k5.test.ts": "k5 の試験\n", "t/k6.test.ts": "k6\n", "apps/api/test/generated/x.test.ts": "切る段の生成の試験\n",
+            "t/k5.test.ts": "k5 の試験 K5-API-001\n", "t/k6.test.ts": "k6\n", "apps/api/test/generated/x.test.ts": "切る段の生成の試験\n",
             "docs/仕様 の表.md": "切る段の版\n"})
         git(self.repo, "add", "-A")
         git(self.repo, "commit", "-qm", "cut: まとめて切る")
@@ -97,11 +99,12 @@ class CutTake(unittest.TestCase):
         self.assertEqual(sorted(ops), ["myOp", "oldOp"])
         self.assertEqual(ops["oldOp"]["covers"], {"a": "X"})
         self.assertEqual((ops["oldOp"]["file"], ops["myOp"]["file"]), ("t/old.test.ts", "t/k5.test.ts"))
-        self.assertEqual(ops["myOp"]["covers"], {"c": "K5-API-001"})
+        # 指す先のファイルが無い（d）・共有の試験から外した行を指す（f）・題が試験に無い（h）は消える。置いた中身に印がある（c・g）は残る
+        self.assertEqual(ops["myOp"]["covers"], {"c": "K5-API-001", "g": {"file": SHARED, "mark": "const mine = 1"}})
 
     def test_K187_CT_003_handwritten_tests_and_carry_are_copied_generated_are_not(self) -> None:
         self.take()
-        self.assertEqual((self.repo / "t/k5.test.ts").read_text(encoding="utf-8"), "k5 の試験\n")
+        self.assertEqual((self.repo / "t/k5.test.ts").read_text(encoding="utf-8"), "k5 の試験 K5-API-001\n")
         self.assertTrue((self.repo / "11_tickets/K-5.md").is_file())
         self.assertEqual((self.repo / "docs/仕様 の表.md").read_text(encoding="utf-8"), "切る段の版\n")   # carry:
         self.assertFalse((self.repo / "apps/api/test/generated/x.test.ts").exists(), "生成の試験を写している")
@@ -174,6 +177,37 @@ class CutTake(unittest.TestCase):
         self.assertIn("K-9", r.stderr)
         r = subprocess.run([sys.executable, str(ROOT / "scripts/tickets/cut_take.py")], cwd=self.repo, capture_output=True, text=True)
         self.assertEqual(r.returncode, 2)   # 引数が足りない
+    def test_K187_CT_010_later_mainline_change_to_a_test_file_is_kept(self) -> None:
+        # tests: のファイルが、切る段の枝を切った後に本線でも変わった（別の所）：両方の変更が残る
+        git(self.repo, "checkout", "-q", "main")
+        put(self.repo, {"t/shared.test.ts": "\n".join(["a", *TAIL])})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "K-1 test: 共有の試験")
+        git(self.repo, "checkout", "-q", "-B", "c/y", "main")
+        put(self.repo, {"t/shared.test.ts": "\n".join(["a", "cut の行", *TAIL]), "11_tickets/K-7.md": ticket("K-7", ["t/shared.test.ts"])})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "cut: K-7")
+        git(self.repo, "checkout", "-q", "main")
+        put(self.repo, {"t/shared.test.ts": "\n".join(["a", *TAIL]) + "本線の後からの行\n"})
+        git(self.repo, "commit", "-qam", "K-2 test: 本線で後から")
+        git(self.repo, "checkout", "-q", "-B", "t/K-7", "main")
+        import cut_take
+        cut_take.take(self.repo, "K-7", "c/y", shared=[], regenerate=False)
+        s = (self.repo / "t/shared.test.ts").read_text(encoding="utf-8")
+        self.assertIn("cut の行", s)
+        self.assertIn("本線の後からの行", s, "本線に後から入った変更が消えた")
+
+    def test_K187_CT_011_unreadable_header_stops(self) -> None:
+        git(self.repo, "checkout", "-q", "c/x")
+        put(self.repo, {"11_tickets/K-8.md": "---\nid: K-8\ntests:\n  - t/k5.test.ts\n---\n本文\n"})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "cut: 複数行の tests")
+        git(self.repo, "checkout", "-q", "t/K-5")
+        import cut_take
+        with self.assertRaises(SystemExit) as e:
+            cut_take.take(self.repo, "K-8", "c/x", shared=[SHARED], regenerate=False)
+        self.assertIn("tests:", str(e.exception))
+        self.assertFalse((self.repo / "11_tickets/K-8.md").exists())
 
 class Config(unittest.TestCase):
     def test_K187_CT_006_ticket_flow_points_at_the_script(self) -> None:
