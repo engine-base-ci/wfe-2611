@@ -482,7 +482,7 @@ class WorkflowTest(unittest.TestCase):
         self.assertEqual(len(g62), 1)
         self.assertIn("python3 scripts/ci/ci_lean_test.py", g62[0]["run"])
 
-    def test_K156_CI_027_web_report_is_kept_as_artifact(self) -> None:
+    def test_K156_CI_027_web_report_is_not_uploaded(self) -> None:
         # K-186（決める人 2026-11-13・answer=f0a119a288f6）：画面の写真と HTML の報告は上げない（人の目の確かめは人のテストの表）。
         #   結果の記録（ci-results）は今までどおり上げる（取り込みの台本が読む）
         web = self.wf()["web"]
@@ -727,7 +727,7 @@ class TesterFindingsTest(unittest.TestCase):
         paths = sorted({p.strip().rstrip("/") for j in wf["jobs"].values() for s in (j.get("steps") or [])
                         if str(s.get("uses", "")).startswith("actions/upload-artifact") and "path" in (s.get("with") or {})   # まとめる段（merge）は path を持たない・K-172
                         for p in str(s["with"]["path"]).split("\n") if p.strip()})
-        self.assertIn("apps/web/playwright-report-skeleton", paths)
+        self.assertTrue(paths, "上げる置き場を 1 つも拾えない")   # K-186：画面の報告の置き場（playwright-report-skeleton など）は上げなくなった
         for rel in paths:
             tracked = bool(subprocess.run(["git", "-C", str(ROOT), "ls-files", "--", rel], capture_output=True, text=True).stdout.strip())
             ignored = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "-q", rel + "/x"]).returncode == 0

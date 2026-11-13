@@ -21,6 +21,8 @@ class WebArtifact(unittest.TestCase):
         ups = [s for s in web_steps() if str(s.get("uses", "")).startswith("actions/upload-artifact")]
         names = [str((s.get("with") or {}).get("name")) for s in ups]
         self.assertNotIn("playwright-report-web", names, "画面の写真と HTML の報告を上げている")
+        paths = "\n".join(str((s.get("with") or {}).get("path", "")) for s in ups)
+        self.assertNotIn("playwright-report", paths, "名前を変えても、画面の報告の置き場を上げている")
         self.assertEqual(names.count("ci-results"), 1, "結果の記録（ci-results）を上げる段が 1 つ要る")
         self.assertEqual(names.count("junit-web"), 1, "JUnit の記録（junit-web）を上げる段が 1 つ要る")
         ci = [s for s in ups if (s.get("with") or {}).get("name") == "ci-results"][0]
@@ -33,7 +35,7 @@ class WebArtifact(unittest.TestCase):
         body = re.search(r"export function row\(.*?\n\}\n", src, re.S)
         self.assertIsNotNone(body, "row の定義を読めない")
         self.assertNotIn("screenshot", body.group(0))   # type: ignore[union-attr]
-        self.assertNotIn("info.attach", body.group(0))  # type: ignore[union-attr]
+        self.assertIsNone(re.search(r"\.attach\(", body.group(0)), "行の試験が何かを報告に添えている")  # type: ignore[union-attr]
 
     def test_K186_CI_003_unreadable_is_red(self) -> None:
         steps = web_steps()
