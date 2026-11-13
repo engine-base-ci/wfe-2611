@@ -62,6 +62,9 @@ changes_ignore:
   - "apps/web/styles/k-tokens.css"
   - "packages/contracts/src/*"
   - "packages/errors/src/catalog.ts"
+# 切る段（大分類ごとにまとめて切った枝）から、1 本の分だけを持ち込む台本（K-187）
+cut:
+  take: "python3 scripts/tickets/cut_take.py {ticket} {ref}"
 # CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
 vm:
   label: linux-vm
