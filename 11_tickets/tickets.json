@@ -7247,8 +7247,7 @@
     "@kaname/db"
    ],
    "ci_wide": [
-    "db",
-    "shared"
+    "db"
    ],
    "changes": [
     "apps/api/src/features/F5/delegate/bridge.ts",
