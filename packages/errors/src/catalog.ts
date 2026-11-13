@@ -2719,7 +2719,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "id": "E-CONF-019",
     "cls": "conflict",
     "message": "完了にできるのは作業中のチケットだけです",
-    "action": "チケットを作業中にしてから完了にする",
+    "action": "AI に任せて、終わってから完了にする",
     "undo": false,
     "severity": "low",
     "support_code": "CONF-019",
