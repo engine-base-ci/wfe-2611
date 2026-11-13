@@ -90,7 +90,7 @@ json.dump({"version": "v3", "created_at": TODAY, "_doc": "entities.json の acce
            "counts": {"entities": len(EN), "policies": sum(len(e["access_control_policies"]) for e in EN), "cases": len(am)}, "cases": am}, open(f"{OUT}/access-matrix.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # ---------------------------------------------------------------- CI ゲート（26 ＋ 仕様の層 ＋ タスク）
 SPEC_GATES = [
-    {"id": 27, "name": "層の棚卸し（G21）", "script": "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\"", "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n", "job": "spec", "blocking": True},   # DB の層は DB の範囲を触った回だけ（空は true＝流す・D-133.6）
+    {"id": 27, "name": "層の棚卸し（G21）", "script": "set -o pipefail; mkdir -p \"$RUNNER_TEMP/gate-logs\"; python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\" 2>&1 | tee \"$RUNNER_TEMP/gate-logs/g27.log\"", "env": "          CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}\n", "job": "spec", "blocking": True},   # DB の層は DB の範囲を触った回だけ（空は true＝流す・D-133.6）
     {"id": 28, "name": "正本 ↔ tickets の参照整合（qa-ladder validate）", "script": "python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json", "job": "spec", "blocking": True},
     {"id": 29, "name": "エラー一覧 E1〜E9（引数を省かない）", "script": "python3 scripts/ci/error_catalog.py gate --catalog 07_qa/test-specs/errors.json --mocks 06_mockup/v1 --spec 07_qa/test-specs --choke 03_architecture/choke-points.json", "job": "spec", "blocking": True},
     {"id": 30, "name": "スキル一式 SK1〜SK6", "script": "python3 scripts/ci/skill_pkg_gate.py 10_skills", "job": "spec", "blocking": True},
@@ -120,7 +120,7 @@ SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める
 #   base と取り込む先は組の出力・入力なので run の命令の文字に入れず env で渡す（K107-CS-034）
 SPEC_GATES.append({"id": 63, "name": "決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146）", "script": "python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base \"$CI_ANSWERS_BASE\" --target \"$CI_TARGET_REF\"", "env": "          CI_ANSWERS_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 64, "name": "着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）", "script": "python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py", "job": "spec", "blocking": True})
-SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py", "job": "spec", "blocking": True})
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
 SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
@@ -193,6 +193,10 @@ DB_STOP = """      - name: DB を消す（赤でも必ず）
 VENV = ("      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）\n"
         "        with: { python-version: '3.14' }\n"
         "      - run: bash scripts/ci/ci_venv.sh\n")
+# 準備の時間切れ（Hook timed out）を、ほかの赤と見分けて 1 行で出す（組が赤のときだけ・組の赤は変えない・自動で流し直さない・K-193）。
+#   spec の組の vitest は層の棚卸し（G27）の中で流れ JUnit を残さないので、G27 の出力の写し（gate-logs）も読む
+def hook_note(*more): return ("      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）\n        if: ${{ failure() }}\n"
+                              f"        run: python3 scripts/ci/hook_timeout.py note {' '.join(('junit',) + more)}\n")
 def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
         if: always()
         with: {{ name: junit-{job}, path: junit/, if-no-files-found: error, retention-days: 7 }}
@@ -212,7 +216,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
       - uses: actions/upload-artifact@v4
         if: ${{{{ !cancelled() }}}}
         with: {{ name: vitest-blob-{i}, path: {UNIT_DIR}/, include-hidden-files: true, retention-days: 1 }}
-{junit_up(f"unit-{i}")}{DB_STOP}""" for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
+{hook_note()}{junit_up(f"unit-{i}")}{DB_STOP}""" for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
     runs-on: [self-hosted, linux-vm]
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
     needs: [static, {", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
@@ -265,7 +269,7 @@ jobs:
     needs: [static]
     if: ${{{{ !cancelled() && {SO}.database == 'true' }}}}
     steps:
-{NODE}{DB_START}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}{DB_STOP}
+{NODE}{DB_START}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}{hook_note()}{DB_STOP}
 {UNIT_JOBS}  spec:
     runs-on: [self-hosted, linux-vm]
     # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
@@ -280,7 +284,7 @@ jobs:
         env:
           CI_PY_TESTS: ${{{{ steps.scope.outputs.py_tests }}}}
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
-{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{junit_up("spec")}{DB_STOP}
+{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}
   task-gate:
     runs-on: [self-hosted, linux-vm]
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')

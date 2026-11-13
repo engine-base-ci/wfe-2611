@@ -209,6 +209,9 @@ jobs:
       - name: "G36 契約 fuzz（Schemathesis・openapi.yaml・作った口を本物の DB の上で叩く。答えの形の元の DB の列の書き出しも確かめる）"
         if: ${{ !cancelled() && (needs.static.outputs.full == 'true' || contains(needs.static.outputs.gates, ',36,')) }}
         run: pnpm ci:schemathesis
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
@@ -248,6 +251,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-1, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-1, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -289,6 +295,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-2, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-2, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -330,6 +339,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-3, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-3, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -371,6 +383,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-4, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-4, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -412,6 +427,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-5, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-5, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -453,6 +471,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: vitest-blob-6, path: .vitest-reports/, include-hidden-files: true, retention-days: 1 }
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-unit-6, path: junit/, if-no-files-found: error, retention-days: 7 }
@@ -535,7 +556,7 @@ jobs:
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',27,')) }}
         env:
           CI_DB_RANGE: ${{ steps.scope.outputs.db_range }}
-        run: "python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\""
+        run: "set -o pipefail; mkdir -p \"$RUNNER_TEMP/gate-logs\"; python3 scripts/ci/layer_audit.py --run --db-range \"${CI_DB_RANGE:-true}\" 2>&1 | tee \"$RUNNER_TEMP/gate-logs/g27.log\""
       - name: "G28 正本 ↔ tickets の参照整合（qa-ladder validate）"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json
@@ -597,13 +618,16 @@ jobs:
         run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
       - name: "G65 CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py
+        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
           CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}
           CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}
         run: python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"
+      - name: 準備の時間切れを見分ける（Hook timed out の赤を 1 行で出す・K-193）
+        if: ${{ failure() }}
+        run: python3 scripts/ci/hook_timeout.py note junit "$RUNNER_TEMP/gate-logs"
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: junit-spec, path: junit/, if-no-files-found: error, retention-days: 7 }
