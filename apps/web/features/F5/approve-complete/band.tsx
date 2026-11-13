@@ -10,8 +10,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Callout } from "@/components/k";
-import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
-import { call, type CallErr } from "@/lib/api/call";
+import { call } from "@/lib/api/call";
+import { messageOf } from "./message";
+import { ReturnDialog } from "./return-dialog";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
 
 export const BAND_LABEL = "承認と実行";
@@ -53,16 +54,6 @@ interface Props<T extends BandTicket> {
   onChanged: () => Promise<void>;
 }
 
-/** 知らせの文（正本の文）。正本に無い言葉は「読み込めなかった」の文 */
-function messageOf(r: Pick<CallErr, "kind" | "code" | "status">): string {
-  const code = errorCodeOf(r);
-  try {
-    return errorText(code).entry.message;
-  } catch {
-    return errorText(PAGE_ERROR.loadFailed).entry.message;
-  }
-}
-
 export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTicket, onChanged }: Props<T>) {
   // 今の実行が走っている間だけ読み直す（動いていないときは止める）
   const polled = useQuery({
@@ -95,6 +86,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const sending = useRef(false);
+  const [returning, setReturning] = useState(false); // 差し戻しの小窓（K-181）
 
   const approve = async () => {
     if (!approval || sending.current) return; // 2 回押しでも口は 1 回
@@ -137,7 +129,23 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
             <Button onClick={() => void approve()} loading={busy} disabled={busy}>
               {irreversible ? "承認して送る" : "承認する"}
             </Button>
+            <Button variant="secondary" disabled={busy} onClick={() => setReturning(true)}>
+              差し戻す
+            </Button>
           </div>
+          {returning ? (
+            <ReturnDialog
+              approvalId={approval.id}
+              screenId="tickets"
+              open
+              onOpenChange={setReturning}
+              onDone={onChanged}
+              onFailed={async (r) => {
+                if (r.status !== 401) setNotice(messageOf(r)); // 409・404：知らせを出して読み直す
+                await onChanged();
+              }}
+            />
+          ) : null}
         </>
       );
     }

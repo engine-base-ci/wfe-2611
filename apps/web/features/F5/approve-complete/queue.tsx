@@ -3,12 +3,13 @@
 //   1 回 20 件。末尾の「もっと見る」で、口がくれた続きの印（meta.cursor）を渡して最後の行の次から読み足す（D-131.9）。
 //   見出しの横と左のメニューの「承認待ち」に同じ数（口の meta.counts.total）。文は全部文字として出す（HTML を作らない）。
 //   行の「承認する」（K-180）：取り消せる操作で人が見る項目が無い行だけ、その場で承認する。答えが来るまでどの行も押せない。
-//   決まっていた（409）・消されていた（404）は知らせ（role=alert）に正本の文を出し、どの答えでも一覧を読み直す。「差し戻す」は K-163 が足す
+//   決まっていた（409）・消されていた（404）は知らせ（role=alert）に正本の文を出し、どの答えでも一覧を読み直す。行の「差し戻す」と小窓は K-181（口は K-163）
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Callout, Loading, Table, type Column } from "@/components/k";
-import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
+import { messageOf } from "./message";
+import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { DUE_GROUPS, dueGroupOf } from "./due";
@@ -103,21 +104,18 @@ interface QueueViewProps {
   onMore: () => void;
 }
 
-/** 知らせの文（正本の文）。正本に無い言葉は「読み込めなかった」の文 */
-function messageOf(r: Pick<CallErr, "kind" | "code" | "status">): string {
-  try {
-    return errorText(errorCodeOf(r)).entry.message;
-  } catch {
-    return errorText(PAGE_ERROR.loadFailed).entry.message;
-  }
-}
-
 function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
   const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [done, setDone] = useState<ReadonlySet<string>>(new Set()); // 承認した行は、読み直しの前でも一覧から外す
   const sending = useRef(false); // 答えが来るまで 2 本目を送らない（押せない間の click も含む）
+  const [returning, setReturning] = useState<string | null>(null); // 差し戻しの小窓を開いている承認（K-181）
+  const reload = () => qc.invalidateQueries({ queryKey: queueKey });
+  const failed = async (r: CallErr) => {
+    if (r.status !== 401) setNotice(messageOf(r)); // 409・404：知らせを出して一覧を読み直す（401 は入り直し）
+    await reload();
+  };
   const approve = async (row: QueueRow) => {
     if (sending.current) return;
     sending.current = true;
@@ -154,24 +152,43 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       key: "act",
       header: "操作",
       // 取り消せない操作の行は、行では決めずにチケットの詳細の帯で中身を見てから決める（D-128.36）
-      cell: (r) =>
-        r.decide_inline ? (
-          <Button size="sm" loading={busy === r.id} disabled={busy !== null} onClick={() => void approve(r)}>
-            承認する
+      cell: (r) => (
+        <span className="k63-acts">
+          {r.decide_inline ? (
+            <Button size="sm" loading={busy === r.id} disabled={busy !== null} onClick={() => void approve(r)}>
+              承認する
+            </Button>
+          ) : (
+            <a className="k-link" href={`/tickets/${r.ticket_id}`}>
+              中身を見る
+            </a>
+          )}
+          <Button size="sm" variant="secondary" disabled={busy === r.id} onClick={() => setReturning(r.id)}>
+            差し戻す
           </Button>
-        ) : (
-          <a className="k-link" href={`/tickets/${r.ticket_id}`}>
-            中身を見る
-          </a>
-        ),
+        </span>
+      ),
     },
   ];
+  const dialog = returning ? (
+    <ReturnDialog
+      approvalId={returning}
+      screenId="approvals"
+      open
+      onOpenChange={(o) => {
+        if (!o) setReturning(null);
+      }}
+      onDone={reload} // 差し戻した行は読み直しで消える（作り直しの後は新しい承認待ちとして並ぶ）
+      onFailed={failed}
+    />
+  ) : null;
   const alert = notice ? <Callout tone="danger">{notice}</Callout> : null;
   const shown = rows.filter((r) => !done.has(r.id));
   if (shown.length === 0)
     return (
       <>
         {alert}
+        {dialog}
         <p className="k-desc">いま決めるものはありません</p>
       </>
     );
@@ -181,6 +198,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
   return (
     <>
       {alert}
+      {dialog}
       {groups.map(([g, rs]) => (
         <Table key={g} caption={g} columns={columns} rows={rs} rowKey={(r) => r.id} />
       ))}
