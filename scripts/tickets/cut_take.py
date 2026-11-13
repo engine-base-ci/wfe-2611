@@ -12,7 +12,7 @@
 切る段の枝が本線より古くても、本線に後から入った分を消さない：共有の試験と carry: のファイルは、分かれ目の版を元に 3 方向で合わせる
 （ぶつかったら止める → 切る段の枝に本線を取り込んでからやり直す）。ears-elsewhere.json は本線の口と covers を残し、切る段の分を足す。
 「本線に入ったチケット」は、作業場所の今の枝の履歴に、件名が「<番号> 」で始まるコミットがあるチケット。
-足りない物・閉じていない印・ぶつかりがあれば、何も置かずに理由を出して止まる。コミットは呼んだ側（ticket-flow）がする。
+足りない物・閉じていない印・ぶつかりがあれば、何も置かずに理由を出して止まる（作り手が落ちたときは、置いた後に止まる）。コミットは呼んだ側（ticket-flow）がする。
 """
 from __future__ import annotations
 
@@ -30,7 +30,6 @@ GENERATORS = [
     "python3 scripts/tickets/build_index.py",
     "node scripts/ci/gen_ears_tests.mjs",
     "python3 05_flow/build_testplan.py",
-    "python3 scripts/ci/trace_gate.py --index",
     "python3 scripts/ci/build_catalog.py",
     "python3 scripts/ci/trace_gate.py --index",
 ]
@@ -47,8 +46,14 @@ def _show(repo: pathlib.Path, ref: str, path: str) -> str | None:
 
 
 def header_list(md: str, key: str) -> list[str]:
-    m = re.search(rf"^{re.escape(key)}:\s*\[(.*?)\]\s*$", md, re.M)
-    return [x.strip() for x in m.group(1).split(",") if x.strip()] if m else []
+    """頭の欄の 1 行の並び `key: [a, b]`。欄があるのにこの形で読めなければ止める（何も持ち込まずに成功しない）"""
+    head = md.split("\n---", 1)[0]
+    if not re.search(rf"^{re.escape(key)}:", head, re.M):
+        return []
+    m = re.search(rf"^{re.escape(key)}:\s*\[(.*?)\]\s*$", head, re.M)
+    if not m:
+        raise SystemExit(f"止めた — チケットの頭の欄 {key}: を読めない（1 行の `{key}: [a, b]` の形で書く）")
+    return [x.strip() for x in m.group(1).split(",") if x.strip()]
 
 
 def merged_tickets(repo: pathlib.Path) -> set[str]:
@@ -77,15 +82,18 @@ def filter_marks(text: str, keep: set[str]) -> str:
     return "\n".join(out)
 
 
-def filter_ears(cut: dict, base: dict, exists) -> dict:
-    """本線の口と covers はそのまま残す。切る段の分は、指す試験のファイルがある covers と、試験のファイルがある口だけを足す"""
+def filter_ears(cut: dict, base: dict, text_of) -> dict:
+    """本線の口と covers はそのまま残す。切る段の分は、指す試験のファイルがあり、その中に印（題）がある covers と、試験のファイルがある口だけを足す。
+    text_of(path) は置く中身（無ければ None）。生成の試験は「指す先に印がある」を確かめるので、印の無い covers を残すと赤になる"""
     ops = {k: {**v, "covers": dict(v.get("covers") or {})} for k, v in base.get("ops", {}).items()}
     for op, o in cut.get("ops", {}).items():
-        if op not in ops and not exists(o["file"]):
+        if op not in ops and text_of(o["file"]) is None:
             continue
         cur = ops.setdefault(op, {**o, "covers": {}})
         for k, v in (o.get("covers") or {}).items():
-            if k not in cur["covers"] and exists(v["file"] if isinstance(v, dict) else o["file"]):
+            body = text_of(v["file"] if isinstance(v, dict) else o["file"])
+            mark = v["mark"] if isinstance(v, dict) else v
+            if k not in cur["covers"] and body is not None and str(mark) in body:
                 cur["covers"][k] = v
     return {**cut, **{k: v for k, v in base.items() if k != "ops"}, "ops": ops}
 
@@ -110,6 +118,8 @@ def merge3(path: str, base: str | None, ours: str | None, theirs: str) -> str:
 
 def take(repo: pathlib.Path, tid: str, ref: str, shared: list[str] | None = None, regenerate: bool = True) -> list[str]:
     shared = SHARED if shared is None else shared
+    if not re.fullmatch(r"[A-Z]+-\d+", tid) or ref.startswith("-") or not ref.strip():
+        raise SystemExit(f"止めた — チケットの番号か枝の名前の形が違う：{tid} {ref}")
     md_path = f"{TICKETS}/{tid}.md"
     md = _show(repo, ref, md_path)
     if md is None:
@@ -123,7 +133,7 @@ def take(repo: pathlib.Path, tid: str, ref: str, shared: list[str] | None = None
         body = _show(repo, ref, f)
         if body is None:
             raise SystemExit(f"止めた — 切る段の枝 {ref} に {f} が無い（{tid} の tests: に書いてある）")
-        files[f] = body
+        files[f] = both(f, body)   # 本線に後から入った変更を消さない
     for f in header_list(md, "carry"):
         body = _show(repo, ref, f)
         if body is None:
@@ -140,8 +150,13 @@ def take(repo: pathlib.Path, tid: str, ref: str, shared: list[str] | None = None
     ears = _show(repo, ref, EARS)
     if ears is not None:
         base = _show(repo, "HEAD", EARS)
-        files[EARS] = json.dumps(filter_ears(json.loads(ears), json.loads(base) if base else {},
-                                             lambda p: p in files or (repo / p).is_file()), ensure_ascii=False, indent=1) + "\n"
+        def text_of(path: str) -> str | None:
+            if path in files:
+                return files[path]
+            f = repo / path
+            return f.read_text(encoding="utf-8", errors="replace") if f.is_file() else None
+
+        files[EARS] = json.dumps(filter_ears(json.loads(ears), json.loads(base) if base else {}, text_of), ensure_ascii=False, indent=1) + "\n"
     for f, body in files.items():   # ここまで何も置いていない（足りなければ上で止まる）
         p = repo / f
         p.parent.mkdir(parents=True, exist_ok=True)
