@@ -8143,7 +8143,8 @@
     "C2"
    ],
    "depends_on": [
-    "K-164"
+    "K-164",
+    "K-181"
    ],
    "tests": [
     "apps/api/test/features/F5/bridge-take-guard.test.ts"
