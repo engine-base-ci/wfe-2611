@@ -20,7 +20,8 @@ export const SKIPPED_REASON = "候補はまだ出していません";
 /** DB の integer に入る番号だけを関数に渡す（入らない数は入口で断る） */
 const INT_MAX = 2 ** 31 - 1;
 
-/** 関門 C6 が 1 人に送る回数（最初の 1 回＋送り直し 1 回）。DB の関数が失敗の行に書く retry_count の 1 と対（0101） */
+/** 関門 C6 が 1 人に送る回数（最初の 1 回＋送り直し 1 回）。DB の関数 app.ticket_completed_notice（0101）が失敗の行に書く
+ *  retry_count の 1 は、この数から 1 を引いた数（送り直した回数）と同じ数。ここを変えるときは、新しい migration で関数の数も同じに変える */
 const NOTIFY_ATTEMPTS = 2;
 /** 口の外から差し替えられるもの。inbox：完了の知らせの受け箱の書き手（既定は DB の関数。試験が「書けない受け箱」に差し替える） */
 export interface CompleteOptions {

@@ -25,7 +25,7 @@ describe("POST /api/v1/tickets/:id/complete", () => {
     expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-025");
   });
   it("test_post_tickets_id_complete_conflict", () => {
-    // UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了）なら、Kaname は 409 とその理由（E-CONF-016・017・018）を返し、何も書かない
+    // UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了・作業中でない）なら、Kaname は 409 とその理由（E-CONF-016・017・018・019）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-032");
   });
