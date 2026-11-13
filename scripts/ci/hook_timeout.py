@@ -20,6 +20,7 @@ HOOK = re.compile(r"Hook timed out in \d+ms")
 ANSI = re.compile(r"\x1b\[[0-9;]*m")
 FAIL = re.compile(r"\bFAIL\s+(\S+)")
 TOP = 8   # measure が出す上位の本数
+UNKNOWN = "（ファイル不明・直前に FAIL の行が無い）"
 
 
 # ---------------------------------------------------------------- note
@@ -51,15 +52,16 @@ def read_junit(root: ET.Element) -> tuple[list[str], int]:
 
 
 def read_log(text: str) -> list[str]:
-    """段の出力の写し：FAIL の後ろの試験のファイルを覚え、その後の時間切れの行をそのファイルに数える"""
+    """段の出力の写し：FAIL の後ろの試験のファイルを覚え、その後の時間切れの行をそのファイルに数える。
+    直前に FAIL の行が無い時間切れの行も捨てない（ファイル不明として数える）"""
     slow: list[str] = []
     last = None
     for line in ANSI.sub("", text).splitlines():
         m = FAIL.search(line)
         if m and "/" in m.group(1):
             last = m.group(1)
-        if HOOK.search(line) and last:
-            slow.append(last)
+        if HOOK.search(line):
+            slow.append(last or UNKNOWN)
     return slow
 
 
@@ -81,15 +83,18 @@ def note(args: list[str]) -> int:
         return 0
     slow: list[str] = []
     other = 0
+    junits = logs = 0
     for f in files:
         if f.suffix == ".xml":
             try:
                 found, n = read_junit(ET.parse(f).getroot())
-            except (ET.ParseError, OSError):
+            except Exception:   # 読めない形は何でも：名前を出して続ける（この段が落ちて元の赤を隠さない）
                 print(f"読めない記録：{f.name}")
                 continue
             other += n
+            junits += 1
         else:
+            logs += 1
             try:
                 found = read_log(f.read_text(encoding="utf-8", errors="replace"))
             except OSError:
@@ -102,7 +107,9 @@ def note(args: list[str]) -> int:
         return 0
     for name in slow:
         print(f"★ 準備の時間切れ（Hook timed out）：{ANSI.sub('', name)} — この組の試験の本体は流れていない")
-    print(f"準備の時間切れ {len(slow)} 件／そのほかの赤 {other} 件")
+    # 「そのほかの赤」は JUnit の testcase だけを数える。写しの中の赤は数えていないので、0 件を「ほかに赤は無い」と読ませない
+    tail = f"／そのほかの赤 {other} 件" if junits else "（JUnit なし・そのほかの赤は数えていない）"
+    print(f"準備の時間切れ {len(slow)} 件{tail}" + ("（段の出力の写しの中のそのほかの赤は数えていない）" if junits and logs else ""))
     return 0
 
 
@@ -202,7 +209,11 @@ def measure(args: list[str]) -> int:
 
 def main(argv: list[str]) -> int:
     if len(argv) >= 2 and argv[0] == "note":
-        return note(argv[1:])
+        try:
+            return note(argv[1:])
+        except Exception as e:   # 見分けの段は組の赤・緑を変えない：台本の誤りでも 0 で終わり、1 行で言う
+            print(f"見分けの台本が途中で止まった（{type(e).__name__}）：時間切れかどうかは記録を読んで確かめる")
+            return 0
     if argv and argv[0] == "measure":
         return measure(argv[1:])
     print(__doc__)
