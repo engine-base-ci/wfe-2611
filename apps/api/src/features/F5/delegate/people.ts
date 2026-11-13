@@ -76,7 +76,14 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
     getTicket: {
       ...getTicket,
       before: async (a: HookArgs) => {
-        await withTenant(pool, a.ctx, (cl) => sweepBeforeRead(cl, SWEEP_TICKET, [a.id], "チケットの詳細"));
+        try {
+          await withTenant(pool, a.ctx, (cl) => sweepBeforeRead(cl, SWEEP_TICKET, [a.id], "チケットの詳細"));
+        } catch (e) {
+          // 片付けの取引そのもの（接続・commit）が失敗しても、読む口は止めない（次に開いたときにまた片付ける）
+          console.error(
+            `[approve-complete] チケットの詳細：読む前の片付けの取引に失敗したので飛ばした（${(e as Error)?.name ?? "Error"}）`,
+          );
+        }
         const r = getTicket?.before ? await getTicket.before(a) : undefined;
         if (!r || r.status !== 200) return r;
         const body = r.body as { data: Record<string, unknown> };

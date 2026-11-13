@@ -170,4 +170,7 @@ begin
 end $$;
 revoke all on function app.on_member_stopped() from public;
 
+-- 読むたびの片付け（② b）が、待っている承認の後の実行だけを引けるようにする（一覧を読むたびに全部の実行をたどらない）
+create index if not exists action_runs_execute_queued_idx on action_runs (ticket_id) where phase = 'execute' and status_id = 'queued';
+
 insert into app.schema_migrations (name) values ('0098_approve_execute_end.sql') on conflict do nothing;
