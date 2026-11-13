@@ -31,6 +31,8 @@ weight:
   groups: { web: ["apps/web/**"], db: ["packages/db/**"] }
   max: 1
 # changes: に書かなくてよい物：作り手が作り直す生成物（scripts/ci/generated.json の outputs）と決める人の答えの記録
+# 取り込みでぶつかったら本線の版にして作り直す物でもある（catch_up）。だから作り手が実際に書くファイルとちょうど同じにする（K-191）：
+# 手で持つ物（07_qa/test-plan/ears-elsewhere.json・result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
 changes_ignore:
   - ".github/workflows/release-gate.yml"
   - ".github/workflows/v3-gate.yml"
@@ -41,12 +43,19 @@ changes_ignore:
   - "03_architecture/flow-lines.json"
   - "05_flow/使ってもらい方.md"
   - "07_functional/*"
-  - "07_qa/test-plan/*"
+  - "07_qa/test-plan/access-matrix.json"
+  - "07_qa/test-plan/ears-test-mapping.json"
+  - "07_qa/test-plan/test-plan.html"
+  - "07_qa/test-plan/test-plan.json"
+  - "07_qa/test-plan/test-plan.md"
   - "07_qa/test-specs/errors.md"
   - "08_api/API-SPEC.md"
   - "08_api/api-decisions.json"
+  - "08_api/api-field-consumption.json"
   - "08_api/api-spec.html"
+  - "08_api/ears-ac-seed.json"
   - "08_api/endpoints.json"
+  - "08_api/lint-mapping.json"
   - "08_api/openapi.yaml"
   - "08_api/screen-api-coverage.json"
   - "08_api/types.ts"
@@ -60,8 +69,16 @@ changes_ignore:
   - "apps/web/lib/nav.ts"
   - "apps/web/lib/routes.ts"
   - "apps/web/styles/k-tokens.css"
-  - "packages/contracts/src/*"
+  - "packages/contracts/src/ops.ts"
+  - "packages/contracts/src/registry.ts"
+  - "packages/contracts/src/schemas.ts"
+  - "packages/contracts/src/types.ts"
   - "packages/errors/src/catalog.ts"
+# 本線が先に進んでいても、同じファイルを変えていなければ CI を流し直さずに取り込む（K-191・D-133.7）。
+# ぶつかってよいのは changes_ignore の物だけ：union の物は両方の行を残し、ほかは本線の版にして regen で作り直す
+catch_up:
+  union: ["01_hearing/decider-answers.jsonl"]
+  regen: "python3 scripts/tickets/regen_all.py"
 # 切る段（大分類ごとにまとめて切った枝）から、1 本の分だけを持ち込む台本（K-187）
 cut:
   take: "python3 scripts/tickets/cut_take.py {ticket} {ref}"

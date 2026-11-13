@@ -1,5 +1,5 @@
 {
- "_doc": "生成物の目録（D-128.123・K-38）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す",
+ "_doc": "生成物の目録（D-128.123・K-38）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す。outputs は作り手が実際に書くファイルとちょうど同じにする（K-191）：作り手が outputs の外の版に入ったファイルを書いたら赤（F5）、outputs に当たるのにどの作り手も書かないファイルがあれば赤（F6。中身が同じ回は書かない作り手の物は、理由つきで not_always_written に載せる）。ticket-flow.yaml の changes_ignore も同じ並びにする（取り込みでぶつかったら本線の版にして作り直す物）",
  "generators": [
   {
    "name": "画面の部品のトークン",
@@ -28,8 +28,11 @@
    "outputs": [
     "08_api/API-SPEC.md",
     "08_api/api-decisions.json",
+    "08_api/api-field-consumption.json",
     "08_api/api-spec.html",
+    "08_api/ears-ac-seed.json",
     "08_api/endpoints.json",
+    "08_api/lint-mapping.json",
     "08_api/openapi.yaml",
     "08_api/screen-api-coverage.json",
     "08_api/types.ts"
@@ -39,7 +42,10 @@
    "name": "契約から作るコード（型・入口）",
    "run": "node scripts/ci/contract.mjs gen",
    "outputs": [
-    "packages/contracts/src/*",
+    "packages/contracts/src/ops.ts",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/schemas.ts",
+    "packages/contracts/src/types.ts",
     "apps/api/src/routes/*"
    ]
   },
@@ -47,7 +53,11 @@
    "name": "テスト計画と CI の定義",
    "run": "python3 05_flow/build_testplan.py",
    "outputs": [
-    "07_qa/test-plan/*",
+    "07_qa/test-plan/access-matrix.json",
+    "07_qa/test-plan/ears-test-mapping.json",
+    "07_qa/test-plan/test-plan.html",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
     ".github/workflows/v3-gate.yml",
     ".github/workflows/release-gate.yml"
    ]
@@ -245,6 +255,16 @@
   {
    "path": "01_hearing/ヒアリングサマリー.md",
    "why": "手で書くヒアリングの要約。先頭の「要件一覧.md＝機械生成」は別のファイルのことを言っているだけ"
+  },
+  {
+   "path": "packages/contracts/src/index.ts",
+   "reason": "手で書く（先頭は、隣の生成物を作り手が「生成する（手で直さない）」という説明）。作り手は書かないので outputs から外した（K-191）。変えるチケットが changes: に書く"
+  }
+ ],
+ "not_always_written": [
+  {
+   "path": "apps/web/lib/built-routes.ts",
+   "reason": "作り手（scripts/ci/gen_built_routes.py）は、中身が同じ回はファイルを書かない。書かなかった回も F6 にしない"
   }
  ],
  "known_stale": []
