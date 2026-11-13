@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9e1f55126662cbc4
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:660211e110241ca4
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -210,7 +210,7 @@ export type DisclosureVersions = { version?: number | null; generated_at?: strin
 export type DisclosureVersionsInput = { generated_at?: string | null; pdf_ref?: string | null; dpa_ref?: string | null; released_by?: string | null; notice_id?: string | null };
 export type Subprocessors = { name?: string | null; purpose?: string | null; region?: string | null; data_kinds?: string[] | null; effective_from?: string | null; announced_at?: string | null; retired_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type SubprocessorsInput = { name?: string | null; purpose?: string | null; region?: string | null; data_kinds?: string[] | null; effective_from?: string | null; announced_at?: string | null; retired_at?: string | null };
-export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; created_by?: string | null; draft_import_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_share?: unknown; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
+export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; created_by?: string | null; draft_import_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_share?: unknown; completed_at?: string | null; completed_by?: string | null; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
 export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; draft_import_id?: string | null };
 export type TicketSections = { ticket_id?: string; section_key?: string; position?: number; body?: unknown; version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketSectionsInput = { ticket_id?: string; section_key?: string; position?: number; body?: unknown };
@@ -303,6 +303,7 @@ export type BridgeFinishInput = { state: string; result?: string; reason?: strin
 export type BridgeToolInput = { input?: unknown };
 export type ApprovalApproveInput = Record<string, never>;
 export type ApprovalReturnInput = { note: string };
+export type TicketCompleteInput = { todo_checked: string[]; todo_version: number; conditions_confirmed: boolean };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
@@ -340,7 +341,7 @@ export type BridgeClaim = { device_token?: string; device_id?: string; member_id
 export type BridgeReleaseLink = { url?: string; expires_at?: string };
 export type BridgeHeartbeat = { ok?: boolean; browser?: string | null; outdated?: boolean };
 export type BridgeDevice = { id?: string; device_label?: string | null; state?: string; last_seen_at?: string | null; connected_at?: string; version?: string | null; health?: string[]; revoke_reason?: string | null };
-export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null };
+export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null; completed?: Record<string, unknown> | null };
 export type TicketKindChoice = { id?: string; name?: string; color?: string | null; position?: number; is_builtin?: boolean; sections?: string[] };
 export type TicketDraft = { draft_id?: string; body?: Record<string, unknown> | null; saved_at?: string | null };
 export type BridgeJob = { job?: Record<string, unknown> | null; forbidden_domains?: string[]; next_ms?: number; outdated?: boolean };

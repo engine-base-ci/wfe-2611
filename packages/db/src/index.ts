@@ -103,6 +103,7 @@ export const MIGRATIONS = [
   "0096_approve_decide.sql",
   "0097_approve_return.sql",
   "0098_approve_execute_end.sql",
+  "0100_ticket_complete.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

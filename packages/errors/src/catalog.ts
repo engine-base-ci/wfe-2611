@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。162 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。168 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2581,6 +2581,120 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "approvals",
       "state": "return"
+    }
+  },
+  "E-VAL-022": {
+    "id": "E-VAL-022",
+    "cls": "validation",
+    "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
+    "action": "残っている実施事項を済ませてチェックする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-022",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-VAL-023": {
+    "id": "E-VAL-023",
+    "cls": "validation",
+    "message": "完了の条件を満たしたか確かめて、チェックを入れてください",
+    "action": "完了の条件を確かめてチェックを入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-023",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-VAL-024": {
+    "id": "E-VAL-024",
+    "cls": "validation",
+    "message": "終わっていない子のチケットがあります。先に子を完了にしてください",
+    "action": "子のチケットを先に完了にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-024",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-CONF-016": {
+    "id": "E-CONF-016",
+    "cls": "conflict",
+    "message": "承認待ち・実行中・確認中のチケットは完了にできません",
+    "action": "今の実行・承認が終わるのを待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-016",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-CONF-017": {
+    "id": "E-CONF-017",
+    "cls": "conflict",
+    "message": "実施事項が変わりました。読み直してから完了にしてください",
+    "action": "読み直して、もう一度確かめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-017",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-CONF-018": {
+    "id": "E-CONF-018",
+    "cls": "conflict",
+    "message": "このチケットはもう完了しています",
+    "action": "チケットを読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
     }
   },
   "E-INV-001": {

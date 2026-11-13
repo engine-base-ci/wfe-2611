@@ -522,6 +522,8 @@ INPUTS = {
     # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
     "approveApproval": ("ApprovalApproveInput", {}),
     "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
+    # K-165：完了にする。todo_checked は済ませた実施事項の番号（0 から）の並び・todo_version は画面が読んだ todo の区画の版（無ければ 0）・conditions_confirmed は完了の条件を確かめた印
+    "completeTicket": ("TicketCompleteInput", {"todo_checked": "array", "todo_version": "integer", "conditions_confirmed": "boolean"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -567,6 +569,21 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
+    ],
+    # 完了にする（K-165・D-125.55・D-128.49・D-128.138）。冪等キーは汎用のまま（同じキーなら最初の結果）
+    "completeTicket": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-016"}, "errors": ["E-CONF-016", "E-CONF-017", "E-CONF-018"],
+         "trigger": "承認待ち・実行中・確認中か、走っている実行・決まっていない承認待ちがある（E-CONF-016）・開いた後に実施事項が書き換わった（E-CONF-017）・もう完了している（E-CONF-018）",
+         "ears_form": "UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了）なら、Kaname は 409 とその理由（E-CONF-016・017・018）を返し、何も書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-022", "E-VAL-024"],
+         "trigger": "チェックの入っていない実施事項が残っている・実施事項に無い番号を送った（E-VAL-022・欄 todo_checked に項目ごと）・終わっていない子がある（E-VAL-024・欄 children に子ごと）",
+         "ears_form": "UNWANTED: IF 実施事項が残っているか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022・E-VAL-024）を返し、何も書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-023"],
+         "trigger": "完了の条件を確かめていない（conditions_confirmed が true でない・無い。E-VAL-023・欄 conditions_confirmed）・実施事項の番号や版が整数でない・本文に知らない欄",
+         "ears_form": "UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "守りの判定（書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
     ],
     # AI に任せる（K-62・D-128.138）。PC をつないでいない（積まない）・走っている実行がある（今の run_id）・承認待ち／完了。冪等キーは汎用のまま
@@ -664,6 +681,7 @@ NOT_NULL_ANSWERS = {
 #   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
 #   条件つきで要る欄（stepUp の code・種別ごとの必須の区画・優先度「高」の理由）は載せない
 REQUIRED_INPUTS = {
+    "completeTicket": ["todo_checked", "todo_version", "conditions_confirmed"],   # apps/api/src/features/F5/approve-complete/complete.ts（3 つとも必須・無ければ 422・K-165）
     "returnApproval": ["note"],                                          # apps/api/src/features/F5/approve-complete/decide.ts（無い・空・空白だけは 422 E-VAL-020・K-163）
     "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
@@ -714,6 +732,11 @@ VALUE_RANGES = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
+    "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
+        "todo_checked": {"items": {"type": "integer", "minimum": 0}},
+        "todo_version": {"minimum": 0},
+        "conditions_confirmed": {"enum": [True]},
+    },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
@@ -784,7 +807,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
@@ -922,7 +945,7 @@ PERMS = {
     "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
     "deleteTicket": ("assignee", "担当者・作成者・マネージャー（子の扱いを選ぶ）", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
-    "completeTicket": ("assignee", "担当者とマネージャー", False),
+    "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
     "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),
     "saveMyTicketDraft": ("self", "自分の下書きだけ", False),

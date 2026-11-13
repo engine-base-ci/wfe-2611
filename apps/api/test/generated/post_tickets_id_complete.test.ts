@@ -18,16 +18,23 @@ describe("POST /api/v1/tickets/:id/complete", () => {
   });
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-complete.test.ts）：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_post_tickets_id_complete_not_found");
+  it("test_post_tickets_id_complete_conflict", () => {
+    // UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了）なら、Kaname は 409 とその理由（E-CONF-016・017・018）を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-032");
+  });
   it("test_post_tickets_id_complete_rejected_422", () => {
-    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+    // UNWANTED: IF 実施事項が残っているか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022・E-VAL-024）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-028」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-028");
   });
   it("test_post_tickets_id_complete_rejected_422_2", () => {
-    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+    // UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-complete.test.ts の「K63-API-029」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-complete.test.ts", "utf8")).toContain("K63-API-029");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-complete.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
+  it.todo("test_post_tickets_id_complete_unavailable");
   it("test_post_tickets_id_complete_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）

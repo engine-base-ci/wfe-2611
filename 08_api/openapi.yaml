@@ -6998,6 +6998,14 @@ components:
           type: string
           format: date-time
         client_share: {}
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_by:
+          type: string
+          format: uuid
+          nullable: true
         deleted_at:
           type: string
           format: date-time
@@ -9566,6 +9574,28 @@ components:
       required:
       - note
       x-required-by: hooks
+    TicketCompleteInput:
+      type: object
+      properties:
+        todo_checked:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+        todo_version:
+          type: integer
+          minimum: 0
+        conditions_confirmed:
+          type: boolean
+          enum:
+          - true
+      additionalProperties: false
+      x-operation: completeTicket
+      required:
+      - todo_checked
+      - todo_version
+      - conditions_confirmed
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -10126,6 +10156,9 @@ components:
         can:
           type: object
         approval:
+          type: object
+          nullable: true
+        completed:
           type: object
           nullable: true
       x-operation: getTicket
@@ -18632,6 +18665,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -37400,6 +37435,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -39157,6 +39194,8 @@ paths:
           - assignee_member_id
           - client_id
           - client_share
+          - completed_at
+          - completed_by
           - created_at
           - created_by
           - delegated_to_clone
@@ -40481,8 +40520,8 @@ paths:
       - D-125.167
       - D-125.55
       - D-125.59
-      x-permission: assignee
-      x-permission-scope: 担当者とマネージャー
+      x-permission: write
+      x-permission-scope: そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ
       x-step-up: false
       security:
       - session: []
@@ -40498,7 +40537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketCompleteInput'
       responses:
         '201':
           description: 成功
@@ -40541,6 +40580,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -40549,12 +40594,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
