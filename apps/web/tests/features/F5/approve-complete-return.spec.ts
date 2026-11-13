@@ -184,8 +184,10 @@ row(R["K63-UI-043"], async (page) => {
   await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toHaveCount(0);
   // 差し戻しでも同じ
   m.on.ticket = () => ({ status: 200, body: { data: ticketOf({ stage: "awaiting_approval", approval: pending() }) } });
+  const runsRead = page.waitForResponse((r) => new URL(r.url()).pathname === `/api/v1/tickets/${TICKET}/runs`);
   await page.reload();
   await expect(bandOf(page)).toContainText(MSG.waitingMe); // 画面がチケットを読み終えてから、答えを替える
+  await runsRead; // 実行の一覧も読み終えてから（後から届くと、替えた答えで帯が読み直されてボタンが消える）
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
   await reasonBox(page).fill("宛名を直してください");
   // 小窓を開いて書いている間に、別のタブ・別の人が決めた（答えを替えるのは小窓が開いた後。替えた後の読み直しで帯のボタンが消えて押せなくなる揺れを避ける）
