@@ -555,6 +555,10 @@
     "test_get_approvals_queue_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_approvals_queue_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
     }
    }
   },
@@ -568,6 +572,22 @@
     "test_get_approvals_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_approvals_id_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_get_approvals_id_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_get_approvals_id_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_get_approvals_id_rejected_422": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
     }
    }
   },
@@ -588,6 +608,30 @@
     "test_post_approvals_id_approve_shape": {
      "file": "apps/api/test/features/F5/approve-complete-return.test.ts",
      "mark": "K63-API-049"
+    },
+    "test_post_approvals_id_approve_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_approvals_id_approve_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_post_approvals_id_approve_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_approvals_id_approve_rejected_422": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-039"
+    },
+    "test_post_approvals_id_approve_rejected_422_2": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
+    },
+    "test_post_approvals_id_approve_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
     }
    }
   },
@@ -606,6 +650,26 @@
     "test_post_approvals_id_return_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
+    },
+    "test_post_approvals_id_return_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_approvals_id_return_rejected_403": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-021"
+    },
+    "test_post_approvals_id_return_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_approvals_id_return_rejected_422_2": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-038"
+    },
+    "test_post_approvals_id_return_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
     }
    }
   },

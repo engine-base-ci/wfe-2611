@@ -9,8 +9,11 @@ describe("GET /api/v1/approvals/queue", () => {
     // 本物の試験：apps/api/test/features/F5/approve-complete-queue.test.ts の「K63-API-001」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-queue.test.ts", "utf8")).toContain("K63-API-001");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-queue.test.ts）：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
-  it.todo("test_get_approvals_queue_rejected_401");
+  it("test_get_approvals_queue_rejected_401", () => {
+    // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-026」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-026");
+  });
   it("test_get_approvals_queue_rejected_403", () => {
     // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
     // 本物の試験：apps/api/test/features/F5/approve-complete-queue.test.ts の「K63-API-064」（同じ CI の G3 で流れる）

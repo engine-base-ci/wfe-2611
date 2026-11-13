@@ -9,21 +9,36 @@ describe("POST /api/v1/approvals/:id/approve", () => {
     // 本物の試験：apps/api/test/features/F5/approve-complete-approve.test.ts の「K63-API-002」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-approve.test.ts", "utf8")).toContain("K63-API-002");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
-  it.todo("test_post_approvals_id_approve_rejected_401");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
-  it.todo("test_post_approvals_id_approve_rejected_403");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
-  it.todo("test_post_approvals_id_approve_not_found");
+  it("test_post_approvals_id_approve_rejected_401", () => {
+    // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-026」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-026");
+  });
+  it("test_post_approvals_id_approve_rejected_403", () => {
+    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-021」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-021");
+  });
+  it("test_post_approvals_id_approve_not_found", () => {
+    // UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-025」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-025");
+  });
   it("test_post_approvals_id_approve_conflict", () => {
     // UNWANTED: IF もう処理された承認がもう一度来たら、Kaname は 409 と E-CONF-003 を返し、実行の仕事を積まない
     // 本物の試験：apps/api/test/features/F5/approve-complete-approve.test.ts の「K63-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-approve.test.ts", "utf8")).toContain("K63-API-016");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない
-  it.todo("test_post_approvals_id_approve_rejected_422");
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない
-  it.todo("test_post_approvals_id_approve_rejected_422_2");
+  it("test_post_approvals_id_approve_rejected_422", () => {
+    // UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-039」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-039");
+  });
+  it("test_post_approvals_id_approve_rejected_422_2", () => {
+    // UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-038」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-038");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
   it.todo("test_post_approvals_id_approve_unavailable");
   it("test_post_approvals_id_approve_too_large", () => {
@@ -31,8 +46,11 @@ describe("POST /api/v1/approvals/:id/approve", () => {
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-042");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
-  it.todo("test_post_approvals_id_approve_rate_limited");
+  it("test_post_approvals_id_approve_rate_limited", () => {
+    // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+    // 本物の試験：apps/api/test/features/F5/approve-complete-guard.test.ts の「K63-API-045」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-guard.test.ts", "utf8")).toContain("K63-API-045");
+  });
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_approvals_id_approve_terms_pending");
   it("test_post_approvals_id_approve_session_unresolved", () => {
