@@ -70,6 +70,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
+    "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
@@ -233,10 +234,29 @@ def _imported_files(path: pathlib.Path, src: str) -> list[pathlib.Path]:
     return list(dict.fromkeys(out))
 
 
+def op_block(src: str, op: str) -> str | None:
+    """機能のファイルの中の口 op の中身（`op: {` から対になる `}` まで）。1 行の形（`op: { before: … },`）も、どの深さの複数行の形も読む（K-185）"""
+    m = re.search(rf"^\s+{re.escape(op)}:\s*\{{", src, re.M)
+    if not m:
+        return None
+    depth, i = 0, m.end() - 1
+    while i < len(src):
+        ch = src[i]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return src[m.start():i + 1]
+        i += 1
+    return None
+
+
 def hook_regions() -> dict[str, tuple[str, dict[str, str]]]:
     """今ある口の全部（apps/api/src/hooks/*.ts に並ぶ口）→（振る舞いの中身・そこから呼べる定義）。
     中身の書き方は 3 つ：その場の { before: async … }／機能のフォルダの hooks に預ける { ...h["op"] }／機能の関数に預ける { before: f.name, input: fn }"""
     out: dict[str, tuple[str, dict[str, str]]] = {}
+    listed: set[str] = set()   # hooks のファイルが { ...h["op"] } で並べた口（拾えなければ黙って外さずに赤・K-185）
     for hf in sorted(HOOKS_DIR.glob("*.ts")):
         src = hf.read_text(encoding="utf-8")
         files = [hf] + _imported_files(hf, src)
@@ -255,16 +275,20 @@ def hook_regions() -> dict[str, tuple[str, dict[str, str]]]:
                 continue
             parts = []
             for ref in re.findall(r'\.\.\.h\["(\w+)"\]', body):
+                listed.add(ref)
                 for f in files[1:]:
-                    b = hook_blocks(texts[f]).get(ref)
+                    b = hook_blocks(texts[f]).get(ref) or op_block(texts[f], ref)   # 1 行の形も読む（K-185）
                     if b:
                         parts.append(b)
+                        break
             for name in re.findall(r"(?:before|input|after):\s*(?:\w+\.)?(\w+)", body):
                 if name in defs:
                     parts.append(defs[name])
             if parts:
                 out[op_id] = ("\n".join(parts), defs)
     assert out, "hooks の口が 1 本も拾えない（apps/api/src/hooks の書き方が変わった）"
+    lost = sorted(listed - set(out))
+    assert not lost, f"hooks のファイルに並ぶのに中身を読めない口：{', '.join(lost)}（書き方が変わった・拾い方を直す）"
     return out
 
 

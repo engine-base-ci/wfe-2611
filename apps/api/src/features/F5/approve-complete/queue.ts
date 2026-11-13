@@ -6,7 +6,7 @@ import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs } from "../../../contract/deps.js";
-import { invalid, replyOf } from "./errors.js";
+import { invalid, notFound } from "./errors.js";
 
 export const LIMIT_DEFAULT = 20;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -82,7 +82,7 @@ async function getOne(pool: pg.Pool, a: HookArgs) {
     return r.rows[0]?.v ?? null;
   });
   // 読めない・成果物の承認でない（D-131.11）・消された は、どれも同じ 404（中身を返さない）
-  if (!v) return replyOf({ error: "not_found" }, "getApproval");
+  if (!v) return notFound(); // 見つからない・読めない人・成果物でない承認（404・D-131.11）。ほかの言葉は返さない
   return { status: 200, body: { data: v } };
 }
 
