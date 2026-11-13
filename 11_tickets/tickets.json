@@ -7735,7 +7735,9 @@
     "scripts/ci/contract_shape_test.py",
     "apps/api/src/features/F5/approve-complete/queue.ts"
    ],
-   "affects": [],
+   "affects": [
+    "@kaname/api"
+   ],
    "ci_wide": [
     "ci"
    ],
