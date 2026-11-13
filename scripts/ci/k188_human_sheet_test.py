@@ -2,6 +2,7 @@
 """K-188 の試験：人が実機で確かめるテストの表を作る台本（scripts/qa/human_sheet.py）。行 ID は K188-HS-NNN"""
 from __future__ import annotations
 
+import datetime
 import json
 import pathlib
 import re
@@ -21,6 +22,8 @@ SPEC_HEAD = ("| ID | 画面 | テスト観点 | テスト項目 | 前提条件 |
              "|---|---|---|---|---|---|---|---|---|---|---|\n")
 SPEC_A = "07_qa/test-specs/k/a 承認 の表.md"   # 名前に日本語と空白（K188-HS-013）
 SPEC_B = "07_qa/test-specs/k/b.md"
+SPEC_0 = "07_qa/test-specs/k/0 最初.md"     # ファイルの名前の順ではいちばん先
+NA = "対象外（機械の試験で確認）"
 
 
 def row(rid: str, task: str, *, screen: str = "approvals", axis: str = "操作", item: str = "（button）「承認する」",
@@ -55,6 +58,11 @@ B_ROWS = [
     row("K3-UI-001", "K-3", op=""),
     row("K3-UI-002", "K-3", exp="   "),
     row("K3-UI-003", "K-3"),
+]
+ZERO_ROWS = [
+    row("K9-UI-001", "K-9", screen="skeleton", item="中間のチケット自身の行"),
+    row("K8-UI-001", "K-8", screen="skeleton", item="入れ子の中間のチケット自身の行"),
+    row("K77-UI-001", "K-77", screen="skeleton", item="まだチケットのファイルが無い持ち主の行"),
 ]
 TICKETS = {
     "K-1": ticket("K-1"), "K-2": ticket("K-2"), "K-3": ticket("K-3"),
@@ -131,7 +139,7 @@ class HumanSheet(unittest.TestCase):
         self.root = pathlib.Path(self.tmp.name) / "repo"
         self.root.mkdir()
         put(self.root, {f"11_tickets/{k}.md": v for k, v in TICKETS.items()})
-        put(self.root, {SPEC_A: spec(*A_ROWS), SPEC_B: spec(*B_ROWS)})
+        put(self.root, {SPEC_0: spec(*ZERO_ROWS), SPEC_A: spec(*A_ROWS), SPEC_B: spec(*B_ROWS)})
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
@@ -187,13 +195,14 @@ class HumanSheet(unittest.TestCase):
     def test_K188_HS_004_qa_ticket_gathers_depends_on_in_flow_order(self) -> None:
         k5 = ["K5-UI-001", "K5-UI-003", "K5-UI-002", "K61-UI-001"]
         p = self.build("K-9")
-        self.assertEqual([r[6] for r in items(p)], ["K7-UI-001", "K57-UI-001", "K7-UI-002", *k5])   # depends_on の順（ファイルの順ではない）
+        # depends_on の順（ファイルの順ではない）。中間のチケット自身の行は、ファイルでは先頭でも冊では最後
+        self.assertEqual([r[6] for r in items(p)], ["K7-UI-001", "K57-UI-001", "K7-UI-002", *k5, "K9-UI-001"])
         self.assertEqual(by_id(p)["K57-UI-001"][2], "K-7")                                           # 先に出た組のチケット
         summ = table(book(p)["進捗サマリ"], 3)
-        self.assertEqual([s["チケット"] for s in summ], ["K-7", "K-5", "K-6", "K-61", "合計"])
+        self.assertEqual([s["チケット"] for s in summ], ["K-7", "K-5", "K-6", "K-61", "K-9", "合計"])
         self.assertEqual(summ[0]["題"], "AI に任せる")
-        # 入れ子の QA（K-8 → K-7）を開き、後ろにもう一度出る K-7 は足さない
-        self.assertEqual([r[6] for r in items(self.build("K-10"))], ["K7-UI-001", "K57-UI-001", "K7-UI-002", *k5])
+        # 入れ子の QA（K-8 → K-7）を開き、K-8 自身の行はその組のすぐ後。後ろにもう一度出る K-7 は足さない。組に無い K-9 の行は入らない
+        self.assertEqual([r[6] for r in items(self.build("K-10"))], ["K7-UI-001", "K57-UI-001", "K7-UI-002", "K8-UI-001", *k5])
 
     # ── 止まる所 ──
     def test_K188_HS_005_empty_cells_stop_and_write_nothing(self) -> None:
@@ -225,6 +234,9 @@ class HumanSheet(unittest.TestCase):
     def test_K188_HS_018_broken_spec_stops(self) -> None:
         put(self.root, {"07_qa/test-specs/k/c.md": spec(row("K5-UI-001", "K-5", item="重なった ID"))})
         self.assertIn("K5-UI-001", self.stops("K-5"))
+        self.assertFalse(self.out("K-5").exists())
+        put(self.root, {"07_qa/test-specs/k/c.md": spec(row("K50-UI-007", "K-50"), row("K50-UI-007", "K-50", item="同じファイルの中で重なった ID"))})
+        self.assertIn("K50-UI-007", self.stops("K-5"))   # この冊に入らない行でも止まる
         self.assertFalse(self.out("K-5").exists())
         put(self.root, {"07_qa/test-specs/k/c.md": spec("| K5-UI-009 | approvals | 操作 | 欄が足りない | 前提 | 押す | K-5 | L1 |\n")})
         msg = self.stops("K-5")
@@ -268,18 +280,29 @@ class HumanSheet(unittest.TestCase):
     def test_K188_HS_008_changed_content_resets_the_result(self) -> None:
         import human_sheet
         p = self.build()
-        fill(p, {"K5-UI-001": R_OK, "K5-UI-002": R_OK})
-        put(self.root, {SPEC_A: spec(*A_ROWS[:3], row("K5-UI-002", "K-5", axis="入力", item="理由が空", op="空で押す",
-                                                       exp="「差し戻す理由を書いてください」と出る"), *A_ROWS[4:])})
+        fill(p, {"K5-UI-001": R_OK, "K5-UI-002": R_OK, "K5-UI-003": R_OK, "K57-UI-001": R_NG})   # K61-UI-001 には何も書かない
+        # 001 は操作手順だけ・002 は期待結果だけ・003 は備考だけ（【補足】が増える）・K57 は前提条件だけ・K61（結果なし）は期待結果が変わる
+        put(self.root, {
+            SPEC_A: spec(row("K5-UI-001", "K-5", pre=r"承認待ちが 1 件（a\|b）", op="2 回押す", note="D-1 の決まり"), A_ROWS[1],
+                         row("K5-UI-003", "K-6", screen="tickets", item="帯", note="足した備考"),
+                         row("K5-UI-002", "K-5", axis="入力", item="理由が空", op="空で押す", exp="「差し戻す理由を書いてください」と出る"),
+                         A_ROWS[4], A_ROWS[5], row("K61-UI-001", "K-61", exp="孫の行が 2 つ出る")),
+            SPEC_B: spec(B_ROWS[0], row("K57-UI-001", "K-5, K-7", screen="delegate", item="2 つのチケットの行", pre="承認待ちが 2 件"), *B_ROWS[2:])})
         got = by_id(self.build())
-        self.assertEqual(got["K5-UI-002"][9:15], (None,) * 6, "前の中身に対する OK が残っている")
+        for rid in ("K5-UI-001", "K5-UI-002", "K5-UI-003", "K57-UI-001", "K61-UI-001"):
+            self.assertEqual(got[rid][9:15], (None,) * 6, f"{rid}：前の中身に対する結果が残っている")
         self.assertEqual(got["K5-UI-002"][8], "「差し戻す理由を書いてください」と出る")
-        self.assertEqual(got["K5-UI-001"][9:15], R_OK)   # 変わっていない行は残る
-        old = table(book(p)["前の版の結果"], 1)
-        self.assertEqual([(o["パターン番号"], o["理由"], o["確認項目"], o["OK/NG"]) for o in old],
-                         [("K5-UI-002", "中身が変わった", "「理由を書いてください」と出る", "OK")])
+        self.assertIn("【補足】足した備考", got["K5-UI-003"][7])
+        old = {o["パターン番号"]: o for o in table(book(p)["前の版の結果"], 1)}
+        self.assertEqual(set(old), {"K5-UI-001", "K5-UI-002", "K5-UI-003", "K57-UI-001"})   # 結果を書いていない K61 は出ない
+        for o in old.values():
+            self.assertEqual(o["理由"], "中身が変わった")
+        self.assertEqual((old["K5-UI-002"]["確認項目"], old["K5-UI-002"]["OK/NG"]), ("「理由を書いてください」と出る", "OK"))
+        self.assertIn("【操作】押す", old["K5-UI-001"]["検証内容/パターン説明"])        # 前の検証内容つき
+        self.assertNotIn("2 回押す", old["K5-UI-001"]["検証内容/パターン説明"])
+        self.assertEqual((old["K57-UI-001"]["OK/NG"], old["K57-UI-001"]["備考"]), ("NG", "文が違う"))
         k5 = next(x for x in human_sheet.progress(p) if x["ticket"] == "K-5")
-        self.assertEqual((k5["done"], k5["ok"]), (1, 1))
+        self.assertEqual((k5["done"], k5["ok"], k5["ng"]), (0, 0, 0))
 
     def test_K188_HS_009_human_sheets_are_carried_over(self) -> None:
         p = self.build()
@@ -323,12 +346,95 @@ class HumanSheet(unittest.TestCase):
 
     def test_K188_HS_017_rebuild_without_changes_changes_nothing(self) -> None:
         p = self.build("K-9")
-        fill(p, {"K7-UI-001": R_OK, "K5-UI-002": R_NG})
+        day = datetime.datetime(2026, 11, 13)   # 人が Excel で入れた日付は、日付の型で保存される
+        fill(p, {"K7-UI-001": (day, "高本", day, "OK", None, None), "K5-UI-002": R_NG})
         self.build("K-9")
         first = dump(p)
+        self.assertEqual(by_id(p)["K7-UI-001"][9:13], (day, "高本", day, "OK"))
         self.build("K-9")
         self.assertEqual(dump(p), first)
         self.assertEqual(by_id(p)["K5-UI-002"][9:15], R_NG)
+
+    def test_K188_HS_021_previous_book_with_another_shape_stops(self) -> None:
+        def shifted(wb):      # 見出しの上に 1 行足した（見出しが 4 行目に無い）
+            wb["テスト項目"].insert_rows(1)
+
+        def no_sheet(wb):     # シートを消した
+            del wb["課題管理"]
+
+        def renamed(wb):      # シートの名前を変えた
+            wb["前の版の結果"].title = "メモ"
+
+        def twice(wb):        # 同じパターン番号が 2 行
+            wb["テスト項目"]["G6"] = wb["テスト項目"]["G5"].value
+
+        def no_id(wb):        # パターン番号が空なのに結果が書いてある
+            wb["テスト項目"]["G5"] = None
+
+        def issue_head(wb):   # 課題管理の見出しの並びが違う
+            wb["課題管理"]["B4"] = "現象"
+
+        for name, breaker in (("見出しの行", shifted), ("シートが無い", no_sheet), ("シートの名前", renamed), ("同じ番号", twice),
+                              ("番号が空", no_id), ("課題管理の見出し", issue_head)):
+            with self.subTest(name):
+                p = self.build()
+                fill(p, {"K5-UI-001": R_OK, "K5-UI-003": R_NG})
+                wb = book(p)
+                breaker(wb)
+                wb.save(p)
+                before = p.read_bytes()
+                self.assertIn("K-5.xlsx", self.stops("K-5"))
+                self.assertEqual(p.read_bytes(), before, "形の違う前の冊を上書きしている")
+                p.unlink()
+
+    def test_K188_HS_022_rows_left_out_are_told(self) -> None:
+        r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.root), "K-9"], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("K77-UI-001", r.stdout)   # 持ち主のチケットのファイルが無い行：止めずに知らせる
+        got = by_id(self.out("K-9"))
+        for rid in ("K77-UI-001", "K8-UI-001", "K50-UI-001", "K1-UI-001", "K3-UI-003"):
+            self.assertNotIn(rid, got)           # 組の外のチケットの行は入れない
+        ws = book(self.out("K-9"))["試験前提条件"]
+        scope = next(str(r[1]) for r in ws.iter_rows(min_row=3, max_col=2, values_only=True) if r[0] == "試験範囲")
+        self.assertRegex(scope, r"まだチケットが無い行 1 件")
+        self.assertIn("K77-UI-001", scope)
+        for owner, n in (("K-50", 1), ("K-1", 1), ("K-3", 3), ("K-8", 1)):   # 読んだファイルの中の、入れていない行（持ち主ごとの件数）
+            self.assertRegex(scope, rf"{owner}（{n} 件）")
+        ws = book(self.build("K-5"))["試験前提条件"]
+        scope = next(str(r[1]) for r in ws.iter_rows(min_row=3, max_col=2, values_only=True) if r[0] == "試験範囲")
+        self.assertRegex(scope, r"まだチケットが無い行 0 件")   # 無いときも必ず書く
+        # depends_on の先のチケットのファイルが無い：止まる
+        put(self.root, {"11_tickets/K-12.md": ticket("K-12", kind="QA", deps=["K-7", "K-404"])})
+        self.assertIn("K-404", self.stops("K-12"))
+        self.assertFalse(self.out("K-12").exists())
+
+    def test_K188_HS_023_rows_marked_out_of_scope(self) -> None:
+        import human_sheet
+        extra = "07_qa/test-specs/k/c.md"
+        marked = row("K50-UI-003", "K-50", item="口が 401 を返す", note="人=対象外 口の 401 は画面から作れない")
+        put(self.root, {extra: spec(marked, row("K50-UI-004", "K-50", item="ふつうの行"))})
+        p = self.build("K-50")
+        got = by_id(p)
+        self.assertEqual(set(got), {"K50-UI-001", "K50-UI-003", "K50-UI-004"})   # 対象外の行も冊には載る
+        self.assertEqual(got["K50-UI-003"][12], NA)
+        self.assertIn("【補足】人=対象外 口の 401 は画面から作れない", got["K50-UI-003"][7])
+        self.assertIsNone(got["K50-UI-001"][12])
+        fill(p, {"K50-UI-001": R_OK, "K50-UI-003": (None, None, None, NA, None, "人のメモ")})
+        (k50,) = human_sheet.progress(p)
+        self.assertEqual((k50["items"], k50["done"], k50["ok"], k50["ng"], k50["na"]), (2, 1, 1, 0, 1))   # 分母から外す
+        self.assertIn("対象外", str(book(p)["進捗サマリ"]["D4"].value))   # 項目数の式も対象外を引く
+        got = by_id(self.build("K-50"))
+        self.assertEqual((got["K50-UI-003"][12], got["K50-UI-003"][14]), (NA, "人のメモ"))   # 作り直しても印と人の備考が残る
+        # 人が対象外の行の OK/NG を書き換えていたら：前の版の結果に移し、欄は対象外に戻る
+        fill(p, {"K50-UI-003": ("2026-11-13", "高本", "2026-11-13", "OK", None, "人のメモ")})
+        got = by_id(self.build("K-50"))
+        self.assertEqual(got["K50-UI-003"][9:15], (None, None, None, NA, None, None))
+        old = table(book(p)["前の版の結果"], 1)
+        self.assertEqual([(o["パターン番号"], o["理由"], o["OK/NG"]) for o in old], [("K50-UI-003", "対象外の行", "OK")])
+        # 印を外す：中身（補足）が変わるので、対象外の字は残らず空に戻る
+        put(self.root, {extra: spec(row("K50-UI-003", "K-50", item="口が 401 を返す"), row("K50-UI-004", "K-50", item="ふつうの行"))})
+        self.assertEqual(by_id(self.build("K-50"))["K50-UI-003"][9:15], (None,) * 6)
+        self.assertEqual(human_sheet.progress(p)[0]["items"], 3)
 
     # ── 進み・前提条件・名前・命令 ──
     def test_K188_HS_011_progress_counts_ok_and_ng_only(self) -> None:
@@ -338,12 +444,32 @@ class HumanSheet(unittest.TestCase):
         fill(p, {"K7-UI-001": R_OK, "K57-UI-001": R_NG, "K7-UI-002": (None, None, None, "保留", None, None),
                  "K5-UI-001": R_OK, "K5-UI-002": blank})
         got = {x["ticket"]: (x["items"], x["done"], x["ok"], x["ng"]) for x in human_sheet.progress(p)}
-        self.assertEqual(got, {"K-7": (3, 2, 1, 1), "K-5": (2, 1, 1, 0), "K-6": (1, 0, 0, 0), "K-61": (1, 0, 0, 0)})
+        self.assertEqual(got, {"K-7": (3, 2, 1, 1), "K-5": (2, 1, 1, 0), "K-6": (1, 0, 0, 0), "K-61": (1, 0, 0, 0), "K-9": (1, 0, 0, 0)})
+        self.assertEqual([x["ticket"] for x in human_sheet.progress(p)], ["K-7", "K-5", "K-6", "K-61", "K-9"])   # 冊に出る順・合計は入れない
         ws = book(p)["進捗サマリ"]
         self.assertEqual([c.value for c in ws[3]][:9], ["No", "チケット", "題", "項目数", "消化数", "OK数", "NG数", "消化率", "合格率"])
         for cell in ws[4][3:9]:
             self.assertTrue(str(cell.value).startswith("="), f"{cell.coordinate} が式でない: {cell.value!r}")
-        self.assertIn("テスト項目", str(ws["D4"].value))
+        # 式が数える所：テスト項目の C 列（チケット）と M 列（OK/NG）を、その行のチケットで絞る
+        ref = lambda col: re.compile(r"テスト項目'?!\$?" + col + r"\b|テスト項目'?!\$?" + col + r"\$?\d")   # noqa: E731
+        for name, cell, word in (("消化数", ws["E4"], None), ("OK数", ws["F4"], '"OK"'), ("NG数", ws["G4"], '"NG"')):
+            f = str(cell.value)
+            self.assertRegex(f, ref("C"), f"{name} がチケットの列を見ていない: {f}")
+            self.assertRegex(f, ref("M"), f"{name} が OK/NG の列を見ていない: {f}")
+            self.assertTrue("B4" in f.replace("$", "") or '"K-7"' in f, f"{name} がその行のチケットで絞っていない: {f}")
+            if word:
+                self.assertIn(word, f)
+        self.assertRegex(str(ws["D4"].value), ref("C"))
+        total = next(r for r in ws.iter_rows(min_row=4) if r[1].value == "合計")
+        for cell in total[3:9]:
+            self.assertTrue(str(cell.value).startswith("="), f"合計の {cell.coordinate} が式でない: {cell.value!r}")
+        item = book(p)["テスト項目"]
+        self.assertEqual(item.freeze_panes, "A5")   # 見出し（4 行目）の下で窓を固定
+        self.assertGreaterEqual(len([c for r in item.iter_rows(min_row=1, max_row=3) for c in r if str(c.value or "").startswith("=")]), 3,
+                                "1 行目のまわりに 項目数・消化数・OK 数の式が無い")
+        lists = [dv for dv in item.data_validations.dataValidation if dv.type == "list" and "OK" in str(dv.formula1) and "NG" in str(dv.formula1)]
+        for n in range(5, 5 + len(items(p))):
+            self.assertTrue(any(f"M{n}" in dv.sqref for dv in lists), f"M{n} に OK・NG を選ぶ欄が無い")
         r = subprocess.run([sys.executable, str(SCRIPT), "--root", str(self.root), "--status", "K-9"], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("K-7", r.stdout)
@@ -356,7 +482,9 @@ class HumanSheet(unittest.TestCase):
             self.assertIn(label, rows)
         for want in ("K-9", "中間テスト", "K-7", "AI に任せる", "K-5", "承認して完了する"):
             self.assertIn(want, rows["対象"])
-        self.assertIn("7", rows["試験範囲"])   # 画面の行の数
+        self.assertIn("8 件", rows["試験範囲"])   # 画面の行の数
+        self.assertIn("貼らない", rows["エビデンスの置き方"])   # 写真は冊に貼らない（作り直しで落ちうる）
+        self.assertIn("0 最初.md", rows["参照資料"])
         self.assertIn("scripts/dev/up.sh", rows["立ち上げ方"])
         self.assertIn("11_tickets/K-9.md", rows["参照資料"])
         self.assertIn("a 承認 の表.md", rows["参照資料"])
@@ -379,6 +507,9 @@ class HumanSheet(unittest.TestCase):
         self.assertIn("K-99", r.stderr)
         self.assertFalse(self.out("K-99").exists())
         self.assertEqual(run().returncode, 2)   # 引数が足りない
+        r = run("--root", str(self.root), "--status", "K-7")   # 冊がまだ無い
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("K-7", r.stderr)
 
 
 class Config(unittest.TestCase):
