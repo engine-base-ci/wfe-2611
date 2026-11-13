@@ -1060,3 +1060,19 @@ K-164 の今の形：PC が仕事を受け取る口（takeBridgeJob・apps/api/s
 - 単体のテスト：`apps/api/test/features/F5/bridge-take-guard.test.ts` が緑（土台は `apps/api/test/features/F5/approve-complete.harness.ts`）
 - K-164 の試験（apps/api/test/features/F5/approve-complete-execute.test.ts）と K-62 の PC の口の試験（apps/api/test/features/F5/delegate-bridge.test.ts）が緑のまま（片付けが通るときの振る舞いを変えていない）
 - 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑"
+K-191,本線が先に進んでいても、同じファイルを変えていなければ CI を流し直さずに取り込める（設定と作り直しの台本）,課題,K-1,未着手,作る,2026-11-14,基盤・CI,"並行で進めたチケットを本線に入れるとき、本線が先に進んでいても、本線の新しい変更とその枝の変更が同じファイルに重ならなければ、CI を流し直さずに入れる（2026-11-13・決める人 answer=86dae8f3cdc0「ぶつからなければ流し直さない」）。
+
+進め方の道具（ticket-flow の取り込み）は、枝に本線を取り込んでから入れる形になった。取り込みでぶつかってよいのは設定 changes_ignore の物（作り手が作る生成物と、決める人の答えの記録）だけで、設定 `catch_up.union` に挙げた物は両方の行を残し、ほかは本線の版にして設定 `catch_up.regen` の命令で作り直す。作り直した後は CI を流さずに本線に入る。
+Kaname にはこの 2 つの設定と作り直しの命令がまだ無いので、生成物（11_tickets/tickets.json など）がぶつかると今は止まる。
+
+設定を入れると、changes_ignore の物は「ぶつかったら本線の版にして作り直す」物になる。だから changes_ignore と生成物の目録（scripts/ci/generated.json）は、作り手が実際に書くファイルとちょうど同じでなければならない。今は 2 つの向きでずれている（下の「洗い出し」）：
+
+- 作り手が書くのに載っていない物（3 つ）：今日 2 回、ER 図に列を足すチケットが「changes: の外を変えた」で止まった
+- 載っているのに、どの作り手も書かない手で持つ物（3 つ。glob に当たっている）：設定を入れた時点で、取り込みでぶつかると本線の版に黙って置き換わり、枝が足した分が消えたまま本線に入る
+
+両方をこのチケットで直し、同じ形が次に出たら生成物の検査が赤にする（F5・F6）。","- [ ] `python3 scripts/tickets/regen_all.py` が、下の表のとおりに目録の作り手を、変わらなくなるまで流す
+- [ ] ticket-flow.yaml に catch_up（union・regen）があり、changes_ignore と目録の outputs が、作り手が実際に書くファイルの並びになっている（洗い出しの 3 つを足し、手で持つ 3 つを外す）
+- [ ] 生成物の検査（scripts/ci/generated_gate.py）が、作り手が目録の外のファイルを書いたら赤（F5）、目録の outputs に当たるファイルをどの作り手も書かなければ赤（F6）にする。本物のリポジトリで緑
+- [ ] 試験 K191-RG-001〜026 が緑・チケットの CI が緑
+- [ ] 目録の作り手のうち、作った日を刻む 3 つに `dated`（作った日を刻む出力の並び）がある
+- [ ] 実装した人が、作業場所で `python3 scripts/tickets/regen_all.py` を 1 回流し、0 で終わって `git status` に差分が出ないことを見た"

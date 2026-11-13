@@ -9,10 +9,15 @@
   F2 作り手が落ちた
   F3 目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイルが、どの作り手にも・履歴にも・しまった物にも入っていない）
   F4 古いと記録した物（known_stale）が、もう古くない（記録を外す）
+  F5 作り手が、目録のどの outputs にも（checked_elsewhere にも）当たらない版に入ったファイルを書いた（中身が同じでも、書いたら当たる）
+  F6 目録の outputs に当たる版に入ったファイルを、どの作り手も書かなかった（手で持つ物が glob に当たっている）。
+     中身が同じ回は書かない作り手の物は、理由つきで not_always_written に載せる（理由が無い・どの outputs にも当たらない項目も F6）
+「書いた」は、作り手を流す前と後でファイルの更新の時刻が変わったかで見る。
 回し終えたら、作業中のファイルは全部元に戻す（手元を汚さない）。CI はまっさらな checkout で回す。
 """
 from __future__ import annotations
 import fnmatch, json, os, re, subprocess, sys
+from typing import NamedTuple
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CFG = json.load(open(os.path.join(ROOT, "scripts/ci/generated.json"), encoding="utf-8"))
@@ -51,14 +56,34 @@ def known(path: str) -> dict | None:
     return None
 
 
-def run_all(files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
-    """作り手を順に回す。作り手ごとに、変わったファイルを返す（日付を伏せて比べる）"""
+class Run(NamedTuple):
+    changed: dict[str, list[str]]   # 作り手の name → 中身が変わったファイル（日付を伏せて比べる）
+    broken: list[str]               # 落ちた作り手
+    wrote: dict[str, list[str]]     # 作り手の name → 書いたファイル（中身が同じでも・F5 と F6 が読む）
+
+
+def stamps(files: list[str]) -> dict[str, tuple[int, int, int] | None]:
+    """ファイルごとの更新の時刻（と入れ物の番号・大きさ）。無い物は None"""
+    out: dict[str, tuple[int, int, int] | None] = {}
+    for f in files:
+        try:
+            st = os.stat(os.path.join(ROOT, f))
+            out[f] = (st.st_mtime_ns, st.st_ino, st.st_size)
+        except (FileNotFoundError, NotADirectoryError):
+            out[f] = None
+    return out
+
+
+def run_all(files: list[str]) -> Run:
+    """作り手を順に回す。作り手ごとに、変わったファイルと書いたファイルを返す"""
     before = {f: read(f) for f in files}
     extra_before = untracked()
     changed: dict[str, list[str]] = {}
     broken: list[str] = []
     seen: dict[str, bytes | None] = dict(before)
+    wrote: dict[str, list[str]] = {}
     for g in CFG["generators"]:
+        stamp = stamps(files)
         r = subprocess.run(g["run"], cwd=ROOT, shell=True, capture_output=True, text=True)
         if r.returncode != 0:
             broken.append(f'{g["name"]}（{g["run"]}）: {(r.stderr or r.stdout).strip().splitlines()[-1:]}')
@@ -75,6 +100,8 @@ def run_all(files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
                 hit.append(f + "（新しくできた）")
         if hit:
             changed[g["name"]] = hit
+        after = stamps(files)
+        wrote.setdefault(g["name"], []).extend(f for f in files if after[f] is not None and after[f] != stamp[f])
     # 元に戻す
     for f, b in before.items():
         if read(f) != b and b is not None:
@@ -82,7 +109,7 @@ def run_all(files: list[str]) -> tuple[dict[str, list[str]], list[str]]:
                 h.write(b)
     for f in untracked() - extra_before:
         os.remove(os.path.join(ROOT, f))
-    return changed, broken
+    return Run(changed, broken, wrote)
 
 
 def coverage(files: list[str]) -> list[str]:
@@ -105,9 +132,41 @@ def coverage(files: list[str]) -> list[str]:
     return bad
 
 
+def outside_catalog(wrote: dict[str, list[str]]) -> list[str]:
+    """F5：作り手が書いたのに、目録の outputs にも checked_elsewhere にも当たらないファイル"""
+    outs = [o for g in CFG["generators"] for o in g.get("outputs", [])]
+    outs += [o for c in CFG.get("checked_elsewhere", []) for o in c["outputs"]]
+    return [f"F5 {name} が、目録の outputs に無いファイルを書いた（generated.json の outputs に足す）: {f}"
+            for name, fs in wrote.items() for f in sorted(set(fs)) if not match(f, outs)]
+
+
+def never_written(files: list[str], wrote: dict[str, list[str]]) -> list[str]:
+    """F6：目録の outputs に当たるのに、どの作り手も書かなかったファイル（not_always_written に理由つきで載せた道は除く）"""
+    owners = [(o, g["name"]) for g in CFG["generators"] for o in g.get("outputs", [])]
+    written = {f for fs in wrote.values() for f in fs}
+    fails, lazy, flagged = [], set(), set()
+    for n in CFG.get("not_always_written", []):
+        path = n.get("path", "")
+        if not match(path, [o for o, _ in owners]):
+            fails.append(f"F6 not_always_written の道が、どの作り手の outputs にも当たらない（消した・名前を変えたなら外す）: {path}")
+        elif not str(n.get("reason") or "").strip():
+            fails.append(f"F6 not_always_written に理由が無い: {path}")
+        else:
+            lazy.add(path)
+            continue
+        flagged.add(path)
+    for f in files:
+        if f in written or f in lazy or f in flagged:
+            continue
+        name = next((who for o, who in owners if fnmatch.fnmatch(f, o)), None)
+        if name is not None:
+            fails.append(f"F6 {name} の outputs に当たるのに、どの作り手も書かない（手で持つ物なら outputs から外す）: {f}")
+    return fails
+
+
 def gate() -> int:
     files = tracked()
-    changed, broken = run_all(files)
+    changed, broken, wrote = run_all(files)
     fails, warns = [], []
     stale_known = set()
     for name, fs in changed.items():
@@ -123,6 +182,9 @@ def gate() -> int:
             fails.append(f"F4 古いと記録した物が、もう古くない（generated.json の known_stale から外す）: {k['path']}")
     fails += [f"F2 作り手が落ちた: {b}" for b in broken]
     fails += [f"F3 目録に無い生成物（generated.json に作り手を足すか、理由を書く）: {f}" for f in coverage(files)]
+    fails += outside_catalog(wrote)
+    if not broken:   # 作り手が落ちた回は、書かれなかった物が F6 に重なって出るだけなので F2 だけにする
+        fails += never_written(files, wrote)
     for w in warns[:20]:
         print("  warn", w)
     if len(warns) > 20:
@@ -141,7 +203,7 @@ def selftest() -> int:
     try:
         with open(os.path.join(ROOT, target), "ab") as h:
             h.write("\n/* わざと古くする */\n".encode())
-        changed, _ = run_all(tracked())
+        changed = run_all(tracked()).changed
         hit = any(target in fs for fs in changed.values())
     finally:
         with open(os.path.join(ROOT, target), "wb") as h:
