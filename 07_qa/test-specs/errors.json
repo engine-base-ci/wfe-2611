@@ -4586,6 +4586,195 @@
    "support_code": "VAL-020"
   },
   {
+   "id": "E-VAL-022",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "完了にするとき、チェックの入っていない実施事項が残っている",
+   "false_when": "実施事項が全部チェック済み",
+   "message": "実施事項がまだ残っています。全部チェックしてから完了にしてください",
+   "action": "残っている実施事項を済ませてチェックする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "実施事項を 1 つ残して完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.55"
+   ],
+   "support_code": "VAL-022"
+  },
+  {
+   "id": "E-VAL-023",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "完了にするとき、完了の条件を満たしたかのチェックを入れていない",
+   "false_when": "チェックを入れた",
+   "message": "完了の条件を満たしたか確かめて、チェックを入れてください",
+   "action": "完了の条件を確かめてチェックを入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "完了の条件のチェックを入れずに完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.55"
+   ],
+   "support_code": "VAL-023"
+  },
+  {
+   "id": "E-VAL-024",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "完了にするとき、終わっていない子のチケットがある",
+   "false_when": "子が無い・全部完了",
+   "message": "終わっていない子のチケットがあります。先に子を完了にしてください",
+   "action": "子のチケットを先に完了にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "子が作業中の親を完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138"
+   ],
+   "support_code": "VAL-024"
+  },
+  {
+   "id": "E-CONF-016",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "承認待ち・実行中・確認中のチケット、走っている実行があるチケットを完了にしようとした",
+   "false_when": "作業中で走っている実行が無い",
+   "message": "承認待ち・実行中・確認中のチケットは完了にできません",
+   "action": "今の実行・承認が終わるのを待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "実行中のチケットで完了の口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.49"
+   ],
+   "support_code": "CONF-016"
+  },
+  {
+   "id": "E-CONF-017",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "完了の小窓を開いた後に、実施事項が書き換わった",
+   "false_when": "開いてから実施事項が変わっていない",
+   "message": "実施事項が変わりました。読み直してから完了にしてください",
+   "action": "読み直して、もう一度確かめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "完了の小窓を開く",
+     "別のタブで実施事項を書き換える",
+     "完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.55"
+   ],
+   "support_code": "CONF-017"
+  },
+  {
+   "id": "E-CONF-018",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "もう完了したチケットを、もう一度・別のタブで完了にしようとした",
+   "false_when": "まだ完了していない",
+   "message": "このチケットはもう完了しています",
+   "action": "チケットを読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "完了にする",
+     "別のタブでもう一度完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138"
+   ],
+   "support_code": "CONF-018"
+  },
+  {
    "id": "E-INV-001",
    "class": "not_found",
    "where": {

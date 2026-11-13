@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9e1f55126662cbc4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:5a1cbad6682461b7
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15789,7 +15789,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "completeTicket",
     "table": "tickets",
     "kind": "create",
-    "input": "TicketsInput",
+    "input": "TicketCompleteInput",
     "success": 201,
     "output": "TicketCompletion",
     "outputList": false,
@@ -15812,6 +15812,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      422,
+      503,
       413,
       429,
       403,
@@ -15824,7 +15826,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "assignee",
+      "word": "write",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -15833,7 +15835,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "tickets",
-        "sql": "((tickets.assignee_member_id = app.user_id() or tickets.created_by = app.user_id() or app.manages_scope(tickets.scope_id)) or deleted_by = app.user_id())"
+        "sql": "app.ticket_writable(id)"
       }
     },
     "termsOpen": false,
@@ -18619,4 +18621,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "9e1f55126662cbc4";
+export const OPENAPI_HASH = "5a1cbad6682461b7";

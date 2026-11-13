@@ -10309,6 +10309,14 @@
      "note": "担当者 ← D-128.25"
     },
     {
+     "name": "completed_at",
+     "note": null
+    },
+    {
+     "name": "completed_by",
+     "note": "完了の時刻と、完了にした人。直せる人なら誰でも完了にできるので押した人を残す ← D-128.138"
+    },
+    {
      "name": "delegated_to_clone",
      "note": "分身に任せている。実行者の列は持たない ← D-128.26"
     },

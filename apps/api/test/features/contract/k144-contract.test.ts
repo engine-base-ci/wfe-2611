@@ -494,6 +494,7 @@ export const UUID_PARAM_CASES = [
   ["K144-API-056", "getApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
   ["K144-API-057", "approveApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
   ["K144-API-054", "returnApproval", "path", "id"], // K-163
+  ["K144-API-055", "completeTicket", "path", "id"], // K-165
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
@@ -505,6 +506,7 @@ const BODIES: Record<string, unknown> = {
   finishBridgeJob: { state: "stopped" },
   // 承認して完了する（K-63 の孫）：必須の欄を入れて、正しい uuid では 422 にならない体（無い承認・チケットは 404）・このコメントは先に入る K-185 が持つ // K-185
   returnApproval: { note: "直してください" }, // K-163
+  completeTicket: { todo_checked: [], todo_version: 1, conditions_confirmed: true }, // K-165
 };
 /** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
 const OTHER_PATH: Record<string, string> = { name: "ticket_read" };

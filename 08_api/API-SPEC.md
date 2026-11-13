@@ -323,7 +323,7 @@
 | EP-308 | POST | `/api/v1/tickets/:id/attachments` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 503 |
 | EP-309 | GET | `/api/v1/tickets/:id/checks` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 503 |
 | EP-310 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 503 |
-| EP-311 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 503 |
+| EP-311 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 503 |
 | EP-312 | GET | `/api/v1/tickets/:id/decisions` | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | A108 | 1 | member |  | 401 403 404 422 429 403 503 |
 | EP-313 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 413 429 403 503 |
 | EP-314 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 413 429 502 403 503 |
@@ -386,7 +386,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1028 ／ 内部専用 274 ／ どの画面にも出ない 0
+- 検査したフィールド 1030 ／ 内部専用 274 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

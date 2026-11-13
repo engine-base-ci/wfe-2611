@@ -1,7 +1,7 @@
 // 承認して完了する（K-63 の孫 K-161〜K-166）の DB の答えの言葉 → HTTP と errors.json の文。文言はコードに書かず正本（errors.json）から引く。
 //   ログに成果物の中身・差し戻しの理由・メールを出さない（ログは言葉と場所だけ）。
 //   K-161 は読む口（not_found）。K-162 は承認（not_member・not_approver・not_writable → 403・decided → 409・guard_failed → 503）。
-//   差し戻し・完了の言葉は K-163〜K-166 が replyOf に足す
+//   K-163 は差し戻し（reason_empty → 422）。K-165 は完了（done・stage・todo_changed → 409／todo_left・todo_out_of_range・not_confirmed・children_left → 422）
 import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 
@@ -16,6 +16,15 @@ export const fromCatalog = (code: string, status: number, o: { field?: string } 
     },
   };
 };
+/** 正本のエラーに、項目ごとの明細（残っている実施事項・終わっていない子）を付ける。明細の文はチケットの中身（項目の文・番号と題名）で、ログには出さない */
+export const withDetails = (
+  code: string,
+  status: number,
+  details: { field: string; message: string }[],
+): HookReply => ({
+  status,
+  body: { ...kanameError(code).toJSON(), details },
+});
 /** 見つからない（他の会社の id・消されたチケット・成果物でない承認も同じ。中身を返さない・D-131.11） */
 export const notFound = (): HookReply => fromCatalog("E-PAGE-001", 404);
 /** 入力の形違い（422・欄つき）。入口（op.ts）と同じ形 */
@@ -29,8 +38,14 @@ export const down = (where: string, word: string): HookReply => {
   return fromCatalog("E-PAGE-003", 503);
 };
 
+/** DB の関数の答えの並び（項目の文・番号）を文字の並びにする。並びでなければ空 */
+const texts = (v: unknown): string[] => (Array.isArray(v) ? v.map((x) => String(x)) : []);
+
 /** DB の関数の答え { error: <言葉> } → 答え。知らない言葉は止める側（503・言葉は記録にだけ残し、答えに出さない） */
-export function replyOf(r: { error?: unknown }, where: string): HookReply {
+export function replyOf(
+  r: { error?: unknown; left?: unknown; out?: unknown; out_total?: unknown; children?: unknown },
+  where: string,
+): HookReply {
   const word = String(r.error);
   if (word === "not_found") return notFound();
   // 承認する人でない・今のメンバーでない・書けない（副作用なし。担当者がいない承認も not_approver）
@@ -40,6 +55,32 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
   if (word === "decided") return fromCatalog("E-CONF-003", 409);
   // 差し戻す理由が空・空白だけ・制御文字だけ（E-VAL-020・欄 note・何も書かない・K-163）
   if (word === "reason_empty") return fromCatalog("E-VAL-020", 422, { field: "note" });
+  // 完了（K-165）：もう完了している・承認待ち／実行中／確認中か走っている実行がある・開いた後に実施事項が書き換わった
+  if (word === "done") return fromCatalog("E-CONF-018", 409);
+  if (word === "stage") return fromCatalog("E-CONF-016", 409);
+  if (word === "todo_changed") return fromCatalog("E-CONF-017", 409);
+  // 残っている実施事項（項目ごと）と、範囲の外の番号（負・項目の数を超える。ほかが全部済みでも断る・D-131.8）。
+  //   範囲の外の番号は DB の関数が先頭の何個かに絞って返す。載せなかった分は数だけを 1 行で出す（送られた数だけ答えを大きくしない）
+  if (word === "todo_left" || word === "todo_out_of_range") {
+    const out = texts(r.out);
+    const more = Number.isInteger(r.out_total) ? (r.out_total as number) - out.length : 0;
+    return withDetails("E-VAL-022", 422, [
+      ...texts(r.left).map((message) => ({ field: "todo_checked", message })),
+      ...out.map((n) => ({ field: "todo_checked", message: `番号 ${n} は実施事項にありません` })),
+      ...(more > 0 ? [{ field: "todo_checked", message: `ほかに ${more} 個の番号も実施事項にありません` }] : []),
+    ]);
+  }
+  if (word === "not_confirmed") return fromCatalog("E-VAL-023", 422, { field: "conditions_confirmed" });
+  // 終わっていない子（番号と題名・D-128.138）
+  if (word === "children_left")
+    return withDetails(
+      "E-VAL-024",
+      422,
+      (Array.isArray(r.children) ? r.children : []).map((c) => ({
+        field: "children",
+        message: String((c as { label?: unknown } | null)?.label ?? ""),
+      })),
+    );
   // 守りの判定で例外（fail-closed・K63-API-059）。知らない言葉（bad_decision を含む）も止める側
   return down(where, word);
 }

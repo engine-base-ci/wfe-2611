@@ -24,6 +24,13 @@ const fromCatalog = (code: string, field: string, message?: string): HookReply =
   };
 };
 const LIST_MAX = 200;
+/** チケットの詳細の帯（DB の app.ticket_band の答え・0096 と 0100） */
+interface TicketBand {
+  approval: unknown;
+  can_complete?: boolean;
+  completed_at?: string | null;
+  completed_by_name?: string | null;
+}
 
 export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
@@ -129,12 +136,13 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
           a.repo.table("ticket_stages").get(a.ctx, String(t["stage_id"])),
           t["assignee_member_id"] ? a.repo.table("members").get(a.ctx, String(t["assignee_member_id"])) : null,
         ]);
-        // 承認の帯（K-162・D-128.178）：決まっていない成果物の承認待ち 1 つ（呼んだ人が決められるか）。読むだけ
+        // 承認の帯（K-162・D-128.178）：決まっていない成果物の承認待ち 1 つ（呼んだ人が決められるか）。読むだけ。
+        //   完了（K-165）：呼んだ人が完了にできるか（can.complete）と、完了の時刻と押した人の名前（completed）
         const band = await withTenant(
           appPool,
           a.ctx,
           async (cl) =>
-            (await cl.query<{ v: { approval: unknown } | null }>("select app.ticket_band($1) as v", [a.id])).rows[0]?.v,
+            (await cl.query<{ v: TicketBand | null }>("select app.ticket_band($1) as v", [a.id])).rows[0]?.v,
         );
         const label = new Map(kindSecs.map((s: Row) => [s["section_key"], s["label"]]));
         return {
@@ -154,6 +162,8 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
               stage: stage ? { id: stage["id"], key: stage["key"], name: stage["name"] } : null,
               assignee: assignee ? { id: assignee["id"], display_name: assignee["display_name"] } : null,
               approval: band?.approval ?? null,
+              can: { complete: band?.can_complete === true },
+              completed: band?.completed_at ? { at: band.completed_at, by: band.completed_by_name ?? null } : null,
             },
           },
         };
