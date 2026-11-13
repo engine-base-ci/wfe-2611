@@ -10,7 +10,11 @@ import { isUuid } from "@kaname/contracts";
 const UUID = { test: (v: string): boolean => isUuid(v) };
 /** 要求の解決の答え：テナントの文脈と、同意し直しの印（K-53。立っている間は契約の入口 op.ts が止める） */
 export type SessionResolver = (c: Context) => Promise<{ ctx: TenantContext; termsPending: boolean } | null>;
-export type Vars = { Variables: { ctx: TenantContext; repo: Repository; termsPending: boolean } };
+/** memberLeft：呼んだ人が会社から抜けた人か（D-131.7 ②・K-166）。契約の入口 op.ts が、認証を通した後に 1 回だけ呼ぶ（呼ばれるまで DB を引かない）。
+ *  本物のアプリではこの中間の処理が必ず入れる。入口だけを偽の関門で試す小さなアプリ（authz.test.ts）には無い */
+export type Vars = {
+  Variables: { ctx: TenantContext; repo: Repository; termsPending: boolean; memberLeft?: () => Promise<boolean> };
+};
 
 /** 要求の頭 → 文脈（packages/auth の解決の形。同意し直しの印 termsPending も一緒に返す・K-53） */
 export type HeaderResolver<R extends { ctx: TenantContext; termsPending: boolean }> = (
@@ -45,6 +49,7 @@ export function tenantContext(repo: Repository, resolve: SessionResolver = anony
     c.set("ctx", ctx);
     c.set("repo", repo);
     c.set("termsPending", r?.termsPending === true);
+    c.set("memberLeft", () => repo.memberLeft(ctx));
     await next();
   };
 }

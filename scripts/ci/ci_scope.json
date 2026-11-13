@@ -357,6 +357,26 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F5/approve-complete-complete.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_tickets_id_complete.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/approve-complete-guard.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_approvals_id.test.ts",
+    "apps/api/test/generated/get_approvals_queue.test.ts",
+    "apps/api/test/generated/post_approvals_id_approve.test.ts",
+    "apps/api/test/generated/post_approvals_id_return.test.ts",
+    "apps/api/test/generated/post_tickets_id_complete.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "08_api/db-columns.json"
    ],
    "tests": [

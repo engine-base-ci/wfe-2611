@@ -3,7 +3,9 @@
 //   知らせは関門 C6 の NotifyGateway.notify だけ（受け箱・宛先は担当者と作った人のうち押した人でない人・D-128.92）。
 //     受け箱の行を書くのは app.ticket_completed_notice（宛先と「完了にした人か」は関数の中でもう一度確かめる＝守りの 2 層目。宛先を口に任せない）。
 //     本文はチケットの id・番号・リンクだけ。同じチケットの完了の知らせは 1 人に 1 つ（dedupe_key ticket.completed:<チケットの id>）。
+//     宛先から会社から抜けた・止められた人を除くのも関数の中（D-131.12・K-166）。
 //   知らせを書けなくても完了は残す（送れたとは言わない。ログは場所と、書けなかった数か例外の種類だけ）。書く所の DB の失敗は 500（何も残らない）。
+//     送れなかったときは、同じ関数を「送れなかった」の印で呼び、受け箱の行に failed_at・retry_count を残す（sent_at は空・K-166・K63-API-044）。
 //   ログに実施事項の中身・題名を出さない
 import type pg from "pg";
 import { withTenant, type TenantContext } from "@kaname/db/context";
@@ -18,15 +20,28 @@ export const SKIPPED_REASON = "候補はまだ出していません";
 /** DB の integer に入る番号だけを関数に渡す（入らない数は入口で断る） */
 const INT_MAX = 2 ** 31 - 1;
 
+/** 関門 C6 が 1 人に送る回数（最初の 1 回＋送り直し 1 回）。DB の関数が失敗の行に書く retry_count の 1 と対（0101） */
+const NOTIFY_ATTEMPTS = 2;
+/** 口の外から差し替えられるもの。inbox：完了の知らせの受け箱の書き手（既定は DB の関数。試験が「書けない受け箱」に差し替える） */
+export interface CompleteOptions {
+  inbox?: Transport;
+}
+
 /** DB の関数の答え（完了した行）か、だめな理由の言葉 */
 type Completed = Record<string, unknown> & { error?: unknown };
 
 /** 完了の知らせ（関門 C6）。受け箱の書き手は DB の関数 1 つ（何度呼んでも 1 人に 1 つ）。答えは書けなかった宛先の数 */
-async function notifyCompleted(pool: pg.Pool, repo: Repository, ctx: TenantContext, t: Completed): Promise<number> {
+async function notifyCompleted(
+  pool: pg.Pool,
+  repo: Repository,
+  ctx: TenantContext,
+  t: Completed,
+  o: CompleteOptions,
+): Promise<number> {
   const memberIds = Array.isArray(t["notify_member_ids"]) ? t["notify_member_ids"].map((x) => String(x)) : [];
   if (!memberIds.length) return 0;
   const ticketId = String(t["ticket_id"]);
-  const inbox: Transport = {
+  const inbox: Transport = o.inbox ?? {
     send: async () => {
       await withTenant(pool, ctx, (cl) => cl.query("select app.ticket_completed_notice($1)", [ticketId]));
     },
@@ -40,11 +55,16 @@ async function notifyCompleted(pool: pg.Pool, repo: Repository, ctx: TenantConte
     repo,
     inbox,
     { resolve: async () => memberIds.map((memberId) => ({ memberId, kind: "human" as const, address: null })) },
-    { channelsOf: () => ["inapp"], maxAttempts: 2 },
+    { channelsOf: () => ["inapp"], maxAttempts: NOTIFY_ATTEMPTS },
   );
   // 送り先の失敗は投げられずに deliveries の failed で返る（関門の中で再送まで済んでいる）
   const { deliveries } = await gw.notify(event, { memberIds }, ctx);
-  return deliveries.filter((d) => d.status === "failed").length;
+  const failed = deliveries.filter((d) => d.status === "failed").length;
+  // 送れなかった：受け箱の行に failed_at・retry_count を残す（sent_at は空＝送れたとは言わない）。書くのは同じ関数（宛先と「完了にした人か」の
+  //   確かめは同じ所を通る。もう行がある人には足さない）。ここも書けなければ例外のまま呼んだ側へ（完了は残し、ログだけ）
+  if (failed > 0)
+    await withTenant(pool, ctx, (cl) => cl.query("select app.ticket_completed_notice($1, true)", [ticketId]));
+  return failed;
 }
 
 /** 完了した答え（201 TicketCompletion） */
@@ -65,7 +85,7 @@ const completedReply = (t: Completed): HookReply => ({
   },
 });
 
-async function complete(pool: pg.Pool, a: HookArgs): Promise<HookReply> {
+async function complete(pool: pg.Pool, a: HookArgs, o: CompleteOptions): Promise<HookReply> {
   const where = "完了にする";
   // 欄があること・型（並び・整数・真偽）は入口が契約の形で確かめ済み。並びの中身（整数か）はここで確かめる。
   //   範囲の外の番号（負・項目の数を超える）は DB の関数が実施事項と比べて断る（E-VAL-022・D-131.8）
@@ -98,7 +118,7 @@ async function complete(pool: pg.Pool, a: HookArgs): Promise<HookReply> {
   if (!r) return replyOf({ error: "empty" }, where);
   if (r.error !== undefined) return replyOf(r, where);
   try {
-    const failed = await notifyCompleted(pool, a.repo, a.ctx, r);
+    const failed = await notifyCompleted(pool, a.repo, a.ctx, r, o);
     // 宛先の名前・チケットの中身は出さない（場所と数だけ）
     if (failed > 0) console.error(`[approve-complete] ${where}：完了の知らせを書けなかった（${failed} 件）`);
   } catch (e) {
@@ -107,9 +127,9 @@ async function complete(pool: pg.Pool, a: HookArgs): Promise<HookReply> {
   return completedReply(r);
 }
 
-export function completeHooks(pool: pg.Pool): Record<string, Hook> {
+export function completeHooks(pool: pg.Pool, o: CompleteOptions = {}): Record<string, Hook> {
   return {
     // 入力の形の確かめ → DB の関数を 1 回 → 知らせ（1 要求＝書き込みは 1 回・関門 C2）
-    completeTicket: { before: (a: HookArgs) => complete(pool, a) },
+    completeTicket: { before: (a: HookArgs) => complete(pool, a, o) },
   };
 }

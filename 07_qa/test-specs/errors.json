@@ -4679,6 +4679,36 @@
    "support_code": "VAL-024"
   },
   {
+   "id": "E-VAL-025",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "完了にするとき、押した人に見えない終わっていない子のチケットがある",
+   "false_when": "終わっていない子が全部、押した人に見える・子が無い・全部完了",
+   "message": "ほかに、あなたに見えない子のチケットがあります",
+   "action": "その子の担当者か、子が見える人に、子を完了にしてもらう",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "親を直せる人に見えない層の子が作業中の親",
+    "steps": [
+     "親を完了にする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.138"
+   ],
+   "support_code": "VAL-025"
+  },
+  {
    "id": "E-CONF-016",
    "class": "conflict",
    "where": {
@@ -4773,6 +4803,37 @@
     "D-128.138"
    ],
    "support_code": "CONF-018"
+  },
+  {
+   "id": "E-CONF-019",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "complete"
+   },
+   "when": "未着手・保留のチケットを完了にしようとした",
+   "false_when": "作業中のチケット",
+   "message": "完了にできるのは作業中のチケットだけです",
+   "action": "チケットを作業中にしてから完了にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作ったままの未着手のチケット",
+    "steps": [
+     "未着手のチケットで完了の口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.49"
+   ],
+   "support_code": "CONF-019"
   },
   {
    "id": "E-INV-001",

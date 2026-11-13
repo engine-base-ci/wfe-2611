@@ -61,6 +61,14 @@ export const sessionUnresolved = (c: Context, where: string, e: unknown) => {
   return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
 };
 
+/** 守りの判定（会社から抜けた人か・行に結ぶ言葉）の所で例外になった：通さず止める側に倒して 503・E-PAGE-003（fail-closed・D-131.7・K-166）。
+ *  ログには口の名前・場所・例外の種類だけ（id・中身を出さない） */
+const guardDown = (c: Ctx, operationId: string, where: string, e: unknown) => {
+  console.error(`[contract] ${operationId} の${where}で例外：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
+  const x = kanameError("E-PAGE-003").toJSON() as { message?: string; action?: string };
+  return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
+};
+
 /** 入口の uuid（D-129.42・K-144）：契約で format: uuid の道の値と問い合わせ（registry の uuidParams）が正式な uuid か。
  *  道の値は届いたまま確かめる（中で使う値と同じもの）。問い合わせの空の値（?x=）は指定なし。*_ids はカンマ区切りの中身を 1 つずつ */
 function uuidParamIssues(c: Ctx, def: EndpointDef): { field: string; message: string }[] {
@@ -148,6 +156,18 @@ export function op(deps: ContractDeps, operationId: string) {
           return err(c, 403, "forbidden", "FORBIDDEN");
         if (ctx.role === "ops" && !(await repo.opsAllowed(ctx))) return err(c, 403, "forbidden", "FORBIDDEN");
       }
+      // 2.6) 会社から抜けた人（members.deleted_at・セッションは残っている）は、行に結ぶ確かめ（4.1）より前に 403 で止める
+      //      （404 でない・何も書かない・全部の口・D-131.7 ②・K-166）。止められた人はここでは見ない（各関数が 403）。判定できなければ 503。
+      //      引くのは関門 C2 の repo.memberLeft（要求の文脈を決める middleware/tenant.ts が、同じ文脈で結んで渡す）
+      if (ctx.role === "member") {
+        let left: boolean;
+        try {
+          left = (await c.get("memberLeft")?.()) === true;
+        } catch (ex) {
+          return guardDown(c, operationId, "抜けた人の確かめ", ex);
+        }
+        if (left) return err(c, 403, "forbidden", "FORBIDDEN");
+      }
     }
     // 3.0) 入口の uuid（D-129.42・K-144）：道の値と問い合わせの id を、id で行を引く権限の確かめ（3.1・4.1）とまだ作っていない口の 501 より前に
     //      正式な uuid か確かめる。形の違う id が DB の ::uuid に届いて 500 にならないように
@@ -172,7 +192,13 @@ export function op(deps: ContractDeps, operationId: string) {
     // 4.1) 行に結ぶ言葉（K-15・ZT4）：:id の行を行の守りの中で読み、見えなければ 404（無いのと同じ）・言葉の中の人でなければ 403
     //      本人・担当者・承認する人・受ける人・マネージャー・書ける人。条件は契約の perm.row（scripts/ci/row_rules.mjs）
     if (id !== null && def.perm.row && def.auth === "member") {
-      const r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
+      //      判定の所で例外になったら通さず 503・E-PAGE-003（fail-closed・決める人の答え 75b89fd38579・K-166）
+      let r: Awaited<ReturnType<typeof repo.rowAllowed>>;
+      try {
+        r = await repo.rowAllowed(ctx, def.perm.row.table, id, def.perm.row.sql);
+      } catch (ex) {
+        return guardDown(c, operationId, "行の守り", ex);
+      }
       if (r === "missing") return err(c, 404, "not_found", "NOT_FOUND");
       if (r === "denied" || r === "gone") return err(c, 403, "forbidden", "FORBIDDEN"); // gone：会社から抜けた人（D-131.7）
     }

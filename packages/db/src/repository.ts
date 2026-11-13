@@ -249,6 +249,16 @@ export class Repository {
     });
   }
 
+  /** 会社から抜けた人か（members.deleted_at・D-131.7 ②・K-166）。行の守りの外で members を引く関数（app.member_left）を 1 回呼ぶ。
+   *  口の共通の入口が、行に結ぶ確かめより前に見る（抜けた人は 404 でなく 403）。メンバーでない役（運営・取引先・PC の印）は見ない */
+  async memberLeft(ctx: TenantContext): Promise<boolean> {
+    if (ctx.role !== "member" || !ctx.userId || !ctx.tenantId) return false;
+    return withTenant(this.pool, ctx, async (c) => {
+      const r = await c.query<{ gone: boolean }>("select app.member_left() as gone");
+      return r.rows[0]?.gone === true;
+    });
+  }
+
   /** 行に結ぶ言葉の確かめ（K-15）。:id の行を行の守り（RLS）の中で読む。見えなければ missing、条件（契約の perm.row.sql）が偽なら denied。
    *  条件は契約の生成（scripts/ci/row_rules.mjs）が出した式だけ（利用者の入力は $1 の id だけ） */
   async rowAllowed(

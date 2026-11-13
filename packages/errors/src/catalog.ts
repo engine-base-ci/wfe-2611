@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。168 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。170 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2640,6 +2640,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "complete"
     }
   },
+  "E-VAL-025": {
+    "id": "E-VAL-025",
+    "cls": "validation",
+    "message": "ほかに、あなたに見えない子のチケットがあります",
+    "action": "その子の担当者か、子が見える人に、子を完了にしてもらう",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-025",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
   "E-CONF-016": {
     "id": "E-CONF-016",
     "cls": "conflict",
@@ -2686,6 +2704,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "CONF-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "complete"
+    }
+  },
+  "E-CONF-019": {
+    "id": "E-CONF-019",
+    "cls": "conflict",
+    "message": "完了にできるのは作業中のチケットだけです",
+    "action": "チケットを作業中にしてから完了にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-019",
     "must_not": false,
     "layers": [
       "UI",
