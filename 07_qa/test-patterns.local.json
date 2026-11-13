@@ -1,6 +1,20 @@
 {
  "_doc": "Kaname の、テストの型の足し分（D-128.134）。正は test-verification のスキルの references/test-patterns/patterns.json。Kaname で型に無い抜けが見つかったら、ここに 1 行足す（ID は TP-<分類>-L01 の形）。他のプロジェクトでも効く型は、スキルの patterns.json に戻す（差分は .qa/skill-patches/）",
- "source": ["D-128.134"],
- "categories": {},
- "patterns": []
+ "source": [
+  "D-128.134"
+ ],
+ "categories": {
+  "XSS": "画面に出す文の守り（利用者・AI・外から来た文を HTML として動かさない）"
+ },
+ "patterns": [
+  {
+   "id": "TP-XSS-L01",
+   "category": "XSS",
+   "axis": "守り",
+   "branch": "利用者・AI・外から来た文（題名・理由・成果物）に HTML やスクリプトが入っている",
+   "expect": "画面では文字として出し、動かない（innerHTML に入れない）。送るときは書いたとおりの文で送る（削らない・書き換えない）",
+   "levels": "単体",
+   "source": "Kaname 2026-11-13（K-63 の画面の孫 K-184・OWASP ASVS の出力の符号化）"
+  }
+ ]
 }

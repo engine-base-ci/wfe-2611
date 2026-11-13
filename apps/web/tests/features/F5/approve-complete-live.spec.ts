@@ -63,10 +63,18 @@ interface World {
   delegates: number;
   /** id ごとの実行の 1 件の答えを止めておく（返した関数を呼ぶと答える） */
   hold: (id: string) => () => void;
+  /** 実行の一覧の答えを止めておく（返した関数を呼ぶと答える） */
+  holdList: () => () => void;
+  /** 実行の一覧を、あと何回 500 で答えるか */
+  failList: number;
+  /** 届いた問い合わせの数（答えを握っている間に「届いたこと」を合図にする）。一覧と、id ごとの 1 件 */
+  listAsked: number;
+  runAsked: Record<string, number>;
 }
 async function world(page: Page): Promise<World> {
   const m = await mockApi(page, { stage: "doing", can_delegate: true });
   const gates: Record<string, Promise<void>> = {};
+  let listGate: Promise<void> | null = null;
   const w: World = {
     ticket: { stage: "doing", can_delegate: true },
     runs: [],
@@ -76,6 +84,17 @@ async function world(page: Page): Promise<World> {
       gates[id] = new Promise<void>((r) => (open = r));
       return () => open();
     },
+    holdList: () => {
+      let open = () => {};
+      listGate = new Promise<void>((r) => (open = r));
+      return () => {
+        listGate = null;
+        open();
+      };
+    },
+    failList: 0,
+    listAsked: 0,
+    runAsked: {},
   };
   m.on.ticket = () => ({ status: 200, body: { data: ticketOf(w.ticket) } });
   const json = (route: Route, status: number, body: unknown) =>
@@ -89,11 +108,19 @@ async function world(page: Page): Promise<World> {
       w.ticket = { stage: "running" };
       return json(route, 201, { data: { run_id: MAKE_1, job_id: MAKE_1, status: "queued", pc: "live" } });
     }
-    if (p === `/api/v1/tickets/${TICKET}/runs`)
+    if (p === `/api/v1/tickets/${TICKET}/runs`) {
+      w.listAsked++;
+      if (listGate) await listGate;
+      if (w.failList > 0) {
+        w.failList--;
+        return json(route, 500, { error: "internal", code: "E-PAGE-003" });
+      }
       return json(route, 200, { data: w.runs.map(view), meta: { limit: 50 } });
+    }
     const one = /^\/api\/v1\/action_runs\/([^/]+)$/.exec(p);
     if (one) {
       const id = one[1]!;
+      w.runAsked[id] = (w.runAsked[id] ?? 0) + 1;
       if (gates[id]) await gates[id];
       const r = w.runs.find((x) => x.id === id);
       return r ? json(route, 200, { data: view(r) }) : json(route, 404, { error: "not_found", code: "NOT_FOUND" });
@@ -246,5 +273,85 @@ row(R["K63-UI-068"], async (page) => {
   await expect(bandOf(page).getByText(MSG.pcClosed)).toHaveCount(0);
   await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
   await expect(k62Band(page)).toHaveCount(0); // 承認する人には K-62 の帯を出さない（D-128.178）
+  expect(await marked(page)).toBe(1);
+});
+
+// ---- レビューの指摘（2026-11-13）を捕まえる行：実行の様子をまだ読めていない間に「完了にする」を出さない ----
+// 捕まえる不具合：band.tsx の canCompleteNow は「走っている実行が無い」を isActive(run) だけで見るので、run が null の間
+//   （実行の一覧を読み込み中・任せた直後でその実行の 1 件がまだ届かない間）も「走っていない」と数え、「完了にする」を出す。
+//   押すと、走っている実行がある作業中のチケットの完了の小窓が開いたまま残る。
+// 「出ないこと」は時間で待たずに確かめる：口の答えを握ったまま、その問い合わせが届いたこと（listAsked・runAsked）を合図に 0 件を見る。
+//   答えを握っている間は画面の状態が変わらないので揺れない。今の実装ではこの時点でボタンが出ているので赤になる。
+const completeButton = (page: Page) => page.getByRole("button", { name: "完了にする", exact: true });
+
+row(R["K63-UI-069"], async (page) => {
+  // チケットは作業中・口は can.complete を true と答える・実は作る段の実行が走っている。実行の一覧の答えだけを遅らせる
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true };
+  w.runs = [{ id: MAKE_1, phase: "make", status: "running" }];
+  const release = w.holdList();
+  await openTicket(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0); // 一覧を読みに行った（まだ答えていない）
+  await expect(completeButton(page)).toHaveCount(0); // 一覧が届くまで出さない
+  await expect(page.getByText(MSG.completeHint)).toHaveCount(0);
+  release();
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 届いたら作る段の帯
+  await expect(completeButton(page)).toHaveCount(0);
+});
+
+row(R["K63-UI-070"], async (page) => {
+  // 実行の記録が無い作業中のチケット。一覧が遅れて届いても、届いた後には「完了にする」が出る
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  w.runs = [];
+  const release = w.holdList();
+  await openTicket(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0);
+  await expect(completeButton(page)).toHaveCount(0); // 走っている実行が無いと分かるまで出さない
+  release();
+  await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
+  await expect(completeButton(page)).toBeVisible();
+});
+
+row(R["K63-UI-071"], async (page) => {
+  // 「AI に任せる」を押し、任せる口は答えた。その実行の 1 件と一覧の読み直しの答えは、まだ届いていない
+  const w = await world(page);
+  w.ticket = { stage: "doing", can_complete: true, can_delegate: true };
+  await openTicket(page);
+  await expect(completeButton(page)).toBeVisible(); // 任せる前：走っている実行が無いので出ている
+  const releaseRun = w.hold(MAKE_1);
+  const releaseList = w.holdList();
+  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await expect.poll(() => w.delegates).toBe(1);
+  await expect.poll(() => w.runAsked[MAKE_1] ?? 0).toBeGreaterThan(0); // 任せた実行を読みに行った（まだ答えていない）
+  await expect(completeButton(page)).toHaveCount(0); // 任せた直後は出さない
+  await expect(page.getByText(MSG.completeHint)).toHaveCount(0);
+  releaseRun();
+  releaseList();
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible();
+  await expect(completeButton(page)).toHaveCount(0);
+});
+
+row(R["K63-UI-072"], async (page) => {
+  // 任せた直後の一覧の読み直しが 1 回失敗（500）する。その後、別の所（別のタブ・別の端末）で作る段が終わって承認され、承認の後の実行が走っている
+  const w = await world(page);
+  await page.clock.install();
+  await openTicket(page);
+  await mark(page);
+  const listsBefore = w.listAsked;
+  w.failList = 1;
+  await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
+  await expect.poll(() => w.delegates).toBe(1);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(listsBefore); // 失敗する読み直しが届いた
+  await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 任せた実行は id で読めている
+  w.runs = [
+    { id: EXEC, phase: "execute", status: "running" },
+    { id: MAKE_1, phase: "make", status: "done" },
+  ];
+  w.ticket = { stage: "running" };
+  await tick(page);
+  // 一覧の読み直しが失敗していても、次の読み直しで一覧の先頭（承認の後の実行）の帯になる
+  await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
+  await expect(k62Band(page)).toHaveCount(0);
   expect(await marked(page)).toBe(1);
 });
