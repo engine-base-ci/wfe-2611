@@ -8308,6 +8308,61 @@
     "申し送り": "- K-164 の bridge.ts の注記「失敗したら渡さずに止める側（500）」は、このチケットで「失敗は記録だけ・その回は承認の後の実行を渡さない」に書き換える"
    },
    "file": "11_tickets/K-189.md"
+  },
+  {
+   "id": "K-191",
+   "title": "本線が先に進んでいても、同じファイルを変えていなければ CI を流し直さずに取り込める（設定と作り直しの台本）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "作る",
+   "due": "2026-11-14",
+   "estimate_hours": "0.75",
+   "estimate_basis": "K-187（台本 1 本と試験 11 行・設定 1 つ）と同じ形で、試験の行が 16・生成物の検査に 1 項足す分を足す（実測なし・仮。この 1 本の後で引き直す）",
+   "decisions": [
+    "D-133",
+    "D-133.7"
+   ],
+   "choke_points": [],
+   "choke_none": "進め方の台本と設定・生成物の検査だけ。製品の外への出口に触らない（流すのは目録の作り手、書くのは作り手が作る生成物）",
+   "depends_on": [
+    "K-188"
+   ],
+   "tests": [
+    "scripts/ci/k191_regen_all_test.py"
+   ],
+   "prior_impl": "なし",
+   "changes": [
+    "scripts/tickets/regen_all.py",
+    "ticket-flow.yaml",
+    "scripts/ci/generated.json",
+    "scripts/ci/generated_gate.py",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "07_qa/test-plan/test-plan.html"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "並行で進めたチケットを本線に入れるとき、本線が先に進んでいても、本線の新しい変更とその枝の変更が同じファイルに重ならなければ、CI を流し直さずに入れる（2026-11-13・決める人 answer=86dae8f3cdc0「ぶつからなければ流し直さない」）。\n\n進め方の道具（ticket-flow の取り込み）は、枝に本線を取り込んでから入れる形になった。取り込みでぶつかってよいのは設定 changes_ignore の物（作り手が作る生成物と、決める人の答えの記録）だけで、設定 `catch_up.union` に挙げた物は両方の行を残し、ほかは本線の版にして設定 `catch_up.regen` の命令で作り直す。\nKaname にはこの 2 つの設定と作り直しの命令がまだ無いので、生成物（11_tickets/tickets.json など）がぶつかると今は止まる。\n\nあわせて、今日 2 回止まった穴をふさぐ：作り手（05_flow/build_api.py）が作る 08_api/api-field-consumption.json が、設定 changes_ignore にも生成物の目録（scripts/ci/generated.json）にも載っておらず、ER 図に列を足すチケットが「changes: の外を変えた」で止まった。同じ形の物を機械で洗い出し（下の「洗い出し」）、同じ形が次に出たら検査が赤にする。",
+    "完了の条件": "- [ ] `python3 scripts/tickets/regen_all.py` が、下の表のとおりに目録の作り手を全部流す\n- [ ] ticket-flow.yaml に catch_up（union・regen）があり、changes_ignore と目録に洗い出した 3 つのファイルが載っている\n- [ ] 生成物の検査（scripts/ci/generated_gate.py）が、作り手が目録の外のファイルを書いたら赤にする（F5）。本物のリポジトリで緑\n- [ ] 試験 K191-RG-001〜016 が緑・チケットの CI が緑\n- [ ] 実装した人が、作業場所で `python3 scripts/tickets/regen_all.py` を 1 回流し、0 で終わって `git status` に差分が出ないことを見た",
+    "前提と制約": "- 取り込みの動き（本線を枝に取り込む・ぶつかった物の扱い・コミット）は道具（ticket-flow）が持つ。このチケットはプロジェクトの側の設定・台本・目録だけ\n- 道具は作り直しの命令を、取り込み先の作業場所をいまのフォルダにして `bash -c` で呼ぶ。0 以外で終われば取り込みをやめて元に戻し、出力の最後の 300 字を出す。だから台本は、落ちた作り手の名前と命令を出力の最後に出す\n- 作り手の一覧は目録（scripts/ci/generated.json の generators）だけが持つ。台本は一覧を持たない。前からある持ち込みの台本（scripts/tickets/cut_take.py）の短い一覧（5 つ）はこのチケットでは変えない（持ち込みの後は一部の作り手で足りる。全部に替えるかは別に決める）\n- 台本の先頭 3 行に、生成物の検査が拾う言い回し（scripts/ci/generated_gate.py の MARK）を書かない\n- scripts/tickets/** と scripts/ci/** は CI の範囲の地図（scripts/ci/ci_scope.json の full.ci）にもう入っている。地図は変えない\n- ticket-flow.yaml は道具の「changes: の外を変えていないか」の検査に数えられる（数えないのは changes_ignore・11_tickets/**・`.ticket-flow*/**` で、ticket-flow.yaml はどれにも当たらない）。だから changes: に書く",
+    "実施事項": "### 作り直しの台本\n\n| 欄 | 中身 |\n|---|---|\n| 台本 | scripts/tickets/regen_all.py（引数なし）。目録の作り手を上から順に 1 回ずつ流し、全部が 0 で終わったら最後に `python3 scripts/ci/trace_gate.py --index`（要件一覧。後ろの作り手が作った物を読むので、もう 1 度最後に流す）を流す |\n| 流す場所 | 呼んだときのいまのフォルダが入っている git の作業場所の根（`git rev-parse --show-toplevel`）。目録もその根の scripts/ci/generated.json を読む。作り手はどれも根をいまのフォルダにして、シェルの 1 行として流す（run の中の `cd 05_flow && …` はその作り手にだけ効く）。台本のファイルがある場所では決めない（別の作業場所の台本を道で呼んでも、呼んだ側の作業場所で流れる）。git の作業場所の外から呼ばれたら、何も流さずに 0 以外で終わる |\n| 目録を読めない | 目録が無い・JSON でない・generators が無い・並びでない・空・run が無い（空の字を含む）項目が 1 つでもある → 目録の道（scripts/ci/generated.json）を出して 0 以外で終わる。作り手も最後の命令も 1 つも流さない（読めた所まで流さない） |\n| 作り手が落ちた | 最初に落ちた所で止める（後ろの作り手と最後の命令は流さない）。その作り手の name と run、作り手が出した文の最後を出して 0 以外で終わる。最後の命令が落ちた・その台本が無いときも同じ（命令を出して 0 以外） |\n| 日付だけの違い | 流す前の中身を覚えておき、終わったとき（落ちて止まったときも）に、git が知っているファイル（版に入っている物と、無視していない新しい物。`git ls-files -z` で読む）のうち、中身が変わったが日付を伏せると同じ物を、流す前のバイトに戻す。日付の見方は生成物の検査と同じ決まり（scripts/ci/generated_gate.py の DATE：`2026-11-13` と `2026-11-13T01:02:03Z` の形）。台本は `DATE` という名前でその決まりを持ち、検査のものと同じ式にする（試験が突き合わせる） |\n| 中身の違い | 日付を伏せても違う物は、新しい版のまま残す（日付も新しいまま）。新しくできたファイルも残す |\n| 終わり方 | 全部が 0 で終わったら 0。流した作り手の数を 1 行出す。2 回続けて流しても、1 回目の後から何も変わらない（前の結果を覚えて飛ばすことはしない。毎回全部流す） |\n\n### 設定と目録\n\n| 欄 | 中身 |\n|---|---|\n| ticket-flow.yaml（取り込み） | `catch_up: { union: [\"01_hearing/decider-answers.jsonl\"], regen: \"python3 scripts/tickets/regen_all.py\" }`。union は決める人の答えの記録（設定 answers と同じファイル）だけ |\n| ticket-flow.yaml（changes_ignore） | `08_api/api-field-consumption.json`・`08_api/ears-ac-seed.json`・`08_api/lint-mapping.json` を足す |\n| 目録 | scripts/ci/generated.json の「API の契約（07_functional → 08_api）」（run が `python3 05_flow/build_api.py`）の outputs に、同じ 3 つを足す |\n| 生成物の検査 | scripts/ci/generated_gate.py に F5 を足す：作り手を 1 つ流すたびに、その作り手が書いたファイル（版に入っているファイルのうち、流す前と後で更新の時刻が変わった物。中身が同じでも書いたら当たる）が、目録の generators の outputs にも checked_elsewhere の outputs にも当たらなければ赤。`F5` と作り手の name とファイルの名前を、1 ファイル 1 行で出す。頭の説明の「赤になるもの」にも F5 を足す |\n| CI の定義 | 05_flow/build_testplan.py：G65 に k191_regen_all_test.py（作り直して v3-gate.yml。この段で足した） |\n\n前からある突き合わせ（scripts/ci/k178_flow_config_test.py の K178-CF-003：changes_ignore ＝ 目録の outputs ＋ 決める人の答えの記録）は、両方に同じ 3 つを足すので緑のまま。",
+    "洗い出し（作り手が作るのに、目録にも changes_ignore にも無い物）": "2026-11-13 に、目録の作り手 16 個を 1 つずつ流し、流す前と後で git が知っているファイルの更新の時刻を比べた（一時の台本。リポジトリには置いていない。同じ見方を F5 として検査に入れる）。書かれたファイルは 459、そのうち目録のどの outputs にも当たらない物は 3 つで、どれも 05_flow/build_api.py が書く：\n\n- 08_api/api-field-consumption.json（今日 2 回止まった物）\n- 08_api/ears-ac-seed.json\n- 08_api/lint-mapping.json\n\nほかの 15 個の作り手は、自分の outputs だけを書いていた（ほかの作り手の outputs を書く作り手も無い）。\n\n```search\n- name: 05_flow/build_api.py が 08_api に書くファイル（書く所は 10。読むだけの db-columns.json は入らない）\n  cmd: git grep -n -o -E 'open\\(f\"\\{OUT\\}/[^\"]+\", \"w\"' -- 05_flow/build_api.py\n  count: 10\n- name: そのうち、目録（API の契約の outputs）にもう載っている物（10 のうち 7。残りの 3 が上の 3 つ）\n  cmd: git grep -n -E '\"08_api/(API-SPEC\\.md|api-decisions\\.json|api-spec\\.html|endpoints\\.json|openapi\\.yaml|screen-api-coverage\\.json|types\\.ts)\"' -- scripts/ci/generated.json\n  count: 7\n- name: 上の 3 つが設定と目録に載っている行（切った時点は 0。実装の後は ticket-flow.yaml に 3・目録に 3 で 6）\n  cmd: git grep -n -E 'api-field-consumption\\.json|ears-ac-seed\\.json|lint-mapping\\.json' -- ticket-flow.yaml scripts/ci/generated.json\n  count: 0\n```",
+    "テスト仕様と確認の結果": "分類: TOOL\n\n- 要らない: TP-TOOL-03 台の違いは、このチケットの CI そのもので確かめる\n- TP-TOOL-01 は K191-RG-007・K191-RG-015、TP-TOOL-02 は K191-RG-006（読めない目録・空の目録で成功しない）・K191-RG-015（わざと目録の外に書く作り手を置いて赤になるのを見る）\n- 試験は一時のフォルダに作り物のリポジトリ（小さい目録・作り物の作り手・作り物の最後の命令）を置き、台本と検査を命令として流す。本物の作り手 16 個が目録の外に書かないことは、どのチケットの CI でも生成物の検査（G38・F5）が本物のリポジトリで見る\n- K191-RG-014・K191-RG-016 は今も緑の守り（食い違いを作らない・載っている物を F5 にしない）。ほかの行は実装の前は赤\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K191-RG-001 | 入力 | 目録に作り手が 3 つ（真ん中は run が `cd sub && …`） | 目録の順に 1 回ずつ流れ、最後に `trace_gate.py --index` が流れて 0 で終わる。どれも根で流れ、cd した作り手の次はまた根で流れる。作り手が書いたファイルができている |\n| K191-RG-002 | 失敗 | 真ん中の作り手が 0 以外で終わる | 0 以外で終わり、その作り手の name・run・作り手が出した文が出る。後ろの作り手と最後の命令は流れない（後ろの作り手のファイルはできない） |\n| K191-RG-003 | 失敗 | 最後の命令（要件一覧）が落ちる／その台本が無い | どちらも 0 以外で終わり、`python3 scripts/ci/trace_gate.py --index` が出る |\n| K191-RG-004 | 時間の流れ | 作り手が、日付（`2026-11-13`）と日時（`…T01:02:03.456Z`）だけが前と違う中身を書く | 作り手は流れ、0 で終わる。2 つのファイルは流す前のバイトに戻り、`git status` に 1 行も出ない |\n| K191-RG-005 | 入力 | 同じ回に、中身と日付の両方が変わる物・中身だけ変わる物・新しくできる物・日付だけ変わる物 | 前の 3 つは新しい版のまま残り（日付も新しいまま）、日付だけの物は戻る。`git status` に出るのは前の 3 つだけ |\n| K191-RG-006 | 守り | 目録が無い／JSON でない／generators が無い／並びでない／空／run の無い項目（前に流せる作り手がある）／run が空の字 | どれも 0 以外で終わり、`scripts/ci/generated.json` が出る。作り手も最後の命令も 1 つも流れず、ファイルは 1 つも変わらない（TP-TOOL-02） |\n| K191-RG-007 | 入力 | 生成物の名前に日本語と空白（`出力 物/一 覧.md`）・日付だけの違い | そのファイルも流す前のバイトに戻り、`git status` に 1 行も出ない（TP-TOOL-01） |\n| K191-RG-008 | 入口 | 下のフォルダから呼ぶ／別の作業場所（git worktree）の下のフォルダから呼ぶ／git の作業場所の外（目録と作り手の写しはある）から呼ぶ | 下のフォルダ：根で流れ、下のフォルダには何もできない。別の作業場所：その作業場所の根で流れ、そこのファイルが変わり、元の作業場所のファイルは変わらない。git の外：0 以外で終わり、1 つも流れない |\n| K191-RG-009 | 失敗 | 日付だけ変える作り手・中身を変える作り手の後で、3 つ目が落ちる | 0 以外で終わる。日付だけの物は流す前のバイトに戻り、中身の違いは残る |\n| K191-RG-010 | 操作の揺れ | 日を変えて 2 回続けて流す | 2 回とも 0 で終わり、2 回とも全部の作り手が流れる。2 回目の後の `git status` と中身は 1 回目の後と同じ |\n| K191-RG-011 | 守り | 台本の中身 | 台本の `DATE` の式が生成物の検査の `DATE` と同じ。先頭 3 行に検査の MARK が当たらない。本物の目録のどの run も、作り手の台本の名前も、台本の中に出ない（最後の `trace_gate.py --index` を除く） |\n| K191-RG-012 | 入力 | ticket-flow.yaml の catch_up | union が `[\"01_hearing/decider-answers.jsonl\"]` で、設定 answers と同じファイル・changes_ignore に入っている・ファイルがある。regen が `python3 scripts/tickets/regen_all.py` で、その台本がある |\n| K191-RG-013 | 入力 | 洗い出した 3 つのファイル | 3 つとも、目録の run が `python3 05_flow/build_api.py` の作り手の outputs と、ticket-flow.yaml の changes_ignore の両方に載っている |\n| K191-RG-014 | 守り | changes_ignore と目録の outputs の突き合わせ | 目録の outputs は全部 changes_ignore にある。changes_ignore にだけある物は、試験の中の理由つきの一覧（決める人の答えの記録 1 つ）とちょうど同じ。どちらにも同じ行が 2 つ無い。食い違えば、片方にしか無い物の名前が出て赤 |\n| K191-RG-015 | 守り | 作り物のリポジトリで、作り手が自分の outputs のほかに、目録に無い版に入ったファイル 2 つ（1 つは日本語と空白の名前）を同じ中身で書き直す | 生成物の検査が 1 で終わり、`F5` の行が 2 行出る。行に作り手の name とファイルの名前が出る。検査の後の `git status` に 1 行も出ない（TP-TOOL-01・TP-TOOL-02） |\n| K191-RG-016 | 守り | 作り手が書く物が全部、自分の outputs（glob を含む）・checked_elsewhere・ほかの作り手の outputs のどれかに載っている | 生成物の検査が 0 で終わり、`F5` は 1 行も出ず `PASS` が出る |",
+    "決める人に聞く": "無い。",
+    "決める人の答え": "2026-11-13・answer=86dae8f3cdc0\n\n- 本線が先に進んでいても、同じファイルを変えていなければ、チケットの CI を流し直さずに取り込む（「ぶつからなければ流し直さない」）。チケットの CI はそのチケットの範囲だけで、組み合わせは大分類の終わりの全部で見る（D-133.7）",
+    "切る段が決めたこと": "作り方の決めで、製品のふるまいではない。\n\n- 洗い出しで 3 つ見つかったので、3 つとも同じチケットで目録と changes_ignore に載せる\n- 同じ形（作り手が目録の外に書く）を次に機械で止めるため、生成物の検査に F5 を足す。前からある突き合わせ（K178-CF-003・この試験の K191-RG-014）は「2 つの一覧が同じか」しか見ず、両方に無い物は緑のまま通していた（今日の穴はこれ）\n- 作り手が落ちたら最初の 1 つで止める（後ろの作り手は前の生成物を読むので、続けても正しい物にならない）\n- 根は呼んだ場所の git の作業場所で決め、git の外では止まる（台本のある場所へ倒さない＝別の作業場所を黙って書き換えない）\n- 日付だけの違いを戻すのは、落ちて止まったときも同じ（手で流したときに差分を残さない）",
+    "成果物": "- scripts/tickets/regen_all.py・scripts/ci/k191_regen_all_test.py\n- ticket-flow.yaml（catch_up・changes_ignore）・scripts/ci/generated.json（outputs に 3 つ）・scripts/ci/generated_gate.py（F5）",
+    "リスクと懸念": "- F5 は更新の時刻で「書いた」を見る。中身が同じなら書かない作り手（scripts/ci/gen_built_routes.py）は、変わらない回には当たらない（変わる回は F1 が見る）\n- 作り直しは作り手 16 個で手元 4 秒ほど（2026-11-13 の実測・依存が入っている作業場所）。node の作り手は依存（node_modules）が要る。取り込み先の作業場所に依存が無いと落ち、取り込みは「作り直しの命令が落ちた」で止まる（黙って古い生成物を入れない）\n- 持ち込みの台本（cut_take.py）は自分の短い一覧を持ったまま。作り手を足したときにそちらが古くなる形は残る"
+   },
+   "file": "11_tickets/K-191.md"
   }
  ]
 }
