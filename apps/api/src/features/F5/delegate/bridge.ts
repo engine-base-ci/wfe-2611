@@ -1,7 +1,7 @@
 // AI に任せる（K-62）の PC が呼ぶ口：取る（takeBridgeJob）・途中の様子（reportJobProgress）・止める合図（getJobControl）・終わる（finishBridgeJob）。
 //   前の道すじ /api/auth-ext/bridge/take・progress・finish（ext.ts）と /bridge/control（agent.ts）の中身をここへ移した。
 //   PC は印（x-bridge-session）で入り、入口（op.ts）が ctx.role = "device"・ctx.sessionId にする（K-57）。仕事の id は道すじで受ける。
-//   書くのは関門 C2 の関数だけ（app.bridge_take_job・app.bridge_progress・app.bridge_control・app.bridge_finish_job・0091）。
+//   書くのは関門 C2 の関数だけ（app.bridge_take_job・app.bridge_progress・app.bridge_control・app.bridge_finish_job・0091。渡す関数の今の形は 0099）。
 //   progress・control・finish はその仕事を受け取った PC からだけ（ほかの PC は 404・D-128.163）。ログにプロンプト・結果・鍵・印を出さない
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -52,8 +52,22 @@ type TakenJob = {
 export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
   const one = async <T>(sql: string, args: unknown[]): Promise<T | undefined> =>
     (await pool.query<{ v: T }>(sql, args)).rows[0]?.v;
-  const takeOne = async (sid: string): Promise<TakenJob | null> =>
-    (await pool.query<TakenJob>("select * from app.bridge_take_job($1)", [sid])).rows[0] ?? null;
+  /** 仕事を 1 件取る。holdExecute（その回の片付けに失敗した）なら、承認の後の実行は 1 つも取らない（K-189・0099） */
+  const takeOne = async (sid: string, holdExecute: boolean): Promise<TakenJob | null> =>
+    (await pool.query<TakenJob>("select * from app.bridge_take_job($1, $2)", [sid, holdExecute])).rows[0] ?? null;
+  /** 渡す前の片付け（K-164）を 1 回流す。片付けだけの取引なので、失敗したら片付けだけが戻る。失敗しても投げず、通ったかを返す。
+   *   withTenant の中で呼ぶ（外だと app.user_id() が空で何もしない）。ログは場所と例外の種類だけ（仕事の中身・id・人の名前を出さない） */
+  const sweepBeforeTake = async (ctx: HookArgs["ctx"], sid: string): Promise<boolean> => {
+    try {
+      await withTenant(pool, ctx, (cl) => cl.query("select app.ticket_execute_expire($1)", [sid]));
+      return true;
+    } catch (e) {
+      console.error(
+        `[delegate] takeBridgeJob：渡す前の片付けに失敗したので、この回は承認の後の実行を渡さない（${(e as Error)?.name ?? "Error"}）`,
+      );
+      return false;
+    }
+  };
 
   /** 渡す仕事の中身：行の中身はそのまま。会話の仕事には記憶と会話の決まり、会話とチケットの仕事には道具の鍵（その仕事の間だけ・D-110.3） */
   const withExtras = async (sid: string, job: TakenJob) => {
@@ -87,11 +101,12 @@ export function bridgeJobHooks(pool: pg.Pool): Record<string, Hook> {
         // 台帳で禁止・銀行のドメイン（D-107.1）。どの仕事にも渡す。資格情報は渡さない（D-107.7）
         const forbidden = (await one<unknown[]>("select app.bridge_blocked_domains() as v", [])) ?? [];
         // 渡す前の片付け（K-164）：その PC の人の待っている承認の後の実行のうち、消された・任せた人が使えない・24 時間を過ぎたものを止める。
-        //   withTenant の中で呼ぶ（外だと app.user_id() が空で何もしない）。失敗したら渡さずに止める側（500）
-        await withTenant(pool, a.ctx, (cl) => cl.query("select app.ticket_execute_expire($1)", [sid]));
+        //   失敗は記録だけで答えに出さない（PC は次の問い合わせでまた取りに来る）。その回は承認の後の実行を 1 つも渡さず、会話・作る段の仕事は渡す（K-189）。
+        //   「失敗した」はこの要求の中だけで持つ（待ちの輪の中の取り直しも同じ向き。次の要求はまた片付けから）
+        const holdExecute = !(await sweepBeforeTake(a.ctx, sid));
         const until = Date.now() + (hot ? wait * 1000 : 0);
         for (;;) {
-          const job = await takeOne(sid);
+          const job = await takeOne(sid, holdExecute);
           if (job)
             return {
               status: 201,

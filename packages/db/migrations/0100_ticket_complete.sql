@@ -23,12 +23,14 @@ $$;
 revoke all on function app.ticket_completed_recipients(uuid) from public;
 
 -- ---------------------------------------------------------------- ⑤ 完了にする（確定の時点）
---   答えは {ticket_id, number, completed_at, completed_by, notify_member_ids} か {error[, left][, out][, children]}。だめなときは何も書かない。
+--   答えは {ticket_id, number, completed_at, completed_by, notify_member_ids} か {error[, left][, out, out_total][, children]}。だめなときは何も書かない。
+--     範囲の外の番号（out）は小さい順の先頭 20 個までと、その総数（out_total）を返す（送られた数だけ答えを大きくしない）。
 --   守りの 2 層目：呼んだ人が今のメンバーで、そのチケットを直せる（app.ticket_writable）こと（口の入口の行の決まり write と同じ判定）。
 --   見る順：完了済み（done）→ 段と走っている実行・決まっていない承認待ち（stage）→ 実施事項の版（todo_changed）→
 --     範囲の外の番号（todo_out_of_range・D-131.8）→ 残っている項目（todo_left）→ 確かめ（not_confirmed）→ 終わっていない子（children_left）。
 --   実施事項：todo の区画の本文の「- 」で始まる行が項目（0 から数える）。「- [x]」は済みで、送られた番号に無くても済みのまま数える
---     （済みは外せない・決める人の答え bf373f5b265a）。通れば全部の項目を「- [x]」にした新しい版を書く（変わるときだけ）。
+--     （済みは外せない・決める人の答え bf373f5b265a）。通れば全部の項目を「- [x]」にした新しい版を書く（変わるときだけ。
+--     済みの行はそのまま・本文が無い（null）区画は書き換えない）。
 --   書く所の失敗は例外のまま外に出す（1 つの処理なので何も残らない・口は 500）
 create or replace function app.ticket_complete(p_ticket uuid, p_todo_checked integer[], p_todo_version integer, p_confirmed boolean)
 returns jsonb
@@ -36,7 +38,8 @@ language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare v_tenant uuid := app.tenant_id(); v_me uuid := app.user_id(); t tickets%rowtype; v_stage text;
         v_checked integer[] := coalesce(p_todo_checked, '{}');
         v_sec uuid; v_ver integer; v_text text; v_line text; v_lines text[] := '{}'; v_idx integer := 0;
-        v_left text[] := '{}'; v_out integer[]; v_new text; v_body jsonb; v_kids jsonb;
+        v_left text[] := '{}'; v_out integer[]; v_new text; v_body jsonb; v_kids jsonb; v_rest text;
+        c_out_max constant integer := 20;   -- 答えに載せる範囲の外の番号の数の上限
 begin
   if v_tenant is null or v_me is null then return jsonb_build_object('error', 'not_member'); end if;
   -- 同じチケットの同時の 2 本は 1 本にする（チケットの行で待ち合わせる。後の 1 本は完了の後の行を見る）
@@ -61,10 +64,13 @@ begin
   if v_text is not null then
     foreach v_line in array regexp_split_to_array(v_text, E'\n') loop
       if v_line ~ '^\s*- ' then
-        if v_line !~ '^\s*- \[[xX]\](\s|$)' and not (v_idx = any(v_checked)) then
-          v_left := v_left || regexp_replace(v_line, '^\s*- (\[[ xX]?\]\s*)?', '');
+        if v_line ~ '^\s*- \[[xX]\](\s|$)' then
+          v_lines := v_lines || v_line;   -- 済みの行はそのまま（外さない・書き換えない）
+        else
+          v_rest := regexp_replace(v_line, '^\s*- (\[ ?\]\s*)?', '');   -- 項目の文（頭の「- 」と空の印を除く）
+          if not (v_idx = any(v_checked)) then v_left := v_left || v_rest; end if;
+          v_lines := v_lines || (substring(v_line from '^\s*') || '- [x]' || case when v_rest = '' then '' else ' ' || v_rest end);
         end if;
-        v_lines := v_lines || regexp_replace(v_line, '^(\s*)- (\[[ xX]?\]\s*)?', '\1- [x] ');
         v_idx := v_idx + 1;
       else
         v_lines := v_lines || v_line;
@@ -74,7 +80,8 @@ begin
   -- 範囲の外の番号（負・項目の数を超える）があれば、ほかが全部済みでも断る（D-131.8）。残っている項目も一緒に返す
   select array_agg(distinct x order by x) into v_out from unnest(v_checked) x where x is not null and (x < 0 or x >= v_idx);
   if v_out is not null then
-    return jsonb_build_object('error', 'todo_out_of_range', 'left', to_jsonb(v_left), 'out', to_jsonb(v_out));
+    return jsonb_build_object('error', 'todo_out_of_range', 'left', to_jsonb(v_left),
+                              'out', to_jsonb(v_out[1:c_out_max]), 'out_total', cardinality(v_out));
   end if;
   if cardinality(v_left) > 0 then return jsonb_build_object('error', 'todo_left', 'left', to_jsonb(v_left)); end if;
   if p_confirmed is distinct from true then return jsonb_build_object('error', 'not_confirmed'); end if;
@@ -85,7 +92,7 @@ begin
   if v_kids is not null then return jsonb_build_object('error', 'children_left', 'children', v_kids); end if;
 
   -- 書く（1 回の書き込み）：実施事項を全部「- [x]」にした新しい版（変わるときだけ）・段・完了の時刻と押した人・やり取りの 1 行・証跡
-  if v_sec is not null then
+  if v_sec is not null and v_text is not null then
     v_new := array_to_string(v_lines, E'\n');
     if v_new is distinct from v_text then
       v_ver := v_ver + 1;

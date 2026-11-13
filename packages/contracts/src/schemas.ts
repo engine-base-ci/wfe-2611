@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:660211e110241ca4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:5a1cbad6682461b7
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2491,6 +2491,8 @@ export const Tickets = z.strictObject({
   stage_id: z.uuid().optional(),
   title: z.string().optional(),
   assignee_member_id: z.uuid().nullable().optional(),
+  completed_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  completed_by: z.uuid().nullable().optional(),
   delegated_to_clone: z.boolean().optional(),
   client_id: z.uuid().nullable().optional(),
   parent_ticket_id: z.uuid().nullable().optional(),
@@ -2513,8 +2515,6 @@ export const Tickets = z.strictObject({
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
   client_share: z.unknown().optional(),
-  completed_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  completed_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
   scope_id: z.uuid().optional(),
   updated_by: z.uuid().nullable().optional(),
@@ -2525,6 +2525,8 @@ export const TicketsInput = z.strictObject({
   stage_id: z.uuid().optional(),
   title: z.string().optional(),
   assignee_member_id: z.uuid().nullable().optional(),
+  completed_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  completed_by: z.uuid().nullable().optional(),
   delegated_to_clone: z.boolean().optional(),
   client_id: z.uuid().nullable().optional(),
   parent_ticket_id: z.uuid().nullable().optional(),

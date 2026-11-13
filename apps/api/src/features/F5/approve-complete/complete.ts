@@ -3,7 +3,7 @@
 //   知らせは関門 C6 の NotifyGateway.notify だけ（受け箱・宛先は担当者と作った人のうち押した人でない人・D-128.92）。
 //     受け箱の行を書くのは app.ticket_completed_notice（宛先と「完了にした人か」は関数の中でもう一度確かめる＝守りの 2 層目。宛先を口に任せない）。
 //     本文はチケットの id・番号・リンクだけ。同じチケットの完了の知らせは 1 人に 1 つ（dedupe_key ticket.completed:<チケットの id>）。
-//   知らせを書けなくても完了は残す（送れたとは言わない。ログは場所と例外の種類だけ）。書く所の DB の失敗は 500（何も残らない）。
+//   知らせを書けなくても完了は残す（送れたとは言わない。ログは場所と、書けなかった数か例外の種類だけ）。書く所の DB の失敗は 500（何も残らない）。
 //   ログに実施事項の中身・題名を出さない
 import type pg from "pg";
 import { withTenant, type TenantContext } from "@kaname/db/context";
@@ -21,10 +21,10 @@ const INT_MAX = 2 ** 31 - 1;
 /** DB の関数の答え（完了した行）か、だめな理由の言葉 */
 type Completed = Record<string, unknown> & { error?: unknown };
 
-/** 完了の知らせ（関門 C6）。受け箱の書き手は DB の関数 1 つ（何度呼んでも 1 人に 1 つ） */
-async function notifyCompleted(pool: pg.Pool, repo: Repository, ctx: TenantContext, t: Completed): Promise<void> {
+/** 完了の知らせ（関門 C6）。受け箱の書き手は DB の関数 1 つ（何度呼んでも 1 人に 1 つ）。答えは書けなかった宛先の数 */
+async function notifyCompleted(pool: pg.Pool, repo: Repository, ctx: TenantContext, t: Completed): Promise<number> {
   const memberIds = Array.isArray(t["notify_member_ids"]) ? t["notify_member_ids"].map((x) => String(x)) : [];
-  if (!memberIds.length) return;
+  if (!memberIds.length) return 0;
   const ticketId = String(t["ticket_id"]);
   const inbox: Transport = {
     send: async () => {
@@ -42,7 +42,9 @@ async function notifyCompleted(pool: pg.Pool, repo: Repository, ctx: TenantConte
     { resolve: async () => memberIds.map((memberId) => ({ memberId, kind: "human" as const, address: null })) },
     { channelsOf: () => ["inapp"], maxAttempts: 2 },
   );
-  await gw.notify(event, { memberIds }, ctx);
+  // 送り先の失敗は投げられずに deliveries の failed で返る（関門の中で再送まで済んでいる）
+  const { deliveries } = await gw.notify(event, { memberIds }, ctx);
+  return deliveries.filter((d) => d.status === "failed").length;
 }
 
 /** 完了した答え（201 TicketCompletion） */
@@ -96,7 +98,9 @@ async function complete(pool: pg.Pool, a: HookArgs): Promise<HookReply> {
   if (!r) return replyOf({ error: "empty" }, where);
   if (r.error !== undefined) return replyOf(r, where);
   try {
-    await notifyCompleted(pool, a.repo, a.ctx, r);
+    const failed = await notifyCompleted(pool, a.repo, a.ctx, r);
+    // 宛先の名前・チケットの中身は出さない（場所と数だけ）
+    if (failed > 0) console.error(`[approve-complete] ${where}：完了の知らせを書けなかった（${failed} 件）`);
   } catch (e) {
     console.error(`[approve-complete] ${where}：完了の知らせを書けなかった（${(e as Error)?.name ?? "Error"}）`);
   }

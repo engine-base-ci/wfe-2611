@@ -43,7 +43,7 @@ const texts = (v: unknown): string[] => (Array.isArray(v) ? v.map((x) => String(
 
 /** DB の関数の答え { error: <言葉> } → 答え。知らない言葉は止める側（503・言葉は記録にだけ残し、答えに出さない） */
 export function replyOf(
-  r: { error?: unknown; left?: unknown; out?: unknown; children?: unknown },
+  r: { error?: unknown; left?: unknown; out?: unknown; out_total?: unknown; children?: unknown },
   where: string,
 ): HookReply {
   const word = String(r.error);
@@ -59,12 +59,17 @@ export function replyOf(
   if (word === "done") return fromCatalog("E-CONF-018", 409);
   if (word === "stage") return fromCatalog("E-CONF-016", 409);
   if (word === "todo_changed") return fromCatalog("E-CONF-017", 409);
-  // 残っている実施事項（項目ごと）と、範囲の外の番号（負・項目の数を超える。ほかが全部済みでも断る・D-131.8）
-  if (word === "todo_left" || word === "todo_out_of_range")
+  // 残っている実施事項（項目ごと）と、範囲の外の番号（負・項目の数を超える。ほかが全部済みでも断る・D-131.8）。
+  //   範囲の外の番号は DB の関数が先頭の何個かに絞って返す。載せなかった分は数だけを 1 行で出す（送られた数だけ答えを大きくしない）
+  if (word === "todo_left" || word === "todo_out_of_range") {
+    const out = texts(r.out);
+    const more = Number.isInteger(r.out_total) ? (r.out_total as number) - out.length : 0;
     return withDetails("E-VAL-022", 422, [
       ...texts(r.left).map((message) => ({ field: "todo_checked", message })),
-      ...texts(r.out).map((n) => ({ field: "todo_checked", message: `番号 ${n} は実施事項にありません` })),
+      ...out.map((n) => ({ field: "todo_checked", message: `番号 ${n} は実施事項にありません` })),
+      ...(more > 0 ? [{ field: "todo_checked", message: `ほかに ${more} 個の番号も実施事項にありません` }] : []),
     ]);
+  }
   if (word === "not_confirmed") return fromCatalog("E-VAL-023", 422, { field: "conditions_confirmed" });
   // 終わっていない子（番号と題名・D-128.138）
   if (word === "children_left")

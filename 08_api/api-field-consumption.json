@@ -9711,6 +9711,50 @@
   },
   {
    "entity": "tickets",
+   "field": "completed_at",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tickets",
+   "field": "completed_by",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "tickets",
    "field": "delegated_to_clone",
    "consumed_by_screens": [
     "bridge-setup",
