@@ -690,6 +690,18 @@
     "test_post_tickets_id_complete_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_complete_rejected_401": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-026"
+    },
+    "test_post_tickets_id_complete_not_found": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-025"
+    },
+    "test_post_tickets_id_complete_rate_limited": {
+     "file": "apps/api/test/features/F5/approve-complete-guard.test.ts",
+     "mark": "K63-API-045"
     }
    }
   }
