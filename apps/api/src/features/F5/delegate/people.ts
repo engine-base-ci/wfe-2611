@@ -6,6 +6,7 @@ import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
+import { SWEEP_TICKET, sweepBeforeRead } from "../approve-complete/sweep.js";
 
 /** PC をつなぐ画面（E-CONN-001 の一手） */
 export const SETUP_BRIDGE = "/setup/bridge";
@@ -70,10 +71,12 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
         return { status: 200, body: { data: v } };
       },
     },
-    // チケットの詳細（K-60）に「見ている人ができること」を足す（can.delegate・D-128.138）
+    // チケットの詳細（K-60）に「見ている人ができること」を足す（can.delegate・D-128.138）。
+    //   読む前に、待っている承認の後の実行の仕事を片付ける（K-164。失敗したら飛ばして読めたものを返す）
     getTicket: {
       ...getTicket,
       before: async (a: HookArgs) => {
+        await withTenant(pool, a.ctx, (cl) => sweepBeforeRead(cl, SWEEP_TICKET, [a.id], "チケットの詳細"));
         const r = getTicket?.before ? await getTicket.before(a) : undefined;
         if (!r || r.status !== 200) return r;
         const body = r.body as { data: Record<string, unknown> };

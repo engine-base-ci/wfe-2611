@@ -1,12 +1,13 @@
-// 承認待ちを見る（K-161）の読む口：listApprovalQueue（自分が決める承認待ち）・getApproval（承認の 1 件）。読むだけ（書かない）。
+// 承認待ちを見る（K-161）の読む口：listApprovalQueue（自分が決める承認待ち）・getApproval（承認の 1 件）。読む前の片付けのほかは書かない。
 //   一覧は 1 回 20 件（既定・最大 200）。続きは鍵の文字列（最後に返した行の due_on・created_at・id を | でつないで base64url）で、
 //   その行の次から読む（間に新しい行が入っても重複・飛びを出さない）。絞るのも切るのも DB の関数（G-16・D-131.9）。数は DB の count。
-//   読む前の片付け（24 時間を過ぎた待ちの仕事を止める）は K-164 が足す
+//   読む前に、待っている承認の後の実行の仕事を片付ける（K-164・sweep.ts。片付けが失敗したら飛ばして読めたものを返す）
 import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs } from "../../../contract/deps.js";
 import { invalid, notFound } from "./errors.js";
+import { SWEEP_MINE, SWEEP_OF_APPROVAL, sweepBeforeRead } from "./sweep.js";
 
 export const LIMIT_DEFAULT = 20;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -51,6 +52,7 @@ async function listQueue(pool: pg.Pool, a: HookArgs) {
   const key = q["cursor"] ? decodeKey(q["cursor"]) : null;
   if (q["cursor"] && !key) return invalid("cursor", "続きの印が不正です");
   const { rows, total } = await withTenant(pool, a.ctx, async (cl) => {
+    await sweepBeforeRead(cl, SWEEP_MINE, [], "承認待ちの一覧");
     const r = await cl.query<{ v: QueueItem[] }>("select app.approval_queue($1, $2, $3, $4) as v", [
       limit + 1,
       key?.due ?? null,
@@ -78,6 +80,7 @@ async function listQueue(pool: pg.Pool, a: HookArgs) {
 
 async function getOne(pool: pg.Pool, a: HookArgs) {
   const v = await withTenant(pool, a.ctx, async (cl) => {
+    await sweepBeforeRead(cl, SWEEP_OF_APPROVAL, [a.id], "承認の 1 件");
     const r = await cl.query<{ v: Record<string, unknown> | null }>("select app.approval_detail($1) as v", [a.id]);
     return r.rows[0]?.v ?? null;
   });
