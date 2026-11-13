@@ -12,16 +12,15 @@ export const SWEEP_OF_APPROVAL =
 /** 呼んだ人が今の担当者のチケットを全部 */
 export const SWEEP_MINE = "select app.ticket_execute_sweep_mine()";
 
-const SAVEPOINT = "execute_sweep";
 
 /** 読む取引の中で片付けを 1 回流す。失敗しても投げない（片付けだけを戻す）。ログは場所と例外の種類だけ */
 export async function sweepBeforeRead(cl: pg.PoolClient, sql: string, args: unknown[], where: string): Promise<void> {
-  await cl.query(`savepoint ${SAVEPOINT}`);
+  await cl.query("savepoint execute_sweep");
   try {
     await cl.query(sql, args);
-    await cl.query(`release savepoint ${SAVEPOINT}`);
+    await cl.query("release savepoint execute_sweep");
   } catch (e) {
-    await cl.query(`rollback to savepoint ${SAVEPOINT}`);
+    await cl.query("rollback to savepoint execute_sweep");
     console.error(
       `[approve-complete] ${where}：読む前の片付けに失敗したので飛ばした（${(e as Error)?.name ?? "Error"}）`,
     );
