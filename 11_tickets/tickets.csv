@@ -996,6 +996,11 @@ K-181,差し戻す（理由をつけて作り直させる）の画面（K-63 の
 - 単体のテスト：`apps/web/tests/features/F5/approve-complete-return.spec.ts` が緑（試験の土台は `apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から変えずに移した）
 - 画面は K-163 の口を呼ぶだけ（口・契約・生成の試験は変えない）。前の孫の画面の試験は緑のまま
 - チケットの CI が緑"
+K-182,実行の結末と時間の流れ（実行が終わる・止まる・24 時間・片付け）の画面（K-63 の孫）,タスク,K-63,未着手,実装,2026-11-13,F5・AI,"実行の結末と時間の流れ（実行が終わる・止まる・24 時間・片付け）の画面。口は K-164 が作る（DB と口）。この孫は画面だけ（重さの上限：画面と DB を 1 本で触らない・2026-11-13 切る段）。
+振る舞いの決まりは K-164 の「目的」「確定の時点」と同じ（画面は口の答えを描き分け、エラーの文は正本 errors.json から引く・文は全部文字として出す）。","- 下の表の、この孫の行（画面 5 行）が全部緑：K63-UI-025・K63-UI-034・K63-UI-051・K63-UI-052・K63-UI-053
+- 単体のテスト：`apps/web/tests/features/F5/approve-complete-execute.spec.ts` が緑（試験の土台は `apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から変えずに移した）
+- 画面は K-164 の口を呼ぶだけ（口・契約・生成の試験は変えない）。前の孫の画面の試験は緑のまま
+- チケットの CI が緑"
 K-185,契約の形の検査が作った口を拾い漏らす（承認待ちの 1 件・承認するが入口の id の形の試験の対象から外れている）,課題,K-1,未着手,作る,2026-11-13,基盤・CI,"2026-11-13、K-163 の切り直しで見つけた（前からある別の場所の問題）。scripts/ci/contract_shape_test.py の hook_regions（作った口を拾う所）が、
 apps/api/src/hooks/approve-complete.ts に並ぶ口（listApprovalQueue・getApproval・approveApproval）を 1 本も拾わない。
 そのため getApproval・approveApproval は、入口の id の形の試験（UUID_PARAM_CASES・SHAPE_017）と必須の欄の決まり（SHAPE_020）の対象から外れている。
