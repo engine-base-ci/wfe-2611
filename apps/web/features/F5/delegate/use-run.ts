@@ -1,6 +1,7 @@
 "use client";
 // AI に任せる（K-62）の読み直し。実行の一覧（listTicketRuns）と今の実行の 1 件（getActionRun）を @tanstack/react-query で読む。
 //   3 秒ごとの読み直しは、今の実行が待っている・動いている・確認待ちの間だけ。それ以外は読みに行かない（K62-UI-017）
+//   今の実行は一覧の先頭（いちばん新しい実行）。任せた直後だけ、一覧に出る前の実行を答えの run_id で読む（K63-UI-064〜067）
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { call } from "@/lib/api/call";
@@ -27,10 +28,22 @@ const POLL_MS = 3_000;
 
 export const isActive = (r: Pick<RunView, "status"> | null | undefined): boolean => !!r && ACTIVE.has(r.status);
 
+interface Pinned {
+  id: string;
+  /** 任せたときの一覧の先頭（無ければ null） */
+  headWas: string | null;
+}
+/** 任せた実行をまだ id で読むか：一覧にその id が無く、一覧の先頭が任せたときのままの間だけ */
+function isPinned(pinned: Pinned | null, list: RunView[] | undefined): boolean {
+  if (!pinned) return false;
+  if (list?.some((x) => x.id === pinned.id)) return false;
+  return (list?.[0]?.id ?? null) === pinned.headWas;
+}
+
 export function useRuns(ticketId: string) {
   const qc = useQueryClient();
-  /** 任せた・別のタブで走っていた実行（答えの run_id）。一覧に出る前から、その実行を読む */
-  const [pinned, setPinned] = useState<string | null>(null);
+  /** 任せた・別のタブで走っていた実行（答えの run_id）と、そのときの一覧の先頭。一覧に出るまでの間だけ、その実行を読む */
+  const [pinned, setPinned] = useState<Pinned | null>(null);
   const runKey = (id: string | null) => ["k62", "run", id] as const;
   const listKey = ["k62", "runs", ticketId] as const;
   const runs = useQuery({
@@ -41,9 +54,14 @@ export function useRuns(ticketId: string) {
       return r.data as unknown as RunView[];
     },
     retry: false,
-    refetchInterval: (q) => (isActive(q.state.data?.[0]) ? POLL_MS : false),
+    // 先頭が走っている間と、任せた実行がまだ一覧に出ていない間（読み直しが失敗しても次で追いつく・K63-UI-072）
+    refetchInterval: (q) => (isActive(q.state.data?.[0]) || pinned !== null ? POLL_MS : false),
   });
-  const currentId = pinned ?? runs.data?.[0]?.id ?? null;
+  const headId = runs.data?.[0]?.id ?? null;
+  const stillPinned = isPinned(pinned, runs.data);
+  // 一覧に出た・一覧の先頭が別の実行に替わった：手放す（承認・差し戻しの後の新しい実行を、古い id で隠さない）
+  if (pinned && !stillPinned) setPinned(null);
+  const currentId = stillPinned && pinned ? pinned.id : headId;
   const run = useQuery({
     queryKey: runKey(currentId),
     enabled: currentId !== null,
@@ -59,9 +77,11 @@ export function useRuns(ticketId: string) {
   return {
     runs: runs.data ?? null,
     current,
+    /** 実行の様子が分かっているか：一覧を 1 回は読み終え、任せた実行が一覧に出ていて、今の実行の中身が届いている（K63-UI-069〜071） */
+    known: runs.data !== undefined && !stillPinned && (currentId === null || current !== null),
     /** 任せた後・別のタブの実行に替わったとき：その実行を読み、一覧も読み直す */
     follow: async (runId: string) => {
-      setPinned(runId);
+      setPinned({ id: runId, headWas: headId });
       await qc.invalidateQueries({ queryKey: listKey });
     },
     reload: async () => {

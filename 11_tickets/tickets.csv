@@ -1029,6 +1029,11 @@ K-183,完了にするの画面（K-63 の孫）,タスク,K-63,未着手,実装,
 - 単体のテスト：`apps/web/tests/features/F5/approve-complete-complete.spec.ts` が緑（試験の土台は `apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から変えずに移した）
 - 画面は K-165 の口を呼ぶだけ（口・契約・生成の試験は変えない）。前の孫の画面の試験は緑のまま
 - チケットの CI が緑"
+K-184,画面に出す文の守り（題名・理由の HTML を文字として出す）・AI に任せていないチケットの「完了にする」・見えない子の件数の文・開いたままの帯の切り替わり（K-63 の孫）,タスク,K-63,未着手,実装,2026-11-13,F5・AI,"承認待ちの画面とチケットの詳細で、利用者や AI が書いた文（題名・差し戻す理由・成果物）に HTML やスクリプトが入っていても、文字として出して動かさない。理由は書いたとおりの文で口に送る（削らない・書き換えない）。口と DB の守り（5 本の口をまたぐ守り）は K-166。この孫は画面だけ（重さの上限：画面と DB を 1 本で触らない・2026-11-13 切る段）。
+K-63 の画面の孫の最後。中間テスト 3（K-64）は K-64 の受け持ち（この孫の完了の条件にしない・下の申し送り）。","- 下の表の、この孫の行（画面 15 行）が全部緑：K63-UI-015・K63-UI-059・K63-UI-060・K63-UI-061・K63-UI-062・K63-UI-063・K63-UI-064・K63-UI-065・K63-UI-066・K63-UI-067・K63-UI-068・K63-UI-069・K63-UI-070・K63-UI-071・K63-UI-072
+- 単体のテスト：`apps/web/tests/features/F5/approve-complete-guard.spec.ts` と `apps/web/tests/features/F5/approve-complete-live.spec.ts` が緑（試験の土台は `apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から変えずに移した）
+- 画面は K-161・K-163・K-165 の口を呼ぶだけ（口・契約・生成の試験は変えない）。前の孫の画面の試験は緑のまま（K-183 の行：実行が終わった・止まった後の「完了にする」・承認待ち／実行中で出さない、はそのまま通る）
+- チケットの CI が緑"
 K-185,契約の形の検査が作った口を拾い漏らす（承認待ちの 1 件・承認するが入口の id の形の試験の対象から外れている）,課題,K-1,未着手,作る,2026-11-13,基盤・CI,"2026-11-13、K-163 の切り直しで見つけた（前からある別の場所の問題）。scripts/ci/contract_shape_test.py の hook_regions（作った口を拾う所）が、
 apps/api/src/hooks/approve-complete.ts に並ぶ口（listApprovalQueue・getApproval・approveApproval）を 1 本も拾わない。
 そのため getApproval・approveApproval は、入口の id の形の試験（UUID_PARAM_CASES・SHAPE_017）と必須の欄の決まり（SHAPE_020）の対象から外れている。

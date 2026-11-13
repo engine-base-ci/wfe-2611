@@ -126,6 +126,7 @@ function DetailView({
         ticketId={id}
         ticket={d}
         run={runs.current}
+        runKnown={runs.known}
         onTicket={onTicket}
         onChanged={async () => {
           await Promise.all([reload(), runs.reload()]);
