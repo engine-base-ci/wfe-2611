@@ -4,8 +4,10 @@
 //   今の実行が走っている間は 3 秒ごとにチケットを読み直す（作る段が終わって承認待ちになったら帯に替わる・K63-UI-044）。
 //     ① 承認待ち・決められる人 … 「あなたの承認を待っています」＋成果物の中身・検査なしの印・取り消せない注意・「承認して送る」
 //     ② 承認待ち・決められない人 … 描かない（K-62 の帯「成果物ができました。承認待ちです」）。担当者がいなければその文（K63-UI-049）
-//     ③ 承認の後の実行が走っている（pc live）… 「実行中」
-//   差し戻す（K-163）・実行の結末と PC が閉じている文（K-164）・完了（K-165）は後の孫がここに足す。
+//     ③ 承認の後の実行が走っている … pc live は「実行中」・running で pc asleep は「実行中・PC が閉じています…」・asking は「AI が許可を求めています…」
+//     ④ 実行待ち・PC が閉じている（queued・pc asleep）… 「実行待ち・PC が閉じています…」（queued・pc live は「実行中」）
+//     ⑤ 止まった … 実行の記録（action_runs）の止まった理由を全文そのまま（切らない・言い換えない・D-131.2・D-131.4）
+//   ③〜⑤ はボタンなし（K-182）。24 時間の聞き直しは ① に approval.note の文を足す。完了の案内と完了は後の孫がここに足す。
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -23,7 +25,18 @@ const MSG = {
   noChecks: "検査なし（まだ流していません）",
   irreversible: "取り消せません",
   running: "実行中",
+  runningAsleep: "実行中・PC が閉じています。開くと続きます",
+  asking: "AI が許可を求めています。許可は自動で断られ、続けられなければ止まります",
+  pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます",
 } as const;
+
+/** 承認の後の実行（phase execute）の今の様子の文。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
+function executeLine(run: RunView): string | null {
+  if (!isActive(run)) return run.status === "done" ? null : run.stopped_reason || null; // ⑤ 理由は口の文をそのまま
+  if (run.status === "asking") return MSG.asking;
+  if (run.pc !== "asleep") return MSG.running; // queued・running で PC が開いている
+  return run.status === "queued" ? MSG.pcClosed : MSG.runningAsleep;
+}
 
 /** getTicket の答えの承認待ち（K-162 が足す approval）。can_decide＝見ている人が決められるか */
 export interface BandApproval {
@@ -151,9 +164,8 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
     }
     if (approval && ticket.assignee === null) return <p>{MSG.noAssignee}</p>;
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
-    if (execute && isActive(execute) && execute.status !== "asking" && execute.pc !== "asleep")
-      return <p>{MSG.running}</p>;
-    return null; // 作る段の間・まだ任せていない：K-62 の帯だけ。実行の結末の文は K-164
+    const line = execute ? executeLine(execute) : null;
+    return line ? <p className="k62-band-line">{line}</p> : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
   })();
 
   if (!body && !notice) return null;
