@@ -44,7 +44,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
 
 from ticket_commit_gate import TICKET  # noqa: E402  目録の物（同じものを 2 つ作らない）
-from ticket_order_gate import PROCESS_CONFIG, generated_outputs, generator_scripts, is_doc_only  # noqa: E402
+from ticket_order_gate import _not_impl, generated_outputs, generator_scripts, is_doc_only  # noqa: E402  _not_impl：実装に数えないコミットの決まりは取り込む順の検査の物をそのまま使う（2 つ持たない・K-192）
 from build_index import parse as parse_ticket  # noqa: E402
 import web_select  # noqa: E402  web の組で流す試験を選ぶ（K-177）
 
@@ -196,17 +196,16 @@ def impl_ids(repo: str, head: str, wanted: set[str]) -> set[str]:
     if not left:
         return done
     gen = generated_outputs(repo)
-    log = git(repo, "log", "--format=%H%x09%s", head, check=False)
-    for line in log.stdout.decode("utf-8", "replace").splitlines() if log.returncode == 0 else []:
+    # git が失敗したら止める（RuntimeError）：浅い写しや読めない head を、黙って「実装なし」にしない（history_ids と同じ向き）
+    for line in git(repo, "log", "--format=%H%x09%s", head).stdout.decode("utf-8", "replace").splitlines():
         sha, _, subj = line.partition("\t")
         m = TICKET.match(subj)
         hit = {m.group(0)} & left if m else set()
         if not hit:
             continue
-        r = git(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", "--root", "-z", sha, check=False)
-        files = [f for f in r.stdout.decode("utf-8", "replace").split("\0") if f] if r.returncode == 0 else []
-        rest = [f for f in files if f not in PROCESS_CONFIG]
-        if rest and not is_doc_only(rest, gen):
+        r = git(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", "--root", "-z", sha)
+        files = [f for f in r.stdout.decode("utf-8", "replace").split("\0") if f]
+        if files and not _not_impl(files, gen):   # 変えたファイルが無い（取り込みのコミット）は数えない
             done |= hit
             left -= hit
             if not left:
@@ -498,39 +497,61 @@ def web_ticket_rows(repo: str, base: str, head: str, cfg: dict) -> list[str]:
     return sorted(k for k in changed if _has_screen(new.get(k) or {}) or _has_screen(old.get(k) or {}))
 
 
-def _children(tickets_dir: str) -> dict[str, list[str]]:
-    """親の番号 → 子の番号（チケットの頭の欄 parent から）"""
-    out: dict[str, list[str]] = {}
+def _read_tickets(tickets_dir: str) -> list[dict]:
+    out = []
     for p in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
         try:
-            t = parse_ticket(p)
+            out.append(parse_ticket(p))
         except (SystemExit, OSError, ValueError):
             continue
+    return out
+
+
+def _children(tickets: list[dict]) -> dict[str, list[str]]:
+    """親の番号 → 子の番号（チケットの頭の欄 parent から）"""
+    out: dict[str, list[str]] = {}
+    for t in tickets:
         if t.get("parent") and t.get("id"):
             out.setdefault(str(t["parent"]), []).append(str(t["id"]))
     return out
 
 
-def _dep_done(repo: str, tickets_dir: str, head: str, dep: str, _seen: frozenset[str] = frozenset()) -> bool:
-    """依存がそろったか：自分の実装のコミットがある。無ければ、子があって子が全部そろっている（子・孫に分けた親は自分のコミットを持たない）"""
-    if dep in impl_ids(repo, head, {dep}):
+def _family(ids: set[str], kids: dict[str, list[str]]) -> set[str]:
+    """ids と、その子・孫の全部（parent の輪があっても 1 度しか見ない）"""
+    seen: set[str] = set()
+    todo = list(ids)
+    while todo:
+        k = todo.pop()
+        if k not in seen:
+            seen.add(k)
+            todo += kids.get(k) or []
+    return seen
+
+
+def _dep_done(dep: str, impl: set[str], kids: dict[str, list[str]], _seen: frozenset[str] = frozenset()) -> bool:
+    """依存がそろったか：自分の実装のコミットがある（impl）。無ければ、子があって子が全部そろっている（子・孫に分けた親は自分のコミットを持たない）。
+    子が 1 つも無いチケットは自分のコミットだけ。parent の輪は、そろっていない扱い"""
+    if dep in impl:
         return True
-    kids = _children(tickets_dir).get(dep) or []
-    return bool(kids) and dep not in _seen and all(_dep_done(repo, tickets_dir, head, k, _seen | {dep}) for k in kids)
+    mine = kids.get(dep) or []
+    return bool(mine) and dep not in _seen and all(_dep_done(k, impl, kids, _seen | {dep}) for k in mine)
 
 
-def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list[str], list[str], list[str]]:
-    """このチケットで depends_on がそろう kind: QA のチケット → (番号, 試験のファイル, tests が無い番号)"""
-    ids, files, empty = [], [], []
-    for p in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
-        try:
-            t = parse_ticket(p)
-        except (SystemExit, OSError, ValueError):
-            continue
-        deps = t.get("depends_on") or []
-        if t.get("kind") != "QA" or not isinstance(deps, list) or tid not in deps:
-            continue
-        if not all(d == tid or _dep_done(repo, tickets_dir, head, d) for d in deps):   # 依存の実装がまだ履歴に無い（名前が出ただけは数えない・K-192）
+def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list[str], list[str], list[str], dict[str, list[str]]]:
+    """このチケットで depends_on がそろう kind: QA のチケット → (番号, 試験のファイル, tests が無い番号, まだそろわない QA の番号 → そろっていない依存)。
+    そろった＝依存の実装のコミットが履歴にある（名前が出ただけは数えない・K-192）。履歴とチケットは 1 回だけ読む"""
+    ids, files, empty, waiting = [], [], [], {}
+    tickets = _read_tickets(tickets_dir)
+    qa = [(t, [str(d) for d in t["depends_on"]]) for t in tickets
+          if t.get("kind") == "QA" and isinstance(t.get("depends_on"), list) and tid in t["depends_on"]]
+    if not qa:
+        return ids, files, empty, waiting
+    kids = _children(tickets)
+    impl = impl_ids(repo, head, _family({d for _, deps in qa for d in deps if d != tid}, kids))
+    for t, deps in qa:
+        late = [d for d in deps if d != tid and not _dep_done(d, impl, kids)]
+        if late:   # 黙って外さない：外した QA と、そろっていない依存を出力に出す
+            waiting[str(t["id"])] = late
             continue
         tests = t.get("tests") or []
         got = sorted({os.path.relpath(x, repo).replace(os.sep, "/")
@@ -541,7 +562,7 @@ def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list
             files += got
         else:
             empty.append(t["id"])
-    return ids, sorted(set(files)), empty
+    return ids, sorted(set(files)), empty, waiting
 
 
 def _ticket_tests(repo: str, tickets_dir: str, tid: str) -> tuple[list[str], list[str]]:
@@ -650,7 +671,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     if scope == "ticket":
         scope = "auto"   # K-172：ticket-flow の入口の名前。絞り方は auto と同じ
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
-               "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "mismatches": [], "errors": [],
+               "changes": [], "changed_packages": [], "affected": [], "tickets": [], "integration": [], "integration_waiting": {}, "mismatches": [], "errors": [],
                "jobs": {"unit": False, "database": False, "web": False}, "unit_shards": 0, "unit_files": [],
                "migration_files": [], "coverage_args": [], "db_range": False, "gates": [], "py_tests": []}
     full: list[tuple[str, str]] = p["full_reasons"]
@@ -773,7 +794,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         mism, fr = _ticket_check(tickets_dir, ids[0], rules, changed_pk, {c for c, _ in wide})
         p["mismatches"] = mism
         full += fr
-        integ, itests, empty = _integration(repo, tickets_dir, ids[0], head)
+        integ, itests, empty, p["integration_waiting"] = _integration(repo, tickets_dir, ids[0], head)
         p["integration"] = integ
         for e in empty:
             full.append(("integration", f"{e} の tests が無い（何にも当たらない）"))
@@ -984,6 +1005,8 @@ def _decide(argv: list[str]) -> int:
             print("  " + r)
         print(f"  組：{', '.join(k for k, v in out['jobs'].items() if v) or 'static・spec だけ'}・unit の組 {out['unit_shards']}・試験 {len(out['unit_files']) or ('全部' if out['mode'] == 'full' else 0)} 本"
               + (f"・migration の lint {len(out['migration_files'])} 本" if out["migration_files"] else ""))
+        for q, late in sorted(p["integration_waiting"].items()):
+            print(f"  この回に足さない中間・統合の試験：{q}（依存の実装がまだ履歴に無い：{', '.join(late)}）")
         for m in p["mismatches"]:
             print("  ★ 食い違い：" + m)
         for e in p["errors"]:
