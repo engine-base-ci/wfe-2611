@@ -7724,7 +7724,9 @@
    "choke_points": [],
    "choke_none": "検査の台本と試験だけ。製品の外への出口に触らない",
    "depends_on": [
-    "K-162"
+    "K-161",
+    "K-162",
+    "K-179"
    ],
    "tests": [
     "scripts/ci/k185_hook_regions_test.py"
