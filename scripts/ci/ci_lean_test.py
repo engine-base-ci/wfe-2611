@@ -483,14 +483,12 @@ class WorkflowTest(unittest.TestCase):
         self.assertIn("python3 scripts/ci/ci_lean_test.py", g62[0]["run"])
 
     def test_K156_CI_027_web_report_is_kept_as_artifact(self) -> None:
+        # K-186（決める人 2026-11-13・answer=f0a119a288f6）：画面の写真と HTML の報告は上げない（人の目の確かめは人のテストの表）。
+        #   結果の記録（ci-results）は今までどおり上げる（取り込みの台本が読む）
         web = self.wf()["web"]
-        ups = [s for s in web["steps"] if str(s.get("uses", "")).startswith("actions/upload-artifact") and (s.get("with") or {}).get("name") == "playwright-report-web"]
-        self.assertEqual(len(ups), 1)
-        self.assertIn("!cancelled()", str(ups[0].get("if", "")))
-        path = str(ups[0]["with"]["path"])
-        self.assertIn("apps/web/playwright-report/", path)
-        self.assertIn("apps/web/playwright-report-skeleton/", path)
-        self.assertIn("apps/web/pw-reports/", path)
+        names = [str((s.get("with") or {}).get("name")) for s in web["steps"] if str(s.get("uses", "")).startswith("actions/upload-artifact")]
+        self.assertNotIn("playwright-report-web", names)
+        self.assertIn("ci-results", names)
 
     def test_K156_CI_041_skeleton_report_does_not_overwrite_k_report(self) -> None:
         web = self.wf()["web"]
