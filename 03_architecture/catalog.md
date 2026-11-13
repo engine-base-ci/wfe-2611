@@ -377,7 +377,7 @@ API 365（作った 34・後のフェーズの行為だけ 20）・前の道す�
 | `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | K-61 |
-| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 契約だけ（501） | K-63 |
+| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 契約だけ（501） | K-63,K-165 |
 | `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 作った | K-62 |
 | `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61 |
 | `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 作った | K-62 |

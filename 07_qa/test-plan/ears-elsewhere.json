@@ -608,6 +608,26 @@
      "mark": "K144-API-042"
     }
    }
+  },
+  "completeTicket": {
+   "file": "apps/api/test/features/F5/approve-complete-complete.test.ts",
+   "reason": "承認と完了は、本物の DB の関数（app.approval_decide・app.ticket_complete）と本物の PC の印（K-57）と差し込んだ受け箱（関門 C6）で確かめる。生成の試験の偽のセッションと土台では確かめられない（K-63 の孫 K-161〜K-166・行は孫ごとのファイル）。同意し直し（terms_pending）は K-53 の共通の前処理が全部の口に効き、K-63 の行は無い（it.todo のまま）",
+   "covers": {
+    "test_post_tickets_id_complete_ok": "K63-API-027",
+    "test_post_tickets_id_complete_rejected_403": "K63-API-034",
+    "test_post_tickets_id_complete_conflict": "K63-API-032",
+    "test_post_tickets_id_complete_rejected_422": "K63-API-028",
+    "test_post_tickets_id_complete_rejected_422_2": "K63-API-029",
+    "test_post_tickets_id_complete_shape": "K63-API-027",
+    "test_post_tickets_id_complete_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_complete_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
   }
  }
 }
