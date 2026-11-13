@@ -135,12 +135,12 @@ revoke all on function app.ticket_complete(uuid, integer[], integer, boolean) fr
 grant execute on function app.ticket_complete(uuid, integer[], integer, boolean) to kaname_app;
 
 -- ---------------------------------------------------------------- 完了の知らせを受け箱に書く（0100 の本体を写し、「送れなかった」の印の引数を足した）
---   ★ K-166 が足した所：2 つ目の引数 p_failed（既定 false）。true のときは、送れなかった記録（sent_at は空・failed_at・retry_count 1）を書く
+--   ★ K-166 が足した所：2 つ目の引数 p_failed。true のときは、送れなかった記録（sent_at は空・failed_at・retry_count 1）を書く
 --     （送れたとは言わない・K63-API-044。retry_count の 1 は関門 C6 の送り直し 1 回＝apps/api の complete.ts の maxAttempts 2 と対）。
 --     守り（完了にした人か・段が完了か）と宛先の選び方・1 人に 1 つは、どちらの印でも同じ所を通る（本人宛てだけの行の守りをすり抜けない・2 層目）。
---   引数を足すので前の形（uuid だけ）を消してから作る（残すと 1 引数の呼び出しがどちらか決まらない）。1 引数でも今までどおり呼べる
-drop function if exists app.ticket_completed_notice(uuid);
-create or replace function app.ticket_completed_notice(p_ticket uuid, p_failed boolean default false) returns integer
+--   前の形（uuid だけ）は消さない（関数を消す migration は書かない）。印つきの形（uuid, boolean）を足して本体をそこへ移し、
+--     前の形は印 false で同じ本体を呼ぶだけにする（下）。印つきの形に既定値は付けない（付けると 1 引数の呼び出しがどちらか決まらない）
+create or replace function app.ticket_completed_notice(p_ticket uuid, p_failed boolean) returns integer
 language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare t tickets%rowtype; v_me uuid := app.user_id(); v_key text; n integer := 0;
         v_failed boolean := coalesce(p_failed, false);   -- ★ K-166 が足した所
@@ -166,6 +166,14 @@ begin
 end $$;
 revoke all on function app.ticket_completed_notice(uuid, boolean) from public;
 grant execute on function app.ticket_completed_notice(uuid, boolean) to kaname_app;
+
+-- 前の形（1 引数・送れたときの書き手）：★ K-166 が直した所＝本体を印つきの形に移し、印 false で呼ぶだけにした（守り・宛先・1 人に 1 つは同じ本体）
+create or replace function app.ticket_completed_notice(p_ticket uuid) returns integer
+language sql security definer set search_path = public, app, pg_temp as $$
+  select app.ticket_completed_notice(p_ticket, false)
+$$;
+revoke all on function app.ticket_completed_notice(uuid) from public;
+grant execute on function app.ticket_completed_notice(uuid) to kaname_app;
 
 -- ---------------------------------------------------------------- チケットの詳細の帯（0100 の本体を写し、can_complete の段の条件だけを変えた）
 --   ★ の 1 行：can_complete は段が作業中（doing）のときだけ（未着手・保留では false・K63-API-099）。ほかは 0100 のまま
