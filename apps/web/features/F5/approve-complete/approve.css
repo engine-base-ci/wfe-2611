@@ -23,3 +23,48 @@
 .k63-more {
   justify-self: start;
 }
+/* 完了の小窓（K-183）：完了の条件の本文・実施事項のチェック・小窓の中の知らせ。狭い幅でも折り返して横にはみ出さない */
+.k63-complete {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+  margin-top: var(--k-s-md);
+  overflow-wrap: anywhere;
+}
+.k63-complete p,
+.k63-problems ul {
+  margin: 0;
+}
+.k63-text {
+  white-space: pre-wrap;
+}
+.k63-checks {
+  display: grid;
+  gap: var(--k-s-sm);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.k63-checks legend {
+  padding: 0;
+  margin-bottom: var(--k-s-xs);
+}
+.k63-check {
+  display: flex;
+  gap: var(--k-s-sm);
+  align-items: flex-start;
+  min-width: 0;
+}
+.k63-check input {
+  flex: none;
+  margin-top: var(--k-s-xs);
+  accent-color: var(--k-primary);
+}
+.k63-problems {
+  display: grid;
+  gap: var(--k-s-sm);
+}
+.k63-problems ul {
+  padding-left: var(--k-s-lg);
+}

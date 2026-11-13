@@ -1,34 +1,39 @@
 "use client";
-// 承認する（K-162・K-63 の孫）：チケットの詳細の題名のすぐ下の帯（<section aria-label="承認と実行">・どの状態でも同じ名前）。
+// 承認と実行の帯（K-162・K-182・K-183・K-63 の孫）：チケットの詳細の題名のすぐ下（<section aria-label="承認と実行">・どの状態でも同じ名前）。
 //   帯は段で分ける（D-128.178）：作る段（phase make）の間は何も描かない（K-62 の帯だけ）。部品は置いたままで、
 //   今の実行が走っている間は 3 秒ごとにチケットを読み直す（作る段が終わって承認待ちになったら帯に替わる・K63-UI-044）。
-//     ① 承認待ち・決められる人 … 「あなたの承認を待っています」＋成果物の中身・検査なしの印・取り消せない注意・「承認して送る」
+//     ① 承認待ち・決められる人 … decide.tsx（成果物の中身・「承認して送る」「差し戻す」）
 //     ② 承認待ち・決められない人 … 描かない（K-62 の帯「成果物ができました。承認待ちです」）。担当者がいなければその文（K63-UI-049）
 //     ③ 承認の後の実行が走っている … pc live は「実行中」・running で pc asleep は「実行中・PC が閉じています…」・asking は「AI が許可を求めています…」
 //     ④ 実行待ち・PC が閉じている（queued・pc asleep）… 「実行待ち・PC が閉じています…」（queued・pc live は「実行中」）
 //     ⑤ 止まった … 実行の記録（action_runs）の止まった理由を全文そのまま（切らない・言い換えない・D-131.2・D-131.4）
-//   ③〜⑤ はボタンなし（K-182）。24 時間の聞き直しは ① に approval.note の文を足す。完了の案内と完了は後の孫がここに足す。
+//     ⑥ 承認の後の実行が終わった・止まった（作業中）・can.complete … 「完了の条件を確かめて完了にしてください」＋「完了にする」（小窓は complete-dialog.tsx）
+//     ⑦ 完了 … 「完了しました（高本・11/08 15:20）」・ボタンなし
+//   ③〜⑤ はボタンなし（K-182）。止まったときも自動で戻さず、ボタンは「完了にする」だけ（K63-UI-035）。
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Badge, Button, Callout } from "@/components/k";
-import { call } from "@/lib/api/call";
-import { messageOf } from "./message";
-import { ReturnDialog } from "./return-dialog";
+import { Button, Callout } from "@/components/k";
+import { call, type CallErr } from "@/lib/api/call";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
+import { CompleteDialog } from "./complete-dialog";
+import { completedLine, type Completed } from "./complete-model";
+import { DecideBody, type BandApproval } from "./decide";
+import { messageOf } from "./message";
 
+export type { BandApproval } from "./decide";
 export const BAND_LABEL = "承認と実行";
 const POLL_MS = 3_000;
 const MSG = {
-  waitingMe: "あなたの承認を待っています",
   noAssignee: "担当者がいないので、承認する人がいません。担当者を決めてください",
-  noChecks: "検査なし（まだ流していません）",
-  irreversible: "取り消せません",
   running: "実行中",
   runningAsleep: "実行中・PC が閉じています。開くと続きます",
   asking: "AI が許可を求めています。許可は自動で断られ、続けられなければ止まります",
   pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます",
+  completeHint: "完了の条件を確かめて完了にしてください",
 } as const;
+/** 完了にできない段（口の can.complete と同じ判定を画面でも重ねる・K63-UI-031） */
+const NOT_COMPLETABLE = new Set(["awaiting_approval", "running", "checking", "done"]);
 
 /** 承認の後の実行（phase execute）の今の様子の文。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
 function executeLine(run: RunView): string | null {
@@ -38,24 +43,20 @@ function executeLine(run: RunView): string | null {
   return run.status === "queued" ? MSG.pcClosed : MSG.runningAsleep;
 }
 
-/** getTicket の答えの承認待ち（K-162 が足す approval）。can_decide＝見ている人が決められるか */
-export interface BandApproval {
-  id: string;
-  can_decide: boolean;
-  irreversible?: boolean;
-  note?: string | null;
-  approver_name?: string | null;
+interface Section {
+  key: string;
+  label: string;
+  body: { text?: string } | null;
+  version: number;
 }
-/** 帯が読む getTicket の答えのところ */
+/** 帯が読む getTicket の答えのところ（K-60 の詳細・K-162 の approval・K165 の can.complete と completed） */
 export interface BandTicket {
   stage: { key?: string | null } | null;
   assignee: unknown;
+  sections: Section[];
   approval?: BandApproval | null;
-}
-interface ApprovalDetail {
-  artifact_version: { version: number; text: string } | null;
-  cautions: string[];
-  check_summary: string;
+  can?: { complete?: boolean } | null;
+  completed?: Completed | null;
 }
 interface Props<T extends BandTicket> {
   ticketId: string;
@@ -67,13 +68,13 @@ interface Props<T extends BandTicket> {
   onChanged: () => Promise<void>;
 }
 
-export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTicket, onChanged }: Props<T>) {
-  // 今の実行が走っている間だけ読み直す（動いていないときは止める）
+/** 今の実行が走っている間だけ、3 秒ごとにチケットを読み直す（動いていないときは止める） */
+function usePolledTicket<T>(ticketId: string, active: boolean, onTicket: (t: T) => void) {
   const polled = useQuery({
     queryKey: ["k63", "ticket", ticketId],
-    enabled: isActive(run),
+    enabled: active,
     retry: false,
-    refetchInterval: isActive(run) ? POLL_MS : false,
+    refetchInterval: active ? POLL_MS : false,
     queryFn: async (): Promise<T | null> => {
       const r = await call("getTicket", { params: { id: ticketId }, screenId: "tickets" });
       return r.ok ? (r.data as unknown as T) : null;
@@ -84,95 +85,79 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
   useEffect(() => {
     if (polled.data) onTicketRef.current(polled.data);
   }, [polled.data]);
+}
 
-  const approval = ticket.approval ?? null;
-  const decide = !!approval && approval.can_decide;
-  const detail = useQuery({
-    queryKey: ["k63", "approval", approval?.id ?? null],
-    enabled: decide,
-    retry: false,
-    queryFn: async (): Promise<ApprovalDetail | null> => {
-      const r = await call("getApproval", { params: { id: approval!.id }, screenId: "tickets" });
-      return r.ok ? (r.data as unknown as ApprovalDetail) : null;
-    },
-  });
+/** ⑥ 完了にできるか：承認の後の実行が終わった・止まった（走っていない）・段が完了にできる段・口が can.complete と答えた */
+function canCompleteNow(ticket: BandTicket, execute: RunView | null): boolean {
+  if (!execute || isActive(execute) || ticket.approval) return false;
+  return ticket.can?.complete === true && !NOT_COMPLETABLE.has(ticket.stage?.key ?? "");
+}
+
+const sectionOf = (ticket: BandTicket, key: string, fallback: string) => {
+  const s = ticket.sections.find((x) => x.key === key);
+  return { label: s?.label ?? fallback, text: s?.body?.text ?? "", version: s?.version ?? 0 };
+};
+
+export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTicket, onChanged }: Props<T>) {
+  usePolledTicket(ticketId, isActive(run), onTicket);
   const [notice, setNotice] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const sending = useRef(false);
-  const [returning, setReturning] = useState(false); // 差し戻しの小窓（K-181）
-
-  const approve = async () => {
-    if (!approval || sending.current) return; // 2 回押しでも口は 1 回
-    sending.current = true;
-    setBusy(true);
-    setNotice(null);
-    try {
-      const r = await call("approveApproval", { params: { id: approval.id }, body: {}, screenId: "tickets" });
-      if (!r.ok) {
-        if (r.status === 401) return; // 入り直しへ（共通の扱い・戻る先にこのチケット）
-        setNotice(messageOf(r)); // 409（E-CONF-003）・404 など：知らせを出して読み直す
-      }
-      await onChanged();
-    } finally {
-      sending.current = false;
-      setBusy(false);
-    }
+  const [completing, setCompleting] = useState(false); // 完了の小窓（読み直しで帯の中身が替わっても閉じない）
+  /** 口が断った（409・404 など）：知らせを出して読み直す。401 は入り直し（共通の扱い・戻る先にこのチケット） */
+  const failed = async (r: CallErr) => {
+    if (r.status === 401) return;
+    setNotice(messageOf(r));
+    await onChanged();
   };
 
+  const approval = ticket.approval ?? null;
   const execute = run?.phase === "execute" ? run : null;
   const body = (() => {
-    if (approval && decide) {
-      const irreversible = approval.irreversible !== false;
-      const text = detail.data?.artifact_version?.text ?? "";
-      const cautions = detail.data?.cautions ?? (irreversible ? [MSG.irreversible] : []);
-      return (
-        <>
-          <p>{MSG.waitingMe}</p>
-          {approval.note ? <Callout tone="warn">{approval.note}</Callout> : null}
-          {text ? <pre className="k-pre">{text}</pre> : null}
-          <p>
-            <Badge>{detail.data?.check_summary ?? MSG.noChecks}</Badge>
-          </p>
-          {cautions.map((c, i) => (
-            <p key={i} className="k-desc">
-              {c}
-            </p>
-          ))}
-          <div>
-            <Button onClick={() => void approve()} loading={busy} disabled={busy}>
-              {irreversible ? "承認して送る" : "承認する"}
-            </Button>
-            <Button variant="secondary" disabled={busy} onClick={() => setReturning(true)}>
-              差し戻す
-            </Button>
-          </div>
-          {returning ? (
-            <ReturnDialog
-              approvalId={approval.id}
-              screenId="tickets"
-              open
-              onOpenChange={setReturning}
-              onDone={onChanged}
-              onFailed={async (r) => {
-                if (r.status !== 401) setNotice(messageOf(r)); // 409・404：知らせを出して読み直す
-                await onChanged();
-              }}
-            />
-          ) : null}
-        </>
-      );
-    }
+    if (ticket.stage?.key === "done") return ticket.completed ? <p>{completedLine(ticket.completed)}</p> : null; // ⑦
+    if (approval?.can_decide)
+      return <DecideBody approval={approval} onChanged={onChanged} onFailed={failed} onStart={() => setNotice(null)} />;
     if (approval && ticket.assignee === null) return <p>{MSG.noAssignee}</p>;
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
-    const line = execute ? executeLine(execute) : null;
-    return line ? <p className="k62-band-line">{line}</p> : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
+    const line = execute ? executeLine(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
+    const complete = canCompleteNow(ticket, execute);
+    if (!line && !complete) return null;
+    return (
+      <>
+        {line ? <p className="k62-band-line">{line}</p> : null}
+        {complete ? <CompleteHint onOpen={() => setCompleting(true)} /> : null}
+      </>
+    );
   })();
 
-  if (!body && !notice) return null;
+  if (!body && !notice && !completing) return null;
   return (
     <section aria-label={BAND_LABEL} className="k62-band k-section">
       {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {body}
+      {completing ? (
+        <CompleteDialog
+          ticketId={ticketId}
+          todo={sectionOf(ticket, "todo", "実施事項")}
+          conditions={sectionOf(ticket, "done", "完了の条件")}
+          onClose={() => setCompleting(false)}
+          onDone={async () => {
+            setNotice(null);
+            await onChanged();
+          }}
+          onFailed={failed}
+        />
+      ) : null}
     </section>
+  );
+}
+
+/** ⑥ 完了の案内と「完了にする」（押すと完了の小窓） */
+function CompleteHint({ onOpen }: { onOpen: () => void }) {
+  return (
+    <>
+      <p className="k62-band-line">{MSG.completeHint}</p>
+      <div>
+        <Button onClick={onOpen}>完了にする</Button>
+      </div>
+    </>
   );
 }

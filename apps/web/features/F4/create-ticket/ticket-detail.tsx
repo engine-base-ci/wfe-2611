@@ -28,8 +28,10 @@ interface Detail {
   kind: { name: string } | null;
   stage: { key?: string | null; name: string } | null;
   assignee: { display_name: string } | null;
-  /** 見ている人ができること（K-62 が delegate を足す） */
-  can?: { delegate?: boolean } | null;
+  /** 見ている人ができること（K-62 が delegate を、K165 が complete を足す） */
+  can?: { delegate?: boolean; complete?: boolean } | null;
+  /** 完了の時刻と押した人の表示名（K165 が足す。完了していなければ null） */
+  completed?: { at: string; by: string | null } | null;
   /** 承認待ちの承認（K-162 が足す）。can_decide＝見ている人が承認する人か */
   approval?: {
     id: string;
