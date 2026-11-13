@@ -343,16 +343,6 @@ jobs:
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
         if: ${{{{ !cancelled() }}}}
         with: {{ name: ci-results, path: 07_qa/ci-results/, if-no-files-found: error, retention-days: 7 }}
-      - uses: actions/upload-artifact@v4
-        # 行ごとの押した証拠（<行 ID>.png・apps/web/tests/_lib/row.ts）が入った HTML の報告と JSON の報告。緑の回にも残す（決める人 2026-11-09・K-156）。
-        #   G59 は別の置き場（playwright-report-skeleton）に書くので G48 の報告を上書きしない
-        if: ${{{{ !cancelled() }}}}
-        with:
-          name: playwright-report-web
-          path: |
-            apps/web/playwright-report/
-            apps/web/playwright-report-skeleton/
-            apps/web/pw-reports/
 {junit_up("web")}      - name: 立てた API と画面を止める（赤でも必ず・Mac の台は残るので次の回が古いサーバーに当たらないように）
         if: always()
         run: |
