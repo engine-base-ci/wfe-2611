@@ -20,6 +20,7 @@ import argparse
 import os
 import re
 import sys
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -33,6 +34,8 @@ SPEC_DIR = "07_qa/test-specs/k"
 TICKET_DIR = "11_tickets"
 OUT_DIR = "07_qa/human"
 SPEC_COLS = 11
+SPEC_NAMES = ["ID", "画面", "テスト観点", "テスト項目", "前提条件", "操作手順", "期待結果", "結果", "備考", "タスク", "実行条件"]
+CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")   # Excel の冊に書けない制御文字（openpyxl が拒む範囲と同じ）
 ID_RE = re.compile(r"K\d+-[A-Za-z]+-\d+")
 UI_RE = re.compile(r"K\d+-UI-\d+")
 TICKET_RE = re.compile(r"K-\d+")
@@ -63,7 +66,7 @@ WIDTHS = {
     S_ISSUE: [6, 14, 16, 40, 40, 12, 12, 10, 12, 10, 12, 10, 10, 18, 26],
     S_OLD: [14, 14, 60, 44, 12, 10, 12, 12, 18, 26],
 }
-Cell = tuple  # (値, 表示の形)
+Cell = tuple  # (値, 表示の形) か (値, 表示の形, 人が入れた式か)
 EMPTY: Cell = (None, "General")
 
 
@@ -104,7 +107,7 @@ def read_specs(root: Path) -> list[Row]:
     errs: list[str] = []
     seen: dict[str, str] = {}
     for f in sorted((root / SPEC_DIR).glob("*.md"), key=lambda p: p.name):
-        for line in f.read_text(encoding="utf-8").splitlines():
+        for line in f.read_text(encoding="utf-8").split("\n"):   # splitlines は制御文字（\x0b など）でも行を割るので使わない
             cells = _cells(line)
             if not cells or not ID_RE.fullmatch(cells[0]):
                 continue
@@ -113,6 +116,9 @@ def read_specs(root: Path) -> list[Row]:
                 errs.append(f"{f.name}: {rid} の欄の数が {len(cells)}（{SPEC_COLS} でない）")
             elif rid in seen:
                 errs.append(f"{f.name}: {rid} が重なっている（先は {seen[rid]}）")
+            elif any(CONTROL_RE.search(c) for c in cells):
+                bad = "・".join(n for n, c in zip(SPEC_NAMES, cells) if CONTROL_RE.search(c))
+                errs.append(f"{f.name}: {rid} の欄（{bad}）に制御文字がある")
             else:
                 seen[rid] = f.name
                 rows.append(_row(cells, f.name))
@@ -204,9 +210,13 @@ def holes(picked: list[tuple[Row, str]]) -> list[str]:
     return [f"{r.rid}（{r.file}）: {label} が空" for r, _ in picked for label, attr in names if not getattr(r, attr).strip()]
 
 
-def make_plan(root: Path, tid: str) -> Plan:
+def check_tid(tid: str) -> None:
     if not TICKET_RE.fullmatch(tid):
         raise SystemExit(f"チケットの番号の形（K-<数字>）でない: {tid}")
+
+
+def make_plan(root: Path, tid: str) -> Plan:
+    check_tid(tid)
     rows = read_specs(root)
     tickets = read_tickets(root)
     if tid not in tickets:
@@ -221,6 +231,9 @@ def make_plan(root: Path, tid: str) -> Plan:
         raise SystemExit(f"{tid}: 詳しさの穴がある。冊は作らない（正本の側で埋める）：\n  " + "\n  ".join(bad))
     no_ticket, outside = left_out(ui_rows, picked, tickets)
     owners = list(dict.fromkeys(o for _, o in picked))
+    for t in dict.fromkeys([tid, *owners]):
+        if CONTROL_RE.search(str(tickets[t].get("title", ""))):
+            raise SystemExit(f"{TICKET_DIR}/{t}.md: 頭の欄 title に制御文字がある。正本の側で直す")
     files = list(dict.fromkeys(r.file for r, _ in picked))
     return Plan(tid, str(tickets[tid].get("title", "")), tickets[tid].get("kind") == "QA", tuple(picked),
                 tuple((o, str(tickets[o].get("title", ""))) for o in owners), tuple(files), tuple(no_ticket), tuple(outside.items()))
@@ -240,7 +253,7 @@ def _blank(v: object) -> bool:
 
 
 def _cell(c) -> Cell:
-    return (None if _blank(c.value) else c.value, c.number_format)
+    return (None if _blank(c.value) else c.value, c.number_format, c.data_type == "f")
 
 
 def _shape_errors(wb) -> list[str]:
@@ -261,7 +274,7 @@ def _read_results(ws) -> tuple[dict[str, tuple[str, str, list[Cell]]], list[str]
     for r in ws.iter_rows(min_row=ITEM_FIRST, max_col=len(ITEM_HEAD)):
         rid, res = r[COL_ID - 1].value, [_cell(c) for c in r[COL_RESULT - 1:]]
         if _blank(rid):
-            if any(v is not None for v, _ in res):
+            if any(c[0] is not None for c in res):
                 errs.append(f"シート「{S_ITEMS}」の {r[0].row} 行目：パターン番号が空なのに結果が書いてある")
             continue
         if str(rid) in out:
@@ -275,7 +288,7 @@ def _read_kept(ws, head_row: int, from_col: int) -> dict[int, list[Cell]]:
     out: dict[int, list[Cell]] = {}
     for r in ws.iter_rows(min_row=head_row + 1):
         cells = [_cell(c) for c in r]
-        if any(v is not None for v, _ in cells[from_col - 1:]):
+        if any(c[0] is not None for c in cells[from_col - 1:]):
             out[r[0].row] = cells
     return out
 
@@ -316,7 +329,7 @@ def read_prior(path: Path) -> Prior | None:
 
 def _written(res: list[Cell]) -> bool:
     """人が何か書いたか（台本が入れた対象外の字は数えない）"""
-    return any(v is not None and not (i == OKNG_AT and v == NA) for i, (v, _) in enumerate(res))
+    return any(c[0] is not None and not (i == OKNG_AT and c[0] == NA) for i, c in enumerate(res))
 
 
 def _carry_one(row: Row, before: tuple[str, str, list[Cell]] | None) -> tuple[list[Cell], str | None]:
@@ -357,11 +370,20 @@ def carry(plan: Plan, prior: Prior | None) -> tuple[dict[str, list[Cell]], list[
 
 
 # ---------------------------------------------------------------- 書く（冊）
+def _text(ws, r: int, c: int, v: object):
+    """正本や前の冊から来た値を入れる。文字は `=` などで始まっても式にしない（文字として入れる）"""
+    x = ws.cell(r, c)
+    x.value = v
+    if isinstance(v, str):
+        x.data_type = "s"
+    return x
+
+
 def _put(ws, r: int, c: int, cell: Cell) -> None:
-    v, fmt = cell
+    v, fmt, *rest = cell
     if v is None:
         return
-    x = ws.cell(r, c, v)
+    x = ws.cell(r, c, v) if rest and rest[0] else _text(ws, r, c, v)   # 式のままにするのは、人が前の冊に式で入れた欄だけ
     if fmt and fmt != "General":
         x.number_format = fmt
 
@@ -392,7 +414,7 @@ def write_items(ws, plan: Plan, results: dict[str, list[Cell]]) -> None:
     from openpyxl.worksheet.datavalidation import DataValidation
     last = ITEM_HEAD_ROW + len(plan.picked)
     m, g = _rng("M", last, False), _rng("G", last, False)
-    ws["A1"] = f"【人の確かめ】{plan.tid} {plan.title}"
+    _text(ws, 1, 1, f"【人の確かめ】{plan.tid} {plan.title}")
     ws["A1"].font = Font(bold=True, size=14)
     top = (("項目数", f'=COUNTA({g})-COUNTIF({m},"{NA_HEAD}*")'), ("消化数", f'=COUNTIF({m},"OK")+COUNTIF({m},"NG")'),
            ("OK数", f'=COUNTIF({m},"OK")'))
@@ -404,14 +426,14 @@ def write_items(ws, plan: Plan, results: dict[str, list[Cell]]) -> None:
         at = ITEM_HEAD_ROW + n
         fixed = [n, row.screen, owner, row.axis, row.item, row.cond, row.rid, row.detail, row.exp]
         for c, v in enumerate(fixed, 1):
-            ws.cell(at, c, v if v != "" else None)
+            _text(ws, at, c, v if v != "" else None)
         for c, cell in enumerate(results[row.rid], COL_RESULT):
             _put(ws, at, c, cell)
         for c in range(1, len(ITEM_HEAD) + 1):
             ws.cell(at, c).alignment = Alignment(vertical="top", wrap_text=True)
     ws.freeze_panes = f"A{ITEM_FIRST}"
     # 選ぶ欄は OK・NG。対象外（台本が入れる字）や保留も書けるよう、止めずに知らせるだけにする
-    dv = DataValidation(type="list", formula1='"OK,NG"', allow_blank=True, errorStyle="warning",
+    dv = DataValidation(type="list", formula1='"OK,NG"', allow_blank=True, errorStyle="warning", showErrorMessage=True,
                         error="OK か NG を選ぶ（ほかの字は消化に数えない）", errorTitle="OK/NG")
     dv.add(f"M{ITEM_FIRST}:M{last}")
     ws.add_data_validation(dv)
@@ -421,7 +443,7 @@ def write_summary(ws, plan: Plan) -> None:
     from openpyxl.styles import Font
     last = ITEM_HEAD_ROW + len(plan.picked)
     c, m = _rng("C", last), _rng("M", last)
-    ws["A1"] = f"進捗サマリ：{plan.tid} {plan.title}"
+    _text(ws, 1, 1, f"進捗サマリ：{plan.tid} {plan.title}")
     ws["A1"].font = Font(bold=True, size=14)
     _head(ws, SUM_HEAD_ROW, SUM_HEAD)
     first = SUM_HEAD_ROW + 1
@@ -429,7 +451,9 @@ def write_summary(ws, plan: Plan) -> None:
         at, b = SUM_HEAD_ROW + n, f"$B{SUM_HEAD_ROW + n}"
         line = [n, owner, title or None, f'=COUNTIF({c},{b})-COUNTIFS({c},{b},{m},"{NA_HEAD}*")',
                 f'=COUNTIFS({c},{b},{m},"OK")+COUNTIFS({c},{b},{m},"NG")', f'=COUNTIFS({c},{b},{m},"OK")', f'=COUNTIFS({c},{b},{m},"NG")']
-        for col, v in enumerate(line, 1):
+        for col, v in enumerate(line[:3], 1):
+            _text(ws, at, col, v)
+        for col, v in enumerate(line[3:], 4):
             ws.cell(at, col, v)
     end = SUM_HEAD_ROW + len(plan.owners)
     total = end + 1
@@ -476,12 +500,12 @@ def pre_rows(plan: Plan) -> list[tuple[str, str | None]]:
 
 def write_pre(ws, plan: Plan, prior: Prior | None) -> None:
     from openpyxl.styles import Alignment, Font
-    ws["A1"] = f"試験前提条件：{plan.tid} {plan.title}"
+    _text(ws, 1, 1, f"試験前提条件：{plan.tid} {plan.title}")
     ws["A1"].font = Font(bold=True, size=14)
     _head(ws, PRE_HEAD_ROW, PRE_HEAD)
     for at, (label, body) in enumerate(pre_rows(plan), PRE_HEAD_ROW + 1):
         ws.cell(at, 1, label).font = Font(bold=True)
-        ws.cell(at, 2, body).alignment = Alignment(vertical="top", wrap_text=True)
+        _text(ws, at, 2, body).alignment = Alignment(vertical="top", wrap_text=True)
         if prior and label in prior.pre_c:
             _put(ws, at, 3, prior.pre_c[label])
 
@@ -520,9 +544,13 @@ def write_book(path: Path, plan: Plan, prior: Prior | None) -> None:
     for ws in sheets.values():
         _widths(ws, prior)
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(f".{path.name}.tmp")   # 書き切ってから置き換える（途中で止まっても前の冊が残る）
+    # 書き切ってから置き換える（途中で止まっても前の冊が残る）。一時の名前は回ごとに別（同時に流しても互いの途中を置き換えない）
+    fd, name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    os.close(fd)
+    tmp = Path(name)
     try:
         wb.save(tmp)
+        os.chmod(tmp, path.stat().st_mode & 0o777 if path.exists() else 0o644)
         os.replace(tmp, path)
     finally:
         tmp.unlink(missing_ok=True)
@@ -559,10 +587,11 @@ def progress(path: Path | str) -> list[dict]:
         if isinstance(v, str) and v.startswith(NA_HEAD):
             t["na"] += 1
             continue
+        word = v.casefold() if isinstance(v, str) else None   # Excel の COUNTIF と同じ：大文字小文字は区別しない・空白は削らない
         t["items"] += 1
-        t["ok"] += v == "OK"
-        t["ng"] += v == "NG"
-        t["done"] += v in ("OK", "NG")
+        t["ok"] += word == "ok"
+        t["ng"] += word == "ng"
+        t["done"] += word in ("ok", "ng")
     return list(out.values())
 
 
@@ -571,6 +600,7 @@ def _say(text: str) -> None:
 
 
 def status(root: Path, tid: str) -> int:
+    check_tid(tid)
     path = out_path(root, tid)
     if not path.exists():
         sys.stderr.write(f"{tid} の冊がまだ無い（{path}）。先に python3 scripts/qa/human_sheet.py {tid} で作る\n")
