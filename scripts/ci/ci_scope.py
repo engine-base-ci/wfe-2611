@@ -44,7 +44,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
 
 from ticket_commit_gate import TICKET  # noqa: E402  目録の物（同じものを 2 つ作らない）
-from ticket_order_gate import generated_outputs, generator_scripts, is_doc_only  # noqa: E402
+from ticket_order_gate import PROCESS_CONFIG, generated_outputs, generator_scripts, is_doc_only  # noqa: E402
 from build_index import parse as parse_ticket  # noqa: E402
 import web_select  # noqa: E402  web の組で流す試験を選ぶ（K-177）
 
@@ -184,6 +184,34 @@ def ticket_ids(repo: str, base: str, head: str) -> list[str]:
 
 def history_ids(repo: str, head: str) -> set[str]:
     return set(TICKET.findall(git(repo, "log", "--format=%B", head).stdout.decode("utf-8", "replace")))
+
+
+def impl_ids(repo: str, head: str, wanted: set[str]) -> set[str]:
+    """wanted のうち、実装のコミットが履歴にある番号（K-64）。実装のコミット＝件名がその番号で始まり、文書と進め方の設定だけでないファイルを変えたコミット
+    （「実装に数えないファイル」は取り込む順の検査 ticket_order_gate.py と同じ見方。取り込みのコミットは変えたファイルが無いので数えない。
+    件名の 2 つ目からの番号は数えない：何枚ものチケットの欄をまとめて直すコミットが、ついでに設定を触っただけで実装に数わるのを防ぐ）。
+    本文に番号が出ただけ・チケットや記録の文書だけを変えたコミットは数えない：まだ終わっていない依存を「そろった」と数えると、
+    試験の無い中間・統合のチケットがこの回に入り、範囲を決められずに止まる"""
+    left, done = set(wanted), set()
+    if not left:
+        return done
+    gen = generated_outputs(repo)
+    log = git(repo, "log", "--format=%H%x09%s", head, check=False)
+    for line in log.stdout.decode("utf-8", "replace").splitlines() if log.returncode == 0 else []:
+        sha, _, subj = line.partition("\t")
+        m = TICKET.match(subj)
+        hit = {m.group(0)} & left if m else set()
+        if not hit:
+            continue
+        r = git(repo, "diff-tree", "--no-commit-id", "--name-only", "-r", "--root", "-z", sha, check=False)
+        files = [f for f in r.stdout.decode("utf-8", "replace").split("\0") if f] if r.returncode == 0 else []
+        rest = [f for f in files if f not in PROCESS_CONFIG]
+        if rest and not is_doc_only(rest, gen):
+            done |= hit
+            left -= hit
+            if not left:
+                break
+    return done
 
 
 # ---------------------------------------------------------------- ワークスペースの地図
@@ -470,10 +498,30 @@ def web_ticket_rows(repo: str, base: str, head: str, cfg: dict) -> list[str]:
     return sorted(k for k in changed if _has_screen(new.get(k) or {}) or _has_screen(old.get(k) or {}))
 
 
+def _children(tickets_dir: str) -> dict[str, list[str]]:
+    """親の番号 → 子の番号（チケットの頭の欄 parent から）"""
+    out: dict[str, list[str]] = {}
+    for p in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
+        try:
+            t = parse_ticket(p)
+        except (SystemExit, OSError, ValueError):
+            continue
+        if t.get("parent") and t.get("id"):
+            out.setdefault(str(t["parent"]), []).append(str(t["id"]))
+    return out
+
+
+def _dep_done(repo: str, tickets_dir: str, head: str, dep: str, _seen: frozenset[str] = frozenset()) -> bool:
+    """依存がそろったか：自分の実装のコミットがある。無ければ、子があって子が全部そろっている（子・孫に分けた親は自分のコミットを持たない）"""
+    if dep in impl_ids(repo, head, {dep}):
+        return True
+    kids = _children(tickets_dir).get(dep) or []
+    return bool(kids) and dep not in _seen and all(_dep_done(repo, tickets_dir, head, k, _seen | {dep}) for k in kids)
+
+
 def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list[str], list[str], list[str]]:
     """このチケットで depends_on がそろう kind: QA のチケット → (番号, 試験のファイル, tests が無い番号)"""
     ids, files, empty = [], [], []
-    hist = None
     for p in sorted(globmod.glob(os.path.join(tickets_dir, "K-*.md"))):
         try:
             t = parse_ticket(p)
@@ -482,8 +530,7 @@ def _integration(repo: str, tickets_dir: str, tid: str, head: str) -> tuple[list
         deps = t.get("depends_on") or []
         if t.get("kind") != "QA" or not isinstance(deps, list) or tid not in deps:
             continue
-        hist = history_ids(repo, head) if hist is None else hist
-        if not all(d == tid or d in hist for d in deps):
+        if not all(d == tid or _dep_done(repo, tickets_dir, head, d) for d in deps):   # 依存の実装がまだ履歴に無い（名前が出ただけは数えない・K-192）
             continue
         tests = t.get("tests") or []
         got = sorted({os.path.relpath(x, repo).replace(os.sep, "/")
