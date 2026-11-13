@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""K-191 の試験：本線の取り込みの後に作り手を全部流す台本（scripts/tickets/regen_all.py）と、その設定・目録。行 ID は K191-RG-NNN
+"""K-191 の試験：本線の取り込みの後に作り手を全部流す台本（scripts/tickets/regen_all.py）と、その設定・目録・生成物の検査の F5・F6。行 ID は K191-RG-NNN
 
-一時のフォルダに小さい作り物のリポジトリ（目録 scripts/ci/generated.json・作り手 tools/g.py・最後の命令 scripts/ci/trace_gate.py）を置き、
-台本を命令として流す。作り物の作り手は、流れた順と流れた場所をリポジトリの外の記録（K191_LOG）に足す。
+一時のフォルダに小さい作り物のリポジトリ（目録 scripts/ci/generated.json・作り手 tools/g.py）を置き、台本と検査を命令として流す。
+作り物の作り手は、流れた順と流れた場所をリポジトリの外の記録（K191_LOG）に足す。
 """
 from __future__ import annotations
 
+import datetime
+import fnmatch
 import json
 import os
 import pathlib
@@ -21,33 +23,56 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "tickets" / "regen_all.py"
 GATE = ROOT / "scripts" / "ci" / "generated_gate.py"
 CATALOG = "scripts/ci/generated.json"
-LAST = "python3 scripts/ci/trace_gate.py --index"
 STRAYS = ["08_api/api-field-consumption.json", "08_api/ears-ac-seed.json", "08_api/lint-mapping.json"]
+# 目録の glob に当たっていたが、どの作り手も書かない物（手で持つ）。目録と changes_ignore から外す
+HAND = ["07_qa/test-plan/ears-elsewhere.json", "07_qa/test-plan/result-ledger.json", "packages/contracts/src/index.ts"]
+# glob を、作り手が実際に書くファイルの並びに替える（glob → 並び）
+EXACT = {
+    "07_qa/test-plan/*": ["07_qa/test-plan/access-matrix.json", "07_qa/test-plan/ears-test-mapping.json", "07_qa/test-plan/test-plan.html",
+                         "07_qa/test-plan/test-plan.json", "07_qa/test-plan/test-plan.md"],
+    "packages/contracts/src/*": ["packages/contracts/src/ops.ts", "packages/contracts/src/registry.ts", "packages/contracts/src/schemas.ts",
+                                 "packages/contracts/src/types.ts"],
+}
 # changes_ignore にだけあってよい物（作り手の目録の outputs に無い）と、その理由
 ONLY_IGNORE = {"01_hearing/decider-answers.jsonl": "決める人の答えの記録。作り手は作らない（フックが足す）。取り込みでは両方の行を残す（catch_up.union）"}
 
-# 作り物の作り手：python3 tools/g.py <名前> [<道>=<中身>…] [FAIL]。中身の @DATE は環境の K191_DATE に置き換える
+# 作り物の作り手：python3 tools/g.py <名前> <すること>…。すること：
+#   <道>=<中身>      書く（中身の @DATE は環境の K191_DATE に置き換える）
+#   <道><<元>+<元>   ある元のファイルの中身をつないで書く（ほかの作り手の生成物を読む作り手）
+#   -<道>            消す        GROW:<道>  流すたびに 1 行足す（いつまでも変わる作り手）
+#   FAIL             文を出して落ちる        FAILLONG  300 字よりずっと長い文を出して落ちる
 G_PY = '''import os, pathlib, sys
 name = sys.argv[1]
 with open(os.environ["K191_LOG"], "a", encoding="utf-8") as h:
     h.write(name + "\\t" + os.path.realpath(os.getcwd()) + "\\n")
 for spec in sys.argv[2:]:
-    if spec == "FAIL":
+    if spec in ("FAIL", "FAILLONG"):
+        if spec == "FAILLONG":
+            print("標準出力の長い文 " + "あ" * 900)
+            print("作り手の長い文 " + "x" * 2000, file=sys.stderr)
         print("作り物の作り手が落ちた " + name, file=sys.stderr)
         sys.exit(3)
-    path, _, body = spec.partition("=")
+    if spec.startswith("-"):
+        pathlib.Path(spec[1:]).unlink(missing_ok=True)
+        continue
+    if spec.startswith("GROW:"):
+        with open(spec[5:], "a", encoding="utf-8") as h:
+            h.write("もう 1 行\\n")
+        continue
+    if "=" in spec:
+        path, _, body = spec.partition("=")
+        body = body.replace("@DATE", os.environ["K191_DATE"]) + "\\n"
+    else:
+        path, _, srcs = spec.partition("<")
+        body = "".join(pathlib.Path(s).read_text(encoding="utf-8") for s in srcs.split("+") if pathlib.Path(s).exists())
     p = pathlib.Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(body.replace("@DATE", os.environ["K191_DATE"]) + "\\n", encoding="utf-8")
-'''
-TRACE_PY = '''import os, sys
-with open(os.environ["K191_LOG"], "a", encoding="utf-8") as h:
-    h.write("trace " + " ".join(sys.argv[1:]) + "\\t" + os.path.realpath(os.getcwd()) + "\\n")
-if os.environ.get("K191_TRACE_FAIL"):
-    print("作り物の最後の命令が落ちた", file=sys.stderr)
-    sys.exit(4)
+    p.write_text(body, encoding="utf-8")
 '''
 OLD = "2026-11-01"
+TODAY = datetime.date.today().isoformat()   # 台本を流す日（手元の日付）
+NOW_UTC = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.456Z")
+TAIL = 300   # 取り込みの道具が PM に見せるのは、出力（stdout の後に stderr）の最後の 300 字
 
 
 def git(repo: pathlib.Path, *a: str) -> str:
@@ -55,13 +80,13 @@ def git(repo: pathlib.Path, *a: str) -> str:
 
 
 def gen(name: str, *specs: str, pre: str = "", tool: str = "tools/g.py") -> dict:
-    return {"name": f"作り手 {name}", "run": f"{pre}python3 {tool} {name} " + " ".join(specs), "outputs": [s.split("=")[0].strip("'") for s in specs if "=" in s]}
+    return {"name": f"作り手 {name}", "run": f"{pre}python3 {tool} {name} " + " ".join(specs), "outputs": [s.strip("'").split("=")[0].split("<")[0] for s in specs if "=" in s or "<" in s]}
 
 
 class Repo:
     """作り物のリポジトリ。files は最初のコミットに入れる物（道 → 中身）"""
 
-    def __init__(self, test: unittest.TestCase, catalog: object, files: dict[str, str] | None = None, trace: bool = True) -> None:
+    def __init__(self, test: unittest.TestCase, catalog: object, files: dict[str, str] | None = None) -> None:
         tmp = tempfile.TemporaryDirectory()
         test.addCleanup(tmp.cleanup)
         self.top = pathlib.Path(os.path.realpath(tmp.name))
@@ -72,8 +97,6 @@ class Repo:
         git(self.dir, "config", "user.email", "t@example.invalid")
         git(self.dir, "config", "user.name", "t")
         put = {"tools/g.py": G_PY, **(files or {})}
-        if trace:
-            put["scripts/ci/trace_gate.py"] = TRACE_PY
         if catalog is not None:
             put[CATALOG] = catalog if isinstance(catalog, str) else json.dumps(catalog, ensure_ascii=False, indent=1)
         for k, v in put.items():
@@ -83,7 +106,7 @@ class Repo:
         git(self.dir, "add", "-A")
         git(self.dir, "commit", "-qm", "K-1 feat: 土台")
 
-    def env(self, date: str = "2026-11-13", **extra: str) -> dict[str, str]:
+    def env(self, date: str = TODAY, **extra: str) -> dict[str, str]:
         return {**os.environ, "K191_LOG": str(self.log), "K191_DATE": date, **extra}
 
     def order(self) -> list[tuple[str, str]]:
@@ -101,63 +124,64 @@ class Repo:
         return ((at or self.dir) / path).read_bytes()
 
 
+def tail(res: subprocess.CompletedProcess) -> str:
+    return (res.stdout + res.stderr).strip()[-TAIL:]
+
+
 def regen(test: unittest.TestCase, cwd: pathlib.Path, env: dict[str, str]) -> subprocess.CompletedProcess:
     test.assertTrue(SCRIPT.exists(), f"台本がまだ無い：{SCRIPT.relative_to(ROOT)}")
     return subprocess.run([sys.executable, str(SCRIPT)], cwd=cwd, env=env, capture_output=True, text=True, encoding="utf-8", timeout=120)
 
 
 class RegenAll(unittest.TestCase):
-    def test_K191_RG_001_runs_every_generator_in_catalog_order_at_the_root_then_the_index(self) -> None:
+    def test_K191_RG_001_runs_every_generator_in_catalog_order_at_the_root(self) -> None:
         r = Repo(self, {"generators": [
             gen("c", "out/c.txt=3"),
             gen("a", "here.txt=1", pre="cd sub && ", tool="../tools/g.py"),
             gen("b", "out/b.txt=2"),
-        ]}, {"sub/.keep": ""})
+        ]}, {"out/c.txt": "3\n", "sub/here.txt": "1\n", "out/b.txt": "2\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-        self.assertEqual(r.names(), ["c", "a", "b", "trace --index"], "目録の順に 1 回ずつ、最後に要件一覧の作り直し")
+        self.assertEqual(r.names(), ["c", "a", "b"], "目録の順に 1 回ずつ。何も変わらなければ 1 周で終わる")
         where = dict(r.order())
         self.assertEqual(where["c"], str(r.dir))
         self.assertEqual(where["a"], str(r.dir / "sub"), "run の中の cd はその作り手にだけ効く")
         self.assertEqual(where["b"], str(r.dir), "前の作り手の cd を引きずらない")
-        self.assertEqual(where["trace --index"], str(r.dir))
-        self.assertEqual(r.read("sub/here.txt"), b"1\n")
-        self.assertEqual(r.read("out/b.txt"), b"2\n")
+        self.assertEqual(r.status(), "")
 
-    def test_K191_RG_002_failing_generator_stops_with_its_name_and_command(self) -> None:
-        bad = gen("b", "FAIL")
-        r = Repo(self, {"generators": [gen("a", "out/a.txt=1"), bad, gen("c", "out/c.txt=3")]})
+    def test_K191_RG_002_failing_generator_stops_and_names_it_in_the_last_300_chars(self) -> None:
+        for how in ("FAIL", "FAILLONG"):
+            with self.subTest(how):
+                bad = gen("b", how)
+                r = Repo(self, {"generators": [gen("a", "out/a.txt=1"), bad, gen("c", "out/c.txt=3")]})
+                res = regen(self, r.dir, r.env())
+                self.assertNotEqual(res.returncode, 0)
+                self.assertIn("作り物の作り手が落ちた b", res.stdout + res.stderr, "落ちた作り手が出した文も出す")
+                self.assertIn(bad["name"], tail(res), "長い文の後でも、最後の 300 字に落ちた作り手の名前が入る")
+                self.assertIn(bad["run"].strip(), tail(res), "最後の 300 字に落ちた命令が入る")
+                self.assertEqual(r.names(), ["a", "b"], "落ちた後ろの作り手は流さない・次の周にも入らない")
+                self.assertFalse((r.dir / "out/c.txt").exists())
+
+    def test_K191_RG_003_never_settling_generator_stops_after_three_rounds(self) -> None:
+        grow = {"name": "作り手 a", "run": "python3 tools/g.py a GROW:out/g.txt", "outputs": ["out/g.txt"]}
+        r = Repo(self, {"generators": [grow, gen("b", "out/b.txt=2")]}, {"out/g.txt": "はじめ\n", "out/b.txt": "2\n"})
         res = regen(self, r.dir, r.env())
-        self.assertNotEqual(res.returncode, 0)
-        out = res.stdout + res.stderr
-        self.assertIn(bad["name"], out)
-        self.assertIn(bad["run"].strip(), out)
-        self.assertIn("作り物の作り手が落ちた b", out, "落ちた作り手が出した文も出す")
-        self.assertEqual(r.names(), ["a", "b"], "落ちた後ろの作り手と最後の命令は流さない")
-        self.assertFalse((r.dir / "out/c.txt").exists())
+        self.assertNotEqual(res.returncode, 0, "3 周流してもまだ変わるのに成功しない")
+        self.assertEqual(r.names(), ["a", "b"] * 3, "上限は 3 周")
+        self.assertIn("out/g.txt", tail(res), "最後の 300 字に、まだ変わるファイルが出る")
+        self.assertNotIn("out/b.txt", tail(res))
 
-    def test_K191_RG_003_failing_or_missing_last_command_is_not_success(self) -> None:
-        with self.subTest("最後の命令が落ちる"):
-            r = Repo(self, {"generators": [gen("a", "out/a.txt=1")]})
-            res = regen(self, r.dir, r.env(K191_TRACE_FAIL="1"))
-            self.assertNotEqual(res.returncode, 0)
-            self.assertIn(LAST, res.stdout + res.stderr)
-            self.assertEqual(r.names(), ["a", "trace --index"])
-        with self.subTest("最後の命令の台本が無い"):
-            r = Repo(self, {"generators": [gen("a", "out/a.txt=1")]}, trace=False)
-            res = regen(self, r.dir, r.env())
-            self.assertNotEqual(res.returncode, 0)
-            self.assertIn(LAST, res.stdout + res.stderr)
-
-    def test_K191_RG_004_date_only_change_is_put_back(self) -> None:
+    def test_K191_RG_004_today_only_date_change_is_put_back(self) -> None:
         before = {"out/day.txt": f"作成日 {OLD}\n本文\n", "out/stamp.json": '{"at": "2026-11-01T09:00:00Z", "n": 1}\n'}
-        r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE\n本文'"), gen("b", """out/stamp.json='{"at": "@DATE", "n": 1}'""")]}, before)
-        res = regen(self, r.dir, r.env(date="2026-11-13T01:02:03.456Z"))
-        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-        self.assertEqual(r.names(), ["a", "b", "trace --index"], "作り手は流れた（流さずに差分なしではない）")
-        for f, body in before.items():
-            self.assertEqual(r.read(f), body.encode(), f"{f} は日付だけの違いなので元のバイトに戻る")
-        self.assertEqual(r.status(), "", "差分を残さない")
+        for label, date in {"手元の今日の日付": TODAY, "UTC の今日の日時": NOW_UTC}.items():
+            with self.subTest(label):
+                r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE\n本文'"), gen("b", """out/stamp.json='{"at": "@DATE", "n": 1}'""")]}, before)
+                res = regen(self, r.dir, r.env(date=date))
+                self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+                self.assertEqual(r.names(), ["a", "b"], "作り手は流れた。今日の日付だけの違いは「変わった」に数えない（1 周で終わる）")
+                for f, body in before.items():
+                    self.assertEqual(r.read(f), body.encode(), f"{f} は今日の日付だけの違いなので元のバイトに戻る")
+                self.assertEqual(r.status(), "", "差分を残さない")
 
     def test_K191_RG_005_content_change_and_new_file_stay(self) -> None:
         r = Repo(self, {"generators": [
@@ -168,12 +192,13 @@ class RegenAll(unittest.TestCase):
         ]}, {"out/both.txt": f"v1 {OLD}\n", "out/body.txt": "v1\n", "out/day.txt": f"作成日 {OLD}\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-        self.assertEqual(r.read("out/both.txt"), "v2 2026-11-13\n".encode(), "中身も日付も変わった物は、新しい版のまま残る")
+        self.assertEqual(r.read("out/both.txt"), f"v2 {TODAY}\n".encode(), "中身も日付も変わった物は、新しい版のまま残る")
         self.assertEqual(r.read("out/body.txt"), b"v2\n")
-        self.assertEqual(r.read("out/new.txt"), "できた 2026-11-13\n".encode(), "新しくできた物は残る")
-        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "同じ回の日付だけの物は戻る")
+        self.assertEqual(r.read("out/new.txt"), f"できた {TODAY}\n".encode(), "新しくできた物は残る")
+        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "同じ回の今日の日付だけの物は戻る")
         changed = sorted(e[3:] for e in r.status().split("\0") if e)
         self.assertEqual(changed, ["out/body.txt", "out/both.txt", "out/new.txt"])
+        self.assertEqual(r.names(), ["a", "b", "c", "d"] * 2, "変わった周の次にもう 1 周流し、変わらないのを見て終わる")
 
     def test_K191_RG_006_unreadable_catalog_stops_before_running_anything(self) -> None:
         ok = gen("a", "out/a.txt=1")
@@ -191,8 +216,8 @@ class RegenAll(unittest.TestCase):
                 r = Repo(self, catalog)
                 res = regen(self, r.dir, r.env())
                 self.assertNotEqual(res.returncode, 0, "読めない目録・流す物が無い目録で成功しない")
-                self.assertIn(CATALOG, res.stdout + res.stderr)
-                self.assertEqual(r.names(), [], "作り手も最後の命令も 1 つも流さない")
+                self.assertIn(CATALOG, tail(res))
+                self.assertEqual(r.names(), [], "作り手を 1 つも流さない")
                 self.assertEqual(r.status(), "")
 
     def test_K191_RG_007_japanese_name_with_space_is_not_missed(self) -> None:
@@ -200,8 +225,8 @@ class RegenAll(unittest.TestCase):
         r = Repo(self, {"generators": [gen("a", f"'{name}=作成日 @DATE'")]}, {name: f"作成日 {OLD}\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-        self.assertEqual(r.names(), ["a", "trace --index"])
-        self.assertEqual(r.read(name), f"作成日 {OLD}\n".encode(), "日本語と空白の名前の物も、日付だけの違いなら戻る")
+        self.assertEqual(r.names(), ["a"])
+        self.assertEqual(r.read(name), f"作成日 {OLD}\n".encode(), "日本語と空白の名前の物も、今日の日付だけの違いなら戻る")
         self.assertEqual(r.status(), "")
 
     def test_K191_RG_008_runs_at_the_root_of_the_worktree_it_is_called_from(self) -> None:
@@ -210,7 +235,7 @@ class RegenAll(unittest.TestCase):
             r = Repo(self, catalog, {"out/a.txt": "v1\n", "deep/er/.keep": ""})
             res = regen(self, r.dir / "deep" / "er", r.env())
             self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-            self.assertEqual(r.order(), [("a", str(r.dir)), ("trace --index", str(r.dir))])
+            self.assertEqual(set(r.order()), {("a", str(r.dir))})
             self.assertEqual(r.read("out/a.txt"), b"v2\n")
             self.assertFalse((r.dir / "deep/er/out").exists())
         with self.subTest("別の作業場所から呼ぶ"):
@@ -219,7 +244,7 @@ class RegenAll(unittest.TestCase):
             git(r.dir, "worktree", "add", "-q", "-b", "t/x", str(wt))
             res = regen(self, wt / "deep", r.env())
             self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-            self.assertEqual(r.order(), [("a", str(wt)), ("trace --index", str(wt))])
+            self.assertEqual(set(r.order()), {("a", str(wt))})
             self.assertEqual(r.read("out/a.txt", wt), b"v2\n")
             self.assertEqual(r.read("out/a.txt"), b"v1\n", "元の作業場所は変えない")
             self.assertEqual(r.status(), "")
@@ -232,25 +257,26 @@ class RegenAll(unittest.TestCase):
             self.assertEqual(r.names(), [])
             self.assertFalse((plain / "out").exists())
 
-    def test_K191_RG_009_after_a_failure_date_only_changes_are_still_put_back(self) -> None:
+    def test_K191_RG_009_after_a_failure_today_only_changes_are_still_put_back(self) -> None:
         r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'"), gen("b", "out/body.txt=v2"), gen("c", "FAIL")]},
                  {"out/day.txt": f"作成日 {OLD}\n", "out/body.txt": "v1\n"})
         res = regen(self, r.dir, r.env())
         self.assertNotEqual(res.returncode, 0)
         self.assertEqual(r.names(), ["a", "b", "c"])
-        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "落ちる前の作り手の、日付だけの違いは戻る")
+        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "落ちる前の作り手の、今日の日付だけの違いは戻る")
         self.assertEqual(r.read("out/body.txt"), b"v2\n", "中身の違いは隠さない")
 
     def test_K191_RG_010_running_twice_changes_nothing_more(self) -> None:
         r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'"), gen("b", "out/body.txt=v2")]},
                  {"out/day.txt": f"作成日 {OLD}\n", "out/body.txt": "v1\n"})
-        first = regen(self, r.dir, r.env(date="2026-11-13"))
+        first = regen(self, r.dir, r.env())
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         after_first = (r.status(), r.read("out/day.txt"), r.read("out/body.txt"))
-        second = regen(self, r.dir, r.env(date="2026-11-14"))
+        ran_first = len(r.names())
+        second = regen(self, r.dir, r.env())
         self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
         self.assertEqual((r.status(), r.read("out/day.txt"), r.read("out/body.txt")), after_first)
-        self.assertEqual(r.names(), ["a", "b", "trace --index"] * 2, "2 回目も全部流す（前の結果を覚えて飛ばさない）")
+        self.assertEqual(r.names()[ran_first:], ["a", "b"], "2 回目も全部流す（前の結果を覚えて飛ばさない）。変わらないので 1 周")
         self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode())
 
     def test_K191_RG_011_script_keeps_no_list_of_its_own_and_shares_the_date_rule(self) -> None:
@@ -260,17 +286,87 @@ class RegenAll(unittest.TestCase):
         import generated_gate  # noqa: PLC0415
         import regen_all  # noqa: PLC0415
 
-        self.assertEqual(regen_all.DATE.pattern, generated_gate.DATE.pattern, "日付の見方は生成物の検査（generated_gate.py の DATE）と同じ")
-        self.assertIsNone(generated_gate.MARK.search("".join(src.splitlines(keepends=True)[:3])), "台本の先頭 3 行を、生成物の検査が生成物と読む")
+        self.assertEqual(regen_all.DATE.pattern, generated_gate.DATE.pattern, "日付の形の見方は生成物の検査（generated_gate.py の DATE）と同じ")
         real = json.loads((ROOT / CATALOG).read_text(encoding="utf-8"))["generators"]
         self.assertGreater(len(real), 10)
         for g in real:
-            if g["run"] == LAST:
-                continue
             self.assertNotIn(g["run"], src, "作り手の一覧を台本が持っている（目録から読む）")
             for word in g["run"].split():
-                if word.endswith((".py", ".mjs")) and not word.endswith("trace_gate.py"):
+                if word.endswith((".py", ".mjs")):
                     self.assertNotIn(pathlib.PurePosixPath(word).name, src, f"作り手 {word} の名前を台本が持っている（目録から読む）")
+
+    def test_K191_RG_017_generator_reading_a_later_generators_output_ends_up_current(self) -> None:
+        # 前の作り手 a が、後ろの作り手 b の生成物を読む（本物：テスト計画がチケットの一覧を読む）
+        r = Repo(self, {"generators": [gen("a", "'out/a.txt<out/b.txt'"), gen("b", "'out/b.txt<src.txt'")]},
+                 {"src.txt": "新しい元\n", "out/b.txt": "古い元\n", "out/a.txt": "古い元\n"})
+        res = regen(self, r.dir, r.env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(r.read("out/b.txt"), "新しい元\n".encode())
+        self.assertEqual(r.read("out/a.txt"), "新しい元\n".encode(), "前の作り手の生成物が、後ろの作り手の新しい物を映していない（1 周で終わっている）")
+        self.assertEqual(r.names(), ["a", "b"] * 3, "変わった周の次にもう 1 周。3 周目で変わらないのを見て終わる")
+        again = regen(self, r.dir, r.env())
+        self.assertEqual(again.returncode, 0)
+        self.assertEqual((r.read("out/a.txt"), r.read("out/b.txt")), ("新しい元\n".encode(), "新しい元\n".encode()), "終わった状態は、もう 1 回流しても変わらない")
+
+    def test_K191_RG_018_real_date_change_is_kept(self) -> None:
+        r = Repo(self, {"generators": [
+            gen("a", "'out/due.csv=K-1,期限 2001-02-20'"),
+            gen("b", "'out/mix.md=作成日 @DATE／期限 2001-02-20'"),
+            gen("c", "'out/day.txt=作成日 @DATE'"),
+        ]}, {"out/due.csv": "K-1,期限 2001-02-14\n", "out/mix.md": f"作成日 {OLD}／期限 2001-02-14\n", "out/day.txt": f"作成日 {OLD}\n"})
+        res = regen(self, r.dir, r.env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(r.read("out/due.csv"), "K-1,期限 2001-02-20\n".encode(), "今日でない日付の違い（期限の変更）は中身の違い。戻さない")
+        self.assertEqual(r.read("out/mix.md"), f"作成日 {TODAY}／期限 2001-02-20\n".encode(), "今日の日付と本物の日付の変更が混ざった物は、新しい版のまま残る")
+        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode())
+        self.assertEqual(sorted(e[3:] for e in r.status().split("\0") if e), ["out/due.csv", "out/mix.md"])
+
+    def test_K191_RG_019_works_in_the_middle_of_a_merge(self) -> None:
+        # 取り込みの道具と同じ形：git merge --no-commit でぶつかった生成物を本線の版に書き、git add せずに台本を呼ぶ
+        r = Repo(self, {"generators": [gen("list", "'out/list.txt<src/a.txt+src/b.txt+src/m.txt'"), gen("day", "'out/day.txt=作成日 @DATE'")]},
+                 {"src/a.txt": "a\n", "out/list.txt": "a\n", "out/day.txt": f"作成日 {OLD}\n", "out/old.txt": "前からある生成物\n"})
+
+        def commit(branch: str, files: dict[str, str], remove: str | None = None) -> None:
+            git(r.dir, "checkout", "-q", branch)
+            for k, v in files.items():
+                r.dir.joinpath(k).parent.mkdir(parents=True, exist_ok=True)
+                r.dir.joinpath(k).write_text(v, encoding="utf-8")
+            if remove:
+                git(r.dir, "rm", "-q", remove)
+            git(r.dir, "add", "-A")
+            git(r.dir, "commit", "-qm", f"K-2 feat: {branch}")
+
+        git(r.dir, "branch", "t/x")
+        commit("main", {"src/m.txt": "m\n", "out/list.txt": "a\nm\n"}, remove="out/old.txt")
+        commit("t/x", {"src/b.txt": "b\n", "out/list.txt": "a\nb\n", "out/old.txt": "枝が作り直した生成物\n"})
+        m = subprocess.run(["git", "-C", str(r.dir), "merge", "--no-ff", "--no-commit", "main"], capture_output=True, text=True)
+        self.assertNotEqual(m.returncode, 0, "作り物の取り込みがぶつかっていない")
+        unmerged = sorted(f for f in git(r.dir, "diff", "--name-only", "--diff-filter=U", "-z").split("\0") if f)
+        self.assertEqual(unmerged, ["out/list.txt", "out/old.txt"])
+        r.dir.joinpath("out/list.txt").write_text(git(r.dir, "show", "main:out/list.txt"), encoding="utf-8")   # ぶつかった物は本線の版に
+        r.dir.joinpath("out/old.txt").unlink(missing_ok=True)                                                  # 本線が消した物は消す
+        before_day = r.read("out/day.txt")
+        res = regen(self, r.dir, r.env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(r.read("out/list.txt"), b"a\nb\nm\n", "生成物が、本線の元と枝の元の両方を映す")
+        self.assertEqual(r.read("out/day.txt"), before_day, "今日の日付だけの物は流す前（取り込んだ後）のバイトに戻る")
+        self.assertFalse((r.dir / "out/old.txt").exists(), "版にあるのに作業場所に無い物を、戻して作らない")
+        git(r.dir, "add", "-A")
+        git(r.dir, "commit", "-qm", "K-2 merge: main を取り込む")
+        self.assertEqual(r.status(), "")
+        self.assertEqual(len(git(r.dir, "log", "-1", "--format=%P").split()), 2, "取り込みのコミットになっている")
+
+    def test_K191_RG_020_missing_and_deleted_files_do_not_break_it(self) -> None:
+        drop = {"name": "作り手 a", "run": "python3 tools/g.py a -out/del.txt", "outputs": ["out/del.txt"]}
+        r = Repo(self, {"generators": [drop, gen("b", "'out/day.txt=作成日 @DATE'")]},
+                 {"out/del.txt": f"作り手が消す物 {OLD}\n", "out/gone.txt": f"流す前から無い物 {OLD}\n", "out/day.txt": f"作成日 {OLD}\n"})
+        r.dir.joinpath("out/gone.txt").unlink()
+        res = regen(self, r.dir, r.env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertFalse((r.dir / "out/del.txt").exists(), "作り手が消した物は消えたまま（戻さない）")
+        self.assertFalse((r.dir / "out/gone.txt").exists(), "流す前から作業場所に無い物は無いまま")
+        self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "ほかの物の、今日の日付だけの違いは戻る")
+        self.assertEqual(sorted(e[3:] for e in r.status().split("\0") if e), ["out/del.txt", "out/gone.txt"])
 
 
 class Config(unittest.TestCase):
@@ -291,13 +387,29 @@ class Config(unittest.TestCase):
         self.assertEqual(cu.get("regen"), "python3 scripts/tickets/regen_all.py")
         self.assertTrue(SCRIPT.is_file(), "catch_up.regen が指す台本が無い")
 
-    def test_K191_RG_013_build_api_strays_are_in_both_lists(self) -> None:
+    def test_K191_RG_013_catalog_and_changes_ignore_list_exactly_what_generators_write(self) -> None:
         api = [g for g in self.gen["generators"] if g["run"] == "python3 05_flow/build_api.py"]
         self.assertEqual(len(api), 1)
         for f in STRAYS:
             self.assertTrue((ROOT / f).is_file(), f)
             self.assertIn(f, api[0]["outputs"], f"{f} が目録の作り手（05_flow/build_api.py）の outputs に無い")
             self.assertIn(f, self.ign, f"{f} が ticket-flow.yaml の changes_ignore に無い")
+        for glob, files in EXACT.items():
+            self.assertNotIn(glob, self.outs, f"目録の outputs に glob {glob} が残っている（手で持つ物まで当たる）")
+            self.assertNotIn(glob, self.ign, f"changes_ignore に glob {glob} が残っている")
+            for f in files:
+                self.assertTrue((ROOT / f).is_file(), f)
+                self.assertIn(f, self.outs)
+                self.assertIn(f, self.ign)
+        nogen = {n["path"] for n in self.gen.get("not_generated", [])}
+        for f in HAND:
+            self.assertTrue((ROOT / f).is_file(), f)
+            self.assertEqual([g for g in self.outs if fnmatch.fnmatch(f, g)], [], f"手で持つ {f} が目録の outputs に当たる")
+            self.assertEqual([g for g in self.ign if fnmatch.fnmatch(f, g)], [], f"手で持つ {f} が changes_ignore に当たる（取り込みで本線の版に置き換わる）")
+        self.assertIn("packages/contracts/src/index.ts", nogen, "先頭の説明が検査の印に当たる手書きの物は、理由つきで not_generated に")
+        lazy = {n["path"]: n.get("reason", "") for n in self.gen.get("not_always_written", [])}
+        self.assertEqual(sorted(lazy), ["apps/web/lib/built-routes.ts"], "変わらない回は書かない作り手の物（F6 の理由つきの一覧）")
+        self.assertTrue(lazy["apps/web/lib/built-routes.ts"].strip())
 
     def test_K191_RG_014_changes_ignore_and_catalog_outputs_agree(self) -> None:
         self.assertEqual(len(self.ign), len(set(self.ign)), "changes_ignore に同じ行が 2 つある")
@@ -311,10 +423,11 @@ class Config(unittest.TestCase):
 
 
 class GateF5(unittest.TestCase):
-    """生成物の検査（generated_gate.py）の F5：作り手が、目録のどの outputs にも当たらないファイルを書いた"""
+    """生成物の検査（generated_gate.py）。F5：作り手が、目録のどの outputs にも当たらないファイルを書いた。
+    F6：目録の outputs に当たる版に入ったファイルを、どの作り手も書かなかった"""
 
     def gate(self, catalog: dict, files: dict[str, str]) -> tuple[subprocess.CompletedProcess, Repo]:
-        r = Repo(self, catalog, {"scripts/ci/generated_gate.py": GATE.read_text(encoding="utf-8"), **files}, trace=False)
+        r = Repo(self, catalog, {"scripts/ci/generated_gate.py": GATE.read_text(encoding="utf-8"), **files})
         res = subprocess.run([sys.executable, "scripts/ci/generated_gate.py"], cwd=r.dir, env=r.env(), capture_output=True, text=True, encoding="utf-8", timeout=120)
         return res, r
 
@@ -330,6 +443,7 @@ class GateF5(unittest.TestCase):
         self.assertIn(jp, out, "日本語と空白の名前の物も見落とさない")
         self.assertIn("作り手 a", out, "どの作り手が書いたかを出す")
         self.assertEqual(sum(1 for line in out.splitlines() if "F5" in line), 2, out)
+        self.assertNotIn("F6", out)
         self.assertEqual(r.status(), "", "検査の後は手元を元に戻す")
 
     def test_K191_RG_016_declared_outputs_are_not_f5(self) -> None:
@@ -349,8 +463,42 @@ class GateF5(unittest.TestCase):
                 out = res.stdout + res.stderr
                 self.assertEqual(res.returncode, 0, out)
                 self.assertNotIn("F5", out)
+                self.assertNotIn("F6", out)
                 self.assertIn("PASS", out)
                 self.assertIn("a", r.names())
+
+
+    def test_K191_RG_021_tracked_file_matching_outputs_but_never_written_is_red(self) -> None:
+        jp = "out/手で 持つ.json"
+        files = {"out/a.txt": "1\n", "out/hand.json": "{}\n", jp: "{}\n", "keep/x.txt": "x\n"}
+        res, r = self.gate({"generators": [{"name": "作り手 a", "run": "python3 tools/g.py a out/a.txt=1", "outputs": ["out/*"]}]}, files)
+        out = res.stdout + res.stderr
+        self.assertEqual(res.returncode, 1, out)
+        lines = [line for line in out.splitlines() if "F6" in line]
+        self.assertEqual(len(lines), 2, out)
+        self.assertTrue(any("out/hand.json" in line and "作り手 a" in line for line in lines), "どの作り手の outputs に当たるかとファイルの名前を出す")
+        self.assertTrue(any(jp in line for line in lines), "日本語と空白の名前の物も見落とさない")
+        self.assertNotIn("F5", out)
+        self.assertFalse(any("out/a.txt" in line or "keep/x.txt" in line for line in lines), "書かれた物・outputs の外の物は F6 にしない")
+
+    def test_K191_RG_022_not_always_written_needs_a_reason(self) -> None:
+        files = {"out/a.txt": "1\n", "out/lazy.ts": "x\n"}
+        gens = [{"name": "作り手 a", "run": "python3 tools/g.py a out/a.txt=1", "outputs": ["out/a.txt", "out/lazy.ts"]}]
+        with self.subTest("理由つきで載せた物は F6 にしない"):
+            res, _ = self.gate({"generators": gens, "not_always_written": [{"path": "out/lazy.ts", "reason": "中身が同じ回は書かない作り手"}]}, files)
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+            self.assertNotIn("F6", res.stdout + res.stderr)
+        for label, entry in {"理由が空": {"path": "out/lazy.ts", "reason": " "}, "理由が無い": {"path": "out/lazy.ts"}}.items():
+            with self.subTest(label):
+                res, _ = self.gate({"generators": gens, "not_always_written": [entry]}, files)
+                out = res.stdout + res.stderr
+                self.assertEqual(res.returncode, 1, out)
+                self.assertTrue(any("F6" in line and "out/lazy.ts" in line for line in out.splitlines()), out)
+        with self.subTest("載せたのに、どの outputs にも当たらない（消した・名前を変えた）"):
+            res, _ = self.gate({"generators": gens, "not_always_written": [{"path": "out/lazy.ts", "reason": "x"}, {"path": "out/nai.ts", "reason": "x"}]}, files)
+            out = res.stdout + res.stderr
+            self.assertEqual(res.returncode, 1, out)
+            self.assertTrue(any("F6" in line and "out/nai.ts" in line for line in out.splitlines()), out)
 
 
 if __name__ == "__main__":
