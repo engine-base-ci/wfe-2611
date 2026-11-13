@@ -338,6 +338,7 @@ row(R["K63-UI-072"], async (page) => {
   await page.clock.install();
   await openTicket(page);
   await mark(page);
+  await expect.poll(() => w.listAsked).toBeGreaterThan(0); // 開いたときの一覧が届いてから（失敗の 1 回を、任せた直後の読み直しに当てる）
   const listsBefore = w.listAsked;
   w.failList = 1;
   await k62Band(page).getByRole("button", { name: "AI に任せる" }).click();
