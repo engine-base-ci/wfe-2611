@@ -70,6 +70,7 @@ import copy
 import json
 import os
 import pathlib
+import math
 import re
 import shutil
 import subprocess
@@ -514,7 +515,13 @@ class WorkflowTest(unittest.TestCase):
         text = (ROOT / "vitest.config.ts").read_text(encoding="utf-8")
         m = re.search(r"\bhookTimeout\s*:\s*([\d_]+)", text)
         self.assertIsNotNone(m)
-        self.assertEqual(int(m.group(1).replace("_", "")), 11000)   # 全部のファイルの最大 3.6 秒 × 3 を切り上げ（D-133.2・2026-11-10 answer=5185823099d3）
+        # 値は決め打ちしない（K-193 で書き直した）：注釈の「最大 <秒> 秒」× 3 を秒に切り上げた数と合う（D-133.2 の式。実測を引き直したら注釈と値を一緒に直す）
+        lines = text.splitlines()
+        at = next(i for i, ln in enumerate(lines) if re.search(r"\bhookTimeout\s*:\s*[\d_]+", ln))
+        around = "\n".join(lines[max(0, at - 8): at + 1])   # 値のすぐ上の注釈だけを読む（K-193 の行と同じ切り出し）
+        mx = re.search(r"最大\s*([\d.]+)\s*秒", around)
+        self.assertIsNotNone(mx, "注釈に実測の最大（最大 <秒> 秒）")
+        self.assertEqual(int(m.group(1).replace("_", "")), math.ceil(round(float(mx.group(1)) * 3, 3)) * 1000)
         self.assertIn("× 3", text)
 
     def test_K156_CI_029_hook_timeout_in_one_place_with_measurement(self) -> None:
