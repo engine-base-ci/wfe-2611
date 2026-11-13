@@ -33,6 +33,15 @@ EXACT = {
     "packages/contracts/src/*": ["packages/contracts/src/ops.ts", "packages/contracts/src/registry.ts", "packages/contracts/src/schemas.ts",
                                  "packages/contracts/src/types.ts"],
 }
+# 作った日を刻む出力（目録の作り手の dated）。作り手の run → 並び
+DATED = {
+    "python3 05_flow/build_functional.py": ["07_functional/*"],
+    "python3 05_flow/build_api.py": ["08_api/API-SPEC.md", "08_api/api-decisions.json", "08_api/api-spec.html", "08_api/endpoints.json",
+                                     "08_api/openapi.yaml", "08_api/screen-api-coverage.json"],
+    "python3 05_flow/build_testplan.py": EXACT["07_qa/test-plan/*"],
+}
+# 日付を持つが、作った日ではない生成物（期限・決めた日）。dated に入れない
+NOT_DATED = ["11_tickets/tickets.json", "11_tickets/tickets.csv", "11_tickets/README.md", "01_hearing/要件一覧.md"]
 # changes_ignore にだけあってよい物（作り手の目録の outputs に無い）と、その理由
 ONLY_IGNORE = {"01_hearing/decider-answers.jsonl": "決める人の答えの記録。作り手は作らない（フックが足す）。取り込みでは両方の行を残す（catch_up.union）"}
 
@@ -79,8 +88,13 @@ def git(repo: pathlib.Path, *a: str) -> str:
     return subprocess.run(["git", "-C", str(repo), "-c", "core.quotepath=off", *a], check=True, capture_output=True, text=True, encoding="utf-8").stdout
 
 
-def gen(name: str, *specs: str, pre: str = "", tool: str = "tools/g.py") -> dict:
-    return {"name": f"作り手 {name}", "run": f"{pre}python3 {tool} {name} " + " ".join(specs), "outputs": [s.strip("'").split("=")[0].split("<")[0] for s in specs if "=" in s or "<" in s]}
+def gen(name: str, *specs: str, pre: str = "", tool: str = "tools/g.py", dated: bool | list[str] = False) -> dict:
+    """作り物の作り手の目録の 1 行。dated=True は outputs を全部「作った日を刻む出力」にする（並びを渡せばその並び）"""
+    outs = [s.strip("'").split("=")[0].split("<")[0] for s in specs if "=" in s or "<" in s]
+    g = {"name": f"作り手 {name}", "run": f"{pre}python3 {tool} {name} " + " ".join(specs), "outputs": outs}
+    if dated:
+        g["dated"] = outs if dated is True else dated
+    return g
 
 
 class Repo:
@@ -163,19 +177,33 @@ class RegenAll(unittest.TestCase):
                 self.assertFalse((r.dir / "out/c.txt").exists())
 
     def test_K191_RG_003_never_settling_generator_stops_after_three_rounds(self) -> None:
-        grow = {"name": "作り手 a", "run": "python3 tools/g.py a GROW:out/g.txt", "outputs": ["out/g.txt"]}
-        r = Repo(self, {"generators": [grow, gen("b", "out/b.txt=2")]}, {"out/g.txt": "はじめ\n", "out/b.txt": "2\n"})
-        res = regen(self, r.dir, r.env())
-        self.assertNotEqual(res.returncode, 0, "3 周流してもまだ変わるのに成功しない")
-        self.assertEqual(r.names(), ["a", "b"] * 3, "上限は 3 周")
-        self.assertIn("out/g.txt", tail(res), "最後の 300 字に、まだ変わるファイルが出る")
-        self.assertNotIn("out/b.txt", tail(res))
+        with self.subTest("1 つだけ変わり続ける"):
+            grow = {"name": "作り手 a", "run": "python3 tools/g.py a GROW:out/g.txt", "outputs": ["out/g.txt"]}
+            r = Repo(self, {"generators": [grow, gen("b", "out/b.txt=2")]}, {"out/g.txt": "はじめ\n", "out/b.txt": "2\n"})
+            res = regen(self, r.dir, r.env())
+            self.assertNotEqual(res.returncode, 0, "3 周流してもまだ変わるのに成功しない")
+            self.assertEqual(r.names(), ["a", "b"] * 3, "上限は 3 周")
+            self.assertIn("3 周", tail(res), "最後の 300 字に、何が起きたかの説明が入る")
+            self.assertIn("out/g.txt", tail(res), "最後の 300 字に、まだ変わるファイルが出る")
+            self.assertNotIn("out/b.txt", tail(res))
+        with self.subTest("長い名前のファイルが 40 個変わり続ける"):
+            names = [f"out/いつまでも変わる長い名前の生成物-{i:02d}.txt" for i in range(40)]
+            grow = {"name": "作り手 a", "run": "python3 tools/g.py a " + " ".join(f"GROW:{n}" for n in names), "outputs": ["out/*"]}
+            r = Repo(self, {"generators": [grow]}, {n: "はじめ\n" for n in names})
+            res = regen(self, r.dir, r.env())
+            self.assertNotEqual(res.returncode, 0)
+            out = res.stdout + res.stderr
+            self.assertIn("3 周", tail(res), "ファイルが多くても、説明が最後の 300 字から押し出されない")
+            self.assertIn("40 件", tail(res), "変わるファイルの総数が出る")
+            self.assertIn(names[0], tail(res), "先頭の数件の名前が出る")
+            self.assertLessEqual(out.count("いつまでも変わる長い名前の生成物-"), 5, "名前は先頭の 5 件まで")
 
     def test_K191_RG_004_today_only_date_change_is_put_back(self) -> None:
         before = {"out/day.txt": f"作成日 {OLD}\n本文\n", "out/stamp.json": '{"at": "2026-11-01T09:00:00Z", "n": 1}\n'}
         for label, date in {"手元の今日の日付": TODAY, "UTC の今日の日時": NOW_UTC}.items():
             with self.subTest(label):
-                r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE\n本文'"), gen("b", """out/stamp.json='{"at": "@DATE", "n": 1}'""")]}, before)
+                r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE\n本文'", dated=True),
+                                                gen("b", """out/stamp.json='{"at": "@DATE", "n": 1}'""", dated=["out/*.json"])]}, before)
                 res = regen(self, r.dir, r.env(date=date))
                 self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
                 self.assertEqual(r.names(), ["a", "b"], "作り手は流れた。今日の日付だけの違いは「変わった」に数えない（1 周で終わる）")
@@ -185,10 +213,10 @@ class RegenAll(unittest.TestCase):
 
     def test_K191_RG_005_content_change_and_new_file_stay(self) -> None:
         r = Repo(self, {"generators": [
-            gen("a", "out/both.txt='v2 @DATE'"),
+            gen("a", "out/both.txt='v2 @DATE'", dated=True),
             gen("b", "out/body.txt=v2"),
             gen("c", "out/new.txt='できた @DATE'"),
-            gen("d", "out/day.txt='作成日 @DATE'"),
+            gen("d", "out/day.txt='作成日 @DATE'", dated=True),
         ]}, {"out/both.txt": f"v1 {OLD}\n", "out/body.txt": "v1\n", "out/day.txt": f"作成日 {OLD}\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
@@ -210,6 +238,8 @@ class RegenAll(unittest.TestCase):
             "generators が空": {"generators": []},
             "run の無い項目（前に流せる作り手がある）": {"generators": [ok, {"name": "run が無い", "outputs": ["x"]}]},
             "run が空の字": {"generators": [ok, {"name": "空", "run": "  ", "outputs": ["x"]}]},
+            "dated が並びでない": {"generators": [ok, {**ok, "dated": "out/a.txt"}]},
+            "dated の中身が字でない": {"generators": [ok, {**ok, "dated": [1]}]},
         }
         for label, catalog in cases.items():
             with self.subTest(label):
@@ -222,7 +252,7 @@ class RegenAll(unittest.TestCase):
 
     def test_K191_RG_007_japanese_name_with_space_is_not_missed(self) -> None:
         name = "出力 物/一 覧.md"
-        r = Repo(self, {"generators": [gen("a", f"'{name}=作成日 @DATE'")]}, {name: f"作成日 {OLD}\n"})
+        r = Repo(self, {"generators": [gen("a", f"'{name}=作成日 @DATE'", dated=True)]}, {name: f"作成日 {OLD}\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
         self.assertEqual(r.names(), ["a"])
@@ -258,7 +288,7 @@ class RegenAll(unittest.TestCase):
             self.assertFalse((plain / "out").exists())
 
     def test_K191_RG_009_after_a_failure_today_only_changes_are_still_put_back(self) -> None:
-        r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'"), gen("b", "out/body.txt=v2"), gen("c", "FAIL")]},
+        r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'", dated=True), gen("b", "out/body.txt=v2"), gen("c", "FAIL")]},
                  {"out/day.txt": f"作成日 {OLD}\n", "out/body.txt": "v1\n"})
         res = regen(self, r.dir, r.env())
         self.assertNotEqual(res.returncode, 0)
@@ -267,7 +297,7 @@ class RegenAll(unittest.TestCase):
         self.assertEqual(r.read("out/body.txt"), b"v2\n", "中身の違いは隠さない")
 
     def test_K191_RG_010_running_twice_changes_nothing_more(self) -> None:
-        r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'"), gen("b", "out/body.txt=v2")]},
+        r = Repo(self, {"generators": [gen("a", "out/day.txt='作成日 @DATE'", dated=True), gen("b", "out/body.txt=v2")]},
                  {"out/day.txt": f"作成日 {OLD}\n", "out/body.txt": "v1\n"})
         first = regen(self, r.dir, r.env())
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
@@ -308,22 +338,22 @@ class RegenAll(unittest.TestCase):
         self.assertEqual(again.returncode, 0)
         self.assertEqual((r.read("out/a.txt"), r.read("out/b.txt")), ("新しい元\n".encode(), "新しい元\n".encode()), "終わった状態は、もう 1 回流しても変わらない")
 
-    def test_K191_RG_018_real_date_change_is_kept(self) -> None:
+    def test_K191_RG_018_dated_output_keeps_a_change_to_another_day(self) -> None:
         r = Repo(self, {"generators": [
-            gen("a", "'out/due.csv=K-1,期限 2001-02-20'"),
-            gen("b", "'out/mix.md=作成日 @DATE／期限 2001-02-20'"),
-            gen("c", "'out/day.txt=作成日 @DATE'"),
+            gen("a", "'out/due.csv=K-1,期限 2001-02-20'", dated=True),
+            gen("b", "'out/mix.md=作成日 @DATE／期限 2001-02-20'", dated=True),
+            gen("c", "'out/day.txt=作成日 @DATE'", dated=True),
         ]}, {"out/due.csv": "K-1,期限 2001-02-14\n", "out/mix.md": f"作成日 {OLD}／期限 2001-02-14\n", "out/day.txt": f"作成日 {OLD}\n"})
         res = regen(self, r.dir, r.env())
         self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
-        self.assertEqual(r.read("out/due.csv"), "K-1,期限 2001-02-20\n".encode(), "今日でない日付の違い（期限の変更）は中身の違い。戻さない")
-        self.assertEqual(r.read("out/mix.md"), f"作成日 {TODAY}／期限 2001-02-20\n".encode(), "今日の日付と本物の日付の変更が混ざった物は、新しい版のまま残る")
+        self.assertEqual(r.read("out/due.csv"), "K-1,期限 2001-02-20\n".encode(), "作った日を刻む出力でも、今日でない日付への変更は中身の違い。戻さない")
+        self.assertEqual(r.read("out/mix.md"), f"作成日 {TODAY}／期限 2001-02-20\n".encode(), "今日の刻みと今日でない日付の変更が混ざった物は、新しい版のまま残る")
         self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode())
         self.assertEqual(sorted(e[3:] for e in r.status().split("\0") if e), ["out/due.csv", "out/mix.md"])
 
     def test_K191_RG_019_works_in_the_middle_of_a_merge(self) -> None:
         # 取り込みの道具と同じ形：git merge --no-commit でぶつかった生成物を本線の版に書き、git add せずに台本を呼ぶ
-        r = Repo(self, {"generators": [gen("list", "'out/list.txt<src/a.txt+src/b.txt+src/m.txt'"), gen("day", "'out/day.txt=作成日 @DATE'")]},
+        r = Repo(self, {"generators": [gen("list", "'out/list.txt<src/a.txt+src/b.txt+src/m.txt'"), gen("day", "'out/day.txt=作成日 @DATE'", dated=True)]},
                  {"src/a.txt": "a\n", "out/list.txt": "a\n", "out/day.txt": f"作成日 {OLD}\n", "out/old.txt": "前からある生成物\n"})
 
         def commit(branch: str, files: dict[str, str], remove: str | None = None) -> None:
@@ -358,7 +388,7 @@ class RegenAll(unittest.TestCase):
 
     def test_K191_RG_020_missing_and_deleted_files_do_not_break_it(self) -> None:
         drop = {"name": "作り手 a", "run": "python3 tools/g.py a -out/del.txt", "outputs": ["out/del.txt"]}
-        r = Repo(self, {"generators": [drop, gen("b", "'out/day.txt=作成日 @DATE'")]},
+        r = Repo(self, {"generators": [drop, gen("b", "'out/day.txt=作成日 @DATE'", dated=True)]},
                  {"out/del.txt": f"作り手が消す物 {OLD}\n", "out/gone.txt": f"流す前から無い物 {OLD}\n", "out/day.txt": f"作成日 {OLD}\n"})
         r.dir.joinpath("out/gone.txt").unlink()
         res = regen(self, r.dir, r.env())
@@ -367,6 +397,76 @@ class RegenAll(unittest.TestCase):
         self.assertFalse((r.dir / "out/gone.txt").exists(), "流す前から作業場所に無い物は無いまま")
         self.assertEqual(r.read("out/day.txt"), f"作成日 {OLD}\n".encode(), "ほかの物の、今日の日付だけの違いは戻る")
         self.assertEqual(sorted(e[3:] for e in r.status().split("\0") if e), ["out/del.txt", "out/gone.txt"])
+
+
+    def test_K191_RG_023_only_dated_outputs_are_put_back(self) -> None:
+        # 本物：チケットの期限 due を今日に変えた → tickets.json・tickets.csv の違いは「日付だけ・新しい側が今日」だが本物の変更
+        due = f"K-1,期限 {TODAY}"
+        with self.subTest("dated に無い出力（期限を今日に変えた一覧）は残る。同じ作り手の dated の出力は戻る"):
+            r = Repo(self, {"generators": [gen("a", f"'out/tickets.csv={due}'", "'out/plan.md=作成日 @DATE'", dated=["out/plan.md"])]},
+                     {"out/tickets.csv": "K-1,期限 2026-11-01\n", "out/plan.md": f"作成日 {OLD}\n"})
+            res = regen(self, r.dir, r.env())
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+            self.assertEqual(r.read("out/tickets.csv"), f"{due}\n".encode(), "作った日を刻む出力でない物の日付の違いは、今日でも本物の変更。戻さない")
+            self.assertEqual(r.read("out/plan.md"), f"作成日 {OLD}\n".encode())
+            self.assertEqual(sorted(e[3:] for e in r.status().split("\0") if e), ["out/tickets.csv"])
+            self.assertEqual(r.names(), ["a", "a"], "dated に無い物の日付の違いは「変わった」に数える（次の周で変わらないのを見る）")
+        with self.subTest("dated が無い作り手の出力は、今日の刻みでも戻さない"):
+            r = Repo(self, {"generators": [gen("a", "'out/day.txt=作成日 @DATE'")]}, {"out/day.txt": f"作成日 {OLD}\n"})
+            res = regen(self, r.dir, r.env())
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+            self.assertEqual(r.read("out/day.txt"), f"作成日 {TODAY}\n".encode())
+
+    def test_K191_RG_025_put_back_replaces_the_file_instead_of_writing_into_it(self) -> None:
+        r = Repo(self, {"generators": [gen("a", "'out/day.sh=作成日 @DATE'", dated=True)]}, {"out/day.sh": f"作成日 {OLD}\n"})
+        target = r.dir / "out/day.sh"
+        target.chmod(0o755)
+        git(r.dir, "commit", "-qam", "K-1 chore: 実行できる生成物")
+        outside = r.top / "同じ中身を指す名前"
+        os.link(target, outside)   # 作り手は中に書くので、この名前にも今日の刻みが見える。戻すときに中へ書けば、ここも元に戻ってしまう
+        res = regen(self, r.dir, r.env())
+        self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+        self.assertEqual(target.read_bytes(), f"作成日 {OLD}\n".encode())
+        self.assertEqual(outside.read_bytes(), f"作成日 {TODAY}\n".encode(), "戻すときは一時のファイルに書いてから置き換える（元のファイルの中に直に書かない）")
+        self.assertEqual(target.stat().st_mode & 0o777, 0o755, "権限は元のまま")
+        self.assertEqual(r.status(), "", "一時のファイルを残さない")
+        self.assertEqual(sorted(x.name for x in (r.dir / "out").iterdir()), ["day.sh"])
+
+    def test_K191_RG_026_os_and_git_failures_end_nonzero_with_the_reason_last(self) -> None:
+        with self.subTest("戻す先のフォルダに書けない"):
+            self.assertNotEqual(os.geteuid(), 0, "root では権限の失敗を作れない（CI の台は runner で流す）")
+            r = Repo(self, {"generators": [gen("a", "'ro/day.txt=作成日 @DATE'", dated=True)]}, {"ro/day.txt": f"作成日 {OLD}\n"})
+            (r.dir / "ro").chmod(0o555)
+            self.addCleanup((r.dir / "ro").chmod, 0o755)
+            res = regen(self, r.dir, r.env())
+            out = res.stdout + res.stderr
+            self.assertNotEqual(res.returncode, 0, "戻せなかったのに成功しない")
+            self.assertNotIn("Traceback", out)
+            self.assertIn("ro/day.txt", tail(res), "最後の 300 字に、何が失敗したか（どのファイルか）が出る")
+            self.assertEqual(r.read("ro/day.txt"), f"作成日 {TODAY}\n".encode(), "戻せなかった物は、作り手が書いた中身のまま欠けない")
+        with self.subTest("作り手が落ち、戻すのにも失敗した"):
+            bad = gen("b", "FAIL")
+            r = Repo(self, {"generators": [gen("a", "'ro/day.txt=作成日 @DATE'", dated=True), bad]}, {"ro/day.txt": f"作成日 {OLD}\n"})
+            (r.dir / "ro").chmod(0o555)
+            self.addCleanup((r.dir / "ro").chmod, 0o755)
+            res = regen(self, r.dir, r.env())
+            self.assertNotEqual(res.returncode, 0)
+            self.assertNotIn("Traceback", res.stdout + res.stderr)
+            self.assertIn(bad["name"], tail(res), "戻すときの失敗が、落ちた作り手の名前を隠さない")
+            self.assertIn("ro/day.txt", tail(res))
+        with self.subTest("git がファイルの一覧を出せない"):
+            r = Repo(self, {"generators": [gen("a", "out/a.txt=1")]})
+            real = shutil.which("git")
+            fake = r.top / "bin"
+            fake.mkdir()
+            (fake / "git").write_text(f'#!/bin/sh\nfor a in "$@"; do [ "$a" = ls-files ] && {{ echo "fatal: 作り物の git の失敗" >&2; exit 128; }}; done\nexec "{real}" "$@"\n', encoding="utf-8")
+            (fake / "git").chmod(0o755)
+            res = regen(self, r.dir, r.env(PATH=f"{fake}{os.pathsep}{os.environ['PATH']}"))
+            out = res.stdout + res.stderr
+            self.assertNotEqual(res.returncode, 0)
+            self.assertNotIn("Traceback", out)
+            self.assertIn("ls-files", tail(res), "最後の 300 字に、失敗した git の命令が出る")
+            self.assertEqual(r.names(), [], "ファイルの一覧を読めないなら、作り手を流さない")
 
 
 class Config(unittest.TestCase):
@@ -410,6 +510,17 @@ class Config(unittest.TestCase):
         lazy = {n["path"]: n.get("reason", "") for n in self.gen.get("not_always_written", [])}
         self.assertEqual(sorted(lazy), ["apps/web/lib/built-routes.ts"], "変わらない回は書かない作り手の物（F6 の理由つきの一覧）")
         self.assertTrue(lazy["apps/web/lib/built-routes.ts"].strip())
+
+    def test_K191_RG_024_real_catalog_marks_exactly_the_outputs_that_stamp_the_day(self) -> None:
+        got = {g["run"]: sorted(g["dated"]) for g in self.gen["generators"] if "dated" in g}
+        self.assertEqual(got, {k: sorted(v) for k, v in DATED.items()}, "作った日を刻む出力（2026-11-13 に、にせの日付で作り手を流して洗い出した 18 個）")
+        for g in self.gen["generators"]:
+            for d in g.get("dated", []):
+                self.assertIn(d, g["outputs"], f"dated の {d} が、その作り手の outputs に無い")
+        every = [d for g in self.gen["generators"] for d in g.get("dated", [])]
+        for f in NOT_DATED:
+            self.assertTrue((ROOT / f).is_file(), f)
+            self.assertEqual([d for d in every if fnmatch.fnmatch(f, d)], [], f"{f} は作った日を刻まない（日付の違いは本物の変更）。dated に入れない")
 
     def test_K191_RG_014_changes_ignore_and_catalog_outputs_agree(self) -> None:
         self.assertEqual(len(self.ign), len(set(self.ign)), "changes_ignore に同じ行が 2 つある")
