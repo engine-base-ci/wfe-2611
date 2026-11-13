@@ -101,6 +101,7 @@ export const MIGRATIONS = [
   "0094_bridge_code_new_lock.sql",
   "0095_approve_queue.sql",
   "0096_approve_decide.sql",
+  "0097_approve_return.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

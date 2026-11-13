@@ -521,6 +521,7 @@ INPUTS = {
     "callKanameTool": ("BridgeToolInput", {"input": "any"}),
     # K-162：承認する。体は空（承認する人はセッションから・今の担当者だけ。本人確認は取り直さない・D-128.177）
     "approveApproval": ("ApprovalApproveInput", {}),
+    "returnApproval": ("ApprovalReturnInput", {"note": "string"}),
 }
 # get で始まるが並びを返す口（K-53）。一覧の問い合わせ（scope_id・cursor・limit・sort）は形だけ確かめて無視する
 LIST_OPS = {"getCurrentTerms"}
@@ -553,6 +554,17 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
          "trigger": "承認の id が uuid でない",
          "ears_form": "UNWANTED: IF 承認の id が uuid でないなら、Kaname は 422 と欄 id を返し、何も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
+         "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
+    ],
+    "returnApproval": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-003"}, "errors": ["E-CONF-003"],
+         "trigger": "もう決まった（承認・差し戻し）か取り下げた承認を差し戻す",
+         "ears_form": "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-020"],
+         "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+         "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
          "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
@@ -652,6 +664,7 @@ NOT_NULL_ANSWERS = {
 #   入口の zod はその欄を .optional() のままにし、無いときの答え（エラー ID と文言）は口の振る舞いが持つ（scripts/ci/contract.mjs）。
 #   条件つきで要る欄（stepUp の code・種別ごとの必須の区画・優先度「高」の理由）は載せない
 REQUIRED_INPUTS = {
+    "returnApproval": ["note"],                                          # apps/api/src/features/F5/approve-complete/decide.ts（無い・空・空白だけは 422 E-VAL-020・K-163）
     "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
@@ -781,6 +794,7 @@ RESPONSES = {
     "delegateTicket": ("TicketDelegation", {"run_id": "string", "job_id": "string", "status": "string", "pc": "string"}),
     # K-162：承認した答え（pc は任せた人の PC が 75 秒以内に知らせていれば live・K-62 と同じ式）。差し戻し（K-163）も同じ形
     "approveApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
+    "returnApproval": ("ApprovalDecided", {"id": "string", "decision": "string?", "decided_at": "string?", "status_id": "string?", "ticket_id": "string?", "run_id": "string", "pc": "string"}),
     "finishBridgeJob": ("BridgeFinish", {"ok": "boolean", "outcome": "string"}),
     "callKanameTool": ("BridgeToolResult", {"result": "object?"}),   # 道具の答え（ticket_read の区画・会話の道具の答え）。無ければ null
     # 実行の 1 件（K-62）。今の実行の様子を読む 1 つの口（K-63 も使う）。pc は live／asleep、checks.state は検査が入るまで none。

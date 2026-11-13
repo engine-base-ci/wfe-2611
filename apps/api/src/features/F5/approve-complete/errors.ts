@@ -38,6 +38,8 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
     return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
   // 決まった・取り下げた承認（E-CONF-003「この承認はもう処理されています」）
   if (word === "decided") return fromCatalog("E-CONF-003", 409);
+  // 差し戻す理由が空・空白だけ・制御文字だけ（E-VAL-020・欄 note・何も書かない・K-163）
+  if (word === "reason_empty") return fromCatalog("E-VAL-020", 422, { field: "note" });
   // 守りの判定で例外（fail-closed・K63-API-059）。知らない言葉（bad_decision を含む）も止める側
   return down(where, word);
 }

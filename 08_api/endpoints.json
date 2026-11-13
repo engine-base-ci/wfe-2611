@@ -1499,10 +1499,14 @@
      "status": 409,
      "code": "CONFLICT",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-003"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-003"
+     ],
+     "trigger": "もう決まった（承認・差し戻し）か取り下げた承認を差し戻す",
+     "ears_form": "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない"
     },
     {
      "status": 422,
@@ -1511,8 +1515,24 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-020"
+     ],
+     "trigger": "差し戻す理由が空・空白だけ（全角の空白も）・制御文字だけ（E-VAL-020・欄 note）・本文に知らない欄。理由に文字数の上限は置かない（D-131.1）",
+     "ears_form": "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "守りの判定（今のメンバーか・承認する人か・書けるか・任せた人の状態）の所で例外になった",
+     "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"
     },
     {
      "status": 413,
@@ -1560,8 +1580,9 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない",
+    "UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない",
+    "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",

@@ -4554,6 +4554,38 @@
    ]
   },
   {
+   "id": "E-VAL-020",
+   "class": "validation",
+   "where": {
+    "screen": "approvals",
+    "state": "return"
+   },
+   "when": "差し戻すときに理由が空・空白だけ（全角の空白も）・制御文字だけ",
+   "false_when": "理由を 1 文字以上書いた",
+   "message": "差し戻す理由を書いてください",
+   "action": "理由を書いてから差し戻す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ち・実行の後のチケット（K-63）",
+    "steps": [
+     "差し戻すを押す",
+     "理由を空のまま送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.103"
+   ],
+   "support_code": "VAL-020"
+  },
+  {
    "id": "E-INV-001",
    "class": "not_found",
    "where": {

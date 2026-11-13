@@ -15,13 +15,18 @@ describe("POST /api/v1/approvals/:id/return", () => {
   it.todo("test_post_approvals_id_return_rejected_403");
   // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-return.test.ts）：UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
   it.todo("test_post_approvals_id_return_not_found");
+  it("test_post_approvals_id_return_conflict", () => {
+    // UNWANTED: IF もう処理された承認を差し戻したら、Kaname は 409 と E-CONF-003 を返し、作り直しの仕事を積まない
+    // 本物の試験：apps/api/test/features/F5/approve-complete-return.test.ts の「K63-API-020」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-return.test.ts", "utf8")).toContain("K63-API-020");
+  });
   it("test_post_approvals_id_return_rejected_422", () => {
-    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+    // UNWANTED: IF 差し戻す理由が空なら、Kaname は 422 と欄 note の理由（E-VAL-020）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F5/approve-complete-return.test.ts の「K63-API-007」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approve-complete-return.test.ts", "utf8")).toContain("K63-API-007");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-return.test.ts）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-  it.todo("test_post_approvals_id_return_rejected_422_2");
+  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-return.test.ts）：UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
+  it.todo("test_post_approvals_id_return_unavailable");
   it("test_post_approvals_id_return_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）

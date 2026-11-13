@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:114926a99b983d19
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9e1f55126662cbc4
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -302,6 +302,7 @@ export type BridgeProgressInput = { seq?: number; kind: string; text?: string; a
 export type BridgeFinishInput = { state: string; result?: string; reason?: string; agent_session_id?: string };
 export type BridgeToolInput = { input?: unknown };
 export type ApprovalApproveInput = Record<string, never>;
+export type ApprovalReturnInput = { note: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };

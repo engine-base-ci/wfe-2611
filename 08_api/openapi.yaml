@@ -9556,6 +9556,16 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: approveApproval
+    ApprovalReturnInput:
+      type: object
+      properties:
+        note:
+          type: string
+      additionalProperties: false
+      x-operation: returnApproval
+      required:
+      - note
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -10211,7 +10221,7 @@ components:
           type: string
         pc:
           type: string
-      x-operation: approveApproval
+      x-operation: returnApproval
     BridgeFinish:
       type: object
       properties:
@@ -12007,7 +12017,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalReturnInput'
       responses:
         '201':
           description: 成功
@@ -12017,7 +12027,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalDecided'
                   meta:
                     type: object
         '401':
@@ -12050,6 +12060,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -12058,12 +12074,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

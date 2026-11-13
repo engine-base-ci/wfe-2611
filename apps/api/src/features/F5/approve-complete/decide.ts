@@ -1,4 +1,4 @@
-// 承認する（K-162）の書く口：approveApproval（承認して実行の仕事を積む）。差し戻し（returnApproval）は K-163 がここに足す。
+// 承認する（K-162）・差し戻す（K-163）の書く口：approveApproval（承認して実行の仕事を積む）・returnApproval（理由つきの作り直しを積む）。
 //   書くのは関門 C2 の app.approval_decide（承認の行・実行の記録と仕事・段・やり取りの 1 行・証跡を 1 つの処理で・0096）だけ。
 //   承認する人＝今の担当者（行の決まり OP_RULES.approveApproval と関数の中の判定の 2 層）。本人確認は取り直さない（D-128.177）。
 //   守りの判定で例外になったら止める側（503・E-PAGE-003・何も書かない）。書く所の DB の失敗は 500（何も残らない）。
@@ -28,15 +28,26 @@ const decidedReply = (r: Decided): HookReply => ({
 });
 
 /** 承認か差し戻しを決める。関数を 1 回呼ぶ（1 要求＝接続 1 本・関門 C2） */
-export async function decide(pool: pg.Pool, a: HookArgs, decision: "approve", where: string): Promise<HookReply> {
+/** 差し戻しの理由：NUL と制御文字（タブ・改行・復帰を除く）を入口で取り除く（断らない・切らない・D-131.1）。空かどうかは DB の関数が見る */
+export const cleanReason = (v: unknown): string =>
+  // eslint-disable-next-line no-control-regex
+  (typeof v === "string" ? v : "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
+
+export async function decide(
+  pool: pg.Pool,
+  a: HookArgs,
+  decision: "approve" | "return",
+  where: string,
+  reason: string | null = null,
+): Promise<HookReply> {
   let r: Decided | undefined;
   try {
     r = await withTenant(
       pool,
       a.ctx,
       async (cl) =>
-        (await cl.query<{ v: Decided }>("select app.approval_decide($1, $2, $3) as v", [a.id, decision, null])).rows[0]
-          ?.v,
+        (await cl.query<{ v: Decided }>("select app.approval_decide($1, $2, $3) as v", [a.id, decision, reason]))
+          .rows[0]?.v,
     );
   } catch (e) {
     // 書く所の失敗（1 つの処理なので何も残らない）。中身を返さず、ログは場所と例外の種類だけ
@@ -51,5 +62,8 @@ export async function decide(pool: pg.Pool, a: HookArgs, decision: "approve", wh
 export function decideHooks(pool: pg.Pool): Record<string, Hook> {
   return {
     approveApproval: { before: (a: HookArgs) => decide(pool, a, "approve", "承認する") },
+    returnApproval: {
+      before: (a: HookArgs) => decide(pool, a, "return", "差し戻す", cleanReason(a.input["note"])),
+    },
   };
 }
