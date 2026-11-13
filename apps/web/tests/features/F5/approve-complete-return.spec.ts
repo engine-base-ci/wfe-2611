@@ -186,13 +186,14 @@ row(R["K63-UI-043"], async (page) => {
   m.on.ticket = () => ({ status: 200, body: { data: ticketOf({ stage: "awaiting_approval", approval: pending() }) } });
   await page.reload();
   await expect(bandOf(page)).toContainText(MSG.waitingMe); // 画面がチケットを読み終えてから、答えを替える
+  await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
+  await reasonBox(page).fill("宛名を直してください");
+  // 小窓を開いて書いている間に、別のタブ・別の人が決めた（答えを替えるのは小窓が開いた後。替えた後の読み直しで帯のボタンが消えて押せなくなる揺れを避ける）
   m.on.ret = () => ({ status: 409, body: { error: "conflict", code: "E-CONF-003", message: MSG.decided } });
   m.on.ticket = () => ({
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "queued", pc: "live" } }) },
   });
-  await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
-  await reasonBox(page).fill("宛名を直してください");
   await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect(dialog(page)).toHaveCount(0);
