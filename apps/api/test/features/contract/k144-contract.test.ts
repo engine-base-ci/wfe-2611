@@ -493,6 +493,7 @@ export const UUID_PARAM_CASES = [
   // 承認して完了する（K-63 の孫）の口。行ごとに、その口を作るチケットが試験のコミットで持ち込む（作っていない口の行は SHAPE_017 で赤・まとめて持ち込まない）・このコメントは先に入る K-185 が持つ // K-185
   ["K144-API-056", "getApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
   ["K144-API-057", "approveApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
+  ["K144-API-054", "returnApproval", "path", "id"], // K-163
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
@@ -503,6 +504,7 @@ const BODIES: Record<string, unknown> = {
   reportJobProgress: { seq: 1, kind: "status", text: "見ています" },
   finishBridgeJob: { state: "stopped" },
   // 承認して完了する（K-63 の孫）：必須の欄を入れて、正しい uuid では 422 にならない体（無い承認・チケットは 404）・このコメントは先に入る K-185 が持つ // K-185
+  returnApproval: { note: "直してください" }, // K-163
 };
 /** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
 const OTHER_PATH: Record<string, string> = { name: "ticket_read" };
@@ -636,6 +638,7 @@ export const REQUIRED_CASES = [
   ["createConversation", []],
   ["updateConversation", []],
   ["createMemory", []],
+  ["returnApproval", ["note"]], // K-163（本物の承認待ちを別の会社に置いて叩く・下の fullBody）
 ] as const;
 // 類 F（回 9・Q5 回 8 追加-2）：配布物の受け取りの道の値 name。true は契約の値域（pattern）に合う名前で、口は 422 にしない（mac・win・英小文字だけでない名前）。
 //   false は合わない名前（mac・win 以外の英小文字だけ）で、口は 422・欄 name（K144-SHAPE-022 が、この並びと契約の pattern の判定を 1 対 1 で見る）
@@ -652,6 +655,53 @@ export const RELEASE_NAMES = [
   ["a", false],
   ["macwin", false],
 ] as const;
+
+// K-163 ここから
+/** K-163：差し戻しの必須の欄を本物の DB で確かめるための承認待ち（K-62 の作る段が終わった形）。
+ *  チケットの数（ticketsOf）を数える会社 T とは別の会社に置く（K144-API-033 は T のチケットが増えないことを見る） */
+let approvalCo: { tenantId: string; rootScope: string; who: Person } | null = null;
+const approver = async () => {
+  if (!approvalCo) {
+    const co = await f.company("K144 の承認の会社", "KR");
+    approvalCo = {
+      ...co,
+      who: await f.person(co.tenantId, co.rootScope, { name: "承認する人", ticketAbility: "edit" }),
+    };
+  }
+  return approvalCo.who;
+};
+const pendingApproval = async () => {
+  const who = await approver();
+  const co = approvalCo!;
+  const one = async (sql: string, p: unknown[]) => (await f.admin.query<{ id: string }>(sql, p)).rows[0]!.id;
+  const stage = (key: string) =>
+    one("select id from ticket_stages where tenant_id = $1 and key = $2", [co.tenantId, key]);
+  const kind = await one(
+    "select id from ticket_kinds where tenant_id = $1 and name = 'タスク' and deleted_at is null",
+    [co.tenantId],
+  );
+  const t = await one(
+    `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, created_by, delegated_to_clone)
+     values ($1, $2, '', $3, $4, '差し戻しの必須の欄', $5, $5, true) returning id`,
+    [co.tenantId, co.rootScope, kind, await stage("awaiting_approval"), who.id],
+  );
+  const job = await one(
+    `insert into bridge_jobs (tenant_id, scope_id, member_id, kind, state_id, prompt, result, started_at, finished_at)
+     values ($1, $2, $3, 'ticket', 'done', '（作る段）', '成果物', now() - interval '2 minutes', now() - interval '1 minute') returning id`,
+    [co.tenantId, co.rootScope, who.id],
+  );
+  const run = await one(
+    `insert into action_runs (tenant_id, scope_id, ticket_id, phase, status_id, bridge_job_id, started_at, finished_at, created_by)
+     values ($1, $2, $3, 'make', 'done', $4, now() - interval '2 minutes', now() - interval '1 minute', $5) returning id`,
+    [co.tenantId, co.rootScope, t, job, who.id],
+  );
+  return one(
+    `insert into approvals (tenant_id, scope_id, kind, ticket_id, action_run_id, approver_member_id, requested_by, status_id, irreversible, human_checks, created_by)
+     values ($1, $2, 'artifact', $3, $4, $5, $5, 'pending', true, '[]', $5) returning id`,
+    [co.tenantId, co.rootScope, t, run, who.id],
+  );
+};
+// K-163 ここまで
 
 type Sent = { method: "POST" | "PATCH"; path: string; body: Record<string, unknown>; headers?: Record<string, string> };
 /** 口ごとに、全部の欄を正しく埋めた体を作る（1 回ごとに新しく：接続コードは 1 回で使い終わり・下書きの id は毎回別） */
@@ -695,6 +745,15 @@ const fullBody = async (op: string): Promise<Sent> => {
     }
     case "createMemory":
       return { method: "POST", path: "/memories", body: { title: "題" }, headers: writer.auth };
+    // K-163 ここから
+    case "returnApproval":
+      return {
+        method: "POST",
+        path: `/approvals/${await pendingApproval()}/return`,
+        body: { note: "直してください" },
+        headers: (await approver()).auth,
+      };
+    // K-163 ここまで
     default:
       throw new Error(`REQUIRED_CASES の ${op} の体の作り方が無い`);
   }
@@ -711,7 +770,14 @@ const without = (b: Record<string, unknown>, k: string) =>
 
 describe("K-144 ⑯ 類 E（回 9）：口が「無い」ことで 422 にする欄は契約の required とちょうど同じ", () => {
   beforeAll(() => {
-    for (const op of ["claimPairingCode", "createConversation", "createMemory", "updateMemory", "updateConversation"])
+    for (const op of [
+      "claimPairingCode",
+      "createConversation",
+      "createMemory",
+      "updateMemory",
+      "updateConversation",
+      "returnApproval", // K-163
+    ])
       f.limits[op] = 10_000;
   });
 

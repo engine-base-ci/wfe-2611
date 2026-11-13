@@ -2918,7 +2918,6 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/generated/post_approvals_id_return.test.ts",
     "apps/api/test/generated/post_tickets_id_complete.test.ts"
    ],
    "depends_on": [
@@ -2933,7 +2932,6 @@
     "tickets"
    ],
    "apis": [
-    "returnApproval",
     "completeTicket"
    ],
    "sections": {
@@ -7092,6 +7090,106 @@
     "申し送り": "- 共通の入口（apps/api/src/contract/op.ts・packages/db/src/repository.ts）を触った：会社から抜けた・止められた人は、行の確かめで 404 でなく 403（D-131.7・全部の口・app.member_gone）。手元の使い捨て DB で apps/api・packages/db の試験 3,233 本が緑\n\n- 帯の「差し戻す」は K-163、帯の実行の状態（③〜⑤）は K-164、完了（⑥⑦）と can.complete は K-165 が band.tsx・getTicket に足す"
    },
    "file": "11_tickets/K-162.md"
+  },
+  {
+   "id": "K-163",
+   "title": "差し戻す口（理由をつけて作り直させる・DB と API）（K-63 の孫）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-63",
+   "milestone": "F5",
+   "area": "AI",
+   "assignee": "実装",
+   "due": "2026-11-13",
+   "estimate_hours": "1",
+   "estimate_basis": "K-159 の実測（2026-11-10・チケットと試験 約 40 分）と K-156 の実装の実測（1 時間 21 分・同じ日）から引いた：親 K-63 は試験 125 行で見込み 3 時間（差し戻し 1 回分を含む）。孫は行 30 以下・口 1〜2 本・関数 1〜3 つに切ったので、1 本 1 時間以下（実装 40 分＋自分の確かめ 10 分＋直し 10 分）。先にある実装（prior_impl k63-impl@a4375be）のこの孫の分を写して直すので新しく書く量は少ない。最初に取り込む孫（K-161）の実測で残りを引き直す",
+   "decisions": [
+    "D-012",
+    "D-125.19",
+    "D-125.102",
+    "D-125.103",
+    "D-125.107",
+    "D-128.25",
+    "D-128.36",
+    "D-128.86",
+    "D-128.125",
+    "D-128.138",
+    "D-128.143",
+    "D-128.147",
+    "D-128.156",
+    "D-128.176",
+    "D-128.177",
+    "D-128.178",
+    "D-131.1",
+    "D-131.3",
+    "D-131.5",
+    "D-131.6",
+    "D-131.7",
+    "D-131.9",
+    "D-131.10",
+    "D-131.11"
+   ],
+   "split": "",
+   "prior_impl": "k63-impl@a4375be",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_approvals_id_return.test.ts",
+    "apps/api/test/features/F5/approve-complete-return.test.ts"
+   ],
+   "depends_on": [
+    "K-162",
+    "K-185"
+   ],
+   "changes": [
+    "scripts/ci/contract_shape_test.py",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "apps/api/src/features/F5/approve-complete/",
+    "apps/api/src/hooks/approve-complete.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "07_qa/test-specs/errors.json",
+    "07_qa/test-specs/k/approve-complete.md",
+    "05_flow/screen_api.py",
+    "05_flow/flow.json",
+    "05_flow/phase1.py",
+    "09_features/",
+    "08_api/db-columns.json",
+    "08_api/ears-ac-seed.json",
+    "03_architecture/ER図.md",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/ci_scope.json"
+   ],
+   "acts": [
+    "A15"
+   ],
+   "screens": [],
+   "apis": [
+    "returnApproval"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db",
+    "@kaname/contracts",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "sections": {
+    "目的": "（2026-11-13 切り直し）この孫は DB と口だけ。画面（差し戻すボタン・理由の小窓）は K-181 が作る（重さの上限：画面と DB を 1 本で触らない）。チケットと試験は古い枝 k63-cut の中身を材料に main から作り直した。\n\n\n承認する人が承認待ちの行かチケットの詳細の帯の「差し戻す」を押し、理由を書いて「差し戻して作り直させる」を押すと、差し戻しが確定し、同じ AI に理由つきの作り直しの仕事（phase make・許可は manual）が積まれ、チケットは実行中に戻る。届いた作り直しは新しい承認待ちの行になり、前の行は差し戻しのまま残る。\n\n確定の時点：承認の行に決めたこと（return）・理由（return_reason）・時刻・状態（returned）・解いた時刻・next_actor clone を 1 回の書き込みで入れた時点。差し戻しの間は帯を出さず、K-62 の帯（作っています）だけを出す（D-128.178）。",
+    "完了の条件": "- 下の表の、この孫の行（口 14 行。画面の 15 行は K-181 が持つ。欠番 API-008・欠番 UI-008 は D-131.1 で消した欠番）が全部緑：K63-API-006・K63-API-007・K63-API-018・K63-API-019・K63-API-020・K63-API-022・K63-API-041・K63-API-049・K63-API-062・K63-API-068・K63-API-070・K63-API-075・K63-API-076・K63-API-077\n- 単体のテスト：`apps/api/test/features/F5/approve-complete-return.test.ts` が緑（試験の土台は `apps/api/test/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から 1 文字も変えずに移した）\n- 口 returnApproval が 501 でなく、契約の形が作り手で作り直されている。生成の試験のうち、この孫の行を指すもの（下の「生成の試験の対応」）が本物の試験を指している\n- 前の孫（depends_on）の試験も緑のまま（この孫の migration・関数の写しが前の孫の分かれ道を変えていない）\n- 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑",
+    "前提と制約": "分類: AI, PERM, CRUD\n\n- 親 K-63「承認して完了する」の孫（2026-11-10・決める人の答え answer=2372305498fb・葉の大きさは試験の行 30 以下）。親の「前提と制約」（流れ F5・K-62 との継ぎ目・このチケットで作るボタンは 承認する・差し戻す の 2 つ・検査なしの印・本人確認を取り直さない・テスト先行）をそのまま受ける\n- 形・言葉・エラーの対応・migration の中身の正本は、親 K-63 の「孫が共有する設計」（入力の形・答えの形・エラーの対応・関門・DB・使う既存の実装・共通の決まり）。この孫が作るのは下の「作り方」の範囲だけ。親の設計のうち、この孫に書いていない所はほかの孫が作る（どの孫かは親の「孫への分け方」）\n- 取り込む順：K-161 → K-162 → K-185 → K-163 → K-164 → K-165 → K-166（どの孫も前の孫の口と関数の上に乗る）。この孫の依存は K-162 と K-185（決める人の答え answer=6ddfa8abc9ed・2026-11-13「K-185 を先に」。契約の形の検査が `{ ...h[\"op\"] }` の口を拾うようになってから、この孫の口 returnApproval を足す。K-185 の前に入れると、この孫の入口の id の形の行（K144-API-054）が「作っていない口の行」として SHAPE_017 で赤になる）\n- 先にある実装（prior_impl k63-impl@a4375be・1 本の migration と口・画面）のうち、この孫の範囲だけを写して直す（写すときは D-131 に合わせた親の設計に従う）\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前にテストを流して赤を確かめない（D-128.143）",
+    "実施事項": "### 作り方（この孫が作るもの）\n\n| 欄 | 中身 |\n|---|---|\n| 契約の形の検査 | 試験の側はこの切る段で書いた（下の「試験のコミットで持ち込むもの」）：apps/api/test/features/contract/k144-contract.test.ts の UUID_PARAM_CASES に `[\"K144-API-054\", \"returnApproval\", \"path\", \"id\"]`（入口の id の形の 422）・BODIES に `returnApproval: { note }`（正しい uuid では 422 にならない体）・REQUIRED_CASES に `[\"returnApproval\", [\"note\"]]` と fullBody の `case \"returnApproval\"`（承認待ちを別の会社に置いて本物の DB で叩く）。実装の段で足すのは検査の側の表だけ：scripts/ci/contract_shape_test.py の REQUIRED_INPUTS に `\"returnApproval\": {\"note\"}`（契約の required と同じ・SHAPE_020）と 05_flow/screen_api.py の REQUIRED_INPUTS（下の「契約」）。口の中身は decide.ts に 1 行の形 `returnApproval: { before: … }` で書いてよい（K-185 の直しの後は拾われる） |\n| 画面 | この孫では作らない。K-181（差し戻すボタンと小窓）が作る |\n| 口 | 親の「API」の `returnApproval`：承認する人だけ（`OP_RULES.returnApproval` は approveApproval と同じ条件）・理由が必須・60 回／分・関門 C2。`decide.ts` に差し戻しを足す（reason_empty → 422・E-VAL-020・欄 note） |\n| DB（migration 1 本） | `<取り込む順の次の空き番号>_approve_return.sql`：親の「migration」の ① の差し戻しの分かれ道を、K-162 の `app.approval_decide` に create or replace で足す（取り込み時点の本線の本体から写す・承認の分かれ道は変えない）：理由が空なら reason_empty・next_actor clone・return_reason・作り直しの仕事（phase make・permission_mode manual・D-131.5・prompt の後ろに理由・作り直しの実行の action_runs.approval_id に差し戻した承認・created_by は任せた人・D-128.176）・チケットを実行中・やり取りの 1 行「高本が差し戻しました：<理由>」・証跡。p_decision が approve・return 以外は bad_decision（K63-API-075 の前半）。作る段の実行が無い承認で requested_by を任せた人にするのは K-162 の承認の分かれ道（K63-API-075 の後半はこの孫で確かめる） |\n| 契約 | `05_flow/screen_api.py`：INPUTS `\"returnApproval\": (\"ApprovalReturnInput\", {\"note\": \"string\"})`・REQUIRED_INPUTS `[\"note\"]`・VALUE_RANGES `{\"note\": {\"pattern\": \"\\\\S\"}}`（上限は書かない）・RESPONSES ApprovalDecided（K-162 と同じ）・4xx 409 E-CONF-003・422 E-VAL-020・503 E-PAGE-003。入口の normalize（NFKC・前後の空白・NUL と C0 を取り除く）の後に空なら 422。作り手を回す |\n| エラー | E-VAL-020「差し戻す理由を書いてください」を errors.json に足す（E-VAL-021 は欠番・理由の上限は置かない・D-131.1） |\n| 生成の試験の対応 | ears-elsewhere.json の returnApproval（file `approve-complete-return.test.ts`・covers：ok→K63-API-006・conflict→K63-API-020・rejected_422→K63-API-007・shape→K63-API-049）と、approveApproval の shape→K63-API-049 を `{\"file\": \"apps/api/test/features/F5/approve-complete-return.test.ts\", \"mark\": \"K63-API-049\"}` の形で足し、生成し直した（apps/api/test/generated/post_approvals_id_return.test.ts・post_approvals_id_approve.test.ts の shape が approve-complete-return.test.ts を見る）。401・403・404・422_2・429 の covers は K-166 が持ち込む |\n| 影響（この孫で受ける） | K-15 の apps/api/test/row_rules.test.ts の「承認：今の担当者だけが承認できる」を「承認・差し戻し：今の担当者だけが承認・差し戻しできる。担当が替わったら前の担当者は denied」に直し、確かめる口に returnApproval を足した（この切る段で書いた・`OP_RULES.returnApproval` が無いうちは赤） |\n| 試験のコミットで持ち込むもの（実装の段では変えない） | tests: の 2 本と 11_tickets/K-163.md のほかに、次をこの孫が試験のコミットで持ち込む（row_rules.test.ts・k144-contract.test.ts・生成の試験は持ち主が別のチケットなので tests: には書かない。書くと test_owner_gate の TO2・TO6 で赤）：① apps/api/test/row_rules.test.ts（ファイルごと・この切る段で変えたのはこの孫の分だけ）② apps/api/test/features/contract/k144-contract.test.ts のうち K-163 の印の行だけ：行の末尾に `// K-163`（または `// K-163（…）`）の 4 行（UUID_PARAM_CASES の K144-API-054・BODIES の returnApproval・REQUIRED_CASES の returnApproval・上限の並びの `\"returnApproval\",`）と、範囲の印 `// K-163 ここから`〜`// K-163 ここまで` の 2 つの塊（道具 approvalCo・approver・pendingApproval の塊と、fullBody の `case \"returnApproval\"` の塊。印の行も含めて写す）。ファイルごと写さない（K-185・K-165 の行が入る）。K-185 の行（土台の approveHooks・共有のコメント 2 行）は先に入った K-185 が本線に置いている ③ 07_qa/test-plan/ears-elsewhere.json の returnApproval の塊（file・reason と covers のうち ok・conflict・rejected_422・shape・session_unresolved・too_large。approve-complete-guard.test.ts を指す rejected_401・rejected_403・not_found・rejected_422_2・rate_limited の 5 つは K-166 が足すので入れない）と、approveApproval の covers の shape の 1 行 ④ 生成の試験（apps/api/test/generated/）は切る段の木から写さない（切る段の木の生成の試験には、まだ本線に無い approve-complete-guard.test.ts を読む K-166 の it も入っていて、写すと ENOENT で赤）。このチケットの枝で、持ち込んだ ears-elsewhere.json の自分の塊から作り手 `node scripts/ci/gen_ears_tests.mjs` で作り直し、作り直した物を試験のコミットに入れる（このチケットでは post_approvals_id_return.test.ts が新しくでき、post_approvals_id_approve.test.ts の shape が approve-complete-return.test.ts を見る形になる） |\n\n持ち込む行の数（k144-contract.test.ts の印）：\n\n```search\n- name: k144-contract.test.ts の K-163 の行の末尾の印（K144-API-054・BODIES・REQUIRED_CASES・上限の並び）\n  cmd: git grep -n -E '// K-163($|（)' -- apps/api/test/features/contract/k144-contract.test.ts\n  count: 4\n- name: k144-contract.test.ts の K-163 の範囲の印（道具の塊と fullBody の case の塊・ここから／ここまで）\n  cmd: git grep -n -E '// K-163 ここ(から|まで)' -- apps/api/test/features/contract/k144-contract.test.ts\n  count: 4\n```\n\n### 決めた判断\n\n（親 K-63 の「決めた判断」のうち、この孫に効く文をそのまま移した）\n\n- 承認・差し戻しができるのは、そのチケットの**今の担当者**だけ（D-128.25・D-128.138）。承認する人は関数の中で今の担当者から引き、承認の行の approver_member_id は決めた時点の担当者に書き直す（担当が替わったら、替わった人が承認する）。担当者がいなければ誰も承認できない。書けない人（app.ticket_writable が偽）も承認できない。入口は「承認待ち」の画面（(work)・チケットを見られる人が開ける・D-131.6）とチケットの詳細の 2 つで、同じ口を呼ぶ（D-125.107・D-012）。承認待ちの一覧は 1 回 20 件を DB 側で絞り、最後の行の次から読み足す（D-131.9）。本人のものでない取り込みの下書きの承認待ちは一覧に出さない（D-131.10）。この口が扱うのは成果物（kind artifact）の承認だけで、ほかの kind の id は 404（D-131.11）。守りは 2 層：口の入口の行の決まり（今の担当者が app.user_id()）と DB の関数の中の判定。どちらか片方を外しても、もう片方が止める。1 件を読めるのは承認する人・マネージャー・作った人・AI に任せた人\n- 承認したら実行してよい。何もなしでは実行しない（D-125.19）。承認では本人確認を取り直さない（D-128.177）。承認は全部「取り消せない」（irreversible true）として記録し、承認待ちの画面の行では決めずに「中身を見る」でチケットの詳細の帯へ（D-128.36・D-128.86・D-128.177）。猶予は置かず、承認したらすぐ実行の仕事を積む（D-125.102）。実行は任せた人の AI が、任せた人の PC で行う（D-128.176）。AI の作業セッションの続きは、作る段を動かしたのと同じ PC が取ったときだけ渡し、別の PC ならチケットの記録の要約から新しい作業セッションで始める（D-131.3・D-129.46）。許可のモードは、承認の後の実行は auto（D-128.177）、差し戻しの後の作り直しは manual（D-131.5・D-129.44）\n- 差し戻すには理由が要る（D-125.103・approvals_return_reason_ck）。差し戻したら、理由をつけて同じ AI にもう一度作らせる（next_actor clone）。チケットは実行中に戻る。届いた作り直しは新しい承認待ちの行になる（前の行は差し戻しのまま残る）\n- 守りの判定が例外で判定できなかったら 503（E-PAGE-003）で止める（決める人の答え answer=75b89fd38579・2026-11-10・この孫の行は差し戻しの K63-API-062）",
+    "テスト仕様と確認の結果": "テストの行 ID は親 K-63 のまま（K63-API-…）。口の行は `apps/api/test/features/F5/approve-complete-return.test.ts`（仕様の表 `07_qa/test-specs/k/approve-complete.md`・タスクの列が K-163）。画面の行は K-181 が持つ。\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：approvals.decision（空・approve・return・self_edit・stop）・status_id（pending・approved・returned）・decided_at（＋24 時間）・withdrawn_at・resolved_at・deleted_at・irreversible・approver_member_id の変化、action_runs.phase（make・execute）と status_id（queued・running・asking・done・stopped・cancelled）、bridge_jobs.state_id・taken_session_id、tickets.stage_id（todo・doing・hold・checking・awaiting_approval・running・done）・deleted_at・parent_ticket_id・completed_at、ticket_sections（todo の版と `- [x]`）、bridge の last_seen_at（75 秒）・revoked_at、members.deleted_at・suspended_at\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 承認待ち（kind が成果物でない承認） | 直に API で 1 件・承認・差し戻し | 承認する人 | 404・E-PAGE-001（この口は成果物の承認だけ・D-131.11） | このチケット | K63-API-068 |\n| 承認待ち（取り消せない操作） | 承認待ちの画面の行 | 承認する人 | 行では決めず「中身を見る」でチケットの詳細へ（D-128.36）。「差し戻す」は行でできる | このチケット | K-181 の UI-003 |\n| 承認待ち | 「差し戻す」と理由 | 承認する人 | 差し戻しを記録し（理由・next_actor clone）、理由つきの作り直しの仕事を積む（作り直しの実行の approval_id に差し戻した承認・created_by は任せた人・仕事の permission_mode は manual・D-131.5）。チケットは実行中。作り直しの間、K-63 の帯は出さず K-62 の帯だけ（D-128.178） | このチケット | K63-API-006・K63-API-070・K-181 の UI-004・K-181 の UI-005・K-181 の UI-006・K-181 の UI-024 |\n| 承認待ち | 「差し戻す」で理由が空・空白だけ・全角空白だけ | 承認する人 | 422・E-VAL-020・欄の下に理由。ブラウザ標準の検証に止められない。何も書かない | このチケット | K63-API-007・K-181 の UI-007 |\n| 承認待ち | 「自分で直す」「止める」 | 承認する人 | 直して確認をやり直す／止める。それまでは、このチケットの画面と帯にこのボタンを出さない（間違った成果物を止める道は「差し戻す」だけ・K-181 の UI-000・K-183 の UI-020 が行の無いボタンを赤にする） | 自分で直す・止める（editApproval・stopApproval・K-61 から切る） | — |\n| 差し戻し済み（決まった） | 「承認する」 | 承認する人 | 409・変えない | このチケット | K63-API-018 |\n| 差し戻し済み・作り直しが届いた | 承認待ちの画面 | 承認する人 | 新しい承認待ちの行として並ぶ（前の行は差し戻しのまま残る） | このチケット | K63-API-019 |\n| 取り下げ済み（withdrawn_at あり） | 「承認する」 | 承認する人 | 409・変えない | このチケット | K63-API-020 |\n| 承認待ち | 一覧・承認する・差し戻す・1 件を開く | 承認する人でない（同じグループの書ける人・作った人・AI に任せた人・マネージャー） | 承認待ちの一覧に出ない。1 件は作った人・AI に任せた人・マネージャーなら読めるが can_decide は false。承認・差し戻しの口は 403・何も書かない。帯は K-62 の「成果物ができました。承認待ちです」だけ（D-128.178） | このチケット | K-166 の API-021・K-181 の UI-021・K-181 の UI-042 |\n| 承認待ち | チケットの詳細を開く | 承認する人・承認する人でない人 | 帯は 1 つだけ（D-128.178）。承認する人には承認の帯（承認して送る・差し戻す）だけで、K-62 の「成果物ができました。承認待ちです」は出ない。承認する人でない人には K-62 の帯だけで、承認の帯は出ない | このチケット | K-181 の UI-042 |\n| 承認待ち | 押す直前に担当が替わった | 開いていた画面のまま | 前の担当者は口で止まる（403）。画面の表示に頼らない。書けない形（本人のものでない取り込みの下書き）は関数が not_writable で止める | このチケット | K63-API-022 |\n| 承認待ち（帯で押した時点でもう決まっていた） | 帯の「承認して送る」・「差し戻す」 | 承認する人 | 409・E-CONF-003。知らせ（role=alert）を出し、帯を読み直して今の状態に替える | このチケット | K-181 の UI-043 |\n| 承認待ち | 行の「差し戻す」→ 理由 →「差し戻して作り直させる」を続けて 2 回押す | 承認する人 | 差し戻しの口は 1 回だけ（答えが来るまで押せない） | このチケット | K-181 の UI-055 |\n| 承認待ち（押した時点でもう決まっていた） | 行から差し戻す | 承認する人 | 409・E-CONF-003。知らせ（role=alert）「この承認はもう処理されています」・小窓を閉じ、一覧を読み直してその行が消える | このチケット | K-181 の UI-056 |\n| 承認待ち（チケットが消された） | 行から差し戻す | 承認する人 | 404・E-PAGE-001。知らせ「見つかりませんでした。消されたか、見る権限が無いかもしれません」・小窓を閉じ、その行が消える | このチケット | K-181 の UI-057 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | 差し戻しの理由が空・空白だけ・全角空白だけ | 422・E-VAL-020（正規化してから判定） | K63-API-007・K-181 の UI-007 |\n| 入力 | 差し戻しの理由が長い（5000 文字） | そのまま通り、理由の全文が承認の行（return_reason）・やり取りの 1 行・作り直しの仕事の prompt に残る（上限なし・D-131.1。欠番 API-008・欠番 UI-008 は消した欠番） | K63-API-076 |\n| 入力 | 差し戻しの理由に HTML・制御文字 | HTML は画面で動かない（文字として出す）。AI へは文としてそのまま渡す（作り直しの仕事の prompt に同じ文）。制御文字：タブ・改行・復帰（\\t \\n \\r）は文のまま残す。NUL（\\u0000）とそれ以外の C0 制御文字（\\u0001〜\\u0008・\\u000B・\\u000C・\\u000E〜\\u001F）は入口の normalize（NFKC・前後の空白と同じ所）で取り除く（NUL は Postgres の text に保存できず 500 になる道を残さない。取り除いた後に空なら E-VAL-020）。断らない・切らない（意味のある文字は 1 つも減らない） | K63-API-041・K-184 の UI-015 |\n| 操作の揺れ | 差し戻しの理由を書きかけで閉じる・再読み込み | 書きかけを失わない（その端末に残す）。送ったら消す | K-181 の UI-010 |\n| 操作の揺れ | 小窓の「やめる」 | 何も送らず閉じる | K-181 の UI-009 |\n| 失敗 | 守りの判定（承認する人か・書けるか・任せた人の状態）の所で例外 | 関数は guard_failed を返し、口は 503・E-PAGE-003。何も書かない（fail-closed）。承認（059）・差し戻し（062）・完了（063）の 3 つとも。完了は入口の行の決まり（write）が先に例外になるので、口の 503 は K-146 の共通の決まりが出す（D-131.7・K-146 の取り込みが前提）。関数の guard_failed と不変は直に呼んで見る | K-162 の API-059・K63-API-062・K-166 の API-063 |\n| 守り | 守りの 2 層目（関数を直に呼ぶ） | 承認する人でない人の member で関数を呼んでも書かない。見るだけの人で完了の関数を呼んでも書かない。p_decision が approve・return 以外なら bad_decision で何も書かない。作る段の実行が無い承認は requested_by を任せた人にして仕事を積む | K-162 の API-051・K-165 の API-052・K63-API-075 |\n| 守り | 一覧・数 | 本人のものでない取り込みの下書き・kind が artifact でない承認は一覧にも数にも出ない（D-131.10・D-131.11） | K-162 の API-067・K63-API-068 |\n| 守り | 抜けた人・守りの例外（全部の口） | K-146 の共通の決まりに従う（抜けた人 403・守りの例外 503・D-131.7）。抜けた人の 403 は op.ts に無く K-166 の API-084 が作る（それまではこの孫の差し戻しの口も抜けた人には 404・NOT_FOUND・何も書かない）。このチケットの試験は自分の口の分（止められた人の K-162 の API-023・K-162 の API-059・K63-API-062・K-166 の API-063）だけ | K-162 の API-023・K-162 の API-059 |\n| 守り | 実行する PC | 任せた人の PC だけ。承認した人・ほかの人の PC には渡らない（D-128.176・D-128.156）。任せた人≠承認する人で 差し戻し → 作り直し → 承認 と回しても、作り直しの実行の created_by が任せた人なので、次の実行の仕事の member_id は任せた人のまま（承認した人の PC には積まれない） | K-162 の API-005・K63-API-077 |\n| 守り | 答えの形 | 承認・差し戻しの答えは id・decision・decided_at・status_id・ticket_id・run_id・pc（live／asleep）だけ | K63-API-049 |\n| 守り | 実行する AI | 実行の仕事は作る段の仕事を動かした人の PC で動かす（承認した人の PC・ほかの人の PC に渡さない・D-128.176）。続きの id は同じ PC のときだけ（D-131.3）・許可のモードは承認の後 auto・作り直し manual（D-131.5） | K-162 の API-005・K-162 の API-009・K63-API-070・K-162 の API-072 |\n| 入口 | 画面の操作要素 | どの操作要素も仕様の表に 1 行ある（モックにあって後の F5 に回すもの（続けて裁く・絞り込みの札・並べ替え・選んだもの・決めた履歴）は骨格の画面に置かない） | K-181 の UI-000・K-183 の UI-020 |\n\n### G 観点（G-11〜G-16・該当／N/A と理由）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | この機能が触る外のリソースは無い。知らせは受け箱（DB の notifications）だけでメールを送らず、置き場・待ち行列・秘密・外の API の設定を使わない。PC（Bridge）は K-57 が持つ。migration は CI の空の DB に当てる既存の段で確かめる |\n| G-12 切り替わりの瞬間 | N/A | この孫の行には無い（受けるのは K-162・K-164。親 K-63 の判定の文：承認から 24 時間の直前・直後（23 時間 59 分・24 時間 1 分・K-164 の API-010）／PC の 75 秒の直前・直後（74 秒・76 秒・K-162 の API-074）／承認した直後に PC が取りに来る（K-162 の API-002・K-162 の API-005）／作る段が終わった直後の帯の切り替わり（K-180 の UI-044）／読む片付けと take が同時（K-164 の API-061）） |\n| G-13 機能の組み合わせ | 該当 | この孫の行：K63-API-022・K63-API-077・K-181 の UI-024（親 K-63 の判定の文：承認 × 差し戻しを同時に（K-164 の API-017）／担当が替わった直後 × 押す・一覧（K63-API-022・K-162 の API-036）／完了 × 走っている実行・承認待ち（K-165 の API-031）／差し戻しの作り直し（phase make）× 帯（K-181 の UI-024）／承認の後の実行 × K-62 の帯（K-182 の UI-025・K-183 の UI-026・K-183 の UI-045）／完了 × もう一度任せる（K-166 の API-055）／任せた人≠承認する人 × 差し戻し → 作り直し → 承認（K63-API-077）） |\n| G-14 口座状態の波及 | 該当 | この孫の行：K63-API-022（親 K-63 の判定の文：押す直前に止められた（K-162 の API-023）・会社から抜けた（K-166 の API-084。それまでは 404）／任せた人が外された・止められた・直せなくなった・PC を外した（K-164 の API-057）／知らせの宛先から抜けた人を除く（K-166 の API-069）／担当が替わった（K63-API-022・K-162 の API-036）。セッション・PC のつながりを切るのは外す操作（F8）と K-62（D-128.179）の受け持ち。全部の口に効く「抜けた人は 403」は、決まりは K-146（D-131.7）・作るのは K-166 の API-084（それまでは 404）） |\n| G-15 信号なし終了 | N/A | この孫の行には無い（受けるのは K-164・K-166。親 K-63 の判定の文：PC が空の結果で「終わった」（E-SIG-004・K-164 の API-013）／PC が落ちて何も来ない → つながり直したときの後始末（K-164 の API-015）／理由が届かずに止まった（D-129.47 の文・K-164 の API-071・K-182 の UI-053）／完了の知らせが送れない（送れたと言わない・K-166 の API-044）） |\n| G-16 有限資源の枯渇 | 該当 | この孫の口も 1 要求＝DB の関数 1 回＝接続 1 本（withTenant のプール経由・関門 C2・専用接続は取らない）。上限に当たったときは 429・retry_after_sec。全体の判定は親 K-63 の G 観点のまま（数を測る行は K-161 の API-066・回数は K-166 の API-045 と K-161 の API-046・消費の実測は L4 の負荷試験） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AI-01 外に出す前 | 差し戻しは外に出さない。作り直しの仕事は manual（AI が許可を求めた操作は実行しない・K63-API-070） |\n| TP-AI-02 取り下げ | 取り下げ済みの承認を差し戻す → 409・変えない（K63-API-020） |\n| TP-PERM-01 役が合わない人 | 帯は決められる人だけ（K-181 の UI-021） |\n| TP-PERM-02 権限を外した直後 | 押す直前に担当が替わった・閲覧のみになった → 403（K63-API-022） |\n| TP-CRUD-01 2 人が同時に直す | 帯で押した時点でもう決まっていた → 409 で知らせと読み直し（K-181 の UI-043） |\n| TP-CRUD-05 保存の途中で失敗 | 差し戻しの守りの判定で例外 → 503・何も書かない（K63-API-062） |\n| TP-CRUD-06 書きかけで戻る・再読み込み | 理由を書きかけで閉じる・再読み込みしても残る（K-181 の UI-010） |\n| TP-CRUD-04 2 回押し | 「差し戻して作り直させる」の 2 回押し（K-181 の UI-055） |\n| TP-CRUD-02 消したものを古いリンクで | 一覧から差し戻した時点でチケットが消されていた → 404 で行を消す（K-181 の UI-057） |\n\n要らない: TP-AI-03 差し戻しは利用量を使わない（作り直しの実行の枠は K-62 の作る段と同じ）\n要らない: TP-AI-04 差し戻しは AI の出力を受けない。長い理由（5000 文字）はそのまま記録に残る入力の行（K63-API-076）\n要らない: TP-PERM-03 この孫では受けない。他の会社の id は K-166 の API-025\n要らない: TP-PERM-04 この孫では受けない。一覧と数に混ざらないのは K-166 の API-053\n要らない: TP-PERM-05 この孫では受けない。担当になった直後は K-162 の API-036\n要らない: TP-CRUD-03 差し戻しには子のあるものを消す・戻す操作が無い",
+    "成果物": "- 口 decide.ts（差し戻し）・row_rules.mjs の OP_RULES.returnApproval／migration `_approve_return.sql`（① の差し戻し）／契約の INPUTS・REQUIRED_INPUTS・VALUE_RANGES／errors の E-VAL-020\n- 単体のテスト：`apps/api/test/features/F5/approve-complete-return.test.ts`（行 14）",
+    "決定ログ": "- 2026-11-13 精査 R の 2 回目を受けて直した：k144-contract.test.ts の持ち込む行を全部印で分かる形にした・生成の試験は写さず枝で作り直すと書いた・ears-elsewhere.json の持ち込む塊を書いた。決める人の答え answer=6ddfa8abc9ed（K-185 を K-163 より前に入れる）\n- 2026-11-13 精査 R の差し戻しを受けて直した：画面の行の持ち主の印を K-179〜K-184 に・row_rules.test.ts と k144-contract.test.ts の差し戻しの行をこの切る段で書いた（試験のコミットで持ち込む）・approveApproval の shape を {file, mark} にして生成し直した・契約の形の検査の拾い漏れ（K-185）を先に入れる順にした\n- 2026-11-10 親 K-63 を孫に分けた（決める人の答え answer=2372305498fb「K-63 だけ孫に分ける」・葉の大きさの決まり 2026-11-10）。行と試験は親の版 c86b9d70（精査 R 回 4 合格）から中身を変えずに移した。決めたことの経緯は親 K-63 の「決定ログ」",
+    "リスクと懸念": "- K-162 の承認の関数を create or replace で写して足すので、写す元は取り込み時点の本線の本体にする（承認の分かれ道を変えると K-162 の試験が赤になる）",
+    "申し送り": "- 差し戻しの後の作り直しで AI が許可を求めた操作は実行しない（manual）。許可に答える口は K-61 から切る（それまでは止まる・K-164 の帯の文 K-182 の UI-052）"
+   },
+   "file": "11_tickets/K-163.md"
   },
   {
    "id": "K-169",

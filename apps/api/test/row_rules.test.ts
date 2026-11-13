@@ -43,17 +43,18 @@ describe("行に結ぶ言葉の条件（K-15）", () => {
   );
 
   // K-63（PM の決め）：承認する人は今のチケットの担当者から引く。承認の行の approver_member_id ではなく、担当を替えて確かめる
-  it("承認：今の担当者だけが承認できる（差し戻しは K-163 が足す）。担当が替わったら前の担当者は denied", async () => {
+  // K-163：差し戻し（returnApproval）も承認と同じ条件（OP_RULES.returnApproval＝今の担当者）。行の決まりは K-163 の実装で足す
+  it("承認・差し戻し：今の担当者だけが承認・差し戻しできる。担当が替わったら前の担当者は denied", async () => {
     const id = await h.freshRow("approvals");
     const t = await h.freshRow("tickets");
     await admin.query("update approvals set ticket_id = $1 where id = $2", [t, id]);
     await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.staffA, t]);
-    for (const op of ["approveApproval"]) {
+    for (const op of ["approveApproval", "returnApproval"]) {
       const r = sqlOf(op);
       expect(await h.repo.rowAllowed(staff, r.table, id, r.sql), op).toBe("ok");
     }
     await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.bossA, t]);
-    for (const op of ["approveApproval"]) {
+    for (const op of ["approveApproval", "returnApproval"]) {
       const r = sqlOf(op);
       expect(await h.repo.rowAllowed(staff, r.table, id, r.sql), op).not.toBe("ok");
     }

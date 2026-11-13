@@ -40,6 +40,9 @@ describe("POST /api/v1/approvals/:id/approve", () => {
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F5/approve-complete-approve.test.ts）：UBIQUITOUS: POST /api/v1/approvals/:id/approve の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
-  it.todo("test_post_approvals_id_approve_shape");
+  it("test_post_approvals_id_approve_shape", () => {
+    // UBIQUITOUS: POST /api/v1/approvals/:id/approve の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // 本物の試験：apps/api/test/features/F5/approve-complete-return.test.ts の「K63-API-049」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/approve-complete-return.test.ts", "utf8")).toContain("K63-API-049");
+  });
 });
