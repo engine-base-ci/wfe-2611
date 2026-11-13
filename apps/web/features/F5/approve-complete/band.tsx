@@ -62,6 +62,8 @@ interface Props<T extends BandTicket> {
   ticketId: string;
   ticket: T;
   run: RunView | null;
+  /** 実行の様子が分かっているか（一覧を読み終えた・任せた実行が届いた）。分かるまでは「完了にする」を出さない */
+  runKnown: boolean;
   /** 読み直したチケット（詳細の全体を差し替える） */
   onTicket: (t: T) => void;
   /** 決めた・断られた：チケットと実行を読み直す */
@@ -89,8 +91,8 @@ function usePolledTicket<T>(ticketId: string, active: boolean, onTicket: (t: T) 
 
 /** ⑥ 完了にできるか：段が作業中・承認待ちが無い・走っている実行が無い（作る段も）・口が can.complete と答えた。
  *  AI に任せていない（実行の記録が無い）チケットでも出す（K63-UI-059） */
-function canCompleteNow(ticket: BandTicket, run: RunView | null): boolean {
-  if (isActive(run) || ticket.approval) return false;
+function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown: boolean): boolean {
+  if (!runKnown || isActive(run) || ticket.approval) return false; // 「走っている実行が無い」は分かってから数える（K63-UI-069〜071）
   return ticket.can?.complete === true && ticket.stage?.key === COMPLETABLE_STAGE;
 }
 
@@ -99,10 +101,17 @@ const sectionOf = (ticket: BandTicket, key: string, fallback: string) => {
   return { label: s?.label ?? fallback, text: s?.body?.text ?? "", version: s?.version ?? 0 };
 };
 
-export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTicket, onChanged }: Props<T>) {
+export function ApproveBand<T extends BandTicket>({
+  ticketId,
+  ticket,
+  run,
+  runKnown,
+  onTicket,
+  onChanged,
+}: Props<T>) {
   usePolledTicket(ticketId, isActive(run), onTicket);
   const [notice, setNotice] = useState<string | null>(null);
-  const [completing, setCompleting] = useState(false); // 完了の小窓（読み直しで帯の中身が替わっても閉じない）
+  const [completing, setCompleting] = useState(false); // 完了の小窓（「完了にする」を出せる間だけ開く）
   /** 口が断った（409・404 など）：知らせを出して読み直す。401 は入り直し（共通の扱い・戻る先にこのチケット） */
   const failed = async (r: CallErr) => {
     if (r.status === 401) return;
@@ -112,6 +121,11 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
 
   const approval = ticket.approval ?? null;
   const execute = run?.phase === "execute" ? run : null;
+  const complete = canCompleteNow(ticket, run, runKnown);
+  // 「完了にする」を出さない形に替わったら（実行が走り出した・承認待ちになった・段が変わった）、開いていた小窓も閉じる
+  useEffect(() => {
+    if (!complete) setCompleting(false);
+  }, [complete]);
   const body = (() => {
     if (ticket.stage?.key === "done") return ticket.completed ? <p>{completedLine(ticket.completed)}</p> : null; // ⑦
     if (approval?.can_decide)
@@ -119,7 +133,6 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
     if (approval && ticket.assignee === null) return <p>{MSG.noAssignee}</p>;
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
     const line = execute ? executeLine(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
-    const complete = canCompleteNow(ticket, run);
     if (!line && !complete) return null;
     return (
       <>
@@ -129,12 +142,13 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, onTic
     );
   })();
 
-  if (!body && !notice && !completing) return null;
+  const dialogOpen = completing && complete;
+  if (!body && !notice && !dialogOpen) return null;
   return (
     <section aria-label={BAND_LABEL} className="k62-band k-section">
       {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {body}
-      {completing ? (
+      {dialogOpen ? (
         <CompleteDialog
           ticketId={ticketId}
           todo={sectionOf(ticket, "todo", "実施事項")}

@@ -54,7 +54,8 @@ export function useRuns(ticketId: string) {
       return r.data as unknown as RunView[];
     },
     retry: false,
-    refetchInterval: (q) => (isActive(q.state.data?.[0]) ? POLL_MS : false),
+    // 先頭が走っている間と、任せた実行がまだ一覧に出ていない間（読み直しが失敗しても次で追いつく・K63-UI-072）
+    refetchInterval: (q) => (isActive(q.state.data?.[0]) || pinned !== null ? POLL_MS : false),
   });
   const headId = runs.data?.[0]?.id ?? null;
   const stillPinned = isPinned(pinned, runs.data);
@@ -76,6 +77,8 @@ export function useRuns(ticketId: string) {
   return {
     runs: runs.data ?? null,
     current,
+    /** 実行の様子が分かっているか：一覧を 1 回は読み終え、任せた実行が一覧に出ていて、今の実行の中身が届いている（K63-UI-069〜071） */
+    known: runs.data !== undefined && !stillPinned && (currentId === null || current !== null),
     /** 任せた後・別のタブの実行に替わったとき：その実行を読み、一覧も読み直す */
     follow: async (runId: string) => {
       setPinned({ id: runId, headWas: headId });
