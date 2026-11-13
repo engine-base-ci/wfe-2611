@@ -1,5 +1,5 @@
 {
- "_doc": "生成物の目録（D-128.123・K-38）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す。outputs は作り手が実際に書くファイルとちょうど同じにする（K-191）：作り手が outputs の外の版に入ったファイルを書いたら赤（F5）、outputs に当たるのにどの作り手も書かないファイルがあれば赤（F6。中身が同じ回は書かない作り手の物は、理由つきで not_always_written に載せる）。ticket-flow.yaml の changes_ignore も同じ並びにする（取り込みでぶつかったら本線の版にして作り直す物）",
+ "_doc": "生成物の目録（D-128.123・K-38）。scripts/ci/generated_gate.py が、作り手を順に全部回して、作る前と後で中身が変わった生成物を赤にする（日付だけの違いは見ない）。目録に無い生成物（先頭 3 行に「生成物」「手で直さない」などと書いたファイル）も赤。作り手を足したら、ここに 1 行足す。outputs は作り手が実際に書くファイルとちょうど同じにする（K-191）：作り手が outputs の外の版に入ったファイルを書いたら赤（F5）、outputs に当たるのにどの作り手も書かないファイルがあれば赤（F6。中身が同じ回は書かない作り手の物は、理由つきで not_always_written に載せる）。ticket-flow.yaml の changes_ignore も同じ並びにする（取り込みでぶつかったら本線の版にして作り直す物）。作り手の欄 dated は、その作り手の outputs のうち「作った日」を刻む物の並び（glob 可）：作り直しの台本 scripts/tickets/regen_all.py が、今日の刻みだけの違いを元に戻すのは dated に当たる道だけ（期限・決めた日を持つ 11_tickets の一覧と要件一覧は入れない）",
  "generators": [
   {
    "name": "画面の部品のトークン",
@@ -20,6 +20,9 @@
    "run": "python3 05_flow/build_functional.py",
    "outputs": [
     "07_functional/*"
+   ],
+   "dated": [
+    "07_functional/*"
    ]
   },
   {
@@ -36,6 +39,14 @@
     "08_api/openapi.yaml",
     "08_api/screen-api-coverage.json",
     "08_api/types.ts"
+   ],
+   "dated": [
+    "08_api/API-SPEC.md",
+    "08_api/api-decisions.json",
+    "08_api/api-spec.html",
+    "08_api/endpoints.json",
+    "08_api/openapi.yaml",
+    "08_api/screen-api-coverage.json"
    ]
   },
   {
@@ -60,6 +71,13 @@
     "07_qa/test-plan/test-plan.md",
     ".github/workflows/v3-gate.yml",
     ".github/workflows/release-gate.yml"
+   ],
+   "dated": [
+    "07_qa/test-plan/access-matrix.json",
+    "07_qa/test-plan/ears-test-mapping.json",
+    "07_qa/test-plan/test-plan.html",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md"
    ]
   },
   {

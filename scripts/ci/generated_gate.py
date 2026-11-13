@@ -62,13 +62,13 @@ class Run(NamedTuple):
     wrote: dict[str, list[str]]     # 作り手の name → 書いたファイル（中身が同じでも・F5 と F6 が読む）
 
 
-def stamps(files: list[str]) -> dict[str, tuple[int, int] | None]:
-    """ファイルごとの更新の時刻（と入れ物の番号）。無い物は None"""
-    out: dict[str, tuple[int, int] | None] = {}
+def stamps(files: list[str]) -> dict[str, tuple[int, int, int] | None]:
+    """ファイルごとの更新の時刻（と入れ物の番号・大きさ）。無い物は None"""
+    out: dict[str, tuple[int, int, int] | None] = {}
     for f in files:
         try:
             st = os.stat(os.path.join(ROOT, f))
-            out[f] = (st.st_mtime_ns, st.st_ino)
+            out[f] = (st.st_mtime_ns, st.st_ino, st.st_size)
         except (FileNotFoundError, NotADirectoryError):
             out[f] = None
     return out
@@ -183,7 +183,8 @@ def gate() -> int:
     fails += [f"F2 作り手が落ちた: {b}" for b in broken]
     fails += [f"F3 目録に無い生成物（generated.json に作り手を足すか、理由を書く）: {f}" for f in coverage(files)]
     fails += outside_catalog(wrote)
-    fails += never_written(files, wrote)
+    if not broken:   # 作り手が落ちた回は、書かれなかった物が F6 に重なって出るだけなので F2 だけにする
+        fails += never_written(files, wrote)
     for w in warns[:20]:
         print("  warn", w)
     if len(warns) > 20:
