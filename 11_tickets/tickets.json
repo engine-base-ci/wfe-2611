@@ -7965,7 +7965,9 @@
     "scripts/ci/ci_lean_test.py",
     "11_tickets/K-156.md"
    ],
-   "affects": [],
+   "affects": [
+    "@kaname/web"
+   ],
    "ci_wide": [
     "ci"
    ],
