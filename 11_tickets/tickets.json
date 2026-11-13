@@ -8358,7 +8358,8 @@
    "changes": [
     "apps/web/features/F5/delegate/",
     "apps/web/features/F5/approve-complete/",
-    "apps/web/features/F4/create-ticket/"
+    "apps/web/features/F4/create-ticket/",
+    "07_qa/test-specs/k/approve-complete.md"
    ],
    "acts": [
     "A15"
