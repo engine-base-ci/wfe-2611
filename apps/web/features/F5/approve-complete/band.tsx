@@ -101,14 +101,7 @@ const sectionOf = (ticket: BandTicket, key: string, fallback: string) => {
   return { label: s?.label ?? fallback, text: s?.body?.text ?? "", version: s?.version ?? 0 };
 };
 
-export function ApproveBand<T extends BandTicket>({
-  ticketId,
-  ticket,
-  run,
-  runKnown,
-  onTicket,
-  onChanged,
-}: Props<T>) {
+export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKnown, onTicket, onChanged }: Props<T>) {
   usePolledTicket(ticketId, isActive(run), onTicket);
   const [notice, setNotice] = useState<string | null>(null);
   const [completing, setCompleting] = useState(false); // 完了の小窓（「完了にする」を出せる間だけ開く）
