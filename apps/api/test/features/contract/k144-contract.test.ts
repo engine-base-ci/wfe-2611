@@ -14,6 +14,7 @@ import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
 import { createApp } from "../../../src/app.js";
 import { agentHooks } from "../../../src/hooks/agent.js";
+import { approveHooks } from "../../../src/hooks/approve-complete.js"; // K-185：承認の口（K-161〜K-166）も同じ土台で叩く
 import { delegateHooks } from "../../../src/hooks/delegate.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
@@ -133,7 +134,9 @@ const draftsOf = () => count("select count(*) as n from app.ticket_drafts where 
 
 beforeAll(async () => {
   // 本物のサーバー（apps/api/src/server.ts）と同じ順：K-60 の工場の後に K-62 の工場（作った口の uuid の行を叩くため・K-62）
-  f = await makeFixture([ticketHooks, agentHooks, delegateHooks]);
+  // K-185 ここから：承認して完了する（K-63 の孫）の口も足す（作った口の uuid の行を叩くため）
+  f = await makeFixture([ticketHooks, agentHooks, delegateHooks, approveHooks]);
+  // K-185 ここまで
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -487,6 +490,9 @@ export const UUID_PARAM_CASES = [
   ["K144-API-051", "getJobControl", "path", "id"],
   ["K144-API-052", "callKanameTool", "path", "id"],
   ["K144-API-053", "finishBridgeJob", "path", "id"],
+  // 承認して完了する（K-63 の孫）の口。行ごとに、その口を作るチケットが試験のコミットで持ち込む（作っていない口の行は SHAPE_017 で赤・まとめて持ち込まない）・このコメントは先に入る K-185 が持つ // K-185
+  ["K144-API-056", "getApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
+  ["K144-API-057", "approveApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
@@ -496,6 +502,7 @@ const BODIES: Record<string, unknown> = {
   // K-62 の口：必須の欄（REQUIRED_INPUTS）を入れて、正しい uuid では 422 にならない体（無い仕事・チケットは 404）
   reportJobProgress: { seq: 1, kind: "status", text: "見ています" },
   finishBridgeJob: { state: "stopped" },
+  // 承認して完了する（K-63 の孫）：必須の欄を入れて、正しい uuid では 422 にならない体（無い承認・チケットは 404）・このコメントは先に入る K-185 が持つ // K-185
 };
 /** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
 const OTHER_PATH: Record<string, string> = { name: "ticket_read" };

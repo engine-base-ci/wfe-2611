@@ -971,3 +971,16 @@ K-180,承認するボタンと承認の帯（画面）（K-63 の孫）,タス�
 - 単体のテスト：`apps/web/tests/features/F5/approve-complete-approve.spec.ts` が緑（試験の土台は K-179 の `apps/web/tests/features/F5/approve-complete.harness.ts`。行の中身は親 K-63 の試験から変えずに移した）
 - 画面は K-162 の口を呼ぶだけ（口・契約・生成の試験は変えない）。K-179 の試験（画面 8 行）は緑のまま
 - チケットの CI が緑"
+K-185,契約の形の検査が作った口を拾い漏らす（承認待ちの 1 件・承認するが入口の id の形の試験の対象から外れている）,課題,K-1,未着手,作る,2026-11-13,基盤・CI,"2026-11-13、K-163 の切り直しで見つけた（前からある別の場所の問題）。scripts/ci/contract_shape_test.py の hook_regions（作った口を拾う所）が、
+apps/api/src/hooks/approve-complete.ts に並ぶ口（listApprovalQueue・getApproval・approveApproval）を 1 本も拾わない。
+そのため getApproval・approveApproval は、入口の id の形の試験（UUID_PARAM_CASES・SHAPE_017）と必須の欄の決まり（SHAPE_020）の対象から外れている。
+
+拾わない訳（確かめた）：hook_regions は `{ ...h[""op""] }` を読む作り（contract_shape_test.py の hook_regions の `...h[` の分かれ道）で、
+`...h[""getApproval""]` から機能のファイル（apps/api/src/features/F5/approve-complete/queue.ts・decide.ts）の中身を hook_blocks で探す。
+ところが hook_blocks は `    opName: {` で行が終わる形（複数行の口）しか口の頭として読まない。承認の口は `approveApproval: { before: (a: HookArgs) => decide(…) },` の
+1 行の形で書いてあるので中身が見つからず、parts が空のまま口ごと外れる（黙って外れ、赤にならない）。
+K-163（returnApproval）・K-165（completeTicket）も同じ 1 行の形で足すので、この直しが先に入らないと、両方の口も拾われず、
+K-163・K-165 が試験のコミットで足す入口の id の形の行（K144-API-054・055）が SHAPE_017 で「作っていない口の行」として赤になる。だからこの課題は K-163 より前に取り込む（K-163 の depends_on に K-185）。","- [ ] hook_regions が、hooks のファイルに `{ ...h[""op""] }` で並ぶ口を、中身が 1 行の形でも複数行の形でも全部拾う（listApprovalQueue・getApproval・approveApproval を含む）
+- [ ] hooks のファイルに並ぶのに中身を読めない口があれば、黙って外さずに名前を出して赤（何も見ていないのに緑にしない）
+- [ ] 拾われるようになった口の入口の id の形の行が UUID_PARAM_CASES にあり（SHAPE_017 が緑）、体を受ける口（approveApproval）は REQUIRED_INPUTS か NO_REQUIRED_INPUTS にある（SHAPE_020 が緑）
+- [ ] 試験 K185-CS-001〜004 が緑・`python3 scripts/ci/contract_shape_test.py` が緑・チケットの CI が緑"
