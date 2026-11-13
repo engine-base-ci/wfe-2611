@@ -330,7 +330,8 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
     expect(r1.error_summary).toBe(long); // 400 字で切らない
     expect((await jobOf(a1.execJobId))["stopped_reason"]).toBe(long);
     expect((await messagesOf(t1.id)).at(-1)!.body).toContain(long); // やり取りの 1 行も全文
-    for (const reason of ["", null]) {
+    // 理由が空・理由の欄を送らない（契約の reason は文字。null は入口が 422 で断るので送らない）
+    for (const reason of ["", undefined]) {
       const t2 = await ticket();
       const a2 = await approved(t2);
       expect((await take(a2.pc))?.id).toBe(a2.execJobId);
@@ -445,7 +446,8 @@ describe("K-63 承認して完了する：積む仕事の中身（口・本物�
       );
       const g = await req("GET", `/tickets/${t.id}`, { headers: auth(boss) });
       expect(g.status, await g.clone().text()).toBe(200);
-      expect(((await json(g)).data as Record<string, unknown>)["id"]).toBe(t.id);
+      const got = (await json(g)).data as { ticket?: { id?: string } }; // チケットの詳細の答えは data.ticket（契約 TicketDetail・K-60）
+      expect(got.ticket?.id).toBe(t.id);
       // 片付けは飛ばした：仕事は待ったまま・聞き直しの行は無い・前の承認は approve のまま
       expect(await jobOf(a.execJobId)).toMatchObject({ state_id: "queued" });
       expect(await openApprovals(t.id)).toBe(0);

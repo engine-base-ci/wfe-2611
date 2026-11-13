@@ -23,6 +23,7 @@
 // 試験が前提にする DB の形（このチケットの migration・番号は取り込む順の次の空き番号）：app.approval_decide・app.ticket_execute_expire・app.ticket_complete・
 //   引き金 app.ticket_execute_job_end・action_runs.approval_id（K-62）・tickets.completed_at／completed_by・bridge_jobs.resume_session_id（作業セッションの記録を持つ PC・D-131.3）
 // 一覧は 1 回 20 件・続きは鍵の文字列（due_on・created_at・id を | でつないで base64url・D-131.9）。片付けで止めた仕事は stopped（D-131.14）。差し戻す理由・止まった理由に上限は無く、切らない（D-131.1・2）
+import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, expect } from "vitest";
 import { createRepository } from "@kaname/db/repository";
 import { type TenantContext } from "@kaname/db/context";
@@ -233,7 +234,7 @@ export async function delegated(
 ): Promise<Delegated> {
   const tm = o.by ?? (await team());
   const by = tm.by;
-  const agentSession = `k63-sess-${Math.random().toString(36).slice(2)}`;
+  const agentSession = randomUUID(); // 続きの id は uuid（PC の口の契約は uuid だけを受ける・D-129.42。K-62 の試験と同じ形）
   const job = await one<{ id: string }>(
     `insert into bridge_jobs (tenant_id, scope_id, member_id, kind, state_id, prompt, agent_session_id, result, started_at, finished_at, taken_session_id)
      values ($1, $2, $3, 'ticket', 'done', '（作る段）', $4, $5, now() - interval '2 minutes', now() - interval '1 minute', $6) returning id`,
