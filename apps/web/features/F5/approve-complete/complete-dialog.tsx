@@ -9,7 +9,7 @@ import { isUuid } from "@kaname/contracts";
 import { Button, Dialog } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { catalogMessage, messageOf } from "./message";
-import { todoItems, type Problem } from "./complete-model";
+import { checkedNumbers, todoItems, type Problem } from "./complete-model";
 import "./approve.css";
 
 /** 小窓の中に出す 422（正本の ID）。ほかは呼んだ側の知らせ */
@@ -46,10 +46,14 @@ function problemOf(r: CallErr): Problem {
 
 /** 小窓の中の値（チェック・確かめ・知らせ）と「確かめて完了にする」。2 回押しでも口は 1 回 */
 function useComplete({ ticketId, todo, onClose, onDone, onFailed }: Props) {
-  const items = todoItems(todo.text);
+  // 開いた時点の項目の並びと版を固定する。開いている間にチケットが読み直されても、古い並びのチェックを新しい版で送らない
+  //   （その間に実施事項が変わっていれば、口が版の違いで 409・E-CONF-017 を返す）
+  const [opened] = useState(() => ({ items: todoItems(todo.text), version: todo.version }));
+  const { items } = opened;
   const [checked, setChecked] = useState<boolean[]>(() => items.map((x) => x.done));
   const [confirmed, setConfirmed] = useState(false);
   const [problems, setProblems] = useState<Problem[]>([]);
+  const [local, setLocal] = useState(false); // 今出している知らせが、口を呼ぶ前の確かめのものか
   const [busy, setBusy] = useState(false);
   const sending = useRef(false); // 答えが来るまで 2 本目を送らない（押せない間の click も含む）
 
@@ -63,18 +67,18 @@ function useComplete({ ticketId, todo, onClose, onDone, onFailed }: Props) {
   };
   const send = async () => {
     if (sending.current) return;
-    const local = missing();
-    setProblems(local);
-    if (local.length) return;
+    const lacking = missing();
+    setProblems(lacking);
+    setLocal(lacking.length > 0);
+    if (lacking.length) return;
     sending.current = true;
     setBusy(true);
     try {
       const r = await call("completeTicket", {
         params: { id: ticketId },
         body: {
-          // 生成の型は並びの中身を string にするが、口は 0 からの整数だけを受ける（文字だと 422）。数で送る
-          todo_checked: items.flatMap((_, i) => (checked[i] ? [i] : [])) as unknown as string[],
-          todo_version: todo.version,
+          todo_checked: checkedNumbers(checked),
+          todo_version: opened.version,
           conditions_confirmed: true,
         },
         screenId: "tickets",
@@ -93,23 +97,39 @@ function useComplete({ ticketId, todo, onClose, onDone, onFailed }: Props) {
       setBusy(false);
     }
   };
-  const toggle = (i: number, on: boolean) => setChecked((c) => c.map((v, j) => (j === i ? on : v)));
-  return { items, checked, toggle, confirmed, setConfirmed, problems, busy, send };
+  /** チェックを入れ直したら、口を呼ぶ前の確かめの知らせは消す（口から来た 422 の明細は残す） */
+  const edited = () => {
+    if (local) setProblems([]);
+    setLocal(false);
+  };
+  const toggle = (i: number, on: boolean) => {
+    setChecked((c) => c.map((v, j) => (j === i ? on : v)));
+    edited();
+  };
+  const confirm = (on: boolean) => {
+    setConfirmed(on);
+    edited();
+  };
+  /** 答えを待っている間は閉じない（開き直して 2 本目を送らせない） */
+  const close = () => {
+    if (!sending.current) onClose();
+  };
+  return { items, checked, toggle, confirmed, confirm, problems, busy, send, close };
 }
 
 export function CompleteDialog(props: Props) {
-  const { todo, conditions, onClose } = props;
+  const { todo, conditions } = props;
   const c = useComplete(props);
   return (
     <Dialog
       title="完了にする"
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) c.close(); // Esc・外側のクリック
       }}
       actions={
         <>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={c.close} disabled={c.busy}>
             やめる
           </Button>
           <Button onClick={() => void c.send()} loading={c.busy} disabled={c.busy}>
@@ -147,7 +167,7 @@ export function CompleteDialog(props: Props) {
           </fieldset>
         ) : null}
         <label className="k63-check">
-          <input type="checkbox" checked={c.confirmed} onChange={(e) => c.setConfirmed(e.target.checked)} />
+          <input type="checkbox" checked={c.confirmed} onChange={(e) => c.confirm(e.target.checked)} />
           <span>完了の条件を満たしたことを確かめました</span>
         </label>
         {c.problems.length ? <Problems problems={c.problems} /> : null}

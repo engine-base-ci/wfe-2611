@@ -1,5 +1,9 @@
 // 完了にする（K-183）の画面が読む形と、口と同じ数え方（口は K165 の app.ticket_complete）。
 //   実施事項の項目＝本文の「- 」で始まる行（字下げした行も 1 項目）。上から 0 で数える。済みは「- [x]」（大文字の X も）
+import type { Ops } from "@kaname/contracts";
+
+type TicketCompleteInput = Ops["completeTicket"]["body"];
+
 export interface TodoItem {
   /** 項目の文（頭の「- 」と印を除く） */
   text: string;
@@ -19,6 +23,14 @@ export function todoItems(text: string): TodoItem[] {
       const rest = done ? line.replace(/^\s*- \[[xX]\]\s*/, "") : line.replace(/^\s*- (\[ ?\]\s*)?/, "");
       return { text: rest.trimEnd(), done };
     });
+}
+
+/** 口に送る番号（入っている項目の番号・済みの項目も入る）。
+ *  生成の型（TicketCompleteInput.todo_checked）は並びの中身を string にしているが、口は 0 からの整数だけを受ける（文字だと 422）。
+ *  型を偽るのはこの 1 か所だけ。契約の生成が number[] を出すようになったら、この言い換えを外す（K-183 の申し送り） */
+export function checkedNumbers(checked: boolean[]): TicketCompleteInput["todo_checked"] {
+  const numbers: number[] = checked.flatMap((on, i) => (on ? [i] : []));
+  return numbers as unknown as TicketCompleteInput["todo_checked"];
 }
 
 /** getTicket の答えの完了（K165 が足す）。by は押した人の表示名（引けなければ null） */
