@@ -231,8 +231,10 @@ class StagingSpecShape(unittest.TestCase):
         self.assertRegex(steps_ts, r"company:\s*`統合テストの会社 ", "会社の名前に「統合テスト」の印")
 
     def test_K65_FM_011_fake_claude_runs_here(self) -> None:
-        mode = subprocess.run(["git", "ls-files", "-s", "--", str(FAKE.relative_to(ROOT))], cwd=ROOT, capture_output=True, text=True, check=True).stdout
-        self.assertTrue(mode.startswith("100755 "), "偽の Claude Code は実行の許可つきで版に入っている")
+        listed = subprocess.run(["git", "ls-files", "-s", "-z", "--", str(FAKE.relative_to(ROOT))], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        entries = [e for e in listed.split("\0") if e]   # -z：名前を化けさせずに \0 区切りで読む（つなぎの検査の決まり）
+        self.assertEqual(len(entries), 1, "偽の Claude Code が版に入っている")
+        self.assertTrue(entries[0].startswith("100755 "), "偽の Claude Code は実行の許可つきで版に入っている")
         self.assertEqual(read(FAKE).splitlines()[0], "#!/usr/bin/env node", "1 行目で node を呼ぶ")
         out = subprocess.run([str(FAKE), "--version"], capture_output=True, text=True, timeout=60)
         self.assertEqual(out.returncode, 0, "この台で、台本をそのまま起こせる（輪の「動くかで決める」と同じ確かめ）")
