@@ -1164,3 +1164,10 @@ K-205,代表の Mac の Bridge アプリを staging につないで、登録か�
 
 中身（どの画面で何を押すか・できたかの確かめ方）は、K-65 の切る段で書く（split: これから）。","- [ ] 代表の Mac の Bridge アプリが staging につながり、登録 → PC をつなぐ → チケットを作る → AI に任せる → 承認して送る → 完了、が 1 回通った
 - [ ] 通った日と、止まった所（あれば）を、このチケットの確認の結果に書いた（値・合言葉は書かない）"
+K-206,コミットの名義が配る側のチームの物でないと、配り（Vercel）が黙って止まる。名義を検査で止める,課題,K-1,未着手,実装,2026-11-14,基盤・CI,"2026-11-14 に PM が確かめた事実：GitHub の main に入るたびに、Vercel の 2 つのプロジェクト（kaname-api・kaname-web）が commit status「Deployment was blocked」（failure）を返していた（`gh api repos/engine-base/Kaname/commits/<sha>/status`）。2 日分・約 30 本のチケットが 1 つも staging に配られていなかった。
+
+訳：コミットの名義（author）が、Vercel のチームに入っていない利用者（個人の GitHub の利用者）だった。チームに入っているのは組織の利用者だけ。11/2 頃までのコミットは組織の名義（メールの @ の後ろが engine-base.com）で、その後、作業フォルダの git の名義が個人の物に変わっていた。配りが止まっても CI は緑なので、だれも気づかなかった。
+
+PM は 2026-11-14 に、このリポジトリの git の名義（local の user.name・user.email）を組織の物に替えた（作業場所は設定を共有する）。このチケットは、名義がまた変わったときに、GitHub に出す前に機械で止める：本線との差分のコミットの author のメールが、決めたドメインで終わらなければ赤にする検査を、CI の static の組に足す。","- [ ] 下の 12 行（K206-AG-001〜012）が緑
+- [ ] チケットの CI が緑（static の組の名義の検査の段が、このチケットの枝のコミットを見て緑。出力に「N 本を見た」がある）
+- [ ] 取り込んだ後、PM が main の先頭のコミットの Vercel の commit status（`gh api repos/engine-base/Kaname/commits/<sha>/status`）を見て、kaname-api・kaname-web の 2 つが「Deployment was blocked」でないことを確かめ、結果（state と文）をこのチケットの「確認の結果」に書く。このチケットの取り込みが、組織の名義で main に入る最初のコミットになる。まだ blocked なら、訳（`Co-Authored-By:` の行・取り込みのコミットの名義・ほか）を切り分けるチケットを切る"
