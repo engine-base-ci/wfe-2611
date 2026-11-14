@@ -9,13 +9,14 @@
 
 ## 0. いまの実際（2026-11-14・K-37 の「前提と制約」の写し）
 
-| もの                                                                                                                | 状態                                                                          | どこで分かるか                                |
-| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------- |
-| GitHub のリポジトリ（S0）・Supabase（S1）・Infisical（S1b）・Vercel の API（S2）・Resend（S3）・Vercel の画面（S4） | 済み（2026-11-08・人の準備のチケットは完了）                                  | 11_tickets の K-78〜K-82                      |
-| 配る道すじ                                                                                                          | Vercel が GitHub の main を見て自分で配る。`.github/workflows` に配る段は無い | Vercel の画面（設定はリポジトリから見えない） |
-| staging の住所                                                                                                      | リポジトリのどこにも書かない。CI には GitHub の secrets の名前で渡す          | 下の「CI から staging を指す名前」            |
-| 立っているかの確かめ                                                                                                | 台本で見る（人が画面で見ない）                                                | S5 の `python3 scripts/ci/staging_health.py`  |
-| 途中でチャットに出た秘密                                                                                            | 取り替える（人の準備）                                                        | 下の「秘密の取り替え」                        |
+| もの                                                                                                                | 状態                                                                                                      | どこで分かるか                                |
+| ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| GitHub のリポジトリ（S0）・Supabase（S1）・Infisical（S1b）・Vercel の API（S2）・Resend（S3）・Vercel の画面（S4） | 済み（2026-11-08・人の準備のチケットは完了）                                                              | 11_tickets の K-78〜K-82                      |
+| 配る道すじ                                                                                                          | Vercel が GitHub の main を見て自分で配る。`.github/workflows` に配る段は無い                             | Vercel の画面（設定はリポジトリから見えない） |
+| staging の住所                                                                                                      | リポジトリのどこにも書かない。CI には GitHub の Environment `staging` の Environment secrets の名前で渡す | 下の「CI から staging を指す名前」            |
+| Supabase のプロジェクトの名前                                                                                       | `Kaname`（S1 の手順の例 `kaname-staging` ではない）                                                       | Supabase の画面                               |
+| 立っているかの確かめ                                                                                                | 台本で見る（人が画面で見ない）                                                                            | S5 の `python3 scripts/ci/staging_health.py`  |
+| 途中でチャットに出た秘密                                                                                            | 取り替える（人の準備）                                                                                    | 下の「秘密の取り替え」                        |
 
 コード側（API を Vercel の関数 1 本にする入口・組み立て・Bridge の問い合わせ）は済み（`apps/api/src/vercel.ts`・`apps/api/build-vercel.mjs`・`apps/api/vercel.json`）。
 
@@ -87,7 +88,7 @@
    python3 scripts/ci/staging_health.py --applied "$APPLIED"
    ```
 
-   DB を読む台本は `STAGING_DATABASE_ADMIN_URL` でつなぎ、読むだけの取引の中で `app.schema_migrations` の名前を 1 回読むだけ（書かない）。手元（127.0.0.1）のほかは必ず TLS でつなぎ、証明書を確かめる。接続の文字列に付けてよい指定は sslmode の require・verify-ca・verify-full だけで、TLS を外す指定（disable・no-verify など）が在ればつながずに止まる。DB の側の証明書が自前の認証局の物なら、その認証局の証明書のファイルを Node の環境の値 `NODE_EXTRA_CA_CERTS` で渡す（確かめを外さない）
+   DB を読む台本は `STAGING_DATABASE_READ_URL`（読むだけの役 `kaname_ci_read` の接続）でつなぎ、読むだけの取引の中で `app.schema_migrations` の名前を 1 回読むだけ（書かない）。手元（127.0.0.1）のほかは、接続の文字列に `sslmode=verify-full` が無ければ、つなぐ前に終わりの値 2 で止まる。つなぐときは証明書と名前を確かめる。TLS を外す・弱める指定が在ればつながない。DB の側の証明書が自前の認証局の物で確かめが通らないときも、**確かめは外さない**：認証局の証明書（公開の物・秘密ではない）を `infra/certs/` に置き、健康診断の段の env に `NODE_EXTRA_CA_CERTS`（その道）を作り手で足す
 
 3. 終わりの値：**DB も見る回（CI の staging を指す回）で 0、手元では 3（DB は見ていない）**。1 は赤（★ の行を見る）。2 は名前が無い・住所が https の出どころだけの形でない（口に当てていない）。3 を緑と読まない。配り直した直後の数十秒は古い版が答えることがあるので、migration の行が赤なら少し待って流し直す。この台本で見えないもの：migration を足さない版の配りの遅れ・画面の版・メールの送る鍵（Vercel の画面と、最初の筋の通しで見る）
 4. 画面から新規登録 → 確認メール → Bridge をつなぐ → 自分のAIと話す、を 1 周（L2）
@@ -110,27 +111,50 @@
 | NODE_ENV／BASE_URL／WEB_BASE_URL                                                                                             | Claude（値は秘密でない）               | Vercel の URL                                    | API                                                     |
 | NEXT_PUBLIC_API_BASE                                                                                                         | Claude（値は秘密でない）               | kaname-api の URL                                | 画面                                                    |
 
-## 3b. CI から staging を指す名前（GitHub の repository secrets）
+## 3b. CI から staging を指す名前（GitHub の Environment `staging` の Environment secrets）
 
-入れる所：GitHub のリポジトリ → Settings → Secrets and variables → Actions → New repository secret。入れるのは高本さん（値をチャット・ファイル・コミットに書かない）。ふだんのチケットの CI にはこの名前を渡さない。渡すのは、手で起こす staging を指す回だけ。
+入れる所：GitHub のリポジトリ → Settings → Environments → `staging` → Environment secrets → Add environment secret。入れるのは高本さん（値をチャット・ファイル・コミットに書かない）。Environment `staging` は、起こせる枝を `main` だけにする（Deployment branches and tags → Selected branches and tags → `main` の 1 つ）。**リポジトリの側の secrets（Settings → Secrets and variables → Actions）には入れない**（0 件のまま）：そこに入れると、枝から起こした回でも読める。
 
-| 名前                       | 何を入れる                                                                                                                                                                                                    | どこから写す                                                           |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| STAGING_BASE_URL           | staging の画面の住所（`https://` から）                                                                                                                                                                       | Vercel → `kaname-web` → Domains                                        |
-| STAGING_API_BASE           | staging の口の住所（`https://` から）                                                                                                                                                                         | Vercel → `kaname-api` → Domains                                        |
-| STAGING_DATABASE_ADMIN_URL | DB の変更の一覧（`app.schema_migrations`）を読む接続の文字列。**この値には、変更の一覧を読めるだけの専用の役の接続を入れる（管理者の接続を入れない）**。TLS でつなぐ形（sslmode は require 以上か、付けない） | 役の作り方と名前の付け替えは K-202・K-204 で決める。それまでは入れない |
-| STAGING_RESEND_READ_KEY    | 送ったメールの記録を読む鍵                                                                                                                                                                                    | Resend → API Keys で新しく作る（名前 `kaname-staging-ci-read`）        |
+ふだんのチケットの CI にはこの名前を渡さない。渡すのは、main から手で起こす staging を指す回（`.github/workflows/staging-e2e.yml`・組が `environment: staging` を持つ）の、健康診断と統合テストの 2 つの段だけ。
+
+| 名前                      | 何を入れる                                                                                                                                                                                                        | どこから写す                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| STAGING_BASE_URL          | staging の画面の住所（`https://` から）                                                                                                                                                                           | Vercel → `kaname-web` → Domains                                                                                                              |
+| STAGING_API_BASE          | staging の口の住所（`https://` から）                                                                                                                                                                             | Vercel → `kaname-api` → Domains                                                                                                              |
+| STAGING_DATABASE_READ_URL | DB の変更の一覧（`app.schema_migrations`）を読む接続の文字列。**読むだけの役 `kaname_ci_read` の接続を入れる（管理者の接続を入れない）**。末尾に `sslmode=verify-full` を付ける（無ければ台本はつながずに止まる） | Supabase → プロジェクト `Kaname` → Connect → Session pooler の文字列の、ユーザー名を `kaname_ci_read.<ref>` に・合言葉を下で作った値に替える |
+| STAGING_RESEND_READ_KEY   | 送ったメールの記録を読む鍵                                                                                                                                                                                        | Resend → API Keys で新しく作る（名前 `kaname-staging-ci-read`）                                                                              |
 
 CI の VM は組ごとに捨てるので、台にファイルを置いて渡す形は使わない。
 
-DB を読む台本は読むだけの取引の中で 1 文を投げるだけだが、それは台本の中の守りで、役の権限は守らない。secrets から漏れたときに DB の全部が漏れないよう、入れる接続そのものを読むだけの役にする。
+### 読むだけの役を作る（Supabase・1 回だけ）
+
+DB を読む台本は読むだけの取引の中で 1 文を投げるだけだが、それは台本の中の守りで、役の権限は守らない。secrets から漏れたときに DB の全部が漏れないよう、入れる接続そのものを読むだけの役にする。与える権限は、DB につなぐ・schema `app` を使う・表 `app.schema_migrations` を読む、の 3 つだけ。
+
+合言葉は `openssl rand -hex 32` で作る（どこにも控えない）。Supabase → プロジェクト `Kaname` → SQL Editor → New query に下の文を貼り、**`ここに自分で作った値` の所だけ**を合言葉に置き換えて Run。流した後、その query は消す（文に合言葉が残る）。
+
+```sql
+create role kaname_ci_read login password 'ここに自分で作った値' nosuperuser nocreatedb nocreaterole noinherit connection limit 3;
+alter role kaname_ci_read set default_transaction_read_only = on;
+grant connect on database postgres to kaname_ci_read;
+grant usage on schema app to kaname_ci_read;
+grant select on table app.schema_migrations to kaname_ci_read;
+```
+
+確かめ（別の query で）：2 行目は数が出て、3 行目は「permission denied」で止まれば正しい（読めるのは 1 表だけ）。
+
+```sql
+set role kaname_ci_read;
+select count(*) from app.schema_migrations;
+select count(*) from public.tenants;
+reset role;
+```
 
 ## 3c. 秘密の取り替え（チャットやログに出た・出たかもしれないとき）
 
 乱数は `openssl rand -hex 32`（記号が入らない形）。入れる所はどれも Vercel → `kaname-api` → Settings → Environment Variables → その名前の行 → Edit。値は控えない・貼らない。
 
 1. DB の役の合言葉 2 つ：乱数を 2 つ作り `KANAME_APP_DB_PASSWORD`・`KANAME_AUTH_DB_PASSWORD` に入れる。`DATABASE_URL`・`AUTH_DATABASE_URL` の中の合言葉の所も同じ値に替える
-2. DB の管理者の合言葉：Supabase → Project Settings → Database → Reset database password → `DATABASE_ADMIN_URL` の中の合言葉の所を替える（GitHub の secrets には管理者の接続を入れない。上の「CI から staging を指す名前」）
+2. DB の管理者の合言葉：Supabase → Project Settings → Database → Reset database password → `DATABASE_ADMIN_URL` の中の合言葉の所を替える
 3. `AUTH_SECRET`：乱数を 1 つ作って入れる（ログイン中の人は入り直しになる）
 4. 置き場の鍵：Supabase → Storage → Settings → S3 access keys → 新しく作って `STORAGE_ACCESS_KEY_ID`・`STORAGE_SECRET_ACCESS_KEY` に入れ、古い鍵の行を消す
 5. Infisical の鍵：Access Control → Identities → `kaname-api-staging` → Universal Auth → Client Secrets → 新しく足して `INFISICAL_CLIENT_SECRET` に入れ、古い行を Revoke

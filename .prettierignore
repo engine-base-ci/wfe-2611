@@ -25,6 +25,7 @@ packages/contracts/src/ops.ts
 packages/errors/src/catalog.ts
 .github/workflows/v3-gate.yml
 .github/workflows/release-gate.yml
+.github/workflows/staging-e2e.yml
 apps/web/lib/nav.ts
 apps/web/lib/routes.ts
 # チケットの置き場（Kaname の形・文書の置き場と同じく書式の検査はしない）

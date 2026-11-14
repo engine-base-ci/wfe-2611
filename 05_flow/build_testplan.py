@@ -120,7 +120,7 @@ SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める
 #   base と取り込む先は組の出力・入力なので run の命令の文字に入れず env で渡す（K107-CS-034）
 SPEC_GATES.append({"id": 63, "name": "決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146）", "script": "python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base \"$CI_ANSWERS_BASE\" --target \"$CI_TARGET_REF\"", "env": "          CI_ANSWERS_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 64, "name": "着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）", "script": "python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py", "job": "spec", "blocking": True})
-SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py", "job": "spec", "blocking": True})
 # コミットの名義（author のメールのドメイン）が配る側のチームの物でなければ赤（K-206）。static の組＝出す前の手元の検査でも流れる。
 #   比べる元は範囲の段（G0）の出力なので run の命令の文字に入れず env で渡す
 SPEC_GATES.append({"id": 66, "name": "コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206）", "script": "python3 scripts/ci/author_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "static", "blocking": True})
@@ -231,7 +231,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'unit')}"""
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
-# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
 # G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
 #   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
@@ -364,17 +364,6 @@ jobs:
     steps:
       - uses: actions/upload-artifact/merge@v4
         with: {{ name: junit, pattern: junit-*, delete-merged: false }}
-  e2e:
-    runs-on: [self-hosted, linux-vm]
-    if: contains(github.event.pull_request.labels.*.name, 'has-ui')
-    needs: [static, database, unit, spec]
-    env:
-      BASE_URL: ${{{{ secrets.STAGING_BASE_URL }}}}
-    steps:
-{NODE}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium
-{''.join(step(g) for g in ALL_GATES if g['job'] == 'e2e')}      - uses: actions/upload-artifact@v4
-        if: failure()
-        with: {{ name: playwright-report, path: apps/web/playwright-report/ }}
   auto-merge:
     runs-on: [self-hosted, linux-vm]
     needs: [static, database, unit, spec, task-gate]
@@ -387,6 +376,56 @@ jobs:
           GH_TOKEN: ${{{{ secrets.GITHUB_TOKEN }}}}
 """
 open(".github/workflows/v3-gate.yml", "w", encoding="utf-8").write(yml)
+# staging を指す統合テストの回（K-204）。ふだんの CI（v3-gate.yml）とは別の定義：main から手で起こしたときだけ。
+#   住所と鍵は GitHub の Environment「staging」に在り、名前だけをここに書く。渡すのは健康診断と統合テストの 2 つの段の env だけ
+#   （定義の env・組の env に書くと、依存の部品の後処理や組み立ての段にも渡る）。値・住所はここにも定義にも書かない
+STAGING_NAMES = ("STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY")
+STAGING_ENV = "".join(f"          {n}: ${{{{ secrets.{n} }}}}\n" for n in STAGING_NAMES)
+STAGING_SPECS = "apps/e2e/staging/**/*.spec.ts"   # 統合テストの置き場（K-65 が作る物だけ）
+STAGING_APPLIED = '"$RUNNER_TEMP/applied.json"'      # DB に当たっている migration の一覧の一時の置き場（版に入らない）
+G15 = [g for g in ALL_GATES if g["job"] == "e2e"]
+assert len(G15) == 1 and G15[0]["id"] == 15, "staging の回に出す関門は G15 の 1 つ"
+staging_yml = f"""# .github/workflows/staging-e2e.yml — staging を指す統合テストの回（05_flow/build_testplan.py が生成。手で直さない・K-204）
+# 起こすのは main から手で（gh workflow run staging-e2e.yml --ref main）。push・PR・時刻では起きない。枝から起こした回は組ごと流れない
+# 住所と鍵は Environment「staging」に在る（起こせる枝は main だけ）。ここに書くのは名前だけで、渡すのは健康診断と統合テストの 2 つの段だけ
+# 健康診断が赤なら統合テストは流れない。試験が 0 本の回は「まだ無い」と知らせる（流して緑、にしない）。上げるのは JUnit の記録だけ
+name: staging-e2e
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: staging-e2e
+  cancel-in-progress: false
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  e2e:
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    runs-on: [self-hosted, linux-vm]
+    timeout-minutes: 30
+    steps:
+{NODE}      - name: "staging の健康診断"
+        env:
+{STAGING_ENV}        run: |
+          node scripts/ci/staging_db_migrations.mjs > {STAGING_APPLIED}
+          python3 scripts/ci/staging_health.py --need STAGING_DATABASE_READ_URL --need STAGING_RESEND_READ_KEY --applied {STAGING_APPLIED}
+      - run: pnpm --filter @kaname/e2e exec playwright install --with-deps chromium
+      - name: "統合テストがまだ無い"
+        if: ${{{{ hashFiles('{STAGING_SPECS}') == '' }}}}
+        run: echo "::warning::統合テストがまだ無い（apps/e2e/staging に試験が 0 本）。この回は健康診断だけ"
+      - name: "G{G15[0]['id']} {G15[0]['name']}"
+        if: ${{{{ hashFiles('{STAGING_SPECS}') != '' }}}}
+        env:
+{STAGING_ENV}          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/e2e-staging.xml
+        run: {G15[0]['script']}
+      - uses: actions/upload-artifact@v4
+        if: ${{{{ !cancelled() }}}}
+        with: {{ name: junit, path: junit/, retention-days: 3 }}
+"""
+open(".github/workflows/staging-e2e.yml", "w", encoding="utf-8").write(staging_yml)
 # 本番に出す前の関門（D-128.113）。ふだんの CI はゼロトラストの残りが「増えない」ことだけ見る。本番の前は残りが 0・秘密なし・弱点なし を求める
 release_yml = f"""# .github/workflows/release-gate.yml — 本番に出す前の関門（05_flow/build_testplan.py が生成。手で直さない・D-128.113）
 # 本番へのデプロイは、この関門が緑のときだけにする（Vercel の本番デプロイを、このワークフローの成功に結び付ける）
@@ -440,8 +479,8 @@ plan = {"version": "v3", "project": "Kaname", "created_at": TODAY, "skill": "tes
         "inputs": {"tickets": len(TASKS), "l1_rows": sum(len(t["qa_rows"]["l1"]) for t in TASKS), "ears_endpoints": len(EARS), "ears_tests": len(mappings), "entities": len(EN), "policies": sum(len(e["access_control_policies"]) for e in EN), "access_cases": len(am), "errors": len(ERR), "journey_rows": len(JR), "critical_tasks": len(crit_tasks)},
         "framework": FRAMEWORK, "tier_mapping": TIER_MAP, "risk": RISK, "not_tested": NOT_TESTED, "mock_strategy": MOCK, "ladder": LADDER,
         "coverage": {"lines": FG["merge_gates"][2]["threshold"]["lines"], "branches": FG["merge_gates"][2]["threshold"]["branches"], "business_logic": 80, "utilities": 60, "note": "閾値は foundation_gates.json G3 から"},
-        "gates": ALL_GATES, "stages": {"static": "静的・関門（DB 不要）", "database": "実 Postgres（RLS・契約・coverage・access-matrix・EARS 対応）", "spec": "仕様の層（Python・G21/qa-ladder/エラー一覧/スキル/テスト計画）", "task-gate": "PR のブランチ task/<ID> の L1 行", "e2e": "has-ui ラベルの PR だけ・staging", "auto-merge": "static＋database＋spec＋task-gate が全部緑"},
-        "merge_criteria": ["G1〜G36 が全部緑（e2e は has-ui のときだけ）", "ears-test-mapping.json の test が全部存在（G34）", "access-matrix.json の全行 PASS（G33）", "そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）", "連続 3 回失敗で高本さんへ（foundation_gates.retry_protocol）"],
+        "gates": ALL_GATES, "stages": {"static": "静的・関門（DB 不要）", "database": "実 Postgres（RLS・契約・coverage・access-matrix・EARS 対応）", "spec": "仕様の層（Python・G21/qa-ladder/エラー一覧/スキル/テスト計画）", "task-gate": "PR のブランチ task/<ID> の L1 行", "e2e": "main から手で起こす staging の回（.github/workflows/staging-e2e.yml）", "auto-merge": "static＋database＋spec＋task-gate が全部緑"},
+        "merge_criteria": ["G1〜G36 が全部緑（統合テスト（G15）は staging-e2e.yml の回で）", "ears-test-mapping.json の test が全部存在（G34）", "access-matrix.json の全行 PASS（G33）", "そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）", "連続 3 回失敗で高本さんへ（foundation_gates.retry_protocol）"],
         "change_follow_up": "仕様・チケットが途中で変わったら qa_delta.py --changed … --gate。EARS の差分は ears-test-mapping.json の差分として出す（全部作り直さない）",
         "critical_gates": FG.get("kaname_critical_gates", []), "retry_protocol": FG.get("retry_protocol", {}), "next_skill": "sprint-planning（S13）"}
 json.dump(plan, open(f"{OUT}/test-plan.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -470,4 +509,4 @@ page = f"""<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>Kan
 <h2>RLS の場合表（先頭 40）</h2>{hrows(["表","policy","役","操作","場合","期待"], [[c["table"],c["policy"],c["role_ja"],c["operation"],c["case"],c["expected"]] for c in am[:40]])}
 </body></html>"""
 open(f"{OUT}/test-plan.html", "w", encoding="utf-8").write(page)
-print(f"tests {len(mappings)} (endpoints {len(EARS)}) / access cases {len(am)} (policies {plan['inputs']['policies']}) / gates {len(ALL_GATES)} / critical tasks {len(crit_tasks)} → {OUT}/ + .github/workflows/v3-gate.yml")
+print(f"tests {len(mappings)} (endpoints {len(EARS)}) / access cases {len(am)} (policies {plan['inputs']['policies']}) / gates {len(ALL_GATES)} / critical tasks {len(crit_tasks)} → {OUT}/ + .github/workflows/v3-gate.yml・staging-e2e.yml")

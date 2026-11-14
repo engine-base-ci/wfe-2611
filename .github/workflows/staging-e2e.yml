@@ -1,0 +1,57 @@
+# .github/workflows/staging-e2e.yml — staging を指す統合テストの回（05_flow/build_testplan.py が生成。手で直さない・K-204）
+# 起こすのは main から手で（gh workflow run staging-e2e.yml --ref main）。push・PR・時刻では起きない。枝から起こした回は組ごと流れない
+# 住所と鍵は Environment「staging」に在る（起こせる枝は main だけ）。ここに書くのは名前だけで、渡すのは健康診断と統合テストの 2 つの段だけ
+# 健康診断が赤なら統合テストは流れない。試験が 0 本の回は「まだ無い」と知らせる（流して緑、にしない）。上げるのは JUnit の記録だけ
+name: staging-e2e
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: staging-e2e
+  cancel-in-progress: false
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10'
+jobs:
+  e2e:
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    runs-on: [self-hosted, linux-vm]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
+        with: { python-version: '3.14' }
+      - run: bash scripts/ci/ci_venv.sh
+      - name: "staging の健康診断"
+        env:
+          STAGING_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
+          STAGING_DATABASE_READ_URL: ${{ secrets.STAGING_DATABASE_READ_URL }}
+          STAGING_RESEND_READ_KEY: ${{ secrets.STAGING_RESEND_READ_KEY }}
+        run: |
+          node scripts/ci/staging_db_migrations.mjs > "$RUNNER_TEMP/applied.json"
+          python3 scripts/ci/staging_health.py --need STAGING_DATABASE_READ_URL --need STAGING_RESEND_READ_KEY --applied "$RUNNER_TEMP/applied.json"
+      - run: pnpm --filter @kaname/e2e exec playwright install --with-deps chromium
+      - name: "統合テストがまだ無い"
+        if: ${{ hashFiles('apps/e2e/staging/**/*.spec.ts') == '' }}
+        run: echo "::warning::統合テストがまだ無い（apps/e2e/staging に試験が 0 本）。この回は健康診断だけ"
+      - name: "G15 統合テスト（staging・Playwright）"
+        if: ${{ hashFiles('apps/e2e/staging/**/*.spec.ts') != '' }}
+        env:
+          STAGING_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
+          STAGING_DATABASE_READ_URL: ${{ secrets.STAGING_DATABASE_READ_URL }}
+          STAGING_RESEND_READ_KEY: ${{ secrets.STAGING_RESEND_READ_KEY }}
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/e2e-staging.xml
+        run: pnpm e2e:staging
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with: { name: junit, path: junit/, retention-days: 3 }

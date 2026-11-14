@@ -844,11 +844,11 @@
   },
   {
    "id": 15,
-   "name": "E2E（Playwright）",
-   "script": "pnpm e2e:web",
+   "name": "統合テスト（staging・Playwright）",
+   "script": "pnpm e2e:staging",
    "blocking": true,
-   "condition": "UIを含むスライスのみ（apps/web/tests・BASE_URL が無ければローカルの next dev）",
-   "owner_task": "T-US-00",
+   "condition": "main から手で起こしたときだけ（.github/workflows/staging-e2e.yml）",
+   "owner_task": "K-65",
    "job": "e2e"
   },
   {
@@ -1298,7 +1298,7 @@
   {
    "id": 65,
    "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）",
-   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py",
+   "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py",
    "job": "spec",
    "blocking": true
   },
@@ -1324,11 +1324,11 @@
   "database": "実 Postgres（RLS・契約・coverage・access-matrix・EARS 対応）",
   "spec": "仕様の層（Python・G21/qa-ladder/エラー一覧/スキル/テスト計画）",
   "task-gate": "PR のブランチ task/<ID> の L1 行",
-  "e2e": "has-ui ラベルの PR だけ・staging",
+  "e2e": "main から手で起こす staging の回（.github/workflows/staging-e2e.yml）",
   "auto-merge": "static＋database＋spec＋task-gate が全部緑"
  },
  "merge_criteria": [
-  "G1〜G36 が全部緑（e2e は has-ui のときだけ）",
+  "G1〜G36 が全部緑（統合テスト（G15）は staging-e2e.yml の回で）",
   "ears-test-mapping.json の test が全部存在（G34）",
   "access-matrix.json の全行 PASS（G33）",
   "そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）",

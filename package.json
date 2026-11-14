@@ -54,6 +54,7 @@
     "web:dev": "pnpm --filter @kaname/web dev",
     "e2e:web": "pnpm --filter @kaname/web exec playwright test",
     "e2e:journeys": "pnpm --filter @kaname/e2e exec playwright test",
+    "e2e:staging": "pnpm --filter @kaname/e2e exec playwright test -c playwright.staging.config.ts",
     "ci:routes:gen": "node scripts/ci/gen_routes.mjs",
     "ci:routes": "node scripts/ci/gen_routes.mjs check",
     "api:dev": "tsx apps/api/src/dev.ts",

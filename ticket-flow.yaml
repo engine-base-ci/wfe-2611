@@ -35,6 +35,7 @@ weight:
 # 手で持つ物（07_qa/test-plan/ears-elsewhere.json・result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
 changes_ignore:
   - ".github/workflows/release-gate.yml"
+  - ".github/workflows/staging-e2e.yml"
   - ".github/workflows/v3-gate.yml"
   - "01_hearing/decider-answers.jsonl"
   - "01_hearing/要件一覧.md"

@@ -175,11 +175,11 @@
   },
   {
    "id": 15,
-   "name": "E2E（Playwright）",
-   "script": "pnpm e2e:web",
+   "name": "統合テスト（staging・Playwright）",
+   "script": "pnpm e2e:staging",
    "blocking": true,
-   "condition": "UIを含むスライスのみ（apps/web/tests・BASE_URL が無ければローカルの next dev）",
-   "owner_task": "T-US-00"
+   "condition": "main から手で起こしたときだけ（.github/workflows/staging-e2e.yml）",
+   "owner_task": "K-65"
   },
   {
    "id": 16,

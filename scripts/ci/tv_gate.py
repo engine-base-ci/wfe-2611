@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 """tv_gate.py — テスト計画（S11 test-verification）の整合 TV1〜TV8。
- TV1 foundation_gates の 26 本が全部 v3-gate.yml にある ／ TV2 仕様の層のゲート（layer_audit・qa-ladder validate・qa-ladder gate --task・error_catalog 全引数・skill_pkg_gate）がある
+ TV1 foundation_gates の 26 本が全部 v3-gate.yml にある（G15＝staging の統合テストだけは staging-e2e.yml にある・K-204） ／ TV2 仕様の層のゲート（layer_audit・qa-ladder validate・qa-ladder gate --task・error_catalog 全引数・skill_pkg_gate）がある
  TV3 EARS の全文が ears-test-mapping.json にあり、各 test に file/function/gate がある ／ TV4 1 作業のチケット（11_tickets）が持つ API と画面の API の EARS が、全部 mapping にある（D-128.117：しまった 07_tasks から読む先を替えた）
  TV5 access-matrix.json が全 policy を ≥2 場合で持つ ／ TV6 三層（json/md/html）が揃い md/html が json より古くない ／ TV7 3-tier の structural/functional/regression 全部に段とゲートがある
  TV8 auto-merge の needs に static/database/spec/task-gate が全部あり、test-plan.json の source と ladder L1〜L5 がある"""
 import json, os, re, sys, argparse
-ap = argparse.ArgumentParser(); ap.add_argument("--dir", default="07_qa/test-plan"); ap.add_argument("--workflow", default=".github/workflows/v3-gate.yml"); ap.add_argument("--gates", default="03_architecture/foundation_gates.json"); ap.add_argument("--ears", default="08_api/ears-ac-seed.json"); ap.add_argument("--tickets", default="11_tickets/tickets.json"); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--mocks", default="06_mockup/v1"); ap.add_argument("--spec", default="07_qa/test-specs"); ap.add_argument("--skills", default="10_skills"); a = ap.parse_args()
+ap = argparse.ArgumentParser(); ap.add_argument("--dir", default="07_qa/test-plan"); ap.add_argument("--workflow", default=".github/workflows/v3-gate.yml"); ap.add_argument("--staging-workflow", default=".github/workflows/staging-e2e.yml"); ap.add_argument("--gates", default="03_architecture/foundation_gates.json"); ap.add_argument("--ears", default="08_api/ears-ac-seed.json"); ap.add_argument("--tickets", default="11_tickets/tickets.json"); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--mocks", default="06_mockup/v1"); ap.add_argument("--spec", default="07_qa/test-specs"); ap.add_argument("--skills", default="10_skills"); a = ap.parse_args()
 J = lambda p: json.load(open(p, encoding="utf-8")); OUT = a.dir; fails = []
 try:
-    P = J(f"{OUT}/test-plan.json"); M = J(f"{OUT}/ears-test-mapping.json"); A = J(f"{OUT}/access-matrix.json"); Y = open(a.workflow, encoding="utf-8").read()
+    P = J(f"{OUT}/test-plan.json"); M = J(f"{OUT}/ears-test-mapping.json"); A = J(f"{OUT}/access-matrix.json"); Y = open(a.workflow, encoding="utf-8").read(); YS = open(a.staging_workflow, encoding="utf-8").read()
 except FileNotFoundError as e: print(f"FAIL — 成果物が無い: {e}"); sys.exit(2)
 FG = J(a.gates); EARS = J(a.ears)["ac_seeds"]; T = J(a.tickets)["tickets"]; EN = J(a.entities); EN = EN.get("entities") or EN["items"]
 # G3（単体の試験と coverage）は、分けて同時に流し、結果を合わせて閾値を当てる形でもよい（unit-1〜unit-N → unit・D-128.140）
 SPLIT = {3: ["ci_scope.py run-unit --shard", "ci_scope.py run-merge"]}   # 分けて流して合わせる（K-107：組の中の vitest の引数の並びは scripts/ci/ci_scope.py の unit_argv・merge_argv）
-present = lambda g: g["script"] in Y or (g["id"] in SPLIT and all(x in Y for x in SPLIT[g["id"]]))
+STAGING_ONLY = {15}   # staging を指す統合テストは、ふだんの CI に無く、main から手で起こす回の定義にだけ在る（K-204）
+present = lambda g: (g["script"] in YS and g["script"] not in Y) if g["id"] in STAGING_ONLY else (g["script"] in Y or (g["id"] in SPLIT and all(x in Y for x in SPLIT[g["id"]])))
 m = [g["name"] for g in FG["merge_gates"] if not present(g)]
-if m: fails.append(("TV1", f"v3-gate.yml に無い基盤ゲート {m[:5]}"))
+if m: fails.append(("TV1", f"v3-gate.yml に無い基盤ゲート（G15 は staging-e2e.yml に在って v3-gate.yml に無いこと） {m[:5]}"))
 need = ["layer_audit.py --run", "qa-ladder.py validate", "qa-ladder.py gate", "--task", "error_catalog.py gate --catalog", f"--mocks {a.mocks} --spec {a.spec} --choke", f"skill_pkg_gate.py {a.skills}", "tv_gate.py"]
 m = [x for x in need if x not in Y]
 if m: fails.append(("TV2", f"仕様の層のゲートが無い {m}"))

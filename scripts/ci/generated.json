@@ -70,7 +70,8 @@
     "07_qa/test-plan/test-plan.json",
     "07_qa/test-plan/test-plan.md",
     ".github/workflows/v3-gate.yml",
-    ".github/workflows/release-gate.yml"
+    ".github/workflows/release-gate.yml",
+    ".github/workflows/staging-e2e.yml"
    ],
    "dated": [
     "07_qa/test-plan/access-matrix.json",
