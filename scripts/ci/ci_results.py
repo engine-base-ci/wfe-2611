@@ -19,7 +19,10 @@ Kaname の入力に合わせたもの。違いは 4 つ：
   python3 scripts/ci/ci_results.py ledger --specs '07_qa/test-specs/**/*.md' --out 07_qa/test-plan/result-ledger.json   # 入れた時点の 1 回だけ
 
 --ledger-base-ref <ref> --target-ref <取り込む先>（PM の判断 2026-11-08 15:37・15:58・17:40 ①②）：
-  ・<ref> は <取り込む先> の先祖で、HEAD と違うコミットでなければ赤（比べる元を枝が選べない）。--target-ref が無い・読めないなら赤
+  ・<ref> は <取り込む先> の先祖でなければ赤。--target-ref が無い・読めないなら赤。<ref> が HEAD と同じコミットのときは、
+    HEAD が <取り込む先> の先頭か先祖のときだけ通す＝本線の上の回（全部の CI・K-196）。そうでなければ赤（比べる元を枝が選べない）
+  ・本線の上の回は枝の差分が無いので、本線の版を信じて飛ばさず、印のある PASS を全部、記録と照らし直す（書き込みのコミットの確かめは掛けない）
+  ・比べる元・取り込む先が使えない赤は、その 1 件だけを出して止まる（行ごとの確かめは流さない。訳が続きの赤に埋もれる）
   ・本線の版と同じ印のまま（同じファイル・行 ID・結果の文字）の行は記録を見直さない（取り込みの台本が write の後に check を流した）
   ・枝で足した・変えた印と、--records の記録のファイルの追加・変更は、<ref>..HEAD のコミットのうち本文に
     「Results-Written-By: ci_results.py write CI <40 字の sha>」を持つコミット（取り込みの台本の書き込み）で入ったものだけ通す
@@ -437,10 +440,30 @@ def _refs_ok(ref: str, target: str | None) -> list[str]:
         return [f"取り込む先「{target}」が読めない。比べる元が取り込む先の先祖かを確かめられないので止める"]
     head = _resolve("HEAD")
     if head is not None and base == head:
+        if _git("merge-base", "--is-ancestor", head, tgt).returncode == 0:
+            return []   # 本線の上の回（HEAD が取り込む先の先頭か先祖・枝の差分が無い）
         return [f"比べる元「{ref}」が HEAD と同じコミット。枝が自分を比べる元にすり替えている（台帳の増えが見えなくなる）"]
     if _git("merge-base", "--is-ancestor", base, tgt).returncode != 0:
         return [f"比べる元「{ref}」が取り込む先「{target}」の先祖でない。本線の版でないものとは比べない"]
     return []
+
+
+def _on_mainline(ref: str) -> bool:
+    """本線の上の回か（比べる元が HEAD と同じコミット）。_refs_ok が通った後に聞く：通っていれば HEAD は取り込む先の先頭か先祖"""
+    base = _resolve(ref)
+    return base is not None and base == _resolve("HEAD")
+
+
+def _mainline_view(ref: str, ledger_path: str):
+    """本線の上の回の比べ方（K-196）：比べる台帳は HEAD の版（＝自分）。trusted は空（本線にあるからと飛ばさず、印を全部
+    記録と照らす）、written は None（枝のコミットが無いので、書き込みのコミットの確かめは掛けない）"""
+    raw = _show(ref, os.path.relpath(ledger_path))
+    if raw is None:
+        return None, set(), None, []
+    try:
+        return json.loads(raw), set(), None, []
+    except ValueError:
+        return None, set(), None, [f"本線（{ref}）の台帳が JSON でない"]
 
 
 def _written_commits(ref: str) -> list[tuple[str, str]]:
@@ -460,6 +483,8 @@ def base_view(ref: str, ledger_path: str, ledger: dict | None, specs: list[str],
     bad = _refs_ok(ref, target)
     if bad:
         return None, set(), set(), bad
+    if _on_mainline(ref):
+        return _mainline_view(ref, ledger_path)
     trusted: set[tuple[str, str, str]] = set()
     base_unmarked: set[tuple[str, str]] = set()
     files = sorted(set(spec_files(specs)) | {os.path.normpath(x["file"]) for x in (ledger or {}).get("rows", [])})
@@ -558,6 +583,15 @@ def main() -> int:
     if a.ledger_base_ref is not None:
         if not a.ledger:
             ap.error("--ledger-base-ref には --ledger が要る")
+        refs_bad = _refs_ok(a.ledger_base_ref, a.target_ref)
+        if refs_bad:   # 比べる元が使えない：その訳だけを出す（行ごとの確かめを流すと、どの印も見当違いの赤になる）
+            for x in refs_bad:
+                print("  ★ " + x)
+            print("比べる元が使えないので、行ごとの確かめは流していない（比べる元を直して流し直す）")
+            print(f"FAIL — {len(refs_bad)} 件")
+            return 1
+        if _on_mainline(a.ledger_base_ref):
+            print("本線の上の回（比べる元＝HEAD）：枝の差分は無い。印のある PASS を全部、記録と照らす")
         base, trusted, written, bad0 = base_view(a.ledger_base_ref, a.ledger, ledger, a.specs, a.target_ref, Path(a.records))
     bad, n = _check(a.specs, Path(a.records), ledger, base, trusted, written)
     bad = bad0 + bad
