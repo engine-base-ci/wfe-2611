@@ -72,7 +72,7 @@ class Repo(unittest.TestCase):
         args = [sys.executable, str(SCRIPT), "check", "--specs", "specs/*.md", "--records", "rec",
                 "--ledger", "ledger.json", "--ledger-base-ref", base]
         if target is not None:
-            args += ["--target-ref", target]
+            args += [f"--target-ref={target}"]   # = でつなぐ（- で始まる名前も値として渡る）
         r = subprocess.run(args, cwd=self.t, capture_output=True, text=True)
         return r.returncode, r.stdout + r.stderr
 
@@ -218,7 +218,8 @@ class Definition(unittest.TestCase):
 
 class TargetIsBranchName(Repo):
     """取り込む先（--target-ref）は本線の枝の名前としてだけ受ける（レビューの指摘 2026-11-14）。
-    HEAD・sha・refs/… の生の書き方・@ ~ ^ を含む物は受けない。名前は origin の枝 → 手元の枝の順に引き、tag は引かない"""
+    HEAD・sha・refs/… の生の書き方・@ ~ ^ を含む物は受けない。名前は refs/heads/<名前> → 無ければ refs/remotes/origin/<名前> と
+    明示して引き（生の名前を git に渡さない）、tag は引かない"""
 
     def assert_refused(self, out: str) -> None:
         self.assertIn(NAME_ONLY, out)
@@ -260,6 +261,21 @@ class TargetIsBranchName(Repo):
                     code, out = self.check(ref, target)
                     self.assertEqual(code, 1, out)
                     self.assert_refused(out)
+        # 名前の見分けを抜ける書き方：git に生で渡すと、枝の先頭（HEAD）や本線に当たる物・誤りになる物。
+        # 訳の文は問わない（「名前だけ」でも「読めない」でもよい）。本線の上の回にならず、例外で落ちないこと
+        git(self.t, "tag", "main", head)
+        git(self.t, "update-ref", "ORIG_HEAD", head)
+        git(self.t, "update-ref", "refs/remotes/origin/main", head)
+        (self.t / ".git" / "FETCH_HEAD").write_text(f"{head}\t\tbranch 'atk' of file:///x\n", encoding="utf-8")
+        loose = ["FETCH_HEAD", "ORIG_HEAD", "head", "origin/main", "heads/main", "heads/atk", "remotes/origin/main", "tags/main",
+                 "main^{}", "main:", "main..atk", " main", "main ", "main\n", "main\natk", "atk\n", "-main", "--all", ""]
+        for target in loose:
+            for ref in (head, base):
+                with self.subTest(loose=target, base_ref=ref[:7]):
+                    code, out = self.check(ref, target)
+                    self.assertEqual(code, 1, out)
+                    self.assertNotIn(MAINLINE, out)
+                    self.assertNotIn("Traceback", out)
 
     def test_K196_RM_012_tag_named_like_branch_is_not_used(self) -> None:
         """K196-RM-012 main という名前の tag が枝の先頭（別のコミット）を指していても、取り込む先は枝の main を引く：
@@ -276,19 +292,60 @@ class TargetIsBranchName(Repo):
         code, out = self.check(base, "main")
         self.assertEqual(code, 0, out)
 
-    def test_K196_RM_013_origin_branch_wins_over_local(self) -> None:
-        """K196-RM-013 origin の枝と手元の枝が同じ名前で違うコミットのときは origin の枝を引く（CI の写しで、枝が手元に main を
-        作って自分を指させても効かない）：枝が比べる元を自分にすると「すり替え」で赤。origin の枝が HEAD と同じなら本線の上の回で緑"""
+    def test_K196_RM_013_local_branch_first_for_preflight(self) -> None:
+        """K196-RM-013 出す前の手元の検査の形：手元の本線の枝が新しく、同じ名前の origin の参照が古い（前に取ったまま残っている）。
+        取り込む先は手元の枝（refs/heads/<名前>）を先に引く：チケットの回（比べる元＝手元の本線の先頭・HEAD は枝）は緑。
+        手元の本線の先頭で流す回は本線の上の回で緑。本線の名前に / が入っていても同じ"""
+        old = self.good_mainline()
+        git(self.t, "update-ref", "refs/remotes/origin/main", old)          # 古いまま残った origin の参照
+        (self.t / "next.txt").write_text("後から本線に入ったチケット", encoding="utf-8")
+        base = self.commit("K-2 feat: 次")                                   # 手元の本線の先頭（origin の参照の先）
+        git(self.t, "branch", "claude/本線-77", base)                         # / と日本語を含む本線の名前
+        git(self.t, "update-ref", "refs/remotes/origin/claude/本線-77", old)
+        for name in ("main", "claude/本線-77"):
+            with self.subTest(mainline=name):
+                git(self.t, "switch", "-q", "--detach", base)
+                code, out = self.check(base, name)
+                self.assertEqual(code, 0, out)
+                self.assertIn(MAINLINE, out)
+                git(self.t, "switch", "-q", "-C", "t/K-9", base)
+                (self.t / "y.txt").write_text("台帳も仕様も変えない", encoding="utf-8")
+                self.commit("K-9 feat: 別のファイルだけ")
+                code, out = self.check(base, name)
+                self.assertEqual(code, 0, out)
+                self.assertNotIn(MAINLINE, out)
+
+    def test_K196_RM_016_fresh_ci_clone_has_only_origin(self) -> None:
+        """K196-RM-016 CI のまっさらな写しの形：取り込む先の名前の手元の枝が無く、origin の枝だけがある。
+        全部の回（HEAD＝origin の本線の先頭）は本線の上の回で緑。チケットの回（HEAD は枝・比べる元＝本線の先頭）は前のとおり緑。
+        枝が比べる元を自分にすると「すり替え」で赤"""
         base, head = self.attack()
-        git(self.t, "update-ref", "refs/remotes/origin/main", base)
-        git(self.t, "branch", "-f", "main", head)
-        code, out = self.check(head, "main")
-        self.assertEqual(code, 1, out)
-        self.assertIn(SWAP, out)
-        git(self.t, "switch", "-q", "--detach", base)
-        code, out = self.check(base, "main")   # 全部の回の形：写しの HEAD ＝ origin/main
-        self.assertEqual(code, 0, out)
-        self.assertIn(MAINLINE, out)
+        git(self.t, "switch", "-q", "-c", "ok", base)
+        (self.t / "y.txt").write_text("台帳も仕様も変えない", encoding="utf-8")
+        ok = self.commit("K-8 feat: 別のファイルだけ")
+        src = self.t
+        with tempfile.TemporaryDirectory() as d:
+            clone = pathlib.Path(d) / "clone"
+            git(pathlib.Path(d), "clone", "-q", "--no-single-branch", f"file://{src}", str(clone))
+            self.t = clone
+            try:
+                git(clone, "switch", "-q", "--detach", "origin/main")
+                for b in git(clone, "for-each-ref", "--format=%(refname:short)", "refs/heads").split():
+                    git(clone, "branch", "-q", "-D", b)                      # 手元の枝は 1 つも無い
+                code, out = self.check(base, "main")
+                self.assertEqual(code, 0, out)
+                self.assertIn(MAINLINE, out)
+                git(clone, "switch", "-q", "--detach", ok)
+                code, out = self.check(base, "main")
+                self.assertEqual(code, 0, out)
+                self.assertNotIn(MAINLINE, out)
+                git(clone, "switch", "-q", "--detach", head)
+                code, out = self.check(head, "main")
+                self.assertEqual(code, 1, out)
+                self.assertIn(SWAP, out)
+                self.assertNotIn(MAINLINE, out)
+            finally:
+                self.t = src
 
     def test_K196_RM_014_shallow_history_is_red(self) -> None:
         """K196-RM-014 浅い履歴：取り込む先の枝が写しに無い（その枝だけを浅く取った）／HEAD が取り込む先の先祖かを辿れない
