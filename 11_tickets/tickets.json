@@ -8981,7 +8981,8 @@
     "scripts/ci/staging_db_migrations.mjs",
     "infra/STAGING.md",
     "infra/provision/README.md",
-    "05_flow/build_testplan.py"
+    "05_flow/build_testplan.py",
+    "01_hearing/決定ログ_進行中.md"
    ],
    "affects": [],
    "ci_wide": [
