@@ -2,7 +2,7 @@
 //   読むだけ（GET）。送らない・消さない。鍵は環境の値の名前で受け、投げる文には口の番号だけを書く（宛先・本文・リンクは書かない）。
 //   探したもの：apps/web/tests/_lib/mailbox.ts（自分の台の中でだけ聞く受け箱。staging の口からは届かない）・packages/notify/src/resend.ts（送る側だけ）。読む道具は無かった。
 //   口の形は Resend の公開の API（2026-11-14 に資料の頁を読んで確かめた）：送った一覧 GET /emails（limit は 1〜100・既定 20。data[] に id・to（配列）・
-//   reply_to・last_event）・1 通 GET /emails/{id}（from・to・reply_to（配列か null）・subject・html・text・last_event）。
+//   reply_to・last_event・subject）・1 通 GET /emails/{id}（from・to・reply_to（配列か null）・subject・html・text・last_event）。
 //   回数の上限はチームごと（鍵をまたいで数える＝staging の口が送る回数とも合わさる）で 1 秒あたり 10 回。越えると 429 で、頭 retry-after（秒）が付く。
 //   429 は retry-after に従って取り直す（上限は RETRY_MAX 回）。形が違っていたら、直すのはこの道具（試験は変えない）
 import { resendKey } from "./site";
@@ -73,11 +73,21 @@ export async function latestTo(to: string): Promise<{ id: string; lastEvent: str
   const hit = rows.find((r) => list(r["to"]).some((a) => a.toLowerCase() === to.toLowerCase()));
   return hit ? { id: str(hit["id"]), lastEvent: str(hit["last_event"]) || null } : null;
 }
-/** その宛先に送った通数（二重に送っていないかを見る） */
-export async function countTo(to: string): Promise<number> {
+/** その宛先に送った通数（二重に送っていないかを見る）。件名を渡すと、その件名の物だけを数える（K-208：確定の後には
+ *  「登録が完了しました」の 1 通も同じ宛先に届くので、確認のメールの通数は件名で分ける）。
+ *  件名は一覧の行の subject で比べ、行に件名が無い形なら 1 通ずつ読んで比べる（同じ宛先の数通だけ） */
+export async function countTo(to: string, subject?: string): Promise<number> {
   const body = await get(`/emails?limit=${LIST_LIMIT}`);
   const rows = Array.isArray(body["data"]) ? (body["data"] as Raw[]) : [];
-  return rows.filter((r) => list(r["to"]).some((a) => a.toLowerCase() === to.toLowerCase())).length;
+  const mine = rows.filter((r) => list(r["to"]).some((a) => a.toLowerCase() === to.toLowerCase()));
+  if (subject === undefined) return mine.length;
+  let hits = 0;
+  for (const r of mine) {
+    const listed = r["subject"];
+    const s = typeof listed === "string" ? listed : (await readMail(str(r["id"]))).subject;
+    if (s === subject) hits += 1;
+  }
+  return hits;
 }
 /** 1 通を読む（差出人・返信先・件名・本文） */
 export async function readMail(id: string): Promise<MailRecord> {

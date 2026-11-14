@@ -64,6 +64,8 @@ const MAIL = {
   from: "Kaname <noreply@engine-base.com>",
   replyTo: "info@engine-base.com",
   subject: "Kaname｜メールアドレスの確認（登録を確定する）",
+  /** 確定の後の 1 通（K-52・D-128.146）。数えるときは件名で分ける（K-208） */
+  doneSubject: "【Kaname】登録が完了しました",
   operator: /運営：.+（代表 .+）/,
   contact: "お問い合わせ：info@engine-base.com",
   /** 電話は載せない（D-096.3）：「電話」「TEL」の字と、番号の形 */
@@ -286,7 +288,9 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
     status: 200,
     pcs: [[pc.label, "live"]],
   });
-  expect(await countTo(me.email), "確認のメールは 1 通だけ（二重に送っていない）").toBe(1);
+  // 確定の後には「登録が完了しました」の 1 通も届く（K-52・決まりどおり）。件名で分けて、それぞれ 1 通（K-208）
+  expect(await countTo(me.email, MAIL.subject), "確認のメールは 1 通だけ（二重に送っていない）").toBe(1);
+  expect(await countTo(me.email, MAIL.doneSubject), "登録が完了しましたのメールも 1 通だけ").toBe(1);
   await page.goto("/approvals");
   await expect(page.getByText(MSG.empty), "決め終わったら承認待ちは空").toBeVisible();
 });
@@ -429,15 +433,15 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
   });
   await expect(h1(other.page, titleOf("会社A")), "A の題名は B には出ない").toHaveCount(0);
   await expect(execBand(other.page), "B に A の承認の帯は出ない").toHaveCount(0);
-  // A の画面：承認待ちは自分の 1 行だけ。チケットの一覧に B のものは出ない
+  // A の画面：承認待ちは自分の 1 行だけ。A から B のチケットは口で見る（K-208：チケットの一覧の口 listTickets はまだ契約だけで 501。
+  //   画面は 501 を空として「まだチケットがありません」を出すので、一覧では確かめられない。一覧での確かめは一覧のチケット K-92 に申し送り）
   await page.goto("/approvals");
   await expect(page.getByRole("row").filter({ hasText: titleOf("会社A") }), "A の承認待ちは自分の 1 行").toHaveCount(1);
   await expect(page.getByRole("row").filter({ hasText: titleOf("会社B") }), "A に B の行は 0 件").toHaveCount(0);
-  await page.goto("/tickets");
-  await expect(page.getByText(titleOf("会社A")).first(), "A の一覧に自分のチケット").toBeVisible({
-    timeout: LIMIT.firstView,
-  });
-  await expect(page.getByText(titleOf("会社B")), "A の一覧に B のチケットは 0 件").toHaveCount(0);
+  expect(
+    [(await readAs(page, `/tickets/${tb}`)).status, (await readAs(page, `/tickets/${tb}/runs`)).status],
+    "A は B のチケットの詳細と実行の記録を読めない（どちらも 404）",
+  ).toEqual([404, 404]);
   // 一覧の「live」は最後の知らせから 75 秒の窓。ここまでの画面の歩きで窓を越えないよう、読む直前に知らせ直す（06 と同じ）
   expect([await pcA.beat(), await pcB.beat()], "読む直前に、2 台とも知らせが通る（201）").toEqual([201, 201]);
   expect((await devicesOf(page)).pcs, "A の PC の一覧は自分の 1 台だけ").toEqual([[pcA.label, "live"]]);
