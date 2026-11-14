@@ -422,7 +422,8 @@ jobs:
       - name: "G{G15[0]['id']} {G15[0]['name']}"
         if: ${{{{ hashFiles('{STAGING_SPECS}') != '' }}}}
         env:
-{STAGING_ENV}          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/e2e-staging.xml
+{STAGING_ENV}          NODE_EXTRA_CA_CERTS: {STAGING_CA}
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{{{ github.workspace }}}}/junit/e2e-staging.xml
         run: {G15[0]['script']}
       - uses: actions/upload-artifact@v4
         if: ${{{{ !cancelled() }}}}
