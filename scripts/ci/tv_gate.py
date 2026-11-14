@@ -2,7 +2,7 @@
 """tv_gate.py — テスト計画（S11 test-verification）の整合 TV1〜TV8。
  TV1 foundation_gates の 26 本が全部 v3-gate.yml にある（G15＝staging の統合テストだけは staging-e2e.yml にある・K-204） ／ TV2 仕様の層のゲート（layer_audit・qa-ladder validate・qa-ladder gate --task・error_catalog 全引数・skill_pkg_gate）がある
  TV3 EARS の全文が ears-test-mapping.json にあり、各 test に file/function/gate がある ／ TV4 1 作業のチケット（11_tickets）が持つ API と画面の API の EARS が、全部 mapping にある（D-128.117：しまった 07_tasks から読む先を替えた）
- TV5 access-matrix.json が全 policy を ≥2 場合で持つ ／ TV6 三層（json/md/html）が揃い md/html が json より古くない ／ TV7 3-tier の structural/functional/regression 全部に段とゲートがある
+ TV5 access-matrix.json が全 policy を ≥2 場合で持つ ／ TV6 三層（json/md/html）が揃っている（古くないかは G38 の生成物の検査が見る） ／ TV7 3-tier の structural/functional/regression 全部に段とゲートがある
  TV8 auto-merge の needs に static/database/spec/task-gate が全部あり、test-plan.json の source と ladder L1〜L5 がある"""
 import json, os, re, sys, argparse
 ap = argparse.ArgumentParser(); ap.add_argument("--dir", default="07_qa/test-plan"); ap.add_argument("--workflow", default=".github/workflows/v3-gate.yml"); ap.add_argument("--staging-workflow", default=".github/workflows/staging-e2e.yml"); ap.add_argument("--gates", default="03_architecture/foundation_gates.json"); ap.add_argument("--ears", default="08_api/ears-ac-seed.json"); ap.add_argument("--tickets", default="11_tickets/tickets.json"); ap.add_argument("--entities", default="07_functional/entities.json"); ap.add_argument("--mocks", default="06_mockup/v1"); ap.add_argument("--spec", default="07_qa/test-specs"); ap.add_argument("--skills", default="10_skills"); a = ap.parse_args()
@@ -34,8 +34,10 @@ for c in A["cases"]: cnt[(c["entity"], c["policy"])] = cnt.get((c["entity"], c["
 skip_t = {"passkeys", "pending_signup"} | {e["table_name"] for e in EN if "段階 1 は作らない" in (e.get("note") or "")}
 m = [f"{e['table_name']}.{p['name']}" for e in EN if e["table_name"] not in skip_t for p in e["access_control_policies"] if cnt.get((e["id"], p["name"]), 0) < 2]
 if m: fails.append(("TV5", f"場合が 2 未満の policy {len(m)} {m[:3]}"))
-tj = os.path.getmtime(f"{OUT}/test-plan.json"); m = [f for f in ("test-plan.md", "test-plan.html") if not os.path.exists(f"{OUT}/{f}") or os.path.getmtime(f"{OUT}/{f}") + 1 < tj]
-if m: fails.append(("TV6", f"三層の欠け／古い {m}"))
+# 「古くない」は生成物の検査（G38・generated_gate.py が作り手を流して中身を比べる）が見る。更新時刻は、取り出した順で決まるだけで
+# 中身の新しさを表さない（CI のまっさらな写しで html が json より 1 秒以上先に書かれると赤になる揺れが出た・2026-11-15）。ここは揃っているかだけ
+m = [f for f in ("test-plan.json", "test-plan.md", "test-plan.html") if not os.path.exists(f"{OUT}/{f}")]
+if m: fails.append(("TV6", f"三層の欠け {m}"))
 tiers = " ".join(x["tier"] for x in P["tier_mapping"]); m = [k for k in ("structural", "functional", "regression") if k not in tiers] + [x["tier"] for x in P["tier_mapping"] if not (x.get("gate") and x.get("level"))]
 if m: fails.append(("TV7", f"3-tier の対応が欠け {m}"))
 am = re.search(r"auto-merge:\n.*?needs: \[([^\]]*)\]", Y, re.S); needs = set(x.strip() for x in am.group(1).split(",")) if am else set()

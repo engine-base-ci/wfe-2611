@@ -3097,7 +3097,8 @@
     "scripts/ci/choke.mjs",
     "scripts/ci/choke.test.mjs",
     "scripts/ci/test_owner_gate.py",
-    "scripts/ci/ticket_order_gate.py"
+    "scripts/ci/ticket_order_gate.py",
+    "scripts/ci/tv_gate.py"
    ],
    "affects": [
     "@kaname/e2e"
