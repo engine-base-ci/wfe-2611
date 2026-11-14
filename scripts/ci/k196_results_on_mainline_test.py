@@ -25,6 +25,7 @@ MARK = "PASS（CI abcdef1）"
 HEAD = "| ID | 画面 | テスト観点 | テスト項目 | 前提条件 | 操作手順 | 期待結果 | 結果 | 備考 | タスク | 実行条件 |\n|---|---|---|---|---|---|---|---|---|---|---|\n"
 MAINLINE = "本線の上の回"                      # 緑のときに出す 1 行に入る語
 SWAP = "すり替え"                              # 枝が比べる元を自分にしたときの赤（前からの文）
+NAME_ONLY = "本線の枝の名前"                   # 取り込む先に HEAD・sha・生の ref を渡したときの赤の訳に入る語
 CASCADE = "Results-Written-By"                 # 比べる元が使えないときに、行ごとに出していた見当違いの赤
 
 
@@ -38,7 +39,9 @@ def git(cwd: pathlib.Path, *args: str) -> str:
     return r.stdout
 
 
-class OnMainline(unittest.TestCase):
+class Repo(unittest.TestCase):
+    """作り物の git のリポジトリと、check を命令として流す道具（試験は持たない）"""
+
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
         self.t = pathlib.Path(self.tmp.name)
@@ -78,6 +81,8 @@ class OnMainline(unittest.TestCase):
         self.put(row("K57-UI-001", MARK) + row("K57-UI-002", "PASS"), ["K57-UI-002"], {"K57-UI-001": "pass"})
         return self.commit("K-1 chore: 結果の欄を CI の記録から書く", trailer=True)
 
+
+class OnMainline(Repo):
     def test_K196_RM_001_green_on_mainline_tip(self) -> None:
         """K196-RM-001 本線の先頭で流す回（比べる元＝HEAD＝取り込む先の先頭）：印のある PASS が記録で pass・印の無い PASS が台帳にあれば緑。
         「本線の上の回」と、照らした行の数を 1 行で言う"""
@@ -210,16 +215,119 @@ class Definition(unittest.TestCase):
         self.assertEqual(len(g65), 1)
         self.assertIn("python3 scripts/ci/k196_results_on_mainline_test.py", g65[0])
 
-    def test_K196_RM_010_real_tree_as_mainline(self) -> None:
-        """K196-RM-010 本物：今の写しを本線の上の回として照らす（比べる元＝取り込む先＝HEAD）と緑。
-        今の試験の仕様の印のある PASS は、どれも 07_qa/ci-results の記録で pass（2026-11-13：224 行・回 305e80b）"""
-        head = git(ROOT, "rev-parse", "HEAD").strip()
-        r = subprocess.run([sys.executable, str(SCRIPT), "check", "--specs", "07_qa/test-specs/**/*.md", "--records", "07_qa/ci-results",
-                            "--ledger", "07_qa/test-plan/result-ledger.json", "--ledger-base-ref", head, "--target-ref", head],
-                           cwd=ROOT, capture_output=True, text=True)
-        out = r.stdout + r.stderr
-        self.assertEqual(r.returncode, 0, out[-2000:])
+
+class TargetIsBranchName(Repo):
+    """取り込む先（--target-ref）は本線の枝の名前としてだけ受ける（レビューの指摘 2026-11-14）。
+    HEAD・sha・refs/… の生の書き方・@ ~ ^ を含む物は受けない。名前は origin の枝 → 手元の枝の順に引き、tag は引かない"""
+
+    def assert_refused(self, out: str) -> None:
+        self.assertIn(NAME_ONLY, out)
+        self.assertNotIn(MAINLINE, out)
+        self.assertNotIn("Traceback", out)
+        self.assertEqual(len([ln for ln in out.splitlines() if ln.lstrip().startswith("★")]), 1, out)
+
+    def attack(self) -> tuple[str, str]:
+        """本線と、枝 atk（手で足した印・台帳に足した行・手で置いた記録）。返り値：(本線の先頭, 枝の先頭)。今いるのは atk"""
+        base = self.good_mainline()
+        git(self.t, "switch", "-q", "-c", "atk")
+        self.put(row("K57-UI-001", MARK) + row("K57-UI-002", "PASS") + row("K57-UI-003", MARK) + row("K57-UI-004", "PASS"),
+                 ["K57-UI-002", "K57-UI-004"], {"K57-UI-001": "pass", "K57-UI-003": "pass"})
+        return base, self.commit("K-9 feat: 枝で印と台帳の行を手で足す")
+
+    def test_K196_RM_010_target_head_is_refused(self) -> None:
+        """K196-RM-010 取り込む先に HEAD を渡すと赤（「HEAD は取り込む先の先祖」が自明に成り立つ道を塞ぐ）：枝が比べる元も取り込む先も
+        HEAD にしても、本線の上の回にならない。訳（取り込む先は本線の枝の名前だけ）を 1 件で言う。本線の先頭でも同じに赤"""
+        base, head = self.attack()
+        for ref in ("HEAD", head):
+            with self.subTest(base_ref=ref):
+                code, out = self.check(ref, "HEAD")
+                self.assertEqual(code, 1, out)
+                self.assert_refused(out)
+        git(self.t, "switch", "-q", "main")
+        code, out = self.check(base, "HEAD")
+        self.assertEqual(code, 1, out)
+        self.assert_refused(out)
+
+    def test_K196_RM_011_target_sha_or_raw_ref_is_refused(self) -> None:
+        """K196-RM-011 取り込む先に、sha（40 桁・7 桁）・refs/… の生の書き方・@ ~ ^ を含む物を渡すと赤（訳つき・1 件）。
+        比べる元が HEAD の回でも、チケットの回（比べる元＝本線の先頭）でも同じ"""
+        base, head = self.attack()
+        bad = [head, head[:7], base, "refs/heads/main", "refs/remotes/origin/main", "refs/heads/atk", "main~0", "main^0",
+               "main^{commit}", "@", "main@{0}", "HEAD~1"]
+        for target in bad:
+            for ref in (head, base):
+                with self.subTest(target=target, base_ref=ref[:7]):
+                    code, out = self.check(ref, target)
+                    self.assertEqual(code, 1, out)
+                    self.assert_refused(out)
+
+    def test_K196_RM_012_tag_named_like_branch_is_not_used(self) -> None:
+        """K196-RM-012 main という名前の tag が枝の先頭（別のコミット）を指していても、取り込む先は枝の main を引く：
+        枝が比べる元を自分にすると「すり替え」で赤（tag を引くと本線の上の回になってしまう）。チケットの回は tag があっても前のとおり"""
+        base, head = self.attack()
+        git(self.t, "tag", "main", head)
+        code, out = self.check(head, "main")
+        self.assertEqual(code, 1, out)
+        self.assertIn(SWAP, out)
+        self.assertNotIn(MAINLINE, out)
+        git(self.t, "switch", "-q", "-c", "clean", base)
+        (self.t / "z.txt").write_text("台帳も仕様も変えない", encoding="utf-8")
+        self.commit("K-9 feat: 別のファイルだけ")
+        code, out = self.check(base, "main")
+        self.assertEqual(code, 0, out)
+
+    def test_K196_RM_013_origin_branch_wins_over_local(self) -> None:
+        """K196-RM-013 origin の枝と手元の枝が同じ名前で違うコミットのときは origin の枝を引く（CI の写しで、枝が手元に main を
+        作って自分を指させても効かない）：枝が比べる元を自分にすると「すり替え」で赤。origin の枝が HEAD と同じなら本線の上の回で緑"""
+        base, head = self.attack()
+        git(self.t, "update-ref", "refs/remotes/origin/main", base)
+        git(self.t, "branch", "-f", "main", head)
+        code, out = self.check(head, "main")
+        self.assertEqual(code, 1, out)
+        self.assertIn(SWAP, out)
+        git(self.t, "switch", "-q", "--detach", base)
+        code, out = self.check(base, "main")   # 全部の回の形：写しの HEAD ＝ origin/main
+        self.assertEqual(code, 0, out)
         self.assertIn(MAINLINE, out)
+
+    def test_K196_RM_014_shallow_history_is_red(self) -> None:
+        """K196-RM-014 浅い履歴：取り込む先の枝が写しに無い（その枝だけを浅く取った）／HEAD が取り込む先の先祖かを辿れない
+        （どの枝も先頭の 1 つだけ）なら赤。本線の上の回にしない"""
+        base = self.good_mainline()
+        git(self.t, "branch", "old", base)
+        (self.t / "next.txt").write_text("次", encoding="utf-8")
+        self.commit("K-2 feat: 次")
+        src = self.t
+        with tempfile.TemporaryDirectory() as d:
+            one = pathlib.Path(d) / "one"
+            git(pathlib.Path(d), "clone", "-q", "--depth", "1", "--branch", "old", "--single-branch", f"file://{src}", str(one))
+            self.t = one
+            code, out = self.check("HEAD", "main")
+            self.assertEqual(code, 1, out)
+            self.assertNotIn(MAINLINE, out)
+            cut = pathlib.Path(d) / "cut"
+            git(pathlib.Path(d), "clone", "-q", "--depth", "1", "--no-single-branch", f"file://{src}", str(cut))
+            git(cut, "switch", "-q", "--detach", "origin/old")
+            self.t = cut
+            old = git(cut, "rev-parse", "HEAD").strip()
+            code, out = self.check(old, "main")
+            self.assertEqual(code, 1, out)
+            self.assertNotIn(MAINLINE, out)
+            self.assertNotIn("Traceback", out)
+        self.t = src
+
+    def test_K196_RM_015_ledger_not_an_object(self) -> None:
+        """K196-RM-015 本線の上の回で、台帳が JSON だが決まった形（{"rows": […]}）でない（配列・数）とき、例外で落ちずに、
+        台帳の訳の文つきで赤"""
+        for body in ("[1]", "3", '{"rows": 3}'):
+            with self.subTest(body=body):
+                self.put(row("K57-UI-001", MARK), [], {"K57-UI-001": "pass"})
+                (self.t / "ledger.json").write_text(body, encoding="utf-8")
+                head = self.commit(f"K-1 chore: 台帳が {body}", trailer=True)
+                code, out = self.check(head)
+                self.assertEqual(code, 1, out)
+                self.assertNotIn("Traceback", out)
+                self.assertIn("台帳", out)
 
 
 if __name__ == "__main__":
