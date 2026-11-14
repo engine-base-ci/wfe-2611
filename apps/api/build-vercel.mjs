@@ -1,3 +1,4 @@
+// 2026-11-14：配りを起こし直した（コミットの名義が個人の物だった間、Vercel が配りを止めていた・K-201）
 // Vercel に置く API を組み立てる（D-097）。packages は TypeScript の src を export しているので、
 // そのまま渡すと workspace の .ts が実行時に読めない。ここで全部を 1 本の JS にまとめ、
 // Vercel の Build Output API の形（.vercel/output）で置く：関数 1 本（api.func）＋全部の道をそこへ回す。
