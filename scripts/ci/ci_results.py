@@ -19,6 +19,8 @@ Kaname の入力に合わせたもの。違いは 4 つ：
   python3 scripts/ci/ci_results.py ledger --specs '07_qa/test-specs/**/*.md' --out 07_qa/test-plan/result-ledger.json   # 入れた時点の 1 回だけ
 
 --ledger-base-ref <ref> --target-ref <取り込む先>（PM の判断 2026-11-08 15:37・15:58・17:40 ①②）：
+  ・<取り込む先> は本線の枝の名前としてだけ受ける（refs/heads/<名前> → 無ければ refs/remotes/origin/<名前> と明示して引く。
+    tag は引かない）。HEAD・sha・refs/… や origin/… の書き方・@ ~ ^ : .. ・空白・- で始まる物は赤
   ・<ref> は <取り込む先> の先祖でなければ赤。--target-ref が無い・読めないなら赤。<ref> が HEAD と同じコミットのときは、
     HEAD が <取り込む先> の先頭か先祖のときだけ通す＝本線の上の回（全部の CI・K-196）。そうでなければ赤（比べる元を枝が選べない）
   ・本線の上の回は枝の差分が無いので、本線の版を信じて飛ばさず、印のある PASS を全部、記録と照らし直す（書き込みのコミットの確かめは掛けない）
@@ -426,6 +428,51 @@ def _resolve(ref: str) -> str | None:
     return None
 
 
+_HEX = re.compile(r"[0-9a-fA-F]{7,40}")
+_TARGET_PREFIXES = ("refs/", "origin/", "heads/", "remotes/", "tags/")
+_TARGET_CHARS = ("@", "~", "^", ":", "..", "\\", "*", "?", "[")
+
+
+def _target_name_problem(target: str) -> str | None:
+    """取り込む先は本線の枝の名前としてだけ受ける（K-196・レビューの指摘 2026-11-14）。受けない書き方なら訳、受けるなら None。
+    HEAD・sha・生の ref・版をたどる記号を受けると、取り込む先を HEAD 自身にでき、本線の上の回の守りを通り抜ける"""
+    if target != target.strip() or any(c.isspace() or ord(c) < 32 for c in target):
+        return "空白・改行を含む"
+    if target.startswith("-"):
+        return "- で始まる"
+    if target.upper() == "HEAD" or target.upper().endswith("_HEAD"):
+        return "HEAD の類"
+    if _HEX.fullmatch(target):
+        return "sha の形"
+    if target.startswith(_TARGET_PREFIXES):
+        return "生の ref の書き方"
+    if any(c in target for c in _TARGET_CHARS):
+        return "@ ~ ^ : .. などの記号を含む"
+    return None
+
+
+def _resolve_target(name: str) -> str | None:
+    """取り込む先の枝の名前をコミットの sha に。手元の枝（refs/heads/<名前>）→ 無ければ origin の枝（refs/remotes/origin/<名前>・
+    CI のまっさらな写し）と明示して引く。生の名前を git に渡さない（同じ名前の tag を引かない）。_target_name_problem を通った名前だけ渡す"""
+    for cand in (f"refs/heads/{name}", f"refs/remotes/origin/{name}"):
+        r = _git("rev-parse", "--verify", "--quiet", f"{cand}^{{commit}}")
+        if r.returncode == 0 and r.stdout.strip():
+            return r.stdout.strip()
+    return None
+
+
+def _ledger_shape_problem(d: object) -> str | None:
+    """台帳の形（{"rows": [{"file": …, "id": …}, …]}）の確かめ。形が違えば訳、合えば None"""
+    if not isinstance(d, dict):
+        return "台帳が JSON だが、決まった形（{\"rows\": […]}）でない"
+    rows = d.get("rows", [])
+    if not isinstance(rows, list):
+        return "台帳の rows が並びでない"
+    if not all(isinstance(x, dict) and isinstance(x.get("file"), str) and isinstance(x.get("id"), str) for x in rows):
+        return "台帳の rows に、file と id を持たない行がある"
+    return None
+
+
 def _refs_ok(ref: str, target: str | None) -> list[str]:
     """比べる元（ref）と取り込む先（target）の確かめ。問題の一覧（空なら通る）"""
     if not ref:
@@ -435,9 +482,13 @@ def _refs_ok(ref: str, target: str | None) -> list[str]:
         return [f"本線の ref「{ref}」が読めない。台帳を本線と比べられないので止める"]
     if target is None or not target:
         return ["取り込む先（--target-ref）が無い。比べる元が取り込む先の先祖かを確かめられないので止める（CI は workflow_dispatch の入力 target を env で渡す）"]
-    tgt = _resolve(target)
+    why = _target_name_problem(target)
+    if why:
+        return [f"取り込む先「{target.strip()[:60]}」は受けない（{why}）。取り込む先は本線の枝の名前だけ"
+                "（HEAD・sha・refs/… などを渡すと「HEAD は取り込む先の先祖」が自明に成り立ち、枝が比べる元を自分にできる）"]
+    tgt = _resolve_target(target)
     if tgt is None:
-        return [f"取り込む先「{target}」が読めない。比べる元が取り込む先の先祖かを確かめられないので止める"]
+        return [f"取り込む先「{target}」が読めない（refs/heads/ にも refs/remotes/origin/ にも無い）。比べる元が取り込む先の先祖かを確かめられないので止める"]
     head = _resolve("HEAD")
     if head is not None and base == head:
         if _git("merge-base", "--is-ancestor", head, tgt).returncode == 0:
@@ -461,9 +512,13 @@ def _mainline_view(ref: str, ledger_path: str):
     if raw is None:
         return None, set(), None, []
     try:
-        return json.loads(raw), set(), None, []
+        d = json.loads(raw)
     except ValueError:
         return None, set(), None, [f"本線（{ref}）の台帳が JSON でない"]
+    why = _ledger_shape_problem(d)
+    if why:
+        return None, set(), None, [f"本線（{ref}）の{why}"]
+    return d, set(), None, []
 
 
 def _written_commits(ref: str) -> list[tuple[str, str]]:
@@ -578,6 +633,11 @@ def main() -> int:
         except (ValueError, OSError) as e:
             print(f"  ★ 台帳が読めない: {a.ledger}（{e}）")
             print("FAIL — 台帳が読めない")
+            return 1
+        why = _ledger_shape_problem(ledger)
+        if why:
+            print(f"  ★ {a.ledger}：{why}")
+            print("FAIL — 台帳の形が違う")
             return 1
     base, trusted, written, bad0 = None, None, None, []
     if a.ledger_base_ref is not None:
