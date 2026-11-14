@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+// 2026-11-14：配りを起こし直した（コミットの名義が個人の物だった間、Vercel が配りを止めていた・K-201）
 
 // 画面は API（apps/api）を叩くだけ（D-043.3）。業務ロジックを Server Actions に置かない。API の口は NEXT_PUBLIC_API_BASE
 const nextConfig: NextConfig = {
