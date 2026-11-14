@@ -46,7 +46,13 @@ class BridgeBuild(unittest.TestCase):
     def test_K97_BB_001_built_before_journeys(self) -> None:
         st = steps("staging-e2e.yml", "e2e")
         build, run, health = find(st, BUILD), find(st, RUN), find(st, r"scripts/ci/staging_health\.py")
+        install = find(st, r"pnpm install\b")
         self.assertEqual(len(build), 1, "組み立ての段は 1 つ")
+        self.assertEqual(len(install), 1, "部品を入れる段は 1 つ")
+        self.assertLess(install[0], build[0], "部品を入れた後に組み立てる（前に置くと tsc が無くて落ちる）")
+        self.assertEqual(str(st[build[0]]["run"]).strip(), "pnpm --filter @kaname/bridge build",
+                         "命令は配布と同じ build の 1 つだけ（|| true・; true を後ろに付けると、型の誤りで赤にならない）")
+        self.assertNotIn("shell", st[build[0]], "shell を付けない（既定の bash -e を外すと、落ちても進む）")
         self.assertLess(build[0], run[0], "統合テストの前に組み立てる")
         self.assertLess(build[0], health[0], "健康診断（秘密を持つ段）より前：staging や secrets がまだでも、Linux で組み立てが通るかが見える")
         self.assertNotIn("if", st[build[0]], "条件を付けて飛ばさない（統合テストが 0 本の回でも組み立てる）")
@@ -67,7 +73,7 @@ class BridgeBuild(unittest.TestCase):
         for f in ("loop.js", "runner.js", "pairing.js"):
             self.assertRegex(cmd, rf"test -f apps/bridge/dist/{re.escape(f)}", f"{f} が在る")
         for line in lines:
-            self.assertNotRegex(line, r";|\|\|", f"; や || でつなぐと、前の確かめの赤が消える：{line}")
+            self.assertNotRegex(line, r";|\|\||&&", f"1 行に 1 つ（; や || は前の赤を消す。&& は 1 行に 2 つを詰める）：{line}")
         node = [x for x in lines if x.startswith("node -e")]
         self.assertEqual(len(node), 1, "窓（Electron）なしの node で輪を読む行が 1 つ")
         self.assertRegex(node[0], r"require\(.*apps/bridge/dist/loop\.js.*\)\.startLoop", "輪の入口 startLoop を読む")
@@ -81,6 +87,13 @@ class BridgeBuild(unittest.TestCase):
         self.assertNotRegex(hit[0], r"\|\|\s*(true|:)|2>\s*/dev/null\s*$", "組み立ての失敗を黙って通さない")
         self.assertRegex(hit[0], r"^\S", "字下げなし＝ if の外（「画面がもう動いている」の回でも組み立てる）")
         self.assertRegex(hit[0], r"exit 1", "失敗したら立ち上げを止める")
+        rows = up.splitlines()
+        at = rows.index(hit[0])
+        api = [i for i, x in enumerate(rows) if x.startswith('say "3／4 API"')]
+        done = [i for i, x in enumerate(rows) if x.startswith('say "触れます"')]
+        self.assertEqual((len(api), len(done)), (1, 1), "置き場所の目印（3／4 API・触れます）が 1 つずつ在る")
+        self.assertLess(api[0], at, "--status・--stop の分かれ道（case）と設定の読み込みより後：見るだけ・止めるだけの回では組み立てない")
+        self.assertLess(at, done[0], "「触れます」と言う前に組み立て終わっている")
 
     def test_K97_BB_004_loop_does_not_need_electron(self) -> None:
         # process.versions["electron"] を見るだけの行は当てない（node でも動く分かれ道）。当てるのは部品の import と require
