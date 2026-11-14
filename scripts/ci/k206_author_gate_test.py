@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -34,8 +35,13 @@ BASE_WORD = "比べる元"                         # 比べる元が読めない
 CONFIG_WORD = "author_gate.json"               # 設定が無い・壊れている赤に入る語
 
 
+def clean_env() -> dict[str, str]:
+    """GIT_ で始まる環境の値を除いた env（フックの中・rebase --exec の中で流しても、本物のリポジトリと環境の名義に当たらない）"""
+    return {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+
+
 def git(cwd: pathlib.Path, *args: str) -> str:
-    r = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
+    r = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, env=clean_env())
     assert r.returncode == 0, r.stderr
     return r.stdout.strip()
 
@@ -68,11 +74,13 @@ class Repo(unittest.TestCase):
             "commit", "-q", "-m", f"c{self.n}", f"--author={who[0]} <{who[1]}>")
         return git(self.t, "rev-parse", "--short=7", "HEAD")
 
-    def gate(self, base: str | None = None, *, config: pathlib.Path | None = None) -> tuple[int, str]:
-        r = subprocess.run(
-            [sys.executable, str(SCRIPT), "--base-ref", self.base if base is None else base,
-             "--config", str(config or self.cfg)],
-            cwd=self.t, capture_output=True, text=True)
+    def gate(self, base: str | None = None, *, config: pathlib.Path | None = None,
+             default_config: bool = False) -> tuple[int, str]:
+        """default_config=True は --config を渡さない（CI の段と同じ呼び方。台本の隣の設定を読む）"""
+        cmd = [sys.executable, str(SCRIPT), "--base-ref", self.base if base is None else base]
+        if not default_config:
+            cmd += ["--config", str(config or self.cfg)]
+        r = subprocess.run(cmd, cwd=self.t, capture_output=True, text=True, env=clean_env())
         out = r.stdout + r.stderr
         self.assertNotIn("Traceback", out, "台本が落ちている（赤は、訳を出して終わりの値 1 で返す）")
         return r.returncode, out
@@ -154,6 +162,7 @@ class AuthorGate(Repo):
         code, out = self.gate()
         self.assertEqual(code, 0, out)
         self.assertNotIn("dev.member", out)
+        self.assertNotIn(ORG[0], out)
 
     def test_K206_AG_006_unreadable_base_is_red(self) -> None:
         """K206-AG-006 比べる元が読めない（無い参照・無いコミット・空）→ 赤（黙って 0 本の緑にしない）"""
@@ -179,6 +188,8 @@ class AuthorGate(Repo):
         cases = {
             "無い": None,
             "JSON でない": "{allowed_domains: [",
+            "一番上が入れ物でない（並び）": json.dumps([]),
+            "一番上が入れ物でない（null）": "null",
             "鍵が無い": json.dumps({}),
             "並びでない": json.dumps({"allowed_domains": DOMAIN}),
             "空の並び": json.dumps({"allowed_domains": []}),
@@ -211,6 +222,14 @@ class AuthorGate(Repo):
                 bad = self.commit(("x", mail))
                 code, out = self.gate()
                 self.assert_red(code, out, bad)
+        # 出す文のドメイン：英数字・「.」・「-」のほかは「?」に替えて出す（CI の記録に、制御の文字や命令の形を出さない）
+        git(self.t, "reset", "-q", "--hard", self.base)
+        bad = self.commit(("x", "x@a\x1b[31m::error.example"))
+        code, out = self.gate()
+        self.assert_red(code, out, bad)
+        self.assertNotIn("\x1b", out)
+        self.assertNotIn("::error", out)
+        self.assertIn("***@a??31m??error.example", out)
 
     def test_K206_AG_010_committer_is_not_checked(self) -> None:
         """K206-AG-010 committer は見ない（author が組織の名義なら、committer が別でも緑）"""
@@ -229,9 +248,9 @@ class AuthorGate(Repo):
         self.assert_red(code, out, bad)
 
 
-class CiDefinition(unittest.TestCase):
+class CiDefinition(Repo):
     def test_K206_AG_012_ci_runs_gate_with_scope_base(self) -> None:
-        """K206-AG-012 CI の static の組に名義の検査の段があり、比べる元は範囲の段の出力。設定はドメインだけ"""
+        """K206-AG-012 CI の static の組に名義の検査の段があり、どの回でも流れ、比べる元は範囲の段の出力。設定はドメインだけで、--config 無しで読める"""
         jobs = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))["jobs"]
         steps = [s for s in jobs["static"]["steps"] if "scripts/ci/author_gate.py" in str(s.get("run", ""))]
         self.assertEqual(len(steps), 1, "static の組に author_gate.py の段が 1 つ")
@@ -239,6 +258,8 @@ class CiDefinition(unittest.TestCase):
         self.assertIn('--base-ref "$CI_BASE"', step["run"])
         self.assertEqual(step.get("env", {}).get("CI_BASE"), "${{ steps.scope.outputs.base }}")
         self.assertNotIn("continue-on-error", step)
+        # どの回でも流れる（全部の回だけ・重い検査の組だけ、の条件で足すと、チケットの回で何も見ない）
+        self.assertIn(step.get("if"), (None, "${{ !cancelled() }}"))
         self.assertNotIn("|| true", step["run"])
         ids = [s.get("id") for s in jobs["static"]["steps"]]
         self.assertLess(ids.index("scope"), jobs["static"]["steps"].index(step), "範囲の段の後ろで流す")
@@ -249,6 +270,12 @@ class CiDefinition(unittest.TestCase):
         cfg = json.loads(CONFIG.read_text(encoding="utf-8"))
         self.assertEqual(cfg["allowed_domains"], [DOMAIN])
         self.assertNotIn("@", CONFIG.read_text(encoding="utf-8"))
+
+        # CI の段と同じ呼び方（--config 無し）：今いるフォルダが別のリポジトリでも、台本の隣の設定を読む
+        self.commit(ORG)
+        code, out = self.gate(default_config=True)
+        self.assertEqual(code, 0, out)
+        self.assertIn("1 本を見た", out)
 
 
 if __name__ == "__main__":
