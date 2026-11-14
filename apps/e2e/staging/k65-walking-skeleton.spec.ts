@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { FAKE_REPLY_HEAD, stagingPc, type Job, type StagingPc } from "./_lib/bridge";
-import { countTo, eventOf, latestTo, readMail, verifyLink } from "./_lib/resend";
+import { countTo, latestTo, readMail, verifyLink } from "./_lib/resend";
 import { scrub } from "./_lib/scrub.mjs";
 import { WEB } from "./_lib/site";
 import {
@@ -69,12 +69,21 @@ const MAIL = {
   /** 電話は載せない（D-096.3）：「電話」「TEL」の字と、番号の形 */
   phone: /電話|TEL|ＴＥＬ|0\d{1,4}[-‐ー−(（]\d{1,4}[-‐ー−)）]\d{3,4}/i,
 } as const;
-/** チケットの区画（実施事項は 2 項目＝完了の小窓のチェック 2 つ・K-64 と同じ形）。偽の AI の合図の語（聞いて・消して・長く・落ちて など）を入れない */
+/** 本文から、リンクの行を除いた文（リンクの乱数の字に「tel」などが当たって、電話の確かめが誤って赤にならないように） */
+const proseOf = (text: string): string =>
+  text
+    .split("\n")
+    .filter((line) => !/https?:\/\//.test(line))
+    .join("\n");
+/** チケットの区画（実施事項は 2 項目＝完了の小窓のチェック 2 つ・K-64 と同じ形）。偽の AI の合図の語（聞いて・消して・長く・落ちて など）を入れない。
+ *  実施事項の「- 」の行は、仕事の文に全文で入る（区画は切らない）。偽の AI は「- 」で始まる行を見ると、その行を並べた答え（FAKE_REPLY_HEAD）を返す */
 const BODY = {
   purpose: "先方に出す見積のたたき台を作って送る",
   done: "先方が見積を受け取った",
   todo: "- 見積を作る\n- 先方に送る",
 } as const;
+/** 実施事項の 2 項目（偽の AI の答えに並ぶ行・完了の小窓のチェックの名前） */
+const TODO_ITEMS = ["見積を作る", "先方に送る"] as const;
 const titleOf = (tag: string): string => `見積を送る 統合テスト ${tag}`;
 /** K65-STG-05 で、輪を回さない PC が返す決まった結果（AI は呼ばない） */
 const RESULT_A = "見積のたたき台：合計 120,000 円（統合テスト）";
@@ -133,14 +142,16 @@ async function device(browser: Browser): Promise<{ ctx: BrowserContext; page: Pa
 async function signUpAndEnter(page: Page, me: Person): Promise<void> {
   expect(await submitSignup(page, me), "登録の口が受ける（201）").toBe(201);
   await expect(h1(page, MSG.sent)).toBeVisible();
+  // 記録の一覧は 2 秒おきに 1 回だけ読み、見つけた 1 通の id をそのまま使う（Resend の口の回数の上限に当てない）
+  const found: { mail: Awaited<ReturnType<typeof latestTo>> } = { mail: null };
   await expect
-    .poll(async () => (await latestTo(me.email)) !== null, {
+    .poll(async () => (found.mail ??= await latestTo(me.email)) !== null, {
       message: "確認のメールが Resend の記録に出る",
       timeout: LIMIT.mailRecord,
       intervals: [2_000],
     })
     .toBe(true);
-  const mail = await readMail((await latestTo(me.email))!.id);
+  const mail = await readMail(found.mail!.id);
   const link = verifyLink(mail);
   expect(link !== null, "メールの本文に確認のリンクがある").toBe(true);
   expect(await enterByLink(page, link!), "メールのリンクの先が開ける（200）").toBe(200);
@@ -211,8 +222,15 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
     timeout: LIMIT.toApproval,
   });
   await expect(execBand(page), "輪が動かした AI の答えが、成果物として帯に出る").toContainText(FAKE_REPLY_HEAD);
+  for (const item of TODO_ITEMS)
+    await expect(execBand(page), `画面で書いた実施事項（${item}）が、輪の仕事を通って成果物に出る`).toContainText(item);
   await expect(execBand(page)).toContainText(MSG.checkNone);
   await expect(execBand(page)).toContainText(MSG.irreversible);
+  // 承認するまで実行の段は動かない（TP-AI-01）：承認の前の実行の記録は、終わった作る段の 1 件だけ
+  expect(await runsOf(page, t), "承認の前：実行の記録は作る段の 1 件だけ（実行の段はまだ無い）").toEqual({
+    status: 200,
+    runs: [["make", "done", me.name]],
+  });
 
   // 承認待ちの画面に 1 行（取り消せない扱いなので行では決めず「中身を見る」・D-128.36・D-128.177）
   await page.goto("/approvals");
@@ -238,8 +256,7 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
   // 完了にする（実施事項 2 つと完了の条件を確かめる）
   await completeBtn(page).click();
   const d = page.getByRole("dialog");
-  await d.getByRole("checkbox", { name: "見積を作る" }).check();
-  await d.getByRole("checkbox", { name: "先方に送る" }).check();
+  for (const item of TODO_ITEMS) await d.getByRole("checkbox", { name: item }).check();
   await d.getByRole("checkbox", { name: "完了の条件を満たしたことを確かめました" }).check();
   expect(
     await clickAndAnswer(page, d.getByRole("button", { name: "確かめて完了にする" }), COMPLETE_RE),
@@ -281,21 +298,22 @@ test("K65-STG-02 本物のメールの到達と中身：登録の直後に Resen
   const me = person("メール");
   expect(await submitSignup(page, me), "登録の口が受ける（201）").toBe(201);
   await expect(h1(page, MSG.sent)).toBeVisible();
+  const found: { mail: Awaited<ReturnType<typeof latestTo>> } = { mail: null };
   await expect
-    .poll(() => eventOf(me.email), {
+    .poll(async () => (found.mail = await latestTo(me.email))?.lastEvent ?? "まだ無い", {
       message: "送ってから 60 秒以内に、Resend の記録が delivered になる",
       timeout: LIMIT.mailDelivered,
       intervals: [2_000],
     })
     .toBe("delivered");
-  const mail = await readMail((await latestTo(me.email))!.id);
+  const mail = await readMail(found.mail!.id);
   expect(
     { from: mail.from, replyTo: mail.replyTo, subject: mail.subject, toCount: mail.to.length },
     "差出人・返信先・件名（D-096）。宛先は登録した 1 件だけ",
   ).toEqual({ from: MAIL.from, replyTo: [MAIL.replyTo], subject: MAIL.subject, toCount: 1 });
   expect(MAIL.operator.test(mail.text), "本文に運営者の署名（運営：会社（代表 名前））").toBe(true);
   expect(mail.text.includes(MAIL.contact), "本文にお問い合わせの届け先").toBe(true);
-  expect(MAIL.phone.test(mail.text), "本文に電話番号は出ない（D-096.3）").toBe(false);
+  expect(MAIL.phone.test(proseOf(mail.text)), "本文（リンクの行のほか）に電話番号は出ない（D-096.3）").toBe(false);
   const link = verifyLink(mail);
   expect(link !== null, "本文に確認のリンクがある").toBe(true);
   expect(new URL(link!).origin === WEB, "リンクの頭が staging の画面の住所と同じ（WEB_BASE_URL）").toBe(true);
@@ -347,7 +365,7 @@ test("K65-STG-04 承認の直後の間合い（K-194）：K65-STG-01 の中で�
   );
 });
 
-test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別の 2 人が並んで 登録 → つなぐ → 作る。A が任せても B の PC には渡らず、B の画面と口に A のものが出ない", async ({
+test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別の 2 人が 登録（順に）→ 並んで つなぐ → 作る。A が任せても B の PC には渡らず、B の画面と口に A のものが出ない", async ({
   page,
   browser,
 }) => {
@@ -355,8 +373,9 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
   const a = person("会社A");
   const b = person("会社B");
   const other = await device(browser);
-  // 2 人が並んで進む（同じ時に別の会社の読み書きが束ね役を通る）
-  await Promise.all([signUpAndEnter(page, a), signUpAndEnter(other.page, b)]);
+  // 登録だけは順に（Resend の記録を読む口の回数の上限に、2 人ぶんの読みを重ねない）。その後は 2 人が並んで進む（同じ時に別の会社の読み書きが束ね役を通る）
+  await signUpAndEnter(page, a);
+  await signUpAndEnter(other.page, b);
   const pcA = pcOf("会社A");
   const pcB = pcOf("会社B");
   await Promise.all([connectQuietPc(page, pcA), connectQuietPc(other.page, pcB)]);
@@ -419,6 +438,8 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
     timeout: LIMIT.firstView,
   });
   await expect(page.getByText(titleOf("会社B")), "A の一覧に B のチケットは 0 件").toHaveCount(0);
+  // 一覧の「live」は最後の知らせから 75 秒の窓。ここまでの画面の歩きで窓を越えないよう、読む直前に知らせ直す（06 と同じ）
+  expect([await pcA.beat(), await pcB.beat()], "読む直前に、2 台とも知らせが通る（201）").toEqual([201, 201]);
   expect((await devicesOf(page)).pcs, "A の PC の一覧は自分の 1 台だけ").toEqual([[pcA.label, "live"]]);
   expect((await devicesOf(other.page)).pcs, "B の PC の一覧は自分の 1 台だけ").toEqual([[pcB.label, "live"]]);
 });
@@ -439,12 +460,13 @@ test("K65-STG-06 入り直し（口と画面が別の住所）：チケットを
   const again = await device(browser);
   await loginByForm(again.page, me);
   expect(pathOf(again.page) !== "/login", "ログインが通る（ログインの画面に残らない）").toBe(true);
-  expect(
-    new URL(again.page.url()).searchParams.get("step"),
-    "同意し直しの段には止まらない（規約の版は変わっていない）",
-  ).toBeNull();
   expect(await hasLoginMark(again.page), "入り直したブラウザがログインの印を持つ").toBe(true);
   await openTicket(again.page, t, title);
+  // 行き先が決まった後（詳細の題名が出た後）に道を見る：同意し直しの段に送り返されていない
+  expect(
+    [pathOf(again.page), new URL(again.page.url()).searchParams.get("step")],
+    "同意し直しの段には止まらない（規約の版は変わっていない）。開いたのはチケットの詳細",
+  ).toEqual([`/tickets/${t}`, null]);
   await expect(again.page.getByText(MSG.todo, { exact: true }), "途中の状態（未着手）が残っている").toBeVisible();
   expect((await readAs(again.page, `/tickets/${t}`)).status, "画面と別の住所の口が、入り直した印を通す（200）").toBe(
     200,

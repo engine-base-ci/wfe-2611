@@ -9,6 +9,7 @@ import pathlib
 import re
 import subprocess
 import unittest
+import xml.etree.ElementTree as ET
 
 import yaml
 
@@ -168,17 +169,38 @@ class StagingSpecShape(unittest.TestCase):
             "xml postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full&amp;a=b",
             "file https://abcdefgh.supabase.co/storage/v1/object/sign/x?X-Amz-Signature=deadbeefdeadbeef",
             "site kaname-web-abc123.vercel.app",
+            "fill(\"ABCDEFGHIJKLMNOPQRSTUVWX-k65pw-aA1\")",
             "<testcase name=\"K65-STG-01 正常\">",
         ])
+        # JUnit と同じ形（XML に書かれた落ちた文）。伏せた後も XML として読めること（伏せた跡の字に < > & を使わない）
+        junit = ("<testsuites><testsuite name=\"staging\"><testcase name=\"K65-STG-01 正常\"><failure message=\"navigating to "
+                 "&quot;https://k65-web-shape.example.test/verify-email?token=PLANTEDTOKEN123&amp;x=1&quot;\">"
+                 "to delivered+k65-abc123@resend.dev key planted-key-value-0123456789 Bearer abcdefghijklmnopqrstuvwxyz012345 "
+                 "kpc_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq "
+                 "postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full&amp;a=b "
+                 "https://abcdefgh.supabase.co/x?X-Amz-Signature=deadbeefdeadbeef&amp;y=1 kaname-web-abc123.vercel.app "
+                 "fill(&quot;ABCDEFGHIJKLMNOPQRSTUVWX-k65pw-aA1&quot;)</failure></testcase></testsuite></testsuites>")
+        ET.fromstring(junit)   # 見本そのものが XML として読める
         script = ("import('./apps/e2e/staging/_lib/scrub.mjs').then(async (m) => {"
                   " let s = ''; for await (const c of process.stdin) s += c; process.stdout.write(m.scrub(s)); })")
         env = {**{k: v for k, v in os.environ.items() if not k.startswith("STAGING_")}, **planted}
         out = subprocess.run(["node", "-e", script], cwd=ROOT, env=env, input=sample, capture_output=True, text=True, timeout=60)
         self.assertEqual(out.returncode, 0, out.stderr[-400:])
-        for gone in ("k65-web-shape", "k65-api-shape", "PLANTEDTOKEN123", "delivered+k65-abc123", "planted-key-value",
-                     "abcdefghijklmnopqrstuvwxyz012345", "kpc_ABCDEFGH", "planted-pass-99", "db.k65-shape", "abcdefgh.supabase.co",
-                     "deadbeefdeadbeef", "kaname-web-abc123"):
+        secrets = ("k65-web-shape", "k65-api-shape", "PLANTEDTOKEN123", "delivered+k65-abc123", "planted-key-value",
+                   "abcdefghijklmnopqrstuvwxyz012345", "kpc_ABCDEFGH", "planted-pass-99", "db.k65-shape", "abcdefgh.supabase.co",
+                   "deadbeefdeadbeef", "kaname-web-abc123", "ABCDEFGHIJKLMNOPQRSTUVWX")
+        for gone in secrets:
             self.assertNotIn(gone, out.stdout, f"伏せ残し：{gone}")
+        xml_out = subprocess.run(["node", "-e", script], cwd=ROOT, env=env, input=junit, capture_output=True, text=True, timeout=60)
+        self.assertEqual(xml_out.returncode, 0, xml_out.stderr[-400:])
+        for gone in secrets:
+            self.assertNotIn(gone, xml_out.stdout, f"伏せ残し（XML）：{gone}")
+        try:
+            case = ET.fromstring(xml_out.stdout).find("./testsuite/testcase")
+        except ET.ParseError as e:   # 伏せた跡が XML を壊すと、判定が記録を読めない
+            self.fail(f"伏せた後の JUnit が XML として読めない：{e}")
+        self.assertEqual(case.get("name"), "K65-STG-01 正常", "伏せた後も、試験の名前（行 ID）を XML から読める")
+        self.assertNotRegex(read(LIB / "scrub.mjs").split("const SHAPES", 1)[1], r'"<[^"$]*>"|\$1<', "伏せた跡の字に < > を使わない")
         self.assertIn('<testcase name="K65-STG-01 正常">', out.stdout, "試験の名前（行 ID）は残す＝判定が読める")
         self.assertEqual(len(out.stdout.splitlines()), len(sample.splitlines()), "行を消さない（伏せるだけ）")
 
@@ -200,6 +222,11 @@ class StagingSpecShape(unittest.TestCase):
         steps_ts = code(LIB / "steps.ts")
         self.assertRegex(steps_ts, r"email:\s*`delivered\+k65-\$\{mark\}@resend\.dev`", "宛先は毎回別の、Resend の試験用の宛先")
         self.assertRegex(steps_ts, r"password:\s*`\$\{randomBytes\(\d+\)", "パスワードは回ごとに作る（決まった字を書かない）")
+        made = re.search(r'password:\s*`\$\{randomBytes\((\d+)\)\.toString\("base64url"\)\}(-[A-Za-z0-9-]+)`', steps_ts)
+        self.assertIsNotNone(made, "パスワードは 乱数（base64url）＋決まった尻の印")
+        chars = -(-int(made.group(1)) * 4 // 3)   # base64url の字数（詰め物なし）
+        self.assertIn(f"[A-Za-z0-9_-]{{{chars}}}{made.group(2)}/g", read(LIB / "scrub.mjs"),
+                      "その回に作ったパスワードの形を、伏せる台本が持つ（落ちた文の Call log に乗っても伏せる）")
         self.assertRegex(steps_ts, r"name:\s*`統合テスト ", "人の名前に「統合テスト」の印")
         self.assertRegex(steps_ts, r"company:\s*`統合テストの会社 ", "会社の名前に「統合テスト」の印")
 
@@ -211,6 +238,16 @@ class StagingSpecShape(unittest.TestCase):
         self.assertEqual(out.returncode, 0, "この台で、台本をそのまま起こせる（輪の「動くかで決める」と同じ確かめ）")
         self.assertRegex(out.stdout, r"\d+\.\d+")
         body = read(SPEC).split("const BODY = {", 1)[1].split("}", 1)[0] + read(SPEC).split("const titleOf", 1)[1].split("\n", 1)[0]
+        # 仕事の文は区画を全文で持つ。偽の AI は「- 」で始まる行が 1 つでも在れば、その行を並べた答えを返す（ふつうの答えにならない）
+        att = re.search(r'filter\(\(l\) => l\.startsWith\("- "\)\);\s*if \(att\.length\) \{\s*const t = `([^`：]+)：', read(FAKE))
+        self.assertIsNotNone(att, "偽の AI の「- の行が在るとき」の答えの頭を、台本から拾えている")
+        head = re.search(r'export const FAKE_REPLY_HEAD = "([^"]+)"', read(LIB / "bridge.ts"))
+        self.assertIsNotNone(head)
+        if re.search(r'(?:"|\\n)- ', body):
+            self.assertEqual(head.group(1), att.group(1), "区画に「- 」の行があるなら、期待の頭は資料の答え（ふつうの答えの頭ではない）")
+        else:
+            self.assertIn(f"## {head.group(1)}", read(FAKE), "区画に「- 」の行が無いなら、期待の頭はふつうの答えの見出し")
+        self.assertRegex(read(SPEC), r"toContainText\(FAKE_REPLY_HEAD\)", "試験は、道具が持つ頭で成果物を確かめる")
         words = sorted(set(re.findall(r'text\.includes\("([^"]+)"\)', read(FAKE))))
         self.assertGreaterEqual(len(words), 10, "偽の AI の合図の語を拾えている")
         for w in words:

@@ -14,14 +14,16 @@ export interface Person {
   password: string;
 }
 /** 初めての人（毎回別の物）。宛先は Resend の試験用の宛先（届いたことになる・D-140.1）。名前と会社に「統合テスト」の印（staging に残す）。
- *  パスワードは回ごとに作る（staging は漏れたパスワードの照合が本物なので、決まった文字を使わない）。どこにも書き出さない */
+ *  パスワードは回ごとに作る（staging は漏れたパスワードの照合が本物なので、決まった文字を使わない）。どこにも書き出さない。
+ *  尻に決まった印（-k65pw-aA1）を付ける：落ちた文（fill の Call log）に乗っても、伏せる台本（scrub.mjs の SHAPES）が形で伏せる。
+ *  作るのは試験の子の側・記録を伏せ直すのは親の側なので、値そのものは渡せない（書き出さない）。だから形で伏せる */
 export function person(tag: string): Person {
   const mark = `${Date.now().toString(36)}${randomBytes(3).toString("hex")}`;
   return {
     email: `delivered+k65-${mark}@resend.dev`,
     name: `統合テスト ${tag}`,
     company: `統合テストの会社 ${tag} ${mark}`,
-    password: `${randomBytes(18).toString("base64url")}-aA1`,
+    password: `${randomBytes(18).toString("base64url")}-k65pw-aA1`,
   };
 }
 export const aiOf = (p: Person): string => `${p.name}のAI`;

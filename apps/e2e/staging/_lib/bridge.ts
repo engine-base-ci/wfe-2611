@@ -15,10 +15,11 @@ import { API } from "./site";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 const DIST = join(ROOT, "apps/bridge/dist");
-/** 決まった答えを返す偽の Claude Code。ふつうの仕事には「## 9 月の請求のまとめ」で始まる文を返す */
+/** 決まった答えを返す偽の Claude Code。受けた文に「- 」で始まる行が在れば「資料を受け取りました：」の後にその行を並べて返す
+ *  （チケットの仕事の文は区画を全文で持つ＝実施事項の「- 」の行が必ず入る・migration 0101 の ticket_job_context）。無ければ「## 9 月の請求のまとめ」 */
 const FAKE_CLAUDE = join(ROOT, "scripts/dev/fake-claude-demo.mjs");
-/** 偽の Claude Code がふつうの仕事に返す文の頭（承認待ちの帯に出る） */
-export const FAKE_REPLY_HEAD = "9 月の請求のまとめ";
+/** 偽の Claude Code が、実施事項（「- 」の行）を持つチケットの仕事に返す文の頭（承認待ちの帯に出る）。形の試験 K65-FM-011 が台本と照らす */
+export const FAKE_REPLY_HEAD = "資料を受け取りました";
 const TIMEOUT_MS = 30_000;
 
 type ClaimReply = { ok: true; token: string } | { ok: false; message: string };
@@ -112,7 +113,7 @@ export function stagingPc(label: string): StagingPc {
         signal: AbortSignal.timeout(TIMEOUT_MS),
       });
     } catch {
-      throw new Error(`PC の口（${path.replace(/[0-9a-f-]{36}/, "<id>")}）に届かない`);
+      throw new Error(`PC の口（${path.replace(/[0-9a-f-]{36}/, "［id］")}）に届かない`);
     }
     const j = (await res.json().catch(() => ({}))) as { data?: Record<string, unknown> };
     return { status: res.status, data: j.data ?? null };
