@@ -1165,7 +1165,7 @@ K-204,staging を指す統合テストの回（staging-e2e.yml）を作り、最
 
 今の CI の e2e の組（.github/workflows/v3-gate.yml の `e2e:`）は前の形のまま：has-ui の札の PR でだけ起き、`secrets.STAGING_BASE_URL` を読み、前の画面の試験（`pnpm e2e:web`）を流す。今の進め方（手で起こすチケットの CI）では 1 回も起きない。逆に、だれかが PR に札を付けると、前の画面の試験が staging に当たって試しのデータを書く。
 
-これを、**別の定義 1 つ**（`.github/workflows/staging-e2e.yml`・手で起こしたときだけ）に移す。ふだんのチケットの CI（v3-gate.yml）からは、staging を指す組を外す。こうすると、住所と鍵の名前が渡るのは staging の回の 2 つの段だけになり、ふだんの CI では「飛ばす」のではなく、その組がそもそも定義に無い。","- [ ] 下の 18 行（K204-CI-001〜018）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・名前と TLS の確かめを直した版）も緑。持ち込んだ K175-CF-001（`scripts/ci/k175_flow_config_test.py`）も緑
+これを、**別の定義 1 つ**（`.github/workflows/staging-e2e.yml`・手で起こしたときだけ）に移す。ふだんのチケットの CI（v3-gate.yml）からは、staging を指す組を外す。こうすると、住所と鍵の名前が渡るのは staging の回の 2 つの段だけになり、ふだんの CI では「飛ばす」のではなく、その組がそもそも定義に無い。","- [ ] 下の 19 行（K204-CI-001〜019）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・名前と TLS の確かめを直した版）も緑。持ち込んだ K175-CF-001（`scripts/ci/k175_flow_config_test.py`）も緑
 - [ ] 作り手（`05_flow/build_testplan.py`）を直して作り直した（v3-gate.yml・staging-e2e.yml・test-plan は生成物。手で直さない）
 - [ ] 試験を CI から流す：G65 の命令の最後に `&& python3 scripts/ci/k204_staging_workflow_test.py` を足す
 - [ ] 生成物が作り手の出力と同じ：生成物が最新かの検査（G38＝`python3 scripts/ci/generated_gate.py`・generated.json を読む）が、このチケットの CI の範囲で流れて緑（作り手 05_flow を変えるので、範囲の決まり ci_scope.json の gates の 38 に当たる・行 008）

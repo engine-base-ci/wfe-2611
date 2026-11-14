@@ -3,6 +3,8 @@
 見るのは CI の定義と、定義を読む検査だけ。staging にはつながない（つなぐのは、main から手で起こした staging-e2e.yml の回だけ）"""
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import pathlib
 import re
@@ -17,6 +19,8 @@ WF = ROOT / ".github" / "workflows"
 NAMES = ["STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY"]
 SPECS = "apps/e2e/staging/**/*.spec.ts"      # 統合テストの置き場（K-65 が作る物だけ）。前の通し apps/e2e/journeys は当てない
 HEALTH = r"scripts/ci/staging_health\.py"
+CA = "infra/certs/supabase-root-2021.crt"       # DB の束ね役の証明書を確かめる信頼の根（公開の証明書）
+CA_SHA256 = "80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA"   # infra/STAGING.md の 3b と同じ
 RUN = r"pnpm (-s )?e2e:staging\b"
 
 
@@ -215,6 +219,31 @@ class StagingWorkflow(unittest.TestCase):
             self.assertRegex(u, r"^(actions/[\w.-]+(/[\w.-]+)?|pnpm/action-setup)@[\w.-]+$",
                              f"staging の回が使う部品は actions/* と pnpm/action-setup だけ（秘密を持つ回に、ほかの作り手の部品を入れない）：{u}")
         self.assertNotIn("uses", job(), "組ごとほかの定義を呼ばない（secrets: inherit の入口）")
+
+    def test_K204_CI_019_trust_root_is_pinned(self) -> None:
+        pem = (ROOT / CA).read_text(encoding="ascii")
+        self.assertEqual(pem.count("-----BEGIN CERTIFICATE-----"), 1, "信頼の根は 1 枚だけ（束にして別の根を足さない）")
+        self.assertEqual(pem.count("-----BEGIN"), 1, "証明書のほかの物（鍵など）を置かない")
+        body = pem.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0]
+        der = base64.b64decode("".join(body.split()), validate=True)
+        got = ":".join(f"{b:02X}" for b in hashlib.sha256(der).digest())
+        self.assertEqual(got, CA_SHA256, "信頼の根が差し替わっている（指紋が決めた値と違う）")
+        self.assertIn(CA_SHA256, (ROOT / "infra/STAGING.md").read_text(encoding="utf-8"), "手順書の指紋も同じ値")
+        tracked = subprocess.run(["git", "-C", str(ROOT), "ls-files", "infra/certs"], capture_output=True, text=True).stdout.split()
+        self.assertEqual(tracked, [CA], "infra/certs に在るのはこの 1 枚だけ（足した根はそのまま信頼の元になりうる）")
+        want = "${{github.workspace}}/" + CA
+        with_db = [s for s in steps() if "STAGING_DATABASE_READ_URL" in (s.get("env") or {})]
+        self.assertEqual(len(with_db), 2, "DB の接続の名前を持つ段は、健康診断と統合テストの 2 つ")
+        for s in with_db:
+            self.assertEqual(str((s.get("env") or {}).get("NODE_EXTRA_CA_CERTS", "")).replace(" ", ""), want,
+                             f"DB の接続の名前を持つ段は、信頼の根も持つ（無いと証明書の確かめに失敗する）：{s.get('name')}")
+        # 証明書を変えた回でも、この試験が流れる：範囲の決まりが infra/certs を spec の組に当て、G65（毎回流れる・重い検査の一覧に無い）がこの試験を呼ぶ
+        scope = json.loads((ROOT / "scripts/ci/ci_scope.json").read_text(encoding="utf-8"))
+        self.assertIn("infra/certs/**", scope["spec"]["paths"], "infra/certs を変えたチケットの CI で spec の組が流れる")
+        self.assertNotIn("65", scope["gates"], "G65 は範囲で絞らない（毎回流れる）")
+        g65 = [s for s in load("v3-gate.yml")["jobs"]["spec"]["steps"] if str(s.get("name", "")).startswith("G65 ")]
+        self.assertEqual(len(g65), 1)
+        self.assertIn("python3 scripts/ci/k204_staging_workflow_test.py", str(g65[0].get("run", "")), "G65 がこの試験を流す")
 
 
 if __name__ == "__main__":
