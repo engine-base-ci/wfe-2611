@@ -245,11 +245,14 @@ class StagingHealth(unittest.TestCase):
         self.assertNotIn("Railway", readme, "古い順序（Railway）が残っている")
         doc = (ROOT / "infra" / "STAGING.md").read_text(encoding="utf-8")
         self.assertIn("python3 scripts/ci/staging_health.py", doc, "S5 の確かめは台本の命令")
-        for name in ("STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_ADMIN_URL", "STAGING_RESEND_READ_KEY"):
+        for name in ("STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY"):
             self.assertIn(name, doc, f"CI の秘密の名前 {name}")
         self.assertIn("Only build production", doc, "作業中の版の配りを止める設定（D-140.4）")
         self.assertNotIn("GitHub のリモート", doc, "§0「いま無いもの」が 2026-09 のまま")
         self.assertNotIn("kaname.secrets", doc, "前の CI（act）の秘密のファイルの書き方")
+        self.assertNotIn("STAGING_DATABASE_ADMIN_URL", doc, "CI に渡す DB の接続は管理者の物ではない（読むだけの役・K-204 で名前を替えた）")
+        self.assertIn("kaname_ci_read", doc, "CI が DB を読む役の名前")
+        self.assertIn("sslmode=verify-full", doc, "接続は TLS を確かめる指定つき")
         for name, text in (("infra/STAGING.md", doc), ("infra/provision/README.md", readme)):   # 手順書に値・住所を書かない（置き字 <ref> などは当てない）
             for label, pat in (("接続の文字列", r"postgres(?:ql)?://[^<\s`]"), ("Resend の鍵", r"\bre_[A-Za-z0-9]{8,}"),
                                ("JWT の形の鍵", r"\beyJ[A-Za-z0-9_-]{10,}"), ("staging の住所", r"(?<![\w.>-])[a-z0-9][a-z0-9-]*\.(?:vercel\.app|supabase\.co)\b")):
@@ -257,8 +260,8 @@ class StagingHealth(unittest.TestCase):
 
     def test_K200_SH_013_reads_only_and_sends_no_key(self) -> None:
         f = self.fake()
-        r = run({**self.both(f), "STAGING_RESEND_READ_KEY": MARK, "STAGING_DATABASE_ADMIN_URL": f"postgres://u:{MARK}@127.0.0.1:1/x"},
-                "--need", "STAGING_RESEND_READ_KEY", "--need", "STAGING_DATABASE_ADMIN_URL", *self.applied())
+        r = run({**self.both(f), "STAGING_RESEND_READ_KEY": MARK, "STAGING_DATABASE_READ_URL": f"postgres://u:{MARK}@127.0.0.1:1/x"},
+                "--need", "STAGING_RESEND_READ_KEY", "--need", "STAGING_DATABASE_READ_URL", *self.applied())
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(sorted({m for m, _, _ in f.seen}), ["GET", "OPTIONS"], "読むだけ（GET と OPTIONS のほかを投げない）")
         self.assertEqual(sorted({path for _, path, _ in f.seen}), ["/api/auth/ok", "/health", "/login"], "当てる道はこの 3 つだけ")
@@ -301,14 +304,14 @@ class StagingHealth(unittest.TestCase):
                          ["begin transaction read only", "select name from app.schema_migrations order by name", "rollback"],
                          "投げる文はこの 3 つだけ（読むだけの取引の中で 1 回読む）")
         self.assertNotRegex(code, r"(?i)\b(insert|update|delete|create|alter|drop|truncate|grant|copy)\b", "書く文の語が台本に在る")
-        self.assertEqual(sorted(set(re.findall(r"process\.env(?:\.|\[\s*[\"'])([A-Z0-9_]+)", code))), ["STAGING_DATABASE_ADMIN_URL"], "読む環境の値はこの 1 つ")
+        self.assertEqual(sorted(set(re.findall(r"process\.env(?:\.|\[\s*[\"'])([A-Z0-9_]+)", code))), ["STAGING_DATABASE_READ_URL"], "読む環境の値はこの 1 つ")
         base = {k: v for k, v in os.environ.items() if not k.startswith("STAGING_")}
         r = subprocess.run(["node", str(READER)], env=base, capture_output=True, text=True, encoding="utf-8", timeout=60)
         self.assertEqual(r.returncode, 2, "名前が無ければ、つなぐ前に止まる")
-        self.assertIn("STAGING_DATABASE_ADMIN_URL", r.stdout + r.stderr)
+        self.assertIn("STAGING_DATABASE_READ_URL", r.stdout + r.stderr)
         self.assertEqual(r.stdout.strip(), "", "一覧（標準出力）には何も出さない")
         url = f"postgres://admin:{MARK}@127.0.0.1:1/postgres"   # 閉じた口。つながらない
-        r = subprocess.run(["node", str(READER)], env={**base, "STAGING_DATABASE_ADMIN_URL": url}, capture_output=True, text=True,
+        r = subprocess.run(["node", str(READER)], env={**base, "STAGING_DATABASE_READ_URL": url}, capture_output=True, text=True,
                            encoding="utf-8", timeout=60)
         self.assertEqual(r.returncode, 1)
         self.assertEqual(r.stdout.strip(), "", "つながらないときに、空の一覧を出して成功にしない")
@@ -316,6 +319,18 @@ class StagingHealth(unittest.TestCase):
         for leak in (MARK, "127.0.0.1:1", "admin:"):
             self.assertNotIn(leak, out, "接続の文字列の一部が出ている")
         self.assertNotRegex(out, r"postgres(ql)?://|\n\s+at ", "接続の文字列・例外の写しを出さない")
+        self.assertNotRegex(code, r"rejectUnauthorized\s*:\s*false|no-verify|sslmode=(disable|allow|prefer)|NODE_TLS_REJECT_UNAUTHORIZED",
+                            "TLS の確かめを外す書き方")
+        for label, far in (("指定なし", f"postgres://kaname_ci_read.ref:{MARK}@db.example.invalid:5432/postgres"),
+                           ("確かめない指定", f"postgres://kaname_ci_read.ref:{MARK}@db.example.invalid:5432/postgres?sslmode=require")):
+            with self.subTest(label):
+                r = subprocess.run(["node", str(READER)], env={**base, "STAGING_DATABASE_READ_URL": far}, capture_output=True, text=True,
+                                   encoding="utf-8", timeout=60)
+                self.assertEqual(r.returncode, 2, "手元（127.0.0.1）のほかは sslmode=verify-full が無ければ、つなぐ前に止まる")
+                self.assertIn("sslmode=verify-full", r.stderr)
+                self.assertEqual(r.stdout.strip(), "")
+                for leak in (MARK, "db.example.invalid", "kaname_ci_read.ref"):
+                    self.assertNotIn(leak, r.stdout + r.stderr, "接続の文字列の一部が出ている")
 
 
 if __name__ == "__main__":
