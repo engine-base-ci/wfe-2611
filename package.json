@@ -14,7 +14,7 @@
   "scripts": {
     "lint": "eslint . && prettier --check \"**/*.{ts,tsx,mjs,json,yml,yaml,md}\"",
     "format": "prettier --write \"**/*.{ts,tsx,mjs,json,yml,yaml,md}\"",
-    "type-check": "tsc -b tsconfig.json",
+    "type-check": "tsc -b tsconfig.json && tsc --noEmit -p apps/e2e/tsconfig.json",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "ci:ac-validate": "bash 09_dispatch/scripts/validate.sh",
