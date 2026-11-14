@@ -7,14 +7,15 @@
 段階 1 は**環境を 1 組だけ**作る（user「一旦は dev でいい。環境は僕だけで十分」）。Vercel の Production を staging として使い、Supabase も staging の 1 プロジェクトだけ。
 **顧客に触らせる前に**、同じ手順で本番をもう 1 組作る（Supabase の本番プロジェクト・Vercel の本番用の環境変数・Vercel Pro）。
 
-## 0. いま無いもの
+## 0. いまの実際（2026-11-14・K-37 の「前提と制約」の写し）
 
-| 無いもの                                                        | 何が困るか                                                         | 誰が                                                                                            |
-| --------------------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| GitHub のリモート                                               | Vercel は GitHub から読む                                          | 高本さんが private リポジトリを作り `git remote add origin …`。私は push しない（確認してから） |
-| Supabase のプロジェクト（staging）                              | DB・添付の置き場が無い                                             | 高本さん（S1）                                                                                  |
-| Vercel のプロジェクト 2 つ（画面・API）                         | 置き場が無い                                                       | 高本さん（S2・S4）                                                                              |
-| Infisical のアカウントと機械の身元（資格情報の預かり先・D-101） | 無いと staging／本番の API が起動時の確認（secrets:vault）で止まる | 高本さん（S1b）                                                                                 |
+| もの                                                                                                                | 状態                                                                          | どこで分かるか                                |
+| ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| GitHub のリポジトリ（S0）・Supabase（S1）・Infisical（S1b）・Vercel の API（S2）・Resend（S3）・Vercel の画面（S4） | 済み（2026-11-08・人の準備のチケットは完了）                                  | 11_tickets の K-78〜K-82                      |
+| 配る道すじ                                                                                                          | Vercel が GitHub の main を見て自分で配る。`.github/workflows` に配る段は無い | Vercel の画面（設定はリポジトリから見えない） |
+| staging の住所                                                                                                      | リポジトリのどこにも書かない。CI には GitHub の secrets の名前で渡す          | 下の「CI から staging を指す名前」            |
+| 立っているかの確かめ                                                                                                | 台本で見る（人が画面で見ない）                                                | S5 の `python3 scripts/ci/staging_health.py`  |
+| 途中でチャットに出た秘密                                                                                            | 取り替える（人の準備）                                                        | 下の「秘密の取り替え」                        |
 
 コード側（API を Vercel の関数 1 本にする入口・組み立て・Bridge の問い合わせ）は済み（`apps/api/src/vercel.ts`・`apps/api/build-vercel.mjs`・`apps/api/vercel.json`）。
 
@@ -54,7 +55,8 @@
 2. Settings → Environment Variables（Production と Preview の両方・**Sensitive**）に下の「秘密の名前」の表の値を入れる
 3. 役割のパスワード 2 つ（`KANAME_APP_DB_PASSWORD`／`KANAME_AUTH_DB_PASSWORD`）は長い乱数（`openssl rand -base64 32`）。S1-2 の接続文字列にも同じ値。`SECRETS_MASTER_KEY` は `openssl rand -base64 48`、`AUTH_SECRET` も長い乱数
 4. `NODE_ENV=staging`、`BASE_URL=https://<kaname-api の URL>`、`WEB_BASE_URL=https://<kaname-web の URL>`（S4 の後に入れて Redeploy）
-5. Deploy。Build Command が `pnpm db:migrate && pnpm provision:bucket` を流してから関数を組み立てる（本番と同じコード・D-097.6）。**Preview のビルドも同じ DB に流れる**（段階 1 は開発者 1 人なので許す。2 人目が入る前に GitHub Actions へ）
+5. Deploy。Build Command が `pnpm db:migrate && pnpm provision:bucket` を流してから関数を組み立てる（本番と同じコード・D-097.6）。Preview のビルドも同じ DB に流れる形なので、下の 6 で止める
+6. **作業中の版の配りは止める**：Settings → Git → Ignored Build Step → **Only build production**（D-140.4）。main に入った版だけが配られ、作業中の枝の Build が同じ DB に migration を流さない
 
 ### S3 Resend（メール）
 
@@ -69,9 +71,24 @@
 
 ### S5 できたかの確認（機械）
 
-1. `curl -s https://<kaname-api>/health` が 200 で版を返す。503 なら本文の理由（`STARTUP_FAILED`）と Vercel の関数のログ（`[api] 起動しない: …`）を見る
-2. 起動時確認 5／5（db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault）がログに出る。secrets:vault が落ちたら S1b の値と役割を見直す
-3. `kaname_app.<ref>`／`kaname_auth.<ref>` で Transaction pooler に入れること（custom role が pooler を通るか）を 1 で確かめる。入れなければ Supabase 側で role の `login` と pooler の設定を見直す
+1. 健康診断の台本を流す（読むだけ・鍵を使わない）。住所は環境の値の名前 `STAGING_BASE_URL`（画面）・`STAGING_API_BASE`（口）で渡す。値はこの文書にもコミットにも書かない
+
+   ```sh
+   python3 scripts/ci/staging_health.py
+   ```
+
+   見るもの：`/health` が 200 で中身がそろっている（起動時の確かめ 5 つ＝db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault は、1 つでも落ちると 503 と `STARTUP_FAILED` と落ちた確かめの名前が出る）・配った版の migration の一覧の最後が手元と同じ・CORS（画面の住所からの事前の問い合わせ）・画面の `/login` が 200
+
+2. DB に migration が当たっているかも見る回（CI の staging を指す回）は、先に DB を読む台本を流して、その出力を渡す
+
+   ```sh
+   node scripts/ci/staging_db_migrations.mjs > applied.json
+   python3 scripts/ci/staging_health.py --applied applied.json
+   ```
+
+   DB を読む台本は `STAGING_DATABASE_ADMIN_URL` でつなぎ、読むだけの取引の中で `app.schema_migrations` の名前を 1 回読むだけ（書かない）
+
+3. 終わりの値：**DB も見る回（CI の staging を指す回）で 0、手元では 3（DB は見ていない）**。1 は赤（★ の行を見る）。2 は名前が無い・住所が https でない（口に当てていない）。3 を緑と読まない。配り直した直後の数十秒は古い版が答えることがあるので、migration の行が赤なら少し待って流し直す。この台本で見えないもの：migration を足さない版の配りの遅れ・画面の版・メールの送る鍵（Vercel の画面と、最初の筋の通しで見る）
 4. 画面から新規登録 → 確認メール → Bridge をつなぐ → 自分のAIと話す、を 1 周（L2）
 5. 正本の行 `FND-01-001`／`FND-06-001`（prod-smoke.md）を BLOCKED から PASS に書き直す
 
@@ -91,6 +108,33 @@
 | MAIL_FROM／MAIL_REPLY_TO／OPS_EMAIL／OPERATOR_*                                                                              | Claude（値は秘密でない）               | D-096                                            | API                                                     |
 | NODE_ENV／BASE_URL／WEB_BASE_URL                                                                                             | Claude（値は秘密でない）               | Vercel の URL                                    | API                                                     |
 | NEXT_PUBLIC_API_BASE                                                                                                         | Claude（値は秘密でない）               | kaname-api の URL                                | 画面                                                    |
+
+## 3b. CI から staging を指す名前（GitHub の repository secrets）
+
+入れる所：GitHub のリポジトリ → Settings → Secrets and variables → Actions → New repository secret。入れるのは高本さん（値をチャット・ファイル・コミットに書かない）。ふだんのチケットの CI にはこの名前を渡さない。渡すのは、手で起こす staging を指す回だけ。
+
+| 名前                       | 何を入れる                              | どこから写す                                                                |
+| -------------------------- | --------------------------------------- | --------------------------------------------------------------------------- |
+| STAGING_BASE_URL           | staging の画面の住所（`https://` から） | Vercel → `kaname-web` → Domains                                             |
+| STAGING_API_BASE           | staging の口の住所（`https://` から）   | Vercel → `kaname-api` → Domains                                             |
+| STAGING_DATABASE_ADMIN_URL | DB を読む接続の文字列（CI は読むだけ）  | Vercel の `DATABASE_ADMIN_URL` と同じ物（Session pooler・`postgres.<ref>`） |
+| STAGING_RESEND_READ_KEY    | 送ったメールの記録を読む鍵              | Resend → API Keys で新しく作る（名前 `kaname-staging-ci-read`）             |
+
+CI の VM は組ごとに捨てるので、台にファイルを置いて渡す形は使わない。
+
+## 3c. 秘密の取り替え（チャットやログに出た・出たかもしれないとき）
+
+乱数は `openssl rand -hex 32`（記号が入らない形）。入れる所はどれも Vercel → `kaname-api` → Settings → Environment Variables → その名前の行 → Edit。値は控えない・貼らない。
+
+1. DB の役の合言葉 2 つ：乱数を 2 つ作り `KANAME_APP_DB_PASSWORD`・`KANAME_AUTH_DB_PASSWORD` に入れる。`DATABASE_URL`・`AUTH_DATABASE_URL` の中の合言葉の所も同じ値に替える
+2. DB の管理者の合言葉：Supabase → Project Settings → Database → Reset database password → `DATABASE_ADMIN_URL` の中の合言葉の所を替える（GitHub の `STAGING_DATABASE_ADMIN_URL` も同じ物に）
+3. `AUTH_SECRET`：乱数を 1 つ作って入れる（ログイン中の人は入り直しになる）
+4. 置き場の鍵：Supabase → Storage → Settings → S3 access keys → 新しく作って `STORAGE_ACCESS_KEY_ID`・`STORAGE_SECRET_ACCESS_KEY` に入れ、古い鍵の行を消す
+5. Infisical の鍵：Access Control → Identities → `kaname-api-staging` → Universal Auth → Client Secrets → 新しく足して `INFISICAL_CLIENT_SECRET` に入れ、古い行を Revoke
+6. `SECRETS_MASTER_KEY`：`openssl rand -base64 48` の値を入れる。そのまま替えてよい：前に預けた試しの資格情報は開けなくなり、メールの確認待ちの登録はやり直しになる（staging の試しのデータは消えてよい・D-140.3）。**本番では同じことをしない**（包み直しの手順が要る）
+7. メールの鍵：Resend → API Keys → 新しく作って（Sending access）`RESEND_API_KEY` に入れ、古い鍵の行を消す
+8. 配り直す：`kaname-api` → Deployments → いちばん上の Production の行 → Redeploy → Ready まで待つ
+9. 確かめ：S5 の 1 の命令を流す。起動時の確かめが落ちていれば `STARTUP_FAILED` と落ちた確かめの名前が出る（手元の回は DB を見ないので、全部通って終わりの値 3）
 
 ## 4. 触らないもの
 

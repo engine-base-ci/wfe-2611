@@ -13,4 +13,4 @@
 
 ## staging（selected-stack `environments.staging`：本番と同じ構成をもう 1 組）
 
-手順の正本は [`infra/STAGING.md`](../STAGING.md)（S0 GitHub → S1 Supabase → S2 Infisical → S3 Railway → S4 Resend → S5 Vercel → S6 確認・秘密の名前の表・誰がやるか）。先に直すコード側の前提（API の起動口と Dockerfile・認証の schema 名・役割のパスワード）は T-F-18。
+手順の正本は [`infra/STAGING.md`](../STAGING.md)（作り方・秘密の名前の表・CI から staging を指す名前・秘密の取り替え・健康診断の台本）。
