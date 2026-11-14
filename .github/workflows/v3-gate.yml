@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 63 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 64 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ e2e（has-ui）→ auto-merge
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
@@ -160,6 +160,11 @@ jobs:
       - name: "G35 有限資源の静的検査（G-16：関門外の生クライアント・タイムアウト無し・冪等キー無しの書込）"
         if: ${{ !cancelled() }}
         run: pnpm ci:resource-static
+      - name: "G66 コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+        run: python3 scripts/ci/author_gate.py --base-ref "$CI_BASE"
 
   database:
     runs-on: [self-hosted, linux-vm]
@@ -618,7 +623,7 @@ jobs:
         run: python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py
       - name: "G65 CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）"
         if: ${{ !cancelled() }}
-        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py
+        run: python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
