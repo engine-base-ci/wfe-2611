@@ -3092,7 +3092,9 @@
     "apps/e2e/staging/_lib/site.ts",
     "apps/e2e/staging/_lib/steps.ts"
    ],
-   "affects": [],
+   "affects": [
+    "@kaname/e2e"
+   ],
    "ci_wide": [
     "ci",
     "lockfile"
