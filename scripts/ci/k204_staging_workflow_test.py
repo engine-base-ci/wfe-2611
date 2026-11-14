@@ -52,6 +52,7 @@ class StagingWorkflow(unittest.TestCase):
         on = wf.get("on", wf.get(True))        # YAML は on: を真偽の True に読む
         on = on if isinstance(on, dict) else {str(on): None}
         self.assertEqual(list(on), ["workflow_dispatch"], "staging を指す回は手で起こしたときだけ（push・PR・時刻では起きない）")
+        self.assertFalse(on["workflow_dispatch"], "起こすときに渡す値（inputs）を持たない（外から来た字が命令や条件に入る道を作らない）")
 
     def test_K204_CI_002_ticket_ci_never_touches_staging(self) -> None:
         for name in ("v3-gate.yml", "release-gate.yml"):
@@ -84,11 +85,14 @@ class StagingWorkflow(unittest.TestCase):
         self.assertLess(health[0], run[0], "健康診断が先")
         h, r = steps()[health[0]], steps()[run[0]]
         cmd = str(h["run"])
-        for name in ("STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY"):
-            self.assertRegex(cmd, rf"--need\s+{name}\b", f"{name} が空なら、当てる前に止まる")
         lines = [x.strip() for x in cmd.splitlines() if x.strip()]
-        self.assertRegex(lines[0], r"^node scripts/ci/staging_db_migrations\.mjs > \S+$", "先に DB の migration の一覧を読む（落ちたら次の行へ進まない）")
-        self.assertRegex(cmd, r"staging_health\.py[^\n]*--applied\s+\S+", "読んだ一覧を健康診断に渡す（DB を見ていない回を緑にしない）")
+        self.assertEqual(len(lines), 2, "健康診断の段の run はこの 2 行だけ（後ろに exit 0 や、値を出す命令を足さない）")
+        first = re.fullmatch(r"node scripts/ci/staging_db_migrations\.mjs > (\S+)", lines[0])
+        self.assertIsNotNone(first, "1 行目は DB の migration の一覧を読む命令だけ（落ちたら次の行へ進まない）")
+        second = re.fullmatch(r"python3 scripts/ci/staging_health\.py --need STAGING_DATABASE_READ_URL --need STAGING_RESEND_READ_KEY --applied (\S+)", lines[1])
+        self.assertIsNotNone(second, "2 行目は健康診断の命令だけ（名前が空なら当てる前に止まる・読んだ一覧を渡す＝DB を見ていない回を緑にしない）")
+        self.assertEqual(second.group(1), first.group(1), "健康診断に渡す一覧は、1 行目が書いたファイルと同じ字")
+        self.assertEqual(str(r["run"]).strip(), "pnpm e2e:staging", "統合テストの段の run はこの 1 行だけ（--pass-with-no-tests や ; exit 0 を足さない）")
         self.assertNotIn("if", h, "健康診断の段に条件を付けて飛ばさない")
         self.assertEqual(str(r.get("if", "")).replace("${{", "").replace("}}", "").strip(), f"hashFiles('{SPECS}') != ''",
                          "統合テストの段の条件は「試験が在る」の 1 つだけ（cancelled・always・failure を足すと、健康診断が赤でも流れる）")
@@ -113,7 +117,7 @@ class StagingWorkflow(unittest.TestCase):
         self.assertEqual([(s.get("with") or {}).get("name") for s in ups], ["junit"], "上げるのは JUnit の記録 1 つ（名前は ticket-flow の ci.artifact と同じ）")
         self.assertIn("!cancelled()", str(ups[0].get("if", "")), "落ちた回も記録を上げる")
         w = ups[0].get("with") or {}
-        self.assertNotRegex(str(w.get("path", "")), r"playwright-report|test-results|pw-reports", "画面の写しと報告は上げない（K-186 と同じ）")
+        self.assertEqual(str(w.get("path", "")).strip(), "junit/", "上げる道は junit/ だけ（画面の写し・報告・作業場所ごとは上げない。K-186 と同じ）")
         self.assertIsInstance(w.get("retention-days"), int, "記録を残す日数を書く（落ちた文に住所やリンクが乗りうる）")
         self.assertLessEqual(w["retention-days"], 7)
         run = one(RUN)
@@ -127,6 +131,10 @@ class StagingWorkflow(unittest.TestCase):
         cfg = yaml.safe_load((ROOT / "ticket-flow.yaml").read_text(encoding="utf-8"))
         self.assertIn(".github/workflows/staging-e2e.yml", cfg["changes_ignore"], "作り手が作り直す物")
         self.assertRegex(text().splitlines()[0], r"build_testplan\.py が生成")
+        # 生成物が作り手の出力と同じかは、生成物の検査（G38＝scripts/ci/generated_gate.py）が見る。作り手を変えた回は、チケットの範囲でも G38 が流れる
+        scope = json.loads((ROOT / "scripts/ci/ci_scope.json").read_text(encoding="utf-8"))
+        self.assertIn("05_flow/**", scope["gates"]["38"], "作り手（05_flow）を変えたチケットの CI で、生成物の検査（G38）が流れる")
+        self.assertIn("python3 scripts/ci/generated_gate.py", text("v3-gate.yml"), "生成物の検査（G38）がふだんの CI に在る")
 
     def test_K204_CI_009_one_at_a_time(self) -> None:
         conc = load().get("concurrency") or job().get("concurrency") or {}
@@ -139,7 +147,8 @@ class StagingWorkflow(unittest.TestCase):
         self.assertLessEqual(limit, 30)
 
     def test_K204_CI_011_read_only_token(self) -> None:
-        self.assertEqual(load().get("permissions") or job().get("permissions"), {"contents": "read"})
+        self.assertEqual(load().get("permissions"), {"contents": "read"}, "定義の頭の権限は読むだけ")
+        self.assertEqual(job().get("permissions", {"contents": "read"}), {"contents": "read"}, "組で権限を足さない（組に書くなら頭と同じ値だけ）")
 
     def test_K204_CI_012_gate_table(self) -> None:
         gates = json.loads((ROOT / "03_architecture/foundation_gates.json").read_text(encoding="utf-8"))["merge_gates"]
@@ -173,6 +182,11 @@ class StagingWorkflow(unittest.TestCase):
         off = r"rejectUnauthorized\s*:\s*false|no-verify|sslmode=(disable|allow|prefer|require)\b|NODE_TLS_REJECT_UNAUTHORIZED"
         for name, body in (("staging-e2e.yml", text()), ("staging_db_migrations.mjs", reader)):
             self.assertIsNone(re.search(off, body), f"{name} に、TLS の確かめを外す・弱める書き方")
+        for s in steps():
+            ca = (s.get("env") or {}).get("NODE_EXTRA_CA_CERTS")
+            if ca is not None:
+                self.assertRegex(str(ca).replace(" ", ""), r"^\$\{\{github\.workspace\}\}/infra/certs/[\w.-]+$",
+                                 "信頼の元を足すなら、版に入った infra/certs/ の下のファイルだけ（外から来た道・一時の置き場を指さない）")
         doc = (ROOT / "infra/STAGING.md").read_text(encoding="utf-8")
         for need in ("create role kaname_ci_read", "grant select on table app.schema_migrations to kaname_ci_read", "sslmode=verify-full"):
             self.assertIn(need, doc, f"手順書に「{need}」")
@@ -183,6 +197,7 @@ class StagingWorkflow(unittest.TestCase):
             run = str(s.get("run", ""))
             self.assertIsNone(re.search(r"set -[a-z]*x|\bprintenv\b|^\s*env\s*$|^\s*env\s*[|>]", run, re.M), f"環境の値を丸ごと出す命令：{s.get('name')}")
             self.assertNotRegex(run, r"\$\{?STAGING_", f"値を命令の引数や echo に開いている（伏せ字は切り出した値に効かない）：{s.get('name')}")
+            self.assertNotIn("${{", run, f"run の中に式を開かない（値は env で渡す。式は命令の字になる）：{s.get('name')}")
         self.assertNotRegex(text(), r"ACTIONS_STEP_DEBUG|ACTIONS_RUNNER_DEBUG", "詳しい記録の印を定義で立てない")
 
     def test_K204_CI_017_secrets_live_in_environment(self) -> None:
@@ -192,6 +207,14 @@ class StagingWorkflow(unittest.TestCase):
         doc = (ROOT / "infra/STAGING.md").read_text(encoding="utf-8")
         self.assertIn("Environment secrets", doc, "手順書の入れ先は Environment「staging」の Environment secrets")
         self.assertNotRegex(doc, r"(?i)repository secret", "手順書に、リポジトリの側の secrets に入れる書き方が残っている")
+
+    def test_K204_CI_018_only_known_actions(self) -> None:
+        uses = [str(s["uses"]) for s in steps() if "uses" in s]
+        self.assertTrue(uses, "取り出しと道具の段が在る")
+        for u in uses:
+            self.assertRegex(u, r"^(actions/[\w.-]+(/[\w.-]+)?|pnpm/action-setup)@[\w.-]+$",
+                             f"staging の回が使う部品は actions/* と pnpm/action-setup だけ（秘密を持つ回に、ほかの作り手の部品を入れない）：{u}")
+        self.assertNotIn("uses", job(), "組ごとほかの定義を呼ばない（secrets: inherit の入口）")
 
 
 if __name__ == "__main__":

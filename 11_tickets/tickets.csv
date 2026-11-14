@@ -1152,7 +1152,7 @@ K-201,staging の今を見る：最新の配り・休止していないか・mai
 - [ ] `kaname-api` に `RESEND_BASE_URL` という名前の設定が「ある／無い」を実装の担当に伝えた（値は伝えない）
 - [ ] 作業中の版（main 以外の枝）の配りを止めた（D-140.4）
 - [ ] GitHub のリポジトリが非公開（Private）であることと、Settings に「Environments」が出るか出ないかを、実装の担当に伝えた"
-K-202,DB を読むだけの役を作り、CI から staging を指す設定の名前を GitHub に入れる,タスク,K-37,未着手,代表,2026-11-14,基盤・環境,"統合テスト（K-65）は、自分の Mac の上の使い捨ての VM から staging を指して流す。VM は 1 回ごとに捨てるので、住所と鍵は台には置けない。GitHub の Environment `staging` の「Environment secrets」（暗号で預かり、`environment: staging` と書いた組が main から起きたときだけ VM に渡る）に名前で入れる。
+K-202,DB を読むだけの役を作り、CI から staging を指す設定の名前を GitHub に入れる,タスク,K-37,完了,代表,2026-11-14,基盤・環境,"統合テスト（K-65）は、自分の Mac の上の使い捨ての VM から staging を指して流す。VM は 1 回ごとに捨てるので、住所と鍵は台には置けない。GitHub の Environment `staging` の「Environment secrets」（暗号で預かり、`environment: staging` と書いた組が main から起きたときだけ VM に渡る）に名前で入れる。
 
 前の書き方（Mac の中のファイル ~/.config/act/kaname.secrets）は前の CI の形なので、やめる。","- [ ] GitHub の engine-base/kaname の Environment `staging` の Environment secrets に、下の名前がそろっている（値は書かない）。Repository secrets は 0 件
 - [ ] Environment `staging` の「Deployment branches and tags」が `main` だけ
@@ -1165,11 +1165,12 @@ K-204,staging を指す統合テストの回（staging-e2e.yml）を作り、最
 
 今の CI の e2e の組（.github/workflows/v3-gate.yml の `e2e:`）は前の形のまま：has-ui の札の PR でだけ起き、`secrets.STAGING_BASE_URL` を読み、前の画面の試験（`pnpm e2e:web`）を流す。今の進め方（手で起こすチケットの CI）では 1 回も起きない。逆に、だれかが PR に札を付けると、前の画面の試験が staging に当たって試しのデータを書く。
 
-これを、**別の定義 1 つ**（`.github/workflows/staging-e2e.yml`・手で起こしたときだけ）に移す。ふだんのチケットの CI（v3-gate.yml）からは、staging を指す組を外す。こうすると、住所と鍵の名前が渡るのは staging の回の 2 つの段だけになり、ふだんの CI では「飛ばす」のではなく、その組がそもそも定義に無い。","- [ ] 下の 17 行（K204-CI-001〜017）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・名前と TLS の確かめを直した版）も緑。持ち込んだ K175-CF-001（`scripts/ci/k175_flow_config_test.py`）も緑
+これを、**別の定義 1 つ**（`.github/workflows/staging-e2e.yml`・手で起こしたときだけ）に移す。ふだんのチケットの CI（v3-gate.yml）からは、staging を指す組を外す。こうすると、住所と鍵の名前が渡るのは staging の回の 2 つの段だけになり、ふだんの CI では「飛ばす」のではなく、その組がそもそも定義に無い。","- [ ] 下の 18 行（K204-CI-001〜018）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・名前と TLS の確かめを直した版）も緑。持ち込んだ K175-CF-001（`scripts/ci/k175_flow_config_test.py`）も緑
 - [ ] 作り手（`05_flow/build_testplan.py`）を直して作り直した（v3-gate.yml・staging-e2e.yml・test-plan は生成物。手で直さない）
 - [ ] 試験を CI から流す：G65 の命令の最後に `&& python3 scripts/ci/k204_staging_workflow_test.py` を足す
+- [ ] 生成物が作り手の出力と同じ：生成物が最新かの検査（G38＝`python3 scripts/ci/generated_gate.py`・generated.json を読む）が、このチケットの CI の範囲で流れて緑（作り手 05_flow を変えるので、範囲の決まり ci_scope.json の gates の 38 に当たる・行 008）
 - [ ] チケットの CI が緑
-- [ ] 取り込んだ後、実装の担当が `gh workflow run staging-e2e.yml --ref main` で最初の 1 回を起こし、健康診断の段が緑（DB も見て終わりの値 0）・「統合テストがまだ無い」の知らせが出ることを見て、回の番号を下の「確認の結果」に書く（値は書かない）。K-97 の前なので、この回に組み立ての段はまだ無い"
+- [ ] 取り込んだ直後に、PM が `gh workflow run staging-e2e.yml --ref main` で最初の 1 回を起こし（取り込まれた時点で定義は GitHub の `main` に在る・下の「前提と制約」）、健康診断の段が緑（DB も見て終わりの値 0）・「統合テストがまだ無い」の知らせが出ることを見て、回の番号を下の「確認の結果」に書く（値は書かない）。K-97 の前なので、この回に組み立ての段はまだ無い"
 K-205,代表の Mac の Bridge アプリを staging につないで、登録から完了までを 1 回通す（段 1 を閉じる前）,タスク,K-77,未着手,代表,2026-11-17,基盤・環境,"統合テスト（K-65）の機械の回は、Bridge の本体を窓なしで回し、AI には偽物を差す（D-141.1）。そこで通らない 3 つ——窓つきの Bridge アプリ・Mac 向けに包んだ形・本物の Claude Code の起こし方——を、代表が自分の Mac で 1 回だけ通して確かめる（D-141.2）。段 1（歩く骨格）を閉じる前にやる。
 
 中身（どの画面で何を押すか・できたかの確かめ方）は、K-65 の切る段で書く（split: これから）。","- [ ] 代表の Mac の Bridge アプリが staging につながり、登録 → PC をつなぐ → チケットを作る → AI に任せる → 承認して送る → 完了、が 1 回通った
