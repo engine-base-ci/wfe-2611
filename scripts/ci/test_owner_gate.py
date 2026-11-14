@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """試験はどれも 1 つのチケットに属する（D-128.140）。
 
-  python3 scripts/ci/test_owner_gate.py             単体の試験のファイル・実ブラウザの試験（e2e:k）・口ごとの権限の試験が、
+  python3 scripts/ci/test_owner_gate.py             単体の試験のファイル・実ブラウザの試験（e2e:k）・統合テスト（staging）の試験・口ごとの権限の試験が、
                                                     どれもちょうど 1 つのチケット（11_tickets/K-*.md の tests:）に属するか
   python3 scripts/ci/test_owner_gate.py --selftest  わざと壊した写しで、赤になるべきものが赤になるか
   python3 scripts/ci/test_owner_gate.py --list      チケットごとの試験の数
@@ -88,6 +88,31 @@ def workflow_globs(wf: str) -> list[str]:
     return out
 
 
+E2E = "apps/e2e/"
+
+
+def staging_globs(wf: str, script: str, config: str) -> list[str]:
+    """統合テスト（staging）の回（staging-e2e.yml の `pnpm e2e:staging`）が読むファイル（K-65）。
+    wf：staging-e2e.yml・script：ルートの package.json の e2e:staging・config：その設定（playwright.staging.config.ts）の中身。
+    回が命令を流さない・命令が @kaname/e2e の設定を指さない・設定に testDir が無いなら、何も足さない（tests: に書いたものが TO3 になる）"""
+    if not re.search(r"^\s*run:\s*pnpm e2e:staging\s*$", wf, flags=re.M):
+        return []
+    if not re.search(r"--filter @kaname/e2e exec playwright test -c \S+", script):
+        return []
+    m = re.search(r'testDir:\s*"\./([^"]+)"', config)
+    return [E2E + m.group(1).rstrip("/") + "/**/*.spec.ts"] if m else []
+
+
+def staging_e2e_globs() -> list[str]:
+    script = json.load(open(os.path.join(ROOT, "package.json"), encoding="utf-8"))["scripts"].get("e2e:staging", "")
+    m = re.search(r"-c (\S+)", script)
+    wf_path = os.path.join(ROOT, ".github/workflows/staging-e2e.yml")
+    cfg_path = os.path.join(ROOT, E2E, m.group(1)) if m else ""
+    if not (m and os.path.exists(wf_path) and os.path.exists(cfg_path)):
+        return []
+    return staging_globs(open(wf_path, encoding="utf-8").read(), script, open(cfg_path, encoding="utf-8").read())
+
+
 def ci_py_tests(wf: str) -> list[str]:
     """workflow の段が直に流す検査の自己試験（`python3 scripts/ci/<名前>_test.py`・K-62）"""
     return sorted(set(re.findall(r"python3 (scripts/ci/[A-Za-z0-9_]+_test\.py)", wf)))
@@ -95,7 +120,7 @@ def ci_py_tests(wf: str) -> list[str]:
 
 def test_files(files: list[str] | None = None, pats: list[str] | None = None) -> list[str]:
     files = repo_files() if files is None else files
-    pats = unit_globs() + e2e_globs() if pats is None else pats
+    pats = unit_globs() + e2e_globs() + staging_e2e_globs() if pats is None else pats
     return sorted(f for f in files if "/node_modules/" not in f and any(glob_re(p).match(f) for p in pats))
 
 
@@ -204,6 +229,21 @@ def selftest() -> int:
     for name, (wf, want) in wf_cases.items():
         fs = test_files(files + [spec], ["a/*.test.ts", GEN + "*.test.ts"] + workflow_globs(wf))
         got = {b.split()[0] for b in check(good + [{"id": "K-5", "tests": [spec]}], fs, gen, ["opP", "opQ"])}
+        hit = got == want
+        ok &= hit
+        print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")
+    # 統合テスト（staging）の回が読む試験（K-65）：回の命令・設定の testDir から読む。回の段が無い・置き場の名前違いなら TO3
+    st_spec = E2E + "staging/k1-x.spec.ts"
+    st_wf = "      - name: x\n        run: pnpm e2e:staging\n"
+    st_script = "pnpm --filter @kaname/e2e exec playwright test -c playwright.staging.config.ts"
+    st_cfg = 'export default defineConfig({\n  testDir: "./staging",\n});\n'
+    st_cases = {"緑（staging の回の試験）": (st_wf, st_script, st_cfg, set()),
+                "TO3（staging の回の段が無い）": ("      - run: pnpm e2e:web\n", st_script, st_cfg, {"TO3"}),
+                "TO3（設定の置き場の名前違い）": (st_wf, st_script, st_cfg.replace("./staging", "./stagin"), {"TO3"}),
+                "TO3（命令が統合テストの設定を指さない）": (st_wf, "pnpm --filter @kaname/web exec playwright test", st_cfg, {"TO3"})}
+    for name, (wf, sc, cfg, want) in st_cases.items():
+        fs = test_files(files + [st_spec], ["a/*.test.ts", GEN + "*.test.ts"] + staging_globs(wf, sc, cfg))
+        got = {b.split()[0] for b in check(good + [{"id": "K-8", "tests": [st_spec]}], fs, gen, ["opP", "opQ"])}
         hit = got == want
         ok &= hit
         print(f"  {'緑' if hit else '★ 赤'} {name}：出たもの {sorted(got) or 'なし'}（あるべきもの {sorted(want) or 'なし'}）")

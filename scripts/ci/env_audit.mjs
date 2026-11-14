@@ -16,8 +16,8 @@ export function audit(root = ROOT) {
   for (const k of example) if (!used.has(k)) bad.push(`packages/config が読まない: ${k}`);
   for (const d of ["apps", "packages"]) for (const p of walk(join(root, d))) {
     const rel = relative(root, p);
-    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$/.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts" || rel === "apps/bridge/src/env.ts" ||
-      rel === "apps/web/next.config.ts" || rel === "apps/api/src/dev.ts" || /playwright\.config\.ts$/.test(rel)) continue; // apps/web/lib/env.ts は画面側の起動設定（NEXT_PUBLIC_* は build 時に埋まる）・playwright.config はテストの設定 // runtime は PATH/HOME を子に渡すために読む（遮断の実装）
+    if (/node_modules|\/dist\/|\.test\.ts$|\/test\/|\/tests\/|\.spec\.ts$|^apps\/e2e\//.test(rel) || rel.startsWith("packages/config/") || rel === "packages/runtime/src/index.ts" || rel === "apps/web/lib/env.ts" || rel === "apps/bridge/src/env.ts" ||
+      rel === "apps/web/next.config.ts" || rel === "apps/api/src/dev.ts" || /playwright\.config\.ts$/.test(rel)) continue; // apps/e2e は通しの試験だけの置き場（@kaname/e2e・製品に入らない。apps/web/tests と同じく試験・K-65）// apps/web/lib/env.ts は画面側の起動設定（NEXT_PUBLIC_* は build 時に埋まる）・playwright.config はテストの設定 // runtime は PATH/HOME を子に渡すために読む（遮断の実装）
     const s = readFileSync(p, "utf8");
     // 子のプログラムの中身（Bridge が書き出して、Claude Code が別のプロセスで起こすもの・例外 X-014）は、その文字列の範囲だけ見ない
     const child = CHILD_SOURCES[rel];

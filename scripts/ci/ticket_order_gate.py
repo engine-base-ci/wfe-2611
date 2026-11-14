@@ -204,33 +204,53 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
         who = str(t.get("assignee") or "").strip()
         return t.get("stage") == "完了" and bool(who) and who not in ROLE_ASSIGNEES
 
+    # 子を持つ親（parent でほかのチケットに指される・実装は持たない）は、子が全部済んでいれば依存として満たす
+    #   （正本 §2「子を持つ親は実装を持たず、孫が全部取り込まれたら完了」。K-65 が K-37〔staging をそろえる親〕に依存して赤になった・2026-11-15）。
+    #   子の済み方は依存と同じ決まり（実装のコミットが祖先にある・決まりの前に入った・人の準備で完了・子が全部済んだ親）で、緩めない
+    children: dict[str, list[str]] = {}
+    for kid, tk in tickets.items():
+        if tk.get("parent"):
+            children.setdefault(str(tk["parent"]), []).append(kid)
+
+    def satisfied(dep: str, has_impl, guard: frozenset[str] = frozenset()) -> str | None:
+        if has_impl(dep):
+            return "impl"
+        if legacy_ok(dep):
+            return "決まりの前に入った"
+        if human_prep_ok(dep):
+            return "人の準備で完了"
+        kids = children.get(dep, [])
+        if kids and dep not in guard and all(satisfied(k, has_impl, guard | {dep}) for k in kids):
+            return "子が全部済んだ親"
+        return None
+
     bad, legacy = [], []
     reported: set[tuple[str, str]] = set()
     for i, (sha, ids) in enumerate(impl):
+        def has_impl_at(x: str, i: int = i, sha: str = sha, ids: set[str] = ids) -> bool:
+            return x in ids or any(x in prev_ids and is_ancestor(prev, sha, root) for prev, prev_ids in impl[:i])
         for tid in sorted(ids):
             for dep in deps_at(sha, tid):
-                if dep in ids:
+                why = satisfied(dep, has_impl_at)
+                if why == "impl":
                     continue
-                if any(dep in prev_ids and is_ancestor(prev, sha, root) for prev, prev_ids in impl[:i]):
-                    continue
-                if legacy_ok(dep):
-                    legacy.append(f"{dep}（{tid} の依存・決まりの前に入った）")
-                    continue
-                if human_prep_ok(dep):
-                    legacy.append(f"{dep}（{tid} の依存・人の準備で完了）")
+                if why:
+                    legacy.append(f"{dep}（{tid} の依存・{why}）")
                     continue
                 reported.add((tid, dep))
                 bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
+    def has_impl_head(x: str) -> bool:
+        return any(x in ids for _, ids in impl)
     for tid in sorted({k for _, ids in impl for k in ids}):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
-            if (tid, dep) in reported or any(dep in ids for _, ids in impl):
+            if (tid, dep) in reported:
                 continue
-            if legacy_ok(dep):
-                legacy.append(f"{dep}（{tid} の依存・決まりの前に入った）")
+            why = satisfied(dep, has_impl_head)
+            if why == "impl":
                 continue
-            if human_prep_ok(dep):
-                legacy.append(f"{dep}（{tid} の依存・人の準備で完了）")
+            if why:
+                legacy.append(f"{dep}（{tid} の依存・{why}）")
                 continue
             bad.append(f"{head_sha[:10]} 枝の先頭：{tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（枝の先頭の depends_on）")
     return bad, sorted(set(legacy)), len(impl)
@@ -285,11 +305,26 @@ def selftest() -> int:
         commit("K-5 feat: 人の準備に依存", "apps/d.ts", "d")
         commit("K-6 feat: 役のチケットに依存", "apps/e.ts", "e")
         bad4, legacy4, _ = check(d, "HEAD", start)
-        ok = (len(bad1) == 1 and "K-2 は K-1" in bad1[0] and len(bad2) == 1 and not bad3 and n3 == 3
+        # 子を持つ親（実装は持たない）は、子が全部済めば依存として満たす。子が 1 つでも済んでいなければ赤（K-65・2026-11-15）
+        run("checkout", "-q", "-b", "parent", start)
+        tickets({"K-1": {"depends_on": [], "stage": "未着手", "assignee": "実装", "parent": "K-20"},
+                 "K-8": {"depends_on": [], "stage": "完了", "assignee": "高本さん", "parent": "K-20"},
+                 "K-20": {"depends_on": [], "stage": "未着手", "assignee": "代表・実装"},
+                 "K-21": {"depends_on": [], "stage": "未着手", "assignee": "実装", "parent": "K-22"},
+                 "K-22": {"depends_on": [], "stage": "未着手", "assignee": "代表・実装"},
+                 "K-5": {"depends_on": ["K-20"], "stage": "未着手"}, "K-6": {"depends_on": ["K-22"], "stage": "未着手"}})
+        commit("K-1 K-8 K-20 K-21 K-22 docs: 一覧", "11_tickets/K-20.md", "x")
+        commit("K-1 feat: 子の実装", "apps/b.ts", "b")
+        commit("K-5 feat: 子が全部済んだ親に依存", "apps/d.ts", "d")
+        commit("K-6 feat: 子が済んでいない親に依存", "apps/e.ts", "e")
+        bad5, legacy5, _ = check(d, "HEAD", start)
+        ok_parent = (not any("K-5" in b for b in bad5) and any("K-6 は K-22" in b for b in bad5)
+                     and "K-20（K-5 の依存・子が全部済んだ親）" in legacy5)
+        ok = ok_parent and (len(bad1) == 1 and "K-2 は K-1" in bad1[0] and len(bad2) == 1 and not bad3 and n3 == 3
               and legacy3 == ["K-9（K-4 の依存・決まりの前に入った）"]
               and any("K-6 は K-7" in b for b in bad4) and not any("K-5" in b for b in bad4)
               and "K-8（K-5 の依存・人の準備で完了）" in legacy4)
-        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3}")
+        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3} / {bad5} / {legacy5}")
         return 0 if ok else 1
 
 

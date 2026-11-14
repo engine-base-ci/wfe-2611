@@ -16,6 +16,12 @@ writeFileSync(
   join(root, "apps/bridge/src/guard.ts"),
   "export const HOOK_SOURCE = `\nconst a = process.env.IN_CHILD;\n`;\nconst b = process.env.OUTSIDE;\n",
 );
+// 通しの試験の置き場 apps/e2e は試験として見ない。名前が似た別の置き場（apps/e2e-x）は見る（K-65）
+mkdirSync(join(root, "apps/e2e/staging/_lib"), { recursive: true });
+mkdirSync(join(root, "apps/e2e-x/src"), { recursive: true });
+writeFileSync(join(root, "apps/e2e/staging/_lib/site.ts"), "export const u = process.env.STAGING_BASE_URL;\n");
+writeFileSync(join(root, "apps/e2e/playwright.staging.config.ts"), "export const n = process.env.PLAYWRIGHT_JUNIT_OUTPUT_NAME;\n");
+writeFileSync(join(root, "apps/e2e-x/src/y.ts"), "export const y = process.env.Y;\n");
 const r = audit(root);
 // 記録の扱い（K-40）：記録に無いファイルは赤・記録どおりは緑・増えたら赤・減ったら下げるよう言う
 const j0 = judge({ bad: ["packages/bad/src/x.ts:1 process.env を関門の外で読んでいる（packages/config を通す）"] }, { files: {} });
@@ -24,6 +30,7 @@ const j2 = judge({ bad: ["a.ts:1 process.env を関門の外で読んでいる�
 const j3 = judge({ bad: [] }, { files: { "a.ts": 1 } });
 const ratchet = j0.fails.length === 1 && j1.fails.length === 0 && j1.notes.length === 0 && j2.fails.length === 1 && j3.notes.length === 1;
 const childOk = r.bad.some((b) => b.includes("apps/bridge/src/guard.ts:4")) && !r.bad.some((b) => b.includes("apps/bridge/src/guard.ts:2"));
-const ok = ratchet && childOk && r.bad.length === 4 && r.bad.some((b) => b.includes("B_KEY")) && r.bad.some((b) => b.includes("C_KEY")) && r.bad.some((b) => b.includes("packages/bad/src/x.ts:1"));
-console.log(ok ? "[env-audit self-test] OK（.env.example に無い 1・読まない 1・関門の外 1 を検出・記録の増減を判定・子のプログラムの範囲の外は赤）" : `[env-audit self-test] NG ${JSON.stringify(r)}`);
+const e2eOk = !r.bad.some((b) => b.startsWith("apps/e2e/")) && r.bad.some((b) => b.startsWith("apps/e2e-x/src/y.ts:1"));
+const ok = ratchet && childOk && e2eOk && r.bad.length === 5 && r.bad.some((b) => b.includes("B_KEY")) && r.bad.some((b) => b.includes("C_KEY")) && r.bad.some((b) => b.includes("packages/bad/src/x.ts:1"));
+console.log(ok ? "[env-audit self-test] OK（.env.example に無い 1・読まない 1・関門の外 1 を検出・記録の増減を判定・子のプログラムの範囲の外は赤・通しの試験の置き場は見ない）" : `[env-audit self-test] NG ${JSON.stringify(r)}`);
 process.exit(ok ? 0 : 1);

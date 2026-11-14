@@ -1152,7 +1152,7 @@ K-200,staging の健康診断の台本を作り、手順書を今の形に直す
 - [ ] 試験を CI から流す：`05_flow/build_testplan.py` の G65 の命令の最後に `&& python3 scripts/ci/k200_staging_health_test.py` を足して作り直す（v3-gate.yml・test-plan は生成物）
 - [ ] チケットの CI が緑
 - [ ] （このチケットでは staging に当てない。本物に当てる最初の 1 回は、K-203 の後に実装の担当が手元で流す 1 回＝DB は見ないので終わりの値 3 と、K-204 の回＝DB も見て 0）"
-K-201,staging の今を見る：最新の配り・休止していないか・main 以外の配りを止める,タスク,K-37,未着手,代表,2026-11-14,基盤・環境,2026-11-08 に staging が立ったことは確かめてある。そのあと本線にたくさん入ったので、今も最新の版で立っているかを、代表が画面で見る（リポジトリからは見えない）。あわせて、取り込む前の枝が staging の DB を書き換えないようにする。,"- [ ] Vercel の `kaname-api` と `kaname-web` の、いちばん上の Production の配りが Ready（緑）で、日付が今日か昨日
+K-201,staging の今を見る：最新の配り・休止していないか・main 以外の配りを止める,タスク,K-37,完了,代表,2026-11-14,基盤・環境,2026-11-08 に staging が立ったことは確かめてある。そのあと本線にたくさん入ったので、今も最新の版で立っているかを、代表が画面で見る（リポジトリからは見えない）。あわせて、取り込む前の枝が staging の DB を書き換えないようにする。,"- [ ] Vercel の `kaname-api` と `kaname-web` の、いちばん上の Production の配りが Ready（緑）で、日付が今日か昨日
 - [ ] Supabase の `kaname-staging` が休止（Paused）でない
 - [ ] `kaname-api` に `RESEND_BASE_URL` という名前の設定が「ある／無い」を実装の担当に伝えた（値は伝えない）
 - [ ] 作業中の版（main 以外の枝）の配りを止めた（D-140.4）
@@ -1162,7 +1162,7 @@ K-202,DB を読むだけの役を作り、CI から staging を指す設定の�
 前の書き方（Mac の中のファイル ~/.config/act/kaname.secrets）は前の CI の形なので、やめる。","- [ ] GitHub の engine-base/kaname の Environment `staging` の Environment secrets に、下の名前がそろっている（値は書かない）。Repository secrets は 0 件
 - [ ] Environment `staging` の「Deployment branches and tags」が `main` だけ
 - [ ] K-204 の最初の 1 回で、健康診断の段が緑"
-K-203,staging の秘密を全部取り替える（準備の途中でチャットに出た分）,タスク,K-37,未着手,代表,2026-11-14,基盤・環境,K-78〜K-81 の準備の途中で、staging の秘密がチャットに出た。チャットに出た値は漏れたものとして扱い、統合テストを流す前に全部作り直す。,"- [ ] 下の 7 つを全部作り直し、Vercel の `kaname-api` の環境変数（Production・Sensitive）を新しい値にした
+K-203,staging の秘密を全部取り替える（準備の途中でチャットに出た分）,タスク,K-37,完了,代表,2026-11-14,基盤・環境,K-78〜K-81 の準備の途中で、staging の秘密がチャットに出た。チャットに出た値は漏れたものとして扱い、統合テストを流す前に全部作り直す。,"- [ ] 下の 7 つを全部作り直し、Vercel の `kaname-api` の環境変数（Production・Sensitive）を新しい値にした
 - [ ] 古い鍵を、作った所の画面で消した（Supabase の置き場の鍵・Infisical の Client Secret・Resend の鍵）
 - [ ] `kaname-api` を配り直し、最新の配りが Ready
 - [ ] K-200 の健康診断が緑（実装の担当が流す）"

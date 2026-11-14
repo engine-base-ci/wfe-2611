@@ -12,7 +12,8 @@ import ts from "typescript";
 const ROOT = process.cwd();
 const SCAN_DIRS = ["apps", "packages"];
 // 見ないもの：依存・生成物（dist／.next／.next-prod／.vercel／release）・試験・道具（apps/<app>/scripts と apps/<app>/*.mjs は開発の道具で製品の実行時には入らない）
-const SKIP = /(^|\/)(node_modules|dist|coverage|\.next[^/]*|\.vercel|release|playwright-report|test-results)(\/|$)|\.test\.(ts|tsx|mts|mjs)$|(^|\/)test(s)?\/|^apps\/[^/]+\/scripts\/|^apps\/[^/]+\/[^/]+\.mjs$/;
+//   apps/e2e は通しの試験だけの置き場（@kaname/e2e・private・中身は Playwright の試験と設定と道具。製品に入らない）。apps/web/tests と同じく試験として見ない（K-65）
+const SKIP = /(^|\/)(node_modules|dist|coverage|\.next[^/]*|\.vercel|release|playwright-report|test-results)(\/|$)|\.test\.(ts|tsx|mts|mjs)$|(^|\/)test(s)?\/|^apps\/e2e\/|^apps\/[^/]+\/scripts\/|^apps\/[^/]+\/[^/]+\.mjs$/;
 
 export function loadChoke(root = ROOT) {
   return JSON.parse(readFileSync(join(root, "03_architecture/choke-points.json"), "utf8"));
