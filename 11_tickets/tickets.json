@@ -1395,28 +1395,27 @@
   },
   {
    "id": "K-37",
-   "title": "ステージングをそろえる",
+   "title": "ステージングをそろえる（統合テストが staging を指して流せるところまで）",
    "kind": "タスク",
    "stage": "未着手",
    "parent": "K-77",
    "milestone": "基盤",
-   "area": "試験",
-   "assignee": "実装",
-   "due": "2026-11-10",
-   "estimate_hours": "6",
-   "estimate_basis": "K-143（実測 チケット 283 分＋取り込み 142 分）から、staging の作り方のコード（infra/provision）と配る道すじと最初の通し・人の準備（K-78〜K-82）は済み。K-133 の後に入る",
+   "area": "環境",
+   "assignee": "代表・実装",
+   "due": "2026-11-15",
    "decisions": [
     "D-128.113",
     "D-125.167",
     "D-097",
+    "D-101",
     "D-128.144",
-    "D-128.145"
+    "D-128.145",
+    "D-128.147",
+    "D-140.3",
+    "D-140.4"
    ],
-   "split": "",
-   "choke_points": [
-    "C1",
-    "C8"
-   ],
+   "split": "K-200・K-201・K-202・K-203・K-204",
+   "choke_none": "親のチケット。実装は持たない（触る関門は孫が書く）",
    "depends_on": [
     "K-78",
     "K-79",
@@ -1426,15 +1425,15 @@
     "K-133"
    ],
    "sections": {
-    "目的": "流れの試験と 5 つの題材を通すステージング（selected-stack.json の environments.staging）を、コードで作れるようにそろえる。",
-    "完了の条件": "- [ ] ステージングの作り方がコードにある（infra/provision）\n- [ ] ステージングで API・画面・DB が動く\n- [ ] 秘密は預け先にだけ置く（コードに書かない）\n- [ ] 本物のデータを入れる前に、準備（K-78〜K-81）の途中でチャットに出た staging の秘密を全部取り替える（DB の 3 役のパスワード・AUTH_SECRET・SECRETS_MASTER_KEY・Infisical の Client Secret・置き場の鍵・Resend の鍵）。取り替えた後に /health と CORS と migration が通ることを確かめる（値はチケット・チャットに書かない）\n- [ ] 統合テスト（K-65）が staging を指せる：CI の台の秘密のファイル（~/.config/act/kaname.secrets・リポジトリに置かない）に STAGING_BASE_URL・STAGING_API_BASE・STAGING_DATABASE_ADMIN_URL（読むだけの役）・STAGING_MAILBOX_URL・QA_MAILBOX_KEY の 5 つの名前があり、.act-ci.env の ACT_STAGING=1 で e2e の段が起きる（決める人の答え 2026-11-09・K-65 の決まり 1〜3・ai-team-delivery references/ci.md §3）\n- [ ] CI が緑",
-    "前提と制約": "- 前の画面は少しずつ直さず、新しく作ってから外す（D-128.78）",
-    "実施事項": "- [ ] ステージングの構成をコードに\n- [ ] 配る道すじ（main に入ったらステージングへ）\n- [ ] 最初の通し",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| ステージングが立つ | ① 機械 | `python3 scripts/ci/pipeline-next.py check-staging` | |\n| ステージングで画面が開く | ③ 人 | ステージングの記録 | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.113・D-125.167・D-097",
-    "リスクと懸念": "外のアカウント（配布先・DB）の用意は高本さんの手が要る。秘密は聞かず、置き場の手順だけ書く",
-    "申し送り": ""
+    "目的": "統合テスト（K-65）を流す場所＝ステージング（02_tech_stack/selected-stack.json の environments.staging：本番と同じ構成をもう 1 組・D-097）を、「立っている」から「統合テストが指して流せる」までそろえる。\n\n2026-11-13 に切り直した。前の形は 1 枚に「作り方のコード・配る道すじ・秘密の取り替え・CI からの指し方・最初の通し」が入っていて、人がすることと実装がすることが混ざっていた。葉の大きさにそろえて 5 枚の孫に分ける（進め方の正本 §2・§6.1）。このチケットは親で、実装を持たない。孫が全部終わったら完了。",
+    "完了の条件": "- [ ] 孫 5 枚（K-200〜K-204）が全部 完了\n- [ ] staging の健康診断（K-200 の台本）が、秘密を取り替えた後の staging で緑\n- [ ] CI の統合テストの段（K-204）が staging を指して 1 回流れ、健康診断の段が緑（統合テストそのものは K-65）",
+    "前提と制約": "- 今の staging の実際（2026-11-13・リポジトリの中だけで確かめた）\n  - **コードにある**：作り方＝API の Build Command が `pnpm db:migrate && pnpm provision:bucket && node apps/api/build-vercel.mjs`（apps/api/vercel.json）。置き場の用意と非公開の確かめ＝infra/provision/bucket.ts（K-133）。API を Vercel の関数 1 本にする入口＝apps/api/src/vercel.ts。起動時の確かめ 5 つ（db:tables・storage:bucket・secrets:master-key・notify:resend・secrets:vault）。設定の名前の正本＝.env.example\n  - **人の準備で済んでいる**：K-78（Supabase）・K-79（Infisical）・K-80（Vercel の API）・K-81（Resend）・K-82（Vercel の画面）は 2026-11-08 に完了（コミット bb1fdde9「/health と CORS を確かめた」）\n  - **無い・分からない**：(1) staging の住所がリポジトリのどこにも無い（`git grep vercel.app` が 0 件）ので、今も立っているかを機械で確かめられない (2) 配る道すじは .github/workflows に無い（配る段は 0）。Vercel が GitHub の main を見て自分で配る形のはずだが、設定は Vercel の画面の中で、リポジトリからは見えない (3) K-133（置き場が公開なら Build を止める）が入った後の Build が通っているか分からない (4) CI から staging を指す設定が無い：.github/workflows/v3-gate.yml の e2e の組は `secrets.STAGING_BASE_URL` の 1 つだけを読み、has-ui の札の PR でしか起きず、流すのは前の画面の試験（`pnpm e2e:web`） (5) 健康診断の台本が無い：`python3 scripts/ci/pipeline-next.py check-staging` は selected-stack.json に欄があるかを見るだけで、staging には当てていない (6) K-78〜K-81 の途中でチャットに出た秘密がまだ取り替えられていない\n  - **古くなった書き方**：前の完了の条件の「~/.config/act/kaname.secrets・.act-ci.env の ACT_STAGING=1」は前の CI（act）の形。今の CI は GitHub Actions を自分の Mac の上の使い捨ての Linux の VM で流す（ticket-flow.yaml の vm）。VM は組ごとに捨てるので、台にファイルを置く形は使えない。infra/STAGING.md の §0「いま無いもの」と infra/provision/README.md の「S3 Railway」も古い（K-200 で直す）\n- 鍵・パスワード・接続の文字列の値は、チャット・ファイル・コミット・このチケットに書かない。入れる先は Vercel の環境変数（Sensitive）・Infisical・GitHub の Actions の secrets だけ（infra/STAGING.md §1）\n- 本番の値を使わない。本番のプロジェクトには触らない\n- GitHub の台（hosted runner）と有料の逃げ道は使わない（決定済み）",
+    "実施事項": "やる順（→ は「先に要る」）：\n\n| 順 | 番号 | 担当 | 何をするか | 先に要る |\n|---|---|---|---|---|\n| 1 | K-201 | 代表（今日） | staging の今を見る：最新の配り・休止していないか・作業中の版の配りを止める（D-140.4） | — |\n| 2 | K-200 | 実装 | 健康診断の台本（DB に migration が当たっているかも読む）と手順書の直し。切る段で書き直したチケットを本線へ運ぶ | —（中身は K-201 を要らない） |\n| 3 | K-203 | 代表 | チャットに出た秘密を全部取り替える（統合テストの前・D-140.3）。K-200 の健康診断で確かめる | K-200 |\n| 4 | K-202 | 代表 | CI から staging を指す設定の名前を GitHub の repository secrets に入れる（取り替えた後の値を 1 回で） | K-203 |\n| 5 | K-204 | 実装 | CI の統合テストの段を今の形にし、staging を指して最初の 1 回を流す | K-200・K-202 |\n| 6 | K-97 | 実装 | Bridge を組み立てる段（この親の外・K-32 の下）。本物の Bridge の輪を回す行に要る（D-140.2） | K-204 |\n| 7 | K-205 | 代表 | 代表の Mac の Bridge アプリを staging につないで 1 本（この親の外・K-77 の下・D-141.2） | K-97・K-203 |\n| 8 | K-65 | 実装 | 統合テスト（この親の外・K-103 の下） | K-37・K-97 |",
+    "テスト仕様と確認の結果": "- 孫の確かめが全部緑（K-200 の健康診断・K-204 の最初の 1 回）",
+    "成果物": "- 動いている staging・健康診断の台本・CI の統合テストの段・直した手順書（infra/STAGING.md）",
+    "決定ログ": "- 決定に従った：D-097（置き場）・D-101（預け先）・D-128.144（統合は staging）・D-128.145（人の準備もチケット）・D-128.147（CI は GitHub と同じ workflow）\n- 決める人の答え（2026-11-14・answer=a26c00bdd2f4・D-140）：鍵の取り替えは統合テストの前・試しのデータは消えてよい（D-140.3）／作業中の版の配りは止める（D-140.4）\n- PM が決めた：CI から staging を指す住所と鍵の置き場は GitHub の repository secrets（2026-11-14）。人の準備のチケットは、代表が終えたら PM が md と Notion の両方の stage を「完了」に直す",
+    "リスクと懸念": "- Vercel の Preview（main 以外の枝の配り）も同じ staging の DB に migration を流す（infra/STAGING.md S2-5）。今の進め方は枝をたくさん GitHub に出すので、取り込む前の migration が staging の DB に当たる。K-201 で止める（D-140.4）\n- Supabase の無料の枠は 1 週間使わないと休止する。休止していたら K-201 で起こす\n- SECRETS_MASTER_KEY を替えると、前に預けた試しの資格情報は開けなくなり、確認待ちの登録はやり直しになる（K-200 の切る段がコードから確かめた）。試しのデータは消えてよい（D-140.3）ので、そのまま替える",
+    "申し送り": "- K-80 の実施事項 4b（RESEND_BASE_URL を CI の台の受け箱へ）と K-87（CI を回す台：act・colima・受け箱を外へ開く）は、前の CI の形。メールの読み方を決め直した（D-140.1）ので、どちらも使わない。K-87 は閉じる扱い（状態は PM が直す）\n- K133-ST-001（staging の置き場が非公開）は K-65 の行（K65-STG-03）が引き取る"
    },
    "file": "11_tickets/K-37.md"
   },
@@ -3026,39 +3025,47 @@
   },
   {
    "id": "K-65",
-   "title": "統合テスト：歩く骨格を端から端まで（登録 → メール → 規約 → PC → チケット → AI → 承認して完了）",
+   "title": "統合テスト：歩く骨格を端から端まで（登録 → メール → 規約 → PC → チケット → AI → 承認して完了）を staging で 1 本通す",
    "kind": "QA",
    "stage": "未着手",
    "parent": "K-103",
    "milestone": "F5",
    "area": "試験",
    "assignee": "実装",
-   "due": "2026-11-13",
+   "due": "2026-11-16",
    "estimate_hours": "1",
-   "estimate_basis": "K-60 fix（2026-11-08 取り込み）の実測から：テスター 10 分・CI 18 分・実装の直し 25 分・差し戻し 1 回分を足す（staging がそろった後に流す）",
+   "estimate_basis": "K-64（中間テスト 3：試験 7 本・始めから取り込みまで 14〜16 分・CI 1 回 8 分）から。staging で流すのが初めてなので、最初の 1 回の手直しを足して 1 時間と見る。実測なし・仮（K-204 の最初の 1 回の後に引き直す）",
    "decisions": [
     "D-128.125",
     "D-128.131",
-    "D-128.133"
+    "D-128.133",
+    "D-128.144",
+    "D-128.147",
+    "D-129.14",
+    "D-140.1",
+    "D-140.2",
+    "D-141.1",
+    "D-141.2"
    ],
-   "split": "",
-   "choke_none": "試験のチケット。触る関門は中の操作のチケット（K-54・K-58・K-64）が持つ",
+   "split": "これから",
+   "choke_none": "試験のチケット。触る関門は中の操作のチケット（K-51〜K-63）が持つ",
    "depends_on": [
     "K-37",
     "K-54",
     "K-58",
-    "K-64"
+    "K-64",
+    "K-97"
    ],
    "sections": {
-    "目的": "歩く骨格の道すじ全体（D-128.131）を、初めての人として本物のブラウザで 1 回通す。登録する（K-51）から承認して完了する（K-63）まで、7 本のチケットがつながって、使い始めから最初の仕事が終わるまでが成り立つかを確かめる。最初の統合テスト。",
-    "完了の条件": "- [ ] 下の筋が全部、本物のブラウザ（Playwright）・本物の DB の上で緑\n- [ ] 中の操作のチケットの単体のテストが先に緑（この試験は、揃えた最後のチケット K-64 が取り込む前に流す）\n- [ ] 手元の CI（act・GitHub と同じ workflow の全部）の段に入っている",
-    "前提と制約": "- 中間テスト 3 つ（K-54・K-58・K-64）が先に緑\n- 筋の数は絞る。分岐は単体と中間が受け持ち、ここは「端から端まで通ること」と、端から端でしか出ないもの（最初の人・最初の会社・最初の PC・最初のチケットがどれも初めての状態で並ぶこと）を見る\n- 本物の AI は呼ばず、決まった答えを返す差し替えを使う",
-    "実施事項": "- 試験のファイル：`apps/e2e/tests/skeleton/integration-walking-skeleton.spec.ts`\n- 中間テストの準備の道具（受け箱・時刻を進める・PC の受け口・本人確認）をそのまま使う",
-    "テスト仕様と確認の結果": "| 筋 | 操作 | 期待結果 | つなぎ目で見るもの |\n|---|---|---|---|\n| 正常 | 登録 → メールのリンク → 規約 → PC をつなぐ → チケットを作る → AI に任せる → 承認 → 完了 | 最初の仕事が完了になり、記録に最初の人・会社・PC・チケットがそろう | 7 本がつながる |\n| 別の端末で続ける | 登録とメールの確認は端末 A、PC をつなぐ所から端末 B | B で続けられ、最後まで通る | 途中で端末が変わっても状態が引き継がれる |\n| 途中で一度ログアウト | チケットを作った後にログアウト → ログインし直して任せる | 続きから進める | セッションをまたいでも途中の状態が残る |\n| 別の会社に漏れない | 同じ手順を別の人（別の会社）でも並べて流す | どちらの画面にも相手のものが出ない | 端から端で守りが効く |",
-    "成果物": "- `apps/e2e/tests/skeleton/integration-walking-skeleton.spec.ts`・試験の記録（落ちたときの画面の写し）",
-    "決定ログ": "- 中間・統合テストの組は flows.json の walking_skeleton（D-128.131）",
-    "リスクと懸念": "- 端から端の試験は長くなる。手元の CI では取り込みの前の全部の段で流し、普段の「変わった所だけ」では骨格のチケットが変わったときだけ流す",
-    "申し送り": "- 骨格のあとは、流れごとに同じ形のチケットを切り、それぞれの流れの統合テストを足していく"
+    "目的": "歩く骨格の道すじ全体（D-128.131）を、初めての人として、staging（本番と同じ形・D-128.144）の上で頭から最後まで 1 本で通す。登録 → 本物のメール → 規約 → PC をつなぐ → チケットを作る → AI に任せる → 承認して完了。\n\n3 つの中間テスト（K-54 の m1・K-58 の m2・K-64 の m3）を合わせ直す試験ではない。中の分岐は単体と中間が開発の環境で持っている。ここで見るのは 2 つだけ：\n\n1. 7 つの操作が、1 人の上で、本物の外のサービスの上でつながること\n2. staging でしか出ないもの（本物のメールの到達・本物の置き場・口と画面が別の住所・接続の束ね役ごしの会社の分け・本物の PC の輪の間合い）\n\n2026-11-13 に切り直した。中身（行の表の残り・試験のコード）は次の回に書く（split: これから）。筋の形は決める人の答え（2026-11-14・D-140）で確定した。",
+    "完了の条件": "- [ ] 正常の 1 本（K65-STG-01）が本物の Bridge の輪で緑（BLOCKED のままでは段 1 を閉じない・D-140.2）\n- [ ] 代表の 1 回（K-205：代表の Mac の Bridge アプリを staging につないで 1 本）が完了（D-141.2。段 1 を閉じる条件。この回で、K-205 の実施事項と代表の手順書を書く）\n- [ ] 下の筋が、staging の上で、本物のブラウザ（Playwright）・本物の DB・本物のメール・本物の置き場で、緑か理由つきの BLOCKED。BLOCKED は緑と数えない\n- [ ] CI の統合テストの段（K-204）で流れ、結果が CI の記録に残る（手で書いた PASS は置かない）\n- [ ] 承認の直後から実行が始まるまでの秒（K65-STG-04）を記録に書き、K-194 に渡す",
+    "前提と制約": "- 試験のための抜け道を作らない（決める人 2026-11-09「本番さながらで、ちゃんと通用する形で」）：口の答えを画面の手前で作らない・製品のコードに試験用の分かれ道を足さない・DB は読むだけ（試験が管理者の権限で書いて筋を通さない）\n- staging では使えない中間テストの道具と、その扱い\n  - 時刻を進める（期限切れ・24 時間）：DB に書くので使えない。期限の筋は中間が持つ（K54-M1-02・K58-M2-05・K64-M3-03）。ここでは持たない\n  - 送り元の IP を人ごとに変える（`_lib/newcomer.ts` の ownIp）：Vercel が送り元を付け替えるので効かない。1 回の通しで登録する人数を 3 人までにする（K65-STG-07 で 429 にならないことを見る。回数の上限の数は次の回にコードから引く）\n  - 試験用の受け箱（`_lib/mailbox.ts`）：自分の Mac の中でだけ聞く。staging の口からは届かない。staging では使わず、本物のメールを Resend から送って、試験は Resend の記録（届いたか・本文）を読む（D-140.1）。機械の試験の宛先は Resend の試験用の宛先（`delivered+<印>@resend.dev`）。記録を読む鍵の名前は `STAGING_RESEND_READ_KEY`（K-202）\n  - AI：本物の AI は呼ばない。PC の輪の中で、決まった答えを返す偽の Claude Code（scripts/dev/fake-claude-demo.mjs）を使う（本人のサブスクを使わない）\n- 試験が作った会社・人・PC・チケットは staging に残す（名前に「統合テスト」の印。staging に顧客のデータは入れない・前の決まり 2）\n- 鍵・接続の文字列の値は書かない。CI の secrets の名前だけ（K-202）",
+    "実施事項": "- 試験のファイル：`apps/e2e/staging/k65-walking-skeleton.spec.ts`（次の回に書く。行 ID を試験の名前の頭に持つ）\n- 画面の 1 歩（登録・PC をつなぐ・画面で作る・任せる・承認）は、中間テストの `apps/web/tests/_lib` を読む（写しを置かない）\n- 前に枝 k65-impl（コミット 0bfb868f・2026-11-09）で切った版（筋 5 本 K65-INT-01〜05・決まり 1〜5）がある。本線には入っていない。筋は下の表に選び直した（INT-01＋05 → STG-01、INT-03 → STG-06、INT-04 → STG-05、INT-02 は K54-M1-05 が持つので外す）。使える試験のコードはそこから引く\n- 状態 × 入口 × 利用者の状態の表・8 つの観点・テストの型の受け（分類 AUTH・PERM・AI・JOB・MAIL・FILE）は次の回に書く",
+    "テスト仕様と確認の結果": "### 筋（案）\n\n| 行 | 筋 | 操作 | 期待結果 | 中間テストと重ならない所 |\n|---|---|---|---|---|\n| K65-STG-01 | 正常・端から端（本物のメール・本物の PC の輪） | 登録の画面 → 届いた本物のメールのリンク →「続ける」→ PC をつなぐ（画面のコードを本物の Bridge の引き取りで）→「＋ チケットを作る」→「AI に任せる」→ 組み立てた Bridge の輪が作る段を取って終える → 承認待ちの行 →「承認して送る」→ 同じ輪が実行の段を取って終える →「完了にする」 | 最後に「完了しました」が出る。DB の記録は 人 1・会社 1・PC 1・チケット 1・承認 1 で、1 本の鎖になっている。承認待ちの帯は手で読み直さなくても 120 秒以内に出る | 中間は試験の PC が 1 回ずつ口を呼ぶ。ここは輪そのものが本物の順と間合いで呼ぶ（D-129.14）。組み立てた Bridge は K-97 が先に入れる（depends_on・D-140.2） |\n| K65-STG-02 | 本物のメールの到達と中身 | STG-01 の登録（宛先は Resend の試験用の宛先）の直後に、Resend の記録を読む | 送ってから 60 秒以内に記録が「delivered」になる。差出人が `Kaname <noreply@engine-base.com>`、返信先が `info@engine-base.com`、本文に運営者の署名が出て電話番号は出ない。本文のリンクの頭が staging の画面の住所と同じ | 中間は手元の受け箱が受けるだけで、外へは送らない。送信ドメインの検証・差出人・リンクの住所（WEB_BASE_URL）は staging でしか確かめられない |\n| K65-STG-03 | 本物の置き場（K133-ST-001 を引き取る） | PC をつなぐの画面で、配布物の受け取りのリンクを読む | 署名つきのリンクは 200 を返す。同じリンクから署名を外すと 200 以外（Supabase は 400）を返す。画面に「読み込めませんでした」は出ない | 開発の環境の置き場は MinIO。Supabase の置き場の非公開と署名は staging でしか出ない |\n| K65-STG-04 | 承認の直後の間合い（K-194） | STG-01 の中で、「承認して送る」を押した時刻と、帯が実行中に替わった時刻を測る | 40 秒以内に帯が替わる（輪の待ち受け 20 秒＋空の後の 5 秒＋余裕）。かかった秒を記録に書く。40 秒を超えたら赤にし、秒を K-194 に渡す | 中間は「取れるまで問い合わせる」形で、遅れを見ていない。本物の輪の間合いでどれだけ遅れるかはここでしか測れない |\n| K65-STG-05 | 別の会社に漏れない（接続の束ね役ごし） | 別の 2 人（別の会社）が並んで 登録 → つなぐ → 作る → 任せる。相手の承認待ちの画面とチケットの詳細を開く。相手の PC が取りに来る | 相手の承認待ちの画面は「いま決めるものはありません」で相手の行は 0 件。相手のチケットの詳細は「見つかりませんでした。消されたか、見る権限が無いかもしれません」が出る。相手の PC の取りは空（201・job は null） | 開発の環境は DB に直に入る。staging は接続の束ね役（Transaction pooler）ごしで、会社の文脈が隣の問い合わせに残らないことはここでしか出ない |\n| K65-STG-06 | 入り直し（口と画面が別の住所） | チケットを作った後にブラウザを閉じる → 別のブラウザからログインの画面で入る → 同じチケットを開いて任せる | ログインが通り、チケットの詳細が開いて題名と「未着手」が出る。前につないだ PC はつながったまま（知らせが 201） | 開発の環境は口も画面も 127.0.0.1。staging は口と画面が別の住所なので、ログインの印が住所をまたいで通るかはここでしか出ない |\n| K65-STG-07 | 同じ送り元から続けて登録 | 1 回の通しの中で、同じ Mac から 3 人が続けて登録する | 3 人とも登録できる。429 は 0 回 | staging では送り元の IP を試験が変えられない。上限に当たるなら、通しの人数か上限の決め方（K-132）を決め直す |\n| K65-STG-08 | 外のサービスが落ちる | — | BLOCKED（理由つき）：staging では Resend・Supabase・Infisical を試験が止める口が無く、抜け道も作らない。落ちたときのふるまいは単体が持つ（送れなかった＝K-51、置き場が読めない＝K-133 の「読み込めませんでした」）。ここでは通しの頭で健康診断（K-200）が 5／5 と返すことだけを見る | — |\n| K65-STG-09 | リンクの期限 | — | BLOCKED（理由つき）：staging では時刻を進められない（DB は読むだけ）。30 分の期限切れは K54-M1-02 が持つ | — |\n\n### 人が 1 回だけ確かめること（機械で見られない）\n\n| 確かめること | 期待結果 |\n|---|---|\n| 代表が自分のメールの住所で staging の画面から登録する | 確認のメールが受信箱に届く（迷惑メールに入らない）。差出人・署名・返信先が上と同じに出る |\n\n### 確認の結果\n\nまだ流していない（staging の指し方 K-37 がまだ・試験のコードは次の回）。実装の前に流して赤を確かめることはしない。",
+    "成果物": "- `apps/e2e/staging/k65-walking-skeleton.spec.ts`・CI の記録",
+    "決定ログ": "- 決定に従った：D-128.131（道すじ）・D-128.144（統合は staging・本物のメール・本物の置き場）・D-129.14（本物の Bridge を回す通しは K-65 の正常の 1 本で・K-97 の後）\n- 決める人の答え（2026-11-14・answer=a26c00bdd2f4・D-140）\n  1. **staging のメールの確かめ方**（D-140.1）：本物のメールを Resend から本当に送り、試験は Resend の記録（届いたか・本文）を読む。機械の試験の宛先は Resend の試験用の宛先。代表が自分のアドレスで 1 回だけ目で確かめる。2026-11-09 の決まり 1（送り先を CI の台の受け箱に向ける）を改めた\n  2. **本物の PC の輪**（D-140.2・D-141）：機械の回は Bridge の本体を窓なしで回し、AI は偽物を差す（D-141.1）。代表の Mac の Bridge アプリで 1 回通す（D-141.2・K-205）。本物の Bridge で正常の 1 本を通してから段 1 を閉じる。K-97 を先に入れる。2026-11-09 の決まり 5（輪の行は BLOCKED のまま先に入れる）を改めた\n- 前の決まり 2（DB は読むだけ・試験のデータは残す）と決まり 4（ログアウトのボタンは K-138 の後）はそのまま使う",
+    "リスクと懸念": "- 口と画面が別の住所（どちらも vercel.app の下）なので、ブラウザによってはログインの印が通らないかもしれない。STG-01 と STG-06 が最初に当たる。当たったら、ドメインを決める K-84 を前に出すかを決める人に聞く\n- Resend の無料の枠（1 日の通数）。1 回の通しで送るのは 5 通前後。数は次の回に筋から数える\n- staging は無料の枠なので、最初の 1 回は口の起き上がりが遅い。試験ごとの時間の上限は次の回に実測から決める\n- 1 回の通しのたびに staging に会社と人が増える。片付けの口は F10・F12 でできてから",
+    "申し送り": "- 骨格のあとは、流れごとに同じ形の統合テストを足していく（置き場は apps/e2e/staging・名前はチケットの番号で始める・行 ID を名前に・secrets の名前は同じ）\n- 次の回（試験を書く回）で決める・直すこと（K-200・K-204・K-97 の精査から）\n  - 置き場と設定：`apps/e2e/staging/` と `apps/e2e/playwright.staging.config.ts`（testDir は `./staging`・JUnit の reporter）をこのチケットが作る。前の通し（apps/e2e/journeys の j01・j02）と同じ設定は使わない\n  - 筋 08 の「健康診断が 5／5 と返す」を「健康診断（K-200 の台本）が 0 で終わる」に直す（数は出ない）\n  - 落ちた試験の文に、staging の住所・試験の宛先・確認のリンク・鍵を出さない書き方にする（確かめの文を自分で付ける。JUnit に標準出力を入れない）。JUnit は成果物に 3 日残り、伏せ字は効かない\n  - 偽の Claude Code の台本（scripts/dev/fake-claude-demo.mjs）が Linux の台で実行できるか（実行の許可・1 行目）を行にする\n  - 輪の行き先（agent-bridge.ts が読む API）を staging の口に向ける形\n  - K-205（代表の 1 回）の実施事項を §6.1 の粒度で書き、代表の手順書に足す\n  - この試験の「できた」をどの回の記録で決めるか（K-204 の決定ログ・PM の決め待ち）\n- 任せた人と承認する人が別の人の通しは、F2 の権限を渡す口ができてから（D-129.15）"
    },
    "file": "11_tickets/K-65.md"
   },
@@ -4378,7 +4385,7 @@
     "成果物": "- 台",
     "決定ログ": "- 人の準備もプロジェクトのチケットとして切る（D-128.145）。どこでどのテストを流すかは D-128.144",
     "リスクと懸念": "- 台が眠ると CI が止まる",
-    "申し送り": "—"
+    "申し送り": "- 2026-11-14：閉じる扱いにする（PM が決めた）。CI の台は「自分の Mac の上の使い捨ての Linux の VM」（ticket-flow.yaml の vm）で済んでいて、このチケットの中身（act・colima・受け箱を外へ開く）は前の形。受け箱の項目は D-140.1 で使わなくなった。状態は PM が直す"
    },
    "file": "11_tickets/K-87.md"
   },
@@ -8925,6 +8932,216 @@
     "申し送り": "- 台に道具があるかを、どの回でも最初に見る段（static の組）は足さなかった：温める命令は本線の中身で流れるので、段を足すチケットそのものの CI が、像を作り直す前に赤になる（取り込めない）。要るなら、像を作り直した後の別のチケットで足す\n- GitHub の台から自分の台に替えたとき（K-173）に、「GitHub の台に初めから入っていて、CI の定義が入れていなかった道具」を洗っていない。全部の回で**赤になった**のは Chrome だけ。飛んで緑になっている試験は別にある（上の「同じ類の洗い出し」の 28 件）\n- 実装の段の試し（使い捨ての VM・2026-11-14）で分かったこと：包みが自分で足す置き場は `.list` でなく `google-chrome.sources`（deb822）だった。温める行は `.list` と `.sources` の両方を消し、そのあと `apt-get clean`（落とした包みを像に残さない）をしてから版を出す（実施事項の表の行より、この 2 つだけ長い）\n- RC-001 が見ていない物（切る段で行を足す候補）：温める行の sudo の有無・`|| true`（失敗を握りつぶす形）\n- 道具を探す形の検出（RC-003・007・008 の鍵）が見落とす物（同じく候補）：道を定数に入れてから existsSync に渡す形・accessSync など existsSync でない確かめ方\n- Linux の台で 1 回も流れない試験（Mac だけの 5 件ほか）の一覧と、どこで流すかは K-197（起票だけ・列に入れていない）"
    },
    "file": "11_tickets/K-195.md"
+  },
+  {
+   "id": "K-200",
+   "title": "staging の健康診断の台本を作り、手順書を今の形に直す",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-37",
+   "milestone": "基盤",
+   "area": "環境",
+   "assignee": "実装",
+   "due": "2026-11-15",
+   "estimate_hours": "0.5",
+   "estimate_basis": "K-193（台本 1 本・試験 12 行・CI の定義に 1 か所。始めから取り込みまで 1 時間以内）と同じ形：台本 1 本（試しの版 60 行が切る段にある）と文書 2 つ。実測なし・仮",
+   "decisions": [
+    "D-097",
+    "D-128.144",
+    "D-128.145",
+    "D-140.3",
+    "D-140.4"
+   ],
+   "split": "",
+   "prior_impl": "なし",
+   "choke_points": [],
+   "choke_none": "CI の台本と文書だけ。製品の外への出口は足さない。台本が外に出すのは、staging の公開の口への GET と OPTIONS（鍵を送らない）と、staging の DB への読むだけの問い合わせ 1 つ（読むだけの取引の中）",
+   "depends_on": [
+    "K-78",
+    "K-80",
+    "K-82",
+    "K-133"
+   ],
+   "tests": [
+    "scripts/ci/k200_staging_health_test.py"
+   ],
+   "carry": [
+    "11_tickets/K-37.md",
+    "11_tickets/K-65.md",
+    "11_tickets/K-87.md",
+    "11_tickets/K-201.md",
+    "11_tickets/K-202.md",
+    "11_tickets/K-203.md",
+    "11_tickets/K-205.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl"
+   ],
+   "changes": [
+    "scripts/ci/staging_health.py",
+    "scripts/ci/staging_db_migrations.mjs",
+    "infra/STAGING.md",
+    "infra/provision/README.md",
+    "05_flow/build_testplan.py"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "staging が「立っていて、画面と口がつながり、配った版の migration の一覧が手元と同じで、その migration が DB に当たっている」ことを、人が画面で見るのではなく台本で確かめられるようにする。使う所は 2 つ：秘密の取り替え（K-203）の後の確かめと、staging を指す統合テストの回（K-204）の最初の段。\n\nあわせて、古くなった手順書（infra/STAGING.md・infra/provision/README.md）を今の実際に直す。",
+    "完了の条件": "- [ ] 下の 16 行（K200-SH-001〜016）が緑\n- [ ] 試験を CI から流す：`05_flow/build_testplan.py` の G65 の命令の最後に `&& python3 scripts/ci/k200_staging_health_test.py` を足して作り直す（v3-gate.yml・test-plan は生成物）\n- [ ] チケットの CI が緑\n- [ ] （このチケットでは staging に当てない。本物に当てる最初の 1 回は、K-203 の後に実装の担当が手元で流す 1 回＝DB は見ないので終わりの値 3 と、K-204 の回＝DB も見て 0）",
+    "前提と制約": "分類: TOOL\n\n- 健康診断の台本（staging_health.py）は鍵を使わない・送らない。当てるのは公開の口だけで、方法は GET と OPTIONS だけ（K200-SH-013）。DB には入らない\n- **DB の形は、別の小さな台本が読む**（PM の決め 2026-11-14・精査 B-2）：`/health` の migration の一覧は配ったコードの定数で、DB に当たっているかではない。`scripts/ci/staging_db_migrations.mjs` が、環境の値の名前 `STAGING_DATABASE_ADMIN_URL` で staging の DB につなぎ、読むだけの取引の中で `app.schema_migrations` の名前を 1 回読んで、名前の並びの JSON を標準出力に出す（書かない・K200-SH-016）。健康診断の台本は、その出力のファイルを `--applied` で受けて、リポジトリの migration の一覧と比べる。`--applied` が無い回（接続の値が無い手元・K-202 の前）は、その 1 項目だけ「見ていない」と必ず出し、ほかが全部通っても終わりの値を 3 にする（0 にしない・K200-SH-015）\n- 住所は環境の値の**名前**で受ける（`STAGING_BASE_URL`・`STAGING_API_BASE`）。値をチケット・コミット・出力に書かない。出力に書いてよいのは住所の頭の 12 文字まで\n- 試験は staging につながない。手元に立てた作りものの口と画面（127.0.0.1）に当てる\n- この台本がふだんのチケットの CI で staging に当たることは無い：住所の名前を CI に渡すのは、手で起こす staging-e2e.yml（K-204）だけ。手元では名前が無いので 2 で止まる（緑にしない）\n- **版は確かめられない**（切る段で読んだ）：`/health` が返す版は決め打ちの `0.1.0`（apps/api/src/app.ts 86 行・server.ts 137 行）で、どのコミットから配ったかは出ない。代わりに、`/health` が返す migration の一覧の最後の名前（`migrations.expected` の末尾・packages/db/src/index.ts の MIGRATIONS）を、作業場所の `packages/db/migrations/*.sql` の最後の名前と比べる。staging の最後が手元の一覧に在って最後でなければ「配りが遅れている」、手元の一覧に無ければ「staging の方が新しい（手元の枝が古い）」。migration を足さない版の遅れは見えない（リスクの欄）\n- **起動時の確かめ 5 つの数は `/health` に出ない**（ログにだけ出る）。落ちたときは 503 と `code: STARTUP_FAILED`・`reason`（落ちた確かめの名前。値は出ない・apps/api/src/vercel.ts 25〜41 行）が返るので、それを出す。200 なら 5 つとも通っている（1 つでも落ちると起動しない）。ただし**メールの送る鍵は staging では起動時に見ていない**（apps/api/src/startup.ts の notify:resend は production のときだけ鍵を要る）。送る鍵が入っているかは、この台本では分からない（リスクの欄）\n- CORS は `/api/*` にだけ掛かる（app.ts 64 行）。事前の問い合わせは `/api/auth/ok` に当てる（認証の部品の生きている口・app.ts の AUTH_TERMS_OPEN）\n- **SECRETS_MASTER_KEY を替えると何が起きるか**（K-203 の手順 6 のために切る段で読んだ）：この鍵で包むのは 2 つ。① 登録の申し込みの間だけ預かるパスワード（packages/auth/src/pending.ts・メールの確認までの 30 分）② 顧客の資格情報（apps/api/src/server.ts 103 行の SecretsGateway）。替えると、確認待ちの申し込みはやり直しになり、前に預けた試しの資格情報は開けなくなる。staging の試しのデータは消えてよい（D-140.3）ので、**そのまま替えてよい**。先に消す作業は要らない（K-203 の手順 6 をこの形に直した）\n- 人の準備への依存：このチケットは人の準備に依らない（やる順は K-201 が先だが、中身は K-201 を要らないので depends_on から外した・PM の決め 2026-11-14）。K-204 は K-202 に依る：取り込む順の検査（scripts/ci/ticket_order_gate.py の human_prep_ok）は、担当が役でない人（「代表」は役の一覧 ROLE_ASSIGNEES に無い）で stage が「完了」のチケットへの依存を、実装のコミットが無くても通す。**代表が終えたら、PM が md と Notion の両方の stage を「完了」に直す**（md が未着手のままだと赤）\n- **このチケットが、切る段で書き直した・起こしたチケットを本線へ運ぶ**（PM の決め 2026-11-14・精査 A-1）：carry: に、K-37・K-65・K-87・K-201・K-202・K-203・K-205 の md と、決定ログ・決める人の答えの記録を入れた。K-204 と K-97 の md は入れない（どちらも自分のチケットの持ち込みで入る。先に入れると、tests: の試験がまだ無くて試験の持ち主の検査が赤になる）。K-175 の md と試験は K-204 が運ぶ\n- **PM が取り込みの前にすること**（carry で写せないとき）：決定ログ（01_hearing/決定ログ_進行中.md）と答えの記録は、本線の側でも末尾に足される。持ち込みの台本（scripts/tickets/cut_take.py）は carry: のファイルを分かれ目の版を元に 3 方向で合わせ、ぶつかったら何も置かずに止まる。止まったら、① 切る段の枝 c/段1-K65 に本線を取り込む（ぶつかるのは末尾の足し分。両方の節を残し、決定の番号 D-140・D-141 が本線の番号と重なったら切る段の側を次の番号に振り直して、チケットの decisions: も直す）② `python3 scripts/tickets/regen_all.py` ③ もう一度持ち込む。2026-11-14 に本線（55cf5a8f・K-195 まで）を取り込んである（そのときぶつかったのは生成物だけ）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 台本 | `scripts/ci/staging_health.py`（新しく作る・Python の標準の部品だけ）。切る段の試しの版（2 版・001〜011・013〜015 が通った）：`/private/tmp/claude-501/-Users-masato0420-Downloads-----------kaname/4519112d-4797-45f1-88bd-12717cf7c1ff/scratchpad/k200-staging_health-trial.py`（使い捨ての置き場。消えていたら下の表から書く） |\n| 呼び方 | `python3 scripts/ci/staging_health.py [--need <名前>]... [--applied <ファイル>] [--timeout <秒・既定 20>]`。環境の値 `STAGING_BASE_URL`（画面）・`STAGING_API_BASE`（口）を読む。末尾の `/` は外す |\n| 止める（終わりの値 2・口に当てる前） | `STAGING_BASE_URL`・`STAGING_API_BASE`・`--need` で渡した名前のどれかが無い・空 →「★ 環境の値が無い：<名前>」。住所が https でない（127.0.0.1・localhost を除く）→「★ 住所は https だけ」。`--need` の値は在るかだけを見て、読まない・出さない |\n| 確かめ 1 | `GET <口>/health`：200・JSON・`ok` が true・`version` が空でない・`migrations.order` が `ok`・`migrations.expected` が空でない →「OK  /health 200・版 <version>」。200 でないとき →「★ /health が <状態>：<code> <reason を ・ でつないだ物>」。200 で中身が違う →「★ /health は 200 だが中身が違う」 |\n| 確かめ 2 | 1 が通ったときだけ：`migrations.expected` の末尾と、作業場所の `packages/db/migrations/*.sql` を名前順に並べた最後を比べる。同じ →「OK  配った版の migration の一覧は手元と同じ（最後は <名前>）」。staging の最後が手元の一覧に在る →「★ 配りが遅れている：配った版の最後の migration は <名前>・手元は <名前>」。手元の一覧に無い →「★ staging の方が新しい（手元の枝が古い）：…」（「配りが遅れている」とは言わない） |\n| 確かめ 3 | `OPTIONS <口>/api/auth/ok`（頭 `origin: <画面の住所の出どころ>`・`access-control-request-method: GET`）：200 か 204 で、`access-control-allow-origin` が画面の出どころと同じ →「OK  CORS（…）」。違う・無い →「★ CORS（…）」 |\n| 確かめ 4 | `GET <画面>/login`：200 →「OK  画面の /login が 200」。ほか →「★ 画面の /login が <状態>」。**行き先の付け替え（301・302・307）は追わない**（追うと、別の住所へ飛ばされた先の 200 で緑になる） |\n| 確かめ 5（DB） | `--applied <ファイル>` が在るとき：中身（名前の並びの JSON）を読み、リポジトリの `packages/db/migrations/*.sql` の名前と比べる。全部在って余りも無い →「OK  DB に当たっている migration は手元と同じ（<本数> 本）」。手元に在って DB に無い →「★ DB に当たっていない migration：<名前（5 つまで）>」。DB に在って手元に無い →「★ 手元に無い migration が DB に当たっている：<名前>」。ファイルが無い・JSON でない・並びでない・空 →「★ DB に当たっている migration の一覧を読めない」。`--applied` が無いとき：「★ 見ていない：DB に当たっている migration（--applied が無い）」 |\n| 届かない・答えない | つながらない →「★ 届かない」。`--timeout` の秒を過ぎた →「★ 時間切れ（答えが返らない）」。その確かめを赤にして次の確かめへ進む（待ち続けない・自動で当て直さない） |\n| 例外 | 台本の中の思わぬ失敗は、例外の写し（Traceback）を出さず「★ 台本の中で失敗した（中身は出さない）」で 1。どの終わり方でも、出力に住所そのまま・`--need` の値・接続の文字列の形を出さない |\n| 終わりの値 | 赤（★ の確かめ）が 1 つでもあれば 1。赤が無く「見ていない」だけなら 3。どちらも無ければ 0。名前が無い・https でないは 2。最初の行に「画面 <頭の 12 文字>… ／ 口 <頭の 12 文字>…」 |\n| DB を読む台本 | `scripts/ci/staging_db_migrations.mjs`（新しく作る・node）。切る段の試しの版（25 行）：`/private/tmp/claude-501/-Users-masato0420-Downloads-----------kaname/4519112d-4797-45f1-88bd-12717cf7c1ff/scratchpad/k200-staging_db_migrations-trial.mjs`。① `STAGING_DATABASE_ADMIN_URL` が無い・空 → 標準エラーに「★ 環境の値が無い：STAGING_DATABASE_ADMIN_URL」・終わりの値 2（つながない・標準出力は空）② 部品 pg は packages/db のものを読む（`createRequire(new URL(\"../../packages/db/package.json\", import.meta.url))(\"pg\")`）③ 投げる文は 3 つだけ：`begin transaction read only` → `select name from app.schema_migrations order by name` → `rollback` ④ 標準出力は名前の並びの JSON 1 行だけ ⑤ つながらない・断られた・部品が無い → 標準エラーに決まった 1 行（中身・接続先・例外の写しは出さない）・終わりの値 1・標準出力は空 ⑥ 読む環境の値はこの 1 つだけ。つなぐ待ちと文の待ちは 15 秒まで |\n| infra/STAGING.md | ① §0「いま無いもの」を今の実際に（GitHub・Supabase・Vercel・Infisical は済み。K-37 の「前提と制約」の表を写す）② S2-5 に「作業中の版の配りは止める：Settings → Git → Ignored Build Step → Only build production」（D-140.4）③ S5 の 1〜3 を `python3 scripts/ci/staging_health.py` の命令に替える ③b S5 に「健康診断は DB も見る回（K-204 の回）で 0、手元では 3（DB は見ていない）」を書く ④ 節を 2 つ足す：「CI から staging を指す名前」（GitHub の repository secrets の 4 つ：STAGING_BASE_URL・STAGING_API_BASE・STAGING_DATABASE_ADMIN_URL・STAGING_RESEND_READ_KEY・K-202）と「秘密の取り替え」（K-203 の手順の写し）。**値・住所・接続の文字列・鍵は 1 つも書かない**（置き字 `<ref>` などだけ・K200-SH-012） |\n| infra/provision/README.md | 最後の段の古い順序（S3 Railway・T-F-18 の Dockerfile）を消し、「手順の正本は infra/STAGING.md」の 1 行にする |",
+    "テスト仕様と確認の結果": "`scripts/ci/k200_staging_health_test.py`（作りものの口と画面を 127.0.0.1 に立てて、台本を別のプロセスで呼ぶ）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K200-SH-001 | 入力 | 全部そろっている（`--applied` に手元と同じ一覧） | 終わりの値 0。`/health`・配った版の migration・DB に当たっている migration・CORS・`/login` の 5 行が「OK」で出る。★ の行は 0 |\n| K200-SH-002 | 失敗 | `/health` が 503・`code: STARTUP_FAILED`・`reason: [\"secrets:vault=error\"]` | 終わりの値 1。出力に `STARTUP_FAILED` と `secrets:vault=error` が出る |\n| K200-SH-003 | 対象の状態 | 配った版の migration の最後が、手元の一覧に在るが最後でない／手元の一覧に無い | 前：終わりの値 1・「配りが遅れている」と 2 つの名前が出る。後：終わりの値 1・「staging の方が新しい」が出て「配りが遅れている」は出ない |\n| K200-SH-004 | 守り | CORS の許す出どころが別の住所／事前の問い合わせが 404 | どちらも終わりの値 1。「★ … CORS」の行が出る |\n| K200-SH-005 | 失敗 | 画面の `/login` が 500／302（飛ばされた先は 200） | どちらも終わりの値 1。「★ … /login … <状態>」の行が出る。302 のとき、飛ばされた先への問い合わせは 0 回 |\n| K200-SH-006 | 入力 | 住所の名前が空（2 つそれぞれ）／`--need` の名前が無い／`--need` の名前が在る | 無いとき：終わりの値 2・足りない名前が出る・「OK」の行は 0（口に当てていない）。在るとき：終わりの値 0 |\n| K200-SH-007 | 守り | 緑の回と赤の回の出力 | `--need` の値（作りものの印）と住所そのままが出力に 0 件。Traceback と接続の文字列の形も 0 件。住所の頭の 12 文字は出る |\n| K200-SH-008 | 失敗 | 口が閉じている／口が 5 秒答えない（`--timeout 1`） | 前：終わりの値 1・「届かない」。後：終わりの値 1・「時間切れ」で、15 秒以内に終わる。どちらも出力に住所そのまま・Traceback が 0 件 |\n| K200-SH-009 | 守り | 住所が http で、手元でない | 終わりの値 2・「https」が出る。「届かない」は出ない（当てに行っていない）。出力にその住所の名前（staging.example.invalid）が 0 件 |\n| K200-SH-010 | 失敗 | `/health` が 200 だが、JSON でない／`ok` が false／migrations が無い | どれも終わりの値 1・「★ … /health」の行が出る（200 だけで緑にしない）。出力に住所そのまま・Traceback が 0 件 |\n| K200-SH-011 | 入力 | 住所の末尾に `/` | 終わりの値 0（001 と同じ） |\n| K200-SH-012 | 守り | 手順書 | infra/provision/README.md に「Railway」が 0 件。infra/STAGING.md に `python3 scripts/ci/staging_health.py`・secrets の名前 4 つ・「Only build production」が出て、「GitHub のリモート」（古い §0）と「kaname.secrets」が 0 件。2 つの文書に、接続の文字列・Resend の鍵・JWT の形の鍵・vercel.app と supabase.co の住所の形が 0 件（置き字 `<ref>.…` は当てない） |\n| K200-SH-013 | 守り | 鍵と DB の接続の値を環境に持たせて流す（作りものの印入り） | 終わりの値 0。作りものの口に来た要求は、方法が GET と OPTIONS だけ・道が `/health`・`/api/auth/ok`・`/login` だけ。どの要求の道と頭にも印が 0 件。authorization・cookie・x-api-key の頭が 0 件 |\n| K200-SH-014 | 対象の状態 | `--applied` の一覧が、手元より 1 本少ない／手元に無い名前を持つ／JSON でない・並びでない・空／ファイルが無い | どれも終わりの値 1。少ない：「★ DB に当たっていない migration」と足りない名前が出る。余る：その名前が ★ の行に出る。読めない：「★ … DB」の行が出る |\n| K200-SH-015 | 守り | `--applied` を渡さない（ほかは全部通る）／渡さず `/login` も 500 | 前：終わりの値 3・「★ 見ていない：DB に当たっている migration」が出て、その項目の「OK」は出ない。後：終わりの値 1 で、「見ていない」の行も出る |\n| K200-SH-016 | 守り | DB を読む台本（staging_db_migrations.mjs）の文と、値が無い／つながらない（閉じた口・合言葉に印）ときの動き | 投げる文は `begin transaction read only`・`select name from app.schema_migrations order by name`・`rollback` の 3 つだけで、書く文の語（insert・update・delete・create・alter・drop・truncate・grant・copy）が 0 件。読む環境の値は `STAGING_DATABASE_ADMIN_URL` の 1 つ。値が無い：終わりの値 2・名前が出る・標準出力は空。つながらない：終わりの値 1・標準出力は空・出力に印・接続先・接続の文字列の形・例外の写しが 0 件 |\n\n### テストの型の受け（分類 TOOL）\n\n- 要らない: TP-TOOL-01 台本はリポジトリのファイルの名前を git から読まない（読むのは packages/db/migrations の英数字の名前と、口の答え）。日本語の名前のファイルを扱わない\n- TP-TOOL-02（検査が何も見ていないのに緑）：K200-SH-006（名前が無ければ当てずに 2・緑にしない）・K200-SH-010（200 でも中身が違えば赤）・K200-SH-008（答えない口を緑にしない）・K200-SH-015（DB を見ていない回を緑にしない）・K200-SH-014（読めない・空の一覧を「同じ」と言わない）\n- TP-TOOL-03（容れ物の中と手元で設定が違う）：住所は環境の値の名前で受け、CI の VM でも手元でも同じ台本・同じ結果（K200-SH-001・011）。名前が無い所では 2 で止まる（K200-SH-006）\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | このチケットそのもの：staging の口・画面・DB の形が在ることを確かめる台本。試験は作りもので受ける（001〜005・010・014）。DB に当たっているかは 014・015。本物に当てるのは K-203 の後と K-204 の回 |\n| G-12 切り替わりの瞬間 | 該当 | 配り直した直後は、古い版が答えることがある：migration の最後の名前が違えば赤（003）。自動で待って当て直すことはしない（赤を見た人が流し直す） |\n| G-13 機能の組み合わせ | N/A | 台本は読むだけで、ほかの機能と同時に走っても状態を変えない |\n| G-14 口座状態の波及 | N/A | 人・権限を扱わない。DB には管理者の接続で入るが、読むだけの取引で 1 文（016）。秘密を取り替えた後に起動するかは 002 の形（STARTUP_FAILED）で出る |\n| G-15 信号なし終了 | 該当 | 答えない・届かない・200 だが空や別の中身、を成功にしない（008・010）。DB の一覧が空・読めない・渡されていない、を「同じ」にしない（014・015・016） |\n| G-16 有限資源の枯渇 | 該当 | 1 回で口に 2 回・画面に 1 回の問い合わせと、DB の接続 1 本（読んだら閉じる・待ちは 15 秒まで）。Vercel の無料の枠・回数の制限に効かない数。答えない口には `--timeout` で切る（008） |\n\n### 確認の結果（切る段・2026-11-14・精査の直しの後）\n\n試しの版 2 つ（健康診断・DB を読む台本）を置いて流した：001〜011・013〜016 が緑・012 は赤（手順書がまだ古い）。016 のつながらない場合は、この作業場所に部品 pg が入っていないので「部品が無い」の道で通っている（つながらない道は CI の回で初めて流れる。どちらの道も決まった 1 行だけを出す形）。",
+    "成果物": "- scripts/ci/staging_health.py・scripts/ci/staging_db_migrations.mjs・infra/STAGING.md・infra/provision/README.md・05_flow/build_testplan.py（G65 に試験を足す）",
+    "決定ログ": "- 決定に従った：D-097（置き場）・D-128.144（統合は staging）・D-128.145（人の準備もチケット）・D-140.3（試しのデータは消えてよい）・D-140.4（作業中の版の配りを止める）\n- PM が決めた（2026-11-14）：DB の形は健康診断が見る（読むだけ・`--applied`）。DB を見ていない回は緑にしない。K-201 は depends_on から外す。切る段で書き直したチケットはこのチケットの carry で運ぶ\n- PM に決めてほしいこと（残り）：`/health` に、どのコミットから配ったかを出すか。(a・推奨) 今は出さない：製品のコードを変えずに、migration の最後の名前で遅れを見る（このチケットの形）。(b) 出す：API の版を Vercel が渡すコミットの印にする製品の直しを 1 枚切る（migration を足さない版の遅れも見える）",
+    "リスクと懸念": "- migration を足さない版の配りの遅れ・Build の失敗は、この台本では見えない。そのときは Vercel の画面の最新の配り（K-201 の見方）で見る\n- **画面の版と、画面が指している口は見えない**：画面は別の Vercel のプロジェクトで、`/login` が 200 でも古い版かもしれず、別の口を指していても分からない（CORS は口の側の設定を見るだけ）。K-201 の画面の確かめと、K-65 の最初の筋で出る\n- **メールの送る鍵が入っているかは見えない**（staging は鍵が無くても起動する）。K-203 の後の人の確かめか、K-65 の筋 02 で出る\n- DB が休止していても、起動済みの口は `/health` 200 を返し続ける（起動時の確かめは 1 回だけ）。DB も見る回（K-204）では、DB を読む台本がつながらずに赤になるので分かる。手元の回（終わりの値 3）では分からない\n- 配り直した直後の数十秒は、古い版が答えることがある（003 が赤になったら、少し待って流し直す）\n- `/api/auth/ok` が 404 を返す形に変わると、CORS の確かめが赤になる（認証の部品の版を上げたとき）\n- DB を読む台本は管理者の接続を使う（読むだけの役は staging に無い）。読むだけの取引と文 1 つで守る（016）。接続の文字列は環境の値でだけ受け、引数・出力・ファイルに出さない",
+    "申し送り": "- 本物の staging に当てた最初の出力（値は出ない）を、K-203 の確かめの欄に貼る（手元の回は終わりの値 3）\n- K-65 の筋 08「健康診断が 5／5 と返す」は、この台本の形（数は出ない。200 なら起動時の確かめは通っている）と合わない。K-65 を切る回で「健康診断が 0 で終わる」に直す"
+   },
+   "file": "11_tickets/K-200.md"
+  },
+  {
+   "id": "K-201",
+   "title": "staging の今を見る：最新の配り・休止していないか・main 以外の配りを止める",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-37",
+   "milestone": "基盤",
+   "area": "環境",
+   "assignee": "代表",
+   "due": "2026-11-14",
+   "estimate_hours": "0.25",
+   "estimate_basis": "画面を 3 つ開いて見るだけ・設定 1 つ。実測なし・仮（15 分）",
+   "decisions": [
+    "D-097",
+    "D-128.145",
+    "D-140.4"
+   ],
+   "split": "",
+   "choke_none": "人の準備。コードは触らない",
+   "depends_on": [
+    "K-80",
+    "K-82"
+   ],
+   "affects": [],
+   "sections": {
+    "目的": "2026-11-08 に staging が立ったことは確かめてある。そのあと本線にたくさん入ったので、今も最新の版で立っているかを、代表が画面で見る（リポジトリからは見えない）。あわせて、取り込む前の枝が staging の DB を書き換えないようにする。",
+    "完了の条件": "- [ ] Vercel の `kaname-api` と `kaname-web` の、いちばん上の Production の配りが Ready（緑）で、日付が今日か昨日\n- [ ] Supabase の `kaname-staging` が休止（Paused）でない\n- [ ] `kaname-api` に `RESEND_BASE_URL` という名前の設定が「ある／無い」を実装の担当に伝えた（値は伝えない）\n- [ ] 作業中の版（main 以外の枝）の配りを止めた（D-140.4）\n- [ ] GitHub のリポジトリが非公開（Private）であることと、Settings に「Environments」が出るか出ないかを、実装の担当に伝えた",
+    "前提と制約": "- 費用：出ない（見るだけ・無料の設定）\n- 鍵・パスワード・接続の文字列の値は、チャット・ファイル・コミット・このチケットに書かない。入れる先は Vercel の環境変数（Sensitive）・Infisical・GitHub の Actions の secrets だけ（infra/STAGING.md §1）",
+    "実施事項": "1. https://vercel.com を開く → プロジェクト `kaname-api` → 上の「Deployments」。いちばん上の行で、右に「Production」の印がある行を見る。丸が緑で「Ready」なら良い。赤で「Error」なら、その行を押して出る画面の住所（ブラウザの上の欄）を実装の担当に伝える（中の文は貼らなくてよい）\n2. 同じことを `kaname-web` でもする\n3. `kaname-api` → 「Settings」→ 左の「Environment Variables」。一覧に `RESEND_BASE_URL` という名前があるか無いかだけを見る（値は開かない）\n4. `kaname-api` → 「Settings」→ 左の「Git」→「Ignored Build Step」。選ぶ所で「Only build production」を選んで「Save」。`kaname-web` でも同じ（これで main に入った物だけが配られる）\n6. https://github.com/engine-base/kaname を開く →「Settings」。①「General」のいちばん下の「Danger Zone」の「Change repository visibility」に「This repository is currently private」と出ているか見る ② 左の一覧に「Environments」という言葉が在るか無いかを見る（開かなくてよい。在るか無いかだけ）\n5. https://supabase.com/dashboard を開く → `kaname-staging`。「Project is paused」と出ていたら「Restore project」を押す（数分かかる）。出ていなければ何もしない",
+    "テスト仕様と確認の結果": "| 確かめること | 期待結果 |\n|---|---|\n| Vercel の 2 つのプロジェクトの最新の Production の配り | どちらも「Ready」と出る |\n| Supabase のプロジェクト | 「Project is paused」が出ない |\n| Ignored Build Step | 「Only build production」が選ばれた形で残る（開き直しても同じ） |\n| GitHub のリポジトリ | 「This repository is currently private」と出る（public と出たら、何もせずにすぐ実装の担当に伝える） |",
+    "成果物": "- なし（見た結果を実装の担当に伝える：Ready か Error か・RESEND_BASE_URL がある／無い・リポジトリは private か・Environments が在る／無い）",
+    "決定ログ": "- 人の準備もチケットにする（D-128.145）・作業中の版の配りは止める（D-140.4・answer=a26c00bdd2f4）",
+    "リスクと懸念": "- 配りが Error のままだと、staging は古い版で動いている。K-200 の健康診断が版の違いで赤になるので、先にここで分かるようにする",
+    "申し送り": "- Vercel の画面の言葉は変わることがある。見当たらないときは、その画面の写しではなく「どの言葉が見当たらないか」を伝える"
+   },
+   "file": "11_tickets/K-201.md"
+  },
+  {
+   "id": "K-202",
+   "title": "CI から staging を指す設定の名前を GitHub に入れる",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-37",
+   "milestone": "基盤",
+   "area": "環境",
+   "assignee": "代表",
+   "due": "2026-11-14",
+   "estimate_hours": "0.25",
+   "estimate_basis": "名前 4 つを 1 つの画面で入れる。実測なし・仮（15 分）",
+   "decisions": [
+    "D-128.144",
+    "D-128.145",
+    "D-128.147",
+    "D-140.1"
+   ],
+   "split": "",
+   "choke_none": "人の準備。コードは触らない",
+   "depends_on": [
+    "K-203"
+   ],
+   "affects": [],
+   "sections": {
+    "目的": "統合テスト（K-65）は、自分の Mac の上の使い捨ての VM から staging を指して流す。VM は 1 回ごとに捨てるので、住所と鍵は台には置けない。GitHub の「Actions の secrets」（暗号で預かり、流すときだけ VM に渡る）に名前で入れる。\n\n前の書き方（Mac の中のファイル ~/.config/act/kaname.secrets）は前の CI の形なので、やめる。",
+    "完了の条件": "- [ ] GitHub の engine-base/kaname の Actions の secrets に、下の名前がそろっている（値は書かない）\n- [ ] K-204 の最初の 1 回で、健康診断の段が緑",
+    "前提と制約": "- 置き場は GitHub の repository secrets（PM が決めた・2026-11-14）。K-201 で「Environments」が在ると分かり、決める人が壁を置くと答えたら、入れ先を「Environments → staging → Environment secrets」に替える（名前は同じ 4 つ。手順はそのとき実装の担当が書き直す・K-204 の決定ログ）。メールは本物を送って Resend の記録を読む（D-140.1）ので、記録を読む鍵が 1 つ要る\n- 費用：出ない\n- 鍵・パスワード・接続の文字列の値は、チャット・ファイル・コミット・このチケットに書かない。入れる先は Vercel の環境変数（Sensitive）・Infisical・GitHub の Actions の secrets だけ（infra/STAGING.md §1）",
+    "実施事項": "入れる所：https://github.com/engine-base/kaname →「Settings」→ 左の「Secrets and variables」→「Actions」→ 緑の「New repository secret」。「Name」に下の名前、「Secret」に値を貼り「Add secret」。4 回くり返す。\n\n| 名前 | 何を入れる | どこから写す |\n|---|---|---|\n| `STAGING_BASE_URL` | staging の画面の住所（https:// から） | Vercel → `kaname-web` → 上の「Domains」の住所 |\n| `STAGING_API_BASE` | staging の口の住所（https:// から） | Vercel → `kaname-api` → 上の「Domains」の住所 |\n| `STAGING_DATABASE_ADMIN_URL` | DB を読む接続の文字列（試験は読むだけ） | Vercel の `DATABASE_ADMIN_URL` と同じ物。Supabase →「Connect」→「Session pooler」の文字列に、K-203 の手順 2 の新しい合言葉を入れた物 |\n| `STAGING_RESEND_READ_KEY` | 送ったメールの記録を読む鍵 | https://resend.com →「API Keys」→「Create API Key」→ Permission を「Full access」にして作る（名前は `kaname-staging-ci-read`） |\n\n`STAGING_BASE_URL` が前からあれば、その行の鉛筆の印から新しい値で上書きする。",
+    "テスト仕様と確認の結果": "| 確かめること | 期待結果 |\n|---|---|\n| GitHub の Actions の secrets の一覧 | 4 つの名前が出る（値は見えない） |\n| K-204 の最初の 1 回（実装の担当が流す） | 健康診断の段が緑。名前が足りないと「〜 が無い」と出て止まる |",
+    "成果物": "- なし（値は GitHub の中だけ）",
+    "決定ログ": "- CI は GitHub と同じ workflow を自分の台で流す（D-128.147）・統合は staging（D-128.144）",
+    "リスクと懸念": "- `STAGING_RESEND_READ_KEY` は読む権限も持つ強い鍵。staging 用の Resend の口座が本番と同じなら、本番のメールの記録も読める。本番を作る前（K-83）に、staging と本番で Resend の鍵の持ち方を分けるか決める\n- DB の接続は管理者の物。健康診断と試験は読むだけに使う（K-200 の行 016・K-65 の前の決まり 2）。本番の DB の接続は決して入れない\n- この 4 つは、staging の回の 2 つの段（健康診断・統合テスト）にだけ渡り、main から起こした回だけが流れる（K-204 の行 004・014）。ただし、枝の側で定義を書き換えれば読める（壁は決める人に聞いている）",
+    "申し送り": "- 値を替えたとき（K-203 をもう一度したとき）は、ここも同じ名前で上書きする"
+   },
+   "file": "11_tickets/K-202.md"
+  },
+  {
+   "id": "K-203",
+   "title": "staging の秘密を全部取り替える（準備の途中でチャットに出た分）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-37",
+   "milestone": "基盤",
+   "area": "環境",
+   "assignee": "代表",
+   "due": "2026-11-14",
+   "estimate_hours": "0.75",
+   "estimate_basis": "取り替える物 7 つ・1 つ 5 分前後＋配り直しの待ち。実測なし・仮（45 分）",
+   "decisions": [
+    "D-097",
+    "D-101",
+    "D-128.145",
+    "D-140.3"
+   ],
+   "split": "",
+   "choke_none": "人の準備。コードは触らない",
+   "depends_on": [
+    "K-200",
+    "K-201"
+   ],
+   "affects": [],
+   "sections": {
+    "目的": "K-78〜K-81 の準備の途中で、staging の秘密がチャットに出た。チャットに出た値は漏れたものとして扱い、統合テストを流す前に全部作り直す。",
+    "完了の条件": "- [ ] 下の 7 つを全部作り直し、Vercel の `kaname-api` の環境変数（Production・Sensitive）を新しい値にした\n- [ ] 古い鍵を、作った所の画面で消した（Supabase の置き場の鍵・Infisical の Client Secret・Resend の鍵）\n- [ ] `kaname-api` を配り直し、最新の配りが Ready\n- [ ] K-200 の健康診断が緑（実装の担当が流す）",
+    "前提と制約": "- 費用：出ない\n- 新しい値は、自分の画面からそのまま Vercel の欄に貼る。チャット・メモ・ファイルに置かない\n- 統合テスト（K-65）の前にやる。staging に今ある試しのデータ（試しに作った会社・人）は消えてよい（D-140.3）\n- 取り替えると、staging にログインしている人は全員ログインし直しになる（staging を使っているのは代表だけ）\n- 鍵・パスワード・接続の文字列の値は、チャット・ファイル・コミット・このチケットに書かない。入れる先は Vercel の環境変数（Sensitive）・Infisical・GitHub の Actions の secrets だけ（infra/STAGING.md §1）",
+    "実施事項": "乱数の作り方：Mac の「ターミナル」を開き、`openssl rand -hex 32` と打って Enter。出た 1 行が新しい値（記号が入らない形。1 回ごとに別の値が出る）。\n\n入れる所はどれも：https://vercel.com → `kaname-api` →「Settings」→「Environment Variables」→ その名前の行の右の「…」→「Edit」→ 値を貼る →「Save」。\n\n1. **DB の役の合言葉 2 つ**：乱数を 2 つ作る。`KANAME_APP_DB_PASSWORD` と `KANAME_AUTH_DB_PASSWORD` に 1 つずつ入れる。続けて `DATABASE_URL` の中の合言葉の所（`:` と `@` の間）を 1 つ目に、`AUTH_DATABASE_URL` の同じ所を 2 つ目に替える\n2. **DB の管理者の合言葉**：https://supabase.com/dashboard → `kaname-staging` → 左下の歯車「Project Settings」→「Database」→「Reset database password」→ 新しい合言葉を作って控えずにそのまま写す → Vercel の `DATABASE_ADMIN_URL` の中の合言葉の所を替える\n3. **ログインの印を包む鍵**：乱数を 1 つ作り `AUTH_SECRET` に入れる\n4. **置き場の鍵**：Supabase → 左の「Storage」→「Settings」→「S3 access keys」→「New access key」→ 出た 2 つを Vercel の `STORAGE_ACCESS_KEY_ID`・`STORAGE_SECRET_ACCESS_KEY` に入れる → 同じ画面で古い鍵の行を消す\n5. **預け先（Infisical）の鍵**：https://app.infisical.com → 左の「Access Control」→「Identities」→ `kaname-api-staging` →「Universal Auth」の「Client Secrets」→「Add Client Secret」→ 出た値を Vercel の `INFISICAL_CLIENT_SECRET` に入れる → 古い行を「Revoke」\n6. **顧客の資格情報を包む鍵** `SECRETS_MASTER_KEY`：ターミナルで `openssl rand -base64 48` と打って出た値を入れる。そのまま替えてよい（K-200 の切る段がコードから確かめた：替えると、前に預けた試しの資格情報は開けなくなり、メールの確認待ちの登録はやり直しになる。staging の試しのデータは消えてよい・D-140.3）\n7. **メールの鍵**：https://resend.com →「API Keys」→「Create API Key」（Permission は「Sending access」）→ 出た値を Vercel の `RESEND_API_KEY` に入れる → 古い鍵の行を消す\n8. **配り直す**：`kaname-api` →「Deployments」→ いちばん上の Production の行の右の「…」→「Redeploy」→ Ready になるまで待つ（数分）\n9. 実装の担当に「取り替えた」とだけ伝える（値は伝えない）",
+    "テスト仕様と確認の結果": "| 確かめること | 期待結果 |\n|---|---|\n| 配り直した `kaname-api` | 最新の配りに「Ready」と出る |\n| 健康診断（K-200 の台本・実装の担当が流す） | 0 で終わり、起動時の確かめが 5／5 と出る |\n| 古い鍵 | Supabase・Infisical・Resend の画面の一覧に、古い鍵の行が残らない |",
+    "成果物": "- なし（値は Vercel と各サービスの中だけ）",
+    "決定ログ": "- 取り替えは統合テストの前・試しのデータは消えてよい（D-140.3・answer=a26c00bdd2f4）\n- 人の準備もチケットにする（D-128.145）・アプリの鍵は Vercel の環境変数（D-097）・顧客の資格情報は Infisical（D-101）",
+    "リスクと懸念": "- 接続の文字列の中の合言葉を替えるとき、前後の `:` や `@` を消すと起動しない。配り直しが Error になったら、その行だけ見直す\n- 手順 1 と 2 のどちらかだけ替えて配り直すと、Build（migration）が落ちる。1〜7 を全部替えてから 8 を 1 回",
+    "申し送り": "- DB の管理者の合言葉を替えたので、K-202 で GitHub に入れる `STAGING_DATABASE_ADMIN_URL` は新しい合言葉の物を入れる（だから K-202 はこの後）\n- 各サービスの画面の言葉は変わることがある。見当たらないときは、どの言葉が見当たらないかを伝える"
+   },
+   "file": "11_tickets/K-203.md"
+  },
+  {
+   "id": "K-205",
+   "title": "代表の Mac の Bridge アプリを staging につないで、登録から完了までを 1 回通す（段 1 を閉じる前）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-77",
+   "milestone": "基盤",
+   "area": "環境",
+   "assignee": "代表",
+   "due": "2026-11-17",
+   "estimate_hours": "0.25",
+   "estimate_basis": "決める人に聞いたときの見立て（代表の作業 15 分前後・answer=8abae29a259f）。実測なし・仮",
+   "decisions": [
+    "D-129.14",
+    "D-141.2"
+   ],
+   "split": "これから",
+   "choke_none": "人がする確かめ。コードは触らない",
+   "depends_on": [
+    "K-97",
+    "K-203"
+   ],
+   "sections": {
+    "目的": "統合テスト（K-65）の機械の回は、Bridge の本体を窓なしで回し、AI には偽物を差す（D-141.1）。そこで通らない 3 つ——窓つきの Bridge アプリ・Mac 向けに包んだ形・本物の Claude Code の起こし方——を、代表が自分の Mac で 1 回だけ通して確かめる（D-141.2）。段 1（歩く骨格）を閉じる前にやる。\n\n中身（どの画面で何を押すか・できたかの確かめ方）は、K-65 の切る段で書く（split: これから）。",
+    "完了の条件": "- [ ] 代表の Mac の Bridge アプリが staging につながり、登録 → PC をつなぐ → チケットを作る → AI に任せる → 承認して送る → 完了、が 1 回通った\n- [ ] 通った日と、止まった所（あれば）を、このチケットの確認の結果に書いた（値・合言葉は書かない）",
+    "前提と制約": "- 費用：出ない。代表の作業は 15 分前後\n- 本人の Claude Code（本人のサブスク）を使う。1 本だけ\n- 代表がふだん使っている Bridge を止めない・設定を壊さない（行き先を staging に向ける手順と、終わった後に元に戻す手順を、実装の担当が K-65 の切る段で書く。行き先は環境の値 `KANAME_API_BASE`・apps/bridge/src/main.ts 25 行）\n- 先に要るもの：staging の秘密の取り替え（K-203）と、機械の回で Bridge の本体が回ること（K-97）",
+    "決定ログ": "- 決める人の答え（2026-11-14・answer=8abae29a259f・D-141.2）：機械で毎回＋代表が 1 回\n- 人の準備もチケットにする（D-128.145 の形）",
+    "申し送り": "- 実施事項（§6.1 の粒度：どの画面で何を押すか・設定の名前・できたかの確かめ方・終わったら元に戻す）は K-65 の切る段で書き、代表の手順書に足す\n- 代表が終えたら、PM が md と Notion の両方の stage を直す"
+   },
+   "file": "11_tickets/K-205.md"
   }
  ]
 }
