@@ -415,13 +415,17 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
         readAs(other.page, `/tickets/${ta}`),
         readAs(other.page, `/tickets/${tb}`),
       ]);
-      return [mine.status, theirs.status, own.status];
+      return [mine.status, `${theirs.status} ${theirs.code}`, own.status];
     }),
   );
-  expect(rounds, "10 回とも：A は自分のチケット 200・B は A のチケット 404・B は自分のチケット 200").toEqual(
-    Array.from({ length: 10 }, () => [200, 404, 200]),
+  expect(
+    rounds,
+    "10 回とも：A は自分のチケット 200・B は A のチケット 404（NOT_FOUND）・B は自分のチケット 200",
+  ).toEqual(Array.from({ length: 10 }, () => [200, "404 NOT_FOUND", 200]));
+  const theirRuns = await readAs(other.page, `/tickets/${ta}/runs`);
+  expect({ status: theirRuns.status, code: theirRuns.code }, "B は A の実行の記録を読めない（404・NOT_FOUND）").toEqual(
+    { status: 404, code: "NOT_FOUND" },
   );
-  expect((await readAs(other.page, `/tickets/${ta}/runs`)).status, "B は A の実行の記録を読めない（404）").toBe(404);
 
   // B の画面：承認待ちは空で A の行が無い。A のチケットの詳細は「見つかりませんでした」
   await other.page.goto("/approvals");
@@ -438,10 +442,17 @@ test("K65-STG-05 別の会社に漏れない（接続の束ね役ごし）：別
   await page.goto("/approvals");
   await expect(page.getByRole("row").filter({ hasText: titleOf("会社A") }), "A の承認待ちは自分の 1 行").toHaveCount(1);
   await expect(page.getByRole("row").filter({ hasText: titleOf("会社B") }), "A に B の行は 0 件").toHaveCount(0);
+  const [detailToB, runsToB] = [await readAs(page, `/tickets/${tb}`), await readAs(page, `/tickets/${tb}/runs`)];
   expect(
-    [(await readAs(page, `/tickets/${tb}`)).status, (await readAs(page, `/tickets/${tb}/runs`)).status],
-    "A は B のチケットの詳細と実行の記録を読めない（どちらも 404）",
-  ).toEqual([404, 404]);
+    [
+      { status: detailToB.status, code: detailToB.code },
+      { status: runsToB.status, code: runsToB.code },
+    ],
+    "A は B のチケットの詳細と実行の記録を読めない（どちらも 404・NOT_FOUND）",
+  ).toEqual([
+    { status: 404, code: "NOT_FOUND" },
+    { status: 404, code: "NOT_FOUND" },
+  ]);
   // 一覧の「live」は最後の知らせから 75 秒の窓。ここまでの画面の歩きで窓を越えないよう、読む直前に知らせ直す（06 と同じ）
   expect([await pcA.beat(), await pcB.beat()], "読む直前に、2 台とも知らせが通る（201）").toEqual([201, 201]);
   expect((await devicesOf(page)).pcs, "A の PC の一覧は自分の 1 台だけ").toEqual([[pcA.label, "live"]]);

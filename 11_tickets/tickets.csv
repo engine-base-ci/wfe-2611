@@ -1210,8 +1210,8 @@ K-208,統合テスト（staging）の期待の誤り 2 つを直す（確認の�
 | 本 | 訳 | 側 | このチケットでどうするか |
 |---|---|---|---|
 | 1 本目（`k65-walking-skeleton.spec.ts` の終わりの「確認のメールは 1 通だけ」） | `countTo(me.email)` が 2。2 通目は、登録が確定した後の「【Kaname】登録が完了しました」（`apps/api/src/features/F1/verify-email/mail.ts` の `DONE_SUBJECT`・確定の処理 `verify-email/index.ts` が送る。決まりどおり）。数える道具（`_lib/resend.ts` の `countTo`）が件名で分けていなかった | 試験 | 道具に件名で絞る引数を足し、確認のメールと完了のメールを 1 通ずつ見る |
-| 3 本目（配布物の口の `released: true`） | staging の置き場に Bridge の配布物が無い（released が false）。製品は決まりどおり | 環境 | 試験は変えない。K-65.md のその行の備考に訳を書く。置く準備は K-209（D-142.1） |
+| 3 本目（配布物の口の `released: true`） | staging の置き場に Bridge の配布物が無い（released が false）。製品は決まりどおり | 環境 | 試験は変えない。K-65.md の確認の結果に訳を書く。置く準備は別のチケット（番号は K-209・別の枝で起票中・D-142.1） |
 | 5 本目（A の `/tickets` の一覧に自分のチケット） | チケットの一覧の口 `listTickets` は契約だけで振る舞いが無い（`packages/contracts/src/registry.ts` で generic:false・`apps/api` に振る舞い無し＝501・`03_architecture/catalog.md` で持ち主は K-92・未着手）。画面（`apps/web/features/F4/create-ticket/tickets-page.tsx`）は一覧が読めないと空として「まだチケットがありません」を出す | 試験（まだ無い口を期待した） | 一覧の確かめを外し、A のブラウザから B のチケットの詳細の口と記録の口が 404 を見る。一覧での確かめと、読めなかったときの表示は K-92 に申し送り（D-142.2） |","- [ ] 下の 8 行（K208-FM-001〜008）が緑
 - [ ] G65 の並びの最後に `&& python3 scripts/ci/k208_staging_expect_test.py` を足し（作り手 `05_flow/build_testplan.py`）、作り直した（v3-gate.yml・test-plan は生成物）
 - [ ] チケットの CI が緑
-- [ ] 取り込みの後、PM が main から staging の統合テストの回を起こし、1 本目と 5 本目が緑であることを JUnit で確かめる（3 本目は K-209 が済むまで赤のまま。この完了の条件に入れない）"
+- [ ] 取り込みの後、PM が main から staging の統合テストの回を起こし、1 本目と 5 本目が緑であることを JUnit で確かめる（3 本目は配布物を置く準備のチケットが済むまで赤のまま。この完了の条件に入れない）"

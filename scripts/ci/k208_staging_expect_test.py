@@ -97,14 +97,16 @@ class StagingExpectShape(unittest.TestCase):
         body = body_of("K65-STG-05")
         self.assertNotRegex(body, r'goto\(\s*"/tickets"\s*\)', "5 本目は、まだ契約だけのチケットの一覧の画面で確かめない")
         self.assertNotIn("一覧に B のチケット", body)
-        self.assertRegex(
-            body,
-            r"\[\(await readAs\(page, `/tickets/\$\{tb\}`\)\)\.status, \(await readAs\(page, `/tickets/\$\{tb\}/runs`\)\)\.status\]"
-            r"[^;]*\.toEqual\(\[404, 404\]\)",
-            "A のブラウザから B のチケットの詳細と記録の口を読み、どちらも 404",
-        )
-        self.assertRegex(body, r"readAs\(other\.page, `/tickets/\$\{ta\}`\)", "B から A の詳細の確かめ（前から在る）は残る")
-        self.assertRegex(body, r"readAs\(other\.page, `/tickets/\$\{ta\}/runs`\)", "B から A の記録の確かめ（前から在る）は残る")
+        nf = r'\{ status: 404, code: "NOT_FOUND" \}'
+        self.assertRegex(body, r"\[detailToB, runsToB\] = \[await readAs\(page, `/tickets/\$\{tb\}`\), await readAs\(page, `/tickets/\$\{tb\}/runs`\)\]",
+                         "A のブラウザから B のチケットの詳細と記録の口を読む")
+        self.assertRegex(body, rf"\.toEqual\(\[\s*{nf},\s*{nf},?\s*\]\)",
+                         "A から B の詳細と記録は、どちらも 404 で code が NOT_FOUND（製品の口の 404 の形）")
+        self.assertRegex(body, r"`\$\{theirs\.status\} \$\{theirs\.code\}`", "B から A の詳細（10 回）も code まで見る")
+        self.assertRegex(body, r'\[200, "404 NOT_FOUND", 200\]', "B から A の詳細は 404・NOT_FOUND")
+        self.assertRegex(body, r"theirRuns = await readAs\(other\.page, `/tickets/\$\{ta\}/runs`\)", "B から A の記録の確かめは残る")
+        self.assertRegex(body, rf"\{{ status: theirRuns\.status, code: theirRuns\.code \}}[^;]*\.toEqual\(\s*{nf}\s*,?\s*\)",
+                         "B から A の記録も 404・NOT_FOUND")
 
     def test_K208_FM_006_ticket_rows_follow(self) -> None:
         doc = read(K65)
@@ -113,10 +115,17 @@ class StagingExpectShape(unittest.TestCase):
         self.assertIn("登録が完了しました", first, "1 本目の期待結果に、完了のメールも 1 通")
         fifth = table_row(doc, "K65-STG-05")[3]
         self.assertNotIn("一覧に B のチケット 0 件", fifth, "5 本目の期待結果に、まだ無い一覧の口の確かめが残っていない")
-        self.assertRegex(fifth, r"A は B のチケットの詳細と記録の口 404", "5 本目の期待結果は、A から B の口が 404")
+        self.assertRegex(fifth, r"A は B のチケットの詳細と記録の口 404（どちらも code NOT_FOUND", "5 本目の期待結果は、A から B の口が 404・NOT_FOUND")
+        operation = table_row(doc, "K65-STG-05")[2]
+        self.assertNotIn("チケットの一覧", operation, "5 本目の操作の欄に、チケットの一覧を開く手順が残っていない")
+        self.assertIn("B のチケットの詳細と実行の記録の口を読む", operation, "5 本目の操作の欄は、口を読む手順")
         third = table_row(doc, "K65-STG-03")
         self.assertIn("released が true", third[3], "3 本目の期待結果は変えない（環境の側の赤）")
-        self.assertIn("2026-11-15 の回：staging の置き場に配布物が未配置で赤", third[4], "3 本目に、その回の赤の訳を書く")
+        self.assertNotIn("2026-11-15", third[4], "3 本目の「中間テストと重ならない所」の欄に、回の訳を書かない（欄の意味が違う）")
+        result = doc.split("### 確認の結果（2026-11-15 の staging の回", 1)
+        self.assertEqual(len(result), 2, "K-65.md に 2026-11-15 の staging の回の確認の結果の節が在る")
+        section = result[1].split("\n## ", 1)[0].split("\n### ", 1)[0]
+        self.assertRegex(section, r"- 03：[^\n]*2026-11-15 の回：staging の置き場に配布物が未配置で赤", "3 本目の赤の訳は確認の結果の節に書く")
         self.assertRegex(body_of("K65-STG-03"), r"\{ status: 200, released: true, hasLink: true \}", "3 本目の試験の期待は変えない")
 
     def test_K208_FM_007_handover_to_list_ticket(self) -> None:
