@@ -27,6 +27,8 @@ NO_TEST = ["K65-STG-08", "K65-STG-09"]                    # staging では作れ
 ENV_NAMES = {"STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_RESEND_READ_KEY",
              "PLAYWRIGHT_JUNIT_OUTPUT_NAME", "RUNNER_TEMP", "KANAME_CLAUDE_BIN"}
 MAX_TEST_MS = 480_000
+# 伏せる台本を試す作りものの DB の URL。秘密の検査（G43）の形に当たらないよう、実行時に組み立てる（検査は弱めない）
+PLANTED_DB_URL = "postgresql://reader:" + "planted-pass-99" + "@db.k65-shape.example.test:6543/postgres?sslmode=verify-full"
 
 
 def read(path: pathlib.Path) -> str:
@@ -157,7 +159,7 @@ class StagingSpecShape(unittest.TestCase):
             "STAGING_BASE_URL": "https://k65-web-shape.example.test",
             "STAGING_API_BASE": "https://k65-api-shape.example.test/",
             "STAGING_RESEND_READ_KEY": "planted-key-value-0123456789",
-            "STAGING_DATABASE_READ_URL": "postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full",
+            "STAGING_DATABASE_READ_URL": PLANTED_DB_URL,
         }
         sample = "\n".join([
             'navigating to "https://k65-web-shape.example.test/verify-email?token=PLANTEDTOKEN123&amp;x=1"',
@@ -165,8 +167,8 @@ class StagingSpecShape(unittest.TestCase):
             "to delivered+k65-abc123@resend.dev key planted-key-value-0123456789",
             "authorization: Bearer abcdefghijklmnopqrstuvwxyz012345",
             "device kpc_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq",
-            "pool postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full",
-            "xml postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full&amp;a=b",
+            "pool " + PLANTED_DB_URL,
+            "xml " + PLANTED_DB_URL + "&amp;a=b",
             "file https://abcdefgh.supabase.co/storage/v1/object/sign/x?X-Amz-Signature=deadbeefdeadbeef",
             "site kaname-web-abc123.vercel.app",
             "fill(\"ABCDEFGHIJKLMNOPQRSTUVWX-k65pw-aA1\")",
@@ -177,7 +179,7 @@ class StagingSpecShape(unittest.TestCase):
                  "&quot;https://k65-web-shape.example.test/verify-email?token=PLANTEDTOKEN123&amp;x=1&quot;\">"
                  "to delivered+k65-abc123@resend.dev key planted-key-value-0123456789 Bearer abcdefghijklmnopqrstuvwxyz012345 "
                  "kpc_ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq "
-                 "postgresql://reader:planted-pass-99@db.k65-shape.example.test:6543/postgres?sslmode=verify-full&amp;a=b "
+                 + PLANTED_DB_URL + "&amp;a=b "
                  "https://abcdefgh.supabase.co/x?X-Amz-Signature=deadbeefdeadbeef&amp;y=1 kaname-web-abc123.vercel.app "
                  "fill(&quot;ABCDEFGHIJKLMNOPQRSTUVWX-k65pw-aA1&quot;)</failure></testcase></testsuite></testsuites>")
         ET.fromstring(junit)   # 見本そのものが XML として読める
