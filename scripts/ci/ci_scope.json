@@ -66,6 +66,7 @@
    ".prettierignore",
    "infra/docker-compose.dev.yml",
    "infra/*.md",
+   "infra/certs/**",
    "infra/provision/README.md", "scripts/ci/**", "scripts/tickets/**", "scripts/qa/**"
   ]
  },

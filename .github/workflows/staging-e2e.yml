@@ -36,6 +36,7 @@ jobs:
           STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
           STAGING_DATABASE_READ_URL: ${{ secrets.STAGING_DATABASE_READ_URL }}
           STAGING_RESEND_READ_KEY: ${{ secrets.STAGING_RESEND_READ_KEY }}
+          NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/infra/certs/supabase-root-2021.crt
         run: |
           node scripts/ci/staging_db_migrations.mjs > "$RUNNER_TEMP/applied.json"
           python3 scripts/ci/staging_health.py --need STAGING_DATABASE_READ_URL --need STAGING_RESEND_READ_KEY --applied "$RUNNER_TEMP/applied.json"

@@ -382,6 +382,8 @@ open(".github/workflows/v3-gate.yml", "w", encoding="utf-8").write(yml)
 STAGING_NAMES = ("STAGING_BASE_URL", "STAGING_API_BASE", "STAGING_DATABASE_READ_URL", "STAGING_RESEND_READ_KEY")
 STAGING_ENV = "".join(f"          {n}: ${{{{ secrets.{n} }}}}\n" for n in STAGING_NAMES)
 STAGING_SPECS = "apps/e2e/staging/**/*.spec.ts"   # 統合テストの置き場（K-65 が作る物だけ）
+# DB の束ね役（Supabase の pooler）の証明書は Supabase の自前の認証局の物。台の既定の信頼の元には無いので、根の証明書（公開の物）を版に入れて足す（確かめは外さない）
+STAGING_CA = "${{ github.workspace }}/infra/certs/supabase-root-2021.crt"
 STAGING_APPLIED = '"$RUNNER_TEMP/applied.json"'      # DB に当たっている migration の一覧の一時の置き場（版に入らない）
 G15 = [g for g in ALL_GATES if g["job"] == "e2e"]
 assert len(G15) == 1 and G15[0]["id"] == 15, "staging の回に出す関門は G15 の 1 つ"
@@ -409,7 +411,8 @@ jobs:
     steps:
 {NODE}      - name: "staging の健康診断"
         env:
-{STAGING_ENV}        run: |
+{STAGING_ENV}          NODE_EXTRA_CA_CERTS: {STAGING_CA}
+        run: |
           node scripts/ci/staging_db_migrations.mjs > {STAGING_APPLIED}
           python3 scripts/ci/staging_health.py --need STAGING_DATABASE_READ_URL --need STAGING_RESEND_READ_KEY --applied {STAGING_APPLIED}
       - run: pnpm --filter @kaname/e2e exec playwright install --with-deps chromium

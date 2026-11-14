@@ -126,6 +126,8 @@
 
 CI の VM は組ごとに捨てるので、台にファイルを置いて渡す形は使わない。
 
+DB の束ね役（Session pooler）の証明書は Supabase の自前の認証局（Supabase Root 2021 CA）の物で、台の既定の信頼の元では確かめが通らない。信頼の元は `infra/certs/supabase-root-2021.crt`（公開の証明書・秘密ではない。出どころは Supabase の画面の Project Settings → Database → SSL Configuration →「Download certificate」と同じ `prod-ca-2021.crt`）で、健康診断の段が `NODE_EXTRA_CA_CERTS` で読む。sha256 の指紋は `80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA`（`openssl x509 -noout -fingerprint -sha256 -in <ファイル>` で確かめる）。Supabase が認証局を替えたら（今の根の期限は 2031-04-26）、同じ手順で落とした物に差し替える。確かめは外さない。
+
 ### 読むだけの役を作る（Supabase・1 回だけ）
 
 DB を読む台本は読むだけの取引の中で 1 文を投げるだけだが、それは台本の中の守りで、役の権限は守らない。secrets から漏れたときに DB の全部が漏れないよう、入れる接続そのものを読むだけの役にする。与える権限は、DB につなぐ・schema `app` を使う・表 `app.schema_migrations` を読む、の 3 つだけ。
