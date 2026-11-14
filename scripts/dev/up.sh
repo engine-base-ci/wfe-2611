@@ -105,6 +105,9 @@ else
   [ "$(alive http://127.0.0.1:$API_PORT/health)" = 200 ] && ok "起動した" || { ng "起動しない → $LOG/api.log"; tail -5 "$LOG/api.log"; exit 1; }
 fi
 
+# ---- Bridge の輪を組み立てる（配布と同じ build。輪を回す試験の道具が apps/bridge/dist を読む・画面がもう動いている回でも組み立てる）
+pnpm -s --filter @kaname/bridge build >"$LOG/bridge-build.log" 2>&1 || { echo "Bridge の組み立てに失敗（$LOG/bridge-build.log）"; exit 1; }
+
 # ---- 4. 画面（本番と同じビルドで出す）
 say "4／4 画面"
 if [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ]; then ok "もう動いている"

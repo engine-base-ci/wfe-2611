@@ -30,6 +30,14 @@ jobs:
       - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）
         with: { python-version: '3.14' }
       - run: bash scripts/ci/ci_venv.sh
+      - name: "Bridge を組み立てる（配布と同じ build・K-97）"
+        run: pnpm --filter @kaname/bridge build
+      - name: "組み立てた輪を確かめる"
+        run: |
+          test -f apps/bridge/dist/loop.js
+          test -f apps/bridge/dist/runner.js
+          test -f apps/bridge/dist/pairing.js
+          node -e "if (typeof require('./apps/bridge/dist/loop.js').startLoop !== 'function') process.exit(1)"
       - name: "staging の健康診断"
         env:
           STAGING_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
