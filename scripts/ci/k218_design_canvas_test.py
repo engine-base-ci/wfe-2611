@@ -134,7 +134,7 @@ class DesignTest(unittest.TestCase):
     def test_K218_DS_007_tokens(self) -> None:
         """K218-DS-007 作り直したトークンに部品の高さと太さが在り、消した段が無い。作り直しが差を出さない"""
         css = WEB_TOKENS.read_text(encoding="utf-8")
-        for line in ("--k-c-button-primary-h: 32px;", "--k-c-button-primary-lg-h: 44px;",
+        for line in ("--k-c-button-primary-height: 32px;", "--k-c-button-primary-lg-height: 44px;",
                      "--k-c-button-primary-fw: 500;", "--k-c-dialog-title-fw: 700;"):
             self.assertIn(line, css)
         for gone in ("--k-text-metric-lg", "--k-text-chat", "--k-text-display"):
