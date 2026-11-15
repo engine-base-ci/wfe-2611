@@ -9568,6 +9568,7 @@
     "scripts/ci/choke.mjs",
     "package.json",
     "03_architecture/choke-points.json",
+    "03_architecture/foundation_gates.json",
     "scripts/ci/ticket_order_gate.py",
     "05_flow/build_testplan.py",
     ".github/workflows/v3-gate.yml",

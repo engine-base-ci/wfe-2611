@@ -458,9 +458,9 @@
   "apps/web/test/k145-draft-id.test.ts": "試験の中で features/F4/create-ticket/draft を動的 import する（vi.stubGlobal の後に読むため・K-145）。ファイルは読まない",
   "apps/bridge/test/k145-uuid.test.ts": "自分で作った一時のファイル（この PC の印の置き場・K-145）を読む。リポジトリのファイルは読まない",
   "apps/api/test/features/contract/k144-contract.test.ts": "自分で作った一時の置き場（配る Bridge の目録 kaname-bridge.json）を読む。リポジトリの物は 08_api/db-columns.json だけで、data_links で結ぶ（K-144・K-156）",
-    "apps/e2e/staging/_lib/bridge.ts": "組み立てた Bridge（apps/bridge/dist）が在るかを見て読み込む。リポジトリの文書は読まない（K-65）",
-    "apps/e2e/staging/_lib/scrub-reporter.ts": "自分の回の JUnit の記録を読んで、伏せて書き戻す。リポジトリのファイルは読まない（K-65）",
-    "apps/e2e/staging/k65-walking-skeleton.spec.ts": "台の一時の置き場に自分で置いた数（承認から帯が替わるまでの秒）を読む。リポジトリのファイルは読まない（K-65）"
+  "apps/e2e/staging/_lib/bridge.ts": "組み立てた Bridge（apps/bridge/dist）が在るかを見て読み込む。リポジトリの文書は読まない（K-65）",
+  "apps/e2e/staging/_lib/scrub-reporter.ts": "自分の回の JUnit の記録を読んで、伏せて書き戻す。リポジトリのファイルは読まない（K-65）",
+  "apps/e2e/staging/k65-walking-skeleton.spec.ts": "台の一時の置き場に自分で置いた数（承認から帯が替わるまでの秒）を読む。リポジトリのファイルは読まない（K-65）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場",

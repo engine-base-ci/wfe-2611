@@ -273,10 +273,11 @@
   {
    "id": 24,
    "name": "動的呼び出し禁止",
-   "script": "pnpm ci:no-dynamic-call",
+   "script": "pnpm ci:no-dynamic-call && pnpm ci:test-imports",
    "blocking": true,
    "detects": [
-    "eval / new Function / 動的import / 文字列からの関数解決"
+    "eval / new Function / 動的import / 文字列からの関数解決",
+    "製品のファイルが試験の置き場・試験の形のファイルを読む（K-210）"
    ],
    "note": "これを許すと関門検査(16-23)が原理的に破れる",
    "owner_task": "T-F-11",

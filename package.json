@@ -40,6 +40,7 @@
     "db:migrate": "tsx packages/db/src/cli.ts migrate && tsx packages/auth/src/cli.ts",
     "ci:choke:all": "node scripts/ci/choke.mjs --all",
     "ci:choke:selftest": "node scripts/ci/choke.test.mjs",
+    "ci:test-imports": "node scripts/ci/choke.mjs --test-imports",
     "ci:sql-guard:selftest": "node scripts/ci/sql_guard.test.mjs",
     "ci:contract:gen": "node scripts/ci/contract.mjs gen",
     "ci:endpoints": "node scripts/ci/contract.mjs endpoints",

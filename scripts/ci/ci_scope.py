@@ -173,13 +173,27 @@ def date_only(repo: str, base: str, head: str, changes: list[Change]) -> list[st
     return found
 
 
-def ticket_ids(repo: str, base: str, head: str) -> list[str]:
-    text = git(repo, "log", "--format=%B", f"{base}..{head}").stdout.decode("utf-8", "replace")
+def subject_ids(repo: str, base: str, head: str) -> tuple[list[str], list[str]]:
+    """base..head のコミットの件名の頭の番号（初めて出た順に 1 回ずつ）と、件名の頭に番号の無いコミットの短い番号（K-210）。
+    本文は見ない（No Ticket, No Commit の G55 と同じく件名だけ）。取り込みのコミットは件名でなく親の数（2 つ以上）で見分けて飛ばす"""
+    text = git(repo, "log", "--format=%H%x09%P%x09%s", f"{base}..{head}").stdout.decode("utf-8", "replace")
     seen: list[str] = []
-    for k in TICKET.findall(text):
-        if k not in seen:
-            seen.append(k)
-    return seen
+    headless: list[str] = []
+    for line in text.splitlines():
+        sha, _, rest = line.partition("\t")
+        parents, _, subj = rest.partition("\t")
+        if len(parents.split()) >= 2:
+            continue
+        m = TICKET.match(subj)
+        if not m:
+            headless.append(sha[:7])
+        elif m.group(0) not in seen:
+            seen.append(m.group(0))
+    return seen, headless
+
+
+def ticket_ids(repo: str, base: str, head: str) -> list[str]:
+    return subject_ids(repo, base, head)[0]
 
 
 def history_ids(repo: str, head: str) -> set[str]:
@@ -272,7 +286,8 @@ def shared_packages(ws: dict[str, dict], min_dependents: int) -> set[str]:
 
 # ---------------------------------------------------------------- 決まり
 def load_rules(path: str) -> dict:
-    r = json.load(open(path, encoding="utf-8"))
+    with open(path, encoding="utf-8") as fh:
+        r = json.load(fh)
     need = {"db": dict, "full": dict, "shared_min_dependents": int, "files_per_shard": int, "affects_required_from": int,
             "coverage_src": dict, "no_test_paths": list, "data_links": list, "reads_ok": dict, "jobs": dict}
     for k, t in need.items():
@@ -303,7 +318,28 @@ def load_rules(path: str) -> dict:
             raise ValueError(f"{path}: data_links の 1 つに paths と tests か readers が要る: {link}")
     if r["files_per_shard"] < 1:
         raise ValueError(f"{path}: files_per_shard は 1 以上")
-    return r
+    return _with_generated_gate(r, path)
+
+
+GENERATED_GATE = "38"   # 生成物が最新か（generated_gate.py）。当たりに目録の生成物を足す（K-210）
+
+
+def _with_generated_gate(r: dict, path: str) -> dict:
+    """gates の 38 に、同じ置き場の generated.json の作り手の outputs を足した新しい設定を返す（目録を写さない・K-210）。
+    gates の 38 が無い設定（作りものの試験の設定）はそのまま。目録が無い・壊れているなら止める（黙って足さずに続けない）"""
+    gates = r.get("gates")
+    if not isinstance(gates, dict) or GENERATED_GATE not in gates:
+        return r
+    gp = os.path.join(os.path.dirname(os.path.abspath(path)), "generated.json")
+    try:
+        with open(gp, encoding="utf-8") as fh:
+            gen = json.load(fh)
+        outs = [o for g in gen["generators"] for o in g["outputs"]]
+    except (OSError, ValueError, KeyError, TypeError) as e:
+        raise ValueError(f"{path}: gates の {GENERATED_GATE} を組み立てる生成物の目録 {gp} が読めない（{e}）") from e
+    own = list(gates[GENERATED_GATE])
+    merged = own + [o for o in dict.fromkeys(outs) if o not in own]
+    return {**r, "gates": {**gates, GENERATED_GATE: merged}}
 
 
 def human_generated(repo: str) -> list[str]:
@@ -784,8 +820,10 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         p["migration_files"] = mig_files
 
     # チケット
-    ids = ticket_ids(repo, base, head)
+    ids, headless = subject_ids(repo, base, head)
     p["tickets"] = ids
+    if headless:
+        full.append(("ticket", f"件名の頭に番号の無いコミット {'・'.join(headless)}（取り込みでないコミットは件名の頭にチケットの番号を書く）"))
     if len(ids) != 1:
         full.append(("ticket", f"コミットのチケットの番号が {len(ids)} 個（{', '.join(ids) or 'なし'}）"))
     elif ticket and ids != [ticket]:

@@ -5,7 +5,7 @@
 //   node scripts/ci/choke.mjs --no-dynamic     G24 eval／new Function／文字列からの import
 //   node scripts/ci/choke.mjs --exceptions     G25 例外台帳の整合（形式・期限切れ・関門 ID の実在）
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
-import { join, relative } from "node:path";
+import { join, relative, posix } from "node:path";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
 
@@ -104,6 +104,49 @@ export function checkChoke(id, root = ROOT) {
   }
   return { id, name: cp.name, gateway, exceptions, violations: [...new Set(violations)] };
 }
+// 試験の置き場を製品が読む（K-210）：関門の検査（SKIP）と環境の値の検査が外している試験の形を、製品のファイルが読みに行ったら赤。
+//   読みに行く先の道を解いてから当てる（当て方は 1 つ）。型だけの import・export は数えない（動くコードは入らない）
+const TEST_SHAPE = /(^|\/)tests?(\/|$)|\.(test|spec)(\.[cm]?[jt]sx?)?$|^apps\/e2e(\/|$)|(^|\/)playwright\.config(\.[cm]?[jt]s)?$/;
+function testImportTarget(rel, spec) {
+  if (spec.startsWith("./") || spec.startsWith("../")) return posix.normalize(posix.join(posix.dirname(rel), spec));
+  if (spec.startsWith("@/") && rel.startsWith("apps/web/")) return "apps/web/" + spec.slice(2);
+  if (spec === "@kaname/e2e" || spec.startsWith("@kaname/e2e/")) return "apps/e2e" + spec.slice("@kaname/e2e".length);
+  const m = /^@kaname\/([^/]+)\/(.+)$/.exec(spec);
+  return m ? `${m[1]}/${m[2]}` : null; // ほかの部品の名前（@playwright/test など）は解かない
+}
+function readSpecs(file) {
+  const src = readFileSync(file, "utf8");
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, file.endsWith("x") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  const out = [];
+  const line = (n) => sf.getLineAndCharacterOfPosition(n.getStart(sf)).line + 1;
+  const lit = (x) => x && ts.isStringLiteralLike(x) ? x.text : null;
+  function visit(n) {
+    if (ts.isImportDeclaration(n)) {
+      if (!(n.importClause && n.importClause.isTypeOnly) && lit(n.moduleSpecifier)) out.push({ spec: n.moduleSpecifier.text, line: line(n) });
+    } else if (ts.isExportDeclaration(n)) {
+      if (!n.isTypeOnly && lit(n.moduleSpecifier)) out.push({ spec: n.moduleSpecifier.text, line: line(n) });
+    } else if (ts.isImportEqualsDeclaration(n)) {
+      if (!n.isTypeOnly && ts.isExternalModuleReference(n.moduleReference) && lit(n.moduleReference.expression)) out.push({ spec: n.moduleReference.expression.text, line: line(n) });
+    } else if (ts.isCallExpression(n) && n.arguments[0] && lit(n.arguments[0])) {
+      const e = n.expression;
+      if ((ts.isIdentifier(e) && e.text === "require") || e.kind === ts.SyntaxKind.ImportKeyword) out.push({ spec: n.arguments[0].text, line: line(n) });
+    }
+    ts.forEachChild(n, visit);
+  }
+  visit(sf);
+  return out;
+}
+export function checkTestImports(root = ROOT) {
+  const v = [];
+  for (const file of sourceFiles(root)) {
+    const rel = relative(root, file).split("\\").join("/");
+    for (const { spec, line } of readSpecs(file)) {
+      const target = testImportTarget(rel, spec);
+      if (target !== null && TEST_SHAPE.test(target)) v.push(`${rel}:${line} ${spec}（試験の置き場を製品が読む）`);
+    }
+  }
+  return [...new Set(v)];
+}
 export function checkDynamic(root = ROOT) {
   const v = [];
   for (const file of sourceFiles(root)) {
@@ -139,7 +182,11 @@ export function checkExceptions(root = ROOT) {
 const args = process.argv.slice(2);
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) { // 日本語のパスは percent-encode されるので href で比べる
   let code = 0;
-  if (args.includes("--exceptions")) {
+  if (args.includes("--test-imports")) {
+    const v = checkTestImports();
+    console.log(v.length ? `[G24b] 試験の置き場を製品が読む ${v.length} 件:\n  ${v.join("\n  ")}` : "[G24b] 試験の置き場を製品が読む 0 件");
+    code = v.length ? 1 : 0;
+  } else if (args.includes("--exceptions")) {
     const b = checkExceptions();
     console.log(b.length ? `[G25] 例外台帳 NG:\n  ${b.join("\n  ")}` : `[G25] 例外台帳 OK（${loadExceptions().length} 件）`);
     code = b.length ? 1 : 0;

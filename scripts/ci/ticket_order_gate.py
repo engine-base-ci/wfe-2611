@@ -145,9 +145,27 @@ def _not_impl(files: list[str], gen: set[str]) -> bool:
     return bool(files) and (not rest or is_doc_only(rest, gen))
 
 
-def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], list[str], int]:
-    """戻り値：(赤の理由, 決まりの前に入ったとして通した依存, 見た実装のコミットの数)"""
+class BaseError(RuntimeError):
+    """比べる元が空・読めない（K-210）"""
+
+
+def _family_versions(root: str, head_sha: str, base: str) -> list[str]:
+    """子を数える版：比べる元と枝の先頭の分かれ目（merge-base）と、そこから枝の先頭までのコミット（K-210）"""
+    if not base.strip():
+        raise BaseError("比べる元（--base-ref）が空。範囲の段の出力 base を渡す")
+    try:
+        base_sha = git("rev-parse", "--verify", f"{base}^{{commit}}", cwd=root).strip()
+        mb = git("merge-base", base_sha, head_sha, cwd=root).strip()
+    except RuntimeError as e:
+        raise BaseError(f"比べる元 {base[:40]} が読めない（{e}）") from e
+    return [mb] + git("rev-list", f"{mb}..{head_sha}", cwd=root).split()
+
+
+def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = None) -> tuple[list[str], list[str], int]:
+    """戻り値：(赤の理由, 決まりの前に入ったとして通した依存, 見た実装のコミットの数)。
+    base（比べる元）を渡すと、子を分かれ目の版と枝の中の版から和で数える（外した子を数え続ける・K-210）。渡さなければ枝の先頭の版だけ"""
     head_sha = git("rev-parse", "--verify", f"{rev}^{{commit}}", cwd=root).strip()
+    family_at = _family_versions(root, head_sha, base) if base is not None else []
     rows = [l.split("\t", 1) for l in git("log", "--reverse", "--format=%H%x09%s", f"{start}..{head_sha}", cwd=root).splitlines() if "\t" in l]
     at_rev = read_versions(root, [f"{head_sha}:{TICKETS_JSON}", f"{head_sha}:{GENERATED_JSON}"])
     tickets = _tickets_of(at_rev[f"{head_sha}:{TICKETS_JSON}"])
@@ -207,10 +225,14 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
     # 子を持つ親（parent でほかのチケットに指される・実装は持たない）は、子が全部済んでいれば依存として満たす
     #   （正本 §2「子を持つ親は実装を持たず、孫が全部取り込まれたら完了」。K-65 が K-37〔staging をそろえる親〕に依存して赤になった・2026-11-15）。
     #   子の済み方は依存と同じ決まり（実装のコミットが祖先にある・決まりの前に入った・人の準備で完了・子が全部済んだ親）で、緩めない
-    children: dict[str, list[str]] = {}
-    for kid, tk in tickets.items():
-        if tk.get("parent"):
-            children.setdefault(str(tk["parent"]), []).append(kid)
+    #   base を渡した回は、分かれ目の版と枝の中の版に一度でも parent として載っていた子を数える（枝で parent を外しても親を満たさない・K-210）。
+    #   起点を START にしない：本線で済む前に消した子・付け替えた子で、親が永久に満たせなくなるため
+    children: dict[str, set[str]] = {}
+    fam_raw = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in family_at]) if family_at else {}
+    for ver in [tickets] + [_tickets_of(r) or {} for r in dict.fromkeys(v for v in fam_raw.values() if v is not None)]:
+        for kid, tk in ver.items():
+            if tk.get("parent"):
+                children.setdefault(str(tk["parent"]), set()).add(kid)
 
     def satisfied(dep: str, has_impl, guard: frozenset[str] = frozenset()) -> str | None:
         if has_impl(dep):
@@ -219,7 +241,7 @@ def check(root: str, rev: str = "HEAD", start: str = START) -> tuple[list[str], 
             return "決まりの前に入った"
         if human_prep_ok(dep):
             return "人の準備で完了"
-        kids = children.get(dep, [])
+        kids = sorted(children.get(dep, ()))
         if kids and dep not in guard and all(satisfied(k, has_impl, guard | {dep}) for k in kids):
             return "子が全部済んだ親"
         return None
@@ -320,11 +342,24 @@ def selftest() -> int:
         bad5, legacy5, _ = check(d, "HEAD", start)
         ok_parent = (not any("K-5" in b for b in bad5) and any("K-6 は K-22" in b for b in bad5)
                      and "K-20（K-5 の依存・子が全部済んだ親）" in legacy5)
+        # 外した子（K-210）：分かれ目の版で子だった K-21（実装なし）の parent を枝で外しても、比べる元を渡せば親 K-22 は満たさない
+        run("checkout", "-q", "-b", "unparent", start)
+        fam = {"K-21": {"depends_on": [], "stage": "未着手", "assignee": "実装", "parent": "K-22"},
+               "K-22": {"depends_on": [], "stage": "未着手", "assignee": "代表・実装"},
+               "K-6": {"depends_on": ["K-22"], "stage": "未着手"}}
+        tickets(fam)
+        commit("K-21 K-22 docs: 一覧", "11_tickets/K-22.md", "x")
+        fork = git("rev-parse", "HEAD", cwd=d).strip()
+        tickets({**fam, "K-21": {k: v for k, v in fam["K-21"].items() if k != "parent"}})
+        commit("K-21 docs: 親を外す", "11_tickets/K-21.md", "x")
+        commit("K-6 feat: 親に依存", "apps/e.ts", "e")
+        bad6, _, _ = check(d, "HEAD", start, base=fork)
+        ok_parent = ok_parent and any("K-6 は K-22" in b for b in bad6)
         ok = ok_parent and (len(bad1) == 1 and "K-2 は K-1" in bad1[0] and len(bad2) == 1 and not bad3 and n3 == 3
               and legacy3 == ["K-9（K-4 の依存・決まりの前に入った）"]
               and any("K-6 は K-7" in b for b in bad4) and not any("K-5" in b for b in bad4)
               and "K-8（K-5 の依存・人の準備で完了）" in legacy4)
-        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3} / {bad5} / {legacy5}")
+        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3} / {bad5} / {legacy5} / {bad6}")
         return 0 if ok else 1
 
 
@@ -332,8 +367,13 @@ def main() -> int:
     if "--selftest" in sys.argv:
         return selftest()
     root = git("rev-parse", "--show-toplevel").strip()
+    args = sys.argv[1:]
+
+    def opt(name: str) -> str | None:
+        return args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else ("" if name in args else None)
+    start = opt("--start") or START
     try:
-        bad, legacy, n = check(root)
+        bad, legacy, n = check(root, "HEAD", start, base=opt("--base-ref"))
     except RuntimeError as e:
         print(f"★ FAIL {e}")
         return 1

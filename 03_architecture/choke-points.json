@@ -472,7 +472,7 @@
     "scope_exclude": [
       "**/*.test.ts",
       "**/*.spec.ts",
-      "e2e/**"
+      "apps/e2e/**"
     ],
     "blocking": true
   },
