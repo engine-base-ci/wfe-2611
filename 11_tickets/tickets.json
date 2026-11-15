@@ -9745,6 +9745,63 @@
    "file": "11_tickets/K-213.md"
   },
   {
+   "id": "K-216",
+   "title": "検査：キャンバスとの見た目の突き合わせの道具と設定（比べる値に位置と字の一覧と読み込んだ書体・組の種類ごとに要る要素と値・段 1 の 21 組・入れた組は外せず弱められない）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-213",
+   "milestone": "段",
+   "area": "試験",
+   "assignee": "実装",
+   "due": "2026-11-17",
+   "estimate_hours": "2",
+   "estimate_basis": "比べ方を visual_fidelity.mjs から 1 つの部品に移す（100 行）・設定の検査の Python 1 本（種類と役の表・分かれ目との比べ）・設定 1 ファイル（21 組）・画面を整える道具の空の入れ物。K-214 の 2 倍と見た。実測なし・仮",
+   "decisions": [
+    "D-143.5",
+    "D-128.23",
+    "D-128.75",
+    "D-128.123"
+   ],
+   "split": "",
+   "prior_impl": "scripts/ci/visual_fidelity.mjs（K-28・部品の時代に使った。CI には結線されていない）",
+   "choke_points": [],
+   "choke_none": "試験と検査と設定だけ。キャンバスの写し（ファイル）を読むだけで、外への出口に触らない",
+   "depends_on": [
+    "K-213"
+   ],
+   "tests": [
+    "scripts/ci/k216_fidelity_config_test.py",
+    "scripts/ci/k216_fidelity_compare.test.mjs"
+   ],
+   "changes": [
+    "scripts/ci/fidelity_compare.mjs",
+    "scripts/ci/fidelity_compare.d.mts",
+    "scripts/ci/visual_fidelity.mjs",
+    "scripts/ci/fidelity_config.py",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "見た目をキャンバスと突き合わせる道具（`scripts/ci/visual_fidelity.mjs`・K-28）は在るのに、CI のどこにも結線されておらず、段 1 の画面のチケットの完了の条件にも無かった（調べの H4）。道具は値が違っても 0 で終わる。だから段 1 の画面は 136 件ずれたまま全部の検査を通った。\n\n精査の指摘：今の道具の形のまま CI に結んでも、今回の症状のうち赤にできるのは見出しの大きさだけ。位置（x・y）も字の中身も比べず、組に置く要素と値も決まっていないので、`h1: [font-size]` の 1 つだけで「突き合わせに入れた」にできる。入れた後で要素や値を減らすこともできる。\n\nこのチケットは、突き合わせの**道具と設定**を作る（CI へのつなぎ・実ブラウザで流す所・入っていない組の見張りは K-238）。\n\n1. 比べる値を足す：計算後の CSS の値・幅と高さに加えて、**位置（x・y）**と、当たった要素全部の**字の一覧（texts）**。実際に読み込んだ書体も残す（K-28 の形・D-128.123）\n2. 組の**種類（kind）ごとに要る役（role）**と、**役ごとに要る値（props）**を検査の表で必須にする（下の 2 つの表）。散文の「最低 4 つ」にしない\n3. 段 1 の組 21 組（16 枚の絵の画面と状態＋外枠 2 組＋PC の外枠 1 組＋作る画面の区画 1 組＋承認の帯 1 組）を全部設定に置く。最初はどれも `enrolled: false`。持ち主は直す画面のチケット\n4. 本線との分かれ目で enrolled だった組は、**消せない・戻せない・役×値×幅を減らせない・セレクタを替えられない**",
+    "完了の条件": "- [ ] 下の 17 行（K216-VF-001〜017）が緑\n- [ ] 04_design/fidelity.json に下の 21 組が全部在り、どれも `enrolled: false`・持ち主つき・種類の役と値がそろう\n- [ ] 突き合わせの CI へのつなぎは K-238（このチケットの試験 2 本を G69 に載せるのも K-238）。このチケットの試験は手元で流して緑\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: TOOL\n\n- 比べ方：色・太さ・角丸・字の並びはちょうど同じ／px の値（大きさ・余白・x・y）は ±2 まで／書体の名前は先頭を大小を問わず比べる／字の一覧は並びも数もちょうど同じ／読み込んだ書体は「キャンバスが読んだ書体を画面も読んでいる」（名前の後ろの Variable と大小は問わない）。x・y は頁の左上からの位置\n- キャンバスは明るいテーマだけ。暗いテーマはトークンの試験が持つ（K-24）\n- 画面を整える道具 `apps/web/tests/_lib/fidelity-states.ts` は、鍵ごとに `(page, path) => Promise<void>`。最初は空（入れた組が 0）。鍵を足すのは画面のチケット\n- 試験を書いた後は変えない（D-128.125）\n\n### 役と要る値（ROLES）\n\n| 役 | 要る値 |\n|---|---|\n| h1 | font-size・font-weight・line-height・color・x・y |\n| head（見出しの帯） | background-color・border-bottom-color・border-bottom-width・padding-top・padding-left・height・width・x・y |\n| body（本文の箱） | padding-top・padding-left・width・x・y |\n| primary（主ボタン） | height・background-color・color・font-size・font-weight・border-radius・x・y |\n| input（入力欄） | width・height・background-color・border-top-color・border-radius・font-size |\n| card（入口の箱など） | background-color・border-top-color・border-radius・padding-top・padding-left・width・x |\n| band（詳細の帯） | background-color・border-top-color・border-radius・padding-top・width・x・y |\n| band-title | font-size・font-weight |\n| dialog（小窓） | width・border-radius・background-color・x・y |\n| dialog-title | font-size・font-weight |\n| nav（左のメニュー） | width・background-color・x |\n| nav-items（左のメニューの項目） | texts・height・font-size |\n| subnav（第 2 ナビ） | texts・width・x |\n| bar（上の帯） | height・background-color・texts |\n| tabs（375 の下のタブ） | texts・height |\n\n### 組の種類と要る役・幅（KINDS）\n\n| 種類 | 要る役 | 要る幅 |\n|---|---|---|\n| page | h1・head・body | 1440・375 |\n| form | h1・head・body・input・primary | 1440・375 |\n| auth | card・h1・input・primary | 1440・375 |\n| auth-msg | card・h1・primary | 1440・375 |\n| doc | card・h1 | 1440・375 |\n| band | band・band-title | 1440・375 |\n| dialog | dialog・dialog-title・primary | 1440・375 |\n| shell-nav | nav・nav-items・bar | 1440 |\n| shell-sub | nav・subnav | 1440 |\n| shell-tabs | tabs | 375 |\n\n### 段 1 の組（21 組・どれも enrolled: false で始める）\n\n| 組の id | 種類 | 絵 | 持ち主 |\n|---|---|---|---|\n| signup | auth | AuthSignup | K-222 |\n| signup-waiting | auth-msg | AuthVerify | K-222 |\n| login | auth | AuthLogin | K-221 |\n| login-2fa | auth | Auth2FA | K-221 |\n| legal | doc | LegalPage | K-232 |\n| tickets-first | page | OnHome | K-223 |\n| tickets-main | page | Main | K-223 |\n| tickets-list | page | List | K-223 |\n| tickets-new | form | Create | K-224 |\n| tickets-new-sections | form | Create | K-225 |\n| ticket-detail | page | TicketDetail | K-226 |\n| band-approval | band | TicketDetail | K-227 |\n| band-running | band | StRunning | K-228 |\n| band-failed | band | StFailed | K-228 |\n| approve-modal | dialog | StModal | K-229 |\n| approvals | page | Approvals | K-231 |\n| bridge-code | dialog | EdPC | K-230 |\n| bridge-connected | page | MePC | K-230 |\n| bridge-shell | shell-sub | MePC | K-220 |\n| shell-nav | shell-nav | Main | K-138 |\n| shell-tabs | shell-tabs | Main | K-138 |\n\n絵の無い 11 の状態（K-219 で起こす）の組は、絵を起こしたときに K-219 が足す（持ち主は帯・小窓・承認待ち・PC・入口のチケット）。",
+    "確かめたこと（切る段・2026-11-15）": "1. visual_fidelity.mjs（79 行）：設定 1 つを読み、両方を実ブラウザで描いて「計算後の CSS の値」と「箱の幅・高さ」を比べ、読み込んだ書体も比べる。位置（x・y）と字は比べない。違いがあっても `process.exit(0)`。頁を開いた後は 800ms の決めた待ち\n2. キャンバスの実測（切る段）：ページの見出し h1 18px・700・行 28.8px・(240,60)（1440）／(24,60)（375）。見出しの帯は白・下に 1px #DDE2E9・内側 12px 24px。区画の見出し 16px・700・下の線。左のメニューの項目は「チケット・承認待ち・高本のAI・…」\n3. 画面の書体は `@fontsource-variable/noto-sans-jp`（apps/web/app/layout.tsx）、キャンバスは Google Fonts の Noto Sans JP（Main.dc.html の頭）。名前は「Noto Sans JP Variable」と「Noto Sans JP」で、比べ方は後ろの Variable を問わない\n4. 04_design/canvas-screens.json の tickets には絵が 37 枚載り、OnHome はどの画面にも載っていない（K-219 で tickets に足す）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 比べ方 `scripts/ci/fidelity_compare.mjs`（実装の役） | `PX_TOLERANCE = 2`・`compareRows(pairs, canvasVals, appVals)` → `[{part, prop, canvas, app, ok}]`（props の `x`・`y` は px として ±2、`texts` は配列をちょうど同じで比べる。要素が無ければ「（無い）」）・`compareFonts(canvasLoaded, appLoaded)` → 同じ形の行 1 つ（part「読み込んだ書体」）・`mismatches(rows)`・`exitCode(rows, strict)`・`readVals(page, pairs, side)`（Playwright の page から組の値を読む。x・y は getBoundingClientRect に scrollX・scrollY を足す。texts は当たった要素全部の textContent を trim した一覧）・`loadedFonts(page)`（document.fonts の loaded の名前）。TypeScript から読むので型の宣言 `fidelity_compare.d.mts` を置く |\n| visual_fidelity.mjs（実装の役） | 比べ方を fidelity_compare.mjs から読む形に直す。800ms の決めた待ちをやめ、組の要素が描かれるまで待つ。`--strict` を足し、違う値があれば 1 で終わる |\n| 設定の検査 `scripts/ci/fidelity_config.py`（実装の役） | `python3 scripts/ci/fidelity_config.py [--root <根>] [--required <組の id,…>] (--base-ref <版> \\| --no-base)`・`--print-required`（既定の段 1 の 21 組の id を空白区切りで）・`--print-rules`（`{\"roles\": {役: [値]}, \"kinds\": {種類: {\"roles\": [...], \"widths\": [...]}}}`）・`--selftest`。赤：組の欄（id・知っている kind・絵が在る・kind の幅を含む・持ち主が在る）／kind の役が欠ける・役の値が欠ける（組と役と値の名前を出す）／段 1 の組が無い（id を出す）／enrolled の組の state が fidelity-states.ts に無い（`\"<鍵>\":` の字で探す）／分かれ目で enrolled だった組が消えた・false になった・(役の name, 値, 幅) の集まりが前の版を含まない・前の版に在った組の値（name）のセレクタが変わった（`git show <版>:04_design/fidelity.json`・読めなければ赤）／比べ方の指定が無い。`--owners-done`（入っていない組の見張り）は K-238 が足す |\n| 設定 `04_design/fidelity.json`（実装の役） | 上の 21 組。組の値（pairs）の canvas と app のセレクタは、キャンバスの実際の作り（例 Main の h1 は `main header h1`・左のメニューの項目は `.kn-item`）と画面の作り（例 `.k-page-head h1`・`.k-nav-item`） |\n| 画面を整える道具 `apps/web/tests/_lib/fidelity-states.ts`（実装の役） | `export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {}`（最初は空）。キャンバスの書体の差し替え routeCanvasFonts は K-238 が足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 全部の組を今すぐ入れて赤にする | 本線が赤になり、ほかのチケットが取り込めない。直した組から入れれば、入れた所は二度と崩れない（入っていないまま残るのは K-238 が止める） |\n| 写しの画素の差（スクリーンショットの差分）で比べる | 字の描き方・データの違いで揺れる。値の比べ方ならどこが違うかが字で出る |\n| 組に置く要素と値を散文で決める | 1 つだけで入れられる（精査の指摘・L-004）。検査の表にした |",
+    "テスト仕様と確認の結果": "`scripts/ci/k216_fidelity_config_test.py`（設定）・`scripts/ci/k216_fidelity_compare.test.mjs`（比べ方・ブラウザなし）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K216-VF-001 | 入力 | 組の欄（無い絵・知らない種類・種類の幅が無い・無い持ち主） | どれも 1 で終わる。そろえば 0 |\n| K216-VF-002 | 入力 | 種類に要る役が欠ける（作る画面の組に入力欄が無い・外枠の組に左のメニューの項目が無い） | 1 で終わり、役の名前を出す |\n| K216-VF-003 | 入力 | 役に要る値が欠ける（見出しの帯に padding-left・見出しに x） | 1 で終わり、値の名前を出す |\n| K216-VF-004 | 対象の状態 | 段 1 の組が設定に無い | 1 で終わり、その id を出す |\n| K216-VF-005 | 入力 | 同じ値 | 全部の行が ok・違う数 0 |\n| K216-VF-006 | 入力 | px の差 2 と 3・色・太さ・書体の名前の大小 | 差 2 は同じ、3 は違う。色と太さは 1 違えば違う。書体の名前は先頭の大小を問わない |\n| K216-VF-007 | 入力 | 見出しの位置が 242px・248px（キャンバス 240px）・y が 25px（キャンバス 60px） | 242 は同じ。248 と 25 は x・y の行が違う |\n| K216-VF-008 | 入力 | 左のメニューの項目の字の一覧が違う・足りない・順が違う | どれも texts の行だけが違う |\n| K216-VF-009 | 失敗 | 画面の側に要素が無い | その組の値が全部「（無い）」で違う |\n| K216-VF-010 | 入力 | 読み込んだ書体（Noto Sans JP と Noto Sans JP Variable・Inter・どちらも空） | 1 つめだけ ok |\n| K216-VF-011 | 入力 | 違う値がある・無い | 強い形で 1・弱い形で 0。無ければ 0 |\n| K216-VF-012 | 対象の状態 | enrolled の組の鍵が道具に無い・在る・enrolled でない | 無ければ 1。ほかは 0 |\n| K216-VF-013 | 時間の流れ | 分かれ目で enrolled の組を false にする・消す・ほかの組を入れる・版が読めない・指定が無い | 入れるのは 0。ほかは 1 |\n| K216-VF-014 | 時間の流れ | 分かれ目で enrolled の組の値を減らす・幅を減らす・役の要素を消す・セレクタを替える・値と幅を足す | 足すのは 0。ほかは 1 |\n| K216-VF-015 | 対象の状態 | 本物の設定 | 0 で終わり、21 組の種類・絵・持ち主が表どおりで絵が在る |\n| K216-VF-016 | 入口 | 検査の既定の段 1 の組（--print-required） | 試験の 21 組と同じ |\n| K216-VF-017 | 入口 | 検査の種類と役の表（--print-rules） | 試験の KINDS・ROLES と同じ |\n\n### テストの型の受け（分類 TOOL）\n\n- 要らない: TP-TOOL-01 ファイルの名前は英数字（中身の日本語の字の一覧は K216-VF-008 で受ける）\n- TP-TOOL-02（検査が何も見ていないのに緑）：K216-VF-002・003（1 つだけの組で入れられない）・K216-VF-004（組が無いと赤）・K216-VF-013・014（入れた組を外す・弱めると赤・比べずに緑にしない）\n- TP-TOOL-03（台によって答えが変わる）：比べ方はブラウザなしで試す（005〜011）。設定の検査は tempfile の作りもの\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 組の欄（001〜003）・値の比べ方（005〜008・010・011） |\n| 対象の状態 | 該当 | 段 1 の組（004・015）・入れた組と道具（012） |\n| 時間の流れ | 該当 | 入れた組は戻せない・弱められない（013・014） |\n| 入口 | 該当 | 表を 2 か所にしない（016・017） |\n| 利用者の状態 | 要らない | 画面の人の状態は画面のチケットの道具が作る |\n| 失敗 | 該当 | 要素が無い（009）・版が読めない（013） |\n| 操作の揺れ | 要らない | 押す操作が無い |\n| 守り | 該当 | 入れた組を弱めて緑にしない（014） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | 絵のファイル（001・015）。キャンバスが外から読む書体は K-238 で手元に差し替える |\n| G-12 切り替わりの瞬間 | 該当 | 組を入れた回の後に戻せない（013） |\n| G-13 機能の組み合わせ | 該当 | 設定と道具の鍵（012） |\n| G-14 口座状態の波及 | N/A | 人の状態を扱わない |\n| G-15 信号なし終了 | 該当 | 値が違っても 0 で終わる今の形を直す（011）・読み込んだ書体が両方空なら違う（010） |\n| G-16 有限資源の枯渇 | N/A | 設定を読むだけ（実ブラウザの数は K-238） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- 試験 2 本（切る段が書いた）\n- `scripts/ci/fidelity_compare.mjs`・`fidelity_compare.d.mts`・`visual_fidelity.mjs`・`fidelity_config.py`・`04_design/fidelity.json`・`apps/web/tests/_lib/fidelity-states.ts`（実装の役）",
+    "決定ログ": "- D-143.5：モックどおりかを機械で突き合わせてから完了にする（answer=4d3e8f714c5d）\n- D-128.23：画面の正はキャンバス。D-128.75：キャンバスの D1〜D4 は 0 件。D-128.123：書体は名前でなく読み込んだ物で比べる\n- 切る段が決めたこと：組の種類と役と値は検査の表に持つ／組は全部 enrolled: false で始め、直した組から入れる／入れた組は弱められない／精査の指摘で大きくなったので CI へのつなぎを K-238 に分けた（PM の決め）",
+    "リスクと懸念": "- キャンバスの要素のセレクタは絵の作り（kn- の名前・タグの並び）に頼る。キャンバスを作り直すと入れた組のセレクタが外れ「（無い）」で赤になる。替えるには組のセレクタを替える必要があり、入れた組では止まる（キャンバスを直すチケットは理由を書いて決める人に聞く）\n- x・y は頁の左上からなので、上に足した物（知らせの帯など）で全部ずれる。そのときはキャンバスも同じに直す",
+    "申し送り": "- K-238：CI へのつなぎ・実ブラウザで流す所・キャンバスの書体の差し替え・入っていない組の見張り\n- 組を入れる（enrolled: true にし、道具に鍵を足す）のは持ち主の画面のチケット（上の表）"
+   },
+   "file": "11_tickets/K-216.md"
+  },
+  {
    "id": "K-218",
    "title": "DESIGN.md をキャンバスに合わせて直す（ボタン・入力欄・項目名・小窓・空の状態・読み込み・文字の段の数）。design_gate を features の CSS と組み立てにも掛ける",
    "kind": "課題",
