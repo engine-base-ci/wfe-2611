@@ -12,14 +12,14 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import {
   ArgError,
+  capture,
   compareFonts,
   compareRows,
   defaultOutDir,
   exitFor,
-  loadedFonts,
   mismatches,
   parseArgs,
-  readVals,
+  STILL_CSS,
   waitRows,
   widthsFor,
 } from "./fidelity_compare.mjs";
@@ -27,11 +27,7 @@ import {
 const { chromium } = createRequire(resolve("apps/web/package.json"))("@playwright/test");
 
 const WAIT_MS = 15_000;
-const SETTLE_MS = 250;
-const SETTLE_TRIES = 8;
 const HEIGHT = 900;
-// 動きを止める（小窓が出てくるときの transform が x・y・幅に乗らないように）。キャンバスと画面の両方に入れる
-const STILL_CSS = "*,*::before,*::after{animation:none !important;transition:none !important;caret-color:transparent !important}";
 
 /** 回す組と幅の一覧（設定を 1 つの形にそろえる） */
 function loadRuns(o) {
@@ -68,20 +64,6 @@ async function waitForParts(page, sels) {
   return page.evaluate((list) => list.filter((s) => !document.querySelector(s)), sels);
 }
 
-/** 読み込みが済むのを待つ：読み込み中の印（aria-busy）が消え、値を 2 回読んで同じになるまで */
-async function settle(page, pairs, side) {
-  await page.waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout: WAIT_MS }).catch(() => undefined);
-  await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  let prev = JSON.stringify(await readVals(page, pairs, side));
-  for (let i = 0; i < SETTLE_TRIES; i++) {
-    await page.waitForTimeout(SETTLE_MS);
-    const now = JSON.stringify(await readVals(page, pairs, side));
-    if (now === prev) return JSON.parse(now);
-    prev = now;
-  }
-  return JSON.parse(prev);
-}
-
 async function open(browser, cfg, url, storageState) {
   const page = await browser.newPage({
     viewport: cfg.viewport,
@@ -94,15 +76,21 @@ async function open(browser, cfg, url, storageState) {
   return page;
 }
 
+/** 落ち着いてから値と書体を読み、写しは後（読み方は fidelity_compare.mjs の capture 1 つ）。待ち切れなければ違う行にする */
 async function read(browser, cfg, url, side, storageState) {
   const page = await open(browser, cfg, url, storageState);
-  const missing = await waitForParts(page, cfg.pairs.map((p) => p[side]));
-  const vals = await settle(page, cfg.pairs, side);
-  const loaded = await loadedFonts(page);
-  // 値を先に読み、写しは後（写しを撮る間に描き直されても値は揺れない）
-  await page.screenshot({ path: `${cfg.outDir}/${side}.png`, fullPage: true });
-  await page.close();
-  return { vals, loaded, missing };
+  try {
+    const missing = await waitForParts(page, cfg.pairs.map((p) => p[side]));
+    try {
+      const { vals, fonts } = await capture(page, cfg.pairs, side, { shot: `${cfg.outDir}/${side}.png`, timeout: WAIT_MS });
+      return { vals, loaded: fonts, missing, stuck: [] };
+    } catch (e) {
+      const why = e instanceof Error ? e.message : String(e);
+      return { vals: [], loaded: [], missing, stuck: [{ part: "待ち切れなかった", prop: side, canvas: side === "canvas" ? why : "", app: side === "app" ? why : "", ok: false }] };
+    }
+  } finally {
+    await page.close();
+  }
 }
 
 const fmt = (v) => (Array.isArray(v) ? `[${v.join("・")}]` : v);
@@ -123,6 +111,8 @@ async function runOne(browser, cfg, o) {
   const rows = [
     ...waitRows("canvas", C.missing),
     ...waitRows("app", A.missing),
+    ...C.stuck,
+    ...A.stuck,
     ...compareRows(cfg.pairs, C.vals, A.vals),
     compareFonts(C.loaded, A.loaded),
   ];

@@ -1249,6 +1249,13 @@
    "blocking": true
   },
   {
+   "id": 70,
+   "name": "キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）",
+   "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-fidelity.xml\" BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web exec playwright test tests/fidelity/fidelity.spec.ts",
+   "job": "web",
+   "blocking": true
+  },
+  {
    "id": 53,
    "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）",
    "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py",
@@ -1332,6 +1339,14 @@
    "id": 67,
    "name": "画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214）",
    "script": "python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k214_class_gate_test.py",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 69,
+   "name": "キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・K-216・K-238）",
+   "script": "python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/fidelity_config.py --base-ref \"$CI_BASE\" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref \"$CI_BASE\" && python3 scripts/ci/k216_fidelity_config_test.py && node --test scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k238_fidelity_ci_test.py",
    "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
    "job": "spec",
    "blocking": true

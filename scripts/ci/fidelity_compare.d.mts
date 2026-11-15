@@ -9,7 +9,7 @@ export interface FidelityPair {
   app: string;
   props: string[];
 }
-/** 読んだ値：texts だけ字の一覧、__count は当たった（見えている）要素の数、ほかは文字。要素が無ければ null */
+/** 読んだ値：texts だけ字の一覧、__count は当たった（見えている）要素の数、ほかは文字。readVals は当たる要素が無ければ {__count: 0}（比べる側は null も受ける） */
 export type FidelityVals = ({ __count?: number } & Record<string, string | string[] | number>) | null;
 export interface FidelityRow {
   part: string;
@@ -42,3 +42,16 @@ export function defaultOutDir(id: string, width?: number): string;
 export function exitCode(rows: FidelityRow[], strict: boolean): 0 | 1;
 export function readVals(page: Page, pairs: FidelityPair[], side: "canvas" | "app"): Promise<FidelityVals[]>;
 export function loadedFonts(page: Page): Promise<string[]>;
+export const CAPTURE_TIMEOUT: number;
+export const STILL_CSS: string;
+export interface CaptureOptions {
+  /** 最後に撮る写しの置き場（値を読んだ後に撮る） */
+  shot?: string;
+  /** 待ちの上限（ミリ秒・既定 CAPTURE_TIMEOUT） */
+  timeout?: number;
+}
+export interface Captured {
+  vals: FidelityVals[];
+  fonts: string[];
+}
+export function capture(page: Page, pairs: FidelityPair[], side: "canvas" | "app", opts?: CaptureOptions): Promise<Captured>;

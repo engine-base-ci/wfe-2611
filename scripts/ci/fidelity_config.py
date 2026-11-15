@@ -14,7 +14,11 @@
   ・本線との分かれ目（--base-ref）で enrolled だった組が、消えた・false になった・(値の name, 値, 幅) の集まりが前の版を含まない・
     前の版に在った値（name）のセレクタが変わった・絵や画面の道や state（画面を整える鍵）が変わった。版が読めなければ赤（版はあるが設定がまだ無い版は、前の組が無いとして扱う）
   ・比べ方の指定（--base-ref か --no-base）が無い
-入っていない組の見張り（--owners-done）は K-238 が足す。
+入っていない組の見張り（--owners-done --base-ref <版>・K-238）：
+  ・enrolled でない組の数を「入っていない組 N / M」で出す
+  ・持ち主が取り込み済みなのに enrolled でない組があれば赤（組の id と持ち主を同じ行に出す）。
+    取り込み済み＝<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る（本線は早送りでだけ進む）か、持ち主の md の stage が確認中か完了
+  ・持ち主の md が無い・stage の行が無いか知らない値・<版> が読めない は赤。保留は取り込み前として数える
 CI につなぐときは --no-base と --required の上書きを使わない（使うと入れた組を弱めても緑になる）。
 """
 from __future__ import annotations
@@ -195,6 +199,62 @@ def base_groups(root: pathlib.Path, ref: str) -> tuple[list[dict] | None, list[s
     return load_groups(r.stdout, f"{ref}:{CONFIG}")
 
 
+STAGES = {"未着手", "作業中", "確認中", "完了", "保留"}
+DONE_STAGES = {"確認中", "完了"}
+
+
+def _stage(md: pathlib.Path) -> str | None:
+    """チケットの頭（--- の間）の stage。行が無ければ None"""
+    lines = md.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0].strip() != "---":
+        return None
+    for line in lines[1:]:
+        if line.strip() == "---":
+            return None
+        if line.startswith("stage:"):
+            return line.split(":", 1)[1].strip()
+    return None
+
+
+def merged_owners(root: pathlib.Path, ref: str, owners: set[str]) -> tuple[set[str], list[str]]:
+    """<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る持ち主"""
+    if _git(root, "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode != 0:
+        return set(), [f"分かれ目の版 {ref} が読めない（取り込み済みの持ち主を数えられない）"]
+    r = _git(root, "log", "--format=%s", ref)
+    if r.returncode != 0:
+        return set(), [f"{ref} の履歴が読めない：{r.stderr.strip()}"]
+    subjects = r.stdout.splitlines()
+    return {o for o in owners if any(sub.startswith(f"{o} ") for sub in subjects)}, []
+
+
+def owners_done(root: pathlib.Path, ref: str) -> tuple[list[str], list[str]]:
+    """入っていない組の見張り。(知らせる行, 赤) を返す"""
+    path = root / CONFIG
+    if not path.is_file():
+        return [], [f"{CONFIG} が無い"]
+    groups, errs = load_groups(path.read_text(encoding="utf-8"), CONFIG)
+    if errs:
+        return [], errs
+    waiting = [g for g in groups if isinstance(g, dict) and g.get("enrolled") is not True]
+    owners = {str(g.get("owner")) for g in waiting}
+    merged, errs = merged_owners(root, ref, owners)
+    stages: dict[str, str | None] = {}
+    for o in sorted(owners):
+        md = root / "11_tickets" / f"{o}.md"
+        if not md.is_file():
+            errs.append(f"持ち主 {o} のチケット（11_tickets/{o}.md）が無い")
+            continue
+        stages[o] = _stage(md)
+        if stages[o] not in STAGES:
+            errs.append(f"持ち主 {o} の stage が読めない（{stages[o] or '行が無い'}）")
+    for g in waiting:
+        o = str(g.get("owner"))
+        why = "版の履歴に取り込みのコミットが在る" if o in merged else f"stage が {stages.get(o)}" if stages.get(o) in DONE_STAGES else ""
+        if why:
+            errs.append(f"組 {g.get('id')} の持ち主 {o} は取り込み済み（{why}）なのに突き合わせに入っていない（enrolled: false）")
+    return [f"入っていない組 {len(waiting)} / {len(groups)}"], errs
+
+
 def _measures(g: dict) -> set[tuple[str, str, int]]:
     out: set[tuple[str, str, int]] = set()
     for p in g.get("pairs") or []:
@@ -280,7 +340,21 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--print-required", action="store_true")
     ap.add_argument("--print-rules", action="store_true")
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--owners-done", action="store_true", help="入っていない組の見張り（--base-ref が要る）")
     a = ap.parse_args(argv)
+    if a.owners_done:
+        if not a.base_ref:
+            ap.error("--owners-done には --base-ref <版> が要る")
+        info, errs = owners_done(pathlib.Path(a.root).resolve(), a.base_ref)
+        for line in info:
+            print(line)
+        for e in errs:
+            print(f"赤 {e}")
+        if errs:
+            print(f"fidelity_config --owners-done：赤 {len(errs)} 件")
+            return 1
+        print("fidelity_config --owners-done：OK")
+        return 0
     if a.print_required:
         print(" ".join(REQUIRED))
         return 0
