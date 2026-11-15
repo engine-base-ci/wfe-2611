@@ -10592,6 +10592,60 @@
    "file": "11_tickets/K-237.md"
   },
   {
+   "id": "K-238",
+   "title": "検査：キャンバスとの見た目の突き合わせを CI につなぐ（web の組で入れた組を幅ごとに流す・キャンバスの書体は手元に差し替え・入っていない組の数を毎回出し、持ち主が取り込み済みなのに入っていない組は赤）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-213",
+   "milestone": "段",
+   "area": "試験",
+   "assignee": "実装",
+   "due": "2026-11-18",
+   "estimate_hours": "1.5",
+   "estimate_basis": "実ブラウザの突き合わせの試験（切る段が書いた）を流す段 2 つ・設定の検査に見張りを 1 つ足す・画面を整える道具に書体の差し替えを足す・範囲の地図に 2 行。K-214 の 1.5 倍と見た。実測なし・仮",
+   "decisions": [
+    "D-143.5",
+    "D-128.123"
+   ],
+   "split": "",
+   "prior_impl": "なし",
+   "choke_points": [],
+   "choke_none": "試験と検査と CI の定義だけ。キャンバスの写しと CI の中で立てた画面を読むだけで、外への出口に触らない（キャンバスの書体の読み込みも手元に差し替える）",
+   "depends_on": [
+    "K-213",
+    "K-216"
+   ],
+   "tests": [
+    "scripts/ci/k238_fidelity_ci_test.py",
+    "apps/web/tests/fidelity/fidelity.spec.ts"
+   ],
+   "changes": [
+    "scripts/ci/fidelity_config.py",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scope.json",
+    "05_flow/build_testplan.py"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "K-216 が作る突き合わせの道具と設定を、CI で毎回流す形にする。精査の指摘で、次の 3 つが K-216 だけでは止まらないと分かった（PM の決めで K-216 から分けた）。\n\n1. **直さない組がいつまでも入らないまま残れる**。止めていたのは親の完了の条件と、子の完了の条件の散文だけ（L-004）。持ち主のチケットが取り込み済み（stage が確認中か完了）なのに enrolled でない組を、spec の組（G69）で赤にする。入っていない組の数も毎回 G69 で出す\n2. **キャンバスが書体を外（Google Fonts）から読む**。CI で揺れの元になる（G-11）。キャンバスの頁の書体の道を、画面と同じ手元の書体（`@fontsource-variable/noto-sans-jp`）に差し替える\n3. **決めた秒数で待つ**（visual_fidelity.mjs の 800ms）。組の要素が全部描かれるまで待つ形にする\n\nあわせて、実ブラウザの突き合わせ（`apps/web/tests/fidelity/fidelity.spec.ts`・切る段が書いた）を web の組の G70 で流し、比べ方を変えた回も web の組が動くように範囲の地図に足す。",
+    "完了の条件": "- [ ] 下の 11 行（K238-VF-001〜011）が緑（VF-003 は入れた組が 0 のあいだ流れる本数が 0。入れた組の数は VF-001 の注記と G69 の出力に出る）\n- [ ] G69（spec の組）と G70（web の組）を `05_flow/build_testplan.py` に足し、作り直した（v3-gate.yml・test-plan は生成物）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: TOOL, UI\n\n- 取り込み済み＝持ち主のチケットの頭の stage が「確認中」か「完了」（この進め方で取り込んだチケットはどちらか）\n- CI の画面の組（web）は回をまたいで同時に 1 つ（K-172）。G70 は G59 の後に、同じ立ち上げた画面（3124）へ流す\n- web の組が動く範囲（scripts/ci/ci_scope.json の jobs.web.paths）には 04_design/** が前から在る（精査の指摘の「04_design を変えても web が動かない」は、今の地図では当たらない）。足すのは比べ方の 2 つ（fidelity_compare.mjs・visual_fidelity.mjs）\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-15）": "1. scripts/ci/ci_scope.json の jobs.web.paths：`04_design/**` が在り、`scripts/ci/fidelity_compare.mjs`・`scripts/ci/visual_fidelity.mjs` は無い\n2. キャンバスの頭：`fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700` を読み、書体の本体は fonts.gstatic.com から来る\n3. 画面の書体：`apps/web/app/layout.tsx` が `@fontsource-variable/noto-sans-jp` を読む（CSP の font-src は self）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 入っていない組の見張り（実装の役） | `scripts/ci/fidelity_config.py --owners-done [--root <根>]`：設定の組のうち enrolled でない数を「入っていない組 N / M」で出す。組の持ち主のチケットの md が無ければ 1。持ち主の stage が確認中か完了なのに enrolled でない組があれば 1（組の id と持ち主を出す） |\n| キャンバスの書体の差し替え（実装の役） | `apps/web/tests/_lib/fidelity-states.ts` に `export async function routeCanvasFonts(page: Page)`：`fonts.googleapis.com` の道は手元の `@font-face`（family は Noto Sans JP・src は `@fontsource-variable/noto-sans-jp` の woff2 を data: か file: で）を返し、`fonts.gstatic.com` の道は手元の woff2 を返す。ほかの外の道は止める（abort） |\n| 範囲の地図（実装の役） | scripts/ci/ci_scope.json の jobs.web.paths に `scripts/ci/fidelity_compare.mjs`・`scripts/ci/visual_fidelity.mjs` を足す |\n| CI の定義（実装の役） | `05_flow/build_testplan.py`：SPEC_GATES に `{\"id\": 69, \"name\": \"キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が済んだのに入っていない組・K-216・K-238）\", \"script\": \"python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/fidelity_config.py --base-ref \\\"$CI_BASE\\\" && python3 scripts/ci/fidelity_config.py --owners-done && python3 scripts/ci/k216_fidelity_config_test.py && node --test scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k238_fidelity_ci_test.py\", \"env\": \"          CI_BASE: ${{ steps.scope.outputs.base }}\\n\", \"job\": \"spec\", \"blocking\": True}`。web の組の G59 の後に `{\"id\": 70, \"name\": \"キャンバスとの見た目の突き合わせ（入れた組・幅ごと・K-238）\", \"script\": \"PLAYWRIGHT_JUNIT_OUTPUT_NAME=\\\"$GITHUB_WORKSPACE/junit/web-fidelity.xml\\\" BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web exec playwright test tests/fidelity/fidelity.spec.ts\", \"job\": \"web\", \"blocking\": True}` |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| チケットが check から merge へ進むときに state.py で止める | state.py はスキルの側の仕組みで、Kaname の CI から見えない。G69 なら本線の全部の回で見える |\n| 入っていない組の数を web の組の注記だけに出す | web の組が動かない回には出ない（精査の指摘）。G69 は毎回流れる |\n| キャンバスの書体をネットから読んだまま比べる | 外の都合で揺れる（G-11）。読み込みに失敗すると代わりの書体で描いて値が変わる |",
+    "テスト仕様と確認の結果": "`scripts/ci/k238_fidelity_ci_test.py`（見張りと配線）・`apps/web/tests/fidelity/fidelity.spec.ts`（実ブラウザ）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K238-VF-001 | 対象の状態 | 実ブラウザ：設定を読む | 組が 1 つ以上、入れた組はどれも道具の鍵を持ち、入れた組の数を注記に出す |\n| K238-VF-002 | 失敗 | 実ブラウザ：キャンバス（Main）を開く | 手元でない所への要求が 0 本で、読み込んだ書体が 1 つ以上 |\n| K238-VF-003 | 守り | 実ブラウザ：入れた組 × 幅 | キャンバスと画面の組の値と読み込んだ書体の違いが 0（1 つでも違えば赤で、どの要素のどの値かを出す） |\n| K238-VF-004 | 対象の状態 | 持ち主が未着手・作業中で入っていない組が 2 つ | 0 で終わり「入っていない組 2 / 3」を出す |\n| K238-VF-005 | 時間の流れ | 持ち主が確認中・完了なのに入っていない組 | 1 で終わり、組の id と持ち主を出す。入れれば 0 |\n| K238-VF-006 | 失敗 | 組の持ち主のチケットのファイルが無い | 1 で終わる |\n| K238-VF-007 | 対象の状態 | 本物の木 | 0 で終わり「入っていない組 N / M」を出す |\n| K238-VF-008 | 操作の揺れ | 実ブラウザの突き合わせと道具の字 | waitForTimeout が 0 か所 |\n| K238-VF-009 | 失敗 | 道具の字 | routeCanvasFonts を出し、2 つの外の書体の道と手元の書体の部品の名前が在る |\n| K238-VF-010 | 入口 | CI の定義 | spec の組に G69（--base-ref・--owners-done・K-216 の試験 2 本・この試験）、web の組に G70 が 1 つずつ在り、continue-on-error が無い |\n| K238-VF-011 | 入口 | 範囲の地図 | jobs.web.paths に fidelity_compare.mjs・visual_fidelity.mjs・04_design/** が在る |\n\n### テストの型の受け（分類 TOOL・UI）\n\n- TP-TOOL-02（検査が何も見ていないのに緑）：K238-VF-005（済んだのに入っていない組は赤）・K238-VF-006（持ち主が読めないと赤）・K238-VF-010（CI で流れる）・K238-VF-001（組が 0 なら赤）\n- TP-TOOL-03（台によって答えが変わる）：キャンバスの書体を手元に差し替える（002）・決めた秒数で待たない（008）\n- UI の型：押す操作は無い（見た目を比べるだけ）。入れた組の画面の状態は画面のチケットが道具で作る\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 設定の形は K-216 が持つ |\n| 対象の状態 | 該当 | 設定を読む（001）・入っていない組の数（004・007） |\n| 時間の流れ | 該当 | 持ち主が済んだ後に入っていない（005） |\n| 入口 | 該当 | CI（010）・範囲の地図（011） |\n| 利用者の状態 | 要らない | 画面の人の状態は画面のチケットの道具が作る |\n| 失敗 | 該当 | 外の書体（002・009）・持ち主が無い（006） |\n| 操作の揺れ | 該当 | 描き終わる前に読まない（008） |\n| 守り | 該当 | 入れた組の値の違いは赤（003） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を外から読まない（002・009） |\n| G-12 切り替わりの瞬間 | 該当 | 持ち主のチケットが取り込み済みになった回から赤（005） |\n| G-13 機能の組み合わせ | 該当 | 設定とチケットの stage（005） |\n| G-14 口座状態の波及 | N/A | 人の状態を扱わない |\n| G-15 信号なし終了 | 該当 | 数えずに緑にしない（006）・組が 0 なら赤（001） |\n| G-16 有限資源の枯渇 | 該当 | 入れた組 × 幅ごとにブラウザの頁を 2 枚開いて閉じる（003）。21 組 × 最大 2 幅で 84 枚まで。web の組の時間に足される（測っていない） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- 試験 2 本（切る段が書いた）\n- `fidelity_config.py` の --owners-done・`fidelity-states.ts` の routeCanvasFonts・`ci_scope.json`・`05_flow/build_testplan.py` と作り直した v3-gate.yml・test-plan（実装の役）",
+    "決定ログ": "- D-143.5：モックどおりかを機械で突き合わせてから完了にする（answer=4d3e8f714c5d）\n- D-128.123：書体は読み込んだ物で比べる\n- PM の決め：直さない組が入らないまま残るのは、持ち主のチケットが取り込み済みなのに入っていない組を spec の組で赤にして止める。入っていない組の数も毎回そこで出す\n- 切る段が決めたこと：取り込み済みは stage が確認中か完了／書体はネットから読まない",
+    "リスクと懸念": "- 持ち主のチケットが取り込み済みになった回から赤になるので、画面のチケットは自分の組を入れてから取り込む（入れ忘れは取り込みの CI で止まる）",
+    "申し送り": "- 組を入れるのは持ち主の画面のチケット（K-216 の表）"
+   },
+   "file": "11_tickets/K-238.md"
+  },
+  {
    "id": "K-245",
    "title": "本線が層の棚卸しの検査（G27）で赤になっているのを直す（入口の枠が共通の部品の束を読むようになり、規約の文面の画面が口を呼ぶコードに届いた）。同じことが範囲の外で通らないよう、CI の範囲の決まりを直す",
    "kind": "課題",
