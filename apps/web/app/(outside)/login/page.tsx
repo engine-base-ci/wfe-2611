@@ -9,6 +9,7 @@ import { AuthFoot, OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
 import { afterLogin } from "@/lib/after-login";
 import { ConsentTerms } from "@/features/F1/consent-terms/consent-terms";
+import { AuthLoading } from "@/features/F1/sign-up/frame";
 
 function LoginInner() {
   const sp = useSearchParams();
@@ -180,7 +181,7 @@ function LoginForm({ next }: { next: string | null }) {
 // useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
 export default function LoginPage() {
   return (
-    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+    <Suspense fallback={<AuthLoading />}>
       <LoginInner />
     </Suspense>
   );
