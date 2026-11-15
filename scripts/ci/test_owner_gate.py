@@ -114,8 +114,11 @@ def staging_e2e_globs() -> list[str]:
 
 
 def ci_py_tests(wf: str) -> list[str]:
-    """workflow の段が直に流す検査の自己試験（`python3 scripts/ci/<名前>_test.py`・K-62）"""
-    return sorted(set(re.findall(r"python3 (scripts/ci/[A-Za-z0-9_]+_test\.py)", wf)))
+    """workflow の段が直に流す検査の自己試験（`python3 scripts/ci/<名前>_test.py`・K-62）と、
+    `node --test [--旗…] scripts/ci/<名前>.test.mjs`（K-216）。`node scripts/ci/<名前>.test.mjs`（--test なし・package.json の ci:*:selftest）は拾わない"""
+    py = re.findall(r"python3 (scripts/ci/[A-Za-z0-9_]+_test\.py)", wf)
+    mjs = re.findall(r"node --test(?: --\S+)* (scripts/ci/[A-Za-z0-9_]+\.test\.mjs)", wf)
+    return sorted(set(py + mjs))
 
 
 def test_files(files: list[str] | None = None, pats: list[str] | None = None) -> list[str]:
@@ -258,6 +261,17 @@ def selftest() -> int:
     hit_list = py == ["scripts/ci/x_test.py", "scripts/ci/y_test.py"]
     ok &= hit_list
     print(f"  {'緑' if hit_list else '★ 赤'} workflow の自己試験の読み方：{py}")
+    # node --test で流す .test.mjs（K-216）：旗が間にあっても拾う。--test の無い node（package.json の自己試験の形）は拾わない
+    wf_mjs = ("run: node --test --test-reporter=junit --test-reporter-destination=junit/a.xml scripts/ci/m.test.mjs"
+              " && node scripts/ci/n.test.mjs && node --test scripts/ci/o.test.mjs\n")
+    mjs = ci_py_tests(wf_mjs)
+    hit_mjs = mjs == ["scripts/ci/m.test.mjs", "scripts/ci/o.test.mjs"]
+    ok &= hit_mjs
+    print(f"  {'緑' if hit_mjs else '★ 赤'} workflow の node --test の読み方：{mjs}")
+    py_cases.update({
+        "緑（node --test の試験を tests: に書く）": (good + [{"id": "K-9", "tests": ["scripts/ci/m.test.mjs"]}], wf_mjs, set()),
+        "TO3（--test の無い node の試験を tests: に書く）": (good + [{"id": "K-9", "tests": ["scripts/ci/n.test.mjs"]}], wf_mjs, {"TO3"}),
+    })
     for name, (ts, wf, want) in py_cases.items():
         got = {b.split()[0] for b in check(ts, files, gen, ["opP", "opQ"], ci_py_tests(wf))}
         hit = got == want

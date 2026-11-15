@@ -66,6 +66,9 @@ def is_wired(name: str, cmd: str, text: str, all_items: dict[str, str]) -> bool:
     core = cmd.split("&&")[0].strip()
     if core and core in text:
         return True
+    # node の試験は旗（--test・--test-reporter=… など）を挟んで流してもよい（K-216：JUnit の記録を出すため）
+    if name.endswith(".test.mjs") and re.search(rf"node(?: --\S+)+ {re.escape(name)}\b", text):
+        return True
     # ほかの、回っている ci: から呼ばれている
     for k, v in all_items.items():
         if k != name and k.startswith("ci:") and re.search(rf"\b{re.escape(name)}\b", v) and re.search(rf"\b{re.escape(k)}\b", text):
@@ -192,6 +195,9 @@ def main() -> int:
                                   {"file": "b", "check": "pnpm -s type-check", "elsewhere": "G99"}], jobs, {}, {})
         w5_ok = check_elsewhere([{"file": "c", "check": "pnpm -s type-check", "elsewhere": "G2"}], jobs, {}, {})
         hit = hit and len(w5_bad) == 2 and all(x.startswith("W5") for x in w5_bad) and w5_ok == []
+        mjs = "scripts/ci/m.test.mjs"
+        hit = hit and is_wired(mjs, f"node {mjs}", f"run: node --test --test-reporter=junit {mjs}", {})
+        hit = hit and not is_wired(mjs, f"node {mjs}", "run: node --test scripts/ci/other.test.mjs", {})
         print("PASS — どこからも回らない検査を見つけた" if hit else "FAIL — どこからも回らない検査を見つけられない")
         return 0 if hit else 1
     fails = check()

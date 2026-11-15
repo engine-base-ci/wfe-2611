@@ -7,9 +7,6 @@
   "ci:routes:gen": "作り手。G38 が回す"
  },
  "manual": {
-  "scripts/ci/fidelity_config.py --selftest": "突き合わせの道具と設定の試験。CI（G69）に載せるのは K-238（このチケットの完了の条件は手元で流して緑）。K-238 が載せたらここから外す",
-  "scripts/ci/k216_fidelity_compare.test.mjs": "突き合わせの道具と設定の試験。CI（G69）に載せるのは K-238（このチケットの完了の条件は手元で流して緑）。K-238 が載せたらここから外す",
-  "scripts/ci/k216_fidelity_config_test.py": "突き合わせの道具と設定の試験。CI（G69）に載せるのは K-238（このチケットの完了の条件は手元で流して緑）。K-238 が載せたらここから外す",
   "ci:layer-audit": "G27 と同じもの（CI は python3 scripts/ci/layer_audit.py --run を直に呼ぶ）",
   "ci:choke:all": "G16〜G24 を 1 回で回す手元用（CI は関門ごとに分けて回す）",
   "ci:ops": "前の作業の仕組み（07_tasks）の作り手。しまった（D-128.114）",
