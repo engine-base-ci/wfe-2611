@@ -41,16 +41,18 @@ def build(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run([node, str(SCRIPT), *args], cwd=ROOT, capture_output=True, text=True, timeout=180)
 
 
-_OUT_EXISTED = OUT.exists()
-
-
-def tearDownModule() -> None:
-    # 試験の前に出力が無かったなら消して終わる（.gitignore 済みだが、eslint は .vercel を外していないので、残すと手元の lint が赤になる）
-    if not _OUT_EXISTED:
-        shutil.rmtree(OUT.parent, ignore_errors=True)
-
-
 class FunctionConfig(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.out_existed = OUT.exists()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # 試験の前に出力が無かったなら消して終わる（.gitignore 済みだが、eslint は .vercel を外していないので、残すと手元の lint が赤になる）。
+        # tearDownModule は CI の流し方（junit_unittest.py が試験のファイルを sys.modules に登録しない）では呼ばれないので、組の後始末で消す
+        if not cls.out_existed:
+            shutil.rmtree(OUT.parent, ignore_errors=True)
+
     def setUp(self) -> None:
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)

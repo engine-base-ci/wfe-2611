@@ -10569,6 +10569,7 @@
    "changes": [
     "apps/api/build-vercel.mjs",
     "infra/STAGING.md",
+    "scripts/ci/ci_scope.json",
     "02_tech_stack/selected-stack.json",
     "05_flow/build_testplan.py",
     ".github/workflows/v3-gate.yml",
@@ -10590,7 +10591,7 @@
     "決める人に聞く": "無い。処理の場所を DB と同じ所に置くのは K-212 で決まっている（D-097.1）。このチケットはその設定を、口の組み立ての形で効く所に書くだけ。\n\nPM に見てほしいこと（決める人の決定ではない）：\n\n- 口の vercel.json の `regions` は残す判断にした（前提と制約の訳）。配った後に口が hnd1 になれば、vercel.json の側を消すかは後で決めてよい\n- 試験が台本を実際に流すので、`apps/api/.vercel/output`（.gitignore 済み）を書き換える。手元で `vercel dev` などを使っていると、試験の後の出力は本物の決まりの版になる（K246-FC-005 の後に組み立て直す）",
     "成果物": "- `scripts/ci/k246_function_config_test.py`（書く段が書いた）\n- `apps/api/build-vercel.mjs`・`infra/STAGING.md`・`02_tech_stack/selected-stack.json`・`05_flow/build_testplan.py` と作り直した v3-gate.yml・test-plan（実装の役）。要れば `scripts/ci/ci_scope.json` の data_links に 1 行",
     "決定ログ": "- D-097.1（段階 1 は画面も API も Vercel、DB は Supabase）：変えない。口の関数の場所を Supabase と同じ東京にそろえる\n- D-097.6（本番と同じ deploy のコードで作る）：場所を画面の操作でなく組み立ての台本の出力に置く。本番のもう 1 組も同じ台本で同じ場所に配られる\n- D-133.7（チケットの CI はそのチケットの範囲だけ）：試験は手元の組み立てだけで、staging に当てない\n- 書く段が決めたこと：場所の決まりは K-212 の 1 か所を読む／読めないときは組み立てを止め、前の出力を消さない／口の vercel.json の `regions` は残す（値は同じ・正は関数の設定）／ほかの欄（記憶の量・対応表など）は足さない",
-    "リスクと懸念": "- ★ Vercel が `.vc-config.json` の `regions` を Hobby で受けるかは資料で確かめられていない。受けなければ配りが落ちるか iad1 のまま。どちらも配った後に分かる（配りの記録・健康診断の赤）。そのときは画面の Function Regions を人が替える案に戻る（選ばなかった直し方の 1 つ目）\n- 試験が `apps/api/.vercel/output` を書き換える。CI の容れ物の中は使い捨てなので問題無い。手元では本物の決まりの版に戻る\n- 口の Node の版は `.vc-config.json` の `runtime`（nodejs22.x）で決まり、画面の Node.js Version を上げても口は 22 のまま（同じ類の表）。このチケットでは変えない\n- 取り込んでから配られるまでの間に staging の回を流すと、健康診断の処理の場所（口）は赤のまま。配られた後に流し直す",
+    "リスクと懸念": "- ★ Vercel が `.vc-config.json` の `regions` を Hobby で受けるかは資料で確かめられていない。受けなければ配りが落ちるか iad1 のまま。どちらも配った後に分かる（配りの記録・健康診断の赤）。そのときは画面の Function Regions を人が替える案に戻る（選ばなかった直し方の 1 つ目）\n- 戻し方：配りが落ちても、Vercel は組み立てに失敗した版を出さないので staging の口は前の版（iad1）のまま動き続ける。戻すときはこのチケットのコミットを戻し、そのあとは画面の Function Regions を人が替える案に移る。決まりが読めずに組み立てが止まる場合、止まるのは Build Command の `pnpm db:migrate && pnpm provision:bucket` の後なので、DB と置き場だけ先に進む（このチケットは移行を持たないので、今回は進む物が無い）\n- 試験が `apps/api/.vercel/output` を書き換える。CI の容れ物の中は使い捨てなので問題無い。試験の前に出力が無かったときは、試験の組の終わり（tearDownClass・CI の流し方でも呼ばれる）に `apps/api/.vercel` を消す（eslint の外す物に `.vercel` が無く、残すと手元の `pnpm lint` が組み立てた 1 本の JS で 4,000 件ほど赤になる。書く段が手元で踏んだ）。前から在ったときは本物の決まりの版に組み立て直して残す\n- 口の Node の版は `.vc-config.json` の `runtime`（nodejs22.x）で決まり、画面の Node.js Version を上げても口は 22 のまま（同じ類の表）。このチケットでは変えない\n- 取り込んでから配られるまでの間に staging の回を流すと、健康診断の処理の場所（口）は赤のまま。配られた後に流し直す",
     "申し送り": "- 対応表（sourcemap）：組み立ては `.map` を出すが `shouldAddSourcemapSupport` が無く、実行時のスタックに使われない。直すなら別のチケット\n- 記憶の量・CPU・Fluid compute の設定は、口の速さが足りないときに見る（書いていない・どれが効くか確かめていない）\n- ログイン後の画面の速さ（口を何回・直列に呼ぶか）は PM が別に進めている調べもの"
    },
    "file": "11_tickets/K-246.md"
