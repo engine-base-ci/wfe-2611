@@ -14,7 +14,7 @@ import {
   mockApi,
   missingInMain,
   openQueue,
-  openTicket,
+  openTicketSettled,
   rowOf,
   dialog,
   bandOf,
@@ -108,7 +108,7 @@ row(R["K63-UI-010"], async (page) => {
 });
 row(R["K63-UI-021"], async (page) => {
   const m = await mockApi(page);
-  await openTicket(page);
+  await openTicketSettled(page);
   const band = bandOf(page);
   await expect(band).toContainText(MSG.waitingMe);
   await expect(band.getByRole("button", { name: "承認して送る" })).toBeVisible();
@@ -139,7 +139,7 @@ row(R["K63-UI-021"], async (page) => {
 });
 row(R["K63-UI-024"], async (page) => {
   const m = await mockApi(page);
-  await openTicket(page);
+  await openTicketSettled(page);
   m.on.ticket = () => ({
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "make", status: "queued", pc: "live" } }) },
@@ -154,7 +154,7 @@ row(R["K63-UI-024"], async (page) => {
 });
 row(R["K63-UI-042"], async (page) => {
   const m = await mockApi(page); // 承認待ち・決められる人（承認する人）
-  await openTicket(page);
+  await openTicketSettled(page);
   await expect(bandOf(page)).toContainText(MSG.waitingMe);
   await expect(page.getByRole("button", { name: "承認して送る" })).toHaveCount(1);
   await expect(page.getByText(MSG.k62Waiting)).toHaveCount(0); // 同じ人に帯を 2 つ並べない
@@ -171,7 +171,7 @@ row(R["K63-UI-042"], async (page) => {
 });
 row(R["K63-UI-043"], async (page) => {
   const m = await mockApi(page);
-  await openTicket(page);
+  await openTicketSettled(page);
   // 帯で押した時点で、もう決まっていた（別のタブ・別の人）：知らせを出し、帯を読み直す
   m.on.approve = () => ({ status: 409, body: { error: "conflict", code: "E-CONF-003", message: MSG.decided } });
   m.on.ticket = () => ({

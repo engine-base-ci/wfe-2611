@@ -14,6 +14,8 @@ import {
   menuCount,
   openQueue,
   openTicket,
+  openTicketSettled,
+  tickSettled,
   rowOf,
   dialog,
   bandOf,
@@ -73,7 +75,7 @@ row(R["K63-UI-014"], async (page) => {
 });
 row(R["K63-UI-022"], async (page) => {
   const m = await mockApi(page);
-  await openTicket(page);
+  await openTicketSettled(page);
   m.on.ticket = () => ({
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "running", pc: "live" } }) },
@@ -89,7 +91,7 @@ row(R["K63-UI-044"], async (page) => {
   // 開いたままのチケットで、作る段が終わって承認待ちになったら、読み直しで承認の帯に替わる
   const m = await mockApi(page, { stage: "running", run: { phase: "make", status: "running", pc: "live" } });
   await page.clock.install(); // 3 秒ごとの読み直しは、時計を進めて起こす（待ち時間に頼らない）
-  await openTicket(page);
+  await openTicketSettled(page);
   await expect(bandOf(page)).toHaveCount(0); // 作る段の間は K-63 の帯ごと出さない（K-62 の帯だけ・D-128.178）
   m.on.ticket = () => ({
     status: 200,
@@ -101,7 +103,7 @@ row(R["K63-UI-044"], async (page) => {
       }),
     },
   });
-  await page.clock.fastForward(3_000);
+  await tickSettled(page);
   await expect(bandOf(page)).toContainText(MSG.waitingMe);
   await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
   await expect(page.getByText(MSG.k62Waiting)).toHaveCount(0);

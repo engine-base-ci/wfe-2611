@@ -20,6 +20,7 @@ import {
   pending,
   mockApi,
   openTicket,
+  tickSettled,
   bandOf,
   k62Band,
   reasonBox,
@@ -130,7 +131,7 @@ async function world(page: Page): Promise<World> {
   return w;
 }
 /** 3 秒ごとの読み直しを 1 回起こす（時計を進める。待ち時間に頼らない） */
-const tick = (page: Page) => page.clock.fastForward(3_000);
+const tick = (page: Page) => tickSettled(page);
 /** 再読み込みしていないことの印（再読み込みすると消える） */
 const mark = (page: Page) => page.evaluate(() => ((window as unknown as { __k184?: number }).__k184 = 1));
 const marked = (page: Page) => page.evaluate(() => (window as unknown as { __k184?: number }).__k184);

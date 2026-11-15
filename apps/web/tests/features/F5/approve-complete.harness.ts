@@ -401,3 +401,30 @@ export const titleLink = (id: string, title: string, ticketId: string) =>
     await link.click();
     await expect(page).toHaveURL(new RegExp(`/tickets/${ticketId}$`));
   });
+
+// ---- 実行の一覧の答えを待つ道具（K-247）----
+// 試験が開いた直後・時計を進めた直後に口の答え（m.on.ticket）を替えると、まだ届いていない実行の一覧の答えが替えた後の答えで帰り、
+// 帯が替わって押す前にボタンが消える（遅い台で起きる揺れ）。答えを替える行は、この道具で開く・進める
+const RUNS_PATH = `/api/v1/tickets/${TICKET}/runs`;
+const isRuns = (req: Request) => new URL(req.url()).pathname === RUNS_PATH;
+/** 開いた後、実行の一覧の最初の答えが届くまで返らない（一覧を握ったまま開く行は openTicket のまま） */
+export const openTicketSettled = async (page: Page, width = 1440): Promise<void> => {
+  const read = page.waitForResponse((r) => isRuns(r.request()));
+  await openTicket(page, width);
+  await read;
+};
+/** 時計を 3 秒進め、進めた後に出た実行の一覧の問い合わせの答えが届くまで返らない（進める前から飛んでいた答えでは返らない）。
+ *  一覧が 3 秒ごとに読み直している間（走っている実行がある・任せた直後）だけ使う */
+export const tickSettled = async (page: Page): Promise<void> => {
+  const asked = new Promise<Request>((resolve) => {
+    const on = (req: Request) => {
+      if (!isRuns(req)) return;
+      page.off("request", on);
+      resolve(req);
+    };
+    page.on("request", on);
+  });
+  await page.clock.fastForward(3_000);
+  const req = await asked;
+  await req.response();
+};
