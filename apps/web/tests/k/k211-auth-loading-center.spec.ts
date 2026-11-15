@@ -84,8 +84,15 @@ interface Measure {
   overflow: number;
 }
 
-/** 箱の中の読み込み中の表示を数で測る。文は字の範囲（Range）で測る（要素の幅が広がっても字の位置で見る） */
+/** 回る印の動きを試験の中だけで止める（製品は変えない）。回っている途中の印は傾いた四角の外枠で測られ、
+ *  左右の端が最大 2.7px ずれ、幅と高さも角度しだいで同じに見える。どの行も止めてから測る（精査の指摘） */
+async function stopSpin(page: Page) {
+  await page.addStyleTag({ content: ".k-spin { animation: none !important; }" });
+}
+
+/** 箱の中の読み込み中の表示を数で測る（回る印の動きは止めてから）。文は字の範囲（Range）で測る（要素の幅が広がっても字の位置で見る） */
 async function measure(page: Page, label: string): Promise<Measure> {
+  await stopSpin(page);
   return page.evaluate((text) => {
     const card = document.querySelector(".k-auth-card");
     const h1 = card?.querySelector("h1");
@@ -236,8 +243,7 @@ test("K211-UI-009 箱の外の読み込み中は今のまま（部品の既定�
   await page.setViewportSize({ width: 1440, height: 900 });
   const res = await page.goto("/dev/k/states");
   expect(res?.status()).toBe(200);
-  // 回る印は回っている途中だと傾いた四角の外枠で測られる（左端が最大 2.7px ずれる）。試験の中だけ動きを止めて測る（製品は変えない）
-  await page.addStyleTag({ content: ".k-spin { animation: none !important; }" });
+  await stopSpin(page);
   const sample = page.locator('[data-sample="loading"]');
   await expect(sample.getByText("読み込んでいます…", { exact: true })).toBeVisible();
   const gap = await sample.evaluate((el) => {
