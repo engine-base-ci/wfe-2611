@@ -215,16 +215,6 @@
   },
   {
    "paths": [
-    "scripts/ci/class_ledger.json",
-    "apps/web/styles/k-tokens.css",
-    "apps/web/components/k/k.css"
-   ],
-   "tests": [
-    "apps/web/tests/k/k217-page-parts.spec.ts"
-   ]
-  },
-  {
-   "paths": [
     "apps/api/src/auth/agent-tools.ts"
    ],
    "tests": [
@@ -457,6 +447,7 @@
   "apps/web/tests/_lib/browser.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/_lib/row.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/reachability.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/k/k217-page-parts.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths：台帳 scripts/ci/class_ledger.json・トークンと k.css は apps/web の中）",
   "apps/web/tests/screens/agent-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/bridge-live.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/screens/bridge-loop.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
@@ -522,6 +513,7 @@
     "05_flow/flow.json",
     "04_design/**",
     "07_qa/test-specs/errors.json",
+    "scripts/ci/class_ledger.json",
     "apps/api/src/**",
     "packages/auth/src/**",
     "packages/db/src/**",
