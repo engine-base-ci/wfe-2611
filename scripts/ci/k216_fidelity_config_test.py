@@ -10,7 +10,7 @@
   ・組の種類（kind）ごとに要る役（role）がそろい、役ごとに要る値（props）がそろう（下の KINDS・ROLES は K-216.md の表と同じ）
   ・段 1 の組（下の GROUPS の 21 組）が全部在る（入れていなくても在る。持ち主の画面のチケットが直して enrolled にする）
   ・enrolled の組は、画面を整える道具（apps/web/tests/_lib/fidelity-states.ts）に鍵が在る
-  ・本線との分かれ目で enrolled だった組は、消せない・enrolled を戻せない・比べる（役×値×幅）を減らせない・セレクタを替えられない
+  ・本線との分かれ目で enrolled だった組は、消せない・enrolled を戻せない・比べる（役×値×幅）を減らせない・セレクタも state も替えられない
 作りものの設定は tempfile の中に作る。git には GIT_ で始まる環境の値を除いて渡す。
 """
 from __future__ import annotations
@@ -217,6 +217,39 @@ class RatchetTest(unittest.TestCase):
             g = copy.deepcopy(more)
             edit(g)
             self.assertEqual(self.check(g), 1, why)
+
+
+class ReviewTest(unittest.TestCase):
+    """レビューの指摘（2026-11-15・PM の決め）"""
+
+    def test_K216_VF_023_cannot_swap_state(self) -> None:
+        """K216-VF-023 分かれ目で enrolled の組の state（画面を整える鍵）を別の鍵に替えると 1（易しい状態で比べて弱められない）"""
+        f = Fake()
+        try:
+            f.write("apps/web/tests/_lib/fidelity-states.ts", 'export const FIDELITY_STATES = {\n  "s1": async () => {},\n  "s2": async () => {},\n};\n')
+            f.git("init", "-q")
+            f.config([group("g1", enrolled=True)])
+            f.git("add", "-A")
+            f.git("commit", "-qm", "base")
+            f.config([group("g1", enrolled=True, state="s2")])
+            r = f.run("--base-ref", "HEAD", required="g1")
+            self.assertEqual(r.returncode, 1, r.stdout)
+            self.assertIn("state", r.stdout)
+            f.config([group("g1", enrolled=True)])
+            self.assertEqual(f.run("--base-ref", "HEAD", required="g1").returncode, 0)
+        finally:
+            f.close()
+
+    def test_K216_VF_024_wiring_needs_node_test(self) -> None:
+        """K216-VF-024 書いた検査が CI から回るかの検査（ci_wiring_gate）は、.test.mjs を `node --test [旗…]` で流すときだけ回ると数える（`node --check` は流していない）"""
+        sys.path.insert(0, str(HERE))
+        import ci_wiring_gate  # noqa: E402
+
+        name = "scripts/ci/m.test.mjs"
+        self.assertTrue(ci_wiring_gate.is_wired(name, f"node {name}", f"run: node --test --test-reporter=junit {name}", {}))
+        self.assertTrue(ci_wiring_gate.is_wired(name, f"node {name}", f"run: node {name}", {}))
+        self.assertFalse(ci_wiring_gate.is_wired(name, f"node {name}", f"run: node --check {name}", {}))
+        self.assertFalse(ci_wiring_gate.is_wired(name, f"node {name}", "run: node --test scripts/ci/other.test.mjs", {}))
 
 
 class RealTest(unittest.TestCase):
