@@ -9779,7 +9779,8 @@
     "scripts/ci/visual_fidelity.mjs",
     "scripts/ci/fidelity_config.py",
     "04_design/fidelity.json",
-    "apps/web/tests/_lib/fidelity-states.ts"
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scripts.json"
    ],
    "affects": [
     "@kaname/web"
