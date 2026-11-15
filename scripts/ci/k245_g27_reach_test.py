@@ -19,7 +19,6 @@ from __future__ import annotations
 import glob
 import pathlib
 import re
-import subprocess
 import sys
 import unittest
 
@@ -135,16 +134,13 @@ class Fix(unittest.TestCase):
             hit = sorted(_rel(p) for p in reach & BUNDLE)
             self.assertEqual(hit, [], f"[{sid}] から共通の部品の束か states に届く: {hit}")
 
-    def test_K245_G27_006_layer_audit_green_on_real_tree(self) -> None:
+    def test_K245_G27_006_g27_step_shape(self) -> None:
+        # G27 そのものはここで流さない（この試験は G65 で毎回流れる。流すと G27 が範囲の外でも流れ、赤の出所が 2 つになる）。
+        # 本物の木で台帳が緑かは 004 が受け、G27 が緑かはこのチケットの CI の G27 の段が受ける
         g27 = [s for s in _spec_steps() if str(s.get("name", "")).startswith("G27 ")]
-        self.assertEqual(len(g27), 1)
+        self.assertEqual(len(g27), 1, "spec の組に G27 の段がちょうど 1 つでない")
         self.assertIn("scripts/ci/layer_audit.py --run", g27[0]["run"])
-        # DB の層は DB の範囲の回だけ（D-133.6）。手元には CI の DB が無いので範囲の外として流す（CI と同じ命令・同じ引数の形）
-        r = subprocess.run([sys.executable, "scripts/ci/layer_audit.py", "--run", "--db-range", "false"], cwd=ROOT,
-                           capture_output=True, text=True, timeout=600)
-        out = r.stdout + r.stderr
-        self.assertEqual(r.returncode, 0, "\n".join(ln for ln in out.splitlines() if "★" in ln)[:4000])
-        self.assertIn("PASS — G21", out)
+        self.assertIn(",27,", str(g27[0].get("if", "")), "G27 の段が範囲の答え（gates の 27）で流れる形でない")
 
 
 class Scope(unittest.TestCase):
