@@ -72,8 +72,23 @@ class Fake:
     def git(self, *a: str) -> None:
         subprocess.run(["git", *a], cwd=self.root, env=clean_env(), capture_output=True, text=True, check=True)
 
+    def no_ledger(self) -> None:
+        (self.root / "scripts/ci/canvas_field_ledger.json").unlink()
+
     def close(self) -> None:
         shutil.rmtree(self.root, ignore_errors=True)
+
+
+def assert_red(tc: unittest.TestCase, r: subprocess.CompletedProcess, *needles: str) -> None:
+    """赤は 1 で終わり、出す字が stdout に在り、読み方で落ちた（Traceback）のではないこと"""
+    tc.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+    tc.assertNotIn("Traceback", r.stderr, r.stderr)
+    for n in needles:
+        tc.assertIn(n, r.stdout, (n, r.stdout))
+
+
+def assert_green(tc: unittest.TestCase, r: subprocess.CompletedProcess) -> None:
+    tc.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
 
 class FieldTest(unittest.TestCase):
@@ -85,82 +100,96 @@ class FieldTest(unittest.TestCase):
         self.f.close()
 
     def test_K215_CF_001_missing_canvas_is_red_by_any_trigger(self) -> None:
-        """K215-CF-001 canvas が無いと 1 で番号を出す。当たり方は 3 つのどれでも（screens あり／area が画面／changes が apps/web/features）"""
-        for head in ({}, {"screens": None}, {"screens": None, "area": "試験", "changes": "[apps/web/features/F4/x.tsx]"}):
+        """K215-CF-001 canvas が無いと 1 で番号を出す。当たり方は 3 つのどれでも（screens だけ／area が画面だけ／changes の
+        apps/web/app・features・components/k・styles のどれか 1 つだけ）。K-9 は組を持たない（逆向きの赤と混ぜない）"""
+        self.f.groups({"g3": "K-8"})
+        cases = [{"area": "試験"}, {"screens": None}]
+        cases += [{"screens": None, "area": "試験", "changes": f"[{d}x.tsx]"}
+                  for d in ("apps/web/app/", "apps/web/features/F4/", "apps/web/components/k/", "apps/web/styles/")]
+        for head in cases:
             self.f.ticket("K-9", canvas=None, **head)
-            r = self.f.run("--no-base")
-            self.assertEqual(r.returncode, 1, head)
-            self.assertIn("K-9", r.stdout)
+            with self.subTest(head=head):
+                assert_red(self, self.f.run("--no-base"), "K-9")
 
     def test_K215_CF_002_good_ticket_is_green(self) -> None:
         """K215-CF-002 canvas: [g1, g2]（どちらも在り、持ち主がこのチケット）なら 0"""
         self.f.ticket("K-9")
-        self.assertEqual(self.f.run("--no-base").returncode, 0, self.f.run("--no-base").stdout)
+        assert_green(self, self.f.run("--no-base"))
 
     def test_K215_CF_003_unknown_group_is_red(self) -> None:
         """K215-CF-003 canvas の組が fidelity.json に無い（絵の名前や無い状態を書いた）と 1 で、その名前を出す"""
         self.f.ticket("K-9", canvas="[g1, g2, Main/存在しない状態]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("Main/存在しない状態", r.stdout)
+        assert_red(self, self.f.run("--no-base"), "Main/存在しない状態", "K-9")
 
     def test_K215_CF_004_group_of_other_owner_is_red(self) -> None:
-        """K215-CF-004 canvas の組の持ち主が別のチケット（g3 の持ち主は K-8）だと 1"""
+        """K215-CF-004 canvas の組の持ち主が別のチケット（g3 の持ち主は K-8）だと 1 で、組の id と持ち主を出す"""
         self.f.ticket("K-9", canvas="[g1, g2, g3]")
-        self.assertEqual(self.f.run("--no-base").returncode, 1)
+        assert_red(self, self.f.run("--no-base"), "g3", "K-8", "K-9")
 
     def test_K215_CF_005_owned_group_missing_from_canvas_is_red(self) -> None:
-        """K215-CF-005 逆向き：持ち主の組（g2）を自分の canvas に書いていないと 1 で、組の id を出す"""
+        """K215-CF-005 逆向き：持ち主の組（g2）を自分の canvas に書いていないと 1 で、組の id を出す。
+        組の持ち主が 11_tickets に無い・取り込み済みでない持ち主に canvas が無い（台帳に載っていても）と 1。取り込み済みの持ち主は見ない"""
         self.f.ticket("K-9", canvas="[g1]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("g2", r.stdout)
+        assert_red(self, self.f.run("--no-base"), "g2", "K-9")
+        self.f.ticket("K-9")
+        self.f.groups({"g1": "K-9", "g2": "K-9", "g3": "K-8", "g4": "K-404"})
+        assert_red(self, self.f.run("--no-base"), "g4", "K-404")
+        self.f.groups({"g1": "K-9", "g2": "K-9", "g3": "K-8", "g5": "K-12"})
+        self.f.ticket("K-12", canvas=None)
+        self.f.ledger(["K-12"])
+        assert_red(self, self.f.run("--no-base"), "g5", "K-12")
+        self.f.ticket("K-12", stage="確認中", canvas=None)
+        self.f.ledger([])
+        assert_green(self, self.f.run("--no-base"))
 
     def test_K215_CF_006_not_applied(self) -> None:
-        """K215-CF-006 確認中・完了のチケット、子を持つ親、当たり方の 3 つのどれにも当たらないチケットは canvas が無くても 0"""
+        """K215-CF-006 確認中・完了のチケット、子を持つ親、当たり方の 3 つのどれにも当たらないチケット
+        （changes が scripts・apps/web/components/ui・apps/web/tests だけ）は canvas が無くても 0"""
         self.f.ticket("K-9")
         self.f.ticket("K-7", stage="確認中", canvas=None)
         self.f.ticket("K-6", stage="完了", canvas=None)
         self.f.ticket("K-5", canvas=None)
         self.f.ticket("K-4", canvas="[全部の組]", parent="K-5")
-        self.f.ticket("K-3", canvas=None, screens=None, area="試験", changes="[scripts/ci/x.py]")
-        self.assertEqual(self.f.run("--no-base").returncode, 0, self.f.run("--no-base").stdout)
+        for tid, path in (("K-3", "scripts/ci/x.py"), ("K-2", "apps/web/components/ui/x.tsx"), ("K-10", "apps/web/tests/features/x.spec.ts")):
+            self.f.ticket(tid, canvas=None, screens=None, area="試験", changes=f"[{path}]")
+        assert_green(self, self.f.run("--no-base"))
 
     def test_K215_CF_007_started_ticket_still_checked(self) -> None:
-        """K215-CF-007 着手した後（作業中・保留）に canvas を消すと 1"""
+        """K215-CF-007 着手した後（作業中・保留）に canvas を消すと 1 で番号を出す（K-9 は組を持たない）"""
+        self.f.groups({"g3": "K-8"})
         for stage in ("作業中", "保留"):
             self.f.ticket("K-9", stage=stage, canvas=None)
-            self.assertEqual(self.f.run("--no-base").returncode, 1, stage)
+            with self.subTest(stage=stage):
+                assert_red(self, self.f.run("--no-base"), "K-9")
 
     def test_K215_CF_008_all_groups(self) -> None:
-        """K215-CF-008 canvas: [全部の組] は 0（持ち主の組が無いチケット）。ほかの id と混ぜると 1"""
+        """K215-CF-008 canvas: [全部の組] は 0（持ち主の組が無いチケット）。自分が持ち主の組と混ぜると 1 で「全部の組」と番号を出す"""
         self.f.groups({"g3": "K-8"})
         self.f.ticket("K-9", canvas="[全部の組]")
-        self.assertEqual(self.f.run("--no-base").returncode, 0)
-        self.f.ticket("K-9", canvas="[全部の組, g3]")
-        self.assertEqual(self.f.run("--no-base").returncode, 1)
-
+        assert_green(self, self.f.run("--no-base"))
+        self.f.groups({"g1": "K-9", "g3": "K-8"})
+        self.f.ticket("K-9", canvas="[全部の組, g1]")
+        assert_red(self, self.f.run("--no-base"), "全部の組", "K-9")
 
     def test_K215_CF_013_canvas_none_needs_reason_and_no_screen_code(self) -> None:
         """K215-CF-013 見た目を変えないチケット（画面の試験だけを直す 等）は canvas: [] と canvas_none: <訳> で 0。
         訳が無い・空の canvas: [] は 1。changes に画面のコード（apps/web/app|features|components/k|styles）があれば訳があっても 1。
-        組を書いた canvas に canvas_none を混ぜると 1"""
+        組を書いた canvas（全部の組・自分の組）に canvas_none を混ぜると 1。どれも番号を出す"""
+        tests_only = "[apps/web/tests/features/F5/x.spec.ts]"
         self.f.groups({"g3": "K-8"})
-        self.f.ticket("K-9", canvas="[]", canvas_none="見た目を変えない（画面の試験だけ）", changes="[apps/web/tests/features/F5/x.spec.ts]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 0, r.stdout)
-        self.f.ticket("K-9", canvas="[]", changes="[apps/web/tests/features/F5/x.spec.ts]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("K-9", r.stdout)
-        self.f.ticket("K-9", canvas="[]", canvas_none="", changes="[apps/web/tests/features/F5/x.spec.ts]")
-        self.assertEqual(self.f.run("--no-base").returncode, 1)
+        self.f.ticket("K-9", canvas="[]", canvas_none="見た目を変えない（画面の試験だけ）", changes=tests_only)
+        assert_green(self, self.f.run("--no-base"))
+        self.f.ticket("K-9", canvas="[]", changes=tests_only)
+        assert_red(self, self.f.run("--no-base"), "K-9")
+        self.f.ticket("K-9", canvas="[]", canvas_none="", changes=tests_only)
+        assert_red(self, self.f.run("--no-base"), "K-9")
         self.f.ticket("K-9", canvas="[]", canvas_none="見た目を変えない", changes="[apps/web/features/F5/x.tsx]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("K-9", r.stdout)
-        self.f.ticket("K-9", canvas="[全部の組]", canvas_none="見た目を変えない", changes="[apps/web/tests/features/F5/x.spec.ts]")
-        self.assertEqual(self.f.run("--no-base").returncode, 1)
+        assert_red(self, self.f.run("--no-base"), "K-9")
+        self.f.ticket("K-9", canvas="[全部の組]", canvas_none="見た目を変えない", changes=tests_only)
+        assert_red(self, self.f.run("--no-base"), "K-9")
+        self.f.groups({"g1": "K-9", "g3": "K-8"})
+        self.f.ticket("K-9", canvas="[g1]", canvas_none="見た目を変えない", changes=tests_only)
+        assert_red(self, self.f.run("--no-base"), "K-9")
 
 
 class LedgerTest(unittest.TestCase):
@@ -172,34 +201,78 @@ class LedgerTest(unittest.TestCase):
         self.f.close()
 
     def test_K215_CF_009_ledger_passes_and_stale_is_red(self) -> None:
-        """K215-CF-009 台帳に載ったチケットは canvas が無くても 0。canvas を書いた・ファイルが無いのに台帳に残れば 1（「台帳から消す」）。
+        """K215-CF-009 台帳に載ったチケットは canvas が無くても 0。canvas を書いた・ファイルが無いのに台帳に残れば 1（「台帳から消す」と番号）。
         取り込み済み（確認中）になって当たらなくなった行は 0 のまま「台帳から消してよい」と出す（取り込みの台本が stage を書いた回を赤にしない）"""
         self.f.ticket("K-9", canvas=None)
         self.f.ledger(["K-9"])
-        self.assertEqual(self.f.run("--no-base").returncode, 0)
+        assert_green(self, self.f.run("--no-base"))
         self.f.ticket("K-9", canvas="[全部の組]")
-        r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("台帳から消す", r.stdout)
+        assert_red(self, self.f.run("--no-base"), "台帳から消す", "K-9")
         self.f.ticket("K-9", stage="確認中", canvas=None)
         r = self.f.run("--no-base")
-        self.assertEqual(r.returncode, 0, r.stdout)
+        assert_green(self, r)
         self.assertIn("台帳から消してよい", r.stdout)
         self.f.ledger(["K-404"])
-        self.assertEqual(self.f.run("--no-base").returncode, 1)
+        assert_red(self, self.f.run("--no-base"), "台帳から消す", "K-404")
 
     def test_K215_CF_010_ledger_cannot_grow(self) -> None:
-        """K215-CF-010 分かれ目の台帳に無いチケットを足すと 1。比べる版が読めない・比べ方の指定が無いと 1"""
+        """K215-CF-010 分かれ目の台帳と同じ・減らしたなら 0。分かれ目に無いチケットを足すと 1 で番号を出す。
+        分かれ目に台帳が無い（台帳を入れる回）なら知らせて 0、ただし 27 行を超えれば 1。比べる版が読めない・比べ方の指定が無いと 1"""
         self.f.git("init", "-q")
         self.f.ticket("K-9", canvas=None)
         self.f.ticket("K-11", canvas=None)
-        self.f.ledger(["K-9"])
+        self.f.ledger(["K-9", "K-11"])
         self.f.git("add", "-A")
         self.f.git("commit", "-qm", "base")
-        self.f.ledger(["K-9", "K-11"])
-        self.assertEqual(self.f.run("--ledger-base-ref", "HEAD").returncode, 1)
-        self.assertEqual(self.f.run("--ledger-base-ref", "nai-ref-x").returncode, 1)
-        self.assertEqual(self.f.run().returncode, 1)
+        assert_green(self, self.f.run("--ledger-base-ref", "HEAD"))
+        self.f.ticket("K-11", canvas="[全部の組]")
+        self.f.ledger(["K-9"])
+        assert_green(self, self.f.run("--ledger-base-ref", "HEAD"))
+        self.f.ticket("K-12", canvas=None)
+        self.f.ledger(["K-9", "K-12"])
+        assert_red(self, self.f.run("--ledger-base-ref", "HEAD"), "K-12")
+        assert_red(self, self.f.run("--ledger-base-ref", "nai-ref-x"), "nai-ref-x")
+        assert_red(self, self.f.run(), "--ledger-base-ref")
+
+    def test_K215_CF_010_first_ledger_has_cap(self) -> None:
+        """K215-CF-010 分かれ目に台帳のファイルが無い回：27 行までは 0（知らせる）、28 行は 1"""
+        self.f.git("init", "-q")
+        self.f.no_ledger()
+        self.f.ticket("K-9", canvas=None)
+        self.f.git("add", "-A")
+        self.f.git("commit", "-qm", "base")
+        self.f.ledger(["K-9"])
+        assert_green(self, self.f.run("--ledger-base-ref", "HEAD"))
+        many = [f"K-{100 + i}" for i in range(28)]
+        for t in many[:27]:
+            self.f.ticket(t, canvas=None)
+        self.f.ledger(many[:27])
+        self.f.ticket("K-9", canvas="[全部の組]")
+        assert_green(self, self.f.run("--ledger-base-ref", "HEAD"))
+        self.f.ticket(many[27], canvas=None)
+        self.f.ledger(many)
+        assert_red(self, self.f.run("--ledger-base-ref", "HEAD"), "27 行")
+
+    def test_K215_CF_014_unreadable_inputs_are_red(self) -> None:
+        """K215-CF-014 fidelity.json・台帳が無い・読めない・形が違う（groups／entries が並びでない）、11_tickets に K-*.md が 0 枚なら 1 で、ファイルの名前を出す"""
+        self.f.ticket("K-9", canvas="[全部の組]")
+        fid = self.f.root / "04_design/fidelity.json"
+        led = self.f.root / "scripts/ci/canvas_field_ledger.json"
+        for path, text, name in ((fid, None, "fidelity.json"), (fid, "{", "fidelity.json"), (fid, '{"groups": {}}', "fidelity.json"),
+                                 (led, None, "canvas_field_ledger.json"), (led, "[", "canvas_field_ledger.json"),
+                                 (led, '{"entries": {}}', "canvas_field_ledger.json")):
+            self.f.groups({})
+            self.f.ledger([])
+            if text is None:
+                path.unlink()
+            else:
+                path.write_text(text, encoding="utf-8")
+            with self.subTest(path=path.name, text=text):
+                assert_red(self, self.f.run("--no-base"), name)
+        self.f.groups({})
+        self.f.ledger([])
+        (self.f.root / "11_tickets/K-9.md").unlink()
+        assert_red(self, self.f.run("--no-base"), "11_tickets")
 
 
 class RealTest(unittest.TestCase):
