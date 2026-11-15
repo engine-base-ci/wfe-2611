@@ -63,6 +63,9 @@ class Tree:
         self.write("apps/web/components/k/k.css", K_CSS)
         self.write("apps/web/components/k/shell.css", SHELL_CSS)
         self.write("apps/web/components/k/shell.tsx", 'export const S = () => <div className="k-shell"><aside className="k-panel" /></div>;\n')
+        # 定義に数えるのは読み込まれた .css だけ（K214-CG-025）。本物と同じく layout が globals.css を読み、globals.css が部品の CSS を @import する
+        self.write("apps/web/app/globals.css", '@import "tailwindcss";\n@import "../components/k/k.css";\n@import "../components/k/shell.css";\n')
+        self.write("apps/web/app/layout.tsx", 'import "./globals.css";\nexport default function L() { return null; }\n')
         self.write("11_tickets/K-1.md", "---\nid: K-1\n---\n")
 
     def write(self, rel: str, text: str) -> pathlib.Path:
@@ -274,11 +277,13 @@ class ReviewTest(unittest.TestCase):
         real_not_grown(self)
 
     def test_K214_CG_020_value_positions(self) -> None:
-        """K214-CG-020 新しい層で、三項の枝・?? と || の両側に変数を置くと unresolved で出す（on ? cls : "k-a"・a ?? "k-a"・b || "k-a"）。
-        && の左と三項の条件は見ない（ok && "k-a"・cond ? "k-a" : ""）"""
-        self.t.write(F, 'export const P = ({on, cls, a, b, ok, cond}) => (<>\n<p className={on ? cls : "k-a"} />\n<p className={a ?? "k-a"} />\n'
-                        '<p className={b || "k-a"} />\n<p className={ok && "k-a"} />\n<p className={cond ? "k-a" : ""} />\n</>);\n')
-        self.assertEqual({(k, c) for k, c, f in self.t.findings()}, {("unresolved", "cls"), ("unresolved", "a"), ("unresolved", "b")})
+        """K214-CG-020 新しい層で、三項の枝・?? と || の両側・&& の右に変数を置くと unresolved で出す（on ? cls : "k-a"・a ?? "k-a"・b || "k-a"・ok && cls2）。
+        && の左と三項の条件は見ない（ok && "k-a"・cond ? "k-a" : ""）。受け取った className と空（`${className}`・on ? className : "k-a"・on ? "k-a" : undefined）は出さない"""
+        self.t.write(F, 'export const P = ({on, cls, a, b, ok, cond, cls2, className}) => (<>\n<p className={on ? cls : "k-a"} />\n<p className={a ?? "k-a"} />\n'
+                        '<p className={b || "k-a"} />\n<p className={ok && "k-a"} />\n<p className={cond ? "k-a" : ""} />\n<p className={ok && cls2} />\n'
+                        '<p className={`${className}`} />\n<p className={on ? className : "k-a"} />\n<p className={on ? "k-a" : undefined} />\n</>);\n')
+        self.assertEqual({(k, c) for k, c, f in self.t.findings()},
+                         {("unresolved", "cls"), ("unresolved", "a"), ("unresolved", "b"), ("unresolved", "cls2")})
         real_not_grown(self)
 
     def test_K214_CG_021_other_unreadable_forms(self) -> None:
@@ -313,10 +318,20 @@ class ReviewTest(unittest.TestCase):
         """K214-CG-024 CSS の定義はセレクタの部分（{ より前）だけを数える。:not(.k-n) の中・content: ".k-s" の文字の中・url(a.k-u.png) の値の中は数えず、
         k-n・k-s・k-u を使うと undefined で出す。.k-x:not(.k-n) の k-x は定義に数える"""
         self.t.write("apps/web/components/k/more.css", '.k-x:not(.k-n) { content: ".k-s"; background: url(a.k-u.png); }\n')
+        self.t.write("apps/web/components/k/more.tsx", 'import "./more.css";\nexport const M = () => null;\n')
         self.t.write(F, 'export const P = () => <p className="k-x k-n k-s k-u" />;\n')
         self.assertEqual(self.t.findings(), {("undefined", "k-n", F), ("undefined", "k-s", F), ("undefined", "k-u", F)})
         real_not_grown(self)
 
+
+    def test_K214_CG_025_only_imported_css_defines(self) -> None:
+        """K214-CG-025 定義に数えるのは、apps/web の .ts・.tsx の import "…css" か、読み込まれた .css の @import で辿れる .css だけ。
+        どこにも読み込まれていない orphan.css の .k-o は数えず、k-o を使う画面で undefined が出る。import した used.css の .k-i は数える（@/ の別名も辿る）"""
+        self.t.write("apps/web/features/F9/x/orphan.css", ".k-o { gap: 0; }\n")
+        self.t.write("apps/web/features/F9/x/used.css", ".k-i { gap: 0; }\n")
+        self.t.write(F, 'import "@/features/F9/x/used.css";\nexport const P = () => <p className="k-o k-i" />;\n')
+        self.assertEqual(self.t.findings(), {("undefined", "k-o", F)})
+        real_not_grown(self)
 
 class WiringTest(unittest.TestCase):
     def test_K214_CG_016_runs_in_ci(self) -> None:
