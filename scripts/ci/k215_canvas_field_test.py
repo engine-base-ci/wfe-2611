@@ -141,6 +141,28 @@ class FieldTest(unittest.TestCase):
         self.assertEqual(self.f.run("--no-base").returncode, 1)
 
 
+    def test_K215_CF_013_canvas_none_needs_reason_and_no_screen_code(self) -> None:
+        """K215-CF-013 見た目を変えないチケット（画面の試験だけを直す 等）は canvas: [] と canvas_none: <訳> で 0。
+        訳が無い・空の canvas: [] は 1。changes に画面のコード（apps/web/app|features|components/k|styles）があれば訳があっても 1。
+        組を書いた canvas に canvas_none を混ぜると 1"""
+        self.f.groups({"g3": "K-8"})
+        self.f.ticket("K-9", canvas="[]", canvas_none="見た目を変えない（画面の試験だけ）", changes="[apps/web/tests/features/F5/x.spec.ts]")
+        r = self.f.run("--no-base")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.f.ticket("K-9", canvas="[]", changes="[apps/web/tests/features/F5/x.spec.ts]")
+        r = self.f.run("--no-base")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("K-9", r.stdout)
+        self.f.ticket("K-9", canvas="[]", canvas_none="", changes="[apps/web/tests/features/F5/x.spec.ts]")
+        self.assertEqual(self.f.run("--no-base").returncode, 1)
+        self.f.ticket("K-9", canvas="[]", canvas_none="見た目を変えない", changes="[apps/web/features/F5/x.tsx]")
+        r = self.f.run("--no-base")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("K-9", r.stdout)
+        self.f.ticket("K-9", canvas="[全部の組]", canvas_none="見た目を変えない", changes="[apps/web/tests/features/F5/x.spec.ts]")
+        self.assertEqual(self.f.run("--no-base").returncode, 1)
+
+
 class LedgerTest(unittest.TestCase):
     def setUp(self) -> None:
         self.f = Fake()
