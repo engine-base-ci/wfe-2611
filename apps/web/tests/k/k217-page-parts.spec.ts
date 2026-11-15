@@ -300,3 +300,121 @@ test("K217-UI-018 入口の枠（/legal/terms）の見出しは変わらない�
   const k = readFileSync(join(ROOT, "apps/web/components/k/k.css"), "utf8");
   expect(k).toContain(":where(.k-root:not(.k-auth)) :where(h1");
 });
+
+// ---- レビューの指摘（2026-11-15）で足した行：本文の箱の直下の子の左右の余白・生の値・帯の中の sm のボタン・区画の本文の段 ----
+//   見本の画面には、本文の箱の直下に ul.k-list・p.k-pre・段落（クラスの無い p）を 1 つずつ置く（実装の役が作る）。
+//   帯の操作（div.k-page-acts）には、既定の主ボタンのほかに sm のボタン（data-size="sm"）を 1 つ置く
+
+/** 本文の箱（.k-page）の直下の子が、箱の左右から 24px 内側か（±1） */
+async function insetOf(page: Page, child: Locator) {
+  const b = await box(page.locator("section.k-page, main.k-page").first());
+  const c = await box(child);
+  return { left: c.x - b.x, right: b.x + b.width - (c.x + c.width) };
+}
+
+for (const w of [1440, 375]) {
+  test(`K217-UI-019 幅 ${w}：本文の箱の直下に置いた箇条（ul.k-list）・整形済みの文（p.k-pre）・段落は、左右とも 24px 内側`, async ({
+    page,
+  }) => {
+    await open(page, w);
+    for (const sel of ["> ul.k-list", "> p.k-pre", "> p:not([class])"]) {
+      const el = page.locator("section.k-page").locator(sel).first();
+      await expect(el, sel).toBeVisible();
+      const { left, right } = await insetOf(page, el);
+      expect(Math.abs(left - 24), `${sel} 左`).toBeLessThanOrEqual(1);
+      expect(Math.abs(right - 24), `${sel} 右`).toBeLessThanOrEqual(1);
+    }
+    expect(await overflowX(page)).toBe(0);
+  });
+}
+
+/** チケットの一覧（/tickets）を、ログインの印と口の答え（一覧 3 件）を網の手前で差し替えて開く */
+async function openTickets(page: Page, width: number) {
+  const WS = "aaaaaaaa-0000-4000-8000-000000000217";
+  const ME = "11111111-0000-4000-8000-000000000217";
+  await page.setViewportSize({ width, height: 1000 });
+  await page.addInitScript(() => window.localStorage.setItem("kaname.token", "k217-web-token"));
+  await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
+    const p = new URL(route.request().url()).pathname;
+    const ok = (json: unknown) => route.fulfill({ status: 200, json });
+    if (p === "/api/auth/get-session")
+      return ok({
+        session: { id: "s-k217", userId: ME, token: "t", expiresAt: "2099-01-01T00:00:00Z" },
+        user: { id: ME, email: "k217@example.com", name: "人", emailVerified: true },
+      });
+    if (p === "/api/auth-ext/me")
+      return ok({ data: { member_id: ME, tenant_id: WS, display_name: "高本", role_id: "staff" } });
+    if (p === "/api/v1/scopes")
+      return ok({ data: [{ id: "s1", name: "営業", tenant_id: WS }], meta: { limit: 200, writable: ["s1"] } });
+    if (p === "/api/v1/ticket_kinds")
+      return ok({ data: [{ id: "k1", name: "タスク", sections: [] }], meta: { limit: 2 } });
+    if (p === "/api/v1/members") return ok({ data: [{ id: ME, display_name: "高本" }], meta: { limit: 200 } });
+    if (p === "/api/v1/tickets")
+      return ok({
+        data: [
+          { id: "0193c5a0-0000-7000-8000-00000000c217", number: "EG-133", title: "11 月分の請求書を送る" },
+          { id: "0193c5a0-0000-7000-8000-00000000c218", number: "EG-134", title: "見積を送る" },
+        ],
+        meta: { limit: 50 },
+      });
+    return route.fulfill({ status: 404, json: { error: "not_found", code: "NOT_FOUND" } });
+  });
+  await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
+  const res = await page.goto("/tickets");
+  expect(res?.status()).toBe(200);
+  await page.locator("ul.k-list").waitFor({ state: "visible" });
+}
+
+for (const w of [1440, 375]) {
+  test(`K217-UI-020 本物の画面（/tickets）幅 ${w}：一覧の箇条（本文の箱の直下）は左右とも 24px 内側で、帯の見出しと左の縁がそろう`, async ({
+    page,
+  }) => {
+    await openTickets(page, w);
+    const list = page.locator(".k-page > ul.k-list").first();
+    const { left, right } = await insetOf(page, list);
+    expect(Math.abs(left - 24)).toBeLessThanOrEqual(1);
+    expect(Math.abs(right - 24)).toBeLessThanOrEqual(1);
+    const h1 = await box(page.locator(".k-page > header.k-page-head h1").first());
+    expect(Math.abs((await box(list)).x - h1.x)).toBeLessThanOrEqual(1);
+    expect(await overflowX(page)).toBe(0);
+  });
+}
+
+test("K217-UI-021 page.css に生の値が無い：大きさ・余白・高さは全部 var(--k-…)。生の色も無い（許すのは 0・auto・枠の 1px と、値の無い言葉だけ）", () => {
+  const src = readFileSync(join(ROOT, "apps/web/components/k/page.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const bad: string[] = [];
+  for (const m of src.matchAll(/([\w-]+)\s*:\s*([^;{}]+);/g)) {
+    const [prop, value] = [m[1]!, m[2]!.trim()];
+    const rest = value.replace(/var\(--k-[\w-]+\)/g, "");
+    if (/#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|lab)\(/.test(rest)) bad.push(`${prop}: ${value}`);
+    for (const n of rest.matchAll(/(?<![\w-])(\d*\.?\d+)(px|rem|em|%|vw|vh)?(?![\w-])/g)) {
+      if (n[1] === "0" && !n[2]) continue;
+      if (/^border/.test(prop) && n[0] === "1px") continue;
+      bad.push(`${prop}: ${value}`);
+    }
+  }
+  expect(bad).toEqual([]);
+});
+
+test("K217-UI-022 帯の中の sm のボタン（data-size=sm）は sm の高さ 28px のまま（帯の決まりが sm を上書きしない）", async ({
+  page,
+}) => {
+  await open(page, 1440);
+  const sm = page.locator('header.k-page-head .k-btn[data-size="sm"]').first();
+  await expect(sm).toBeVisible();
+  expect(await css(sm, "min-height")).toBe("28px");
+  expect(Math.abs((await box(sm)).height - 28)).toBeLessThanOrEqual(1);
+});
+
+test("K217-UI-023 区画の本文の段：正本の部品 section-body から作ったトークンに行の高さ 1.7 が在り、区画の段落と箇条の項目はそれを読む（見出しの段 section-title を流用しない）", () => {
+  const t = readFileSync(join(ROOT, "apps/web/styles/k-tokens.css"), "utf8");
+  expect(t).toContain("--k-c-section-body-text: var(--k-text-body);");
+  expect(t).toContain("--k-c-section-body-lh: 1.7;");
+  const src = readFileSync(join(ROOT, "apps/web/components/k/page.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const sel of [".k-section p", ".k-list > li"]) {
+    const rule = [...src.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find((m) => m[1]!.split(",").some((x) => x.trim() === sel));
+    expect(rule, sel).toBeTruthy();
+    expect(rule![2], sel).toContain("line-height: var(--k-c-section-body-lh)");
+    expect(rule![2], sel).not.toContain("--k-lh-section-title");
+  }
+});
