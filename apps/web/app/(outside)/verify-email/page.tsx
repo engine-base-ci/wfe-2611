@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SignupWaiting } from "@/features/F1/sign-up";
 import { VerifyLink, readLinkToken } from "@/features/F1/verify-email";
+import { AuthLoading } from "@/features/F1/sign-up/frame";
 
 function VerifyEmailSwitch() {
   const sp = useSearchParams();
@@ -23,7 +24,7 @@ function VerifyEmailSwitch() {
 // useSearchParams は Suspense の中でしか使えない（本番ビルドの prerender で落ちる。dev では出ない）
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<p className="p-8 text-[13.5px] text-[var(--on-sv)]">読み込み中</p>}>
+    <Suspense fallback={<AuthLoading />}>
       <VerifyEmailSwitch />
     </Suspense>
   );

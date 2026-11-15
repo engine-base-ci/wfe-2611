@@ -1230,6 +1230,20 @@ K-210,統合テストを通した後の後始末：配布物の決定の直し�
 - [ ] 作り手（`05_flow/build_testplan.py`）を直して CI の定義と試験計画を作り直した（G65 の並びの最後に `&& python3 scripts/ci/k210_gate_holes_test.py`・G24 の段の run を `pnpm ci:no-dynamic-call && pnpm ci:test-imports`・G56 の段に `env: CI_BASE: ${{ steps.scope.outputs.base }}` と `--base-ref ""$CI_BASE""`）
 - [ ] 生成物が最新かの検査（G38）・決定のトレース（G54）・取り込む順（G56）・範囲の台本の試験（G57）が、このチケットの CI で流れて緑
 - [ ] チケットの CI が緑"
+K-211,ログインしていない人の箱の中の「…しています…」（回る印と文）が左に寄る。箱の真ん中にそろえる（メールの確認の確定中・規約の同意し直しの読み込み中）,課題,K-103,未着手,実装,2026-11-15,F1・画面の土台,"決める人の指摘（2026-11-15・staging の画面の写し）：確認のメールのリンクを押した直後の画面（/verify-email）で、箱の見出し「確認しています」は真ん中にそろっているのに、その下の「◌ 登録を確定しています…」（回る印と文）が箱の左に寄っている。「真ん中になっていないので揃えて」。
+
+訳（切る段がコードで確かめた）：
+
+- 箱（`AuthFrame` の `.k-auth-card`・`apps/web/features/F1/sign-up/sign-up.css`）は縦の flex。見出し（`.k-auth-card h1`）・説明（`.k-auth-lead`）・下の行き先（`.k-auth-alt`）は `text-align: center` で真ん中
+- 読み込み中は共通の部品 `Loading`（`apps/web/components/k/states.tsx`）。外側は `.k-state[data-state=""loading""]`（`apps/web/components/k/k.css:479-491`）で、横の flex・`align-items: center`・**`justify-content` は既定（flex-start）**。箱の中では幅いっぱいに伸び、回る印と文は左の端から並ぶ。だから左に寄る
+- キャンバス（`04_design/canvas_gen/auth.py`・正）で、箱の中の待っている間の文は真ん中：AuthQR の「スマホからの返事を待っています…」（`auth.py:72`・印と文を `text-align: center` の 1 行に）。見出し・説明・注・下の行き先も真ん中（手順の行など左ぞろえの物もある）。確定中の絵は無いので、この待っている文の形に合わせる
+- 箱の外の読み込み中（キャンバスの `OnLoading`・仕事の画面）は左から。部品の既定は変えない
+- もう 1 つ（精査の指摘 1）：/verify-email と /login の入れ物（`apps/web/app/(outside)/verify-email/page.tsx:26`・`login/page.tsx:183`）の Suspense の待ちが、素の `<p className=""p-8 text-[13.5px] …"">読み込み中</p>`（13.5px は文字の段の外・D-128.75）。確かめた事実：本番の組み立てでも Suspense の待ちは HTML に出ない（この画面は毎回サーバーで描く作り・ビルドの一覧で ƒ。curl で /verify-email?token=… と /login の HTML を読み、待ちではなく画面そのもの〔「確認しています」・ログインの形〕が入っていることを確かめた）。だから箱の外に出る状態は起きない。待ちの部品への置き換え（素の文と段の外の大きさをやめた）は害が無いので残す。試験の行は持たない（起きない状態を見る試験になる）","- [ ] 下の 9 行（K211-UI-001〜009）が緑
+- [ ] 箱（AuthFrame）の中の読み込み中の表示 3 か所が、回る印と文の塊ごと箱の真ん中にそろう（見出しは動かない）。回る印は縮まない
+- [ ] /verify-email と /login の Suspense の待ちを箱の部品に替える（素の文と 13.5px を無くす。待ちは HTML に出ないので試験の行は持たない）
+- [ ] 箱の外の読み込み中（仕事の画面・見本の画面）の位置は変わらない
+- [ ] design_gate に新しい値を足さない（生の色・大きさを書かない）
+- [ ] チケットの CI が緑"
 K-212,staging の口と画面の処理が、DB から遠い場所（米国東部）で動いているのを、DB と同じ場所（東京）に直す,課題,K-1,未着手,実装,2026-11-15,基盤・環境,"2026-11-15、決める人が staging の画面を自分で触り、「読み込みが遅すぎるレベル」と指摘した。PM が測った事実：
 
 - 口（kaname-api）の `/health` と画面（kaname-web）の `/login` の答えの頭が `x-vercel-id: hnd1::iad1::…`。入口は東京（hnd1）だが、処理（Function）は iad1（米国東部・Washington, D.C.）で動いている

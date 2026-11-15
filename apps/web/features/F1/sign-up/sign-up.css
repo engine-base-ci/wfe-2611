@@ -44,6 +44,15 @@
   font-size: var(--k-text-h2);
   font-weight: var(--k-fw-h2);
 }
+/* 箱の中の読み込み中（回る印と文）は、見出しと同じく真ん中（K-211・キャンバス AuthQR の待っている文）。
+   部品 Loading の既定（k.css・左から）は箱の外のため変えない。文が折れたら行ごとに真ん中、印は縮ませない */
+.k-auth-card > .k-state[data-state="loading"] {
+  justify-content: center;
+  text-align: center;
+}
+.k-auth-card > .k-state[data-state="loading"] .k-spin {
+  flex: none;
+}
 .k-auth-lead {
   margin: 0;
   text-align: center;
