@@ -11,6 +11,9 @@ CI の spec の組（G69）と web の組（G70）で流れ、比べ方を変え
     持ち主のチケット（11_tickets/<owner>.md）の stage が「確認中」か「完了」
   ・持ち主の md が無い・stage が読めない（行が無い・知らない値）・<版> が読めない は 1。--base-ref が無ければ 2
 作りものの設定と git の木は tempfile の中に作る。
+
+範囲を決める台本（web_select.py・ci_scope.py・web_run.py）の 3 つ目の選ぶ先「専用の段の画面の試験」（ci_scope.json の web_select.gates）：
+  G48・G59 の一覧に無く、専用の段（G70）が流す画面の試験。比べ方の道具・突き合わせの試験の道具を変えた差分で選ばれ、関係ない画面の差分では選ばれない。
 """
 from __future__ import annotations
 
@@ -27,6 +30,10 @@ import yaml
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
+sys.path.insert(0, str(HERE))
+import ci_scope  # noqa: E402
+import web_run  # noqa: E402
+import web_select  # noqa: E402
 GATE = HERE / "fidelity_config.py"
 SPEC = ROOT / "apps" / "web" / "tests" / "fidelity" / "fidelity.spec.ts"
 STATES = ROOT / "apps" / "web" / "tests" / "_lib" / "fidelity-states.ts"
@@ -195,13 +202,19 @@ class WiringTest(unittest.TestCase):
         for s in (g69[0], g70[0]):
             for bad in ("--no-base", "--required", "--report-only"):
                 self.assertNotIn(bad, s["run"])
-        self.assertIn("python3 scripts/ci/fidelity_config.py --selftest", g69[0]["run"])
         self.assertRegex(g69[0]["run"], r"fidelity_config\.py --owners-done --base-ref \"\$CI_BASE\"")
-        for want in ("python3 scripts/ci/fidelity_config.py --base-ref", "python3 scripts/ci/fidelity_config.py --owners-done",
-                     "python3 scripts/ci/k216_fidelity_config_test.py", "node --test scripts/ci/k216_fidelity_compare.test.mjs",
-                     "python3 scripts/ci/k238_fidelity_ci_test.py"):
+        for want in ("python3 scripts/ci/fidelity_config.py --base-ref \"$CI_BASE\"", "python3 scripts/ci/k238_fidelity_ci_test.py"):
             self.assertIn(want, g69[0]["run"])
-        self.assertIn("tests/fidelity/fidelity.spec.ts", g70[0]["run"])
+        # 自己試験と K-216 の試験 2 本は G65 が持つ（二重に流さない）
+        g65 = [s for s in wf["jobs"]["spec"]["steps"] if str(s.get("name", "")).startswith("G65 ")]
+        self.assertEqual(len(g65), 1)
+        for once in ("fidelity_config.py --selftest", "k216_fidelity_config_test.py", "k216_fidelity_compare.test.mjs"):
+            self.assertIn(once, g65[0]["run"])
+            self.assertNotIn(once, g69[0]["run"])
+        # G70 は範囲の台本が選んだ専用の段の試験だけを流す（全部の回は設定の一覧）
+        self.assertIn("python3 scripts/ci/web_run.py gate 70", g70[0]["run"])
+        self.assertIn("needs.static.outputs.web_gates", str(g70[0].get("env", "")))
+        self.assertIn("needs.static.outputs.full", str(g70[0].get("env", "")))
         for s in (g69[0], g70[0]):
             self.assertNotIn("continue-on-error", s)
 
@@ -210,6 +223,90 @@ class WiringTest(unittest.TestCase):
         paths = json.loads(SCOPE.read_text(encoding="utf-8"))["jobs"]["web"]["paths"]
         for p in ("scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", "04_design/**"):
             self.assertIn(p, paths)
+
+
+FID = "apps/web/tests/fidelity/fidelity.spec.ts"
+STATES_REL = "apps/web/tests/_lib/fidelity-states.ts"
+G48 = ["apps/web/tests/k/a.spec.ts"]
+G59 = ["apps/web/tests/skeleton/m1.spec.ts"]
+IMP = {STATES_REL: {FID}, "apps/web/tests/_lib/row.ts": {"apps/web/tests/k/a.spec.ts"}}
+TICKETS = {
+    "K-1": {"tests": ["apps/web/tests/k/a.spec.ts"], "changes": ["apps/web/app/a/page.tsx"], "depends_on": []},
+    "K-2": {"tests": [FID, "scripts/ci/x_test.py"], "changes": ["scripts/ci/fidelity_config.py"], "depends_on": []},
+    "K-3": {"tests": ["apps/web/tests/skeleton/m1.spec.ts"], "changes": [], "depends_on": []},
+}
+
+
+def web_cfg() -> dict:
+    return json.loads(SCOPE.read_text(encoding="utf-8"))["web_select"]
+
+
+def pick(changed: list[str], ticket: str = "K-99", cfg: dict | None = None) -> dict:
+    t = {**TICKETS, ticket: TICKETS.get(ticket, {"tests": [], "changes": [], "depends_on": []})}
+    return web_select.select(changed, ticket, t, G48, G59, IMP, web_cfg() if cfg is None else cfg)
+
+
+class GateSelectTest(unittest.TestCase):
+    def test_K238_VF_024_fidelity_changes_pick_gate(self) -> None:
+        """K238-VF-024 比べ方の道具（fidelity_compare.mjs・visual_fidelity.mjs）・突き合わせの試験の道具（fidelity-states.ts）・突き合わせの試験そのものを変えた差分で、
+        専用の段 70 に突き合わせの試験が選ばれ、web の組が起き（止める文が出ない）、G48・G59 は空のまま"""
+        for f in ("scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", STATES_REL, FID):
+            r = pick([f])
+            self.assertEqual(r["gates"], {"70": [FID]}, f)
+            self.assertEqual((r["g48"], r["g59"]), ([], []), f)
+            p = {"mode": "ticket", "jobs": {"unit": False, "database": False, "web": True}, "errors": [], "reasons": []}
+            out = ci_scope.with_web_selection(p, r)
+            self.assertTrue(out["jobs"]["web"], f)
+            self.assertEqual(out["errors"], [], f)
+            self.assertEqual(json.loads(ci_scope.outputs({**self.base_plan(), **out})["web_gates"]), {"70": [FID]})
+
+    @staticmethod
+    def base_plan() -> dict:
+        return {"mode": "ticket", "unit_shards": 0, "unit_files": [], "migration_files": [], "coverage_args": [], "base": "",
+                "reasons": [], "mismatches": [], "errors": []}
+
+    def test_K238_VF_025_unrelated_screen_does_not_pick_gate(self) -> None:
+        """K238-VF-025 関係ない画面の差分（別のチケットの画面のコード・別の試験の部品）では専用の段 70 は選ばれない（G48 の答えは前と同じ）"""
+        for f in ("apps/web/app/a/page.tsx", "apps/web/tests/_lib/row.ts"):
+            r = pick([f])
+            self.assertEqual(r["gates"], {"70": []}, f)
+            self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], f)
+
+    def test_K238_VF_026_gate_tests_must_exist(self) -> None:
+        """K238-VF-026 専用の段の設定に書いた試験が実ファイルとして無ければ赤（本物の木は 0 件・無い試験は道と段を出す）"""
+        self.assertEqual(web_select.check_gates(str(ROOT), web_cfg()), [])
+        cfg = {**web_cfg(), "gates": {"70": {"tests": ["apps/web/tests/fidelity/no-such.spec.ts"], "on": []}}}
+        errs = web_select.check_gates(str(ROOT), cfg)
+        self.assertEqual(len(errs), 1)
+        self.assertIn("no-such.spec.ts", errs[0])
+        self.assertIn("70", errs[0])
+
+    def test_K238_VF_027_old_two_targets_unchanged(self) -> None:
+        """K238-VF-027 前からの 2 つの選ぶ先（G48・G59）と持ち主の答えは、専用の段の設定が有っても無くても同じ"""
+        without = {k: v for k, v in web_cfg().items() if k != "gates"}
+        cases = [(["apps/web/app/a/page.tsx"], "K-99"), (["apps/web/tests/_lib/row.ts"], "K-99"), (["README.md"], "K-3"),
+                 (["scripts/ci/fidelity_compare.mjs"], "K-2"), (["apps/web/package.json"], "K-99")]
+        for changed, tid in cases:
+            a, b = pick(changed, tid), pick(changed, tid, without)
+            self.assertEqual((a["g48"], a["g59"], a["tasks"]), (b["g48"], b["g59"], b["tasks"]), changed)
+        self.assertEqual(pick(["apps/web/package.json"])["gates"], {"70": [FID]}, "画面の試験の設定を変えたら専用の段も全部")
+
+    def test_K238_VF_028_runner_runs_only_selected(self) -> None:
+        """K238-VF-028 web_run の専用の段：全部の回は設定の一覧・範囲の回は選んだ試験だけ・選ばれなければ何も流さない。
+        専用の段だけが選ばれた回に G48・G59 は「壊れている」で止まらない"""
+        cfg_tests = web_cfg()["gates"]["70"]["tests"]
+        self.assertEqual(web_run.gate_commands("70", True, {}, cfg_tests),
+                         [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", "tests/fidelity/fidelity.spec.ts"]])
+        self.assertEqual(web_run.gate_commands("70", False, {"70": [FID]}, cfg_tests),
+                         [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", "tests/fidelity/fidelity.spec.ts"]])
+        self.assertEqual(web_run.gate_commands("70", False, {"70": []}, cfg_tests), [])
+        env = {**clean_env(), "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_OTHER": "[]", "CI_WEB_GATES": json.dumps({"70": [FID]})}
+        for part in ("g48", "g59"):
+            r = subprocess.run([sys.executable, str(HERE / "web_run.py"), part], capture_output=True, text=True, env=env, cwd=ROOT)
+            self.assertEqual(r.returncode, 0, part + r.stdout)
+        env["CI_WEB_GATES"] = json.dumps({"70": []})
+        r = subprocess.run([sys.executable, str(HERE / "web_run.py"), "g48"], capture_output=True, text=True, env=env, cwd=ROOT)
+        self.assertEqual(r.returncode, 1, "どの段にも流す物が無いのに web の組が動いた（壊れている）を黙って緑にしない")
 
 
 if __name__ == "__main__":
