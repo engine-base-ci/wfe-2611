@@ -15,6 +15,7 @@ import {
   compareRows,
   defaultOutDir,
   exitCode,
+  exitFor,
   mismatches,
   parseArgs,
   waitRows,
@@ -120,6 +121,19 @@ test("K216-VF-018 角丸・文字の大きさ・行の高さ・太さ・色は�
     compareRows(ps, c, off).filter((r) => !r.ok).map((r) => r.prop),
     ["border-radius", "font-size", "line-height", "margin-top", "border-top-left-radius"],
   );
+  // 境目：余白（padding）は ±2・字の間（letter-spacing）と線の太さはちょうど同じ・丸めの差はちょうど 0.5 で違う
+  const ps2 = [{ name: "箱", role: "card", canvas: ".c", app: ".a", props: ["padding-left", "letter-spacing", "border-top-width", "line-height"] }];
+  const c2 = [{ "padding-left": "12px", "letter-spacing": "0px", "border-top-width": "1px", "line-height": "28.8px" }];
+  assert.equal(
+    mismatches(compareRows(ps2, c2, [{ "padding-left": "14px", "letter-spacing": "0px", "border-top-width": "1px", "line-height": "28.8px" }])),
+    0,
+  );
+  assert.deepEqual(
+    compareRows(ps2, c2, [{ "padding-left": "15px", "letter-spacing": "0.5px", "border-top-width": "2px", "line-height": "28.3px" }])
+      .filter((r) => !r.ok)
+      .map((r) => r.prop),
+    ["padding-left", "letter-spacing", "border-top-width", "line-height"],
+  );
 });
 
 test("K216-VF-019 当たった（見えている）要素の数を両側で比べる：texts 以外の役はちょうど 1 つ・texts の役は同じ数（1 つ以上）。数が違えば「当たった数」の行が違う", () => {
@@ -137,6 +151,11 @@ test("K216-VF-019 当たった（見えている）要素の数を両側で比�
   assert.ok(rows.some((r) => !r.ok && r.part === "左のメニューの項目" && r.prop === "当たった数"));
   rows = compareRows(ps, c, [one(1, canvas[0]), null]);
   assert.ok(rows.some((r) => !r.ok && r.part === "左のメニューの項目" && r.prop === "当たった数" && r.app === 0));
+  // 片側だけ数を持ち、もう片側に無い（読む側が数を付け忘れた）なら違う。両側とも無いときだけ数の行を出さない（VF-005 の形）
+  rows = compareRows(ps, c, [structuredClone(canvas[0]), structuredClone(canvas[2])]);
+  assert.deepEqual(rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}`), ["見出し・当たった数", "左のメニューの項目・当たった数"]);
+  rows = compareRows(ps, [structuredClone(canvas[0]), structuredClone(canvas[2])], c);
+  assert.deepEqual(rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}`), ["見出し・当たった数", "左のメニューの項目・当たった数"]);
 });
 
 test("K216-VF-020 描かれるまでの待ちが時間切れなら、出なかったセレクタを行に出して違う（黙って比べ始めない）。出揃えば行は無い", () => {
@@ -152,6 +171,13 @@ test("K216-VF-020 描かれるまでの待ちが時間切れなら、出なか�
 test("K216-VF-021 道具の引数：既定は違いがあれば 1（--report-only を付けたときだけ 0）・--width を省くと組の全部の幅・幅の値が不正なら止める", () => {
   assert.equal(parseArgs(["--group", "g"]).reportOnly, false);
   assert.equal(parseArgs(["--group", "g", "--report-only"]).reportOnly, true);
+  const diff = compareRows(pairs, canvas, [{ ...canvas[0], "font-size": "13px" }, canvas[1], canvas[2]]);
+  assert.equal(exitFor(diff, parseArgs(["--group", "g"])), 1);
+  assert.equal(exitFor(diff, parseArgs(["--group", "g", "--report-only"])), 0);
+  assert.equal(exitFor(compareRows(pairs, canvas, canvas), parseArgs(["--group", "g"])), 0);
+  // 道具そのもの：引数が不正なら 2（引数はブラウザを立ち上げる前に読む）
+  const run = spawnSync(process.execPath, ["scripts/ci/visual_fidelity.mjs", "--group", "g", "--width", "abc"], { cwd: ROOT, encoding: "utf8" });
+  assert.equal(run.status, 2, run.stdout + run.stderr);
   const g = { id: "g", widths: [1440, 375] };
   assert.deepEqual(widthsFor(g, parseArgs(["--group", "g"]).width), [1440, 375]);
   assert.deepEqual(widthsFor(g, parseArgs(["--group", "g", "--width", "375"]).width), [375]);
