@@ -47,7 +47,8 @@ const ENROLLED = CFG.groups.filter((g) => g.enrolled);
 
 /** 組の要素が全部（キャンバスの側か画面の側のセレクタで）描かれるまで待つ */
 async function drawn(page: Page, pairs: Pair[], side: "canvas" | "app") {
-  for (const p of pairs) await page.locator(p[side]).first().waitFor({ state: "visible" });
+  // 幅ごとに出し分ける複製で先頭が隠れていても、見えている物を待つ
+  for (const p of pairs) await page.locator(p[side]).filter({ visible: true }).first().waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
 }
 
@@ -74,7 +75,7 @@ test("K238-VF-002 キャンバスを開いても外（fonts.googleapis.com・fon
   const page = await context.newPage();
   await routeCanvasFonts(page);
   await page.goto(pathToFileURL(join(ROOT, "04_design/canvas/Main.dc.html")).href);
-  await page.locator("h1").first().waitFor({ state: "visible" });
+  await page.locator("h1").filter({ visible: true }).first().waitFor({ state: "visible" });
   await page.evaluate(() => document.fonts.ready);
   expect(outside).toEqual([]);
   const fonts = await loadedFonts(page);
@@ -207,4 +208,26 @@ test("K238-VF-017 readVals は当たった数（__count）を毎回付け、0 �
     [".none", 0, false],
     [".two", 2, false],
   ]);
+});
+
+test("K238-VF-022 読み込み中（aria-busy=true）が上限の時間までに消えなければ、capture は「aria-busy」を出して投げる（読み込み中の値で比べない）", async ({
+  page,
+}) => {
+  await page.goto(dataUrl(`<main aria-busy="true"><div class="v" style="width:50px;height:10px"></div></main>`));
+  await expect(capture(page, [pair(".v", ["width"])], "app", { timeout: 2_000 })).rejects.toThrow(/aria-busy/);
+});
+
+test("K238-VF-023 値が上限の時間までに 2 回続けて揃わなければ、capture は「揃わない」を出して投げる（動いている途中の値で比べない）", async ({
+  page,
+}) => {
+  await page.goto(
+    dataUrl(`<div class="v" style="width:50px;height:10px"></div>
+      <script>
+        const v = document.querySelector(".v");
+        let n = 0;
+        const step = () => { n++; v.style.width = (50 + (n % 100)) + "px"; requestAnimationFrame(step); };
+        requestAnimationFrame(step);
+      </script>`),
+  );
+  await expect(capture(page, [pair(".v", ["width"])], "app", { timeout: 2_000 })).rejects.toThrow(/揃わない/);
 });

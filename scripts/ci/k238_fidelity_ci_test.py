@@ -4,10 +4,13 @@ CI の spec の組（G69）と web の組（G70）で流れ、比べ方を変え
 
   python3 scripts/ci/k238_fidelity_ci_test.py      行 ID は K238-VF-NNN（11_tickets/K-238.md の行の表と 1 対 1）
 
-検査：python3 scripts/ci/fidelity_config.py --owners-done
+検査：python3 scripts/ci/fidelity_config.py --owners-done --base-ref <版>
   ・設定 04_design/fidelity.json の組のうち enrolled でない組の数を「入っていない組 N / M」で出す
-  ・組の持ち主のチケット（11_tickets/<owner>.md）の stage が「確認中」か「完了」（＝取り込み済み）なのに enrolled でない組があれば 1（組の id と持ち主を出す）
-作りものの設定は tempfile の中に作る。
+  ・組の持ち主が取り込み済みなのに enrolled でない組があれば 1（組の id と持ち主を同じ行に出す）
+    取り込み済み＝<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る（本線は早送りで進むので、取り込んだチケットのコミットは本線の履歴に載る）か、
+    持ち主のチケット（11_tickets/<owner>.md）の stage が「確認中」か「完了」
+  ・持ち主の md が無い・stage が読めない（行が無い・知らない値）・<版> が読めない は 1。--base-ref が無ければ 2
+作りものの設定と git の木は tempfile の中に作る。
 """
 from __future__ import annotations
 
@@ -29,15 +32,28 @@ SPEC = ROOT / "apps" / "web" / "tests" / "fidelity" / "fidelity.spec.ts"
 STATES = ROOT / "apps" / "web" / "tests" / "_lib" / "fidelity-states.ts"
 WORKFLOW = ROOT / ".github" / "workflows" / "v3-gate.yml"
 SCOPE = ROOT / "scripts" / "ci" / "ci_scope.json"
+COMPARE = HERE / "fidelity_compare.mjs"
+TOOL = HERE / "visual_fidelity.mjs"
 
 
 def clean_env() -> dict[str, str]:
     return {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
 
 
+GIT_ID = ["-c", "user.name=k238", "-c", "user.email=k238@example.invalid", "-c", "commit.gpgsign=false"]
+
+
 class Fake:
     def __init__(self) -> None:
         self.root = pathlib.Path(tempfile.mkdtemp(prefix="k238-"))
+        self.git("init", "-q")
+        self.commit("はじめ")
+
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", *GIT_ID, *args], cwd=self.root, check=True, capture_output=True, env=clean_env())
+
+    def commit(self, subject: str) -> None:
+        self.git("commit", "-q", "--allow-empty", "-m", subject)
 
     def write(self, rel: str, text: str) -> None:
         p = self.root / rel
@@ -51,9 +67,11 @@ class Fake:
         self.write("04_design/fidelity.json", json.dumps(
             {"_doc": "試し", "groups": [{"id": g, "owner": o, "enrolled": e} for g, o, e in groups]}, ensure_ascii=False))
 
-    def run(self) -> subprocess.CompletedProcess:
-        return subprocess.run([sys.executable, str(GATE), "--root", str(self.root), "--owners-done"],
-                              capture_output=True, text=True, env=clean_env(), cwd=self.root)
+    def run(self, *extra: str, base: str | None = "HEAD") -> subprocess.CompletedProcess:
+        args = [sys.executable, str(GATE), "--root", str(self.root), "--owners-done", *extra]
+        if base is not None:
+            args += ["--base-ref", base]
+        return subprocess.run(args, capture_output=True, text=True, env=clean_env(), cwd=self.root)
 
     def close(self) -> None:
         shutil.rmtree(self.root, ignore_errors=True)
@@ -66,44 +84,92 @@ class OwnersDoneTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.f.close()
 
+    def line_with(self, out: str, *words: str) -> bool:
+        return any(all(w in line for w in words) for line in out.splitlines())
+
     def test_K238_VF_004_counts_not_enrolled(self) -> None:
-        """K238-VF-004 持ち主が着手前・作業中なら、入っていない組があっても 0 で終わり、「入っていない組 2 / 3」を出す"""
+        """K238-VF-004 持ち主が着手前・作業中で取り込まれていなければ、入っていない組があっても 0 で終わり、「入っていない組 2 / 3」を出す"""
         self.f.ticket("K-1", "未着手")
         self.f.ticket("K-2", "作業中")
+        self.f.commit("K-10 feat: 別のチケット（K-1 の取り込みではない）")
         self.f.config([("a", "K-1", False), ("b", "K-2", False), ("c", "K-1", True)])
         r = self.f.run()
-        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn("入っていない組 2 / 3", r.stdout)
 
     def test_K238_VF_005_owner_done_but_not_enrolled_is_red(self) -> None:
-        """K238-VF-005 持ち主が確認中・完了（取り込み済み）なのに enrolled でない組があれば 1 で、組の id と持ち主を出す"""
+        """K238-VF-005 持ち主の stage が確認中・完了なのに enrolled でない組があれば 1 で、組の id と持ち主を同じ行に出す。入れれば 0"""
         for stage in ("確認中", "完了"):
             self.f.ticket("K-3", stage)
-            self.f.config([("d", "K-3", False)])
+            self.f.config([("grp-done-x", "K-3", False)])
             r = self.f.run()
             self.assertEqual(r.returncode, 1, stage)
-            self.assertIn("d", r.stdout)
-            self.assertIn("K-3", r.stdout)
-        self.f.config([("d", "K-3", True)])
+            self.assertTrue(self.line_with(r.stdout, "grp-done-x", "K-3"), r.stdout)
+        self.f.config([("grp-done-x", "K-3", True)])
         self.assertEqual(self.f.run().returncode, 0)
 
+    def test_K238_VF_018_merged_by_history_is_red(self) -> None:
+        """K238-VF-018 md の stage は未着手のままでも、<版> の履歴に件名が「K-3 」で始まるコミットが在れば取り込み済みとして 1（組の id と持ち主を同じ行に）。「K-30 」は K-3 の取り込みでない"""
+        self.f.ticket("K-3", "未着手")
+        self.f.config([("grp-merged-y", "K-3", False)])
+        self.f.commit("K-30 feat: 番号の頭が同じ別のチケット")
+        self.assertEqual(self.f.run().returncode, 0, "K-30 を K-3 と数えた")
+        self.f.commit("K-3 feat: 画面を直す")
+        r = self.f.run()
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertTrue(self.line_with(r.stdout, "grp-merged-y", "K-3"), r.stdout)
+        self.assertEqual(self.f.run(base="HEAD~1").returncode, 0, "版より後のコミットを数えた")
+
     def test_K238_VF_006_missing_owner_ticket_is_red(self) -> None:
-        """K238-VF-006 組の持ち主のチケットのファイルが無ければ 1（数えずに緑にしない）"""
+        """K238-VF-006 組の持ち主のチケットのファイルが無ければ 1 で、持ち主と「無い」を出す（落ちて終わらない）"""
         self.f.config([("e", "K-404", False)])
-        self.assertEqual(self.f.run().returncode, 1)
+        r = self.f.run()
+        self.assertEqual(r.returncode, 1)
+        self.assertTrue(self.line_with(r.stdout, "K-404", "無い"), r.stdout)
+        self.assertNotIn("Traceback", r.stderr)
+
+    def test_K238_VF_019_unreadable_stage_is_red(self) -> None:
+        """K238-VF-019 持ち主の md に stage の行が無い・知らない値なら 1 で持ち主を出す。「保留」は取り込み前として数える（0）"""
+        self.f.config([("f", "K-5", False)])
+        for text in ("---\nid: K-5\n---\n", "---\nid: K-5\nstage: なにか\n---\n"):
+            self.f.write("11_tickets/K-5.md", text)
+            r = self.f.run()
+            self.assertEqual(r.returncode, 1, text)
+            self.assertIn("K-5", r.stdout)
+            self.assertNotIn("Traceback", r.stderr)
+        self.f.ticket("K-5", "保留")
+        self.assertEqual(self.f.run().returncode, 0)
+
+    def test_K238_VF_020_base_required_and_readable(self) -> None:
+        """K238-VF-020 --owners-done に --base-ref が無ければ 2、読めない版なら 1（履歴を見ずに緑にしない）"""
+        self.f.ticket("K-1", "未着手")
+        self.f.config([("a", "K-1", False)])
+        self.assertEqual(self.f.run(base=None).returncode, 2)
+        r = self.f.run(base="no-such-ref-k238")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertNotIn("Traceback", r.stderr)
 
     def test_K238_VF_007_real_tree(self) -> None:
         """K238-VF-007 本物の木で 0 で終わり、入っていない組の数を出す"""
-        r = subprocess.run([sys.executable, str(GATE), "--owners-done"], cwd=ROOT, capture_output=True, text=True, env=clean_env())
+        r = subprocess.run([sys.executable, str(GATE), "--owners-done", "--base-ref", "HEAD"], cwd=ROOT,
+                           capture_output=True, text=True, env=clean_env())
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertRegex(r.stdout, r"入っていない組 \d+ / \d+")
 
 
 class RunnerTest(unittest.TestCase):
     def test_K238_VF_008_runner_has_no_fixed_wait(self) -> None:
-        """K238-VF-008 実ブラウザの突き合わせと画面を整える道具に、決めた秒数の待ち（waitForTimeout）が無い"""
-        for p in (SPEC, STATES):
+        """K238-VF-008 実ブラウザの突き合わせ・画面を整える道具・比べ方の部品・道具に、決めた秒数の待ち（waitForTimeout）が無い"""
+        for p in (SPEC, STATES, COMPARE, TOOL):
             self.assertNotIn("waitForTimeout", p.read_text(encoding="utf-8"), p)
+
+    def test_K238_VF_021_tool_uses_shared_capture(self) -> None:
+        """K238-VF-021 道具 visual_fidelity.mjs は fidelity_compare.mjs の capture を import して使い、自前の動きを止める CSS・aria-busy の待ち・読み直しの輪を持たない"""
+        t = TOOL.read_text(encoding="utf-8")
+        self.assertRegex(t, r"import\s*\{[^}]*\bcapture\b[^}]*\}\s*from\s*\"\./fidelity_compare\.mjs\"")
+        self.assertRegex(t, r"\bcapture\(")
+        for word in ("aria-busy", "animation:none", "SETTLE_TRIES", "readVals("):
+            self.assertNotIn(word, t)
 
     def test_K238_VF_009_states_route_fonts(self) -> None:
         """K238-VF-009 画面を整える道具が、キャンバスの外の書体の道（fonts.googleapis.com・fonts.gstatic.com）を手元の書体（@fontsource-variable/noto-sans-jp）に差し替える routeCanvasFonts を出す"""
@@ -118,8 +184,19 @@ class WiringTest(unittest.TestCase):
         """K238-VF-010 spec の組に G69（設定の検査・入っていない組・K-216 と K-238 の試験）、web の組に G70（実ブラウザの突き合わせ）が 1 つずつ在り、continue-on-error が無い"""
         wf = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
         g69 = [s for s in wf["jobs"]["spec"]["steps"] if str(s.get("name", "")).startswith("G69 ")]
-        g70 = [s for s in wf["jobs"]["web"]["steps"] if str(s.get("name", "")).startswith("G70 ")]
+        web = wf["jobs"]["web"]["steps"]
+        g70 = [s for s in web if str(s.get("name", "")).startswith("G70 ")]
         self.assertEqual((len(g69), len(g70)), (1, 1))
+        names = [str(s.get("name", "")) for s in web]
+        g59 = [i for i, n in enumerate(names) if n.startswith("G59 ")]
+        self.assertEqual(len(g59), 1)
+        self.assertGreater(names.index(g70[0]["name"]), g59[0], "G70 は G59 が立てた画面を使うので G59 より後")
+        # 入れた組を弱めても緑になる旗は CI で使わない（K-216 の申し送り）
+        for s in (g69[0], g70[0]):
+            for bad in ("--no-base", "--required", "--report-only"):
+                self.assertNotIn(bad, s["run"])
+        self.assertIn("python3 scripts/ci/fidelity_config.py --selftest", g69[0]["run"])
+        self.assertRegex(g69[0]["run"], r"fidelity_config\.py --owners-done --base-ref \"\$CI_BASE\"")
         for want in ("python3 scripts/ci/fidelity_config.py --base-ref", "python3 scripts/ci/fidelity_config.py --owners-done",
                      "python3 scripts/ci/k216_fidelity_config_test.py", "node --test scripts/ci/k216_fidelity_compare.test.mjs",
                      "python3 scripts/ci/k238_fidelity_ci_test.py"):
