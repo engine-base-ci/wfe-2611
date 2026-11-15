@@ -380,20 +380,55 @@ for (const w of [1440, 375]) {
   });
 }
 
-test("K217-UI-021 page.css に生の値が無い：大きさ・余白・高さは全部 var(--k-…)。生の色も無い（許すのは 0・auto・枠の 1px と、値の無い言葉だけ）", () => {
-  const src = readFileSync(join(ROOT, "apps/web/components/k/page.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+/** CSS の中の生の値（K217-UI-021）。var(--k-…) を除いた残りの字を 1 つずつ見る。
+ *  許すのは 0・auto などの言葉（WORDS）と、線の太さの指定（border・border-<辺>・…-width）の 1px だけ。
+ *  負の値・単位つきの数・色の名前（一覧に無い言葉）・色の関数・# の色は赤 */
+const WORDS = new Set(
+  "none auto inherit initial unset solid dashed transparent currentColor flex inline-flex block inline flow-root grid wrap nowrap center start end flex-start flex-end baseline stretch disc pre-wrap anywhere break-word underline normal".split(
+    " ",
+  ),
+);
+const BORDER_WIDTH = /^border(-(top|right|bottom|left))?(-width)?$/;
+function rawIn(css: string): string[] {
+  const src = css.replace(/\/\*[\s\S]*?\*\//g, "");
   const bad: string[] = [];
-  for (const m of src.matchAll(/([\w-]+)\s*:\s*([^;{}]+);/g)) {
+  for (const m of src.matchAll(/([\w-]+)\s*:\s*([^;{}]+)(?:;|(?=\}))/g)) {
     const [prop, value] = [m[1]!, m[2]!.trim()];
-    const rest = value.replace(/var\(--k-[\w-]+\)/g, "");
-    if (/#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|lab)\(/.test(rest)) bad.push(`${prop}: ${value}`);
-    for (const n of rest.matchAll(/(?<![\w-])(\d*\.?\d+)(px|rem|em|%|vw|vh)?(?![\w-])/g)) {
-      if (n[1] === "0" && !n[2]) continue;
-      if (/^border/.test(prop) && n[0] === "1px") continue;
-      bad.push(`${prop}: ${value}`);
+    if (prop.startsWith("--")) continue;
+    const rest = value.replace(/var\(--k-[\w-]+\)/g, " ");
+    for (const tok of rest.split(/[\s,/]+/).filter(Boolean)) {
+      const num = /^[-+]?\d*\.?\d+[a-z%]*$/i.test(tok);
+      const ok = num ? tok === "0" || (tok === "1px" && BORDER_WIDTH.test(prop)) : WORDS.has(tok) && !/^#|\(/.test(tok);
+      if (!ok) bad.push(`${prop}: ${value}（${tok}）`);
     }
   }
-  expect(bad).toEqual([]);
+  return bad;
+}
+
+test("K217-UI-021 page.css に生の値が無い：大きさ・余白・高さ・色は全部 var(--k-…)（許すのは 0・言葉の一覧・線の太さの 1px だけ）。見張り自身が負の値・最後の指定・色の名前・広すぎる 1px を拾う", () => {
+  expect(rawIn(readFileSync(join(ROOT, "apps/web/components/k/page.css"), "utf8"))).toEqual([]);
+  // 見張りが働いている（作りもの：どれも 1 つずつ赤になる）
+  for (const fake of [
+    ".a{margin-top:-6px}",
+    ".a{margin-top:-0.5em;}",
+    ".a{padding:12px}",
+    ".a{color:red}",
+    ".a{border-bottom:1px solid red}",
+    ".a{background:white;}",
+    ".a{color:color-mix(in srgb, var(--k-primary) 50%, transparent)}",
+    ".a{color:hwb(0 0% 0%)}",
+    ".a{color:#22345C}",
+    ".a{border-radius:1px}",
+    ".a{border-spacing:1px}",
+    ".a{line-height:1.7}",
+  ])
+    expect(rawIn(fake).length, fake).toBeGreaterThan(0);
+  // 許す形（作りもの）：0・言葉・線の太さの 1px・var(--k-…)
+  expect(
+    rawIn(
+      ".a{margin:0;display:flex;border-bottom:1px solid var(--k-line);border-top-width:1px;padding:var(--k-s-sm) 0}",
+    ),
+  ).toEqual([]);
 });
 
 test("K217-UI-022 帯の中の sm のボタン（data-size=sm）は sm の高さ 28px のまま（帯の決まりが sm を上書きしない）", async ({
