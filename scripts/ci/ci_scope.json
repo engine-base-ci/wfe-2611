@@ -387,6 +387,14 @@
   },
   {
    "paths": [
+    "scripts/ci/staging_region.json"
+   ],
+   "readers": [
+    "apps/api/build-vercel.mjs"
+   ]
+  },
+  {
+   "paths": [
     "07_qa/test-specs/journeys/plan.json"
    ],
    "readers": [
