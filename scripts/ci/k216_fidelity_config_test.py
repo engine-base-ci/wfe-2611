@@ -129,7 +129,7 @@ class ShapeTest(unittest.TestCase):
         """K216-VF-001 組の欄（絵が在る・知っている種類・種類の幅を含む・持ち主が在る）が欠けると 1。そろえば 0"""
         self.f.config([group("g1")])
         self.assertEqual(self.f.run("--no-base").returncode, 0, self.f.run("--no-base").stdout)
-        for bad in (group("g1", canvas="Nai"), group("g1", kind="nai"), group("g1", widths=[1440]), group("g1", owner="K-99999")):
+        for bad in (group("g1", canvas="Nai"), {**group("g1"), "kind": "nai"},group("g1", widths=[1440]), group("g1", owner="K-99999")):
             self.f.config([bad])
             self.assertEqual(self.f.run("--no-base").returncode, 1, bad)
 
