@@ -688,7 +688,8 @@ def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list
             continue
         lst = lambda v: v if isinstance(v, list) else ([v] if v else [])  # noqa: E731
         tk[t.get("id")] = {"tests": lst(t.get("tests")), "changes": lst(t.get("changes")), "depends_on": lst(t.get("depends_on"))}
-    changed = [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old]
+    deploy_only = (rules.get("spec") or {}).get("package_paths", [])   # 組み立てに入らない物は画面の試験を選ぶ元にしない（K-212）
+    changed = [x for x in [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old] if not match(x, deploy_only)]
     return web_select.select(changed, tid, tk, web_select.domain_g48(repo), web_select.domain_g59(repo),
                              web_select.importers(repo), rules.get("web_select") or {})
 
