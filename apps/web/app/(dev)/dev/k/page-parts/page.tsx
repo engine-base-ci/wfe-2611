@@ -10,7 +10,14 @@ export default function KPagePartsPage() {
         id="page-parts-title"
         title="チケット"
         sub="すべてのグループ"
-        actions={<Button>＋ チケットを作る</Button>}
+        actions={
+          <>
+            <Button size="sm" variant="secondary">
+              並べ替え
+            </Button>
+            <Button>＋ チケットを作る</Button>
+          </>
+        }
       />
       <Section title="目的">
         <p>取引先の 1 社を開き、今月の見積の状態を確かめます。</p>
@@ -30,6 +37,13 @@ export default function KPagePartsPage() {
           <Button variant="secondary">やめる</Button>
         </Row>
       </Section>
+      {/* 本文の箱の直下に置いた箇条・整形済みの文・段落（今の一覧の画面の形・K217-UI-019） */}
+      <ul className="k-list">
+        <li>EG-133 11 月分の請求書を送る</li>
+        <li>EG-134 見積を送る</li>
+      </ul>
+      <Prose>{"直下の整形済みの文\n2 行目"}</Prose>
+      <p>直下の段落</p>
       <div data-testid="bare">
         <h1>クラスの無い見出し 1</h1>
         <h2>クラスの無い見出し 2</h2>

@@ -1,11 +1,13 @@
 /* ページの型（K-217・D-143.3）。見出しの帯・本文の箱・区画・整形済みの文・箇条・文字のリンク・横並び。
-   値はキャンバス（04_design/canvas の Main・Approvals・TicketDetail）の実測。色と文字の段は全部 --k-*（生の色・大きさを書かない）。
+   値は正本 DESIGN-kaname.md の components（page-head・page-head-button・page-body・section-title・section-body・section-list）
+   から作ったトークン（--k-c-*）だけを読む。正本の値はキャンバスの実測。ここに生の色・生の px を書かない（K217-UI-021）。
    今の画面は section.k-root.k-page の中に header.k-page-head と本文が並ぶ入れ子なので、
-   帯は箱の幅いっぱい・ほかの子は左右 24px 内側・帯の下から 16px・下に 40px の決まりにする（JSX を書き換えずに効く） */
+   帯は箱の幅いっぱい・ほかの子は左右 spacing.lg 内側・帯の下から spacing.md の決まりにする（JSX を書き換えずに効く）。
+   直下の子にも付く部品（箇条・整形済みの文・段落）は上下の余白だけを持ち、左右に触らない（左右は箱の決まりが持つ） */
 
 /* ---- 本文の箱 ---- */
 .k-page {
-  padding: 0 0 40px;
+  padding: var(--k-c-page-body-pad);
   min-width: 0;
 }
 .k-page > * {
@@ -25,9 +27,9 @@
   align-items: center;
   column-gap: var(--k-s-sm);
   row-gap: var(--k-s-xs);
-  padding: 12px var(--k-s-lg);
-  background: var(--k-card);
-  border-bottom: 1px solid var(--k-line);
+  padding: var(--k-c-page-head-pad);
+  background: var(--k-c-page-head-bg);
+  border-bottom: var(--k-c-page-head-border);
   min-width: 0;
 }
 .k-page-head h1 {
@@ -47,43 +49,43 @@
 .k-page-head > .k-btn:last-child {
   margin-left: auto;
 }
-/* 帯の中のボタンはキャンバスの帯の操作と同じ高さ 30px（Approvals の「続けて裁く」の実測。帯の高さを見出しの行に合わせる） */
-.k-page-head .k-btn {
-  min-height: 30px;
-  padding-block: 6px;
-}
 .k-page-acts {
   display: flex;
   flex-wrap: wrap;
   gap: var(--k-s-sm);
+  align-items: center;
+}
+/* 帯の中の既定の大きさのボタンは帯の部品の高さ（帯の高さを見出しの行に合わせる）。sm のボタンはそのまま */
+.k-page-head .k-btn:not([data-size="sm"]) {
+  min-height: var(--k-c-page-head-button-height);
+  padding: var(--k-c-page-head-button-pad);
 }
 
 /* ---- 区画 ---- */
 .k-section {
-  /* 見出しの上の余白（28px）を区画の外へ抜けさせない（帯の下から 16px を保つ） */
+  /* 見出しの上の余白を区画の外へ抜けさせない（帯の下から spacing.md を保つ） */
   display: flow-root;
   min-width: 0;
 }
 .k-section h2 {
-  margin: 28px 0 var(--k-s-sm);
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--k-line);
-  font-size: var(--k-text-section-title);
-  line-height: var(--k-lh-section-title);
-  font-weight: var(--k-fw-section-title);
+  margin: var(--k-c-section-title-margin);
+  padding: var(--k-c-section-title-pad);
+  border-bottom: var(--k-c-section-title-border);
+  font-size: var(--k-c-section-title-text);
+  line-height: var(--k-c-section-title-lh);
+  font-weight: var(--k-c-section-title-fw);
   color: var(--k-on-surface);
 }
-/* 区画の本文は 13px・行 1.7（区画の見出しと同じ行の割合。キャンバスの段落の 22.1px） */
 .k-section p {
-  margin: 0 0 var(--k-s-sm);
-  font-size: var(--k-text-body);
-  line-height: var(--k-lh-section-title);
+  margin-block: 0 var(--k-s-sm);
+  font-size: var(--k-c-section-body-text);
+  line-height: var(--k-c-section-body-lh);
   color: var(--k-on-surface);
 }
 
 /* ---- 整形済みの文（改行を残し、空白の無い長い字も折り返す） ---- */
 .k-pre {
-  margin: 0 0 var(--k-s-sm);
+  margin-block: 0 var(--k-s-sm);
   font: inherit;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -92,28 +94,24 @@
 
 /* ---- 箇条 ---- */
 .k-list {
-  margin: 0 0 var(--k-s-sm);
-  padding-left: 20px;
+  margin-block: 0 var(--k-s-sm);
+  padding: var(--k-c-section-list-pad);
   list-style: disc;
 }
 .k-list > li {
-  font-size: var(--k-text-body);
-  line-height: var(--k-lh-section-title);
+  font-size: var(--k-c-section-body-text);
+  line-height: var(--k-c-section-body-lh);
 }
 
 /* ---- 文字のリンク ---- */
 .k-link {
   color: var(--k-primary);
   text-decoration: underline;
-  text-underline-offset: 2px;
 }
 .k-link:hover {
   color: var(--k-primary-hover);
 }
-.k-link:focus-visible {
-  outline: 2px solid var(--k-primary);
-  outline-offset: 2px;
-}
+/* キーボードで移ったときの輪は .k-root :focus-visible（k.css）が付ける */
 
 /* ---- 横並び ---- */
 .k-row {

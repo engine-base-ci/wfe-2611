@@ -269,6 +269,26 @@ components:
     typography: "{typography.label-md}"
     rounded: "{rounded.sm}"
     padding: "0 6px"
+  # ページの型（K-217・D-143.2：値はキャンバスの実測。Main・Approvals・TicketDetail）
+  page-head:            # 見出しの帯（箱の幅いっぱい・下に線）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    padding: "12px {spacing.lg}"
+  page-head-button:     # 帯の中の既定の大きさのボタン（Approvals「続けて裁く」30px）。sm のボタンには当てない
+    height: "30px"
+    padding: "6px {spacing.lg}"
+  page-body:            # 本文の箱（下の余白。ほかの子は左右 spacing.lg 内側・帯の下から spacing.md）
+    padding: "0 0 40px"
+  section-title:        # 区画の見出し（下に線）
+    typography: "{typography.section-title}"
+    border: "1px solid {colors.line}"
+    margin: "28px 0 {spacing.sm}"
+    padding: "0 0 6px"
+  section-body:         # 区画の本文（段落・箇条の項目。行の高さ 1.7 は本文の段より広い）
+    typography: "{typography.body}"
+    lineHeight: 1.7
+  section-list:         # 区画の箇条（黒丸の字下げ）
+    padding: "0 0 0 20px"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

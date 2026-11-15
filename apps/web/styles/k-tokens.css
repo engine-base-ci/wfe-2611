@@ -222,6 +222,22 @@
   --k-c-kbd-fw: var(--k-fw-label-md);
   --k-c-kbd-radius: var(--k-r-sm);
   --k-c-kbd-pad: 0 6px;
+  --k-c-page-head-bg: var(--k-card);
+  --k-c-page-head-border: 1px solid var(--k-line);
+  --k-c-page-head-pad: 12px var(--k-s-lg);
+  --k-c-page-head-button-height: 30px;
+  --k-c-page-head-button-pad: 6px var(--k-s-lg);
+  --k-c-page-body-pad: 0 0 40px;
+  --k-c-section-title-text: var(--k-text-section-title);
+  --k-c-section-title-lh: var(--k-lh-section-title);
+  --k-c-section-title-fw: var(--k-fw-section-title);
+  --k-c-section-title-border: 1px solid var(--k-line);
+  --k-c-section-title-margin: 28px 0 var(--k-s-sm);
+  --k-c-section-title-pad: 0 0 6px;
+  --k-c-section-body-text: var(--k-text-body);
+  --k-c-section-body-fw: var(--k-fw-body);
+  --k-c-section-body-lh: 1.7;
+  --k-c-section-list-pad: 0 0 0 20px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
