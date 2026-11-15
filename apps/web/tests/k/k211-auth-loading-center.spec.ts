@@ -1,6 +1,7 @@
 // K-211「ログインしていない人の箱（AuthFrame）の中の『…しています…』を、箱の真ん中にそろえる」の画面の試験（実 Chrome・実装より先に積む）。
 //   決める人の指摘（2026-11-15・staging の写し）：/verify-email の確定中、見出し「確認しています」は真ん中なのに、回る印と文が箱の左に寄っている。
 //   同じ形（AuthFrame の箱の中の読み込み中の表示）は 3 か所：メールの確認の確定中・規約の同意し直しの「確かめています…」「今の版を読んでいます…」。
+//   加えて、/verify-email と /login の Suspense の待ち（組み立てた HTML に、画面の JS が動く前に出る物）も箱の中の真ん中に出す（精査の指摘 1）。
 //   位置は目で見ずに数で測る（getBoundingClientRect と、文の字の範囲＝Range）。口は網の手前（page.route）で答えを返さずに止め、読み込み中のままにする。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
@@ -16,6 +17,7 @@ const LABEL = {
   verify: "登録を確定しています…",
   checking: "確かめています…",
   current: "今の版を読んでいます…",
+  fallback: "読み込んでいます…",
 } as const;
 
 type Reply = { status: number; body: unknown };
@@ -48,12 +50,13 @@ async function openVerifyChecking(page: Page, width: number) {
   await expect(page.getByText(LABEL.verify, { exact: true })).toBeVisible();
 }
 
-/** 規約の同意し直し（/login?step=terms）を、ログイン中の印つきで開く。which で止める口を選ぶ */
+/** 規約の同意し直し（/login?step=terms）を、ログイン中の印つきで開く。今の版の口はいつも止める。which=me なら自分の取得も止める
+ *  （今の版の口が答えると「調子が悪い」の知らせが同時に出る形になる・精査の指摘 4） */
 async function openTermsLoading(page: Page, width: number, which: "me" | "current") {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), SESSION);
   await mockApi(
     page,
-    (m, p) => m === "GET" && (which === "me" ? /\/me$/.test(p) : p === CURRENT_PATH),
+    (m, p) => m === "GET" && (p === CURRENT_PATH || (which === "me" && /\/me$/.test(p))),
     (p) => (/\/me$/.test(p) ? meOk : unauth),
   );
   await page.setViewportSize({ width, height: 900 });
@@ -74,7 +77,7 @@ interface Measure {
   /** 回る印と文の字の範囲を合わせた塊の横の中心 */
   block: number;
   /** 回る印の箱 */
-  spin: { left: number; right: number; top: number; bottom: number };
+  spin: { left: number; right: number; top: number; bottom: number; width: number; height: number };
   /** 文の字の 1 行ずつの箱 */
   lines: { left: number; right: number; top: number; bottom: number }[];
   /** 文の要素の横の中心 */
@@ -83,44 +86,48 @@ interface Measure {
   overflow: number;
 }
 
-/** 箱の中の読み込み中の表示を数で測る。文は字の範囲（Range）で測る（要素の幅が広がっても字の位置で見る） */
-async function measure(page: Page, label: string): Promise<Measure> {
-  return page.evaluate((text) => {
-    const card = document.querySelector(".k-auth-card");
-    const h1 = card?.querySelector("h1");
-    const box = card?.querySelector('[data-state="loading"]');
-    const spin = box?.querySelector(".k-spin");
-    const span = [...(box?.querySelectorAll("span") ?? [])].find((s) => s.textContent === text);
-    if (!card || !h1 || !box || !spin || !span)
-      throw new Error("箱・見出し・読み込み中の表示・回る印・文のどれかが無い");
-    const rangeOf = (el: Element) => {
-      const r = document.createRange();
-      r.selectNodeContents(el);
-      return r;
-    };
-    const c = card.getBoundingClientRect();
-    const cs = getComputedStyle(card);
-    const innerLeft = c.left + parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth);
-    const innerRight = c.right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth);
-    const h = rangeOf(h1).getBoundingClientRect();
-    const s = spin.getBoundingClientRect();
-    const t = rangeOf(span).getBoundingClientRect();
-    const lines = [...rangeOf(span).getClientRects()]
-      .filter((r) => r.width > 0)
-      .map((r) => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
-    const sb = span.getBoundingClientRect();
-    return {
-      card: (c.left + c.right) / 2,
-      innerLeft,
-      innerRight,
-      heading: (h.left + h.right) / 2,
-      block: (Math.min(s.left, t.left) + Math.max(s.right, t.right)) / 2,
-      spin: { left: s.left, right: s.right, top: s.top, bottom: s.bottom },
-      lines,
-      labelBox: (sb.left + sb.right) / 2,
-      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    };
-  }, label);
+/** 箱の中の読み込み中の表示を数で測る。文は字の範囲（Range）で測る（要素の幅が広がっても字の位置で見る）。
+ *  withHeading が偽なら見出しを求めない（Suspense の待ちには見出しが無い。heading には箱の中心を入れる） */
+async function measure(page: Page, label: string, withHeading = true): Promise<Measure> {
+  return page.evaluate(
+    ([text, needH1]) => {
+      const card = document.querySelector(".k-auth-card");
+      const h1 = card?.querySelector("h1") ?? null;
+      const box = card?.querySelector('[data-state="loading"]');
+      const spin = box?.querySelector(".k-spin");
+      const span = [...(box?.querySelectorAll("span") ?? [])].find((s) => s.textContent === text);
+      if (!card || (needH1 && !h1) || !box || !spin || !span)
+        throw new Error("箱・見出し・読み込み中の表示・回る印・文のどれかが無い");
+      const rangeOf = (el: Element) => {
+        const r = document.createRange();
+        r.selectNodeContents(el);
+        return r;
+      };
+      const c = card.getBoundingClientRect();
+      const cs = getComputedStyle(card);
+      const innerLeft = c.left + parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth);
+      const innerRight = c.right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth);
+      const h = h1 ? rangeOf(h1).getBoundingClientRect() : c;
+      const s = spin.getBoundingClientRect();
+      const t = rangeOf(span).getBoundingClientRect();
+      const lines = [...rangeOf(span).getClientRects()]
+        .filter((r) => r.width > 0)
+        .map((r) => ({ left: r.left, right: r.right, top: r.top, bottom: r.bottom }));
+      const sb = span.getBoundingClientRect();
+      return {
+        card: (c.left + c.right) / 2,
+        innerLeft,
+        innerRight,
+        heading: (h.left + h.right) / 2,
+        block: (Math.min(s.left, t.left) + Math.max(s.right, t.right)) / 2,
+        spin: { left: s.left, right: s.right, top: s.top, bottom: s.bottom, width: s.width, height: s.height },
+        lines,
+        labelBox: (sb.left + sb.right) / 2,
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    },
+    [label, withHeading] as const,
+  );
 }
 
 /** 1 行に収まっているときの決まり：塊の中心が箱の中心とも見出しの中心とも TOL 以内。横溢れ 0 */
@@ -177,7 +184,7 @@ test("K211-UI-004 /verify-email の確定中（375・1440）：回る印は文�
   }
 });
 
-test("K211-UI-005 文字を大きくした人（文が 2 行に折れる）・幅 320：文のどの行も文の中で真ん中にそろい（行の中心と文の中心が 2px 以内）、箱の中身の左右からはみ出さず、横溢れ 0", async ({
+test("K211-UI-005 文字を大きくした人（文が 2 行に折れる）・幅 320：文のどの行も文の中で真ん中にそろい（行の中心と文の中心が 2px 以内）、箱の中身の左右からはみ出さず、回る印は丸のまま（幅と高さの差 1px 以内）、横溢れ 0", async ({
   page,
 }) => {
   await openVerifyChecking(page, 320);
@@ -193,6 +200,11 @@ test("K211-UI-005 文字を大きくした人（文が 2 行に折れる）・�
     expect(ln.right, `${i + 1} 行目が箱の中身の右からはみ出さない`).toBeLessThanOrEqual(m.innerRight + TOL);
   }
   expect(m.spin.left, "回る印も箱の中身の中").toBeGreaterThanOrEqual(m.innerLeft - TOL);
+  // 回る印は縮まない（文が長くても丸のまま・精査の指摘 3）
+  expect(
+    Math.abs(m.spin.width - m.spin.height),
+    `回る印の幅 ${m.spin.width} と高さ ${m.spin.height} の差`,
+  ).toBeLessThanOrEqual(1);
   expect(m.overflow).toBe(0);
 });
 
@@ -238,4 +250,43 @@ test("K211-UI-009 箱の外の読み込み中は今のまま（部品の既定�
     return spin.getBoundingClientRect().left - el.getBoundingClientRect().left;
   });
   expect(Math.abs(gap)).toBeLessThanOrEqual(TOL);
+});
+
+/** 組み立てた画面の HTML を、画面の JS を止めて開く（hydrate の前に出る Suspense の待ちを見る）。口は呼ばれない */
+async function openBeforeHydrate(page: Page, path: string, width: number) {
+  await page.route(/\/_next\/static\/.*\.js(\?.*)?$/, (route) => route.abort());
+  await page.setViewportSize({ width, height: 900 });
+  const res = await page.goto(path);
+  expect(res?.status()).toBe(200);
+  await expect(page.locator(".k-auth-card").getByText(LABEL.fallback, { exact: true })).toBeVisible();
+}
+
+/** Suspense の待ちの決まり：箱の中に回る印と文の塊が真ん中（箱の中心と 2px 以内）。箱の外に素の「読み込み中」が無い。横溢れ 0 */
+async function expectFallbackCentered(page: Page, where: string) {
+  const m = await measure(page, LABEL.fallback, false);
+  expect(Math.abs(m.block - m.card), `${where}：塊の中心 ${m.block} と箱の中心 ${m.card} の差`).toBeLessThanOrEqual(
+    TOL,
+  );
+  expect(m.overflow, `${where}：横溢れ`).toBe(0);
+  await expect(page.getByText("読み込み中", { exact: true }), `${where}：箱の外の素の「読み込み中」`).toHaveCount(0);
+}
+
+test("K211-UI-010 /verify-email の組み立てた HTML（画面の JS が動く前）・幅 375 と 1440：Suspense の待ちが箱（AuthFrame）の中に出て、回る印と「読み込んでいます…」の塊の中心が箱の中心と 2px 以内。箱の外の素の「読み込み中」は 0 件・横溢れ 0", async ({
+  page,
+}) => {
+  for (const width of [375, 1440]) {
+    await openBeforeHydrate(page, `/verify-email?token=${encodeURIComponent(LINK_TOKEN)}`, width);
+    await expectFallbackCentered(page, `/verify-email・幅 ${width}`);
+  }
+});
+
+test("K211-UI-011 /login と /login?step=terms の組み立てた HTML（画面の JS が動く前）・幅 375 と 1440：Suspense の待ちが箱の中に出て、塊の中心が箱の中心と 2px 以内。箱の外の素の「読み込み中」は 0 件・横溢れ 0", async ({
+  page,
+}) => {
+  for (const path of ["/login", `/login?step=terms&next=${encodeURIComponent("/tickets")}`]) {
+    for (const width of [375, 1440]) {
+      await openBeforeHydrate(page, path, width);
+      await expectFallbackCentered(page, `${path}・幅 ${width}`);
+    }
+  }
 });
