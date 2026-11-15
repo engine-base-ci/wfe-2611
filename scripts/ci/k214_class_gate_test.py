@@ -242,6 +242,82 @@ class RealTreeTest(unittest.TestCase):
             t.close()
 
 
+REAL_CAP = 32   # 台帳を入れた時点の赤の組の数。足した行は、今の木の赤がこれより増えないことも見る（レビューの指摘で足した行・2026-11-15）
+
+
+def real_not_grown(tc: unittest.TestCase) -> None:
+    keys = {(f["kind"], f["cls"], f["file"]) for f in class_gate.scan(ROOT)}
+    tc.assertLessEqual(len(keys), REAL_CAP, "今の木の赤が台帳を入れた時点の 32 より増えた")
+
+
+class ReviewTest(unittest.TestCase):
+    """レビュー（Q・2026-11-15）の指摘 1〜3 で足した行"""
+
+    def setUp(self) -> None:
+        self.t = Tree()
+
+    def tearDown(self) -> None:
+        self.t.close()
+
+    def kinds_lines(self) -> set[tuple[str, int]]:
+        return {(f["kind"], f["line"]) for f in class_gate.scan(self.t.root) if f["file"] == F}
+
+    def test_K214_CG_019_template_interpolation(self) -> None:
+        """K214-CG-019 新しい層の className={`${v}`}・className={`k-a ${w}`} は中の変数を unresolved で出す（空白で区切られた ${} も読めない）。
+        名前にくっついた `k-btn-${u}` は built だけ（unresolved を重ねない）。前の世代（components/ai）の同じ書き方は出さない"""
+        self.t.write(F, "export const P = ({v, w, u}) => (<>\n<p className={`${v}`} />\n<p className={`k-a ${w}`} />\n<p className={`k-a k-btn-${u}`} />\n</>);\n")
+        self.t.write("apps/web/components/ai/old.tsx", "export const R = ({v}) => <p className={`k-a ${v}`} />;\n")
+        got = {(k, c) for k, c, f in self.t.findings() if f == F and k == "unresolved"}
+        self.assertEqual(got, {("unresolved", "v"), ("unresolved", "w")})
+        self.assertEqual({k for k, l in self.kinds_lines() if l == 4}, {"built"})
+        self.assertFalse([g for g in self.t.findings() if g[2].startswith("apps/web/components/ai/")])
+        real_not_grown(self)
+
+    def test_K214_CG_020_value_positions(self) -> None:
+        """K214-CG-020 新しい層で、三項の枝・?? と || の両側に変数を置くと unresolved で出す（on ? cls : "k-a"・a ?? "k-a"・b || "k-a"）。
+        && の左と三項の条件は見ない（ok && "k-a"・cond ? "k-a" : ""）"""
+        self.t.write(F, 'export const P = ({on, cls, a, b, ok, cond}) => (<>\n<p className={on ? cls : "k-a"} />\n<p className={a ?? "k-a"} />\n'
+                        '<p className={b || "k-a"} />\n<p className={ok && "k-a"} />\n<p className={cond ? "k-a" : ""} />\n</>);\n')
+        self.assertEqual({(k, c) for k, c, f in self.t.findings()}, {("unresolved", "cls"), ("unresolved", "a"), ("unresolved", "b")})
+        real_not_grown(self)
+
+    def test_K214_CG_021_other_unreadable_forms(self) -> None:
+        """K214-CG-021 新しい層の [c1, "k-a"].join(" ")・getCls()・c2 as string・cn(...xs) は、どれも unresolved で出す（読めない書き方は赤に倒す）"""
+        self.t.write(F, 'export const P = ({c1, c2, xs}) => (<>\n<p className={[c1, "k-a"].join(" ")} />\n<p className={getCls()} />\n'
+                        '<p className={c2 as string} />\n<p className={cn(...xs)} />\n</>);\n')
+        self.assertEqual(self.kinds_lines(), {("unresolved", 2), ("unresolved", 3), ("unresolved", 4), ("unresolved", 5)})
+        real_not_grown(self)
+
+    def test_K214_CG_022_cn_arguments_and_object_keys(self) -> None:
+        """K214-CG-022 新しい層の cn("k-a", on ? c3 : "") は c3 を unresolved、cn({ active: on }) は鍵 active を foreign、cn({ [c4]: on }) は unresolved、
+        cn({ "k-a": on, "k-zz": on }) は k-zz を undefined で出す（オブジェクトの鍵も字として判定・値は条件なので見ない）"""
+        self.t.write(F, 'export const P = ({on, c3, c4}) => (<>\n<p className={cn("k-a", on ? c3 : "")} />\n<p className={cn({ active: on })} />\n'
+                        '<p className={cn({ [c4]: on })} />\n<p className={cn({ "k-a": on, "k-zz": on })} />\n</>);\n')
+        got = {(f["kind"], f["cls"], f["line"]) for f in class_gate.scan(self.t.root) if f["file"] == F}
+        self.assertEqual({(k, l) for k, _, l in got}, {("unresolved", 2), ("foreign", 3), ("unresolved", 4), ("undefined", 5)})
+        self.assertIn(("unresolved", "c3", 2), got)
+        self.assertIn(("foreign", "active", 3), got)
+        self.assertIn(("undefined", "k-zz", 5), got)
+        real_not_grown(self)
+
+    def test_K214_CG_023_shell_names_by_component_css(self) -> None:
+        """K214-CG-023 外枠の名前＝shell.css に在って部品の CSS（components/k の shell.css 以外）に無い名前。components/k の外の .css に .k-panel を書いても、
+        features の k-panel は shell で出たまま、その .css の定義も shell で出す。k.css にも在る k-tabs を外の .css に書いても出さない"""
+        css = "apps/web/features/F9/x/x.css"
+        self.t.write(css, ".k-panel { gap: 0; }\n.k-tabs { gap: 0; }\n")
+        self.t.write(F, 'export const P = () => <section className="k-panel k-tabs" />;\n')
+        self.assertEqual(self.t.findings(), {("shell", "k-panel", F), ("shell", "k-panel", css)})
+        real_not_grown(self)
+
+    def test_K214_CG_024_css_selector_only(self) -> None:
+        """K214-CG-024 CSS の定義はセレクタの部分（{ より前）だけを数える。:not(.k-n) の中・content: ".k-s" の文字の中・url(a.k-u.png) の値の中は数えず、
+        k-n・k-s・k-u を使うと undefined で出す。.k-x:not(.k-n) の k-x は定義に数える"""
+        self.t.write("apps/web/components/k/more.css", '.k-x:not(.k-n) { content: ".k-s"; background: url(a.k-u.png); }\n')
+        self.t.write(F, 'export const P = () => <p className="k-x k-n k-s k-u" />;\n')
+        self.assertEqual(self.t.findings(), {("undefined", "k-n", F), ("undefined", "k-s", F), ("undefined", "k-u", F)})
+        real_not_grown(self)
+
+
 class WiringTest(unittest.TestCase):
     def test_K214_CG_016_runs_in_ci(self) -> None:
         """K214-CG-016 CI の spec の組に G67 の段が 1 つ在り、class_gate.py の自己試験と、本線との分かれ目と比べる class_gate.py --ledger-base-ref とこの試験を流す。continue-on-error が無い"""
