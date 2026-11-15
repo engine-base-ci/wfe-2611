@@ -1,0 +1,1198 @@
+{
+ "_doc": "キャンバス（04_design/canvas/<canvas>.dc.html）と画面の見た目の突き合わせの組（K-216）。検査は scripts/ci/fidelity_config.py、比べ方は scripts/ci/fidelity_compare.mjs。組の種類（kind）ごとに要る役（role）、役ごとに要る値（props）は検査の表で決まる。app の {ticket} は画面を整える道具（apps/web/tests/_lib/fidelity-states.ts の state の鍵）が作ったチケットの id に置き換える。どの組も enrolled: false で始め、持ち主（owner）の画面のチケットが直したときに enrolled: true にして道具に鍵を足す。入れた組は消せない・戻せない・比べる値と幅を減らせない・セレクタを替えられない",
+ "groups": [
+  {
+   "id": "signup",
+   "kind": "auth",
+   "canvas": "AuthSignup",
+   "app": "/signup",
+   "state": "signup",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-222",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "x-dc > div > div:nth-of-type(2) input",
+     "app": "[data-part=\"auth-box\"] input",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
+     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "signup-waiting",
+   "kind": "auth-msg",
+   "canvas": "AuthVerify",
+   "app": "/verify-email",
+   "state": "signup-waiting",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-222",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
+     "app": "[data-part=\"auth-box\"] :is(a, button)",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "login",
+   "kind": "auth",
+   "canvas": "AuthLogin",
+   "app": "/login",
+   "state": "login",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-221",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "x-dc > div > div:nth-of-type(2) input",
+     "app": "[data-part=\"auth-box\"] input",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
+     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "login-2fa",
+   "kind": "auth",
+   "canvas": "Auth2FA",
+   "app": "/login",
+   "state": "login-2fa",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-221",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "x-dc > div > div:nth-of-type(2) > div:nth-of-type(2) > span",
+     "app": "[data-part=\"auth-box\"] input",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
+     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "legal",
+   "kind": "doc",
+   "canvas": "LegalPage",
+   "app": "/legal/terms",
+   "state": "legal",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-232",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": ".k-legal",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": ".k-legal h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tickets-first",
+   "kind": "page",
+   "canvas": "OnHome",
+   "app": "/tickets",
+   "state": "tickets-first",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-223",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > header + div",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tickets-main",
+   "kind": "page",
+   "canvas": "Main",
+   "app": "/tickets",
+   "state": "tickets-main",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-223",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > header + div",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tickets-list",
+   "kind": "page",
+   "canvas": "List",
+   "app": "/tickets",
+   "state": "tickets-list",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-223",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > header + div",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tickets-new",
+   "kind": "form",
+   "canvas": "Create",
+   "app": "/tickets?new=1",
+   "state": "tickets-new",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-224",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > header + div",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "form section input[type=text]",
+     "app": "input[name=\"title\"]",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "button[style*=\"padding: 0 18px\"]",
+     "app": ".k-panel form button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tickets-new-sections",
+   "kind": "form",
+   "canvas": "Create",
+   "app": "/tickets?new=1",
+   "state": "tickets-new-sections",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-225",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "section[aria-label=\"本文\"]",
+     "app": ".k-panel form",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "入力欄",
+     "role": "input",
+     "canvas": "form section input[type=text]",
+     "app": "input[name=\"title\"]",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "button[style*=\"padding: 0 18px\"]",
+     "app": ".k-panel form button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ticket-detail",
+   "kind": "page",
+   "canvas": "TicketDetail",
+   "app": "/tickets/{ticket}",
+   "state": "ticket-detail",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-226",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main article h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main article > div:has(h1)",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > div > div:first-child",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "band-approval",
+   "kind": "band",
+   "canvas": "TicketDetail",
+   "app": "/tickets/{ticket}",
+   "state": "band-approval",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-227",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "帯",
+     "role": "band",
+     "canvas": "main article [role=\"status\"]",
+     "app": "section.k62-band[aria-label=\"承認と実行\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "帯の題",
+     "role": "band-title",
+     "canvas": "main article [role=\"status\"] b",
+     "app": "section.k62-band[aria-label=\"承認と実行\"] :is(h2, h3)",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "band-running",
+   "kind": "band",
+   "canvas": "StRunning",
+   "app": "/tickets/{ticket}",
+   "state": "band-running",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-228",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "帯",
+     "role": "band",
+     "canvas": "main article [role=\"status\"]",
+     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "帯の題",
+     "role": "band-title",
+     "canvas": "main article [role=\"status\"] b",
+     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "band-failed",
+   "kind": "band",
+   "canvas": "StFailed",
+   "app": "/tickets/{ticket}",
+   "state": "band-failed",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-228",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "帯",
+     "role": "band",
+     "canvas": "main article [role=\"alert\"]",
+     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "帯の題",
+     "role": "band-title",
+     "canvas": "main article [role=\"alert\"] b",
+     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "approve-modal",
+   "kind": "dialog",
+   "canvas": "StModal",
+   "app": "/tickets/{ticket}",
+   "state": "approve-modal",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-229",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "小窓",
+     "role": "dialog",
+     "canvas": "section[role=\"alertdialog\"]",
+     "app": ".k-dialog",
+     "props": [
+      "width",
+      "border-radius",
+      "background-color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "小窓の題",
+     "role": "dialog-title",
+     "canvas": "section[role=\"alertdialog\"] b",
+     "app": ".k-dialog-title",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "section[role=\"alertdialog\"] button[style*=\"#22345C\"]",
+     "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "approvals",
+   "kind": "page",
+   "canvas": "Approvals",
+   "app": "/approvals",
+   "state": "approvals",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-231",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main header h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main header",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > header + div",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bridge-code",
+   "kind": "dialog",
+   "canvas": "EdPC",
+   "app": "/setup/bridge",
+   "state": "bridge-code",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-230",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "小窓",
+     "role": "dialog",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div",
+     "app": ".k-dialog",
+     "props": [
+      "width",
+      "border-radius",
+      "background-color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "小窓の題",
+     "role": "dialog-title",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div b",
+     "app": ".k-dialog-title",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div :is(a, button)[style*=\"background: #22345C\"]",
+     "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bridge-connected",
+   "kind": "page",
+   "canvas": "MePC",
+   "app": "/setup/bridge",
+   "state": "bridge-connected",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-230",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "main > div > section h1",
+     "app": ".k-page-head h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯",
+     "role": "head",
+     "canvas": "main > div > section > :first-child",
+     "app": ".k-page-head",
+     "props": [
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "本文の箱",
+     "role": "body",
+     "canvas": "main > div > section",
+     "app": ".k-page",
+     "props": [
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bridge-shell",
+   "kind": "shell-sub",
+   "canvas": "MePC",
+   "app": "/setup/bridge",
+   "state": "bridge-shell",
+   "widths": [
+    1440
+   ],
+   "owner": "K-220",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "左のメニュー",
+     "role": "nav",
+     "canvas": ".kn-nav",
+     "app": ".k-nav",
+     "props": [
+      "width",
+      "background-color",
+      "x"
+     ]
+    },
+    {
+     "name": "第 2 ナビ",
+     "role": "subnav",
+     "canvas": ".kn-sub .kn-sub-i",
+     "app": "[aria-label=\"自分の設定の中\"] a",
+     "props": [
+      "texts",
+      "width",
+      "x"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shell-nav",
+   "kind": "shell-nav",
+   "canvas": "Main",
+   "app": "/tickets",
+   "state": "shell-nav",
+   "widths": [
+    1440
+   ],
+   "owner": "K-138",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "左のメニュー",
+     "role": "nav",
+     "canvas": ".kn-nav",
+     "app": ".k-nav",
+     "props": [
+      "width",
+      "background-color",
+      "x"
+     ]
+    },
+    {
+     "name": "左のメニューの項目",
+     "role": "nav-items",
+     "canvas": ".kn-nav .kn-item",
+     "app": ".k-nav .k-nav-item",
+     "props": [
+      "texts",
+      "height",
+      "font-size"
+     ]
+    },
+    {
+     "name": "上の帯",
+     "role": "bar",
+     "canvas": ".kn-bar",
+     "app": ".k-bar",
+     "props": [
+      "height",
+      "background-color",
+      "texts"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shell-tabs",
+   "kind": "shell-tabs",
+   "canvas": "Main",
+   "app": "/tickets",
+   "state": "shell-tabs",
+   "widths": [
+    375
+   ],
+   "owner": "K-138",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "下のタブ",
+     "role": "tabs",
+     "canvas": "nav[aria-label=\"下のタブ\"] > a",
+     "app": ".k-tabs .k-nav-item",
+     "props": [
+      "texts",
+      "height"
+     ]
+    }
+   ]
+  }
+ ]
+}
