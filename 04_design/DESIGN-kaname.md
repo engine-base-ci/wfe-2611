@@ -113,6 +113,17 @@ typography:
     fontSize: 15px
     fontWeight: 600
     lineHeight: 1.5
+  # ページの型の見出し（K-217・D-143.2：キャンバスの実測。帯の中のページの見出しと、本文の区画の見出し）
+  page-title:
+    fontFamily: "Noto Sans JP"
+    fontSize: 18px
+    fontWeight: 700
+    lineHeight: 1.6
+  section-title:
+    fontFamily: "Noto Sans JP"
+    fontSize: 16px
+    fontWeight: 700
+    lineHeight: 1.7
   input:
     fontFamily: "Noto Sans JP"
     fontSize: 16px
@@ -465,6 +476,8 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 | `h1` | 20px | ページの題（チケット・ナレッジ・取引先） |
 | `h2` | 18px | 管理の画面の題・数の札の数字 |
 | `h3` | 15px | 小窓の題・カードの題 |
+| `page-title` | 18px | ページの型の見出しの帯の h1（行 1.6・K-217） |
+| `section-title` | 16px | ページの型の区画の見出し h2（行 1.7・下に罫線・K-217） |
 | `input` | 16px | スマホの入力欄（拡大を防ぐ） |
 | `body-md` | 14px | スマホの本文・長い文 |
 | `body` | 13px | **本文の既定**。表の行・左のバー |

@@ -215,6 +215,16 @@
   },
   {
    "paths": [
+    "scripts/ci/class_ledger.json",
+    "apps/web/styles/k-tokens.css",
+    "apps/web/components/k/k.css"
+   ],
+   "tests": [
+    "apps/web/tests/k/k217-page-parts.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/auth/agent-tools.ts"
    ],
    "tests": [
