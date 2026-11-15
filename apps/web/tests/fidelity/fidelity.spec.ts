@@ -78,7 +78,10 @@ test("K238-VF-002 キャンバスを開いても外（fonts.googleapis.com・fon
   await page.evaluate(() => document.fonts.ready);
   expect(outside).toEqual([]);
   const fonts = await loadedFonts(page);
-  expect(fonts.some((f) => /^noto sans jp( variable)?$/i.test(f)), fonts.join(", ")).toBe(true);
+  expect(
+    fonts.some((f) => /^noto sans jp( variable)?$/i.test(f)),
+    fonts.join(", "),
+  ).toBe(true);
   await context.close();
 });
 
@@ -89,7 +92,9 @@ for (const g of ENROLLED) {
       await routeCanvasFonts(canvasPage);
       await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g.canvas}.dc.html`)).href);
       await drawn(canvasPage, g.pairs, "canvas");
-      const C = await capture(canvasPage, g.pairs, "canvas", { shot: test.info().outputPath(`${g.id}-${w}-canvas.png`) });
+      const C = await capture(canvasPage, g.pairs, "canvas", {
+        shot: test.info().outputPath(`${g.id}-${w}-canvas.png`),
+      });
       await canvasPage.close();
 
       const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
@@ -130,7 +135,9 @@ test("K238-VF-013 texts は隠れた要素の字を数えない（見えてい�
   expect(v).toMatchObject({ __count: 2, texts: ["D", "E"] });
 });
 
-test("K238-VF-014 読み込み中（aria-busy=true）が消え、さらに値が 2 回読んで同じになるまで待ってから読む", async ({ page }) => {
+test("K238-VF-014 読み込み中（aria-busy=true）が消え、さらに値が 2 回読んで同じになるまで待ってから読む", async ({
+  page,
+}) => {
   // 300ms 後に aria-busy を外し、その後 10 コマ（requestAnimationFrame）続けて幅を 10px ずつ広げてから止まる。読むのは止まった後の 200px
   await page.goto(
     dataUrl(`<main aria-busy="true"><div class="v" style="width:50px;height:10px"></div></main>
@@ -149,7 +156,9 @@ test("K238-VF-014 読み込み中（aria-busy=true）が消え、さらに値が
   expect(vals[0]).toMatchObject({ width: "200px" });
 });
 
-test("K238-VF-015 動き（animation・transition）を止める：動く小窓の x・y・幅は止まった後の値で読める", async ({ page }) => {
+test("K238-VF-015 動き（animation・transition）を止める：動く小窓の x・y・幅は止まった後の値で読める", async ({
+  page,
+}) => {
   await page.goto(
     dataUrl(`<style>
         @keyframes slide { from { transform: translateX(300px) scale(0.5) } to { transform: none } }
@@ -186,7 +195,9 @@ test("K238-VF-016 値を先に読み、写しは後（写しを撮る間に描�
 });
 
 test("K238-VF-017 readVals は当たった数（__count）を毎回付け、0 個のときも当たった数の行が出る", async ({ page }) => {
-  await page.goto(dataUrl(`<p class="two" style="color:rgb(1, 2, 3)">x</p><p class="two" style="color:rgb(1, 2, 3)">y</p>`));
+  await page.goto(
+    dataUrl(`<p class="two" style="color:rgb(1, 2, 3)">x</p><p class="two" style="color:rgb(1, 2, 3)">y</p>`),
+  );
   const pairs = [pair(".none", ["color"]), pair(".two", ["color"])];
   const vals = await readVals(page, pairs, "app");
   expect(vals[0]?.__count).toBe(0);
