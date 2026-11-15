@@ -187,7 +187,8 @@ class ScopeScript(unittest.TestCase):
     def test_K172_CI_008_gates_for_changed_files(self):
         self.assertEqual(sorted(self.rules["gates"]), sorted(HEAVY), "重い検査は全部、関係するファイルを持つ")
         self.assertIn("57", ci_scope.gates_for(["scripts/ci/ci_scope.py"], self.rules, full=False))
-        self.assertNotIn("57", ci_scope.gates_for(["apps/web/app/page.tsx"], self.rules, full=False))
+        # 画面のコード（.tsx）は読む印を持ちうるので 57 に当たる（K-248）。読む印を持てない画面の文書・CSS は当たらない
+        self.assertNotIn("57", ci_scope.gates_for(["apps/web/README.md", "apps/web/styles/x.css"], self.rules, full=False))
         self.assertEqual(set(ci_scope.gates_for([], self.rules, full=True)), set(HEAVY))
         self.assertEqual(ci_scope.gates_for(["README.md"], self.rules, full=False), [])
         self.commit("K-9 chore: 範囲", {"scripts/ci/ci_scope.py": "# x\n", "11_tickets/K-9.md": "---\nid: K-9\naffects: []\nci_wide: []\ntests: []\n---\n"})
