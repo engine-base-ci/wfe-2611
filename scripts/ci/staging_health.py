@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """staging の健康診断（K-200）。読むだけ：公開の口への GET と OPTIONS だけを投げ、鍵は使わない・送らない。DB には入らない。
 
-呼び方：python3 scripts/ci/staging_health.py [--need <名前>]... [--applied <ファイル>] [--timeout <秒>]
+呼び方：python3 scripts/ci/staging_health.py [--need <名前>]... [--applied <ファイル>] [--timeout <秒>] [--region-config <ファイル>]
   住所は環境の値の名前で受ける（STAGING_BASE_URL＝画面・STAGING_API_BASE＝口）。値は出力に出さない（頭の 12 文字まで）。
   --applied は scripts/ci/staging_db_migrations.mjs の出力（DB に当たっている migration の名前の並びの JSON）。
+  --region-config は処理の場所の決まり（既定は台本の隣の staging_region.json・K-212）。口の /health と画面の /login の答えの頭 x-vercel-id から
+  処理の場所（Function の地域）を読み、決まりと違う・読めないときは赤。道は増やさない。
 終わりの値：0＝全部通った／1＝赤がある／2＝名前が無い・住所の形が違う（口に当てていない）／3＝赤は無いが DB を見ていない／64＝使い方の誤り（引数）。
 """
 from __future__ import annotations
@@ -13,6 +15,7 @@ import http.client
 import json
 import os
 import pathlib
+import re
 import socket
 import sys
 import threading
@@ -22,6 +25,10 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MIGRATIONS_DIR = ROOT / "packages" / "db" / "migrations"
+REGION_CONFIG = pathlib.Path(__file__).resolve().parent / "staging_region.json"   # 処理の場所の決まり（K-212）
+REGION_CODE = re.compile(r"^[a-z]{3}[0-9]$")           # Vercel の地域の符号の形
+NOT_FUNCTION = ("HIT", "STALE", "PRERENDER")           # x-vercel-cache がこれなら Function を通っていない答え（頭の場所を読まない）
+SIDES = ("口", "画面")
 URL_NAMES = ("STAGING_BASE_URL", "STAGING_API_BASE")   # 画面・口
 LOOPBACK = ("127.0.0.1", "localhost")                  # 試験の作りものの口だけ http を許す
 HEAD_CHARS = 12                                        # 出力に書いてよい住所の頭の長さ
@@ -65,9 +72,44 @@ def _short(value: object) -> str:
     return text[:MAX_TEXT]
 
 
-def check_health(api: str, timeout: float, mine: list[str]) -> list[Result]:
-    """確かめ 1（/health）と、通ったときだけ確かめ 2（配った版の migration の一覧の最後）"""
-    status, body, _ = fetch(api + "/health", timeout)
+def read_region(path: str) -> str | None:
+    """処理の場所の決まりを読む。無い・読めない・形が違うときは None"""
+    try:
+        value = json.loads(pathlib.Path(path).read_text(encoding="utf-8")).get("function_region")
+    except (OSError, ValueError, AttributeError):
+        return None
+    return value if isinstance(value, str) and REGION_CODE.match(value) else None
+
+
+def region_label(side: str) -> str:
+    return f"処理の場所（{side}）"
+
+
+def check_region(side: str, headers, want: str | None) -> list[Result]:
+    """答えの頭 x-vercel-id（入口::…::処理の場所::要求の番号）の最後の 1 つ前を、決まりと比べる。want が None（決まりが読めない）なら何も出さない"""
+    if want is None:
+        return []
+    label = region_label(side)
+    cache = (headers.get("x-vercel-cache") or "").strip().upper() if headers is not None else ""
+    if cache in NOT_FUNCTION:
+        return [(False, f"{label}が読めない（Function を通っていない答え）")]
+    raw = headers.get("x-vercel-id") if headers is not None else None
+    parts = raw.strip().split("::") if raw else []
+    if len(parts) < 3 or not all(REGION_CODE.match(x) for x in parts[:-1]):
+        return [(False, f"{label}が読めない（x-vercel-id が無い・形が違う）")]
+    got = parts[-2]
+    if got != want:
+        return [(False, f"{label}が {got}（決まりは {want}・DB と同じ場所）")]
+    return [(True, f"{label}は {got}")]
+
+
+def check_health(api: str, timeout: float, mine: list[str], want: str | None = None) -> list[Result]:
+    """確かめ 1（/health）と、通ったときだけ確かめ 2（配った版の migration の一覧の最後）。答えの頭から口の処理の場所も見る"""
+    status, body, headers = fetch(api + "/health", timeout)
+    return [*_health_body(status, body, mine), *check_region("口", headers, want)]
+
+
+def _health_body(status: int, body: bytes, mine: list[str]) -> list[Result]:
     try:
         data = json.loads(body)
     except ValueError:
@@ -105,10 +147,18 @@ def check_cors(web: str, api: str, timeout: float) -> list[Result]:
     return [(ok, "CORS（画面の住所からの事前の問い合わせ）" + ("" if ok else f"・状態 {status}"))]
 
 
-def check_login(web: str, timeout: float) -> list[Result]:
-    """確かめ 4：画面の /login"""
-    status, _, _ = fetch(web + "/login", timeout)
-    return [(status == 200, f"画面の /login が {status}")]
+def check_login(web: str, timeout: float, want: str | None = None) -> list[Result]:
+    """確かめ 4：画面の /login。答えの頭から画面の処理の場所も見る"""
+    status, _, headers = fetch(web + "/login", timeout)
+    return [(status == 200, f"画面の /login が {status}"), *check_region("画面", headers, want)]
+
+
+def region_gaps(results: list[Result], want: str | None) -> list[Result]:
+    """決まりが読めない・答えが返らず場所を見られなかった側を赤で足す（黙って抜かさない）"""
+    if want is None:
+        return [(False, "処理の場所の決まりを読めない（scripts/ci/staging_region.json の function_region）")]
+    return [(False, f"{region_label(side)}が読めない（答えが返らない）") for side in SIDES
+            if not any(region_label(side) in message for _, message in results)]
 
 
 def check_applied(path: str, mine: list[str]) -> list[Result]:
@@ -198,6 +248,7 @@ def main() -> int:
     ap.add_argument("--need", action="append", default=[], metavar="名前", help="在ることだけを確かめる環境の値の名前")
     ap.add_argument("--applied", metavar="ファイル", help="DB に当たっている migration の名前の並び（JSON）")
     ap.add_argument("--timeout", type=float, default=20.0, metavar="秒")
+    ap.add_argument("--region-config", default=str(REGION_CONFIG), metavar="ファイル", help="処理の場所の決まり（JSON の function_region）")
     args = ap.parse_args()
     if not 0 < args.timeout <= 300:
         ap.error("timeout")
@@ -211,12 +262,14 @@ def main() -> int:
     if not mine:
         print("★ 手元の migration の一覧が空（packages/db/migrations）")
         return EXIT_RED
+    want = read_region(args.region_config)
     results = [
-        *guarded("/health", lambda: check_health(api, args.timeout, mine), deadline),
+        *guarded("/health", lambda: check_health(api, args.timeout, mine, want), deadline),
         *guarded("CORS", lambda: check_cors(web, api, args.timeout), deadline),
-        *guarded("画面の /login", lambda: check_login(web, args.timeout), deadline),
+        *guarded("画面の /login", lambda: check_login(web, args.timeout, want), deadline),
         *(check_applied(args.applied, mine) if args.applied else []),
     ]
+    results += region_gaps(results, want)
     for ok, message in results:
         print(("OK  " if ok else "★ ") + message)
     if not args.applied:
