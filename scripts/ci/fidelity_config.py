@@ -12,9 +12,10 @@
   ・段 1 の組（--required・既定は REQUIRED）が無い
   ・enrolled の組の state の鍵が画面を整える道具（apps/web/tests/_lib/fidelity-states.ts）に無い（"<鍵>": の字で探す）
   ・本線との分かれ目（--base-ref）で enrolled だった組が、消えた・false になった・(値の name, 値, 幅) の集まりが前の版を含まない・
-    前の版に在った値（name）のセレクタが変わった・絵や画面の道が変わった。版が読めなければ赤（版はあるが設定がまだ無い版は、前の組が無いとして扱う）
+    前の版に在った値（name）のセレクタが変わった・絵や画面の道や state（画面を整える鍵）が変わった。版が読めなければ赤（版はあるが設定がまだ無い版は、前の組が無いとして扱う）
   ・比べ方の指定（--base-ref か --no-base）が無い
 入っていない組の見張り（--owners-done）は K-238 が足す。
+CI につなぐときは --no-base と --required の上書きを使わない（使うと入れた組を弱めても緑になる）。
 """
 from __future__ import annotations
 
@@ -218,7 +219,7 @@ def check_ratchet(base: list[dict], cur: list[Any]) -> list[str]:
             continue
         if g.get("enrolled") is not True:
             errs.append(f"{gid}：分かれ目で入っていた組を enrolled: false に戻した")
-        for key in ("canvas", "app"):
+        for key in ("canvas", "app", "state"):
             if g.get(key) != b.get(key):
                 errs.append(f"{gid}：分かれ目で入っていた組の {key} を {b.get(key)!r} から {g.get(key)!r} に替えた")
         lost = _measures(b) - _measures(g)
@@ -263,6 +264,7 @@ def selftest() -> int:
     assert check_ratchet(base, [dict(base[0], widths=[])])
     assert check_ratchet(base, [dict(base[0], pairs=[dict(good, app="body")])])
     assert check_ratchet(base, [])
+    assert check_ratchet([dict(base[0], state="s1")], [dict(base[0], state="s2")])
     assert sorted(set(REQUIRED)) == sorted(REQUIRED) and len(REQUIRED) == 21
     print("fidelity_config：自己試験 OK")
     return 0

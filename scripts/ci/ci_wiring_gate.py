@@ -66,8 +66,8 @@ def is_wired(name: str, cmd: str, text: str, all_items: dict[str, str]) -> bool:
     core = cmd.split("&&")[0].strip()
     if core and core in text:
         return True
-    # node の試験は旗（--test・--test-reporter=… など）を挟んで流してもよい（K-216：JUnit の記録を出すため）
-    if name.endswith(".test.mjs") and re.search(rf"node(?: --\S+)+ {re.escape(name)}\b", text):
+    # node の試験は `node --test [旗…]` で流してもよい（K-216：JUnit の記録を出すため）。--check などの流さない旗は数えない
+    if name.endswith(".test.mjs") and re.search(rf"node --test(?: --\S+)* {re.escape(name)}\b", text):
         return True
     # ほかの、回っている ci: から呼ばれている
     for k, v in all_items.items():
@@ -198,6 +198,7 @@ def main() -> int:
         mjs = "scripts/ci/m.test.mjs"
         hit = hit and is_wired(mjs, f"node {mjs}", f"run: node --test --test-reporter=junit {mjs}", {})
         hit = hit and not is_wired(mjs, f"node {mjs}", "run: node --test scripts/ci/other.test.mjs", {})
+        hit = hit and not is_wired(mjs, f"node {mjs}", f"run: node --check {mjs}", {})
         print("PASS — どこからも回らない検査を見つけた" if hit else "FAIL — どこからも回らない検査を見つけられない")
         return 0 if hit else 1
     fails = check()

@@ -46,8 +46,8 @@
     {
      "name": "入力欄",
      "role": "input",
-     "canvas": "x-dc > div > div:nth-of-type(2) input",
-     "app": "[data-part=\"auth-box\"] input",
+     "canvas": "x-dc > div > div:nth-of-type(2) > div:nth-of-type(2) > input",
+     "app": "[data-part=\"auth-box\"] input[autocomplete=\"email\"]",
      "props": [
       "width",
       "height",
@@ -180,8 +180,8 @@
     {
      "name": "入力欄",
      "role": "input",
-     "canvas": "x-dc > div > div:nth-of-type(2) input",
-     "app": "[data-part=\"auth-box\"] input",
+     "canvas": "x-dc > div > div:nth-of-type(2) > input:first-of-type",
+     "app": "[data-part=\"auth-box\"] input[autocomplete=\"email\"]",
      "props": [
       "width",
       "height",
@@ -194,7 +194,7 @@
     {
      "name": "主ボタン",
      "role": "primary",
-     "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
+     "canvas": "x-dc > div > div:nth-of-type(2) > a:first-of-type",
      "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
      "props": [
       "height",
@@ -254,8 +254,8 @@
     {
      "name": "入力欄",
      "role": "input",
-     "canvas": "x-dc > div > div:nth-of-type(2) > div:nth-of-type(2) > span",
-     "app": "[data-part=\"auth-box\"] input",
+     "canvas": "x-dc > div > div:nth-of-type(2) > div:nth-of-type(2) > span:first-child",
+     "app": "[data-part=\"auth-box\"] input[autocomplete=\"one-time-code\"]",
      "props": [
       "width",
       "height",
@@ -812,7 +812,7 @@
     {
      "name": "帯の題",
      "role": "band-title",
-     "canvas": "main article [role=\"status\"] b",
+     "canvas": "main article [role=\"status\"] > div:first-child > b",
      "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
      "props": [
       "font-size",
@@ -890,7 +890,7 @@
     {
      "name": "小窓の題",
      "role": "dialog-title",
-     "canvas": "section[role=\"alertdialog\"] b",
+     "canvas": "section[role=\"alertdialog\"] > div:first-child b",
      "app": ".k-dialog-title",
      "props": [
       "font-size",
@@ -1003,7 +1003,7 @@
     {
      "name": "小窓の題",
      "role": "dialog-title",
-     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div b",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div > div:first-child > div > b",
      "app": ".k-dialog-title",
      "props": [
       "font-size",
