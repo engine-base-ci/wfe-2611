@@ -19,3 +19,4 @@ export { Shell, type ShellProps, type Crumb, type Group } from "./shell";
 export { navFor, type NavItem, type ShellNav } from "./nav-model";
 export { Empty, Loading, ErrorState, NoAccess, ErrorPage, OfflineBanner, useOnline, type ErrorAct } from "./states";
 export { PAGE_ERROR, errorCodeOf, errorText, type ErrorText, type PageErrorCode } from "./error-of";
+export { PageBody, PageHeader, Section, Prose, TextLink, Row } from "./page";
