@@ -8,7 +8,9 @@
 直し：data_links に載せる（001・002）。data_links の画面の試験は単体の組（vitest）ではなく画面の組で流す（010〜012）
 範囲：G57 の当たり（gates の 57）が台本と設定だけで、CS-032 が歩く apps・packages のコード（.ts・.tsx・.mjs）を持っていなかったので、
       そのチケットの CI と出す前の手元の検査（どちらも範囲の答えの gates を読む）で G57 が流れなかった（003〜009）。
-      同じ形（リポジトリのファイルを歩く検査なのに、当たりが台本と設定だけ）の G47（errors_used.mjs が apps・packages を歩く）も閉じる（013〜015）
+      同じ形（リポジトリのファイルを歩く検査なのに、当たりが台本と設定だけ）の G47 も閉じる：errors_used.mjs が apps・packages を、
+      ci_wiring_gate.py が scripts・apps/*/scripts・05_flow の台本を、contract_shape_test.py が apps・packages のコードと migration を歩く（013〜015・018・019）
+      読む先を消した・名前を替えた差分でも画面の試験が選ばれる（020・021）
 
 読むのは本物のリポジトリのファイルだけ（作りもののリポジトリは作らない）。範囲は ci_scope.gates_for と ci_scope.plan に本物の決まりを
 読ませ、git とチケットの読み取りだけを差し替える（plan() が重い検査と組を決めるのと同じ関数）。
@@ -38,6 +40,7 @@ WORKFLOW = ROOT / ".github/workflows/v3-gate.yml"
 BUILDER = ROOT / "05_flow/build_testplan.py"
 FLOW_CFG = ROOT / "ticket-flow.yaml"
 ERRORS_USED = ROOT / "scripts/ci/errors_used.mjs"
+WIRING = ROOT / "scripts/ci/ci_wiring_gate.py"
 SCOPE_GATE, ERRORS_GATE = "57", "47"
 ME = "python3 scripts/ci/k248_scope_reach_test.py"
 DOCS = ["README.md", "09_dispatch/memo.md", "apps/web/README.md", "apps/web/styles/k-extra.css", "infra/STAGING.md"]
@@ -52,10 +55,11 @@ def _gates(changes: list[str]) -> list[str]:
 
 
 @contextlib.contextmanager
-def _patched(changed: list[str], tid: str = "K-999"):
-    """plan() の git の読み取りとチケットの検査だけを差し替える（範囲の決め方・決まり・依存の地図・画面の試験の一覧は本物）"""
+def _patched(changed: list, tid: str = "K-999"):
+    """plan() の git の読み取りとチケットの検査だけを差し替える（範囲の決め方・決まり・依存の地図・画面の試験の一覧は本物）。
+    changed の物は パス（足した）か ci_scope.Change（消した D・名前を替えた R と古いパス）"""
     saved = {k: getattr(ci_scope, k) for k in ("changed_files", "date_only", "subject_ids", "_ticket_check", "_integration", "_ticket_tests")}
-    ci_scope.changed_files = lambda repo, base, head: [ci_scope.Change("A", x, None) for x in changed]
+    ci_scope.changed_files = lambda repo, base, head: [x if isinstance(x, ci_scope.Change) else ci_scope.Change("A", x, None) for x in changed]
     ci_scope.date_only = lambda *a: []
     ci_scope.subject_ids = lambda *a: ([tid], [])
     ci_scope._ticket_check = lambda *a: ([], [])
@@ -68,7 +72,7 @@ def _patched(changed: list[str], tid: str = "K-999"):
             setattr(ci_scope, k, v)
 
 
-def _plan(changed: list[str]) -> dict:
+def _plan(changed: list) -> dict:
     with _patched(changed):
         return ci_scope.plan(str(ROOT), "a" * 40, "HEAD", "ticket", _rules(), str(ROOT / "11_tickets"),
                              lambda fs: {f: [] for f in fs}, lambda: [], ticket="K-999")
@@ -92,6 +96,17 @@ def _errors_used_walk() -> tuple[list[str], list[str]]:
     dirs = re.search(r"for \(const d of \[([^\]]*)\]\)", src)
     ext = re.search(r"/\\\.\(([\w|]+)\)\$/\.test\(f\)", src)
     return (re.findall(r'"([^"]+)"', dirs.group(1)) if dirs else [], ext.group(1).split("|") if ext else [])
+
+
+def _wiring_globs() -> list[str]:
+    """ci_wiring_gate.py の script_texts が歩く glob（台本の字から読む）"""
+    m = re.search(r"def script_texts\(\).*?for g in \(([^)]*)\)", WIRING.read_text(encoding="utf-8"), re.S)
+    return re.findall(r'"([^"]+)"', m.group(1)) if m else []
+
+
+def _sample(glob: str) -> str:
+    """glob に当たる作りもののパス（* と ** を名前に替える）"""
+    return glob.replace("**/", "k248/").replace("*", "k248")
 
 
 def _tracked(prefixes: list[str]) -> list[str]:
@@ -174,9 +189,29 @@ class WebDataLinkTest(unittest.TestCase):
         p = _plan(["08_api/endpoints.json"])
         self.assertIn("apps/api/src/contract/authz.test.ts", p["unit_files"])
 
-    def test_K248_G57_012_web_spec_never_in_unit_files(self) -> None:
+    def test_K248_G57_012_web_spec_not_in_list_is_dropped_quietly(self) -> None:
+        # data_links の画面の試験が画面の試験の一覧（G48・G59）に無い（agent-chat.spec.ts）：単体の組に入れず、画面の組も起こさず、止めない
+        self.assertNotIn("apps/web/tests/screens/agent-chat.spec.ts", self._domain())
         p = _plan(["scripts/ci/chat_one.mjs"])
         self.assertEqual([f for f in p["unit_files"] if f.startswith(ci_scope.WEB_E2E_PREFIX)], [])
+        self.assertEqual(p["errors"], [])
+        self.assertFalse(p["jobs"]["web"])
+
+    def _domain(self) -> set[str]:
+        import web_select
+        return set(web_select.domain_g48(str(ROOT))) | set(web_select.domain_g59(str(ROOT)))
+
+    def test_K248_G57_020_deleted_read_target_selects_settle_spec(self) -> None:
+        p = _plan([ci_scope.Change("D", F5 + "approve-complete-live.spec.ts", None)])
+        self.assertEqual(p["errors"], [])
+        self.assertIn(SETTLE, p["web_g48"] + p["web_g59"])
+        self.assertNotIn(SETTLE, p["unit_files"])
+
+    def test_K248_G57_021_renamed_read_target_selects_settle_spec(self) -> None:
+        p = _plan([ci_scope.Change("R100", F5 + "approve-complete-live2.spec.ts", F5 + "approve-complete-live.spec.ts")])
+        self.assertEqual(p["errors"], [])
+        self.assertIn(SETTLE, p["web_g48"] + p["web_g59"])
+        self.assertNotIn(SETTLE, p["unit_files"])
 
 
 class ErrorsGateReachTest(unittest.TestCase):
@@ -199,6 +234,24 @@ class ErrorsGateReachTest(unittest.TestCase):
     def test_K248_G47_015_docs_do_not_hit_47(self) -> None:
         for f in DOCS:
             self.assertNotIn(ERRORS_GATE, _gates([f]), f)
+
+    def test_K248_G47_018_wiring_walk_hits_47(self) -> None:
+        globs = _wiring_globs()
+        self.assertGreaterEqual(len(globs), 4, f"ci_wiring_gate の歩く glob が読めない: {globs}")
+        g47 = _rules()["gates"][ERRORS_GATE]
+        for g in globs:
+            self.assertIn(ERRORS_GATE, _gates([_sample(g)]), g)
+        files = [str(f.relative_to(ROOT)) for g in globs for f in ROOT.glob(g) if f.is_file() and "__pycache__" not in f.parts]
+        self.assertGreater(len(files), 100, "歩いたファイルが少なすぎる")
+        self.assertEqual([f for f in files if not ci_scope.match(f, g47)], [])
+
+    def test_K248_G47_019_contract_shape_reads_hit_47(self) -> None:
+        reads = ["08_api/openapi.yaml", "08_api/db-columns.json", "08_api/endpoints.json", "08_api/types.ts", "05_flow/screen_api.py",
+                 "packages/db/src/index.ts", "apps/api/src/hooks/k248.ts", "apps/bridge/src/k248.tsx"]
+        reads += [str(f.relative_to(ROOT)) for f in sorted((ROOT / "packages/db/migrations").glob("*.sql"))]
+        self.assertGreater(len(reads), 20, "migration が拾えない")
+        for f in reads:
+            self.assertIn(ERRORS_GATE, _gates([f]), f)
 
 
 class WiringTest(unittest.TestCase):
