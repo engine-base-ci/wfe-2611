@@ -1,12 +1,14 @@
 // キャンバスと画面の見た目の値を比べる部品（K-216）。visual_fidelity.mjs と実ブラウザの突き合わせ（K-238）が使う。
 //   比べる値：計算後の CSS の値・箱の幅と高さ（width・height）・位置（x・y＝頁の左上から）・当たった要素全部の字の一覧（texts）
-//   比べ方：px の値（大きさ・余白・x・y）は ±PX_TOLERANCE まで／書体の名前は先頭を大小を問わず／字の一覧は並びも数もちょうど同じ／
+//   比べ方：px の値（大きさ・余白・x・y）は ±PX_TOLERANCE まで（線の太さ border-*-width はちょうど同じ）／書体の名前は先頭を大小を問わず／字の一覧は並びも数もちょうど同じ／
 //           それ以外（色・太さ・角丸の書き方・字の並び）はちょうど同じ。要素が無ければ「（無い）」で違う
 //   読み込んだ書体は「キャンバスが読んだ書体を画面も読んでいる」か（名前の後ろの Variable と大小は問わない・D-128.123）
 
 export const PX_TOLERANCE = 2;
 export const MISSING = "（無い）";
 const PX = /^-?\d+(\.\d+)?px$/;
+// 線の太さは ±2 にしない（1px の線が無い＝0px を同じにしてしまう）。px でもちょうど同じで比べる
+const EXACT_PX = /^border(-[a-z]+)*-width$/;
 
 const firstFont = (v) => v.split(",")[0].trim().replace(/["']/g, "").toLowerCase();
 const famOf = (f) => String(f ?? "").replace(/["']/g, "").trim().replace(/ Variable$/i, "").toLowerCase();
@@ -16,7 +18,7 @@ function same(prop, c, a) {
   if (c === MISSING || a === MISSING) return false;
   if (prop === "texts") return Array.isArray(c) && Array.isArray(a) && c.length === a.length && c.every((t, i) => t === a[i]);
   if (typeof c !== "string" || typeof a !== "string") return false;
-  if (PX.test(c) && PX.test(a)) return Math.abs(parseFloat(c) - parseFloat(a)) <= PX_TOLERANCE;
+  if (PX.test(c) && PX.test(a) && !EXACT_PX.test(prop)) return Math.abs(parseFloat(c) - parseFloat(a)) <= PX_TOLERANCE;
   if (prop === "font-family") return firstFont(c) === firstFont(a);
   return c === a;
 }

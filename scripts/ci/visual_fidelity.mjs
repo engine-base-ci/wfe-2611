@@ -3,6 +3,7 @@
 //   node scripts/ci/visual_fidelity.mjs .qa/visual-fidelity/K-28/pairs.json [BASE_URL] [--strict]
 //   node scripts/ci/visual_fidelity.mjs --group <組の id> --width <幅> [BASE_URL] [--strict] [--out <フォルダ>]
 //     （--group は 04_design/fidelity.json の組を読む。画面を整える道具 fidelity-states.ts は通さない＝K-238 の試験が通す）
+//   --storage <道>：画面の側だけ、Playwright の storageState（ログインの印など）を読んで開く
 //   出力：result.json・canvas.png・app.png。比べ方は fidelity_compare.mjs（K-216）。
 //   --strict：違う値が 1 つでもあれば 1 で終わる（無ければ 0。弱い形は数えるだけで 0）
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -24,6 +25,7 @@ function parseArgs(argv) {
     else if (a === "--group") o.group = argv[++i];
     else if (a === "--width") o.width = Number(argv[++i]);
     else if (a === "--out") o.out = argv[++i];
+    else if (a === "--storage") o.storage = argv[++i];
     else o.rest.push(a);
   }
   return o;
@@ -62,8 +64,8 @@ async function waitForParts(page, sels) {
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
 }
 
-async function read(browser, cfg, url, side) {
-  const page = await browser.newPage({ viewport: cfg.viewport, colorScheme: "light" });
+async function read(browser, cfg, url, side, storageState) {
+  const page = await browser.newPage({ viewport: cfg.viewport, colorScheme: "light", ...(storageState ? { storageState } : {}) });
   await page.goto(url, { waitUntil: "load" });
   await waitForParts(page, cfg.pairs.map((p) => p[side]));
   await page.screenshot({ path: `${cfg.outDir}/${side}.png`, fullPage: true });
@@ -83,10 +85,14 @@ async function main() {
   const browser = await chromium.launch();
   try {
     const C = await read(browser, cfg, pathToFileURL(resolve(cfg.canvas)).href, "canvas");
-    const A = await read(browser, cfg, new URL(cfg.app, base).href, "app");
+    const A = await read(browser, cfg, new URL(cfg.app, base).href, "app", o.storage);
     // 新しい画面だけ、明るい・暗い・スマホも残す（比べる相手のキャンバスは明るいテーマだけ）
     for (const [name, scheme, w] of cfg.extra ?? []) {
-      const page = await browser.newPage({ viewport: { width: w, height: cfg.viewport.height }, colorScheme: scheme });
+      const page = await browser.newPage({
+        viewport: { width: w, height: cfg.viewport.height },
+        colorScheme: scheme,
+        ...(o.storage ? { storageState: o.storage } : {}),
+      });
       await page.goto(new URL(cfg.app, base).href, { waitUntil: "load" });
       await waitForParts(page, cfg.pairs.map((p) => p.app));
       await page.screenshot({ path: `${cfg.outDir}/app-${name}.png` });
