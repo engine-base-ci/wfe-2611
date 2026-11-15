@@ -124,6 +124,9 @@ SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・
 # コミットの名義（author のメールのドメイン）が配る側のチームの物でなければ赤（K-206）。static の組＝出す前の手元の検査でも流れる。
 #   比べる元は範囲の段（G0）の出力なので run の命令の文字に入れず env で渡す
 SPEC_GATES.append({"id": 66, "name": "コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206）", "script": "python3 scripts/ci/author_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "static", "blocking": True})
+# 画面の JSX のクラスがどの CSS にも在るか・外枠（components/k/shell.css）の決まりを本文で使っていないか・新しい層に CSS の外の見た目を書いていないか（K-214）。
+#   今ある赤は台帳 scripts/ci/class_ledger.json で通し、台帳は本線との分かれ目（G0 の base）と比べて減らすだけ。base は env で渡す（K107-CS-034）
+SPEC_GATES.append({"id": 67, "name": "画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214）", "script": "python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k214_class_gate_test.py", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True})
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
 SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
