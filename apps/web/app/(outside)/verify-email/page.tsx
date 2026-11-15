@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { SignupWaiting } from "@/features/F1/sign-up";
 import { VerifyLink, readLinkToken } from "@/features/F1/verify-email";
-import { AuthLoading } from "@/features/F1/sign-up/frame";
+import { AuthLoading } from "@/features/F1/sign-up/auth-loading";
 
 function VerifyEmailSwitch() {
   const sp = useSearchParams();

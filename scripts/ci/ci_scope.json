@@ -114,7 +114,7 @@
  ],
  "_gates_doc": "重い検査（番号 → 関係するファイル）。scope=ticket では変えたファイルが当たるときだけ流す。全部の回は全部（K-172・D-133.7）",
  "gates": {
-  "27": ["scripts/ci/layer_audit*", "scripts/ci/layers*", "03_architecture/**", "05_flow/**", "07_functional/**", "packages/db/**"],
+  "27": ["spec-dependencies.yaml", "skill-pipeline.yaml", "scripts/ci/**", "scripts/tickets/**", "scripts/spec-sync/**", "00_research/**", "01_hearing/**", "02_tech_stack/**", "03_architecture/**", "04_design/**", "05_flow/**", "06_mockup/**", "07_functional/**", "07_qa/**", "07_tasks/**", "08_api/**", "08_schedule/**", "09_features/**", "10_skills/**", "11_tickets/**", "apps/**", "packages/**", "infra/docker-compose.dev.yml", "package.json"],
   "36": ["08_api/**", "apps/api/src/**", "packages/contracts/**", "packages/db/**", "scripts/ci/schemathesis*"],
   "38": ["scripts/ci/generated*", "05_flow/**", "08_api/**", "07_functional/**", "04_design/**", "03_architecture/**", "packages/contracts/**", "apps/web/app/**", "01_hearing/決定ログ*", "11_tickets/**", "07_qa/test-specs/**"],
   "47": [".github/**", "scripts/ci/**", "05_flow/build_testplan.py", "package.json"],

@@ -9,7 +9,7 @@ import { AuthFoot, OutsideLayout } from "@/components/outside/outside-layout";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
 import { afterLogin } from "@/lib/after-login";
 import { ConsentTerms } from "@/features/F1/consent-terms/consent-terms";
-import { AuthLoading } from "@/features/F1/sign-up/frame";
+import { AuthLoading } from "@/features/F1/sign-up/auth-loading";
 
 function LoginInner() {
   const sp = useSearchParams();
