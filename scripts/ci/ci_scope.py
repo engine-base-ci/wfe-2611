@@ -17,6 +17,8 @@
   続ける理由（full_reasons に残し、チケットの範囲で続ける）：ci・lockfile・shared・unmapped・no-declaration
   static と spec だけ（K-156）：決まりの spec（spec.paths・spec.generated のときは generated.json の生成物と作り手）の物は、全部に倒さず組も足さない。
     読む試験・src があれば no_test_path_reads（CS-044）が赤にする（data_links に書く）
+    spec.package_paths（K-212）：パッケージの中にあっても組み立てに入らない物（Vercel が読むだけの apps/*/vercel.json など）。
+    パッケージの試験を広げず、static と spec だけにする
   画面の組とチケットの一覧（K-156・D-133.5）：jobs.web.ticket_rows のファイル（11_tickets/tickets.json）が変わったら、比べる元と先頭を
     id で比べ、変わった・足した・消した行のチケットが画面を持つ（screens・apps/web の tests）ときだけ web の組。読めないなら流す
   migration の lint（K-156）：scope=full でも比べる元が有効なら migration_files を出す。名前を変えた migration（git の R）も足した物に数える
@@ -305,8 +307,10 @@ def load_rules(path: str) -> dict:
     sp = r.get("spec")
     if sp is not None and not (isinstance(sp, dict) and isinstance(sp.get("paths", []), list)
                                and all(isinstance(x, str) for x in sp.get("paths", []))
+                               and isinstance(sp.get("package_paths", []), list)
+                               and all(isinstance(x, str) for x in sp.get("package_paths", []))
                                and isinstance(sp.get("generated", False), bool)):
-        raise ValueError(f"{path}: spec は {{\"paths\": [glob…], \"generated\": true|false}}（K-156）")
+        raise ValueError(f"{path}: spec は {{\"paths\": [glob…], \"generated\": true|false, \"package_paths\": [glob…]}}（K-156・K-212）")
     for job, j in r["jobs"].items():
         if not (isinstance(j, dict) and isinstance(j.get("packages"), list) and isinstance(j.get("paths"), list)):
             raise ValueError(f"{path}: jobs.{job} は packages・paths")
@@ -684,7 +688,8 @@ def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list
             continue
         lst = lambda v: v if isinstance(v, list) else ([v] if v else [])  # noqa: E731
         tk[t.get("id")] = {"tests": lst(t.get("tests")), "changes": lst(t.get("changes")), "depends_on": lst(t.get("depends_on"))}
-    changed = [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old]
+    deploy_only = (rules.get("spec") or {}).get("package_paths", [])   # 組み立てに入らない物は画面の試験を選ぶ元にしない（K-212）
+    changed = [x for x in [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old] if not match(x, deploy_only)]
     return web_select.select(changed, tid, tk, web_select.domain_g48(repo), web_select.domain_g59(repo),
                              web_select.importers(repo), rules.get("web_select") or {})
 
@@ -778,6 +783,9 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                 if match(x, l["paths"]):
                     direct.update(l.get("tests", []))
                     readers.update(l.get("readers", []))
+            if match(x, (rules.get("spec") or {}).get("package_paths", [])):
+                p["spec_only"].append(x)   # パッケージの中でも組み立てに入らない物：パッケージの試験を広げない（K-212）
+                continue
             if match(x, db["paths"]):
                 db_range = True
                 wide.append(("db", x))

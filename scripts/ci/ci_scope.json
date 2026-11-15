@@ -45,6 +45,7 @@
  },
  "spec": {
   "generated": true,
+  "package_paths": ["apps/*/vercel.json"],
   "paths": [
    "05_flow/*.py",
    "05_flow/*.json",
