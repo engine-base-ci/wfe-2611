@@ -6,12 +6,15 @@
   python3 scripts/ci/class_gate.py --selftest                             作りものの木で赤を 1 つずつ起こす
   そのほか：--root <根>（既定はこの台本の置き場の 2 つ上）・--ledger <台帳>・--tickets <11_tickets>
 
-見るもの（apps/web の .tsx と .css。node_modules・.next は読まない）：
+見るもの（apps/web の .tsx と .css。node_modules・.next は読まない。CSS の定義はセレクタの部分の .名前 だけ。注釈・文字・:not(…)・値の中は数えない。
+  定義に数える .css は、.ts・.tsx の import "…css"（./・../・@/）と、そこから @import で辿れる物だけ）：
   ・className="…"・className={…} の中の文字（"…"・'…'・`…` の静的な部分。cn() の引数も同じ）・classNames={{ 鍵: "…" }} の値
   ・undefined   どの層でも：頭が k と数字の後に - の名前（k-・k62-）が、どの .css にも .名前 で無い
-  ・shell       components/k/shell.css にだけ在る k の名前を components/k の外で使う（外枠の決まりの流用）
+  ・shell       外枠の名前（components/k/shell.css に在って、部品の CSS＝components/k のほかの .css に無い k の名前）を components/k の外で使う・
+                components/k の外の .css が定義する（別の CSS に書いて抜けさせない。その .css の行で出す）
   ・built       `k-btn-${v}` のように名前を組み立てていて確かめられない（どの層でも k の名前。新しい層はどの名前でも）
-  ・unresolved  新しい層で className={変数}・cn(変数, …)。受け取った className をそのまま渡すのは呼んだ側で確かめるので出さない
+  ・unresolved  新しい層で、値になる位置（三項の枝・?? と || の両側・&& の右・${} の中・cn の引数）が字・受け取った className・空のどれでもない
+                （変数・呼び出し・as・join・...xs・計算した鍵など。読めない書き方は赤に倒す）。&& の左と三項の条件は見ない。cn({ 鍵: 条件 }) の鍵は字として判定
   ・foreign     新しい層で、CSS に在る k の名前でも sr-only でもない字（tailwind の字・[ を含む任意の値）
   ・style       新しい層の style={…}
   新しい層＝apps/web/features・apps/web/components/k。前の世代（components/ai など・D-128.78 で外す側）と app/ は foreign・style・unresolved を見ない
@@ -47,9 +50,14 @@ ALLOWED_FOREIGN = {"sr-only"}        # 画面の読み上げだけの決まり�
 K_NAME = re.compile(r"^k\d*-")
 CSS_CLASS = re.compile(r"\.(-?[_a-zA-Z][\w-]*)")
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.S)
+CSS_STRING = re.compile(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'")
+TS_CSS_IMPORT = re.compile(r"""^\s*import\s+(?:[^'";]*?\s+from\s+)?['"]([^'"]+\.css)['"]""", re.M)
+CSS_IMPORT = re.compile(r"""@import\s+(?:url\(\s*)?['"]([^'"]+\.css)['"]""")
+CSS_PRELUDE = re.compile(r"([^{}]*)\{")
+CSS_NOT = re.compile(r":not\((?:[^()]|\([^()]*\))*\)")
 ATTR = re.compile(r"\b(className|classNames|style)\s*=\s*(?=[\"'{])")
 IDENT = re.compile(r"^[A-Za-z_$][\w$]*(?:\??\.[A-Za-z_$][\w$]*)*$")
-CN_CALL = re.compile(r"^(?:cn|clsx|cx|classnames|classNames)\s*\((.*)\)$", re.S)
+UNRESOLVED_SHOWN = 60   # 読めない式を台帳の名前にするときの字数
 KINDS = ("undefined", "shell", "built", "unresolved", "foreign", "style")
 
 
@@ -62,15 +70,67 @@ def _files(root: Path, suffix: str) -> list[Path]:
     return out
 
 
-def css_defs(root: Path) -> dict[str, set[str]]:
-    """名前 → 定義している .css（root からの posix の道）の集合。注釈の中は数えない"""
-    defs: dict[str, set[str]] = {}
+def _blank(m: re.Match) -> str:
+    """消した所を同じ長さの空白にする（改行は残す。行の番号を変えない）"""
+    return re.sub(r"[^\n]", " ", m.group(0))
+
+
+def css_selector_defs(text: str):
+    """CSS の定義：セレクタの部分（{ より前）の .名前 だけ。注釈・文字・:not(…) の中・値の中は数えない。(名前, 位置)"""
+    text = CSS_STRING.sub(_blank, CSS_COMMENT.sub(_blank, text))
+    for m in CSS_PRELUDE.finditer(text):
+        start = m.start(1) + m.group(1).rfind(";") + 1   # 入れ子の書き方で、前の宣言の後ろだけ
+        pre = text[start:m.end(1)]
+        if pre.lstrip().startswith("@"):
+            continue
+        pre = CSS_NOT.sub(_blank, pre)
+        for c in CSS_CLASS.finditer(pre):
+            yield c.group(1), start + c.start()
+
+
+def _resolve(root: Path, frm: Path, spec: str) -> Path | None:
+    """import の行き先。./・../ は読む側からの道、@/ は apps/web。外の部品（node_modules）は辿らない"""
+    if spec.startswith("@/"):
+        return (root / WEB / spec[2:]).resolve()
+    if spec.startswith("."):
+        return (frm.parent / spec).resolve()
+    return None
+
+
+def loaded_css(root: Path) -> set[Path]:
+    """読み込まれた .css：.ts・.tsx の import "…css" と、そこから @import で辿れる物"""
+    todo = [q for f in _files(root, ".ts") + _files(root, ".tsx")
+            for spec in TS_CSS_IMPORT.findall(f.read_text(encoding="utf-8"))
+            if (q := _resolve(root, f, spec)) is not None]
+    seen: set[Path] = set()
+    while todo:
+        q = todo.pop()
+        if q in seen or not q.is_file():
+            continue
+        seen.add(q)
+        text = CSS_COMMENT.sub("", q.read_text(encoding="utf-8"))
+        todo += [r for spec in CSS_IMPORT.findall(text) if (r := _resolve(root, q, spec if spec.startswith(("@/", ".")) else "./" + spec)) is not None]
+    return seen
+
+
+def css_defs(root: Path, only: set[Path] | None = None) -> dict[str, dict[str, int]]:
+    """名前 → {定義している .css（root からの posix の道）: 最初の行}。only を渡すとその .css だけ"""
+    defs: dict[str, dict[str, int]] = {}
     for p in _files(root, ".css"):
+        if only is not None and p.resolve() not in only:
+            continue
         rel = p.relative_to(root).as_posix()
-        text = CSS_COMMENT.sub("", p.read_text(encoding="utf-8"))
-        for m in CSS_CLASS.finditer(text):
-            defs.setdefault(m.group(1), set()).add(rel)
+        text = p.read_text(encoding="utf-8")
+        for name, pos in css_selector_defs(text):
+            defs.setdefault(name, {}).setdefault(rel, text.count("\n", 0, pos) + 1)
     return defs
+
+
+def shell_names(defs: dict[str, dict[str, int]], every: dict[str, dict[str, int]] | None = None) -> set[str]:
+    """外枠の名前：shell.css に在って、読み込まれた部品の CSS（components/k の shell.css 以外の .css）に無い k の名前"""
+    every = defs if every is None else every
+    return {n for n, where in every.items() if K_NAME.match(n) and SHELL_CSS in where
+            and not any(f.startswith(SHELL_DIR) and f != SHELL_CSS for f in defs.get(n, {}))}
 
 
 # ---------------------------------------------------------------- 式を読む（文字・テンプレート・入れ子の括弧）
@@ -177,18 +237,177 @@ def _top_args(s: str) -> list[str]:
     return out + [s[cur:]]
 
 
-def unresolved_in(expr: str) -> list[str]:
-    """className={…} の中の、確かめられない変数（受け取った className は除く）"""
-    e = expr.strip()
-    m = CN_CALL.match(e)
-    parts = [a.strip() for a in _top_args(m.group(1))] if m else [e]
-    return [a for a in parts if IDENT.match(a) and a.split(".")[-1] != "className"]
+def _top(s: str):
+    """いちばん外（括弧・文字・テンプレートの外）の位置を順に"""
+    depth, i = 0, 0
+    while i < len(s):
+        c = s[i]
+        if c in "\"'":
+            i = _skip_quote(s, i)
+            continue
+        if c == "`":
+            i = _skip_template(s, i)
+            continue
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        elif depth == 0:
+            yield i
+        i += 1
+
+
+def _match_close(s: str, i: int) -> int:
+    """s[i] が ( か [ か { のとき、対応する閉じの位置"""
+    depth, k = 0, i
+    while k < len(s):
+        c = s[k]
+        if c in "\"'":
+            k = _skip_quote(s, k)
+            continue
+        if c == "`":
+            k = _skip_template(s, k)
+            continue
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+            if depth == 0:
+                return k
+        k += 1
+    return -1
+
+
+def _ternary(s: str) -> tuple[str, str, str] | None:
+    q = None
+    nest = 0
+    for i in _top(s):
+        c = s[i]
+        if c == "?" and q is None:
+            if s[i + 1:i + 2] in ("?", ".") or s[i - 1:i] == "?":
+                continue
+            q = i
+        elif q is not None and c == "?" and s[i + 1:i + 2] not in ("?", ".") and s[i - 1:i] != "?":
+            nest += 1
+        elif q is not None and c == ":":
+            if nest:
+                nest -= 1
+            else:
+                return s[:q], s[q + 1:i], s[i + 1:]
+    return None
+
+
+def _split(s: str, ops: tuple[str, ...]) -> list[str]:
+    out, cur = [], 0
+    skip = -1
+    for i in _top(s):
+        if i < skip:
+            continue
+        for op in ops:
+            if s.startswith(op, i) and not (op == "??" and s.startswith("??=", i)):
+                out.append(s[cur:i])
+                cur = skip = i + len(op)
+                break
+    return out + [s[cur:]] if out else [s]
+
+
+def _whole(s: str, open_i: int) -> bool:
+    """s[open_i] の括弧が s の最後で閉じるか"""
+    return _match_close(s, open_i) == len(s) - 1
+
+
+def _template_holes(s: str):
+    """`…` の中の ${} のうち、名前にくっついていない物の中身（くっついた物は built で出る）"""
+    j = 1
+    while j < len(s) - 1:
+        if s[j] == "\\":
+            j += 2
+        elif s.startswith("${", j):
+            end = _skip_braces(s, j + 1)
+            glued = (j > 1 and not s[j - 1].isspace()) or (end < len(s) - 1 and not s[end].isspace())
+            if not glued:
+                yield s[j + 2:end - 1]
+            j = end
+        else:
+            j += 1
+
+
+EMPTY = {"undefined", "null", "false", "true", "''", '""', "``"}
+
+
+def _object_keys(body: str, base: int, unres: list[str], keys: list[tuple[str, int]]) -> None:
+    """cn({ … }) の鍵：引用符の無い鍵は字として、計算した鍵・広げる書き方は読めない（値は条件なので見ない）"""
+    for part in _top_args(body):
+        off = base + len(part) - len(part.lstrip())
+        p = part.strip()
+        if not p:
+            continue
+        if p.startswith("...") or p.startswith("["):
+            unres.append(p.split(":", 1)[0].strip() if p.startswith("[") else p)
+            continue
+        colon = next((i for i in _top(p) if p[i] == ":"), None)
+        k = (p[:colon] if colon is not None else p).strip()
+        if re.fullmatch(r"[A-Za-z_$][\w$-]*", k):
+            keys.append((k, off))
+
+
+def values(s: str, base: int, unres: list[str], keys: list[tuple[str, int]]) -> None:
+    """新しい層の className={…} の値になる位置を辿る。読めない物は unres に、オブジェクトの鍵は keys に"""
+    lead = len(s) - len(s.lstrip())
+    s, base = s.strip(), base + lead
+    while s.startswith("(") and _whole(s, 0):
+        inner = s[1:-1]
+        base += 1 + len(inner) - len(inner.lstrip())
+        s = inner.strip()
+    if not s or s in EMPTY or re.fullmatch(r"-?\d+(\.\d+)?", s):
+        return
+    if s[0] in "\"'" and _skip_quote(s, 0) == len(s):
+        return
+    if s[0] == "`" and _skip_template(s, 0) == len(s):
+        for hole in _template_holes(s):
+            values(hole, base, unres, keys)
+        return
+    t = _ternary(s)
+    if t:
+        values(t[1], base, unres, keys)
+        values(t[2], base, unres, keys)
+        return
+    parts = _split(s, ("||", "??"))
+    if len(parts) > 1:
+        for x in parts:
+            values(x, base, unres, keys)
+        return
+    parts = _split(s, ("&&",))
+    if len(parts) > 1:
+        values(parts[-1], base, unres, keys)   # && の左は条件なので見ない
+        return
+    m = re.match(r"(?:cn|clsx|cx|classnames|classNames)\s*\(", s)
+    if m and _whole(s, m.end() - 1):
+        inner = s[m.end():-1]
+        for a in _top_args(inner):
+            a_strip = a.strip()
+            if a_strip.startswith("..."):
+                unres.append(a_strip)
+            elif a_strip.startswith("{") and _whole(a_strip, 0):
+                _object_keys(a_strip[1:-1], base, unres, keys)
+            else:
+                values(a, base, unres, keys)
+        return
+    if s.startswith("{") and _whole(s, 0):
+        _object_keys(s[1:-1], base, unres, keys)
+        return
+    if IDENT.match(s):
+        if s.split(".")[-1] != "className":   # 受け取った className は呼んだ側で確かめる
+            unres.append(s)
+        return
+    unres.append(re.sub(r"\s+", " ", s)[:UNRESOLVED_SHOWN])
 
 
 # ---------------------------------------------------------------- 1 つのファイルを見る
-def scan_file(text: str, rel: str, defs: dict[str, set[str]]) -> list[dict]:
+def scan_file(text: str, rel: str, defs: dict[str, dict[str, int]], shell: set[str] | None = None) -> list[dict]:
     new = rel.startswith(NEW_LAYERS)
     in_k = rel.startswith(SHELL_DIR)
+    shell = shell_names(defs) if shell is None else shell
     line_of = lambda pos: text.count("\n", 0, pos) + 1  # noqa: E731
     out: list[dict] = []
     add = lambda kind, cls, pos: out.append({"kind": kind, "cls": cls, "file": rel, "line": line_of(pos)})  # noqa: E731
@@ -202,17 +421,22 @@ def scan_file(text: str, rel: str, defs: dict[str, set[str]]) -> list[dict]:
             end = _skip_braces(text, i)
             expr, base = text[i + 1:end - 1], i + 1
             if new and attr == "className":
-                for v in unresolved_in(expr):
+                unres: list[str] = []
+                keys: list[tuple[str, int]] = []
+                values(expr, base, unres, keys)
+                for v in unres:
                     add("unresolved", v, m.start())
+                for k, pos in keys:
+                    _judge(k, pos, False, new, in_k, defs, shell, add)
         else:
             end = _skip_quote(text, i)
             expr, base = text[i:end], i
         for tok, pos, built in strings_in(expr, base):
-            _judge(tok, pos, built, new, in_k, defs, add)
+            _judge(tok, pos, built, new, in_k, defs, shell, add)
     return out
 
 
-def _judge(tok: str, pos: int, built: bool, new: bool, in_k: bool, defs: dict[str, set[str]], add) -> None:
+def _judge(tok: str, pos: int, built: bool, new: bool, in_k: bool, defs: dict[str, dict[str, int]], shell: set[str], add) -> None:
     is_k = bool(K_NAME.match(tok))
     if built:
         if is_k or new:
@@ -221,7 +445,7 @@ def _judge(tok: str, pos: int, built: bool, new: bool, in_k: bool, defs: dict[st
     where = defs.get(tok)
     if is_k and not where:
         add("undefined", tok, pos)
-    elif is_k and where == {SHELL_CSS} and not in_k:   # sr-only など tailwind の字は外枠の決まりに数えない
+    elif tok in shell and not in_k:
         add("shell", tok, pos)
     elif new and not is_k and tok not in ALLOWED_FOREIGN:
         add("foreign", tok, pos)
@@ -230,10 +454,13 @@ def _judge(tok: str, pos: int, built: bool, new: bool, in_k: bool, defs: dict[st
 def scan(root: Path) -> list[dict]:
     """木の赤の全部。各要素は kind・cls・file（root からの posix の道）・line"""
     root = Path(root)
-    defs = css_defs(root)
-    out: list[dict] = []
+    every = css_defs(root)                       # 外枠の名前を外の .css が定義するのは、読み込まれていなくても赤
+    defs = css_defs(root, loaded_css(root))      # 在る・無いは読み込まれた .css だけで決める（import を忘れた .css で通さない）
+    shell = shell_names(defs, every)
+    out: list[dict] = [{"kind": "shell", "cls": n, "file": f, "line": line}
+                       for n in sorted(shell) for f, line in sorted(every[n].items()) if not f.startswith(SHELL_DIR)]
     for p in _files(root, ".tsx"):
-        out += scan_file(p.read_text(encoding="utf-8"), p.relative_to(root).as_posix(), defs)
+        out += scan_file(p.read_text(encoding="utf-8"), p.relative_to(root).as_posix(), defs, shell)
     return out
 
 
@@ -333,6 +560,7 @@ def selftest() -> int:
     try:
         for rel, body in (("apps/web/components/k/k.css", ".k-a { gap: 0; }\n"),
                           ("apps/web/components/k/shell.css", ".k-panel { gap: 0; }\n"),
+                          ("apps/web/app/layout.tsx", 'import "../components/k/k.css";\nimport "../components/k/shell.css";\n'),
                           ("11_tickets/K-1.md", "---\nid: K-1\n---\n")):
             (tmp / rel).parent.mkdir(parents=True, exist_ok=True)
             (tmp / rel).write_text(body, encoding="utf-8")
