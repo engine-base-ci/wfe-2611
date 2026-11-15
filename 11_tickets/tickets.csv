@@ -1230,3 +1230,15 @@ K-210,統合テストを通した後の後始末：配布物の決定の直し�
 - [ ] 作り手（`05_flow/build_testplan.py`）を直して CI の定義と試験計画を作り直した（G65 の並びの最後に `&& python3 scripts/ci/k210_gate_holes_test.py`・G24 の段の run を `pnpm ci:no-dynamic-call && pnpm ci:test-imports`・G56 の段に `env: CI_BASE: ${{ steps.scope.outputs.base }}` と `--base-ref ""$CI_BASE""`）
 - [ ] 生成物が最新かの検査（G38）・決定のトレース（G54）・取り込む順（G56）・範囲の台本の試験（G57）が、このチケットの CI で流れて緑
 - [ ] チケットの CI が緑"
+K-211,ログインしていない人の箱の中の「…しています…」（回る印と文）が左に寄る。箱の真ん中にそろえる（メールの確認の確定中・規約の同意し直しの読み込み中）,課題,K-103,未着手,実装,2026-11-15,F1・画面の土台,"決める人の指摘（2026-11-15・staging の画面の写し）：確認のメールのリンクを押した直後の画面（/verify-email）で、箱の見出し「確認しています」は真ん中にそろっているのに、その下の「◌ 登録を確定しています…」（回る印と文）が箱の左に寄っている。「真ん中になっていないので揃えて」。
+
+訳（切る段がコードで確かめた）：
+
+- 箱（`AuthFrame` の `.k-auth-card`・`apps/web/features/F1/sign-up/sign-up.css`）は縦の flex。見出し（`.k-auth-card h1`）・説明（`.k-auth-lead`）・下の行き先（`.k-auth-alt`）は `text-align: center` で真ん中
+- 読み込み中は共通の部品 `Loading`（`apps/web/components/k/states.tsx`）。外側は `.k-state[data-state=""loading""]`（`apps/web/components/k/k.css:479-491`）で、横の flex・`align-items: center`・**`justify-content` は既定（flex-start）**。箱の中では幅いっぱいに伸び、回る印と文は左の端から並ぶ。だから左に寄る
+- キャンバス（`04_design/canvas_gen/auth.py` の `authpage`・正）は、箱の中の字を全部真ん中にそろえている（見出し・説明・注・下の行き先・アイコンの段も `justify-content: center`）。確定中の絵は無いが、箱の中の作法は真ん中
+- 箱の外の読み込み中（キャンバスの `OnLoading`・仕事の画面）は左から。部品の既定は変えない","- [ ] 下の 9 行（K211-UI-001〜009）が緑
+- [ ] 箱（AuthFrame）の中の読み込み中の表示 3 か所が、回る印と文の塊ごと箱の真ん中にそろう（見出しは動かない）
+- [ ] 箱の外の読み込み中（仕事の画面・見本の画面）の位置は変わらない
+- [ ] design_gate に新しい値を足さない（生の色・大きさを書かない）
+- [ ] チケットの CI が緑"
