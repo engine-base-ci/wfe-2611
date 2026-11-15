@@ -14,6 +14,7 @@ import {
   executedBand,
   openQueue,
   openTicket,
+  openTicketSettled,
   openComplete,
   confirmBox,
   dialog,
@@ -51,7 +52,7 @@ row(R["K63-UI-015"], async (page) => {
 //   条件：段が作業中・承認待ちが無い・走っている実行が無い・口の can.complete が true（K-183 の条件を広げる）
 row(R["K63-UI-059"], async (page) => {
   const m = await mockApi(page, { stage: "doing", can_complete: true, can_delegate: true }); // 実行の記録なし
-  await openTicket(page);
+  await openTicketSettled(page);
   await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
   await expect(k62Band(page).getByRole("button", { name: "AI に任せる" })).toBeVisible();
   await openComplete(page);

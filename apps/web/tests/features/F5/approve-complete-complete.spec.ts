@@ -16,6 +16,8 @@ import {
   mockApi,
   missingInMain,
   openTicket,
+  openTicketSettled,
+  tickSettled,
   dialog,
   bandOf,
   k62Band,
@@ -46,11 +48,11 @@ row(R["K63-UI-020"], async (page) => {
 row(R["K63-UI-026"], async (page) => {
   const m = await mockApi(page, { stage: "running", run: { phase: "execute", status: "running", pc: "live" } });
   await page.clock.install(); // 3 秒ごとの読み直しは、時計を進めて起こす（待ち時間に頼らない）
-  await openTicket(page);
+  await openTicketSettled(page);
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
   m.on.ticket = () => ({ status: 200, body: { data: ticketOf(executedBand) } });
-  await page.clock.fastForward(3_000);
+  await tickSettled(page);
   await expect(bandOf(page).getByText(MSG.completeHint)).toBeVisible();
   await expect(k62Band(page)).toHaveCount(0); // 承認の後の実行の間、K-62 の帯は出さない（D-128.178）
   await expect(page.getByText(/のAI が作っています|PC が起きるのを待っています/)).toHaveCount(0);
@@ -65,7 +67,7 @@ row(R["K63-UI-027"], async (page) => {
 });
 row(R["K63-UI-028"], async (page) => {
   const m = await mockApi(page, executedBand);
-  await openTicket(page);
+  await openTicketSettled(page);
   await openComplete(page);
   await page.getByRole("checkbox", { name: "請求書を作る" }).check();
   await page.getByRole("checkbox", { name: "先方に送る" }).check();
@@ -126,7 +128,7 @@ row(R["K63-UI-030"], async (page) => {
 });
 row(R["K63-UI-031"], async (page) => {
   const m = await mockApi(page, { stage: "awaiting_approval", approval: pending(), can_complete: true });
-  await openTicket(page);
+  await openTicketSettled(page);
   await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
   m.on.ticket = () => ({
     status: 200,
@@ -209,7 +211,7 @@ row(R["K63-UI-036"], async (page) => {
 });
 row(R["K63-UI-037"], async (page) => {
   const m = await mockApi(page, executedBand);
-  await openTicket(page);
+  await openTicketSettled(page);
   m.on.ticket = () => ({
     status: 200,
     body: { data: ticketOf({ stage: "done", completed: { at: new Date().toISOString(), by: "高本" } }) },
