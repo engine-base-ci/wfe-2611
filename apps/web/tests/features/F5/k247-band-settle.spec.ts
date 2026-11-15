@@ -56,21 +56,26 @@ async function slowRuns(page: Page) {
   };
 }
 
-/** p が返ったか（返っていなければ false）。時間で待たず、今の時点の様子だけを見る */
-async function settledNow(p: Promise<unknown>): Promise<boolean> {
-  const mark = Symbol("pending");
-  return (await Promise.race([p.then(() => true), Promise.resolve(mark)])) === true;
+/** 道具を呼んだ時点で印を付ける。done は道具が返ったときにだけ true になる（時間で待たず、答えを握っている間の今の様子を見る） */
+function track(p: Promise<void>) {
+  const t = { done: false, p };
+  p.then(
+    () => (t.done = true),
+    () => undefined, // 失敗は await t.p で試験に返す
+  );
+  return t;
 }
 
 /** 一覧の答えを止めたまま開き、見出しが出て一覧を読みに行ったのに道具が返っていないことを見てから離す */
 async function openWithSlowRuns(page: Page) {
   const slow = await slowRuns(page);
-  const opening = openTicketSettled(page);
+  const opening = track(openTicketSettled(page));
   await expect(page.getByRole("heading", { level: 1, name: /11 月分の請求書を送る/ })).toBeVisible();
   await expect.poll(() => slow.s.asked).toBeGreaterThan(0);
-  expect(await settledNow(opening), "一覧の答えが届く前に開く道具が返った").toBe(false);
+  expect(opening.done, "一覧の答えが届く前に開く道具が返った").toBe(false);
   slow.s.release();
-  await opening;
+  await opening.p;
+  expect(opening.done).toBe(true);
   return slow;
 }
 
@@ -196,11 +201,12 @@ test("K247-UI-006 時計を進める道具 tickSettled：その読み直しで�
   const slow = await openWithSlowRuns(page);
   const before = slow.s.asked;
   slow.hold();
-  const ticking = tickSettled(page);
+  const ticking = track(tickSettled(page));
   await expect.poll(() => slow.s.asked).toBeGreaterThan(before);
-  expect(await settledNow(ticking), "読み直しの一覧の答えが届く前に時計の道具が返った").toBe(false);
+  expect(ticking.done, "読み直しの一覧の答えが届く前に時計の道具が返った").toBe(false);
   slow.s.release();
-  await ticking;
+  await ticking.p;
+  expect(ticking.done).toBe(true);
   await expect(k62Band(page)).toBeVisible();
 });
 
