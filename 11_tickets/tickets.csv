@@ -1369,13 +1369,13 @@ K-247,承認の帯の画面の試験が CI で時々 1 分の時間切れにな�
 
 | 回 | 落ちた行 | 記録（Call log） |
 |---|---|---|
-| 43679342176 | K63-UI-022（approve-complete-approve.spec.ts:81「承認して送る」） | locator resolved to `<button …>承認して送る</button>` → element is not stable → **element was detached from the DOM, retrying** → 60 秒 |
-| 43681091878 | K63-UI-043（approve-complete-return.spec.ts:181） | locator resolved → **element was detached from the DOM, retrying** → 60 秒 |
-| 43693781963 | K63-UI-043（同じ） | 同じ（ほかの 337 行は通った） |
+| 43679342176 | K-63 の UI-022（approve-complete-approve.spec.ts:81「承認して送る」） | locator resolved to `<button …>承認して送る</button>` → element is not stable → **element was detached from the DOM, retrying** → 60 秒 |
+| 43681091878 | K-63 の UI-043（approve-complete-return.spec.ts:181） | locator resolved → **element was detached from the DOM, retrying** → 60 秒 |
+| 43693781963 | K-63 の UI-043（同じ） | 同じ（ほかの 337 行は通った） |
 
 揺れを止め、同じ形（試験が画面を開いた直後に口の答えを替える）を全部同じ道具で直す。","- [ ] 下の 12 行（K247-UI-001〜012）が緑
 - [ ] 試験の土台に `openTicketSettled`（開いた後、実行の一覧の最初の答えが届くまで返らない）と `tickSettled`（時計を 3 秒進め、その読み直しの一覧の答えが届くまで返らない）がある
 - [ ] 同じ形の行（下の「同じ形の箇所」の 11 行と時計の 3 か所）が道具に替わっている。期待結果・行の中身は変えない（開き方と時計の進め方だけ）
 - [ ] 製品のコードを変えない（`apps/web/features`・`apps/web/app`・`apps/web/components` に差分が無い）。見た目も変えない
-- [ ] 落ちた 2 行（K63-UI-022・K63-UI-043）を **CI の台で 20 回ずつ（--repeat-each 20）流して 0 回落ちる**。あわせて承認と完了の画面の試験（approve-complete-*.spec.ts）を全部 1 回流して緑
+- [ ] 落ちた 2 行（K-63 の UI-022・K-63 の UI-043）を **CI の台で 20 回ずつ（--repeat-each 20）流して 0 回落ちる**。あわせて承認と完了の画面の試験（approve-complete-*.spec.ts）を全部 1 回流して緑
 - [ ] チケットの CI が緑"
