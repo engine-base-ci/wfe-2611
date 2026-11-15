@@ -152,7 +152,7 @@ for (const w of [1440, 375]) {
 
 test("K217-UI-010 箇条（.k-list）は左に 20px・黒丸・項目は 13px", async ({ page }) => {
   await open(page, 1440);
-  const ul = page.locator("ul.k-list");
+  const ul = page.locator(".k-section ul.k-list");
   expect(await css(ul, "padding-left")).toBe("20px");
   expect(await css(ul, "list-style-type")).toBe("disc");
   expect(await css(ul.locator("li").first(), "font-size")).toBe("13px");
