@@ -760,6 +760,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     whole_pk: set[str] = set()           # 中の試験を全部足すパッケージ（使い手まで）
     direct: set[str] = set()             # そのまま流す試験
     readers: set[str] = set()
+    web_direct: set[str] = set()         # data_links の画面の試験（単体の組でなく画面の組で流す・K-248）
     src_live: set[str] = set()           # 変えて残った src（coverage と「試験の無いコード」）
     db_range = False
     any_path = []
@@ -781,7 +782,9 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
                 continue
             for l in rules["data_links"]:
                 if match(x, l["paths"]):
-                    direct.update(l.get("tests", []))
+                    lt = l.get("tests", [])
+                    direct.update(t for t in lt if not t.startswith(WEB_E2E_PREFIX))
+                    web_direct.update(t for t in lt if t.startswith(WEB_E2E_PREFIX))
                     readers.update(l.get("readers", []))
             if match(x, (rules.get("spec") or {}).get("package_paths", [])):
                 p["spec_only"].append(x)   # パッケージの中でも組み立てに入らない物：パッケージの試験を広げない（K-212）
@@ -889,16 +892,22 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
     tr = jw.get("ticket_rows")
     if tr and tr["file"] in any_path:
         p["web_ticket_rows"] = web_ticket_rows(repo, base, head, tr)
+    web_dom = set(web_select.domain_g48(repo)) | set(web_select.domain_g59(repo)) if web_direct else set()
+    web_direct &= web_dom   # 画面の試験の一覧（G48・G59）に無い物は流せない：組を起こさず止めもしない（K-248）
     p["jobs"] = {"unit": bool(files),
                  "database": db_range or bool(jaff & set(jd.get("packages", []))) or any(match(x, jd.get("paths", [])) for x in any_path),
                  "web": bool(jaff & set(jw.get("packages", []))) or any(match(x, jw.get("paths", [])) for x in any_path)
                  or bool(p["web_ticket_rows"])
                  or any(f.startswith(WEB_E2E_PREFIX) for f in itests)
-                 or bool(p.get("ticket_web_tests"))}
+                 or bool(p.get("ticket_web_tests"))
+                 or bool(web_direct)}
     if not p["jobs"]["unit"]:
         p["unit_shards"] = 0
     if p["jobs"]["web"] and (web_select.domain_g48(repo) or web_select.domain_g59(repo)):   # 画面の試験があるリポジトリだけ
-        p = with_web_selection(p, _web_pick(repo, tickets_dir, rules, p, list(ids)))
+        sel = _web_pick(repo, tickets_dir, rules, p, list(ids))
+        g48 = set(web_select.domain_g48(repo))
+        sel = {**sel, "g48": sorted(set(sel["g48"]) | (web_direct & g48)), "g59": sorted(set(sel["g59"]) | (web_direct - g48))}
+        p = with_web_selection(p, sel)
     return done()
 
 
