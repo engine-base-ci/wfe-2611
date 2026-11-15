@@ -1238,7 +1238,7 @@ K-212,staging の口と画面の処理が、DB から遠い場所（米国東部
 
 このチケットは、口と画面の処理の場所を DB と同じ東京（hnd1）にする設定をリポジトリに置き、健康診断（`scripts/ci/staging_health.py`）が、答えの頭の処理の場所が決まりと違えば赤にする。
 
-ログイン後の画面の速さ（画面が口を何回・直列に呼ぶか）は別の調べもの（PM が別に進めている）。このチケットでは扱わない。","- [ ] 下の 11 行（K212-FR-001〜011）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・作りものの答えに処理の場所の頭を足した版）も緑
+ログイン後の画面の速さ（画面が口を何回・直列に呼ぶか）は別の調べもの（PM が別に進めている）。このチケットでは扱わない。","- [ ] 下の 12 行（K212-FR-001〜012）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・作りものの答えに処理の場所の頭を足した版）も緑
 - [ ] 試験を CI から流す：G65 の命令（作り手 `05_flow/build_testplan.py`）の最後に `&& python3 scripts/ci/k212_function_region_test.py` を足し、作り直した（v3-gate.yml・test-plan は生成物）
 - [ ] チケットの CI が緑
 - [ ] 取り込んで配られた後、PM が `curl -s -o /dev/null -D - <口>/health` と `<画面>/login` の頭 `x-vercel-id` の 2 つ目（処理の場所）が両方 `hnd1` であることを確かめる。健康診断（`python3 scripts/ci/staging_health.py`）の「処理の場所（口）」「処理の場所（画面）」が OK

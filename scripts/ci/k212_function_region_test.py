@@ -85,7 +85,7 @@ class FunctionRegion(unittest.TestCase):
         self.assertTrue(any("DB と同じ" in ln and "両方" in ln for ln in lines),
                         "その行に「DB と同じ場所に置く・変えるときは両方」が在る")
         self.assertIn("staging_region.json", doc, "決まりの置き場を書く（Vercel の画面で場所を変えない）")
-        stage1 = next(s for s in load(STACK)["hosting"]["stages"] if s["id"] == "stage1")
+        stage1 = next(s for s in load(STACK)["stack"]["hosting"]["stages"] if s["id"] == "stage1")
         self.assertIn(load(CONFIG)["function_region"], str(stage1.get("function_region", "")),
                       "環境の正本（段階 1）に処理の場所の欄が在り、決まりと同じ")
         self.assertIn("東京", str(stage1.get("database", "")), "DB の場所（東京）は前のまま")
@@ -158,6 +158,8 @@ class FunctionRegion(unittest.TestCase):
                 self.assertRegex(r.stdout, r"★[^\n]*処理の場所の決まり")
                 self.assertRegex(r.stdout, r"OK[^\n]*CORS", "ほかの確かめは止めずに流す")
                 self.assertNotRegex(r.stdout, r"OK[^\n]*処理の場所（")
+        src = (ROOT / "scripts" / "ci" / "staging_health.py").read_text(encoding="utf-8")
+        self.assertNotIn(TOKYO, src, "台本に場所（hnd1）の字を書き込まない（決まりのファイルだけが持つ）")
         good = bad / "good.json"
         good.write_text(json.dumps({"function_region": "iad1"}), encoding="utf-8")
         r = run(self.two(api, web), "--region-config", str(good), *self.applied())
@@ -172,7 +174,8 @@ class FunctionRegion(unittest.TestCase):
         self.assertEqual(sorted({m for m, _, _ in seen}), ["GET", "OPTIONS"], "読むだけ")
         self.assertEqual(sorted({p for m, p, _ in api.seen if m == "GET"}), ["/health"], "口の場所は /health の答えの頭から読む（道を足さない）")
         self.assertEqual(sorted({p for m, p, _ in web.seen if m == "GET"}), ["/login"], "画面の場所は /login の答えの頭から読む")
-        self.assertEqual(sum(1 for m, p, _ in api.seen if (m, p) == ("GET", "/health")), 1, "当て直さない（1 回だけ）")
+        self.assertEqual(sum(1 for m, p, _ in api.seen if (m, p) == ("GET", "/health")), 1, "当て直さない（/health は 1 回だけ）")
+        self.assertEqual(sum(1 for m, p, _ in web.seen if (m, p) == ("GET", "/login")), 1, "当て直さない（/login も 1 回だけ）")
         clean(self, r, api.url, web.url, REQ_ID)
 
     def test_K212_FR_010_unreachable_is_not_green(self) -> None:
@@ -190,6 +193,24 @@ class FunctionRegion(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertRegex(r.stdout, rf"OK[^\n]*処理の場所（口）[^\n]*{TOKYO}",
                          "/health が 503 でも、答えの頭の場所は読む（落ちた口がどこで動いているかを出す）")
+
+    def test_K212_FR_012_cached_answer_is_not_read(self) -> None:
+        for cache in ("HIT", "STALE", "PRERENDER"):
+            with self.subTest(cache=cache):
+                api = self.fake(vercel_id=self.vid(TOKYO))
+                web = self.fake(vercel_id=self.vid(TOKYO), extra_headers={"/login": {"x-vercel-cache": cache}})
+                r = run(self.two(api, web), *self.applied())
+                self.assertEqual(r.returncode, 1, "Function を通っていない答え（cache の HIT など）の頭で緑にしない")
+                self.assertRegex(r.stdout, r"★[^\n]*処理の場所（画面）[^\n]*読めない[^\n]*Function を通っていない")
+                self.assertNotRegex(r.stdout, r"OK[^\n]*処理の場所（画面）")
+                clean(self, r, api.url, web.url, REQ_ID)
+        for cache in ("MISS", "BYPASS"):
+            with self.subTest(cache=cache):
+                api = self.fake(vercel_id=self.vid(TOKYO), extra_headers={"/health": {"x-vercel-cache": cache}})
+                web = self.fake(vercel_id=self.vid(TOKYO), extra_headers={"/login": {"x-vercel-cache": cache}})
+                r = run(self.two(api, web), *self.applied())
+                self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+                self.assertRegex(r.stdout, rf"OK[^\n]*処理の場所（画面）[^\n]*{TOKYO}")
 
     def test_K212_FR_011_region_code_shape(self) -> None:
         self.assertRegex(TOKYO, REGION_CODE)

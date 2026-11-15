@@ -35,11 +35,12 @@ def expected_region() -> str:
 
 class Fake:
     """作りものの口（/health・/api/auth/ok の事前の問い合わせ）と画面（/login）。振る舞いは cfg で変える。
-    答えの頭 x-vercel-id（入口::処理の場所::番号・K-212）は既定で決まりの場所。vercel_id=None で頭を付けない・vercel_ids で道ごとに替える"""
+    答えの頭 x-vercel-id（入口::処理の場所::番号・K-212）は既定で決まりの場所。vercel_id=None で頭を付けない・vercel_ids で道ごとに替える。
+    extra_headers で道ごとに頭を足す（例 {"/login": {"x-vercel-cache": "HIT"}}）"""
 
     def __init__(self, **cfg):
         self.cfg = {"health_status": 200, "health_body": None, "last": LAST, "allow": "same", "login": 200, "sleep": 0.0,
-                    "vercel_id": f"hnd1::{expected_region()}::k200fake-1", "vercel_ids": {}, **cfg}
+                    "vercel_id": f"hnd1::{expected_region()}::k200fake-1", "vercel_ids": {}, "extra_headers": {}, **cfg}
         self.seen: list[tuple[str, str, str]] = []   # 来た要求（方法・道・頭の全部）
         fake = self
 
@@ -52,6 +53,8 @@ class Fake:
                 vid = fake.cfg["vercel_ids"].get(self.path.split("?")[0], fake.cfg["vercel_id"])
                 if vid is not None:
                     self.send_header("x-vercel-id", vid)
+                for k, v in fake.cfg["extra_headers"].get(self.path.split("?")[0], {}).items():
+                    self.send_header(k, v)
                 for k, v in (headers or {}).items():
                     self.send_header(k, v)
                 self.send_header("content-length", str(len(body)))
