@@ -9844,7 +9844,8 @@
     "scripts/ci/ci_wiring_gate.py",
     "05_flow/build_testplan.py",
     ".github/workflows/v3-gate.yml",
-    "07_qa/test-plan/**"
+    "07_qa/test-plan/**",
+    "scripts/ci/ci_scripts.json"
    ],
    "affects": [
     "@kaname/web"
