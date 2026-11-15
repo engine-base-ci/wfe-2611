@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { Route } from "next";
 import type { ReactNode } from "react";
-import { Loading } from "@/components/k";
 import { pendingRoute } from "@/lib/pending-route";
 import "./sign-up.css";
 
@@ -54,14 +53,5 @@ export function AuthFrame({
         <Link href={HELP_HREF}>困ったとき</Link>
       </nav>
     </div>
-  );
-}
-
-/** 入れ物の Suspense の待ち（K-211）。画面の JS が動く前の HTML にも、箱の中の真ん中に回る印と「読み込んでいます…」を出す */
-export function AuthLoading() {
-  return (
-    <AuthFrame foot="help">
-      <Loading delayMs={0} />
-    </AuthFrame>
   );
 }
