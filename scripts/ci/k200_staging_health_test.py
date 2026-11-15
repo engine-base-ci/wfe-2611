@@ -22,13 +22,24 @@ ALL = sorted(p.name for p in (ROOT / "packages" / "db" / "migrations").glob("*.s
 LAST = ALL[-1]
 MARK = "k200-secret-marker-9f3a"          # 鍵の代わりの作りもの。出力に 1 文字も出てはいけない
 NAMES = ("STAGING_BASE_URL", "STAGING_API_BASE")
+REGION_CONFIG = ROOT / "scripts" / "ci" / "staging_region.json"   # 処理の場所の決まり（K-212）
+
+
+def expected_region() -> str:
+    """作りものの答えに載せる処理の場所。決まりのファイルがまだ無い枝では東京（hnd1）"""
+    try:
+        return str(json.loads(REGION_CONFIG.read_text(encoding="utf-8"))["function_region"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return "hnd1"
 
 
 class Fake:
-    """作りものの口（/health・/api/auth/ok の事前の問い合わせ）と画面（/login）。振る舞いは cfg で変える"""
+    """作りものの口（/health・/api/auth/ok の事前の問い合わせ）と画面（/login）。振る舞いは cfg で変える。
+    答えの頭 x-vercel-id（入口::処理の場所::番号・K-212）は既定で決まりの場所。vercel_id=None で頭を付けない・vercel_ids で道ごとに替える"""
 
     def __init__(self, **cfg):
-        self.cfg = {"health_status": 200, "health_body": None, "last": LAST, "allow": "same", "login": 200, "sleep": 0.0, **cfg}
+        self.cfg = {"health_status": 200, "health_body": None, "last": LAST, "allow": "same", "login": 200, "sleep": 0.0,
+                    "vercel_id": f"hnd1::{expected_region()}::k200fake-1", "vercel_ids": {}, **cfg}
         self.seen: list[tuple[str, str, str]] = []   # 来た要求（方法・道・頭の全部）
         fake = self
 
@@ -38,6 +49,9 @@ class Fake:
 
             def _send(self, status: int, body: bytes = b"", headers: dict[str, str] | None = None) -> None:
                 self.send_response(status)
+                vid = fake.cfg["vercel_ids"].get(self.path.split("?")[0], fake.cfg["vercel_id"])
+                if vid is not None:
+                    self.send_header("x-vercel-id", vid)
                 for k, v in (headers or {}).items():
                     self.send_header(k, v)
                 self.send_header("content-length", str(len(body)))

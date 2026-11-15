@@ -1230,3 +1230,16 @@ K-210,統合テストを通した後の後始末：配布物の決定の直し�
 - [ ] 作り手（`05_flow/build_testplan.py`）を直して CI の定義と試験計画を作り直した（G65 の並びの最後に `&& python3 scripts/ci/k210_gate_holes_test.py`・G24 の段の run を `pnpm ci:no-dynamic-call && pnpm ci:test-imports`・G56 の段に `env: CI_BASE: ${{ steps.scope.outputs.base }}` と `--base-ref ""$CI_BASE""`）
 - [ ] 生成物が最新かの検査（G38）・決定のトレース（G54）・取り込む順（G56）・範囲の台本の試験（G57）が、このチケットの CI で流れて緑
 - [ ] チケットの CI が緑"
+K-212,staging の口と画面の処理が、DB から遠い場所（米国東部）で動いているのを、DB と同じ場所（東京）に直す,課題,K-1,未着手,実装,2026-11-15,基盤・環境,"2026-11-15、決める人が staging の画面を自分で触り、「読み込みが遅すぎるレベル」と指摘した。PM が測った事実：
+
+- 口（kaname-api）の `/health` と画面（kaname-web）の `/login` の答えの頭が `x-vercel-id: hnd1::iad1::…`。入口は東京（hnd1）だが、処理（Function）は iad1（米国東部・Washington, D.C.）で動いている
+- DB（Supabase）は東京（ap-northeast-1）。だから口の処理は、DB への問い合わせ 1 回ごとに太平洋を往復する
+- `apps/api/vercel.json` に `regions` が無い（Vercel の既定は iad1）。`apps/web` に vercel.json は無い
+
+このチケットは、口と画面の処理の場所を DB と同じ東京（hnd1）にする設定をリポジトリに置き、健康診断（`scripts/ci/staging_health.py`）が、答えの頭の処理の場所が決まりと違えば赤にする。
+
+ログイン後の画面の速さ（画面が口を何回・直列に呼ぶか）は別の調べもの（PM が別に進めている）。このチケットでは扱わない。","- [ ] 下の 11 行（K212-FR-001〜011）が緑。持ち込んだ K-200 の 16 行（`scripts/ci/k200_staging_health_test.py`・作りものの答えに処理の場所の頭を足した版）も緑
+- [ ] 試験を CI から流す：G65 の命令（作り手 `05_flow/build_testplan.py`）の最後に `&& python3 scripts/ci/k212_function_region_test.py` を足し、作り直した（v3-gate.yml・test-plan は生成物）
+- [ ] チケットの CI が緑
+- [ ] 取り込んで配られた後、PM が `curl -s -o /dev/null -D - <口>/health` と `<画面>/login` の頭 `x-vercel-id` の 2 つ目（処理の場所）が両方 `hnd1` であることを確かめる。健康診断（`python3 scripts/ci/staging_health.py`）の「処理の場所（口）」「処理の場所（画面）」が OK
+- [ ] 同じく配られた後、PM が下の「直す前の速さ」と同じ測り方（同じ 3 つの住所に 5 回ずつ・`curl -w '%{time_total}'`）で測り、中央の値を「確認の結果」に書く（しきい値は置かない。前と後の数字を並べる）"
