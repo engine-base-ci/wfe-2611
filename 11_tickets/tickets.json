@@ -9898,7 +9898,8 @@
     "scripts/ci/ci_scope.json"
    ],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/bridge"
    ],
    "ci_wide": [],
    "screens": [
