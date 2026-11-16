@@ -85,6 +85,11 @@ def workflow_globs(wf: str) -> list[str]:
     if re.search(r"scripts/ci/web_run\.py g59\b", wf):   # K-177：G59 は web_run.py が中間の試験の置き場を流す
         from web_select import SKELETON
         out.append(SKELETON + "**/*.spec.ts")
+    # K-238：専用の段（web_run.py gate <段>）は ci_scope.json の web_select.gates の試験を流す
+    gids = re.findall(r"scripts/ci/web_run\.py gate (\w+)", wf)
+    if gids:
+        gates = (json.load(open(os.path.join(ROOT, "scripts/ci/ci_scope.json"), encoding="utf-8")).get("web_select") or {}).get("gates") or {}
+        out += [t for g in gids for t in (gates.get(g) or {}).get("tests") or []]
     return out
 
 

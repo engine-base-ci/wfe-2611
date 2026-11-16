@@ -15,7 +15,8 @@
   "scripts/ci/gen_ears_tests.mjs": "作り手（名前に test が入るだけ）。G38 が回す",
   "scripts/ci/ticket_affects_test.py --selftest": "試験のファイル（K-107 の K8）。--selftest の文字は scripts/tickets/build_index.py --selftest を呼ぶため。試験は G57 が python3 scripts/ci/ticket_affects_test.py で回す",
   "scripts/ci/ticket_process_test.py --selftest": "試験のファイル（K-146）。--selftest の文字は写し（ticket_rows_gate.py・answers_merge.py）の --selftest を呼ぶためにあるだけ。試験は G64 が python3 scripts/ci/ticket_process_test.py で回す",
-  "scripts/ci/ci_lean_test.py --selftest": "試験のファイル（K-156）。--selftest の文字は説明の文（stack_gate.py の --selftest がそのまま通る）にあるだけ。試験は G62 が python3 scripts/ci/ci_lean_test.py で回す"
+  "scripts/ci/ci_lean_test.py --selftest": "試験のファイル（K-156）。--selftest の文字は説明の文（stack_gate.py の --selftest がそのまま通る）にあるだけ。試験は G62 が python3 scripts/ci/ci_lean_test.py で回す",
+  "scripts/ci/k238_fidelity_ci_test.py --selftest": "試験のファイル（K-238）。--selftest の文字は CI の定義に fidelity_config.py --selftest が在るかを確かめる文にあるだけ。試験は G69 が python3 scripts/ci/k238_fidelity_ci_test.py で回す"
  },
  "known_broken": {}
 }

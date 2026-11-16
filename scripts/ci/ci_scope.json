@@ -449,6 +449,8 @@
   "apps/web/tests/_lib/api.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/_lib/browser.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/_lib/row.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
+  "apps/web/tests/fidelity/fidelity.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は 04_design/** で jobs.web.paths に在る。比べ方の 2 つも jobs.web.paths・K-238）",
+  "scripts/ci/fidelity_compare.mjs": "比べ方の部品（jobs.web.paths・変えると web の組と専用の段 70 が流れる）。読むのは画面の書体の部品（node_modules の @fontsource-variable/noto-sans-jp・リポジトリの物でない・K-238）",
   "apps/web/tests/reachability.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
   "apps/web/tests/k/k217-page-parts.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths：台帳 scripts/ci/class_ledger.json・トークンと k.css は apps/web の中）",
   "apps/web/tests/screens/agent-chat.spec.ts": "実ブラウザの試験（web の組が組ごと流す。読むリポジトリの物は jobs.web.paths・ほかは動いている間の物）",
@@ -476,11 +478,17 @@
   "apps/e2e/staging/k65-walking-skeleton.spec.ts": "台の一時の置き場に自分で置いた数（承認から帯が替わるまでの秒）を読む。リポジトリのファイルは読まない（K-65）"
  },
  "web_select": {
-  "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場",
+  "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）",
   "registry": ["packages/db/src/index.ts", "11_tickets/**", "07_qa/**", "08_api/**", "07_functional/**", "05_flow/**", "01_hearing/**", "scripts/ci/ci_scope.json", ".github/**"],
   "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py"],
   "web_own": ["apps/web/app/**"],
-  "web_tests": ["apps/web/tests/**"]
+  "web_tests": ["apps/web/tests/**"],
+  "gates": {
+   "70": {
+    "tests": ["apps/web/tests/fidelity/fidelity.spec.ts"],
+    "on": ["scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", "04_design/fidelity.json", "04_design/canvas/**"]
+   }
+  }
  },
  "jobs": {
   "database": {
@@ -512,6 +520,8 @@
    "paths": [
     "scripts/ci/web_run.py",
     "scripts/ci/web_select.py",
+    "scripts/ci/fidelity_compare.mjs",
+    "scripts/ci/visual_fidelity.mjs",
     "07_qa/test-specs/k/**",
     "05_flow/flow.json",
     "04_design/**",

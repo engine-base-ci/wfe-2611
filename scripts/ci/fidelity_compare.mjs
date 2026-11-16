@@ -5,6 +5,13 @@
 //           それ以外（色・太さ・字の並び）はちょうど同じ。要素が無ければ「（無い）」で違う。
 //   当たった（見えている）要素の数（__count）も比べる：texts を比べる役は同じ数（1 つ以上）、ほかの役は両側ちょうど 1 つ
 //   読み込んだ書体は「キャンバスが読んだ書体を画面も読んでいる」か（名前の後ろの Variable と大小は問わない・D-128.123）
+//   値の読み方（capture・K-238）：動きを止め → aria-busy が消えるまで待ち → 2 回続けて同じになるまで読み直し → 書体を読み → 写しは最後。
+//   待ちの上限を越えたら投げる（読み込み中・動いている途中の値で比べない）。実ブラウザの突き合わせと visual_fidelity.mjs が同じこれを使う
+
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 export const PX_TOLERANCE = 2;
 export const MISSING = "（無い）";
@@ -117,15 +124,20 @@ export const exitCode = (rows, strict) => (strict && mismatches(rows) > 0 ? 1 : 
 /** 道具の終わりの値：既定は違いがあれば 1、--report-only のときだけ 0（引数の誤りの 2 は道具が出す） */
 export const exitFor = (rows, opts) => exitCode(rows, !opts.reportOnly);
 
-/** Playwright の page から組の値を読む。side は "canvas" か "app"（pairs[i][side] がセレクタ）。要素が無ければ null */
+/** Playwright の page から組の値を読む。side は "canvas" か "app"（pairs[i][side] がセレクタ）。当たる要素が無ければ {__count: 0} */
 export async function readVals(page, pairs, side) {
   return page.evaluate(
     (list) =>
       list.map(({ sel, props }) => {
-        // 見えない要素（display:none・visibility:hidden・幅ごとに出し分ける複製）は「無い」
-        const els = [...document.querySelectorAll(sel)].filter((e) => e.checkVisibility({ visibilityProperty: true }));
+        // 見えない要素（display:none・visibility:hidden・大きさ 0・幅ごとに出し分ける複製）は「無い」
+        const seen = (e) => {
+          if (!e.checkVisibility({ visibilityProperty: true })) return false;
+          const b = e.getBoundingClientRect();
+          return b.width > 0 && b.height > 0;
+        };
+        const els = [...document.querySelectorAll(sel)].filter(seen);
         const el = els[0];
-        if (!el) return null;
+        if (!el) return { __count: 0 };
         const cs = getComputedStyle(el);
         const r = el.getBoundingClientRect();
         const px = (n) => `${Math.round(n)}px`;
@@ -134,7 +146,8 @@ export async function readVals(page, pairs, side) {
           if (k === "height") return px(r.height);
           if (k === "x") return px(r.left + window.scrollX);
           if (k === "y") return px(r.top + window.scrollY);
-          if (k === "texts") return els.map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim());
+          // innerText：見えている要素の中の隠れた子（display:none・visibility:hidden）の字を数えない
+          if (k === "texts") return els.map((e) => (e.innerText ?? "").replace(/\s+/g, " ").trim());
           return cs.getPropertyValue(k);
         };
         return { __count: els.length, ...Object.fromEntries(props.map((k) => [k, one(k)])) };
@@ -148,5 +161,97 @@ export async function loadedFonts(page) {
   return page.evaluate(async () => {
     await document.fonts.ready;
     return [...new Set([...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family.replace(/["']/g, "")))];
+  });
+}
+
+/** 待ちの上限の既定（ミリ秒） */
+export const CAPTURE_TIMEOUT = 15_000;
+// 動きを止める（小窓が出てくるときの transform が x・y・幅に乗らないように）。キャンバスと画面の両方に入れる
+export const STILL_CSS =
+  "*,*::before,*::after{animation:none !important;transition:none !important;caret-color:transparent !important}";
+
+/** 描画のコマを 2 つ進める（決めた秒数で待たない） */
+const nextFrames = (page) =>
+  page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => done(undefined)))));
+
+/**
+ * 組の値を落ち着いてから読む：動きを止め → aria-busy="true" が消えるまで待ち → 書体の読み込みを待ち →
+ * 値を 2 回続けて読んで同じになるまで読み直し → 読み込んだ書体を読む → opts.shot があれば最後に写しを撮る（値は写しの前に読む）。
+ * 上限（opts.timeout・既定 CAPTURE_TIMEOUT）までに aria-busy が消えない・値が揃わないときは投げる
+ */
+export async function capture(page, pairs, side, opts = {}) {
+  const timeout = opts.timeout ?? CAPTURE_TIMEOUT;
+  const end = Date.now() + timeout;
+  await page.addStyleTag({ content: STILL_CSS });
+  const idle = await page
+    .waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout })
+    .then(
+      () => true,
+      () => false,
+    );
+  if (!idle) throw new Error(`aria-busy が消えない（${timeout}ms 待った・${side}）`);
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  let prev = JSON.stringify(await readVals(page, pairs, side));
+  for (;;) {
+    await nextFrames(page);
+    const now = JSON.stringify(await readVals(page, pairs, side));
+    if (now === prev) break;
+    if (Date.now() > end) throw new Error(`値が揃わない（${timeout}ms のあいだ 2 回続けて同じにならなかった・${side}）`);
+    prev = now;
+  }
+  const vals = JSON.parse(prev);
+  const fonts = await loadedFonts(page);
+  if (opts.shot) await page.screenshot({ path: opts.shot, fullPage: true });
+  return { vals, fonts };
+}
+
+// ── キャンバスの書体の差し替え（K-238）：キャンバスが外から読む書体を、画面と同じ手元の書体に差し替え、外へは出さない（G-11）。
+//    実ブラウザの突き合わせ（fidelity-states.ts が出し直す）と人が使う道具（visual_fidelity.mjs）が同じこれを使う
+// 書体の部品は apps/web の node_modules にしか無い（pnpm）：apps/web/package.json を起点に createRequire で探す
+const WEB_PKG = join(dirname(fileURLToPath(import.meta.url)), "../../apps/web/package.json");
+const fontPkg = () => dirname(createRequire(WEB_PKG).resolve("@fontsource-variable/noto-sans-jp/index.css"));
+const FONT_CSS_HOST = "fonts.googleapis.com";
+const FONT_FILE_HOST = "fonts.gstatic.com";
+// 差し替えた書体の本体の道（fonts.gstatic.com の下に置き、下の差し替えで手元のファイルを返す）
+const LOCAL_FONT_PREFIX = `https://${FONT_FILE_HOST}/kaname-local/`;
+const WOFF2_NAME = /^[\w.-]+\.woff2$/;
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost"]);
+
+/** キャンバスの頭が読む書体の CSS の代わり：手元の部品の @font-face を、キャンバスの名前（Noto Sans JP）で返す */
+function localFontCss() {
+  return readFileSync(join(fontPkg(), "index.css"), "utf8")
+    .replaceAll("font-family: 'Noto Sans JP Variable';", "font-family: 'Noto Sans JP';")
+    .replace(/url\(\.\/files\/([\w.-]+\.woff2)\)/g, (_m, name) => `url(${LOCAL_FONT_PREFIX}${name})`);
+}
+
+function fulfillFontFile(route, url) {
+  const name = url.pathname.split("/").pop() ?? "";
+  const file = join(fontPkg(), "files", name);
+  if (!url.href.startsWith(LOCAL_FONT_PREFIX) || !WOFF2_NAME.test(name) || !existsSync(file)) {
+    return route.fulfill({ status: 404, body: "" });
+  }
+  // 書体は CORS で読むので、file: の頁からも読めるように許可の見出しを付ける
+  return route.fulfill({ status: 200, contentType: "font/woff2", headers: { "access-control-allow-origin": "*" }, body: readFileSync(file) });
+}
+
+/**
+ * キャンバスの頁の書体を手元に差し替える：fonts.googleapis.com は手元の @font-face を、fonts.gstatic.com は手元の woff2 を返す（@fontsource-variable/noto-sans-jp）。
+ * ほかの手元でない道は止める（abort）。file:・data: はそのまま読み、手元（127.0.0.1・localhost）は先に登録された差し替えへ渡す
+ */
+export async function routeCanvasFonts(page) {
+  await page.route("**/*", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol !== "http:" && url.protocol !== "https:") return route.continue();
+    if (url.hostname === FONT_CSS_HOST) {
+      return route.fulfill({
+        status: 200,
+        contentType: "text/css; charset=utf-8",
+        headers: { "access-control-allow-origin": "*" },
+        body: localFontCss(),
+      });
+    }
+    if (url.hostname === FONT_FILE_HOST) return fulfillFontFile(route, url);
+    if (LOCAL_HOSTS.has(url.hostname)) return route.fallback();
+    return route.abort();
   });
 }

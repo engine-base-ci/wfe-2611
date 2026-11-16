@@ -678,6 +678,19 @@ def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     return sorted((k for k, globs in g.items() if any(match(x, globs) for x in changes)), key=int)
 
 
+def gate_cfg(repo: str, cfg: dict) -> dict:
+    """入れた組（04_design/fidelity.json の enrolled: true）が 1 つでもあれば、専用の段に always を付けた設定を返す（K-238）。
+    画面のコードを後で変えても、web の組が起きる回には突き合わせを流して見た目のずれを止める。入れた組が 0 なら元のまま"""
+    path = os.path.join(repo, "04_design", "fidelity.json")
+    try:
+        groups = json.load(open(path, encoding="utf-8")).get("groups") or [] if os.path.isfile(path) else []
+    except (json.JSONDecodeError, AttributeError):
+        groups = []   # 形の誤りは G69 の設定の検査が赤にする
+    if not any(isinstance(g, dict) and g.get("enrolled") is True for g in groups):
+        return cfg
+    return {**cfg, "gates": {k: {**v, "always": True} for k, v in (cfg.get("gates") or {}).items()}}
+
+
 def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list[str]) -> dict:
     """web の組で流す画面の試験（チケットの範囲・K-177）"""
     tk = {}
@@ -691,20 +704,21 @@ def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list
     deploy_only = (rules.get("spec") or {}).get("package_paths", [])   # 組み立てに入らない物は画面の試験を選ぶ元にしない（K-212）
     changed = [x for x in [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old] if not match(x, deploy_only)]
     return web_select.select(changed, tid, tk, web_select.domain_g48(repo), web_select.domain_g59(repo),
-                             web_select.importers(repo), rules.get("web_select") or {})
+                             web_select.importers(repo), gate_cfg(repo, rules.get("web_select") or {}))
 
 
 def with_web_selection(p: dict, sel: dict) -> dict:
     """選んだ画面の試験を出力に。チケットの範囲の回で 1 本も当たらなければ web の組を流さない（理由つき）。全部の回は今と同じ"""
     if p["mode"] == "full":
-        return {**p, "web_g48": [], "web_g59": [], "web_tasks": []}
-    hit = bool(sel["g48"] or sel["g59"])
+        return {**p, "web_g48": [], "web_g59": [], "web_gates": {}, "web_tasks": []}
+    gates = sel.get("gates") or {}
+    hit = bool(sel["g48"] or sel["g59"] or any(gates.values()))   # 専用の段の画面の試験も選ぶ先（K-238）
     errs = list(p.get("errors") or [])
     if p["jobs"]["web"] and not hit:   # web の組を流すはずの変更なのに選べない：黙って飛ばさず止める（D-133.7・K-177 レビュー）
         errs.append("web の組を流すはずの変更なのに、流す画面の試験を決められない。チケットの tests: に画面の試験を書くか、"
                     "画面の試験を持つチケットを depends_on に書く（" + "・".join(sel["reasons"]) + "）")
     return {**p, "jobs": {**p["jobs"], "web": p["jobs"]["web"] and hit}, "web_g48": sel["g48"], "web_g59": sel["g59"],
-            "web_tasks": sel["tasks"], "errors": errs, "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
+            "web_gates": gates, "web_tasks": sel["tasks"], "errors": errs, "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
 
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
@@ -908,6 +922,9 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         g48 = set(web_select.domain_g48(repo))
         sel = {**sel, "g48": sorted(set(sel["g48"]) | (web_direct & g48)), "g59": sorted(set(sel["g59"]) | (web_direct - g48))}
         p = with_web_selection(p, sel)
+    # 専用の段の設定の誤り（試験が無い・段の命令が無い・G48／G59 と重なる）は止める。画面の試験があるリポジトリだけ（K-238）
+    if web_select.domain_g48(repo) or web_select.domain_g59(repo):
+        p["errors"] = list(p.get("errors") or []) + web_select.check_gates(repo, rules.get("web_select") or {})
     return done()
 
 
@@ -1016,7 +1033,8 @@ def outputs(p: dict) -> dict[str, str]:
             "coverage_args": j(p["coverage_args"]), "base": p["base"] if SHA.fullmatch(p.get("base") or "") else "",
             "reasons": j(p["reasons"] + p["mismatches"] + p["errors"]),
             "gates": "," + ",".join(p.get("gates") or []) + ",", "py_tests": j(p.get("py_tests") or []),
-            "web_g48": j(p.get("web_g48") or []), "web_g59": j(p.get("web_g59") or []), "web_tasks": j(p.get("web_tasks") or [])}
+            "web_g48": j(p.get("web_g48") or []), "web_g59": j(p.get("web_g59") or []),
+            "web_gates": j(p.get("web_gates") or {}), "web_tasks": j(p.get("web_tasks") or [])}
 
 
 def _decide(argv: list[str]) -> int:

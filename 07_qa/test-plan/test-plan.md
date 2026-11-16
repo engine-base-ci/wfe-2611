@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 66 本（.github/workflows/v3-gate.yml）
+## CI ゲート 68 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -145,6 +145,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G51 | 利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127） | `python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py` | spec |  |
 | G48 | 新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143） | `BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48` | web |  |
 | G59 | 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から） | `PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-skeleton.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59` | web |  |
+| G70 | キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238） | `PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70` | web |  |
 | G53 | 試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140） | `python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py` | spec |  |
 | G54 | 決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147） | `cp 01_hearing/要件一覧.md $RUNNER_TEMP/req.md && python3 scripts/ci/trace_gate.py --index && cmp $RUNNER_TEMP/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py` | spec |  |
 | G55 | No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47） | `python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py` | spec |  |
@@ -158,6 +159,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G66 | コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206） | `python3 scripts/ci/author_gate.py --base-ref "$CI_BASE"` | static |  |
 | G67 | 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214） | `python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py` | spec |  |
 | G68 | 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5） | `python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py` | spec |  |
+| G69 | キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238） | `python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" ${CI_TICKET:+--ticket "$CI_TICKET"} && python3 scripts/ci/k238_fidelity_ci_test.py` | spec |  |
 | G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"` | spec |  |
 
 ## マージ可能の判断

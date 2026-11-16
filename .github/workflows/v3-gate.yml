@@ -1,4 +1,4 @@
-# .github/workflows/v3-gate.yml — Kaname CI ゲート 66 本（05_flow/build_testplan.py が生成。手で直さない）
+# .github/workflows/v3-gate.yml — Kaname CI ゲート 68 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: ゲートが緑を維持できないなら次のスライスに進まない。旧jobrainはCIが全ゲート赤のまま進み、それが死因の一つ。
 # 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-6（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
@@ -48,6 +48,7 @@ jobs:
       py_tests: ${{ steps.scope.outputs.py_tests }}
       web_g48: ${{ steps.scope.outputs.web_g48 }}
       web_g59: ${{ steps.scope.outputs.web_g59 }}
+      web_gates: ${{ steps.scope.outputs.web_gates }}
       web_tasks: ${{ steps.scope.outputs.web_tasks }}
     steps:
       - uses: actions/checkout@v4
@@ -637,6 +638,12 @@ jobs:
           CI_BASE: ${{ steps.scope.outputs.base }}
           CI_TICKET: ${{ inputs.ticket }}
         run: python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py
+      - name: "G69 キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_BASE: ${{ steps.scope.outputs.base }}
+          CI_TICKET: ${{ inputs.ticket }}
+        run: "python3 scripts/ci/fidelity_config.py --base-ref \"$CI_BASE\" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref \"$CI_BASE\" ${CI_TICKET:+--ticket \"$CI_TICKET\"} && python3 scripts/ci/k238_fidelity_ci_test.py"
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
@@ -737,6 +744,7 @@ jobs:
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
           CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
           CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
         run: BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48
       - name: "G59 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）"
         if: ${{ !cancelled() }}
@@ -744,7 +752,16 @@ jobs:
           CI_FULL: ${{ needs.static.outputs.full }}
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}
           CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-skeleton.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59
+      - name: "G70 キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）"
+        if: ${{ !cancelled() }}
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70
       - uses: actions/upload-artifact@v4
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
         if: ${{ !cancelled() }}
