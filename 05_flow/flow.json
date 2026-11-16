@@ -10936,7 +10936,7 @@
    {
     "key": "tickets",
     "label": "チケット",
-    "icon": "list-checks",
+    "icon": "list",
     "screens": [
      "tickets"
     ],
@@ -10951,7 +10951,7 @@
    {
     "key": "approvals",
     "label": "承認待ち",
-    "icon": "check-circle",
+    "icon": "check",
     "screens": [
      "approvals"
     ],
@@ -10983,7 +10983,7 @@
    {
     "key": "knowledge",
     "label": "ナレッジ",
-    "icon": "book-open",
+    "icon": "book",
     "screens": [
      "knowledge"
     ],
@@ -10995,7 +10995,7 @@
    {
     "key": "company",
     "label": "ワークスペースの管理",
-    "icon": "building-2",
+    "icon": "building",
     "screens": [
      "members",
      "member-detail",
@@ -11014,7 +11014,7 @@
    {
     "key": "clients",
     "label": "取引先",
-    "icon": "handshake",
+    "icon": "briefcase",
     "screens": [
      "clients",
      "requests"

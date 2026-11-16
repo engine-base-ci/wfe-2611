@@ -1,11 +1,14 @@
 "use client";
 // チケットの画面の外枠（K-60・K-138）。キャンバスどおりの新しい外枠（components/k の Shell・D-143.1）に載せる。
 //   役と名前は前からある口（/api/auth-ext/me）を useMyRoles と同じ問い合わせ（鍵 ["me"]）で読む（契約の口 getMe は K-70）。
-//     読み中・失敗（401 など）のあいだは役を渡さない：役の項目を出さない（useMyRoles は失敗を owner に倒すので、役の値だけは使わない）
-//   外枠が読む口（グループ・承認待ちの数・PC）は 1 画面で 1 回ずつ。読み続けない（G-16）。失敗したら、その部分を出さないだけ（本文は出す）
-//   本当の値が無い物（会社の名前・グループの件数・知らせの数）は空にする（嘘の値を書かない・D-144.2・D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）
+//     読み中・失敗（401 など）・役の値が分からない（null・知らない値）あいだは役を渡さない：役の項目を出さない
+//   会社名は自分の情報の口の答えの workspace_name（口の側は K-253）。在れば頭文字と会社名、無ければどちらも出さない（D-145.16）
+//   外枠が読む口（グループ・承認待ちの数・PC）は 1 画面で 1 回ずつ。読み続けない・窓に戻っても読み直さない（G-16）。
+//     グループの口は作る面の選択肢と同じ問い合わせ（SCOPES_KEY）で分け合う。失敗したら、その部分を出さないだけ（本文は出す）
+//   本当の値が無い物（グループの件数・知らせの数）は出さない（D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）
+//   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
 //   右の自分のAIのパネルは出さない（チケットは PC をつないでいなくても作れる・D-127.8）
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Shell, type Crumb, type Group } from "@/components/k";
 import { call } from "@/lib/api/call";
@@ -15,23 +18,37 @@ import { me } from "@/lib/auth/ext";
 import type { RoleId } from "@/lib/nav";
 import { THEME_COOKIE, parseTheme, type Theme } from "@/lib/theme";
 
-/** members.role_id → 主ナビの役（役ごとの並べ方は flow.json の sections_by_role） */
+/** members.role_id → 主ナビの役（役ごとの並べ方は flow.json の sections_by_role）。ここに無い値は役を渡さない */
 const ROLE_OF: Record<string, RoleId> = { owner: "R1", admin: "R1", staff: "R3", viewer: "R4", ops: "R6" };
 /** グループの札の色（データの色の順に回す。キャンバスは 営業 teal・受託開発 plum・経理 amber） */
 const TONES: Group["tone"][] = ["teal", "plum", "amber", "indigo", "coral", "sage", "lavender", "teal-light"];
 /** 外枠の口は 1 画面で 1 回：自分では読み直さない */
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
 
-interface ScopeRow {
+export interface ScopeRow {
   id: string;
   name: string;
+  tenant_id?: string;
   /** 番号の頭（EG など）。在れば札に使う（キャンバスの札と同じ物） */
   ticket_prefix?: string | null;
 }
-interface Scopes {
+export interface Scopes {
   rows: ScopeRow[];
-  writable: number;
+  /** 書けるグループの id（口の meta.writable） */
+  writable: string[];
 }
+/** グループの口の問い合わせの鍵（外枠と作る面の選択肢で分け合う） */
+export const SCOPES_KEY = ["k138-shell", "scopes"] as const;
+
+export async function readScopes(screen: string): Promise<Scopes> {
+  const r = await call("listScopes", { screenId: screen });
+  if (!r.ok) throw Object.assign(new Error(r.code), { result: r });
+  const writable = ((r.meta["writable"] as unknown[] | undefined) ?? []).map(String);
+  return { rows: r.data as unknown as ScopeRow[], writable };
+}
+/** 作る面がグループを読む（外枠が読んでいれば同じ答えを使い、口を 2 回呼ばない） */
+export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
+  qc.fetchQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes(screen), ...ONCE });
 
 export interface TicketShellProps {
   /** いま見ている画面（flow の screen id）。左のメニューの今いる項目になる */
@@ -51,19 +68,17 @@ function readTheme(): Theme {
   return parseTheme(hit?.slice(THEME_COOKIE.length + 1));
 }
 
+/** 自分の情報の口の答え（前からある口・会社名の欄は K-253 が足す） */
+type Me = Awaited<ReturnType<typeof me>> & { workspace_name?: string | null };
+
 function useShellData(screen: string, ownCount: boolean) {
   const signedIn = typeof window !== "undefined" && Boolean(getToken());
-  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, retry: false });
+  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, ...ONCE });
   const scopes = useQuery({
-    queryKey: ["k138-shell", "scopes"],
+    queryKey: SCOPES_KEY,
     enabled: signedIn,
     ...ONCE,
-    queryFn: async (): Promise<Scopes> => {
-      const r = await call("listScopes", { screenId: screen });
-      if (!r.ok) throw new Error(r.code);
-      const writable = ((r.meta["writable"] as unknown[] | undefined) ?? []).length;
-      return { rows: r.data as unknown as ScopeRow[], writable };
-    },
+    queryFn: () => readScopes(screen),
   });
   const waiting = useQuery({
     queryKey: ["k138-shell", "approvals-count"],
@@ -91,24 +106,27 @@ function useShellData(screen: string, ownCount: boolean) {
 export function TicketShell({ screen, crumbs, counts, onCreate, children }: TicketShellProps) {
   const ownCount = counts?.["approvals"] !== undefined;
   const { who, scopes, waiting, devices } = useShellData(screen, ownCount);
-  // 役は口が答えたときだけ（読み中・失敗は役なし＝役の項目を出さない）
-  const role = who.isSuccess ? (ROLE_OF[who.data.role_id ?? ""] ?? "R1") : undefined;
-  const name = (who.isSuccess ? who.data.display_name : null) ?? "";
+  const mine = who.isSuccess ? (who.data as Me) : null;
+  // 役は口が答え、値が分かるときだけ（読み中・失敗・知らない値は役なし＝役の項目を出さない）
+  const role = mine?.role_id ? ROLE_OF[mine.role_id] : undefined;
+  const name = mine?.display_name ?? "";
+  const company = mine?.workspace_name?.trim() ?? "";
   const groups: Group[] = (scopes.data?.rows ?? []).map((s, i) => ({
-    code: s.ticket_prefix || s.name.slice(0, 2),
+    code: s.ticket_prefix || s.name.slice(0, 1),
     name: s.name,
     href: `/tickets?scope=${encodeURIComponent(s.id)}`,
     tone: TONES[i % TONES.length]!,
+    pending: true,
   }));
   const approvals = ownCount ? counts?.["approvals"] : waiting.data;
   const badges = { ...counts, ...(approvals !== undefined ? { approvals } : {}) };
-  const canCreate = (scopes.data?.writable ?? 0) > 0;
+  const canCreate = (scopes.data?.writable.length ?? 0) > 0;
   return (
     <Shell
       {...(role ? { role } : {})}
       screen={screen}
       crumbs={crumbs}
-      workspace={{ name: "", initial: "" }}
+      workspace={{ name: company, initial: company.slice(0, 1) }}
       member={{ name, initial: name.slice(0, 1) }}
       groups={groups}
       badges={badges}

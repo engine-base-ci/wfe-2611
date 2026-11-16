@@ -12,7 +12,7 @@ export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 const ME = "11111111-0000-4000-8000-000000000001";
 
-/** 外枠の口を差し替える：役 owner・名前 高本・承認待ち n・グループ 営業・受託開発・経理・PC live（キャンバス Main と同じ人とデータ） */
+/** 外枠の口を差し替える：役 owner・名前 高本・会社 ENGINE BASE・承認待ち n・グループ 営業 EG・受託開発 JD・経理 KR・PC live（キャンバス Main と同じ人とデータ） */
 async function shellApi(page: Page, approvals: number): Promise<void> {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
@@ -30,13 +30,20 @@ async function shellApi(page: Page, approvals: number): Promise<void> {
         },
       };
     else if (p === "/api/auth-ext/me")
-      r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
+      r = ok({
+        member_id: ME,
+        tenant_id: WS,
+        display_name: "高本",
+        role_id: "owner",
+        scope_id: null,
+        workspace_name: "ENGINE BASE",
+      });
     else if (p === "/api/v1/scopes")
       r = ok(
         [
-          { id: "22222222-0000-4000-8000-000000000001", name: "営業", tenant_id: WS },
-          { id: "22222222-0000-4000-8000-000000000002", name: "受託開発", tenant_id: WS },
-          { id: "22222222-0000-4000-8000-000000000003", name: "経理", tenant_id: WS },
+          { id: "22222222-0000-4000-8000-000000000001", name: "営業", ticket_prefix: "EG", tenant_id: WS },
+          { id: "22222222-0000-4000-8000-000000000002", name: "受託開発", ticket_prefix: "JD", tenant_id: WS },
+          { id: "22222222-0000-4000-8000-000000000003", name: "経理", ticket_prefix: "KR", tenant_id: WS },
         ],
         { limit: 200, writable: ["22222222-0000-4000-8000-000000000001"] },
       );

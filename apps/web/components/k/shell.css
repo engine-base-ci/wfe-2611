@@ -56,7 +56,18 @@
   flex: none;
   display: grid;
   place-items: center;
+}
+.k-ws-mark {
   font-weight: var(--k-fw-h1);
+}
+/* 会社の切り替え ▾ と グループの ★（まだ使えない：正本の button-disabled の薄さ・押しても何もしない） */
+.k-ws-switch,
+.k-nav-star {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-nav-star {
+  margin-left: auto;
 }
 .k-ws-mark {
   width: 24px;
@@ -135,6 +146,10 @@
   color: var(--k-on-primary);
   font-weight: var(--k-fw-label-md);
 }
+.k-nav-item[data-group] {
+  /* グループの行はキャンバスどおり 30px */
+  min-height: 30px;
+}
 .k-nav-item[aria-disabled="true"] {
   /* 作っていない項目：正本の button-disabled（隠さず、薄くして押せない形・D-145.9） */
   opacity: var(--k-c-button-disabled-opacity);
@@ -160,16 +175,17 @@
   text-align: center;
 }
 .k-nav-sec {
+  display: flex;
   padding: 12px 10px var(--k-s-xs);
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
 .k-group-mark {
-  /* 札の字（番号の頭か名前の頭の 2 字）が漢字 2 字でもはみ出さないよう、幅は字に合わせて 18px 以上 */
-  min-width: 18px;
+  /* キャンバスどおり 18px の四角・10px・太さ普通。字は番号の頭（EG など）か名前の頭 1 字 */
+  width: 18px;
   height: 18px;
+  overflow: hidden;
   white-space: nowrap;
-  box-sizing: border-box;
   border-radius: var(--k-r-sm);
   color: var(--k-card);
   font-size: var(--k-text-label-xs);
@@ -251,9 +267,9 @@
     flex-basis: 56px;
     padding: 10px 6px;
   }
+  /* 畳むボタンはレールにも出す（キャンバスの 768 どおり） */
   .k-nav .k-nav-label,
-  .k-nav .k-nav-badge,
-  .k-nav .k-nav-toggle {
+  .k-nav .k-nav-badge {
     display: none;
   }
   .k-nav .k-nav-top {
@@ -464,7 +480,8 @@
   min-width: 0;
   outline: 0;
 }
-.k-panel {
+/* 外枠の右のパネルは外枠の中の aside#k-panel だけ（本文の部品が同じクラス名を使っても、この並べ方を当てない・K-138） */
+.k-work > .k-panel {
   flex: 0 0 360px;
   position: sticky;
   top: 48px;
@@ -474,17 +491,17 @@
   border-left: 1px solid var(--k-line);
   box-sizing: border-box;
 }
-.k-panel[hidden] {
+.k-work > .k-panel[hidden] {
   display: none;
 }
 @media (min-width: 1440px) {
-  .k-panel {
+  .k-work > .k-panel {
     flex-basis: 400px;
   }
 }
 /* 1023 以下はパネルを横に並べない（本文が狭くなる）。スマホでは下のタブの AI から開く */
 @media (max-width: 1023px) {
-  .k-panel {
+  .k-work > .k-panel {
     position: fixed;
     inset: auto 0 0 auto;
     top: 48px;
@@ -500,25 +517,26 @@
   display: none;
 }
 @media (max-width: 767px) {
+  /* キャンバス MobileList どおり上の帯は出さない（見出しは本文の 1 つ・鈴は本文の見出しの右・自分のメニューは下のタブの「メニュー」） */
   .k-nav,
-  .k-search,
-  .k-crumbs {
+  .k-bar {
     display: none;
   }
-  .k-bar {
-    padding: 0 var(--k-s-sm) 0 var(--k-s-md);
+  .k-bell-inline {
+    flex: none;
+    margin-left: auto;
   }
-  .k-bar-title {
-    position: static;
-    width: auto;
-    height: auto;
-    clip: auto;
-    font-size: var(--k-text-h2);
-    line-height: var(--k-lh-h2);
-    font-weight: var(--k-fw-h2);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  /* 長い見出しでも鈴が下の行に落ちない（見出しが縮む） */
+  .k-shell :is(.k-row, .k63-head):has(> .k-bell-inline) {
+    flex-wrap: nowrap;
+  }
+  .k-shell :is(.k-row, .k63-head):has(> .k-bell-inline) > h1 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .k-sheet-me {
+    padding: var(--k-s-sm) 10px;
+    border-top: 1px solid var(--k-line-soft);
   }
   .k-body {
     padding-bottom: 60px;
@@ -550,10 +568,18 @@
     color: var(--k-primary);
     font-weight: var(--k-fw-h3);
   }
+  /* 数の印はキャンバスどおり 16px の丸・10px で、絵の右上 */
   .k-tabs .k-nav-badge {
     position: absolute;
     top: var(--k-s-xs);
+    display: grid;
+    place-items: center;
+    min-width: 16px;
+    height: 16px;
     margin-left: 18px;
+    padding: 0;
+    font-size: var(--k-text-label-xs);
+    line-height: 1;
   }
   .k-tab-create {
     flex: 1;

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:0225181a93424020
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:c483dbfe8770ec42
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -15,7 +15,7 @@ export const NAV: NavData = {
     {
       "key": "tickets",
       "label": "チケット",
-      "icon": "list-checks",
+      "icon": "list",
       "screens": [
         "tickets"
       ],
@@ -24,7 +24,7 @@ export const NAV: NavData = {
     {
       "key": "approvals",
       "label": "承認待ち",
-      "icon": "check-circle",
+      "icon": "check",
       "screens": [
         "approvals"
       ],
@@ -45,7 +45,7 @@ export const NAV: NavData = {
     {
       "key": "knowledge",
       "label": "ナレッジ",
-      "icon": "book-open",
+      "icon": "book",
       "screens": [
         "knowledge"
       ]
@@ -53,7 +53,7 @@ export const NAV: NavData = {
     {
       "key": "company",
       "label": "ワークスペースの管理",
-      "icon": "building-2",
+      "icon": "building",
       "screens": [
         "members",
         "member-detail",
@@ -67,7 +67,7 @@ export const NAV: NavData = {
     {
       "key": "clients",
       "label": "取引先",
-      "icon": "handshake",
+      "icon": "briefcase",
       "screens": [
         "clients",
         "requests"

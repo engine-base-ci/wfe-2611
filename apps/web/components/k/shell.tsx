@@ -5,46 +5,101 @@
 //   右のパネル（自分の AI）は 1180 以上で既定で開く（本文 720 を保てるときだけ・D-070）。開閉は自分で替えられ、次も同じ
 //   キャンバスに在る物は機能がまだでも出す（D-145.9）：作っていない項目・探す欄・知らせの鈴は、正本の「使えない状態」の薄さで押せない形にする。
 //   目に見える「準備中」の字は出さない（指を置くと title で読める・D-144.1）。帯の題は見出しにしない（1 画面の h1 は本文の 1 つ・K-138）
+//   使えない項目は role と aria-disabled と tabIndex で読み上げとキーボードに伝える（Enter でも動かない）
+//   767 以下はキャンバス MobileList どおり上の帯を出さない。鈴は本文の見出しの右（ShellBell を本文が置く）・自分のメニューは下のタブの「メニュー」の中
 import { Menu as M } from "@base-ui/react/menu";
-import {
-  Bell,
-  BookOpen,
-  Bot,
-  Building2,
-  CircleCheck,
-  CircleUser,
-  Handshake,
-  Inbox,
-  LifeBuoy,
-  ListChecks,
-  Menu,
-  PanelLeft,
-  PanelRight,
-  Search,
-  type LucideIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, type LucideIcon } from "lucide-react";
+import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
 import { EMPTY_NAV, navFor, type NavItem } from "./nav-model";
 import { ThemeSwitch } from "./theme";
 
-const ICON: Record<string, LucideIcon> = {
-  "list-checks": ListChecks,
-  "check-circle": CircleCheck,
-  bot: Bot,
-  "book-open": BookOpen,
-  "building-2": Building2,
-  handshake: Handshake,
-  "circle-user": CircleUser,
-  inbox: Inbox,
-  "life-buoy": LifeBuoy,
+/** キャンバス（Main・MobileList）の絵の線をそのまま描く（flow の icon の名前と同じ鍵・K-138） */
+const CANVAS_ICON: Record<string, ReactNode> = {
+  list: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
+  check: <path d="M20 6 9 17l-5-5" />,
+  bot: (
+    <>
+      <path d="M12 8V4H8" />
+      <rect width="16" height="12" x="4" y="8" rx="2" />
+      <path d="M2 14h2M20 14h2M15 13v2M9 13v2" />
+    </>
+  ),
+  book: <path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5a2.5 2.5 0 0 0 0 5H20" />,
+  briefcase: (
+    <>
+      <rect x="3" y="7" width="18" height="13" rx="2" />
+      <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+    </>
+  ),
+  building: <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" />,
+  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
 };
+/** キャンバスに絵が無い項目（運営・クライアントの場所・自分のメニュー）は部品の絵 */
+const OTHER_ICON: Record<string, LucideIcon> = { "circle-user": CircleUser, inbox: Inbox, "life-buoy": LifeBuoy };
 const Icon = ({ name, size = 16 }: { name: string; size?: number }) => {
-  const C = ICON[name] ?? ListChecks;
+  const lines = CANVAS_ICON[name];
+  if (lines)
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        aria-hidden="true"
+      >
+        {lines}
+      </svg>
+    );
+  const C = OTHER_ICON[name] ?? CircleUser;
   return <C size={size} aria-hidden="true" strokeWidth={2} />;
 };
+
+/** 767 以下か（キャンバス MobileList の形にする幅） */
+function useNarrow(): boolean {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return narrow;
+}
+
+interface BellState {
+  narrow: boolean;
+  notices?: number | undefined;
+  onNotices?: (() => void) | undefined;
+}
+const BellContext = createContext<BellState>({ narrow: false });
+
+function BellButton({ notices, onNotices, inline }: Omit<BellState, "narrow"> & { inline?: boolean }) {
+  return (
+    <button
+      type="button"
+      className={inline ? "k-icon-btn k-bell k-bell-inline" : "k-icon-btn k-bell"}
+      aria-label={notices ? `知らせ（${notices} 件）` : "知らせ"}
+      aria-disabled={onNotices ? undefined : true}
+      title={onNotices ? undefined : "知らせ（準備中）"}
+      onClick={onNotices}
+    >
+      <Bell size={18} aria-hidden="true" />
+      {notices ? <b aria-hidden="true">{notices}</b> : null}
+    </button>
+  );
+}
+
+/** 767 以下で本文の見出しの右に置く鈴（キャンバス MobileList）。広い画面では帯にあるので何も出さない */
+export function ShellBell() {
+  const b = useContext(BellContext);
+  return b.narrow ? <BellButton notices={b.notices} onNotices={b.onNotices} inline /> : null;
+}
 
 export interface Crumb {
   label: string;
@@ -55,6 +110,8 @@ export interface Group {
   name: string;
   count?: number;
   href: string;
+  /** 押しても行き先がまだ効かない（絞り込みができるまでグレーで押せない・D-145.18） */
+  pending?: boolean;
   tone: "indigo" | "teal" | "amber" | "coral" | "sage" | "plum" | "lavender" | "teal-light";
 }
 export interface ShellProps {
@@ -105,7 +162,7 @@ const writePref = (k: string, v: boolean) => {
 function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
   const body = (
     <>
-      <Icon name={it.icon} />
+      <Icon name={it.icon} size={compact ? 20 : 16} />
       <span className="k-nav-label">{compact ? (it.tab ?? it.label) : it.label}</span>
       {it.badge ? (
         <b className="k-nav-badge" aria-label={`${it.badge} 件`}>
@@ -119,7 +176,9 @@ function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
       <span
         className="k-nav-item"
         data-compact={compact || undefined}
+        role="link"
         aria-disabled="true"
+        tabIndex={0}
         title={`${it.label}（準備中）`}
       >
         {body}
@@ -138,7 +197,64 @@ function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
   );
 }
 
+function MeMenu({
+  me,
+  member,
+  theme,
+  onSignOut,
+}: {
+  me: NavItem[];
+  member: { name: string; initial: string };
+  theme: Theme;
+  onSignOut?: (() => void) | undefined;
+}) {
+  return (
+    <M.Root>
+      <M.Trigger className="k-me" aria-label="自分のメニュー">
+        <span className="k-avatar" aria-hidden="true">
+          {member.initial}
+        </span>
+        ▾
+      </M.Trigger>
+      <M.Portal>
+        <M.Positioner sideOffset={6} align="end">
+          <M.Popup className="k-select-popup k-menu">
+            <div className="k-menu-head">{member.name}</div>
+            {me.map((it) =>
+              it.pending ? (
+                <M.Item key={it.key} className="k-select-item" disabled title={`${it.label}（準備中）`}>
+                  {it.label}
+                </M.Item>
+              ) : (
+                <M.Item key={it.key} className="k-select-item" render={<a href={it.href} />}>
+                  {it.label}
+                </M.Item>
+              ),
+            )}
+            <div className="k-menu-theme">
+              <ThemeSwitch initial={theme} />
+            </div>
+            {onSignOut ? (
+              <M.Item className="k-select-item" onClick={onSignOut}>
+                ログアウト
+              </M.Item>
+            ) : null}
+          </M.Popup>
+        </M.Positioner>
+      </M.Portal>
+    </M.Root>
+  );
+}
+
+/** 押せない小さな印（★・会社の切り替え ▾）。読み上げは「使えないボタン」・Tab で止まる・押しても何もしない */
+const Inert = ({ className, label, children }: { className: string; label: string; children: ReactNode }) => (
+  <span className={className} role="button" aria-disabled="true" tabIndex={0} aria-label={label} title={label}>
+    {children}
+  </span>
+);
+
 export function Shell(p: ShellProps) {
+  const narrow = useNarrow();
   const nav = p.role
     ? navFor(p.role, {
         screen: p.screen,
@@ -187,7 +303,13 @@ export function Shell(p: ShellProps) {
         <span className="k-ws-mark" aria-hidden="true">
           {p.workspace.initial}
         </span>
-        <b className="k-nav-label k-ws-name">{p.workspace.name}</b>
+        <b className="k-nav-label k-ws-name">
+          {p.workspace.name}
+          {p.workspace.name ? " " : ""}
+          <Inert className="k-ws-switch" label="会社を切り替える（準備中）">
+            ▾
+          </Inert>
+        </b>
         {inSheet ? null : (
           <button
             type="button"
@@ -211,16 +333,40 @@ export function Shell(p: ShellProps) {
       ))}
       {p.groups?.length ? (
         <>
-          <div className="k-nav-label k-nav-sec">グループ</div>
-          {p.groups.map((g) => (
-            <a key={g.code} className="k-nav-item" href={g.href} title={g.name}>
-              <span className="k-group-mark" data-tone={g.tone} aria-hidden="true">
-                {g.code}
+          <div className="k-nav-label k-nav-sec">
+            グループ
+            <Inert className="k-nav-star" label="グループの★（準備中）">
+              ★
+            </Inert>
+          </div>
+          {p.groups.map((g) => {
+            const body = (
+              <>
+                <span className="k-group-mark" data-tone={g.tone} aria-hidden="true">
+                  {g.code}
+                </span>
+                <span className="k-nav-label">{g.name}</span>
+                {g.count !== undefined ? <span className="k-nav-label k-nav-count">{g.count}</span> : null}
+              </>
+            );
+            return g.pending ? (
+              <span
+                key={g.href}
+                className="k-nav-item"
+                data-group={g.name}
+                role="link"
+                aria-disabled="true"
+                tabIndex={0}
+                title={`${g.name}（準備中）`}
+              >
+                {body}
               </span>
-              <span className="k-nav-label">{g.name}</span>
-              {g.count !== undefined ? <span className="k-nav-label k-nav-count">{g.count}</span> : null}
-            </a>
-          ))}
+            ) : (
+              <a key={g.href} className="k-nav-item" data-group={g.name} href={g.href} title={g.name}>
+                {body}
+              </a>
+            );
+          })}
         </>
       ) : null}
       <div className="k-nav-fill" />
@@ -235,6 +381,11 @@ export function Shell(p: ShellProps) {
         <span className="k-pc-dot" aria-hidden="true" />
         <span className="k-nav-label">{p.bridgeConnected ? "PC つながっている" : "PC をつないでいない"}</span>
       </div>
+      {inSheet ? (
+        <div className="k-sheet-me">
+          <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
+        </div>
+      ) : null}
     </>
   );
 
@@ -280,51 +431,8 @@ export function Shell(p: ShellProps) {
                 </span>
               </label>
             </form>
-            <button
-              type="button"
-              className="k-icon-btn k-bell"
-              aria-label={p.notices ? `知らせ（${p.notices} 件）` : "知らせ"}
-              aria-disabled={p.onNotices ? undefined : true}
-              title={p.onNotices ? undefined : "知らせ（準備中）"}
-              onClick={p.onNotices}
-            >
-              <Bell size={18} aria-hidden="true" />
-              {p.notices ? <b aria-hidden="true">{p.notices}</b> : null}
-            </button>
-            <M.Root>
-              <M.Trigger className="k-me" aria-label="自分のメニュー">
-                <span className="k-avatar" aria-hidden="true">
-                  {p.member.initial}
-                </span>
-                ▾
-              </M.Trigger>
-              <M.Portal>
-                <M.Positioner sideOffset={6} align="end">
-                  <M.Popup className="k-select-popup k-menu">
-                    <div className="k-menu-head">{p.member.name}</div>
-                    {nav.me.map((it) =>
-                      it.pending ? (
-                        <M.Item key={it.key} className="k-select-item" disabled title={`${it.label}（準備中）`}>
-                          {it.label}
-                        </M.Item>
-                      ) : (
-                        <M.Item key={it.key} className="k-select-item" render={<a href={it.href} />}>
-                          {it.label}
-                        </M.Item>
-                      ),
-                    )}
-                    <div className="k-menu-theme">
-                      <ThemeSwitch initial={p.theme} />
-                    </div>
-                    {p.onSignOut ? (
-                      <M.Item className="k-select-item" onClick={p.onSignOut}>
-                        ログアウト
-                      </M.Item>
-                    ) : null}
-                  </M.Popup>
-                </M.Positioner>
-              </M.Portal>
-            </M.Root>
+            {narrow ? null : <BellButton notices={p.notices} onNotices={p.onNotices} />}
+            {narrow ? null : <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />}
             {p.panel ? (
               <button
                 type="button"
@@ -341,7 +449,9 @@ export function Shell(p: ShellProps) {
         </header>
         <div className="k-work">
           <main id="k-main" className="k-main" tabIndex={-1}>
-            {p.children}
+            <BellContext.Provider value={{ narrow, notices: p.notices, onNotices: p.onNotices }}>
+              {p.children}
+            </BellContext.Provider>
           </main>
           {p.panel ? (
             <aside id="k-panel" aria-label="自分の AI" className="k-panel" hidden={!panelOpen}>
@@ -370,7 +480,7 @@ export function Shell(p: ShellProps) {
           aria-controls="k-sheet"
           onClick={() => setSheet((v) => !v)}
         >
-          <Menu size={16} aria-hidden="true" />
+          <Icon name="menu" size={20} />
           <span className="k-nav-label">メニュー</span>
         </button>
       </nav>

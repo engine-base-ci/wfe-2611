@@ -27,7 +27,7 @@ export interface ShellNav {
 export interface NavOptions {
   /** いま見ている画面（flow の screen id）。そのまとまりを「いまの場所」にする */
   screen?: string;
-  /** 自分の名前（「（名前）のAI」の名前）。空なら「（名前）のAI」は短い名前（tab）にする（「のAI」にしない） */
+  /** 自分の名前（「（名前）のAI」の名前）。空なら「あなた」（D-145.17） */
   memberName: string;
   /** まとまりごとの数（承認待ち 2 件 など） */
   badges?: Partial<Record<string, number>>;
@@ -55,12 +55,8 @@ export function navFor(role: RoleId, o: NavOptions): ShellNav {
     const first = sec.screens.find((id) => allowed.size === 0 || allowed.has(id)) ?? sec.screens[0];
     if (!first) return null;
     const route = NAV.screens[first as ScreenId]?.route ?? "/";
-    const named = sec.label.includes("（名前）");
-    const label = !named
-      ? sec.label
-      : o.memberName
-        ? sec.label.replace("（名前）", o.memberName)
-        : (sec.tab ?? sec.label.replace("（名前）", ""));
+    // 名前を登録していない人は「あなたのAI」（D-145.17・下のタブの短い名前 tab はそのまま）
+    const label = sec.label.replace("（名前）", o.memberName || "あなた");
     return {
       key,
       label,

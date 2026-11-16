@@ -1167,6 +1167,34 @@
       "background-color",
       "texts"
      ]
+    },
+    {
+     "name": "上の帯の箱",
+     "role": "head",
+     "canvas": ".kn-bar",
+     "app": ".k-bar",
+     "props": [
+      "height",
+      "background-color",
+      "border-bottom-color",
+      "border-bottom-width",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "グループの行",
+     "role": "band-title",
+     "canvas": ".kn-nav > a.kn-item[title=\"営業\"]",
+     "app": ".k-nav > .k-nav-item[data-group=\"営業\"]",
+     "props": [
+      "height",
+      "font-size",
+      "font-weight"
+     ]
     }
    ]
   },

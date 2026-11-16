@@ -237,13 +237,14 @@ PRODUCT_STATES = [
 SKELETON = ["A01", "A02", "A96", "A97", "A09", "A10", "A99", "A101", "A102", "A130", "A104", "A15", "A53", "A106"]
 
 # ------------------------------------------------------------ 導線（D-127.10・D-127.11）
+# 絵の名前はキャンバス（Main・MobileList）の絵に合わせる（K-138・レビューの指摘 4）。外枠はキャンバスの線をそのまま描く
 NAV_SECTIONS = [
- ("tickets", "チケット", "list-checks", ["tickets"], ["D-127.10", "D-125.145", "D-128.9", "D-128.12"]),
- ("approvals", "承認待ち", "check-circle", ["approvals"], ["D-127.10", "D-125.107"]),
+ ("tickets", "チケット", "list", ["tickets"], ["D-127.10", "D-125.145", "D-128.9", "D-128.12"]),
+ ("approvals", "承認待ち", "check", ["approvals"], ["D-127.10", "D-125.107"]),
  ("ai", "（名前）のAI", "bot", ["clone-chat", "ai-activity", "work-types", "rules"], ["D-127.10", "D-127.11", "D-128.16", "D-128.38", "D-128.40"]),
- ("knowledge", "ナレッジ", "book-open", ["knowledge"], ["D-127.10", "D-125.109"]),
- ("company", "ワークスペースの管理", "building-2", ["members", "member-detail", "layers", "masters", "audit", "company-settings", "billing"], ["D-127.10", "D-128.47", "D-128.48"]),
- ("clients", "取引先", "handshake", ["clients", "requests"], ["D-127.10", "D-125.121"]),
+ ("knowledge", "ナレッジ", "book", ["knowledge"], ["D-127.10", "D-125.109"]),
+ ("company", "ワークスペースの管理", "building", ["members", "member-detail", "layers", "masters", "audit", "company-settings", "billing"], ["D-127.10", "D-128.47", "D-128.48"]),
+ ("clients", "取引先", "briefcase", ["clients", "requests"], ["D-127.10", "D-125.121"]),
  ("me", "自分のメニュー", "circle-user", ["account", "credentials", "bridge-setup", "inquiry", "notices"], ["D-127.10", "D-128.55", "D-128.71"]),
  ("portal", "クライアントの場所", "inbox", ["portal"], ["D-127.10", "D-125.46"]),
  ("admin", "運営", "life-buoy", ["ops-home", "ops-tenant", "ops-support", "ops-notices", "ops-billing", "ops-skills", "ops-team"], ["D-127.10", "D-125.129", "D-128.67"]),

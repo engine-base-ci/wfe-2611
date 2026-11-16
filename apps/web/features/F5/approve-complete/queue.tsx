@@ -11,6 +11,7 @@ import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "./message";
 import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
+import { ShellBell } from "@/components/k/shell";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { DUE_GROUPS, dueGroupOf } from "./due";
 import "./approve.css";
@@ -74,6 +75,7 @@ export function ApprovalsPage() {
         <header className="k-page-head k63-head">
           <h1 id="approvals-title">承認待ち</h1>
           {q.data ? <span className="k63-count">{total} 件</span> : null}
+          <ShellBell />
         </header>
         {q.isError ? (
           <div className="k-state" role="alert">

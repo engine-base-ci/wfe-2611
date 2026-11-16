@@ -2,6 +2,7 @@
 // チケットの画面の「作る」の入口（K-60・画面 tickets・道 /tickets）。左のメニューの「チケットを作る」（外枠・K-138）・空の箱の「＋ チケットを作る」・URL の印 ?new=1（再読み込みでも開いたまま）。
 //   書けるグループが 1 つも無い人（閲覧のみ）には「作る」を出さない（口も 403）。PC をつないでいなくても作れる（D-127.8）
 //   一覧そのもの（絞り込み・並べ替え）は F4 のこれからのチケット。ここは作ったチケットが並ぶところまで
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Empty, ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
@@ -9,7 +10,8 @@ import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
-import { TicketShell } from "./ticket-shell";
+import { ShellBell } from "@/components/k/shell";
+import { TicketShell, fetchScopes, type Scopes } from "./ticket-shell";
 
 type Row = { id: string; number: string; title: string };
 type Load =
@@ -17,7 +19,7 @@ type Load =
   | { state: "error"; code: string }
   | { state: "ok"; choices: Choices; writable: boolean; rows: Row[] };
 
-export async function loadChoices(): Promise<Load> {
+export async function loadChoices(qc: QueryClient): Promise<Load> {
   // 本人と本人の会社（下書きの写しの鍵・H1）。分からないうちは作る面を出さない（写しを読まない・書かない）
   let who: Awaited<ReturnType<typeof me>>;
   try {
@@ -27,16 +29,23 @@ export async function loadChoices(): Promise<Load> {
     const status = (e as { status?: number }).status;
     return { state: "error", code: status === 401 ? PAGE_ERROR.sessionExpired : PAGE_ERROR.loadFailed };
   }
-  const [scopes, kinds, members, list] = await Promise.all([
-    call("listScopes", { screenId: "tickets" }),
+  // グループは外枠と同じ問い合わせ（口を 2 回呼ばない・K-138）
+  let scopes: Scopes;
+  try {
+    scopes = await fetchScopes(qc, "tickets");
+  } catch (e) {
+    const r = (e as { result?: Parameters<typeof errorCodeOf>[0] }).result;
+    return { state: "error", code: r ? errorCodeOf(r) : PAGE_ERROR.loadFailed };
+  }
+  const [kinds, members, list] = await Promise.all([
     call("listTicketKinds", { screenId: "tickets" }),
     call("listMembers", { query: { limit: 200 }, screenId: "tickets" }),
     call("listTickets", { query: { limit: 50 }, screenId: "tickets" }),
   ]);
-  for (const r of [scopes, kinds, members]) if (!r.ok) return { state: "error", code: errorCodeOf(r) };
-  if (!scopes.ok || !kinds.ok || !members.ok) return { state: "error", code: PAGE_ERROR.loadFailed };
-  const all = scopes.data as unknown as { id: string; name: string; tenant_id: string }[];
-  const writableIds = new Set(((scopes.meta["writable"] as string[] | undefined) ?? []).map(String));
+  for (const r of [kinds, members]) if (!r.ok) return { state: "error", code: errorCodeOf(r) };
+  if (!kinds.ok || !members.ok) return { state: "error", code: PAGE_ERROR.loadFailed };
+  const all = scopes.rows;
+  const writableIds = new Set(scopes.writable);
   const rows = list.ok ? (list.data as unknown as Row[]) : [];
   return {
     state: "ok",
@@ -89,6 +98,7 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
   const [ready, setReady] = useState(false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [expired, setExpired] = useState(false);
+  const qc = useQueryClient();
   const here = open ? "/tickets?new=1" : "/tickets";
 
   useEffect(() => {
@@ -97,11 +107,11 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
   }, [here]);
   const reload = useCallback(() => {
     setLoad({ state: "loading" });
-    void loadChoices().then((l) => {
+    void loadChoices(qc).then((l) => {
       if (l.state === "error" && l.code === PAGE_ERROR.sessionExpired) setExpired(true);
       setLoad(l);
     });
-  }, []);
+  }, [qc]);
   useEffect(() => {
     if (ready) reload();
   }, [ready, reload]);
@@ -115,6 +125,7 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
     <section className="k-root k-page" aria-labelledby="tickets-title">
       <header className="k-page-head k-row">
         <h1 id="tickets-title">チケット</h1>
+        <ShellBell />
       </header>
       {load.state === "loading" ? <Loading /> : null}
       {load.state === "error" ? <ErrorState code={load.code} acts={[reload]} /> : null}

@@ -13,6 +13,7 @@ import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { RunLog } from "@/features/F5/delegate/run-log";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
+import { ShellBell } from "@/components/k/shell";
 import { TicketShell } from "./ticket-shell";
 
 interface Detail {
@@ -122,7 +123,11 @@ function DetailView({
       </a>
       <header className="k-page-head">
         <p className="k-desc">{t.number}</p>
-        <h1 id="ticket-title">{t.title}</h1>
+        {/* 767 以下は鈴を見出しの右に置く（キャンバス MobileList・K-138） */}
+        <div className="k-row">
+          <h1 id="ticket-title">{t.title}</h1>
+          <ShellBell />
+        </div>
         <p>
           <Badge>{d.stage?.name ?? ""}</Badge> {d.kind?.name ?? ""}・担当 {d.assignee?.display_name ?? "—"}・期限{" "}
           {t.due_on ?? "—"}
