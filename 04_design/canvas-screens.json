@@ -15,7 +15,8 @@
    "Approvals",
    "ApprovalsFocus",
    "ApBulk",
-   "ApHistory"
+   "ApHistory",
+   "ApEmpty"
   ],
   "audit": [
    "WsLog"
@@ -25,7 +26,8 @@
   ],
   "bridge-setup": [
    "EdPC",
-   "MePC"
+   "MePC",
+   "MePCInstalled"
   ],
   "clients": [
    "CuList",
@@ -80,7 +82,8 @@
    "AuthLogin",
    "Auth2FA",
    "AuthQR",
-   "AuthRecover"
+   "AuthRecover",
+   "AuthConsent"
   ],
   "masters": [
    "WsRules",
@@ -163,7 +166,8 @@
    "EdRule"
   ],
   "signup": [
-   "AuthSignup"
+   "AuthSignup",
+   "AuthChecking"
   ],
   "tickets": [
    "Main",
@@ -202,10 +206,22 @@
    "StRunning",
    "EdMove",
    "EdParent",
-   "EdTypeChange"
+   "EdTypeChange",
+   "OnHome",
+   "OnLoading",
+   "StBefore",
+   "StConfirmDone",
+   "StDone",
+   "StDelegated",
+   "StCompleteModal",
+   "OnHomeLater"
   ],
   "verify-email": [
-   "AuthVerify"
+   "AuthVerify",
+   "AuthVerifying",
+   "AuthVerifyExpired",
+   "AuthVerifyUsed",
+   "AuthVerifyLoading"
   ],
   "work-types": [
    "RoomWays",
@@ -218,8 +234,6 @@
  "common": {
   "_doc": "どの画面でも使う絵（外枠・4 つの状態・エラー・スマホ・ワークスペースの切り替え）。画面ごとの絵ではない",
   "boards": [
-   "OnHome",
-   "OnLoading",
    "OnError",
    "OnClients",
    "OnKnowledge",
@@ -242,7 +256,8 @@
    "MobileDetail",
    "MobileList",
    "TnNew",
-   "TopOrg"
+   "TopOrg",
+   "UiDisabled"
   ]
  }
 }

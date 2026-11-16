@@ -154,3 +154,7 @@ try:
     import tokensnap; tokensnap.run()
 except Exception as e:
     print('edwire', e)
+
+# 最後に、shellfix が全部の画面に同じに掛けた所のうち、絵ごとに違うもの（承認待ちが空の絵のバー・「あとで」の絵のバー）を直す（K-219）。
+# ここで呼ぶので、shellfix.py だけを回し直しても戻らない
+import k219; k219.after_shellfix()

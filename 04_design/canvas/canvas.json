@@ -20,6 +20,15 @@
    "x": 3040,
    "y": 1240
   },
+  "ApEmpty.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "approvals",
+   "title": "承認待ち・空 ← 決めるものが無いとき",
+   "w": 1440,
+   "x": 0,
+   "y": 1140
+  },
   "ApHistory.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -46,6 +55,141 @@
    "w": 1440,
    "x": 1520,
    "y": 0
+  },
+  "Auth2FA.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "確認のコード ← 2 段階認証を付けている人だけ",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthAddPasskey.dc.html": {
+   "x": 1520,
+   "y": 1140,
+   "w": 1440,
+   "h": 900,
+   "title": "この PC にもパスキーを付ける？ ← スマホで入ったあと",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthChecking.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "登録・確かめ中 ← アカウントを作るを開いた直後",
+   "w": 1440,
+   "x": 0,
+   "y": 5700
+  },
+  "AuthConsent.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "規約の同意 ← ログインの続き（規約が新しくなった）",
+   "w": 1440,
+   "x": 1520,
+   "y": 6840
+  },
+  "AuthInvite.dc.html": {
+   "x": 0,
+   "y": 3420,
+   "w": 1440,
+   "h": 900,
+   "title": "招待されて入る",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthLogin.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "ログイン（パスキー・メールとパスワード）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthQR.dc.html": {
+   "x": 0,
+   "y": 1140,
+   "w": 1440,
+   "h": 900,
+   "title": "スマホで QR を読み取って入る ← ログイン（この PC にパスキーが無いとき）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthRecover.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 900,
+   "title": "端末をなくしたとき（バックアップコード・管理者に再設定）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthReset.dc.html": {
+   "x": 3040,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "パスワードを忘れた",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthSignup.dc.html": {
+   "x": 0,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "アカウントを作る（設定の段はない）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthVerify.dc.html": {
+   "x": 1520,
+   "y": 2280,
+   "w": 1440,
+   "h": 900,
+   "title": "確認メールを送りました（リンクで確定する・D-128.142）",
+   "expand": "fill",
+   "page": "auth"
+  },
+  "AuthVerifyExpired.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "メールの確認・期限切れ ← 30 分を過ぎたリンクを押した",
+   "w": 1440,
+   "x": 0,
+   "y": 4560
+  },
+  "AuthVerifyLoading.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "確認メールを送りました・読み込み中 ← 登録の次へを押した直後",
+   "w": 1440,
+   "x": 1520,
+   "y": 7980
+  },
+  "AuthVerifyUsed.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "メールの確認・使用済み ← 確定した後にもう一度リンクを押した",
+   "w": 1440,
+   "x": 1520,
+   "y": 5700
+  },
+  "AuthVerifying.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "メールの確認・確定中 ← 確認メールのリンクを押した",
+   "w": 1440,
+   "x": 1520,
+   "y": 4560
   },
   "CalDay.dc.html": {
    "expand": "fill",
@@ -173,6 +317,15 @@
    "x": 0,
    "y": 1240
   },
+  "EdDeleteWs.dc.html": {
+   "x": 3040,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペースを消す（名前を打って確かめる・14 日は取り消せる）",
+   "expand": "fill",
+   "page": "ed"
+  },
   "EdGroup.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -181,6 +334,33 @@
    "w": 1440,
    "x": 0,
    "y": 2480
+  },
+  "EdInquiry.dc.html": {
+   "x": 1520,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "問い合わせる ← 困ったとき・お知らせ「問い合わせる」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "EdKind.dc.html": {
+   "x": 0,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "種別を足す ← チケットの形「＋ 種別を足す」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdLeaveWs.dc.html": {
+   "x": 0,
+   "y": 7440,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペースから抜ける ← プロフィール「抜ける」",
+   "expand": "fill",
+   "page": "ed"
   },
   "EdMemberMenu.dc.html": {
    "expand": "fill",
@@ -227,6 +407,33 @@
    "x": 0,
    "y": 3720
   },
+  "EdParent.dc.html": {
+   "x": 1520,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "親チケットを決める ← 作る「親チケットを決める」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdPasskey.dc.html": {
+   "x": 1520,
+   "y": 7440,
+   "w": 1440,
+   "h": 1000,
+   "title": "パスキーを足す ← ログインと安全「足す」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdPlan.dc.html": {
+   "x": 1520,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "プランを変える ← ワークスペースの設定（払い方は請求書払い・値段は仮）",
+   "expand": "fill",
+   "page": "ed"
+  },
   "EdRule.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -244,6 +451,78 @@
    "w": 1440,
    "x": 3040,
    "y": 2480
+  },
+  "EdTeach.dc.html": {
+   "x": 3040,
+   "y": 4960,
+   "w": 1440,
+   "h": 1000,
+   "title": "分身に覚えさせる ← 覚えていること「＋ 覚えさせる」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "EdTypeChange.dc.html": {
+   "x": 0,
+   "y": 6200,
+   "w": 1440,
+   "h": 1000,
+   "title": "種別を変える ← チケットの「…」",
+   "expand": "fill",
+   "page": "ed"
+  },
+  "ErrDown.dc.html": {
+   "x": 3040,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "Kaname の調子が悪い（いまの様子）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrLinkExpired.dc.html": {
+   "x": 0,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "リンクの期限が切れた（招待・作り直し）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrMaintenance.dc.html": {
+   "x": 1520,
+   "y": 3580,
+   "w": 1440,
+   "h": 900,
+   "title": "メンテナンス中（分身の作業はどうなるか）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrNoAccess.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "権限がない（頼める）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrNotFound.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "見つからない（404）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "ErrSession.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 900,
+   "title": "ログインが切れた（書きかけは残る）",
+   "expand": "fill",
+   "page": "on"
   },
   "Gantt.dc.html": {
    "expand": "fill",
@@ -344,6 +623,15 @@
    "x": 0,
    "y": 1400
   },
+  "LegalPage.dc.html": {
+   "expand": "fill",
+   "h": 900,
+   "page": "auth",
+   "title": "規約・プライバシーポリシー（文面）",
+   "w": 1440,
+   "x": 1520,
+   "y": 3420
+  },
   "List.dc.html": {
    "expand": "fill",
    "h": 1180,
@@ -398,6 +686,114 @@
    "x": 0,
    "y": 0
   },
+  "MbAI.dc.html": {
+   "x": 5390,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜分身（下のタブ AI）",
+   "page": "tickets"
+  },
+  "MbApprovals.dc.html": {
+   "x": 3980,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜承認（下のタブ）",
+   "page": "tickets"
+  },
+  "MbApproveOne.dc.html": {
+   "x": 4450,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜1 件ずつ裁く",
+   "page": "tickets"
+  },
+  "MbClients.dc.html": {
+   "x": 5860,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜取引先 ← メニュー",
+   "page": "tickets"
+  },
+  "MbCreate.dc.html": {
+   "x": 4920,
+   "y": 1560,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜＋ 作る（話すか書くだけ）",
+   "page": "tickets"
+  },
+  "MbKnowledge.dc.html": {
+   "x": 5390,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜ナレッジ ← メニュー",
+   "page": "tickets"
+  },
+  "MbMenu.dc.html": {
+   "x": 3980,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜メニュー",
+   "page": "tickets"
+  },
+  "MbNotify.dc.html": {
+   "x": 4450,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜知らせ（ベル）",
+   "page": "tickets"
+  },
+  "MbTalk.dc.html": {
+   "x": 4920,
+   "y": 2500,
+   "w": 390,
+   "h": 844,
+   "title": "スマホ｜チケットのやり取り",
+   "page": "tickets"
+  },
+  "Me2FA.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "2 段階認証を付ける ← ログインと安全「2 段階認証 › 付ける」（任意）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeBackup.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "バックアップコード（いまだけ表示）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MeHelp.dc.html": {
+   "x": 0,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "困ったとき・お知らせ ← 右上の顔「困ったとき・お知らせ」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "MeInquiry.dc.html": {
+   "x": 1520,
+   "y": 10280,
+   "w": 1440,
+   "h": 1000,
+   "title": "自分の問い合わせ（やり取り）← 困ったとき・お知らせ「自分の問い合わせ」",
+   "expand": "fill",
+   "page": "ops"
+  },
   "MeLogin.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -406,6 +802,15 @@
    "w": 1440,
    "x": 1520,
    "y": 0
+  },
+  "MeLogin2FA.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1100,
+   "title": "ログインと安全（2 段階認証を付けているとき）",
+   "expand": "fill",
+   "page": "me"
   },
   "MeNotify.dc.html": {
    "expand": "fill",
@@ -425,6 +830,15 @@
    "x": 3040,
    "y": 0
   },
+  "MePCInstalled.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "page": "me",
+   "title": "この PC に Bridge が入っている ← PC をつなぐを開いた",
+   "w": 1440,
+   "x": 3040,
+   "y": 3720
+  },
   "MeProfile.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -433,6 +847,15 @@
    "w": 1440,
    "x": -56,
    "y": 0
+  },
+  "MeProfileEdit.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 1100,
+   "title": "名前を直す（長い名前・自動で保存）",
+   "expand": "fill",
+   "page": "me"
   },
   "MeSecretAdd.dc.html": {
    "expand": "fill",
@@ -461,6 +884,24 @@
    "x": 0,
    "y": 1240
   },
+  "MeTotp.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "パスワードを決める（パスワードだけで入るなら 2 段階認証も一緒に）",
+   "expand": "fill",
+   "page": "me"
+  },
+  "MnIncident.dc.html": {
+   "x": 3040,
+   "y": 9040,
+   "w": 1440,
+   "h": 1000,
+   "title": "障害のお知らせの帯 ← 障害が出ている間",
+   "expand": "fill",
+   "page": "ops"
+  },
   "MnView.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -486,6 +927,258 @@
    "x": 3040,
    "y": 1560
   },
+  "OnClients.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "取引先（まだない）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnError.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "読み込めない・保存できない・オフライン・権限がない",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnHome.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "はじめて入ったとき（チケットが空・はじめにやること 3 つ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnHomeLater.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "page": "on",
+   "title": "はじめにやること に「あとで」 ← はじめて入ったとき",
+   "w": 1440,
+   "x": 0,
+   "y": 4720
+  },
+  "OnKnowledge.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "ナレッジ（まだページがない）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnLoading.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "読み込み中（3 秒より長いときだけ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OnRoom.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "分身の部屋（はじめて・PC がまだ）",
+   "expand": "fill",
+   "page": "on"
+  },
+  "OpBills.dc.html": {
+   "x": 0,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "請求（月ごと・期限を過ぎた）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpInbox.dc.html": {
+   "x": 0,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "問い合わせ（受信箱）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpList.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "ワークスペース（一覧）← 運営の左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNotice.dc.html": {
+   "x": 0,
+   "y": 5080,
+   "w": 1440,
+   "h": 1000,
+   "title": "障害のお知らせ（状態を足していく）← お知らせの行",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNoticeNew.dc.html": {
+   "x": 3040,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "お知らせを書く（メンテ）← お知らせ「＋ お知らせを書く」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpNotices.dc.html": {
+   "x": 1520,
+   "y": 3840,
+   "w": 1440,
+   "h": 1000,
+   "title": "お知らせ（一覧）← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPay.dc.html": {
+   "x": 1520,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "入金を記録 ← 請求「入金を記録」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPeek.dc.html": {
+   "x": 3040,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "中を見る（理由・1 時間・見るだけ）← 1 社「中を見る」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlanEdit.dc.html": {
+   "x": 0,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "値段を変える案を作る ← プラン「変える案を作る」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlanLog.dc.html": {
+   "x": 3040,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "プランの記録（案・差し戻し・決めた）← プラン「記録」タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlanReview.dc.html": {
+   "x": 1520,
+   "y": 11640,
+   "w": 1440,
+   "h": 1000,
+   "title": "案を確かめて決める（別の人）← プラン「変える案」タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpPlans.dc.html": {
+   "x": 1520,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "配るもの プラン（値段は仮・版で持つ）← 配るもの",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpStop.dc.html": {
+   "x": 1520,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "止める（先に知らせる・データは残る）← 1 社「⋯」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTeam.dc.html": {
+   "x": 3040,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "運営の人 ← 左のメニューの下",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTemplates.dc.html": {
+   "x": 1520,
+   "y": 12880,
+   "w": 1440,
+   "h": 1000,
+   "title": "配るもの ひな形（種別とチケットの形・作業の段・分類・層の形）← 配るもの",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTypeUpload.dc.html": {
+   "x": 0,
+   "y": 7680,
+   "w": 1440,
+   "h": 1000,
+   "title": "業務の型を上げる（機械の検査 → 版を出す）← 「＋ 業務の型を上げる」",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpTypes.dc.html": {
+   "x": 3040,
+   "y": 6440,
+   "w": 1440,
+   "h": 1000,
+   "title": "配るもの 業務の型と操作 ← 左のメニュー",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWs.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 いまの状態 ← 一覧の行",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsBilling.dc.html": {
+   "x": 0,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 プランと請求 ← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsLog.dc.html": {
+   "x": 1520,
+   "y": 1240,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 記録（運営の誰が何をしたか）← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
+  "OpWsMembers.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "1 社 メンバー ← タブ",
+   "expand": "fill",
+   "page": "ops"
+  },
   "OvGroup.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -503,6 +1196,15 @@
    "w": 1440,
    "x": 1520,
    "y": 0
+  },
+  "PeekMain.dc.html": {
+   "x": 0,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "中を見ている（顧客の画面の上に帯）← 中を見る「見るだけで開く」",
+   "expand": "fill",
+   "page": "ops"
   },
   "Room.dc.html": {
    "expand": "fill",
@@ -584,6 +1286,30 @@
    "x": 1520,
    "y": 0
   },
+  "StBefore.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "帯・任せる前 ← チケットを作った直後",
+   "w": 1440,
+   "x": 3040,
+   "y": 2480
+  },
+  "StCompleteModal.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "完了にするの小窓 ← 帯の完了にする",
+   "w": 1440,
+   "x": 0,
+   "y": 3720
+  },
+  "StConfirmDone.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "帯・完了の確かめ ← 実行が終わって承認待ちが無い",
+   "w": 1440,
+   "x": 3040,
+   "y": 3720
+  },
   "StCreateAi.dc.html": {
    "h": 1000,
    "page": "states",
@@ -591,6 +1317,22 @@
    "w": 1440,
    "x": 1520,
    "y": 1240
+  },
+  "StDelegated.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "帯・任せました（作る段） ← AI に任せるを押した",
+   "w": 1440,
+   "x": 3040,
+   "y": 6200
+  },
+  "StDone.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "帯・完了 ← 完了にした",
+   "w": 1440,
+   "x": 3040,
+   "y": 4960
   },
   "StEdit.dc.html": {
    "h": 1000,
@@ -776,6 +1518,24 @@
    "x": 0,
    "y": 2480
   },
+  "UiDisabled.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "page": "on",
+   "title": "使えない形の見本 ← どの画面でも（まだ使えない物は薄く押せない）",
+   "w": 1440,
+   "x": 1520,
+   "y": 4720
+  },
+  "WsBills.dc.html": {
+   "x": 0,
+   "y": 10280,
+   "w": 1440,
+   "h": 1000,
+   "title": "請求書 ← ワークスペースの管理 › 設定「請求書」",
+   "expand": "fill",
+   "page": "ops"
+  },
   "WsInvite.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -794,6 +1554,15 @@
    "x": 0,
    "y": 1240
   },
+  "WsMember.dc.html": {
+   "x": 3040,
+   "y": 2480,
+   "w": 1440,
+   "h": 1000,
+   "title": "メンバーの 1 人 ← メンバーの名前を押す",
+   "expand": "fill",
+   "page": "ws"
+  },
   "WsPeople.dc.html": {
    "expand": "fill",
    "h": 1000,
@@ -802,6 +1571,15 @@
    "w": 1440,
    "x": 0,
    "y": 0
+  },
+  "WsPriceChange.dc.html": {
+   "x": 0,
+   "y": 12880,
+   "w": 1440,
+   "h": 1000,
+   "title": "顧客の側：値段が変わる知らせ（決めたあと）← ワークスペースの管理 › 設定",
+   "expand": "fill",
+   "page": "ops"
   },
   "WsRules.dc.html": {
    "expand": "fill",
@@ -829,654 +1607,6 @@
    "w": 1440,
    "x": 3040,
    "y": 1240
-  },
-  "MeProfileEdit.dc.html": {
-   "x": 4560,
-   "y": 0,
-   "w": 1440,
-   "h": 1100,
-   "title": "名前を直す（長い名前・自動で保存）",
-   "expand": "fill",
-   "page": "me"
-  },
-  "AuthLogin.dc.html": {
-   "x": 0,
-   "y": 0,
-   "w": 1440,
-   "h": 900,
-   "title": "ログイン（パスキー・メールとパスワード）",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "Auth2FA.dc.html": {
-   "x": 1520,
-   "y": 0,
-   "w": 1440,
-   "h": 900,
-   "title": "確認のコード ← 2 段階認証を付けている人だけ",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "AuthRecover.dc.html": {
-   "x": 3040,
-   "y": 0,
-   "w": 1440,
-   "h": 900,
-   "title": "端末をなくしたとき（バックアップコード・管理者に再設定）",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "MeTotp.dc.html": {
-   "x": 0,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "パスワードを決める（パスワードだけで入るなら 2 段階認証も一緒に）",
-   "expand": "fill",
-   "page": "me"
-  },
-  "MeBackup.dc.html": {
-   "x": 1520,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "バックアップコード（いまだけ表示）",
-   "expand": "fill",
-   "page": "me"
-  },
-  "AuthQR.dc.html": {
-   "x": 0,
-   "y": 1140,
-   "w": 1440,
-   "h": 900,
-   "title": "スマホで QR を読み取って入る ← ログイン（この PC にパスキーが無いとき）",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "AuthAddPasskey.dc.html": {
-   "x": 1520,
-   "y": 1140,
-   "w": 1440,
-   "h": 900,
-   "title": "この PC にもパスキーを付ける？ ← スマホで入ったあと",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "MeLogin2FA.dc.html": {
-   "x": 1520,
-   "y": 1240,
-   "w": 1440,
-   "h": 1100,
-   "title": "ログインと安全（2 段階認証を付けているとき）",
-   "expand": "fill",
-   "page": "me"
-  },
-  "Me2FA.dc.html": {
-   "x": 3040,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "2 段階認証を付ける ← ログインと安全「2 段階認証 › 付ける」（任意）",
-   "expand": "fill",
-   "page": "me"
-  },
-  "AuthSignup.dc.html": {
-   "x": 0,
-   "y": 2280,
-   "w": 1440,
-   "h": 900,
-   "title": "アカウントを作る（設定の段はない）",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "AuthVerify.dc.html": {
-   "x": 1520,
-   "y": 2280,
-   "w": 1440,
-   "h": 900,
-   "title": "確認メールを送りました（リンクで確定する・D-128.142）",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "AuthReset.dc.html": {
-   "x": 3040,
-   "y": 2280,
-   "w": 1440,
-   "h": 900,
-   "title": "パスワードを忘れた",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "AuthInvite.dc.html": {
-   "x": 0,
-   "y": 3420,
-   "w": 1440,
-   "h": 900,
-   "title": "招待されて入る",
-   "expand": "fill",
-   "page": "auth"
-  },
-  "LegalPage.dc.html": {
-   "expand": "fill",
-   "h": 900,
-   "page": "auth",
-   "title": "規約・プライバシーポリシー（文面）",
-   "w": 1440,
-   "x": 1520,
-   "y": 3420
-  },
-  "OnHome.dc.html": {
-   "x": 0,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "はじめて入ったとき（チケットが空・はじめにやること 3 つ）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "OnRoom.dc.html": {
-   "x": 1520,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "分身の部屋（はじめて・PC がまだ）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "OnKnowledge.dc.html": {
-   "x": 3040,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "ナレッジ（まだページがない）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "OnClients.dc.html": {
-   "x": 0,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "取引先（まだない）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "OnLoading.dc.html": {
-   "x": 1520,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "読み込み中（3 秒より長いときだけ）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "OnError.dc.html": {
-   "x": 3040,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "読み込めない・保存できない・オフライン・権限がない",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrNotFound.dc.html": {
-   "x": 0,
-   "y": 2480,
-   "w": 1440,
-   "h": 900,
-   "title": "見つからない（404）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrNoAccess.dc.html": {
-   "x": 1520,
-   "y": 2480,
-   "w": 1440,
-   "h": 900,
-   "title": "権限がない（頼める）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrSession.dc.html": {
-   "x": 3040,
-   "y": 2480,
-   "w": 1440,
-   "h": 900,
-   "title": "ログインが切れた（書きかけは残る）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrLinkExpired.dc.html": {
-   "x": 0,
-   "y": 3580,
-   "w": 1440,
-   "h": 900,
-   "title": "リンクの期限が切れた（招待・作り直し）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrMaintenance.dc.html": {
-   "x": 1520,
-   "y": 3580,
-   "w": 1440,
-   "h": 900,
-   "title": "メンテナンス中（分身の作業はどうなるか）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "ErrDown.dc.html": {
-   "x": 3040,
-   "y": 3580,
-   "w": 1440,
-   "h": 900,
-   "title": "Kaname の調子が悪い（いまの様子）",
-   "expand": "fill",
-   "page": "on"
-  },
-  "MbApprovals.dc.html": {
-   "x": 3980,
-   "y": 1560,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜承認（下のタブ）",
-   "page": "tickets"
-  },
-  "MbApproveOne.dc.html": {
-   "x": 4450,
-   "y": 1560,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜1 件ずつ裁く",
-   "page": "tickets"
-  },
-  "MbCreate.dc.html": {
-   "x": 4920,
-   "y": 1560,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜＋ 作る（話すか書くだけ）",
-   "page": "tickets"
-  },
-  "MbAI.dc.html": {
-   "x": 5390,
-   "y": 1560,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜分身（下のタブ AI）",
-   "page": "tickets"
-  },
-  "MbMenu.dc.html": {
-   "x": 3980,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜メニュー",
-   "page": "tickets"
-  },
-  "MbNotify.dc.html": {
-   "x": 4450,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜知らせ（ベル）",
-   "page": "tickets"
-  },
-  "MbTalk.dc.html": {
-   "x": 4920,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜チケットのやり取り",
-   "page": "tickets"
-  },
-  "EdKind.dc.html": {
-   "x": 0,
-   "y": 4960,
-   "w": 1440,
-   "h": 1000,
-   "title": "種別を足す ← チケットの形「＋ 種別を足す」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdParent.dc.html": {
-   "x": 1520,
-   "y": 4960,
-   "w": 1440,
-   "h": 1000,
-   "title": "親チケットを決める ← 作る「親チケットを決める」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdTeach.dc.html": {
-   "x": 3040,
-   "y": 4960,
-   "w": 1440,
-   "h": 1000,
-   "title": "分身に覚えさせる ← 覚えていること「＋ 覚えさせる」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdTypeChange.dc.html": {
-   "x": 0,
-   "y": 6200,
-   "w": 1440,
-   "h": 1000,
-   "title": "種別を変える ← チケットの「…」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdPlan.dc.html": {
-   "x": 1520,
-   "y": 6200,
-   "w": 1440,
-   "h": 1000,
-   "title": "プランを変える ← ワークスペースの設定（払い方は請求書払い・値段は仮）",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdDeleteWs.dc.html": {
-   "x": 3040,
-   "y": 6200,
-   "w": 1440,
-   "h": 1000,
-   "title": "ワークスペースを消す（名前を打って確かめる・14 日は取り消せる）",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdLeaveWs.dc.html": {
-   "x": 0,
-   "y": 7440,
-   "w": 1440,
-   "h": 1000,
-   "title": "ワークスペースから抜ける ← プロフィール「抜ける」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "EdPasskey.dc.html": {
-   "x": 1520,
-   "y": 7440,
-   "w": 1440,
-   "h": 1000,
-   "title": "パスキーを足す ← ログインと安全「足す」",
-   "expand": "fill",
-   "page": "ed"
-  },
-  "OpList.dc.html": {
-   "x": 0,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "ワークスペース（一覧）← 運営の左のメニュー",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpWs.dc.html": {
-   "x": 1520,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "1 社 いまの状態 ← 一覧の行",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpWsMembers.dc.html": {
-   "x": 3040,
-   "y": 0,
-   "w": 1440,
-   "h": 1000,
-   "title": "1 社 メンバー ← タブ",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpWsBilling.dc.html": {
-   "x": 0,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "1 社 プランと請求 ← タブ",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpWsLog.dc.html": {
-   "x": 1520,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "1 社 記録（運営の誰が何をしたか）← タブ",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPeek.dc.html": {
-   "x": 3040,
-   "y": 1240,
-   "w": 1440,
-   "h": 1000,
-   "title": "中を見る（理由・1 時間・見るだけ）← 1 社「中を見る」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "PeekMain.dc.html": {
-   "x": 0,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "中を見ている（顧客の画面の上に帯）← 中を見る「見るだけで開く」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpStop.dc.html": {
-   "x": 1520,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "止める（先に知らせる・データは残る）← 1 社「⋯」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpInbox.dc.html": {
-   "x": 0,
-   "y": 3840,
-   "w": 1440,
-   "h": 1000,
-   "title": "問い合わせ（受信箱）← 左のメニュー",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpNotices.dc.html": {
-   "x": 1520,
-   "y": 3840,
-   "w": 1440,
-   "h": 1000,
-   "title": "お知らせ（一覧）← 左のメニュー",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpNoticeNew.dc.html": {
-   "x": 3040,
-   "y": 3840,
-   "w": 1440,
-   "h": 1000,
-   "title": "お知らせを書く（メンテ）← お知らせ「＋ お知らせを書く」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpNotice.dc.html": {
-   "x": 0,
-   "y": 5080,
-   "w": 1440,
-   "h": 1000,
-   "title": "障害のお知らせ（状態を足していく）← お知らせの行",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpBills.dc.html": {
-   "x": 0,
-   "y": 6440,
-   "w": 1440,
-   "h": 1000,
-   "title": "請求（月ごと・期限を過ぎた）← 左のメニュー",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPay.dc.html": {
-   "x": 1520,
-   "y": 6440,
-   "w": 1440,
-   "h": 1000,
-   "title": "入金を記録 ← 請求「入金を記録」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpTypes.dc.html": {
-   "x": 3040,
-   "y": 6440,
-   "w": 1440,
-   "h": 1000,
-   "title": "配るもの 業務の型と操作 ← 左のメニュー",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpTypeUpload.dc.html": {
-   "x": 0,
-   "y": 7680,
-   "w": 1440,
-   "h": 1000,
-   "title": "業務の型を上げる（機械の検査 → 版を出す）← 「＋ 業務の型を上げる」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPlans.dc.html": {
-   "x": 1520,
-   "y": 7680,
-   "w": 1440,
-   "h": 1000,
-   "title": "配るもの プラン（値段は仮・版で持つ）← 配るもの",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpTeam.dc.html": {
-   "x": 3040,
-   "y": 7680,
-   "w": 1440,
-   "h": 1000,
-   "title": "運営の人 ← 左のメニューの下",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "MeHelp.dc.html": {
-   "x": 0,
-   "y": 9040,
-   "w": 1440,
-   "h": 1000,
-   "title": "困ったとき・お知らせ ← 右上の顔「困ったとき・お知らせ」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "EdInquiry.dc.html": {
-   "x": 1520,
-   "y": 9040,
-   "w": 1440,
-   "h": 1000,
-   "title": "問い合わせる ← 困ったとき・お知らせ「問い合わせる」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "MnIncident.dc.html": {
-   "x": 3040,
-   "y": 9040,
-   "w": 1440,
-   "h": 1000,
-   "title": "障害のお知らせの帯 ← 障害が出ている間",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "WsBills.dc.html": {
-   "x": 0,
-   "y": 10280,
-   "w": 1440,
-   "h": 1000,
-   "title": "請求書 ← ワークスペースの管理 › 設定「請求書」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPlanEdit.dc.html": {
-   "x": 0,
-   "y": 11640,
-   "w": 1440,
-   "h": 1000,
-   "title": "値段を変える案を作る ← プラン「変える案を作る」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPlanReview.dc.html": {
-   "x": 1520,
-   "y": 11640,
-   "w": 1440,
-   "h": 1000,
-   "title": "案を確かめて決める（別の人）← プラン「変える案」タブ",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "OpPlanLog.dc.html": {
-   "x": 3040,
-   "y": 11640,
-   "w": 1440,
-   "h": 1000,
-   "title": "プランの記録（案・差し戻し・決めた）← プラン「記録」タブ",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "WsPriceChange.dc.html": {
-   "x": 0,
-   "y": 12880,
-   "w": 1440,
-   "h": 1000,
-   "title": "顧客の側：値段が変わる知らせ（決めたあと）← ワークスペースの管理 › 設定",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "WsMember.dc.html": {
-   "x": 3040,
-   "y": 2480,
-   "w": 1440,
-   "h": 1000,
-   "title": "メンバーの 1 人 ← メンバーの名前を押す",
-   "expand": "fill",
-   "page": "ws"
-  },
-  "MeInquiry.dc.html": {
-   "x": 1520,
-   "y": 10280,
-   "w": 1440,
-   "h": 1000,
-   "title": "自分の問い合わせ（やり取り）← 困ったとき・お知らせ「自分の問い合わせ」",
-   "expand": "fill",
-   "page": "ops"
-  },
-  "MbKnowledge.dc.html": {
-   "x": 5390,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜ナレッジ ← メニュー",
-   "page": "tickets"
-  },
-  "MbClients.dc.html": {
-   "x": 5860,
-   "y": 2500,
-   "w": 390,
-   "h": 844,
-   "title": "スマホ｜取引先 ← メニュー",
-   "page": "tickets"
-  },
-  "OpTemplates.dc.html": {
-   "x": 1520,
-   "y": 12880,
-   "w": 1440,
-   "h": 1000,
-   "title": "配るもの ひな形（種別とチケットの形・作業の段・分類・層の形）← 配るもの",
-   "expand": "fill",
-   "page": "ops"
   }
  },
  "createdOnFiles": {
@@ -1952,7 +2082,22 @@
   "MeInquiry.dc.html",
   "MbKnowledge.dc.html",
   "MbClients.dc.html",
-  "OpTemplates.dc.html"
+  "OpTemplates.dc.html",
+  "AuthVerifying.dc.html",
+  "AuthVerifyExpired.dc.html",
+  "AuthVerifyUsed.dc.html",
+  "AuthConsent.dc.html",
+  "AuthChecking.dc.html",
+  "AuthVerifyLoading.dc.html",
+  "StBefore.dc.html",
+  "StConfirmDone.dc.html",
+  "StDone.dc.html",
+  "StDelegated.dc.html",
+  "StCompleteModal.dc.html",
+  "ApEmpty.dc.html",
+  "MePCInstalled.dc.html",
+  "UiDisabled.dc.html",
+  "OnHomeLater.dc.html"
  ],
  "pages": [
   {
