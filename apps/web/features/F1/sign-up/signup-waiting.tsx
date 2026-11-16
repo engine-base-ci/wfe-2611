@@ -39,12 +39,6 @@ export function SignupWaiting() {
     else setState("none");
     // 戻る・進むで古い画面がそのまま戻ってきたら（bfcache）、読み込み直す。そのままにすると画面の道（Next.js）が
     // 別の画面の中身を描くことがある。読み込み直せば、印で今の状態を引き直す（申し込みは二重にならない）
-    // 箱の頭の「← 戻る」（キャンバス AuthVerify）。書きかけ（パスワードのほか）は登録の画面に残っている
-    const back = (
-      <Link className="k-auth-back" href="/signup">
-        ← 戻る
-      </Link>
-    );
     const again = (e: PageTransitionEvent) => {
       if (e.persisted) window.location.reload();
     };
