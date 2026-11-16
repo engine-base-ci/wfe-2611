@@ -6201,7 +6201,8 @@
     "apps/e2e/staging/_lib/steps.ts"
    ],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/e2e"
    ],
    "ci_wide": [],
    "screens": [
