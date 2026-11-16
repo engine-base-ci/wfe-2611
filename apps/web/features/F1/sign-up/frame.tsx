@@ -38,7 +38,9 @@ export function AuthFrame({
         <span className="k-auth-mark">K</span>
         <b>Kaname</b>
       </div>
-      <main className="k-auth-card">{children}</main>
+      <main className="k-auth-card" data-part="auth-box">
+        {children}
+      </main>
       <nav className="k-auth-foot" aria-label="Kaname について">
         {foot === "all" ? (
           <>

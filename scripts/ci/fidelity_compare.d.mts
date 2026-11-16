@@ -49,6 +49,8 @@ export interface CaptureOptions {
   shot?: string;
   /** 待ちの上限（ミリ秒・既定 CAPTURE_TIMEOUT） */
   timeout?: number;
+  /** 読み込み中の画面の組（設定の組の busy: true・K-255）：aria-busy を待たず、状態の文（role=status）が出るのを待つ */
+  busy?: boolean;
 }
 export interface Captured {
   vals: FidelityVals[];
