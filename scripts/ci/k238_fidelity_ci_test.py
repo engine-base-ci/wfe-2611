@@ -213,6 +213,15 @@ class WiringTest(unittest.TestCase):
             self.assertNotIn(once, g69[0]["run"])
         # G70 は範囲の台本が選んだ専用の段の試験だけを流す（全部の回は設定の一覧）
         self.assertIn("python3 scripts/ci/web_run.py gate 70", g70[0]["run"])
+        # 範囲の台本の一覧が組をまたいで渡る（static の outputs → G48・G59・G70 の env）
+        self.assertEqual(wf["jobs"]["static"]["outputs"].get("web_gates"), "${{ steps.scope.outputs.web_gates }}")
+        for n in ("G48 ", "G59 ", "G70 "):
+            step = [s for s in web if str(s.get("name", "")).startswith(n)]
+            self.assertEqual(len(step), 1, n)
+            self.assertEqual((step[0].get("env") or {}).get("CI_WEB_GATES"), "${{ needs.static.outputs.web_gates }}", n)
+        g70env = g70[0].get("env") or {}
+        self.assertEqual(g70env.get("CI_WEB_SPECS"), "${{ needs.static.outputs.web_g48 }}")
+        self.assertEqual(g70env.get("CI_WEB_OTHER"), "${{ needs.static.outputs.web_g59 }}")
         self.assertIn("needs.static.outputs.web_gates", str(g70[0].get("env", "")))
         self.assertIn("needs.static.outputs.full", str(g70[0].get("env", "")))
         for s in (g69[0], g70[0]):
@@ -234,6 +243,7 @@ TICKETS = {
     "K-1": {"tests": ["apps/web/tests/k/a.spec.ts"], "changes": ["apps/web/app/a/page.tsx"], "depends_on": []},
     "K-2": {"tests": [FID, "scripts/ci/x_test.py"], "changes": ["scripts/ci/fidelity_config.py"], "depends_on": []},
     "K-3": {"tests": ["apps/web/tests/skeleton/m1.spec.ts"], "changes": [], "depends_on": []},
+    "K-4": {"tests": [], "changes": [], "depends_on": ["K-2"]},
 }
 
 
@@ -250,8 +260,14 @@ class GateSelectTest(unittest.TestCase):
     def test_K238_VF_024_fidelity_changes_pick_gate(self) -> None:
         """K238-VF-024 比べ方の道具（fidelity_compare.mjs・visual_fidelity.mjs）・突き合わせの試験の道具（fidelity-states.ts）・突き合わせの試験そのものを変えた差分で、
         専用の段 70 に突き合わせの試験が選ばれ、web の組が起き（止める文が出ない）、G48・G59 は空のまま"""
-        for f in ("scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", STATES_REL, FID):
-            r = pick([f])
+        cases = [(f, "K-99") for f in ("scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", STATES_REL, FID,
+                                         "04_design/fidelity.json", "04_design/canvas/Main.dc.html")]
+        cases += [("README.md", "K-2"),                       # チケット自身の tests に在る
+                  ("README.md", "K-4"),                       # depends_on のチケットの tests に在る
+                  ("scripts/ci/fidelity_config.py", "K-99")]  # その試験を持つチケットの changes のファイルを変えた
+        for f, tid in cases:
+            r = pick([f], tid)
+            f = f"{f}（{tid}）"
             self.assertEqual(r["gates"], {"70": [FID]}, f)
             self.assertEqual((r["g48"], r["g59"]), ([], []), f)
             p = {"mode": "ticket", "jobs": {"unit": False, "database": False, "web": True}, "errors": [], "reasons": []}
@@ -259,6 +275,15 @@ class GateSelectTest(unittest.TestCase):
             self.assertTrue(out["jobs"]["web"], f)
             self.assertEqual(out["errors"], [], f)
             self.assertEqual(json.loads(ci_scope.outputs({**self.base_plan(), **out})["web_gates"]), {"70": [FID]})
+
+    def test_K238_VF_024_web_off_stays_off(self) -> None:
+        """K238-VF-024 web の組が起きていない回（jobs.web が False）は、専用の段に当たっても False のまま（起こすかは jobs.web の地図が決める）。止める文は出さず web_gates は出す"""
+        r = pick(["scripts/ci/fidelity_config.py"], "K-99")
+        p = {"mode": "ticket", "jobs": {"unit": False, "database": False, "web": False}, "errors": [], "reasons": []}
+        out = ci_scope.with_web_selection(p, r)
+        self.assertFalse(out["jobs"]["web"])
+        self.assertEqual(out["errors"], [])
+        self.assertEqual(out["web_gates"], {"70": [FID]})
 
     @staticmethod
     def base_plan() -> dict:
@@ -280,6 +305,13 @@ class GateSelectTest(unittest.TestCase):
         self.assertEqual(len(errs), 1)
         self.assertIn("no-such.spec.ts", errs[0])
         self.assertIn("70", errs[0])
+        # 段の番号に対応する web_run.py gate <番号> の段が workflow に無い（選んでも誰も流さない）
+        errs = web_select.check_gates(str(ROOT), {**web_cfg(), "gates": {"71": {"tests": [FID], "on": []}}})
+        self.assertTrue(any("71" in e and "web_run.py gate 71" in e for e in errs), errs)
+        # 専用の段の試験が G48 の一覧にも在る（2 回流れる）
+        dup = web_select.domain_g48(str(ROOT))[0]
+        errs = web_select.check_gates(str(ROOT), {**web_cfg(), "gates": {"70": {"tests": [FID, dup], "on": []}}})
+        self.assertTrue(any(dup in e and "G48" in e for e in errs), errs)
 
     def test_K238_VF_027_old_two_targets_unchanged(self) -> None:
         """K238-VF-027 前からの 2 つの選ぶ先（G48・G59）と持ち主の答えは、専用の段の設定が有っても無くても同じ"""
@@ -290,6 +322,11 @@ class GateSelectTest(unittest.TestCase):
             a, b = pick(changed, tid), pick(changed, tid, without)
             self.assertEqual((a["g48"], a["g59"], a["tasks"]), (b["g48"], b["g59"], b["tasks"]), changed)
         self.assertEqual(pick(["apps/web/package.json"])["gates"], {"70": [FID]}, "画面の試験の設定を変えたら専用の段も全部")
+        # 全部に倒れる回（共通の画面のコード・トークンの CSS）は専用の段も全部（見た目にいちばん効く変更で突き合わせを流す）
+        for f in ("apps/web/styles/k-tokens.css", "apps/web/components/k/shell.tsx"):
+            r = pick([f])
+            self.assertEqual(r["gates"], {"70": [FID]}, f)
+            self.assertEqual(r["g48"], G48, f)
 
     def test_K238_VF_028_runner_runs_only_selected(self) -> None:
         """K238-VF-028 web_run の専用の段：全部の回は設定の一覧・範囲の回は選んだ試験だけ・選ばれなければ何も流さない。
@@ -307,6 +344,19 @@ class GateSelectTest(unittest.TestCase):
         env["CI_WEB_GATES"] = json.dumps({"70": []})
         r = subprocess.run([sys.executable, str(HERE / "web_run.py"), "g48"], capture_output=True, text=True, env=env, cwd=ROOT)
         self.assertEqual(r.returncode, 1, "どの段にも流す物が無いのに web の組が動いた（壊れている）を黙って緑にしない")
+
+        def gate(**over: str) -> int:
+            e = {**clean_env(), "CI_FULL": "false", "CI_WEB_SPECS": "[]", "CI_WEB_OTHER": "[]", **over}
+            e = {k: v for k, v in e.items() if v != "<無い>"}
+            return subprocess.run([sys.executable, str(HERE / "web_run.py"), "gate", "70"], capture_output=True, text=True,
+                                  env=e, cwd=ROOT).returncode
+        # 範囲の回に一覧が渡っていない（無い・空・JSON でない・"70" の鍵が無い）は 1
+        for bad in ("<無い>", "", "{oops", "{}"):
+            self.assertEqual(gate(CI_WEB_GATES=bad), 1, repr(bad))
+        # "70" が空でも G48 か G59 に流す物があれば 0（この段は選ばれなかっただけ）、3 つとも空なら 1
+        self.assertEqual(gate(CI_WEB_GATES='{"70": []}', CI_WEB_SPECS='["apps/web/tests/k/a.spec.ts"]'), 0)
+        self.assertEqual(gate(CI_WEB_GATES='{"70": []}', CI_WEB_OTHER='["apps/web/tests/skeleton/m1.spec.ts"]'), 0)
+        self.assertEqual(gate(CI_WEB_GATES='{"70": []}'), 1)
 
 
 if __name__ == "__main__":
