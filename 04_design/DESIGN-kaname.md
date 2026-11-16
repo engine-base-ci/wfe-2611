@@ -465,6 +465,183 @@ components:
   create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
     border: "1px solid {colors.primary}"
     padding: "0 18px"
+  # チケットの一覧（K-251・D-143.2：値はキャンバス OnHome・Main の実測）。帯（page-head）そのものの余白は 0 で、中の行が余白を持つ
+  list-head-row:        # 帯の 1 行目（見出し・すべてのグループ）
+    padding: "12px {spacing.lg} 0"
+    gap: "10px"
+  list-views:           # 見え方のタブの並び
+    padding: "6px {spacing.lg} 0"
+    gap: "2px"
+  list-view:            # 今いる見え方のタブ（紺の下線・500）。ほかのタブは下線が透明で字は灰
+    padding: "{spacing.sm} 12px"
+    borderBottom: "2px solid {colors.primary}"
+    textColor: "{colors.primary}"
+    fontWeight: 500
+  list-body:            # 本文の行（Main：上下 16・左右 24・左と右の列の間 16）
+    padding: "{spacing.md} {spacing.lg}"
+    gap: "{spacing.md}"
+  list-body-first:      # 本文の行（はじめて・OnHome：上下 18）
+    padding: "18px {spacing.lg}"
+  list-main:            # 本文の左の列（Main：数の札と表の箱の間 12）
+    gap: "12px"
+  list-main-basis:      # 本文の左の列が右の列と横に並ぶときの基準の幅（flex-basis）
+    width: "640px"
+  list-first:           # 本文の左の列（はじめて：あいさつと空の箱の間 14）
+    gap: "14px"
+  list-first-basis:     # はじめての左の列の基準の幅（flex-basis）
+    width: "520px"
+  list-greet:           # あいさつ（15px・700）
+    typography: "{typography.h3}"
+    fontWeight: 700
+  list-empty-mark:      # 空の箱の ＋ の札（48・紺・角丸 field・20px・700）
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.field}"
+    typography: "{typography.h1}"
+    fontWeight: 700
+    width: "48px"
+    height: "48px"
+  list-empty-desc:      # 空の箱の説明（13px・灰・行の高さ 1.7）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body}"
+    lineHeight: 1.7
+  list-empty-desc-max:  # 空の箱の説明の幅の上限（max-width）
+    width: "460px"
+  list-act:             # 空の箱・はじめにやることのボタン（高さ 30・左右 12・12px・角丸 md）
+    height: "30px"
+    padding: "0 12px"
+    typography: "{typography.body-sm}"
+    rounded: "{rounded.md}"
+  list-suggest:         # 空の箱の「はじめての 1 枚におすすめ」（12px・灰・上 6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    margin: "6px 0 0"
+  list-side:            # 右の列（幅 340・箱の間 12）
+    width: "340px"
+    gap: "12px"
+  list-side-main:       # Main の右の列の基準の幅（flex-basis 300・広がっても 360 まで）
+    width: "300px"
+  list-side-main-max:   # Main の右の列の幅の上限（max-width）
+    width: "360px"
+  list-side-box:        # 右の列の白い箱（はじめにやること：角丸 lg・余白 14 16）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.lg}"
+    padding: "14px {spacing.md}"
+  list-side-title:      # 右の列の箱の見出し（15px・700）
+    typography: "{typography.h3}"
+    fontWeight: 700
+  list-progress:        # 進みの棒（高さ 6・角丸 full・淡い地・上 8 下 4）
+    backgroundColor: "{colors.side-bg}"
+    rounded: "{rounded.full}"
+    height: "6px"
+    margin: "{spacing.sm} 0 {spacing.xs}"
+  list-task:            # はじめにやることの 1 行（間 12・上下 12・上に線）
+    gap: "12px"
+    padding: "12px 0"
+    borderTop: "1px solid {colors.line-soft}"
+  list-task-mark:       # 行の頭の丸（22・まだは線 2px）
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.full}"
+    border: "2px solid {colors.line-strong}"
+  list-task-label:      # 行の名前（600）
+    fontWeight: 600
+  list-setup-foot:      # 箱の足の 1 行（11px・上 8）
+    typography: "{typography.label-md}"
+    fontWeight: 400
+    padding: "{spacing.sm} 0 0"
+  list-anytime:         # いつでもできること（淡い地・角丸 lg・余白 12 16・12px・行の高さ 1.8）
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.lg}"
+    padding: "12px {spacing.md}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.8
+  list-target:          # 字だけの小さな操作（いまは閉じる・表のリンク）の押せる高さ（24 以上）
+    height: "24px"
+  list-cards:           # 数の札の格子（間 10）
+    gap: "10px"
+  list-card:            # 数の札（白・角丸 field・余白 10 12）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+  list-card-value:      # 数の札の数（20px・700）
+    typography: "{typography.h1}"
+    fontWeight: 700
+  list-panel:           # 表の箱（白・角丸 field）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  list-filter:          # 表の箱の頭の絞り込みの行（余白 10 12・下に線）
+    gap: "{spacing.sm}"
+    padding: "10px 12px"
+    borderBottom: "1px solid {colors.line}"
+  list-chip:            # 絞りの札（高さ 26・角丸 full・左右 10・12px）
+    height: "26px"
+    rounded: "{rounded.full}"
+    padding: "0 10px"
+    typography: "{typography.body-sm}"
+    border: "1px solid {colors.line}"
+  list-tool:            # 条件を保存・表示設定（高さ 26・角丸 md・左右 8・12px）
+    height: "26px"
+    rounded: "{rounded.md}"
+    padding: "0 {spacing.sm}"
+    typography: "{typography.body-sm}"
+    border: "1px solid {colors.line}"
+  list-th:              # 表の頭の行（高さ 32・左右 8・12px・500・下に線）
+    backgroundColor: "{colors.table-head}"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    height: "32px"
+    padding: "0 {spacing.sm}"
+    borderBottom: "1px solid {colors.line}"
+  list-title-max:       # 表の題名の列の幅の上限（max-width・越えたら「…」）
+    width: "360px"
+  list-td:              # 表の行（高さ 36・左右 8・下に淡い線）
+    height: "36px"
+    padding: "0 {spacing.sm}"
+    borderBottom: "1px solid {colors.line-soft}"
+  list-tag:             # 種別・状態の札（白い字・角丸 full・11px・500）
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.full}"
+    padding: "1px {spacing.sm}"
+    typography: "{typography.label-md}"
+    fontWeight: 500
+  list-tag-min:         # 種別・状態の札の幅の下限（min-width）
+    width: "44px"
+  list-avatar:          # 担当者の頭文字の丸（20・10px）
+    backgroundColor: "{data.lavender}"
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.full}"
+    typography: "{typography.label-xs}"
+    width: "20px"
+    height: "20px"
+  list-ai:              # 担当者の横の「AI」の札（線・角丸 full・左右 6・11px・間 2）
+    textColor: "{colors.on-surface-variant}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    padding: "0 6px"
+    typography: "{typography.label-md}"
+    gap: "2px"
+  list-icon:            # 表の中の小さな絵（炎・ロボット）の大きさ
+    width: "12px"
+    height: "12px"
+  list-more:            # 表の下の「もっと見る」の行（余白 8 12）
+    padding: "{spacing.sm} 12px"
+    gap: "{spacing.sm}"
+  list-box:             # Main の右の列の白い箱（角丸 field）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  list-box-title:       # 右の列の箱の見出し（13px・余白 10 12・下に線）
+    typography: "{typography.body}"
+    padding: "10px 12px"
+    borderBottom: "1px solid {colors.line}"
+  list-box-row:         # 右の列の箱の 1 行（余白 10 12・下に淡い線）
+    padding: "10px 12px"
+    borderBottom: "1px solid {colors.line-soft}"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:
