@@ -100,8 +100,8 @@ async function owner(
   const H = { authorization: `Bearer ${ver.token}` };
   const row = (
     await admin.query<{ id: string; tenant_id: string; scope_id: string }>(
-      "select m.id, m.tenant_id, m.scope_id from members m join auth_users u on u.id = m.auth_user_id where u.email = $1",
-      [email],
+      "select m.id, m.tenant_id, m.scope_id from members m where m.auth_user_id = $1 and m.deleted_at is null",
+      [ver.userId],
     )
   ).rows[0]!;
   return { H, member: row.id, tenant: row.tenant_id, scope: row.scope_id };
@@ -125,10 +125,11 @@ async function moveToOtherCompany(
   ).rows[0]!.id;
   const au = (await admin.query<{ a: string }>("select auth_user_id as a from members where id = $1", [o.member]))
     .rows[0]!.a;
+  // members.auth_user_id は 1 人 1 行（unique）。2 つ目の会社の人の行はログインを持たず、所属（tenant_memberships.auth_user_id）でつなぐ（D-125.150）
   const m = (
     await admin.query<{ id: string }>(
-      "insert into members (tenant_id, scope_id, kind_id, display_name, auth_user_id, role_id) values ($1, $2, 'human', '高本', $3, 'staff') returning id",
-      [t, s, au],
+      "insert into members (tenant_id, scope_id, kind_id, display_name, role_id) values ($1, $2, 'human', '高本', 'staff') returning id",
+      [t, s],
     )
   ).rows[0]!.id;
   await admin.query(
