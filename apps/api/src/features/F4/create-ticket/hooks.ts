@@ -108,7 +108,13 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
     },
     listScopes: {
       before: async (a: HookArgs) => {
-        const rows = (await a.repo.table("scopes").list(a.ctx, { limit: LIST_MAX })).filter((s) => !s["deleted_at"]);
+        // 層の絞り込み（K-249）：入口が uuid と確かめ済み（registry の uuidParams）。空の値（?layer_id=）は指定なし。
+        //   見える範囲は行の守りのまま（見えるグループの中で絞る）。別の会社の層・無い層は 0 件
+        const layerId = a.c.req.query("layer_id") ?? "";
+        const byLayer = layerId ? { where: { layer_id: layerId } } : {};
+        const rows = (await a.repo.table("scopes").list(a.ctx, { limit: LIST_MAX, ...byLayer })).filter(
+          (s) => !s["deleted_at"],
+        );
         // チケットを書けるグループ：グループごとに聞かず、1 回の SQL で（has_permission を並びに当てる）
         const ids = rows.map((s) => String(s["id"]));
         const writable =

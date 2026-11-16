@@ -11253,6 +11253,61 @@
    "file": "11_tickets/K-248.md"
   },
   {
+   "id": "K-249",
+   "title": "グループの一覧の口（listScopes）に、契約に在る層の絞り込み（layer_id）を足す",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "チケット",
+   "assignee": "実装",
+   "due": "2026-11-19",
+   "estimate_hours": "0.5",
+   "estimate_basis": "口の hooks の 1 か所（問い合わせの layer_id を読んで絞る）。K-92 の口の 1 行ぶんと見た。実測なし・仮",
+   "decisions": [
+    "D-129.32",
+    "D-129.42",
+    "D-128.125",
+    "D-128.143"
+   ],
+   "split": "",
+   "prior_impl": "apps/api/src/features/F4/create-ticket/hooks.ts の listScopes（K-60・layer_id を読まずに全部を返す）",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [
+    "K-60",
+    "K-213"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/scopes-layer.test.ts"
+   ],
+   "changes": [
+    "apps/api/src/features/F4/create-ticket/hooks.ts"
+   ],
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "acts": [
+    "A117"
+   ],
+   "apis": [],
+   "sections": {
+    "目的": "グループの一覧の口 listScopes の契約には問い合わせ `layer_id`（その層のグループだけに絞る）が在るのに、口（K-60 が作った）は読まずに全部を返している。絞ったつもりの画面に全部を見せてしまう。前の切りで一覧の口のチケット（K-92）が「誰も持っていなかった機能」として足していた受け持ちを、口が違うので 1 本に分けた（PM の決め・番号は PM が渡した）。",
+    "完了の条件": "- [ ] 下の 5 行（K249-API-001〜005）が本物の DB の上で緑\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: LIST, PERM\n\n- 先に要るチケット：K-60（listScopes・取り込み済み）・K-213（親の並び）\n- 見える範囲は今の行の守りのまま（見えるグループだけ）。層の絞り込みは見えるグループの中で効く\n- 入口が uuid を確かめる（D-129.42）。uuid でなければ 422\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "1. 契約：05_flow/screen_api.py 304 行（GET /scopes・行為 A117）。問い合わせ layer_id は契約に在る（build_api.py 916 行・registry の uuidParams）。口の持ち主は K-60（生成した試験 get_scopes.test.ts も K-60）なので、このチケットの apis: には書かない（既にある口の振る舞いを足すだけ）\n2. 口：apps/api/src/features/F4/create-ticket/hooks.ts の listScopes は `a.repo.table(\"scopes\").list(a.ctx, { limit: LIST_MAX })` で全部を読み、layer_id を見ていない\n3. 表：scopes.layer_id（migration 0002）・layers（tenant_id・key・label・order_no）\n\n層の絞り込みを読まずにグループを並べる口のコード（このチケットが直す 1 か所）：\n\n```search\ngit grep -n 'table(\"scopes\").list(a.ctx' -- apps/api/src\n1\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 口（実装の役） | listScopes の before で問い合わせの layer_id（入口が uuid を確かめた後の値）が空でなければ（空の値 `?layer_id=` は指定なし） `where: { layer_id }` で読む。無ければ今のまま。書けるグループ（meta.writable）は読んだグループの中で今のまま出す |",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F4/scopes-layer.test.ts`（口・本物の DB）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K249-API-001 | 入力 | layer_id が部門の層・チームの層（見る人は営業だけ edit） | 部門の層は 営業・経理、チームの層は 営業 1 課 だけ。meta.writable は data の中だけ（部門の層では 営業 だけ・全体とチームの id を含まない） |\n| K249-API-002 | 対象の状態 | layer_id なし・空の値（?layer_id=） | どちらも見えるグループ全部（今までどおり・同じ id） |\n| K249-API-003 | 入力 | layer_id が uuid でない | 422・欄の名前 layer_id |\n| K249-API-004 | 守り | 別の会社の層・無い層 | 0 件（200） |\n| K249-API-005 | 対象の状態 | 部門の層に消したグループ（deleted_at あり）がある | layer_id で絞った一覧に出ない |\n\n### テストの型の受け（分類 LIST・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-01 0 件 | 004 |\n| TP-PERM-03 他の会社の ID | 004 |\n| 要らない：TP-LIST-02〜04・TP-PERM-01・02・05 | 並び・ページ・言葉の絞り込みは無い。役と権限の扱いは今の口のまま（K-60 の試験が持つ） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 001・003 |\n| 対象の状態 | 該当 | 002 |\n| 時間の流れ | 要らない | 時間で変わる物が無い |\n| 入口 | 要らない | 口だけ |\n| 利用者の状態 | 要らない | 役ごとの扱いは今のまま（K-60） |\n| 失敗 | 要らない | 読むだけ。DB の失敗は入口の共通の 500／503 |\n| 操作の揺れ | 要らない | 読むだけ |\n| 守り | 該当 | 004 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11〜G-16 | N/A | 1 つの問い合わせを読んで絞るだけ（外のもの・時間・組み合わせ・口座・外のプロセス・資源に触らない） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/api/test/features/F4/scopes-layer.test.ts`（切る段が書いた）\n- listScopes の layer_id の絞り込み（実装の役）",
+    "決定ログ": "- D-129.32：途中の見つけもの（今のチケットの受け持ちはそのチケットで直す／誰も持っていなかった機能は近いチケットに足すか 1 枚）。契約に在るのに口が読まない layer_id を、このチケットに分けた根拠。D-129.42：入口が uuid を確かめる\n- 決める人に聞くこと：無い",
+    "申し送り": "- 無い"
+   },
+   "file": "11_tickets/K-249.md"
+  },
+  {
    "id": "K-250",
    "title": "はじめにやることの口（listSetupTasks：パスキー（使えない）・PC・預けたログイン情報（任意）の 3 つと済みの印／dismissSetupTasks：いまは閉じる／skipSetupTask：任意の項目を飛ばす）",
    "kind": "タスク",
