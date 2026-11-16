@@ -423,6 +423,7 @@
   "apps/web/tests/k/k254-canvas-layout.spec.ts": "04_design/canvas の絵と幅の台帳 scripts/ci/canvas_layout_ledger.json を読む（data_links で絵か台帳が変わると web の組が流す）・K-254",
   "apps/web/tests/k/k220-bridge-shell.spec.ts": "04_design/fidelity.json（組 bridge-shell のセレクタ）と 04_design/canvas/MePC.dc.html を読む。どちらも 04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-220",
   "apps/web/tests/k/k138-shell.spec.ts": "04_design/fidelity.json・04_design/DESIGN-kaname.md・04_design/canvas と apps/web/features の .ts・.tsx を読む（実ブラウザの試験は web の組が流す）・K-138",
+  "apps/web/tests/k/k232-legal-page.spec.ts": "04_design/fidelity.json（組 legal のセレクタと持ち主）・04_design/canvas の絵（LegalPage）・features/F1/consent-terms/legal-page.tsx（Callout の部品を使うか）・legal-page.css と styles/k-tokens.css（箱の幅と本文の行の高さを部品の値で読むか）を読む。04_design/** と apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-232",
   "apps/web/tests/k/k256-verify-consent.spec.ts": "04_design/fidelity.json（組のセレクタと持ち主）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-256）",
   "apps/web/tests/k/k255-signup-waiting.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵と apps/web/tests/fidelity/fidelity.spec.ts（組の印を道具に渡すか）を読む。どちらも 04_design/** で jobs.web.paths に在る（K-255）",
   "apps/web/tests/k/k219-canvas-boards.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-219）",

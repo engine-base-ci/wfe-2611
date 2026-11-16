@@ -197,6 +197,10 @@
   --k-c-auth-card-pad: 26px 28px;
   --k-c-auth-card-gap: 14px;
   --k-c-auth-card-width: 440px;
+  --k-c-auth-card-wide-width: 720px;
+  --k-c-legal-body-text: var(--k-text-body);
+  --k-c-legal-body-fw: var(--k-fw-body);
+  --k-c-legal-body-lh: 1.9;
   --k-c-auth-lead-sub-fg: var(--k-on-surface-variant);
   --k-c-auth-lead-sub-text: var(--k-text-body-sm);
   --k-c-auth-lead-sub-lh: var(--k-lh-body-sm);

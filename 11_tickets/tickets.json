@@ -10917,21 +10917,71 @@
   },
   {
    "id": "K-232",
-   "title": "規約の文面の画面（条の番号・段落の間・題名 22px・版の行・戻る・足元）",
+   "title": "規約の文面の画面をキャンバス（LegalPage）に合わせる（題名 20px・版の行・条の番号・段落の間 14px・本文 13px・箱 720px・「← 戻る」・足元 3 つ・準備中は Callout）",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
-   "area": "認証",
-   "assignee": "作る",
-   "due": "",
-   "estimate_hours": "1",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1.5",
+   "estimate_basis": "文面の描き手に版の行の印と番号の並びの形・問い合わせの段・CSS の .k-legal を別のファイルへ（10 行前後の値）・戻るの小さな部品 1 つ・足元を 3 つに・Callout に替える・突き合わせの組 1 つと鍵。K-217（2.5）の 6 割と見た。実測なし・仮",
    "decisions": [
-    "D-143.2"
+    "D-143.2",
+    "D-143.5",
+    "D-128.23",
+    "D-145.9",
+    "D-146.7",
+    "D-146.8",
+    "D-146.5"
    ],
-   "split": "これから",
-   "depends_on": [],
+   "split": "",
+   "prior_impl": "apps/web/features/F1/consent-terms/legal-page.tsx・legal-markdown.tsx・consent-terms.css（K-53・入口の枠 AuthFrame wide の中に文面を出す）",
+   "choke_points": [],
+   "choke_none": "画面の見た目と戻る先だけ。文面のページは口も DB も読まず（ひな形と設定だけ）、外への出口に触らない",
+   "depends_on": [
+    "K-53",
+    "K-255",
+    "K-218",
+    "K-215",
+    "K-216",
+    "K-238",
+    "K-254",
+    "K-257"
+   ],
+   "tests": [
+    "apps/web/tests/k/k232-legal-page.spec.ts",
+    "scripts/ci/k232_fidelity_doc_test.py"
+   ],
+   "changes": [
+    "scripts/ci/ci_scope.json",
+    "scripts/ci/fidelity_config.py",
+    "scripts/ci/k232_fidelity_doc_test.py",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "07_qa/test-plan/test-plan.html",
+    "07_qa/test-plan/test-plan.json",
+    "07_qa/test-plan/test-plan.md",
+    "apps/web/features/F1/consent-terms/legal-page.tsx",
+    "apps/web/features/F1/consent-terms/legal-markdown.tsx",
+    "apps/web/features/F1/consent-terms/legal-back.tsx",
+    "apps/web/features/F1/consent-terms/legal-page.css",
+    "apps/web/features/F1/consent-terms/consent-terms.css",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "01_hearing/決定ログ_進行中.md",
+    "04_design/DESIGN-kaname.md",
+    "04_design/DESIGN-kaname-preview.html",
+    "apps/web/styles/k-tokens.css",
+    "design-gate.json"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
    "screens": [
     "legal"
    ],
@@ -10939,12 +10989,17 @@
     "legal"
    ],
    "sections": {
-    "目的": "条の番号と字下げが消え（見立て）、段落の間が 0、題名が 18px。戻る道と足元の 3 つが無い",
-    "完了の条件": "- [ ] 下の表のずれ 9 件が直り、どれも実ブラウザで値を数で測った（1440・375）\n- [ ] 頭の canvas の組（04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が組の幅で緑（持ち主が取り込み済みなのに入っていない組は G69 が赤にする）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 正のモックは頭の canvas（突き合わせの組の id・D-143.5・K-215）。組の絵と状態と要素は 04_design/fidelity.json（K-216）\n- 見込みは実測なし・仮\n- 先に要る最初の波のチケット：K-215・K-216・K-217・K-238。最初の波が本線に入るまで本線に無いチケットは depends_on に書けない（親が先に本線へ入るため）ので、切り直すときに depends_on に足す",
-    "持つずれ（調べの番号・2026-11-15）": "| 番号 | 何が | キャンバスでは | 今 | 重さ |\n|---|---|---|---|---|\n| #36 | 文面：題名 | 22px | 18px（.k-auth-card h1） | 中 |\n| #37 | 文面：版の行 | 12px・灰 | 本文と同じ p | 軽 |\n| #38 | 文面：条の番号 | 見える | ol に決まりが無く、preflight で番号と字下げが消える（見立て：実物で見ていない） | 重 |\n| #39 | 文面：段落の間 | 14px | p の margin 0 | 中 |\n| #40 | 文面：本文 | 13px・1.9 | 12px・1.9 | 軽 |\n| #41 | 文面：箱の幅 | 720px | 760px | 軽 |\n| #42 | 文面：「← 戻る」 | ある | 無い | 中 |\n| #43 | 文面：足元 | 3 つ | 「困ったとき」だけ | 軽 |\n| #44 | 文面・準備中：お知らせ | Callout の部品 | 素の div に k-callout | 軽 |",
-    "決定ログ": "- 従う決定：D-143.2",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "規約・プライバシーポリシーの文面の画面（/legal/terms・/legal/privacy）が、キャンバス LegalPage とずれている。題名は 18px で真ん中、版の行は本文と同じ段落、条の番号の並び（ol）に決まりが無く preflight で番号と字下げが消える（見立て）、段落の間は 0、本文は 12px、箱は 760px、「← 戻る」と足元の 2 つが無く、文面を準備している間のお知らせは素の div（調べの §3.4 #36〜#44）。",
+    "完了の条件": "- [ ] 下の 21 行（K232-UI-001〜019・K232-CI-001〜002）が緑\n- [ ] 前からの文面の試験（terms.spec.ts の K53-UI-021・022）が替えずに緑（下の「前からの試験」）\n- [ ] 頭の canvas の組 legal（LegalPage・04_design/fidelity.json）を enrolled にし、キャンバスとの突き合わせ（K232-UI-011・G70）が組の幅（1440・375）で緑\n- [ ] 幅 320・375・768・1024・1440 の横溢れが 0・題の 1 文字目が画面の中（K232-UI-012）。押した結果（戻る先）まで実ブラウザで見る（K232-UI-007）\n- [ ] design_gate（G37）が緑（題は正本の段 h1 の 20px を使い、正本に段を足さない）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: UI\n\n- 決定ログ（2026-11-16 の切る段・手元の検査で見つけた）：このチケットの decisions の D-146.5・.7・.8 は切る段の枝の 01_hearing/決定ログ_進行中.md にだけ在り、本線に無い。D-146 の節は絵の起こし直し K-257 が 1 本で運ぶ（2 本で運ぶと、先に入った 1 本の CI で使われない文が残り、決定のトレース T8 が赤になる）。だから依存に K-257 を足した。K-257 が運ぶ節には、このチケットが使う D-146.7・.8 を「このチケットが入るまで反映先なし」とする clauses_out を書いてある。**書く段で、決定ログの D-146 の注の clauses_out の行（7 と 8）を消す**（このチケットが 7・8 を使うので要らなくなる。changes: に決定ログを書いてある）\n\n- 先に要るチケット：K-53（文面のページ・取り込み済み）・K-255（入口の枠の箱に data-part=\"auth-box\"・箱の余白 26px 28px と段の間 14px を入口の枠で付ける。このチケットは入口の枠 frame.tsx と sign-up.css を触らない）・K-218・K-215・K-216・K-238。**K-254（全部の絵を正本と決定にそろえる）**（文字の段 22px・26px を使う絵を 20px・24px に寄せる。文面の題も 20px になる）にも依存する（depends_on に入れた。K-254 が入る前は K232-UI-001 の 20px と、まだ 22px の絵との突き合わせ K232-UI-011 が両方は通らない）・K-257（D-146 の決定ログを運ぶ）\n- 正のモックは LegalPage（組 legal）。この画面は口を読まないので、画面を整える道具の鍵 legal は /legal/terms を開くだけ\n- 値は全部 --k-*。画面の CSS に生の色・大きさを書かない。題名は 20px（正本の段 h1）。正本に段は足さない（PM の決め・2026-11-16・絵は K-254 で 20px に寄せる）\n- キャンバスに在る物は機能がまだでも出し、使えない物はグレーで押せない（D-145.9）。この画面にまだ機能の無い物は無い\n- 本人の Bridge（127.0.0.1:38617）に届かせない（試験は網の手前で 404）\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "キャンバス LegalPage（04_design/canvas/LegalPage.dc.html の inline の style を読んだ）：\n\n| 何が | 値 |\n|---|---|\n| 箱 | 白・1px #DDE2E9・角丸 12・padding 26px 28px・max-width 720・縦に gap 14 |\n| 戻る | 箱の最初に「← 戻る」12px のリンク |\n| 題名 | b 20px（太字・K-254 で 20px の段に寄せた絵）・左寄せ。行の高さは body の 1.6（32px） |\n| 版の行 | 12px・#4A5563「第 1 版（2026 年 11 月 1 日 施行）」。行の高さ 1.6（19.2px） |\n| 本文 | 13px・行の高さ 1.9 |\n| 条の見出し | b 15px「第 1 条（適用）」・行の高さ 1.6（24px）。本文の番号「1.」「2.」は本文の字の頭に見え、字下げしない（箱の中の左端から始まり、折り返した行も左端へ戻る） |\n| 問い合わせ | 箱の一番下に「株式会社ENGINE BASE ・ メール：…」：上の線 1px #EDF0F4・padding-top 12・12px・#4A5563（見出しは無い） |\n| 足元 | 箱の下に 11px の 利用規約・プライバシー・困ったとき |\n\n今の画面：legal-page.tsx が AuthFrame foot=\"help\" wide の中に article.k-legal と LegalMarkdown。consent-terms.css の .k-auth[data-wide] .k-auth-card が max-width 760、.k-legal が 12px（--k-text-body-sm）・1.9、.k-legal h1 は入口の枠の h1（18px・真ん中）を左に寄せるだけ、ol と p に決まりが無い。準備中は `<div className=\"k-callout\" data-tone=\"warn\" role=\"status\">`。\n\n文面の見た目の決まりが入っている所（このチケットが legal-page.css へ移す）：\n\n```search\ngit grep -n 'k-legal' -- apps/web/features\n7\n```\n\n素の k-callout の字（このチケットは文面の 1 か所だけを Callout に替える）：\n\n```search\ngit grep -n 'className=\"k-callout\"' -- apps/web/features\n1\n```\n\n### 前からの試験（替えない）\n\n文面の前からの試験は K-53 の terms.spec.ts（替えるのは確認と同意のチケット K-256。このチケットは触らない）。替えずに通る作り方にする：\n\n| 試験の行 | 見ている物 | このチケットの作り方 |\n|---|---|---|\n| K53-UI-021・022 | 文面の h1 の字（Kaname 利用規約・プライバシーポリシー）・「第 1 版」の字・{{ }} が残らない・施行日・ログインを求めない | h1 と版の行の字は今のひな形のまま。版の行に印（.k-legal-version）を付けるだけで字を変えない |",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| CI の範囲（作り手が最初に足す） `scripts/ci/ci_scope.json` | reads_ok に `apps/web/tests/k/k232-legal-page.spec.ts`（04_design/fidelity.json と features/F1/consent-terms/legal-page.tsx を読む・理由つき）を足す。足さないと「読む印を持つ試験が範囲の台帳に無い」（CS-032）で、作る段の最初の CI が赤になる |\n| 箱の幅 `legal-page.css`（新しいファイル）・`consent-terms.css` | consent-terms.css から .k-auth[data-wide] .k-auth-card と .k-legal の決まりを消し、legal-page.css へ移す。.k-auth[data-wide] .k-auth-card は width: var(--k-c-auth-card-wide-width)（720px）・max-width: 100%。値は正本の部品 auth-card-wide（幅 720px）から作り手 gen_tokens.py で出した物（design_gate の D5 が width の性質で部品と比べる）（入口の枠の 440px＝部品 auth-card の width と同じ書き方。文字の段ではなく部品の値なので段は増やさない・レビュー Q の指摘で生の値から直した） |\n| 文面 `legal-page.tsx` | AuthFrame を foot=\"all\"（3 つ）・wide にする。箱の最初に `<LegalBack />`、続けて article.k-legal（display flex・縦に gap 14 で、子は h1・版の行・p・h2・ol・ul・表・最後に問い合わせ）。準備中は `Callout tone=\"warn\"`（部品から import・正本の E-PAGE-003 の文）と h1「文面を準備しています」 |\n| 戻る `legal-back.tsx`（新しいファイル・\"use client\"） | `<a href=\"/login\">← 戻る</a>`（12px）。押したとき、このタブのこの項目の前に同じ origin の画面があれば history.back()、そうでなければ /login へ（判定は下の「戻るの判定」の行）。外の origin の referrer には戻らない（K232-UI-017）。画面の動きが付いたら（最初に描いた後）リンクに data-ready を付ける（試験が付く前に押さないため） |\n| 描き手 `legal-markdown.tsx` | 1 段目の h1 の直後の段落が「第 N 版（…施行）」の形なら `<p className=\"k-legal-version\">` にする（字は変えない）。h2 は条の見出し。最後の節の見出しが「問い合わせ」で終わるなら、その節を `<div className=\"k-legal-contact\">`（見出し h2 は読み上げだけ・中の段落はそのまま）にする |\n| 見た目 `legal-page.css` | .k-legal h1：大きさ --k-text-h1（20px）・太さ --k-fw-h1（700）・行の高さ --k-lh-body（1.6＝32px。段 h1 の行の高さ --k-lh-h1 1.35 は使わない）・左。.k-legal-version：12px（body-sm）・行の高さ 1.6・on-surface-variant。.k-legal p と li：13px（body）・行の高さ 1.9（正本の部品 legal-body の lineHeight → --k-c-legal-body-lh）・margin 0。.k-legal h2：15px（h3）・700・行の高さ 1.6・margin 0。.k-legal ol：list-style decimal inside・padding 0・margin 0（キャンバスは字下げしない）。.k-legal ul：disc inside・padding 0・入れ子の ul も padding 0（字下げしない・決める人の答え（answer=fd9dcd7a7cc8・2026-11-16・D-146.8））。.k-legal-contact：上の線 1px line-soft・padding-top 12・12px・on-surface-variant。表は箱の中で横に送る（今のまま） |\n| 突き合わせの設定の検査 `scripts/ci/fidelity_config.py`（作る段で見つけて書く段に戻した・PM の決め 2026-11-17） | 役 h1 は y を必ず求めていたので、組 legal の見出しから y を外すと G（fidelity_config）が赤になる。種類 doc の組の見出しだけ y を外せる表（KIND_OPTIONAL）を足す。ほかの値（x・字の大きさ・太さ）と doc 以外の種類の y は今までどおり要る。自己試験（--selftest）にも「doc では y が無くても緑・doc 以外で y が無ければ赤・doc でも x が無ければ赤」を足す |\n| 試験を CI から回す `05_flow/build_testplan.py`（作り手）→ `.github/workflows/v3-gate.yml`・`07_qa/test-plan/*`（作り直す・手で書かない） | 新しい試験 `scripts/ci/k232_fidelity_doc_test.py` を、作り手の G65 の並びの最後（k248_scope_reach_test.py）の手前に足して作り直す。tests: の .py は spec の組が流すが、配線の検査（ci_wiring_gate の W1）と試験の持ち主の検査（TO3）は workflow に名前が在ることを求める（作る段の手元の検査で見つけた・PM の決め 2026-11-17 案 A） |\n| 戻るの判定 `legal-back.tsx`（レビュー Q の指摘） | 「前の画面があるか」を history.length と document.referrer で決めると、新しいタブ → 戻る（/login）→ ブラウザの戻る → 戻る で、タブの先頭なのに history.back() を呼んで何も起きない。最初に描いたとき、次の 3 つのどれかなら「前が無い」として history.replaceState({ ...history.state, 印: true }, \"\") でその履歴の項目に印を付ける（Next の内部の state を消さないよう広げて足す）：navigation.canGoBack が false（navigation が無いブラウザは history.length <= 1）／referrer が無い／referrer が外の origin。canGoBack だけで決めない（K232-UI-017 は前に /signup があり canGoBack が true だが、referrer が外なので前が無いに数える）。押したときは印があるか navigation.canGoBack が false なら /login へ、そうでなければ history.back()（K232-UI-018） |\n| 正本の部品 `04_design/DESIGN-kaname.md`・作り手で `apps/web/styles/k-tokens.css`・`04_design/DESIGN-kaname-preview.html`・`design-gate.json` | 部品 auth-card-wide（width 720px）と legal-body（lineHeight 1.9）を足し、gen_tokens.py --web と gen_preview.py で出し直す。design_gate の部品の検査（D5）のため design-gate.json の component_selectors に 2 つのセレクタを足す（K232-UI-019） |\n| 突き合わせの組 `04_design/fidelity.json`・`fidelity-states.ts` | 組 legal の画面の側のセレクタを、入口の箱 `[data-part=\"auth-box\"]` と見出し `[data-part=\"auth-box\"] h1` に直し（今は文面の中身の .k-legal を指していて、キャンバスの白い箱と比べていない）、見出しの組の props から y を外して（キャンバスは短い文面を縦の真ん中に置き、本物の長い文面は上から始まるので、y はどう作っても ±2 に入らない・PM に確かめたいこと 1）、enrolled: true にする。縦の並びは箱の中の間（K232-UI-004）と行の高さ（001〜003）で見る。fidelity-states.ts に鍵 legal（/legal/terms を開くだけ）を足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 題名のために正本に段を足す | 段を増やさず、絵を 20px に寄せる（PM の決め・K-254） |\n| 版の行をひな形（md）の書き方で印にする（`> 第 1 版` など） | ひな形は専門家の確認を受ける文面（K-86）。字を変えずに描き手の形で見分ける |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k232-legal-page.spec.ts`（実 Chrome・口は読まない画面・本人の Bridge は網の手前で 404）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K232-UI-001 | 対象の状態 | 題名 | h1「Kaname 利用規約」20px・700・行の高さ 32px（±0.5）・#131B27・左寄せ・h1 は 1 つ |\n| K232-UI-002 | 対象の状態 | 版の行 | .k-legal-version が 1 つ・「第 1 版（…施行）」・12px・行の高さ 19.2px（±0.5）・#4A5563 |\n| K232-UI-003 | 対象の状態 | 条の見出しと番号 | h2「第 1 条（適用）」15px・700・行の高さ 24px（±0.5）・ol は decimal・inside・番号の左端が箱の中の左端と ±2 |\n| K232-UI-004 | 対象の状態 | 段の間 | 版の行と段落・段落と条の見出しの間が 14px（±2） |\n| K232-UI-005 | 対象の状態 | 本文 | 段落と番号の並びが 13px・行の高さ 24.7px |\n| K232-UI-006 | 入口 | 幅 1440 の箱 | 幅 720・真ん中（±2）・padding 26px 28px |\n| K232-UI-007 | 入口 | 「← 戻る」（登録の画面から同じタブで来た／直に開いた） | 箱の最初の要素・12px。押すと /signup に戻る。履歴の無いタブでは /login |\n| K232-UI-008 | 対象の状態 | 足元 | 利用規約・プライバシー・困ったとき の 3 つ（href /legal/terms・/legal/privacy） |\n| K232-UI-009 | 守り | 準備中のお知らせ | legal-page.tsx が Callout を部品から使い、素の k-callout の字が無く、E-PAGE-003 を出す |\n| K232-UI-010 | 守り | 突き合わせの設定 | legal が enrolled・持ち主 K-232・箱と見出しの画面の側が入口の箱・見出しの組に y が無く font-size・font-weight・line-height・color・x は在る・鍵が在る |\n| K232-UI-011 | 対象の状態 | legal をキャンバスと突き合わせる（1440・375） | 組の値と読み込んだ書体が全部同じ |\n| K232-UI-012 | 入口 | 幅 320・375・768・1024・1440（利用規約・プライバシー） | 横溢れ 0・題の 1 文字目が画面の中・表は箱の外へ出ない |\n| K232-UI-013 | 対象の状態 | プライバシーポリシー | h1 20px・版の行 12px・本文 13px |\n| K232-UI-014 | 入口 | 幅 375 の箱 | 左右 16px 内側（幅 343）・padding-left 28px |\n| K232-UI-015 | 対象の状態 | 問い合わせ | 箱の一番下（.k-legal の最後）・上の線 1px rgb(237, 240, 244)・padding-top 12px・12px・#4A5563・「メール：」を含む・節の見出しは目に見える高さ 1px 以下 |\n| K232-UI-016 | 対象の状態 | 点の並び（プライバシーの上の段・利用規約の第 3 条の入れ子） | disc・inside・13px・行の高さ 24.7px・上の段の点の左端は箱の中の左端と ±2・入れ子の ul も inside で、その最初の点（li）の左端は番号の段（ol の li）の左端と ±2（字下げしない。入れ子の ul に padding を付けると落ちる） |\n| K232-UI-017 | 守り | 外の origin から来て「← 戻る」 | 前の画面に戻らず /login |\n| K232-UI-018 | 操作の揺れ | 登録の画面の足元「利用規約」で新しいタブ → 「← 戻る」 → ブラウザの戻る → もう一度「← 戻る」 | 1 回目も 2 回目も /login へ移る（タブの先頭で history.back() に頼らず、何も起きないボタンにしない・レビュー Q の指摘） |\n| K232-UI-019 | 守り | 箱の幅と本文の行の高さ | k-tokens.css に --k-c-auth-card-wide-width: 720px と --k-c-legal-body-lh: 1.9 が在り、legal-page.css は var() で読み、生の 720px・1.9 を書かない（レビュー Q の指摘） |\n| K232-CI-001 | 守り | 突き合わせの設定の検査：種類 doc の見出しの y | y が無くても在っても fidelity_config が 0（緑）で終わる（`scripts/ci/k232_fidelity_doc_test.py`・G65 の並びで回す） |\n| K232-CI-002 | 守り | 種類 auth-msg の見出しに y が無い／doc の見出しの y 以外の値か箱（card）の値を 1 つ外す | どれも fidelity_config が 1 で終わり、外した値の名前（「値 y」など）を出す。外せる表は doc の h1 の y だけ（ほかの組を弱めない） |\n\n### テストの型の受け（分類 UI）\n\n- 押した結果まで：007・017（戻る先の URL）\n- 幅：006・012・014\n- 文面の中身（ひな形の埋め込み・版・ログインを求めない）は K-53 の試験が持つ（替えない）\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 入力欄が無い画面 |\n| 対象の状態 | 該当 | 001〜005・008・011・013・015・016 |\n| 時間の流れ | 要らない | 読み込みの無い画面（サーバーで描く） |\n| 入口 | 該当 | 戻る先（007）・幅（006・012・014） |\n| 利用者の状態 | 要らない | ログインを求めない画面（K53-UI-021・022 が持つ） |\n| 失敗 | 該当 | 準備中（009。値の足りない環境は試験の中で作れないので、部品を使うことを読んで確かめる） |\n| 操作の揺れ | 要らない | 押せる物は戻ると足元のリンクだけ |\n| 守り | 該当 | 外の origin へ戻らない（017）・設定（010） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（011） |\n| G-12 切り替わりの瞬間 | N/A | 状態の切り替わりが無い |\n| G-13 機能の組み合わせ | N/A | 1 つの文面を出すだけ |\n| G-14 口座状態の波及 | N/A | ログインを求めない |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | N/A | 口を呼ばない |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k232-legal-page.spec.ts`（切る段が書いた）\n- 文面の見た目・戻る・足元・Callout・突き合わせの組・CI の範囲の 1 行（実装の役）",
+    "決定ログ": "- D-143.2：キャンバスが正。D-143.5：正のモックを書き、突き合わせてから完了。D-128.23：画面の正はキャンバス。D-145.9：キャンバスに在る物は出す\n- PM の決め（2026-11-16）：題名は正本に段を足さず、絵を 20px に寄せる（K-254）ので 20px で書く。これは決める人の答え（answer=fd9dcd7a7cc8・D-146.5「ベストにしたい大きすぎてもよくないし」・見比べで決める人が確かめる）を受けた K-254 の寄せ。決める人が見比べで 22px を選んだら、K-254 の申し送りどおり K232-UI-001・013 を 22px に直す\n- 決める人の答え（answer=fd9dcd7a7cc8・2026-11-16 15:48・PM の伝えた日付は 2026-11-17）：「← 戻る」は前の画面へ、無ければログインへ（D-146.7）。規約の箇条書き（点の並び・番号の並び・入れ子）は字下げしない（D-146.8）\n- 切る段の決め（決める人の答えではない）：「前の画面」は同じ origin の画面だけに数え、外の origin から来たときはログインへ移す（K232-UI-017）。理由：規約のリンクは別のタブで開き、外のページ（メールや検索）へ戻すと Kaname の外に出てしまうため。決める人の言葉と逆に読めるなら、決める人に聞く項目に上げる\n- 決める人に聞くこと：無い（全部答えが出た）\n- 切る段が決めたこと：文面の決まりは同意の画面の CSS から別のファイルへ移した（同意の画面のチケット K-256 と同じファイルを触る行を減らす）／突き合わせの組 legal の画面の側を、文面の中身ではなく入口の箱に直した（キャンバスの白い箱と比べるため・組はまだ入れていないので弱めにはならない）",
+    "PM に確かめたいこと": "（答え・2026-11-17）PM：案 1。種類 doc の組の見出しだけ y を要らないとし、検査 fidelity_config.py を changes: に足す。ほかの組は弱めない（K232-CI-001・002）\n\n1. 突き合わせの組 legal の見出しの y：キャンバスは短い文面を縦の真ん中に置き（min-height 100vh・真ん中寄せ）、本物の規約は画面より長いので上から始まる。y はどう作っても ±2 に入らないので、組から y を外す（組はまだ入れていない）。弱めでなく、比べられない値を外すだけでよいか",
+    "リスクと懸念": "- 入口の枠（data-part・余白・段の間）は K-255 が入れる。K-255 が先に取り込まれないと 006・011・014 が落ちる（依存に書いた）",
+    "申し送り": "- K-86（専門家の確認）：版の行の形（「第 N 版（…施行）」）を変えるときは描き手の見分け方も直す"
    },
    "file": "11_tickets/K-232.md"
   },
