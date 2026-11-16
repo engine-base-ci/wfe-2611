@@ -24,7 +24,7 @@ article table{min-width:520px}
 @media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header{flex-wrap:wrap}aside{max-width:none !important}article>div{padding-left:16px !important;padding-right:16px !important}article [style*="overflow: hidden"]:has(table),article div:has(>table){overflow-x:auto !important}}
 
 /* k257-detail */
-@media (max-width:1023px){div:has(>aside[aria-label="チケットのパネル"]){flex-direction:column}aside[aria-label="チケットのパネル"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}@media (max-width:767px){article>div:first-child>span[style*="margin-left: auto"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}
+@media (max-width:1023px){div:has(>aside[aria-label="チケットのパネル"]){flex-direction:column}aside[aria-label="チケットのパネル"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}@media (max-width:767px){article>div:first-child>span[style*="margin-left: auto"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}article :is(a[style*="height: 30px"],a[style*="height: 32px"],button){white-space:nowrap}article div:has(>a[style*="height: 30px"]){flex-wrap:wrap}
 
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
@@ -109,7 +109,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       </span>
      </div>
      <div style="display: flex; align-items: flex-start; gap: 10px; padding: 6px 20px 12px; flex-wrap: wrap">
-      <h1 style="font-size: 20px; margin: 0; line-height: 1.45; flex: 1 1 360px">セイコー様へ 11月分の請求書を送る</h1>
+      <h1 style="font-size: 20px; margin: 0; line-height: 1.45; flex: 1 1 360px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" title="セイコー様へ 11月分の請求書を送る">セイコー様へ 11月分の請求書を送る</h1>
       <span style="display: flex; gap: 6px">
        
        <a href="TdDuplicate.dc.html" style="height: 30px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; box-sizing: border-box">複製</a>
@@ -118,7 +118,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       </span>
      </div>
      <div role="alert" style="margin: 0 20px 14px; border: 1px solid #F3C7C7; background: #FDECEC; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-      <div style="flex: 1 1 260px; min-width: 0"><b style="color: #991B1B">高本のAI が止まりました</b><div style="color: #991B1B; font-size: 12px">請求書の金額が見積 EG-097 の月額と合いませんでした（見積 120,000 円・請求書 132,000 円）。10/19 の追加対応を入れたためです</div></div>
+      <div style="flex: 1 1 100%; min-width: 0"><b style="color: #991B1B">高本のAI が止まりました</b><div style="color: #991B1B; font-size: 12px">金額が見積 EG-097 の月額と合いませんでした</div></div>
       <span style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap"><button type="button" style="height: 30px; border-radius: 6px; padding: 0 12px; font-size: 12px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; font-weight: 500">AI に任せる</button><button type="button" aria-disabled="true" title="まだ使えません" style="height: 30px; border-radius: 6px; padding: 0 12px; font-size: 12px; border: 1px solid #F3C7C7; background: #FFFFFF; color: #131B27; opacity: 0.55; cursor: not-allowed">直し方を AI に伝える</button><button type="button" aria-disabled="true" title="まだ使えません" style="height: 30px; border-radius: 6px; padding: 0 12px; font-size: 12px; border: 1px solid #F3C7C7; background: #FFFFFF; color: #131B27; opacity: 0.55; cursor: not-allowed">自分で直す</button></span>
      </div>
      <div style="margin: 0 20px 14px; overflow-x: auto"><table aria-label="確認の結果" style="border-collapse: collapse; width: 100%; min-width: 0"><thead><tr><th>確認項目</th><th>種類</th><th>1 回目</th><th>2 回目</th><th>根拠</th></tr></thead><tbody></tbody></table><div style="font-size: 12px; color: #4A5563; padding: 6px 0 0">検査なし（まだ流していません）</div></div>

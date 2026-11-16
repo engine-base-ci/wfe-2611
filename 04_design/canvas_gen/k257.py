@@ -78,7 +78,7 @@ def band(role, line, bg, color, title, sub, acts, pad="12px 14px", extra=""):
     sub_html = '<div style="color: %s; font-size: 12px">%s</div>' % (color, sub) if sub else ""
     return ('<div role="%s" style="margin: 0 20px 14px; border: 1px solid %s; background: %s; border-radius: 8px; padding: %s; '
             'display: flex; align-items: center; gap: 10px; flex-wrap: wrap">\n'
-            '      <div style="flex: 1 1 260px; min-width: 0"><b style="color: %s">%s</b>%s%s</div>%s\n     </div>'
+            '      <div style="flex: 1 1 100%%; min-width: 0"><b style="color: %s">%s</b>%s%s</div>%s\n     </div>'
             ) % (role, line, bg, pad, color, title, sub_html, extra, act)
 
 
@@ -88,7 +88,7 @@ STEP_LINE = {"done": "#166534", "now": "#1D4ED8", "next": "#DDE2E9"}
 
 def steps():
     """進みの 5 段（作っているときだけ）"""
-    li = "".join('<li data-state="%s" style="flex: 1 1 0; min-width: 0; border-top: 3px solid %s; padding-top: 4px; font-size: 11px; color: %s%s">%s</li>'
+    li = "".join('<li data-state="%s" style="flex: 1 0 auto; white-space: nowrap; border-top: 3px solid %s; padding-top: 4px; font-size: 11px; color: %s%s">%s</li>'
                  % (st, STEP_LINE[st], "#1E40AF" if st == "now" else MUTED, "; font-weight: 700" if st == "now" else "", t) for t, st in STEPS)
     return '<ol aria-label="進み" style="list-style: none; margin: 8px 0 0; padding: 0; display: flex; gap: 4px">%s</ol>' % li
 
@@ -112,7 +112,7 @@ DETAIL = {
                        [bbtn("AI と話す", "o#DDE2E9", 30, off=True), bbtn("止める", "o#DDE2E9", 30, off=True)], extra=steps())),
     "StFailed": ("確認で落ちて直しているとき", "作業中", "#2F4B7C",
                  band("alert", "#F3C7C7", "#FDECEC", "#991B1B", "高本のAI が止まりました",
-                      "請求書の金額が見積 EG-097 の月額と合いませんでした（見積 120,000 円・請求書 132,000 円）。10/19 の追加対応を入れたためです",
+                      "金額が見積 EG-097 の月額と合いませんでした",
                       [bbtn("AI に任せる", "p", 30), bbtn("直し方を AI に伝える", "o#F3C7C7", 30, off=True), bbtn("自分で直す", "o#F3C7C7", 30, off=True)])
                  + "\n     " + CHECK_TABLE),
     "StBefore": ("AI に任せる前", "未着手", "#6B7585",
@@ -132,7 +132,19 @@ PILL = re.compile(r'(<span style="font-size: 12px; font-weight: 500; border-radi
 NARROW = ("/* k257-detail */\n@media (max-width:1023px){div:has(>aside[aria-label=\"チケットのパネル\"]){flex-direction:column}"
           "aside[aria-label=\"チケットのパネル\"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}"
           # 幅 767 以下は、上の行の日付と札を 2 列の格子にする（札の字の長さで行の折り返しが変わり、帯の位置が絵ごとにずれないように）
-          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}\n")
+          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}"
+          # ボタンの名前は 1 行（並びは折り返す）。代表の答え answer=ba0d9572fc77・PM の決め
+          "article :is(a[style*=\"height: 30px\"],a[style*=\"height: 32px\"],button){white-space:nowrap}article div:has(>a[style*=\"height: 30px\"]){flex-wrap:wrap}\n")
+# 承認待ち：ボタンの名前は 1 行・右の並びは折り返す
+AP = ("/* k257-ap */\nsection a[style*=\"height: 28px\"]{white-space:nowrap}"
+      "section>div:first-child>span[style*=\"margin-left: auto\"]{flex-wrap:wrap;justify-content:flex-end}\n")
+
+
+def put_css(s, css):
+    """kn-shell の前（shellfix が消さない所）に 1 行の決まりを置く。前に置いた同じ印の行は消してから（何度流しても 1 回だけ）"""
+    tag = re.escape(css.split("\n", 1)[0])
+    s = re.sub(r"\n*" + tag + r"\n[^\n]*\n", "\n", s)
+    return re.sub(r"\n*(?=/\* kn-shell)", lambda _m: "\n\n" + css, s, count=1)
 TOOLS = [("太字", "B"), ("斜体", "I"), ("見出し", "見出し"), ("箇条書き", "・"), ("番号つき", "1."), ("チェックリスト", "☐"), ("表", "表"),
          ("画像・添付", "画像"), ("引用", "引用"), ("コード", "&lt;/&gt;"), ("注意の枠", "注意"), ("チケットを引く", "#"), ("人を呼ぶ", "@"), ("リンク", "リンク")]
 TOOL = ('<button type="button" aria-label="%s" title="%s" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; '
@@ -145,8 +157,11 @@ def detail_base():
     s = load("TicketDetail.dc.html")
     s = re.sub(r"<sc-for list=\"\{\{tools\}\}\".*?</sc-for>", lambda _m: "".join(TOOL % (n, n, label) for n, label in TOOLS), s, count=1, flags=re.S)
     s = SCRIPT.sub("", s)
-    s = re.sub(r"\n*(?:/\* k257-detail \*/\n[^\n]*\n)?\n*(?=/\* kn-shell)", lambda _m: "\n\n" + NARROW, s, count=1)
-    s = s.replace('<h1 style="font-size: 22px;', '<h1 style="font-size: 20px;', 1)
+    s = put_css(s, NARROW)
+    # 題は 1 行。長いときは「…」で切り、全文は title（代表の答え answer=ba0d9572fc77・PM の決め）
+    s = re.sub(r'<h1 style="font-size: 2[02]px;[^"]*"[^>]*>([^<]*)</h1>',
+               lambda m: '<h1 style="font-size: 20px; margin: 0; line-height: 1.45; flex: 1 1 360px; min-width: 0; white-space: nowrap; overflow: hidden; '
+                         'text-overflow: ellipsis" title="%s">%s</h1>' % (m.group(1), m.group(1)), s, count=1)
     return s
 
 
@@ -295,6 +310,7 @@ def approvals():
     a = s.index("<tbody>") + len("<tbody>")
     s = s[:a] + "\n" + rows + "      " + s[s.index("</tbody>", a):]
     s = SCRIPT.sub("", s)
+    s = put_css(s, AP)
     save("Approvals", "承認待ち", s)
 
 
@@ -426,7 +442,8 @@ def update_fidelity():
 # ---------- 代表に見せる見比べの 1 枚 ----------
 REVIEW = [
     ("TicketDetail", "チケットの詳細（承認待ち）", "スマホで見ると、右の欄が縮まらずに本文のカードが細く潰れ、画面が横にはみ出していました。幅が狭いときは右の欄を本文の下に回しました。"
-     "帯の文は今の画面と同じ「確認 検査なし（まだ流していません）」にし、取り消せないことを赤い箱で出しました。「自分で直す」「止める」はまだ使えないので薄くしています。"),
+     "帯の文は今の画面と同じ「確認 検査なし（まだ流していません）」にし、取り消せないことを赤い箱で出しました。「自分で直す」「止める」はまだ使えないので薄くしています。"
+     "題・帯の文・ボタンは 2 行に割れないようにしました（題が長いときは 1 行で切って「…」を付け、全文は題に指を置くと出ます。帯のボタンは文の下に回しました）。"),
     ("StRunning", "AI が作っているとき", "詳細の画面と同じ形（右の欄の幅・帯の位置）にそろえました。帯の文は今の画面と同じ「高本のAI が作っています」にし、"
      "進みを「受け取る・作る・確かめる・あなたの承認・実行」の 5 段で出しています。スマホでも潰れません。"),
     ("StFailed", "AI が止まったとき", "詳細の画面と同じ形にそろえ、帯の文を今の画面と同じ「高本のAI が止まりました」と止まった理由にしました。"

@@ -24,7 +24,7 @@ article table{min-width:520px}
 @media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header{flex-wrap:wrap}aside{max-width:none !important}article>div{padding-left:16px !important;padding-right:16px !important}article [style*="overflow: hidden"]:has(table),article div:has(>table){overflow-x:auto !important}}
 
 /* k257-detail */
-@media (max-width:1023px){div:has(>aside[aria-label="チケットのパネル"]){flex-direction:column}aside[aria-label="チケットのパネル"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}@media (max-width:767px){article>div:first-child>span[style*="margin-left: auto"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}
+@media (max-width:1023px){div:has(>aside[aria-label="チケットのパネル"]){flex-direction:column}aside[aria-label="チケットのパネル"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}@media (max-width:767px){article>div:first-child>span[style*="margin-left: auto"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}article :is(a[style*="height: 30px"],a[style*="height: 32px"],button){white-space:nowrap}article div:has(>a[style*="height: 30px"]){flex-wrap:wrap}
 
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
@@ -109,7 +109,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       </span>
      </div>
      <div style="display: flex; align-items: flex-start; gap: 10px; padding: 6px 20px 12px; flex-wrap: wrap">
-      <h1 style="font-size: 20px; margin: 0; line-height: 1.45; flex: 1 1 360px">セイコー様へ 11月分の請求書を送る</h1>
+      <h1 style="font-size: 20px; margin: 0; line-height: 1.45; flex: 1 1 360px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis" title="セイコー様へ 11月分の請求書を送る">セイコー様へ 11月分の請求書を送る</h1>
       <span style="display: flex; gap: 6px">
        
        <a href="TdDuplicate.dc.html" style="height: 30px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; box-sizing: border-box">複製</a>
@@ -118,7 +118,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       </span>
      </div>
      <div role="status" style="margin: 0 20px 14px; border: 1px solid #CDE8D5; background: #E8F5EC; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-      <div style="flex: 1 1 260px; min-width: 0"><b style="color: #166534">完了しました（高本・11/02 10:48）</b></div>
+      <div style="flex: 1 1 100%; min-width: 0"><b style="color: #166534">完了しました（高本・11/02 10:48）</b></div>
      </div>
 
      <div aria-label="本文の道具" style="position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 2px; padding: 6px 20px; border-top: 1px solid #DDE2E9; border-bottom: 1px solid #EDF0F4; background: #FAFBFC; flex-wrap: wrap">
