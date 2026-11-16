@@ -129,6 +129,7 @@
   { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
   { "paths": ["apps/web/tests/features/F5/approve-complete-approve.spec.ts", "apps/web/tests/features/F5/approve-complete-complete.spec.ts", "apps/web/tests/features/F5/approve-complete-execute.spec.ts", "apps/web/tests/features/F5/approve-complete-guard.spec.ts", "apps/web/tests/features/F5/approve-complete-queue.spec.ts", "apps/web/tests/features/F5/approve-complete-return.spec.ts", "apps/web/tests/features/F5/approve-complete-live.spec.ts"], "tests": ["apps/web/tests/features/F5/k247-band-settle.spec.ts"] },
   { "paths": ["scripts/ci/row_rules.mjs"], "tests": ["apps/api/test/authz_rows.test.ts"] },
+  { "paths": ["scripts/ci/canvas_field_ledger.json"], "tests": ["apps/api/test/features/F4/ticket-list.test.ts"] },
   { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   {
    "paths": [

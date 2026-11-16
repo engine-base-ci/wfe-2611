@@ -11,7 +11,7 @@ SCREEN_API = {
     # ---------------------------------------------------------------- チケット（08_api/phase1/01_チケット.md）
     "tickets": [
         # 一覧・数・探す
-        ("GET", "/tickets", "A58|A113", T, "listTickets", ["ticket_kinds", "ticket_stages", "members", "clients"]),
+        ("GET", "/tickets", "A58|A113|A99", T, "listTickets", ["ticket_kinds", "ticket_stages", "members", "clients"]),
         ("GET", "/scopes/:id/overview", "A58", T, "getScopeOverview", ["scopes", "ticket_stages"]),
         # 外枠の役と今いる会社の名前（K-253・D-144.2）。今は手で書いた道すじ GET /api/auth-ext/me が答え、移す先がこの getMe（D-128.88・持ち主 K-70）
         ("GET", "/me", "A74", "members", "getMe", ["tenant_memberships", "tenants"]),
@@ -881,7 +881,7 @@ RESPONSES = {
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
 META = {
-    "listTickets": {"counts": "object"},
+    "listTickets": {"next_cursor": "string"},   # 次の分の鍵（keyset）。総数も数も返さない（D-144.3・K-92）
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
@@ -893,9 +893,13 @@ META = {
 RATES = {
     "claimPairingCode": "5/min/ip",   # 総当たりを防ぐ（D-089）
 }
-# 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く
+# 一覧の口の細目（K-92）：limit の上限・sort を受けない口・説明（行為から作る説明の代わり）・答えの meta の形（endpoints.json の outputs_2xx）
+LIST_DETAILS = {
+    "listTickets": {"limit_max": 100, "sort": False, "desc": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）", "meta": "{ next_cursor }"},
+}
+# 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く（sort は LIST_DETAILS で外せる）
 QUERIES = {
-    "listTickets": ["view", "scope_id", "q", "kind_id", "stage_id", "assignee_id", "client_id", "due_from", "due_to", "start_from", "start_to", "overdue", "fire", "parent", "fields"],
+    "listTickets": ["view", "q", "scope_id"],   # ほかの絞り込みは K-67 が作るまで 422・E-VAL-018（K-92・D-128.152）
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
