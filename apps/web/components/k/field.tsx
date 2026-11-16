@@ -8,6 +8,9 @@ import { Eye, EyeOff } from "lucide-react";
 interface Common {
   label: ReactNode;
   description?: ReactNode;
+  /** 項目名の横の括弧書きの補足（K-255・キャンバスの AuthSignup）。項目名の外に置き、読み上げの名前は項目名のまま。
+   *  欄の説明として aria-describedby でつなぐ。括弧（）は部品が付ける */
+  hint?: ReactNode;
   /** 項目の理由（サーバーの 422 か、画面での確かめ）。あれば赤く出す */
   error?: string | null | undefined;
   required?: boolean;
@@ -16,17 +19,36 @@ interface Common {
   size?: "md" | "lg";
 }
 
-function Frame({ label, description, error, required, name, size = "md", children }: Common & { children: ReactNode }) {
+function Frame({
+  label,
+  description,
+  hint,
+  error,
+  required,
+  name,
+  size = "md",
+  children,
+}: Common & { children: ReactNode }) {
+  const head = (
+    <Field.Label className="k-label">
+      {label}
+      {required ? (
+        <span className="k-req" aria-hidden="true">
+          *
+        </span>
+      ) : null}
+    </Field.Label>
+  );
   return (
     <Field.Root className="k-field" data-size={size} name={name} invalid={Boolean(error)}>
-      <Field.Label className="k-label">
-        {label}
-        {required ? (
-          <span className="k-req" aria-hidden="true">
-            *
-          </span>
-        ) : null}
-      </Field.Label>
+      {hint ? (
+        <div className="k-label-row">
+          {head}
+          <Field.Description className="k-hint">（{hint}）</Field.Description>
+        </div>
+      ) : (
+        head
+      )}
       {children}
       {description ? <Field.Description className="k-desc">{description}</Field.Description> : null}
       {error ? (
@@ -39,18 +61,34 @@ function Frame({ label, description, error, required, name, size = "md", childre
 }
 
 export type TextFieldProps = Common & Omit<InputHTMLAttributes<HTMLInputElement>, "name" | "required" | "size">;
-export function TextField({ label, description, error, required, name, size, ...input }: TextFieldProps) {
+export function TextField({ label, description, hint, error, required, name, size, ...input }: TextFieldProps) {
   return (
-    <Frame label={label} description={description} error={error} required={required} name={name} size={size}>
+    <Frame
+      label={label}
+      description={description}
+      hint={hint}
+      error={error}
+      required={required}
+      name={name}
+      size={size}
+    >
       <Field.Control className="k-input" required={required} aria-required={required || undefined} {...input} />
     </Frame>
   );
 }
 
 export type TextAreaProps = Common & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "name" | "required">;
-export function TextArea({ label, description, error, required, name, size, ...area }: TextAreaProps) {
+export function TextArea({ label, description, hint, error, required, name, size, ...area }: TextAreaProps) {
   return (
-    <Frame label={label} description={description} error={error} required={required} name={name} size={size}>
+    <Frame
+      label={label}
+      description={description}
+      hint={hint}
+      error={error}
+      required={required}
+      name={name}
+      size={size}
+    >
       <Field.Control
         render={<textarea />}
         className="k-input"
@@ -64,10 +102,18 @@ export function TextArea({ label, description, error, required, name, size, ...a
 
 export type PasswordFieldProps = Omit<TextFieldProps, "type">;
 /** パスワード（D-087）：既定は隠す。押すと見え、もう一度押すと隠れる。読み上げの名前と aria-pressed も一緒に変わる。的は 24px 以上 */
-export function PasswordField({ label, description, error, required, name, size, ...input }: PasswordFieldProps) {
+export function PasswordField({ label, description, hint, error, required, name, size, ...input }: PasswordFieldProps) {
   const [shown, setShown] = useState(false);
   return (
-    <Frame label={label} description={description} error={error} required={required} name={name} size={size}>
+    <Frame
+      label={label}
+      description={description}
+      hint={hint}
+      error={error}
+      required={required}
+      name={name}
+      size={size}
+    >
       <div className="k-pw">
         <Field.Control
           className="k-input"

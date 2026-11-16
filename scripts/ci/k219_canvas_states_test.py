@@ -44,8 +44,8 @@ NEW = {
                        ["登録は終わっています"]),
     "AuthConsent": ("AuthVerify", "auth", "login", "consent-terms", "auth-msg", "/login?step=terms", "K-222",
                     ["利用規約とプライバシーポリシーが新しくなりました", "同意"]),
-    "AuthChecking": ("AuthSignup", "auth", "signup", "signup-checking", "doc", "/signup", "K-222", ["確かめています"]),
-    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "signup-waiting-loading", "doc", "/verify-email", "K-222",
+    "AuthChecking": ("AuthSignup", "auth", "signup", "signup-checking", "doc", "/signup", "K-255", ["確かめています"]),
+    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "signup-waiting-loading", "doc", "/verify-email", "K-255",
                           ["読み込んでいます"]),
     "StBefore": ("StRunning", "states", "tickets", "band-before", "band", "/tickets/{ticket}", "K-228", ["AI に任せる"]),
     "StConfirmDone": ("StRunning", "states", "tickets", "band-confirm-done", "band", "/tickets/{ticket}", "K-228",
@@ -77,9 +77,17 @@ def load(p: pathlib.Path) -> dict:
 
 
 def head_of(tid: str) -> dict:
+    """チケットの頭の `キー: [a, b]` の並びを読む（頭は YAML ではない：affects の @kaname/web のような値を YAML は読めない。
+    チケットの道具（build_index・ticket-flow の header_list）と同じ読み方）"""
     m = re.match(r"^---\n(.*?)\n---\n", (TICKETS / f"{tid}.md").read_text(encoding="utf-8"), re.S)
     assert m, f"{tid} に頭が無い"
-    return yaml.safe_load(m.group(1))
+    out: dict = {}
+    for line in m.group(1).splitlines():
+        k, sep, v = line.partition(":")
+        v = v.strip()
+        if sep and v.startswith("[") and v.endswith("]"):
+            out[k.strip()] = [x.strip() for x in v[1:-1].split(",") if x.strip()]
+    return out
 
 
 def review_sections(text: str) -> dict[str, tuple[str, str]]:
@@ -136,6 +144,22 @@ class KindParts(html.parser.HTMLParser):
 
 def groups() -> dict[str, dict]:
     return {g["id"]: g for g in load(FIDELITY)["groups"]}
+
+
+def owner_in(owner: str) -> str:
+    """組を入れて（enrolled: true）よい持ち主か。持ち主が決める（K-255）：
+    この木の履歴に件名が「<持ち主> 」で始まるコミットが在る（持ち主の実装がこの木に入っている）か、持ち主の md の stage が確認中か完了か、
+    今の CI のチケット（環境の CI_TICKET）が持ち主。取り込み済みの判定は突き合わせの設定の見張り（fidelity_config.py の merged_reason）と同じ。
+    入っていいなら訳、まだなら空"""
+    sys.path.insert(0, str(HERE))
+    try:
+        import fidelity_config as fc
+    finally:
+        sys.path.pop(0)
+    subjects, errs = fc.history_subjects(ROOT, "HEAD")
+    assert not errs, errs
+    kids, stages = fc.ticket_tree(ROOT)
+    return fc.merged_reason(owner, kids, stages, subjects or [], os.environ.get("CI_TICKET", "").strip())
 
 
 def nav_of(body: str) -> str:
@@ -288,7 +312,10 @@ class FidelityTest(unittest.TestCase):
             self.assertIsNotNone(g, f"組 {gid} が無い")
             self.assertEqual((g["kind"], g["canvas"], g["app"], g["owner"]), (kind, name, app, owner), gid)
             self.assertEqual(g["state"], gid, gid)
-            self.assertIs(g["enrolled"], False, gid)
+            # 入れるかは組の持ち主が決める（K-255）。持ち主がまだなら入っていない（false）、持ち主が来ていれば true を許す
+            self.assertIsInstance(g["enrolled"], bool, gid)
+            if g["enrolled"]:
+                self.assertTrue(owner_in(owner), f"{gid}：持ち主 {owner} がまだなのに enrolled: true")
             self.assertTrue(set(KIND_WIDTHS[kind]) <= set(g["widths"]), gid)
             self.assertTrue(g["pairs"], gid)
         r = subprocess.run([sys.executable, "scripts/ci/fidelity_config.py", "--no-base"], cwd=ROOT,
