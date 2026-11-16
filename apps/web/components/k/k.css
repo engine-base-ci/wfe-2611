@@ -756,3 +756,37 @@ textarea.k-input {
   border-radius: var(--k-r-lg);
   box-sizing: border-box;
 }
+
+/* ---- 本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create） ----
+   道具はどれもまだ使えない（押せない形・正本の使えない状態の薄さ）。最小の幅（doc-tool-min）は字の短い道具の幅（「見出し」などは字に合わせて広がる） */
+.k-doc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-doc-toolbar-gap);
+  padding: var(--k-c-doc-toolbar-pad);
+  background: var(--k-c-doc-toolbar-bg);
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-doc-tools button {
+  min-width: var(--k-c-doc-tool-min-width);
+  height: var(--k-c-doc-tool-height);
+  padding: var(--k-c-doc-tool-pad);
+  border: 0;
+  border-radius: var(--k-r-sm);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.k-doc-tools button[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-doc-tools-note {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}

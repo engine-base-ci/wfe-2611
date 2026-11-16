@@ -10,7 +10,7 @@
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
-  "ui": 15,
+  "ui": 16,
   "packages": 13,
   "errors": 172,
   "stack": 53,
@@ -7385,6 +7385,14 @@
     "MeSub"
    ],
    "what": "自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。"
+  },
+  {
+   "file": "apps/web/components/k/doc-tools",
+   "exports": [
+    "DocTools",
+    "DOC_TOOL_ITEMS"
+   ],
+   "what": "本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。"
   }
  ],
  "common": {

@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import type { Page, Request, Route } from "@playwright/test";
 import { expect, missingRows, row, rowsOf } from "../../_lib/row";
+import { detailRows } from "../../k/detail-kit";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const SPEC = join(HERE, "../../../../../07_qa/test-specs/k/delegate.md");
@@ -140,15 +141,18 @@ const open = async (page: Page, width = 1440) => {
 };
 const band = (page: Page) => page.getByRole("region", { name: "AI に任せる" });
 const delegateBtn = (page: Page) => page.getByRole("button", { name: "AI に任せる", exact: true });
-const runLog = (page: Page) => page.getByRole("region", { name: "実行の記録" });
-/** 読み終えた印：実行の記録の行が n 行出るまで待つ（「出ない」を確かめる前に、画面が読み終えたことを見る） */
-const loaded = async (page: Page, n: number) => expect(runLog(page).getByRole("listitem")).toHaveCount(n);
+/** 右のパネルの「実行の記録（最新）」（K-226：最新 1 件だけを出し、全部は小窓「実行の記録」） */
+const runLog = (page: Page) => page.getByRole("region", { name: "実行の記録（最新）" });
+/** 読み終えた印：実行の記録を n 件読み終えるまで待つ（「出ない」を確かめる前に、画面が読み終えたことを見る）。
+ *  K-226 で右のパネルは最新 1 件だけになったので、読んだ件数（data-runs）で見る */
+const loaded = async (page: Page, n: number) => expect(runLog(page)).toHaveAttribute("data-runs", String(n));
 
 row(R["K62-UI-000"], async (page) => {
   await mockApi(page, mock());
   await open(page);
   // K-60 が持つ詳細の要素（チケットへ戻る など）は K-60 の表が受け持つ。外枠は外枠の試験（D-128.151）
-  const both = [...ROWS, ...rowsOf(K60_SPEC)];
+  // K-226 が詳細の本文と右のパネルに置いた操作要素（まだ使えない物も・D-145.9）は K-226 の一覧（detailRows）が受け持つ
+  const both = [...ROWS, ...rowsOf(K60_SPEC), ...detailRows(["目的"])];
   expect(await missingRows(page, both, "[data-ticket-shell]")).toEqual([]);
 });
 
@@ -359,7 +363,9 @@ row(R["K62-UI-016"], async (page) => {
     mock({ stage: { key: "running", name: "実行中" }, canDelegate: false, runs: [now, older], runSeq: [now] }),
   );
   await open(page);
-  const log = page.getByRole("region", { name: "実行の記録" });
+  // K-226：全部の実行は右のパネルの「実行の記録をすべて見る」で開く小窓「実行の記録」に、新しい順で出る
+  await page.getByRole("button", { name: "実行の記録をすべて見る" }).click();
+  const log = page.getByRole("dialog", { name: "実行の記録" });
   const items = log.getByRole("listitem");
   await expect(items).toHaveCount(2);
   await expect(items.nth(0)).toContainText("高本のAI");
@@ -482,6 +488,18 @@ row(R["K62-UI-025"], async (page) => {
       "先方に送っています",
     ])
       await expect(runLog(page).getByText(text), `${r.status}: ${text}`).toHaveCount(0);
+    // K-226：全部の実行は小窓「実行の記録」に出る。小窓にも K-62 の帯の文を出さない
+    await page.getByRole("button", { name: "実行の記録をすべて見る" }).click();
+    const all = page.getByRole("dialog", { name: "実行の記録" });
+    await expect(all.getByRole("listitem")).toHaveCount(1);
+    for (const text of [
+      "のAI が作っています",
+      "PC が起きるのを待っています",
+      "あなたが止めました",
+      "先方に送っています",
+    ])
+      await expect(all.getByText(text), `小窓 ${r.status}: ${text}`).toHaveCount(0);
+    await page.keyboard.press("Escape");
   }
 });
 
