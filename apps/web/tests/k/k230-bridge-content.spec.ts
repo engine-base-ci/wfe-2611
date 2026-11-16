@@ -7,7 +7,7 @@
 //     「Bridge を起こす」「新しいコード」「この PC の Bridge につなぐ」「このアカウントに切り替える」「戻る」「前の設定の画面」を残す。
 //   口（API）とこの PC の中だけの口（127.0.0.1:38617）は網の手前で差し替える（本人の Bridge に届かせない）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
@@ -20,6 +20,7 @@ import {
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+import { codeWait } from "../../features/F3/connect-pc/code-wait";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "../../../..");
@@ -50,11 +51,34 @@ interface Mock {
   installed: boolean;
   /** 受け取りの口の答え（既定 200・ファイル） */
   downloadStatus: number;
+  /** ブラウザの時計を進めた分（コードの期限をブラウザの時計に合わせる） */
+  skewMs: number;
+  /** コードの期限を遠い未来（2099 年）で返す（待ちの頭打ちを見る） */
+  farExpiry: boolean;
+  /** 立てると、コードの口の答えを release() まで止める */
+  hold: boolean;
+  release: () => void;
 }
 const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ status: 200, body: { data, meta } });
 
 async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
-  const m: Mock = { downloads: [], codes: 0, devices: [], installed: false, downloadStatus: 200, ...o };
+  let waiting: (() => void)[] = [];
+  const m: Mock = {
+    downloads: [],
+    codes: 0,
+    devices: [],
+    installed: false,
+    downloadStatus: 200,
+    skewMs: 0,
+    farExpiry: false,
+    hold: false,
+    release: () => {
+      m.hold = false;
+      for (const go of waiting) go();
+      waiting = [];
+    },
+    ...o,
+  };
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   await page.route(/127\.0\.0\.1:38617/, async (route, req) => {
     if (!m.installed) return route.abort("connectionrefused");
@@ -89,12 +113,10 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
       );
     else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST") {
       m.codes += 1;
-      r = {
-        status: 201,
-        body: {
-          data: { code: `KQ7M${CODE_CHARS[m.codes % 10]}X`, expires_at: new Date(Date.now() + 600_000).toISOString() },
-        },
-      };
+      const n = m.codes;
+      if (m.hold) await new Promise<void>((go) => waiting.push(go));
+      const expires = m.farExpiry ? "2099-01-01T00:00:00Z" : new Date(Date.now() + m.skewMs + 600_000).toISOString();
+      r = { status: 201, body: { data: { code: `KQ7M${CODE_CHARS[n % 10]}X`, expires_at: expires } } };
     } else {
       const d = /^\/api\/v1\/bridge\/releases\/(\w+)\/file$/.exec(p);
       if (d) {
@@ -154,11 +176,27 @@ test("K230-UI-001 PC が無い・Bridge も無い：つなぐ小窓が開く（�
   const subBox = (await sub.boundingBox())!;
   const headBox = (await head.boundingBox())!;
   expect(subBox.y + subBox.height, "補足は頭の中（題の下）").toBeLessThanOrEqual(headBox.y + headBox.height);
+  // 影と本文・足の余白は小窓の型（正本の dialog）のまま：同じトークンを読んだ物と計算値が同じ
+  const typed = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      "position:absolute;box-shadow:var(--k-c-dialog-shadow);padding:var(--k-c-dialog-body-pad);margin:0";
+    document.body.append(probe);
+    const a = getComputedStyle(probe);
+    const body = { shadow: a.boxShadow, pad: a.padding };
+    probe.style.padding = "var(--k-c-dialog-actions-pad)";
+    const foot = getComputedStyle(probe).padding;
+    probe.remove();
+    return { ...body, foot };
+  });
+  expect(await color(pop, "box-shadow"), "影は正本の dialog").toBe(typed.shadow);
+  expect(await color(page.locator(".k-dialog-body"), "padding"), "本文の余白は正本の dialog").toBe(typed.pad);
+  expect(await color(page.locator(".k-dialog-actions"), "padding"), "足の余白は正本の dialog").toBe(typed.foot);
   await page.setViewportSize({ width: 375, height: 1000 });
   expect(Math.round((await pop.boundingBox())!.width), "幅 375 は小窓の型どおり画面の幅 − 48").toBe(327);
 });
 
-test("K230-UI-002 3 段：丸の番号（26px・円）。2 段目は紺の「2」・3 段目は灰の地の「3」。受け取りを始めると 1 段目は緑の ✓。題は 600、段の間に線 #EDF0F4", async ({
+test("K230-UI-002 3 段：丸の番号（26px・円）。2 段目は紺の「2」・3 段目は灰の地の「3」。受け取りに成功すると 1 段目は緑の ✓。題は 600、段の間に線 #EDF0F4", async ({
   page,
 }) => {
   await mockApi(page);
@@ -493,6 +531,8 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
     expect(FIDELITY_STATES[g!.state], id).toBeTruthy();
   }
   const code = CFG.groups.find((x) => x.id === "bridge-code")!;
+  // 小窓は型の影（正本の dialog）を持つ：作り直した EdPC の影とも突き合わせる
+  expect(code.pairs.find((p) => p.name === "小窓")?.props, "小窓は影も比べる").toContain("box-shadow");
   // bridge-code の primary は「あとで」と「新しいコード」の 2 つ。対は名前で探す
   const btn = code.pairs.find((p) => p.name === "足のボタン（あとで）");
   expect(btn, "bridge-code に「足のボタン（あとで）」の対").toBeTruthy();
@@ -626,6 +666,11 @@ test("K230-UI-022 待っている → つながっている：小窓は自分で
   m.devices = ["live"];
   await page.clock.fastForward(6_000);
   await expect(dialog(page)).toHaveCount(0);
+  // 自分で閉じた後も、期限で替えるのは小窓が開いている間だけ（12 分進めてもコードを作らない）
+  const closed = m.codes;
+  m.skewMs += 12 * 60_000;
+  await page.clock.fastForward(12 * 60_000);
+  expect(m.codes, "閉じた後はコードを作らない").toBe(closed);
   await expect(
     page
       .getByRole("status")
@@ -731,22 +776,32 @@ test("K230-UI-027 比べ方の y_from：幅 767 以下は y を y_from の箱の
   await expect(readVals(page, [noWhy], "app")).rejects.toThrow(/why/);
 });
 
-test("K230-UI-028 「あとで」で閉じた後：閉じている間はコードの口を呼ばず（12 分進めても増えない）、コードは消える。「＋ PC をつなぐ」で開き直すと口を 1 回呼んで新しいコードが出る", async ({
+test("K230-UI-028 「あとで」で閉じた後：閉じている間はコードの口を呼ばず（12 分進めても増えない）、コードは消える。「＋ PC をつなぐ」で開き直すと口を 1 回呼んで新しいコードが出る（前のコードは出さない）", async ({
   page,
 }) => {
   const m = await mockApi(page);
   await page.clock.install();
   await open(page);
-  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  const code = dialog(page).getByTestId("pairing-code");
+  await expect(code).toHaveText(CODE_RE);
+  const before = await code.innerText();
   await page.locator(".k-dialog-actions").getByRole("button", { name: "あとで" }).click();
   await expect(dialog(page)).toHaveCount(0);
-  await expect(page.getByTestId("pairing-code")).toHaveCount(0);
   const closed = m.codes;
+  m.skewMs += 12 * 60_000;
   await page.clock.fastForward(12 * 60_000);
   expect(m.codes, "閉じている間はコードを作らない").toBe(closed);
+  // 開き直す：答えを止めておき、答えが来るまで前のコードを出さない（閉じたらコードは消えている）
+  m.hold = true;
   await page.locator(BODY).getByRole("button", { name: "＋ PC をつなぐ" }).click();
-  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  await expect(dialog(page)).toBeVisible();
   await expect.poll(() => m.codes).toBe(closed + 1);
+  await expect(dialog(page).getByTestId("pairing-code")).toHaveCount(0);
+  m.release();
+  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  expect(await dialog(page).getByTestId("pairing-code").innerText()).not.toBe(before);
+  await page.clock.runFor(3_000);
+  expect(m.codes, "開き直しで口は 1 回").toBe(closed + 1);
 });
 
 test("K230-UI-029 受け取りに失敗（口が 503・E-PAGE-007）：1 段目の丸は ✓ にならず「1」のまま、小窓の中に「読み込めませんでした」", async ({
@@ -760,4 +815,31 @@ test("K230-UI-029 受け取りに失敗（口が 503・E-PAGE-007）：1 段目�
   await expect(dialog(page).getByText(/読み込めませんでした/)).toBeVisible();
   await expect(step1.locator(".k-step-dot")).toHaveText("1");
   expect(await color(step1.locator(".k-step-dot"), "background-color")).not.toBe(GREEN);
+});
+
+test("K230-UI-030 口がコードの期限を遠い未来（2099 年）で返しても、待ちは setTimeout の上限で頭打ちにし、すぐ取り直さない（数秒たってもコードの口は 1 回）", async ({
+  page,
+}) => {
+  const m = await mockApi(page, { farExpiry: true });
+  await page.clock.install();
+  await open(page);
+  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  await page.clock.runFor(5_000);
+  expect(m.codes).toBe(1);
+  // 待ちを決める関数そのもの：上限 2^31−1 で頭打ち・過ぎた期限は 0・ふつうは残りの時間
+  const now = Date.parse("2026-11-17T00:00:00Z");
+  expect(codeWait(Date.parse("2099-01-01T00:00:00Z"), now)).toBe(2_147_483_647);
+  expect(codeWait(now - 1_000, now)).toBe(0);
+  expect(codeWait(now + 600_000, now)).toBe(600_000);
+});
+
+test("K230-UI-031 PC と使った量の CSS（connect-pc.css）に生の大きさが無い（--k-* だけを読む・注釈と @media の条件を除いて px が 0）。小窓は型（components/k/dialog.tsx）を使い、Base UI を直に使わない", () => {
+  const css = readFileSync(join(ROOT, "apps/web/features/F3/connect-pc/connect-pc.css"), "utf8")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/@media[^{]*\{/g, "{");
+  const raw = [...css.matchAll(/[^\s:;{}]*\d+(\.\d+)?px[^;{}]*/g)].map((x) => x[0]);
+  expect(raw).toEqual([]);
+  const dir = join(ROOT, "apps/web/features/F3/connect-pc");
+  for (const f of readdirSync(dir).filter((x) => /\.tsx?$/.test(x)))
+    expect(readFileSync(join(dir, f), "utf8"), f).not.toContain("@base-ui/react");
 });

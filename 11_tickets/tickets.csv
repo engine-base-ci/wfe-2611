@@ -1400,7 +1400,8 @@ K-230,PC をつなぐの中身をキャンバスに合わせる（つなぐ小�
 
 台帳（scripts/ci/class_ledger.json）の k-steps・k-code の 2 行はこのチケットが消す。
 
-この PC に Bridge が入っている状態の絵（MePCInstalled）は K-219 が起こし、本線に入った（正の絵）。","- [ ] 下の 27 行（K230-UI-001〜027）が緑
+この PC に Bridge が入っている状態の絵（MePCInstalled）は K-219 が起こし、本線に入った（正の絵）。","- [ ] 下の 31 行（K230-UI-001〜031）が緑
+- [ ] 作り手（k257.py）で EdPC を作り直した後も、K-257 の試験（k257_canvas_boards_test.py・k257-canvas-boards.spec.ts）・K-254 の絵の検査（k254_canvas_values_test.py・k254-canvas-layout.spec.ts）・K-229 の小窓の試験（k229-modals.spec.ts）を替えずに緑。design_gate と gen_tokens.py --web --check が緑
 - [ ] 前からの PC をつなぐの試験（K-220 が替えた connect-pc.spec.ts・qa-b-bridge-setup.spec.ts と、K-220 が替える m2-bridge-ticket.spec.ts・staging の steps.ts）が、このチケットでは替えずに緑
 - [ ] 台帳から connect-pc.tsx の k-steps・k-code の行を消し、G67（K-214）が緑
 - [ ] 頭の canvas の 3 組（今の 2 組と K-219 が足す bridge-installed：bridge-code：EdPC／bridge-connected：MePC／bridge-installed：MePCInstalled）を enrolled にし、キャンバスとの突き合わせ（K230-UI-019・G70）が組の幅（1440・375）で緑

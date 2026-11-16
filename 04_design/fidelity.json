@@ -996,7 +996,8 @@
       "border-radius",
       "background-color",
       "x",
-      "y"
+      "y",
+      "box-shadow"
      ]
     },
     {
