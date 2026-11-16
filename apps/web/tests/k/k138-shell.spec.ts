@@ -12,11 +12,10 @@ import { expect, test, type Page, type Request, type Route } from "@playwright/t
 import { NAV, type RoleId } from "../../lib/nav";
 import { isBuilt } from "../../lib/built-routes";
 import {
+  capture,
   compareFonts,
   compareRows,
-  loadedFonts,
   mismatches,
-  readVals,
   type FidelityPair,
 } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
@@ -38,22 +37,42 @@ type Reply = { status: number; body: unknown };
 interface Mock {
   role: string;
   meStatus: number;
+  /** 名前（null は口が名前を返さない） */
+  displayName: string | null;
   approvals: number;
   devices: { state: "waiting" | "live" | "asleep" }[];
+  /** 外枠だけが読む 3 つの口（グループ・承認待ちの数・PC）を 500 にする */
+  outerFail: boolean;
   signOuts: number;
+  /** 呼ばれた口（"GET /api/v1/approvals/queue?limit=1" の形） */
+  calls: string[];
 }
 
 const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ status: 200, body: { data, meta } });
 
 async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
-  const m: Mock = { role: "owner", meStatus: 200, approvals: 2, devices: [{ state: "live" }], signOuts: 0, ...o };
+  const m: Mock = {
+    role: "owner",
+    meStatus: 200,
+    displayName: "高本",
+    approvals: 2,
+    devices: [{ state: "live" }],
+    outerFail: false,
+    signOuts: 0,
+    calls: [],
+    ...o,
+  };
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   // 本人の Bridge に届かせない（テストで本人の Bridge を止めない・触らない）
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await page.route(API_RE, async (route: Route, req: Request) => {
-    const p = new URL(req.url()).pathname;
+    const u = new URL(req.url());
+    const p = u.pathname;
+    m.calls.push(`${req.method()} ${p}${u.search}`);
     let r: Reply = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
-    if (p === "/api/auth/get-session")
+    const outer = ["/api/v1/scopes", "/api/v1/approvals/queue", "/api/v1/bridge/devices"];
+    if (m.outerFail && outer.includes(p)) r = { status: 500, body: { error: "internal", code: "INTERNAL" } };
+    else if (p === "/api/auth/get-session")
       r = {
         status: 200,
         body: {
@@ -67,7 +86,7 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     } else if (p === "/api/auth-ext/me")
       r =
         m.meStatus === 200
-          ? ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: m.role, scope_id: null })
+          ? ok({ member_id: ME, tenant_id: WS, display_name: m.displayName, role_id: m.role, scope_id: null })
           : { status: m.meStatus, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
     else if (p === "/api/v1/scopes")
       r = ok(
@@ -326,7 +345,7 @@ test("K138-SH-012 上の帯：探す欄はグレーで出て打っても字が�
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("K138-SH-013 自分のメニュー：名前「高本」・ログアウトを押すとログアウトの口を呼び /login へ移る", async ({
+test("K138-SH-013 自分のメニュー：名前「高本」・「準備中」の字が無い・ログアウトを押すとログアウトの口を呼び /login へ移る", async ({
   page,
 }) => {
   const m = await mockApi(page);
@@ -334,6 +353,8 @@ test("K138-SH-013 自分のメニュー：名前「高本」・ログアウト�
   await page.getByRole("button", { name: "自分のメニュー" }).click();
   const menu = page.getByRole("menu");
   await expect(menu).toContainText("高本");
+  // 作っていない項目（自分の設定 など）も「準備中」の字を出さない（D-144.1）
+  expect(await menu.innerText()).not.toContain("準備中");
   await menu.getByRole("menuitem", { name: "ログアウト" }).click();
   await expect(page).toHaveURL(/\/login/);
   expect(m.signOuts).toBeGreaterThan(0);
@@ -358,7 +379,7 @@ test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チ
   await expect(page).toHaveURL(/\/tickets\?new=1$/);
 });
 
-test("K138-SH-015 幅 375：メニューを押すと全部のメニューが開き項目が左のメニューと同じ。もう一度押すと閉じる", async ({
+test("K138-SH-015 幅 375：メニューを押すと全部のメニューが開き項目が左のメニューと同じ・「準備中」の字が無い。もう一度押すと閉じる", async ({
   page,
 }) => {
   await mockApi(page);
@@ -372,6 +393,7 @@ test("K138-SH-015 幅 375：メニューを押すと全部のメニューが開�
     .locator(".k-nav-item:not(:has(.k-group-mark))")
     .evaluateAll((els) => els.map((e) => e.querySelector(".k-nav-label")?.textContent?.trim() ?? ""));
   expect(labels).toEqual(expectedLabels("R1"));
+  expect(await sheet.innerText()).not.toContain("準備中");
   await btn.click();
   await expect(sheet).toHaveCount(0);
 });
@@ -524,6 +546,59 @@ test("K138-SH-025 使えない状態の部品：正本に button-disabled・inpu
   expect(await search.locator("input").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
 });
 
+test("K138-SH-026 外枠だけが読む 3 つの口（グループ・承認待ちの数・PC）が 500：主ナビは R1 どおり・数の印なし・グループの見出しなし・PC はつないでいない・本文は出る", async ({
+  page,
+}) => {
+  await mockApi(page, { outerFail: true });
+  await open(page, PATHS.detail);
+  await expect(page.locator("#k-main h1")).toHaveText("請求書を送る");
+  await expect.poll(() => navLabels(page)).toEqual(expectedLabels("R1"));
+  const nav = leftNav(page);
+  await expect(nav.locator(".k-nav-badge")).toHaveCount(0);
+  await expect(nav.getByText("グループ", { exact: true })).toHaveCount(0);
+  await expect(nav.locator(".k-nav-item:has(.k-group-mark)")).toHaveCount(0);
+  await expect(nav.locator(".k-pc")).toHaveText("PC をつないでいない");
+  // 書けるグループが分からないあいだは作るボタンを出さない
+  await expect(nav.getByRole("button", { name: "チケットを作る" })).toHaveCount(0);
+});
+
+test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC と承認待ちの数を 1 回ずつ読み、時計を 60 秒進めても増えない・/approvals では外枠が数を読まない", async ({
+  page,
+}) => {
+  const m = await mockApi(page);
+  await page.clock.install();
+  await open(page, PATHS.tickets);
+  await expect(leftNav(page).locator(".k-pc")).toHaveText("PC つながっている");
+  await expect(leftNav(page).locator(".k-nav-badge")).toHaveText("2");
+  const count = (prefix: string) => m.calls.filter((c) => c.startsWith(prefix)).length;
+  expect(count("GET /api/v1/bridge/devices")).toBe(1);
+  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+  await page.clock.runFor(60_000);
+  expect(count("GET /api/v1/bridge/devices")).toBe(1);
+  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+
+  m.calls.length = 0;
+  await open(page, PATHS.approvals);
+  await expect(page.locator("#k-main h1")).toHaveText("承認待ち");
+  await expect(leftNav(page).locator(".k-pc")).toHaveText("PC つながっている");
+  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(0);
+});
+
+test("K138-SH-028 名前が無い（display_name が null）：自分の札とメニューの名前は空（嘘の名前を出さない）・AI の項目は「のAI」にしない", async ({
+  page,
+}) => {
+  await mockApi(page, { displayName: null });
+  await open(page, PATHS.tickets);
+  await expect.poll(() => navLabels(page)).toContain("チケット");
+  await expect(page.locator(".k-bar .k-me .k-avatar")).toHaveText("");
+  await page.getByRole("button", { name: "自分のメニュー" }).click();
+  await expect(page.locator(".k-menu-head")).toHaveText("");
+  await page.keyboard.press("Escape");
+  const labels = await navLabels(page);
+  expect(labels).not.toContain("のAI");
+  expect(labels).toContain("AI");
+});
+
 interface Group {
   id: string;
   canvas: string;
@@ -559,21 +634,22 @@ for (const id of SHELL_GROUPS) {
       await routeCanvasFonts(canvasPage);
       await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
       for (const p of g!.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
-      await canvasPage.evaluate(() => document.fonts.ready);
-      const canvasVals = await readVals(canvasPage, g!.pairs, "canvas");
-      const canvasFonts = await loadedFonts(canvasPage);
+      const C = await capture(canvasPage, g!.pairs, "canvas");
       await canvasPage.close();
 
       const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
       await appPage.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
       await FIDELITY_STATES[g!.state]!(appPage, g!.app);
       for (const p of g!.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
-      await appPage.evaluate(() => document.fonts.ready);
-      const appVals = await readVals(appPage, g!.pairs, "app");
-      const appFonts = await loadedFonts(appPage);
+      // 後から届く口の値（承認待ちの数の印・自分の札）が出てから読む（届く前の値で比べない）
+      if (id === "shell-nav") {
+        await expect(appPage.locator(".k-nav .k-nav-badge")).toHaveText("2");
+        await expect(appPage.locator(".k-bar .k-me .k-avatar")).toHaveText("高");
+      } else await expect(appPage.locator(".k-tabs .k-nav-badge")).toHaveText("9");
+      const A = await capture(appPage, g!.pairs, "app");
       await appPage.close();
 
-      const rows = [...compareRows(g!.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
+      const rows = [...compareRows(g!.pairs, C.vals, A.vals), compareFonts(C.fonts, A.fonts)];
       const bad = rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}：キャンバス ${r.canvas} ／ 画面 ${r.app}`);
       expect(mismatches(rows), bad.join("\n")).toBe(0);
     });
