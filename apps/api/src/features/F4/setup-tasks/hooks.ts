@@ -1,6 +1,6 @@
 // はじめにやることの口（K-250）：listSetupTasks・dismissSetupTasks。項目は決定どおり 3 つ（D-125.146）。
 //   passkey：パスキーの機能ができるまで使えない（available false・行き先 null）・済みにしない（2 段階認証でも済みにしない・D-145.11）
-//   pc：一度でも知らせが届いた PC が在れば済み（外しても済み・D-145.12）。アカウント全体で数える（D-128.137・app.setup_pc_done）
+//   pc：知らせが一度でも届き、外していない PC が在れば済み。全部外したら済んでいないに戻す・電源を切っただけなら済み（D-145.12・answer=20e64d6fae6d）。アカウント全体で数える（D-128.137・app.setup_pc_done）
 //   credentials：任意（D-145.13）。今の会社で自分が預け、取り消し・消していない物が 1 つ以上で済み（PM の決め）。「あとで」で飛ばせる（skipped）
 //   閉じる・飛ばすは自分の今の会社の members の行だけを書く（関門 C2・security definer の関数 app.setup_dismiss・app.setup_skip）。
 //   セッションの人が今の会社のメンバーでなければ、どちらの口も 403 で何も書かない（K250-API-014）。
