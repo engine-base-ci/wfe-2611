@@ -879,9 +879,9 @@ RESPONSES = {
     "getServiceStatus": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
-# 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）
+# 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
 META = {
-    "listTickets": {"next_cursor": "string"},   # 次の分の鍵（keyset）。総数も数も返さない（D-144.3・K-92）
+    "listTickets": {"next_cursor": {"type": "string", "nullable": True}},   # 次の分の鍵（keyset・最後の分は null）。総数も数も返さない（D-144.3・K-92）
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},

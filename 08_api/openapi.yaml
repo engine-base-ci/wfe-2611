@@ -39147,6 +39147,7 @@ paths:
                     properties:
                       next_cursor:
                         type: string
+                        nullable: true
         '401':
           description: UNAUTHENTICATED
           content:
