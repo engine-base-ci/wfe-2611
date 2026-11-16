@@ -527,6 +527,9 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
   expect(byId("bridge-connected").app).toBe("/setup/bridge?from=%2Ftickets");
   // 375 は外枠の決まり（767 以下は上の帯なし）に従う：キャンバス MePC・MePCInstalled の絵の側を帯なしに作り直したので、y は頁の上端から比べる（PM の決め 2026-11-17）。
   //   口に無い補足の字の行の高さだけを外すため、bridge-connected の「Bridge を起こす」の y だけ、幅 767 以下は直し方の箱の上端から比べる（訳つき）
+  const wakePair = byId("bridge-connected").pairs.find((x) => x.name === "Bridge を起こす");
+  expect(wakePair?.props, "起こすは y まで比べる").toContain("y");
+  expect((wakePair as FidelityPair & { y_from?: YFrom }).y_from, "起こすは y_from を持つ").toBeTruthy();
   for (const id of ["bridge-connected", "bridge-installed"]) {
     for (const p of byId(id).pairs.filter((x) => x.props.includes("y"))) {
       const yf = (p as FidelityPair & { y_from?: YFrom }).y_from;
