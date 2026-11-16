@@ -108,6 +108,92 @@
   color: var(--k-on-surface);
 }
 
+/* ---- 本文の箱（K-225・キャンバス Create の本文の箱）：上に道具の帯（部品 DocTools の CSS のまま）・下に文書。箱の余白は文書が持つ ---- */
+.k-create-card-doc {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.k-create-doc {
+  padding: var(--k-c-create-doc-pad);
+  max-width: var(--k-c-create-doc-width);
+  min-width: 0;
+}
+/* 区画の見出し（正本 section-title-form。最初の見出しだけ上が section-title-form-first） */
+.k-create-doc h2,
+.k-create-spec > h3 {
+  margin: var(--k-c-section-title-form-margin);
+  padding: var(--k-c-section-title-form-pad);
+  border-bottom: var(--k-c-section-title-form-border-bottom);
+  font-size: var(--k-c-section-title-form-text);
+  font-weight: var(--k-c-section-title-form-fw);
+  line-height: var(--k-c-section-title-form-lh);
+  color: var(--k-on-surface);
+}
+.k-create-doc h2:first-of-type {
+  margin: var(--k-c-section-title-form-first-margin);
+}
+/* 必須の印（見出しの中・赤） */
+.k-create-doc h2 b {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-error);
+}
+/* ひな形の補足（見出しの中・灰・細い字） */
+.k-create-doc h2 span:not([id]) {
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-body);
+  color: var(--k-on-surface-variant);
+}
+.k-create-doc .k-err {
+  margin: var(--k-s-xs) 0 0;
+}
+/* テスト仕様（まだ AI の案が無いので、空の箱と押せない 2 つのボタン・D-145.9） */
+.k-create-spec-box {
+  border: var(--k-c-create-spec-border);
+  border-radius: var(--k-c-create-spec-radius);
+  overflow: hidden;
+}
+.k-create-spec-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-create-spec-acts-gap);
+  padding: var(--k-c-create-spec-acts-pad);
+  background: var(--k-c-create-spec-acts-bg);
+}
+.k-create-spec-act,
+.k-create-doc-add {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-primary);
+  text-align: left;
+}
+.k-create-spec-act[aria-disabled="true"],
+.k-create-doc-add[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 文書の下の「＋ 見出しを足す…」（点線の上の線・まだ使えない・D-145.8） */
+.k-create-doc-add {
+  display: block;
+  width: 100%;
+  margin: var(--k-c-create-doc-add-margin);
+  padding: var(--k-c-create-doc-add-pad);
+  border-top: var(--k-c-create-doc-add-border-top);
+  font-size: var(--k-text-body);
+  color: var(--k-neutral);
+}
+/* 幅 767 以下：道具の帯と文書の左右を 16px（キャンバスの決まり）。帯は作る画面の本文の箱の中だけ（詳細の画面の帯に効かせない） */
+@media (max-width: 767px) {
+  section[aria-label="本文"] > .k-doc-tools,
+  .k-create-doc {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+}
+
 /* 上の箱：グループと種別は幅 160 で横に並べ、題名は高さ 40・15px・500 */
 .k-create-pick {
   display: flex;
