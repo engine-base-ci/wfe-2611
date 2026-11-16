@@ -25,6 +25,8 @@ const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, r
 interface ScopeRow {
   id: string;
   name: string;
+  /** 番号の頭（EG など）。在れば札に使う（キャンバスの札と同じ物） */
+  ticket_prefix?: string | null;
 }
 interface Scopes {
   rows: ScopeRow[];
@@ -93,7 +95,7 @@ export function TicketShell({ screen, crumbs, counts, onCreate, children }: Tick
   const role = who.isSuccess ? (ROLE_OF[who.data.role_id ?? ""] ?? "R1") : undefined;
   const name = (who.isSuccess ? who.data.display_name : null) ?? "";
   const groups: Group[] = (scopes.data?.rows ?? []).map((s, i) => ({
-    code: s.name.slice(0, 2),
+    code: s.ticket_prefix || s.name.slice(0, 2),
     name: s.name,
     href: `/tickets?scope=${encodeURIComponent(s.id)}`,
     tone: TONES[i % TONES.length]!,

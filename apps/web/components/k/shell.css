@@ -165,8 +165,11 @@
   color: var(--k-on-surface-variant);
 }
 .k-group-mark {
-  width: 18px;
+  /* 札の字（番号の頭か名前の頭の 2 字）が漢字 2 字でもはみ出さないよう、幅は字に合わせて 18px 以上 */
+  min-width: 18px;
   height: 18px;
+  white-space: nowrap;
+  box-sizing: border-box;
   border-radius: var(--k-r-sm);
   color: var(--k-card);
   font-size: var(--k-text-label-xs);
