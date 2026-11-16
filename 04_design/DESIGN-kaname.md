@@ -265,6 +265,7 @@ components:
     padding: "12px 0 0"
   auth-foot:            # 足元の行き先：11px・間 12px
     typography: "{typography.label-md}"
+    fontWeight: 400
     gap: "12px"
   auth-spin:            # 確かめ中・読み込み中の回る印：16px
     width: "16px"

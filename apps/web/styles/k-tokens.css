@@ -212,7 +212,7 @@
   --k-c-auth-alt-border-top: 1px solid var(--k-line-soft);
   --k-c-auth-alt-pad: 12px 0 0;
   --k-c-auth-foot-text: var(--k-text-label-md);
-  --k-c-auth-foot-fw: var(--k-fw-label-md);
+  --k-c-auth-foot-fw: 400;
   --k-c-auth-foot-gap: 12px;
   --k-c-auth-spin-width: 16px;
   --k-c-auth-spin-height: 16px;
