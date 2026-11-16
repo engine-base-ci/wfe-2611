@@ -496,7 +496,7 @@
     <div class="type-card" data-part="dialog">
       <div class="type-scale-name">dialog</div>
       <div><div style="background:#FFFFFF; border-radius:12px; border:1px solid #DDE2E9; width:280px;"><div style="padding:14px 18px; border-bottom:1px solid #DDE2E9; font-size:15px; font-weight:700;">完了にする <span style="float:right;">×</span></div><div style="padding:12px 18px; border-top:1px solid #DDE2E9; margin-top:24px; text-align:right;">やめる ／ 決める</div></div></div>
-      <div class="type-meta">backgroundColor #FFFFFF · rounded 12px · margin 60px auto 0</div>
+      <div class="type-meta">backgroundColor #FFFFFF · rounded 12px · shadow 0 0 0 1px #DDE2E9, 0 24px 60px #131B274D · margin 60px auto 0</div>
     </div>
   </div>
 </section>
@@ -600,6 +600,7 @@ colors:
   line-strong: &#x27;#B8C0CC&#x27;
   primary-soft: &#x27;#EEF3FD&#x27;
   primary-line: &#x27;#C7D7F5&#x27;
+  overlay-shadow: &#x27;#131B274D&#x27;
 typography:
   h1:
     fontFamily: Noto Sans JP
@@ -713,6 +714,7 @@ components:
   dialog:
     backgroundColor: &#x27;{colors.card}&#x27;
     rounded: &#x27;{rounded.lg}&#x27;
+    shadow: 0 0 0 1px {colors.line}, 0 24px 60px {colors.overlay-shadow}
     margin: 60px auto 0
 ---</div>
 </section>

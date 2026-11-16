@@ -492,11 +492,9 @@ textarea.k-input {
   font-family: var(--k-font);
   font-size: var(--k-text-body);
   line-height: var(--k-lh-body);
-  /* 縁は箱の外の輪（大きさに足さない・暗いテーマでも縁が見える）と影（キャンバス StModal：0 24px 60px・30%） */
+  /* 縁は箱の外の輪（大きさに足さない）と影（正本の dialog の shadow。暗いテーマは輪だけ） */
   border: 0;
-  box-shadow:
-    0 0 0 1px var(--k-line),
-    0 24px 60px color-mix(in srgb, var(--k-on-surface) 30%, transparent);
+  box-shadow: var(--k-c-dialog-shadow);
   border-radius: var(--k-c-dialog-radius);
   outline: 0;
 }

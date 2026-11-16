@@ -37,6 +37,7 @@
   --k-line-strong: #B8C0CC;
   --k-primary-soft: #EEF3FD;
   --k-primary-line: #C7D7F5;
+  --k-overlay-shadow: #131B274D;
   --k-syn-keyword: #22345C;
   --k-syn-string: #186F69;
   --k-syn-number: #7E570D;
@@ -222,6 +223,7 @@
   --k-c-auth-spin-height: 16px;
   --k-c-dialog-bg: var(--k-card);
   --k-c-dialog-radius: var(--k-r-lg);
+  --k-c-dialog-shadow: 0 0 0 1px var(--k-line), 0 24px 60px var(--k-overlay-shadow);
   --k-c-dialog-margin: 60px auto 0;
   --k-c-dialog-confirm-width: 380px;
   --k-c-dialog-form-width: 420px;
@@ -443,6 +445,7 @@
     --k-line-strong: #3D4858;
     --k-primary-soft: #1B2638;
     --k-primary-line: #34476B;
+    --k-overlay-shadow: #00000000;
     --k-syn-keyword: #9DB5E8;
     --k-syn-string: #6CC4BC;
     --k-syn-number: #E0B25A;
@@ -513,6 +516,7 @@
   --k-line-strong: #3D4858;
   --k-primary-soft: #1B2638;
   --k-primary-line: #34476B;
+  --k-overlay-shadow: #00000000;
   --k-syn-keyword: #9DB5E8;
   --k-syn-string: #6CC4BC;
   --k-syn-number: #E0B25A;
@@ -581,6 +585,7 @@
   --color-k-line-strong: var(--k-line-strong);
   --color-k-primary-soft: var(--k-primary-soft);
   --color-k-primary-line: var(--k-primary-line);
+  --color-k-overlay-shadow: var(--k-overlay-shadow);
   --color-k-syn-keyword: var(--k-syn-keyword);
   --color-k-syn-string: var(--k-syn-string);
   --color-k-syn-number: var(--k-syn-number);

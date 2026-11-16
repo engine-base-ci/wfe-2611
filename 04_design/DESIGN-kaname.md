@@ -46,6 +46,7 @@ colors:
   line-strong: "#B8C0CC"   # 点線の枠・使えない線・薄いアイコン
   primary-soft: "#EEF3FD"  # 紺の淡い地（選んだ札・案内）
   primary-line: "#C7D7F5"  # 紺の淡い線
+  overlay-shadow: "#131B274D"  # 迫り出す面（小窓）の影：on-surface の 30%（StModal の 0 24px 60px）。暗いテーマは影を使わない（透明）
 syntax:
   # コードの色分け（D-104.4）。新しい色は作らず、既存の値を字の色としてだけ使う（面に使わない）
   keyword: "#22345C"
@@ -276,6 +277,7 @@ components:
   dialog:
     backgroundColor: "{colors.card}"
     rounded: "{rounded.lg}"
+    shadow: "0 0 0 1px {colors.line}, 0 24px 60px {colors.overlay-shadow}"   # 層 2：縁の輪（大きさに足さない）と影。暗いテーマは overlay-shadow が透明なので輪だけ
     margin: "60px auto 0"   # 置き場：上から 60px・左右の真ん中（K-229・キャンバスの StApproveModal・StCompleteModal・StReturnModal）。左右は画面の端から lg 空ける
   dialog-confirm:       # 取り消せない確かめの幅（StApproveModal 380）
     width: "380px"
@@ -540,6 +542,7 @@ dark:
     line-strong: "#3D4858"
     primary-soft: "#1B2638"
     primary-line: "#34476B"
+    overlay-shadow: "#00000000"  # 暗いテーマは影が見えないので出さない。迫り出す面は輪（dialog-ring＝line）と地の段で表す
   syntax:
     keyword: "#9DB5E8"
     string: "#6CC4BC"
