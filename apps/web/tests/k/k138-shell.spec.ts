@@ -556,12 +556,16 @@ test("K138-SH-025 使えない状態の部品：正本に button-disabled・inpu
       input: st.getPropertyValue("--k-c-input-disabled-opacity").trim(),
     };
   });
-  expect(tokens).toEqual({ button: DISABLED_OPACITY, input: DISABLED_OPACITY });
+  // 本番の形の組み立てでは CSS の圧縮でトークンの字が「.55」になる（CI の回 43801690491）。字でなく数で比べる
+  expect({ button: Number(tokens.button), input: Number(tokens.input) }).toEqual({
+    button: Number(DISABLED_OPACITY),
+    input: Number(DISABLED_OPACITY),
+  });
   const item = leftNav(page).locator('[aria-disabled="true"]').first();
-  expect(await item.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.button);
+  expect(Number(await item.evaluate((e) => getComputedStyle(e).opacity))).toBe(Number(tokens.button));
   // 探す欄は外の箱（role search）だけを薄くする。中の入力欄にも掛けると薄さが重なる（0.55 × 0.55）ので、入力欄は 1 のまま
   const search = page.getByRole("search");
-  expect(await search.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.input);
+  expect(Number(await search.evaluate((e) => getComputedStyle(e).opacity))).toBe(Number(tokens.input));
   expect(await search.locator("input").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
 });
 
