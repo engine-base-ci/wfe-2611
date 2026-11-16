@@ -127,7 +127,7 @@ describe("K-250 はじめにやることの口", () => {
     expect(JSON.stringify(pg)).not.toContain("付けました");
   });
 
-  it("K250-API-003 PC：引き取っただけ（知らせが 0 回）は済んでいない・知らせが届くと済み・電源を切っただけ（知らせが古い）なら済み・外したら済んでいないに戻る（answer=20e64d6fae6d）", async () => {
+  it("K250-API-003 PC：引き取っただけ（知らせが 0 回）は済んでいない・知らせが届くと済み・電源を切っただけ（知らせが古い）なら済み・2 台のうち 1 台を外しても済み・全部外したら済んでいないに戻る（answer=20e64d6fae6d）", async () => {
     const { p } = await person();
     const d = await connectPc(p, false);
     expect(doneOf(await listOk(p))["pc"]).toBe(false);
@@ -144,13 +144,17 @@ describe("K-250 はじめにやることの口", () => {
     );
     expect(asleep.rowCount).toBe(1);
     expect(doneOf(await listOk(p))["pc"]).toBe(true);
-    // 外す口（revokeMyDevice）は K-91。ここでは外した状態を DB で作る
-    const off = await f.admin.query(
-      "update sessions set revoked_at = now(), revoke_reason_id = 'admin' where member_id = $1 and kind_id = 'bridge' and revoked_at is null",
-      [p.id],
-    );
-    expect(off.rowCount).toBe(1);
-    expect(doneOf(await listOk(p))["pc"]).toBe(false);
+    // 2 台目もつなぐ（知らせが届く）。外す口（revokeMyDevice）は K-91。ここでは外した状態を DB で 1 台ずつ作る
+    const d2 = await connectPc(p, true);
+    const revoke = (id: string) =>
+      f.admin.query(
+        "update sessions set revoked_at = now(), revoke_reason_id = 'admin' where id = $1 and kind_id = 'bridge' and revoked_at is null",
+        [id],
+      );
+    expect((await revoke(d.deviceId)).rowCount).toBe(1);
+    expect(doneOf(await listOk(p))["pc"]).toBe(true); // まだ外していない PC が 1 台ある
+    expect((await revoke(d2.deviceId)).rowCount).toBe(1);
+    expect(doneOf(await listOk(p))["pc"]).toBe(false); // つながっている PC が 1 台も無い
   });
 
   it("K250-API-004 ログイン情報：自分の預けた物が在れば済み。取り消した・消した・他の人の物だけなら済んでいない", async () => {
