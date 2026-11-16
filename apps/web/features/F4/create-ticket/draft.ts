@@ -104,9 +104,15 @@ export class DraftStore {
   private seq = 0;
   constructor(
     private readonly o: DraftOwner,
-    private readonly onState: (s: SaveState) => void,
+    /** 残せたかを知らせる。残せたときは保存の口の答えの saved_at（サーバーが残した時刻）も渡す */
+    private readonly onState: (s: SaveState, savedAt?: string | null) => void,
     private readonly waitMs = 600,
   ) {}
+
+  /** まだサーバーへ送っていない書きかけがある（少し待ってから送る保存が待っている） */
+  get pending(): boolean {
+    return this.timer !== undefined;
+  }
 
   /** 書いた中身を残す（サーバーへは少し待ってから・まとめて 1 回） */
   save(body: DraftBody): void {
@@ -114,7 +120,10 @@ export class DraftStore {
     const id = tabDraftId(this.o);
     write(COPY_KEY(this.o), JSON.stringify({ id, body }), local);
     if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => void this.send(body), this.waitMs);
+    this.timer = setTimeout(() => {
+      this.timer = undefined;
+      void this.send(body);
+    }, this.waitMs);
   }
 
   /** 作る前に：待っている保存を止め、今の中身をすぐサーバーへ残して答えを待つ（ログイン切れでも続きが出る・H1） */
@@ -156,6 +165,7 @@ export class DraftStore {
     if (this.sealed) return "saved";
     const mine = ++this.seq;
     let state: SaveState;
+    let savedAt: string | null = null;
     // 待ちすぎたら打ち切る。打ち切りは setTimeout で数える（画面の時計で進められる・AbortSignal.timeout は使わない）
     const ac = timeoutMs ? new AbortController() : null;
     const stop = ac ? setTimeout(() => ac.abort(), timeoutMs) : undefined;
@@ -165,6 +175,7 @@ export class DraftStore {
         screenId: "tickets",
         ...(ac ? { signal: ac.signal } : {}),
       });
+      if (r.ok) savedAt = (r.data as { saved_at?: string | null }).saved_at ?? null;
       state = r.ok
         ? "saved"
         : r.kind === "unauthenticated"
@@ -177,7 +188,7 @@ export class DraftStore {
     } finally {
       if (stop) clearTimeout(stop);
     }
-    if (mine === this.seq && !this.sealed) this.onState(state);
+    if (mine === this.seq && !this.sealed) this.onState(state, savedAt);
     return state;
   }
 }
