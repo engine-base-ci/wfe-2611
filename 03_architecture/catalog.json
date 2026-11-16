@@ -2761,7 +2761,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "dismissSetupTasks",
@@ -2776,7 +2778,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "listMyTicketDrafts",

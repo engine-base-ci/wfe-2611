@@ -3485,10 +3485,12 @@
    ],
    "apis": [
     "copyNotificationSettings",
+    "dismissSetupTasks",
     "getMe",
     "getNotificationSettings",
     "leaveWorkspace",
     "listMySessions",
+    "listSetupTasks",
     "requestEmailChange",
     "revokeMySession",
     "revokeOtherSessions",
