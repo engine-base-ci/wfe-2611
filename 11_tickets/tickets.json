@@ -6193,7 +6193,12 @@
     "04_design/fidelity.json",
     "apps/web/tests/_lib/fidelity-states.ts",
     "scripts/ci/ci_scope.json",
-    "apps/web/components/k/k.css"
+    "apps/web/components/k/k.css",
+    "05_flow/flow.json",
+    "01_hearing/決定ログ_進行中.md",
+    "07_qa/test-specs/k/approve-complete.md",
+    "07_qa/test-specs/k/create-ticket.md",
+    "apps/e2e/staging/_lib/steps.ts"
    ],
    "affects": [
     "@kaname/web"
