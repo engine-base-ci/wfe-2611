@@ -165,6 +165,32 @@ class DesignTest(unittest.TestCase):
         r = run([str(GEN), "--check"], ROOT)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertNotIn("--text-metric-lg", BRIDGE_TOKENS.read_text(encoding="utf-8"))
+        # 小窓の頭・本文・足・×・項目名の間・使えない状態も正本の部品から --k-c-* で配る（PM の決め 3）
+        for line in ("--k-c-dialog-head-pad: 14px 18px;", "--k-c-dialog-head-border-bottom: 1px solid var(--k-line);",
+                     "--k-c-dialog-body-pad: 14px 18px;", "--k-c-dialog-actions-pad: 12px 18px;",
+                     "--k-c-dialog-actions-border-top: 1px solid var(--k-line);", "--k-c-dialog-close-width: 28px;",
+                     "--k-c-dialog-close-height: 28px;", "--k-c-field-gap: var(--k-s-xs);", "--k-c-field-lg-gap: 6px;",
+                     "--k-c-button-disabled-opacity: 0.55;", "--k-c-input-disabled-opacity: 0.55;",
+                     "--k-c-tab-disabled-opacity: 0.55;"):
+            self.assertIn(line, css)
+        # 部品の CSS（k.css）のその規則は var(--k-c-…) で読み、生の値を書かない（レビューの指摘 3 が戻らないように）
+        kcss = (ROOT / "apps" / "web" / "components" / "k" / "k.css").read_text(encoding="utf-8")
+        for sel, prop, var in ((".k-dialog-head", "padding", "--k-c-dialog-head-pad"),
+                               (".k-dialog-head", "border-bottom", "--k-c-dialog-head-border-bottom"),
+                               (".k-dialog-body", "padding", "--k-c-dialog-body-pad"),
+                               (".k-dialog-actions", "padding", "--k-c-dialog-actions-pad"),
+                               (".k-dialog-actions", "border-top", "--k-c-dialog-actions-border-top"),
+                               (".k-dialog-close", "width", "--k-c-dialog-close-width"),
+                               (".k-dialog-close", "height", "--k-c-dialog-close-height"),
+                               ('.k-field[data-size="lg"]', "gap", "--k-c-field-lg-gap"),
+                               (".k-input:disabled", "opacity", "--k-c-input-disabled-opacity"),
+                               ('.k-tab[data-disabled]', "opacity", "--k-c-tab-disabled-opacity"),
+                               (".k-btn:disabled", "opacity", "--k-c-button-disabled-opacity")):
+            blocks = [m.group(2) for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", kcss)
+                      if sel in [x.strip() for x in m.group(1).split(",")]]
+            self.assertTrue(blocks, f"k.css に {sel} の規則が無い")
+            vals = [v.strip() for b in blocks for k, _, v in (d.partition(":") for d in b.split(";")) if k.strip() == prop]
+            self.assertTrue(vals and all(v == f"var({var})" for v in vals), f"{sel} の {prop} が {vals}（var({var}) で読む）")
         # 部品が太さを持つときは、書体の段から来る太さを重ねて出さない（部品の値が勝つ・1 つの名前に 1 つの値）
         self.assertEqual(css.count("--k-c-button-primary-fw:"), 1)
         # 帯の中のボタン（K-217）は高さ 30 を min-height で持つ。上下の余白が残ると字の段（body 13px）で 30 を超える
@@ -267,6 +293,27 @@ class GateTest(unittest.TestCase):
                 out = r.stdout + r.stderr
                 self.assertEqual(r.returncode, 1, f"{prop} を消した: {out}")
                 self.assertTrue([ln for ln in d5_lines(out, "btn", prop) if "CSS に無い" in ln], out)
+            finally:
+                t.close()
+        # opacity・width・上の線・下の線も比べる（違えば赤・消せば「CSS に無い」・そろえば 0）
+        box_comps = DEFAULT_COMPS + ('\n  box:\n    opacity: 0.55\n    width: 28px\n'
+                                     '    borderTop: "1px solid {colors.line}"\n    borderBottom: "1px solid {colors.line}"')
+        box_cfg = '{"component_selectors": {"btn": ".x-btn", "box": ".x-box"}}'
+        good_box = ".x-box { opacity: 0.55; width: 28px; border-top: 1px solid #dde2e9; border-bottom: 1px solid #dde2e9; }\n"
+        cases = [(good_box, 0, None)]
+        for prop, good, bad in (("opacity", "0.55", "0.4"), ("width", "28px", "30px"),
+                                ("border-top", "1px solid #dde2e9", "1px solid #22345c"),
+                                ("border-bottom", "1px solid #dde2e9", "1px solid #22345c")):
+            cases.append((good_box.replace(f"{prop}: {good}", f"{prop}: {bad}"), 1, prop))
+            cases.append((good_box.replace(f" {prop}: {good};", ""), 1, prop))
+        for css_box, code, prop in cases:
+            t = FakeTree({"body": "13px"}, OK_CSS + css_box, "var(--k-text-body)", box_cfg, box_comps)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, code, f"{prop}: {css_box}\n{out}")
+                if prop:
+                    self.assertTrue(d5_lines(out, "box", prop), out)
             finally:
                 t.close()
         gap_comps = RESOLVE_COMPS + '\n    gap: "12px"'
@@ -459,6 +506,13 @@ class RealTreeTest(unittest.TestCase):
         self.assertEqual(int(m.group(1)), len(sels), r.stdout)
         self.assertGreaterEqual(int(m.group(1)), 20, r.stdout)
         self.assertGreaterEqual(int(m.group(2)), 60, r.stdout)
+        # セレクタを持つ部品は、どれも比べた値を 1 個以上持つ（比べる値の表に足し忘れた性質で 0 個のまま緑にならない）
+        j = subprocess.run([sys.executable, str(GATE), "--design", str(DESIGN), "--mocks", "apps/web/components/k",
+                            "apps/web/features", "--css", "apps/web/styles/k-tokens.css", "--part", "--json"],
+                           cwd=ROOT, capture_output=True, text=True, timeout=300)
+        by_part = json.loads(j.stdout)["d5_by_part"]
+        self.assertEqual(set(by_part), set(sels))
+        self.assertEqual([k for k, n in by_part.items() if n < 1], [], by_part)
 
     def test_K218_DS_026_preview(self) -> None:
         """K218-DS-026 プレビューに page-title・section-title が在り、metric-lg・chat の段が無い"""
