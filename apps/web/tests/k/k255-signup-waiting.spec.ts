@@ -208,15 +208,23 @@ test("K255-UI-006 補足：会社・チームの名前とパスワードの補�
     const lines = await h.evaluate((e) => {
       const r = document.createRange();
       r.selectNodeContents(e);
-      const tops = new Map<number, { left: number; top: number }>();
+      // 縦に重なる箱は同じ行にまとめる（上の端の丸めに頼らない）
+      const rows: { left: number; top: number; bottom: number; right: number }[] = [];
       for (const b of r.getClientRects()) {
         if (b.width === 0) continue;
-        const k = Math.round(b.top);
-        const was = tops.get(k);
-        if (!was || b.left < was.left) tops.set(k, { left: b.left, top: b.top });
+        const row = rows.find((x) => b.top < x.bottom && b.bottom > x.top);
+        if (row) {
+          row.left = Math.min(row.left, b.left);
+          row.right = Math.max(row.right, b.right);
+        } else rows.push({ left: b.left, top: b.top, bottom: b.bottom, right: b.right });
       }
-      return [...tops.values()].sort((x, y) => x.top - y.top);
+      return rows.sort((x, y) => x.top - y.top);
     });
+    const box = await rect(page, BOX);
+    for (const ln of lines)
+      expect(ln.right, `${l} の補足は箱の中身の右からはみ出さない`).toBeLessThanOrEqual(box.x + box.width - 28 + 1);
+    if (l === "会社・チームの名前")
+      expect(lines.length, `${l} の補足は幅 1440 で折れる（キャンバスも 2 行）`).toBeGreaterThanOrEqual(2);
     expect(lines.length, `${l} の補足の行`).toBeGreaterThanOrEqual(1);
     expect(Math.abs(lines[0]!.top - lb.y), `${l} の補足の 1 行目は項目名と同じ行（上の端が ±2）`).toBeLessThanOrEqual(
       2,
@@ -462,12 +470,12 @@ test("K255-UI-021 突き合わせの道具：読み込み中の組の印（busy:
   page,
 }) => {
   await page.goto(
-    dataPage(`<main><div role="status" aria-busy="true"></div><div class="v" style="width:50px;height:10px"></div></main>
-      <script>setTimeout(() => { document.querySelector('[role="status"]').textContent = "読み込んでいます…"; }, 300);</script>`),
+    dataPage(`<main><div role="status" aria-busy="true"></div><div class="v" style="width:10px;height:10px"></div></main>
+      <script>setTimeout(() => { document.querySelector('[role="status"]').textContent = "読み込んでいます…"; document.querySelector(".v").style.width = "50px"; }, 300);</script>`),
   );
   const { vals } = await capture(page, [vPair], "app", { busy: true, timeout: 5_000 });
   expect(vals[0]?.width).toBe("50px");
-  await expect(page.getByRole("status")).toHaveText("読み込んでいます…"); // 文が出てから読んだ
+  // 文が出るのと同じ時に幅が 10px → 50px になる。50px なら文が出てから読んだ（文が出る前に読めば 10px）
 });
 
 test("K255-UI-022 突き合わせの道具：印のある組でも、状態の文が上限の時間までに出なければ「状態の文が出ない」を出して投げる（空の箱で比べない）", async ({
