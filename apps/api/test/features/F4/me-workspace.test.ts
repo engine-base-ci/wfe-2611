@@ -147,6 +147,7 @@ describe("K-253 ログイン中の人の口に今いる会社の名前（GET /ap
     expect(me.member_id).toBe(o.member);
     expect(me.tenant_id).toBe(o.tenant);
     expect(me.display_name).toBe("高本");
+    expect(me.role_id).toBe("owner");
     expect(me.scope_id).toBe(o.scope);
     expect(Object.keys(me).sort()).toEqual(
       ["display_name", "member_id", "role_id", "scope_id", "tenant_id", "workspace_name"].sort(),
@@ -262,6 +263,15 @@ describe("K-253 ログイン中の人の口に今いる会社の名前（GET /ap
     const yaml = readFileSync(join(ROOT, "08_api", "openapi.yaml"), "utf8");
     const block = yaml.slice(yaml.indexOf("\n    Me:\n"), yaml.indexOf("x-operation: getMe"));
     expect(block).toMatch(/workspace_name:/);
+  });
+
+  it("K253-API-014 欄の使い道：08_api/api-field-consumption.json の tenants.name を読む画面に外枠の画面（tickets）が載る", () => {
+    const doc = JSON.parse(readFileSync(join(ROOT, "08_api", "api-field-consumption.json"), "utf8")) as {
+      fields: { entity: string; field: string; consumed_by_screens: string[] }[];
+    };
+    const row = doc.fields.find((f) => f.entity === "tenants" && f.field === "name");
+    expect(row, "tenants.name の行が無い").toBeDefined();
+    expect(row!.consumed_by_screens).toContain("tickets");
   });
 
   it("K253-API-013 読むだけ：読む前後で会社と人の行（名前・更新の時刻）が変わらない", async () => {
