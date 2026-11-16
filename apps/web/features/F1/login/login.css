@@ -86,7 +86,8 @@
 .k-code {
   display: flex;
   justify-content: center;
-  gap: var(--k-s-sm);
+  /* キャンバスの枠は線が外に付き 46 幅で間 8。こちらは線を含めて 44 なので、間を 10 にして並びの幅（約 316）をそろえる */
+  gap: 10px;
   /* キャンバスの枠は線が外に付く（content-box で 52 + 線 2）。行の高さをそれにそろえ、下の段の位置を合わせる */
   padding-block: 1px;
 }
