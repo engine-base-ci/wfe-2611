@@ -1,0 +1,88 @@
+/* 文面のページ（キャンバス LegalPage・K-232）。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない）。
+   箱（白・線・角丸・余白 26px 28px・段の間 14）は入口の枠（sign-up.css の .k-auth-card）のまま、幅だけ 720 に広げる。
+   箱の幅は正本の段の外（入口の枠の 440 と同じく箱の決まり）。字下げはしない（決める人の答え・D-146.8） */
+.k-auth[data-wide] .k-auth-card {
+  width: 100%;
+  max-width: 720px;
+}
+/* 文面：箱の段の間（14）と同じ間で縦に並べ、段落や見出しの margin で詰めない */
+.k-auth-card .k-legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-auth-card-gap);
+  font-size: var(--k-text-body);
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.k-auth-card .k-legal h1 {
+  margin: 0;
+  text-align: left;
+  font-size: var(--k-text-h1);
+  font-weight: var(--k-fw-h1);
+  line-height: var(--k-lh-body);
+}
+.k-auth-card .k-legal-version {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+  color: var(--k-on-surface-variant);
+}
+.k-auth-card .k-legal p,
+.k-auth-card .k-legal li {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: 1.9;
+}
+.k-auth-card .k-legal p.k-legal-version {
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+}
+.k-auth-card .k-legal h2 {
+  margin: 0;
+  font-size: var(--k-text-h3);
+  font-weight: var(--k-fw-h2);
+  line-height: var(--k-lh-body);
+}
+/* 番号の並び・点の並び：記号は字の頭に出し（inside）、字下げしない（入れ子も同じ左端） */
+.k-auth-card .k-legal ol,
+.k-auth-card .k-legal ul {
+  margin: 0;
+  padding: 0;
+}
+.k-auth-card .k-legal ol {
+  list-style: decimal inside;
+}
+.k-auth-card .k-legal ul {
+  list-style: disc inside;
+}
+/* 問い合わせ：箱の一番下の 1 段（上の線・12px・灰）。節の見出しは読み上げだけに残す */
+.k-auth-card .k-legal-contact {
+  border-top: var(--k-c-auth-alt-border-top);
+  padding: var(--k-c-auth-alt-pad);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-auth-card .k-legal-contact p {
+  font-size: inherit;
+  line-height: var(--k-lh-body);
+}
+.k-auth-card .k-legal-contact h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.k-legal table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.k-legal th,
+.k-legal td {
+  border: 1px solid var(--k-line);
+  padding: var(--k-s-xs) var(--k-s-sm);
+  text-align: left;
+}
