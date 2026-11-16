@@ -9,11 +9,11 @@ test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横
   await expect(page.locator("form[data-state='n'] h1")).toHaveText("ログイン");
   await expect(page.locator("[data-requires]")).toHaveCount(0);
 });
-test("SCR-LOGIN-009 SCR-LOGIN-010 SCR-LOGIN-028 SCR-LOGIN-029 リンク「パスワードをお忘れの方」→ /password-reset、「アカウントを作る」→ /signup が開く", async ({
+test("SCR-LOGIN-009 SCR-LOGIN-010 SCR-LOGIN-028 SCR-LOGIN-029 リンク「パスワードを忘れた」→ /password-reset、「アカウントを作る」→ /signup が開く", async ({
   page,
 }) => {
   await page.goto("/login");
-  await page.getByRole("link", { name: "パスワードをお忘れの方" }).click();
+  await page.getByRole("link", { name: "パスワードを忘れた" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
   await expect(page.locator("h1")).toHaveText("パスワードの再設定");
   await page.goto("/login");
@@ -31,7 +31,7 @@ test("SCR-LOGIN-008 SCR-LOGIN-025 SCR-LOGIN-026 SCR-LOGIN-027 SCR-LOGIN-014 SCR-
   // eslint-disable-next-line no-irregular-whitespace -- 全角の空白と全角の＠を意図して入れる
   await page.getByLabel("メールアドレス").fill(`　${local.toUpperCase()}＠${domain.toUpperCase()} `);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
   expect(page.url()).toMatch(HOME_RE);
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeTruthy();
@@ -44,7 +44,7 @@ test("SCR-LOGIN-016 SCR-LOGIN-017 記号の種別・NFD：メールは ASCII な
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email.normalize("NFD"));
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
   expect(page.url()).toMatch(HOME_RE);
 });
@@ -57,18 +57,18 @@ test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-
   await page.getByLabel("メールアドレス").fill(u.email);
   for (let i = 4; i >= 1; i--) {
     await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
-    await page.getByRole("button", { name: "ログイン" }).click();
+    await page.getByRole("button", { name: "次へ", exact: true }).click();
     await expect(page.locator("form[data-state='e']")).toContainText(`あと ${i} 回で 15 分ロックします`);
   }
   await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page.locator("form[data-state='e']")).toContainText("15 分間ロックしました");
   const r = await api("/api/auth-ext/sign-in", { email: u.email, password: PW });
   expect(r.status).toBe(429);
-  await page.locator("form[data-state='e']").getByRole("link", { name: "パスワードをお忘れの方" }).click();
+  await page.locator('[data-part="auth-box"]').getByRole("link", { name: "パスワードを忘れた" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
 });
-test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-LOGIN-011 6桁の入力：2 段階を設定した人はパスワードの後に 6 桁。チェックを外して入れる → /today。「端末を失くした」で回復コードの欄に切り替わる", async ({
+test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-LOGIN-011 確認のコード：2 段階を設定した人はパスワードの後に 6 つの枠（30 日きかないのチェックは出さない）。バックアップコードで入れる → /today。「認証アプリが使えない」でバックアップコードの欄に切り替わる", async ({
   page,
 }) => {
   const u = await signupViaApi();
@@ -86,31 +86,29 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
-  await expect(page.locator("form[data-state='m'] h1")).toHaveText("6桁を入れてください");
-  const trust = page.getByLabel("この端末では30日間きかない");
-  await expect(trust).toBeChecked();
-  await trust.uncheck();
-  await expect(trust).not.toBeChecked();
-  await page.getByRole("button", { name: "端末を失くした（回復コードで入る）" }).click();
-  await expect(page.locator("form[data-state='m'] h1")).toHaveText("回復コードを入れてください");
-  await page.getByLabel("回復コード").fill(backup);
-  await page.getByRole("button", { name: "今日の画面へ" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
+  await expect(page.locator("form[data-state='m'] h1")).toHaveText("確認のコード");
+  // 「この端末では 30 日間きかない」はキャンバスに無いので出さない（K-221・PM の決め・口には既定の true を送る）
+  await expect(page.locator('[data-part="auth-box"]').getByRole("checkbox")).toHaveCount(0);
+  await page.getByRole("button", { name: "認証アプリが使えない" }).click();
+  await expect(page.locator("form[data-state='m'] h1")).toHaveText("バックアップコードで入る");
+  await page.getByLabel("バックアップコード").fill(backup);
+  await page.getByRole("button", { name: "入る", exact: true }).click();
   await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
   expect(page.url()).toMatch(HOME_RE);
-  // 使った回復コードは消える（サーバ）
+  // 使ったバックアップコードは消える（サーバ）
   await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
-  await page.getByRole("button", { name: "端末を失くした（回復コードで入る）" }).click();
-  await page.getByLabel("回復コード").fill(backup);
-  await page.getByRole("button", { name: "今日の画面へ" }).click();
-  await expect(page.locator("p[role=alert]")).toBeVisible();
-  await page.getByRole("button", { name: "認証アプリの6桁で入る" }).click();
-  await page.getByLabel("6桁").fill(totp(secret));
-  await page.getByRole("button", { name: "今日の画面へ" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
+  await page.getByRole("button", { name: "認証アプリが使えない" }).click();
+  await page.getByLabel("バックアップコード").fill(backup);
+  await page.getByRole("button", { name: "入る", exact: true }).click();
+  await expect(page.locator('[data-part="auth-box"]').getByRole("alert")).toBeVisible();
+  await page.getByRole("button", { name: "認証アプリの 6 けたで入る" }).click();
+  await page.getByRole("textbox", { name: "確認のコード 1 けた目" }).click();
+  await page.keyboard.type(totp(secret), { delay: 30 }); // 6 つそろうと自動で進む
   await page.waitForURL(HOME_RE, { timeout: 30_000 }).catch(() => undefined);
   expect(page.url()).toMatch(HOME_RE);
 });
