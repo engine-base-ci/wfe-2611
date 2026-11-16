@@ -635,7 +635,8 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
-        run: python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k215_canvas_field_test.py
+          CI_TICKET: ${{ inputs.ticket }}
+        run: python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:

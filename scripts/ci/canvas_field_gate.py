@@ -6,11 +6,13 @@
   そのほか：--root <根>（既定はこの台本の置き場の 2 つ上）
 
 当てるチケット（11_tickets/K-*.md の直下。_old は見ない）：stage が「確認中」「完了」（取り込み済み）でなく、子を持たず、次のどれかに当たるもの
-  ・頭の screens が空でない ・頭の area が「画面」 ・頭の changes に apps/web/(app|features|components/k|styles)/ の道がある
+  ・頭の screens が空でない ・頭の area が「画面」で始まる ・頭の changes に apps/web/(app|features|components|styles)/ の道がある（lib は入れない）
 当てたチケットの頭：
   ・canvas: [<組の id>, …]。組は 04_design/fidelity.json に在り、組の owner がこのチケット（状態は組が持つ）
   ・全部の画面に効くチケットは canvas: [全部の組]（ほかの id と混ぜない）
   ・見た目を変えないチケットは canvas: [] と canvas_none: <訳>（changes に画面のコードがあれば使えない・組と混ぜない）
+CI のチケットの回（--ticket と --ledger-base-ref）：そのチケットが canvas_none なら、git diff <分かれ目>...HEAD の名前に画面のコードがあれば赤
+  （--no-base・--ticket が無い・空の回は見ない）。台帳の行は未着手のあいだだけ通す（作業中・保留は赤）
 逆向き：組の owner は 11_tickets に在り、取り込み済みでなければ canvas を持ち、そこに組の id が在る（取り込み済みの持ち主は見ない）
 台帳 scripts/ci/canvas_field_ledger.json（{"_doc", "entries": [{ticket, reason}]}）：今ある canvas の無いチケットを載せて通す。減らすだけ。
   赤：canvas を書いた・ファイルが無いのに残る行（台帳から消す）／分かれ目の台帳に無い行／入れた時点の行の数を超えた／同じ行が 2 つ・理由が空。
@@ -35,7 +37,8 @@ LEDGER_REL = "scripts/ci/canvas_field_ledger.json"
 LEDGER_CAP = 27                       # 台帳を入れた時点の行の数（K-215）。減らすだけなので超えたら赤
 ALL_GROUPS = "全部の組"
 MERGED = {"確認中", "完了"}
-SCREEN_CODE = re.compile(r"^apps/web/(app|features|components/k|styles)/")
+STARTED = {"作業中", "保留"}             # 台帳の行は未着手のあいだだけ通す
+SCREEN_CODE = re.compile(r"^apps/web/(app|features|components|styles)/")   # components は k・ui・shell など全部。lib は入れない
 HEAD = re.compile(r"^---\n(.*?)\n---\n", re.S)
 TICKET_FILE = re.compile(r"^K-\d+\.md$")
 
@@ -129,7 +132,8 @@ def touches_screen_code(head: dict) -> bool:
 def applies(tid: str, head: dict, parents: set[str]) -> bool:
     if is_merged(head) or tid in parents:
         return False
-    return bool(as_list(head.get("screens"))) or head.get("area") == "画面" or touches_screen_code(head)
+    area = head.get("area")
+    return bool(as_list(head.get("screens"))) or (isinstance(area, str) and area.startswith("画面")) or touches_screen_code(head)
 
 
 def canvas_problems(tid: str, head: dict, groups: dict[str, str]) -> list[str]:
@@ -144,7 +148,7 @@ def canvas_problems(tid: str, head: dict, groups: dict[str, str]) -> list[str]:
         if not (isinstance(reason, str) and reason.strip()):
             bad.append(f"{tid}：canvas が空。正の組の id を書く（見た目を変えないチケットなら canvas_none: <訳> を書く）")
         elif touches_screen_code(head):
-            bad.append(f"{tid}：canvas_none なのに changes に画面のコード（apps/web/app|features|components/k|styles）がある。正の組の id を書く")
+            bad.append(f"{tid}：canvas_none なのに changes に画面のコード（apps/web/app|features|components|styles）がある。正の組の id を書く")
         return bad
     if has_none:
         bad.append(f"{tid}：組を書いた canvas に canvas_none を混ぜている（どちらか 1 つ）")
@@ -208,6 +212,8 @@ def ledger_problems(entries: list[dict], tickets: dict[str, dict]) -> tuple[list
             bad.append(f"台帳の {tid} のファイルが {TICKETS_REL} に無い：台帳から消す")
         elif "canvas" in head:
             bad.append(f"台帳の {tid} は canvas を書いた：台帳から消す")
+        elif head.get("stage") in STARTED:
+            bad.append(f"台帳の {tid} は {head.get('stage')}：着手した：canvas を書いて台帳から消す（台帳は未着手のあいだだけ）")
         elif not applies(tid, head, parents):
             notes.append(f"台帳の {tid} はもう当たらない（取り込み済み・子を持つ・画面に触らない）：台帳から消してよい")
     return bad, notes
@@ -232,7 +238,21 @@ def base_problems(root: Path, ref: str, entries: list[dict]) -> tuple[list[str],
     return [f"台帳の {t} は分かれ目（{ref}）の台帳に無い（台帳は増やせない）" for t in sorted({e["ticket"] for e in entries} - base)], []
 
 
-def run(root: Path, base_ref: str | None, no_base: bool) -> int:
+def diff_problems(root: Path, ref: str, tid: str, tickets: dict[str, dict]) -> list[str]:
+    """--ticket のチケットが canvas_none なら、分かれ目との実際の差分（名前）に画面のコードがあれば赤"""
+    head = tickets.get(tid)
+    if head is None:
+        return [f"--ticket の {tid} が {TICKETS_REL} に無い"]
+    if head.get("canvas") != [] or "canvas_none" not in head:
+        return []
+    r = _git(root, "diff", "--name-only", f"{ref}...HEAD")
+    if r.returncode != 0:
+        return [f"分かれ目 {ref} との差分が読めない（{r.stderr.strip()}）"]
+    hits = [n for n in r.stdout.splitlines() if SCREEN_CODE.match(n)]
+    return [f"{tid}：canvas_none なのに分かれ目（{ref}）との差分に画面のコードがある：{n}" for n in hits]
+
+
+def run(root: Path, base_ref: str | None, no_base: bool, ticket: str | None = None) -> int:
     if not no_base and base_ref is None:
         print("canvas_field_gate：--ledger-base-ref <版> か --no-base が要る（黙って比べずに緑にしない）")
         return 1
@@ -248,6 +268,8 @@ def run(root: Path, base_ref: str | None, no_base: bool) -> int:
     if not no_base:
         more, more_notes = base_problems(root, base_ref or "", entries)
         bad, notes = bad + more, notes + more_notes
+        if ticket and not more:
+            bad += diff_problems(root, base_ref or "", ticket, tickets)
     for n in notes:
         print(f"  知らせ：{n}")
     if bad:
@@ -265,8 +287,9 @@ def main(argv: list[str] | None = None) -> int:
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--ledger-base-ref", default=None)
     g.add_argument("--no-base", action="store_true")
+    ap.add_argument("--ticket", default="", help="この枝のチケット（canvas_none なら実際の差分も見る。空なら見ない）")
     a = ap.parse_args(argv)
-    return run(a.root.resolve(), a.ledger_base_ref, a.no_base)
+    return run(a.root.resolve(), a.ledger_base_ref, a.no_base, a.ticket.strip() or None)
 
 
 if __name__ == "__main__":
