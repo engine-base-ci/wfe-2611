@@ -323,6 +323,23 @@ class Boards(unittest.TestCase):
         # 題のほかは起こし直した絵とちょうど同じ（決める人が題の大きさだけを見比べられる）
         self.assertEqual(re.sub(r"(<h1[^>]*font-size: ?)22px", r"\g<1>20px", h22, count=1), h20)
 
+    def test_K257_CV_013_k219_review_unchanged(self):
+        """K257-CV-013 k219.py の見比べの 1 枚の作り方（review_sheet）を写しの置き場で流すと、今の 04_design/canvas-review/K-219.html と一字同じ
+        （k219.py から移した 6 枚の絵は書かないが、見比べの区画は残す。作り手を流し直しても見比べが変わらない）"""
+        code = (
+            "import sys, pathlib\n"
+            "sys.path.insert(0, sys.argv[1])\n"
+            "import k219\n"
+            "k219.ROOT = sys.argv[2]\n"
+            "k219.review_sheet()\n"
+        )
+        with tempfile.TemporaryDirectory() as d:
+            env = dict(os.environ, KANAME_CANVAS=str(CANVAS) + "/")   # 絵は読むだけ（review_sheet は絵を書かない）
+            r = subprocess.run([sys.executable, "-c", code, str(GEN), d], cwd=GEN, env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            got = (pathlib.Path(d) / "04_design" / "canvas-review" / "K-219.html").read_text(encoding="utf-8")
+        self.assertEqual(got, (ROOT / "04_design" / "canvas-review" / "K-219.html").read_text(encoding="utf-8"))
+
     def test_K257_CV_009_no_showcase_for_owned_groups(self):
         """K257-CV-009 段 1 の小窓の組（approve-modal・complete-modal・return-modal）の絵は、どれも小窓がちょうど 1 つの絵（role=dialog と alertdialog の section が 1 つ）"""
         bad = []
