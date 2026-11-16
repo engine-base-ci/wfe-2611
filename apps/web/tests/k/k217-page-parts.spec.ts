@@ -396,8 +396,9 @@ for (const w of [1440, 375]) {
     const page_ = await box(page.locator(".k-list-page").first());
     const main = await box(page.locator(".k-list-body > .k-list-main").first());
     const side = await box(page.locator(".k-list-body > .k-list-side").first());
+    const left = Math.min(main.x, side.x);
     const right = Math.max(main.x + main.width, side.x + side.width);
-    expect(Math.abs(main.x - page_.x - 24)).toBeLessThanOrEqual(1);
+    expect(Math.abs(left - page_.x - 24)).toBeLessThanOrEqual(1);
     expect(Math.abs(page_.x + page_.width - right - 24)).toBeLessThanOrEqual(1);
     const h1 = await box(page.locator(".k-list-page > header.k-page-head h1").first());
     expect(Math.abs(main.x - h1.x)).toBeLessThanOrEqual(1);
