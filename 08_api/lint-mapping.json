@@ -1712,7 +1712,8 @@
    "path": "/api/v1/me",
    "implementation_path": "apps/api/src/routes/members.ts::getMe",
    "screen_ids_referencing": [
-    "account"
+    "account",
+    "tickets"
    ],
    "acts": [
     "A74"

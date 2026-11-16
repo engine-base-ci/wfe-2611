@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-13",
+ "created_at": "2026-11-16",
  "summary": {
   "screens_count": 73,
   "features_count": 32,
@@ -2874,12 +2874,13 @@
     "E-004 members",
     "E-124 clients",
     "E-002 scopes",
+    "E-129 tenant_memberships",
+    "E-001 tenants",
     "E-121 knowledge_pages",
     "E-043 conversations",
     "E-094 attachments",
     "E-050 artifacts",
     "E-052 audit_events",
-    "E-129 tenant_memberships",
     "E-051 artifact_versions",
     "E-038 approvals",
     "E-049 messages",
@@ -2897,6 +2898,7 @@
     "GET /api/tickets",
     "GET /api/tickets",
     "GET /api/scopes/:id/overview",
+    "GET /api/me",
     "GET /api/search",
     "GET /api/tickets/:id",
     "POST /api/tickets",
@@ -10561,6 +10563,12 @@
      "path_draft": "/api/scopes/:id/overview"
     },
     {
+     "act": "A74",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/me"
+    },
+    {
      "act": "A21",
      "role": "data_fetch",
      "method": "GET",
@@ -11713,21 +11721,27 @@
     "company-settings",
     "ops-skills",
     "ops-billing",
-    "ops-tenant"
+    "ops-tenant",
+    "tickets"
    ],
    "used_by_features": [
     "F-001",
     "F-002",
     "F-004",
     "F-005",
+    "F-006",
     "F-008",
+    "F-010",
     "F-011",
     "F-012",
     "F-013",
     "F-014",
     "F-016",
     "F-017",
-    "F-020"
+    "F-020",
+    "F-021",
+    "F-023",
+    "F-024"
    ]
   },
   {
@@ -14771,6 +14785,7 @@
     "tickets"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-006",
@@ -14962,6 +14977,7 @@
     "tickets"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-006",
@@ -15586,6 +15602,7 @@
     "tickets"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-037",
@@ -15674,6 +15691,7 @@
     "tickets"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-028",
@@ -15741,6 +15759,7 @@
     "tickets"
    ],
    "entities": [
+    "E-001",
     "E-002",
     "E-004",
     "E-006",

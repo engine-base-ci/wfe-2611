@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-13",
-  "frozen_at": "2026-11-13",
+  "created_at": "2026-11-16",
+  "frozen_at": "2026-11-16",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -24485,7 +24485,8 @@
     "A74"
    ],
    "screens": [
-    "account"
+    "account",
+    "tickets"
    ],
    "related_entities": [
     "E-001",

@@ -5018,7 +5018,8 @@
    "endpoint": "GET /api/v1/me",
    "feature_id": "F-017",
    "screen_ids": [
-    "account"
+    "account",
+    "tickets"
    ],
    "acts": [
     "A74"

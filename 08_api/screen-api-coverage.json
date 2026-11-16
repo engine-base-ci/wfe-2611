@@ -1,7 +1,7 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-13",
+ "frozen_at": "2026-11-16",
  "summary": {
   "total_screens": 36,
   "total_apis": 365,
@@ -2237,6 +2237,11 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/scopes/:id/overview",
      "act": "A58"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/me",
+     "act": "A74"
     },
     {
      "role": "data_fetch",
