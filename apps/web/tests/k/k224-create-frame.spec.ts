@@ -522,6 +522,8 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect.poll(() => m.creates.length).toBe(1);
   expect(m.creates[0]!["parent_ticket_id"] ?? null).toBeNull();
+  // 作った後は詳細へ移る。移り終えてから次の開き直しへ進む（移る途中に開き直すと goto とぶつかって揺れる）
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
   // (b) 0 件・(c) 選んで外す
   const m2 = await mockCreate(page);
   await openCreate(page);
@@ -537,6 +539,8 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect.poll(() => m2.creates.length).toBe(1);
   expect(m2.creates[0]!["parent_ticket_id"] ?? null).toBeNull();
+  // 作った後は詳細へ移る。移り終えてから次の開き直しへ進む（移る途中に開き直すと goto とぶつかって揺れる）
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
   // (d) 下書きから戻した親
   await mockCreate(page, {
     drafts: [{ draft_id: "d1", body: { title: "戻した", parent_ticket_id: "p2" }, saved_at: "2026-11-16T01:42:00Z" }],
