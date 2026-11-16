@@ -23,6 +23,9 @@ article table{min-width:520px}
 @media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] button,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
 @media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header{flex-wrap:wrap}aside{max-width:none !important}article>div{padding-left:16px !important;padding-right:16px !important}article [style*="overflow: hidden"]:has(table),article div:has(>table){overflow-x:auto !important}}
 
+/* k257-detail */
+@media (max-width:1023px){div:has(>aside[aria-label="チケットのパネル"]){flex-direction:column}aside[aria-label="チケットのパネル"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}@media (max-width:767px){article>div:first-child>span[style*="margin-left: auto"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -115,17 +118,12 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
       </span>
      </div>
      <div role="status" style="margin: 0 20px 14px; border: 1px solid #F3D3A7; background: #FCEBD5; border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-      <div><b style="color: #7A4A05">あなたの承認を待っています</b><div style="color: #7A4A05; font-size: 12px">成果物は高本のAI が 11/01 09:12 に作成 ・ 確認 ① 2 件確実 ・ ② 1 件 AI 判定 ・ ③ 1 件はあなたが見る</div></div>
-      <span style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap">
-       <a href="StModal.dc.html" style="height: 32px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 14px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; box-sizing: border-box">承認して送る</a>
-       <a href="StEdit.dc.html" style="height: 32px; border-radius: 6px; border: 1px solid #f3d3a7; background: #FFFFFF; padding: 0 12px; font-size: 13px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; box-sizing: border-box">自分で直す</a>
-       <a href="StModal.dc.html" style="height: 32px; border-radius: 6px; border: 1px solid #f3d3a7; background: #FFFFFF; padding: 0 12px; font-size: 13px; color: #131B27; display: inline-flex; align-items: center; justify-content: center; gap: 4px; text-decoration: none; box-sizing: border-box">差し戻す</a>
-       <button type="button" style="height: 32px; border-radius: 6px; border: 1px solid #f3d3a7; background: #FFFFFF; padding: 0 12px; font-size: 13px; color: #131B27">止める</button>
-      </span>
+      <div style="flex: 1 1 260px; min-width: 0"><b style="color: #7A4A05">あなたの承認を待っています</b><div style="color: #7A4A05; font-size: 12px">成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）</div><div style="margin-top: 6px; border: 1px solid #F3C7C7; background: #FDECEC; border-radius: 8px; padding: 4px 10px; font-size: 12px; color: #991B1B">取り消せません</div></div>
+      <span style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap"><a href="StApproveModal.dc.html" style="height: 32px; border-radius: 6px; padding: 0 14px; font-size: 13px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box">承認して送る</a><button type="button" aria-disabled="true" title="まだ使えません" style="height: 32px; border-radius: 6px; padding: 0 14px; font-size: 13px; border: 1px solid #F3D3A7; background: #FFFFFF; color: #131B27; opacity: 0.55; cursor: not-allowed">自分で直す</button><a href="StReturnModal.dc.html" style="height: 32px; border-radius: 6px; padding: 0 14px; font-size: 13px; border: 1px solid #F3D3A7; background: #FFFFFF; color: #131B27; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box">差し戻す</a><button type="button" aria-disabled="true" title="まだ使えません" style="height: 32px; border-radius: 6px; padding: 0 14px; font-size: 13px; border: 1px solid #F3D3A7; background: #FFFFFF; color: #131B27; opacity: 0.55; cursor: not-allowed">止める</button></span>
      </div>
 
      <div aria-label="本文の道具" style="position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 2px; padding: 6px 20px; border-top: 1px solid #DDE2E9; border-bottom: 1px solid #EDF0F4; background: #FAFBFC; flex-wrap: wrap">
-      <sc-for list="{{tools}}" as="t" hint-placeholder-count="14"><button type="button" aria-label="{{t.name}}" title="{{t.name}}" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">{{t.label}}</button></sc-for>
+      <button type="button" aria-label="太字" title="太字" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">B</button><button type="button" aria-label="斜体" title="斜体" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">I</button><button type="button" aria-label="見出し" title="見出し" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">見出し</button><button type="button" aria-label="箇条書き" title="箇条書き" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">・</button><button type="button" aria-label="番号つき" title="番号つき" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">1.</button><button type="button" aria-label="チェックリスト" title="チェックリスト" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">☐</button><button type="button" aria-label="表" title="表" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">表</button><button type="button" aria-label="画像・添付" title="画像・添付" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">画像</button><button type="button" aria-label="引用" title="引用" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">引用</button><button type="button" aria-label="コード" title="コード" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">&lt;/&gt;</button><button type="button" aria-label="注意の枠" title="注意の枠" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">注意</button><button type="button" aria-label="チケットを引く" title="チケットを引く" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">#</button><button type="button" aria-label="人を呼ぶ" title="人を呼ぶ" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">@</button><button type="button" aria-label="リンク" title="リンク" style="min-width: 30px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: #4A5563; font-size: 12px; padding: 0 6px">リンク</button>
       <span style="margin-left: auto; font-size: 12px; color: #4A5563">「/」で部品を入れる ・ 本文の版 3（11/01 08:50 高本）<a href="TdVersions.dc.html" style="margin-left: 6px">版と差分</a></span>
      </div>
 
@@ -282,24 +280,5 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
  </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2050}}'>
-class Component extends DCLogic {
-  renderVals() {
-    var av = function (bg) { return "width:32px;height:32px;border-radius:9999px;background:" + bg + ";color:#FFFFFF;font-size:12px;display:grid;place-items:center;flex:none"; };
-    var k = function (bg) { return "font-size:11px;color:#FFFFFF;border-radius:9999px;padding:0 8px;background:" + bg; };
-    return {
-      tools: [ { name: "太字", label: "B" }, { name: "斜体", label: "I" }, { name: "見出し", label: "見出し" }, { name: "箇条書き", label: "・" }, { name: "番号つき", label: "1." }, { name: "チェックリスト", label: "☐" }, { name: "表", label: "表" }, { name: "画像・添付", label: "画像" }, { name: "引用", label: "引用" }, { name: "コード", label: "</>" }, { name: "注意の枠", label: "注意" }, { name: "チケットを引く", label: "#" }, { name: "人を呼ぶ", label: "@" }, { name: "リンク", label: "リンク" } ],
-      events: [
-        { ini: "高", av: av("#6B5B99"), who: "高本 聖斗", when: "10/28 14:02", kind: "書き込み", kindStyle: k("#6B7585"), text: "山田様（セイコー）から、支払期日は月末締め翌月末でよいと返事がありました。", changes: [], canQuote: true },
-        { ini: "高", av: av("#6B5B99"), who: "高本 聖斗", when: "10/28 14:05", kind: "決定", kindStyle: k("#166534"), text: "", changes: ["決定：支払期日は月末締め翌月末"], canQuote: false },
-        { ini: "高", av: av("#6B5B99"), who: "高本 聖斗", when: "10/30 17:44", kind: "作成", kindStyle: k("#22345C"), text: "", changes: ["種別：タスク", "期限：11/01", "業務の型：請求書を作る v3"], canQuote: false },
-        { ini: "AI", av: av("#4A5563"), who: "高本のAI", when: "11/01 09:00〜09:12", kind: "AI の実行", kindStyle: k("#1D4ED8"), text: "請求書を作りました。見積 EG-097 の月額と 10 月の追加対応 2 回を入れ、宛名と CC は山田様のメールに合わせています。", changes: ["状態：作業中 → 確認中", "成果物：請求書 No.2026-1101.pdf"], canQuote: true },
-        { ini: "確", av: av("#6D4AA6"), who: "確認（① 機械・② AI）", when: "11/01 09:12", kind: "確認", kindStyle: k("#6D4AA6"), text: "", changes: ["① 2 件 通過・確実", "② 1 件 通過・AI 判定", "状態：確認中 → 承認待ち"], canQuote: false },
-        { ini: "鈴", av: av("#2F4B7C"), who: "鈴木", when: "11/01 10:20", kind: "書き込み", kindStyle: k("#6B7585"), text: "10/19 の追加対応は先方の都合で無償にした件、反映が要るかもしれません。", changes: ["未決事項に追加"], canQuote: true }
-      ]
-    };
-  }
-}
-</script>
 </body>
 </html>

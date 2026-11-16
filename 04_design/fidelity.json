@@ -864,7 +864,7 @@
   {
    "id": "approve-modal",
    "kind": "dialog",
-   "canvas": "StModal",
+   "canvas": "StApproveModal",
    "app": "/tickets/{ticket}",
    "state": "approve-modal",
    "widths": [
@@ -1011,10 +1011,10 @@
      ]
     },
     {
-     "name": "主ボタン",
+     "name": "足のボタン（あとで）",
      "role": "primary",
-     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div :is(a, button)[style*=\"background: #22345C\"]",
-     "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div > div:last-child a",
+     "app": ".k-dialog-actions .k-btn[data-variant=\"outlined\"]",
      "props": [
       "height",
       "background-color",
@@ -1710,7 +1710,7 @@
     {
      "name": "小窓",
      "role": "dialog",
-     "canvas": "section[role=\"alertdialog\"]",
+     "canvas": "section[role=\"dialog\"]",
      "app": ".k-dialog",
      "props": [
       "width",
@@ -1723,7 +1723,7 @@
     {
      "name": "小窓の題",
      "role": "dialog-title",
-     "canvas": "section[role=\"alertdialog\"] > div:first-child b",
+     "canvas": "section[role=\"dialog\"] > div:first-child b",
      "app": ".k-dialog-title",
      "props": [
       "font-size",
@@ -1733,7 +1733,7 @@
     {
      "name": "主ボタン",
      "role": "primary",
-     "canvas": "section[role=\"alertdialog\"] button[style*=\"#22345C\"]",
+     "canvas": "section[role=\"dialog\"] button[style*=\"#22345C\"]",
      "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
      "props": [
       "height",
@@ -1860,6 +1860,60 @@
       "padding-top",
       "padding-left",
       "width",
+      "x",
+      "y"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "return-modal",
+   "kind": "dialog",
+   "canvas": "StReturnModal",
+   "app": "/tickets/{ticket}",
+   "state": "return-modal",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-229",
+   "enrolled": false,
+   "pairs": [
+    {
+     "name": "小窓",
+     "role": "dialog",
+     "canvas": "section[role=\"dialog\"]",
+     "app": ".k-dialog",
+     "props": [
+      "width",
+      "border-radius",
+      "background-color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "小窓の題",
+     "role": "dialog-title",
+     "canvas": "section[role=\"dialog\"] > div:first-child b",
+     "app": ".k-dialog-title",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "section[role=\"dialog\"] button[style*=\"#22345C\"]",
+     "app": ".k-dialog-actions .k-btn[data-variant=\"primary\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
       "x",
       "y"
      ]

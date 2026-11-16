@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>詳細・帯・小窓・PC をつなぐの絵（見比べ）</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:14px;line-height:1.7}
+main{padding:24px;display:flex;flex-direction:column;gap:20px}
+h1{font-size:20px;margin:0}
+h2{font-size:16px;margin:0}
+main>p{margin:0;color:#4A5563}
+section{background:#FFFFFF;border:1px solid #DDE2E9;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.why{margin:0;color:#4A5563}
+.only{margin:0;font-size:13px;color:#7A4A05}
+.pair{display:flex;gap:16px;flex-wrap:wrap}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+figcaption{font-size:12px;color:#4A5563}
+.frame{width:576px;height:400px;overflow:hidden;border:1px solid #DDE2E9;border-radius:8px;background:#FFFFFF}
+.frame iframe{width:1440px;height:1000px;border:0;transform:scale(.4);transform-origin:0 0}
+@media (max-width:700px){main{padding:16px 12px}.pair{flex-direction:column}.frame{width:316px;height:220px}.frame iframe{transform:scale(.22)}}
+</style>
+</head>
+<body>
+<main>
+<h1>詳細・帯・小窓・PC をつなぐの絵（見比べ）</h1>
+<p>左が直す前の絵、右が直した後の絵です。それぞれ、何を直したかを上に書いています。はじめの区画だけ、題の文字の大きさを選んでください。</p>
+<section data-board="title-size"><h2>題の文字の大きさ（どちらかを選んでください）</h2><p class="why">左は題が 22px の絵、右は 20px に寄せた絵です。ほかは全部同じです。決まった文字の大きさの段は一番上が 20px なので、いまは 20px に寄せています。題が小さく見えて読みにくいと感じたら 22px を選んでください。22px を選ぶと、文字の大きさの段に 22px を足して、ほかの画面の題もそろえ直します。</p><div class="pair"><figure><figcaption>題が 22px の今の絵</figcaption><div class="frame"><iframe src="K-257/before/title-22.html" title="題が 22px の今の絵" loading="lazy"></iframe></div></figure><figure><figcaption>20px に寄せた絵</figcaption><div class="frame"><iframe src="../canvas/TicketDetail.dc.html" title="20px に寄せた絵" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="TicketDetail"><h2>チケットの詳細（承認待ち）</h2><p class="why">スマホで見ると、右の欄が縮まらずに本文のカードが細く潰れ、画面が横にはみ出していました。幅が狭いときは右の欄を本文の下に回しました。帯の文は今の画面と同じ「確認 検査なし（まだ流していません）」にし、取り消せないことを赤い箱で出しました。「自分で直す」「止める」はまだ使えないので薄くしています。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/TicketDetail.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/TicketDetail.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StRunning"><h2>AI が作っているとき</h2><p class="why">詳細の画面と同じ形（右の欄の幅・帯の位置）にそろえました。帯の文は今の画面と同じ「高本のAI が作っています」にし、進みを「受け取る・作る・確かめる・あなたの承認・実行」の 5 段で出しています。スマホでも潰れません。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StRunning.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StRunning.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StFailed"><h2>AI が止まったとき</h2><p class="why">詳細の画面と同じ形にそろえ、帯の文を今の画面と同じ「高本のAI が止まりました」と止まった理由にしました。まだ流していない確認の結果は表の下に「検査なし」と出します。スマホでも潰れません。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StFailed.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StFailed.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StBefore"><h2>AI に任せる前</h2><p class="why">前は右の欄が無く、帯が横に長く伸びていました。詳細の画面と同じ形（右の欄あり）にそろえ、帯の位置と幅をほかの絵と同じにしました。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StBefore.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StBefore.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StConfirmDone"><h2>完了の確かめ</h2><p class="why">詳細の画面と同じ形にそろえ、帯の位置と幅をほかの絵と同じにしました。「完了にする」を押すと完了の小窓が開きます。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StConfirmDone.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StConfirmDone.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StDone"><h2>完了しました</h2><p class="why">詳細の画面と同じ形にそろえ、帯の文を今の画面と同じ「完了しました（高本・11/02 10:48）」にしました。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StDone.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StDone.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StDelegated"><h2>AI に任せました</h2><p class="why">詳細の画面と同じ形にそろえ、帯の文を今の画面と同じ「高本のAI に任せました。PC が受け取るのを待っています」にしました。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StDelegated.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StDelegated.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StApproveModal"><h2>承認して送ります（小窓）</h2><p class="why">前は 3 つの小窓を 1 枚に並べていて、スマホでは承認の小窓が細く潰れていました。1 枚に 1 つにし、画面の真ん中に置きました。本人確認は取り直さないので、その文を外しました。「成果物を目で見た」に印を付けるまで「承認して送る」は押せません。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StModal.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StApproveModal.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StReturnModal"><h2>差し戻す（小窓）</h2><p class="why">前は 3 つの小窓を 1 枚に並べていました。差し戻しの小窓を 1 枚に 1 つにし、画面の真ん中に置きました。「どこを直すか」「次は誰が直すか」「覚えさせる候補」はまだ使えないので薄くしています。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StModal.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StReturnModal.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="StCompleteModal"><h2>完了にする（小窓）</h2><p class="why">閉じる × を頭に付けました（取り消せる操作なので、ふつうの小窓の形にしました）。置き場は前と同じ真ん中です。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/StCompleteModal.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/StCompleteModal.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="Approvals"><h2>承認待ち</h2><p class="why">期限の区切りを今の画面と同じ「期限切れ・今日・7 日以内・それより後・期限なし」にしました。今日が期限のものは「11/02（今日）」と出します。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/Approvals.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/Approvals.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="EdPC"><h2>PC をつなぐ（コード）</h2><p class="why">今の画面に在る「新しいコード」を、コードの説明の行の右に足しました。本文の最後に「前の設定の画面」への案内を足しました。</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/EdPC.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/EdPC.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="MePC"><h2>PC と使った量（つないでいる PC）</h2><p class="why">切れている PC の直し方の箱に、今の画面と同じ案内の文と「Bridge を起こす」を足しました。題の左に「戻る」、本文の最後に「前の設定の画面」への案内を足しました。</p><p class="only">戻るは、ほかの画面から開いたときだけ出る</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/MePC.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/MePC.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+<section data-board="MePCInstalled"><h2>この PC に Bridge が入っている</h2><p class="why">「この PC の Bridge につなぐ」の隣に「このアカウントに切り替える」（赤い線のボタン）を足しました。本文の最後に「前の設定の画面」への案内を足しました。</p><p class="only">このアカウントに切り替えるは、この PC の Bridge が別のアカウントでつながっているときだけ出る</p><div class="pair"><figure><figcaption>直す前</figcaption><div class="frame"><iframe src="K-257/before/MePCInstalled.html" title="直す前" loading="lazy"></iframe></div></figure><figure><figcaption>直した後</figcaption><div class="frame"><iframe src="../canvas/MePCInstalled.dc.html" title="直した後" loading="lazy"></iframe></div></figure></div></section>
+</main>
+</body>
+</html>

@@ -94,91 +94,7 @@ def auth_boards():
                TITLE % "確認メールを送りました" + WAITING % "読み込んでいます…")
 
 
-# ---------- 帯（StRunning から） ----------
-ROBOT = ('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%s" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path>'
-         '<rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>')
-BAND_PRIMARY = ('<button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; '
-                'padding: 0 12px; font-size: 12px; font-weight: 500">%s</button>')
-BAND_SECOND = ('<button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; '
-               'font-size: 12px; color: #131B27">%s</button>')
-TODO = ["新着から条件に合う案件を選ぶ（3 件 → 1 件）", "案件の要件と予算を読む", "応募文を作る（過去の採用文 3 件を参考）", "確認を通す",
-        "発注ナビの画面から応募する（承認のあと）"]
-DONE_AT = ["高本のAI 10:31", "高本のAI 10:32", "高本のAI 10:34", "高本のAI 10:36", "高本のAI 10:44"]
-TEXT = "はじめまして。株式会社ENGINE BASE の高本です。業務システムの受託開発を…"
-
-
-def band(line, bg, color, title, sub, actions=""):
-    act = '<span style="margin-left: auto; display: flex; gap: 6px">%s</span>' % actions if actions else ""
-    return ('<div role="status" style="margin: 0 20px 14px; border: 1px solid %s; background: %s; border-radius: 8px; padding: 12px 14px">\n'
-            '    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">\n     %s\n     <b style="color: %s">%s</b>'
-            '<span style="font-size: 12px; color: %s">%s</span>\n     %s\n    </div>\n   </div>') % (line, bg, ROBOT % color, color, title, color, sub, act)
-
-
-def todo_list(done):
-    rows = []
-    for i, t in enumerate(TODO):
-        if done:
-            rows.append('<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked>%s'
-                        '<span style="font-size: 11px; color: #4A5563">%s</span></label>' % (t, DONE_AT[i]))
-        else:
-            rows.append('<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox">%s</label>' % t)
-    return '<div style="display: flex; flex-direction: column; gap: 4px">\n     ' + "\n     ".join(rows) + "\n    </div>"
-
-
-def band_board(name, title, pill, pill_bg, band_html, done):
-    s = load("StRunning.dc.html")
-    s = re.sub(r'(<span style="margin-left: auto; font-size: 12px; font-weight: 500; border-radius: 9999px; padding: 2px 12px; color: #FFFFFF; background: )#[0-9A-Fa-f]{6}">[^<]*</span>',
-               lambda m: m.group(1) + pill_bg + '">' + pill + "</span>", s, count=1)
-    # 見出しの 22px は正本の文字の段から外れた（段の上は 20px）。この絵は段に寄せる（元の StRunning は 22px のまま）
-    s = s.replace('<h1 style="font-size: 22px;', '<h1 style="font-size: 20px;', 1)
-    s = replace_block(s, '<div role="status"', band_html)
-    s = replace_block(s, '<div style="display: flex; flex-direction: column; gap: 4px">', todo_list(done))
-    s = s.replace("成果物（作りかけ）", "成果物", 1)
-    out = ('<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px; color: #4A5563; background: #FAFBFC">%s</div>'
-           % (TEXT if done else "まだありません。AI が作ると、ここに出ます"))
-    s = replace_block(s, '<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px; color: #4A5563; background: #FAFBFC">', out)
-    # 右の「PC のブラウザ」と「ほかの形」は実行しているときの物なので、この絵には置かない
-    s = replace_block(s, '<aside style="width: 340px; display: flex; flex-direction: column; gap: 12px">', "", tag="aside")
-    save(name, title, s)
-
-
-def band_boards():
-    band_board("StBefore", "AI に任せる前", "未着手", "#6B7585",
-               band("#DDE2E9", "#FFFFFF", "#22345C", "AI に任せる", "高本のAI が実施事項を進め、確かめてから承認を待ちます",
-                    BAND_PRIMARY % "AI に任せる"), False)
-    band_board("StConfirmDone", "完了の確かめ", "作業中", "#2F4B7C",
-               band("#DDE2E9", "#FFFFFF", "#22345C", "完了の条件を確かめて完了にしてください", "実施事項は全部終わりました",
-                    BAND_PRIMARY % "完了にする"), True)
-    band_board("StDone", "完了しました", "完了", "#166534",
-               band("#CDE8D5", "#E8F5EC", "#166534", "完了しました", "11/02 10:48 に 高本 が完了にしました"), True)
-    band_board("StDelegated", "AI に任せました", "作業中", "#2F4B7C",
-               band("#F3D3A7", "#FFF8EE", "#7A4A05", "高本のAI に任せました", "PC が受け取るのを待っています",
-                    BAND_SECOND % "AI と話す"), False)
-
-
-# ---------- 完了の小窓（StModal から） ----------
-def complete_modal():
-    s = load("StModal.dc.html")
-    check = '<label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox"%s>%s</label>'
-    dialog = (
-        '<div style="position: absolute; inset: 0; display: flex; gap: 24px; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">\n\n'
-        '  <section role="alertdialog" aria-label="完了にする" style="width: 420px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">\n'
-        '   <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9"><b style="font-size: 15px">完了にする</b></div>\n'
-        '   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px">\n'
-        '    <div style="font-size: 12px; color: #4A5563">EG-127 発注ナビ 新着案件に応募文を出す</div>\n'
-        '    <div><div style="font-size: 12px; font-weight: 500">完了の条件</div><div style="font-size: 12px; color: #4A5563">応募が発注ナビの「応募済み」に出ていること</div></div>\n'
-        '    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0"><legend style="font-size: 12px; color: #4A5563; padding: 0 4px">実施事項</legend>\n'
-        + "".join("     " + check % (" checked disabled", t) + "\n" for t in TODO[:4])
-        + "     " + check % ("", TODO[4]) + "\n"
-        '    </fieldset>\n'
-        '    ' + check % ("", "完了の条件を満たしたことを確かめました") + '\n'
-        '   </div>\n'
-        '   <div style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end">'
-        '<button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button>'
-        '<button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">確かめて完了にする</button></div>\n'
-        '  </section>\n </div>')
-    s = replace_block(s, '<div style="position: absolute; inset: 0;', dialog)
-    save("StCompleteModal", "完了にするの小窓", s)
+# 帯の 4 枚（StBefore・StConfirmDone・StDone・StDelegated）と完了の小窓（StCompleteModal）の持ち主は k257.py（詳細の形にそろえて起こし直した・K-257）
 
 
 # ---------- 承認待ちが空（Approvals から） ----------
@@ -198,26 +114,7 @@ def approvals_empty():
     save("ApEmpty", "承認待ち 空", s)
 
 
-# ---------- この PC に Bridge が入っている（MePC から） ----------
-def pc_installed():
-    s = load("MePC.dc.html")
-    sec = '<section style="flex: 1; min-width: 0; padding: 22px 28px'
-    i = s.index(sec)
-    head_end = block_end(s, s.index("<div", i + 1), "div")
-    body = ('<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px">'
-            '<b style="font-weight: 600">この PC の Bridge</b>'
-            '<div style="font-size: 13px; line-height: 1.7">この PC に Bridge が入っています（v1.4）。コードを打たずに、ボタン 1 つでつなげます。</div>'
-            '<div style="display: flex; gap: 8px; flex-wrap: wrap">' + btn("この PC の Bridge につなぐ", "p") + "</div></div>"
-            '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 4px 18px">'
-            '<div style="display: flex; align-items: center; padding: 12px 0 4px"><b style="font-weight: 600; flex: 1">つないでいる PC</b></div>'
-            '<div style="padding: 12px 0; border-top: 1px solid #EDF0F4; font-size: 12px; color: #4A5563">まだありません</div></div>')
-    end = block_end(s, i, "section")
-    s = s[:head_end] + body + "</section>" + s[end:]
-    # 幅 375 では 2 つめのパネルが横一列になり、本文が幅 0 に潰れる（元の MePC も同じ）。この絵は本文を下に回す（kn-shell の前に置くので shellfix が消さない）
-    narrow = "\n@media (max-width:767px){main>div:has(>.kn-sub){flex-direction:column}}"
-    if narrow not in s:
-        s = s.replace("\n/* kn-shell", narrow + "\n/* kn-shell", 1)
-    save("MePCInstalled", "自分の設定 この PC に Bridge が入っている", s)
+# この PC に Bridge が入っている（MePCInstalled）の持ち主は k257.py（画面に在る操作を描き足した・K-257）
 
 
 # ---------- 使えない形の見本（OnLoading の外枠に） ----------
@@ -319,13 +216,7 @@ BOARDS = {
     "AuthConsent": ("AuthVerify", "auth", "login", "規約の同意 ← ログインの続き（規約が新しくなった）", ("consent-terms", "auth-msg", "/login?step=terms", "K-222", "signup-waiting")),
     "AuthChecking": ("AuthSignup", "auth", "signup", "登録・確かめ中 ← アカウントを作るを開いた直後", ("signup-checking", "doc", "/signup", "K-222", "signup-waiting")),
     "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "確認メールを送りました・読み込み中 ← 登録の次へを押した直後", ("signup-waiting-loading", "doc", "/verify-email", "K-222", "signup-waiting")),
-    "StBefore": ("StRunning", "states", "tickets", "帯・任せる前 ← チケットを作った直後", ("band-before", "band", "/tickets/{ticket}", "K-228", "band-running")),
-    "StConfirmDone": ("StRunning", "states", "tickets", "帯・完了の確かめ ← 実行が終わって承認待ちが無い", ("band-confirm-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
-    "StDone": ("StRunning", "states", "tickets", "帯・完了 ← 完了にした", ("band-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
-    "StDelegated": ("StRunning", "states", "tickets", "帯・任せました（作る段） ← AI に任せるを押した", ("band-delegated", "band", "/tickets/{ticket}", "K-228", "band-running")),
-    "StCompleteModal": ("StModal", "states", "tickets", "完了にするの小窓 ← 帯の完了にする", ("complete-modal", "dialog", "/tickets/{ticket}", "K-229", "approve-modal")),
     "ApEmpty": ("Approvals", "approvals", "approvals", "承認待ち・空 ← 決めるものが無いとき", ("approvals-empty", "page", "/approvals", "K-231", "approvals")),
-    "MePCInstalled": ("MePC", "me", "bridge-setup", "この PC に Bridge が入っている ← PC をつなぐを開いた", ("bridge-installed", "page", "/setup/bridge", "K-230", "bridge-connected")),
     "UiDisabled": ("OnLoading", "on", "common", "使えない形の見本 ← どの画面でも（まだ使えない物は薄く押せない）", None),
     "OnHomeLater": ("OnHome", "on", "tickets", "はじめにやること に「あとで」 ← はじめて入ったとき", None),
 }
@@ -416,13 +307,7 @@ DIFF = {
     "AuthConsent": ["見出しを「利用規約とプライバシーポリシーが新しくなりました」にした", "2 つの文書と版・同意のチェック・「同意して続ける」と「ログアウト」を置いた"],
     "AuthChecking": ["入力欄を外し、見出しの下に回る印つきの「確かめています…」だけを置いた", "文は 3 秒たっても終わらないときだけ出す"],
     "AuthVerifyLoading": ["本文とボタンを外し、見出しの下に回る印つきの「読み込んでいます…」だけを置いた", "文は 3 秒たっても終わらないときだけ出す"],
-    "StBefore": ["帯を白い箱にし、紺の「AI に任せる」のボタンを置いた", "実施事項はどれもまだ。右の「PC のブラウザ」は動いていないので外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
-    "StConfirmDone": ["帯を白い箱にし、「完了の条件を確かめて完了にしてください」と紺の「完了にする」を置いた", "実施事項は全部済みの印。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
-    "StDone": ["帯を緑の箱にし、「完了しました」と完了にした人と時刻を出した", "上の印を「完了」にした。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
-    "StDelegated": ["帯を橙の箱にし、「高本のAI に任せました」「PC が受け取るのを待っています」を出した", "実施事項はどれもまだ。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
-    "StCompleteModal": ["小窓を 1 つにし、題を「完了にする」にした", "完了の条件・実施事項のチェック・「確かめました」のチェック・「確かめて完了にする」を置いた"],
     "ApEmpty": ["表を外し、「いま決めるものはありません」と「決めた履歴」へのボタンを置いた", "空の箱は、ほかの空の画面と同じ点線の箱にした", "件数を 0 にし、左のバーの件数の印も外した"],
-    "MePCInstalled": ["「この PC の Bridge」の箱と「この PC の Bridge につなぐ」のボタンを置いた", "つないでいる PC はまだ無い形にした"],
     "UiDisabled": ["ボタン・選ぶ欄・探す欄・メニューの項目・見え方のタブ の使える形と使えない形を並べた", "使えない形は薄く（不透明度 0.55）して押せないようにした"],
     "OnHomeLater": ["パスキーの行を薄く押せない形にし、数に入れないので「0 ／ 2」・進みの棒を 0 にした", "「ログイン情報を預ける」の「預ける」の横に「あとで」を置いた"],
 }
@@ -457,10 +342,7 @@ def review_sheet():
 
 if __name__ == "__main__":
     auth_boards()
-    band_boards()
-    complete_modal()
     approvals_empty()
-    pc_installed()
     disabled_sample()
     home_later()
     subprocess.run([sys.executable, "shellfix.py"], cwd=HERE, check=True, stdout=subprocess.DEVNULL)  # 最後に after_shellfix() を呼ぶ
