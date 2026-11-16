@@ -146,6 +146,22 @@ def groups() -> dict[str, dict]:
     return {g["id"]: g for g in load(FIDELITY)["groups"]}
 
 
+def owner_in(owner: str) -> str:
+    """組を入れて（enrolled: true）よい持ち主か。持ち主が決める（K-255）：
+    この木の履歴に件名が「<持ち主> 」で始まるコミットが在る（持ち主の実装がこの木に入っている）か、持ち主の md の stage が確認中か完了か、
+    今の CI のチケット（環境の CI_TICKET）が持ち主。取り込み済みの判定は突き合わせの設定の見張り（fidelity_config.py の merged_reason）と同じ。
+    入っていいなら訳、まだなら空"""
+    sys.path.insert(0, str(HERE))
+    try:
+        import fidelity_config as fc
+    finally:
+        sys.path.pop(0)
+    subjects, errs = fc.history_subjects(ROOT, "HEAD")
+    assert not errs, errs
+    kids, stages = fc.ticket_tree(ROOT)
+    return fc.merged_reason(owner, kids, stages, subjects or [], os.environ.get("CI_TICKET", "").strip())
+
+
 def nav_of(body: str) -> str:
     m = NAV.search(body)
     assert m, "左のバーが無い"
@@ -296,7 +312,10 @@ class FidelityTest(unittest.TestCase):
             self.assertIsNotNone(g, f"組 {gid} が無い")
             self.assertEqual((g["kind"], g["canvas"], g["app"], g["owner"]), (kind, name, app, owner), gid)
             self.assertEqual(g["state"], gid, gid)
-            self.assertIs(g["enrolled"], False, gid)
+            # 入れるかは組の持ち主が決める（K-255）。持ち主がまだなら入っていない（false）、持ち主が来ていれば true を許す
+            self.assertIsInstance(g["enrolled"], bool, gid)
+            if g["enrolled"]:
+                self.assertTrue(owner_in(owner), f"{gid}：持ち主 {owner} がまだなのに enrolled: true")
             self.assertTrue(set(KIND_WIDTHS[kind]) <= set(g["widths"]), gid)
             self.assertTrue(g["pairs"], gid)
         r = subprocess.run([sys.executable, "scripts/ci/fidelity_config.py", "--no-base"], cwd=ROOT,
