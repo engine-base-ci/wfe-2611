@@ -104,7 +104,8 @@ export class DraftStore {
   private seq = 0;
   constructor(
     private readonly o: DraftOwner,
-    private readonly onState: (s: SaveState) => void,
+    /** 残せたかを知らせる。残せたときは保存の口の答えの saved_at（サーバーが残した時刻）も渡す */
+    private readonly onState: (s: SaveState, savedAt?: string | null) => void,
     private readonly waitMs = 600,
   ) {}
 
@@ -156,6 +157,7 @@ export class DraftStore {
     if (this.sealed) return "saved";
     const mine = ++this.seq;
     let state: SaveState;
+    let savedAt: string | null = null;
     // 待ちすぎたら打ち切る。打ち切りは setTimeout で数える（画面の時計で進められる・AbortSignal.timeout は使わない）
     const ac = timeoutMs ? new AbortController() : null;
     const stop = ac ? setTimeout(() => ac.abort(), timeoutMs) : undefined;
@@ -165,6 +167,7 @@ export class DraftStore {
         screenId: "tickets",
         ...(ac ? { signal: ac.signal } : {}),
       });
+      if (r.ok) savedAt = (r.data as { saved_at?: string | null }).saved_at ?? null;
       state = r.ok
         ? "saved"
         : r.kind === "unauthenticated"
@@ -177,7 +180,7 @@ export class DraftStore {
     } finally {
       if (stop) clearTimeout(stop);
     }
-    if (mine === this.seq && !this.sealed) this.onState(state);
+    if (mine === this.seq && !this.sealed) this.onState(state, savedAt);
     return state;
   }
 }

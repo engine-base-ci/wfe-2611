@@ -104,16 +104,6 @@ function DropOff() {
   );
 }
 
-/** サーバーの下書きの一覧から、このタブの下書きを残した時刻を読む（保存の口の答えの saved_at と同じ値） */
-async function savedAtOf(draftId: string): Promise<string | null> {
-  const r = await call("listMyTicketDrafts", { screenId: "tickets" }).catch(() => null);
-  if (!r?.ok) return null;
-  const mine = (r.data as unknown as { draft_id: string; saved_at?: string | null }[]).find(
-    (x) => x.draft_id === draftId,
-  );
-  return mine?.saved_at ? jstClock(mine.saved_at) : null;
-}
-
 export function CreateTicket({
   choices,
   onCreated,
@@ -132,8 +122,6 @@ export function CreateTicket({
   const [d, setD] = useState<DraftBody>(EMPTY);
   const [saveState, setSaveState] = useState<SaveState>("saved");
   const [save, setSave] = useState<SaveView>({ kind: "none" });
-  /** 保存の状態の知らせの順番（遅れて届いた時刻で、後の「残せなかった」を上書きしない） */
-  const saveSeq = useRef(0);
   const alive = useRef(true);
   /** まだサーバーに残していない書きかけがある（閉じる前に残す） */
   const dirty = useRef(false);
@@ -143,20 +131,16 @@ export function CreateTicket({
       alive.current = false;
     };
   }, []);
-  const onState = useCallback(
-    (s: SaveState) => {
-      if (!alive.current) return;
-      const mine = ++saveSeq.current;
-      setSaveState(s);
-      if (s === "failed" || s === "too_large") return setSave({ kind: "failed" });
-      if (s !== "saved") return;
-      dirty.current = false;
-      void savedAtOf(tabDraftId(owner)).then((at) => {
-        if (alive.current && at && mine === saveSeq.current) setSave({ kind: "saved", at });
-      });
-    },
-    [owner],
-  );
+  const onState = useCallback((st: SaveState, savedAt?: string | null) => {
+    if (!alive.current) return;
+    setSaveState(st);
+    if (st === "failed" || st === "too_large") return setSave({ kind: "failed" });
+    if (st !== "saved") return;
+    dirty.current = false;
+    // 時刻は保存の口の答えの saved_at（サーバーが残した時刻）。答えに無ければ時刻を出さない
+    const at = savedAt ? jstClock(savedAt) : null;
+    if (at) setSave({ kind: "saved", at });
+  }, []);
   const store = useMemo(() => new DraftStore(owner, onState), [owner, onState]);
   useEffect(() => () => store.dispose(), [store]);
   /** 続きとして出した別のタブの下書きの id（作る口に source_draft_id で渡して消す・H2） */
@@ -449,9 +433,9 @@ export function CreateTicket({
             </Callout>
           ) : null}
           {saveState === "failed" ? (
-            // 「下書きをサーバーに残せませんでした」は帯の保存の状態（role=status）が言う。同じ字を 2 か所に出さない
-            <Callout tone="warn" title="書いたものはこの画面に残っています">
-              このまま書き続けると、もう一度残します。閉じる前に「作る」を押すか、時間をおいて開き直してください。
+            // 帯は短く「下書きを残せませんでした」、ここは今までどおりの見出しと説明（同じ文を 2 か所に出さない・answer=d4790d24d5e2）
+            <Callout tone="warn" title="下書きをサーバーに残せませんでした">
+              書いたものはこの画面に残っています。このまま書き続けると、もう一度残します。閉じる前に「作る」を押すか、時間をおいて開き直してください。
             </Callout>
           ) : null}
           {problem ? <ErrorState code={problem} /> : null}
