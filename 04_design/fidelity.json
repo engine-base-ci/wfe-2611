@@ -1097,7 +1097,7 @@
     1440
    ],
    "owner": "K-220",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "左のメニュー",
@@ -1113,8 +1113,8 @@
     {
      "name": "第 2 ナビ",
      "role": "subnav",
-     "canvas": ".kn-sub .kn-sub-i",
-     "app": "[aria-label=\"自分の設定の中\"] a",
+     "canvas": ".kn-sub .kn-sub-t",
+     "app": "[aria-label=\"自分の設定の中\"] .k-me-sub-t",
      "props": [
       "texts",
       "width",

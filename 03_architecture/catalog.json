@@ -10,7 +10,7 @@
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
-  "ui": 14,
+  "ui": 15,
   "packages": 13,
   "errors": 170,
   "stack": 53,
@@ -7377,6 +7377,13 @@
     "Row"
    ],
    "what": "ページの型（K-217・D-143.3）。見た目は page.css（キャンバスの実測）。どれもクラスの名前を出すだけの薄い部品。"
+  },
+  {
+   "file": "apps/web/components/k/me-sub",
+   "exports": [
+    "MeSub"
+   ],
+   "what": "自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。"
   }
  ],
  "common": {

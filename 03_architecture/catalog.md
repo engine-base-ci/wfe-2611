@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 35・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 14・共通の処理 13・エラー 170・部品 53・設定 39
+API 365（作った 35・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 15・共通の処理 13・エラー 170・部品 53・設定 39
 
 ## 共通の処理
 
@@ -40,6 +40,7 @@ API 365（作った 35・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/states` | Empty, Loading, ErrorState, NoAccess, ErrorPage, OfflineBanner, useOnline | 4 つの状態（空・読み込み中・失敗・権限が無い）とエラーの 1 件（K-26・D-069）。どの画面でも同じ形で出す |
 | `apps/web/components/k/error-of` | PAGE_ERROR, errorCodeOf, errorText | どのエラーを出すか（K-26・D-069）。文言は正本（07_qa/test-specs/errors.json → @kaname/errors/catalog）の 1 件だけ。画面で文言を作らない |
 | `apps/web/components/k/page` | PageBody, PageHeader, Section, Prose, TextLink, Row | ページの型（K-217・D-143.3）。見た目は page.css（キャンバスの実測）。どれもクラスの名前を出すだけの薄い部品。 |
+| `apps/web/components/k/me-sub` | MeSub | 自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。 |
 
 ## DB の表（境目と骨格）
 
