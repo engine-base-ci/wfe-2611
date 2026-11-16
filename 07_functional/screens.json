@@ -37330,6 +37330,31 @@
      ]
     },
     {
+     "act": "A99",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets",
+     "table": "tickets",
+     "operation_id": "listTickets",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-109",
+      "E-111",
+      "E-004",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A58",
      "role": "data_fetch",
      "method": "GET",
@@ -39267,6 +39292,31 @@
      "source": [
       "D-125.61",
       "D-125.97",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A99",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets",
+     "table": "tickets",
+     "operation_id": "listTickets",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-109",
+      "E-111",
+      "E-004",
+      "E-124"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.6",
+      "D-125.51",
+      "D-125.57",
       "D-125.167"
      ]
     },

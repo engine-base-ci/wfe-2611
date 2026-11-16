@@ -5341,6 +5341,65 @@
    "support_code": "VAL-015"
   },
   {
+   "id": "E-VAL-017",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "list"
+   },
+   "when": "チケットの一覧で、探す言葉（q）が 100 文字を超える（全角半角をそろえ、前後の空白を除いて数える）",
+   "false_when": "前後の空白を除いて 100 文字まで。空と空白だけは絞らない",
+   "message": "探す言葉は 100 文字までにしてください",
+   "action": "探す言葉を短くする",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧の口",
+    "steps": [
+     "q に 101 文字を入れて GET /api/v1/tickets を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.157"
+   ],
+   "support_code": "VAL-017"
+  },
+  {
+   "id": "E-VAL-018",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "list"
+   },
+   "when": "チケットの一覧で、まだ使えない絞り込み・並べ方（種別・段・担当者・取引先・期限と開始の範囲・期限切れ・炎・親子・列・sort）を付けて呼んだ（黙って無視しない）",
+   "false_when": "view・q・scope_id・limit・cursor だけ",
+   "message": "この絞り込みはまだ使えません",
+   "action": "絞り込みを外して開き直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧の口",
+    "steps": [
+     "kind_id を付けて GET /api/v1/tickets を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.152",
+    "D-128.157"
+   ],
+   "support_code": "VAL-018"
+  },
+  {
    "id": "E-CONF-013",
    "class": "conflict",
    "where": {

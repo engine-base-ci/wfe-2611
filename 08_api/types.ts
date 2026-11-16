@@ -3694,7 +3694,8 @@ export const ENDPOINTS = [
   "path": "/api/v1/tickets",
   "acts": [
    "A113",
-   "A58"
+   "A58",
+   "A99"
   ],
   "screens": [
    "tickets"

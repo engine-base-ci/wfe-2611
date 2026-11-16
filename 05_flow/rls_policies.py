@@ -47,8 +47,8 @@ POLICIES: dict[str, list[dict]] = {
     # チケット：読む＝見える層か関わっている人／作る＝その層の edit／直す＝その層の edit か担当者／消す（行の削除）は誰もしない（論理削除だけ・D-128.84）
     "tickets": [
         {"name": "tickets_read", "operation": "select", "role": "member",
-         "predicate": f"tenant_id = {T} AND app.ticket_draft_ok(draft_import_id, {U}) AND (scope_id = ANY(visible_scopes({U})) OR assignee_member_id = {U} OR app.ticket_involved(id, {U}))",
-         "rationale": "そのグループを見られる人と、グループの外でも関わっている人（担当者・承認する人・渡された相手）。取り込みの下書きは確定まで取り込んだ人だけ", "source": SRC_T + ["D-128.119"]},
+         "predicate": f"tenant_id = {T} AND deleted_at IS NULL AND app.ticket_draft_ok(draft_import_id, {U}) AND (scope_id = ANY(visible_scopes({U})) OR assignee_member_id = {U} OR app.ticket_involved(id, {U}))",
+         "rationale": "そのグループを見られる人と、グループの外でも関わっている人（担当者・承認する人・渡された相手）。取り込みの下書きは確定まで取り込んだ人だけ。消したものは誰にも見えない（消すのは app.ticket_soft_delete・戻す画面は security definer の関数で読む）", "source": SRC_T + ["D-128.119", "D-128.158"]},
         {"name": "tickets_create", "operation": "insert", "role": "member",
          "predicate": f"tenant_id = {T} AND app.ticket_draft_ok(draft_import_id, {U}) AND has_permission({U}, 'tickets', scope_id, 'edit')",
          "rationale": "そのグループで書ける人だけが作る（自分を担当者にしても、書けないグループには作れない）。下書きは自分の取り込みにだけ入れる", "source": SRC_T + ["D-128.119"]},
@@ -56,8 +56,8 @@ POLICIES: dict[str, list[dict]] = {
          "predicate": f"tenant_id = {T} AND app.ticket_draft_ok(draft_import_id, {U}) AND (has_permission({U}, 'tickets', scope_id, 'edit') OR assignee_member_id = {U})",
          "rationale": "そのグループで書ける人と担当者（消す・戻すは論理削除で、ここを通る）", "source": SRC_T + ["D-128.84"]},
         {"name": "tickets_client_read", "operation": "select", "role": "client",
-         "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND draft_import_id IS NULL AND client_share <> '{{}}'::jsonb",
-         "rationale": "取引先の人は、自分の取引先のチケットのうち会社が見せると決めたものだけ（どの項目を見せるかは API が client_share で絞る・D-125.122・D-128.100）", "source": ["D-125.122", "D-128.100"]},
+         "predicate": f"tenant_id = {T} AND client_id = app.my_client() AND deleted_at IS NULL AND draft_import_id IS NULL AND client_share <> '{{}}'::jsonb",
+         "rationale": "取引先の人は、自分の取引先のチケットのうち会社が見せると決めたものだけ（どの項目を見せるかは API が client_share で絞る・D-125.122・D-128.100）。消したものは見えない（D-128.158）", "source": ["D-125.122", "D-128.100", "D-128.158"]},
         ops_read("tickets"),
     ],
     "ticket_sections": child_of_ticket("ticket_sections"),

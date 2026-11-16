@@ -106,6 +106,7 @@ export const MIGRATIONS = [
   "0099_bridge_take_guard.sql",
   "0100_ticket_complete.sql",
   "0101_complete_notify_guard.sql",
+  "0102_ticket_list.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */
