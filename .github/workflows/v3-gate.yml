@@ -48,6 +48,7 @@ jobs:
       py_tests: ${{ steps.scope.outputs.py_tests }}
       web_g48: ${{ steps.scope.outputs.web_g48 }}
       web_g59: ${{ steps.scope.outputs.web_g59 }}
+      web_gates: ${{ steps.scope.outputs.web_gates }}
       web_tasks: ${{ steps.scope.outputs.web_tasks }}
     steps:
       - uses: actions/checkout@v4
@@ -631,11 +632,11 @@ jobs:
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
         run: python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py
-      - name: "G69 キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・K-216・K-238）"
+      - name: "G69 キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238）"
         if: ${{ !cancelled() }}
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
-        run: python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" && python3 scripts/ci/k216_fidelity_config_test.py && node --test scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k238_fidelity_ci_test.py
+        run: python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" && python3 scripts/ci/k238_fidelity_ci_test.py
       - name: "G61 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）"
         if: ${{ !cancelled() }}
         env:
@@ -736,6 +737,7 @@ jobs:
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
           CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
           CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
         run: BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48
       - name: "G59 中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）"
         if: ${{ !cancelled() }}
@@ -743,10 +745,16 @@ jobs:
           CI_FULL: ${{ needs.static.outputs.full }}
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}
           CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-skeleton.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59
       - name: "G70 キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）"
         if: ${{ !cancelled() }}
-        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 pnpm --filter @kaname/web exec playwright test tests/fidelity/fidelity.spec.ts
+        env:
+          CI_FULL: ${{ needs.static.outputs.full }}
+          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
+          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
+        run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70
       - uses: actions/upload-artifact@v4
         # 結果の記録（G48 の record が書く）。緑の回にこそ要る：取り込みの台本（pm_merge.sh）がここから写して結果の欄を書く（K-143・D-129.51）
         if: ${{ !cancelled() }}
