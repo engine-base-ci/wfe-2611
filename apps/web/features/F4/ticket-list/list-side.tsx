@@ -58,7 +58,6 @@ function Task({ task, setup, first }: { task: SetupTask; setup: SetupTasks; firs
 function SetupBox({ setup }: { setup: SetupTasks }) {
   // 主ボタン（紺）は、まだの項目のうち最初の 1 つだけ（1 画面 1 主アクション）
   const firstOpen = setup.tasks.find((t) => t.available && !t.done && !t.skipped)?.key;
-  const ratio = setup.total ? setup.done / setup.total : 0;
   return (
     <section className="k-list-side-box" aria-labelledby="k-list-setup-title">
       <div className="k-list-side-head">
@@ -69,9 +68,7 @@ function SetupBox({ setup }: { setup: SetupTasks }) {
           {setup.done} ／ {setup.total}
         </span>
       </div>
-      <div className="k-list-progress" aria-hidden="true">
-        <div style={{ transform: `scaleX(${ratio})` }} />
-      </div>
+      <progress className="k-list-progress" value={setup.done} max={Math.max(setup.total, 1)} aria-hidden="true" />
       <ul className="k-list-tasks">
         {setup.tasks.map((t) => (
           <Task key={t.key} task={t} setup={setup} first={t.key === firstOpen} />

@@ -157,16 +157,24 @@ a.k-btn.k-list-act {
   font-weight: var(--k-c-list-side-title-fw);
 }
 .k-list-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  border: 0;
   height: var(--k-c-list-progress-height);
   margin: var(--k-c-list-progress-margin);
   border-radius: var(--k-c-list-progress-radius);
   background: var(--k-c-list-progress-bg);
   overflow: hidden;
 }
-.k-list-progress > div {
-  height: 100%;
+.k-list-progress::-webkit-progress-bar {
+  background: var(--k-c-list-progress-bg);
+}
+.k-list-progress::-webkit-progress-value {
   background: var(--k-st-success);
-  transform-origin: left;
+}
+.k-list-progress::-moz-progress-bar {
+  background: var(--k-st-success);
 }
 .k-list-tasks {
   margin: 0;
@@ -604,7 +612,7 @@ button.k-list-tool:hover {
 /* 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ね、行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ・作る面の帯と同じ形）。
    数の札は 2 列（キャンバスの 4 列の格子の折り返し） */
 @media (max-width: 767px) {
-  .k-list-head-row > .k-bell-inline {
+  .k-list-head-row > button {
     position: absolute;
     top: var(--k-s-xs);
     right: var(--k-s-sm);

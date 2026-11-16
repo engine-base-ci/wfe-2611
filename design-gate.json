@@ -1,10 +1,6 @@
 {
   "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
-  "ignore_files": [
-    "_viewer.html",
-    "DESIGN-kaname-preview.html",
-    "font-compare.html"
-  ],
+  "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
   "allow_colors": [
     {
       "value": "#2A3444",
@@ -19,10 +15,7 @@
     },
     "button-primary-lg": {
       "selector": ".k-btn[data-size=\"lg\"]",
-      "shape": [
-        ".k-btn",
-        ".k-btn[data-variant=\"primary\"]"
-      ]
+      "shape": [".k-btn", ".k-btn[data-variant=\"primary\"]"]
     },
     "button-outlined": {
       "selector": ".k-btn[data-variant=\"outlined\"]",
