@@ -1,5 +1,6 @@
 /* チケットを作る画面の器（K-224・キャンバス Create）。帯の下に、白い箱を縦に並べた本文（.k-create-cards）と右の「作る前に」（.k-create-aside）、
-   画面の下に貼り付く足元の帯（.k-create-foot）。値は --k-* のトークンだけを読む（生の色・文字の大きさを書かない）。
+   画面の下に貼り付く足元の帯（.k-create-foot）。値は --k-* のトークンだけを読む（キャンバスの実測は正本 DESIGN-kaname.md の部品 create-* に置き、
+   04_design/gen_tokens.py --web で k-tokens.css に出す。ここに生の色・大きさ・影を書かない）。
    箱の中の区画の見た目は K-225。外枠の右のパネル（.k-panel）は使わない（本文の部品が外枠の決まりを借りない・K-214） */
 
 /* ---- 器（帯と本文と足元の帯をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
@@ -10,7 +11,7 @@
 /* ---- 帯：見出し・作り方・下書きの保存の状態 ---- */
 .k-create-head {
   position: relative;
-  gap: calc(var(--k-s-xs) + var(--k-s-sm));
+  gap: var(--k-c-create-head-gap);
 }
 .k-create-head h1 {
   min-width: 0;
@@ -22,8 +23,8 @@
   flex: none;
   display: inline-flex;
   max-width: 100%;
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-md);
+  border: var(--k-c-create-how-border);
+  border-radius: var(--k-c-create-how-radius);
   overflow: hidden;
 }
 /* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
@@ -33,10 +34,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  line-height: 28px;
-  height: 28px;
-  padding: 0 calc(var(--k-s-xs) + var(--k-s-sm));
-  font-size: var(--k-text-body-sm);
+  line-height: var(--k-c-create-how-height);
+  height: var(--k-c-create-how-height);
+  padding: var(--k-c-create-how-pad);
+  font-size: var(--k-c-create-how-text);
   white-space: nowrap;
   background: var(--k-card);
   color: var(--k-on-surface-variant);
@@ -79,31 +80,31 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: var(--k-s-md);
-  padding: var(--k-s-md) var(--k-s-lg) var(--k-s-2xl);
+  gap: var(--k-c-create-body-gap);
+  padding: var(--k-c-create-body-pad);
   min-width: 0;
 }
 .k-create-cards {
-  flex: 999 1 640px;
+  flex: 999 1 var(--k-c-create-cards-basis-width);
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--k-s-xs) + var(--k-s-sm));
+  gap: var(--k-c-create-cards-gap);
 }
 .k-create-card {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--k-s-xs) + var(--k-s-sm));
-  padding: var(--k-s-md);
-  background: var(--k-card);
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-field);
+  gap: var(--k-c-create-card-gap);
+  padding: var(--k-c-create-card-pad);
+  background: var(--k-c-create-card-bg);
+  border: var(--k-c-create-card-border);
+  border-radius: var(--k-c-create-card-radius);
   min-width: 0;
 }
 .k-create-card > h2 {
   margin: 0;
-  font-size: var(--k-text-body-md);
-  font-weight: var(--k-fw-h2);
+  font-size: var(--k-c-create-card-title-text);
+  font-weight: var(--k-c-create-card-title-fw);
   color: var(--k-on-surface);
 }
 
@@ -112,12 +113,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: var(--k-s-sm);
+  gap: var(--k-c-create-pick-gap);
   min-width: 0;
 }
 .k-create-pick > .k-field {
   flex: none;
-  width: 160px;
+  width: var(--k-c-create-pick-width);
 }
 .k-create-pick > .k-create-number {
   margin-left: auto;
@@ -125,9 +126,9 @@
   color: var(--k-on-surface-variant);
 }
 .k-create-title .k-input {
-  height: 40px;
-  font-size: var(--k-text-h3);
-  font-weight: var(--k-fw-label-md);
+  height: var(--k-c-create-title-height);
+  font-size: var(--k-c-create-title-text);
+  font-weight: var(--k-c-create-title-fw);
 }
 @media (max-width: 767px) {
   /* 16px 未満だと iPhone が入力のたびに拡大する（D-144.7） */
@@ -140,7 +141,7 @@
 .k-create-assign {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: var(--k-s-lg);
+  gap: var(--k-c-create-assign-gap);
 }
 @media (max-width: 767px) {
   .k-create-assign {
@@ -152,13 +153,13 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--k-s-sm);
-  padding: var(--k-s-sm) 0;
-  border-bottom: 1px solid var(--k-line-soft);
+  padding: var(--k-c-create-assign-row-pad);
+  border-bottom: var(--k-c-create-assign-row-border-bottom);
   min-width: 0;
 }
 .k-create-assign-row > .k-field {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-columns: var(--k-c-create-assign-label-width) minmax(0, 1fr);
   align-items: center;
   column-gap: var(--k-s-sm);
   row-gap: var(--k-s-xs);
@@ -184,7 +185,7 @@
   margin-left: auto;
 }
 
-/* 親のチケット：打って候補から選ぶ */
+/* 親のチケット：打って候補から選ぶ（候補の箱は影を置かず線だけ） */
 .k-create-parent {
   position: relative;
   min-width: 0;
@@ -196,14 +197,13 @@
   right: 0;
   top: calc(100% + var(--k-s-xs));
   margin: 0;
-  padding: var(--k-s-xs);
+  padding: var(--k-c-create-options-pad);
   list-style: none;
-  max-height: 240px;
+  max-height: var(--k-c-create-options-max-height);
   overflow-y: auto;
-  background: var(--k-card);
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-field);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--k-on-surface) 14%, transparent);
+  background: var(--k-c-create-options-bg);
+  border: var(--k-c-create-options-border);
+  border-radius: var(--k-c-create-options-radius);
 }
 .k-create-options > li {
   padding: var(--k-s-xs) var(--k-s-sm);
@@ -234,10 +234,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--k-s-sm);
-  padding: var(--k-s-md);
-  background: var(--k-card);
-  border: 1px dashed var(--k-line-strong);
-  border-radius: var(--k-r-field);
+  padding: var(--k-c-create-drop-pad);
+  background: var(--k-c-create-drop-bg);
+  border: var(--k-c-create-drop-border);
+  border-radius: var(--k-c-create-drop-radius);
   color: var(--k-on-surface-variant);
   text-align: center;
   opacity: var(--k-c-input-disabled-opacity);
@@ -260,18 +260,18 @@
 .k-create-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--k-s-xs);
-  padding-left: var(--k-s-sm);
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-full);
+  gap: var(--k-c-create-chip-gap);
+  padding: var(--k-c-create-chip-pad);
+  border: var(--k-c-create-chip-border);
+  border-radius: var(--k-c-create-chip-radius);
   font-size: var(--k-text-body-sm);
   white-space: nowrap;
 }
 .k-create-chip > button {
   display: inline-grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: var(--k-c-create-target-width);
+  height: var(--k-c-create-target-height);
   border: 0;
   border-radius: var(--k-r-full);
   background: transparent;
@@ -291,19 +291,19 @@
   display: inline-flex;
   align-items: center;
   gap: var(--k-s-xs);
-  min-height: 24px;
+  min-height: var(--k-c-create-target-height);
   font-size: var(--k-text-body);
   cursor: pointer;
 }
 
 /* ---- 右：作る前に・高本のAI から ---- */
 .k-create-aside {
-  flex: 1 1 280px;
-  max-width: 340px;
+  flex: 1 1 var(--k-c-create-aside-width);
+  max-width: var(--k-c-create-aside-max-width);
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--k-s-xs) + var(--k-s-sm));
+  gap: var(--k-c-create-aside-gap);
 }
 @media (max-width: 767px) {
   .k-create-aside {
@@ -311,10 +311,10 @@
   }
 }
 .k-create-aside > section {
-  padding: calc(var(--k-s-xs) + var(--k-s-sm)) 14px;
-  background: var(--k-card);
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-field);
+  padding: var(--k-c-create-aside-box-pad);
+  background: var(--k-c-create-aside-box-bg);
+  border: var(--k-c-create-aside-box-border);
+  border-radius: var(--k-c-create-aside-box-radius);
 }
 .k-create-aside h2 {
   margin: 0 0 var(--k-s-sm);
@@ -325,7 +325,7 @@
 .k-create-checks {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--k-c-create-checks-gap);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -344,9 +344,9 @@
   display: flex;
   align-items: center;
   gap: var(--k-s-sm);
-  padding: 10px var(--k-s-lg);
-  background: var(--k-card);
-  border-top: 1px solid var(--k-line);
+  padding: var(--k-c-create-foot-pad);
+  background: var(--k-c-create-foot-bg);
+  border-top: var(--k-c-create-foot-border-top);
 }
 .k-create-foot > p {
   margin: 0;
@@ -360,13 +360,13 @@
   gap: var(--k-s-sm);
   margin-left: auto;
 }
-/* 足元の帯のボタンはキャンバスどおり高さ 34・主ボタンは左右 18 と紺の線 1px */
+/* 足元の帯のボタンはキャンバスどおり高さ 34・主ボタンは左右 18 と紺の線 */
 .k-create-foot .k-btn {
-  min-height: calc(var(--k-c-button-primary-height) + 2px);
+  min-height: var(--k-c-create-foot-button-height);
 }
 .k-create-foot .k-btn[data-variant="primary"] {
-  padding: 0 calc(var(--k-s-md) + 2px);
-  border: 1px solid var(--k-primary);
+  padding: var(--k-c-create-foot-primary-pad);
+  border: var(--k-c-create-foot-primary-border);
 }
 @media (max-width: 767px) {
   .k-create-foot {

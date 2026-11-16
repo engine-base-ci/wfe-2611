@@ -41,6 +41,10 @@ export function NotifyPicker({
         placeholder="名前で絞り込む（担当者と承認する人には自動で届く）"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        // 絞り込む欄の Enter で作る面を送らない（名前を打って Enter でチケットができてしまう）
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.preventDefault();
+        }}
       />
       {picked.size ? (
         <ul className="k-create-chips" aria-label="知らせる人">

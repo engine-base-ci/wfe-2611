@@ -286,9 +286,10 @@ export function CreateTicket({
     }
   };
 
-  /** 下書きのまま閉じる：まだ残していない書きかけをサーバーへ送ってから閉じる（下書きは消さない） */
+  /** 下書きのまま閉じる：まだ残していない書きかけをサーバーへ送ってから閉じる（下書きは消さない）。
+   *  「残していない」は待っている保存の有無で決める（前の保存の答えを待つ間に続けて打った字も落とさない） */
   const closeKeep = () => {
-    if (dirty.current) void store.flush(d);
+    if (store.pending || dirty.current) void store.flush(d);
     onClose();
   };
 
@@ -412,7 +413,11 @@ export function CreateTicket({
                   />
                 </div>
               ) : null}
-              <ParentPicker value={d.parent_ticket_id ?? null} onChange={(id) => set({ parent_ticket_id: id })} />
+              <ParentPicker
+                value={d.parent_ticket_id ?? null}
+                error={fields["parent_ticket_id"]}
+                onChange={(id) => set({ parent_ticket_id: id })}
+              />
             </div>
           </section>
           <DropOff />

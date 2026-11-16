@@ -24,7 +24,16 @@ type Found = { kind: "idle" } | { kind: "ok"; rows: Candidate[] } | { kind: "fai
 const labelOf = (c: { number: string; title: string }): string => `${c.number} ${c.title}`;
 const cut = (s: string): string => [...s].slice(0, Q_MAX).join("");
 
-export function ParentPicker({ value, onChange }: { value: string | null; onChange: (id: string | null) => void }) {
+export function ParentPicker({
+  value,
+  onChange,
+  error,
+}: {
+  value: string | null;
+  onChange: (id: string | null) => void;
+  /** 作る口が親を断った理由（E-VAL-015・入口の確かめ）。欄の下に出す */
+  error?: string | null | undefined;
+}) {
   const id = useId();
   const [text, setText] = useState("");
   const [found, setFound] = useState<Found>({ kind: "idle" });
@@ -97,6 +106,8 @@ export function ParentPicker({ value, onChange }: { value: string | null; onChan
   };
 
   const rows = found.kind === "ok" ? found.rows : [];
+  /** 欄の下に出している理由（読み上げで欄とつなぐ） */
+  const described = [...(error ? [`${id}-err`] : []), ...(found.kind === "failed" ? [`${id}-failed`] : [])];
   const listOpen = open && found.kind === "ok";
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -131,6 +142,8 @@ export function ParentPicker({ value, onChange }: { value: string | null; onChan
             aria-autocomplete="list"
             aria-expanded={listOpen}
             aria-controls={`${id}-list`}
+            aria-invalid={error ? true : undefined}
+            {...(described.length ? { "aria-describedby": described.join(" ") } : {})}
             {...(listOpen && active >= 0 ? { "aria-activedescendant": `${id}-o${active}` } : {})}
             maxLength={Q_MAX}
             placeholder="番号か題名で探す"
@@ -165,7 +178,16 @@ export function ParentPicker({ value, onChange }: { value: string | null; onChan
             </ul>
           ) : null}
         </div>
-        {found.kind === "failed" ? <span className="k-err">候補を読み込めませんでした</span> : null}
+        {error ? (
+          <span id={`${id}-err`} className="k-err">
+            {error}
+          </span>
+        ) : null}
+        {found.kind === "failed" ? (
+          <span id={`${id}-failed`} className="k-err">
+            候補を読み込めませんでした
+          </span>
+        ) : null}
       </div>
       {value ? (
         <Button variant="ghost" size="sm" onClick={clear}>

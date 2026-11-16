@@ -109,13 +109,21 @@ export class DraftStore {
     private readonly waitMs = 600,
   ) {}
 
+  /** まだサーバーへ送っていない書きかけがある（少し待ってから送る保存が待っている） */
+  get pending(): boolean {
+    return this.timer !== undefined;
+  }
+
   /** 書いた中身を残す（サーバーへは少し待ってから・まとめて 1 回） */
   save(body: DraftBody): void {
     if (this.sealed) return;
     const id = tabDraftId(this.o);
     write(COPY_KEY(this.o), JSON.stringify({ id, body }), local);
     if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => void this.send(body), this.waitMs);
+    this.timer = setTimeout(() => {
+      this.timer = undefined;
+      void this.send(body);
+    }, this.waitMs);
   }
 
   /** 作る前に：待っている保存を止め、今の中身をすぐサーバーへ残して答えを待つ（ログイン切れでも続きが出る・H1） */
