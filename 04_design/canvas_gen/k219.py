@@ -1,8 +1,8 @@
 """K-219：キャンバスに絵が無い状態の絵を起こす（13 枚＋使えない形の見本＋「あとで」を置いた絵）。
 
 近い絵を読み込んで写し、見出し・文・ボタン・箱の色だけを替えて書き出す。値は近い絵と正本（DESIGN-kaname.md）の段だけを使う。
-書き出した後に shellfix.py（左のバー・上の帯・行き先・値の段のそろえ）を回し、そのあと shellfix が全部の画面に同じに掛ける所のうち、
-この絵だけ違うもの（承認待ちが空の絵のバーの印と今いる所・はじめて入ったときの絵のバー）を直す。
+書き出した後に shellfix.py（左のバー・上の帯・行き先・値の段のそろえ）を回す。shellfix が全部の画面に同じに掛ける所のうち、
+この絵だけ違うもの（承認待ちが空の絵のバーの印と今いる所・はじめて入ったときの絵のバー）は、shellfix.py が最後に after_shellfix() を呼んで直す。
 canvas.json・対応表（canvas-screens.json）・突き合わせの設定（fidelity.json）・持ち主のチケットの頭（canvas）も、ここで足す。
 何度流しても同じになる。
 
@@ -57,26 +57,21 @@ WARN = ('<div style="background: #FFF8EE; border: 1px solid #F3D3A7; border-radi
 INFO = '<div style="background: #F7F8FA; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #4A5563; line-height: 1.7">%s</div>'
 WAITING = ('<div role="status" style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #4A5563">'
            + SPIN + '<span>%s</span></div>')
-NOTE = '<div style="font-size: 11px; color: #4A5563; text-align: center; max-width: 440px">%s</div>'
 CENTER = '<div style="display: flex; justify-content: center">%s</div>'
-LATE = "文は 3 秒たっても終わらないときだけ出す。すぐ終わるときは、枠と見出しだけのまま次へ進む"
 CARD_OPEN = re.compile(r'<div style="width: 100%; max-width: 4\d0px; background: #FFFFFF;')
 
 
-def auth_board(ref, name, title, inner, note=""):
+def auth_board(ref, name, title, inner):
     """入口の箱（x-dc > div > div:nth-of-type(2)）の中身を替える。箱は登録の画面と同じ形にそろえる"""
     s = load(ref + ".dc.html")
     opener = CARD_OPEN.search(s).group(0)
     s = replace_block(s, opener, CARD + inner + "</div>")
-    if note:
-        foot = s.rindex('<div style="font-size: 11px; color: #4A5563', 0, s.index("</x-dc>"))
-        s = s[:foot] + NOTE % note + s[foot:]
     save(name, title, s)
 
 
 def auth_boards():
     auth_board("AuthVerify", "AuthVerifying", "確認しています",
-               TITLE % "確認しています" + WAITING % "登録を確定しています…", LATE)
+               TITLE % "確認しています" + WAITING % "登録を確定しています…")
     auth_board("ErrLinkExpired", "AuthVerifyExpired", "メールの確認 期限切れ",
                CENTER % icon("期", "#B45309", 44) + TITLE % "リンクの期限が切れました"
                + WARN % "リンクの期限が切れました。もう一度登録してください" + PRIMARY % ("AuthSignup.dc.html", "もう一度登録する"))
@@ -94,9 +89,9 @@ def auth_boards():
                + PRIMARY % ("Main.dc.html", "同意して続ける")
                + '<button type="button" style="height: 36px; border: 0; background: transparent; color: #4A5563; font-size: 13px">ログアウト</button>')
     auth_board("AuthSignup", "AuthChecking", "アカウントを作る 確かめ中",
-               TITLE % "アカウントを作る" + WAITING % "確かめています…", LATE)
+               TITLE % "アカウントを作る" + WAITING % "確かめています…")
     auth_board("AuthVerify", "AuthVerifyLoading", "確認メールを送りました 読み込み中",
-               TITLE % "確認メールを送りました" + WAITING % "読み込んでいます…", LATE)
+               TITLE % "確認メールを送りました" + WAITING % "読み込んでいます…")
 
 
 # ---------- 帯（StRunning から） ----------
@@ -192,8 +187,9 @@ def approvals_empty():
     s = s.replace('<span style="color: #4A5563">あなたが決めるもの 9 件</span>', '<span style="color: #4A5563">あなたが決めるもの 0 件</span>', 1)
     s = re.sub(r'\n    <a href="ApprovalsFocus\.dc\.html"[^>]*>続けて裁く（9 件）</a>', "", s, count=1)
     empty = ('<div style="padding: 16px 24px; display: flex; flex-direction: column; gap: 12px">\n'
-             '   <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px; padding: 40px 24px; display: flex; flex-direction: column; '
-             'align-items: center; gap: 10px; text-align: center">'
+             # 空の箱は正本の state-empty（地 card・1px dashed line-strong・角丸 lg・余白 36px 28px・間 12px）
+             '   <section data-part="state-empty" style="background: #FFFFFF; border: 1px dashed #B8C0CC; border-radius: 12px; padding: 36px 28px; '
+             'display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">'
              + icon("✓", "#166534", 44)
              + '<b style="font-size: 16px">いま決めるものはありません</b>'
              '<div style="font-size: 13px; color: #4A5563; max-width: 460px; line-height: 1.7">AI が成果物を作り、確かめが終わると、ここに並びます</div>'
@@ -298,6 +294,9 @@ NAV = re.compile(r' <nav aria-label="メニュー".*?</nav>\n', re.S)
 
 
 def after_shellfix():
+    """shellfix.py の最後から呼ぶ（絵が無い木では何もしない）"""
+    if not all(os.path.exists(P + n + ".dc.html") for n in ("Approvals", "ApEmpty", "OnHome", "OnHomeLater")):
+        return
     ap = load("Approvals.dc.html")
     s = load("ApEmpty.dc.html")
     s = NAV.sub(lambda _m: BADGE.sub("", NAV.search(ap).group(0)), s, count=1)
@@ -411,7 +410,7 @@ def update_owner_heads():
 
 # ---------- 代表に見せる見比べの 1 枚 ----------
 DIFF = {
-    "AuthVerifying": ["確認メールの箱の中身を「確認しています」の見出しと、回る印つきの「登録を確定しています…」に替えた", "文は 3 秒たっても終わらないときだけ出す（すぐ終われば見出しだけで次へ）"],
+    "AuthVerifying": ["確認メールの箱の中身を「確認しています」の見出しと、回る印つきの「登録を確定しています…」に替えた", "文は 3 秒たっても終わらないときだけ出す（すぐ終われば見出しだけで次へ）。この決まりは絵には書いていない"],
     "AuthVerifyExpired": ["箱を登録の画面と同じ形にそろえ、見出しを「リンクの期限が切れました」にした", "案内の文と「もう一度登録する」のボタンを置いた"],
     "AuthVerifyUsed": ["印を緑の ✓ にし、見出しを「登録は終わっています」にした", "ログインへ進む文と「ログイン」のボタンを置いた"],
     "AuthConsent": ["見出しを「利用規約とプライバシーポリシーが新しくなりました」にした", "2 つの文書と版・同意のチェック・「同意して続ける」と「ログアウト」を置いた"],
@@ -422,7 +421,7 @@ DIFF = {
     "StDone": ["帯を緑の箱にし、「完了しました」と完了にした人と時刻を出した", "上の印を「完了」にした。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
     "StDelegated": ["帯を橙の箱にし、「高本のAI に任せました」「PC が受け取るのを待っています」を出した", "実施事項はどれもまだ。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
     "StCompleteModal": ["小窓を 1 つにし、題を「完了にする」にした", "完了の条件・実施事項のチェック・「確かめました」のチェック・「確かめて完了にする」を置いた"],
-    "ApEmpty": ["表を外し、「いま決めるものはありません」と「決めた履歴」へのボタンを置いた", "件数を 0 にし、左のバーの件数の印も外した"],
+    "ApEmpty": ["表を外し、「いま決めるものはありません」と「決めた履歴」へのボタンを置いた", "空の箱は、ほかの空の画面と同じ点線の箱にした", "件数を 0 にし、左のバーの件数の印も外した"],
     "MePCInstalled": ["「この PC の Bridge」の箱と「この PC の Bridge につなぐ」のボタンを置いた", "つないでいる PC はまだ無い形にした"],
     "UiDisabled": ["ボタン・選ぶ欄・探す欄・メニューの項目・見え方のタブ の使える形と使えない形を並べた", "使えない形は薄く（不透明度 0.55）して押せないようにした"],
     "OnHomeLater": ["パスキーの行を薄く押せない形にし、数に入れないので「0 ／ 2」・進みの棒を 0 にした", "「ログイン情報を預ける」の「預ける」の横に「あとで」を置いた"],
@@ -464,8 +463,7 @@ if __name__ == "__main__":
     pc_installed()
     disabled_sample()
     home_later()
-    subprocess.run([sys.executable, "shellfix.py"], cwd=HERE, check=True, stdout=subprocess.DEVNULL)
-    after_shellfix()
+    subprocess.run([sys.executable, "shellfix.py"], cwd=HERE, check=True, stdout=subprocess.DEVNULL)  # 最後に after_shellfix() を呼ぶ
     update_canvas_json()
     update_screens()
     update_fidelity()
