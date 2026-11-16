@@ -10319,6 +10319,7 @@
    ],
    "changes": [
     "scripts/ci/ci_scope.json",
+    "07_qa/test-specs/k/connect-pc.md",
     "apps/web/features/F3/connect-pc/connect-pc.tsx",
     "apps/web/features/F4/create-ticket/ticket-shell.tsx",
     "apps/web/components/k/shell.tsx",
