@@ -26,6 +26,9 @@ import {
   views,
 } from "./list-mock";
 
+/** 一覧の列（キャンバス Main・代表の答え answer=afc3b0f2fdb4。D-128.15 の 7 列を置き換えた） */
+const COLUMNS = ["種別", "番号", "題名", "状態", "担当者", "グループ", "期限", "予定・実績", "更新"];
+
 test("K251-UI-001 帯：白い帯の中に h1「チケット」18px・700 と「すべてのグループ」。帯に「＋ チケットを作る」は無い（主は 1 つ）", async ({
   page,
 }) => {
@@ -100,15 +103,25 @@ test("K251-UI-004 タブを素早く切り替える：遅れて届いた前の�
   await expect(table(page)).not.toContainText("自分の分");
 });
 
-test("K251-UI-005 表：列の見出しは 番号・題名・種別・状態・担当者・期限・更新 の 7 つ。行は口の答えの並び・番号はリンク", async ({
+test("K251-UI-005 表：列の見出しは キャンバス Main どおり 種別・番号・題名・状態・担当者・グループ・期限・予定・実績・更新 の 9 つ。行は口の答えの並び・番号はリンク・グループと予定・実績は空（answer=afc3b0f2fdb4）", async ({
   page,
 }) => {
   await mockList(page, { list: () => ok([item(3), item(1), item(2)], { next_cursor: null }) });
   await open(page);
+  await expect(rowsOf(page)).toHaveCount(3); // 表は口の答えが届いてから描く（読む前に待つ）
   const heads = await table(page).getByRole("columnheader").allInnerTexts();
-  expect(heads.map((h) => h.trim())).toEqual(["番号", "題名", "種別", "状態", "担当者", "期限", "更新"]);
-  const numbers = await rowsOf(page).locator("td:first-child").allInnerTexts();
+  expect(heads.map((h) => h.trim())).toEqual(COLUMNS);
+  const at = (name: string) => COLUMNS.indexOf(name) + 1;
+  const numbers = await rowsOf(page)
+    .locator(`td:nth-child(${at("番号")})`)
+    .allInnerTexts();
   expect(numbers.map((x) => x.trim())).toEqual(["EG-103", "EG-101", "EG-102"]);
+  // グループと予定・実績は一覧の口に値が無いので空（D-144.3）
+  for (const name of ["グループ", "予定・実績"])
+    for (const v of await rowsOf(page)
+      .locator(`td:nth-child(${at(name)})`)
+      .allInnerTexts())
+      expect(v.trim(), name).toBe("");
   await expect(rowsOf(page).first().getByRole("link", { name: "EG-103" })).toHaveAttribute(
     "href",
     `/tickets/${idOf(3)}`,
@@ -479,11 +492,12 @@ test("K251-UI-025 ログイン情報を預けるの横の「あとで」（キ�
   await expect(box.locator('[data-task="pc"]').getByRole("button", { name: "あとで" })).toHaveCount(0); // 任意でない項目は飛ばせない
 });
 
-test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：数の札 4 つと「自分に関わるもの」の件数は在るが数は空・絞りの札 5 つ・並び・条件を保存・表示設定はグレーで押せない（D-145.9）", async ({
+test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：数の札 4 つと「自分に関わるもの」の件数は在るが数は空・絞りの札 5 つ・並び・条件を保存はグレーで押せない（D-145.9。表示設定は 032 で押せる）", async ({
   page,
 }) => {
   const m = await mockList(page);
   await open(page);
+  await expect(rowsOf(page)).toHaveCount(3); // 札と表は口の答えが届いてから描く（読む前に待つ）
   const cards = page.locator('[aria-label="数の札"]');
   const names = await cards
     .locator(":scope > *")
@@ -502,7 +516,6 @@ test("K251-UI-026 自分に関わるもの（キャンバス Main）の部品：
     "渡されたもの",
     "並び：期限の近い順",
     "条件を保存",
-    "表示設定",
   ])
     await expectDisabled(page, bar.locator('[aria-disabled="true"]', { hasText: t }).first(), t);
   for (const v of await bar.locator("[data-chip] [data-value]").allInnerTexts()) expect(v.trim()).toBe("");
@@ -593,3 +606,110 @@ test("K251-UI-030 幅 375：一番下までスクロールしても「もっと�
     await hit(z.getByRole("region", { name: "はじめにやること" }).getByRole("button", { name: "いまは閉じる" })),
   ).toBe(true);
 });
+
+test("K251-UI-031 自分に関わるものは期限で区切る：見出しの行は 期限切れ・今日まで・今週・来週以降 の順で件数は出さず、行の無い区切りは出さない。一覧（?view=all）は区切らない（answer=afc3b0f2fdb4）", async ({
+  page,
+}) => {
+  await page.clock.setFixedTime(new Date("2026-11-04T10:00:00+09:00")); // 水曜（週は月曜から日曜）
+  const rows = [
+    item(1, { overdue: true, due_on: "2026-11-01" }),
+    item(2, { due_on: "2026-11-04" }),
+    item(3, { due_on: "2026-11-02", stage: { id: "st", name: "完了", key: "done" } }), // 済んだ過去の期限：今日まで
+    item(4, { due_on: "2026-11-06" }),
+    item(5, { due_on: "2026-11-08" }),
+    item(6, { due_on: "2026-11-09" }),
+    item(7, { due_on: null }),
+  ];
+  await mockList(page, { list: () => ok(rows, { next_cursor: null }) });
+  await open(page);
+  await expect(rowsOf(page)).toHaveCount(7);
+  const heads = table(page).locator("tbody tr[data-section]");
+  expect((await heads.allInnerTexts()).map((t) => t.trim())).toEqual(["期限切れ", "今日まで", "今週", "来週以降"]);
+  await expect(table(page).locator("tbody")).not.toContainText("件");
+  expect(await heads.first().locator("td").getAttribute("colspan")).toBe(String(COLUMNS.length));
+  // 区切りの見出しの行の後ろに、その区切りの行が口の並びのまま続く
+  const order = await table(page)
+    .locator("tbody tr")
+    .evaluateAll((trs) => trs.map((tr) => tr.getAttribute("data-section") ?? tr.textContent?.match(/EG-\d+/)?.[0]));
+  expect(order).toEqual([
+    "overdue",
+    "EG-101",
+    "today",
+    "EG-102",
+    "EG-103",
+    "week",
+    "EG-104",
+    "EG-105",
+    "later",
+    "EG-106",
+    "EG-107",
+  ]);
+  // 期限切れの行が無ければ、その区切りは出さない
+  const p2 = await page.context().newPage();
+  await p2.clock.setFixedTime(new Date("2026-11-04T10:00:00+09:00"));
+  await mockList(p2, { list: () => ok(rows.slice(1), { next_cursor: null }) });
+  await open(p2);
+  await expect(rowsOf(p2)).toHaveCount(6);
+  expect((await p2.locator("tbody tr[data-section]").allInnerTexts()).map((t) => t.trim())).toEqual([
+    "今日まで",
+    "今週",
+    "来週以降",
+  ]);
+  // 一覧（全部）は区切らない
+  await views(p2).getByRole("link", { name: "一覧" }).click();
+  await expect(p2).toHaveURL(/\/tickets\?view=all$/);
+  await expect(rowsOf(p2)).toHaveCount(6);
+  await expect(p2.locator("tbody tr[data-section]")).toHaveCount(0);
+});
+
+test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せない。外した列は見出しと行から消え、開き直しても覚えている。はじめに戻すで 9 列。Esc で閉じてボタンに戻る。口は呼ばない（answer=afc3b0f2fdb4）", async ({
+  page,
+}) => {
+  const m = await mockList(page);
+  await open(page);
+  await expect(rowsOf(page)).toHaveCount(3);
+  const btn = page.getByRole("button", { name: "表示設定" });
+  await expect(btn).toHaveAttribute("aria-expanded", "false");
+  await btn.click();
+  await expect(btn).toHaveAttribute("aria-expanded", "true");
+  const box = page.getByRole("dialog", { name: "表に出す列" });
+  await expect(box).toBeVisible();
+  for (const name of COLUMNS) await expect(box.getByRole("checkbox", { name, exact: true }), name).toBeChecked();
+  for (const name of ["番号", "題名"])
+    await expect(box.getByRole("checkbox", { name, exact: true }), name).toBeDisabled();
+  await box.getByRole("checkbox", { name: "種別", exact: true }).uncheck();
+  await box.getByRole("checkbox", { name: "グループ", exact: true }).uncheck();
+  const left = COLUMNS.filter((c) => c !== "種別" && c !== "グループ");
+  const heads = async (p = page) => (await table(p).getByRole("columnheader").allInnerTexts()).map((h) => h.trim());
+  expect(await heads()).toEqual(left);
+  await expect(rowsOf(page).first().locator("td")).toHaveCount(left.length);
+  await page.keyboard.press("Escape");
+  await expect(box).toHaveCount(0);
+  await expect(btn).toBeFocused();
+  // 開き直しても覚えている（このブラウザ）
+  await page.reload();
+  await expect(rowsOf(page)).toHaveCount(3);
+  expect(await heads()).toEqual(left);
+  // はじめに戻す
+  await btn.click();
+  await page.getByRole("dialog", { name: "表に出す列" }).getByRole("button", { name: "はじめに戻す" }).click();
+  expect(await heads()).toEqual(COLUMNS);
+  await btn.click();
+  await expect(page.getByRole("dialog", { name: "表に出す列" })).toHaveCount(0);
+  expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
+});
+
+for (const [label, saved, want] of [
+  ["JSON でない", "{壊れた", COLUMNS],
+  ["知らない鍵だけ・番号と題名を外した値", JSON.stringify(["nope", "kind", "due"]), ["種別", "番号", "題名", "期限"]],
+] as const) {
+  test(`K251-UI-033 覚えた列の値が壊れている（${label}）：表は出て、番号と題名は必ず在り、知っている鍵だけ使う`, async ({
+    page,
+  }) => {
+    await page.addInitScript((v) => window.localStorage.setItem("kaname.ticket-list.columns", v), saved);
+    await mockList(page);
+    await open(page);
+    await expect(rowsOf(page)).toHaveCount(3);
+    expect((await table(page).getByRole("columnheader").allInnerTexts()).map((h) => h.trim())).toEqual([...want]);
+  });
+}
