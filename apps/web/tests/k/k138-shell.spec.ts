@@ -173,19 +173,20 @@ const navLabels = (page: Page) =>
     .locator(".k-nav-item:not(:has(.k-group-mark))")
     .evaluateAll((els) => els.map((e) => e.querySelector(".k-nav-label")?.textContent?.trim() ?? ""));
 
-/** 絵（svg）の線の形：子の要素ごとに 形の名前・d・x・y・幅・高さ・角丸（色や太さは見ない） */
+/** 絵（svg）の大きさ（width・height・viewBox）と線の形：子の要素ごとに 形の名前・d・x・y・幅・高さ・角丸（色や太さは見ない） */
 const svgSigs = (page: Page, sel: string) =>
-  page
-    .locator(sel)
-    .evaluateAll((els) =>
-      els.map((e) =>
-        [...(e.querySelector("svg")?.children ?? [])]
-          .map((c) =>
-            [c.tagName, ...["d", "x", "y", "width", "height", "rx"].map((a) => c.getAttribute(a) ?? "")].join(","),
-          )
-          .join(" "),
-      ),
-    );
+  page.locator(sel).evaluateAll((els) =>
+    els.map((e) => {
+      const svg = e.querySelector("svg");
+      const size = ["width", "height", "viewBox"].map((a) => svg?.getAttribute(a) ?? "").join(",");
+      const lines = [...(svg?.children ?? [])]
+        .map((c) =>
+          [c.tagName, ...["d", "x", "y", "width", "height", "rx"].map((x) => c.getAttribute(x) ?? "")].join(","),
+        )
+        .join(" ");
+      return `${size} ${lines}`;
+    }),
+  );
 /** キャンバスの頁を開いて、その要素の絵の線を読む（外への道は止める） */
 async function canvasSigs(browser: Browser, file: string, sel: string, width: number): Promise<string[]> {
   const cp = await browser.newPage({ viewport: { width, height: 900 } });
@@ -277,7 +278,8 @@ test("K138-SH-006 作っていない項目（ナレッジ・取引先・ワー�
     const before = page.url();
     await item.click({ force: true });
     expect(page.url(), name).toBe(before);
-    // キーボード：Tab で止まり（title の準備中に届く）、Enter を押しても移らない
+    // キーボード：Tab で止まり（tabindex 0・title の準備中に届く）、Enter を押しても移らない
+    await expect(item, name).toHaveAttribute("tabindex", "0");
     await item.focus();
     await expect(item, name).toBeFocused();
     await page.keyboard.press("Enter");
@@ -320,6 +322,7 @@ test("K138-SH-009 グループ：見出し「グループ」と★（グレー�
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
+  await expect(nav.locator(".k-nav-sec")).toBeVisible();
   await expect(nav.locator(".k-nav-sec")).toContainText("グループ");
   const star = nav.locator('.k-nav-sec [aria-disabled="true"]', { hasText: "★" });
   await expect(star).toBeVisible();
@@ -333,6 +336,12 @@ test("K138-SH-009 グループ：見出し「グループ」と★（グレー�
     const g = groups.nth(i);
     await expect(g).toHaveAttribute("role", "link");
     await expect(g).toHaveAttribute("aria-disabled", "true");
+    await expect(g).toHaveAttribute("tabindex", "0");
+    await expect(g).toHaveAttribute("data-group", ["営業", "経理"][i]!);
+    // 札の字はキャンバスどおり 10px・太さ普通
+    expect(
+      await g.locator(".k-group-mark").evaluate((e) => [getComputedStyle(e).fontSize, getComputedStyle(e).fontWeight]),
+    ).toEqual(["10px", "400"]);
     await expect(g).not.toHaveAttribute("href", /./);
     expect(await g.getAttribute("title")).toContain("準備中");
     expect(await g.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
@@ -443,6 +452,13 @@ test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チ
     );
   expect(items).toEqual(["チケット", "承認", "チケットを作る", "AI", "メニュー"]);
   await expect(tabs.locator(":scope > *").nth(1)).toContainText("2");
+  // 数の印はキャンバスどおり 16px の丸・10px
+  expect(
+    await tabs.locator(".k-nav-badge").evaluate((e) => {
+      const r = e.getBoundingClientRect();
+      return [Math.round(r.width), Math.round(r.height), getComputedStyle(e).fontSize];
+    }),
+  ).toEqual([16, 16, "10px"]);
   // 絵の線がキャンバス MobileList の下のタブと同じ（＋は字なので絵を持たない）
   const canvas = await canvasSigs(browser, "MobileList", 'nav[aria-label="下のタブ"] > a', 375);
   expect(await svgSigs(page, ".k-tabs > :is(a, button, span)")).toEqual(canvas);
@@ -556,13 +572,15 @@ test("K138-SH-019 幅 375：本文を一番下まで送っても、本文の最�
   }
 });
 
-test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の名前は title で読める）、1024 は 216px", async ({
+test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の名前は title で読める・畳むボタンが在る）、1024 は 216px", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets, 768);
   await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(56);
   await expect(leftNav(page).getByRole("link", { name: /^チケット/ })).toHaveAttribute("title", /チケット/);
+  // レールにもキャンバスどおり畳むボタンが在る
+  await expect(leftNav(page).locator(".k-nav-toggle")).toBeVisible();
   await open(page, PATHS.tickets, 1024);
   await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(216);
 });
@@ -694,8 +712,9 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認�
   expect(count("GET /api/v1/scopes")).toBe(1);
   // 窓に戻っても役の口を読み直さない
   const meBefore = count("GET /api/auth-ext/me");
+  // 入っている TanStack Query は window の visibilitychange を聞く（document の物は泡立たず届かない）
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
-  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await page.evaluate(() => window.dispatchEvent(new Event("visibilitychange")));
   await page.clock.runFor(10_000);
   expect(count("GET /api/auth-ext/me")).toBe(meBefore);
 
@@ -769,6 +788,7 @@ test("K138-SH-030 幅 767 以下（375）はキャンバス MobileList どおり
     );
     expect(titles, path).toBe(1);
     await expect(page.getByRole("navigation", { name: "いまの場所" }), path).toBeHidden();
+    await expect(page.getByRole("search"), path).toBeHidden();
     await expect(page.getByRole("button", { name: "自分のメニュー" }), path).toBeHidden();
     const bell = page.locator(".k-bell");
     await expect(bell, path).toBeVisible();
@@ -813,7 +833,9 @@ test("K138-SH-023 突き合わせの設定：shell-nav・shell-tabs が enrolled
   const nav = CFG.groups.find((x) => x.id === "shell-nav")!.pairs;
   const bar = nav.find((p) => p.canvas === ".kn-bar" && p.app === ".k-bar");
   expect(bar?.props).toEqual(expect.arrayContaining(["height", "background-color"]));
-  const group = nav.find((p) => p.canvas.includes(".kn-item") && p.app.includes(".k-group-mark"));
+  const group = nav.find(
+    (p) => p.canvas === '.kn-nav > a.kn-item[title="営業"]' && p.app === '.k-nav > .k-nav-item[data-group="営業"]',
+  );
   expect(group?.props).toEqual(expect.arrayContaining(["height", "font-size"]));
 });
 
