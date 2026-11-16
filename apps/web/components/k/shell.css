@@ -527,10 +527,10 @@
     margin-left: auto;
   }
   /* 長い見出しでも鈴が下の行に落ちない（見出しが縮む） */
-  .k-shell :is(.k-row, .k63-head):has(> .k-bell-inline) {
+  .k-shell :has(> .k-bell-inline) {
     flex-wrap: nowrap;
   }
-  .k-shell :is(.k-row, .k63-head):has(> .k-bell-inline) > h1 {
+  .k-shell :has(> .k-bell-inline) > h1 {
     min-width: 0;
     overflow-wrap: anywhere;
   }
