@@ -574,9 +574,9 @@ jobs:
       - name: "G31 テスト計画の整合 TV1〜TV8"
         if: ${{ !cancelled() }}
         run: python3 scripts/ci/tv_gate.py
-      - name: "G37 デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）"
+      - name: "G37 デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4・部品の値 D5・文字の段 D6／D7・プレビュー）"
         if: ${{ !cancelled() }}
-        run: python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part
+        run: python3 04_design/gen_tokens.py --web --check && python3 04_design/gen_preview.py --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --scales --usage apps/web apps/bridge/src && python3 scripts/ci/k218_design_canvas_test.py
       - name: "G38 生成物が全部最新（作り手を全部回して、中身が変わる生成物・落ちる作り手・目録に無い生成物を赤にする・D-128.123）"
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',38,')) }}
         run: python3 scripts/ci/generated_gate.py --selftest && python3 scripts/ci/generated_gate.py

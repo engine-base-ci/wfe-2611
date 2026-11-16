@@ -48,9 +48,9 @@ python3 shellfix.py      # 全部の画面にそろえの処理をかける（�
 ## 確かめ方
 
 ```bash
-python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks "04_design/canvas/*.dc.html"
+python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks "04_design/canvas/*.dc.html" --no-components
 ```
 
-D1〜D4（色・書体・角丸・文字）が 0 件であること。D6（正本にあって画面が使っていない色）は、データ色の残りや会話のコードの色分けなど、画面の見本に出ないものだけのはず。
+D1〜D4（色・書体・角丸・文字）が 0 件であること。キャンバスの絵は部品のクラス（.k-btn など）を持たないので D5 は掛けない（--no-components・部品とキャンバスの突き合わせは G70）。D6（正本にあって画面が使っていない色）は、データ色の残りや会話のコードの色分けなど、画面の見本に出ないものだけのはず。
 
 キャンバスに出すときは、`canvas.json`（ページ・画面の置き場所・メモ）も一緒に出す。出す前に、キャンバスで人が動かした分がないか、公開済みの `canvas.json` を読んで確かめる。

@@ -8,8 +8,11 @@
   D2 書体    font-family が正本の fontFamily に無い
   D3 角丸    border-radius が正本の rounded の段に無い
   D4 文字    font-size が正本の typography の段に無い
-  D5 部品    components の定義に対応する規則が画面に無い／面の色・角丸が違う
+  D5 部品    components の定義に対応する規則が画面に無い／規則に書いた値（地・字・線・角丸・余白・高さ・太さ・文字）が正本と違う
+             （design-gate.json の component_selectors。キャンバスの絵には --no-components で掛けない・K-218）
   D6 未使用  正本にあって画面がどこにも使っていない色・型の段（＝絵に描いた餅）
+             --scales：文字の段の名前が --usage の下のどこにも出てこない（名前は完全に一致で数える・K-218）
+  D7 段の数  文字の大きさの種類が design-gate.json の max_type_sizes（既定 10）を超える（K-218）
 
 規約: .claude/rules/common/design-system.md
 """
@@ -98,6 +101,148 @@ def resolve(val: str, vars_: dict, depth: int = 0) -> str:
     return resolve(out, vars_, depth + 1) if "var(" in out and out != val else out
 
 
+# ---- D5：部品の定義 ⇔ CSS の規則（K-218）----
+# 比べる値：CSS の性質 → 正本の部品の鍵。background と background-color、height と min-height は同じ値として比べる
+D5_PROPS = {
+    "background": "backgroundColor", "background-color": "backgroundColor", "color": "textColor",
+    "border": "border", "border-radius": "rounded", "padding": "padding", "height": "height",
+    "min-height": "height", "font-weight": "fontWeight", "font-size": "typography",
+}
+REF = re.compile(r"\{(\w+)\.([\w-]+)\}")
+
+
+def strip_at_blocks(css: str) -> str:
+    """@media などの入れ子の塊（{ の中に { がある）を外す。D5 は素の規則だけを部品の契約とする"""
+    out, i, n = [], 0, len(css)
+    while i < n:
+        if css[i] == "@":
+            j = css.find("{", i)
+            k = css.find(";", i)
+            if j == -1 or (k != -1 and k < j):          # @import など塊の無いもの
+                i = (k + 1) if k != -1 else n
+                continue
+            depth, j = 1, j + 1
+            while j < n and depth:
+                depth += {"{": 1, "}": -1}.get(css[j], 0)
+                j += 1
+            i = j
+            continue
+        out.append(css[i])
+        i += 1
+    return "".join(out)
+
+
+def norm_sel(sel: str) -> str:
+    return re.sub(r"\s+", " ", sel.replace("'", '"')).strip()
+
+
+def rules_of(css: str) -> list[tuple[list[str], dict[str, str]]]:
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    out = []
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", strip_at_blocks(css)):
+        sels = [norm_sel(x) for x in m.group(1).split(",") if x.strip()]
+        decls = {}
+        for d in m.group(2).split(";"):
+            if ":" in d:
+                k, v = d.split(":", 1)
+                decls[k.strip().lower()] = v.strip()
+        out.append((sels, decls))
+    return out
+
+
+def norm_val(v: str) -> str:
+    v = re.sub(r"\s+", " ", v.strip().lower())
+    v = HEX.sub(lambda m: norm_hex(m.group(0)), v)
+    return re.sub(r"\b0px\b", "0", v)
+
+
+def src_value(src: dict, spec_val, key: str) -> str | None:
+    """正本の部品の値を本当の値に開く。開けないものは None（比べない）"""
+    def sub(m: re.Match) -> str:
+        g, k = m.group(1), m.group(2)
+        for group in ([g] if g != "colors" else ["colors"]):
+            v = (src.get(group) or {}).get(k)
+            if v is not None:
+                return str(v)
+        return m.group(0)
+    raw = str(spec_val)
+    if key == "typography":
+        t = REF.fullmatch(raw)
+        if not t:
+            return None
+        size = ((src.get("typography") or {}).get(t.group(2)) or {}).get("fontSize")
+        return str(size) if size is not None else None
+    out = REF.sub(sub, raw)
+    return None if REF.search(out) else out
+
+
+def check_components(src: dict, cfg: dict, files: list[Path], vars_: dict) -> tuple[list[str], int, int, int]:
+    """戻り：赤の行・部品の数・比べた値の数・セレクタの無い部品の数"""
+    comps = src.get("components") or {}
+    sels = cfg.get("component_selectors") or {}
+    rules = [r for f in files for r in rules_of(css_of(f))]
+
+    def decls_for(sel: str) -> dict[str, str] | None:
+        want, got, hit = norm_sel(sel), {}, False
+        for ss, d in rules:
+            if want in ss:
+                hit = True
+                got.update(d)
+        return got if hit else None
+
+    bad, compared = [], 0
+    for name, conf in sels.items():
+        sel = conf.get("selector") if isinstance(conf, dict) else conf
+        shape = conf.get("shape") if isinstance(conf, dict) else None
+        spec = comps.get(name)
+        if spec is None:
+            bad.append(f"D5 {name} 正本の components に無い（design-gate.json の component_selectors を直す）")
+            continue
+        own = decls_for(sel)
+        if own is None:
+            bad.append(f"D5 {name} セレクタ {sel} の規則が CSS に無い")
+            continue
+        merged = {**((decls_for(shape) or {}) if shape else {}), **own}
+        for prop, key in D5_PROPS.items():
+            if prop not in merged or key not in spec:
+                continue
+            if prop in ("background", "height") and (
+                    ("background-color" if prop == "background" else "min-height") in merged):
+                continue                                   # 同じ値の 2 つの書き方は片方だけ比べる
+            want = src_value(src, spec[key], key)
+            if want is None:
+                continue
+            have = resolve(merged[prop], vars_)
+            compared += 1
+            if norm_val(want) != norm_val(have):
+                bad.append(f"D5 {name} {prop} 正本 {want} ／ CSS {have}")
+    return bad, len(sels), compared, len([c for c in comps if c not in sels])
+
+
+SKIP_DIRS = {"node_modules", ".next", ".turbo", "dist", "build", "coverage", "test-results", "playwright-report"}
+GENERATED = {"k-tokens.css", "tokens.css"}
+USAGE_EXT = {".css", ".ts", ".tsx", ".js", ".mjs", ".html"}
+
+
+def unused_scales(src: dict, usage: list[str]) -> list[str]:
+    names = list((src.get("typography") or {}).keys())
+    text = []
+    for u in usage:
+        for f in Path(u).rglob("*"):
+            if f.is_file() and f.suffix in USAGE_EXT and f.name not in GENERATED and not (SKIP_DIRS & set(f.parts)):
+                text.append(f.read_text(encoding="utf-8", errors="replace"))
+    for spec in (src.get("components") or {}).values():
+        text.append(" ".join(str(v) for v in spec.values()))
+    blob = "\n".join(text)
+    out = []
+    for n in names:
+        pat = (rf"(?:--k-text-|--k-lh-|--k-fw-|--text-|--lh-){re.escape(n)}(?![\w-])"
+               rf"|\{{typography\.{re.escape(n)}\}}")
+        if not re.search(pat, blob):
+            out.append(n)
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--design", required=True)
@@ -106,6 +251,11 @@ def main() -> int:
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--part", action="store_true",
                     help="画面の一部だけを見る（D6 未使用は製品全体でしか判定できないので見ない）")
+    ap.add_argument("--no-components", action="store_true",
+                    help="D5 を掛けない（キャンバスの絵は部品のクラスを持たない。部品とキャンバスの突き合わせは G70）")
+    ap.add_argument("--scales", action="store_true",
+                    help="文字の段を数える：使われない段（D6 段・--usage の下）と大きさの種類（D7）")
+    ap.add_argument("--usage", nargs="*", default=[], help="--scales で段の名前を探すフォルダ（生成物のトークンは除く）")
     a = ap.parse_args()
 
     root = Path(a.design).resolve().parent
@@ -173,27 +323,49 @@ def main() -> int:
             if fonts and first not in fonts and first not in ("inherit", "ui-monospace"):
                 bad_f.setdefault(first, set()).add(f.name)
 
+    d5_bad, d5_parts, d5_compared, d5_free = [], 0, 0, 0
+    if not a.no_components and cfg.get("component_selectors"):
+        d5_bad, d5_parts, d5_compared, d5_free = check_components(src, cfg, files, vars_)
+    scale_unused: list[str] = []
+    type_sizes: set[str] = set()
+    max_sizes = int(cfg.get("max_type_sizes", 10))
+    if a.scales:
+        scale_unused = unused_scales(src, a.usage)
+        type_sizes = {str(v.get("fontSize")) for v in (src.get("typography") or {}).values()
+                      if isinstance(v, dict) and "fontSize" in v}
+
     res = {
         "D1_色_正本に無い": {k: sorted(v)[:3] for k, v in sorted(bad_c.items())},
         "D2_書体_正本に無い": {k: sorted(v)[:3] for k, v in sorted(bad_f.items())},
         "D3_角丸_段に無い": {k: sorted(v)[:3] for k, v in sorted(bad_r.items())},
         "D4_文字_段に無い": {k: sorted(v)[:3] for k, v in sorted(bad_s.items())},
-        "D5_部品": "検査していません（design-gate.json の component_selectors が無い）"
-                   if not cfg.get("component_selectors") else {},
+        "D5_部品": ("掛けていません（--no-components）" if a.no_components else
+                    "検査していません（design-gate.json の component_selectors が無い）"
+                    if not cfg.get("component_selectors") else d5_bad),
         "D6_未使用_色": "一部だけ見ています（--part）" if a.part else sorted(colors - used_c),
         "D6_未使用_文字": "一部だけ見ています（--part）" if a.part else sorted(sizes - used_s, key=float),
+        "D6_段_使われない": scale_unused if a.scales else "数えていません（--scales が無い）",
+        "D7_段の数": ([f"大きさの種類 {len(type_sizes)} 個（上限 {max_sizes}）"] if len(type_sizes) > max_sizes else [])
+                     if a.scales else "数えていません（--scales が無い）",
     }
     fails = sum(len(res[k]) for k in ("D1_色_正本に無い", "D2_書体_正本に無い", "D3_角丸_段に無い",
-                                      "D4_文字_段に無い", "D6_未使用_色", "D6_未使用_文字")
+                                      "D4_文字_段に無い", "D5_部品", "D6_未使用_色", "D6_未使用_文字",
+                                      "D6_段_使われない", "D7_段の数")
                 if not isinstance(res[k], str))
     if a.json:
-        print(json.dumps({"files": len(files), "fails": fails, **res}, ensure_ascii=False, indent=2))
+        print(json.dumps({"files": len(files), "fails": fails, "d5_parts": d5_parts, "d5_compared": d5_compared,
+                          **res}, ensure_ascii=False, indent=2))
     else:
         print(f"画面 {len(files)} 枚 / 正本 {Path(a.design).name}")
         for k, v in res.items():
             if isinstance(v, str):
                 print(f"  {k}: {v}"); continue
-            print(f"  {k}: {len(v)} 件" + (f"  {list(v)[:8]}" if v else ""))
+            extra = f"  (部品 {d5_parts} 個・比べた値 {d5_compared} 個・セレクタの無い部品 {d5_free} 個)" \
+                if k == "D5_部品" else ""
+            print(f"  {k}: {len(v)} 件{extra}" + (f"  {list(v)[:8]}" if v and k != "D5_部品" else ""))
+            if k == "D5_部品":
+                for line in v:
+                    print(f"    {line}")
         print("PASS" if fails == 0 else f"不合格 {fails} 件")
     return 0 if fails == 0 else 1
 

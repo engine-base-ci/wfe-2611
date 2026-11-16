@@ -1,6 +1,19 @@
 {
-  "_doc": "design_gate.py（D1〜D6）のプロジェクト固有の設定。例外は必ず理由を書く",
+  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則で、変種の規則を上に重ねて比べる・K-218）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
   "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
   "allow_colors": [{ "value": "#2A3444", "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない" }],
-  "allow_sizes": []
+  "allow_sizes": [],
+  "component_selectors": {
+    "button-primary": { "selector": ".k-btn[data-variant=\"primary\"]", "shape": ".k-btn" },
+    "button-primary-lg": { "selector": ".k-btn[data-size=\"lg\"]", "shape": ".k-btn" },
+    "button-outlined": { "selector": ".k-btn[data-variant=\"outlined\"]", "shape": ".k-btn" },
+    "input": ".k-input",
+    "input-lg": { "selector": ".k-field[data-size=\"lg\"] .k-input", "shape": ".k-input" },
+    "label": ".k-label",
+    "label-lg": { "selector": ".k-field[data-size=\"lg\"] .k-label", "shape": ".k-label" },
+    "dialog": ".k-dialog",
+    "dialog-title": ".k-dialog-title",
+    "state-empty": ".k-state[data-state=\"empty\"]"
+  },
+  "max_type_sizes": 10
 }

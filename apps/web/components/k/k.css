@@ -32,20 +32,22 @@
   font-size: var(--k-text-body);
 }
 
-/* ---- ボタン（正本 components.button-*）。1 画面に主ボタンは 1 つ ---- */
+/* ---- ボタン（正本 components.button-*）。1 画面に主ボタンは 1 つ ----
+   大きさは 2 つ（K-218・キャンバス）：作業の画面（既定・高さ 32）と入口の画面（data-size="lg"・高さ 44）。表の中の小さな操作は sm（28）。
+   高さは min-height で持つ（帯の中のボタンは page.css が 30 に上書きする・K-217） */
 .k-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--k-s-sm);
-  min-height: 36px;
+  min-height: var(--k-c-button-primary-height);
   padding: var(--k-c-button-primary-pad);
   border: 0;
   border-radius: var(--k-c-button-primary-radius);
   font: inherit;
   font-size: var(--k-c-button-primary-text);
   line-height: var(--k-c-button-primary-lh);
-  font-weight: var(--k-fw-h3);
+  font-weight: var(--k-c-button-primary-fw);
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -57,11 +59,6 @@
 .k-btn[aria-disabled="true"] {
   opacity: 0.55;
   cursor: not-allowed;
-}
-.k-btn[data-size="sm"] {
-  min-height: 28px;
-  padding: var(--k-s-xs) var(--k-s-sm);
-  font-size: var(--k-text-label-md);
 }
 .k-btn[data-variant="primary"] {
   background: var(--k-c-button-primary-bg);
@@ -78,6 +75,8 @@
   background: var(--k-c-button-outlined-bg);
   color: var(--k-c-button-outlined-fg);
   border: var(--k-c-button-outlined-border);
+  font-weight: var(--k-c-button-outlined-fw);
+  padding: var(--k-c-button-outlined-pad);
 }
 .k-btn[data-variant="inverted"] {
   background: var(--k-c-button-inverted-bg);
@@ -91,6 +90,20 @@
   background: transparent;
   color: var(--k-error);
   border: 1.5px solid var(--k-error);
+}
+/* 大きさは色の変種より後に置く（線のある従ボタンも sm・lg の余白になる） */
+.k-btn[data-size="sm"] {
+  min-height: 28px;
+  padding: var(--k-s-xs) var(--k-s-sm);
+  font-size: var(--k-text-label-md);
+}
+.k-btn[data-size="lg"] {
+  min-height: var(--k-c-button-primary-lg-height);
+  padding: var(--k-c-button-primary-lg-pad);
+  border-radius: var(--k-c-button-primary-lg-radius);
+  font-size: var(--k-c-button-primary-lg-text);
+  line-height: var(--k-c-button-primary-lg-lh);
+  font-weight: var(--k-c-button-primary-lg-fw);
 }
 .k-btn[data-variant="secondary"]:hover:not(:disabled),
 .k-btn[data-variant="outlined"]:hover:not(:disabled),
@@ -123,10 +136,20 @@
   gap: var(--k-s-xs);
   min-width: 0;
 }
+.k-field[data-size="lg"] {
+  gap: 6px;
+}
+/* 項目名（K-218）：作業の画面は太さを付けない灰の字、入口は 500 の黒い字 */
 .k-label {
-  font-size: var(--k-text-body-sm);
-  font-weight: var(--k-fw-h3);
-  color: var(--k-on-surface);
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+  font-weight: var(--k-c-label-fw);
+  color: var(--k-c-label-fg);
+}
+.k-field[data-size="lg"] .k-label {
+  font-size: var(--k-c-label-lg-text);
+  font-weight: var(--k-c-label-lg-fw);
+  color: var(--k-c-label-lg-fg);
 }
 .k-req {
   color: var(--k-error);
@@ -140,26 +163,43 @@
   font-size: var(--k-text-body-sm);
   color: var(--k-error);
 }
+/* 入力欄（K-218・キャンバスの Create・StModal）：白地・line-strong の線・13px。入口（.k-field[data-size="lg"]）は高さ 42・14px */
 .k-input,
 .k-select-trigger {
+  box-sizing: border-box;
   width: 100%;
-  min-height: 36px;
-  padding: var(--k-s-sm) var(--k-s-md);
+  padding: var(--k-c-input-pad);
   background: var(--k-c-input-bg);
   color: var(--k-c-input-fg);
-  border: 1px solid transparent;
+  border: var(--k-c-input-border);
   border-radius: var(--k-c-input-radius);
   font: inherit;
-  /* 16px 未満だと iPhone が入力のたびに拡大する */
-  font-size: var(--k-text-input);
-  line-height: var(--k-lh-input);
+  font-size: var(--k-c-input-text);
+  line-height: var(--k-c-input-lh);
+}
+.k-field[data-size="lg"] .k-input {
+  min-height: var(--k-c-input-lg-height);
+  padding: var(--k-c-input-lg-pad);
+  background: var(--k-c-input-lg-bg);
+  border: var(--k-c-input-lg-border);
+  border-radius: var(--k-c-input-lg-radius);
+  font-size: var(--k-c-input-lg-text);
+  line-height: var(--k-c-input-lg-lh);
+}
+/* 幅 767 以下は入力の字を 16px（16px 未満だと iPhone が入力のたびに拡大する・D-144.7） */
+@media (max-width: 767px) {
+  .k-input,
+  .k-select-trigger,
+  .k-field[data-size="lg"] .k-input {
+    font-size: var(--k-text-input);
+  }
 }
 .k-input::placeholder {
   color: var(--k-on-surface-variant);
 }
 .k-input:hover,
 .k-select-trigger:hover {
-  border-color: var(--k-line-strong);
+  border-color: var(--k-on-surface-variant);
 }
 .k-input[data-invalid],
 .k-input[aria-invalid="true"] {
@@ -426,21 +466,55 @@ textarea.k-input {
   width: min(480px, calc(100vw - 2 * var(--k-s-md)));
   max-height: calc(100dvh - 2 * var(--k-s-md));
   overflow-y: auto;
-  padding: var(--k-s-lg);
-  background: var(--k-card);
+  box-sizing: border-box;
+  padding: 0;
+  background: var(--k-c-dialog-bg);
   color: var(--k-on-surface);
   border: 1px solid var(--k-line);
-  border-radius: var(--k-r-lg);
+  border-radius: var(--k-c-dialog-radius);
   outline: 0;
+}
+/* 頭（StModal）：題と右上の ×・下に線。本文と足は左右 18px */
+.k-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--k-line);
 }
 .k-dialog-title {
   margin: 0;
-  font-size: var(--k-text-h2);
-  line-height: var(--k-lh-h2);
-  font-weight: var(--k-fw-h2);
+  min-width: 0;
+  font-size: var(--k-c-dialog-title-text);
+  line-height: var(--k-c-dialog-title-lh);
+  font-weight: var(--k-c-dialog-title-fw);
+}
+.k-dialog-close {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-dialog-close:hover {
+  color: var(--k-on-surface);
+  background: var(--k-surface-variant);
+}
+.k-dialog-body {
+  padding: 14px 18px;
+}
+.k-dialog-body:empty {
+  display: none;
 }
 .k-dialog-desc {
-  margin: var(--k-s-sm) 0 0;
+  margin: 0;
   color: var(--k-on-surface-variant);
 }
 .k-dialog-actions {
@@ -448,7 +522,8 @@ textarea.k-input {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: var(--k-s-sm);
-  margin-top: var(--k-s-lg);
+  padding: 12px 18px;
+  border-top: 1px solid var(--k-line);
 }
 
 /* ---- 見た目の切り替え（システム・明るい・暗い・D-128.55）---- */
@@ -499,6 +574,21 @@ textarea.k-input {
   gap: var(--k-s-sm);
   padding: var(--k-s-lg) 0;
   max-width: 560px;
+}
+/* 空のとき（K-218・OnHome ほか）：白地の点線の箱を本文の幅いっぱいに、中は中央寄せ */
+.k-state[data-state="empty"] {
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--k-c-state-empty-gap);
+  max-width: none;
+  padding: var(--k-c-state-empty-pad);
+  background: var(--k-c-state-empty-bg);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-c-state-empty-radius);
+  text-align: center;
+}
+.k-state[data-state="empty"] .k-state-actions {
+  justify-content: center;
 }
 .k-state[data-state="loading"] {
   flex-direction: row;

@@ -1200,8 +1200,8 @@
   },
   {
    "id": 37,
-   "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4）",
-   "script": "python3 04_design/gen_tokens.py --web --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k --css apps/web/styles/k-tokens.css --part",
+   "name": "デザインのトークンと新しい部品（正本どおり・明るい／暗いのコントラスト AA・生の値 D1〜D4・部品の値 D5・文字の段 D6／D7・プレビュー）",
+   "script": "python3 04_design/gen_tokens.py --web --check && python3 04_design/gen_preview.py --check && python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --scales --usage apps/web apps/bridge/src && python3 scripts/ci/k218_design_canvas_test.py",
    "job": "spec",
    "blocking": true
   },
