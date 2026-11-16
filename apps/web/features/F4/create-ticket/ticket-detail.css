@@ -417,6 +417,7 @@
   }
   .k-detail-panel {
     position: relative;
+    top: auto;
     align-self: stretch;
     width: auto;
     height: auto;
