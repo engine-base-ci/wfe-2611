@@ -44,8 +44,8 @@ NEW = {
                        ["登録は終わっています"]),
     "AuthConsent": ("AuthVerify", "auth", "login", "consent-terms", "auth-msg", "/login?step=terms", "K-222",
                     ["利用規約とプライバシーポリシーが新しくなりました", "同意"]),
-    "AuthChecking": ("AuthSignup", "auth", "signup", "signup-checking", "doc", "/signup", "K-222", ["確かめています"]),
-    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "signup-waiting-loading", "doc", "/verify-email", "K-222",
+    "AuthChecking": ("AuthSignup", "auth", "signup", "signup-checking", "doc", "/signup", "K-255", ["確かめています"]),
+    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "signup-waiting-loading", "doc", "/verify-email", "K-255",
                           ["読み込んでいます"]),
     "StBefore": ("StRunning", "states", "tickets", "band-before", "band", "/tickets/{ticket}", "K-228", ["AI に任せる"]),
     "StConfirmDone": ("StRunning", "states", "tickets", "band-confirm-done", "band", "/tickets/{ticket}", "K-228",
@@ -77,9 +77,17 @@ def load(p: pathlib.Path) -> dict:
 
 
 def head_of(tid: str) -> dict:
+    """チケットの頭の `キー: [a, b]` の並びを読む（頭は YAML ではない：affects の @kaname/web のような値を YAML は読めない。
+    チケットの道具（build_index・ticket-flow の header_list）と同じ読み方）"""
     m = re.match(r"^---\n(.*?)\n---\n", (TICKETS / f"{tid}.md").read_text(encoding="utf-8"), re.S)
     assert m, f"{tid} に頭が無い"
-    return yaml.safe_load(m.group(1))
+    out: dict = {}
+    for line in m.group(1).splitlines():
+        k, sep, v = line.partition(":")
+        v = v.strip()
+        if sep and v.startswith("[") and v.endswith("]"):
+            out[k.strip()] = [x.strip() for x in v[1:-1].split(",") if x.strip()]
+    return out
 
 
 def review_sections(text: str) -> dict[str, tuple[str, str]]:
