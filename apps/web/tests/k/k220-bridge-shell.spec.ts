@@ -233,7 +233,7 @@ test("K220-UI-008 第 2 ナビの幅：1440 は 232px（項目の字が出る）
   expect(await overflowX(page)).toBe(0);
 });
 
-test("K220-UI-009 本文の箱と見出し：箱は x 448・幅 900・padding 22px 28px・段の間 14px。見出しの行は帯にしない（地なし・下の線なし）、h1 は 20px・700、説明（キャンバスの字）は 12px・灰で h1 の右に並ぶ", async ({
+test("K220-UI-009 本文の箱と見出し：箱は x 448・幅 956（中身の幅 900・余白はその外側）・padding 22px 28px・段の間 14px。見出しの行は帯にしない（地なし・下の線なし）、h1 は 20px・700、説明（キャンバスの字）は 12px・灰で h1 の右に並ぶ", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
@@ -247,7 +247,14 @@ test("K220-UI-009 本文の箱と見出し：箱は x 448・幅 900・padding 22
   expect(Math.abs(body.x - 448), `本文の箱の左 ${body.x}（左のメニュー 216 と第 2 ナビ 232 の右）`).toBeLessThanOrEqual(
     2,
   );
-  expect(Math.abs(body.width - 900), `本文の箱の幅 ${body.width}`).toBeLessThanOrEqual(2);
+  // キャンバスの section は box-sizing の指定が無い（content-box）ので、余白 28px×2 は中身の幅 900 の外側に付く（箱 956・中身 476〜1376）
+  expect(Math.abs(body.width - 956), `本文の箱の幅 ${body.width}`).toBeLessThanOrEqual(2);
+  const inner = await page
+    .locator(BODY)
+    .evaluate(
+      (e) => e.clientWidth - parseFloat(getComputedStyle(e).paddingLeft) - parseFloat(getComputedStyle(e).paddingRight),
+    );
+  expect(Math.abs(inner - 900), `本文の中身の幅 ${inner}`).toBeLessThanOrEqual(2);
   const head = `${BODY} .k-page-head`;
   expect(await css(page, head, "background-color")).toBe("rgba(0, 0, 0, 0)");
   expect(await css(page, head, "border-bottom-width")).toBe("0px");
