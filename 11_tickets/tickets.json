@@ -10090,7 +10090,10 @@
     "apps/web/app/(dev)/dev/k/design/page.tsx",
     "scripts/ci/design_gate.py",
     "design-gate.json",
-    "05_flow/build_testplan.py"
+    "05_flow/build_testplan.py",
+    "01_hearing/決定ログ_進行中.md",
+    "07_qa/test-specs/k/approve-complete.md",
+    "scripts/ci/ci_scope.json"
    ],
    "carry": [
     "01_hearing/決定ログ_進行中.md",
