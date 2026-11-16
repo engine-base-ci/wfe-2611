@@ -456,6 +456,12 @@ test("K230-UI-017 小窓のキーボード：開いたときフォーカスは�
   await expect(page.getByRole("heading", { level: 1, name: "PC と使った量" })).toBeVisible();
 });
 
+interface YFrom {
+  max_width: number;
+  canvas: string;
+  app: string;
+  why: string;
+}
 interface Group {
   id: string;
   canvas: string;
@@ -519,6 +525,23 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
   }
   // 戻るはほかの画面から開いたときだけ出るので、bridge-connected は ?from= つき（一覧から来た形）で開く
   expect(byId("bridge-connected").app).toBe("/setup/bridge?from=%2Ftickets");
+  // 375 は外枠の決まり（767 以下は上の帯なし）に従い、y は本文の箱の上端から比べる（PM の決め 2026-11-17）。訳は必ず書く
+  for (const id of ["bridge-connected", "bridge-installed"]) {
+    for (const p of byId(id).pairs.filter((x) => x.props.includes("y"))) {
+      const yf = (p as FidelityPair & { y_from?: YFrom }).y_from;
+      expect(yf, `${id} の ${p.name} に y_from`).toBeTruthy();
+      expect(yf!.max_width, `${id} の ${p.name}`).toBe(767);
+      expect(yf!.why.length, `${id} の ${p.name} の訳`).toBeGreaterThan(10);
+      const box = p.name === "Bridge を起こす" ? "直し方の箱" : "本文の箱";
+      if (box === "本文の箱") {
+        expect(yf!.canvas, `${id} の ${p.name}`).toBe("main > div > section");
+        expect(yf!.app, `${id} の ${p.name}`).toBe(".k-page");
+      } else {
+        expect(yf!.app, `${id} の ${p.name}：口に無い補足の行の高さだけを外す`).toBe(".k-pc-fix");
+        expect(yf!.canvas).toContain("#FFF8EE");
+      }
+    }
+  }
 });
 
 for (const id of MINE) {
@@ -627,4 +650,67 @@ test("K230-UI-024 小窓を開いている間にこの PC で Bridge が入っ�
   await page.clock.fastForward(6_000);
   await expect(dialog(page)).toHaveCount(0);
   await expect(page.locator(`${BODY} .k-pc-card`, { hasText: "この PC の Bridge" })).toBeVisible();
+});
+
+test("K230-UI-025 超えそうなとき（つながっている）：キャンバスのカードを出す。本当の値が無いので、切り替えと選ぶ欄はグレー（薄さ 0.55）で押せず、押しても変わらない。選ぶ欄に値の字を書かない", async ({
+  page,
+}) => {
+  await mockApi(page, { devices: ["live"] });
+  await open(page);
+  const card = page.locator(`${BODY} .k-pc-card`, { hasText: "超えそうなとき" });
+  expect(await color(card, "background-color")).toBe(WHITE);
+  expect(await color(card, "border-top-left-radius")).toBe("10px");
+  await expect(card.locator(".k-pc-set-row")).toHaveCount(2);
+  await expect(card.locator(".k-pc-set-row").nth(0)).toContainText("80% を超えたら知らせる");
+  await expect(card.locator(".k-pc-set-row").nth(1)).toContainText("枠を使い切ったら");
+  const sw = card.getByRole("switch");
+  const pick = card.locator(".k-pc-set-row").nth(1).getByRole("button");
+  for (const el of [sw, pick]) {
+    await expect(el).toHaveAttribute("aria-disabled", "true");
+    expect(await seenOpacity(el), "先祖まで掛けた薄さ（二重にしない）").toBeCloseTo(0.55, 2);
+    expect(await el.getAttribute("tabindex")).toBe("-1");
+  }
+  const before = await sw.getAttribute("aria-checked");
+  await sw.click({ force: true });
+  expect(await sw.getAttribute("aria-checked")).toBe(before);
+  await pick.click({ force: true });
+  await expect(page.getByRole("listbox")).toHaveCount(0);
+  await expect(card).not.toContainText("満ちるまで待つ");
+});
+
+test("K230-UI-026 見出しの行（幅 375）：戻る・見出しの行と説明の行の縦の間はキャンバスの 10px", async ({ page }) => {
+  await mockApi(page, { devices: ["live"] });
+  await page.setViewportSize({ width: 375, height: 1000 });
+  await page.goto("/setup/bridge?from=%2Ftickets");
+  await page.evaluate(() => document.fonts.ready);
+  const h1 = (await page.locator(`${BODY} .k-page-head h1`).boundingBox())!;
+  const desc = (await page.locator(`${BODY} .k-page-head .k-desc`).boundingBox())!;
+  expect(desc.y, "説明は見出しの下の行").toBeGreaterThan(h1.y + 1);
+  expect(Math.round(desc.y - (h1.y + h1.height))).toBe(10);
+});
+
+test("K230-UI-027 比べ方の y_from：幅 767 以下は y を y_from の箱の上端から読む（上に 48px の帯があっても無くても同じ）。768 以上は頁の上端から。訳（why）が無ければ投げる", async ({
+  page,
+}) => {
+  const html = (bar: number) =>
+    `<div style="height:${bar}px"></div><section id="b" style="padding:10px"><p id="t" style="margin:0;height:20px">x</p></section>`;
+  const pair = {
+    name: "試し",
+    role: "h1",
+    canvas: "#t",
+    app: "#t",
+    props: ["y"],
+    y_from: { max_width: 767, canvas: "#b", app: "#b", why: "試しの訳（帯の高さで y を比べない）" },
+  } as FidelityPair;
+  await page.setViewportSize({ width: 375, height: 600 });
+  await page.setContent(html(48));
+  expect((await readVals(page, [pair], "app"))[0]!["y"]).toBe("10px");
+  await page.setContent(html(0));
+  expect((await readVals(page, [pair], "canvas"))[0]!["y"]).toBe("10px");
+  await page.setViewportSize({ width: 768, height: 600 });
+  await page.setContent(html(48));
+  expect((await readVals(page, [pair], "app"))[0]!["y"]).toBe("58px");
+  await page.setViewportSize({ width: 375, height: 600 });
+  const noWhy = { ...pair, y_from: { max_width: 767, canvas: "#b", app: "#b" } } as FidelityPair;
+  await expect(readVals(page, [noWhy], "app")).rejects.toThrow(/why/);
 });
