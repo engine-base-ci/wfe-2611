@@ -42,7 +42,7 @@ row(R["K63-UI-015"], async (page) => {
   await openReturn(page, "請求書");
   const note = "<script>window.__k63=2</script>宛名を直して";
   await reasonBox(page).fill(note);
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect.poll(() => m.returns.length).toBe(1);
   expect(m.returns[0]!.body).toEqual({ note });
   expect(await page.evaluate(() => (window as unknown as { __k63?: number }).__k63)).toBeUndefined();

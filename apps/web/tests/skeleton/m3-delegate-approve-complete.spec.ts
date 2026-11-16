@@ -33,6 +33,7 @@ import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
 import { asPerson, pairedPc, teammate, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
+import { approveVia } from "../k/approve-modal";
 
 const box = new Mailbox();
 test.beforeAll(() => box.open());
@@ -162,7 +163,7 @@ const decided = (page: Page, what: "approve" | "return") =>
 /** 帯の「承認して送る」を押し、口が 201 で受けるのを待つ */
 async function approveOnBand(page: Page): Promise<void> {
   const res = decided(page, "approve");
-  await approveBtn(page).click();
+  await approveVia(page, approveBtn(page)); // 確かめの小窓を通す（K-229・D-143.4）
   expect((await res).status(), "承認の口が受ける").toBe(201);
   await expect(approveBtn(page), "決めた承認を二度は押させない").toHaveCount(0);
 }
@@ -296,7 +297,7 @@ test("K64-M3-02 差し戻し：理由つきで差し戻す → 理由が作り�
   await execBand(page).getByRole("button", { name: "差し戻す", exact: true }).click();
   await page.getByRole("textbox", { name: "差し戻す理由" }).fill(reason);
   const returned = decided(page, "return");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   expect((await returned).status(), "差し戻しの口が受ける").toBe(201);
   // 作り直し（phase make）の間は K-62 の帯だけ（帯は段で分ける・D-128.178）。理由は文字として出す（D-129.12）
   await expect(aiBand(page)).toContainText(MSG.queuedLive);
