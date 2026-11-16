@@ -292,7 +292,8 @@ test("SCR-BRIDGE-SETUP-089 SCR-BRIDGE-SETUP-090 状態「接続中」：手順�
   // 「1. PCをつなぐ」の行き先 /setup/bridge は K-57 の新しい画面（D-128.150：前の画面は /setup/bridge/legacy に残した）
   await one.click();
   await expect(page).toHaveURL(/\/setup\/bridge$/);
-  await expect(page.locator("h1")).toHaveText("PC をつなぐ");
+  // 本文の h1 は「PC と使った量」（K-220）。つなぐ小窓（K-230）が開くと題「PC をつなぐ」も h1 で、後ろの h1 は読み上げから外れる。読み上げの見出しで見る
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible();
 });
 
 test("SCR-BRIDGE-SETUP-090 SCR-BRIDGE-SETUP-091 SCR-BRIDGE-SETUP-092 状態「つながった」（段 3 まで通した人）：手順バーの 2・3・4 を押すとそれぞれの画面が開く（200・h1）。5・6 は届いていない段として、いまの段で何をすれば開くかが出る", async ({
@@ -495,7 +496,9 @@ test("USH-01-057 AI がまだ無い時点（PS0）の上の帯の「PC をつな
   await link.click();
   await expect(page).toHaveURL(/\/setup\/bridge$/, { timeout: 15_000 });
   // /setup/bridge は K-57 の新しい画面（D-128.150）
-  await expect(page.locator("h1")).toHaveText("PC をつなぐ", { timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible({
+    timeout: 15_000,
+  });
   expect((await page.request.get(page.url())).status(), "実在ルート（200）").toBe(200);
 });
 

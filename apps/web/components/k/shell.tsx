@@ -104,6 +104,8 @@ export function ShellBell() {
 export interface Crumb {
   label: string;
   href?: string;
+  /** その画面がまだ無い段：出すが押せない（href なし・aria-disabled・Tab で止まらない・正本の使えない状態の薄さ・D-145.9） */
+  disabled?: boolean;
 }
 export interface Group {
   code: string;
@@ -403,7 +405,16 @@ export function Shell(p: ShellProps) {
             <ol>
               {p.crumbs.map((c, i) => (
                 <li key={`${c.label}-${i}`}>
-                  {c.href && i < p.crumbs.length - 1 ? (
+                  {i > 0 ? (
+                    <span className="k-crumb-sep" aria-hidden="true">
+                      ›
+                    </span>
+                  ) : null}
+                  {c.disabled && i < p.crumbs.length - 1 ? (
+                    <a role="link" aria-disabled="true" tabIndex={-1} title={`${c.label}（準備中）`}>
+                      {c.label}
+                    </a>
+                  ) : c.href && i < p.crumbs.length - 1 ? (
                     <a href={c.href}>{c.label}</a>
                   ) : (
                     <span aria-current={i === p.crumbs.length - 1 ? "page" : undefined}>{c.label}</span>
