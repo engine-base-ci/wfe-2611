@@ -1,7 +1,7 @@
 // 関門 C2：業務ロジックが DB に触る唯一の入口 repository.<table>.<op>(input, ctx)。
 // ここで 1 回だけやること：テナント文脈（withTenant）・監査列（created_by/updated_by）・論理削除の強制・識別子の許可リスト（文字列連結の禁止 G10）・UUID v7。
 import type pg from "pg";
-import { withTenant, type TenantContext } from "./context.js";
+import { withRequest, withTenant, type TenantContext } from "./context.js";
 import { uuidv7 } from "./id.js";
 
 /** 触ってよい表（migration で作った表だけ。無い表は起動時に拒否） */
@@ -198,6 +198,11 @@ export class Repository {
     for (const row of r.rows) this.columns.get(row.table_name as TableName)?.add(row.column_name);
     const missing = TABLES.filter((t) => (this.columns.get(t)?.size ?? 0) === 0);
     if (missing.length) throw new Error(`表が無い（migration 未適用）: ${missing.join(", ")}`);
+  }
+
+  /** 要求の取引（K-234）：fn の中の withTenant（このプール・同じ文脈）を 1 本の接続・1 つの取引にまとめる。最初の withTenant で開く */
+  inRequest<T>(ctx: TenantContext, fn: () => Promise<T>): Promise<T> {
+    return withRequest(this.pool, ctx, fn);
   }
 
   /** 表にその列があるか（init 後）。関門の外から列の有無で分岐するとき用 */
