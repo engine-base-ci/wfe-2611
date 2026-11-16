@@ -151,6 +151,21 @@
   font-weight: var(--k-c-label-lg-fw);
   color: var(--k-c-label-lg-fg);
 }
+/* 項目名の横の括弧書きの補足（K-255・キャンバス AuthSignup）。項目名に続けて同じ行に流し、折り返しは箱の左から（キャンバスどおり・どの幅でも） */
+.k-label-row {
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+}
+.k-label-row .k-hint {
+  display: inline;
+}
+.k-hint {
+  margin: 0 0 0 var(--k-s-xs);
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+  font-weight: var(--k-fw-body);
+  color: var(--k-on-surface-variant);
+}
 .k-req {
   color: var(--k-error);
   margin-left: var(--k-s-xs);

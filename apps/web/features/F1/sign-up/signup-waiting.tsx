@@ -5,7 +5,7 @@
 //   再読み込み・戻る・進むでも印で今の状態を引き直す（期限切れ・別の端末で確定した後 を出し分ける・D-088.9）
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Callout, PAGE_ERROR, errorText } from "@/components/k";
+import { Button, Callout, Loading, PAGE_ERROR, errorText } from "@/components/k";
 import { call } from "@/lib/api/call";
 import { AuthFrame } from "./frame";
 import { readTicket, saveTicket, type SignupTicket } from "./store";
@@ -77,6 +77,12 @@ export function SignupWaiting() {
     }
   };
 
+  // 箱の頭の「← 戻る」（キャンバス AuthVerify）。書きかけ（パスワードのほか）は登録の画面に残っている
+  const back = (
+    <Link className="k-auth-back" href="/signup">
+      ← 戻る
+    </Link>
+  );
   const again = (
     <Link href="/signup" onClick={() => saveTicket(null)}>
       登録の画面へ
@@ -84,30 +90,39 @@ export function SignupWaiting() {
   );
   return (
     <AuthFrame>
+      {state === "loading" ? (
+        <>
+          {/* 枠と見出しを先に出し、文は 3 秒たっても状態が引けないときだけ（D-144.8・キャンバス AuthVerifyLoading） */}
+          <h1>確認メールを送りました</h1>
+          <Loading label="読み込んでいます…" />
+        </>
+      ) : null}
       {state === "sent" ? (
         <>
+          {back}
+          <span className="k-auth-badge" aria-hidden="true">
+            ✉
+          </span>
           <h1>確認メールを送りました</h1>
-          <p className="k-auth-lead">
+          <p className="k-auth-lead" data-kind="body">
             <span className="k-auth-mail">{ticket?.email}</span> に確認のメールを送りました。
             <br />
             30 分以内にメールのリンクを押してください。押した時点で登録が終わります
           </p>
           {notice ? <Callout>{notice}</Callout> : null}
           <div className="k-auth-actions">
-            <Button variant="outlined" loading={busy} onClick={() => void resend()}>
+            <Button variant="outlined" size="lg" loading={busy} onClick={() => void resend()}>
               送り直す
             </Button>
           </div>
-          <p className="k-auth-note">
-            届かないときは、迷惑メールのフォルダと、アドレスの打ち間違いを確かめてください（
-            <Link href="/signup">入力し直す</Link>）
-          </p>
+          <p className="k-auth-note">届かないときは、迷惑メールのフォルダと、アドレスの打ち間違いを確かめてください</p>
         </>
       ) : null}
       {state === "unsent" ? (
         <>
+          {back}
           <h1>確認のメールを届けられませんでした</h1>
-          <p className="k-auth-lead">
+          <p className="k-auth-lead" data-kind="body">
             <span className="k-auth-mail">{ticket?.email}</span> への確認のメールは、まだ届いていません。
           </p>
           <Callout tone="warn">
@@ -115,7 +130,7 @@ export function SignupWaiting() {
           </Callout>
           {notice ? <Callout tone="danger">{notice}</Callout> : null}
           <div className="k-auth-actions">
-            <Button loading={busy} onClick={() => void resend()}>
+            <Button size="lg" loading={busy} onClick={() => void resend()}>
               送り直す
             </Button>
           </div>
