@@ -117,7 +117,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 @media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
 """ + NARROW
 # 絵ごとの幅 767 以下の決まり（画面の外枠と同じく上の帯を出さない・足元の帯を下のタブ 60px の上に置く など）。
-# kn-shell の塊の中に足すので、shellfix.py を何度流しても 1 回だけ（K-224：Create）
+# kn-shell の塊の中に足すので、shellfix.py を何度流しても 1 回だけ（K-224：Create・K-226：TicketDetail）
 NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
@@ -126,6 +126,14 @@ NARROW_BY_BOARD = {
 _LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
                 "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
 NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW})
+# 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。画面の外枠と同じく上の帯を出さない（MobileList と同じ）。
+# 7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
+DETAIL_BOARDS = ("TicketDetail", "StRunning", "StFailed", "StBefore", "StConfirmDone", "StDone", "StDelegated")
+NARROW_BY_BOARD.update({
+    f"{b}.dc.html": "/* kn-board-narrow（K-226）：画面の外枠と同じく上の帯を出さない（MobileList と同じ） */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}}\n"
+    for b in DETAIL_BOARDS
+})
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]

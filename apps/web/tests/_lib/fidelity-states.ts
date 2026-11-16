@@ -239,6 +239,73 @@ async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
 }
 
+/** チケットの詳細（K-226・キャンバス TicketDetail）：外枠の口に、承認待ちのチケット 1 件と実行 1 件・承認の中身を足す（キャンバスと同じ人とデータ） */
+const DETAIL_ID = "0193c5a0-0000-7000-8000-00000000d226";
+const DETAIL_APPROVAL = "0193c5a0-0000-7000-8000-0000000ad226";
+async function detailApi(page: Page): Promise<string> {
+  await shellApi(page, 2);
+  const json = (route: Route, data: unknown, meta: Record<string, unknown> = {}) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ data, meta }) });
+  await page.route(`**/api/v1/tickets/${DETAIL_ID}`, (route) =>
+    json(route, {
+      ticket: {
+        id: DETAIL_ID,
+        number: "EG-128",
+        title: "セイコー様へ 11月分の請求書を送る",
+        scope_id: "22222222-0000-4000-8000-000000000001",
+        created_at: "2026-10-30T08:44:00Z",
+        start_on: "2026-10-30",
+        due_on: "2026-11-01",
+        priority: "mid",
+      },
+      sections: [
+        {
+          key: "purpose",
+          label: "目的",
+          body: { text: "セイコー様に 11 月分の保守費を請求し、11/30 までに入金してもらう。" },
+          version: 3,
+        },
+        { key: "done", label: "完了の条件", body: { text: "金額が見積の月額と一致している" }, version: 3 },
+        {
+          key: "todo",
+          label: "実施事項",
+          body: { text: "見積 EG-097 の月額を確かめる\n請求書 PDF を作る" },
+          version: 3,
+        },
+      ],
+      kind: { id: "k1", name: "タスク", color: "#186F69" },
+      stage: { id: "s1", key: "awaiting_approval", name: "承認待ち" },
+      assignee: { id: ME, display_name: "高本" },
+      approval: { id: DETAIL_APPROVAL, can_decide: true, irreversible: true, note: null, approver_name: "高本" },
+      can: { complete: false, delegate: false },
+      completed: null,
+    }),
+  );
+  await page.route(`**/api/v1/tickets/${DETAIL_ID}/runs`, (route) =>
+    json(
+      route,
+      [
+        {
+          id: "0193c5a0-0000-7000-8000-0000000ed226",
+          ticket_id: DETAIL_ID,
+          phase: "make",
+          status: "done",
+          by: { member_id: ME, display_name: "高本" },
+          pc: "live",
+          silent: false,
+          progress: null,
+          stopped_reason: null,
+          started_at: "2026-11-01T00:00:00Z",
+          finished_at: "2026-11-01T00:12:00Z",
+          checks: { state: "none" },
+        },
+      ],
+      { limit: 50 },
+    ),
+  );
+  return DETAIL_ID;
+}
+
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
   // 鍵は "<鍵>": の字で探される（scripts/ci/fidelity_config.py）。整形が引用符を外さないようにする
   // prettier-ignore
@@ -311,6 +378,13 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[aria-label="自分の設定の中"] .k-me-sub-t')).toHaveCount(5);
     await expect(page.locator(".k-nav .k-pc")).toHaveText("PC つながっている");
     await expect(page.locator("#connect-pc-title")).toHaveText("PC と使った量");
+  },
+  // チケットの詳細（K-226・キャンバス TicketDetail）：承認待ちのチケットを開き、題名と右のパネルが描かれるまで待つ
+  "ticket-detail": async (page, path) => {
+    const id = await detailApi(page);
+    await page.goto(path.replace("{ticket}", id));
+    await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
+    await expect(page.locator('.k-detail-meta [data-part="stage"]')).toHaveText("承認待ち");
   },
   // 承認と完了の小窓（K-229）：承認待ち・帯の「承認して送る」／実行が終わった作業中・「完了にする」／承認待ち・帯の「差し戻す」
   "approve-modal": async (page, path) => {

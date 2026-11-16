@@ -426,6 +426,141 @@ components:
     lineHeight: 1.7
   section-list:         # 区画の箇条（黒丸の字下げ）
     padding: "0 0 0 20px"
+  # 本文の道具の帯（K-226・キャンバス TicketDetail・Create で同じ所の実測）。作る画面の区画（K-225）も同じ部品を使う
+  doc-toolbar:          # 帯（地は表の頭の色・下に薄い線）。詳細だけの違い（左右 20px・上の線・上に貼り付く）は詳細の CSS が上書きする
+    backgroundColor: "{colors.table-head}"
+    borderBottom: "1px solid {colors.line-soft}"
+    padding: "6px 12px"
+    gap: "2px"
+  doc-tool:             # 帯の 1 つの道具（高さ 28。幅は字に合わせ、最小 30 は doc-tool-min）
+    height: "28px"
+    padding: "0 6px"
+  doc-tool-min:         # 道具の最小の幅（min-width）
+    width: "30px"
+  shell-bar:            # 外枠の上の帯の高さ（K-138・shell.css の .k-bar）。上に貼り付く物はこの下に置く（K-226）
+    height: "48px"
+  # チケットの詳細（K-226・キャンバス TicketDetail の実測）
+  detail-body:          # 本文の箱（カードと子チケット・つながりのカードを縦に並べる）
+    padding: "{spacing.md} {spacing.lg} 40px"
+    gap: "12px"
+  detail-body-basis:    # 本文の箱がパネルと横に並ぶときの基準の幅（flex-basis）
+    width: "640px"
+  detail-card:          # 本文の白いカード（子チケット・つながりのカードも同じ）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  detail-rule:          # 詳細の中の区切りの線（パネルの左・タブの下・狭い幅の上の線・パネルの区画の下の薄い線）
+    border: "1px solid {colors.line}"
+    borderBottom: "1px solid {colors.line-soft}"
+  detail-meta:          # 頭の行（種別の札・番号・コピー・作成・開始日・期限・段の札）
+    padding: "12px 20px 0"
+    gap: "{spacing.sm}"
+    lineHeight: 1.7
+  detail-meta-side:     # 頭の行の右（開始日・期限・段の札）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    gap: "14px"
+  detail-kind:          # 種別の札（塗りは種別の色）
+    typography: "{typography.label-md}"
+    rounded: "{rounded.full}"
+    padding: "1px 10px"
+  detail-stage:         # 段の札（塗りは段の色・白字）
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    lineHeight: 1.7
+    rounded: "{rounded.full}"
+    padding: "2px 12px"
+  detail-copy:          # 番号をコピー（24 の四角・線）
+    width: "24px"
+    height: "24px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.sm}"
+  detail-head:          # 題名の行（線も地も無い）
+    padding: "6px 20px 12px"
+    gap: "10px"
+  detail-title-basis:   # 題名が操作と横に並ぶときの基準の幅（flex-basis）
+    width: "360px"
+  detail-title:         # 題名 h1（行の高さは絵のまま 1.45）
+    typography: "{typography.h1}"
+    lineHeight: 1.45
+  detail-acts:          # 題名の行の操作の並び
+    gap: "6px"
+  detail-act:           # 題名の行の操作（複製・AI と話す・ほかの操作。高さ 30 は page-head-button）
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    padding: "0 10px"
+  detail-more:          # ほかの操作（…）の幅
+    width: "32px"
+    padding: "0"
+  detail-bands:         # 帯の場所（題名の行の下・帯の間と下の余白）
+    padding: "0 20px 14px"
+    gap: "14px"
+  detail-doc:           # 区画の並び（幅は 900 まで。狭ければ箱の幅）
+    padding: "4px 28px 28px"
+    width: "900px"
+  detail-doc-toolbar:   # 詳細の本文の道具の帯だけの違い（左右 20px・上に線。上に貼り付く）
+    padding: "6px 20px"
+    borderTop: "1px solid {colors.line}"
+  detail-links-head:    # 子チケット・つながりの見出しの行
+    padding: "10px {spacing.md}"
+    gap: "{spacing.sm}"
+  detail-links-title:   # 子チケット・つながりの見出し（キャンバスの h2 の太さ 700）
+    typography: "{typography.body-md}"
+    fontWeight: 700
+  detail-link:          # 字のリンクの形のボタン・目次のリンク（押せる高さ 24 以上）
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    height: "24px"
+  detail-reopen:        # パネルを開く（閉じたときだけ・本文の右の 36 の列。幅は flex-basis）
+    width: "36px"
+    padding: "10px 0 0"
+  detail-panel:         # 右の属性パネル（左に線は detail-rule）
+    width: "380px"
+  detail-panel-close:   # パネルを閉じる（パネルの右上・28 の四角）
+    width: "28px"
+    height: "28px"
+    rounded: "{rounded.md}"
+  detail-panel-close-at: # パネルを閉じるの位置（右上から top・right）
+    height: "10px"
+  detail-tabs:          # パネルのタブの並び（右は閉じるボタンの分）
+    padding: "0 44px 0 6px"
+  detail-tab:           # パネルのタブ（下に 2px の印・今いるタブは紺）
+    padding: "10px 12px"
+    gap: "6px"
+    borderBottom: "2px solid transparent"
+  detail-panel-sec:     # パネルの区画（下に薄い線は detail-rule）
+    padding: "12px 0"
+  detail-panel-title:   # パネルの区画の見出し
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    textColor: "{colors.on-surface-variant}"
+  detail-fields:        # 項目名と値の格子（項目名の列の幅は detail-fields-label）
+    gap: "{spacing.sm}"
+  detail-fields-label:  # 項目名の列の幅（grid の列）
+    width: "72px"
+  detail-due:           # 期限を変える（▾）の最小の幅（min-width）
+    width: "28px"
+  detail-who:           # 担当者（頭文字の丸と名前）
+    gap: "6px"
+  detail-avatar:        # 担当者の頭文字の丸
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.full}"
+    typography: "{typography.label-xs}"
+    backgroundColor: "{data.lavender}"
+    textColor: "{colors.on-primary}"
+  # 実行の記録（K-62 の帯・K-226 の小窓「実行の記録」：キャンバス TdRunLog）
+  run-band:             # AI に任せるの帯の中の行の間
+    gap: "12px"
+  run-sheet:            # 小窓「実行の記録」の右から出る板（幅 540・画面が狭ければ画面の幅）
+    backgroundColor: "{colors.card}"
+    width: "540px"
+  run-chip:             # 絞り込みの札
+    height: "28px"
+    padding: "0 12px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    typography: "{typography.body-sm}"
   shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
     height: "60px"
   # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）

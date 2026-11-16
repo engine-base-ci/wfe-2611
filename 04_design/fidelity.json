@@ -692,7 +692,7 @@
     375
    ],
    "owner": "K-226",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
