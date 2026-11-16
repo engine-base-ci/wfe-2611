@@ -6,7 +6,7 @@
 // 項目は決定どおり 3 つ（D-125.146・D-128.62）：passkey（パスキー。機能ができるまで使えない）・pc（自分の PC）・credentials（預けたログイン情報）。
 // 済みの判定は決める人の答え（D-145.11〜.13）と D-128.137：
 //   passkey＝パスキーの機能ができるまで使えない（available false）・済みにしない（2 段階認証では済みにしない）／
-//   pc＝一度でも知らせ（alive_at）が届いた PC が在れば済み（外しても済み・D-145.12）。PC はアカウント全体で使える（D-128.137）ので、同じログインの人の別の会社でつないだ PC も数える／
+//   pc＝一度でも知らせ（alive_at）が届き、外していない PC が在れば済み。外したら済んでいないに戻す・電源を切っただけ（知らせが古い）なら済み（D-145.12・answer=20e64d6fae6d）。PC はアカウント全体で使える（D-128.137）ので、同じログインの人の別の会社でつないだ PC も数える／
 //   credentials＝任意（optional）で本人が飛ばせる（skipped）。預けた場合は今の会社で自分が預け、取り消し・消していないものが 1 つ以上で済み（PM の決め）
 // 試験ごとに別の会社と人を作る。PC は前からある口（pairing-codes → claim → heartbeat）でつなぐ。外すのは DB で revoked_at を立てる（外す口は K-91）。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
@@ -127,7 +127,7 @@ describe("K-250 はじめにやることの口", () => {
     expect(JSON.stringify(pg)).not.toContain("付けました");
   });
 
-  it("K250-API-003 PC：引き取っただけ（知らせが 0 回）は済んでいない・知らせが届くと済み・外しても済みのまま（一度つなげば済み）", async () => {
+  it("K250-API-003 PC：引き取っただけ（知らせが 0 回）は済んでいない・知らせが届くと済み・電源を切っただけ（知らせが古い）なら済み・外したら済んでいないに戻る（answer=20e64d6fae6d）", async () => {
     const { p } = await person();
     const d = await connectPc(p, false);
     expect(doneOf(await listOk(p))["pc"]).toBe(false);
@@ -137,13 +137,20 @@ describe("K-250 はじめにやることの口", () => {
     });
     expect(b.status, await b.clone().text()).toBe(201);
     expect(doneOf(await listOk(p))["pc"]).toBe(true);
+    // 電源を切った：最後に見えた時刻が古い（つながっている扱いの 75 秒を過ぎた）。外していないので済みのまま
+    const asleep = await f.admin.query(
+      "update sessions set last_seen_at = now() - interval '1 day' where member_id = $1 and kind_id = 'bridge' and revoked_at is null",
+      [p.id],
+    );
+    expect(asleep.rowCount).toBe(1);
+    expect(doneOf(await listOk(p))["pc"]).toBe(true);
     // 外す口（revokeMyDevice）は K-91。ここでは外した状態を DB で作る
     const off = await f.admin.query(
       "update sessions set revoked_at = now(), revoke_reason_id = 'admin' where member_id = $1 and kind_id = 'bridge' and revoked_at is null",
       [p.id],
     );
     expect(off.rowCount).toBe(1);
-    expect(doneOf(await listOk(p))["pc"]).toBe(true);
+    expect(doneOf(await listOk(p))["pc"]).toBe(false);
   });
 
   it("K250-API-004 ログイン情報：自分の預けた物が在れば済み。取り消した・消した・他の人の物だけなら済んでいない", async () => {
