@@ -489,24 +489,31 @@ test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の
   await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(216);
 });
 
-test("K138-SH-021 役の口が 401（ログインが切れた）：左のメニューに役の項目のリンクが 0・本文にログインへの道", async ({
+test("K138-SH-021 役が分かるまで（読み中）は左のメニューに役の項目のリンクが 0・本文は出る。役の口が 401（ログインが切れた）なら入り直し（/login?next=）へ移り、前の役の項目を出さない", async ({
   page,
 }) => {
-  await mockApi(page, { meStatus: 401 });
-  // 本文の口も 401（後から足した route が先に効く）。セッションの口だけは前のまま（切れたのは口の鍵）
-  await page.route(/\/api\/v1\//, (route) =>
-    route.fulfill({
+  await mockApi(page);
+  // 役の口の答えを止めておき（読み中）、後で 401 を返す。後から足した route が先に効く
+  let release!: () => void;
+  const held = new Promise<void>((done) => (release = done));
+  await page.route(/\/api\/auth-ext\/me$/, async (route) => {
+    await held;
+    await route.fulfill({
       status: 401,
       contentType: "application/json",
       body: JSON.stringify({ error: "unauthenticated", code: "UNAUTHENTICATED" }),
-    }),
-  );
+    });
+  });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(PATHS.detail);
   await expect(page.locator(".k-shell")).toBeVisible();
-  await expect(page.locator("#k-main").getByRole("link", { name: /ログイン/ })).toBeVisible();
+  await expect(page.locator("#k-main h1")).toHaveText("請求書を送る");
   for (const name of expectedLabels("R1"))
     await expect(leftNav(page).getByRole("link", { name: new RegExp(`^${name}`) }), name).toHaveCount(0);
+  await expect(leftNav(page).locator(".k-nav-item:not(:has(.k-group-mark))")).toHaveCount(0);
+  // ログインが切れた（401）：どの画面も入り直しへ（lib/api/query.tsx・D-086.4）。開いていた場所を next に持つ
+  release();
+  await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(PATHS.detail)}$`));
 });
 
 test("K138-SH-022 鍵が無い（ログインしていない）：/tickets を開くと /login?next=%2Ftickets に移る", async ({

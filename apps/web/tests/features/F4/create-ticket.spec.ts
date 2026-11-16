@@ -349,9 +349,11 @@ row(R["K60-UI-002"], async (page) => {
   });
   expect(String(m.creates[0]!["draft_id"])).toMatch(/^[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { level: 1, name: "請求書を送る" })).toBeVisible();
-  await expect(page.getByText("EG-133")).toBeVisible();
-  await expect(page.getByText("未着手")).toBeVisible();
-  await expect(page.getByText("月末の請求を出す")).toBeVisible();
+  // 番号は外枠の帯のいまの場所にも出る（K-138）。ここは本文の詳細を見る
+  const main = page.locator("#k-main");
+  await expect(main.getByText("EG-133")).toBeVisible();
+  await expect(main.getByText("未着手")).toBeVisible();
+  await expect(main.getByText("月末の請求を出す")).toBeVisible();
 });
 
 row(R["K60-UI-003"], async (page) => {
@@ -1025,7 +1027,8 @@ row(R["K60-UI-031"], async (page) => {
     await expect(side).toBeVisible();
     await expect(side.locator(".k-nav-item", { hasText: "クライアントの場所" })).toHaveCount(1);
     await expect(side.locator(".k-nav-item", { hasText: "承認待ち" })).toHaveCount(0);
-    await expect(page.getByRole("navigation", { name: "下のタブ" })).toBeAttached(); // 下のタブは狭い幅だけで見える
+    // 下のタブは狭い幅だけで見える（1440 では隠れているので、隠れた物も含めて探す）
+    await expect(page.getByRole("navigation", { name: "下のタブ", includeHidden: true })).toBeAttached();
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   }
   expect(me.length).toBeGreaterThan(0);
