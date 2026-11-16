@@ -9,7 +9,7 @@ import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
-import { CreateHead } from "./create-head";
+import { CreateHead, type SaveView } from "./create-head";
 import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
 import { ShellBell } from "@/components/k/shell";
 import { TicketShell, fetchScopes, type Scopes } from "./ticket-shell";
@@ -102,6 +102,11 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
   const [ready, setReady] = useState(false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [expired, setExpired] = useState(false);
+  /** 作る面の帯の下書きの保存の状態（帯は読み込みの前後で同じものを使い続ける） */
+  const [save, setSave] = useState<SaveView>({ kind: "none" });
+  useEffect(() => {
+    if (!open) setSave({ kind: "none" }); // 閉じたら前の保存の状態を持ち越さない
+  }, [open]);
   const qc = useQueryClient();
   const here = open ? "/tickets?new=1" : "/tickets";
 
@@ -125,23 +130,24 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
     return (
       <ErrorState code={PAGE_ERROR.sessionExpired} heading={1} acts={[`/login?next=${encodeURIComponent(here)}`]} />
     );
-  // 作る面：帯を先に出し、選ぶ欄を読み終えたら本文（K-224・D-144.8）。書けるグループが無い人は一覧のまま
-  if (open && load.state === "ok" && load.writable)
-    return (
-      <CreateTicket
-        choices={load.choices}
-        onCreated={(id) => window.location.assign(`/tickets/${id}`)}
-        onClose={() => show(false)}
-        onExpired={() => setExpired(true)}
-      />
-    );
-  if (open && load.state !== "ok")
+  // 作る面：帯を先に出し、選ぶ欄を読み終えたら本文（K-224・D-144.8）。帯は読み込みの前後で同じものを使い続ける。書けるグループが無い人は一覧のまま
+  if (open && !(load.state === "ok" && !load.writable))
     return (
       <div className="k-root k-create-page">
-        <CreateHead save={{ kind: "none" }} />
-        <div className="k-create-body">
-          {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
-        </div>
+        <CreateHead save={save} />
+        {load.state === "ok" ? (
+          <CreateTicket
+            choices={load.choices}
+            onCreated={(id) => window.location.assign(`/tickets/${id}`)}
+            onClose={() => show(false)}
+            onExpired={() => setExpired(true)}
+            onSave={setSave}
+          />
+        ) : (
+          <div className="k-create-body">
+            {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
+          </div>
+        )}
       </div>
     );
   return (

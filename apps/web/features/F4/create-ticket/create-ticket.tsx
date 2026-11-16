@@ -10,7 +10,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState, type DragEven
 import { Button, Callout, ErrorState, Loading, Select, TextArea, TextField } from "@/components/k";
 import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
-import { CreateHead, jstClock, type SaveView } from "./create-head";
+import { jstClock, type SaveView } from "./create-head";
 import { DraftStore, loadDraft, tabDraftId, type DraftBody, type SaveState } from "./draft";
 import { NotifyPicker } from "./notify-picker";
 import { ParentPicker } from "./parent-picker";
@@ -109,11 +109,14 @@ export function CreateTicket({
   onCreated,
   onClose,
   onExpired,
+  onSave,
 }: {
   choices: Choices;
   onCreated: (id: string) => void;
   onClose: () => void;
   onExpired: () => void;
+  /** 帯の下書きの保存の状態（帯は作る面の外で描く。読み込みの前後で同じ帯を使い続ける） */
+  onSave: (v: SaveView) => void;
 }) {
   const owner = useMemo(
     () => ({ workspace: choices.workspace, member: choices.member }),
@@ -121,7 +124,6 @@ export function CreateTicket({
   );
   const [d, setD] = useState<DraftBody>(EMPTY);
   const [saveState, setSaveState] = useState<SaveState>("saved");
-  const [save, setSave] = useState<SaveView>({ kind: "none" });
   const alive = useRef(true);
   /** まだサーバーに残していない書きかけがある（閉じる前に残す） */
   const dirty = useRef(false);
@@ -131,16 +133,19 @@ export function CreateTicket({
       alive.current = false;
     };
   }, []);
-  const onState = useCallback((st: SaveState, savedAt?: string | null) => {
-    if (!alive.current) return;
-    setSaveState(st);
-    if (st === "failed" || st === "too_large") return setSave({ kind: "failed" });
-    if (st !== "saved") return;
-    dirty.current = false;
-    // 時刻は保存の口の答えの saved_at（サーバーが残した時刻）。答えに無ければ時刻を出さない
-    const at = savedAt ? jstClock(savedAt) : null;
-    if (at) setSave({ kind: "saved", at });
-  }, []);
+  const onState = useCallback(
+    (st: SaveState, savedAt?: string | null) => {
+      if (!alive.current) return;
+      setSaveState(st);
+      if (st === "failed" || st === "too_large") return onSave({ kind: "failed" });
+      if (st !== "saved") return;
+      dirty.current = false;
+      // 時刻は保存の口の答えの saved_at（サーバーが残した時刻）。答えに無ければ時刻を出さない
+      const at = savedAt ? jstClock(savedAt) : null;
+      if (at) onSave({ kind: "saved", at });
+    },
+    [onSave],
+  );
   const store = useMemo(() => new DraftStore(owner, onState), [owner, onState]);
   useEffect(() => () => store.dispose(), [store]);
   /** 続きとして出した別のタブの下書きの id（作る口に source_draft_id で渡して消す・H2） */
@@ -288,8 +293,7 @@ export function CreateTicket({
   };
 
   return (
-    <div className="k-root k-create-page">
-      <CreateHead save={save} />
+    <>
       <section className="k-create-body" aria-label="チケットを作る">
         {!ready ? <Loading label="書きかけを読み込んでいます…" /> : null}
         <form id={FORM_ID} className="k-create-cards" noValidate onSubmit={(e) => void submit(e)} hidden={!ready}>
@@ -467,6 +471,6 @@ export function CreateTicket({
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
