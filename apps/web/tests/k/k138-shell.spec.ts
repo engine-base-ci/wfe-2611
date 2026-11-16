@@ -1,0 +1,579 @@
+// K-138「外枠をキャンバスどおりの新しい外枠に載せ替える」の画面の試験（実 Chrome・実装より先に積む）。
+//   新しい層の 3 画面（/tickets と作る面・/tickets/:id・/approvals）が components/k の Shell に載り、左のメニューが flow.json の
+//   主ナビ（lib/nav.ts の sectionsByRole）と同じになるか・上の帯・下のタブ・横溢れ・固定の箱の被り・突き合わせを数で見る。
+//   口（API）は網の手前（page.route）で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404 を返す）。
+//   期待は決める人の答えのおすすめ（K-138.md の決定ログ 1〜6）による：作っていない項目は押せない形で出し目に見える「準備中」を出さない・
+//   グループの件数と知らせの数は出さない・探す欄は出さない・承認待ちの数はどの画面でも出す。
+//   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { expect, test, type Page, type Request, type Route } from "@playwright/test";
+import { NAV, type RoleId } from "../../lib/nav";
+import { isBuilt } from "../../lib/built-routes";
+import {
+  compareFonts,
+  compareRows,
+  loadedFonts,
+  mismatches,
+  readVals,
+  type FidelityPair,
+} from "../../../../scripts/ci/fidelity_compare.mjs";
+import { FIDELITY_STATES, routeCanvasFonts } from "../_lib/fidelity-states";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "../../../..");
+const WEB = join(HERE, "../..");
+const API_RE = /\/api\/(v1|auth-ext|auth)\//;
+const WS = "aaaaaaaa-0000-4000-8000-000000000001";
+const ME = "11111111-0000-4000-8000-000000000001";
+const ID = "0193c5a0-0000-7000-8000-00000000c138";
+const SALES = "22222222-0000-4000-8000-000000000001";
+const ACCT = "22222222-0000-4000-8000-000000000002";
+const WIDTHS = [320, 375, 768, 1024, 1440] as const;
+/** 使えない状態の不透明度（正本 DESIGN-kaname.md の components.button-disabled・input-disabled・tab-disabled） */
+const DISABLED_OPACITY = "0.55";
+
+type Reply = { status: number; body: unknown };
+interface Mock {
+  role: string;
+  meStatus: number;
+  approvals: number;
+  devices: { state: "waiting" | "live" | "asleep" }[];
+  signOuts: number;
+}
+
+const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ status: 200, body: { data, meta } });
+
+async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
+  const m: Mock = { role: "owner", meStatus: 200, approvals: 2, devices: [{ state: "live" }], signOuts: 0, ...o };
+  await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
+  // 本人の Bridge に届かせない（テストで本人の Bridge を止めない・触らない）
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(API_RE, async (route: Route, req: Request) => {
+    const p = new URL(req.url()).pathname;
+    let r: Reply = { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
+    if (p === "/api/auth/get-session")
+      r = {
+        status: 200,
+        body: {
+          session: { id: "s1", userId: ME, token: "t", expiresAt: "2099-01-01T00:00:00Z" },
+          user: { id: ME, email: "me@example.com", name: "高本", emailVerified: true },
+        },
+      };
+    else if (p === "/api/auth/sign-out") {
+      m.signOuts += 1;
+      r = { status: 200, body: { success: true } };
+    } else if (p === "/api/auth-ext/me")
+      r =
+        m.meStatus === 200
+          ? ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: m.role, scope_id: null })
+          : { status: m.meStatus, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+    else if (p === "/api/v1/scopes")
+      r = ok(
+        [
+          { id: SALES, name: "営業", tenant_id: WS },
+          { id: ACCT, name: "経理", tenant_id: WS },
+        ],
+        { limit: 200, writable: [SALES] },
+      );
+    else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: m.approvals }, cursor: null });
+    else if (p === "/api/v1/bridge/devices")
+      r = ok(
+        m.devices.map((d, i) => ({
+          id: `d${i}`,
+          device_label: "Mac",
+          state: d.state,
+          last_seen_at: "2026-11-15T00:00:00Z",
+          version: "1.0.0",
+        })),
+      );
+    else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
+    else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
+    else if (p === "/api/v1/tickets" && req.method() === "GET")
+      r = { status: 501, body: { error: "not_implemented", code: "NOT_IMPLEMENTED" } };
+    else if (p === `/api/v1/tickets/${ID}`)
+      r = ok({
+        ticket: { id: ID, number: "EG-133", title: "請求書を送る", due_on: null, start_on: null, priority: "mid" },
+        sections: Array.from({ length: 12 }, (_, i) => ({
+          key: `s${i}`,
+          label: `区画 ${i + 1}`,
+          body: { text: "長い本文の段落。".repeat(20) },
+          version: 1,
+        })),
+        kind: { name: "タスク" },
+        stage: { name: "未着手" },
+        assignee: { display_name: "高本" },
+      });
+    else if (p === `/api/v1/tickets/${ID}/runs`) r = ok([]);
+    else if (p === "/api/v1/me/ticket-drafts") r = ok([]);
+    await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
+  });
+  return m;
+}
+
+const PATHS = {
+  tickets: "/tickets",
+  create: "/tickets?new=1",
+  detail: `/tickets/${ID}`,
+  approvals: "/approvals",
+} as const;
+
+async function open(page: Page, path: string, width = 1440) {
+  await page.setViewportSize({ width, height: 900 });
+  const res = await page.goto(path);
+  expect(res?.status()).toBe(200);
+  await expect(page.locator(".k-shell")).toBeVisible();
+}
+
+const leftNav = (page: Page) => page.getByRole("navigation", { name: "メニュー", exact: true });
+const overflowX = (page: Page) =>
+  page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+
+/** lib/nav.ts（flow.json の生成物）から、その役の左のメニューの名前の並び（主ナビ → 下のワークスペースの管理） */
+function expectedLabels(role: RoleId): string[] {
+  const keys = (NAV.sectionsByRole[role] ?? []).filter((k) => k !== "me");
+  const label = (k: string) => NAV.sections.find((s) => s.key === k)!.label.replace("（名前）", "高本");
+  return [...keys.filter((k) => k !== "company").map(label), ...keys.filter((k) => k === "company").map(label)];
+}
+
+/** 左のメニューの項目（グループの行を除く）の名前の並び */
+const navLabels = (page: Page) =>
+  leftNav(page)
+    .locator(".k-nav-item:not(:has(.k-group-mark))")
+    .evaluateAll((els) => els.map((e) => e.querySelector(".k-nav-label")?.textContent?.trim() ?? ""));
+
+test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が lib/nav.ts の R1 の主ナビと同じ並び", async ({
+  page,
+}) => {
+  await mockApi(page, { role: "owner" });
+  await open(page, PATHS.tickets);
+  const want = expectedLabels("R1");
+  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "取引先", "ワークスペースの管理"]);
+  await expect.poll(() => navLabels(page)).toEqual(want);
+});
+
+test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（取引先が無い）", async ({ page }) => {
+  await mockApi(page, { role: "staff" });
+  await open(page, PATHS.tickets);
+  const want = expectedLabels("R3");
+  expect(want).not.toContain("取引先");
+  await expect.poll(() => navLabels(page)).toEqual(want);
+});
+
+test("K138-SH-003 3 画面とも新しい外枠に載り、前の外枠（主ナビ・下タブ）が 0", async ({ page }) => {
+  await mockApi(page);
+  for (const path of [PATHS.tickets, PATHS.detail, PATHS.approvals]) {
+    await open(page, path);
+    await expect(page.getByRole("complementary", { name: "主ナビ" }), path).toHaveCount(0);
+    await expect(page.locator("nav.tabbar"), path).toHaveCount(0);
+    await expect(page.locator(".k-shell [data-ticket-shell]"), path).toHaveCount(1);
+  }
+});
+
+test("K138-SH-004 apps/web/features のどのファイルも前の外枠（@/components/shell・@/lib/nav.legacy）を読まない", () => {
+  const hits: string[] = [];
+  const walk = (dir: string) => {
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.(ts|tsx)$/.test(name)) {
+        const src = readFileSync(p, "utf8");
+        if (/from\s+["']@\/components\/shell["']|from\s+["']@\/lib\/nav\.legacy["']/.test(src)) hits.push(p);
+      }
+    }
+  };
+  walk(join(WEB, "features"));
+  expect(hits).toEqual([]);
+});
+
+test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、/approvals は承認待ちだけに aria-current", async ({
+  page,
+}) => {
+  await mockApi(page);
+  for (const [path, here] of [
+    [PATHS.tickets, "チケット"],
+    [PATHS.detail, "チケット"],
+    [PATHS.approvals, "承認待ち"],
+  ] as const) {
+    await open(page, path);
+    const current = leftNav(page).locator('[aria-current="page"]');
+    await expect(current, path).toHaveCount(1);
+    await expect(current.locator(".k-nav-label").first(), path).toHaveText(here);
+  }
+});
+
+test("K138-SH-006 作っていない項目（ナレッジ・取引先・ワークスペースの管理）は押せない形・title に準備中・目に見える「準備中」の字が無い", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.tickets);
+  const nav = leftNav(page);
+  for (const name of ["ナレッジ", "取引先", "ワークスペースの管理"]) {
+    await expect(nav.getByRole("link", { name: new RegExp(name) }), name).toHaveCount(0);
+    const item = nav.locator('[aria-disabled="true"]', { hasText: name });
+    await expect(item, name).toHaveCount(1);
+    expect(await item.getAttribute("title"), name).toContain("準備中");
+    expect(await item.evaluate((e) => getComputedStyle(e).opacity), name).toBe(DISABLED_OPACITY);
+    const before = page.url();
+    await item.click({ force: true });
+    expect(page.url(), name).toBe(before);
+  }
+  expect(await nav.innerText()).not.toContain("準備中");
+});
+
+test("K138-SH-007 左のメニューを押す：承認待ちの画面でチケットを押すと /tickets、/tickets で承認待ちを押すと /approvals", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.approvals);
+  await leftNav(page)
+    .getByRole("link", { name: /^チケット/ })
+    .click();
+  await expect(page).toHaveURL(/\/tickets$/);
+  await expect(page.locator(".k-shell")).toBeVisible();
+  await leftNav(page)
+    .getByRole("link", { name: /^承認待ち/ })
+    .click();
+  await expect(page).toHaveURL(/\/approvals$/);
+});
+
+test("K138-SH-008 承認待ちの口の数 2：/tickets でも /approvals でも承認待ちの項目に「2」（aria-label「2 件」）", async ({
+  page,
+}) => {
+  await mockApi(page, { approvals: 2 });
+  for (const path of [PATHS.tickets, PATHS.approvals]) {
+    await open(page, path);
+    const item = leftNav(page).getByRole("link", { name: /^承認待ち/ });
+    await expect(item.locator(".k-nav-badge"), path).toHaveText("2");
+    await expect(item.locator(".k-nav-badge"), path).toHaveAttribute("aria-label", "2 件");
+  }
+});
+
+test("K138-SH-009 グループ：見出し「グループ」の下に 営業・経理 の 2 行・行き先 /tickets?scope=<id>・件数の字は無い", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.tickets);
+  const nav = leftNav(page);
+  await expect(nav.getByText("グループ", { exact: true })).toBeVisible();
+  const groups = nav.locator(".k-nav-item:has(.k-group-mark)");
+  await expect(groups).toHaveCount(2);
+  await expect(groups.nth(0)).toHaveAttribute("href", `/tickets?scope=${SALES}`);
+  await expect(groups.nth(1)).toHaveAttribute("href", `/tickets?scope=${ACCT}`);
+  await expect(groups.nth(0).locator(".k-nav-label").first()).toHaveText("営業");
+  await expect(groups.nth(1).locator(".k-nav-label").first()).toHaveText("経理");
+  await expect(groups.locator(".k-nav-count")).toHaveCount(0);
+});
+
+for (const [devices, label] of [
+  [[{ state: "live" }], "PC つながっている"],
+  [[{ state: "asleep" }], "PC をつないでいない"],
+  [[], "PC をつないでいない"],
+] as const) {
+  test(`K138-SH-010 PC の口 ${devices.map((d) => d.state).join("・") || "0 件"}：「${label}」`, async ({ page }) => {
+    await mockApi(page, { devices: [...devices] });
+    await open(page, PATHS.tickets);
+    await expect(leftNav(page).locator(".k-pc")).toHaveText(label);
+  });
+}
+
+test("K138-SH-011 上の帯のいまの場所：画面ごとの字・詳細はチケットへのリンクと番号・帯に h1 が無く、どの画面も h1 は 1 つ", async ({
+  page,
+}) => {
+  await mockApi(page);
+  for (const [path, want] of [
+    [PATHS.tickets, ["チケット"]],
+    [PATHS.detail, ["チケット", "EG-133"]],
+    [PATHS.approvals, ["承認待ち"]],
+  ] as const) {
+    await open(page, path);
+    const crumbs = page.getByRole("navigation", { name: "いまの場所" });
+    for (const w of want) await expect(crumbs, path).toContainText(w);
+    if (path === PATHS.detail)
+      await expect(crumbs.getByRole("link", { name: "チケット" })).toHaveAttribute("href", "/tickets");
+    await expect(page.locator("header.k-bar h1"), path).toHaveCount(0);
+    await expect(page.locator("h1"), path).toHaveCount(1);
+  }
+});
+
+test("K138-SH-012 上の帯：探す欄はグレーで出て打っても字が入らない（⌘K でも）・知らせの鈴はグレーで押しても何も開かず数の字が無い", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.tickets);
+  const bar = page.locator("header.k-bar");
+  const search = bar.getByRole("search");
+  await expect(search).toHaveCount(1);
+  const box = search.locator("input");
+  await expect(box).toBeDisabled();
+  await expect(box).toHaveAttribute("aria-disabled", "true");
+  expect(await search.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+  await box.click({ force: true });
+  await page.keyboard.type("請求");
+  await expect(box).toHaveValue("");
+  await page.keyboard.press("Meta+k");
+  await expect(box).not.toBeFocused();
+  const bell = bar.locator(".k-bell");
+  await expect(bell).toHaveCount(1);
+  await expect(bell).toHaveAttribute("aria-disabled", "true");
+  expect(await bell.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+  expect((await bell.innerText()).trim()).toBe("");
+  const before = page.url();
+  await bell.click({ force: true });
+  await page.keyboard.press("Enter");
+  expect(page.url()).toBe(before);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("K138-SH-013 自分のメニュー：名前「高本」・ログアウトを押すとログアウトの口を呼び /login へ移る", async ({
+  page,
+}) => {
+  const m = await mockApi(page);
+  await open(page, PATHS.tickets);
+  await page.getByRole("button", { name: "自分のメニュー" }).click();
+  const menu = page.getByRole("menu");
+  await expect(menu).toContainText("高本");
+  await menu.getByRole("menuitem", { name: "ログアウト" }).click();
+  await expect(page).toHaveURL(/\/login/);
+  expect(m.signOuts).toBeGreaterThan(0);
+});
+
+test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チケット・承認（2）・＋・AI・メニュー の順。＋で /tickets?new=1", async ({
+  page,
+}) => {
+  await mockApi(page, { approvals: 2 });
+  await open(page, PATHS.tickets, 375);
+  await expect(leftNav(page)).toBeHidden();
+  const tabs = page.getByRole("navigation", { name: "下のタブ" });
+  await expect(tabs).toBeVisible();
+  const items = await tabs
+    .locator(":scope > *")
+    .evaluateAll((els) =>
+      els.map((e) => e.getAttribute("aria-label") ?? e.querySelector(".k-nav-label")?.textContent?.trim()),
+    );
+  expect(items).toEqual(["チケット", "承認", "チケットを作る", "AI", "メニュー"]);
+  await expect(tabs.locator(":scope > *").nth(1)).toContainText("2");
+  await tabs.getByRole("button", { name: "チケットを作る" }).click();
+  await expect(page).toHaveURL(/\/tickets\?new=1$/);
+});
+
+test("K138-SH-015 幅 375：メニューを押すと全部のメニューが開き項目が左のメニューと同じ。もう一度押すと閉じる", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.tickets, 375);
+  const btn = page.getByRole("navigation", { name: "下のタブ" }).getByRole("button", { name: "メニュー" });
+  await btn.click();
+  const sheet = page.getByRole("navigation", { name: "メニュー（全部）" });
+  await expect(sheet).toBeVisible();
+  await expect(btn).toHaveAttribute("aria-expanded", "true");
+  const labels = await sheet
+    .locator(".k-nav-item:not(:has(.k-group-mark))")
+    .evaluateAll((els) => els.map((e) => e.querySelector(".k-nav-label")?.textContent?.trim() ?? ""));
+  expect(labels).toEqual(expectedLabels("R1"));
+  await btn.click();
+  await expect(sheet).toHaveCount(0);
+});
+
+test("K138-SH-016 外枠を持つ 4 画面 × 幅 320・375・768・1024・1440 で横溢れ 0・本文の h1 の左の端が画面の中", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await mockApi(page);
+  const bad: string[] = [];
+  for (const path of Object.values(PATHS))
+    for (const w of WIDTHS) {
+      await open(page, path, w);
+      const o = await overflowX(page);
+      if (o !== 0) bad.push(`${path} 幅 ${w}：${o}px`);
+      // 左へのはみ出しは scrollWidth − clientWidth に出ないので、本文の h1 の左の端が画面の中かを見る（レビューの見つけもの）
+      const x = await page
+        .locator("#k-main h1")
+        .first()
+        .evaluate((e) => e.getBoundingClientRect().left);
+      if (x < 0) bad.push(`${path} 幅 ${w}：本文の h1 の左の端 ${x}`);
+    }
+  expect(bad).toEqual([]);
+});
+
+test("K138-SH-017 幅 375・768・1440：外枠の中の押せるものは 24px 以上", async ({ page }) => {
+  await mockApi(page);
+  for (const w of [375, 768, 1440]) {
+    await open(page, PATHS.tickets, w);
+    const small = await page.$$eval(
+      ".k-shell > nav a[href], .k-shell > nav button, .k-shell header.k-bar a[href], .k-shell header.k-bar button",
+      (els) =>
+        els
+          .filter((e) => {
+            const r = e.getBoundingClientRect();
+            return r.width > 0 && r.height > 0 && (r.width < 24 || r.height < 24) && !e.classList.contains("k-skip");
+          })
+          .map((e) => e.getAttribute("aria-label") ?? e.textContent?.trim()),
+    );
+    expect(small, `幅 ${w}`).toEqual([]);
+  }
+});
+
+test("K138-SH-018 左のメニュー・下のタブ・全部のメニュー・自分のメニューの行き先は全部作った画面", async ({ page }) => {
+  await mockApi(page);
+  const hrefs = new Set<string>();
+  const collect = async (sel: string) => {
+    for (const h of await page.locator(sel).evaluateAll((els) => els.map((e) => e.getAttribute("href") ?? "")))
+      hrefs.add(h);
+  };
+  await open(page, PATHS.tickets);
+  await collect('nav[aria-label="メニュー"] a[href]');
+  await page.getByRole("button", { name: "自分のメニュー" }).click();
+  await collect('[role="menu"] a[href]');
+  await page.keyboard.press("Escape");
+  await open(page, PATHS.tickets, 375);
+  await collect('nav[aria-label="下のタブ"] a[href]');
+  await page.getByRole("navigation", { name: "下のタブ" }).getByRole("button", { name: "メニュー" }).click();
+  await collect('nav[aria-label="メニュー（全部）"] a[href]');
+  expect(hrefs.size).toBeGreaterThan(0);
+  expect([...hrefs].filter((h) => !isBuilt(h))).toEqual([]);
+});
+
+test("K138-SH-019 幅 375：本文を一番下まで送っても、本文の最後の要素が下のタブ（固定の箱）に被らない", async ({
+  page,
+}) => {
+  await mockApi(page, { approvals: 0 });
+  for (const path of [PATHS.detail, PATHS.approvals]) {
+    await open(page, path, 375);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const tabsTop = await page
+      .getByRole("navigation", { name: "下のタブ" })
+      .evaluate((e) => e.getBoundingClientRect().top);
+    const lastBottom = await page.locator("#k-main").evaluate((main) => {
+      const all = [...main.querySelectorAll<HTMLElement>("*")].filter((e) => {
+        const r = e.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && getComputedStyle(e).position !== "fixed";
+      });
+      return Math.max(...all.map((e) => e.getBoundingClientRect().bottom));
+    });
+    expect(lastBottom, path).toBeLessThanOrEqual(tabsTop);
+  }
+});
+
+test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の名前は title で読める）、1024 は 216px", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await open(page, PATHS.tickets, 768);
+  await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(56);
+  await expect(leftNav(page).getByRole("link", { name: /^チケット/ })).toHaveAttribute("title", /チケット/);
+  await open(page, PATHS.tickets, 1024);
+  await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(216);
+});
+
+test("K138-SH-021 役の口が 401（ログインが切れた）：左のメニューに役の項目のリンクが 0・本文にログインへの道", async ({
+  page,
+}) => {
+  await mockApi(page, { meStatus: 401 });
+  // 本文の口も 401（後から足した route が先に効く）。セッションの口だけは前のまま（切れたのは口の鍵）
+  await page.route(/\/api\/v1\//, (route) =>
+    route.fulfill({
+      status: 401,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "unauthenticated", code: "UNAUTHENTICATED" }),
+    }),
+  );
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(PATHS.detail);
+  await expect(page.locator(".k-shell")).toBeVisible();
+  await expect(page.locator("#k-main").getByRole("link", { name: /ログイン/ })).toBeVisible();
+  for (const name of expectedLabels("R1"))
+    await expect(leftNav(page).getByRole("link", { name: new RegExp(`^${name}`) }), name).toHaveCount(0);
+});
+
+test("K138-SH-022 鍵が無い（ログインしていない）：/tickets を開くと /login?next=%2Ftickets に移る", async ({
+  page,
+}) => {
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(API_RE, (route) =>
+    route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ code: "UNAUTHENTICATED" }) }),
+  );
+  await page.goto(PATHS.tickets);
+  await expect(page).toHaveURL(/\/login\?next=%2Ftickets$/);
+});
+
+test("K138-SH-025 使えない状態の部品：正本に button-disabled・input-disabled・tab-disabled（opacity 0.55）・トークン --k-c-button-disabled-opacity と --k-c-input-disabled-opacity が 0.55・作っていない項目と探す欄の不透明度がその値", async ({
+  page,
+}) => {
+  const design = readFileSync(join(ROOT, "04_design/DESIGN-kaname.md"), "utf8");
+  const front = design.split(/^---$/m)[1] ?? "";
+  for (const part of ["button-disabled", "input-disabled", "tab-disabled"]) {
+    expect(front, part).toMatch(new RegExp(`\\n {2}${part}:\\n(?: {4}.*\\n)*? {4}opacity: "?0\\.55"?\\n`));
+  }
+  await mockApi(page);
+  await open(page, PATHS.tickets);
+  const tokens = await page.evaluate(() => {
+    const st = getComputedStyle(document.documentElement);
+    return {
+      button: st.getPropertyValue("--k-c-button-disabled-opacity").trim(),
+      input: st.getPropertyValue("--k-c-input-disabled-opacity").trim(),
+    };
+  });
+  expect(tokens).toEqual({ button: DISABLED_OPACITY, input: DISABLED_OPACITY });
+  const item = leftNav(page).locator('[aria-disabled="true"]').first();
+  expect(await item.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.button);
+  const input = page.getByRole("search").locator("input");
+  expect(await input.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.input);
+});
+
+interface Group {
+  id: string;
+  canvas: string;
+  app: string;
+  state: string;
+  widths: number[];
+  pairs: FidelityPair[];
+  owner: string;
+  enrolled: boolean;
+}
+const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
+const SHELL_GROUPS = ["shell-nav", "shell-tabs"] as const;
+
+test("K138-SH-023 突き合わせの設定：shell-nav・shell-tabs が enrolled・持ち主 K-138・shell-tabs の絵は MobileList・画面を整える道具に鍵", () => {
+  for (const id of SHELL_GROUPS) {
+    const g = CFG.groups.find((x) => x.id === id);
+    expect(g, id).toBeTruthy();
+    expect(g!.enrolled, id).toBe(true);
+    expect(g!.owner, id).toBe("K-138");
+    expect(FIDELITY_STATES[g!.state], `${id} の state ${g!.state}`).toBeTruthy();
+  }
+  expect(CFG.groups.find((x) => x.id === "shell-tabs")!.canvas).toBe("MobileList");
+});
+
+for (const id of SHELL_GROUPS) {
+  const g = CFG.groups.find((x) => x.id === id);
+  for (const w of g?.widths ?? [1440]) {
+    test(`K138-SH-024 ${id}（${g?.canvas ?? "?"}）幅 ${w}：組の値と読み込んだ書体がキャンバスと同じ`, async ({
+      browser,
+    }) => {
+      expect(g, id).toBeTruthy();
+      const canvasPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+      await routeCanvasFonts(canvasPage);
+      await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
+      for (const p of g!.pairs) await canvasPage.locator(p.canvas).first().waitFor({ state: "visible" });
+      await canvasPage.evaluate(() => document.fonts.ready);
+      const canvasVals = await readVals(canvasPage, g!.pairs, "canvas");
+      const canvasFonts = await loadedFonts(canvasPage);
+      await canvasPage.close();
+
+      const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+      await appPage.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+      await FIDELITY_STATES[g!.state]!(appPage, g!.app);
+      for (const p of g!.pairs) await appPage.locator(p.app).first().waitFor({ state: "visible" });
+      await appPage.evaluate(() => document.fonts.ready);
+      const appVals = await readVals(appPage, g!.pairs, "app");
+      const appFonts = await loadedFonts(appPage);
+      await appPage.close();
+
+      const rows = [...compareRows(g!.pairs, canvasVals, appVals), compareFonts(canvasFonts, appFonts)];
+      const bad = rows.filter((r) => !r.ok).map((r) => `${r.part}・${r.prop}：キャンバス ${r.canvas} ／ 画面 ${r.app}`);
+      expect(mismatches(rows), bad.join("\n")).toBe(0);
+    });
+  }
+}

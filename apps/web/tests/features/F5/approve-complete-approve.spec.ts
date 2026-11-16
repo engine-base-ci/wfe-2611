@@ -32,7 +32,7 @@ row(R["K63-UI-002"], async (page) => {
   expect(m.approves[0]).toMatchObject({ id: A_INLINE, body: {} });
   expect(m.approves[0]!.key).toBeTruthy();
   await expect(page.getByRole("main").getByText("2 件", { exact: true })).toBeVisible(); // 見出しの横の数が 1 減る
-  await menuCount(page, 2); // 1440 で「仕事」を開いた左のメニューの数も 1 減る
+  await menuCount(page, 2); // 1440 の左のメニューの「承認待ち」の数も 1 減る
 });
 row(R["K63-UI-012"], async (page) => {
   const m = await mockApi(page);

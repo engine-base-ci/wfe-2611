@@ -309,7 +309,7 @@ row(R["K60-UI-000"], async (page) => {
     ...KINDS.flatMap((k) => k.sections.map((s) => s.label)),
     ...MEMBERS.map((x) => x.display_name),
   ]);
-  // 外枠（サイドバー・下タブ）の要素は外枠の試験が受け持つ（D-128.151）。ここは本文だけを見る。外枠が出ることは K60-UI-031
+  // 外枠（左のメニュー・下のタブ）の要素は外枠の試験が受け持つ（D-143.1）。ここは本文だけを見る。外枠が出ることは K60-UI-031
   const missing = (await missingRows(page, ROWS, "[data-ticket-shell]")).filter(
     (x) => !generated.has(/「(.+)」/.exec(x)?.[1] ?? ""),
   );
@@ -319,7 +319,11 @@ row(R["K60-UI-000"], async (page) => {
 row(R["K60-UI-001"], async (page) => {
   await mockApi(page);
   await open(page, "");
-  await page.getByRole("button", { name: "＋ チケットを作る" }).click();
+  // 作る入口は左のメニューの「チケットを作る」（見出しの帯には主ボタンを置かない・K-138）
+  await page
+    .getByRole("navigation", { name: "メニュー", exact: true })
+    .getByRole("button", { name: "チケットを作る" })
+    .click();
   await expect(form(page)).toBeVisible();
   await expect(page).toHaveURL(/\/tickets\?new=1$/);
   await page.reload();
@@ -354,7 +358,7 @@ row(R["K60-UI-003"], async (page) => {
   const m = await mockApi(page);
   m.on.list = () => ({ status: 200, body: { data: [], meta: { limit: 50 } } });
   await open(page, "");
-  await page.getByRole("button", { name: "自分で書く" }).click();
+  await page.locator('[data-state="empty"]').getByRole("button", { name: "＋ チケットを作る" }).click();
   await expect(form(page)).toBeVisible();
 });
 
@@ -509,9 +513,8 @@ row(R["K60-UI-018"], async (page) => {
   m.on.list = () => ({ status: 200, body: { data: [], meta: { limit: 50 } } });
   await open(page, "");
   await expect(page.getByRole("heading", { level: 1, name: "チケット" })).toBeVisible();
-  await expect(page.getByText("まだチケットがありません")).toBeVisible();
-  await expect(page.getByRole("button", { name: "＋ チケットを作る" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "自分で書く" })).toHaveCount(0);
+  await expect(page.getByText("まだチケットはありません")).toBeVisible();
+  await expect(page.getByRole("button", { name: /チケットを作る/ })).toHaveCount(0); // 本文の空の箱にも左のメニューにも出ない
 });
 
 row(R["K60-UI-019"], async (page) => {
@@ -991,7 +994,7 @@ row(R["K60-UI-030"], async (page) => {
 
 row(R["K60-UI-031"], async (page) => {
   await mockApi(page);
-  // 役と名前は前からある口（/api/auth-ext/me・useMyRoles）で読む（D-128.151）。後から足した route が先に効く
+  // 役と名前は前からある口（/api/auth-ext/me・useMyRoles）で読む（D-128.151 の役の部分）。後から足した route が先に効く
   const me: string[] = [];
   await page.route(/\/api\/auth\/get-session/, (route) =>
     route.fulfill({
@@ -1017,10 +1020,12 @@ row(R["K60-UI-031"], async (page) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     const res = await page.goto(`/tickets${path}`);
     expect(res?.status()).toBe(200);
-    const side = page.getByRole("complementary", { name: "主ナビ" });
+    // 新しい外枠（components/k の Shell・D-143.1）。役は閲覧のみ（R4）として読まれ、左のメニューは R4 の主ナビ（クライアントの場所）になる
+    const side = page.getByRole("navigation", { name: "メニュー", exact: true });
     await expect(side).toBeVisible();
-    await expect(side).toHaveAttribute("data-role", "R4");
-    await expect(page.locator('nav.tabbar[aria-label="下タブ"]')).toBeAttached(); // 下タブは狭い幅だけで見える
+    await expect(side.locator(".k-nav-item", { hasText: "クライアントの場所" })).toHaveCount(1);
+    await expect(side.locator(".k-nav-item", { hasText: "承認待ち" })).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "下のタブ" })).toBeAttached(); // 下のタブは狭い幅だけで見える
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   }
   expect(me.length).toBeGreaterThan(0);

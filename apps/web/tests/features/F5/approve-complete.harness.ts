@@ -333,10 +333,10 @@ export async function missingInMain(page: Page, rows: SpecRow[], extra: SpecRow[
 }
 /** 左のメニューの「承認待ち」の数。外枠は K-60 の前の外枠（D-128.151・lib/nav.legacy）で、承認待ちは「仕事」のまとまりの中（閉じている）。
  *  まとまりを開いてから、その中の「承認待ち」のリンクの数を見る。左のメニューが出る幅（1440）だけで見る（狭い幅の下のタブは前の外枠の並び） */
+/** 1440 の左のメニュー（新しい外枠・D-143.1）の「承認待ち」の数の印が n */
 export const menuCount = async (page: Page, n: number) => {
-  const group = page.getByRole("button", { name: /^仕事/ });
-  if ((await group.getAttribute("aria-expanded")) === "false") await group.click();
-  await expect(page.getByRole("link", { name: new RegExp(`承認待ち\\s*${n}`) })).toBeVisible();
+  const item = page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: /^承認待ち/ });
+  await expect(item.locator(".k-nav-badge")).toHaveText(String(n));
 };
 export const openQueue = async (page: Page, width = 1440) => {
   await page.setViewportSize({ width, height: 1000 });

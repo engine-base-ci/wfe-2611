@@ -67,10 +67,13 @@ async function connectByCode(page: Page, pc: TestPc): Promise<void> {
   await expect(liveOn(page)).toContainText(pc.label);
 }
 
-/** チケットの画面の「＋ チケットを作る」から作る → 詳細へ。できたチケットの id を返す */
+/** 左のメニューの「チケットを作る」から作る → 詳細へ。できたチケットの id を返す（見出しの帯には主ボタンを置かない・K-138） */
 async function createTicket(page: Page, me: Newcomer, title: string): Promise<string> {
   await page.goto("/tickets");
-  await page.getByRole("button", { name: "＋ チケットを作る" }).click();
+  await page
+    .getByRole("navigation", { name: "メニュー", exact: true })
+    .getByRole("button", { name: "チケットを作る" })
+    .click();
   await expect(page.getByRole("region", { name: "チケットを作る" })).toBeVisible();
   await page.getByRole("textbox", { name: "題名", exact: true }).fill(title);
   await page.getByRole("combobox", { name: "担当者" }).click();
@@ -275,5 +278,8 @@ test("K58-M2-07 使い始めの手順：つなぐ前は入口が「PC をつな�
   await page.goto("/setup/bridge");
   await expect(liveOn(page), "済んだ段の画面に戻っても、つながったまま").toBeVisible();
   await page.goto("/tickets");
-  await expect(page.getByRole("button", { name: "＋ チケットを作る" }), "チケットの画面は手順の門の外").toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("button", { name: "チケットを作る" }),
+    "チケットの画面は手順の門の外",
+  ).toBeVisible();
 });

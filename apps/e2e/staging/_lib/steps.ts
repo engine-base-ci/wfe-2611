@@ -101,10 +101,14 @@ export interface TicketBody {
   todo: string;
 }
 const jst = (days: number): string => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
-/** チケットの画面の「＋ チケットを作る」から作る → 詳細へ。できたチケットの id を返す */
+/** 左のメニューの「チケットを作る」から作る → 詳細へ。できたチケットの id を返す */
 export async function createTicket(page: Page, me: Person, title: string, body: TicketBody): Promise<string> {
   await page.goto("/tickets");
-  await page.getByRole("button", { name: "＋ チケットを作る" }).click();
+  // 作る入口は左のメニューの「チケットを作る」（見出しの帯には主ボタンを置かない・K-138）
+  await page
+    .getByRole("navigation", { name: "メニュー", exact: true })
+    .getByRole("button", { name: "チケットを作る" })
+    .click();
   await expect(page.getByRole("region", { name: "チケットを作る" })).toBeVisible();
   await page.getByRole("textbox", { name: "題名", exact: true }).fill(title);
   await page.getByRole("combobox", { name: "担当者" }).click();

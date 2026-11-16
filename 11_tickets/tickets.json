@@ -3485,12 +3485,10 @@
    ],
    "apis": [
     "copyNotificationSettings",
-    "dismissSetupTasks",
     "getMe",
     "getNotificationSettings",
     "leaveWorkspace",
     "listMySessions",
-    "listSetupTasks",
     "requestEmailChange",
     "revokeMySession",
     "revokeOtherSessions",
@@ -6123,31 +6121,83 @@
    "parent": "K-213",
    "milestone": "段",
    "area": "画面",
-   "assignee": "作る",
-   "due": "",
+   "assignee": "実装",
+   "due": "2026-11-19",
+   "estimate_hours": "4",
+   "estimate_basis": "外枠の載せ替え 1 本（ticket-shell.tsx を新しい Shell に・読む口 4 つ）・Shell と nav-model の直し（帯の題・下のタブの短い名前・準備中の出し方・自分のメニュー）・flow の項目に短い名前・3 画面の渡す値・突き合わせの組 2 つと画面を整える道具。K-217（2.5）の 1.6 倍と見た。実測なし・仮",
    "decisions": [
     "D-143.1",
-    "D-128.9",
-    "D-128.78",
-    "D-128.151",
-    "D-128.147",
+    "D-143.5",
     "D-144.1",
     "D-144.2",
     "D-144.3",
     "D-144.4",
     "D-144.5",
-    "D-144.6"
+    "D-144.6",
+    "D-145.9",
+    "D-128.9",
+    "D-128.78",
+    "D-128.151",
+    "D-128.147",
+    "D-127.8"
    ],
+   "split": "",
+   "prior_impl": "components/k/shell.tsx・nav-model.ts（K-25・見本の /dev/k/shell だけが使う）／features/F4/create-ticket/ticket-shell.tsx（前の外枠 AppShell に載せる・D-128.151）",
    "choke_points": [],
-   "choke_none": "画面の外枠の並べ方を替えるだけ。中身は各画面のチケットの口から読む。書き込み・外への送信に触らない",
+   "choke_none": "画面の外枠の並べ方を替えるだけ。外枠が読む口（役と名前・グループ・承認待ちの数・PC）は前からある読む口で、書き込みはログアウトの口（前からある）だけ。外への送信に触らない",
    "depends_on": [
-    "K-60"
+    "K-60",
+    "K-213",
+    "K-215",
+    "K-216",
+    "K-218",
+    "K-238"
+   ],
+   "tests": [
+    "apps/web/tests/k/k138-shell.spec.ts",
+    "apps/web/tests/features/F4/create-ticket.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-queue.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-approve.spec.ts",
+    "apps/web/tests/features/F5/approve-complete.harness.ts",
+    "apps/web/tests/k-shell.spec.ts",
+    "scripts/ci/k216_fidelity_config_test.py",
+    "apps/web/tests/skeleton/m2-bridge-ticket.spec.ts"
+   ],
+   "carry": [
+    "07_qa/test-specs/k/create-ticket.md",
+    "07_qa/test-specs/k/approve-complete.md",
+    "apps/e2e/staging/_lib/steps.ts",
+    "04_design/fidelity.json",
+    "11_tickets/K-223.md",
+    "11_tickets/K-224.md",
+    "11_tickets/K-225.md",
+    "11_tickets/K-250.md",
+    "11_tickets/K-251.md",
+    "11_tickets/K-252.md",
+    "11_tickets/K-70.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl"
+   ],
+   "changes": [
+    "apps/web/features/F4/create-ticket/ticket-shell.tsx",
+    "apps/web/features/F4/create-ticket/tickets-page.tsx",
+    "apps/web/features/F4/create-ticket/ticket-detail.tsx",
+    "apps/web/features/F5/approve-complete/queue.tsx",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/shell.css",
+    "apps/web/components/k/nav-model.ts",
+    "05_flow/phase1.py",
+    "scripts/ci/gen_routes.mjs",
+    "scripts/ci/class_ledger.json",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scope.json",
+    "apps/web/components/k/k.css"
    ],
    "affects": [
     "@kaname/web"
    ],
    "ci_wide": [],
-   "split": "これから",
    "screens": [
     "tickets",
     "approvals"
@@ -6157,13 +6207,16 @@
     "shell-tabs"
    ],
    "sections": {
-    "目的": "**改め（2026-11-15・D-143.1）**：先に要る最初の波のチケットは K-215・K-216・K-238（親が先に本線へ入るので、切り直すときに depends_on に足す）。決める人が、新しい画面を前の外枠に載せる D-128.151 を改め、キャンバスどおりの新しい外枠（components/k/shell.tsx）に載せ替えると決めた。段 1 の画面をモックに合わせる親（K-213）の下へ移した（前は K-22 の下）。調べ（2026-11-15）のずれ S1〜S7（左のメニューの項目・上の帯・今いる項目の印・ワークスペース名とグループと PC の状態・準備中・375 の下のタブ・使う外枠）と、検査の穴 H7（溢れ 0 でも被さる固定の箱を見ない）・H8（殻のナビと flow.json の by_role を比べない）をこのチケットが持つ。外枠の部品のクラス k-panel-toggle（components/k/shell.tsx）が CSS に無い（K-214 の台帳の行をこのチケットが消す）。次の波で切り直す（下の元の目的・完了の条件は切り直すときに直す）。\n\nK-60 の画面は、前からある外枠（`components/shell` の AppShell・ShellProvider）に載せた（D-128.151）。この外枠は、前の画面の写し `lib/nav.legacy.ts` を読んで左のメニューと下のタブを並べている。新しい外枠の並べ方 `components/k/nav-model.ts`（K-25）は、flow.json から作る `lib/nav.ts` の主ナビ（役割ごとのまとまり・D-128.9）を読む。\n\nいまは新しい画面が前の外枠に載っているので、左のメニューが flow.json の主ナビになっていない。たとえば「承認待ち」は主ナビの 1 本になるはず（D-128.9）だが、前の外枠には出ない。承認待ちの画面（K-63）やチケットの一覧（K-92）を作ると、行き先が外枠に出ないまま増えていく。K-63 の作る役が見つけた（2026-11-07）。途中で見つけたものはその場で直さずチケットにする（D-128.147）。",
-    "完了の条件": "- [ ] 新しい画面（apps/web/features の下）の外枠が、nav-model の主ナビ（左のメニュー）と下のタブ（主ナビの先頭・作る・メニュー）を出す。役割ごとに項目が変わり、まだ作っていない画面は「準備中」で押させない（lib/built-routes.ts）\n- [ ] 「承認待ち」が主ナビの 1 本として出る（件数の数は承認待ちの口ができてから・K-63）\n- [ ] 前の外枠に残る画面（前の画面）をどうするか（そのまま前の外枠に残す・一緒に替える）を、切るときに決める人に聞いて書く。前の外枠と写し lib/nav.legacy を消すのは前の画面を外すチケットで（D-128.78）\n- [ ] 役と名前を読む仕組み（useMyRoles・前の口 /api/auth-ext/me）は D-128.151 のとおり使い続ける。契約の口 getMe を作るのは K-70\n- [ ] 外枠を含む**全部の画面**で、375・768・1024・1440 の幅の横溢れ（`document.documentElement.scrollWidth - clientWidth`）を数で測り、どれも 0（共通シェルを触ったら全画面で測る・L-003 G-05）。行き先の href が全部実在するルートか照合する（G-04）\n- [ ] 役割の数（主ナビの項目が一番多い役割を含む）× 幅 で、横溢れと押せる大きさ（24px 以上）を試験の行で持つ\n- [ ] 頭の canvas の組（shell-nav：左のメニューの項目の字の一覧・上の帯／shell-tabs：375 の下のタブ・04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が緑\n- [ ] チケットの CI（act）が緑",
-    "前提と制約": "- 依存：K-60（取り込み済み。前の外枠に載せたチケットの画面・ticket-shell.tsx）\n- 並べ方は 1 か所（nav-model）に定義し全画面が読む。画面ごとに手で並べない（screen-derivation §6）\n- 外枠の部品の見た目はキャンバスと DESIGN-kaname.md のとおり（K-25 で作った形）\n- 前の外枠を使う画面を全文検索（`@/lib/nav.legacy`・`@/components/shell`）で洗い出し、実装の詳細に一覧で書く",
-    "実施事項": "- [ ] 作る役：前の外枠と写しを使う所の一覧（今の時点で 14 か所：components/shell の 6 本・lib/auth/role.tsx・components/ai/panel.tsx・components/wizard/require-setup.tsx・features/F4/create-ticket/ticket-shell.tsx・app/(app)/ai/chat/page.tsx・app/page.tsx・app/not-found.tsx・app/(dev)/dev/shell/page.tsx）を確かめて書く\n- [ ] 作る役：分岐（役割ごと・まだ作っていない画面・いまの場所・スマホのメニュー・ログインが切れた・権限が無い画面に直に来た）と試験の行\n- [ ] 作る役：全画面 × 4 つの幅の横溢れを測る試験の行",
-    "テスト仕様と確認の結果": "| 確認項目 | 種類 | 判定のしかた | 結果 |\n|---|---|---|---|\n| 新しい画面の左のメニューが flow.json の主ナビ | ① 単体（画面） | 役割ごとにチケットの画面を開き、左のメニューの項目が nav-model の main と同じ | |\n| 全画面で横溢れが 0 | ① 単体（画面） | 外枠を含む全画面を 375・768・1024・1440 で開き、scrollWidth − clientWidth が 0 | |\n| 行き先が全部実在する | ① 単体 | 主ナビと下のタブの href の集合が、実在するルートの集合に入る | |",
-    "成果物": "",
-    "決定ログ": "- 決定に従った：D-128.9・D-128.78・D-128.151・D-128.147\n- 決める人に聞くこと：前の外枠に残る前の画面を、このチケットで一緒に替えるか"
+    "目的": "D-143.1（2026-11-15）で、新しい画面を前の外枠に載せる D-128.151 を改め、キャンバスどおりの新しい外枠（components/k/shell.tsx・K-25）に載せ替えると決めた。段 1 の画面をモックに合わせる親（K-213）の下で、調べ（2026-11-15）のずれ S1〜S7 と検査の穴 H7・H8 をこのチケットが持つ。\n\n| 番号 | 何が | いま |\n|---|---|---|\n| S1 | 左のメニューの項目 | 前の画面の写し lib/nav.legacy の 6 本（今日 準備中・自分のAI・仕事・目標・会社モデル・設定と記録）。「チケット」が無く、承認待ちは「仕事」の中 |\n| S2 | 上の帯 | 出ない（screenId=null で TopBar が null） |\n| S3 | 今いる項目の印 | 付かない |\n| S4 | ワークスペース名・グループ・PC の状態 | 無い |\n| S5 | 「準備中」 | 「今日 準備中」が先頭。分類の中も準備中だらけ。キャンバスには出ない |\n| S6 | 375 の下のタブ | 前の IA（自分のAIと話す・AI社員の動き・…・メニュー）。キャンバス（MobileList）は チケット・承認・＋・AI・メニュー |\n| S7 | 使う外枠 | 前の AppShell。新しい外枠は app/(dev)/dev/k/shell だけが使う |\n| H7 | 溢れの試験 | 溢れ 0 でも、固定の箱（下のタブ）が本文に被るのを見ない |\n| H8 | 殻のナビ | flow.json の navigation.by_role と比べない（前の IA の殻を掛けても赤にならない） |\n\nあわせて、外枠の部品のクラス k-panel-toggle（shell.tsx:301）が CSS に無い（K-214 の台帳の行をこのチケットが消す）。\n\n載せ替える画面は、新しい層の 3 画面（/tickets と /tickets?new=1・/tickets/:id・/approvals）。PC をつなぐ（/setup/bridge）を新しい外枠に入れるのは K-220。前の画面（/・/ai/chat・はじめの設定・not-found）は前の外枠のまま（D-144.6）。",
+    "完了の条件": "- [ ] 下の 25 行（K138-SH-001〜025）が緑\n- [ ] 書く段で新しい外枠の期待に替えた前からの試験（K60-UI-031・K63-UI-001・K63-UI-002・K63-UI-011・KN105-003・KN105-005・KN105-007・K216-VF-015）が緑\n- [ ] 台帳（scripts/ci/class_ledger.json）から k-panel-toggle の undefined の行を消し、G67（K-214）が緑\n- [ ] 頭の canvas の組（shell-nav：Main の左のメニューの項目・自分のメニューの札／shell-tabs：MobileList の 375 の下のタブ・04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（K138-SH-024・G70）が緑\n- [ ] 外枠を持つ全部の画面（上の 3 画面と作る面）で、320・375・768・1024・1440 の幅の横溢れ（`document.documentElement.scrollWidth - clientWidth`）が 0（K138-SH-016）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: UI\n\n- 先に要るチケット：K-60（取り込み済み）・K-215（頭の canvas の検査）・K-216（突き合わせの設定と比べ方）・K-238（キャンバスの書体の差し替え routeCanvasFonts・G70）\n- 並べ方は 1 か所（nav-model ← lib/nav.ts ← flow.json）に定義し全画面が読む。画面ごとに手で並べない（screen-derivation §6）\n- 役と名前を読む仕組み（useMyRoles・前の口 /api/auth-ext/me）は D-128.151 のとおり使い続ける。契約の口 getMe を作るのは K-70\n- 外枠の部品の見た目はキャンバスと DESIGN-kaname.md のとおり（値は --k-* だけ）\n- 今の画面の試験が見ている `[data-ticket-shell]`（create-ticket.spec.ts:313・delegate.spec.ts:152）は、新しい外枠の中の本文の包みに残す\n- 外枠の口は 1 画面で 1 回ずつ読む（PC の状態を 5 秒ごとに読み続けない・速さは K-233〜K-237）\n- 試験の中で本人の Bridge（127.0.0.1:38617）に届かないよう、網の手前で止める（試験の頭の注釈）\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-15）": "1. キャンバス Main の左のメニュー（.kn-nav）：ENGINE BASE ▾・＋チケットを作る・チケット（今いる）・承認待ち 2・高本のAI・ナレッジ・取引先・「グループ」の見出しと 営業 18・受託開発 42・経理 9（色の札つき）・ワークスペースの管理・PC つながっている。準備中の字は無い。上の帯（.kn-bar）は いまの場所（チケット › 自分に関わるもの）・探す ⌘K・知らせ 3・自分のメニュー（高 ▾）。帯に見出し（h1）は無い（見出しは本文の h1 だけ）\n2. キャンバス Main に 375 の下のタブは無い。下のタブはスマホの絵（MobileList ほか Mb*）に在り、`nav[aria-label=\"下のタブ\"]` の a が チケット・承認 9・＋（aria-label チケットを作る）・AI・メニュー。K-216 の組 shell-tabs は canvas を Main にしているので当たらない。正の絵を MobileList に直す（下の「前からの試験を替えた所」）\n3. 新しい外枠（components/k/shell.tsx）：帯の題を `h1.k-bar-title` で出す（本文の h1 と 2 つになる）。下のタブは主ナビの先頭 3 本の名前をそのまま出す（承認待ち・高本のAI）。作っていない項目は目に見える「準備中」を出す。探す欄は onSearch が無くても出る（押しても何も起きない）\n4. flow.json の R1 の主ナビ：チケット・承認待ち・（名前）のAI・ナレッジ・取引先、下にワークスペースの管理。作った画面（lib/built-routes.ts）は /tickets・/approvals・/ai/chat。ナレッジ（/knowledge）・取引先（/clients）・ワークスペースの管理（/members）は作っていない\n5. 前の口 /api/auth-ext/me は member_id・tenant_id・display_name・role_id・scope_id を返す。会社名（ワークスペース名）は返さない\n6. グループの件数を返す口は無い（一覧の口 listTickets は 501・K-92）。知らせの数の口も無い\n\n前の外枠を使う所（新しい層の 3 画面が通る ticket-shell.tsx のほかは、このチケットでは替えない）：\n\n```search\ngit grep -lE '@/components/shell\"|@/lib/nav\\.legacy\"' -- 'apps/web/app' 'apps/web/components' 'apps/web/features' 'apps/web/lib'\n14\n```\n\n新しい層の画面で TicketShell を使う所：\n\n```search\ngit grep -l 'TicketShell' -- 'apps/web/features'\n4\n```\n\n### 前からの試験を替えた所（書く段・2026-11-16）\n\nこのチケットを実装すると落ちる前からの試験を、書く段で新しい外枠の期待に替えた（実装の役は試験を変えない）。どれも、見ていた物を新しい外枠の同じ物に置き換えただけで、確かめる数は減らしていない。\n\n| 試験の行 | 前の期待 | 新しい期待 | 替えた訳 |\n|---|---|---|---|\n| K60-UI-031（create-ticket.spec.ts と 07_qa/test-specs/k/create-ticket.md） | 前の外枠の主ナビ（complementary「主ナビ」・data-role R4）と nav.tabbar の下タブ・h1 は 1 つ | 新しい外枠の左のメニュー（navigation「メニュー」）に R4 の主ナビ（クライアントの場所が 1 つ・承認待ちは無い）・下のタブ（navigation「下のタブ」）・h1 は 1 つ | D-143.1 で外枠を替えた。役 R4 として読んだことは、data-role の印の代わりに R4 の主ナビの項目で確かめる |\n| K63-UI-001・K63-UI-002（menuCount・approve-complete.harness.ts） | 1440 で前の外枠の「仕事」を開き、承認待ちのリンクの名前に数 | 1440 の左のメニューの承認待ちのリンクの数の印（.k-nav-badge）が n | 新しい外枠に「仕事」のまとまりは無く、承認待ちは主ナビの 1 本（D-128.9） |\n| K63-UI-011（approve-complete-queue.spec.ts） | 「仕事」を開き、承認待ちのリンクに 0 が無い | 左のメニューの承認待ちが見え、数の印が無く、0 の字も無い | 同上 |\n| K60-UI-001（create-ticket.spec.ts と create-ticket.md） | 帯の「＋ チケットを作る」を押すと作る面 | 左のメニューの「チケットを作る」を押すと作る面（?new=1・再読み込みでも開いたまま） | 作る入口は外枠の左のメニュー（キャンバス Main）。帯の主ボタンを消す |\n| K60-UI-003 | 空の「自分で書く」で作る面 | 空の箱の「＋ チケットを作る」で作る面 | キャンバス OnHome の主ボタンの名前 |\n| K60-UI-018 | 閲覧のみの人に「＋ チケットを作る」も「自分で書く」も出ない・空は「まだチケットがありません」 | 空は「まだチケットはありません」・本文にも左のメニューにも作るボタンが出ない | キャンバスの文。作る入口が左のメニューにもあるので、そこも出ないことを見る（期待を広げた） |\n| m2-bridge-ticket.spec.ts の作る入口 2 か所・staging の steps.ts の作る入口 | 帯の「＋ チケットを作る」 | 左のメニューの「チケットを作る」 | 同上 |\n| KN105-003（k-shell.spec.ts） | 作っていない項目に「準備中」の字 | 作っていない項目は押せない（aria-disabled）・title に「準備中」・左のメニューに目に見える「準備中」の字が無い | D-144.1 |\n| KN105-005・KN105-007（k-shell.spec.ts） | 帯の題「自分に関わるもの」が h1 | 帯の題（.k-bar-title）が「自分に関わるもの」で、帯の中に h1 が無い | 1 画面の h1 は本文の 1 つ（帯の題を h1 から外す） |\n| K216-VF-015（k216_fidelity_config_test.py） | 組 shell-tabs の正の絵が Main・一覧の画面の 3 組の持ち主が K-223 | 正の絵が MobileList・一覧の画面の 3 組の持ち主が K-251（tickets-first・tickets-main）と K-252（tickets-list） | Main には 375 の下のタブが無く、組のセレクタが当たらない。一覧の画面の親 K-223 を 2 本の子に分け、組の持ち主を付け替えた（04_design/fidelity.json と K-223・K-251・K-252 の md も carry で一緒に運ぶ。同じ試験のファイルを 2 本で分け持たない） |\n\nPM の決め（2026-11-16）「同じ試験のファイルを 2 本で分け持たない」により、作る入口の行（K60-UI-001・003・018 と m2-bridge-ticket・staging の作る入口）は、create-ticket.spec.ts と create-ticket.md を持つこのチケットに寄せた（一覧の画面のチケットは触らない）。そのため、このチケットの実装に「帯の作るボタンを消す・空の箱の文と主ボタンの名前・左のメニューの作るボタンは書ける人だけ」を入れた（下の実施事項）。\n\n結果の欄：K60-UI-031・001・003・018 は前の期待の PASS（CI 305e80b）だったので、期待を替えた行は「BLOCKED（実装待ち：K-138 の外枠の載せ替え）」にし、前の PASS を備考に残した（手で PASS を書かない。次の結果は CI の記録から書く）。K63-UI-001・002・011 は前から BLOCKED のまま。\n\n前の外枠を見る所が試験に残っていない（このチケットの試験と、前の外枠のまま残る画面の試験 shell-ops.spec.ts を除く）：\n\n```search\ngit grep -nE 'name: /\\^仕事/|\"主ナビ\"|nav\\.tabbar|toContainText\\(\"準備中\"\\)|level: 1, name: \"自分に関わるもの\"' -- apps/web/tests ':!apps/web/tests/k/k138-shell.spec.ts' ':!apps/web/tests/shell-ops.spec.ts'\n0\n```\n\n承認待ちの数を新しい外枠で見る道具 menuCount を呼ぶ所：\n\n```search\ngit grep -n 'menuCount(' -- apps/web/tests/features\n2\n```\n\n仕様の行に前の外枠（「仕事」・AppShell）の言葉が残っていない：\n\n```search\ngit grep -nE '「仕事」|AppShell' -- 07_qa/test-specs/k\n0\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 外枠の包み `features/F4/create-ticket/ticket-shell.tsx`（実装の役） | `TicketShell({ screen, crumbs, children, counts? })` を components/k の `Shell` に載せ替える。役は useMyRoles（owner・admin→R1、staff→R3、viewer→R4）・名前は /api/auth-ext/me の display_name（頭の 1 字が札）・グループは listScopes（名前・札は名前の頭の 2 字・行き先 `/tickets?scope=<id>`・件数は出さない）・承認待ちの数は listApprovalQueue（limit=1）の meta.counts.total（承認待ちの画面は counts で渡した数を使い、二重に読まない）・PC は listMyDevices の state が live の物が 1 つでも在れば「PC つながっている」。見た目（theme）は cookie k-theme を lib/theme の parseTheme で読む。onCreate は /tickets?new=1 へ・onSignOut は lib/auth の signOut の後 /login へ。役が分かるまで（読み中・401）は役の項目を出さない。本文は `<div data-ticket-shell>` で包む |\n| 3 画面（実装の役） | tickets-page.tsx は screen「tickets」・crumbs [チケット]、ticket-detail.tsx は screen「tickets」・crumbs [チケット（/tickets）, 番号]、queue.tsx は screen「approvals」・crumbs [承認待ち]・counts を渡す |\n| 外枠 `components/k/shell.tsx`・`shell.css`（実装の役） | 帯の題を h1 から `b.k-bar-title` に替える（見出しは本文の h1 だけ）。作っていない項目は `span.k-nav-item[aria-disabled=\"true\"]` で title に「（準備中）」を入れ、目に見える「準備中」の字は出さない。探す欄は onSearch が無ければグレーで押せない形で出す（`form[role=\"search\"]` は在り、input は disabled と aria-disabled・⌘K も効かない・D-145.9）。知らせの鈴は onNotices が無ければ aria-disabled でグレー（数は notices を渡したときだけ・本当の値が無いあいだは空）。作っていない項目・探す欄・鈴のグレーは正本の「使えない状態」の部品の不透明度（項目と鈴は button-disabled・探す欄は input-disabled）。自分のメニューの札の後ろに「▾」。下のタブの名前は NavItem の `tab`（無ければ label）。`.k-panel-toggle` の決まりを shell.css に足す |\n| 作る入口（実装の役） | tickets-page.tsx の帯の「＋ チケットを作る」を消す（作る入口は左のメニュー）。空の箱の見出しを「まだチケットはありません」、主ボタンを「＋ チケットを作る」（primary）にする（キャンバス OnHome・中身の見た目は一覧の画面のチケット）。外枠の onCreate は書けるグループが在る人にだけ渡す（閲覧のみの人には左のメニューと下のタブの作るボタンが出ない） |\n| 使えない状態の部品（実装の役） | 正本 DESIGN-kaname.md の components に在る使えない状態の部品をそのまま使い、正本には足さない（DESIGN の直しのチケットが入れた）：左のメニューの作っていない項目と知らせの鈴は `button-disabled`、上の探す欄は `input-disabled`（どれも opacity 0.55）。CSS はトークン `--k-c-button-disabled-opacity`・`--k-c-input-disabled-opacity` を読む（k.css の .k-btn と同じ書き方。生の 0.55 を書かない） |\n| 並べ方 `components/k/nav-model.ts`（実装の役） | NavItem に `tab?: string`。flow の項目の `tab` を写す |\n| flow `05_flow/phase1.py`・`scripts/ci/gen_routes.mjs`（実装の役） | 主ナビの項目に短い名前 `tab` を足す（tickets「チケット」・approvals「承認」・ai「AI」）。gen_routes.mjs が lib/nav.ts の sections に `tab` を出す（flow.json と lib/nav.ts は生成物で作り直す） |\n| CI の範囲（実装の役） | scripts/ci/ci_scope.json の reads_ok に `apps/web/tests/k/k138-shell.spec.ts`（04_design/fidelity.json と apps/web/features の .ts・.tsx を読む・実ブラウザの試験は web の組が流す）を足す |\n| 台帳（実装の役） | scripts/ci/class_ledger.json から k-panel-toggle の行を消す |\n| 突き合わせ（実装の役） | 04_design/fidelity.json の shell-nav を enrolled: true にし、左のメニューの項目の canvas を `.kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))`（グループの行を除く）・app を `.k-nav > .k-nav-item:not(:has(.k-group-mark))`、上の帯（role bar）を canvas `.kn-bar a[aria-label=\"自分のメニュー\"]`・app `.k-bar .k-me` にする。shell-tabs を enrolled: true・canvas MobileList・canvas の下のタブを `nav[aria-label=\"下のタブ\"] > a`・app を `.k-tabs > :is(a, button, span)` にする（PM の決め）。`apps/web/tests/_lib/fidelity-states.ts` に鍵 `shell-nav`（/tickets・役 owner・名前 高本・承認待ち 2・グループ 営業・受託開発・経理・PC live）と `shell-tabs`（/tickets・承認待ち 9）を足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 作っていない項目を出さない | キャンバスと項目の並びが変わり、突き合わせ（字の一覧）がナレッジ・取引先を作るまで緑にならない。押せない形で同じ並びに出し、行き止まりにはしない（D-144.1） |\n| 前の外枠の lib/nav.legacy を flow.json の主ナビに直す | 前の外枠は前の画面（D-128.78 で外す側）が使う。新しい画面は components/k だけを使う（D-128.78） |\n| 下のタブの短い名前を nav-model に書く | 並べ方の正は flow.json（screen-derivation §6）。名前を 2 か所に持たない |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k138-shell.spec.ts`（実 Chrome・本番の形で組み立てた画面。口は網の手前（page.route）で差し替え、本人の Bridge 127.0.0.1:38617 にも届かせない）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K138-SH-001 | 対象の状態 | 役 owner（R1）で /tickets・幅 1440 | 左のメニューの項目（グループを除く）の名前が lib/nav.ts の R1 の主ナビと同じ並び（チケット・承認待ち・高本のAI・ナレッジ・取引先・ワークスペースの管理） |\n| K138-SH-002 | 利用者の状態 | 役 staff（R3） | 項目が lib/nav.ts の R3 と同じ（取引先が無い） |\n| K138-SH-003 | 入口 | /tickets・/tickets/:id・/approvals | どれも新しい外枠（.k-shell）で、前の外枠（主ナビの complementary・nav.tabbar）が 0 |\n| K138-SH-004 | 守り | apps/web/features の .ts・.tsx | `@/components/shell` と `@/lib/nav.legacy` を読むファイルが 0 |\n| K138-SH-005 | 対象の状態 | 今いる項目 | /tickets と /tickets/:id はチケットに aria-current=\"page\"、/approvals は承認待ち。ほかの項目には付かない |\n| K138-SH-006 | 対象の状態 | 作っていない項目（ナレッジ・取引先・ワークスペースの管理） | リンクでなく aria-disabled=\"true\"・title に「準備中」・不透明度は使えない状態の値（0.55）・押しても URL が変わらない。左のメニューに目に見える「準備中」の字が無い |\n| K138-SH-007 | 入口 | 左のメニューのチケット・承認待ちを押す | /approvals からチケットを押すと /tickets、/tickets から承認待ちを押すと /approvals |\n| K138-SH-008 | 対象の状態 | 承認待ちの口の数 2 | /tickets でも /approvals でも、承認待ちの項目に「2」・aria-label「2 件」 |\n| K138-SH-009 | 対象の状態 | グループの口（営業・経理） | 「グループ」の見出しの下に 営業・経理 の 2 行・行き先 /tickets?scope=<id>・件数の字は無い |\n| K138-SH-010 | 対象の状態 | PC の口 live／asleep／0 件 | live は「PC つながっている」、asleep と 0 件は「PC をつないでいない」 |\n| K138-SH-011 | 対象の状態 | 上の帯のいまの場所 | /tickets は「チケット」・/tickets/:id は「チケット」（/tickets へのリンク）と番号 EG-133・/approvals は「承認待ち」。帯の中に h1 が無く、どの画面も h1 は 1 つ |\n| K138-SH-012 | 対象の状態 | 上の帯の探す・知らせ（グレーで出す・D-145.9） | 探す欄（role search）は在り、入力欄は disabled・aria-disabled で打っても字が入らない・⌘K でも入らない・不透明度 0.55。知らせの鈴は aria-disabled=\"true\"・押しても何も開かない・数の字が無い・不透明度 0.55 |\n| K138-SH-013 | 操作の揺れ | 自分のメニューを開いてログアウト | メニューに名前「高本」。ログアウトを押すと /api/auth/sign-out を呼び、/login へ移る |\n| K138-SH-014 | 入口 | 幅 375 の下のタブ | 左のメニューは見えない。下のタブは チケット・承認（2）・チケットを作る（＋）・AI・メニュー の順。＋を押すと /tickets?new=1 |\n| K138-SH-015 | 操作の揺れ | 幅 375 でメニューを押す・もう一度押す | 全部のメニュー（メニュー（全部））が開き、項目が左のメニューと同じ。もう一度押すと閉じる |\n| K138-SH-016 | 入口 | 外枠を持つ 4 画面 × 幅 320・375・768・1024・1440 | どれも横溢れ 0・本文の h1 の左の端が画面の中（0 以上・左へのはみ出しは scrollWidth − clientWidth に出ないので getBoundingClientRect で見る） |\n| K138-SH-017 | 入口 | 幅 375・768・1440 の外枠の中の押せるもの | どれも 24px 以上（読み飛ばしのリンクを除く） |\n| K138-SH-018 | 守り | 左のメニュー・下のタブ・全部のメニュー・自分のメニューの行き先 | href が全部 lib/built-routes.ts の作った画面 |\n| K138-SH-019 | 対象の状態 | 幅 375 で本文を一番下まで送る（/tickets/:id・/approvals） | 本文の最後の要素の下の端が、下のタブ（固定の箱）の上の端より上（被らない） |\n| K138-SH-020 | 入口 | 幅 768 と 1024 | 768 は左のメニューが 56px のレール（項目の名前は title で読める）、1024 は 216px |\n| K138-SH-021 | 利用者の状態 | 役の口が 401（ログインが切れた） | 左のメニューに役の項目のリンクが 0（前の役の項目を出さない）・本文にログインへの道 |\n| K138-SH-022 | 利用者の状態 | 鍵が無い（ログインしていない） | /tickets を開くと /login?next=%2Ftickets に移る |\n| K138-SH-023 | 守り | 突き合わせの設定 | shell-nav と shell-tabs が enrolled: true・持ち主 K-138・shell-tabs の絵が MobileList（前からの K216-VF-015 も MobileList で確かめる）・画面を整える道具に 2 つの鍵が在る |\n| K138-SH-025 | 守り | 使えない状態の部品 | 正本の components に button-disabled・input-disabled・tab-disabled（どれも opacity 0.55）が在る・トークン --k-c-button-disabled-opacity と --k-c-input-disabled-opacity が 0.55・作っていない項目の不透明度が前の値・探す欄の入力の不透明度が後の値 |\n| K138-SH-024 | 対象の状態 | shell-nav（幅 1440）と shell-tabs（幅 375）をキャンバスと突き合わせる | 組の値と読み込んだ書体が全部同じ（違う数 0） |\n\n### テストの型の受け（分類 UI）\n\n- 押す操作：左のメニュー（007）・自分のメニューとログアウト（013）・下のタブの＋（014）・全部のメニュー（015）。押した結果（移った先・呼んだ口・開いた物）まで見る\n- 幅：320・375・768・1024・1440 を数で測る（016）。共通の外枠なので外枠を持つ全画面で測る（G-05）\n- 行き先：href の集合が作った画面の集合に入る（018・G-04）\n- 失敗：口の 401（021）\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 探す欄はグレーで、打っても字が入らない（012） |\n| 対象の状態 | 該当 | 項目・今いる項目・数・グループ・PC・帯（001・005・006・008〜012・019・024） |\n| 時間の流れ | 要らない | 外枠の口は 1 画面で 1 回読むだけで、時間で替わる物を出さない |\n| 入口 | 該当 | 3 画面（003）・押して移る（007）・幅（014・016・017・020） |\n| 利用者の状態 | 該当 | 役 R1・R3（001・002）・ログインが切れた（021）・ログインしていない（022） |\n| 失敗 | 該当 | 役の口の 401（021）。グループ・数・PC の口が失敗したときは出さないだけで本文は出る（008〜010 の口を 500 にしても外枠の項目は出る：021 と同じ組み立て） |\n| 操作の揺れ | 該当 | 全部のメニューを開いて閉じる（015）・ログアウト（013） |\n| 守り | 該当 | 前の外枠を読まない（004）・行き先が作った画面（018）・突き合わせの設定（023） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（024）。本人の Bridge に届かせない（試験の頭） |\n| G-12 切り替わりの瞬間 | 該当 | 役が分かるまで役の項目を出さない（021） |\n| G-13 機能の組み合わせ | 該当 | 承認待ちの画面の数と外枠の数（008）・作る面と外枠（016） |\n| G-14 口座状態の波及 | 該当 | ログインが切れた後に前の役の項目を出さない（021） |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 外枠の口は 1 画面で 1 回ずつ（前提と制約）。PC を読み続けない |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k138-shell.spec.ts`（切る段が書いた）\n- ticket-shell.tsx・3 画面・shell.tsx・shell.css・nav-model.ts・phase1.py と gen_routes.mjs（作り直した flow.json・lib/nav.ts）・台帳・突き合わせの設定と画面を整える道具（実装の役）",
+    "決定ログ": "- D-143.1：新しい外枠に載せ替える（D-128.151 の外枠の部分を改めた）。D-143.5：正のモックを書き、突き合わせてから完了\n- D-128.9：主ナビは役割ごとのまとまり。D-128.78：新しい画面は components/k だけ。D-128.147：途中の見つけものはチケットに。D-127.8：チケットは PC をつながなくても使える\n- 決める人の答え（answer=050da6af83e4・ac0171f505bd。どれも切る段のおすすめどおり）：D-144.1 作っていない項目は押せない形で出し「準備中」の字を出さない／D-144.2 会社の名前は頭文字だけ／D-144.3 グループの数と知らせの数は形だけ出し数は出さない／D-144.4 検索の箱は隠す（D-145.9 で置き換え：グレーで出す）／D-144.5 承認待ちの数はどの画面の外枠にも出す／D-144.6 古い画面は古い外枠のまま\n- D-145.9（answer=78cb822fc1f1）：キャンバスに在る物は機能がまだでも出し、使えない物はグレーで押せない形（検索の箱も）\n- PM の決め（2026-11-16）：外枠の突き合わせで的を絞った 2 つ（左のメニューの項目からグループの行を除く・上の帯は自分のメニューのボタンだけ）はそれでよい。的を戻すチケットを申し送りに名指しで書く／下のタブの短い名前を flow.json の作り手に置くのはそれでよい／組 shell-tabs の正の絵を MobileList に直し、前の K216-VF-015 もこのチケットの書く段で替える\n- 切る段が決めたこと：下のタブの短い名前は flow.json に持つ（並べ方の正を 1 か所に）／帯の題は h1 にしない（1 画面 1 つの h1）／外枠の口は 1 画面で 1 回／グループの札は名前の頭の 2 字",
+    "リスクと懸念": "- 前からの試験 8 行（上の「前からの試験を替えた所」）は書く段で新しい外枠の期待に替えたので、このチケットを実装するまで赤（このチケットの試験として一緒に運び、CI で一緒に流す）\n- 外枠が口を 3 つ（グループ・承認待ちの数・PC）読むので、1 画面の口の数が増える。速さを測るのは K-237",
+    "申し送り": "- K-92：グループごとの件数を返す口ができたら、外枠のグループの行に件数を出し、突き合わせの組 shell-nav の左のメニューの項目からグループの行を除いた的（canvas `.kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))`・app `.k-nav > .k-nav-item:not(:has(.k-group-mark))`）はそのままにして、グループの行（件数つき）を比べる値を名前の違う値として足す（入れた組の値のセレクタは替えられない・K-216。値は足すだけ）\n- K-72：知らせの画面と数の口ができたら、外枠の鈴を押せる形にして数を出し、組 shell-nav に知らせの鈴（数つき）を比べる値を名前の違う値として足す（上の帯の値はいま自分のメニューのボタンだけを見ている。セレクタは替えられないので足す。いまの場所の 2 つめ「自分に関わるもの」は K-223 が持つ）\n- K-220：PC をつなぐ（/setup/bridge）を同じ外枠に入れる（自分の設定の第 2 ナビ）\n- K-70：会社名を返す口（getMe）ができたら、外枠のワークスペース名を出す\n- K-92・K-223：グループの件数・一覧の見え方のタブ（いまの場所の 2 つめ「自分に関わるもの」）"
    },
    "file": "11_tickets/K-138.md"
   },
@@ -10270,66 +10323,109 @@
   },
   {
    "id": "K-223",
-   "title": "チケットの一覧の見出しの帯・タブ・空の状態・はじめにやること・帯を先に描く（一覧の裏側 K-92 の後）",
-   "kind": "課題",
+   "title": "チケットの一覧の画面をキャンバスに合わせる（K-251・K-252 に分けた。実装を持たない）",
+   "kind": "タスク",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "画面",
-   "assignee": "作る",
+   "assignee": "未定",
    "due": "",
-   "estimate_hours": "2",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
    "decisions": [
     "D-143.6",
     "D-143.3",
-    "D-142.2"
+    "D-143.5",
+    "D-142.2",
+    "D-145.1",
+    "D-145.2",
+    "D-145.3",
+    "D-145.4",
+    "D-145.9",
+    "D-145.10"
    ],
-   "split": "これから",
+   "split": "",
+   "choke_points": [],
+   "choke_none": "実装を持たない（中身は K-251・K-252）",
    "depends_on": [
-    "K-92",
-    "K-138",
-    "K-219"
+    "K-251",
+    "K-252"
    ],
-   "screens": [
-    "tickets"
-   ],
-   "canvas": [
-    "tickets-first",
-    "tickets-main",
-    "tickets-list"
-   ],
+   "affects": [],
+   "canvas": [],
+   "canvas_none": "実装を持たない（画面の組は K-251・K-252 が持つ）",
    "sections": {
-    "目的": "/tickets の見出しが 13px・400 で、帯もタブも無く、空の状態は左寄せの素の並び。一覧の口が 501 で、作った後も「まだチケットがありません」と出る（T7・調べの H9）。一覧の裏側（K-92）を前倒しで先に作り（D-143.3）、その後でこの画面を直す。OnHome（はじめて入ったとき）はどの画面にも載っていないので K-219 で tickets に足す",
-    "完了の条件": "- [ ] 下の表のずれ 11 件が直り、どれも実ブラウザで値を数で測った（1440・375）\n- [ ] 頭の canvas の組（04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が組の幅で緑（持ち主が取り込み済みなのに入っていない組は G69 が赤にする）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 正のモックは頭の canvas（突き合わせの組の id・D-143.5・K-215）。組の絵と状態と要素は 04_design/fidelity.json（K-216）\n- 見込みは実測なし・仮\n- 先に要る最初の波のチケット：K-215・K-216・K-217・K-238。最初の波が本線に入るまで本線に無いチケットは depends_on に書けない（親が先に本線へ入るため）ので、切り直すときに depends_on に足す\n- 読めなかったときの表示は K-92 で決める（D-142.2）",
-    "持つずれ（調べの番号・2026-11-15）": "| 番号 | 何が | キャンバスでは | 今 | 重さ |\n|---|---|---|---|---|\n| T1 | 見出し「チケット」 | 18px・700。白い帯の中・「すべてのグループ」 | 13px・400（.k-root の下に h1 の決まりが無い） | 重 |\n| T2 | 見出しの帯 | 白地の帯（padding 12px 24px）と、タブ（自分に関わるもの・概要・一覧・カレンダー・ガント） | 帯もタブも無い。k-page-head・k-row が未定義で、見出しとボタンが縦に詰まる | 重 |\n| T3 | 本文の箱 | 地の上にカード | k-page が未定義。.k-root の地の色（--k-page）が 248〜1408px の薄い四角に見えるだけ | 中 |\n| T4 | 空の状態 | 破線の箱の中央寄せ・48px の＋の札・見出し・説明・主「＋ チケットを作る」・従「分身と話して作る」・おすすめ 3 つ | 左寄せの素の並び（.k-state は align-items:flex-start・max-width 560）。ボタンは secondary（淡い緑） | 重 |\n| T5 | 主ボタンの重複 | 主は 1 つ | 見出し横の primary「＋ チケットを作る」と、空の secondary「自分で書く」が同じ操作 | 中 |\n| T6 | はじめにやること | 右に パスキー・PC をつなぐ・ログイン情報を預ける と進み具合 | 無い。PC をつなぐへの道はサイドバーの「設定と記録」の中だけ | 重 |\n| T7 | 在るのに空と出る | 一覧の表 | 一覧の口が 501 で、`list.ok ? data : []`。作った後も「まだチケットがありません」（4 つの幅で実測）。D-128.152 で既知（持ち主 K-92）だが、画面には何も知らせない | 重 |\n| T8 | 在るときの並び | 表（List） | ul.k-list・a.k-link が未定義（今は 501 なので出ない） | 中 |\n| T9 | 読み込み | 帯とタブを先に描き、3 秒より長いときだけ文言（OnLoading） | 帯ごと出さず、3 秒後に「読み込んでいます…」だけ | 中 |\n| T10 | ようこその見出し | 「ようこそ、○○さん」と会社名 | 無い | 軽 |\n| T11 | 1900 の幅 | 本文の欄と右の欄（340px） | 1 列のまま伸びる | 重 |",
-    "決定ログ": "- 従う決定：D-143.6・D-143.3・D-142.2",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "/tickets の見出しが 13px・400 で帯もタブも無く、空の状態は左寄せの素の並び、一覧の口が 501 のあいだは作った後も「まだチケットがありません」と出ていた（調べの T1〜T11・H9）。一覧の口（K-92）とはじめにやることの口（K-250）の上で、一覧の画面をキャンバス（OnHome・Main・List）に合わせる。\n\nD-145.9（キャンバスに在る物は出し、使えない物はグレーで押せない）で部品が増え、1 本の行が 30 を超えるので、PM の決めで 2 本に分けた（番号は PM が渡した）。チケットの親子は 3 段まで（K-103 → K-213 → このチケット）なので、2 本はこのチケットの子にできず、K-213 の子にした。このチケットは実装も試験も持たず、2 本が取り込まれたら完了にする（調べの T1〜T11 の持ち主の表は K-213 のまま・中身は 2 本が持つ）。",
+    "完了の条件": "- [ ] K-251・K-252 が全部取り込まれた（このチケットの依存）\n- [ ] 一覧の画面の 3 組（tickets-first・tickets-main は K-251、tickets-list は K-252 が持ち主）が enrolled で突き合わせ（G70）が緑",
+    "分けた 2 本": "| チケット | 持つ物 | 正のモック（組） |\n|---|---|---|\n| K-251 | はじめて（0 件）と自分に関わるもの：帯・見え方のタブ・7 列の表・もっと見る・空の箱（グレーの従ボタンと提案）・はじめにやること（K-250）と右の列・Main の数の札と絞りと右の列（グレー・数は空）・読み込みと失敗 | tickets-first（OnHome）・tickets-main（Main） |\n| K-252 | 一覧のタブとグループの一覧：検索条件の箱（言葉は使える・ほかはグレー）・表の上の道具（グレー）・行を押して横に開く詳細と列の数 | tickets-list（List） |",
+    "前提と制約": "- 突き合わせの組の持ち主は、切る段が 04_design/fidelity.json で K-223 から 2 本に付け替えた（K-216 の試験の持ち主の表も一緒に替えた・その試験の書き替えは外枠のチケット K-138 が運ぶ）\n- 作る入口（帯の作るボタンを消す・空の箱の主ボタンの名前）と、それを見る前からの試験の書き替えは K-138 が持つ（同じ試験のファイルを 2 本で分け持たない）",
+    "決定ログ": "- D-143.6：一覧の裏側を前倒し（K-92）。D-142.2：読めなかったときは「読み込めませんでした」。D-143.5：正のモックを書き、突き合わせてから完了\n- D-145.1〜.4・D-145.9・D-145.10：タブ・0 件の画面のボタンと提案・はじめにやることの口・あいさつ・キャンバスに在る物は出してグレー・はじめにやることは 0 件の画面だけ\n- PM の決め（2026-11-16）：2 本に分ける（K-251・K-252）。分けたらこのチケットは実装を持たない",
+    "実施事項": "- 無い（実装は K-251・K-252。このチケットは 2 本が取り込まれたら PM が完了にする）",
+    "テスト仕様と確認の結果": "- 無い（試験は K-251・K-252 が持つ）",
+    "申し送り": "- 2 本の申し送りは各チケットに"
    },
    "file": "11_tickets/K-223.md"
   },
   {
    "id": "K-224",
-   "title": "チケットを作る画面の器（外枠の右のパネルの流用をやめる・上の箱・選択欄の幅・振り分けの箱・右の「作る前に」・足元の帯・主 1 つ・読み込み）",
+   "title": "チケットを作る画面の器をキャンバス（Create）に合わせる（外枠の右のパネルの流用をやめる・白い箱 3 つと右の「作る前に」・選択欄の幅・振り分けの格子・足元の帯・主 1 つ・読み込み・知らせる人の絞り込み・親の候補を q で引く）",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "画面",
-   "assignee": "作る",
-   "due": "",
-   "estimate_hours": "2.5",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "4",
+   "estimate_basis": "create-ticket.tsx の組み直し（箱・振り分け・足元の帯）・帯の作り方と保存の状態・知らせる人の絞り込み欄・親の候補の検索欄・CSS 1 本・台帳 2 行・突き合わせの組。K-223（4）と同じと見た。実測なし・仮",
    "decisions": [
     "D-143.2",
-    "D-128.23"
+    "D-143.5",
+    "D-128.23",
+    "D-144.1",
+    "D-144.7",
+    "D-144.8",
+    "D-145.5",
+    "D-145.6",
+    "D-145.7",
+    "D-145.9",
+    "D-128.138",
+    "D-128.152",
+    "D-128.157"
    ],
-   "split": "これから",
+   "split": "",
+   "prior_impl": "apps/web/features/F4/create-ticket/create-ticket.tsx（K-60・section.k-panel の中に欄を 1 列に並べる）",
+   "choke_points": [],
+   "choke_none": "画面の器だけ。作る口・下書きの口・一覧の口（親の候補）は前からある口を呼ぶだけで、口と DB に触らない",
    "depends_on": [
+    "K-60",
+    "K-92",
+    "K-138",
+    "K-217",
     "K-218",
-    "K-138"
+    "K-251",
+    "K-216",
+    "K-238"
    ],
+   "tests": [
+    "apps/web/tests/k/k224-create-frame.spec.ts",
+    "apps/web/tests/k/create-mock.ts"
+   ],
+   "changes": [
+    "apps/web/features/F4/create-ticket/create-ticket.tsx",
+    "apps/web/features/F4/create-ticket/create-head.tsx",
+    "apps/web/features/F4/create-ticket/notify-picker.tsx",
+    "apps/web/features/F4/create-ticket/parent-picker.tsx",
+    "apps/web/features/F4/create-ticket/create-ticket.css",
+    "apps/web/features/F4/create-ticket/tickets-page.tsx",
+    "scripts/ci/class_ledger.json",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scope.json"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
    "screens": [
     "tickets"
    ],
@@ -10337,34 +10433,71 @@
     "tickets-new"
    ],
    "sections": {
-    "目的": "作る画面が外枠の右のパネルの決まり（.k-panel）を本文の箱に流用し、1024 以上は内側スクロールの箱、1023 以下は画面に被さる引き出しになる。入力欄は全部本文の幅いっぱいに伸びる（1900 で 1619px）。キャンバス（Create）は白いカード 3 つ＋右の aside 340px・選択は 160px の 2 つ並び",
-    "完了の条件": "- [ ] 下の表のずれ 12 件が直り、どれも実ブラウザで値を数で測った（1440・375）\n- [ ] 頭の canvas の組（04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が組の幅で緑（持ち主が取り込み済みなのに入っていない組は G69 が赤にする）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 正のモックは頭の canvas（突き合わせの組の id・D-143.5・K-215）。組の絵と状態と要素は 04_design/fidelity.json（K-216）\n- 見込みは実測なし・仮\n- 先に要る最初の波のチケット：K-215・K-216・K-217・K-238。最初の波が本線に入るまで本線に無いチケットは depends_on に書けない（親が先に本線へ入るため）ので、切り直すときに depends_on に足す",
-    "持つずれ（調べの番号・2026-11-15）": "| 番号 | 何が | キャンバスでは | 今 | 重さ |\n|---|---|---|---|---|\n| C1 | 箱 | 白いカード 3 つ（上：グループ・種別・題名／中：区画の文書／振り分け）＋右の aside 340px | section.k-panel。シェルの右パネルの決まり（sticky・高さ 100dvh−48・縦スクロール・左の線）が掛かる。1023 以下は fixed の引き出しとして画面に被さる | 重 |\n| C2 | 入力欄の幅 | 選択は 160px の 2 つ並び。題名だけ横長 | 全部 width:100%（.k-input）。幅を決める器が無い | 重 |\n| C3 | 見出し | h1「チケットを作る」18px・700、作り方の切り替え 3 つ、保存の状態 | h2 13px・400。その上に一覧の h1「チケット」と「＋ チケットを作る」が残る | 重 |\n| C5 | 欄と欄の間 | 間 12px の格子。補足は項目名の横か上 | form に gap が無い。補足（k-desc）が欄の下に張り付き、次の項目名が詰まる | 重 |\n| C6 | 振り分け（担当者・期限・開始・優先度） | 「振り分け」の箱に 96px＋1fr の格子 | ほかと同じ 1 列 | 中 |\n| C7 | 作る前に | 右の aside（✓ 題名 …・△ の注意） | form の下の section.k-section（未定義） | 中 |\n| C8 | 足元の帯 | 下に貼り付く帯（説明・下書きのまま閉じる・主「作る」） | div.k-row（未定義）。form の末尾に置かれるだけ | 中 |\n| C9 | 主ボタン | 1 つ（作る） | 上の「＋ チケットを作る」（primary）と「作る」の 2 つ | 中 |\n| C10 | 書きかけの読み込み | 3 秒より長いときだけ文言 | delayMs={0} ですぐ「書きかけを読み込んでいます…」。下書きの口の 12 往復のあいだ出続ける | 中 |\n| C11 | 知らせる人 | 名前で絞り込む欄 | label.k-check（未定義）のチェックの並び | 中 |\n| C12 | AI からの手がかり | 右の「高本のAI から」 | 無い（PC の前は出さない決まりなら妥当・見立て） | 軽 |\n| C13 | 375 の余白 | 左右 24px | 入力欄 374px で端に付く（引き出しの中） | 重 |",
-    "決定ログ": "- 従う決定：D-143.2・D-128.23",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "作る画面が外枠の右のパネルの決まり（.k-panel）を本文の箱に流用し、1024 以上は内側スクロールの箱、1023 以下は画面に被さる引き出しになる。入力欄は全部本文の幅いっぱいに伸びる（1900 で 1619px）。キャンバス（Create）は白い箱 3 つ（グループ・種別・題名／本文の区画／振り分け）と右の aside 340px、選択は 160px の 2 つ並び（調べの C1〜C3・C5〜C13）。\n\nあわせて、作る面の親の候補を一覧の口の先頭 50 件から取るのをやめ、打った字で一覧の口（K-92）を `q` と `view=all` で引く（前の切りで K-92 が持っていた行・D-128.152・D-128.157）。\n\n区画の見た目（文書の見出し・必須の印）は K-225。",
+    "完了の条件": "- [ ] 下の 27 行（K224-UI-001〜027）が緑\n- [ ] 前からの作る画面の試験（create-ticket.spec.ts の K60-UI-*）が替えずに緑（下の「前からの試験」）\n- [ ] 台帳（scripts/ci/class_ledger.json）から作る画面の .k-panel の流用と k-check の行を消し、G67（K-214）が緑\n- [ ] 頭の canvas の組 tickets-new（Create）を enrolled にし、キャンバスとの突き合わせ（K224-UI-023・G70）が組の幅で緑\n- [ ] 幅 320・375・768・1024・1440 の横溢れが 0（K224-UI-019）。押した結果（呼んだ口・移った先）まで実ブラウザで見る\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: UI\n\n- 先に要るチケット：K-60（作る面）・K-92（一覧の口の q）・K-138（外枠）・K-217（帯の部品）・K-218（ボタン 32／入力欄 13px・幅 767 以下は 16px（D-144.7）・項目名・読み込みの値）・K-251（tickets-page.tsx の組み替え）・K-216・K-238（突き合わせ）\n- 区画（本文の箱の中）は K-225。このチケットは本文の箱の外側（箱の並び・幅）まで\n- 値は全部 --k-* のトークン。画面の CSS（create-ticket.css）に生の色・大きさを書かない\n- キャンバスに在る物は、機能がまだでも出し、使えない物はグレーで押せない形（D-145.5〜.7・D-145.9）。グレーは正本の使えない状態の部品（button-disabled・input-disabled・不透明度 0.55・正本に在る）。押せない物は：押しても・Enter でも動かず口を呼ばない・aria-disabled。本当の値が無い字（番号の予定・ひな形の名前など）は空\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "キャンバス Create（04_design/canvas/Create.dc.html の inline の style を読んだ）：\n\n| 何が | 値 |\n|---|---|\n| 帯 | 白・下に 1px #DDE2E9・padding 12px 24px。h1「チケットを作る」18px。作り方の切り替え（自分で書く＝紺の地の押した形・AI と話して作る・過去のチケットから複製）高さ 28・12px。「下書きを自動で保存しました（10:42）」12px・灰 |\n| 本文の並び | flex・gap 16・padding 16px 24px 96px。form は flex 999 1 640px・縦に gap 12。aside は flex 1 1 280px・max-width 340・縦に gap 12 |\n| 上の箱 | 白・1px #DDE2E9・角丸 8・padding 16。グループと種別の select は width 160 で横に並ぶ。題名の input は 15px・500・高さ 40 |\n| 振り分けの箱 | h2「振り分け」14px。2 列の格子（gap 0 24px）。1 行は 96px と 1fr の格子（gap 8）・padding 8px 0・下に線 |\n| 作る前に | aside の白い箱・h2 13px・12px の行。済は ✓ と #166534 |\n| 高本のAI から | aside の 2 つめの箱（AI の手がかり） |\n| ファイルの置き場 | 点線の箱「ファイルをここに置くか、貼り付ける」と「ファイルを選ぶ」 |\n| 知らせる人 | 項目名「作ったことを知らせる人」の text 欄・placeholder「名前で絞り込む（担当者と承認する人には自動で届く）」 |\n| 足元の帯 | position sticky・bottom 0・白・上に 1px #DDE2E9・padding 10px 24px。説明「作るとチケットになり、担当者に知らせが届きます」12px・右に「下書きのまま閉じる」（白地・灰の線・34）と主「作る」（紺・34） |\n\n今の画面（create-ticket.tsx）：section.k-panel の中に h2「チケットを作る」・欄を 1 列・知らせる人は label.k-check のチェックの並び・「作る前に」は form の下の section.k-section・足元は div.k-row に「作る」と ghost の「閉じる」・書きかけの読み込みは delayMs={0}（すぐ文が出る）。親の候補は tickets-page.tsx が一覧の口を `limit 50` で呼んだ答え。\n\n外枠の右のパネルの流用と未定義の k-check（台帳の 2 行の元）：\n\n```search\ngit grep -n 'className=\"k-panel\"\\|className=\"k-check\"' -- apps/web/features\n2\n```\n\n書きかけの読み込みですぐ文を出す所（このチケットは作る画面の 1 か所だけを直す。入口の auth-loading.tsx は入口のチケットが持つ）：\n\n```search\ngit grep -n 'delayMs={0}' -- apps/web/features\n2\n```\n\n### 前からの試験（替えない・PM の決め「同じ試験のファイルを 2 本で分け持たない」）\n\n作る画面の前からの試験（create-ticket.spec.ts・create-ticket.md）は外枠のチケット（K-138）が持つので、このチケットは変えない。替えずに通る作り方にする：\n\n| 試験の行 | 見ている物 | このチケットの作り方 |\n|---|---|---|\n| K60-UI-004 | （button）名前に「閉じる」を含むボタンを押すと作る面が閉じる | 足元の「下書きのまま閉じる」（名前に「閉じる」を含む）。作る面の本文に「閉じる」を含むボタンをほかに置かない |\n| K60-UI-015 | 知らせる人のチェックの並びから 2 人に印 | 絞り込む欄が空のあいだは全員をチェックで出す（打つと合う人だけに絞る・K224-UI-015） |\n| K60-UI-040 | 書きかけの読み込みの文が出るまで待つ | 3 秒より長いときだけ文（D-144.8）。試験は文が出るまで待つ形なので落ちない |\n\nまだ機能の無い部品（D-145.9 の前は「出さない」と書いていた 2 つ＝AI のひとことの箱・ファイルを置く枠）と、キャンバスの振り分けに在って今の画面に無い 6 欄を、出す・グレーで持つ。試験の中で押せない物を確かめる所：\n\n```search\ngit grep -n 'aria-disabled\", \"true\"' -- apps/web/tests/k/k224-create-frame.spec.ts\n3\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 帯 `create-head.tsx`（実装の役） | PageHeader（K-217）に h1「チケットを作る」・`[aria-label=\"作り方\"]`（自分で書く＝`span[aria-current=\"true\"]`・AI と話して作る と 過去のチケットから複製＝`span[aria-disabled=\"true\"]` で title に「（準備中）」）・`span[role=\"status\"][aria-label=\"下書きの保存\"]`（下書きを残した時刻を日本時間で「下書きを自動で保存しました（HH:MM）」。残せなかったときは今の Callout のまま） |\n| 器 `create-ticket.tsx`・`create-ticket.css` | `section.k-panel` をやめ、`section[aria-label=\"チケットを作る\"]` の中に `.k-create-cards`（form・縦に gap 12・白い箱 3 つ：`section[aria-label=\"グループ・種別・題名\"]`・`section[aria-label=\"本文\"]`（中身は K-225）・`section[aria-label=\"振り分け\"]`）と `aside.k-create-aside`（`section[aria-label=\"作る前に\"]`・幅 340 まで）。1023 以下は aside を form の下に。375 は左右 24px |\n| 上の箱 | グループと種別の Select を幅 160 で横に並べる。題名の TextField を高さ 40・15px・500。番号の予定の文は「番号は作ったときに付く」で、予定の番号は本当の値が無いので空 |\n| 振り分け | h2「振り分け」14px。キャンバスの 10 欄の順（担当者・AI に任せる・業務の型・期限・開始日・予定・分類・節目・取引先・優先度）と親のチケット を `.k-create-assign-row`（96px と 1fr の格子）で並べ、768 以上は 2 列、767 以下は 1 列。AI に任せる・業務の型・予定・分類・節目・取引先 はまだ使えないので `[role=\"combobox\"][aria-disabled=\"true\"]` で値は空・グレー。担当者の横に「自分」のボタン（押すと担当者が自分） |\n| 知らせる人 `notify-picker.tsx` | 「作ったことを知らせる人」の TextField（placeholder「名前で絞り込む（担当者と承認する人には自動で届く）」）。欄が空のあいだは全員をチェックで出し、打った字に合う人だけに絞る。選んだ人は札（「〈名前〉 を外す」のボタンつき）で上に残す。作る口に送る notify_member_ids は今のまま |\n| 親のチケット `parent-picker.tsx` | `input[role=\"combobox\"]`（名前「親のチケット」）。打ち終わってから 300ms で一覧の口を `q` と `view=all` で 1 回引き、`role=\"option\"` で番号と題名を出す。depth が 3 の物は aria-disabled（3 段目の下には作れない）。選ぶと parent_ticket_id。tickets-page.tsx の一覧の口の `limit 50` の答えを親の候補に渡すのをやめる |\n| 足元の帯 | `.k-create-foot`（position sticky・bottom 0）に説明と Button outlined「下書きのまま閉じる」（下書きは消さずに閉じる）・Button primary「作る」（submit） |\n| 読み込み | 書きかけの読み込みの Loading の delayMs={0} を外す（3 秒より長いときだけ文・D-144.8）。帯は先に描く |\n| AI のひとこと・ファイル（D-145.6・D-145.7） | aside の 2 つめに `section[aria-label=\"高本のAI から\"]`（見出しだけ・AI の文は 1 字も出さない）。form の振り分けの下に `[aria-label=\"ファイルを置く\"][aria-disabled=\"true\"]`（「ファイルをここに置くか、貼り付ける」と disabled の「ファイルを選ぶ」・落としても受けない・グレー） |\n| 台帳・突き合わせ・CI の範囲 | scripts/ci/class_ledger.json から create-ticket.tsx の k-panel（shell）と k-check（undefined）の行を消す。04_design/fidelity.json の tickets-new を enrolled: true にし、画面の側のセレクタを新しい器に直す（本文の箱 `.k-page`・題名 `input[name=\"title\"]`・主ボタン `.k-create-foot button[type=\"submit\"]`）。`apps/web/tests/_lib/fidelity-states.ts` に鍵 tickets-new（作る面・下書きなし）を足す。scripts/ci/ci_scope.json の reads_ok に `apps/web/tests/k/k224-create-frame.spec.ts`（04_design/fidelity.json と scripts/ci/class_ledger.json を読む）を足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 区画の見た目も同じチケットで直す | 行が 30 を超える。区画は K-225（親の順 8 で並べて進める） |\n| 親を選ぶのをキャンバスの「親チケットを決める」の小窓（EdParent）にする | 小窓の絵の組が段 1 に無い。欄で打って選ぶ形なら作る面だけで閉じる（PM に確かめたいこと） |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k224-create-frame.spec.ts`（実 Chrome・口は網の手前で差し替え・tests/k/create-mock.ts）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K224-UI-001 | 対象の状態 | 幅 1440 | .k-panel が無い・白い箱 3 つ（線 #DDE2E9・角丸 8）・右に作る前に（幅 340 以下） |\n| K224-UI-002 | 入口 | 幅 768・375 | 作る面は fixed でない・作る前には本文の下・横溢れ 0 |\n| K224-UI-003 | 対象の状態 | 帯 | h1「チケットを作る」18px・700・h1 は 1 つ |\n| K224-UI-004 | 対象の状態 | 作り方 | 自分で書く が今いる・ほかの 2 つは押せない（title に準備中） |\n| K224-UI-005 | 時間の流れ | 題名を書いて下書きが残る | 帯に「下書きを自動で保存しました（10:42）」 |\n| K224-UI-006 | 対象の状態 | 上の箱 | グループと種別は幅 160 で横並び・題名は高さ 40・15px・500 |\n| K224-UI-007 | 対象の状態 | 間 | 箱と箱の間 12px・項目名と欄の間 4px |\n| K224-UI-008 | 対象の状態 | 振り分け（1440） | 見出し 14px・2 列・項目名の列 96 |\n| K224-UI-009 | 入口 | 振り分け（375） | 1 列 |\n| K224-UI-010 | 対象の状態 | 作る前に | 見出し 13px・書いた欄は ✓ と緑・まだの欄は緑でない |\n| K224-UI-011 | 対象の状態 | 足元の帯 | sticky で画面の下の端・説明・下書きのまま閉じる（outlined）・作る（primary）の順 |\n| K224-UI-012 | 対象の状態 | 本文の主ボタン | 「作る」1 つ |\n| K224-UI-013 | 操作の揺れ | 書いてから下書きのまま閉じる → 開き直す | /tickets・下書きを消さない・開き直すと題名が残る |\n| K224-UI-014 | 時間の流れ | 書きかけの読み込みが遅い | 帯はすぐ出る・欄は読み終えるまで出ない・文は 2.9 秒で出ず 3 秒を過ぎて出る |\n| K224-UI-015 | 入力 | 知らせる人を「佐」で絞る | 山田は出ず佐藤だけ・選ぶと札・作る口に佐藤の id |\n| K224-UI-016 | 入力 | 親のチケットに「月次」 | 一覧の口を q=月次・view=all で 1 回・3 段目は押せない・選んだ親が作る口に届く |\n| K224-UI-017 | 対象の状態 | 右の「高本のAI から」（D-145.6） | 箱と見出しが在り、AI の文は 1 字も出ない |\n| K224-UI-018 | 入口 | 幅 375 | 箱は左右 24px 内側 |\n| K224-UI-019 | 入口 | 幅 320・375・768・1024・1440 | 横溢れ 0 |\n| K224-UI-020 | 入口 | 幅 375・1440 の本文の押せるもの | 24px 以上 |\n| K224-UI-021 | 守り | 台帳 | 作る画面の k-panel と k-check の行が無い |\n| K224-UI-022 | 守り | 突き合わせの設定 | tickets-new が enrolled・持ち主 K-224・画面の側のセレクタに .k-panel が無い・鍵が在る |\n| K224-UI-023 | 対象の状態 | tickets-new をキャンバスと突き合わせる | 組の値と読み込んだ書体が全部同じ |\n| K224-UI-024 | 守り | ファイルを置く枠（D-145.7） | 在り・aria-disabled・グレー（0.55）・「ファイルを選ぶ」は disabled・ファイルを落としても付かず、下書きの保存も作る口も呼ばれない |\n| K224-UI-025 | 守り | 振り分けのまだ使えない 6 欄（D-145.9） | 在り・aria-disabled・値は空・グレー（0.55）・押しても選ぶ一覧が開かない |\n| K224-UI-026 | 入力 | 担当者の横の「自分」 | 押すと担当者が高本になる |\n| K224-UI-027 | 入口 | 幅 375・320（レビューの見つけもの：左が切れて題の 1 文字目が見えない） | 帯の h1「チケットを作る」の 1 文字目と題名の欄が画面の中に出る（左の端が 0 以上・getBoundingClientRect で見る） |\n\n### テストの型の受け（分類 UI）\n\n- 押した結果まで：013（移った先と下書きの口）・015（作る口に届く id）・016（一覧の口の問い合わせと作る口）\n- 幅：002・009・018・019・020\n- 作る口・下書きの口の振る舞い（必須・期限・401・429 など）は K-60 の試験が持つ（替えない）\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 知らせる人・親の候補・自分（015・016・026） |\n| 対象の状態 | 該当 | 001・003〜008・010〜012・023 |\n| 時間の流れ | 該当 | 保存の状態（005）・読み込みの 3 秒（014） |\n| 入口 | 該当 | 幅（002・009・018〜020・027） |\n| 利用者の状態 | 要らない | ログインしていない・閲覧のみ・切れたは K-60 の試験（K60-UI-016〜018）が持ち、このチケットで変えない |\n| 失敗 | 要らない | 作る口・下書きの口の失敗は K-60 の試験（K60-UI-017・021・022・027・039）が持ち、このチケットで変えない |\n| 操作の揺れ | 該当 | 下書きのまま閉じて開き直す（013） |\n| 守り | 該当 | 021・022・024・025 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（023）・本人の Bridge に届かせない |\n| G-12 切り替わりの瞬間 | 該当 | 読み込みの 3 秒の境目（014） |\n| G-13 機能の組み合わせ | 該当 | 下書き × 閉じる（013）・親の候補 × 一覧の口（016） |\n| G-14 口座状態の波及 | N/A | 人の状態を変えない（K-60 の試験が持つ） |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 親の候補は打ち終わってから 1 回（016） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k224-create-frame.spec.ts`・`apps/web/tests/k/create-mock.ts`（切る段が書いた）\n- 作る画面の器・帯・知らせる人と親の候補の欄・CSS・台帳・突き合わせの組・CI の範囲の 1 行（実装の役）",
+    "決定ログ": "- D-143.2：キャンバスが正。D-143.5：正のモックを書き、突き合わせてから完了。D-128.23：画面の正はキャンバス\n- D-144.1：作っていない物は押せない形で出し「準備中」の字を出さない。D-144.7：入力欄は幅 767 以下だけ 16px（K-218 の値）。D-144.8：読み込みは 3 秒たっても終わらないときだけ文\n- D-128.138：知らせる人を選べる。D-128.152・D-128.157：親の候補は打った字で一覧の口から引く\n- 決める人の答え：D-145.5 作り方の切り替えは出すが押せない／D-145.6 AI のひとことは空の箱を出す／D-145.7 ファイルを置く枠は出すが使えない（answer=fe6f87a03801）。D-145.9 キャンバスに在る物は出し、使えない物はグレーで押せない（answer=78cb822fc1f1）\n- 決める人に聞くこと：無い（出し方が 2 通りに分かれる所は無かった）\n- 切る段が決めたこと：区画の見た目は K-225 に分けた（行の数）／親の候補は小窓でなく欄で打って選ぶ（PM に確かめたいこと）／番号の予定は出さない（番号を先に返す口が無い）／前の切りの K-92 の「親の候補を q で引く」画面の行をこのチケットに移した",
+    "リスクと懸念": "- 作る面の欄の並びが変わるので、K-60 の試験のうち欄の位置や順を見る物があれば落ちる（名前で探す形なので落ちない見込み・前からの試験は替えない）\n- K-251 と同じ tickets-page.tsx を触る。K-251 が先に入る（依存）",
+    "申し送り": "- K-225：本文の箱の中（区画の見出し・必須の印・ひな形の補足）\n- K-59（F4 のこれから）：AI と話して作る・過去のチケットから複製・AI の手がかり\n- 添付のチケット（F4 のこれから）：ファイルを置く枠を使えるようにする\n- AI の手がかりのチケット（F4 のこれから）：「高本のAI から」の箱に文を入れる\n- 振り分けの 6 欄（AI に任せる・業務の型・予定・分類・節目・取引先）を使えるようにするチケット（F4・F9 のこれから）"
    },
    "file": "11_tickets/K-224.md"
   },
   {
    "id": "K-225",
-   "title": "チケットを作る画面の区画（目的・完了の条件…）を文書の見た目にする（見出し 16px・下線・必須の印・ひな形の補足）",
+   "title": "チケットを作る画面の区画を文書の見た目に（本文の箱・区画の見出し 16px と下の線・必須の印・ひな形の補足を見出しの中に）",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "画面",
-   "assignee": "作る",
-   "due": "",
-   "estimate_hours": "1",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "1.5",
+   "estimate_basis": "区画を並べる部品 1 本（h2 と欄を結ぶ）・CSS の 1 区画・突き合わせの組 1 つ。K-217（2.5）の半分強と見た。実測なし・仮",
    "decisions": [
-    "D-143.2"
+    "D-143.2",
+    "D-143.5",
+    "D-128.23",
+    "D-144.1",
+    "D-145.8",
+    "D-145.9"
    ],
-   "split": "これから",
+   "split": "",
+   "prior_impl": "apps/web/features/F4/create-ticket/create-ticket.tsx の区画（K-60・TextArea を縦に並べ、補足は欄の下）",
+   "choke_points": [],
+   "choke_none": "作る面の区画の見た目だけ。作る口・下書きの口は前からある口を呼ぶだけ",
    "depends_on": [
-    "K-224"
+    "K-224",
+    "K-138",
+    "K-217",
+    "K-218",
+    "K-216",
+    "K-238"
    ],
+   "tests": [
+    "apps/web/tests/k/k225-create-sections.spec.ts"
+   ],
+   "changes": [
+    "apps/web/features/F4/create-ticket/create-sections.tsx",
+    "apps/web/features/F4/create-ticket/create-ticket.tsx",
+    "apps/web/features/F4/create-ticket/create-ticket.css",
+    "04_design/DESIGN-kaname.md",
+    "04_design/DESIGN-kaname-preview.html",
+    "04_design/gen_tokens.py",
+    "apps/web/styles/k-tokens.css",
+    "apps/web/components/k/page.css",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scope.json"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
    "screens": [
     "tickets"
    ],
@@ -10372,12 +10505,16 @@
     "tickets-new-sections"
    ],
    "sections": {
-    "目的": "区画がラベル＋textarea の縦の羅列になっている。キャンバスでは見出し付きの文書（h2 16px・下線・必須の印・ひな形の補足）",
-    "完了の条件": "- [ ] 下の表のずれ 1 件が直り、どれも実ブラウザで値を数で測った（1440・375）\n- [ ] 頭の canvas の組（04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が組の幅で緑（持ち主が取り込み済みなのに入っていない組は G69 が赤にする）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 正のモックは頭の canvas（突き合わせの組の id・D-143.5・K-215）。組の絵と状態と要素は 04_design/fidelity.json（K-216）\n- 見込みは実測なし・仮\n- 先に要る最初の波のチケット：K-215・K-216・K-238。最初の波が本線に入るまで本線に無いチケットは depends_on に書けない（親が先に本線へ入るため）ので、切り直すときに depends_on に足す",
-    "持つずれ（調べの番号・2026-11-15）": "| 番号 | 何が | キャンバスでは | 今 | 重さ |\n|---|---|---|---|---|\n| C4 | 区画（目的・完了の条件…） | 見出し付きの文書（h2 16px・下線・「必須」の印・ひな形の補足） | ラベル＋textarea の縦の羅列 | 重 |",
-    "決定ログ": "- 従う決定：D-143.2",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "作る面の区画（目的・完了の条件・実施事項…）が、項目名と textarea の縦の羅列になっている。キャンバス（Create の本文の箱）では、区画は見出しつきの文書（h2 16px・下に線・「必須」の印・ひな形の補足は見出しの中）として並ぶ（調べの C4）。",
+    "完了の条件": "- [ ] 下の 13 行（K225-UI-001〜013）が緑\n- [ ] 頭の canvas の組 tickets-new-sections（Create）を enrolled にし、キャンバスとの突き合わせ（K225-UI-012・G70）が組の幅で緑\n- [ ] 幅 320・375・768・1024・1440 の横溢れが 0（K225-UI-009）。押した結果（作る口が呼ばれない・下書きに残る）まで実ブラウザで見る\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: UI\n\n- 先に要るチケット：K-224（本文の箱 `section[aria-label=\"本文\"]` を置く器）・K-217（区画の見出しの土台 .k-section h2）・K-218（入力欄・項目名の値）・K-216・K-238（突き合わせ）\n- 区画の並びと必須は種別のマスタ（kind_sections）のまま。必須の確かめ（E-VAL-013）・下書きに残す・作る口は K-60 のまま\n- 欄は今の TextArea のまま（文字で書く）。太字・表・チェックリストなど 14 個の道具の帯は出すが押せない（D-145.8）。グレーは正本の使えない状態の部品（button-disabled・不透明度 0.55・正本に在る）\n- 区画の見出しの余白は絵ごとに違う（作る画面 20／22・6、詳細 28・8）。PM の決め「正本に部品を 2 つ持つ（名前を分ける）」により、このチケットが正本に section-heading（詳細・K-217 の .k-section h2 の値）と section-heading-form（作る画面）を足す（K-218 の後・依存）\n- 値は全部 --k-* のトークン（生の色・大きさを書かない）\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "キャンバス Create の本文の箱：`section[aria-label=\"本文\"]`（白・1px #DDE2E9・角丸 8・overflow hidden）。上に道具の帯（太字・斜体・見出し・箇条書き・番号つき・チェックリスト・表・画像・引用・コード・注意の枠・#・@・リンク と「種別「タスク」のひな形 ・ 「/」で部品」）。中の文書は padding 8px 28px 24px・max-width 900。h2 は 16px・margin 20px 0 6px（最初）／22px 0 6px（2 つめから）・padding-bottom 6px・下に 1px #DDE2E9。必須は h2 の中の b「必須」（#B91C1C・12px）。補足は h2 の中の span（11px・#4A5563・太さ 400）。\n\nK-217 の区画の見出しの土台（`.k-section h2`）は詳細の画面（TicketDetail）の値（margin 28px 0 8px）。作る画面の区画は Create の値（20／22px 0 6px）。正本に部品を 2 つ持ち、`.k-section h2` は section-heading、`.k-create-doc h2` は section-heading-form のトークンを読む。\n\n突き合わせの組 tickets-new-sections（K-216）の本文の箱の画面の側は `.k-panel form`（K-224 で器が替わると当たらない）。\n\n区画を並べる今のコード（このチケットが部品に替える所）：\n\n```search\ngit grep -n 'kind?.sections ?? \\[\\])' -- apps/web/features/F4/create-ticket/create-ticket.tsx\n3\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 区画の部品 `create-sections.tsx`（実装の役） | `CreateSections({ kind, values, errors, onChange })`。`.k-create-doc` の中に、区画ごとに `h2[id]`（区画の名前・必須なら `b`「必須」・補足があれば `span`）と TextArea（`aria-labelledby` で h2 に結ぶ・理由は aria-describedby で欄のすぐ下）。create-ticket.tsx の区画の並べ方（`(kind?.sections ?? []).map`）をこの部品に替える。本文の箱は K-224 の `section[aria-label=\"本文\"]` |\n| CSS `create-ticket.css` | `.k-create-doc`（padding 8px 28px 24px・max-width 900）・`.k-create-doc h2`（--k-text-section-title・700・下に 1px --k-line・padding-bottom 6・margin 22px 0 6px・最初の h2 は上 20px）・`.k-create-doc h2 b`（--k-text-body-sm・--k-error）・`.k-create-doc h2 span`（--k-text-label-md・--k-on-surface-variant・400）。375 で欄が箱の内に収まる |\n| 道具の帯（D-145.8） | `.k-create-doc` の上に `[role=\"toolbar\"][aria-label=\"文書の道具\"]`：キャンバスの順の 14 個（太字・斜体・見出し・箇条書き・番号つき・チェックリスト・表・画像・添付・引用・コード・注意の枠・チケットを引く・人を呼ぶ・リンク）を aria-label つきの button で aria-disabled=\"true\"・グレー（押しても何もしない）。右に「種別「〈種別〉」のひな形 ・ 「/」で部品」。文書の下に `[aria-disabled=\"true\"]`「＋ 見出しを足す（相手・成果物・決定ログ・申し送り・自由欄 など）」 |\n| 正本の部品（PM の決め） | DESIGN-kaname.md の components に `section-heading`（typography {typography.section-title}・margin \"28px 0 8px\"・padding \"0 0 6px\"）と `section-heading-form`（同じ字・margin \"22px 0 6px\"）を足し、生成器の COMP_PROP に `margin → m` を足して作り直す。page.css の `.k-section h2` と create-ticket.css の `.k-create-doc h2` がそれぞれを読む（最初の h2 の上 20px は作る画面の CSS で） |\n| 突き合わせ・CI の範囲 | 04_design/fidelity.json の tickets-new-sections を enrolled: true にし、画面の側のセレクタを新しい器に直す（本文の箱 `section[aria-label=\"本文\"]`・題名 `input[name=\"title\"]`・主ボタン `.k-create-foot button[type=\"submit\"]`）。`apps/web/tests/_lib/fidelity-states.ts` に鍵 tickets-new-sections（作る面・タスク）を足す。scripts/ci/ci_scope.json の reads_ok に `apps/web/tests/k/k225-create-sections.spec.ts`（04_design/fidelity.json を読む）を足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 区画を書く道具（太字・表・チェックリスト）ごと動くように作る | 文書を書く仕組み（区画の本文の形）がまだ文字だけ（K-60）。道具は出してグレー（D-145.8） |\n| K-217 の .k-section h2 の値をそのまま使う・作る画面の CSS にだけ値を書く | 詳細の画面の値（28／8）で、Create の絵（20・22／6）と違う。値を画面の CSS に書くと正本に無い値になる（PM の決め：部品を 2 つ） |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k225-create-sections.spec.ts`（実 Chrome・口は網の手前で差し替え・tests/k/create-mock.ts）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K225-UI-001 | 対象の状態 | 本文の箱 | 白・線 #DDE2E9・角丸 8・中の文書は padding 8px 28px 24px・max-width 900 |\n| K225-UI-002 | 対象の状態 | 区画の見出し（タスク） | 目的・完了の条件・実施事項・リスクと懸念 の順・16px・700・下に 1px の線・下 6px・最初の上 20px・2 つめから上 22px |\n| K225-UI-003 | 対象の状態 | 必須の印 | 必須の 3 つにだけ「必須」（12px・#B91C1C）・任意には無い |\n| K225-UI-004 | 対象の状態 | ひな形の補足 | 見出しの中に 11px・灰・400 |\n| K225-UI-005 | 入力 | 目的の欄に書く | 欄の名前は h2（aria-labelledby）・書いた字が下書きの保存に届く |\n| K225-UI-006 | 入力 | 必須の区画が空で作る | 欄に aria-invalid・理由「この区画は書かないと作れません」が本文の箱の中・作る口は呼ばれない |\n| K225-UI-007 | 対象の状態 | 種別を課題に替える | 見出しが 起きていること・影響・完了の条件 に替わる |\n| K225-UI-008 | 守り | 道具の帯と「＋ 見出しを足す」（D-145.8） | 14 個がキャンバスの順・aria-disabled・グレー（0.55）・押しても Enter でも欄の字と下書きが変わらない・ひな形の字。「＋ 見出しを足す」も押せず見出しが増えない |\n| K225-UI-009 | 入口 | 幅 320・375・768・1024・1440 | 横溢れ 0・375 で欄が本文の箱の内に収まる |\n| K225-UI-010 | 利用者の状態 | 暗いテーマ | 本文の箱の地が暗いテーマの --k-card・必須の印が暗いテーマの --k-error |\n| K225-UI-011 | 守り | 突き合わせの設定 | tickets-new-sections が enrolled・持ち主 K-225・本文の箱の画面の側が section[aria-label=\"本文\"]・.k-panel が無い・鍵が在る |\n| K225-UI-012 | 対象の状態 | tickets-new-sections をキャンバスと突き合わせる | 組の値と読み込んだ書体が全部同じ |\n| K225-UI-013 | 入力 | 正本の区画の見出しの部品 2 つ | section-heading（margin 28px 0 8px）と section-heading-form（22px 0 6px）・トークン --k-c-section-heading-form-m・作る画面の見出しの余白がその値 |\n\n### テストの型の受け（分類 UI）\n\n- 押した結果まで：006（作る口が呼ばれない）・005（下書きの保存に届く）・007（種別を替えると見出しが替わる）\n- 幅：009。テーマ：010\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 005・006・013 |\n| 対象の状態 | 該当 | 001〜004・007・012 |\n| 時間の流れ | 要らない | 時間で変わる物が無い（下書きの保存の時刻は K-224） |\n| 入口 | 該当 | 幅（009） |\n| 利用者の状態 | 該当 | 暗いテーマ（010） |\n| 失敗 | 要らない | 作る口・下書きの口の失敗は K-60 の試験が持ち、このチケットで変えない |\n| 操作の揺れ | 要らない | 押す操作は作るだけ（2 回押しは K60-UI-024 が持つ） |\n| 守り | 該当 | 008・011 |\n\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（012） |\n| G-12 切り替わりの瞬間 | N/A | 状態が切り替わらない |\n| G-13 機能の組み合わせ | 該当 | 種別を替える × 区画（007）・暗いテーマ × 区画（010） |\n| G-14 口座状態の波及 | N/A | 人の状態を扱わない |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | N/A | 見た目だけ |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k225-create-sections.spec.ts`（切る段が書いた）\n- 区画の部品・CSS・突き合わせの組・CI の範囲の 1 行（実装の役）",
+    "決定ログ": "- D-143.2：キャンバスが正。D-143.5：正のモックを書き、突き合わせてから完了。D-128.23：画面の正はキャンバス\n- D-145.8：本文の欄の上の道具 14 個は出すが押せない（answer=fe6f87a03801）。D-145.9：キャンバスに在る物は出し、使えない物はグレーで押せない（answer=78cb822fc1f1）\n- PM の決め（2026-11-16）：区画の見出しの余白が絵ごとに違う所は、正本に部品を 2 つ持つ（名前を分ける）。このチケットが足す\n- 決める人に聞くこと：無い\n- 切る段が決めたこと：区画の見出しの値は Create の絵（20／22・6）にし、詳細の値（K-217 の 28・8）を上書きする／欄は今の TextArea のまま",
+    "リスクと懸念": "- 正本の生成器（gen_tokens.py）に margin の決まりを足すので、同じ生成器を直す K-218（取り込みが先）と K-138（opacity の決まりを足す）と順に合わせる",
+    "申し送り": "- K-59（F4 のこれから）：区画を文書で書く道具の帯と「＋ 見出しを足す」を押せるようにする"
    },
    "file": "11_tickets/K-225.md"
   },
@@ -11071,6 +11208,257 @@
     "申し送り": "- 起票は PM がする（このチケットのセッションは切らない）。下の 3 つを報告で渡す\n- G38・G62 の当たりの抜け（上の表）：どちらも全部の追跡ファイルを歩くので glob では閉じられない。「足したファイル」「足したファイルの中身」で決める形を範囲の台本に入れるチケットを切る\n- data_links の agent-chat.spec.ts が画面の試験の一覧に無い（chat_one.mjs を変えた回にどの組でも流れない）"
    },
    "file": "11_tickets/K-248.md"
+  },
+  {
+   "id": "K-250",
+   "title": "はじめにやることの口（listSetupTasks：パスキー（使えない）・PC・預けたログイン情報（任意）の 3 つと済みの印／dismissSetupTasks：いまは閉じる／skipSetupTask：任意の項目を飛ばす）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "チケット",
+   "assignee": "実装",
+   "due": "2026-11-19",
+   "estimate_hours": "2.5",
+   "estimate_basis": "読む口 1 本（3 つの済みを 1 本の select で）・閉じる口 1 本（members の 1 列）・2 段階認証を読む security definer の関数 1 つ・契約の答えに desc と meta を足して作り直す。K-92 の半分と見た。実測なし・仮",
+   "decisions": [
+    "D-145.3",
+    "D-145.10",
+    "D-145.11",
+    "D-145.12",
+    "D-145.13",
+    "D-145.14",
+    "D-145.15",
+    "D-125.142",
+    "D-125.146",
+    "D-128.62",
+    "D-128.125",
+    "D-128.143"
+   ],
+   "split": "",
+   "prior_impl": "なし（契約だけ・listSetupTasks と dismissSetupTasks は 501。members.setup_dismissed_at は migration 0078 に在る）",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [
+    "K-213",
+    "K-57"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/setup-tasks.test.ts"
+   ],
+   "carry": [
+    "11_tickets/K-70.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl"
+   ],
+   "changes": [
+    "apps/api/src/features/F4/setup-tasks/hooks.ts",
+    "apps/api/src/hooks/setup-tasks.ts",
+    "apps/api/src/app.ts",
+    "apps/api/src/routes/me.ts",
+    "05_flow/screen_api.py",
+    "packages/db/migrations/0103_setup_tasks.sql"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "acts": [
+    "A74",
+    "A97",
+    "A09",
+    "A10"
+   ],
+   "apis": [
+    "listSetupTasks",
+    "dismissSetupTasks",
+    "skipSetupTask"
+   ],
+   "sections": {
+    "目的": "チケットの画面の 0 件のとき（キャンバス OnHome）と広い画面の右の列に「はじめにやること」の箱が在る（調べの T6・T11）。決める人が、今回この箱の中身を返す口も作ると決めた（D-145.3）。一覧の画面（K-223）がこの口を読んで箱を描く。\n\n項目と出し方は前からの決定に従う：はじめにやることは パスキーを設定する・PC をつなぐ・ログイン情報を預ける の 3 つ（D-125.146）。終わると印・いつでも続きから・閉じられる（D-128.62）。済みの判定は決める人の答え：パスキーは機能ができるまでグレーで出し済みにしない（D-145.11）・PC は一度つなげば済み（D-145.12）・ログイン情報は任意でスキップできる（D-145.13）。箱を出すのは 0 件の画面だけ（D-145.10・画面は一覧のチケット）。",
+    "完了の条件": "- [ ] 下の 11 行（K250-API-001〜011）が本物の DB の上で緑\n- [ ] 契約の口 listSetupTasks・dismissSetupTasks が 501 でなく、新しい口 skipSetupTask が契約に在り、答えの形（下）が契約から作り直されている\n- [ ] 目録（03_architecture/catalog）の 3 つの口の持ち主が K-250・状態が「作った」（生成物）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: PERM, CRUD\n\n- 先に要るチケット：K-213（親の並び）・K-57（PC をつなぐ口と bridge の知らせ・取り込み済み）\n- 項目は決定どおり 3 つ（D-125.146）。ひな形を自社に合わせる・メンバーの招待・ナレッジのページは「いつでもできること」で、この口には入れない（D-125.146）\n- 関門：C2（DB を読む・自分の members の 1 列を書く）。2 段階認証は認証の表（kaname_auth）に在り、アプリの接続からは読めない（0059 の境界）ので、security definer の関数で「有効か」だけを返す\n- 答えに預けた物の参照（vault_ref）・PC の印（device token）を入れない\n- 試験を書いた後は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "確かめたこと（切る段・2026-11-16）": "1. キャンバス OnHome の右の列：「はじめにやること」と「1 ／ 3」・進みの棒・3 つ（✓ パスキーを付ける「登録のときに付けました」／PC をつなぐ「分身はあなたの PC で動く。つなぐまで、分身は話すだけで実行はしない」と「つなぐ」／ログイン情報を預ける「分身に使わせるメール・サービスのログイン。値は誰にも見せない」と「預ける」）・「いつでも続きから。全部終わると消える ・ いまは閉じる」。その下に「いつでもできること」（メンバーを招く・ナレッジのページを書く・チケットの形を自社に合わせる・ひな形の行）\n2. 契約：05_flow/screen_api.py 217〜218 行（GET /me/setup-tasks・POST /me/setup-tasks/dismiss・行為 A74）・800 行（SetupTask = key・label・done・href）・1107〜1108 行（自分のものだけ）。目録の持ち主は K-70（このチケットに移す：K-70.md の apis から 2 つを外す）\n3. 表：members.setup_dismissed_at（migration 0078）。PC は sessions（kind device・知らせの時刻・外した時刻）。預けた物は credentials（owner_member_id・revoked_at・deleted_at）。2 段階認証は kaname_auth.\"user\".\"twoFactorEnabled\"。パスキーの仕組みはまだ無い\n4. 行き先の画面：/mfa-setup・/setup/bridge・/settings/credentials はどれも作った画面（lib/built-routes.ts）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 口 `apps/api/src/features/F4/setup-tasks/hooks.ts`・`apps/api/src/hooks/setup-tasks.ts`（実装の役） | `setupTaskHooks(appPool)` が listSetupTasks・dismissSetupTasks・skipSetupTask の hook を返す（試験は makeFixture([setupTaskHooks])）。app.ts で hooks に足し、routes/me.ts に POST /api/v1/me/setup-tasks/skip を足す。listSetupTasks は自分の文脈（withTenant）で 1 本の select：passkey＝いつも available false・done false（パスキーの機能ができるまで・2 段階認証では済みにしない・D-145.11）／pc＝今の会社の自分の device の session で知らせの時刻が在り外していない物が 1 つ以上（D-145.12。「外していない」は PM の決め）／credentials＝optional true・今の会社で owner_member_id が自分・revoked_at と deleted_at が空の物が 1 つ以上で done（PM の決め）・members.setup_skipped_keys に 'credentials' が在れば skipped／dismissed＝members.setup_dismissed_at が在る。dismissSetupTasks は `setup_dismissed_at = coalesce(setup_dismissed_at, now())`（204）。skipSetupTask は体の key が任意の項目（credentials）だけ受け、setup_skipped_keys に重ねずに足す（204）。ほかの key・無い key は 422（欄 key） |\n| 項目の字（実装の役） | passkey：「パスキーを付ける」・説明は空・行き先 null（使えないので押させない）／pc：「PC をつなぐ」・「分身はあなたの PC で動く。つなぐまで、分身は話すだけで実行はしない」・/setup/bridge／credentials：「ログイン情報を預ける」・「分身に使わせるメール・サービスのログイン。値は誰にも見せない」・/settings/credentials |\n| DB（実装の役） | migration `packages/db/migrations/0103_setup_tasks.sql`（次の空き番号）：`alter table members add column if not exists setup_skipped_keys text[] not null default '{}'`（飛ばした任意の項目の key） |\n| 契約（実装の役） | `05_flow/screen_api.py` の 800 行の SetupTask に `desc: string`・`available: boolean`・`optional: boolean`・`skipped: boolean` を足し href を null 可に、listSetupTasks の答えの meta に `dismissed: boolean`、dismissSetupTasks の答えを 204 にする。218 行の下に `(\"POST\", \"/me/setup-tasks/skip\", \"A74\", \"members\", \"skipSetupTask\", [])`（自分のものだけ・体 { key }・204）を足す。作り直す（endpoints.json・packages/contracts・目録は生成物） |\n| 持ち主（実装の役） | 11_tickets/K-70.md の apis から listSetupTasks・dismissSetupTasks を外した（切る段がこの md で済ませ、carry で運ぶ） |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 画面の外枠の口 getShell（setup_left を返す）で済ませる | getShell は件数・グループ・PC・帯をまとめて返す別の口（持ち主 K-67）。箱は項目と済みの印が要る |\n| 2 段階認証でパスキーを済みにする | 決める人がパスキーの機能ができるまで済みにしないと決めた（D-145.11） |",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F4/setup-tasks.test.ts`（口・本物の DB・試験ごとに別の会社と人）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K250-API-001 | 対象の状態 | 登録したばかりの人 | passkey・pc・credentials の順・名前・どれも done false・passkey は available false で行き先 null と説明が空・credentials は optional・説明の字・meta は `{ dismissed: false }` |\n| K250-API-002 | 対象の状態 | 2 段階認証を有効にした | passkey は済みにならず available false のまま・「付けました」の字が無い |\n| K250-API-003 | 時間の流れ | PC を引き取っただけ → 知らせ → 外す | false → true → false |\n| K250-API-004 | 対象の状態 | 他の人の預け物・自分の預け物・取り消し・消した | false → true → false → false |\n| K250-API-005 | 守り | 別の会社で PC と預け物を済ませた（同じログインの人） | その会社では true、今の会社では false |\n| K250-API-006 | 操作の揺れ | 閉じる 2 回・同じ会社の別の人 | 204・dismissed が true・2 回目も 204 で閉じた時刻は最初のまま・別の人は false |\n| K250-API-007 | 守り | 答えの形 | 鍵はちょうど key・label・desc・done・href・available・optional・skipped と meta の dismissed・預けた物の参照と PC の印が無い |\n| K250-API-008 | 利用者の状態 | 取引先の人・運営の人 | 一覧も閉じるも飛ばすも 403・閉じた時刻は立たない |\n| K250-API-009 | 利用者の状態 | ログインしていない | 一覧も閉じるも飛ばすも 401 |\n| K250-API-010 | 操作の揺れ | 預けるを飛ばす 2 回・別の人・後で預ける | 204・skipped true で done false・2 回目も 204・別の人は false・後で預けると done も true |\n| K250-API-011 | 入力 | 任意でない key（passkey・pc）・知らない key・key なし | 422・欄 key・何も残らない |\n\n### テストの型の受け（分類 PERM・CRUD）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-PERM-01 役が合わない人 | 008 |\n| TP-PERM-03 他の会社の ID・物 | 005 |\n| TP-PERM-04 一覧・数 | 007（済みの印だけ・中身を返さない） |\n| TP-CRUD 書く口の二度押し | 006 |\n| 要らない：TP-PERM-02・05（権限の付け外し） | 自分のものだけの口で、グループの権限を見ない |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 飛ばす key（011） |\n| 対象の状態 | 該当 | 001・002・004 |\n| 時間の流れ | 該当 | PC の知らせの前後と外した後（003） |\n| 入口 | 要らない | 口だけ（画面の入口は K-223） |\n| 利用者の状態 | 該当 | 008・009 |\n| 失敗 | 要らない | DB の失敗は入口の共通の 500／503 が受ける。画面の読めなかったときは K-223 |\n| 操作の揺れ | 該当 | 閉じる 2 回（006）・飛ばす 2 回（010） |\n| 守り | 該当 | 005・007 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | 試験は認証の表（kaname_auth）を作ってから流す（2 段階認証の有無で答えが変わらないことを 002 で見る） |\n| G-12 切り替わりの瞬間 | 該当 | PC の知らせが届いた直後・外した直後（003） |\n| G-13 機能の組み合わせ | 該当 | 2 つの会社 × 済み（005） |\n| G-14 口座状態の波及 | 該当 | PC を外すと済みが戻る（003） |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 1 回の読みは select 1 本・接続 1 本 |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/api/test/features/F4/setup-tasks.test.ts`（切る段が書いた）・K-70.md の apis の直し（切る段）\n- 口と hooks・migration 0103・契約の直しと作り直し（実装の役）",
+    "決定ログ": "- D-145.3：はじめにやることと広い画面の右の列は、今回中身を返す口も作る（answer=01c0b5315ab4）\n- D-125.146：項目は 3 つ。D-128.62：終わると印・いつでも続き・閉じられる。D-125.142：はじめの設定は段として持たない\n- D-145.10：箱は 0 件の画面だけ。D-145.11：パスキーは機能ができるまでグレーで済みにしない（2 段階認証では済みにしない・名前は変えない）。D-145.12：PC は一度つなげば済み。D-145.13：ログイン情報は任意でスキップできる（answer=501ca767580c）\n- PM の決め（2026-11-16）：PC は一度つないで外していなければ済み（外したら戻る）。ログイン情報は本人が 1 つ預けたら済み。飛ばしたら済みの扱いで残りに数えない（skipped）\n- 決める人の答え（answer=a99e001c6cdf・2026-11-16）：飛ばす押し方は項目の横に「あとで」（D-145.14）。「1 ／ 3」は今できる 2 つで数え、パスキーは並ぶが数に入れない（D-145.15）。どちらもおすすめどおりで、試験は変えない\n- 切る段が決めたこと：パスキーの説明は空・行き先は null（使えない物に嘘の字と行き先を出さない）／目録の持ち主を K-70 から移した",
+    "リスクと懸念": "- パスキーの機能ができたら、passkey の available と済みの判定を替える（そのチケットの行に）",
+    "申し送り": "- K-223：この口を読んで右の列の箱を描く・「いまは閉じる」で閉じる口を呼ぶ\n- K-70：自分のアカウントの画面（はじめにやることの 2 つの口はこのチケットに移した）\n- パスキーのチケット（F1 のこれから）：パスキーを付けたら passkey の済みに数える"
+   },
+   "file": "11_tickets/K-250.md"
+  },
+  {
+   "id": "K-251",
+   "title": "チケットの一覧の画面（はじめて・自分に関わるもの）をキャンバスに合わせる（帯・見え方のタブ・7 列の表・もっと見る・空の箱・はじめにやること・Main の数の札と絞りと右の列・読み込みと失敗）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-213",
+   "milestone": "段",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "4",
+   "estimate_basis": "一覧の画面の部品 6 本（帯とタブ・表・空の箱・右の列・Main の数の札と絞り・失敗と読み込み）・tickets-page.tsx の組み直し・突き合わせの組 2 つ。K-138（4）と同じと見た。実測なし・仮",
+   "decisions": [
+    "D-143.6",
+    "D-143.5",
+    "D-142.2",
+    "D-144.2",
+    "D-144.3",
+    "D-144.8",
+    "D-145.1",
+    "D-145.2",
+    "D-145.3",
+    "D-145.4",
+    "D-145.9",
+    "D-145.10",
+    "D-145.11",
+    "D-145.12",
+    "D-145.13",
+    "D-145.14",
+    "D-145.15",
+    "D-128.11",
+    "D-128.15",
+    "D-128.16",
+    "D-128.25",
+    "D-128.26",
+    "D-128.159",
+    "D-125.61"
+   ],
+   "split": "",
+   "prior_impl": "apps/web/features/F4/create-ticket/tickets-page.tsx（K-60・一覧の口の答えを ul.k-list で並べ、口が答えないと空として描く）",
+   "choke_points": [],
+   "choke_none": "画面だけ。口は一覧の口（K-92）・はじめにやることの口（K-250）・承認待ちの口（K-161）と前からある読む口を呼ぶだけ。書くのは閉じる・飛ばすの口（K-250）だけ",
+   "depends_on": [
+    "K-92",
+    "K-250",
+    "K-138",
+    "K-217",
+    "K-218",
+    "K-216",
+    "K-238"
+   ],
+   "tests": [
+    "apps/web/tests/k/k251-ticket-list-mine.spec.ts",
+    "apps/web/tests/k/list-mock.ts"
+   ],
+   "carry": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl"
+   ],
+   "changes": [
+    "apps/web/features/F4/ticket-list/list-page.tsx",
+    "apps/web/features/F4/ticket-list/list-table.tsx",
+    "apps/web/features/F4/ticket-list/list-views.tsx",
+    "apps/web/features/F4/ticket-list/list-empty.tsx",
+    "apps/web/features/F4/ticket-list/list-side.tsx",
+    "apps/web/features/F4/ticket-list/list-mine-parts.tsx",
+    "apps/web/features/F4/ticket-list/use-ticket-list.ts",
+    "apps/web/features/F4/ticket-list/ticket-list.css",
+    "apps/web/features/F4/create-ticket/tickets-page.tsx",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/ci_scope.json"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "screens": [
+    "tickets"
+   ],
+   "canvas": [
+    "tickets-first",
+    "tickets-main"
+   ],
+   "sections": {
+    "目的": "/tickets の見出しが 13px・400 で帯もタブも無く、空の状態は左寄せの素の並び、一覧の口が 501 のあいだは作った後も「まだチケットがありません」と出ていた（調べの T1〜T11・H9）。一覧の画面（K-223 を分けた 2 本）のうち、このチケットは **はじめて（0 件・キャンバス OnHome）と自分に関わるもの（キャンバス Main）** を持つ。グループの一覧（キャンバス List）・一覧のタブの画面・行を押して横に開く詳細は K-252。\n\nキャンバスに在る物は機能がまだでも出し、使えない物はグレーで押せない（D-145.9）。",
+    "完了の条件": "- [ ] 下の 27 行（K251-UI-001〜027）が緑\n- [ ] 頭の canvas の 2 組（tickets-first：OnHome／tickets-main：Main）を enrolled にし、キャンバスとの突き合わせ（K251-UI-021・G70）が組の幅で緑\n- [ ] 幅 320・375・768・1024・1440 で横溢れ 0・見出しの左の端が画面の中（K251-UI-018）。押した結果（移った先・呼んだ口）まで実ブラウザで見る\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: LIST, UI\n\n- 先に要るチケット：K-92（一覧の口）・K-250（はじめにやることの口）・K-138（新しい外枠・作る入口・使えない状態の部品）・K-217（頁の部品）・K-218（ボタン・空の箱・読み込みの値）・K-216・K-238（突き合わせ）\n- グレーは正本の使えない状態の部品（button-disabled・input-disabled・tab-disabled・不透明度 0.55）。押せない物は：aria-disabled・リンクでない・押しても Enter でも移らず口を呼ばない\n- 本当の値が無い数（数の札・件数・絞りの札の数）と字（会社の名前・ひな形の名前と数）は空（D-144.2・D-144.3）\n- 作る入口（帯の作るボタンを消す・空の箱の主ボタンの名前）と、それを見る前からの試験の書き替えは K-138 が持つ（同じ試験のファイルを 2 本で分け持たない）\n- 列は 7 つ（D-128.15・D-128.25・D-128.26）と「もっと見る」（PM の決め）。キャンバス Main の「グループ」「予定・実績」の列は持たない\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "1. キャンバス OnHome：帯の h1「チケット」と「すべてのグループ」・見え方のタブ（自分に関わるもの・概要・一覧・カレンダー・ガント）・「ようこそ、高本さん」・点線の箱（＋ の札・「まだチケットはありません」・説明・主「＋ チケットを作る」・従「分身と話して作る」・「はじめての 1 枚におすすめ：」3 つ）・右の aside（はじめにやること「1 ／ 3」・3 つ・「いつでも続きから。全部終わると消える ・ いまは閉じる」／いつでもできること 3 つとひな形の行）。項目ごとに飛ばすボタンは描いていない\n2. キャンバス Main：数の札 4 つ（期限切れ 2・今日まで 3・自分が承認 2・AI が動いている 3）・「自分に関わるもの 14 件」と絞りの札 5 つ（すべて・自分が担当 11・AI に任せている 5・自分が承認 2・渡されたもの 1）・「並び：期限の近い順 ▾」・条件を保存・表示設定・期限で区切った表・右の列（自分の承認を待っているもの・高本のAI のいま・最近の知らせ）\n3. 今の画面（tickets-page.tsx）：一覧の口を `limit 50` で呼び、答えが無いと空として描く（40 行）\n\n一覧の口を呼ぶ画面のコード：\n\n```search\ngit grep -n 'call(\"listTickets\"' -- apps/web\n1\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 一覧の画面 `list-page.tsx`（実装の役） | `TicketListPage({ view, scopeId, openNumber })`（view=all・scope・横の詳細は K-252 が足す）。TicketShell（K-138）の中に PageHeader（h1「チケット」と補足「すべてのグループ」）・見え方のタブ・Main の部品・表か空の箱か失敗・右の列。帯とタブは一覧を読む前に描く。読み込み中は Loading（3 秒より長いときだけ文・D-144.8） |\n| 見え方のタブ `list-views.tsx` | `nav[aria-label=\"チケットの見え方\"]` に 自分に関わるもの（`/tickets`）・概要・一覧（`/tickets?view=all`）・カレンダー・ガント。今いるものに aria-current=\"page\"。概要・カレンダー・ガントは `span[aria-disabled=\"true\"]` で title に「（準備中）」・グレー（D-145.1） |\n| 表 `list-table.tsx` | `table[aria-label=\"チケットの一覧\"]`・データの行は `tr[data-ticket]`。列は 番号・題名（/tickets/<id> へのリンク）・種別・状態・担当者（任せていればロボットの絵と「〈名前〉のAI」）・期限（overdue なら炎の印 aria-label「期限切れ」）・更新。下に「もっと見る」（next_cursor が在るときだけ・押している間は押せない）。失敗は読んだ行を残して「もう一度」、401 は「ログインが切れました」 |\n| Main の部品 `list-mine-parts.tsx`（D-145.9） | `[aria-label=\"数の札\"]` に 期限切れ・今日まで・自分が承認・AI が動いている の 4 つ（`[data-label]` と空の `[data-value]`・aria-disabled・グレー）。`[aria-label=\"自分に関わるものの絞り込み\"]` に「自分に関わるもの」と空の件数・絞りの札 5 つ（`[data-chip]` で数は空）・並び・条件を保存・表示設定（どれも aria-disabled・グレー） |\n| 空の箱 `list-empty.tsx` | 0 件で読めたとき：「ようこそ、〈名前〉さん」（会社の名前は出さない・D-145.4）と Empty（＋ の札・「まだチケットはありません」・説明・書ける人だけ主「＋ チケットを作る」→ `?new=1`）。従「分身と話して作る」と提案 3 つは `span[aria-disabled=\"true\"]` でグレー（D-145.2） |\n| 右の列 `list-side.tsx` | `aside.k-list-side`（幅 340 まで・1023 以下は本文の下）。**0 件の画面**：`section[aria-label=\"はじめにやること\"]`（D-145.10・K-250 の答え。項目は `[data-task=\"<key>\"]`。数は「済みか飛ばした数 ／ 使える項目の数」。passkey は available false なのでグレーで押せず ✓ も説明の字も出さない（D-145.11）。pc はまだなら「つなぐ」のリンク・済みなら ✓。credentials は「任意」の印・まだなら「預ける」のリンクと「あとで」のボタン（押すと skipSetupTask・data-skipped=\"true\"・D-145.13）。「いまは閉じる」で dismissSetupTasks を呼び箱を消す。dismissed か、使える項目が全部済みか飛ばしたら箱を出さない）と `section[aria-label=\"いつでもできること\"]`（3 つは aria-disabled・グレー。ひな形の行は固定の字と空の `[data-value]` 4 つ・PM の決め）。**チケットが在る画面**（Main）：`section[aria-label=\"自分の承認を待っているもの\"]`（承認待ちの口の行の番号と題名・「すべて」はグレー）・`section[aria-label=\"高本のAI のいま\"]` と `section[aria-label=\"最近の知らせ\"]`（見出しだけ・中身は空・「分身の部屋へ」はグレー） |\n| 読めなかったとき（D-142.2） | 一覧の口が 5xx・501・届かない：ErrorState（E-PAGE-007「読み込めませんでした」・「もう一度」）。空の箱は出さない |\n| 組み替え `tickets-page.tsx` | ?new=1 のときは作る面（K-224）、それ以外は TicketListPage。一覧の口の答えを親の候補に使うのをやめる。`list.ok ? data : []`（40 行）を消す |\n| 突き合わせ | 04_design/fidelity.json の tickets-first・tickets-main を enrolled: true（持ち主はこのチケット・切る段が付け替えた）。`apps/web/tests/_lib/fidelity-states.ts` に鍵 tickets-first（0 件・書ける人）・tickets-main（自分に関わるもの 6 件）を足す |\n| CI の範囲 | scripts/ci/ci_scope.json の reads_ok に `apps/web/tests/k/list-mock.ts`（04_design/fidelity.json を読む）を足す |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k251-ticket-list-mine.spec.ts`（実 Chrome・口は網の手前で差し替え・tests/k/list-mock.ts）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K251-UI-001 | 対象の状態 | 帯 | h1「チケット」18px・700・帯は白・「すべてのグループ」・帯に作るボタンが無い |\n| K251-UI-002 | 対象の状態 | 見え方のタブ | 5 つの順・自分に関わるものが今いる・3 つは押せない（title に準備中・グレー・押しても URL が変わらない） |\n| K251-UI-003 | 入口 | 一覧のタブを押す・再読み込み | 口に view=all・URL ?view=all・一覧が今いる。再読み込みしても同じ |\n| K251-UI-004 | 操作の揺れ | タブを素早く切り替える | 後のタブの答えだけが残る |\n| K251-UI-005 | 対象の状態 | 3 件 | 見出しは 7 つの列・行は口の並び・番号は /tickets/<id> へのリンク |\n| K251-UI-006 | 時間の流れ | 期限切れの行と、そうでない行 | 期限切れの行にだけ炎（読み上げ「期限切れ」） |\n| K251-UI-007 | 対象の状態 | AI に任せている行 | 担当者の列に「高本のAI」とロボットの印 |\n| K251-UI-008 | 操作の揺れ | 50 件 → もっと見る（2 回押し） | 51 件・もっと見るが消える・次の分の口は 1 回 |\n| K251-UI-009 | 失敗 | もっと見るが 503 → もう一度 | 50 件は残り「もう一度」。押すと 51 件 |\n| K251-UI-010 | 対象の状態 | 0 件・書ける人 | あいさつは名前だけ・点線の箱・「まだチケットはありません」・主「＋ チケットを作る」が 1 つで押すと ?new=1・「分身と話して作る」と提案 3 つも在る |\n| K251-UI-011 | 利用者の状態 | 0 件・閲覧のみの人 | 空の箱にボタンが無い |\n| K251-UI-012 | 失敗 | 一覧の口が 500・503・501 | 「読み込めませんでした」ともう一度・空の文は出ない。もう一度で一覧が出る |\n| K251-UI-013 | 時間の流れ | 一覧の口が遅い | 帯とタブはすぐ出る・文は 2.9 秒で出ず 3 秒を過ぎて出る |\n| K251-UI-014 | 利用者の状態 | ログインしていない | /login?next=%2Ftickets |\n| K251-UI-015 | 利用者の状態 | もっと見るで 401 | 「ログインが切れました」・50 件は残る |\n| K251-UI-016 | 守り | 題名に HTML とスクリプト | 字のまま出る・img が 0・スクリプトが動かない |\n| K251-UI-017 | 対象の状態 | 作った後に一覧へ戻る | 読み直して作った 1 件が出る |\n| K251-UI-018 | 入口 | 50 件と 0 件 × 幅 320・375・768・1024・1440 | 横溢れ 0・見出しの左の端が 0 以上（左へのはみ出しは scrollWidth に出ないので getBoundingClientRect で見る） |\n| K251-UI-019 | 入口 | 幅 375・1440 の本文の押せるもの | 24px 以上 |\n| K251-UI-020 | 対象の状態 | 0 件の画面のはじめにやること | 見出し・「0 ／ 2」・3 つの名前と説明・パスキーはグレーで押せず ✓ と「付けました」が無い・「つなぐ」で /setup/bridge・「預ける」で /settings/credentials |\n| K251-UI-021 | 対象の状態 | 2 組をキャンバスと突き合わせる | 2 組が enrolled・持ち主 K-251・鍵が在り、組の値と読み込んだ書体が全部同じ |\n| K251-UI-022 | 守り | 「分身と話して作る」と提案 3 つ（D-145.2） | aria-disabled・リンクでない・グレー・押しても Enter でも URL が変わらない・書く口を呼ばない |\n| K251-UI-023 | 操作の揺れ | いまは閉じる・PC 済みで預けるを飛ばした人・チケットが在る画面 | 閉じる口 1 回・箱が消え開き直しても出ない。ほかの 2 つの場合も箱が出ない（D-145.10） |\n| K251-UI-024 | 入口 | 幅 1440・1900 の右の列 | 本文の右・幅 340 以下・いつでもできることの 3 つはグレーで押せない・ひな形の行は字が在り値 4 つは空 |\n| K251-UI-025 | 操作の揺れ | 預けるの「あとで」（D-145.13） | 飛ばす口を 1 回（credentials）・飛ばした印・「あとで」が消える・「1 ／ 2」・任意でない PC には「あとで」が無い |\n| K251-UI-026 | 対象の状態 | Main の数の札・件数・絞りの札・並び・条件を保存・表示設定 | 札の名前 4 つ・数は全部空・どれもグレーで押せない・書く口を呼ばない |\n| K251-UI-027 | 対象の状態 | Main の右の列 | 承認待ちの箱に口の番号と題名・AI のいま と 最近の知らせ は見出しだけで中身は空・「すべて」「分身の部屋へ」はグレー |\n\n### テストの型の受け（分類 LIST・UI）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-01 0 件・1 件・ページの境目 | 010・017・008 |\n| TP-LIST-02 並びの値が同じものが多い | 口（K-92 の 018・019）。画面は口の並びのまま（005） |\n| TP-LIST-03 URL で開き直す | 003 |\n| TP-LIST-04 表記ゆれ・記号 | K-252（言葉の欄）・口（K-92） |\n| UI：押した結果まで | 003・008・009・010・012・020・022・023・025 |\n| UI：幅 | 018・019・024 |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 言葉の欄は K-252。このチケットに入力欄は無い |\n| 対象の状態 | 該当 | 001・002・005・007・010・017・020・021・026・027 |\n| 時間の流れ | 該当 | 期限切れ（006）・読み込みの 3 秒（013） |\n| 入口 | 該当 | 003・018・019・024 |\n| 利用者の状態 | 該当 | 011・014・015 |\n| 失敗 | 該当 | 009・012 |\n| 操作の揺れ | 該当 | 004・008・023・025 |\n| 守り | 該当 | 016・022 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（021）・本人の Bridge に届かせない |\n| G-12 切り替わりの瞬間 | 該当 | タブを切り替えた直後に前の答えが届く（004）・読み込みの 3 秒の境目（013） |\n| G-13 機能の組み合わせ | 該当 | はじめにやること × 0 件とチケットが在る画面（023）・作る面との行き来（010・017） |\n| G-14 口座状態の波及 | 該当 | 読んでいる途中でログインが切れた（015） |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 1 回の読みは 50 件・もっと見るの 2 回押しで 1 回（008） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k251-ticket-list-mine.spec.ts`・`apps/web/tests/k/list-mock.ts`（切る段が書いた）\n- 一覧の画面の部品・tickets-page.tsx・突き合わせの組と画面を整える道具・CI の範囲の 1 行（実装の役）",
+    "決定ログ": "- D-145.1〜.4・D-145.9（answer=01c0b5315ab4・78cb822fc1f1）：タブは 5 つで 3 つは押せない／0 件の画面のボタンと提案は出すが押せない／はじめにやることの口も作る／あいさつは名前だけ／キャンバスに在る物は出してグレー\n- D-145.10〜.13（answer=501ca767580c）：はじめにやることは 0 件の画面だけ／パスキーはグレーで済みにしない／PC は一度つなげば済み／ログイン情報は任意でスキップできる\n- PM の決め（2026-11-16）：ひな形の行は決まった言葉を出し値は空。飛ばした項目は済みの扱いで残りに数えない。一覧の列は 7 つと「もっと見る」\n- 決める人の答え（answer=a99e001c6cdf・2026-11-16）：飛ばす押し方は項目の横に「あとで」（D-145.14）。「1 ／ 3」は今できる 2 つで数え、パスキーは並ぶが数に入れない（D-145.15）。どちらもおすすめどおりで、試験は変えない\n- 切る段が決めたこと：K-223 の 29 行を K-251（はじめて・自分に関わるもの）と K-252（一覧・グループ・横の詳細）に分けた（PM の決め・番号は PM が渡した）",
+    "リスクと懸念": "- K-252 と同じ部品（list-page.tsx・list-table.tsx・ticket-list.css）を触る。このチケットが先（K-252 が依存）",
+    "申し送り": "- K-252：一覧のタブの画面（検索条件の箱）・グループの一覧・行を押して横に開く詳細\n- K-59（F4 のこれから）：空の箱の「分身と話して作る」と提案 3 つを押せるようにする\n- K-67（F7）：数の札・絞りの札・並び・条件を保存・表示設定・概要・カレンダー・ガントを押せるようにし、数を出す"
+   },
+   "file": "11_tickets/K-251.md"
+  },
+  {
+   "id": "K-252",
+   "title": "チケットの一覧の画面（一覧のタブ・グループの一覧・行を押して横に開く詳細）をキャンバスに合わせる（検索条件の箱・言葉で絞る・表の上の道具・横の詳細と列の数）",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-213",
+   "milestone": "段",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "2.5",
+   "estimate_basis": "検索条件の箱と表の上の道具の部品 1 本・横の詳細（詳細の部品を横の形で）・列を 5 つに絞る・グループの一覧の帯・突き合わせの組 1 つ。K-251（4）の 6 割と見た。実測なし・仮",
+   "decisions": [
+    "D-143.5",
+    "D-145.9",
+    "D-128.14",
+    "D-128.15",
+    "D-128.25",
+    "D-128.26",
+    "D-128.157",
+    "D-128.165"
+   ],
+   "split": "",
+   "prior_impl": "なし（一覧のタブの画面・グループの一覧・横の詳細は無い）",
+   "choke_points": [],
+   "choke_none": "画面だけ。口は一覧の口（K-92）と詳細の口（K-60）を読むだけ",
+   "depends_on": [
+    "K-251",
+    "K-92",
+    "K-138",
+    "K-216",
+    "K-238"
+   ],
+   "tests": [
+    "apps/web/tests/k/k252-ticket-list-all.spec.ts"
+   ],
+   "changes": [
+    "apps/web/features/F4/ticket-list/list-page.tsx",
+    "apps/web/features/F4/ticket-list/list-table.tsx",
+    "apps/web/features/F4/ticket-list/list-filter.tsx",
+    "apps/web/features/F4/ticket-list/list-detail-side.tsx",
+    "apps/web/features/F4/ticket-list/ticket-list.css",
+    "apps/web/features/F4/create-ticket/ticket-detail.tsx",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "screens": [
+    "tickets"
+   ],
+   "canvas": [
+    "tickets-list"
+   ],
+   "sections": {
+    "目的": "一覧の画面（K-223 を分けた 2 本）のうち、このチケットは **一覧のタブの画面（`/tickets?view=all`）とグループの一覧（`/tickets?scope=<id>`）・行を押して横に開く詳細** を持つ（キャンバス List・D-128.165）。はじめて・自分に関わるものは K-251。\n\nキャンバス List の検索条件の箱と表の上の道具は、言葉で絞る欄（題名か番号・q）を除いてまだ機能が無いので、出してグレーで押せない（D-145.9）。列は決めた 7 つと「もっと見る」（PM の決め）。",
+    "完了の条件": "- [ ] 下の 10 行（K252-UI-001〜010）が緑\n- [ ] 頭の canvas の組 tickets-list（List）を enrolled にし、キャンバスとの突き合わせ（K252-UI-010・G70）が組の幅で緑\n- [ ] 幅 320・375・768・1024・1440 で横溢れ 0・見出しの左の端が画面の中（K252-UI-006）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: LIST, UI\n\n- 先に要るチケット：K-251（一覧の画面の部品・帯・タブ・表・list-mock.ts）・K-92（一覧の口の q・scope_id）・K-138（外枠・左のメニューの畳み方・使えない状態の部品）・K-216・K-238（突き合わせ）\n- 押せない物は：aria-disabled・リンクでない・グレー（0.55）・押しても Enter でも移らず口を呼ばない。総数（全 N 件中）は返さない口なので空\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "キャンバス List：帯の h1 がグループの名前（営業）と「（EG）」・見え方のタブ。本文に `section[aria-label=\"検索条件\"]`（検索条件・かんたん／詳しく・検索条件を保存・畳む ▴・状態の札・親子（すべて・親だけ・子だけ）・種別・分類・節目・担当者・AI に任せている・言葉（題名・本文・番号））・表の上（全 72 件中 1〜20 件・ページ番号・まとめて操作・CSV で取り込む・表示設定（列））・選ぶ印つきの 13 列の表。K-216 の組 tickets-list が比べるのは h1・帯・本文の箱。",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 検索条件の箱 `list-filter.tsx`（実装の役） | `section[aria-label=\"検索条件\"]`（view=all と scope の画面）。言葉は `input[aria-label=\"題名か番号で絞る\"]`（打ち終わってから 300ms で 1 回だけ一覧の口を q つきで呼ぶ・古い答えを描かない）。かんたん・詳しく・検索条件を保存・畳む・状態の札・親子・種別・分類・節目・担当者・AI に任せている は aria-disabled・グレー（D-145.9） |\n| 表の上の道具 | `[aria-label=\"一覧の道具\"]` に 空の件数（`[data-value]`・総数を返さないので空）・まとめて操作・CSV で取り込む・表示設定（列）（aria-disabled・グレー）。表の行の頭に選ぶ印（disabled の checkbox）。ページ番号の代わりに K-251 の「もっと見る」 |\n| グループの一覧 | `/tickets?scope=<id>`：帯の h1 がグループの名前・補足は「（<頭字>）」・口に scope_id |\n| 横の詳細 `list-detail-side.tsx`・`ticket-detail.tsx`（D-128.165・D-128.14） | 幅 1024 以上で行を押すと移らずに右に `aside[aria-label=\"チケットの詳細\"]`（詳細の部品 layout=\"side\"）を開き URL を `?open=<番号>` に。1024〜1279 で開いている間は列を 番号・題名・種別・状態・担当者 の 5 つにし、左のメニューを 56 に畳む。1023 以下はリンクのまま `/tickets/<id>`。自分に関わるもの（K-251 の画面）の行でも同じ |\n| 突き合わせ | 04_design/fidelity.json の tickets-list を enrolled: true（持ち主はこのチケット・切る段が付け替えた）・app の道を `/tickets?scope={scope}` に。`apps/web/tests/_lib/fidelity-states.ts` に鍵 tickets-list（`/tickets?scope=<営業>`）を足す |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| キャンバス List の 13 列とページ番号をそのまま作る | 列は 7 つ（D-128.15・D-128.25・D-128.26）・次の分はもっと見る（総数を出さない・K-92）と決めてある（PM の決め） |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k252-ticket-list-all.spec.ts`（実 Chrome・口は網の手前で差し替え・tests/k/list-mock.ts）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K252-UI-001 | 入口 | 幅 1440 で行を押す | 右に詳細・URL ?open=EG-101・列は 7 つ |\n| K252-UI-002 | 入口 | 幅 1200 で行を押す | 右に詳細・列は 5 つ・左のメニュー 56px |\n| K252-UI-003 | 入口 | 幅 768 で行を押す | /tickets/<id> へ移る |\n| K252-UI-004 | 入力 | 言葉の欄に「EG-102」を続けて打つ | 口は 1 回（q=EG-102・view=all）・1 件だけ出る |\n| K252-UI-005 | 入口 | /tickets?scope=<営業> | h1 が「営業」・口に scope_id |\n| K252-UI-006 | 入口 | 一覧・グループ・横の詳細 × 幅 320・375・768・1024・1440 | 横溢れ 0・見出しの左の端が 0 以上 |\n| K252-UI-007 | 対象の状態 | 検索条件の箱 | 言葉の欄は使える・ほかの 11 の部品はグレーで押せない・書く口を呼ばない |\n| K252-UI-008 | 対象の状態 | 表の上の道具と選ぶ印 | まとめて操作・CSV・表示設定はグレーで押せない・件数は空・選ぶ印は disabled で印が付かない |\n| K252-UI-009 | 入口 | 幅 375・1440 の本文の押せるもの | 24px 以上 |\n| K252-UI-010 | 対象の状態 | tickets-list をキャンバスと突き合わせる | enrolled・持ち主 K-252・鍵が在り、組の値と読み込んだ書体が全部同じ |\n\n### テストの型の受け（分類 LIST・UI）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-03 URL で開き直す | 001（?open=）・005（?scope=） |\n| TP-LIST-04 表記ゆれ・記号 | 004（打った字をそのまま q に渡す。そろえるのは口・K-92） |\n| UI：押した結果まで | 001〜004・007 |\n| UI：幅 | 002・003・006・009 |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 004 |\n| 対象の状態 | 該当 | 007・008・010 |\n| 時間の流れ | 要らない | 時間で変わる物は K-251 が持つ |\n| 入口 | 該当 | 001〜003・005・006・009 |\n| 利用者の状態 | 要らない | ログイン・閲覧のみ・切れたは K-251 が持つ（同じ画面の部品） |\n| 失敗 | 要らない | 一覧の口の失敗は K-251 が持つ |\n| 操作の揺れ | 該当 | 続けて打っても 1 回（004） |\n| 守り | 該当 | 押せない物が書く口を呼ばない（007） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（010） |\n| G-12 切り替わりの瞬間 | N/A | 状態の切り替わりは K-251 |\n| G-13 機能の組み合わせ | 該当 | 横の詳細 × 列の数 × 左のメニューの幅（002） |\n| G-14 口座状態の波及 | N/A | K-251 |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 言葉の欄は打ち終わってから 1 回（004） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k252-ticket-list-all.spec.ts`（切る段が書いた）\n- 検索条件の箱・表の上の道具・横の詳細・グループの一覧の帯・突き合わせの組（実装の役）",
+    "決定ログ": "- D-145.9：キャンバスに在る物は出し、使えない物はグレーで押せない（answer=78cb822fc1f1）\n- D-128.165・D-128.14：行を押したときの開き方と列の数。D-128.157：題名か番号で絞る\n- PM の決め（2026-11-16）：列は 7 つと「もっと見る」。K-223 を 2 本に分けた（親子は 3 段までなので、2 本は K-213 の子にした）\n- 決める人に聞くこと：無い",
+    "申し送り": "- K-226：横に開いた詳細の「全画面で開く」「閉じる」\n- K-67（F7）：検索条件の箱・まとめて操作・CSV・表示設定・選ぶ印を使えるようにする"
+   },
+   "file": "11_tickets/K-252.md"
   }
  ]
 }

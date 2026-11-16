@@ -30,7 +30,7 @@ row(R["K63-UI-001"], async (page) => {
       .allInnerTexts(); // 外枠の「今日」（左のメニュー・下タブ）に当てない
     expect(order).toEqual(["期限切れ", "今日", "期限なし"]);
     await expect(page.getByRole("main").getByText("3 件", { exact: true })).toBeVisible();
-    if (w >= 1440) await menuCount(page, 3); // 左のメニューの数は 1440 で「仕事」を開いて見る。ほかの幅は見出しの横の数だけ
+    if (w >= 1440) await menuCount(page, 3); // 左のメニューの数は 1440 で見る。ほかの幅は見出しの横の数だけ
     await noOverflow(page, w);
   }
 });
@@ -40,11 +40,11 @@ row(R["K63-UI-011"], async (page) => {
   await openQueue(page);
   await expect(page.getByText("いま決めるものはありません")).toBeVisible();
   await expect(page.getByRole("main").getByText("0 件", { exact: true })).toBeVisible(); // 見出しの横の数は 0
-  // 1440 で「仕事」を開いた左のメニューの「承認待ち」は、0 件のとき数を出さない（決める人の答え answer=3efd1b287ec3）
-  const group = page.getByRole("button", { name: /^仕事/ });
-  if ((await group.getAttribute("aria-expanded")) === "false") await group.click();
-  await expect(page.getByRole("link", { name: /^承認待ち$/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /承認待ち\s*0/ })).toHaveCount(0);
+  // 1440 の左のメニュー（新しい外枠）の「承認待ち」は、0 件のとき数を出さない（決める人の答え answer=3efd1b287ec3）
+  const item = page.getByRole("navigation", { name: "メニュー", exact: true }).getByRole("link", { name: /^承認待ち/ });
+  await expect(item).toBeVisible();
+  await expect(item.locator(".k-nav-badge")).toHaveCount(0);
+  await expect(item).not.toContainText("0");
 });
 row(R["K63-UI-016"], async (page) => {
   await mockApi(page);

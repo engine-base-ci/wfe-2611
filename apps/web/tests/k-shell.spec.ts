@@ -36,11 +36,16 @@ test("KN105-002 左のバー：役割の主ナビが出て、いまの場所に 
   await expect(nav.getByText("PC つながっている")).toBeVisible();
 });
 
-test("KN105-003 まだ作っていない画面は押せない（準備中）", async ({ page }) => {
+test("KN105-003 まだ作っていない画面は押せない（指を置くと準備中・目に見える「準備中」の字は出さない・D-144.1）", async ({
+  page,
+}) => {
   await open(page, 1440, "?built=none");
   const nav = page.getByRole("navigation", { name: "メニュー", exact: true });
   await expect(nav.getByRole("link", { name: /ナレッジ/ })).toHaveCount(0);
-  await expect(nav.locator('[aria-disabled="true"]', { hasText: "ナレッジ" })).toContainText("準備中");
+  const item = nav.locator('[aria-disabled="true"]', { hasText: "ナレッジ" });
+  await expect(item).toHaveCount(1);
+  expect(await item.getAttribute("title")).toContain("準備中");
+  expect(await nav.innerText()).not.toContain("準備中");
 });
 
 test("KN105-004 左のバーを畳むと 56 のレールになり、開き直しても畳んだまま", async ({ page }) => {
@@ -59,7 +64,9 @@ test("KN105-005 上の帯：いまの場所・探す・知らせの数・自分�
   const crumbs = page.getByRole("navigation", { name: "いまの場所" });
   await expect(crumbs.getByRole("link", { name: "チケット" })).toHaveAttribute("href", "/tickets");
   await expect(crumbs.getByText("自分に関わるもの")).toHaveAttribute("aria-current", "page");
-  await expect(page.getByRole("heading", { level: 1, name: "自分に関わるもの" })).toBeAttached();
+  // 帯の題は見出し（h1）にしない（1 画面の h1 は本文の 1 つだけ・K-138）
+  await expect(page.locator("header.k-bar .k-bar-title")).toHaveText("自分に関わるもの");
+  await expect(page.locator("header.k-bar h1")).toHaveCount(0);
   const box = page.getByRole("searchbox", { name: "探す" });
   await box.fill("請求");
   await box.press("Enter");
@@ -98,7 +105,8 @@ test("KN105-007 スマホ：左のバーは無く、下のタブ（チケット�
   await expect(tabs).toBeVisible();
   await expect(tabs.getByRole("link", { name: /チケット/ })).toHaveAttribute("aria-current", "page");
   await expect(tabs.getByRole("button", { name: "チケットを作る" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1, name: "自分に関わるもの" })).toBeVisible();
+  await expect(page.locator("header.k-bar .k-bar-title")).toHaveText("自分に関わるもの");
+  await expect(page.locator("header.k-bar h1")).toHaveCount(0);
   await tabs.getByRole("button", { name: "メニュー" }).click();
   const sheet = page.getByRole("navigation", { name: "メニュー（全部）" });
   await expect(sheet.getByRole("link", { name: /ワークスペースの管理/ })).toBeVisible();
