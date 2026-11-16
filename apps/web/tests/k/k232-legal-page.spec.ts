@@ -323,3 +323,41 @@ test("K232-UI-017 「← 戻る」の守り：外の origin から来た（refer
   await page.locator(BOX).getByRole("link", { name: "← 戻る" }).click();
   await expect(page).toHaveURL(/\/login$/);
 });
+
+test("K232-UI-018 「← 戻る」の死にボタンを作らない：登録の画面の足元「利用規約」で新しいタブに開き、戻る → /login・ブラウザの戻るで規約に戻り、もう一度戻る → /login（前の項目が無いタブの先頭で history.back() に頼らない・レビュー Q の指摘）", async ({
+  page,
+}) => {
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/signup");
+  const [tab] = await Promise.all([
+    page.context().waitForEvent("page"),
+    page.getByRole("navigation", { name: "Kaname について" }).getByRole("link", { name: "利用規約" }).click(),
+  ]);
+  await tab.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await tab.waitForLoadState();
+  await expect(tab).toHaveURL(/\/legal\/terms/);
+  const back = () => tab.locator(BOX).getByRole("link", { name: "← 戻る" });
+  await back().click();
+  await expect(tab).toHaveURL(/\/login$/);
+  await tab.goBack();
+  await expect(tab).toHaveURL(/\/legal\/terms/);
+  await expect(back()).toBeVisible();
+  await back().click();
+  await expect(tab, "2 回目の「← 戻る」も /login へ移る（何も起きないボタンにしない）").toHaveURL(/\/login$/);
+  await tab.close();
+});
+
+test("K232-UI-019 箱の幅 720px と本文の行の高さ 1.9 は正本の部品から作った値（k-tokens.css の --k-c-*）を読み、文面の CSS に生の値を書かない（レビュー Q の指摘）", () => {
+  const tokens = readFileSync(join(WEB, "styles/k-tokens.css"), "utf8");
+  expect(tokens).toMatch(/--k-c-auth-card-wide-width:\s*720px;/);
+  expect(tokens).toMatch(/--k-c-legal-body-lh:\s*1\.9;/);
+  const legalCss = readFileSync(join(WEB, "features/F1/consent-terms/legal-page.css"), "utf8").replace(
+    /\/\*[\s\S]*?\*\//g,
+    "",
+  );
+  expect(legalCss, "生の 720px を書かない").not.toMatch(/\b720px\b/);
+  expect(legalCss, "生の 1.9 を書かない").not.toMatch(/line-height:\s*1\.9\b/);
+  expect(legalCss).toContain("var(--k-c-auth-card-wide-width)");
+  expect(legalCss).toContain("var(--k-c-legal-body-lh)");
+});
