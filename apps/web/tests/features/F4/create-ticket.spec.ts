@@ -426,11 +426,11 @@ row(R["K60-UI-010"], async (page) => {
   const m = await mockApi(page);
   await open(page);
   await fillAll(page);
-  await page.getByRole("textbox", { name: "開始", exact: true }).fill(jst(10));
+  await page.getByRole("textbox", { name: "開始日", exact: true }).fill(jst(10));
   await create(page).click();
-  await expect.poll(() => reasonOf(page, "開始")).toContain("開始は期限より前の日にしてください");
+  await expect.poll(() => reasonOf(page, "開始日")).toContain("開始は期限より前の日にしてください");
   expect(m.creates).toHaveLength(0);
-  await page.getByRole("textbox", { name: "開始", exact: true }).fill(jst(-30));
+  await page.getByRole("textbox", { name: "開始日", exact: true }).fill(jst(-30));
   await create(page).click();
   await expect.poll(() => m.creates.length).toBe(1);
   expect(m.creates[0]).toMatchObject({ start_on: jst(-30) });

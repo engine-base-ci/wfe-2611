@@ -116,6 +116,12 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 @media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
 """ + NARROW
+# 絵ごとの幅 767 以下の決まり（画面の外枠と同じく上の帯を出さない・足元の帯を下のタブ 60px の上に置く など）。
+# kn-shell の塊の中に足すので、shellfix.py を何度流しても 1 回だけ（K-224：Create）
+NARROW_BY_BOARD = {
+    "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
+                      "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
+}
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
@@ -136,7 +142,7 @@ for path in sorted(glob.glob(P + "*.dc.html")):
     s = PHONE[0].sub(PHONE[1], s)
     if "kn-shell" in s: s = re.sub(r"\n/\* kn-shell.*?(?=</style>)", "\n", s, flags=re.S)
     s = re.sub(r"\n{2,}(?=</style>)", "\n", s, count=1)
-    s = s.replace("</style>", CSS + "</style>", 1)
+    s = s.replace("</style>", CSS + NARROW_BY_BOARD.get(f, "") + "</style>", 1)
     # root
     i = s.index("</helmet>"); j = s.index(">", s.index("<div", i))
     root = s[s.index("<div", i):j+1]
