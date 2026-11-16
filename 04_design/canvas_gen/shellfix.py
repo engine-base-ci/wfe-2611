@@ -121,6 +121,11 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
+    # 自分の設定の PC と使った量（K-230）：画面の外枠と同じく、幅 767 以下は上の帯を出さない（下のタブは外枠の決まり）
+    "MePC.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}}\n",
+    "MePCInstalled.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                             "@media (max-width:767px){.kn-bar{display:none !important}}\n",
 }
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}

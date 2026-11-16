@@ -525,21 +525,18 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
   }
   // 戻るはほかの画面から開いたときだけ出るので、bridge-connected は ?from= つき（一覧から来た形）で開く
   expect(byId("bridge-connected").app).toBe("/setup/bridge?from=%2Ftickets");
-  // 375 は外枠の決まり（767 以下は上の帯なし）に従い、y は本文の箱の上端から比べる（PM の決め 2026-11-17）。訳は必ず書く
+  // 375 は外枠の決まり（767 以下は上の帯なし）に従う：キャンバス MePC・MePCInstalled の絵の側を帯なしに作り直したので、y は頁の上端から比べる（PM の決め 2026-11-17）。
+  //   口に無い補足の字の行の高さだけを外すため、bridge-connected の「Bridge を起こす」の y だけ、幅 767 以下は直し方の箱の上端から比べる（訳つき）
   for (const id of ["bridge-connected", "bridge-installed"]) {
     for (const p of byId(id).pairs.filter((x) => x.props.includes("y"))) {
       const yf = (p as FidelityPair & { y_from?: YFrom }).y_from;
-      expect(yf, `${id} の ${p.name} に y_from`).toBeTruthy();
-      expect(yf!.max_width, `${id} の ${p.name}`).toBe(767);
-      expect(yf!.why.length, `${id} の ${p.name} の訳`).toBeGreaterThan(10);
-      const box = p.name === "Bridge を起こす" ? "直し方の箱" : "本文の箱";
-      if (box === "本文の箱") {
-        expect(yf!.canvas, `${id} の ${p.name}`).toBe("main > div > section");
-        expect(yf!.app, `${id} の ${p.name}`).toBe(".k-page");
-      } else {
-        expect(yf!.app, `${id} の ${p.name}：口に無い補足の行の高さだけを外す`).toBe(".k-pc-fix");
+      if (id === "bridge-connected" && p.name === "Bridge を起こす") {
+        expect(yf, `${id} の ${p.name} に y_from`).toBeTruthy();
+        expect(yf!.max_width).toBe(767);
+        expect(yf!.why.length, "訳").toBeGreaterThan(10);
+        expect(yf!.app, "口に無い補足の行の高さだけを外す").toBe(".k-pc-fix");
         expect(yf!.canvas).toContain("#FFF8EE");
-      }
+      } else expect(yf, `${id} の ${p.name} は頁の上端から比べる（y_from を持たない）`).toBeUndefined();
     }
   }
 });

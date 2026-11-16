@@ -1105,13 +1105,7 @@
       "color",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "見出しの帯",
@@ -1128,13 +1122,7 @@
       "width",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "本文の箱",
@@ -1147,13 +1135,7 @@
       "width",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "つないでいる PC のカード",
@@ -1184,13 +1166,7 @@
       "border-radius",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "Bridge を起こす",
@@ -1225,13 +1201,7 @@
       "color",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "前の設定の画面",
@@ -1995,13 +1965,7 @@
       "color",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "見出しの帯",
@@ -2018,13 +1982,7 @@
       "width",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "本文の箱",
@@ -2037,13 +1995,7 @@
       "width",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "この PC の Bridge のカード",
@@ -2074,13 +2026,7 @@
       "border-radius",
       "x",
       "y"
-     ],
-     "y_from": {
-      "max_width": 767,
-      "canvas": "main > div > section",
-      "app": ".k-page",
-      "why": "外枠の決まりで幅 767 以下は上の帯（48px）を出さず下のタブにする（K-138）。キャンバス MePC・MePCInstalled は 375 でも上の帯を描くので、狭い幅の y は本文の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
-     }
+     ]
     },
     {
      "name": "前の設定の画面",
