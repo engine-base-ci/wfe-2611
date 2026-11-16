@@ -87,7 +87,9 @@ def bridge() -> list[str]:
 
 # ---- 新しい画面用（--k-*） ----
 GROUP = {"colors": "", "syntax": "syn-", "state": "st-", "data": "d-"}
-COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "rounded": "radius", "padding": "pad"}
+COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "rounded": "radius", "padding": "pad",
+             # ページの型（K-217）：部品の高さ・外の余白・行の高さ。行の高さは書体の段より部品の値が勝つ
+             "height": "height", "margin": "margin", "lineHeight": "lh"}
 
 
 def ref(v: str) -> str:
@@ -149,7 +151,7 @@ def web() -> list[str]:
                     sys.exit(f"部品 {name} の書体の参照が読めない: {v}")
                 tk = t.group(1)
                 L.append(f"  --k-c-{name}-text: var(--k-text-{tk});")
-                if "lineHeight" in T[tk]:
+                if "lineHeight" in T[tk] and "lineHeight" not in spec:
                     L.append(f"  --k-c-{name}-lh: var(--k-lh-{tk});")
                 if "fontWeight" in T[tk]:
                     L.append(f"  --k-c-{name}-fw: var(--k-fw-{tk});")

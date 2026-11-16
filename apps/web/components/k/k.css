@@ -15,6 +15,22 @@
   outline: 2px solid var(--k-primary);
   outline-offset: 2px;
 }
+/* クラスの無い見出しを本文（13px・400）に戻さない（K-217）。強さ 0 なので、クラスつきの決まり（.k-section h2 など）に必ず負ける。
+   tailwind の土台（preflight）は @layer base の中で、ここは層の外なので勝つ。入口の枠（.k-auth）は外す（規約の文面の見出しを変えない） */
+:where(.k-root:not(.k-auth)) :where(h1, h2, h3) {
+  font-weight: var(--k-fw-page-title);
+}
+:where(.k-root:not(.k-auth)) :where(h1) {
+  font-size: var(--k-text-page-title);
+  line-height: var(--k-lh-page-title);
+}
+:where(.k-root:not(.k-auth)) :where(h2) {
+  font-size: var(--k-text-section-title);
+  line-height: var(--k-lh-section-title);
+}
+:where(.k-root:not(.k-auth)) :where(h3) {
+  font-size: var(--k-text-body);
+}
 
 /* ---- ボタン（正本 components.button-*）。1 画面に主ボタンは 1 つ ---- */
 .k-btn {
