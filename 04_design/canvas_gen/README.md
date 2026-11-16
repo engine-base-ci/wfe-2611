@@ -50,9 +50,14 @@ python3 shellfix.py      # 全部の画面にそろえの処理をかける（�
 ## 確かめ方
 
 ```bash
-python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks "04_design/canvas/*.dc.html" --no-components
+python3 scripts/ci/canvas_design_gate.py                     # 値：中で design_gate.py --no-components を掛け、D1〜D4（色・書体・角丸・文字）が 0 件。D6 は知らせ
+python3 scripts/ci/canvas_design_gate.py --canvas <写しの置き場>  # 写し（KANAME_CANVAS）で作り手を流したとき（同じく --no-components）
+pnpm --filter @kaname/web exec playwright test tests/k/k254-canvas-layout.spec.ts   # 幅：375・768・1440 で横溢れ 0・潰れた箱 0・幅 767 以下の入力欄 16px
 ```
 
-D1〜D4（色・書体・角丸・文字）が 0 件であること。キャンバスの絵は部品のクラス（.k-btn など）を持たないので D5 は掛けない（--no-components・部品とキャンバスの突き合わせは G70）。D6（正本にあって画面が使っていない色）は、データ色の残りや会話のコードの色分けなど、画面の見本に出ないものだけのはず。
+- 値の検査は design_gate.py をキャンバスに掛ける（--no-components）。赤なら、どの絵がどの値で赤かを絵ごとに出す。CI の spec の組（G71）で毎回流れる。D5 は掛けない（キャンバスの絵は部品のクラスを持たない・部品とキャンバスの突き合わせは G70）。D6（正本にあって絵が使っていない色）は、データ色の残りや会話のコードの色分けなど、絵に出ないものだけのはず
+- 文字の大きさは正本の段だけ。段の外（22px・26px など）は `tokensnap.py` の SIZE で段に寄せる（22・26 は h1 の 20px・K-254）
+- 幅 767 以下の入力欄は 16px（D-144.7）。`shellfix.py` が全部の絵の頭の style に 1 回だけ足す（kn-narrow）。スマホの絵の外枠（390px）は狭い幅で画面の幅に縮む。設定などの 2 つめの左の列（kn-sub）は幅 767 以下で本文の上に折り返す
+- 今の時点で直せない絵の幅は台帳 `scripts/ci/canvas_layout_ledger.json` に理由つきで載せる。台帳は減らすだけで、直った絵の行は消す（幅の試験が赤にする）。段 1 の絵（fidelity.json の組の絵）は載せない
 
 キャンバスに出すときは、`canvas.json`（ページ・画面の置き場所・メモ）も一緒に出す。出す前に、キャンバスで人が動かした分がないか、公開済みの `canvas.json` を読んで確かめる。

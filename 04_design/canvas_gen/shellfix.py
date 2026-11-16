@@ -62,6 +62,16 @@ def opsec(f):
     for k, v in [("OpInbox", "inbox"), ("OpNotice", "notice"), ("OpBill", "bill"), ("OpPay", "bill"), ("OpType", "master"), ("OpPlan", "master"), ("OpTeam", "team")]:
         if n.startswith(k): return v
     return "ws"
+# 幅 767 以下の入力欄は 16px（D-144.7。スマホで入力欄に触れたとき画面が勝手に拡大しない）。広い幅は絵の大きさのまま。
+# 全部の絵（スマホの絵 Mobile* も）の頭の style に 1 回だけ足す。16px にした選ぶ欄が、選んだ字の幅で並びからはみ出さないよう、縮めてよいことにする
+NARROW = ("/* kn-narrow */\n@media (max-width: 767px) { input, textarea, select { font-size: 16px !important } }\n"
+          "@media (max-width: 767px) { select { min-width: 0; max-width: 100% } label:has(> select) { min-width: 0 } }\n")
+# スマホの絵の外枠（幅 390px の固定）は、狭い画面では画面の幅に縮む（広い画面では 390px のまま）
+PHONE = (re.compile(r"(?<![-\w])width: 390px; height: 844px;"), "width: 100%; max-width: 390px; height: 844px;")   # max-width の中には当てない（何度流しても 1 回だけ）
+def narrow(s):
+    s = PHONE[0].sub(PHONE[1], s)
+    s = re.sub(r"/\* kn-narrow \*/\n(?:@media[^\n]*\n)*", "", s)   # 前に足した分は消してから足す（決まりを替えても 1 回だけ）
+    return s.replace("</style>", NARROW + "</style>", 1)
 SIDE = ("選んだもの", "自分の AI", "自分の AI との会話", "チケットのパネル", "ワークスペースの情報", "問い合わせのワークスペース")
 CSS = """
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
@@ -104,7 +114,8 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 @media (max-width:1023px){.kn-sub{width:64px;padding:10px 8px}.kn-sub-h,.kn-sub-t,.kn-sub-n,.kn-sub-note{display:none}.kn-sub-i{justify-content:center;padding:0}.kn-sub-badge{position:absolute;margin:-18px 0 0 18px;font-size:9px;padding:0 4px}}
 @media (max-width:767px){.kn-sub{width:auto;flex:none;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #DDE2E9;padding:6px 8px}.kn-sub-t{display:inline}.kn-sub-i{padding:0 10px;flex:none}}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
-"""
+@media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
+""" + NARROW
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
@@ -117,8 +128,12 @@ def section(f):
     return "tickets"
 for path in sorted(glob.glob(P + "*.dc.html")):
     f = os.path.basename(path)
-    if f.startswith("Mobile"): continue
     s = open(path, encoding="utf-8").read()
+    if f.startswith("Mobile"):
+        s2 = narrow(s)
+        if s2 != s: open(path, "w", encoding="utf-8").write(s2)
+        continue
+    s = PHONE[0].sub(PHONE[1], s)
     if "kn-shell" in s: s = re.sub(r"\n/\* kn-shell.*?(?=</style>)", "\n", s, flags=re.S)
     s = re.sub(r"\n{2,}(?=</style>)", "\n", s, count=1)
     s = s.replace("</style>", CSS + "</style>", 1)

@@ -1387,6 +1387,13 @@
    "blocking": true
   },
   {
+   "id": 71,
+   "name": "キャンバスの値が正本の段（色・書体・角丸・文字）・幅の台帳の形と作り手の流し直し（K-254）",
+   "script": "python3 scripts/ci/canvas_design_gate.py && python3 scripts/ci/k254_canvas_values_test.py",
+   "job": "spec",
+   "blocking": true
+  },
+  {
    "id": 61,
    "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
    "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"",
