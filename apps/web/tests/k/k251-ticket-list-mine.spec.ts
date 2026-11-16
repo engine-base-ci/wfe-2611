@@ -690,9 +690,11 @@ test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せ�
   await expect(btn).toHaveAttribute("aria-expanded", "false");
   await btn.click();
   await expect(btn).toHaveAttribute("aria-expanded", "true");
-  const box = page.getByRole("dialog", { name: "表に出す列" });
+  const box = page.getByRole("dialog", { name: "自分に関わるものの見え方" });
   await expect(box).toBeVisible();
-  for (const name of COLUMNS) await expect(box.getByRole("checkbox", { name, exact: true }), name).toBeChecked();
+  const cols = box.getByRole("group", { name: "表に出す列" });
+  await expect(cols.getByRole("checkbox")).toHaveCount(COLUMNS.length);
+  for (const name of COLUMNS) await expect(cols.getByRole("checkbox", { name, exact: true }), name).toBeChecked();
   for (const name of ["番号", "題名"])
     await expect(box.getByRole("checkbox", { name, exact: true }), name).toBeDisabled();
   await box.getByRole("checkbox", { name: "種別", exact: true }).uncheck();
@@ -715,10 +717,13 @@ test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せ�
   await expect(heads).toHaveText(left);
   // はじめに戻す
   await btn.click();
-  await page.getByRole("dialog", { name: "表に出す列" }).getByRole("button", { name: "はじめに戻す" }).click();
+  await page
+    .getByRole("dialog", { name: "自分に関わるものの見え方" })
+    .getByRole("button", { name: "はじめに戻す" })
+    .click();
   await expect(heads).toHaveText(COLUMNS);
   await btn.click();
-  await expect(page.getByRole("dialog", { name: "表に出す列" })).toHaveCount(0);
+  await expect(page.getByRole("dialog", { name: "自分に関わるものの見え方" })).toHaveCount(0);
   expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
 });
 
@@ -749,7 +754,7 @@ for (const w of [320, 375]) {
     await open(page, "/tickets", w);
     await expect(rowsOf(page)).toHaveCount(3);
     await page.getByRole("button", { name: "表示設定" }).click();
-    const box = page.getByRole("dialog", { name: "表に出す列" });
+    const box = page.getByRole("dialog", { name: "自分に関わるものの見え方" });
     await expect(box).toBeVisible();
     expect(await overflowX(page)).toBe(0);
     const b = (await box.boundingBox())!;
@@ -757,3 +762,107 @@ for (const w of [320, 375]) {
     expect(b.x + b.width).toBeLessThanOrEqual(w);
   });
 }
+
+for (const check of ["empty", "fail"] as const) {
+  test(`K251-UI-035 自分に関わるものが 0 件で会社にはチケットが在る（確かめの口が ${check === "empty" ? "1 件を返す" : "500"}）：はじめて にせず、Main の形で表の見出しだけと空の文（PM の決め 2026-11-17）`, async ({
+    page,
+  }) => {
+    const m = await mockList(page, {
+      list: (q) => {
+        if (q.get("view") !== "all") return ok([], { next_cursor: null });
+        if (check === "fail") return { status: 500, body: { error: "server_error", code: "INTERNAL" } };
+        return ok([item(9)], { next_cursor: "c9" });
+      },
+    });
+    await open(page);
+    await expect(page.getByText("自分に関わるチケットはありません")).toBeVisible();
+    const probes = m.listCalls.filter((q) => q.get("view") === "all");
+    expect(probes).toHaveLength(1);
+    expect(probes[0]!.get("limit")).toBe("1");
+    await expect(table(page).getByRole("columnheader")).toHaveText(COLUMNS);
+    await expect(rowsOf(page)).toHaveCount(0);
+    await expect(page.locator('[aria-label="数の札"]')).toBeVisible();
+    await expect(page.locator('[aria-label="自分に関わるものの絞り込み"]')).toBeVisible();
+    await expect(page.getByText("ようこそ")).toHaveCount(0);
+    await expect(page.locator('[data-state="empty"]')).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "はじめにやること" })).toHaveCount(0);
+  });
+}
+
+test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ぶのは外枠の数の 1 回だけ（自分に関わるものより 1 回少ない）", async ({
+  page,
+}) => {
+  const count = async (path: string) => {
+    const p = await page.context().newPage();
+    let n = 0;
+    p.on("request", (r) => {
+      if (new URL(r.url()).pathname === "/api/v1/approvals/queue") n += 1;
+    });
+    await mockList(p);
+    await open(p, path);
+    await expect(rowsOf(p)).toHaveCount(3);
+    await expect(p.getByRole("region", { name: "自分の承認を待っているもの" })).toHaveCount(
+      path === "/tickets" ? 1 : 0,
+    );
+    await expect(p.locator("aside.k-list-side")).toHaveCount(path === "/tickets" ? 1 : 0);
+    await p.waitForLoadState("networkidle");
+    await p.close();
+    return n;
+  };
+  const mine = await count("/tickets");
+  const all = await count("/tickets?view=all");
+  expect(all).toBe(1);
+  expect(mine).toBe(all + 1);
+});
+
+test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べ、どれもグレーで押せない・口を呼ばない・箱に影がある（D-145.9）", async ({
+  page,
+}) => {
+  const m = await mockList(page);
+  await open(page);
+  await expect(rowsOf(page)).toHaveCount(3);
+  await page.getByRole("button", { name: "表示設定" }).click();
+  const box = page.getByRole("dialog", { name: "自分に関わるものの見え方" });
+  await expect(box).toBeVisible();
+  expect(await box.evaluate((e) => getComputedStyle(e).boxShadow)).not.toBe("none");
+  const groups: [string, string[]][] = [
+    ["上の数字", ["期限切れ", "今日まで", "自分が承認", "AI が動いている", "今週まで"]],
+    [
+      "右に出すもの",
+      ["自分の承認を待っているもの", "高本のAI のいま", "最近の知らせ", "自分が担当・承認するものの動き"],
+    ],
+    ["表の分け方", ["期限", "グループ", "状態"]],
+    ["入れるもの", ["担当しているもの", "承認するもの・渡されたもの", "自分が担当・承認するもの"]],
+  ];
+  for (const [title, names] of groups) {
+    const g = box.getByRole("group", { name: title });
+    await expect(g, title).toBeVisible();
+    await expect(g.locator('[aria-disabled="true"]'), title).toHaveCount(names.length);
+    for (const name of names) {
+      const it = g.locator('[aria-disabled="true"]', { hasText: name }).first();
+      await expect(it, name).toHaveCount(1);
+      expect(await it.evaluate((e) => e.tagName), name).not.toBe("A");
+      expect(Number(await it.evaluate((e) => getComputedStyle(e).opacity)), name).toBeCloseTo(DISABLED_OPACITY, 3);
+      await it.click({ force: true });
+    }
+  }
+  // 押しても表の列も箱も変わらない
+  await expect(box).toBeVisible();
+  await expect(table(page).getByRole("columnheader")).toHaveText(COLUMNS);
+  expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
+});
+
+test("K251-UI-038 本人の名前を読めない（自分の情報の口が 500）：右の列の見出しは「AI のいま」で、「のAI」から始まる欠けた見出しが無い", async ({
+  page,
+}) => {
+  await mockList(page);
+  await page.route(/\/api\/auth-ext\/me$/, (route) =>
+    route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ code: "INTERNAL" }) }),
+  );
+  await open(page);
+  await expect(rowsOf(page)).toHaveCount(3);
+  const side = page.locator("aside.k-list-side");
+  await expect(side.getByRole("heading", { name: /^AI のいま/ })).toBeVisible();
+  for (const h of await side.getByRole("heading").allInnerTexts()) expect(h.startsWith("のAI"), h).toBe(false);
+  await expect(side.getByRole("region", { name: /^のAI/ })).toHaveCount(0);
+});
