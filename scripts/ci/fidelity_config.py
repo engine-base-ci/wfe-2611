@@ -66,6 +66,12 @@ KINDS: dict[str, dict[str, list[Any]]] = {
     "shell-sub": {"roles": ["nav", "subnav"], "widths": [1440]},
     "shell-tabs": {"roles": ["tabs"], "widths": [375]},
 }
+# 種類ごとに、役に要る値のうち外してよい物（K-232）。長い文面（doc）の見出しは、キャンバスでは短い文面を縦の真ん中に置き、
+#   本物の文面は上から始まるので、縦の位置 y は比べられない。外せるのは doc の h1 の y だけで、ほかの値（x・字の大きさ・太さ など）と
+#   ほかの種類の y は今までどおり要る
+KIND_OPTIONAL: dict[str, dict[str, list[str]]] = {
+    "doc": {"h1": ["y"]},
+}
 # 段 1 の組（11_tickets/K-216.md の「段 1 の組」と同じ 21 組）
 REQUIRED: list[str] = [
     "signup", "signup-waiting", "login", "login-2fa", "legal",
@@ -109,8 +115,9 @@ def check_pairs(gid: str, kind: str, pairs: Any) -> list[str]:
             errs.append(f"{where}：知らない役 {role!r}（{'・'.join(ROLES)}）")
             continue
         roles.add(role)
+        optional = KIND_OPTIONAL.get(kind, {}).get(role, [])
         for need in ROLES[role]:
-            if need not in props:
+            if need not in props and need not in optional:
                 errs.append(f"{where}：役 {role} に要る値 {need} が無い")
     for need in KINDS.get(kind, {}).get("roles", []):
         if need not in roles:
@@ -350,6 +357,12 @@ def selftest() -> int:
     assert check_pairs("g", "doc", [good]) == ["g：種類 doc に要る役 card が無い"], check_pairs("g", "doc", [good])
     weak = dict(good, props=["font-size"])
     assert any("x" in e for e in check_pairs("g", "doc", [weak]))
+    # K-232：doc の見出しだけ y を外せる。doc でも x は要る・doc 以外の見出しは y が要る
+    card = {"name": "箱", "role": "card", "canvas": "c", "app": "a", "props": list(ROLES["card"])}
+    no_y = dict(good, props=[x for x in ROLES["h1"] if x != "y"])
+    assert check_pairs("g", "doc", [card, no_y]) == [], check_pairs("g", "doc", [card, no_y])
+    assert any("値 y" in e for e in check_pairs("g", "auth-msg", [card, no_y]))
+    assert any("値 x" in e for e in check_pairs("g", "doc", [card, dict(good, props=[x for x in ROLES["h1"] if x != "x"])]))
     base = [{"id": "g", "enrolled": True, "canvas": "C", "app": "/", "widths": [1440], "pairs": [good]}]
     assert check_ratchet(base, base) == []
     assert check_ratchet(base, [dict(base[0], enrolled=False)])

@@ -294,13 +294,13 @@
     375
    ],
    "owner": "K-232",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
      "role": "card",
      "canvas": "x-dc > div > div:nth-of-type(2)",
-     "app": ".k-legal",
+     "app": "[data-part=\"auth-box\"]",
      "props": [
       "background-color",
       "border-top-color",
@@ -315,14 +315,13 @@
      "name": "見出し",
      "role": "h1",
      "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
-     "app": ".k-legal h1",
+     "app": "[data-part=\"auth-box\"] h1",
      "props": [
       "font-size",
       "font-weight",
       "line-height",
       "color",
-      "x",
-      "y"
+      "x"
      ]
     }
    ]
