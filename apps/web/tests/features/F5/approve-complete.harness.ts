@@ -349,6 +349,8 @@ export const openQueue = async (page: Page, width = 1440) => {
   const res = await page.goto("/approvals");
   expect(res?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1, name: /承認待ち/ })).toBeVisible();
+  // 見出しは一覧を読む前から出る。最初の読み込みが終わる（読み込み中が消える）まで待ってから、試験が口の答えを差し替える（K-138）
+  await expect(page.locator('#k-main [aria-busy="true"]')).toHaveCount(0);
 };
 export const openTicket = async (page: Page, width = 1440) => {
   await page.setViewportSize({ width, height: 1000 });
