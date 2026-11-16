@@ -726,7 +726,7 @@ test("K221-UI-029 6 けた：自動入力で 1 つめの枠に 482913 が一度�
 /** 画面の側で口を呼んだ回数を数える（網の手前の受け手は画面が答えを受け取る前に数えるので、押した直後の回数は画面の側で見る） */
 async function countCalls(page: Page) {
   await page.addInitScript(() => {
-    const w = window as unknown as { __k221: Record<string, number> };
+    const w = window as unknown as { __k221: { signIn: number; verify: number } };
     w.__k221 = { signIn: 0, verify: 0 };
     const orig = window.fetch.bind(window);
     window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
