@@ -325,7 +325,8 @@ test("K257-UI-020 2 行に割らない：14 枚の 題（小窓の題も）・�
           return [
             e.getAttribute("title"),
             (e.textContent ?? "").replace(/\s+/g, " ").trim(),
-            e.scrollWidth > e.clientWidth + 1,
+            // インラインの題（小窓の b）は幅を持たないので、包む頭の行の箱で切れを見る
+            ((b) => b.scrollWidth > b.clientWidth + 1)(getComputedStyle(e).display === "inline" ? e.parentElement! : e),
             cs.textOverflow === "ellipsis" &&
               (cs.overflowX === "hidden" || cs.overflowX === "clip") &&
               cs.whiteSpace === "nowrap",
