@@ -473,19 +473,28 @@ textarea.k-input {
   background: color-mix(in srgb, var(--k-on-surface) 40%, transparent);
 }
 .k-dialog {
+  /* 置き場（K-229・キャンバス）：上から 60px・左右の真ん中・左右は画面の端から lg。幅は data-size（form 420・confirm 380） */
   position: fixed;
   z-index: 81;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(480px, calc(100vw - 2 * var(--k-s-md)));
-  max-height: calc(100dvh - 2 * var(--k-s-md));
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: var(--k-c-dialog-margin);
+  width: var(--k-c-dialog-form-width);
+  max-width: calc(100vw - 2 * var(--k-s-lg));
+  max-height: calc(100dvh - 2 * var(--k-s-xl));
   overflow-y: auto;
   box-sizing: border-box;
   padding: 0;
   background: var(--k-c-dialog-bg);
   color: var(--k-on-surface);
-  border: 1px solid var(--k-line);
+  /* 小窓は .k-root の外（body の直下）に出るので、字の大きさと行の高さを本文に戻す */
+  font-family: var(--k-font);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  /* 縁は箱の外の輪（大きさに足さない）と影（正本の dialog の shadow。暗いテーマは輪だけ） */
+  border: 0;
+  box-shadow: var(--k-c-dialog-shadow);
   border-radius: var(--k-c-dialog-radius);
   outline: 0;
 }
@@ -522,8 +531,15 @@ textarea.k-input {
   color: var(--k-on-surface);
   background: var(--k-surface-variant);
 }
+.k-dialog[data-size="confirm"] {
+  width: var(--k-c-dialog-confirm-width);
+}
 .k-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
   padding: var(--k-c-dialog-body-pad);
+  min-width: 0;
 }
 .k-dialog-body:empty {
   display: none;
@@ -539,6 +555,94 @@ textarea.k-input {
   gap: var(--k-s-sm);
   padding: var(--k-c-dialog-actions-pad);
   border-top: var(--k-c-dialog-actions-border-top);
+}
+/* 足のボタンは高さ 34（StModal）。ふつうの大きさ（md）のボタンだけ（sm・lg は替えない） */
+.k-dialog-actions .k-btn[data-size="md"] {
+  min-height: var(--k-c-dialog-button-height);
+}
+/* 確かめの小窓の説明（赤い箱と説明の文をまとめて読み上げにつなぐ）。段の間は本文と同じ */
+.k-dialog-describe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
+  min-width: 0;
+}
+/* 取り消せない注意の赤い箱（StApproveModal） */
+.k-dialog-caution {
+  margin: 0;
+  padding: var(--k-c-dialog-caution-pad);
+  background: var(--k-c-dialog-caution-bg);
+  color: var(--k-c-dialog-caution-fg);
+  border: var(--k-c-dialog-caution-border);
+  border-radius: var(--k-c-dialog-caution-radius);
+  overflow-wrap: anywhere;
+}
+.k-dialog-caution p {
+  margin: 0;
+}
+/* 頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
+.k-dialog-target {
+  margin: 0;
+  color: var(--k-c-dialog-target-fg);
+  font-size: var(--k-c-dialog-target-text);
+  line-height: var(--k-c-dialog-target-lh);
+  overflow-wrap: anywhere;
+}
+/* 小窓の中の項目の枠（fieldset：実施事項・次は誰が直すか） */
+.k-dialog-group {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: var(--k-c-dialog-group-pad);
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-c-dialog-group-radius);
+}
+.k-dialog-group legend {
+  padding: 0 var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+}
+/* 項目の多い小窓の段（StReturnModal：段の間 12px）。項目名は 12px・行の高さ 1.6 */
+.k-dialog-stack {
+  display: grid;
+  gap: var(--k-c-dialog-stack-gap);
+  min-width: 0;
+}
+.k-dialog-stack .k-label {
+  line-height: var(--k-c-dialog-check-lh);
+}
+.k-dialog-stack select.k-input {
+  min-height: var(--k-c-dialog-select-height);
+}
+.k-dialog-stack textarea.k-input {
+  min-height: var(--k-c-dialog-textarea-height);
+}
+/* 小窓の中のチェック・選ぶ印の行（12px・印と字の間 6px） */
+.k-dialog-check {
+  display: flex;
+  gap: var(--k-c-dialog-check-gap);
+  align-items: flex-start;
+  min-width: 0;
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+}
+.k-dialog-check input {
+  flex: none;
+  accent-color: var(--k-primary); /* 余白はブラウザの既定のまま（キャンバスと同じ・左 4px） */
+}
+/* 押せない欄（正本の input-disabled：input そのものを薄く） */
+.k-dialog input:disabled,
+.k-dialog select:disabled,
+.k-dialog [aria-disabled="true"]:is(input, select, button[role="combobox"]) {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 必須の印（StReturnModal「必須」） */
+.k-field-required {
+  color: var(--k-c-field-required-fg);
+  font-size: var(--k-c-field-required-text);
 }
 
 /* ---- 見た目の切り替え（システム・明るい・暗い・D-128.55）---- */
