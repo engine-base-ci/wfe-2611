@@ -562,6 +562,13 @@ textarea.k-input {
 .k-dialog-actions .k-btn[data-size="md"] {
   min-height: var(--k-c-dialog-button-height);
 }
+/* 確かめの小窓の説明（赤い箱と説明の文をまとめて読み上げにつなぐ）。段の間は本文と同じ */
+.k-dialog-describe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-body-gap);
+  min-width: 0;
+}
 /* 取り消せない注意の赤い箱（StApproveModal） */
 .k-dialog-caution {
   margin: 0;

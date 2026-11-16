@@ -6,7 +6,7 @@
 //   開いたときのフォーカスは本文の最初の欄、無ければ足の最初のボタン、どちらも無ければ小窓そのもの（× には置かない）。
 //   取り消せない確かめ（Confirm）は × を持たない（キャンバスの「承認して送ります」）。閉じるのは足の「やめる」と Esc
 //   置き場と幅（K-229・キャンバス）：上から 60px・左右の真ん中。幅は size（form＝420・confirm＝380。どちらも画面の幅 − 48px まで）。
-//   Confirm は tone（主ボタン primary｜danger）・caution（赤い箱）・children（チェックなど）・confirmDisabled を持つ。
+//   Confirm は tone（主ボタン primary｜danger）・caution（赤い箱）・children（チェックなど）・confirmDisabled を持つ。赤い箱と説明は小窓の説明（読み上げ）につなぐ。
 //   答えを待つ間（busy）は「やめる」も押せず、Esc でも閉じない（2 回目を送らせない）
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as D } from "@base-ui/react/dialog";
@@ -140,15 +140,18 @@ export function Confirm({
           </div>
           {hasBody ? (
             <div className="k-dialog-body">
-              {caution?.length ? (
-                <div className="k-dialog-caution">
-                  {caution.map((c, i) => (
-                    <p key={i}>{c}</p>
-                  ))}
-                </div>
-              ) : null}
-              {description ? (
-                <AlertDialog.Description className="k-dialog-desc">{description}</AlertDialog.Description>
+              {/* 注意の赤い箱と説明は 1 つの説明（aria-describedby）にまとめ、開いたときの読み上げにつなぐ（K-229） */}
+              {caution?.length || description ? (
+                <AlertDialog.Description render={<div className="k-dialog-describe" />}>
+                  {caution?.length ? (
+                    <div className="k-dialog-caution">
+                      {caution.map((c, i) => (
+                        <p key={i}>{c}</p>
+                      ))}
+                    </div>
+                  ) : null}
+                  {description ? <p className="k-dialog-desc">{description}</p> : null}
+                </AlertDialog.Description>
               ) : null}
               {children}
             </div>
