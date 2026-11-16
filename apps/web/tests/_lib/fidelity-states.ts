@@ -93,6 +93,63 @@ async function putTicket(page: Page): Promise<void> {
     [SIGNUP_TOKEN, SIGNUP_EMAIL] as const,
   );
 }
+/** 確認のリンクと同意し直しの口を差し替える（K-256）。verify：hold＝確定の口が答えない（確定中のまま）・expired＝410・used＝409。
+ *  同意し直しは本人（/me）と今の版（利用規約・プライバシーポリシーの 2 つ）を返す */
+const VERIFY_TOKEN = "vt_fidelity_0123456789abcdefghijklmnopqrstuvwxyz";
+const TERMS_AT = "2026-11-01T00:00:00.000Z";
+async function verifyApi(page: Page, verify: "hold" | "expired" | "used" | "none"): Promise<void> {
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
+    const req = route.request();
+    const p = new URL(req.url()).pathname;
+    let r: { status: number; body: unknown } = {
+      status: 401,
+      body: { error: "unauthenticated", code: "UNAUTHENTICATED" },
+    };
+    if (req.method() === "POST" && p === "/api/v1/auth/sign-up/verify") {
+      if (verify === "hold") return; // 答えない（確定中のまま）
+      if (verify === "expired")
+        r = {
+          status: 410,
+          body: { code: "E-AUTH-003", message: "リンクの期限が切れました。もう一度登録してください" },
+        };
+      else if (verify === "used")
+        r = {
+          status: 409,
+          body: {
+            code: "E-CONF-011",
+            message: "このメールアドレスの登録は確認まで終わっています。ログインしてください",
+          },
+        };
+    } else if (p === "/api/v1/auth/terms/current")
+      r = {
+        status: 200,
+        body: {
+          data: [
+            {
+              id: "00000000-0000-4000-8000-000000000301",
+              kind: "terms",
+              version: "第2版",
+              url: "/legal/terms?v=2",
+              published_at: TERMS_AT,
+            },
+            {
+              id: "00000000-0000-4000-8000-000000000302",
+              kind: "privacy",
+              version: "第2版",
+              url: "/legal/privacy?v=2",
+              published_at: TERMS_AT,
+            },
+          ],
+        },
+      };
+    else if (/\/me$/.test(p) && verify === "none")
+      r = { status: 200, body: { data: { id: ME, email: SIGNUP_EMAIL, name: "高本" } } };
+    await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
+  });
+}
+const withToken = (path: string) => `${path}${path.includes("?") ? "&" : "?"}token=${VERIFY_TOKEN}`;
+
 /** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
 async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
@@ -123,6 +180,29 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await putTicket(page);
     await page.goto(path);
     await untilStatusText(page, "読み込んでいます…");
+  },
+  // 確認のリンクを開いた後（K-256・キャンバス AuthVerifying・AuthVerifyExpired・AuthVerifyUsed）：手がかりつきで開き、状態の見出しか文が出るまで待つ
+  "verify-confirming": async (page, path) => {
+    await verifyApi(page, "hold");
+    await page.goto(withToken(path));
+    await untilStatusText(page, "登録を確定しています…");
+  },
+  "verify-expired": async (page, path) => {
+    await verifyApi(page, "expired");
+    await page.goto(withToken(path));
+    await expect(page.locator('[data-part="auth-box"] h1')).toHaveText("リンクの期限が切れました");
+  },
+  "verify-used": async (page, path) => {
+    await verifyApi(page, "used");
+    await page.goto(withToken(path));
+    await expect(page.locator('[data-part="auth-box"] h1')).toHaveText("登録は終わっています");
+  },
+  // 規約の同意し直し（K-256・キャンバス AuthConsent）：ログインの印を置き、本人と今の版を返して開き、チェックが出るまで待つ
+  "consent-terms": async (page, path) => {
+    await verifyApi(page, "none");
+    await page.addInitScript(() => window.localStorage.setItem("kaname.token", "tok-fidelity"));
+    await page.goto(path);
+    await expect(page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" })).toBeVisible();
   },
   "shell-nav": async (page, path) => {
     await shellApi(page, 2);

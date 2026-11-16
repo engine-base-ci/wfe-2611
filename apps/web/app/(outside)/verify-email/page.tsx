@@ -17,7 +17,8 @@ function VerifyEmailSwitch() {
   useEffect(() => setKept(readLinkToken()), []);
   const token = current ?? first ?? kept;
   if (token) return <VerifyLink token={token} />;
-  if (kept === undefined) return null; // 覚えた手がかりを読むまで待つ（読むのは画面が開いた直後の 1 回）
+  // 覚えた手がかりを読むまで待つ（読むのは画面が開いた直後の 1 回）。その間も入口の枠を出し続ける（箱を消さない・真っ白にしない・K-256）
+  if (kept === undefined) return <AuthLoading />;
   return <SignupWaiting />;
 }
 

@@ -172,6 +172,38 @@
 .k-auth-foot a {
   color: var(--k-on-surface-variant);
 }
+/* 「いまの様子 ・ 困ったとき」（キャンバス AuthVerifyExpired・K-256）：字の「・」で区切る 1 行（flex にしない） */
+.k-auth-foot[data-foot="status"] {
+  display: block;
+  color: var(--k-on-surface-variant);
+}
+/* その画面がまだ無い行き先：正本の button-disabled の薄さで押せない形（隠さない・D-145.9） */
+.k-auth-foot a[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 箱の中の主の行き先（リンクの形のボタン・K-256）：下線を付けない */
+.k-auth a.k-btn {
+  text-decoration: none;
+}
+/* 入口の箱の中の知らせ（キャンバス AuthVerifyExpired・AuthVerifyUsed・K-256）。共通の Callout（k.css）は変えない。
+   12px・行の高さ 1.7・余白 8 と 10・角丸 8。warn は淡い橙の地と線、info は灰の地で線なし */
+[data-part="auth-box"] .k-callout {
+  padding: var(--k-s-sm) 10px;
+  border-radius: var(--k-r-field);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-c-auth-lead-body-lh);
+}
+[data-part="auth-box"] .k-callout[data-tone="warn"] {
+  background: var(--k-st-warning-soft);
+  border: 1px solid var(--k-st-warning-line);
+  color: var(--k-st-on-warning-container);
+}
+[data-part="auth-box"] .k-callout[data-tone="info"] {
+  background: var(--k-surface);
+  border: 0;
+  color: var(--k-on-surface-variant);
+}
 .k-auth-mail {
   font-weight: var(--k-fw-h2);
   color: var(--k-on-surface);

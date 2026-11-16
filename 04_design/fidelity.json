@@ -1232,8 +1232,9 @@
     1440,
     375
    ],
-   "owner": "K-222",
-   "enrolled": false,
+   "owner": "K-256",
+   "enrolled": true,
+   "busy": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -1276,8 +1277,8 @@
     1440,
     375
    ],
-   "owner": "K-222",
-   "enrolled": false,
+   "owner": "K-256",
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -1312,7 +1313,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
-     "app": "[data-part=\"auth-box\"] :is(a, button)",
+     "app": "[data-part=\"auth-box\"] a[data-variant=\"primary\"]",
      "props": [
       "height",
       "background-color",
@@ -1336,8 +1337,8 @@
     1440,
     375
    ],
-   "owner": "K-222",
-   "enrolled": false,
+   "owner": "K-256",
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -1372,7 +1373,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
-     "app": "[data-part=\"auth-box\"] :is(a, button)",
+     "app": "[data-part=\"auth-box\"] a[data-variant=\"primary\"]",
      "props": [
       "height",
       "background-color",
@@ -1396,8 +1397,8 @@
     1440,
     375
    ],
-   "owner": "K-222",
-   "enrolled": false,
+   "owner": "K-256",
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -1432,7 +1433,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "x-dc > div > div:nth-of-type(2) > a[style*=\"border-radius: 8px\"]",
-     "app": "[data-part=\"auth-box\"] :is(a, button)",
+     "app": "[data-part=\"auth-box\"] button[data-variant=\"primary\"]",
      "props": [
       "height",
       "background-color",
