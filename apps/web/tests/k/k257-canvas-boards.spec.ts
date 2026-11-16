@@ -261,7 +261,7 @@ async function linesOf(page: Page, sel: string): Promise<{ text: string; lines: 
       .filter((e) => (e as HTMLElement).checkVisibility() && (e.textContent ?? "").trim() !== "")
       .map((e) => {
         const rects: [number, number][] = [];
-        // 字と字の間で行が替わる所が、英数字（数・記号を含む）の途中か
+        // 行が替わる所が、割れてよい所（空白・「、」「・」「（」の前後）でないか（PM の決め・レビューの指摘）
         let cut = false;
         let prev: { ch: string; top: number } | null = null;
         const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
@@ -282,12 +282,7 @@ async function linesOf(page: Page, sel: string): Promise<{ text: string; lines: 
             const q = r.getClientRects()[0];
             if (!q || q.width < 0.5) continue;
             rects.push([q.top, q.height]);
-            if (
-              prev &&
-              q.top > prev.top + q.height * 0.7 &&
-              /[0-9A-Za-z,.:/-]/.test(prev.ch) &&
-              /[0-9A-Za-z,.:/-]/.test(s[i]!)
-            )
+            if (prev && q.top > prev.top + q.height * 0.7 && !"、・（".includes(prev.ch) && !"、・（".includes(s[i]!))
               cut = true;
             prev = { ch: s[i]!, top: q.top };
           }
@@ -307,7 +302,7 @@ async function linesOf(page: Page, sel: string): Promise<{ text: string; lines: 
   );
 }
 
-test("K257-UI-020 2 行に割らない：14 枚の 題（小窓の題も）・帯の文・進みの段・ボタン・札・表の見出しは幅 1440・768・375 で 1 行（幅 375 の帯の文だけ 2 行まで・英数字の途中で割らない）。題が切れたら「…」で全文は title。詳細の形の 7 枚の題はいつも title に全文", async ({
+test("K257-UI-020 2 行に割らない：14 枚の 題（小窓の題も）・帯の文・進みの段・ボタン・札・表の見出しは幅 1440・768・375 で 1 行（幅 375 の帯の文だけ 2 行までで、割れてよい所（空白・「、」「・」「（」の前後）でだけ割れる）。題が切れたら「…」で全文は title。詳細の形の 7 枚の題はいつも title に全文", async ({
   browser,
 }) => {
   test.setTimeout(300_000);
@@ -319,7 +314,10 @@ test("K257-UI-020 2 行に割らない：14 枚の 題（小窓の題も）・�
         const band = kind === "帯の文" && w === 375;
         for (const r of await linesOf(page, sel)) {
           if (r.lines > (band ? 2 : 1)) bad.push(`${b} 幅 ${w}：${kind}「${r.text}」が ${r.lines} 行`);
-          if (band && r.cut) bad.push(`${b} 幅 375：帯の文「${r.text}」が英数字の途中で割れている`);
+          if (band && r.cut)
+            bad.push(
+              `${b} 幅 375：帯の文「${r.text}」が割れてよい所（空白・「、」「・」「（」の前後）でない所で割れている`,
+            );
         }
       }
       for (const h of await page.locator(ONE_LINE[0]![1]).all()) {

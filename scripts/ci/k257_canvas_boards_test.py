@@ -257,6 +257,49 @@ class Boards(unittest.TestCase):
             changed = [f.name for f in CANVAS.glob("*.dc.html") if (pathlib.Path(d) / f.name).read_text(encoding="utf-8") != f.read_text(encoding="utf-8")]
         self.assertEqual(changed, [])
 
+    def _tree(self, d: str) -> pathlib.Path:
+        """作り手と絵と設定の写しの木（本物の木は読むだけ）。作り手は写しの木の中の 04_design/canvas_gen を流す"""
+        t = pathlib.Path(d)
+        shutil.copytree(ROOT / "04_design", t / "04_design", ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(ROOT / "11_tickets", t / "11_tickets")
+        (t / "packages" / "errors" / "src").mkdir(parents=True)
+        shutil.copy(CATALOG, t / "packages" / "errors" / "src" / "catalog.ts")
+        return t
+
+    def _run(self, t: pathlib.Path, script: str) -> None:
+        env = {k: v for k, v in os.environ.items() if k not in ("KANAME_CANVAS", "K257_NO_SIDEFILES")}
+        r = subprocess.run([sys.executable, script], cwd=t / "04_design" / "canvas_gen", env=env, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, script + r.stdout[-2000:] + r.stderr[-2000:])
+
+    def test_K257_CV_008_sidefiles_kept(self):
+        """K257-CV-008 作り手を設定ごと流し直しても（K257_NO_SIDEFILES なし）、持ち主が後から直した組（return-modal を enrolled: true に）は戻らず、
+        fidelity.json・canvas.json・canvas-screens.json・見比べの 1 枚 K-257.html と、どの絵も 1 字も変わらない（組は無いときだけ足す）"""
+        with tempfile.TemporaryDirectory() as d:
+            t = self._tree(d)
+            fp = t / "04_design" / "fidelity.json"
+            f = json.loads(fp.read_text(encoding="utf-8"))
+            f["groups"] = [{**g, "enrolled": True} if g["id"] == "return-modal" else g for g in f["groups"]]
+            fp.write_text(json.dumps(f, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            files = ["04_design/fidelity.json", "04_design/canvas/canvas.json", "04_design/canvas-screens.json", "04_design/canvas-review/K-257.html"]
+            before = {p: (t / p).read_text(encoding="utf-8") for p in files}
+            boards = {f.name: f.read_text(encoding="utf-8") for f in (t / "04_design" / "canvas").glob("*.dc.html")}
+            self._run(t, "k257.py")
+            changed = [p for p in files if (t / p).read_text(encoding="utf-8") != before[p]]
+            changed += [n for n, s in boards.items() if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != s]
+        self.assertEqual(changed, [])
+
+    def test_K257_CV_008_other_generators(self):
+        """K257-CV-008 承認待ちの絵の持ち主も k257.py：lists.py か k219.py を単独で流した後に k257.py を流すと、このチケットの絵（変えた 14 枚と ApEmpty）は今の木と 1 字も変わらない"""
+        mine = [f"{n}.dc.html" for n in CHANGED + ["ApEmpty"]]
+        bad = []
+        for other in ("lists.py", "k219.py"):
+            with tempfile.TemporaryDirectory() as d:
+                t = self._tree(d)
+                self._run(t, other)
+                self._run(t, "k257.py")
+                bad += [f"{other} の後：{n}" for n in mine if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != (CANVAS / n).read_text(encoding="utf-8")]
+        self.assertEqual(bad, [])
+
     def test_K257_CV_011_pc_actions(self):
         """K257-CV-011 PC をつなぐの絵に、今の画面に在って絵に無かった操作を全部、画面の本物の文と形で描き足す：EdPC の 2 段目の説明の行の中に button[data-act="new-code"]「新しいコード」（字のリンクの形）、MePC の切れている行の直し方の箱の中に E-CONN-001 の文と button[data-act="wake"]「Bridge を起こす」、3 枚とも本文の最後の「ほかの設定」の文の中に a[data-act="legacy"]「前の設定の画面」、MePC の頭の並びで題の前に a[data-act="back"]「戻る」（EdPC・MePCInstalled には無い）、MePCInstalled のつなぐの隣に button[data-act="switch-account"]「このアカウントに切り替える」（危ない操作の形）。条件つきの 2 つ（戻る・切り替える）は見比べの 1 枚に「…のときだけ出る」の 1 行。受け取るは字のリンクのまま（枠のボタンにしない）・行は足さない（札 3 つ・最後に見えた 1 つのまま）"""
         bad = []
