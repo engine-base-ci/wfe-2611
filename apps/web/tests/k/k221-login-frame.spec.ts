@@ -621,3 +621,164 @@ test("K221-UI-024 ログインしたまま同意し直し（?step=terms）の画
   await expect(page.locator(".k-auth-card, [data-part='auth-box']").first()).toBeVisible();
   await expect(page.locator(`${BOX} [data-act="passkey"]`)).toHaveCount(0);
 });
+
+// ---- Q の指摘（1・2・4・5）から足した行（025〜031） ----
+const codeVals = (page: Page) =>
+  page
+    .locator(`${BOX} input[aria-label$="けた目"]`)
+    .evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
+
+test("K221-UI-025 6 けた：空の 3 つめで Backspace を押すと 2 つめに戻って空になる。続けて打つと 482913 が 1 回届く", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).click();
+  await page.keyboard.type("47", { delay: 30 });
+  await expect(digit(page, 3)).toBeFocused();
+  await page.keyboard.press("Backspace");
+  await expect(digit(page, 2)).toBeFocused();
+  await expect(digit(page, 2)).toHaveValue("");
+  expect(await codeVals(page)).toEqual(["4", "", "", "", "", ""]);
+  await page.keyboard.type("82913", { delay: 30 });
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+  expect(m.verifies).toHaveLength(1);
+  expect(m.verifies[0]).toMatchObject({ code: "482913" });
+});
+
+test("K221-UI-026 6 けた：全角の「４８２９１３」を打つと各枠は半角の 1 字になり、口に 482913 が 1 回届く", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  m.on.verify = () => ({ status: 200, body: { data: { token: "tok-k221" } }, delayMs: 600 });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).click();
+  await page.keyboard.type("４８２９１３", { delay: 30 });
+  await expect.poll(() => codeVals(page)).toEqual(["4", "8", "2", "9", "1", "3"]);
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+  expect(m.verifies).toHaveLength(1);
+  expect(m.verifies[0]).toMatchObject({ code: "482913" });
+});
+
+test("K221-UI-027 6 けた：日本語の変換中に打っても、確定のたびに半角の 1 字だけが入り（二重に入らない）、482913 が 1 回届く", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  m.on.verify = () => ({ status: 200, body: { data: { token: "tok-k221" } }, delayMs: 600 });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).click();
+  const cdp = await page.context().newCDPSession(page);
+  const full = ["４", "８", "２", "９", "１", "３"];
+  for (let i = 0; i < full.length; i += 1) {
+    // 変換の途中（下線つきの文字）。この間は次の枠へ移らない
+    await cdp.send("Input.imeSetComposition", { text: full[i]!, selectionStart: 1, selectionEnd: 1 });
+    await expect(digit(page, i + 1)).toBeFocused();
+    // 確定
+    await cdp.send("Input.insertText", { text: full[i]! });
+    if (i < full.length - 1) await expect(digit(page, i + 2)).toBeFocused();
+  }
+  await expect.poll(() => codeVals(page)).toEqual(["4", "8", "2", "9", "1", "3"]);
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+  expect(m.verifies).toHaveLength(1);
+  expect(m.verifies[0]).toMatchObject({ code: "482913" });
+});
+
+test("K221-UI-028 6 けた：入っている 2 つめをクリックして 7 を打つと 7 に替わって 3 つめへ移る。5 つめから 1・3 を打つと 472913 が 1 回届く", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).click();
+  await page.keyboard.type("4829", { delay: 30 });
+  await digit(page, 2).click();
+  await page.keyboard.type("7");
+  await expect(digit(page, 2)).toHaveValue("7");
+  await expect(digit(page, 3)).toBeFocused();
+  expect(await codeVals(page)).toEqual(["4", "7", "2", "9", "", ""]);
+  expect(m.verifies).toHaveLength(0);
+  await digit(page, 5).click();
+  await page.keyboard.type("13", { delay: 30 });
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+  expect(m.verifies).toHaveLength(1);
+  expect(m.verifies[0]).toMatchObject({ code: "472913" });
+});
+
+test("K221-UI-029 6 けた：自動入力で 1 つめの枠に 482913 が一度に入ると、6 つの枠に 1 字ずつ配られて 482913 が 1 回届く", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  m.on.verify = () => ({ status: 200, body: { data: { token: "tok-k221" } }, delayMs: 600 });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).fill("482913");
+  await expect.poll(() => codeVals(page)).toEqual(["4", "8", "2", "9", "1", "3"]);
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+  expect(m.verifies).toHaveLength(1);
+  expect(m.verifies[0]).toMatchObject({ code: "482913" });
+});
+
+test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」も「入る」も回る印のまま押せず、もう一度押しても口は 1 回", async ({
+  page,
+}) => {
+  // 行き先の画面の読み込み（文書と、画面の中で移るときの RSC の ?_rsc= の両方）を止めておき、移る途中の画面で確かめる
+  let release: () => void = () => undefined;
+  const held = new Promise<void>((r) => (release = r));
+  await page.route(new RegExp(`${NEXT}(\\?|$)`), async (route) => {
+    await held;
+    await route.continue();
+  });
+  const m = await mockAuth(page);
+  await open(page);
+  await mail(page).fill("takamoto@example.com");
+  await pass(page).fill("correct-horse-battery-1");
+  await nextBtn(page).click();
+  await expect.poll(() => m.signIns.length).toBe(1);
+  const b = nextBtn(page);
+  await expect(b).toHaveAttribute("aria-busy", "true");
+  await expect(b).toBeDisabled();
+  await b.evaluate((e) => (e as HTMLButtonElement).click());
+  await page.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
+  expect(m.signIns).toHaveLength(1);
+  release();
+  await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
+
+  // 6 けたの確かめが成功した後も同じ
+  let release2: () => void = () => undefined;
+  const held2 = new Promise<void>((r) => (release2 = r));
+  const page2 = await page.context().newPage();
+  await page2.route(new RegExp(`${NEXT}(\\?|$)`), async (route) => {
+    await held2;
+    await route.continue();
+  });
+  const m2 = await mockAuth(page2, { twoFactor: true });
+  await open(page2);
+  await toTwoFactor(page2);
+  await digit(page2, 1).click();
+  await page2.keyboard.type("482913", { delay: 30 });
+  await expect.poll(() => m2.verifies.length).toBe(1);
+  const enter = page2.locator(BOX).getByRole("button", { name: "入る", exact: true });
+  await expect(enter).toHaveAttribute("aria-busy", "true");
+  await expect(enter).toBeDisabled();
+  await page2.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
+  await expect(page2.locator(BOX).getByRole("alert")).toHaveCount(0);
+  expect(m2.verifies).toHaveLength(1);
+  release2();
+  await expect(page2).toHaveURL(new RegExp(`${NEXT}$`));
+});
+
+test("K221-UI-031 空のバックアップコードで「入る」：口を呼ばず、箱の中に正本の文（コードを入れてください）が出る", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  await open(page);
+  await toTwoFactor(page);
+  await page.locator(BOX).getByRole("button", { name: "認証アプリが使えない" }).click();
+  await page.getByRole("textbox", { name: "バックアップコード" }).fill("　 ");
+  await page.locator(BOX).getByRole("button", { name: "入る", exact: true }).click();
+  await expect(page.locator(BOX).getByRole("alert")).toHaveText("コードを入れてください");
+  expect(m.verifies).toHaveLength(0);
+});
