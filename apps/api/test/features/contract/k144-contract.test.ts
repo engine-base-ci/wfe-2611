@@ -16,6 +16,7 @@ import { createApp } from "../../../src/app.js";
 import { agentHooks } from "../../../src/hooks/agent.js";
 import { approveHooks } from "../../../src/hooks/approve-complete.js"; // K-185：承認の口（K-161〜K-166）も同じ土台で叩く
 import { delegateHooks } from "../../../src/hooks/delegate.js";
+import { setupTaskHooks } from "../../../src/hooks/setup-tasks.js"; // K-250：はじめにやることの口も同じ土台で叩く
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
@@ -137,6 +138,9 @@ beforeAll(async () => {
   // K-185 ここから：承認して完了する（K-63 の孫）の口も足す（作った口の uuid の行を叩くため）
   f = await makeFixture([ticketHooks, agentHooks, delegateHooks, approveHooks]);
   // K-185 ここまで
+  // K-250 ここから：はじめにやることの口も足す（作った口の uuid の行 K144-API-058 を叩くため・土台の hooks は作った後に作り直さない）
+  Object.assign(f.hooks, setupTaskHooks(f.pool));
+  // K-250 ここまで
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -495,6 +499,7 @@ export const UUID_PARAM_CASES = [
   ["K144-API-057", "approveApproval", "path", "id"], // K-185（拾い方の直しと一緒に）
   ["K144-API-054", "returnApproval", "path", "id"], // K-163
   ["K144-API-055", "completeTicket", "path", "id"], // K-165
+  ["K144-API-058", "listSetupTasks", "query", "scope_id"], // K-250（一覧の口の問い合わせ scope_id）
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
