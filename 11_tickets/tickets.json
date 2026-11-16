@@ -10907,7 +10907,8 @@
     "packages/auth/src/resolver.ts",
     "packages/auth/src/index.ts",
     "apps/api/src/middleware/tenant.ts",
-    "apps/api/src/app.ts"
+    "apps/api/src/app.ts",
+    ".gitleaksignore"
    ],
    "affects": [
     "@kaname/api",
