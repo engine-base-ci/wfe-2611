@@ -89,6 +89,27 @@ row(R["K63-UI-009"], async (page) => {
   expect(m.returns).toHaveLength(0);
   await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(1);
 });
+row(R["K63-UI-074"], async (page) => {
+  const m = await mockApi(page);
+  await openQueue(page);
+  await openReturn(page);
+  await reasonBox(page).fill("やっぱりやめる");
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dialog(page).locator(".k-dialog-head").getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  expect(m.returns).toHaveLength(0);
+  await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(1);
+});
+row(R["K63-UI-076"], async (page) => {
+  const m = await mockApi(page);
+  await openQueue(page);
+  await openReturn(page);
+  await expect(reasonBox(page)).toBeFocused();
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).not.toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog(page)).toBeVisible();
+  expect(m.returns).toHaveLength(0);
+});
 row(R["K63-UI-010"], async (page) => {
   const m = await mockApi(page);
   await openQueue(page);
@@ -151,6 +172,21 @@ row(R["K63-UI-024"], async (page) => {
   expect(m.returns[0]).toEqual({ id: A_OPEN, body: { note: "宛名を直してください" } });
   await expect(dialog(page)).toHaveCount(0);
   await expect(bandOf(page)).toHaveCount(0); // 作り直し（phase make）の間は K-63 の帯を出さない（K-62 の帯だけ・D-128.178）
+});
+row(R["K63-UI-073"], async (page) => {
+  const m = await mockApi(page); // 承認待ち・決められる人
+  await openTicketSettled(page);
+  await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
+  await expect(dialog(page)).toBeVisible();
+  await reasonBox(page).fill("宛名を直してください");
+  // 小窓の中で名前「閉じる」は頭の × の 1 つだけ（足に「閉じる」を重ねない）
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dialog(page).locator(".k-dialog-head").getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  expect(m.returns).toHaveLength(0);
+  await expect(bandOf(page)).toContainText("あなたの承認を待っています");
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
+  await expect(bandOf(page).getByRole("button", { name: "差し戻す" })).toBeVisible();
 });
 row(R["K63-UI-042"], async (page) => {
   const m = await mockApi(page); // 承認待ち・決められる人（承認する人）

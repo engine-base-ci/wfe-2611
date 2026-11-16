@@ -60,10 +60,6 @@
   --d-plum: #6B3F5E;
   --d-lavender: #6B5B99;
   --d-teal-light: #537E7B;
-  --text-metric-lg: 26px;
-  --lh-metric-lg: 1.1;
-  --text-display: 22px;
-  --lh-display: 1.35;
   --text-h1: 20px;
   --lh-h1: 1.35;
   --text-h2: 18px;
@@ -80,8 +76,6 @@
   --lh-body-md: 1.6;
   --text-body: 13px;
   --lh-body: 1.6;
-  --text-chat: 13px;
-  --lh-chat: 1.65;
   --text-body-sm: 12px;
   --lh-body-sm: 1.5;
   --text-label-md: 11px;

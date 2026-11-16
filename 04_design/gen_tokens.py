@@ -89,7 +89,11 @@ def bridge() -> list[str]:
 GROUP = {"colors": "", "syntax": "syn-", "state": "st-", "data": "d-"}
 COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "rounded": "radius", "padding": "pad",
              # ページの型（K-217）：部品の高さ・外の余白・行の高さ。行の高さは書体の段より部品の値が勝つ
-             "height": "height", "margin": "margin", "lineHeight": "lh"}
+             "height": "height", "margin": "margin", "lineHeight": "lh",
+             # 部品の太さと中の間（K-218）。太さは書体の段より部品の値が勝つ
+             "fontWeight": "fw", "gap": "gap",
+             # 小窓の頭・足の線、× の大きさ、使えない状態（K-218）
+             "borderTop": "border-top", "borderBottom": "border-bottom", "width": "width", "opacity": "opacity"}
 
 
 def ref(v: str) -> str:
@@ -153,7 +157,7 @@ def web() -> list[str]:
                 L.append(f"  --k-c-{name}-text: var(--k-text-{tk});")
                 if "lineHeight" in T[tk] and "lineHeight" not in spec:
                     L.append(f"  --k-c-{name}-lh: var(--k-lh-{tk});")
-                if "fontWeight" in T[tk]:
+                if "fontWeight" in T[tk] and "fontWeight" not in spec:
                     L.append(f"  --k-c-{name}-fw: var(--k-fw-{tk});")
             elif p in COMP_PROP:
                 L.append(f"  --k-c-{name}-{COMP_PROP[p]}: {ref(v)};")

@@ -1321,10 +1321,14 @@ K-217,部品：ページの型（見出しの帯・本文の箱・区画・整�
 - [ ] G37（トークンと部品・D1〜D4）と apps/web/test/k-tokens.test.ts（components/k に生の値を書かない）が緑のまま
 - [ ] canvas は `全部の組`（全部の画面に効く土台）。入れた組（K-238 の G70）が全部緑のまま。画面の組を入れるのは各画面のチケット
 - [ ] チケットの CI が緑"
-K-218,DESIGN.md をキャンバスに合わせて直す（ボタン・入力欄・項目名・小窓・空の状態・読み込み・文字の段の数）。design_gate を features の CSS と組み立てにも掛ける,課題,K-213,未着手,作る,,段・画面,DESIGN-kaname.md の components の値がキャンバスと食い違い（調べの §4 X1〜X7）、実装は DESIGN.md に従ったのでキャンバスと違って見える。D-143.2 でキャンバスが正と決めた。正本を直してトークンを作り直し、design_gate（G37）を部品だけでなく features の CSS と画面の組み立てにも掛ける（調べの H1・H11）。文字の段が K-217 で 2 つ増えるので、使われない段を消して 10 段以内に戻す（design-system.md §3）,"- [ ] X1〜X7 の値が DESIGN-kaname.md でキャンバスと同じ（下の表）。生成器でトークンとプレビューを作り直した
-- [ ] G37 が features/*.css と components/k の組み立てにも掛かり、D5（部品の対応）を component_selectors で検査している
-- [ ] 文字・角丸・余白の段が design-system.md §3 の数に収まり、1 度も使われない段が無い（D6）
-- [ ] canvas は `全部の組`：入れた組（G70）が全部緑のまま
+K-218,DESIGN.md をキャンバスに合わせて直す（ボタン・入力欄・項目名・小窓・空の状態・読み込み・文字の段の数）。design_gate を features の CSS と組み立てにも掛ける,課題,K-213,未着手,実装,2026-11-18,段・画面,"DESIGN-kaname.md の components の値がキャンバスと食い違い（調べの §4 X1〜X7）、実装は DESIGN.md に従ったのでキャンバスと違って見える。D-143.2 でキャンバスが正と決めた。正本を直してトークンを作り直し、部品（components/k）をその値にする。
+
+あわせて、値の検査 design_gate（G37）の穴を 2 つ塞ぐ（調べの H1・H11）：
+
+1. 部品（components/k）にしか掛かっておらず、画面の CSS（apps/web/features）を見ていない。D5（部品の定義と CSS の規則の突き合わせ）は design-gate.json に component_selectors が無く「検査していません」と出るだけ（design_gate.py は component_selectors があっても何も比べない）
+2. 文字の段の数を誰も数えていない。K-217 で 2 段（page-title・section-title）増えて 14 段になる。design-system.md §3 の「10 を超えない」「1 度も使われない段を残さない」を機械で見る","- [ ] 下の 30 行（K218-DS-001〜030）が緑（入力欄の幅 375 の 16px は D-144.7）
+- [ ] G37 が apps/web/features の CSS にも掛かり、D5 と段の検査（--scales）が緑
+- [ ] canvas は `全部の組`（全部の画面に効く土台）：入れた組（K-238 の G70）が全部緑のまま
 - [ ] チケットの CI が緑"
 K-219,キャンバスに絵が無い状態の絵を起こし、代表に見てもらう（人の確認つき）,課題,K-213,未着手,実装,2026-11-18,段・設計,段 1 の画面の状態のうち 11 個はキャンバスに絵が無い（調べの §2）。絵が無い状態は、作る前に絵を起こして代表に見てもらう（D-143.5）。起こした絵は 04_design/canvas に置き、04_design/canvas-screens.json の画面に載せ、突き合わせの組（04_design/fidelity.json・K-216）を足して、直す画面のチケットが完了の前に突き合わせられるようにする。OnHome・OnLoading も今はどの画面にも載っていないので、チケットの画面（tickets）に移す。,"- [ ] 下の 13 行（K219-CV-001〜013）のうち、人が確かめる 1 行を除く 12 行が緑
 - [ ] 代表が比べる 1 枚（04_design/canvas-review/K-219.html）を見て OK と言った（決める人の答えの記録 01_hearing/decider-answers.jsonl に残る・K219-CV-011）

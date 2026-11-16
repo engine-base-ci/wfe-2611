@@ -308,3 +308,14 @@ row(R["K63-UI-058"], async (page) => {
   expect(m.completes).toHaveLength(0);
   await expect(page.getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
 });
+row(R["K63-UI-075"], async (page) => {
+  const m = await mockApi(page, executedBand);
+  await openTicket(page);
+  await openComplete(page);
+  await dialog(page).getByRole("checkbox", { name: "請求書を作る" }).check();
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dialog(page).locator(".k-dialog-head").getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  expect(m.completes).toHaveLength(0);
+  await expect(page.getByRole("button", { name: "完了にする", exact: true })).toBeVisible();
+});

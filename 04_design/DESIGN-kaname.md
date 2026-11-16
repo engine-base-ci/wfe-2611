@@ -87,17 +87,6 @@ data:
   teal-light: "#537E7B"  # 白い字で 4.5:1（もとの #5E8F8B は 3.63:1 で AA に届かなかった・K-24 の確かめで見つけた）
 typography:
   # 書体は Noto Sans JP 1 つ（D-128.3）。密度は 1 行 36px・本文 13px（D-128.13）
-  metric-lg:
-    fontFamily: "Noto Sans JP"
-    fontSize: 26px
-    fontWeight: 700
-    lineHeight: 1.1
-    fontVariantNumeric: tabular-nums
-  display:
-    fontFamily: "Noto Sans JP"
-    fontSize: 22px
-    fontWeight: 700
-    lineHeight: 1.35
   h1:
     fontFamily: "Noto Sans JP"
     fontSize: 20px
@@ -139,11 +128,6 @@ typography:
     fontSize: 13px
     fontWeight: 400
     lineHeight: 1.6
-  chat:
-    fontFamily: "Noto Sans JP"
-    fontSize: 13px
-    fontWeight: 400
-    lineHeight: 1.65
   body-sm:
     fontFamily: "Noto Sans JP"
     fontSize: 12px
@@ -174,42 +158,113 @@ rounded:
   xl: 20px
   full: 9999px
 components:
+  # ボタン（K-218・D-143.2：値はキャンバスの実測。作業の画面は高さ 32（StModal 34・帯 32・詳細 30 の間）、入口は 44（AuthSignup・AuthVerify））
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.body-sm}"
+    typography: "{typography.body}"
+    fontWeight: 500
     rounded: "{rounded.md}"
-    padding: "12px 24px"
+    height: "32px"
+    padding: "0 {spacing.md}"
+  button-primary-lg:    # 入口の画面の大きさ（Button size="lg"）
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.body-md}"
+    fontWeight: 500
+    rounded: "{rounded.field}"
+    height: "44px"
+    padding: "0 {spacing.lg}"
   button-secondary:
     backgroundColor: "{colors.secondary-container}"
     textColor: "{colors.on-secondary-container}"
-    typography: "{typography.body-sm}"
+    typography: "{typography.body}"
+    fontWeight: 500
     rounded: "{rounded.md}"
-    padding: "12px 24px"
-  button-outlined:
-    backgroundColor: "transparent"
-    textColor: "{colors.primary}"
-    border: "1.5px solid {colors.primary}"
-    typography: "{typography.body-sm}"
+    height: "32px"
+    padding: "0 {spacing.md}"
+  button-outlined:      # 従ボタン（StModal の「やめる」：白地・灰の線・黒字・太さを付けない）
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.body}"
+    fontWeight: 400
     rounded: "{rounded.md}"
-    padding: "12px 24px"
+    height: "32px"
+    padding: "0 14px"
   button-inverted:
     backgroundColor: "{colors.on-primary}"
     textColor: "{colors.primary}"
-    typography: "{typography.body-sm}"
+    typography: "{typography.body}"
+    fontWeight: 500
     rounded: "{rounded.md}"
-    padding: "12px 24px"
+    height: "32px"
+    padding: "0 {spacing.md}"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.lg}"
     padding: "{spacing.lg}"
     border: "1px solid {colors.surface-variant}"
+  # 入力欄（K-218：作業の画面は Create・StModal、入口は AuthSignup。幅 767 以下は字を 16px にする・D-144.7・k.css）
   input:
-    backgroundColor: "{colors.surface-variant}"
+    backgroundColor: "{colors.card}"
     textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line-strong}"
+    typography: "{typography.body}"
     rounded: "{rounded.md}"
-    padding: "{spacing.md}"
+    padding: "6px 10px"
+  input-lg:             # 入口の画面の大きさ（Field size="lg"）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.field}"
+    height: "42px"
+    padding: "0 12px"
+  field:                # 項目名と欄の組（作業の画面：間 xs＝4px・Create）
+    gap: "{spacing.xs}"
+  field-lg:             # 入口の画面の組（間 6px・AuthSignup）
+    gap: "6px"
+  label:                # 項目名（作業の画面：太さを付けない・灰・欄との間 xs）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+  label-lg:             # 項目名（入口：500・黒・欄との間 6px）
+    textColor: "{colors.on-surface}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  # 小窓（StModal：頭は題と右上の ×・下に線、足は上に線とボタン）
+  dialog:
+    backgroundColor: "{colors.card}"
+    rounded: "{rounded.lg}"
+  dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）
+    typography: "{typography.h3}"
+    fontWeight: 700
+  dialog-head:          # 頭：題と右上の ×・下に線
+    padding: "14px 18px"
+    borderBottom: "1px solid {colors.line}"
+  dialog-body:
+    padding: "14px 18px"
+  dialog-actions:       # 足：上に線・右寄せのボタン
+    padding: "12px 18px"
+    borderTop: "1px solid {colors.line}"
+  dialog-close:         # 右上の ×（名前「閉じる」）。取り消せない確かめ（Confirm）には付けない
+    width: "28px"
+    height: "28px"
+  # 使えない状態（決める人 answer=78cb822fc1f1：隠さず、薄くして押せない形で出す）。キャンバスに絵が無いので今の実装の値を写した
+  button-disabled:
+    opacity: 0.55
+  input-disabled:
+    opacity: 0.55
+  tab-disabled:
+    opacity: 0.55
+  # 空のとき（OnHome・OnClients・OnKnowledge・OnRoom：白地の点線の箱・中央寄せ）
+  state-empty:
+    backgroundColor: "{colors.card}"
+    border: "1px dashed {colors.line-strong}"
+    rounded: "{rounded.lg}"
+    padding: "36px 28px"
+    gap: "12px"
   # ---- 自分のAIとの会話（D-104）。会話を出す 5 か所は全部この部品（AgentChat）
   chat-bubble-me:
     backgroundColor: "{colors.surface-variant}"
@@ -276,7 +331,7 @@ components:
     padding: "12px {spacing.lg}"
   page-head-button:     # 帯の中の既定の大きさのボタン（Approvals「続けて裁く」30px）。sm のボタンには当てない
     height: "30px"
-    padding: "6px {spacing.lg}"
+    padding: "0 {spacing.lg}"   # 高さは min-height の 30 で決める（上下の余白を置くと字 13px の行で 30 を超える・K-218）
   page-body:            # 本文の箱（下の余白。ほかの子は左右 spacing.lg 内側・帯の下から spacing.md）
     padding: "0 0 40px"
   section-title:        # 区画の見出し（下に線）
@@ -491,8 +546,6 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 
 | 段 | 大きさ | 使う所 |
 |---|---|---|
-| `metric-lg` | 26px | 大きな数（めったに使わない） |
-| `display` | 22px | ログイン・1 件ずつ裁く画面の題 |
 | `h1` | 20px | ページの題（チケット・ナレッジ・取引先） |
 | `h2` | 18px | 管理の画面の題・数の札の数字 |
 | `h3` | 15px | 小窓の題・カードの題 |
@@ -506,6 +559,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 | `label-xs` | 10px | 数のしるし（バッジ）・顔の 1 文字 |
 
 段の間の大きさ（17・19・21px など）は使わない。`tokensnap.py` が寄せる。
+段は**大きさの種類で数えて 10 まで**（design-system.md §3）。1 度も使われない段は置かない（K-218 で metric-lg・display・chat を消した）。どちらも design_gate の `--scales`（D6 段・D7）が見る。
 
 ## Layout
 
@@ -574,9 +628,10 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 ## Components
 
 ### Buttons
+大きさは 2 つ（K-218・キャンバスの実測）。**作業の画面**は高さ 32・字 13px（`body`）・太さ 500・角丸 `md`（`button-primary`）。**入口の画面**（登録・ログイン・確認）は高さ 44・字 14px（`body-md`）・角丸 `field`（`button-primary-lg`・Button `size="lg"`）。表の中や帯の小さな操作は sm（高さ 28）。
 - **Primary** — 最重要アクション。**1 画面に 1 つ**が原則（承認画面なら「承認する」）
 - **Secondary** — 重要だが補助的（「直す」）
-- **Outlined** — 代替アクション、破壊的操作の確認（「却下」）
+- **Outlined** — 従の操作（「やめる」「下書きのまま閉じる」）。白地・`1px solid line`・黒字・太さを付けない（400）
 - **Inverted** — Primary 背景上での使用
 
 ### Status Pill（状態ピル）
@@ -589,13 +644,14 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lucide の `sparkles` 相当のアイコン。「AI が提案しました」を明示する。
 
 ### Metric（数値表示）
-`metric-*` トークン ＋ `tabular-nums` ＋ 表では `text-align: right`。目標に対する実績は「目標 12,000,000 に対して 69.4%」のように**ラベル付きの日本語**で書き、進捗バーを併記する。「8,330,000 / 12,000,000」のようなスラッシュだけの分数表記は使わない（何が実績で何が目標か読み手に伝わらないため）。
+数の段（数の札は `h2`）＋ `tabular-nums` ＋ 表では `text-align: right`。目標に対する実績は「目標 12,000,000 に対して 69.4%」のように**ラベル付きの日本語**で書き、進捗バーを併記する。「8,330,000 / 12,000,000」のようなスラッシュだけの分数表記は使わない（何が実績で何が目標か読み手に伝わらないため）。
 
 ### Cards
 白（`card`）の面 ＋ `1px solid line` ＋ 角丸 `card`。ページの地は `page`。影は使わない。
 
 ### Inputs
-白の面 ＋ `1px solid line` ＋ 角丸 `md`。フォーカスと書いている最中は `1px solid primary` ＋ `0 0 0 2px primary-container` の輪。
+白の面 ＋ 角丸。作業の画面は `1px solid line-strong`・角丸 `md`・字 13px・余白 6px 10px（`input`）。入口の画面は高さ 42・`1px solid line`・角丸 `field`・字 14px・余白 0 12px（`input-lg`・Field `size="lg"`）。**幅 767 以下は字を 16px**（`input` の段・iPhone が入力のたびに拡大するのを防ぐ・D-144.7）。フォーカスと書いている最中は `1px solid primary` ＋ `0 0 0 2px primary-container` の輪。
+項目名は欄の上に 12px。作業の画面は太さを付けず `on-surface-variant`・欄との間 4px（`label`）。入口の画面は 500・`on-surface`・間 6px（`label-lg`）。
 
 ### 選んでいるもの（2 つめのパネルは「白いカードが浮く」を高本さんが選んだ）
 - 白い面の中で選んでいる行・項目：`select` の灰の塗り
@@ -613,7 +669,7 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 白いカードに 説明（12px）・数（18px・太字）・補足（11px）。気にかけてほしい数だけ `st-warning`／`st-danger` の字の色。
 
 ### 小窓・引き出し・ポップオーバー
-小窓は真ん中（幅 520〜620・角丸 `lg`・下に やめる／決める）。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
+小窓は真ん中（幅 520〜620・白地・角丸 `lg`）。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
 
 ### 帯（お知らせ・確かめ・運営）
 - 注意：`warning-soft` の地 ＋ `warning-line` の線 ＋ 札
@@ -621,7 +677,10 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 - 運営として中を見ている：画面のいちばん上に黒い帯 ＋ 画面のふちに `st-warning` の枠（D-128.68）
 
 ### 空のとき
-点線の枠（`line-strong`）の箱に 印・何がないか・足すと何がうれしいか・最初のボタン。2 つめのパネルは出さない（D-128.66）。
+白地の点線の枠（`1px dashed line-strong`・角丸 `lg`・余白 36px 28px・間 12px）の箱を本文の幅いっぱいに置き、中を**中央寄せ**で 印・何がないか・足すと何がうれしいか・最初のボタン（`state-empty`）。2 つめのパネルは出さない（D-128.66）。
+
+### 読み込み中
+枠と見出し（帯）を先に描き、中身の所は空けておく。**3 秒たっても終わらないときだけ**「読み込んでいます…」の文を出す（すぐ読めるときにちらつかせない・キャンバスの OnLoading・D-144.8）。
 
 ### AI の印（D-128.16）
 ロボットの線の絵 ＋「高本のAI」のように名前つき。AI に任せていることは担当者の横に札で出す（実行者の欄は持たない・D-128.26）。

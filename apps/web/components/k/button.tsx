@@ -1,11 +1,13 @@
 "use client";
 // ボタン（K-24・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+//   大きさ（K-218・キャンバス）：md＝作業の画面（高さ 32）・lg＝入口の画面（高さ 44）・sm＝表の中や帯の小さな操作（28）
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "outlined" | "inverted" | "ghost" | "danger";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
-  size?: "md" | "sm";
+  size?: "md" | "sm" | "lg";
+  ref?: Ref<HTMLButtonElement>;
   icon?: ReactNode;
   /** 押したあと答えを待っている間。押し直しを止め、読み上げにも「処理中」と伝える */
   loading?: boolean;

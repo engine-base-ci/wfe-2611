@@ -7,7 +7,7 @@
 <title>Kaname — Design System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     /* === SYSTEM COLORS === */
@@ -47,9 +47,9 @@
     --data-plum:   #6B3F5E;
 
     /* === TYPOGRAPHY === */
-    --font-headline: 'M PLUS 2', 'Hiragino Sans', sans-serif;
-    --font-body: 'M PLUS 2', 'Hiragino Sans', sans-serif;
-    --font-label: 'M PLUS 2', 'Hiragino Sans', sans-serif;
+    --font-headline: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    --font-body: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    --font-label: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
     /* コード表示にのみ等幅を使う（UI の数値には使わない） */
     --font-code: ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -331,85 +331,69 @@
 </section>
 
 <!-- 4. TYPOGRAPHY -->
+<!-- gen:type -->
 <section class="ds-section">
-  <div class="ds-section-title">Typography ── 1書体で組む</div>
-  <div class="ds-note">
-    <b>M PLUS 2 の単一書体。</b> 見出し・本文・ラベル・数値をすべて 1 書体で組む。数値だけ別書体にすると「目標 12,000,000 に対して 69.4%」のように文と数字が混ざる行で<b>数字だけが浮く</b>。Kaname はその画面が中心なので、1 書体に統一してこの問題を構造的に無くしている。<br>
-    なお <b>M PLUS 2 の数字は元から全字が同じ幅</b>（実測：<span class="num">111,111,111</span> と <span class="num">888,888,888</span> が同一幅）。等幅書体を使わなくても桁は揃う。縦に揃えるために本当に要るのは<b>数値列の右寄せ</b>のほうで、これが無いと幅が揃っていても揃って見えない。
-  </div>
-
+  <div class="ds-section-title">Typography ── 1 書体・段は大きさの種類で 10 まで</div>
+  <div class="ds-note"><b>Noto Sans JP の単一書体。</b> 段は 11 個・大きさの種類は 9 個（10px / 11px / 12px / 13px / 14px / 15px / 16px / 18px / 20px）。1 度も使われない段は置かない（design_gate の --scales）。数値は tabular-nums と右寄せで桁を揃える。</div>
   <div class="type-grid">
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Headline Display</div>
-        <div class="type-sample" style="font-family:var(--font-headline); font-size:60px; font-weight:700; letter-spacing:-.02em;">要Aa</div>
-      </div>
-      <div class="type-meta">72px · 太さ700 · 行間1.1<br>ページ見出し</div>
+    <div class="type-card" data-type="h1" data-size="20px">
+      <div class="type-scale-name">h1</div>
+      <div class="type-sample" style="font-size:20px; font-weight:700;">要の文字 Aa 1,234</div>
+      <div class="type-meta">20px · 太さ700 · 行間1.35<br>ページの題（チケット・ナレッジ・取引先）</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Headline LG / MD</div>
-        <div class="type-sample" style="font-family:var(--font-headline); font-size:44px; font-weight:700; letter-spacing:-.01em;">要Aa</div>
-        <div style="font-size:24px; font-weight:600; margin-top:6px;">今期の売上目標</div>
-      </div>
-      <div class="type-meta">48px · 太さ700 ／ 36px · 太さ600<br>セクション見出し・カード見出し</div>
+    <div class="type-card" data-type="h2" data-size="18px">
+      <div class="type-scale-name">h2</div>
+      <div class="type-sample" style="font-size:18px; font-weight:700;">要の文字 Aa 1,234</div>
+      <div class="type-meta">18px · 太さ700 · 行間1.4<br>管理の画面の題・数の札の数字</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Body</div>
-        <div class="type-sample" style="font-size:34px; font-weight:400;">要Aa</div>
-        <div style="font-size:15px; line-height:1.8; margin-top:8px; color:var(--color-on-surface-variant);">カスタマーサクセスの達成率が3か月連続で下がっています。原因は初回面談から契約までの日数が平均11日伸びたことだと考えられます。</div>
-      </div>
-      <div class="type-meta">18 / 16 / 14px · 太さ400<br>本文・説明文</div>
+    <div class="type-card" data-type="h3" data-size="15px">
+      <div class="type-scale-name">h3</div>
+      <div class="type-sample" style="font-size:15px; font-weight:600;">要の文字 Aa 1,234</div>
+      <div class="type-meta">15px · 太さ600 · 行間1.5<br>小窓・カードの題</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Metric ── 数値</div>
-        <div class="type-sample num" style="font-size:40px; font-weight:600; letter-spacing:-.02em;">8,330,000</div>
-        <div class="num" style="font-size:14px; color:var(--color-on-surface-variant); margin-top:8px;">目標 12,000,000 に対して 69.4%</div>
-      </div>
-      <div class="type-meta">40 / 26 / 14px · 太さ600<br>本文と同じ書体。桁だけ揃える</div>
+    <div class="type-card" data-type="page-title" data-size="18px">
+      <div class="type-scale-name">page-title</div>
+      <div class="type-sample" style="font-size:18px; font-weight:700;">要の文字 Aa 1,234</div>
+      <div class="type-meta">18px · 太さ700 · 行間1.6<br>ページの型の見出しの帯</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Page title / Section title</div>
-        <div style="font-size:18px; font-weight:700; line-height:1.6;">チケット</div>
-        <div style="font-size:16px; font-weight:700; line-height:1.7; margin-top:8px; padding-bottom:6px; border-bottom:1px solid var(--color-surface-variant);">目的</div>
-      </div>
-      <div class="type-meta">18px · 太さ700 · 行間1.6 ／ 16px · 太さ700 · 行間1.7<br>ページの型の見出しの帯・区画の見出し（K-217）</div>
+    <div class="type-card" data-type="section-title" data-size="16px">
+      <div class="type-scale-name">section-title</div>
+      <div class="type-sample" style="font-size:16px; font-weight:700;">要の文字 Aa 1,234</div>
+      <div class="type-meta">16px · 太さ700 · 行間1.7<br>ページの型の区画の見出し</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">Label</div>
-        <div class="type-sample" style="font-size:30px; font-weight:600; letter-spacing:.02em;">承認Aa</div>
-        <div style="font-size:13px; font-weight:600; letter-spacing:.03em; margin-top:10px; color:var(--color-on-surface-variant);">承認して実行 ／ 修正を指示</div>
-      </div>
-      <div class="type-meta">14 / 12 / 11px · 太さ600<br>ボタン・表の見出し・タグ</div>
+    <div class="type-card" data-type="input" data-size="16px">
+      <div class="type-scale-name">input</div>
+      <div class="type-sample" style="font-size:16px; font-weight:400;">要の文字 Aa 1,234</div>
+      <div class="type-meta">16px · 太さ400 · 行間1.5<br>幅 767 以下の入力欄</div>
     </div>
-
-    <div class="type-card">
-      <div>
-        <div class="type-scale-name">数値列は右寄せにする</div>
-        <table style="width:100%; font-size:15px; line-height:1.9; border-collapse:collapse;">
-          <tr>
-            <td style="color:var(--color-on-surface-variant); font-size:12px; padding-bottom:4px;">左寄せ</td>
-            <td style="color:var(--color-on-surface-variant); font-size:12px; padding-bottom:4px; text-align:right;">右寄せ</td>
-          </tr>
-          <tr style="vertical-align:top;">
-            <td class="num" style="text-align:left; padding-right:20px;">1,320,000<br>892,400<br>11,050,000</td>
-            <td class="num" style="text-align:right;">1,320,000<br>892,400<br>11,050,000</td>
-          </tr>
-        </table>
-      </div>
-      <div class="type-meta">数字の幅は M PLUS 2 が元から揃えている。<br>桁を縦に合わせるのは右寄せの仕事</div>
+    <div class="type-card" data-type="body-md" data-size="14px">
+      <div class="type-scale-name">body-md</div>
+      <div class="type-sample" style="font-size:14px; font-weight:400;">要の文字 Aa 1,234</div>
+      <div class="type-meta">14px · 太さ400 · 行間1.6<br>スマホの本文・入口の画面</div>
+    </div>
+    <div class="type-card" data-type="body" data-size="13px">
+      <div class="type-scale-name">body</div>
+      <div class="type-sample" style="font-size:13px; font-weight:400;">要の文字 Aa 1,234</div>
+      <div class="type-meta">13px · 太さ400 · 行間1.6<br>本文の既定・作業の画面のボタンと入力欄</div>
+    </div>
+    <div class="type-card" data-type="body-sm" data-size="12px">
+      <div class="type-scale-name">body-sm</div>
+      <div class="type-sample" style="font-size:12px; font-weight:400;">要の文字 Aa 1,234</div>
+      <div class="type-meta">12px · 太さ400 · 行間1.5<br>補足・項目名・表の頭</div>
+    </div>
+    <div class="type-card" data-type="label-md" data-size="11px">
+      <div class="type-scale-name">label-md</div>
+      <div class="type-sample" style="font-size:11px; font-weight:500;">要の文字 Aa 1,234</div>
+      <div class="type-meta">11px · 太さ500<br>小さな補足・sm のボタン</div>
+    </div>
+    <div class="type-card" data-type="label-xs" data-size="10px">
+      <div class="type-scale-name">label-xs</div>
+      <div class="type-sample" style="font-size:10px; font-weight:500;">要の文字 Aa 1,234</div>
+      <div class="type-meta">10px · 太さ500<br>数のしるし（バッジ）</div>
     </div>
   </div>
 </section>
+<!-- /gen:type -->
 
 <!-- 5. COMPONENTS IN CONTEXT -->
 <section class="ds-section">
@@ -479,6 +463,45 @@
   </div>
 </section>
 
+<!-- 5b. PARTS -->
+<!-- gen:parts -->
+<section class="ds-section">
+  <div class="ds-section-title">Components ── 作業の画面（32）と入口の画面（44）・小窓</div>
+  <div class="type-grid">
+    <div class="type-card" data-part="button-primary">
+      <div class="type-scale-name">button-primary</div>
+      <div><button type="button" style="background:#22345C; color:#FFFFFF; border-radius:6px; padding:0 16px; min-height:32px; font-weight:500; font-size:13px; display:inline-flex; align-items:center; box-sizing:border-box;">作る</button></div>
+      <div class="type-meta">backgroundColor #22345C · textColor #FFFFFF · typography 13px · fontWeight 500 · rounded 6px · height 32px · padding 0 16px</div>
+    </div>
+    <div class="type-card" data-part="button-primary-lg">
+      <div class="type-scale-name">button-primary-lg</div>
+      <div><button type="button" style="background:#22345C; color:#FFFFFF; border-radius:8px; padding:0 24px; min-height:44px; font-weight:500; font-size:14px; display:inline-flex; align-items:center; box-sizing:border-box;">次へ</button></div>
+      <div class="type-meta">backgroundColor #22345C · textColor #FFFFFF · typography 14px · fontWeight 500 · rounded 8px · height 44px · padding 0 24px</div>
+    </div>
+    <div class="type-card" data-part="button-outlined">
+      <div class="type-scale-name">button-outlined</div>
+      <div><button type="button" style="background:#FFFFFF; color:#131B27; border:1px solid #DDE2E9; border-radius:6px; padding:0 14px; min-height:32px; font-weight:400; font-size:13px; display:inline-flex; align-items:center; box-sizing:border-box;">やめる</button></div>
+      <div class="type-meta">backgroundColor #FFFFFF · textColor #131B27 · border 1px solid #DDE2E9 · typography 13px · fontWeight 400 · rounded 6px · height 32px · padding 0 14px</div>
+    </div>
+    <div class="type-card" data-part="input">
+      <div class="type-scale-name">input</div>
+      <div><input type="text" value="見積を送る" style="background:#FFFFFF; color:#131B27; border:1px solid #B8C0CC; border-radius:6px; padding:6px 10px; font-size:13px; box-sizing:border-box; width:240px;"></div>
+      <div class="type-meta">backgroundColor #FFFFFF · textColor #131B27 · border 1px solid #B8C0CC · typography 13px · rounded 6px · padding 6px 10px</div>
+    </div>
+    <div class="type-card" data-part="input-lg">
+      <div class="type-scale-name">input-lg</div>
+      <div><input type="text" value="見積を送る" style="background:#FFFFFF; border:1px solid #DDE2E9; border-radius:8px; padding:0 12px; min-height:42px; font-size:14px; box-sizing:border-box; width:240px;"></div>
+      <div class="type-meta">backgroundColor #FFFFFF · border 1px solid #DDE2E9 · typography 14px · rounded 8px · height 42px · padding 0 12px</div>
+    </div>
+    <div class="type-card" data-part="dialog">
+      <div class="type-scale-name">dialog</div>
+      <div><div style="background:#FFFFFF; border-radius:12px; border:1px solid #DDE2E9; width:280px;"><div style="padding:14px 18px; border-bottom:1px solid #DDE2E9; font-size:15px; font-weight:700;">完了にする <span style="float:right;">×</span></div><div style="padding:12px 18px; border-top:1px solid #DDE2E9; margin-top:24px; text-align:right;">やめる ／ 決める</div></div></div>
+      <div class="type-meta">backgroundColor #FFFFFF · rounded 12px</div>
+    </div>
+  </div>
+</section>
+<!-- /gen:parts -->
+
 <!-- 6. SPACING / SHAPES / ELEVATION -->
 <section class="ds-section">
   <div class="ds-section-title">Spacing</div>
@@ -537,44 +560,162 @@
 </section>
 
 <!-- 8. SOURCE -->
+<!-- gen:source -->
 <section class="ds-section">
-  <div class="ds-section-title">DESIGN.md Source（抜粋）</div>
+  <div class="ds-section-title">DESIGN.md Source（抜粋・正本から作る）</div>
   <div class="source-block">---
-name: Kaname
 colors:
-  # Primary — 要（中心・収束）
-  primary: "#22345C"
-  on-primary: "#FFFFFF"
-  primary-container: "#DCE4F2"
-  on-primary-container: "#101C33"
-  # Secondary — 補助操作
-  secondary: "#186F69"
-  on-secondary: "#FFFFFF"
-  secondary-container: "#CFEAE7"
-  on-secondary-container: "#0A3330"
-  # Tertiary — AI 由来を示す
-  tertiary: "#6D4AA6"
-  on-tertiary: "#FFFFFF"
-  tertiary-container: "#E9E0F5"
-  on-tertiary-container: "#33235C"
-  # Surface
-  surface: "#F7F8FA"
-  on-surface: "#131B27"
-  surface-variant: "#E9ECF1"
-  on-surface-variant: "#4A5563"
-  error: "#B91C1C"
-  on-error: "#FFFFFF"
-  neutral: "#8A94A3"
-  on-neutral: "#131B27"
+  primary: &#x27;#22345C&#x27;
+  on-primary: &#x27;#FFFFFF&#x27;
+  primary-container: &#x27;#DCE4F2&#x27;
+  on-primary-container: &#x27;#101C33&#x27;
+  secondary: &#x27;#186F69&#x27;
+  on-secondary: &#x27;#FFFFFF&#x27;
+  secondary-container: &#x27;#CFEAE7&#x27;
+  on-secondary-container: &#x27;#0A3330&#x27;
+  tertiary: &#x27;#6D4AA6&#x27;
+  on-tertiary: &#x27;#FFFFFF&#x27;
+  tertiary-container: &#x27;#E9E0F5&#x27;
+  on-tertiary-container: &#x27;#33235C&#x27;
+  surface: &#x27;#F7F8FA&#x27;
+  on-surface: &#x27;#131B27&#x27;
+  surface-variant: &#x27;#E9ECF1&#x27;
+  on-surface-variant: &#x27;#4A5563&#x27;
+  error: &#x27;#B91C1C&#x27;
+  on-error: &#x27;#FFFFFF&#x27;
+  neutral: &#x27;#8A94A3&#x27;
+  on-neutral: &#x27;#131B27&#x27;
+  neutral-strong: &#x27;#6B7585&#x27;
+  card: &#x27;#FFFFFF&#x27;
+  line: &#x27;#DDE2E9&#x27;
+  line-soft: &#x27;#EDF0F4&#x27;
+  side-bg: &#x27;#EEF0F4&#x27;
+  primary-hover: &#x27;#1A2848&#x27;
+  on-code: &#x27;#D8DEE9&#x27;
+  ai-container: &#x27;#EDEAF6&#x27;
+  mark: &#x27;#FFF1B8&#x27;
+  page: &#x27;#F2F4F7&#x27;
+  select: &#x27;#F1F3F6&#x27;
+  table-head: &#x27;#FAFBFC&#x27;
+  line-strong: &#x27;#B8C0CC&#x27;
+  primary-soft: &#x27;#EEF3FD&#x27;
+  primary-line: &#x27;#C7D7F5&#x27;
 typography:
-  headline-display:  { fontFamily: "M PLUS 2", fontSize: 72px, fontWeight: 700 }
-  body-md:           { fontFamily: "M PLUS 2", fontSize: 16px, fontWeight: 400 }
-  label-lg:          { fontFamily: "M PLUS 2", fontSize: 14px, fontWeight: 600 }
-  metric-lg:         { fontFamily: "M PLUS 2", fontSize: 40px, fontWeight: 600, tabular-nums }
+  h1:
+    fontFamily: Noto Sans JP
+    fontSize: 20px
+    fontWeight: 700
+    lineHeight: 1.35
+  h2:
+    fontFamily: Noto Sans JP
+    fontSize: 18px
+    fontWeight: 700
+    lineHeight: 1.4
+  h3:
+    fontFamily: Noto Sans JP
+    fontSize: 15px
+    fontWeight: 600
+    lineHeight: 1.5
+  page-title:
+    fontFamily: Noto Sans JP
+    fontSize: 18px
+    fontWeight: 700
+    lineHeight: 1.6
+  section-title:
+    fontFamily: Noto Sans JP
+    fontSize: 16px
+    fontWeight: 700
+    lineHeight: 1.7
+  input:
+    fontFamily: Noto Sans JP
+    fontSize: 16px
+    fontWeight: 400
+    lineHeight: 1.5
+  body-md:
+    fontFamily: Noto Sans JP
+    fontSize: 14px
+    fontWeight: 400
+    lineHeight: 1.6
+  body:
+    fontFamily: Noto Sans JP
+    fontSize: 13px
+    fontWeight: 400
+    lineHeight: 1.6
+  body-sm:
+    fontFamily: Noto Sans JP
+    fontSize: 12px
+    fontWeight: 400
+    lineHeight: 1.5
+  label-md:
+    fontFamily: Noto Sans JP
+    fontSize: 11px
+    fontWeight: 500
+  label-xs:
+    fontFamily: Noto Sans JP
+    fontSize: 10px
+    fontWeight: 500
 rounded:
-  sm: 4px   md: 6px   lg: 12px   xl: 20px   full: 9999px
+  none: 0px
+  sm: 4px
+  md: 6px
+  field: 8px
+  card: 10px
+  lg: 12px
+  xl: 20px
+  full: 9999px
+spacing:
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 48px
+  2xl: 96px
+components:
+  button-primary:
+    backgroundColor: &#x27;{colors.primary}&#x27;
+    textColor: &#x27;{colors.on-primary}&#x27;
+    typography: &#x27;{typography.body}&#x27;
+    fontWeight: 500
+    rounded: &#x27;{rounded.md}&#x27;
+    height: 32px
+    padding: 0 {spacing.md}
+  button-primary-lg:
+    backgroundColor: &#x27;{colors.primary}&#x27;
+    textColor: &#x27;{colors.on-primary}&#x27;
+    typography: &#x27;{typography.body-md}&#x27;
+    fontWeight: 500
+    rounded: &#x27;{rounded.field}&#x27;
+    height: 44px
+    padding: 0 {spacing.lg}
+  button-outlined:
+    backgroundColor: &#x27;{colors.card}&#x27;
+    textColor: &#x27;{colors.on-surface}&#x27;
+    border: 1px solid {colors.line}
+    typography: &#x27;{typography.body}&#x27;
+    fontWeight: 400
+    rounded: &#x27;{rounded.md}&#x27;
+    height: 32px
+    padding: 0 14px
+  input:
+    backgroundColor: &#x27;{colors.card}&#x27;
+    textColor: &#x27;{colors.on-surface}&#x27;
+    border: 1px solid {colors.line-strong}
+    typography: &#x27;{typography.body}&#x27;
+    rounded: &#x27;{rounded.md}&#x27;
+    padding: 6px 10px
+  input-lg:
+    backgroundColor: &#x27;{colors.card}&#x27;
+    border: 1px solid {colors.line}
+    typography: &#x27;{typography.body-md}&#x27;
+    rounded: &#x27;{rounded.field}&#x27;
+    height: 42px
+    padding: 0 12px
+  dialog:
+    backgroundColor: &#x27;{colors.card}&#x27;
+    rounded: &#x27;{rounded.lg}&#x27;
 ---</div>
 </section>
+<!-- /gen:source -->
 
 <footer class="ds-footer">
   <span>Kaname Design System v1.0 · design.md format by Google Labs</span>
