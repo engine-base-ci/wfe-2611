@@ -307,7 +307,13 @@ export async function mockApi(
       m.stepUps.push(req.postDataJSON() as Record<string, unknown>);
       reply = await m.on.stepUp(req);
     } else if (/\/me$/.test(p))
-      reply = { status: 200, body: { data: { id: ME, display_name: "高本", roles: ["member"], name: "高本" } } };
+      // 役は role_id で読む（分からない役は外枠が項目を出さない・K-138）
+      reply = {
+        status: 200,
+        body: {
+          data: { id: ME, member_id: ME, display_name: "高本", role_id: "owner", roles: ["member"], name: "高本" },
+        },
+      };
     else reply = { status: 200, body: { data: [], meta: { limit: 50 } } };
     await route.fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) });
   });

@@ -83,6 +83,23 @@ row(R["KSC-01-012"], async (page) => {
     .getAttribute("href");
   expect(href, "R1 が入れる画面（members は R1 に無い）").toBe("/workspace/members/groups");
 });
+// まだ使えない小さな印（会社の切り替え ▾・グループの ★）：押しても何も起きない（K-138）
+const inert = (id: string, name: string) =>
+  row(R[id], async (page) => {
+    await open(page);
+    const b = nav(page).getByRole("button", { name, disabled: true });
+    await expect(b).toBeVisible();
+    expect(await b.evaluate((e) => getComputedStyle(e).opacity)).toBe("0.55");
+    const before = page.url();
+    await b.click({ force: true });
+    await b.focus();
+    await page.keyboard.press("Enter");
+    expect(page.url()).toBe(before);
+    await expect(page.getByRole("menu")).toHaveCount(0);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+inert("KSC-01-013", "会社を切り替える（準備中）");
+inert("KSC-01-014", "グループの★（準備中）");
 
 // ---- 外枠（上の帯） ----
 row(R["KSC-02-001"], async (page) => {
