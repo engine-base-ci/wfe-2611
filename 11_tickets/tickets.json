@@ -10871,49 +10871,118 @@
    "parent": "K-213",
    "milestone": "段",
    "area": "認証",
-   "assignee": "作る",
-   "due": "",
-   "estimate_hours": "2",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "assignee": "実装",
+   "due": "2026-11-20",
+   "estimate_hours": "1.5",
+   "estimate_basis": "解決の関数 1 つの問い合わせを 1 本にし、Better Auth の設定 1 行・中間の処理 2 か所に印を通すだけ。口の hooks 1 か所の K-249（見込み 0.5 時間）の 3 倍と見た。実測なし・仮",
    "decisions": [
-    "D-143.3"
+    "D-143.3",
+    "D-125.140",
+    "D-128.120",
+    "D-128.121",
+    "D-125.162",
+    "D-131.7",
+    "D-128.125",
+    "D-128.143"
    ],
-   "split": "これから",
-   "depends_on": [],
+   "split": "",
+   "prior_impl": "packages/auth/src/resolver.ts の createSessionResolver（K-20・K-14・K-53。Better Auth の getSession のあと app.session_check と app.session_step_up_at／app.session_terms_pending を 2 本で引く）と apps/api/src/middleware/tenant.ts（抜けた人の確かめを repo.memberLeft の別のトランザクションで引く・K-166）",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [
+    "K-213"
+   ],
+   "tests": [
+    "apps/api/test/k233_session_resolve.test.ts",
+    "apps/api/test/k233_auth_mail_paths.test.ts"
+   ],
+   "changes": [
+    "packages/auth/src/resolver.ts",
+    "packages/auth/src/index.ts",
+    "apps/api/src/middleware/tenant.ts",
+    "apps/api/src/app.ts",
+    ".gitleaksignore"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth"
+   ],
+   "ci_wide": [],
+   "acts": [],
+   "apis": [],
    "sections": {
-    "目的": "契約の口 1 回で、認証の解決に 4 本・抜けた人の確かめに 4 本の DB の文を、別々のトランザクションで流している（調べの §5.2）。1 つの関数（1 回の往復）にまとめる。目安：1 回 16 本 → 約 8 本",
-    "完了の条件": "- [ ] 直す前と後の数（口の数・DB の文の数・直列の段）を同じ測り方で出し、報告に書く（調べの §5 の測り方）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 見込みは実測なし・仮",
-    "決定ログ": "- 従う決定：D-143.3",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "代表が「読み込みが遅すぎる」と言った（2026-11-15）。契約の口 1 回のうち、ログインの解決（だれの要求か）と抜けた人の確かめだけで DB の文を 8 本、ほぼ直列に流している（調べの §5.2）。解決を 1 本の文にまとめ、抜けた人の確かめを解決の答えに含めて別のトランザクションを開かない。振る舞い（守り・答え）は変えない。",
+    "完了の条件": "- [ ] 下の 18 行（K233-API-001〜018）が本物の DB と本物の Better Auth の上で緑\n- [ ] 直す前と後の数を同じ測り方で出し、確認の結果に書く（下の「今の値と目標の値」）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: AUTH, PERM\n\n- 先に要るチケット：K-213（親の並び）。ほかの速さのチケット（K-234・K-236・K-235・K-237）とは触るファイルが重ならない（K-234 は op.ts と packages/db/src/context.ts、このチケットは解決と中間の処理）。K-234 と同時に始めてよい\n- 振る舞いは変えない：失効・見張り（12 時間・7 日・国・端末）・IP の記録・本人確認の取り直しの時刻・同意し直しの印・会社に属していない人・期限切れのセッションの答えは今のまま\n- 会社から抜けた人（members.deleted_at）は、今も解決で 401 になる（`app.session_check` が `m.deleted_at is null` で結び、抜けると引き金 `members_revoke_sessions` がセッションを全部閉じる）。だから本物のログインの要求では、入口の抜けた人の確かめ（`app.member_left()`）は今も必ず false。解決の答えに「抜けていない」を持たせ、入口はその答えを使う（偽のログインで組む試験の土台と PC の印の要求は、今までどおり repo.memberLeft を引く）\n- Better Auth の `advanced.database.joins`（1.7.15 の adapter の設定・既定は false）を真にすると、session と user を 1 本の結んだ問い合わせで引く（切る段で手元の使い捨ての DB で試し、`/api/auth/get-session` の文が 2 → 1 になることを見た）。答えの形は同じ（K233-API-003 で見る）\n- 新しい migration は作らない（今ある関数を 1 本の問い合わせの中で呼ぶだけ）\n- 試験を書いた後は変えない（D-128.125）",
+    "今の値と目標の値（切る段で測った・2026-11-16）": "測り方：本線の先頭（99a61f5b）の写しを scratchpad に作り、使い捨ての DB（kaname_tmp_cs_perf1116・log_statement=all）に migration を当て、口（tsx・手元）と画面（next build → next start）を立て、登録 → 確認 → 同意 → チケット 1 枚をブラウザの中から作った。口ごとに DB へ目印の select を挟み、間の文を数えた（2 回とも同じ数）。\n\n| 口 | 今の文（そのうち解決と抜けた人） | begin | 目標の文 |\n|---|---|---|---|\n| GET /api/v1/scopes | 16（8：Better Auth 2・session_check 1・step_up と terms 1・member_left の取引 4） | 3 | 10 以下（解決 2・member_left 0） |\n| GET /api/auth-ext/me | 12（4） | 2 | 10 以下 |\n| GET /api/v1/tickets/:id | 50（8） | 11 | 44 以下 |\n| GET /api/auth/get-session | 2 | 0 | 1 |\n\nstaging（https://kaname-api.vercel.app・ログインの要らない口だけ・2026-11-16）：処理の場所は hnd1（頭 x-vercel-id）。`/api/v1/auth/terms/current` の答えの頭までの時間は温まった後 64〜77ms、最初の 1 回 290ms。プリフライト（OPTIONS）は 51ms。ログインの要る口の時間は、staging に試験の人が居ないので測っていない（K-237 の申し送り）。",
+    "確かめたこと（切る段・2026-11-16）": "1. 解決は `packages/auth/src/resolver.ts` の createSessionResolver の 1 か所。呼ぶのは契約の口の入口（server.ts → app.ts の resolver → middleware/tenant.ts）・認証の部品の口の止め（app.ts の /api/auth/*）・前の道すじ（ext.ts の fresh・同じ要求の中は WeakMap で 1 回）\n2. `app.session_check` は、生きていれば 1 行・閉じたら 0 行（理由を付けて閉じ、国と端末なら security_events）を返す（0083）。`app.session_step_up_at(text)`・`app.session_terms_pending(uuid)` は security definer で kaname_app が呼べる（0081・0088）。3 つを `select … from app.session_check($1,$2,$3,$4) c` の 1 本にまとめられる（session_check は from の中で 1 回だけ動く）\n3. 入口の抜けた人の確かめ（op.ts の 2.6）は `c.get(\"memberLeft\")` を呼ぶ。tenant.ts が `() => repo.memberLeft(ctx)`（withTenant の取引 1 つ＝4 本）を入れている\n\nまとめる文と、抜けた人を別の取引で引く所（このチケットが直す所）：\n\n```search\ngit grep -n -e 'app.session_check(' -e 'app.session_step_up_at(' -- packages/auth/src\n2\n```\n\n```search\ngit grep -n 'repo.memberLeft(ctx)' -- apps/api/src\n1\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 解決（packages/auth/src/resolver.ts） | createSessionResolver の 2 本の問い合わせを `select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms from app.session_check($1, $2, $3, $4) c` の 1 本にする（引数は今と同じ）。行が無ければ null（今と同じ）。答えの Resolved に `memberLeft: false` を足す（行が在る＝抜けていない。型は `memberLeft?: boolean`。PC の印の解決は持たない） |\n| Better Auth（packages/auth/src/index.ts） | `advanced: { database: { generateId: () => uuidv7(), joins: true } }`（session と user を 1 本で引く） |\n| 入口（apps/api/src/app.ts） | resolve の答えを tenantContext の解決に渡すとき、`memberLeft` もそのまま渡す（今は ctx と termsPending だけ） |\n| 中間の処理（apps/api/src/middleware/tenant.ts） | SessionResolver の答えに `memberLeft?: boolean` を足す。答えが `memberLeft` を持てば `c.set(\"memberLeft\", async () => r.memberLeft)`（DB を引かない）、持たなければ今のまま `() => repo.memberLeft(ctx)` |\n| 数を測る | 確認の結果に、上の表の 4 つの口の文の数を同じ測り方（使い捨ての DB の log_statement）で書く |",
+    "テスト仕様と確認の結果": "`apps/api/test/k233_session_resolve.test.ts`（口・本物の DB・本物の Better Auth のログイン。文の数は、試験が作った 2 つのプール（アプリと認証）の接続が流した問い合わせを数える）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K233-API-001 | 対象の状態 | ログインした人が GET /api/v1/scopes | 200・自分の会社のグループ。要求 1 回の文が 10 以下。最初の begin より前の文（解決）が 2 本。`member_left` を含む文が 0 本。kaname_auth の表を引く文が 1 本。begin が 2 以下（今は 3。K-234 が先に入れば 1） |\n| K233-API-002 | 対象の状態 | ログインした人が GET /api/auth-ext/me | 200・答えの member の id と会社が本人のもの。文が 10 以下 |\n| K233-API-003 | 入力 | GET /api/auth/get-session（結んで引く形に変えた後） | 200・`user` に id・email・name・emailVerified、`session` に id・token・userId・expiresAt が在り、user.id と session.userId が同じ。kaname_auth を引く文が 1 本 |\n| K233-API-004 | 利用者の状態 | ログアウトした印で GET /api/v1/scopes と GET /api/auth-ext/me | どちらも 401 |\n| K233-API-005 | 時間の流れ | 最後に見た時刻が 13 時間前のセッションで GET /api/v1/scopes | 401・sessions.revoked_at が入り revoke_reason_id が idle |\n| K233-API-006 | 時間の流れ | 最後に見た時刻が 11 時間 50 分前（12 時間の直前）で GET /api/v1/scopes | 200・sessions.last_seen_at がこの要求の時刻（今から 1 分以内）に進む |\n| K233-API-007 | 入口 | 1 回目を国 JP、2 回目を国 US で GET /api/v1/scopes | 1 回目 200・2 回目 401。revoke_reason_id が country_changed。security_events の suspicious_connection がこの人に 1 行 |\n| K233-API-018 | 入口 | 1 回目を Chrome/macOS、2 回目を Firefox/Windows の UA で GET /api/v1/scopes | 1 回目 200・2 回目 401。revoke_reason_id が device_changed。security_events の suspicious_connection がこの人に 1 行 |\n| K233-API-008 | 入口 | 同じ国 JP のまま IP だけ変えて 2 回 | 2 回とも 200。security_events の ip_changed がこの人に 2 回目の分だけ 1 行増える |\n| K233-API-009 | 時間の流れ | sessions.step_up_at を 5 分前にしたセッション／入れていないセッションを解決する | 前者の ctx.stepUpAt が DB の値と同じ時刻・後者は null |\n| K233-API-010 | 利用者の状態 | 同意し直しの印（sessions.terms_pending）が立ったセッションで GET /api/v1/scopes | 403・code E-AUTH-010。解決の答えの termsPending が true |\n| K233-API-011 | 利用者の状態 | 会社から抜けた人（members.deleted_at を入れた）の印で GET /api/v1/scopes | 401（今と同じ）。`member_left` を含む文が 0 本 |\n| K233-API-012 | 利用者の状態 | 会社に属していない人（Better Auth の利用者だけで member が無い）の印 | 解決の答えが null・GET /api/v1/scopes は 401 |\n| K233-API-013 | 時間の流れ | Better Auth のセッションの期限（kaname_auth.\"session\".\"expiresAt\"・認証の表の列は camelCase）が過ぎた印 | GET /api/v1/scopes が 401 |\n| K233-API-014 | 失敗 | 解決の 1 本の文が例外になる（アプリのプールの query が投げる） | 503・code E-PAGE-003。グループを読む文は流れない |\n| K233-API-015 | 守り | 2 つの会社の人がそれぞれ GET /api/v1/scopes | どちらの答えにも、相手の会社のグループの id が無い（自分の会社のグループだけ） |\n| K233-API-016 | 操作の揺れ | 同じ印で GET /api/v1/scopes を同時に 2 本 | 2 本とも 200・sessions.revoked_at は空のまま |\n| K233-API-017 | 守り | 印が無い・形の違う印で GET /api/v1/scopes | どちらも 401。`app.session_check` の文が 0 本 |\n| K233-API-019 | 対象の状態 | 登録済みの人が再設定を頼む（requestPasswordReset・試験用の受け箱） | 受け箱に 1 通。宛先は本人・kind reset・件名「Kaname のパスワードを再設定する」・リンクは画面の `/password-reset?token=…`・本文にリンクと「30 分」 |\n| K233-API-020 | 入力 | 登録の無いアドレスで再設定を頼む | 例外にならない。受け箱は 0 通（登録の有無を漏らさない） |\n| K233-API-021 | 利用者の状態 | 再設定のメールの token で新しいパスワードにする（resetPassword） | その人の public.sessions が全部閉じ revoke_reason_id は password_changed。前の印の GET /api/v1/scopes は 401。新しいパスワードでログインできる |\n| K233-API-022 | 対象の状態 | 確認待ちの人が確認のメールを頼む（sendVerificationEmail） | 受け箱に 1 通。宛先は本人・kind verify・件名「Kaname のメールアドレスを確認する」・リンクは画面の `/verify-email?token=…`・本文にリンクと「30 分」 |\n| K233-API-023 | 失敗 | メールの送出先（mailer）が無い組み立てで再設定を頼む | 例外にならない。「メールの送出先が無い」の行がログに 1 行出て、宛先（reset → 本人のアドレス）と画面の `/password-reset?token=` を含む |\n| K233-API-024 | 利用者の状態 | 解決を渡さないアプリ（createApp に resolve も resolveSession も無い） | 既定の解決（anonymousResolver）は null。GET /api/v1/scopes は印が無くても有っても 401・code UNAUTHENTICATED |\n\n### テストの型の受け（分類 AUTH・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-AUTH-04 セッションが切れた・長く入っていない | 005・006・013 |\n| TP-AUTH-05 ログアウトした後 | 004 |\n| TP-AUTH-07 本人確認の取り直しの期限 | 009 |\n| TP-AUTH-06 パスワードを変えた（再設定）後に前の印が効かない | 021 |\n| TP-AUTH-09 国・端末が変わった | 007・008・018 |\n| TP-PERM-03 他の会社 | 015 |\n| TP-PERM-01 役が合わない人 | 011・012（抜けた人・会社に属していない人は通らない） |\n| 要らない：TP-AUTH-01・02・03・08 | ログインの口・2 段階・戻す先は触らない（ログインの部品の試験 packages/auth/test と auth_ext.test.ts が持ち、このチケットの CI で一緒に流れる） |\n| 要らない：TP-PERM-02・04・05 | 権限の判定は触らない（解決は文脈を作るだけ） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 003・020 |\n| 対象の状態 | 該当 | 001・002・019・022 |\n| 時間の流れ | 該当 | 005・006・009・013 |\n| 入口 | 該当 | 007・008・018 |\n| 利用者の状態 | 該当 | 004・010・011・012・021・024 |\n| 失敗 | 該当 | 014・023 |\n| 操作の揺れ | 該当 | 016 |\n| 守り | 該当 | 015・017 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 | N/A | 外のもの（置き場・秘密）に触らない |\n| G-12 | 該当 | 12 時間の直前（006）と直後（005） |\n| G-13 | N/A | 解決の中身を変えるだけで、新しい機能を足さない |\n| G-14 | 該当 | ログアウト（004）・抜けた人（011）・パスワードの再設定（021）の後に印が効かない |\n| G-15 | N/A | 外のプロセスを呼ばない |\n| G-16 | 該当 | 1 要求の文が 16 → 10 以下・begin が 3 → 2 以下（001）。接続を取る回数が減る |\n\n### 足した試験（作る段の CI の覆い率から・2026-11-16）\n\nチケットの CI（https://github.com/engine-base/Kaname/actions/runs/43876656175）で、試験は全部緑だが、変えたファイルの関数の覆い率が 75%（決まり 80%）で赤だった。覆っていないのは変えたファイルの前からの関数 5 つ（packages/auth/src/index.ts の mail（送出先が無いときの代わり）・sendResetPassword・onPasswordReset・sendVerificationEmail、apps/api/src/middleware/tenant.ts の anonymousResolver）で、どれも通る単体の試験がリポジトリに無かった（地図の抜けではない）。PM の決めで、このチケットの中で `apps/api/test/k233_auth_mail_paths.test.ts`（K233-API-019〜024）を足した。\n\n```search\ngit grep -ln -e reset-password -e resetPassword -e request-password -e forget -- apps/api/test/*.test.ts apps/api/test/features packages/auth/test\n1\n```\n\n```search\ngit grep -ln -e sendVerificationEmail -e send-verification-email -- apps/api/test/*.test.ts apps/api/test/features packages/auth/test\n1\n```\n\n（どちらの 1 件も足した `apps/api/test/k233_auth_mail_paths.test.ts`。足す前は 0 件）\n\n### 確認の結果\n\n- 試験：`apps/api/test/k233_session_resolve.test.ts` の 18 行（K233-API-001〜018）が、使い捨ての DB（kaname_tmp_k233）の上で全部緑（手元・2026-11-16）\n- 数（直した後・2026-11-16）：切る段の measure.mjs の「口ごとの DB の文の数」と同じ測り方（使い捨ての DB に log_statement=all・手元の口（tsx）・登録 → 確認 → 同意 → チケット 1 枚・目印の select の間の文を数える・2 回とも同じ数）。画面は立てず、要求は同じ頭（Bearer・x-screen-id）で Node から送った。同じ Postgres のほかの DB の文が混ざらないよう、この DB の接続の番号の文だけを数えた\n\n| 口 | 直す前の文（解決と抜けた人） | 直した後の文（解決と抜けた人） | begin（前 → 後） | 目標 |\n|---|---|---|---|---|\n| GET /api/v1/scopes | 16（8） | 10（2・member_left 0） | 3 → 2 | 10 以下 ✓ |\n| GET /api/auth-ext/me | 12（4） | 10（2） | 2 → 2 | 10 以下 ✓ |\n| GET /api/v1/tickets/:id | 50（8） | 44（2・member_left 0） | 11 → 10 | 44 以下 ✓ |\n| GET /api/auth/get-session | 2 | 1 | 0 → 0 | 1 ✓ |",
+    "成果物": "- `apps/api/test/k233_session_resolve.test.ts`（切る段が書いた）\n- 解決の 1 本の文・Better Auth の結んで引く設定・入口の抜けた人の印（実装の役）",
+    "決定ログ": "- D-125.140・D-128.120・D-128.121：セッションの見張り（12 時間・7 日・国・端末・Bridge は時間で切らない）。D-125.162：同意し直しの印。D-131.7：抜けた人は入口で止める。D-143.3：速さの子をこの親の下に置く\n- 決める人に聞くこと：無い（振る舞いを変えない）",
+    "申し送り": "- 認証の部品の口（/api/auth/*）の止めも同じ解決を通るので、同じだけ速くなる\n- 前の道すじ `/api/auth-ext/me` の残りの 8 本（members と tenants を別の取引で引く）は K-234 の 1 つの取引の外（契約の口でない）。まとめるなら K-235 の画面の読み込みの見直しと一緒に別のチケットにする"
    },
    "file": "11_tickets/K-233.md"
   },
   {
    "id": "K-234",
-   "title": "速さ：1 要求を 1 トランザクションに（確かめ・本体・書ける範囲を同じ withTenant で）",
+   "title": "速さ：読む口（GET）の 1 要求を 1 トランザクションに（確かめ・本体・書ける範囲を同じ取引と同じ接続で）",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "DB",
-   "assignee": "作る",
-   "due": "",
+   "assignee": "実装",
+   "due": "2026-11-20",
    "estimate_hours": "2",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "estimate_basis": "文脈の関門（context.ts）に要求の取引を 1 つ足し、契約の入口（op.ts）の外側で包むだけ（口の振る舞いの中身は触らない）。切る段の試しで足した物は 60 行ほど。K-249（0.5 時間）の 4 倍と見た。実測なし・仮",
    "decisions": [
-    "D-143.3"
+    "D-143.3",
+    "D-131.7",
+    "D-125.162",
+    "D-128.125",
+    "D-128.143"
    ],
-   "split": "これから",
+   "split": "",
+   "prior_impl": "packages/db/src/context.ts の withTenant（呼ぶたびに接続を 1 本借りて begin・set_config・中身・commit）。契約の入口 apps/api/src/contract/op.ts は確かめ（抜けた人・行の守り・権限）と本体をそれぞれ別の withTenant で引く",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
    "depends_on": [
-    "K-233"
+    "K-92",
+    "K-213"
    ],
+   "tests": [
+    "apps/api/test/k234_one_transaction.test.ts"
+   ],
+   "changes": [
+    "packages/db/src/context.ts",
+    "packages/db/src/repository.ts",
+    "apps/api/src/contract/op.ts"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "acts": [],
+   "apis": [],
    "sections": {
-    "目的": "1 要求が最大 9 つのトランザクションに分かれ、詳細は同時に最大 5 接続を使う（G-16・L-007）。確かめと本体と書ける範囲を同じ withTenant に入れる。目安：約 6 本",
-    "完了の条件": "- [ ] 直す前と後の数（口の数・DB の文の数・直列の段）を同じ測り方で出し、報告に書く（調べの §5 の測り方）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 見込みは実測なし・仮",
-    "決定ログ": "- 従う決定：D-143.3",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "読む口 1 回が、確かめ（抜けた人・行の守り・書ける範囲）と本体で最大 11 のトランザクションに分かれ、詳細の口は同時に最大 5 本の接続を借りている（調べの §5.2・G-16・L-007）。ログインした人の読む口（GET）のうち、DB だけを読む口は、要求の中の withTenant を 1 つの取引（1 本の接続・begin と set_config は 1 回）にまとめる。取引は最初の withTenant で開く（遅く開く）。振る舞い（答え・守り・エラー）は変えない。",
+    "完了の条件": "- [ ] 下の 17 行（K234-API-001〜017）が本物の DB の上で緑\n- [ ] 直す前と後の数を同じ測り方で出し、確認の結果に書く（下の「今の値と目標の値」）\n- [ ] チケットの CI が緑（同じ口の前からの試験 apps/api/test 全部を含む）",
+    "前提と制約": "分類: LIST, PERM\n\n- 先に要るチケット：K-92（今作っている・同じ apps/api/src/contract/op.ts を変える）・K-213（親の並び）。K-233（解決）とは触るファイルが重ならないので並べてよい\n- **まとめる口**：契約の口の GET で、ログインした社内の人（role: member）の要求のうち、(a) hooks の無い口（関門 C2 の repository だけで読む）と、(b) hooks のある口のうち DB だけを読む口として名前で挙げた物（op.ts の一覧 `ONE_TX_HOOKS`）：listScopes・listTicketKinds・getTicket・listTicketRuns・getActionRun・listApprovalQueue・getApproval・listMyTicketDrafts・listTickets（K-92）・listSetupTasks（K-250）。一覧に無い hooks の口（例：getLatestBridgeRelease・downloadBridgeRelease は目録を外から読み関門 C4 で署名する。listMyDevices は withTenant を使わずプールに直に 1 本）は今のまま。訳：外を待つ間に取引と接続を握ると、読む口ぜんぶが接続を取り合う（G-16）\n- 書く口・PC の印・運営・取引先・ログインしていない人の口は今のまま\n- **遅く開く**：要求の入口では取引を開かない。最初の withTenant で接続を借り、begin・set_config を流す。だから上限（429）・同意し直し（403）・uuid（422）などで断る要求は DB に触らない（今と同じ 0 本）。最後まで withTenant が呼ばれなければ取引は開かない\n- **閉じた後**：要求の取引を閉じた（commit・rollback した）後に流れる withTenant（応答の後に動く setTimeout・流しの続き・待たない Promise）は、要求の取引に入らず今のまま自分の取引を開く（閉じた接続を使わない・別の要求の set_config の上で流れない）\n- 同じ取引に入るのは、要求の文脈と同じ（会社・人・役が同じ）で同じプールの withTenant だけ。違えば今のまま別の取引\n- 同じ取引に入った withTenant は、前の呼び出しが終わってから順に流す（Promise.all で並べても 1 本の接続の上で順に）。入った中でもう一度 withTenant を呼んでも待ち合わない（入れ子はそのまま中で流す）\n- **例外**：入った中の問い合わせが例外になると、その要求の取引は全部戻る（今は別々の取引）。まとめる口で例外を受けて DB を使い続ける所は、片付けの 1 か所（読む前の片付け・K-164）だけで、片付けは自分で失敗を戻す（今は sweep.ts の savepoint、K-236 の後は DB の関数の中の例外の受け）。詳細の口（people.ts）の外側の try/catch は片付けの取引そのもの（接続・commit）の失敗を受ける物で、まとめた後は片付けが要求の取引に入るので、接続が切れれば要求ごと失敗する（今も同じ接続の上の読みは失敗する）。ほかの所（op.ts の抜けた人・行の守り・入力の DB の誤り）は受けた後に DB を使わずに答えを返す。commit は、例外で止まった取引では Postgres が rollback として扱うので、答えは変わらない\n- 要求が例外で終われば片付けも戻り、次に開いたときにまた片付ける（K-164 の決まりと同じ向き）\n- 新しい migration は作らない\n- 試験を書いた後は変えない（D-128.125）",
+    "今の値と目標の値（切る段で測った・2026-11-16）": "測り方：本線の先頭（99a61f5b）の写しに、この試験のファイルをそのまま置いて流した（試験の土台は偽のログインなので、解決の文は 0 本・抜けた人の確かめは DB で引く）。目標は、写しに切る段で試しに入れた形（遅く開く・閉じた印・まとめる口の一覧）で同じ試験を流して出た数。画面の口（本物のログイン）の数は K-233・K-237 の表。\n\n| 口 | 今の文 | 今の begin | 目標の文 | 目標の begin・借りた接続 |\n|---|---|---|---|---|\n| GET /scopes | 12 | 3 | 6 以下 | 1・1 |\n| GET /ticket_kinds | 12 | 3 | 6 以下 | 1・1 |\n| GET /members?limit=200 | 8 | 2 | 5 以下 | 1・1 |\n| GET /tickets/:id | 46 | 11 | 16 以下 | 1・1（同時に借りる接続 1） |\n| GET /approvals/queue | 12 | 2 | 9 以下 | 1・1 |\n| GET /tickets/:id/runs | 12 | 3 | 6 以下 | 1・1 |\n\n切る段の試しの全部の結果：試しの形（K-233・K-234・K-236 の試しを全部入れた写し）で口の試験 apps/api/test を全部流すと 88 ファイル緑・8 ファイル赤（試験 6 本：時間切れ 2・1 分の上限 2・大きな体 1・確定の途中の失敗 1 など）。赤の 8 ファイルだけを、試しの写しと本線の写しの両方で別々に流し直すと、どちらも 8 ファイル・216 本が全部緑（全部を一度に流したときの台の混みによる揺れで、試しの形のせいではない）。",
+    "確かめたこと（切る段・2026-11-16）": "1. 取引を開くのは `packages/db/src/context.ts` の withTenant の 1 か所。関門 C2 の repository（list・get・rowAllowed・memberLeft・can など）も、口の hooks も、全部これを呼ぶ\n2. 契約の口の入口は `apps/api/src/contract/op.ts` の op() が返す 1 つの関数（上限 → 認証 → 抜けた人 → uuid → 権限 → 行の守り → 入力 → 振る舞い）\n3. hooks が受け取るプールは、server.ts でも試験の土台でも repository と同じプール（appPool）\n4. まとめる口の hooks に `after`（応答の後の処理）を持つ物は無い（features の中に after: が 0）\n5. まとめる口の hooks のファイル（create-ticket/hooks.ts・delegate/people.ts・approve-complete/queue.ts・sweep.ts）でプールに直に問い合わせる所は 0。例外を受ける所は people.ts の 2 つ（片付けの取引の失敗の受け・getTicket の前の try）と sweep.ts の 1 つ\n\n取引を開く所（このチケットが包む関数）と、それを呼ぶ所：\n\n```search\ngit grep -n 'export async function withTenant' -- packages/db/src\n1\n```\n\n```search\ngit grep -n 'withTenant(' -- packages/db/src apps/api/src\n34\n```\n\n例外を受ける所（まとめる口の道にある物を上の 5 で 1 件ずつ見た）：\n\n```search\ngit grep -n '} catch' -- apps/api/src/features apps/api/src/hooks apps/api/src/contract\n31\n```\n\n自分で savepoint を持つ所（今は片付けの 1 か所。注 1 行と savepoint・release・rollback の 3 行）：\n\n```search\ngit grep -n 'savepoint' -- apps/api/src\n4\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 要求の取引（packages/db/src/context.ts） | `withRequest(pool, ctx, fn)` を足す：AsyncLocalStorage に（プール・文脈・文脈の鍵（tenantId・userId・role）・接続（まだ無い）・開いている途中の約束・順番の尾・閉じた印）を置いて fn を流す。fn が終わったら閉じた印を立て、接続を借りていれば commit（例外なら rollback して投げ直す）して必ず返す。借りていなければ何もしない |\n| withTenant（同じファイル） | 置き場があり、閉じていず、プールと文脈の鍵が同じなら：まだ開いていなければ接続を借りて begin・set_config（今の withTenant と同じ 1 本）を流し（同時に来ても 1 回だけ）、その接続で fn を流す（begin・commit を流さない）。前の呼び出しが終わってから流す（順番の尾につなぐ）。入った中で呼ばれたら（置き場に「中にいる」の印）待たずにそのまま流す。ほかは今のまま |\n| repository（packages/db/src/repository.ts） | `inRequest(ctx, fn)`：自分のプールで withRequest を呼ぶ（入口が repo を通して開く・関門 C2 の外でプールに触らない） |\n| 入口（apps/api/src/contract/op.ts） | op() が返す関数を `handle` にし、外側で `def.method === \"GET\" && ctx.role === \"member\" && (hooks が無い || ONE_TX_HOOKS に在る)` のときだけ `repo.inRequest(ctx, () => handle(c))`、ほかは `handle(c)`。`ONE_TX_HOOKS` は前提に挙げた 10 の口の名前の集まり（K-92・K-250 の口が先に無くても名前は置いてよい） |\n| 数を測る | 確認の結果に、上の表の 6 つの口の数を同じ測り方で書く |",
+    "テスト仕様と確認の結果": "`apps/api/test/k234_one_transaction.test.ts`（口・本物の DB・偽の画面のログイン。数は試験の土台のアプリのプール（f.pool）で、接続が流した問い合わせ・begin・接続を借りた回数・同時に借りた接続の最大を数える）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K234-API-001 | 対象の状態 | GET /scopes | 200・begin 1・借りた回数 1・文 6 以下 |\n| K234-API-002 | 対象の状態 | GET /ticket_kinds | 200・begin 1・借りた回数 1・文 6 以下 |\n| K234-API-003 | 対象の状態 | GET /members?limit=200 | 200・begin 1・借りた回数 1・文 5 以下 |\n| K234-API-004 | 対象の状態 | GET /tickets/:id（作ったばかりのチケット） | 200・題名・区画の並び（purpose・done・todo）・段 todo・can.delegate が true（今と同じ答え）。begin 1・借りた回数 1・文 16 以下 |\n| K234-API-005 | 対象の状態 | 担当の人の GET /approvals/queue | 200・begin 1・借りた回数 1・文 9 以下 |\n| K234-API-006 | 対象の状態 | GET /tickets/:id/runs | 200・begin 1・借りた回数 1・文 6 以下 |\n| K234-API-007 | 失敗 | 詳細の口 1 本の間に同時に借りる接続 | 1（G-16。今は最大 5） |\n| K234-API-008 | 対象の状態 | 書く口 POST /tickets のあと別の GET /tickets/:id | 201・GET で同じ id のチケットが読める（書く口は取引の外のまま） |\n| K234-API-009 | 守り | 別の会社のチケットの id で GET /tickets/:id | 404・区画と帯を読む文が流れない・借りたままの接続 0 |\n| K234-API-010 | 利用者の状態 | 会社から抜けた人の GET /scopes と GET /tickets/:id | どちらも 403（今と同じ）・借りたままの接続 0 |\n| K234-API-011 | 利用者の状態 | 同意し直しの印が立った人の GET /scopes | 403・code E-AUTH-010・DB の文 0・借りた回数 0（遅く開く） |\n| K234-API-012 | 失敗 | 読む口の中の問い合わせが例外（hooks の中で 1 / 0） | 500（今と同じ番号）・借りたままの接続 0・次の GET /scopes は 200 で begin 1 |\n| K234-API-013 | 操作の揺れ | プールの上限（6 本）より多い 8 本の GET /tickets/:id を同時 | 8 本とも 200・同じ題名・20 秒以内・終わった後に借りたままの接続 0 |\n| K234-API-014 | 守り | 1 分 1 回にした GET /scopes の 2 回目 | 429・DB の文 0・借りた回数 0（遅く開く） |\n| K234-API-015 | 守り | まとめる口の中で、文脈の違う withTenant（別の人）を流す | begin 2（違う文脈は自分の取引で流れ、要求の取引に入らない） |\n| K234-API-016 | 入口 | まとめない口（外へ出す getLatestBridgeRelease）の中で withTenant を 2 つ流す | 200・抜けた人の確かめの後の begin が 2（今のまま別々の取引） |\n| K234-API-017 | 時間の流れ | まとめる口が答えを返した後（setTimeout）に withTenant を流す | その withTenant は自分の begin 1 つで流れる（閉じた要求の接続を使わない）・終わった後に借りたままの接続 0 |\n\n役（運営・PC の印・取引先）の行は置かない。訳：入口は role が member でなければ包まない（1 つの比べ）。包んだ場合に違いが出るのは「同じ取引に入るか」だけで、それは文脈の鍵が違う withTenant が入らないこと（015）で見る。\n\n### テストの型の受け（分類 LIST・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-01 0 件・今ある件数 | 001・002・003・005（答えの中身は前からの各口の試験が持つ） |\n| TP-PERM-01 役が合わない人 | 010・011 |\n| TP-PERM-03 他の会社の ID | 009 |\n| 要らない：TP-LIST-02〜04 | 並び・ページ・絞り込みは触らない（各口の試験が持ち、このチケットの CI で一緒に流れる） |\n| 要らない：TP-PERM-02・04・05 | 権限の判定は触らない（同じ判定を同じ取引の中で流すだけ） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 入力の確かめは触らない（op.ts の 3.0・4 のまま） |\n| 対象の状態 | 該当 | 001〜006・008 |\n| 時間の流れ | 該当 | 017 |\n| 入口 | 該当 | 016 |\n| 利用者の状態 | 該当 | 010・011 |\n| 失敗 | 該当 | 007・012 |\n| 操作の揺れ | 該当 | 013 |\n| 守り | 該当 | 009・014・015 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 | N/A | 外のものに触らない |\n| G-12 | 該当 | 要求の取引を閉じた直後に流れる withTenant（017） |\n| G-13 | 該当 | 同時の 8 本（013）・書く口との組み合わせ（008）・まとめない口との組み合わせ（016） |\n| G-14 | 該当 | 抜けた人・同意し直しの人は今のまま止まる（010・011） |\n| G-15 | N/A | 外のプロセスを呼ばない |\n| G-16 | 該当 | 1 要求で借りる接続 最大 5 → 1（007）・断る要求は接続を借りない（011・014）・上限より多い同時でも詰まらない（013）・例外でも接続を返す（012） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/api/test/k234_one_transaction.test.ts`（切る段が書いた）\n- 要求の取引（withRequest・inRequest・遅く開く・閉じた印）と入口の包み（実装の役）",
+    "決定ログ": "- D-131.7：抜けた人は入口で止める（同じ取引の中で引くだけで、順は今のまま）。D-125.162：同意し直し。D-143.3：速さの子をこの親の下に置く\n- PM・切る段の決め（決める人の決定ではない）：まとめるのは契約の口の GET・role member の、DB だけを読む口（hooks の無い口と、名前で挙げた 10 の口）。外へ出す口・書く口は入れない（G-16）\n- 決める人に聞くこと：無い（振る舞いを変えない）",
+    "申し送り": "- K-236（読む口の片付けを 1 本の文に）は、このチケットの後なら片付けが同じ取引の中の 1 本になり、詳細の口は 16 → 14 になる見込み\n- まとめる口の一覧に新しい口を足すのは、その口が DB だけを読むときに限る（足すチケットが試験で begin 1 を見る）\n- 前の道すじ `/api/auth-ext/*` と書く口は取引の外のまま。書く口を 1 つの取引にするかは、外へ出す処理の位置を口ごとに見てから別のチケットで決める"
    },
    "file": "11_tickets/K-234.md"
   },
@@ -11779,6 +11848,51 @@
     "申し送り": "- K-256・K-221・K-232：入口の枠の data-part=\"auth-box\"・余白・段の間はこのチケットが入れる。期限切れの足元 \"status\" と入口の箱の中の Callout は K-256 が入れる\n- K-211（取り込み済み）：入口の Suspense の待ち（auth-loading.tsx の delayMs=0）は D-144.8 とずれる"
    },
    "file": "11_tickets/K-255.md"
+  },
+  {
+   "id": "K-258",
+   "title": "速さ：チケットの CI で画面の試験の組（web）を後回しにできる入口（workflow_dispatch の web=run／defer・設定 ci.web_defer）と、web の組の「同時に 1 つだけ」を外す",
+   "kind": "課題",
+   "stage": "未着手",
+   "parent": "K-213",
+   "milestone": "段",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-17",
+   "estimate_hours": "0.5",
+   "estimate_basis": "作り手（build_testplan.py）の入力 1 つ・web の組の if と concurrency・G65 に 1 本・作り直し・試験 9 行。K-248（0.5）と同じ形と見た。実測なし・仮",
+   "decisions": [
+    "D-128.169"
+   ],
+   "split": "",
+   "prior_impl": "なし",
+   "choke_points": [],
+   "choke_none": "CI の定義と作り手と試験だけ。製品のコード・口・DB・外への出口（関門）に触らない",
+   "depends_on": [],
+   "tests": [
+    "scripts/ci/k258_web_defer_test.py"
+   ],
+   "changes": [
+    "ticket-flow.yaml",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    "scripts/ci/k172_ci_shape_test.py",
+    "07_qa/test-plan/**"
+   ],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "sections": {
+    "目的": "CI の 1 本の回の時間の半分以上が、画面の試験の組（web）の箱の空き待ちと画面の試験だった（K-220 の回：全部で 36 分のうち待ち約 19 分・画面の試験 9 分）。代表の答え（2026-11-16・PM 経由）：チケットの CI では画面の試験を後回しにし、鎖の終わりにまとめて流して速くする。流す試験は 1 本も減らさない。\n\nticket-flow の ci.py は、後回しにする回に workflow_dispatch の入力 `web=defer` を渡し、取り込んだ後に `ci.py web <ID>` で同じチケットの版を `web=run` で流す。このチケットは CI の定義の側にその入口を作る。\n\nあわせて、web の組の `concurrency: { group: kaname-web }` を外す。今は組ごとに使い捨ての Linux の VM（self-hosted・linux-vm）で走り、番号 3011・3124・3191 は VM の中だけなのでぶつからない。外さないと全部の回の画面の試験が 1 つずつしか走れず、箱の空き待ちが 1 回 10〜20 分出ている。",
+    "完了の条件": "- [ ] 下の 10 行（K258-CI-001〜010）が緑\n- [ ] web=defer の回でも junit の組・ほかの組が今までどおり緑で終わる（形は K258-CI-005、実際の回は K258-CI-011）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: TOOL\n\n- v3-gate.yml は作り手 05_flow/build_testplan.py の生成物。作り手を直して作り直す（手で直さない）\n- 流す試験を減らさない：web の組・段（G48・G59・G70）は消さない。defer は「この回は流さない」だけ。後回しにした分を流すのは ticket-flow の `ci.py web`（このチケットの外・スキルの側）\n- 入力が空の回（push・入力を渡さない回・GitHub で手で押した回）は今までどおり流れる（既定 run・if は `!= 'defer'` の形）\n- 外から来る値（inputs）を run の命令の文字に入れない（ci_scope_test の決まり）。inputs.web は組の if でだけ読む\n- 入力 web を定義に持たない版を流すと、GitHub は知らない入力として回を拒む（422）。だから設定 `ci.web_defer` は、入力を足す定義と同じこのチケットで入れる（取り込むまで本線の設定は今のまま・このチケット自身の CI は画面の組まで流れる）。取り込んだ後も、本線を取り込んでいない枝や K-258 より前の版を `ci.py web` で流すと止まるので、後回しを使う枝は本線を取り込んでから出す（ci.py の側の扱いはスキルの側・PM に渡す）\n- 試験を書いた後は変えない（D-128.125）",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| 入力 `05_flow/build_testplan.py` | workflow_dispatch の inputs に `web`：type choice・options [run, defer]・default run・説明「画面の試験の組（web）を流すか。defer ならこの回は流さず、鎖の終わりに同じチケットの版でまとめて流す（ticket-flow の ci.py web）」 |\n| web の組の if | `${{ !cancelled() && needs.static.outputs.web == 'true' && inputs.web != 'defer' }}`（今の条件は残す） |\n| web の組の concurrency | 外す。コメントを「組ごとに使い捨ての VM・番号は VM の中だけなので回をまたいで同時に走ってよい」に直す |\n| G65 | 並びに `python3 scripts/ci/k258_web_defer_test.py` を足す（作り直しで形が戻らないよう毎回見る）。最後は k248 の試験のまま（K248-G57-016 が「G65 の並びの最後」を見るので、その手前に入れる） |\n| 前からの試験 `scripts/ci/k172_ci_shape_test.py` | K172-CI-012 の「web の組は同時に 1 つ（concurrency に group）」を、concurrency が無いことに合わせる（形は K258-CI-003 が見る） |\n| 設定 `ticket-flow.yaml` | ci: に `web_defer: true`・`web_rows: \"-UI-\"`、inputs に `web: web`（PM の指示・2026-11-16。ci.py は web_defer が真なら web=defer を渡し、行 ID に -UI- を含む行を後回しにする・design.md「画面の試験を後回しにする」） |\n| 作り直し | `python3 05_flow/build_testplan.py`（根から）。v3-gate.yml と試験計画 |\n\nこの形を見ている検査・試験を全部出した：\n\n```search\ngit grep -n \"kaname-web\"\n49\n```\n\n```search\ngit grep -n \"workflow_dispatch\"\n48\n```\n\nkaname-web のうち CI の定義の concurrency は v3-gate.yml:691 と build_testplan.py:317 の 2 か所だけ（ほかは Vercel のプロジェクトの名前）。concurrency を見る試験は k172_ci_shape_test.py:231（web の組）と k204_staging_workflow_test.py:144（staging の定義・この直しの外）。workflow_dispatch の inputs を見る試験は ci_scope_test.py:1053・k172_ci_shape_test.py:88・ci_results_test.py:429（どれも scope・base・target を見るだけで、web を足しても緑のまま）・k204_staging_workflow_test.py:58（staging の定義・外）。\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| defer のとき web の組の段ごとに if で外す | 組の準備（DB・API・画面の組み立て）が無駄に走る。組ごと外す |\n| concurrency を残して group を回ごとに変える | 意味が無い（同時に 1 つの決まりそのものが要らない） |",
+    "テスト仕様と確認の結果": "`scripts/ci/k258_web_defer_test.py`（CI の定義と作り手を読む。web の組の if は小さな読み手で入力ごとに評価する）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K258-CI-001 | 入力 | workflow_dispatch の inputs | web が在り、type choice・options がちょうど [run, defer]・default run・説明に defer と ci.py web。scope・ticket・base・target は残り、scope の既定は full |\n| K258-CI-002 | 入口 | web の組の if を評価（入力 空・run・defer × static の答え true・false × 取り消し） | 空と run は流れ、defer は流れない。static が false か取り消された回は入力にかかわらず流れない。今の条件（!cancelled()・needs.static.outputs.web == 'true'）は字で残る |\n| K258-CI-003 | 守り | web の組の concurrency | web の組に concurrency が無く、kaname-web が定義のどこにも無い。runs-on は [self-hosted, linux-vm]。定義の頭の concurrency（workflow-ref・取り消し真）は今のまま。古いコメント「回をまたいで同時に 1 つだけ」が無い |\n| K258-CI-004 | 守り | inputs.web を読む所 | web の組の if だけ（ほかの組の if・env・段・定義の env に無い） |\n| K258-CI-005 | 失敗 | web が飛ばされた回の junit の組とほかの組 | junit は needs に web を持ち if が always()。auto-merge は web を待たない。web を待つ組がほかに無い |\n| K258-CI-006 | 守り | web の組の段 | G48・G59・G70 の段がそれぞれちょうど 1 つ残る。段の if に defer が無い（組ごとに外す）。static の出力 web は残る |\n| K258-CI-007 | 入口 | 作り手の字 | options: [run, defer]・inputs.web != 'defer' があり、group: kaname-web が無い |\n| K258-CI-008 | 入口 | G65 | spec の組の G65 の段がちょうど 1 つで、この試験と k172 の試験を流す。作り手の G65 の行にもこの試験 |\n| K258-CI-009 | 失敗 | 試験の読み手に知らない語の式 | 止まる（黙って真にしない） |\n| K258-CI-010 | 入口 | 根の ticket-flow.yaml の ci | web_defer が真・web_rows が `-UI-`・inputs に web: web。前からの inputs（scope・ticket・base）と workflow は残る |\n| K258-CI-011 | 失敗 | この枝を scope=ticket・ticket=K-258・web=defer で 1 回流す（手で起こす） | 回の結論が success・web の組は skipped・junit の組は success で artifact junit に spec の JUnit が入る |\n\n```judge-skip\n- K258-CI-011: web=defer の回は、このチケット自身の CI（本線の設定のまま web=run の形）では起きない。チケットの CI が緑になった後、TS が `gh workflow run v3-gate.yml --ref t/K-258 -f scope=ticket -f ticket=K-258 -f base=<チケットの CI と同じ元> -f web=defer` で 1 回流し、回の URL と組ごとの結論を確かめの報告に書く\n```\n\n### テストの型の受け（分類 TOOL）\n\n- TP-TOOL-01（日本語の名前のファイル）：受けない。読むのは決まった名前のファイル\n- TP-TOOL-02（検査が何も見ていないのに緑）：002 は字だけでなく式を評価する・009 は読み手が知らない語で止まる\n- TP-TOOL-03（容れ物の中と手元で設定が違う）：CI の中でも G65 で同じ試験が流れる（008）\n\n### 8 つの観点\n\n| 観点 | 判定 |\n|---|---|\n| 入力 | 001（入力の形）・002（入力の値ごと） |\n| 対象の状態 | 002（static の答え・取り消し） |\n| 時間の流れ | N/A：時刻・期限を扱わない |\n| 入口 | 002（push・手で押した回・ci.py の回）・007・008・010 |\n| 利用者の状態 | N/A：人の状態を扱わない |\n| 失敗 | 005（web が飛ばされても junit は緑）・009・011（実際の defer の回） |\n| 操作の揺れ | 003（回をまたいで同時に走る） |\n| 守り | 003・004・006（試験を減らさない・他の組に効かない） |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外のサービスに触らない |\n| G-12 切り替わりの瞬間 | N/A | 状態の切り替わりを扱わない |\n| G-13 機能の組み合わせ | 該当 | defer × 範囲の答え × 取り消し（002）・defer × junit のまとめ（005） |\n| G-14 口座状態の波及 | N/A | 人・権限の状態を変えない |\n| G-15 信号なし終了 | 該当 | 飛ばされた web を緑と数えない：後回しの行は ci.py web が流すまで「まだ」（スキルの側）。この定義では junit が web の JUnit 無しでまとめても、ci.py の判定は今の回の行だけを見る |\n| G-16 有限資源の枯渇 | 該当 | VM の台の数：web の組が同時に走る数は台（箱）の数で決まる。番号は VM の中だけ（003） |",
+    "成果物": "- `scripts/ci/k258_web_defer_test.py`（書く段）\n- 実装：作り手と作り直した CI の定義・試験計画・k172 の試験の 1 行",
+    "決定ログ": "- 代表の答え（2026-11-16・PM 経由）：チケットの CI では画面の試験を後回しにし、鎖の終わりにまとめて流して速くする。流す試験は 1 本も減らさない\n- 従う決定：D-128.169（チケットの CI の範囲）"
+   },
+   "file": "11_tickets/K-258.md"
   }
  ]
 }
