@@ -1,0 +1,113 @@
+{
+  "_doc": "画面を作る・変えるチケットで canvas（正の組の id）が無い、前からあるチケット（K-215・D-143.5）。減らすだけ（canvas を書いたら行を消す）。増やすと scripts/ci/canvas_field_gate.py が赤にする",
+  "entries": [
+    {
+      "ticket": "K-55",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-61",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-62",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-64",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-69",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-70",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-71",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-72",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-74",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-75",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-76",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-89",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-90",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-91",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-92",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-144",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-145",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-147",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-151",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-179",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-180",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-181",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-182",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-183",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-184",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-211",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    },
+    {
+      "ticket": "K-245",
+      "reason": "前からある画面のチケット。切り直すときに canvas を書く"
+    }
+  ]
+}
