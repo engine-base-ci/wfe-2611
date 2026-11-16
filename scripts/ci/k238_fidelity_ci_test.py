@@ -360,7 +360,8 @@ class GateSelectTest(unittest.TestCase):
             (tmp / "04_design").mkdir()
             (tmp / "11_tickets").mkdir()
             rules = {"web_select": web_cfg(), "spec": {}}
-            plan = {"changes": [ci_scope.Change("M", "apps/web/app/a/page.tsx", None)]}
+            # 関係ないファイルの差分（誰の画面でもない画面のコードは、前からの決まりで全部に倒れて専用の段も選ぶので使わない）
+            plan = {"changes": [ci_scope.Change("M", "README.md", None)]}
             for text, want in ((json.dumps({"groups": [{"id": "g", "enrolled": True}]}), [FID]),
                                (json.dumps({"groups": [{"id": "g", "enrolled": False}]}), []),
                                (None, []), ("{oops", [])):
