@@ -20,6 +20,9 @@ td{height:44px;padding:0 8px;border-bottom:1px solid #EDF0F4;white-space:nowrap}
 @media (max-width:1023px){nav[aria-label="メニュー"]{flex-basis:56px !important;font-size:0 !important;padding:10px 6px !important}nav[aria-label="メニュー"] a,nav[aria-label="メニュー"] div{justify-content:center !important;padding-left:0 !important;padding-right:0 !important}nav[aria-label="メニュー"] b{display:none}}
 @media (max-width:767px){nav[aria-label="メニュー"]{display:none !important}header label{width:auto !important;flex:1 1 120px;min-width:0}header>div{flex-wrap:wrap}}
 
+/* k257-ap */
+section a[style*="height: 28px"]{white-space:nowrap}section>div:first-child>span[style*="margin-left: auto"]{flex-wrap:wrap;justify-content:flex-end}
+
 /* kn-shell: bars and panels run edge to edge; menu and side panel open/close */
 [data-shell]{min-height:100vh !important;align-items:stretch}
 [data-shell]>main{display:flex !important;flex-direction:column}
@@ -99,7 +102,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
    <section style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 8px">
     <div style="display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #DDE2E9; flex-wrap: wrap">
      <span style="display: flex; gap: 6px; flex-wrap: wrap">
-      <sc-for list="{{filters}}" as="f" hint-placeholder-count="5"><button type="button" style="{{f.style}}">{{f.label}}</button></sc-for>
+      <button type="button" style="height: 26px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; border-radius: 9999px; padding: 0 10px; font-size: 12px">すべて 9</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">AI の成果物 3</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">上位の承認 1</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">渡された 2</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">判断を仰がれた 1</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">決まりの例外 1</button><button type="button" style="height: 26px; border: 1px solid #DDE2E9; background: #FFFFFF; color: #4A5563; border-radius: 9999px; padding: 0 10px; font-size: 12px">やり方を広げる 1</button>
      </span>
      <span style="margin-left: auto; display: flex; gap: 6px; align-items: center">
       <span style="font-size: 12px; color: #4A5563">期限の近い順 ▾</span>
@@ -111,22 +114,110 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
      <table style="border-collapse: collapse; width: 100%">
       <thead><tr><th><input type="checkbox" aria-label="まとめて選べるものをすべて選ぶ"></th><th>決めること</th><th>種別</th><th>番号</th><th>題名</th><th>誰から</th><th>確認</th><th>期限</th><th style="text-align: right">その場で決める</th></tr></thead>
       <tbody>
-       <sc-for list="{{sections}}" as="s" hint-placeholder-count="3">
-        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: {{s.color}}">{{s.label}}　{{s.n}} 件</td></tr>
-        <sc-for list="{{s.rows}}" as="r" hint-placeholder-count="3">
+        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: #B91C1C">期限切れ　1 件</td></tr>
          <tr>
-          <td><sc-if value="{{r.bulk}}" hint-placeholder-val="{{ false }}"><input type="checkbox" aria-label="まとめて承認に入れる"></sc-if><sc-if value="{{r.nobulk}}" hint-placeholder-val="{{ true }}"><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></sc-if></td>
-          <td><span style="{{r.kindStyle}}">{{r.kind}}</span></td>
-          <td><span style="{{r.typeStyle}}">{{r.type}}</span></td>
-          <td><a href="TicketDetail.dc.html" style="font-size: 12px">{{r.key}}</a></td>
-          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">{{r.title}}</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">{{r.sub}}</span></td>
-          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="{{r.av}}">{{r.ini}}</span>{{r.from}}</span></td>
-          <td style="font-size: 12px">{{r.check}}</td>
-          <td style="{{r.dueStyle}}">{{r.due}}</td>
-          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">{{r.second}}</button><button type="button" style="{{r.primaryStyle}}">{{r.primary}}</button></span></td>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #22345C; color: #22345C">AI の成果物</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">EG-128</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">セイコー様へ 11月分の請求書を送る</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">承認するとメールを送る（取り消せない）</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #4A5563">AI</span>高本のAI</span></td>
+          <td style="font-size: 12px">確実 2 ・ AI 1 ・ 人 1</td>
+          <td style="color: #B91C1C; font-weight: 500">11/01</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">差し戻す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">中身を見る</button></span></td>
          </tr>
-        </sc-for>
-       </sc-for>
+        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: #131B27">今日　2 件</td></tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #6D4AA6; color: #6D4AA6">上位の承認</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">JD-204</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">京蟻 追加開発の見積を出す（1,826,000 円）</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">見積が 100 万円を超えたため上位へ（ワークスペースの決まり）</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #186F69">佐</span>佐藤</span></td>
+          <td style="font-size: 12px">確実 2 ・ AI 1</td>
+          <td>11/02（今日）</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">差し戻す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">承認する</button></span></td>
+         </tr>
+         <tr>
+          <td><input type="checkbox" aria-label="まとめて承認に入れる"></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #22345C; color: #22345C">AI の成果物</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">KR-031</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">入金の照合（10月分）を記録する</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">承認すると会計に記録する（戻せる）</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #4A5563">AI</span>高本のAI</span></td>
+          <td style="font-size: 12px">確実 3</td>
+          <td>11/02（今日）</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">差し戻す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">承認する</button></span></td>
+         </tr>
+        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: #131B27">7 日以内　4 件</td></tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #7E570D; color: #7E570D">渡された</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">EG-119</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">問い合わせ（山田様）に一次返信する</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">理由：先方と面識がある ・ 返事の期限 11/03</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #186F69">佐</span>佐藤</span></td>
+          <td style="font-size: 12px">—</td>
+          <td>11/03</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">断る</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">受ける</button></span></td>
+         </tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #22345C; color: #22345C">AI の成果物</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">EG-127</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">発注ナビ 応募文を出す</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">承認すると 3 社に応募する（外に出る）</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #4A5563">AI</span>高本のAI</span></td>
+          <td style="font-size: 12px">確実 2</td>
+          <td>11/04</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">差し戻す</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">中身を見る</button></span></td>
+         </tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #186F69; color: #186F69">決まりの例外</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #4A5563">決まり</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">—</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">ミナト様だけ月末締めにしたい</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">ワークスペースの決まり「請求は 25 日締め」と反対 ・ 田中の分身が点検</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #7E570D">田</span>田中</span></td>
+          <td style="font-size: 12px">—</td>
+          <td>11/05</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">断る</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">OK する</button></span></td>
+         </tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #B91C1C; color: #B91C1C">判断を仰がれた</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #B91C1C">QA</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">JD-207</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">保守の範囲にログの保管は入るか</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">京蟻様から 1 年保管を頼まれた</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #7E570D">田</span>田中</span></td>
+          <td style="font-size: 12px">—</td>
+          <td>11/05</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">もっと聞く</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">答える</button></span></td>
+         </tr>
+        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: #4A5563">それより後　1 件</td></tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #7E570D; color: #7E570D">渡された</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #186F69">タスク</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">JD-190</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">【親】京蟻 v2.1 リリース</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">子 8 件も一緒に ・ 返事の期限 11/16</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #2F4B7C">鈴</span>鈴木</span></td>
+          <td style="font-size: 12px">—</td>
+          <td>11/16</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">断る</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">受ける</button></span></td>
+         </tr>
+        <tr><td colspan="9" style="background: #F7F8FA; height: 28px; font-size: 12px; font-weight: 500; color: #4A5563">期限なし　1 件</td></tr>
+         <tr>
+          <td><span title="1 件ずつ決める" style="color: #8A94A3; font-size: 11px">—</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 0 8px; border: 1.5px solid #2F4B7C; color: #2F4B7C">やり方を広げる</span></td>
+          <td><span style="display: inline-block; font-size: 11px; font-weight: 500; border-radius: 9999px; padding: 1px 8px; color: #FFFFFF; background: #4A5563">やり方</span></td>
+          <td><a href="TicketDetail.dc.html" style="font-size: 12px">—</a></td>
+          <td style="max-width: 360px; overflow: hidden; text-overflow: ellipsis"><a href="TicketDetail.dc.html" style="color: #131B27; text-decoration: none; font-weight: 500">やり方「問い合わせに返す」を営業の全員に</a><span style="display: block; font-size: 12px; color: #4A5563; overflow: hidden; text-overflow: ellipsis">鈴木の自分のやり方 v1 ・ 使った 6 回・そのまま通った 4</span></td>
+          <td><span style="display: inline-flex; align-items: center; gap: 5px"><span style="width: 22px; height: 22px; border-radius: 9999px; font-size: 10px; display: grid; place-items: center; color: #FFFFFF; background: #2F4B7C">鈴</span>鈴木</span></td>
+          <td style="font-size: 12px">—</td>
+          <td>—</td>
+          <td style="text-align: right"><span style="display: inline-flex; gap: 6px"><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; font-size: 12px; color: #131B27">断る</button><button type="button" style="height: 28px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 12px; font-size: 12px; font-weight: 500">中身を見る</button></span></td>
+         </tr>
       </tbody>
      </table>
     </div>
@@ -136,40 +227,5 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
  </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
-class Component extends DCLogic {
-  renderVals() {
-    var K = { "AI の成果物": "#22345C", "上位の承認": "#6D4AA6", "渡された": "#7E570D", "判断を仰がれた": "#B91C1C", "決まりの例外": "#186F69", "やり方を広げる": "#2F4B7C" };
-    var T = { "タスク": "#186F69", "QA": "#B91C1C", "課題": "#B45309", "決まり": "#4A5563", "やり方": "#4A5563" };
-    var pill = function (c) { return "display:inline-block;font-size:11px;font-weight:500;border-radius:9999px;padding:1px 8px;color:#FFFFFF;background:" + c; };
-    var outline = function (c) { return "display:inline-block;font-size:11px;font-weight:500;border-radius:9999px;padding:0 8px;border:1.5px solid " + c + ";color:" + c; };
-    var avc = { "高本のAI": "#4A5563", "佐藤": "#186F69", "田中": "#7E570D", "鈴木": "#2F4B7C" };
-    var row = function (kind, type, key, title, sub, from, check, due, late, primary, second, bulk) {
-      return { kind: kind, kindStyle: outline(K[kind]), type: type, typeStyle: pill(T[type]), key: key, title: title, sub: sub, from: from,
-        ini: from === "高本のAI" ? "AI" : from.slice(0, 1), av: "width:22px;height:22px;border-radius:9999px;font-size:10px;display:grid;place-items:center;color:#FFFFFF;background:" + avc[from],
-        check: check, due: due, dueStyle: late ? "color:#B91C1C;font-weight:500" : "", primary: primary, second: second, bulk: bulk, nobulk: !bulk,
-        primaryStyle: "height:28px;border-radius:6px;border:1px solid #22345C;background:#22345C;color:#FFFFFF;padding:0 12px;font-size:12px;font-weight:500" };
-    };
-    var f = function (l, on) { return { label: l, style: on ? "height:26px;border:1px solid #22345C;background:#22345C;color:#FFFFFF;border-radius:9999px;padding:0 10px;font-size:12px" : "height:26px;border:1px solid #DDE2E9;background:#FFFFFF;color:#4A5563;border-radius:9999px;padding:0 10px;font-size:12px" }; };
-    return {
-      filters: [f("すべて 9", true), f("AI の成果物 3"), f("上位の承認 1"), f("渡された 2"), f("判断を仰がれた 1"), f("決まりの例外 1"), f("やり方を広げる 1")],
-      sections: [
-        { label: "期限切れ・今日", color: "#B91C1C", n: 3, rows: [
-          row("AI の成果物", "タスク", "EG-128", "セイコー様へ 11月分の請求書を送る", "承認するとメールを送る（取り消せない）", "高本のAI", "確実 2 ・ AI 1 ・ 人 1", "11/01", true, "中身を見る", "差し戻す", false),
-          row("上位の承認", "タスク", "JD-204", "京蟻 追加開発の見積を出す（1,826,000 円）", "見積が 100 万円を超えたため上位へ（ワークスペースの決まり）", "佐藤", "確実 2 ・ AI 1", "今日 18:00", false, "承認する", "差し戻す", false),
-          row("渡された", "タスク", "EG-119", "問い合わせ（山田様）に一次返信する", "理由：先方と面識がある ・ 返事の期限 11/03", "佐藤", "—", "11/03", false, "受ける", "断る", false) ] },
-        { label: "今週", color: "#131B27", n: 5, rows: [
-          row("決まりの例外", "決まり", "—", "ミナト様だけ月末締めにしたい", "ワークスペースの決まり「請求は 25 日締め」と反対 ・ 田中の分身が点検", "田中", "—", "11/05", false, "OK する", "断る", false),
-          row("やり方を広げる", "やり方", "—", "やり方「問い合わせに返す」を営業の全員に", "鈴木の自分のやり方 v1 ・ 使った 6 回・そのまま通った 4", "鈴木", "—", "11/07", false, "中身を見る", "断る", false),
-          row("AI の成果物", "タスク", "EG-127", "発注ナビ 応募文を出す", "承認すると 3 社に応募する（外に出る）", "高本のAI", "確実 2", "11/04", false, "中身を見る", "差し戻す", false),
-          row("判断を仰がれた", "QA", "JD-207", "保守の範囲にログの保管は入るか", "京蟻様から 1 年保管を頼まれた", "田中", "—", "11/05", false, "答える", "もっと聞く", false),
-          row("AI の成果物", "タスク", "KR-031", "入金の照合（10月分）を記録する", "承認すると会計に記録する（戻せる）", "高本のAI", "確実 3", "11/06", false, "承認する", "差し戻す", true) ] },
-        { label: "来週以降", color: "#4A5563", n: 1, rows: [
-          row("渡された", "タスク", "JD-190", "【親】京蟻 v2.1 リリース", "子 8 件も一緒に ・ 返事の期限 11/09", "鈴木", "—", "11/09", false, "受ける", "断る", false) ] }
-      ]
-    };
-  }
-}
-</script>
 </body>
 </html>

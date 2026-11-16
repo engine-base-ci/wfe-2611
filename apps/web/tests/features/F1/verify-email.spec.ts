@@ -285,6 +285,45 @@ row(R["K52-UI-018"], async (page) => {
   await expect(done(page)).toBeVisible();
   await expect(link(page, "困ったとき").first()).toHaveAttribute("href", /help/);
 });
+row(R["K52-UI-020"], async (page) => {
+  const m = await mockApi(page);
+  m.on.verify = () => fail(410, "E-AUTH-003", MSG.expired);
+  await openLink(page);
+  await expect(page.getByText(MSG.expired).first()).toBeVisible();
+  const foot = page.getByRole("navigation", { name: "Kaname について" });
+  expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual(["いまの様子", "困ったとき"]);
+  const status = foot.getByRole("link", { name: "いまの様子", exact: true });
+  await expect(status).toHaveAttribute("aria-disabled", "true");
+  expect(await status.getAttribute("href")).toBeNull();
+  expect(Number(await status.evaluate((e) => getComputedStyle(e).opacity))).toBeCloseTo(0.55, 2);
+  await status.click({ force: true });
+  await expect(page).toHaveURL(/\/verify-email/);
+});
+row(R["K52-UI-021"], async (page) => {
+  await mockApi(page);
+  await openLink(page);
+  await expect(done(page)).toBeVisible();
+  const foot = page.getByRole("navigation", { name: "Kaname について" });
+  expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual([
+    "利用規約",
+    "プライバシー",
+    "困ったとき",
+  ]);
+  await expect(foot.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", /terms/);
+});
+row(R["K52-UI-022"], async (page) => {
+  const m = await mockApi(page);
+  m.on.verify = () => fail(409, "E-CONF-011", "このメールアドレスの登録は確認まで終わっています。ログインしてください");
+  await openLink(page);
+  await expect(page.getByRole("heading", { level: 1, name: "登録は終わっています" })).toBeVisible();
+  const foot = page.getByRole("navigation", { name: "Kaname について" });
+  expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual([
+    "利用規約",
+    "プライバシー",
+    "困ったとき",
+  ]);
+  await expect(foot.getByRole("link", { name: "プライバシー", exact: true })).toHaveAttribute("href", /privacy/);
+});
 
 // ---- 手がかりをタブに覚えるのは確定できたときだけ（K-52 の 2 回目のレビュー HIGH-3） ----
 row(R["K52-UI-019"], async (page) => {

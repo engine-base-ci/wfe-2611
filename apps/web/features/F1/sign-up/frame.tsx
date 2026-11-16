@@ -19,7 +19,10 @@ export const DEFAULT_TERMS_LINKS: TermsLinks = { terms: TERMS_HREF, privacy: PRI
 // ログインしていない人の「困ったとき」の画面はまだ切っていない（ログイン後は 問い合わせ・お知らせ）
 export const HELP_HREF = pendingRoute("/help", "困ったとき（未切り出し）");
 
-/** foot="help" は下の行き先を「困ったとき」だけにする（確認のリンクを開いた画面・K-52。規約への同意は登録の画面で済んでいる） */
+/** 下の行き先の形。all＝利用規約・プライバシー・困ったとき／help＝困ったとき だけ（入れ物の待ち）／
+ *  status＝「いまの様子 ・ 困ったとき」の 1 行（キャンバス AuthVerifyExpired・K-256） */
+export type AuthFoot = "all" | "help" | "status";
+
 //   links は規約の 2 つの行き先（今の版の url・K-53）。wide は文面のページ（本文を広く読む）
 export function AuthFrame({
   children,
@@ -28,7 +31,7 @@ export function AuthFrame({
   wide = false,
 }: {
   children: ReactNode;
-  foot?: "all" | "help";
+  foot?: AuthFoot;
   links?: TermsLinks;
   wide?: boolean;
 }) {
@@ -41,19 +44,39 @@ export function AuthFrame({
       <main className="k-auth-card" data-part="auth-box">
         {children}
       </main>
-      <nav className="k-auth-foot" aria-label="Kaname について">
-        {foot === "all" ? (
-          <>
-            <Link href={links.terms as Route} target="_blank" rel="noopener">
-              利用規約
-            </Link>
-            <Link href={links.privacy as Route} target="_blank" rel="noopener">
-              プライバシー
-            </Link>
-          </>
-        ) : null}
-        <Link href={HELP_HREF}>困ったとき</Link>
-      </nav>
+      {foot === "status" ? <StatusFoot /> : <AuthFootNav foot={foot} links={links} />}
     </div>
+  );
+}
+
+/** 「いまの様子 ・ 困ったとき」（字の「・」で区切る 1 行）。いまの様子の画面はまだ無いので、出すが押せない
+ *  （href なし・aria-disabled・Tab で止まらない・正本の使えない状態の薄さ・D-145.9） */
+function StatusFoot() {
+  return (
+    <nav className="k-auth-foot" data-foot="status" aria-label="Kaname について">
+      <a role="link" aria-disabled="true" tabIndex={-1}>
+        いまの様子
+      </a>
+      {" ・ "}
+      <Link href={HELP_HREF}>困ったとき</Link>
+    </nav>
+  );
+}
+
+function AuthFootNav({ foot, links }: { foot: "all" | "help"; links: TermsLinks }) {
+  return (
+    <nav className="k-auth-foot" aria-label="Kaname について">
+      {foot === "all" ? (
+        <>
+          <Link href={links.terms as Route} target="_blank" rel="noopener">
+            利用規約
+          </Link>
+          <Link href={links.privacy as Route} target="_blank" rel="noopener">
+            プライバシー
+          </Link>
+        </>
+      ) : null}
+      <Link href={HELP_HREF}>困ったとき</Link>
+    </nav>
   );
 }

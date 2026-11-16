@@ -148,7 +148,7 @@ export function ConsentTerms({ next }: { next: string | null }) {
   };
 
   return (
-    <AuthFrame foot="help">
+    <AuthFrame foot="all">
       <h1>利用規約とプライバシーポリシーが新しくなりました</h1>
       {reason ? <Callout>{reason}</Callout> : null}
       {banner?.kind === "down" ? <Callout tone="danger">{msg(PAGE_ERROR.down)}</Callout> : null}
@@ -156,10 +156,12 @@ export function ConsentTerms({ next }: { next: string | null }) {
       {banner?.kind === "expired" ? <Callout tone="danger">{banner.text}</Callout> : null}
       {banner?.kind === "wait" ? <Callout tone="warn">{waitText(banner.sec)}</Callout> : null}
       {!signedIn ? (
-        <Loading label="確かめています…" delayMs={600} />
+        <Loading label="確かめています…" />
       ) : items ? (
         <>
-          <p className="k-auth-lead">新しい版を読んで同意してから、続けてください</p>
+          <p className="k-auth-lead" data-kind="body">
+            新しい版を読んで同意してから、続けてください
+          </p>
           <ul className="k-terms-list">
             {NEED.map((n) => {
               const it = items.find((x) => x.kind === n.kind);
@@ -173,9 +175,9 @@ export function ConsentTerms({ next }: { next: string | null }) {
               ) : null;
             })}
           </ul>
-          <div className="k-terms-check" data-invalid={noAgree ? "" : undefined}>
+          {/* label がチェックを包む（キャンバス AuthConsent：間 8 とチェックの既定の余白・13px） */}
+          <label className="k-terms-check" data-invalid={noAgree ? "" : undefined}>
             <input
-              id={boxId}
               type="checkbox"
               checked={checked}
               aria-invalid={noAgree || undefined}
@@ -185,30 +187,27 @@ export function ConsentTerms({ next }: { next: string | null }) {
                 if (e.target.checked) setNoAgree(false);
               }}
             />
-            <label htmlFor={boxId}>利用規約とプライバシーポリシーに同意します</label>
-          </div>
+            利用規約とプライバシーポリシーに同意します
+          </label>
           {noAgree ? (
             <p id={errId} className="k-err k-terms-err">
               {msg("E-VAL-019")}
             </p>
           ) : null}
-          <div className="k-auth-actions">
-            <Button onClick={() => void agree()} loading={busy}>
-              同意して続ける
-            </Button>
-            <Button variant="ghost" onClick={() => void signOut()} disabled={busy}>
-              ログアウト
-            </Button>
-          </div>
-        </>
-      ) : banner?.kind === "down" ? (
-        <div className="k-auth-actions">
-          <Button variant="ghost" onClick={() => void signOut()}>
+          {/* 主とログアウトは箱の段に並べる（間 14・キャンバス AuthConsent） */}
+          <Button size="lg" onClick={() => void agree()} loading={busy}>
+            同意して続ける
+          </Button>
+          <Button variant="ghost" className="k-terms-out" onClick={() => void signOut()} disabled={busy}>
             ログアウト
           </Button>
-        </div>
+        </>
+      ) : banner?.kind === "down" ? (
+        <Button variant="ghost" className="k-terms-out" onClick={() => void signOut()}>
+          ログアウト
+        </Button>
       ) : (
-        <Loading label="今の版を読んでいます…" delayMs={600} />
+        <Loading label="今の版を読んでいます…" />
       )}
     </AuthFrame>
   );

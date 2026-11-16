@@ -39,7 +39,8 @@ python3 shellfix.py      # 全部の画面にそろえの処理をかける（�
 | `me.py` | 自分の設定（Me*） |
 | `auth.py` | ログイン・登録（Auth*） |
 | `on.py` `err.py` | はじめて・空・失敗・エラー（On* Err*） |
-| `k219.py` | キャンバスに絵が無かった状態の絵（AuthVerifying など 13 枚・UiDisabled・OnHomeLater）と、見比べの 1 枚（04_design/canvas-review/K-219.html）。最後に shellfix.py を回す |
+| `k219.py` | キャンバスに絵が無かった状態の絵（AuthVerifying など。帯の 4 枚・StCompleteModal・MePCInstalled は k257.py に移した・UiDisabled・OnHomeLater）と、見比べの 1 枚（04_design/canvas-review/K-219.html）。最後に shellfix.py を回す |
+| `k257.py` | 詳細の形の 7 枚（TicketDetail と帯の絵 St*。TicketDetail を土台に帯だけを替える・幅 1023 以下は右のパネルを本文の下に）・小窓 3 枚（StApproveModal・StReturnModal・StCompleteModal を 1 枚に 1 つ）・承認待ち（Approvals）・PC をつなぐの 3 枚（EdPC・MePC・MePCInstalled。今の画面に在る操作を描き足す）と、見比べの 1 枚（04_design/canvas-review/K-257.html）。これらの絵の持ち主は k257.py なので、me.py・ed.py・k219.py は書かない。K257_NO_SIDEFILES=1 で絵だけを書く。最後に shellfix.py を回す |
 | `mb.py` | スマホ（Mb*） |
 | `ed.py` `ed2.py` | 直す・足す の小窓（Ed*） |
 | `op.py` | 運営と、顧客の側の 困ったとき・お知らせ・請求書（Op* Me* Ws*） |

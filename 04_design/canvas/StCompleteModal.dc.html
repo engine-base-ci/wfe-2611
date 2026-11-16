@@ -64,10 +64,9 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 </helmet>
 <div data-shell style="min-height: 100vh; position: relative; overflow: hidden; background: rgba(19,27,39,0.42)">
  <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">
- <div style="position: absolute; inset: 0; display: flex; gap: 24px; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">
-
-  <section role="alertdialog" aria-label="完了にする" style="width: 420px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">
-   <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9"><b style="font-size: 15px">完了にする</b></div>
+ <div style="position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">
+  <section role="dialog" aria-label="完了にする" style="width: 420px; max-width: 100%; box-sizing: border-box; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">
+   <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center"><b style="font-size: 15px">完了にする</b><button type="button" aria-label="閉じる" style="margin-left: auto; width: 28px; height: 28px; border: 0; background: transparent; color: #4A5563">×</button></div>
    <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px">
     <div style="font-size: 12px; color: #4A5563">EG-127 発注ナビ 新着案件に応募文を出す</div>
     <div><div style="font-size: 12px; font-weight: 500">完了の条件</div><div style="font-size: 12px; color: #4A5563">応募が発注ナビの「応募済み」に出ていること</div></div>
@@ -80,7 +79,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
     </fieldset>
     <label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox">完了の条件を満たしたことを確かめました</label>
    </div>
-   <div style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">確かめて完了にする</button></div>
+   <div style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap"><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button><button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">確かめて完了にする</button></div>
   </section>
  </div>
 </div>

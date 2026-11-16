@@ -90,13 +90,27 @@ export function VerifyLink({ token }: { token: string }) {
     // 同意し直しの印が立っていれば、同意し直しの画面へ（戻る先は今の行き先）。立っていなければ今の行き先へ
     router.push(view.kind === "ok" && view.termsPending ? (termsStepHref(AFTER) as Route) : AFTER);
   };
-  return <AuthFrame foot="help">{body(view, next)}</AuthFrame>;
+  // 期限切れだけ足元を「いまの様子 ・ 困ったとき」に（キャンバス AuthVerifyExpired）。ほかは利用規約・プライバシー・困ったとき
+  const foot = view.kind === "error" && view.code === "E-AUTH-003" ? "status" : "all";
+  return <AuthFrame foot={foot}>{body(view, next)}</AuthFrame>;
 }
 
 const toSignup = (
   <Link href="/signup" prefetch={false}>
     もう一度登録する
   </Link>
+);
+/** 箱の中の主の行き先（主ボタンの形・高さ 44。キャンバス AuthVerifyExpired・AuthVerifyUsed） */
+const primaryLink = (href: "/signup" | "/login", label: string) => (
+  <Link href={href} prefetch={false} className="k-btn" data-variant="primary" data-size="lg">
+    {label}
+  </Link>
+);
+/** 見出しの上の札（44・橙「期」／緑「✓」） */
+const badge = (tone: "warn" | "ok", mark: string) => (
+  <span className="k-auth-badge" data-tone={tone} aria-hidden="true">
+    {mark}
+  </span>
 );
 const toLogin = (
   <Link href="/login" prefetch={false}>
@@ -109,7 +123,8 @@ function body(v: View, next: () => void) {
     return (
       <>
         <h1>確認しています</h1>
-        <Loading label="登録を確定しています…" delayMs={600} />
+        {/* 枠と見出しを先に出し、文は 3 秒たっても終わらないときだけ（D-144.8・キャンバス AuthVerifying） */}
+        <Loading label="登録を確定しています…" />
       </>
     );
   if (v.kind === "ok")
@@ -140,9 +155,10 @@ function body(v: View, next: () => void) {
     case "E-AUTH-003": // 期限切れ：申し込みからやり直す
       return (
         <>
+          {badge("warn", "期")}
           <h1>リンクの期限が切れました</h1>
           <Callout tone="warn">{message(v.code)}</Callout>
-          <p className="k-auth-alt">{toSignup}</p>
+          {primaryLink("/signup", "もう一度登録する")}
         </>
       );
     case "E-AUTH-008": // 前のリンク：新しいリンクはそのまま使えるので、登録し直しへは誘わない
@@ -156,9 +172,10 @@ function body(v: View, next: () => void) {
     case "E-CONF-001":
       return (
         <>
+          {badge("ok", "✓")}
           <h1>登録は終わっています</h1>
           <Callout>{message(v.code)}</Callout>
-          <p className="k-auth-alt">{toLogin}</p>
+          {primaryLink("/login", "ログイン")}
         </>
       );
     case "E-AUTH-009": // 別のアカウントの登録のリンク：勝手に切り替えない

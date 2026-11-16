@@ -94,91 +94,7 @@ def auth_boards():
                TITLE % "確認メールを送りました" + WAITING % "読み込んでいます…")
 
 
-# ---------- 帯（StRunning から） ----------
-ROBOT = ('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%s" stroke-width="2" aria-hidden="true"><path d="M12 8V4H8"></path>'
-         '<rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2M20 14h2M15 13v2M9 13v2"></path></svg>')
-BAND_PRIMARY = ('<button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; '
-                'padding: 0 12px; font-size: 12px; font-weight: 500">%s</button>')
-BAND_SECOND = ('<button type="button" style="height: 30px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 10px; '
-               'font-size: 12px; color: #131B27">%s</button>')
-TODO = ["新着から条件に合う案件を選ぶ（3 件 → 1 件）", "案件の要件と予算を読む", "応募文を作る（過去の採用文 3 件を参考）", "確認を通す",
-        "発注ナビの画面から応募する（承認のあと）"]
-DONE_AT = ["高本のAI 10:31", "高本のAI 10:32", "高本のAI 10:34", "高本のAI 10:36", "高本のAI 10:44"]
-TEXT = "はじめまして。株式会社ENGINE BASE の高本です。業務システムの受託開発を…"
-
-
-def band(line, bg, color, title, sub, actions=""):
-    act = '<span style="margin-left: auto; display: flex; gap: 6px">%s</span>' % actions if actions else ""
-    return ('<div role="status" style="margin: 0 20px 14px; border: 1px solid %s; background: %s; border-radius: 8px; padding: 12px 14px">\n'
-            '    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">\n     %s\n     <b style="color: %s">%s</b>'
-            '<span style="font-size: 12px; color: %s">%s</span>\n     %s\n    </div>\n   </div>') % (line, bg, ROBOT % color, color, title, color, sub, act)
-
-
-def todo_list(done):
-    rows = []
-    for i, t in enumerate(TODO):
-        if done:
-            rows.append('<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox" checked>%s'
-                        '<span style="font-size: 11px; color: #4A5563">%s</span></label>' % (t, DONE_AT[i]))
-        else:
-            rows.append('<label style="display: flex; gap: 8px; align-items: center"><input type="checkbox">%s</label>' % t)
-    return '<div style="display: flex; flex-direction: column; gap: 4px">\n     ' + "\n     ".join(rows) + "\n    </div>"
-
-
-def band_board(name, title, pill, pill_bg, band_html, done):
-    s = load("StRunning.dc.html")
-    s = re.sub(r'(<span style="margin-left: auto; font-size: 12px; font-weight: 500; border-radius: 9999px; padding: 2px 12px; color: #FFFFFF; background: )#[0-9A-Fa-f]{6}">[^<]*</span>',
-               lambda m: m.group(1) + pill_bg + '">' + pill + "</span>", s, count=1)
-    # 見出しの 22px は正本の文字の段から外れた（段の上は 20px）。この絵は段に寄せる（元の StRunning は 22px のまま）
-    s = s.replace('<h1 style="font-size: 22px;', '<h1 style="font-size: 20px;', 1)
-    s = replace_block(s, '<div role="status"', band_html)
-    s = replace_block(s, '<div style="display: flex; flex-direction: column; gap: 4px">', todo_list(done))
-    s = s.replace("成果物（作りかけ）", "成果物", 1)
-    out = ('<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px; color: #4A5563; background: #FAFBFC">%s</div>'
-           % (TEXT if done else "まだありません。AI が作ると、ここに出ます"))
-    s = replace_block(s, '<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 12px; color: #4A5563; background: #FAFBFC">', out)
-    # 右の「PC のブラウザ」と「ほかの形」は実行しているときの物なので、この絵には置かない
-    s = replace_block(s, '<aside style="width: 340px; display: flex; flex-direction: column; gap: 12px">', "", tag="aside")
-    save(name, title, s)
-
-
-def band_boards():
-    band_board("StBefore", "AI に任せる前", "未着手", "#6B7585",
-               band("#DDE2E9", "#FFFFFF", "#22345C", "AI に任せる", "高本のAI が実施事項を進め、確かめてから承認を待ちます",
-                    BAND_PRIMARY % "AI に任せる"), False)
-    band_board("StConfirmDone", "完了の確かめ", "作業中", "#2F4B7C",
-               band("#DDE2E9", "#FFFFFF", "#22345C", "完了の条件を確かめて完了にしてください", "実施事項は全部終わりました",
-                    BAND_PRIMARY % "完了にする"), True)
-    band_board("StDone", "完了しました", "完了", "#166534",
-               band("#CDE8D5", "#E8F5EC", "#166534", "完了しました", "11/02 10:48 に 高本 が完了にしました"), True)
-    band_board("StDelegated", "AI に任せました", "作業中", "#2F4B7C",
-               band("#F3D3A7", "#FFF8EE", "#7A4A05", "高本のAI に任せました", "PC が受け取るのを待っています",
-                    BAND_SECOND % "AI と話す"), False)
-
-
-# ---------- 完了の小窓（StModal から） ----------
-def complete_modal():
-    s = load("StModal.dc.html")
-    check = '<label style="display: flex; gap: 6px; font-size: 12px"><input type="checkbox"%s>%s</label>'
-    dialog = (
-        '<div style="position: absolute; inset: 0; display: flex; gap: 24px; align-items: flex-start; justify-content: center; padding: 60px 24px; box-sizing: border-box">\n\n'
-        '  <section role="alertdialog" aria-label="完了にする" style="width: 420px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 24px 60px rgba(19,27,39,0.3); overflow: hidden">\n'
-        '   <div style="padding: 14px 18px; border-bottom: 1px solid #DDE2E9"><b style="font-size: 15px">完了にする</b></div>\n'
-        '   <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; font-size: 13px">\n'
-        '    <div style="font-size: 12px; color: #4A5563">EG-127 発注ナビ 新着案件に応募文を出す</div>\n'
-        '    <div><div style="font-size: 12px; font-weight: 500">完了の条件</div><div style="font-size: 12px; color: #4A5563">応募が発注ナビの「応募済み」に出ていること</div></div>\n'
-        '    <fieldset style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 8px 12px; margin: 0"><legend style="font-size: 12px; color: #4A5563; padding: 0 4px">実施事項</legend>\n'
-        + "".join("     " + check % (" checked disabled", t) + "\n" for t in TODO[:4])
-        + "     " + check % ("", TODO[4]) + "\n"
-        '    </fieldset>\n'
-        '    ' + check % ("", "完了の条件を満たしたことを確かめました") + '\n'
-        '   </div>\n'
-        '   <div style="padding: 12px 18px; border-top: 1px solid #DDE2E9; display: flex; gap: 8px; justify-content: flex-end">'
-        '<button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #DDE2E9; background: #FFFFFF; padding: 0 14px; font-size: 13px; color: #131B27">やめる</button>'
-        '<button type="button" style="height: 34px; border-radius: 6px; border: 1px solid #22345C; background: #22345C; color: #FFFFFF; padding: 0 16px; font-size: 13px; font-weight: 500">確かめて完了にする</button></div>\n'
-        '  </section>\n </div>')
-    s = replace_block(s, '<div style="position: absolute; inset: 0;', dialog)
-    save("StCompleteModal", "完了にするの小窓", s)
+# 帯の 4 枚（StBefore・StConfirmDone・StDone・StDelegated）と完了の小窓（StCompleteModal）の持ち主は k257.py（詳細の形にそろえて起こし直した・K-257）
 
 
 # ---------- 承認待ちが空（Approvals から） ----------
@@ -198,26 +114,7 @@ def approvals_empty():
     save("ApEmpty", "承認待ち 空", s)
 
 
-# ---------- この PC に Bridge が入っている（MePC から） ----------
-def pc_installed():
-    s = load("MePC.dc.html")
-    sec = '<section style="flex: 1; min-width: 0; padding: 22px 28px'
-    i = s.index(sec)
-    head_end = block_end(s, s.index("<div", i + 1), "div")
-    body = ('<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px">'
-            '<b style="font-weight: 600">この PC の Bridge</b>'
-            '<div style="font-size: 13px; line-height: 1.7">この PC に Bridge が入っています（v1.4）。コードを打たずに、ボタン 1 つでつなげます。</div>'
-            '<div style="display: flex; gap: 8px; flex-wrap: wrap">' + btn("この PC の Bridge につなぐ", "p") + "</div></div>"
-            '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 4px 18px">'
-            '<div style="display: flex; align-items: center; padding: 12px 0 4px"><b style="font-weight: 600; flex: 1">つないでいる PC</b></div>'
-            '<div style="padding: 12px 0; border-top: 1px solid #EDF0F4; font-size: 12px; color: #4A5563">まだありません</div></div>')
-    end = block_end(s, i, "section")
-    s = s[:head_end] + body + "</section>" + s[end:]
-    # 幅 375 では 2 つめのパネルが横一列になり、本文が幅 0 に潰れる（元の MePC も同じ）。この絵は本文を下に回す（kn-shell の前に置くので shellfix が消さない）
-    narrow = "\n@media (max-width:767px){main>div:has(>.kn-sub){flex-direction:column}}"
-    if narrow not in s:
-        s = s.replace("\n/* kn-shell", narrow + "\n/* kn-shell", 1)
-    save("MePCInstalled", "自分の設定 この PC に Bridge が入っている", s)
+# この PC に Bridge が入っている（MePCInstalled）の持ち主は k257.py（画面に在る操作を描き足した・K-257）
 
 
 # ---------- 使えない形の見本（OnLoading の外枠に） ----------
@@ -313,22 +210,29 @@ def after_shellfix():
 # ---------- 置き場の表 ----------
 # 絵: (近い絵, page, 画面 か "common", title, 組 (id, 種類, 画面の道, 持ち主, 組を写す元) か None)
 BOARDS = {
-    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "メールの確認・確定中 ← 確認メールのリンクを押した", ("verify-confirming", "doc", "/verify-email", "K-222", "signup-waiting")),
-    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "メールの確認・期限切れ ← 30 分を過ぎたリンクを押した", ("verify-expired", "auth-msg", "/verify-email", "K-222", "signup-waiting")),
-    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "メールの確認・使用済み ← 確定した後にもう一度リンクを押した", ("verify-used", "auth-msg", "/verify-email", "K-222", "signup-waiting")),
-    "AuthConsent": ("AuthVerify", "auth", "login", "規約の同意 ← ログインの続き（規約が新しくなった）", ("consent-terms", "auth-msg", "/login?step=terms", "K-222", "signup-waiting")),
-    "AuthChecking": ("AuthSignup", "auth", "signup", "登録・確かめ中 ← アカウントを作るを開いた直後", ("signup-checking", "doc", "/signup", "K-222", "signup-waiting")),
-    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "確認メールを送りました・読み込み中 ← 登録の次へを押した直後", ("signup-waiting-loading", "doc", "/verify-email", "K-222", "signup-waiting")),
+    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "メールの確認・確定中 ← 確認メールのリンクを押した", ("verify-confirming", "doc", "/verify-email", "K-256", "signup-waiting")),
+    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "メールの確認・期限切れ ← 30 分を過ぎたリンクを押した", ("verify-expired", "auth-msg", "/verify-email", "K-256", "signup-waiting")),
+    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "メールの確認・使用済み ← 確定した後にもう一度リンクを押した", ("verify-used", "auth-msg", "/verify-email", "K-256", "signup-waiting")),
+    "AuthConsent": ("AuthVerify", "auth", "login", "規約の同意 ← ログインの続き（規約が新しくなった）", ("consent-terms", "auth-msg", "/login?step=terms", "K-256", "signup-waiting")),
+    "AuthChecking": ("AuthSignup", "auth", "signup", "登録・確かめ中 ← アカウントを作るを開いた直後", ("signup-checking", "doc", "/signup", "K-255", "signup-waiting")),
+    "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "確認メールを送りました・読み込み中 ← 登録の次へを押した直後", ("signup-waiting-loading", "doc", "/verify-email", "K-255", "signup-waiting")),
+    "ApEmpty": ("Approvals", "approvals", "approvals", "承認待ち・空 ← 決めるものが無いとき", ("approvals-empty", "page", "/approvals", "K-231", "approvals")),
+    "UiDisabled": ("OnLoading", "on", "common", "使えない形の見本 ← どの画面でも（まだ使えない物は薄く押せない）", None),
+    "OnHomeLater": ("OnHome", "on", "tickets", "はじめにやること に「あとで」 ← はじめて入ったとき", None),
+}
+
+# 絵の持ち主は k257.py に移したが、見比べの 1 枚（K-219.html）の区画は残す（流し直しても見比べが変わらない・K-257）。並びは元の表の順
+MOVED = {
     "StBefore": ("StRunning", "states", "tickets", "帯・任せる前 ← チケットを作った直後", ("band-before", "band", "/tickets/{ticket}", "K-228", "band-running")),
     "StConfirmDone": ("StRunning", "states", "tickets", "帯・完了の確かめ ← 実行が終わって承認待ちが無い", ("band-confirm-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
     "StDone": ("StRunning", "states", "tickets", "帯・完了 ← 完了にした", ("band-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
     "StDelegated": ("StRunning", "states", "tickets", "帯・任せました（作る段） ← AI に任せるを押した", ("band-delegated", "band", "/tickets/{ticket}", "K-228", "band-running")),
     "StCompleteModal": ("StModal", "states", "tickets", "完了にするの小窓 ← 帯の完了にする", ("complete-modal", "dialog", "/tickets/{ticket}", "K-229", "approve-modal")),
-    "ApEmpty": ("Approvals", "approvals", "approvals", "承認待ち・空 ← 決めるものが無いとき", ("approvals-empty", "page", "/approvals", "K-231", "approvals")),
     "MePCInstalled": ("MePC", "me", "bridge-setup", "この PC に Bridge が入っている ← PC をつなぐを開いた", ("bridge-installed", "page", "/setup/bridge", "K-230", "bridge-connected")),
-    "UiDisabled": ("OnLoading", "on", "common", "使えない形の見本 ← どの画面でも（まだ使えない物は薄く押せない）", None),
-    "OnHomeLater": ("OnHome", "on", "tickets", "はじめにやること に「あとで」 ← はじめて入ったとき", None),
 }
+REVIEW_ORDER = ["AuthVerifying", "AuthVerifyExpired", "AuthVerifyUsed", "AuthConsent", "AuthChecking", "AuthVerifyLoading", "StBefore", "StConfirmDone",
+                "StDone", "StDelegated", "StCompleteModal", "ApEmpty", "MePCInstalled", "UiDisabled", "OnHomeLater"]
+
 
 
 def dump(path, data, newline):
@@ -342,8 +246,7 @@ def update_canvas_json():
     boards = dict(c["boards"])
     for name, (ref, page, _screen, title, _g) in BOARDS.items():
         key = name + ".dc.html"
-        if key in boards:
-            boards[key] = {**boards[key], "page": page, "title": title}
+        if key in boards:   # 在る絵の置き場と題は持ち主が後から直すので触らない（無い絵だけ足す・K-257）
             continue
         r = boards[ref + ".dc.html"]
         col = [b for b in boards.values() if b.get("page") == page and b.get("x") == r["x"]]
@@ -358,12 +261,15 @@ def update_canvas_json():
 def update_screens():
     path = os.path.join(ROOT, "04_design", "canvas-screens.json")
     d = json.load(open(path, encoding="utf-8"))
-    screens = {k: [b for b in v if b not in BOARDS] for k, v in d["screens"].items()}
-    common = [b for b in d["common"]["boards"] if b not in BOARDS and b not in ("OnHome", "OnLoading")]
-    for name, (_ref, _page, screen, _t, _g) in BOARDS.items():
+    # 決まった所に在る絵は並びを動かさない（流し直しても対応表が変わらない・K-257）。違う所に在る絵だけ外して足す
+    want = {name: screen for name, (_ref, _page, screen, _t, _g) in BOARDS.items()}
+    screens = {k: [b for b in v if b not in want or want[b] == k] for k, v in d["screens"].items()}
+    common = [b for b in d["common"]["boards"] if (b not in want or want[b] == "common") and b not in ("OnHome", "OnLoading")]
+    for name, screen in want.items():
         if screen == "common":
-            common.append(name)
-        else:
+            if name not in common:
+                common.append(name)
+        elif name not in screens[screen]:
             screens[screen] = screens[screen] + [name]
     for name in ("OnHome", "OnLoading"):
         if name not in screens["tickets"]:
@@ -387,8 +293,8 @@ def update_fidelity():
         pairs = [p for p in base["pairs"] if not roles or p["role"] in roles]
         new.append({"id": gid, "kind": kind, "canvas": name, "app": app, "state": gid, "widths": [1440, 375], "owner": owner,
                     "enrolled": False, "pairs": [dict(p) for p in pairs]})
-    ids = {g["id"] for g in new}
-    f = {**f, "groups": [g for g in groups if g["id"] not in ids] + new}
+    # 組は無いときだけ足す（持ち主が後から enrolled にしたり pairs を直したりした組を戻さない・K-257）
+    f = {**f, "groups": groups + [g for g in new if g["id"] not in have]}
     dump(path, f, True)
 
 
@@ -432,7 +338,8 @@ def review_sheet():
     out = os.path.join(ROOT, "04_design", "canvas-review", "K-219.html")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     secs = []
-    for name, (ref, _page, _screen, title, _g) in BOARDS.items():
+    for name in REVIEW_ORDER:
+        ref, _page, _screen, title, _g = {**BOARDS, **MOVED}[name]
         what = title.split(" ← ")[0]
         diffs = "".join("<li>違い：%s</li>" % d for d in DIFF[name])
         frame = lambda b, cap: ('<figure><figcaption>%s</figcaption><div class="frame"><iframe src="../canvas/%s.dc.html" '
@@ -457,10 +364,7 @@ def review_sheet():
 
 if __name__ == "__main__":
     auth_boards()
-    band_boards()
-    complete_modal()
     approvals_empty()
-    pc_installed()
     disabled_sample()
     home_later()
     subprocess.run([sys.executable, "shellfix.py"], cwd=HERE, check=True, stdout=subprocess.DEVNULL)  # 最後に after_shellfix() を呼ぶ

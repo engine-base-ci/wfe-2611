@@ -79,18 +79,7 @@ body = (ttl("ログインと安全", "大事な変更の前には、本人確認
 page("MeLogin.dc.html", "自分の設定 ログインと安全", "ログインと安全", body)
 page("MeLogin2FA.dc.html", "自分の設定 2 段階認証を付けている", "ログインと安全", body.replace(TFA_OFF, TFA_ON), "MeLogin.dc.html")
 # ---------- PC と使った量 ----------
-bar = lambda pct, col="#22345C": '<span style="display: block; height: 8px; border-radius: 99px; background: #EEF0F4; margin-top: 6px"><span style="display: block; height: 100%%; width: %d%%; background: %s; border-radius: 99px"></span></span>' % (pct, col)
-body = (ttl("PC と使った量", "分身はあなたの PC で動く。どのワークスペースの分身も同じ PC を使う")
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 4px 18px"><div style="display: flex; align-items: center; padding: 12px 0 4px"><b style="font-weight: 600; flex: 1">つないでいる PC</b>' + btn("＋ PC をつなぐ") + '</div>'
-  + '<div style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid #EDF0F4"><span style="color: #4A5563">' + SV % IC2["pc"] + '</span><span style="flex: 1"><span style="display: block">高本の MacBook Pro ' + OKP("つながっている") + ' ' + pill("いつも使う") + '</span><span style="font-size: 11px; color: %s">いま 1 件実行中（EG-127）・ 9/12 につないだ ・ Kaname の常駐アプリ v1.4</span></span>%s</div>' % (MUTED, btn("…"))
-  + '<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid #EDF0F4"><span style="color: #4A5563">' + SV % IC2["pc"] + '</span><span style="flex: 1"><span style="display: block">事務所の Windows ' + WARN("切れている") + '</span><span style="font-size: 11px; color: %s">最後に見えた 10/30 18:40 ・ 理由：PC がスリープしている</span>' % MUTED
-  + '<span style="display: block; margin-top: 8px; background: #FFF8EE; border: 1px solid #F1D9A8; border-radius: 8px; padding: 8px 10px; font-size: 12px; line-height: 1.7"><b style="font-weight: 500">直し方</b><br>1. PC を起こして、Kaname の常駐アプリが開いているか見る<br>2. 「スリープしない」にしておくと、承認したあとすぐ実行される<br><span style="color: %s">いつも使う PC が閉じているときは、承認したものは「実行待ち」になり、開いたら動く</span></span></span>%s</div>' % (MUTED, btn("…")) + '</div>'
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; padding: 14px 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px">'
-  + '<div><b style="font-weight: 600">5 時間の枠</b><div style="font-size: 12px; color: %s">いま 32%% ・ 14:10 にまた満ちる</div>%s</div>' % (MUTED, bar(32))
-  + '<div><b style="font-weight: 600">今月</b><div style="font-size: 12px; color: %s">41%% ・ 12/01 に戻る</div>%s</div></div>' % (MUTED, bar(41, "#186F69"))
-  + blk("ワークスペースごとの内訳（今月）", [(icon("E", NAVY, 20) + "株式会社ENGINE BASE", "チケット 38 件 ・ 壁打ち 12 回", '<span style="width: 160px">' + bar(34) + '</span><span style="font-size: 12px; width: 40px; text-align: right">34%</span>'), (icon("高", "#6B5B99", 20) + "高本 聖斗（個人）", "チケット 4 件", '<span style="width: 160px">' + bar(5) + '</span><span style="font-size: 12px; width: 40px; text-align: right">5%</span>'), (icon("京", "#6D4AA6", 20) + "京蟻システム株式会社", "チケット 2 件", '<span style="width: 160px">' + bar(2) + '</span><span style="font-size: 12px; width: 40px; text-align: right">2%</span>')])
-  + blk("超えそうなとき", [("80% を超えたら知らせる", "", toggle(True)), ("枠を使い切ったら", "", sel("満ちるまで待つ（実行待ちにする）"))]))
-page("MePC.dc.html", "自分の設定 PC と使った量", "PC と使った量", body)
+# MePC の持ち主は k257.py（今の画面に在る操作を描き足した・K-257）。ここで書き直すと描き足しが消えるので書かない
 # ---------- 預けたログイン情報 ----------
 def sec(name, desc, ws, used, last, st, dest=""):
     d = ('<span style="display: block; font-size: 11px; color: #186F69; margin-top: 2px">使える場所：' + dest + '</span>') if dest else ""

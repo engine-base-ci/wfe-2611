@@ -102,6 +102,9 @@ const openTerms = async (page: Page, next = "/tickets/abc", width = 1440) => {
 const box = (page: Page) => page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" });
 const agreeBtn = (page: Page) => page.getByRole("button", { name: "同意して続ける", exact: true });
 const link = (page: Page, name: string) => page.getByRole("link", { name, exact: true });
+/** 版の一覧の中のリンク。足元にも同じ名前の「利用規約」がある（キャンバス AuthConsent・K-256）ので、版の一覧の中だけで探す */
+const listLink = (page: Page, name: string) =>
+  page.locator('[data-part="auth-box"]').getByRole("list").getByRole("link", { name, exact: true });
 const agree = async (page: Page) => {
   await box(page).check();
   await agreeBtn(page).click();
@@ -172,7 +175,7 @@ const termsLink = async (page: Page, name: string, kind: string) => {
   await mockApi(page);
   await signedIn(page);
   await openTerms(page);
-  const l = link(page, name);
+  const l = listLink(page, name);
   await expect(l).toHaveAttribute("href", V2.find((x) => x.kind === kind)!.url);
   await expect(l).toHaveAttribute("target", "_blank");
 };
@@ -315,7 +318,7 @@ row(R["K53-UI-014"], async (page) => {
   await signedIn(page);
   await openTerms(page);
   await expect(page.getByText(/第2版/).first()).toBeVisible();
-  await expect(link(page, "利用規約")).toHaveAttribute("href", "https://unreachable.invalid/terms");
+  await expect(listLink(page, "利用規約")).toHaveAttribute("href", "https://unreachable.invalid/terms");
   m.on.other = () => ({ status: 200, body: { data: [] } });
   await agree(page);
   await expect(page).toHaveURL(/\/tickets\/abc$/);
@@ -373,7 +376,7 @@ row(R["K53-UI-017"], async (page) => {
   await expect(page.getByText(MSG.stale)).toBeVisible();
   await expect(page.getByText(/第3版/).first()).toBeVisible();
   await expect(page).toHaveURL(/step=terms/);
-  await expect(link(page, "利用規約")).toHaveAttribute("href", V3[0]!.url);
+  await expect(listLink(page, "利用規約")).toHaveAttribute("href", V3[0]!.url);
 });
 row(R["K53-UI-018"], async (page) => {
   const m = await mockApi(page);
@@ -405,6 +408,18 @@ row(R["K53-UI-020"], async (page) => {
   await openTerms(page);
   await expect(link(page, "困ったとき").first()).toHaveAttribute("href", /help/);
 });
+row(R["K53-UI-027"], async (page) => {
+  await mockApi(page);
+  await signedIn(page);
+  await openTerms(page);
+  const foot = page.getByRole("navigation", { name: "Kaname について" });
+  expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual([
+    "利用規約",
+    "プライバシー",
+    "困ったとき",
+  ]);
+  await expect(foot.getByRole("link", { name: "プライバシー", exact: true })).toHaveAttribute("href", /privacy/);
+});
 
 // ---- 文面のページ（/legal/terms・/legal/privacy・K-53 で作る・G-04 の届くこと） ----
 /** 種の第 1 版の url は Kaname の中の道（/legal/<kind>?v=1）。文面は apps/web/content/legal/<kind>-v1.md のひな形を設定で埋めて出す */
@@ -430,7 +445,11 @@ const legal = async (page: Page, kind: "terms" | "privacy", title: string, from:
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/signup");
   }
-  const a = page.getByRole("link", { name: new RegExp(name.slice(0, 5)) }).first();
+  // 足元にも同じ名前のリンクがある（K-256）ので、同意の画面は版の一覧の中、登録の画面は「続けると」の文の中だけで探す（.first() で足元に落ちない）
+  const a =
+    from === "consent"
+      ? listLink(page, name)
+      : page.getByText(/続けると/).getByRole("link", { name: new RegExp(`^${name.slice(0, 5)}`) });
   await expect(a).toHaveAttribute("href", new RegExp(`/legal/${kind}`));
   const href = (await a.getAttribute("href"))!;
   for (const path of [href, `/legal/${kind}`]) {
@@ -455,7 +474,8 @@ const loginByForm = async (page: Page, email: string) => {
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  // 送るボタンの字はログインの画面のチケット（K-221）が替える。名前に依らず欄から送る（同じ試験のファイルを 2 本で分け持たない）
+  await page.getByLabel("パスワード", { exact: true }).press("Enter");
   await page.waitForURL((u) => u.pathname !== "/login" || u.searchParams.get("step") === "terms", { timeout: 30_000 });
 };
 /** 会社の利用者を作り、今の版への同意を外す（同意し直しが要る人にする） */
