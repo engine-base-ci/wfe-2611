@@ -95,7 +95,7 @@ def gate_picks(changed: list[str], ticket: str | list[str], tickets: dict, impor
     registry = cfg.get("registry") or []
     for gid, g in (cfg.get("gates") or {}).items():
         mine = set(g.get("tests") or [])
-        hit = set(mine) if every else set()
+        hit = set(mine) if every or g.get("always") else set()   # always：入れた組があるとき（ci_scope.gate_cfg が付ける・K-238）
         for tid in tids:
             for t in [tid, *((tickets.get(tid) or {}).get("depends_on") or [])]:
                 hit |= set((tickets.get(t) or {}).get("tests") or []) & mine

@@ -55,3 +55,5 @@ export interface Captured {
   fonts: string[];
 }
 export function capture(page: Page, pairs: FidelityPair[], side: "canvas" | "app", opts?: CaptureOptions): Promise<Captured>;
+/** キャンバスの書体を手元に差し替える（外の書体の道は手元の書体・ほかの外の道は止める） */
+export function routeCanvasFonts(page: Page): Promise<void>;

@@ -19,6 +19,7 @@ import {
   exitFor,
   mismatches,
   parseArgs,
+  routeCanvasFonts,
   STILL_CSS,
   waitRows,
   widthsFor,
@@ -64,13 +65,15 @@ async function waitForParts(page, sels) {
   return page.evaluate((list) => list.filter((s) => !document.querySelector(s)), sels);
 }
 
-async function open(browser, cfg, url, storageState) {
+async function open(browser, cfg, url, storageState, canvas = false) {
   const page = await browser.newPage({
     viewport: cfg.viewport,
     colorScheme: "light",
     reducedMotion: "reduce",
     ...(storageState ? { storageState } : {}),
   });
+  // キャンバスは外（Google）から書体を読む。CI の突き合わせと同じ手元の書体に差し替え、外へは出さない
+  if (canvas) await routeCanvasFonts(page);
   await page.goto(url, { waitUntil: "load" });
   await page.addStyleTag({ content: STILL_CSS });
   return page;
@@ -78,7 +81,7 @@ async function open(browser, cfg, url, storageState) {
 
 /** 落ち着いてから値と書体を読み、写しは後（読み方は fidelity_compare.mjs の capture 1 つ）。待ち切れなければ違う行にする */
 async function read(browser, cfg, url, side, storageState) {
-  const page = await open(browser, cfg, url, storageState);
+  const page = await open(browser, cfg, url, storageState, side === "canvas");
   try {
     const missing = await waitForParts(page, cfg.pairs.map((p) => p[side]));
     try {

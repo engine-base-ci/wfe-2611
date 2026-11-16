@@ -678,6 +678,19 @@ def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
     return sorted((k for k, globs in g.items() if any(match(x, globs) for x in changes)), key=int)
 
 
+def gate_cfg(repo: str, cfg: dict) -> dict:
+    """入れた組（04_design/fidelity.json の enrolled: true）が 1 つでもあれば、専用の段に always を付けた設定を返す（K-238）。
+    画面のコードを後で変えても、web の組が起きる回には突き合わせを流して見た目のずれを止める。入れた組が 0 なら元のまま"""
+    path = os.path.join(repo, "04_design", "fidelity.json")
+    try:
+        groups = json.load(open(path, encoding="utf-8")).get("groups") or [] if os.path.isfile(path) else []
+    except (json.JSONDecodeError, AttributeError):
+        groups = []   # 形の誤りは G69 の設定の検査が赤にする
+    if not any(isinstance(g, dict) and g.get("enrolled") is True for g in groups):
+        return cfg
+    return {**cfg, "gates": {k: {**v, "always": True} for k, v in (cfg.get("gates") or {}).items()}}
+
+
 def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list[str]) -> dict:
     """web の組で流す画面の試験（チケットの範囲・K-177）"""
     tk = {}
@@ -691,7 +704,7 @@ def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list
     deploy_only = (rules.get("spec") or {}).get("package_paths", [])   # 組み立てに入らない物は画面の試験を選ぶ元にしない（K-212）
     changed = [x for x in [c.path for c in p["changes"]] + [c.old for c in p["changes"] if c.old] if not match(x, deploy_only)]
     return web_select.select(changed, tid, tk, web_select.domain_g48(repo), web_select.domain_g59(repo),
-                             web_select.importers(repo), rules.get("web_select") or {})
+                             web_select.importers(repo), gate_cfg(repo, rules.get("web_select") or {}))
 
 
 def with_web_selection(p: dict, sel: dict) -> dict:

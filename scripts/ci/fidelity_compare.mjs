@@ -8,6 +8,11 @@
 //   値の読み方（capture・K-238）：動きを止め → aria-busy が消えるまで待ち → 2 回続けて同じになるまで読み直し → 書体を読み → 写しは最後。
 //   待ちの上限を越えたら投げる（読み込み中・動いている途中の値で比べない）。実ブラウザの突き合わせと visual_fidelity.mjs が同じこれを使う
 
+import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 export const PX_TOLERANCE = 2;
 export const MISSING = "（無い）";
 export const ROUND_TOLERANCE = 0.5;
@@ -141,7 +146,8 @@ export async function readVals(page, pairs, side) {
           if (k === "height") return px(r.height);
           if (k === "x") return px(r.left + window.scrollX);
           if (k === "y") return px(r.top + window.scrollY);
-          if (k === "texts") return els.map((e) => (e.textContent ?? "").replace(/\s+/g, " ").trim());
+          // innerText：見えている要素の中の隠れた子（display:none・visibility:hidden）の字を数えない
+          if (k === "texts") return els.map((e) => (e.innerText ?? "").replace(/\s+/g, " ").trim());
           return cs.getPropertyValue(k);
         };
         return { __count: els.length, ...Object.fromEntries(props.map((k) => [k, one(k)])) };
@@ -197,4 +203,55 @@ export async function capture(page, pairs, side, opts = {}) {
   const fonts = await loadedFonts(page);
   if (opts.shot) await page.screenshot({ path: opts.shot, fullPage: true });
   return { vals, fonts };
+}
+
+// ── キャンバスの書体の差し替え（K-238）：キャンバスが外から読む書体を、画面と同じ手元の書体に差し替え、外へは出さない（G-11）。
+//    実ブラウザの突き合わせ（fidelity-states.ts が出し直す）と人が使う道具（visual_fidelity.mjs）が同じこれを使う
+// 書体の部品は apps/web の node_modules にしか無い（pnpm）：apps/web/package.json を起点に createRequire で探す
+const WEB_PKG = join(dirname(fileURLToPath(import.meta.url)), "../../apps/web/package.json");
+const fontPkg = () => dirname(createRequire(WEB_PKG).resolve("@fontsource-variable/noto-sans-jp/index.css"));
+const FONT_CSS_HOST = "fonts.googleapis.com";
+const FONT_FILE_HOST = "fonts.gstatic.com";
+// 差し替えた書体の本体の道（fonts.gstatic.com の下に置き、下の差し替えで手元のファイルを返す）
+const LOCAL_FONT_PREFIX = `https://${FONT_FILE_HOST}/kaname-local/`;
+const WOFF2_NAME = /^[\w.-]+\.woff2$/;
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost"]);
+
+/** キャンバスの頭が読む書体の CSS の代わり：手元の部品の @font-face を、キャンバスの名前（Noto Sans JP）で返す */
+function localFontCss() {
+  return readFileSync(join(fontPkg(), "index.css"), "utf8")
+    .replaceAll("font-family: 'Noto Sans JP Variable';", "font-family: 'Noto Sans JP';")
+    .replace(/url\(\.\/files\/([\w.-]+\.woff2)\)/g, (_m, name) => `url(${LOCAL_FONT_PREFIX}${name})`);
+}
+
+function fulfillFontFile(route, url) {
+  const name = url.pathname.split("/").pop() ?? "";
+  const file = join(fontPkg(), "files", name);
+  if (!url.href.startsWith(LOCAL_FONT_PREFIX) || !WOFF2_NAME.test(name) || !existsSync(file)) {
+    return route.fulfill({ status: 404, body: "" });
+  }
+  // 書体は CORS で読むので、file: の頁からも読めるように許可の見出しを付ける
+  return route.fulfill({ status: 200, contentType: "font/woff2", headers: { "access-control-allow-origin": "*" }, body: readFileSync(file) });
+}
+
+/**
+ * キャンバスの頁の書体を手元に差し替える：fonts.googleapis.com は手元の @font-face を、fonts.gstatic.com は手元の woff2 を返す（@fontsource-variable/noto-sans-jp）。
+ * ほかの手元でない道は止める（abort）。file:・data: はそのまま読み、手元（127.0.0.1・localhost）は先に登録された差し替えへ渡す
+ */
+export async function routeCanvasFonts(page) {
+  await page.route("**/*", async (route) => {
+    const url = new URL(route.request().url());
+    if (url.protocol !== "http:" && url.protocol !== "https:") return route.continue();
+    if (url.hostname === FONT_CSS_HOST) {
+      return route.fulfill({
+        status: 200,
+        contentType: "text/css; charset=utf-8",
+        headers: { "access-control-allow-origin": "*" },
+        body: localFontCss(),
+      });
+    }
+    if (url.hostname === FONT_FILE_HOST) return fulfillFontFile(route, url);
+    if (LOCAL_HOSTS.has(url.hostname)) return route.fallback();
+    return route.abort();
+  });
 }

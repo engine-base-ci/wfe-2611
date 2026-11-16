@@ -17,7 +17,8 @@
 入っていない組の見張り（--owners-done --base-ref <版>・K-238）：
   ・enrolled でない組の数を「入っていない組 N / M」で出す
   ・持ち主が取り込み済みなのに enrolled でない組があれば赤（組の id と持ち主を同じ行に出す）。
-    取り込み済み＝<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る（本線は早送りでだけ進む）か、持ち主の md の stage が確認中か完了
+    取り込み済み＝<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る（本線は早送りでだけ進む）か、持ち主の md の stage が確認中か完了か、
+    --ticket <番号> で渡した今のチケット（持ち主が入れ忘れたら持ち主自身の CI で赤）。持ち主が子を持つ親なら、子（parent: <持ち主>）が全部取り込み済みのとき
   ・持ち主の md が無い・stage の行が無いか知らない値・<版> が読めない は赤。保留は取り込み前として数える
 CI につなぐときは --no-base と --required の上書きを使わない（使うと入れた組を弱めても緑になる）。
 """
@@ -203,31 +204,64 @@ STAGES = {"未着手", "作業中", "確認中", "完了", "保留"}
 DONE_STAGES = {"確認中", "完了"}
 
 
-def _stage(md: pathlib.Path) -> str | None:
-    """チケットの頭（--- の間）の stage。行が無ければ None"""
+def _head(md: pathlib.Path, key: str) -> str | None:
+    """チケットの頭（--- の間）の 1 つの欄。行が無ければ None"""
     lines = md.read_text(encoding="utf-8").splitlines()
     if not lines or lines[0].strip() != "---":
         return None
     for line in lines[1:]:
         if line.strip() == "---":
             return None
-        if line.startswith("stage:"):
+        if line.startswith(f"{key}:"):
             return line.split(":", 1)[1].strip()
     return None
 
 
-def merged_owners(root: pathlib.Path, ref: str, owners: set[str]) -> tuple[set[str], list[str]]:
-    """<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る持ち主"""
+def _stage(md: pathlib.Path) -> str | None:
+    return _head(md, "stage")
+
+
+def ticket_tree(root: pathlib.Path) -> tuple[dict[str, list[str]], dict[str, str | None]]:
+    """全部のチケットの子（頭の parent）と stage"""
+    kids: dict[str, list[str]] = {}
+    stages: dict[str, str | None] = {}
+    for md in sorted((root / "11_tickets").glob("K-*.md")):
+        stages[md.stem] = _stage(md)
+        parent = _head(md, "parent")
+        if parent:
+            kids.setdefault(parent, []).append(md.stem)
+    return kids, stages
+
+
+def history_subjects(root: pathlib.Path, ref: str) -> tuple[list[str] | None, list[str]]:
+    """<版> の履歴の件名。版が読めなければ赤"""
     if _git(root, "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode != 0:
-        return set(), [f"分かれ目の版 {ref} が読めない（取り込み済みの持ち主を数えられない）"]
+        return None, [f"分かれ目の版 {ref} が読めない（取り込み済みの持ち主を数えられない）"]
     r = _git(root, "log", "--format=%s", ref)
     if r.returncode != 0:
-        return set(), [f"{ref} の履歴が読めない：{r.stderr.strip()}"]
-    subjects = r.stdout.splitlines()
-    return {o for o in owners if any(sub.startswith(f"{o} ") for sub in subjects)}, []
+        return None, [f"{ref} の履歴が読めない：{r.stderr.strip()}"]
+    return r.stdout.splitlines(), []
 
 
-def owners_done(root: pathlib.Path, ref: str) -> tuple[list[str], list[str]]:
+def merged_reason(tid: str, kids: dict[str, list[str]], stages: dict[str, str | None], subjects: list[str],
+                  ticket: str, seen: frozenset[str] = frozenset()) -> str:
+    """取り込み済みなら訳、まだなら空。子を持つ親は子だけで決め（親自身の履歴・stage は見ない）、子にも同じ決め方をたどって当てる"""
+    if tid in seen:
+        return ""   # parent の輪（形の誤り）は取り込み前として扱う
+    children = kids.get(tid) or []
+    if children:
+        done = all(merged_reason(k, kids, stages, subjects, ticket, seen | {tid}) for k in children)
+        return f"子 {'・'.join(children)} が全部取り込み済み" if done else ""
+    if tid == ticket:
+        return "今のチケット"
+    if any(sub.startswith(f"{tid} ") for sub in subjects):
+        return "版の履歴に取り込みのコミットが在る"
+    if stages.get(tid) in DONE_STAGES:
+        return f"stage が {stages[tid]}"
+    return ""
+
+
+def owners_done(root: pathlib.Path, ref: str, ticket: str = "") -> tuple[list[str], list[str]]:
     """入っていない組の見張り。(知らせる行, 赤) を返す"""
     path = root / CONFIG
     if not path.is_file():
@@ -236,22 +270,20 @@ def owners_done(root: pathlib.Path, ref: str) -> tuple[list[str], list[str]]:
     if errs:
         return [], errs
     waiting = [g for g in groups if isinstance(g, dict) and g.get("enrolled") is not True]
-    owners = {str(g.get("owner")) for g in waiting}
-    merged, errs = merged_owners(root, ref, owners)
-    stages: dict[str, str | None] = {}
-    for o in sorted(owners):
-        md = root / "11_tickets" / f"{o}.md"
-        if not md.is_file():
+    subjects, errs = history_subjects(root, ref)
+    kids, stages = ticket_tree(root)
+    owners = sorted({str(g.get("owner")) for g in waiting})
+    for o in owners:
+        if o not in stages:
             errs.append(f"持ち主 {o} のチケット（11_tickets/{o}.md）が無い")
-            continue
-        stages[o] = _stage(md)
-        if stages[o] not in STAGES:
+        elif stages[o] not in STAGES:
             errs.append(f"持ち主 {o} の stage が読めない（{stages[o] or '行が無い'}）")
-    for g in waiting:
-        o = str(g.get("owner"))
-        why = "版の履歴に取り込みのコミットが在る" if o in merged else f"stage が {stages.get(o)}" if stages.get(o) in DONE_STAGES else ""
-        if why:
-            errs.append(f"組 {g.get('id')} の持ち主 {o} は取り込み済み（{why}）なのに突き合わせに入っていない（enrolled: false）")
+    if subjects is not None:
+        for g in waiting:
+            o = str(g.get("owner"))
+            why = merged_reason(o, kids, stages, subjects, ticket) if o in stages else ""
+            if why:
+                errs.append(f"組 {g.get('id')} の持ち主 {o} は取り込み済み（{why}）なのに突き合わせに入っていない（enrolled: false）")
     return [f"入っていない組 {len(waiting)} / {len(groups)}"], errs
 
 
@@ -341,11 +373,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--print-rules", action="store_true")
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--owners-done", action="store_true", help="入っていない組の見張り（--base-ref が要る）")
+    ap.add_argument("--ticket", default="", help="今のチケット（見張りで取り込み済みとして数える）")
     a = ap.parse_args(argv)
     if a.owners_done:
         if not a.base_ref:
             ap.error("--owners-done には --base-ref <版> が要る")
-        info, errs = owners_done(pathlib.Path(a.root).resolve(), a.base_ref)
+        info, errs = owners_done(pathlib.Path(a.root).resolve(), a.base_ref, a.ticket.strip())
         for line in info:
             print(line)
         for e in errs:

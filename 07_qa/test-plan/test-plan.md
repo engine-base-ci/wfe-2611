@@ -159,7 +159,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G66 | コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206） | `python3 scripts/ci/author_gate.py --base-ref "$CI_BASE"` | static |  |
 | G67 | 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214） | `python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py` | spec |  |
 | G68 | 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5） | `python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py` | spec |  |
-| G69 | キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238） | `python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" && python3 scripts/ci/k238_fidelity_ci_test.py` | spec |  |
+| G69 | キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238） | `python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" ${CI_TICKET:+--ticket "$CI_TICKET"} && python3 scripts/ci/k238_fidelity_ci_test.py` | spec |  |
 | G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"` | spec |  |
 
 ## マージ可能の判断
