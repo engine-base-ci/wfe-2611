@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 65 本（.github/workflows/v3-gate.yml）
+## CI ゲート 66 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -157,6 +157,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G65 | CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173） | `python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k248_scope_reach_test.py` | spec |  |
 | G66 | コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206） | `python3 scripts/ci/author_gate.py --base-ref "$CI_BASE"` | static |  |
 | G67 | 画面のクラスが CSS に在る・外枠の決まりを本文で使わない（台帳は減らすだけ・K-214） | `python3 scripts/ci/class_gate.py --selftest && python3 scripts/ci/class_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k214_class_gate_test.py` | spec |  |
+| G68 | 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5） | `python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py` | spec |  |
 | G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"` | spec |  |
 
 ## マージ可能の判断
