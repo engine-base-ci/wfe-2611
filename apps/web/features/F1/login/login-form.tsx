@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import { Fingerprint } from "lucide-react";
+import type { Route } from "next";
+import { CATALOG } from "@kaname/errors/catalog";
 import { Button, PasswordField, TextField } from "@/components/k";
 import { AuthExtError, signIn, verifyTwoFactor } from "@/lib/auth/ext";
 import { afterLogin } from "@/lib/after-login";
@@ -17,6 +19,8 @@ import "./login.css";
 type Step = "n" | "e" | "m";
 const FALLBACK = "うまくいきませんでした。もう一度試してください";
 const NEED_CODE = "6 けたを入れてください";
+/** 空のバックアップコード：新しい文は作らず、正本の「コードが空」の文（E-VAL-009） */
+const EMPTY_BACKUP = CATALOG["E-VAL-009"]?.message ?? "E-VAL-009";
 const messageOf = (err: unknown): string => (err instanceof AuthExtError ? err.message : FALLBACK);
 /** バックアップコードは全角を半角にし、前後の空白を落とすだけ（口はちょうど同じかで照らすので、大小はそろえない） */
 const tidyBackup = (v: string): string => v.normalize("NFKC").trim();
@@ -52,19 +56,28 @@ export function LoginForm({ next }: { next: string | null }) {
   const sending = useRef(false); // 2 回押し・6 つそろった瞬間の重なりで口を 2 回呼ばない
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
 
-  const run = async (call: () => Promise<void>, onError: (err: unknown) => void) => {
+  // 口が成功して行き先へ移るときは、移り終わるまで送る印を戻さない（移る途中の二度押しで口を 2 回呼ばない）。
+  //   戻すのは、失敗したときと、移らずに画面の中で次の段（確認のコード）へ進むときだけ
+  const run = async (call: () => Promise<"moving" | "stay">, onError: (err: unknown) => void) => {
     if (sending.current) return;
     sending.current = true;
     setBusy(true);
     setMsg(null);
-    try {
-      await call();
-    } catch (err) {
-      onError(err);
-    } finally {
+    const release = () => {
       sending.current = false;
       setBusy(false);
+    };
+    try {
+      if ((await call()) === "stay") release();
+    } catch (err) {
+      release();
+      onError(err);
     }
+  };
+  // 行き先が今のログインの画面なら、移りが起きず回り続けるので入口（/）へ移す
+  const go = () => {
+    const to = afterLogin(next);
+    router.push(to === "/login" || to.startsWith("/login?") || to.startsWith("/login/") ? ("/" as Route) : to);
   };
 
   const submit = (e: FormEvent) => {
@@ -75,9 +88,10 @@ export function LoginForm({ next }: { next: string | null }) {
         if (r.two_factor) {
           setTfCookie(r.two_factor_cookie);
           setStep("m");
-          return;
+          return "stay";
         }
-        router.push(afterLogin(next));
+        go();
+        return "moving";
       },
       (err) => {
         setStep("e");
@@ -90,7 +104,8 @@ export function LoginForm({ next }: { next: string | null }) {
     run(
       async () => {
         await verifyTwoFactor({ two_factor_cookie: tfCookie ?? "", ...body });
-        router.push(afterLogin(next));
+        go();
+        return "moving";
       },
       (err) => {
         setMsg(messageOf(err));
@@ -110,7 +125,12 @@ export function LoginForm({ next }: { next: string | null }) {
   const submitCode = (e: FormEvent) => {
     e.preventDefault();
     if (useBackup) {
-      void verify({ backup_code: tidyBackup(backup) });
+      const v = tidyBackup(backup);
+      if (!v) {
+        setMsg(EMPTY_BACKUP);
+        return;
+      }
+      void verify({ backup_code: v });
       return;
     }
     const joined = code.join("");
