@@ -2,7 +2,7 @@
 //   「← 戻る」とひな形を埋めた文面を出す。
 //   埋める値が足りないときは文面を出さず、正本の E-PAGE-003 と「文面を準備しています」を出す（{{ }} のまま出さない）
 import { CATALOG } from "@kaname/errors/catalog";
-import { Callout } from "@/components/k";
+import { Callout } from "@/components/k/notice";
 import { AuthFrame } from "../sign-up/frame";
 import { LegalBack } from "./legal-back";
 import { LegalMarkdown } from "./legal-markdown";
