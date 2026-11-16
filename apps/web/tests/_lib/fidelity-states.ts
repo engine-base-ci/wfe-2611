@@ -257,4 +257,11 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(tabs.locator(".k-nav-badge")).toHaveText("9");
     await expect(tabs.locator(".k-tab-create")).toBeVisible();
   },
+  // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
+  "tickets-new": async (page, path) => {
+    await shellApi(page, 3);
+    await page.goto(path);
+    await expect(page.locator('input[name="title"]')).toBeVisible();
+    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
+  },
 };
