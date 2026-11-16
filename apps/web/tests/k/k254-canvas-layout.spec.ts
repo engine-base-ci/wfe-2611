@@ -54,7 +54,9 @@ async function shapeOf(page: Page, board: string): Promise<Shape> {
       .filter((e) => visible(e) && e.getBoundingClientRect().width < 60 && (e.textContent ?? "").trim().length >= 5)
       .map((e) => `${e.tagName.toLowerCase()}${e.getAttribute("role") ? `[role=${e.getAttribute("role")}]` : ""}`);
     const inputs = [
-      ...document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), textarea, select'),
+      ...document.querySelectorAll(
+        'input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), textarea, select',
+      ),
     ].filter((e) => e.getBoundingClientRect().width > 0);
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -65,7 +67,9 @@ async function shapeOf(page: Page, board: string): Promise<Shape> {
 }
 
 for (const w of WIDTHS) {
-  test(`K254-UI-008 K254-UI-009 幅 ${w}：台帳に無い絵はどれも横溢れ 0・潰れた箱（字を持つのに幅 60px 未満）が 0`, async ({ browser }) => {
+  test(`K254-UI-008 K254-UI-009 幅 ${w}：台帳に無い絵はどれも横溢れ 0・潰れた箱（字を持つのに幅 60px 未満）が 0`, async ({
+    browser,
+  }) => {
     test.setTimeout(300_000);
     const page = await browser.newPage({ viewport: { width: w, height: 900 }, colorScheme: "light" });
     await routeCanvasFonts(page);
@@ -81,7 +85,9 @@ for (const w of WIDTHS) {
   });
 }
 
-test("K254-UI-010 幅の台帳の行は、その幅で今も横溢れか潰れた箱がある（直った絵は台帳から消す）", async ({ browser }) => {
+test("K254-UI-010 幅の台帳の行は、その幅で今も横溢れか潰れた箱がある（直った絵は台帳から消す）", async ({
+  browser,
+}) => {
   test.setTimeout(300_000);
   const stale: string[] = [];
   for (const w of WIDTHS) {
@@ -96,7 +102,9 @@ test("K254-UI-010 幅の台帳の行は、その幅で今も横溢れか潰れ�
   expect(stale).toEqual([]);
 });
 
-test("K254-UI-011 幅 375 と境目の 767：どの絵も（台帳の絵も）入力欄の文字が 16px 以上（D-144.7）", async ({ browser }) => {
+test("K254-UI-011 幅 375 と境目の 767：どの絵も（台帳の絵も）入力欄の文字が 16px 以上（D-144.7）", async ({
+  browser,
+}) => {
   test.setTimeout(400_000);
   const bad: string[] = [];
   for (const w of [375, 767]) {
