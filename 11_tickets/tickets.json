@@ -11019,27 +11019,61 @@
   },
   {
    "id": "K-236",
-   "title": "速さ：読む口（チケットの詳細）の中の書き込み（ticket_execute_sweep）を外へ出す",
+   "title": "速さ：読む口（チケットの詳細・承認待ちの一覧と 1 件）の片付け（ticket_execute_sweep）を 1 本の文にする",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "API",
-   "assignee": "作る",
-   "due": "",
+   "assignee": "実装",
+   "due": "2026-11-20",
    "estimate_hours": "1",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "estimate_basis": "片付けを包む関数 1 つの migration と、読む前の片付けの 1 か所（sweep.ts）。切る段の試しで足した物は 25 行ほど。K-249（0.5 時間）の 2 倍と見た。実測なし・仮",
    "decisions": [
-    "D-143.3"
+    "D-143.3",
+    "D-128.125",
+    "D-128.143",
+    "D-128.171"
    ],
-   "split": "これから",
-   "depends_on": [],
+   "split": "",
+   "prior_impl": "apps/api/src/features/F5/approve-complete/sweep.ts の sweepBeforeRead（K-164。読む口が読む前に savepoint・片付け・release の 3 本を流し、失敗したら片付けだけを戻す）。詳細の口（people.ts）は片付けを別の withTenant（begin・set_config・commit）で包むので 6 本",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "depends_on": [
+    "K-92",
+    "K-250",
+    "K-213"
+   ],
+   "tests": [
+    "apps/api/test/k236_read_sweep.test.ts"
+   ],
+   "changes": [
+    "packages/db/migrations/0104_read_sweep_quiet.sql",
+    "packages/db/src/index.ts",
+    "apps/api/src/features/F5/approve-complete/sweep.ts"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "acts": [],
+   "apis": [],
    "sections": {
-    "目的": "getTicket（読む口）の中で ticket_execute_sweep（6 本の書き込み）を毎回流している（調べの §5.2）。読む口から書き込みを外し、時間で動く処理か書く口の側へ移す",
-    "完了の条件": "- [ ] 直す前と後の数（口の数・DB の文の数・直列の段）を同じ測り方で出し、報告に書く（調べの §5 の測り方）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 見込みは実測なし・仮",
-    "決定ログ": "- 従う決定：D-143.3",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "チケットの詳細の口（getTicket）は、読む前の片付け（承認の後の実行の仕事のうち、消された・任せた人が使えない・24 時間を過ぎたものを止める・K-164）を、毎回別のトランザクションで 6 本の文（begin・set_config・savepoint・片付け・release・commit）で流している（調べの §5.2）。承認待ちの一覧と 1 件も、片付けごとに 3 本。片付けの失敗を受けて片付けだけを戻す仕事を DB の関数の中に入れ、読む口からは 1 本の文にする。振る舞い（何を止めるか・失敗したら飛ばす・何度読んでも同じ）は変えない。",
+    "完了の条件": "- [ ] 下の 10 行（K236-API-001〜010）が本物の DB の上で緑\n- [ ] 直す前と後の数を同じ測り方で出し、確認の結果に書く（下の「今の値と目標の値」）\n- [ ] 前からの片付けの試験（apps/api/test/features/F5/approve-complete-*.test.ts の K63-API-085 など）が緑のまま\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: JOB, PERM\n\n- 先に要るチケット：K-92（今作っている。migration の番号 0102 を持つ）・K-250（0103 を持つ）・K-213（親の並び）。migration の番号は取り込む順の次の空き番号で、packages/db/src/index.ts の並びは飛ばせない（checkMigrationOrder が起動時と DB の試験で止める）。だから 0104 を使い、K-92・K-250 の後に入れる（番号のためだけの依存。K-250 より先に入れたいなら、PM が番号を 0103 にして依存を外す）\n- 振る舞いは変えない（決める人の答え answer=bf373f5b265a・K63-API-085）：読む口は読む前に片付ける。片付けが例外になったら片付けだけを戻し（関数の中の例外の受け＝DB の中の savepoint）、読めたものを 200 で返し、記録に「飛ばした」を出す。次に開いたときにまた片付ける\n- 片付けの中身（app.ticket_execute_sweep・app.ticket_execute_sweep_mine）は変えない。包む関数を 1 つ足すだけ\n- K-234（読む口を 1 つの取引に）より先でも後でもよい。K-234 の後なら、詳細の口の片付けは同じ取引の中の 1 本になる（16 → 14 の見込み）。先なら、片付けは自分の取引の 4 本（begin・set_config・片付け・commit）\n- 試験を書いた後は変えない（D-128.125）",
+    "今の値と目標の値（切る段で測った・2026-11-16）": "測り方：本線の先頭（99a61f5b）の写しにこの試験を置いて流し、試験の土台の接続が流した文を数えた（偽のログイン）。目標は、写しに切る段で試しに入れた形で同じ試験を流して出た数。\n\n| 口 | 今の片付けの文（そのうち savepoint・release） | 目標 |\n|---|---|---|\n| GET /tickets/:id | 6（別の取引：begin・set_config・savepoint・片付け・release・commit） | 片付けの文 1 本・savepoint 0。片付けの取引は 4 本（begin・set_config・片付け・commit）。K-234 の後は同じ取引の中の 1 本 |\n| GET /approvals/queue | 3（savepoint・片付け・release） | 1 |\n| GET /approvals/:id | 3 | 1 |\n\n画面のログインを含む口全体の数は K-233・K-234 の表。",
+    "確かめたこと（切る段・2026-11-16）": "1. 読む前の片付けは `apps/api/src/features/F5/approve-complete/sweep.ts` の sweepBeforeRead の 1 か所。呼ぶのは詳細（delegate/people.ts）・承認待ちの一覧と 1 件（approve-complete/queue.ts）の 3 か所。文は同じファイルの SWEEP_TICKET・SWEEP_OF_APPROVAL・SWEEP_MINE\n2. PC が取りに来る前の片付け（app.ticket_execute_expire・bridge.ts の sweepBeforeTake）は読む口ではないので変えない\n3. 片付けを壊して飛ばすことは K63-API-085 が見ている。このチケットの K236-API-007 も同じやり方（中の関数を試験の中だけ例外に作り替える）で見る\n\n読む前の片付けを呼ぶ所（このチケットが直す関数の使い手）：\n\n```search\ngit grep -n 'sweepBeforeRead(' -- apps/api/src\n4\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| migration（packages/db/migrations/0104_read_sweep_quiet.sql） | `app.ticket_execute_sweep_read(p_kind text, p_id uuid) returns integer`（plpgsql・**security invoker**（呼んだ人の権限で動く。承認の表の行の守り approvals の RLS が今と同じく効く。中の 3 つの関数は前から security definer で kaname_app に execute がある）・`set search_path = public, app, pg_temp`）。p_kind が ticket なら `app.ticket_execute_sweep(p_id)`、approval なら承認の id からそのチケット（今の SWEEP_OF_APPROVAL と同じ引き方・`a.tenant_id = app.tenant_id()`）、mine なら `app.ticket_execute_sweep_mine()`、ほかは 0。`exception when query_canceled then return -1; when others then return -1`（時間切れ・取り消しも受ける。plpgsql の others は query_canceled を含まないので名前で書く。片付けだけが戻る）。public から外し kaname_app にだけ execute を渡す（D-128.171） |\n| migration の並び（packages/db/src/index.ts） | MIGRATIONS の最後に 1 行足す |\n| 読む前の片付け（sweep.ts） | 3 つの文を `select app.ticket_execute_sweep_read('ticket'｜'approval'｜'mine', $1｜null) as n` にする。sweepBeforeRead は savepoint を使わず 1 本を流し、答えが -1 なら今と同じ形の記録（`[approve-complete] <場所>：読む前の片付けに失敗したので飛ばした（…）`）を出す。その 1 本が JS に例外を投げた（接続が切れた）ときも、今と同じく受けて記録を出し、投げ直さない（その後の読みは同じ接続の上なので、接続が切れていれば読みも失敗する。今の savepoint のやり方でも同じ）。呼び手（people.ts・queue.ts）は変えない |\n| 数を測る | 確認の結果に、上の表の 3 つの口の数を同じ測り方で書く |",
+    "テスト仕様と確認の結果": "`apps/api/test/k236_read_sweep.test.ts`（口・本物の DB・偽の画面のログイン。土台は apps/api/test/features/F5/approve-complete.harness.ts を読むだけで使う）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K236-API-001 | 対象の状態 | GET /tickets/:id | 200・片付けを含む文が 1 本で、それが app.ticket_execute_sweep_read・savepoint を含む文が 0 本 |\n| K236-API-002 | 対象の状態 | 担当の人の GET /approvals/queue | 200・片付けの文 1 本（app.ticket_execute_sweep_read）・savepoint 0 本 |\n| K236-API-003 | 対象の状態 | 担当の人の GET /approvals/:id | 200・片付けの文 1 本・savepoint 0 本 |\n| K236-API-004 | 時間の流れ | 承認から 24 時間 1 分を過ぎた実行の仕事があるチケットの GET /tickets/:id | 200・仕事は stopped で理由は「承認から 24 時間を過ぎたので、実行の前にもう一度確かめます」・聞き直しの承認待ちが 1 つ |\n| K236-API-005 | 対象の状態 | チケットが消された実行の仕事があり、担当の人が GET /approvals/queue | 200・仕事は stopped で理由は「チケットが消されたので止めました」 |\n| K236-API-006 | 操作の揺れ | 24 時間を過ぎた後に GET /tickets/:id を 2 回 | 2 回とも 200・聞き直しの承認待ちは 1 つのまま |\n| K236-API-007 | 失敗 | 中の片付けの関数が例外（試験の中だけ作り替える）で、詳細・一覧・1 件を読む | 3 つとも 200・仕事は queued のまま・聞き直しは 0・「片付け」と「飛ばした」を含む記録が 3 つ以上 |\n| K236-API-008 | 守り | 別の会社の人がこちらのチケットの GET /tickets/:id | 404・こちらの 24 時間を過ぎた仕事は queued のまま（見えない人の読みで止めない） |\n| K236-API-009 | 守り | 包む関数の execute の権限と動く権限 | kaname_app は呼べる・public には渡していない・security invoker（pg_proc.prosecdef が false） |\n| K236-API-010 | 失敗 | 中の片付けの関数が時間切れ・取り消し（errcode query_canceled）で落ちる | 007 と同じ：3 つとも 200・仕事は queued のまま・聞き直しは 0・「片付け」と「飛ばした」を含む記録が 3 つ以上 |\n\n### テストの型の受け（分類 JOB・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-JOB-01 途中で止まった・やり直し | 006・007・010 |\n| TP-JOB-03 処理の途中で対象が消えた | 005 |\n| TP-PERM-03 他の会社の ID | 008 |\n| 要らない：TP-JOB-02 | 日付の変わり目は触らない（24 時間の数え方は中の関数のまま） |\n| 要らない：TP-PERM-01・02・04・05 | 権限の判定は触らない（中の関数の app.member_ok・app.ticket_visible のまま） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | 口の入力は触らない |\n| 対象の状態 | 該当 | 001・002・003・005 |\n| 時間の流れ | 該当 | 004 |\n| 入口 | 要らない | 読む口 3 つの中身だけ（入口は今のまま） |\n| 利用者の状態 | 要らない | 誰が片付けられるかは中の関数のまま |\n| 失敗 | 該当 | 007・010 |\n| 操作の揺れ | 該当 | 006 |\n| 守り | 該当 | 008・009 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 | N/A | 外のものに触らない |\n| G-12 | 該当 | 24 時間を過ぎた直後（24 時間 1 分）の読み（004） |\n| G-13 | N/A | 片付けの中身は変えない |\n| G-14 | N/A | 人の状態は中の関数のまま |\n| G-15 | 該当 | 片付けが例外・時間切れでも読む口は 200（007・010） |\n| G-16 | 該当 | 詳細の口の片付けの文 6 → 4（K-234 の後は同じ取引の中の 1 本）・一覧と 1 件は 3 → 1・savepoint の往復 0（001〜003）。接続の数はこのチケットでは変わらない（K-234 が減らす） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/api/test/k236_read_sweep.test.ts`（切る段が書いた）\n- 片付けを包む関数の migration と、読む前の片付けの 1 本の文（実装の役）",
+    "決定ログ": "- answer=bf373f5b265a（K-164・K63-API-085）：読む口は読む前に片付け、失敗したら片付けだけを戻して読めたものを返す。このチケットはこの決まりのまま、戻し方を DB の関数の中に移すだけ。D-128.171：関数は kaname_app にだけ渡す。D-143.3：速さの子をこの親の下に置く\n- 決める人に聞くこと（試験は 1 のおすすめで書いた）：\n  - 題は「読む口から書き込みを外へ出す（時間で動く処理か書く口の側へ移す）」だった。出し方が 3 通りある\n    1. **おすすめ**：振る舞いは変えず、読む口の片付けを 1 本の文にする（このチケットの形）。詳細の口の片付けの文は 6 → 4（K-234 の後は 1）、一覧と 1 件は 3 → 1\n    2. 詳細の口（getTicket）だけ片付けをやめる（承認待ちの一覧・1 件・PC が取りに来る前は今のまま）。片付けの文は 0 になるが、詳細だけを見ている人には、24 時間を過ぎた待ちの仕事が「実行待ち」のまま見え、聞き直しの承認待ちは誰かが承認待ちを開くか PC が取りに来るまでできない（K63-API-085 の答えの「読む口は読む前に片付ける」を変える）\n    3. 読む口から全部外し、時間で動く処理（数分おき）に移す。時間で動く処理の土台（cron）がまだ無いので土台から作る（今の staging は Hobby。Vercel の cron の回数の上限を確かめてから）。待つ間は 2 と同じ見え方\n  - おすすめの訳：1 は今の決まり（answer=bf373f5b265a）を変えずに、遅さの元（別の取引と savepoint の往復）だけを消せる。2・3 は画面の見え方が変わり、3 は土台から要る",
+    "申し送り": "- 決める人が 2 か 3 を選んだら、このチケットの行（001・004・006）と実施事項を書き直し、精査を差分で 1 回"
    },
    "file": "11_tickets/K-236.md"
   },
