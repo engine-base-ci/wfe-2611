@@ -221,6 +221,19 @@ BOARDS = {
     "OnHomeLater": ("OnHome", "on", "tickets", "はじめにやること に「あとで」 ← はじめて入ったとき", None),
 }
 
+# 絵の持ち主は k257.py に移したが、見比べの 1 枚（K-219.html）の区画は残す（流し直しても見比べが変わらない・K-257）。並びは元の表の順
+MOVED = {
+    "StBefore": ("StRunning", "states", "tickets", "帯・任せる前 ← チケットを作った直後", ("band-before", "band", "/tickets/{ticket}", "K-228", "band-running")),
+    "StConfirmDone": ("StRunning", "states", "tickets", "帯・完了の確かめ ← 実行が終わって承認待ちが無い", ("band-confirm-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
+    "StDone": ("StRunning", "states", "tickets", "帯・完了 ← 完了にした", ("band-done", "band", "/tickets/{ticket}", "K-228", "band-running")),
+    "StDelegated": ("StRunning", "states", "tickets", "帯・任せました（作る段） ← AI に任せるを押した", ("band-delegated", "band", "/tickets/{ticket}", "K-228", "band-running")),
+    "StCompleteModal": ("StModal", "states", "tickets", "完了にするの小窓 ← 帯の完了にする", ("complete-modal", "dialog", "/tickets/{ticket}", "K-229", "approve-modal")),
+    "MePCInstalled": ("MePC", "me", "bridge-setup", "この PC に Bridge が入っている ← PC をつなぐを開いた", ("bridge-installed", "page", "/setup/bridge", "K-230", "bridge-connected")),
+}
+REVIEW_ORDER = ["AuthVerifying", "AuthVerifyExpired", "AuthVerifyUsed", "AuthConsent", "AuthChecking", "AuthVerifyLoading", "StBefore", "StConfirmDone",
+                "StDone", "StDelegated", "StCompleteModal", "ApEmpty", "MePCInstalled", "UiDisabled", "OnHomeLater"]
+
+
 
 def dump(path, data, newline):
     with open(path, "w", encoding="utf-8") as f:
@@ -249,12 +262,15 @@ def update_canvas_json():
 def update_screens():
     path = os.path.join(ROOT, "04_design", "canvas-screens.json")
     d = json.load(open(path, encoding="utf-8"))
-    screens = {k: [b for b in v if b not in BOARDS] for k, v in d["screens"].items()}
-    common = [b for b in d["common"]["boards"] if b not in BOARDS and b not in ("OnHome", "OnLoading")]
-    for name, (_ref, _page, screen, _t, _g) in BOARDS.items():
+    # 決まった所に在る絵は並びを動かさない（流し直しても対応表が変わらない・K-257）。違う所に在る絵だけ外して足す
+    want = {name: screen for name, (_ref, _page, screen, _t, _g) in BOARDS.items()}
+    screens = {k: [b for b in v if b not in want or want[b] == k] for k, v in d["screens"].items()}
+    common = [b for b in d["common"]["boards"] if (b not in want or want[b] == "common") and b not in ("OnHome", "OnLoading")]
+    for name, screen in want.items():
         if screen == "common":
-            common.append(name)
-        else:
+            if name not in common:
+                common.append(name)
+        elif name not in screens[screen]:
             screens[screen] = screens[screen] + [name]
     for name in ("OnHome", "OnLoading"):
         if name not in screens["tickets"]:
@@ -278,8 +294,9 @@ def update_fidelity():
         pairs = [p for p in base["pairs"] if not roles or p["role"] in roles]
         new.append({"id": gid, "kind": kind, "canvas": name, "app": app, "state": gid, "widths": [1440, 375], "owner": owner,
                     "enrolled": False, "pairs": [dict(p) for p in pairs]})
-    ids = {g["id"] for g in new}
-    f = {**f, "groups": [g for g in groups if g["id"] not in ids] + new}
+    # 在る組はその場所で置き換え、無い組だけ末尾に足す（流し直しても組の並びが変わらない・K-257）
+    by_id = {g["id"]: g for g in new}
+    f = {**f, "groups": [by_id.get(g["id"], g) for g in groups] + [g for g in new if g["id"] not in have]}
     dump(path, f, True)
 
 
@@ -307,7 +324,13 @@ DIFF = {
     "AuthConsent": ["見出しを「利用規約とプライバシーポリシーが新しくなりました」にした", "2 つの文書と版・同意のチェック・「同意して続ける」と「ログアウト」を置いた"],
     "AuthChecking": ["入力欄を外し、見出しの下に回る印つきの「確かめています…」だけを置いた", "文は 3 秒たっても終わらないときだけ出す"],
     "AuthVerifyLoading": ["本文とボタンを外し、見出しの下に回る印つきの「読み込んでいます…」だけを置いた", "文は 3 秒たっても終わらないときだけ出す"],
+    "StBefore": ["帯を白い箱にし、紺の「AI に任せる」のボタンを置いた", "実施事項はどれもまだ。右の「PC のブラウザ」は動いていないので外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
+    "StConfirmDone": ["帯を白い箱にし、「完了の条件を確かめて完了にしてください」と紺の「完了にする」を置いた", "実施事項は全部済みの印。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
+    "StDone": ["帯を緑の箱にし、「完了しました」と完了にした人と時刻を出した", "上の印を「完了」にした。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
+    "StDelegated": ["帯を橙の箱にし、「高本のAI に任せました」「PC が受け取るのを待っています」を出した", "実施事項はどれもまだ。右のパネルは外した", "題の文字は、決まった大きさの段に合わせて少し小さくした"],
+    "StCompleteModal": ["小窓を 1 つにし、題を「完了にする」にした", "完了の条件・実施事項のチェック・「確かめました」のチェック・「確かめて完了にする」を置いた"],
     "ApEmpty": ["表を外し、「いま決めるものはありません」と「決めた履歴」へのボタンを置いた", "空の箱は、ほかの空の画面と同じ点線の箱にした", "件数を 0 にし、左のバーの件数の印も外した"],
+    "MePCInstalled": ["「この PC の Bridge」の箱と「この PC の Bridge につなぐ」のボタンを置いた", "つないでいる PC はまだ無い形にした"],
     "UiDisabled": ["ボタン・選ぶ欄・探す欄・メニューの項目・見え方のタブ の使える形と使えない形を並べた", "使えない形は薄く（不透明度 0.55）して押せないようにした"],
     "OnHomeLater": ["パスキーの行を薄く押せない形にし、数に入れないので「0 ／ 2」・進みの棒を 0 にした", "「ログイン情報を預ける」の「預ける」の横に「あとで」を置いた"],
 }
@@ -317,7 +340,8 @@ def review_sheet():
     out = os.path.join(ROOT, "04_design", "canvas-review", "K-219.html")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     secs = []
-    for name, (ref, _page, _screen, title, _g) in BOARDS.items():
+    for name in REVIEW_ORDER:
+        ref, _page, _screen, title, _g = {**BOARDS, **MOVED}[name]
         what = title.split(" ← ")[0]
         diffs = "".join("<li>違い：%s</li>" % d for d in DIFF[name])
         frame = lambda b, cap: ('<figure><figcaption>%s</figcaption><div class="frame"><iframe src="../canvas/%s.dc.html" '
