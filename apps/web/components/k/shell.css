@@ -136,7 +136,8 @@
   font-weight: var(--k-fw-label-md);
 }
 .k-nav-item[aria-disabled="true"] {
-  color: var(--k-on-surface-variant);
+  /* 作っていない項目：正本の button-disabled（隠さず、薄くして押せない形・D-145.9） */
+  opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
 }
 .k-nav-item[aria-disabled="true"]:hover {
@@ -157,11 +158,6 @@
   color: var(--k-card);
   font-size: var(--k-text-label-md);
   text-align: center;
-}
-.k-nav-pending {
-  margin-left: auto;
-  font-size: var(--k-text-label-xs);
-  color: var(--k-on-surface-variant);
 }
 .k-nav-sec {
   padding: 12px 10px var(--k-s-xs);
@@ -232,7 +228,6 @@
   padding: 10px 6px;
 }
 .k-shell[data-railed] .k-nav .k-nav-label,
-.k-shell[data-railed] .k-nav .k-nav-pending,
 .k-shell[data-railed] .k-nav .k-nav-badge {
   display: none;
 }
@@ -254,7 +249,6 @@
     padding: 10px 6px;
   }
   .k-nav .k-nav-label,
-  .k-nav .k-nav-pending,
   .k-nav .k-nav-badge,
   .k-nav .k-nav-toggle {
     display: none;
@@ -327,7 +321,7 @@
   font-weight: var(--k-fw-label-md);
 }
 .k-bar-title {
-  /* 見出しは読み上げのために置く。広い画面では「いまの場所」が同じことを見せる */
+  /* 帯の題（見出しにしない・1 画面の h1 は本文の 1 つ）。広い画面では「いまの場所」が同じことを見せるので隠す */
   position: absolute;
   width: 1px;
   height: 1px;
@@ -362,9 +356,28 @@
   background: transparent;
   color: var(--k-on-surface);
   font: inherit;
-  /* 16px 未満だと iPhone が拡大する */
-  font-size: var(--k-text-input);
+  /* 探す欄は 768 以上でだけ出る（767 以下は隠す）ので、16px の決まり（iPhone の拡大）は当たらない。キャンバスと同じ 12px */
+  font-size: var(--k-text-body-sm);
   outline: 0;
+}
+.k-search-key {
+  flex: none;
+  padding: 0 var(--k-s-xs);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-sm);
+  font-size: var(--k-text-label-xs);
+}
+/* 探すがまだ使えない：外の箱だけを正本の input-disabled の薄さに（中の入力欄に重ねない） */
+.k-search[data-disabled] {
+  opacity: var(--k-c-input-disabled-opacity);
+}
+.k-search[data-disabled] label,
+.k-search[data-disabled] input {
+  cursor: not-allowed;
+}
+/* 全体の [disabled] の薄さ（app/globals.css）を中の入力欄に重ねない（外の箱が薄いので 0.55 × 0.55 になる） */
+.k-search[data-disabled] input {
+  opacity: 1;
 }
 .k-search label:focus-within {
   outline: 2px solid var(--k-primary);
@@ -373,6 +386,18 @@
 .k-bell {
   position: relative;
   border-radius: var(--k-r-full);
+}
+/* 知らせの画面がまだ無い：正本の button-disabled の薄さで押せない形 */
+.k-bell[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-bell[aria-disabled="true"]:hover {
+  background: transparent;
+  color: var(--k-on-surface-variant);
+}
+.k-panel-toggle {
+  flex: none;
 }
 .k-bell b {
   position: absolute;
@@ -527,9 +552,6 @@
     top: var(--k-s-xs);
     margin-left: 18px;
   }
-  .k-tabs .k-nav-pending {
-    display: none;
-  }
   .k-tab-create {
     flex: 1;
     display: grid;
@@ -538,14 +560,15 @@
     background: transparent;
     cursor: pointer;
   }
-  .k-tab-create svg {
+  .k-tab-plus {
+    display: grid;
+    place-items: center;
     width: 44px;
     height: 44px;
-    padding: 11px;
-    box-sizing: border-box;
     border-radius: var(--k-r-full);
     background: var(--k-primary);
     color: var(--k-on-primary);
+    font-size: var(--k-text-h1);
   }
   .k-sheet {
     position: fixed;

@@ -59,7 +59,8 @@ flow = {
    "_rule": "主ナビは6本まで。フェーズ順で並べ、役割で出る本数が変わる。中は第2ナビ（タブ）で分ける。"
             "全画面同一の第2ナビは規約違反。",
    "_why_six": "16項目のフラットなサイドバーは分かりづらくUXを落とす（2026-09-09 user 指摘）",
-   "sections": [{"key": k, "label": l, "icon": ic, "screens": ss, "source": s}
+   "sections": [{"key": k, "label": l, "icon": ic, "screens": ss, "source": s,
+                 **({"tab": getattr(D, "NAV_TABS", {})[k]} if k in getattr(D, "NAV_TABS", {}) else {})}
                 for k, l, ic, ss, s in D.NAV_SECTIONS],
    "sections_by_role": D.NAV_SECTIONS_BY_ROLE,
    # 主ナビに出る画面は導出物。手で並べない（section の画面 × その役割の権限）

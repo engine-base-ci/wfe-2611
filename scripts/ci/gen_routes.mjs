@@ -27,7 +27,7 @@ export const ROUTE_PATTERNS: readonly string[] = ["/", ...ROUTES.map((r) => r.ro
 // ナビ（主ナビ 6 本・役割ごとの本数・第2ナビ・画面の型・時点の caps）も flow から。画面ごとに手で書かない（screen-derivation §6）
 const nav = flow.navigation;
 const navData = {
-  sections: nav.sections.map((x) => ({ key: x.key, label: x.label, icon: x.icon, screens: x.screens })),
+  sections: nav.sections.map((x) => ({ key: x.key, label: x.label, icon: x.icon, screens: x.screens, ...(x.tab ? { tab: x.tab } : {}) })),
   sectionsByRole: nav.sections_by_role,
   byRole: nav.by_role,
   subByScreen: Object.fromEntries(Object.entries(nav.sub_by_screen).map(([k, v]) => [k, v.map((i) => ({ label: i.label, desc: i.desc ?? "", ...(i.group ? { group: i.group } : {}), ...(i.state ? { state: i.state } : {}) }))])),
@@ -53,7 +53,7 @@ const fallbacks = {
 };
 const navHash = createHash("sha256").update(JSON.stringify({ navData, fallbacks })).digest("hex").slice(0, 16);
 const navBody = `// 生成物（scripts/ci/gen_routes.mjs ← ${FLOW} navigation／screens／product_states）。手で直さない。flow:${navHash}
-export interface NavSection { key: string; label: string; icon: string; screens: string[] }
+export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
 export interface ProductState { id: string; name: string; caps: string[] }

@@ -248,6 +248,8 @@ NAV_SECTIONS = [
  ("portal", "クライアントの場所", "inbox", ["portal"], ["D-127.10", "D-125.46"]),
  ("admin", "運営", "life-buoy", ["ops-home", "ops-tenant", "ops-support", "ops-notices", "ops-billing", "ops-skills", "ops-team"], ["D-127.10", "D-125.129", "D-128.67"]),
 ]
+# 下のタブ（スマホ）に出す短い名前（K-138・キャンバス MobileList）。並べ方の正は 1 か所（screen-derivation §6）なので、名前もここに持つ
+NAV_TABS = {"tickets": "チケット", "approvals": "承認", "ai": "AI"}
 NAV_SECTIONS_BY_ROLE = {
  "R1": ["tickets", "approvals", "ai", "knowledge", "company", "clients", "me"],
  "R2": ["tickets", "approvals", "ai", "knowledge", "company", "clients", "me"],
@@ -390,6 +392,7 @@ def apply(G):
     G["PRODUCT_STATES"] = PRODUCT_STATES
     G["NAV_SECTIONS"] = NAV_SECTIONS
     G["NAV_SECTIONS_BY_ROLE"] = NAV_SECTIONS_BY_ROLE
+    G["NAV_TABS"] = NAV_TABS
     G["SUBNAV"] = SUBNAV
     G["SUBNAV_MODE"] = SUBNAV_MODE
     G["LAYOUT"] = LAYOUT

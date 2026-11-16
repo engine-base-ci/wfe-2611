@@ -1,5 +1,5 @@
 "use client";
-// チケットの画面の「作る」の入口（K-60・画面 tickets・道 /tickets）。上の帯の「＋ チケットを作る」・空の一覧の「自分で書く」・URL の印 ?new=1（再読み込みでも開いたまま）。
+// チケットの画面の「作る」の入口（K-60・画面 tickets・道 /tickets）。左のメニューの「チケットを作る」（外枠・K-138）・空の箱の「＋ チケットを作る」・URL の印 ?new=1（再読み込みでも開いたまま）。
 //   書けるグループが 1 つも無い人（閲覧のみ）には「作る」を出さない（口も 403）。PC をつないでいなくても作れる（D-127.8）
 //   一覧そのもの（絞り込み・並べ替え）は F4 のこれからのチケット。ここは作ったチケットが並ぶところまで
 import { useCallback, useEffect, useState } from "react";
@@ -71,19 +71,23 @@ const withNew = (open: boolean) => {
   window.history.replaceState(null, "", `${u.pathname}${u.search}`);
 };
 
-/** 前からある外枠（AppShell）に載せる（D-128.151） */
+/** キャンバスどおりの新しい外枠に載せる（D-143.1）。作る面の開け閉めは外枠の作るボタンと本文で分け合う */
 export function TicketsPage({ openNew }: { openNew: boolean }) {
+  const [open, setOpen] = useState(openNew);
+  const show = useCallback((v: boolean) => {
+    setOpen(v);
+    withNew(v);
+  }, []);
   return (
-    <TicketShell>
-      <TicketsBody openNew={openNew} />
+    <TicketShell screen="tickets" crumbs={[{ label: "チケット" }]} onCreate={() => show(true)}>
+      <TicketsBody open={open} show={show} />
     </TicketShell>
   );
 }
 
-function TicketsBody({ openNew }: { openNew: boolean }) {
+function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void }) {
   const [ready, setReady] = useState(false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
-  const [open, setOpen] = useState(openNew);
   const [expired, setExpired] = useState(false);
   const here = open ? "/tickets?new=1" : "/tickets";
 
@@ -102,11 +106,6 @@ function TicketsBody({ openNew }: { openNew: boolean }) {
     if (ready) reload();
   }, [ready, reload]);
 
-  const show = (v: boolean) => {
-    setOpen(v);
-    withNew(v);
-  };
-
   if (!ready) return <Loading />;
   if (expired)
     return (
@@ -116,11 +115,6 @@ function TicketsBody({ openNew }: { openNew: boolean }) {
     <section className="k-root k-page" aria-labelledby="tickets-title">
       <header className="k-page-head k-row">
         <h1 id="tickets-title">チケット</h1>
-        {load.state === "ok" && load.writable ? (
-          <Button onClick={() => show(true)} aria-expanded={open}>
-            ＋ チケットを作る
-          </Button>
-        ) : null}
       </header>
       {load.state === "loading" ? <Loading /> : null}
       {load.state === "error" ? <ErrorState code={load.code} acts={[reload]} /> : null}
@@ -145,14 +139,8 @@ function TicketsBody({ openNew }: { openNew: boolean }) {
           </ul>
         ) : (
           <Empty
-            title="まだチケットがありません"
-            action={
-              load.writable ? (
-                <Button variant="secondary" onClick={() => show(true)}>
-                  自分で書く
-                </Button>
-              ) : null
-            }
+            title="まだチケットはありません"
+            action={load.writable ? <Button onClick={() => show(true)}>＋ チケットを作る</Button> : null}
           >
             自分で書いて作れます。
           </Empty>

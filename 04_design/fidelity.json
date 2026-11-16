@@ -1133,7 +1133,7 @@
     1440
    ],
    "owner": "K-138",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "左のメニュー",
@@ -1149,8 +1149,8 @@
     {
      "name": "左のメニューの項目",
      "role": "nav-items",
-     "canvas": ".kn-nav .kn-item",
-     "app": ".k-nav .k-nav-item",
+     "canvas": ".kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))",
+     "app": ".k-nav > .k-nav-item:not(:has(.k-group-mark))",
      "props": [
       "texts",
       "height",
@@ -1158,10 +1158,10 @@
      ]
     },
     {
-     "name": "上の帯",
+     "name": "上の帯（自分のメニュー）",
      "role": "bar",
-     "canvas": ".kn-bar",
-     "app": ".k-bar",
+     "canvas": ".kn-bar a[aria-label=\"自分のメニュー\"]",
+     "app": ".k-bar .k-me",
      "props": [
       "height",
       "background-color",
@@ -1173,20 +1173,20 @@
   {
    "id": "shell-tabs",
    "kind": "shell-tabs",
-   "canvas": "Main",
+   "canvas": "MobileList",
    "app": "/tickets",
    "state": "shell-tabs",
    "widths": [
     375
    ],
    "owner": "K-138",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "下のタブ",
      "role": "tabs",
      "canvas": "nav[aria-label=\"下のタブ\"] > a",
-     "app": ".k-tabs .k-nav-item",
+     "app": ".k-tabs > :is(a, button, span)",
      "props": [
       "texts",
       "height"

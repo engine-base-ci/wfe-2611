@@ -69,7 +69,7 @@ export function ApprovalsPage() {
   const pages = q.data?.pages ?? [];
   const total = pages.at(-1)?.total ?? 0;
   return (
-    <TicketShell counts={{ approvals: total }}>
+    <TicketShell screen="approvals" crumbs={[{ label: "承認待ち" }]} counts={{ approvals: total }}>
       <section className="k-root k-page k63-queue" aria-labelledby="approvals-title">
         <header className="k-page-head k63-head">
           <h1 id="approvals-title">承認待ち</h1>

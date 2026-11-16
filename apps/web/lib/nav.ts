@@ -1,5 +1,5 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:6f5bf7ac1fa9cdfd
-export interface NavSection { key: string; label: string; icon: string; screens: string[] }
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:0225181a93424020
+export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
 export interface ProductState { id: string; name: string; caps: string[] }
@@ -18,7 +18,8 @@ export const NAV: NavData = {
       "icon": "list-checks",
       "screens": [
         "tickets"
-      ]
+      ],
+      "tab": "チケット"
     },
     {
       "key": "approvals",
@@ -26,7 +27,8 @@ export const NAV: NavData = {
       "icon": "check-circle",
       "screens": [
         "approvals"
-      ]
+      ],
+      "tab": "承認"
     },
     {
       "key": "ai",
@@ -37,7 +39,8 @@ export const NAV: NavData = {
         "ai-activity",
         "work-types",
         "rules"
-      ]
+      ],
+      "tab": "AI"
     },
     {
       "key": "knowledge",

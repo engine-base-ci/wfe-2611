@@ -42,26 +42,33 @@ interface Detail {
   } | null;
 }
 
-/** 前からある外枠（AppShell）に載せる（D-128.151） */
+/** キャンバスどおりの新しい外枠に載せる（D-143.1）。上の帯のいまの場所は チケット › 番号（番号は読めてから） */
 export function TicketDetail({ id }: { id: string }) {
+  const [number, setNumber] = useState<string | null>(null);
   return (
-    <TicketShell>
-      <DetailBody id={id} />
+    <TicketShell
+      screen="tickets"
+      crumbs={[{ label: "チケット", href: "/tickets" }, ...(number ? [{ label: number }] : [])]}
+    >
+      <DetailBody id={id} onNumber={setNumber} />
     </TicketShell>
   );
 }
 
-function DetailBody({ id }: { id: string }) {
+function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => void }) {
   const [d, setD] = useState<Detail | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const here = `/tickets/${id}`;
   const load = useCallback(
     () =>
       call("getTicket", { params: { id }, screenId: "tickets" }).then((r) => {
-        if (r.ok) setD(r.data as unknown as Detail);
-        else setCode(errorCodeOf(r));
+        if (r.ok) {
+          const detail = r.data as unknown as Detail;
+          setD(detail);
+          onNumber(detail.ticket.number);
+        } else setCode(errorCodeOf(r));
       }),
-    [id],
+    [id, onNumber],
   );
   useEffect(() => {
     if (!getToken()) {

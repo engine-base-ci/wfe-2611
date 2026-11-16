@@ -3,13 +3,14 @@
 //   中身（どのまとまりを出すか・行き先）は nav-model.ts（flow.json の生成物）。数・名前・グループは呼ぶ側が API から渡す
 //   幅：1024 以上は左のバー 216（畳むと 56）／768〜1023 は 56 のレール／767 以下は左のバーを出さず下のタブ（D-072）
 //   右のパネル（自分の AI）は 1180 以上で既定で開く（本文 720 を保てるときだけ・D-070）。開閉は自分で替えられ、次も同じ
+//   キャンバスに在る物は機能がまだでも出す（D-145.9）：作っていない項目・探す欄・知らせの鈴は、正本の「使えない状態」の薄さで押せない形にする。
+//   目に見える「準備中」の字は出さない（指を置くと title で読める・D-144.1）。帯の題は見出しにしない（1 画面の h1 は本文の 1 つ・K-138）
 import { Menu as M } from "@base-ui/react/menu";
 import {
   Bell,
   BookOpen,
   Bot,
   Building2,
-  ChevronDown,
   CircleCheck,
   CircleUser,
   Handshake,
@@ -19,15 +20,14 @@ import {
   Menu,
   PanelLeft,
   PanelRight,
-  Plus,
   Search,
   type LucideIcon,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
-import { navFor, type NavItem } from "./nav-model";
+import { EMPTY_NAV, navFor, type NavItem } from "./nav-model";
 import { ThemeSwitch } from "./theme";
 
 const ICON: Record<string, LucideIcon> = {
@@ -58,7 +58,8 @@ export interface Group {
   tone: "indigo" | "teal" | "amber" | "coral" | "sage" | "plum" | "lavender" | "teal-light";
 }
 export interface ShellProps {
-  role: RoleId;
+  /** 役。分からないあいだ（読み中・ログインが切れた）は渡さない：役の項目を 1 つも出さない */
+  role?: RoleId;
   /** いま見ている画面（flow の screen id） */
   screen: string;
   crumbs: Crumb[];
@@ -71,8 +72,11 @@ export interface ShellProps {
   theme: Theme;
   /** 右のパネル（自分の AI）の中身。無ければパネルを出さない（会話の画面そのものなど） */
   panel?: ReactNode;
+  /** 作るボタン（左のメニューと下のタブの＋）。無ければ作るボタンを出さない（書けるグループが無い人） */
   onCreate?: () => void;
+  /** 探す。無ければ探す欄を使えない形（グレー・打てない）で出す */
   onSearch?: (q: string) => void;
+  /** 知らせを開く。無ければ鈴を使えない形（グレー・押しても何も開かない）で出す */
   onNotices?: () => void;
   onSignOut?: () => void;
   /** 試験・見本で「作った画面」の一覧を替える */
@@ -102,13 +106,12 @@ function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
   const body = (
     <>
       <Icon name={it.icon} />
-      <span className="k-nav-label">{it.label}</span>
+      <span className="k-nav-label">{compact ? (it.tab ?? it.label) : it.label}</span>
       {it.badge ? (
         <b className="k-nav-badge" aria-label={`${it.badge} 件`}>
           {it.badge}
         </b>
       ) : null}
-      {it.pending ? <span className="k-nav-pending">準備中</span> : null}
     </>
   );
   if (it.pending)
@@ -136,12 +139,15 @@ function NavLink({ it, compact }: { it: NavItem; compact?: boolean }) {
 }
 
 export function Shell(p: ShellProps) {
-  const nav = navFor(p.role, {
-    screen: p.screen,
-    memberName: p.member.name,
-    ...(p.badges ? { badges: p.badges } : {}),
-    built: p.built ?? BUILT_ROUTES,
-  });
+  const nav = p.role
+    ? navFor(p.role, {
+        screen: p.screen,
+        memberName: p.member.name,
+        ...(p.badges ? { badges: p.badges } : {}),
+        built: p.built ?? BUILT_ROUTES,
+      })
+    : EMPTY_NAV;
+  const searchBox = useRef<HTMLInputElement>(null);
   const [railed, setRailed] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [sheet, setSheet] = useState(false);
@@ -149,6 +155,19 @@ export function Shell(p: ShellProps) {
     setRailed(readPref(NAV_KEY) ?? false);
     setPanelOpen(readPref(PANEL_KEY) ?? window.matchMedia("(min-width: 1180px)").matches);
   }, []);
+  // ⌘K（Ctrl+K）で探す欄へ。探すが使えないあいだは何もしない
+  const canSearch = Boolean(p.onSearch);
+  useEffect(() => {
+    if (!canSearch) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchBox.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [canSearch]);
   const toggleNav = () => {
     setRailed((v) => (writePref(NAV_KEY, !v), !v));
   };
@@ -183,7 +202,7 @@ export function Shell(p: ShellProps) {
       </div>
       {p.onCreate ? (
         <button type="button" className="k-nav-create" onClick={p.onCreate} title="チケットを作る">
-          <Plus size={16} aria-hidden="true" />
+          <span aria-hidden="true">＋</span>
           <span className="k-nav-label">チケットを作る</span>
         </button>
       ) : null}
@@ -242,19 +261,36 @@ export function Shell(p: ShellProps) {
               ))}
             </ol>
           </nav>
-          <h1 className="k-bar-title">{title}</h1>
+          <b className="k-bar-title">{title}</b>
           <div className="k-bar-tools">
-            <form role="search" className="k-search" onSubmit={search}>
+            <form
+              role="search"
+              className="k-search"
+              data-disabled={canSearch ? undefined : true}
+              onSubmit={search}
+            >
               <label>
                 <Search size={14} aria-hidden="true" />
                 <span className="sr-only">探す</span>
-                <input type="search" name="q" placeholder="チケット・ナレッジ・決定を探す" />
+                <input
+                  ref={searchBox}
+                  type="search"
+                  name="q"
+                  placeholder="チケット・ナレッジ・決定を探す"
+                  disabled={!canSearch}
+                  aria-disabled={canSearch ? undefined : true}
+                />
+                <span className="k-search-key" aria-hidden="true">
+                  ⌘K
+                </span>
               </label>
             </form>
             <button
               type="button"
               className="k-icon-btn k-bell"
               aria-label={p.notices ? `知らせ（${p.notices} 件）` : "知らせ"}
+              aria-disabled={p.onNotices ? undefined : true}
+              title={p.onNotices ? undefined : "知らせ（準備中）"}
               onClick={p.onNotices}
             >
               <Bell size={18} aria-hidden="true" />
@@ -265,7 +301,7 @@ export function Shell(p: ShellProps) {
                 <span className="k-avatar" aria-hidden="true">
                   {p.member.initial}
                 </span>
-                <ChevronDown size={14} aria-hidden="true" />
+                ▾
               </M.Trigger>
               <M.Portal>
                 <M.Positioner sideOffset={6} align="end">
@@ -273,9 +309,8 @@ export function Shell(p: ShellProps) {
                     <div className="k-menu-head">{p.member.name}</div>
                     {nav.me.map((it) =>
                       it.pending ? (
-                        <M.Item key={it.key} className="k-select-item" disabled>
+                        <M.Item key={it.key} className="k-select-item" disabled title={`${it.label}（準備中）`}>
                           {it.label}
-                          <span className="k-nav-pending">準備中</span>
                         </M.Item>
                       ) : (
                         <M.Item key={it.key} className="k-select-item" render={<a href={it.href} />}>
@@ -326,7 +361,7 @@ export function Shell(p: ShellProps) {
         ))}
         {p.onCreate ? (
           <button type="button" className="k-tab-create" aria-label="チケットを作る" onClick={p.onCreate}>
-            <Plus size={22} aria-hidden="true" />
+            <span className="k-tab-plus">＋</span>
           </button>
         ) : null}
         {nav.tabs.slice(2).map((it) => (

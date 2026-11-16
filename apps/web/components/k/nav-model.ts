@@ -2,13 +2,15 @@
 //   ・左のバーの上：役割の主ナビ（ワークスペースの管理・自分のメニューを除く）
 //   ・左のバーの下：ワークスペースの管理（ある役割だけ）
 //   ・自分のメニュー：右上の自分のボタンの中（自分の設定・つなぐ・問い合わせ・お知らせ）
-//   ・スマホの下のタブ：主ナビの先頭 3 本＋メニュー（全部はメニューの中）
+//   ・スマホの下のタブ：主ナビの先頭 3 本＋メニュー（全部はメニューの中）。名前は flow の短い名前 tab（無ければ label・K-138）
 //   行き先は、その役割が入れる画面（by_role）のうち、まとまりの先頭。まだ作っていない画面は「準備中」で押させない（lib/built-routes.ts）
 import { NAV, type RoleId, type ScreenId } from "@/lib/nav";
 
 export interface NavItem {
   key: string;
   label: string;
+  /** 下のタブに出す短い名前（flow.json の tab。無ければ label） */
+  tab?: string;
   icon: string;
   href: string;
   current: boolean;
@@ -25,7 +27,7 @@ export interface ShellNav {
 export interface NavOptions {
   /** いま見ている画面（flow の screen id）。そのまとまりを「いまの場所」にする */
   screen?: string;
-  /** 自分の名前（「（名前）のAI」の名前） */
+  /** 自分の名前（「（名前）のAI」の名前）。空なら「（名前）のAI」は短い名前（tab）にする（「のAI」にしない） */
   memberName: string;
   /** まとまりごとの数（承認待ち 2 件 など） */
   badges?: Partial<Record<string, number>>;
@@ -40,6 +42,9 @@ export function isBuilt(route: string, built: readonly string[]): boolean {
   return built.includes(route);
 }
 
+/** 役が分からないあいだ（読み中・ログインが切れた）は役の項目を 1 つも出さない */
+export const EMPTY_NAV: ShellNav = { main: [], bottom: [], me: [], tabs: [] };
+
 export function navFor(role: RoleId, o: NavOptions): ShellNav {
   const allowed = new Set<string>(NAV.byRole[role] ?? []);
   const keys = NAV.sectionsByRole[role] ?? [];
@@ -50,9 +55,16 @@ export function navFor(role: RoleId, o: NavOptions): ShellNav {
     const first = sec.screens.find((id) => allowed.size === 0 || allowed.has(id)) ?? sec.screens[0];
     if (!first) return null;
     const route = NAV.screens[first as ScreenId]?.route ?? "/";
+    const named = sec.label.includes("（名前）");
+    const label = !named
+      ? sec.label
+      : o.memberName
+        ? sec.label.replace("（名前）", o.memberName)
+        : (sec.tab ?? sec.label.replace("（名前）", ""));
     return {
       key,
-      label: sec.label.replace("（名前）", o.memberName),
+      label,
+      ...(sec.tab ? { tab: sec.tab } : {}),
       icon: sec.icon,
       href: route,
       current: o.screen ? sec.screens.includes(o.screen) : false,
