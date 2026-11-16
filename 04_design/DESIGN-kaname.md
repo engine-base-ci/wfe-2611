@@ -388,6 +388,88 @@ components:
     lineHeight: 1.7
   section-list:         # 区画の箇条（黒丸の字下げ）
     padding: "0 0 0 20px"
+  shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
+    height: "60px"
+  # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）
+  create-head:          # 作る画面の帯の中の間（見出し・作り方・保存の状態）
+    gap: "12px"
+  create-how:           # 帯の作り方の切り替え（自分で書く・AI と話して作る・過去のチケットから複製）
+    height: "28px"
+    padding: "0 12px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    typography: "{typography.body-sm}"
+  create-body:          # 本文の器（帯の下。左右 spacing.lg・下は足元の帯の分 spacing.2xl）
+    padding: "{spacing.md} {spacing.lg} {spacing.2xl}"
+    gap: "{spacing.md}"
+  create-cards:         # 白い箱の縦の並び（箱と箱の間）
+    gap: "12px"
+  create-cards-basis:   # 白い箱の並びが右の列と横に並ぶときの基準の幅（flex-basis）
+    width: "640px"
+  create-card:          # 白い箱（グループ・種別・題名／本文／振り分け）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "{spacing.md}"
+    gap: "12px"
+  create-card-title:    # 箱の見出し（振り分け）
+    typography: "{typography.body-md}"
+    fontWeight: 700
+  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）
+    width: "160px"
+    gap: "{spacing.sm}"
+  create-title:         # 題名の欄（キャンバスは高さ 40・15px・500。入口の欄 input-lg の 42 とは別）
+    height: "40px"
+    typography: "{typography.h3}"
+    fontWeight: 500
+  create-assign:        # 振り分けの格子（2 列の間 spacing.lg・行の間は 0）
+    gap: "0 {spacing.lg}"
+  create-assign-row:    # 振り分けの 1 行（上下 spacing.sm と下の線）
+    padding: "{spacing.sm} 0"
+    borderBottom: "1px solid {colors.line-soft}"
+  create-assign-label:  # 振り分けの 1 行の項目名の列の幅（grid の列）
+    width: "96px"
+  create-options-max:   # 親の候補の箱の高さの上限（max-height・越えたら中を送る）
+    height: "240px"
+  create-options:       # 親の候補の箱（影は置かず線だけ）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "{spacing.xs}"
+  create-drop:          # ファイルを置く枠（点線）
+    backgroundColor: "{colors.card}"
+    border: "1px dashed {colors.line-strong}"
+    rounded: "{rounded.field}"
+    padding: "{spacing.md}"
+  create-chip:          # 知らせる人の札
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    padding: "0 0 0 {spacing.sm}"
+    gap: "{spacing.xs}"
+  create-target:        # 札の × とチェックの行の押せる大きさ（24 以上）
+    width: "24px"
+    height: "24px"
+  create-aside:         # 右の列（作る前に・AI のひとこと）。横に並ぶときの基準の幅 280
+    width: "280px"
+    gap: "12px"
+  create-aside-max:     # 右の列が広がっても超えない幅（340）
+    width: "340px"
+  create-aside-box:     # 右の列の白い箱
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "12px 14px"
+  create-checks:        # 作る前にの行の間
+    gap: "6px"
+  create-foot:          # 足元の帯（画面の下に貼り付く）
+    backgroundColor: "{colors.card}"
+    borderTop: "1px solid {colors.line}"
+    padding: "10px {spacing.lg}"
+  create-foot-button:   # 足元の帯のボタンの高さ（キャンバス 34）
+    height: "34px"
+  create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
+    border: "1px solid {colors.primary}"
+    padding: "0 18px"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

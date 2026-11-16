@@ -1,0 +1,382 @@
+/* チケットを作る画面の器（K-224・キャンバス Create）。帯の下に、白い箱を縦に並べた本文（.k-create-cards）と右の「作る前に」（.k-create-aside）、
+   画面の下に貼り付く足元の帯（.k-create-foot）。値は --k-* のトークンだけを読む（キャンバスの実測は正本 DESIGN-kaname.md の部品 create-* に置き、
+   04_design/gen_tokens.py --web で k-tokens.css に出す。ここに生の色・大きさ・影を書かない）。
+   箱の中の区画の見た目は K-225。外枠の右のパネル（.k-panel）は使わない（本文の部品が外枠の決まりを借りない・K-214） */
+
+/* ---- 器（帯と本文と足元の帯をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
+.k-create-page {
+  min-width: 0;
+}
+
+/* ---- 帯：見出し・作り方・下書きの保存の状態 ---- */
+.k-create-head {
+  position: relative;
+  gap: var(--k-c-create-head-gap);
+}
+.k-create-head h1 {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-create-how {
+  flex: none;
+  display: inline-flex;
+  max-width: 100%;
+  border: var(--k-c-create-how-border);
+  border-radius: var(--k-c-create-how-radius);
+  overflow: hidden;
+}
+/* 狭い幅では、まだ使えない作り方の字を 1 行のまま「…」で切る（全文は title） */
+.k-create-how > span {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: var(--k-c-create-how-height);
+  height: var(--k-c-create-how-height);
+  padding: var(--k-c-create-how-pad);
+  font-size: var(--k-c-create-how-text);
+  white-space: nowrap;
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+}
+.k-create-how > span[aria-current="true"] {
+  flex: none;
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-create-how > span[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+/* まだ残していない（字が無い）ときも 1 行の高さを取っておく（字が出たときに本文が下にずれない） */
+.k-create-saved {
+  min-height: calc(var(--k-text-body-sm) * var(--k-lh-body));
+  line-height: var(--k-lh-body);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+  white-space: nowrap;
+}
+/* 幅 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ねて置き、帯の行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ）。
+   外枠が見出しの行を折り返さない決まり（鈴を見出しの右に置く）を、この帯だけ折り返す形に替える */
+@media (max-width: 767px) {
+  header.k-page-head.k-create-head {
+    flex-wrap: wrap;
+  }
+  .k-create-head h1 {
+    max-width: calc(100% - var(--k-s-xl));
+  }
+  .k-create-head > button {
+    position: absolute;
+    top: var(--k-s-xs);
+    right: var(--k-s-sm);
+  }
+}
+
+/* ---- 本文：左に白い箱の並び・右に「作る前に」。1023 以下は「作る前に」を下に ---- */
+.k-create-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--k-c-create-body-gap);
+  padding: var(--k-c-create-body-pad);
+  min-width: 0;
+}
+.k-create-cards {
+  flex: 999 1 var(--k-c-create-cards-basis-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-create-cards-gap);
+}
+.k-create-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-create-card-gap);
+  padding: var(--k-c-create-card-pad);
+  background: var(--k-c-create-card-bg);
+  border: var(--k-c-create-card-border);
+  border-radius: var(--k-c-create-card-radius);
+  min-width: 0;
+}
+.k-create-card > h2 {
+  margin: 0;
+  font-size: var(--k-c-create-card-title-text);
+  font-weight: var(--k-c-create-card-title-fw);
+  color: var(--k-on-surface);
+}
+
+/* 上の箱：グループと種別は幅 160 で横に並べ、題名は高さ 40・15px・500 */
+.k-create-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--k-c-create-pick-gap);
+  min-width: 0;
+}
+.k-create-pick > .k-field {
+  flex: none;
+  width: var(--k-c-create-pick-width);
+}
+.k-create-pick > .k-create-number {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-create-title .k-input {
+  height: var(--k-c-create-title-height);
+  font-size: var(--k-c-create-title-text);
+  font-weight: var(--k-c-create-title-fw);
+}
+@media (max-width: 767px) {
+  /* 16px 未満だと iPhone が入力のたびに拡大する（D-144.7） */
+  .k-create-title .k-input {
+    font-size: var(--k-text-input);
+  }
+}
+
+/* 振り分け：2 列の格子（767 以下は 1 列）。1 行は 項目名 96px と欄 */
+.k-create-assign {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-c-create-assign-gap);
+}
+@media (max-width: 767px) {
+  .k-create-assign {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-create-assign-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-create-assign-row-pad);
+  border-bottom: var(--k-c-create-assign-row-border-bottom);
+  min-width: 0;
+}
+.k-create-assign-row > .k-field {
+  display: grid;
+  grid-template-columns: var(--k-c-create-assign-label-width) minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--k-s-sm);
+  row-gap: var(--k-s-xs);
+}
+.k-create-assign-row > .k-field > :not(.k-label) {
+  grid-column: 2;
+}
+.k-create-assign-row > .k-field > .k-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* まだ使えない欄（正本の使えない状態の部品・input-disabled）：在るが押せない・値は空・▾ は飾り */
+.k-create-off {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-create-off:hover {
+  border-color: var(--k-line-strong);
+}
+.k-create-off > span {
+  margin-left: auto;
+}
+
+/* 親のチケット：打って候補から選ぶ（候補の箱は影を置かず線だけ） */
+.k-create-parent {
+  position: relative;
+  min-width: 0;
+}
+.k-create-options {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--k-s-xs));
+  margin: 0;
+  padding: var(--k-c-create-options-pad);
+  list-style: none;
+  max-height: var(--k-c-create-options-max-height);
+  overflow-y: auto;
+  background: var(--k-c-create-options-bg);
+  border: var(--k-c-create-options-border);
+  border-radius: var(--k-c-create-options-radius);
+}
+.k-create-options > li {
+  padding: var(--k-s-xs) var(--k-s-sm);
+  border-radius: var(--k-r-md);
+  font-size: var(--k-text-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.k-create-options > li[aria-selected="true"],
+.k-create-options > li:hover {
+  background: var(--k-select);
+}
+.k-create-options > li[aria-disabled="true"] {
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-create-options > li[role="status"] {
+  cursor: default;
+  color: var(--k-on-surface-variant);
+}
+
+/* ファイルを置く枠（まだ使えない・D-145.7）：点線の箱をグレーで */
+.k-create-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-create-drop-pad);
+  background: var(--k-c-create-drop-bg);
+  border: var(--k-c-create-drop-border);
+  border-radius: var(--k-c-create-drop-radius);
+  color: var(--k-on-surface-variant);
+  text-align: center;
+  opacity: var(--k-c-input-disabled-opacity);
+  cursor: not-allowed;
+}
+/* 枠ごと薄くしているので、中のボタンを二重に薄くしない */
+.k-create-drop .k-btn:disabled {
+  opacity: 1;
+}
+
+/* 作ったことを知らせる人：絞り込む欄・選んだ人の札・候補のチェック */
+.k-create-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-create-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-create-chip-gap);
+  padding: var(--k-c-create-chip-pad);
+  border: var(--k-c-create-chip-border);
+  border-radius: var(--k-c-create-chip-radius);
+  font-size: var(--k-text-body-sm);
+  white-space: nowrap;
+}
+.k-create-chip > button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-c-create-target-width);
+  height: var(--k-c-create-target-height);
+  border: 0;
+  border-radius: var(--k-r-full);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-create-chip > button:hover {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+}
+.k-create-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs) var(--k-s-md);
+}
+.k-create-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-height: var(--k-c-create-target-height);
+  font-size: var(--k-text-body);
+  cursor: pointer;
+}
+
+/* ---- 右：作る前に・高本のAI から ---- */
+.k-create-aside {
+  flex: 1 1 var(--k-c-create-aside-width);
+  max-width: var(--k-c-create-aside-max-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-create-aside-gap);
+}
+@media (max-width: 767px) {
+  .k-create-aside {
+    max-width: none;
+  }
+}
+.k-create-aside > section {
+  padding: var(--k-c-create-aside-box-pad);
+  background: var(--k-c-create-aside-box-bg);
+  border: var(--k-c-create-aside-box-border);
+  border-radius: var(--k-c-create-aside-box-radius);
+}
+.k-create-aside h2 {
+  margin: 0 0 var(--k-s-sm);
+  font-size: var(--k-text-body);
+  font-weight: var(--k-fw-h2);
+  color: var(--k-on-surface);
+}
+.k-create-checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-create-checks-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-create-checks > li[data-ok="true"] {
+  color: var(--k-st-success);
+}
+
+/* ---- 足元の帯（画面の下に貼り付く。767 以下は下のタブの上） ---- */
+.k-create-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-c-create-foot-pad);
+  background: var(--k-c-create-foot-bg);
+  border-top: var(--k-c-create-foot-border-top);
+}
+.k-create-foot > p {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-create-foot-acts {
+  flex: none;
+  display: flex;
+  gap: var(--k-s-sm);
+  margin-left: auto;
+}
+/* 足元の帯のボタンはキャンバスどおり高さ 34・主ボタンは左右 18 と紺の線 */
+.k-create-foot .k-btn {
+  min-height: var(--k-c-create-foot-button-height);
+}
+.k-create-foot .k-btn[data-variant="primary"] {
+  padding: var(--k-c-create-foot-primary-pad);
+  border: var(--k-c-create-foot-primary-border);
+}
+@media (max-width: 767px) {
+  .k-create-foot {
+    bottom: var(--k-c-shell-tabs-height); /* 下のタブ（外枠 K-138）の上 */
+  }
+}
+
+/* 選ぶ部品（Base UI Select）が値を持たせるための見えない入力（1px・読み上げにも出ない・押せない）は大きさを 0 にする。
+   押せる物の大きさを測るとき（24px 以上）に、押せない 1px の箱を数えない */
+.k-create-page .k-field > input[aria-hidden="true"][tabindex="-1"] {
+  width: 0 !important;
+  height: 0 !important;
+}
