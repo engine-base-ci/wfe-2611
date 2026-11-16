@@ -10100,7 +10100,8 @@
     "07_qa/test-specs/k/approve-complete.md"
    ],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/bridge"
    ],
    "ci_wide": [
     "ci"
