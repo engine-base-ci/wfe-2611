@@ -142,8 +142,15 @@ export function op(deps: ContractDeps, operationId: string) {
   return async (c: Ctx) => {
     const ctx = c.get("ctx");
     const hook = deps.hooks[operationId];
-    if (def.method === "GET" && ctx.role === "member" && (!hook || ONE_TX_HOOKS.has(operationId)))
-      return c.get("repo").inRequest(ctx, () => handle(c));
+    const repo = c.get("repo");
+    // 要求の取引を開けない repo（関門 C2 の本物でない差し替え）は今のまま（取引をまとめないだけで振る舞いは同じ）
+    if (
+      def.method === "GET" &&
+      ctx.role === "member" &&
+      (!hook || ONE_TX_HOOKS.has(operationId)) &&
+      typeof repo.inRequest === "function"
+    )
+      return repo.inRequest(ctx, () => handle(c));
     return handle(c);
   };
 }
