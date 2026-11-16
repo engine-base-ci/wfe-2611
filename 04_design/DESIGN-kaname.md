@@ -46,6 +46,7 @@ colors:
   line-strong: "#B8C0CC"   # 点線の枠・使えない線・薄いアイコン
   primary-soft: "#EEF3FD"  # 紺の淡い地（選んだ札・案内）
   primary-line: "#C7D7F5"  # 紺の淡い線
+  overlay-shadow: "#131B274D"  # 迫り出す面（小窓）の影：on-surface の 30%（StModal の 0 24px 60px）。暗いテーマは影を使わない（透明）
 syntax:
   # コードの色分け（D-104.4）。新しい色は作らず、既存の値を字の色としてだけ使う（面に使わない）
   keyword: "#22345C"
@@ -281,14 +282,51 @@ components:
   dialog:
     backgroundColor: "{colors.card}"
     rounded: "{rounded.lg}"
-  dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）
+    shadow: "0 0 0 1px {colors.line}, 0 24px 60px {colors.overlay-shadow}"   # 層 2：縁の輪（大きさに足さない）と影。暗いテーマは overlay-shadow が透明なので輪だけ
+    margin: "60px auto 0"   # 置き場：上から 60px・左右の真ん中（K-229・キャンバスの StApproveModal・StCompleteModal・StReturnModal）。左右は画面の端から lg 空ける
+  dialog-confirm:       # 取り消せない確かめの幅（StApproveModal 380）
+    width: "380px"
+  dialog-form:          # ふつうの小窓の幅（StCompleteModal・StReturnModal 420）
+    width: "420px"
+  dialog-button:        # 小窓の足のボタンの高さ（StModal 34）
+    height: "34px"
+  dialog-caution:       # 取り消せない注意の赤い箱（StApproveModal）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+  dialog-target:        # 頭の下の対象の行（「EG-133 11 月分の請求書を送る」・12px・灰・行の高さ 1.6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+  dialog-group:         # 小窓の中の項目の枠（実施事項の fieldset：1px line・角丸 field）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "8px 12px"
+  dialog-check:         # 小窓の中のチェック・選ぶ印の行（12px・行の高さ 1.6・印と字の間 6px）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+    gap: "6px"
+  dialog-stack:         # 項目の多い小窓（StReturnModal）の段の間 12px
+    gap: "12px"
+  dialog-select:        # 小窓の中の選ぶ欄の高さ（StReturnModal「どこを直すか」35）
+    height: "35px"
+  dialog-textarea:      # 小窓の中の複数行の欄の高さ（StReturnModal「理由」64）
+    height: "64px"
+  field-required:       # 必須の印（StReturnModal「必須」）
+    textColor: "{colors.error}"
+    typography: "{typography.body-sm}"
+  dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）。行の高さは本文と同じ 1.6（StModal の頭 53）
     typography: "{typography.h3}"
     fontWeight: 700
+    lineHeight: 1.6
   dialog-head:          # 頭：題と右上の ×・下に線
     padding: "14px 18px"
     borderBottom: "1px solid {colors.line}"
-  dialog-body:
+  dialog-body:          # 本文：段の間 10px（StApproveModal・StCompleteModal）
     padding: "14px 18px"
+    gap: "10px"
   dialog-actions:       # 足：上に線・右寄せのボタン
     padding: "12px 18px"
     borderTop: "1px solid {colors.line}"
@@ -388,6 +426,141 @@ components:
     lineHeight: 1.7
   section-list:         # 区画の箇条（黒丸の字下げ）
     padding: "0 0 0 20px"
+  # 本文の道具の帯（K-226・キャンバス TicketDetail・Create で同じ所の実測）。作る画面の区画（K-225）も同じ部品を使う
+  doc-toolbar:          # 帯（地は表の頭の色・下に薄い線）。詳細だけの違い（左右 20px・上の線・上に貼り付く）は詳細の CSS が上書きする
+    backgroundColor: "{colors.table-head}"
+    borderBottom: "1px solid {colors.line-soft}"
+    padding: "6px 12px"
+    gap: "2px"
+  doc-tool:             # 帯の 1 つの道具（高さ 28。幅は字に合わせ、最小 30 は doc-tool-min）
+    height: "28px"
+    padding: "0 6px"
+  doc-tool-min:         # 道具の最小の幅（min-width）
+    width: "30px"
+  shell-bar:            # 外枠の上の帯の高さ（K-138・shell.css の .k-bar）。上に貼り付く物はこの下に置く（K-226）
+    height: "48px"
+  # チケットの詳細（K-226・キャンバス TicketDetail の実測）
+  detail-body:          # 本文の箱（カードと子チケット・つながりのカードを縦に並べる）
+    padding: "{spacing.md} {spacing.lg} 40px"
+    gap: "12px"
+  detail-body-basis:    # 本文の箱がパネルと横に並ぶときの基準の幅（flex-basis）
+    width: "640px"
+  detail-card:          # 本文の白いカード（子チケット・つながりのカードも同じ）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  detail-rule:          # 詳細の中の区切りの線（パネルの左・タブの下・狭い幅の上の線・パネルの区画の下の薄い線）
+    border: "1px solid {colors.line}"
+    borderBottom: "1px solid {colors.line-soft}"
+  detail-meta:          # 頭の行（種別の札・番号・コピー・作成・開始日・期限・段の札）
+    padding: "12px 20px 0"
+    gap: "{spacing.sm}"
+    lineHeight: 1.7
+  detail-meta-side:     # 頭の行の右（開始日・期限・段の札）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    gap: "14px"
+  detail-kind:          # 種別の札（塗りは種別の色）
+    typography: "{typography.label-md}"
+    rounded: "{rounded.full}"
+    padding: "1px 10px"
+  detail-stage:         # 段の札（塗りは段の色・白字）
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    lineHeight: 1.7
+    rounded: "{rounded.full}"
+    padding: "2px 12px"
+  detail-copy:          # 番号をコピー（24 の四角・線）
+    width: "24px"
+    height: "24px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.sm}"
+  detail-head:          # 題名の行（線も地も無い）
+    padding: "6px 20px 12px"
+    gap: "10px"
+  detail-title-basis:   # 題名が操作と横に並ぶときの基準の幅（flex-basis）
+    width: "360px"
+  detail-title:         # 題名 h1（行の高さは絵のまま 1.45）
+    typography: "{typography.h1}"
+    lineHeight: 1.45
+  detail-acts:          # 題名の行の操作の並び
+    gap: "6px"
+  detail-act:           # 題名の行の操作（複製・AI と話す・ほかの操作。高さ 30 は page-head-button）
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    padding: "0 10px"
+  detail-more:          # ほかの操作（…）の幅
+    width: "32px"
+    padding: "0"
+  detail-bands:         # 帯の場所（題名の行の下・帯の間と下の余白）
+    padding: "0 20px 14px"
+    gap: "14px"
+  detail-doc:           # 区画の並び（幅は 900 まで。狭ければ箱の幅）
+    padding: "4px 28px 28px"
+    width: "900px"
+  detail-doc-toolbar:   # 詳細の本文の道具の帯だけの違い（左右 20px・上に線。上に貼り付く）
+    padding: "6px 20px"
+    borderTop: "1px solid {colors.line}"
+  detail-links-head:    # 子チケット・つながりの見出しの行
+    padding: "10px {spacing.md}"
+    gap: "{spacing.sm}"
+  detail-links-title:   # 子チケット・つながりの見出し（キャンバスの h2 の太さ 700）
+    typography: "{typography.body-md}"
+    fontWeight: 700
+  detail-link:          # 字のリンクの形のボタン・目次のリンク（押せる高さ 24 以上）
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    height: "24px"
+  detail-reopen:        # パネルを開く（閉じたときだけ・本文の右の 36 の列。幅は flex-basis）
+    width: "36px"
+    padding: "10px 0 0"
+  detail-panel:         # 右の属性パネル（左に線は detail-rule）
+    width: "380px"
+  detail-panel-close:   # パネルを閉じる（パネルの右上・28 の四角）
+    width: "28px"
+    height: "28px"
+    rounded: "{rounded.md}"
+  detail-panel-close-at: # パネルを閉じるの位置（右上から top・right）
+    height: "10px"
+  detail-tabs:          # パネルのタブの並び（右は閉じるボタンの分）
+    padding: "0 44px 0 6px"
+  detail-tab:           # パネルのタブ（下に 2px の印・今いるタブは紺）
+    padding: "10px 12px"
+    gap: "6px"
+    borderBottom: "2px solid transparent"
+  detail-panel-sec:     # パネルの区画（下に薄い線は detail-rule）
+    padding: "12px 0"
+  detail-panel-title:   # パネルの区画の見出し
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    textColor: "{colors.on-surface-variant}"
+  detail-fields:        # 項目名と値の格子（項目名の列の幅は detail-fields-label）
+    gap: "{spacing.sm}"
+  detail-fields-label:  # 項目名の列の幅（grid の列）
+    width: "72px"
+  detail-due:           # 期限を変える（▾）の最小の幅（min-width）
+    width: "28px"
+  detail-who:           # 担当者（頭文字の丸と名前）
+    gap: "6px"
+  detail-avatar:        # 担当者の頭文字の丸
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.full}"
+    typography: "{typography.label-xs}"
+    backgroundColor: "{data.lavender}"
+    textColor: "{colors.on-primary}"
+  # 実行の記録（K-62 の帯・K-226 の小窓「実行の記録」：キャンバス TdRunLog）
+  run-band:             # AI に任せるの帯の中の行の間
+    gap: "12px"
+  run-sheet:            # 小窓「実行の記録」の右から出る板（幅 540・画面が狭ければ画面の幅）
+    backgroundColor: "{colors.card}"
+    width: "540px"
+  run-chip:             # 絞り込みの札
+    height: "28px"
+    padding: "0 12px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    typography: "{typography.body-sm}"
   shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
     height: "60px"
   # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）
@@ -509,6 +682,7 @@ dark:
     line-strong: "#3D4858"
     primary-soft: "#1B2638"
     primary-line: "#34476B"
+    overlay-shadow: "#00000000"  # 暗いテーマは影が見えないので出さない。迫り出す面は輪（dialog-ring＝line）と地の段で表す
   syntax:
     keyword: "#9DB5E8"
     string: "#6CC4BC"
@@ -795,7 +969,7 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 白いカードに 説明（12px）・数（18px・太字）・補足（11px）。気にかけてほしい数だけ `st-warning`／`st-danger` の字の色。
 
 ### 小窓・引き出し・ポップオーバー
-小窓は真ん中（幅 520〜620・白地・角丸 `lg`）。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
+小窓は上から 60px・左右の真ん中に置き、左右は画面の端から `lg` 空ける（K-229・キャンバスの StApproveModal・StCompleteModal・StReturnModal）。幅は取り消せない確かめ 380（`dialog-confirm`）・ふつうの小窓 420（`dialog-form`）。白地・角丸 `lg`。足のボタンは高さ 34（`dialog-button`）。取り消せない注意は赤い箱（`dialog-caution`）、頭の下の対象の行は 12px・灰（`dialog-target`）、中の項目の枠は 1px の線・角丸 `field`（`dialog-group`）、必須の印は `field-required`。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
 
 ### 帯（お知らせ・確かめ・運営）
 - 注意：`warning-soft` の地 ＋ `warning-line` の線 ＋ 札

@@ -23,6 +23,7 @@ import {
   ticketOf,
   type Mock,
 } from "./approve-complete.harness.js";
+import { approveVia, confirmButton } from "../../k/approve-modal";
 
 /** 実装の段で土台に足す道具（今は無い。無ければ呼んだ所で赤になる） */
 type Settle = (page: Page, width?: number) => Promise<void>;
@@ -131,7 +132,7 @@ test("K247-UI-002 K63-UI-022 の形（開いた後に答えを承認の後の実
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "running", pc: "live" } }) },
   });
-  await approveBtn(page).click();
+  await approveVia(page, approveBtn(page)); // 確かめの小窓を通す（K-229・D-143.4）
   await expect.poll(() => m.approves.length).toBe(1);
   expect(m.approves[0]).toMatchObject({ id: A_OPEN, body: {} });
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
@@ -147,7 +148,7 @@ test("K247-UI-003 K63-UI-043 の形（押した時点で決まっていた 409�
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "queued", pc: "live" } }) },
   });
-  await approveBtn(page).click();
+  await approveVia(page, approveBtn(page)); // 確かめの小窓を通す（K-229）
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   await expect(approveBtn(page)).toHaveCount(0);
@@ -164,7 +165,7 @@ test("K247-UI-004 K63-UI-024 の形（開いた後に答えを作り直しの実
   });
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
   await reasonBox(page).fill("宛名を直してください");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect.poll(() => m.returns.length).toBe(1);
   expect(m.returns[0]).toEqual({ id: A_OPEN, body: { note: "宛名を直してください" } });
   await expect(dialog(page)).toHaveCount(0);
@@ -272,11 +273,12 @@ test("K247-UI-010 守り（製品）：押して答えを待っている間に�
   await page.clock.install();
   await openTicketSettled(page);
   const release = m.hold();
-  await approveBtn(page).click();
+  await approveVia(page, approveBtn(page)); // 確かめの小窓を通す（K-229）
   await expect.poll(() => m.approves.length).toBe(1);
   await tickSettled(page);
   await tickSettled(page);
-  await expect(approveBtn(page)).toBeDisabled();
+  // 答えを待つ間は確かめの小窓（K-229）が開いたまま。帯は小窓の外で読み上げの木から外れるので、小窓の主ボタンで見る
+  await expect(confirmButton(page)).toBeDisabled();
   expect(m.approves).toHaveLength(1);
   m.on.ticket = () => ({
     status: 200,

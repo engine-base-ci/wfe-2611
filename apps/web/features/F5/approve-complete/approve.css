@@ -23,43 +23,30 @@
 .k63-more {
   justify-self: start;
 }
-/* 完了の小窓（K-183）：完了の条件の本文・実施事項のチェック・小窓の中の知らせ。狭い幅でも折り返して横にはみ出さない */
+/* 完了の小窓（K-183・形は K-229 のキャンバス StCompleteModal）：段の間は小窓の本文と同じ・狭い幅でも折り返して横にはみ出さない。
+   実施事項の枠とチェックの行は小窓の部品（.k-dialog-group・.k-dialog-check） */
 .k63-complete {
   display: grid;
-  gap: var(--k-s-md);
+  gap: var(--k-c-dialog-body-gap);
   min-width: 0;
-  margin-top: var(--k-s-md);
   overflow-wrap: anywhere;
 }
 .k63-complete p,
 .k63-problems ul {
   margin: 0;
 }
+/* 完了の条件：見出し 12px・500・黒、文 12px・灰 */
+.k63-cond .k-label {
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-c-dialog-check-lh);
+  font-weight: var(--k-c-label-lg-fw);
+  color: var(--k-on-surface);
+}
 .k63-text {
   white-space: pre-wrap;
-}
-.k63-checks {
-  display: grid;
-  gap: var(--k-s-sm);
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.k63-checks legend {
-  padding: 0;
-  margin-bottom: var(--k-s-xs);
-}
-.k63-check {
-  display: flex;
-  gap: var(--k-s-sm);
-  align-items: flex-start;
-  min-width: 0;
-}
-.k63-check input {
-  flex: none;
-  margin-top: var(--k-s-xs);
-  accent-color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-c-dialog-check-lh);
+  color: var(--k-on-surface-variant);
 }
 .k63-problems {
   display: grid;

@@ -692,7 +692,7 @@
     375
    ],
    "owner": "K-226",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -871,7 +871,7 @@
     375
    ],
    "owner": "K-229",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "小窓",
@@ -1837,7 +1837,7 @@
     375
    ],
    "owner": "K-229",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "小窓",
@@ -2052,7 +2052,7 @@
     375
    ],
    "owner": "K-229",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "小窓",

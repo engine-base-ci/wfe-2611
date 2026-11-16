@@ -4,11 +4,13 @@
 //   見出しの横と左のメニューの「承認待ち」に同じ数（口の meta.counts.total）。文は全部文字として出す（HTML を作らない）。
 //   行の「承認する」（K-180）：取り消せる操作で人が見る項目が無い行だけ、その場で承認する。答えが来るまでどの行も押せない。
 //   決まっていた（409）・消されていた（404）は知らせ（role=alert）に正本の文を出し、どの答えでも一覧を読み直す。行の「差し戻す」と小窓は K-181（口は K-163）
+//   行の「承認する」は確かめの小窓（approve-confirm.tsx・K-229・D-143.4）を開くだけで、口は小窓の主ボタンで呼ぶ
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Badge, Button, Callout, Loading, Table, type Column } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "./message";
+import { ApproveConfirm } from "./approve-confirm";
 import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
 import { ShellBell } from "@/components/k/shell";
@@ -112,7 +114,8 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
   const [notice, setNotice] = useState<string | null>(null);
   const [done, setDone] = useState<ReadonlySet<string>>(new Set()); // 承認した行は、読み直しの前でも一覧から外す
   const sending = useRef(false); // 答えが来るまで 2 本目を送らない（押せない間の click も含む）
-  const [returning, setReturning] = useState<string | null>(null); // 差し戻しの小窓を開いている承認（K-181）
+  const [returning, setReturning] = useState<QueueRow | null>(null); // 差し戻しの小窓を開いている承認（K-181）
+  const [confirming, setConfirming] = useState<QueueRow | null>(null); // 確かめの小窓を開いている承認（K-229）
   const reload = () => qc.invalidateQueries({ queryKey: queueKey });
   const failed = async (r: CallErr) => {
     if (r.status !== 401) setNotice(messageOf(r)); // 409・404：知らせを出して一覧を読み直す（401 は入り直し）
@@ -125,6 +128,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
     setNotice(null);
     try {
       const r = await call("approveApproval", { params: { id: row.id }, body: {}, screenId: "approvals" });
+      setConfirming(null);
       if (r.ok) setDone((d) => new Set([...d, row.id]));
       else if (r.status !== 401) setNotice(messageOf(r)); // 401 は入り直し（共通の扱い）
       await qc.invalidateQueries({ queryKey: queueKey });
@@ -157,7 +161,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       cell: (r) => (
         <span className="k63-acts">
           {r.decide_inline ? (
-            <Button size="sm" loading={busy === r.id} disabled={busy !== null} onClick={() => void approve(r)}>
+            <Button size="sm" loading={busy === r.id} disabled={busy !== null} onClick={() => setConfirming(r)}>
               承認する
             </Button>
           ) : (
@@ -165,7 +169,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
               中身を見る
             </a>
           )}
-          <Button size="sm" variant="secondary" disabled={busy === r.id} onClick={() => setReturning(r.id)}>
+          <Button size="sm" variant="secondary" disabled={busy === r.id} onClick={() => setReturning(r)}>
             差し戻す
           </Button>
         </span>
@@ -174,7 +178,8 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
   ];
   const dialog = returning ? (
     <ReturnDialog
-      approvalId={returning}
+      approvalId={returning.id}
+      target={`${returning.ticket_number} ${returning.title}`}
       screenId="approvals"
       open
       onOpenChange={(o) => {
@@ -184,6 +189,20 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       onFailed={failed}
     />
   ) : null;
+  const confirm = (
+    <ApproveConfirm
+      open={confirming !== null}
+      onOpenChange={(o) => {
+        if (!o && busy === null) setConfirming(null);
+      }}
+      irreversible={confirming?.irreversible ?? false}
+      cautions={[]}
+      busy={busy !== null}
+      onConfirm={() => {
+        if (confirming) void approve(confirming);
+      }}
+    />
+  );
   const alert = notice ? <Callout tone="danger">{notice}</Callout> : null;
   const shown = rows.filter((r) => !done.has(r.id));
   if (shown.length === 0)
@@ -191,6 +210,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       <>
         {alert}
         {dialog}
+        {confirm}
         <p className="k-desc">いま決めるものはありません</p>
       </>
     );
@@ -201,6 +221,7 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
     <>
       {alert}
       {dialog}
+      {confirm}
       {groups.map(([g, rs]) => (
         <Table key={g} caption={g} columns={columns} rows={rs} rowKey={(r) => r.id} />
       ))}

@@ -20,13 +20,14 @@ import {
   dialog,
   bandOf,
 } from "./approve-complete.harness.js";
+import { approveVia, confirmButton } from "../../k/approve-modal";
 
 row(R["K63-UI-002"], async (page) => {
   const m = await mockApi(page);
   await openQueue(page);
   const after = QUEUE().filter((x) => x.id !== A_INLINE);
   m.on.queue = () => ({ status: 200, body: { data: after, meta: { limit: 20, counts: { total: 2 } } } });
-  await rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true }).click();
+  await approveVia(page, rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(rowOf(page, "見積を出す")).toHaveCount(0);
   expect(m.approves).toHaveLength(1);
   expect(m.approves[0]).toMatchObject({ id: A_INLINE, body: {} });
@@ -43,7 +44,7 @@ row(R["K63-UI-012"], async (page) => {
     status: 200,
     body: { data: QUEUE().filter((x) => x.id !== A_INLINE), meta: { limit: 20, counts: { total: 2 } } },
   });
-  await rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true }).click();
+  await approveVia(page, rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect.poll(() => m.queueReads).toBeGreaterThan(before);
   await expect(rowOf(page, "見積を出す")).toHaveCount(0);
@@ -51,8 +52,10 @@ row(R["K63-UI-012"], async (page) => {
 row(R["K63-UI-013"], async (page) => {
   const m = await mockApi(page);
   await openQueue(page);
-  const b = rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true });
   const release = m.hold();
+  await rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true }).click();
+  // 確かめの小窓（K-229・D-143.4）の主ボタンを押す。答えの前は小窓の主ボタンも行のボタンも押せない
+  const b = confirmButton(page);
   await b.click();
   await expect.poll(() => m.approves.length).toBe(1);
   await expect(b).toBeDisabled(); // 答えの前は押せない
@@ -69,7 +72,7 @@ row(R["K63-UI-014"], async (page) => {
     status: 200,
     body: { data: QUEUE().filter((x) => x.id !== A_INLINE), meta: { limit: 20, counts: { total: 2 } } },
   });
-  await rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true }).click();
+  await approveVia(page, rowOf(page, "見積を出す").getByRole("button", { name: "承認する", exact: true })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(page.getByRole("alert").filter({ hasText: MSG.gone })).toBeVisible();
   await expect(rowOf(page, "見積を出す")).toHaveCount(0);
 });
@@ -80,12 +83,13 @@ row(R["K63-UI-022"], async (page) => {
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "running", pc: "live" } }) },
   });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect.poll(() => m.approves.length).toBe(1);
   expect(m.approves[0]).toMatchObject({ id: A_OPEN, body: {} });
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   expect(m.stepUps).toHaveLength(0); // 本人確認を取り直さない（D-128.177）
   await expect(dialog(page)).toHaveCount(0);
+  await expect(page.getByRole("alertdialog")).toHaveCount(0); // 送った後は確かめの小窓も閉じる
 });
 row(R["K63-UI-044"], async (page) => {
   // 開いたままのチケットで、作る段が終わって承認待ちになったら、読み直しで承認の帯に替わる

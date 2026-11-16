@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { expect, row, rowsOf } from "../../_lib/row";
 import { WIDTHS } from "../../_lib/api";
+import { detailRows } from "../../k/detail-kit";
 import {
   ROWS,
   R,
@@ -42,7 +43,9 @@ row(R["K63-UI-020"], async (page) => {
   const k60 = rowsOf(
     join(dirname(fileURLToPath(import.meta.url)), "../../../../../07_qa/test-specs/k/create-ticket.md"),
   );
-  const have = new Set(k60.map((r) => `（${r.role}）「${r.name}」`));
+  // K-226 が詳細の本文と右のパネルに置いた操作要素（まだ使えない物も・D-145.9）は K-226 の一覧（detailRows）が受け持つ
+  const k226 = detailRows(["目的", "完了の条件", "実施事項"]);
+  const have = new Set([...k60, ...k226].map((r) => `（${r.role}）「${r.name}」`));
   expect([...banded, ...completing].filter((x) => !have.has(x))).toEqual([]);
 });
 row(R["K63-UI-026"], async (page) => {

@@ -6,6 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
+import { TICKET, executedBand, mockApi } from "../features/F5/approve-complete.harness";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -162,6 +163,23 @@ async function verifyApi(page: Page, verify: "hold" | "expired" | "used" | "none
 }
 const withToken = (path: string) => `${path}${path.includes("?") ? "&" : "?"}token=${VERIFY_TOKEN}`;
 
+/** チケットの詳細の小窓（K-229・キャンバス StApproveModal・StCompleteModal・StReturnModal）：口を差し替えてチケットを開き、
+ *  帯（region「承認と実行」）のボタンで小窓を開き、題が出るまで待つ */
+/** 完了の小窓の実施事項：キャンバス StCompleteModal と同じ 5 つ（済み 4・残り 1） */
+const CANVAS_TODO = [
+  "- [x] 新着から条件に合う案件を選ぶ（3 件 → 1 件）",
+  "- [x] 案件の要件と予算を読む",
+  "- [x] 応募文を作る（過去の採用文 3 件を参考）",
+  "- [x] 確認を通す",
+  "- 発注ナビの画面から応募する（承認のあと）",
+].join("\n");
+async function openBandModal(page: Page, path: string, button: string, title: string, done = false): Promise<void> {
+  await (done ? mockApi(page, { ...executedBand, todo: CANVAS_TODO }) : mockApi(page));
+  await page.goto(path.replace("{ticket}", TICKET));
+  await page.getByRole("region", { name: "承認と実行" }).getByRole("button", { name: button, exact: true }).click();
+  await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
+}
+
 /** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
 async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
@@ -207,6 +225,73 @@ async function localBridgeOtherAccount(route: Route): Promise<void> {
       }),
     });
   return route.fulfill({ status: 404, headers: cors, body: "" });
+}
+
+/** チケットの詳細（K-226・キャンバス TicketDetail）：外枠の口に、承認待ちのチケット 1 件と実行 1 件・承認の中身を足す（キャンバスと同じ人とデータ） */
+const DETAIL_ID = "0193c5a0-0000-7000-8000-00000000d226";
+const DETAIL_APPROVAL = "0193c5a0-0000-7000-8000-0000000ad226";
+async function detailApi(page: Page): Promise<string> {
+  await shellApi(page, 2);
+  const json = (route: Route, data: unknown, meta: Record<string, unknown> = {}) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ data, meta }) });
+  await page.route(`**/api/v1/tickets/${DETAIL_ID}`, (route) =>
+    json(route, {
+      ticket: {
+        id: DETAIL_ID,
+        number: "EG-128",
+        title: "セイコー様へ 11月分の請求書を送る",
+        scope_id: "22222222-0000-4000-8000-000000000001",
+        created_at: "2026-10-30T08:44:00Z",
+        start_on: "2026-10-30",
+        due_on: "2026-11-01",
+        priority: "mid",
+      },
+      sections: [
+        {
+          key: "purpose",
+          label: "目的",
+          body: { text: "セイコー様に 11 月分の保守費を請求し、11/30 までに入金してもらう。" },
+          version: 3,
+        },
+        { key: "done", label: "完了の条件", body: { text: "金額が見積の月額と一致している" }, version: 3 },
+        {
+          key: "todo",
+          label: "実施事項",
+          body: { text: "見積 EG-097 の月額を確かめる\n請求書 PDF を作る" },
+          version: 3,
+        },
+      ],
+      kind: { id: "k1", name: "タスク", color: "#186F69" },
+      stage: { id: "s1", key: "awaiting_approval", name: "承認待ち" },
+      assignee: { id: ME, display_name: "高本" },
+      approval: { id: DETAIL_APPROVAL, can_decide: true, irreversible: true, note: null, approver_name: "高本" },
+      can: { complete: false, delegate: false },
+      completed: null,
+    }),
+  );
+  await page.route(`**/api/v1/tickets/${DETAIL_ID}/runs`, (route) =>
+    json(
+      route,
+      [
+        {
+          id: "0193c5a0-0000-7000-8000-0000000ed226",
+          ticket_id: DETAIL_ID,
+          phase: "make",
+          status: "done",
+          by: { member_id: ME, display_name: "高本" },
+          pc: "live",
+          silent: false,
+          progress: null,
+          stopped_reason: null,
+          started_at: "2026-11-01T00:00:00Z",
+          finished_at: "2026-11-01T00:12:00Z",
+          checks: { state: "none" },
+        },
+      ],
+      { limit: 50 },
+    ),
+  );
+  return DETAIL_ID;
 }
 
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
@@ -302,6 +387,23 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
     await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
+  },
+  // チケットの詳細（K-226・キャンバス TicketDetail）：承認待ちのチケットを開き、題名と右のパネルが描かれるまで待つ
+  "ticket-detail": async (page, path) => {
+    const id = await detailApi(page);
+    await page.goto(path.replace("{ticket}", id));
+    await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
+    await expect(page.locator('.k-detail-meta [data-part="stage"]')).toHaveText("承認待ち");
+  },
+  // 承認と完了の小窓（K-229）：承認待ち・帯の「承認して送る」／実行が終わった作業中・「完了にする」／承認待ち・帯の「差し戻す」
+  "approve-modal": async (page, path) => {
+    await openBandModal(page, path, "承認して送る", "承認して送ります");
+  },
+  "complete-modal": async (page, path) => {
+    await openBandModal(page, path, "完了にする", "完了にする", true);
+  },
+  "return-modal": async (page, path) => {
+    await openBandModal(page, path, "差し戻す", "差し戻す");
   },
   "shell-tabs": async (page, path) => {
     await shellApi(page, 9);

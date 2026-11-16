@@ -22,6 +22,7 @@ import {
   reasonOf,
   openReturn,
 } from "./approve-complete.harness.js";
+import { approveVia } from "../../k/approve-modal";
 
 // ---- 承認待ち（/approvals）----
 row(R["K63-UI-000"], async (page) => {
@@ -62,7 +63,7 @@ row(R["K63-UI-006"], async (page) => {
   });
   await openReturn(page);
   await reasonBox(page).fill("宛名を直してください");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(dialog(page)).toHaveCount(0);
   expect(m.returns).toEqual([{ id: A_OPEN, body: { note: "宛名を直してください" } }]);
   await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(0);
@@ -73,7 +74,7 @@ row(R["K63-UI-007"], async (page) => {
   await openReturn(page);
   for (const v of ["", "　　"]) {
     await reasonBox(page).fill(v);
-    await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
     await expect.poll(() => reasonOf(page)).toContain(MSG.reasonEmpty);
   }
   expect(m.returns).toHaveLength(0);
@@ -122,7 +123,7 @@ row(R["K63-UI-010"], async (page) => {
   await expect(page.getByRole("heading", { level: 1, name: /承認待ち/ })).toBeVisible();
   await openReturn(page);
   await expect(reasonBox(page)).toHaveValue("書きかけの理由");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect.poll(() => m.returns.length).toBe(1);
   await openReturn(page);
   await expect(reasonBox(page)).toHaveValue("");
@@ -167,7 +168,7 @@ row(R["K63-UI-024"], async (page) => {
   });
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
   await reasonBox(page).fill("宛名を直してください");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect.poll(() => m.returns.length).toBe(1);
   expect(m.returns[0]).toEqual({ id: A_OPEN, body: { note: "宛名を直してください" } });
   await expect(dialog(page)).toHaveCount(0);
@@ -214,7 +215,7 @@ row(R["K63-UI-043"], async (page) => {
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "queued", pc: "live" } }) },
   });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toHaveCount(0);
@@ -232,7 +233,7 @@ row(R["K63-UI-043"], async (page) => {
     status: 200,
     body: { data: ticketOf({ stage: "running", run: { phase: "execute", status: "queued", pc: "live" } }) },
   });
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect(dialog(page)).toHaveCount(0);
   await expect(bandOf(page).getByRole("button", { name: "差し戻す" })).toHaveCount(0);
@@ -242,7 +243,7 @@ row(R["K63-UI-055"], async (page) => {
   await openQueue(page);
   await openReturn(page);
   await reasonBox(page).fill("宛名を直してください");
-  const b = page.getByRole("button", { name: "差し戻して作り直させる" });
+  const b = page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true });
   const release = m.hold();
   await b.click();
   await expect.poll(() => m.returns.length).toBe(1);
@@ -264,7 +265,7 @@ row(R["K63-UI-056"], async (page) => {
   });
   await openReturn(page);
   await reasonBox(page).fill("宛名を直してください");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: MSG.decided })).toBeVisible();
   await expect(dialog(page)).toHaveCount(0);
   await expect.poll(() => m.queueReads).toBeGreaterThan(before);
@@ -281,7 +282,7 @@ row(R["K63-UI-057"], async (page) => {
   });
   await openReturn(page);
   await reasonBox(page).fill("宛名を直してください");
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: MSG.gone })).toBeVisible();
   await expect(dialog(page)).toHaveCount(0);
   await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(0);
