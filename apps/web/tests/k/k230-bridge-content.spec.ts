@@ -623,6 +623,7 @@ test("K230-UI-022 待っている → つながっている：小窓は自分で
       .filter({ hasText: /^つながっています/ })
       .first(),
   ).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "メニュー", exact: true })).toContainText("PC つながっている");
 });
 
 test("K230-UI-023 「あとで」で閉じた後：一覧を読み直しても（6 秒進めても）小窓は自分で開き直さない。開くのは画面を開いた最初の 1 回と「＋ PC をつなぐ」だけ", async ({
@@ -670,12 +671,14 @@ test("K230-UI-025 超えそうなとき（つながっている）：キャン�
     expect(await seenOpacity(el), "先祖まで掛けた薄さ（二重にしない）").toBeCloseTo(0.55, 2);
     expect(await el.getAttribute("tabindex")).toBe("-1");
   }
-  const before = await sw.getAttribute("aria-checked");
+  // 値が無いので「切」の形（aria-checked=false・つまみは左）で出し、押しても変わらない
+  await expect(sw).toHaveAttribute("aria-checked", "false");
   await sw.click({ force: true });
-  expect(await sw.getAttribute("aria-checked")).toBe(before);
+  await expect(sw).toHaveAttribute("aria-checked", "false");
   await pick.click({ force: true });
   await expect(page.getByRole("listbox")).toHaveCount(0);
   await expect(card).not.toContainText("満ちるまで待つ");
+  expect((await pick.innerText()).replace(/\s|▾/g, ""), "選ぶ欄に値の字を出さない").toBe("");
 });
 
 test("K230-UI-026 見出しの行（幅 375）：戻る・見出しの行と説明の行の縦の間はキャンバスの 10px", async ({ page }) => {
@@ -693,7 +696,7 @@ test("K230-UI-027 比べ方の y_from：幅 767 以下は y を y_from の箱の
   page,
 }) => {
   const html = (bar: number) =>
-    `<div style="height:${bar}px"></div><section id="b" style="padding:10px"><p id="t" style="margin:0;height:20px">x</p></section>`;
+    `<style>body{margin:0}</style><div style="height:${bar}px"></div><section id="b" style="padding:10px"><p id="t" style="margin:0;height:20px">x</p></section>`;
   const pair = {
     name: "試し",
     role: "h1",
@@ -707,6 +710,10 @@ test("K230-UI-027 比べ方の y_from：幅 767 以下は y を y_from の箱の
   expect((await readVals(page, [pair], "app"))[0]!["y"]).toBe("10px");
   await page.setContent(html(0));
   expect((await readVals(page, [pair], "canvas"))[0]!["y"]).toBe("10px");
+  // 境の 767 は引く・768 は引かない
+  await page.setViewportSize({ width: 767, height: 600 });
+  await page.setContent(html(48));
+  expect((await readVals(page, [pair], "app"))[0]!["y"]).toBe("10px");
   await page.setViewportSize({ width: 768, height: 600 });
   await page.setContent(html(48));
   expect((await readVals(page, [pair], "app"))[0]!["y"]).toBe("58px");
