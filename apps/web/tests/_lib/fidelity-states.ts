@@ -64,7 +64,8 @@ async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promi
         ],
       );
     else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST")
-      r = { status: 201, body: { data: { code: "KQ7M2X", expires_at: "2099-01-01T00:00:00Z" } } };
+      // 期限は近い未来（今から 10 分）。遠い未来は画面の待ち（setTimeout）の上限を越えてすぐ取り直しになる
+      r = { status: 201, body: { data: { code: "KQ7M2X", expires_at: new Date(Date.now() + 600_000).toISOString() } } };
     else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
     else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
     else if (p === "/api/v1/tickets" && req.method() === "GET")

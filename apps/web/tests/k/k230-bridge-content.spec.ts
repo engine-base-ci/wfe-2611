@@ -48,11 +48,13 @@ interface Mock {
   codes: number;
   devices: DevState[];
   installed: boolean;
+  /** 受け取りの口の答え（既定 200・ファイル） */
+  downloadStatus: number;
 }
 const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ status: 200, body: { data, meta } });
 
 async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
-  const m: Mock = { downloads: [], codes: 0, devices: [], installed: false, ...o };
+  const m: Mock = { downloads: [], codes: 0, devices: [], installed: false, downloadStatus: 200, ...o };
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   await page.route(/127\.0\.0\.1:38617/, async (route, req) => {
     if (!m.installed) return route.abort("connectionrefused");
@@ -97,6 +99,12 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
       const d = /^\/api\/v1\/bridge\/releases\/(\w+)\/file$/.exec(p);
       if (d) {
         m.downloads.push(d[1]!);
+        if (m.downloadStatus !== 200)
+          return route.fulfill({
+            status: m.downloadStatus,
+            contentType: "application/json",
+            body: JSON.stringify({ error: "connectivity", code: "E-PAGE-007" }),
+          });
         return route.fulfill({ status: 200, contentType: "application/octet-stream", body: "Kaname-Bridge" });
       }
     }
@@ -133,6 +141,7 @@ test("K230-UI-001 PC が無い・Bridge も無い：つなぐ小窓が開く（�
   expect(Math.round((await pop.boundingBox())!.width)).toBe(580);
   expect(await color(pop, "border-top-left-radius")).toBe("12px");
   expect(await color(pop, "background-color")).toBe(WHITE);
+  expect(Math.round((await pop.boundingBox())!.y), "小窓の型の置き場：上から 60px").toBe(60);
   const title = d.getByRole("heading", { level: 1, name: "PC をつなぐ" });
   await expect(title).toBeVisible();
   expect(await title.evaluate((e) => getComputedStyle(e).fontSize)).toBe("15px");
@@ -146,7 +155,7 @@ test("K230-UI-001 PC が無い・Bridge も無い：つなぐ小窓が開く（�
   const headBox = (await head.boundingBox())!;
   expect(subBox.y + subBox.height, "補足は頭の中（題の下）").toBeLessThanOrEqual(headBox.y + headBox.height);
   await page.setViewportSize({ width: 375, height: 1000 });
-  expect(Math.round((await pop.boundingBox())!.width), "幅 375 は左右 16px の内側").toBe(343);
+  expect(Math.round((await pop.boundingBox())!.width), "幅 375 は小窓の型どおり画面の幅 − 48").toBe(327);
 });
 
 test("K230-UI-002 3 段：丸の番号（26px・円）。2 段目は紺の「2」・3 段目は灰の地の「3」。受け取りを始めると 1 段目は緑の ✓。題は 600、段の間に線 #EDF0F4", async ({
@@ -720,4 +729,35 @@ test("K230-UI-027 比べ方の y_from：幅 767 以下は y を y_from の箱の
   await page.setViewportSize({ width: 375, height: 600 });
   const noWhy = { ...pair, y_from: { max_width: 767, canvas: "#b", app: "#b" } } as FidelityPair;
   await expect(readVals(page, [noWhy], "app")).rejects.toThrow(/why/);
+});
+
+test("K230-UI-028 「あとで」で閉じた後：閉じている間はコードの口を呼ばず（12 分進めても増えない）、コードは消える。「＋ PC をつなぐ」で開き直すと口を 1 回呼んで新しいコードが出る", async ({
+  page,
+}) => {
+  const m = await mockApi(page);
+  await page.clock.install();
+  await open(page);
+  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  await page.locator(".k-dialog-actions").getByRole("button", { name: "あとで" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(page.getByTestId("pairing-code")).toHaveCount(0);
+  const closed = m.codes;
+  await page.clock.fastForward(12 * 60_000);
+  expect(m.codes, "閉じている間はコードを作らない").toBe(closed);
+  await page.locator(BODY).getByRole("button", { name: "＋ PC をつなぐ" }).click();
+  await expect(dialog(page).getByTestId("pairing-code")).toHaveText(CODE_RE);
+  await expect.poll(() => m.codes).toBe(closed + 1);
+});
+
+test("K230-UI-029 受け取りに失敗（口が 503・E-PAGE-007）：1 段目の丸は ✓ にならず「1」のまま、小窓の中に「読み込めませんでした」", async ({
+  page,
+}) => {
+  const m = await mockApi(page, { downloadStatus: 503 });
+  await open(page);
+  const step1 = dialog(page).locator(".k-steps > li").first();
+  await step1.getByRole("button", { name: "Mac 用を受け取る" }).click();
+  await expect.poll(() => m.downloads).toEqual(["mac"]);
+  await expect(dialog(page).getByText(/読み込めませんでした/)).toBeVisible();
+  await expect(step1.locator(".k-step-dot")).toHaveText("1");
+  expect(await color(step1.locator(".k-step-dot"), "background-color")).not.toBe(GREEN);
 });
