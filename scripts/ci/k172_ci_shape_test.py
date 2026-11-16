@@ -228,7 +228,8 @@ class WebCleanup(unittest.TestCase):
     def test_K172_CI_012_web_cleans_up_and_no_shared_tmp(self):
         self.assertNotIn("/tmp/", WF_TEXT, "回の間の物は $RUNNER_TEMP に置く")
         web = JOBS["web"]
-        self.assertIn("group", web.get("concurrency") or {}, "web の組は同時に 1 つ")
+        # web の組は組ごとに使い捨ての VM で走るので、回をまたいで同時に走ってよい（同時に 1 つだけの決まりは K-258 で外した。形は k258_web_defer_test.py の K258-CI-003）
+        self.assertNotIn("concurrency", web)
         stop = [s for s in steps("web") if "kill" in str(s.get("run", ""))]
         self.assertEqual(len(stop), 1)
         self.assertEqual(stop[0].get("if"), "always()")
