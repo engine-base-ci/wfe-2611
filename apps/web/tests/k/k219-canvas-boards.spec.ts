@@ -50,13 +50,17 @@ for (const id of NEW_GROUPS) {
       browser,
     }) => {
       expect(g, `組 ${id} が無い`).toBeTruthy();
-      const page = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+      const context = await browser.newContext({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+      // いちばん外の網：頁の差し替え（routeCanvasFonts）が受けずに落ちてきた手元でない要求を数えて止める（K238-VF-002 と同じ形。
+      // 差し替えて返した書体の要求も page の request には出るので、page.on("request") では数えない）
       const outside: string[] = [];
-      page.on("request", (r) => {
-        const u = new URL(r.url());
-        if (!["file:", "data:"].includes(u.protocol) && !["127.0.0.1", "localhost"].includes(u.hostname))
-          outside.push(r.url());
+      await context.route("**/*", async (route) => {
+        const u = new URL(route.request().url());
+        if (["127.0.0.1", "localhost"].includes(u.hostname)) return route.continue();
+        outside.push(route.request().url());
+        return route.abort();
       });
+      const page = await context.newPage();
       await routeCanvasFonts(page);
       await page.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
       for (const p of g!.pairs) await page.locator(p.canvas).first().waitFor({ state: "visible" });
@@ -80,7 +84,7 @@ for (const id of NEW_GROUPS) {
       });
       expect(bad, bad.join("\n")).toEqual([]);
       expect(outside).toEqual([]);
-      await page.close();
+      await context.close();
     });
   }
 }

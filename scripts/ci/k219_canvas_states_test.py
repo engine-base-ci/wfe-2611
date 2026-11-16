@@ -10,6 +10,7 @@ K219-CV-011（代表が絵を見て OK と言う）は人の確かめ（チケ�
 from __future__ import annotations
 
 import html
+import html.parser
 import json
 import os
 import pathlib
@@ -53,6 +54,9 @@ NEW = {
                 ["いま決めるものはありません"]),
     "MePCInstalled": ("MePC", "me", "bridge-setup", "bridge-installed", "page", "/setup/bridge", "K-230", ["この PC の Bridge"]),
 }
+EXTRA = ["UiDisabled", "OnHomeLater"]  # 表の 13 枚のほかに作り手が新しく描く絵（使えない形の見本・「あとで」の絵）
+OPACITY = r"opacity:\s*0?\.55"
+DISABLED_KINDS = {"button": "ボタン", "select": "選ぶ欄", "search": "探す欄", "menuitem": "メニューの項目", "tab": "見え方のタブ"}
 KIND_WIDTHS = {"doc": [1440, 375], "auth-msg": [1440, 375], "band": [1440, 375], "dialog": [1440, 375], "page": [1440, 375]}
 
 
@@ -68,6 +72,58 @@ def head_of(tid: str) -> dict:
     m = re.match(r"^---\n(.*?)\n---\n", (TICKETS / f"{tid}.md").read_text(encoding="utf-8"), re.S)
     assert m, f"{tid} に頭が無い"
     return yaml.safe_load(m.group(1))
+
+
+def review_sections(text: str) -> dict[str, tuple[str, str]]:
+    """比べる 1 枚の区画：data-board → (区画の始まりのタグ, 次の data-board の区画までの中身)。区画の中の入れ子の section で切れない"""
+    starts = list(re.finditer(r'<section[^>]*data-board="([^"]+)"[^>]*>', text))
+    out: dict[str, tuple[str, str]] = {}
+    for i, m in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(text)
+        out[m.group(1)] = (m.group(0), text[m.end():end])
+    return out
+
+
+class KindParts(html.parser.HTMLParser):
+    """data-kind の区画ごとに、押せる部品（button・select・input[type=search]・role=menuitem・role=tab）の
+    使える形（aria-disabled が無い）と使えない形（aria-disabled="true"）を数える"""
+
+    VOID = {"input", "br", "img", "hr", "meta", "link", "source", "wbr", "col", "area", "base", "embed", "param", "track"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.stack: list[tuple[str, str | None]] = []
+        self.found: dict[str, dict[str, int]] = {}
+
+    def _kind(self) -> str | None:
+        for _tag, k in reversed(self.stack):
+            if k:
+                return k
+        return None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        a = {k: (v or "") for k, v in attrs}
+        kind = self._kind() if "data-kind" not in a else a["data-kind"]
+        part = {"button": "button", "select": "select"}.get(tag)
+        if tag == "input" and a.get("type") == "search":
+            part = "search"
+        if a.get("role") in ("menuitem", "tab"):
+            part = a["role"]
+        if kind and part == kind:
+            c = self.found.setdefault(kind, {"usable": 0, "disabled": 0})
+            if a.get("aria-disabled") == "true":
+                if re.search(OPACITY, a.get("style", "")):
+                    c["disabled"] += 1
+            elif "aria-disabled" not in a and "disabled" not in a:
+                c["usable"] += 1
+        if tag not in self.VOID:
+            self.stack.append((tag, a.get("data-kind")))
+
+    def handle_endtag(self, tag: str) -> None:
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i][0] == tag:
+                del self.stack[i:]
+                return
 
 
 def groups() -> dict[str, dict]:
@@ -140,27 +196,27 @@ class FidelityTest(unittest.TestCase):
             self.assertTrue(ids <= have, f"{owner} の canvas に {sorted(ids - have)} が無い")
 
     def test_K219_CV_010_board_values(self) -> None:
-        """K219-CV-010 新しい絵 13 枚は正本に無い色・書体・角丸・文字の大きさを使わない（design_gate の D1〜D4 が 0 件）"""
-        files = [str(CANVAS / f"{n}.dc.html") for n in NEW]
+        """K219-CV-010 新しい絵 15 枚（表の 13 枚と UiDisabled・OnHomeLater）は正本に無い色・書体・角丸・文字の大きさを使わない（design_gate の D1〜D4 が 0 件）"""
+        names = [*NEW, *EXTRA]
+        files = [str(CANVAS / f"{n}.dc.html") for n in names]
         r = subprocess.run([sys.executable, "scripts/ci/design_gate.py", "--design", "04_design/DESIGN-kaname.md",
                             "--mocks", *files, "--part", "--json"], cwd=ROOT, capture_output=True, text=True,
                            env=clean_env(), timeout=120)
         out = json.loads(r.stdout)
         for k in ("D1_色_正本に無い", "D2_書体_正本に無い", "D3_角丸_段に無い", "D4_文字_段に無い"):
             self.assertEqual(out[k], {}, k)
-        self.assertEqual(out["files"], len(NEW))
+        self.assertEqual(out["files"], len(names))
 
 
 class ReviewTest(unittest.TestCase):
     def test_K219_CV_008_review_sheet(self) -> None:
         """K219-CV-008 比べる 1 枚：13 枚それぞれに data-board と data-ref の区画・「違い：」の行・2 つの絵を指す iframe"""
         text = REVIEW.read_text(encoding="utf-8")
-        sections = dict(re.findall(r'<section[^>]*data-board="([^"]+)"[^>]*>(.*?)</section>', text, re.S))
+        sections = review_sections(text)
         for name, (ref, *_rest) in NEW.items():
             self.assertIn(name, sections, f"{name} の区画が無い")
-            m = re.search(rf'<section[^>]*data-board="{name}"[^>]*>', text)
-            self.assertIn(f'data-ref="{ref}"', m.group(0), name)
-            body = sections[name]
+            start, body = sections[name]
+            self.assertIn(f'data-ref="{ref}"', start, name)
             self.assertIn("違い：", body, name)
             self.assertRegex(body, rf'<iframe[^>]+src="[^"]*canvas/{name}\.dc\.html"', name)
             self.assertRegex(body, rf'<iframe[^>]+src="[^"]*canvas/{ref}\.dc\.html"', name)
@@ -168,8 +224,8 @@ class ReviewTest(unittest.TestCase):
 
 class DisabledSampleTest(unittest.TestCase):
     def test_K219_CV_012_disabled_sample(self) -> None:
-        """K219-CV-012 使えない状態（グレー）の見本の絵 UiDisabled：canvas.json（page on）と対応表の共通に在り、押せない部品 5 種以上が
-        aria-disabled と不透明度 0.55 で描かれ、比べる 1 枚に区画が在る（D-145.9）"""
+        """K219-CV-012 使えない状態（グレー）の見本の絵 UiDisabled：canvas.json（page on）と対応表の共通に在り、5 種（button・select・search・
+        menuitem・tab）の区画それぞれに使える形と使えない形（aria-disabled と不透明度 0.55）が 1 つ以上ずつ在り、比べる 1 枚に区画が在る（D-145.9）"""
         name = "UiDisabled"
         body = (CANVAS / f"{name}.dc.html").read_text(encoding="utf-8")
         self.assertEqual(load(BOARDS_JSON)["boards"].get(f"{name}.dc.html", {}).get("page"), "on")
@@ -179,9 +235,14 @@ class DisabledSampleTest(unittest.TestCase):
         disabled = re.findall(r'<[^>]*aria-disabled="true"[^>]*>', body)
         self.assertGreaterEqual(len(disabled), 5, "押せない部品が 5 つ未満")
         for tag in disabled:
-            self.assertRegex(tag, r"opacity:\s*0\.55", f"不透明度 0.55 でない：{tag[:80]}")
-        for kind in ("ボタン", "選ぶ欄", "探す欄", "メニューの項目", "見え方のタブ"):
-            self.assertIn(kind, body, f"見本に {kind} が無い")
+            self.assertRegex(tag, OPACITY, f"不透明度 0.55 でない：{tag[:80]}")
+        parts = KindParts()
+        parts.feed(body)
+        for kind, label in DISABLED_KINDS.items():
+            self.assertIn(label, html.unescape(body), f"見本に {label} が無い")
+            got = parts.found.get(kind, {"usable": 0, "disabled": 0})
+            self.assertGreaterEqual(got["usable"], 1, f"{label}（data-kind={kind}）に使える形が無い")
+            self.assertGreaterEqual(got["disabled"], 1, f"{label}（data-kind={kind}）に使えない形（aria-disabled と 0.55）が無い")
         review = REVIEW.read_text(encoding="utf-8")
         self.assertRegex(review, r'<section[^>]*data-board="UiDisabled"')
 
@@ -189,7 +250,7 @@ class DisabledSampleTest(unittest.TestCase):
 class LaterBoardTest(unittest.TestCase):
     def test_K219_CV_013_later_board(self) -> None:
         """K219-CV-013 「はじめにやること」に「あとで」を置いた絵 OnHomeLater：canvas.json（page on）と screens.tickets だけに在り、
-        数は「0 ／ 2」・「あとで」は 1 つで「預ける」と同じ行・パスキーの行は使えない形・比べる 1 枚に区画（D-145.14・D-145.15）"""
+        数は「0 ／ 2」・進みの棒は 0%・「あとで」は 1 つで「預ける」と同じ行・パスキーの行は使えない形で ✓ と取り消し線が無い・比べる 1 枚に区画（D-145.14・D-145.15）"""
         name = "OnHomeLater"
         body = html.unescape((CANVAS / f"{name}.dc.html").read_text(encoding="utf-8"))
         self.assertEqual(load(BOARDS_JSON)["boards"].get(f"{name}.dc.html", {}).get("page"), "on")
@@ -210,11 +271,20 @@ class LaterBoardTest(unittest.TestCase):
         self.assertNotIn("あとで", pc.group(1), "PC をつなぐに「あとで」がある")
         passkey = re.findall(r'<[^>]*aria-disabled="true"[^>]*>[^<]*(?:<[^>]*>[^<]*){0,6}パスキーを付ける', body)
         self.assertTrue(passkey, "パスキーを付けるの行が使えない形でない")
-        self.assertRegex(passkey[0], r"opacity:\s*0\.55")
+        self.assertRegex(passkey[0], OPACITY)
+        box = re.search(r"はじめにやること(.*?)PC をつなぐ", body, re.S)
+        self.assertIsNotNone(box, "はじめにやることの箱が無い")
+        self.assertNotIn("✓", box.group(1), "パスキーの行に ✓ がある")
+        self.assertNotIn("line-through", box.group(1), "パスキーの行に取り消し線がある")
+        bar = re.search(r"0 ／ 2(.*?)パスキーを付ける", body, re.S)
+        self.assertIsNotNone(bar)
+        widths = re.findall(r"(?<![-\w])width:\s*(\d+(?:\.\d+)?)%", bar.group(1))
+        self.assertIn("0", widths, "進みの棒の幅が 0% でない")
+        self.assertEqual([w for w in widths if float(w) != 0], [], f"進みの棒に 0% のほかの幅：{widths}")
         review = REVIEW.read_text(encoding="utf-8")
-        m = re.search(r'<section[^>]*data-board="OnHomeLater"[^>]*>', review)
+        m = review_sections(review).get("OnHomeLater")
         self.assertIsNotNone(m, "比べる 1 枚に区画が無い")
-        self.assertIn('data-ref="OnHome"', m.group(0))
+        self.assertIn('data-ref="OnHome"', m[0])
 
 
 # K219-CV-011 は人の確かめ（judge-skip）。代表の OK は 01_hearing/decider-answers.jsonl の答えの記録で PM が決める
