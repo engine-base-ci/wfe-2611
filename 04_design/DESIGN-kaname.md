@@ -272,6 +272,28 @@ components:
   auth-spin:            # 確かめ中・読み込み中の回る印：16px
     width: "16px"
     height: "16px"
+  # ログインの画面だけの形（K-221・キャンバス AuthLogin・Auth2FA の実測。features/F1/login/login.css が読む）
+  auth-card-login:      # ログインの箱の幅（登録は 440・ログインは 420）
+    width: "420px"
+  auth-sep:             # 区切り「またはメールとパスワード」：11px・灰・400・字と線の間 10px
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label-md}"
+    fontWeight: 400
+    gap: "10px"
+  auth-sep-line:        # 区切りの字の左右の線
+    borderTop: "1px solid {colors.line-soft}"
+  auth-code-row:        # 確認のコードの 6 つの枠の並び：間 10px・上下 1px（キャンバスの枠は線が外に付くので行の高さを 54 にそろえる）
+    gap: "10px"
+    padding: "1px 0"
+  auth-code:            # 確認のコードの枠：44×52・線 1px line・角丸 field・20px・700
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    typography: "{typography.h1}"
+    fontWeight: 700
+    width: "44px"
+    height: "52px"
+  auth-alt-col:         # 確認のコードの下の段（認証アプリが使えない・注）：縦に間 6px
+    gap: "6px"
   # 小窓（StModal：頭は題と右上の ×・下に線、足は上に線とボタン）
   dialog:
     backgroundColor: "{colors.card}"

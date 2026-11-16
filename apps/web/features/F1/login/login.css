@@ -1,9 +1,10 @@
 /* ログインの画面（K-221・キャンバス AuthLogin・Auth2FA）。入口の枠（features/F1/sign-up/sign-up.css）の上に、ログインだけの形を足す。
-   値は --k-*（生の色・文字の大きさ・角丸を書かない）。入口の枠のファイルは触らない */
+   値は正本の部品（DESIGN-kaname.md の auth-card-login・auth-sep・auth-sep-line・auth-code-row・auth-code・auth-alt-col）の --k-c-* と --k-* だけを読む。
+   入口の枠のファイルは触らない */
 
 /* 箱の幅はログインだけ 420（キャンバス。登録は 440） */
 .k-auth-card:has(> form[data-auth="login"]) {
-  width: 420px;
+  width: var(--k-c-auth-card-login-width);
 }
 
 /* パスキーの説明：主ボタンのすぐ下に寄せる（キャンバスの margin-top −6） */
@@ -21,16 +22,17 @@
 .k-login-sep {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: var(--k-text-label-md);
-  color: var(--k-on-surface-variant);
+  gap: var(--k-c-auth-sep-gap);
+  font-size: var(--k-c-auth-sep-text);
+  font-weight: var(--k-c-auth-sep-fw);
+  color: var(--k-c-auth-sep-fg);
 }
 .k-login-sep-line {
   flex: 1;
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-auth-sep-line-border-top);
 }
 
-/* 目に見える項目名の無い 2 つの欄（キャンバス）。項目名は読み上げだけに残し、欄は箱の段の間 14 で並べる */
+/* 目に見える項目名の無い 2 つの欄（キャンバス）。項目名は読み上げだけに残し、欄は箱の段の間で並べる */
 .k-login-bare {
   display: contents;
 }
@@ -58,14 +60,17 @@
   font-size: var(--k-text-body-sm);
 }
 
-/* 確認のコードの下の段（キャンバス Auth2FA：線の下に縦に 2 つ・間 6） */
+/* 確認のコードの下の段（キャンバス Auth2FA：線の下に縦に 2 つ） */
 .k-login-alt-col {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--k-c-auth-alt-col-gap);
 }
+/* 「認証アプリが使えない」：行の中の文字のボタン（キャンバスではリンク）。文の行と同じ扱いなので、的の最小の高さ（globals.css）は掛けない */
 .k-login-textbtn {
   align-self: center;
+  min-height: 0;
+  min-width: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -74,41 +79,35 @@
   color: var(--k-primary);
   text-decoration: underline;
   cursor: pointer;
-  /* 押せる的は 24px（globals.css）のまま、段の中の場所は 1 行ぶん（キャンバスのリンクの高さ）だけ取る */
-  margin-block: calc((1em * var(--k-lh-body) - 24px) / 2);
 }
 .k-login-muted {
   color: var(--k-on-surface-variant);
 }
 
-/* 6 つの枠：44×52・線・角丸 8・20px・700。地は透明（キャンバスの span）。
-   幅が足りないときはキャンバスの span と同じく縮む（min-width 0）。入力欄の 767 以下の 16px の決まりは掛けない（.k-input を使わない） */
+/* 6 つの枠。地は透明（キャンバスの span）。幅が足りないときはキャンバスの span と同じく縮む（min-width 0）。
+   入力欄の 767 以下の 16px の決まりは掛けない（.k-input を使わない）。フォーカスの輪は k-root の :focus-visible */
 .k-login-code {
   display: flex;
   justify-content: center;
-  /* キャンバスの枠は線が外に付き 46 幅で間 8。こちらは線を含めて 44 なので、間を 10 にして並びの幅（約 316）をそろえる */
-  gap: 10px;
-  /* キャンバスの枠は線が外に付く（content-box で 52 + 線 2）。行の高さをそれにそろえ、下の段の位置を合わせる */
-  padding-block: 1px;
+  gap: var(--k-c-auth-code-row-gap);
+  padding: var(--k-c-auth-code-row-pad);
 }
 .k-login-code-box {
   box-sizing: border-box;
   flex: 0 1 auto;
   min-width: 0;
-  width: 44px;
-  height: 52px;
+  width: var(--k-c-auth-code-width);
+  height: var(--k-c-auth-code-height);
   padding: 0;
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-field);
+  border: var(--k-c-auth-code-border);
+  border-radius: var(--k-c-auth-code-radius);
   background: transparent;
   color: var(--k-on-surface);
   font: inherit;
-  font-size: var(--k-text-h1);
-  font-weight: var(--k-fw-h1);
+  font-size: var(--k-c-auth-code-text);
+  font-weight: var(--k-c-auth-code-fw);
   text-align: center;
 }
 .k-login-code-box:focus {
-  outline: none;
   border-color: var(--k-primary);
-  box-shadow: 0 0 0 2px var(--k-primary-container);
 }
