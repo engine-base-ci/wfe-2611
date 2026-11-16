@@ -36,13 +36,13 @@ SHELLFIX = ROOT / "04_design" / "canvas_gen" / "shellfix.py"
 
 # 絵: (近い絵, page, 画面, 組の id, 種類, 画面の道, 持ち主, 出す文)
 NEW = {
-    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "verify-confirming", "doc", "/verify-email", "K-222",
+    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "verify-confirming", "doc", "/verify-email", "K-256",
                       ["確認しています", "登録を確定しています…"]),
-    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "verify-expired", "auth-msg", "/verify-email", "K-222",
+    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "verify-expired", "auth-msg", "/verify-email", "K-256",
                           ["リンクの期限が切れました"]),
-    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "verify-used", "auth-msg", "/verify-email", "K-222",
+    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "verify-used", "auth-msg", "/verify-email", "K-256",
                        ["登録は終わっています"]),
-    "AuthConsent": ("AuthVerify", "auth", "login", "consent-terms", "auth-msg", "/login?step=terms", "K-222",
+    "AuthConsent": ("AuthVerify", "auth", "login", "consent-terms", "auth-msg", "/login?step=terms", "K-256",
                     ["利用規約とプライバシーポリシーが新しくなりました", "同意"]),
     "AuthChecking": ("AuthSignup", "auth", "signup", "signup-checking", "doc", "/signup", "K-255", ["確かめています"]),
     "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "signup-waiting-loading", "doc", "/verify-email", "K-255",
