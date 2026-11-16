@@ -785,12 +785,14 @@ test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」�
   const calls2 = await countCalls(page2);
   const release2 = await holdNext(page2);
   try {
-    await mockAuth(page2, { twoFactor: true });
+    const m2 = await mockAuth(page2, { twoFactor: true });
+    // 前半のログインの印は同じ context で共有されるので、後半は別の印にしてそれを待つ
+    m2.on.verify = () => ({ status: 200, body: { data: { token: "tok-k221-2fa" } } });
     await open(page2);
     await toTwoFactor(page2);
     await digit(page2, 1).click();
     await page2.keyboard.type("482913", { delay: 30 });
-    await expect.poll(() => page2.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe("tok-k221");
+    await expect.poll(() => page2.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe("tok-k221-2fa");
     await nextFrame(page2);
     await nextFrame(page2);
     const enter = page2.locator(BOX).getByRole("button", { name: "入る", exact: true });
