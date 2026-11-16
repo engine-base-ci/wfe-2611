@@ -10086,7 +10086,6 @@
     "apps/web/components/k/button.tsx",
     "apps/web/components/k/field.tsx",
     "apps/web/components/k/dialog.tsx",
-    "apps/web/components/k/states.tsx",
     "apps/web/app/(dev)/dev/k/design/page.tsx",
     "scripts/ci/design_gate.py",
     "design-gate.json",
