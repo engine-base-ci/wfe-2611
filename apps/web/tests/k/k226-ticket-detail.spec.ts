@@ -302,7 +302,8 @@ test("K226-UI-009 本文の道具の帯：14 個がキャンバスの順に並�
   expect(await cssOf(bar, "padding-left")).toBe("20px");
   expect(await cssOf(bar, "padding-right")).toBe("20px");
   expect(await cssOf(bar, "position")).toBe("sticky");
-  expect(await cssOf(bar, "top")).toBe("0px");
+  // 貼り付く位置：幅 768 以上は外枠の上の帯（48px・上に貼り付く）の下。帯の下に隠れない（レビューの指摘）
+  expect(await cssOf(bar, "top")).toBe("48px");
   for (const name of DOC_TOOLS) {
     const b = bar.getByRole("button", { name, exact: true });
     await expect(b, name).toHaveAttribute("aria-disabled", "true");
@@ -312,6 +313,10 @@ test("K226-UI-009 本文の道具の帯：14 個がキャンバスの順に並�
     expect(await b.evaluate((e) => e.scrollWidth <= e.clientWidth), `${name} の字があふれない`).toBe(true);
     expect(await opacityOf(b), name).toBeCloseTo(DISABLED_OPACITY, 3);
   }
+  // 幅 767 以下は外枠が上の帯を出さない（K-138）ので、画面の上の端（0）に貼り付く
+  await page.setViewportSize({ width: 375, height: 1000 });
+  expect(await cssOf(bar, "top")).toBe("0px");
+  expect(await cssOf(bar, "position")).toBe("sticky");
 });
 
 test("K226-UI-010 区画の見出し h2：16px・700・下に 1px #DDE2E9・下の余白 6px。2 つめの見出しは前の本文から 28px 下", async ({
@@ -614,6 +619,38 @@ test("K226-UI-029 右のパネルの「パネルを閉じる」：押すとパ�
   await expect(panel(page)).toBeVisible();
   expect(Math.round((await box(panel(page))).width)).toBe(380);
   expect(writes.n).toBe(0);
+});
+
+test("K226-UI-031 パネルを閉じるとキーボードの場所が「パネルを開く」に移り、開く（Enter）と「パネルを閉じる」に戻る", async ({
+  page,
+}) => {
+  await open(page);
+  await panel(page).getByRole("button", { name: "パネルを閉じる" }).click();
+  const reopen = page.locator(".k-detail").getByRole("button", { name: "パネルを開く" });
+  await expect(reopen).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(panel(page)).toBeVisible();
+  await expect(panel(page).getByRole("button", { name: "パネルを閉じる" })).toBeFocused();
+});
+
+test("K226-UI-032 「実行の記録」の小窓は右から出る板（キャンバス TdRunLog）：右の端に寄せて幅 540・上から下まで画面いっぱい。幅 375 は画面の幅", async ({
+  page,
+}) => {
+  for (const w of [1440, 375]) {
+    await open(page, { stage: "doing" }, {}, w, [run({})]);
+    await panel(page).getByRole("button", { name: "実行の記録をすべて見る" }).click();
+    const dlg = page.getByRole("dialog", { name: "実行の記録" });
+    await expect(dlg).toBeVisible();
+    const b = await box(dlg);
+    const vp = page.viewportSize()!;
+    expect(Math.round(b.width), `幅 ${w}`).toBe(Math.min(540, vp.width));
+    expect(Math.round(b.x + b.width), `幅 ${w} の右の端`).toBe(vp.width);
+    expect(Math.round(b.y), `幅 ${w} の上の端`).toBe(0);
+    expect(Math.round(b.height), `幅 ${w} の高さ`).toBe(vp.height);
+    await page.keyboard.press("Escape");
+    await expect(dlg).toHaveCount(0);
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+  }
 });
 
 fidelityConfigTest(
