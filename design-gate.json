@@ -89,6 +89,20 @@
       "selector": ".k-callout[data-tone=\"danger\"]",
       "shape": ".k-callout"
     },
+    "doc-toolbar": ".k-doc-tools",
+    "doc-tool": ".k-doc-tools button",
+    "detail-card": ".k-detail-card",
+    "detail-meta": ".k-detail-meta",
+    "detail-meta-side": ".k-detail-meta-side",
+    "detail-kind": ".k-detail-kind",
+    "detail-stage": ".k-detail-stage",
+    "detail-head": ".k-detail-card > .k-page-head",
+    "detail-title": ".k-detail-card > .k-page-head h1",
+    "detail-doc": ".k-detail-doc",
+    "detail-doc-toolbar": ".k-detail-card .k-doc-tools",
+    "detail-links-title": ".k-detail-links h2",
+    "detail-panel": ".k-detail-panel",
+    "detail-panel-title": ".k-detail-panel h2",
     "create-head": ".k-create-head",
     "create-how": {
       "selector": ".k-create-how > span",
@@ -139,7 +153,26 @@
       "shape": ".k-btn"
     },
     "approvals-empty-title": ".k-ap-body .k-state-title",
-    "approvals-empty-body": ".k-ap-body .k-state-body"
+    "approvals-empty-body": ".k-ap-body .k-state-body",
+    "shell-bar": ".k-bar",
+    "detail-body": ".k-detail > .k-page",
+    "detail-copy": ".k-detail-copy",
+    "detail-acts": ".k-detail-card > .k-page-head .k-page-acts",
+    "detail-act": ".k-detail-card > .k-page-head .k-page-acts .k-btn",
+    "detail-more": ".k-detail-card > .k-page-head .k-page-acts .k-detail-more",
+    "detail-bands": ".k-detail-bands:not(:empty)",
+    "detail-links-head": ".k-detail-links-head",
+    "detail-link": ".k-detail-link",
+    "detail-panel-close": ".k-detail-panel-close",
+    "detail-tabs": ".k-detail-tabs",
+    "detail-tab": ".k-detail-tabs button",
+    "detail-panel-sec": ".k-detail-panel-sec",
+    "detail-fields": ".k-detail-fields",
+    "detail-who": ".k-detail-who",
+    "detail-avatar": ".k-detail-avatar",
+    "run-band": ".k62-band",
+    "run-sheet": ".k62-run-sheet",
+    "run-chip": ".k62-run-chip"
   },
   "component_exempt": [
     {
@@ -217,6 +250,38 @@
     {
       "part": "create-aside-max",
       "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "doc-tool-min",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 最小の幅（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-body-basis",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-title-basis",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-reopen",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis）と上の余白 で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-panel-close-at",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 位置（top・right） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-fields-label",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は grid の列の幅（grid-template-columns） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-due",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 最小の幅（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "detail-rule",
+      "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10
