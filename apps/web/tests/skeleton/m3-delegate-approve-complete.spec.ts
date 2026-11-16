@@ -424,7 +424,7 @@ test("K64-M3-05 2 つのタブで承認：後のタブは「もう処理され�
   await expect(approveBtn(tabB)).toBeVisible();
   await approveOnBand(page);
   const late = decided(tabB, "approve");
-  await approveBtn(tabB).click();
+  await approveVia(tabB, approveBtn(tabB)); // 後のタブも確かめの小窓を通す（K-229・D-143.4）
   expect((await late).status(), "後のタブの承認は 409").toBe(409);
   await expect(tabB.getByRole("alert").filter({ hasText: MSG.decided }), "後のタブに 409 の知らせ").toBeVisible();
   await expect(approveBtn(tabB), "B の帯は読み直して今の状態に替わる").toHaveCount(0);
