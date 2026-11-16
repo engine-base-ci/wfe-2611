@@ -1,19 +1,126 @@
 {
-  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則で、変種の規則を上に重ねて比べる・K-218）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
+  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
   "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
-  "allow_colors": [{ "value": "#2A3444", "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない" }],
+  "allow_colors": [
+    {
+      "value": "#2A3444",
+      "reason": "状態タブの帯はモック専用の治具。実装の画面には出ない"
+    }
+  ],
   "allow_sizes": [],
   "component_selectors": {
-    "button-primary": { "selector": ".k-btn[data-variant=\"primary\"]", "shape": ".k-btn" },
-    "button-primary-lg": { "selector": ".k-btn[data-size=\"lg\"]", "shape": ".k-btn" },
-    "button-outlined": { "selector": ".k-btn[data-variant=\"outlined\"]", "shape": ".k-btn" },
+    "button-primary": {
+      "selector": ".k-btn[data-variant=\"primary\"]",
+      "shape": ".k-btn"
+    },
+    "button-primary-lg": {
+      "selector": ".k-btn[data-size=\"lg\"]",
+      "shape": [".k-btn", ".k-btn[data-variant=\"primary\"]"]
+    },
+    "button-outlined": {
+      "selector": ".k-btn[data-variant=\"outlined\"]",
+      "shape": ".k-btn"
+    },
     "input": ".k-input",
-    "input-lg": { "selector": ".k-field[data-size=\"lg\"] .k-input", "shape": ".k-input" },
+    "input-lg": {
+      "selector": ".k-field[data-size=\"lg\"] .k-input",
+      "shape": ".k-input"
+    },
     "label": ".k-label",
-    "label-lg": { "selector": ".k-field[data-size=\"lg\"] .k-label", "shape": ".k-label" },
+    "label-lg": {
+      "selector": ".k-field[data-size=\"lg\"] .k-label",
+      "shape": ".k-label"
+    },
     "dialog": ".k-dialog",
     "dialog-title": ".k-dialog-title",
-    "state-empty": ".k-state[data-state=\"empty\"]"
+    "state-empty": ".k-state[data-state=\"empty\"]",
+    "button-secondary": {
+      "selector": ".k-btn[data-variant=\"secondary\"]",
+      "shape": ".k-btn"
+    },
+    "button-inverted": {
+      "selector": ".k-btn[data-variant=\"inverted\"]",
+      "shape": ".k-btn"
+    },
+    "button-disabled": ".k-btn:disabled",
+    "input-disabled": ".k-input:disabled",
+    "tab-disabled": ".k-tab[data-disabled]",
+    "field": ".k-field",
+    "field-lg": {
+      "selector": ".k-field[data-size=\"lg\"]",
+      "shape": ".k-field"
+    },
+    "dialog-head": ".k-dialog-head",
+    "dialog-body": ".k-dialog-body",
+    "dialog-actions": ".k-dialog-actions",
+    "dialog-close": ".k-dialog-close",
+    "page-head-button": ".k-page-head .k-btn:not([data-size=\"sm\"])",
+    "callout-info": {
+      "selector": ".k-callout[data-tone=\"info\"]",
+      "shape": ".k-callout"
+    },
+    "callout-warn": {
+      "selector": ".k-callout[data-tone=\"warn\"]",
+      "shape": ".k-callout"
+    },
+    "callout-danger": {
+      "selector": ".k-callout[data-tone=\"danger\"]",
+      "shape": ".k-callout"
+    }
   },
+  "component_exempt": [
+    {
+      "part": "card",
+      "reason": "components/k にカードの部品のクラスがまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "chat-bubble-me",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-bubble-ai",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-composer",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-work-line",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "chat-chip",
+      "reason": "会話の部品は components/ai（agent-chat.tsx・panel.tsx）にあり、components/k の規則ではない。components/k へ移す時はまだ決まっていない"
+    },
+    {
+      "part": "code-block",
+      "reason": "components/k に規則がまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "kbd",
+      "reason": "components/k に規則がまだ無い。作る時はまだ決まっていない"
+    },
+    {
+      "part": "page-head",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "page-body",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-title",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-body",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    },
+    {
+      "part": "section-list",
+      "reason": "ページの型の部品（components/k/page.css）。規則は在るが、線を下だけ（border-bottom）に当てるなど正本の書き方と性質の名前が揃っていない。比べ方を揃える時はまだ決まっていない"
+    }
+  ],
   "max_type_sizes": 10
 }

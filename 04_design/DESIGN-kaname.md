@@ -221,6 +221,10 @@ components:
     rounded: "{rounded.field}"
     height: "42px"
     padding: "0 12px"
+  field:                # 項目名と欄の組（作業の画面：間 xs＝4px・Create）
+    gap: "{spacing.xs}"
+  field-lg:             # 入口の画面の組（間 6px・AuthSignup）
+    gap: "6px"
   label:                # 項目名（作業の画面：太さを付けない・灰・欄との間 xs）
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
@@ -236,6 +240,24 @@ components:
   dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）
     typography: "{typography.h3}"
     fontWeight: 700
+  dialog-head:          # 頭：題と右上の ×・下に線
+    padding: "14px 18px"
+    borderBottom: "1px solid {colors.line}"
+  dialog-body:
+    padding: "14px 18px"
+  dialog-actions:       # 足：上に線・右寄せのボタン
+    padding: "12px 18px"
+    borderTop: "1px solid {colors.line}"
+  dialog-close:         # 右上の ×（名前「閉じる」）。取り消せない確かめ（Confirm）には付けない
+    width: "28px"
+    height: "28px"
+  # 使えない状態（決める人 answer=78cb822fc1f1：隠さず、薄くして押せない形で出す）。キャンバスに絵が無いので今の実装の値を写した
+  button-disabled:
+    opacity: 0.55
+  input-disabled:
+    opacity: 0.55
+  tab-disabled:
+    opacity: 0.55
   # 空のとき（OnHome・OnClients・OnKnowledge・OnRoom：白地の点線の箱・中央寄せ）
   state-empty:
     backgroundColor: "{colors.card}"
@@ -647,7 +669,7 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 白いカードに 説明（12px）・数（18px・太字）・補足（11px）。気にかけてほしい数だけ `st-warning`／`st-danger` の字の色。
 
 ### 小窓・引き出し・ポップオーバー
-小窓は真ん中（幅 520〜620・白地・角丸 `lg`）。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
+小窓は真ん中（幅 520〜620・白地・角丸 `lg`）。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
 
 ### 帯（お知らせ・確かめ・運営）
 - 注意：`warning-soft` の地 ＋ `warning-line` の線 ＋ 札

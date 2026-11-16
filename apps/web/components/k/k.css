@@ -57,7 +57,7 @@
 }
 .k-btn:disabled,
 .k-btn[aria-disabled="true"] {
-  opacity: 0.55;
+  opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
 }
 .k-btn[data-variant="primary"] {
@@ -133,11 +133,11 @@
 .k-field {
   display: flex;
   flex-direction: column;
-  gap: var(--k-s-xs);
+  gap: var(--k-c-field-gap);
   min-width: 0;
 }
 .k-field[data-size="lg"] {
-  gap: 6px;
+  gap: var(--k-c-field-lg-gap);
 }
 /* 項目名（K-218）：作業の画面は太さを付けない灰の字、入口は 500 の黒い字 */
 .k-label {
@@ -206,7 +206,7 @@
   border-color: var(--k-error);
 }
 .k-input:disabled {
-  opacity: 0.55;
+  opacity: var(--k-c-input-disabled-opacity);
   cursor: not-allowed;
 }
 /* パスワードの見る・隠す（D-087）。ボタンは欄の右の中に置き、的は 32px（24px 以上） */
@@ -390,7 +390,7 @@ textarea.k-input {
   font-weight: var(--k-fw-h3);
 }
 .k-tab[data-disabled] {
-  opacity: 0.55;
+  opacity: var(--k-c-tab-disabled-opacity);
   cursor: not-allowed;
 }
 .k-tab-panel {
@@ -474,13 +474,13 @@ textarea.k-input {
   border-radius: var(--k-c-dialog-radius);
   outline: 0;
 }
-/* 頭（StModal）：題と右上の ×・下に線。本文と足は左右 18px */
 .k-dialog-head {
+  /* 頭（StModal）：題と右上の ×・下に線。本文と足は左右 18px */
   display: flex;
   align-items: center;
   gap: var(--k-s-sm);
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--k-line);
+  padding: var(--k-c-dialog-head-pad);
+  border-bottom: var(--k-c-dialog-head-border-bottom);
 }
 .k-dialog-title {
   margin: 0;
@@ -493,8 +493,8 @@ textarea.k-input {
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: var(--k-c-dialog-close-width);
+  height: var(--k-c-dialog-close-height);
   margin-left: auto;
   padding: 0;
   border: 0;
@@ -508,7 +508,7 @@ textarea.k-input {
   background: var(--k-surface-variant);
 }
 .k-dialog-body {
-  padding: 14px 18px;
+  padding: var(--k-c-dialog-body-pad);
 }
 .k-dialog-body:empty {
   display: none;
@@ -522,8 +522,8 @@ textarea.k-input {
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: var(--k-s-sm);
-  padding: 12px 18px;
-  border-top: 1px solid var(--k-line);
+  padding: var(--k-c-dialog-actions-pad);
+  border-top: var(--k-c-dialog-actions-border-top);
 }
 
 /* ---- 見た目の切り替え（システム・明るい・暗い・D-128.55）---- */

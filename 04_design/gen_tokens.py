@@ -91,7 +91,9 @@ COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "ro
              # ページの型（K-217）：部品の高さ・外の余白・行の高さ。行の高さは書体の段より部品の値が勝つ
              "height": "height", "margin": "margin", "lineHeight": "lh",
              # 部品の太さと中の間（K-218）。太さは書体の段より部品の値が勝つ
-             "fontWeight": "fw", "gap": "gap"}
+             "fontWeight": "fw", "gap": "gap",
+             # 小窓の頭・足の線、× の大きさ、使えない状態（K-218）
+             "borderTop": "border-top", "borderBottom": "border-bottom", "width": "width", "opacity": "opacity"}
 
 
 def ref(v: str) -> str:

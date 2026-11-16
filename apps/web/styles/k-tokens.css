@@ -177,6 +177,8 @@
   --k-c-input-lg-radius: var(--k-r-field);
   --k-c-input-lg-height: 42px;
   --k-c-input-lg-pad: 0 12px;
+  --k-c-field-gap: var(--k-s-xs);
+  --k-c-field-lg-gap: 6px;
   --k-c-label-fg: var(--k-on-surface-variant);
   --k-c-label-text: var(--k-text-body-sm);
   --k-c-label-lh: var(--k-lh-body-sm);
@@ -190,6 +192,16 @@
   --k-c-dialog-title-text: var(--k-text-h3);
   --k-c-dialog-title-lh: var(--k-lh-h3);
   --k-c-dialog-title-fw: 700;
+  --k-c-dialog-head-pad: 14px 18px;
+  --k-c-dialog-head-border-bottom: 1px solid var(--k-line);
+  --k-c-dialog-body-pad: 14px 18px;
+  --k-c-dialog-actions-pad: 12px 18px;
+  --k-c-dialog-actions-border-top: 1px solid var(--k-line);
+  --k-c-dialog-close-width: 28px;
+  --k-c-dialog-close-height: 28px;
+  --k-c-button-disabled-opacity: 0.55;
+  --k-c-input-disabled-opacity: 0.55;
+  --k-c-tab-disabled-opacity: 0.55;
   --k-c-state-empty-bg: var(--k-card);
   --k-c-state-empty-border: 1px dashed var(--k-line-strong);
   --k-c-state-empty-radius: var(--k-r-lg);

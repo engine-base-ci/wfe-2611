@@ -102,11 +102,12 @@ def resolve(val: str, vars_: dict, depth: int = 0) -> str:
 
 
 # ---- D5：部品の定義 ⇔ CSS の規則（K-218）----
-# 比べる値：CSS の性質 → 正本の部品の鍵。background と background-color、height と min-height は同じ値として比べる
-D5_PROPS = {
-    "background": "backgroundColor", "background-color": "backgroundColor", "color": "textColor",
-    "border": "border", "border-radius": "rounded", "padding": "padding", "height": "height",
-    "min-height": "height", "font-weight": "fontWeight", "font-size": "typography",
+# 比べる値：正本の部品の鍵 → CSS の性質（同じ値の書き方が 2 つあるものは、規則に在る方を比べる）
+D5_KEYS = {
+    "backgroundColor": ("background-color", "background"), "textColor": ("color",), "border": ("border",),
+    "borderTop": ("border-top",), "borderBottom": ("border-bottom",), "rounded": ("border-radius",),
+    "padding": ("padding",), "height": ("min-height", "height"), "width": ("width",),
+    "fontWeight": ("font-weight",), "typography": ("font-size",), "gap": ("gap",), "opacity": ("opacity",),
 }
 REF = re.compile(r"\{(\w+)\.([\w-]+)\}")
 
@@ -176,10 +177,12 @@ def src_value(src: dict, spec_val, key: str) -> str | None:
     return None if REF.search(out) else out
 
 
-def check_components(src: dict, cfg: dict, files: list[Path], vars_: dict) -> tuple[list[str], int, int, int]:
-    """戻り：赤の行・部品の数・比べた値の数・セレクタの無い部品の数"""
+def check_components(src: dict, cfg: dict, files: list[Path], vars_: dict) -> tuple[list[str], dict[str, int], int]:
+    """戻り：赤の行・部品ごとの比べた値の数・訳で外した部品の数。
+    正本の部品にある値が規則に無ければ赤（CSS に無い）。セレクタも訳（component_exempt）も無い部品は赤"""
     comps = src.get("components") or {}
     sels = cfg.get("component_selectors") or {}
+    exempt = {x.get("part"): str(x.get("reason") or "").strip() for x in cfg.get("component_exempt", [])}
     rules = [r for f in files for r in rules_of(css_of(f))]
 
     def decls_for(sel: str) -> dict[str, str] | None:
@@ -190,10 +193,12 @@ def check_components(src: dict, cfg: dict, files: list[Path], vars_: dict) -> tu
                 got.update(d)
         return got if hit else None
 
-    bad, compared = [], 0
+    bad: list[str] = []
+    by_part: dict[str, int] = {}
     for name, conf in sels.items():
         sel = conf.get("selector") if isinstance(conf, dict) else conf
-        shape = conf.get("shape") if isinstance(conf, dict) else None
+        shapes = conf.get("shape", []) if isinstance(conf, dict) else []
+        shapes = [shapes] if isinstance(shapes, str) else list(shapes)
         spec = comps.get(name)
         if spec is None:
             bad.append(f"D5 {name} 正本の components に無い（design-gate.json の component_selectors を直す）")
@@ -202,21 +207,35 @@ def check_components(src: dict, cfg: dict, files: list[Path], vars_: dict) -> tu
         if own is None:
             bad.append(f"D5 {name} セレクタ {sel} の規則が CSS に無い")
             continue
-        merged = {**((decls_for(shape) or {}) if shape else {}), **own}
-        for prop, key in D5_PROPS.items():
-            if prop not in merged or key not in spec:
+        merged: dict[str, str] = {}
+        for sh in shapes:
+            merged.update(decls_for(sh) or {})
+        merged.update(own)
+        n = 0
+        for key, props in D5_KEYS.items():
+            if key not in spec:
                 continue
-            if prop in ("background", "height") and (
-                    ("background-color" if prop == "background" else "min-height") in merged):
-                continue                                   # 同じ値の 2 つの書き方は片方だけ比べる
             want = src_value(src, spec[key], key)
             if want is None:
                 continue
+            n += 1
+            prop = next((p for p in props if p in merged), None)
+            if prop is None:
+                bad.append(f"D5 {name} {props[0]} CSS に無い（正本 {want}）")
+                continue
             have = resolve(merged[prop], vars_)
-            compared += 1
             if norm_val(want) != norm_val(have):
                 bad.append(f"D5 {name} {prop} 正本 {want} ／ CSS {have}")
-    return bad, len(sels), compared, len([c for c in comps if c not in sels])
+        by_part[name] = n
+    for name in comps:
+        if name in sels:
+            continue
+        if not exempt.get(name):
+            bad.append(f"D5 {name} セレクタも訳も無い（design-gate.json の component_selectors か component_exempt に書く）")
+    for name in exempt:
+        if name not in comps or name in sels:
+            bad.append(f"D5 {name} 訳があるのに正本の部品に無い・セレクタと重なる（component_exempt を直す）")
+    return bad, by_part, len([c for c in comps if c not in sels])
 
 
 SKIP_DIRS = {"node_modules", ".next", ".turbo", "dist", "build", "coverage", "test-results", "playwright-report"}
@@ -323,9 +342,12 @@ def main() -> int:
             if fonts and first not in fonts and first not in ("inherit", "ui-monospace"):
                 bad_f.setdefault(first, set()).add(f.name)
 
-    d5_bad, d5_parts, d5_compared, d5_free = [], 0, 0, 0
+    d5_bad: list[str] = []
+    d5_by_part: dict[str, int] = {}
+    d5_free = 0
     if not a.no_components and cfg.get("component_selectors"):
-        d5_bad, d5_parts, d5_compared, d5_free = check_components(src, cfg, files, vars_)
+        d5_bad, d5_by_part, d5_free = check_components(src, cfg, files, vars_)
+    d5_parts, d5_compared = len(d5_by_part), sum(d5_by_part.values())
     scale_unused: list[str] = []
     type_sizes: set[str] = set()
     max_sizes = int(cfg.get("max_type_sizes", 10))
@@ -354,13 +376,14 @@ def main() -> int:
                 if not isinstance(res[k], str))
     if a.json:
         print(json.dumps({"files": len(files), "fails": fails, "d5_parts": d5_parts, "d5_compared": d5_compared,
+                          "d5_by_part": d5_by_part,
                           **res}, ensure_ascii=False, indent=2))
     else:
         print(f"画面 {len(files)} 枚 / 正本 {Path(a.design).name}")
         for k, v in res.items():
             if isinstance(v, str):
                 print(f"  {k}: {v}"); continue
-            extra = f"  (部品 {d5_parts} 個・比べた値 {d5_compared} 個・セレクタの無い部品 {d5_free} 個)" \
+            extra = f"  (部品 {d5_parts} 個・比べた値 {d5_compared} 個・訳で外した部品 {d5_free} 個)" \
                 if k == "D5_部品" else ""
             print(f"  {k}: {len(v)} 件{extra}" + (f"  {list(v)[:8]}" if v and k != "D5_部品" else ""))
             if k == "D5_部品":

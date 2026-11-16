@@ -17,6 +17,9 @@ export default function KDesignPage() {
         style={{ display: "flex", flexWrap: "wrap", gap: "var(--k-s-sm)", alignItems: "center" }}
       >
         <Button data-testid="btn-md">作る</Button>
+        <Button data-testid="btn-disabled" disabled>
+          送る
+        </Button>
         <Button data-testid="btn-lg" size="lg">
           次へ
         </Button>
