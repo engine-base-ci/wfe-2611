@@ -37,6 +37,8 @@
     "auth-page": ".k-auth",
     "auth-logo": ".k-auth-logo",
     "auth-card": ".k-auth-card",
+    "auth-card-wide": ".k-auth[data-wide] .k-auth-card",
+    "legal-body": ".k-auth-card .k-legal",
     "auth-lead-sub": ".k-auth-lead[data-kind=\"sub\"]",
     "auth-lead-body": ".k-auth-lead[data-kind=\"body\"]",
     "auth-badge": ".k-auth-badge",
