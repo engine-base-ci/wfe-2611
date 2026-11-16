@@ -273,7 +273,7 @@ class Boards(unittest.TestCase):
 
     def test_K257_CV_008_sidefiles_kept(self):
         """K257-CV-008 作り手を設定ごと流し直しても（K257_NO_SIDEFILES なし）、持ち主が後から直した物は戻らない：写しの木で
-        組 return-modal・approvals-empty を enrolled: true に、bridge-code の「足のボタン（あとで）」の画面の側のセレクタを替え、canvas.json の StFailed・StApproveModal の題を替えてから
+        組 return-modal・approvals-empty を enrolled: true に、bridge-code の「足のボタン（あとで）」の画面の側のセレクタを替え、canvas.json の ApEmpty（k219.py の絵）・StApproveModal（k257.py の絵）の題を替えてから
         k257.py と k219.py を流しても、fidelity.json・canvas.json・canvas-screens.json・見比べの 1 枚 K-257.html・K-219.html は 1 字も変わらない（組と絵の置き場は無いときだけ足す）。
         k257.py の後は、どの絵も 1 字も変わらない"""
         with tempfile.TemporaryDirectory() as d:
@@ -292,7 +292,7 @@ class Boards(unittest.TestCase):
             fp.write_text(json.dumps(f, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
             cp = t / "04_design" / "canvas" / "canvas.json"
             c = json.loads(cp.read_text(encoding="utf-8"))
-            for k in ("StFailed.dc.html", "StApproveModal.dc.html"):
+            for k in ("ApEmpty.dc.html", "StApproveModal.dc.html"):
                 c["boards"][k] = {**c["boards"][k], "title": "持ち主が直した題"}
             cp.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
             files = ["04_design/fidelity.json", "04_design/canvas/canvas.json", "04_design/canvas-screens.json",
