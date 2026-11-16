@@ -253,7 +253,9 @@ test("K251-UI-013 読み込み中：帯とタブはすぐ出て、文言は 3 �
   page,
 }) => {
   const slow = gate();
-  await page.clock.install();
+  // 時計を止めてから開く（実時間で流れると、遅い台では 3 秒の境目の前に時間が進んで揺れる）。時間は runFor だけで進める
+  await page.clock.install({ time: new Date("2026-11-04T08:00:00+09:00") });
+  await page.clock.pauseAt(new Date("2026-11-04T08:00:01+09:00"));
   await mockList(page, {
     list: async () => {
       await slow.wait;
@@ -263,6 +265,7 @@ test("K251-UI-013 読み込み中：帯とタブはすぐ出て、文言は 3 �
   await open(page);
   await expect(head(page).locator("h1")).toHaveText("チケット");
   await expect(views(page)).toBeVisible();
+  await expect(page.locator('[data-state="loading"]')).toHaveCount(1); // 読み込み中の印が付いてから時間を進める
   await page.clock.runFor(2900);
   await expect(page.getByText("読み込んでいます")).toHaveCount(0);
   await page.clock.runFor(200);
