@@ -5,6 +5,9 @@
 //   閉じる手段は頭の × と Esc。足に「閉じる」を重ねて置かない（同じ名前のボタンを 2 つにしない）。
 //   開いたときのフォーカスは本文の最初の欄、無ければ足の最初のボタン、どちらも無ければ小窓そのもの（× には置かない）。
 //   取り消せない確かめ（Confirm）は × を持たない（キャンバスの「承認して送ります」）。閉じるのは足の「やめる」と Esc
+//   置き場と幅（K-229・キャンバス）：上から 60px・左右の真ん中。幅は size（form＝420・confirm＝380。どちらも画面の幅 − 48px まで）。
+//   Confirm は tone（主ボタン primary｜danger）・caution（赤い箱）・children（チェックなど）・confirmDisabled を持つ。
+//   答えを待つ間（busy）は「やめる」も押せず、Esc でも閉じない（2 回目を送らせない）
 import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as D } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
@@ -12,8 +15,14 @@ import { useCallback, useRef, type ReactElement, type ReactNode } from "react";
 import { Button } from "./button";
 
 const CLOSE_LABEL = "閉じる";
-const FIRST_FIELD =
-  ".k-dialog-body input:not([type=hidden]):not(:disabled), .k-dialog-body textarea:not(:disabled), .k-dialog-body select:not(:disabled), .k-dialog-body [role=combobox]";
+// 押せない欄（disabled・aria-disabled="true"）には乗らない（K-229：差し戻しの「どこを直すか」でなく「差し戻す理由」に乗る）
+const USABLE = ":not(:disabled):not([aria-disabled=true])";
+const FIRST_FIELD = [
+  `.k-dialog-body input:not([type=hidden])${USABLE}`,
+  `.k-dialog-body textarea${USABLE}`,
+  `.k-dialog-body select${USABLE}`,
+  `.k-dialog-body [role=combobox]${USABLE}`,
+].join(", ");
 const FIRST_ACTION = ".k-dialog-actions button:not(:disabled), .k-dialog-actions a[href]";
 
 function CloseIcon() {
@@ -30,9 +39,24 @@ export interface DialogProps {
   children?: ReactNode;
   /** 足のボタン（右寄せ・やめる／決める）。無ければ足を出さない */
   actions?: ReactNode;
+  /** 頭の下の対象の行（「EG-133 11 月分の請求書を送る」・12px・灰） */
+  target?: ReactNode;
+  /** 幅：form＝420（既定）・confirm＝380 */
+  size?: DialogSize;
 }
+export type DialogSize = "form" | "confirm";
 
-export function Dialog({ title, description, open, onOpenChange, trigger, children, actions }: DialogProps) {
+export function Dialog({
+  title,
+  description,
+  open,
+  onOpenChange,
+  trigger,
+  children,
+  actions,
+  target,
+  size = "form",
+}: DialogProps) {
   const popupRef = useRef<HTMLDivElement>(null);
   // 最初のフォーカス：本文の最初の欄 → 足の最初のボタン → 小窓そのもの（× に乗せて Enter で閉じないように）
   const firstFocus = useCallback((): HTMLElement | null => {
@@ -45,15 +69,16 @@ export function Dialog({ title, description, open, onOpenChange, trigger, childr
       {trigger ? <D.Trigger render={trigger} /> : null}
       <D.Portal>
         <D.Backdrop className="k-backdrop" />
-        <D.Popup ref={popupRef} className="k-dialog" initialFocus={firstFocus}>
+        <D.Popup ref={popupRef} className="k-dialog" data-size={size} initialFocus={firstFocus}>
           <div className="k-dialog-head">
             <D.Title className="k-dialog-title">{title}</D.Title>
             <D.Close className="k-dialog-close" aria-label={CLOSE_LABEL}>
               <CloseIcon />
             </D.Close>
           </div>
-          {description || children ? (
+          {description || children || target ? (
             <div className="k-dialog-body">
+              {target ? <p className="k-dialog-target">{target}</p> : null}
               {description ? <D.Description className="k-dialog-desc">{description}</D.Description> : null}
               {children}
             </div>
@@ -67,36 +92,84 @@ export function Dialog({ title, description, open, onOpenChange, trigger, childr
 
 export interface ConfirmProps {
   title: ReactNode;
-  description: ReactNode;
+  description?: ReactNode;
   confirmLabel: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  /** 答えを待っている間：主ボタンは処理中・「やめる」も押せず、Esc でも閉じない */
   busy?: boolean;
+  /** 主ボタンの色：danger（既定・消すなど）・primary（承認して送る・K-229） */
+  tone?: "danger" | "primary";
+  /** 取り消せない注意（赤い箱）。1 行ずつ */
+  caution?: readonly string[];
+  /** 本文のチェックなど */
+  children?: ReactNode;
+  /** 主ボタンを押せない（目で見たに印が無い など） */
+  confirmDisabled?: boolean;
 }
-export function Confirm({ title, description, confirmLabel, open, onOpenChange, onConfirm, busy }: ConfirmProps) {
+export function Confirm({
+  title,
+  description,
+  confirmLabel,
+  open,
+  onOpenChange,
+  onConfirm,
+  busy = false,
+  tone = "danger",
+  caution,
+  children,
+  confirmDisabled = false,
+}: ConfirmProps) {
   // 開いたときは取り消しの側（やめる）に動く
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const hasBody = Boolean(description || children || caution?.length);
   return (
-    <AlertDialog.Root open={open} onOpenChange={(o) => onOpenChange(o)}>
+    <AlertDialog.Root
+      open={open}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 答えを待つ間は閉じない
+        onOpenChange(o);
+      }}
+    >
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="k-backdrop" />
-        <AlertDialog.Popup className="k-dialog" initialFocus={cancelRef}>
+        <AlertDialog.Popup className="k-dialog" data-size="confirm" initialFocus={cancelRef}>
           <div className="k-dialog-head">
             <AlertDialog.Title className="k-dialog-title">{title}</AlertDialog.Title>
           </div>
-          <div className="k-dialog-body">
-            <AlertDialog.Description className="k-dialog-desc">{description}</AlertDialog.Description>
-          </div>
+          {hasBody ? (
+            <div className="k-dialog-body">
+              {caution?.length ? (
+                <div className="k-dialog-caution">
+                  {caution.map((c, i) => (
+                    <p key={i}>{c}</p>
+                  ))}
+                </div>
+              ) : null}
+              {description ? (
+                <AlertDialog.Description className="k-dialog-desc">{description}</AlertDialog.Description>
+              ) : null}
+              {children}
+            </div>
+          ) : null}
           <div className="k-dialog-actions">
             <AlertDialog.Close
+              disabled={busy}
               render={
-                <Button ref={cancelRef} variant="outlined">
+                <Button ref={cancelRef} variant="outlined" disabled={busy}>
                   やめる
                 </Button>
               }
             />
-            <Button variant="danger" loading={busy} onClick={onConfirm}>
+            <Button
+              variant={tone}
+              loading={busy}
+              disabled={confirmDisabled}
+              onClick={() => {
+                if (!busy && !confirmDisabled) onConfirm();
+              }}
+            >
               {confirmLabel}
             </Button>
           </div>
