@@ -419,6 +419,7 @@
  "reads_ok": {
   "scripts/ci/k254_canvas_values_test.py": "04_design/canvas の絵・正本 DESIGN-kaname.md・作り手 04_design/canvas_gen・幅の台帳・fidelity.json・v3-gate.yml・ci_scope.json を読み、作り手と値の検査を写し（tempfile）で子プロセスに流す。G71 で spec の組が流す・K-254",
   "apps/web/tests/k/k254-canvas-layout.spec.ts": "04_design/canvas の絵と幅の台帳 scripts/ci/canvas_layout_ledger.json を読む（data_links で絵か台帳が変わると web の組が流す）・K-254",
+  "apps/web/tests/k/k220-bridge-shell.spec.ts": "04_design/fidelity.json（組 bridge-shell のセレクタ）と 04_design/canvas/MePC.dc.html を読む。どちらも 04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-220",
   "apps/web/tests/k/k138-shell.spec.ts": "04_design/fidelity.json・04_design/DESIGN-kaname.md・04_design/canvas と apps/web/features の .ts・.tsx を読む（実ブラウザの試験は web の組が流す）・K-138",
   "apps/web/tests/k/k255-signup-waiting.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵と apps/web/tests/fidelity/fidelity.spec.ts（組の印を道具に渡すか）を読む。どちらも 04_design/** で jobs.web.paths に在る（K-255）",
   "apps/web/tests/k/k219-canvas-boards.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-219）",

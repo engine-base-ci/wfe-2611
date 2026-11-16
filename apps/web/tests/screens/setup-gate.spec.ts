@@ -34,7 +34,8 @@ test("USH-00-017 はじめの設定を 1 つも通していない人は、ログ
   await loginAs(page, u.token);
   await page.goto("/");
   await expect(page).toHaveURL(/\/setup\/bridge$/, { timeout: 15_000 });
-  await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
+  // /setup/bridge の見出しは K-220 から「PC と使った量」。PC が無いときは K-230 のつなぐ小窓の題「PC をつなぐ」が読み上げの h1
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible();
   // 飛ばす出口（あとでやる）は出さない
   await expect(page.getByRole("button", { name: /あとでやる/ })).toHaveCount(0);
 });

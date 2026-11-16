@@ -7,6 +7,7 @@
 //     グループの口は作る面の選択肢と同じ問い合わせ（SCOPES_KEY）で分け合う。失敗したら、その部分を出さないだけ（本文は出す）
 //   本当の値が無い物（グループの件数・知らせの数）は出さない（D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）
 //   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
+//   PC の状態は、画面が自分で PC の一覧を読み続けるとき（PC をつなぐ・K-220）は画面の答えを受け取り、外枠は読まない（口を二重に呼ばない）
 //   右の自分のAIのパネルは出さない（チケットは PC をつないでいなくても作れる・D-127.8）
 import { useQuery, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -52,13 +53,15 @@ export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
 
 export interface TicketShellProps {
   /** いま見ている画面（flow の screen id）。左のメニューの今いる項目になる */
-  screen: "tickets" | "approvals";
+  screen: "tickets" | "approvals" | "bridge-setup";
   /** 上の帯のいまの場所 */
   crumbs: Crumb[];
   /** 左のメニューの数（まとまりの鍵 → 数）。承認待ちの画面は自分で読んだ数を渡す（外枠は二重に読まない） */
   counts?: Partial<Record<string, number>>;
   /** 作るボタンを押したとき（一覧の画面はその場で作る面を開く）。無ければ /tickets?new=1 へ移る。書けるグループが無い人には出さない */
   onCreate?: () => void;
+  /** 画面が読んだ PC の状態（true＝つながっている・null＝まだ読んでいる）。渡されたら外枠は PC の一覧を読まない（K-220） */
+  bridgeConnected?: boolean | null;
   children: ReactNode;
 }
 
@@ -71,7 +74,7 @@ function readTheme(): Theme {
 /** 自分の情報の口の答え（前からある口・会社名の欄は K-253 が足す） */
 type Me = Awaited<ReturnType<typeof me>> & { workspace_name?: string | null };
 
-function useShellData(screen: string, ownCount: boolean) {
+function useShellData(screen: string, ownCount: boolean, ownBridge: boolean) {
   const signedIn = typeof window !== "undefined" && Boolean(getToken());
   const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, ...ONCE });
   const scopes = useQuery({
@@ -92,7 +95,7 @@ function useShellData(screen: string, ownCount: boolean) {
   });
   const devices = useQuery({
     queryKey: ["k138-shell", "devices"],
-    enabled: signedIn,
+    enabled: signedIn && !ownBridge,
     ...ONCE,
     queryFn: async (): Promise<boolean> => {
       const r = await call("listMyDevices", { screenId: screen });
@@ -103,9 +106,10 @@ function useShellData(screen: string, ownCount: boolean) {
   return { who, scopes, waiting, devices };
 }
 
-export function TicketShell({ screen, crumbs, counts, onCreate, children }: TicketShellProps) {
+export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected, children }: TicketShellProps) {
   const ownCount = counts?.["approvals"] !== undefined;
-  const { who, scopes, waiting, devices } = useShellData(screen, ownCount);
+  const ownBridge = bridgeConnected !== undefined;
+  const { who, scopes, waiting, devices } = useShellData(screen, ownCount, ownBridge);
   const mine = who.isSuccess ? (who.data as Me) : null;
   // 役は口が答え、値が分かるときだけ（読み中・失敗・知らない値は役なし＝役の項目を出さない）
   const role = mine?.role_id ? ROLE_OF[mine.role_id] : undefined;
@@ -130,7 +134,7 @@ export function TicketShell({ screen, crumbs, counts, onCreate, children }: Tick
       member={{ name, initial: name.slice(0, 1) }}
       groups={groups}
       badges={badges}
-      bridgeConnected={devices.data === true}
+      bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
       theme={readTheme()}
       {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
       onSignOut={() => {

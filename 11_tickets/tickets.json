@@ -10300,23 +10300,73 @@
   },
   {
    "id": "K-220",
-   "title": "PC をつなぐ（/setup/bridge）を新しい外枠に入れる（左のメニュー・自分の設定の第 2 ナビ・上の帯）",
+   "title": "PC をつなぐ（/setup/bridge）を新しい外枠に入れる（左のメニュー・上の帯・自分の設定の第 2 ナビ・本文の箱と見出しの行）",
    "kind": "課題",
    "stage": "未着手",
    "parent": "K-213",
    "milestone": "段",
    "area": "画面",
-   "assignee": "作る",
-   "due": "",
-   "estimate_hours": "1",
-   "estimate_basis": "実測なし・仮（調べの見積もりから。次の波で切るときに、取り込んだチケットの実測から引き直す）",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "2.5",
+   "estimate_basis": "外枠（K-138 の TicketShell を bridge-setup で使う）・第 2 ナビの部品 1 つと CSS（3 つの幅）・本文の箱と見出しの行・突き合わせの組 1 つと鍵・K-57 の試験と qa-b の見出しの替え。K-217（2.5）と同じと見た。実測なし・仮",
    "decisions": [
-    "D-143.1"
+    "D-143.1",
+    "D-143.2",
+    "D-143.5",
+    "D-144.1",
+    "D-144.3",
+    "D-144.6",
+    "D-144.8",
+    "D-145.9"
    ],
-   "split": "これから",
+   "split": "",
+   "prior_impl": "apps/web/features/F3/connect-pc/connect-pc.tsx（K-57・外枠の無い main.k-root.k-page）",
+   "choke_points": [],
+   "choke_none": "画面の外枠と並べ方だけ。外枠が読む口（自分・グループ・承認待ちの数・PC）は前からある読む口で、PC をつなぐの口（コード・一覧・受け取り）も今のまま。外への出口に触らない",
    "depends_on": [
-    "K-138"
+    "K-57",
+    "K-138",
+    "K-217",
+    "K-215",
+    "K-216",
+    "K-238",
+    "K-254"
    ],
+   "tests": [
+    "apps/web/tests/k/k220-bridge-shell.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/features/F3/connect-pc.spec.ts",
+    "apps/web/tests/k/k217-page-parts.spec.ts",
+    "07_qa/test-specs/k/connect-pc.md",
+    "apps/web/tests/screens/qa-b-bridge-setup.spec.ts",
+    "apps/web/tests/reachability.spec.ts",
+    "apps/web/tests/screens/setup-gate.spec.ts",
+    "apps/web/tests/shell-ops.spec.ts",
+    "apps/web/tests/skeleton/m2-bridge-ticket.spec.ts",
+    "apps/e2e/staging/_lib/steps.ts"
+   ],
+   "changes": [
+    "scripts/ci/ci_scope.json",
+    "07_qa/test-specs/k/connect-pc.md",
+    "apps/web/features/F3/connect-pc/connect-pc.tsx",
+    "apps/web/features/F4/create-ticket/ticket-shell.tsx",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/shell.css",
+    "apps/web/components/k/me-sub.tsx",
+    "apps/web/components/k/me-sub.css",
+    "apps/web/components/k/index.ts",
+    "04_design/fidelity.json",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "scripts/ci/class_ledger.json",
+    "apps/e2e/staging/_lib/steps.ts"
+   ],
+   "affects": [
+    "@kaname/web",
+    "@kaname/e2e"
+   ],
+   "ci_wide": [],
    "screens": [
     "bridge-setup"
    ],
@@ -10324,12 +10374,17 @@
     "bridge-shell"
    ],
    "sections": {
-    "目的": "/setup/bridge は外枠そのものが無く、見出しが画面の左上 (0,0) に付く（実測）。キャンバス（MePC）では、左のメニュー＋自分の設定の第 2 ナビ（プロフィール・ログインと安全・PC と使った量・預けたログイン情報・知らせ）＋上の帯の中にある",
-    "完了の条件": "- [ ] 下の表のずれ 2 件が直り、どれも実ブラウザで値を数で測った（1440・375）\n- [ ] 頭の canvas の組（04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（G70）が組の幅で緑（持ち主が取り込み済みなのに入っていない組は G69 が赤にする）\n- [ ] チケットの CI が緑",
-    "前提と制約": "- まだ切っていない（薄い形）。次の波で切る段が、行の表（8 つの観点）・実装の詳細・試験のコードまで切る\n- 正のモックは頭の canvas（突き合わせの組の id・D-143.5・K-215）。組の絵と状態と要素は 04_design/fidelity.json（K-216）\n- 見込みは実測なし・仮\n- 先に要る最初の波のチケット：K-215・K-216・K-238。最初の波が本線に入るまで本線に無いチケットは depends_on に書けない（親が先に本線へ入るため）ので、切り直すときに depends_on に足す",
-    "持つずれ（調べの番号・2026-11-15）": "| 番号 | 何が | キャンバスでは | 今 | 重さ |\n|---|---|---|---|---|\n| S8 | /setup/bridge の外枠 | 左のメニュー＋第 2 ナビ＋上の帯 | 外枠なし。main.k-root.k-page だけで、h1 が (0,0)（実測） | 重 |\n| P1 | 外枠 | 左のメニュー＋第 2 ナビ（プロフィール・ログインと安全・PC と使った量・預けたログイン情報・知らせ）＋上の帯 | 無い | 重 |",
-    "決定ログ": "- 従う決定：D-143.1",
-    "申し送り": "- 次の波で切る（親 K-213 の「次の波で切る順」）"
+    "目的": "/setup/bridge は外枠そのものが無く、見出しが画面の左上 (0,0) に付く（実測）。キャンバス MePC では、左のメニュー・上の帯（自分の設定 › PC と使った量）・自分の設定の第 2 ナビ（アカウント：プロフィール・ログインと安全／分身：PC と使った量・預けたログイン情報／ワークスペースごと：知らせ）の中に、余白 22px 28px・中身の幅 900 まで（余白はその外側・箱 956）の本文の箱がある（調べの S8・P1）。D-144.6 で、PC をつなぐの画面はこのチケットで新しい外枠に入れる。\n\n本文の中身（PC の一覧・つなぐ小窓・この PC の Bridge）は K-230。",
+    "完了の条件": "- [ ] 下の 17 行（K220-UI-001〜017）が緑\n- [ ] 書く段で替えた K-57 の試験（下の「前からの試験を替えた所」）と、ほかの K-57 の行（connect-pc.spec.ts）が緑\n- [ ] 頭の canvas の組 bridge-shell（MePC の左のメニューと第 2 ナビ）を enrolled にし、キャンバスとの突き合わせ（K220-UI-015・G70）が組の幅（1440）で緑\n- [ ] 幅 320・375・768・1024・1440 の横溢れが 0・見出しの 1 文字目が画面の中（K220-UI-012）。押した結果（移った先）まで実ブラウザで見る（004・005）\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: UI\n\n- 先に要るチケット：K-57（画面・取り込み済み）・K-138（新しい外枠に載せる TicketShell・左のメニュー・上の帯・375 の下のタブ）・K-217（見出しの行と本文の箱の部品）・K-215・K-216・K-238\n- 外枠の並べ方は 1 か所（nav-model ← flow.json）。bridge-setup は左のメニューの項目ではない（自分のメニューの中・flow の me）ので、左のメニューに今いる印は付かない\n- 第 2 ナビの 5 つの行き先：ログインと安全 → /mfa-setup・預けたログイン情報 → /settings/credentials（どちらも作った画面・前の外枠のまま D-144.6）・PC と使った量 → この画面。プロフィール（/account）と知らせはまだ無いので、出すが押せない（D-145.9：aria-disabled・href なし・tabindex -1・正本の使えない状態の薄さ）。預けたログイン情報の件数は本当の数を返す口が無いので出さない（D-144.3 と同じ）\n- 見出しの字はキャンバス MePC どおり「PC と使った量」（キャンバスが正・PM の決め 2026-11-16）。上の帯と第 2 ナビの字も「PC と使った量」。後に入る K-230 のつなぐ小窓の題「PC をつなぐ」も h1 で、小窓が開いている間は読み上げの h1 は小窓の題だけになる\n- 見出しの行は帯にしない（キャンバスの見出しは本文の箱の中の h1 20px と説明 12px の 1 行）。今の画面の「戻る」（?from= のとき）は見出しの行に残す（K-57 の機能）\n- 読み込み中は外枠と見出しを先に出し、文は 3 秒たっても終わらないときだけ（D-144.8）\n- 本人の Bridge（127.0.0.1:38617）に届かせない（試験は網の手前で止める）\n- 試験を書いた後は変えない（D-128.125）",
+    "確かめたこと（切る段・2026-11-16）": "キャンバス MePC（04_design/canvas/MePC.dc.html の inline の style と .kn-sub の決まりを読んだ）：\n\n| 何が | 値 |\n|---|---|\n| 左のメニュー | .kn-nav 216px・#EEF0F4（K-138 の外枠と同じ） |\n| 上の帯 | 48px・白・下の線。いまの場所「自分の設定 › PC と使った量」（自分の設定は #4A5563 のリンク・今いる所は 500） |\n| 第 2 ナビ | aside[aria-label=\"自分の設定の中\"].kn-sub 232px・#EDF0F4・右の線・padding 10px 10px 14px・縦に gap 2。見出し .kn-sub-h 11px・#6B7585。項目 .kn-sub-i 高さ 36・角丸 8・#4a5563・字は .kn-sub-t。今いる項目は白い地・600・影。件数 .kn-sub-n 12px（キャンバスは「5」）。注 .kn-sub-note 11px（一番下）。1023 以下は 64px で字を隠す。767 以下は本文の上の横 1 列（overflow-x auto） |\n| 本文の箱 | section padding 22px 28px・縦に gap 14・max-width 900（box-sizing の指定なし＝content-box：余白は 900 の外側。箱 956・中身 900） |\n| 見出しの行 | h1 20px と説明 12px #4A5563 を横に並べる（flex・gap 10・折り返す）。地・線なし |\n\n今の画面：`<main className=\"k-root k-page\">` の中に header.k-page-head（戻る・h1・説明）と中身。外枠なし・第 2 ナビなし。\n\n外枠の無い画面の頭（このチケットは PC をつなぐの 1 か所だけを外枠に入れる。ほか 2 つは K-138 が外枠に載せた画面の本文の箱）：\n\n```search\ngit grep -n 'className=\"k-root k-page\"' -- apps/web/features\n3\n```\n\nTicketShell を使う所（このチケットで screen に bridge-setup を足し、PC をつなぐでも使う）：\n\n```search\ngit grep -n 'TicketShell' -- apps/web/features\n10\n```\n\n### 前からの試験を替えた所（書く段・2026-11-16）\n\nconnect-pc.spec.ts と 07_qa/test-specs/k/connect-pc.md の持ち主はこのチケット（K-230 は触らない。同じ試験のファイルを 2 本で分け持たない）。外枠を入れると落ちる行と、K-230 のつなぐ小窓（開くと後ろを押せず、後ろが読み上げから外れる）が入っても通るように、書く段で次の所を替えた。このチケットの時点では確かめる数は減らしていない（K57-UI-000 の K-230 の後の範囲は表の訳のとおり）。結果の欄は「BLOCKED（実装待ち）」にし、前の PASS を備考に残した（手で PASS を書かない）。\n\n| 試験の行 | 前の期待 | 新しい期待 | 替えた訳 |\n|---|---|---|---|\n| K57-UI-000 | body の操作要素に表の行がある | 本文（section[aria-labelledby=\"connect-pc-title\"]）の操作要素に表の行がある | 外枠の操作要素（左のメニュー・帯・第 2 ナビ）は外枠の試験（K-138・このチケット）が持つ（前からある外枠に載せた画面は本文だけを見る・tests/_lib/row.ts の scope）。K-230 の後は、PC 無しの状態で小窓が開いて本文が読み上げから外れるので、この行が照らすのは小窓の無い状態の本文になる。小窓の操作要素（閉じる・あとで・Mac 用・Windows 用・新しいコード）は K-230 の行（K230-UI-001〜007）が持つ |\n| K57-UI-008・021 | link「戻る」（読み上げの木で探す） | 本文の中の字が「戻る」のリンク（CSS で探す） | つなぐ小窓（K-230）が開くと後ろが読み上げの木から外れる。戻る先の値は同じく見る |\n| K57-UI-022 | PC 無しで「前の設定の画面」を押す | PC がつながっている状態で押す | PC 無しはつなぐ小窓（K-230）が開き、後ろの導線を押せない |\n| K57 の見出しの道具 heading（K57-UI-004・008・021・022 などが使う） | level 1 の「PC をつなぐ」 | level 1 の「PC と使った量」か「PC をつなぐ」（小窓が開いている間は小窓の題） | 本文の h1 をキャンバスの字に替えた。K-230 の後、PC 無しでは小窓の題が読み上げの h1 になる |\n| qa-b-bridge-setup.spec.ts の 2 か所（手順バーの行・USH-01-057） | 読み上げの見出し（level 1・「PC をつなぐ」） | 読み上げの見出し（level 1・「PC と使った量」か「PC をつなぐ」） | 本文の字を「PC と使った量」に替えたため。この試験を替えるのはこのチケットだけ（K-230 は触らない） |\n| reachability.spec.ts の USH-00-013・setup-gate.spec.ts の USH-00-017（PC 未接続で / から /setup/bridge へ送られた後の見出し） | `locator(\"h1\")` の字が「自分のPCをつなぐ」（前の画面の字。K-57 の「PC をつなぐ」とも合っておらず、前から落ちていた） | 読み上げの見出し（level 1・「PC と使った量」か「PC をつなぐ」） | 本文の見出しを替えるこのチケットが一緒に通す形にした（この 2 本を持つ取り込み前のチケットは無い：reachability は K-53（取り込み済み）・setup-gate は持ち主なし。PM の指示・2026-11-17） |\n| shell-ops.spec.ts の USH-01-042（setupStep 6・PC 無しの人がサイドバーから /setup/bridge を開いた後の見出し） | `locator(\"h1\")` の字が「自分のPCをつ」で始まる（前の画面の字。前から落ちていた。このチケットの後は h1 が 2 つ当たる場面もある） | /setup/bridge の行だけ読み上げの見出し（level 1・「PC と使った量」か「PC をつなぐ」）。/settings/credentials の行（USH-01-043）は今のまま | 同じ類の 3 本目。shell-ops.spec.ts を持つ取り込み前のチケットは無い（K-138 は検索の除外として名前を出しているだけ） |\n| k217-page-parts.spec.ts の K217-UI-017（作る段の CI で見つかった・2026-11-16 に書く段へ戻して替えた） | 本物の画面 /setup/bridge で、見出しの帯（page-head）が箱の幅いっぱいの白い帯・h1 18px 700・帯の左から 24px | 測る画面を承認待ち /approvals に移し、読み終えた形（0 件・いま決めるものはありません・知らせ無し）で、同じ 3 つ（18px・700／白い帯が箱の幅いっぱい／帯の左から 24px）と横溢れ 0 を見る（期待は弱めない） | このチケットで /setup/bridge の見出しは帯にしない行（h1 20px・キャンバス MePC）になり、`.k-root.k-page` の箱も無くなる。行が見たいのは帯の部品の形で、画面は問わない（PM の決め）。page-head を使う本物の画面（/approvals・/tickets・チケットの詳細）はどれも切ったチケットが変えるので、PM が /approvals を選んだ。/setup/bridge の新しい形は K220-UI-009 が見る |\n\n替えた所が残っていない：\n\n```search\ngit grep -n 'getByRole(\"link\", { name: \"戻る\" })' -- apps/web/tests/features/F3\n0\n```\n\n/setup/bridge の見出しを新しい形（level 1・「PC と使った量」か「PC をつなぐ」）で見る所（connect-pc の道具・qa-b の 2 か所・reachability・setup-gate・shell-ops・外枠の後で替えた m2 と staging の steps.ts の 2 か所）：\n\n```search\ngit grep -n -F '/^(PC と使った量|PC をつなぐ)$/' -- apps/web/tests apps/e2e\n8\n```\n\n残る「自分のPCをつなぐ」の期待は、前の画面 /setup/bridge/legacy の試験だけ（bridge-setup.spec.ts の 1 か所・qa-b-bridge-setup.spec.ts の 5 か所。どれも /setup/bridge/legacy を開いて見る）と、下の j02 の 1 か所：\n\n```search\ngit grep -n -F '\"自分のPCをつなぐ\"' -- apps/web/tests apps/e2e\n7\n```\n\napps/e2e/journeys/j02.spec.ts の J02-01 は運ばない（前からある別の場所の問題・起票候補）。見出しを替えても、この行が続けて見る `[data-state='ok']` と `[data-wiz-next-go]`（「次へ：2. 話す」）は前の画面（components/wizard/wizard-layout.tsx・/setup/bridge/legacy）にしか無く、K-57 の後の /setup/bridge では通らない。行全体を今の画面の形（つながった印・次の段への道）で書き直す 1 本が要る。j02 は手元でも staging でも流していない（K-204）ので、このチケットの CI には効かない。\n\n### 外枠（K-138）が本線に入った後で替えた所（切る段が 2026-11-16 に替えた・carry に足した）\n\n前からの試験（m2-bridge-ticket.spec.ts の持ち主は K-58・staging の steps.ts の持ち主は K-65 で、K-138 が carry で運んだ）のうち、見出し「PC をつなぐ」で PC をつなぐの画面を開いた印にしている行。このチケットの実装で本文の h1 が「PC と使った量」になるので、openConnect を使う行は状態によらず全部落ちる（このチケットの時点では小窓が無く、どの状態でも本文の h1 になる）。\n\n外枠の枝は読むだけで触らない。替えるのは切る段（CS）で、時点は「K-138 が本線に取り込まれた後・このチケットを始める前」。切る段の枝で本線を取り込んでから、heading と同じ形（level 1・「PC と使った量」か「PC をつなぐ」）に替え、その 2 つのファイルをこのチケットの carry に足し、替えた差分を精査に 1 回通す（cut の枝は K-138 も同じ枝から持ち出すので、それより前に替えると K-138 が赤になる）。**K-138 の取り込みと、この書き替えが済むまで、このチケットを始めない**。\n\n| 試験の行 | 今の期待 | 替える期待 |\n|---|---|---|\n| apps/web/tests/skeleton/m2-bridge-ticket.spec.ts の openConnect（K58-M2-01・03・05・06 などが使う） | level 1 の「PC をつなぐ」 | level 1 の「PC と使った量」か「PC をつなぐ」（替えた） |\n| apps/e2e/staging/_lib/steps.ts の openConnect（K65-STG-01・03 が使う） | h1(page, \"PC をつなぐ\") | 同上（h1 の道具は字しか受けないので、その行だけ getByRole の形にした。道具 h1 は替えない・ほかの 2 か所が使う）（替えた） |\n\nsteps.ts は試験の形の名前（tests/・.spec.ts）に当たらない部品なので、carry のほかに changes: にも書き、影響の範囲 affects: に @kaname/e2e を足した（外枠のチケットが同じファイルを運んだときと同じ形。書かないと CI の範囲の G0 が「@kaname/e2e：変えたのにチケットに無い」で止まる・手元の検査で確かめた）\n\n替えた後、古い期待（見出し「PC をつなぐ」だけ）が残っていない：\n\n```search\ngit grep -n -E 'heading\", \\{ level: 1, name: \"PC をつなぐ\"|h1\\(page, \"PC をつなぐ\"\\)' -- apps/web/tests/skeleton apps/e2e\n0\n```\n\napps の全体で同じ形はつなぐ小窓の題の 1 か所だけ（apps/web/tests/k/k230-bridge-content.spec.ts の 136 行目・小窓の題は「PC をつなぐ」のまま正しい）：\n\n```search\ngit grep -n -E 'heading\", \\{ level: 1, name: \"PC をつなぐ\"|h1\\(page, \"PC をつなぐ\"\\)' -- apps\n1\n```",
+    "実施事項": "| 欄 | 中身 |\n|---|---|\n| CI の範囲（作り手が最初に足す） `scripts/ci/ci_scope.json` | reads_ok に `apps/web/tests/k/k220-bridge-shell.spec.ts`（04_design/fidelity.json を読む・理由つき）を足す。足さないと「読む印を持つ試験が範囲の台帳に無い」（CS-032）で、作る段の最初の CI が赤になる |\n| 外枠 `ticket-shell.tsx`・`components/k/shell.tsx`・`shell.css` | TicketShellProps の screen に \"bridge-setup\" を足す（左のメニューに今いる印は付かない。外枠の口は 1 画面で 1 回ずつのまま）。TicketShell に bridgeConnected（画面が読んだ PC の状態）を渡す口を足し、渡されたらそれを左のメニューの PC の状態に使う（外枠は読み直さない・K220-UI-016）。Crumb に disabled を足し、disabled の段は `<a role=\"link\" aria-disabled=\"true\" tabIndex={-1}>`（href なし・正本の使えない状態の薄さ）で出す（キャンバスの帯の「自分の設定」はリンク・その画面はまだ無い・D-145.9） |\n| 第 2 ナビ `components/k/me-sub.tsx`・`me-sub.css`（新しい部品・index.ts から出す） | `<aside aria-label=\"自分の設定の中\" className=\"k-me-sub\">`。見出し（.k-me-sub-h）3 つと項目 5 つ（`<a className=\"k-me-sub-i\"><span className=\"k-me-sub-ic\">絵</span><span className=\"k-me-sub-t\">名前</span></a>`）。今いる項目は aria-current=\"page\"。作った画面だけ href（isBuilt で決める）、ほかは role=\"link\"・aria-disabled=\"true\"・tabIndex -1・href なし・正本の使えない状態の薄さ（押しても Enter でも何もしない）。件数は出さない。一番下に注（.k-me-sub-note 11px）。幅 232・1023 以下 64（字を隠す）・767 以下は横 1 列（overflow-x auto・下の線）。色と大きさはキャンバスとちょうど同じ値（地 #EDF0F4・右の線 #DDE2E9・見出し 11px #6B7585・項目 高さ 36・角丸 8・字 #4a5563・今いる項目は字 #131B27 と影）。書き方は --k-* のトークンで、同じ値のトークンが無ければ正本に足す（近いトークンに寄せない。design_gate の D1 で見る） |\n| 画面 `connect-pc.tsx` | どの状態も（読み込み中・権限なし・ログイン切れも）`<TicketShell screen=\"bridge-setup\" crumbs={[{label:\"自分の設定\",disabled:true},{label:\"PC と使った量\"}]} bridgeConnected={live があるか}>` の中に `<div className=\"k-me-wrap\">`（横に並べる：第 2 ナビ・本文）。本文は `<section className=\"k-page k-me-page\" aria-labelledby=\"connect-pc-title\">`（padding 22px 28px・縦に gap 14・中身の幅 900 まで＝box-sizing: content-box で余白はその外側・箱 956）。見出しの行 `.k-page-head` はこの画面だけ帯にしない（地なし・線なし・padding 0・h1 20px と説明 12px を flex・gap 10・折り返しで並べる）。説明の字はキャンバスの「分身はあなたの PC で動く。どのワークスペースの分身も同じ PC を使う」（今の長い説明はやめる：1 行に収まらず h1 の下へ折り返す）。「戻る」は ?from= のときだけ見出しの行に。PC の一覧を読み終えるまで（devices が null の間）は、見出しの行の下の中身の代わりに Loading（既定の 3 秒・delay を 0 にしない）を出す |\n| 突き合わせの組 `04_design/fidelity.json`・`fidelity-states.ts` | 組 bridge-shell の第 2 ナビの組を、データの数（預けたログイン情報の「5」）を含まない字の箱どうしに直す：canvas `.kn-sub .kn-sub-t`・app `[aria-label=\"自分の設定の中\"] .k-me-sub-t`（texts と width と x はそのまま）。enrolled: true。鍵 bridge-shell（ログインの印を置き、自分・承認待ち・PC の一覧（つながっている 1 台）を網の手前で返し、本人の Bridge は網の手前で止めて /setup/bridge を開く）を足す |\n| 台帳 | 新しく使うクラスを CSS に置く（G67） |\n\n### 選ばなかった直し方\n\n| 案 | 選ばない訳 |\n|---|---|\n| 第 2 ナビを Shell（components/k/shell.tsx）の口として足す | 自分の設定の 5 画面のうち作ったのは 3 つで、ほかの画面はまだ前の外枠（D-144.6）。この画面の本文の中に置けば外枠の部品を変えずに済む。自分の設定の画面を作るときに Shell へ移すかを決める |\n| connect-pc.spec.ts の書き替えを K-230 に持たせる | 外枠を入れた時点で K57-UI-000（body の操作要素）が落ちる。先に入るこのチケットが持ち、後の小窓でも通る形にした |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k220-bridge-shell.spec.ts`（実 Chrome・口は網の手前で差し替え・本人の Bridge は網の手前で止める）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K220-UI-001 | 対象の状態 | 幅 1440（つながっている） | 左のメニュー 216px・h1「PC と使った量」は第 2 ナビの右で帯より下・h1 は 1 つ |\n| K220-UI-002 | 守り | 上の帯 | いまの場所「自分の設定 › PC と使った量」・自分の設定は role=link・aria-disabled・href なし・薄さ 0.55・押しても移らない |\n| K220-UI-003 | 対象の状態 | 第 2 ナビ | 見出し 3 つ（11px・rgb(107, 117, 133)）・項目 5 つの順・地 rgb(237, 240, 244)・右の線 rgb(221, 226, 233)・項目 高さ 36・角丸 8・字 #4A5563・今いる項目は PC と使った量（aria-current=page・白・600・字 #131B27・影あり） |\n| K220-UI-004 | 入口 | 作った画面の項目 | ログインと安全 → /mfa-setup・預けたログイン情報 → /settings/credentials・押すと /mfa-setup |\n| K220-UI-005 | 守り | まだ無い画面の項目（プロフィール・知らせ） | role=link・aria-disabled・href なし・薄さ 0.55（数で比べる）・押しても Enter でも移らない・tabindex -1 |\n| K220-UI-006 | 対象の状態 | 預けたログイン情報の件数 | 項目の字は「預けたログイン情報」だけで数字が無い |\n| K220-UI-007 | 対象の状態 | 第 2 ナビの注 | 11px・最後の項目より下 |\n| K220-UI-008 | 入口 | 幅 1440・1023・375 | 232px／64px（字が隠れる）／本文の上の横 1 列（overflow-x auto・row）・横溢れ 0 |\n| K220-UI-009 | 対象の状態 | 本文の箱と見出しの行 | 本文の箱は x 448・幅 956（±2）・中身の幅 900（±2・余白はその外側）・padding 22px 28px（上下左右）・row-gap 14px・見出しの行は地なし・下の線 0・h1 20px 700・説明はキャンバスの字で 12px 灰・h1 の右 |\n| K220-UI-010 | 守り | 外枠の口 | 自分の口は 1 回・承認待ちの数は 1 回以下・左のメニューに「PC つながっている」 |\n| K220-UI-011 | 時間の流れ | PC の一覧を読んでいる間（時計を止め、一覧の口の要求を待ってから進める） | 外枠と h1 がすぐ・2.9 秒で文なし・3 秒を過ぎて本文に「読み込んでいます…」 |\n| K220-UI-012 | 入口 | 幅 320〜1440 | 横溢れ 0・見出しの 1 文字目が画面の中 |\n| K220-UI-013 | 入口 | 幅 375 の一番下 | 下のタブが見え、「前の設定の画面」がその上の端より上 |\n| K220-UI-014 | 守り | 突き合わせの設定 | bridge-shell が enrolled・持ち主 K-220・第 2 ナビの組は texts を持ち字の箱どうし（.kn-sub-t ／ .k-me-sub-t）・鍵が在る |\n| K220-UI-015 | 対象の状態 | bridge-shell をキャンバスと突き合わせる（1440） | 組の値と読み込んだ書体が全部同じ |\n| K220-UI-016 | 時間の流れ | この画面で待っている → つながっている | 左のメニューの PC の状態も「PC つながっている」に変わる・自分の口は 1 回のまま |\n| K220-UI-017 | 失敗 | PC の一覧の口が 403 | 外枠（.k-shell）の中に「この画面を見る権限がありません」 |\n\n### テストの型の受け（分類 UI）\n\n- 押した結果まで：004（移った先）・005（移らない）\n- 幅：008・012・013\n- PC をつなぐの口の振る舞い（コード・受け取り・つながった・切れた・429・ログイン切れ・権限なし）は K-57 の試験が持つ（表の所のほかは替えない）\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 要らない | この画面の外枠に入力欄は無い（探す欄は K-138 の外枠の試験が持つ） |\n| 対象の状態 | 該当 | 001〜003・006・007・009・015 |\n| 時間の流れ | 該当 | 読み込みの 3 秒（011）・つながった瞬間の外枠（016） |\n| 入口 | 該当 | 004・008・012・013 |\n| 利用者の状態 | 要らない | ログインしていない・切れた・権限なしは K-57 の試験（K57-UI-009〜011）が持ち、外枠に入れても同じ行き先 |\n| 失敗 | 該当 | 権限なしでも外枠の中（017）。ほかの口の失敗は K-57 の試験が持つ |\n| 操作の揺れ | 要らない | 外枠の操作の揺れは K-138 の試験が持つ |\n| 守り | 該当 | 002・005・010・014 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | キャンバスの書体を手元に差し替える（015）・本人の Bridge に届かせない |\n| G-12 切り替わりの瞬間 | 該当 | 読み込みの 3 秒の境目（011） |\n| G-13 機能の組み合わせ | 該当 | 外枠 × K-57 の画面（K-57 の試験を表の所だけ替えて通す）・外枠の PC の状態 × 画面の読み続け（016） |\n| G-14 口座状態の波及 | N/A | 人の状態を変えない |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 外枠の口は 1 画面で 1 回（010・016） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "成果物": "- `apps/web/tests/k/k220-bridge-shell.spec.ts`・connect-pc.spec.ts・connect-pc.md・qa-b-bridge-setup.spec.ts の書き替え（切る段が書いた）\n- 外枠に入れる・第 2 ナビの部品・本文の箱と見出しの行・突き合わせの組・CI の範囲（実装の役）",
+    "決定ログ": "- D-143.1：新しい外枠に載せ替える。D-143.2：キャンバスが正。D-143.5：正のモックを書き、突き合わせてから完了。D-144.1：作っていない画面の項目は押せない形で出し「準備中」の字を出さない。D-144.3：数は口ができるまで出さない。D-144.6：PC をつなぐはこのチケットで新しい外枠へ。D-144.8：読み込みは 3 秒たっても終わらないときだけ文。D-145.9：キャンバスに在る物は出し、使えない物はグレーで押せない\n- 決める人に聞くこと：無い（第 2 ナビのまだ無い画面と件数は D-145.9・D-144.3 で決まった）\n- PM の決め（2026-11-16）：K217-UI-017 の測る画面を /setup/bridge から /approvals に移す（期待は弱めない）。見出しはキャンバスどおり「PC と使った量」。K-138 の試験の見出しの行は、外枠が本線に入った後で切る段が替え、このチケットの carry に足す（このチケットを始める前）\n- 切る段が決めたこと：第 2 ナビは外枠の部品にせず、この画面の本文の中の部品にした／connect-pc.spec.ts・connect-pc.md の持ち主をこのチケットにし、K-230 の小窓が入っても通る形に替えた（qa-b-bridge-setup.spec.ts も）／突き合わせの組 bridge-shell の第 2 ナビの組を字の箱どうしに直した（データの数を比べないため・組はまだ入れていない）",
+    "PM に確かめたいこと": "1. 外枠の後で替える 2 か所（m2・steps.ts）：K-138 が本線に入った後、切る段が替えて carry に足した（2026-11-16）。替えた差分の精査の記録し直しを PM にお願いする\n2. 親 K-213 の順：このチケットは K-230 より先（K-230 が depends_on に持つ）。connect-pc.spec.ts の持ち主はこのチケット",
+    "リスクと懸念": "- K-138 の外枠が先に入らないと、このチケットの行は全部落ちる（依存に書いた）\n- 第 2 ナビの「ログインと安全」「預けたログイン情報」の行き先は前の外枠の画面（D-144.6）。移ると外枠の形が変わる（意図どおり）",
+    "申し送り": "- K-230：本文の中身。本文の h1「PC と使った量」・「戻る」・「前の設定の画面」は本文に残し、connect-pc.spec.ts・qa-b-bridge-setup.spec.ts は触らない（このチケットが替える）。小窓の題「PC をつなぐ」は h1 にする\n- 承認待ちの画面のチケット（K-231 など）：承認待ちの形を変えるとき、k217-page-parts.spec.ts の K217-UI-017 を自分で運んで新しい形に替える\n- 自分の設定の画面（/account）を作るチケット：第 2 ナビのプロフィールと知らせを使える形にし、外枠の部品へ移すかを決める"
    },
    "file": "11_tickets/K-220.md"
   },

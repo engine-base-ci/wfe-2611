@@ -39,7 +39,8 @@ const jst = (days = 0) => new Date(Date.now() + 9 * 3600_000 + days * 86400_000)
 async function openConnect(page: Page, from = "/tickets"): Promise<void> {
   const res = await page.goto(`/setup/bridge?from=${encodeURIComponent(from)}`);
   expect(res?.status()).toBe(200);
-  await expect(page.getByRole("heading", { level: 1, name: "PC をつなぐ" })).toBeVisible();
+  // 本文の h1 はキャンバスの字「PC と使った量」（K-220）。つなぐ小窓が開いている間は小窓の題「PC をつなぐ」
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible();
 }
 /** 画面に出ている接続コード（人が読んで Bridge の窓に入れるもの） */
 async function codeOnScreen(page: Page): Promise<string> {

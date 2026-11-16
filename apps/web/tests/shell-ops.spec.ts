@@ -29,8 +29,10 @@ for (const [id, label] of [
     await expect(btn).toHaveAttribute("aria-expanded", String(was));
   });
 }
+// /setup/bridge の見出しは「PC と使った量」。PC が無いときはつなぐ小窓の題「PC をつなぐ」が読み上げの h1（後ろは読み上げから外れる）
+const BRIDGE_H1 = /^(PC と使った量|PC をつなぐ)$/;
 for (const [id, href, h1] of [
-  ["USH-01-042", "/setup/bridge", "自分のPCをつなぐ"],
+  ["USH-01-042", "/setup/bridge", BRIDGE_H1],
   ["USH-01-043", "/settings/credentials", "ログイン情報を預ける"],
 ] as const) {
   test(`${id} サイドバーのリンク ${href} を押すと開く（200・h1）`, async ({ page }) => {
@@ -46,7 +48,8 @@ for (const [id, href, h1] of [
         .click();
     await link.click();
     await expect(page).toHaveURL(new RegExp(href.replace(/\//g, "\\/") + "$"));
-    await expect(page.locator("h1")).toContainText(h1.slice(0, 6));
+    if (typeof h1 === "string") await expect(page.locator("h1")).toContainText(h1.slice(0, 6));
+    else await expect(page.getByRole("heading", { level: 1, name: h1 })).toBeVisible();
   });
 }
 

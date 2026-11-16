@@ -322,8 +322,8 @@
   list-style: none;
   white-space: nowrap;
 }
-.k-crumbs li + li::before {
-  content: "›";
+/* 区切りの › はキャンバスどおり字として置く（読み上げには出さない） */
+.k-crumb-sep {
   margin-right: var(--k-s-sm);
   color: var(--k-line-strong);
 }
@@ -338,6 +338,15 @@
 .k-crumbs a:hover {
   color: var(--k-on-surface);
   text-decoration: underline;
+}
+/* その画面がまだ無い段（キャンバスではリンク）：正本の button-disabled の薄さで押せない形 */
+.k-crumbs a[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-crumbs a[aria-disabled="true"]:hover {
+  color: var(--k-on-surface-variant);
+  text-decoration: none;
 }
 .k-crumbs [aria-current="page"] {
   color: var(--k-on-surface);
