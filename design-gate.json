@@ -157,7 +157,13 @@
     "list-box-row": ".k-list-box-row",
     "list-section": ".k-list-section > td",
     "list-columns": ".k-list-columns",
-    "list-columns-item": ".k-list-columns-item"
+    "list-columns-item": ".k-list-columns-item",
+    "list-chips": ".k-list-chips",
+    "list-tools": ".k-list-tools",
+    "list-who": ".k-list-who",
+    "list-late": ".k-list-late",
+    "list-late-icon": ".k-list-late svg",
+    "list-ai-icon": ".k-list-ai svg"
   },
   "component_exempt": [
     {
@@ -255,10 +261,6 @@
     {
       "part": "list-title-max",
       "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
-    },
-    {
-      "part": "list-icon",
-      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 表の中の絵（svg）の大きさ（素の規則のセレクタが子孫の svg で、部品の 1 つのセレクタに当たらない） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
       "part": "list-side-main",

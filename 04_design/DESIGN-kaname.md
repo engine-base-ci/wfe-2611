@@ -536,6 +536,7 @@ components:
   list-greet:           # あいさつ（15px・700）
     typography: "{typography.h3}"
     fontWeight: 700
+    lineHeight: 1.6
   list-empty-mark:      # 空の箱の ＋ の札（48・紺・角丸 field・20px・700）
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
@@ -559,6 +560,7 @@ components:
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
     margin: "6px 0 0"
+    lineHeight: 1.6
   list-side:            # 右の列（幅 340・箱の間 12）
     width: "340px"
     gap: "12px"
@@ -574,6 +576,7 @@ components:
   list-side-title:      # 右の列の箱の見出し（15px・700）
     typography: "{typography.h3}"
     fontWeight: 700
+    lineHeight: 1.6
   list-progress:        # 進みの棒（高さ 6・角丸 full・淡い地・上 8 下 4）
     backgroundColor: "{colors.side-bg}"
     rounded: "{rounded.full}"
@@ -640,6 +643,7 @@ components:
     height: "32px"
     padding: "0 {spacing.sm}"
     borderBottom: "1px solid {colors.line}"
+    lineHeight: 1.6
   list-title-max:       # 表の題名の列の幅の上限（max-width・越えたら「…」）
     width: "360px"
   list-td:              # 表の行（高さ 36・左右 8・下に淡い線）
@@ -661,6 +665,7 @@ components:
     typography: "{typography.label-xs}"
     width: "20px"
     height: "20px"
+    fontWeight: 400
   list-ai:              # 担当者の横の「AI」の札（線・角丸 full・左右 6・11px・間 2）
     textColor: "{colors.on-surface-variant}"
     border: "1px solid {colors.line}"
@@ -668,9 +673,23 @@ components:
     padding: "0 6px"
     typography: "{typography.label-md}"
     gap: "2px"
-  list-icon:            # 表の中の小さな絵（炎・ロボット）の大きさ
+    fontWeight: 400
+  list-chips:           # 絞りの札の並び（間 6・件数との間 8 を足して 16）
+    gap: "6px"
+    margin: "0 0 0 {spacing.sm}"
+  list-tools:           # 並び・条件を保存・表示設定の並び（間 6）
+    gap: "6px"
+  list-who:             # 担当者の頭文字の丸と名前の間（5）
+    gap: "5px"
+  list-late:            # 期限の横の炎の印（左 3・縦は 1px 下げる）
+    margin: "0 0 0 3px"
+    verticalAlign: "-1px"
+  list-late-icon:       # 炎の絵の大きさ（12）
     width: "12px"
     height: "12px"
+  list-ai-icon:         # AI の札のロボットの絵の大きさ（13）
+    width: "13px"
+    height: "13px"
   list-more:            # 表の下の「もっと見る」の行（余白 8 12）
     padding: "{spacing.sm} 12px"
     gap: "{spacing.sm}"
@@ -679,12 +698,15 @@ components:
     height: "28px"
     typography: "{typography.body-sm}"
     fontWeight: 500
+    lineHeight: 1.6
   list-columns:         # 表示設定の箱（白・線だけで影は置かない・角丸 card・余白 10・幅 320）
     backgroundColor: "{colors.card}"
     border: "1px solid {colors.line}"
     rounded: "{rounded.card}"
     padding: "10px"
     width: "320px"
+    shadow: "0 10px 30px color-mix(in srgb, {colors.overlay-shadow} 60%, transparent)"   # on-surface の 18%（overlay-shadow 30% の 6 割・MnView）。暗いテーマは overlay-shadow が透明なので影なし
+    top: "36px"
   list-columns-item:    # 表示設定の箱の 1 行（チェックと名前・上下 4 左右 6・間 8）
     padding: "{spacing.xs} 6px"
     gap: "{spacing.sm}"
@@ -696,6 +718,7 @@ components:
     typography: "{typography.body}"
     padding: "10px 12px"
     borderBottom: "1px solid {colors.line}"
+    fontWeight: 700
   list-box-row:         # 右の列の箱の 1 行（余白 10 12・下に淡い線）
     padding: "10px 12px"
     borderBottom: "1px solid {colors.line-soft}"

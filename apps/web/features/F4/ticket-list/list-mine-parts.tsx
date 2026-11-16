@@ -2,6 +2,7 @@
 //   数を出す口・絞り・並び・条件を保存は機能がまだ（K-67）なので、出すが押せない（aria-disabled・グレー）。表示設定は列を選べる（list-columns.tsx）。
 //   本当の値が無い数（札の数・件数・絞りの札の数）は空にする（D-144.2・D-144.3）。[data-value] の中は空のまま
 import { ColumnSettings, type Columns } from "./list-columns";
+import { aiNowTitle } from "./list-side";
 
 const CARDS = [
   { label: "期限切れ", tone: "danger" },
@@ -31,7 +32,7 @@ export function MineCards() {
   );
 }
 
-export function MineFilter({ columns }: { columns: Columns }) {
+export function MineFilter({ columns, name }: { columns: Columns; name: string }) {
   return (
     <div className="k-list-filter" role="group" aria-label="自分に関わるものの絞り込み">
       <b>自分に関わるもの</b>
@@ -58,9 +59,40 @@ export function MineFilter({ columns }: { columns: Columns }) {
         <span className="k-list-tool" aria-disabled="true" title="条件を保存（準備中）">
           条件を保存
         </span>
-        <ColumnSettings columns={columns} />
+        <ColumnSettings columns={columns} title="自分に関わるものの見え方" extra={<MineViewItems name={name} />} />
       </span>
     </div>
+  );
+}
+
+/** 表示設定の箱の、自分に関わるものだけの項目（キャンバス MnView）。機能はまだ（K-67）なので並べるが押せない（D-145.9） */
+function MineViewItems({ name }: { name: string }) {
+  const groups: [string, string[]][] = [
+    ["上の数字", ["期限切れ", "今日まで", "自分が承認", "AI が動いている", "今週まで"]],
+    [
+      "右に出すもの",
+      ["自分の承認を待っているもの", aiNowTitle(name), "最近の知らせ", "自分が担当・承認するものの動き"],
+    ],
+    ["表の分け方", ["期限", "グループ", "状態"]],
+    ["入れるもの", ["担当しているもの", "承認するもの・渡されたもの", "自分が担当・承認するもの"]],
+  ];
+  return (
+    <>
+      {groups.map(([title, items]) => (
+        <div key={title} className="k-list-columns-group" role="group" aria-label={title}>
+          <p className="k-list-columns-title">{title}</p>
+          <ul className="k-list-columns-list">
+            {items.map((it) => (
+              <li key={it}>
+                <span className="k-list-columns-item k-list-off" aria-disabled="true" title={`${it}（準備中）`}>
+                  {it}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -69,7 +101,7 @@ export function ListToolbar({ columns }: { columns: Columns }) {
   return (
     <div className="k-list-filter" role="group" aria-label="表の見え方">
       <span className="k-list-tools">
-        <ColumnSettings columns={columns} />
+        <ColumnSettings columns={columns} title="一覧の見え方" />
       </span>
     </div>
   );

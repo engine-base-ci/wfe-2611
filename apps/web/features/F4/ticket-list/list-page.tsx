@@ -47,10 +47,12 @@ function ListHead({ view }: { view: ListView }) {
 
 function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; onCreate: () => void }) {
   const { list } = data;
-  const empty = list.state === "ok" && list.rows.length === 0;
+  // はじめて（OnHome）は会社にチケットが 1 枚も無いときだけ。自分に関わるものが 0 件でも会社に在れば Main の形で表を空にする
+  const first = list.state === "ok" && list.first;
   const viewer = useViewer(true);
-  const setup = useSetupTasks(empty);
-  const approvals = useApprovals(list.state === "ok" && !empty);
+  const setup = useSetupTasks(first);
+  // 右の列（承認待ちの行）は自分に関わるものだけ（一覧はキャンバス List に右の列が無い）
+  const approvals = useApprovals(list.state === "ok" && !first && view === "mine");
   const columns = useColumns();
   if (list.state === "loading")
     return (
@@ -64,7 +66,7 @@ function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; 
         <ErrorState code={list.code} acts={[data.reload]} />
       </div>
     );
-  if (empty)
+  if (first)
     return (
       <div className="k-list-body" data-first>
         <ListEmpty name={viewer.name} canCreate={viewer.canCreate} onCreate={onCreate} />
@@ -76,7 +78,7 @@ function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; 
       <section className="k-list-main" aria-labelledby="tickets-title">
         {view === "mine" ? <MineCards /> : null}
         <div className="k-list-panel">
-          {view === "mine" ? <MineFilter columns={columns} /> : <ListToolbar columns={columns} />}
+          {view === "mine" ? <MineFilter columns={columns} name={viewer.name} /> : <ListToolbar columns={columns} />}
           <ListTable
             rows={list.rows}
             columns={columns.visible}
@@ -86,9 +88,10 @@ function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; 
             moreError={data.moreError}
             onMore={data.loadMore}
           />
+          {list.rows.length === 0 ? <p className="k-list-none">自分に関わるチケットはありません</p> : null}
         </div>
       </section>
-      <MainSide name={viewer.name} approvals={approvals} />
+      {view === "mine" ? <MainSide name={viewer.name} approvals={approvals} /> : null}
     </div>
   );
 }

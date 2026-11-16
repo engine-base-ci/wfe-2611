@@ -164,8 +164,12 @@ function ApprovalRows({ approvals }: { approvals: Approvals }) {
   );
 }
 
+/** 〈名前〉のAI のいま（名前が無いときは「AI のいま」） */
+export const aiNowTitle = (name: string): string => (name ? `${name}のAI のいま` : "AI のいま");
+
 export function MainSide({ name, approvals }: { name: string; approvals: Approvals }) {
-  const ai = `${name}のAI のいま`;
+  // 名前を読む前・読めないときは「AI のいま」（欠けた見出し「のAI のいま」にしない）
+  const ai = aiNowTitle(name);
   return (
     <aside className="k-list-side" aria-label="自分に関わるものの右の列">
       <section className="k-list-box" aria-labelledby="k-list-ap-title">

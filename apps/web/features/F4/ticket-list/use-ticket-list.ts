@@ -29,7 +29,10 @@ export interface ListItem {
 export const PAGE_SIZE = 50;
 
 export type ListState =
-  { state: "loading" } | { state: "error"; code: string } | { state: "ok"; rows: ListItem[]; next: string | null };
+  | { state: "loading" }
+  | { state: "error"; code: string }
+  /** first：会社にチケットが 1 枚も無い（はじめて・キャンバス OnHome） */
+  | { state: "ok"; rows: ListItem[]; next: string | null; first: boolean };
 
 /** 口を呼び、届かなかった（ネットが切れた）ときも答えの形にする */
 async function safeCall<K extends OpName>(run: () => Promise<CallResult<K>>): Promise<CallResult<K> | null> {
@@ -46,6 +49,14 @@ const codeOf = <K extends OpName>(r: CallResult<K> | null): string =>
 const listOf = (data: unknown): ListItem[] => (Array.isArray(data) ? (data as ListItem[]) : []);
 const nextOf = (meta: Record<string, unknown>): string | null =>
   typeof meta["next_cursor"] === "string" && meta["next_cursor"] ? meta["next_cursor"] : null;
+
+/** 会社にチケットが 1 枚も無いか（一覧の口を全部の見え方で 1 件だけ読む・口は足さない）。
+ *  読めない（500・届かない）ときは「在る」とみなす（はじめて にしない）。401 は入り直しに任せて答えを返さない（null） */
+async function companyIsEmpty(): Promise<boolean | null> {
+  const r = await safeCall(() => call("listTickets", { query: { view: "all", limit: 1 }, screenId: "tickets" }));
+  if (r?.ok) return listOf(r.data).length === 0;
+  return r?.kind === "unauthenticated" ? null : false;
+}
 
 export interface TicketList {
   list: ListState;
@@ -70,11 +81,20 @@ export function useTicketList(view: ListView, enabled: boolean): TicketList {
     setLoadingMore(false);
     setMoreError(null);
     setList({ state: "loading" });
-    void safeCall(() => call("listTickets", { query: { view, limit: PAGE_SIZE }, screenId: "tickets" })).then((r) => {
+    void (async () => {
+      const r = await safeCall(() => call("listTickets", { query: { view, limit: PAGE_SIZE }, screenId: "tickets" }));
       if (mine !== seq.current) return; // 後から切り替えた見え方の答えだけを描く
-      if (r?.ok) setList({ state: "ok", rows: listOf(r.data), next: nextOf(r.meta) });
-      else if (r?.kind !== "unauthenticated") setList({ state: "error", code: codeOf(r) });
-    });
+      if (!r?.ok) {
+        if (r?.kind !== "unauthenticated") setList({ state: "error", code: codeOf(r) });
+        return;
+      }
+      const rows = listOf(r.data);
+      const next = nextOf(r.meta);
+      // 0 件なら、会社にチケットが在るかを確かめる（はじめては会社に 0 件のときだけ・PM の決め 2026-11-17）
+      const first = rows.length === 0 && (view === "all" || (await companyIsEmpty()));
+      if (mine !== seq.current || first === null) return;
+      setList({ state: "ok", rows, next, first });
+    })();
   }, [view]);
 
   useEffect(() => {
@@ -103,9 +123,7 @@ export function useTicketList(view: ListView, enabled: boolean): TicketList {
       setLoadingMore(false);
       if (r?.ok) {
         const more = listOf(r.data);
-        setList((cur) =>
-          cur.state === "ok" ? { state: "ok", rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur,
-        );
+        setList((cur) => (cur.state === "ok" ? { ...cur, rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur));
       } else if (r?.kind !== "unauthenticated") setMoreError(codeOf(r));
     });
   }, [list, view]);

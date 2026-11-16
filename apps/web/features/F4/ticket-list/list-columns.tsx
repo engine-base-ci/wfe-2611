@@ -3,7 +3,7 @@
 //   列はキャンバス Main どおり 9 つ（種別・番号・題名・状態・担当者・グループ・期限・予定・実績・更新・代表の答え answer=afc3b0f2fdb4。D-128.15 の 7 列を置き換えた）。
 //   表示設定で出す列を選べる。番号と題名は外せない。選んだ列はこのブラウザ（localStorage）に覚える（口は足さない）。
 //   覚えた値が文字の配列でなければ 9 つ全部。配列なら知っている鍵だけを使い、番号と題名は必ず足す。並びはいつも決まった並び
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 export const COLUMN_KEYS = [
   "kind",
@@ -92,8 +92,9 @@ export function useColumns(): Columns {
   return { visible, toggle, reset };
 }
 
-/** 表示設定（ボタンと、すぐ下に開く「表に出す列」の箱）。Esc・押し直し・箱の外を押すと閉じ、閉じたらボタンに戻る */
-export function ColumnSettings({ columns }: { columns: Columns }) {
+/** 表示設定（ボタンと、すぐ下に開く見え方の箱）。箱の中は「表に出す列」と、画面ごとの項目（extra）。
+ *  Esc・押し直し・箱の外を押すと閉じ、閉じたらボタンに戻る。箱の位置の基準はボタンを包む要素（キャンバス MnView） */
+export function ColumnSettings({ columns, title, extra }: { columns: Columns; title: string; extra?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const btn = useRef<HTMLButtonElement>(null);
@@ -120,7 +121,7 @@ export function ColumnSettings({ columns }: { columns: Columns }) {
     };
   }, [open, close]);
   return (
-    <>
+    <span className="k-list-columns-anchor">
       <button
         ref={btn}
         type="button"
@@ -132,31 +133,35 @@ export function ColumnSettings({ columns }: { columns: Columns }) {
         表示設定
       </button>
       {open ? (
-        <div ref={box} id={id} className="k-list-columns" role="dialog" aria-label="表に出す列">
+        <div ref={box} id={id} className="k-list-columns" role="dialog" aria-label={title}>
           <div className="k-list-columns-head">
-            <b>表に出す列</b>
+            <b>{title}</b>
             <button type="button" className="k-list-text-btn" onClick={columns.reset}>
               はじめに戻す
             </button>
           </div>
-          <ul className="k-list-columns-list">
-            {COLUMN_KEYS.map((k) => (
-              <li key={k}>
-                <label className="k-list-columns-item">
-                  <input
-                    type="checkbox"
-                    checked={columns.visible.includes(k)}
-                    disabled={FIXED.has(k)}
-                    onChange={(e) => columns.toggle(k, e.target.checked)}
-                  />
-                  {COLUMN_LABEL[k]}
-                </label>
-              </li>
-            ))}
-          </ul>
+          {extra}
+          <div className="k-list-columns-group" role="group" aria-label="表に出す列">
+            <p className="k-list-columns-title">表に出す列</p>
+            <ul className="k-list-columns-list">
+              {COLUMN_KEYS.map((k) => (
+                <li key={k}>
+                  <label className="k-list-columns-item">
+                    <input
+                      type="checkbox"
+                      checked={columns.visible.includes(k)}
+                      disabled={FIXED.has(k)}
+                      onChange={(e) => columns.toggle(k, e.target.checked)}
+                    />
+                    {COLUMN_LABEL[k]}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
           <p className="k-list-columns-note">自分だけの見え方。このブラウザに覚える（番号と題名は外せない）</p>
         </div>
       ) : null}
-    </>
+    </span>
   );
 }

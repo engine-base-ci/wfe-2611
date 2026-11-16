@@ -89,6 +89,7 @@ a.k-list-view:not([aria-current="page"]):hover {
   margin: 0;
   font-size: var(--k-c-list-greet-text);
   font-weight: var(--k-c-list-greet-fw);
+  line-height: var(--k-c-list-greet-lh);
 }
 .k-list-empty .k-state-actions {
   margin-top: 0;
@@ -104,6 +105,7 @@ a.k-list-view:not([aria-current="page"]):hover {
   color: var(--k-c-list-empty-mark-fg);
   font-size: var(--k-c-list-empty-mark-text);
   font-weight: var(--k-c-list-empty-mark-fw);
+  line-height: var(--k-c-list-empty-mark-lh);
 }
 .k-list-empty-desc {
   margin: 0;
@@ -111,6 +113,7 @@ a.k-list-view:not([aria-current="page"]):hover {
   color: var(--k-c-list-empty-desc-fg);
   font-size: var(--k-c-list-empty-desc-text);
   line-height: var(--k-c-list-empty-desc-lh);
+  font-weight: var(--k-c-list-empty-desc-fw);
 }
 .k-btn.k-list-act {
   min-height: var(--k-c-list-act-height);
@@ -118,6 +121,8 @@ a.k-list-view:not([aria-current="page"]):hover {
   font-size: var(--k-c-list-act-text);
   border-radius: var(--k-c-list-act-radius);
   white-space: nowrap;
+  font-weight: var(--k-c-list-act-fw);
+  line-height: var(--k-c-list-act-lh);
 }
 a.k-btn.k-list-act {
   text-decoration: none;
@@ -126,6 +131,8 @@ a.k-btn.k-list-act {
   margin: var(--k-c-list-suggest-margin);
   color: var(--k-c-list-suggest-fg);
   font-size: var(--k-c-list-suggest-text);
+  font-weight: var(--k-c-list-suggest-fw);
+  line-height: var(--k-c-list-suggest-lh);
 }
 
 /* ---- 右の列：幅 340 まで・1023 以下は本文の下に幅いっぱい ---- */
@@ -155,6 +162,7 @@ a.k-btn.k-list-act {
   margin: 0;
   font-size: var(--k-c-list-side-title-text);
   font-weight: var(--k-c-list-side-title-fw);
+  line-height: var(--k-c-list-side-title-lh);
 }
 .k-list-progress {
   appearance: none;
@@ -260,6 +268,7 @@ a.k-btn.k-list-act {
   padding: var(--k-c-list-anytime-pad);
   font-size: var(--k-c-list-anytime-text);
   line-height: var(--k-c-list-anytime-lh);
+  font-weight: var(--k-c-list-anytime-fw);
 }
 .k-list-anytime-title {
   margin: 0;
@@ -297,10 +306,11 @@ a.k-btn.k-list-act {
 }
 /* 数は口ができるまで空（字の高さだけ取っておく） */
 .k-list-card-value {
-  min-height: calc(var(--k-c-list-card-value-text) * var(--k-lh-body));
+  min-height: calc(var(--k-c-list-card-value-text) * var(--k-c-list-card-value-lh));
   font-size: var(--k-c-list-card-value-text);
   font-weight: var(--k-c-list-card-value-fw);
   color: var(--k-on-surface);
+  line-height: var(--k-c-list-card-value-lh);
 }
 .k-list-panel {
   background: var(--k-c-list-panel-bg);
@@ -320,7 +330,8 @@ a.k-btn.k-list-act {
 .k-list-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--k-s-sm);
+  gap: var(--k-c-list-chips-gap);
+  margin: var(--k-c-list-chips-margin);
 }
 .k-list-chip {
   display: inline-flex;
@@ -337,6 +348,8 @@ a.k-btn.k-list-act {
   white-space: nowrap;
   opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
+  font-weight: var(--k-c-list-chip-fw);
+  line-height: var(--k-c-list-chip-lh);
 }
 .k-list-chip[data-current] {
   background: var(--k-primary);
@@ -348,7 +361,7 @@ a.k-btn.k-list-act {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--k-s-sm);
+  gap: var(--k-c-list-tools-gap);
   font-size: var(--k-text-body-sm);
 }
 .k-list-tool {
@@ -365,6 +378,8 @@ a.k-btn.k-list-act {
   background: var(--k-card);
   white-space: nowrap;
   cursor: pointer;
+  font-weight: var(--k-c-list-tool-fw);
+  line-height: var(--k-c-list-tool-lh);
 }
 button.k-list-tool:hover {
   background: var(--k-select);
@@ -375,14 +390,20 @@ button.k-list-tool:hover {
 }
 
 /* ---- 表示設定の箱（表の箱の頭のすぐ下・右に寄せる。狭い幅は箱の幅に収める） ---- */
+.k-list-columns-anchor {
+  position: relative;
+  display: inline-flex;
+}
 .k-list-columns {
   position: absolute;
-  top: 100%;
-  right: var(--k-s-sm);
+  top: var(--k-c-list-columns-top);
+  right: 0;
   z-index: 20;
   box-sizing: border-box;
   width: var(--k-c-list-columns-width);
-  max-width: calc(100% - var(--k-s-md));
+  max-width: calc(100vw - 2 * var(--k-s-md));
+  box-shadow: var(--k-c-list-columns-shadow);
+  text-align: left;
   padding: var(--k-c-list-columns-pad);
   background: var(--k-c-list-columns-bg);
   border: var(--k-c-list-columns-border);
@@ -414,6 +435,17 @@ button.k-list-tool:hover {
   cursor: not-allowed;
   color: var(--k-on-surface-variant);
 }
+.k-list-columns-title {
+  margin: var(--k-s-sm) 0 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-list-none {
+  margin: 0;
+  padding: var(--k-c-list-more-pad);
+  text-align: center;
+  color: var(--k-on-surface-variant);
+}
 .k-list-columns-note {
   margin: 0;
   font-size: var(--k-text-label-md);
@@ -438,6 +470,7 @@ button.k-list-tool:hover {
   border-bottom: var(--k-c-list-th-border-bottom);
   text-align: left;
   white-space: nowrap;
+  line-height: var(--k-c-list-th-lh);
 }
 .k-list-table td {
   height: var(--k-c-list-td-height);
@@ -450,6 +483,7 @@ button.k-list-tool:hover {
   background: var(--k-c-list-section-bg);
   font-size: var(--k-c-list-section-text);
   font-weight: var(--k-c-list-section-fw);
+  line-height: var(--k-c-list-section-lh);
 }
 .k-list-section[data-section="overdue"] > td {
   color: var(--k-error);
@@ -489,15 +523,18 @@ button.k-list-tool:hover {
 .k-list-ai {
   display: inline-flex;
   align-items: center;
-  vertical-align: middle;
-}
-.k-list-late svg,
-.k-list-ai svg {
-  width: var(--k-c-list-icon-width);
-  height: var(--k-c-list-icon-height);
 }
 .k-list-late {
-  margin-left: var(--k-s-xs);
+  margin: var(--k-c-list-late-margin);
+  vertical-align: var(--k-c-list-late-va);
+}
+.k-list-late svg {
+  width: var(--k-c-list-late-icon-width);
+  height: var(--k-c-list-late-icon-height);
+}
+.k-list-ai svg {
+  width: var(--k-c-list-ai-icon-width);
+  height: var(--k-c-list-ai-icon-height);
 }
 .k-list-table td.k-list-dim {
   font-size: var(--k-text-body-sm);
@@ -537,7 +574,7 @@ button.k-list-tool:hover {
 .k-list-who {
   display: inline-flex;
   align-items: center;
-  gap: var(--k-s-xs);
+  gap: var(--k-c-list-who-gap);
 }
 .k-list-avatar {
   display: grid;
@@ -549,9 +586,11 @@ button.k-list-tool:hover {
   background: var(--k-c-list-avatar-bg);
   color: var(--k-c-list-avatar-fg);
   font-size: var(--k-c-list-avatar-text);
+  font-weight: var(--k-c-list-avatar-fw);
 }
 .k-list-ai {
   gap: var(--k-c-list-ai-gap);
+  font-weight: var(--k-c-list-ai-fw);
   padding: var(--k-c-list-ai-pad);
   border: var(--k-c-list-ai-border);
   border-radius: var(--k-c-list-ai-radius);
@@ -586,6 +625,8 @@ button.k-list-tool:hover {
   padding: var(--k-c-list-box-title-pad);
   border-bottom: var(--k-c-list-box-title-border-bottom);
   font-size: var(--k-c-list-box-title-text);
+  font-weight: var(--k-c-list-box-title-fw);
+  line-height: var(--k-c-list-box-title-lh);
 }
 .k-list-box-more {
   margin-left: auto;
@@ -612,6 +653,19 @@ button.k-list-tool:hover {
 /* 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ね、行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ・作る面の帯と同じ形）。
    数の札は 2 列（キャンバスの 4 列の格子の折り返し） */
 @media (max-width: 767px) {
+  /* 狭い幅は箱の位置の基準を表の箱の頭の行にし、箱を表の箱の幅に収める（ボタンが右の端に無くても画面の外に出ない） */
+  .k-list-columns-anchor {
+    position: static;
+  }
+  .k-list-columns {
+    top: 100%;
+    right: var(--k-s-sm);
+    max-width: calc(100% - var(--k-s-md));
+  }
+  /* Main の右の列は幅いっぱい（キャンバスの aside{max-width:none}） */
+  .k-list-body:not([data-first]) > .k-list-side {
+    max-width: 100%;
+  }
   .k-list-head-row > button {
     position: absolute;
     top: var(--k-s-xs);
