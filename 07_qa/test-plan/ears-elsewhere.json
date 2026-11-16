@@ -723,6 +723,51 @@
      "mark": "K63-API-045"
     }
    }
+  },
+  "listSetupTasks": {
+   "file": "apps/api/test/features/F4/setup-tasks.test.ts",
+   "reason": "はじめにやることの済みの判定は PC の知らせ・預け物・別の会社の同じログインを本物の DB で確かめ、生成の試験の土台（偽のセッション・hooks なし）では作れない（K-250）",
+   "covers": {
+    "test_get_me_setup_tasks_ok": "K250-API-001",
+    "test_get_me_setup_tasks_rejected_422": "K250-API-011",
+    "test_get_me_setup_tasks_rejected_401": "K250-API-009",
+    "test_get_me_setup_tasks_rejected_403": "K250-API-008",
+    "test_get_me_setup_tasks_rate_limited": "K250-API-013",
+    "test_get_me_setup_tasks_terms_pending": "K250-API-009",
+    "test_get_me_setup_tasks_shape": "K250-API-007",
+    "test_get_me_setup_tasks_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_setup_tasks_rejected_422_2": "名前・メール・パスワードの保存の型で、読むだけのこの口は体を受けない"
+   }
+  },
+  "dismissSetupTasks": {
+   "file": "apps/api/test/features/F4/setup-tasks.test.ts",
+   "reason": "はじめにやることの済みの判定は PC の知らせ・預け物・別の会社の同じログインを本物の DB で確かめ、生成の試験の土台（偽のセッション・hooks なし）では作れない（K-250）",
+   "covers": {
+    "test_post_me_setup_tasks_dismiss_ok": "K250-API-006",
+    "test_post_me_setup_tasks_dismiss_rejected_401": "K250-API-009",
+    "test_post_me_setup_tasks_dismiss_rejected_403": "K250-API-008",
+    "test_post_me_setup_tasks_dismiss_rejected_422": "K250-API-006",
+    "test_post_me_setup_tasks_dismiss_rejected_422_2": "K250-API-011",
+    "test_post_me_setup_tasks_dismiss_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_setup_tasks_dismiss_rate_limited": "K250-API-013",
+    "test_post_me_setup_tasks_dismiss_terms_pending": "K250-API-009",
+    "test_post_me_setup_tasks_dismiss_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_setup_tasks_dismiss_shape": "K250-API-006"
+   },
+   "na": {
+    "test_post_me_setup_tasks_dismiss_rejected_422_3": "名前・メール・パスワードの保存の型で、この口は key（飛ばす項目）だけを受ける"
+   }
   }
  }
 }

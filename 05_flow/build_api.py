@@ -169,13 +169,14 @@ for e in E:
     resp = {**props, **{k: dbtype(v) for k, v in sorted(dbc.items()) if k not in props}}   # 答えは DB の列を全部持つ（ER に無い列も）
     schemas[name] = {"type": "object", "properties": resp, "required": ["id"], "x-table": e["table_name"], "x-source": e["source"]}
     schemas[name + "Input"] = {"type": "object", "properties": {k: v for k, v in props.items() if k not in INTERNAL}, "additionalProperties": False}   # 知らない項目は許さない（D-129.42）
-_FTYPES = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
+_FTYPES = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]", "string[]"}
 def _ftype(v):   # 型の後ろの ? は null を許す（K-51）。uuid・uuid[] は正式な uuid の形（D-129.42・K-144）。知らない名前は黙って string にしない
     base = v[:-1] if v.endswith("?") else v
     if base not in _FTYPES: raise SystemExit(f"05_flow/screen_api.py の型の名前 {v!r} を作り手が表せない（{sorted(_FTYPES)} のどれか）")
     if base == "array": t = {"type": "array", "items": {"type": "object"}}
     elif base == "uuid": t = {"type": "string", "format": "uuid"}
     elif base == "uuid[]": t = {"type": "array", "items": {"type": "string", "format": "uuid"}}
+    elif base == "string[]": t = {"type": "array", "items": {"type": "string"}}   # 文字の並び（K-250 の飛ばした項目）。array は object の並び
     else: t = {"type": base}
     return {**t, "nullable": True} if v.endswith("?") else t
 for _op, (_n, _props) in getattr(_sa, "INPUTS", {}).items():   # 表の行ではない入力の形（K-19）。知らない項目は許さない（入口の z.strictObject と同じ・D-129.42）

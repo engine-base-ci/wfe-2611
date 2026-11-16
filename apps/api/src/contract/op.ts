@@ -115,12 +115,47 @@ export async function readBodyLimited(c: Pick<Context, "req">): Promise<string |
 const issueMessage = (i: { code: string; message: string; format?: string }) =>
   i.code === "invalid_format" && i.format === "uuid" ? "uuid" : i.message;
 
+/** 1 要求を 1 つの取引にまとめる hooks の口（K-234）：DB だけを読む口に限る。外を待つ口（目録を外から読む・関門 C4 で署名する）や
+ *  プールに直に問い合わせる口は入れない（外を待つ間に取引と接続を握ると、読む口ぜんぶが接続を取り合う・G-16）。
+ *  hooks の無い GET の口（関門 C2 の repository だけで読む）は一覧に無くてもまとめる */
+export const ONE_TX_HOOKS: ReadonlySet<string> = new Set([
+  "listScopes",
+  "listTicketKinds",
+  "getTicket",
+  "listTicketRuns",
+  "getActionRun",
+  "listApprovalQueue",
+  "getApproval",
+  "listMyTicketDrafts",
+  "listTickets",
+  "listSetupTasks",
+]);
+
 export function op(deps: ContractDeps, operationId: string) {
   const e = ENDPOINTS.find((x) => x.operationId === operationId);
   if (!e) throw new Error(`契約に無い operation: ${operationId}`);
   const def: EndpointDef = e;
-  const schema = def.input ? SCHEMAS[def.input] : null;
+  const schema = def.input ? (SCHEMAS[def.input] ?? null) : null;
   if (def.input && !schema) throw new Error(`schema が無い: ${def.input}`);
+  const handle = handler(deps, operationId, def, schema);
+  // 社内の人の読む口（GET）のうち DB だけを読む口は、要求の中の withTenant を 1 つの取引にまとめる（K-234・遅く開く）。ほかは今のまま
+  return async (c: Ctx) => {
+    const ctx = c.get("ctx");
+    const hook = deps.hooks[operationId];
+    const repo = c.get("repo");
+    // 要求の取引を開けない repo（関門 C2 の本物でない差し替え）は今のまま（取引をまとめないだけで振る舞いは同じ）
+    if (
+      def.method === "GET" &&
+      ctx.role === "member" &&
+      (!hook || ONE_TX_HOOKS.has(operationId)) &&
+      typeof repo.inRequest === "function"
+    )
+      return repo.inRequest(ctx, () => handle(c));
+    return handle(c);
+  };
+}
+
+function handler(deps: ContractDeps, operationId: string, def: EndpointDef, schema: (typeof SCHEMAS)[string] | null) {
   return async (c: Ctx) => {
     // 0) 送る量の守り（D-130.1・K-144 ㉚㊱）：上限・認証・権限・501 より前の一番最初。超えたら振る舞いに届かず何も書かない。
     //    読んだ体は 4) の JSON の読みに使い（2 回読まない）、hooks が c.req.json() で読んでも同じ中身になるよう Hono の器に入れる
