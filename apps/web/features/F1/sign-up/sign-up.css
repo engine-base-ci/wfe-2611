@@ -1,24 +1,25 @@
 /* ログインしていない人の画面（K-51）。キャンバスの authpage の形。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない）。
-   余白と間はキャンバス（AuthSignup・AuthVerify）の値（K-255）：外 32px 16px・ロゴと箱の間 18・箱 26px 28px・段の間 14・足元の間 12 */
+   余白と間はキャンバス（AuthSignup・AuthVerify）の値（K-255）。正本の部品 auth-page・auth-logo・auth-card・auth-lead-sub・auth-lead-body・
+   auth-badge・auth-alt・auth-foot・auth-spin（--k-c-auth-*）を読む */
 .k-auth {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  padding: 32px var(--k-s-md);
+  gap: var(--k-c-auth-page-gap);
+  padding: var(--k-c-auth-page-pad);
   box-sizing: border-box;
 }
 .k-auth-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--k-c-auth-logo-gap);
   font-size: var(--k-text-h1);
-  letter-spacing: 0.02em;
 }
 .k-auth-logo b {
   font-weight: var(--k-fw-h1);
+  letter-spacing: var(--k-c-auth-logo-ls);
 }
 .k-auth-mark {
   display: grid;
@@ -32,16 +33,16 @@
   font-size: var(--k-text-h2);
 }
 .k-auth-card {
-  width: 100%;
-  max-width: 440px;
+  width: var(--k-c-auth-card-width);
+  max-width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 26px 28px;
-  background: var(--k-card);
-  border: 1px solid var(--k-line);
-  border-radius: var(--k-r-lg);
+  gap: var(--k-c-auth-card-gap);
+  padding: var(--k-c-auth-card-pad);
+  background: var(--k-c-auth-card-bg);
+  border: var(--k-c-auth-card-border);
+  border-radius: var(--k-c-auth-card-radius);
 }
 .k-auth-card h1 {
   margin: 0;
@@ -67,8 +68,8 @@
 .k-auth-card > .k-state[data-state="loading"] .k-spin {
   flex: none;
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: var(--k-c-auth-spin-width);
+  height: var(--k-c-auth-spin-height);
   border: 0;
   animation: none;
 }
@@ -95,12 +96,14 @@
 }
 /* 見出しのすぐ下の小さな説明（登録・ログイン）：見出しとの間を 8 に詰める（段の間 14 − 6） */
 .k-auth-lead[data-kind="sub"] {
-  margin-top: -6px;
+  margin: var(--k-c-auth-lead-sub-margin);
+  font-size: var(--k-c-auth-lead-sub-text);
+  color: var(--k-c-auth-lead-sub-fg);
 }
 /* 待つ画面の説明（AuthVerify）：13px・行の高さ 1.7 */
 .k-auth-lead[data-kind="body"] {
-  font-size: var(--k-text-body);
-  line-height: 1.7;
+  font-size: var(--k-c-auth-lead-body-text);
+  line-height: var(--k-c-auth-lead-body-lh);
 }
 /* 入口の項目名と補足の行の高さはキャンバスの地の 1.6（12px で 19.2px） */
 .k-auth-form .k-field[data-size="lg"] .k-label-row,
@@ -111,7 +114,7 @@
 .k-auth-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--k-c-auth-card-gap);
 }
 .k-auth-form .k-btn {
   width: 100%;
@@ -127,13 +130,13 @@
   align-self: center;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--k-r-field);
-  background: var(--k-primary);
-  color: var(--k-on-primary);
-  font-size: var(--k-text-h2);
-  font-weight: var(--k-fw-h2);
+  width: var(--k-c-auth-badge-width);
+  height: var(--k-c-auth-badge-height);
+  border-radius: var(--k-c-auth-badge-radius);
+  background: var(--k-c-auth-badge-bg);
+  color: var(--k-c-auth-badge-fg);
+  font-size: var(--k-c-auth-badge-text);
+  font-weight: var(--k-c-auth-badge-fw);
   line-height: 1;
 }
 .k-auth-badge[data-tone="warn"] {
@@ -150,8 +153,8 @@
 }
 .k-auth-alt {
   margin: 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--k-line-soft);
+  padding: var(--k-c-auth-alt-pad);
+  border-top: var(--k-c-auth-alt-border-top);
   text-align: center;
   font-size: var(--k-text-body-sm);
 }
@@ -162,8 +165,9 @@
 }
 .k-auth-foot {
   display: flex;
-  gap: 12px;
-  font-size: var(--k-text-label-md);
+  gap: var(--k-c-auth-foot-gap);
+  font-size: var(--k-c-auth-foot-text);
+  font-weight: var(--k-c-auth-foot-fw);
 }
 .k-auth-foot a {
   color: var(--k-on-surface-variant);

@@ -247,7 +247,9 @@ components:
     padding: "26px 28px"
     gap: "14px"
     width: "440px"
-  auth-lead-sub:        # 見出しのすぐ下の小さな説明（登録・ログイン）：見出しとの間を 8 に詰める（段の間 14 − 6）
+  auth-lead-sub:        # 見出しのすぐ下の小さな説明（登録・ログイン）：12px・灰・見出しとの間を 8 に詰める（段の間 14 − 6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
     margin: "-6px 0 0"
   auth-lead-body:       # 待つ画面の説明：13px・行の高さ 1.7
     typography: "{typography.body}"
