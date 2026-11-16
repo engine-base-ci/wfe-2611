@@ -104,14 +104,19 @@ const open = async (page: Page, q = "", width = 1440) => {
   const res = await page.goto(`/setup/bridge${q}`);
   expect(res?.status()).toBe(200);
 };
-const heading = (page: Page) => page.getByRole("heading", { level: 1, name: "PC をつなぐ" });
+/** 画面の見出し（K-220 から本文の h1 は「PC と使った量」。K-230 のつなぐ小窓が開いている間は、読み上げの h1 は小窓の題「PC をつなぐ」） */
+const heading = (page: Page) => page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ });
 const codeText = (page: Page) => page.getByTestId("pairing-code");
+/** 本文（外枠と第 2 ナビの外・K-220）。外枠の操作要素は外枠の試験（K-138・K-220）が持つ */
+const BODY = 'section[aria-labelledby="connect-pc-title"]';
+/** 「戻る」のリンク（読み上げの木でなく字で探す：つなぐ小窓（K-230）が開いて後ろが読み上げから外れても見る） */
+const backLink = (page: Page) => page.locator(`${BODY} a`, { hasText: /^\s*戻る\s*$/ });
 
 row(R["K57-UI-000"], async (page) => {
   await mockApi(page);
   await open(page);
   await expect(codeText(page)).toHaveText(/^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/);
-  expect(await missingRows(page, ROWS)).toEqual([]);
+  expect(await missingRows(page, ROWS, BODY)).toEqual([]);
 });
 
 row(R["K57-UI-001"], async (page) => {
@@ -205,10 +210,10 @@ row(R["K57-UI-007"], async (page) => {
 row(R["K57-UI-008"], async (page) => {
   await mockApi(page);
   await open(page, "?from=%2Ftickets");
-  await expect(page.getByRole("link", { name: "戻る" })).toHaveAttribute("href", "/tickets");
+  await expect(backLink(page)).toHaveAttribute("href", "/tickets");
   await open(page, "?from=https%3A%2F%2Fevil.example%2F");
   await expect(heading(page)).toBeVisible();
-  await expect(page.getByRole("link", { name: "戻る" })).toHaveCount(0);
+  await expect(backLink(page)).toHaveCount(0);
 });
 
 row(R["K57-UI-021"], async (page) => {
@@ -230,15 +235,17 @@ row(R["K57-UI-021"], async (page) => {
     // 先の 4 つ（%09・%0A・%0D%0A・%5C）は問いに打ったままの形で送る。ほかは値そのもの（"/%2e//…" も文字のまま）を送る
     await open(page, `?from=${/^\/%(09|0A|0D|5C)/.test(q) ? q : encodeURIComponent(q)}`);
     await expect(heading(page), q).toBeVisible();
-    await expect(page.getByRole("link", { name: "戻る" }), q).toHaveCount(0);
+    await expect(backLink(page), q).toHaveCount(0);
   }
   // 中の道は問いと # まで含めて、そのまま戻る先になる
   await open(page, `?from=${encodeURIComponent("/tickets?x=1#a")}`);
-  await expect(page.getByRole("link", { name: "戻る" })).toHaveAttribute("href", "/tickets?x=1#a");
+  await expect(backLink(page)).toHaveAttribute("href", "/tickets?x=1#a");
 });
 
 row(R["K57-UI-022"], async (page) => {
-  await mockApi(page);
+  const m = await mockApi(page);
+  // つながっている PC がある状態で見る（PC が無いときは、つなぐ小窓（K-230）が開いて後ろの導線を押せない）
+  m.on.devices = () => ({ status: 200, body: { data: [device("live")] } });
   await open(page);
   await expect(heading(page)).toBeVisible();
   await page.getByRole("link", { name: "前の設定の画面" }).click();

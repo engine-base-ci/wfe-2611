@@ -46,7 +46,8 @@ test("USH-00-013 入っている人（PC 未接続）が / を開くと 自分�
   await loginAs(page, u.token);
   await page.goto("/");
   await page.waitForURL(/\/setup\/bridge$/, { timeout: 30_000 });
-  await expect(page.locator("h1")).toHaveText("自分のPCをつなぐ");
+  // /setup/bridge の見出しは K-220 から「PC と使った量」。PC が無いときは K-230 のつなぐ小窓の題「PC をつなぐ」が読み上げの h1
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible();
 });
 test("USH-00-014 入っている人（PC 接続済み）が / を開くと 今日 へ送られる", async ({ page }) => {
   const u = await signupViaApi();

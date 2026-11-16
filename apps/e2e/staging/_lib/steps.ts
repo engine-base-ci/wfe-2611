@@ -77,7 +77,8 @@ export async function readAs(
 /** PC をつなぐの画面を開く。開いた先の番号を返す */
 export async function openConnect(page: Page, from = "/tickets"): Promise<number | null> {
   const res = await page.goto(`/setup/bridge?from=${encodeURIComponent(from)}`);
-  await expect(h1(page, "PC をつなぐ")).toBeVisible();
+  // 本文の h1 はキャンバスの字「PC と使った量」（K-220）。つなぐ小窓が開いている間は小窓の題「PC をつなぐ」
+  await expect(page.getByRole("heading", { level: 1, name: /^(PC と使った量|PC をつなぐ)$/ })).toBeVisible();
   return res?.status() ?? null;
 }
 const CODE_RE = /^[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{6}$/;
