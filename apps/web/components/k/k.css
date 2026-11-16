@@ -151,6 +151,24 @@
   font-weight: var(--k-c-label-lg-fw);
   color: var(--k-c-label-lg-fg);
 }
+/* 項目名の横の括弧書きの補足（K-255・キャンバス AuthSignup）。項目名と同じ行の右に置き、長ければ補足の中で折る。
+   幅 767 以下は欄の幅が狭く、補足だけの列では行が増えるので、キャンバスと同じく項目名に続けて流す（折り返しは箱の左から） */
+.k-label-row {
+  display: flex;
+  align-items: flex-start;
+}
+.k-label-row .k-label {
+  flex: none;
+}
+.k-hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 0 0 var(--k-s-xs);
+  font-size: var(--k-c-label-text);
+  line-height: var(--k-c-label-lh);
+  font-weight: var(--k-fw-body);
+  color: var(--k-on-surface-variant);
+}
 .k-req {
   color: var(--k-error);
   margin-left: var(--k-s-xs);
@@ -185,6 +203,16 @@
   border-radius: var(--k-c-input-lg-radius);
   font-size: var(--k-c-input-lg-text);
   line-height: var(--k-c-input-lg-lh);
+}
+@media (max-width: 767px) {
+  .k-label-row {
+    display: block;
+    font-size: var(--k-c-label-text);
+    line-height: var(--k-c-label-lh);
+  }
+  .k-label-row .k-hint {
+    display: inline;
+  }
 }
 /* 幅 767 以下は入力の字を 16px（16px 未満だと iPhone が入力のたびに拡大する・D-144.7） */
 @media (max-width: 767px) {

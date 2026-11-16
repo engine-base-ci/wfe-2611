@@ -61,7 +61,69 @@ async function shellApi(page: Page, approvals: number): Promise<void> {
   });
 }
 
+/** 入口（登録・待つ）の口を差し替える（K-255）。ログインしていない人・規約の今の版は空・申し込みは pending。
+ *  hold の口は答えない（確かめ中・読み込み中の状態を作る） */
+const SIGNUP_EMAIL = "takamoto@engine-base.example";
+const SIGNUP_TOKEN = "st_fidelity_0123456789abcdefghijklmnopqrstuvwxyz";
+async function authApi(page: Page, hold: { me?: boolean; status?: boolean } = {}): Promise<void> {
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
+    const req = route.request();
+    const p = new URL(req.url()).pathname;
+    let r: { status: number; body: unknown } = {
+      status: 401,
+      body: { error: "unauthenticated", code: "UNAUTHENTICATED" },
+    };
+    if (/\/me$/.test(p) && hold.me) return; // 答えない（確かめ中のまま）
+    if (p === "/api/v1/auth/sign-up/status") {
+      if (hold.status) return; // 答えない（読み込み中のまま）
+      r = { status: 200, body: { data: { state: "pending", email: SIGNUP_EMAIL } } };
+    } else if (p === "/api/v1/auth/terms/current") r = { status: 200, body: { data: [] } };
+    await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
+  });
+}
+/** 待つ画面の申し込みの印をこのタブに置く（登録の答えと同じ形・features/F1/sign-up/store.ts） */
+async function putTicket(page: Page): Promise<void> {
+  await page.addInitScript(
+    ([t, e]) =>
+      window.sessionStorage.setItem(
+        "kaname.signup",
+        JSON.stringify({ token: t, email: e, sent: true, mailError: null }),
+      ),
+    [SIGNUP_TOKEN, SIGNUP_EMAIL] as const,
+  );
+}
+/** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
+async function untilStatusText(page: Page, text: string): Promise<void> {
+  await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
+}
+
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
+  // 鍵は "<鍵>": の字で探される（scripts/ci/fidelity_config.py）。整形が引用符を外さないようにする
+  // prettier-ignore
+  "signup": async (page, path) => {
+    await authApi(page);
+    await page.goto(path);
+    await expect(page.getByLabel("名前", { exact: true })).toBeVisible();
+  },
+  "signup-waiting": async (page, path) => {
+    await authApi(page);
+    await putTicket(page);
+    await page.goto(path);
+    await expect(page.getByRole("button", { name: "送り直す" })).toBeVisible();
+  },
+  "signup-checking": async (page, path) => {
+    await authApi(page, { me: true });
+    await page.addInitScript(() => window.localStorage.setItem("kaname.token", "tok-fidelity"));
+    await page.goto(path);
+    await untilStatusText(page, "確かめています…");
+  },
+  "signup-waiting-loading": async (page, path) => {
+    await authApi(page, { status: true });
+    await putTicket(page);
+    await page.goto(path);
+    await untilStatusText(page, "読み込んでいます…");
+  },
   "shell-nav": async (page, path) => {
     await shellApi(page, 2);
     await page.goto(path);

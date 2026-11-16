@@ -1,19 +1,24 @@
-/* ログインしていない人の画面（K-51）。キャンバスの authpage の形。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない） */
+/* ログインしていない人の画面（K-51）。キャンバスの authpage の形。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない）。
+   余白と間はキャンバス（AuthSignup・AuthVerify）の値（K-255）：外 32px 16px・ロゴと箱の間 18・箱 26px 28px・段の間 14・足元の間 12 */
 .k-auth {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--k-s-md);
-  padding: var(--k-s-lg) var(--k-s-md);
+  gap: 18px;
+  padding: 32px var(--k-s-md);
   box-sizing: border-box;
 }
 .k-auth-logo {
   display: flex;
   align-items: center;
-  gap: var(--k-s-sm);
+  gap: 10px;
   font-size: var(--k-text-h1);
+  letter-spacing: 0.02em;
+}
+.k-auth-logo b {
+  font-weight: var(--k-fw-h1);
 }
 .k-auth-mark {
   display: grid;
@@ -32,8 +37,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--k-s-md);
-  padding: var(--k-s-lg);
+  gap: 14px;
+  padding: 26px 28px;
   background: var(--k-card);
   border: 1px solid var(--k-line);
   border-radius: var(--k-r-lg);
@@ -46,12 +51,41 @@
 }
 /* 箱の中の読み込み中（回る印と文）は、見出しと同じく真ん中（K-211・キャンバス AuthQR の待っている文）。
    部品 Loading の既定（k.css・左から）は箱の外のため変えない。文が折れたら行ごとに真ん中、印は縮ませない */
+/* 確かめ中・読み込み中（K-255・キャンバス AuthChecking・AuthVerifyLoading）：13px・灰・間 8・回る印 16px（灰の輪に紺の弧）。
+   文が出る前（3 秒・D-144.8）も行の高さを取っておき、文が出たときに箱がずれない */
 .k-auth-card > .k-state[data-state="loading"] {
   justify-content: center;
   text-align: center;
+  gap: var(--k-s-sm);
+  padding: 0;
+  min-height: calc(var(--k-text-body) * var(--k-lh-body));
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  color: var(--k-on-surface-variant);
 }
+/* 印の箱は 16px のまま動かさず、回るのは中の輪（箱の大きさが回る角度で変わらない） */
 .k-auth-card > .k-state[data-state="loading"] .k-spin {
   flex: none;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  animation: none;
+}
+.k-auth-card > .k-state[data-state="loading"] .k-spin::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 2px solid var(--k-line);
+  border-top-color: var(--k-primary);
+  border-radius: var(--k-r-full);
+  animation: k-spin 0.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .k-auth-card > .k-state[data-state="loading"] .k-spin::before {
+    animation-duration: 2.4s;
+  }
 }
 .k-auth-lead {
   margin: 0;
@@ -59,14 +93,54 @@
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
+/* 見出しのすぐ下の小さな説明（登録・ログイン）：見出しとの間を 8 に詰める（段の間 14 − 6） */
+.k-auth-lead[data-kind="sub"] {
+  margin-top: -6px;
+}
+/* 待つ画面の説明（AuthVerify）：13px・行の高さ 1.7 */
+.k-auth-lead[data-kind="body"] {
+  font-size: var(--k-text-body);
+  line-height: 1.7;
+}
+/* 入口の項目名と補足の行の高さはキャンバスの地の 1.6（12px で 19.2px） */
+.k-auth-form .k-field[data-size="lg"] .k-label-row,
+.k-auth-form .k-field[data-size="lg"] .k-label,
+.k-auth-form .k-field[data-size="lg"] .k-hint {
+  line-height: var(--k-lh-body);
+}
 .k-auth-form {
   display: flex;
   flex-direction: column;
-  gap: var(--k-s-md);
+  gap: 14px;
 }
 .k-auth-form .k-btn {
   width: 100%;
-  min-height: 44px;
+}
+/* 待つ画面の頭の「← 戻る」（AuthVerify） */
+.k-auth-back {
+  align-self: flex-start;
+  font-size: var(--k-text-body-sm);
+}
+/* 見出しの上の札（AuthVerify の ✉）。44×44・紺・角丸 8。tone で橙（warn）・緑（ok） */
+.k-auth-badge {
+  flex: none;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--k-r-field);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-h2);
+  font-weight: var(--k-fw-h2);
+  line-height: 1;
+}
+.k-auth-badge[data-tone="warn"] {
+  background: var(--k-st-warning);
+}
+.k-auth-badge[data-tone="ok"] {
+  background: var(--k-st-success);
 }
 .k-auth-note {
   margin: 0;
@@ -76,24 +150,27 @@
 }
 .k-auth-alt {
   margin: 0;
-  padding-top: var(--k-s-sm);
+  padding-top: 12px;
   border-top: 1px solid var(--k-line-soft);
   text-align: center;
   font-size: var(--k-text-body-sm);
 }
+/* リンクは下線つき（キャンバスの a の既定） */
 .k-auth a {
   color: var(--k-primary);
+  text-decoration: underline;
 }
 .k-auth-foot {
   display: flex;
-  gap: var(--k-s-md);
+  gap: 12px;
   font-size: var(--k-text-label-md);
 }
 .k-auth-foot a {
   color: var(--k-on-surface-variant);
 }
 .k-auth-mail {
-  font-weight: var(--k-fw-h3);
+  font-weight: var(--k-fw-h2);
+  color: var(--k-on-surface);
   word-break: break-all;
 }
 .k-auth-actions {
