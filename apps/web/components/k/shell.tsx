@@ -263,12 +263,7 @@ export function Shell(p: ShellProps) {
           </nav>
           <b className="k-bar-title">{title}</b>
           <div className="k-bar-tools">
-            <form
-              role="search"
-              className="k-search"
-              data-disabled={canSearch ? undefined : true}
-              onSubmit={search}
-            >
+            <form role="search" className="k-search" data-disabled={canSearch ? undefined : true} onSubmit={search}>
               <label>
                 <Search size={14} aria-hidden="true" />
                 <span className="sr-only">探す</span>

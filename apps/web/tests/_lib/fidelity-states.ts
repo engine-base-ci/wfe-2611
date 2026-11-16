@@ -42,7 +42,9 @@ async function shellApi(page: Page, approvals: number): Promise<void> {
       );
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: approvals }, cursor: null });
     else if (p === "/api/v1/bridge/devices")
-      r = ok([{ id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" }]);
+      r = ok([
+        { id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" },
+      ]);
     else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
     else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
     else if (p === "/api/v1/tickets" && req.method() === "GET")
