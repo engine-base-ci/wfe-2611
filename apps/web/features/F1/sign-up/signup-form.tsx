@@ -8,7 +8,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
-import { Button, Callout, PasswordField, TextField, PAGE_ERROR, errorText } from "@/components/k";
+import { Button, Callout, Loading, PasswordField, TextField, PAGE_ERROR, errorText } from "@/components/k";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { pendingRoute } from "@/lib/pending-route";
@@ -108,7 +108,7 @@ export function SignupForm() {
           mailError: r.data.mail_error ?? null,
         });
         // 待つ画面は登録の画面と入れ替える（戻る・進む・再読み込みをまたいでも、待つ画面がほかの画面の中身にならない）。
-        // メールを直したいときは待つ画面の「入力し直す」から戻る（書きかけはパスワードのほかは残っている）
+        // メールを直したいときは待つ画面の頭の「← 戻る」から戻る（書きかけはパスワードのほかは残っている）
         router.replace("/verify-email");
         return;
       }
@@ -124,11 +124,20 @@ export function SignupForm() {
     }
   };
 
-  if (checking) return <AuthFrame links={links}>{null}</AuthFrame>;
+  // 確かめている間も枠と見出しを先に出し、文は 3 秒たっても終わらないときだけ（D-144.8・キャンバス AuthChecking）
+  if (checking)
+    return (
+      <AuthFrame links={links}>
+        <h1>アカウントを作る</h1>
+        <Loading label="確かめています…" />
+      </AuthFrame>
+    );
   return (
     <AuthFrame links={links}>
       <h1>アカウントを作る</h1>
-      <p className="k-auth-lead">登録したらすぐ使い始められる。設定の段はない</p>
+      <p className="k-auth-lead" data-kind="sub">
+        登録したらすぐ使い始められる。設定の段はない
+      </p>
       {banner?.kind === "registered" ? (
         <Callout tone="warn">
           <span>{msg("E-CONF-001")}</span>
@@ -140,6 +149,7 @@ export function SignupForm() {
       {banner?.kind === "failed" ? <Callout tone="danger">{errorText(banner.code).entry.message}</Callout> : null}
       <form className="k-auth-form" onSubmit={submit} noValidate>
         <TextField
+          size="lg"
           label="メール"
           name="email"
           type="text"
@@ -151,6 +161,7 @@ export function SignupForm() {
           error={errors.email}
         />
         <TextField
+          size="lg"
           label="名前"
           name="name"
           autoComplete="name"
@@ -160,25 +171,28 @@ export function SignupForm() {
           error={errors.name}
         />
         <TextField
+          size="lg"
           label="会社・チームの名前"
           name="company_name"
           autoComplete="organization"
           placeholder="例：株式会社ENGINE BASE"
-          description="空なら、あなたの名前で個人のワークスペースになる。あとで人を招ける"
+          hint="空なら、あなたの名前で個人のワークスペースになる。あとで人を招ける"
           value={company}
           onChange={(e) => setCompany(e.target.value)}
           error={errors.company_name}
         />
         <PasswordField
+          size="lg"
           label="パスワード"
           name="password"
           autoComplete="new-password"
-          description="12 文字以上。漏れたことのあるパスワードは使えない"
+          placeholder="12 文字以上"
+          hint="12 文字以上。漏れたことのあるパスワードは使えない"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={errors.password}
         />
-        <Button type="submit" loading={busy}>
+        <Button type="submit" size="lg" loading={busy}>
           次へ（メールを確かめる）
         </Button>
       </form>

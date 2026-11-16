@@ -62,7 +62,7 @@ KINDS = {
     "shell-tabs": (["tabs"], [375]),
 }
 GROUPS = {
-    "signup": ("auth", "AuthSignup", "K-222"), "signup-waiting": ("auth-msg", "AuthVerify", "K-222"),
+    "signup": ("auth", "AuthSignup", "K-255"), "signup-waiting": ("auth-msg", "AuthVerify", "K-255"),
     "login": ("auth", "AuthLogin", "K-221"), "login-2fa": ("auth", "Auth2FA", "K-221"), "legal": ("doc", "LegalPage", "K-232"),
     "tickets-first": ("page", "OnHome", "K-251"), "tickets-main": ("page", "Main", "K-251"), "tickets-list": ("page", "List", "K-252"),
     "tickets-new": ("form", "Create", "K-224"), "tickets-new-sections": ("form", "Create", "K-225"),

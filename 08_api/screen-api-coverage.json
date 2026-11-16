@@ -2235,6 +2235,11 @@
     },
     {
      "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets",
+     "act": "A99"
+    },
+    {
+     "role": "data_fetch",
      "endpoint": "GET /api/v1/scopes/:id/overview",
      "act": "A58"
     },

@@ -34,6 +34,15 @@
     "dialog": ".k-dialog",
     "dialog-title": ".k-dialog-title",
     "state-empty": ".k-state[data-state=\"empty\"]",
+    "auth-page": ".k-auth",
+    "auth-logo": ".k-auth-logo",
+    "auth-card": ".k-auth-card",
+    "auth-lead-sub": ".k-auth-lead[data-kind=\"sub\"]",
+    "auth-lead-body": ".k-auth-lead[data-kind=\"body\"]",
+    "auth-badge": ".k-auth-badge",
+    "auth-alt": ".k-auth-alt",
+    "auth-foot": ".k-auth-foot",
+    "auth-spin": ".k-auth-card > .k-state[data-state=\"loading\"] .k-spin",
     "button-secondary": {
       "selector": ".k-btn[data-variant=\"secondary\"]",
       "shape": ".k-btn"

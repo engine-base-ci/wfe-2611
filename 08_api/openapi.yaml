@@ -39072,12 +39072,13 @@ paths:
   /api/v1/tickets:
     get:
       operationId: listTickets
-      summary: 取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント）
+      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）
       tags:
       - tickets
       x-acts:
       - A113
       - A58
+      - A99
       x-screens:
       - tickets
       x-choke-points: []
@@ -39088,6 +39089,9 @@ paths:
       - D-125.13
       - D-125.167
       - D-125.49
+      - D-125.51
+      - D-125.57
+      - D-125.6
       - D-125.61
       - D-125.64
       - D-125.97
@@ -39102,132 +39106,30 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+      - name: q
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
       - name: scope_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
           format: uuid
-      - name: q
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: kind_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
-      - name: stage_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
-      - name: assignee_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
-      - name: client_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
-      - name: due_from
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: due_to
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: start_from
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: start_to
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: overdue
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: fire
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: parent
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: fields
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
       - name: cursor
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[0-9]{1,9}$
+          pattern: ^[A-Za-z0-9_-]{1,200}$
       - name: limit
         in: query
         allowEmptyValue: true
         schema:
           type: integer
           minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - actual_minutes
-          - assignee_member_id
-          - client_id
-          - client_share
-          - completed_at
-          - completed_by
-          - created_at
-          - created_by
-          - delegated_to_clone
-          - deleted_at
-          - deleted_by
-          - derived_from_ticket_id
-          - draft_import_id
-          - due_on
-          - estimate_minutes
-          - hold_reason
-          - id
-          - kind_id
-          - number
-          - parent_ticket_id
-          - priority
-          - priority_reason
-          - resume_condition
-          - scope_id
-          - stage_id
-          - start_on
-          - tenant_id
-          - title
-          - updated_at
-          - updated_by
-          - work_type_id
-          - work_type_version
+          maximum: 100
       responses:
         '200':
           description: 成功
@@ -39243,8 +39145,9 @@ paths:
                   meta:
                     type: object
                     properties:
-                      counts:
-                        type: object
+                      next_cursor:
+                        type: string
+                        nullable: true
         '401':
           description: UNAUTHENTICATED
           content:

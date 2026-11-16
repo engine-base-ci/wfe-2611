@@ -38,7 +38,7 @@ export function normalize(v: unknown): unknown {
 // 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・K-35）
 //   鍵の文字列（base64url の 1〜200 字）を受けると宣言した口（KEY_CURSOR_OPS）だけは、鍵の文字列も通す。中身（鍵の形）はその口が確かめる（D-131.9・K-161）。
 //   宣言の無い一覧の口は今までどおり位置の数だけ（契約の生成器 05_flow/build_api.py の KEY_CURSOR_OPS と同じ集まり）
-export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set(["listApprovalQueue"]);
+export const KEY_CURSOR_OPS: ReadonlySet<string> = new Set(["listApprovalQueue", "listTickets"]);
 const encodeCursor = (n: number) => String(n);
 const decodeCursor = (s: string | undefined, keyed = false): number | null => {
   if (!s) return 0;
@@ -356,6 +356,14 @@ async function execute(
       const row = await table.update(ctx, id!, input);
       if (!row) return await unwritable(args);
       body = { data: row };
+    } else if (def.table === "tickets") {
+      // チケットは行の守りが消したもの（deleted_at）を外すので、共通の softDelete（更新した行を select の守りで読む）は弾かれる。
+      //   消すのは関門 C2 の app.ticket_soft_delete だけ（見えて edit を持つときだけ消して true・記録も書く・K-92・D-128.158）。
+      //   行の守りの中で :id の行を読んで関数を呼ぶ（見えない＝404・消せない＝403）
+      const r = await repo.rowAllowed(ctx, "tickets", id!, "app.ticket_soft_delete(tickets.id)");
+      if (r === "missing") return fail(404, "not_found", "NOT_FOUND");
+      if (r !== "ok") return fail(403, "forbidden", "FORBIDDEN");
+      body = { data: { id } };
     } else {
       if (!(await table.softDelete(ctx, id!))) return await unwritable(args);
       body = { data: { id } };

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 35・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 14・共通の処理 13・エラー 170・部品 53・設定 39
+API 365（作った 36・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 15・共通の処理 13・エラー 172・部品 53・設定 39
 
 ## 共通の処理
 
@@ -40,6 +40,7 @@ API 365（作った 35・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/states` | Empty, Loading, ErrorState, NoAccess, ErrorPage, OfflineBanner, useOnline | 4 つの状態（空・読み込み中・失敗・権限が無い）とエラーの 1 件（K-26・D-069）。どの画面でも同じ形で出す |
 | `apps/web/components/k/error-of` | PAGE_ERROR, errorCodeOf, errorText | どのエラーを出すか（K-26・D-069）。文言は正本（07_qa/test-specs/errors.json → @kaname/errors/catalog）の 1 件だけ。画面で文言を作らない |
 | `apps/web/components/k/page` | PageBody, PageHeader, Section, Prose, TextLink, Row | ページの型（K-217・D-143.3）。見た目は page.css（キャンバスの実測）。どれもクラスの名前を出すだけの薄い部品。 |
+| `apps/web/components/k/me-sub` | MeSub | 自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。 |
 
 ## DB の表（境目と骨格）
 
@@ -327,6 +328,7 @@ API 365（作った 35・後のフェーズの行為だけ 20）・前の道す�
 | `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
+| `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印） | F4,F7 | 作った | K-92 |
 | `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
 | `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 契約だけ（501） | K-67 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -402,7 +404,6 @@ API 365（作った 35・後のフェーズの行為だけ 20）・前の道す�
 | `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `search` | GET /api/v1/search | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | F7 | 契約だけ（501） | K-67 |
 | `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
-| `listTickets` | GET /api/v1/tickets | 取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-92 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |

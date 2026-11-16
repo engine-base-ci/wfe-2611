@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 35,
+  "api_built": 36,
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
-  "ui": 14,
+  "ui": 15,
   "packages": 13,
-  "errors": 170,
+  "errors": 172,
   "stack": 53,
   "env": 39
  },
@@ -4775,15 +4775,16 @@
    "op": "listTickets",
    "method": "GET",
    "path": "/api/v1/tickets",
-   "what": "取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）",
    "flows": [
+    "F4",
     "F7"
    ],
    "only_later_phase": false,
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-92"
    ]
@@ -7377,6 +7378,13 @@
     "Row"
    ],
    "what": "ページの型（K-217・D-143.3）。見た目は page.css（キャンバスの実測）。どれもクラスの名前を出すだけの薄い部品。"
+  },
+  {
+   "file": "apps/web/components/k/me-sub",
+   "exports": [
+    "MeSub"
+   ],
+   "what": "自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。"
   }
  ],
  "common": {

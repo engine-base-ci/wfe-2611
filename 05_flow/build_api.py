@@ -35,6 +35,7 @@ for s in S:
         e["acts"].add(a["act"]); e["screens"].add(s["id"]); e["related_entities"].update(a.get("related_entities", [])); e["choke_points"].update(a.get("choke_points", [])); e["source"].update(a.get("source", []) or s["source"]); 
         if feat_of_act.get(a["act"]): e["features"].add(feat_of_act[a["act"]])
 def desc(e):
+    if e.get("operation_id") in getattr(_sa, "LIST_DETAILS", {}): return _sa.LIST_DETAILS[e["operation_id"]]["desc"]
     verbs = "／".join(acts[a]["act"][:28] for a in sorted(e["acts"])[:2]); t = e["path"].split("/")[3] if len(e["path"].split("/")) > 3 else ""
     return f"{ {'GET':'取得','POST':'作成・実行','PATCH':'更新','DELETE':'削除'}[e['method']] }（{t}）— {verbs}"
 def four(e):
@@ -96,6 +97,10 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["path_params"] = params; e["returns_list"] = (m == "GET" and (e["operation_id"].startswith(("list", "search")) or e["operation_id"] in getattr(_sa, "LIST_OPS", set()))) if e.get("operation_id") else (m == "GET" and ":id" not in p)
     e["inputs"] = {"path": params, "body": f"{tname} の入力（types.ts の {''.join(w.capitalize() for w in tname.split('_'))}Input）" if m in ("POST", "PATCH") else None, "query": ["scope_id", "cursor", "limit", "sort"] if m == "GET" and ":id" not in p else []}
     e["outputs_2xx"] = {"status": 201 if m == "POST" else 200, "body": f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}{'[]' if e['returns_list'] else ''}, meta?: {{ cursor, limit, total }} }}"}
+    _ld = getattr(_sa, "LIST_DETAILS", {}).get(e.get("operation_id"))   # 一覧の口の細目（K-92）：問い合わせと答えの meta をその口の形に
+    if _ld:
+        e["inputs"]["query"] = list(_sa.QUERIES.get(e["operation_id"], ["scope_id"])) + ["cursor", "limit"] + (["sort"] if _ld.get("sort", True) else [])
+        e["outputs_2xx"]["body"] = f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}[], meta: {_ld['meta']} }}"
     e["id"] = f"EP-{len(endpoints)+1:03d}"; e["feature_id"] = e["features"][0] if e["features"] else None
     endpoints.append(e)
 # 行為 → endpoint の逆被覆
@@ -184,10 +189,10 @@ schemas["Error"] = {"type": "object", "properties": {"error": {"type": "string"}
 # 問い合わせの値の形（入口 op.ts が確かめるのと同じ。K-35）
 #   sort は表の列の名前だけ。scope_id は表に scope_id があるときだけ出す。空の値（?limit=）は指定なしと同じ（allowEmptyValue）
 # 続きの印を「鍵の文字列」で受ける一覧の口（D-131.9・K-161）。ほかの一覧の口は位置の数のまま（入口 op.ts の KEY_CURSOR_OPS と同じ集まり）
-KEY_CURSOR_OPS = {"listApprovalQueue"}
+KEY_CURSOR_OPS = {"listApprovalQueue", "listTickets"}
 def qtype(q, table, op=None):
     cols = sorted(_DBC.get(table, {}))
-    if q == "limit": return {"type": "integer", "minimum": 1, "maximum": 200}
+    if q == "limit": return {"type": "integer", "minimum": 1, "maximum": getattr(_sa, "LIST_DETAILS", {}).get(op, {}).get("limit_max", 200)}
     if q == "sort": return {"type": "string", "enum": cols} if cols else {"type": "string", "pattern": "^[a-z_][a-z0-9_]{0,62}$"}
     if q.endswith("_id"): return {"type": "string", "format": "uuid"}   # *_id は正式な uuid（scope_id も・D-129.42・K-144）
     if q.endswith("_ids"): return {"type": "array", "items": {"type": "string", "format": "uuid"}}
@@ -232,14 +237,14 @@ for e in endpoints:
     for _n in _pp:
         if _n not in e["path_params"]: raise SystemExit(f"05_flow/screen_api.py の PATH_PATTERNS の {e.get('operation_id')}.{_n} が道の値に無い")
     op["parameters"] = [{"name": n, "in": "path", "required": True, "schema": {"type": "string", "format": "uuid"} if n.endswith("id") else ({"type": "string", "pattern": _pp[n]} if n in _pp else {"type": "string"})} for n in e["path_params"]]   # :id・:qid・:pid・:mid は uuid（D-129.42）
-    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + (["cursor", "limit", "sort"] if e["returns_list"] else []), tname, e.get("operation_id"))
+    if e.get("operation_id") in _sa.QUERIES: op["parameters"] += qparams(_sa.QUERIES[e["operation_id"]] + ((["cursor", "limit", "sort"] if getattr(_sa, "LIST_DETAILS", {}).get(e["operation_id"], {}).get("sort", True) else ["cursor", "limit"]) if e["returns_list"] else []), tname, e.get("operation_id"))
     elif e["returns_list"]: op["parameters"] += qparams(("scope_id", "cursor", "limit", "sort"), tname, e.get("operation_id"))
     op["parameters"] += [{"name": h, "in": "header", "required": True, "schema": {"type": "string", "minLength": 32}} for h in getattr(_sa, "HEADERS", {}).get(e.get("operation_id"), [])]   # 頭で受ける値（K-51）
     if not op["parameters"]: del op["parameters"]
     tbl = "".join(w.capitalize() for w in tname.split("_"))
     _in = _in_of.get(op["operationId"]) or getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), (f"{tbl}Input",))[0]
     if e["method"] in ("POST", "PATCH"): op["requestBody"] = {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{_in}"}}}}
-    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: {"type": v} for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
+    ok = {"description": "成功", "content": {"application/json": {"schema": {"type": "object", "properties": {"data": {"type": "array", "items": {"$ref": f"#/components/schemas/{name}"}} if e["returns_list"] else {"$ref": f"#/components/schemas/{name}"}, "meta": {"type": "object", **({"properties": {k: ({"type": v} if isinstance(v, str) else dict(v)) for k, v in getattr(_sa, "META", {}).get(e.get("operation_id"), {}).items()}} if e.get("operation_id") in getattr(_sa, "META", {}) else {})}}}}}}
     if e.get("operation_id") in getattr(_sa, "RAW_200", {}): ok["content"]["application/octet-stream"] = {"schema": dict(_sa.RAW_200[e["operation_id"]])}   # ファイルそのものを返す口（K-144）
     _codes = {}
     for x in e["outputs_4xx"]: _codes.setdefault(str(x["status"]), []).append(x["code"])   # 同じ番号の行（403 の FORBIDDEN と E-AUTH-010・K-53）は説明を 1 つにまとめる

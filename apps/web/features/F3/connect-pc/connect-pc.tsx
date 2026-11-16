@@ -2,13 +2,18 @@
 // PC をつなぐ（K-57・画面 bridge-setup・道 /setup/bridge）。キャンバスの EdPC（①常駐アプリを入れる ②アプリにこのコードを入れる ③試しに動かす）と MePC（つないでいる PC）。
 //   出し分け（D-089）：①ブラウザで Bridge が入っていない＝受け取る道＋コード ②ブラウザで Bridge が入っている＝ボタン 1 つで渡す ③Bridge の窓の中＝開いた時点で自分でつながる
 //   「つながっています」は、最初の生きている知らせが届いてから（D-090）。眠っていれば「切れています」（E-CONN-001）と起こすボタン
+//   外枠（K-220・D-144.6）：新しい外枠（TicketShell）の中に、自分の設定の第 2 ナビ（MeSub）と本文の箱を並べる（キャンバス MePC）。どの状態も外枠の中に出す。
+//     見出しはキャンバスどおり「PC と使った量」。左のメニューの PC の状態は、この画面が読み続ける一覧の答えを渡す（外枠は読み直さない）。
+//     PC の一覧を読み終えるまでは、見出しの行の下に読み込み中（3 秒たっても終わらないときだけ文・D-144.8）
 //   口は契約の口だけ（createPairingCode・listMyDevices・downloadBridgeRelease）。文言は正本（errors.json）から
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Badge, Button, Callout, ErrorState, Loading, NoAccess } from "@/components/k";
+import type { ReactNode } from "react";
+import { Badge, Button, Callout, ErrorState, Loading, MeSub, NoAccess } from "@/components/k";
 import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { getInstaller, pairViaLocal, useWhere, wake } from "@/lib/bridge-presence";
+import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { pollDevices, type Device } from "./devices";
 import { CATALOG } from "@kaname/errors/catalog";
 
@@ -150,28 +155,40 @@ export function ConnectPc({ from }: { from: string | null }) {
     setNote("ダウンロードを始めました。入れて開くと、この画面が自分で気づきます");
   };
 
-  if (!ready) return <Loading />;
-  if (problem?.kind === "forbidden") return <NoAccess acts={[back ?? "/"]} />;
+  // 外枠・第 2 ナビ・本文の箱と見出しの行は、どの状態でも同じ（中身だけを替える）
+  const frame = (body: ReactNode) => (
+    <TicketShell
+      screen="bridge-setup"
+      crumbs={[{ label: "自分の設定", disabled: true }, { label: "PC と使った量" }]}
+      bridgeConnected={devices === null ? null : live !== null}
+    >
+      <div className="k-me-wrap">
+        <MeSub current="bridge" />
+        <section className="k-page k-me-page" aria-labelledby="connect-pc-title">
+          <header className="k-page-head">
+            {back ? (
+              <a className="k-link" href={back}>
+                戻る
+              </a>
+            ) : null}
+            <h1 id="connect-pc-title">PC と使った量</h1>
+            <p className="k-desc">分身はあなたの PC で動く。どのワークスペースの分身も同じ PC を使う</p>
+          </header>
+          {body}
+        </section>
+      </div>
+    </TicketShell>
+  );
+
+  if (!ready) return frame(<Loading />);
+  if (problem?.kind === "forbidden") return frame(<NoAccess acts={[back ?? "/"]} />);
   if (problem?.kind === "expired")
-    return (
-      <ErrorState code={PAGE_ERROR.sessionExpired} heading={1} acts={[`/login?next=${encodeURIComponent(here)}`]} />
-    );
+    return frame(<ErrorState code={PAGE_ERROR.sessionExpired} acts={[`/login?next=${encodeURIComponent(here)}`]} />);
+  // PC の一覧を読み終えるまで（失敗の知らせが無いあいだ）は読み込み中
+  if (devices === null && !problem) return frame(<Loading />);
 
-  return (
-    <main className="k-root k-page" aria-labelledby="connect-pc-title">
-      <header className="k-page-head">
-        {back ? (
-          <a className="k-link" href={back}>
-            戻る
-          </a>
-        ) : null}
-        <h1 id="connect-pc-title">PC をつなぐ</h1>
-        <p className="k-desc">
-          自分の AI は、あなたの PC の中で動きます。PC
-          のプログラム（Bridge）を入れて、この画面のコードでつなぎます。つながなくても、チケットを作る・自分で進めることはできます。
-        </p>
-      </header>
-
+  return frame(
+    <>
       {live ? (
         <Callout tone="info" title="つながっています">
           {live.device_label ?? "この PC"}・最後に見えた {lastSeen(live.last_seen_at)}
@@ -284,6 +301,6 @@ export function ConnectPc({ from }: { from: string | null }) {
           で行えます。
         </p>
       </section>
-    </main>
+    </>,
   );
 }

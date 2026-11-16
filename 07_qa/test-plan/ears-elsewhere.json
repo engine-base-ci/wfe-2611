@@ -308,6 +308,25 @@
     }
    }
   },
+  "listTickets": {
+   "file": "apps/api/test/features/F4/ticket-list.test.ts",
+   "reason": "K-92 の一覧の口は本物の振る舞い（hooks）と、見える範囲・自分に関わるもの・keyset の次の分を、試験ごとに作った会社とチケットで確かめる。生成の試験の土台（表の種の入力・hooks なし）では確かめられない（K-92）",
+   "covers": {
+    "test_get_tickets_ok": "K92-API-002",
+    "test_get_tickets_ok_2": "K92-API-003",
+    "test_get_tickets_ok_3": "K92-API-015",
+    "test_get_tickets_rejected_401": "K92-API-020",
+    "test_get_tickets_rejected_403": "K92-API-020",
+    "test_get_tickets_rejected_422": "K92-API-023",
+    "test_get_tickets_rate_limited": "K92-API-029",
+    "test_get_tickets_terms_pending": "K92-API-020",
+    "test_get_tickets_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_tickets_shape": "K92-API-009"
+   }
+  },
   "getTicket": {
    "file": "apps/api/test/features/F4/create-ticket.test.ts",
    "reason": "K-60 の口は本物の振る舞い（hooks）と、種別の必須の区画・期限が今日より前でない・同じ会社の確かめが要る。生成の試験の土台（表の種の入力）では確かめられない（K-60）",
