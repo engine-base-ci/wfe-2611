@@ -145,13 +145,13 @@ class FieldTest(unittest.TestCase):
 
     def test_K215_CF_006_not_applied(self) -> None:
         """K215-CF-006 確認中・完了のチケット、子を持つ親、当たり方の 3 つのどれにも当たらないチケット
-        （changes が scripts・apps/web/tests だけ）は canvas が無くても 0"""
+        （changes が scripts・apps/web/tests・apps/web/lib だけ。lib は入れない）は canvas が無くても 0"""
         self.f.ticket("K-9")
         self.f.ticket("K-7", stage="確認中", canvas=None)
         self.f.ticket("K-6", stage="完了", canvas=None)
         self.f.ticket("K-5", canvas=None)
         self.f.ticket("K-4", canvas="[全部の組]", parent="K-5")
-        for tid, path in (("K-3", "scripts/ci/x.py"), ("K-2", "scripts/tickets/x.py"), ("K-10", "apps/web/tests/features/x.spec.ts")):
+        for tid, path in (("K-3", "scripts/ci/x.py"), ("K-2", "scripts/tickets/x.py"), ("K-1", "apps/web/lib/theme.ts"), ("K-10", "apps/web/tests/features/x.spec.ts")):
             self.f.ticket(tid, canvas=None, screens=None, area="試験", changes=f"[{path}]")
         assert_green(self, self.f.run("--no-base"))
 
@@ -216,13 +216,20 @@ class DiffTest(unittest.TestCase):
 
     def test_K215_CF_015_canvas_none_checks_actual_diff(self) -> None:
         """K215-CF-015 --ticket のチケットが canvas_none のとき、分かれ目との実際の差分（git diff <分かれ目>...HEAD の名前）に
-        画面のコード（components/ui も）があれば 1 で番号とファイルを出す。画面の試験だけの差分は 0。--no-base・--ticket が無い回は差分を見ない"""
+        画面のコード（components/ui も）があれば 1 で番号とファイルを出す。画面の試験だけの差分は 0。--no-base・--ticket が無い・空（全部の回）は差分を見ない。
+        canvas に組を書いたチケット（canvas_none でない）は差分に画面のコードがあっても 0"""
         self.commit("apps/web/tests/features/F5/x.spec.ts")
         assert_green(self, self.f.run("--ledger-base-ref", "base", "--ticket", "K-9"))
         self.commit("apps/web/components/ui/x.tsx")
         assert_red(self, self.f.run("--ledger-base-ref", "base", "--ticket", "K-9"), "K-9", "apps/web/components/ui/x.tsx")
         assert_green(self, self.f.run("--ledger-base-ref", "base"))
+        assert_green(self, self.f.run("--ledger-base-ref", "base", "--ticket", ""))
         assert_green(self, self.f.run("--no-base", "--ticket", "K-9"))
+        self.f.groups({"g1": "K-8"})
+        self.f.ticket("K-8", canvas="[g1]", changes="[apps/web/components/ui/x.tsx]")
+        self.f.git("add", "-A")
+        self.f.git("commit", "-qm", "owner")
+        assert_green(self, self.f.run("--ledger-base-ref", "base", "--ticket", "K-8"))
 
 
 class LedgerTest(unittest.TestCase):
@@ -332,7 +339,8 @@ class WiringTest(unittest.TestCase):
         self.assertEqual(len(steps), 1)
         run = steps[0]["run"]
         self.assertIn("python3 scripts/ci/canvas_field_gate.py --ledger-base-ref", run)
-        self.assertIn("--ticket", run)
+        self.assertIn('--ticket "$CI_TICKET"', run)
+        self.assertEqual(str(steps[0].get("env", {}).get("CI_TICKET", "")).replace(" ", ""), "${{inputs.ticket}}")
         self.assertIn("python3 scripts/ci/k215_canvas_field_test.py", run)
         self.assertNotIn("continue-on-error", steps[0])
 
