@@ -1,0 +1,86 @@
+// K-219「キャンバスに絵が無い状態の絵を起こす」の試験（実 Chrome・画面の側は開かない）。
+//   起こした 13 枚の絵を、突き合わせの組（04_design/fidelity.json・K-216）の種類の幅で開き、組の canvas のセレクタが
+//   見えている要素に当たり（texts 以外の役はちょうど 1 つ）、比べる値が全部読める（「（無い）」が無い）かを見る。
+//   設定の形が正しいだけでは通さない（持ち主の画面のチケットが組を入れた日に、絵の側が空で赤になるのを先に止める）。
+//   キャンバスが外から読む書体は手元に差し替え（routeCanvasFonts・K-238）、外へは 1 本も出さない（G-11）。
+//   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { expect, test } from "@playwright/test";
+import { MISSING, readVals, type FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
+import { routeCanvasFonts } from "../_lib/fidelity-states";
+
+interface Group {
+  id: string;
+  kind: string;
+  canvas: string;
+  widths: number[];
+  pairs: FidelityPair[];
+}
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(HERE, "../../../..");
+const NEW_GROUPS = [
+  "verify-confirming",
+  "verify-expired",
+  "verify-used",
+  "consent-terms",
+  "signup-checking",
+  "signup-waiting-loading",
+  "band-before",
+  "band-confirm-done",
+  "band-done",
+  "band-delegated",
+  "complete-modal",
+  "approvals-empty",
+  "bridge-installed",
+];
+const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
+
+test("K219-CV-009 起こした 13 組が設定に在る（無ければ下の行が流れないので、ここで止める）", () => {
+  const ids = new Set(CFG.groups.map((g) => g.id));
+  expect(NEW_GROUPS.filter((id) => !ids.has(id))).toEqual([]);
+});
+
+for (const id of NEW_GROUPS) {
+  const g = CFG.groups.find((x) => x.id === id);
+  for (const w of g?.widths ?? [1440]) {
+    test(`K219-CV-009 ${id}（${g?.canvas ?? "?"}）幅 ${w}：組のセレクタが絵の要素に当たり、比べる値が全部読める・外へ出ない`, async ({
+      browser,
+    }) => {
+      expect(g, `組 ${id} が無い`).toBeTruthy();
+      const page = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+      const outside: string[] = [];
+      page.on("request", (r) => {
+        const u = new URL(r.url());
+        if (!["file:", "data:"].includes(u.protocol) && !["127.0.0.1", "localhost"].includes(u.hostname))
+          outside.push(r.url());
+      });
+      await routeCanvasFonts(page);
+      await page.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g!.canvas}.dc.html`)).href);
+      for (const p of g!.pairs) await page.locator(p.canvas).first().waitFor({ state: "visible" });
+      await page.evaluate(() => document.fonts.ready);
+      const vals = await readVals(page, g!.pairs, "canvas");
+      const bad: string[] = [];
+      g!.pairs.forEach((p, i) => {
+        const v = vals[i];
+        if (!v) {
+          bad.push(`${p.name}：要素が無い`);
+          return;
+        }
+        const count = v.__count;
+        if (!p.props.includes("texts") && count !== undefined && count !== 1)
+          bad.push(`${p.name}：当たった数 ${count}`);
+        for (const prop of p.props) {
+          const got = v[prop];
+          if (got === undefined || got === null || got === MISSING || (Array.isArray(got) && got.length === 0))
+            bad.push(`${p.name}・${prop}：読めない`);
+        }
+      });
+      expect(bad, bad.join("\n")).toEqual([]);
+      expect(outside).toEqual([]);
+      await page.close();
+    });
+  }
+}
