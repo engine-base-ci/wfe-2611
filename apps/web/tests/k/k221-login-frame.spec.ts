@@ -577,8 +577,47 @@ test("K221-UI-024 ログインしたまま同意し直し（?step=terms）の画
   page,
 }) => {
   await mockAuth(page);
+  // ログインしたまま：印を置き、本人の口（/me）と今の版の規約の口に答える（印が無いと同意し直しの画面はログインへ移す・K-53）。
+  //   あとから足した道が先に当たる（Playwright の route は後に足した物が先）
+  await page.addInitScript(() => window.localStorage.setItem("kaname.token", "tok-k221"));
+  await page.route(/\/api\/v1\/auth\/terms\/current$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: [
+          {
+            id: "00000000-0000-4000-8000-000000000301",
+            kind: "terms",
+            version: "第2版",
+            url: "/legal/terms?v=2",
+            published_at: "2026-11-01T00:00:00.000Z",
+          },
+          {
+            id: "00000000-0000-4000-8000-000000000302",
+            kind: "privacy",
+            version: "第2版",
+            url: "/legal/privacy?v=2",
+            published_at: "2026-11-01T00:00:00.000Z",
+          },
+        ],
+      }),
+    }),
+  );
+  await page.route(/\/api\/.*\/me$/, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: { id: "11111111-0000-4000-8000-000000000001", email: "takamoto@example.com", name: "高本" },
+      }),
+    }),
+  );
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`/login?step=terms&next=${encodeURIComponent("/tickets")}`);
+  // 同意し直しの画面が出きるまで待つ（ログインの画面へ移っていない）
+  await expect(page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" })).toBeVisible();
+  await expect(page).toHaveURL(/\/login\?step=terms/);
   await expect(page.locator(".k-auth-card, [data-part='auth-box']").first()).toBeVisible();
   await expect(page.locator(`${BOX} [data-act="passkey"]`)).toHaveCount(0);
 });
