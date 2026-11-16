@@ -11118,7 +11118,7 @@
     "@kaname/contracts"
    ],
    "ci_wide": [
-    "db"
+    "shared"
    ],
    "acts": [
     "A74"
