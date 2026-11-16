@@ -313,10 +313,10 @@ def after_shellfix():
 # ---------- 置き場の表 ----------
 # 絵: (近い絵, page, 画面 か "common", title, 組 (id, 種類, 画面の道, 持ち主, 組を写す元) か None)
 BOARDS = {
-    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "メールの確認・確定中 ← 確認メールのリンクを押した", ("verify-confirming", "doc", "/verify-email", "K-222", "signup-waiting")),
-    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "メールの確認・期限切れ ← 30 分を過ぎたリンクを押した", ("verify-expired", "auth-msg", "/verify-email", "K-222", "signup-waiting")),
-    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "メールの確認・使用済み ← 確定した後にもう一度リンクを押した", ("verify-used", "auth-msg", "/verify-email", "K-222", "signup-waiting")),
-    "AuthConsent": ("AuthVerify", "auth", "login", "規約の同意 ← ログインの続き（規約が新しくなった）", ("consent-terms", "auth-msg", "/login?step=terms", "K-222", "signup-waiting")),
+    "AuthVerifying": ("AuthVerify", "auth", "verify-email", "メールの確認・確定中 ← 確認メールのリンクを押した", ("verify-confirming", "doc", "/verify-email", "K-256", "signup-waiting")),
+    "AuthVerifyExpired": ("ErrLinkExpired", "auth", "verify-email", "メールの確認・期限切れ ← 30 分を過ぎたリンクを押した", ("verify-expired", "auth-msg", "/verify-email", "K-256", "signup-waiting")),
+    "AuthVerifyUsed": ("AuthVerify", "auth", "verify-email", "メールの確認・使用済み ← 確定した後にもう一度リンクを押した", ("verify-used", "auth-msg", "/verify-email", "K-256", "signup-waiting")),
+    "AuthConsent": ("AuthVerify", "auth", "login", "規約の同意 ← ログインの続き（規約が新しくなった）", ("consent-terms", "auth-msg", "/login?step=terms", "K-256", "signup-waiting")),
     "AuthChecking": ("AuthSignup", "auth", "signup", "登録・確かめ中 ← アカウントを作るを開いた直後", ("signup-checking", "doc", "/signup", "K-222", "signup-waiting")),
     "AuthVerifyLoading": ("AuthVerify", "auth", "verify-email", "確認メールを送りました・読み込み中 ← 登録の次へを押した直後", ("signup-waiting-loading", "doc", "/verify-email", "K-222", "signup-waiting")),
     "StBefore": ("StRunning", "states", "tickets", "帯・任せる前 ← チケットを作った直後", ("band-before", "band", "/tickets/{ticket}", "K-228", "band-running")),
