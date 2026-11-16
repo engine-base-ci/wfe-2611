@@ -1,6 +1,8 @@
 // 自分に関わるもの（キャンバス Main）の部品（K-251・D-145.9）。数の札 4 つと、表の箱の頭の絞り込みの行。
-//   どれも機能はまだ（数を出す口・絞り・並び・条件を保存・表示設定は K-67）なので、出すが押せない（aria-disabled・グレー）。
+//   数を出す口・絞り・並び・条件を保存は機能がまだ（K-67）なので、出すが押せない（aria-disabled・グレー）。表示設定は列を選べる（list-columns.tsx）。
 //   本当の値が無い数（札の数・件数・絞りの札の数）は空にする（D-144.2・D-144.3）。[data-value] の中は空のまま
+import { ColumnSettings, type Columns } from "./list-columns";
+
 const CARDS = [
   { label: "期限切れ", tone: "danger" },
   { label: "今日まで", tone: "neutral" },
@@ -29,7 +31,7 @@ export function MineCards() {
   );
 }
 
-export function MineFilter() {
+export function MineFilter({ columns }: { columns: Columns }) {
   return (
     <div className="k-list-filter" role="group" aria-label="自分に関わるものの絞り込み">
       <b>自分に関わるもの</b>
@@ -56,9 +58,18 @@ export function MineFilter() {
         <span className="k-list-tool" aria-disabled="true" title="条件を保存（準備中）">
           条件を保存
         </span>
-        <span className="k-list-tool" aria-disabled="true" title="表示設定（準備中）">
-          表示設定
-        </span>
+        <ColumnSettings columns={columns} />
+      </span>
+    </div>
+  );
+}
+
+/** 一覧（全部）の表の箱の頭：表示設定だけ（絞りの行は K-252 が足す） */
+export function ListToolbar({ columns }: { columns: Columns }) {
+  return (
+    <div className="k-list-filter" role="group" aria-label="表の見え方">
+      <span className="k-list-tools">
+        <ColumnSettings columns={columns} />
       </span>
     </div>
   );

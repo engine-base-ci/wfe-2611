@@ -636,6 +636,20 @@ components:
   list-more:            # 表の下の「もっと見る」の行（余白 8 12）
     padding: "{spacing.sm} 12px"
     gap: "{spacing.sm}"
+  list-section:         # 表の期限の区切りの見出しの行（淡い地・高さ 28・12px・500）
+    backgroundColor: "{colors.surface}"
+    height: "28px"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  list-columns:         # 表示設定の箱（白・線だけで影は置かない・角丸 card・余白 10・幅 320）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.card}"
+    padding: "10px"
+    width: "320px"
+  list-columns-item:    # 表示設定の箱の 1 行（チェックと名前・上下 4 左右 6・間 8）
+    padding: "{spacing.xs} 6px"
+    gap: "{spacing.sm}"
   list-box:             # Main の右の列の白い箱（角丸 field）
     backgroundColor: "{colors.card}"
     border: "1px solid {colors.line}"

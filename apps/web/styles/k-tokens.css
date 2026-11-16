@@ -519,6 +519,18 @@
   --k-c-list-icon-height: 12px;
   --k-c-list-more-pad: var(--k-s-sm) 12px;
   --k-c-list-more-gap: var(--k-s-sm);
+  --k-c-list-section-bg: var(--k-surface);
+  --k-c-list-section-height: 28px;
+  --k-c-list-section-text: var(--k-text-body-sm);
+  --k-c-list-section-lh: var(--k-lh-body-sm);
+  --k-c-list-section-fw: 500;
+  --k-c-list-columns-bg: var(--k-card);
+  --k-c-list-columns-border: 1px solid var(--k-line);
+  --k-c-list-columns-radius: var(--k-r-card);
+  --k-c-list-columns-pad: 10px;
+  --k-c-list-columns-width: 320px;
+  --k-c-list-columns-item-pad: var(--k-s-xs) 6px;
+  --k-c-list-columns-item-gap: var(--k-s-sm);
   --k-c-list-box-bg: var(--k-card);
   --k-c-list-box-border: 1px solid var(--k-line);
   --k-c-list-box-radius: var(--k-r-field);

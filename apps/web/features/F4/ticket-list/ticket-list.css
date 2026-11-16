@@ -301,6 +301,7 @@ a.k-btn.k-list-act {
   min-width: 0;
 }
 .k-list-filter {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -350,11 +351,65 @@ a.k-btn.k-list-act {
   padding: var(--k-c-list-tool-pad);
   border: var(--k-c-list-tool-border);
   border-radius: var(--k-c-list-tool-radius);
+  font: inherit;
   font-size: var(--k-c-list-tool-text);
+  color: var(--k-on-surface);
   background: var(--k-card);
   white-space: nowrap;
+  cursor: pointer;
+}
+button.k-list-tool:hover {
+  background: var(--k-select);
+}
+.k-list-tool[aria-disabled="true"] {
   opacity: var(--k-c-button-disabled-opacity);
   cursor: not-allowed;
+}
+
+/* ---- 表示設定の箱（表の箱の頭のすぐ下・右に寄せる。狭い幅は箱の幅に収める） ---- */
+.k-list-columns {
+  position: absolute;
+  top: 100%;
+  right: var(--k-s-sm);
+  z-index: 20;
+  box-sizing: border-box;
+  width: var(--k-c-list-columns-width);
+  max-width: calc(100% - var(--k-s-md));
+  padding: var(--k-c-list-columns-pad);
+  background: var(--k-c-list-columns-bg);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  color: var(--k-on-surface);
+}
+.k-list-columns-head {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-list-columns-head > b {
+  flex: 1;
+}
+.k-list-columns-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-list-columns-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-list-columns-item-gap);
+  min-height: var(--k-c-list-target-height);
+  padding: var(--k-c-list-columns-item-pad);
+  cursor: pointer;
+}
+.k-list-columns-item:has(input:disabled) {
+  cursor: not-allowed;
+  color: var(--k-on-surface-variant);
+}
+.k-list-columns-note {
+  margin: 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
 }
 
 /* ---- 表 ---- */
@@ -382,7 +437,19 @@ a.k-btn.k-list-act {
   border-bottom: var(--k-c-list-td-border-bottom);
   white-space: nowrap;
 }
-.k-list-table tbody tr:hover > td {
+.k-list-section > td {
+  height: var(--k-c-list-section-height);
+  background: var(--k-c-list-section-bg);
+  font-size: var(--k-c-list-section-text);
+  font-weight: var(--k-c-list-section-fw);
+}
+.k-list-section[data-section="overdue"] > td {
+  color: var(--k-error);
+}
+.k-list-section[data-section="later"] > td {
+  color: var(--k-on-surface-variant);
+}
+.k-list-table tbody tr[data-ticket]:hover > td {
   background: var(--k-select);
 }
 .k-list-title-cell {

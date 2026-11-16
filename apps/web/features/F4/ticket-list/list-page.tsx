@@ -12,7 +12,8 @@ import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { SCOPES_KEY, TicketShell, readScopes } from "../create-ticket/ticket-shell";
 import { ListEmpty } from "./list-empty";
-import { MineCards, MineFilter } from "./list-mine-parts";
+import { useColumns } from "./list-columns";
+import { ListToolbar, MineCards, MineFilter } from "./list-mine-parts";
 import { FirstSide, MainSide } from "./list-side";
 import { ListTable } from "./list-table";
 import { ListViews } from "./list-views";
@@ -50,6 +51,7 @@ function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; 
   const viewer = useViewer(true);
   const setup = useSetupTasks(empty);
   const approvals = useApprovals(list.state === "ok" && !empty);
+  const columns = useColumns();
   if (list.state === "loading")
     return (
       <div className="k-list-body">
@@ -74,9 +76,11 @@ function ListBody({ view, data, onCreate }: { view: ListView; data: TicketList; 
       <section className="k-list-main" aria-labelledby="tickets-title">
         {view === "mine" ? <MineCards /> : null}
         <div className="k-list-panel">
-          {view === "mine" ? <MineFilter /> : null}
+          {view === "mine" ? <MineFilter columns={columns} /> : <ListToolbar columns={columns} />}
           <ListTable
             rows={list.rows}
+            columns={columns.visible}
+            sections={view === "mine"}
             hasMore={list.next !== null}
             loadingMore={data.loadingMore}
             moreError={data.moreError}

@@ -150,7 +150,10 @@
     "list-more": ".k-list-more",
     "list-box": ".k-list-box",
     "list-box-title": ".k-list-box-title",
-    "list-box-row": ".k-list-box-row"
+    "list-box-row": ".k-list-box-row",
+    "list-section": ".k-list-section > td",
+    "list-columns": ".k-list-columns",
+    "list-columns-item": ".k-list-columns-item"
   },
   "component_exempt": [
     {
