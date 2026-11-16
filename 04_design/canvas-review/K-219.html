@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>絵が無かった状態の絵（見比べ）</title>
+<style>
+body{margin:0;font-family:system-ui,sans-serif;color:#131B27;background:#F2F4F7;font-size:14px;line-height:1.7}
+main{padding:24px;display:flex;flex-direction:column;gap:20px}
+h1{font-size:20px;margin:0}
+h2{font-size:16px;margin:0}
+main>p{margin:0;color:#4A5563}
+section{background:#FFFFFF;border:1px solid #DDE2E9;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+ul{margin:0;padding-left:18px;color:#4A5563}
+.pair{display:flex;gap:16px;flex-wrap:wrap}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+figcaption{font-size:12px;color:#4A5563}
+.frame{width:576px;height:400px;overflow:hidden;border:1px solid #DDE2E9;border-radius:8px;background:#FFFFFF}
+.frame iframe{width:1440px;height:1000px;border:0;transform:scale(.4);transform-origin:0 0}
+@media (max-width:700px){main{padding:16px 12px}.frame{width:316px;height:220px}.frame iframe{transform:scale(.22)}}
+</style>
+</head>
+<body>
+<main>
+<h1>絵が無かった状態の絵（見比べ）</h1>
+<p>左が元にした絵、右が起こした絵です。それぞれ、何を足したか・替えたかを上に書いています。</p>
+<section data-board="AuthVerifying" data-ref="AuthVerify"><h2>メールの確認・確定中</h2><ul><li>違い：確認メールの箱の中身を「確認しています」の見出しと、回る印つきの「登録を確定しています…」に替えた</li><li>違い：文は 3 秒たっても終わらないときだけ出す（すぐ終われば見出しだけで次へ）</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerify.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerifying.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="AuthVerifyExpired" data-ref="ErrLinkExpired"><h2>メールの確認・期限切れ</h2><ul><li>違い：箱を登録の画面と同じ形にそろえ、見出しを「リンクの期限が切れました」にした</li><li>違い：案内の文と「もう一度登録する」のボタンを置いた</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/ErrLinkExpired.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerifyExpired.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="AuthVerifyUsed" data-ref="AuthVerify"><h2>メールの確認・使用済み</h2><ul><li>違い：印を緑の ✓ にし、見出しを「登録は終わっています」にした</li><li>違い：ログインへ進む文と「ログイン」のボタンを置いた</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerify.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerifyUsed.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="AuthConsent" data-ref="AuthVerify"><h2>規約の同意</h2><ul><li>違い：見出しを「利用規約とプライバシーポリシーが新しくなりました」にした</li><li>違い：2 つの文書と版・同意のチェック・「同意して続ける」と「ログアウト」を置いた</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerify.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthConsent.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="AuthChecking" data-ref="AuthSignup"><h2>登録・確かめ中</h2><ul><li>違い：入力欄を外し、見出しの下に回る印つきの「確かめています…」だけを置いた</li><li>違い：文は 3 秒たっても終わらないときだけ出す</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/AuthSignup.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthChecking.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="AuthVerifyLoading" data-ref="AuthVerify"><h2>確認メールを送りました・読み込み中</h2><ul><li>違い：本文とボタンを外し、見出しの下に回る印つきの「読み込んでいます…」だけを置いた</li><li>違い：文は 3 秒たっても終わらないときだけ出す</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerify.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/AuthVerifyLoading.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="StBefore" data-ref="StRunning"><h2>帯・任せる前</h2><ul><li>違い：帯を白い箱にし、紺の「AI に任せる」のボタンを置いた</li><li>違い：実施事項はどれもまだ。右の「PC のブラウザ」は動いていないので外した</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/StRunning.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/StBefore.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="StConfirmDone" data-ref="StRunning"><h2>帯・完了の確かめ</h2><ul><li>違い：帯を白い箱にし、「完了の条件を確かめて完了にしてください」と紺の「完了にする」を置いた</li><li>違い：実施事項は全部済みの印。右のパネルは外した</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/StRunning.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/StConfirmDone.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="StDone" data-ref="StRunning"><h2>帯・完了</h2><ul><li>違い：帯を緑の箱にし、「完了しました」と完了にした人と時刻を出した</li><li>違い：上の印を「完了」にした。右のパネルは外した</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/StRunning.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/StDone.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="StDelegated" data-ref="StRunning"><h2>帯・任せました（作る段）</h2><ul><li>違い：帯を橙の箱にし、「高本のAI に任せました」「PC が受け取るのを待っています」を出した</li><li>違い：実施事項はどれもまだ。右のパネルは外した</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/StRunning.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/StDelegated.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="StCompleteModal" data-ref="StModal"><h2>完了にするの小窓</h2><ul><li>違い：小窓を 1 つにし、題を「完了にする」にした</li><li>違い：完了の条件・実施事項のチェック・「確かめました」のチェック・「確かめて完了にする」を置いた</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/StModal.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/StCompleteModal.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="ApEmpty" data-ref="Approvals"><h2>承認待ち・空</h2><ul><li>違い：表を外し、「いま決めるものはありません」と「決めた履歴」へのボタンを置いた</li><li>違い：件数を 0 にし、左のバーの件数の印も外した</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/Approvals.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/ApEmpty.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="MePCInstalled" data-ref="MePC"><h2>この PC に Bridge が入っている</h2><ul><li>違い：「この PC の Bridge」の箱と「この PC の Bridge につなぐ」のボタンを置いた</li><li>違い：つないでいる PC はまだ無い形にした</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/MePC.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/MePCInstalled.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="UiDisabled" data-ref="OnLoading"><h2>使えない形の見本</h2><ul><li>違い：ボタン・選ぶ欄・探す欄・メニューの項目・見え方のタブ の使える形と使えない形を並べた</li><li>違い：使えない形は薄く（不透明度 0.55）して押せないようにした</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/OnLoading.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/UiDisabled.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+<section data-board="OnHomeLater" data-ref="OnHome"><h2>はじめにやること に「あとで」</h2><ul><li>違い：パスキーの行を薄く押せない形にし、数に入れないので「0 ／ 2」・進みの棒を 0 にした</li><li>違い：「ログイン情報を預ける」の「預ける」の横に「あとで」を置いた</li></ul><div class="pair"><figure><figcaption>元の絵</figcaption><div class="frame"><iframe src="../canvas/OnHome.dc.html" title="元の絵"></iframe></div></figure><figure><figcaption>起こした絵</figcaption><div class="frame"><iframe src="../canvas/OnHomeLater.dc.html" title="起こした絵"></iframe></div></figure></div></section>
+</main>
+</body>
+</html>

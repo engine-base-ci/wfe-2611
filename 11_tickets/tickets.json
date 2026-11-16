@@ -10248,7 +10248,13 @@
    ],
    "canvas": [
     "signup",
-    "signup-waiting"
+    "signup-waiting",
+    "verify-confirming",
+    "verify-expired",
+    "verify-used",
+    "consent-terms",
+    "signup-checking",
+    "signup-waiting-loading"
    ],
    "sections": {
     "目的": "入口の箱の中の余白・段の間・ボタンと入力欄の形・待つ画面の戻る道と札・確認と同意の状態の出し方が、キャンバスとずれている（調べの §3.4）。箱の中の読み込みの位置（#17・#19・#32・#34）は別の枝のチケット（K-211）が持つ",
@@ -10470,7 +10476,11 @@
    ],
    "canvas": [
     "band-running",
-    "band-failed"
+    "band-failed",
+    "band-before",
+    "band-confirm-done",
+    "band-done",
+    "band-delegated"
    ],
    "sections": {
     "目的": "実行中・止まった・完了の帯が地の文で、色・進みの段・直し方のボタンが無い。任せる前・完了の確かめ・完了・任せました（作る段）は絵が無い（K-219 の M3〜M6）",
@@ -10508,7 +10518,8 @@
     "tickets"
    ],
    "canvas": [
-    "approve-modal"
+    "approve-modal",
+    "complete-modal"
    ],
    "sections": {
     "目的": "承認するボタンは確かめの小窓なしで即実行する。決める人の答え：確認の小窓を入れる（D-143.4）。小窓の型（k-dialog）もキャンバスの StModal と違う",
@@ -10545,7 +10556,8 @@
    ],
    "canvas": [
     "bridge-code",
-    "bridge-connected"
+    "bridge-connected",
+    "bridge-installed"
    ],
    "sections": {
     "目的": "3 段の番号が見出しの文字に埋まり（ol.k-steps 未定義）、接続コードは 13px の地の文（p.k-code 未定義）。つながっているは青い Callout（成功が青）。台帳の k-steps・k-code の行はこのチケットが消す",
@@ -10581,7 +10593,8 @@
     "approvals"
    ],
    "canvas": [
-    "approvals"
+    "approvals",
+    "approvals-empty"
    ],
    "sections": {
     "目的": "見出しが 13px・400 で、期限ごとに別の表とカードが縦に並ぶ。題名はリンクに見えず、ボタンが主から先に間なしで並ぶ（k63-acts 未定義・台帳の行はこのチケットが消す）",

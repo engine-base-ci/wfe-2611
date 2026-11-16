@@ -412,6 +412,7 @@
   }
  ],
  "reads_ok": {
+  "apps/web/tests/k/k219-canvas-boards.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-219）",
   "apps/bridge/test/update.test.ts": "自分で作った一時のファイルを読む",
   "apps/bridge/test/guard.test.ts": "自分で作った一時のファイルを読む",
   "apps/bridge/test/kaname-tools.test.ts": "自分で作った一時のファイル・台本を起こす",
