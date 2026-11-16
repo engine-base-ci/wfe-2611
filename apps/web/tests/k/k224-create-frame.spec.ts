@@ -110,12 +110,18 @@ test("K224-UI-004 作り方：自分で書く が今いる（aria-current）・A
   expect(await page.locator("header.k-page-head").innerText()).not.toContain("準備中");
 });
 
-test("K224-UI-005 下書きの保存の状態：開いた直後は字なし・残すと「下書きを自動で保存しました（10:42）」（答えの saved_at を日本時間で）・残せないと「下書きをサーバーに残せませんでした」", async ({
+test("K224-UI-005 下書きの保存の状態：開いた直後は字なし・残すと「下書きを自動で保存しました（10:42）」（答えの saved_at を日本時間で）・残せないと帯は短く「下書きを残せませんでした」で、知らせの箱の「下書きをサーバーに残せませんでした」と同じ文は 2 回出ない", async ({
   page,
 }) => {
   const m = await mockCreate(page);
+  // 下書きの一覧の口を読んだ回数（保存の時刻は保存の口の答えから読み、保存のたびに一覧を読み直さない）
+  let draftLists = 0;
+  page.on("request", (r) => {
+    if (r.method() === "GET" && /\/api\/v1\/me\/ticket-drafts$/.test(r.url())) draftLists += 1;
+  });
   await openCreate(page);
   await loaded(page);
+  const listsAtOpen = draftLists;
   const status = page.locator('header.k-page-head [role="status"][aria-label="下書きの保存"]');
   await expect(status).toHaveText("");
   await page.getByRole("textbox", { name: "題名", exact: true }).fill("請求書を送る");
@@ -123,8 +129,12 @@ test("K224-UI-005 下書きの保存の状態：開いた直後は字なし・�
   await expect(status).toHaveText("下書きを自動で保存しました（10:42）");
   m.draftSaveStatus = 500;
   await page.getByRole("textbox", { name: "題名", exact: true }).fill("請求書を送る 2");
-  await expect(status).toHaveText("下書きをサーバーに残せませんでした");
+  await expect(status).toHaveText("下書きを残せませんでした");
   await expect(status).not.toContainText("保存しました");
+  // 知らせの箱は今までどおり「下書きをサーバーに残せませんでした」＋「書いたものはこの画面に残っています」。同じ文は画面に 1 つだけ
+  await expect(page.getByText("下書きをサーバーに残せませんでした", { exact: true })).toHaveCount(1);
+  await expect(page.getByText(/書いたものはこの画面に残っています/).first()).toBeVisible();
+  expect(draftLists, "保存のたびに下書きの一覧を読み直さない").toBe(listsAtOpen);
 });
 
 test("K224-UI-006 上の箱：グループと種別の選択は幅 160 で横に並び、題名の欄は高さ 40・15px・500", async ({ page }) => {
@@ -247,12 +257,14 @@ test("K224-UI-014 書きかけの読み込み：帯はすぐ出る・文は 2 �
   page,
 }) => {
   const slow = gate();
-  await page.clock.install();
+  // 時刻を決めて入れ、開く前からその時刻で止める（画面の今の時刻を読んでから止めると、読んだ後に進んだ分で「過去へは止められない」になる）。
+  //   止めたまま開くので、読み込みの文の 3 秒の時計は試験が進めた分だけ進む
+  const t0 = new Date("2026-11-16T10:00:00+09:00");
+  await page.clock.install({ time: t0 });
+  await page.clock.pauseAt(t0);
   await mockCreate(page, { holdDrafts: slow.wait });
   await openCreate(page);
   await expect(page.locator("header.k-page-head h1")).toHaveText("チケットを作る");
-  // ここから時計を止め、試験が進めた分だけ進める（今の画面の時刻のまま止めるので、待っていた時計は動かない）
-  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now())));
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveCount(0);
   await page.clock.runFor(2000);
   await expect(page.getByText("書きかけを読み込んでいます")).toHaveCount(0);
