@@ -9,7 +9,10 @@ import { isUuid } from "@kaname/contracts";
 /** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
 const UUID = { test: (v: string): boolean => isUuid(v) };
 /** 要求の解決の答え：テナントの文脈と、同意し直しの印（K-53。立っている間は契約の入口 op.ts が止める） */
-export type SessionResolver = (c: Context) => Promise<{ ctx: TenantContext; termsPending: boolean } | null>;
+/** memberLeft：解決が抜けた人かを答えで持つとき（画面のログイン・K-233）。持たなければ入口が DB で確かめる */
+export type SessionResolver = (
+  c: Context,
+) => Promise<{ ctx: TenantContext; termsPending: boolean; memberLeft?: boolean } | null>;
 /** memberLeft：呼んだ人が会社から抜けた人か（D-131.7 ②・K-166）。契約の入口 op.ts が、認証を通した後に 1 回だけ呼ぶ（呼ばれるまで DB を引かない）。
  *  本物のアプリではこの中間の処理が必ず入れる。入口だけを偽の関門で試す小さなアプリ（authz.test.ts）には無い */
 export type Vars = {
@@ -49,7 +52,9 @@ export function tenantContext(repo: Repository, resolve: SessionResolver = anony
     c.set("ctx", ctx);
     c.set("repo", repo);
     c.set("termsPending", r?.termsPending === true);
-    c.set("memberLeft", () => repo.memberLeft(ctx));
+    // 解決の答えが抜けた人かを持てば、それを使い DB を引かない（K-233）。持たなければ今までどおり引く（PC の印・試験の土台）
+    const known = r?.memberLeft;
+    c.set("memberLeft", known === undefined ? () => repo.memberLeft(ctx) : async () => known);
     await next();
   };
 }
