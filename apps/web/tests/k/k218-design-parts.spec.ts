@@ -4,7 +4,8 @@
 //     btn-md（Button primary「作る」）・btn-lg（Button primary size lg「次へ」）・btn-outlined（Button outlined「下書きのまま閉じる」）
 //     field-md（Field「題名」・入力欄 input-md）・field-lg（Field size lg「メール」・入力欄 input-lg）
 //     dlg-open（押すと Dialog「完了にする」：.k-dialog-head に題と右上の「閉じる」・.k-dialog-actions に primary「完了にする」と outlined「やめる」）
-//     empty-wrap（幅 900px の箱に Empty「まだチケットがありません」）・loading-wrap（Loading・既定の 3 秒）
+//     dlg-plain-open（押すと actions の無い Dialog「共有の相手」）・confirm-open（押すと Confirm「チケットを消しますか」）
+//     empty-wrap（幅 900px の箱に Empty「まだチケットがありません」）・loading-wrap（loading-start を押すと Loading を出す・既定の 3 秒）
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
@@ -53,10 +54,12 @@ test("K218-DS-009 幅 1440：主ボタン（lg・入口）は高さ 44・角丸 
   await expectStyle(b, { "border-top-left-radius": "8px", "font-size": "14px", "font-weight": "500" });
 });
 
-test("K218-DS-010 outlined のボタンは白地・1px の灰の線（#DDE2E9）・黒字（#131B27）", async ({ page }) => {
+test("K218-DS-010 outlined のボタンは白地・1px の灰の線（#DDE2E9）・黒字（#131B27）・太さ 400・高さ 32", async ({ page }) => {
   await open(page, 1440);
   const b = page.getByTestId("btn-outlined");
+  expect(Math.round((await box(b)).height)).toBe(32);
   await expectStyle(b, {
+    "font-weight": "400",
     "background-color": WHITE,
     "border-top-width": "1px",
     "border-top-style": "solid",
@@ -76,8 +79,15 @@ test("K218-DS-011 入力欄（md）：幅 1440 は白地・1px #B8C0CC・角丸 
     "font-size": "13px",
     "padding-left": "10px",
   });
-  await open(page, 375);
-  expect(await css(page.getByTestId("input-md"), "font-size")).toBe("16px");
+  // D-144.7 の境目：幅 767 以下だけ 16px（iPhone の拡大を防ぐ）、768 から上はキャンバスどおり 13px
+  for (const [w, size] of [
+    [375, "16px"],
+    [767, "16px"],
+    [768, "13px"],
+  ] as const) {
+    await open(page, w);
+    expect(await css(page.getByTestId("input-md"), "font-size"), `幅 ${w}`).toBe(size);
+  }
 });
 
 test("K218-DS-012 幅 1440：入力欄（lg・入口）は高さ 42・1px #DDE2E9・角丸 8px・14px・左の余白 12px", async ({ page }) => {
@@ -148,22 +158,44 @@ test("K218-DS-016 幅 375：小窓が画面に収まり、横に溢れない", a
   expect(await overflowX(page)).toBe(0);
 });
 
-test("K218-DS-017 空：幅 900 の箱で縮まず（max-width なし）・見出しが真ん中・線は 1px dashed #B8C0CC", async ({ page }) => {
+test("K218-DS-017 空：幅 900 の箱で縮まず（max-width なし）・見出しの字が真ん中・白地・1px dashed #B8C0CC・角丸 12px・余白 36px 28px", async ({
+  page,
+}) => {
   await open(page, 1440);
   const wrap = await box(page.getByTestId("empty-wrap"));
   const empty = page.getByTestId("empty-wrap").locator('.k-state[data-state="empty"]');
   const e = await box(empty);
   expect(Math.abs(e.width - wrap.width)).toBeLessThanOrEqual(1);
-  const t = await box(empty.locator(".k-state-title"));
-  await expect(empty.locator(".k-state-title")).toHaveText("まだチケットがありません");
-  expect(Math.abs(t.x + t.width / 2 - (e.x + e.width / 2))).toBeLessThanOrEqual(2);
-  await expectStyle(empty, { "border-top-style": "dashed", "border-top-width": "1px", "border-top-color": LINE_STRONG });
+  const title = empty.locator(".k-state-title");
+  await expect(title).toHaveText("まだチケットがありません");
+  // 見出しの箱でなく、字そのものの範囲の真ん中を測る（箱が伸びて字が左に寄ったままでも緑にしない）
+  const ink = await title.evaluate((el) => {
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    const b = r.getBoundingClientRect();
+    return { x: b.x, width: b.width };
+  });
+  expect(Math.abs(ink.x + ink.width / 2 - (e.x + e.width / 2))).toBeLessThanOrEqual(2);
+  await expectStyle(empty, {
+    "border-top-style": "dashed",
+    "border-top-width": "1px",
+    "border-top-color": LINE_STRONG,
+    "border-top-left-radius": "12px",
+    "background-color": WHITE,
+    "padding-top": "36px",
+    "padding-left": "28px",
+  });
 });
 
 test("K218-DS-018 読み込み：2.9 秒までは文言が出ず、3 秒を過ぎると「読み込んでいます…」", async ({ page }) => {
-  await page.clock.install();
+  const t0 = new Date("2026-11-16T09:00:00+09:00");
+  await page.clock.install({ time: t0 });
   await open(page, 1440);
+  // 時計を止めてから読み込みを出す（ページの用意にかかった時間で先に出て揺れないように）
+  await page.clock.pauseAt(new Date(t0.getTime() + 60_000));
   const wrap = page.getByTestId("loading-wrap");
+  await wrap.getByTestId("loading-start").click();
+  await expect(wrap.locator('.k-state[data-state="loading"]')).toHaveCount(1);
   await page.clock.runFor(2900);
   await expect(wrap).not.toContainText("読み込んでいます");
   await page.clock.runFor(200);
@@ -180,4 +212,36 @@ test("K218-DS-019 暗いテーマ：入力欄の地は暗いテーマの --k-car
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await css(page.getByTestId("input-md"), "background-color")).toBe("rgb(23, 30, 41)");
   expect(await css(page.getByTestId("btn-outlined"), "border-top-color")).toBe("rgb(42, 52, 67)");
+});
+
+test("K218-DS-027 帯の中のボタン（K-217）は字が body（13px）になっても高さ 30、sm は 28 のまま", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const res = await page.goto("/dev/k/page-parts");
+  expect(res?.status()).toBe(200);
+  await page.evaluate(() => document.fonts.ready);
+  const md = page.locator('header.k-page-head .k-btn:not([data-size="sm"])').first();
+  const sm = page.locator('header.k-page-head .k-btn[data-size="sm"]').first();
+  expect(Math.abs((await box(md)).height - 30)).toBeLessThanOrEqual(1);
+  expect(Math.abs((await box(sm)).height - 28)).toBeLessThanOrEqual(1);
+});
+
+test("K218-DS-029 小窓の「閉じる」は頭の × の 1 つだけ。取り消せない確かめ（Confirm）も頭に × を持ち、開くとフォーカスは「やめる」", async ({
+  page,
+}) => {
+  await open(page, 1440);
+  const opener = page.getByTestId("dlg-plain-open");
+  await opener.click();
+  const dlg = page.getByRole("dialog", { name: "共有の相手" });
+  await expect(dlg).toBeVisible();
+  await expect(dlg.getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await expect(dlg.locator(".k-dialog-head").getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dlg.getByRole("button", { name: "閉じる" }).click();
+  await expect(dlg).toHaveCount(0);
+  await expect(opener).toBeFocused();
+
+  await page.getByTestId("confirm-open").click();
+  const cf = page.getByRole("alertdialog", { name: "チケットを消しますか" });
+  await expect(cf).toBeVisible();
+  await expect(cf.locator(".k-dialog-head").getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await expect(cf.getByRole("button", { name: "やめる" })).toBeFocused();
 });

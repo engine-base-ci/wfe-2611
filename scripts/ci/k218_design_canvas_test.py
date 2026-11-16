@@ -86,6 +86,8 @@ class DesignTest(unittest.TestCase):
         self.assertEqual(o["textColor"], "{colors.on-surface}")
         self.assertEqual(o["border"], "1px solid {colors.line}")
         self.assertEqual(o["height"], "32px")
+        self.assertEqual(str(o["fontWeight"]), "400", "キャンバスの従ボタンは太さを付けていない（400）")
+        self.assertEqual(o["padding"], "0 14px")
 
     def test_K218_DS_003_inputs(self) -> None:
         """K218-DS-003 正本の input（作業）と input-lg（入口）"""
@@ -120,6 +122,10 @@ class DesignTest(unittest.TestCase):
         self.assertEqual(t["typography"], "{typography.h3}")
         self.assertEqual(str(t["fontWeight"]), "700")
         self.assertEqual(e["border"], "1px dashed {colors.line-strong}")
+        self.assertEqual(e["backgroundColor"], "{colors.card}")
+        self.assertEqual(e["rounded"], "{rounded.lg}")
+        self.assertEqual(e["padding"], "36px 28px")
+        self.assertEqual(e["gap"], "12px")
 
     def test_K218_DS_006_type_scale(self) -> None:
         """K218-DS-006 文字の段：使われない 3 段が無く、K-217 の 2 段が在り、大きさの種類が 10 以下"""
@@ -135,7 +141,8 @@ class DesignTest(unittest.TestCase):
         """K218-DS-007 作り直したトークンに部品の高さと太さが在り、消した段が無い。作り直しが差を出さない"""
         css = WEB_TOKENS.read_text(encoding="utf-8")
         for line in ("--k-c-button-primary-height: 32px;", "--k-c-button-primary-lg-height: 44px;",
-                     "--k-c-button-primary-fw: 500;", "--k-c-dialog-title-fw: 700;"):
+                     "--k-c-button-primary-fw: 500;", "--k-c-button-outlined-fw: 400;",
+                     "--k-c-dialog-title-fw: 700;", "--k-c-state-empty-gap: 12px;"):
             self.assertIn(line, css)
         for gone in ("--k-text-metric-lg", "--k-text-chat", "--k-text-display"):
             self.assertNotIn(gone, css)
@@ -144,6 +151,10 @@ class DesignTest(unittest.TestCase):
         r = run([str(GEN), "--check"], ROOT)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertNotIn("--text-metric-lg", BRIDGE_TOKENS.read_text(encoding="utf-8"))
+        # 部品が太さを持つときは、書体の段から来る太さを重ねて出さない（部品の値が勝つ・1 つの名前に 1 つの値）
+        self.assertEqual(css.count("--k-c-button-primary-fw:"), 1)
+        # 帯の中のボタン（K-217）は高さ 30 を min-height で持つ。上下の余白が残ると字の段（body 13px）で 30 を超える
+        self.assertEqual(comp("page-head-button")["padding"], "0 {spacing.lg}")
 
 
 FAKE_DESIGN = """---
@@ -159,22 +170,41 @@ rounded:
 spacing:
   md: 16px
 components:
-  btn:
-    backgroundColor: "{{colors.primary}}"
-    rounded: "{{rounded.md}}"
+{comps}
 ---
 # T
 """
 
 
+DEFAULT_COMPS = (
+    "  btn:\n"
+    '    backgroundColor: "{colors.primary}"\n'
+    '    rounded: "{rounded.md}"'
+)
+
+RESOLVE_COMPS = """  btn:
+    backgroundColor: "{colors.primary}"
+    typography: "{typography.body}"
+    border: "1px solid {colors.line}"
+    padding: "0 {spacing.md}"
+    fontWeight: 500
+    height: 32px"""
+
+
+def d5_lines(out: str, part: str, prop: str) -> list[str]:
+    return [ln for ln in out.splitlines() if "D5" in ln and re.search(rf"\b{re.escape(part)}\b", ln) and prop in ln]
+
+
 class FakeTree:
     """design_gate を流す作りものの木（正本・CSS・使う側のファイル・design-gate.json）"""
 
-    def __init__(self, typo: dict[str, str], css: str, usage: str, cfg: str) -> None:
+    def __init__(self, typo: dict[str, str], css: str, usage: str, cfg: str, comps: str = DEFAULT_COMPS,
+                 tokens: str = "") -> None:
         self.tmp = tempfile.TemporaryDirectory()
         self.root = pathlib.Path(self.tmp.name)
         lines = "\n".join(f"  {k}:\n    fontFamily: \"Noto Sans JP\"\n    fontSize: {v}" for k, v in typo.items())
-        (self.root / "DESIGN.md").write_text(FAKE_DESIGN.format(typo=lines), encoding="utf-8")
+        (self.root / "DESIGN.md").write_text(FAKE_DESIGN.format(typo=lines, comps=comps), encoding="utf-8")
+        (self.root / "tokens.css").write_text(tokens, encoding="utf-8")
         (self.root / "ui").mkdir()
         (self.root / "ui" / "a.css").write_text(css, encoding="utf-8")
         (self.root / "use").mkdir()
@@ -182,8 +212,8 @@ class FakeTree:
         (self.root / "design-gate.json").write_text(cfg, encoding="utf-8")
 
     def gate(self, *extra: str) -> subprocess.CompletedProcess:
-        return run([str(GATE), "--design", str(self.root / "DESIGN.md"), "--mocks", str(self.root / "ui"), "--part", *extra],
-                   self.root)
+        return run([str(GATE), "--design", str(self.root / "DESIGN.md"), "--mocks", str(self.root / "ui"),
+                    "--css", str(self.root / "tokens.css"), "--part", *extra], self.root)
 
     def close(self) -> None:
         self.tmp.cleanup()
@@ -205,14 +235,38 @@ class GateTest(unittest.TestCase):
             self.assertTrue(hit, f"D5・部品 btn・border-radius を 1 行に出していない:\n{out}")
         finally:
             t.close()
+        # 値は var() を一緒に読む CSS（--css）から開き、正本は {typography}・{spacing}・{colors} を開いて比べる
+        good_tokens = ":root { --x-pad: 0 16px; --x-text: 13px; --x-line: #dde2e9; --x-fw: 500; --x-h: 32px; }\n"
+        rule = (".x-btn { background: #22345c; padding: var(--x-pad); font-size: var(--x-text); "
+                "border: 1px solid var(--x-line); font-weight: var(--x-fw); min-height: var(--x-h); }\n")
+        t = FakeTree({"body": "13px"}, rule, "var(--k-text-body)", SEL_CFG, RESOLVE_COMPS, good_tokens)
+        try:
+            r = t.gate()
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        finally:
+            t.close()
+        for prop, bad in (("padding", "--x-pad: 0 20px"), ("font-size", "--x-text: 14px"),
+                          ("border", "--x-line: #b8c0cc"), ("font-weight", "--x-fw: 700"), ("height", "--x-h: 36px")):
+            name = bad.split(":")[0]
+            tokens = re.sub(rf"{re.escape(name)}: [^;]+", bad, good_tokens)
+            t = FakeTree({"body": "13px"}, rule, "var(--k-text-body)", SEL_CFG, RESOLVE_COMPS, tokens)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, 1, f"{prop}: {out}")
+                self.assertTrue(d5_lines(out, "btn", prop), f"D5・btn・{prop} を 1 行に出していない:\n{out}")
+            finally:
+                t.close()
 
     def test_K218_DS_021_d5_missing_rule(self) -> None:
         """K218-DS-021 D5：セレクタの規則が CSS に無ければ 1 で部品の名前を出す。そろえば 0"""
         t = FakeTree({"body": "13px"}, ".other { color: #22345c; font-size: 13px; }\n", "var(--k-text-body)", SEL_CFG)
         try:
             r = t.gate()
-            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
-            self.assertIn("btn", r.stdout + r.stderr)
+            out = r.stdout + r.stderr
+            self.assertEqual(r.returncode, 1, out)
+            self.assertTrue([ln for ln in out.splitlines() if "D5" in ln and re.search(r"\bbtn\b", ln)],
+                            f"D5 と部品 btn を 1 行に出していない:\n{out}")
         finally:
             t.close()
         t = FakeTree({"body": "13px"}, OK_CSS, "var(--k-text-body)", SEL_CFG)
@@ -229,6 +283,16 @@ class GateTest(unittest.TestCase):
             r = t.gate("--scales", "--usage", str(t.root / "use"))
             self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
             self.assertIn("rare", r.stdout + r.stderr)
+        finally:
+            t.close()
+        # 名前は完全に一致で数える：body-md だけを使っていても body は使われていない
+        t = FakeTree({"body": "13px", "body-md": "14px"}, OK_CSS, "a { font-size: var(--k-text-body-md); }", SEL_CFG)
+        try:
+            r = t.gate("--scales", "--usage", str(t.root / "use"))
+            out = r.stdout + r.stderr
+            self.assertEqual(r.returncode, 1, out)
+            self.assertTrue([ln for ln in out.splitlines() if "D6" in ln and "'body'" in ln],
+                            f"使われない段 'body' を D6 の行に出していない:\n{out}")
         finally:
             t.close()
 
@@ -255,6 +319,55 @@ class GateTest(unittest.TestCase):
             t.close()
 
 
+class GateRulesTest(unittest.TestCase):
+    def test_K218_DS_028_d5_rules(self) -> None:
+        """K218-DS-028 D5 が見る規則：@media の中・:hover などの状態・子孫のセレクタは見ない。同じセレクタの規則は合わせて見る。
+        shape（形の規則）を書いた部品は、形の規則に変種の規則を重ねて比べる"""
+        ignored = OK_CSS + ("@media (max-width: 767px) { .x-btn { border-radius: 8px; } }\n"
+                            ".x-btn:hover { border-radius: 8px; }\n.wrap .x-btn { border-radius: 8px; }\n")
+        t = FakeTree({"body": "13px"}, ignored, "var(--k-text-body)", SEL_CFG)
+        try:
+            r = t.gate()
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        finally:
+            t.close()
+        split = ".x-btn { background: #22345c; font-size: 13px; }\n.x-btn { border-radius: 8px; }\n"
+        t = FakeTree({"body": "13px"}, split, "var(--k-text-body)", SEL_CFG)
+        try:
+            r = t.gate()
+            out = r.stdout + r.stderr
+            self.assertEqual(r.returncode, 1, out)
+            self.assertTrue(d5_lines(out, "btn", "border-radius"), out)
+        finally:
+            t.close()
+        shape_cfg = '{"component_selectors": {"btn": {"selector": ".x-btn.p", "shape": ".x-btn"}}}'
+        for radius, code in (("8px", 1), ("6px", 0)):
+            css = f".x-btn {{ border-radius: {radius}; font-size: 13px; }}\n.x-btn.p {{ background: #22345c; }}\n"
+            t = FakeTree({"body": "13px"}, css, "var(--k-text-body)", shape_cfg)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, code, out)
+                if code:
+                    self.assertTrue(d5_lines(out, "btn", "border-radius"), out)
+            finally:
+                t.close()
+
+    def test_K218_DS_030_no_components(self) -> None:
+        """K218-DS-030 キャンバス（部品のクラスを持たない絵）に掛けるときは --no-components で D5 を掛けない。README の命令もそうなっている"""
+        t = FakeTree({"body": "13px"}, ".other { color: #22345c; font-size: 13px; }\n", "var(--k-text-body)", SEL_CFG)
+        try:
+            r = t.gate("--no-components")
+            out = r.stdout + r.stderr
+            self.assertEqual(r.returncode, 0, out)
+            self.assertTrue([ln for ln in out.splitlines() if "D5" in ln and "--no-components" in ln], out)
+        finally:
+            t.close()
+        readme = (ROOT / "04_design" / "canvas_gen" / "README.md").read_text(encoding="utf-8")
+        cmd = [ln for ln in readme.splitlines() if "design_gate.py" in ln and "canvas" in ln]
+        self.assertTrue(cmd and all("--no-components" in ln for ln in cmd), cmd)
+
+
 class RealTreeTest(unittest.TestCase):
     def test_K218_DS_024_config(self) -> None:
         """K218-DS-024 design-gate.json に 10 部品のセレクタと max_type_sizes 10"""
@@ -278,14 +391,25 @@ class RealTreeTest(unittest.TestCase):
         cmd = script.replace("&& python3 scripts/ci/k218_design_canvas_test.py", "")
         r = subprocess.run(["bash", "-c", cmd], cwd=ROOT, capture_output=True, text=True, timeout=300)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        # D5 が本当に比べている（何も見ていないのに緑でない）：10 部品・比べた値 20 以上
+        m = re.search(r"部品 (\d+) 個・比べた値 (\d+) 個", r.stdout)
+        self.assertIsNotNone(m, r.stdout)
+        self.assertEqual(int(m.group(1)), 10, r.stdout)
+        self.assertGreaterEqual(int(m.group(2)), 20, r.stdout)
 
     def test_K218_DS_026_preview(self) -> None:
         """K218-DS-026 プレビューに page-title・section-title が在り、metric-lg・chat の段が無い"""
         html = PREVIEW.read_text(encoding="utf-8")
-        self.assertIn("page-title", html)
-        self.assertIn("section-title", html)
+        r = run([str(ROOT / "04_design" / "gen_preview.py"), "--check"], ROOT)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        typo = front(DESIGN)["typography"]
+        rows = dict(re.findall(r'data-type="([\w-]+)"[^>]*data-size="([\d.]+px)"', html))
+        self.assertEqual(set(rows), set(typo), "プレビューの文字の段が正本の段と同じでない")
+        for k, v in typo.items():
+            self.assertEqual(rows[k], str(v["fontSize"]), k)
         self.assertNotIn("metric-lg", html)
-        self.assertIsNone(re.search(r"typography[^<]{0,40}\bchat\b|\bchat\b[^<]{0,10}13px", html), "chat の段が残っている")
+        for name in ("button-primary", "button-primary-lg", "button-outlined", "input", "input-lg", "dialog"):
+            self.assertIn(f'data-part="{name}"', html, name)
 
 
 if __name__ == "__main__":

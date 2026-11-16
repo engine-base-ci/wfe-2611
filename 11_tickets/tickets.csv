@@ -1310,7 +1310,7 @@ K-218,DESIGN.md をキャンバスに合わせて直す（ボタン・入力欄�
 あわせて、値の検査 design_gate（G37）の穴を 2 つ塞ぐ（調べの H1・H11）：
 
 1. 部品（components/k）にしか掛かっておらず、画面の CSS（apps/web/features）を見ていない。D5（部品の定義と CSS の規則の突き合わせ）は design-gate.json に component_selectors が無く「検査していません」と出るだけ（design_gate.py は component_selectors があっても何も比べない）
-2. 文字の段の数を誰も数えていない。K-217 で 2 段（page-title・section-title）増えて 14 段になる。design-system.md §3 の「10 を超えない」「1 度も使われない段を残さない」を機械で見る","- [ ] 下の 26 行（K218-DS-001〜026）が緑（入力欄の幅 375 の 16px は D-144.7）
+2. 文字の段の数を誰も数えていない。K-217 で 2 段（page-title・section-title）増えて 14 段になる。design-system.md §3 の「10 を超えない」「1 度も使われない段を残さない」を機械で見る","- [ ] 下の 30 行（K218-DS-001〜030）が緑（入力欄の幅 375 の 16px は D-144.7）
 - [ ] G37 が apps/web/features の CSS にも掛かり、D5 と段の検査（--scales）が緑
 - [ ] canvas は `全部の組`（全部の画面に効く土台）：入れた組（K-238 の G70）が全部緑のまま
 - [ ] チケットの CI が緑"
