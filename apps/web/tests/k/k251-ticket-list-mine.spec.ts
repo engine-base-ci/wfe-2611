@@ -610,7 +610,7 @@ test("K251-UI-030 幅 375：一番下までスクロールしても「もっと�
 test("K251-UI-031 自分に関わるものは期限で区切る：見出しの行は 期限切れ・今日まで・今週・来週以降 の順で件数は出さず、行の無い区切りは出さない。一覧（?view=all）は区切らない（answer=afc3b0f2fdb4）", async ({
   page,
 }) => {
-  await page.clock.setFixedTime(new Date("2026-11-04T10:00:00+09:00")); // 水曜（週は月曜から日曜）
+  await page.clock.setFixedTime(new Date("2026-11-04T08:00:00+09:00")); // 日本時間の水曜 8 時（UTC ではまだ 11-03・週は月曜から日曜）
   const rows = [
     item(1, { overdue: true, due_on: "2026-11-01" }),
     item(2, { due_on: "2026-11-04" }),
@@ -646,7 +646,7 @@ test("K251-UI-031 自分に関わるものは期限で区切る：見出しの�
   ]);
   // 期限切れの行が無ければ、その区切りは出さない
   const p2 = await page.context().newPage();
-  await p2.clock.setFixedTime(new Date("2026-11-04T10:00:00+09:00"));
+  await p2.clock.setFixedTime(new Date("2026-11-04T08:00:00+09:00"));
   await mockList(p2, { list: () => ok(rows.slice(1), { next_cursor: null }) });
   await open(p2);
   await expect(rowsOf(p2)).toHaveCount(6);
@@ -655,6 +655,23 @@ test("K251-UI-031 自分に関わるものは期限で区切る：見出しの�
     "今週",
     "来週以降",
   ]);
+  // 「もっと見る」で届いた期限切れの行は、期限切れの見出しを増やさずその下に入る（読んだ行全部を区切り直す）
+  const p3 = await page.context().newPage();
+  await p3.clock.setFixedTime(new Date("2026-11-04T08:00:00+09:00"));
+  await mockList(p3, {
+    list: (q) =>
+      q.get("cursor")
+        ? ok([item(8, { overdue: true, due_on: "2026-10-30" })], { next_cursor: null })
+        : ok(rows.slice(0, 4), { next_cursor: "c1" }),
+  });
+  await open(p3);
+  await expect(rowsOf(p3)).toHaveCount(4);
+  await p3.getByRole("button", { name: "もっと見る" }).click();
+  await expect(rowsOf(p3)).toHaveCount(5);
+  const order3 = await table(p3)
+    .locator("tbody tr")
+    .evaluateAll((trs) => trs.map((tr) => tr.getAttribute("data-section") ?? tr.textContent?.match(/EG-\d+/)?.[0]));
+  expect(order3).toEqual(["overdue", "EG-101", "EG-108", "today", "EG-102", "EG-103", "week", "EG-104"]);
   // 一覧（全部）は区切らない
   await views(p2).getByRole("link", { name: "一覧" }).click();
   await expect(p2).toHaveURL(/\/tickets\?view=all$/);
@@ -665,6 +682,7 @@ test("K251-UI-031 自分に関わるものは期限で区切る：見出しの�
 test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せない。外した列は見出しと行から消え、開き直しても覚えている。はじめに戻すで 9 列。Esc で閉じてボタンに戻る。口は呼ばない（answer=afc3b0f2fdb4）", async ({
   page,
 }) => {
+  await page.clock.setFixedTime(new Date("2026-11-04T08:00:00+09:00")); // 区切りの見出しの行（来週以降）を決まった日で出す
   const m = await mockList(page);
   await open(page);
   await expect(rowsOf(page)).toHaveCount(3);
@@ -680,20 +698,25 @@ test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せ�
   await box.getByRole("checkbox", { name: "種別", exact: true }).uncheck();
   await box.getByRole("checkbox", { name: "グループ", exact: true }).uncheck();
   const left = COLUMNS.filter((c) => c !== "種別" && c !== "グループ");
-  const heads = async (p = page) => (await table(p).getByRole("columnheader").allInnerTexts()).map((h) => h.trim());
-  expect(await heads()).toEqual(left);
+  const heads = table(page).getByRole("columnheader");
+  await expect(heads).toHaveText(left); // 待つ形で読む
   await expect(rowsOf(page).first().locator("td")).toHaveCount(left.length);
+  // 区切りの見出しの行は残りの列にまたがる
+  await expect(table(page).locator("tbody tr[data-section] td").first()).toHaveAttribute(
+    "colspan",
+    String(left.length),
+  );
   await page.keyboard.press("Escape");
   await expect(box).toHaveCount(0);
   await expect(btn).toBeFocused();
   // 開き直しても覚えている（このブラウザ）
   await page.reload();
   await expect(rowsOf(page)).toHaveCount(3);
-  expect(await heads()).toEqual(left);
+  await expect(heads).toHaveText(left);
   // はじめに戻す
   await btn.click();
   await page.getByRole("dialog", { name: "表に出す列" }).getByRole("button", { name: "はじめに戻す" }).click();
-  expect(await heads()).toEqual(COLUMNS);
+  await expect(heads).toHaveText(COLUMNS);
   await btn.click();
   await expect(page.getByRole("dialog", { name: "表に出す列" })).toHaveCount(0);
   expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
@@ -701,15 +724,36 @@ test("K251-UI-032 表示設定で出す列を選ぶ：番号と題名は外せ�
 
 for (const [label, saved, want] of [
   ["JSON でない", "{壊れた", COLUMNS],
-  ["知らない鍵だけ・番号と題名を外した値", JSON.stringify(["nope", "kind", "due"]), ["種別", "番号", "題名", "期限"]],
+  ["配列でない", JSON.stringify({ a: 1 }), COLUMNS],
+  [
+    "知らない鍵と番号と題名を外した値を逆の順で",
+    JSON.stringify(["due", "nope", "kind"]),
+    ["種別", "番号", "題名", "期限"],
+  ],
+  ["空の配列", JSON.stringify([]), ["番号", "題名"]],
 ] as const) {
-  test(`K251-UI-033 覚えた列の値が壊れている（${label}）：表は出て、番号と題名は必ず在り、知っている鍵だけ使う`, async ({
+  test(`K251-UI-033 覚えた列の値が壊れている・ずれている（${label}）：表は出て、番号と題名は必ず在り、知っている鍵だけを決まった並びで使う`, async ({
     page,
   }) => {
     await page.addInitScript((v) => window.localStorage.setItem("kaname.ticket-list.columns", v), saved);
     await mockList(page);
     await open(page);
     await expect(rowsOf(page)).toHaveCount(3);
-    expect((await table(page).getByRole("columnheader").allInnerTexts()).map((h) => h.trim())).toEqual([...want]);
+    await expect(table(page).getByRole("columnheader")).toHaveText([...want]); // 待つ形で読む
+  });
+}
+
+for (const w of [320, 375]) {
+  test(`K251-UI-034 幅 ${w}：表示設定の箱を開いても横溢れ 0・箱の左右の端が画面の中`, async ({ page }) => {
+    await mockList(page);
+    await open(page, "/tickets", w);
+    await expect(rowsOf(page)).toHaveCount(3);
+    await page.getByRole("button", { name: "表示設定" }).click();
+    const box = page.getByRole("dialog", { name: "表に出す列" });
+    await expect(box).toBeVisible();
+    expect(await overflowX(page)).toBe(0);
+    const b = (await box.boundingBox())!;
+    expect(b.x).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width).toBeLessThanOrEqual(w);
   });
 }
