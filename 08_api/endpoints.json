@@ -46484,7 +46484,8 @@
    "path": "/api/v1/tickets",
    "acts": [
     "A113",
-    "A58"
+    "A58",
+    "A99"
    ],
    "screens": [
     "tickets"
@@ -46504,6 +46505,9 @@
     "D-125.13",
     "D-125.167",
     "D-125.49",
+    "D-125.51",
+    "D-125.57",
+    "D-125.6",
     "D-125.61",
     "D-125.64",
     "D-125.97"
@@ -46595,18 +46599,20 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/tickets が「印の付いたチケットを開いて手を打つ」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN GET /api/v1/tickets が「タブで切り替える・絞り込みを保存する」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/tickets が「種別を選び、題名・責任者・期限・目的・完了の条件を書く」として呼ばれたとき THEN Kaname は「番号（グループの頭文字＋連番）を振る・版を残す」を行い 2xx を返す（自動側：ルールを当てて既定値を入れる）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: GET /api/v1/tickets の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— 期限間近・炎・詰まりを片付ける／見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）",
    "implementation_path": "apps/api/src/routes/tickets.ts::listTickets",
    "permission": {
     "who": "read",
@@ -46619,15 +46625,16 @@
     "path": [],
     "body": null,
     "query": [
+     "view",
+     "q",
      "scope_id",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Tickets[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Tickets[], meta: { next_cursor } }"
    },
    "id": "EP-298",
    "feature_id": "F-004"

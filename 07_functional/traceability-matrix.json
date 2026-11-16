@@ -2897,6 +2897,7 @@
    "related_apis": [
     "GET /api/tickets",
     "GET /api/tickets",
+    "GET /api/tickets",
     "GET /api/scopes/:id/overview",
     "GET /api/me",
     "GET /api/search",
@@ -10552,6 +10553,12 @@
     },
     {
      "act": "A113",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets"
+    },
+    {
+     "act": "A99",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets"
