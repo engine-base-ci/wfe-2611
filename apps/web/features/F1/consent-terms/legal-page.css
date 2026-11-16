@@ -1,17 +1,17 @@
 /* 文面のページ（キャンバス LegalPage・K-232）。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない）。
-   箱（白・線・角丸・余白 26px 28px・段の間 14）は入口の枠（sign-up.css の .k-auth-card）のまま、幅だけ 720 に広げる。
-   箱の幅は正本の段の外（入口の枠の 440 と同じく箱の決まり）。字下げはしない（決める人の答え・D-146.8） */
+   箱（白・線・角丸・余白 26px 28px・段の間 14）は入口の枠（sign-up.css の .k-auth-card）のまま、幅だけ正本の部品 auth-card-wide（720）に広げる。
+   本文の行の高さは正本の部品 legal-body（1.9）。字下げはしない（決める人の答え・D-146.8） */
 .k-auth[data-wide] .k-auth-card {
-  width: 100%;
-  max-width: 720px;
+  width: var(--k-c-auth-card-wide-width);
+  max-width: 100%;
 }
 /* 文面：箱の段の間（14）と同じ間で縦に並べ、段落や見出しの margin で詰めない */
 .k-auth-card .k-legal {
   display: flex;
   flex-direction: column;
   gap: var(--k-c-auth-card-gap);
-  font-size: var(--k-text-body);
-  line-height: 1.9;
+  font-size: var(--k-c-legal-body-text);
+  line-height: var(--k-c-legal-body-lh);
   overflow-wrap: anywhere;
 }
 .k-auth-card .k-legal h1 {
@@ -30,8 +30,8 @@
 .k-auth-card .k-legal p,
 .k-auth-card .k-legal li {
   margin: 0;
-  font-size: var(--k-text-body);
-  line-height: 1.9;
+  font-size: var(--k-c-legal-body-text);
+  line-height: var(--k-c-legal-body-lh);
 }
 .k-auth-card .k-legal p.k-legal-version {
   font-size: var(--k-text-body-sm);
