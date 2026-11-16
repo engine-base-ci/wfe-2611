@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:82c3be5b9f16b879
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:ed4cbe34361b991c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3709,7 +3709,7 @@ export const SetupTask = z.strictObject({
 });
 export const SetupTasksDismissed = z.strictObject({
   dismissed: z.boolean().optional(),
-  skipped: z.array(z.unknown()).optional(),
+  skipped: z.array(z.string()).optional(),
 });
 export const PairingCode = z.strictObject({
   code: z.string().optional(),

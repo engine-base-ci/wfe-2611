@@ -42,7 +42,7 @@ REGISTRY = (ROOT / "packages" / "contracts" / "src" / "registry.ts").read_text(e
 TYPES = (ROOT / "08_api" / "types.ts").read_text(encoding="utf-8")
 
 # INPUTS・RESPONSES の欄の型の名前として作り手（05_flow/build_api.py の _ftype）が表せるもの。後ろの ? は null を許す（any には付けない）
-VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
+VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]", "string[]"}
 
 # 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする入力の欄（必須の欄）。読んで洗い出した根拠つき。
 #   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。

@@ -491,7 +491,7 @@ SCREEN_API = {
 }
 
 
-# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]（後ろの ? は null 可）
+# 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]／string[]（後ろの ? は null 可）
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
     "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
@@ -805,7 +805,7 @@ RESPONSES = {
     # K-250：はじめにやること（passkey・pc・credentials の 3 つ）。passkey は機能ができるまで available false・行き先 null（D-145.11）。credentials は任意（optional）で「あとで」で飛ばせる（skipped・D-145.13）
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "desc": "string", "done": "boolean", "href": "string?", "available": "boolean", "optional": "boolean", "skipped": "boolean"}),
     # K-250：閉じる・飛ばすの後の今の状態（箱を閉じたか・飛ばした項目）
-    "dismissSetupTasks": ("SetupTasksDismissed", {"dismissed": "boolean", "skipped": "array"}),
+    "dismissSetupTasks": ("SetupTasksDismissed", {"dismissed": "boolean", "skipped": "string[]"}),
     "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
     "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null

@@ -10090,7 +10090,7 @@ components:
         skipped:
           type: array
           items:
-            type: object
+            type: string
       x-operation: dismissSetupTasks
     PairingCode:
       type: object
