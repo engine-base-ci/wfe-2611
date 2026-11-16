@@ -483,6 +483,17 @@ test("K229-UI-029 目で見たに印を付けて「やめる」で閉じ、開�
   expect(m.approves).toHaveLength(0);
 });
 
+test("K229-UI-030 取り消せない確かめの小窓は、開いたときの説明（aria-describedby・読み上げ）に赤い箱の「取り消せません」がつながる", async ({
+  page,
+}) => {
+  await mockApi(page);
+  await openTicketSettled(page);
+  await sendBtn(page).click();
+  const d = approveDialog(page);
+  await expect(d.locator(".k-dialog-caution")).toContainText("取り消せません");
+  await expect(d).toHaveAccessibleDescription(/取り消せません/);
+});
+
 fidelityConfigTest(
   "K229-UI-023 突き合わせの設定：approve-modal と complete-modal と return-modal が enrolled・持ち主 K-229・画面を整える道具に鍵・画面の側のセレクタに .k-panel が無い",
   ["approve-modal", "complete-modal", "return-modal"],
