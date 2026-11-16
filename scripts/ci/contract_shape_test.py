@@ -42,7 +42,7 @@ REGISTRY = (ROOT / "packages" / "contracts" / "src" / "registry.ts").read_text(e
 TYPES = (ROOT / "08_api" / "types.ts").read_text(encoding="utf-8")
 
 # INPUTS・RESPONSES の欄の型の名前として作り手（05_flow/build_api.py の _ftype）が表せるもの。後ろの ? は null を許す（any には付けない）
-VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]"}
+VOCAB = {"string", "integer", "number", "boolean", "object", "array", "uuid", "uuid[]", "string[]"}
 
 # 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする入力の欄（必須の欄）。読んで洗い出した根拠つき。
 #   入口の zod は前から全部 .optional()（契約に required が 1 つも無かった）なので、必須の確かめと文言は口の振る舞いが持っている。
@@ -73,6 +73,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
+    "dismissSetupTasks": "key は無くてよい（無ければ箱を閉じる・K-250）。{} で 201",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
@@ -127,6 +128,7 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
+    "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
 # 会話と記憶の口（hooks/agent.ts）の成功の答えの形（類 C/D の続き）：表の行ではなく、口が返すとおりの形
 AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
