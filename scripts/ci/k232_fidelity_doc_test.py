@@ -57,7 +57,7 @@ class DocHeadingTest(unittest.TestCase):
         return subprocess.run(args, capture_output=True, text=True, cwd=self.root)
 
     def test_K232_CI_001_doc_heading_without_y(self) -> None:
-        """K232-CI-001 種類 doc の組の見出しは y が無くても 0（緑）。y が在っても 0"""
+        """K232-CI-001 種類 doc の組の見出しは、y が無くても在っても 0（緑）で終わる"""
         no_y = [x for x in H1 if x != "y"]
         r = self.run_gate(group("doc", no_y))
         self.assertEqual(r.returncode, 0, r.stdout)
@@ -65,13 +65,29 @@ class DocHeadingTest(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout)
 
     def test_K232_CI_002_other_kinds_still_need_y(self) -> None:
-        """K232-CI-002 doc 以外（auth-msg）の見出しに y が無ければ 1 で「値 y」を出す。doc でも見出しに x が無ければ 1 で「値 x」を出す"""
+        """K232-CI-002 doc 以外（auth-msg）の見出しに y が無ければ 1 で「値 y」を出す。doc でも見出しの y 以外の値（字の大きさ・太さ・行の高さ・色・x）や
+        箱（card）の値を 1 つでも外せば 1 でその値の名前を出す。外せる表は doc の h1 の y だけ"""
         r = self.run_gate(group("auth-msg", [x for x in H1 if x != "y"]))
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertIn("値 y", r.stdout)
-        r = self.run_gate(group("doc", [x for x in H1 if x != "x"]))
-        self.assertEqual(r.returncode, 1, r.stdout)
-        self.assertIn("値 x", r.stdout)
+        for need in [x for x in H1 if x != "y"]:
+            with self.subTest(h1=need):
+                r = self.run_gate(group("doc", [x for x in H1 if x != need]))
+                self.assertEqual(r.returncode, 1, r.stdout)
+                self.assertIn(f"値 {need}", r.stdout)
+        for need in CARD:
+            with self.subTest(card=need):
+                g = group("doc", H1)
+                g["pairs"][0]["props"] = [x for x in CARD if x != need]
+                r = self.run_gate(g)
+                self.assertEqual(r.returncode, 1, r.stdout)
+                self.assertIn(f"値 {need}", r.stdout)
+        sys.path.insert(0, str(HERE))
+        try:
+            import fidelity_config  # noqa: PLC0415
+        finally:
+            sys.path.remove(str(HERE))
+        self.assertEqual(fidelity_config.KIND_OPTIONAL, {"doc": {"h1": ["y"]}})
 
 
 if __name__ == "__main__":
