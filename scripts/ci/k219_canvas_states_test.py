@@ -160,6 +160,17 @@ def styles(tag: str) -> dict[str, str]:
     return out
 
 
+def element_end(body: str, start: int) -> int:
+    """body[start] の開きタグに対応する閉じタグの終わり（同じタグ名の入れ子を数える）"""
+    tag = re.match(r"<(\w+)", body[start:]).group(1)
+    depth = 0
+    for m in re.compile(r"<(/?)%s\b[^>]*>" % tag).finditer(body, start):
+        depth += -1 if m.group(1) else 1
+        if depth == 0:
+            return m.end()
+    raise AssertionError(f"<{tag}> の閉じタグが無い")
+
+
 def design_tokens() -> dict:
     m = re.match(r"^---\n(.*?)\n---\n", DESIGN.read_text(encoding="utf-8"), re.S)
     assert m, "正本に頭が無い"
@@ -200,7 +211,7 @@ class BarAndBoxTest(unittest.TestCase):
             self._bars(pathlib.Path(tmp))
 
     def test_K219_CV_015_empty_box(self) -> None:
-        """K219-CV-015 承認待ちが空の絵の空の箱は正本の state-empty の値（地・1px dashed の線・角丸・余白・間）"""
+        """K219-CV-015 承認待ちが空の絵の空の箱は正本の state-empty の値（地・1px dashed の線・角丸・余白・間と、間が効く display）で、箱の中に文が在る"""
         body = (CANVAS / "ApEmpty.dc.html").read_text(encoding="utf-8")
         tags = list(re.finditer(r'<[^>]*data-part="state-empty"[^>]*>', body))
         self.assertEqual(len(tags), 1, "空の箱がちょうど 1 つでない")
@@ -213,7 +224,9 @@ class BarAndBoxTest(unittest.TestCase):
         self.assertEqual(got.get("border-radius"), resolve(tok, want["rounded"]).lower(), "角丸")
         self.assertEqual(got.get("padding"), resolve(tok, want["padding"]).lower(), "余白")
         self.assertEqual(got.get("gap"), resolve(tok, want["gap"]).lower(), "間")
-        self.assertIn("いま決めるものはありません", body[tags[0].end():])
+        self.assertIn(got.get("display"), ("flex", "inline-flex", "grid"), "間が効かない（display が flex か grid でない）")
+        inside = body[tags[0].end():element_end(body, tags[0].start())]
+        self.assertIn("いま決めるものはありません", visible_text(inside), "空の箱の中に文が無い")
 
     def test_K219_CV_016_no_designer_note(self) -> None:
         """K219-CV-016 新しい 15 枚に 3 秒の決まりの注記（設計者の説明）が無く、比べる 1 枚の「違い：」に在る"""

@@ -115,10 +115,23 @@ for (const w of [1440, 375]) {
       const src = (await f.getAttribute("src")) ?? "";
       const box = await f.boundingBox();
       if (!box || box.width < 100 || box.height < 100) empty.push(`${src}：枠が小さい`);
-      const body = f.contentFrame().locator("body");
-      await expect(body).toBeAttached();
-      const text = (await body.innerText()).trim();
-      if (text.length < 10) empty.push(`${src}：絵が出ていない`);
+      const name = src.replace(/^.*\//, "").replace(/\.dc\.html$/, "");
+      const frame = await (await f.elementHandle())?.contentFrame();
+      if (!frame) {
+        empty.push(`${src}：枠に頁が無い`);
+        continue;
+      }
+      // 枠の頁が src の絵そのもの（無いファイルの失敗の頁でない）で、絵の中身（x-dc）と文が読み込まれている
+      await expect
+        .poll(
+          async () =>
+            frame.url().endsWith(`/canvas/${name}.dc.html`) &&
+            (await frame
+              .evaluate(() => !!document.querySelector("x-dc") && document.body.innerText.trim().length > 10)
+              .catch(() => false)),
+          { message: `${src}：絵が出ていない` },
+        )
+        .toBe(true);
     }
     expect(empty, empty.join("\n")).toEqual([]);
     expect(outside).toEqual([]);
