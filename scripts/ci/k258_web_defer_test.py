@@ -20,6 +20,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 WF_PATH = ROOT / ".github" / "workflows" / "v3-gate.yml"
 BUILDER = ROOT / "05_flow" / "build_testplan.py"
+FLOW_CFG = ROOT / "ticket-flow.yaml"
 ME = "python3 scripts/ci/k258_web_defer_test.py"
 
 WF_TEXT = WF_PATH.read_text(encoding="utf-8")
@@ -154,6 +155,18 @@ class Builder(unittest.TestCase):
         line = [ln for ln in BUILDER_TEXT.splitlines() if '"id": 65,' in ln]
         self.assertEqual(len(line), 1)
         self.assertIn(ME, line[0])
+
+
+class FlowConfig(unittest.TestCase):
+    def test_K258_CI_010_ticket_flow_defers_web_rows(self):
+        ci = (yaml.safe_load(FLOW_CFG.read_text(encoding="utf-8")) or {}).get("ci") or {}
+        self.assertIs(ci.get("web_defer"), True, "チケットの CI は画面の行を後回しにする（ci.py が web=defer を渡す）")
+        self.assertEqual(ci.get("web_rows"), "-UI-", "後回しにする行は行 ID に -UI- を含む行")
+        inputs = ci.get("inputs") or {}
+        self.assertEqual(inputs.get("web"), "web", "入力の名前 web を CI の定義の入力 web に渡す")
+        for k in ("scope", "ticket", "base"):
+            self.assertEqual(inputs.get(k), k, "前からの入力は残る")
+        self.assertEqual(ci.get("workflow"), "v3-gate.yml")
 
 
 if __name__ == "__main__":
