@@ -28,6 +28,8 @@ const ROOT = join(HERE, "../../../..");
 const LINE = "rgb(221, 226, 233)";
 const WHITE = "rgb(255, 255, 255)";
 const WIDTHS = [320, 375, 768, 1024, 1440] as const;
+/** 親子が 3 段を超えたときの正本の理由（E-VAL-015） */
+const TOO_DEEP = "チケットの親子は 3 段までです。ほかの親を選んでください";
 const DISABLED_OPACITY = 0.55; // 数で比べる（本番の組み立ては CSS を縮めて ".55" と書くことがある）
 const box = async (page: Page, sel: string) => (await page.locator(sel).first().boundingBox())!;
 
@@ -579,7 +581,7 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   expect([...(await p4.inputValue())].length).toBe(100);
   await expect.poll(() => m4.listCalls.length).toBeGreaterThan(0);
   expect(m4.listCalls.every((q) => [...(q.get("q") ?? "")].length <= 100)).toBe(true);
-  // (f) 作る口が親を断った（E-VAL-015・3 段を超える／消された親）：入口の理由を親の欄の下に出し、欄は aria-invalid
+  // (f) 作る口が親を断った（E-VAL-015・親子は 3 段まで）：正本の理由を親の欄のすぐ下に出し、欄は aria-invalid。答えは本物と同じ形（fromCatalog）
   await mockCreate(page);
   await page.route(/\/api\/v1\/tickets$/, (route) =>
     route.request().method() === "POST"
@@ -589,7 +591,9 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
           body: JSON.stringify({
             error: "validation",
             code: "E-VAL-015",
-            details: [{ field: "parent_ticket_id", message: "親のチケットを選び直してください" }],
+            field: "parent_ticket_id",
+            message: TOO_DEEP,
+            details: [{ field: "parent_ticket_id", message: TOO_DEEP }],
           }),
         })
       : route.fallback(),
@@ -602,16 +606,23 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   await fillRequired(page, "断られる親");
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect(p5).toHaveAttribute("aria-invalid", "true");
-  await expect
-    .poll(() =>
-      p5.evaluate((el) =>
-        (el.getAttribute("aria-describedby") ?? "")
-          .split(" ")
-          .map((id) => document.getElementById(id)?.textContent ?? "")
-          .join(" "),
-      ),
-    )
-    .toContain("親のチケットを選び直してください");
+  // 理由は aria-describedby の先の、目に見える・親の欄と同じ行の中・欄のすぐ下の要素に出る（下の知らせの箱だけに出るのでは足りない）
+  const where = await p5.evaluate((el, text) => {
+    const box = el.getBoundingClientRect();
+    return (el.getAttribute("aria-describedby") ?? "")
+      .split(" ")
+      .map((id) => document.getElementById(id))
+      .filter((e): e is HTMLElement => !!e && (e.textContent ?? "").includes(text))
+      .map((e) => {
+        const r = e.getBoundingClientRect();
+        return {
+          visible: r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== "hidden",
+          below: r.top >= box.bottom - 1,
+          sameRow: e.closest(".k-create-assign-row") === el.closest(".k-create-assign-row"),
+        };
+      });
+  }, TOO_DEEP);
+  expect(where).toEqual([{ visible: true, below: true, sameRow: true }]);
 });
 
 test("K224-UI-029 幅 375：足元の帯は下のタブの上に乗り、「作る」が見えて押せる（押すと作る口が 1 回）", async ({
