@@ -10888,7 +10888,9 @@
    "affects": [
     "@kaname/web"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "ci"
+   ],
    "screens": [
     "legal"
    ],
