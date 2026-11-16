@@ -654,20 +654,20 @@ textarea.k-input {
 }
 
 /* ---- 本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create） ----
-   道具はどれもまだ使えない（押せない形・正本の使えない状態の薄さ）。最小の幅 30 は字の短い道具の幅（「見出し」などは字に合わせて広がる） */
+   道具はどれもまだ使えない（押せない形・正本の使えない状態の薄さ）。最小の幅（doc-tool-min）は字の短い道具の幅（「見出し」などは字に合わせて広がる） */
 .k-doc-tools {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 2px;
+  gap: var(--k-c-doc-toolbar-gap);
   padding: var(--k-c-doc-toolbar-pad);
   background: var(--k-c-doc-toolbar-bg);
   border-bottom: var(--k-c-doc-toolbar-border-bottom);
 }
 .k-doc-tools button {
-  min-width: 30px;
+  min-width: var(--k-c-doc-tool-min-width);
   height: var(--k-c-doc-tool-height);
-  padding: 0 6px;
+  padding: var(--k-c-doc-tool-pad);
   border: 0;
   border-radius: var(--k-r-sm);
   background: transparent;

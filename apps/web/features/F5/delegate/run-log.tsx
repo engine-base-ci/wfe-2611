@@ -2,11 +2,14 @@
 // AI に任せる（K-62）の実行の記録。K-226 でキャンバス TicketDetail・TdRunLog の形にした：
 //   ・右のパネルの「実行の記録（最新）」：いちばん新しい 1 件だけを「〈名前〉のAI ・ MM/DD HH:MM → HH:MM（N 分）」で。
 //     走っている実行は終わりの時刻と分を出さない。無ければ「まだ AI に任せていません」。読み終えた件数を data-runs に（読み中は付けない）
-//   ・「実行の記録をすべて見る」で開く小窓「実行の記録」：全部を新しい順に、誰の AI か・作る／承認の後の実行・状態・始めた時刻だけ。
-//     絞り込みの札はキャンバスに在るがまだ使えない（押せない形・D-145.9）
+//   ・「実行の記録をすべて見る」で開く小窓「実行の記録」：右から出る幅 540 の板（キャンバス TdRunLog・正本の部品 run-sheet）。
+//     全部を新しい順に、誰の AI か・作る／承認の後の実行・状態・始めた時刻だけ。絞り込みの札はキャンバスに在るがまだ使えない（押せない形・D-145.9）。
+//     components/k の Dialog（真ん中に置く形だけ）は変えず、Base UI の Dialog をここで組み、頭・題・×・本文は .k-dialog-* を使い回す
 //   途中の様子・止まった理由は帯（作る段は K-62・承認の後の実行は K-63）が出す（同じことを 2 か所で言わない・D-128.178）
-import { useState } from "react";
-import { Button, Dialog } from "@/components/k";
+import { Dialog as D } from "@base-ui/react/dialog";
+import { X } from "lucide-react";
+import { useRef, useState } from "react";
+import { Button } from "@/components/k";
 import { jst, type RunView } from "./use-run";
 
 const STATUS: Record<string, string> = {
@@ -78,7 +81,7 @@ export function RunLatest({ runs }: { runs: RunView[] | null }) {
 
 const CHIPS = ["通った", "落ちた"] as const;
 
-/** 小窓「実行の記録」（キャンバス TdRunLog）。全部の実行を新しい順に */
+/** 小窓「実行の記録」（キャンバス TdRunLog）：右から出る板。全部の実行を新しい順に。最初のフォーカスは板そのもの（× に乗せない） */
 export function RunLogDialog({
   runs,
   open,
@@ -89,34 +92,49 @@ export function RunLogDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const list = runs ?? [];
+  const sheet = useRef<HTMLDivElement>(null);
   return (
-    <Dialog title="実行の記録" open={open} onOpenChange={onOpenChange}>
-      <div role="group" aria-label="絞り込み" className="k62-run-chips">
-        {[`すべて ${list.length}`, ...CHIPS].map((c) => (
-          <button
-            key={c}
-            type="button"
-            className="k62-run-chip"
-            aria-disabled="true"
-            tabIndex={-1}
-            title={`${c}（まだ使えません）`}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-      {runs === null ? <p className="k-desc">読み込んでいます</p> : null}
-      {runs !== null && list.length === 0 ? <p className="k-desc">まだ AI に任せていません</p> : null}
-      <ul className="k62-run-list">
-        {list.map((r) => (
-          <li key={r.id} data-run-id={r.id}>
-            <span>{whoOf(r)}</span>
-            <span>{PHASE[r.phase ?? "make"] ?? ""}</span>
-            <span>{STATUS[r.status] ?? r.status}</span>
-            <time dateTime={r.started_at ?? undefined}>{jst(r.started_at)}</time>
-          </li>
-        ))}
-      </ul>
-    </Dialog>
+    <D.Root open={open} onOpenChange={(o) => onOpenChange(o)}>
+      <D.Portal>
+        <D.Backdrop className="k-backdrop" />
+        <D.Popup ref={sheet} className="k62-run-sheet" initialFocus={sheet}>
+          <div className="k-dialog-head">
+            <D.Title className="k-dialog-title">実行の記録</D.Title>
+            <D.Close className="k-dialog-close" aria-label="閉じる">
+              <X aria-hidden="true" size={16} />
+            </D.Close>
+          </div>
+          <div role="group" aria-label="絞り込み" className="k62-run-chips">
+            {[`すべて ${list.length}`, ...CHIPS].map((c, i) => (
+              <button
+                key={c}
+                type="button"
+                className="k62-run-chip"
+                aria-pressed={i === 0}
+                aria-disabled="true"
+                tabIndex={-1}
+                title={`${c}（まだ使えません）`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="k-dialog-body">
+            {runs === null ? <p className="k-desc">読み込んでいます</p> : null}
+            {runs !== null && list.length === 0 ? <p className="k-desc">まだ AI に任せていません</p> : null}
+            <ul className="k62-run-list">
+              {list.map((r) => (
+                <li key={r.id} data-run-id={r.id}>
+                  <span>{whoOf(r)}</span>
+                  <span>{PHASE[r.phase ?? "make"] ?? ""}</span>
+                  <span>{STATUS[r.status] ?? r.status}</span>
+                  <time dateTime={r.started_at ?? undefined}>{jst(r.started_at)}</time>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </D.Popup>
+      </D.Portal>
+    </D.Root>
   );
 }

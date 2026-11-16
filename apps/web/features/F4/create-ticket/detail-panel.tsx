@@ -5,7 +5,7 @@
 //   口が返さない値（業務の型・予定・実績・分類・節目・取引先・親）は空（嘘の値を書かない）。
 //   グループは外枠と同じ問い合わせ（SCOPES_KEY）の答えから引く（口を 2 回呼ばない・G-16）。読めなければグループだけ空
 import { Bot, PanelRight } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject } from "react";
 import { RunLatest } from "@/features/F5/delegate/run-log";
 import type { RunView } from "@/features/F5/delegate/use-run";
 import { InertButton, daysOver, mmddWeek } from "./detail-head";
@@ -49,6 +49,8 @@ export interface DetailPanelProps {
   runs: RunView[] | null;
   me: string;
   hidden: boolean;
+  /** パネルを開いたときにキーボードの場所を移す先（パネルを閉じる） */
+  closeRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
 }
 
@@ -60,6 +62,7 @@ export function DetailPanel(p: DetailPanelProps) {
   return (
     <aside aria-label="チケットのパネル" className="k-detail-panel" hidden={p.hidden}>
       <button
+        ref={p.closeRef}
         type="button"
         className="k-detail-panel-close"
         aria-label="パネルを閉じる"
@@ -139,7 +142,7 @@ export function DetailPanel(p: DetailPanelProps) {
         <nav aria-label="本文の目次" className="k-detail-panel-sec k-detail-toc">
           <h2>本文の目次</h2>
           {p.sections.map((s) => (
-            <a key={s.key} href={`#sec-${s.key}`}>
+            <a key={s.key} className="k-detail-link" href={`#sec-${s.key}`}>
               {s.label}
             </a>
           ))}

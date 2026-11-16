@@ -142,6 +142,19 @@ function DetailView({
 }) {
   const runs = useRuns(id);
   const [panelOpen, setPanelOpen] = useState(true);
+  // パネルを閉じたら「パネルを開く」へ、開いたら「パネルを閉じる」へキーボードの場所を移す（押したボタンが消えて場所を失わない）
+  const reopenRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const moveFocus = useRef(false);
+  useEffect(() => {
+    if (!moveFocus.current) return;
+    moveFocus.current = false;
+    (panelOpen ? closeRef : reopenRef).current?.focus();
+  }, [panelOpen]);
+  const togglePanel = (open: boolean) => {
+    moveFocus.current = true;
+    setPanelOpen(open);
+  };
   // 動いていた実行が終わった・止まった読み直しで、チケットの詳細（段・can.delegate・成果物の区画）も読み直す（K62-UI-029・030・G-12）
   const status = runs.current?.status ?? null;
   const prevStatus = useRef<string | null>(null);
@@ -210,7 +223,8 @@ function DetailView({
           className="k-detail-reopen"
           aria-label="パネルを開く"
           title="パネルを開く"
-          onClick={() => setPanelOpen(true)}
+          ref={reopenRef}
+          onClick={() => togglePanel(true)}
         >
           <PanelRight size={16} aria-hidden="true" />
         </button>
@@ -225,7 +239,8 @@ function DetailView({
           runs={runs.runs}
           me={myName}
           hidden={!panelOpen}
-          onClose={() => setPanelOpen(false)}
+          closeRef={closeRef}
+          onClose={() => togglePanel(false)}
         />
       ) : null}
     </div>
