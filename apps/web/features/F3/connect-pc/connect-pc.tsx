@@ -227,11 +227,7 @@ export function ConnectPc({ from }: { from: string | null }) {
       {/* 小窓の外の失敗（この PC の Bridge に渡すとき）は本文に出す */}
       {!dialogOpen ? problemNote : null}
 
-      <PcList
-        devices={devices ?? []}
-        onAdd={installed ? undefined : openDialog}
-        onWake={() => wake()}
-      />
+      <PcList devices={devices ?? []} onAdd={installed ? undefined : openDialog} onWake={() => wake()} />
       {live ? <Usage /> : null}
 
       {/* 前の画面への導線（D-128.164）：Claude Code を入れてログインする・AI が使うブラウザを選ぶ・端末を外すは、

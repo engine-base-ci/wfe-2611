@@ -172,8 +172,8 @@ export function ThisPcCard({ version, busy, otherAccount, onConnect, onSwitch }:
     <section className="k-pc-card k-pc-this" aria-labelledby="pc-this-title">
       <h2 id="pc-this-title">この PC の Bridge</h2>
       <p className="k-pc-this-text">
-        この PC に Bridge が入っています（{version ? `v${version}` : "版はまだ分かりません"}）。コードを打たずに、ボタン 1
-        つでつなげます。
+        この PC に Bridge が入っています（{version ? `v${version}` : "版はまだ分かりません"}）。コードを打たずに、ボタン
+        1 つでつなげます。
       </p>
       <div className="k-pc-this-acts">
         <Button className="k-pc-btn" loading={busy} onClick={onConnect}>

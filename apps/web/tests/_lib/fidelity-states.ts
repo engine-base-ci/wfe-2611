@@ -21,7 +21,9 @@ interface ShellOpts {
 }
 async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promise<void> {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
-  await page.route(/127\.0\.0\.1:38617/, (route) => (o.local ? o.local(route) : route.fulfill({ status: 404, body: "" })));
+  await page.route(/127\.0\.0\.1:38617/, (route) =>
+    o.local ? o.local(route) : route.fulfill({ status: 404, body: "" }),
+  );
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
     const req = route.request();
     const p = new URL(req.url()).pathname;
@@ -192,7 +194,10 @@ async function localBridgeOtherAccount(route: Route): Promise<void> {
       status: 409,
       headers: cors,
       contentType: "application/json",
-      body: JSON.stringify({ reason: "other_account", message: "この PC の Bridge は別のアカウントでつながっています" }),
+      body: JSON.stringify({
+        reason: "other_account",
+        message: "この PC の Bridge は別のアカウントでつながっています",
+      }),
     });
   return route.fulfill({ status: 404, headers: cors, body: "" });
 }

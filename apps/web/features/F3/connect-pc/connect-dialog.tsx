@@ -43,7 +43,14 @@ function Take({ os, label, onTake }: { os: Os; label: string; onTake: (os: Os) =
     }
   };
   return (
-    <a role="button" tabIndex={0} className="k-pc-take" aria-label={`${label}を受け取る`} onClick={() => onTake(os)} onKeyDown={onKey}>
+    <a
+      role="button"
+      tabIndex={0}
+      className="k-pc-take"
+      aria-label={`${label}を受け取る`}
+      onClick={() => onTake(os)}
+      onKeyDown={onKey}
+    >
       {label}
     </a>
   );
@@ -64,7 +71,16 @@ export interface ConnectDialogProps {
   notice?: ReactNode;
 }
 
-export function ConnectDialog({ open, onOpenChange, code, busy, received, onTake, onNewCode, notice }: ConnectDialogProps) {
+export function ConnectDialog({
+  open,
+  onOpenChange,
+  code,
+  busy,
+  received,
+  onTake,
+  onNewCode,
+  notice,
+}: ConnectDialogProps) {
   const popupRef = useRef<HTMLDivElement>(null);
   const firstFocus = useCallback(
     (): HTMLElement | null => popupRef.current?.querySelector<HTMLElement>(FIRST_ACTION) ?? popupRef.current,
@@ -106,7 +122,14 @@ export function ConnectDialog({ open, onOpenChange, code, busy, received, onTake
                 ) : null}
                 <span className="k-code-foot">
                   <span>10 分で切れる ・ この PC 専用の鍵が作られ、ほかの PC からは使えない</span>
-                  <button type="button" className="k-pc-text-btn" data-act="new-code" disabled={busy} aria-busy={busy || undefined} onClick={onNewCode}>
+                  <button
+                    type="button"
+                    className="k-pc-text-btn"
+                    data-act="new-code"
+                    disabled={busy}
+                    aria-busy={busy || undefined}
+                    onClick={onNewCode}
+                  >
                     新しいコード
                   </button>
                 </span>
@@ -117,7 +140,9 @@ export function ConnectDialog({ open, onOpenChange, code, busy, received, onTake
             </ol>
             <div className="k-pc-shared-note">
               <b aria-hidden="true">!</b>
-              <span>つなぐ PC は、あなたしか使わないものにする。共用の PC だと、ほかの人があなたの分身の作業を見られる</span>
+              <span>
+                つなぐ PC は、あなたしか使わないものにする。共用の PC だと、ほかの人があなたの分身の作業を見られる
+              </span>
             </div>
             {notice}
           </div>
