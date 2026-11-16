@@ -235,22 +235,41 @@ test("K224-UI-012 本文の主ボタンは「作る」1 つだけ", async ({ pag
   await expect(primaries).toHaveText("作る");
 });
 
-test("K224-UI-013 「下書きのまま閉じる」：作る面が閉じて /tickets・下書きは消さず、開き直すと続きが出る", async ({
+test("K224-UI-013 「下書きのまま閉じる」：作る面が閉じて /tickets・下書きは消さず、開き直すと続きが出る。前の保存の答えを待つ間に続けて打った字も、閉じる前にサーバーへ残す", async ({
   page,
 }) => {
+  // 時計を止めて、書いてから少し待って送る保存（600ms）を試験が進めた分だけ進める（決めた時間は待たない）
+  const t0 = new Date("2026-11-16T10:00:00+09:00");
+  await page.clock.install({ time: t0 });
+  await page.clock.pauseAt(t0);
   const m = await mockCreate(page);
+  // 1 回目の保存の答えを止めておき、答える前に続けて打つ
+  const first = gate();
+  let posts = 0;
+  await page.route(/\/api\/v1\/me\/ticket-drafts$/, async (route) => {
+    if (route.request().method() === "POST" && posts++ === 0) await first.wait;
+    await route.fallback();
+  });
   await openCreate(page);
   await loaded(page);
-  await page.getByRole("textbox", { name: "題名", exact: true }).fill("閉じる前の題名");
-  await expect.poll(() => m.draftSaves.length).toBeGreaterThan(0);
+  const title = page.getByRole("textbox", { name: "題名", exact: true });
+  await title.fill("閉じる前");
+  await page.clock.runFor(600);
+  await expect.poll(() => posts).toBe(1);
+  await title.fill("閉じる前の題名"); // 次の保存は、まだ時計を進めていないので待っている
+  first.open();
+  await expect(page.locator('header.k-page-head [role="status"][aria-label="下書きの保存"]')).toContainText(
+    "保存しました",
+  ); // 1 回目の答えが届いた
   await page.getByRole("button", { name: "下書きのまま閉じる" }).click();
   await expect(page).toHaveURL(/\/tickets$/);
   await expect(form(page)).toHaveCount(0);
+  // 閉じる前に続けて打った字までサーバーに残っている（閉じた時点で待っていた保存を捨てない）
+  await expect.poll(() => m.drafts.some((d) => JSON.stringify(d.body).includes("閉じる前の題名"))).toBe(true);
   await page.evaluate(() => window.localStorage.clear()); // この PC の写しから戻らないようにして、サーバーに残っていることを見る
   await page.goto("/tickets?new=1");
   await expect(page.getByRole("textbox", { name: "題名", exact: true })).toHaveValue("閉じる前の題名");
   expect(m.draftDeletes).toBe(0);
-  expect(m.drafts.some((d) => JSON.stringify(d.body).includes("閉じる前の題名"))).toBe(true);
 });
 
 test("K224-UI-014 書きかけの読み込み：帯はすぐ出る・文は 2 秒では出ず 3 秒を過ぎると出る（3 秒たっても終わらないときだけ・D-144.8）・読み終えるまで欄を出さない", async ({
@@ -275,21 +294,23 @@ test("K224-UI-014 書きかけの読み込み：帯はすぐ出る・文は 2 �
   await expect(page.getByText("書きかけを読み込んでいます")).toHaveCount(0);
 });
 
-test("K224-UI-015 作ったことを知らせる人：名前で絞り込む欄に「佐」と打つと佐藤だけが出て、選ぶと作る口に佐藤の id が届く", async ({
+test("K224-UI-015 作ったことを知らせる人：名前で絞り込む欄に「佐」と打つと佐藤だけが出て、選ぶと作る口に佐藤の id が届く。絞り込む欄の Enter では作らない", async ({
   page,
 }) => {
   const m = await mockCreate(page);
   await openCreate(page);
   await loaded(page);
+  await fillRequired(page); // 必須が埋まっていても、絞り込む欄の Enter では作らない
   const filter = page.getByRole("textbox", { name: "作ったことを知らせる人" });
   await expect(filter).toHaveAttribute("placeholder", /名前で絞り込む/);
   await filter.fill("佐");
   await expect(page.getByRole("checkbox", { name: "山田" })).toHaveCount(0);
   await page.getByRole("checkbox", { name: "佐藤" }).check();
   await expect(page.getByRole("button", { name: "佐藤 を外す" })).toBeVisible();
-  await fillRequired(page);
+  await filter.press("Enter");
   await page.getByRole("button", { name: "作る", exact: true }).click();
-  await expect.poll(() => m.creates.length).toBe(1);
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
+  expect(m.creates).toHaveLength(1); // Enter で 1 回作っていれば 2 回になる（または「作る」を押す前に画面が移る）
   expect(m.creates[0]!["notify_member_ids"]).toEqual([BOSS]);
   expect(m.creates[0]!["assignee_member_id"]).toBe(ME);
 });
@@ -508,7 +529,7 @@ test("K224-UI-027 幅 375・320：帯の h1「チケットを作る」と題名�
   }
 });
 
-test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補を読み込めませんでした」で親なしで作れる・0 件は「見つかりません」・選んだ親は外せる・下書きから戻した親は番号と題名・101 字は打てない", async ({
+test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補を読み込めませんでした」で親なしで作れる・0 件は「見つかりません」・選んだ親は外せる・下書きから戻した親は番号と題名・101 字は打てない・作る口が親を断ると理由を欄の下に出す", async ({
   page,
 }) => {
   const m = await mockCreate(page, { listStatus: 500 });
@@ -558,6 +579,39 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   expect([...(await p4.inputValue())].length).toBe(100);
   await expect.poll(() => m4.listCalls.length).toBeGreaterThan(0);
   expect(m4.listCalls.every((q) => [...(q.get("q") ?? "")].length <= 100)).toBe(true);
+  // (f) 作る口が親を断った（E-VAL-015・3 段を超える／消された親）：入口の理由を親の欄の下に出し、欄は aria-invalid
+  await mockCreate(page);
+  await page.route(/\/api\/v1\/tickets$/, (route) =>
+    route.request().method() === "POST"
+      ? route.fulfill({
+          status: 422,
+          contentType: "application/json",
+          body: JSON.stringify({
+            error: "validation",
+            code: "E-VAL-015",
+            details: [{ field: "parent_ticket_id", message: "親のチケットを選び直してください" }],
+          }),
+        })
+      : route.fallback(),
+  );
+  await openCreate(page);
+  await loaded(page);
+  const p5 = page.getByRole("combobox", { name: "親のチケット" });
+  await p5.pressSequentially("月次", { delay: 30 });
+  await page.getByRole("option", { name: /EG-102/ }).click();
+  await fillRequired(page, "断られる親");
+  await page.getByRole("button", { name: "作る", exact: true }).click();
+  await expect(p5).toHaveAttribute("aria-invalid", "true");
+  await expect
+    .poll(() =>
+      p5.evaluate((el) =>
+        (el.getAttribute("aria-describedby") ?? "")
+          .split(" ")
+          .map((id) => document.getElementById(id)?.textContent ?? "")
+          .join(" "),
+      ),
+    )
+    .toContain("親のチケットを選び直してください");
 });
 
 test("K224-UI-029 幅 375：足元の帯は下のタブの上に乗り、「作る」が見えて押せる（押すと作る口が 1 回）", async ({
