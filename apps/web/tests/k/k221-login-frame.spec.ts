@@ -761,15 +761,17 @@ test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」�
     await open(page);
     await mail(page).fill("takamoto@example.com");
     await pass(page).fill("correct-horse-battery-1");
-    // 移る途中に入ったこと＝行き先の読み込みが出たこと（router.push の後）を待つ
-    const moving = page.waitForRequest(new RegExp(`${NEXT}(\\?|$)`));
     await nextBtn(page).click();
-    await moving;
+    // 移る途中に入ったこと＝画面が口の答えを受け取り終えた（ログインの印が置かれた・この後に行き先へ移す）のを待ち、描き終わりを 2 フレーム待つ。
+    //   行き先の読み込みの要求では待たない（本番の組み立てでは足元のリンクの先読みで、押す前に要求が出ていることがある）
+    await expect.poll(() => page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe("tok-k221");
+    await nextFrame(page);
     await nextFrame(page);
     const b = nextBtn(page);
-    await expect(b).toHaveAttribute("aria-busy", "true");
-    await expect(b).toBeDisabled();
-    await expect(b.locator(".k-spin")).toBeVisible();
+    // 待たずにその時の値を読む（待つ確かめだと、戻した印が一瞬残っている間に通ってしまう）
+    expect(await b.getAttribute("aria-busy")).toBe("true");
+    expect(await b.isDisabled()).toBe(true);
+    expect(await b.locator(".k-spin").count()).toBe(1);
     await b.evaluate((e) => (e as HTMLButtonElement).click());
     await page.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
     expect(await calls("signIn")).toBe(1);
@@ -787,14 +789,14 @@ test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」�
     await open(page2);
     await toTwoFactor(page2);
     await digit(page2, 1).click();
-    const moving2 = page2.waitForRequest(new RegExp(`${NEXT}(\\?|$)`));
     await page2.keyboard.type("482913", { delay: 30 });
-    await moving2;
+    await expect.poll(() => page2.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe("tok-k221");
+    await nextFrame(page2);
     await nextFrame(page2);
     const enter = page2.locator(BOX).getByRole("button", { name: "入る", exact: true });
-    await expect(enter).toHaveAttribute("aria-busy", "true");
-    await expect(enter).toBeDisabled();
-    await expect(enter.locator(".k-spin")).toBeVisible();
+    expect(await enter.getAttribute("aria-busy")).toBe("true");
+    expect(await enter.isDisabled()).toBe(true);
+    expect(await enter.locator(".k-spin").count()).toBe(1);
     await enter.evaluate((e) => (e as HTMLButtonElement).click());
     await page2.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
     expect(await calls2("verify")).toBe(1);
