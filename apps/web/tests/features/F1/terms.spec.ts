@@ -102,6 +102,9 @@ const openTerms = async (page: Page, next = "/tickets/abc", width = 1440) => {
 const box = (page: Page) => page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" });
 const agreeBtn = (page: Page) => page.getByRole("button", { name: "同意して続ける", exact: true });
 const link = (page: Page, name: string) => page.getByRole("link", { name, exact: true });
+/** 版の一覧の中のリンク。足元にも同じ名前の「利用規約」がある（キャンバス AuthConsent・K-256）ので、版の一覧の中だけで探す */
+const listLink = (page: Page, name: string) =>
+  page.locator('[data-part="auth-box"]').getByRole("list").getByRole("link", { name, exact: true });
 const agree = async (page: Page) => {
   await box(page).check();
   await agreeBtn(page).click();
@@ -172,7 +175,7 @@ const termsLink = async (page: Page, name: string, kind: string) => {
   await mockApi(page);
   await signedIn(page);
   await openTerms(page);
-  const l = link(page, name);
+  const l = listLink(page, name);
   await expect(l).toHaveAttribute("href", V2.find((x) => x.kind === kind)!.url);
   await expect(l).toHaveAttribute("target", "_blank");
 };
@@ -315,7 +318,7 @@ row(R["K53-UI-014"], async (page) => {
   await signedIn(page);
   await openTerms(page);
   await expect(page.getByText(/第2版/).first()).toBeVisible();
-  await expect(link(page, "利用規約")).toHaveAttribute("href", "https://unreachable.invalid/terms");
+  await expect(listLink(page, "利用規約")).toHaveAttribute("href", "https://unreachable.invalid/terms");
   m.on.other = () => ({ status: 200, body: { data: [] } });
   await agree(page);
   await expect(page).toHaveURL(/\/tickets\/abc$/);
@@ -373,7 +376,7 @@ row(R["K53-UI-017"], async (page) => {
   await expect(page.getByText(MSG.stale)).toBeVisible();
   await expect(page.getByText(/第3版/).first()).toBeVisible();
   await expect(page).toHaveURL(/step=terms/);
-  await expect(link(page, "利用規約")).toHaveAttribute("href", V3[0]!.url);
+  await expect(listLink(page, "利用規約")).toHaveAttribute("href", V3[0]!.url);
 });
 row(R["K53-UI-018"], async (page) => {
   const m = await mockApi(page);
