@@ -150,6 +150,22 @@ async function verifyApi(page: Page, verify: "hold" | "expired" | "used" | "none
 }
 const withToken = (path: string) => `${path}${path.includes("?") ? "&" : "?"}token=${VERIFY_TOKEN}`;
 
+/** ログインの口を差し替える（K-221）。ログインしていない人・メールとパスワードの口は 2 段階の確かめを求める */
+async function loginApi(page: Page): Promise<void> {
+  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
+    const p = new URL(route.request().url()).pathname;
+    let r: { status: number; body: unknown } = {
+      status: 401,
+      body: { error: "unauthenticated", code: "UNAUTHENTICATED" },
+    };
+    if (p === "/api/auth-ext/sign-in")
+      r = { status: 200, body: { data: { token: null, two_factor: true, two_factor_cookie: "tf-fidelity" } } };
+    else if (p === "/api/auth/get-session") r = { status: 200, body: { session: null, user: null } };
+    await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
+  });
+}
+
 /** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
 async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
@@ -203,6 +219,22 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.addInitScript(() => window.localStorage.setItem("kaname.token", "tok-fidelity"));
     await page.goto(path);
     await expect(page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" })).toBeVisible();
+  },
+  // ログイン（K-221・キャンバス AuthLogin）：ログインしていない人が開くだけ
+  // prettier-ignore
+  "login": async (page, path) => {
+    await loginApi(page);
+    await page.goto(path);
+    await expect(page.locator('[data-part="auth-box"] [data-act="passkey"]')).toBeVisible();
+  },
+  // 確認のコード（K-221・キャンバス Auth2FA）：ログインの口を two_factor: true にし、メールとパスワードを入れて「次へ」まで進める
+  "login-2fa": async (page, path) => {
+    await loginApi(page);
+    await page.goto(path);
+    await page.getByRole("textbox", { name: "メールアドレス" }).fill(SIGNUP_EMAIL);
+    await page.getByLabel("パスワード", { exact: true }).fill("fidelity-password-000");
+    await page.locator('[data-part="auth-box"]').getByRole("button", { name: "次へ", exact: true }).click();
+    await expect(page.locator('[data-part="auth-box"] h1')).toHaveText("確認のコード");
   },
   "shell-nav": async (page, path) => {
     await shellApi(page, 2);

@@ -1,0 +1,113 @@
+/* ログインの画面（K-221・キャンバス AuthLogin・Auth2FA）。入口の枠（features/F1/sign-up/sign-up.css）の上に、ログインだけの形を足す。
+   値は --k-*（生の色・文字の大きさ・角丸を書かない）。入口の枠のファイルは触らない */
+
+/* 箱の幅はログインだけ 420（キャンバス。登録は 440） */
+.k-auth-card:has(> form[data-auth="login"]) {
+  width: 420px;
+}
+
+/* パスキーの説明：主ボタンのすぐ下に寄せる（キャンバスの margin-top −6） */
+.k-login-pk-note {
+  margin: var(--k-c-auth-lead-sub-margin);
+}
+
+/* 押せない行き先（まだ作っていない画面）：正本の使えない状態の薄さで出し、押せない形（隠さない・D-145.9） */
+.k-auth a.k-login-off {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* 区切り「またはメールとパスワード」：字の左右に線 */
+.k-login-sep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-login-sep-line {
+  flex: 1;
+  border-top: 1px solid var(--k-line-soft);
+}
+
+/* 目に見える項目名の無い 2 つの欄（キャンバス）。項目名は読み上げだけに残し、欄は箱の段の間 14 で並べる */
+.k-login-bare {
+  display: contents;
+}
+.k-login-bare .k-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* 口の文（残り回数・ロック・コードが違う） */
+.k-login-alert {
+  margin: 0;
+  text-align: center;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-error);
+}
+
+/* 「パスワードを忘れた｜端末をなくした」を両端に */
+.k-login-links {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--k-text-body-sm);
+}
+
+/* 確認のコードの下の段（キャンバス Auth2FA：線の下に縦に 2 つ・間 6） */
+.k-login-alt-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.k-login-textbtn {
+  align-self: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  /* 押せる的は 24px（globals.css）のまま、段の中の場所は 1 行ぶん（キャンバスのリンクの高さ）だけ取る */
+  margin-block: calc((1em * var(--k-lh-body) - 24px) / 2);
+}
+.k-login-muted {
+  color: var(--k-on-surface-variant);
+}
+
+/* 6 つの枠：44×52・線・角丸 8・20px・700。地は透明（キャンバスの span）。
+   幅が足りないときはキャンバスの span と同じく縮む（min-width 0）。入力欄の 767 以下の 16px の決まりは掛けない（.k-input を使わない） */
+.k-code {
+  display: flex;
+  justify-content: center;
+  gap: var(--k-s-sm);
+  /* キャンバスの枠は線が外に付く（content-box で 52 + 線 2）。行の高さをそれにそろえ、下の段の位置を合わせる */
+  padding-block: 1px;
+}
+.k-code-box {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: 44px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-field);
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-h1);
+  font-weight: var(--k-fw-h1);
+  text-align: center;
+}
+.k-code-box:focus {
+  outline: none;
+  border-color: var(--k-primary);
+  box-shadow: 0 0 0 2px var(--k-primary-container);
+}
