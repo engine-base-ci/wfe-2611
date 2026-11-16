@@ -93,7 +93,9 @@ COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "ro
              # 部品の太さと中の間（K-218）。太さは書体の段より部品の値が勝つ
              "fontWeight": "fw", "gap": "gap",
              # 小窓の頭・足の線、× の大きさ、使えない状態（K-218）
-             "borderTop": "border-top", "borderBottom": "border-bottom", "width": "width", "opacity": "opacity"}
+             "borderTop": "border-top", "borderBottom": "border-bottom", "width": "width", "opacity": "opacity",
+             # 入口の枠のロゴの字の間（K-255）
+             "letterSpacing": "ls"}
 
 
 def ref(v: str) -> str:
