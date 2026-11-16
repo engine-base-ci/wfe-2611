@@ -152,6 +152,21 @@ row(R["K63-UI-024"], async (page) => {
   await expect(dialog(page)).toHaveCount(0);
   await expect(bandOf(page)).toHaveCount(0); // 作り直し（phase make）の間は K-63 の帯を出さない（K-62 の帯だけ・D-128.178）
 });
+row(R["K63-UI-073"], async (page) => {
+  const m = await mockApi(page); // 承認待ち・決められる人
+  await openTicketSettled(page);
+  await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
+  await expect(dialog(page)).toBeVisible();
+  await reasonBox(page).fill("宛名を直してください");
+  // 小窓の中で名前「閉じる」は頭の × の 1 つだけ（足に「閉じる」を重ねない）
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dialog(page).locator(".k-dialog-head").getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  expect(m.returns).toHaveLength(0);
+  await expect(bandOf(page)).toContainText("あなたの承認を待っています");
+  await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
+  await expect(bandOf(page).getByRole("button", { name: "差し戻す" })).toBeVisible();
+});
 row(R["K63-UI-042"], async (page) => {
   const m = await mockApi(page); // 承認待ち・決められる人（承認する人）
   await openTicketSettled(page);

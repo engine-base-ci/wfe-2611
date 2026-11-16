@@ -32,8 +32,13 @@ test("KN104-002 入力：見出しで名前が付き、理由は読み上げに�
   await title.fill("見積");
   await page.getByRole("button", { name: "確かめる" }).click();
   await expect(title).not.toHaveAttribute("aria-invalid", "true");
-  // スマホで拡大されない大きさ（16px 以上）
-  expect(await title.evaluate((e) => parseFloat(getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(16);
+  // 字の大きさ（D-144.7）：幅 767 以下はスマホで拡大されない大きさ（16px 以上）、広い幅はキャンバスどおり（13〜14px）。境目は K218-DS-011 が持つ
+  const fontPx = () => title.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  expect(await fontPx()).toBeGreaterThanOrEqual(13);
+  expect(await fontPx()).toBeLessThanOrEqual(14);
+  await page.setViewportSize({ width: 375, height: 1000 });
+  expect(await fontPx()).toBeGreaterThanOrEqual(16);
 });
 
 test("KN104-003 選ぶ：キーボードで開いて選べる。使えない項目は選べない", async ({ page }) => {

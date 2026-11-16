@@ -412,6 +412,8 @@
   }
  ],
  "reads_ok": {
+  "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",
+  "scripts/ci/k218_design_canvas_test.py": "正本・トークン・設定・プレビュー・build_testplan.py を読み、作りものの木（tempfile）に design_gate を子プロセスで流す。G37 の末尾で spec の組が流す・K-218",
   "apps/bridge/test/update.test.ts": "自分で作った一時のファイルを読む",
   "apps/bridge/test/guard.test.ts": "自分で作った一時のファイルを読む",
   "apps/bridge/test/kaname-tools.test.ts": "自分で作った一時のファイル・台本を起こす",
