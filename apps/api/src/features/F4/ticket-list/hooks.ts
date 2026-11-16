@@ -33,7 +33,15 @@ interface ListRow {
 }
 
 // $1 mine か・$2 今日（日本時間）・$3 題名の LIKE・$4 番号・$5 グループ・$6 鍵の期限・$7 鍵の更新・$8 鍵の id・$9 読む件数（limit + 1）
-const SQL = `
+// 並び：mine は索引 tickets_list_mine_idx（tenant_id, coalesce(due_on, infinity), updated_at desc, id）、all は tickets_list_all_idx と同じ式にする
+//   （式が索引と違うと索引で並べられず、毎回会社のチケットを全部並べ直す）。view ごとに並びの式を変え、続きの条件は同じ式で比べる
+const ORDER = {
+  mine: "coalesce(t.due_on, 'infinity'::date) asc, t.updated_at desc, t.id asc",
+  all: "t.updated_at desc, t.id asc",
+} as const;
+const OUTER_ORDER = { mine: "p.due_key asc, p.updated_at desc, p.id asc", all: "p.updated_at desc, p.id asc" } as const;
+
+const sqlFor = (view: keyof typeof ORDER): string => `
 with recursive scope_down(id) as (
   select s.id from scopes s where $5::uuid is not null and s.id = $5::uuid
   union all
@@ -60,7 +68,7 @@ page as (
                or (coalesce(t.due_on, 'infinity'::date) = $6::date
                    and (t.updated_at < $7::timestamptz or (t.updated_at = $7::timestamptz and t.id > $8::uuid)))))
           or (not $1::boolean and (t.updated_at < $7::timestamptz or (t.updated_at = $7::timestamptz and t.id > $8::uuid))))
-   order by case when $1::boolean then coalesce(t.due_on, 'infinity'::date) end asc, t.updated_at desc, t.id asc
+   order by ${ORDER[view]}
    limit $9
 )
 select p.id, p.number, p.title, k.id as kind_id, k.name as kind_name, s.id as stage_id, s.name as stage_name, s.key as stage_key,
@@ -78,7 +86,7 @@ select p.id, p.number, p.title, k.id as kind_id, k.name as kind_name, s.id as st
   join ticket_kinds k on k.id = p.kind_id
   join ticket_stages s on s.id = p.stage_id
   left join members m on m.id = p.assignee_member_id
- order by case when $1::boolean then p.due_key end asc, p.updated_at desc, p.id asc`;
+ order by ${OUTER_ORDER[view]}`;
 
 const params = (q: ListQuery, today: string): unknown[] => {
   const c: Cursor | null = q.cursor;
@@ -140,7 +148,7 @@ export function createTicketListHooks(appPool: pg.Pool): Record<string, Hook> {
         const rows = await withTenant(
           appPool,
           a.ctx,
-          async (cl) => (await cl.query<ListRow>(SQL, params(q, todayJst()))).rows,
+          async (cl) => (await cl.query<ListRow>(sqlFor(q.view), params(q, todayJst()))).rows,
         );
         const page = rows.slice(0, q.limit);
         const more = rows.length > q.limit;

@@ -7,8 +7,9 @@
 --   新しい表・列は作らない。
 
 -- ---------------------------------------------------------------- ① 索引
-create index if not exists tickets_list_mine_idx on tickets (tenant_id, due_on, updated_at desc, id);
-create index if not exists tickets_list_all_idx on tickets (tenant_id, updated_at desc, id);
+--   mine の並びは期限の無いものを最後にするため coalesce(due_on, 'infinity') で並べる。索引も同じ式にする（式が違うと並びにも続きの条件にも使えない）
+create index if not exists tickets_list_mine_idx on tickets (tenant_id, (coalesce(due_on, 'infinity'::date)), updated_at desc, id) where deleted_at is null;
+create index if not exists tickets_list_all_idx on tickets (tenant_id, updated_at desc, id) where deleted_at is null;
 -- 題名の部分一致（全角半角と大文字小文字をそろえた形）。pg_trgm が使えるときだけ作る（無い DB でも migration は通す・G-11）
 do $$
 begin
