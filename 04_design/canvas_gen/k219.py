@@ -246,8 +246,7 @@ def update_canvas_json():
     boards = dict(c["boards"])
     for name, (ref, page, _screen, title, _g) in BOARDS.items():
         key = name + ".dc.html"
-        if key in boards:
-            boards[key] = {**boards[key], "page": page, "title": title}
+        if key in boards:   # 在る絵の置き場と題は持ち主が後から直すので触らない（無い絵だけ足す・K-257）
             continue
         r = boards[ref + ".dc.html"]
         col = [b for b in boards.values() if b.get("page") == page and b.get("x") == r["x"]]
@@ -294,9 +293,8 @@ def update_fidelity():
         pairs = [p for p in base["pairs"] if not roles or p["role"] in roles]
         new.append({"id": gid, "kind": kind, "canvas": name, "app": app, "state": gid, "widths": [1440, 375], "owner": owner,
                     "enrolled": False, "pairs": [dict(p) for p in pairs]})
-    # 在る組はその場所で置き換え、無い組だけ末尾に足す（流し直しても組の並びが変わらない・K-257）
-    by_id = {g["id"]: g for g in new}
-    f = {**f, "groups": [by_id.get(g["id"], g) for g in groups] + [g for g in new if g["id"] not in have]}
+    # 組は無いときだけ足す（持ち主が後から enrolled にしたり pairs を直したりした組を戻さない・K-257）
+    f = {**f, "groups": groups + [g for g in new if g["id"] not in have]}
     dump(path, f, True)
 
 

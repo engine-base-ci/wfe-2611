@@ -22,6 +22,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ov import P, load  # noqa: E402
+import k219  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
@@ -75,7 +76,8 @@ def bbtn(label, kind, h, href=None, off=False):
 def band(role, line, bg, color, title, sub, acts, pad="12px 14px", extra=""):
     """帯の箱。題は最初の div の直下の b（突き合わせの組のセレクタ > div:first-child > b）。箱の中の b は題の 1 つだけ"""
     act = '\n      <span style="margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap">%s</span>' % "".join(acts) if acts else ""
-    sub_html = '<div style="color: %s; font-size: 12px">%s</div>' % (color, sub) if sub else ""
+    # 幅 375 で 2 行に割れるときも、割れてよい所（空白・「、」の後）でだけ割る（keep-all：日本語の字の間では割らない）
+    sub_html = '<div style="color: %s; font-size: 12px; word-break: keep-all">%s</div>' % (color, sub) if sub else ""
     return ('<div role="%s" style="margin: 0 20px 14px; border: 1px solid %s; background: %s; border-radius: 8px; padding: %s; '
             'display: flex; align-items: center; gap: 10px; flex-wrap: wrap">\n'
             '      <div style="flex: 1 1 100%%; min-width: 0"><b style="color: %s">%s</b>%s%s</div>%s\n     </div>'
@@ -110,7 +112,7 @@ DETAIL = {
     "StRunning": ("AI が実行しているとき", "作業中", "#2F4B7C",
                   band("status", "#C7D7F5", "#EEF3FD", "#1E40AF", "高本のAI が作っています", "開始 10:31 ・ 3 分",
                        [bbtn("AI と話す", "o#DDE2E9", 30, off=True), bbtn("止める", "o#DDE2E9", 30, off=True)], extra=steps())),
-    "StFailed": ("確認で落ちて直しているとき", "作業中", "#2F4B7C",
+    "StFailed": ("AI が止まったとき", "作業中", "#2F4B7C",
                  band("alert", "#F3C7C7", "#FDECEC", "#991B1B", "高本のAI が止まりました",
                       "金額が見積 EG-097 の月額と合いませんでした",
                       [bbtn("AI に任せる", "p", 30), bbtn("直し方を AI に伝える", "o#F3C7C7", 30, off=True), bbtn("自分で直す", "o#F3C7C7", 30, off=True)])
@@ -388,13 +390,15 @@ def dump(path, data, newline):
 
 
 def update_canvas_json():
+    """在る絵の置き場と題は持ち主が後から直すので触らない。無い絵だけ足す（止まったの絵の題だけは前の名前のときに 1 回だけ直す）"""
     path = P + "canvas.json"
     c = json.load(open(path, encoding="utf-8"))
     boards = dict(c["boards"])
+    if boards.get("StFailed.dc.html", {}).get("title") == "4 確認で落ちて直しているとき":
+        boards["StFailed.dc.html"] = {**boards["StFailed.dc.html"], "title": "4 AI が止まったとき"}
     for name, (ref, page, _screen, title, _g) in BOARDS.items():
         key = name + ".dc.html"
         if key in boards:
-            boards[key] = {**boards[key], "page": page, "title": title}
             continue
         r = boards[ref + ".dc.html"]
         col = [b for b in boards.values() if b.get("page") == page and b.get("x") == r["x"]]
@@ -415,27 +419,31 @@ def update_screens():
     dump(path, {**d, "screens": screens}, False)
 
 
+OLD_PRIMARY = '[role="dialog"][aria-label="PC をつなぐ"] > div :is(a, button)[style*="background: #22345C"]'
+
+
 def update_fidelity():
-    """承認の小窓の絵を 1 枚の絵に・完了の小窓は × を持つふつうの小窓に・差し戻しの組を足す。ほかの組は今の値のまま"""
+    """組は無いときだけ足す（持ち主が後から直した組を戻さない）。前の形を直す 3 つ（承認の小窓の絵・完了の小窓のセレクタ・bridge-code の主ボタン）は、
+    前の値が在るときだけ 1 回直す"""
     path = os.path.join(ROOT, "04_design", "fidelity.json")
     f = json.load(open(path, encoding="utf-8"))
     groups = []
     for g in f["groups"]:
-        if g["id"] == "approve-modal":
+        if g["id"] == "approve-modal" and g["canvas"] == "StModal":
             g = {**g, "canvas": "StApproveModal"}
         if g["id"] == "complete-modal":
             g = {**g, "pairs": [{**p, "canvas": p["canvas"].replace('section[role="alertdialog"]', 'section[role="dialog"]')} for p in g["pairs"]]}
         if g["id"] == "bridge-code":
             # EdPC の小窓に紺のボタンは無い（前のセレクタはキャンバスの側が「無い」）。足の帯の「あとで」どうしを比べる（K-230 の決めた形）
             g = {**g, "pairs": [({**p, "name": "足のボタン（あとで）", "canvas": '[role="dialog"][aria-label="PC をつなぐ"] > div > div:last-child a',
-                                  "app": '.k-dialog-actions .k-btn[data-variant="outlined"]'} if p["name"] in ("主ボタン", "足のボタン（あとで）") else p)
+                                  "app": '.k-dialog-actions .k-btn[data-variant="outlined"]'} if p["name"] == "主ボタン" and p["canvas"] == OLD_PRIMARY else p)
                                 for p in g["pairs"]]}
-        if g["id"] != "return-modal":
-            groups.append(g)
-    approve = next(g for g in groups if g["id"] == "approve-modal")
-    groups.append({"id": "return-modal", "kind": "dialog", "canvas": "StReturnModal", "app": "/tickets/{ticket}", "state": "return-modal",
-                   "widths": [1440, 375], "owner": "K-229", "enrolled": False,
-                   "pairs": [{**p, "canvas": p["canvas"].replace('section[role="alertdialog"]', 'section[role="dialog"]')} for p in approve["pairs"]]})
+        groups.append(g)
+    if not any(g["id"] == "return-modal" for g in groups):
+        approve = next(g for g in groups if g["id"] == "approve-modal")
+        groups.append({"id": "return-modal", "kind": "dialog", "canvas": "StReturnModal", "app": "/tickets/{ticket}", "state": "return-modal",
+                       "widths": [1440, 375], "owner": "K-229", "enrolled": False,
+                       "pairs": [{**p, "canvas": p["canvas"].replace('section[role="alertdialog"]', 'section[role="dialog"]')} for p in approve["pairs"]]})
     dump(path, {**f, "groups": groups}, True)
 
 
@@ -518,6 +526,7 @@ if __name__ == "__main__":
     detail_boards()
     modals()
     approvals()
+    k219.approvals_empty()   # 承認待ちが空の絵は、今の承認待ちから作り直す（持ち主はこの作り手・k219.py も同じ物を作る）
     pc_boards()
     subprocess.run([sys.executable, "shellfix.py"], cwd=HERE, check=True, stdout=subprocess.DEVNULL)
     if SIDEFILES:

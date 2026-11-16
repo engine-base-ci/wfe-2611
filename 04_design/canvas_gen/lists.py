@@ -107,6 +107,6 @@ save("GtNoDate.dc.html", "開始・期限が無いもの", float_pop(Gp, nd, "to
 def w(name, mp):
     s = base(name); s = wire_buttons(s, mp); open(P + name + ".dc.html", "w", encoding="utf-8").write(s)
 w("List", {"表示設定（列）": "LsView.dc.html", "詳しく": "LsFilter.dc.html", "まとめて操作": "LsBulk.dc.html", "検索条件を保存": "LsSave.dc.html"})
-w("Approvals", {"決めた履歴": "ApHistory.dc.html", "選んだものをまとめて承認": "ApBulk.dc.html"})
+# 承認待ち（Approvals）の持ち主は k257.py（区切りと行を固まった HTML で描いた・K-257）。ボタンのつなぎは今の絵に在るので、ここでは書かない
 w("Gantt", {"開始・期限が無い 4 件": "GtNoDate.dc.html"})
 print("wired")
