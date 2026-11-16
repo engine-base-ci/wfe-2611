@@ -89,6 +89,17 @@ row(R["K63-UI-009"], async (page) => {
   expect(m.returns).toHaveLength(0);
   await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(1);
 });
+row(R["K63-UI-074"], async (page) => {
+  const m = await mockApi(page);
+  await openQueue(page);
+  await openReturn(page);
+  await reasonBox(page).fill("やっぱりやめる");
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await dialog(page).locator(".k-dialog-head").getByRole("button", { name: "閉じる" }).click();
+  await expect(dialog(page)).toHaveCount(0);
+  expect(m.returns).toHaveLength(0);
+  await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(1);
+});
 row(R["K63-UI-010"], async (page) => {
   const m = await mockApi(page);
   await openQueue(page);

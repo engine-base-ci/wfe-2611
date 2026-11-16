@@ -54,7 +54,9 @@ test("K218-DS-009 幅 1440：主ボタン（lg・入口）は高さ 44・角丸 
   await expectStyle(b, { "border-top-left-radius": "8px", "font-size": "14px", "font-weight": "500" });
 });
 
-test("K218-DS-010 outlined のボタンは白地・1px の灰の線（#DDE2E9）・黒字（#131B27）・太さ 400・高さ 32", async ({ page }) => {
+test("K218-DS-010 outlined のボタンは白地・1px の灰の線（#DDE2E9）・黒字（#131B27）・太さ 400・高さ 32", async ({
+  page,
+}) => {
   await open(page, 1440);
   const b = page.getByTestId("btn-outlined");
   expect(Math.round((await box(b)).height)).toBe(32);
@@ -68,7 +70,9 @@ test("K218-DS-010 outlined のボタンは白地・1px の灰の線（#DDE2E9）
   });
 });
 
-test("K218-DS-011 入力欄（md）：幅 1440 は白地・1px #B8C0CC・角丸 6px・13px・左の余白 10px、幅 375 は 16px", async ({ page }) => {
+test("K218-DS-011 入力欄（md）：幅 1440 は白地・1px #B8C0CC・角丸 6px・13px・左の余白 10px、幅 375 は 16px", async ({
+  page,
+}) => {
   await open(page, 1440);
   const i = page.getByTestId("input-md");
   await expectStyle(i, {
@@ -90,7 +94,9 @@ test("K218-DS-011 入力欄（md）：幅 1440 は白地・1px #B8C0CC・角丸 
   }
 });
 
-test("K218-DS-012 幅 1440：入力欄（lg・入口）は高さ 42・1px #DDE2E9・角丸 8px・14px・左の余白 12px", async ({ page }) => {
+test("K218-DS-012 幅 1440：入力欄（lg・入口）は高さ 42・1px #DDE2E9・角丸 8px・14px・左の余白 12px", async ({
+  page,
+}) => {
   await open(page, 1440);
   const i = page.getByTestId("input-lg");
   expect(Math.round((await box(i)).height)).toBe(42);
