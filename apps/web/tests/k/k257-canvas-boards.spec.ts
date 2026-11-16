@@ -226,3 +226,109 @@ test("K257-UI-019 見比べの 1 枚（canvas-review/K-257.html）：幅 1440 �
     await page.close();
   }
 });
+
+// 字が何行に割れているかを、字（テキストの節）の矩形だけで数える。飾りの svg・絶対配置の印は数えない。同じ行の大きさ違いの字は上の差が高さの 7 割未満
+const ALL = [
+  ...DETAIL,
+  "StApproveModal",
+  "StReturnModal",
+  "StCompleteModal",
+  "Approvals",
+  "EdPC",
+  "MePC",
+  "MePCInstalled",
+] as const;
+const ONE_LINE: [string, string][] = [
+  ["題", "main h1, section[role] > div:first-child b"],
+  ["帯の文", 'main article :is([role="status"], [role="alert"]) > div:first-child > :is(b, div, ol li)'],
+  ["ボタン", 'main button, main a[style*="height: 2"], main a[style*="height: 3"], section[role] button'],
+  ["札", 'main span[style*="border-radius: 9999px"]'],
+  ["表の見出し", "main th"],
+];
+const BAND_TEXT = 'main article :is([role="status"], [role="alert"]) > div:first-child > :is(b, div)';
+
+async function linesOf(page: Page, sel: string): Promise<{ text: string; lines: number; cut: boolean }[]> {
+  return page.locator(sel).evaluateAll((els) =>
+    els
+      .filter((e) => (e as HTMLElement).checkVisibility() && (e.textContent ?? "").trim() !== "")
+      .map((e) => {
+        const rects: [number, number][] = [];
+        // 字と字の間で行が替わる所が、英数字（数・記号を含む）の途中か
+        let cut = false;
+        let prev: { ch: string; top: number } | null = null;
+        const tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+        for (let t = tw.nextNode(); t; t = tw.nextNode()) {
+          const pe = t.parentElement;
+          if (pe && pe !== e && getComputedStyle(pe).position === "absolute") continue;
+          const s = t.textContent ?? "";
+          for (let i = 0; i < s.length; i++) {
+            if (!s[i]!.trim()) {
+              prev = null;
+              continue;
+            }
+            const r = document.createRange();
+            r.setStart(t, i);
+            r.setEnd(t, i + 1);
+            const q = r.getClientRects()[0];
+            if (!q || q.width < 0.5) continue;
+            rects.push([q.top, q.height]);
+            if (
+              prev &&
+              q.top > prev.top + q.height * 0.7 &&
+              /[0-9A-Za-z,.:/]/.test(prev.ch) &&
+              /[0-9A-Za-z,.:/]/.test(s[i]!)
+            )
+              cut = true;
+            prev = { ch: s[i]!, top: q.top };
+          }
+        }
+        rects.sort((a, b) => a[0] - b[0]);
+        let n = 0;
+        let top = -1e9;
+        let h = 0;
+        for (const [t, hh] of rects)
+          if (t >= top + h * 0.7) {
+            n++;
+            top = t;
+            h = hh;
+          }
+        return { text: (e.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 40), lines: n, cut };
+      }),
+  );
+}
+
+test("K257-UI-020 2 行に割らない：14 枚の 題・帯の文・ボタン・札・表の見出しは幅 1440 と 768 で 1 行。幅 375 は題が 1 行（切れたら「…」で、全文は title）・帯の文は 2 行までで英数字の途中で割らない", async ({
+  browser,
+}) => {
+  test.setTimeout(240_000);
+  const bad: string[] = [];
+  for (const w of [1440, 768, 375]) {
+    for (const b of ALL) {
+      const page = await open(browser, b, w);
+      if (w !== 375) {
+        for (const [kind, sel] of ONE_LINE)
+          for (const r of await linesOf(page, sel))
+            if (r.lines > 1) bad.push(`${b} 幅 ${w}：${kind}「${r.text}」が ${r.lines} 行`);
+      } else {
+        for (const r of await linesOf(page, "main h1"))
+          if (r.lines > 1) bad.push(`${b} 幅 375：題「${r.text}」が ${r.lines} 行`);
+        for (const r of await linesOf(page, BAND_TEXT)) {
+          if (r.lines > 2) bad.push(`${b} 幅 375：帯の文「${r.text}」が ${r.lines} 行`);
+          if (r.cut) bad.push(`${b} 幅 375：帯の文「${r.text}」が英数字の途中で割れている`);
+        }
+      }
+      for (const h of await page.locator("main h1").all()) {
+        const [title, text, over] = await h.evaluate((e) => [
+          e.getAttribute("title"),
+          (e.textContent ?? "").trim(),
+          e.scrollWidth > e.clientWidth + 1,
+        ]);
+        if (over && title !== text) bad.push(`${b} 幅 ${w}：題が切れているのに title に全文が無い`);
+        if (DETAIL.includes(b as (typeof DETAIL)[number]) && title !== text)
+          bad.push(`${b} 幅 ${w}：題の title が全文でない`);
+      }
+      await page.close();
+    }
+  }
+  expect(bad).toEqual([]);
+});
