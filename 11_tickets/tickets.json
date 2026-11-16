@@ -6158,7 +6158,6 @@
     "apps/web/tests/features/F4/create-ticket.spec.ts",
     "apps/web/tests/features/F5/approve-complete-queue.spec.ts",
     "apps/web/tests/features/F5/approve-complete-approve.spec.ts",
-    "apps/web/tests/features/F5/approve-complete.harness.ts",
     "apps/web/tests/k-shell.spec.ts",
     "scripts/ci/k216_fidelity_config_test.py",
     "apps/web/tests/skeleton/m2-bridge-ticket.spec.ts"
