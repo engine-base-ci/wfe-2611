@@ -272,32 +272,50 @@ class Boards(unittest.TestCase):
         self.assertEqual(r.returncode, 0, script + r.stdout[-2000:] + r.stderr[-2000:])
 
     def test_K257_CV_008_sidefiles_kept(self):
-        """K257-CV-008 作り手を設定ごと流し直しても（K257_NO_SIDEFILES なし）、持ち主が後から直した組（return-modal を enrolled: true に）は戻らず、
-        fidelity.json・canvas.json・canvas-screens.json・見比べの 1 枚 K-257.html と、どの絵も 1 字も変わらない（組は無いときだけ足す）"""
+        """K257-CV-008 作り手を設定ごと流し直しても（K257_NO_SIDEFILES なし）、持ち主が後から直した物は戻らない：写しの木で
+        組 return-modal・approvals-empty を enrolled: true に、bridge-code の「足のボタン（あとで）」の画面の側のセレクタを替え、canvas.json の StFailed・StApproveModal の題を替えてから
+        k257.py と k219.py を流しても、fidelity.json・canvas.json・canvas-screens.json・見比べの 1 枚 K-257.html・K-219.html は 1 字も変わらない（組と絵の置き場は無いときだけ足す）。
+        k257.py の後は、どの絵も 1 字も変わらない"""
         with tempfile.TemporaryDirectory() as d:
             t = self._tree(d)
             fp = t / "04_design" / "fidelity.json"
             f = json.loads(fp.read_text(encoding="utf-8"))
-            f["groups"] = [{**g, "enrolled": True} if g["id"] == "return-modal" else g for g in f["groups"]]
+
+            def edit(g: dict) -> dict:
+                if g["id"] in ("return-modal", "approvals-empty"):
+                    return {**g, "enrolled": True}
+                if g["id"] == "bridge-code":
+                    return {**g, "pairs": [{**p, "app": ".k-dialog-actions .k-btn"} if p["name"] == "足のボタン（あとで）" else p for p in g["pairs"]]}
+                return g
+
+            f["groups"] = [edit(g) for g in f["groups"]]
             fp.write_text(json.dumps(f, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-            files = ["04_design/fidelity.json", "04_design/canvas/canvas.json", "04_design/canvas-screens.json", "04_design/canvas-review/K-257.html"]
+            cp = t / "04_design" / "canvas" / "canvas.json"
+            c = json.loads(cp.read_text(encoding="utf-8"))
+            for k in ("StFailed.dc.html", "StApproveModal.dc.html"):
+                c["boards"][k] = {**c["boards"][k], "title": "持ち主が直した題"}
+            cp.write_text(json.dumps(c, ensure_ascii=False, indent=1), encoding="utf-8")
+            files = ["04_design/fidelity.json", "04_design/canvas/canvas.json", "04_design/canvas-screens.json",
+                     "04_design/canvas-review/K-257.html", "04_design/canvas-review/K-219.html"]
             before = {p: (t / p).read_text(encoding="utf-8") for p in files}
             boards = {f.name: f.read_text(encoding="utf-8") for f in (t / "04_design" / "canvas").glob("*.dc.html")}
             self._run(t, "k257.py")
-            changed = [p for p in files if (t / p).read_text(encoding="utf-8") != before[p]]
-            changed += [n for n, s in boards.items() if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != s]
+            changed = [n for n, s in boards.items() if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != s]
+            self._run(t, "k219.py")
+            changed += [p for p in files if (t / p).read_text(encoding="utf-8") != before[p]]
         self.assertEqual(changed, [])
 
     def test_K257_CV_008_other_generators(self):
-        """K257-CV-008 承認待ちの絵の持ち主も k257.py：lists.py か k219.py を単独で流した後に k257.py を流すと、このチケットの絵（変えた 14 枚と ApEmpty）は今の木と 1 字も変わらない"""
+        """K257-CV-008 承認待ちの絵の持ち主も k257.py：lists.py か k219.py を単独で流しても、その後に k257.py を流しても、
+        このチケットの絵（変えた 14 枚と ApEmpty）は今の木と 1 字も変わらない（lists.py は Approvals を書かない・k219.py は今の Approvals から同じ ApEmpty を作る）"""
         mine = [f"{n}.dc.html" for n in CHANGED + ["ApEmpty"]]
         bad = []
         for other in ("lists.py", "k219.py"):
             with tempfile.TemporaryDirectory() as d:
                 t = self._tree(d)
-                self._run(t, other)
-                self._run(t, "k257.py")
-                bad += [f"{other} の後：{n}" for n in mine if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != (CANVAS / n).read_text(encoding="utf-8")]
+                for step, script in (("単独", other), ("k257.py の後", "k257.py")):
+                    self._run(t, script)
+                    bad += [f"{other}（{step}）：{n}" for n in mine if (t / "04_design" / "canvas" / n).read_text(encoding="utf-8") != (CANVAS / n).read_text(encoding="utf-8")]
         self.assertEqual(bad, [])
 
     def test_K257_CV_011_pc_actions(self):
