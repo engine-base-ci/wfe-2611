@@ -372,6 +372,9 @@ class GateSelectTest(unittest.TestCase):
                     f.write_text(text, encoding="utf-8")
                 r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, plan, "K-99")
                 self.assertEqual(r["gates"], {"70": want}, text)
+                # always が付いても G48・G59 は全部に倒れない（チケットの CI はチケットの範囲だけ）
+                r = pick(["apps/web/tests/_lib/row.ts"], cfg=ci_scope.gate_cfg(str(tmp), web_cfg()))
+                self.assertEqual((r["gates"], r["g48"], r["g59"]), ({"70": want}, ["apps/web/tests/k/a.spec.ts"], []), text)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
