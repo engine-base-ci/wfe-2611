@@ -675,6 +675,8 @@ test("K221-UI-027 6 けた：日本語の変換中に打っても、確定のた
   for (let i = 0; i < full.length; i += 1) {
     // 変換の途中（下線つきの文字）。この間は次の枠へ移らない
     await cdp.send("Input.imeSetComposition", { text: full[i]!, selectionStart: 1, selectionEnd: 1 });
+    // 変換中の字が枠に届いたのを待ってから、まだ次の枠へ移っていないことを見る
+    await expect(digit(page, i + 1)).toHaveValue(full[i]!);
     await expect(digit(page, i + 1)).toBeFocused();
     // 確定
     await cdp.send("Input.insertText", { text: full[i]! });
@@ -721,52 +723,85 @@ test("K221-UI-029 6 けた：自動入力で 1 つめの枠に 482913 が一度�
   expect(m.verifies[0]).toMatchObject({ code: "482913" });
 });
 
-test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」も「入る」も回る印のまま押せず、もう一度押しても口は 1 回", async ({
-  page,
-}) => {
-  // 行き先の画面の読み込み（文書と、画面の中で移るときの RSC の ?_rsc= の両方）を止めておき、移る途中の画面で確かめる
+/** 画面の側で口を呼んだ回数を数える（網の手前の受け手は画面が答えを受け取る前に数えるので、押した直後の回数は画面の側で見る） */
+async function countCalls(page: Page) {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __k221: Record<string, number> };
+    w.__k221 = { signIn: 0, verify: 0 };
+    const orig = window.fetch.bind(window);
+    window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+      const u = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (u.includes("/api/auth-ext/sign-in")) w.__k221.signIn += 1;
+      if (u.includes("/api/auth-ext/two-factor/verify")) w.__k221.verify += 1;
+      return orig(input, init);
+    };
+  });
+  return (key: "signIn" | "verify") =>
+    page.evaluate((k) => (window as unknown as { __k221: Record<string, number> }).__k221[k], key);
+}
+const nextFrame = (page: Page) => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => r(null))));
+/** 行き先の画面の読み込み（文書と、画面の中で移るときの ?_rsc=）を止める。解くのは返した関数 */
+async function holdNext(page: Page): Promise<() => void> {
   let release: () => void = () => undefined;
   const held = new Promise<void>((r) => (release = r));
   await page.route(new RegExp(`${NEXT}(\\?|$)`), async (route) => {
     await held;
-    await route.continue();
+    await route.continue().catch(() => undefined);
   });
-  const m = await mockAuth(page);
-  await open(page);
-  await mail(page).fill("takamoto@example.com");
-  await pass(page).fill("correct-horse-battery-1");
-  await nextBtn(page).click();
-  await expect.poll(() => m.signIns.length).toBe(1);
-  const b = nextBtn(page);
-  await expect(b).toHaveAttribute("aria-busy", "true");
-  await expect(b).toBeDisabled();
-  await b.evaluate((e) => (e as HTMLButtonElement).click());
-  await page.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
-  expect(m.signIns).toHaveLength(1);
-  release();
+  return release;
+}
+
+test("K221-UI-030 成功の直後（行き先へ移る途中）：「次へ」も「入る」も回る印のまま押せず、もう一度押しても口は 1 回", async ({
+  page,
+}) => {
+  const calls = await countCalls(page);
+  const release = await holdNext(page);
+  try {
+    await mockAuth(page);
+    await open(page);
+    await mail(page).fill("takamoto@example.com");
+    await pass(page).fill("correct-horse-battery-1");
+    // 移る途中に入ったこと＝行き先の読み込みが出たこと（router.push の後）を待つ
+    const moving = page.waitForRequest(new RegExp(`${NEXT}(\\?|$)`));
+    await nextBtn(page).click();
+    await moving;
+    await nextFrame(page);
+    const b = nextBtn(page);
+    await expect(b).toHaveAttribute("aria-busy", "true");
+    await expect(b).toBeDisabled();
+    await expect(b.locator(".k-spin")).toBeVisible();
+    await b.evaluate((e) => (e as HTMLButtonElement).click());
+    await page.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
+    expect(await calls("signIn")).toBe(1);
+  } finally {
+    release();
+  }
   await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
 
   // 6 けたの確かめが成功した後も同じ
-  let release2: () => void = () => undefined;
-  const held2 = new Promise<void>((r) => (release2 = r));
   const page2 = await page.context().newPage();
-  await page2.route(new RegExp(`${NEXT}(\\?|$)`), async (route) => {
-    await held2;
-    await route.continue();
-  });
-  const m2 = await mockAuth(page2, { twoFactor: true });
-  await open(page2);
-  await toTwoFactor(page2);
-  await digit(page2, 1).click();
-  await page2.keyboard.type("482913", { delay: 30 });
-  await expect.poll(() => m2.verifies.length).toBe(1);
-  const enter = page2.locator(BOX).getByRole("button", { name: "入る", exact: true });
-  await expect(enter).toHaveAttribute("aria-busy", "true");
-  await expect(enter).toBeDisabled();
-  await page2.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
-  await expect(page2.locator(BOX).getByRole("alert")).toHaveCount(0);
-  expect(m2.verifies).toHaveLength(1);
-  release2();
+  const calls2 = await countCalls(page2);
+  const release2 = await holdNext(page2);
+  try {
+    await mockAuth(page2, { twoFactor: true });
+    await open(page2);
+    await toTwoFactor(page2);
+    await digit(page2, 1).click();
+    const moving2 = page2.waitForRequest(new RegExp(`${NEXT}(\\?|$)`));
+    await page2.keyboard.type("482913", { delay: 30 });
+    await moving2;
+    await nextFrame(page2);
+    const enter = page2.locator(BOX).getByRole("button", { name: "入る", exact: true });
+    await expect(enter).toHaveAttribute("aria-busy", "true");
+    await expect(enter).toBeDisabled();
+    await expect(enter.locator(".k-spin")).toBeVisible();
+    await enter.evaluate((e) => (e as HTMLButtonElement).click());
+    await page2.locator(`${BOX} form`).evaluate((f) => (f as HTMLFormElement).requestSubmit());
+    expect(await calls2("verify")).toBe(1);
+    await expect(page2.locator(BOX).getByRole("alert")).toHaveCount(0);
+  } finally {
+    release2();
+  }
   await expect(page2).toHaveURL(new RegExp(`${NEXT}$`));
 });
 
@@ -781,4 +816,36 @@ test("K221-UI-031 空のバックアップコードで「入る」：口を呼�
   await page.locator(BOX).getByRole("button", { name: "入る", exact: true }).click();
   await expect(page.locator(BOX).getByRole("alert")).toHaveText("コードを入れてください");
   expect(m.verifies).toHaveLength(0);
+});
+
+test("K221-UI-032 6 けた：入っている枠で数字でない字（a）を打つと、枠は元の数字のままで次へ移らず、口も呼ばない", async ({
+  page,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  await open(page);
+  await toTwoFactor(page);
+  await digit(page, 1).click();
+  await page.keyboard.type("48", { delay: 30 });
+  await digit(page, 2).click();
+  await page.keyboard.type("a");
+  await expect(digit(page, 2)).toHaveValue("8");
+  await expect(digit(page, 2)).toBeFocused();
+  expect(await codeVals(page)).toEqual(["4", "8", "", "", "", ""]);
+  // カーソルが字の前にあっても、打った字は前の値との違いで決める（7 を打つと 7 になる）
+  await digit(page, 2).evaluate((e) => (e as HTMLInputElement).setSelectionRange(0, 0));
+  await page.keyboard.type("7");
+  await expect(digit(page, 2)).toHaveValue("7");
+  expect(m.verifies).toHaveLength(0);
+});
+
+test("K221-UI-033 行き先が今のログインの画面（next=/login）でも、成功したら入口（/）へ移り、回ったまま止まらない", async ({
+  page,
+}) => {
+  await mockAuth(page);
+  await open(page, 1440, `?next=${encodeURIComponent("/login")}`);
+  await mail(page).fill("takamoto@example.com");
+  await pass(page).fill("correct-horse-battery-1");
+  const toEntrance = page.waitForRequest((r) => new URL(r.url()).pathname === "/" && r.method() === "GET");
+  await nextBtn(page).click();
+  await toEntrance;
 });
