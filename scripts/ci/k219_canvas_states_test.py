@@ -15,8 +15,10 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 import unittest
 
 import yaml
@@ -29,6 +31,8 @@ MAP = ROOT / "04_design" / "canvas-screens.json"
 FIDELITY = ROOT / "04_design" / "fidelity.json"
 REVIEW = ROOT / "04_design" / "canvas-review" / "K-219.html"
 TICKETS = ROOT / "11_tickets"
+DESIGN = ROOT / "04_design" / "DESIGN-kaname.md"
+SHELLFIX = ROOT / "04_design" / "canvas_gen" / "shellfix.py"
 
 # 絵: (近い絵, page, 画面, 組の id, 種類, 画面の道, 持ち主, 出す文)
 NEW = {
@@ -57,6 +61,10 @@ NEW = {
 EXTRA = ["UiDisabled", "OnHomeLater"]  # 表の 13 枚のほかに作り手が新しく描く絵（使えない形の見本・「あとで」の絵）
 OPACITY = r"opacity:\s*0?\.55"
 DISABLED_KINDS = {"button": "ボタン", "select": "選ぶ欄", "search": "探す欄", "menuitem": "メニューの項目", "tab": "見え方のタブ"}
+NOTE_WORDS = ["3 秒たっても", "すぐ終わるときは"]  # 3 秒の決まりの注記（設計者の説明。絵には描かず比べる 1 枚の「違い：」だけに書く）
+NAV = re.compile(r'<nav aria-label="メニュー".*?</nav>', re.S)
+BADGE = re.compile(r'<b class="kn-lbl"[^>]*>\s*\d+\s*</b>')
+GROUP_N = re.compile(r'<span class="kn-lbl" style="margin-left: auto; font-size: 12px; color: #4A5563">(\d+)</span>')
 KIND_WIDTHS = {"doc": [1440, 375], "auth-msg": [1440, 375], "band": [1440, 375], "dialog": [1440, 375], "page": [1440, 375]}
 
 
@@ -128,6 +136,94 @@ class KindParts(html.parser.HTMLParser):
 
 def groups() -> dict[str, dict]:
     return {g["id"]: g for g in load(FIDELITY)["groups"]}
+
+
+def nav_of(body: str) -> str:
+    m = NAV.search(body)
+    assert m, "左のバーが無い"
+    return m.group(0)
+
+
+def visible_text(body: str) -> str:
+    """絵に見える文（helmet・script・タグを外す）"""
+    body = re.sub(r"<helmet>.*?</helmet>|<script\b.*?</script>|<style\b.*?</style>", " ", body, flags=re.S)
+    return html.unescape(re.sub(r"<[^>]+>", " ", body))
+
+
+def styles(tag: str) -> dict[str, str]:
+    m = re.search(r'style="([^"]*)"', tag)
+    out: dict[str, str] = {}
+    for part in (m.group(1) if m else "").split(";"):
+        if ":" in part:
+            k, v = part.split(":", 1)
+            out[k.strip().lower()] = " ".join(v.split()).lower()
+    return out
+
+
+def design_tokens() -> dict:
+    m = re.match(r"^---\n(.*?)\n---\n", DESIGN.read_text(encoding="utf-8"), re.S)
+    assert m, "正本に頭が無い"
+    return yaml.safe_load(m.group(1))
+
+
+def resolve(tokens: dict, value: str) -> str:
+    def one(m: re.Match) -> str:
+        cur: object = tokens
+        for k in m.group(1).split("."):
+            cur = cur[k]  # type: ignore[index]
+        return str(cur)
+    return re.sub(r"\{([\w.-]+)\}", one, str(value))
+
+
+class BarAndBoxTest(unittest.TestCase):
+    def _bars(self, folder: pathlib.Path) -> None:
+        ap = nav_of((folder / "ApEmpty.dc.html").read_text(encoding="utf-8"))
+        self.assertEqual(BADGE.findall(ap), [], "承認待ちが空の絵のバーに件数の印がある")
+        self.assertRegex(ap, r'<a href="Approvals\.dc\.html" title="承認待ち" aria-current="page"', "今いる所が承認待ちでない")
+        later = nav_of((folder / "OnHomeLater.dc.html").read_text(encoding="utf-8"))
+        counts = GROUP_N.findall(later)
+        self.assertGreaterEqual(len(counts), 3, "グループの数が読めない")
+        self.assertEqual(set(counts), {"0"}, f"グループの数が 0 でない：{counts}")
+        self.assertIn("PC がまだ", later)
+        self.assertEqual(BADGE.findall(later), [], "「あとで」の絵のバーに件数の印がある")
+
+    def test_K219_CV_014_bars(self) -> None:
+        """K219-CV-014 承認待ちが空の絵のバーに件数の印が無く今いる所が承認待ち・「あとで」の絵のバーはグループ 0 件で「PC がまだ」。
+        写しの木で shellfix.py を回し直した後も同じ"""
+        self._bars(CANVAS)
+        with tempfile.TemporaryDirectory() as tmp:
+            for f in CANVAS.glob("*.dc.html"):
+                shutil.copy(f, tmp)
+            env = {**clean_env(), "KANAME_CANVAS": tmp + "/"}
+            r = subprocess.run([sys.executable, str(SHELLFIX)], cwd=SHELLFIX.parent, capture_output=True, text=True, env=env, timeout=300)
+            self.assertEqual(r.returncode, 0, r.stdout[-2000:] + r.stderr[-2000:])
+            self._bars(pathlib.Path(tmp))
+
+    def test_K219_CV_015_empty_box(self) -> None:
+        """K219-CV-015 承認待ちが空の絵の空の箱は正本の state-empty の値（地・1px dashed の線・角丸・余白・間）"""
+        body = (CANVAS / "ApEmpty.dc.html").read_text(encoding="utf-8")
+        tags = list(re.finditer(r'<[^>]*data-part="state-empty"[^>]*>', body))
+        self.assertEqual(len(tags), 1, "空の箱がちょうど 1 つでない")
+        tok = design_tokens()
+        want = tok["components"]["state-empty"]
+        got = styles(tags[0].group(0))
+        bg = got.get("background-color", got.get("background", ""))
+        self.assertEqual(bg, resolve(tok, want["backgroundColor"]).lower(), "地")
+        self.assertEqual(got.get("border"), " ".join(resolve(tok, want["border"]).split()).lower(), "線")
+        self.assertEqual(got.get("border-radius"), resolve(tok, want["rounded"]).lower(), "角丸")
+        self.assertEqual(got.get("padding"), resolve(tok, want["padding"]).lower(), "余白")
+        self.assertEqual(got.get("gap"), resolve(tok, want["gap"]).lower(), "間")
+        self.assertIn("いま決めるものはありません", body[tags[0].end():])
+
+    def test_K219_CV_016_no_designer_note(self) -> None:
+        """K219-CV-016 新しい 15 枚に 3 秒の決まりの注記（設計者の説明）が無く、比べる 1 枚の「違い：」に在る"""
+        for name in [*NEW, *EXTRA]:
+            text = visible_text((CANVAS / f"{name}.dc.html").read_text(encoding="utf-8"))
+            for w in NOTE_WORDS:
+                self.assertNotIn(w, text, f"{name} に設計者の説明「{w}」がある")
+        review = REVIEW.read_text(encoding="utf-8")
+        diffs = " ".join(re.findall(r"<li>違い：(.*?)</li>", review))
+        self.assertIn(NOTE_WORDS[0], diffs)
 
 
 class BoardsTest(unittest.TestCase):

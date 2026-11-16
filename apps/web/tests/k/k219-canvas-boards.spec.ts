@@ -88,3 +88,40 @@ for (const id of NEW_GROUPS) {
     });
   }
 }
+
+// K219-CV-017：代表が比べる 1 枚をブラウザで開き、下まで動かしたときに、どの枠にも絵が出るか（枠は 15 区画 × 2 つ＝30）
+for (const w of [1440, 375]) {
+  test(`K219-CV-017 比べる 1 枚 幅 ${w}：下まで動かすと 30 の枠がどれも見えていて絵が読み込まれている・外へ出ない`, async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
+    const outside: string[] = [];
+    await context.route("**/*", async (route) => {
+      const u = new URL(route.request().url());
+      if (["127.0.0.1", "localhost"].includes(u.hostname)) return route.continue();
+      outside.push(route.request().url());
+      return route.abort();
+    });
+    const page = await context.newPage();
+    await routeCanvasFonts(page);
+    await page.goto(pathToFileURL(join(ROOT, "04_design/canvas-review/K-219.html")).href);
+    const frames = page.locator("iframe");
+    expect(await frames.count()).toBe(30);
+    const empty: string[] = [];
+    for (let i = 0; i < 30; i++) {
+      const f = frames.nth(i);
+      await f.scrollIntoViewIfNeeded();
+      await expect(f).toBeVisible();
+      const src = (await f.getAttribute("src")) ?? "";
+      const box = await f.boundingBox();
+      if (!box || box.width < 100 || box.height < 100) empty.push(`${src}：枠が小さい`);
+      const body = f.contentFrame().locator("body");
+      await expect(body).toBeAttached();
+      const text = (await body.innerText()).trim();
+      if (text.length < 10) empty.push(`${src}：絵が出ていない`);
+    }
+    expect(empty, empty.join("\n")).toEqual([]);
+    expect(outside).toEqual([]);
+    await context.close();
+  });
+}
