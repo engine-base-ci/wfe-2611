@@ -8,7 +8,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { expect, test, type Page, type Request, type Route } from "@playwright/test";
+import { expect, test, type Browser, type Page, type Request, type Route } from "@playwright/test";
 import { NAV, type RoleId } from "../../lib/nav";
 import { isBuilt } from "../../lib/built-routes";
 import {
@@ -35,7 +35,10 @@ const DISABLED_OPACITY = "0.55";
 
 type Reply = { status: number; body: unknown };
 interface Mock {
-  role: string;
+  /** members.role_id（null・知らない値も入れられる） */
+  role: string | null;
+  /** 自分の情報の口が返す会社名（workspace_name・口の側は K-253）。null は欄が無い */
+  workspaceName: string | null;
   meStatus: number;
   /** 名前（null は口が名前を返さない） */
   displayName: string | null;
@@ -53,6 +56,7 @@ const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ stat
 async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
   const m: Mock = {
     role: "owner",
+    workspaceName: "ENGINE BASE",
     meStatus: 200,
     displayName: "高本",
     approvals: 2,
@@ -86,13 +90,20 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
     } else if (p === "/api/auth-ext/me")
       r =
         m.meStatus === 200
-          ? ok({ member_id: ME, tenant_id: WS, display_name: m.displayName, role_id: m.role, scope_id: null })
+          ? ok({
+              member_id: ME,
+              tenant_id: WS,
+              display_name: m.displayName,
+              role_id: m.role,
+              scope_id: null,
+              ...(m.workspaceName === null ? {} : { workspace_name: m.workspaceName }),
+            })
           : { status: m.meStatus, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
     else if (p === "/api/v1/scopes")
       r = ok(
         [
-          { id: SALES, name: "営業", tenant_id: WS },
-          { id: ACCT, name: "経理", tenant_id: WS },
+          { id: SALES, name: "営業", ticket_prefix: "EG", tenant_id: WS },
+          { id: ACCT, name: "経理", ticket_prefix: null, tenant_id: WS },
         ],
         { limit: 200, writable: [SALES] },
       );
@@ -162,14 +173,42 @@ const navLabels = (page: Page) =>
     .locator(".k-nav-item:not(:has(.k-group-mark))")
     .evaluateAll((els) => els.map((e) => e.querySelector(".k-nav-label")?.textContent?.trim() ?? ""));
 
-test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が lib/nav.ts の R1 の主ナビと同じ並び", async ({
+/** 絵（svg）の線の形：子の要素ごとに 形の名前・d・x・y・幅・高さ・角丸（色や太さは見ない） */
+const svgSigs = (page: Page, sel: string) =>
+  page
+    .locator(sel)
+    .evaluateAll((els) =>
+      els.map((e) =>
+        [...(e.querySelector("svg")?.children ?? [])]
+          .map((c) =>
+            [c.tagName, ...["d", "x", "y", "width", "height", "rx"].map((a) => c.getAttribute(a) ?? "")].join(","),
+          )
+          .join(" "),
+      ),
+    );
+/** キャンバスの頁を開いて、その要素の絵の線を読む（外への道は止める） */
+async function canvasSigs(browser: Browser, file: string, sel: string, width: number): Promise<string[]> {
+  const cp = await browser.newPage({ viewport: { width, height: 900 } });
+  await cp.route(/^https?:\/\//, (route) => route.abort());
+  await cp.goto(pathToFileURL(join(ROOT, `04_design/canvas/${file}.dc.html`)).href);
+  await cp.locator(sel).first().waitFor({ state: "attached" });
+  const sigs = await svgSigs(cp, sel);
+  await cp.close();
+  return sigs;
+}
+
+test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が lib/nav.ts の R1 の主ナビと同じ並びで、項目の絵の線がキャンバス Main と同じ", async ({
   page,
+  browser,
 }) => {
   await mockApi(page, { role: "owner" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R1");
   expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "取引先", "ワークスペースの管理"]);
   await expect.poll(() => navLabels(page)).toEqual(want);
+  const canvas = await canvasSigs(browser, "Main", ".kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))", 1440);
+  expect(canvas).toHaveLength(6);
+  expect(await svgSigs(page, ".k-nav > .k-nav-item:not(:has(.k-group-mark))")).toEqual(canvas);
 });
 
 test("K138-SH-002 役 staff（R3）：項目が lib/nav.ts の R3 と同じ（取引先が無い）", async ({ page }) => {
@@ -222,20 +261,26 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 作っていない項目（ナレッジ・取引先・ワークスペースの管理）は押せない形・title に準備中・目に見える「準備中」の字が無い", async ({
+test("K138-SH-006 作っていない項目（ナレッジ・取引先・ワークスペースの管理）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
   for (const name of ["ナレッジ", "取引先", "ワークスペースの管理"]) {
-    await expect(nav.getByRole("link", { name: new RegExp(name) }), name).toHaveCount(0);
-    const item = nav.locator('[aria-disabled="true"]', { hasText: name });
+    // 押せるリンクは無く、読み上げには「使えないリンク」として届く（role=link・aria-disabled）
+    await expect(nav.getByRole("link", { name: new RegExp(name), disabled: false }), name).toHaveCount(0);
+    const item = nav.getByRole("link", { name: new RegExp(name), disabled: true });
     await expect(item, name).toHaveCount(1);
     expect(await item.getAttribute("title"), name).toContain("準備中");
     expect(await item.evaluate((e) => getComputedStyle(e).opacity), name).toBe(DISABLED_OPACITY);
     const before = page.url();
     await item.click({ force: true });
+    expect(page.url(), name).toBe(before);
+    // キーボード：Tab で止まり（title の準備中に届く）、Enter を押しても移らない
+    await item.focus();
+    await expect(item, name).toBeFocused();
+    await page.keyboard.press("Enter");
     expect(page.url(), name).toBe(before);
   }
   expect(await nav.innerText()).not.toContain("準備中");
@@ -269,19 +314,41 @@ test("K138-SH-008 承認待ちの口の数 2：/tickets でも /approvals でも
   }
 });
 
-test("K138-SH-009 グループ：見出し「グループ」の下に 営業・経理 の 2 行・行き先 /tickets?scope=<id>・件数の字は無い", async ({
+test("K138-SH-009 グループ：見出し「グループ」と★（グレーで押せない）の下に 営業・経理 の 2 行。絞り込みができるまでグレーで押せない（D-145.18）・件数の字は無い・札は番号の頭（無ければ名前の頭 1 字）で 18px", async ({
   page,
 }) => {
   await mockApi(page);
   await open(page, PATHS.tickets);
   const nav = leftNav(page);
-  await expect(nav.getByText("グループ", { exact: true })).toBeVisible();
+  await expect(nav.locator(".k-nav-sec")).toContainText("グループ");
+  const star = nav.locator('.k-nav-sec [aria-disabled="true"]', { hasText: "★" });
+  await expect(star).toBeVisible();
+  expect(await star.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
   const groups = nav.locator(".k-nav-item:has(.k-group-mark)");
   await expect(groups).toHaveCount(2);
-  await expect(groups.nth(0)).toHaveAttribute("href", `/tickets?scope=${SALES}`);
-  await expect(groups.nth(1)).toHaveAttribute("href", `/tickets?scope=${ACCT}`);
   await expect(groups.nth(0).locator(".k-nav-label").first()).toHaveText("営業");
   await expect(groups.nth(1).locator(".k-nav-label").first()).toHaveText("経理");
+  await expect(groups.locator(".k-group-mark")).toHaveText(["EG", "経"]);
+  for (const i of [0, 1]) {
+    const g = groups.nth(i);
+    await expect(g).toHaveAttribute("role", "link");
+    await expect(g).toHaveAttribute("aria-disabled", "true");
+    await expect(g).not.toHaveAttribute("href", /./);
+    expect(await g.getAttribute("title")).toContain("準備中");
+    expect(await g.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+    const box = await g
+      .locator(".k-group-mark")
+      .evaluate((e) => [e.getBoundingClientRect().width, e.getBoundingClientRect().height]);
+    expect(box.map(Math.round)).toEqual([18, 18]);
+    const before = page.url();
+    await g.click({ force: true });
+    expect(page.url()).toBe(before);
+  }
+  // 札の幅がそろい、名前の左の端が 2 行でそろう（札がはみ出して名前がずれない）
+  const lefts = await groups
+    .locator(".k-nav-label")
+    .evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
+  expect(new Set(lefts).size).toBe(1);
   await expect(groups.locator(".k-nav-count")).toHaveCount(0);
 });
 
@@ -360,8 +427,9 @@ test("K138-SH-013 自分のメニュー：名前「高本」・「準備中」�
   expect(m.signOuts).toBeGreaterThan(0);
 });
 
-test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チケット・承認（2）・＋・AI・メニュー の順。＋で /tickets?new=1", async ({
+test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チケット・承認（2）・＋・AI・メニュー の順で絵の線がキャンバス MobileList と同じ。＋で /tickets?new=1", async ({
   page,
+  browser,
 }) => {
   await mockApi(page, { approvals: 2 });
   await open(page, PATHS.tickets, 375);
@@ -375,6 +443,9 @@ test("K138-SH-014 幅 375：左のメニューは見えず、下のタブが チ
     );
   expect(items).toEqual(["チケット", "承認", "チケットを作る", "AI", "メニュー"]);
   await expect(tabs.locator(":scope > *").nth(1)).toContainText("2");
+  // 絵の線がキャンバス MobileList の下のタブと同じ（＋は字なので絵を持たない）
+  const canvas = await canvasSigs(browser, "MobileList", 'nav[aria-label="下のタブ"] > a', 375);
+  expect(await svgSigs(page, ".k-tabs > :is(a, button, span)")).toEqual(canvas);
   await tabs.getByRole("button", { name: "チケットを作る" }).click();
   await expect(page).toHaveURL(/\/tickets\?new=1$/);
 });
@@ -398,7 +469,7 @@ test("K138-SH-015 幅 375：メニューを押すと全部のメニューが開�
   await expect(sheet).toHaveCount(0);
 });
 
-test("K138-SH-016 外枠を持つ 4 画面 × 幅 320・375・768・1024・1440 で横溢れ 0・本文の h1 の左の端が画面の中", async ({
+test("K138-SH-016 外枠を持つ 4 画面 × 幅 320・375・768・1024・1440 で横溢れ 0・本文の h1 の左の端が画面の中・作る面の左右の端も画面の中", async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -415,6 +486,13 @@ test("K138-SH-016 外枠を持つ 4 画面 × 幅 320・375・768・1024・1440 
         .first()
         .evaluate((e) => e.getBoundingClientRect().left);
       if (x < 0) bad.push(`${path} 幅 ${w}：本文の h1 の左の端 ${x}`);
+      // 作る面を開いたときは、作る面の欄（region「チケットを作る」）の左右の端も画面の中（字の頭が切れない）
+      if (path === PATHS.create) {
+        const r = await page
+          .getByRole("region", { name: "チケットを作る" })
+          .evaluate((e) => [e.getBoundingClientRect().left, e.getBoundingClientRect().right]);
+        if (r[0]! < 0 || r[1]! > w) bad.push(`${path} 幅 ${w}：作る面の左右の端 ${r.join("〜")}`);
+      }
     }
   expect(bad).toEqual([]);
 });
@@ -489,8 +567,9 @@ test("K138-SH-020 幅 768 は左のメニューが 56px のレール（項目の
   await expect.poll(() => leftNav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width))).toBe(216);
 });
 
-test("K138-SH-021 役が分かるまで（読み中）は左のメニューに役の項目のリンクが 0・本文は出る。役の口が 401（ログインが切れた）なら入り直し（/login?next=）へ移り、前の役の項目を出さない", async ({
+test("K138-SH-021 役が分かるまで（読み中）は左のメニューに役の項目のリンクが 0・本文は出る。役の口が 401（ログインが切れた）なら入り直し（/login?next=）へ移り、前の役の項目を出さない。役の値が分からない（null・知らない値）ときも役の項目を出さない", async ({
   page,
+  browser,
 }) => {
   await mockApi(page);
   // 役の口の答えを止めておき（読み中）、後で 401 を返す。後から足した route が先に効く
@@ -526,6 +605,17 @@ test("K138-SH-021 役が分かるまで（読み中）は左のメニューに�
   await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(PATHS.detail)}$`));
   // 読み中から入り直しまでのあいだに、役の項目（R1 などに倒した物）を一度も描いていない
   expect(await page.evaluate(() => (window as unknown as { __roleNavSeen?: boolean }).__roleNavSeen)).toBe(false);
+  // 口は答えたが役の値が分からない（null・知らない値）：いちばん広い主ナビ（R1）に倒さず、役の項目を出さない
+  for (const role of [null, "unknown-role"]) {
+    const p2 = await browser.newPage();
+    await mockApi(p2, { role });
+    await p2.setViewportSize({ width: 1440, height: 900 });
+    await p2.goto(PATHS.detail);
+    await expect(p2.locator("#k-main h1")).toHaveText("請求書を送る");
+    await expect(p2.locator(".k-bar .k-me .k-avatar")).toHaveText("高");
+    await expect(leftNav(p2).locator(".k-nav-item:not(:has(.k-group-mark))"), String(role)).toHaveCount(0);
+    await p2.close();
+  }
 });
 
 test("K138-SH-022 鍵が無い（ログインしていない）：/tickets を開くと /login?next=%2Ftickets に移る", async ({
@@ -585,7 +675,7 @@ test("K138-SH-026 外枠だけが読む 3 つの口（グループ・承認待�
   await expect(nav.getByRole("button", { name: "チケットを作る" })).toHaveCount(0);
 });
 
-test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC と承認待ちの数を 1 回ずつ読み、時計を 60 秒進めても増えない・/approvals では外枠が数を読まない", async ({
+test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認待ちの数・グループを 1 回ずつ読み、時計を 60 秒進めても窓に戻っても増えない・/approvals では外枠が数を読まない", async ({
   page,
 }) => {
   const m = await mockApi(page);
@@ -596,9 +686,18 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC と承認�
   const count = (prefix: string) => m.calls.filter((c) => c.startsWith(prefix)).length;
   expect(count("GET /api/v1/bridge/devices")).toBe(1);
   expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+  // グループの口は外枠と本文（作る面の選択肢）で分け合い、1 回だけ読む
+  expect(count("GET /api/v1/scopes")).toBe(1);
   await page.clock.runFor(60_000);
   expect(count("GET /api/v1/bridge/devices")).toBe(1);
   expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+  expect(count("GET /api/v1/scopes")).toBe(1);
+  // 窓に戻っても役の口を読み直さない
+  const meBefore = count("GET /api/auth-ext/me");
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await page.clock.runFor(10_000);
+  expect(count("GET /api/auth-ext/me")).toBe(meBefore);
 
   m.calls.length = 0;
   await open(page, PATHS.approvals);
@@ -607,7 +706,7 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC と承認�
   expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(0);
 });
 
-test("K138-SH-028 名前が無い（display_name が null）：自分の札とメニューの名前は空（嘘の名前を出さない）・AI の項目は「のAI」にしない", async ({
+test("K138-SH-028 名前が無い（display_name が null）：自分の札とメニューの名前は空（嘘の名前を出さない）・AI の項目は「あなたのAI」（下のタブは「AI」のまま）", async ({
   page,
 }) => {
   await mockApi(page, { displayName: null });
@@ -618,8 +717,74 @@ test("K138-SH-028 名前が無い（display_name が null）：自分の札と�
   await expect(page.locator(".k-menu-head")).toHaveText("");
   await page.keyboard.press("Escape");
   const labels = await navLabels(page);
+  // 決める人の答え（D-145.17・answer=f0b42d2edbed）
+  expect(labels).toContain("あなたのAI");
   expect(labels).not.toContain("のAI");
-  expect(labels).toContain("AI");
+  // 下のタブの短い名前は「AI」のまま
+  await open(page, PATHS.tickets, 375);
+  await expect(
+    page.getByRole("navigation", { name: "下のタブ" }).locator(".k-nav-label", { hasText: /AI/ }),
+  ).toHaveText("AI");
+});
+
+test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_name）が在れば頭文字と会社名、無ければどちらも出さない（紺の四角だけ）。会社の切り替え ▾ はグレーで押せない", async ({
+  page,
+}) => {
+  await mockApi(page, { workspaceName: "ENGINE BASE" });
+  await open(page, PATHS.tickets);
+  const top = leftNav(page).locator(".k-nav-top");
+  await expect(top.locator(".k-ws-mark")).toHaveText("E");
+  await expect(top.locator(".k-ws-name")).toContainText("ENGINE BASE");
+  const sw = top.getByRole("button", { name: /会社を切り替える/, disabled: true });
+  await expect(sw).toHaveText("▾");
+  expect(await sw.evaluate((e) => getComputedStyle(e).opacity)).toBe(DISABLED_OPACITY);
+  const before = page.url();
+  await sw.click({ force: true });
+  expect(page.url()).toBe(before);
+  await expect(page.getByRole("menu")).toHaveCount(0);
+
+  await mockApi(page, { workspaceName: null });
+  await open(page, PATHS.tickets);
+  await expect.poll(() => navLabels(page)).toContain("チケット");
+  await expect(top.locator(".k-ws-mark")).toHaveText("");
+  await expect(top.locator(".k-ws-name")).not.toContainText("ENGINE");
+  expect((await top.locator(".k-ws-name").innerText()).replace("▾", "").trim()).toBe("");
+});
+
+test("K138-SH-030 幅 767 以下（375）はキャンバス MobileList どおり：上の帯（いまの場所・題・探す・自分の札）は出さず、見える見出しは本文の 1 つだけ。鈴は本文の見出しの右（グレー）。自分のメニューは下のタブの「メニュー」の中", async ({
+  page,
+}) => {
+  await mockApi(page);
+  for (const path of [PATHS.tickets, PATHS.detail, PATHS.approvals]) {
+    await open(page, path, 375);
+    const h1 = page.locator("#k-main h1").first();
+    await expect(h1, path).toBeVisible();
+    // 見えている見出し（h1・h2・帯の題）のうち、画面の題として出るのは本文の h1 の 1 つだけ
+    const titles = await page.evaluate(
+      () =>
+        [...document.querySelectorAll("h1, .k-bar-title")].filter((e) => {
+          const r = e.getBoundingClientRect();
+          return r.width > 1 && r.height > 1 && getComputedStyle(e).visibility !== "hidden";
+        }).length,
+    );
+    expect(titles, path).toBe(1);
+    await expect(page.getByRole("navigation", { name: "いまの場所" }), path).toBeHidden();
+    await expect(page.getByRole("button", { name: "自分のメニュー" }), path).toBeHidden();
+    const bell = page.locator(".k-bell");
+    await expect(bell, path).toBeVisible();
+    await expect(bell, path).toHaveAttribute("aria-disabled", "true");
+    const [hb, bb] = await Promise.all([
+      h1.evaluate((e) => e.getBoundingClientRect().toJSON()),
+      bell.evaluate((e) => e.getBoundingClientRect().toJSON()),
+    ]);
+    expect(bb.left, `${path} 鈴は見出しの右`).toBeGreaterThanOrEqual(hb.right);
+    expect(bb.top < hb.bottom && bb.bottom > hb.top, `${path} 鈴は見出しと同じ行`).toBe(true);
+  }
+  await open(page, PATHS.tickets, 375);
+  await page.getByRole("navigation", { name: "下のタブ" }).getByRole("button", { name: "メニュー" }).click();
+  const sheet = page.getByRole("navigation", { name: "メニュー（全部）" });
+  await sheet.getByRole("button", { name: "自分のメニュー" }).click();
+  await expect(page.getByRole("menu")).toContainText("高本");
 });
 
 interface Group {
@@ -635,7 +800,7 @@ interface Group {
 const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
 const SHELL_GROUPS = ["shell-nav", "shell-tabs"] as const;
 
-test("K138-SH-023 突き合わせの設定：shell-nav・shell-tabs が enrolled・持ち主 K-138・shell-tabs の絵は MobileList・画面を整える道具に鍵", () => {
+test("K138-SH-023 突き合わせの設定：shell-nav・shell-tabs が enrolled・持ち主 K-138・shell-tabs の絵は MobileList・画面を整える道具に鍵・帯の箱とグループの行も比べる", () => {
   for (const id of SHELL_GROUPS) {
     const g = CFG.groups.find((x) => x.id === id);
     expect(g, id).toBeTruthy();
@@ -644,6 +809,12 @@ test("K138-SH-023 突き合わせの設定：shell-nav・shell-tabs が enrolled
     expect(FIDELITY_STATES[g!.state], `${id} の state ${g!.state}`).toBeTruthy();
   }
   expect(CFG.groups.find((x) => x.id === "shell-tabs")!.canvas).toBe("MobileList");
+  // 上の帯の箱（高さ・背景）とグループの行（高さ・文字の大きさ）も、名前の違う値として比べる（レビューの指摘 7）
+  const nav = CFG.groups.find((x) => x.id === "shell-nav")!.pairs;
+  const bar = nav.find((p) => p.canvas === ".kn-bar" && p.app === ".k-bar");
+  expect(bar?.props).toEqual(expect.arrayContaining(["height", "background-color"]));
+  const group = nav.find((p) => p.canvas.includes(".kn-item") && p.app.includes(".k-group-mark"));
+  expect(group?.props).toEqual(expect.arrayContaining(["height", "font-size"]));
 });
 
 for (const id of SHELL_GROUPS) {

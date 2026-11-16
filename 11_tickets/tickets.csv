@@ -718,7 +718,7 @@ K-138,外枠（左のメニュー・下のタブ）を、前の外枠（lib/nav.
 
 あわせて、外枠の部品のクラス k-panel-toggle（shell.tsx:301）が CSS に無い（K-214 の台帳の行をこのチケットが消す）。
 
-載せ替える画面は、新しい層の 3 画面（/tickets と /tickets?new=1・/tickets/:id・/approvals）。PC をつなぐ（/setup/bridge）を新しい外枠に入れるのは K-220。前の画面（/・/ai/chat・はじめの設定・not-found）は前の外枠のまま（D-144.6）。","- [ ] 下の 28 行（K138-SH-001〜028）が緑
+載せ替える画面は、新しい層の 3 画面（/tickets と /tickets?new=1・/tickets/:id・/approvals）。PC をつなぐ（/setup/bridge）を新しい外枠に入れるのは K-220。前の画面（/・/ai/chat・はじめの設定・not-found）は前の外枠のまま（D-144.6）。","- [ ] 下の 30 行（K138-SH-001〜030）が緑
 - [ ] 書く段で新しい外枠の期待に替えた前からの試験（K60-UI-031・K60-UI-001・K60-UI-003・K60-UI-018・K63-UI-001・K63-UI-002・K63-UI-011・KN105-003・KN105-005・KN105-007・K216-VF-015 と m2-bridge-ticket.spec.ts の作る入口 2 か所）が緑
 - [ ] 台帳（scripts/ci/class_ledger.json）から k-panel-toggle の undefined の行を消し、G67（K-214）が緑
 - [ ] 頭の canvas の組（shell-nav：Main の左のメニューの項目・自分のメニューの札／shell-tabs：MobileList の 375 の下のタブ・04_design/fidelity.json）を enrolled にし、キャンバスとの見た目の突き合わせ（K138-SH-024・G70）が緑

@@ -41,8 +41,9 @@ test("KN105-003 まだ作っていない画面は押せない（指を置くと�
 }) => {
   await open(page, 1440, "?built=none");
   const nav = page.getByRole("navigation", { name: "メニュー", exact: true });
-  await expect(nav.getByRole("link", { name: /ナレッジ/ })).toHaveCount(0);
-  const item = nav.locator('[aria-disabled="true"]', { hasText: "ナレッジ" });
+  // 押せるリンクは無い。読み上げには「使えないリンク」として届く（role=link・aria-disabled・K-138）
+  await expect(nav.getByRole("link", { name: /ナレッジ/, disabled: false })).toHaveCount(0);
+  const item = nav.getByRole("link", { name: /ナレッジ/, disabled: true });
   await expect(item).toHaveCount(1);
   expect(await item.getAttribute("title")).toContain("準備中");
   expect(await nav.innerText()).not.toContain("準備中");
