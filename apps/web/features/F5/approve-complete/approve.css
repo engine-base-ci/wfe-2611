@@ -1,28 +1,248 @@
-/* 承認待ち（K-161）：見出しの横の数・期限ごとの表。狭い幅では表が自分の枠の中で横に送る（本文ははみ出さない） */
-.k63-head {
+/* 承認待ち（K-231・キャンバス Approvals・空は ApEmpty）。値は正本 DESIGN-kaname.md の approvals-*・state-empty-icon のトークンだけを読む。
+   帯の下の本文の箱（.k-ap-body）がカード 1 つか空の箱を包む。狭い幅では表がカードの中で横に送る（頁ははみ出さない） */
+.k-page-head.k-ap-head > .k-btn,
+.k-page-head.k-ap-head > .k-btn:last-child {
+  margin-left: 0; /* 続けて裁くは数のすぐ右（帯の右の端に寄せない） */
+}
+/* 見出しと数は縮めない（狭い幅では続けて裁くが次の行へ回る・キャンバスの折り返し） */
+.k-ap-head > h1,
+.k-ap-head > .k-ap-next {
+  flex: none;
+}
+.k-ap-head > .k-page-sub {
+  min-width: 0;
+}
+/* 767 以下は外枠の鈴が帯の右に入る（帯を 1 行にする外枠の決まり）。続けて裁くは次の行へ回す（キャンバスの折り返し） */
+@media (max-width: 767px) {
+  .k-shell .k-ap-head:has(> .k-ap-next) {
+    flex-wrap: wrap;
+  }
+  .k-ap-head:has(> .k-ap-next)::after {
+    content: "";
+    order: 1;
+    flex-basis: 100%;
+  }
+  .k-ap-head > .k-ap-next {
+    order: 2;
+  }
+}
+.k-page-head.k-ap-head .k-btn.k-ap-next {
+  padding: var(--k-c-approvals-next-pad);
+  font-size: var(--k-c-approvals-next-text);
+  line-height: var(--k-c-approvals-next-lh);
+  font-weight: var(--k-c-approvals-next-fw);
+}
+.k-page > .k-ap-body {
+  margin: 0; /* 余白は箱が自分で持つ（帯の下から・左右とも） */
+}
+.k-ap-body {
   display: flex;
-  align-items: baseline;
-  gap: var(--k-s-sm);
+  flex-direction: column;
+  gap: var(--k-c-approvals-body-gap);
+  padding: var(--k-c-approvals-body-pad);
+  min-width: 0;
+}
+.k-ap-card {
+  background: var(--k-c-approvals-card-bg);
+  border: var(--k-c-approvals-card-border);
+  border-radius: var(--k-c-approvals-card-radius);
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ---- 道具の行 ---- */
+.k-ap-tools {
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-approvals-tools-gap);
+  padding: var(--k-c-approvals-tools-pad);
+  border-bottom: var(--k-c-approvals-tools-border-bottom);
 }
-.k63-count {
+.k-ap-chips,
+.k-ap-tools-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-approvals-chips-gap);
+}
+.k-ap-tools-end {
+  margin-left: auto;
+  justify-content: flex-end;
+}
+.k-ap-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-c-approvals-chip-height);
+  padding: var(--k-c-approvals-chip-pad);
+  border: var(--k-c-approvals-chip-border);
+  border-radius: var(--k-c-approvals-chip-radius);
+  background: var(--k-c-approvals-chip-bg);
+  color: var(--k-c-approvals-chip-fg);
+  font: inherit;
+  font-size: var(--k-c-approvals-chip-text);
+  line-height: var(--k-c-approvals-chip-lh);
+  font-weight: var(--k-c-approvals-chip-fw);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.k-ap-chip[aria-pressed="true"] {
+  background: var(--k-c-approvals-chip-on-bg);
+  color: var(--k-c-approvals-chip-on-fg);
+  border: var(--k-c-approvals-chip-on-border);
+  cursor: default;
+}
+.k-ap-chip[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-ap-sort,
+.k-ap-tools-end .k-btn,
+.k-ap-acts .k-btn {
+  font-size: var(--k-c-approvals-acts-text);
+  line-height: var(--k-c-approvals-acts-lh);
+  white-space: nowrap;
+}
+.k-ap-sort {
   color: var(--k-on-surface-variant);
-  font-variant-numeric: tabular-nums;
 }
-.k63-queue {
+
+/* ---- 表（見出しの行・区切りの行・行） ---- */
+.k-ap-scroll {
+  overflow-x: auto;
+}
+.k-ap-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-ap-table th {
+  height: var(--k-c-approvals-th-height);
+  padding: var(--k-c-approvals-th-pad);
+  background: var(--k-c-approvals-th-bg);
+  color: var(--k-c-approvals-th-fg);
+  border-bottom: var(--k-c-approvals-th-border-bottom);
+  font-size: var(--k-c-approvals-th-text);
+  line-height: var(--k-c-approvals-th-lh);
+  font-weight: var(--k-c-approvals-th-fw);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-ap-table td {
+  height: var(--k-c-approvals-td-height);
+  padding: var(--k-c-approvals-td-pad);
+  border-bottom: var(--k-c-approvals-td-border-bottom);
+  white-space: nowrap;
+}
+.k-ap-table .k-ap-end {
+  text-align: right;
+}
+.k-ap-group > td {
+  height: var(--k-c-approvals-group-height);
+  background: var(--k-c-approvals-group-bg);
+  font-size: var(--k-c-approvals-group-text);
+  line-height: var(--k-c-approvals-group-lh);
+  font-weight: var(--k-c-approvals-group-fw);
+  color: var(--k-on-surface);
+}
+.k-ap-group[data-alert] > td,
+.k-ap-table td[data-late] {
+  color: var(--k-c-approvals-late-fg);
+  font-weight: var(--k-c-approvals-late-fw);
+}
+.k-ap-dash {
+  color: var(--k-neutral);
+  font-size: var(--k-text-label-md);
+}
+.k-ap-kind {
+  display: inline-block;
+  padding: var(--k-c-approvals-kind-pad);
+  border: var(--k-c-approvals-kind-border);
+  border-radius: var(--k-c-approvals-kind-radius);
+  color: var(--k-c-approvals-kind-fg);
+  font-size: var(--k-c-approvals-kind-text);
+  font-weight: var(--k-c-approvals-kind-fw);
+}
+.k-ap-num {
+  font-size: var(--k-text-body-sm);
+}
+.k-ap-title > a {
+  color: var(--k-c-approvals-title-fg);
+  font-weight: var(--k-c-approvals-title-fw);
+  text-decoration: none;
+}
+.k-ap-title > a:hover {
+  text-decoration: underline;
+}
+.k-ap-sub {
+  display: block;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-ap-from {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-approvals-from-gap);
+}
+.k-ap-avatar {
   display: grid;
-  gap: var(--k-s-lg);
-  min-width: 0;
+  place-items: center;
+  width: var(--k-c-approvals-avatar-width);
+  height: var(--k-c-approvals-avatar-height);
+  border-radius: var(--k-c-approvals-avatar-radius);
+  background: var(--k-c-approvals-avatar-bg);
+  color: var(--k-c-approvals-avatar-fg);
+  font-size: var(--k-c-approvals-avatar-text);
+  font-weight: var(--k-c-approvals-avatar-fw);
 }
-.k63-title {
+.k-ap-check {
+  font-size: var(--k-text-body-sm);
+}
+.k-ap-acts {
+  display: inline-flex;
+  gap: var(--k-c-approvals-acts-gap);
+  font-size: var(--k-c-approvals-acts-text);
+}
+.k-ap-acts a.k-btn {
+  text-decoration: none;
+}
+.k-ap-note {
+  margin: 0;
+  padding: var(--k-c-approvals-note-pad);
+  border-top: var(--k-c-approvals-note-border-top);
+  color: var(--k-c-approvals-note-fg);
+  font-size: var(--k-c-approvals-note-text);
+  line-height: var(--k-c-approvals-note-lh);
+}
+.k-ap-more {
+  align-self: flex-start;
+}
+
+/* ---- 空の箱（ApEmpty）：見出し 16px・説明 13px ---- */
+.k-ap-body .k-state-title {
+  font-size: var(--k-c-approvals-empty-title-text);
+  line-height: var(--k-c-approvals-empty-title-lh);
+  font-weight: var(--k-c-approvals-empty-title-fw);
+}
+.k-ap-body .k-state-body {
+  font-size: var(--k-c-approvals-empty-body-text);
+  line-height: var(--k-c-approvals-empty-body-lh);
+}
+
+/* ---- 空の箱の見出しの上の印（ApEmpty の ✓・Empty の icon） ---- */
+.k-state-icon {
   display: grid;
-  gap: var(--k-s-xs);
-  min-width: 0;
-  overflow-wrap: anywhere;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-state-empty-icon-width);
+  height: var(--k-c-state-empty-icon-height);
+  border-radius: var(--k-c-state-empty-icon-radius);
+  background: var(--k-c-state-empty-icon-bg);
+  color: var(--k-c-state-empty-icon-fg);
+  font-size: var(--k-c-state-empty-icon-text);
+  font-weight: var(--k-c-state-empty-icon-fw);
 }
-.k63-more {
-  justify-self: start;
-}
+
 /* 完了の小窓（K-183・形は K-229 のキャンバス StCompleteModal）：段の間は小窓の本文と同じ・狭い幅でも折り返して横にはみ出さない。
    実施事項の枠とチェックの行は小窓の部品（.k-dialog-group・.k-dialog-check） */
 .k63-complete {

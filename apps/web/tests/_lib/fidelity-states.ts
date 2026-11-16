@@ -6,7 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
-import { TICKET, executedBand, mockApi } from "../features/F5/approve-complete.harness";
+import { TICKET, executedBand, jst, mockApi, qrow } from "../features/F5/approve-complete.harness";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -173,6 +173,49 @@ async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
 }
 
+/** 承認待ち（K-231・キャンバス Approvals）：K-257 が描き直した絵と同じ 9 件（期限切れ 1・今日 2・7 日以内 4・それより後 1・期限なし 1） */
+const CANVAS_QUEUE = () =>
+  (
+    [
+      ["セイコー様へ 11月分の請求書を送る", -1, false, "承認するとメールを送る（取り消せない）"],
+      [
+        "京蟻 追加開発の見積を出す（1,826,000 円）",
+        0,
+        false,
+        "見積が 100 万円を超えたため上位へ（ワークスペースの決まり）",
+      ],
+      ["入金の照合（10月分）を記録する", 0, true, "承認すると会計に記録する（戻せる）"],
+      ["問い合わせ（山田様）に一次返信する", 1, false, "理由：先方と面識がある ・ 返事の期限 11/03"],
+      ["発注ナビ 応募文を出す", 2, false, "承認すると 3 社に応募する（外に出る）"],
+      ["ミナト様だけ月末締めにしたい", 3, false, "ワークスペースの決まり「請求は 25 日締め」と反対"],
+      ["保守の範囲にログの保管は入るか", 4, false, null],
+      ["【親】京蟻 v2.1 リリース", 12, false, null],
+      ["やり方「問い合わせに返す」を営業の全員に", null, false, null],
+    ] as const
+  ).map(([title, due, inline, note], i) =>
+    qrow(`0193c5a0-0000-7000-8000-0000000f00${String(i).padStart(2, "0")}`, {
+      title,
+      due_on: due === null ? null : jst(due),
+      decide_inline: inline,
+      irreversible: !inline,
+      primary_action: inline ? "approve" : "open",
+      note,
+      ticket_number: `EG-${120 + i}`,
+      from_name: "高本",
+    }),
+  );
+async function openApprovals(page: Page, path: string, rows: ReturnType<typeof CANVAS_QUEUE>): Promise<void> {
+  await shellApi(page, rows.length);
+  await page.route(/\/api\/v1\/approvals\/queue/, (route) =>
+    route.fulfill({
+      status: 200,
+      json: { data: rows, meta: { limit: 20, counts: { total: rows.length }, cursor: null } },
+    }),
+  );
+  await page.goto(path);
+  await expect(page.locator("header.k-page-head .k-page-sub")).toHaveText(`あなたが決めるもの ${rows.length} 件`);
+}
+
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
   // 鍵は "<鍵>": の字で探される（scripts/ci/fidelity_config.py）。整形が引用符を外さないようにする
   // prettier-ignore
@@ -264,6 +307,15 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(tabs.locator(".k-tab-create")).toBeVisible();
   },
   // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
+  // prettier-ignore
+  "approvals": async (page, path) => {
+    await openApprovals(page, path, CANVAS_QUEUE());
+    await expect(page.locator(".k-ap-card table")).toBeVisible();
+  },
+  "approvals-empty": async (page, path) => {
+    await openApprovals(page, path, []);
+    await expect(page.locator('.k-ap-body [data-state="empty"]')).toBeVisible();
+  },
   "tickets-new": async (page, path) => {
     await shellApi(page, 3);
     await page.goto(path);
