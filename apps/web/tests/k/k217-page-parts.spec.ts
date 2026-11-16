@@ -359,31 +359,48 @@ async function openTickets(page: Page, width: number) {
     if (p === "/api/v1/members") return ok({ data: [{ id: ME, display_name: "高本" }], meta: { limit: 200 } });
     if (p === "/api/v1/tickets")
       return ok({
+        // 一覧の口の答えの形（K-92）。一覧の画面は K-251 で表になった
         data: [
-          { id: "0193c5a0-0000-7000-8000-00000000c217", number: "EG-133", title: "11 月分の請求書を送る" },
-          { id: "0193c5a0-0000-7000-8000-00000000c218", number: "EG-134", title: "見積を送る" },
-        ],
-        meta: { limit: 50 },
+          ["0193c5a0-0000-7000-8000-00000000c217", "EG-133", "11 月分の請求書を送る"],
+          ["0193c5a0-0000-7000-8000-00000000c218", "EG-134", "見積を送る"],
+        ].map(([id, number, title]) => ({
+          id,
+          number,
+          title,
+          kind: { id: "k1", name: "タスク" },
+          stage: { id: "st", name: "未着手", key: "todo" },
+          assignee: { id: ME, display_name: "高本" },
+          delegated_to_clone: false,
+          due_on: "2026-12-01",
+          overdue: false,
+          updated_at: "2026-11-15T00:00:00Z",
+          parent_ticket_id: null,
+          depth: 1,
+        })),
+        meta: { next_cursor: null },
       });
     return route.fulfill({ status: 404, json: { error: "not_found", code: "NOT_FOUND" } });
   });
   await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
   const res = await page.goto("/tickets");
   expect(res?.status()).toBe(200);
-  await page.locator("ul.k-list").waitFor({ state: "visible" });
+  await page.getByRole("table", { name: "チケットの一覧" }).waitFor({ state: "visible" });
 }
 
 for (const w of [1440, 375]) {
-  test(`K217-UI-020 本物の画面（/tickets）幅 ${w}：一覧の箇条（本文の箱の直下）は左右とも 24px 内側で、帯の見出しと左の縁がそろう`, async ({
+  // K-251 で一覧の画面は箇条（ul.k-list）から表と右の列に替わった。本文の行（.k-list-body）の中身が、左右とも 24px 内側で帯の見出しと左の縁がそろうことを同じ強さで見る
+  test(`K217-UI-020 本物の画面（/tickets）幅 ${w}：一覧の本文（表の列と右の列）は左右とも 24px 内側で、帯の見出しと左の縁がそろう`, async ({
     page,
   }) => {
     await openTickets(page, w);
-    const list = page.locator(".k-page > ul.k-list").first();
-    const { left, right } = await insetOf(page, list);
-    expect(Math.abs(left - 24)).toBeLessThanOrEqual(1);
-    expect(Math.abs(right - 24)).toBeLessThanOrEqual(1);
-    const h1 = await box(page.locator(".k-page > header.k-page-head h1").first());
-    expect(Math.abs((await box(list)).x - h1.x)).toBeLessThanOrEqual(1);
+    const page_ = await box(page.locator(".k-list-page").first());
+    const main = await box(page.locator(".k-list-body > .k-list-main").first());
+    const side = await box(page.locator(".k-list-body > .k-list-side").first());
+    const right = Math.max(main.x + main.width, side.x + side.width);
+    expect(Math.abs(main.x - page_.x - 24)).toBeLessThanOrEqual(1);
+    expect(Math.abs(page_.x + page_.width - right - 24)).toBeLessThanOrEqual(1);
+    const h1 = await box(page.locator(".k-list-page > header.k-page-head h1").first());
+    expect(Math.abs(main.x - h1.x)).toBeLessThanOrEqual(1);
     expect(await overflowX(page)).toBe(0);
   });
 }

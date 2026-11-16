@@ -122,6 +122,10 @@ NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
 }
+# 一覧の絵（K-251：OnHome・Main）：画面の外枠と同じく上の帯を出さず、見え方のタブは字を折り返さず 1 行のまま横に送る
+_LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
+                "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
+NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW})
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
