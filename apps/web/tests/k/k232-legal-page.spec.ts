@@ -140,13 +140,19 @@ test("K232-UI-007 「← 戻る」：箱の頭に 12px のリンク。登録の�
     .first()
     .evaluate((e) => e.textContent?.trim());
   expect(first, "箱の中の最初の要素が「← 戻る」").toBe("← 戻る");
+  await expect(back, "画面の動きが付いてから押す（付く前は素のリンクで /login へ行く）").toHaveAttribute(
+    "data-ready",
+    "",
+  );
   await back.click();
   await expect(page).toHaveURL(/\/signup$/);
 
   const fresh = await page.context().newPage();
   await fresh.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await fresh.goto("/legal/privacy");
-  await fresh.locator(BOX).getByRole("link", { name: "← 戻る" }).click();
+  const freshBack = fresh.locator(BOX).getByRole("link", { name: "← 戻る" });
+  await expect(freshBack).toHaveAttribute("data-ready", "");
+  await freshBack.click();
   await expect(fresh).toHaveURL(/\/login$/);
   await fresh.close();
 });
@@ -320,7 +326,9 @@ test("K232-UI-017 「← 戻る」の守り：外の origin から来た（refer
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/signup");
   await page.goto("/legal/terms", { referer: "https://example.com/" });
-  await page.locator(BOX).getByRole("link", { name: "← 戻る" }).click();
+  const back = page.locator(BOX).getByRole("link", { name: "← 戻る" });
+  await expect(back, "画面の動きが付いてから押す").toHaveAttribute("data-ready", "");
+  await back.click();
   await expect(page).toHaveURL(/\/login$/);
 });
 
@@ -338,11 +346,19 @@ test("K232-UI-018 「← 戻る」の死にボタンを作らない：登録の�
   await tab.waitForLoadState();
   await expect(tab).toHaveURL(/\/legal\/terms/);
   const back = () => tab.locator(BOX).getByRole("link", { name: "← 戻る" });
+  await expect(
+    back(),
+    "画面の動きが付いてから押す（付く前は素のリンクで /login へ行き、判定を確かめられない）",
+  ).toHaveAttribute("data-ready", "");
   await back().click();
   await expect(tab).toHaveURL(/\/login$/);
   await tab.goBack();
   await expect(tab).toHaveURL(/\/legal\/terms/);
-  await expect(back()).toBeVisible();
+  await expect(back()).toHaveAttribute("data-ready", "");
+  // 前提：戻った規約はタブの先頭の項目（前に戻れる項目が無い）
+  expect(
+    await tab.evaluate(() => (window as unknown as { navigation?: { canGoBack: boolean } }).navigation?.canGoBack),
+  ).toBe(false);
   await back().click();
   await expect(tab, "2 回目の「← 戻る」も /login へ移る（何も起きないボタンにしない）").toHaveURL(/\/login$/);
   await tab.close();
@@ -358,6 +374,8 @@ test("K232-UI-019 箱の幅 720px と本文の行の高さ 1.9 は正本の部�
   );
   expect(legalCss, "生の 720px を書かない").not.toMatch(/\b720px\b/);
   expect(legalCss, "生の 1.9 を書かない").not.toMatch(/line-height:\s*1\.9\b/);
-  expect(legalCss).toContain("var(--k-c-auth-card-wide-width)");
+  expect(legalCss, "箱の幅（width）に部品の値を使う（入口の枠と同じ width: var(…)・max-width: 100%）").toMatch(
+    /\.k-auth\[data-wide\] \.k-auth-card\s*\{[^}]*\bwidth:\s*var\(--k-c-auth-card-wide-width\)/,
+  );
   expect(legalCss).toContain("var(--k-c-legal-body-lh)");
 });
