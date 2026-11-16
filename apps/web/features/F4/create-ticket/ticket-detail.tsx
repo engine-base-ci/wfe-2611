@@ -1,20 +1,26 @@
 "use client";
-// チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。番号・題名・種別・段・担当者・期限と、区画の本文（版 1）。
-//   本文は文字として出す（HTML やスクリプトを動かさない）。見出しの下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と
-//   AI に任せるの帯、右に実行の記録（K-62・apps/web/features/F5/delegate/）
+// チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。K-226 でキャンバス TicketDetail の形にした：
+//   左に本文の箱（.k-page）：白いカード（頭の行・題名の行・帯・本文の道具の帯・区画）と、その下に子チケット・つながりのカード。
+//   右に属性パネル（幅 380・detail-panel.tsx）。1023 以下はパネルを本文の下に回す。
+//   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227・K-228。
+//   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
+import { useQuery } from "@tanstack/react-query";
+import { PanelRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
-import { Badge, ErrorState, Loading } from "@/components/k";
+import { DocTools, ErrorState, Loading, Prose } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
+import { me } from "@/lib/auth/ext";
 import { ApproveBand } from "@/features/F5/approve-complete/band";
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
-import { RunLog } from "@/features/F5/delegate/run-log";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
-import { ShellBell } from "@/components/k/shell";
-import { TicketShell } from "./ticket-shell";
+import { DetailMeta, DetailTitle, InertButton } from "./detail-head";
+import { DetailPanel } from "./detail-panel";
+import { SCOPES_KEY, TicketShell, readScopes, type ScopeRow } from "./ticket-shell";
+import "./ticket-detail.css";
 
 interface Detail {
   ticket: {
@@ -24,9 +30,11 @@ interface Detail {
     due_on: string | null;
     start_on: string | null;
     priority: string;
+    created_at?: string | null;
+    scope_id?: string | null;
   };
   sections: { key: string; label: string; body: { text?: string } | null; version: number }[];
-  kind: { name: string } | null;
+  kind: { name: string; color?: string | null } | null;
   stage: { key?: string | null; name: string } | null;
   assignee: { display_name: string } | null;
   /** 見ている人ができること（K-62 が delegate を、K165 が complete を足す） */
@@ -42,6 +50,9 @@ interface Detail {
     approver_name?: string | null;
   } | null;
 }
+
+/** 外枠と同じ問い合わせ（同じ鍵・1 画面で 1 回・読み直さない）。外枠が読んでいれば口を 2 回呼ばない（G-16） */
+const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
 
 /** キャンバスどおりの新しい外枠に載せる（D-143.1）。上の帯のいまの場所は チケット › 番号（番号は読めてから） */
 export function TicketDetail({ id }: { id: string }) {
@@ -60,6 +71,10 @@ function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => voi
   const [d, setD] = useState<Detail | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const here = `/tickets/${id}`;
+  const signedIn = typeof window !== "undefined" && Boolean(getToken());
+  // 見ている人の名前（AI と話す・AI のタブ）とグループ（パネルの分類）。外枠と同じ鍵で分け合う
+  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, ...ONCE });
+  const scopes = useQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes("tickets"), enabled: signedIn, ...ONCE });
   const load = useCallback(
     () =>
       call("getTicket", { params: { id }, screenId: "tickets" }).then((r) => {
@@ -92,21 +107,41 @@ function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => voi
       />
     );
   if (!d) return <Loading />;
-  return <DetailView id={id} d={d} reload={load} onTicket={setD} />;
+  // 名前は読めてから AI と話す・AI のタブを出す（読み中・失敗の間も本文は出す・K138-SH-021）
+  const name = who.isSuccess ? (who.data.display_name ?? "") : "";
+  return (
+    <DetailView
+      id={id}
+      d={d}
+      me={name}
+      scopesSettled={!scopes.isPending}
+      scopes={scopes.isSuccess ? scopes.data.rows : null}
+      reload={load}
+      onTicket={setD}
+    />
+  );
 }
 
 function DetailView({
   id,
   d,
+  me: myName,
+  scopes,
+  scopesSettled,
   reload,
   onTicket,
 }: {
   id: string;
   d: Detail;
+  me: string;
+  scopes: ScopeRow[] | null;
+  /** グループの答え（失敗も含む）が届いたか。届く前の空のグループでパネルを描いてから描き替えない */
+  scopesSettled: boolean;
   reload: () => Promise<void>;
   onTicket: (d: Detail) => void;
 }) {
   const runs = useRuns(id);
+  const [panelOpen, setPanelOpen] = useState(true);
   // 動いていた実行が終わった・止まった読み直しで、チケットの詳細（段・can.delegate・成果物の区画）も読み直す（K62-UI-029・030・G-12）
   const status = runs.current?.status ?? null;
   const prevStatus = useRef<string | null>(null);
@@ -116,58 +151,83 @@ function DetailView({
     if (was && ACTIVE.has(was) && status && !ACTIVE.has(status)) void reload();
   }, [status, reload]);
   const t = d.ticket;
+  const version = d.sections.reduce((n, s) => Math.max(n, s.version ?? 0), 0);
+  const changed = async () => {
+    await Promise.all([reload(), runs.reload()]);
+  };
   return (
-    <section className="k-root k-page" aria-labelledby="ticket-title">
-      <a className="k-link" href="/tickets">
-        チケットへ戻る
-      </a>
-      <header className="k-page-head">
-        <p className="k-desc">{t.number}</p>
-        {/* 767 以下は鈴を見出しの右に置く（キャンバス MobileList・K-138） */}
-        <div className="k-row">
-          <h1 id="ticket-title">{t.title}</h1>
-          <ShellBell />
-        </div>
-        <p>
-          <Badge>{d.stage?.name ?? ""}</Badge> {d.kind?.name ?? ""}・担当 {d.assignee?.display_name ?? "—"}・期限{" "}
-          {t.due_on ?? "—"}
-          {t.start_on ? `・開始 ${t.start_on}` : ""}・優先度 {t.priority === "high" ? "高" : "中"}
-        </p>
-      </header>
-      <ApproveBand
-        ticketId={id}
-        ticket={d}
-        run={runs.current}
-        runKnown={runs.known}
-        onTicket={onTicket}
-        onChanged={async () => {
-          await Promise.all([reload(), runs.reload()]);
-        }}
-      />
-      <DelegateBand
-        ticket={{
-          id,
-          stageKey: d.stage?.key ?? null,
-          canDelegate: d.can?.delegate === true,
-          canDecide: d.approval?.can_decide === true,
-        }}
-        run={runs.current}
-        onRun={runs.follow}
-        onChanged={async () => {
-          await Promise.all([reload(), runs.reload()]);
-        }}
-      />
-      <div className="k62-layout">
-        <div>
-          {d.sections.map((s) => (
-            <section key={s.key} className="k-section" aria-label={s.label}>
-              <h2>{s.label}</h2>
-              <p className="k-pre">{s.body?.text ?? ""}</p>
-            </section>
-          ))}
-        </div>
-        <RunLog runs={runs.runs} />
-      </div>
-    </section>
+    <div className="k-detail">
+      <section className="k-root k-page" aria-labelledby="ticket-title">
+        <article className="k-detail-card">
+          <DetailMeta ticket={t} kind={d.kind} stage={d.stage} />
+          <DetailTitle title={t.title} me={myName} />
+          <div className="k-detail-bands">
+            <ApproveBand
+              ticketId={id}
+              ticket={d}
+              run={runs.current}
+              runKnown={runs.known}
+              onTicket={onTicket}
+              onChanged={changed}
+            />
+            <DelegateBand
+              ticket={{
+                id,
+                stageKey: d.stage?.key ?? null,
+                canDelegate: d.can?.delegate === true,
+                canDecide: d.approval?.can_decide === true,
+              }}
+              run={runs.current}
+              onRun={runs.follow}
+              onChanged={changed}
+            />
+          </div>
+          <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
+            <InertButton size="sm" className="k-detail-versions">
+              版と差分
+            </InertButton>
+          </DocTools>
+          <div className="k-detail-doc">
+            {d.sections.map((s) => (
+              <section key={s.key} className="k-section" aria-label={s.label}>
+                <h2 id={`sec-${s.key}`}>{s.label}</h2>
+                <Prose>{s.body?.text ?? ""}</Prose>
+              </section>
+            ))}
+          </div>
+        </article>
+        <section className="k-detail-links" aria-label="子チケット・つながり">
+          <div className="k-detail-links-head">
+            <h2>子チケット・つながり</h2>
+            <InertButton size="sm">子を足す</InertButton>
+            <InertButton size="sm">つながりを足す</InertButton>
+          </div>
+        </section>
+      </section>
+      {panelOpen ? null : (
+        <button
+          type="button"
+          className="k-detail-reopen"
+          aria-label="パネルを開く"
+          title="パネルを開く"
+          onClick={() => setPanelOpen(true)}
+        >
+          <PanelRight size={16} aria-hidden="true" />
+        </button>
+      )}
+      {scopesSettled ? (
+        <DetailPanel
+          ticket={t}
+          assignee={d.assignee?.display_name ?? null}
+          approver={d.approval?.approver_name ?? null}
+          scopes={scopes}
+          sections={d.sections}
+          runs={runs.runs}
+          me={myName}
+          hidden={!panelOpen}
+          onClose={() => setPanelOpen(false)}
+        />
+      ) : null}
+    </div>
   );
 }

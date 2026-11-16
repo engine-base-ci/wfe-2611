@@ -316,6 +316,45 @@
   --k-c-section-body-fw: var(--k-fw-body);
   --k-c-section-body-lh: 1.7;
   --k-c-section-list-pad: 0 0 0 20px;
+  --k-c-doc-toolbar-bg: var(--k-table-head);
+  --k-c-doc-toolbar-border-bottom: 1px solid var(--k-line-soft);
+  --k-c-doc-toolbar-pad: 6px 12px;
+  --k-c-doc-tool-height: 28px;
+  --k-c-detail-card-bg: var(--k-card);
+  --k-c-detail-card-border: 1px solid var(--k-line);
+  --k-c-detail-card-radius: var(--k-r-field);
+  --k-c-detail-meta-pad: 12px 20px 0;
+  --k-c-detail-meta-gap: var(--k-s-sm);
+  --k-c-detail-meta-side-text: var(--k-text-body-sm);
+  --k-c-detail-meta-side-lh: var(--k-lh-body-sm);
+  --k-c-detail-meta-side-fw: var(--k-fw-body-sm);
+  --k-c-detail-meta-side-gap: 14px;
+  --k-c-detail-kind-text: var(--k-text-label-md);
+  --k-c-detail-kind-fw: var(--k-fw-label-md);
+  --k-c-detail-kind-radius: var(--k-r-full);
+  --k-c-detail-kind-pad: 1px 10px;
+  --k-c-detail-stage-text: var(--k-text-body-sm);
+  --k-c-detail-stage-lh: var(--k-lh-body-sm);
+  --k-c-detail-stage-fw: 500;
+  --k-c-detail-stage-radius: var(--k-r-full);
+  --k-c-detail-stage-pad: 2px 12px;
+  --k-c-detail-head-pad: 6px 20px 12px;
+  --k-c-detail-head-gap: 10px;
+  --k-c-detail-title-text: var(--k-text-h1);
+  --k-c-detail-title-fw: var(--k-fw-h1);
+  --k-c-detail-title-lh: 1.45;
+  --k-c-detail-doc-pad: 4px 28px 28px;
+  --k-c-detail-doc-width: 900px;
+  --k-c-detail-doc-toolbar-pad: 6px 20px;
+  --k-c-detail-doc-toolbar-border-top: 1px solid var(--k-line);
+  --k-c-detail-links-title-text: var(--k-text-body-md);
+  --k-c-detail-links-title-lh: var(--k-lh-body-md);
+  --k-c-detail-links-title-fw: var(--k-fw-body-md);
+  --k-c-detail-panel-width: 380px;
+  --k-c-detail-panel-title-text: var(--k-text-body-sm);
+  --k-c-detail-panel-title-lh: var(--k-lh-body-sm);
+  --k-c-detail-panel-title-fw: 500;
+  --k-c-detail-panel-title-fg: var(--k-on-surface-variant);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {

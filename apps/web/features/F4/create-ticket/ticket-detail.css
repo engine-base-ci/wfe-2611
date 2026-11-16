@@ -1,0 +1,477 @@
+/* チケットの詳細（K-226・キャンバス TicketDetail の実測）。値は正本 DESIGN-kaname.md の components（detail-*・doc-toolbar）と
+   色・文字・角丸・余白の段から作ったトークン（--k-*）だけを読む。生の色・文字の大きさ・角丸は書かない。
+   形：.k-detail（横並び）＝ 本文の箱 section.k-page（白いカード article.k-detail-card と 子チケット・つながりのカード）
+       ＋（閉じたときだけ）パネルを開くボタン ＋ 右の属性パネル aside.k-detail-panel（幅 380・左に線・1024 以上は上に貼り付く）。
+   1023 以下はパネルを本文の下に回す。767 以下はカードの中の左右の余白を 16px にし、頭の行の右（開始日・期限・段）を 2 列の格子にする */
+
+/* ---- 並べ方 ---- */
+.k-detail {
+  display: flex;
+  min-width: 0;
+  min-height: calc(100dvh - 48px);
+}
+.k-detail > .k-page {
+  flex: 1 1 640px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--k-s-md) var(--k-s-lg) 40px;
+  box-sizing: border-box;
+}
+/* ページの型の「子は左右 24px 内側」をカードに当てない（本文の箱の余白がその役をする） */
+.k-detail > .k-page > * {
+  margin-inline: 0;
+}
+.k-detail [aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 白いカード（本文・子チケット・つながり） ---- */
+.k-detail-card,
+.k-detail-links {
+  background: var(--k-c-detail-card-bg);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-c-detail-card-radius);
+  min-width: 0;
+}
+
+/* ---- 頭の行 ---- */
+.k-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-detail-meta-gap);
+  padding: var(--k-c-detail-meta-pad);
+  line-height: var(--k-c-section-body-lh);
+}
+.k-detail-kind {
+  padding: var(--k-c-detail-kind-pad);
+  border-radius: var(--k-c-detail-kind-radius);
+  background: var(--k-secondary);
+  color: var(--k-on-secondary);
+  font-size: var(--k-c-detail-kind-text);
+  font-weight: var(--k-c-detail-kind-fw);
+  white-space: nowrap;
+}
+/* 種別の塗り（口が返す種別の色を正本の色の段に寄せた名前） */
+.k-detail-kind[data-tone="warning"] {
+  background: var(--k-st-warning);
+}
+.k-detail-kind[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-detail-kind[data-tone="primary"] {
+  background: var(--k-primary);
+}
+.k-detail-kind[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-detail-kind[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-detail-kind[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-detail-kind[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-detail-kind[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-detail-kind[data-tone="teal-light"] {
+  background: var(--k-d-teal-light);
+}
+.k-detail-kind[data-tone="tertiary"] {
+  background: var(--k-tertiary);
+}
+.k-detail-number {
+  color: var(--k-on-surface-variant);
+}
+.k-detail-copy {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-sm);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-copy:hover {
+  color: var(--k-primary);
+}
+.k-detail-created {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-detail-meta-side {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-detail-meta-side-gap);
+  font-size: var(--k-c-detail-meta-side-text);
+  color: var(--k-on-surface-variant);
+}
+.k-detail-meta-side b {
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-label-md);
+}
+.k-detail-meta-side b[data-over] {
+  color: var(--k-st-danger);
+  font-weight: var(--k-fw-h1);
+}
+/* 段の札（段ごとの塗りに白字。色は状態の色とデータの色の段から・キャンバス TicketDetail・StRunning・StFailed・K-219・Gantt） */
+.k-detail-stage {
+  padding: var(--k-c-detail-stage-pad);
+  border-radius: var(--k-c-detail-stage-radius);
+  background: var(--k-neutral-strong);
+  color: var(--k-on-primary);
+  font-size: var(--k-c-detail-stage-text);
+  font-weight: var(--k-c-detail-stage-fw);
+  white-space: nowrap;
+}
+.k-detail-stage[data-stage="doing"] {
+  background: var(--k-d-indigo);
+}
+.k-detail-stage[data-stage="hold"] {
+  background: var(--k-on-surface-variant);
+}
+.k-detail-stage[data-stage="checking"] {
+  background: var(--k-tertiary);
+}
+.k-detail-stage[data-stage="awaiting_approval"] {
+  background: var(--k-st-warning);
+}
+.k-detail-stage[data-stage="running"] {
+  background: var(--k-st-progress);
+}
+.k-detail-stage[data-stage="done"] {
+  background: var(--k-st-success);
+}
+
+/* ---- 題名の行（ページの型の帯の線と地を外す） ---- */
+.k-detail-card > .k-page-head {
+  align-items: flex-start;
+  gap: var(--k-c-detail-head-gap);
+  padding: var(--k-c-detail-head-pad);
+  background: transparent;
+  border-bottom: 0;
+}
+.k-detail-title {
+  flex: 1 1 360px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.k-detail-card > .k-page-head h1 {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--k-c-detail-title-text);
+  font-weight: var(--k-c-detail-title-fw);
+  line-height: var(--k-c-detail-title-lh);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-detail-card > .k-page-head .k-page-acts {
+  margin-left: 0;
+  gap: 6px;
+}
+.k-detail-card > .k-page-head .k-page-acts .k-btn {
+  padding: 0 10px;
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body);
+  gap: var(--k-s-xs);
+}
+.k-detail-card > .k-page-head .k-page-acts .k-detail-more {
+  width: 32px;
+  padding: 0;
+}
+/* 767 以下の見出しの右の鈴（K-138）が題名の行の高さを変えない（鈴 44 を題名の行 29 に収める） */
+.k-detail-bell {
+  flex: none;
+  display: flex;
+  margin-left: auto;
+  margin-block: calc(var(--k-s-sm) * -1);
+}
+.k-detail-bell:empty {
+  display: none;
+}
+
+/* ---- 帯の場所（中身は K-227・K-228） ---- */
+.k-detail-bands {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.k-detail-bands:not(:empty) {
+  padding: 0 20px 14px;
+}
+
+/* ---- 本文の道具の帯（詳細だけの違い・部品の素の規則は k.css） ---- */
+.k-detail-card .k-doc-tools {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--k-c-detail-doc-toolbar-pad);
+  border-top: var(--k-c-detail-doc-toolbar-border-top);
+}
+.k-detail-card .k-doc-tools .k-detail-versions {
+  margin-left: 6px;
+}
+
+/* ---- 区画 ---- */
+.k-detail-doc {
+  width: var(--k-c-detail-doc-width);
+  max-width: 100%;
+  padding: var(--k-c-detail-doc-pad);
+  box-sizing: border-box;
+}
+.k-detail-doc .k-section .k-pre {
+  margin: 0;
+  line-height: var(--k-c-section-body-lh);
+}
+.k-detail-doc .k-section h2 {
+  scroll-margin-top: var(--k-s-2xl);
+}
+
+/* ---- 子チケット・つながり ---- */
+.k-detail-links-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: 10px var(--k-s-md);
+}
+.k-detail-links h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--k-c-detail-links-title-text);
+  line-height: var(--k-c-detail-links-title-lh);
+  font-weight: var(--k-fw-h1);
+}
+.k-detail-links-head h2 + .k-btn {
+  margin-left: auto;
+}
+
+/* ---- パネルを開く（閉じたときだけ・キャンバスの kn-reopen） ---- */
+.k-detail-reopen {
+  flex: 0 0 36px;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 0;
+  border: 0;
+  border-left: 1px solid var(--k-line);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-reopen:hover {
+  color: var(--k-primary);
+}
+
+/* ---- 右の属性パネル ---- */
+.k-detail-panel {
+  position: sticky;
+  top: 48px;
+  align-self: flex-start;
+  flex: none;
+  width: var(--k-c-detail-panel-width);
+  height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--k-card);
+  border-left: 1px solid var(--k-line);
+  box-sizing: border-box;
+}
+.k-detail-panel[hidden] {
+  display: none;
+}
+.k-detail-panel-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-detail-panel-close:hover {
+  background: var(--k-line);
+}
+.k-detail-tabs {
+  display: flex;
+  flex: none;
+  padding: 0 44px 0 6px;
+  border-bottom: 1px solid var(--k-line);
+}
+.k-detail-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  white-space: nowrap;
+}
+.k-detail-tabs button[aria-current="page"] {
+  border-bottom-color: var(--k-primary);
+  color: var(--k-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-detail-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--k-s-xs) var(--k-s-md) var(--k-s-md);
+}
+.k-detail-panel-sec {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--k-line-soft);
+}
+.k-detail-panel h2 {
+  margin: 0 0 var(--k-s-sm);
+  padding: 0;
+  border: 0;
+  font-size: var(--k-c-detail-panel-title-text);
+  line-height: var(--k-c-detail-panel-title-lh);
+  font-weight: var(--k-c-detail-panel-title-fw);
+  color: var(--k-c-detail-panel-title-fg);
+}
+.k-detail-fields {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: var(--k-s-sm);
+  align-items: center;
+  margin: 0;
+}
+.k-detail-field {
+  display: contents;
+}
+.k-detail-fields dt {
+  color: var(--k-on-surface-variant);
+}
+.k-detail-fields dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-detail-fields dd[data-over] {
+  color: var(--k-st-danger);
+  font-weight: var(--k-fw-label-md);
+}
+.k-detail-due-btn {
+  min-width: 28px;
+  margin-left: var(--k-s-xs);
+}
+.k-detail-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.k-detail-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--k-r-full);
+  background: var(--k-d-lavender);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+}
+.k-detail-toc {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--k-text-body-sm);
+}
+.k-detail-toc a {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--k-primary);
+}
+.k-detail-panel .k62-runlog {
+  font-size: var(--k-text-body-sm);
+}
+
+/* ---- 1023 以下：パネルを本文の下に ---- */
+@media (max-width: 1023px) {
+  .k-detail {
+    flex-direction: column;
+  }
+  .k-detail-panel {
+    position: relative;
+    align-self: stretch;
+    width: auto;
+    height: auto;
+    border-left: 0;
+    border-top: 1px solid var(--k-line);
+  }
+  .k-detail-reopen {
+    flex-basis: auto;
+    padding: 10px 0;
+    border-left: 0;
+    border-top: 1px solid var(--k-line);
+  }
+}
+
+/* ---- 767 以下：カードの中の左右 16px・頭の行の右は 2 列の格子 ---- */
+@media (max-width: 767px) {
+  .k-detail-card > .k-detail-meta,
+  .k-detail-card > .k-page-head,
+  .k-detail-card > .k-doc-tools,
+  .k-detail-card > .k-detail-doc {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-detail-bands:not(:empty) {
+    padding-left: var(--k-s-md);
+    padding-right: var(--k-s-md);
+  }
+  .k-detail-meta-side {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-items: start;
+  }
+}
+
+/* ---- 字のリンクの形（キャンバスでは 版と差分・子を足す・つながりを足す・期限の ▾・目次・実行の記録をすべて見る は字のリンク） ---- */
+.k-detail-card .k-doc-tools .k-detail-versions,
+.k-detail-links-head .k-btn,
+.k-detail-panel .k62-run-all {
+  min-height: 24px;
+  padding: 0 var(--k-s-xs);
+  border: 0;
+  background: transparent;
+  color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body);
+  text-decoration: underline;
+}
+.k-detail-toc a {
+  text-decoration: underline;
+}
+.k-detail-fields .k-detail-due-btn {
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: var(--k-text-body-sm);
+}

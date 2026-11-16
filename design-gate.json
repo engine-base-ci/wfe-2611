@@ -75,7 +75,21 @@
     "callout-danger": {
       "selector": ".k-callout[data-tone=\"danger\"]",
       "shape": ".k-callout"
-    }
+    },
+    "doc-toolbar": ".k-doc-tools",
+    "doc-tool": ".k-doc-tools button",
+    "detail-card": ".k-detail-card",
+    "detail-meta": ".k-detail-meta",
+    "detail-meta-side": ".k-detail-meta-side",
+    "detail-kind": ".k-detail-kind",
+    "detail-stage": ".k-detail-stage",
+    "detail-head": ".k-detail-card > .k-page-head",
+    "detail-title": ".k-detail-card > .k-page-head h1",
+    "detail-doc": ".k-detail-doc",
+    "detail-doc-toolbar": ".k-detail-card .k-doc-tools",
+    "detail-links-title": ".k-detail-links h2",
+    "detail-panel": ".k-detail-panel",
+    "detail-panel-title": ".k-detail-panel h2"
   },
   "component_exempt": [
     {

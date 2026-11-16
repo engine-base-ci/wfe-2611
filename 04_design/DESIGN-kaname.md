@@ -383,6 +383,53 @@ components:
     lineHeight: 1.7
   section-list:         # 区画の箇条（黒丸の字下げ）
     padding: "0 0 0 20px"
+  # 本文の道具の帯（K-226・キャンバス TicketDetail・Create で同じ所の実測）。作る画面の区画（K-225）も同じ部品を使う
+  doc-toolbar:          # 帯（地は表の頭の色・下に薄い線）。詳細だけの違い（左右 20px・上の線・上に貼り付く）は詳細の CSS が上書きする
+    backgroundColor: "{colors.table-head}"
+    borderBottom: "1px solid {colors.line-soft}"
+    padding: "6px 12px"
+  doc-tool:             # 帯の 1 つの道具（高さ 28。幅は字に合わせ、最小 30 は CSS の min-width）
+    height: "28px"
+  # チケットの詳細（K-226・キャンバス TicketDetail の実測）
+  detail-card:          # 本文の白いカード（子チケット・つながりのカードも同じ）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  detail-meta:          # 頭の行（種別の札・番号・コピー・作成・開始日・期限・段の札）
+    padding: "12px 20px 0"
+    gap: "{spacing.sm}"
+  detail-meta-side:     # 頭の行の右（開始日・期限・段の札）
+    typography: "{typography.body-sm}"
+    gap: "14px"
+  detail-kind:          # 種別の札（塗りは種別の色）
+    typography: "{typography.label-md}"
+    rounded: "{rounded.full}"
+    padding: "1px 10px"
+  detail-stage:         # 段の札（塗りは段の色・白字）
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    rounded: "{rounded.full}"
+    padding: "2px 12px"
+  detail-head:          # 題名の行（線も地も無い）
+    padding: "6px 20px 12px"
+    gap: "10px"
+  detail-title:         # 題名 h1（行の高さは絵のまま 1.45）
+    typography: "{typography.h1}"
+    lineHeight: 1.45
+  detail-doc:           # 区画の並び（幅は 900 まで。狭ければ箱の幅）
+    padding: "4px 28px 28px"
+    width: "900px"
+  detail-doc-toolbar:   # 詳細の本文の道具の帯だけの違い（左右 20px・上に線。上に貼り付く）
+    padding: "6px 20px"
+    borderTop: "1px solid {colors.line}"
+  detail-links-title:   # 子チケット・つながりの見出し
+    typography: "{typography.body-md}"
+  detail-panel:         # 右の属性パネル（左に線）
+    width: "380px"
+  detail-panel-title:   # パネルの区画の見出し
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    textColor: "{colors.on-surface-variant}"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

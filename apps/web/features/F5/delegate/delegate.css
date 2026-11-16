@@ -1,39 +1,62 @@
-/* AI に任せる（K-62）：上の帯と右の実行の記録。狭い幅では縦に並ぶ（横にはみ出さない・K62-UI-020） */
-.k62-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--k-space-5, 20px);
-  min-width: 0;
-}
-@media (min-width: 1024px) {
-  .k62-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
-    align-items: start;
-  }
-}
-.k62-band,
-.k62-runlog {
+/* AI に任せる（K-62）：上の帯と実行の記録。狭い幅では縦に並ぶ（横にはみ出さない・K62-UI-020）。
+   K-226：右の列（k62-layout）はやめ、実行の記録は詳細の右のパネルの最新 1 件と小窓「実行の記録」になった */
+.k62-band {
   display: grid;
   gap: var(--k-space-3, 12px);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k62-runlog {
+  display: grid;
+  gap: var(--k-s-xs);
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .k62-band-line {
   margin: 0;
 }
-.k62-runlog ul {
+.k62-run-latest {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.k62-runlog .k62-run-all {
+  justify-self: start;
+  padding-inline: 0;
+  color: var(--k-primary);
+}
+.k62-run-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin-bottom: var(--k-s-sm);
+}
+.k62-run-chip {
+  min-height: 28px;
+  padding: 0 var(--k-s-sm);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r-full);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+}
+.k62-run-chip[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k62-run-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--k-space-2, 8px);
+  gap: var(--k-s-sm);
 }
-.k62-runlog li {
+.k62-run-list li {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--k-space-2, 8px);
+  gap: var(--k-s-sm);
   align-items: baseline;
 }
-.k62-runlog time {
+.k62-run-list time {
   font-variant-numeric: tabular-nums;
 }
