@@ -1,5 +1,5 @@
 {
- "_doc": "キャンバスの絵の幅の台帳（K-254）。幅 375・768・1440 で横溢れか潰れた箱（字 5 字以上で幅 60px 未満の本文の箱）がある絵を、理由つきで載せて通す。測り方は apps/web/tests/k/k254-canvas-layout.spec.ts の shapeOf。行は減らすだけで、直った絵の行は消す（K254-UI-010 が赤にする）。段 1 の絵（04_design/fidelity.json の組の絵）は載せない。K-257 が直す 3 枚（TicketDetail・StRunning・StFailed）だけは例外。2026-11-16 に作り手を流した後に測った",
+ "_doc": "キャンバスの絵の幅の台帳（K-254）。幅 375・768・1440 で横溢れか潰れた箱（字 5 字以上で幅 60px 未満の本文の箱）がある絵を、理由つきで載せて通す。測り方は apps/web/tests/k/k254-canvas-layout.spec.ts の shapeOf。行は減らすだけで、直った絵の行は消す（K254-UI-010 が赤にする）。段 1 の絵（04_design/fidelity.json の組の絵）は載せない。2026-11-16 に作り手を流した後に測った",
  "entries": [
   {
    "board": "CuList",
@@ -195,20 +195,6 @@
    "reason": "幅 375 で潰れた箱（article）。チケットの動きの絵（St*）。詳細の絵を土台にしていて、狭い幅で本文が潰れる。その画面を作るチケットが直す"
   },
   {
-   "board": "StFailed",
-   "widths": [
-    375
-   ],
-   "reason": "幅 375 で潰れた箱（article・div[role=alert]）。段 1 の絵。K-257 が起こし直す（詳細・帯の絵の作り直し）"
-  },
-  {
-   "board": "StRunning",
-   "widths": [
-    375
-   ],
-   "reason": "幅 375 で潰れた箱（article・div[role=status]）。段 1 の絵。K-257 が起こし直す（詳細・帯の絵の作り直し）"
-  },
-  {
    "board": "TdAssignee",
    "widths": [
     375
@@ -284,13 +270,6 @@
     375
    ],
    "reason": "幅 375 で横溢れ 53pxと潰れた箱（article・div[role=status]・section）。チケットの詳細から開く小窓の絵（Td*）。詳細の絵の上に重ねていて、狭い幅で詳細の本文が潰れる。詳細を起こし直すとき（K-257）か、その小窓の画面を作るチケットが直す"
-  },
-  {
-   "board": "TicketDetail",
-   "widths": [
-    375
-   ],
-   "reason": "幅 375 で横溢れ 53pxと潰れた箱（article・div[role=status]・section）。段 1 の絵。K-257 が起こし直す（詳細・帯の絵の作り直し）"
   }
  ]
 }

@@ -98,15 +98,8 @@ def main():
       + mfoot(btn("やめる", "", "WsShape.dc.html"), btn("足す", "p", "WsShape.dc.html")), 600, "区画を足す")
     save("EdSection.dc.html", "区画を足す", s)
 
-    # 9 PC をつなぐ
-    step = lambda n, t, d, st: '<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid #EDF0F4"><span style="width: 26px; height: 26px; flex: none; border-radius: 99px; display: grid; place-items: center; font-size: 12px; font-weight: 700; %s">%s</span><div style="flex: 1"><b style="font-weight: 600">%s</b><div style="font-size: 12px; color: %s; margin-top: 2px; line-height: 1.7">%s</div></div></div>' % ({"done": "background: #166534; color: #FFFFFF", "now": "background: #22345C; color: #FFFFFF", "next": "background: #EEF0F4; color: #4A5563"}[st], "✓" if st == "done" else n, t, MUTED, d)
-    s = modal(L("MePC"), mhead("PC をつなぐ", "MePC.dc.html", "", "分身はこの PC で動く。3 分ほど")
-      + mbody(step("1", "常駐アプリを入れる", "Mac・Windows に入れる小さなアプリ。ブラウザを動かし、預けたログイン情報を入れる役目 ・ <a href=\"#\">Mac 用</a> ／ <a href=\"#\">Windows 用</a>", "done")
-      + step("2", "アプリにこのコードを入れる", '<span style="display: inline-flex; gap: 6px; margin-top: 6px">' + "".join('<span style="width: 34px; height: 42px; border: 1px solid #22345C; border-radius: 8px; display: grid; place-items: center; font-size: 20px; font-weight: 700; color: #131B27; background: #FFFFFF">%s</span>' % c for c in "KQ7M2X") + '</span><br>10 分で切れる ・ この PC 専用の鍵が作られ、ほかの PC からは使えない', "now")
-      + step("3", "試しに動かす", "分身が「ナレッジのページを開いて閉じる」を試す。終わればつながった", "next")
-      + WARNB("つなぐ PC は、あなたしか使わないものにする。共用の PC だと、ほかの人があなたの分身の作業を見られる"))
-      + mfoot(btn("あとで", "", "MePC.dc.html"), '<span style="font-size: 12px; color: %s; display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 99px; background: #B45309"></span>アプリからの返事を待っています…</span>' % MUTED), 580, "PC をつなぐ")
-    save("EdPC.dc.html", "PC をつなぐ", s)
+    # 9 PC をつなぐ（EdPC）の持ち主は k257.py（今の画面に在る操作を描き足した・K-257）。ここで書き直すと描き足しが消えるので書かない
+
 
     # 10 ほかのグループへ移す
     s = modal(L("TicketDetail"), mhead("ほかのグループへ移す", "TdMore.dc.html", "", "EG-128 セイコー様へ 11月分の請求書を送る")

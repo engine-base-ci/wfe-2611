@@ -1286,6 +1286,14 @@
    "x": 1520,
    "y": 0
   },
+  "StApproveModal.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "承認して送りますの小窓 ← 帯の承認して送る・行の承認する",
+   "w": 1440,
+   "x": 0,
+   "y": 4960
+  },
   "StBefore.dc.html": {
    "h": 1000,
    "page": "states",
@@ -1345,7 +1353,7 @@
   "StFailed.dc.html": {
    "h": 1000,
    "page": "states",
-   "title": "4 確認で落ちて直しているとき",
+   "title": "4 AI が止まったとき",
    "w": 1440,
    "x": 0,
    "y": 1240
@@ -1365,6 +1373,14 @@
    "w": 1440,
    "x": 3040,
    "y": 1240
+  },
+  "StReturnModal.dc.html": {
+   "h": 1000,
+   "page": "states",
+   "title": "差し戻すの小窓 ← 帯の差し戻す",
+   "w": 1440,
+   "x": 0,
+   "y": 6200
   },
   "StRunning.dc.html": {
    "h": 1000,
@@ -2097,7 +2113,9 @@
   "ApEmpty.dc.html",
   "MePCInstalled.dc.html",
   "UiDisabled.dc.html",
-  "OnHomeLater.dc.html"
+  "OnHomeLater.dc.html",
+  "StApproveModal.dc.html",
+  "StReturnModal.dc.html"
  ],
  "pages": [
   {

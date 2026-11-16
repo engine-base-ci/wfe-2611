@@ -68,7 +68,8 @@ GROUPS = {
     "tickets-new": ("form", "Create", "K-224"), "tickets-new-sections": ("form", "Create", "K-225"),
     "ticket-detail": ("page", "TicketDetail", "K-226"), "band-approval": ("band", "TicketDetail", "K-227"),
     "band-running": ("band", "StRunning", "K-228"), "band-failed": ("band", "StFailed", "K-228"),
-    "approve-modal": ("dialog", "StModal", "K-229"), "approvals": ("page", "Approvals", "K-231"),
+    # 承認の小窓は 1 枚の絵に移した（3 つを並べた見本 StModal は幅 375 で潰れる）
+    "approve-modal": ("dialog", "StApproveModal", "K-229"), "approvals": ("page", "Approvals", "K-231"),
     "bridge-code": ("dialog", "EdPC", "K-230"), "bridge-connected": ("page", "MePC", "K-230"), "bridge-shell": ("shell-sub", "MePC", "K-220"),
     "shell-nav": ("shell-nav", "Main", "K-138"), "shell-tabs": ("shell-tabs", "MobileList", "K-138"),
 }
