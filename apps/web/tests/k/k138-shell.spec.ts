@@ -498,7 +498,7 @@ test("K138-SH-022 鍵が無い（ログインしていない）：/tickets を�
   await expect(page).toHaveURL(/\/login\?next=%2Ftickets$/);
 });
 
-test("K138-SH-025 使えない状態の部品：正本に button-disabled・input-disabled・tab-disabled（opacity 0.55）・トークン --k-c-button-disabled-opacity と --k-c-input-disabled-opacity が 0.55・作っていない項目と探す欄の不透明度がその値", async ({
+test("K138-SH-025 使えない状態の部品：正本に button-disabled・input-disabled・tab-disabled（opacity 0.55）・トークン --k-c-button-disabled-opacity と --k-c-input-disabled-opacity が 0.55・作っていない項目と探す欄（外の箱）の不透明度がその値で、中の入力欄は重ねない", async ({
   page,
 }) => {
   const design = readFileSync(join(ROOT, "04_design/DESIGN-kaname.md"), "utf8");
@@ -518,8 +518,10 @@ test("K138-SH-025 使えない状態の部品：正本に button-disabled・inpu
   expect(tokens).toEqual({ button: DISABLED_OPACITY, input: DISABLED_OPACITY });
   const item = leftNav(page).locator('[aria-disabled="true"]').first();
   expect(await item.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.button);
-  const input = page.getByRole("search").locator("input");
-  expect(await input.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.input);
+  // 探す欄は外の箱（role search）だけを薄くする。中の入力欄にも掛けると薄さが重なる（0.55 × 0.55）ので、入力欄は 1 のまま
+  const search = page.getByRole("search");
+  expect(await search.evaluate((e) => getComputedStyle(e).opacity)).toBe(tokens.input);
+  expect(await search.locator("input").evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
 });
 
 interface Group {
