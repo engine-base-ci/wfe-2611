@@ -991,6 +991,7 @@ row(R["K60-UI-030"], async (page) => {
   await mockApi(page);
   await page.goto(`/tickets/${ID}`);
   // K-226：本文の「チケットへ戻る」をやめ、上の帯のいまの場所（キャンバス TicketDetail）の「チケット」で戻る
+  await expect(page.getByRole("heading", { level: 1, name: "請求書を送る" })).toBeVisible();
   await expect(page.getByRole("link", { name: "チケットへ戻る" })).toHaveCount(0);
   await page
     .getByRole("navigation", { name: "いまの場所" })
