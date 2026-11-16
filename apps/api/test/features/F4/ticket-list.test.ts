@@ -411,13 +411,18 @@ describe("K-92 一覧の口：見える範囲（口と行の守りの 2 重）",
       expect(ids(await listOk(w.me, q)), q).toEqual([]);
   });
 
-  it("K92-API-020 取引先の人・運営の人（預かりの許可なし）は 403", async () => {
+  it("K92-API-020 取引先の人・運営の人（預かりの許可なし）は 403。ログインなしは 401・同意し直しが要るセッションは 403・E-AUTH-010", async () => {
     const w = await world();
     await make(w);
     for (const role of ["client", "ops"] as const) {
       const r = await list(w.me, "view=all", f.as(w.me, role));
       expect(r.status, role).toBe(403);
     }
+    const anon = await f.req("GET", "/tickets?view=all");
+    expect(anon.status).toBe(401);
+    const pending = await list(w.me, "view=all", f.pending(w.me));
+    expect(pending.status).toBe(403);
+    expect(((await pending.json()) as { code?: string }).code).toBe("E-AUTH-010");
   });
 
   it("K92-API-021 グループの見る権限を外した直後は出ず、付けた直後は出る（入り直さなくても）", async () => {
