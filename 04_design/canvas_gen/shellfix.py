@@ -122,6 +122,15 @@ NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
 }
+# 承認待ち（K-231：Approvals・ApEmpty）：767 以下は画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴（44px・右寄せ・外枠の .k-bell-inline）を置く。
+# 鈴は帯の中の div の ::after（要素は足さない・768 以上の絵は変わらない）。続けて裁く（a）は鈴の後ろ＝狭い幅では次の行へ回る（画面と同じ並び）
+BELL = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' "
+        "stroke='%23131B27' stroke-width='2'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.9 1.9 0 0 0 3.4 0'/%3E%3C/svg%3E")
+AP_NARROW = ("/* kn-board-narrow（K-231）：画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴の場所（44px）を置く。続けて裁くは鈴の後ろ */\n"
+             "@media (max-width:767px){.kn-bar{display:none !important}"
+             "main header>div::after{content:\"\";order:1;flex:none;width:44px;height:44px;margin-left:auto;"
+             "background:center/18px 18px no-repeat url(\"" + BELL + "\")}main header>div>a{order:2}}\n")
+NARROW_BY_BOARD.update({"Approvals.dc.html": AP_NARROW, "ApEmpty.dc.html": AP_NARROW})
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
