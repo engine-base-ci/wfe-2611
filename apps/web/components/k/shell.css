@@ -67,7 +67,11 @@
   cursor: not-allowed;
 }
 .k-nav-star {
+  /* 押せる的は 24px（全体の決まり）のまま、見出しの高さはキャンバスどおり（字の行より伸びた分を上下で吸収） */
+  display: inline-grid;
+  place-items: center;
   margin-left: auto;
+  margin-block: -3px;
 }
 .k-ws-mark {
   width: 24px;
@@ -522,9 +526,13 @@
   .k-bar {
     display: none;
   }
+  /* 本文の見出しの右の鈴はキャンバス MobileList どおり 44px・本文の字の色 */
   .k-bell-inline {
     flex: none;
+    width: 44px;
+    height: 44px;
     margin-left: auto;
+    color: var(--k-on-surface);
   }
   /* 長い見出しでも鈴が下の行に落ちない（見出しが縮む） */
   .k-shell :has(> .k-bell-inline) {
