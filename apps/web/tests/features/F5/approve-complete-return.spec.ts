@@ -100,6 +100,16 @@ row(R["K63-UI-074"], async (page) => {
   expect(m.returns).toHaveLength(0);
   await expect(rowOf(page, "11 月分の請求書を送る")).toHaveCount(1);
 });
+row(R["K63-UI-076"], async (page) => {
+  const m = await mockApi(page);
+  await openQueue(page);
+  await openReturn(page);
+  await expect(reasonBox(page)).toBeFocused();
+  await expect(dialog(page).getByRole("button", { name: "閉じる" })).not.toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(dialog(page)).toBeVisible();
+  expect(m.returns).toHaveLength(0);
+});
 row(R["K63-UI-010"], async (page) => {
   const m = await mockApi(page);
   await openQueue(page);

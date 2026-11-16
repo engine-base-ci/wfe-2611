@@ -78,6 +78,9 @@ class DesignTest(unittest.TestCase):
         self.assertEqual(str(lg["fontWeight"]), "500")
         self.assertEqual(lg["rounded"], "{rounded.field}")
         self.assertEqual(lg["height"], "44px")
+        # 使えない状態（決める人 answer=78cb822fc1f1：隠さずグレーで押せない形）。キャンバスに絵が無いので今の実装の値を写す
+        for name in ("button-disabled", "tab-disabled"):
+            self.assertEqual(str(comp(name)["opacity"]), "0.55", name)
 
     def test_K218_DS_002_outlined(self) -> None:
         """K218-DS-002 正本の button-outlined は白地（card）・黒字（on-surface）・1px の灰の線（line）"""
@@ -103,6 +106,7 @@ class DesignTest(unittest.TestCase):
         self.assertEqual(lg["rounded"], "{rounded.field}")
         self.assertEqual(lg["typography"], "{typography.body-md}")
         self.assertEqual(lg["height"], "42px")
+        self.assertEqual(str(comp("input-disabled")["opacity"]), "0.55")
 
     def test_K218_DS_004_labels(self) -> None:
         """K218-DS-004 正本の label（作業：400・灰）と label-lg（入口：500・黒）"""
@@ -126,6 +130,16 @@ class DesignTest(unittest.TestCase):
         self.assertEqual(e["rounded"], "{rounded.lg}")
         self.assertEqual(e["padding"], "36px 28px")
         self.assertEqual(e["gap"], "12px")
+        # 小窓の頭・本文・足・×（StModal）と項目名の間（Create 4px・AuthSignup 6px）も正本の部品に置く
+        self.assertEqual(comp("dialog-head")["padding"], "14px 18px")
+        self.assertEqual(comp("dialog-head")["borderBottom"], "1px solid {colors.line}")
+        self.assertEqual(comp("dialog-body")["padding"], "14px 18px")
+        self.assertEqual(comp("dialog-actions")["padding"], "12px 18px")
+        self.assertEqual(comp("dialog-actions")["borderTop"], "1px solid {colors.line}")
+        self.assertEqual(comp("dialog-close")["width"], "28px")
+        self.assertEqual(comp("dialog-close")["height"], "28px")
+        self.assertEqual(comp("field")["gap"], "{spacing.xs}")
+        self.assertEqual(comp("field-lg")["gap"], "6px")
 
     def test_K218_DS_006_type_scale(self) -> None:
         """K218-DS-006 文字の段：使われない 3 段が無く、K-217 の 2 段が在り、大きさの種類が 10 以下"""
@@ -245,6 +259,28 @@ class GateTest(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         finally:
             t.close()
+        # 正本の部品にある値が規則に無ければ赤（「CSS に無い」）。gap も比べる
+        for prop, drop in (("font-weight", " font-weight: var(--x-fw);"), ("border", " border: 1px solid var(--x-line);")):
+            t = FakeTree({"body": "13px"}, rule.replace(drop, ""), "var(--k-text-body)", SEL_CFG, RESOLVE_COMPS, good_tokens)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, 1, f"{prop} を消した: {out}")
+                self.assertTrue([ln for ln in d5_lines(out, "btn", prop) if "CSS に無い" in ln], out)
+            finally:
+                t.close()
+        gap_comps = RESOLVE_COMPS + '\n    gap: "12px"'
+        for gap, code in (("12px", 0), ("8px", 1)):
+            t = FakeTree({"body": "13px"}, rule.replace("}", f" gap: {gap}; }}"), "var(--k-text-body)", SEL_CFG,
+                         gap_comps, good_tokens)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, code, f"gap {gap}: {out}")
+                if code:
+                    self.assertTrue(d5_lines(out, "btn", "gap"), out)
+            finally:
+                t.close()
         for prop, bad in (("padding", "--x-pad: 0 20px"), ("font-size", "--x-text: 14px"),
                           ("border", "--x-line: #b8c0cc"), ("font-weight", "--x-fw: 700"), ("height", "--x-h: 36px")):
             name = bad.split(":")[0]
@@ -275,6 +311,20 @@ class GateTest(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         finally:
             t.close()
+        # セレクタも訳も無い部品は赤。訳を書けば 0
+        extra = DEFAULT_COMPS + '\n  card:\n    rounded: "{rounded.md}"'
+        for cfg, code in ((SEL_CFG, 1),
+                          ('{"component_selectors": {"btn": ".x-btn"}, "component_exempt": '
+                           '[{"part": "card", "reason": "部品のクラスがまだ無い（作る時はまだ決まっていない）"}]}', 0)):
+            t = FakeTree({"body": "13px"}, OK_CSS, "var(--k-text-body)", cfg, extra)
+            try:
+                r = t.gate()
+                out = r.stdout + r.stderr
+                self.assertEqual(r.returncode, code, out)
+                if code:
+                    self.assertTrue([ln for ln in out.splitlines() if "D5" in ln and re.search(r"\bcard\b", ln)], out)
+            finally:
+                t.close()
 
     def test_K218_DS_022_unused_scale(self) -> None:
         """K218-DS-022 --scales：どこにも出てこない段（rare）があれば 1 で、その名前を出す"""
@@ -379,6 +429,15 @@ class RealTreeTest(unittest.TestCase):
             got = got.get("selector") if isinstance(got, dict) else got
             self.assertEqual(got, v, k)
         self.assertEqual(cfg.get("max_type_sizes"), 10)
+        # このチケットで値を変えた部品は比べる。セレクタの無い部品は部品ごとに訳を持つ（訳の無い部品は D5 が赤）
+        for k in ("button-secondary", "button-inverted", "page-head-button", "dialog-head", "dialog-body",
+                  "dialog-actions", "dialog-close", "field", "field-lg", "button-disabled", "input-disabled", "tab-disabled"):
+            self.assertIn(k, cfg["component_selectors"], k)
+        exempt = {x["part"]: x["reason"] for x in cfg.get("component_exempt", [])}
+        comps = set(front(DESIGN)["components"])
+        self.assertEqual(comps - set(cfg["component_selectors"]), set(exempt), "セレクタも訳も無い部品・余分な訳")
+        for k, why in exempt.items():
+            self.assertGreaterEqual(len(why.strip()), 10, f"{k} の訳が短い")
 
     def test_K218_DS_025_g37(self) -> None:
         """K218-DS-025 G37 の命令が features・--scales・--usage を含み、本物の木で 0 で終わる"""
@@ -394,8 +453,12 @@ class RealTreeTest(unittest.TestCase):
         # D5 が本当に比べている（何も見ていないのに緑でない）：10 部品・比べた値 20 以上
         m = re.search(r"部品 (\d+) 個・比べた値 (\d+) 個", r.stdout)
         self.assertIsNotNone(m, r.stdout)
-        self.assertEqual(int(m.group(1)), 10, r.stdout)
-        self.assertGreaterEqual(int(m.group(2)), 20, r.stdout)
+        import json
+
+        sels = json.loads(CFG.read_text(encoding="utf-8"))["component_selectors"]
+        self.assertEqual(int(m.group(1)), len(sels), r.stdout)
+        self.assertGreaterEqual(int(m.group(1)), 20, r.stdout)
+        self.assertGreaterEqual(int(m.group(2)), 60, r.stdout)
 
     def test_K218_DS_026_preview(self) -> None:
         """K218-DS-026 プレビューに page-title・section-title が在り、metric-lg・chat の段が無い"""

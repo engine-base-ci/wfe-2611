@@ -1,6 +1,7 @@
 // K-218「DESIGN.md をキャンバスに合わせる」の画面の試験（実 Chrome・実装より先に積む）。見本の画面 /dev/k/design に部品を並べ、
 //   キャンバスの値（04_design/canvas の StModal・Create・AuthSignup・OnHome・OnLoading を読んだ値・2026-11-15）と同じかを数で測る。
 //   見本の画面の形（実装の役が作る・data-testid）：
+//     btn-disabled（Button primary「送る」disabled：使えない状態・answer=78cb822fc1f1）
 //     btn-md（Button primary「作る」）・btn-lg（Button primary size lg「次へ」）・btn-outlined（Button outlined「下書きのまま閉じる」）
 //     field-md（Field「題名」・入力欄 input-md）・field-lg（Field size lg「メール」・入力欄 input-lg）
 //     dlg-open（押すと Dialog「完了にする」：.k-dialog-head に題と右上の「閉じる」・.k-dialog-actions に primary「完了にする」と outlined「やめる」）
@@ -44,6 +45,11 @@ test("K218-DS-008 幅 1440：主ボタン（md）は高さ 32・角丸 6px・13p
     "background-color": PRIMARY,
     "padding-left": "16px",
   });
+  // 使えない状態は隠さず、薄くして押せない形で出す（決める人 answer=78cb822fc1f1・値は今の実装の 0.55 を正本に写した）
+  const off = page.getByTestId("btn-disabled");
+  await expect(off).toBeVisible();
+  await expect(off).toBeDisabled();
+  expect(await css(off, "opacity")).toBe("0.55");
 });
 
 test("K218-DS-009 幅 1440：主ボタン（lg・入口）は高さ 44・角丸 8px・14px・500", async ({ page }) => {
@@ -231,23 +237,35 @@ test("K218-DS-027 帯の中のボタン（K-217）は字が body（13px）にな
   expect(Math.abs((await box(sm)).height - 28)).toBeLessThanOrEqual(1);
 });
 
-test("K218-DS-029 小窓の「閉じる」は頭の × の 1 つだけ。取り消せない確かめ（Confirm）も頭に × を持ち、開くとフォーカスは「やめる」", async ({
+test("K218-DS-029 ふつうの小窓：「閉じる」は頭の × の 1 つだけ・開くとフォーカスは × でなく本文の最初の欄か足の最初のボタン。取り消せない確かめ（Confirm）は × を持たず、開くとフォーカスは「やめる」・Esc で閉じる", async ({
   page,
 }) => {
   await open(page, 1440);
+  // 足のある小窓：最初のフォーカスは足の最初のボタン（やめる）。× ではない
+  await page.getByTestId("dlg-open").click();
+  const done = page.getByRole("dialog", { name: "完了にする" });
+  await expect(done).toBeVisible();
+  await expect(done.getByRole("button", { name: "やめる" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(done).toHaveCount(0);
+
   const opener = page.getByTestId("dlg-plain-open");
   await opener.click();
   const dlg = page.getByRole("dialog", { name: "共有の相手" });
   await expect(dlg).toBeVisible();
   await expect(dlg.getByRole("button", { name: "閉じる" })).toHaveCount(1);
   await expect(dlg.locator(".k-dialog-head").getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await expect(dlg.getByRole("button", { name: "閉じる" })).not.toBeFocused();
   await dlg.getByRole("button", { name: "閉じる" }).click();
   await expect(dlg).toHaveCount(0);
   await expect(opener).toBeFocused();
 
-  await page.getByTestId("confirm-open").click();
+  const cfOpener = page.getByTestId("confirm-open");
+  await cfOpener.click();
   const cf = page.getByRole("alertdialog", { name: "チケットを消しますか" });
   await expect(cf).toBeVisible();
-  await expect(cf.locator(".k-dialog-head").getByRole("button", { name: "閉じる" })).toHaveCount(1);
+  await expect(cf.getByRole("button", { name: "閉じる" })).toHaveCount(0);
   await expect(cf.getByRole("button", { name: "やめる" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(cf).toHaveCount(0);
 });
