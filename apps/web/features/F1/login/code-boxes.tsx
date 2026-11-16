@@ -43,14 +43,14 @@ export function CodeBoxes({ code, onCode, inputs }: CodeBoxesProps) {
     put(i, e.clipboardData.getData("text/plain"));
   };
   return (
-    <div className="k-code" role="group" aria-label="確認のコード">
+    <div className="k-login-code" role="group" aria-label="確認のコード">
       {code.map((d, i) => (
         <input
           key={i}
           ref={(el) => {
             inputs.current[i] = el;
           }}
-          className="k-code-box"
+          className="k-login-code-box"
           type="text"
           inputMode="numeric"
           maxLength={1}
