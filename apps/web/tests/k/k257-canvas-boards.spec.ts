@@ -241,7 +241,11 @@ const ALL = [
 const DIALOG = 'section[role], [role="dialog"]';
 const ONE_LINE: [string, string][] = [
   ["題", `main h1, :is(${DIALOG}) > div:first-child b, [role="dialog"] > div > div:first-child b`],
-  ["帯の文", 'main article :is([role="status"], [role="alert"]) > div:first-child > :is(b, div)'],
+  // 止まったの帯（role=alert）の理由の文は「説明の文」で、全部出して折り返してよい（代表の答え answer=27139d031d30）。題の b だけを見る
+  [
+    "帯の文",
+    'main article [role="status"] > div:first-child > :is(b, div), main article [role="alert"] > div:first-child > b',
+  ],
   ["進みの段", 'main article [role="status"] > div:first-child ol li'],
   [
     "ボタン",
