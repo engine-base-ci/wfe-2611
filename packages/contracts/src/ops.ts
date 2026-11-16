@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:36a53d66a778dbf4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:82c3be5b9f16b879
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -174,7 +174,7 @@ export interface Ops {
   revokeMySession: { params: { id: string }; query: never; body: never; data: T.Sessions };
   revokeOtherSessions: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   listSetupTasks: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.SetupTask[] };
-  dismissSetupTasks: { params: never; query: never; body: T.MembersInput; data: T.Members };
+  dismissSetupTasks: { params: never; query: never; body: T.DismissSetupTasksInput; data: T.SetupTasksDismissed };
   listMyTicketDrafts: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDraft[] };
   saveMyTicketDraft: { params: never; query: never; body: T.TicketDraftInput; data: T.TicketDraft };
   disableTwoFactor: { params: never; query: never; body: never; data: T.SecurityEvents };

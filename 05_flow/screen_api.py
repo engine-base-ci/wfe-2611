@@ -513,6 +513,8 @@ INPUTS = {
                                            "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
                                            "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
+    # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
+    "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
     # K-62：AI に任せる。任せる体は空（担当者・人・プロンプトは入れさせない・押した人の AI が動く・D-128.138）。PC の口は仕事の id を道すじで受ける（体に入れない）
     "delegateTicket": ("TicketDelegateInput", {}),
     "takeBridgeJob": ("BridgeTakeInput", {"wait_sec": "integer", "protocol": "integer", "idle": "boolean"}),
@@ -753,6 +755,7 @@ UNEXPRESSIBLE_422 = {
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
+    "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
@@ -799,7 +802,10 @@ RESPONSES = {
     "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
     "getMe": ("Me", {"member": "object", "workspaces": "array", "workspace_name": "string?"}),   # workspace_name：今いる会社の名前（前後の空白を取り、空なら null）。今は GET /api/auth-ext/me が返す（K-253）
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
-    "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
+    # K-250：はじめにやること（passkey・pc・credentials の 3 つ）。passkey は機能ができるまで available false・行き先 null（D-145.11）。credentials は任意（optional）で「あとで」で飛ばせる（skipped・D-145.13）
+    "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "desc": "string", "done": "boolean", "href": "string?", "available": "boolean", "optional": "boolean", "skipped": "boolean"}),
+    # K-250：閉じる・飛ばすの後の今の状態（箱を閉じたか・飛ばした項目）
+    "dismissSetupTasks": ("SetupTasksDismissed", {"dismissed": "boolean", "skipped": "array"}),
     "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),
     "createPairingCode": ("PairingCode", {"code": "string", "expires_at": "string"}),
     "getLatestBridgeRelease": ("BridgeRelease", {"released": "boolean", "version": "string", "released_at": "string", "update": "object?"}),   # その OS・CPU の更新が無いと update: null
@@ -883,6 +889,7 @@ RESPONSES = {
 META = {
     "listTickets": {"next_cursor": {"type": "string", "nullable": True}},   # 次の分の鍵（keyset・最後の分は null）。総数も数も返さない（D-144.3・K-92）
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
+    "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
     "listClients": {"counts": "object"},
     "listOpsWorkspaces": {"summary": "object"},

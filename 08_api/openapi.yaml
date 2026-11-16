@@ -239,6 +239,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        setup_skipped_keys:
+          type: array
+          items:
+            type: string
         suspended_at:
           type: string
           format: date-time
@@ -9497,6 +9501,13 @@ components:
       required:
       - draft_id
       x-required-by: hooks
+    DismissSetupTasksInput:
+      type: object
+      properties:
+        key:
+          type: string
+      additionalProperties: false
+      x-operation: dismissSetupTasks
     TicketDelegateInput:
       type: object
       properties: {}
@@ -10057,11 +10068,30 @@ components:
           type: string
         label:
           type: string
+        desc:
+          type: string
         done:
           type: boolean
         href:
           type: string
+          nullable: true
+        available:
+          type: boolean
+        optional:
+          type: boolean
+        skipped:
+          type: boolean
       x-operation: listSetupTasks
+    SetupTasksDismissed:
+      type: object
+      properties:
+        dismissed:
+          type: boolean
+        skipped:
+          type: array
+          items:
+            type: object
+      x-operation: dismissSetupTasks
     PairingCode:
       type: object
       properties:
@@ -27357,6 +27387,7 @@ paths:
           - role_id
           - scope_id
           - setup_dismissed_at
+          - setup_skipped_keys
           - setup_step
           - suspended_at
           - suspended_by
@@ -27380,6 +27411,9 @@ paths:
                       $ref: '#/components/schemas/SetupTask'
                   meta:
                     type: object
+                    properties:
+                      dismissed:
+                        type: boolean
         '401':
           description: UNAUTHENTICATED
           content:
@@ -27440,7 +27474,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MembersInput'
+              $ref: '#/components/schemas/DismissSetupTasksInput'
       responses:
         '201':
           description: 成功
@@ -27450,7 +27484,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Members'
+                    $ref: '#/components/schemas/SetupTasksDismissed'
                   meta:
                     type: object
         '401':
@@ -27472,11 +27506,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：任意でない項目・知らない key）
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 任意でない項目・知らない key
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -28097,6 +28133,7 @@ paths:
           - role_id
           - scope_id
           - setup_dismissed_at
+          - setup_skipped_keys
           - setup_step
           - suspended_at
           - suspended_by
@@ -34562,6 +34599,7 @@ paths:
           - role_id
           - scope_id
           - setup_dismissed_at
+          - setup_skipped_keys
           - setup_step
           - suspended_at
           - suspended_by

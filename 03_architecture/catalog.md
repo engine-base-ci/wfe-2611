@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 36・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 14・共通の処理 13・エラー 172・部品 53・設定 39
+API 365（作った 38・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 14・共通の処理 13・エラー 172・部品 53・設定 39
 
 ## 共通の処理
 
@@ -174,8 +174,8 @@ API 365（作った 36・後のフェーズの行為だけ 20）・前の道す�
 | `listMySessions` | GET /api/v1/me/sessions | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `revokeMySession` | DELETE /api/v1/me/sessions/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `revokeOtherSessions` | POST /api/v1/me/sessions/revoke-others | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
-| `listSetupTasks` | GET /api/v1/me/setup-tasks | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-250 |
-| `dismissSetupTasks` | POST /api/v1/me/setup-tasks/dismiss | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-250 |
+| `listSetupTasks` | GET /api/v1/me/setup-tasks | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-250 |
+| `dismissSetupTasks` | POST /api/v1/me/setup-tasks/dismiss | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 作った | K-250 |
 | `leaveWorkspace` | DELETE /api/v1/me/workspaces/:id | 削除（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `getMember` | GET /api/v1/members/:id | 取得（members）— メンバーの所属（兼務）・権限を決める | F10 | 契約だけ（501） |  |
 | `removeMember` | DELETE /api/v1/members/:id | 削除（members）— 抜ける人の依存を片付ける | F10 | 契約だけ（501） |  |
