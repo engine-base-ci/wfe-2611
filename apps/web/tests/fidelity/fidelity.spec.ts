@@ -119,7 +119,7 @@ const HIDDEN_COPIES = `
   <div class="t" style="display:none;width:10px;height:10px">A</div>
   <div class="t" style="visibility:hidden;width:20px;height:20px">B</div>
   <div class="t" style="width:0;height:0;overflow:hidden">C</div>
-  <div class="t" style="width:120px;height:30px">D</div>
+  <div class="t" style="width:120px;height:30px">D<span style="display:none">X</span><span style="visibility:hidden">Y</span></div>
   <div class="t" style="width:120px;height:30px">E</div>`;
 
 test("K238-VF-012 見えない要素（display:none・visibility:hidden・大きさ 0 の隠した複製）は無いにして、見えている方の値を読む", async ({
@@ -130,7 +130,9 @@ test("K238-VF-012 見えない要素（display:none・visibility:hidden・大き
   expect(v).toMatchObject({ __count: 2, width: "120px", height: "30px" });
 });
 
-test("K238-VF-013 texts は隠れた要素の字を数えない（見えている D・E だけ）", async ({ page }) => {
+test("K238-VF-013 texts は隠れた要素の字を数えない（見えている D・E だけ。見えている要素の中の隠れた子の X・Y も数えない）", async ({
+  page,
+}) => {
   await page.goto(dataUrl(HIDDEN_COPIES));
   const [v] = await readVals(page, [pair(".t", ["texts"])], "app");
   expect(v).toMatchObject({ __count: 2, texts: ["D", "E"] });

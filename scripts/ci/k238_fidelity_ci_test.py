@@ -8,7 +8,8 @@ CI の spec の組（G69）と web の組（G70）で流れ、比べ方を変え
   ・設定 04_design/fidelity.json の組のうち enrolled でない組の数を「入っていない組 N / M」で出す
   ・組の持ち主が取り込み済みなのに enrolled でない組があれば 1（組の id と持ち主を同じ行に出す）
     取り込み済み＝<版> の履歴に件名が「<持ち主> 」で始まるコミットが在る（本線は早送りで進むので、取り込んだチケットのコミットは本線の履歴に載る）か、
-    持ち主のチケット（11_tickets/<owner>.md）の stage が「確認中」か「完了」
+    持ち主のチケット（11_tickets/<owner>.md）の stage が「確認中」か「完了」か、--ticket <番号> で渡した今のチケット（取り込む前の自分の CI で赤にする）か、
+    持ち主が子を持つ親で、子（parent: <持ち主>）が 1 本以上あり全部が取り込み済み（子が 0 本なら前の決めのまま）
   ・持ち主の md が無い・stage が読めない（行が無い・知らない値）・<版> が読めない は 1。--base-ref が無ければ 2
 作りものの設定と git の木は tempfile の中に作る。
 
@@ -67,8 +68,9 @@ class Fake:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(text, encoding="utf-8")
 
-    def ticket(self, tid: str, stage: str) -> None:
-        self.write(f"11_tickets/{tid}.md", f"---\nid: {tid}\nstage: {stage}\n---\n")
+    def ticket(self, tid: str, stage: str, parent: str = "") -> None:
+        head = f"parent: {parent}\n" if parent else ""
+        self.write(f"11_tickets/{tid}.md", f"---\nid: {tid}\n{head}stage: {stage}\n---\n")
 
     def config(self, groups: list[tuple[str, str, bool]]) -> None:
         self.write("04_design/fidelity.json", json.dumps(
@@ -156,6 +158,34 @@ class OwnersDoneTest(unittest.TestCase):
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertNotIn("Traceback", r.stderr)
 
+    def test_K238_VF_029_current_ticket_counts_as_merged(self) -> None:
+        """K238-VF-029 --ticket K-3 を渡すと、版の履歴にも stage にも無くても K-3 を取り込み済みとして数え、入れ忘れた組は 1（組の id と持ち主を同じ行に）。
+        別の番号（K-30）を渡したときと、--ticket を渡さないときは 0"""
+        self.f.ticket("K-3", "未着手")
+        self.f.config([("grp-self-z", "K-3", False)])
+        r = self.f.run("--ticket", "K-3")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertTrue(self.line_with(r.stdout, "grp-self-z", "K-3"), r.stdout)
+        self.assertEqual(self.f.run("--ticket", "K-30").returncode, 0)
+        self.assertEqual(self.f.run().returncode, 0)
+
+    def test_K238_VF_030_parent_owner_counts_by_children(self) -> None:
+        """K238-VF-030 持ち主 K-3 が子を持つ親なら、子（parent: K-3）が全部取り込み済みのとき取り込み済みとして 1（組の id と持ち主を同じ行に）。
+        子が 1 本でも残れば 0。子が 0 本なら前の決め（K-3 自身の履歴・stage）"""
+        self.f.ticket("K-3", "未着手")
+        self.f.ticket("K-31", "完了", parent="K-3")
+        self.f.ticket("K-32", "未着手", parent="K-3")
+        self.f.ticket("K-40", "完了", parent="K-4")
+        self.f.config([("grp-parent-w", "K-3", False)])
+        self.assertEqual(self.f.run().returncode, 0, "子の K-32 が残っているのに取り込み済みと数えた")
+        self.f.commit("K-32 feat: 子の残り")
+        r = self.f.run()
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertTrue(self.line_with(r.stdout, "grp-parent-w", "K-3"), r.stdout)
+        self.f.ticket("K-5", "未着手")
+        self.f.config([("grp-leaf-v", "K-5", False)])
+        self.assertEqual(self.f.run().returncode, 0, "子の無い持ち主を取り込み済みと数えた")
+
     def test_K238_VF_007_real_tree(self) -> None:
         """K238-VF-007 本物の木で 0 で終わり、入っていない組の数を出す"""
         r = subprocess.run([sys.executable, str(GATE), "--owners-done", "--base-ref", "HEAD"], cwd=ROOT,
@@ -179,11 +209,18 @@ class RunnerTest(unittest.TestCase):
             self.assertNotIn(word, t)
 
     def test_K238_VF_009_states_route_fonts(self) -> None:
-        """K238-VF-009 画面を整える道具が、キャンバスの外の書体の道（fonts.googleapis.com・fonts.gstatic.com）を手元の書体（@fontsource-variable/noto-sans-jp）に差し替える routeCanvasFonts を出す"""
-        s = STATES.read_text(encoding="utf-8")
-        self.assertIn("export async function routeCanvasFonts", s)
+        """K238-VF-009 キャンバスの外の書体の道（fonts.googleapis.com・fonts.gstatic.com）を手元の書体（@fontsource-variable/noto-sans-jp）に差し替える routeCanvasFonts は
+        fidelity_compare.mjs に 1 つだけ在り、試験の部品（fidelity-states.ts）はそれを出し直し、道具（visual_fidelity.mjs）はキャンバスを開くときに使う（道具も外へ読みに行かない）"""
+        c = COMPARE.read_text(encoding="utf-8")
+        self.assertIn("export async function routeCanvasFonts", c)
         for word in ("fonts.googleapis.com", "fonts.gstatic.com", "@fontsource-variable/noto-sans-jp"):
-            self.assertIn(word, s)
+            self.assertIn(word, c)
+        st = STATES.read_text(encoding="utf-8")
+        self.assertRegex(st, r"export\s*\{[^}]*\brouteCanvasFonts\b[^}]*\}\s*from\s*\"[./]*scripts/ci/fidelity_compare\.mjs\"")
+        self.assertNotIn("fonts.gstatic.com", st, "差し替えを 2 か所に持たない")
+        t = TOOL.read_text(encoding="utf-8")
+        self.assertRegex(t, r"import\s*\{[^}]*\brouteCanvasFonts\b[^}]*\}\s*from\s*\"\./fidelity_compare\.mjs\"")
+        self.assertRegex(t, r"\brouteCanvasFonts\(")
 
 
 class WiringTest(unittest.TestCase):
@@ -202,7 +239,8 @@ class WiringTest(unittest.TestCase):
         for s in (g69[0], g70[0]):
             for bad in ("--no-base", "--required", "--report-only"):
                 self.assertNotIn(bad, s["run"])
-        self.assertRegex(g69[0]["run"], r"fidelity_config\.py --owners-done --base-ref \"\$CI_BASE\"")
+        self.assertRegex(g69[0]["run"], r"fidelity_config\.py --owners-done --base-ref \"\$CI_BASE\" \$\{CI_TICKET:\+--ticket \"\$CI_TICKET\"\}")
+        self.assertEqual((g69[0].get("env") or {}).get("CI_TICKET"), "${{ inputs.ticket }}", "今のチケットを見張りに渡す（空の回は --ticket を足さない）")
         for want in ("python3 scripts/ci/fidelity_config.py --base-ref \"$CI_BASE\"", "python3 scripts/ci/k238_fidelity_ci_test.py"):
             self.assertIn(want, g69[0]["run"])
         # 自己試験と K-216 の試験 2 本は G65 が持つ（二重に流さない）
@@ -296,6 +334,18 @@ class GateSelectTest(unittest.TestCase):
             r = pick([f])
             self.assertEqual(r["gates"], {"70": []}, f)
             self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], f)
+        # 入れた組が 1 つでもあれば、web の組が起きる回には専用の段を必ず選ぶ（G48 の答えは同じ）。入れた組が 0 なら上のまま
+        tmp = pathlib.Path(tempfile.mkdtemp(prefix="k238-gate-"))
+        try:
+            (tmp / "04_design").mkdir()
+            for enrolled, want in ((True, [FID]), (False, [])):
+                (tmp / "04_design" / "fidelity.json").write_text(json.dumps({"groups": [{"id": "g", "enrolled": enrolled}]}), encoding="utf-8")
+                cfg = ci_scope.gate_cfg(str(tmp), web_cfg())
+                r = pick(["apps/web/app/a/page.tsx"], cfg=cfg)
+                self.assertEqual(r["gates"], {"70": want}, enrolled)
+                self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], enrolled)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
 
     def test_K238_VF_026_gate_tests_must_exist(self) -> None:
         """K238-VF-026 専用の段の設定に書いた試験が実ファイルとして無ければ赤（本物の木は 0 件・無い試験は道と段を出す）"""
