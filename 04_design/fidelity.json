@@ -1458,6 +1458,7 @@
    ],
    "owner": "K-255",
    "enrolled": true,
+   "busy": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -1502,6 +1503,7 @@
    ],
    "owner": "K-255",
    "enrolled": true,
+   "busy": true,
    "pairs": [
     {
      "name": "入口の箱",

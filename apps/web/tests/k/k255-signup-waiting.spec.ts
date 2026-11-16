@@ -9,6 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import {
+  capture,
   compareFonts,
   compareRows,
   loadedFonts,
@@ -186,7 +187,7 @@ test("K255-UI-005 項目名：12px・500・#131B27。項目名の下の端と欄
   expect(Math.abs(f.y - (l.y + l.height) - 6)).toBeLessThanOrEqual(1);
 });
 
-test("K255-UI-006 補足：会社・チームの名前とパスワードの補足は項目名の横に括弧書き（400・灰）。欄の下の別の行に出ない・読み上げの名前は項目名のまま", async ({
+test("K255-UI-006 補足：会社・チームの名前とパスワードの補足は項目名に続く括弧書き（400・灰）。1 行目は項目名と同じ行で項目名より右から、折れた行は箱の左から（キャンバスどおり）。欄の下の別の行に出ない・読み上げの名前は項目名のまま", async ({
   page,
 }) => {
   await mockApi(page);
@@ -203,8 +204,28 @@ test("K255-UI-006 補足：会社・チームの名前とパスワードの補�
     const f = (await field(page, l).boundingBox())!;
     expect(hb.y + hb.height, `${l} の補足は欄より上`).toBeLessThanOrEqual(f.y + 1);
     const lb = (await page.locator(`${BOX} .k-label`, { hasText: l }).first().boundingBox())!;
-    expect(Math.abs(hb.y - lb.y), `${l} の補足は項目名と同じ行（上の端が ±2）`).toBeLessThanOrEqual(2);
-    expect(hb.x, `${l} の補足は項目名の右`).toBeGreaterThan(lb.x);
+    // 補足の字の行ごとの箱（折れた行は 1 行ずつ別の箱）
+    const lines = await h.evaluate((e) => {
+      const r = document.createRange();
+      r.selectNodeContents(e);
+      const tops = new Map<number, { left: number; top: number }>();
+      for (const b of r.getClientRects()) {
+        if (b.width === 0) continue;
+        const k = Math.round(b.top);
+        const was = tops.get(k);
+        if (!was || b.left < was.left) tops.set(k, { left: b.left, top: b.top });
+      }
+      return [...tops.values()].sort((x, y) => x.top - y.top);
+    });
+    expect(lines.length, `${l} の補足の行`).toBeGreaterThanOrEqual(1);
+    expect(Math.abs(lines[0]!.top - lb.y), `${l} の補足の 1 行目は項目名と同じ行（上の端が ±2）`).toBeLessThanOrEqual(
+      2,
+    );
+    expect(lines[0]!.left, `${l} の補足の 1 行目は項目名の右から`).toBeGreaterThanOrEqual(lb.x + lb.width);
+    for (const [i, ln] of lines.slice(1).entries())
+      expect(Math.abs(ln.left - lb.x), `${l} の補足の ${i + 2} 行目は箱の左（項目名の左の端）から`).toBeLessThanOrEqual(
+        2,
+      );
     await expect(field(page, l), l).toHaveCount(1); // exact の項目名で 1 つ当たる（補足が名前に混ざらない）
     const described = (await field(page, l).getAttribute("aria-describedby")) ?? "";
     const texts = await Promise.all(
@@ -431,6 +452,56 @@ for (const id of MINE) {
     });
   }
 }
+
+/** 道具の試験用の頁（data:） */
+const dataPage = (html: string) =>
+  `data:text/html;charset=utf-8,${encodeURIComponent(`<!doctype html><body>${html}</body>`)}`;
+const vPair: FidelityPair = { name: ".v", role: "v", canvas: ".v", app: ".v", props: ["width"] };
+
+test("K255-UI-021 突き合わせの道具：読み込み中の組の印（busy: true）があれば、aria-busy が残っていても状態の文（role=status）が出て値が揃えば読む", async ({
+  page,
+}) => {
+  await page.goto(
+    dataPage(`<main><div role="status" aria-busy="true"></div><div class="v" style="width:50px;height:10px"></div></main>
+      <script>setTimeout(() => { document.querySelector('[role="status"]').textContent = "読み込んでいます…"; }, 300);</script>`),
+  );
+  const { vals } = await capture(page, [vPair], "app", { busy: true, timeout: 5_000 });
+  expect(vals[0]?.width).toBe("50px");
+  await expect(page.getByRole("status")).toHaveText("読み込んでいます…"); // 文が出てから読んだ
+});
+
+test("K255-UI-022 突き合わせの道具：印のある組でも、状態の文が上限の時間までに出なければ「状態の文が出ない」を出して投げる（空の箱で比べない）", async ({
+  page,
+}) => {
+  await page.goto(
+    dataPage(
+      `<main><div role="status" aria-busy="true"></div><div class="v" style="width:50px;height:10px"></div></main>`,
+    ),
+  );
+  await expect(capture(page, [vPair], "app", { busy: true, timeout: 2_000 })).rejects.toThrow(/状態の文が出ない/);
+});
+
+test("K255-UI-023 突き合わせの道具：印の無い組は今までどおり aria-busy が消えるまで待ち、消えなければ「aria-busy」を出して投げる（文が出ていても読まない）", async ({
+  page,
+}) => {
+  await page.goto(
+    dataPage(
+      `<main><div role="status" aria-busy="true">読み込んでいます…</div><div class="v" style="width:50px;height:10px"></div></main>`,
+    ),
+  );
+  await expect(capture(page, [vPair], "app", { timeout: 2_000 })).rejects.toThrow(/aria-busy/);
+});
+
+test("K255-UI-024 突き合わせの設定：読み込み中の 2 組（signup-checking・signup-waiting-loading）は印 busy: true を持ち、ほかの K-255 の組は持たない。全体の突き合わせ（fidelity.spec.ts）は組の印を道具に渡す", () => {
+  for (const id of MINE) {
+    const g = CFG.groups.find((x) => x.id === id) as (Group & { busy?: boolean }) | undefined;
+    expect(g?.busy === true, id).toBe(id === "signup-checking" || id === "signup-waiting-loading");
+  }
+  const spec = readFileSync(join(ROOT, "apps/web/tests/fidelity/fidelity.spec.ts"), "utf8");
+  expect(spec, "画面の側の読み取りに組の印を渡す").toMatch(
+    /capture\(appPage, g\.pairs, "app", \{[\s\S]{0,200}?busy: g\.busy/,
+  );
+});
 
 test("K255-UI-020 幅 320・375・768・1024・1440（登録・待つ）：横溢れ 0・見出しの 1 文字目が画面の中", async ({
   page,

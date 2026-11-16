@@ -38,6 +38,8 @@ interface Group {
   pairs: Pair[];
   owner: string;
   enrolled: boolean;
+  /** 読み込み中の画面の組（K-255）：aria-busy の代わりに状態の文が出るのを待って読む */
+  busy?: boolean;
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -93,15 +95,20 @@ for (const g of ENROLLED) {
       await routeCanvasFonts(canvasPage);
       await canvasPage.goto(pathToFileURL(join(ROOT, `04_design/canvas/${g.canvas}.dc.html`)).href);
       await drawn(canvasPage, g.pairs, "canvas");
+      // 読み込み中の画面の組（busy: true）は aria-busy の代わりに状態の文が出るのを待つ（K-255）
       const C = await capture(canvasPage, g.pairs, "canvas", {
         shot: test.info().outputPath(`${g.id}-${w}-canvas.png`),
+        busy: g.busy,
       });
       await canvasPage.close();
 
       const appPage = await browser.newPage({ viewport: { width: w, height: 1000 }, colorScheme: "light" });
       await FIDELITY_STATES[g.state]!(appPage, g.app);
       await drawn(appPage, g.pairs, "app");
-      const A = await capture(appPage, g.pairs, "app", { shot: test.info().outputPath(`${g.id}-${w}-app.png`) });
+      const A = await capture(appPage, g.pairs, "app", {
+        shot: test.info().outputPath(`${g.id}-${w}-app.png`),
+        busy: g.busy,
+      });
       await appPage.close();
 
       const rows = [...compareRows(g.pairs, C.vals, A.vals), compareFonts(C.fonts, A.fonts)];
