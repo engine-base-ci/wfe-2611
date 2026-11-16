@@ -5,7 +5,7 @@
 //       header.k-page-head（h1「チケット」・p.k-page-sub「すべてのグループ」・div.k-page-acts に主ボタン）
 //       section.k-section × 2（h2「目的」と p・p.k-pre（改行入りと、空白の無い長い字）・ul.k-list・a.k-link・div.k-row にボタン 2 つ）
 //       div[data-testid=bare]（クラスの無い h1・h2・h3）
-//   本物の画面（/setup/bridge・口は網の手前で差し替える）と入口の枠（/legal/terms）でも測る。
+//   本物の画面（/approvals・口は網の手前で差し替える。2026-11-16 に /setup/bridge から移した・K-220）と入口の枠（/legal/terms）でも測る。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -249,35 +249,43 @@ test("K217-UI-016 文字の段：正本から作ったトークンに「ペー�
     expect(t, line).toContain(line);
 });
 
-/** /setup/bridge を、ログインの印と口の答え（PC は 0 台・接続コード）を網の手前で差し替えて開く（K-57 の画面の試験と同じ形） */
-async function openBridge(page: Page, width: number) {
+/** 承認待ち（/approvals）を、ログインの印と口の答え（承認待ちは 0 件）を網の手前で差し替えて開く。
+ *  2026-11-16 に測る画面を /setup/bridge から移した（K-220 で PC をつなぐは帯にしない見出しの行になった・PM の決め）。
+ *  承認待ちの画面のチケットが承認待ちの形を変えるとき、この行を自分で運んで新しい形に替える */
+async function openApprovals(page: Page, width: number) {
   await page.setViewportSize({ width, height: 1000 });
   await page.addInitScript(() => window.localStorage.setItem("kaname.token", "k217-web-token"));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
     const u = new URL(route.request().url());
+    if (u.pathname === "/api/v1/approvals/queue")
+      return route.fulfill({
+        status: 200,
+        json: { data: [], meta: { limit: 20, counts: { total: 0 }, cursor: null } },
+      });
     if (u.pathname === "/api/v1/bridge/devices")
       return route.fulfill({ status: 200, json: { data: [], meta: { limit: 0 } } });
-    if (u.pathname === "/api/v1/bridge/pairing-codes")
-      return route.fulfill({
-        status: 201,
-        json: { data: { code: "KQ7MAX", expires_at: new Date(Date.now() + 600_000).toISOString() } },
-      });
     return route.fulfill({ status: 404, json: { error: "not_found", code: "NOT_FOUND" } });
   });
   await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
-  await page.goto("/setup/bridge");
+  await page.goto("/approvals");
   await page.locator("header.k-page-head h1").waitFor({ state: "visible" });
+  // 読み終えた形（0 件・空の知らせ）で測る。読み込み中や失敗の形のまま測らない
+  await expect(page.locator("header.k-page-head .k63-count")).toHaveText("0 件");
+  await expect(page.getByText("いま決めるものはありません")).toBeVisible();
+  // 本文の中に失敗の知らせが無い（Next の読み上げの部品 next-route-announcer も role=alert なので、本文の箱に絞る）
+  await expect(page.locator(".k-root.k-page").getByRole("alert")).toHaveCount(0);
 }
 
 for (const w of [1440, 375]) {
-  test(`K217-UI-017 本物の画面（/setup/bridge）幅 ${w}：見出しは 18px・700、帯は白で画面の箱の幅いっぱい、見出しは帯の左から 24px`, async ({
+  test(`K217-UI-017 本物の画面（/approvals）幅 ${w}：見出しは 18px・700、帯は白で画面の箱の幅いっぱい、見出しは帯の左から 24px`, async ({
     page,
   }) => {
-    await openBridge(page, w);
+    await openApprovals(page, w);
     const root = await box(page.locator(".k-root.k-page").first());
     const head = page.locator(".k-page > header.k-page-head").first();
     const hb = await box(head);
     const h1 = head.locator("h1");
+    await expect(h1).toHaveText("承認待ち");
     expect(await css(h1, "font-size")).toBe("18px");
     expect(await css(h1, "font-weight")).toBe("700");
     expect(await css(head, "background-color")).toBe(WHITE);

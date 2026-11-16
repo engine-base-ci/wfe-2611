@@ -71,6 +71,15 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(nav.locator(".k-pc")).toHaveText("PC つながっている");
     await expect(page.locator(".k-bar .k-me .k-avatar")).toHaveText("高");
   },
+  // 自分の設定の外枠（K-220・キャンバス MePC）：外枠の口と PC の一覧（つながっている 1 台）を返して /setup/bridge を開き、
+  //   第 2 ナビと本文の見出し・左のメニューの PC の状態が描かれるまで待つ
+  "bridge-shell": async (page, path) => {
+    await shellApi(page, 2);
+    await page.goto(path);
+    await expect(page.locator('[aria-label="自分の設定の中"] .k-me-sub-t')).toHaveCount(5);
+    await expect(page.locator(".k-nav .k-pc")).toHaveText("PC つながっている");
+    await expect(page.locator("#connect-pc-title")).toHaveText("PC と使った量");
+  },
   "shell-tabs": async (page, path) => {
     await shellApi(page, 9);
     await page.goto(path);
