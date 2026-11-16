@@ -177,19 +177,38 @@ const nextFrames = (page) =>
 /**
  * 組の値を落ち着いてから読む：動きを止め → aria-busy="true" が消えるまで待ち → 書体の読み込みを待ち →
  * 値を 2 回続けて読んで同じになるまで読み直し → 読み込んだ書体を読む → opts.shot があれば最後に写しを撮る（値は写しの前に読む）。
- * 上限（opts.timeout・既定 CAPTURE_TIMEOUT）までに aria-busy が消えない・値が揃わないときは投げる
+ * 上限（opts.timeout・既定 CAPTURE_TIMEOUT）までに aria-busy が消えない・値が揃わないときは投げる。
+ * opts.busy（読み込み中の画面の組・K-255）は aria-busy を待たず、状態の文（role=status）が出るのを待つ（出なければ「状態の文が出ない」で投げる）
  */
 export async function capture(page, pairs, side, opts = {}) {
   const timeout = opts.timeout ?? CAPTURE_TIMEOUT;
   const end = Date.now() + timeout;
   await page.addStyleTag({ content: STILL_CSS });
-  const idle = await page
-    .waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout })
-    .then(
-      () => true,
-      () => false,
-    );
-  if (!idle) throw new Error(`aria-busy が消えない（${timeout}ms 待った・${side}）`);
+  if (opts.busy) {
+    // 読み込み中の画面の組（設定の組の busy: true・K-255）：aria-busy は消えない画面なので、状態の文（role=status）が出るのを待つ
+    const shown = await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll('[role="status"]')].some(
+            (e) => (e.innerText ?? "").trim() !== "" && e.getClientRects().length > 0,
+          ),
+        null,
+        { timeout },
+      )
+      .then(
+        () => true,
+        () => false,
+      );
+    if (!shown) throw new Error(`状態の文が出ない（${timeout}ms 待った・${side}）`);
+  } else {
+    const idle = await page
+      .waitForFunction(() => !document.querySelector('[aria-busy="true"]'), null, { timeout })
+      .then(
+        () => true,
+        () => false,
+      );
+    if (!idle) throw new Error(`aria-busy が消えない（${timeout}ms 待った・${side}）`);
+  }
   await page.evaluate(() => document.fonts.ready.then(() => undefined));
   let prev = JSON.stringify(await readVals(page, pairs, side));
   for (;;) {
