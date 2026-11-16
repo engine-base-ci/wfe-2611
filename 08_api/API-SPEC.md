@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-13 凍結）
+# Kaname API 設計書 v1.0（2026-11-16 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -167,7 +167,7 @@
 | EP-152 | POST | `/api/v1/learning_candidates/:id/dismiss` | 作成・実行（learning_candidates）— 自分の AI に | A30 A93 | 1 | member | C2 | 401 403 404 409 422 413 429 403 503 |
 | EP-153 | POST | `/api/v1/learning_candidates/:id/exception-request` | 作成・実行（learning_candidates）— ルールを置く（会 | A131 | 1 | member | C2 | 401 403 404 409 422 413 429 403 503 |
 | EP-154 | POST | `/api/v1/learning_candidates/:id/later` | 作成・実行（learning_candidates）— 自分の AI に | A30 | 1 | member | C2 | 401 403 404 409 422 413 429 403 503 |
-| EP-155 | GET | `/api/v1/me` | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member |  | 401 403 422 429 503 |
+| EP-155 | GET | `/api/v1/me` | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 2 | member |  | 401 403 422 429 503 |
 | EP-156 | PATCH | `/api/v1/me` | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member | C2 | 401 403 422 413 429 403 503 |
 | EP-157 | POST | `/api/v1/me/avatar` | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member | C2 | 401 403 409 422 413 429 403 503 |
 | EP-158 | POST | `/api/v1/me/backup-codes` | 作成・実行（me）— 2段階認証を設定する | A04 | 1 | member | C2 C8 | 401 403 409 422 413 429 403 503 |
@@ -396,4 +396,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-13 凍結（endpoints 365）
+- v1.0 2026-11-16 凍結（endpoints 365）

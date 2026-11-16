@@ -50,6 +50,12 @@ export interface AuthExtDeps {
   /** 会話が変わった知らせ（D-113）。無ければ /agent/stream は 503 で、画面は見に行く形のまま */
   hub?: MemberHub | null;
 }
+/** 会社の名前を外枠に出す形にする：前後の空白（全角を含む）を取り、空なら null。長くても切らない（画面が詰める・K-253） */
+export function workspaceName(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const name = v.trim();
+  return name === "" ? null : name;
+}
 /** 届かなかった答えを、自分のAI への指示に添える文にする（問い：答え）。無ければ空 */
 export function carriedAnswers(v: unknown): string {
   const list = Array.isArray(v)
@@ -661,6 +667,9 @@ export function authExt(d: AuthExtDeps): Hono {
     const s = await resolve(c.req.raw.headers);
     if (!s?.ctx.tenantId || !s.ctx.userId) return bad(c, 401, "UNAUTHENTICATED", "ログインしてください");
     const m = await d.repo.table("members").get(s.ctx, s.ctx.userId);
+    // 今いる会社（セッションの会社）の名前（K-253・D-144.2）。関門 C2 の読むだけで、行の守りが今の会社の行だけを見せる。
+    // 消した印のある会社は読めないので null（ほかの欄は返す）
+    const t = await d.repo.table("tenants").get(s.ctx, s.ctx.tenantId);
     return c.json({
       data: {
         member_id: s.ctx.userId,
@@ -668,6 +677,7 @@ export function authExt(d: AuthExtDeps): Hono {
         display_name: m?.["display_name"] ?? null,
         role_id: (m?.["role_id"] as string | null) ?? null,
         scope_id: m?.["scope_id"] ?? null,
+        workspace_name: workspaceName(t?.["name"]),
       },
     });
   });

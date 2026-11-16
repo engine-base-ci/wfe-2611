@@ -13,6 +13,8 @@ SCREEN_API = {
         # 一覧・数・探す
         ("GET", "/tickets", "A58|A113", T, "listTickets", ["ticket_kinds", "ticket_stages", "members", "clients"]),
         ("GET", "/scopes/:id/overview", "A58", T, "getScopeOverview", ["scopes", "ticket_stages"]),
+        # 外枠の役と今いる会社の名前（K-253・D-144.2）。今は手で書いた道すじ GET /api/auth-ext/me が答え、移す先がこの getMe（D-128.88・持ち主 K-70）
+        ("GET", "/me", "A74", "members", "getMe", ["tenant_memberships", "tenants"]),
         ("GET", "/search", "A21", T, "search", ["knowledge_pages", "ticket_decisions", "conversations"]),
         # 1 件を開く・作る・直す・消す
         ("GET", "/tickets/:id", "A101", T, "getTicket", ["ticket_sections", "test_specs", "ticket_links", "clients"]),
@@ -795,7 +797,7 @@ RESPONSES = {
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
     "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),
     "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
-    "getMe": ("Me", {"member": "object", "workspaces": "array"}),
+    "getMe": ("Me", {"member": "object", "workspaces": "array", "workspace_name": "string?"}),   # workspace_name：今いる会社の名前（前後の空白を取り、空なら null）。今は GET /api/auth-ext/me が返す（K-253）
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
     "listSetupTasks": ("SetupTask", {"key": "string", "label": "string", "done": "boolean", "href": "string"}),
     "getNotificationSettings": ("NotificationSettings", {"email_digest": "boolean", "quiet_hours": "object", "paused_until": "string?", "urgent_override": "array", "events": "array"}),

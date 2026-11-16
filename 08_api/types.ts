@@ -332,7 +332,7 @@ export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_fact
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };
 export type StepUp = { step_up_at?: string; valid_until?: string };
-export type Me = { member?: Record<string, unknown>; workspaces?: string[] };
+export type Me = { member?: Record<string, unknown>; workspaces?: string[]; workspace_name?: string | null };
 export type MyUsage = { five_hour?: Record<string, unknown>; month?: Record<string, unknown>; by_workspace?: string[]; notify_at_percent?: number; on_exhausted?: string };
 export type SetupTask = { key?: string; label?: string; done?: boolean; href?: string };
 export type PairingCode = { code?: string; expires_at?: string };
@@ -2112,7 +2112,8 @@ export const ENDPOINTS = [
    "A74"
   ],
   "screens": [
-   "account"
+   "account",
+   "tickets"
   ]
  },
  {
