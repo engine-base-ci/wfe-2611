@@ -480,7 +480,8 @@ textarea.k-input {
   left: 0;
   right: 0;
   margin: var(--k-c-dialog-margin);
-  width: min(var(--k-c-dialog-form-width), calc(100vw - 2 * var(--k-s-lg)));
+  width: var(--k-c-dialog-form-width);
+  max-width: calc(100vw - 2 * var(--k-s-lg));
   max-height: calc(100dvh - 2 * var(--k-s-xl));
   overflow-y: auto;
   box-sizing: border-box;
@@ -533,7 +534,7 @@ textarea.k-input {
   background: var(--k-surface-variant);
 }
 .k-dialog[data-size="confirm"] {
-  width: min(var(--k-c-dialog-confirm-width), calc(100vw - 2 * var(--k-s-lg)));
+  width: var(--k-c-dialog-confirm-width);
 }
 .k-dialog-body {
   display: flex;
@@ -557,8 +558,8 @@ textarea.k-input {
   padding: var(--k-c-dialog-actions-pad);
   border-top: var(--k-c-dialog-actions-border-top);
 }
-/* 足のボタンは高さ 34（StModal）。ふつうの大きさのボタンだけ（sm・lg は替えない） */
-.k-dialog-actions .k-btn:not([data-size="sm"], [data-size="lg"]) {
+/* 足のボタンは高さ 34（StModal）。ふつうの大きさ（md）のボタンだけ（sm・lg は替えない） */
+.k-dialog-actions .k-btn[data-size="md"] {
   min-height: var(--k-c-dialog-button-height);
 }
 /* 取り消せない注意の赤い箱（StApproveModal） */
