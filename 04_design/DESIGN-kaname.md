@@ -233,6 +233,42 @@ components:
     textColor: "{colors.on-surface}"
     typography: "{typography.body-sm}"
     fontWeight: 500
+  # 入口の枠（K-255・キャンバス AuthSignup・AuthVerify・AuthChecking・AuthVerifyLoading の実測。features/F1/sign-up/sign-up.css が読む）
+  auth-page:            # 外：余白 32px 16px・ロゴと箱の間 18px
+    padding: "32px {spacing.md}"
+    gap: "18px"
+  auth-logo:            # ロゴ：印と名前の間 10px・字の間 .02em
+    gap: "10px"
+    letterSpacing: "0.02em"
+  auth-card:            # 箱：白・1px line・角丸 lg・余白 26px 28px・段の間 14px・幅 440px まで
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.lg}"
+    padding: "26px 28px"
+    gap: "14px"
+    width: "440px"
+  auth-lead-sub:        # 見出しのすぐ下の小さな説明（登録・ログイン）：見出しとの間を 8 に詰める（段の間 14 − 6）
+    margin: "-6px 0 0"
+  auth-lead-body:       # 待つ画面の説明：13px・行の高さ 1.7
+    typography: "{typography.body}"
+    lineHeight: 1.7
+  auth-badge:           # 見出しの上の札（✉）：44×44・紺・角丸 field・18px・700
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.h2}"
+    fontWeight: 700
+    rounded: "{rounded.field}"
+    width: "44px"
+    height: "44px"
+  auth-alt:             # 「アカウントがある方は ログイン」の行：上に線・線と字の間 12px
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0 0"
+  auth-foot:            # 足元の行き先：11px・間 12px
+    typography: "{typography.label-md}"
+    gap: "12px"
+  auth-spin:            # 確かめ中・読み込み中の回る印：16px
+    width: "16px"
+    height: "16px"
   # 小窓（StModal：頭は題と右上の ×・下に線、足は上に線とボタン）
   dialog:
     backgroundColor: "{colors.card}"
