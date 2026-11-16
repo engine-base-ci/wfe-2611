@@ -405,6 +405,18 @@ row(R["K53-UI-020"], async (page) => {
   await openTerms(page);
   await expect(link(page, "困ったとき").first()).toHaveAttribute("href", /help/);
 });
+row(R["K53-UI-027"], async (page) => {
+  await mockApi(page);
+  await signedIn(page);
+  await openTerms(page);
+  const foot = page.getByRole("navigation", { name: "Kaname について" });
+  expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual([
+    "利用規約",
+    "プライバシー",
+    "困ったとき",
+  ]);
+  await expect(foot.getByRole("link", { name: "プライバシー", exact: true })).toHaveAttribute("href", /privacy/);
+});
 
 // ---- 文面のページ（/legal/terms・/legal/privacy・K-53 で作る・G-04 の届くこと） ----
 /** 種の第 1 版の url は Kaname の中の道（/legal/<kind>?v=1）。文面は apps/web/content/legal/<kind>-v1.md のひな形を設定で埋めて出す */
@@ -455,7 +467,8 @@ const loginByForm = async (page: Page, email: string) => {
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  // 送るボタンの字はログインの画面のチケット（K-221）が替える。名前に依らず欄から送る（同じ試験のファイルを 2 本で分け持たない）
+  await page.getByLabel("パスワード", { exact: true }).press("Enter");
   await page.waitForURL((u) => u.pathname !== "/login" || u.searchParams.get("step") === "terms", { timeout: 30_000 });
 };
 /** 会社の利用者を作り、今の版への同意を外す（同意し直しが要る人にする） */
