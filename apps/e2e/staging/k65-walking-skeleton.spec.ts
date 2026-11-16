@@ -243,7 +243,14 @@ test("K65-STG-01 正常・端から端（本物のメール・本物の PC の�
   await expect.poll(() => pathOf(page), "行からチケットの詳細の帯へ").toBe(`/tickets/${t}`);
 
   // 承認して送る → 同じ輪が実行の段を取って終える。押してから帯が替わるまでの秒を測る（K65-STG-04 が読む）
-  expect(await clickAndAnswer(page, approveBtn(page), APPROVE_RE), "承認の口が受ける（201）").toBe(201);
+  // 押すと確かめの小窓（K-229・D-143.4）。成果物を目で見たに印を付け、小窓の「承認して送る」で口を呼ぶ
+  await approveBtn(page).click();
+  const sure = page.getByRole("alertdialog");
+  await sure.getByRole("checkbox", { name: "成果物を目で見た" }).check();
+  expect(
+    await clickAndAnswer(page, sure.getByRole("button", { name: "承認して送る", exact: true }), APPROVE_RE),
+    "承認の口が受ける（201）",
+  ).toBe(201);
   const approvedAt = Date.now();
   await expect(approveBtn(page), "決めた承認を二度は押させない").toHaveCount(0);
   const moved = execBand(page).getByText(MSG.running, { exact: true }).or(execBand(page).getByText(MSG.completeHint));

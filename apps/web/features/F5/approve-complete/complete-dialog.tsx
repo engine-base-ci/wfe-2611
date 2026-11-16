@@ -4,6 +4,7 @@
 //   ブラウザ標準の検証は使わない（noValidate・required を付けない）。揃うまでは口を呼ばず、小窓の中に正本の文（E-VAL-022・E-VAL-023）。
 //   口の 422（残りの項目・終わっていない子）は小窓の中に出し、閉じない。それ以外の断りは閉じて、呼んだ側が知らせて読み直す。
 //   文は全部文字として出す（HTML を作らない）
+//   形はキャンバス StCompleteModal（K-229）：頭の下に対象の行・完了の条件（12px・500 の見出しと 12px 灰の文）・実施事項は線の枠・その下に確かめのチェック
 import { useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { Button, Dialog } from "@/components/k";
@@ -26,6 +27,8 @@ interface Props {
   onDone: () => void | Promise<void>;
   /** 小窓の中に出さない断り（409 など）。小窓は閉じてある */
   onFailed: (r: CallErr) => void | Promise<void>;
+  /** 頭の下の対象の行（「EG-133 11 月分の請求書を送る」） */
+  target?: string;
 }
 
 /** 口の 422 の答え → 小窓の中の知らせ（文は正本、明細は口の答えをそのまま） */
@@ -118,18 +121,19 @@ function useComplete({ ticketId, todo, onClose, onDone, onFailed }: Props) {
 }
 
 export function CompleteDialog(props: Props) {
-  const { todo, conditions } = props;
+  const { todo, conditions, target } = props;
   const c = useComplete(props);
   return (
     <Dialog
       title="完了にする"
+      {...(target ? { target } : {})}
       open
       onOpenChange={(open) => {
         if (!open) c.close(); // Esc・外側のクリック
       }}
       actions={
         <>
-          <Button variant="ghost" onClick={c.close} disabled={c.busy}>
+          <Button variant="outlined" onClick={c.close} disabled={c.busy}>
             やめる
           </Button>
           <Button onClick={() => void c.send()} loading={c.busy} disabled={c.busy}>
@@ -146,15 +150,15 @@ export function CompleteDialog(props: Props) {
           void c.send();
         }}
       >
-        <section aria-label={conditions.label}>
+        <section aria-label={conditions.label} className="k63-cond">
           <p className="k-label">{conditions.label}</p>
           <p className="k63-text">{conditions.text}</p>
         </section>
         {c.items.length ? (
-          <fieldset className="k63-checks">
-            <legend className="k-label">{todo.label}</legend>
+          <fieldset className="k-dialog-group">
+            <legend>{todo.label}</legend>
             {c.items.map((x, i) => (
-              <label key={i} className="k63-check">
+              <label key={i} className="k-dialog-check">
                 <input
                   type="checkbox"
                   checked={c.checked[i] ?? false}
@@ -166,7 +170,7 @@ export function CompleteDialog(props: Props) {
             ))}
           </fieldset>
         ) : null}
-        <label className="k63-check">
+        <label className="k-dialog-check">
           <input type="checkbox" checked={c.confirmed} onChange={(e) => c.confirm(e.target.checked)} />
           <span>完了の条件を満たしたことを確かめました</span>
         </label>

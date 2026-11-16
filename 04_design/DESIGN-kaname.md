@@ -46,6 +46,7 @@ colors:
   line-strong: "#B8C0CC"   # 点線の枠・使えない線・薄いアイコン
   primary-soft: "#EEF3FD"  # 紺の淡い地（選んだ札・案内）
   primary-line: "#C7D7F5"  # 紺の淡い線
+  overlay-shadow: "#131B274D"  # 迫り出す面（小窓）の影：on-surface の 30%（StModal の 0 24px 60px）。暗いテーマは影を使わない（透明）
 syntax:
   # コードの色分け（D-104.4）。新しい色は作らず、既存の値を字の色としてだけ使う（面に使わない）
   keyword: "#22345C"
@@ -281,14 +282,51 @@ components:
   dialog:
     backgroundColor: "{colors.card}"
     rounded: "{rounded.lg}"
-  dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）
+    shadow: "0 0 0 1px {colors.line}, 0 24px 60px {colors.overlay-shadow}"   # 層 2：縁の輪（大きさに足さない）と影。暗いテーマは overlay-shadow が透明なので輪だけ
+    margin: "60px auto 0"   # 置き場：上から 60px・左右の真ん中（K-229・キャンバスの StApproveModal・StCompleteModal・StReturnModal）。左右は画面の端から lg 空ける
+  dialog-confirm:       # 取り消せない確かめの幅（StApproveModal 380）
+    width: "380px"
+  dialog-form:          # ふつうの小窓の幅（StCompleteModal・StReturnModal 420）
+    width: "420px"
+  dialog-button:        # 小窓の足のボタンの高さ（StModal 34）
+    height: "34px"
+  dialog-caution:       # 取り消せない注意の赤い箱（StApproveModal）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+  dialog-target:        # 頭の下の対象の行（「EG-133 11 月分の請求書を送る」・12px・灰・行の高さ 1.6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+  dialog-group:         # 小窓の中の項目の枠（実施事項の fieldset：1px line・角丸 field）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "8px 12px"
+  dialog-check:         # 小窓の中のチェック・選ぶ印の行（12px・行の高さ 1.6・印と字の間 6px）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+    gap: "6px"
+  dialog-stack:         # 項目の多い小窓（StReturnModal）の段の間 12px
+    gap: "12px"
+  dialog-select:        # 小窓の中の選ぶ欄の高さ（StReturnModal「どこを直すか」35）
+    height: "35px"
+  dialog-textarea:      # 小窓の中の複数行の欄の高さ（StReturnModal「理由」64）
+    height: "64px"
+  field-required:       # 必須の印（StReturnModal「必須」）
+    textColor: "{colors.error}"
+    typography: "{typography.body-sm}"
+  dialog-title:         # 題は h3 の大きさに太さ 700 を重ねる（段を増やさない）。行の高さは本文と同じ 1.6（StModal の頭 53）
     typography: "{typography.h3}"
     fontWeight: 700
+    lineHeight: 1.6
   dialog-head:          # 頭：題と右上の ×・下に線
     padding: "14px 18px"
     borderBottom: "1px solid {colors.line}"
-  dialog-body:
+  dialog-body:          # 本文：段の間 10px（StApproveModal・StCompleteModal）
     padding: "14px 18px"
+    gap: "10px"
   dialog-actions:       # 足：上に線・右寄せのボタン
     padding: "12px 18px"
     borderTop: "1px solid {colors.line}"
@@ -700,6 +738,7 @@ dark:
     line-strong: "#3D4858"
     primary-soft: "#1B2638"
     primary-line: "#34476B"
+    overlay-shadow: "#00000000"  # 暗いテーマは影が見えないので出さない。迫り出す面は輪（dialog-ring＝line）と地の段で表す
   syntax:
     keyword: "#9DB5E8"
     string: "#6CC4BC"
@@ -986,7 +1025,7 @@ Tertiary の細い左罫、または `tertiary-container` の淡い背景 ＋ Lu
 白いカードに 説明（12px）・数（18px・太字）・補足（11px）。気にかけてほしい数だけ `st-warning`／`st-danger` の字の色。
 
 ### 小窓・引き出し・ポップオーバー
-小窓は真ん中（幅 520〜620・白地・角丸 `lg`）。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
+小窓は上から 60px・左右の真ん中に置き、左右は画面の端から `lg` 空ける（K-229・キャンバスの StApproveModal・StCompleteModal・StReturnModal）。幅は取り消せない確かめ 380（`dialog-confirm`）・ふつうの小窓 420（`dialog-form`）。白地・角丸 `lg`。足のボタンは高さ 34（`dialog-button`）。取り消せない注意は赤い箱（`dialog-caution`）、頭の下の対象の行は 12px・灰（`dialog-target`）、中の項目の枠は 1px の線・角丸 `field`（`dialog-group`）、必須の印は `field-required`。**頭**は余白 14px 18px・下に `1px solid line`・題は 15px（`h3`）の太さ 700（`dialog-title`）・右上に × の閉じる（28×28・名前「閉じる」）。**足**は上に `1px solid line`・右寄せに やめる（outlined）／決める（primary）。閉じる手段は頭の × と Esc で、足に「閉じる」のボタンを重ねて置かない。開いたときのフォーカスは本文の最初の欄（無ければ足の最初のボタン）に置き、× には置かない。**取り消せない確かめ**（Confirm・キャンバスの StModal「承認して送ります」）は × を持たず、閉じるのは足の「やめる」と Esc。開いたときのフォーカスは「やめる」。引き出しは右から。ポップオーバーは押した所の近くに出し、パネルの外にはみ出しても切れないよう画面に固定して出す。
 
 ### 帯（お知らせ・確かめ・運営）
 - 注意：`warning-soft` の地 ＋ `warning-line` の線 ＋ 札

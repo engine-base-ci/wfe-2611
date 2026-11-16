@@ -51,6 +51,8 @@ interface Section {
 }
 /** 帯が読む getTicket の答えのところ（K-60 の詳細・K-162 の approval・K165 の can.complete と completed） */
 export interface BandTicket {
+  /** 番号と題名（小窓の頭の下の対象の行・K-229） */
+  ticket?: { number?: string | null; title?: string | null } | null;
   stage: { key?: string | null } | null;
   assignee: unknown;
   sections: Section[];
@@ -96,6 +98,10 @@ function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown: boole
   return ticket.can?.complete === true && ticket.stage?.key === COMPLETABLE_STAGE;
 }
 
+/** 小窓の対象の行「EG-133 11 月分の請求書を送る」。番号も題名も無ければ出さない */
+export const targetLine = (number?: string | null, title?: string | null): string | undefined =>
+  [number, title].filter(Boolean).join(" ") || undefined;
+
 const sectionOf = (ticket: BandTicket, key: string, fallback: string) => {
   const s = ticket.sections.find((x) => x.key === key);
   return { label: s?.label ?? fallback, text: s?.body?.text ?? "", version: s?.version ?? 0 };
@@ -115,6 +121,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   const approval = ticket.approval ?? null;
   const execute = run?.phase === "execute" ? run : null;
   const complete = canCompleteNow(ticket, run, runKnown);
+  const target = targetLine(ticket.ticket?.number, ticket.ticket?.title);
   // 「完了にする」を出さない形に替わったら（実行が走り出した・承認待ちになった・段が変わった）、開いていた小窓も閉じる
   useEffect(() => {
     if (!complete) setCompleting(false);
@@ -122,7 +129,15 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   const body = (() => {
     if (ticket.stage?.key === "done") return ticket.completed ? <p>{completedLine(ticket.completed)}</p> : null; // ⑦
     if (approval?.can_decide)
-      return <DecideBody approval={approval} onChanged={onChanged} onFailed={failed} onStart={() => setNotice(null)} />;
+      return (
+        <DecideBody
+          approval={approval}
+          onChanged={onChanged}
+          onFailed={failed}
+          onStart={() => setNotice(null)}
+          {...(target ? { target } : {})}
+        />
+      );
     if (approval && ticket.assignee === null) return <p>{MSG.noAssignee}</p>;
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
     const line = execute ? executeLine(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
@@ -144,6 +159,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
       {dialogOpen ? (
         <CompleteDialog
           ticketId={ticketId}
+          {...(target ? { target } : {})}
           todo={sectionOf(ticket, "todo", "実施事項")}
           conditions={sectionOf(ticket, "done", "完了の条件")}
           onClose={() => setCompleting(false)}
