@@ -222,6 +222,12 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.getByRole("checkbox", { name: "利用規約とプライバシーポリシーに同意します" })).toBeVisible();
   },
+  // 規約の文面（K-232・キャンバス LegalPage）：口を読まない画面なので開くだけ。箱の題が出るまで待つ（鍵は "<鍵>": の字で探されるので引用符を残す）
+  // prettier-ignore
+  "legal": async (page, path) => {
+    await page.goto(path);
+    await expect(page.locator('[data-part="auth-box"] h1')).toBeVisible();
+  },
   "shell-nav": async (page, path) => {
     await shellApi(page, 2);
     await page.goto(path);

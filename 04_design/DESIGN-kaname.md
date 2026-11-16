@@ -248,6 +248,11 @@ components:
     padding: "26px 28px"
     gap: "14px"
     width: "440px"
+  auth-card-wide:       # 文面のページ（規約・プライバシーポリシー）の箱の幅：720px まで（K-232・キャンバス LegalPage。ほかの値は auth-card のまま）
+    width: "720px"
+  legal-body:           # 文面のページの本文（段落・番号と点の並び）：13px・行の高さ 1.9（K-232・キャンバス LegalPage）
+    typography: "{typography.body}"
+    lineHeight: 1.9
   auth-lead-sub:        # 見出しのすぐ下の小さな説明（登録・ログイン）：12px・灰・見出しとの間を 8 に詰める（段の間 14 − 6）
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.body-sm}"
