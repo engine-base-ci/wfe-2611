@@ -504,6 +504,16 @@ test("K138-SH-021 役が分かるまで（読み中）は左のメニューに�
       body: JSON.stringify({ error: "unauthenticated", code: "UNAUTHENTICATED" }),
     });
   });
+  // 401 の後に役の項目を一度でも描いたら印を立てる（入り直しは画面の中の移動なので、印は /login に移った後も読める）
+  await page.addInitScript(() => {
+    const w = window as unknown as { __roleNavSeen?: boolean };
+    w.__roleNavSeen = false;
+    const look = () => {
+      if (document.querySelector('nav[aria-label="メニュー"] .k-nav-item:not(:has(.k-group-mark))'))
+        w.__roleNavSeen = true;
+    };
+    new MutationObserver(look).observe(document, { childList: true, subtree: true });
+  });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(PATHS.detail);
   await expect(page.locator(".k-shell")).toBeVisible();
@@ -514,6 +524,8 @@ test("K138-SH-021 役が分かるまで（読み中）は左のメニューに�
   // ログインが切れた（401）：どの画面も入り直しへ（lib/api/query.tsx・D-086.4）。開いていた場所を next に持つ
   release();
   await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(PATHS.detail)}$`));
+  // 読み中から入り直しまでのあいだに、役の項目（R1 などに倒した物）を一度も描いていない
+  expect(await page.evaluate(() => (window as unknown as { __roleNavSeen?: boolean }).__roleNavSeen)).toBe(false);
 });
 
 test("K138-SH-022 鍵が無い（ログインしていない）：/tickets を開くと /login?next=%2Ftickets に移る", async ({
