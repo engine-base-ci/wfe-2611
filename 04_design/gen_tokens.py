@@ -95,7 +95,9 @@ COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "ro
              # 小窓の頭・足の線、× の大きさ、使えない状態（K-218）
              "borderTop": "border-top", "borderBottom": "border-bottom", "width": "width", "opacity": "opacity",
              # 入口の枠のロゴの字の間（K-255）
-             "letterSpacing": "ls"}
+             "letterSpacing": "ls",
+             # 迫り出す面の影と縁の輪（K-229：小窓。色は colors を参照するので、暗いテーマでは暗い側の値に替わる）
+             "shadow": "shadow"}
 
 
 def ref(v: str) -> str:

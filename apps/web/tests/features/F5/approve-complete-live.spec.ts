@@ -26,6 +26,7 @@ import {
   reasonBox,
   type Band,
 } from "./approve-complete.harness.js";
+import { approveVia } from "../../k/approve-modal";
 
 const MAKE_1 = "0193c5a0-0000-7000-8000-0000000e0011"; // 任せたときの作る段の実行（画面が pinned に持つ id）
 const EXEC = "0193c5a0-0000-7000-8000-0000000e0012"; // 承認の後の実行
@@ -161,7 +162,7 @@ const approveTo = (w: World, exec: Run) => {
 row(R["K63-UI-064"], async (page) => {
   const w = await delegatedAndMade(page);
   approveTo(w, { id: EXEC, phase: "execute", status: "running" });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible(); // 再読み込みなしで替わる
   await expect(page.getByRole("button", { name: "完了にする", exact: true })).toHaveCount(0);
   // 実行が終わった
@@ -186,7 +187,7 @@ row(R["K63-UI-065"], async (page) => {
     { id: MAKE_1, phase: "make", status: "done" },
   ];
   w.ticket = { stage: "running" };
-  await page.getByRole("button", { name: "差し戻して作り直させる" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 再読み込みなしで、作り直しの間の K-62 の帯が出る
   await expect(k62Band(page).getByText("差し戻しの理由：宛名を直してください")).toBeVisible();
   await expect(bandOf(page)).toHaveCount(0); // 作り直しの間は K-63 の帯を出さない（D-128.178）
@@ -205,7 +206,7 @@ row(R["K63-UI-065"], async (page) => {
 row(R["K63-UI-066"], async (page) => {
   const w = await delegatedAndMade(page);
   approveTo(w, { id: EXEC, phase: "execute", status: "running" });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   // 実行が止まった（道具の途中）
   const reason = `ここで止まりました。${MSG.inFlight}`;
@@ -226,7 +227,7 @@ row(R["K63-UI-067"], async (page) => {
   // 承認の後、古い作る段の実行（MAKE_1）の答えだけを止めておく（新しい実行の答えより後に届かせる）
   const release = w.hold(MAKE_1);
   approveTo(w, { id: EXEC, phase: "execute", status: "running" });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(bandOf(page).getByText("実行中", { exact: true })).toBeVisible();
   // 古い実行の答え（作る段・終わった）が後から届く
   release();
@@ -252,7 +253,7 @@ row(R["K63-UI-068"], async (page) => {
   const REASK = "0193c5a0-0000-7000-8000-0000000a0068"; // 聞き直しの承認待ち（前の承認とは別の id）
   const w = await delegatedAndMade(page);
   approveTo(w, { id: EXEC, phase: "execute", status: "queued", pc: "asleep" });
-  await bandOf(page).getByRole("button", { name: "承認して送る" }).click();
+  await approveVia(page, bandOf(page).getByRole("button", { name: "承認して送る" })); // 確かめの小窓を通す（K-229・D-143.4）
   await expect(bandOf(page).getByText(MSG.pcClosed)).toBeVisible(); // 実行待ち・PC が閉じている
   await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toHaveCount(0);
   // 24 時間が過ぎ、読む口の前の片付けが聞き直しにした

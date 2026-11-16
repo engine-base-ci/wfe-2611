@@ -429,6 +429,7 @@
   "apps/web/tests/k/k219-canvas-boards.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-219）",
   "scripts/ci/k257_canvas_boards_test.py": "04_design/canvas の絵・canvas.json・対応表 canvas-screens.json・突き合わせの設定 fidelity.json・幅の台帳・見比べの 1 枚 canvas-review を読み、作り手 04_design/canvas_gen を写し（tempfile）で子プロセスに流す。G65 で spec の組が流す・K-257",
   "apps/web/tests/k/k257-canvas-boards.spec.ts": "04_design/canvas の絵・突き合わせの設定 fidelity.json・見比べの 1 枚 canvas-review を読む。どれも 04_design/** で jobs.web.paths に在る・K-257",
+  "apps/web/tests/k/k229-modals.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組の持ち主）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-229",
   "apps/web/tests/k/kit.ts": "画面の試験の汎用の道具。突き合わせの設定 04_design/fidelity.json とキャンバスの絵を読む・K-257",
   "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
   "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",

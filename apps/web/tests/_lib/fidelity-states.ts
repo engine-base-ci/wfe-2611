@@ -6,6 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
+import { TICKET, executedBand, mockApi } from "../features/F5/approve-complete.harness";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -149,6 +150,23 @@ async function verifyApi(page: Page, verify: "hold" | "expired" | "used" | "none
   });
 }
 const withToken = (path: string) => `${path}${path.includes("?") ? "&" : "?"}token=${VERIFY_TOKEN}`;
+
+/** チケットの詳細の小窓（K-229・キャンバス StApproveModal・StCompleteModal・StReturnModal）：口を差し替えてチケットを開き、
+ *  帯（region「承認と実行」）のボタンで小窓を開き、題が出るまで待つ */
+/** 完了の小窓の実施事項：キャンバス StCompleteModal と同じ 5 つ（済み 4・残り 1） */
+const CANVAS_TODO = [
+  "- [x] 新着から条件に合う案件を選ぶ（3 件 → 1 件）",
+  "- [x] 案件の要件と予算を読む",
+  "- [x] 応募文を作る（過去の採用文 3 件を参考）",
+  "- [x] 確認を通す",
+  "- 発注ナビの画面から応募する（承認のあと）",
+].join("\n");
+async function openBandModal(page: Page, path: string, button: string, title: string, done = false): Promise<void> {
+  await (done ? mockApi(page, { ...executedBand, todo: CANVAS_TODO }) : mockApi(page));
+  await page.goto(path.replace("{ticket}", TICKET));
+  await page.getByRole("region", { name: "承認と実行" }).getByRole("button", { name: button, exact: true }).click();
+  await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
+}
 
 /** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
 async function untilStatusText(page: Page, text: string): Promise<void> {
@@ -301,6 +319,16 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path.replace("{ticket}", id));
     await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
     await expect(page.locator('.k-detail-meta [data-part="stage"]')).toHaveText("承認待ち");
+  },
+  // 承認と完了の小窓（K-229）：承認待ち・帯の「承認して送る」／実行が終わった作業中・「完了にする」／承認待ち・帯の「差し戻す」
+  "approve-modal": async (page, path) => {
+    await openBandModal(page, path, "承認して送る", "承認して送ります");
+  },
+  "complete-modal": async (page, path) => {
+    await openBandModal(page, path, "完了にする", "完了にする", true);
+  },
+  "return-modal": async (page, path) => {
+    await openBandModal(page, path, "差し戻す", "差し戻す");
   },
   "shell-tabs": async (page, path) => {
     await shellApi(page, 9);

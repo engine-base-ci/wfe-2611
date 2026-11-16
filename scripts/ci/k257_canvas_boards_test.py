@@ -184,7 +184,7 @@ class Boards(unittest.TestCase):
 
     def test_K257_CV_003_fidelity_groups(self):
         """K257-CV-003 突き合わせの組：approve-modal の絵は StApproveModal・complete-modal の小窓のセレクタは role=dialog（× を持つふつうの小窓）・
-        組 return-modal（kind dialog・絵 StReturnModal・道 /tickets/{ticket}・state return-modal・幅 1440 と 375・持ち主 K-229・enrolled false・役 dialog・dialog-title・primary）が在る"""
+        組 return-modal（kind dialog・絵 StReturnModal・道 /tickets/{ticket}・state return-modal・幅 1440 と 375・持ち主 K-229・enrolled true（K-229 が入れる）・役 dialog・dialog-title・primary）が在る"""
         g = groups()
         self.assertEqual(g["approve-modal"]["canvas"], "StApproveModal")
         self.assertTrue(all('role="alertdialog"' not in p["canvas"] for p in g["complete-modal"]["pairs"]))
@@ -193,7 +193,7 @@ class Boards(unittest.TestCase):
         self.assertTrue(r, "組 return-modal が無い")
         self.assertEqual(
             (r["kind"], r["canvas"], r["app"], r["state"], r["widths"], r["owner"], r["enrolled"]),
-            ("dialog", "StReturnModal", "/tickets/{ticket}", "return-modal", [1440, 375], "K-229", False),
+            ("dialog", "StReturnModal", "/tickets/{ticket}", "return-modal", [1440, 375], "K-229", True),
         )
         self.assertEqual(sorted(p["role"] for p in r["pairs"]), ["dialog", "dialog-title", "primary"])
 
