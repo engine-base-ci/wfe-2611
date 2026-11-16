@@ -445,7 +445,11 @@ const legal = async (page: Page, kind: "terms" | "privacy", title: string, from:
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/signup");
   }
-  const a = page.getByRole("link", { name: new RegExp(name.slice(0, 5)) }).first();
+  // 足元にも同じ名前のリンクがある（K-256）ので、同意の画面は版の一覧の中、登録の画面は「続けると」の文の中だけで探す（.first() で足元に落ちない）
+  const a =
+    from === "consent"
+      ? listLink(page, name)
+      : page.getByText(/続けると/).getByRole("link", { name: new RegExp(`^${name.slice(0, 5)}`) });
   await expect(a).toHaveAttribute("href", new RegExp(`/legal/${kind}`));
   const href = (await a.getAttribute("href"))!;
   for (const path of [href, `/legal/${kind}`]) {
