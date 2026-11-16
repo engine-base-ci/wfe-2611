@@ -11,6 +11,7 @@ import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
 import { bridgeHooks } from "./hooks/bridge.js";
 import { ticketHooks } from "./hooks/tickets.js";
+import { setupTaskHooks } from "./hooks/setup-tasks.js";
 import { delegateHooks } from "./hooks/delegate.js";
 import { approveHooks } from "./hooks/approve-complete.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
@@ -155,6 +156,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
           objects,
         }),
         ...ticketHooks(appPool),
+        // はじめにやること（K-250）
+        ...setupTaskHooks(appPool),
         // AI に任せる（K-62）。getTicket は K-60 の詳細に can.delegate を足したものに置き換わる
         ...delegateHooks(appPool),
         // 承認して完了する（K-63 の孫）。K-161 は承認待ちの一覧と 1 件・K-162 は承認する

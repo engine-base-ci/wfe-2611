@@ -117,7 +117,11 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   const resolver: SessionResolver | undefined = opts.resolve
     ? async (c) => {
         const r = await opts.resolve!(c.req.raw.headers);
-        return r ? { ctx: r.ctx, termsPending: r.termsPending } : null;
+        if (!r) return null;
+        // 抜けた人の答え（memberLeft）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
+        return r.memberLeft === undefined
+          ? { ctx: r.ctx, termsPending: r.termsPending }
+          : { ctx: r.ctx, termsPending: r.termsPending, memberLeft: r.memberLeft };
       }
     : legacy
       ? async (c) => {

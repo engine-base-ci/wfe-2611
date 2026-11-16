@@ -94,7 +94,7 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       },
     },
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 },
-    advanced: { database: { generateId: () => uuidv7() } },
+    advanced: { database: { generateId: () => uuidv7(), joins: true } }, // session と user を 1 本で引く（K-233）
     plugins: [twoFactor({ issuer: o.issuer ?? "Kaname" }), bearer()],
     databaseHooks: {
       user: {

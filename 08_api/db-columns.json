@@ -3788,6 +3788,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "setup_skipped_keys": {
+    "type": "text[]",
+    "nullable": false
+   },
    "setup_step": {
     "type": "smallint",
     "nullable": false
