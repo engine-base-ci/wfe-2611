@@ -992,7 +992,10 @@ row(R["K60-UI-030"], async (page) => {
   await page.goto(`/tickets/${ID}`);
   // K-226：本文の「チケットへ戻る」をやめ、上の帯のいまの場所（キャンバス TicketDetail）の「チケット」で戻る
   await expect(page.getByRole("link", { name: "チケットへ戻る" })).toHaveCount(0);
-  await page.getByRole("navigation", { name: "いまの場所" }).getByRole("link", { name: "チケット", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "いまの場所" })
+    .getByRole("link", { name: "チケット", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/tickets$/);
 });
 
