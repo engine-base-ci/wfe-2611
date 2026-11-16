@@ -4,8 +4,6 @@
 
 /* ---- 器（帯と本文と足元の帯をまとめる。.k-page の左右の入れ子の余白は当てない） ---- */
 .k-create-page {
-  /* 下のタブ（外枠 K-138・幅 767 以下）の高さ。外枠の shell.css の .k-tabs と同じ値 */
-  --k-create-tabs-height: 60px;
   min-width: 0;
 }
 
@@ -372,7 +370,7 @@
 }
 @media (max-width: 767px) {
   .k-create-foot {
-    bottom: var(--k-create-tabs-height);
+    bottom: var(--k-c-shell-tabs-height); /* 下のタブ（外枠 K-138）の上 */
   }
 }
 

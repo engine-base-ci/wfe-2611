@@ -283,6 +283,7 @@
   --k-c-section-body-fw: var(--k-fw-body);
   --k-c-section-body-lh: 1.7;
   --k-c-section-list-pad: 0 0 0 20px;
+  --k-c-shell-tabs-height: 60px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
