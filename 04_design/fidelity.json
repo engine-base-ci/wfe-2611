@@ -985,7 +985,7 @@
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "小窓",
@@ -1025,6 +1025,58 @@
       "x",
       "y"
      ]
+    },
+    {
+     "name": "コードの箱",
+     "role": "input",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] span[style*=\"height: 42px\"]:first-child",
+     "app": ".k-code-cell:first-child",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "段の題",
+     "role": "dialog-title",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div > div:nth-child(2) > div:nth-child(2) > div > b",
+     "app": ".k-steps > li:nth-child(2) .k-step-title",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    },
+    {
+     "name": "新しいコード",
+     "role": "primary",
+     "canvas": "[data-act=\"new-code\"]",
+     "app": "[data-act=\"new-code\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
+     ]
     }
    ]
   },
@@ -1032,14 +1084,14 @@
    "id": "bridge-connected",
    "kind": "page",
    "canvas": "MePC",
-   "app": "/setup/bridge",
+   "app": "/setup/bridge?from=%2Ftickets",
    "state": "bridge-connected",
    "widths": [
     1440,
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1083,6 +1135,78 @@
       "width",
       "x",
       "y"
+     ]
+    },
+    {
+     "name": "つないでいる PC のカード",
+     "role": "card",
+     "canvas": "main > div > section > div:nth-child(2)",
+     "app": ".k-pc-card[aria-labelledby=\"pc-list-title\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "＋ PC をつなぐ",
+     "role": "primary",
+     "canvas": "main > div > section > div:nth-child(2) > div:first-child > a",
+     "app": ".k-pc-card-head .k-btn",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "Bridge を起こす",
+     "role": "primary",
+     "canvas": "[data-act=\"wake\"]",
+     "app": "[data-act=\"wake\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "戻る",
+     "role": "band-title",
+     "canvas": "[data-act=\"back\"]",
+     "app": "[data-act=\"back\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
      ]
     }
    ]
@@ -1821,7 +1945,7 @@
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1865,6 +1989,49 @@
       "width",
       "x",
       "y"
+     ]
+    },
+    {
+     "name": "この PC の Bridge のカード",
+     "role": "card",
+     "canvas": "main > div > section > div:nth-child(2)",
+     "app": ".k-pc-this",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "このアカウントに切り替える",
+     "role": "primary",
+     "canvas": "[data-act=\"switch-account\"]",
+     "app": "[data-act=\"switch-account\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
      ]
     }
    ]

@@ -13,9 +13,15 @@ const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 const ME = "11111111-0000-4000-8000-000000000001";
 
 /** 外枠の口を差し替える：役 owner・名前 高本・会社 ENGINE BASE・承認待ち n・グループ 営業 EG・受託開発 JD・経理 KR・PC live（キャンバス Main と同じ人とデータ） */
-async function shellApi(page: Page, approvals: number): Promise<void> {
+interface ShellOpts {
+  /** PC の一覧の答え（無ければ live の 1 台） */
+  devices?: unknown[];
+  /** この PC の中だけの口（127.0.0.1:38617）の差し替え（無ければ 404＝Bridge は居ない）。本人の Bridge には届かせない */
+  local?: (route: Route) => Promise<void>;
+}
+async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promise<void> {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
-  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(/127\.0\.0\.1:38617/, (route) => (o.local ? o.local(route) : route.fulfill({ status: 404, body: "" })));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
     const req = route.request();
     const p = new URL(req.url()).pathname;
@@ -49,9 +55,13 @@ async function shellApi(page: Page, approvals: number): Promise<void> {
       );
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: approvals }, cursor: null });
     else if (p === "/api/v1/bridge/devices")
-      r = ok([
-        { id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" },
-      ]);
+      r = ok(
+        o.devices ?? [
+          { id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" },
+        ],
+      );
+    else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST")
+      r = { status: 201, body: { data: { code: "KQ7M2X", expires_at: "2099-01-01T00:00:00Z" } } };
     else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
     else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
     else if (p === "/api/v1/tickets" && req.method() === "GET")
@@ -155,6 +165,38 @@ async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
 }
 
+/** キャンバス MePC の 2 台（最後に見えたは日本時間で 10/30 18:40） */
+const BRIDGE_TWO = [
+  { id: "d0", device_label: "高本の MacBook Pro", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.4" },
+  { id: "d1", device_label: "事務所の Windows", state: "asleep", last_seen_at: "2026-10-30T09:40:00Z", version: "1.4" },
+];
+/** この PC の中だけの口：ping は版を返し、つなぐ（pair）は別のアカウントでつながっている（409） */
+async function localBridgeOtherAccount(route: Route): Promise<void> {
+  const req = route.request();
+  const cors = {
+    "access-control-allow-origin": req.headers()["origin"] ?? "*",
+    "access-control-allow-headers": "content-type",
+    "access-control-allow-methods": "GET,POST,OPTIONS",
+  };
+  if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors, body: "" });
+  const path = new URL(req.url()).pathname;
+  if (path === "/ping")
+    return route.fulfill({
+      status: 200,
+      headers: cors,
+      contentType: "application/json",
+      body: JSON.stringify({ app: "kaname-bridge", version: "1.4", device_label: "この PC", connected: false }),
+    });
+  if (path === "/pair")
+    return route.fulfill({
+      status: 409,
+      headers: cors,
+      contentType: "application/json",
+      body: JSON.stringify({ reason: "other_account", message: "この PC の Bridge は別のアカウントでつながっています" }),
+    });
+  return route.fulfill({ status: 404, headers: cors, body: "" });
+}
+
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
   // 鍵は "<鍵>": の字で探される（scripts/ci/fidelity_config.py）。整形が引用符を外さないようにする
   // prettier-ignore
@@ -221,6 +263,27 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[aria-label="自分の設定の中"] .k-me-sub-t')).toHaveCount(5);
     await expect(page.locator(".k-nav .k-pc")).toHaveText("PC つながっている");
     await expect(page.locator("#connect-pc-title")).toHaveText("PC と使った量");
+  },
+  // PC をつなぐの中身（K-230・キャンバス EdPC・MePC・MePCInstalled）。口とこの PC の中だけの口は網の手前で差し替える（本人の Bridge に届かせない）
+  //   bridge-code：PC 無し・Bridge 無し → つなぐ小窓が開き、コード（キャンバスと同じ KQ7M2X）が出るまで待つ
+  "bridge-code": async (page, path) => {
+    await shellApi(page, 2, { devices: [] });
+    await page.goto(path);
+    await expect(page.getByRole("dialog", { name: "PC をつなぐ" }).getByTestId("pairing-code")).toHaveText("KQ7M2X");
+  },
+  //   bridge-connected：キャンバス MePC の 2 行（つながっている 1 台と切れている 1 台）
+  "bridge-connected": async (page, path) => {
+    await shellApi(page, 2, { devices: BRIDGE_TWO });
+    await page.goto(path);
+    await expect(page.locator(".k-pc-card .k-pc-row")).toHaveCount(2);
+    await expect(page.locator('[data-act="wake"]')).toBeVisible();
+  },
+  //   bridge-installed：この PC の口が答え（版 1.4）、つなぐと「別のアカウントでつながっている」（409）。押して「切り替える」が出るまで待つ
+  "bridge-installed": async (page, path) => {
+    await shellApi(page, 2, { devices: [], local: localBridgeOtherAccount });
+    await page.goto(path);
+    await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
+    await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
   },
   "shell-tabs": async (page, path) => {
     await shellApi(page, 9);
