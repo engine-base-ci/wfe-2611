@@ -269,6 +269,11 @@ async function openApprovals(page: Page, width: number) {
   await page.route(/^https?:\/\/127\.0\.0\.1:38617\//, (route) => route.abort());
   await page.goto("/approvals");
   await page.locator("header.k-page-head h1").waitFor({ state: "visible" });
+  // 読み終えた形（0 件・空の知らせ）で測る。読み込み中や失敗の形のまま測らない
+  await expect(page.locator("header.k-page-head .k63-count")).toHaveText("0 件");
+  await expect(page.getByText("いま決めるものはありません")).toBeVisible();
+  // 本文の中に失敗の知らせが無い（Next の読み上げの部品 next-route-announcer も role=alert なので、本文の箱に絞る）
+  await expect(page.locator(".k-root.k-page").getByRole("alert")).toHaveCount(0);
 }
 
 for (const w of [1440, 375]) {
