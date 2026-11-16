@@ -391,11 +391,12 @@ class ContractShapeTest(unittest.TestCase):
         return out
 
     def test_K144_SHAPE_015_every_id_path_value_and_query_is_uuid(self) -> None:
-        """回 2 の差し戻し（R1 #5）：道の値（:id だけでなく :qid・:pid・:mid）と問い合わせの *_id（listTickets の kind_id・stage_id・assignee_id・client_id、
+        """回 2 の差し戻し（R1 #5）：道の値（:id だけでなく :qid・:pid・:mid）と問い合わせの *_id（listClientRequests・listRules の client_id、listScopes の layer_id、
         listAuditEvents の member_id・ticket_id、listCredentials の tenant_id など）も、契約に format: uuid（*_ids は uuid の並び）。作り手の決まりで全部の口に"""
         params = self._id_params()
         names = {(i, n) for _o, i, n, _s in params}
-        for must in [("path", "qid"), ("path", "pid"), ("path", "mid"), ("query", "kind_id"), ("query", "assignee_id"),
+        # K-92：listTickets の kind_id・assignee_id は契約から外した（まだ使えない絞り込み・422・E-VAL-018）。拾い方の見本は契約に残る欄に替えた
+        for must in [("path", "qid"), ("path", "pid"), ("path", "mid"), ("query", "client_id"), ("query", "layer_id"),
                      ("query", "actor_member_id"), ("query", "tenant_id"), ("query", "plan_id"), ("query", "parent_id")]:
             self.assertIn(must, names, f"{must} を拾えていない（拾い方が壊れたか、口が消えた）")
         bad = [f"{o} {i}:{n}" for o, i, n, sc in params
@@ -996,6 +997,8 @@ class ContractShapeTest(unittest.TestCase):
                                                          ("slice(0, 40)", "Bridge が送る版の名前（人が書く欄でない）")],
         # K-161：一覧は limit+1 件を DB から取り、続きがあるかを見てから limit 件に切る（入力でない・DB 側で絞った後の行）
         "apps/api/src/features/F5/approve-complete/queue.ts": [("rows.slice(0, limit)", "DB から limit+1 件取った行を、続きの有無を見た後に limit 件に戻す（入力でない）")],
+        # K-92：チケットの一覧も同じ形（DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す）
+        "apps/api/src/features/F4/ticket-list/hooks.ts": [("const page = rows.slice(0, q.limit);", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
         # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
