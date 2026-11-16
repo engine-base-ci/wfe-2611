@@ -1,4 +1,4 @@
-/* 同意し直しの画面と文面のページ（K-53）。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない） */
+/* 同意し直しの画面（K-53）。文面のページの決まりは legal-page.css（K-232）。値は全部 --k-*（生の色・文字の大きさ・角丸を書かない） */
 /* 版の一覧（キャンバス AuthConsent）：1 つの箱（線 1px・角丸 8・余白 4 と 12・13px）に行を並べ、行の間に淡い線 */
 .k-terms-list {
   margin: 0;
@@ -41,31 +41,4 @@
 }
 .k-terms-err {
   margin: 0;
-}
-.k-auth[data-wide] .k-auth-card {
-  max-width: 760px;
-}
-.k-legal {
-  font-size: var(--k-text-body-sm);
-  line-height: 1.9;
-  overflow-wrap: anywhere;
-}
-.k-legal h1 {
-  text-align: left;
-}
-.k-legal h2 {
-  margin: var(--k-s-md) 0 var(--k-s-sm);
-  font-size: var(--k-text-h3);
-}
-.k-legal table {
-  width: 100%;
-  border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
-}
-.k-legal th,
-.k-legal td {
-  border: 1px solid var(--k-line);
-  padding: var(--k-s-xs) var(--k-s-sm);
-  text-align: left;
 }
