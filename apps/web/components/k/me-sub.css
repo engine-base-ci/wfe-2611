@@ -106,7 +106,8 @@
   margin-top: 0;
 }
 .k-me-page > .k-page-head {
-  column-gap: 10px;
+  /* キャンバス MePC の見出しの行は gap 10（折り返した行の間も 10・K-230） */
+  gap: 10px;
   padding: 0;
   background: transparent;
   border-bottom: 0;

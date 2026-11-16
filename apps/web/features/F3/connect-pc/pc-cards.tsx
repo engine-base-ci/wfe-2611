@@ -211,6 +211,45 @@ export function Usage() {
           <h2 id="pc-per-ws-title">ワークスペースごとの内訳（今月）</h2>
         </div>
       </section>
+      <Limits />
     </>
+  );
+}
+
+/** 超えそうなとき（キャンバス MePC）。設定を返す口・決める口がまだ無いので、中身は空で押せない形（D-145.9）。
+ *  切り替えは「切」の形（今は知らせが出ないのが本当）・選ぶ欄は値の字を出さない */
+function Limits() {
+  return (
+    <section className="k-pc-card" aria-labelledby="pc-limits-title">
+      <div className="k-pc-card-head">
+        <h2 id="pc-limits-title">超えそうなとき</h2>
+      </div>
+      <div className="k-pc-set-row">
+        <span className="k-pc-set-label">80% を超えたら知らせる</span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked="false"
+          aria-disabled="true"
+          tabIndex={-1}
+          aria-label="80% を超えたら知らせる（まだ選べません）"
+          className="k-pc-switch"
+        >
+          <span aria-hidden="true" />
+        </button>
+      </div>
+      <div className="k-pc-set-row">
+        <span className="k-pc-set-label">枠を使い切ったら</span>
+        <button
+          type="button"
+          aria-disabled="true"
+          tabIndex={-1}
+          aria-label="枠を使い切ったら（まだ選べません）"
+          className="k-pc-pick"
+        >
+          <span aria-hidden="true">▾</span>
+        </button>
+      </div>
+    </section>
   );
 }

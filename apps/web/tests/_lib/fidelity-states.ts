@@ -169,7 +169,14 @@ async function untilStatusText(page: Page, text: string): Promise<void> {
 
 /** キャンバス MePC の 2 台（最後に見えたは日本時間で 10/30 18:40） */
 const BRIDGE_TWO = [
-  { id: "d0", device_label: "高本の MacBook Pro", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.4" },
+  {
+    id: "d0",
+    device_label: "高本の MacBook Pro",
+    state: "live",
+    last_seen_at: "2026-11-15T00:00:00Z",
+    connected_at: "2026-09-12T00:00:00Z",
+    version: "1.4",
+  },
   { id: "d1", device_label: "事務所の Windows", state: "asleep", last_seen_at: "2026-10-30T09:40:00Z", version: "1.4" },
 ];
 /** この PC の中だけの口：ping は版を返し、つなぐ（pair）は別のアカウントでつながっている（409） */
