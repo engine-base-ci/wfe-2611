@@ -170,18 +170,34 @@ class OwnersDoneTest(unittest.TestCase):
         self.assertEqual(self.f.run().returncode, 0)
 
     def test_K238_VF_030_parent_owner_counts_by_children(self) -> None:
-        """K238-VF-030 持ち主 K-3 が子を持つ親なら、子（parent: K-3）が全部取り込み済みのとき取り込み済みとして 1（組の id と持ち主を同じ行に）。
-        子が 1 本でも残れば 0。子が 0 本なら前の決め（K-3 自身の履歴・stage）"""
+        """K238-VF-030 持ち主が子を持つ親なら子だけで決める（親自身の履歴・stage は見ない）：子が残っていれば、親の件名（K-3 docs）を積んでも 0。
+        最後の子の CI（--ticket K-32）では 1、子が全部取り込み済みなら 1（組の id と持ち主を同じ行に）。孫を持つ子は、その孫で決める（たどって当てる）。
+        子の無い持ち主は前の決め（自分の履歴・stage・--ticket）"""
         self.f.ticket("K-3", "未着手")
         self.f.ticket("K-31", "完了", parent="K-3")
         self.f.ticket("K-32", "未着手", parent="K-3")
         self.f.ticket("K-40", "完了", parent="K-4")
         self.f.config([("grp-parent-w", "K-3", False)])
-        self.assertEqual(self.f.run().returncode, 0, "子の K-32 が残っているのに取り込み済みと数えた")
+        self.f.commit("K-3 docs: 親が自分の文書を直す")
+        self.assertEqual(self.f.run().returncode, 0, "子の K-32 が残っているのに、親の件名で取り込み済みと数えた")
+        r = self.f.run("--ticket", "K-32")
+        self.assertEqual(r.returncode, 1, "最後の子の CI で止まらない：" + r.stdout)
+        self.assertTrue(self.line_with(r.stdout, "grp-parent-w", "K-3"), r.stdout)
         self.f.commit("K-32 feat: 子の残り")
         r = self.f.run()
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertTrue(self.line_with(r.stdout, "grp-parent-w", "K-3"), r.stdout)
+        # 孫：K-6 の子 K-61 は孫 K-611 だけを持つ。K-61 自身は件名も stage も無いが、孫が済めば済み
+        self.f.ticket("K-6", "未着手")
+        self.f.ticket("K-61", "未着手", parent="K-6")
+        self.f.ticket("K-611", "未着手", parent="K-61")
+        self.f.config([("grp-grand-u", "K-6", False)])
+        self.assertEqual(self.f.run().returncode, 0)
+        self.f.ticket("K-611", "完了", parent="K-61")
+        r = self.f.run()
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertTrue(self.line_with(r.stdout, "grp-grand-u", "K-6"), r.stdout)
+        # 子の無い持ち主
         self.f.ticket("K-5", "未着手")
         self.f.config([("grp-leaf-v", "K-5", False)])
         self.assertEqual(self.f.run().returncode, 0, "子の無い持ち主を取り込み済みと数えた")
@@ -213,6 +229,9 @@ class RunnerTest(unittest.TestCase):
         fidelity_compare.mjs に 1 つだけ在り、試験の部品（fidelity-states.ts）はそれを出し直し、道具（visual_fidelity.mjs）はキャンバスを開くときに使う（道具も外へ読みに行かない）"""
         c = COMPARE.read_text(encoding="utf-8")
         self.assertIn("export async function routeCanvasFonts", c)
+        # 書体の部品は apps/web の node_modules にしか無い：apps/web/package.json を起点に createRequire で探す
+        self.assertIn("createRequire", c)
+        self.assertIn("apps/web/package.json", c)
         for word in ("fonts.googleapis.com", "fonts.gstatic.com", "@fontsource-variable/noto-sans-jp"):
             self.assertIn(word, c)
         st = STATES.read_text(encoding="utf-8")
@@ -334,16 +353,24 @@ class GateSelectTest(unittest.TestCase):
             r = pick([f])
             self.assertEqual(r["gates"], {"70": []}, f)
             self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], f)
-        # 入れた組が 1 つでもあれば、web の組が起きる回には専用の段を必ず選ぶ（G48 の答えは同じ）。入れた組が 0 なら上のまま
+        # 入れた組が 1 つでもあれば、web の組が起きる回には専用の段を必ず選ぶ（G48 の答えは同じ）。入れた組が 0 なら上のまま。
+        # ci_scope が実際に選ぶ所（_web_pick）を偽の木に当てる。fidelity.json が無い・壊れているときは always を付けない（例外で落ちない。形の誤りは G69 が赤にする）
         tmp = pathlib.Path(tempfile.mkdtemp(prefix="k238-gate-"))
         try:
             (tmp / "04_design").mkdir()
-            for enrolled, want in ((True, [FID]), (False, [])):
-                (tmp / "04_design" / "fidelity.json").write_text(json.dumps({"groups": [{"id": "g", "enrolled": enrolled}]}), encoding="utf-8")
-                cfg = ci_scope.gate_cfg(str(tmp), web_cfg())
-                r = pick(["apps/web/app/a/page.tsx"], cfg=cfg)
-                self.assertEqual(r["gates"], {"70": want}, enrolled)
-                self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], enrolled)
+            (tmp / "11_tickets").mkdir()
+            rules = {"web_select": web_cfg(), "spec": {}}
+            plan = {"changes": [ci_scope.Change("M", "apps/web/app/a/page.tsx", None)]}
+            for text, want in ((json.dumps({"groups": [{"id": "g", "enrolled": True}]}), [FID]),
+                               (json.dumps({"groups": [{"id": "g", "enrolled": False}]}), []),
+                               (None, []), ("{oops", [])):
+                f = tmp / "04_design" / "fidelity.json"
+                if text is None:
+                    f.unlink(missing_ok=True)
+                else:
+                    f.write_text(text, encoding="utf-8")
+                r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, plan, "K-99")
+                self.assertEqual(r["gates"], {"70": want}, text)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
