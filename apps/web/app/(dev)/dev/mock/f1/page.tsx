@@ -1,3 +1,5 @@
+"use client";
+// MOCKS は "use client" の mocks.tsx の値なので、索引も client で読む（server から読むと client の参照になり配列として使えない）
 import Link from "next/link";
 import { MOCKS } from "./mocks";
 
