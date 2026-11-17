@@ -312,6 +312,54 @@ test("K227-UI-017 操作要素の表：K-63 の表（07_qa/test-specs/k/approve-
   expect(want.filter((n) => !have.has(`button|${n}`))).toEqual([]);
 });
 
+const CHECKED = "検査 3 件 すべて通った";
+const decider: Band = { stage: "awaiting_approval", approval: pending() };
+const watcher: Band = { stage: "awaiting_approval", approval: pending({ can_decide: false, approver_name: "佐藤" }) };
+
+test("K227-UI-020 確認の要約は承認の 1 件の check_summary から出る（決められる人の帯の要約と、決められない人の帯の要約の両方。固定の「検査なし」の文を出さない）", async ({
+  page,
+}) => {
+  for (const b of [decider, watcher]) {
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+    const m = await mockApi(page, b);
+    m.on.detail = (req) => ({
+      status: 200,
+      body: { data: detailOf(new URL(req.url()).pathname.split("/").at(-1)!, { check_summary: CHECKED }) },
+    });
+    await openTicketSettled(page);
+    const sub = statusBox(page, b === decider ? "承認と実行" : "AI に任せる").locator(".k-band-sub");
+    // 決められる人の要約は「… ・ 確認 〈check_summary〉」、決められない人の要約は check_summary そのまま
+    await expect(sub).toContainText(b === decider ? `確認 ${CHECKED}` : CHECKED);
+    await expect(sub).not.toContainText(MSG.checkNone);
+  }
+});
+
+test("K227-UI-021 承認の 1 件が読めない（500）：決められない人の帯は題だけで要約（.k-band-sub）も「検査なし」の字も無い。決められる人の帯の要約に「確認」の部分が無い", async ({
+  page,
+}) => {
+  for (const b of [watcher, decider]) {
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+    const m = await mockApi(page, b);
+    let asked = 0;
+    m.on.detail = () => {
+      asked += 1;
+      return { status: 500, body: { error: "internal", code: "E-INT-001" } };
+    };
+    await openTicketSettled(page);
+    await expect.poll(() => asked).toBeGreaterThan(0);
+    if (b === watcher) {
+      const box = statusBox(page, "AI に任せる");
+      await expect(box.locator("h3")).toHaveText(MSG.k62Waiting);
+      await expect(box.locator(".k-band-sub")).toHaveCount(0);
+      await expect(box).not.toContainText(MSG.checkNone);
+    } else {
+      await expect(statusBox(page).locator("h3")).toHaveText(MSG.waitingMe);
+      await expect(statusBox(page)).not.toContainText("確認");
+      await expect(statusBox(page)).not.toContainText(MSG.checkNone);
+    }
+  }
+});
+
 fidelityConfigTest(
   "K227-UI-018 突き合わせの設定：band-approval が enrolled・持ち主 K-227・画面を整える道具に鍵・画面の側のセレクタに .k-panel が無い",
   ["band-approval"],
