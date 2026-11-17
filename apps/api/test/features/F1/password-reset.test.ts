@@ -167,21 +167,27 @@ const passwordHash = async (uid: string) =>
   ).rows[0]?.password ?? null;
 const canSignIn = async (e: string, pw: string) =>
   (await signInWithLock(authFixture.auth, fixturePool, e, pw, UA_WEB)).ok;
+/** その人の行（会社を作った人の members.auth_user_id か、2 社目の所属の行の auth_user_id） */
+const OWN_MEMBER =
+  "(m.auth_user_id = $1 or exists (select 1 from tenant_memberships tm where tm.member_id = m.id and tm.auth_user_id = $1))";
 const sessionsOf = async (uid: string) =>
   (
     await admin.query<{ kind_id: string; revoked_at: Date | null; revoke_reason_id: string | null; tenant_id: string }>(
-      "select s.kind_id, s.revoked_at, s.revoke_reason_id, s.tenant_id from sessions s join members m on m.id = s.member_id where m.auth_user_id = $1",
+      `select s.kind_id, s.revoked_at, s.revoke_reason_id, s.tenant_id from sessions s join members m on m.id = s.member_id
+        where ${OWN_MEMBER}`,
       [uid],
     )
   ).rows;
 const doneEvents = async (uid: string) =>
   (
     await admin.query<{ tenant_id: string; detail: Record<string, unknown> }>(
-      "select e.tenant_id, e.detail from security_events e join members m on m.id = e.member_id where m.auth_user_id = $1 and e.kind_id = 'password_reset_done'",
+      `select e.tenant_id, e.detail from security_events e join members m on m.id = e.member_id
+        where ${OWN_MEMBER} and e.kind_id = 'password_reset_done'`,
       [uid],
     )
   ).rows;
-/** 同じ人を 2 つめのワークスペースにも入れ、そこに PC のセッションを 1 つ置く */
+/** 同じ人を 2 つめのワークスペースにも入れ、そこに PC のセッションを 1 つ置く。members.auth_user_id は一意なので、
+ *  2 社目の人の行は所属の行（tenant_memberships.auth_user_id）でログインに結ぶ（0089 の引き方と同じ・K-313 の試験と同じ） */
 const secondWorkspaceWithBridge = async (uid: string) => {
   const t = (
     await admin.query<{ id: string }>(
@@ -197,8 +203,8 @@ const secondWorkspaceWithBridge = async (uid: string) => {
   ).rows[0]!.id;
   const m = (
     await admin.query<{ id: string }>(
-      "insert into members (tenant_id, scope_id, kind_id, display_name, auth_user_id) values ($1, $2, 'human', '決める 花子', $3) returning id",
-      [t, s, uid],
+      "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '決める 花子') returning id",
+      [t, s],
     )
   ).rows[0]!.id;
   await admin.query(
@@ -312,7 +318,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     const uid = await registered("expired");
     const token = await linkFor(e);
     await admin.query(
-      "update kaname_auth.verification set expires_at = now() - interval '1 second' where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "expiresAt" = now() - interval '1 second' where value = $1 and identifier like 'reset-password:%'`,
       [uid],
     );
     // 部品は verification を引くたびに期限の過ぎた行を表ぜんぶから消す。本番と同じく、送る前に部品の引きを 1 回挟む
@@ -332,7 +338,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     const ua = await registered("edge-in");
     const ta = await linkFor(a);
     await admin.query(
-      "update kaname_auth.verification set expires_at = now() + interval '5 seconds' where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "expiresAt" = now() + interval '5 seconds' where value = $1 and identifier like 'reset-password:%'`,
       [ua],
     );
     expect((await reset(ta)).status).toBe(201);
@@ -340,7 +346,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     const ub = await registered("edge-on");
     const tb = await linkFor(b);
     await admin.query(
-      "update kaname_auth.verification set expires_at = now() where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "expiresAt" = now() where value = $1 and identifier like 'reset-password:%'`,
       [ub],
     );
     await expectGone(await reset(tb), "E-AUTH-006");
@@ -348,7 +354,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     const uc = await registered("edge-past");
     const tc = await linkFor(c);
     await admin.query(
-      "update kaname_auth.verification set expires_at = now() - interval '1 second' where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "expiresAt" = now() - interval '1 second' where value = $1 and identifier like 'reset-password:%'`,
       [uc],
     );
     await expectGone(await reset(tc), "E-AUTH-006");
@@ -370,7 +376,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     const uid = await registered("replaced");
     const first = await linkFor(e);
     await admin.query(
-      "update kaname_auth.verification set created_at = created_at - interval '61 seconds' where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "createdAt" = "createdAt" - interval '61 seconds', "updatedAt" = "updatedAt" - interval '61 seconds' where value = $1 and identifier like 'reset-password:%'`,
       [uid],
     );
     const second = await linkFor(e);
