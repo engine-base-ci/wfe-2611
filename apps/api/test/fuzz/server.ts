@@ -19,8 +19,9 @@ import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
-import { createAuth } from "@kaname/auth";
 import { migrateAuth } from "@kaname/auth/migrate";
+import { createAuth } from "@kaname/auth";
+import { ActionGateway, RateLimiter } from "@kaname/actions";
 import { createPool } from "@kaname/db/pool";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
@@ -38,6 +39,11 @@ const login = createAuth({
   baseURL: `http://127.0.0.1:${port}`,
   poolMax: 2,
 });
+// 新しいパスワードを決める口（K-314）は、部品と同じ形でハッシュを作るためにログインと同じ本物の認証の部品を、漏れの照合に関門 C1 を使う。
+//   照合の外への口は落ちている扱い（外に出ない・照合が落ちている間は通す D-128.134 の道を回る）
+const actions = new ActionGateway(h.repo, {}, new RateLimiter(600), 1_000, async () => {
+  throw new Error("fuzz の的は外に出ない");
+});
 // 本物のサーバー（src/server.ts）と同じ hooks を差す。差さない工場は scripts/ci/fuzz_targets.py の EXEMPT（理由つき）だけ（K-62・D-095）
 //   PC をつなぐ（K-57）の置き場は試験の一時フォルダの偽物。外の置き場の署名は作らない（配布物の受け取りは 404 の形で回る）
 const objects = new ObjectStore(h.repo, localDriver(mkdtempSync(join(tmpdir(), "fuzz-obj-"))), {
@@ -53,8 +59,15 @@ Object.assign(
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
   serviceStatusHooks({ appPool: h.pool }),
-  // 再設定のメールを頼む（K-313）。送出先は差さない（外に送らず、ログの道を通る）。本人は認証の接続、記録は業務の接続（本物と同じ）
-  passwordResetHooks({ authPool, appPool: h.pool, config: { baseUrl: "http://127.0.0.1", webBaseUrl: null } }),
+  // 再設定のメールを頼む（K-313）・新しいパスワードを決める（K-314）。送出先は差さない（外に送らず、ログの道を通る）。
+  //   本人は認証の接続、記録は業務の接続（本物と同じ）
+  passwordResetHooks({
+    auth: login.auth,
+    authPool,
+    appPool: h.pool,
+    actions,
+    config: { baseUrl: "http://127.0.0.1", webBaseUrl: null },
+  }),
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）

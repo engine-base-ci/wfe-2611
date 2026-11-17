@@ -155,8 +155,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...authHooks(auth, appPool),
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
         ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
-        // 再設定のメールを頼む（K-313）。送るのは答えの後（D-042）
-        ...passwordResetHooks({ authPool, appPool, ...(mailer ? { mailer } : {}), config }),
+        // 再設定のメールを頼む（K-313）。送るのは答えの後（D-042）。新しいパスワードを決める（K-314）は部品の形のハッシュと漏れの照合（関門 C1）を使う
+        ...passwordResetHooks({ auth, actions, authPool, appPool, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
         ...serviceStatusHooks({ appPool }),
         // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）

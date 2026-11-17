@@ -54,6 +54,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
     "requestPasswordReset": {"email"},                 # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "signInWithPassword": {"email", "password"},       # apps/api/src/features/F1/login/sign-in.ts の input（無い・空は 422 E-VAL-008・K301-API-009）
+    "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
     "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい
