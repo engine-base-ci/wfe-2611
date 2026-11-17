@@ -13396,6 +13396,83 @@
    "file": "11_tickets/K-301.md"
   },
   {
+   "id": "K-303",
+   "title": "止められた人と会社を、セッションを作る前の 1 か所で断る（パスワードとパスキーの両方の道・app.login_gate）（K-74 の子）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-74",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。K-166 の見込みの根拠と同じ引き方（K-156 の実装の実測 1 時間 21 分を、行 30 以下・関数 1 本・hook 1 か所の葉に割った）。新しく書くのは DB の関数 1 本（app.login_gate）と session.create.before の数行と、口の 403 の振り分けだけ。K-301 の実測で引き直す",
+   "decisions": [
+    "D-042",
+    "D-125.126",
+    "D-125.150",
+    "D-128.63",
+    "D-128.91",
+    "D-128.125",
+    "D-128.130",
+    "D-128.141",
+    "D-128.143"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/login-gate.test.ts"
+   ],
+   "depends_on": [
+    "K-301"
+   ],
+   "acts": [
+    "A13"
+   ],
+   "screens": [],
+   "apis": [],
+   "affects": [
+    "@kaname/db",
+    "@kaname/auth",
+    "@kaname/api",
+    "@kaname/errors",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "packages/auth/src/index.ts",
+    "packages/auth/src/signup.ts",
+    "apps/api/src/features/F1/login/",
+    "07_qa/test-specs/errors.json",
+    "05_flow/screen_api.py",
+    "08_api/db-columns.json",
+    "03_architecture/ER図.md",
+    "scripts/ci/ci_scope.json",
+    "07_qa/test-plan/ears-elsewhere.json"
+   ],
+   "sections": {
+    "目的": "会社から止められた人（`members.suspended_at`・所属の `tenant_memberships.status = suspended`）・止められた会社（`subscriptions.suspended_at`・D-125.126）・会社から抜けた人を、**ログインの部品がセッションを作る直前の 1 か所**（`packages/auth` の `databaseHooks.session.create.before`）で断る。パスワード・2 段階の 6 けた・パスキー（K-304）・部品を直に呼ぶ道のどれも、ここを通らずにセッションを作れない。\n\n断ったら、契約の口は 403 と、errors.json の文（D-128.141）を返す。人が止められた「このアカウントは、いま止められています。ワークスペースの管理者に聞いてください」／会社が止められた「このワークスペースは、いま止められています。データは残っています。管理者か運営に連絡してください」／抜けた E-AUTH-007。画面（止められた の 2 状態）は K-316。",
+    "完了の条件": "- [ ] 下の表の 25 行（K303-DB-001〜009・K303-API-001〜016）が本物の DB の上で緑（`apps/api/test/features/F1/login-gate.test.ts`）\n- [ ] DB の関数 `app.login_gate(text) returns text` があり、`databaseHooks.session.create.before` から呼ばれている（apps/api の中では呼ばない）\n- [ ] errors.json に 2 件（E-AUTH-011 人の止め・E-AUTH-012 会社の止め）が足され、目録（packages/errors・errors.md）が作り直されている。`python3 scripts/ci/error_catalog.py gate` が緑\n- [ ] 前の孫（K-301）の試験 `sign-in.test.ts` も緑のまま（K301-API-014 の「抜けた」の答えが変わらない）\n- [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑",
+    "前提と制約": "分類: AUTH, PERM\n\n- 親 K-74「ログインする」の子（切り方.md・2026-11-17）。依存は K-301（契約の口 signInWithPassword と、その 403 の答えの形）\n- 止める操作（運営の「止める」F12・管理者の suspendMember F8）はまだ無い。この葉は止められた状態を **見る** だけで、止める・止めを外す画面と口は作らない。試験は DB に直に書く\n- パスキーの道で断ることの試験は K-308（パスキーの部品は K-304 が足し、K-303 と K-304 は同時に走るので、両方が入った後の K-308 で確かめる・待ちを減らす案 3）。6 けたの契約の口（verifySignInCode・K-302）が断られたときに 403 と errors.json の文を返す振り分けは K-302 の口の中（K-303 のコードに頼らない）。それを確かめる 2 行は K-302 と K-303 の両方が入った後の K-305（待ちを減らすために移した・K305-API-022・023）。この葉の試験は 6 けたの道を部品の関数（`verifyTotp`）で確かめる\n- 止められた人の **今あるセッション** を切るのは止める操作の受け持ち（F8 の suspendMember・F12 の止める）。この葉は新しいセッションを作らせないところまで\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前にテストを流して赤を確かめない（D-128.143）",
+    "依存の理由": "- K-301: 要る — 試験は K-301 の土台 login.harness.ts と契約の口 signInWithPassword（K303-API の行はこの口に止めの 403 を返させる）を前提にする。口の置き場 apps/api/src/features/F1/login/ も同じファイル",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| DB（migration 1 本） | `00NN_login_gate.sql`（番号は取り込む時点の次の空き・K-50 の予約の決まり）。`app.login_gate(p_auth_user_id text) returns text`（security definer・`search_path = public, app`・`revoke all … from public`・`grant execute … to kaname_app`）。見るのはその人の member の行（`members.auth_user_id = p_auth_user_id`、と `tenant_memberships.auth_user_id = p_auth_user_id` の所属の行が指す member）。**member の行と、同じ (tenant_id, member_id) の所属の行を組にして見る**：① 組が 1 つも無い（登録の途中・招待の受諾の途中・会社を作らない登録）→ `'ok'` ② 使える組が 1 つも無い → `'member_left'`。組が使えるのは、member の `deleted_at` が空で、かつ同じ組の所属の行が無いか `status` が `left` でないとき（member の行が生きていても、同じ組の所属が left なら使えない） ③ 使える組のうち、人が止められた（member の `suspended_at is not null` か、同じ組の所属の `status = 'suspended'`）→ `'member_suspended'` ④ 使える組の会社が止められた（その会社の `subscriptions` に `suspended_at is not null and deleted_at is null` の行）→ `'workspace_suspended'` ⑤ どれでもない → `'ok'`。人と会社の両方が止められていれば人の方（③が先）。断ったとき（`'ok'` 以外）は、その人の会社（行のある会社ごと）の `security_events` に `kind_id = 'login_blocked'`・`member_id`・`detail = {\"reason\": <理由>}` を 1 行（追記専用の表に関数から書く・メール・IP は入れない）。返すのは text だけ（どのワークスペースか・名前・メモは返さない）。packages/db/src/index.ts の MIGRATIONS の末尾に足す |\n| ログインの部品（packages/auth/src/index.ts） | `databaseHooks.session.create.before` を足す：`select app.login_gate($1)`（appPool・関門 C2）を呼び、`'ok'` 以外なら better-auth の `APIError(\"FORBIDDEN\", { code: <errors.json の id>, message: <errors.json の文> })` を投げてセッションを作らせない（`member_suspended`→人の止め・`workspace_suspended`→会社の止め・`member_left`→E-AUTH-007。文は `@kaname/errors` の目録から引く）。関数が例外になったら（読めない・落ちた）止める側に倒す：`APIError(\"SERVICE_UNAVAILABLE\", { code: \"E-PAGE-003\" })`（503。K-301 の口が決めた 500・E-PAGE-003 は「口の中の予期しない例外」で、**止めの確かめができなかったときだけ 503**（K-53 の入口でセッションを解けないときと同じ・fail-closed））。今の `session.create.after`（open_session・同意し直しの印・新しい端末の知らせ）は変えない。2 段階の人はパスワードの段でも部品がセッションを 1 度作る（作ってすぐ消して待ちの印にする）ので、止められた 2 段階の人はパスワードの段で断られ、待ちの印を受け取らない |\n| ログインの補助（packages/auth/src/signup.ts） | `signInWithLock`：部品が止めで断った（上の APIError の code が人の止め・会社の止め・E-AUTH-007・E-PAGE-003）ときは、パスワードの失敗として数えない（`app.login_failed` を呼ばない・`app.login_ok` も呼ばない）。結果に `blocked: { code, message, status }` を足して返す。ロック中の確かめ（`app.login_locked_until`）は今のまま先（ロック中なら止めの有無を出さずに 429） |\n| 試験の土台 | K-301 の `apps/api/test/features/F1/login.harness.ts`（`setupLogin`・`makeUser`・`signIn`・`authSessions`・`liveSessions`）を使う。登録のときにできたセッションは土台の準備が閉じる（精査の後の決め 7・直すのは K-301）。この葉の試験は、念のため数を「前と後の差」で比べる |\n| 口（apps/api/src/features/F1/login/・K-301 が作る sign-in の振る舞い） | `signInWithLock` が `blocked` を返したら、その status（403 か 503）と code・message をそのまま答える。`data`（印・待ちの印）は返さない。K-301 が置いた「入った直後に解いて会社の人が無ければ閉じる（E-AUTH-007）」は、この葉の後は 1 か所の止めが先に断るので通らなくなる（消してよいが、答えは同じ 403・E-AUTH-007） |\n| 契約（05_flow/screen_api.py） | `ERRORS_4XX` の signInWithPassword と verifySignInCode の 403 に E-AUTH-011・E-AUTH-012 を足す（EARS「IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない」）。同じ 2 つの口に 503・E-PAGE-003 の行を足す（`{\"status\": 503, \"code\": \"E-PAGE-003\", \"body\": {\"error\": \"unavailable\", \"code\": \"E-PAGE-003\"}, \"errors\": [\"E-PAGE-003\"]}`・EARS「IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない」・approveApproval の 503 の行と同じ形）。作り手の順（scripts/ci/generated.json）で 08_api・packages/contracts・apps/api/test/generated を作り直す |\n| エラーの正本（07_qa/test-specs/errors.json に 2 件・番号は E-AUTH-011・E-AUTH-012 に決め打ち（精査の後の決め 1）。本線で番号がぶつかったら段 2 の全部の葉で一括に付け替える（K-300 の申し送り）） | **E-AUTH-011 人の止め**：class `auth`・where `{screen: \"login\", state: \"suspended-member\"}`・when「止められた人（管理者か運営が止めた）が、正しいパスワードかパスキーで入ろうとした」・false_when「パスワードが違う（E-AUTH-001 のまま）・ロック中（E-AUTH-002 のまま）・止めを外した後」・message「このアカウントは、いま止められています。ワークスペースの管理者に聞いてください」・action「ワークスペースの管理者に聞く」・undo false・layers [UI, API, DB]・must_not false・severity medium・source [D-128.141, D-128.63]・support_code `AUTH-011`・reproduce `{setup: \"止められた人\", steps: [\"メールとパスワードで入る\"], needs: \"人を止める（DB に直に）\"}`。**E-AUTH-012 会社の止め**：同じ欄で、where state `suspended-ws`・when「止められたワークスペースの人が、正しいパスワードかパスキーで入ろうとした」・message「このワークスペースは、いま止められています。データは残っています。管理者か運営に連絡してください」・action「管理者か運営に連絡する」・source [D-128.141, D-125.126]。欄の手本は、欄が全部そろっている E-PAGE-003。support_code を持たせる：`AUTH-011`・`AUTH-012` |\n| 表の正本 | `08_api/db-columns.json`・`03_architecture/ER図.md` に関数 `app.login_gate` を 1 行（表と列は足さない） |\n| 範囲の地図 | 試験が `07_qa/test-specs/errors.json` と `packages/auth/src/index.ts` を読み、`git grep` を子プロセスで起こす（K303-API-015・016）。`scripts/ci/ci_scope.json` の data_links に `{ \"paths\": [\"07_qa/test-specs/errors.json\", \"packages/auth/src/index.ts\"], \"tests\": [\"apps/api/test/features/F1/login-gate.test.ts\"] }`、reads_ok に `apps/api/test/features/F1/login-gate.test.ts`（理由：止めの 1 か所を git grep で数える）を足す |\n\n### 決めた判断\n\n- 止めは 1 か所（D-128.91 の「暗号の中身は Better Auth・止めは Kaname」）：セッションを作る直前の hook で見るので、口ごとに見落とす道が無い。ロック・パスワードの確かめ・6 けたの確かめの **後** にしか届かないので、止めの有無は正しいパスワードかパスキーを持つ人にしか分からない（D-042「有る無しを漏らさない」）\n- 会社に属していない利用者（登録の途中・招待の受諾の途中）は止めない（`'ok'`）。止めると登録の自動ログインと招待の受諾が動かなくなる。この人が入ったときの E-AUTH-007 は K-301 の確かめのまま\n- 人の止めは `members.suspended_at` と所属の `tenant_memberships.status = 'suspended'` の両方を見る（止める操作 suspendMember がどちらを書いても漏れない・answer=75dc21e85b2e）\n- 止めで断ったことは失敗の数に入れない（パスワードは合っている。数えると、止めを外した直後に入れない）\n- 止めの関数が落ちたら止める側に倒す（fail-closed・503・E-PAGE-003・K-53 と同じ）\n- 複数のワークスペースに入っている人（D-125.150）で、止められたのが 1 つだけのときの入り方は流れ F10（ワークスペースの切り替え）。この葉は「使える行が 1 つでもあれば、その止めを見る」の上の順で決め、試験は 1 つのワークスペースの人で書く",
+    "テスト仕様と確認の結果": "### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`members.suspended_at`・`members.deleted_at`・`tenant_memberships.status`（active・suspended・left）・`subscriptions.suspended_at`・`app.login_attempts.locked_until`・`\"user\".two_factor_enabled`・`terms_consents`（今の版）・業務の行が無い（登録の途中）\n\n| アカウントの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| ふつう | 止めの関数 | — | `'ok'`・記録なし | このチケット | K303-DB-001 |\n| 人が止められた（members.suspended_at） | 止めの関数 | — | `'member_suspended'` | このチケット | K303-DB-002 |\n| 所属が止められた（tenant_memberships.status = suspended） | 止めの関数 | — | `'member_suspended'` | このチケット | K303-DB-003 |\n| 会社が止められた（subscriptions.suspended_at）・人も会社も | 止めの関数 | — | `'workspace_suspended'`・両方なら `'member_suspended'` | このチケット | K303-DB-004 |\n| 抜けた（members.deleted_at・所属 left） | 止めの関数 | — | `'member_left'` | このチケット | K303-DB-005 |\n| 会社に属していない（登録の途中・招待の受諾の途中） | 止めの関数・登録の自動ログイン | ログインしていない | `'ok'`・セッションができる | このチケット | K303-DB-006・K303-API-009 |\n| 止めを外した直後（0 秒） | 止めの関数・パスワード | ログインしていない | `'ok'`・201 で入れる | このチケット | K303-DB-007・K303-API-007 |\n| 人が止められた | 正しいパスワード（契約の口） | ログインしていない | 403・人の止めの文。セッションなし・失敗の数は変わらない | このチケット | K303-API-001 |\n| 会社が止められた | 正しいパスワード | ログインしていない | 403・会社の止めの文。人も会社も消えない | このチケット | K303-API-002 |\n| 抜けた | 正しいパスワード | ログインしていない | 403・E-AUTH-007 | このチケット（K-301 の答えを 1 か所に移す） | K303-API-003 |\n| 止められた | 違うパスワード | ログインしていない | 401・E-AUTH-001・失敗を 1 回数える | このチケット | K303-API-004 |\n| 2 段階あり・止められた | 正しいパスワード | ログインしていない | パスワードの段で 403。待ちの印を返さない | このチケット | K303-API-005 |\n| 2 段階あり・待ちの印を持った直後に止められた | 正しい 6 けた | パスワードを通った直後 | 部品が E-AUTH-011 で断る。セッションは増えない | このチケット（契約の口の 403 の振り分けは K-302・確かめは K-305） | K303-API-006 |\n| 止められた | 部品を直に（auth.api.signInEmail） | ログインしていない | 例外（body.code が E-AUTH-011）・セッションは増えない | このチケット | K303-API-008 |\n| 止められた | パスキー | ログインしていない | 403・人の止め／会社の止め／E-AUTH-007 | K-308（K-303 と K-304 の両方が入った後・案 3） | K308-API-020・021・022 |\n| ロック中・止められた | 正しいパスワード | ログインしていない | 429・E-AUTH-002（ロックが先） | このチケット | K303-API-013 |\n| 規約の新しい版が出た・止められた | 正しいパスワード | ログインしていない | 403・人の止め（同意の画面へ進ませない） | このチケット | K303-API-014 |\n| 止められた・会社が止められた | ログインの画面 | ログインしていない | 止められた の 2 状態（suspended-member・suspended-ws） | K-316 | K316-UI-010・011 |\n| 止められた人の今あるセッション | 中の画面 | ログイン中 | 切れる | 止める操作（F8 suspendMember・F12 止める） | — |\n| 複数のワークスペース・1 つだけ止められた | パスワード | ログインしていない | どのワークスペースで入るか | 流れ F10 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 失敗 | 止めの関数が読めない（実行の権限を外す） | 503・E-PAGE-003（契約に 503 の行を足す。口の中の予期しない例外は K-301 の 500 のまま）。セッションは増えず、失敗の数にも入れない | K303-API-010 |\n| 守り | 止めの答え | パスワードが合ったときだけ出す（違えば E-AUTH-001） | K303-API-004 |\n| 守り | 答えの中身 | ワークスペースの名前・id・人の id を出さない | K303-API-012 |\n| 守り | 記録とログ | security_events に login_blocked（理由）が 1 行。ログにメール・パスワード・IP が出ない | K303-DB-008・K303-API-011 |\n| 守り | 関数の形と権限 | text だけを返す。kaname_app だけが呼べる（PUBLIC は呼べない） | K303-DB-009 |\n| 守り | 関門 | 止めは packages/auth の session.create.before の 1 か所（apps/api で呼ばない） | K303-API-016 |\n| 守り | 正本 | errors.json の E-AUTH-011・012 の文・根拠・層・support_code | K303-API-015 |\n\n### G 観点（G-11〜G-16・該当／N/A と理由）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外の置き場・待ち行列・秘密・外の API を使わない。migration は CI の空の DB に当てる既存の段で確かめる |\n| G-12 切り替わりの瞬間 | 該当 | 止めを外した直後（K303-DB-007・K303-API-007）・待ちの印を持った直後に止められた（K303-API-006） |\n| G-13 機能の組み合わせ | 該当 | 止め × ロック（K303-API-013）・止め × 規約の新しい版（K303-API-014）・止め × 2 段階（K303-API-005） |\n| G-14 口座状態の波及 | 該当 | 止められた・抜けた後に新しいセッションを作らせない（K303-API-001〜003・008）。今あるセッションを切るのは止める操作（F8・F12） |\n| G-15 信号なし終了 | 該当 | 止めの関数が落ちたときに「通した」にしない（K303-API-010） |\n| G-16 有限資源の枯渇 | 該当 | 1 回のログインで DB の関数 1 回＝プールの接続 1 本（appPool・関門 C2・専用接続は取らない）。数の上限は口の rate_limit（K-301） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-01 誤ったパスワードと、無いメール | 止められた × 違うパスワードは E-AUTH-001 のまま（K303-API-004） |\n| TP-AUTH-02 続けて失敗する | ロック中の止められた人は 429（K303-API-013）・止めで断ったときは失敗の数に入れない（K303-API-001・010） |\n| TP-PERM-01 役が合わない人 | 止められた人・会社・抜けた人は入れない（K303-API-001〜003） |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 待ちの印を持った直後に止められた（K303-API-006）・止めを外した直後（K303-API-007） |\n| TP-PERM-04 一覧・数・検索 | 断った答えに会社の名前・id を出さない（K303-API-012） |\n\n要らない: TP-AUTH-03 6 けたの期限切れ・使い回し・誤りは K-302 が受ける（この葉は 6 けたの確かめを変えない）\n要らない: TP-AUTH-04 セッションが切れた後に戻るのは K-317（画面）が受ける。この葉は新しいセッションを作る前の止めだけ\n要らない: TP-AUTH-05 ログアウトの後は K-306 が受ける\n要らない: TP-AUTH-06 パスワードを変えた・端末を外したは K-312・K-314 が受ける\n要らない: TP-AUTH-07 本人確認の取り直しをこの葉は使わない（K-19）\n要らない: TP-AUTH-08 戻す先の道はこの葉に無い（K-316 の画面）\n要らない: TP-AUTH-09 国・端末が変わったときに切るのは K-20。この葉は入り直すときの止めだけで、国と端末を見ない\n要らない: TP-PERM-03 この葉は id を受け取る口を持たない（入力はメールとパスワード・パスキー）\n要らない: TP-PERM-05 権限を付けた直後は無い（止めを外した直後は TP-PERM-02 の K303-API-007 で受ける）\n\n### K-74 の行の配り方（この葉の分）\n\nK-74 の状態の表：「人が止められた（パスワードでもパスキーでも）」「会社が止められた」「会社の人が無い・抜けた」のパスワードの道 → K303-API-001・002・003（パスキーの道は K-304）。\nK-74 の入力・失敗・揺れ・守り：「止められた・会社の人が無い の答え（パスワードが合ったときだけ出す）」→ K303-API-004／「記録（止めで断った）」→ K303-DB-008・K303-API-011／「ログ」の止めの分 → K303-API-011／「関門」の止めの分 → K303-API-016。\n決めた判断「止める場所は 1 か所」→ K303-API-008・016。\n\n```search\n- name: 止めの関数を呼ぶ所（packages/auth の hook の 1 か所だけ。実装の前は 0）\n  cmd: git grep -n -F 'app.login_gate' -- packages/auth/src apps/api/src\n  count: 0\n- name: 前の道すじの「入った直後に解いて閉じる」E-AUTH-007（K-301 が契約の口に写す元。1 か所に移した後も答えは同じ）\n  cmd: git grep -n -F 'E-AUTH-007' -- apps/api/src/auth/ext.ts\n  count: 2\n```",
+    "成果物": "- migration `00NN_login_gate.sql`（app.login_gate）・packages/auth の session.create.before と signInWithLock の blocked・口の 403 の振り分け・errors.json に 2 件・契約の 403\n- 単体のテスト：`apps/api/test/features/F1/login-gate.test.ts`（行 25）",
+    "決定ログ": "- 2026-11-17 精査（R）の差し戻しを直した：試験の土台を K-301 の login.harness.ts にし数は前と後の差で比べる（決め 7）・止めの関数の「使える行」を member と所属の組で書いた・6 けたと部品の直の道は例外の body.code まで見る・関門の行は before の関数の中だけを切り出して見る・契約に 503・E-PAGE-003 を足し K-301 の 500 との違いを書いた・番号を E-AUTH-011・012 に決め打ち（決め 1）・正本の手本を E-PAGE-003 にし support_code を決めた\n- 2026-11-17 代表の答え answer=75dc21e85b2e（聞くこと-2 の ⑧）：人の止めは members.suspended_at と所属の tenant_memberships.status = suspended の両方を見る（勧めのとおり）\n- 2026-11-17 切る段（枝 c/段2）で K-74 から切り出した。答え D-128.141 の止めの文をそのまま errors.json に書く。番号は精査の後の決め 1 で E-AUTH-011・012 に決め打ちにした",
+    "決まった答え（もと PM に確かめたいこと）": "1. 人の止めに、所属の行の `tenant_memberships.status = 'suspended'` も入れるか → **両方を見る**（代表の答え 2026-11-17・answer=75dc21e85b2e・聞くこと-2 の ⑧）。K303-DB-003 はこの形",
+    "リスクと懸念": "- 止めの関数は追記専用の security_events に書く。ログインの試みのたびに 1 行増えるので、止められた人が何度も試すと行が増える（口の rate_limit 10／分／IP が上限）\n- better-auth の `databaseHooks.session.create.before` で投げた APIError の body（code・message）がそのまま部品の口（/api/auth/*）の答えになることを、K-308 の試験（案 3 で K-304 から移した行）で確かめる。部品の版を上げたときに壊れやすい\n- 会社を作った人（`members.role_id = 'owner'`）は所属の行（tenant_memberships）を持たない（app.create_company が作らない）。止めの関数は members の行を見るので漏れないが、所属の行だけを見る別の所（app.is_admin など）は会社を作った人を管理者と見ない。この葉の外の見つけもの（K-305 の申し送りにも書いた）",
+    "申し送り": "- K-302 へ（振り分け）・K-305 へ（確かめ・待ちを減らすために K-302 から移した 2 行）：6 けたの契約の口（verifySignInCode）は、部品が止めで断った（APIError の code が人の止め・会社の止め・E-AUTH-007・E-PAGE-003）ときに、その status と code と文をそのまま答える（401・E-AUTH-004 にしない）。振り分けは K-302 が K-303 に頼らずに作り、K-302 と K-303 の両方が入った後の K-305 が K305-API-022・023 で確かめる\n- K-308 へ：パスキーの道の止めは、この hook がそのまま効く。部品の口の答えが 403 と errors.json の id になることを、K-304 から移した 3 行で見る（.ticket-flow/out/K-304/move-to-K-308.md）\n- K-316 へ：止められた の 2 状態（suspended-member・suspended-ws）は、口の 403 の code（E-AUTH-011・E-AUTH-012）の文を目録から出す\n- 止める操作（F8 suspendMember・F12 の止める）を切るチケットへ：止めたときに今あるセッション（画面・PC）を切る（G-14）。この葉は新しく入るところだけを止める"
+   },
+   "file": "11_tickets/K-303.md"
+  },
+  {
    "id": "K-306",
    "title": "ログアウトする口（signOut・その画面のセッションだけ閉じる・Bridge は残す）（K-74 の子）",
    "kind": "タスク",

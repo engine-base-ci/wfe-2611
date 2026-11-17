@@ -4002,6 +4002,70 @@
    ]
   },
   {
+   "id": "E-AUTH-011",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "suspended-member"
+   },
+   "when": "止められた人（管理者か運営が止めた）が、正しいパスワードかパスキーで入ろうとした",
+   "false_when": "パスワードが違う（E-AUTH-001 のまま）・ロック中（E-AUTH-002 のまま）・止めを外した後",
+   "message": "このアカウントは、いま止められています。ワークスペースの管理者に聞いてください",
+   "action": "ワークスペースの管理者に聞く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "止められた人",
+    "steps": [
+     "メールとパスワードで入る"
+    ],
+    "needs": "人を止める（DB に直に）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.141",
+    "D-128.63"
+   ],
+   "support_code": "AUTH-011"
+  },
+  {
+   "id": "E-AUTH-012",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "suspended-ws"
+   },
+   "when": "止められたワークスペースの人が、正しいパスワードかパスキーで入ろうとした",
+   "false_when": "パスワードが違う（E-AUTH-001 のまま）・ロック中（E-AUTH-002 のまま）・止めを外した後",
+   "message": "このワークスペースは、いま止められています。データは残っています。管理者か運営に連絡してください",
+   "action": "管理者か運営に連絡する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "止められたワークスペースの人",
+    "steps": [
+     "メールとパスワードで入る"
+    ],
+    "needs": "ワークスペースを止める（DB に直に）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.141",
+    "D-125.126"
+   ],
+   "support_code": "AUTH-012"
+  },
+  {
    "id": "E-CHAT-001",
    "class": "connectivity",
    "where": {
