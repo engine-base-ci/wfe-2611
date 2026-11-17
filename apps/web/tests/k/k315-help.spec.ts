@@ -330,7 +330,8 @@ test("K315-UI-015 キーボードだけ：戻る → 札 4 つ → 運営のメ�
     await page.keyboard.press("Tab");
     const f = await page.evaluate(() => {
       const a = document.activeElement as HTMLElement | null;
-      if (!a) return null;
+      // 最後の要素の後は焦点が頁の外（ブラウザの側）へ出て body になる。頁の中の要素だけを数える
+      if (!a || a === document.body) return null;
       const cs = getComputedStyle(a);
       return {
         text: (a.innerText ?? "").trim().split("\n")[0] ?? "",
