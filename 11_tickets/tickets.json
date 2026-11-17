@@ -13675,9 +13675,13 @@
    ],
    "apis": [],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/api",
+    "@kaname/contracts"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/web/app/(outside)/help/page.tsx",
     "apps/web/features/F1/help/",
