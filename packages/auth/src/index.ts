@@ -49,7 +49,9 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
         if (dev) console.warn(`[auth] リンク（${m.kind} → ${mailTag(m.to)}）: ${m.url}`);
         await o.mailer!(m);
       }
-    : async (m) => console.warn(`[auth] メールの送出先が無い（${m.kind} → ${mailTag(m.to)}）: ${m.url}`);
+    : async (m) =>
+        // 本番では手がかり入りのリンクをログに残さない（K-313 のレビュー）
+        console.warn(`[auth] メールの送出先が無い（${m.kind} → ${mailTag(m.to)}）${dev ? `: ${m.url}` : ""}`);
   const auth = betterAuth({
     database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "kaname_auth" },
     secret: o.secret,

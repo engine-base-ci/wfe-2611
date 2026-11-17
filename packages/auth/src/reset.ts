@@ -94,11 +94,13 @@ export async function requestReset(d: RequestResetDeps, rawEmail: string): Promi
   const url = `${d.webBaseURL}/password-reset?token=${encodeURIComponent(p.token)}`;
   const tag = mailTag(p.to);
   // 本番以外はリンクを残す（受信箱を開かずに先へ進める・画面の試験の lastMailUrl が拾う）
+  const prod = optionalEnv("NODE_ENV") === "production";
   if (!d.mailer) {
-    console.warn(`[auth] メールの送出先が無い（reset → ${tag}）: ${url}`);
+    // 本番では手がかり入りのリンクをログに残さない（本番は起動時の確かめが送出先を要る）
+    console.warn(`[auth] メールの送出先が無い（reset → ${tag}）${prod ? "" : `: ${url}`}`);
     return { result: "failed", userId: p.userId };
   }
-  if (optionalEnv("NODE_ENV") !== "production") console.warn(`[auth] リンク（reset → ${tag}）: ${url}`);
+  if (!prod) console.warn(`[auth] リンク（reset → ${tag}）: ${url}`);
   try {
     await d.mailer({
       to: p.to,

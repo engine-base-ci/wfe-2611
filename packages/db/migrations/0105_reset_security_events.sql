@@ -7,9 +7,13 @@
 --   止められた会社・人には書く（本人の記録として残す）。detail にメール・リンクの手がかりを入れるのは呼ぶ側の誤り（呼ぶ側の試験が見る）
 create or replace function app.record_security_event_for_auth_user(p_auth_user_id text, p_kind text, p_detail jsonb default '{}'::jsonb)
 returns int
-language plpgsql security definer set search_path = public, app as $$
+language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare v_n int;
 begin
+  -- 書けるのは再設定の 2 つの出来事だけ（誰でも呼べる口の後ろなので、ほかの出来事を書かせない）
+  if p_kind not in ('password_reset_requested', 'password_reset_done') then
+    raise exception '再設定の出来事でない: %', p_kind using errcode = 'insufficient_privilege';
+  end if;
   insert into security_events (tenant_id, kind_id, member_id, detail)
   select m.tenant_id, p_kind, m.id, coalesce(p_detail, '{}'::jsonb)
   from members m
