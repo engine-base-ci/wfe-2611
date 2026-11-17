@@ -646,6 +646,12 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
   },
+  // グループの一覧（K-252・キャンバス List）：営業で絞った 6 件。表の行が出るまで待つ
+  "tickets-list": async (page, path) => {
+    await shellApi(page, 3, { tickets: listRows() });
+    await page.goto(path);
+    await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
+  },
   // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
   "tickets-new": async (page, path) => {
     await shellApi(page, 3);

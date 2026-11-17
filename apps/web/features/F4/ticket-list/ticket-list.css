@@ -1,6 +1,6 @@
 /* チケットの一覧の画面（K-251・キャンバス OnHome・Main）。値は --k-* のトークンだけを読む（キャンバスの実測は正本 DESIGN-kaname.md の部品 list-* に置き、
    04_design/gen_tokens.py --web で k-tokens.css に出す。ここに生の色・大きさ・余白・影を書かない。@media の区切りの幅だけは CSS の決まりで生の値）。
-   一覧の部品（帯・タブ・表・右の列）は「全部」の一覧（K-252）も同じクラスで使う */
+   一覧の部品（帯・タブ・表・右の列）は「全部」の一覧（K-252）も同じクラスで使う。K-252 は検索条件の箱・選ぶ印・右に開く詳細を足す */
 
 .k-list-page {
   min-width: 0;
@@ -652,6 +652,236 @@ button.k-list-tool:hover {
   font-weight: var(--k-c-list-th-fw);
 }
 
+/* ---- 一覧（全部）・グループの一覧（K-252・キャンバス List） ---- */
+/* グループの一覧の見出しの頭の札（地は左のメニューの札と同じグループの色） */
+.k-list-scope-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-list-scope-mark-width);
+  height: var(--k-c-list-scope-mark-height);
+  border-radius: var(--k-c-list-scope-mark-radius);
+  color: var(--k-c-list-scope-mark-fg);
+  font-size: var(--k-c-list-scope-mark-text);
+  font-weight: var(--k-c-list-scope-mark-fw);
+  background: var(--k-d-teal);
+}
+.k-list-scope-mark[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-list-scope-mark[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-list-scope-mark[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-list-scope-mark[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-list-scope-mark[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-list-scope-mark[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-list-scope-mark[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-list-scope-mark[data-tone="teal-light"] {
+  background: var(--k-d-teal-light);
+}
+/* 検索条件の箱：言葉の欄だけが使える。ほかは出すが押せない（D-145.9） */
+.k-list-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-list-search-gap);
+  padding: var(--k-c-list-search-pad);
+  background: var(--k-c-list-search-bg);
+  border: var(--k-c-list-search-border);
+  border-radius: var(--k-c-list-search-radius);
+  min-width: 0;
+}
+.k-list-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-search-row-gap);
+}
+.k-list-search-acts {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-list-tools-gap);
+}
+.k-list-search-seg {
+  display: inline-flex;
+  border: var(--k-c-list-search-seg-border);
+  border-radius: var(--k-c-list-search-seg-radius);
+  overflow: hidden;
+}
+.k-list-search-seg-item {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--k-c-list-search-seg-item-height);
+  padding: var(--k-c-list-search-seg-item-pad);
+  font-size: var(--k-c-list-search-seg-item-text);
+  line-height: var(--k-c-list-search-seg-item-lh);
+  font-weight: var(--k-c-list-search-seg-item-fw);
+  color: var(--k-on-surface-variant);
+  background: var(--k-card);
+  white-space: nowrap;
+}
+.k-list-search-seg-item:first-child {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-list-search-seg-item[aria-disabled="true"],
+.k-list-search-group[aria-disabled="true"],
+.k-list-search-field[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-list-search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-search-chips-gap);
+  font-size: var(--k-c-list-search-chips-text);
+  line-height: var(--k-c-list-search-chips-lh);
+  font-weight: var(--k-c-list-search-chips-fw);
+}
+.k-list-search-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-search-chips-gap);
+}
+.k-list-search-group + .k-list-search-group {
+  margin-left: var(--k-s-sm);
+}
+.k-list-search-label {
+  color: var(--k-on-surface-variant);
+}
+.k-list-search-group:first-child .k-list-search-label {
+  width: var(--k-c-list-search-label-width);
+}
+.k-list-search-chip {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--k-c-list-search-chip-height);
+  padding: var(--k-c-list-search-chip-pad);
+  border: var(--k-c-list-search-chip-border);
+  border-radius: var(--k-c-list-search-chip-radius);
+  font-size: var(--k-c-list-search-chip-text);
+  line-height: var(--k-c-list-search-chip-lh);
+  font-weight: var(--k-c-list-search-chip-fw);
+  color: var(--k-on-surface-variant);
+  background: var(--k-card);
+  white-space: nowrap;
+}
+.k-list-search-chip[data-current] {
+  background: var(--k-primary);
+  border-color: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-list-search-fields {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--k-c-list-search-fields-gap);
+}
+.k-list-search-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-list-search-field-gap);
+  min-width: 0;
+  color: var(--k-c-list-search-field-fg);
+  font-size: var(--k-c-list-search-field-text);
+  line-height: var(--k-c-list-search-field-lh);
+  font-weight: var(--k-c-list-search-field-fw);
+  white-space: nowrap;
+}
+.k-list-search-input {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: var(--k-c-list-search-input-height);
+  padding: var(--k-c-list-search-input-pad);
+  border: var(--k-c-list-search-input-border);
+  border-radius: var(--k-c-list-search-input-radius);
+  background: var(--k-c-list-search-input-bg);
+  color: var(--k-c-list-search-input-fg);
+  font: inherit;
+  font-size: var(--k-c-list-search-input-text);
+  line-height: var(--k-c-list-search-input-lh);
+  font-weight: var(--k-c-list-search-input-fw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 表の行の頭の選ぶ印（まだ使えない） */
+.k-list-table .k-list-pick {
+  width: var(--k-c-list-pick-width);
+}
+.k-list-pick input {
+  cursor: not-allowed;
+}
+.k-list-table thead .k-list-pick {
+  background: var(--k-c-list-th-bg);
+  border-bottom: var(--k-c-list-th-border-bottom);
+}
+.k-list-table tbody tr[data-open] > td {
+  background: var(--k-select);
+}
+
+/* ---- 右に開く詳細（D-128.165・D-128.14）：本文の行を折り返さず、表の列の右に幅 400 ---- */
+.k-list-body[data-split] {
+  flex-wrap: nowrap;
+}
+.k-list-body[data-split] > .k-list-main {
+  flex: 1 1 0;
+}
+.k-list-body[data-split] .k-list-search-fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.k-list-detail {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--k-c-list-detail-side-width);
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--k-c-list-detail-side-pad);
+  background: var(--k-c-list-detail-side-bg);
+  border: var(--k-c-list-detail-side-border);
+  border-radius: var(--k-c-list-detail-side-radius);
+}
+.k-detail.k-detail-side {
+  display: block;
+  min-height: 0;
+}
+.k-detail-side-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-detail-body-gap);
+  min-width: 0;
+}
+.k-list-detail-title {
+  margin: 0;
+  padding: var(--k-c-detail-head-pad);
+  font-size: var(--k-c-list-detail-side-title-text);
+  line-height: var(--k-c-list-detail-side-title-lh);
+  font-weight: var(--k-c-list-detail-side-title-fw);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1023px) {
+  .k-list-search-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 /* 右の列は、本文の左の列と並ぶ幅が無いとき（1023 以下）本文の下に折り返す（flex-wrap・キャンバスの aside と同じ） */
 /* 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ね、行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ・作る面の帯と同じ形）。
    数の札は 2 列（キャンバスの 4 列の格子の折り返し） */
@@ -676,5 +906,12 @@ button.k-list-tool:hover {
   }
   .k-list-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .k-list-search-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* 767 以下の入力欄は 16px（打つときに画面が拡大しない・K-254） */
+  input.k-list-search-input {
+    font-size: var(--k-text-input);
   }
 }

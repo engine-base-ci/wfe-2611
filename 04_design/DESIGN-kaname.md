@@ -1288,6 +1288,65 @@ components:
   list-box-row:         # 右の列の箱の 1 行（余白 10 12・下に淡い線）
     padding: "10px 12px"
     borderBottom: "1px solid {colors.line-soft}"
+  # 一覧（全部）・グループの一覧（K-252・キャンバス List）
+  list-scope-mark:      # グループの一覧の見出しの頭の札（26 角・角丸 md・11px・700・白い字。地はグループの色）
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.md}"
+    typography: "{typography.label-md}"
+    fontWeight: 700
+    width: "26px"
+    height: "26px"
+  list-search:          # 検索条件の箱（白・角丸 field・余白 12 14・行の間 10）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "12px 14px"
+    gap: "10px"
+  list-search-row:      # 検索条件の箱の頭の行（検索条件・かんたん／詳しく・保存・畳む。間 10）
+    gap: "10px"
+  list-search-chips:    # 状態・親子の札の行（間 6・12px）
+    gap: "6px"
+    typography: "{typography.body-sm}"
+  list-search-label:    # 札の行の頭の名前（状態の幅 40）
+    width: "40px"
+  list-search-chip:     # 状態・親子の札（高さ 24・角丸 full・左右 9・12px）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    padding: "0 9px"
+    typography: "{typography.body-sm}"
+    height: "24px"
+  list-search-seg:      # かんたん・詳しく の箱（線・角丸 md）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+  list-search-seg-item: # かんたん・詳しく の 1 つ（高さ 26・左右 10・12px）
+    padding: "0 10px"
+    typography: "{typography.body-sm}"
+    height: "26px"
+  list-search-fields:   # 種別〜言葉の格子（間 10）
+    gap: "10px"
+  list-search-field:    # 格子の 1 つ（名前と欄の間 3・12px・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    gap: "3px"
+  list-search-input:    # 格子の欄（白・線・角丸 md・高さ 30・左右 8・12px）
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line-strong}"
+    rounded: "{rounded.md}"
+    padding: "0 {spacing.sm}"
+    typography: "{typography.body-sm}"
+    height: "30px"
+  list-pick:            # 表の行の頭の選ぶ印の列（幅 32）
+    width: "32px"
+  list-detail-side:     # 一覧の右に開く詳細（白・線・角丸 field・幅 400・余白 16・D-128.14・D-128.165）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "{spacing.md}"
+    width: "400px"
+  list-detail-side-title: # 右に開く詳細の題名（h2・18px・700・余白は詳細の題名の行と同じ）
+    typography: "{typography.h2}"
+    fontWeight: 700
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

@@ -95,14 +95,3 @@ function MineViewItems({ name }: { name: string }) {
     </>
   );
 }
-
-/** 一覧（全部）の表の箱の頭：表示設定だけ（絞りの行は K-252 が足す） */
-export function ListToolbar({ columns }: { columns: Columns }) {
-  return (
-    <div className="k-list-filter" role="group" aria-label="表の見え方">
-      <span className="k-list-tools">
-        <ColumnSettings columns={columns} title="一覧の見え方" />
-      </span>
-    </div>
-  );
-}

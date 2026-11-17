@@ -4,6 +4,8 @@
 //     「もっと見る」は押している間は押せない（2 回押しても口は 1 回・G-16）。失敗したら読んだ行を残して「もう一度」
 //   401 は共通の決まり（lib/api/query の入り直し）に任せる。ほかの失敗は正本のエラーの 1 件（errorCodeOf・D-142.2）
 //   はじめにやること：閉じる・飛ばすの口は押している間は押せず、失敗したら箱とその項目をそのまま残す（K251-UI-028）
+//   K-252：一覧（全部）とグループの一覧は、言葉（q・打った字のまま）とグループ（scope_id）を口に渡す。言葉を替えたときは
+//     読んだ行を残したまま読み直し（言葉の欄を消さない）、遅れて届いた前の言葉の答えでは描かない。言葉かグループで 0 件なら はじめて にしない
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
@@ -64,12 +66,37 @@ export interface TicketList {
   loadingMore: boolean;
   /** 次の分が読めなかった（正本のエラーの ID） */
   moreError: string | null;
+  /** 読んだ行を残したまま読み直している（言葉を替えた直後。この間は「もっと見る」を受けない・K252-UI-020） */
+  reloading: boolean;
   reload: () => void;
   loadMore: () => void;
 }
 
-export function useTicketList(view: ListView, enabled: boolean): TicketList {
+/** 一覧の口に足す絞り（K-252）。q は打った字のまま（そろえるのは口・K-92） */
+export interface ListFilter {
+  q?: string;
+  scopeId?: string | null;
+}
+
+type ListQuery = { view: ListView; limit: number; q?: string; scope_id?: string; cursor?: string };
+const queryOf = (view: ListView, f: ListFilter): ListQuery => ({
+  view,
+  limit: PAGE_SIZE,
+  ...(f.q ? { q: f.q } : {}),
+  ...(f.scopeId ? { scope_id: f.scopeId } : {}),
+});
+
+export function useTicketList(view: ListView, enabled: boolean, filter: ListFilter = {}): TicketList {
+  const q = filter.q ?? "";
+  const scopeId = filter.scopeId ?? null;
   const [list, setList] = useState<ListState>({ state: "loading" });
+  /** 今の見え方とグループ（言葉だけを替えたときは、読んだ行を残して読み直す） */
+  const shown = useRef<string | null>(null);
+  const okNow = useRef(false);
+  const [reloading, setReloading] = useState(false);
+  /** 今の問い合わせ（見え方・言葉・グループ）。続きの答えは、始めた時と今が同じときだけ描く */
+  const asked = useRef("");
+  asked.current = `${view}|${q}|${scopeId ?? ""}`;
   const [loadingMore, setLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState<string | null>(null);
   const seq = useRef(0);
@@ -77,13 +104,20 @@ export function useTicketList(view: ListView, enabled: boolean): TicketList {
 
   const reload = useCallback(() => {
     const mine = ++seq.current;
+    const place = `${view}|${scopeId ?? ""}`;
+    const keep = shown.current === place && okNow.current;
+    shown.current = place;
     busy.current = false;
     setLoadingMore(false);
     setMoreError(null);
-    setList({ state: "loading" });
+    if (!keep) setList({ state: "loading" });
+    setReloading(keep);
     void (async () => {
-      const r = await safeCall(() => call("listTickets", { query: { view, limit: PAGE_SIZE }, screenId: "tickets" }));
+      const r = await safeCall(() =>
+        call("listTickets", { query: queryOf(view, { q, scopeId }), screenId: "tickets" }),
+      );
       if (mine !== seq.current) return; // 後から切り替えた見え方の答えだけを描く
+      setReloading(false);
       if (!r?.ok) {
         if (r?.kind !== "unauthenticated") setList({ state: "error", code: codeOf(r) });
         return;
@@ -91,34 +125,42 @@ export function useTicketList(view: ListView, enabled: boolean): TicketList {
       const rows = listOf(r.data);
       const next = nextOf(r.meta);
       // 0 件なら、会社にチケットが在るかを確かめる（はじめては会社に 0 件のときだけ・PM の決め 2026-11-17）
-      const first = rows.length === 0 && (view === "all" || (await companyIsEmpty()));
+      //   言葉かグループで絞ったときは、0 件でも はじめて にしない（条件に合うものが無いだけ・K252-UI-014）
+      const filtered = q !== "" || scopeId !== null;
+      const first = rows.length === 0 && !filtered && (view === "all" || (await companyIsEmpty()));
       if (mine !== seq.current || first === null) return;
       setList({ state: "ok", rows, next, first });
     })();
-  }, [view]);
+  }, [view, q, scopeId]);
+
+  useEffect(() => {
+    okNow.current = list.state === "ok";
+  }, [list.state]);
 
   useEffect(() => {
     if (enabled) reload();
-    // 画面を離れたら、届いた答えを描かない（印を進める）
+    // 画面を離れたら、届いた答えを描かない（印を進める）。見え方・グループが替われば読み込み中から
     return () => {
       seq.current += 1;
     };
   }, [enabled, reload]);
 
   const loadMore = useCallback(() => {
-    if (busy.current || list.state !== "ok" || !list.next) return;
+    if (busy.current || reloading || list.state !== "ok" || !list.next) return;
     busy.current = true;
     const mine = seq.current;
+    const startedFor = asked.current;
     const cursor = list.next;
     setLoadingMore(true);
     setMoreError(null);
     void safeCall(() =>
       call("listTickets", {
-        query: { view, limit: PAGE_SIZE, cursor },
+        query: { ...queryOf(view, { q, scopeId }), cursor },
         screenId: "tickets",
       }),
     ).then((r) => {
-      if (mine !== seq.current) return;
+      // 読み直した後・言葉かグループを替えた後に届いた続きは描かない（前の言葉の行を新しい一覧に混ぜない）
+      if (mine !== seq.current || startedFor !== asked.current) return;
       busy.current = false;
       setLoadingMore(false);
       if (r?.ok) {
@@ -126,9 +168,9 @@ export function useTicketList(view: ListView, enabled: boolean): TicketList {
         setList((cur) => (cur.state === "ok" ? { ...cur, rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur));
       } else if (r?.kind !== "unauthenticated") setMoreError(codeOf(r));
     });
-  }, [list, view]);
+  }, [list, reloading, view, q, scopeId]);
 
-  return { list, loadingMore, moreError, reload, loadMore };
+  return { list, loadingMore, moreError, reloading, reload, loadMore };
 }
 
 /** はじめにやることの 1 件（K-250 の答えの形） */
@@ -239,4 +281,31 @@ export function useApprovals(enabled: boolean): Approvals {
   if (q.isError) return { state: "error" };
   if (q.isSuccess) return { state: "ok", rows: q.data };
   return { state: "loading" };
+}
+
+export type OpenLookup = { state: "loading" } | { state: "found"; id: string } | { state: "missing" };
+
+/** ?open=<番号> を直に開いたとき：一覧の口を q=<番号>・view=all で引き、番号がちょうど合う行の id を得る（K252-UI-011）。
+ *  known は行を押して分かっている id（そのときは口を呼ばない） */
+export function useOpenLookup(number: string | null, known: { number: string; id: string } | null): OpenLookup | null {
+  const [found, setFound] = useState<{ number: string; result: OpenLookup } | null>(null);
+  const hit = number !== null && known?.number === number;
+  useEffect(() => {
+    if (number === null || hit) return;
+    let live = true;
+    setFound({ number, result: { state: "loading" } });
+    void safeCall(() =>
+      call("listTickets", { query: { view: "all", q: number, limit: PAGE_SIZE }, screenId: "tickets" }),
+    ).then((r) => {
+      if (!live) return;
+      const row = r?.ok ? listOf(r.data).find((x) => x.number === number) : undefined;
+      setFound({ number, result: row ? { state: "found", id: row.id } : { state: "missing" } });
+    });
+    return () => {
+      live = false;
+    };
+  }, [number, hit]);
+  if (number === null) return null;
+  if (hit) return { state: "found", id: known!.id };
+  return found?.number === number ? found.result : { state: "loading" };
 }
