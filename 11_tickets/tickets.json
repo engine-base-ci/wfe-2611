@@ -13195,6 +13195,76 @@
    "file": "11_tickets/K-301.md"
   },
   {
+   "id": "K-306",
+   "title": "ログアウトする口（signOut・その画面のセッションだけ閉じる・Bridge は残す）（K-74 の子）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-74",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。K-301 と同じ引き方。前からある部品 signOut（packages/auth/src/resolver.ts：sessions を閉じてから認証側を閉じる）を契約の口の hook から呼ぶだけで、DB と画面は変えない。K-301 の実測で引き直す",
+   "decisions": [
+    "D-125.140",
+    "D-128.63",
+    "D-128.120",
+    "D-128.121",
+    "D-125.162",
+    "D-128.125",
+    "D-128.143"
+   ],
+   "split": "",
+   "prior_impl": "部品の signOut（packages/auth/src/resolver.ts 78〜82 行）。画面のログアウトは部品の口 /api/auth/sign-out（authClient.signOut・apps/web/lib/auth/session.tsx）で、sessions の行は閉じていない。契約の口 signOut は契約だけ（501）",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "tests": [
+    "apps/api/test/features/F1/sign-out.test.ts",
+    "apps/api/test/generated/post_auth_sign_out.test.ts"
+   ],
+   "depends_on": [
+    "K-301"
+   ],
+   "acts": [
+    "A13"
+   ],
+   "screens": [],
+   "apis": [
+    "signOut"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F1/login/",
+    "apps/api/src/hooks/login.ts",
+    "05_flow/screen_api.py",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json"
+   ],
+   "sections": {
+    "目的": "ログイン中の人が「ログアウト」を押したとき、**その画面のセッションだけ** を閉じる契約の口（`POST /api/v1/auth/sign-out`）を作る。認証側のセッションを消し、sessions の行を `revoked_at` と理由 `logout` で閉じる。同じ人の別のブラウザのセッションと、PC（Bridge）のセッションは閉じない（D-125.140 が全部切ると決めたのはパスワードの変更・端末を外す・退会で、ログアウトは入っていない。Bridge は時間でも切らない D-128.121）。\n\n今の画面のログアウトは部品の口 `/api/auth/sign-out` を呼んでいて、sessions の行が開いたまま残る。画面をこの口に移し、部品の口を閉じるのは K-317（重さの上限：この葉は apps/web に触らない）。",
+    "完了の条件": "- [ ] 下の表の 12 行（K306-API-001〜012）が本物の DB の上で緑（`apps/api/test/features/F1/sign-out.test.ts`・土台は K-301 の `login.harness.ts`）\n- [ ] 契約の口 signOut が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_sign_out.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している\n- [ ] K-301・K-302 の試験と、前からの試験（packages/auth/test/auth.test.ts のログアウト・apps/api/test/agent_stream.test.ts）が緑のまま\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: AUTH\n\n- 親 K-74 の子。依存は K-301（口の置き場 apps/api/src/features/F1/login/・hooks/login.ts・試験の土台）\n- 同意し直しの印が立ったセッションでもログアウトは止めない（契約の termsOpen に signOut が入っている：05_flow/screen_api.py の TERMS_OPEN_OPS・K-53）\n- セッションの見張り（操作が無い 12 時間・最長 7 日・国か端末の変化で切る）は K-20。切られた後に押すと 401（見張りが付けた理由は書き換えない）\n- ログアウトの後に戻る・ブックマーク・別のタブで残った画面は画面の振る舞いで K-317\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）",
+    "確かめたこと（切る段・2026-11-17）": "1. 部品の `signOut`（resolver.ts）：`auth.api.getSession` → `app.close_session(認証側の id, 'logout')`（sessions の行だけ閉じる・migration 0004）→ `auth.api.signOut`（認証側の行を消す）。閉じる順が sessions → 認証側なので、sessions で失敗すれば認証側は残る（半分だけ閉じない）\n2. 口の入口（op.ts）：上限は `60/min/user`（人ごと。印が解けない要求は IP ごと）→ 認証（role member・PC の印は self_or_device でないので 403）→ 同意し直し（termsOpen で通す）→ hook の before\n3. sessions の Bridge の行は kind_id `bridge` で、画面のセッションと別の行（auth_session_id が別）。`app.close_session` は auth_session_id が同じ 1 行だけ閉じる\n4. 画面のログアウトの今：`apps/web/lib/auth/session.tsx` の `signOut()` → `authClient.signOut()` → 部品の `/api/auth/sign-out`（認証側だけ消え、sessions は開いたまま。見張りで 12 時間後に閉じる）\n\n```search\n- name: 画面が部品のログアウトの口を呼んでいる所（移すのは K-317。K-317 の試験 k317-login-passkey.spec.ts の名前に出る 1 件は外す・c/段2 の今の木で数えた）\n  cmd: git grep -n -F 'authClient.signOut' -- apps packages ':!apps/web/tests/k/k317-login-passkey.spec.ts'\n  count: 1\n- name: 部品のログアウトの道を名指ししている所（K-138 の外枠の試験の差し替え。K-317 が向け直す。K-317 の試験の 1 件は外す）\n  cmd: git grep -n -F '/api/auth/sign-out' -- apps packages ':!apps/web/tests/k/k317-login-passkey.spec.ts'\n  count: 1\n```",
+    "依存の理由": "- K-301: 要る — 試験は K-301 の土台 login.harness.ts（PW・SIGN_OUT・setupLogin）を使い、口の置き場 apps/api/src/features/F1/login/・hooks/login.ts も K-301 が作る同じファイル",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 口の形（契約を直す） | `05_flow/screen_api.py` の `INPUTS` に `\"signOut\": (\"SignOutInput\", {})`（strict・空の体だけ・ほかの欄は 422）、`RESPONSES` に `\"signOut\": (\"SignedOut\", {\"signed_out\": \"boolean\"})`。4xx は今の汎用（401・403・422・429）のまま。作り手の順で作り直す（K-301 と同じ） |\n| 口の振る舞い | `apps/api/src/features/F1/login/sign-out.ts`（新しく）：要求の頭（Bearer）で部品の `signOut(auth, appPool, headers)` を呼び、201・`{ data: { signed_out: true } }`。入口が解けたのに部品のセッションが無い（同時に 2 回押した 2 つ目）は 401・UNAUTHENTICATED（500 にしない）。`app.close_session` か部品の signOut が例外なら 500・E-PAGE-003（ログには種類だけ・印は出さない）。`apps/api/src/hooks/login.ts` に足す。PC の印（x-bridge-session）は入口が 403 で止める（この口は画面のセッションだけ） |\n| 生成の試験の対応 | `07_qa/test-plan/ears-elsewhere.json` に signOut（file：apps/api/test/features/F1/sign-out.test.ts）を足す。作り直した後の名前に種類で結ぶ：`_ok` → K306-API-001・`_rejected_401` → K306-API-004・`_rejected_422*` → K306-API-008・`_rate_limited` → K306-API-009・`_server_error` → K306-API-010・`_shape` → K306-API-001・`_rejected_403` → K306-API-012（PC の印だけで呼ぶと 403）・`_session_unresolved` → K144-API-032・`_too_large` → K144-API-042 |\n| 範囲の地図 | `scripts/ci/ci_scope.json` の data_links に `{ \"paths\": [\"apps/api/test/features/F1/sign-out.test.ts\"], \"tests\": [\"apps/api/test/generated/post_auth_sign_out.test.ts\"] }` |\n| 使う既存の実装 | 部品の `signOut`（resolver.ts）・`app.close_session`（0004）・K-301 の `loginHooks` と試験の土台 |\n\n### 決めた判断\n\n- ログアウトは、その画面のセッション（認証側と sessions）だけを閉じる。PC（Bridge）は閉じない（K-74 の決めた判断・D-125.140・D-128.121）\n- 閉じた理由は `logout`。見張りが先に閉じた行は書き換えない\n- 2 回目（もう閉じた印）は 401（何も書かない）",
+    "テスト仕様と確認の結果": "行 ID は `K306-API-…`。試験は `apps/api/test/features/F1/sign-out.test.ts`（12 行）。\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`sessions.revoked_at`／`revoke_reason_id`（logout・idle・max_age・country_changed・device_changed）・`sessions.kind_id`（web・bridge）・`sessions.terms_pending`・`sessions.last_seen_at`・`kaname_auth.session` の行\n\n| セッションの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 生きている | 「ログアウト」 | ログイン中 | 201・signed_out・認証側の行が消え、sessions は logout で閉じる・その印で入れない | このチケット（画面は K-317） | K306-API-001 |\n| 生きている（同じ人の別のブラウザ・PC もある） | 「ログアウト」 | ログイン中 | その画面だけ閉じる。別のブラウザと PC は残る | このチケット | K306-API-002 |\n| ログアウトした | 古い印でログアウト・ほかの口を直に | ログインしていない | 401。閉じた行は書き換えない | このチケット | K306-API-003 |\n| 無い・でたらめ | ログアウト | ログインしていない | 401・UNAUTHENTICATED・何も書かない | このチケット | K306-API-004 |\n| 生きている | 同じ印で同時に 2 回 | ログイン中 | 201 か 401（500 にならない）・1 回だけ閉じる | このチケット | K306-API-005 |\n| 同意し直しの印が立っている | ログアウト | ログイン中 | 201（止めない） | このチケット（印は K-53） | K306-API-006 |\n| 見張りで切られた（idle） | ログアウト | セッションが切れた | 401・理由は idle のまま | このチケット（切るのは K-20） | K306-API-007 |\n| どれでも | ログアウトした後に戻る・ブックマーク・別のタブの残った画面で押す | ログインしていない | 中は見えずログインへ・書きかけは残る | K-317 | — |\n| どれでも | 部品の口 /api/auth/sign-out | ログイン中 | 閉じて 404 にする（sessions を閉じない道を残さない） | K-317（画面を移してから閉じる） | — |\n| パスワードを変えた・再設定した後 | 別の端末の古いセッション | — | 401 | K-312・K-314 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | 知らない欄（all・session_id） | 422・閉じない | K306-API-008 |\n| 守り | 1 分に 61 回（同じ人） | 429・RATE_LIMITED・61 回目の印は閉じない | K306-API-009 |\n| 失敗 | 閉じる所（sessions の書き換え）で失敗 | 500・E-PAGE-003・半分だけ閉じない（押し直せば閉じる） | K306-API-010 |\n| 守り | ログ | ログインの印が出ない | K306-API-011 |\n| 守り | 答えの形 | data は signed_out だけ | K306-API-001 |\n| 守り | PC の印（x-bridge-session）だけで呼ぶ | 403・FORBIDDEN。PC のセッションは閉じない（PC を閉じるのは端末を外す操作） | K306-API-012 |\n\n### G 観点（G-11〜G-16）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外のリソースを使わない |\n| G-12 切り替わりの瞬間 | 該当 | 見張りで切られた直後に押す（K306-API-007） |\n| G-13 機能の組み合わせ | 該当 | 同時に 2 回（K306-API-005）・同意し直し × ログアウト（K306-API-006）・PC が動いている × ログアウト（K306-API-002） |\n| G-14 口座状態の波及 | 該当 | ログアウトした印が全部の口で 401（K306-API-003） |\n| G-15 信号なし終了 | 該当 | 閉じる所の失敗で「閉じた」と言わない（K306-API-010） |\n| G-16 有限資源の枯渇 | 該当 | 1 要求で DB の関数 1 回と部品 1 回・接続はプール経由。上限 60 回／分／人（K306-API-009） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-05 ログアウトした後に戻る・ブックマーク | 口の側：K306-API-003（古い印で直に）。画面の側は K-317 |\n\n要らない: TP-AUTH-01 誤ったパスワードと無いメールは K-301（この口はログイン中の人だけが呼ぶ）\n要らない: TP-AUTH-02 続けて失敗するのは K-301（パスワード）・K-302（6 けた）。ログアウトには失敗の数が無い\n要らない: TP-AUTH-03 2 段階のコードは K-302（この口はコードを受けない）\n要らない: TP-AUTH-04 切れた後に戻ってくる画面は K-316\n要らない: TP-AUTH-06 パスワードを変えた後は K-312・K-314\n要らない: TP-AUTH-07 取り直しは K-19\n要らない: TP-AUTH-08 戻る先は画面 K-316\n要らない: TP-AUTH-09 国・端末の変化は K-20・K-301",
+    "成果物": "- 口 `apps/api/src/features/F1/login/sign-out.ts`・hooks／契約の形と生成物／ears-elsewhere／範囲の地図\n- 単体のテスト：`apps/api/test/features/F1/sign-out.test.ts`（12 行）",
+    "決定ログ": "- 2026-11-17 切る段で K-74 から分けた\n- 2026-11-17 精査 R（差し戻し・指摘 2）を受けて直した：search の命令から K-317 の試験を外して件数を今の木に合わせた・生成の試験の `_rejected_403` の結び先として行 K306-API-012（PC の印だけで呼ぶと 403）を足した（11 → 12 行）。K306-API-002 の PC のセッションも、本物の PC のつなぎ（apps/api/test/bridge_pair.ts の pairMemberForTest）で作る形にした。試験の土台は精査の後の決め 7（準備のセッションを閉じる）\n- 2026-11-17 PM の決め（聞くこと-2 の「PM が決めた作り方」・勧めのとおり）：画面のログアウトを契約の口に移し、部品の口 `/api/auth/sign-out` を閉じるのは K-317\n\n### K-74 の行の配り先（この葉の分）\n\nK-74 の状態の表：「どれでも × ログアウト × ログイン中」→ K306-API-001・002（PC は残る）／「ログアウトした古いトークンで口を直に呼ぶ」→ 003。「ログアウトした後に戻る・ブックマーク」「別のタブでログアウトした後」→ K-317。\nK-74 の入力・失敗・揺れ・守り：「閉じた部品の道（/sign-out）」→ K-317 に回した（画面が使っているため）。1 分の上限・ログはこの葉の口の分を 009・011 で受けた（K-74 の上限の行はログイン・6 けた・管理者に頼む・いまの様子の分で、ログアウトの 60 回／分／人は契約の rate_limit から足した）。",
+    "リスクと懸念": "- 同時に 2 回押したとき、2 つ目は入口で解けて部品で無くなる間がある。そこを 401 にしないと 500 になる（K306-API-005 が見る）",
+    "申し送り": "- K-317 へ：画面の `signOut()`（apps/web/lib/auth/session.tsx）を契約の口に向け、部品の口 `/sign-out` を `disabledPaths` で閉じる（AUTH_TERMS_OPEN の `/sign-out` も外す）。外枠の試験 apps/web/tests/k/k138-shell.spec.ts の差し替えの道も向け直す\n- K-74 の頭の欄：apis から signOut、tests から post_auth_sign_out.test.ts を外す"
+   },
+   "file": "11_tickets/K-306.md"
+  },
+  {
    "id": "K-307",
    "title": "いまの様子（誰でも読める稼働状況の口 getServiceStatus・公開の分だけ・型を決める・app.public_service_status）（K-74 の子）",
    "kind": "タスク",
