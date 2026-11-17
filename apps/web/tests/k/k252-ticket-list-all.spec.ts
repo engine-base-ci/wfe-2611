@@ -36,6 +36,9 @@ const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const COLUMNS = ["種別", "番号", "題名", "状態", "担当者", "グループ", "期限", "予定・実績", "更新"];
 const headsOf = async (page: Page) =>
   (await table(page).getByRole("columnheader").allInnerTexts()).map((h) => h.trim());
+/** 見出しの列（待つ形で比べる：toHaveText） */
+const heads = (page: Page) => table(page).getByRole("columnheader");
+const COLUMNS_KEY = "kaname.ticket-list.columns";
 
 for (const path of PATHS) {
   test(`K252-UI-001 ${path} 幅 1440 で行（題名）を押す：一覧の右に詳細が開き URL は元の問い合わせに open=EG-101・列は 9 つのまま・詳細に帯と h1 は無く h1 は一覧の 1 つ。番号のリンクを押しても移らずに横に開く`, async ({
@@ -177,9 +180,10 @@ for (const path of PATHS) {
       await expectDisabled(page, tools.locator('[aria-disabled="true"]', { hasText: t }).first(), t);
     await expect(tools.getByRole("button", { name: "表示設定" })).toBeEnabled();
     await expect(tools.locator('[aria-disabled="true"]', { hasText: "表示設定" })).toHaveCount(0);
+    await expect(rowsOf(page)).toHaveCount(3);
     await expect(tools.locator("[data-value]")).toHaveCount(1);
     expect((await tools.locator("[data-value]").innerText()).trim()).toBe("");
-    expect(await headsOf(page)).toEqual(COLUMNS);
+    await expect(heads(page)).toHaveText(COLUMNS);
     await expect(table(page).locator("tr.k-list-section")).toHaveCount(0);
     const picks = table(page).getByRole("checkbox");
     expect(await picks.count()).toBeGreaterThan(0);
@@ -349,7 +353,7 @@ test('K252-UI-016 横の詳細（詳細の部品 layout="side"）には、詳細
 });
 
 for (const path of PATHS) {
-  test(`K252-UI-017 ${path} 表示設定（一覧の道具の中）：番号と題名は外せない。期限と更新を外すと表から消え（見出し 7）、開き直しても外したまま。はじめに戻すで 9 列。口は呼ばない（answer=afc3b0f2fdb4）`, async ({
+  test(`K252-UI-017 ${path} 表示設定（一覧の道具の中）：番号と題名は外せない。期限と更新を外すと表から消え（見出し 7）、このブラウザに覚え（自分に関わるものと同じ鍵）開き直しても外したまま。はじめに戻すで 9 列。口は呼ばない（answer=afc3b0f2fdb4）`, async ({
     page,
   }) => {
     const m = await mockList(page);
@@ -363,14 +367,56 @@ for (const path of PATHS) {
     await cols.getByRole("checkbox", { name: "期限", exact: true }).uncheck();
     await cols.getByRole("checkbox", { name: "更新", exact: true }).uncheck();
     const left = COLUMNS.filter((c) => c !== "期限" && c !== "更新");
-    expect(await headsOf(page)).toEqual(left);
+    await expect(heads(page)).toHaveText(left);
     await expect(rowsOf(page).first().locator("td")).toHaveCount(left.length + 1); // 頭の選ぶ印の td を足す
+    const stored = await page.evaluate((k) => window.localStorage.getItem(k), COLUMNS_KEY);
+    expect(JSON.parse(stored ?? "null")).toEqual(["kind", "number", "title", "stage", "assignee", "scope", "estimate"]);
     await open(page, path);
     await expect(rowsOf(page)).toHaveCount(3);
-    expect(await headsOf(page)).toEqual(left);
+    await expect(heads(page)).toHaveText(left);
+    await open(page, "/tickets");
+    await expect(rowsOf(page)).toHaveCount(3);
+    await expect(heads(page)).toHaveText(left);
+    await open(page, path);
+    await expect(rowsOf(page)).toHaveCount(3);
     await tools.getByRole("button", { name: "表示設定" }).click();
     await page.getByRole("dialog", { name: "一覧の見え方" }).getByRole("button", { name: "はじめに戻す" }).click();
-    expect(await headsOf(page)).toEqual(COLUMNS);
+    await expect(heads(page)).toHaveText(COLUMNS);
     expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
   });
+
+  for (const w of [320, 375] as const)
+    test(`K252-UI-017 ${path} 幅 ${w}：一覧の道具の表示設定の箱を開いても横溢れ 0・箱の左右の端が画面の中`, async ({
+      page,
+    }) => {
+      await mockList(page);
+      await open(page, path, w);
+      await expect(rowsOf(page)).toHaveCount(3);
+      await page.locator('[aria-label="一覧の道具"]').getByRole("button", { name: "表示設定" }).click();
+      const box = page.getByRole("dialog", { name: "一覧の見え方" });
+      await expect(box).toBeVisible();
+      expect(await overflowX(page)).toBe(0);
+      const b = (await box.boundingBox())!;
+      expect(b.x).toBeGreaterThanOrEqual(0);
+      expect(b.x + b.width).toBeLessThanOrEqual(w);
+    });
 }
+
+test("K252-UI-018 表示設定 × 横に開いた間（幅 1200）：種別を外してあれば列は 番号・題名・状態・担当者 の 4 つ。詳細を閉じる（戻る）と選んだ 8 列に戻る", async ({
+  page,
+}) => {
+  await page.addInitScript(([k, v]) => window.localStorage.setItem(k, v), [
+    COLUMNS_KEY,
+    JSON.stringify(["number", "title", "stage", "assignee", "scope", "due", "estimate", "updated"]),
+  ] as const);
+  await mockList(page);
+  await open(page, "/tickets?view=all", 1200);
+  const chosen = COLUMNS.filter((c) => c !== "種別");
+  await expect(heads(page)).toHaveText(chosen);
+  await rowsOf(page).first().getByRole("link", { name: "チケット 1" }).click();
+  await expect(side(page)).toBeVisible();
+  await expect(heads(page)).toHaveText(["番号", "題名", "状態", "担当者"]);
+  await page.goBack();
+  await expect(side(page)).toHaveCount(0);
+  await expect(heads(page)).toHaveText(chosen);
+});
