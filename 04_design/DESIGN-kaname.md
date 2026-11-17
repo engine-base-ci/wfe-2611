@@ -803,6 +803,94 @@ components:
   create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
     border: "1px solid {colors.primary}"
     padding: "0 18px"
+  # 承認待ち（K-231・D-143.2：値はキャンバス Approvals・ApEmpty の実測）
+  approvals-body:       # 本文の箱（帯の下。カードか空の箱を包む）
+    padding: "{spacing.md} {spacing.lg}"
+    gap: "12px"
+  approvals-next:       # 帯の主ボタン「続けて裁く」（高さは page-head-button の 30。左右 12・字 12px）
+    padding: "0 12px"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-card:       # カード 1 つ（道具の行・表・注記）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  approvals-tools:      # 道具の行（絞り込みの札・並べ替え・まとめて承認・決めた履歴）
+    padding: "10px 12px"
+    borderBottom: "1px solid {colors.line}"
+    gap: "{spacing.sm}"
+  approvals-chips:      # 絞り込みの札の並び
+    gap: "6px"
+  approvals-chip:       # 絞り込みの札（今いる札は紺の地に白字）
+    height: "26px"
+    padding: "0 10px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+  approvals-chip-on:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    border: "1px solid {colors.primary}"
+  approvals-th:         # 表の見出しの行
+    height: "32px"
+    padding: "0 {spacing.sm}"
+    backgroundColor: "{colors.table-head}"
+    textColor: "{colors.on-surface-variant}"
+    borderBottom: "1px solid {colors.line}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-td:         # 表の行
+    height: "44px"
+    padding: "0 {spacing.sm}"
+    borderBottom: "1px solid {colors.line-soft}"
+  approvals-group:      # 期限の区切りの行（期限切れだけ赤の字・今日は黒）
+    height: "28px"
+    backgroundColor: "{colors.surface}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-title:      # 題名のリンク（黒字・下線なし）
+    textColor: "{colors.on-surface}"
+    fontWeight: 500
+  approvals-late:       # 期限の区切りの赤（期限切れだけ）と過ぎた期限の字
+    textColor: "{colors.error}"
+    fontWeight: 500
+  approvals-kind:       # 決めることの線の札
+    border: "1.5px solid {colors.primary}"
+    rounded: "{rounded.full}"
+    padding: "0 {spacing.sm}"
+    textColor: "{colors.primary}"
+    typography: "{typography.label-md}"
+  approvals-avatar:     # 誰からの頭文字の丸
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.on-surface-variant}"
+    textColor: "{colors.card}"
+    typography: "{typography.label-xs}"
+  approvals-from:       # 誰からの列（頭文字の丸と名前の間）
+    gap: "5px"
+  approvals-acts:       # 行のボタン（従と主の間・字 12px）
+    gap: "6px"
+    typography: "{typography.body-sm}"
+  approvals-note:       # カードの下の注記
+    padding: "{spacing.sm} 12px"
+    borderTop: "1px solid {colors.line-soft}"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+  approvals-empty-title: # 空の箱の見出し（ApEmpty「いま決めるものはありません」16px・700）
+    typography: "{typography.section-title}"
+  approvals-empty-body: # 空の箱の説明（13px・行の高さ 1.7）
+    typography: "{typography.body}"
+    lineHeight: 1.7
+  state-empty-icon:     # 空の箱の見出しの上の印（ApEmpty の ✓）
+    width: "44px"
+    height: "44px"
+    rounded: "{rounded.field}"
+    backgroundColor: "{state.success}"
+    textColor: "{colors.card}"
+    typography: "{typography.h2}"
   # 作る画面の本文の箱の中（K-225・キャンバス Create の本文の箱）。詳細の区画の見出しは前からの section-title（28・8）のまま、作る画面は名前を分けて持つ（PM の決め）
   create-doc:           # 本文の箱の中の文書（道具の帯の下）。幅 900 は CSS の max-width で持つ
     padding: "8px 28px 24px"

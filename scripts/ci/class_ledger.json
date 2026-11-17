@@ -1,12 +1,4 @@
 {
   "_doc": "画面のクラスの検査（scripts/ci/class_gate.py・K-214）で、今ある赤を通す台帳。減らすだけ：直したら行を消す。足して通さない（本線との分かれ目の台帳に無い行・入れた時点の 32 行を超える行は赤）",
-  "entries": [
-    {
-      "kind": "undefined",
-      "cls": "k63-acts",
-      "file": "apps/web/features/F5/approve-complete/queue.tsx",
-      "owner": "K-231",
-      "reason": "どの CSS にも定義が無い（画面を直す K-231 が台帳から消す）"
-    }
-  ]
+  "entries": []
 }

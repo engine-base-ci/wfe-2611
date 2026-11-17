@@ -931,7 +931,7 @@
     375
    ],
    "owner": "K-231",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -956,9 +956,20 @@
       "background-color",
       "border-bottom-color",
       "border-bottom-width",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯の余白",
+     "role": "body",
+     "canvas": "main header > div",
+     "app": ".k-page-head",
+     "props": [
       "padding-top",
       "padding-left",
-      "height",
       "width",
       "x",
       "y"
@@ -968,7 +979,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-ap-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -1910,7 +1921,7 @@
     375
    ],
    "owner": "K-231",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1935,9 +1946,20 @@
       "background-color",
       "border-bottom-color",
       "border-bottom-width",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯の余白",
+     "role": "body",
+     "canvas": "main header > div",
+     "app": ".k-page-head",
+     "props": [
       "padding-top",
       "padding-left",
-      "height",
       "width",
       "x",
       "y"
@@ -1947,7 +1969,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-ap-body",
      "props": [
       "padding-top",
       "padding-left",
