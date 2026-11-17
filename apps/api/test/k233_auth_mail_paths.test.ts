@@ -10,6 +10,7 @@ import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth, type Auth, type Mail } from "@kaname/auth";
 import { createSessionResolver } from "@kaname/auth/resolver";
+import { mailTag } from "@kaname/auth/signup";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { createApp } from "../src/app.js";
@@ -139,7 +140,8 @@ describe("K-233 メールの道（試験用の受け箱で受ける）", () => {
     await expect(noMail.auth.api.requestPasswordReset({ body: { email } })).resolves.toBeDefined();
     const lines = warn.mock.calls.map((a) => String(a[0])).filter((s) => s.includes("メールの送出先が無い"));
     expect(lines).toHaveLength(1);
-    expect(lines[0]).toContain(`reset → ${email}`);
+    expect(lines[0]).toContain(`reset → ${mailTag(email)}`);
+    expect(lines[0]).not.toContain(email);
     expect(lines[0]).toContain(`${WEB}/password-reset?token=`);
     expect(box).toHaveLength(0);
   });
