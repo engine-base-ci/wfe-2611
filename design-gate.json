@@ -44,6 +44,12 @@
     "auth-badge": ".k-auth-badge",
     "auth-alt": ".k-auth-alt",
     "auth-foot": ".k-auth-foot",
+    "auth-card-login": ".k-auth-card:has(> form[data-auth=\"login\"])",
+    "auth-sep": ".k-login-sep",
+    "auth-sep-line": ".k-login-sep-line",
+    "auth-code-row": ".k-login-code",
+    "auth-code": ".k-login-code-box",
+    "auth-alt-col": ".k-login-alt-col",
     "auth-spin": ".k-auth-card > .k-state[data-state=\"loading\"] .k-spin",
     "button-secondary": {
       "selector": ".k-btn[data-variant=\"secondary\"]",

@@ -254,12 +254,12 @@ test("SCR-LOGIN-037 ボタン「ログイン」：通常は正しい組み合わ
   await expect(page.locator("form[data-state='n']")).toBeVisible();
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page.locator("form[data-state='e']")).toContainText("あと 4 回で 15 分ロックします");
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token")), "失敗では入らない").toBeFalsy();
   // 状態「失敗」から正しいパスワードで押す
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await page.waitForURL(HOME_RE, { timeout: 30_000 });
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeTruthy();
 });
