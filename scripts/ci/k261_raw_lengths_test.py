@@ -418,7 +418,8 @@ class RealTree(unittest.TestCase):
         self.assertIn("style", class_gate.KINDS)
         self.assertIn("apps/web/features/", class_gate.NEW_LAYERS)
         self.assertIn("apps/web/components/k/", class_gate.NEW_LAYERS)
-        files = subprocess.run(["git", "ls-files", "apps/web"], cwd=ROOT, capture_output=True, text=True).stdout.split()
+        files = [f for f in subprocess.run(["git", "ls-files", "-z", "apps/web"], cwd=ROOT, capture_output=True,
+                                           text=True).stdout.split("\0") if f]
         other = [f for f in files if re.search(r"\.(scss|sass|less|styl|pcss)$", f)]
         self.assertEqual(other, [], "D8 が読まない書き方の CSS がある")
         tagged = [f for f in files if f.endswith((".tsx", ".jsx")) and "<style" in (ROOT / f).read_text(encoding="utf-8")]
