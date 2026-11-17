@@ -851,10 +851,7 @@ button.k-list-tool:hover {
   box-sizing: border-box;
   width: var(--k-c-list-detail-side-width);
   max-width: 100%;
-  position: sticky;
-  top: 0;
-  max-height: calc(100dvh - var(--k-c-shell-bar-height));
-  overflow: auto;
+  min-width: 0;
   padding: var(--k-c-list-detail-side-pad);
   background: var(--k-c-list-detail-side-bg);
   border: var(--k-c-list-detail-side-border);
