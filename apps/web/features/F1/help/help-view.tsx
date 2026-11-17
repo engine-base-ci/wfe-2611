@@ -67,8 +67,8 @@ export function HelpView({ status, opsEmail }: HelpViewProps) {
             </p>
           ) : (
             <ul className="k-help-list">
-              {status.map((s) => (
-                <li key={`${s.kind}-${s.title}`} className="k-help-row">
+              {status.map((s, i) => (
+                <li key={`${i}-${s.kind}-${s.title}`} className="k-help-row">
                   <span className="k-help-main">
                     <b>{s.title}</b>
                     <span className="k-help-when">{s.when}</span>

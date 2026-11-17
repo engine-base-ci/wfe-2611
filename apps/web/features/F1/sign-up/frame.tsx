@@ -16,8 +16,8 @@ export interface TermsLinks {
 }
 export const DEFAULT_TERMS_LINKS: TermsLinks = { terms: TERMS_HREF, privacy: PRIVACY_HREF };
 // ログインしていない人の「困ったとき」（K-315）。いまの様子はその稼働状況の区画へ
-export const HELP_HREF = "/help" as Route;
-export const STATUS_HREF = "/help#status" as Route;
+export const HELP_HREF = "/help" satisfies Route;
+export const STATUS_HREF = "/help#status" satisfies Route;
 
 /** 下の行き先の形。all＝利用規約・プライバシー・困ったとき／help＝困ったとき だけ（入れ物の待ち）／
  *  status＝「いまの様子 ・ 困ったとき」の 1 行（キャンバス AuthVerifyExpired・K-256） */

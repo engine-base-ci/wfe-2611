@@ -28,8 +28,22 @@ else:
     scr = mp.get("screens", {})
     names = {f.replace(".dc.html", "") for f in files}
     every = [b for v in scr.values() for b in v] + list(mp.get("common", {}).get("boards", []))
-    # キャンバスの絵が無く、正が本番と同じ部品で作ったモック（段 2 の /dev/mock）の画面は、理由つきで mock_only に載せる（K-315）
-    mock_only = {k for k, v in mp.get("mock_only", {}).items() if isinstance(v, str) and v.strip()}
+    # キャンバスの絵が無く、正が本番と同じ部品で作ったモック（段 2 の /dev/mock）の画面は、理由つきで mock_only に載せる（K-315）。
+    #   抜け道にしない：理由が空・第1フェーズに無い画面・モックの置き場に screen: "<画面>" の見本が無い画面は赤
+    MOCKS = "apps/web/app/(dev)/dev/mock/f1/mocks.tsx"
+    mock_src = open(MOCKS, encoding="utf-8").read() if os.path.exists(MOCKS) else ""
+    mock_only = set()
+    for k, v in mp.get("mock_only", {}).items():
+        if not (isinstance(v, str) and v.strip()):
+            fails.append(("CV4", f"mock_only の {k} に理由が無い"))
+        elif k not in v1:
+            fails.append(("CV4", f"mock_only の {k} は flow の第1フェーズに無い画面"))
+        elif f'screen: "{k}"' not in mock_src:
+            fails.append(("CV4", f"mock_only の {k} のモックが {MOCKS} に無い"))
+        elif scr.get(k):
+            fails.append(("CV4", f"mock_only の {k} にはキャンバスの絵もある（どちらか 1 つ）"))
+        else:
+            mock_only.add(k)
     nob = sorted(v1 - mock_only - {k for k, v in scr.items() if v})
     if nob: fails.append(("CV4", f"絵の無い画面 {nob[:8]}"))
     if set(scr) - v1: fails.append(("CV4", f"flow の第1フェーズに無い画面 {sorted(set(scr) - v1)[:8]}"))
