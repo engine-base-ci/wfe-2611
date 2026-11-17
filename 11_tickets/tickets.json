@@ -13241,10 +13241,12 @@
     "@kaname/api",
     "@kaname/auth",
     "@kaname/errors",
-    "@kaname/contracts"
+    "@kaname/contracts",
+    "@kaname/db"
    ],
    "ci_wide": [
-    "shared"
+    "shared",
+    "db"
    ],
    "changes": [
     "apps/api/src/features/F1/login/",
