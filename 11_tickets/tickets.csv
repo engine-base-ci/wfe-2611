@@ -1704,3 +1704,10 @@ K-314,新しいパスワードを決める口（リンクの状態で答え分�
 - [ ] 契約の口 `resetPassword` が 501 でない。生成の試験 `apps/api/test/generated/post_auth_password_reset.test.ts` の it.todo が 0（ears-elsewhere.json の covers）
 - [ ] K-313 の試験（password-forgot.test.ts）と前からの試験 `apps/api/test/k233_auth_mail_paths.test.ts`（K233-API-021：部品で直に再設定してもセッションが全部切れる）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲・D-128.147）が緑"
+K-316,ログインの画面を口につなぐ：パスワード・確認のコード・止め・ロック・送りすぎ（views の LoginMain・LoginCode・LoginBlocked に載せ替え、契約の口 signInWithPassword・verifySignInCode だけを呼ぶ）,タスク,K-74,未着手,実装,2026-11-24,F1・画面,"ログインの画面（/login）を、段 2 の部品（K-300 が入れた `features/F1/login/views.tsx` の LoginMain・LoginCode・LoginBlocked）に載せ替え、契約の口だけを呼ぶようにする。メールとパスワード・確認のコード（6 けたとバックアップコード）・違う・ロック・送りすぎ・確認のコードの止め・待ちの印が切れた・止められた人と会社 を、口の答えのとおりに出す。
+
+パスキー・スマホの QR・端末をなくした（ログインの画面と、確認のコードの画面の「認証アプリが使えない」の下の 2 か所・代表の答え ④）・いまの様子の帯・別のアカウント・ログアウトは K-317。このチケットではそれらを今のまま **出すがグレーで押せない**（D-145.9）。","- [ ] 下の 23 行（K316-UI-001〜023）が緑。021 は 11 の状態 × 幅 375・768・1440 でモックと本番の値が同じ
+- [ ] 書く段で替えた前からの試験（下の「前からの試験を替えた所」）が緑。ほかの前からのログインの試験（login.spec.ts・account-gone.spec.ts・terms.spec.ts・m1-signup-verify-terms.spec.ts・qa-c-onboard.spec.ts・k211・k256）は替えずに緑
+- [ ] 突き合わせの組 login・login-2fa（K-221 の持ち物・K221-UI-023）が替えずに緑
+- [ ] 画面が前の道すじ `/api/auth-ext/sign-in`・`/api/auth-ext/two-factor/verify` を 1 回も呼ばず（K316-UI-001・002）、その 2 つの道すじは消えて 404（K316-UI-022・精査の後の決め 3）
+- [ ] チケットの CI が緑"
