@@ -13173,7 +13173,8 @@
     "apps/api/test/k233_auth_mail_paths.test.ts",
     "scripts/ci/ci_scope.json",
     "apps/api/test/fuzz/server.ts",
-    "11_tickets/K-76.md"
+    "11_tickets/K-76.md",
+    ".gitleaksignore"
    ],
    "sections": {
     "目的": "パスワードを忘れた人が、再設定の画面でメールアドレスを入れて「再設定メールを送る」を押したときに呼ぶ契約の口 `requestPasswordReset`（POST /api/v1/auth/password/forgot）を作る（今は 501）。\n登録されていれば、30 分・1 回だけ使えるリンクのメールが 1 通届く（D-128.62）。登録されているかどうかは、答えの文・状態の番号・かかる時間のどれからも分からない（D-042）。\n同じ人へは 60 秒に 1 通まで。60 秒を過ぎて新しく送ると、前のリンクは使えなくなる（D-128.141）。ログに出る宛先はメールアドレスでなく「宛先#ハッシュ」の印（D-128.146）。\n\nこのチケットは口と DB だけ。新しいパスワードを決める口は K-314、画面は K-320（画面と DB を 1 本で触らない）。",
