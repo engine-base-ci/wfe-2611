@@ -33,12 +33,6 @@
   font-size: var(--k-text-body-sm);
 }
 
-/* まだつないでいない字のボタン（K-317 まで・確認のコードの「端末をなくした」）：正本の使えない状態の薄さ（D-145.9） */
-.k-auth .k-login-textbtn[aria-disabled="true"] {
-  opacity: var(--k-c-button-disabled-opacity);
-  cursor: not-allowed;
-}
-
 /* パスキーの説明を主ボタンのすぐ下に寄せる（キャンバスの margin-top −6・login.css と同じ値）。
    入口の枠の .k-auth-note { margin: 0 } と同じ強さだと、読み込む順（画面ごとに違う）で負けるので、form の中で 1 段強くする */
 .k-auth-form .k-login-pk-note {

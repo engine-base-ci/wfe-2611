@@ -150,6 +150,7 @@ export function LoginForm({ next }: { next: string | null }) {
     if (r.status === 403 && BLOCKED.has(r.code)) return block(r);
     if (r.code === "E-AUTH-013" || r.code === "E-AUTH-014") {
       setMsg(textOf(r));
+      setCode(EMPTY_CODE); // もう使わないコードは枠に残さない（止めた画面は空の枠・モック login-code-lock・login-tf-expired）
       setStopped(true);
       setExpired(r.code === "E-AUTH-013");
       return;
