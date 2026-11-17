@@ -795,7 +795,8 @@ for (const check of ["empty", "fail"] as const) {
     const probes = m.listCalls.filter((q) => q.get("view") === "all");
     expect(probes).toHaveLength(1);
     expect(probes[0]!.get("limit")).toBe("1");
-    expect(setupCalls).toBe(0);
+    // はじめにやることの口は一覧の答えを待たずに最初に 1 回呼ぶ（K-235・段を 1 にする）。箱を出さないことは下で見る
+    expect(setupCalls).toBe(1);
     await expect(table(page).getByRole("columnheader")).toHaveText(COLUMNS);
     await expect(rowsOf(page)).toHaveCount(0);
     await expect(page.locator('[aria-label="数の札"]')).toBeVisible();
@@ -848,7 +849,7 @@ test("K251-UI-040 一覧（?view=all）の表示設定の箱：名前は「一�
     await expect(box.getByRole("group", { name: title }), title).toHaveCount(0);
 });
 
-test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ぶのは外枠の数の 1 回だけ（自分に関わるものより 1 回少ない）", async ({
+test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ちの口を呼ぶのは 1 回だけ（自分に関わるものも 1 回：外枠の数と右の列が同じ問い合わせを分け合う・K-235）", async ({
   page,
 }) => {
   const count = async (path: string) => {
@@ -871,7 +872,7 @@ test("K251-UI-036 一覧（?view=all）は右の列を描かず、承認待ち�
   const mine = await count("/tickets");
   const all = await count("/tickets?view=all");
   expect(all).toBe(1);
-  expect(mine).toBe(all + 1);
+  expect(mine).toBe(all);
 });
 
 test("K251-UI-037 自分に関わるものの表示設定の箱：キャンバス MnView の項目（上の数字・右に出すもの・表の分け方・入れるもの）を見出しと並べ、どれもグレーで押せない・口を呼ばない・箱に影がある（D-145.9）", async ({

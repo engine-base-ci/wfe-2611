@@ -47,7 +47,7 @@ interface Mock {
   /** 外枠だけが読む 3 つの口（グループ・承認待ちの数・PC）を 500 にする */
   outerFail: boolean;
   signOuts: number;
-  /** 呼ばれた口（"GET /api/v1/approvals/queue?limit=1" の形） */
+  /** 呼ばれた口（"GET /api/v1/approvals/queue?limit=5" の形） */
   calls: string[];
 }
 
@@ -703,12 +703,13 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認�
   await expect(leftNav(page).locator(".k-nav-badge")).toHaveText("2");
   const count = (prefix: string) => m.calls.filter((c) => c.startsWith(prefix)).length;
   expect(count("GET /api/v1/bridge/devices")).toBe(1);
-  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+  // 承認待ちの数は、一覧の右の列（自分の承認を待っているもの・5 件）と同じ問い合わせを分け合う（K-235）
+  expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(1);
   // グループの口は外枠と本文（作る面の選択肢）で分け合い、1 回だけ読む
   expect(count("GET /api/v1/scopes")).toBe(1);
   await page.clock.runFor(60_000);
   expect(count("GET /api/v1/bridge/devices")).toBe(1);
-  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(1);
+  expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(1);
   expect(count("GET /api/v1/scopes")).toBe(1);
   // 窓に戻っても役の口を読み直さない
   const meBefore = count("GET /api/auth-ext/me");
@@ -722,7 +723,7 @@ test("K138-SH-027 外枠の口は 1 画面で 1 回：/tickets で PC・承認�
   await open(page, PATHS.approvals);
   await expect(page.locator("#k-main h1")).toHaveText("承認待ち");
   await expect(leftNav(page).locator(".k-pc")).toHaveText("PC つながっている");
-  expect(count("GET /api/v1/approvals/queue?limit=1")).toBe(0);
+  expect(count("GET /api/v1/approvals/queue?limit=5")).toBe(0);
 });
 
 test("K138-SH-028 名前が無い（display_name が null）：自分の札とメニューの名前は空（嘘の名前を出さない）・AI の項目は「あなたのAI」（下のタブは「AI」のまま）", async ({
