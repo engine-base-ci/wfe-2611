@@ -84,7 +84,7 @@
 | L4 | 正本 full ＋ 本番スモーク（prod-smoke.md）＋ 負荷実測 | staging ＋ 本番（スモークのみ） | リリース前 | qa-coverage.py STATUS 完了 |
 | L5 | full ＋ 正本の鮮度監査 | staging | 年次・大改修 | 同上 |
 
-## CI ゲート 69 本（.github/workflows/v3-gate.yml）
+## CI ゲート 70 本（.github/workflows/v3-gate.yml）
 
 | # | 名前 | script | job | 致命 |
 |---|---|---|---|---|
@@ -161,6 +161,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G68 | 画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5） | `python3 scripts/ci/canvas_field_gate.py --ledger-base-ref "$CI_BASE" --ticket "$CI_TICKET" && python3 scripts/ci/k215_canvas_field_test.py` | spec |  |
 | G69 | キャンバスとの突き合わせの設定（段 1 の組・要る要素と値・入れた組は外せず弱められない・入っていない組の数と持ち主が取り込み済みなのに入っていない組・自己試験と K-216 の試験は G65・K-238） | `python3 scripts/ci/fidelity_config.py --base-ref "$CI_BASE" && python3 scripts/ci/fidelity_config.py --owners-done --base-ref "$CI_BASE" ${CI_TICKET:+--ticket "$CI_TICKET"} && python3 scripts/ci/k238_fidelity_ci_test.py` | spec |  |
 | G71 | キャンバスの値が正本の段（色・書体・角丸・文字）・幅の台帳は減らすだけ・台帳の形と作り手の流し直し（K-254） | `python3 scripts/ci/canvas_design_gate.py --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k254_canvas_values_test.py` | spec |  |
+| G72 | 画面の CSS の生の長さ（大きさ・余白・間・行の高さ・影・枠の太さが正本のトークンを通る・D8・台帳は減らすだけ・K-261） | `python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref "$CI_BASE" && python3 scripts/ci/k261_raw_lengths_test.py` | spec |  |
 | G61 | 試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51） | `python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref "$CI_LEDGER_BASE" --target-ref "$CI_TARGET_REF"` | spec |  |
 
 ## マージ可能の判断
