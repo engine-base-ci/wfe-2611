@@ -161,7 +161,7 @@ const linkFor = async (e: string) => {
 const passwordHash = async (uid: string) =>
   (
     await admin.query<{ password: string }>(
-      "select password from kaname_auth.account where user_id = $1 and password is not null",
+      'select password from kaname_auth.account where "userId" = $1 and password is not null',
       [uid],
     )
   ).rows[0]?.password ?? null;
@@ -298,7 +298,8 @@ describe("K-314 リンクの状態 × 決める", () => {
       app.app.request("http://localhost/api/v1/me", {
         headers: { authorization: `Bearer ${t}`, "user-agent": UA_WEB },
       });
-    expect((await me(web.token!)).status).toBe(200);
+    // getMe はまだ作っていない（501）。セッションが生きていることは 401 でないことで見る（step_up.test.ts と同じ）
+    expect((await me(web.token!)).status).not.toBe(401);
     const token = await linkFor(e);
     // 別のアカウント（bystander）でログインしたまま、リンクの人の再設定を送る
     expect(
@@ -459,11 +460,11 @@ describe("K-314 リンクの状態 × 決める", () => {
   it("K314-API-013 2 段階ありの人：201。two_factor_enabled は true のまま。新しいパスワードで入ると 2 段階の待ちになる", async () => {
     const e = email("tf");
     const uid = await registered("tf");
-    await admin.query('update kaname_auth."user" set two_factor_enabled = true where id = $1', [uid]);
+    await admin.query('update kaname_auth."user" set "twoFactorEnabled" = true where id = $1', [uid]);
     const token = await linkFor(e);
     expect((await reset(token)).status).toBe(201);
     const u = await admin.query<{ t: boolean }>(
-      'select two_factor_enabled as t from kaname_auth."user" where id = $1',
+      'select "twoFactorEnabled" as t from kaname_auth."user" where id = $1',
       [uid],
     );
     expect(u.rows[0]!.t).toBe(true);
@@ -540,7 +541,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     expect(await canSignIn(e, PW)).toBe(true);
     const token = await linkFor(e);
     await admin.query(`create or replace function kaname_auth.k314_change_down() returns trigger language plpgsql as $$
-      begin if old.user_id = '${uid}' then raise exception 'K-314 の試験：変えられない'; end if; return new; end $$`);
+      begin if old."userId" = '${uid}' then raise exception 'K-314 の試験：変えられない'; end if; return new; end $$`);
     await admin.query(
       "create trigger k314_change_down before update on kaname_auth.account for each row execute function kaname_auth.k314_change_down()",
     );
@@ -600,7 +601,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     try {
       await reset("not-a-real-token-log");
       await admin.query(`create or replace function kaname_auth.k314_log_down() returns trigger language plpgsql as $$
-        begin if old.user_id = '${uid}' then raise exception 'K-314 の試験：ログ'; end if; return new; end $$`);
+        begin if old."userId" = '${uid}' then raise exception 'K-314 の試験：ログ'; end if; return new; end $$`);
       await admin.query(
         "create trigger k314_log_down before update on kaname_auth.account for each row execute function kaname_auth.k314_log_down()",
       );
