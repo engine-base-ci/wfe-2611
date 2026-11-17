@@ -43,7 +43,7 @@ def four(e):
     if auth: out.append({"status": 401, "code": "UNAUTHENTICATED", "body": {"error": "unauthenticated"}, "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）", "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"})
     if auth: out.append({"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden"}, "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした", "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"})
     if ":id" in e["path"]: out.append({"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found"}, "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）", "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"})
-    if e["method"] == "POST": out.append({"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）", "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"})
+    if e["method"] == "POST" and e.get("operation_id") not in getattr(_sa, "NO_GENERIC_409", set()): out.append({"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）", "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"})
     if e["method"] in ("POST", "PATCH") or ":id" in e["path"] or e["method"] == "GET": out.append({"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形", "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"})
     # 口ごとの 4xx（K-52・K-53）。表の行は、同じ状態の番号の汎用の行をその場所で置き換え、ほかの番号の行は後ろに足す
     custom = getattr(_sa, "ERRORS_4XX", {}).get(e.get("operation_id"))
@@ -66,7 +66,8 @@ def four(e):
 def ears(e):
     out = []
     for a in sorted(e["acts"]):
-        b = BP.get(a, {}); out.append(f"EVENT-DRIVEN: WHEN {e['method']} {e['path']} が「{b.get('human') or acts[a]['act']}」として呼ばれたとき THEN Kaname は「{b.get('backstage','')}」を行い 2xx を返す" + (f"（自動側：{b['auto']}）" if b.get("auto") and b["auto"] != "—" else ""))
+        b = BP.get(a, {}); _ok = getattr(_sa, "EARS_OK", {}).get(e.get("operation_id"))   # 口ごとの上書き（K-313）を先に見る
+        out.append(f"EVENT-DRIVEN: WHEN {e['method']} {e['path']} が「{b.get('human') or acts[a]['act']}」として呼ばれたとき THEN Kaname は「{_ok or b.get('backstage','')}」を行い 2xx を返す" + (f"（自動側：{b['auto']}）" if not _ok and b.get("auto") and b["auto"] != "—" else ""))
     for x in e["outputs_4xx"]: out.append(x["ears_form"])
     for er in ERR:
         w = er.get("where", {})

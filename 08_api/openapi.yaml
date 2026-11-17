@@ -9366,6 +9366,16 @@ components:
       required:
       - token
       x-required-by: hooks
+    PasswordForgotInput:
+      type: object
+      properties:
+        email:
+          type: string
+      additionalProperties: false
+      x-operation: requestPasswordReset
+      required:
+      - email
+      x-required-by: hooks
     TermsConsentInput:
       type: object
       properties:
@@ -9934,6 +9944,12 @@ components:
         terms_pending:
           type: boolean
       x-operation: verifySignup
+    PasswordForgotAccepted:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+      x-operation: requestPasswordReset
     CurrentTerms:
       type: object
       properties:
@@ -13422,7 +13438,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityEventsInput'
+              $ref: '#/components/schemas/PasswordForgotInput'
       responses:
         '201':
           description: 成功
@@ -13432,15 +13448,9 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SecurityEvents'
+                    $ref: '#/components/schemas/PasswordForgotAccepted'
                   meta:
                     type: object
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
           content:
