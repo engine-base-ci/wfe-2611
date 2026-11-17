@@ -130,7 +130,8 @@ const registered = async (tag: string) => {
   await admin.query('update kaname_auth."user" set "emailVerified" = true where id = $1', [r.userId]);
   return r.userId;
 };
-/** 同じ人を 2 つめのワークスペースにも入れる（同じログインの人・D-125.150） */
+/** 同じ人を 2 つめのワークスペースにも入れる（同じログインの人・D-125.150）。members.auth_user_id は一意なので、
+ *  2 社目の人の行は所属の行（tenant_memberships.auth_user_id）でログインに結ぶ（0089 の引き方と同じ） */
 const alsoInAnother = async (userId: string) => {
   const t = (
     await admin.query<{ id: string }>(
@@ -146,8 +147,8 @@ const alsoInAnother = async (userId: string) => {
   ).rows[0]!.id;
   const m = (
     await admin.query<{ id: string }>(
-      "insert into members (tenant_id, scope_id, kind_id, display_name, auth_user_id) values ($1, $2, 'human', '再設定 太郎', $3) returning id",
-      [t, s, userId],
+      "insert into members (tenant_id, scope_id, kind_id, display_name) values ($1, $2, 'human', '再設定 太郎') returning id",
+      [t, s],
     )
   ).rows[0]!.id;
   await admin.query(
@@ -162,21 +163,23 @@ const keyOf = (token: string) => createHash("sha256").update(token, "utf8").dige
 const seenRows = async (userId: string) =>
   (
     await admin.query<{ identifier: string; left_sec: number }>(
-      "select identifier, extract(epoch from expires_at - now())::int as left_sec from kaname_auth.verification where value = $1 and identifier like 'reset-password-seen:%'",
+      `select identifier, extract(epoch from "expiresAt" - now())::int as left_sec from kaname_auth.verification where value = $1 and identifier like 'reset-password-seen:%'`,
       [userId],
     )
   ).rows;
 const resetRows = async (userId: string) =>
   (
     await admin.query<{ identifier: string; value: string; expires_at: Date; created_at: Date; left_sec: number }>(
-      "select identifier, value, expires_at, created_at, extract(epoch from expires_at - now())::int as left_sec from kaname_auth.verification where value = $1 and identifier like 'reset-password:%'",
+      `select identifier, value, "expiresAt" as expires_at, "createdAt" as created_at, extract(epoch from "expiresAt" - now())::int as left_sec from kaname_auth.verification where value = $1 and identifier like 'reset-password:%'`,
       [userId],
     )
   ).rows;
 const events = async (userId: string, kind = "password_reset_requested") =>
   (
     await admin.query<{ tenant_id: string; detail: Record<string, unknown> }>(
-      "select e.tenant_id, e.detail from security_events e join members m on m.id = e.member_id where m.auth_user_id = $1 and e.kind_id = $2",
+      `select e.tenant_id, e.detail from security_events e join members m on m.id = e.member_id
+        where (m.auth_user_id = $1 or exists (select 1 from tenant_memberships tm where tm.member_id = m.id and tm.auth_user_id = $1))
+          and e.kind_id = $2`,
       [userId, kind],
     )
   ).rows;
@@ -341,7 +344,7 @@ describe("K-313 再設定のメールを頼む：登録の状態 × 頼み方", 
     await resetWorkIdle();
     const first = await resetRows(uid);
     await admin.query(
-      "update kaname_auth.verification set created_at = created_at - interval '61 seconds', updated_at = updated_at - interval '61 seconds' where value = $1 and identifier like 'reset-password:%'",
+      `update kaname_auth.verification set "createdAt" = "createdAt" - interval '61 seconds', "updatedAt" = "updatedAt" - interval '61 seconds' where value = $1 and identifier like 'reset-password:%'`,
       [uid],
     );
     const r = await forgot({ email: e });
