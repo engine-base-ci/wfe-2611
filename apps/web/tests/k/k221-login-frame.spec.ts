@@ -134,15 +134,16 @@ test("K221-UI-001 幅 1440：左半分の紺の宣伝の面が無く、灰の地
 test("K221-UI-002 部品の世代：ログインの画面は k の部品と入口の枠を使い、前の外の枠（OutsideLayout）と前の部品（components/ui）を読まない", () => {
   const page = readFileSync(join(WEB, "app/(outside)/login/page.tsx"), "utf8");
   const form = readFileSync(join(WEB, "features/F1/login/login-form.tsx"), "utf8");
+  const views = readFileSync(join(WEB, "features/F1/login/views.tsx"), "utf8");
   for (const [name, src] of [
     ["page.tsx", page],
     ["login-form.tsx", form],
+    ["views.tsx", views],
   ] as const) {
     expect(src, name).not.toMatch(/@\/components\/outside\/outside-layout/);
     expect(src, name).not.toMatch(/@\/components\/ui"/);
   }
   // 入口の枠は段 2 の部品（views）が持ち、login-form はその部品を読む（K-316）
-  const views = readFileSync(join(WEB, "features/F1/login/views.tsx"), "utf8");
   expect(views).toMatch(/\bAuthFrame\b/);
   expect(form).toMatch(/from "\.\/views"/);
 });
