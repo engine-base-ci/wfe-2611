@@ -13150,6 +13150,7 @@
     "shared"
    ],
    "changes": [
+    ".gitleaksignore",
     "11_tickets/K-74.md",
     "apps/api/test/fuzz/server.ts",
     "packages/db/migrations/0105_public_service_status.sql",
