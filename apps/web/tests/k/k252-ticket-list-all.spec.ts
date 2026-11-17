@@ -468,8 +468,11 @@ test("K252-UI-020 言葉を替えた直後の「もっと見る」：読み直�
   await expect.poll(() => m.listCalls.filter((q) => q.get("cursor")).length).toBe(1);
   await box.fill("見積");
   await expect(table(page)).toContainText("見積を出す");
+  const late = page.waitForResponse((r) => r.url().includes("cursor="));
   more.open();
-  await expect.poll(() => m.listCalls.length).toBeGreaterThan(3);
+  await late;
+  // 遅い答えを受けた後の描画を 2 コマ待ってから見る
+  await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))));
   await expect(rowsOf(page)).toHaveCount(1);
   await expect(table(page)).not.toContainText("古い言葉の続き");
 });
