@@ -768,6 +768,31 @@
    "na": {
     "test_post_me_setup_tasks_dismiss_rejected_422_3": "名前・メール・パスワードの保存の型で、この口は key（飛ばす項目）だけを受ける"
    }
+  },
+  "signInWithPassword": {
+   "file": "apps/api/test/features/F1/sign-in.test.ts",
+   "reason": "パスワードで入るのは、本物のログインの部品（Better Auth の本人・2 段階・セッション）と DB のロック（app.login_attempts）・差し込んだ送出先（関門 C6 の新しい端末の知らせ）で確かめる。生成の試験の偽のセッションでは確かめられない（K-301）",
+   "covers": {
+    "test_post_auth_sign_in_ok": "K301-API-001",
+    "test_post_auth_sign_in_rejected_422": "K301-API-015",
+    "test_post_auth_sign_in_rejected_422_2": "K301-API-013",
+    "test_post_auth_sign_in_rejected_401": "K301-API-003",
+    "test_post_auth_sign_in_rejected_403": "K301-API-014",
+    "test_post_auth_sign_in_rejected_422_3": "K301-API-009",
+    "test_post_auth_sign_in_rejected_422_4": "K301-API-010",
+    "test_post_auth_sign_in_rate_limited": "K301-API-004",
+    "test_post_auth_sign_in_rate_limited_2": "K301-API-020",
+    "test_post_auth_sign_in_server_error": "K301-API-019",
+    "test_post_auth_sign_in_shape": "K301-API-024",
+    "test_post_auth_sign_in_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_in_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
   }
  }
 }

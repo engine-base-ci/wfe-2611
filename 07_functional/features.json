@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-16",
+  "created_at": "2026-11-18",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -435,7 +435,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-001",
     "D-001.5",
@@ -563,7 +563,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-026",
     "D-037",
@@ -652,7 +652,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-042",
     "D-053.3",
@@ -1505,7 +1505,7 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN R1／R2／R3／R4 が「パスキーで入る／メールとパスワードと 6 桁で入る」したとき THEN Kaname は「セッション（操作が無ければ 12 時間・長くて 7 日）。5 回失敗で 15 分止める」を行う",
     "UNWANTED: IF メールアドレスかパスワードが違う（1〜4 回目は残り回数を出す） THEN Kaname は「メールアドレスかパスワードが違います。あと 4 回で 15 分ロックします」を出し、入力し直す／パスワードを忘れた（E-AUTH-001）",
-    "UNWANTED: IF パスワードを 5 回間違えた（連続失敗でロック） THEN Kaname は「15 分間ロックしました。急ぐときはメールでロックを解除できます」を出し、解除メールを送る／15 分待つ（E-AUTH-002）",
+    "UNWANTED: IF パスワードを 5 回間違えた（連続失敗でロック） THEN Kaname は「15 分間ロックしました。15 分たってから、もう一度入ってください」を出し、15 分待ってから入り直す。急ぐときはパスキーかパスワードの再設定で入る（E-AUTH-002）",
     "UNWANTED: IF 同時アクセスが集中して資源（DB 接続）が上限に達した（枯渇）。API は待機列で受け、DB 側は接続プールで上限を守る（1 層では守れない） THEN Kaname は「混み合っています。順番にご案内します（およそ 30 秒）」を出し、そのまま待つ（E-LIM-003）",
     "UNWANTED: IF メールアドレスとパスワードは合っているが、その人の会社の登録（会社の人）が見つからない（会社が消えた・登録の途中で壊れた） THEN Kaname は「このアカウントは、会社の登録が見つからないため使えません。もう一度アカウントを作るか、運営に連絡してください」を出し、アカウントを作る／運営に連絡する（E-AUTH-007）",
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「種別を選び、題名・責任者・期限・目的・完了の条件を書く」したとき THEN Kaname は「番号（グループの頭文字＋連番）を振る・版を残す」を行う（自動側：ルールを当てて既定値を入れる）",
@@ -1609,7 +1609,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-002",
     "D-003.1",
@@ -2080,7 +2080,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.7",
     "D-004",
@@ -2652,7 +2652,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -2905,7 +2905,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-006.2",
     "D-010",
@@ -3223,7 +3223,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003",
     "D-003.1",
@@ -3416,7 +3416,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -4099,7 +4099,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -4584,7 +4584,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003",
     "D-003.1",
@@ -5015,7 +5015,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-010.7",
     "D-015",
@@ -5580,7 +5580,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.7",
     "D-010",
@@ -5715,7 +5715,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-030",
     "D-030.10",
@@ -5890,7 +5890,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-002",
     "D-002.2",
@@ -6377,7 +6377,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-002",
     "D-002.2",
@@ -6738,7 +6738,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -6900,7 +6900,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-030.6",
     "D-037",
@@ -7031,7 +7031,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -7225,7 +7225,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-026",
     "D-026.2",
@@ -7452,7 +7452,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.121",
     "D-125.123",
@@ -7593,7 +7593,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.121",
     "D-125.122",
@@ -7841,7 +7841,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-007",
     "D-012",
@@ -8202,7 +8202,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-003.9",
     "D-007",
@@ -8323,7 +8323,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-013",
     "D-014",
@@ -8568,7 +8568,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-010",
     "D-038",
@@ -8679,7 +8679,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-004",
     "D-007",
@@ -8756,7 +8756,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-029",
     "D-025",
@@ -8822,7 +8822,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-015",
     "D-044",
@@ -8920,7 +8920,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-012",
     "D-043",
@@ -8988,7 +8988,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-002",
     "D-004",
@@ -9055,7 +9055,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-16",
+   "decided_at": "2026-11-18",
    "source": [
     "D-017",
     "D-042",

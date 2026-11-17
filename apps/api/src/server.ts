@@ -27,6 +27,7 @@ import { authHooks } from "./hooks/auth.js";
 import { signupHooks } from "./hooks/signup.js";
 import { verifyEmailHooks } from "./hooks/verify-email.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
+import { loginHooks } from "./hooks/login.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -153,6 +154,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
         ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
+        // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）
+        ...loginHooks({ auth, appPool, authPool, config: { opsEmail: config.opsEmail } }),
         ...bridgeHooks({
           appPool,
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },
