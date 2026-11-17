@@ -31,7 +31,8 @@ export const DISABLED_OPACITY = 0.55; // 数で比べる（本番の組み立て
 
 export type Reply = { status: number; body: unknown };
 export const ok = (data: unknown, meta: Record<string, unknown> = {}): Reply => ({ status: 200, body: { data, meta } });
-export const idOf = (i: number) => `0193c5a0-0000-7000-8000-${String(100000000000 + i).slice(1)}`;
+/** 正しい形の uuid（最後の組 12 桁・版 7・variant 8）。画面は口を呼ぶ前に uuid を確かめる（D-129.42） */
+export const idOf = (i: number) => `0193c5a0-0000-7000-8000-${String(1000000000000 + i).slice(1)}`;
 export const item = (i: number, o: Record<string, unknown> = {}) => ({
   id: idOf(i),
   number: `EG-${100 + i}`,
@@ -105,6 +106,8 @@ export interface ListMock {
   tasksStatus: number;
   approvalsStatus: number;
   dismissStatus: number;
+  /** グループの一覧の口の答えの状態（K-252：200 番台以外なら体はエラー） */
+  scopesStatus: number;
   /** 一覧の口とはじめにやることの一覧のほかに呼ばれた口（押せない物が口を呼ばないことを見る） */
   otherCalls: string[];
   /** 一覧の口の答え（問い合わせを見て返す） */
@@ -136,6 +139,7 @@ export async function mockList(page: Page, o: Partial<ListMock> = {}): Promise<L
     tasksStatus: 200,
     approvalsStatus: 200,
     dismissStatus: 201,
+    scopesStatus: 200,
     otherCalls: [],
     list: () => ok(items(3), { next_cursor: null }),
     listCalls: [],
@@ -158,6 +162,8 @@ export async function mockList(page: Page, o: Partial<ListMock> = {}): Promise<L
       };
     else if (p === "/api/auth-ext/me")
       r = ok({ member_id: ME, tenant_id: WS, display_name: "高本", role_id: "owner", scope_id: null });
+    else if (p === "/api/v1/scopes" && m.scopesStatus !== 200)
+      r = { status: m.scopesStatus, body: { error: "server_error", code: "INTERNAL" } };
     else if (p === "/api/v1/scopes")
       r = ok([{ id: SALES, name: "営業", tenant_id: WS, ticket_prefix: "EG" }], { limit: 200, writable: m.writable });
     else if (p === "/api/v1/ticket_kinds") r = ok([{ id: TASK, name: "タスク", sections: [] }], { limit: 50 });
@@ -195,7 +201,7 @@ export async function mockList(page: Page, o: Partial<ListMock> = {}): Promise<L
       r = await m.list(u.searchParams, m.listCalls.length);
     } else if (/^\/api\/v1\/tickets\/[^/]+$/.test(p)) {
       const id = p.split("/").pop()!;
-      const n = Number(id.slice(-11));
+      const n = Number(id.slice(-12));
       r = ok({
         ticket: { id, number: `EG-${100 + n}`, title: `チケット ${n}`, due_on: null, start_on: null, priority: "mid" },
         sections: [{ key: "purpose", label: "目的", body: { text: "目的の本文" }, version: 1 }],

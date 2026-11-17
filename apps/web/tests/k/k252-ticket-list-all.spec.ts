@@ -420,3 +420,95 @@ test("K252-UI-018 表示設定 × 横に開いた間（幅 1200）：種別を�
   await expect(side(page)).toHaveCount(0);
   await expect(heads(page)).toHaveText(chosen);
 });
+
+test("K252-UI-019 横の詳細でも口を呼ぶ前に id を確かめる：一覧の口が uuid でない id を返した行を幅 1440 で押すと、右に「見つかりませんでした」（見出しは h2・h1 は一覧の 1 つ）で、詳細の口は呼ばない（D-129.42）", async ({
+  page,
+}) => {
+  const m = await mockList(page, { list: () => ok([item(1, { id: "not-a-uuid" })], { next_cursor: null }) });
+  await open(page, "/tickets?view=all");
+  await rowsOf(page).first().getByRole("link", { name: "チケット 1" }).click();
+  await expect(side(page).getByRole("heading", { level: 2, name: /見つかりませんでした/ })).toBeVisible();
+  await expect(page.locator("h1")).toHaveCount(1);
+  expect(m.otherCalls.filter((c) => c.includes("/api/v1/tickets/"))).toEqual([]);
+});
+
+test("K252-UI-020 言葉を替えた直後の「もっと見る」：読み直している間は押せず口も呼ばない。先に押した「もっと見る」の答えが言葉を替えた後に届いても、新しい一覧に混ぜない", async ({
+  page,
+}) => {
+  const more = gate();
+  const word = gate();
+  const m = await mockList(page, {
+    list: async (q) => {
+      if (q.get("cursor")) {
+        await more.wait;
+        return ok([item(51, { title: "古い言葉の続き" })], { next_cursor: null });
+      }
+      if (q.get("q") === "請求") {
+        await word.wait;
+        return ok([item(6, { title: "請求書を送る" })], { next_cursor: "c2" });
+      }
+      if (q.get("q") === "見積") return ok([item(7, { title: "見積を出す" })], { next_cursor: null });
+      return ok(items(50), { next_cursor: "c1" });
+    },
+  });
+  await open(page, "/tickets?view=all");
+  await expect(rowsOf(page)).toHaveCount(50);
+  const box = page.getByRole("textbox", { name: "題名か番号で絞る" });
+  // 1) 読み直している間は「もっと見る」を受けない
+  await box.fill("請求");
+  await expect.poll(() => m.listCalls.some((q) => q.get("q") === "請求")).toBe(true);
+  const moreBtn = page.getByRole("button", { name: "もっと見る" });
+  await expect(moreBtn).toHaveCount(0);
+  expect(m.listCalls.filter((q) => q.get("cursor"))).toEqual([]);
+  word.open();
+  await expect(rowsOf(page)).toHaveCount(1);
+  await expect(table(page)).toContainText("請求書を送る");
+  // 2) 先に押した「もっと見る」の遅い答えは、言葉を替えた後の一覧に混ぜない
+  await moreBtn.click();
+  await expect.poll(() => m.listCalls.filter((q) => q.get("cursor")).length).toBe(1);
+  await box.fill("見積");
+  await expect(table(page)).toContainText("見積を出す");
+  more.open();
+  await expect.poll(() => m.listCalls.length).toBeGreaterThan(3);
+  await expect(rowsOf(page)).toHaveCount(1);
+  await expect(table(page)).not.toContainText("古い言葉の続き");
+});
+
+test("K252-UI-021 言葉で絞った読み直しの口が失敗：正本のエラーの 1 件を出し、言葉の欄は打った字のまま残る。「もう一度」で同じ言葉（q）で読み直して行が出る", async ({
+  page,
+}) => {
+  let fail = true;
+  const m = await mockList(page, {
+    list: (q) => {
+      if (q.get("q") === "請求" && fail) return { status: 500, body: { error: "server_error", code: "INTERNAL" } };
+      if (q.get("q") === "請求") return ok([item(6, { title: "請求書を送る" })], { next_cursor: null });
+      return ok(items(3), { next_cursor: null });
+    },
+  });
+  await open(page, "/tickets?view=all");
+  await expect(rowsOf(page)).toHaveCount(3);
+  const box = page.getByRole("textbox", { name: "題名か番号で絞る" });
+  await box.fill("請求");
+  await expect(page.getByText("読み込めませんでした")).toBeVisible();
+  await expect(box).toHaveValue("請求");
+  fail = false;
+  await page.getByRole("button", { name: "もう一度" }).click();
+  await expect(table(page)).toContainText("請求書を送る");
+  await expect(box).toHaveValue("請求");
+  expect(m.listCalls.at(-1)?.get("q")).toBe("請求");
+});
+
+test("K252-UI-022 グループの一覧でグループの口が失敗：「見つかりませんでした」ではなく読み込みの失敗（読み込めませんでした・もう一度）。「もう一度」でグループを読み直し、読めたら h1 はグループの名前で一覧が出る", async ({
+  page,
+}) => {
+  const m = await mockList(page, { scopesStatus: 500 });
+  await open(page, `/tickets?scope=${SALES}`);
+  const main = page.locator("#k-main");
+  await expect(main).toContainText("読み込めませんでした");
+  await expect(main).not.toContainText("見つかりませんでした");
+  await expect(table(page)).toHaveCount(0);
+  m.scopesStatus = 200;
+  await main.getByRole("button", { name: "もう一度" }).click();
+  await expect(head(page).locator("h1")).toHaveText("営業");
+  await expect(rowsOf(page)).toHaveCount(3);
+});
