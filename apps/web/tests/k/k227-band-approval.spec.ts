@@ -343,7 +343,7 @@ test("K227-UI-021 承認の 1 件が読めない（500）：決められない�
     let asked = 0;
     m.on.detail = () => {
       asked += 1;
-      return { status: 500, body: { error: "internal", code: "E-INT-001" } };
+      return { status: 500, body: { error: "internal", code: "E-PAGE-003" } };
     };
     await openTicketSettled(page);
     await expect.poll(() => asked).toBeGreaterThan(0);
