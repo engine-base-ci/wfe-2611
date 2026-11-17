@@ -5,9 +5,11 @@
 //   行の「承認する」（K-180）：取り消せる操作で人が見る項目が無い行だけ、その場で承認する。答えが来るまでどの行も押せない。
 //   決まっていた（409）・消されていた（404）は知らせ（role=alert）に正本の文を出し、どの答えでも一覧を読み直す。行の「差し戻す」と小窓は K-181（口は K-163）
 //   行の「承認する」は確かめの小窓（approve-confirm.tsx・K-229・D-143.4）を開くだけで、口は小窓の主ボタンで呼ぶ
+//   形はキャンバス Approvals（K-231）：見出しの帯（「あなたが決めるもの N 件」・続けて裁く）と、本文の箱にカード 1 つ（queue-table.tsx）。
+//   空はキャンバス ApEmpty：点線の箱に ✓・見出し・説明・決めた履歴。続けて裁く・決めた履歴の画面はまだ無いので押せない（D-145.9）
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Badge, Button, Callout, Loading, Table, type Column } from "@/components/k";
+import { Button, Callout, Empty, Loading } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "./message";
 import { ApproveConfirm } from "./approve-confirm";
@@ -15,7 +17,7 @@ import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
 import { ShellBell } from "@/components/k/shell";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
-import { DUE_GROUPS, dueGroupOf } from "./due";
+import { QueueCard } from "./queue-table";
 import "./approve.css";
 
 export interface QueueRow {
@@ -71,31 +73,42 @@ export function ApprovalsPage() {
   }, []);
   const pages = q.data?.pages ?? [];
   const total = pages.at(-1)?.total ?? 0;
+  const rows = pages.flatMap((p) => p.rows);
   return (
     <TicketShell screen="approvals" crumbs={[{ label: "承認待ち" }]} counts={{ approvals: total }}>
-      <section className="k-root k-page k63-queue" aria-labelledby="approvals-title">
-        <header className="k-page-head k63-head">
+      <section className="k-root k-page" aria-labelledby="approvals-title">
+        <header className="k-page-head k-ap-head">
           <h1 id="approvals-title">承認待ち</h1>
-          {q.data ? <span className="k63-count">{total} 件</span> : null}
+          {q.data ? (
+            <p className="k-page-sub">
+              あなたが決めるもの <span className="k63-count">{total} 件</span>
+            </p>
+          ) : null}
+          {q.data && !q.isError && rows.length > 0 ? (
+            <Button className="k-ap-next" aria-disabled="true" tabIndex={-1}>{`続けて裁く（${total} 件）`}</Button>
+          ) : null}
           <ShellBell />
         </header>
-        {q.isError ? (
-          <div className="k-state" role="alert">
-            <p className="k-state-body">{LOAD_FAILED}</p>
-            <div className="k-state-actions">
-              <Button onClick={() => void q.refetch()}>もう一度</Button>
+        <div className="k-ap-body">
+          {q.isError ? (
+            <div className="k-state" role="alert">
+              <p className="k-state-body">{LOAD_FAILED}</p>
+              <div className="k-state-actions">
+                <Button onClick={() => void q.refetch()}>もう一度</Button>
+              </div>
             </div>
-          </div>
-        ) : !q.data ? (
-          <Loading />
-        ) : (
-          <QueueView
-            rows={pages.flatMap((p) => p.rows)}
-            more={q.hasNextPage}
-            loadingMore={q.isFetchingNextPage}
-            onMore={() => void q.fetchNextPage()}
-          />
-        )}
+          ) : !q.data ? (
+            <Loading />
+          ) : (
+            <QueueView
+              rows={rows}
+              total={total}
+              more={q.hasNextPage}
+              loadingMore={q.isFetchingNextPage}
+              onMore={() => void q.fetchNextPage()}
+            />
+          )}
+        </div>
       </section>
     </TicketShell>
   );
@@ -103,12 +116,30 @@ export function ApprovalsPage() {
 
 interface QueueViewProps {
   rows: QueueRow[];
+  total: number;
   more: boolean;
   loadingMore: boolean;
   onMore: () => void;
 }
 
-function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
+/** 空（ApEmpty）：点線の箱に ✓・見出し・説明・決めた履歴（画面がまだ無いので押せない） */
+function NothingToDecide() {
+  return (
+    <Empty
+      icon="✓"
+      title="いま決めるものはありません"
+      action={
+        <Button variant="outlined" aria-disabled="true" tabIndex={-1}>
+          決めた履歴
+        </Button>
+      }
+    >
+      AI が成果物を作り、確かめが終わると、ここに並びます
+    </Empty>
+  );
+}
+
+function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
   const qc = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -137,45 +168,6 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       setBusy(null);
     }
   };
-  const columns: Column<QueueRow>[] = [
-    { key: "number", header: "番号", cell: (r) => r.ticket_number },
-    {
-      key: "title",
-      header: "題名",
-      cell: (r) => (
-        <span className="k63-title">
-          <a className="k-link" href={`/tickets/${r.ticket_id}`}>
-            {r.title}
-          </a>
-          {r.note ? <span className="k-desc">{r.note}</span> : null}
-        </span>
-      ),
-    },
-    { key: "from", header: "作った AI", cell: (r) => `${r.from_name ?? "自分"}のAI` },
-    { key: "check", header: "検査", cell: (r) => <Badge>{r.check_summary}</Badge> },
-    { key: "due", header: "期限", cell: (r) => r.due_on ?? "—" },
-    {
-      key: "act",
-      header: "操作",
-      // 取り消せない操作の行は、行では決めずにチケットの詳細の帯で中身を見てから決める（D-128.36）
-      cell: (r) => (
-        <span className="k63-acts">
-          {r.decide_inline ? (
-            <Button size="sm" loading={busy === r.id} disabled={busy !== null} onClick={() => setConfirming(r)}>
-              承認する
-            </Button>
-          ) : (
-            <a className="k-link" href={`/tickets/${r.ticket_id}`}>
-              中身を見る
-            </a>
-          )}
-          <Button size="sm" variant="secondary" disabled={busy === r.id} onClick={() => setReturning(r)}>
-            差し戻す
-          </Button>
-        </span>
-      ),
-    },
-  ];
   const dialog = returning ? (
     <ReturnDialog
       approvalId={returning.id}
@@ -203,30 +195,19 @@ function QueueView({ rows, more, loadingMore, onMore }: QueueViewProps) {
       }}
     />
   );
-  const alert = notice ? <Callout tone="danger">{notice}</Callout> : null;
   const shown = rows.filter((r) => !done.has(r.id));
-  if (shown.length === 0)
-    return (
-      <>
-        {alert}
-        {dialog}
-        {confirm}
-        <p className="k-desc">いま決めるものはありません</p>
-      </>
-    );
-  const groups = DUE_GROUPS.map((g) => [g, shown.filter((r) => dueGroupOf(r.due_on) === g)] as const).filter(
-    ([, rs]) => rs.length > 0,
-  );
   return (
     <>
-      {alert}
+      {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {dialog}
       {confirm}
-      {groups.map(([g, rs]) => (
-        <Table key={g} caption={g} columns={columns} rows={rs} rowKey={(r) => r.id} />
-      ))}
-      {more ? (
-        <Button className="k63-more" variant="secondary" loading={loadingMore} disabled={loadingMore} onClick={onMore}>
+      {shown.length === 0 ? (
+        <NothingToDecide />
+      ) : (
+        <QueueCard rows={shown} total={total} acts={{ busy, onApprove: setConfirming, onReturn: setReturning }} />
+      )}
+      {more && shown.length > 0 ? (
+        <Button className="k-ap-more" variant="secondary" loading={loadingMore} disabled={loadingMore} onClick={onMore}>
           もっと見る
         </Button>
       ) : null}

@@ -127,6 +127,15 @@ NARROW_BY_BOARD = {
     "MePCInstalled.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
                              "@media (max-width:767px){.kn-bar{display:none !important}}\n",
 }
+# 承認待ち（K-231：Approvals・ApEmpty）：767 以下は画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴（44px・右寄せ・外枠の .k-bell-inline）を置く。
+# 鈴は帯の中の div の ::after（要素は足さない・768 以上の絵は変わらない）。続けて裁く（a）は鈴の後ろ＝狭い幅では次の行へ回る（画面と同じ並び）
+BELL = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' "
+        "stroke='%23131B27' stroke-width='2'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.9 1.9 0 0 0 3.4 0'/%3E%3C/svg%3E")
+AP_NARROW = ("/* kn-board-narrow（K-231）：画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴の場所（44px）を置く。続けて裁くは鈴の後ろ */\n"
+             "@media (max-width:767px){.kn-bar{display:none !important}"
+             "main header>div::after{content:\"\";order:1;flex:none;width:44px;height:44px;margin-left:auto;"
+             "background:center/18px 18px no-repeat url(\"" + BELL + "\")}main header>div>a{order:2}}\n")
+NARROW_BY_BOARD.update({"Approvals.dc.html": AP_NARROW, "ApEmpty.dc.html": AP_NARROW})
 # 一覧の絵（K-251：OnHome・Main）：画面の外枠と同じく上の帯を出さず、見え方のタブは字を折り返さず 1 行のまま横に送る
 _LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
                 "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
