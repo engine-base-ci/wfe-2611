@@ -112,7 +112,8 @@ export const MIGRATIONS = [
   "0105_public_service_status.sql",
   "0106_reset_security_events.sql",
   "0107_login_events.sql",
-  "0108_passkey_counter_event.sql",
+  "0108_login_gate.sql",
+  "0109_passkey_counter_event.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

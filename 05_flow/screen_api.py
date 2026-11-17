@@ -563,6 +563,9 @@ ERRORS_4XX = {
         {"status": 403, "code": "E-AUTH-007", "body": {"error": "auth", "code": "E-AUTH-007"}, "errors": ["E-AUTH-007"],
          "trigger": "メールアドレスとパスワードは合っているが、会社の人が無い・抜けた",
          "ears_form": "UNWANTED: IF パスワードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない"},
+        {"status": 403, "code": "E-AUTH-011", "body": {"error": "auth", "code": "E-AUTH-011"}, "errors": ["E-AUTH-011", "E-AUTH-012"],
+         "trigger": "メールアドレスとパスワードは合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
+         "ears_form": "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
          "trigger": "本文に知らない欄（remember_me・trust_device など・strict）",
          "ears_form": "UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、DB を引かず失敗の数に入れない"},
@@ -578,6 +581,18 @@ ERRORS_4XX = {
         {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "ロックを見る・数える DB が落ちた・セッションを写す所で失敗した",
          "ears_form": "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
+         "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
+    ],
+    # 6 けたで入る（K-302 が振る舞いを作る）。止めの 1 か所（K-303）で断られたら 403 と止めの文・止めの確かめが落ちたら 503（振り分けは K-302・確かめは K-305）
+    "verifySignInCode": [
+        {"status": 403, "code": "E-AUTH-011", "body": {"error": "auth", "code": "E-AUTH-011"}, "errors": ["E-AUTH-011", "E-AUTH-012"],
+         "trigger": "6 けた（かバックアップコード）は合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
+         "ears_form": "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
+         "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
     ],
     # 承認する（K-162）。決まった・取り下げた承認（409・E-CONF-003）・入力の 422（体に知らない欄・id が uuid でない）・守りの判定で例外（503・E-PAGE-003）
     "approveApproval": [

@@ -811,6 +811,14 @@
     "test_post_auth_sign_in_rejected_422_2": "K301-API-013",
     "test_post_auth_sign_in_rejected_401": "K301-API-003",
     "test_post_auth_sign_in_rejected_403": "K301-API-014",
+    "test_post_auth_sign_in_rejected_403_2": {
+     "file": "apps/api/test/features/F1/login-gate.test.ts",
+     "mark": "K303-API-001"
+    },
+    "test_post_auth_sign_in_unavailable": {
+     "file": "apps/api/test/features/F1/login-gate.test.ts",
+     "mark": "K303-API-010"
+    },
     "test_post_auth_sign_in_rejected_422_3": "K301-API-009",
     "test_post_auth_sign_in_rejected_422_4": "K301-API-010",
     "test_post_auth_sign_in_rate_limited": "K301-API-004",

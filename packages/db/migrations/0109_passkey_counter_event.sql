@@ -1,4 +1,4 @@
--- 0108 パスキーの署名の回数が戻った応答（写されたパスキーの疑い）を、本人の今いる会社の security_events に残す（K-304・関門 C2）。
+-- 0109 パスキーの署名の回数が戻った応答（写されたパスキーの疑い）を、本人の今いる会社の security_events に残す（K-304・関門 C2）。
 --   ログインの前の出来事なので、ログインの記録の関数 app.record_login_event（0107）が受ける種類に passkey_counter_rollback を 1 つ足す。
 --   会社の引き方・ip_region（国だけ）・detail（空。credential id を入れない）は 0107 のまま変えない（関数の本体は 0107 と同じで、種類の一覧だけが違う）。
 --   呼ぶのは packages/auth/src/passkey.ts の見張り（部品の verify-authentication の前）だけ。
@@ -27,4 +27,4 @@ end $$;
 revoke all on function app.record_login_event(text, text, text) from public;
 grant execute on function app.record_login_event(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0108_passkey_counter_event.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0109_passkey_counter_event.sql') on conflict do nothing;
