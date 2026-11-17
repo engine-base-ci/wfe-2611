@@ -54,6 +54,17 @@ export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([...Object.value
 /** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
 const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
 
+/** 部品（Better Auth）のログ。パスキーの確かめの失敗（@simplewebauthn の例外の文にチャレンジと期待の値が入る）は、例外の種類だけを出す */
+function authLog(level: "debug" | "info" | "warn" | "error", message: string, ...args: unknown[]): void {
+  const out = level === "error" ? console.error : level === "warn" ? console.warn : console.log;
+  if (/passkey|authentication|registration/i.test(message)) {
+    const kind = args[0] instanceof Error ? args[0].name : typeof args[0];
+    out(`[Better Auth] ${message}（${kind}）`);
+    return;
+  }
+  out(`[Better Auth] ${message}`, ...args);
+}
+
 /** 型は core の Auth（plugin の endpoint 型は使わない＝zod の内部型を .d.ts に出さない） */
 export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
 
@@ -80,6 +91,8 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
     // チャレンジを Cookie にして部品に渡すので verify は Cookie つきの POST になる。部品は Origin を trustedOrigins と比べる
     //   （既定は baseURL＝API の origin だけ）。画面の origin を足す。origin の確かめは切らない（K-304・K304-API-023）
     trustedOrigins: [web.origin],
+    // 部品の失敗のログは本文と種類だけ。パスキーの確かめの失敗は、例外の文にチャレンジの値が入るので落とす（K-304・値をログに出さない）
+    logger: { log: authLog },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 12,

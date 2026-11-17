@@ -2,9 +2,11 @@
 //   Kaname は 次の 3 つだけを足す（チャレンジを JSON と頭で受け渡す所は apps/api/src/auth/passkey-challenge.ts）:
 //   1. rpID と origin を画面の URL（webBaseURL）から決める（画面は別の origin。API の URL ではない）
 //   2. Kaname の決まり（最後の入り方は外せない・本人確認の取り直し）を通らない部品の口を閉じる（PASSKEY_DISABLED_PATHS）
-//   3. 署名の回数が戻った応答（写されたパスキーの疑い）を部品に渡す前に断り、本人の会社に記録を残す（関門 C2）
+//   3. 署名の回数が戻った応答（写されたパスキーの疑い）を部品に渡す前に断り、本人の会社に記録を残す（関門 C2）。
+//      記録は「チャレンジ・origin・rpID・署名が正しく、回数だけが戻っている」ときだけ（作り物の応答で記録を積ませない・二度送りを写しにしない）
 // 境界 B2：@better-auth/passkey を import してよいのはこのパッケージだけ（CI G7）。
 import { passkey } from "@better-auth/passkey";
+import { verifyAuthenticationResponse, type AuthenticatorTransportFuture } from "@simplewebauthn/server";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import type { BetterAuthPlugin } from "better-auth";
 import type pg from "pg";
@@ -12,11 +14,15 @@ import { countryOf } from "./device.js";
 
 /** 部品の既定のチャレンジの Cookie の名前（接頭辞の前）。実際の名前は createAuthCookie で引く（passkey-challenge.ts） */
 export const PASSKEY_CHALLENGE_COOKIE = "better-auth-passkey";
-/** 閉じる部品の道：一覧・名前・外すは契約の口（K-308 の getMySecurity・K-309 の renamePasskey／deletePasskey）で作る */
+/** 閉じる部品の道：一覧・名前・外すは契約の口（K-308 の getMySecurity・K-309 の renamePasskey／deletePasskey）で作る。
+ *  付ける 2 つの口も、本人確認の取り直し（D-128.141）を通す K-309 が開けるまで閉じる（部品は 1 日以内のセッションしか見ないので、
+ *  それまでに開けておくと、盗まれた印で他人のパスキーを付けられる・Q の指摘） */
 export const PASSKEY_DISABLED_PATHS = [
   "/passkey/delete-passkey",
   "/passkey/update-passkey",
   "/passkey/list-user-passkeys",
+  "/passkey/generate-register-options",
+  "/passkey/verify-registration",
 ] as const;
 const VERIFY_AUTHENTICATION = "/passkey/verify-authentication";
 /** 写されたパスキーの疑いの記録の種類（security_events.kind_id） */
@@ -44,6 +50,18 @@ export function signCountOf(authenticatorData: unknown): number | null {
 export const isCounterRollback = (stored: number, received: number): boolean =>
   (stored > 0 || received > 0) && received <= stored;
 
+interface StoredPasskey {
+  userId: string;
+  counter: number;
+  publicKey: string;
+  credentialID: string;
+  transports: string | null;
+}
+interface AuthResponse {
+  id?: unknown;
+  response?: { authenticatorData?: unknown };
+}
+
 /** 部品（パスキー）と、その前で署名の回数を見る見張りの 2 つを返す。createAuth の plugins に足す */
 export function kanamePasskey(o: PasskeyOptions): BetterAuthPlugin[] {
   const web = new URL(o.webBaseURL);
@@ -54,24 +72,50 @@ export function kanamePasskey(o: PasskeyOptions): BetterAuthPlugin[] {
         {
           matcher: (ctx) => ctx.path === VERIFY_AUTHENTICATION,
           handler: createAuthMiddleware(async (ctx) => {
-            const resp = (ctx.body as { response?: { id?: unknown; response?: { authenticatorData?: unknown } } })
-              ?.response;
+            const resp = (ctx.body as { response?: AuthResponse } | undefined)?.response;
             const received = signCountOf(resp?.response?.authenticatorData);
             if (typeof resp?.id !== "string" || received === null) return; // 形の違う応答は部品が断る
             const row = (
-              await o.authPool.query<{ userId: string; counter: number }>(
-                'select "userId", counter from kaname_auth.passkey where "credentialID" = $1',
+              await o.authPool.query<StoredPasskey>(
+                'select "userId", counter, "publicKey", "credentialID", transports from kaname_auth.passkey where "credentialID" = $1',
                 [resp.id],
               )
             ).rows[0];
             if (!row || !isCounterRollback(Number(row.counter), received)) return;
-            // その人の今いる会社ごとに 1 行（detail は空・credential id を入れない・国だけ）。書けなくても断る（守りを先に）
-            const headers = ctx.headers ?? new Headers();
+            // 回数のほかが正しいか（チャレンジ・origin・rpID・署名）を、回数を 0 にして部品と同じ道具で確かめる。
+            //   チャレンジは消費せずに読む（正しくなければ部品に渡して、部品が断る）
+            const cookie = ctx.context.createAuthCookie(PASSKEY_CHALLENGE_COOKIE).name;
+            const token = await ctx.getSignedCookie(cookie, ctx.context.secret);
+            if (!token) return;
+            const v = await ctx.context.internalAdapter.findVerificationValue(token);
+            if (!v || v.expiresAt < new Date()) return;
+            const { type, expectedChallenge } = JSON.parse(v.value) as { type?: string; expectedChallenge?: string };
+            if (type !== "authentication" || !expectedChallenge) return;
+            const ok = await verifyAuthenticationResponse({
+              response: resp as Parameters<typeof verifyAuthenticationResponse>[0]["response"],
+              expectedChallenge,
+              expectedOrigin: web.origin,
+              expectedRPID: web.hostname,
+              credential: {
+                id: row.credentialID,
+                publicKey: new Uint8Array(Buffer.from(row.publicKey, "base64")),
+                counter: 0,
+                ...(row.transports ? { transports: row.transports.split(",") as AuthenticatorTransportFuture[] } : {}),
+              },
+              requireUserVerification: false,
+            }).then(
+              (r) => r.verified,
+              () => false,
+            );
+            if (!ok) return;
+            // ここからは本物の鍵の、回数だけが戻った応答。チャレンジを使い終わりにし、その人の今いる会社ごとに 1 行
+            //   （detail は空・credential id を入れない・国だけ）。書けなくても断る（守りを先に）
+            await ctx.context.internalAdapter.consumeVerificationValue(token);
             await o.appPool
               .query("select app.record_login_event($1, $2, $3)", [
                 row.userId,
                 PASSKEY_COUNTER_ROLLBACK,
-                countryOf(headers),
+                countryOf(ctx.headers ?? new Headers()),
               ])
               .catch((e: unknown) =>
                 console.error("[auth] パスキーの戻りを記録できなかった", (e as { code?: string }).code ?? "unknown"),

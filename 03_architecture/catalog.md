@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 41・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 174・部品 54・設定 41
+API 365（作った 41・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 174・部品 55・設定 41
 
 ## 共通の処理
 
@@ -594,6 +594,7 @@ API 365（作った 41・後のフェーズの行為だけ 20）・前の道す�
 | `@aws-sdk/s3-request-presigner` | 外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160） |
 | `@better-auth/utils` | ログインの部品の中の道具 |
 | `@better-auth/passkey` | パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91） |
+| `@simplewebauthn/server` | パスキーの応答の確かめ（署名の回数が戻ったときに、ほかが正しいかを部品と同じ道具で見る・K-304。部品 @better-auth/passkey の中と同じ版） |
 | `@eslint/js` | 書き方の検査（G1） |
 | `@fontsource-variable/noto-sans-jp` | 記録にある名前のまま |
 | `@hono/node-server` | API を Node で動かす |
