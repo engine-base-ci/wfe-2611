@@ -85,11 +85,42 @@ def _str(v: Any) -> bool:
     return isinstance(v, str) and v.strip() != ""
 
 
+# 見出しの帯の余白（K-231）：絵が帯の余白を帯の中の div で持つとき、役 head の組の padding は帯では比べられない。
+#   組に「キャンバスが <その head のキャンバス> > div・画面がその head の画面と同じ」で padding を比べる役 body の組（帯の余白の組）が
+#   あるときだけ、その head の padding-top・padding-left を外せる。帯の余白の組は種類に要る役 body の数に入れない（本文の箱の組は今までどおり要る）
+HEAD_PAD = ["padding-top", "padding-left"]
+
+
+def _head_keys(pairs: list[Any]) -> set[tuple[str, str]]:
+    """帯の余白の組になれる（キャンバス・画面）の組：役 head の組ごとに（<キャンバス> > div・<画面>）"""
+    return {
+        (f"{p.get('canvas')} > div", str(p.get("app")))
+        for p in pairs
+        if isinstance(p, dict) and p.get("role") == "head"
+    }
+
+
+def _is_head_pad(p: dict[str, Any], heads: set[tuple[str, str]]) -> bool:
+    return p.get("role") == "body" and (str(p.get("canvas")), str(p.get("app"))) in heads
+
+
+def _optional(kind: str, p: dict[str, Any], pads: set[tuple[str, str]]) -> list[str]:
+    role = p.get("role")
+    extra = HEAD_PAD if role == "head" and (f"{p.get('canvas')} > div", str(p.get("app"))) in pads else []
+    return KIND_OPTIONAL.get(kind, {}).get(role, []) + extra
+
+
 def check_pairs(gid: str, kind: str, pairs: Any) -> list[str]:
     """組の値（pairs）の形と、種類に要る役・役に要る値"""
     errs: list[str] = []
     if not isinstance(pairs, list) or not pairs:
         return [f"{gid}：pairs（組の値）が無い"]
+    heads = _head_keys(pairs)
+    pads = {
+        (str(p.get("canvas")), str(p.get("app")))
+        for p in pairs
+        if isinstance(p, dict) and _is_head_pad(p, heads) and all(x in (p.get("props") or []) for x in HEAD_PAD)
+    }
     names: set[str] = set()
     roles: set[str] = set()
     for i, p in enumerate(pairs):
@@ -114,8 +145,9 @@ def check_pairs(gid: str, kind: str, pairs: Any) -> list[str]:
         if role not in ROLES:
             errs.append(f"{where}：知らない役 {role!r}（{'・'.join(ROLES)}）")
             continue
-        roles.add(role)
-        optional = KIND_OPTIONAL.get(kind, {}).get(role, [])
+        if not _is_head_pad(p, heads):
+            roles.add(role)  # 帯の余白の組は本文の箱の代わりにならない
+        optional = _optional(kind, p, pads)
         for need in ROLES[role]:
             if need not in props and need not in optional:
                 errs.append(f"{where}：役 {role} に要る値 {need} が無い")
@@ -363,6 +395,17 @@ def selftest() -> int:
     assert check_pairs("g", "doc", [card, no_y]) == [], check_pairs("g", "doc", [card, no_y])
     assert any("値 y" in e for e in check_pairs("g", "auth-msg", [card, no_y]))
     assert any("値 x" in e for e in check_pairs("g", "doc", [card, dict(good, props=[x for x in ROLES["h1"] if x != "x"])]))
+    # K-231：帯の余白を中の div で持つ絵だけ、head の padding を外せる（帯の余白の組のキャンバスと画面が合うときだけ）
+    head = {"name": "帯", "role": "head", "canvas": "main header", "app": ".h", "props": list(ROLES["head"])}
+    head_np = dict(head, props=[x for x in ROLES["head"] if x not in HEAD_PAD])
+    pad = {"name": "帯の余白", "role": "body", "canvas": "main header > div", "app": ".h", "props": list(ROLES["body"])}
+    body = {"name": "本文", "role": "body", "canvas": "b", "app": "b", "props": list(ROLES["body"])}
+    assert check_pairs("g", "page", [good, head_np, pad, body]) == [], check_pairs("g", "page", [good, head_np, pad, body])
+    assert any("padding-top" in e for e in check_pairs("g", "page", [good, head_np, body]))  # 帯の余白の組が無い
+    assert any("padding-top" in e for e in check_pairs("g", "page", [good, head_np, dict(pad, app=".x"), body]))  # 画面が違う
+    assert any("padding-top" in e for e in check_pairs("g", "page", [good, head_np, dict(pad, canvas="main div"), body]))  # キャンバスが違う
+    assert any("役 body が無い" in e for e in check_pairs("g", "page", [good, head_np, pad]))  # 帯の余白の組は本文の箱の代わりにならない
+    assert check_pairs("g", "page", [good, head, body]) == []  # 今までの形はそのまま
     base = [{"id": "g", "enrolled": True, "canvas": "C", "app": "/", "widths": [1440], "pairs": [good]}]
     assert check_ratchet(base, base) == []
     assert check_ratchet(base, [dict(base[0], enrolled=False)])

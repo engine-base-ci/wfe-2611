@@ -134,6 +134,32 @@
     "create-foot-primary": ".k-create-foot .k-btn[data-variant=\"primary\"]",
     "create-assign-row": ".k-create-assign-row",
     "create-checks": ".k-create-checks",
+    "approvals-body": ".k-ap-body",
+    "approvals-card": ".k-ap-card",
+    "approvals-tools": ".k-ap-tools",
+    "approvals-chips": ".k-ap-chips",
+    "approvals-chip": ".k-ap-chip",
+    "approvals-chip-on": {
+      "selector": ".k-ap-chip[aria-pressed=\"true\"]",
+      "shape": ".k-ap-chip"
+    },
+    "approvals-th": ".k-ap-table th",
+    "approvals-td": ".k-ap-table td",
+    "approvals-group": ".k-ap-group > td",
+    "approvals-title": ".k-ap-title > a",
+    "approvals-late": ".k-ap-table td[data-late]",
+    "approvals-kind": ".k-ap-kind",
+    "approvals-avatar": ".k-ap-avatar",
+    "approvals-acts": ".k-ap-acts",
+    "approvals-note": ".k-ap-note",
+    "state-empty-icon": ".k-state-icon",
+    "approvals-from": ".k-ap-from",
+    "approvals-next": {
+      "selector": ".k-page-head.k-ap-head .k-btn.k-ap-next",
+      "shape": ".k-btn"
+    },
+    "approvals-empty-title": ".k-ap-body .k-state-title",
+    "approvals-empty-body": ".k-ap-body .k-state-body",
     "list-head-row": ".k-list-head-row",
     "list-views": ".k-list-views",
     "list-view": {

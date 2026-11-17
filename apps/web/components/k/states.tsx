@@ -8,9 +8,25 @@ import { Button } from "./button";
 import { Callout } from "./notice";
 import { PAGE_ERROR, errorText } from "./error-of";
 
-export function Empty({ title, children, action }: { title: string; children?: ReactNode; action?: ReactNode }) {
+/** 空のとき。icon は見出しの上の印（キャンバス ApEmpty の ✓・K-231）。読み上げには見出しで伝えるので印は読ませない */
+export function Empty({
+  title,
+  icon,
+  children,
+  action,
+}: {
+  title: string;
+  icon?: ReactNode;
+  children?: ReactNode;
+  action?: ReactNode;
+}) {
   return (
     <section className="k-state" data-state="empty" aria-label={title}>
+      {icon ? (
+        <span className="k-state-icon" aria-hidden="true">
+          {icon}
+        </span>
+      ) : null}
       <h2 className="k-state-title">{title}</h2>
       {children ? <div className="k-state-body">{children}</div> : null}
       {action ? <div className="k-state-actions">{action}</div> : null}
