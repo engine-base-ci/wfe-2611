@@ -268,6 +268,14 @@
     {
       "part": "section-title-form-first",
       "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-doc h2:first-of-type）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は K225-UI-002・K225-UI-013 が数で見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-number",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick > .k-create-number）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の幅 375 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-label",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick .k-label・.k-create-title .k-label）。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（D5 は地・字・線・角丸・余白・高さ・太さ・文字を比べる）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10

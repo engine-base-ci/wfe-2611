@@ -473,7 +473,9 @@
   --k-c-create-card-title-lh: var(--k-lh-body-md);
   --k-c-create-card-title-fw: 700;
   --k-c-create-pick-width: 160px;
-  --k-c-create-pick-gap: var(--k-s-sm);
+  --k-c-create-pick-gap: 10px;
+  --k-c-create-label-lh: 1.6;
+  --k-c-create-number-margin: 0 0 8px auto;
   --k-c-create-title-height: 40px;
   --k-c-create-title-text: var(--k-text-h3);
   --k-c-create-title-lh: var(--k-lh-h3);

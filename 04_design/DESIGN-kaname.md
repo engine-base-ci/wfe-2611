@@ -589,9 +589,13 @@ components:
   create-card-title:    # 箱の見出し（振り分け）
     typography: "{typography.body-md}"
     fontWeight: 700
-  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）
+  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）。間はキャンバスの 10（K-225 で 8 から直した）
     width: "160px"
-    gap: "{spacing.sm}"
+    gap: "10px"
+  create-label:         # 上の白い箱（グループ・種別・題名）の項目名の行の高さ（キャンバスは 12px の 1.6。共通の label の 1.5 はほかの画面のまま・K-225）
+    lineHeight: 1.6
+  create-number:        # 選ぶ欄の行の右の「番号は作ったときに付く」（キャンバスの下 8・左は寄せる）。幅 767 以下で行が割れたときの高さに効く（K-225）
+    margin: "0 0 8px auto"
   create-title:         # 題名の欄（キャンバスは高さ 40・15px・500。入口の欄 input-lg の 42 とは別）
     height: "40px"
     typography: "{typography.h3}"

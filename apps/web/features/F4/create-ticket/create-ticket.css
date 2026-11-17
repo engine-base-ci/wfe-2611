@@ -206,8 +206,15 @@
   flex: none;
   width: var(--k-c-create-pick-width);
 }
+/* 上の箱の項目名の行の高さはキャンバスの 1.6（共通の label の 1.5 は変えない） */
+.k-create-pick .k-label {
+  line-height: var(--k-c-create-label-lh);
+}
+.k-create-title .k-label {
+  line-height: var(--k-c-create-label-lh);
+}
 .k-create-pick > .k-create-number {
-  margin-left: auto;
+  margin: var(--k-c-create-number-margin);
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
