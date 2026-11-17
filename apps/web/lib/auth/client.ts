@@ -7,8 +7,10 @@ import { noticeTermsRequired } from "@/lib/terms-gate";
 /** 認証の部品の要求を出した時刻（要求の文脈ごと） */
 const SENT = new WeakMap<object, number>();
 
+// 口の住所が空（画面と同じ住所・K-262）なら baseURL を渡さない（Better Auth は画面の出どころの /api/auth を使う）
+const base = apiBase();
 export const authClient = createAuthClient({
-  baseURL: apiBase(),
+  ...(base ? { baseURL: base } : {}),
   basePath: "/api/auth",
   plugins: [twoFactorClient()],
   fetchOptions: {

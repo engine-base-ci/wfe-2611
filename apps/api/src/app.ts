@@ -8,6 +8,7 @@ import type { Auth } from "@kaname/auth";
 import { DEVICE_TOKEN_HEADER, type Resolved } from "@kaname/auth/resolver";
 import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
+import { countryOf, ipOf } from "@kaname/auth/device";
 import { registerAll } from "./routes/index.js";
 import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
@@ -56,11 +57,28 @@ export interface AppOptions {
   /** 画面の origin（別 origin から Bearer で呼ぶ。Cookie は使わない） */
   /** 画面の出どころ（"," 区切りで複数可）。CORS の許可元 */
   corsOrigin?: string | null;
+  /** 確かめの口 GET /api/edge/echo を開く（K-262・KANAME_EDGE_ECHO=1・staging の確かめの間だけ）。既定は閉じる（404） */
+  edgeEcho?: boolean;
 }
+
+/** 口の答えを配り先（画面の中継の CDN）や途中に貯めさせない（K-262）。認証の要る JSON が別の人に見えないように */
+const NO_STORE = "private, no-store";
 
 export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   const opts = typeof o === "string" ? { version: o } : o;
   const app = new Hono<Vars>();
+  // 全部の答え（/health・契約の口・認証の口の素の Response・404・onError の 500）に付ける。
+  //   next の前の c.header() は、認証の部品が返す素の Response の道で消えるので、next の後に答えへ直に付ける
+  app.use("*", async (c, next) => {
+    await next();
+    try {
+      c.res.headers.set("Cache-Control", NO_STORE);
+    } catch {
+      // 頭を変えられない答え（外から受け取った Response）は写して付け直す
+      c.res = new Response(c.res.body, c.res);
+      c.res.headers.set("Cache-Control", NO_STORE);
+    }
+  });
   if (opts.corsOrigin)
     app.use(
       "/api/*",
@@ -111,6 +129,10 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
       return opts.auth!.handler(c.req.raw);
     });
   if (opts.authExt) app.route("/api/auth-ext", opts.authExt);
+  // 確かめの口（K-262）：口の入口で置き換えた後の IP と国を、セッションの見張りと同じ読み方で返す。
+  //   ログインなしで答えるので、/api/* のテナント文脈より前に置く。開いていなければ登録しない（404）。契約の外（/health と同じ）
+  if (opts.edgeEcho)
+    app.get("/api/edge/echo", (c) => c.json({ ip: ipOf(c.req.raw.headers), country: countryOf(c.req.raw.headers) }));
   // /api/* 配下は全部テナント文脈を通る（SET LOCAL の網羅＝G6）
   //   resolve は同意し直しの印（termsPending・K-53）も返す。resolveSession（文脈だけを返す古い形・試験の土台）は印の無いものとして包む
   const legacy = opts.resolveSession;

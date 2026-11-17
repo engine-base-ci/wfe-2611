@@ -5,7 +5,7 @@
 //   Strict-Transport-Security：本番は https だけで開く
 export interface HeaderOptions {
   nonce: string;
-  /** API の口（WEB_ENV.apiBase）。画面が呼ぶ・署名つきの資料を読む先 */
+  /** API の口（WEB_ENV.apiBase）。画面が呼ぶ・署名つきの資料を読む先。空なら画面と同じ住所（K-262） */
   apiBase: string;
   /** 開発（next dev）。React の作り直しに eval が要る・http で開く */
   dev: boolean;
@@ -15,17 +15,18 @@ export interface HeaderOptions {
 export const BRIDGE_LOCAL = "http://127.0.0.1:38617";
 
 export function contentSecurityPolicy(o: HeaderOptions): string {
-  const api = new URL(o.apiBase).origin;
+  // 口の住所が空（画面と同じ住所・K-262）なら 'self' で足りる。空の出どころを書かない
+  const api = o.apiBase ? [new URL(o.apiBase).origin] : [];
   const d: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": ["'self'", `'nonce-${o.nonce}'`, "'strict-dynamic'", ...(o.dev ? ["'unsafe-eval'"] : [])],
     // 部品が style 属性で寸法を渡すので、style だけは inline を許す（スクリプトは許さない）
     "style-src": ["'self'", "'unsafe-inline'"],
-    "img-src": ["'self'", "data:", "blob:", api],
+    "img-src": ["'self'", "data:", "blob:", ...api],
     "font-src": ["'self'", "data:"],
     // この PC の Bridge が開く小さな口（ループバックだけ・apps/bridge/src/local.ts）。Bridge が居るかを見て、コードを打たずにつなぐ（D-089・K-57）
-    "connect-src": ["'self'", api, BRIDGE_LOCAL, ...(o.dev ? ["ws:"] : [])],
-    "media-src": ["'self'", "blob:", api],
+    "connect-src": ["'self'", ...api, BRIDGE_LOCAL, ...(o.dev ? ["ws:"] : [])],
+    "media-src": ["'self'", "blob:", ...api],
     // Bridge を起こす（kaname-bridge:// を見えない枠で叩く・D-015.8）。ほかの枠は開かない
     "frame-src": ["kaname-bridge:"],
     "frame-ancestors": ["'none'"],

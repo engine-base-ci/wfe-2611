@@ -76,7 +76,7 @@ async function openFresh(context: BrowserContext, path: string): Promise<{ page:
 async function signInOn(page: Page): Promise<void> {
   await page.getByLabel("メールアドレス").fill("k259@example.com");
   await page.getByLabel("パスワード", { exact: true }).fill("k259-password-x1");
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click(); // メールとパスワードを送るボタンは「次へ」（K-221・キャンバスどおり。「入る」は確認のコードの段のボタン）
 }
 
 test("K259-UI-001 ログインの画面を ?next=/%5Cevil.com・/%09/evil.com・//evil.com・/%255Cevil.com で開いて入ると、同じ出どころの / へ移り、外の出どころへは要求も移動も 0 回", async ({

@@ -1,5 +1,6 @@
 // 画面側の起動設定（X-002 の画面版）。process.env を読むのはここだけ。NEXT_PUBLIC_* は build 時に埋まる（秘密は置かない）
 export const WEB_ENV = {
+  // 「/」か空なら画面と同じ住所（相対の道で呼ぶ・K-262）。未設定なら手元の口
   apiBase: (process.env["NEXT_PUBLIC_API_BASE"] ?? "http://127.0.0.1:3001").replace(/\/$/, ""),
   isProduction: process.env.NODE_ENV === "production",
   // サーバ側（(dev)/layout など）。クライアントには埋まらない

@@ -14,7 +14,7 @@
   "packages": 13,
   "errors": 172,
   "stack": 53,
-  "env": 39
+  "env": 41
  },
  "api": [
   {
@@ -7839,6 +7839,14 @@
    {
     "name": "BRIDGE_RELEASE_BASE",
     "what": "空＝まだ配布していない（画面は「まだ配布していません」と言い、自動更新も見に行かない）"
+   },
+   {
+    "name": "KANAME_EDGE_SECRET",
+    "what": "画面と口の両方のプロジェクトに同じ値をサーバーだけの環境変数で入れる（NEXT_PUBLIC にしない）。空なら写した頭を消すだけ。値は K-263 で入れる"
+   },
+   {
+    "name": "KANAME_EDGE_ECHO",
+    "what": "確かめの口 GET /api/edge/echo を開く（1 で開く）。staging の確かめ（scripts/ci/staging_edge_check.py）の間だけ。本番には入れない"
    }
   ]
  }

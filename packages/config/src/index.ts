@@ -50,6 +50,10 @@ export interface Config {
   bridgeReleaseDir: string;
   /** 資格情報の預かり先 Infisical（D-101）。staging／本番は必須（起動時に確かめる）。開発は無くてよい（メモリ） */
   infisical: { siteUrl: string; clientId: string; clientSecret: string; projectId: string; environment: string } | null;
+  /** 画面の入口が口へ中継するときの秘密（K-262・KANAME_EDGE_SECRET）。合うときだけ写した IP と国を使う。無ければ undefined（写した頭を消すだけ） */
+  edgeSecret?: string | undefined;
+  /** 確かめの口 GET /api/edge/echo を開く（K-262・KANAME_EDGE_ECHO=1）。staging の確かめの間だけ。本番は入れない */
+  edgeEcho?: boolean;
   port: number;
 }
 const REQUIRED = [
@@ -82,6 +86,8 @@ export const ENV_KEYS = [
   "INFISICAL_CLIENT_SECRET",
   "INFISICAL_PROJECT_ID",
   "INFISICAL_ENVIRONMENT",
+  "KANAME_EDGE_SECRET",
+  "KANAME_EDGE_ECHO",
 ] as const;
 export type EnvKey = (typeof ENV_KEYS)[number];
 /** migration が役割に入れるパスワード（T-F-18）。process.env を読むのはここだけ（X-002） */
@@ -199,6 +205,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
           environment: env["INFISICAL_ENVIRONMENT"]!,
         }
       : null,
+    edgeSecret: env["KANAME_EDGE_SECRET"] || undefined,
+    edgeEcho: env["KANAME_EDGE_ECHO"] === "1",
     port: Number(env["PORT"] ?? 3001),
   };
 }
