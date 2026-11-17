@@ -12,7 +12,7 @@
 3. **期限**を書く。恒久例外は `expires_at: null` とし、理由を明記する
 4. 解消したら削除せず「解消済（タスク ID）」に書き換える
 
-## 現在の例外（16 件・いずれも恒久）
+## 現在の例外（17 件・いずれも恒久）
 
 | ID | 関門 | 迂回箇所 | 理由 | 代替統制 | 期限 | 状態 |
 |----|-----|---------|------|---------|------|------|
@@ -32,8 +32,9 @@
 | X-014 | **C8 秘密** | `apps/bridge/src/guard.ts#HOOK_SOURCE` | 定数 HOOK_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（直前のフック）。子は Bridge の入口を読み込めず、渡された環境を読むのが機能そのもの（K-42） | 渡す環境は Bridge が `childEnv` で絞り、Bridge が決めた KANAME_* だけを足す。G13 はこの定数の文字列の範囲だけを見ず、範囲の外で読めば赤（env_audit の自己試験）。ファイル全体は除かない | 恒久 | 有効 |
 | X-015 | **C8 秘密** | `apps/bridge/src/kaname-tools.ts#MCP_SERVER_SOURCE` | 定数 MCP_SERVER_SOURCE の中身は、Bridge が書き出して Claude Code が別のプロセスで起こす子のプログラム（Kaname の道具のサーバー）。理由は X-014 と同じ（K-42） | X-014 と同じ | 恒久 | 有効 |
 | X-016 | **C4 ファイル** | `apps/web/features/F1/consent-terms/legal-text.ts` | 規約・プライバシーポリシーの文面のページ（K-53）が、画面に同梱したひな形（`apps/web/content/legal/*.md`）を要求のときに読む。DB も API も読まない（画面だけを立ち上げる CI の段でも開ける）。利用者のファイルではない | 読むのは `apps/web/content/legal` の `<kind>-v<版>.md` だけ（kind は terms・privacy の 2 つ・版は数だけ）・書かない・利用者由来のパスを受け取らない | 恒久 | 有効 |
+| X-017 | **C8 秘密** | `packages/auth/`（Better Auth の 2 段階・バックアップコード） | 2 段階の鍵（TOTP の鍵）とバックアップコードはログインの部品（Better Auth）が自分の鍵（BETTER_AUTH_SECRET）で包んで kaname_auth の表に持ち、`packages/secrets` を通らない。アカウント全体（ワークスペースをまたぐ 1 人）の秘密で、ワークスペースごとの鍵では包めない（D-128.141・K-308） | 口から返さない（安全の設定を読む口 getMySecurity は残りの数だけ・K308-API-004）・ログに出さない・部品の暗号のまま持つ。読むのは部品のサーバーだけの口（viewBackupCodes）で、中身は数えた後に捨てる | 恒久 | 有効 |
 
-**例外件数：16（恒久 16 / 期限付き 0）**
+**例外件数：17（恒久 17 / 期限付き 0）**
 
 ## 過去の例外（解消済）
 

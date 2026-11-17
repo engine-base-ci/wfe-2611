@@ -4020,6 +4020,8 @@ components:
         last_ip:
           type: string
           nullable: true
+        mfa_pending:
+          type: boolean
         step_up_at:
           type: string
           format: date-time
@@ -4044,6 +4046,7 @@ components:
       - D-120.1
       - D-128.120
       - D-128.121
+      - D-128.141
       - D-128.174
     SessionsInput:
       type: object
@@ -10070,14 +10073,8 @@ components:
           type: boolean
         backup_codes_left:
           type: integer
-        sessions:
-          type: array
-          items:
-            type: object
-        recent_events:
-          type: array
-          items:
-            type: object
+        mfa_pending:
+          type: boolean
       x-operation: getMySecurity
     TwoFactorSetup:
       type: object
@@ -14925,6 +14922,7 @@ paths:
           - last_seen_at
           - machine_id
           - member_id
+          - mfa_pending
           - revoke_reason_id
           - revoked_at
           - step_up_at
@@ -27220,6 +27218,7 @@ paths:
           - last_seen_at
           - machine_id
           - member_id
+          - mfa_pending
           - revoke_reason_id
           - revoked_at
           - step_up_at

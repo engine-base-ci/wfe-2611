@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 43,
+  "api_built": 44,
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
@@ -2692,7 +2692,7 @@
    "tables": [
     "passkeys"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-308"
    ]

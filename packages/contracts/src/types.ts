@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:82dcf82bf4864476
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:eb3b5b1ae7ffbc5b
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -122,7 +122,7 @@ export type AccountEvents = { kind_id?: string | null; subject_type?: string | n
 export type AccountEventsInput = { kind_id?: string | null; subject_type?: string | null; subject_id?: string | null; requested_by?: string | null; status_id?: string | null; resolved_at?: string | null };
 export type AccountEventItems = { event_id?: string | null; object_kind?: string | null; disposition_id?: string | null; target_ref?: string | null; decided_by?: string | null; done_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type AccountEventItemsInput = { event_id?: string | null; object_kind?: string | null; disposition_id?: string | null; target_ref?: string | null; decided_by?: string | null; done_at?: string | null };
-export type Sessions = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null; device_token_hash?: string | null; alive_at?: string | null; bridge_version?: string | null; machine_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; browser?: string; cli_model?: string | null; country?: string | null; created_by?: string | null; deleted_at?: string | null; device?: string | null; health?: unknown | null; health_at?: string | null; last_ip?: string | null; step_up_at?: string | null; terms_pending?: boolean; updated_by?: string | null };
+export type Sessions = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null; device_token_hash?: string | null; alive_at?: string | null; bridge_version?: string | null; machine_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; browser?: string; cli_model?: string | null; country?: string | null; created_by?: string | null; deleted_at?: string | null; device?: string | null; health?: unknown | null; health_at?: string | null; last_ip?: string | null; mfa_pending?: boolean; step_up_at?: string | null; terms_pending?: boolean; updated_by?: string | null };
 export type SessionsInput = { member_id?: string; kind_id?: string; auth_session_id?: string | null; device_label?: string | null; ip_region?: string | null; issued_at?: string; last_seen_at?: string; revoked_at?: string | null; revoke_reason_id?: string | null; device_token_hash?: string | null; alive_at?: string | null; bridge_version?: string | null; machine_id?: string | null };
 export type SupportAccessGrants = { granted_by_member_id?: string | null; scope?: string; expires_at?: string; revoked_at?: string | null; ops_member_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; closed_at?: string | null; created_by?: string | null; deleted_at?: string | null; inquiry_id?: string | null; reason?: string | null; updated_by?: string | null };
 export type SupportAccessGrantsInput = { granted_by_member_id?: string | null; scope?: string; expires_at?: string; revoked_at?: string | null; ops_member_id?: string | null };
@@ -337,7 +337,7 @@ export type TermsConsented = { consented?: boolean };
 export type ConversationCreated = { id?: string; conversation_id?: string };
 export type ConversationUpdated = { id?: string; ok?: boolean };
 export type MemoryUpdated = { id?: string; ok?: boolean };
-export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; sessions?: string[]; recent_events?: string[] };
+export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; mfa_pending?: boolean };
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };
 export type StepUp = { step_up_at?: string; valid_until?: string };

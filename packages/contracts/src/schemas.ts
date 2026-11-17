@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:82dcf82bf4864476
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:eb3b5b1ae7ffbc5b
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1469,6 +1469,7 @@ export const Sessions = z.strictObject({
   health: z.unknown().nullable().optional(),
   health_at: z.iso.datetime({ offset: true }).nullable().optional(),
   last_ip: z.string().nullable().optional(),
+  mfa_pending: z.boolean().optional(),
   step_up_at: z.iso.datetime({ offset: true }).nullable().optional(),
   terms_pending: z.boolean().optional(),
   updated_by: z.uuid().nullable().optional(),
@@ -3698,8 +3699,7 @@ export const MySecurity = z.strictObject({
   two_factor: z.boolean().optional(),
   two_factor_required: z.boolean().optional(),
   backup_codes_left: z.number().int().optional(),
-  sessions: z.array(z.unknown()).optional(),
-  recent_events: z.array(z.unknown()).optional(),
+  mfa_pending: z.boolean().optional(),
 });
 export const TwoFactorSetup = z.strictObject({
   otpauth_uri: z.string().optional(),

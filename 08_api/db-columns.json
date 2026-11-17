@@ -5934,6 +5934,10 @@
     "type": "uuid",
     "nullable": false
    },
+   "mfa_pending": {
+    "type": "boolean",
+    "nullable": false
+   },
    "revoke_reason_id": {
     "type": "text",
     "nullable": true
