@@ -55,6 +55,10 @@
   display: flex;
   flex-direction: column;
 }
+/* 名前（パスキーの名前は本人が付けるので長い 1 語でも行の中で折る・K-318 の突き合わせの的） */
+.k-set-name {
+  overflow-wrap: anywhere;
+}
 .k-set-detail {
   font-size: var(--k-c-pc-detail-text);
   font-weight: var(--k-c-pc-detail-fw);
