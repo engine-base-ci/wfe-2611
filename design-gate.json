@@ -160,6 +160,55 @@
     },
     "approvals-empty-title": ".k-ap-body .k-state-title",
     "approvals-empty-body": ".k-ap-body .k-state-body",
+    "list-head-row": ".k-list-head-row",
+    "list-views": ".k-list-views",
+    "list-view": {
+      "selector": ".k-list-view[aria-current=\"page\"]",
+      "shape": ".k-list-view"
+    },
+    "list-body": ".k-list-body",
+    "list-body-first": ".k-list-body[data-first]",
+    "list-main": ".k-list-main",
+    "list-first": ".k-list-first",
+    "list-greet": ".k-list-greet",
+    "list-empty-mark": ".k-list-empty-mark",
+    "list-empty-desc": ".k-list-empty-desc",
+    "list-act": ".k-btn.k-list-act",
+    "list-suggest": ".k-list-suggest",
+    "list-side": ".k-list-side",
+    "list-side-box": ".k-list-side-box",
+    "list-side-title": ".k-list-side-title",
+    "list-progress": ".k-list-progress",
+    "list-task": ".k-list-task",
+    "list-task-mark": ".k-list-task-mark",
+    "list-task-label": ".k-list-task-label",
+    "list-setup-foot": ".k-list-setup-foot",
+    "list-anytime": ".k-list-anytime",
+    "list-target": ".k-list-text-btn",
+    "list-cards": ".k-list-cards",
+    "list-card": ".k-list-card",
+    "list-card-value": ".k-list-card-value",
+    "list-panel": ".k-list-panel",
+    "list-filter": ".k-list-filter",
+    "list-chip": ".k-list-chip",
+    "list-tool": ".k-list-tool",
+    "list-th": ".k-list-table th",
+    "list-td": ".k-list-table td",
+    "list-tag": ".k-list-tag",
+    "list-avatar": ".k-list-avatar",
+    "list-ai": ".k-list-ai",
+    "list-more": ".k-list-more",
+    "list-box": ".k-list-box",
+    "list-box-title": ".k-list-box-title",
+    "list-box-row": ".k-list-box-row",
+    "list-section": ".k-list-section > td",
+    "list-columns": ".k-list-columns",
+    "list-columns-item": ".k-list-columns-item",
+    "list-chips": ".k-list-chips",
+    "list-tools": ".k-list-tools",
+    "list-who": ".k-list-who",
+    "list-late-icon": ".k-list-late svg",
+    "list-ai-icon": ".k-list-ai svg",
     "shell-bar": ".k-bar",
     "detail-body": ".k-detail > .k-page",
     "detail-copy": ".k-detail-copy",
@@ -258,6 +307,34 @@
       "reason": "作る画面の部品（K-224・features/F4/create-ticket/create-ticket.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
+      "part": "list-main-basis",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-first-basis",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-empty-desc-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-tag-min",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-title-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-side-main",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-side-main-max",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 幅の上限（max-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
       "part": "doc-tool-min",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 最小の幅（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
@@ -288,6 +365,10 @@
     {
       "part": "detail-rule",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-late",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10

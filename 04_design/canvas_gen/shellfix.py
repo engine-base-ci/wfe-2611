@@ -131,6 +131,10 @@ AP_NARROW = ("/* kn-board-narrow（K-231）：画面の外枠と同じく上の�
              "main header>div::after{content:\"\";order:1;flex:none;width:44px;height:44px;margin-left:auto;"
              "background:center/18px 18px no-repeat url(\"" + BELL + "\")}main header>div>a{order:2}}\n")
 NARROW_BY_BOARD.update({"Approvals.dc.html": AP_NARROW, "ApEmpty.dc.html": AP_NARROW})
+# 一覧の絵（K-251：OnHome・Main）：画面の外枠と同じく上の帯を出さず、見え方のタブは字を折り返さず 1 行のまま横に送る
+_LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
+                "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
+NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW})
 # 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。画面の外枠と同じく上の帯を出さない（MobileList と同じ）。
 # 7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
 DETAIL_BOARDS = ("TicketDetail", "StRunning", "StFailed", "StBefore", "StConfirmDone", "StDone", "StDelegated")
