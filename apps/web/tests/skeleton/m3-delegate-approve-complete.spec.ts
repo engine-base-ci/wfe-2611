@@ -60,6 +60,7 @@ const MSG = {
   irreversible: "取り消せません", // D-128.177
   pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます", // K-63 の帯
   completeHint: "完了の条件を確かめて完了にしてください", // K-63 の帯
+  stoppedTitle: "実行が止まりました", // K-228 の止まった帯の題（K228-UI-009）
   decided: "この承認はもう処理されています", // E-CONF-003
   emptyResult: "自分のAI が結果を返さずに終わりました。完了とは見なしていません", // E-SIG-004
   note24h: "承認から 24 時間を過ぎたので、実行の前にもう一度確かめてください", // K-63 の聞き直しの行の note
@@ -402,10 +403,14 @@ test("K64-M3-04 実行が止まる（G-15）：承認の後の実行が空の結
   expect((await ticketState(r.t)).stage, "完了にも承認待ちにもならず作業中に戻る").toBe("doing");
   expect(await approvalsOf(r.t), "実行の終わりは新しい承認待ちを作らない").toHaveLength(1);
   expect(await delegatedMark(r.t), "止まったら印が外れる").toBe(false);
+  // 止まった帯は K-228 の形（赤い箱・題「実行が止まりました」・理由・「完了にする」を同じ箱に。完了の確かめの文は出さない・K-264）
+  const stopped = execBand(page).getByRole("alert").filter({ hasText: MSG.stoppedTitle });
+  await expect(stopped, "止まった帯は赤い箱 1 つ").toHaveCount(1);
   await expect(
-    execBand(page).getByText(MSG.completeHint),
-    "止まった後も、人が確かめて完了にする道が出る",
+    stopped.getByRole("button", { name: "完了にする", exact: true }),
+    "止まった後も、人が確かめて完了にする道が出る（止まった帯の中の「完了にする」）",
   ).toBeVisible();
+  await expect(execBand(page).getByText(MSG.completeHint), "止まった帯は完了の確かめの文を出さない").toHaveCount(0);
   await expect(delegateBtn(page), "もう一度任せる道も並ぶ").toBeVisible();
   await completeAll(page, r);
   expect((await systemLines(r.t)).some((l) => l.includes(`${r.me.name}が完了にしました`))).toBe(true);
