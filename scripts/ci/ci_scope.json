@@ -280,7 +280,8 @@
    ],
    "tests": [
     "apps/api/test/features/F1/sign-in.test.ts",
-    "apps/api/test/features/F1/sign-in-code.test.ts"
+    "apps/api/test/features/F1/sign-in-code.test.ts",
+    "apps/api/test/features/F1/sign-out.test.ts"
    ]
   },
   {
@@ -298,6 +299,14 @@
    ],
    "tests": [
     "apps/api/test/generated/post_auth_two_factor_verify.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/sign-out.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_sign_out.test.ts"
    ]
   },
   {

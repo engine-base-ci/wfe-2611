@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0cea2811274a4796
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:5314d4c5525e6c9e
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -293,6 +293,7 @@ export type SignupVerifyInput = { token: string };
 export type PasswordForgotInput = { email: string };
 export type SignInInput = { email: string; password: string };
 export type SignInCodeInput = { pending: string; code?: string | null; backup_code?: string | null };
+export type SignOutInput = Record<string, never>;
 export type TermsConsentInput = { agree: boolean; terms_version_id: string; privacy_version_id: string };
 export type PairingCodeInput = Record<string, never>;
 export type BridgeClaimInput = { code: string; device_label?: string; machine_id?: string | null };
@@ -330,6 +331,7 @@ export type SignupVerified = { email?: string; token?: string | null; signed_in?
 export type PasswordForgotAccepted = { accepted?: boolean };
 export type SignInResult = { token?: string | null; two_factor?: boolean; pending?: string | null };
 export type SignInCodeResult = { token?: string; backup_codes_left?: number };
+export type SignedOut = { signed_out?: boolean };
 export type CurrentTerms = { id?: string; kind?: string; version?: string; url?: string; published_at?: string };
 export type TermsConsented = { consented?: boolean };
 export type ConversationCreated = { id?: string; conversation_id?: string };
