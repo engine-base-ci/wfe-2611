@@ -14,6 +14,7 @@ import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 import { serverTiming } from "./server-timing.js";
+import { CHALLENGE_HEADER, withPasskeyChallenge } from "./auth/passkey-challenge.js";
 
 // 独立 API 層（Hono）。画面は API を叩くだけ。endpoint は T-A-* が 08_api/openapi.yaml どおりに足す（routes/ 配下・c.get("repo") 経由）。
 export interface Health {
@@ -98,7 +99,8 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
           "x-screen-id",
           "x-tenant-id",
           "x-signup-token",
-        ], // x-signup-token：登録の申し込みの印（K-51）
+          CHALLENGE_HEADER,
+        ], // x-signup-token：登録の申し込みの印（K-51）。x-passkey-challenge：パスキーのチャレンジ（K-304）
         exposeHeaders: ["set-auth-token", "content-disposition"], // 成果物を落とすときのファイル名（D-106.7）
         credentials: true,
         maxAge: 600,
@@ -129,7 +131,8 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
         }
         if (r?.termsPending) return termsRequired(c);
       }
-      return opts.auth!.handler(c.req.raw);
+      // パスキーのチャレンジは Cookie でなく JSON と頭で受け渡す（K-304）。ほかの道はそのまま
+      return withPasskeyChallenge(opts.auth!, c.req.raw, sub, (r) => opts.auth!.handler(r));
     });
   if (opts.authExt) app.route("/api/auth-ext", opts.authExt);
   // 確かめの口（K-262）：口の入口で置き換えた後の IP と国を、セッションの見張りと同じ読み方で返す。

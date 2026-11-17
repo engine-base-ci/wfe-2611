@@ -11,6 +11,7 @@ import { countQueries, markDbSession } from "@kaname/db/pool";
 import { optionalEnv } from "@kaname/config";
 import { mailTag } from "./signup.js";
 import { RESET_PREFIX, resetHash } from "./reset.js";
+import { kanamePasskey, PASSKEY_DISABLED_PATHS } from "./passkey.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -38,7 +39,8 @@ export type Mailer = (m: Mail) => Promise<void>;
 /** 2 段階の待ちの印の長さ（秒・K-301） */
 export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
-export const DISABLED_PATHS = ["/sign-in/email"] as const;
+/** パスキーの部品のうち Kaname の決まりを通らない口（一覧・名前・外す）も閉じる（K-304） */
+export const DISABLED_PATHS = ["/sign-in/email", ...PASSKEY_DISABLED_PATHS] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
@@ -51,6 +53,17 @@ export const LOGIN_GATE_DOWN = "E-PAGE-003";
 export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([...Object.values(LOGIN_BLOCKED), LOGIN_GATE_DOWN]);
 /** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
 const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
+
+/** 部品（Better Auth）のログ。パスキーの確かめの失敗（@simplewebauthn の例外の文にチャレンジと期待の値が入る）は、例外の種類だけを出す */
+function authLog(level: "debug" | "info" | "warn" | "error", message: string, ...args: unknown[]): void {
+  const out = level === "error" ? console.error : level === "warn" ? console.warn : console.log;
+  if (/passkey|authentication|registration/i.test(message)) {
+    const kind = args[0] instanceof Error ? args[0].name : typeof args[0];
+    out(`[Better Auth] ${message}（${kind}）`);
+    return;
+  }
+  out(`[Better Auth] ${message}`, ...args);
+}
 
 /** 型は core の Auth（plugin の endpoint 型は使わない＝zod の内部型を .d.ts に出さない） */
 export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
@@ -69,10 +82,17 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
     : async (m) =>
         // 本番では手がかり入りのリンクをログに残さない（K-313 のレビュー）
         console.warn(`[auth] メールの送出先が無い（${m.kind} → ${mailTag(m.to)}）${dev ? `: ${m.url}` : ""}`);
+  // 画面の URL（パスキーの rpID と origin・別の origin の画面から来る Cookie つきの verify を通す trustedOrigins の元・K-304）
+  const web = new URL(o.webBaseURL ?? o.baseURL);
   const auth = betterAuth({
     database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "kaname_auth" },
     secret: o.secret,
     baseURL: o.baseURL,
+    // チャレンジを Cookie にして部品に渡すので verify は Cookie つきの POST になる。部品は Origin を trustedOrigins と比べる
+    //   （既定は baseURL＝API の origin だけ）。画面の origin を足す。origin の確かめは切らない（K-304・K304-API-023）
+    trustedOrigins: [web.origin],
+    // 部品の失敗のログは本文と種類だけ。パスキーの確かめの失敗は、例外の文にチャレンジの値が入るので落とす（K-304・値をログに出さない）
+    logger: { log: authLog },
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 12,
@@ -128,7 +148,12 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
     },
     advanced: { database: { generateId: () => uuidv7(), joins: true } }, // session と user を 1 本で引く（K-233）
     // 2 段階の待ちの印（パスワードを通った後・6 けたの前）は 5 分（部品の既定 10 分を直す・K-301）
-    plugins: [twoFactor({ issuer: o.issuer ?? "Kaname", twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC }), bearer()],
+    // パスキー（K-304）：パスワードのロックの外・6 けたを聞かない（2 段階の after の hook は /sign-in/email だけ・D-128.60）
+    plugins: [
+      twoFactor({ issuer: o.issuer ?? "Kaname", twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC }),
+      bearer(),
+      ...kanamePasskey({ webBaseURL: web.href, authPool: pool, appPool: o.appPool }),
+    ],
     // ロック（app.login_attempts）を通らない部品のログインの道は閉じる（404・K-301）。サーバーの中の auth.api.signInEmail は道を通らないので動く
     disabledPaths: [...DISABLED_PATHS],
     databaseHooks: {

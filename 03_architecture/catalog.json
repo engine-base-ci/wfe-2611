@@ -13,7 +13,7 @@
   "ui": 17,
   "packages": 13,
   "errors": 175,
-  "stack": 53,
+  "stack": 55,
   "env": 41
  },
  "api": [
@@ -7485,6 +7485,14 @@
    {
     "package": "@better-auth/utils",
     "for": "ログインの部品の中の道具"
+   },
+   {
+    "package": "@better-auth/passkey",
+    "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）"
+   },
+   {
+    "package": "@simplewebauthn/server",
+    "for": "パスキーの応答の確かめ（署名の回数が戻ったときに、ほかが正しいかを部品と同じ道具で見る・K-304。部品 @better-auth/passkey の中と同じ版）"
    },
    {
     "package": "@eslint/js",
