@@ -16,28 +16,33 @@ import { delegateHooks } from "../../src/hooks/delegate.js";
 import { approveHooks } from "../../src/hooks/approve-complete.js";
 import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
 import { serviceStatusHooks } from "../../src/hooks/service-status.js";
+import { passwordResetHooks } from "../../src/hooks/password-reset.js";
+import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
 import { createAuth } from "@kaname/auth";
 import { migrateAuth } from "@kaname/auth/migrate";
+import { createPool } from "@kaname/db/pool";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
-// 本物のサーバー（src/server.ts）と同じ hooks を差す。差さない工場は scripts/ci/fuzz_targets.py の EXEMPT（理由つき）だけ（K-62・D-095）
-//   PC をつなぐ（K-57）の置き場は試験の一時フォルダの偽物。外の置き場の署名は作らない（配布物の受け取りは 404 の形で回る）
-const objects = new ObjectStore(h.repo, localDriver(mkdtempSync(join(tmpdir(), "fuzz-obj-"))), {
-  signingSecret: "fuzz-test-files",
-  externalSigner: { presignGet: async () => null },
-});
-// ログイン（K-301）は本物のログインの部品（Better Auth・kaname_auth の表）で回す。偽のセッション（Bearer boss）は入口だけが読み、
-//   ログインの口は送られたメールとパスワードを部品で確かめる（登録の無いメールは 401・形の違うメールは 422・数の上限で 429）
+// 認証の表（kaname_auth）は認証の接続からしか触れない（0059）。再設定の口（K-313）は本物のサーバーと同じく認証の接続で本人を引く
 const DB_URL = process.env["DATABASE_URL"]!;
 await migrateAuth(DB_URL);
+const authPool = createPool({ databaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"), max: 2 });
+// ログイン（K-301）は本物のログインの部品（Better Auth・kaname_auth の表）で回す。偽のセッション（Bearer boss）は入口だけが読み、
+//   ログインの口は送られたメールとパスワードを部品で確かめる（登録の無いメールは 401・形の違うメールは 422・数の上限で 429）
 const login = createAuth({
   authDatabaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"),
   appPool: h.pool,
   secret: "fuzz-test-secret-0123456789-abcdefghij",
   baseURL: `http://127.0.0.1:${port}`,
   poolMax: 2,
+});
+// 本物のサーバー（src/server.ts）と同じ hooks を差す。差さない工場は scripts/ci/fuzz_targets.py の EXEMPT（理由つき）だけ（K-62・D-095）
+//   PC をつなぐ（K-57）の置き場は試験の一時フォルダの偽物。外の置き場の署名は作らない（配布物の受け取りは 404 の形で回る）
+const objects = new ObjectStore(h.repo, localDriver(mkdtempSync(join(tmpdir(), "fuzz-obj-"))), {
+  signingSecret: "fuzz-test-files",
+  externalSigner: { presignGet: async () => null },
 });
 Object.assign(
   h.hooks,
@@ -48,6 +53,8 @@ Object.assign(
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
   serviceStatusHooks({ appPool: h.pool }),
+  // 再設定のメールを頼む（K-313）。送出先は差さない（外に送らず、ログの道を通る）。本人は認証の接続、記録は業務の接続（本物と同じ）
+  passwordResetHooks({ authPool, appPool: h.pool, config: { baseUrl: "http://127.0.0.1", webBaseUrl: null } }),
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
@@ -61,6 +68,8 @@ const srv = serve({ fetch: h.fetch, port, hostname: "127.0.0.1" }, () =>
 );
 const stop = async () => {
   srv.close();
+  await resetWorkIdle(); // 答えの後の仕事（再設定の送り）が終わってから接続を閉じる
+  await authPool.end();
   await login.pool.end();
   await h.close();
   process.exit(0);

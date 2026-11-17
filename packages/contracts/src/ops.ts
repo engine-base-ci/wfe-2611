@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2f4b516a42dfb3d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:dda1e74d734c39fc
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -24,7 +24,7 @@ export interface Ops {
   listAuditEvents: { params: never; query: { "q"?: string | number; "kind"?: string | number; "member_id"?: string | number; "ticket_id"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.AuditEvents[] };
   getInvitation: { params: { token: string }; query: never; body: never; data: T.Invitations };
   acceptInvitation: { params: { token: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
-  requestPasswordReset: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
+  requestPasswordReset: { params: never; query: never; body: T.PasswordForgotInput; data: T.PasswordForgotAccepted };
   resetPassword: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   requestAdminRecovery: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
   getServiceStatus: { params: never; query: never; body: never; data: T.PublicServiceStatus };

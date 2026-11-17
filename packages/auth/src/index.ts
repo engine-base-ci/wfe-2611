@@ -9,6 +9,7 @@ import { uuidv7 } from "@kaname/db/id";
 import { countQueries, markDbSession } from "@kaname/db/pool";
 import { optionalEnv } from "@kaname/config";
 import { mailTag } from "./signup.js";
+import { RESET_PREFIX, resetHash } from "./reset.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -51,10 +52,12 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
   const dev = optionalEnv("NODE_ENV") !== "production";
   const mail: Mailer = o.mailer
     ? async (m) => {
-        if (dev) console.warn(`[auth] リンク（${m.kind} → ${m.to}）: ${m.url}`);
+        if (dev) console.warn(`[auth] リンク（${m.kind} → ${mailTag(m.to)}）: ${m.url}`);
         await o.mailer!(m);
       }
-    : async (m) => console.warn(`[auth] メールの送出先が無い（${m.kind} → ${m.to}）: ${m.url}`);
+    : async (m) =>
+        // 本番では手がかり入りのリンクをログに残さない（K-313 のレビュー）
+        console.warn(`[auth] メールの送出先が無い（${m.kind} → ${mailTag(m.to)}）${dev ? `: ${m.url}` : ""}`);
   const auth = betterAuth({
     database: { dialect: new PostgresDialect({ pool }), type: "postgres", casing: "snake", schemaName: "kaname_auth" },
     secret: o.secret,
@@ -102,6 +105,16 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       },
     },
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 },
+    // 再設定のリンクの手がかりは DB に平文で置かない（K-313）。頭（reset-password:）を残したハッシュにし、自分の送る関数
+    //   （reset.ts の resetKey）と同じ形にする。部品はこの { default, overrides } と { hash } の形だけを読む
+    verification: {
+      storeIdentifier: {
+        default: "plain",
+        overrides: {
+          [RESET_PREFIX]: { hash: async (id: string) => RESET_PREFIX + resetHash(id.slice(RESET_PREFIX.length)) },
+        },
+      },
+    },
     advanced: { database: { generateId: () => uuidv7(), joins: true } }, // session と user を 1 本で引く（K-233）
     // 2 段階の待ちの印（パスワードを通った後・6 けたの前）は 5 分（部品の既定 10 分を直す・K-301）
     plugins: [twoFactor({ issuer: o.issuer ?? "Kaname", twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC }), bearer()],

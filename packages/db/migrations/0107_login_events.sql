@@ -22,4 +22,4 @@ end $$;
 revoke all on function app.record_login_event(text, text, text) from public;
 grant execute on function app.record_login_event(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0106_login_events.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0107_login_events.sql') on conflict do nothing;

@@ -55,7 +55,7 @@ function apiErrorCode(e: unknown): string | null {
  *  ほか（DB が落ちた・セッションを写す所の失敗）は数えずに投げ直す（K-301・切る段の精査の後） */
 const COUNTED = new Set(["INVALID_EMAIL_OR_PASSWORD", "PASSWORD_TOO_LONG"]);
 
-/** ログインの記録を書く（会社ごとの security_events・migration 0106）。本人がいなければ書かない。書けなくてもログインは止めない */
+/** ログインの記録を書く（会社ごとの security_events・migration 0107）。本人がいなければ書かない。書けなくてもログインは止めない */
 async function recordLogin(appPool: pg.Pool, rec: SignInRecord | undefined, userId: string | null, kind: string) {
   if (!rec || !userId) return;
   try {

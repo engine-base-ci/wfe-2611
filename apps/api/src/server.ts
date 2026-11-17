@@ -26,6 +26,7 @@ import { agentHooks } from "./hooks/agent.js";
 import { authHooks } from "./hooks/auth.js";
 import { signupHooks } from "./hooks/signup.js";
 import { verifyEmailHooks } from "./hooks/verify-email.js";
+import { passwordResetHooks } from "./hooks/password-reset.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
 import { serviceStatusHooks } from "./hooks/service-status.js";
 import { loginHooks } from "./hooks/login.js";
@@ -154,6 +155,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...authHooks(auth, appPool),
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
         ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
+        // 再設定のメールを頼む（K-313）。送るのは答えの後（D-042）
+        ...passwordResetHooks({ authPool, appPool, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
         ...serviceStatusHooks({ appPool }),
         // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）
