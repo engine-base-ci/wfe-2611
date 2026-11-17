@@ -9,7 +9,15 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
-import { MSG, bandOf, k62Band, mockApi, openTicketSettled, type Band } from "../features/F5/approve-complete.harness";
+import {
+  MSG,
+  bandOf,
+  k62Band,
+  mockApi,
+  openTicketSettled,
+  runView,
+  type Band,
+} from "../features/F5/approve-complete.harness";
 import {
   LINE,
   ROOT,
@@ -226,6 +234,41 @@ test("K228-UI-021 止まった（作る段）の確認の結果の表の左右�
     });
     if (Math.abs(t.left - b.left) > 1) bad.push(`幅 ${w}：表の左 ${t.left}・帯の左 ${b.left}`);
     if (Math.abs(wrap.right - b.right) > 1) bad.push(`幅 ${w}：表の器の右 ${wrap.right}・帯の右 ${b.right}`);
+  }
+  expect(bad).toEqual([]);
+});
+
+test("K228-UI-022 作っていますの経過：口の答えが前と同じ間も、時計を 60 秒進めると要約の分が 0 分 → 1 分、さらに 120 秒で 3 分に増える（分の境目ごとに描き直す）", async ({
+  page,
+}) => {
+  await page.clock.install();
+  await mockApi(page, STATES["作っています"]!);
+  // 始めた時刻を 30 秒前に決めて、読み直しの答えを毎回同じにする（答えが変わらないので、口の読み直しでは描き直されない）
+  const view = { ...runView(STATES["作っています"]!)!, started_at: new Date(Date.now() - 30_000).toISOString() };
+  const json = (data: unknown) => ({ status: 200, contentType: "application/json", body: JSON.stringify(data) });
+  await page.route(/\/api\/v1\/tickets\/[^/]+\/runs$/, (route) =>
+    route.fulfill(json({ data: [view], meta: { limit: 50 } })),
+  );
+  await page.route(/\/api\/v1\/action_runs\/[^/]+$/, (route) => route.fulfill(json({ data: view })));
+  await openTicketSettled(page);
+  const sub = boxIn(page, "AI に任せる").locator(".k-band-sub");
+  await expect(sub).toHaveText(/ ・ 0 分$/);
+  await page.clock.runFor(60_000);
+  await expect(sub).toHaveText(/ ・ 1 分$/);
+  await page.clock.runFor(120_000);
+  await expect(sub).toHaveText(/ ・ 3 分$/);
+});
+
+test("K228-UI-023 止まった（作る段）の帯の箱と確認の結果の表の縦の間：幅 375・1440 で、帯の箱（role=alert の .k-band）の下端から表の上端まで 14px（±1・キャンバス StFailed）", async ({
+  page,
+}) => {
+  const bad: string[] = [];
+  for (const w of [375, 1440]) {
+    await open(page, STATES["止まった"]!, w);
+    const b = await box(card(page).locator('[role="alert"].k-band'));
+    const t = await box(card(page).getByRole("table", { name: "確認の結果" }));
+    const gap = Math.round(t.y - (b.y + b.height));
+    if (Math.abs(gap - 14) > 1) bad.push(`幅 ${w}：間 ${gap}px`);
   }
   expect(bad).toEqual([]);
 });
