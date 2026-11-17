@@ -141,7 +141,10 @@ test("K221-UI-002 部品の世代：ログインの画面は k の部品と入�
     expect(src, name).not.toMatch(/@\/components\/outside\/outside-layout/);
     expect(src, name).not.toMatch(/@\/components\/ui"/);
   }
-  expect(form).toMatch(/AuthFrame/);
+  // 入口の枠は段 2 の部品（views）が持ち、login-form はその部品を読む（K-316）
+  const views = readFileSync(join(WEB, "features/F1/login/views.tsx"), "utf8");
+  expect(views).toMatch(/\bAuthFrame\b/);
+  expect(form).toMatch(/from "\.\/views"/);
 });
 
 test("K221-UI-003 見出し：h1「ログイン」は 18px・700・#131B27・真ん中。「毎日ここから。」は無い", async ({ page }) => {

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 44・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 177・部品 55・設定 41
+API 365（作った 44・後のフェーズの行為だけ 20）・前の道すじ 28・表 144・画面の部品 17・共通の処理 13・エラー 177・部品 55・設定 41
 
 ## 共通の処理
 
@@ -533,8 +533,6 @@ API 365（作った 44・後のフェーズの行為だけ 20）・前の道す�
 - `/onboard/testrun/cancel`
 - `/setup-state`
 - `/setup-step`
-- `/sign-in`
-- `/two-factor/verify`
 - `/vault/credentials`
 - `/vault/credentials/:id/answer`
 - `/vault/credentials/:id/login-check`
