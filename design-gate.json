@@ -217,6 +217,10 @@
     "artifact-meta": ".k-artifact-meta",
     "artifact-acts": ".k-artifact-acts",
     "artifact-button": ".k-artifact-acts .k-artifact-btn",
+    "section-title-form": ".k-create-doc h2",
+    "create-doc-add": ".k-create-doc-add",
+    "create-spec": ".k-create-spec-box",
+    "create-spec-acts": ".k-create-spec-acts",
     "dialog-connect": ".k-dialog[data-size=\"connect\"]",
     "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
     "dialog-sub": ".k-dialog-sub",
@@ -392,6 +396,22 @@
     {
       "part": "detail-rule",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-doc",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css）。幅 900 は CSS の max-width で持つ。D5 は width としか比べず、CSS を width にすると幅 375 で溢れる（K225-UI-009）。幅は K225-UI-009 と突き合わせの組が見る。余白はこのトークンだけを読む"
+    },
+    {
+      "part": "section-title-form-first",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-doc h2:first-of-type）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は K225-UI-002・K225-UI-013 が数で見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-number",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick > .k-create-number）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の幅 375 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-label",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick .k-label・.k-create-title .k-label）。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（D5 は地・字・線・角丸・余白・高さ・太さ・文字を比べる）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
     },
     {
       "part": "pc-usage-col",

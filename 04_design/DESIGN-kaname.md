@@ -438,7 +438,8 @@ components:
     padding: "0 {spacing.lg}"   # 高さは min-height の 30 で決める（上下の余白を置くと字 13px の行で 30 を超える・K-218）
   page-body:            # 本文の箱（下の余白。ほかの子は左右 spacing.lg 内側・帯の下から spacing.md）
     padding: "0 0 40px"
-  section-title:        # 区画の見出し（下に線）
+  # 区画の見出し（下に線）
+  section-title:
     typography: "{typography.section-title}"
     border: "1px solid {colors.line}"
     margin: "28px 0 {spacing.sm}"
@@ -671,9 +672,13 @@ components:
   create-card-title:    # 箱の見出し（振り分け）
     typography: "{typography.body-md}"
     fontWeight: 700
-  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）
+  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）。間はキャンバスの 10（K-225 で 8 から直した）
     width: "160px"
-    gap: "{spacing.sm}"
+    gap: "10px"
+  create-label:         # 上の白い箱（グループ・種別・題名）の項目名の行の高さ（キャンバスは 12px の 1.6。共通の label の 1.5 はほかの画面のまま・K-225）
+    lineHeight: 1.6
+  create-number:        # 選ぶ欄の行の右の「番号は作ったときに付く」（キャンバスの下 8・左は寄せる）。幅 767 以下で行が割れたときの高さに効く（K-225）
+    margin: "0 0 8px auto"
   create-title:         # 題名の欄（キャンバスは高さ 40・15px・500。入口の欄 input-lg の 42 とは別）
     height: "40px"
     typography: "{typography.h3}"
@@ -726,6 +731,31 @@ components:
   create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
     border: "1px solid {colors.primary}"
     padding: "0 18px"
+  # 作る画面の本文の箱の中（K-225・キャンバス Create の本文の箱）。詳細の区画の見出しは前からの section-title（28・8）のまま、作る画面は名前を分けて持つ（PM の決め）
+  create-doc:           # 本文の箱の中の文書（道具の帯の下）。幅 900 は CSS の max-width で持つ
+    padding: "8px 28px 24px"
+    width: "900px"
+  # 作る画面の区画の見出し（16px・700・下に線）。2 つめから上 22
+  section-title-form:
+    typography: "{typography.section-title}"
+    lineHeight: 1.6
+    borderBottom: "1px solid {colors.line}"
+    margin: "22px 0 6px"
+    padding: "0 0 6px"
+  # 作る画面の最初の区画の見出し（上 20）
+  section-title-form-first:
+    margin: "20px 0 6px"
+  create-doc-add:       # 文書の下の「＋ 見出しを足す…」（点線の上の線・まだ使えない）
+    borderTop: "1px dashed {colors.line}"
+    margin: "18px 0 0"
+    padding: "10px 0 0"
+  create-spec:          # 本文の箱の「テスト仕様」の箱（線・角丸 8）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  create-spec-acts:     # テスト仕様の箱の下の行（＋ 項目を足す・抜けを点検する）
+    backgroundColor: "{colors.table-head}"
+    padding: "7px 10px"
+    gap: "12px"
   # PC と使った量・PC をつなぐ（K-230・D-143.2：値はキャンバス EdPC・MePC・MePCInstalled の実測。小窓の置き場・影・余白は dialog の型のまま）
   dialog-connect:       # PC をつなぐの小窓の幅（EdPC 580）
     width: "580px"

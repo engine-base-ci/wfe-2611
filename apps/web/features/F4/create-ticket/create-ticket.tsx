@@ -4,13 +4,15 @@
 //   必須は 題名・種別・担当者・期限 と、その種別の必須の区画（種別のマスタ kind_sections.mode = required）。期限は今日より前は不可（D-128.138）
 //   ブラウザ標準の検証は使わない（noValidate）：理由は欄の下に、正本の文言か入口の理由で出す（G-01・G-08）
 //   書きかけはサーバーとこの PC に残す（draft.ts）。ログインが切れても・戻っても・再読み込みしても続きから書ける
+//   本文の箱の中（区画の見出し・欄・道具の帯）は create-sections（K-225）
 //   キャンバスに在って機能がまだの物（AI に任せる など 6 欄・ファイル・AI のひとこと）は出すが押せない・値は空（D-145.6・D-145.7・D-145.9）
 import "./create-ticket.css";
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type DragEvent, type FormEvent } from "react";
-import { Button, Callout, ErrorState, Loading, Select, TextArea, TextField } from "@/components/k";
+import { Button, Callout, ErrorState, Loading, Select, TextField } from "@/components/k";
 import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { jstClock, type SaveView } from "./create-head";
+import { CreateSections } from "./create-sections";
 import { DraftStore, loadDraft, tabDraftId, type DraftBody, type SaveState } from "./draft";
 import { NotifyPicker } from "./notify-picker";
 import { ParentPicker } from "./parent-picker";
@@ -331,19 +333,14 @@ export function CreateTicket({
               />
             </div>
           </section>
-          <section className="k-create-card" aria-label="本文">
-            {(kind?.sections ?? []).map((s) => (
-              <TextArea
-                key={`${kind?.id}-${s.key}`}
-                label={s.label}
-                name={`sections.${s.key}`}
-                required={s.mode === "required"}
-                value={d.sections?.[s.key] ?? ""}
-                onChange={(e) => setSection(s.key, e.target.value)}
-                error={fields[`sections.${s.key}`]}
-                {...(s.hint ? { description: s.hint } : {})}
-              />
-            ))}
+          <section className="k-create-card k-create-card-doc" aria-label="本文">
+            <CreateSections
+              kindName={kind?.name ?? ""}
+              sections={kind?.sections ?? []}
+              values={d.sections ?? {}}
+              errors={Object.fromEntries((kind?.sections ?? []).map((s) => [s.key, fields[`sections.${s.key}`]]))}
+              onChange={setSection}
+            />
           </section>
           <section className="k-create-card" aria-labelledby="k-create-assign-title">
             <h2 id="k-create-assign-title">振り分け</h2>
