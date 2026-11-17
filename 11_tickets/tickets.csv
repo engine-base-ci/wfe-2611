@@ -357,7 +357,7 @@ K-74,ログインする（パスキー、またはメールとパスワードと
 K-75,パスキーを設定する（パスワードの人は 2 段階認証を設定する。パスキーの名前を変える・外す・パスワードを変える）,タスク,K-50,未着手,未定,2026-11-15,F1・認証,"ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。
 
 同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
-- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）
+- 契約の口 `renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）。`getMySecurity` と `get_me_security.test.ts` は子 K-308 が受け持つ（2026-11-18）
 - 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる
 - 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている
 - 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑
