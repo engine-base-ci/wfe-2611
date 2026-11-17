@@ -707,7 +707,7 @@ components:
     height: "44px"
     padding: "0 {spacing.sm}"
     borderBottom: "1px solid {colors.line-soft}"
-  approvals-group:      # 期限の区切りの行（期限切れと今日は赤の字）
+  approvals-group:      # 期限の区切りの行（期限切れだけ赤の字・今日は黒）
     height: "28px"
     backgroundColor: "{colors.surface}"
     typography: "{typography.body-sm}"
@@ -715,7 +715,7 @@ components:
   approvals-title:      # 題名のリンク（黒字・下線なし）
     textColor: "{colors.on-surface}"
     fontWeight: 500
-  approvals-late:       # 期限の区切りの赤（期限切れ・今日）と過ぎた期限の字
+  approvals-late:       # 期限の区切りの赤（期限切れだけ）と過ぎた期限の字
     textColor: "{colors.error}"
     fontWeight: 500
   approvals-kind:       # 決めることの線の札

@@ -133,7 +133,7 @@ test("K231-UI-006 期限の区切りは表の中の行：「期限切れ 1 件�
     "期限なし 1 件",
   ]);
   expect(await cssOf(groups.nth(0).locator("td"), "color")).toBe(RED_TEXT);
-  expect(await cssOf(groups.nth(1).locator("td"), "color")).not.toBe(RED_TEXT);
+  expect(await cssOf(groups.nth(1).locator("td"), "color")).toBe(INK);
   expect(await cssOf(groups.nth(2).locator("td"), "color")).not.toBe(RED_TEXT);
   expect(await groups.nth(0).locator("td").getAttribute("colspan")).toBe("9");
 });
