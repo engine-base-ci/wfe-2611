@@ -136,6 +136,7 @@
   { "paths": ["apps/api/test/features/F4/setup-tasks.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_me_setup_tasks.test.ts", "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"] },
   { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   { "paths": ["04_design/canvas/*.dc.html", "scripts/ci/canvas_layout_ledger.json"], "tests": ["apps/web/tests/k/k254-canvas-layout.spec.ts"] },
+  { "paths": ["07_functional/段2-F1/mock-shots.mjs", "07_functional/段2-F1/切り方.md", "design-gate.json", "scripts/ci/design_gate.py", "scripts/ci/k218_design_canvas_test.py"], "tests": ["apps/web/tests/k/k300-stage2-mock.spec.ts"] },
   {
    "paths": [
     "07_qa/test-plan/access-matrix.json"
@@ -494,6 +495,7 @@
   "apps/web/tests/k/k227-band-approval.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組 band-approval の持ち主と enrolled）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-227",
   "apps/web/tests/k/k228-bands.spec.ts": "07_qa/test-specs/k/delegate.md・approve-complete.md（操作要素の表）と 04_design/fidelity.json（6 組の持ち主と enrolled）・キャンバス（detail-kit.ts 経由）を読む。どれも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-228",
   "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
+  "apps/web/tests/k/k300-stage2-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f1/mocks.tsx・07_functional/段2-F1/切り方.md・写しの台本 07_functional/段2-F1/mock-shots.mjs・design-gate.json・04_design/DESIGN-kaname.md・apps/web/lib/theme.ts を読み、04_design/gen_tokens.py・gen_preview.py・scripts/ci/design_gate.py・k218_design_canvas_test.py を子プロセスで流す（K-300）",
   "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",
   "scripts/ci/k218_design_canvas_test.py": "正本・トークン・設定・プレビュー・build_testplan.py を読み、作りものの木（tempfile）に design_gate を子プロセスで流す。G37 の末尾で spec の組が流す・K-218",
   "apps/bridge/test/update.test.ts": "自分で作った一時のファイルを読む",

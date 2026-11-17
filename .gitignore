@@ -40,3 +40,4 @@ __pycache__/
 junit/
 # 見た目の突き合わせの出力（K-216・ログインして撮った画面が入るので版に入れない）
 .qa/visual-fidelity/out/
+07_functional/段2-F1/gallery/

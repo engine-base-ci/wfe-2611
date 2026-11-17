@@ -14,6 +14,11 @@
 CI のチケットの回（--ticket と --ledger-base-ref）：そのチケットが canvas_none なら、git diff <分かれ目>...HEAD の名前に画面のコードがあれば赤
   （--no-base・--ticket が無い・空の回は見ない）。台帳の行は未着手のあいだだけ通す（作業中・保留は赤）
 逆向き：組の owner は 11_tickets に在り、取り込み済みでなければ canvas を持ち、そこに組の id が在る（取り込み済みの持ち主は見ない）
+部品先行のモック（design-system.md §8・K-300）：canvas の代わりに mock: [<状態の id>, …] を正の欄にしてよい（canvas・canvas_none と混ぜない）。
+  状態は apps/web/app/(dev)/dev/mock/<置き場>/mocks.tsx の `export const MOCKS` の並びの { id: "…", …, ticket: "K-…" }（折った行も読む）。
+  id は状態に在り、状態の ticket がこのチケット（その状態の置き場を changes に持つ運ぶチケットは、ほかの持ち主の状態も書ける）。
+  逆向き：状態の ticket は K-<数> の形で、11_tickets に在り取り込み済みでなければ mock: に状態の id が在る（まだ無い持ち主は見ない）。
+  mock: を持つチケットがあるのに置き場が 1 つも無い・読めないなら赤。台帳に載ったチケットが mock を書いたら赤
 台帳 scripts/ci/canvas_field_ledger.json（{"_doc", "entries": [{ticket, reason}]}）：今ある canvas の無いチケットを載せて通す。減らすだけ。
   赤：canvas を書いた・ファイルが無いのに残る行（台帳から消す）／分かれ目の台帳に無い行／入れた時点の行の数を超えた／同じ行が 2 つ・理由が空。
   取り込み済みで当たらなくなった行は「台帳から消してよい」と出すだけ（取り込みの台本が stage を書いた回を赤にしない）。
@@ -41,6 +46,10 @@ STARTED = {"作業中", "保留"}             # 台帳の行は未着手のあ�
 SCREEN_CODE = re.compile(r"^apps/web/(app|features|components|styles)/")   # components は k・ui・shell など全部。lib は入れない
 HEAD = re.compile(r"^---\n(.*?)\n---\n", re.S)
 TICKET_FILE = re.compile(r"^K-\d+\.md$")
+MOCK_GLOB = "apps/web/app/(dev)/dev/mock/*/mocks.tsx"
+MOCK_ARRAY = re.compile(r"export\s+const\s+MOCKS\b[^=]*=\s*\[(.*?)\n\];", re.S)
+MOCK_ENTRY = re.compile(r"\{\s*id:\s*\"([^\"]+)\",[^{}]*?\bticket:\s*\"([^\"]*)\"[^{}]*?\}", re.S)
+TICKET_ID = re.compile(r"^K-\d+$")
 
 
 class Unreadable(Exception):
@@ -108,6 +117,29 @@ def load_groups(root: Path) -> dict[str, str]:
     return groups
 
 
+def load_mocks(root: Path) -> dict[str, tuple[str, str]]:
+    """モックの状態の id → (持ち主, 置き場の道 apps/web/app/(dev)/dev/mock/<置き場>/)。置き場のファイルが無ければ空"""
+    out: dict[str, tuple[str, str]] = {}
+    for path in sorted(root.glob(MOCK_GLOB)):
+        rel = path.relative_to(root).as_posix()
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            raise Unreadable(f"{rel} が読めない（{e}）") from e
+        m = MOCK_ARRAY.search(text)
+        if not m:
+            raise Unreadable(f"{rel} に `export const MOCKS = [` … `];` の並びが無い")
+        found = MOCK_ENTRY.findall(m.group(1))
+        if not found:
+            raise Unreadable(f"{rel} の MOCKS に状態（{{ id: \"…\", …, ticket: \"…\" }}）が 1 つも無い")
+        folder = rel.rsplit("/", 1)[0] + "/"
+        for mid, owner in found:
+            if mid in out:
+                raise Unreadable(f"モックの状態 {mid} が 2 つある（{out[mid][1]} と {folder}）")
+            out[mid] = (owner, folder)
+    return out
+
+
 def load_ledger(path: Path, rel: str) -> list[dict]:
     entries = load_json(path, rel, "entries")
     for e in entries:
@@ -164,6 +196,50 @@ def canvas_problems(tid: str, head: dict, groups: dict[str, str]) -> list[str]:
     return bad
 
 
+def carries(head: dict, folder: str) -> bool:
+    """その状態の置き場（またはその下の道）を changes に持つ運ぶチケットか"""
+    return any(c == folder or c.startswith(folder) or c == folder.rstrip("/") for c in as_list(head.get("changes")))
+
+
+def mock_problems(tid: str, head: dict, mocks: dict[str, tuple[str, str]]) -> list[str]:
+    """mock を持つチケットの中身（形・混ぜ方・無い状態・別の持ち主）"""
+    mk = head["mock"]
+    if not isinstance(mk, list):
+        return [f"{tid}：mock は [<状態の id>, …] の形で書く（今は {mk!r}）"]
+    bad: list[str] = []
+    if "canvas" in head or "canvas_none" in head:
+        bad.append(f"{tid}：mock と canvas を混ぜている（どちらか 1 つ）")
+    if not mk:
+        return bad + [f"{tid}：mock が空。正のモックの状態の id を書く"]
+    if not mocks:
+        return bad + [f"{tid}：mock を書いたのにモックの置き場 {MOCK_GLOB} が無い"]
+    for mid in mk:
+        if mid not in mocks:
+            bad.append(f"{tid}：mock の状態 {mid} が {MOCK_GLOB} の MOCKS に無い")
+            continue
+        owner, folder = mocks[mid]
+        if owner != tid and not carries(head, folder):
+            bad.append(f"{tid}：mock の状態 {mid} の持ち主は {owner}（このチケットではなく、置き場 {folder} を運ぶチケットでもない）")
+    return bad
+
+
+def mock_owner_problems(tickets: dict[str, dict], mocks: dict[str, tuple[str, str]]) -> list[str]:
+    """逆向き：状態の持ち主の字は K-<数>。11_tickets に在り取り込み済みでなければ mock に状態の id が在る"""
+    bad: list[str] = []
+    for mid, (owner, _folder) in mocks.items():
+        if not TICKET_ID.match(owner):
+            bad.append(f"状態 {mid} の持ち主の字 {owner} が K-<数> の形でない")
+            continue
+        head = tickets.get(owner)
+        if head is None or is_merged(head):
+            continue
+        if "mock" not in head:
+            bad.append(f"状態 {mid} の持ち主 {owner} に mock が無い（mock: [{mid}, …] を書く）")
+        elif mid not in as_list(head["mock"]):
+            bad.append(f"状態 {mid} の持ち主 {owner} の mock に {mid} が無い")
+    return bad
+
+
 def owner_problems(tickets: dict[str, dict], groups: dict[str, str]) -> list[str]:
     """逆向き：組の持ち主が在り、取り込み済みでなければ canvas に組の id を書いている"""
     bad: list[str] = []
@@ -180,17 +256,21 @@ def owner_problems(tickets: dict[str, dict], groups: dict[str, str]) -> list[str
     return bad
 
 
-def ticket_problems(tickets: dict[str, dict], groups: dict[str, str], ledgered: set[str]) -> list[str]:
+def ticket_problems(tickets: dict[str, dict], groups: dict[str, str], ledgered: set[str],
+                    mocks: dict[str, tuple[str, str]] | None = None) -> list[str]:
     parents = parents_of(tickets)
+    mocks = mocks or {}
     bad: list[str] = []
     for tid, head in tickets.items():
         if is_merged(head):
             continue
-        if "canvas" in head:
+        if "mock" in head:
+            bad += mock_problems(tid, head, mocks)
+        elif "canvas" in head:
             bad += canvas_problems(tid, head, groups)
         elif applies(tid, head, parents) and tid not in ledgered:
             bad.append(f"{tid}：画面を作る・変えるチケットなのに canvas（正の組の id）が無い")
-    return bad + owner_problems(tickets, groups)
+    return bad + owner_problems(tickets, groups) + mock_owner_problems(tickets, mocks)
 
 
 def ledger_problems(entries: list[dict], tickets: dict[str, dict]) -> tuple[list[str], list[str]]:
@@ -212,6 +292,8 @@ def ledger_problems(entries: list[dict], tickets: dict[str, dict]) -> tuple[list
             bad.append(f"台帳の {tid} のファイルが {TICKETS_REL} に無い：台帳から消す")
         elif "canvas" in head:
             bad.append(f"台帳の {tid} は canvas を書いた：台帳から消す")
+        elif "mock" in head:
+            bad.append(f"台帳の {tid} は mock を書いた：台帳から消す")
         elif head.get("stage") in STARTED:
             bad.append(f"台帳の {tid} は {head.get('stage')}：着手した：canvas を書いて台帳から消す（台帳は未着手のあいだだけ）")
         elif not applies(tid, head, parents):
@@ -260,11 +342,13 @@ def run(root: Path, base_ref: str | None, no_base: bool, ticket: str | None = No
         tickets = load_tickets(root)
         groups = load_groups(root)
         entries = load_ledger(root / LEDGER_REL, LEDGER_REL)
+        uses_mock = any("mock" in h and not is_merged(h) for h in tickets.values())
+        mocks = load_mocks(root) if uses_mock else {}
     except Unreadable as e:
         print(f"canvas_field_gate：赤 — {e}")
         return 1
     bad, notes = ledger_problems(entries, tickets)
-    bad += ticket_problems(tickets, groups, {e["ticket"] for e in entries})
+    bad += ticket_problems(tickets, groups, {e["ticket"] for e in entries}, mocks)
     if not no_base:
         more, more_notes = base_problems(root, base_ref or "", entries)
         bad, notes = bad + more, notes + more_notes
@@ -277,7 +361,7 @@ def run(root: Path, base_ref: str | None, no_base: bool, ticket: str | None = No
         for b in bad:
             print(f"  - {b}")
         return 1
-    print(f"canvas_field_gate：OK（チケット {len(tickets)} 枚・組 {len(groups)}・台帳 {len(entries)} 行）")
+    print(f"canvas_field_gate：OK（チケット {len(tickets)} 枚・組 {len(groups)}・モックの状態 {len(mocks)}・台帳 {len(entries)} 行）")
     return 0
 
 
