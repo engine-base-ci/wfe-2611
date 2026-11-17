@@ -312,7 +312,7 @@ export function RemovePasskeyConfirm({
 }: {
   open: boolean;
   name: string;
-  /** 外せない理由（E-AUTH-015・016）。在れば外すを押せない */
+  /** 外せない理由（最後の 1 つ・取り直しが要る のエラーの文。番号は口の葉が errors.json に足す）。在れば外すを押せない */
   blocked?: string | null;
   onOpenChange: (o: boolean) => void;
 }) {
