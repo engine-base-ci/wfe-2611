@@ -1,7 +1,7 @@
 // 登録・ログインの補助（T-U-01／05）。表記ゆらぎはサーバで直す（NFKC・前後の空白・小文字）。ロックは app.login_attempts（5 回で 15 分）
 import { createHash } from "node:crypto";
 import type pg from "pg";
-import type { Auth } from "./index.js";
+import { LOGIN_BLOCKED_CODES, type Auth } from "./index.js";
 import { authUserIdByEmail } from "./pending.js";
 
 /** メールアドレスの正規化：全角→半角（NFKC）・前後と途中の空白を除く・小文字 */
@@ -26,6 +26,8 @@ export interface SignInResult {
   lockedUntil?: Date | null;
   /** メールの形を部品が受け付けなかった（失敗の数に入れない・口は 422 E-VAL-004） */
   invalidEmail?: boolean;
+  /** 止めの 1 か所（K-303）が断った：人・会社の止め・抜けた（403）か、止めの確かめができなかった（503）。失敗の数に入れない */
+  blocked?: { code: string; status: number };
 }
 /** 記録（ログインの成功・失敗・ロックを会社の security_events に・K-301）に要るもの。無ければ記録しない（前の道すじ） */
 export interface SignInRecord {
@@ -50,6 +52,11 @@ function apiErrorCode(e: unknown): string | null {
   const x = e as { status?: unknown; body?: { code?: unknown } } | null;
   if (!x || typeof x !== "object" || typeof x.status !== "string") return null;
   return typeof x.body?.code === "string" ? x.body.code : null;
+}
+/** 部品の APIError の HTTP の数（無ければ 503・止める側） */
+function statusOf(e: unknown): number {
+  const n = (e as { statusCode?: unknown } | null)?.statusCode;
+  return typeof n === "number" ? n : 503;
 }
 /** パスワードの失敗に数える部品の答え：「メールかパスワードが違う」と「パスワードが長すぎる」（長すぎるパスワードは決して合わない＝違うのと同じ）。
  *  ほか（DB が落ちた・セッションを写す所の失敗）は数えずに投げ直す（K-301・切る段の精査の後） */
@@ -89,6 +96,8 @@ export async function signInWithLock(
   } catch (ex) {
     const code = apiErrorCode(ex);
     if (code === "INVALID_EMAIL") return { ok: false, invalidEmail: true };
+    // 止めで断られた：パスワードは合っている。失敗にも成功にも数えない（止めを外した直後に入れるように・K-303）
+    if (code && LOGIN_BLOCKED_CODES.has(code)) return { ok: false, blocked: { code, status: statusOf(ex) } };
     if (!code || !COUNTED.has(code)) throw ex; // 数えない失敗（DB・写す所）は呼んだ側が 500 にする
     const f = await appPool.query<{ remaining: number; locked_until: Date | null }>(
       "select * from app.login_failed($1)",

@@ -13252,7 +13252,8 @@
     "05_flow/screen_api.py",
     "08_api/db-columns.json",
     "03_architecture/ER図.md",
-    "scripts/ci/ci_scope.json"
+    "scripts/ci/ci_scope.json",
+    "07_qa/test-plan/ears-elsewhere.json"
    ],
    "sections": {
     "目的": "会社から止められた人（`members.suspended_at`・所属の `tenant_memberships.status = suspended`）・止められた会社（`subscriptions.suspended_at`・D-125.126）・会社から抜けた人を、**ログインの部品がセッションを作る直前の 1 か所**（`packages/auth` の `databaseHooks.session.create.before`）で断る。パスワード・2 段階の 6 けた・パスキー（K-304）・部品を直に呼ぶ道のどれも、ここを通らずにセッションを作れない。\n\n断ったら、契約の口は 403 と、errors.json の文（D-128.141）を返す。人が止められた「このアカウントは、いま止められています。ワークスペースの管理者に聞いてください」／会社が止められた「このワークスペースは、いま止められています。データは残っています。管理者か運営に連絡してください」／抜けた E-AUTH-007。画面（止められた の 2 状態）は K-316。",

@@ -2,6 +2,7 @@
 // 表は Postgres の schema "kaname_auth"（RLS の対象の public とは分ける。Supabase は schema auth を自社の認証に使うので同じ名前にしない：T-F-18）。失効の正は public.sessions（app.session_alive）。トークンの期限には頼らない。
 import { deviceOf } from "./device.js";
 import { betterAuth, type BetterAuthOptions } from "better-auth";
+import { APIError } from "better-auth/api";
 import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
 import pg from "pg";
@@ -38,6 +39,16 @@ export type Mailer = (m: Mail) => Promise<void>;
 export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
 export const DISABLED_PATHS = ["/sign-in/email"] as const;
+/** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
+export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
+  member_suspended: "E-AUTH-011",
+  workspace_suspended: "E-AUTH-012",
+  member_left: "E-AUTH-007",
+};
+/** 止めの確かめができなかった（止めの関数が落ちた）ときの id。止める側に倒す（fail-closed・503） */
+export const LOGIN_GATE_DOWN = "E-PAGE-003";
+/** 部品の道（パスワード・6 けた・パスキー・直に呼ぶ）が止めで断られたときの印。signInWithLock と口はこの id で見分ける */
+export const LOGIN_BLOCKED_CODES: ReadonlySet<string> = new Set([...Object.values(LOGIN_BLOCKED), LOGIN_GATE_DOWN]);
 /** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
 const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
 
@@ -133,6 +144,28 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       },
       session: {
         create: {
+          // 止めの 1 か所（K-303・D-128.91）：どの道（パスワード・2 段階の 6 けた・パスキー・部品を直に呼ぶ）でも、セッションを作る直前にここを通る。
+          //   止められた人・止められた会社・抜けた人は APIError（body.code が errors.json の id・文は口が目録から引く）で断り、セッションを作らせない。
+          //   止めの関数が落ちたら止める側に倒す（503・E-PAGE-003）。理由の記録（security_events の login_blocked）は関数が書く
+          before: async (session) => {
+            let verdict: string | undefined;
+            try {
+              const r = await o.appPool.query<{ verdict: string }>("select app.login_gate($1) as verdict", [
+                session.userId,
+              ]);
+              verdict = r.rows[0]?.verdict;
+            } catch (e) {
+              const x = e as { code?: unknown; name?: unknown } | null;
+              const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+              console.error(`[auth] 止めの確かめができなかった（${why}）`); // 文や値は出さない（種類だけ）
+              throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+            }
+            if (verdict === "ok") return;
+            const code = verdict ? LOGIN_BLOCKED[verdict] : undefined;
+            // 知らない答え（関数と部品の版ずれ）も止める側に倒す
+            if (!code) throw new APIError("SERVICE_UNAVAILABLE", { code: LOGIN_GATE_DOWN });
+            throw new APIError("FORBIDDEN", { code });
+          },
           // 認証のセッションができたら public.sessions に写す（失効の正はこちら）。会社に属していない利用者は null（登録の途中）
           after: async (session, ctx) => {
             // 2 段階を付けた人のパスワードの段：部品は一度ふつうにセッションを作ってから消し、待ちの印に替える。
