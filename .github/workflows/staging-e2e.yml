@@ -62,6 +62,12 @@ jobs:
           NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/infra/certs/supabase-root-2021.crt
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ github.workspace }}/junit/e2e-staging.xml
         run: pnpm e2e:staging
+      - name: "staging の速さ（K-237）"
+        if: ${{ !cancelled() }}
+        env:
+          STAGING_BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+          STAGING_API_BASE: ${{ secrets.STAGING_API_BASE }}
+        run: python3 scripts/ci/staging_perf.py
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with: { name: junit, path: junit/, retention-days: 3 }

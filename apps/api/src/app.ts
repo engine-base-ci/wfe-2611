@@ -13,6 +13,7 @@ import { registerAll } from "./routes/index.js";
 import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
+import { serverTiming } from "./server-timing.js";
 
 // 独立 API 層（Hono）。画面は API を叩くだけ。endpoint は T-A-* が 08_api/openapi.yaml どおりに足す（routes/ 配下・c.get("repo") 経由）。
 export interface Health {
@@ -67,6 +68,8 @@ const NO_STORE = "private, no-store";
 export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   const opts = typeof o === "string" ? { version: o } : o;
   const app = new Hono<Vars>();
+  // 要求ごとの DB の文の数と時間を答えの Server-Timing に書く（K-237）。数え器はこの中の全部（下の middleware と口）に掛かるので最初に置く
+  app.use("*", serverTiming());
   // 全部の答え（/health・契約の口・認証の口の素の Response・404・onError の 500）に付ける。
   //   next の前の c.header() は、認証の部品が返す素の Response の道で消えるので、next の後に答えへ直に付ける
   app.use("*", async (c, next) => {

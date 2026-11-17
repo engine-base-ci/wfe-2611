@@ -2,6 +2,8 @@
 // 並ぶ時間と、接続を作る時間は別の上限にする（L-023）：pg-pool の connectionTimeoutMillis は「空きを待つ」にも効くので、
 // 上限まで埋まった後に来た要求は 5 秒で断られていた。並ぶのはこの関門の待機列（queueTimeoutMs）で、
 // 枠を受け取ってから pg-pool の connect を呼ぶ（このときは作る時間だけが connectionTimeoutMillis に当たる）。
+import { AsyncLocalStorage } from "node:async_hooks";
+import { performance } from "node:perf_hooks";
 import pg from "pg";
 
 // 日付（date）は文字列のまま返す（K-35）。Date にすると、サーバーの時刻の帯で前の日に化ける（Asia/Tokyo の 0 時 → 前日 15 時 Z）。契約は format: date
@@ -53,6 +55,63 @@ function slots(size: number) {
 
 type ConnectCb = (err: Error | undefined, client?: pg.PoolClient, done?: (release?: unknown) => void) => void;
 
+/** 1 要求の DB の数え（K-237）。文の数と、文が答えるまでにかかった時間の合計（ms） */
+export interface DbCount {
+  statements: number;
+  ms: number;
+}
+
+const counting = new AsyncLocalStorage<DbCount>();
+
+/** fn の中（その非同期の続きも）で、数える印の付いたプールの接続が流した文を count に足す。数え器の外（起動・ジョブ）では数えない */
+export function withDbCount<T>(count: DbCount, fn: () => T): T {
+  return counting.run(count, fn);
+}
+
+type Query = (...a: unknown[]) => unknown;
+const COUNTED = Symbol("k-db-counted");
+
+/** 接続の query を 1 回だけ包む。流す文・引数・答えは変えず、数え器が在るときだけ文の数と時間を足す */
+function countClient(client: pg.PoolClient): pg.PoolClient {
+  const c = client as pg.PoolClient & { [COUNTED]?: true };
+  if (c[COUNTED]) return client;
+  const orig = c.query.bind(c) as Query;
+  (c as unknown as { query: Query }).query = (...a: unknown[]) => {
+    const count = counting.getStore();
+    if (!count) return orig(...a);
+    count.statements += 1;
+    const t0 = performance.now();
+    const done = () => {
+      count.ms += performance.now() - t0;
+    };
+    const last = a.length - 1;
+    if (last >= 0 && typeof a[last] === "function") {
+      const cb = a[last] as (...r: unknown[]) => unknown;
+      a[last] = (...r: unknown[]) => {
+        done();
+        return cb(...r);
+      };
+      return orig(...a);
+    }
+    const out = orig(...a);
+    if (out && typeof (out as Promise<unknown>).then === "function") (out as Promise<unknown>).then(done, done);
+    return out;
+  };
+  c[COUNTED] = true;
+  return client;
+}
+
+/** プールが貸す接続（connect の両方の形・pool.query も中でこれを呼ぶ）を数える形にする。createPool のプールと認証のプールに掛ける */
+export function countQueries(pool: pg.Pool): pg.Pool {
+  const p = pool as unknown as { connect: (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined };
+  const orig = p.connect.bind(pool) as (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined;
+  p.connect = (cb?: ConnectCb) =>
+    cb
+      ? orig((err, client, done) => cb(err, client ? countClient(client) : client, done))
+      : (orig() as Promise<pg.PoolClient>).then(countClient);
+  return pool;
+}
+
 export function createPool(o: PoolOptions): pg.Pool {
   const max = o.max ?? 10;
   const pool = new pg.Pool({
@@ -99,5 +158,5 @@ export function createPool(o: PoolOptions): pg.Pool {
     );
     return undefined;
   };
-  return pool;
+  return countQueries(pool);
 }

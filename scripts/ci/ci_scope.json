@@ -124,6 +124,7 @@
   "62": ["scripts/ci/ci_lean*", "scripts/ci/ci_scope*", "scripts/ci/layer_audit*", "scripts/ci/stack_gate*", "scripts/ci/generated*"]
  },
  "data_links": [
+  { "paths": ["scripts/ci/perf_budget.json"], "tests": ["apps/api/test/k237_perf_budget.test.ts", "apps/web/tests/k/k237-screen-budget.spec.ts"] },
   { "paths": ["apps/web/vercel.json", "apps/web/middleware.ts", "apps/web/app/**", "apps/web/components/**", "apps/web/features/**", "apps/web/lib/**"], "tests": ["apps/web/test/k262-edge-proxy.test.ts"] },
   { "paths": ["05_flow/screen_api.py", "packages/contracts/src/types.ts", "08_api/openapi.yaml", "08_api/api-field-consumption.json"], "tests": ["apps/api/test/features/F4/me-workspace.test.ts"] },
   { "paths": ["scripts/ci/chat_one.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },

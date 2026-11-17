@@ -6,6 +6,7 @@ import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
 import pg from "pg";
 import { uuidv7 } from "@kaname/db/id";
+import { countQueries } from "@kaname/db/pool";
 import { optionalEnv } from "@kaname/config";
 import { mailTag } from "./signup.js";
 
@@ -37,7 +38,8 @@ export type Mailer = (m: Mail) => Promise<void>;
 export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
 
 export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
-  const pool = new pg.Pool({ connectionString: o.authDatabaseUrl, max: o.poolMax ?? 5 });
+  // 要求ごとの文の数と時間を数える（K-237・口の答えの Server-Timing）。流す文と接続の取り方は変えない
+  const pool = countQueries(new pg.Pool({ connectionString: o.authDatabaseUrl, max: o.poolMax ?? 5 }));
   // 送出先が無ければリンクをログに出す（開発）。送出先があっても、本番以外はリンクを残す
   // （実際に送っていても、確かめる人が受信箱を開かずに先へ進めるように）
   const dev = optionalEnv("NODE_ENV") !== "production";
