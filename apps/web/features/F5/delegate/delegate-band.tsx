@@ -40,7 +40,6 @@ const SETUP_BRIDGE = "/setup/bridge";
 const MSG = {
   waking: "PC が起きるのを待っています",
   made: "成果物ができました。承認待ちです",
-  noChecks: "検査なし（まだ流していません）",
 } as const;
 const nameOf = (r: RunView) => `${r.by?.display_name ?? "自分"}のAI`;
 
@@ -123,8 +122,12 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
       {notice ? <NoticeLine notice={notice} /> : null}
       {showRun && run ? <RunLines run={run} /> : null}
       {showMade ? (
-        // 確認の要約は承認の 1 件の check_summary。読めない間・読めなかったときは前からの文（K-62 の帯の文）
-        <Band tone="approval" title={MSG.made} sub={approvalDetail.data?.check_summary || MSG.noChecks} />
+        // 確認の要約は承認の 1 件の check_summary。読めない間・読めなかったときは出さない（本当とは限らない文を言い切らない）
+        <Band
+          tone="approval"
+          title={MSG.made}
+          {...(approvalDetail.data?.check_summary ? { sub: approvalDetail.data.check_summary } : {})}
+        />
       ) : null}
       {showButton ? (
         <div>

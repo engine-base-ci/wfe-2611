@@ -16,7 +16,6 @@ import { ReturnDialog } from "./return-dialog";
 
 const MSG = {
   waitingMe: "あなたの承認を待っています",
-  noChecks: "検査なし（まだ流していません）",
   irreversible: "取り消せません",
 } as const;
 
@@ -48,11 +47,11 @@ export function useApprovalDetail(id: string | null) {
   });
 }
 
-/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）」。口が返した値だけで作る（時刻が無ければ確認だけ） */
+/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）」。口が返した値だけで作る（無い部分は出さない） */
 export function approvalSummary(d: ApprovalDetail): string {
   const at = d.approval?.created_at ? jstStamp(d.approval.created_at) : "";
-  const check = `確認 ${d.check_summary || MSG.noChecks}`;
-  return at ? `成果物は ${at} に作成 ・ ${check}` : check;
+  const parts = [at ? `成果物は ${at} に作成` : "", d.check_summary ? `確認 ${d.check_summary}` : ""];
+  return parts.filter(Boolean).join(" ・ ");
 }
 interface Props {
   approval: BandApproval;
@@ -115,7 +114,7 @@ export function DecideBody(props: Props) {
       <Band
         tone="approval"
         title={MSG.waitingMe}
-        {...(detail.data ? { sub: approvalSummary(detail.data) } : {})}
+        {...(detail.data && approvalSummary(detail.data) ? { sub: approvalSummary(detail.data) } : {})}
         acts={acts}
       >
         {approval.note ? <BandLine>{approval.note}</BandLine> : null}
