@@ -505,6 +505,8 @@ INPUTS = {
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
     "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
+    # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
+    "signOut": ("SignOutInput", {}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
     # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
@@ -859,6 +861,8 @@ RESPONSES = {
     "requestPasswordReset": ("PasswordForgotAccepted", {"accepted": "boolean"}),
     # パスワードで入った（K-301）。2 段階なし：token にログインの印・two_factor=false・pending=null。2 段階あり：token=null・two_factor=true・pending に待ちの印（中身の見えない文字列・5 分。6 けたで入るのは K-302）
     "signInWithPassword": ("SignInResult", {"token": "string?", "two_factor": "boolean", "pending": "string?"}),
+    # ログアウトした（K-306）。いつも signed_out=true。閉じたのはその画面のセッションだけ（別のブラウザ・PC は残る）
+    "signOut": ("SignedOut", {"signed_out": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
