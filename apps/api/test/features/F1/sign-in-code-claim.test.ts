@@ -131,19 +131,30 @@ describe("K-322 確認のコードで入る：確かめの前後で DB が落ち
     expect(again.status, await again.clone().text()).toBe(201);
   });
 
-  it("K322-API-003 部品が通った後、残りのバックアップコードを数える所で落ちる（backupCodes が読めない）：500・E-PAGE-003。生きたセッションも認証側のセッションも要求の前と同じ数", async () => {
+  it("K322-API-003 部品が通った後、残りのバックアップコードを数える所で落ちる（backupCodes が読めない）：500・E-PAGE-003。生きたセッションも認証側のセッションも要求の前と同じ数。直った後に同じ 6 けた（同じ 30 秒）を新しい待ちの印で送ると 201", async () => {
     const u = await h.makeUser("countdown", { twoFactor: true });
-    const p = await pendingOf(h, u);
+    const p1 = await pendingOf(h, u);
+    const p2 = await pendingOf(h, u);
+    const saved = (
+      await h.admin.query<{ codes: string }>(
+        'select "backupCodes" as codes from kaname_auth."twoFactor" where "userId" = $1',
+        [u.userId],
+      )
+    ).rows[0]!.codes;
     await h.admin.query(`update kaname_auth."twoFactor" set "backupCodes" = 'broken' where "userId" = $1`, [u.userId]);
     const before = await counts(u);
     await awayFromStepEdge();
-    const r = await quiet(() => h.verifyCode({ pending: p, code: totp(u.secret!) }));
+    const code = totp(u.secret!);
+    const r = await quiet(() => h.verifyCode({ pending: p1, code }));
     expect(r.status).toBe(500);
     expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     expect(await counts(u), "入った後に落ちたらその場で閉じる").toEqual(before);
+    await h.admin.query('update kaname_auth."twoFactor" set "backupCodes" = $2 where "userId" = $1', [u.userId, saved]);
+    const again = await h.verifyCode({ pending: p2, code });
+    expect(again.status, await again.clone().text()).toBe(201);
   });
 
-  it("K322-API-004 部品が通った後、入った記録（security_events の login_succeeded）を書く所で落ちる：500・E-PAGE-003。セッションは要求の前と同じ数・login_succeeded は増えない", async () => {
+  it("K322-API-004 部品が通った後、入った記録（security_events の login_succeeded）を書く所で落ちる：201・token（記録が書けなくても入れる・K-301 と同じ）。セッションは 1 つだけ増え、login_succeeded は増えない", async () => {
     const u = await h.makeUser("recorddown", { twoFactor: true });
     const member = safeId(u.memberId);
     const p = await pendingOf(h, u);
@@ -156,9 +167,10 @@ describe("K-322 確認のコードで入る：確かめの前後で DB が落ち
       `new.kind_id = 'login_succeeded' and new.member_id::text = '${member}'`,
       () => quiet(() => h.verifyCode({ pending: p, code: totp(u.secret!) })),
     );
-    expect(r.status).toBe(500);
-    expect((await h.json(r))["code"]).toBe("E-PAGE-003");
-    expect(await counts(u), "入った後に落ちたらその場で閉じる").toEqual(before);
+    expect(r.status, await r.clone().text()).toBe(201);
+    const token = String((await h.json(r)).data!["token"]);
+    expect(await h.resolves(token, UA_MAC), "入れている").toBe(true);
+    expect(await counts(u)).toEqual({ live: before.live + 1, auth: before.auth + 1 });
     expect(await loginSucceeded(u.memberId)).toBe(ok0);
   });
 });
