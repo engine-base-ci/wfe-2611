@@ -1,5 +1,5 @@
--- 0110 記録の関数の「今いる会社の人」を引く部分を 1 つにまとめる（K-302・PM の決め 2026-11-18・関門 C2）
---   0106（app.record_security_event_for_auth_user・K-313）と 0107（app.record_login_event・K-301）が同じ引き方を別々に持っていた。
+-- 0111 記録の関数の「今いる会社の人」を引く部分を 1 つにまとめる（K-302・PM の決め 2026-11-18・関門 C2）
+--   0106（app.record_security_event_for_auth_user・K-313）と 0107・0110（app.record_login_event・K-301・K-304）が同じ引き方を別々に持っていた。
 --   内部の関数 app.current_members_of_auth_user に切り出し、2 つの記録の関数はそれを呼ぶ。振る舞いは変えない。
 --   今いる会社の人：members に本人が居て（members.auth_user_id か、所属の行 tenant_memberships.auth_user_id・D-125.150・0089 と同じ引き方）消えていない、
 --   かつ同じ会社・同じ人の所属が抜けた（left）・招待中（invited）・消した（deleted_at）でない。会社を作った人は所属の行を持たないので members で見る
@@ -39,12 +39,13 @@ end $$;
 revoke all on function app.record_security_event_for_auth_user(text, text, jsonb) from public;
 grant execute on function app.record_security_event_for_auth_user(text, text, jsonb) to kaname_app, kaname_auth;
 
--- ログインの記録（0107 と同じ振る舞い：種類はログインの 5 つだけ・国だけ・detail は空・本人がどの会社にもいなければ 0）
+-- ログインの記録（0110 と同じ振る舞い：種類はログインの 5 つとパスキーの回数が戻った passkey_counter_rollback（K-304）だけ・国だけ・detail は空・本人がどの会社にもいなければ 0）
 create or replace function app.record_login_event(p_auth_user_id text, p_kind text, p_ip_region text) returns int
 language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare v_n int;
 begin
-  if p_kind not in ('login_succeeded', 'login_failed', 'login_locked', 'login_code_failed', 'login_code_locked') then
+  if p_kind not in ('login_succeeded', 'login_failed', 'login_locked', 'login_code_failed', 'login_code_locked',
+                    'passkey_counter_rollback') then
     raise exception 'ログインの記録の種類でない: %', p_kind using errcode = 'invalid_parameter_value';
   end if;
   if p_auth_user_id is null then return 0; end if;
@@ -57,4 +58,4 @@ end $$;
 revoke all on function app.record_login_event(text, text, text) from public;
 grant execute on function app.record_login_event(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0110_current_members_of_auth_user.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0111_current_members_of_auth_user.sql') on conflict do nothing;

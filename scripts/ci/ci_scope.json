@@ -304,6 +304,15 @@
   },
   {
    "paths": [
+    "04_design/canvas/AuthQR.dc.html",
+    "packages/auth/package.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/passkey-sign-in.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "07_qa/test-specs/errors.json",
     "packages/auth/src/index.ts"
    ],
