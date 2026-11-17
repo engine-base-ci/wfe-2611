@@ -27,6 +27,7 @@ import { authHooks } from "./hooks/auth.js";
 import { signupHooks } from "./hooks/signup.js";
 import { verifyEmailHooks } from "./hooks/verify-email.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
+import { serviceStatusHooks } from "./hooks/service-status.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -153,6 +154,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
         ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
+        ...serviceStatusHooks({ appPool }),
         ...bridgeHooks({
           appPool,
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },
