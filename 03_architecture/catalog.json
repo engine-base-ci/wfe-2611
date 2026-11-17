@@ -13,7 +13,7 @@
   "ui": 17,
   "packages": 13,
   "errors": 172,
-  "stack": 53,
+  "stack": 54,
   "env": 41
  },
  "api": [
@@ -7485,6 +7485,10 @@
    {
     "package": "@better-auth/utils",
     "for": "ログインの部品の中の道具"
+   },
+   {
+    "package": "@better-auth/passkey",
+    "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）"
    },
    {
     "package": "@eslint/js",

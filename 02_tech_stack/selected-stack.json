@@ -842,6 +842,10 @@
    "for": "ログインの部品の中の道具",
    "register": "stack.auth.service"
   },
+  "@better-auth/passkey": {
+   "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）",
+   "register": "stack.auth.service"
+  },
   "@eslint/js": {
    "for": "書き方の検査（G1）",
    "register": "dev_tools"

@@ -13237,10 +13237,12 @@
    "apis": [],
    "affects": [
     "@kaname/auth",
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/db"
    ],
    "ci_wide": [
-    "lockfile"
+    "lockfile",
+    "db"
    ],
    "changes": [
     "packages/auth/package.json",
@@ -13253,7 +13255,13 @@
     "04_design/canvas/AuthQR.dc.html",
     "04_design/canvas/canvas.json",
     "04_design/canvas-screens.json",
-    "scripts/ci/ci_scope.json"
+    "scripts/ci/ci_scope.json",
+    "pnpm-workspace.yaml",
+    "packages/db/migrations/0108_passkey_counter_event.sql",
+    "packages/db/src/index.ts",
+    ".gitleaksignore",
+    "02_tech_stack/selected-stack.json",
+    "scripts/ci/lock_dates.json"
    ],
    "sections": {
     "目的": "付いているパスキー（指・顔・PC のロック）で、ログインの画面から入れるようにする（D-125.137・D-128.59）。暗号の中身は Better Auth のパスキーの部品 `@better-auth/passkey`（中で `@simplewebauthn/server` 13）に任せ（D-128.91）、Kaname は次の 4 つだけを足す。\n\n1. 部品を足し、rpID と origin を画面の URL（WEB_BASE_URL）から決め、`kaname_auth.passkey` の表を作る\n2. 画面は別の origin で Cookie を使わない（D-051.2）ので、チャレンジの値を **JSON と頭** で受け渡す（2 段階の待ちの印と同じ作り）\n3. 止められた人と会社は K-303 の 1 か所の止めで断られる（パスワードの道と同じ答え。パスキーの道で確かめる行は K-308・待ちを減らす案 3）。パスワードのロックの外（D-128.60・フィッシングに強い入り方を止めない）\n4. 部品の口のうち、Kaname の決まり（最後の入り方は外せない・本人確認の取り直し）を通らない道を閉じる\n\nパスキーを **付ける**・名前を変える・外すは K-309（口）・K-318（画面）。画面の「パスキーで入る」ボタン・失敗の文・「この PC にも付ける？」は K-317。スマホの QR はブラウザが出す（answer=fe708d209427 の 2）ので、Kaname の QR の画面は作らず、キャンバスの AuthQR を描き直す。",
