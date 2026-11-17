@@ -1,6 +1,7 @@
 // K-252「チケットの一覧の画面（一覧・グループの一覧・横に詳細）をキャンバスに合わせる」の画面の試験（実 Chrome・実装より先に積む）。
 //   正のモック：04_design/canvas の List（グループで絞った一覧・検索条件の箱）。一覧の画面の親 K-223 の子（もう 1 本は K-251）。
-//   口は網の手前で差し替える（tests/k/list-mock.ts）。列は決めた 7 つ（D-128.15・D-128.25・D-128.26）と「もっと見る」（PM の決め）。
+//   口は網の手前で差し替える（tests/k/list-mock.ts）。列はキャンバスどおり 9 列で表示設定で選べる（一覧の共通の部品・代表の答え answer=afc3b0f2fdb4・D-128.15 を置き換えた）と「もっと見る」（PM の決め）。
+//   一覧（全部）は期限の区切りの見出しを出さない。
 //   キャンバスに在ってまだ使えない物はグレーで押せない（D-145.9）。本当の値が無い数は空（総数は返さない・K-92）。
 //   横の詳細（D-128.165・D-128.14）：幅 1024 以上で行を押すと移らずに右に開き、URL は今の問い合わせに open=<番号> を足す。
 //     ?open=<番号> を直に開いたときは、一覧の口を q=<番号>・view=all で引いて id を得てから詳細の口で読む。
@@ -32,9 +33,12 @@ const nav = (page: Page) => page.getByRole("navigation", { name: "メニュー",
 const navWidth = (page: Page) => nav(page).evaluate((e) => Math.round(e.getBoundingClientRect().width));
 const withOpen = (path: string, n: string) => `${path}${path.includes("?") ? "&" : "?"}open=${n}`;
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const COLUMNS = ["種別", "番号", "題名", "状態", "担当者", "グループ", "期限", "予定・実績", "更新"];
+const headsOf = async (page: Page) =>
+  (await table(page).getByRole("columnheader").allInnerTexts()).map((h) => h.trim());
 
 for (const path of PATHS) {
-  test(`K252-UI-001 ${path} 幅 1440 で行（題名）を押す：一覧の右に詳細が開き URL は元の問い合わせに open=EG-101・列は 7 つ・詳細に帯と h1 は無く h1 は一覧の 1 つ。番号のリンクを押しても移らずに横に開く`, async ({
+  test(`K252-UI-001 ${path} 幅 1440 で行（題名）を押す：一覧の右に詳細が開き URL は元の問い合わせに open=EG-101・列は 9 つのまま・詳細に帯と h1 は無く h1 は一覧の 1 つ。番号のリンクを押しても移らずに横に開く`, async ({
     page,
   }) => {
     await mockList(page);
@@ -45,7 +49,7 @@ for (const path of PATHS) {
     const t = (await table(page).boundingBox())!;
     const s = (await side(page).boundingBox())!;
     expect(s.x).toBeGreaterThanOrEqual(t.x + t.width - 1);
-    await expect(table(page).getByRole("columnheader")).toHaveCount(7);
+    expect(await headsOf(page)).toEqual(COLUMNS);
     await expect(side(page).locator("header.k-page-head")).toHaveCount(0);
     await expect(page.locator("h1")).toHaveCount(1);
     const num = rowsOf(page).nth(1).getByRole("link", { name: "EG-102" });
@@ -56,7 +60,7 @@ for (const path of PATHS) {
   });
 }
 
-test("K252-UI-002 幅 1200 で行を押す：詳細は右に幅 400・列は 番号・題名・種別・状態・担当者 の 5 つ・左のメニューは 56px（本人の好み k-shell-nav は書き換えない）。自分に関わるものの画面では右の列を隠す", async ({
+test("K252-UI-002 幅 1200 で行を押す：詳細は右に幅 400・列は 種別・番号・題名・状態・担当者 の 5 つ（9 列と同じ並び）・左のメニューは 56px（本人の好み k-shell-nav は書き換えない）。自分に関わるものの画面では右の列を隠す", async ({
   page,
 }) => {
   await mockList(page);
@@ -65,8 +69,7 @@ test("K252-UI-002 幅 1200 で行を押す：詳細は右に幅 400・列は 番
   await rowsOf(page).first().getByRole("link", { name: "チケット 1" }).click();
   await expect(side(page)).toBeVisible();
   expect(Math.round((await side(page).boundingBox())!.width)).toBe(400);
-  const heads = (await table(page).getByRole("columnheader").allInnerTexts()).map((h) => h.trim());
-  expect(heads).toEqual(["番号", "題名", "種別", "状態", "担当者"]);
+  expect(await headsOf(page)).toEqual(["種別", "番号", "題名", "状態", "担当者"]);
   await expect.poll(() => navWidth(page)).toBe(56);
   expect(await page.evaluate(() => window.localStorage.getItem("k-shell-nav"))).toBe(pref);
   await open(page, "/tickets", 1200);
@@ -164,17 +167,20 @@ for (const path of PATHS) {
     expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
   });
 
-  test(`K252-UI-008 ${path} 表の上の道具：まとめて操作・CSV で取り込む・表示設定（列）と行を選ぶ印はグレーで押せない・件数の札は 1 つで空（総数を返さない）・選ぶ印の列の頭は見出しに数えない`, async ({
+  test(`K252-UI-008 ${path} 表の上の道具：まとめて操作・CSV で取り込むと行を選ぶ印はグレーで押せない・表示設定は押せる・件数の札は 1 つで空（総数を返さない）・見出しは 9 列で選ぶ印の列の頭は数えない・期限の区切りの見出しは無い`, async ({
     page,
   }) => {
     await mockList(page);
     await open(page, path);
     const tools = page.locator('[aria-label="一覧の道具"]');
-    for (const t of ["まとめて操作", "CSV で取り込む", "表示設定（列）"])
+    for (const t of ["まとめて操作", "CSV で取り込む"])
       await expectDisabled(page, tools.locator('[aria-disabled="true"]', { hasText: t }).first(), t);
+    await expect(tools.getByRole("button", { name: "表示設定" })).toBeEnabled();
+    await expect(tools.locator('[aria-disabled="true"]', { hasText: "表示設定" })).toHaveCount(0);
     await expect(tools.locator("[data-value]")).toHaveCount(1);
     expect((await tools.locator("[data-value]").innerText()).trim()).toBe("");
-    await expect(table(page).getByRole("columnheader")).toHaveCount(7);
+    expect(await headsOf(page)).toEqual(COLUMNS);
+    await expect(table(page).locator("tr.k-list-section")).toHaveCount(0);
     const picks = table(page).getByRole("checkbox");
     expect(await picks.count()).toBeGreaterThan(0);
     for (const c of await picks.all()) {
@@ -240,9 +246,9 @@ for (const [w, mode] of [
   [1023, "move"],
   [1024, "side5"],
   [1279, "side5"],
-  [1280, "side7"],
+  [1280, "side9"],
 ] as const) {
-  test(`K252-UI-012 幅の境 ${w}：${mode === "move" ? "行を押すと移る" : mode === "side5" ? "横に開き列 5・左のメニュー 56" : "横に開き列 7・左のメニューは畳まない"}`, async ({
+  test(`K252-UI-012 幅の境 ${w}：${mode === "move" ? "行を押すと移る" : mode === "side5" ? "横に開き列 5・左のメニュー 56" : "横に開き列 9・左のメニューは畳まない"}`, async ({
     page,
   }) => {
     await mockList(page);
@@ -254,7 +260,7 @@ for (const [w, mode] of [
       return;
     }
     await expect(side(page)).toBeVisible();
-    await expect(table(page).getByRole("columnheader")).toHaveCount(mode === "side5" ? 5 : 7);
+    await expect(table(page).getByRole("columnheader")).toHaveCount(mode === "side5" ? 5 : 9);
     if (mode === "side5") await expect.poll(() => navWidth(page)).toBe(56);
     else expect(await navWidth(page)).toBe(wide);
   });
@@ -341,3 +347,30 @@ test('K252-UI-016 横の詳細（詳細の部品 layout="side"）には、詳細
   await expect(side(page).getByRole("heading", { level: 2, name: "チケット 1" })).toHaveCount(1);
   await expect(page.locator("h1")).toHaveCount(1);
 });
+
+for (const path of PATHS) {
+  test(`K252-UI-017 ${path} 表示設定（一覧の道具の中）：番号と題名は外せない。期限と更新を外すと表から消え（見出し 7）、開き直しても外したまま。はじめに戻すで 9 列。口は呼ばない（answer=afc3b0f2fdb4）`, async ({
+    page,
+  }) => {
+    const m = await mockList(page);
+    await open(page, path);
+    await expect(rowsOf(page)).toHaveCount(3);
+    const tools = page.locator('[aria-label="一覧の道具"]');
+    await tools.getByRole("button", { name: "表示設定" }).click();
+    const cols = page.getByRole("dialog", { name: "一覧の見え方" }).getByRole("group", { name: "表に出す列" });
+    for (const name of ["番号", "題名"])
+      await expect(cols.getByRole("checkbox", { name, exact: true }), name).toBeDisabled();
+    await cols.getByRole("checkbox", { name: "期限", exact: true }).uncheck();
+    await cols.getByRole("checkbox", { name: "更新", exact: true }).uncheck();
+    const left = COLUMNS.filter((c) => c !== "期限" && c !== "更新");
+    expect(await headsOf(page)).toEqual(left);
+    await expect(rowsOf(page).first().locator("td")).toHaveCount(left.length + 1); // 頭の選ぶ印の td を足す
+    await open(page, path);
+    await expect(rowsOf(page)).toHaveCount(3);
+    expect(await headsOf(page)).toEqual(left);
+    await tools.getByRole("button", { name: "表示設定" }).click();
+    await page.getByRole("dialog", { name: "一覧の見え方" }).getByRole("button", { name: "はじめに戻す" }).click();
+    expect(await headsOf(page)).toEqual(COLUMNS);
+    expect(m.otherCalls.filter((c) => !c.startsWith("GET "))).toEqual([]);
+  });
+}
