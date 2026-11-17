@@ -18,6 +18,7 @@ import { getInstaller, pairViaLocal, useWhere, wake } from "@/lib/bridge-presenc
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { pollDevices, type Device } from "./devices";
 import { ConnectDialog, type Os } from "./connect-dialog";
+import { codeWait } from "./code-wait";
 import { PcList, ThisPcCard, Usage } from "./pc-cards";
 import "./connect-pc.css";
 import { CATALOG } from "@kaname/errors/catalog";
@@ -141,32 +142,42 @@ export function ConnectPc({ from }: { from: string | null }) {
     } else if (where === "app" && !live) void connectLocal();
   }, [ready, where, devices, known, live, newCode, connectLocal]);
 
+  // 小窓を閉じたら（「あとで」・×・Esc・つながって自分で閉じた）コードを消す。閉じている間は使える鍵を作らない
+  const closeDialog = useCallback(() => {
+    setDialogOpen(false);
+    setCode(null);
+  }, []);
+
   // つながった・この PC で Bridge が見つかったら、小窓は自分で閉じる（後ろの「つながっています」・この PC の Bridge のカードに戻る）
   useEffect(() => {
-    if (live || where === "installed" || where === "app") setDialogOpen(false);
-  }, [live, where]);
+    if (dialogOpen && (live || where === "installed" || where === "app")) closeDialog();
+  }, [dialogOpen, live, where, closeDialog]);
 
-  // 期限が来たら、画面が自分で新しいコードに替える（10 分・1 回だけ）
+  // 期限が来たら、画面が自分で新しいコードに替える（10 分・1 回だけ）。替えるのは小窓が開いている間だけ。
+  //   待ちは setTimeout の上限で頭打ち（口が遠い期限を返しても、すぐ取り直しを繰り返さない）
   useEffect(() => {
-    if (!code || where !== "web") return;
-    const t = setTimeout(() => void newCode(), Math.max(0, code.expiresAt - Date.now()));
+    if (!code || !dialogOpen || where !== "web") return;
+    const t = setTimeout(() => void newCode(), codeWait(code.expiresAt, Date.now()));
     return () => clearTimeout(t);
-  }, [code, where, newCode]);
+  }, [code, dialogOpen, where, newCode]);
 
+  // 開き直したら、前のコードを出さずに新しいコードを取る
   const openDialog = () => {
+    setCode(null);
     setDialogOpen(true);
-    if (!code) void newCode();
+    void newCode();
   };
 
   const download = async (os: Os) => {
     setDialogNote(null);
-    setReceived(true);
     // 置き場が外なら署名 URL を普通のリンクとして開く・手元なら中身を保存させる（D-128.153）
     const r = await getInstaller(os);
     if (!r.ok) {
       if (r.status === 401) return setProblem({ kind: "expired" });
       return setDialogNote(errorText(r.code in CATALOG_IDS ? r.code : PAGE_ERROR.loadFailed).entry.message);
     }
+    // 受け取りに成功したときだけ 1 段目を済にする（失敗で ✓ にしない）
+    setReceived(true);
     setDialogNote("ダウンロードを始めました。入れて開くと、この画面が自分で気づきます");
   };
 
@@ -247,7 +258,7 @@ export function ConnectPc({ from }: { from: string | null }) {
 
       <ConnectDialog
         open={dialogOpen && where === "web"}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(o) => (o ? setDialogOpen(true) : closeDialog())}
         code={code?.code ?? null}
         busy={busy}
         received={received}

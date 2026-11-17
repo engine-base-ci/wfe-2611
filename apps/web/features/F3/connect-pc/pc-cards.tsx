@@ -193,7 +193,7 @@ export function ThisPcCard({ version, busy, otherAccount, onConnect, onSwitch }:
 export function Usage() {
   const meter = (title: string) => (
     <div>
-      <h2 className="k-pc-usage-title">{title}</h2>
+      <h2>{title}</h2>
       <div className="k-pc-usage-desc" />
       <span className="k-pc-bar">
         <span />
