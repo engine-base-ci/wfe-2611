@@ -19,10 +19,22 @@
    "name": "機能の分解（flow → 07_functional）",
    "run": "python3 05_flow/build_functional.py",
    "outputs": [
-    "07_functional/*"
+    "07_functional/entities.json",
+    "07_functional/features.json",
+    "07_functional/roles.json",
+    "07_functional/screens.json",
+    "07_functional/traceability-matrix.json",
+    "07_functional/functional-breakdown.md",
+    "07_functional/functional-breakdown.html"
    ],
    "dated": [
-    "07_functional/*"
+    "07_functional/entities.json",
+    "07_functional/features.json",
+    "07_functional/roles.json",
+    "07_functional/screens.json",
+    "07_functional/traceability-matrix.json",
+    "07_functional/functional-breakdown.md",
+    "07_functional/functional-breakdown.html"
    ]
   },
   {

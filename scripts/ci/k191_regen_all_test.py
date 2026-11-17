@@ -35,7 +35,10 @@ EXACT = {
 }
 # 作った日を刻む出力（目録の作り手の dated）。作り手の run → 並び
 DATED = {
-    "python3 05_flow/build_functional.py": ["07_functional/*"],
+    # 07_functional/段2-F1 は手で持つ（K-300）ので、置き場の * ではなく 7 つの生成物の名前（どれも作った日を刻む）
+    "python3 05_flow/build_functional.py": ["07_functional/entities.json", "07_functional/features.json", "07_functional/roles.json",
+                                            "07_functional/screens.json", "07_functional/traceability-matrix.json",
+                                            "07_functional/functional-breakdown.md", "07_functional/functional-breakdown.html"],
     "python3 05_flow/build_api.py": ["08_api/API-SPEC.md", "08_api/api-decisions.json", "08_api/api-spec.html", "08_api/endpoints.json",
                                      "08_api/openapi.yaml", "08_api/screen-api-coverage.json"],
     "python3 05_flow/build_testplan.py": EXACT["07_qa/test-plan/*"],

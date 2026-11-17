@@ -14,6 +14,8 @@ export const BUILT_ROUTES: readonly string[] = [
   "/dev/k/states",
   "/dev/mail",
   "/dev/memory",
+  "/dev/mock/f1",
+  "/dev/mock/f1/:id",
   "/dev/shell",
   "/dev/ui",
   "/dev/views",
