@@ -21,8 +21,8 @@ GATE = ROOT / "scripts" / "ci" / "design_gate.py"
 CFG = ROOT / "design-gate.json"
 TESTPLAN = ROOT / "05_flow" / "build_testplan.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "v3-gate.yml"
-LEDGER_CAP_ROWS = 888        # 台帳を入れた時点の行の数（K-261）。減らすだけ
-LEDGER_CAP_COUNT = 888       # 台帳を入れた時点の生の値の数（count の和）
+LEDGER_CAP_ROWS = 1295       # 台帳を入れた時点の行の数（K-261・Q の指摘 6 つを入れた後）。減らすだけ
+LEDGER_CAP_COUNT = 1419      # 台帳を入れた時点の生の値の数（count の和）
 
 DESIGN = """---
 colors:
@@ -61,6 +61,10 @@ class Tree:
 
     def css(self, text: str) -> None:
         (self.dir / "web" / "a.css").write_text(text, encoding="utf-8")
+
+    def put(self, rel: str, text: str) -> None:
+        (self.dir / rel).parent.mkdir(parents=True, exist_ok=True)
+        (self.dir / rel).write_text(text, encoding="utf-8")
 
     def cfg(self, cfg: dict) -> None:
         (self.dir / "design-gate.json").write_text(json.dumps(cfg, ensure_ascii=False), encoding="utf-8")
@@ -358,6 +362,101 @@ class D8(unittest.TestCase):
         r = self.tree(".a { gap: 6px; }\n").run()
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertRegex(r.stdout, r"D8_生の長さ: 掛けていません")
+
+    # ---------------------------------------------------------------- レビュー Q の指摘（2026-11-17）
+    def test_K261_RL_019_at_rules_inside_rules(self) -> None:
+        """K261-RL-019 規則の中の @media・@supports・@container・@layer・@scope・@starting-style に直に書いた宣言も見る。
+        一番上の @font-face の記述子は宣言にしない"""
+        for at in ("@media (min-width: 600px)", "@supports (display: grid)", "@container (min-width: 400px)",
+                   "@layer x", "@scope (.b)", "@starting-style"):
+            with self.subTest(at):
+                r = self.assertRed(f".a {{ color: inherit; {at} {{ padding: 10px; }} }}\n", at)
+                self.assertIn("padding: 10px", "\n".join(d8_lines(r.stdout)))
+        self.assertGreen("@font-face { font-family: x; src: url(a.woff2); size-adjust: 90%; }\n")
+
+    def test_K261_RL_020_at_property(self) -> None:
+        """K261-RL-020 @property の initial-value の生の長さは定義として赤、その変数を読む所も赤"""
+        r = self.assertRed("@property --gap { syntax: '<length>'; inherits: false; initial-value: 12px; }\n"
+                           ".a { gap: var(--gap); }\n")
+        lines = "\n".join(d8_lines(r.stdout))
+        self.assertIn("12px", lines)
+        self.assertIn("gap: var(--gap)", lines)
+        self.assertGreen("@property --gap { syntax: '<length>'; inherits: false; initial-value: 0px; }\n"
+                         ".a { gap: var(--gap); }\n")
+
+    def test_K261_RL_021_unitless_line_height_paths(self) -> None:
+        """K261-RL-021 単位の無い行の高さ：font の略記の /1.4・自前の変数（--lh: 1.9）を line-height や font の / の後ろで読む所は赤。
+        トークンの行の高さは緑"""
+        for why, css in {
+            "font の / の後ろ": ".a { font: 600 var(--k-s-md)/1.4 sans-serif; }",
+            "font の 12px/1": ".a { font: 400 12px/1 sans-serif; }",
+            "line-height で読む": ".a { --lh: 1.9; }\n.b { line-height: var(--lh); }",
+            "font の / の後ろで読む": ".a { --lh: 1.9; }\n.b { font: 600 var(--k-s-md)/var(--lh) sans-serif; }",
+        }.items():
+            with self.subTest(why):
+                r = self.assertRed(css + "\n", why)
+                if "読む" in why:
+                    self.assertTrue(any(".b" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        self.assertGreen(".a { font: 600 var(--k-s-md)/var(--k-lh-body) sans-serif; line-height: var(--k-lh-body); "
+                         "--z: 3; z-index: var(--z); }\n")
+
+    def test_K261_RL_022_vars_any_depth(self) -> None:
+        """K261-RL-022 自前の変数を何段でも辿る：--a: 12px → --b → --c を padding で読む所が赤"""
+        r = self.assertRed(".r { --a: 12px; --b: var(--a); --c: var(--b); }\n.x { padding: var(--c); }\n")
+        self.assertTrue(any("padding: var(--c)" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        r = self.assertRed(".r { --a: 12px; --b: var(--a); }\n.x { padding: var(--b); }\n")
+        self.assertTrue(any("padding: var(--b)" in ln for ln in d8_lines(r.stdout)), r.stdout)
+
+    def test_K261_RL_023_d3_d4_coverage(self) -> None:
+        """K261-RL-023 px だけの font-size・border-radius を D8 から外すのは、D3・D4 が読む置き場（--mocks・--css）にあるときだけ。
+        外の置き場の値・関数や変数の予備の値の中の px は D8 が赤"""
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["raw_lengths"]["paths"] = ["web", "old"]
+        cases = {
+            ("web", "font-size: 13px"): 0, ("old", "font-size: 13px"): 1,
+            ("web", "border-radius: 4px"): 0, ("old", "border-radius: 4px"): 1,
+            ("web", "font-size: max(12px, 13px)"): 1, ("web", "font-size: clamp(12px, 1vw, 13px)"): 1,
+            ("web", "border-radius: var(--k-r, 7px)"): 1, ("web", "font-size: 1.1rem"): 1,
+        }
+        for (where, d), want in cases.items():
+            with self.subTest(where=where, decl=d):
+                t = self.tree(".a { color: inherit; }\n", cfg=cfg)
+                t.put(f"{where}/b.css", f".b {{ {d}; }}\n")
+                r = t.run("--raw-lengths")
+                got = [ln for ln in d8_lines(r.stdout) if f"{where}/b.css" in ln]
+                self.assertEqual(len(got), want, f"{where} {d}\n{r.stdout}")
+
+    def test_K261_RL_024_markup(self) -> None:
+        """K261-RL-024 画面のコード（.tsx など）の Tailwind の任意値・style 属性・DOM の style へ書く値も数える（台帳で減らすだけ）。
+        試験の台本（.spec.tsx・tests/ の下）は数えない"""
+        for why, code in {
+            "任意値": 'export const P = () => <p className="max-w-[920px] p-4" />;',
+            "任意の性質": 'export const P = () => <p className="[padding:10px]" />;',
+            "calc の任意値": 'export const P = () => <p className="w-[calc(100%-12px)]" />;',
+            "変種つき": 'export const P = () => <p className="md:hover:text-[13.5px]" />;',
+            "style 属性": "export const P = () => <p style={{ gap: 6 }} />;",
+            "DOM の style": 'export function f(el: HTMLElement) { el.style.width = "12px"; }',
+        }.items():
+            with self.subTest(why):
+                t = self.tree(".a { color: inherit; }\n")
+                t.put("web/p.tsx", code + "\n")
+                r = t.run("--raw-lengths")
+                self.assertEqual(r.returncode, 1, f"{why}\n{r.stdout}")
+                self.assertTrue(any("web/p.tsx:1" in ln for ln in d8_lines(r.stdout)), r.stdout)
+        t = self.tree(".a { color: inherit; }\n")
+        t.put("web/p.tsx", 'export const P = () => <p className="grid-cols-[minmax(0,1fr)_auto] bg-[#fff] '
+                           'w-[var(--k-s-md)] w-full" />;\n')
+        t.put("web/x.spec.tsx", 'const s = "max-w-[920px]"; el.style.width = "12px";\n')
+        t.put("web/tests/y.ts", 'const s = "max-w-[920px]";\n')
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        t = self.tree(".a { color: inherit; }\n",
+                      ledger=[{"file": "web/p.tsx", "selector": "className", "prop": "任意値", "value": "max-w-[920px]",
+                               "count": 1, "reason": "前からの値。その画面のチケットが直す"}])
+        t.put("web/p.tsx", 'export const P = () => <p className="max-w-[920px]" />;\n')
+        self.assertEqual(t.run("--raw-lengths").returncode, 0, "台帳に載った任意値で赤")
+        t.put("web/p.tsx", 'export const P = () => <><p className="max-w-[920px]" /><i className="max-w-[920px]" /></>;\n')
+        self.assertEqual(t.run("--raw-lengths").returncode, 1, "任意値を増やして緑")
 
 
 class RealTree(unittest.TestCase):
