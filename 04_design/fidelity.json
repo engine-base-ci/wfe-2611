@@ -337,7 +337,7 @@
     375
    ],
    "owner": "K-251",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -357,7 +357,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -374,7 +374,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -396,7 +396,7 @@
     375
    ],
    "owner": "K-251",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -416,7 +416,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -433,7 +433,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",
