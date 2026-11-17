@@ -3982,7 +3982,6 @@
     "C8"
    ],
    "tests": [
-    "apps/api/test/generated/get_me_security.test.ts",
     "apps/api/test/generated/patch_me_passkeys_id.test.ts",
     "apps/api/test/generated/delete_me_passkeys_id.test.ts",
     "apps/api/test/generated/patch_me_password.test.ts",
@@ -3999,7 +3998,6 @@
     "mfa-setup"
    ],
    "apis": [
-    "getMySecurity",
     "renamePasskey",
     "deletePasskey",
     "changePassword",
@@ -13781,7 +13779,9 @@
     "07_qa/test-plan/ears-elsewhere.json",
     "03_architecture/choke-point-exceptions.md",
     "08_api/db-columns.json",
-    "03_architecture/ER図.md"
+    "03_architecture/ER図.md",
+    "11_tickets/K-75.md",
+    "apps/api/test/fuzz/server.ts"
    ],
    "sections": {
     "目的": "（2026-11-17 切る段・枝 c/段2）古い形の K-75 を葉に分けた 1 本目。**DB と読む口だけ**（重さの上限：packages/db を触るので apps/web は触らない）。画面は K-318・K-319。\n\nログインした本人が自分の安全の設定（パスキーの一覧・パスワードの有無・2 段階の有無・バックアップコードの残り・「付けるまで進めない」の印）を読める口 `getMySecurity` を作る。\nあわせて、K-309・K-311・K-312 が乗る DB の土台を 1 本の migration で足す：入り方を数える関数、登録の直後でパスキーも 2 段階も無い人のセッションに立てる印 `sessions.mfa_pending`（D-128.141）、入り方がそろったら印を下ろす関数、パスワードを変えたときに今の画面のほかを全部のワークスペースで切る関数。\n\n印を**立てる**のはこの葉。印が立っている間に**ほかの口を止める**（入口の 403・MFA_REQUIRED）のは K-321（止めると前からの画面の試験 50 本ほどが止まるので、画面の試験の道具を直せる葉に分けた・2026-11-17）。",
