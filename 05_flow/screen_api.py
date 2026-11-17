@@ -509,6 +509,8 @@ INPUTS = {
     "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?"}),
     # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
     "signOut": ("SignOutInput", {}),
+    # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
+    "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
     # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
@@ -716,6 +718,18 @@ ERRORS_4XX = {
          "trigger": "メールアドレスが無い・空・形が違う（全角・大文字・前後と途中の空白は直してから見る）",
          "ears_form": "UNWANTED: IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない"},
     ],
+    # 新しいパスワードを決める（K-314・D-125.137・D-125.140・D-128.62）。冪等キーは使わない（汎用の 409 は NO_GENERIC_409 で外す）
+    "resetPassword": [
+        {"status": 410, "code": "GONE", "body": {"error": "gone"}, "errors": ["E-AUTH-006", "E-PAGE-006"],
+         "trigger": "リンクが期限切れ（30 分）・使い終わった・新しく頼んだ後の前のリンク（E-AUTH-006）・無い（でたらめ・空・24 時間を過ぎた・E-PAGE-006）",
+         "ears_form": "UNWANTED: IF リンクが期限切れ・使用済み・前のリンク・無いなら、Kaname は 410 と次の一手を返し、パスワードを変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
+         "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（手がかり・新しいパスワードの欄が無いときも 422）",
+         "ears_form": "UNWANTED: IF 新しいパスワードが 12 文字より短いか 128 文字を超えるか漏れたものなら、Kaname は 422 と欄 new_password の理由を返し、端末を切らずパスワードを変えない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "端末を切る所かパスワードを変える所で DB が落ちた",
+         "ears_form": "UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 500 と E-PAGE-003 を返し、リンクを使えるまま残す"},
+    ],
     # 登録の申し込み（K-51・K-144）。規約の版を読む DB が落ちたら申し込みを作らない（汎用の 409・422 はそのまま）
     "createSignup": [
         {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
@@ -756,7 +770,7 @@ EARS_OK = {
     "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
 }
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
-NO_GENERIC_409 = {"requestPasswordReset"}   # K-313：答えはいつも同じ。登録の有無を器に残さない
+NO_GENERIC_409 = {"requestPasswordReset", "resetPassword"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
@@ -783,6 +797,7 @@ REQUIRED_INPUTS = {
     "requestPasswordReset": ["email"],                                   # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
     "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
+    "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
@@ -894,6 +909,8 @@ RESPONSES = {
     "verifySignInCode": ("SignInCodeResult", {"token": "string", "backup_codes_left": "integer"}),
     # ログアウトした（K-306）。いつも signed_out=true。閉じたのはその画面のセッションだけ（別のブラウザ・PC は残る）
     "signOut": ("SignedOut", {"signed_out": "boolean"}),
+    # 新しいパスワードを決めた（K-314）。いつも reset=true。ログインの印は入れない（再設定の後は自動で入らない・D-125.140）
+    "resetPassword": ("PasswordResetDone", {"reset": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),

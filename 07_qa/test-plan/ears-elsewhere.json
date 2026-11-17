@@ -880,6 +880,26 @@
      "mark": "K144-API-042"
     }
    }
+  },
+  "resetPassword": {
+   "file": "apps/api/test/features/F1/password-reset.test.ts",
+   "reason": "新しいパスワードを決める口は、本物の DB の verification・account・セッションの失効とロックで確かめる（K-314）",
+   "covers": {
+    "test_post_auth_password_reset_ok": "K314-API-001 期限内のリンクで決める",
+    "test_post_auth_password_reset_gone": "K314-API-003 期限切れ",
+    "test_post_auth_password_reset_rejected_422": "K314-API-009 新しいパスワード 11 文字は 422",
+    "test_post_auth_password_reset_server_error": "K314-API-017 端末を切る所で失敗",
+    "test_post_auth_password_reset_rate_limited": "K314-API-019 同じ IP から 1 分に 11 回",
+    "test_post_auth_password_reset_shape": "K314-API-020 DB の中",
+    "test_post_auth_password_reset_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_password_reset_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
   }
  }
 }

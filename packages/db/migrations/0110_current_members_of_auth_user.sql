@@ -1,4 +1,4 @@
--- 0109 記録の関数の「今いる会社の人」を引く部分を 1 つにまとめる（K-302・PM の決め 2026-11-18・関門 C2）
+-- 0110 記録の関数の「今いる会社の人」を引く部分を 1 つにまとめる（K-302・PM の決め 2026-11-18・関門 C2）
 --   0106（app.record_security_event_for_auth_user・K-313）と 0107（app.record_login_event・K-301）が同じ引き方を別々に持っていた。
 --   内部の関数 app.current_members_of_auth_user に切り出し、2 つの記録の関数はそれを呼ぶ。振る舞いは変えない。
 --   今いる会社の人：members に本人が居て（members.auth_user_id か、所属の行 tenant_memberships.auth_user_id・D-125.150・0089 と同じ引き方）消えていない、
@@ -57,4 +57,4 @@ end $$;
 revoke all on function app.record_login_event(text, text, text) from public;
 grant execute on function app.record_login_event(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0109_current_members_of_auth_user.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0110_current_members_of_auth_user.sql') on conflict do nothing;

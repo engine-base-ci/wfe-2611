@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。176 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。177 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2730,6 +2730,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "complete"
+    }
+  },
+  "E-VAL-026": {
+    "id": "E-VAL-026",
+    "cls": "validation",
+    "message": "パスワードは 128 文字以内にしてください",
+    "action": "短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-026",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "password-reset",
+      "state": "p"
     }
   },
   "E-CONF-016": {

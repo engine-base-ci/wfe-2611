@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:dd6f88d8123fbc24
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:b2033198c7b5e0a2
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1187,9 +1187,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "resetPassword",
     "table": "sessions",
     "kind": "create",
-    "input": "SessionsInput",
+    "input": "PasswordResetInput",
     "success": 201,
-    "output": "Sessions",
+    "output": "PasswordResetDone",
     "outputList": false,
     "generic": false,
     "auth": "public",
@@ -1203,8 +1203,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "C6"
     ],
     "errors": [
-      409,
       422,
+      410,
+      500,
       413,
       429,
       503
@@ -18633,4 +18634,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "dd6f88d8123fbc24";
+export const OPENAPI_HASH = "b2033198c7b5e0a2";
