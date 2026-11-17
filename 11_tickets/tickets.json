@@ -13294,7 +13294,8 @@
    "split": "",
    "choke_points": [
     "C1",
-    "C2"
+    "C2",
+    "C6"
    ],
    "tests": [
     "apps/api/test/features/F1/password-reset.test.ts",
