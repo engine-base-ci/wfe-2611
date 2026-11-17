@@ -175,7 +175,6 @@
     "list-chips": ".k-list-chips",
     "list-tools": ".k-list-tools",
     "list-who": ".k-list-who",
-    "list-late": ".k-list-late",
     "list-late-icon": ".k-list-late svg",
     "list-ai-icon": ".k-list-ai svg",
     "shell-bar": ".k-bar",
@@ -334,6 +333,10 @@
     {
       "part": "detail-rule",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "list-late",
+      "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10

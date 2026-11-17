@@ -435,6 +435,9 @@ button.k-list-tool:hover {
   cursor: not-allowed;
   color: var(--k-on-surface-variant);
 }
+.k-list-columns-group {
+  min-width: 0;
+}
 .k-list-columns-title {
   margin: var(--k-s-sm) 0 0;
   font-size: var(--k-text-label-md);
