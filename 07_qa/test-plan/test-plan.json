@@ -1380,7 +1380,7 @@
   {
    "id": 68,
    "name": "画面のチケットに正のモック（突き合わせの組）・組の持ち主と両向き（台帳は減らすだけ・K-215・D-143.5）",
-   "script": "python3 scripts/ci/canvas_field_gate.py --ledger-base-ref \"$CI_BASE\" --ticket \"$CI_TICKET\" && python3 scripts/ci/k215_canvas_field_test.py",
+   "script": "python3 scripts/ci/canvas_field_gate.py --ledger-base-ref \"$CI_BASE\" --ticket \"$CI_TICKET\" && python3 scripts/ci/k215_canvas_field_test.py && python3 scripts/ci/k300_mock_field_test.py",
    "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n          CI_TICKET: ${{ inputs.ticket }}\n",
    "job": "spec",
    "blocking": true
