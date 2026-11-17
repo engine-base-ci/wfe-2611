@@ -103,8 +103,7 @@ export function passwordResetFeature(d: PasswordResetDeps) {
   /** 漏れの照合。照合のサービスが落ちている間は通す（D-128.134・代表の答え ⑩）。理由にパスワードは入らない */
   const checkLeaked = async (password: string): Promise<LeakCheck> => {
     const r = await checkPwned(d.actions, OPS_CTX, password);
-    if (r.kind === "unavailable")
-      console.warn(`[reset] 漏れの照合が使えないので、照合せずに通す: ${r.reason.slice(0, 200)}`);
+    if (r.kind === "unavailable") console.warn(`[reset] 漏れの照合が使えないので、照合せずに通す: ${r.reason}`);
     return r.kind;
   };
   const hashPassword = async (password: string): Promise<string> => (await d.auth.$context).password.hash(password);
