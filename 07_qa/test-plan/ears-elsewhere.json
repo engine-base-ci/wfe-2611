@@ -826,6 +826,31 @@
      "mark": "K144-API-042"
     }
    }
+  },
+  "verifySignInCode": {
+   "file": "apps/api/test/features/F1/sign-in-code.test.ts",
+   "reason": "確認のコードで入るのは、本物のログインの部品（Better Auth の 2 段階の待ちの印・TOTP・バックアップコード・6 けたの止め）と、パスワードの段（K-301）の口で受け取った待ちの印で確かめる。生成の試験の偽のセッションでは確かめられない（K-302）",
+   "covers": {
+    "test_post_auth_two_factor_verify_ok": "K302-API-001",
+    "test_post_auth_two_factor_verify_rejected_422": "K302-API-015",
+    "test_post_auth_two_factor_verify_rejected_422_2": "K302-API-012",
+    "test_post_auth_two_factor_verify_rejected_401": "K302-API-006",
+    "test_post_auth_two_factor_verify_rejected_401_2": "K302-API-003",
+    "test_post_auth_two_factor_verify_rejected_403": "K302-API-016",
+    "test_post_auth_two_factor_verify_rejected_422_3": "K302-API-012",
+    "test_post_auth_two_factor_verify_rate_limited": "K302-API-007",
+    "test_post_auth_two_factor_verify_server_error": "K302-API-017",
+    "test_post_auth_two_factor_verify_rate_limited_2": "K302-API-018",
+    "test_post_auth_two_factor_verify_shape": "K302-API-021",
+    "test_post_auth_two_factor_verify_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_two_factor_verify_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
   }
  }
 }

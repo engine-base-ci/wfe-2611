@@ -10,6 +10,7 @@ import { countQueries, markDbSession } from "@kaname/db/pool";
 import { optionalEnv } from "@kaname/config";
 import { mailTag } from "./signup.js";
 import { RESET_PREFIX, resetHash } from "./reset.js";
+import { CODE_LOCK, generateBackupCodes } from "./two_factor.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -117,7 +118,16 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
     },
     advanced: { database: { generateId: () => uuidv7(), joins: true } }, // session と user を 1 本で引く（K-233）
     // 2 段階の待ちの印（パスワードを通った後・6 けたの前）は 5 分（部品の既定 10 分を直す・K-301）
-    plugins: [twoFactor({ issuer: o.issuer ?? "Kaname", twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC }), bearer()],
+    // 6 けた（とバックアップコード）は 5 回続けて違えたら 15 分止める（人ごと・D-128.141・K-302）。バックアップコードは小文字と数字だけ（answer=6bdcb125e8f7）
+    plugins: [
+      twoFactor({
+        issuer: o.issuer ?? "Kaname",
+        twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC,
+        accountLockout: { ...CODE_LOCK },
+        backupCodeOptions: { customBackupCodesGenerate: generateBackupCodes },
+      }),
+      bearer(),
+    ],
     // ロック（app.login_attempts）を通らない部品のログインの道は閉じる（404・K-301）。サーバーの中の auth.api.signInEmail は道を通らないので動く
     disabledPaths: [...DISABLED_PATHS],
     databaseHooks: {

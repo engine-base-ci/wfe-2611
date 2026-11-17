@@ -55,16 +55,20 @@ function apiErrorCode(e: unknown): string | null {
  *  ほか（DB が落ちた・セッションを写す所の失敗）は数えずに投げ直す（K-301・切る段の精査の後） */
 const COUNTED = new Set(["INVALID_EMAIL_OR_PASSWORD", "PASSWORD_TOO_LONG"]);
 
-/** ログインの記録を書く（会社ごとの security_events・migration 0107）。本人がいなければ書かない。書けなくてもログインは止めない */
-async function recordLogin(appPool: pg.Pool, rec: SignInRecord | undefined, userId: string | null, kind: string) {
-  if (!rec || !userId) return;
+/** ログインの記録を書く（会社ごとの security_events・migration 0107・0108）。本人がいなければ書かない。書けなくてもログインは止めない。
+ *  パスワードの段（K-301）と確認のコードの段（K-302 の login_code_failed・login_code_locked）の 1 か所 */
+export async function recordLoginEvent(appPool: pg.Pool, userId: string | null, kind: string, country: string | null) {
+  if (!userId) return;
   try {
-    await appPool.query("select app.record_login_event($1, $2, $3)", [userId, kind, rec.country]);
+    await appPool.query("select app.record_login_event($1, $2, $3)", [userId, kind, country]);
   } catch (e) {
     const x = e as { code?: unknown; name?: unknown } | null;
     const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
     console.error(`[auth] ログインの記録を書けなかった（${kind}・${why}）`); // 文や値は出さない（種類だけ）
   }
+}
+async function recordLogin(appPool: pg.Pool, rec: SignInRecord | undefined, userId: string | null, kind: string) {
+  if (rec) await recordLoginEvent(appPool, userId, kind, rec.country);
 }
 
 /** メール＋パスワードでログイン。連続失敗は app.login_attempts で数え、5 回で 15 分ロック（E-AUTH-001／002）。

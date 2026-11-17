@@ -4,37 +4,16 @@
 //   2 段階を付けた人は、まだ入らず待ちの印（pending・5 分）を受け取る。6 けたで入るのは K-302。
 //   ログインの部品（better-auth）・生の DB・外への送信は直に使わない（部品は @kaname/auth の中だけ・境界 B2・関門 C2）。
 //   ログにメール・パスワード・ログインの印・待ちの印を出さない（K301-API-021）
-import type { Auth } from "@kaname/auth";
 import { countryOf } from "@kaname/auth/device";
-import { createSessionResolver, signOut } from "@kaname/auth/resolver";
 import { EMAIL_RE, normalizeEmail, signInWithLock, type SignInResult } from "@kaname/auth/signup";
-import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
+import { kindOf, memberGoneCheck, reply, type LoginDeps } from "./shared.js";
 
-type AppPool = Parameters<typeof signInWithLock>[1];
-type AuthPool = NonNullable<Parameters<typeof signInWithLock>[5]>["authPool"];
-
-export interface LoginDeps {
-  auth: Auth;
-  /** kaname_app の接続（ロック・セッションの写し・記録） */
-  appPool: AppPool;
-  /** 認証の接続（失敗とロックの記録のとき、メールから本人を引く） */
-  authPool: AuthPool;
-  config: { opsEmail: string };
-}
+export type { LoginDeps } from "./shared.js";
 
 /** ロックの長さ（秒）。app.login_failed の 15 分と同じ（待つ秒数をこれより大きく言わない） */
 const LOCK_SEC = 15 * 60;
 
-const reply = (status: number, code: string, extra: Record<string, unknown> = {}): HookReply => ({
-  status,
-  body: { ...kanameError(code).toJSON(), ...extra },
-});
-/** 例外の種類だけ（DB の番号か名前）。文や値はログに出さない */
-const kindOf = (e: unknown): string => {
-  const x = e as { code?: unknown; name?: unknown } | null;
-  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
-};
 const filled = (v: unknown): boolean => typeof v === "string" && v !== "";
 
 /** 失敗の答え：ロック（429）か残り回数つきの 401。登録していないメールも同じ形（有る無しを漏らさない・D-042） */
@@ -51,8 +30,6 @@ function failed(r: SignInResult): HookReply {
 }
 
 export function loginFeature(d: LoginDeps) {
-  const resolve = createSessionResolver(d.auth, d.appPool);
-
   /** 前処理（入口の strict な形の確かめより前）：メールかパスワードが無い・空なら 422・E-VAL-008（DB を引かない・失敗に数えない） */
   const input = (raw: unknown): { input: Record<string, unknown> } | { reply: HookReply } => {
     const b = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
@@ -60,14 +37,7 @@ export function loginFeature(d: LoginDeps) {
     return { input: b };
   };
 
-  /** 入ったのに会社の人が無い・抜けた：その場で閉じて 403・E-AUTH-007（ログインの印を渡さない）。止めの 1 か所への移しは K-303 */
-  const memberGone = async (token: string, ua: string | undefined): Promise<boolean> => {
-    const h = new Headers({ authorization: `Bearer ${token}` });
-    if (ua) h.set("user-agent", ua);
-    if (await resolve(h)) return false;
-    await signOut(d.auth, d.appPool, h);
-    return true;
-  };
+  const memberGone = memberGoneCheck(d);
 
   const signIn = async (a: HookArgs): Promise<HookReply> => {
     // パスワードは入口の正規化（前後の空白を落とす）の前の値を使う（打ったとおりに比べる・K301-API-012）
