@@ -495,6 +495,7 @@ erDiagram
 - `ops_members`：`caps text[]`（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）。`ops_role_id` は見出し（運営の管理者・サポート・お金）だけに使う
 - `notices`：`state`（下書き・予定・出した）/ `affects jsonb`（画面・分身の実行・PC とのつながり）/ `placements text[]`（一覧・上の帯・メンテ中の画面）/ `maintenance_from` / `maintenance_to` / `emailed_admins_at`（メンテだけ管理者にメール・D-128.109）
 - `status_incidents`：`notice_id` / `state`（調べている・原因が分かった・様子を見ている・直った）/ `body`。お知らせ 1 件に状態を足していく
+- 関数 `app.public_service_status()`（security definer・K-307）：ログインしていない人にも出してよい分だけを返す（直っていない障害のうち、全部向けに公開したお知らせに結んだもの＝state・お知らせの題・started_at／いま中のメンテナンス＝題・from・to）。`notices` と `status_incidents` の行の守り（運営だけ）は変えない。表と列は足さない
 - `inquiries`：`context jsonb`（いま見ている画面の情報：画面の場所・時刻・ブラウザ・PC のつながり）/ `later_until`。運営の社内メモは `messages` の `visibility = ops_only`
 
 前の表の扱い：`tasks` `task_handovers` `daily_plans` は後のフェーズ（チケットに置き換え）。`skills` 系は「業務の型」として使い続ける（`skills.kind_id` に work_type を足す・D-126.26）。`learned_procedures` は「記録した動かし方」として使い続け、入力した値を空欄に置き換えた形だけを持つ（D-126.25）。`support_access_grants` は「運営の閲覧」の記録として使い、許可の範囲と期限は契約で先に持つ（D-125.128・D-128.68）。

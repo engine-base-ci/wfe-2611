@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8d91e4112dff67cf
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2f4b516a42dfb3d4
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -27,7 +27,7 @@ export interface Ops {
   requestPasswordReset: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
   resetPassword: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   requestAdminRecovery: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
-  getServiceStatus: { params: never; query: never; body: never; data: T.ServiceStatus };
+  getServiceStatus: { params: never; query: never; body: never; data: T.PublicServiceStatus };
   signInWithPassword: { params: never; query: never; body: T.SignInInput; data: T.SignInResult };
   signOut: { params: never; query: never; body: T.SessionsInput; data: T.Sessions };
   createSignup: { params: never; query: never; body: T.SignupInput; data: T.SignupCreated };

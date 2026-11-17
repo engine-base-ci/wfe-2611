@@ -15,6 +15,7 @@ import { ticketHooks } from "../../src/hooks/tickets.js";
 import { delegateHooks } from "../../src/hooks/delegate.js";
 import { approveHooks } from "../../src/hooks/approve-complete.js";
 import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
+import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { loginHooks } from "../../src/hooks/login.js";
 import { createAuth } from "@kaname/auth";
 import { migrateAuth } from "@kaname/auth/migrate";
@@ -46,6 +47,7 @@ Object.assign(
   delegateHooks(h.pool),
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
+  serviceStatusHooks({ appPool: h.pool }),
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
