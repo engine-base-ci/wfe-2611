@@ -22,6 +22,8 @@ HEALTH = r"scripts/ci/staging_health\.py"
 CA = "infra/certs/supabase-root-2021.crt"       # DB の束ね役の証明書を確かめる信頼の根（公開の証明書）
 CA_SHA256 = "80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA"   # infra/STAGING.md の 3b と同じ
 RUN = r"pnpm (-s )?e2e:staging\b"
+PERF = r"scripts/ci/staging_perf\.py"     # staging の速さの段（K-237）。住所の 2 つだけを持つ
+URL_NAMES = ["STAGING_BASE_URL", "STAGING_API_BASE"]
 
 
 def text(name: str = "staging-e2e.yml") -> str:
@@ -73,10 +75,13 @@ class StagingWorkflow(unittest.TestCase):
         for where, env in (("定義の env", wf.get("env")), ("組の env", job().get("env"))):
             self.assertNotIn("secrets", json.dumps(env or {}), f"{where} に secrets を書くと、全部の段（依存の部品の後処理・組み立て）に渡る")
         holders = [i for i, s in enumerate(steps()) if "secrets" in json.dumps(s, ensure_ascii=False)]
-        self.assertEqual(holders, sorted(find(HEALTH) + find(RUN)), "secrets を持つ段は、健康診断と統合テストの 2 つだけ")
+        perf = find(PERF)
+        self.assertEqual(holders, sorted(find(HEALTH) + find(RUN) + perf), "secrets を持つ段は、健康診断と統合テストと速さ（K-237）の 3 つだけ")
         for i in holders:
             env = steps()[i].get("env") or {}
-            for name in NAMES:
+            if i in perf:  # 速さの段は住所の 2 つだけ（DB と送り先の鍵は渡さない・K-237）
+                self.assertEqual(sorted(env), sorted(URL_NAMES), "速さの段の env は住所の 2 つだけ")
+            for name in URL_NAMES if i in perf else NAMES:
                 self.assertEqual(str(env.get(name, "")).replace(" ", ""), "${{secrets.%s}}" % name, f"{name} は同じ名前の secrets から")
             self.assertNotIn("secrets", str(steps()[i].get("run", "")) + json.dumps(steps()[i].get("with") or {}), "secrets は env だけに書く")
         self.assertEqual(sorted(set(re.findall(r"secrets\.([A-Za-z0-9_]+)", text()))), sorted(NAMES), "読む secrets はこの 4 つだけ")
