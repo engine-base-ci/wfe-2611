@@ -146,7 +146,7 @@
     375
    ],
    "owner": "K-221",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -195,7 +195,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "x-dc > div > div:nth-of-type(2) > a:first-of-type",
-     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "app": "[data-part=\"auth-box\"] [data-act=\"passkey\"]",
      "props": [
       "height",
       "background-color",
@@ -220,7 +220,7 @@
     375
    ],
    "owner": "K-221",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
