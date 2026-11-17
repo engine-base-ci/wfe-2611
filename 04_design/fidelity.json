@@ -146,7 +146,7 @@
     375
    ],
    "owner": "K-221",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -195,7 +195,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "x-dc > div > div:nth-of-type(2) > a:first-of-type",
-     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "app": "[data-part=\"auth-box\"] [data-act=\"passkey\"]",
      "props": [
       "height",
       "background-color",
@@ -220,7 +220,7 @@
     375
    ],
    "owner": "K-221",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
@@ -337,7 +337,7 @@
     375
    ],
    "owner": "K-251",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -357,7 +357,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -374,7 +374,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -396,7 +396,7 @@
     375
    ],
    "owner": "K-251",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -416,7 +416,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -433,7 +433,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",

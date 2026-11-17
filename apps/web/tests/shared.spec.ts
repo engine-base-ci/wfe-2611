@@ -57,7 +57,7 @@ test("USH-04-001 認証の配管：未ログインで守られた画面は入り
   await setupDone(u); // はじめの設定を通し終わった人（D-089）
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page).toHaveURL(/\/settings\/credentials$/, { timeout: 15_000 });
   await expect(page.locator("h1")).toHaveText("ログイン情報を預ける");
 });

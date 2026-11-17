@@ -1,0 +1,680 @@
+/* チケットの一覧の画面（K-251・キャンバス OnHome・Main）。値は --k-* のトークンだけを読む（キャンバスの実測は正本 DESIGN-kaname.md の部品 list-* に置き、
+   04_design/gen_tokens.py --web で k-tokens.css に出す。ここに生の色・大きさ・余白・影を書かない。@media の区切りの幅だけは CSS の決まりで生の値）。
+   一覧の部品（帯・タブ・表・右の列）は「全部」の一覧（K-252）も同じクラスで使う */
+
+.k-list-page {
+  min-width: 0;
+}
+
+/* ---- 見出しの帯：帯そのものの余白は 0、中の行（見出しの行・タブ）が余白を持つ（キャンバスの header） ---- */
+header.k-page-head.k-list-head {
+  display: block;
+  padding: 0;
+}
+.k-list-head-row {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-head-row-gap);
+  padding: var(--k-c-list-head-row-pad);
+  min-width: 0;
+}
+.k-list-views {
+  display: flex;
+  gap: var(--k-c-list-views-gap);
+  padding: var(--k-c-list-views-pad);
+  overflow-x: auto;
+}
+.k-list-view {
+  padding: var(--k-c-list-view-pad);
+  border-bottom: var(--k-c-list-view-border-bottom);
+  border-bottom-color: transparent;
+  color: var(--k-on-surface-variant);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.k-list-view[aria-current="page"] {
+  padding: var(--k-c-list-view-pad);
+  border-bottom: var(--k-c-list-view-border-bottom);
+  color: var(--k-c-list-view-fg);
+  font-weight: var(--k-c-list-view-fw);
+}
+a.k-list-view:not([aria-current="page"]):hover {
+  color: var(--k-on-surface);
+}
+/* まだ無い見え方：出すが押せない（正本の使えない状態の薄さ） */
+.k-list-view[aria-disabled="true"] {
+  opacity: var(--k-c-tab-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 本文の行：左の列と右の列。狭い幅は右の列が下に回る ---- */
+.k-list-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--k-c-list-body-gap);
+  padding: var(--k-c-list-body-pad);
+  min-width: 0;
+}
+.k-list-body[data-first] {
+  padding: var(--k-c-list-body-first-pad);
+}
+.k-list-main {
+  flex: 999 1 var(--k-c-list-main-basis-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-list-main-gap);
+}
+.k-list-first {
+  flex: 1 1 var(--k-c-list-first-basis-width);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-list-first-gap);
+}
+.k-list-dim {
+  color: var(--k-on-surface-variant);
+}
+/* 押せない字（提案・いつでもできること・並び・すべて など） */
+.k-list-off[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- はじめて：あいさつと空の箱 ---- */
+.k-list-greet {
+  margin: 0;
+  font-size: var(--k-c-list-greet-text);
+  font-weight: var(--k-c-list-greet-fw);
+  line-height: var(--k-c-list-greet-lh);
+}
+.k-list-empty .k-state-actions {
+  margin-top: 0;
+}
+.k-list-empty-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-list-empty-mark-width);
+  height: var(--k-c-list-empty-mark-height);
+  border-radius: var(--k-c-list-empty-mark-radius);
+  background: var(--k-c-list-empty-mark-bg);
+  color: var(--k-c-list-empty-mark-fg);
+  font-size: var(--k-c-list-empty-mark-text);
+  font-weight: var(--k-c-list-empty-mark-fw);
+  line-height: var(--k-c-list-empty-mark-lh);
+}
+.k-list-empty-desc {
+  margin: 0;
+  max-width: var(--k-c-list-empty-desc-max-width);
+  color: var(--k-c-list-empty-desc-fg);
+  font-size: var(--k-c-list-empty-desc-text);
+  line-height: var(--k-c-list-empty-desc-lh);
+  font-weight: var(--k-c-list-empty-desc-fw);
+}
+.k-btn.k-list-act {
+  min-height: var(--k-c-list-act-height);
+  padding: var(--k-c-list-act-pad);
+  font-size: var(--k-c-list-act-text);
+  border-radius: var(--k-c-list-act-radius);
+  white-space: nowrap;
+  font-weight: var(--k-c-list-act-fw);
+  line-height: var(--k-c-list-act-lh);
+}
+a.k-btn.k-list-act {
+  text-decoration: none;
+}
+.k-list-suggest {
+  margin: var(--k-c-list-suggest-margin);
+  color: var(--k-c-list-suggest-fg);
+  font-size: var(--k-c-list-suggest-text);
+  font-weight: var(--k-c-list-suggest-fw);
+  line-height: var(--k-c-list-suggest-lh);
+}
+
+/* ---- 右の列：幅 340 まで・1023 以下は本文の下に幅いっぱい ---- */
+.k-list-side {
+  flex: none;
+  width: var(--k-c-list-side-width);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-list-side-gap);
+  min-width: 0;
+}
+.k-list-side-box {
+  background: var(--k-c-list-side-box-bg);
+  border: var(--k-c-list-side-box-border);
+  border-radius: var(--k-c-list-side-box-radius);
+  padding: var(--k-c-list-side-box-pad);
+}
+.k-list-side-head {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body-sm);
+}
+.k-list-side-title {
+  flex: 1;
+  margin: 0;
+  font-size: var(--k-c-list-side-title-text);
+  font-weight: var(--k-c-list-side-title-fw);
+  line-height: var(--k-c-list-side-title-lh);
+}
+.k-list-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  border: 0;
+  height: var(--k-c-list-progress-height);
+  margin: var(--k-c-list-progress-margin);
+  border-radius: var(--k-c-list-progress-radius);
+  background: var(--k-c-list-progress-bg);
+  overflow: hidden;
+}
+.k-list-progress::-webkit-progress-bar {
+  background: var(--k-c-list-progress-bg);
+}
+.k-list-progress::-webkit-progress-value {
+  background: var(--k-st-success);
+}
+.k-list-progress::-moz-progress-bar {
+  background: var(--k-st-success);
+}
+.k-list-tasks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-list-task {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-c-list-task-gap);
+  padding: var(--k-c-list-task-pad);
+  border-top: var(--k-c-list-task-border-top);
+}
+/* 使えない項目（パスキー）：出すが押せない（正本の使えない状態の薄さ） */
+.k-list-task[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-list-task-mark {
+  flex: none;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-list-task-mark-width);
+  height: var(--k-c-list-task-mark-height);
+  border-radius: var(--k-c-list-task-mark-radius);
+  border: var(--k-c-list-task-mark-border);
+  font-size: var(--k-text-body-sm);
+}
+.k-list-task-mark[data-done] {
+  border-color: var(--k-st-success);
+  background: var(--k-st-success);
+  color: var(--k-on-primary);
+}
+.k-list-task-text {
+  flex: 1;
+  min-width: 0;
+}
+.k-list-task-label {
+  display: block;
+  font-weight: var(--k-c-list-task-label-fw);
+}
+.k-list-task-label[data-settled] {
+  color: var(--k-on-surface-variant);
+  text-decoration: line-through;
+}
+.k-list-task-desc {
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-list-task-acts {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--k-s-xs);
+}
+.k-list-setup-foot {
+  margin: 0;
+  padding: var(--k-c-list-setup-foot-pad);
+  font-size: var(--k-c-list-setup-foot-text);
+  font-weight: var(--k-c-list-setup-foot-fw);
+  color: var(--k-on-surface-variant);
+}
+/* 字だけの操作（いまは閉じる）：押せる高さは 24 以上 */
+.k-list-text-btn {
+  min-height: var(--k-c-list-target-height);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--k-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.k-list-text-btn:disabled {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-list-anytime {
+  background: var(--k-c-list-anytime-bg);
+  border-radius: var(--k-c-list-anytime-radius);
+  padding: var(--k-c-list-anytime-pad);
+  font-size: var(--k-c-list-anytime-text);
+  line-height: var(--k-c-list-anytime-lh);
+  font-weight: var(--k-c-list-anytime-fw);
+}
+.k-list-anytime-title {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--k-c-list-task-label-fw);
+}
+.k-list-anytime p {
+  margin: 0;
+}
+
+/* ---- 自分に関わるもの：数の札・表の箱・絞り込みの行 ---- */
+.k-list-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--k-c-list-cards-gap);
+}
+.k-list-card {
+  background: var(--k-c-list-card-bg);
+  border: var(--k-c-list-card-border);
+  border-radius: var(--k-c-list-card-radius);
+  padding: var(--k-c-list-card-pad);
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-list-card[data-tone="danger"] {
+  border-color: var(--k-st-danger-line);
+  color: var(--k-st-on-danger-container);
+}
+.k-list-card[data-tone="warning"] {
+  border-color: var(--k-st-warning-line);
+  color: var(--k-st-on-warning-container);
+}
+/* 数は口ができるまで空（字の高さだけ取っておく） */
+.k-list-card-value {
+  min-height: calc(var(--k-c-list-card-value-text) * var(--k-c-list-card-value-lh));
+  font-size: var(--k-c-list-card-value-text);
+  font-weight: var(--k-c-list-card-value-fw);
+  color: var(--k-on-surface);
+  line-height: var(--k-c-list-card-value-lh);
+}
+.k-list-panel {
+  background: var(--k-c-list-panel-bg);
+  border: var(--k-c-list-panel-border);
+  border-radius: var(--k-c-list-panel-radius);
+  min-width: 0;
+}
+.k-list-filter {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-filter-gap);
+  padding: var(--k-c-list-filter-pad);
+  border-bottom: var(--k-c-list-filter-border-bottom);
+}
+.k-list-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-list-chips-gap);
+  margin: var(--k-c-list-chips-margin);
+}
+.k-list-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  box-sizing: border-box;
+  height: var(--k-c-list-chip-height);
+  padding: var(--k-c-list-chip-pad);
+  border: var(--k-c-list-chip-border);
+  border-radius: var(--k-c-list-chip-radius);
+  font-size: var(--k-c-list-chip-text);
+  color: var(--k-on-surface-variant);
+  background: var(--k-card);
+  white-space: nowrap;
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+  font-weight: var(--k-c-list-chip-fw);
+  line-height: var(--k-c-list-chip-lh);
+}
+.k-list-chip[data-current] {
+  background: var(--k-primary);
+  border-color: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-list-tools {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-list-tools-gap);
+  font-size: var(--k-text-body-sm);
+}
+.k-list-tool {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: var(--k-c-list-tool-height);
+  padding: var(--k-c-list-tool-pad);
+  border: var(--k-c-list-tool-border);
+  border-radius: var(--k-c-list-tool-radius);
+  font: inherit;
+  font-size: var(--k-c-list-tool-text);
+  color: var(--k-on-surface);
+  background: var(--k-card);
+  white-space: nowrap;
+  cursor: pointer;
+  font-weight: var(--k-c-list-tool-fw);
+  line-height: var(--k-c-list-tool-lh);
+}
+button.k-list-tool:hover {
+  background: var(--k-select);
+}
+.k-list-tool[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ---- 表示設定の箱（表の箱の頭のすぐ下・右に寄せる。狭い幅は箱の幅に収める） ---- */
+.k-list-columns-anchor {
+  position: relative;
+  display: inline-flex;
+}
+.k-list-columns {
+  position: absolute;
+  top: var(--k-c-list-columns-top);
+  right: 0;
+  z-index: 20;
+  box-sizing: border-box;
+  width: var(--k-c-list-columns-width);
+  max-width: calc(100vw - 2 * var(--k-s-md));
+  box-shadow: var(--k-c-list-columns-shadow);
+  text-align: left;
+  padding: var(--k-c-list-columns-pad);
+  background: var(--k-c-list-columns-bg);
+  border: var(--k-c-list-columns-border);
+  border-radius: var(--k-c-list-columns-radius);
+  color: var(--k-on-surface);
+}
+.k-list-columns-head {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+}
+.k-list-columns-head > b {
+  flex: 1;
+}
+.k-list-columns-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-list-columns-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-c-list-columns-item-gap);
+  min-height: var(--k-c-list-target-height);
+  padding: var(--k-c-list-columns-item-pad);
+  cursor: pointer;
+}
+.k-list-columns-item:has(input:disabled) {
+  cursor: not-allowed;
+  color: var(--k-on-surface-variant);
+}
+.k-list-columns-group {
+  min-width: 0;
+}
+.k-list-columns-title {
+  margin: var(--k-s-sm) 0 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+.k-list-none {
+  margin: 0;
+  padding: var(--k-c-list-more-pad);
+  text-align: center;
+  color: var(--k-on-surface-variant);
+}
+.k-list-columns-note {
+  margin: 0;
+  font-size: var(--k-text-label-md);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 表 ---- */
+.k-list-scroll {
+  overflow-x: auto;
+}
+.k-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-list-table th {
+  height: var(--k-c-list-th-height);
+  padding: var(--k-c-list-th-pad);
+  background: var(--k-c-list-th-bg);
+  color: var(--k-c-list-th-fg);
+  font-size: var(--k-c-list-th-text);
+  font-weight: var(--k-c-list-th-fw);
+  border-bottom: var(--k-c-list-th-border-bottom);
+  text-align: left;
+  white-space: nowrap;
+  line-height: var(--k-c-list-th-lh);
+}
+.k-list-table td {
+  height: var(--k-c-list-td-height);
+  padding: var(--k-c-list-td-pad);
+  border-bottom: var(--k-c-list-td-border-bottom);
+  white-space: nowrap;
+}
+.k-list-section > td {
+  height: var(--k-c-list-section-height);
+  background: var(--k-c-list-section-bg);
+  font-size: var(--k-c-list-section-text);
+  font-weight: var(--k-c-list-section-fw);
+  line-height: var(--k-c-list-section-lh);
+}
+.k-list-section[data-section="overdue"] > td {
+  color: var(--k-error);
+}
+.k-list-section[data-section="later"] > td {
+  color: var(--k-on-surface-variant);
+}
+.k-list-table tbody tr[data-ticket]:hover > td {
+  background: var(--k-select);
+}
+.k-list-title-cell {
+  max-width: var(--k-c-list-title-max-width);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.k-list-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--k-c-list-target-height);
+  color: var(--k-on-surface);
+  text-decoration: none;
+}
+.k-list-link:hover {
+  color: var(--k-primary);
+  text-decoration: underline;
+}
+.k-list-number {
+  color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+  text-decoration: underline;
+}
+.k-list-table td[data-late] {
+  color: var(--k-st-danger);
+  font-weight: var(--k-c-list-th-fw);
+}
+.k-list-late,
+.k-list-ai {
+  display: inline-flex;
+  align-items: center;
+}
+.k-list-late {
+  margin: var(--k-c-list-late-margin);
+  vertical-align: var(--k-c-list-late-va);
+}
+.k-list-late svg {
+  width: var(--k-c-list-late-icon-width);
+  height: var(--k-c-list-late-icon-height);
+}
+.k-list-ai svg {
+  width: var(--k-c-list-ai-icon-width);
+  height: var(--k-c-list-ai-icon-height);
+}
+.k-list-table td.k-list-dim {
+  font-size: var(--k-text-body-sm);
+}
+.k-list-tag {
+  display: inline-block;
+  min-width: var(--k-c-list-tag-min-width);
+  padding: var(--k-c-list-tag-pad);
+  border-radius: var(--k-c-list-tag-radius);
+  color: var(--k-c-list-tag-fg);
+  font-size: var(--k-c-list-tag-text);
+  font-weight: var(--k-c-list-tag-fw);
+  text-align: center;
+  background: var(--k-neutral-strong);
+}
+.k-list-tag[data-tone="secondary"] {
+  background: var(--k-secondary);
+}
+.k-list-tag[data-tone="error"] {
+  background: var(--k-error);
+}
+.k-list-tag[data-tone="warning"] {
+  background: var(--k-st-warning);
+}
+.k-list-tag[data-tone="tertiary"] {
+  background: var(--k-tertiary);
+}
+.k-list-tag[data-tone="progress"] {
+  background: var(--k-st-progress);
+}
+.k-list-tag[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-list-tag[data-tone="success"] {
+  background: var(--k-st-success);
+}
+.k-list-who {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-c-list-who-gap);
+}
+.k-list-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-list-avatar-width);
+  height: var(--k-c-list-avatar-height);
+  border-radius: var(--k-c-list-avatar-radius);
+  background: var(--k-c-list-avatar-bg);
+  color: var(--k-c-list-avatar-fg);
+  font-size: var(--k-c-list-avatar-text);
+  font-weight: var(--k-c-list-avatar-fw);
+}
+.k-list-ai {
+  gap: var(--k-c-list-ai-gap);
+  font-weight: var(--k-c-list-ai-fw);
+  padding: var(--k-c-list-ai-pad);
+  border: var(--k-c-list-ai-border);
+  border-radius: var(--k-c-list-ai-radius);
+  color: var(--k-c-list-ai-fg);
+  font-size: var(--k-c-list-ai-text);
+}
+.k-list-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--k-c-list-more-gap);
+  padding: var(--k-c-list-more-pad);
+}
+
+/* ---- Main の右の列：基準の幅 300・広がっても 360 まで（キャンバス Main の aside）---- */
+.k-list-body:not([data-first]) > .k-list-side {
+  flex: 1 1 var(--k-c-list-side-main-width);
+  width: auto;
+  max-width: var(--k-c-list-side-main-max-width);
+}
+/* ---- Main の右の列の箱 ---- */
+.k-list-box {
+  background: var(--k-c-list-box-bg);
+  border: var(--k-c-list-box-border);
+  border-radius: var(--k-c-list-box-radius);
+}
+.k-list-box-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--k-c-list-box-title-pad);
+  border-bottom: var(--k-c-list-box-title-border-bottom);
+  font-size: var(--k-c-list-box-title-text);
+  font-weight: var(--k-c-list-box-title-fw);
+  line-height: var(--k-c-list-box-title-lh);
+}
+.k-list-box-more {
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-body);
+  color: var(--k-primary);
+}
+.k-list-box-row {
+  margin: 0;
+  padding: var(--k-c-list-box-row-pad);
+  border-bottom: var(--k-c-list-box-row-border-bottom);
+}
+.k-list-box-row:last-child {
+  border-bottom: 0;
+}
+.k-list-box-row .k-list-dim {
+  font-size: var(--k-text-body-sm);
+}
+.k-list-box-link {
+  font-weight: var(--k-c-list-th-fw);
+}
+
+/* 右の列は、本文の左の列と並ぶ幅が無いとき（1023 以下）本文の下に折り返す（flex-wrap・キャンバスの aside と同じ） */
+/* 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ね、行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ・作る面の帯と同じ形）。
+   数の札は 2 列（キャンバスの 4 列の格子の折り返し） */
+@media (max-width: 767px) {
+  /* 狭い幅は箱の位置の基準を表の箱の頭の行にし、箱を表の箱の幅に収める（ボタンが右の端に無くても画面の外に出ない） */
+  .k-list-columns-anchor {
+    position: static;
+  }
+  .k-list-columns {
+    top: 100%;
+    right: var(--k-s-sm);
+    max-width: calc(100% - var(--k-s-md));
+  }
+  /* Main の右の列は幅いっぱい（キャンバスの aside{max-width:none}） */
+  .k-list-body:not([data-first]) > .k-list-side {
+    max-width: 100%;
+  }
+  .k-list-head-row > button {
+    position: absolute;
+    top: var(--k-s-xs);
+    right: var(--k-s-sm);
+  }
+  .k-list-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
