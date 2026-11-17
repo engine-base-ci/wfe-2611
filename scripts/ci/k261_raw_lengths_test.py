@@ -35,7 +35,7 @@ rounded:
 ---
 # 作りもの
 """
-TOKENS = ":root {\n  --k-s-sm: 8px;\n  --k-s-md: 16px;\n  --k-lh-body: 1.6;\n  --k-shadow: 0 8px 24px #0002;\n}\n"
+TOKENS = ":root {\n  --k-s-sm: 8px;\n  --k-s-md: 16px;\n  --k-lh-body: 1.6;\n  --k-shadow: 0 8px 24px #000;\n}\n"
 BASE_CFG = {
     "raw_lengths": {
         "paths": ["web"],
@@ -123,6 +123,12 @@ class D8(unittest.TestCase):
         self.assertIn(".a", lines[0])
         self.assertIn("padding: 10px 12px", lines[0])
         self.assertRegex(r.stdout, r"D8_生の長さ: 1 件")
+        # 注釈の中の { } ; と値は数えず、注釈の後の宣言の行も合う
+        r = self.assertRed("/* .x { padding: 10px; } gap: 2px; }\n */\n.b {\n  color: inherit;\n  gap: 6px;\n}\n")
+        lines = d8_lines(r.stdout)
+        self.assertEqual(len(lines), 1, r.stdout)
+        self.assertIn("web/a.css:5", lines[0])
+        self.assertIn(".b { gap: 6px }", lines[0])
 
     def test_K261_RL_002_token_green(self) -> None:
         """K261-RL-002 同じ所をトークンにすると 0 で終わる"""
@@ -136,11 +142,14 @@ class D8(unittest.TestCase):
             "max-height: 80vh", "padding-top: 4px", "padding-inline: 12px", "margin: 0 auto 16px",
             "margin-left: -2px", "gap: 6px", "row-gap: 4px", "column-gap: 8px", "inset: 0 4px",
             "top: 8px", "right: 8px", "bottom: 8px", "left: 50%", "line-height: 1.9", "line-height: 20px",
-            "box-shadow: 0 8px 24px #0002", "border-width: 2px", "border-top-width: 1px", "border: 1px solid #000",
+            "box-shadow: 0 8px 24px #000", "border-width: 2px", "border-top-width: 1px", "border: 1px solid #000",
             "border-bottom: 2px solid currentColor", "outline: 2px solid #000", "outline-offset: 2px",
             "flex-basis: 240px", "flex: 1 1 240px", "grid-template-columns: 240px 1fr",
             "grid-template-rows: auto 48px", "transform: translateY(4px)", "letter-spacing: .02em",
             "font: 14px/1.5 sans-serif", "translate: 0 2px",
+            # 表に名前の無い性質も見る（性質を決め打ちしない）
+            "text-indent: 1em", "scroll-margin-top: 64px", "background-size: 12px 12px",
+            "background-position: 30% 4px", "word-spacing: 2px", "stroke-width: 1.5px",
         ]
         for d in decls:
             with self.subTest(d):
@@ -148,7 +157,8 @@ class D8(unittest.TestCase):
 
     def test_K261_RL_004_each_unit_red(self) -> None:
         """K261-RL-004 単位ごと（px・rem・em・%・vw・vh・ch・大文字の PX）に赤"""
-        for v in ("12px", "1rem", "1.5em", "50%", "10vw", "20vh", "60ch", "12PX", ".5rem"):
+        for v in ("12px", "1rem", "1.5em", "50%", "10vw", "20vh", "60ch", "12PX", ".5rem", "100dvh", "100svh",
+                  "50vmin", "40cqi", "10pt", "2lh", "1e1px"):
             with self.subTest(v):
                 self.assertRed(f".a {{ width: {v}; }}\n", v)
 
@@ -158,6 +168,9 @@ class D8(unittest.TestCase):
             "予備の値": ".a { gap: var(--k-s-sm, 12px); }",
             "無いトークン": ".a { gap: var(--k-nope); }",
             "calc": ".a { width: calc(100% - 12px); }",
+            "min": ".a { width: min(400px, 100%); }",
+            "max": ".a { width: max(var(--k-s-md), 12px); }",
+            "clamp": ".a { width: clamp(var(--k-s-sm), 50%, var(--k-s-md)); }",
             "入れ子": ".a { color: inherit; &:hover { gap: 6px; } }",
             "@layer": "@layer x { .a { gap: 6px; } }",
             "@supports": "@supports (display: grid) { .a { gap: 6px; } }",
@@ -188,21 +201,34 @@ class D8(unittest.TestCase):
                          "@keyframes k { 0% { opacity: 0; } 50% { opacity: .5; } 100% { opacity: 1; } }\n")
 
     def test_K261_RL_008_not_lengths_green(self) -> None:
-        """K261-RL-008 長さでない物は見ない：font-size（D4）・角丸（D3）・色の関数の %・文字・url・時間・数だけの値"""
+        """K261-RL-008 長さでない物・別の段が比べる物は見ない：font-size の px（D4）・border-radius の px（D3）・色の関数の %・文字・url・時間・数だけの値・
+        長さでない自前の変数・どこにも定義の無い頭の違う変数。D3・D4 が比べない書き方（rem の字・% の角丸・角ごとの角丸）は D8 が赤"""
         r = self.assertGreen(
-            ".a { font-size: 13px; border-radius: 4px; border-top-left-radius: 4px; "
+            ".a { --c: #22345C; color: var(--c); width: var(--from-js); font-size: 13px; border-radius: 4px; "
             "background: color-mix(in srgb, #22345C 20%, transparent); color: hsl(0 0% 50%); "
             "content: \"12px\"; background-image: url(a-12px.svg); transition: opacity .2s ease 100ms; "
             "z-index: 10; opacity: .5; flex: 1; font-weight: 600; aspect-ratio: 16 / 9; "
             "grid-template-columns: repeat(3, minmax(0, 1fr)); }\n")
         self.assertRegex(r.stdout, r"D4_文字_段に無い: 0 件")
+        for d in ("font-size: 1.1rem", "border-radius: 50%", "border-top-left-radius: 7px"):
+            with self.subTest(d):
+                self.assertRed(f".a {{ {d}; }}\n", d)
 
     def test_K261_RL_009_token_file_ignored(self) -> None:
-        """K261-RL-009 token_css（トークンの定義元）の宣言は見ない。トークンの外の画面の CSS だけを見る"""
+        """K261-RL-009 token_css の宣言と、組み立ての置き場（node_modules・.next）の .css は見ない。
+        ignore_files（D1〜D7 の外し）は D8 を外さない"""
         t = self.tree(".a { gap: var(--k-s-sm); }\n")
+        for d in ("node_modules/x", ".next/static"):
+            (t.dir / "web" / d).mkdir(parents=True)
+            (t.dir / "web" / d / "z.css").write_text(".z { gap: 6px; }\n", encoding="utf-8")
         r = t.run("--raw-lengths")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertNotIn("tokens.css", "\n".join(d8_lines(r.stdout)))
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["ignore_files"] = ["a.css"]
+        t = self.tree(".a { gap: 6px; }\n", cfg=cfg)
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 1, "ignore_files で D8 が黙った\n" + r.stdout)
 
     # ---------------------------------------------------------------- 設定
     def test_K261_RL_010_config_failures_red(self) -> None:
@@ -276,6 +302,37 @@ class D8(unittest.TestCase):
         self.assertEqual(r.returncode, 0, "減らしたのに赤\n" + r.stdout)
         r = t.run("--raw-lengths", "--ledger-base-ref", "no-such-ref")
         self.assertEqual(r.returncode, 1, "読めない版で緑\n" + r.stdout)
+        # 入れ替え：1 行消して別の 1 行を足す（行の数も count の和も同じ）
+        t.css(".b { gap: 4px; }\n.c { gap: 2px; }\n")
+        t.ledger([entry(".b", "gap", "4px"), entry(".c", "gap", "2px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "入れ替えで通った\n" + r.stdout)
+        # 台帳の道を変えても、分かれ目の設定が指す台帳と比べる
+        cfg = json.loads(json.dumps(BASE_CFG))
+        cfg["raw_lengths"]["ledger"] = "ledger2.json"
+        t.cfg(cfg)
+        (t.dir / "ledger2.json").write_text(json.dumps({"entries": [entry(".b", "gap", "4px"), entry(".c", "gap", "2px")]}),
+                                           encoding="utf-8")
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "台帳の道を変えて足した行が通った\n" + r.stdout)
+
+    def test_K261_RL_012b_base_without_config(self) -> None:
+        """K261-RL-012 分かれ目の設定に raw_lengths が無い回（台帳を入れる回）だけ比べずに通す。設定が在って台帳が無ければ赤"""
+        t = self.tree(".a { gap: 6px; }\n", cfg={}, ledger=[])
+        t.git("init", "-q")
+        t.git("add", "-A")
+        t.git("commit", "-q", "-m", "base")
+        t.cfg(BASE_CFG)
+        t.ledger([entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("台帳を入れる回", r.stdout)
+        (t.dir / "ledger.json").unlink()
+        t.git("add", "-A")
+        t.git("commit", "-q", "-m", "config only")
+        t.ledger([entry(".a", "gap", "6px")])
+        r = t.run("--raw-lengths", "--ledger-base-ref", "HEAD")
+        self.assertEqual(r.returncode, 1, "分かれ目に台帳が無いのに通った\n" + r.stdout)
 
     def test_K261_RL_013_shrink(self) -> None:
         """K261-RL-013 --shrink-ledger は直った行を消し count を今の数に下げるだけで、台帳に無い赤は足さない"""
@@ -317,8 +374,11 @@ class RealTree(unittest.TestCase):
     def test_K261_RL_015_real_tree(self) -> None:
         """K261-RL-015 本物の設定と台帳：置き場・トークン・許しの理由・台帳の上限と形、CI の命令が本物の木で 0 で終わる"""
         conf = json.loads(CFG.read_text(encoding="utf-8"))["raw_lengths"]
-        self.assertIn("apps/web", conf["paths"])
-        self.assertIn("apps/web/styles/k-tokens.css", conf["token_css"])
+        # 設定を変えて D8 を黙らせない（置き場を狭める・トークンの定義元に画面の CSS を足す・見ない物を足す）
+        self.assertEqual(set(conf), {"paths", "token_css", "token_prefix", "allow", "ledger"})
+        self.assertEqual(conf["paths"], ["apps/web"])
+        self.assertEqual(sorted(conf["token_css"]), ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"])
+        self.assertEqual(conf["token_prefix"], "--k-")
         for a in conf["allow"]:
             self.assertGreaterEqual(len(str(a.get("reason") or "").strip()), 6, a)
         self.assertEqual({str(a["value"]) for a in conf["allow"]}, {"0", "100%"})
