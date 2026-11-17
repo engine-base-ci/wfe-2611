@@ -768,6 +768,24 @@
    "na": {
     "test_post_me_setup_tasks_dismiss_rejected_422_3": "名前・メール・パスワードの保存の型で、この口は key（飛ばす項目）だけを受ける"
    }
+  },
+  "requestPasswordReset": {
+   "file": "apps/api/test/features/F1/password-forgot.test.ts",
+   "reason": "再設定を頼む口は、本物の DB の本人と verification・差し込んだ送出先（関門 C6）・答えの後の送りで確かめる（K-313）",
+   "covers": {
+    "test_post_auth_password_forgot_ok": "K313-API-001 登録済みの人が頼む",
+    "test_post_auth_password_forgot_rejected_422": "K313-API-006 メールが空・形が違う・欄が無い",
+    "test_post_auth_password_forgot_rate_limited": "K313-API-011 同じ IP から 1 分に 11 回",
+    "test_post_auth_password_forgot_shape": "K313-API-012 記録（関門 C2）",
+    "test_post_auth_password_forgot_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_password_forgot_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
   }
  }
 }
