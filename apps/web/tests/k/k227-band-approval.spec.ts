@@ -360,6 +360,19 @@ test("K227-UI-021 承認の 1 件が読めない（500）：決められない�
   }
 });
 
+test("K227-UI-022 承認の 1 件の答えに確認の要約が無い（check_summary が空）：決められる人の帯の要約は「成果物は M/D HH:MM に作成」だけで、「確認」の部分も「検査なし」の字も無い", async ({
+  page,
+}) => {
+  const m = await mockApi(page, decider);
+  m.on.detail = (req) => ({
+    status: 200,
+    body: { data: detailOf(new URL(req.url()).pathname.split("/").at(-1)!, { check_summary: "" }) },
+  });
+  await openTicketSettled(page);
+  await expect(statusBox(page).locator(".k-band-sub")).toHaveText(/^成果物は \d{1,2}\/\d{1,2} \d{2}:\d{2} に作成$/);
+  await expect(statusBox(page)).not.toContainText(MSG.checkNone);
+});
+
 fidelityConfigTest(
   "K227-UI-018 突き合わせの設定：band-approval が enrolled・持ち主 K-227・画面を整える道具に鍵・画面の側のセレクタに .k-panel が無い",
   ["band-approval"],
