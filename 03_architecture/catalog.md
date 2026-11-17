@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 39・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 172・部品 53・設定 41
+API 365（作った 40・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 172・部品 53・設定 41
 
 ## 共通の処理
 
@@ -145,7 +145,7 @@ API 365（作った 39・後のフェーズの行為だけ 20）・前の道す�
 | `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | K-76 |
 | `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-307 |
-| `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
+| `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-301 |
 | `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-51 |
 | `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |

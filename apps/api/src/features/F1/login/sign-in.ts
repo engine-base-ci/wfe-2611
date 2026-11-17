@@ -1,0 +1,101 @@
+// K-301 パスワードで入る（契約の口 signInWithPassword・POST /api/v1/auth/sign-in）。
+//   上限（1 分に 10 回・IP ごと）と入力の形（strict）は契約の入口（op.ts）が先に確かめる。ここは前処理（空）と振る舞い。
+//   5 回違えたら 15 分ロック（app.login_attempts・D-042）。無いメールも違うパスワードと同じ答え・同じくらいの時間（部品が無いメールでもハッシュを計算する）。
+//   2 段階を付けた人は、まだ入らず待ちの印（pending・5 分）を受け取る。6 けたで入るのは K-302。
+//   ログインの部品（better-auth）・生の DB・外への送信は直に使わない（部品は @kaname/auth の中だけ・境界 B2・関門 C2）。
+//   ログにメール・パスワード・ログインの印・待ちの印を出さない（K301-API-021）
+import type { Auth } from "@kaname/auth";
+import { countryOf } from "@kaname/auth/device";
+import { createSessionResolver, signOut } from "@kaname/auth/resolver";
+import { EMAIL_RE, normalizeEmail, signInWithLock, type SignInResult } from "@kaname/auth/signup";
+import { kanameError } from "@kaname/errors";
+import type { HookArgs, HookReply } from "../../../contract/deps.js";
+
+type AppPool = Parameters<typeof signInWithLock>[1];
+type AuthPool = NonNullable<Parameters<typeof signInWithLock>[5]>["authPool"];
+
+export interface LoginDeps {
+  auth: Auth;
+  /** kaname_app の接続（ロック・セッションの写し・記録） */
+  appPool: AppPool;
+  /** 認証の接続（失敗とロックの記録のとき、メールから本人を引く） */
+  authPool: AuthPool;
+  config: { opsEmail: string };
+}
+
+/** ロックの長さ（秒）。app.login_failed の 15 分と同じ（待つ秒数をこれより大きく言わない） */
+const LOCK_SEC = 15 * 60;
+
+const reply = (status: number, code: string, extra: Record<string, unknown> = {}): HookReply => ({
+  status,
+  body: { ...kanameError(code).toJSON(), ...extra },
+});
+/** 例外の種類だけ（DB の番号か名前）。文や値はログに出さない */
+const kindOf = (e: unknown): string => {
+  const x = e as { code?: unknown; name?: unknown } | null;
+  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+};
+const filled = (v: unknown): boolean => typeof v === "string" && v !== "";
+
+/** 失敗の答え：ロック（429）か残り回数つきの 401。登録していないメールも同じ形（有る無しを漏らさない・D-042） */
+function failed(r: SignInResult): HookReply {
+  if (r.lockedUntil) {
+    const sec = Math.ceil((r.lockedUntil.getTime() - Date.now()) / 1000);
+    return reply(429, "E-AUTH-002", { retry_after_sec: Math.min(LOCK_SEC, Math.max(1, sec)), remaining: 0 });
+  }
+  const remaining = r.remaining ?? 0;
+  return reply(401, "E-AUTH-001", {
+    message: `メールアドレスかパスワードが違います。あと ${remaining} 回で 15 分ロックします`,
+    remaining,
+  });
+}
+
+export function loginFeature(d: LoginDeps) {
+  const resolve = createSessionResolver(d.auth, d.appPool);
+
+  /** 前処理（入口の strict な形の確かめより前）：メールかパスワードが無い・空なら 422・E-VAL-008（DB を引かない・失敗に数えない） */
+  const input = (raw: unknown): { input: Record<string, unknown> } | { reply: HookReply } => {
+    const b = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+    if (!filled(b["email"]) || !filled(b["password"])) return { reply: reply(422, "E-VAL-008") };
+    return { input: b };
+  };
+
+  /** 入ったのに会社の人が無い・抜けた：その場で閉じて 403・E-AUTH-007（ログインの印を渡さない）。止めの 1 か所への移しは K-303 */
+  const memberGone = async (token: string, ua: string | undefined): Promise<boolean> => {
+    const h = new Headers({ authorization: `Bearer ${token}` });
+    if (ua) h.set("user-agent", ua);
+    if (await resolve(h)) return false;
+    await signOut(d.auth, d.appPool, h);
+    return true;
+  };
+
+  const signIn = async (a: HookArgs): Promise<HookReply> => {
+    // パスワードは入口の正規化（前後の空白を落とす）の前の値を使う（打ったとおりに比べる・K301-API-012）
+    const raw = (await a.c.req.json().catch(() => ({}))) as Record<string, unknown>;
+    const password = typeof raw["password"] === "string" ? raw["password"] : String(a.input["password"] ?? "");
+    const email = normalizeEmail(String(a.input["email"] ?? ""));
+    if (!EMAIL_RE.test(email)) return reply(422, "E-VAL-004", { detail: { field: "email" } });
+    const ua = a.c.req.header("user-agent");
+    try {
+      const r = await signInWithLock(d.auth, d.appPool, email, password, ua, {
+        authPool: d.authPool,
+        country: countryOf(a.c.req.raw.headers),
+      });
+      if (r.invalidEmail) return reply(422, "E-VAL-004", { detail: { field: "email" } });
+      if (!r.ok) return failed(r);
+      if (r.twoFactor) {
+        if (!r.pending) throw new Error("2 段階の待ちの印が無い");
+        return { status: 201, body: { data: { token: null, two_factor: true, pending: r.pending } } };
+      }
+      if (!r.token) throw new Error("ログインの印が無い");
+      if (await memberGone(r.token, ua)) return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
+      return { status: 201, body: { data: { token: r.token, two_factor: false, pending: null } } };
+    } catch (e) {
+      // DB が落ちた・セッションを写す所で失敗した：パスワードの失敗には数えず 500（部品の側で半分だけ入ったセッションは消してある）
+      console.error(`[login] パスワードのログインの途中で落ちた（${kindOf(e)}）`);
+      return reply(500, "E-PAGE-003");
+    }
+  };
+
+  return { input, signIn };
+}

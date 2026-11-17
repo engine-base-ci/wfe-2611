@@ -4026,8 +4026,90 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "本文に知らない欄（remember_me・trust_device など・strict）",
+     "ears_form": "UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、DB を引かず失敗の数に入れない"
+    },
+    {
+     "status": 401,
+     "code": "E-AUTH-001",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-001",
+      "remaining": 4
+     },
+     "errors": [
+      "E-AUTH-001"
+     ],
+     "trigger": "メールアドレスかパスワードが違う・登録していないメール（同じ答え・同じくらいの時間）",
+     "ears_form": "UNWANTED: IF メールアドレスかパスワードが違うなら、Kaname は 401 と残り回数を返し、登録の有無を漏らさない"
+    },
+    {
+     "status": 403,
+     "code": "E-AUTH-007",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-007"
+     },
+     "errors": [
+      "E-AUTH-007"
+     ],
+     "trigger": "メールアドレスとパスワードは合っているが、会社の人が無い・抜けた",
+     "ears_form": "UNWANTED: IF パスワードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない"
+    },
+    {
+     "status": 422,
+     "code": "E-VAL-008",
+     "body": {
+      "error": "validation",
+      "code": "E-VAL-008"
+     },
+     "errors": [
+      "E-VAL-008"
+     ],
+     "trigger": "メールアドレスかパスワードが空・無い",
+     "ears_form": "UNWANTED: IF メールアドレスかパスワードが空なら、Kaname は 422 と E-VAL-008 を返し、DB を引かず失敗の数に入れない"
+    },
+    {
+     "status": 422,
+     "code": "E-VAL-004",
+     "body": {
+      "error": "validation",
+      "code": "E-VAL-004"
+     },
+     "errors": [
+      "E-VAL-004"
+     ],
+     "trigger": "メールアドレスの形が違う（@ が無い・ドメインが無い。全角・空白・大文字は直して通す）",
+     "ears_form": "UNWANTED: IF メールアドレスの形が違うなら、Kaname は 422 と E-VAL-004 を返し、失敗の数に入れない"
+    },
+    {
+     "status": 429,
+     "code": "E-AUTH-002",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-002",
+      "retry_after_sec": 900,
+      "remaining": 0
+     },
+     "errors": [
+      "E-AUTH-002"
+     ],
+     "trigger": "5 回続けて違えた・ロック中（15 分）",
+     "ears_form": "UNWANTED: IF 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいパスワードでも入れない"
+    },
+    {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "ロックを見る・数える DB が落ちた・セッションを写す所で失敗した",
+     "ears_form": "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない"
     },
     {
      "status": 413,
@@ -4063,7 +4145,13 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/sign-in が「パスキーで入る／メールとパスワードと 6 桁で入る」として呼ばれたとき THEN Kaname は「セッション（操作が無ければ 12 時間・長くて 7 日）。5 回失敗で 15 分止める」を行い 2xx を返す",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、DB を引かず失敗の数に入れない",
+    "UNWANTED: IF メールアドレスかパスワードが違うなら、Kaname は 401 と残り回数を返し、登録の有無を漏らさない",
+    "UNWANTED: IF パスワードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない",
+    "UNWANTED: IF メールアドレスかパスワードが空なら、Kaname は 422 と E-VAL-008 を返し、DB を引かず失敗の数に入れない",
+    "UNWANTED: IF メールアドレスの形が違うなら、Kaname は 422 と E-VAL-004 を返し、失敗の数に入れない",
+    "UNWANTED: IF 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいパスワードでも入れない",
+    "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",

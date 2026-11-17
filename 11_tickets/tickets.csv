@@ -1624,6 +1624,20 @@ K-300,段 2 の部品とモックの画面を本線に入れる（入口と安�
 - [ ] 手元の検査：`python3 04_design/gen_tokens.py --web --check`・`python3 04_design/gen_preview.py --check`・design_gate（D1〜D7 は K300-DS-002。D8（画面の CSS の生の長さ）は CI の static の段（v3-gate.yml の design_gate --raw-lengths --ledger-base-ref ""$CI_BASE""）が流し、このチケットの試験では流さない：画面の試験の組には CI_BASE が無く、本線の名前を写しの中で読めないため・精査の指摘 1 の (c)）・`python3 scripts/ci/k218_design_canvas_test.py`・`python3 scripts/ci/class_gate.py`（台帳に足さない）が緑
 - [ ] 段 1 の前からの試験（k218-design-parts.spec.ts・k221-login-frame.spec.ts・k255-signup-waiting.spec.ts・k256-verify-consent.spec.ts）が替えずに緑（入口の枠と部品の値を変えていないこと）
 - [ ] チケットの CI が緑"
+K-301,パスワードで入る口（signInWithPassword・ロックの新しい文・無いメールも同じ答えと時間・閉じた部品の道）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"登録を済ませた人が、ログインの画面でメールとパスワードを入れて入る **契約の口**（`POST /api/v1/auth/sign-in`）を作る。今は前の道すじ `POST /api/auth-ext/sign-in` にしか振る舞いが無く、契約の口は 501。
+
+- 2 段階を付けていない人は、その場でログインの印（token）を受け取る
+- 2 段階を付けている人は、まだ入らず、2 段階の **待ちの印**（pending・5 分）を受け取る。6 けたで入るのは K-302
+- 5 回違えたら 15 分ロック。ロックの文は D-128.141 で「15 分たってから、もう一度入ってください」に直す（解除のメールは作らない）
+- 無いメールでも、違うパスワードと同じ答え・同じくらいの時間で返す（D-042「有る無しを漏らさない」）
+- ロックを通らない部品の道 `POST /api/auth/sign-in/email` を閉じる（404）
+
+画面をこの口に載せ替えるのは K-316（重さの上限：この葉は apps/web に触らない）。前の道すじ `/api/auth-ext/sign-in` は画面と前からの試験 20 か所が使っているので、この葉では消さず、K-316 が画面を移すときに消す。","- [ ] 下の表の 27 行（K301-API-001〜027）が本物の DB の上で緑（`apps/api/test/features/F1/sign-in.test.ts`・土台は `login.harness.ts`）
+- [ ] 契約の口 signInWithPassword が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_sign_in.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している
+- [ ] errors.json の E-AUTH-002 の文が直り、目録（packages/errors）が作り直されている
+- [ ] 前からの試験（apps/api/test/auth_ext.test.ts の前の道すじのログイン・packages/auth の試験）が緑のまま
+- [ ] 前からの試験の手直し 1 か所（carry：`apps/api/test/k237_perf_budget.test.ts` の K237-API-005。段 1 で入った試験で、段 2 で振る舞いが入る・閉じる道（契約のログイン 501・部品のログインの道・部品の再設定の申し込みの道・前の道すじのログイン・契約の再設定の申し込み 501）を外し、ログインの分は K301-API-027、再設定の申し込みの分は K313-API-018 に移した）が緑
+- [ ] チケットの CI が緑"
 K-307,いまの様子（誰でも読める稼働状況の口 getServiceStatus・公開の分だけ・型を決める・app.public_service_status）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"ログインしていない人にも、Kaname の **いまの様子**（直っていない障害・いま中のメンテナンス）を返す契約の口 `GET /api/v1/auth/service-status`（getServiceStatus）を作る。ログインの画面の上の帯（K-317）と、困ったとき（/help・K-315）の「いまの稼働状況」が読む（D-128.110。D-128.110 の「メンテの予定も読める」は、代表の答え answer=88f98638a534 で「中のときだけ・予定は出さない」に改めた）。今は 501。
 
 返すのは **運営が公開したものだけ**（どのワークスペースのことも出さない）。メンテナンスは **中のときだけ** 出し、予定は出さない（代表の答え answer=88f98638a534・帯も困ったときも同じ決まり）。契約の答えの型が曖昧（`components?: string[]` など）なので、この葉で決める：

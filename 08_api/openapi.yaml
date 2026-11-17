@@ -9376,6 +9376,21 @@ components:
       required:
       - email
       x-required-by: hooks
+    SignInInput:
+      type: object
+      properties:
+        email:
+          type: string
+          pattern: \S
+        password:
+          type: string
+          pattern: \S
+      additionalProperties: false
+      x-operation: signInWithPassword
+      required:
+      - email
+      - password
+      x-required-by: hooks
     TermsConsentInput:
       type: object
       properties:
@@ -9950,6 +9965,18 @@ components:
         accepted:
           type: boolean
       x-operation: requestPasswordReset
+    SignInResult:
+      type: object
+      properties:
+        token:
+          type: string
+          nullable: true
+        two_factor:
+          type: boolean
+        pending:
+          type: string
+          nullable: true
+      x-operation: signInWithPassword
     CurrentTerms:
       type: object
       properties:
@@ -13698,7 +13725,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/SignInInput'
       responses:
         '201':
           description: 成功
@@ -13708,7 +13735,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/SignInResult'
                   meta:
                     type: object
         '409':
@@ -13718,19 +13745,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VAL-008／E-VAL-004（契約に書けない値の決まり：メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）
+        '401':
+          description: E-AUTH-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-AUTH-007
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: E-AUTH-002／RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
           content:
             application/json:
               schema:

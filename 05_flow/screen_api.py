@@ -503,6 +503,8 @@ INPUTS = {
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
     # 再設定のメールを頼む（K-313）：メールだけ。登録の有無に関わらず同じ答え（D-042）
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
+    # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
+    "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
     # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
@@ -551,6 +553,30 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
+    # パスワードで入る（K-301・D-042・D-128.141）。違う（401・残り回数）・会社の人が無い（403）・空と形（422）・5 回でロック（429）・写す所の失敗（500）
+    "signInWithPassword": [
+        {"status": 401, "code": "E-AUTH-001", "body": {"error": "auth", "code": "E-AUTH-001", "remaining": 4}, "errors": ["E-AUTH-001"],
+         "trigger": "メールアドレスかパスワードが違う・登録していないメール（同じ答え・同じくらいの時間）",
+         "ears_form": "UNWANTED: IF メールアドレスかパスワードが違うなら、Kaname は 401 と残り回数を返し、登録の有無を漏らさない"},
+        {"status": 403, "code": "E-AUTH-007", "body": {"error": "auth", "code": "E-AUTH-007"}, "errors": ["E-AUTH-007"],
+         "trigger": "メールアドレスとパスワードは合っているが、会社の人が無い・抜けた",
+         "ears_form": "UNWANTED: IF パスワードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "本文に知らない欄（remember_me・trust_device など・strict）",
+         "ears_form": "UNWANTED: IF 本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、DB を引かず失敗の数に入れない"},
+        {"status": 422, "code": "E-VAL-008", "body": {"error": "validation", "code": "E-VAL-008"}, "errors": ["E-VAL-008"],
+         "trigger": "メールアドレスかパスワードが空・無い",
+         "ears_form": "UNWANTED: IF メールアドレスかパスワードが空なら、Kaname は 422 と E-VAL-008 を返し、DB を引かず失敗の数に入れない"},
+        {"status": 422, "code": "E-VAL-004", "body": {"error": "validation", "code": "E-VAL-004"}, "errors": ["E-VAL-004"],
+         "trigger": "メールアドレスの形が違う（@ が無い・ドメインが無い。全角・空白・大文字は直して通す）",
+         "ears_form": "UNWANTED: IF メールアドレスの形が違うなら、Kaname は 422 と E-VAL-004 を返し、失敗の数に入れない"},
+        {"status": 429, "code": "E-AUTH-002", "body": {"error": "auth", "code": "E-AUTH-002", "retry_after_sec": 900, "remaining": 0}, "errors": ["E-AUTH-002"],
+         "trigger": "5 回続けて違えた・ロック中（15 分）",
+         "ears_form": "UNWANTED: IF 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいパスワードでも入れない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "ロックを見る・数える DB が落ちた・セッションを写す所で失敗した",
+         "ears_form": "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない"},
+    ],
     # 承認する（K-162）。決まった・取り下げた承認（409・E-CONF-003）・入力の 422（体に知らない欄・id が uuid でない）・守りの判定で例外（503・E-PAGE-003）
     "approveApproval": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-003"}, "errors": ["E-CONF-003"],
@@ -712,6 +738,7 @@ REQUIRED_INPUTS = {
     "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
     "requestPasswordReset": ["email"],                                   # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
+    "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
@@ -757,6 +784,7 @@ VALUE_RANGES = {
         "password": {"minLength": 12},
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
+    "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
@@ -777,6 +805,7 @@ UNEXPRESSIBLE_422 = {
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
@@ -813,6 +842,8 @@ RESPONSES = {
     "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean", "terms_pending": "boolean"}),
     # 再設定のメールを頼んだ（K-313）。いつも accepted=true（登録の有無・送れたかを答えに出さない・D-042）
     "requestPasswordReset": ("PasswordForgotAccepted", {"accepted": "boolean"}),
+    # パスワードで入った（K-301）。2 段階なし：token にログインの印・two_factor=false・pending=null。2 段階あり：token=null・two_factor=true・pending に待ちの印（中身の見えない文字列・5 分。6 けたで入るのは K-302）
+    "signInWithPassword": ("SignInResult", {"token": "string?", "two_factor": "boolean", "pending": "string?"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
