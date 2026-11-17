@@ -148,6 +148,12 @@ NARROW_BY_BOARD.update({
                     "@media (max-width:767px){.kn-bar{display:none !important}}\n"
     for b in DETAIL_BOARDS
 })
+# 必須の印「*」を項目名と同じ行に置く（K-225）。縦並び（flex の column）の label の中で、項目名の字と <b>*</b> が別々の段に割れて
+#   「種別」「*」「欄」の 3 段になっていた（絵の描き方の事故）。項目名と印を 1 つの span に包む。包んだ後は合わないので、何度流しても 1 回だけ
+REQ_INLINE_BOARDS = ("Create.dc.html",)
+REQ_INLINE = re.compile(r'(<label style="display: flex; flex-direction: column;[^"]*">)([^<]+?) (<b style="color: #B91C1C">\*</b>)')
+def req_inline(s):
+    return REQ_INLINE.sub(r"\1<span>\2 \3</span>", s)
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
@@ -169,6 +175,7 @@ for path in sorted(glob.glob(P + "*.dc.html")):
     if "kn-shell" in s: s = re.sub(r"\n/\* kn-shell.*?(?=</style>)", "\n", s, flags=re.S)
     s = re.sub(r"\n{2,}(?=</style>)", "\n", s, count=1)
     s = s.replace("</style>", CSS + NARROW_BY_BOARD.get(f, "") + "</style>", 1)
+    if f in REQ_INLINE_BOARDS: s = req_inline(s)
     # root
     i = s.index("</helmet>"); j = s.index(">", s.index("<div", i))
     root = s[s.index("<div", i):j+1]

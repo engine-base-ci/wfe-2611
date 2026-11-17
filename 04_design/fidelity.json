@@ -603,7 +603,7 @@
     375
    ],
    "owner": "K-225",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -640,7 +640,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "section[aria-label=\"本文\"]",
-     "app": ".k-panel form",
+     "app": "section[aria-label=\"本文\"]",
      "props": [
       "padding-top",
       "padding-left",
@@ -667,7 +667,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "button[style*=\"padding: 0 18px\"]",
-     "app": ".k-panel form button[type=\"submit\"]",
+     "app": ".k-create-foot button[type=\"submit\"]",
      "props": [
       "height",
       "background-color",

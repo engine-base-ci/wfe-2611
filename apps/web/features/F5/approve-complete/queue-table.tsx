@@ -15,7 +15,7 @@ const NOTE =
   "— は 1 件ずつ中身を見て決めるもの（取り消せない操作・あなたが見る項目がある）。押すとチケットの詳細の承認の帯へ";
 /** 区切りの名前と件数の間（キャンバスの全角の空白） */
 const GAP = "\u3000";
-const RED_GROUPS: ReadonlySet<DueGroup> = new Set(["期限切れ", "今日"]);
+const RED_GROUPS: ReadonlySet<DueGroup> = new Set(["期限切れ"]);
 
 /** まだ使えない物：在るが押せない（aria-disabled・Tab で止まらない・押しても何もしない） */
 const inert = { "aria-disabled": true, tabIndex: -1 } as const;

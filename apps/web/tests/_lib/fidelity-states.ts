@@ -7,6 +7,7 @@
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
 import { TICKET, executedBand, jst, mockApi, qrow } from "../features/F5/approve-complete.harness";
+import { mockCreate } from "../k/create-mock";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -578,6 +579,14 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await shellApi(page, 3);
     await page.goto(path);
     await expect(page.locator('input[name="title"]')).toBeVisible();
+    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
+  },
+  // 作る面の本文の箱の区画（K-225・キャンバス Create の本文の箱）：種別はタスク（区画 4 つ）・下書きなし。区画の見出しが出るまで待つ。
+  //   種別の区画は作る画面の試験の差し替え（tests/k/create-mock.ts）の口で出す（外枠の差し替えの種別は空）
+  "tickets-new-sections": async (page, path) => {
+    await mockCreate(page);
+    await page.goto(path);
+    await expect(page.locator('section[aria-label="本文"] .k-create-doc h2').first()).toBeVisible();
     await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
   },
 };
