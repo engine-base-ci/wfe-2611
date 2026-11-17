@@ -140,6 +140,8 @@ export interface ShellProps {
   onSignOut?: () => void;
   /** 試験・見本で「作った画面」の一覧を替える */
   built?: readonly string[];
+  /** 画面が左のバーを 56 に畳ませる（チケットの一覧で横に詳細を開いた 1024〜1279・D-128.14）。本人の好み（k-shell-nav）は書き換えない */
+  railed?: boolean;
   children: ReactNode;
 }
 
@@ -289,6 +291,8 @@ export function Shell(p: ShellProps) {
   const toggleNav = () => {
     setRailed((v) => (writePref(NAV_KEY, !v), !v));
   };
+  // 画面が畳ませている間は、本人の好みに関わらず畳む（好みはそのまま残し、外れたら戻る）
+  const isRailed = railed || p.railed === true;
   const togglePanel = () => {
     setPanelOpen((v) => (writePref(PANEL_KEY, !v), !v));
   };
@@ -316,8 +320,9 @@ export function Shell(p: ShellProps) {
           <button
             type="button"
             className="k-icon-btn k-nav-toggle"
-            aria-label={railed ? "メニューを開く" : "メニューを畳む"}
-            aria-expanded={!railed}
+            aria-label={isRailed ? "メニューを開く" : "メニューを畳む"}
+            aria-expanded={!isRailed}
+            disabled={p.railed === true}
             onClick={toggleNav}
           >
             <PanelLeft size={16} aria-hidden="true" />
@@ -392,7 +397,11 @@ export function Shell(p: ShellProps) {
   );
 
   return (
-    <div className="k-root k-shell" data-railed={railed || undefined} data-panel={(p.panel && panelOpen) || undefined}>
+    <div
+      className="k-root k-shell"
+      data-railed={isRailed || undefined}
+      data-panel={(p.panel && panelOpen) || undefined}
+    >
       <a className="k-skip" href="#k-main">
         本文へ
       </a>

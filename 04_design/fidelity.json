@@ -448,14 +448,14 @@
    "id": "tickets-list",
    "kind": "page",
    "canvas": "List",
-   "app": "/tickets",
+   "app": "/tickets?scope=22222222-0000-4000-8000-000000000001",
    "state": "tickets-list",
    "widths": [
     1440,
     375
    ],
    "owner": "K-252",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -475,7 +475,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -492,7 +492,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",
