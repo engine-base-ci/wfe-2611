@@ -12,7 +12,7 @@ import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth, type Auth } from "@kaname/auth";
 import { createSessionResolver } from "@kaname/auth/resolver";
-import { createPool } from "@kaname/db/pool";
+import { countQueries, createPool, withDbCount, type DbCount } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { ObjectStore } from "@kaname/storage";
@@ -55,6 +55,7 @@ let auth: Auth;
 let app: ReturnType<typeof createApp>;
 let token = "";
 let ticketId = "";
+let email = "";
 
 // ---------------------------------------------------------------- 数える（接続を取る所を包み、その接続の query を記録する）
 const hits: string[] = [];
@@ -149,8 +150,9 @@ beforeAll(async () => {
       limits: {},
     },
   });
+  email = `k237-${Date.now().toString(36)}@example.com`;
   const v = await verifiedUser(AUTH_URL, {
-    email: `k237-${Date.now().toString(36)}@example.com`,
+    email,
     password: PW,
     companyName: "K237 の会社",
   });
@@ -231,15 +233,70 @@ describe("K-237 口ごとの DB の文の数（台帳の上限）", () => {
     }
   });
 
-  it("K237-API-004 /health と、ログインしていない契約の口（401）の答えにも Server-Timing の db と q があり、/health の q は 0", async () => {
+  it("K237-API-004 /health と規約の今の版の口（誰が呼んでも同じ道）の答えには Server-Timing の db と q があり、/health の q は 0。ログインしていない契約の口（401）と、解けない鍵の 401 の答えには Server-Timing が無い", async () => {
     const st = (r: Response) => r.headers.get("server-timing") ?? "";
     const health = await app.request("http://localhost/health");
     const h = st(health);
     expect(h).toMatch(/(?:^|,)\s*db;dur=\d+(?:\.\d+)?/);
     expect(/(?:^|,)\s*q;desc="statements";dur=(\d+)/.exec(h)?.[1]).toBe("0");
+    const terms = await app.request("http://localhost/api/v1/auth/terms/current", { headers: { "user-agent": UA } });
+    expect(st(terms)).toMatch(/(?:^|,)\s*q;desc="statements";dur=\d+/);
     const anon = await app.request("http://localhost/api/v1/scopes", { headers: { "user-agent": UA } });
     expect(anon.status).toBe(401);
-    expect(st(anon)).toMatch(/(?:^|,)\s*db;dur=\d+(?:\.\d+)?/);
-    expect(st(anon)).toMatch(/(?:^|,)\s*q;desc="statements";dur=\d+/);
+    expect(anon.headers.get("server-timing")).toBeNull();
+    const bogus = await app.request("http://localhost/api/v1/scopes", {
+      headers: { "user-agent": UA, authorization: "Bearer k237-not-a-session" },
+    });
+    expect(bogus.status).toBe(401);
+    expect(bogus.headers.get("server-timing")).toBeNull();
+  });
+
+  it("K237-API-005 ログイン・登録・再設定の申し込みの答え（セッションの無い要求）には、登録の有無にかかわらず Server-Timing が無い（文の数で登録の有無を漏らさない・PM の決め）", async () => {
+    const ghost = `k237-none-${Date.now().toString(36)}@example.com`;
+    const post = (path: string, body: unknown) =>
+      app.request(`http://localhost${path}`, {
+        method: "POST",
+        headers: { "user-agent": UA, "content-type": "application/json", origin: "http://localhost:3123" },
+        body: JSON.stringify(body),
+      });
+    const cases: [string, unknown][] = [];
+    for (const who of [email, ghost]) {
+      cases.push(
+        ["/api/auth/sign-in/email", { email: who, password: "wrong-password-0000" }],
+        ["/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }],
+        ["/api/auth-ext/sign-in", { email: who, password: "wrong-password-0000" }],
+        ["/api/v1/auth/sign-in", { email: who, password: "wrong-password-0000" }],
+        ["/api/v1/auth/password/forgot", { email: who }],
+        ["/api/v1/auth/sign-up", { email: who, password: PW, company_name: "K237 の会社" }],
+      );
+    }
+    cases.push([
+      "/api/auth/sign-up/email",
+      { email: `k237-new-${Date.now().toString(36)}@example.com`, password: PW, name: "K237" },
+    ]);
+    const leaked: string[] = [];
+    for (const [path, body] of cases) {
+      const r = await post(path, body);
+      const st = r.headers.get("server-timing");
+      if (st !== null) leaked.push(`${path}（${r.status}）：${st}`);
+    }
+    expect(leaked, leaked.join("\n")).toEqual([]);
+  });
+
+  it("K237-API-006 同時の 2 つの要求の数は混ざらない：接続が 1 本のプールで、2 つの数え器の中から pool.query を 3 回と 5 回同時に流すと、それぞれ 3 と 5", async () => {
+    const pool = countQueries(new pg.Pool({ connectionString: AUTH_URL, max: 1 }));
+    try {
+      const run = (n: number): Promise<DbCount> => {
+        const c: DbCount = { statements: 0, ms: 0 };
+        return withDbCount(c, async () => {
+          for (let i = 0; i < n; i += 1) await pool.query("select 1");
+          return c;
+        });
+      };
+      const [a, b] = await Promise.all([run(3), run(5)]);
+      expect([a.statements, b.statements]).toEqual([3, 5]);
+    } finally {
+      await pool.end();
+    }
   });
 });
