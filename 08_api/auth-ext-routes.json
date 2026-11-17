@@ -447,18 +447,6 @@
   },
   {
    "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/sign-in",
-   "to": "signInWithPassword"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
-   "method": "POST",
-   "route": "/api/auth-ext/two-factor/verify",
-   "to": "verifySignInCode"
-  },
-  {
-   "file": "apps/api/src/auth/ext.ts",
    "method": "GET",
    "route": "/api/auth-ext/vault/credentials",
    "to": "listCredentials"
