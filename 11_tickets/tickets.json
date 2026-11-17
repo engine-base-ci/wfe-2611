@@ -3912,7 +3912,6 @@
    ],
    "tests": [
     "apps/api/test/generated/post_auth_two_factor_verify.test.ts",
-    "apps/api/test/generated/post_auth_sign_out.test.ts",
     "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
    ],
    "depends_on": [
@@ -3926,7 +3925,6 @@
    ],
    "apis": [
     "verifySignInCode",
-    "signOut",
     "requestAdminRecovery"
    ],
    "sections": {
@@ -13247,7 +13245,8 @@
     "apps/api/src/hooks/login.ts",
     "05_flow/screen_api.py",
     "07_qa/test-plan/ears-elsewhere.json",
-    "scripts/ci/ci_scope.json"
+    "scripts/ci/ci_scope.json",
+    "11_tickets/K-74.md"
    ],
    "sections": {
     "目的": "ログイン中の人が「ログアウト」を押したとき、**その画面のセッションだけ** を閉じる契約の口（`POST /api/v1/auth/sign-out`）を作る。認証側のセッションを消し、sessions の行を `revoked_at` と理由 `logout` で閉じる。同じ人の別のブラウザのセッションと、PC（Bridge）のセッションは閉じない（D-125.140 が全部切ると決めたのはパスワードの変更・端末を外す・退会で、ログアウトは入っていない。Bridge は時間でも切らない D-128.121）。\n\n今の画面のログアウトは部品の口 `/api/auth/sign-out` を呼んでいて、sessions の行が開いたまま残る。画面をこの口に移し、部品の口を閉じるのは K-317（重さの上限：この葉は apps/web に触らない）。",
