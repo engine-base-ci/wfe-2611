@@ -141,12 +141,12 @@ API 365（作った 39・後のフェーズの行為だけ 20）・前の道す�
 | 口 | 道 | 何をするか | 流れ | 状態 | 持ち主のチケット |
 |---|---|---|---|---|---|
 | `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） |  |
-| `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） |  |
-| `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） |  |
-| `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） |  |
-| `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） |  |
+| `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | K-76 |
+| `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 契約だけ（501） | K-76 |
+| `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
+| `getServiceStatus` | GET /api/v1/auth/service-status | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `signInWithPassword` | POST /api/v1/auth/sign-in | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-301 |
-| `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） |  |
+| `signOut` | POST /api/v1/auth/sign-out | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
 | `createSignup` | POST /api/v1/auth/sign-up | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン／規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-51 |
 | `resendSignupEmail` | POST /api/v1/auth/sign-up/resend | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |
 | `getSignupStatus` | GET /api/v1/auth/sign-up/status | 取得（auth）— アカウントを作る（会社名が空なら本人の名前で個人のテナン | F1 | 作った | K-51 |
@@ -154,11 +154,11 @@ API 365（作った 39・後のフェーズの行為だけ 20）・前の道す�
 | `stepUp` | POST /api/v1/auth/step-up | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-19 |
 | `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
 | `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
-| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） |  |
-| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） |  |
-| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） |  |
-| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） |  |
-| `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） |  |
+| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
+| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
+| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
+| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
+| `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
 | `getExport` | GET /api/v1/exports/:id | 取得（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
@@ -500,8 +500,8 @@ API 365（作った 39・後のフェーズの行為だけ 20）・前の道す�
 | `answerAgentPermission` | POST /api/v1/conversations/:id/permissions/:pid | 作成・実行（conversations）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `regenerateBackupCodes` | POST /api/v1/me/backup-codes | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `disableTwoFactor` | DELETE /api/v1/me/two-factor | 削除（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） |  |
-| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） |  |
+| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
+| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
 | `getMyUsage` | GET /api/v1/me/usage | 取得（me）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `resetMemberTwoFactor` | POST /api/v1/members/:id/two-factor/reset | 作成・実行（members）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `createArtifactFromMessage` | POST /api/v1/messages/:id/artifacts | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
