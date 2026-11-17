@@ -14,14 +14,20 @@ const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 const ME = "11111111-0000-4000-8000-000000000001";
 
 /** 外枠の口を差し替える：役 owner・名前 高本・会社 ENGINE BASE・承認待ち n・グループ 営業 EG・受託開発 JD・経理 KR・PC live（キャンバス Main と同じ人とデータ） */
-/** 一覧の画面の組（K-251）が渡す、一覧の口の答えと、はじめにやることの口の答え。無ければ前のまま（一覧は 501・はじめにやることは 404） */
-interface ListReply {
+interface ShellOpts {
+  /** PC の一覧の答え（無ければ live の 1 台・K-230） */
+  devices?: unknown[];
+  /** この PC の中だけの口（127.0.0.1:38617）の差し替え（無ければ 404＝Bridge は居ない）。本人の Bridge には届かせない（K-230） */
+  local?: (route: Route) => Promise<void>;
+  /** 一覧の画面の組（K-251）が渡す、一覧の口の答えと、はじめにやることの口の答え。無ければ前のまま（一覧は 501・はじめにやることは 404） */
   tickets?: unknown[];
   setupTasks?: unknown[];
 }
-async function shellApi(page: Page, approvals: number, list: ListReply = {}): Promise<void> {
+async function shellApi(page: Page, approvals: number, o: ShellOpts = {}): Promise<void> {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
-  await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
+  await page.route(/127\.0\.0\.1:38617/, (route) =>
+    o.local ? o.local(route) : route.fulfill({ status: 404, body: "" }),
+  );
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
     const req = route.request();
     const p = new URL(req.url()).pathname;
@@ -55,16 +61,20 @@ async function shellApi(page: Page, approvals: number, list: ListReply = {}): Pr
       );
     else if (p === "/api/v1/approvals/queue") r = ok([], { limit: 20, counts: { total: approvals }, cursor: null });
     else if (p === "/api/v1/bridge/devices")
-      r = ok([
-        { id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" },
-      ]);
+      r = ok(
+        o.devices ?? [
+          { id: "d0", device_label: "Mac", state: "live", last_seen_at: "2026-11-15T00:00:00Z", version: "1.0.0" },
+        ],
+      );
+    else if (p === "/api/v1/bridge/pairing-codes" && req.method() === "POST")
+      // 期限は近い未来（今から 10 分）。遠い未来は画面の待ち（setTimeout）の上限を越えてすぐ取り直しになる
+      r = { status: 201, body: { data: { code: "KQ7M2X", expires_at: new Date(Date.now() + 600_000).toISOString() } } };
     else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
     else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
-    else if (p === "/api/v1/tickets" && req.method() === "GET" && list.tickets)
-      r = ok(list.tickets, { next_cursor: null });
+    else if (p === "/api/v1/tickets" && req.method() === "GET" && o.tickets) r = ok(o.tickets, { next_cursor: null });
     else if (p === "/api/v1/tickets" && req.method() === "GET")
       r = { status: 501, body: { error: "not_implemented", code: "NOT_IMPLEMENTED" } };
-    else if (p === "/api/v1/me/setup-tasks" && list.setupTasks) r = ok(list.setupTasks, { dismissed: false });
+    else if (p === "/api/v1/me/setup-tasks" && o.setupTasks) r = ok(o.setupTasks, { dismissed: false });
     else if (p === "/api/v1/me/ticket-drafts") r = ok([]);
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
   });
@@ -298,6 +308,48 @@ async function openApprovals(page: Page, path: string, rows: ReturnType<typeof C
   await expect(page.locator("header.k-page-head .k-page-sub")).toHaveText(`あなたが決めるもの ${rows.length} 件`);
 }
 
+/** キャンバス MePC の 2 台（最後に見えたは日本時間で 10/30 18:40） */
+const BRIDGE_TWO = [
+  {
+    id: "d0",
+    device_label: "高本の MacBook Pro",
+    state: "live",
+    last_seen_at: "2026-11-15T00:00:00Z",
+    connected_at: "2026-09-12T00:00:00Z",
+    version: "1.4",
+  },
+  { id: "d1", device_label: "事務所の Windows", state: "asleep", last_seen_at: "2026-10-30T09:40:00Z", version: "1.4" },
+];
+/** この PC の中だけの口：ping は版を返し、つなぐ（pair）は別のアカウントでつながっている（409） */
+async function localBridgeOtherAccount(route: Route): Promise<void> {
+  const req = route.request();
+  const cors = {
+    "access-control-allow-origin": req.headers()["origin"] ?? "*",
+    "access-control-allow-headers": "content-type",
+    "access-control-allow-methods": "GET,POST,OPTIONS",
+  };
+  if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors, body: "" });
+  const path = new URL(req.url()).pathname;
+  if (path === "/ping")
+    return route.fulfill({
+      status: 200,
+      headers: cors,
+      contentType: "application/json",
+      body: JSON.stringify({ app: "kaname-bridge", version: "1.4", device_label: "この PC", connected: false }),
+    });
+  if (path === "/pair")
+    return route.fulfill({
+      status: 409,
+      headers: cors,
+      contentType: "application/json",
+      body: JSON.stringify({
+        reason: "other_account",
+        message: "この PC の Bridge は別のアカウントでつながっています",
+      }),
+    });
+  return route.fulfill({ status: 404, headers: cors, body: "" });
+}
+
 /** チケットの詳細（K-226・キャンバス TicketDetail）：外枠の口に、承認待ちのチケット 1 件と実行 1 件・承認の中身を足す（キャンバスと同じ人とデータ） */
 const DETAIL_ID = "0193c5a0-0000-7000-8000-00000000d226";
 const DETAIL_APPROVAL = "0193c5a0-0000-7000-8000-0000000ad226";
@@ -453,6 +505,27 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('[aria-label="自分の設定の中"] .k-me-sub-t')).toHaveCount(5);
     await expect(page.locator(".k-nav .k-pc")).toHaveText("PC つながっている");
     await expect(page.locator("#connect-pc-title")).toHaveText("PC と使った量");
+  },
+  // PC をつなぐの中身（K-230・キャンバス EdPC・MePC・MePCInstalled）。口とこの PC の中だけの口は網の手前で差し替える（本人の Bridge に届かせない）
+  //   bridge-code：PC 無し・Bridge 無し → つなぐ小窓が開き、コード（キャンバスと同じ KQ7M2X）が出るまで待つ
+  "bridge-code": async (page, path) => {
+    await shellApi(page, 2, { devices: [] });
+    await page.goto(path);
+    await expect(page.getByRole("dialog", { name: "PC をつなぐ" }).getByTestId("pairing-code")).toHaveText("KQ7M2X");
+  },
+  //   bridge-connected：キャンバス MePC の 2 行（つながっている 1 台と切れている 1 台）
+  "bridge-connected": async (page, path) => {
+    await shellApi(page, 2, { devices: BRIDGE_TWO });
+    await page.goto(path);
+    await expect(page.locator(".k-pc-card .k-pc-row")).toHaveCount(2);
+    await expect(page.locator('[data-act="wake"]')).toBeVisible();
+  },
+  //   bridge-installed：この PC の口が答え（版 1.4）、つなぐと「別のアカウントでつながっている」（409）。押して「切り替える」が出るまで待つ
+  "bridge-installed": async (page, path) => {
+    await shellApi(page, 2, { devices: [], local: localBridgeOtherAccount });
+    await page.goto(path);
+    await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
+    await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
   },
   // チケットの詳細（K-226・キャンバス TicketDetail）：承認待ちのチケットを開き、題名と右のパネルが描かれるまで待つ
   "ticket-detail": async (page, path) => {

@@ -121,6 +121,11 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
+    # 自分の設定の PC と使った量（K-230）：画面の外枠と同じく、幅 767 以下は上の帯を出さない（下のタブは外枠の決まり）
+    "MePC.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}}\n",
+    "MePCInstalled.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                             "@media (max-width:767px){.kn-bar{display:none !important}}\n",
 }
 # 承認待ち（K-231：Approvals・ApEmpty）：767 以下は画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴（44px・右寄せ・外枠の .k-bell-inline）を置く。
 # 鈴は帯の中の div の ::after（要素は足さない・768 以上の絵は変わらない）。続けて裁く（a）は鈴の後ろ＝狭い幅では次の行へ回る（画面と同じ並び）

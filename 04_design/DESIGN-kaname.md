@@ -753,6 +753,164 @@ components:
     backgroundColor: "{state.success}"
     textColor: "{colors.card}"
     typography: "{typography.h2}"
+  # PC と使った量・PC をつなぐ（K-230・D-143.2：値はキャンバス EdPC・MePC・MePCInstalled の実測。小窓の置き場・影・余白は dialog の型のまま）
+  dialog-connect:       # PC をつなぐの小窓の幅（EdPC 580）
+    width: "580px"
+  dialog-connect-button: # PC をつなぐの小窓の足のボタンの高さ（EdPC「あとで」30）
+    height: "30px"
+  dialog-sub:           # 小窓の頭の題の下の補足（「分身はこの PC で動く。3 分ほど」12px・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+  pc-step:              # 3 段の 1 段（上に線・上下 12・丸と字の間 12）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "12px"
+  pc-step-dot:          # 段の丸（26・円・12px・700。済は緑・今は紺・まだは灰）
+    width: "26px"
+    height: "26px"
+    rounded: "{rounded.full}"
+    typography: "{typography.body-sm}"
+    fontWeight: 700
+  pc-step-title:        # 段の題（13px・600）
+    typography: "{typography.body}"
+    fontWeight: 600
+  pc-step-desc:         # 段の説明（12px・灰・行の高さ 1.7・題との間 2）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    margin: "2px 0 0"
+  pc-code:              # 接続コードの並び（上 6。キャンバスの箱は線の外に 34×42 なので上下に 1 足して行をそろえる）
+    margin: "6px 0 0"
+    padding: "1px 0"
+  pc-code-next:         # 接続コードの 2 つめからの箱の左の間（6・inline の箱で並べるので gap でなく余白）
+    margin: "0 0 0 6px"
+  pc-code-cell:         # 接続コードの 1 字の箱（34×42・線 紺・角丸 field・20px・700）
+    width: "34px"
+    height: "42px"
+    border: "1px solid {colors.primary}"
+    rounded: "{rounded.field}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.h1}"
+  pc-code-foot:         # コードの下の行（上 6・間 8）
+    margin: "6px 0 0"
+    gap: "{spacing.sm}"
+  pc-text-button:       # 字のリンクの形のボタン（新しいコード・12px・紺・400・行の高さ normal）
+    textColor: "{colors.primary}"
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    lineHeight: normal
+  pc-note:              # 共用の PC の注意（淡い橙の箱・12px）
+    backgroundColor: "{state.warning-soft}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+    typography: "{typography.body-sm}"
+    gap: "{spacing.sm}"
+  pc-note-mark:         # 共用の PC の注意の「!」（濃い橙）
+    textColor: "{state.on-warning-container}"
+  pc-wait:              # 足の「アプリからの返事を待っています…」（12px・灰・点との間 6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    gap: "6px"
+  pc-wait-dot:          # 待っている印の点（8・橙）
+    width: "8px"
+    height: "8px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{state.warning}"
+  pc-button:            # 小さなボタン（高さ 30・左右 12・12px・400・角丸 md）
+    height: "30px"
+    padding: "0 12px"
+    rounded: "{rounded.md}"
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+  pc-button-primary:    # 小さなボタンの主（紺の線）
+    border: "1px solid {colors.primary}"
+  pc-wake:              # 直し方の箱の中の「Bridge を起こす」（角丸 field・600・上 6）
+    rounded: "{rounded.field}"
+    fontWeight: 600
+    margin: "6px 0 0"
+  pc-card:              # 白いカード（線・角丸 card・上下 4 左右 18）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.card}"
+    padding: "4px 18px"
+  pc-card-wide:         # 余白の大きいカード（この PC の Bridge・使った量：上下 14 左右 18・中の間 10）
+    padding: "14px 18px"
+    gap: "10px"
+  pc-card-head:         # カードの頭（題と右のボタン・上 12 下 4）
+    padding: "12px 0 4px"
+  pc-card-title:        # カードの題（13px・600）
+    typography: "{typography.body}"
+    fontWeight: 600
+  pc-row:               # カードの行（上に線・上下 12・間 12）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "12px"
+  pc-pill:              # 札（つながっている・切れている・いつも使う：11px・400・丸い）
+    padding: "1px 8px"
+    rounded: "{rounded.full}"
+    typography: "{typography.label-md}"
+    fontWeight: 400
+  pc-detail:            # 行の補足（11px・400・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label-md}"
+    fontWeight: 400
+  pc-fix:               # 直し方の箱（淡い橙・12px・行の高さ 1.7・上 8）
+    backgroundColor: "{state.warning-soft}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    margin: "8px 0 0"
+  pc-fix-msg:           # 直し方の箱の中の正本の文（上 6）
+    margin: "6px 0 0"
+  pc-more:              # 行の「…」（高さ 30・左右 12・線・角丸 md）
+    height: "30px"
+    padding: "0 12px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.body-sm}"
+  pc-usage:             # 使った量の 2 列（間 18）
+    gap: "18px"
+  pc-usage-col:         # 使った量の列の最小の幅（grid の minmax の 240）
+    width: "240px"
+  pc-bar:               # 使った量の帯（高さ 8・円・上 6）
+    height: "8px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.side-bg}"
+    margin: "6px 0 0"
+  pc-bar-fill:          # 帯の中身（紺）
+    backgroundColor: "{colors.primary}"
+  pc-set-row:           # 超えそうなときの行（上に線・上下 12・間 14・字の列の基準 240）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "14px"
+  pc-set-label:         # 超えそうなときの行の字の列の基準の幅（flex-basis 240）
+    width: "240px"
+  pc-switch:            # 切り替え（30×16・円・中の余白 2・つまみ 12）
+    width: "30px"
+    height: "16px"
+    rounded: "{rounded.full}"
+    padding: "2px"
+    backgroundColor: "{colors.line-strong}"
+  pc-switch-knob:       # 切り替えのつまみ（12・円・白）
+    width: "12px"
+    height: "12px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.card}"
+  pc-pick:              # 選ぶ欄（高さ 30・左右 10・線・角丸 md）
+    height: "30px"
+    padding: "0 10px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    backgroundColor: "{colors.card}"
+  pc-pick-min:          # 選ぶ欄の幅の下限（min-width 120）
+    width: "120px"
   # チケットの一覧（K-251・D-143.2：値はキャンバス OnHome・Main の実測）。帯（page-head）そのものの余白は 0 で、中の行が余白を持つ
   list-head-row:        # 帯の 1 行目（見出し・すべてのグループ）
     padding: "12px {spacing.lg} 0"

@@ -2,12 +2,20 @@
 import type { Page } from "@playwright/test";
 
 /** 組の値 1 つ：同じ役の要素をキャンバスと画面でそれぞれ指すセレクタと、比べる値の名前 */
+/** 幅が max_width 以下のとき、y をこの箱（canvas・app のセレクタ）の上端から読む。訳 why は必ず書く（K-230） */
+export interface FidelityYFrom {
+  max_width: number;
+  canvas: string;
+  app: string;
+  why: string;
+}
 export interface FidelityPair {
   name: string;
   role: string;
   canvas: string;
   app: string;
   props: string[];
+  y_from?: FidelityYFrom;
 }
 /** 読んだ値：texts だけ字の一覧、__count は当たった（見えている）要素の数、ほかは文字。readVals は当たる要素が無ければ {__count: 0}（比べる側は null も受ける） */
 export type FidelityVals = ({ __count?: number } & Record<string, string | string[] | number>) | null;

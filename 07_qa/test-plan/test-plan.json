@@ -1401,6 +1401,14 @@
    "blocking": true
   },
   {
+   "id": 72,
+   "name": "画面の CSS の生の長さ（大きさ・余白・間・行の高さ・影・枠の太さが正本のトークンを通る・D8・台帳は減らすだけ・K-261）",
+   "script": "python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k261_raw_lengths_test.py",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
+   "job": "spec",
+   "blocking": true
+  },
+  {
    "id": 61,
    "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
    "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"",

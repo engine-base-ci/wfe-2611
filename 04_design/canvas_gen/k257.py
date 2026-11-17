@@ -346,6 +346,31 @@ def with_legacy(s):
     return s[:end] + LEGACY + s[end:]
 
 
+# PC をつなぐの小窓を小窓の型（K-229・正本の dialog）にそろえる（K-230・代表の答え answer=cc774c8b31d7）：
+#   置き場は上から 60px・左右 24（真ん中に置かない）・幅 580 まで、影は正本の dialog（縁の輪 1px line と 0 24px 60px overlay-shadow）、
+#   本文の余白 14px 18px・段の間 10・頭と足の線は line。何度流しても同じ（置き換える前の字が無ければ何もしない）
+CONNECT_TYPED = [
+    ('style="position: fixed; inset: 0; background: rgba(19,27,39,.45); display: grid; place-items: center; padding: 16px; z-index: 30"',
+     'style="position: fixed; inset: 0; background: rgba(19,27,39,.45); display: flex; align-items: flex-start; justify-content: center; '
+     'padding: 60px 24px; box-sizing: border-box; z-index: 30"'),
+    ('max-width: 580px; max-height: calc(100vh - 32px); overflow: auto; background: #FFFFFF; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.25);',
+     'max-width: 580px; max-height: calc(100vh - 96px); overflow: auto; background: #FFFFFF; border-radius: 12px; '
+     'box-shadow: 0 0 0 1px #DDE2E9, 0 24px 60px #131B274D;'),
+    ('gap: 10px; padding: 14px 18px; border-bottom: 1px solid #EDF0F4"', 'gap: 10px; padding: 14px 18px; border-bottom: 1px solid #DDE2E9"'),
+    ('<div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">',
+     '<div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px">'),
+    ('padding: 12px 18px; border-top: 1px solid #EDF0F4; flex-wrap: wrap"', 'padding: 12px 18px; border-top: 1px solid #DDE2E9; flex-wrap: wrap"'),
+]
+
+
+def connect_typed(ed):
+    i = ed.index('<div role="dialog" aria-label="PC をつなぐ"')
+    head, tail = ed[:i], ed[i:]
+    for old, new in CONNECT_TYPED:
+        tail = tail.replace(old, new, 1)
+    return head + tail
+
+
 def pc_boards():
     me = load("MePC.dc.html")
     if 'data-act="back"' not in me:
@@ -362,7 +387,7 @@ def pc_boards():
     if 'data-act="new-code"' not in ed:
         ed = ed.replace("<br>" + CODE_LINE + "</div>",
                         '<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px"><span>%s</span>%s</span></div>' % (CODE_LINE, NEW_CODE), 1)
-    save("EdPC", "PC をつなぐ", with_legacy(ed))
+    save("EdPC", "PC をつなぐ", with_legacy(connect_typed(ed)))
     ins = load("MePCInstalled.dc.html")
     if 'data-act="switch-account"' not in ins:
         btn = ins.index(">この PC の Bridge につなぐ</button>") + len(">この PC の Bridge につなぐ</button>")
@@ -466,7 +491,7 @@ REVIEW = [
      "「どこを直すか」「次は誰が直すか」「覚えさせる候補」はまだ使えないので薄くしています。"),
     ("StCompleteModal", "完了にする（小窓）", "閉じる × を頭に付けました（取り消せる操作なので、ふつうの小窓の形にしました）。置き場は前と同じ真ん中です。"),
     ("Approvals", "承認待ち", "期限の区切りを今の画面と同じ「期限切れ・今日・7 日以内・それより後・期限なし」にしました。今日が期限のものは「11/02（今日）」と出します。"),
-    ("EdPC", "PC をつなぐ（コード）", "今の画面に在る「新しいコード」を、コードの説明の行の右に足しました。本文の最後に「前の設定の画面」への案内を足しました。"),
+    ("EdPC", "PC をつなぐ（コード）", "今の画面に在る「新しいコード」を、コードの説明の行の右に足しました。本文の最後に「前の設定の画面」への案内を足しました。小窓は小窓の型にそろえました（上から 60px・正本の影・本文の余白と段の間・頭と足の線・K-230）。"),
     ("MePC", "PC と使った量（つないでいる PC）", "切れている PC の直し方の箱に、今の画面と同じ案内の文と「Bridge を起こす」を足しました。"
      "題の左に「戻る」、本文の最後に「前の設定の画面」への案内を足しました。"),
     ("MePCInstalled", "この PC に Bridge が入っている", "「この PC の Bridge につなぐ」の隣に「このアカウントに切り替える」（赤い線のボタン）を足しました。"
