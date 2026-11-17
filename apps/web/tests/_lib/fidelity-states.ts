@@ -6,7 +6,7 @@
 //   外枠の組（shell-nav・shell-tabs・K-138）：口は網の手前（page.route）で差し替え、本人の Bridge（127.0.0.1:38617）にも届かせない。
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
-import { TICKET, executedBand, mockApi } from "../features/F5/approve-complete.harness";
+import { TICKET, executedBand, mockApi, type Band } from "../features/F5/approve-complete.harness";
 import { mockCreate } from "../k/create-mock";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
@@ -261,6 +261,28 @@ async function openBandModal(page: Page, path: string, button: string, title: st
   await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
 }
 
+/** 詳細の帯（2）の組（K-228）：その状態の答えで開き、帯の箱（region の中の status か alert の .k-band）の題が描かれるまで待つ */
+async function openStateBand(
+  page: Page,
+  path: string,
+  band: Band,
+  region: string,
+  title: string,
+  alert = false,
+): Promise<void> {
+  await mockApi(page, band);
+  await page.goto(path.replace("{ticket}", TICKET));
+  const box = page.getByRole("region", { name: region }).locator(`[role="${alert ? "alert" : "status"}"].k-band`);
+  await expect(box.locator("h3")).toHaveText(title);
+}
+const makeRun = (status: string, o: Record<string, unknown> = {}) => ({
+  phase: "make",
+  status,
+  pc: "live",
+  stopped_reason: null,
+  ...o,
+});
+
 /** 3 秒たっても終わらないときに出る文（D-144.8）が出るまで待つ（決めた秒数では待たない） */
 async function untilStatusText(page: Page, text: string): Promise<void> {
   await expect(page.locator('[data-part="auth-box"]').getByRole("status")).toContainText(text, { timeout: 15_000 });
@@ -501,6 +523,46 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(band.locator('[role="status"].k-band h3')).toHaveText("あなたの承認を待っています");
     await expect(band.locator('[role="status"].k-band .k-band-sub')).toBeVisible();
     await expect(band.getByRole("region", { name: "成果物" })).toBeVisible();
+  },
+  // 詳細の帯（2）（K-228・キャンバス StRunning・StFailed・StBefore・StConfirmDone・StDone・StDelegated の main article の帯）
+  "band-running": async (page, path) => {
+    await openStateBand(
+      page,
+      path,
+      { stage: "running", run: makeRun("running") },
+      "AI に任せる",
+      "山田のAI が作っています",
+    );
+  },
+  "band-failed": async (page, path) => {
+    const band: Band = {
+      stage: "doing",
+      run: makeRun("stopped", { stopped_reason: "金額が見積の月額と合いませんでした" }),
+      can_delegate: true,
+    };
+    await openStateBand(page, path, band, "AI に任せる", "山田のAI が止まりました", true);
+    await expect(page.getByRole("table", { name: "確認の結果" })).toBeVisible();
+  },
+  "band-before": async (page, path) => {
+    await openStateBand(page, path, { stage: "doing", can_delegate: true }, "AI に任せる", "AI に任せる");
+    await expect(page.getByRole("region", { name: "AI に任せる" }).locator(".k-band-sub")).toBeVisible();
+  },
+  "band-confirm-done": async (page, path) => {
+    const band: Band = { stage: "doing", can_complete: true, todo: "- [x] 請求書を作る\n- [x] 先方に送る" };
+    await openStateBand(page, path, band, "承認と実行", "完了の条件を確かめて完了にしてください");
+  },
+  "band-done": async (page, path) => {
+    const band: Band = { stage: "done", completed: { at: "2026-11-02T01:48:00Z", by: "高本" } };
+    await openStateBand(page, path, band, "承認と実行", "完了しました（高本・11/02 10:48）");
+  },
+  "band-delegated": async (page, path) => {
+    await openStateBand(
+      page,
+      path,
+      { stage: "running", run: makeRun("queued") },
+      "AI に任せる",
+      "山田のAI に任せました。",
+    );
   },
   // 承認と完了の小窓（K-229）：承認待ち・帯の「承認して送る」／実行が終わった作業中・「完了にする」／承認待ち・帯の「差し戻す」
   "approve-modal": async (page, path) => {

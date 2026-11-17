@@ -791,18 +791,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -812,10 +813,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] > div:first-child > b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]
@@ -831,18 +834,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"alert\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"alert\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -852,10 +856,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"alert\"] b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"alert\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]
@@ -1678,18 +1684,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -1699,10 +1706,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] > div:first-child > b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]
@@ -1718,18 +1727,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -1739,10 +1749,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] > div:first-child > b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]
@@ -1758,18 +1770,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -1779,10 +1792,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] > div:first-child > b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]
@@ -1798,18 +1813,19 @@
     375
    ],
    "owner": "K-228",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"]",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
       "border-radius",
       "padding-top",
+      "padding-left",
       "width",
       "x",
       "y"
@@ -1819,10 +1835,12 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] > div:first-child > b",
-     "app": "section.k62-band[aria-label=\"AI に任せる\"] :is(h2, h3)",
+     "app": "section[aria-label=\"AI に任せる\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
-      "font-weight"
+      "font-weight",
+      "line-height",
+      "color"
      ]
     }
    ]

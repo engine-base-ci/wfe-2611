@@ -619,6 +619,78 @@ components:
     border: "1px solid {state.danger-line}"
     rounded: "{rounded.field}"
     padding: "8px 10px"
+  # 詳細の帯（2）（K-228・キャンバス StRunning・StFailed・StBefore・StConfirmDone・StDone・StDelegated の main article の帯）
+  band-state:           # 作る段・実行・止まった・完了・任せる前の帯の箱の寸法（余白 12px 14px・767 以下も同じ・角丸 field・間 10px）
+    rounded: "{rounded.field}"
+    padding: "12px 14px"
+    gap: "10px"
+  band-info:            # 作っています・実行中の帯（淡い青の地・線・濃い青の字）
+    backgroundColor: "{colors.primary-soft}"
+    textColor: "{state.on-progress-container}"
+    border: "1px solid {colors.primary-line}"
+  band-danger:          # 止まった帯（role=alert・淡い赤の地・線・濃い赤の字）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+  band-ok:              # 完了の帯（淡い緑の地・線・緑の字）
+    backgroundColor: "{state.success-soft}"
+    textColor: "{state.success}"
+    border: "1px solid {state.success-line}"
+  band-wait:            # 任せました・実行待ちの帯（淡い橙の地・線・濃い橙の字）
+    backgroundColor: "{state.warning-soft}"
+    textColor: "{state.on-warning-container}"
+    border: "1px solid {state.warning-line}"
+  band-plain:           # 任せる前・完了の確かめの帯（白・線・紺の字）
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.primary}"
+    border: "1px solid {colors.line}"
+  band-state-button:    # 帯のボタンの形（高さ 30・余白 0 12px・12px・角丸 md。承認待ちの帯だけ 32 のまま）
+    height: "30px"
+    padding: "0 12px"
+    typography: "{typography.body-sm}"
+    rounded: "{rounded.md}"
+  band-button-info:     # 作っていますの帯の白地のボタン（線は灰）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+  band-button-danger:   # 止まった帯の白地のボタン（線は淡い赤）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {state.danger-line}"
+  band-notice-warn:     # 帯の region の中の知らせ（押しすぎ・別のタブで先に任せていた など・淡い橙）
+    backgroundColor: "{state.warning-soft}"
+    textColor: "{state.on-warning-container}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+  run-steps:            # 作っている間の進みの 5 段の並び（間 4px・上に 8px）
+    gap: "4px"
+    margin: "8px 0 0"
+  run-step:             # 進みの 1 段（11px・400・行の高さ 1.7・上の線 3px・灰の字。先の段の線は灰）
+    typography: "{typography.label-md}"
+    fontWeight: 400
+    lineHeight: 1.7
+    padding: "4px 0 0"
+    textColor: "{colors.on-surface-variant}"
+    borderTop: "3px solid {colors.line}"
+  run-step-done:        # 済んだ段（上の線は緑）
+    borderTop: "3px solid {state.success}"
+  run-step-now:         # 今の段（上の線は青・字は濃い青で 700）
+    textColor: "{state.on-progress-container}"
+    fontWeight: 700
+    borderTop: "3px solid {state.progress}"
+  check-table-head:     # 確認の結果の表の見出し（12px・500・行の高さ 1.7・余白 6px 10px・淡い灰の地・上下の線・灰の字）
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+    lineHeight: 1.7
+    padding: "6px 10px"
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.on-surface-variant}"
+    borderTop: "1px solid {colors.line}"
+    borderBottom: "1px solid {colors.line}"
+  check-empty:          # 確認の結果が無いときの文（表の下・12px・行の高さ 1.7・灰・上に 6px）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    padding: "6px 0 0"
+    textColor: "{colors.on-surface-variant}"
   artifact-card:        # 成果物のカード（帯の箱の下・白・線・角丸 field・余白 12・縮小と説明の間 14・狭ければ折り返す）
     backgroundColor: "{colors.card}"
     border: "1px solid {colors.line}"

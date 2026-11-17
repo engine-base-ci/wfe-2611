@@ -97,7 +97,9 @@ def steps():
 
 CAUTION = ('<div style="margin-top: 6px; border: 1px solid #F3C7C7; background: #FDECEC; border-radius: 8px; padding: 4px 10px; '
            'font-size: 12px; color: #991B1B">取り消せません</div>')
-CHECK_TABLE = ('<div style="margin: 0 20px 14px; overflow-x: auto"><table aria-label="確認の結果" style="border-collapse: collapse; width: 100%; min-width: 0">'
+# 表の器の左右は margin でなく padding で 20px（K-228）：幅 767 以下はカードの行の決まり（article>div の左右 16px）が padding を
+#   16px に替えるので、表の左端が帯の箱とそろう（margin のままだと 20px＋16px で帯より 20px 内側に入っていた）
+CHECK_TABLE = ('<div style="margin: 0 0 14px; padding: 0 20px; overflow-x: auto"><table aria-label="確認の結果" style="border-collapse: collapse; width: 100%; min-width: 0">'
                '<thead><tr><th>確認項目</th><th>種類</th><th>1 回目</th><th>2 回目</th><th>根拠</th></tr></thead><tbody></tbody></table>'
                '<div style="font-size: 12px; color: ' + MUTED + '; padding: 6px 0 0">検査なし（まだ流していません）</div></div>')
 
@@ -174,7 +176,7 @@ def detail_board(base, name):
     start = head.start()
     end = block_end(s, start, "div")
     # 前に足した確認の結果の表（止まったの絵）も帯ごと替える
-    tail = re.match(r'\s*<div style="margin: 0 20px 14px; overflow-x: auto"><table aria-label="確認の結果"', s[end:])
+    tail = re.match(r'\s*<div style="margin: 0 (?:20px 14px|0 14px; padding: 0 20px); overflow-x: auto"><table aria-label="確認の結果"', s[end:])
     if tail:
         end = block_end(s, end + tail.start() + s[end + tail.start():].index("<div"), "div")
     s = s[:start] + band_html + s[end:]

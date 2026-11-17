@@ -870,3 +870,114 @@ textarea.k-input {
   color: var(--k-c-band-notice-fg);
   font-size: var(--k-text-body);
 }
+.k-band-notice[data-tone="warn"] {
+  padding: var(--k-c-band-notice-warn-pad);
+  border: var(--k-c-band-notice-warn-border);
+  border-radius: var(--k-c-band-notice-warn-radius);
+  background: var(--k-c-band-notice-warn-bg);
+  color: var(--k-c-band-notice-warn-fg);
+}
+
+/* ---- 詳細の帯（2）（K-228・キャンバス StRunning・StFailed・StBefore・StConfirmDone・StDone・StDelegated）。
+   承認待ち（approval）のほかの tone は箱の寸法が band-state（余白 12px 14px・ボタン 30）。色は tone ごと ---- */
+.k-band:not([data-tone="approval"]) {
+  padding: var(--k-c-band-state-pad);
+  border-radius: var(--k-c-band-state-radius);
+  gap: var(--k-c-band-state-gap);
+}
+.k-band[data-tone="info"] {
+  border: var(--k-c-band-info-border);
+  background: var(--k-c-band-info-bg);
+  color: var(--k-c-band-info-fg);
+}
+.k-band[data-tone="danger"] {
+  border: var(--k-c-band-danger-border);
+  background: var(--k-c-band-danger-bg);
+  color: var(--k-c-band-danger-fg);
+}
+.k-band[data-tone="ok"] {
+  border: var(--k-c-band-ok-border);
+  background: var(--k-c-band-ok-bg);
+  color: var(--k-c-band-ok-fg);
+}
+.k-band[data-tone="wait"] {
+  border: var(--k-c-band-wait-border);
+  background: var(--k-c-band-wait-bg);
+  color: var(--k-c-band-wait-fg);
+}
+.k-band[data-tone="plain"] {
+  border: var(--k-c-band-plain-border);
+  background: var(--k-c-band-plain-bg);
+  color: var(--k-c-band-plain-fg);
+}
+/* 要約は 1 語の途中で折り返さない（キャンバスの word-break: keep-all）。理由の全文は .k-band-line で折り返す */
+.k-band-sub {
+  word-break: keep-all;
+}
+.k-band:not([data-tone="approval"]) .k-band-acts .k-btn {
+  min-height: var(--k-c-band-state-button-height);
+  padding: var(--k-c-band-state-button-pad);
+  border-radius: var(--k-c-band-state-button-radius);
+  font-size: var(--k-c-band-state-button-text);
+}
+.k-band[data-tone="info"] .k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-info-bg);
+  border: var(--k-c-band-button-info-border);
+}
+.k-band[data-tone="danger"] .k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-danger-bg);
+  border: var(--k-c-band-button-danger-border);
+}
+/* 作っている間の進みの 5 段（済＝緑の上線・今＝青の上線と濃い青の字・先＝灰の上線） */
+.k-run-steps {
+  display: flex;
+  gap: var(--k-c-run-steps-gap);
+  margin: var(--k-c-run-steps-margin);
+  padding: 0;
+  list-style: none;
+}
+.k-run-steps > li {
+  flex: 1 0 auto;
+  white-space: nowrap;
+  padding: var(--k-c-run-step-pad);
+  border-top: var(--k-c-run-step-border-top);
+  color: var(--k-c-run-step-fg);
+  font-size: var(--k-c-run-step-text);
+  line-height: var(--k-c-run-step-lh);
+  font-weight: var(--k-c-run-step-fw);
+}
+.k-run-steps > li[data-state="done"] {
+  border-top: var(--k-c-run-step-done-border-top);
+}
+.k-run-steps > li[data-state="now"] {
+  border-top: var(--k-c-run-step-now-border-top);
+  color: var(--k-c-run-step-now-fg);
+  font-weight: var(--k-c-run-step-now-fw);
+}
+/* 止まった（作る段）の確認の結果の表（キャンバス StFailed）：器は帯の箱と同じ左右。狭い幅では器の中で横に送る */
+.k-check-table {
+  min-width: 0;
+  overflow-x: auto;
+}
+.k-check-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.k-check-table th {
+  padding: var(--k-c-check-table-head-pad);
+  border-top: var(--k-c-check-table-head-border-top);
+  border-bottom: var(--k-c-check-table-head-border-bottom);
+  background: var(--k-c-check-table-head-bg);
+  color: var(--k-c-check-table-head-fg);
+  font-size: var(--k-c-check-table-head-text);
+  line-height: var(--k-c-check-table-head-lh);
+  font-weight: var(--k-c-check-table-head-fw);
+  text-align: left;
+  white-space: nowrap;
+}
+.k-check-empty {
+  padding: var(--k-c-check-empty-pad);
+  color: var(--k-c-check-empty-fg);
+  font-size: var(--k-c-check-empty-text);
+  line-height: var(--k-c-check-empty-lh);
+}

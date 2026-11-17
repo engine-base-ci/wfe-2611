@@ -11,14 +11,16 @@
 //     ⑥ 作業中・承認待ちなし・走っている実行なし・can.complete（AI に任せていないチケットも・K-184）… 「完了の条件を確かめて完了にしてください」＋「完了にする」（小窓は complete-dialog.tsx）
 //     ⑦ 完了 … 「完了しました（高本・11/08 15:20）」・ボタンなし
 //   ③〜⑤ はボタンなし（K-182）。止まったときも自動で戻さず、ボタンは「完了にする」だけ（K63-UI-035）。
+//   箱は components/k の Band（K-228・キャンバス StConfirmDone・StDone）：④ は淡い橙（題「実行待ち ・ PC が閉じています」・「PC をつなぐ」のリンク）、
+//   ③ は青（題が今の文）、⑤ は赤（role=alert・題「実行が止まりました」・理由の全文・完了にするを同じ箱に）、⑥ は白（完了にする）、⑦ は緑
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Band, Button, NoticeBox } from "@/components/k";
+import { Band, BandLine, Button, NoticeBox } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
 import { CompleteDialog } from "./complete-dialog";
-import { completedLine, type Completed } from "./complete-model";
+import { completedLine, todoItems, type Completed } from "./complete-model";
 import { DecideBody, type BandApproval } from "./decide";
 import { messageOf } from "./message";
 
@@ -32,16 +34,24 @@ const MSG = {
   asking: "AI が許可を求めています。許可は自動で断られ、続けられなければ止まります",
   pcClosed: "実行待ち・PC が閉じています。開いたらすぐ実行します。承認から 24 時間を過ぎたら、もう一度聞きます",
   completeHint: "完了の条件を確かめて完了にしてください",
+  allDone: "実施事項は全部終わりました",
+  waitTitle: "実行待ち ・ PC が閉じています",
+  stoppedTitle: "実行が止まりました",
 } as const;
+const SETUP_BRIDGE = "/setup/bridge";
 /** 完了にできる段は作業中だけ（口の can.complete と同じ判定を画面でも重ねる・K63-UI-031・K63-UI-061） */
 const COMPLETABLE_STAGE = "doing";
 
-/** 承認の後の実行（phase execute）の今の様子の文。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
-function executeLine(run: RunView): string | null {
-  if (!isActive(run)) return run.status === "done" ? null : run.stopped_reason || null; // ⑤ 理由は口の文をそのまま
-  if (run.status === "asking") return MSG.asking;
-  if (run.pc !== "asleep") return MSG.running; // queued・running で PC が開いている
-  return run.status === "queued" ? MSG.pcClosed : MSG.runningAsleep;
+/** 承認の後の実行（phase execute）の今の様子。帯は実行の記録（getActionRun）だけを読む。終わった（done）・理由の無い結末は何も出さない */
+type ExecuteView = { kind: "running"; title: string } | { kind: "wait" } | { kind: "stopped"; reason: string } | null;
+function executeView(run: RunView): ExecuteView {
+  if (!isActive(run)) {
+    if (run.status === "done" || !run.stopped_reason) return null;
+    return { kind: "stopped", reason: run.stopped_reason }; // ⑤ 理由は口の文をそのまま
+  }
+  if (run.status === "asking") return { kind: "running", title: MSG.asking };
+  if (run.pc !== "asleep") return { kind: "running", title: MSG.running }; // queued・running で PC が開いている
+  return run.status === "queued" ? { kind: "wait" } : { kind: "running", title: MSG.runningAsleep };
 }
 
 interface Section {
@@ -128,7 +138,8 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
     if (!complete) setCompleting(false);
   }, [complete]);
   const body = (() => {
-    if (ticket.stage?.key === "done") return ticket.completed ? <p>{completedLine(ticket.completed)}</p> : null; // ⑦
+    if (ticket.stage?.key === "done")
+      return ticket.completed ? <Band tone="ok" title={completedLine(ticket.completed)} /> : null; // ⑦
     if (approval?.can_decide)
       return (
         <DecideBody
@@ -141,14 +152,31 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
       );
     if (approval && ticket.assignee === null) return <Band tone="approval" title={MSG.noAssignee} />; // 箱は 1 つ（K-62 の帯は出さない）
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
-    const line = execute ? executeLine(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
-    if (!line && !complete) return null;
-    return (
-      <>
-        {line ? <p className="k62-band-line">{line}</p> : null}
-        {complete ? <CompleteHint onOpen={() => setCompleting(true)} /> : null}
-      </>
-    );
+    const view = execute ? executeView(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
+    const completeButton = complete ? <Button onClick={() => setCompleting(true)}>完了にする</Button> : null;
+    if (view?.kind === "stopped")
+      return (
+        <Band tone="danger" role="alert" title={MSG.stoppedTitle} {...(completeButton ? { acts: completeButton } : {})}>
+          <BandLine>{view.reason}</BandLine>
+        </Band>
+      );
+    if (view?.kind === "running") return <Band tone="info" title={view.title} />;
+    if (view?.kind === "wait")
+      return (
+        <Band
+          tone="wait"
+          title={MSG.waitTitle}
+          acts={
+            <a className="k-link" href={SETUP_BRIDGE}>
+              PC をつなぐ
+            </a>
+          }
+        >
+          <BandLine>{MSG.pcClosed}</BandLine>
+        </Band>
+      );
+    if (!complete) return null;
+    return <CompleteHint todo={sectionOf(ticket, "todo", "実施事項").text} onOpen={() => setCompleting(true)} />;
   })();
 
   const dialogOpen = completing && complete;
@@ -175,14 +203,16 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   );
 }
 
-/** ⑥ 完了の案内と「完了にする」（押すと完了の小窓） */
-function CompleteHint({ onOpen }: { onOpen: () => void }) {
+/** ⑥ 完了の案内と「完了にする」（押すと完了の小窓）。実施事項が 1 件以上あって全部済みのときだけ要約「実施事項は全部終わりました」 */
+function CompleteHint({ todo, onOpen }: { todo: string; onOpen: () => void }) {
+  const items = todoItems(todo);
+  const allDone = items.length > 0 && items.every((i) => i.done);
   return (
-    <>
-      <p className="k62-band-line">{MSG.completeHint}</p>
-      <div>
-        <Button onClick={onOpen}>完了にする</Button>
-      </div>
-    </>
+    <Band
+      tone="plain"
+      title={MSG.completeHint}
+      {...(allDone ? { sub: MSG.allDone } : {})}
+      acts={<Button onClick={onOpen}>完了にする</Button>}
+    />
   );
 }

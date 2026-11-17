@@ -1,16 +1,28 @@
 "use client";
 // AI に任せる（K-62）：チケットの詳細の上の帯（<section aria-label="AI に任せる">）。
-//   帯は段で分ける（同じことを言う帯は 1 つ・D-128.178）：
-//     作る段（phase make）の間 … この帯だけ（作っています・PC が起きるのを待っています・止まった理由・10 分の知らせ・差し戻しの理由）
+//   帯は段で分ける（同じことを言う帯は 1 つ・D-128.178）。帯の箱は components/k の Band（K-227・K-228 がキャンバスの色と形に合わせた）：
+//     作る段（phase make）の間 … この帯だけ
+//       作っています（running・asking）… 青の箱・題「〈名〉のAI が作っています」・要約「開始 HH:MM ・ N 分」・差し戻しの理由・途中の 1 行・10 分の知らせ・進みの 5 段・
+//         AI と話す と 止める は在るが押せない（D-145.9）
+//       任せました（queued）… 淡い橙の箱・題「〈名〉のAI に任せました。」・要約は PC が受け取る／起きるのを待っています・AI と話す は押せない
+//       止まった（stopped・cancelled）… 赤い箱（role=alert）・題「〈名〉のAI が止まりました」・理由の全文・AI に任せる（任せられるとき）・
+//         直し方を AI に伝える と 自分で直す は押せない。箱の下に確認の結果の表
+//     任せる前（任せられる・走っている実行なし）… 白い箱・題「AI に任せる」・要約「〈見ている人〉のAI が実施事項を進め、確かめてから承認を待ちます」・AI に任せる
 //     承認待ち … 承認する人でない人にだけ「成果物ができました。承認待ちです」の橙の箱（承認する人には K-63 の承認の帯）。
 //       要約は確認の 12px の字（札にしない）・ボタンなし。担当者がいなければ出さない（K-63 の帯がその文の箱を出す・箱は 1 つ・K-227）
-//     承認の後の実行（phase execute）… この帯の状態の文は出さない（K-63 の帯）。can.delegate なら「AI に任せる」のボタンだけ
+//     承認の後の実行（phase execute）… この帯の状態の文は出さない（K-63 の帯）。can.delegate なら任せる前の箱
+//   主ボタンは 1 つ：K-63 の帯が「完了にする」を出している間は「AI に任せる」を outlined（決める人の答え answer=5cf21973b39f）
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く
-import { useEffect, useRef, useState } from "react";
-import { Band, Button, Callout } from "@/components/k";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Band, BandLine, Button, NoticeBox } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
+import { me } from "@/lib/auth/ext";
+import { InertButton } from "@/features/F4/create-ticket/detail-head";
+import { CheckTable } from "@/features/F5/approve-complete/check-table";
 import { useApprovalDetail } from "@/features/F5/approve-complete/decide";
+import { RunSteps } from "./run-steps";
 import { isActive, type RunView } from "./use-run";
 
 export interface BandTicket {
@@ -39,32 +51,88 @@ type Notice = { code: string; retryAfterSec?: number | null; link?: boolean } | 
 const SETUP_BRIDGE = "/setup/bridge";
 const MSG = {
   waking: "PC が起きるのを待っています",
+  receiving: "PC が受け取るのを待っています",
   made: "成果物ができました。承認待ちです",
+  before: "AI に任せる",
+  beforeSub: "のAI が実施事項を進め、確かめてから承認を待ちます",
 } as const;
+const JST_MS = 9 * 3600_000;
+const MINUTE_MS = 60_000;
+/** 見ている人の名前（詳細の画面と同じ鍵で読む・1 回だけ） */
+const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
 const nameOf = (r: RunView) => `${r.by?.display_name ?? "自分"}のAI`;
 
-/** 作る段の実行の様子の文（帯の中だけ） */
-function RunLines({ run }: { run: RunView }) {
+/** 作っています の要約「開始 HH:MM ・ N 分」（日本時間・経過は分で切り捨て）。始めた時刻が無ければ出さない */
+export function startedLine(startedAt: string | null, now = Date.now()): string | null {
+  if (!startedAt) return null;
+  const t = Date.parse(startedAt);
+  if (Number.isNaN(t)) return null;
+  const hhmm = new Date(t + JST_MS).toISOString().slice(11, 16);
+  return `開始 ${hhmm} ・ ${Math.max(0, Math.floor((now - t) / MINUTE_MS))} 分`;
+}
+
+/** 作る段の途中の行（差し戻しの理由・途中の 1 行・10 分の知らせ） */
+function MakeLines({ run }: { run: RunView }) {
   const lines: string[] = [];
-  if (isActive(run)) {
-    if (run.status === "queued")
-      lines.push(`${nameOf(run)} に任せました。${run.pc === "asleep" ? MSG.waking : "PC が受け取るのを待っています"}`);
-    else lines.push(`${nameOf(run)} が作っています`);
-    if (run.return_reason) lines.push(`差し戻しの理由：${run.return_reason}`);
-    if (run.progress) lines.push(run.progress);
-    if (run.silent) lines.push(errorText("E-TO-005").entry.message);
-  } else if (run.status === "stopped" || run.status === "cancelled") {
-    lines.push(`${nameOf(run)} が止まりました`);
-    if (run.stopped_reason) lines.push(run.stopped_reason);
-  }
+  if (run.return_reason) lines.push(`差し戻しの理由：${run.return_reason}`);
+  if (run.progress) lines.push(run.progress);
+  if (run.silent) lines.push(errorText("E-TO-005").entry.message);
   return (
     <>
       {lines.map((t, i) => (
-        <p key={i} className="k62-band-line" data-run-line>
-          {t}
-        </p>
+        <BandLine key={i}>{t}</BandLine>
       ))}
     </>
+  );
+}
+
+/** 作る段の実行の箱（作っています・任せました・止まった）。止まったときだけ AI に任せる（delegate）を箱の中に置く */
+function RunBox({ run, delegate }: { run: RunView; delegate: ReactNode }) {
+  if (run.status === "queued")
+    return (
+      <Band
+        tone="wait"
+        title={`${nameOf(run)} に任せました。`}
+        sub={run.pc === "asleep" ? MSG.waking : MSG.receiving}
+        acts={<InertButton>AI と話す</InertButton>}
+      >
+        <MakeLines run={run} />
+      </Band>
+    );
+  if (isActive(run)) {
+    const started = startedLine(run.started_at);
+    return (
+      <Band
+        tone="info"
+        title={`${nameOf(run)} が作っています`}
+        {...(started ? { sub: started } : {})}
+        acts={
+          <>
+            <InertButton>AI と話す</InertButton>
+            <InertButton>止める</InertButton>
+          </>
+        }
+      >
+        <MakeLines run={run} />
+        <RunSteps />
+      </Band>
+    );
+  }
+  return (
+    <Band
+      tone="danger"
+      role="alert"
+      title={`${nameOf(run)} が止まりました`}
+      acts={
+        <>
+          {delegate}
+          <InertButton>直し方を AI に伝える</InertButton>
+          <InertButton>自分で直す</InertButton>
+        </>
+      }
+    >
+      {run.stopped_reason ? <BandLine>{run.stopped_reason}</BandLine> : null}
+    </Band>
   );
 }
 
@@ -83,6 +151,9 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   const showRun = making && !!run && !closed && (active || run.status === "stopped" || run.status === "cancelled");
   const showMade = awaiting && !ticket.canDecide && ticket.hasAssignee;
   const approvalDetail = useApprovalDetail(showMade ? ticket.approvalId : null);
+  // 任せる前の要約の名前：読めたらその名前、読めなかったら「自分」。読み終わるまでは要約を出さない
+  const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: showButton, ...ONCE });
+  const viewer = who.isSuccess ? who.data.display_name || "自分" : who.isError ? "自分" : null;
 
   const delegate = async () => {
     if (busy || waitUntil) return;
@@ -117,10 +188,22 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   };
 
   if (!showButton && !showRun && !showMade && !notice) return null;
+  const stopped = showRun && !!run && !active;
+  const delegateButton = showButton ? (
+    <Button
+      variant={ticket.completeShown ? "outlined" : "primary"}
+      onClick={() => void delegate()}
+      loading={busy}
+      disabled={waitUntil !== null}
+    >
+      AI に任せる
+    </Button>
+  ) : null;
   return (
     <section aria-label="AI に任せる" className="k62-band k-section">
       {notice ? <NoticeLine notice={notice} /> : null}
-      {showRun && run ? <RunLines run={run} /> : null}
+      {showRun && run ? <RunBox run={run} delegate={delegateButton} /> : null}
+      {stopped ? <CheckTable /> : null}
       {showMade ? (
         // 確認の要約は承認の 1 件の check_summary。読めない間・読めなかったときは出さない（本当とは限らない文を言い切らない）
         <Band
@@ -129,17 +212,13 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
           {...(approvalDetail.data?.check_summary ? { sub: approvalDetail.data.check_summary } : {})}
         />
       ) : null}
-      {showButton ? (
-        <div>
-          <Button
-            variant={ticket.completeShown ? "outlined" : "primary"}
-            onClick={() => void delegate()}
-            loading={busy}
-            disabled={waitUntil !== null}
-          >
-            AI に任せる
-          </Button>
-        </div>
+      {showButton && !showRun ? (
+        <Band
+          tone="plain"
+          title={MSG.before}
+          {...(viewer ? { sub: `${viewer}${MSG.beforeSub}` } : {})}
+          acts={delegateButton}
+        />
       ) : null}
     </section>
   );
@@ -155,7 +234,7 @@ async function runIdOf(ticketId: string): Promise<string | null> {
 
 function NoticeLine({ notice }: { notice: NonNullable<Notice> }) {
   if (notice.code === "RATE")
-    return <Callout tone="warn">押しすぎです。{notice.retryAfterSec} 秒たってから、もう一度押してください</Callout>;
+    return <NoticeBox tone="warn">押しすぎです。{notice.retryAfterSec} 秒たってから、もう一度押してください</NoticeBox>;
   const code = notice.code;
   let message: string;
   try {
@@ -164,7 +243,7 @@ function NoticeLine({ notice }: { notice: NonNullable<Notice> }) {
     message = errorText(PAGE_ERROR.loadFailed).entry.message;
   }
   return (
-    <Callout tone={code === "E-CONF-013" || code === "E-CONF-014" ? "info" : "danger"}>
+    <NoticeBox tone={code === "E-CONF-013" || code === "E-CONF-014" ? "warn" : "danger"}>
       {message}
       {notice.link ? (
         <>
@@ -174,6 +253,6 @@ function NoticeLine({ notice }: { notice: NonNullable<Notice> }) {
           </a>
         </>
       ) : null}
-    </Callout>
+    </NoticeBox>
   );
 }

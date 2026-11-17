@@ -1,6 +1,7 @@
 // 詳細の帯の箱（K-227・正本 components.band-*・キャンバス TicketDetail の main article [role="status"]）。
 //   箱 1 つの中に、1 行目に 題（h3）・要約（12px）・中の 1 行や注意（children）の塊、次の行に右寄せのボタンの並び（キャンバスどおり）。
 //   tone は帯の色：approval（承認待ち）のほか、作る段・実行・止まった・完了の帯（K-228）が wait・info・danger・ok・plain を使う。
+//   approval 以外の tone は寸法が band-state（余白 12px 14px・ボタン 30・K-228）。題の前の印は無い（飾りの svg は出さない）
 //   口の失敗の知らせは NoticeBox（帯の region の中の赤い箱・role=alert は 1 つだけ。中に別の alert を入れない）
 import type { ReactNode } from "react";
 
@@ -42,10 +43,11 @@ export function BandCaution({ children }: { children: ReactNode }) {
   return <div className="k-band-caution">{children}</div>;
 }
 
-/** 口が断ったときの知らせ（帯の region の中・赤い箱）。role=alert はこの 1 つだけ */
-export function NoticeBox({ children }: { children: ReactNode }) {
+/** 口が断ったときの知らせ（帯の region の中・帯の箱の外）。role=alert はこの 1 つだけ。
+ *  tone：danger（赤・断った）／warn（淡い橙・押しすぎ・別のタブで先に任せていた など・K-228 の band-notice-warn） */
+export function NoticeBox({ children, tone = "danger" }: { children: ReactNode; tone?: "danger" | "warn" }) {
   return (
-    <div className="k-band-notice" data-tone="danger" role="alert">
+    <div className="k-band-notice" data-tone={tone} role="alert">
       {children}
     </div>
   );
