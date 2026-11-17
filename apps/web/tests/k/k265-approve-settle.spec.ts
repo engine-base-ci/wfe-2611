@@ -97,8 +97,7 @@ test("K265-UI-001 作る段が終わった読み直しの回で、作る段の�
       ticket = { stage: "running" };
       return json(route, 201, { data: { run_id: MAKE_1, job_id: MAKE_1, status: "queued", pc: "live" } });
     }
-    if (p === `/api/v1/tickets/${TICKET}/runs`)
-      return json(route, 200, { data: runs.map(view), meta: { limit: 50 } });
+    if (p === `/api/v1/tickets/${TICKET}/runs`) return json(route, 200, { data: runs.map(view), meta: { limit: 50 } });
     const one = /^\/api\/v1\/action_runs\/([^/]+)$/.exec(p);
     if (one) {
       if (one[1] === MAKE_1 && gate) await gate;
