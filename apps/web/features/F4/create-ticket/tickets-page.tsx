@@ -1,24 +1,23 @@
 "use client";
-// チケットの画面の「作る」の入口（K-60・画面 tickets・道 /tickets）。左のメニューの「チケットを作る」（外枠・K-138）・空の箱の「＋ チケットを作る」・URL の印 ?new=1（再読み込みでも開いたまま）。
+// チケットの画面の入口（K-60・画面 tickets・道 /tickets）。作る面（?new=1・K-224）と一覧（K-251・features/F4/ticket-list）を切り替える。
+//   作るの入口：左のメニューの「チケットを作る」（外枠・K-138）・空の箱の「＋ チケットを作る」・URL の印 ?new=1（再読み込みでも開いたまま）。
 //   書けるグループが 1 つも無い人（閲覧のみ）には「作る」を出さない（口も 403）。PC をつないでいなくても作れる（D-127.8）
-//   一覧そのもの（絞り込み・並べ替え）は F4 のこれからのチケット。ここは作ったチケットが並ぶところまで
+//   一覧の口の答えは作る面の選択肢に使わない（親の候補は作る面が一覧の口の q で引く・K-224）
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Empty, ErrorState, Loading } from "@/components/k";
+import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
+import { TicketListPage } from "../ticket-list/list-page";
 import { CreateHead, type SaveView } from "./create-head";
 import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
-import { ShellBell } from "@/components/k/shell";
 import { TicketShell, fetchScopes, type Scopes } from "./ticket-shell";
 
-type Row = { id: string; number: string; title: string };
 type Load =
-  | { state: "loading" }
-  | { state: "error"; code: string }
-  | { state: "ok"; choices: Choices; writable: boolean; rows: Row[] };
+  { state: "loading" } | { state: "error"; code: string } | { state: "ok"; choices: Choices; writable: boolean };
 
 export async function loadChoices(qc: QueryClient): Promise<Load> {
   // 本人と本人の会社（下書きの写しの鍵・H1）。分からないうちは作る面を出さない（写しを読まない・書かない）
@@ -38,20 +37,17 @@ export async function loadChoices(qc: QueryClient): Promise<Load> {
     const r = (e as { result?: Parameters<typeof errorCodeOf>[0] }).result;
     return { state: "error", code: r ? errorCodeOf(r) : PAGE_ERROR.loadFailed };
   }
-  const [kinds, members, list] = await Promise.all([
+  const [kinds, members] = await Promise.all([
     call("listTicketKinds", { screenId: "tickets" }),
     call("listMembers", { query: { limit: 200 }, screenId: "tickets" }),
-    call("listTickets", { query: { limit: 50 }, screenId: "tickets" }),
   ]);
   for (const r of [kinds, members]) if (!r.ok) return { state: "error", code: errorCodeOf(r) };
   if (!kinds.ok || !members.ok) return { state: "error", code: PAGE_ERROR.loadFailed };
   const all = scopes.rows;
   const writableIds = new Set(scopes.writable);
-  const rows = list.ok ? (list.data as unknown as Row[]) : [];
   return {
     state: "ok",
     writable: writableIds.size > 0,
-    rows,
     choices: {
       workspace: String(who.tenant_id),
       member: String(who.member_id),
@@ -80,40 +76,39 @@ const withNew = (open: boolean) => {
   window.history.replaceState(null, "", `${u.pathname}${u.search}`);
 };
 
-/** キャンバスどおりの新しい外枠に載せる（D-143.1）。作る面の開け閉めは外枠の作るボタンと本文で分け合う */
+/** 作る面が開いていれば作る面（K-224）、それ以外は一覧（K-251）。書けるグループが無い人には作る面を出さず一覧のまま */
 export function TicketsPage({ openNew }: { openNew: boolean }) {
   const [open, setOpen] = useState(openNew);
+  const view = useSearchParams().get("view") === "all" ? "all" : "mine";
   const show = useCallback((v: boolean) => {
     setOpen(v);
     withNew(v);
   }, []);
+  if (!open) return <TicketListPage view={view} onCreate={() => show(true)} />;
   return (
     <TicketShell
       screen="tickets"
-      crumbs={open ? [{ label: "チケット", href: "/tickets" }, { label: "作る" }] : [{ label: "チケット" }]}
+      crumbs={[{ label: "チケット", href: "/tickets" }, { label: "作る" }]}
       onCreate={() => show(true)}
     >
-      <TicketsBody open={open} show={show} />
+      <CreateBody show={show} />
     </TicketShell>
   );
 }
 
-function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void }) {
+function CreateBody({ show }: { show: (v: boolean) => void }) {
   const [ready, setReady] = useState(false);
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [expired, setExpired] = useState(false);
   /** 作る面の帯の下書きの保存の状態（帯は読み込みの前後で同じものを使い続ける） */
   const [save, setSave] = useState<SaveView>({ kind: "none" });
-  useEffect(() => {
-    if (!open) setSave({ kind: "none" }); // 閉じたら前の保存の状態を持ち越さない
-  }, [open]);
   const qc = useQueryClient();
-  const here = open ? "/tickets?new=1" : "/tickets";
+  const here = "/tickets?new=1";
 
   useEffect(() => {
     if (!getToken()) window.location.replace(`/login?next=${encodeURIComponent(here)}`);
     else setReady(true);
-  }, [here]);
+  }, []);
   const reload = useCallback(() => {
     setLoad({ state: "loading" });
     void loadChoices(qc).then((l) => {
@@ -124,60 +119,33 @@ function TicketsBody({ open, show }: { open: boolean; show: (v: boolean) => void
   useEffect(() => {
     if (ready) reload();
   }, [ready, reload]);
+  // 書けるグループが無い人は一覧に戻す（作る面を出さない）
+  useEffect(() => {
+    if (load.state === "ok" && !load.writable) show(false);
+  }, [load, show]);
 
   if (!ready) return <Loading />;
   if (expired)
     return (
       <ErrorState code={PAGE_ERROR.sessionExpired} heading={1} acts={[`/login?next=${encodeURIComponent(here)}`]} />
     );
-  // 作る面：帯を先に出し、選ぶ欄を読み終えたら本文（K-224・D-144.8）。帯は読み込みの前後で同じものを使い続ける。書けるグループが無い人は一覧のまま
-  if (open && !(load.state === "ok" && !load.writable))
-    return (
-      <div className="k-root k-create-page">
-        <CreateHead save={save} />
-        {load.state === "ok" ? (
-          <CreateTicket
-            choices={load.choices}
-            onCreated={(id) => window.location.assign(`/tickets/${id}`)}
-            onClose={() => show(false)}
-            onExpired={() => setExpired(true)}
-            onSave={setSave}
-          />
-        ) : (
-          <div className="k-create-body">
-            {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
-          </div>
-        )}
-      </div>
-    );
+  // 作る面：帯を先に出し、選ぶ欄を読み終えたら本文（K-224・D-144.8）。帯は読み込みの前後で同じものを使い続ける
   return (
-    <section className="k-root k-page" aria-labelledby="tickets-title">
-      <header className="k-page-head k-row">
-        <h1 id="tickets-title">チケット</h1>
-        <ShellBell />
-      </header>
-      {load.state === "loading" ? <Loading /> : null}
-      {load.state === "error" ? <ErrorState code={load.code} acts={[reload]} /> : null}
+    <div className="k-root k-create-page">
+      <CreateHead save={save} />
       {load.state === "ok" ? (
-        load.rows.length ? (
-          <ul className="k-list" aria-label="チケットの一覧">
-            {load.rows.map((r) => (
-              <li key={r.id}>
-                <a className="k-link" href={`/tickets/${r.id}`}>
-                  {r.number} {r.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <Empty
-            title="まだチケットはありません"
-            action={load.writable ? <Button onClick={() => show(true)}>＋ チケットを作る</Button> : null}
-          >
-            自分で書いて作れます。
-          </Empty>
-        )
-      ) : null}
-    </section>
+        <CreateTicket
+          choices={load.choices}
+          onCreated={(id) => window.location.assign(`/tickets/${id}`)}
+          onClose={() => show(false)}
+          onExpired={() => setExpired(true)}
+          onSave={setSave}
+        />
+      ) : (
+        <div className="k-create-body">
+          {load.state === "loading" ? <Loading /> : <ErrorState code={load.code} acts={[reload]} />}
+        </div>
+      )}
+    </div>
   );
 }

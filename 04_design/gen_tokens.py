@@ -97,7 +97,9 @@ COMP_PROP = {"backgroundColor": "bg", "textColor": "fg", "border": "border", "ro
              # 入口の枠のロゴの字の間（K-255）
              "letterSpacing": "ls",
              # 迫り出す面の影と縁の輪（K-229：小窓。色は colors を参照するので、暗いテーマでは暗い側の値に替わる）
-             "shadow": "shadow"}
+             "shadow": "shadow",
+             # 浮く箱の上からの位置・小さな印の縦の位置（K-251：表示設定の箱・炎の印）
+             "top": "top", "verticalAlign": "va"}
 
 
 def ref(v: str) -> str:
