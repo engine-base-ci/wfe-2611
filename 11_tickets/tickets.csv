@@ -1617,3 +1617,13 @@ K-265,試験の揺れ：開いたままの承認の試験 K63-UI-066 が、「�
 - [ ] K63-UI-064〜068 が、口の答えを承認・差し戻しの口が呼ばれたときに替える形で、期待を変えずに緑（手元で繰り返し流して落ちない）
 - [ ] 押す前に口の答えを替えて、遅れた読みで押す物が消える形が、ほかの試験に残っていない（下の検索）
 - [ ] チケットの CI が緑（画面の行は取り込んだ後の ci.py web）"
+K-307,いまの様子（誰でも読める稼働状況の口 getServiceStatus・公開の分だけ・型を決める・app.public_service_status）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"ログインしていない人にも、Kaname の **いまの様子**（直っていない障害・いま中のメンテナンス）を返す契約の口 `GET /api/v1/auth/service-status`（getServiceStatus）を作る。ログインの画面の上の帯（K-317）と、困ったとき（/help・K-315）の「いまの稼働状況」が読む（D-128.110。D-128.110 の「メンテの予定も読める」は、代表の答え answer=88f98638a534 で「中のときだけ・予定は出さない」に改めた）。今は 501。
+
+返すのは **運営が公開したものだけ**（どのワークスペースのことも出さない）。メンテナンスは **中のときだけ** 出し、予定は出さない（代表の答え answer=88f98638a534・帯も困ったときも同じ決まり）。契約の答えの型が曖昧（`components?: string[]` など）なので、この葉で決める：
+
+```
+{ data: { incidents: [{ state, title, started_at }], maintenance: { title, from, to } | null } }   // 型 PublicServiceStatus
+```","- [ ] 下の表の 22 行（K307-API-001〜009・011〜020・K307-DB-001〜003）が本物の DB の上で緑（`apps/api/test/features/F1/service-status.test.ts`）
+- [ ] 契約の口 getServiceStatus が 501 でなく、答えの型が PublicServiceStatus に作り直されている（packages/contracts の ENDPOINTS の output）。`apps/api/test/generated/get_auth_service_status.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している
+- [ ] ログイン後の getServiceStatusForMember（GET /api/v1/service-status）の型は ServiceStatus のまま
+- [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
