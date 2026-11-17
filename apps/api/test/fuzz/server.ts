@@ -15,6 +15,7 @@ import { ticketHooks } from "../../src/hooks/tickets.js";
 import { delegateHooks } from "../../src/hooks/delegate.js";
 import { approveHooks } from "../../src/hooks/approve-complete.js";
 import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
+import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { migrateAuth } from "@kaname/auth/migrate";
@@ -40,6 +41,7 @@ Object.assign(
   delegateHooks(h.pool),
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
+  serviceStatusHooks({ appPool: h.pool }),
   // 再設定のメールを頼む（K-313）。送出先は差さない（外に送らず、ログの道を通る）。本人は認証の接続、記録は業務の接続（本物と同じ）
   passwordResetHooks({ authPool, appPool: h.pool, config: { baseUrl: "http://127.0.0.1", webBaseUrl: null } }),
 );

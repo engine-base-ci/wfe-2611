@@ -11136,6 +11136,17 @@ components:
           items:
             type: object
       x-operation: getOpsNotice
+    PublicServiceStatus:
+      type: object
+      properties:
+        incidents:
+          type: array
+          items:
+            type: object
+        maintenance:
+          type: object
+          nullable: true
+      x-operation: getServiceStatus
     ServiceStatus:
       type: object
       properties:
@@ -13633,11 +13644,17 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ServiceStatus'
+                    $ref: '#/components/schemas/PublicServiceStatus'
                   meta:
                     type: object
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
           content:
             application/json:
               schema:

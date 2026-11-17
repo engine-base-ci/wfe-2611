@@ -28,6 +28,7 @@ import { signupHooks } from "./hooks/signup.js";
 import { verifyEmailHooks } from "./hooks/verify-email.js";
 import { passwordResetHooks } from "./hooks/password-reset.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
+import { serviceStatusHooks } from "./hooks/service-status.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -156,6 +157,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         // 再設定のメールを頼む（K-313）。送るのは答えの後（D-042）
         ...passwordResetHooks({ authPool, appPool, ...(mailer ? { mailer } : {}), config }),
         ...consentTermsHooks({ appPool }),
+        ...serviceStatusHooks({ appPool }),
         ...bridgeHooks({
           appPool,
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },

@@ -1,4 +1,4 @@
--- 0105 再設定を頼んだ・再設定した を本人の今いる会社に残す（K-313・K-314・関門 C2）
+-- 0106 再設定を頼んだ・再設定した を本人の今いる会社に残す（K-313・K-314・関門 C2）
 --   再設定の口は誰でも呼べる（ログインしていない）ので、要求の文脈（app.tenant_id）が無い。認証の本人の id から、
 --   その人が今いる会社ごとに security_events を 1 行ずつ書き、書いた数を返す。
 --   今いる会社：members に本人が居て（members.auth_user_id か、所属の行の auth_user_id）消えていない、かつ同じ会社・同じ人の所属（tenant_memberships）が
@@ -30,4 +30,4 @@ end $$;
 revoke all on function app.record_security_event_for_auth_user(text, text, jsonb) from public;
 grant execute on function app.record_security_event_for_auth_user(text, text, jsonb) to kaname_app, kaname_auth;
 
-insert into app.schema_migrations (name) values ('0105_reset_security_events.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0106_reset_security_events.sql') on conflict do nothing;

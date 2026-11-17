@@ -309,6 +309,14 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/service-status.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_service_status.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F3/connect-pc.test.ts"
    ],
    "tests": [

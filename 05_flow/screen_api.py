@@ -619,6 +619,12 @@ ERRORS_4XX = {
          "trigger": "今の版を読む DB が落ちた",
          "ears_form": "UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、版も url も返さない"},
     ],
+    # いまの様子を読む（K-307）。DB が落ちたら「ふつう」（空）を返さず中身も返さない
+    "getServiceStatus": [
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "稼働状況を読む DB（障害とお知らせ）が落ちた",
+         "ears_form": "UNWANTED: IF 稼働状況を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、題も時刻も返さない"},
+    ],
     # 確認のリンクで確定する（K-52・D-088.9・D-128.146）。冪等キーは使わない：2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう
     "verifySignup": [
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict"}, "errors": ["E-CONF-011", "E-CONF-001", "E-AUTH-009"],
@@ -901,7 +907,8 @@ RESPONSES = {
     "previewTicketShapeChange": ("TicketShapeChangePreview", {"removed": "array", "needs_move_to": "array", "affected_tickets": "integer", "over_limits": "array"}),
     "getOpsInquiry": ("OpsInquiryDetail", {"inquiry": "object", "messages": "array", "context": "object", "workspace": "object"}),
     "getOpsNotice": ("OpsNoticeDetail", {"notice": "object", "updates": "array", "affects": "object", "placements": "array"}),
-    "getServiceStatus": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
+    # いまの様子（K-307・誰でも）：直っていない障害（公開したお知らせに結んだもの）といま中のメンテナンスだけ。ログイン後の口の型 ServiceStatus とは分ける
+    "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
