@@ -11648,7 +11648,8 @@
     "apps/api/src/server-timing.ts",
     "apps/api/src/app.ts",
     "packages/db/src/pool.ts",
-    "packages/auth/src/index.ts"
+    "packages/auth/src/index.ts",
+    ".gitleaksignore"
    ],
    "affects": [
     "@kaname/api",
