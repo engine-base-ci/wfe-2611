@@ -3,7 +3,8 @@
 //   帯は段で分ける（D-128.178）：作る段（phase make）の間は何も描かない（K-62 の帯だけ）。部品は置いたままで、
 //   今の実行が走っている間は 3 秒ごとにチケットを読み直す（作る段が終わって承認待ちになったら帯に替わる・K63-UI-044）。
 //     ① 承認待ち・決められる人 … decide.tsx（成果物の中身・「承認して送る」「差し戻す」）
-//     ② 承認待ち・決められない人 … 描かない（K-62 の帯「成果物ができました。承認待ちです」）。担当者がいなければその文（K63-UI-049）
+//     ② 承認待ち・決められない人 … 描かない（K-62 の帯「成果物ができました。承認待ちです」）。担当者がいなければその文の橙の箱（K63-UI-049・K-227）
+//   口の失敗の知らせは帯の region の中の赤い箱（NoticeBox・K-227）
 //     ③ 承認の後の実行が走っている … pc live は「実行中」・running で pc asleep は「実行中・PC が閉じています…」・asking は「AI が許可を求めています…」
 //     ④ 実行待ち・PC が閉じている（queued・pc asleep）… 「実行待ち・PC が閉じています…」（queued・pc live は「実行中」）
 //     ⑤ 止まった … 実行の記録（action_runs）の止まった理由を全文そのまま（切らない・言い換えない・D-131.2・D-131.4）
@@ -13,7 +14,7 @@
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Button, Callout } from "@/components/k";
+import { Band, Button, NoticeBox } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
 import { CompleteDialog } from "./complete-dialog";
@@ -93,7 +94,7 @@ function usePolledTicket<T>(ticketId: string, active: boolean, onTicket: (t: T) 
 
 /** ⑥ 完了にできるか：段が作業中・承認待ちが無い・走っている実行が無い（作る段も）・口が can.complete と答えた。
  *  AI に任せていない（実行の記録が無い）チケットでも出す（K63-UI-059） */
-function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown: boolean): boolean {
+export function canCompleteNow(ticket: BandTicket, run: RunView | null, runKnown: boolean): boolean {
   if (!runKnown || isActive(run) || ticket.approval) return false; // 「走っている実行が無い」は分かってから数える（K63-UI-069〜071）
   return ticket.can?.complete === true && ticket.stage?.key === COMPLETABLE_STAGE;
 }
@@ -138,7 +139,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
           {...(target ? { target } : {})}
         />
       );
-    if (approval && ticket.assignee === null) return <p>{MSG.noAssignee}</p>;
+    if (approval && ticket.assignee === null) return <Band tone="approval" title={MSG.noAssignee} />; // 箱は 1 つ（K-62 の帯は出さない）
     if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
     const line = execute ? executeLine(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
     if (!line && !complete) return null;
@@ -154,7 +155,7 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   if (!body && !notice && !dialogOpen) return null;
   return (
     <section aria-label={BAND_LABEL} className="k62-band k-section">
-      {notice ? <Callout tone="danger">{notice}</Callout> : null}
+      {notice ? <NoticeBox>{notice}</NoticeBox> : null}
       {body}
       {dialogOpen ? (
         <CompleteDialog

@@ -55,3 +55,60 @@
 .k63-problems ul {
   padding-left: var(--k-s-lg);
 }
+/* 承認待ちの帯の region（K-227）：帯の箱（components/k の .k-band）と、その下の成果物のカード */
+.k63-decide {
+  display: grid;
+  gap: var(--k-c-detail-bands-gap);
+  min-width: 0;
+}
+/* 成果物のカード（キャンバス TicketDetail の区画「成果物」）：左に字の頭（縮小の絵の代わり）・右に版とボタン。狭ければ折り返す */
+.k-artifact-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--k-c-artifact-card-gap);
+  min-width: 0;
+  padding: var(--k-c-artifact-card-pad);
+  border: var(--k-c-artifact-card-border);
+  border-radius: var(--k-c-artifact-card-radius);
+  background: var(--k-c-artifact-card-bg);
+}
+.k-artifact-head {
+  box-sizing: border-box;
+  width: var(--k-c-artifact-head-width);
+  max-width: 100%;
+  height: var(--k-c-artifact-head-height);
+  overflow: hidden;
+  padding: var(--k-c-artifact-head-pad);
+  border: var(--k-c-artifact-head-border);
+  border-radius: var(--k-c-artifact-head-radius);
+  background: var(--k-c-artifact-head-bg);
+  font-size: var(--k-c-artifact-head-text);
+  line-height: var(--k-c-artifact-head-lh);
+  font-weight: var(--k-c-artifact-head-fw);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.k-artifact-info {
+  flex: 1 1 var(--k-c-artifact-info-width);
+  min-width: 0;
+}
+.k-artifact-meta {
+  font-size: var(--k-c-artifact-meta-text);
+  line-height: var(--k-c-artifact-meta-lh);
+  font-weight: var(--k-c-artifact-meta-fw);
+  color: var(--k-c-artifact-meta-fg);
+}
+.k-artifact-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-artifact-acts-gap);
+  margin: var(--k-c-artifact-acts-margin);
+}
+.k-artifact-acts .k-artifact-btn {
+  min-height: var(--k-c-artifact-button-height);
+  padding: var(--k-c-artifact-button-pad);
+  font-size: var(--k-c-artifact-button-text);
+  line-height: var(--k-c-artifact-button-lh);
+  font-weight: var(--k-c-artifact-button-fw);
+}
