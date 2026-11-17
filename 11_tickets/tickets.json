@@ -13761,7 +13761,8 @@
     "@kaname/contracts"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/",
