@@ -320,6 +320,16 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
     await expect(page.locator('.k-detail-meta [data-part="stage"]')).toHaveText("承認待ち");
   },
+  // 承認待ちの帯（K-227・キャンバス TicketDetail の main article [role="status"]）：承認待ち・決められる人・取り消せない承認を開き、
+  //   帯の箱の題と要約（承認の 1 件の答えの後に出る）と成果物のカードが描かれるまで待つ
+  "band-approval": async (page, path) => {
+    await mockApi(page);
+    await page.goto(path.replace("{ticket}", TICKET));
+    const band = page.getByRole("region", { name: "承認と実行" });
+    await expect(band.locator('[role="status"].k-band h3')).toHaveText("あなたの承認を待っています");
+    await expect(band.locator('[role="status"].k-band .k-band-sub')).toBeVisible();
+    await expect(band.getByRole("region", { name: "成果物" })).toBeVisible();
+  },
   // 承認と完了の小窓（K-229）：承認待ち・帯の「承認して送る」／実行が終わった作業中・「完了にする」／承認待ち・帯の「差し戻す」
   "approve-modal": async (page, path) => {
     await openBandModal(page, path, "承認して送る", "承認して送ります");

@@ -561,6 +561,67 @@ components:
     border: "1px solid {colors.line}"
     rounded: "{rounded.full}"
     typography: "{typography.body-sm}"
+  # 詳細の帯（K-227・キャンバス TicketDetail の main article [role="status"]・D-143.2：値はキャンバスの実測）
+  band-approval:        # 承認待ちの帯の箱（淡い橙の地・線・角丸 field・余白 10px 12px。題と要約の塊が 1 行目・右寄せのボタンの並びが次の行・間 10px）
+    backgroundColor: "{state.warning-container}"
+    textColor: "{state.on-warning-container}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+    gap: "10px"
+  band-title:           # 帯の題（h3・13px・700・行の高さはキャンバスの本文の 1.7）
+    typography: "{typography.body}"
+    fontWeight: 700
+    lineHeight: 1.7
+  band-sub:             # 帯の要約と中の 1 行（12px・行の高さ 1.7）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+  band-acts:            # 帯のボタンの並び（右寄せ・間 6px）
+    gap: "6px"
+  band-button:          # 帯の白地のボタン（自分で直す・差し戻す・止める）：線は帯の線
+    backgroundColor: "{colors.card}"
+    border: "1px solid {state.warning-line}"
+  band-caution:         # 帯の中の取り消せない注意の赤い箱（小窓の dialog-caution と同じ色・要約の下に 6px あけて・12px）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "4px 10px"
+    margin: "6px 0 0"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+  band-notice:          # 帯の region の中の口の失敗の知らせ（赤い箱・role=alert は 1 つ）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+  artifact-card:        # 成果物のカード（帯の箱の下・白・線・角丸 field・余白 12・縮小と説明の間 14・狭ければ折り返す）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "12px"
+    gap: "14px"
+  artifact-head:        # 縮小の絵の代わりの字の頭（180×240 の白い紙・線・角丸 sm・余白 14・12px。長い字は切る）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.sm}"
+    padding: "14px"
+    width: "180px"
+    height: "240px"
+    typography: "{typography.body-sm}"
+  artifact-info:        # 縮小の右の説明（名前・ボタン）の基準の幅（flex-basis）
+    width: "240px"
+  artifact-meta:        # 名前の下の 12px の灰の行（成果物の版 N）
+    typography: "{typography.body-sm}"
+    textColor: "{colors.on-surface-variant}"
+  artifact-acts:        # 大きく見る・データを見る…の並び（名前の 8px 下・間 6px）
+    gap: "6px"
+    margin: "8px 0 0"
+  artifact-button:      # 成果物のボタン（高さ 30・余白 0 10px・12px）
+    height: "30px"
+    padding: "0 10px"
+    typography: "{typography.body-sm}"
   shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
     height: "60px"
   # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）

@@ -790,3 +790,67 @@ textarea.k-input {
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
+
+/* ---- 詳細の帯（正本 components.band-*・キャンバス TicketDetail の main article [role="status"]・K-227）。
+   1 行目に題と要約の塊（幅いっぱい）、次の行に右寄せのボタンの並び。tone の色は承認待ち（approval）。ほかの tone は K-228 が足す ---- */
+.k-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-c-band-approval-gap);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-band[data-tone="approval"] {
+  padding: var(--k-c-band-approval-pad);
+  border: var(--k-c-band-approval-border);
+  border-radius: var(--k-c-band-approval-radius);
+  background: var(--k-c-band-approval-bg);
+  color: var(--k-c-band-approval-fg);
+}
+.k-band-main {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+.k-band .k-band-title {
+  margin: 0;
+  font-size: var(--k-c-band-title-text);
+  line-height: var(--k-c-band-title-lh);
+  font-weight: var(--k-c-band-title-fw);
+  color: inherit;
+}
+.k-band-sub,
+.k-band-line {
+  font-size: var(--k-c-band-sub-text);
+  line-height: var(--k-c-band-sub-lh);
+  font-weight: var(--k-c-band-sub-fw);
+}
+.k-band-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-c-band-acts-gap);
+  margin-left: auto;
+}
+.k-band-acts .k-btn[data-variant="outlined"] {
+  background: var(--k-c-band-button-bg);
+  border: var(--k-c-band-button-border);
+}
+.k-band-caution {
+  margin: var(--k-c-band-caution-margin);
+  padding: var(--k-c-band-caution-pad);
+  border: var(--k-c-band-caution-border);
+  border-radius: var(--k-c-band-caution-radius);
+  background: var(--k-c-band-caution-bg);
+  color: var(--k-c-band-caution-fg);
+  font-size: var(--k-c-band-caution-text);
+  line-height: var(--k-c-band-caution-lh);
+  font-weight: var(--k-c-band-caution-fw);
+}
+.k-band-notice {
+  padding: var(--k-c-band-notice-pad);
+  border: var(--k-c-band-notice-border);
+  border-radius: var(--k-c-band-notice-radius);
+  background: var(--k-c-band-notice-bg);
+  color: var(--k-c-band-notice-fg);
+  font-size: var(--k-text-body);
+}

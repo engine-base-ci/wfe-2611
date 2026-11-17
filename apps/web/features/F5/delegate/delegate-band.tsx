@@ -2,13 +2,15 @@
 // AI に任せる（K-62）：チケットの詳細の上の帯（<section aria-label="AI に任せる">）。
 //   帯は段で分ける（同じことを言う帯は 1 つ・D-128.178）：
 //     作る段（phase make）の間 … この帯だけ（作っています・PC が起きるのを待っています・止まった理由・10 分の知らせ・差し戻しの理由）
-//     承認待ち … 承認する人でない人にだけ「成果物ができました。承認待ちです」（承認する人には K-63 の承認の帯）
+//     承認待ち … 承認する人でない人にだけ「成果物ができました。承認待ちです」の橙の箱（承認する人には K-63 の承認の帯）。
+//       要約は確認の 12px の字（札にしない）・ボタンなし。担当者がいなければ出さない（K-63 の帯がその文の箱を出す・箱は 1 つ・K-227）
 //     承認の後の実行（phase execute）… この帯の状態の文は出さない（K-63 の帯）。can.delegate なら「AI に任せる」のボタンだけ
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く
 import { useEffect, useRef, useState } from "react";
-import { Badge, Button, Callout } from "@/components/k";
+import { Band, Button, Callout } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
+import { useApprovalDetail } from "@/features/F5/approve-complete/decide";
 import { isActive, type RunView } from "./use-run";
 
 export interface BandTicket {
@@ -17,6 +19,12 @@ export interface BandTicket {
   canDelegate: boolean;
   /** 見ている人が承認する人か（K-63 が getTicket に足す approval.can_decide） */
   canDecide: boolean;
+  /** 承認待ちの承認の id（確認の要約を読む）。承認待ちでなければ null */
+  approvalId: string | null;
+  /** 担当者がいるか（いない承認待ちは K-63 の帯だけ） */
+  hasAssignee: boolean;
+  /** K-63 の帯が今「完了にする」（主ボタン）を出しているか。出している間は「AI に任せる」を outlined にする（主ボタンは 1 つ・D31） */
+  completeShown: boolean;
 }
 interface Props {
   ticket: BandTicket;
@@ -74,7 +82,8 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   const closed = awaiting || ticket.stageKey === "done";
   const showButton = ticket.canDelegate && !active && !closed;
   const showRun = making && !!run && !closed && (active || run.status === "stopped" || run.status === "cancelled");
-  const showMade = awaiting && !ticket.canDecide;
+  const showMade = awaiting && !ticket.canDecide && ticket.hasAssignee;
+  const approvalDetail = useApprovalDetail(showMade ? ticket.approvalId : null);
 
   const delegate = async () => {
     if (busy || waitUntil) return;
@@ -114,13 +123,17 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
       {notice ? <NoticeLine notice={notice} /> : null}
       {showRun && run ? <RunLines run={run} /> : null}
       {showMade ? (
-        <p className="k62-band-line">
-          {MSG.made} <Badge>{MSG.noChecks}</Badge>
-        </p>
+        // 確認の要約は承認の 1 件の check_summary。読めない間・読めなかったときは前からの文（K-62 の帯の文）
+        <Band tone="approval" title={MSG.made} sub={approvalDetail.data?.check_summary || MSG.noChecks} />
       ) : null}
       {showButton ? (
         <div>
-          <Button onClick={() => void delegate()} loading={busy} disabled={waitUntil !== null}>
+          <Button
+            variant={ticket.completeShown ? "outlined" : "primary"}
+            onClick={() => void delegate()}
+            loading={busy}
+            disabled={waitUntil !== null}
+          >
             AI に任せる
           </Button>
         </div>

@@ -146,7 +146,22 @@
     "detail-avatar": ".k-detail-avatar",
     "run-band": ".k62-band",
     "run-sheet": ".k62-run-sheet",
-    "run-chip": ".k62-run-chip"
+    "run-chip": ".k62-run-chip",
+    "band-approval": {
+      "selector": ".k-band[data-tone=\"approval\"]",
+      "shape": ".k-band"
+    },
+    "band-title": ".k-band .k-band-title",
+    "band-sub": ".k-band-sub",
+    "band-acts": ".k-band-acts",
+    "band-button": ".k-band-acts .k-btn[data-variant=\"outlined\"]",
+    "band-caution": ".k-band-caution",
+    "band-notice": ".k-band-notice",
+    "artifact-card": ".k-artifact-card",
+    "artifact-head": ".k-artifact-head",
+    "artifact-meta": ".k-artifact-meta",
+    "artifact-acts": ".k-artifact-acts",
+    "artifact-button": ".k-artifact-acts .k-artifact-btn"
   },
   "component_exempt": [
     {
@@ -236,6 +251,10 @@
     {
       "part": "detail-title-basis",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "artifact-info",
+      "reason": "成果物のカードの部品（K-227・features/F5/approve-complete/approve.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
       "part": "detail-reopen",

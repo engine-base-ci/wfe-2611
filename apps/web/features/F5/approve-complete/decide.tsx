@@ -1,12 +1,17 @@
 "use client";
-// 承認の帯の ①（K-162・K-181）：承認待ち・決められる人。「あなたの承認を待っています」＋成果物の中身・検査なしの印・
-//   取り消せない注意・「承認して送る」「差し戻す」。24 時間の聞き直しは approval.note の文を足す。帯（band.tsx）から分けた（K-183）
+// 承認の帯の ①（K-162・K-181）：承認待ち・決められる人。帯（band.tsx）から分けた（K-183）。
+//   K-227 でキャンバス TicketDetail の帯にした：淡い橙の箱 1 つ（components/k の Band）に 題「あなたの承認を待っています」・
+//   12px の要約「成果物は M/D HH:MM に作成 ・ 確認 〈check_summary〉」・取り消せない注意の赤い箱・24 時間の聞き直しの 1 行、
+//   次の行に 承認して送る（主）・自分で直す（押せない）・差し戻す・止める（押せない）。成果物は箱の下のカード（artifact-card.tsx）。
 //   「承認して送る」「承認する」は確かめの小窓（approve-confirm.tsx・K-229・D-143.4）を開くだけで、口は小窓の主ボタンで呼ぶ
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { Badge, Button, Callout } from "@/components/k";
+import { Band, BandCaution, BandLine, Button } from "@/components/k";
+import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import { call, type CallErr } from "@/lib/api/call";
 import { ApproveConfirm } from "./approve-confirm";
+import { ArtifactCard } from "./artifact-card";
+import { jstStamp } from "./complete-model";
 import { ReturnDialog } from "./return-dialog";
 
 const MSG = {
@@ -23,10 +28,31 @@ export interface BandApproval {
   note?: string | null;
   approver_name?: string | null;
 }
-interface ApprovalDetail {
+export interface ApprovalDetail {
+  approval?: { created_at?: string | null } | null;
   artifact_version: { version: number; text: string } | null;
   cautions: string[];
   check_summary: string;
+}
+
+/** 承認の 1 件（getApproval）。決められない人の帯（K-62）も同じ鍵で読む（1 画面で 1 回） */
+export function useApprovalDetail(id: string | null) {
+  return useQuery({
+    queryKey: ["k63", "approval", id],
+    enabled: id !== null,
+    retry: false,
+    queryFn: async (): Promise<ApprovalDetail | null> => {
+      const r = await call("getApproval", { params: { id: id ?? "" }, screenId: "tickets" });
+      return r.ok ? (r.data as unknown as ApprovalDetail) : null;
+    },
+  });
+}
+
+/** 帯の要約「成果物は 11/01 09:12 に作成 ・ 確認 検査なし（まだ流していません）」。口が返した値だけで作る（時刻が無ければ確認だけ） */
+export function approvalSummary(d: ApprovalDetail): string {
+  const at = d.approval?.created_at ? jstStamp(d.approval.created_at) : "";
+  const check = `確認 ${d.check_summary || MSG.noChecks}`;
+  return at ? `成果物は ${at} に作成 ・ ${check}` : check;
 }
 interface Props {
   approval: BandApproval;
@@ -65,40 +91,39 @@ function useApprove({ approval, onChanged, onFailed, onStart }: Props) {
 
 export function DecideBody(props: Props) {
   const { approval, onChanged, onFailed, target } = props;
-  const detail = useQuery({
-    queryKey: ["k63", "approval", approval.id],
-    retry: false,
-    queryFn: async (): Promise<ApprovalDetail | null> => {
-      const r = await call("getApproval", { params: { id: approval.id }, screenId: "tickets" });
-      return r.ok ? (r.data as unknown as ApprovalDetail) : null;
-    },
-  });
+  const detail = useApprovalDetail(approval.id);
   const { busy, approve, confirming, setConfirming } = useApprove(props);
   const [returning, setReturning] = useState(false); // 差し戻しの小窓（K-181）
   const irreversible = approval.irreversible !== false;
-  const text = detail.data?.artifact_version?.text ?? "";
-  const cautions = detail.data?.cautions ?? (irreversible ? [MSG.irreversible] : []);
-  return (
+  const artifact = detail.data?.artifact_version ?? null;
+  const cautions = detail.data?.cautions ?? [];
+  const cautionLines = irreversible ? (cautions.length ? cautions : [MSG.irreversible]) : []; // 取り消せないときだけ赤い箱
+  const acts = (
     <>
-      <p>{MSG.waitingMe}</p>
-      {approval.note ? <Callout tone="warn">{approval.note}</Callout> : null}
-      {text ? <pre className="k-pre">{text}</pre> : null}
-      <p>
-        <Badge>{detail.data?.check_summary ?? MSG.noChecks}</Badge>
-      </p>
-      {cautions.map((c, i) => (
-        <p key={i} className="k-desc">
-          {c}
-        </p>
-      ))}
-      <div>
-        <Button onClick={() => setConfirming(true)} loading={busy} disabled={busy}>
-          {irreversible ? "承認して送る" : "承認する"}
-        </Button>
-        <Button variant="secondary" disabled={busy} onClick={() => setReturning(true)}>
-          差し戻す
-        </Button>
-      </div>
+      <Button onClick={() => setConfirming(true)} loading={busy} disabled={busy}>
+        {irreversible ? "承認して送る" : "承認する"}
+      </Button>
+      <InertButton>自分で直す</InertButton>
+      <Button variant="outlined" disabled={busy} onClick={() => setReturning(true)}>
+        差し戻す
+      </Button>
+      <InertButton>止める</InertButton>
+    </>
+  );
+  return (
+    <div className="k63-decide">
+      <Band
+        tone="approval"
+        title={MSG.waitingMe}
+        {...(detail.data ? { sub: approvalSummary(detail.data) } : {})}
+        acts={acts}
+      >
+        {approval.note ? <BandLine>{approval.note}</BandLine> : null}
+        {cautionLines.map((c, i) => (
+          <BandCaution key={i}>{c}</BandCaution>
+        ))}
+      </Band>
+      {artifact?.text ? <ArtifactCard version={artifact.version} text={artifact.text} /> : null}
       <ApproveConfirm
         open={confirming}
         onOpenChange={(o) => {
@@ -120,6 +145,6 @@ export function DecideBody(props: Props) {
           onFailed={onFailed}
         />
       ) : null}
-    </>
+    </div>
   );
 }
