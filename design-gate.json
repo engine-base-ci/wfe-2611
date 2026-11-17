@@ -1,5 +1,5 @@
 {
-  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
+  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）。raw_lengths は D8（画面の CSS の生の長さ・--raw-lengths を付けた回だけ・K-261）：paths 見る置き場・token_css トークンの定義元・token_prefix トークンの頭・allow 許す値（理由つき・0 はどの単位の零にも当たる）・ledger 台帳（減らすだけ）",
   "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
   "allow_colors": [
     {
@@ -413,5 +413,15 @@
       "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
-  "max_type_sizes": 10
+  "max_type_sizes": 10,
+  "raw_lengths": {
+    "paths": ["apps/web"],
+    "token_css": ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"],
+    "token_prefix": "--k-",
+    "allow": [
+      { "value": "0", "reason": "零は長さを持たない（どの単位でも同じ）" },
+      { "value": "100%", "reason": "親いっぱいはトークンにしない（大きさの決まりではなく親に合わせる指定）" }
+    ],
+    "ledger": "scripts/ci/raw_length_ledger.json"
+  }
 }

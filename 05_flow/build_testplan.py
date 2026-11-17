@@ -134,6 +134,10 @@ SPEC_GATES.append({"id": 69, "name": "キャンバスとの突き合わせの設
 #   幅の台帳は本線との分かれ目（G0 の base）と比べて減らすだけ。base は env で渡す（G67 と同じ形・命令の注入を防ぐ）
 #   同じ段でこのチケットの試験も流す（幅の台帳の上限と作り手の流し直し。tests: の .py はチケットの回でしか流れない・G37 の末尾の K-218 と同じ形）
 SPEC_GATES.append({"id": 71, "name": "キャンバスの値が正本の段（色・書体・角丸・文字）・幅の台帳は減らすだけ・台帳の形と作り手の流し直し（K-254）", "script": "python3 scripts/ci/canvas_design_gate.py --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k254_canvas_values_test.py", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True})
+# 画面の CSS の生の長さ（D8・K-261）：大きさ・余白・間・行の高さ・影・枠の太さなどにトークンを通らない生の値が無い。
+#   今ある値は台帳 scripts/ci/raw_length_ledger.json で通し、台帳は本線との分かれ目（G0 の base）と比べて減らすだけ。base は env で渡す（G67 と同じ形）。
+#   G37 に混ぜない（K218-DS-025 が G37 の命令を CI_BASE 無しで流す）。同じ段でこのチケットの試験も流す（G71 と同じ形）
+SPEC_GATES.append({"id": 72, "name": "画面の CSS の生の長さ（大きさ・余白・間・行の高さ・影・枠の太さが正本のトークンを通る・D8・台帳は減らすだけ・K-261）", "script": "python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k261_raw_lengths_test.py", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True})
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
 SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
