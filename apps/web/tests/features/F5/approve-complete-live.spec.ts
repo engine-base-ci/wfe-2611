@@ -72,6 +72,8 @@ interface World {
   /** 届いた問い合わせの数（答えを握っている間に「届いたこと」を合図にする）。一覧と、id ごとの 1 件 */
   listAsked: number;
   runAsked: Record<string, number>;
+  /** 承認・差し戻しの口が呼ばれたときに替える口の答え（本物の口と同じく、押す前には替えない・K-265） */
+  next: (() => void) | null;
 }
 async function world(page: Page): Promise<World> {
   const m = await mockApi(page, { stage: "doing", can_delegate: true });
@@ -97,8 +99,25 @@ async function world(page: Page): Promise<World> {
     failList: 0,
     listAsked: 0,
     runAsked: {},
+    next: null,
   };
   m.on.ticket = () => ({ status: 200, body: { data: ticketOf(w.ticket) } });
+  // 口の答えは承認・差し戻しの口が呼ばれたときに替える（K-265）。押す前に替えると、作る段が終わった回の遅れた読み直しが
+  //   承認の後の形を読み、押す前に帯のボタンが消える（段 1 の締めの全部の CI で K63-UI-066 がこの形で落ちた）
+  const decided = () => {
+    const go = w.next;
+    w.next = null;
+    go?.();
+  };
+  const base = { approve: m.on.approve, ret: m.on.ret };
+  m.on.approve = (req) => {
+    decided();
+    return base.approve(req);
+  };
+  m.on.ret = (req) => {
+    decided();
+    return base.ret(req);
+  };
   const json = (route: Route, status: number, body: unknown) =>
     route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
   // 後から足した道が先に見られる。ここで受けない道は土台（mockApi）へ回す
@@ -153,10 +172,12 @@ async function delegatedAndMade(page: Page): Promise<World> {
   await expect(bandOf(page).getByRole("button", { name: "承認して送る" })).toBeVisible();
   return w;
 }
-/** 承認すると、承認の後の実行が一覧の先頭に来る（古い作る段の実行は終わったまま残る） */
+/** 承認すると、承認の後の実行が一覧の先頭に来る（古い作る段の実行は終わったまま残る）。替わるのは承認の口が呼ばれたとき（K-265） */
 const approveTo = (w: World, exec: Run) => {
-  w.runs = [exec, { id: MAKE_1, phase: "make", status: "done" }];
-  w.ticket = { stage: "running" };
+  w.next = () => {
+    w.runs = [exec, { id: MAKE_1, phase: "make", status: "done" }];
+    w.ticket = { stage: "running" };
+  };
 };
 
 row(R["K63-UI-064"], async (page) => {
@@ -181,12 +202,14 @@ row(R["K63-UI-065"], async (page) => {
   const w = await delegatedAndMade(page);
   await bandOf(page).getByRole("button", { name: "差し戻す" }).click();
   await reasonBox(page).fill("宛名を直してください");
-  // 差し戻すと、作り直しの実行が一覧の先頭に来る
-  w.runs = [
-    { id: MAKE_2, phase: "make", status: "running", return_reason: "宛名を直してください" },
-    { id: MAKE_1, phase: "make", status: "done" },
-  ];
-  w.ticket = { stage: "running" };
+  // 差し戻すと、作り直しの実行が一覧の先頭に来る（替わるのは差し戻しの口が呼ばれたとき・K-265）
+  w.next = () => {
+    w.runs = [
+      { id: MAKE_2, phase: "make", status: "running", return_reason: "宛名を直してください" },
+      { id: MAKE_1, phase: "make", status: "done" },
+    ];
+    w.ticket = { stage: "running" };
+  };
   await page.getByRole("dialog").getByRole("button", { name: "差し戻す", exact: true }).click();
   await expect(k62Band(page).getByText(MAKING)).toBeVisible(); // 再読み込みなしで、作り直しの間の K-62 の帯が出る
   await expect(k62Band(page).getByText("差し戻しの理由：宛名を直してください")).toBeVisible();
