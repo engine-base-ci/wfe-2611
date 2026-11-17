@@ -120,7 +120,7 @@ test("K231-UI-005 K63-UI-098 表の列：選ぶ・決めること・種別・番
   await expect(all).toBeDisabled();
 });
 
-test("K231-UI-006 期限の区切りは表の中の行：「期限切れ 1 件」「今日 1 件」「期限なし 1 件」の順。期限切れと今日は赤（#B91C1C）・ほかは赤でない", async ({
+test("K231-UI-006 期限の区切りは表の中の行：「期限切れ 1 件」「今日 1 件」「期限なし 1 件」の順。赤（#B91C1C）は期限切れだけ・今日と期限なしは赤でない（キャンバスどおり）", async ({
   page,
 }) => {
   await mockApi(page);
@@ -133,7 +133,7 @@ test("K231-UI-006 期限の区切りは表の中の行：「期限切れ 1 件�
     "期限なし 1 件",
   ]);
   expect(await cssOf(groups.nth(0).locator("td"), "color")).toBe(RED_TEXT);
-  expect(await cssOf(groups.nth(1).locator("td"), "color")).toBe(RED_TEXT);
+  expect(await cssOf(groups.nth(1).locator("td"), "color")).not.toBe(RED_TEXT);
   expect(await cssOf(groups.nth(2).locator("td"), "color")).not.toBe(RED_TEXT);
   expect(await groups.nth(0).locator("td").getAttribute("colspan")).toBe("9");
 });
