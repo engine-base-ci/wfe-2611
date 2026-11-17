@@ -6,7 +6,7 @@ import { bearer, twoFactor } from "better-auth/plugins";
 import { PostgresDialect } from "kysely";
 import pg from "pg";
 import { uuidv7 } from "@kaname/db/id";
-import { countQueries } from "@kaname/db/pool";
+import { countQueries, markDbSession } from "@kaname/db/pool";
 import { optionalEnv } from "@kaname/config";
 import { mailTag } from "./signup.js";
 
@@ -152,6 +152,14 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       },
     },
   });
+  // セッションが解けた要求に印を立てる（K-237）。口の答えの Server-Timing は印の立った要求にだけ付く（ログイン・登録・再設定の答えに文の数を出さない）
+  const api = auth.api as unknown as { getSession: (...a: unknown[]) => Promise<unknown> };
+  const getSession = api.getSession.bind(auth.api);
+  api.getSession = async (...a: unknown[]) => {
+    const s = await getSession(...a);
+    if (s) markDbSession();
+    return s;
+  };
   return { auth: auth as unknown as Auth, pool };
 }
 

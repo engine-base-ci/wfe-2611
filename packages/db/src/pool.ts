@@ -2,7 +2,7 @@
 // 並ぶ時間と、接続を作る時間は別の上限にする（L-023）：pg-pool の connectionTimeoutMillis は「空きを待つ」にも効くので、
 // 上限まで埋まった後に来た要求は 5 秒で断られていた。並ぶのはこの関門の待機列（queueTimeoutMs）で、
 // 枠を受け取ってから pg-pool の connect を呼ぶ（このときは作る時間だけが connectionTimeoutMillis に当たる）。
-import { AsyncLocalStorage } from "node:async_hooks";
+import { AsyncLocalStorage, AsyncResource } from "node:async_hooks";
 import { performance } from "node:perf_hooks";
 import pg from "pg";
 
@@ -59,6 +59,8 @@ type ConnectCb = (err: Error | undefined, client?: pg.PoolClient, done?: (releas
 export interface DbCount {
   statements: number;
   ms: number;
+  /** この要求でログインのセッションが解けた（markDbSession が立てる）。Server-Timing はこれが立った答えにだけ付ける */
+  session?: boolean;
 }
 
 const counting = new AsyncLocalStorage<DbCount>();
@@ -66,6 +68,12 @@ const counting = new AsyncLocalStorage<DbCount>();
 /** fn の中（その非同期の続きも）で、数える印の付いたプールの接続が流した文を count に足す。数え器の外（起動・ジョブ）では数えない */
 export function withDbCount<T>(count: DbCount, fn: () => T): T {
   return counting.run(count, fn);
+}
+
+/** 今の要求の数え器に「セッションが解けた」印を立てる（数え器の外では何もしない） */
+export function markDbSession(): void {
+  const count = counting.getStore();
+  if (count) count.session = true;
 }
 
 type Query = (...a: unknown[]) => unknown;
@@ -105,9 +113,15 @@ function countClient(client: pg.PoolClient): pg.PoolClient {
 export function countQueries(pool: pg.Pool): pg.Pool {
   const p = pool as unknown as { connect: (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined };
   const orig = p.connect.bind(pool) as (cb?: ConnectCb) => Promise<pg.PoolClient> | undefined;
+  // コールバックの形（pool.query が中で使う）は、呼び手の文脈に縛ってから渡す。素の pg.Pool は空いた接続を
+  //   別の要求の release の中で配るので、縛らないとコールバックの中の client.query が別の要求の数え器に足される（K-237・Q の指摘 2）
   p.connect = (cb?: ConnectCb) =>
     cb
-      ? orig((err, client, done) => cb(err, client ? countClient(client) : client, done))
+      ? orig(
+          AsyncResource.bind((err: Error | undefined, client?: pg.PoolClient, done?: (release?: unknown) => void) =>
+            cb(err, client ? countClient(client) : client, done),
+          ),
+        )
       : (orig() as Promise<pg.PoolClient>).then(countClient);
   return pool;
 }
