@@ -215,7 +215,41 @@
     "detail-avatar": ".k-detail-avatar",
     "run-band": ".k62-band",
     "run-sheet": ".k62-run-sheet",
-    "run-chip": ".k62-run-chip"
+    "run-chip": ".k62-run-chip",
+    "dialog-connect": ".k-dialog[data-size=\"connect\"]",
+    "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
+    "dialog-sub": ".k-dialog-sub",
+    "pc-step": ".k-steps > li",
+    "pc-step-dot": ".k-step-dot",
+    "pc-step-title": ".k-steps .k-step-title",
+    "pc-step-desc": ".k-step-desc",
+    "pc-code": ".k-code",
+    "pc-code-cell": ".k-code-cell",
+    "pc-code-foot": ".k-code-foot",
+    "pc-text-button": ".k-pc-text-btn",
+    "pc-note": ".k-pc-shared-note",
+    "pc-note-mark": ".k-pc-shared-note > b",
+    "pc-wait": ".k-pc-wait",
+    "pc-wait-dot": ".k-wait-dot",
+    "pc-button": ".k-btn.k-pc-btn[data-variant]",
+    "pc-button-primary": ".k-btn.k-pc-btn[data-variant=\"primary\"]",
+    "pc-wake": ".k-btn.k-pc-wake[data-variant]",
+    "pc-card": ".k-pc-card",
+    "pc-card-wide": ".k-pc-card.k-pc-this",
+    "pc-card-head": ".k-pc-card-head",
+    "pc-row": ".k-pc-row",
+    "pc-pill": ".k-pc-pill",
+    "pc-detail": ".k-pc-detail",
+    "pc-fix": ".k-pc-fix",
+    "pc-more": ".k-pc-more",
+    "pc-usage": ".k-pc-card.k-pc-usage",
+    "pc-bar": ".k-pc-bar",
+    "pc-bar-fill": ".k-pc-bar > span",
+    "pc-set-row": ".k-pc-set-row",
+    "pc-switch": ".k-pc-switch",
+    "pc-switch-knob": ".k-pc-switch > span",
+    "pc-pick": ".k-pc-pick",
+    "pc-card-title": ".k-pc-card h2"
   },
   "component_exempt": [
     {
@@ -353,6 +387,26 @@
     {
       "part": "detail-rule",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-usage-col",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は grid の列の最小の幅（grid-template-columns の minmax） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-set-label",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-pick-min",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-code-next",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-fix-msg",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
       "part": "list-late",
