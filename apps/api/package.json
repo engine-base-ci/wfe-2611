@@ -18,6 +18,7 @@
     "@kaname/notify": "workspace:*",
     "@kaname/secrets": "workspace:*",
     "@kaname/storage": "workspace:*",
+    "@vercel/functions": "3.10.3",
     "hono": "^4.10.0"
   },
   "devDependencies": {

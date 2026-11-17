@@ -13,7 +13,8 @@
     "./migrate": "./src/migrate.ts",
     "./signup": "./src/signup.ts",
     "./pending": "./src/pending.ts",
-    "./device": "./src/device.ts"
+    "./device": "./src/device.ts",
+    "./reset": "./src/reset.ts"
   },
   "scripts": {
     "type-check": "tsc -p tsconfig.json --noEmit"

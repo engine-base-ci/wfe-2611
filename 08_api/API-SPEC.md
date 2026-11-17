@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-16 凍結）
+# Kaname API 設計書 v1.0（2026-11-18 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -34,7 +34,7 @@
 | EP-019 | GET | `/api/v1/audit_events` | 取得（audit_events）— 何をしたか追う（記録） | A33 | 1 | member |  | 401 403 422 429 403 503 |
 | EP-020 | GET | `/api/v1/auth/invitations/:token` | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントに | A03 | 1 | public |  | 422 429 503 |
 | EP-021 | POST | `/api/v1/auth/invitations/:token/accept` | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナ | A03 A96 | 1 | public | C2 | 409 422 413 429 503 |
-| EP-022 | POST | `/api/v1/auth/password/forgot` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 409 422 413 429 503 |
+| EP-022 | POST | `/api/v1/auth/password/forgot` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 413 429 503 |
 | EP-023 | POST | `/api/v1/auth/password/reset` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 409 422 413 429 503 |
 | EP-024 | POST | `/api/v1/auth/recovery/admin-request` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 413 429 503 |
 | EP-025 | GET | `/api/v1/auth/service-status` | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public |  | 422 429 503 |
@@ -396,4 +396,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-16 凍結（endpoints 365）
+- v1.0 2026-11-18 凍結（endpoints 365）

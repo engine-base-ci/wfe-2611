@@ -501,6 +501,8 @@ INPUTS = {
     "resendSignupEmail": ("SignupResendInput", {}),
     # 確認のリンクで確定する（K-52）：届いたメールのリンクの手がかりだけ。表の列（pw_iv など）は入力に出さない
     "verifySignup": ("SignupVerifyInput", {"token": "string"}),
+    # 再設定のメールを頼む（K-313）：メールだけ。登録の有無に関わらず同じ答え（D-042）
+    "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
     "consentToTerms": ("TermsConsentInput", {"agree": "boolean", "terms_version_id": "uuid", "privacy_version_id": "uuid"}),
     # K-57：PC をつなぐ。コードを出すのは空の入力（持ち主・ハッシュは外から入れさせない）。型が any の欄は形を問わず受け、口が扱う
@@ -632,6 +634,13 @@ ERRORS_4XX = {
          "trigger": "確定の途中で DB か認証の仕組みが落ちた",
          "ears_form": "UNWANTED: IF 確定の途中で DB か認証が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、ログインの印を渡さない"},
     ],
+    # 再設定のメールを頼む（K-313・D-042）。形の違うメールだけ 422。冪等キーは使わない（汎用の 409 は NO_GENERIC_409 で外す）。
+    #   登録の有無・送れたか・60 秒の内か・背景で DB が落ちたか では答えを変えない
+    "requestPasswordReset": [
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-004"],
+         "trigger": "メールアドレスが無い・空・形が違う（全角・大文字・前後と途中の空白は直してから見る）",
+         "ears_form": "UNWANTED: IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない"},
+    ],
     # 登録の申し込み（K-51・K-144）。規約の版を読む DB が落ちたら申し込みを作らない（汎用の 409・422 はそのまま）
     "createSignup": [
         {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
@@ -666,6 +675,13 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"},
     ],
 }
+# 2xx の EARS を口ごとに上書きする（operationId → 文）。無い口は行為の裏側の文（flow.json の blueprint）になる。
+#   行為の裏側の文が別の口の振る舞いを書いているとき（A31 の「全部のセッションを失効」は決める口 resetPassword の振る舞い）に使う
+EARS_OK = {
+    "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
+}
+# 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
+NO_GENERIC_409 = {"requestPasswordReset"}   # K-313：答えはいつも同じ。登録の有無を器に残さない
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
@@ -689,6 +705,7 @@ REQUIRED_INPUTS = {
     "returnApproval": ["note"],                                          # apps/api/src/features/F5/approve-complete/decide.ts（無い・空・空白だけは 422 E-VAL-020・K-163）
     "createSignup": ["email", "name", "password"],                       # apps/api/src/features/F1/sign-up/input.ts:40〜47（E-VAL-004・010・005）
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
+    "requestPasswordReset": ["email"],                                   # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
@@ -788,6 +805,8 @@ RESPONSES = {
     # 確定した（K-52）。ふつうは token にログインの印・signed_in=true。別のアカウントでログイン中に確定したら token=null・signed_in=false（D-128.137）。本人の id は返さない
     #   terms_pending（K-53）：確定の最後に refresh_terms_pending で決めたこのセッションの同意し直しの印。true なら画面は同意し直しの画面（/login?step=terms&next=…）へ
     "verifySignup": ("SignupVerified", {"email": "string", "token": "string?", "signed_in": "boolean", "terms_pending": "boolean"}),
+    # 再設定のメールを頼んだ（K-313）。いつも accepted=true（登録の有無・送れたかを答えに出さない・D-042）
+    "requestPasswordReset": ("PasswordForgotAccepted", {"accepted": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない
     "getCurrentTerms": ("CurrentTerms", {"id": "string", "kind": "string", "version": "string", "url": "string", "published_at": "string"}),
     "consentToTerms": ("TermsConsented", {"consented": "boolean"}),
