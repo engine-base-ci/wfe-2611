@@ -5,6 +5,10 @@
 import { getRequestListener } from "@hono/node-server";
 import { loadConfig, StartupFailed } from "@kaname/config";
 import { bootApi, type Booted } from "./server.js";
+import { edgeRequest } from "./edge.js";
+
+/** 口の答えを配り先や途中に貯めさせない頭（K-262。app.ts の答えと同じ） */
+const NO_STORE = { "Cache-Control": "private, no-store" } as const;
 
 export const VERCEL_POOL = { app: 3, auth: 2 } as const;
 
@@ -20,8 +24,9 @@ export function lazyBoot(boot: () => Promise<Booted>): () => Promise<Booted> {
   };
 }
 
-/** 要求を組み立て済みの API に渡す。組み立てに落ちたら 503（理由つき） */
-export function vercelFetch(booted: () => Promise<Booted>): (req: Request) => Promise<Response> {
+/** 要求を組み立て済みの API に渡す。組み立てに落ちたら 503（理由つき）。
+ *  渡す前に口の入口の置き換え（edge.ts）を通す。secret（KANAME_EDGE_SECRET）が無ければ、写した頭を消すだけ（K-262） */
+export function vercelFetch(booted: () => Promise<Booted>, secret?: string): (req: Request) => Promise<Response> {
   return async (req) => {
     let b: Booted;
     try {
@@ -36,11 +41,24 @@ export function vercelFetch(booted: () => Promise<Booted>): (req: Request) => Pr
           message: "いまサービスを始められません。少し待ってからもう一度試してください",
           reason,
         },
-        { status: 503 },
+        { status: 503, headers: NO_STORE },
       );
     }
-    return b.app.fetch(req);
+    return b.app.fetch(edgeRequest(req, secret));
   };
 }
 
-export default getRequestListener(vercelFetch(lazyBoot(() => bootApi(loadConfig(), { poolMax: VERCEL_POOL }))));
+// 秘密は設定から読む（起動に要る値が無ければ 503 の道で理由を返すので、ここでは投げない）
+const edgeSecret = (() => {
+  try {
+    return loadConfig().edgeSecret;
+  } catch {
+    return undefined;
+  }
+})();
+export default getRequestListener(
+  vercelFetch(
+    lazyBoot(() => bootApi(loadConfig(), { poolMax: VERCEL_POOL })),
+    edgeSecret,
+  ),
+);

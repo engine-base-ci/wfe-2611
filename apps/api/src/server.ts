@@ -16,6 +16,7 @@ import { delegateHooks } from "./hooks/delegate.js";
 import { approveHooks } from "./hooks/approve-complete.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
+import { edgeRequest } from "./edge.js";
 import { authExt } from "./auth/ext.js";
 import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname/secrets";
 import { resendMail, signedMail, type MailLike } from "@kaname/notify";
@@ -142,6 +143,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)),
     authExt: authExt({ auth, appPool, authPool, repo, secrets, objects, config, hub, ...(mailer ? { mailer } : {}) }),
     corsOrigin: config.webOrigins.join(","),
+    // 確かめの口（K-262・staging の確かめの間だけ）。既定は閉じる
+    edgeEcho: config.edgeEcho === true,
     // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51、確認のリンクで確定するのは K-52、規約の今の版と同意は K-53
     contract: {
       hooks: {
@@ -178,8 +181,9 @@ export async function startServer(config: Config, o: BootOptions = {}): Promise<
   const booted = await bootApi(config, o);
   // listen が終わってから返す（port 0 なら実際に取れた口を返す。閉じるのも listen 後）
   const { server, port } = await new Promise<{ server: ServerType; port: number }>((resolve) => {
-    const srv = serve({ fetch: booted.app.fetch, port: config.port, hostname: "0.0.0.0" }, (info) =>
-      resolve({ server: srv, port: info.port }),
+    const srv = serve(
+      { fetch: (req) => booted.app.fetch(edgeRequest(req, config.edgeSecret)), port: config.port, hostname: "0.0.0.0" },
+      (info) => resolve({ server: srv, port: info.port }),
     );
   });
   return {
