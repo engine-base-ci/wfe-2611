@@ -293,6 +293,15 @@
   },
   {
    "paths": [
+    "04_design/canvas/AuthQR.dc.html",
+    "packages/auth/package.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/passkey-sign-in.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-forgot.test.ts"
    ],
    "tests": [

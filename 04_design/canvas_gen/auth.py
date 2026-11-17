@@ -62,14 +62,14 @@ s = modal(ML, mhead("バックアップコード", "MeLogin.dc.html", icon("鍵"
   + mfoot(btn("2 段階認証を付けて閉じる", "p", "MeLogin.dc.html")), 520, "バックアップコード")
 save("MeBackup.dc.html", "バックアップコード", s)
 
-# 6 スマホで QR を読み取って入る
+# 6 スマホのパスキーで入る（K-304・answer=fe708d209427 の 2）：QR は Kaname でなくブラウザが出す。Kaname の QR の絵（qr）は使わず、手順の説明の 1 枚にする
 st = lambda n, t: '<div style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px"><b style="width: 22px; height: 22px; flex: none; border-radius: 99px; background: #EEF3FD; color: #22345C; display: grid; place-items: center; font-size: 11px">%s</b><span style="line-height: 1.6">%s</span></div>' % (n, t)
 authpage("AuthQR.dc.html", "スマホで入る",
   '<a href="AuthLogin.dc.html" style="font-size: 12px">← ログインに戻る</a><b style="font-size: 18px; text-align: center">スマホのパスキーで入る</b>'
-  + '<div style="display: flex; justify-content: center">' + qr.replace('width="120" height="120"', 'width="180" height="180"') + '</div>'
-  + st("1", "スマホのカメラでこの QR を読み取る") + st("2", "スマホに「Kaname にログイン」と出たら、指か顔で確かめる") + st("3", "この PC がログインした状態になる")
-  + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: %s; line-height: 1.7">スマホと PC が近くにある必要がある（Bluetooth で近さを確かめる）。離れた所の人に QR を送っても入れないので、だまし取られにくい ・ QR は 2 分で変わる</div>' % MUTED
-  + '<div style="font-size: 12px; text-align: center; color: %s"><span style="width: 8px; height: 8px; border-radius: 99px; background: #B45309; display: inline-block; margin-right: 6px"></span>スマホからの返事を待っています…</div>' % MUTED, 440)
+  + '<div style="font-size: 13px; color: %s; text-align: center; line-height: 1.7">QR はブラウザが出します。Kaname の画面には QR を出しません</div>' % MUTED
+  + st("1", "ログインの画面で「パスキーで入る」を押す") + st("2", "ブラウザの小窓で「別の端末を使う」（スマホ・タブレット）を選ぶ") + st("3", "ブラウザが出した QR を、スマホのカメラで読み取る") + st("4", "スマホに「Kaname にログイン」と出たら、指か顔で確かめる。この PC がログインした状態になる")
+  + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; color: %s; line-height: 1.7">スマホと PC が近くにある必要がある（Bluetooth で近さを確かめる）。離れた所の人に QR を送っても入れないので、だまし取られにくい</div>' % MUTED
+  + big(FP + "パスキーで入る", "p", "AuthAddPasskey.dc.html"), 440)
 # 7 この PC にもパスキーを付ける？
 authpage("AuthAddPasskey.dc.html", "この PC にもパスキーを付ける",
   '<div style="display: flex; justify-content: center">' + icon("✓", "#166534", 40) + '</div><b style="font-size: 18px; text-align: center">入れました</b>'
