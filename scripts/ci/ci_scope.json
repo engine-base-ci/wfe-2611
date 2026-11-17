@@ -329,6 +329,14 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/password-reset.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_password_reset.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/content/legal/**"
    ],
    "tests": [
