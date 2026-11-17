@@ -296,13 +296,13 @@ for (const w of [1440, 375]) {
   });
 }
 
-test("K217-UI-018 入口の枠（/legal/terms）の見出しは変わらない：h1 は 18px・左寄せ、h2 は 15px（.k-legal の決まり）。見出しの土台の決まりは :where(.k-root:not(.k-auth)) で書く", async ({
+test("K217-UI-018 入口の枠（/legal/terms）の見出しは変わらない：h1 は 20px（キャンバス LegalPage・正本の h1 の段・K-232）・左寄せ、h2 は 15px（.k-legal の決まり）。見出しの土台の決まりは :where(.k-root:not(.k-auth)) で書く", async ({
   page,
 }) => {
   const res = await page.goto("/legal/terms");
   expect(res?.status()).toBe(200);
   const h1 = page.locator(".k-legal h1").first();
-  expect(await css(h1, "font-size")).toBe("18px");
+  expect(await css(h1, "font-size")).toBe("20px");
   expect(await css(h1, "text-align")).toBe("left");
   expect(await css(page.locator(".k-legal h2").first(), "font-size")).toBe("15px");
   const k = readFileSync(join(ROOT, "apps/web/components/k/k.css"), "utf8");
