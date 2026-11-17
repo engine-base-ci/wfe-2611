@@ -3910,9 +3910,7 @@
     "C2",
     "C6"
    ],
-   "tests": [
-    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-53"
    ],
@@ -3922,9 +3920,7 @@
    "screens": [
     "login"
    ],
-   "apis": [
-    "requestAdminRecovery"
-   ],
+   "apis": [],
    "sections": {
     "目的": "登録を済ませた人が、ログインの画面で **パスキー（指か顔）** で入るか、**メールとパスワード** を入れて入る。2 段階認証を付けている人は、続けて認証アプリの 6 けた（またはバックアップコード）を入れる。入ったら、元の画面（next）か、入口の振り分け（`afterLogin`）の先へ進む。\n\nログアウトすると、その画面のセッションだけが閉じる。端末をなくして 6 けたもバックアップコードも無い人は、パスワードを通った直後に「管理者に戻してもらう」を押すと、管理者に知らせが届く。ログインの画面には、障害やメンテナンスのときだけ Kaname のいまの様子を出す。\n\nパスキーを **付ける** のはこのチケットではない（安全の設定・K-75）。このチケットは、付いているパスキーで **入る** までを持つ。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）\n- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる\n- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
@@ -13703,6 +13699,7 @@
     "packages/auth/src/two_factor.ts",
     "apps/api/test/fuzz/server.ts",
     "scripts/ci/contract_shape_test.py",
+    "11_tickets/K-74.md",
     "apps/api/src/features/F1/admin-recovery/",
     "apps/api/src/hooks/admin-recovery.ts",
     "apps/api/src/server.ts",
