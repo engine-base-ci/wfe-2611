@@ -9376,6 +9376,19 @@ components:
       required:
       - email
       x-required-by: hooks
+    PasswordResetInput:
+      type: object
+      properties:
+        token:
+          type: string
+        new_password:
+          type: string
+      additionalProperties: false
+      x-operation: resetPassword
+      required:
+      - token
+      - new_password
+      x-required-by: hooks
     TermsConsentInput:
       type: object
       properties:
@@ -9950,6 +9963,12 @@ components:
         accepted:
           type: boolean
       x-operation: requestPasswordReset
+    PasswordResetDone:
+      type: object
+      properties:
+        reset:
+          type: boolean
+      x-operation: resetPassword
     CurrentTerms:
       type: object
       properties:
@@ -13501,7 +13520,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/PasswordResetInput'
       responses:
         '201':
           description: 成功
@@ -13511,17 +13530,23 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/PasswordResetDone'
                   meta:
                     type: object
-        '409':
-          description: CONFLICT
+        '422':
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
+        '410':
+          description: GONE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
           content:
             application/json:
               schema:

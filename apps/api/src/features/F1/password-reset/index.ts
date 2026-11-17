@@ -4,10 +4,18 @@
 //   送るのは答えの後（afterReply）。待つと登録されている人だけ遅くなり、時間で有無が分かる。
 //   送れた／送れなかったときは、本人が今いる会社ごとに security_events（password_reset_requested・detail は sent だけ）を残す（関門 C2）。
 //   ログにメールアドレス・手がかりを出さない。宛先は mailTag の印（D-128.146）
+// K-314 新しいパスワードを決める（契約の口 resetPassword・POST /api/v1/auth/password/reset・リンクを持つ人）。
+//   中身は packages/auth の resetWithLink（リンクを見る → 長さ → 漏れ → 取る → 切る → 変える）。ここは形と答えの写しだけ。
+//   ログに手がかり・パスワード・メールを出さない（失敗の名前と番号だけ）
+import type { Auth } from "@kaname/auth";
+import type { ActionGateway } from "@kaname/actions";
+import type { TenantContext } from "@kaname/db/context";
 import { EMAIL_RE, mailTag, normalizeEmail } from "@kaname/auth/signup";
-import { requestReset, type ResetMailer } from "@kaname/auth/reset";
+import { requestReset, resetWithLink, type LeakCheck, type ResetMailer } from "@kaname/auth/reset";
 import type pg from "pg";
 import { kanameError } from "@kaname/errors";
+import { OPS_TENANT_ID } from "../sign-up/index.js";
+import { checkPwned, registerPwned } from "../sign-up/pwned.js";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { afterReply } from "./after-reply.js";
 
@@ -17,6 +25,10 @@ export { resetWorkIdle } from "./after-reply.js";
 export const RESET_REQUESTED = "password_reset_requested";
 
 export interface PasswordResetDeps {
+  /** 認証の部品（新しいパスワードを部品と同じ形でハッシュにする・K-314） */
+  auth: Auth;
+  /** 外への口（関門 C1）。漏れたパスワードの照合（K-51 の行為をそのまま使う・K-314） */
+  actions: ActionGateway;
   /** 認証の接続（kaname_auth の表） */
   authPool: pg.Pool;
   /** 業務の接続（記録の関数 app.record_security_event_for_auth_user） */
@@ -37,8 +49,22 @@ const errSummary = (e: unknown): string => {
   return `${x?.name ?? "Error"}${x?.code ? `（${x.code}）` : ""}`;
 };
 
+/** 照合の証跡は運営のテナントに残す（再設定の前は会社の文脈が無い・登録と同じ） */
+const OPS_CTX: TenantContext = { tenantId: OPS_TENANT_ID, userId: null, role: "anonymous" };
+/** 欄が無い・形が違う（契約の形の 422） */
+const missing = (field: string): HookReply => ({
+  status: 422,
+  body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message: `${field} が要る` }] },
+});
+/** 正本のエラーを答えにする。状態の番号は口が決める（410・500 は種類の既定と違う） */
+const reply = (status: number, code: string, field?: string): HookReply => ({
+  status,
+  body: kanameError(code, field ? { field } : {}).toJSON(),
+});
+
 export function passwordResetFeature(d: PasswordResetDeps) {
   const web = d.config.webBaseUrl ?? d.config.baseUrl;
+  registerPwned(d.actions);
 
   /** 答えの後の仕事：送って、送った／送れなかったを記録する。失敗は宛先の印つきで残し、投げない */
   const work = async (email: string): Promise<void> => {
@@ -74,5 +100,56 @@ export function passwordResetFeature(d: PasswordResetDeps) {
     return accepted();
   };
 
-  return { request };
+  /** 漏れの照合。照合のサービスが落ちている間は通す（D-128.134・代表の答え ⑩）。理由にパスワードは入らない */
+  const checkLeaked = async (password: string): Promise<LeakCheck> => {
+    const r = await checkPwned(d.actions, OPS_CTX, password);
+    if (r.kind === "unavailable")
+      console.warn(`[reset] 漏れの照合が使えないので、照合せずに通す: ${r.reason.slice(0, 200)}`);
+    return r.kind;
+  };
+  const hashPassword = async (password: string): Promise<string> => (await d.auth.$context).password.hash(password);
+
+  /** resetPassword：形を確かめ、決めて、答えに写す */
+  const reset = async (a: HookArgs): Promise<HookReply> => {
+    // パスワードは契約の入口が表記ゆらぎを直す前の値を使う（打ったとおりに預ける・登録と同じ）
+    const raw = (await a.c.req.json().catch(() => ({}))) as Record<string, unknown>;
+    const token = a.input["token"];
+    const newPassword = typeof raw["new_password"] === "string" ? raw["new_password"] : a.input["new_password"];
+    if (typeof token !== "string") return missing("token");
+    if (typeof newPassword !== "string") return missing("new_password");
+    let r: Awaited<ReturnType<typeof resetWithLink>>;
+    try {
+      r = await resetWithLink(
+        { authPool: d.authPool, appPool: d.appPool, hashPassword, checkLeaked },
+        { token, newPassword },
+      );
+    } catch (e) {
+      console.error(`[reset] 新しいパスワードを決められなかった（リンクを見る所）: ${errSummary(e)}`);
+      return reply(500, "E-PAGE-003");
+    }
+    switch (r.result) {
+      case "done":
+        if (r.followUpError)
+          console.error(`[reset] 決めた後の片付け・ロック・記録が落ちた: ${errSummary(r.followUpError)}`);
+        return { status: 201, body: { data: { reset: true } } };
+      case "expired":
+        return reply(410, "E-AUTH-006");
+      case "invalid":
+        return reply(410, "E-PAGE-006");
+      case "short":
+        return reply(422, "E-VAL-005", "new_password");
+      case "long":
+        return reply(422, "E-VAL-026", "new_password");
+      case "leaked":
+        return reply(422, "E-VAL-011", "new_password");
+      case "down":
+        console.error(
+          `[reset] 端末を切る所かパスワードを変える所で落ちた（リンクは残す）: ${errSummary(r.error)}` +
+            (r.restoreError ? `／リンクを戻せなかった: ${errSummary(r.restoreError)}` : ""),
+        );
+        return reply(500, "E-PAGE-003");
+    }
+  };
+
+  return { request, reset };
 }
