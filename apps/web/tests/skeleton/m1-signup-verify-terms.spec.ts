@@ -122,7 +122,7 @@ async function loginByForm(page: Page, email: string): Promise<void> {
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await page.waitForURL((u) => u.pathname !== "/login" || u.searchParams.get("step") === "terms", { timeout: 30_000 });
 }
 /** 同意し直しの画面に居て、同意の前に他の画面（チャット）へ行けない */

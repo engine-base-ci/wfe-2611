@@ -17,7 +17,7 @@ test("USH-00-031 ログインは生きているが会社の人が無い人は、
       new RegExp(`/login\\?next=${encodeURIComponent(path).replace(/%/g, "%")}`),
       { timeout: 15_000 },
     );
-    await expect(page.getByRole("button", { name: "ログイン" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "次へ", exact: true })).toBeVisible();
   }
 });
 
@@ -29,7 +29,7 @@ test("E-AUTH-007-A E-AUTH-007-C 会社の人が無いアカウントでログイ
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "ログイン" }).click();
+  await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page.getByText("会社の登録が見つからないため使えません")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("もう一度アカウントを作るか、運営に連絡してください")).toBeVisible();
   await expect(page).toHaveURL(/\/login/);
