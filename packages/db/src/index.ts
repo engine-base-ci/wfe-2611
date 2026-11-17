@@ -109,6 +109,7 @@ export const MIGRATIONS = [
   "0102_ticket_list.sql",
   "0103_setup_tasks.sql",
   "0104_read_sweep_quiet.sql",
+  "0105_public_service_status.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */
