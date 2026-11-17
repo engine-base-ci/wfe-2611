@@ -386,6 +386,9 @@ test("K220-UI-016 この画面で PC がつながったら（待っている →
   const m = await mockApi(page, { devices: [{ state: "waiting" }], liveAfter: 1 });
   await page.clock.install();
   await open(page);
+  // 待っている PC だけのときは K-230 のつなぐ小窓が開き、開いている間は後ろ（左のメニュー）が読み上げの木から外れる。「あとで」で閉じてから見る
+  await page.getByRole("dialog", { name: "PC をつなぐ" }).getByRole("button", { name: "あとで" }).click();
+  await expect(page.getByRole("dialog", { name: "PC をつなぐ" })).toHaveCount(0);
   const nav = page.getByRole("navigation", { name: "メニュー", exact: true });
   await expect(nav).not.toContainText("PC つながっている");
   await page.clock.fastForward(6_000);

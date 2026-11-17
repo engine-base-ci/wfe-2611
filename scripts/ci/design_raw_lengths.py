@@ -73,7 +73,8 @@ def declarations(css: str) -> list[tuple[str, str, str, int]]:
         raw = text[seg:i]
         if ch == "{":
             stack.append(re.sub(r"\s+", " ", css[seg:i]).strip())
-        elif ":" in raw and stack and not stack[-1].startswith("@"):
+        elif ":" in raw and stack and (any(not x.startswith("@") for x in stack)
+                                       or stack[-1].lower().startswith("@property")):
             k = raw.split(":", 1)[0].strip().lower()
             if re.fullmatch(r"--[\w-]+|-?[a-z][\w-]*", k):
                 val = re.sub(r"\s+", " ", css[seg:i].split(":", 1)[1]).strip()
@@ -123,16 +124,51 @@ def _is_zero(tok: str) -> bool:
     return bool(m) and float(m.group(0)) == 0
 
 
-def raw_tokens(prop: str, value: str, allow: set[str], other: dict[str, list[str]]) -> list[str]:
-    """値の中の生の長さ（許しの値・別の段が比べる単位を除く）"""
+PURE_PX = re.compile(r"^\s*(?:-?(?:\d+\.?\d*|\.\d+)px\s*/?\s*)+$", re.I)
+ONE_PX = re.compile(r"^\s*-?(?:\d+\.?\d*|\.\d+)px\s*$", re.I)
+
+
+def left_to_other(prop: str, value: str, other: dict[str, list[str]]) -> bool:
+    """別の段（D3・D4）がこの値をそのまま比べるか。比べるのは、値が px の字だけのとき（関数・変数・別の単位を含まない）。
+    font-size は D4 が最初の px しか見ないので 1 つだけのとき"""
+    units = {u.lower() for u in other.get(prop, [])}
+    if units != {"px"}:
+        return False
+    return bool((ONE_PX if prop == "font-size" else PURE_PX).match(value))
+
+
+def _clean(value: str) -> str:
     v = re.sub(r"\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|url\((?:[^()]|\([^()]*\))*\)", " ", value, flags=re.I)
     v = _drop_fns(strip_vars(v)[0], COLOR_FN)
-    v = re.sub(r"#[0-9a-fA-F]{3,8}\b", " ", v)
-    left = {u.lower() for u in other.get(prop, [])}
-    hits = [m.group(1) + m.group(2).lower() for m in LEN.finditer(v) if m.group(2).lower() not in left]
+    return re.sub(r"#[0-9a-fA-F]{3,8}\b", " ", v)
+
+
+def bare_slots(prop: str, value: str) -> str:
+    """単位の無い数が行の高さになる所の字（line-height は値の全部・font の略記は / の後ろの 1 つ）"""
+    v = _clean(value)
     if prop == "line-height":
-        hits += [m.group(1) for m in BARE.finditer(LEN.sub(" ", v))]
+        return LEN.sub(" ", v)
+    if prop == "font":
+        m = re.search(r"/\s*(-?(?:\d+\.?\d*|\.\d+)(?![\w%.]))", v)
+        return m.group(1) if m else ""
+    return ""
+
+
+def raw_tokens(prop: str, value: str, allow: set[str], skip_px: bool = False) -> list[str]:
+    """値の中の生の長さ（許しの値を除く）。skip_px は別の段（D3・D4）がこの値を比べるときだけ真"""
+    v = _clean(value)
+    hits = [m.group(1) + m.group(2).lower() for m in LEN.finditer(v) if not (skip_px and m.group(2).lower() == "px")]
+    hits += [m.group(1) for m in BARE.finditer(bare_slots(prop, value))]
     return [h for h in hits if not ((_is_zero(h) and "0" in allow) or h.lower() in allow)]
+
+
+def bare_var_reads(prop: str, value: str) -> list[str]:
+    """行の高さになる所で読む変数の名前（line-height の値の中・font の / の直後）"""
+    if prop == "line-height":
+        return strip_vars(value)[1]
+    if prop == "font":
+        return re.findall(r"/\s*var\(\s*(--[\w-]+)", value)
+    return []
 
 
 # ---------------------------------------------------------------- 置き場を読む
@@ -145,6 +181,68 @@ def css_files(base: Path, paths: list[str]) -> list[Path]:
         elif q.is_file() and q.suffix == ".css":
             out.add(q)
     return sorted(out)
+
+
+MARKUP_EXT = (".tsx", ".jsx", ".ts", ".js", ".mjs", ".cjs", ".html", ".vue", ".svelte")
+ARBITRARY = re.compile(r"(?<![\w\[-])((?:[\w-]+:)*-?[\w-]*\[[^\]\s\"'`]+\](?:/[\w.\[\]]+)?)")
+STYLE_ATTR = re.compile(r"\bstyle\s*=\s*(?=[{\"'])")
+DOM_STYLE = re.compile(r"\.style\s*(?:\.\s*[\w$]+\s*=(?!=)|\[[^\]]+\]\s*=(?!=)|\.\s*setProperty\s*\()[^;\n]*"
+                       r"|\bObject\.assign\s*\(\s*[\w$.]+\.style\b[^;\n]*"
+                       r"|\.setAttribute\s*\(\s*[\"'`]style[\"'`][^;\n]*")
+
+
+TEST_DIRS = {"tests", "__tests__", "e2e"}          # 試験の台本は画面ではない（画面の生の値を数えない）
+TEST_FILE = re.compile(r"\.(?:spec|test)\.[cm]?[jt]sx?$")
+
+
+def markup_files(base: Path, paths: list[str]) -> list[Path]:
+    out: set[Path] = set()
+    for p in paths:
+        q = base / p
+        if q.is_dir():
+            out |= {f for f in q.rglob("*") if f.is_file() and f.suffix in MARKUP_EXT and not TEST_FILE.search(f.name)
+                    and not (SKIP_DIRS | TEST_DIRS) & set(f.relative_to(base).parts)}
+        elif q.is_file() and q.suffix in MARKUP_EXT:
+            out.add(q)
+    return sorted(out)
+
+
+def _attr_end(text: str, i: int) -> int:
+    if text[i] in "\"'":
+        j = text.find(text[i], i + 1)
+        return len(text) if j == -1 else j + 1
+    depth, j = 0, i
+    while j < len(text):
+        depth += {"{": 1, "}": -1}.get(text[j], 0)
+        j += 1
+        if depth == 0:
+            break
+    return j
+
+
+def markup_findings(base: Path, paths: list[str], allow: set[str]) -> list[dict]:
+    """画面のコード（.tsx など）の生の長さ：Tailwind の任意値（max-w-[920px]・[padding:10px]）・style 属性（どれも）・
+    DOM の style へ書く値。CSS の外で見た目を書く道を台帳で数える"""
+    found: list[dict] = []
+    for f in markup_files(base, paths):
+        rel = f.relative_to(base).as_posix()
+        text = f.read_text(encoding="utf-8", errors="replace")
+        line_of = lambda pos: text.count("\n", 0, pos) + 1  # noqa: E731
+        for m in ARBITRARY.finditer(text):
+            inner = m.group(1)[m.group(1).index("[") + 1:m.group(1).rindex("]")].replace("_", " ")
+            if raw_tokens("", inner, allow):
+                found.append({"file": rel, "selector": "className", "prop": "任意値", "value": m.group(1),
+                              "line": line_of(m.start()), "raw": raw_tokens("", inner, allow)})
+        for m in STYLE_ATTR.finditer(text):
+            end = _attr_end(text, m.end())
+            body = re.sub(r"\s+", " ", text[m.end():end]).strip()
+            found.append({"file": rel, "selector": "style 属性", "prop": "style", "value": body,
+                          "line": line_of(m.start()), "raw": ["style={…}"]})
+        for m in DOM_STYLE.finditer(text):
+            found.append({"file": rel, "selector": "DOM の style", "prop": "style",
+                          "value": re.sub(r"\s+", " ", m.group(0)).strip(), "line": line_of(m.start()),
+                          "raw": ["DOM の style に書く所"]})
+    return found
 
 
 def read_conf(conf: dict, base: Path) -> tuple[dict, list[str]]:
@@ -173,22 +271,46 @@ def read_conf(conf: dict, base: Path) -> tuple[dict, list[str]]:
             "other": other}, problems
 
 
-def scan(base: Path, conf: dict) -> tuple[list[dict], list[str], int]:
-    """戻り：(赤（file・selector・prop・value・line・raw）, 設定の問題, 見た .css の数)"""
+def _close(seed: set[str], defs: dict[str, list[str]]) -> set[str]:
+    """自前の変数を何段でも辿る：seed の名前を var で読む定義も、変わらなくなるまで足す"""
+    out = set(seed)
+    while True:
+        more = {k for k, vals in defs.items() if k not in out and any(set(strip_vars(v)[1]) & out for v in vals)}
+        if not more:
+            return out
+        out |= more
+
+
+def scan(base: Path, conf: dict, checked: set[Path] | None = None) -> tuple[list[dict], list[str], int]:
+    """戻り：(赤（file・selector・prop・value・line・raw）, 設定の問題, 見た .css の数)。
+    checked は別の段（D3・D4）が読んだファイル。そこにある px だけの font-size・border-radius は D8 から外す"""
     c, problems = read_conf(conf, base)
+    checked = {p.resolve() for p in (checked or set())}
     token_names: set[str] = set()
     for f in c["tokens"]:
         token_names |= {k for _, k, _, _ in declarations(f.read_text(encoding="utf-8")) if k.startswith("--")}
     files = [f for f in css_files(base, c["paths"]) if f.resolve() not in c["tokens"]]
     if c["paths"] and not files:
         problems.append("raw_lengths.paths の下に .css が 1 つも無い（黙って緑にしない）")
-    decls = [(f.relative_to(base).as_posix(), s, k, v, ln)
-             for f in files for s, k, v, ln in declarations(f.read_text(encoding="utf-8", errors="replace"))]
-    local = {k for _, _, k, _, _ in decls if k.startswith("--")}
-    local_raw = {k for _, _, k, v, _ in decls if k.startswith("--") and raw_tokens(k, v, c["allow"], c["other"])}
+    decls = []
+    for f in files:
+        for sel, k, v, ln in declarations(f.read_text(encoding="utf-8", errors="replace")):
+            last = sel.split(" >> ")[-1]
+            if last.lower().startswith("@property") and k == "initial-value":
+                k = last.split(None, 1)[1].strip() if " " in last else k   # @property の初めの値＝その変数の定義
+            decls.append((f.relative_to(base).as_posix(), f.resolve(), sel, k, v, ln))
+    defs: dict[str, list[str]] = {}
+    for _, _, _, k, v, _ in decls:
+        if k.startswith("--"):
+            defs.setdefault(k, []).append(v)
+    local = set(defs)
+    local_raw = _close({k for k, vals in defs.items() if any(raw_tokens("", v, c["allow"]) for v in vals)}, defs)
+    local_bare = _close({k for k, vals in defs.items()
+                         if any(BARE.search(LEN.sub(" ", _clean(v))) for v in vals)}, defs)
     found: list[dict] = []
-    for rel, sel, prop, val, ln in decls:
-        raws = raw_tokens(prop, val, c["allow"], c["other"])
+    for rel, path, sel, prop, val, ln in decls:
+        skip = path in checked and left_to_other(prop, val, c["other"])
+        raws = raw_tokens(prop, val, c["allow"], skip_px=skip)
         for name in strip_vars(val)[1]:
             if name in token_names:
                 continue
@@ -196,8 +318,12 @@ def scan(base: Path, conf: dict) -> tuple[list[dict], list[str], int]:
                 raws.append(f"var({name})＝生の値の自前の変数")
             elif c["prefix"] and name.startswith(c["prefix"]) and name not in local:
                 raws.append(f"var({name})＝無いトークン")
+        for name in bare_var_reads(prop, val):
+            if name in local_bare and name not in token_names and name not in local_raw:
+                raws.append(f"var({name})＝単位の無い行の高さの自前の変数")
         if raws:
             found.append({"file": rel, "selector": sel, "prop": prop, "value": val, "line": ln, "raw": raws})
+    found += markup_findings(base, c["paths"], c["allow"])
     return found, problems, len(files)
 
 
@@ -307,7 +433,8 @@ def base_problems(cfg_file: Path, ref: str, entries: list[dict]) -> tuple[list[s
     return bad, ""
 
 
-def run(cfg_file: Path, cfg: dict, base_ref: str | None, no_base: bool, do_shrink: bool) -> tuple[list[str], str, int]:
+def run(cfg_file: Path, cfg: dict, base_ref: str | None, no_base: bool, do_shrink: bool,
+        checked: set[Path] | None = None) -> tuple[list[str], str, int]:
     """D8 を流す。戻り：(赤の行, 知らせ, 見た .css の数)"""
     conf = cfg.get("raw_lengths")
     if not isinstance(conf, dict) or not conf:
@@ -315,7 +442,7 @@ def run(cfg_file: Path, cfg: dict, base_ref: str | None, no_base: bool, do_shrin
     if not no_base and base_ref is None:
         return ["D8 比べ方の指定が無い：--ledger-base-ref <版> か --no-base を付ける（黙って比べずに緑にしない）"], "", 0
     base = cfg_file.parent
-    found, problems, n = scan(base, conf)
+    found, problems, n = scan(base, conf, checked)
     bad = [f"D8 {p}" for p in problems]
     led_file = base / str(conf.get("ledger") or "")
     try:

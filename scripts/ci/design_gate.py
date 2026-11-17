@@ -370,7 +370,8 @@ def main() -> int:
 
     d8_bad, d8_note, d8_files = [], "", 0
     if a.raw_lengths:
-        d8_bad, d8_note, d8_files = design_raw_lengths.run(cfg_file, cfg, a.ledger_base_ref, a.no_base, a.shrink_ledger)
+        d8_bad, d8_note, d8_files = design_raw_lengths.run(cfg_file, cfg, a.ledger_base_ref, a.no_base, a.shrink_ledger,
+                                                           set(files))
 
     res = {
         "D1_色_正本に無い": {k: sorted(v)[:3] for k, v in sorted(bad_c.items())},

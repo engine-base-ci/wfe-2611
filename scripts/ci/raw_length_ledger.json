@@ -2,12 +2,884 @@
  "_doc": "design_gate の D8（画面の CSS の生の長さ・K-261）の台帳。鍵は (file, selector, prop, value)・count はその鍵の数。減らすだけ：直したら design_gate.py --raw-lengths --no-base --shrink-ledger で減らす。足すと CI（G72・分かれ目と比べる）が赤",
  "entries": [
   {
+   "file": "apps/web/app/(app)/ai/chat/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[920px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/ai/chat/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/ai/chat/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/ai/chat/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-l-[3px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[160px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:text-[14px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "px-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 8,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 4,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(app)/settings/credentials/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[16px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/fake-login/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ border: \"1px solid #999\", padding: 12, width: 260 }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/fake-login/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ color: \"#b00020\" }}",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/fake-login/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: 32, fontFamily: \"sans-serif\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/design/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", flexWrap: \"wrap\", gap: \"var(--k-s-sm)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/design/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", flexWrap: \"wrap\", gap: \"var(--k-s-sm)\", alignItems: \"center\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/design/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"grid\", gap: \"var(--k-s-md)\", maxWidth: \"480px\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/design/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-lg)\", display: \"grid\", gridTemplateColumns: \"minmax(0, 1fr)\", gap: \"var(--k-s-lg)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/design/page.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ width: \"900px\", maxWidth: \"100%\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", alignItems: \"center\", gap: \"var(--k-s-md)\", flexWrap: \"wrap\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", flexDirection: \"column\", gap: \"var(--k-s-lg)\", maxWidth: 880, margin: \"0 auto\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", gap: \"var(--k-s-sm)\", flexWrap: \"wrap\" }}",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", gap: \"var(--k-s-sm)\", flexWrap: \"wrap\", marginTop: \"var(--k-s-sm)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"grid\", gap: \"var(--k-s-md)\" }}",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"grid\", gap: \"var(--k-s-sm)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ fontSize: \"var(--k-text-h3)\" }}",
+   "count": 5,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ margin: 0, fontSize: \"var(--k-text-h1)\", lineHeight: \"var(--k-lh-h1)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ minHeight: \"100dvh\", padding: \"var(--k-s-lg) var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/parts.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-lg) var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/shell/demo.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ margin: 0, fontSize: \"var(--k-text-h3)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/shell/demo.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-lg)\", display: \"grid\", gap: \"var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/shell/demo.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/showcase/showcase.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ margin: 0, fontSize: \"var(--k-text-h3)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/showcase/showcase.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-lg) var(--k-s-lg) 0\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/showcase/showcase.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-md) var(--k-s-lg) 0\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/showcase/showcase.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/states/states.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", flexWrap: \"wrap\", gap: \"var(--k-s-sm)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/states/states.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ margin: 0, fontSize: \"var(--k-text-h1)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/states/states.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ maxWidth: 880, margin: \"0 auto\", display: \"grid\", gap: \"var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/states/states.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ minHeight: \"100dvh\", padding: \"var(--k-s-lg) var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/k/states/states.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ padding: \"var(--k-s-lg) var(--k-s-md)\" }}",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[880px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/mail/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.015em]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/memory/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[860px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/shell/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[65ch]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/shell/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/views/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(dev)/dev/views/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "gap-[9px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[18px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[3px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[11px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/invite/[token]/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "shadow-[0_0_0_1px_var(--line)]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[0.12em]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(outside)/password-reset/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 4,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-l-[3px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[520px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[18px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "min-w-[48px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[22px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "size-[60px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 7,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/golive/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[20px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/interview/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "lg:grid-cols-[minmax(0,1fr)_320px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/interview/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/interview/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-l-[3px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[22px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 9,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 6,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/onboard/testrun/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "lg:grid-cols-[minmax(0,1fr)_360px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[62ch]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 8,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 2,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 8,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 12,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 3,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[15px]",
+   "count": 4,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[20px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/(wizard)/setup/bridge/legacy/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[0.12em]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
    "file": "apps/web/app/globals.css",
    "selector": ".cdlg",
    "prop": "border",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -15,7 +887,7 @@
    "prop": "box-shadow",
    "value": "0 16px 48px rgba(0,0,0,.18)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -23,7 +895,7 @@
    "prop": "max-height",
    "value": "calc(100dvh - 32px)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -31,7 +903,15 @@
    "prop": "width",
    "value": "min(400px,calc(100vw - 32px))",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/globals.css",
+   "selector": ".cdlg-b",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -39,7 +919,7 @@
    "prop": "line-height",
    "value": "1.7",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -47,7 +927,7 @@
    "prop": "margin",
    "value": "8px 0 0",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -55,7 +935,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -63,7 +943,15 @@
    "prop": "margin-top",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/globals.css",
+   "selector": ".cdlg-f button",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -71,7 +959,7 @@
    "prop": "height",
    "value": "32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -79,7 +967,7 @@
    "prop": "padding",
    "value": "0 14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -87,7 +975,7 @@
    "prop": "outline",
    "value": "2px solid var(--primary)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -95,7 +983,15 @@
    "prop": "outline-offset",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/globals.css",
+   "selector": ".cdlg-h",
+   "prop": "font-size",
+   "value": "16px",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -103,7 +999,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -111,7 +1007,7 @@
    "prop": "height",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -119,7 +1015,7 @@
    "prop": "width",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -127,7 +1023,7 @@
    "prop": "padding",
    "value": "18px 20px 16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -135,7 +1031,7 @@
    "prop": "outline",
    "value": "2px solid var(--ring)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -143,7 +1039,7 @@
    "prop": "outline-offset",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -151,7 +1047,7 @@
    "prop": "min-height",
    "value": "24px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -159,7 +1055,15 @@
    "prop": "min-width",
    "value": "24px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/globals.css",
+   "selector": "html",
+   "prop": "font-size",
+   "value": "15px",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
    "file": "apps/web/app/globals.css",
@@ -167,7 +1071,95 @@
    "prop": "line-height",
    "value": "1.7",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/not-found.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/not-found.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.015em]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/app/page.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/agent-chat.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/agent-chat.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ marginLeft: 0 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/agent-chat.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ marginLeft: 0, marginBottom: 12 }}",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/agent-chat.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ marginTop: 12 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/artifact.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{sort.asc ? undefined : { transform: \"rotate(180deg)\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/artifact.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ width: \"100%\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/asks.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{preview ? undefined : { gridTemplateColumns: \"minmax(0,1fr)\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/asks.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ textAlign: \"left\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/ai/chat.css",
@@ -198,6 +1190,14 @@
    "selector": "@layer components >> .kc .artifact",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .ab",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -246,6 +1246,14 @@
    "selector": "@layer components >> .kc .artifact .aedit",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .aedit",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -316,6 +1324,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .artifact .ah",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .ah",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -331,6 +1347,14 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .ah .v",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .artifact .ah input",
    "prop": "border",
    "value": "1px solid var(--line)",
@@ -340,8 +1364,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .artifact .ah input",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .ah input",
    "prop": "padding",
    "value": "2px 8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .aold",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -404,6 +1444,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .artifact .atabs button",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .atabs button",
    "prop": "padding",
    "value": "4px 12px",
    "count": 1,
@@ -422,6 +1470,14 @@
    "selector": "@layer components >> .kc .artifact .avers",
    "prop": "border-top",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .avers",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -459,6 +1515,22 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .avers li .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .avers li .now",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .artifact .avers ol",
    "prop": "gap",
    "value": "4px",
@@ -470,6 +1542,14 @@
    "selector": "@layer components >> .kc .artifact .avers ol",
    "prop": "margin",
    "value": "8px 0 0",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .artifact .aview",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -524,6 +1604,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .bfix ol",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bfix ol",
    "prop": "line-height",
    "value": "1.8",
    "count": 1,
@@ -547,9 +1635,33 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bfix summary",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .bignum",
    "prop": "gap",
    "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bignum .l",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bignum .v",
+   "prop": "font-size",
+   "value": "34px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -566,6 +1678,14 @@
    "selector": "@layer components >> .kc .bignum .v",
    "prop": "line-height",
    "value": "1",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bignum .v small",
+   "prop": "font-size",
+   "value": "15px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -596,8 +1716,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .bpick .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bpick .muted",
    "prop": "line-height",
    "value": "1.6",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .bpick b",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -668,6 +1804,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .callout",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .callout",
    "prop": "gap",
    "value": "10px",
    "count": 1,
@@ -700,6 +1844,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .catt-err",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .catt-err",
    "prop": "margin",
    "value": "0 0 6px",
    "count": 1,
@@ -724,6 +1876,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .cbar",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cbar",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -734,6 +1894,14 @@
    "selector": "@layer components >> .kc .cbar",
    "prop": "padding",
    "value": "4px 10px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cbar button",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -804,6 +1972,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .cchip",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cchip",
    "prop": "gap",
    "value": "4px",
    "count": 1,
@@ -868,6 +2044,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .ccount",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ccount",
    "prop": "margin-right",
    "value": "4px",
    "count": 1,
@@ -878,6 +2062,14 @@
    "selector": "@layer components >> .kc .chat",
    "prop": "gap",
    "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .chint",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -948,8 +2140,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .chk li",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .chk li",
    "prop": "gap",
    "value": "8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cmem",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -974,6 +2182,14 @@
    "selector": "@layer components >> .kc .cmem",
    "prop": "padding",
    "value": "0 8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cmem-note",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1038,6 +2254,22 @@
    "selector": "@layer components >> .kc .cmenu>div[role=option]",
    "prop": "row-gap",
    "value": "1px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cmenu>div[role=option] b",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cmenu>div[role=option] span",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1116,8 +2348,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .cmore",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cmore",
    "prop": "padding",
    "value": "4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .codeblk pre,.kc .term pre",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1180,6 +2428,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .composer textarea",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .composer textarea",
    "prop": "line-height",
    "value": "1.5",
    "count": 1,
@@ -1228,6 +2484,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .composer.compact textarea",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .composer.compact textarea",
    "prop": "min-height",
    "value": "32px",
    "count": 1,
@@ -1238,6 +2502,14 @@
    "selector": "@layer components >> .kc .composer:focus-within .cbox",
    "prop": "outline",
    "value": "2px solid var(--primary-c)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cpick",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1348,6 +2620,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .cpop .note",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cpop .note",
    "prop": "max-width",
    "value": "280px",
    "count": 1,
@@ -1366,6 +2646,14 @@
    "selector": "@layer components >> .kc .cpop .sep",
    "prop": "border-top",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cpop .sep",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1476,6 +2764,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .cpop>div",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cpop>div",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -1494,6 +2790,14 @@
    "selector": "@layer components >> .kc .cpop>div",
    "prop": "padding",
    "value": "5px 8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cpop>div span",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1550,6 +2854,14 @@
    "selector": "@layer components >> .kc .cqueue>div",
    "prop": "border",
    "value": "1px dashed var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .cqueue>div",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1620,6 +2932,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dg .ba",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .ba",
    "prop": "gap",
    "value": "6px",
    "count": 1,
@@ -1651,6 +2971,22 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .dgh .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .dgh h2",
+   "prop": "font-size",
+   "value": "18px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dg .grp",
    "prop": "border",
    "value": "1px solid var(--line)",
@@ -1662,6 +2998,14 @@
    "selector": "@layer components >> .kc .dg .grp>b",
    "prop": "border-bottom",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .grp>b",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1683,9 +3027,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .grp>b .n",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dg .it",
    "prop": "border-bottom",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .it",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1723,9 +3083,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .it .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dg .to",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .to",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1763,9 +3139,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .two .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dg .two>div",
    "prop": "border",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dg .two>div",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1796,6 +3188,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .dgbar",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dgbar",
    "prop": "gap",
    "value": "10px",
    "count": 1,
@@ -1814,6 +3214,22 @@
    "selector": "@layer components >> .kc .dgbar",
    "prop": "padding",
    "value": "10px 14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .dgbar .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .diffblk .dl",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1838,6 +3254,14 @@
    "selector": "@layer components >> .kc .ecard",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ecard",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1875,6 +3299,22 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ecard .abtn a",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ecard .akv",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .ecard .akv",
    "prop": "gap",
    "value": "2px",
@@ -1894,6 +3334,22 @@
    "selector": "@layer components >> .kc .ecard .akv div",
    "prop": "gap",
    "value": "10px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ecard .em",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ecard .et",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -1956,6 +3412,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .fcard",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .fcard",
    "prop": "gap",
    "value": "10px",
    "count": 1,
@@ -1966,6 +3430,14 @@
    "selector": "@layer components >> .kc .fcard",
    "prop": "padding",
    "value": "8px 12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .fcard .muted",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2020,6 +3492,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .fchart .fn",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .fchart .fn",
    "prop": "padding",
    "value": "4px 10px",
    "count": 1,
@@ -2036,6 +3516,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .ftree",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .ftree",
    "prop": "line-height",
    "value": "1.6",
    "count": 1,
@@ -2046,6 +3534,14 @@
    "selector": "@layer components >> .kc .ftree",
    "prop": "padding",
    "value": "8px 12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .greet",
+   "prop": "font-size",
+   "value": "16px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2092,6 +3588,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .imgbox figcaption,.kc .mapbox figcaption",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .imgbox figcaption,.kc .mapbox figcaption",
    "prop": "padding",
    "value": "4px 10px",
    "count": 1,
@@ -2118,6 +3622,14 @@
    "selector": "@layer components >> .kc .lprev",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .lprev",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2155,9 +3667,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .lprev .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mact",
    "prop": "gap",
    "value": "2px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mact button",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2235,6 +3763,22 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mdet summary",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mdet>div",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mdet>div",
    "prop": "padding-top",
    "value": "6px",
@@ -2246,6 +3790,14 @@
    "selector": "@layer components >> .kc .media",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .media",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2286,6 +3838,22 @@
    "selector": "@layer components >> .kc .media .mbar i",
    "prop": "width",
    "value": "30%",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .media .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .memline",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2332,6 +3900,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .msg .av",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .msg .av",
    "prop": "height",
    "value": "28px",
    "count": 1,
@@ -2342,6 +3918,14 @@
    "selector": "@layer components >> .kc .msg .av",
    "prop": "width",
    "value": "28px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .msg .bub",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2372,6 +3956,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .msg .qt",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .msg .qt",
    "prop": "gap",
    "value": "6px",
    "count": 1,
@@ -2390,6 +3982,14 @@
    "selector": "@layer components >> .kc .msg .qt",
    "prop": "padding-left",
    "value": "8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .msg .who",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2459,6 +4059,14 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtable table",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mtable td",
    "prop": "border-bottom",
    "value": "1px solid var(--line-soft)",
@@ -2478,6 +4086,14 @@
    "selector": "@layer components >> .kc .mtable th",
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtable th",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2516,6 +4132,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mtabs .tb button",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtabs .tb button",
    "prop": "margin-bottom",
    "value": "-1px",
    "count": 1,
@@ -2526,6 +4150,14 @@
    "selector": "@layer components >> .kc .mtabs .tb button",
    "prop": "padding",
    "value": "6px 12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtabs .tp",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2548,6 +4180,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mtbar",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtbar",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -2558,6 +4198,14 @@
    "selector": "@layer components >> .kc .mtbar",
    "prop": "padding",
    "value": "4px 8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtbar button",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2628,6 +4276,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mtime li",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtime li",
    "prop": "gap",
    "value": "10px",
    "count": 1,
@@ -2676,6 +4332,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .mtoc",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtoc",
    "prop": "gap",
    "value": "2px",
    "count": 1,
@@ -2686,6 +4350,14 @@
    "selector": "@layer components >> .kc .mtoc",
    "prop": "padding-left",
    "value": "10px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .mtoc b",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2708,8 +4380,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .opts button",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .opts button",
    "prop": "padding",
    "value": "4px 12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .pbar .pl",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2734,6 +4422,14 @@
    "selector": "@layer components >> .kc .pchip",
    "prop": "padding-left",
    "value": "2px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .pchip .pa",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2820,8 +4516,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .pdfprev .pp",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .pdfprev .pp",
    "prop": "gap",
    "value": "8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .pdfprev .pp .muted",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2892,6 +4604,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .perm .pbtn input",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .pbtn input",
    "prop": "padding",
    "value": "4px 0",
    "count": 1,
@@ -2900,8 +4620,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .perm .pby",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .pby",
    "prop": "gap",
    "value": "4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .pcode",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -2924,6 +4660,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .perm .ph",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .ph",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -2932,8 +4676,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .perm .pnote",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .pnote",
    "prop": "margin-top",
    "value": "6px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .perm .psum",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3003,9 +4763,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qfoot .memo",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .qhd",
    "prop": "border-bottom",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qhd",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3022,6 +4798,14 @@
    "selector": "@layer components >> .kc .qhd",
    "prop": "padding",
    "value": "10px 14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qhd .muted",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3100,6 +4884,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .qo .ql",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qo .ql",
    "prop": "gap",
    "value": "2px",
    "count": 1,
@@ -3110,6 +4902,14 @@
    "selector": "@layer components >> .kc .qo .ql em",
    "prop": "border",
    "value": "1px solid var(--secondary)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qo .ql em",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3131,9 +4931,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qo .ql span",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .qo.other input",
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qo.other input",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3172,6 +4988,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .qprev .qph",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qprev .qph",
    "prop": "margin-bottom",
    "value": "4px",
    "count": 1,
@@ -3180,8 +5004,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .qprev pre",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qprev pre",
    "prop": "line-height",
    "value": "1.6",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qq",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3214,6 +5054,14 @@
    "selector": "@layer components >> .kc .qtabs button",
    "prop": "border",
    "value": "1px solid var(--line)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .qtabs button",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3276,8 +5124,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .queue .qh",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .queue .qh",
    "prop": "margin-bottom",
    "value": "4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .queue .qi",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3332,6 +5196,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .rec",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .rec",
    "prop": "gap",
    "value": "10px",
    "count": 1,
@@ -3348,8 +5220,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .results",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .results",
    "prop": "gap",
    "value": "4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .results .muted",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3396,6 +5284,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .schip,.kc .dchip,.kc .pchip",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .schip,.kc .dchip,.kc .pchip",
    "prop": "gap",
    "value": "4px",
    "count": 1,
@@ -3430,6 +5326,14 @@
    "selector": "@layer components >> .kc .scrprev .sb",
    "prop": "border-bottom",
    "value": "1px solid var(--line-soft)",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .scrprev .sb",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3516,6 +5420,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .selpop",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .selpop",
    "prop": "gap",
    "value": "2px",
    "count": 1,
@@ -3565,6 +5477,14 @@
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .selpop button svg",
    "prop": "width",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .sendfail",
+   "prop": "font-size",
    "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
@@ -3628,6 +5548,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .srcs",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .srcs",
    "prop": "gap",
    "value": "4px",
    "count": 1,
@@ -3684,6 +5612,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .steer",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .steer",
    "prop": "gap",
    "value": "8px",
    "count": 1,
@@ -3699,9 +5635,25 @@
   },
   {
    "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .stopline .muted",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .stopline svg,.kc .usage svg",
    "prop": "margin-top",
    "value": "4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .stopline,.kc .usage",
+   "prop": "font-size",
+   "value": "13px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3756,6 +5708,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .tobottom",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .tobottom",
    "prop": "gap",
    "value": "6px",
    "count": 1,
@@ -3782,6 +5742,14 @@
    "selector": "@layer components >> .kc .tobottom",
    "prop": "padding",
    "value": "0 8px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .tobottom .nb",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3852,6 +5820,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .wd",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .wd",
    "prop": "line-height",
    "value": "1.6",
    "count": 1,
@@ -3868,8 +5844,24 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .work",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .work",
    "prop": "margin-left",
    "value": "38px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .work .el",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3908,6 +5900,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc .wsteps li",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .wsteps li",
    "prop": "gap",
    "value": "7px",
    "count": 1,
@@ -3926,6 +5926,14 @@
    "selector": "@layer components >> .kc .wsteps li svg",
    "prop": "width",
    "value": "14px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc .wtool summary,.kc .work.done summary",
+   "prop": "font-size",
+   "value": "12px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -3980,8 +5988,40 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc code.ic",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc code.ic",
    "prop": "padding",
    "value": "0 4px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc h2.mh",
+   "prop": "font-size",
+   "value": "18px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc h3.mh",
+   "prop": "font-size",
+   "value": "16px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc h4.mh",
+   "prop": "font-size",
+   "value": "14px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -4004,6 +6044,14 @@
   {
    "file": "apps/web/components/ai/chat.css",
    "selector": "@layer components >> .kc kbd",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc kbd",
    "prop": "padding",
    "value": "0 6px",
    "count": 1,
@@ -4014,6 +6062,22 @@
    "selector": "@layer components >> .kc mark",
    "prop": "padding",
    "value": "0 2px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc math",
+   "prop": "font-size",
+   "value": "18px",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> .kc sup.cn a",
+   "prop": "font-size",
+   "value": "11px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -4054,6 +6118,14 @@
    "selector": "@layer components >> @media(max-width:1179px) >> .kc .artdock",
    "prop": "width",
    "value": "100vw",
+   "count": 1,
+   "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/chat.css",
+   "selector": "@layer components >> @media(max-width:767px) >> .kc .composer textarea,.kc .composer.compact textarea",
+   "prop": "font-size",
+   "value": "16px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
   },
@@ -4120,6 +6192,262 @@
    "value": "30px",
    "count": 1,
    "reason": "前の世代の会話の部品（D-128.78 で外す側）。生成物で、作り手 06_mockup/export_web_css.py が書いた値。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/composer.tsx",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.height = \"auto\"",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/composer.tsx",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.height = `${el.scrollHeight}px`",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/composer.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"flex\", gap: 8 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/composer.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ flexDirection: \"column\", alignItems: \"flex-start\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/conversation.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ paddingTop: 6 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/conversation.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ position: \"fixed\", left: sel.x, top: sel.y - 36, transform: \"translateX(-50%)\", zIndex: 30 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/conversation.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ scrollMarginBottom: compact ? 24 : 176 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/conversation.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ textAlign: \"center\", fontSize: 12 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/conversation.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ whiteSpace: \"pre-wrap\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/frame.tsx",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.height = `${Math.max(FRAME_MIN_HEIGHT, Math.floor(clientH - top - after))}px`",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/frame.tsx",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.height = `${PROBE}px`",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/markdown.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{SYNTAX_VARS}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/markdown.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{sort.asc ? undefined : { transform: \"rotate(180deg)\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/markdown.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ display: \"contents\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/markdown.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ maxWidth: \"100%\", display: \"block\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/memory.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/memory.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[16px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/memory.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ background: \"transparent\", font: \"inherit\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/memory.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ flexDirection: \"column\" }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/memory.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ marginTop: 14 }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/panel.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/panel.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/parts.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-l-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/parts.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/parts.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 3,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/parts.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 5,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 3,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 5,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[16px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ai/settings.tsx",
+   "selector": "style 属性",
+   "prop": "style",
+   "value": "{{ width: `${Math.min(100, pct)}%`, background: pct >= 100 ? \"var(--st-danger)\" : pct >= 80 ? \"var(--st-warning)\" : \"var(--primary)\", }}",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/k/k.css",
@@ -4428,7 +6756,7 @@
   {
    "file": "apps/web/components/k/me-sub.css",
    "selector": ".k-me-page > .k-page-head",
-   "prop": "column-gap",
+   "prop": "gap",
    "value": "10px",
    "count": 1,
    "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
@@ -5282,12 +7610,196 @@
    "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
   },
   {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "gap-[9px]",
+   "count": 3,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[376px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[420px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[18px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[22px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[26px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:py-[52px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:text-[28px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[18px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[11px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[30px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "size-[52px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[21px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[22px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[24px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/outside/outside-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.01em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
    "file": "apps/web/components/shell/shell.css",
    "selector": ".aipanel",
    "prop": "border-left",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5295,7 +7807,7 @@
    "prop": "height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5303,7 +7815,7 @@
    "prop": "padding",
    "value": "24px 32px 64px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5311,7 +7823,7 @@
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5319,7 +7831,15 @@
    "prop": "padding",
    "value": "48px 32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".purpose",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5327,7 +7847,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5335,7 +7855,7 @@
    "prop": "padding",
    "value": "0 28px 8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5343,7 +7863,7 @@
    "prop": "height",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5351,7 +7871,7 @@
    "prop": "width",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5359,7 +7879,7 @@
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5367,7 +7887,15 @@
    "prop": "min-height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".shell .btn",
+   "prop": "font-size",
+   "value": "13.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5375,7 +7903,7 @@
    "prop": "gap",
    "value": "7px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5383,7 +7911,7 @@
    "prop": "padding",
    "value": "9px 17px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5391,7 +7919,7 @@
    "prop": "height",
    "value": "15px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5399,7 +7927,7 @@
    "prop": "width",
    "value": "15px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5407,7 +7935,15 @@
    "prop": "border",
    "value": "1.5px solid var(--primary)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".shell .btn-sm",
+   "prop": "font-size",
+   "value": "12.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5415,7 +7951,7 @@
    "prop": "padding",
    "value": "6px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5423,7 +7959,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5431,7 +7967,7 @@
    "prop": "padding",
    "value": "8px 24px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5439,7 +7975,7 @@
    "prop": "padding",
    "value": "6px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5447,7 +7983,7 @@
    "prop": "border-right",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5455,7 +7991,15 @@
    "prop": "height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-brand",
+   "prop": "font-size",
+   "value": "16px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5463,7 +8007,7 @@
    "prop": "gap",
    "value": "9px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5471,7 +8015,7 @@
    "prop": "letter-spacing",
    "value": "0.01em",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5479,7 +8023,7 @@
    "prop": "padding",
    "value": "18px 18px 14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5487,7 +8031,7 @@
    "prop": "border-top",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5495,7 +8039,7 @@
    "prop": "gap",
    "value": "10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5503,7 +8047,15 @@
    "prop": "padding",
    "value": "12px 14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-foot .av",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5511,7 +8063,7 @@
    "prop": "height",
    "value": "30px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5519,7 +8071,23 @@
    "prop": "width",
    "value": "30px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-foot .co",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-foot .nm",
+   "prop": "font-size",
+   "value": "12.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5527,7 +8095,7 @@
    "prop": "margin-left",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5535,7 +8103,7 @@
    "prop": "height",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5543,7 +8111,15 @@
    "prop": "width",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-item",
+   "prop": "font-size",
+   "value": "13.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5551,7 +8127,7 @@
    "prop": "gap",
    "value": "10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5559,7 +8135,15 @@
    "prop": "padding",
    "value": "7px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-item .badge, .side-sub .badge",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5567,7 +8151,7 @@
    "prop": "padding",
    "value": "1px 7px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5575,7 +8159,7 @@
    "prop": "height",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5583,7 +8167,7 @@
    "prop": "width",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5591,7 +8175,7 @@
    "prop": "box-shadow",
    "value": "0 0 0 1px var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5599,7 +8183,7 @@
    "prop": "height",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5607,7 +8191,7 @@
    "prop": "width",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5615,7 +8199,7 @@
    "prop": "gap",
    "value": "3px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5623,7 +8207,7 @@
    "prop": "padding",
    "value": "4px 10px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5631,7 +8215,7 @@
    "prop": "gap",
    "value": "3px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5639,7 +8223,7 @@
    "prop": "margin-top",
    "value": "3px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5647,7 +8231,15 @@
    "prop": "padding-left",
    "value": "26px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".side-sub a, .side-sub .soon",
+   "prop": "font-size",
+   "value": "12.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5655,7 +8247,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5663,7 +8255,7 @@
    "prop": "padding",
    "value": "5px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5671,7 +8263,15 @@
    "prop": "box-shadow",
    "value": "0 0 0 1px var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".sn",
+   "prop": "font-size",
+   "value": "13px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5679,7 +8279,7 @@
    "prop": "gap",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5687,7 +8287,15 @@
    "prop": "padding",
    "value": "7px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".sn .sn-d",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5695,7 +8303,7 @@
    "prop": "line-height",
    "value": "1.5",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5703,7 +8311,15 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".sn .sn-l .n",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5711,7 +8327,15 @@
    "prop": "padding",
    "value": "0 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".soon-tag",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5719,7 +8343,7 @@
    "prop": "padding",
    "value": "0 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5727,7 +8351,7 @@
    "prop": "border-right",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5735,7 +8359,7 @@
    "prop": "height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5743,7 +8367,7 @@
    "prop": "gap",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5751,7 +8375,15 @@
    "prop": "padding",
    "value": "6px 10px 16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".subnav-sec",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5759,7 +8391,7 @@
    "prop": "letter-spacing",
    "value": "0.1em",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5767,7 +8399,7 @@
    "prop": "padding",
    "value": "12px 10px 4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5775,7 +8407,7 @@
    "prop": "height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5783,7 +8415,7 @@
    "prop": "padding",
    "value": "24px 32px 64px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5791,7 +8423,15 @@
    "prop": "border-right",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-empty",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5799,7 +8439,7 @@
    "prop": "padding",
    "value": "6px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5807,7 +8447,15 @@
    "prop": "border-top",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-foot",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5815,7 +8463,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5823,7 +8471,7 @@
    "prop": "margin-top",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5831,7 +8479,15 @@
    "prop": "padding",
    "value": "10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-foot .muted",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5839,7 +8495,7 @@
    "prop": "line-height",
    "value": "1.6",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5847,7 +8503,7 @@
    "prop": "margin-top",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5855,7 +8511,15 @@
    "prop": "margin-top",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-grp",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5863,7 +8527,15 @@
    "prop": "padding",
    "value": "10px 10px 4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-hit",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5871,7 +8543,7 @@
    "prop": "padding-bottom",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5879,7 +8551,7 @@
    "prop": "min-height",
    "value": "32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5887,7 +8559,7 @@
    "prop": "border",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5895,7 +8567,7 @@
    "prop": "box-shadow",
    "value": "0 8px 24px rgba(0,0,0,.12)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5903,7 +8575,7 @@
    "prop": "min-width",
    "value": "160px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5911,7 +8583,7 @@
    "prop": "padding",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5919,7 +8591,7 @@
    "prop": "right",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5927,7 +8599,15 @@
    "prop": "top",
    "value": "calc(100% + 2px)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-menu button",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5935,7 +8615,7 @@
    "prop": "gap",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5943,7 +8623,7 @@
    "prop": "height",
    "value": "28px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5951,7 +8631,7 @@
    "prop": "padding",
    "value": "0 8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5959,7 +8639,7 @@
    "prop": "height",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5967,7 +8647,7 @@
    "prop": "width",
    "value": "14px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5975,7 +8655,7 @@
    "prop": "height",
    "value": "24px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5983,7 +8663,7 @@
    "prop": "margin-right",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5991,7 +8671,7 @@
    "prop": "width",
    "value": "24px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -5999,7 +8679,7 @@
    "prop": "height",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6007,7 +8687,7 @@
    "prop": "width",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6015,7 +8695,7 @@
    "prop": "border",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6023,7 +8703,7 @@
    "prop": "height",
    "value": "32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6031,7 +8711,7 @@
    "prop": "width",
    "value": "32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6039,7 +8719,7 @@
    "prop": "outline",
    "value": "2px solid var(--primary)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6047,7 +8727,15 @@
    "prop": "outline-offset",
    "value": "1px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-open",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6055,7 +8743,7 @@
    "prop": "padding",
    "value": "0 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6063,7 +8751,7 @@
    "prop": "padding",
    "value": "0 4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6071,7 +8759,15 @@
    "prop": "border",
    "value": "1px solid var(--primary)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-rename input",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6079,7 +8775,7 @@
    "prop": "height",
    "value": "28px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6087,7 +8783,7 @@
    "prop": "padding",
    "value": "0 8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6095,7 +8791,7 @@
    "prop": "gap",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6103,7 +8799,7 @@
    "prop": "height",
    "value": "32px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6111,7 +8807,15 @@
    "prop": "padding",
    "value": "0 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-search input",
+   "prop": "font-size",
+   "value": "14px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6119,7 +8823,15 @@
    "prop": "gap",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-tag",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6127,7 +8839,7 @@
    "prop": "padding",
    "value": "0 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6135,7 +8847,7 @@
    "prop": "gap",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6143,7 +8855,15 @@
    "prop": "margin-bottom",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".tl-unread",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6151,7 +8871,7 @@
    "prop": "height",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6159,7 +8879,7 @@
    "prop": "margin-right",
    "value": "8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6167,7 +8887,7 @@
    "prop": "min-width",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6175,7 +8895,7 @@
    "prop": "padding",
    "value": "0 5px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6183,7 +8903,7 @@
    "prop": "gap",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6191,7 +8911,7 @@
    "prop": "height",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6199,7 +8919,7 @@
    "prop": "width",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6207,7 +8927,7 @@
    "prop": "gap",
    "value": "2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6215,7 +8935,7 @@
    "prop": "gap",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6223,7 +8943,15 @@
    "prop": "padding",
    "value": "10px 28px 2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".topbar .crumb",
+   "prop": "font-size",
+   "value": "12px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6231,7 +8959,15 @@
    "prop": "gap",
    "value": "10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": ".topbar h1",
+   "prop": "font-size",
+   "value": "18px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6239,7 +8975,7 @@
    "prop": "letter-spacing",
    "value": "-0.015em",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6247,7 +8983,7 @@
    "prop": "margin-bottom",
    "value": "12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6255,7 +8991,7 @@
    "prop": "height",
    "value": "36px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6263,7 +8999,7 @@
    "prop": "margin-left",
    "value": "-8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6271,7 +9007,7 @@
    "prop": "width",
    "value": "36px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6279,7 +9015,7 @@
    "prop": "height",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6287,7 +9023,7 @@
    "prop": "width",
    "value": "18px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6295,7 +9031,7 @@
    "prop": "box-shadow",
    "value": "0 16px 40px rgba(0, 0, 0, 0.16)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6303,7 +9039,7 @@
    "prop": "left",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6311,7 +9047,7 @@
    "prop": "transform",
    "value": "translateX(calc(-100% - 24px))",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6319,7 +9055,7 @@
    "prop": "width",
    "value": "280px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6327,7 +9063,7 @@
    "prop": "padding",
    "value": "14px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6335,7 +9071,7 @@
    "prop": "transform",
    "value": "translateX(calc(100% + 24px))",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6343,7 +9079,7 @@
    "prop": "box-shadow",
    "value": "0 16px 40px rgba(0, 0, 0, 0.16)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6351,7 +9087,7 @@
    "prop": "transform",
    "value": "translateX(calc(-100% - 24px))",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6359,7 +9095,7 @@
    "prop": "border-top",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6367,7 +9103,7 @@
    "prop": "height",
    "value": "72dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6375,7 +9111,7 @@
    "prop": "padding",
    "value": "16px 16px 48px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6383,7 +9119,7 @@
    "prop": "padding",
    "value": "0 16px 8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6391,7 +9127,7 @@
    "prop": "width",
    "value": "min(320px, 88vw)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6399,7 +9135,7 @@
    "prop": "padding-bottom",
    "value": "64px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6407,7 +9143,7 @@
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6415,7 +9151,7 @@
    "prop": "gap",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6423,7 +9159,7 @@
    "prop": "padding",
    "value": "8px 16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6431,7 +9167,7 @@
    "prop": "padding",
    "value": "6px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6439,7 +9175,7 @@
    "prop": "border-top",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6447,7 +9183,15 @@
    "prop": "height",
    "value": "60px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media (max-width: 767px) >> .tabbar .bdg",
+   "prop": "font-size",
+   "value": "10px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6455,7 +9199,7 @@
    "prop": "padding",
    "value": "0 5px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6463,7 +9207,7 @@
    "prop": "right",
    "value": "calc(50% - 18px)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6471,7 +9215,15 @@
    "prop": "top",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media (max-width: 767px) >> .tabbar a",
+   "prop": "font-size",
+   "value": "10.5px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6479,7 +9231,7 @@
    "prop": "gap",
    "value": "3px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6487,7 +9239,7 @@
    "prop": "min-height",
    "value": "44px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6495,7 +9247,7 @@
    "prop": "height",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6503,7 +9255,7 @@
    "prop": "width",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6511,7 +9263,7 @@
    "prop": "padding",
    "value": "16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6519,7 +9271,7 @@
    "prop": "padding",
    "value": "12px 16px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6527,7 +9279,15 @@
    "prop": "padding",
    "value": "12px 16px 4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media (max-width: 767px) >> .topbar h1",
+   "prop": "font-size",
+   "value": "18px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6535,7 +9295,7 @@
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6543,7 +9303,7 @@
    "prop": "gap",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6551,7 +9311,7 @@
    "prop": "padding",
    "value": "8px 28px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6559,7 +9319,7 @@
    "prop": "padding",
    "value": "6px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6567,7 +9327,7 @@
    "prop": "max-height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6575,7 +9335,7 @@
    "prop": "--sidebar-w",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6583,7 +9343,7 @@
    "prop": "width",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6591,7 +9351,7 @@
    "prop": "padding",
    "value": "16px 0 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6599,7 +9359,15 @@
    "prop": "padding",
    "value": "10px 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media (min-width: 1180px) >> .shell[data-layout=\"threepane\"] .side-item",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6607,7 +9375,7 @@
    "prop": "gap",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6615,7 +9383,7 @@
    "prop": "line-height",
    "value": "1.2",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6623,7 +9391,7 @@
    "prop": "padding",
    "value": "9px 2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6631,7 +9399,7 @@
    "prop": "right",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6639,7 +9407,7 @@
    "prop": "top",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6647,7 +9415,7 @@
    "prop": "height",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6655,7 +9423,7 @@
    "prop": "width",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6663,7 +9431,7 @@
    "prop": "padding",
    "value": "4px 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6671,7 +9439,7 @@
    "prop": "border-right",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6679,7 +9447,7 @@
    "prop": "box-shadow",
    "value": "8px 0 24px rgba(0, 0, 0, 0.12)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6687,7 +9455,7 @@
    "prop": "left",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6695,7 +9463,7 @@
    "prop": "padding",
    "value": "14px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6703,7 +9471,7 @@
    "prop": "width",
    "value": "216px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6711,7 +9479,7 @@
    "prop": "padding-bottom",
    "value": "12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6719,7 +9487,7 @@
    "prop": "padding-top",
    "value": "12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6727,7 +9495,7 @@
    "prop": "box-shadow",
    "value": "-8px 0 24px rgba(0, 0, 0, 0.12)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6735,7 +9503,7 @@
    "prop": "width",
    "value": "360px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6743,7 +9511,7 @@
    "prop": "padding",
    "value": "20px 24px 64px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6751,7 +9519,7 @@
    "prop": "padding",
    "value": "0 20px 8px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6759,7 +9527,7 @@
    "prop": "grid-template-columns",
    "value": "72px minmax(0, 1fr)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6767,7 +9535,7 @@
    "prop": "min-height",
    "value": "100dvh",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6775,7 +9543,7 @@
    "prop": "width",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6783,7 +9551,7 @@
    "prop": "padding",
    "value": "16px 0 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6791,7 +9559,15 @@
    "prop": "padding",
    "value": "10px 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media (min-width: 768px) and (max-width: 1179px) >> .side-item",
+   "prop": "font-size",
+   "value": "11px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6799,7 +9575,7 @@
    "prop": "gap",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6807,7 +9583,7 @@
    "prop": "line-height",
    "value": "1.2",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6815,7 +9591,7 @@
    "prop": "padding",
    "value": "9px 2px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6823,7 +9599,7 @@
    "prop": "right",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6831,7 +9607,7 @@
    "prop": "top",
    "value": "4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6839,7 +9615,7 @@
    "prop": "height",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6847,7 +9623,7 @@
    "prop": "width",
    "value": "20px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6855,7 +9631,7 @@
    "prop": "padding",
    "value": "4px 6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6863,7 +9639,7 @@
    "prop": "border-right",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6871,7 +9647,7 @@
    "prop": "box-shadow",
    "value": "8px 0 24px rgba(0, 0, 0, 0.12)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6879,7 +9655,7 @@
    "prop": "left",
    "value": "72px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6887,7 +9663,7 @@
    "prop": "padding",
    "value": "14px 10px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6895,7 +9671,7 @@
    "prop": "width",
    "value": "216px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6903,7 +9679,7 @@
    "prop": "border-bottom",
    "value": "1px solid var(--line)",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6911,7 +9687,7 @@
    "prop": "gap",
    "value": "6px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6919,7 +9695,7 @@
    "prop": "padding",
    "value": "8px 20px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6927,7 +9703,7 @@
    "prop": "padding",
    "value": "6px 12px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/shell/shell.css",
@@ -6935,7 +9711,407 @@
    "prop": "padding",
    "value": "12px 20px 4px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/shell/shell.css",
+   "selector": "@media(max-width:767px) >> .tl-search input,.tl-rename input",
+   "prop": "font-size",
+   "value": "16px",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-[1.5px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "gap-[7px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "px-[17px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[9px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "size-[15px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/button.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/empty.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[420px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/empty.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[18px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/empty.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "size-[38px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/empty.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/empty.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[15px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[15px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "md:text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[5px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "px-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "size-[17px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 3,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/field.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[16px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[7px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[7px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[34px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.02em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/metric.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[0.04em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/pill.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "gap-[5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/pill.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/popover.ts",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.inset = \"auto\"",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/popover.ts",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.left = `${Math.max(EDGE, Math.min(left, window.innerWidth - EDGE - w))}px`",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/popover.ts",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.top = `${Math.max(EDGE, Math.min(top, window.innerHeight - EDGE - h))}px`",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/section.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[22px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/section.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.01em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/stopped.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/table.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "py-[11px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/table.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/table.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/ui/table.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[0.06em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/timeline.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "rounded-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "rounded-[4px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "shadow-[0_0_0_1px_var(--line)]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[11px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/views/view-switch.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[0.05em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/components/views/views.css",
@@ -6943,7 +10119,119 @@
    "prop": "grid-template-columns",
    "value": "minmax(0, 1fr) 360px",
    "count": 1,
-   "reason": "前の世代の画面の CSS（D-128.78 で外す側）。外すときに台帳から消える"
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "border-b-[3px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[1120px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "max-w-[65ch]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mb-[22px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "mt-[26px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pb-[11px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[18px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "pt-[26px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12.5px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[12px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 2,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[16px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/components/wizard/wizard-layout.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[22px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   },
   {
    "file": "apps/web/features/F1/consent-terms/consent-terms.css",
@@ -7104,6 +10392,38 @@
    "value": "100dvh",
    "count": 1,
    "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
+  },
+  {
+   "file": "apps/web/lib/auth/role.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[13.5px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/lib/auth/role.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "text-[14px]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/lib/auth/role.tsx",
+   "selector": "className",
+   "prop": "任意値",
+   "value": "tracking-[-0.015em]",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
+  },
+  {
+   "file": "apps/web/lib/bridge-presence.ts",
+   "selector": "DOM の style",
+   "prop": "style",
+   "value": ".style.display = \"none\"",
+   "count": 1,
+   "reason": "前の世代の画面の部品（D-128.78 で外す側）。外すときに台帳から消える"
   }
  ]
 }
