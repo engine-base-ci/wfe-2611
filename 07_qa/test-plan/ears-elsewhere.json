@@ -128,7 +128,7 @@
    "file": "apps/api/test/features/F1/service-status.test.ts",
    "reason": "いまの様子は、運営のテナントの障害とお知らせの行と、行の守りの外で読む DB の関数で確かめる。生成の試験の土台には障害とお知らせが無い（K-307）",
    "covers": {
-    "test_get_auth_service_status_ok": "K307-API-001",
+    "test_get_auth_service_status_ok": "K307-API-001", "test_get_auth_service_status_ok_2": "K307-API-001",
     "test_get_auth_service_status_rejected_422": "K307-API-013",
     "test_get_auth_service_status_rate_limited": "K307-API-014",
     "test_get_auth_service_status_server_error": "K307-API-015",

@@ -13696,7 +13696,12 @@
     "scripts/ci/class_ledger.json",
     "apps/web/tests/features/F1/verify-email.spec.ts",
     "apps/web/tests/k/k256-verify-consent.spec.ts",
-    "07_qa/test-specs/k/verify-email.md"
+    "07_qa/test-specs/k/verify-email.md",
+    "scripts/ci/zt_gate.py",
+    "scripts/ci/canvas_gate.py",
+    "04_design/canvas-screens.json",
+    "spec-dependencies.yaml",
+    "07_qa/test-plan/ears-elsewhere.json"
    ],
    "mock": [
     "help-n",

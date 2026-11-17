@@ -28,7 +28,9 @@ else:
     scr = mp.get("screens", {})
     names = {f.replace(".dc.html", "") for f in files}
     every = [b for v in scr.values() for b in v] + list(mp.get("common", {}).get("boards", []))
-    nob = sorted(v1 - {k for k, v in scr.items() if v})
+    # キャンバスの絵が無く、正が本番と同じ部品で作ったモック（段 2 の /dev/mock）の画面は、理由つきで mock_only に載せる（K-315）
+    mock_only = {k for k, v in mp.get("mock_only", {}).items() if isinstance(v, str) and v.strip()}
+    nob = sorted(v1 - mock_only - {k for k, v in scr.items() if v})
     if nob: fails.append(("CV4", f"絵の無い画面 {nob[:8]}"))
     if set(scr) - v1: fails.append(("CV4", f"flow の第1フェーズに無い画面 {sorted(set(scr) - v1)[:8]}"))
     if names - set(every): fails.append(("CV4", f"どの画面にも共通にも入っていない絵 {sorted(names - set(every))[:8]}"))
