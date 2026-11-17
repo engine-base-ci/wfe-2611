@@ -86,6 +86,43 @@ function MakeLines({ run }: { run: RunView }) {
   );
 }
 
+/** 作っています の箱。要約の分は今の時刻を状態に持ち、started_at から数えた次の分の境目で持ち直す
+ *  （口の答えが前と同じ間は描き直されないので、箱が自分で時計を進める・レビュー Q の指摘 1）。箱が消えたら timer を片付ける */
+function MakingBox({ run }: { run: RunView }) {
+  const now = useMinuteClock(run.started_at);
+  const started = startedLine(run.started_at, now);
+  return (
+    <Band
+      tone="info"
+      title={`${nameOf(run)} が作っています`}
+      {...(started ? { sub: started } : {})}
+      acts={
+        <>
+          <InertButton>AI と話す</InertButton>
+          <InertButton>止める</InertButton>
+        </>
+      }
+    >
+      <MakeLines run={run} />
+      <RunSteps />
+    </Band>
+  );
+}
+
+/** 今の時刻。startedAt から数えた分の境目ごとに持ち直す（始めた時刻が無ければ持ち直さない） */
+function useMinuteClock(startedAt: string | null): number {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = startedAt ? Date.parse(startedAt) : Number.NaN;
+    if (Number.isNaN(t)) return;
+    const elapsed = Math.max(0, now - t);
+    const wait = MINUTE_MS - (elapsed % MINUTE_MS);
+    const timer = setTimeout(() => setNow(Date.now()), wait);
+    return () => clearTimeout(timer);
+  }, [startedAt, now]);
+  return now;
+}
+
 /** 作る段の実行の箱（作っています・任せました・止まった）。止まったときだけ AI に任せる（delegate）を箱の中に置く */
 function RunBox({ run, delegate }: { run: RunView; delegate: ReactNode }) {
   if (run.status === "queued")
@@ -99,25 +136,7 @@ function RunBox({ run, delegate }: { run: RunView; delegate: ReactNode }) {
         <MakeLines run={run} />
       </Band>
     );
-  if (isActive(run)) {
-    const started = startedLine(run.started_at);
-    return (
-      <Band
-        tone="info"
-        title={`${nameOf(run)} が作っています`}
-        {...(started ? { sub: started } : {})}
-        acts={
-          <>
-            <InertButton>AI と話す</InertButton>
-            <InertButton>止める</InertButton>
-          </>
-        }
-      >
-        <MakeLines run={run} />
-        <RunSteps />
-      </Band>
-    );
-  }
+  if (isActive(run)) return <MakingBox run={run} />;
   return (
     <Band
       tone="danger"
@@ -202,8 +221,15 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   return (
     <section aria-label="AI に任せる" className="k62-band k-section">
       {notice ? <NoticeLine notice={notice} /> : null}
-      {showRun && run ? <RunBox run={run} delegate={delegateButton} /> : null}
-      {stopped ? <CheckTable /> : null}
+      {showRun && run && stopped ? (
+        // 止まった帯の箱と確認の結果の表は 1 つの並び（間 14px・キャンバス StFailed）
+        <div className="k-check-stack">
+          <RunBox run={run} delegate={delegateButton} />
+          <CheckTable />
+        </div>
+      ) : showRun && run ? (
+        <RunBox run={run} delegate={delegateButton} />
+      ) : null}
       {showMade ? (
         // 確認の要約は承認の 1 件の check_summary。読めない間・読めなかったときは出さない（本当とは限らない文を言い切らない）
         <Band

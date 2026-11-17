@@ -955,6 +955,11 @@ textarea.k-input {
   font-weight: var(--k-c-run-step-now-fw);
 }
 /* 止まった（作る段）の確認の結果の表（キャンバス StFailed）：器は帯の箱と同じ左右。狭い幅では器の中で横に送る */
+.k-check-stack {
+  display: grid;
+  gap: var(--k-c-check-stack-gap);
+  min-width: 0;
+}
 .k-check-table {
   min-width: 0;
   overflow-x: auto;

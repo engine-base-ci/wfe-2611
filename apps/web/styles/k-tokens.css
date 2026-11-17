@@ -541,6 +541,7 @@
   --k-c-run-step-now-fg: var(--k-st-on-progress-container);
   --k-c-run-step-now-fw: 700;
   --k-c-run-step-now-border-top: 3px solid var(--k-st-progress);
+  --k-c-check-stack-gap: 14px;
   --k-c-check-table-head-text: var(--k-text-body-sm);
   --k-c-check-table-head-fw: 500;
   --k-c-check-table-head-lh: 1.7;

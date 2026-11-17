@@ -677,6 +677,8 @@ components:
     textColor: "{state.on-progress-container}"
     fontWeight: 700
     borderTop: "3px solid {state.progress}"
+  check-stack:          # 止まった帯の箱と確認の結果の表を包む縦の並び（間 14px＝キャンバス StFailed の帯の下 14px。region の間 12px に頼らない）
+    gap: "14px"
   check-table-head:     # 確認の結果の表の見出し（12px・500・行の高さ 1.7・余白 6px 10px・淡い灰の地・上下の線・灰の字）
     typography: "{typography.body-sm}"
     fontWeight: 500

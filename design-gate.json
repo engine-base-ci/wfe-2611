@@ -266,6 +266,7 @@
     "run-step": ".k-run-steps > li",
     "run-step-done": ".k-run-steps > li[data-state=\"done\"]",
     "run-step-now": ".k-run-steps > li[data-state=\"now\"]",
+    "check-stack": ".k-check-stack",
     "check-table-head": ".k-check-table th",
     "check-empty": ".k-check-empty",
     "artifact-card": ".k-artifact-card",
