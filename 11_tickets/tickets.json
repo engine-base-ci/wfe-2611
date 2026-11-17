@@ -12683,7 +12683,8 @@
     "apps/api/src/server.ts",
     ".env.example",
     "scripts/ci/env_audit.mjs",
-    "scripts/ci/k212_function_region_test.py"
+    "scripts/ci/k212_function_region_test.py",
+    ".gitleaksignore"
    ],
    "affects": [
     "@kaname/api",
