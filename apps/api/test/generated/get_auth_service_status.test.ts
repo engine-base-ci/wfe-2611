@@ -9,6 +9,8 @@ describe("GET /api/v1/auth/service-status", () => {
     // 本物の試験：apps/api/test/features/F1/service-status.test.ts の「K307-API-001」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/service-status.test.ts", "utf8")).toContain("K307-API-001");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F1/service-status.test.ts）：EVENT-DRIVEN: WHEN GET /api/v1/auth/service-status が「困りごとを選んで次の画面へ進む／稼働状況を見る／運営にメールする」として呼ばれたとき THEN Kaname は「誰でも読める稼働状況の口（公開の分だけ）を読む」を行い 2xx を返す
+  it.todo("test_get_auth_service_status_ok_2");
   it("test_get_auth_service_status_rejected_422", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
     // 本物の試験：apps/api/test/features/F1/service-status.test.ts の「K307-API-013」（同じ CI の G3 で流れる）

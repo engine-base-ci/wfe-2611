@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:c483dbfe8770ec42
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:8694473d718b773e
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -9,7 +9,7 @@ export interface NavData {
   productStates: readonly ProductState[]; screens: Record<ScreenId, ScreenMeta>; roles: readonly { id: RoleId; name: string }[];
 }
 export type RoleId = "R1" | "R2" | "R3" | "R4" | "R6";
-export type ScreenId = "signup" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "clients" | "requests" | "ops-team" | "legal" | "portal";
+export type ScreenId = "signup" | "verify-email" | "invite-accept" | "mfa-setup" | "billing-setup" | "login" | "password-reset" | "onboard-interview" | "onboard-draft" | "bridge-setup" | "credentials" | "onboard-testrun" | "onboard-golive" | "today" | "approvals" | "clone-thread" | "tasks" | "clone-chat" | "ai-activity" | "records" | "record-detail" | "goals" | "goal-allocation" | "goal-edit" | "my-progress" | "review" | "hypotheses" | "duties" | "ledger-def" | "company-model" | "automation-repair" | "audit" | "policies" | "members" | "ai-staff" | "ai-staff-detail" | "security-brief" | "disclosure" | "export" | "account-close" | "ops-support" | "ops-home" | "ops-catalog" | "account" | "company-settings" | "llm-routes" | "app-setup" | "import" | "services" | "ops-services" | "ops-skills" | "inquiry" | "notices" | "billing" | "ops-notices" | "ops-billing" | "ops-llm" | "ops-disclosure" | "ops-tenant" | "ops-review" | "ops-audit" | "member-detail" | "tickets" | "masters" | "layers" | "rules" | "work-types" | "knowledge" | "clients" | "requests" | "ops-team" | "legal" | "help" | "portal";
 export const NAV: NavData = {
   "sections": [
     {
@@ -1539,6 +1539,22 @@ export const NAV: NavData = {
       ],
       "purpose": "利用規約とプライバシーポリシーの今の版を、登録の前でも読める",
       "primaryAction": "読む",
+      "release": "v1"
+    },
+    "help": {
+      "id": "help",
+      "name": "困ったとき",
+      "route": "/help",
+      "needsLogin": false,
+      "hasShell": false,
+      "roles": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ],
+      "purpose": "ログインできない・困ったときに、よくある困りごとから次の画面へ進み、いまの稼働状況を見て、解けなければ運営にメールする",
+      "primaryAction": "困りごとを選ぶ",
       "release": "v1"
     },
     "portal": {

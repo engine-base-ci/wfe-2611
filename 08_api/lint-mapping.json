@@ -273,10 +273,12 @@
    "path": "/api/v1/auth/service-status",
    "implementation_path": "apps/api/src/routes/status_incidents.ts::getServiceStatus",
    "screen_ids_referencing": [
+    "help",
     "login"
    ],
    "acts": [
-    "A13"
+    "A13",
+    "A135"
    ]
   },
   {
