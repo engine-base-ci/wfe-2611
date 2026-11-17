@@ -495,11 +495,11 @@
   "tickets": 218,
   "l1_rows": 5128,
   "ears_endpoints": 365,
-  "ears_tests": 3566,
+  "ears_tests": 3570,
   "entities": 142,
   "policies": 410,
   "access_cases": 1530,
-  "errors": 172,
+  "errors": 174,
   "journey_rows": 88,
   "critical_tasks": 88
  },

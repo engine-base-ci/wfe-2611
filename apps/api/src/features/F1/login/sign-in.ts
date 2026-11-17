@@ -60,7 +60,12 @@ export function loginFeature(d: LoginDeps) {
     return { input: b };
   };
 
-  /** 入ったのに会社の人が無い・抜けた：その場で閉じて 403・E-AUTH-007（ログインの印を渡さない）。止めの 1 か所への移しは K-303 */
+  /** 止めで断られた：人・会社の止めは 403 と目録の文、抜けたは 403・E-AUTH-007（運営の連絡先つき）、止めの確かめができなかったは 503・E-PAGE-003 */
+  const blocked = (b: { code: string; status: number }): HookReply =>
+    reply(b.status, b.code, b.code === "E-AUTH-007" ? { detail: { ops_email: d.config.opsEmail } } : {});
+
+  /** 入ったのに会社の人が 1 人も無い：その場で閉じて 403・E-AUTH-007（ログインの印を渡さない）。
+   *  抜けた人は止めの 1 か所（K-303）が先に断るので、ここに来るのは会社に属していない利用者（登録の途中など）だけ */
   const memberGone = async (token: string, ua: string | undefined): Promise<boolean> => {
     const h = new Headers({ authorization: `Bearer ${token}` });
     if (ua) h.set("user-agent", ua);
@@ -82,6 +87,8 @@ export function loginFeature(d: LoginDeps) {
         country: countryOf(a.c.req.raw.headers),
       });
       if (r.invalidEmail) return reply(422, "E-VAL-004", { detail: { field: "email" } });
+      // 止めの 1 か所（K-303・ログインの部品の session.create.before）が断った：その status と id と目録の文をそのまま返す（印は渡さない）
+      if (r.blocked) return blocked(r.blocked);
       if (!r.ok) return failed(r);
       if (r.twoFactor) {
         if (!r.pending) throw new Error("2 段階の待ちの印が無い");
