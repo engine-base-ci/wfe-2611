@@ -393,7 +393,9 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-76"
+   ]
   },
   {
    "op": "requestAdminRecovery",
@@ -408,7 +410,9 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-74"
+   ]
   },
   {
    "op": "getServiceStatus",
@@ -423,7 +427,9 @@
     "status_incidents"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-74"
+   ]
   },
   {
    "op": "signInWithPassword",
@@ -438,7 +444,9 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-74"
+   ]
   },
   {
    "op": "signOut",
@@ -453,7 +461,9 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-74"
+   ]
   },
   {
    "op": "createSignup",
@@ -587,7 +597,9 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-74"
+   ]
   },
   {
    "op": "claimPairingCode",
@@ -2630,7 +2642,9 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "deletePasskey",
@@ -2645,7 +2659,9 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "changePassword",
@@ -2660,7 +2676,9 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "getMySecurity",
@@ -2675,7 +2693,9 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "listMySessions",
@@ -2822,7 +2842,9 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "startTwoFactor",
@@ -2835,7 +2857,9 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-75"
+   ]
   },
   {
    "op": "getMyUsage",
