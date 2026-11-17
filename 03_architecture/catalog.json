@@ -376,9 +376,7 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-76"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "resetPassword",
@@ -393,9 +391,7 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-76"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "requestAdminRecovery",
@@ -410,9 +406,7 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-74"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "getServiceStatus",
@@ -427,9 +421,7 @@
     "status_incidents"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-74"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "signInWithPassword",
@@ -445,7 +437,6 @@
    ],
    "status": "作った",
    "owner_tickets": [
-    "K-74",
     "K-301"
    ]
   },
@@ -462,9 +453,7 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-74"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "createSignup",
@@ -598,9 +587,7 @@
     "sessions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-74"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "claimPairingCode",
@@ -2643,9 +2630,7 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "deletePasskey",
@@ -2660,9 +2645,7 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "changePassword",
@@ -2677,9 +2660,7 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "getMySecurity",
@@ -2694,9 +2675,7 @@
     "passkeys"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "listMySessions",
@@ -2843,9 +2822,7 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "startTwoFactor",
@@ -2858,9 +2835,7 @@
     "security_events"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-75"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "getMyUsage",

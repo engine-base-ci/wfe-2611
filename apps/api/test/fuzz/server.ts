@@ -15,6 +15,9 @@ import { ticketHooks } from "../../src/hooks/tickets.js";
 import { delegateHooks } from "../../src/hooks/delegate.js";
 import { approveHooks } from "../../src/hooks/approve-complete.js";
 import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
+import { loginHooks } from "../../src/hooks/login.js";
+import { createAuth } from "@kaname/auth";
+import { migrateAuth } from "@kaname/auth/migrate";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
@@ -24,6 +27,17 @@ const objects = new ObjectStore(h.repo, localDriver(mkdtempSync(join(tmpdir(), "
   signingSecret: "fuzz-test-files",
   externalSigner: { presignGet: async () => null },
 });
+// ログイン（K-301）は本物のログインの部品（Better Auth・kaname_auth の表）で回す。偽のセッション（Bearer boss）は入口だけが読み、
+//   ログインの口は送られたメールとパスワードを部品で確かめる（登録の無いメールは 401・形の違うメールは 422・数の上限で 429）
+const DB_URL = process.env["DATABASE_URL"]!;
+await migrateAuth(DB_URL);
+const login = createAuth({
+  authDatabaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"),
+  appPool: h.pool,
+  secret: "fuzz-test-secret-0123456789-abcdefghij",
+  baseURL: `http://127.0.0.1:${port}`,
+  poolMax: 2,
+});
 Object.assign(
   h.hooks,
   agentHooks(h.pool),
@@ -32,6 +46,7 @@ Object.assign(
   delegateHooks(h.pool),
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
+  loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(
@@ -44,6 +59,7 @@ const srv = serve({ fetch: h.fetch, port, hostname: "127.0.0.1" }, () =>
 );
 const stop = async () => {
   srv.close();
+  await login.pool.end();
   await h.close();
   process.exit(0);
 };
