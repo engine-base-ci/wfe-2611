@@ -22,6 +22,7 @@ import pg from "pg";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
+import { migrateAuth } from "@kaname/auth/migrate";
 import { ENDPOINTS } from "@kaname/contracts";
 import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
@@ -148,6 +149,8 @@ const removeNotice = (id: string) => admin.query("update notices set deleted_at 
 
 beforeAll(async () => {
   await migrate(ADMIN, DB_PKG);
+  // 入口はログインしていない要求でもセッションを解く（Better Auth）。CI の組ごとの新しい DB には認証の表が無いので、ここで作る
+  await migrateAuth(ADMIN);
   admin = new pg.Pool({ connectionString: ADMIN, max: 3 });
   appRole = new pg.Pool({ connectionString: APP_URL, max: 1 });
   myTenant = (
@@ -163,7 +166,8 @@ beforeAll(async () => {
 afterAll(async () => {
   await admin?.query("delete from status_incidents where note like $1", [`${RUN}%`]);
   await admin?.query("delete from notices where body like $1", [`${RUN}%`]);
-  if (myTenant) await admin?.query("delete from tenants where id = $1", [myTenant]);
+  // テナントは消した印だけ付ける（作ると引き金 app.ticket_basics_on_tenant がチケットの基本の行を入れ、仕組みの段は消せないので行ごとは消せない）
+  if (myTenant) await admin?.query("update tenants set deleted_at = now() where id = $1", [myTenant]);
   await app?.close();
   await appRole?.end();
   await admin?.end();
