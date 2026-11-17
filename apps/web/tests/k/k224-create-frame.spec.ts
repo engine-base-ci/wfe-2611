@@ -531,7 +531,15 @@ test("K224-UI-027 幅 375・320：帯の h1「チケットを作る」と題名�
   }
 });
 
-test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補を読み込めませんでした」で親なしで作れる・0 件は「見つかりません」・選んだ親は外せる・下書きから戻した親は番号と題名・101 字は打てない・作る口が親を断ると理由を欄の下に出す", async ({
+/** 作った後に詳細へ移り切るのを待つ（K-260）。URL が移った（toHaveURL）だけでは、詳細の画面はまだ動き出していないことがある。
+ *  その間に鍵（kaname.token）を消すと、詳細の画面が動き出したときに鍵が無いとみてログインへ移し、次の開き直しの goto が取り消される（ERR_ABORTED）。
+ *  詳細の見出し（作った題名）は、詳細の画面が鍵を確かめて詳細の口を読んだ後にだけ出るので、これが出たら移り切った印 */
+const settledDetail = async (page: Page) => {
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
+  await expect(page.getByRole("heading", { level: 1, name: "作った" })).toBeVisible();
+};
+
+test("K260-UI-001 K224-UI-028 親のチケット：口が落ちると欄の下に「候補を読み込めませんでした」で親なしで作れる・0 件は「見つかりません」・選んだ親は外せる・下書きから戻した親は番号と題名・101 字は打てない・作る口が親を断ると理由を欄の下に出す", async ({
   page,
 }) => {
   const m = await mockCreate(page, { listStatus: 500 });
@@ -545,8 +553,7 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect.poll(() => m.creates.length).toBe(1);
   expect(m.creates[0]!["parent_ticket_id"] ?? null).toBeNull();
-  // 作った後は詳細へ移る。移り終えてから次の開き直しへ進む（移る途中に開き直すと goto とぶつかって揺れる）
-  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
+  await settledDetail(page);
   // (b) 0 件・(c) 選んで外す
   const m2 = await mockCreate(page);
   await openCreate(page);
@@ -562,8 +569,7 @@ test("K224-UI-028 親のチケット：口が落ちると欄の下に「候補�
   await page.getByRole("button", { name: "作る", exact: true }).click();
   await expect.poll(() => m2.creates.length).toBe(1);
   expect(m2.creates[0]!["parent_ticket_id"] ?? null).toBeNull();
-  // 作った後は詳細へ移る。移り終えてから次の開き直しへ進む（移る途中に開き直すと goto とぶつかって揺れる）
-  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
+  await settledDetail(page);
   // (d) 下書きから戻した親
   await mockCreate(page, {
     drafts: [{ draft_id: "d1", body: { title: "戻した", parent_ticket_id: "p2" }, saved_at: "2026-11-16T01:42:00Z" }],
