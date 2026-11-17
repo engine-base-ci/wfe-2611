@@ -3,8 +3,10 @@
 //   グループ・予定・実績は一覧の口に値が無いので空（D-144.3）。期限切れの行は期限の横に炎の印（読み上げ「期限切れ」）。題名は字のまま出す（K251-UI-016）。
 //   自分に関わるものは期限で区切る（期限切れ・今日まで・今週・来週以降・件数は出さない）。読んだ行全部を区切り直し、中は口の並びのまま。
 //   下に「もっと見る」（次がある時だけ・押している間は押せない）。次の分が読めなかったら、読んだ行を残して「もう一度」
+//   K-252：一覧・グループの一覧は行の頭に選ぶ印（まだ使えない・disabled。列の頭は td で見出しに数えない・selectable）。
+//     番号と題名のリンクは、広い幅（1024 以上）では移らずに右に詳細を開く（onOpen が開いたら移らない・修飾キーつきは移る）
 import { Bot, Flame } from "lucide-react";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, type MouseEvent, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import { COLUMN_LABEL, type ColumnKey } from "./list-columns";
@@ -79,8 +81,22 @@ function Assignee({ row }: { row: ListItem }) {
   );
 }
 
+/** 行のリンクを押したとき。右に詳細を開いたら true（移らない） */
+export type OpenRow = (row: ListItem) => boolean;
+
+function openClick(row: ListItem, onOpen: OpenRow | undefined) {
+  return (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!onOpen || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (onOpen(row)) e.preventDefault();
+  };
+}
+
 /** 列ごとのセル（td の属性と中身） */
-function cellOf(key: ColumnKey, row: ListItem): { className?: string; late?: boolean; body: ReactNode } {
+function cellOf(
+  key: ColumnKey,
+  row: ListItem,
+  onOpen?: OpenRow,
+): { className?: string; late?: boolean; body: ReactNode } {
   const href = `/tickets/${encodeURIComponent(row.id)}`;
   switch (key) {
     case "kind":
@@ -94,7 +110,7 @@ function cellOf(key: ColumnKey, row: ListItem): { className?: string; late?: boo
     case "number":
       return {
         body: (
-          <a className="k-list-link k-list-number" href={href}>
+          <a className="k-list-link k-list-number" href={href} onClick={openClick(row, onOpen)}>
             {row.number}
           </a>
         ),
@@ -103,7 +119,7 @@ function cellOf(key: ColumnKey, row: ListItem): { className?: string; late?: boo
       return {
         className: "k-list-title-cell",
         body: (
-          <a className="k-list-link" href={href}>
+          <a className="k-list-link" href={href} onClick={openClick(row, onOpen)}>
             {row.title}
           </a>
         ),
@@ -140,11 +156,29 @@ function cellOf(key: ColumnKey, row: ListItem): { className?: string; late?: boo
   }
 }
 
-function Row({ row, columns }: { row: ListItem; columns: ColumnKey[] }) {
+/** 行の頭の選ぶ印（まとめて操作は K-67 まで使えない・disabled で印は付かない） */
+function PickCell({ label }: { label: string }) {
   return (
-    <tr data-ticket={row.id}>
+    <td className="k-list-pick">
+      <input type="checkbox" disabled aria-label={label} title="選ぶ（準備中）" />
+    </td>
+  );
+}
+
+interface RowProps {
+  row: ListItem;
+  columns: ColumnKey[];
+  selectable: boolean;
+  open: boolean;
+  onOpen: OpenRow | undefined;
+}
+
+function Row({ row, columns, selectable, open, onOpen }: RowProps) {
+  return (
+    <tr data-ticket={row.id} data-open={open || undefined}>
+      {selectable ? <PickCell label={`${row.number} を選ぶ`} /> : null}
       {columns.map((k) => {
-        const c = cellOf(k, row);
+        const c = cellOf(k, row, onOpen);
         return (
           <td key={k} className={c.className} data-late={c.late || undefined}>
             {c.body}
@@ -164,10 +198,21 @@ export interface ListTableProps {
   loadingMore: boolean;
   moreError: string | null;
   onMore: () => void;
+  /** 行の頭に選ぶ印（一覧・グループの一覧だけ） */
+  selectable?: boolean;
+  /** 番号・題名を押したとき（右に詳細を開いたら true） */
+  onOpen?: OpenRow;
+  /** 右に開いている行の id */
+  openId?: string | null;
 }
 
-function Body({ rows, columns, sections }: Pick<ListTableProps, "rows" | "columns" | "sections">) {
-  if (!sections) return rows.map((r) => <Row key={r.id} row={r} columns={columns} />);
+type BodyProps = Pick<ListTableProps, "rows" | "columns" | "sections" | "onOpen" | "openId"> & { selectable: boolean };
+
+function Body({ rows, columns, sections, selectable, onOpen, openId }: BodyProps) {
+  const row = (r: ListItem) => (
+    <Row key={r.id} row={r} columns={columns} selectable={selectable} open={r.id === openId} onOpen={onOpen} />
+  );
+  if (!sections) return rows.map(row);
   const now = Date.now();
   return SECTIONS.map((s) => {
     const mine = rows.filter((r) => sectionOf(r, now) === s.key);
@@ -175,23 +220,33 @@ function Body({ rows, columns, sections }: Pick<ListTableProps, "rows" | "column
     return (
       <Fragment key={s.key}>
         <tr className="k-list-section" data-section={s.key}>
-          <td colSpan={columns.length}>{s.label}</td>
+          <td colSpan={columns.length + (selectable ? 1 : 0)}>{s.label}</td>
         </tr>
-        {mine.map((r) => (
-          <Row key={r.id} row={r} columns={columns} />
-        ))}
+        {mine.map(row)}
       </Fragment>
     );
   });
 }
 
-export function ListTable({ rows, columns, sections, hasMore, loadingMore, moreError, onMore }: ListTableProps) {
+export function ListTable({
+  rows,
+  columns,
+  sections,
+  hasMore,
+  loadingMore,
+  moreError,
+  onMore,
+  selectable = false,
+  onOpen,
+  openId = null,
+}: ListTableProps) {
   return (
     <>
       <div className="k-list-scroll">
         <table className="k-list-table" aria-label="チケットの一覧">
           <thead>
             <tr>
+              {selectable ? <PickCell label="すべて選ぶ" /> : null}
               {columns.map((k) => (
                 <th key={k} scope="col">
                   {COLUMN_LABEL[k]}
@@ -200,7 +255,14 @@ export function ListTable({ rows, columns, sections, hasMore, loadingMore, moreE
             </tr>
           </thead>
           <tbody>
-            <Body rows={rows} columns={columns} sections={sections} />
+            <Body
+              rows={rows}
+              columns={columns}
+              sections={sections}
+              selectable={selectable}
+              onOpen={onOpen}
+              openId={openId}
+            />
           </tbody>
         </table>
       </div>

@@ -3,6 +3,7 @@
 //   作るの入口：左のメニューの「チケットを作る」（外枠・K-138）・空の箱の「＋ チケットを作る」・URL の印 ?new=1（再読み込みでも開いたまま）。
 //   書けるグループが 1 つも無い人（閲覧のみ）には「作る」を出さない（口も 403）。PC をつないでいなくても作れる（D-127.8）
 //   一覧の口の答えは作る面の選択肢に使わない（親の候補は作る面が一覧の口の q で引く・K-224）
+//   一覧には URL の印 ?scope=<グループ>（グループの一覧）と ?open=<番号>（右に開く詳細）を渡す（K-252）
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -79,12 +80,15 @@ const withNew = (open: boolean) => {
 /** 作る面が開いていれば作る面（K-224）、それ以外は一覧（K-251）。書けるグループが無い人には作る面を出さず一覧のまま */
 export function TicketsPage({ openNew }: { openNew: boolean }) {
   const [open, setOpen] = useState(openNew);
-  const view = useSearchParams().get("view") === "all" ? "all" : "mine";
+  const params = useSearchParams();
+  const view = params.get("view") === "all" ? "all" : "mine";
+  const scope = params.get("scope");
+  const openNumber = params.get("open") || null;
   const show = useCallback((v: boolean) => {
     setOpen(v);
     withNew(v);
   }, []);
-  if (!open) return <TicketListPage view={view} onCreate={() => show(true)} />;
+  if (!open) return <TicketListPage view={view} scope={scope} open={openNumber} onCreate={() => show(true)} />;
   return (
     <TicketShell
       screen="tickets"
