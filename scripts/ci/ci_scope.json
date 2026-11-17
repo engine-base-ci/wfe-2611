@@ -338,6 +338,16 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/my-security.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_security.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-reset.test.ts"
    ],
    "tests": [
