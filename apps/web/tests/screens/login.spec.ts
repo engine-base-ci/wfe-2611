@@ -63,7 +63,7 @@ test("SCR-LOGIN-003 SCR-LOGIN-034 E-AUTH-001-A E-AUTH-001-C E-AUTH-002-A E-AUTH-
   await page.getByLabel("パスワード", { exact: true }).fill("wrong-password-000");
   await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page.locator("form[data-state='e']")).toContainText("15 分間ロックしました");
-  const r = await api("/api/auth-ext/sign-in", { email: u.email, password: PW });
+  const r = await api("/api/v1/auth/sign-in", { email: u.email, password: PW });
   expect(r.status).toBe(429);
   await page.locator('[data-part="auth-box"]').getByRole("link", { name: "パスワードを忘れた" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);

@@ -1,7 +1,7 @@
 // K-221「ログインを入口の新しい枠と部品へ（AuthLogin・Auth2FA）」の画面の試験（実 Chrome・実装より先に積む）。
 //   正のモック：04_design/canvas/AuthLogin.dc.html・Auth2FA.dc.html。前の外の枠（OutsideLayout・左半分の紺の宣伝の面）と前の部品（components/ui）をやめ、
 //   登録と同じ入口の枠（features/F1/sign-up/frame.tsx の AuthFrame・箱 [data-part="auth-box"]）と k の部品（size lg）に載せる。
-//   口（/api/auth-ext/sign-in・/two-factor/verify）は網の手前で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
+//   口（/api/v1/auth/sign-in・/api/v1/auth/two-factor/verify）は網の手前で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
 //   画面の形（実装の役が作る）：
 //     h1「ログイン」・主「パスキーで入る」（[data-act="passkey"]・使えない：グレー 0.55・押しても何も起きない）・その下の説明と「スマホで QR を読み取る」（使えない）・
 //     区切り「またはメールとパスワード」・目に見える項目名の無い 2 つの欄（placeholder「メール」「パスワード」・読み上げの名前は「メールアドレス」「パスワード」）・
@@ -55,8 +55,8 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
         status: 200,
         body: {
           data: o.twoFactor
-            ? { token: null, two_factor: true, two_factor_cookie: "tf-k221" }
-            : { token: "tok-k221", two_factor: false, two_factor_cookie: null },
+            ? { token: null, two_factor: true, pending: "tf-k221" }
+            : { token: "tok-k221", two_factor: false, pending: null },
         },
       }),
       verify: () => ({ status: 200, body: { data: { token: "tok-k221" } } }),
@@ -66,11 +66,11 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
   await page.route(/\/api\//, async (route: Route, req: Request) => {
     const p = new URL(req.url()).pathname;
     let r: Reply = { status: 404, body: { code: "NOT_FOUND", message: "無い" } };
-    if (p === "/api/auth-ext/sign-in") {
+    if (p === "/api/v1/auth/sign-in") {
       const b = (req.postDataJSON() as Record<string, unknown>) ?? {};
       m.signIns.push(b);
       r = m.on.signIn(b);
-    } else if (p === "/api/auth-ext/two-factor/verify") {
+    } else if (p === "/api/v1/auth/two-factor/verify") {
       const b = (req.postDataJSON() as Record<string, unknown>) ?? {};
       m.verifies.push(b);
       r = m.on.verify(b);
@@ -325,7 +325,7 @@ test("K221-UI-012 送っている間：「次へ」に回る印（.k-spin）と 
   const m = await mockAuth(page);
   m.on.signIn = () => ({
     status: 200,
-    body: { data: { token: "tok-k221", two_factor: false, two_factor_cookie: null } },
+    body: { data: { token: "tok-k221", two_factor: false, pending: null } },
     delayMs: 800,
   });
   await open(page);
@@ -380,7 +380,7 @@ test("K221-UI-013 6 けた：h1「確認のコード」・説明 13px・枠が 6
   );
 });
 
-test("K221-UI-014 6 けた：1 つめから 6 つの数字を打つと次の枠へ進み、6 つそろうと自動で確かめの口へ（code・trust_device）・行き先へ移る", async ({
+test("K221-UI-014 6 けた：1 つめから 6 つの数字を打つと次の枠へ進み、6 つそろうと自動で確かめの口へ（code）・行き先へ移る", async ({
   page,
 }) => {
   const m = await mockAuth(page, { twoFactor: true });
@@ -390,7 +390,7 @@ test("K221-UI-014 6 けた：1 つめから 6 つの数字を打つと次の枠�
   await page.keyboard.type("482913", { delay: 30 });
   await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
   expect(m.verifies).toHaveLength(1);
-  expect(m.verifies[0]).toMatchObject({ two_factor_cookie: "tf-k221", code: "482913", trust_device: true });
+  expect(m.verifies[0]).toEqual({ pending: "tf-k221", code: "482913" });
 });
 
 test("K221-UI-015 6 けた：6 けたを貼り付けると 6 つの枠に 1 字ずつ入る。違うコードの口の文は箱の中に出て、枠は空に戻り 1 つめに戻る", async ({
@@ -438,11 +438,11 @@ test("K221-UI-017 「認証アプリが使えない」：バックアップコ�
   await bk.fill("　Ｋ８ｆ２－９Ｘ１ｍ ");
   await page.locator(BOX).getByRole("button", { name: "入る", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
-  expect(m.verifies[0]).toMatchObject({ two_factor_cookie: "tf-k221", backup_code: "K8f2-9X1m" });
+  expect(m.verifies[0]).toMatchObject({ pending: "tf-k221", backup_code: "K8f2-9X1m" });
   expect(m.verifies[0]).not.toHaveProperty("code");
 });
 
-test("K221-UI-018 「この端末では 30 日間きかない」はキャンバスに無いので出さない（PM の決め）。確かめの口には今の既定どおり trust_device: true を送る", async ({
+test("K221-UI-018 「この端末では 30 日間きかない」はキャンバスに無いので出さない（PM の決め）。確かめの口に trust_device を送らない（D-128.60）", async ({
   page,
 }) => {
   const m = await mockAuth(page, { twoFactor: true });
@@ -453,7 +453,7 @@ test("K221-UI-018 「この端末では 30 日間きかない」はキャンバ�
   await digit(page, 1).click();
   await page.keyboard.type("482913", { delay: 30 });
   await expect(page).toHaveURL(new RegExp(`${NEXT}$`));
-  expect(m.verifies[0]).toMatchObject({ trust_device: true });
+  expect(m.verifies[0]).not.toHaveProperty("trust_device");
 });
 
 test("K221-UI-019 入力欄の字：幅 1440 は 14px（キャンバス）・幅 375 は 16px（D-144.7）。どちらも高さ 42・白地・線 #DDE2E9・角丸 8", async ({
@@ -731,8 +731,8 @@ async function countCalls(page: Page) {
     const orig = window.fetch.bind(window);
     window.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
       const u = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-      if (u.includes("/api/auth-ext/sign-in")) w.__k221.signIn += 1;
-      if (u.includes("/api/auth-ext/two-factor/verify")) w.__k221.verify += 1;
+      if (u.includes("/api/v1/auth/sign-in")) w.__k221.signIn += 1;
+      if (u.includes("/api/v1/auth/two-factor/verify")) w.__k221.verify += 1;
       return orig(input, init);
     };
   });
