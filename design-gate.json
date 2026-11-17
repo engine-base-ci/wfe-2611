@@ -311,7 +311,24 @@
     "pc-switch": ".k-pc-switch",
     "pc-switch-knob": ".k-pc-switch > span",
     "pc-pick": ".k-pc-pick",
-    "pc-card-title": ".k-pc-card h2"
+    "pc-card-title": ".k-pc-card h2",
+    "auth-choice": ".k-auth-choice",
+    "auth-choice-title": ".k-auth-choice-main b",
+    "auth-choice-desc": ".k-auth-choice-main span",
+    "auth-icon": ".k-auth-icon",
+    "auth-note-box": ".k-auth-note-box",
+    "auth-ok-box": ".k-auth-result",
+    "auth-bad-box": ".k-auth-result[data-tone=\"bad\"]",
+    "auth-ok-icon": ".k-auth-result-icon",
+    "status-strip": ".k-status-strip",
+    "status-strip-maint": ".k-status-strip[data-kind=\"maintenance\"]",
+    "auth-status-page": ".k-auth-status-page",
+    "auth-qr": ".k-auth-qr",
+    "auth-secret": ".k-auth-secret",
+    "backup-codes": ".k-backup-codes",
+    "backup-code": ".k-backup-code",
+    "sec-summary": ".k-sec-summary",
+    "sec-summary-warn": ".k-sec-summary[data-tone=\"warn\"]"
   },
   "component_exempt": [
     {

@@ -1,0 +1,34 @@
+/* ログインの画面の段 2 の形（views.tsx）。値は --k-* と正本の部品の --k-c-* だけ（生の値を書かない・D8） */
+
+/* いまの様子の帯を上に置く頁：帯と入口の枠を縦に並べ、入口の枠は残りの高さで真ん中にそろえる */
+.k-auth-status-page {
+  min-height: var(--k-c-auth-status-page-height);
+  display: flex;
+  flex-direction: column;
+}
+.k-auth-status-page > .k-auth {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 文の中の字のボタン（スマホで QR を読み取る） */
+.k-login-textbtn.k-login-inline {
+  display: inline;
+  font-size: inherit;
+}
+/* 戻る・左寄せの見出し（キャンバス AuthRecover） */
+.k-login-textbtn.k-login-back {
+  align-self: flex-start;
+}
+.k-auth-card .k-login-h-left,
+.k-login-left {
+  text-align: left;
+}
+.k-login-center {
+  display: flex;
+  justify-content: center;
+}
+.k-auth a.k-login-back {
+  align-self: flex-start;
+  font-size: var(--k-text-body-sm);
+}

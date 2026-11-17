@@ -1290,6 +1290,101 @@ components:
   list-box-row:         # 右の列の箱の 1 行（余白 10 12・下に淡い線）
     padding: "10px 12px"
     borderBottom: "1px solid {colors.line-soft}"
+  # ---- 段 2（K-50 の F1 の残り・枝 c/段2）の入口と安全の設定の部品（キャンバス AuthRecover・AuthReset・MeLogin・MeTotp・MeBackup・op の障害の帯の実測）。
+  #      components/k/auth-parts.css と components/k/setting-parts.css が読む。カード・行・札・小さなボタン・段は「PC と使った量」の pc-* をそのまま使う
+  auth-choice:          # 選ぶカード（端末をなくしたとき：線・角丸 card・上下 12 左右 14・印と字の間 12）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.card}"
+    padding: "12px 14px"
+    gap: "12px"
+  auth-choice-title:    # 選ぶカードの題（13px・600）
+    typography: "{typography.body}"
+    fontWeight: 600
+  auth-choice-desc:     # 選ぶカードの説明（12px・灰・行の高さ 1.6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+  auth-icon:            # 絵の印（30・角丸 field・淡い紺の地に紺の絵。済の印は紺の地に白・止めは赤・代表 2026-11-17「色はメインに合わせる」「絵にする」）
+    width: "30px"
+    height: "30px"
+    rounded: "{rounded.field}"
+    backgroundColor: "{colors.primary-soft}"
+    textColor: "{colors.primary}"
+    typography: "{typography.body-sm}"
+    fontWeight: 700
+  auth-note-box:        # 灰の案内の箱（地 surface・角丸 field・余白 10 12・12px・行の高さ 1.7）
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+  auth-ok-box:          # 済んだ知らせの箱（淡い紺・線・13px・行の高さ 1.7・印と字の間 10。緑にしない・代表 2026-11-17）
+    backgroundColor: "{colors.primary-soft}"
+    border: "1px solid {colors.primary-line}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+    typography: "{typography.body}"
+    lineHeight: 1.7
+    gap: "10px"
+  auth-bad-box:         # 使えない・止められた知らせの箱（淡い赤・線・13px・行の高さ 1.7）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+    typography: "{typography.body}"
+    lineHeight: 1.7
+    gap: "10px"
+  auth-ok-icon:         # 済んだ知らせの箱の丸の印（22・角丸 field）
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.field}"
+  status-strip:         # いまの様子の帯（障害：淡い赤・下に線・余白 8 24・12px・間 8）。メンテナンスは status-strip-maint の色
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    borderBottom: "1px solid {state.danger-line}"
+    padding: "{spacing.sm} {spacing.lg}"
+    typography: "{typography.body-sm}"
+    gap: "{spacing.sm}"
+  auth-status-page:     # いまの様子の帯を載せた入口の頁の高さ（帯と入口の枠で画面の高さちょうど）
+    height: "100dvh"
+  status-strip-maint:   # メンテナンスの帯（淡い橙）
+    backgroundColor: "{state.warning-soft}"
+    textColor: "{state.on-warning-container}"
+    borderBottom: "1px solid {state.warning-line}"
+  auth-qr:              # QR の箱（白・線・角丸 field・余白 6・120）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "6px"
+    width: "120px"
+  auth-secret:          # 読み取れないときに手で入れる鍵の文字（地 page・角丸 sm・余白 2 6・13px）
+    backgroundColor: "{colors.page}"
+    rounded: "{rounded.sm}"
+    padding: "2px 6px"
+    typography: "{typography.body}"
+  backup-codes:         # バックアップコード 10 個の並び（2 列・地 surface・角丸 card・余白 14・間 8）
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.card}"
+    padding: "14px"
+    gap: "{spacing.sm}"
+  backup-code:          # バックアップコード 1 つ（白・線・角丸 md・余白 6・15px・字の間 .06em）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    padding: "6px"
+    typography: "{typography.h3}"
+    fontWeight: 400
+    letterSpacing: "0.06em"
+  sec-summary:          # 安全の状態のカード（安全：淡い紺・線・角丸 card・余白 12 16・間 12）。足りないときは sec-summary-warn の色
+    backgroundColor: "{colors.primary-soft}"
+    border: "1px solid {colors.primary-line}"
+    rounded: "{rounded.card}"
+    padding: "12px 16px"
+    gap: "12px"
+  sec-summary-warn:     # 安全の状態のカード（足りない：淡い橙）
+    backgroundColor: "{state.warning-soft}"
+    border: "1px solid {state.warning-line}"
   # 一覧（全部）・グループの一覧（K-252・キャンバス List）
   list-scope-mark:      # グループの一覧の見出しの頭の札（26 角・角丸 md・11px・700・白い字。地はグループの色）
     textColor: "{colors.on-primary}"
