@@ -1854,19 +1854,20 @@
     "D-128.136",
     "D-128.146"
    ],
-   "split": "これから",
-   "screens": [
-    "login",
-    "mfa-setup",
-    "password-reset",
-    "signup",
-    "verify-email"
+   "split": [
+    "K-74",
+    "K-75",
+    "K-76",
+    "K-300",
+    "K-315"
    ],
+   "screens": [],
    "apis": [],
    "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F1「登録してログインできる」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
+    "切った結果（2026-11-17・切る段・枝 c/段2）": "- 機能分解と口の契約：`07_functional/段2-F1/機能分解.md`。葉の一覧：`07_functional/段2-F1/切り方.md`（K-300〜K-320・K-310 は欠番）\n- 部品先行のモック：`/dev/mock/f1`（47 状態・代表 OK 2026-11-17）。写し `07_functional/段2-F1/shots/`\n- 代表の答え：answer=fe708d209427（困ったときは 1 枚・スマホの QR はブラウザの QR・付けるまで進めないは入口の枠）\n- 子：K-300（部品とモックを本線に入れる）・K-74（ログイン）・K-75（ログインと安全）・K-76（再設定）・K-315（困ったとき）\n- 中間テストの組（案）：パスワード → 6 けた → ログアウト（K-301・302・306・316）／パスキーで入る → パスキーを足す・外す（K-304・309・317・318）／再設定 → 新しいパスワードで入る（K-313・314・320・301）。統合：登録 → 確認 → 規約 → 付けるまで進めない → 2 段階 → ログアウト → パスワードと 6 けたで入る（staging）",
     "完了の条件": "- [ ] この流れの操作が、どれも新しい形のチケット（分類・目録で探した結果・実装の詳細・8 観点の分岐とテスト・状態 × 入口 × 利用者の状態の表）に切られている\n- [ ] 下の画面・API が、切ったチケットのどれかに移り、このまとまりから消えている\n- [ ] この流れの中間テストの組と統合テストが決まっている",
     "前提と制約": "- 切るのは 1 つ先を並行で（今の流れを実装している間に）。一気に全部は切らない\n- 引き継いだ古いチケット：KN-8・KN-59・KN-60・KN-61・KN-62・KN-63・KN-64（11_tickets/_old/ に残す。切るときに目録として読む）\n\n- （D-128.146）ログインしていない人の「困ったとき」の行き先（登録・ログイン・再設定の画面から開く）を、この流れの中の 1 本のチケットとして切る",
     "migration の番号の予約": "migration は番号の順に 1 本ずつ足し、packages/db/src/index.ts の MIGRATIONS の末尾にも足す（checkMigrationOrder は重なり・飛びを許さない）。**予約は仮**：番号は**取り込む順に、その時点の次の空き番号**を取る（予約どおりに取ると、先に取り込むチケットとの間に飛び番ができて checkMigrationOrder で落ちる・K-62 の実装で見つかった）。チケットを切るときは仮の順番だけを書き、取り込むときにそのチケットと、このチケットを指すチケットの番号を直す。取り込む順＝依存の順（D-128.147）。\n\n| 番号 | チケット | ファイル | 置き場・付け替え |\n|---|---|---|---|\n| 0087 | K-52 メールを確かめる | 0087_pending_replaced_tokens.sql | 取り込み済み |\n| 0088 | K-53 規約に同意する | 0088_terms_consent.sql | 取り込み済み |\n| 0089 | K-57 PC をつなぐ | 0089_bridge_pairing_codes.sql | hold/k57-k60 の 0087 を取り込みで 0089 に付け替えた（hold の枝は触らない） |\n| 0090 | K-60 チケットを作る | 0090_ticket_create.sql | hold/k57-k60 の 0088 を取り込みで 0090 に付け替えた |\n| 0091 | K-144 契約と口のずれをそろえる | 0091_free_text_limits.sql | 取り込み済み（2026-11-09・K-62 より先に入った） |\n| 0092 | K-62 AI に任せる | 0092_ticket_delegate.sql | K-144 0091 の次（前の予約は 0091。本線を取り込んで付け替えた・2026-11-09）。taken_session_id は `add column if not exists`（K-91 と重ねる）。action_runs.approval_id（外部キー approvals・索引つき）はここだけで足し、K-63 では足さない |\n| 次の空き | K-63 承認して完了する | 00NN_approve_complete.sql | K-62 0092 の次（前の予約は 0092。取り込む順が変われば、その時点の次の空き番号） |\n| 次の空き | K-92 チケットの一覧を見る | 00NN_ticket_list.sql（行の守りは packages/db/policies/00NN_ticket_list.sql） | 取り込む時点の次の空き番号（前の予約は 0091） |\n| 次の空き | K-75 パスキーを設定する | 00NN_login_methods.sql | 同上（前の予約は 0092） |\n| 次の空き | K-91 端末を外す | 00NN_device_revoke.sql | 同上（前の予約は 0093） |\n| 次の空き | K-89 Claude Code を入れてログインする | 00NN_device_health_at.sql | 同上（前の予約は 0094） |\n| 次の空き | K-90 AI が使うブラウザを選ぶ（後のフェーズ・D-128.154） | 00NN_device_browser.sql | 同上 |"
@@ -3905,18 +3906,22 @@
     "D-128.137",
     "D-128.141"
    ],
-   "split": "",
+   "split": [
+    "K-301",
+    "K-302",
+    "K-303",
+    "K-304",
+    "K-305",
+    "K-306",
+    "K-307",
+    "K-316",
+    "K-317"
+   ],
    "choke_points": [
     "C2",
     "C6"
    ],
-   "tests": [
-    "apps/api/test/generated/post_auth_sign_in.test.ts",
-    "apps/api/test/generated/post_auth_two_factor_verify.test.ts",
-    "apps/api/test/generated/post_auth_sign_out.test.ts",
-    "apps/api/test/generated/get_auth_service_status.test.ts",
-    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-53"
    ],
@@ -3926,14 +3931,9 @@
    "screens": [
     "login"
    ],
-   "apis": [
-    "signInWithPassword",
-    "verifySignInCode",
-    "signOut",
-    "getServiceStatus",
-    "requestAdminRecovery"
-   ],
+   "apis": [],
    "sections": {
+    "切り直し（2026-11-17・切る段・枝 c/段2）": "このチケットは実装を持たない入れ物になった。中身は葉（`split:` の子）に分けた（葉は試験の行 30 以下・画面と DB を 1 本で触らない）。分け方は `07_functional/段2-F1/切り方.md`、\n画面の正はモック `/dev/mock/f1`（本番と同じ部品・代表 OK 2026-11-17）。下の表は分ける前の元で、どの行もどれかの葉が持つ（葉の「受け持ち」の列）。",
     "目的": "登録を済ませた人が、ログインの画面で **パスキー（指か顔）** で入るか、**メールとパスワード** を入れて入る。2 段階認証を付けている人は、続けて認証アプリの 6 けた（またはバックアップコード）を入れる。入ったら、元の画面（next）か、入口の振り分け（`afterLogin`）の先へ進む。\n\nログアウトすると、その画面のセッションだけが閉じる。端末をなくして 6 けたもバックアップコードも無い人は、パスワードを通った直後に「管理者に戻してもらう」を押すと、管理者に知らせが届く。ログインの画面には、障害やメンテナンスのときだけ Kaname のいまの様子を出す。\n\nパスキーを **付ける** のはこのチケットではない（安全の設定・K-75）。このチケットは、付いているパスキーで **入る** までを持つ。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `signInWithPassword`・`verifySignInCode`・`signOut`・`getServiceStatus`・`requestAdminRecovery` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）\n- 前の道すじ `POST /api/auth-ext/sign-in`・`POST /api/auth-ext/two-factor/verify`（apps/api/src/auth/ext.ts）が消え、画面は契約の口と、パスキーの部品の口（`/api/auth/passkey/*`）だけを呼んでいる\n- 部品の口のうち、ロックと会社の止めを通らない道（`/api/auth/sign-in/email`・`/api/auth/two-factor/verify-totp`・`/api/auth/two-factor/verify-backup-code`・`/api/auth/sign-out`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AUTH, MAIL\n\n- 流れ F1 登録してログインできる（K-50）。歩く骨格の 3 本（K-51〜K-53）の次\n- 依存：規約に同意する（K-53）。セッションができたときに規約の印（`sessions.terms_pending`）を立てるのは K-53 の hook で、このチケットのログインもその hook を通る\n- 本人確認の取り直し（`stepUp`）は K-19 が持つ。このチケットは使わない\n- セッションの見張り（操作が無い 12 時間・最長 7 日・国か端末が変わったら切る）は K-20 が持つ（D-128.120・D-128.121）。このチケットは、切られた後に入り直せることを持つ\n- パスキーを付ける・2 段階を付ける・パスワードを変えるは K-75、パスワードの再設定は K-76\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
@@ -3982,19 +3982,19 @@
     "D-128.141",
     "D-128.162"
    ],
-   "split": "",
+   "split": [
+    "K-308",
+    "K-309",
+    "K-311",
+    "K-312",
+    "K-318",
+    "K-319"
+   ],
    "choke_points": [
     "C2",
     "C8"
    ],
-   "tests": [
-    "apps/api/test/generated/get_me_security.test.ts",
-    "apps/api/test/generated/patch_me_passkeys_id.test.ts",
-    "apps/api/test/generated/delete_me_passkeys_id.test.ts",
-    "apps/api/test/generated/patch_me_password.test.ts",
-    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
-    "apps/api/test/generated/post_me_two_factor_confirm.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-74"
    ],
@@ -4004,15 +4004,9 @@
    "screens": [
     "mfa-setup"
    ],
-   "apis": [
-    "getMySecurity",
-    "renamePasskey",
-    "deletePasskey",
-    "changePassword",
-    "startTwoFactor",
-    "confirmTwoFactor"
-   ],
+   "apis": [],
    "sections": {
+    "切り直し（2026-11-17・切る段・枝 c/段2）": "このチケットは実装を持たない入れ物になった。中身は葉（`split:` の子）に分けた（葉は試験の行 30 以下・画面と DB を 1 本で触らない）。分け方は `07_functional/段2-F1/切り方.md`、\n画面の正はモック `/dev/mock/f1`（本番と同じ部品・代表 OK 2026-11-17）。下の表は分ける前の元で、どの行もどれかの葉が持つ（葉の「受け持ち」の列）。",
     "目的": "ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。\n\n同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる\n- 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: AUTH, CRUD, PERM\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。パスキーの部品（`@better-auth/passkey` 1.7.15）と `passkey` の表は K-74 が足す。このチケットは付ける・直す・外すと画面を持つ\n- 本人確認の取り直しの口（`stepUp`・15 分）は K-19 が持つ。このチケットは「直前の取り直しが無いと 403」を受けて、画面から取り直しの小窓を出す\n- 2 段階を付ける口（`startTwoFactor`・`confirmTwoFactor`）は、行為が後のフェーズの A04 になっているが、パスワードだけの人には必須（D-128.61）なので、A97 のこのチケットで作る。外す（`disableTwoFactor`）・バックアップコードを作り直す（`regenerateBackupCodes`）・管理者が戻す（`resetMemberTwoFactor`）は K-73 に残す\n- 入っている端末の一覧と切る（`listMySessions` など・A74）とはじめにやることの一覧（`listSetupTasks`）は流れ F10（K-70）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）",
@@ -4053,15 +4047,16 @@
     "D-128.141",
     "D-128.146"
    ],
-   "split": "",
+   "split": [
+    "K-313",
+    "K-314",
+    "K-320"
+   ],
    "choke_points": [
     "C2",
     "C6"
    ],
-   "tests": [
-    "apps/api/test/generated/post_auth_password_forgot.test.ts",
-    "apps/api/test/generated/post_auth_password_reset.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-74"
    ],
@@ -4071,11 +4066,9 @@
    "screens": [
     "password-reset"
    ],
-   "apis": [
-    "requestPasswordReset",
-    "resetPassword"
-   ],
+   "apis": [],
    "sections": {
+    "切り直し（2026-11-17・切る段・枝 c/段2）": "このチケットは実装を持たない入れ物になった。中身は葉（`split:` の子）に分けた（葉は試験の行 30 以下・画面と DB を 1 本で触らない）。分け方は `07_functional/段2-F1/切り方.md`、\n画面の正はモック `/dev/mock/f1`（本番と同じ部品・代表 OK 2026-11-17）。下の表は分ける前の元で、どの行もどれかの葉が持つ（葉の「受け持ち」の列）。",
     "目的": "パスワードを忘れた人が、再設定の画面でメールを入れて「再設定のメールを送る」を押すと、登録されていればリンクが 1 通届く（30 分・1 回だけ・D-128.62）。登録されているかどうかは画面に出さない。\n\nリンクを開いて新しいパスワードを 2 回入れると、パスワードが変わり、**全部のワークスペースの端末と PC（Bridge）が入り直しになる**（D-125.140）。ログインのロックも外れ、ログインの画面へ進む。期限切れ・使い終わった・新しく頼んだ後の前のリンクでは変えられず、頼み直しの案内を出す。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 `requestPasswordReset`・`resetPassword` が 501 でない（apps/api/test/generated/post_auth_password_forgot.test.ts・post_auth_password_reset.test.ts の `it.todo` が本物のテストになって緑）\n- 画面が部品の口を直に呼ぶ道（今の `authClient.requestPasswordReset`・`authClient.resetPassword`）が消え、契約の口だけを呼んでいる。部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）は 404（K-74 と同じ `disabledPaths`）\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（act・GitHub と同じ workflow の全部）が緑",
     "前提と制約": "分類: RESET, MAIL\n\n- 流れ F1 登録してログインできる（K-50）\n- 依存：ログインする（K-74）。ロック（`app.login_attempts`）と、部品の道を閉じる所（`disabledPaths`）は K-74 が持つ。このチケットは再設定でロックを外すことを持つ\n- ログイン中の人がパスワードを変えるのは安全の設定（K-75 の `changePassword`）。このチケットはログインしていない人の再設定だけ\n- 2 段階認証は再設定では外れない（外すのは管理者が戻す口・K-73）\n- テストはこのチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）\n\n- （D-128.146）再設定のメールのログに出るメールアドレスを、登録と同じ「宛先#ハッシュ」の印に揃える。ログにメールアドレスが出たら赤になる検査を足す",
@@ -13159,8 +13152,6 @@
     "apps/api/src/features/F1/password-reset/",
     "apps/api/src/hooks/password-reset.ts",
     "apps/api/src/server.ts",
-    "apps/api/package.json",
-    "pnpm-lock.yaml",
     "packages/auth/src/index.ts",
     "packages/auth/src/reset.ts",
     "packages/auth/package.json",
@@ -13172,18 +13163,23 @@
     "scripts/ci/fuzz_targets.py",
     "07_qa/test-plan/ears-elsewhere.json",
     "apps/api/test/k233_auth_mail_paths.test.ts",
-    "scripts/ci/ci_scope.json"
+    "scripts/ci/ci_scope.json",
+    "apps/api/test/fuzz/server.ts",
+    "11_tickets/K-50.md",
+    "11_tickets/K-74.md",
+    "11_tickets/K-75.md",
+    "11_tickets/K-76.md"
    ],
    "sections": {
     "目的": "パスワードを忘れた人が、再設定の画面でメールアドレスを入れて「再設定メールを送る」を押したときに呼ぶ契約の口 `requestPasswordReset`（POST /api/v1/auth/password/forgot）を作る（今は 501）。\n登録されていれば、30 分・1 回だけ使えるリンクのメールが 1 通届く（D-128.62）。登録されているかどうかは、答えの文・状態の番号・かかる時間のどれからも分からない（D-042）。\n同じ人へは 60 秒に 1 通まで。60 秒を過ぎて新しく送ると、前のリンクは使えなくなる（D-128.141）。ログに出る宛先はメールアドレスでなく「宛先#ハッシュ」の印（D-128.146）。\n\nこのチケットは口と DB だけ。新しいパスワードを決める口は K-314、画面は K-320（画面と DB を 1 本で触らない）。",
     "完了の条件": "- [ ] 下の表の 18 行（K313-API-001〜018）が緑：`apps/api/test/features/F1/password-forgot.test.ts`\n- [ ] 契約の口 `requestPasswordReset` が 501 でない。生成の試験 `apps/api/test/generated/post_auth_password_forgot.test.ts` の it.todo が 0（ears-elsewhere.json の covers で本物の試験を指す）\n- [ ] 前からの試験 `apps/api/test/k233_auth_mail_paths.test.ts` を下の「前からの試験を替える」のとおりに替えて緑。ほかの前からの試験（verify-email・sign-up）は替えずに緑\n- [ ] 手元の CI（.github/workflows を act で・このチケットの範囲・D-128.147）が緑",
     "前提と制約": "分類: RESET, MAIL\n\n- 親 K-76（パスワードを再設定する）の葉。分け方は `07_functional/段2-F1/切り方.md`。K-76 の表の行のうち「頼む」側をこのチケットが持つ（下の「K-76 の行の配り方」）\n- 依存：無い（2026-11-17 の依存の見直しで K-301 を外した。この葉の試験は K-301 の口・土台を使わない）。ロックの表 `app.login_attempts` と `normalizeEmail`・`emailHash`・`mailTag`（packages/auth/src/signup.ts）はもうある\n- 部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password*`）は**このチケットでは閉じない**。今の画面（apps/web/app/(outside)/password-reset/page.tsx）が使っているので、閉じるのは画面を契約の口に載せ替える K-320\n- テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）\n- 重さ：口（apps/api）・packages/auth・migration（packages/db）。apps/web は触らない（ticket-flow.yaml の weight）",
     "依存の理由": "依存は無い。前は K-301 を待っていたが、この葉の試験は K-301 の口・土台・ロックの文のどれも使わない（ロックの表 app.login_attempts・normalizeEmail などは前からある）。同じ packages/auth/src/index.ts・packages/db/migrations/ を触るが、足す行が別で、migration の番号は取り込む時点の次の空き（K-303 と K-304 と同じ扱い）。だから外した（触らない・2026-11-17 の依存の見直し）",
-    "実施事項": "### 作り方\n\n| 欄 | 中身 |\n|---|---|\n| 手がかりの持ち方（K-314 と同じ・精査の後に決めた） | リンクの手がかりは `crypto.randomBytes(32)` の base64url。DB には**頭を残したハッシュ**で置く：identifier `reset-password:<sha256(手がかり) の base64url>`（`packages/auth/src/reset.ts` の `resetKey(token)` の 1 か所で作る）。部品（Better Auth 1.7.15）にも同じ形を設定する：`verification.storeIdentifier = { default: \"plain\", overrides: { \"reset-password:\": { hash: (id) => \"reset-password:\" + sha256b64url(id.slice(15)) } } }`（部品は `{ default, overrides }` と `{ hash }` の形だけを読む・verification-token-storage.mjs）。部品を直に使う道（K233-API-019・021）も同じ行を引ける。行の探し方は頭（`reset-password:`）と value（本人の id）のどちらでもよい |\n| 出したリンクの印（K-314 の期限切れ・使った・前のリンクの見分けに使う） | 送るときに、もう 1 行 `reset-password-seen:<同じハッシュ>`（value＝本人の id・期限 24 時間）を置く。部品は verification を引くたびに期限の過ぎた行を消す（internal-adapter.mjs の片付け）ので、リンクの行（30 分）が消えても印は 24 時間残る。K-314 は「リンクの行が無いか期限切れで、印が在る」を E-AUTH-006、「印も無い」を E-PAGE-006 にする |\n| 送る部品 `packages/auth/src/reset.ts`（新しい・package.json の exports に `./reset` を足す） | 部品の `auth.api.requestPasswordReset` は使わない（送れたかを握りつぶして返す・password.mjs の runInBackgroundOrAwait）。自分で 1 本の関数 `requestReset({ authPool, mailer, webBaseURL }, email): Promise<{ result: \"sent\" / \"failed\" / \"skipped\"; userId: string or null }>` を書く：① `normalizeEmail` で直し、kaname_auth.\"user\" から本人を引く（いなければ skipped・確認していない申し込みだけの人もいない扱い）② `reset-password:` の行が 60 秒の内に作られていれば skipped（D-128.141）③ 前の `reset-password:` の行を消す（印 `reset-password-seen:` は残す＝前のリンクは E-AUTH-006 になる）④ 新しい手がかりを作り、リンクの行（30 分）と印の行（24 時間）を 1 つのトランザクションで置く ⑤ `mailer` を await して送る（件名「Kaname のパスワードを再設定する」・本文にリンク `<web>/password-reset?token=…` と「30 分」・今の sendResetPassword の文面）。投げたら failed、通れば sent ⑥ 本番以外ではリンクを `[auth] リンク（reset → <宛先の印>）: <URL>` で 1 行出す（画面の試験の lastMailUrl が拾う形・宛先は mailTag）。送出先が無いときは `[auth] メールの送出先が無い（reset → <宛先の印>）: <URL>` |\n| 口の振る舞い `apps/api/src/features/F1/password-reset/index.ts` と hooks の口 `apps/api/src/hooks/password-reset.ts` | features に `passwordResetFeature({ auth, authPool, appPool, mailer?, config })`、hooks に `passwordResetHooks(d)`（verify-email と同じ形。中身は features を呼ぶだけ・contract_shape_test の K144-SHAPE-010 と目録の作り手が hooks を見る）。`apps/api/src/server.ts` の `contract.hooks` に足す。`requestPasswordReset`：① email を `normalizeEmail` で直し、`EMAIL_RE` に合わなければ 422・E-VAL-004（欄 email）② `requestReset` を**答えの後に走らせ**、すぐ 201 `{ data: { accepted: true } }` を返す（待つと登録されている人だけ遅くなる・D-042）③ 終わったら、result が sent・failed のとき `app.record_security_event_for_auth_user(userId, 'password_reset_requested', { sent })`（メール・手がかりは入れない）。例外は握りつぶさず、宛先の印つきで console.error に出す（メールアドレスは出さない） |\n| 答えの後に走らせる `apps/api/src/features/F1/password-reset/after-reply.ts` | `afterReply(work: Promise<unknown>)`：① 本番の組み立て（Vercel の関数・apps/api/vercel.json）では `@vercel/functions` の `waitUntil(work)` に渡す（答えを返した後も、関数を止めずに最後まで送り切る。Vercel でない所では waitUntil は何もしない）② 同じ promise を手元の集まりに入れ、`resetWorkIdle()` はその集まりが全部終わるのを待つ（試験の道具）。`@vercel/functions` を apps/api/package.json に入れ版を固定する（pnpm-lock.yaml も） |\n| 部品 `packages/auth/src/index.ts` | ① createAuth の送出の包み（46・49 行）がログに出す宛先を `mailTag(m.to)` に替える（D-128.146）② 上の `storeIdentifier` ③ 部品の sendResetPassword・resetPasswordTokenExpiresIn は残す（部品を直に使う道 K233-API-019〜021 のため） |\n| DB（migration 1 本・番号は取り込む順に次の空き） | `<次の番号>_reset_security_events.sql`：`app.record_security_event_for_auth_user(p_auth_user_id text, p_kind text, p_detail jsonb default '{}') returns int`（security definer・search_path public, app）。`members where auth_user_id = p_auth_user_id and deleted_at is null` のうち、同じ会社・同じ人の `tenant_memberships` が抜けた（status left）・招待中（invited）・消した（deleted_at）でない人ごとに（会社を作った人は所属の行を持たないので members で見る。形は app.ticket_member_ok・0090 と同じ `not exists` の書き方）、その会社の `security_events`（tenant_id・kind_id・member_id・detail）を 1 行ずつ書き、書いた数を返す。**抜けた会社・招待中の会社には書かない**（前の会社の管理者に見せない）。止められた会社・人には書く（本人の記録として残す）。kaname_app・kaname_auth に execute。packages/db/src/index.ts の MIGRATIONS に足す。K-314 も使う |\n| 契約の形 `05_flow/screen_api.py`・`05_flow/build_api.py`・`scripts/ci/contract_shape_test.py` | screen_api.py：`INPUTS` に `\"requestPasswordReset\": (\"PasswordForgotInput\", {\"email\": \"string\"})`・`RESPONSES` に `(\"PasswordForgotAccepted\", {\"accepted\": \"boolean\"})`・`REQUIRED_INPUTS` に `[\"email\"]`・`ERRORS_4XX` に 422（E-VAL-004。EARS「IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない」）。汎用の 409（冪等キー）は外す。2xx の EARS は行為 A31 の裏側の文（「全部のセッションを失効」）になり、頼む口では違うので、screen_api.py に口ごとの上書きの表 `EARS_OK = {\"requestPasswordReset\": \"登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る\"}` を足し、build_api.py の 2xx の EARS（69 行）がこの表を先に見る形にする。contract_shape_test.py の `REQUIRED_INPUTS` にも `\"requestPasswordReset\": {\"email\"}` を足す（K144-SHAPE-020）。作り直しは `python3 scripts/tickets/regen_all.py` |\n| fuzz の的 `scripts/ci/fuzz_targets.py` | `EXEMPT` に `\"passwordResetHooks\": \"Better Auth の本物の部品と送るメールの差し込みが要り、偽のセッションの的では回せない。口の振る舞いは K-313・K-314 の試験が持つ\"` を足す（G36） |\n| 生成の試験の対応 `07_qa/test-plan/ears-elsewhere.json` | `requestPasswordReset`：file `apps/api/test/features/F1/password-forgot.test.ts`・reason「再設定を頼む口は、本物の DB の本人と verification・差し込んだ送出先（関門 C6）・答えの後の送りで確かめる（K-313）」。covers：`_ok`→K313-API-001・`_rejected_422`→K313-API-006・`_rate_limited`→K313-API-011・`_shape`→K313-API-012・`_too_large`→{file apps/api/test/features/contract/k144-contract.test.ts, mark K144-API-042}・`_session_unresolved`→{同じ file, mark K144-API-032}。作り直した後の名前がこの 6 つと違えば、作り直した名前に合わせて covers を書く（行は替えない） |\n| CI の範囲 `scripts/ci/ci_scope.json` | 試験のファイル `apps/api/test/features/F1/password-forgot.test.ts` が範囲の地図に無ければ足す。K313-API-015 はソースを読むので reads_ok に理由つきで足す |\n\n### 前からの試験を替える（書く段の最初に作り手が替える・変えた差分の精査を 1 回受ける）\n\n`apps/api/test/k233_auth_mail_paths.test.ts` の K233-API-023（送出先が無いときのログ）は、ログにメールアドレスそのものが出ることを期待している。D-128.146 と逆なので次のとおり替える（ほかの行は替えない）。\n\n書き替える前：\n\n```text\n    expect(lines[0]).toContain(`reset → ${email}`);\n```\n\n書き替えた後（`mailTag` は `@kaname/auth/signup` から import を足す）：\n\n```text\n    expect(lines[0]).toContain(`reset → ${mailTag(email)}`);\n    expect(lines[0]).not.toContain(email);\n```\n\nログにメールアドレスを出していた所と、それを期待していた試験（同じ形を全部出した）：\n\n```search\n- name: 送出の包みがログにメールアドレス（m.to）をそのまま出している所\n  cmd: git grep -n -F '${m.to}' -- packages apps/api/src\n  count: 2\n- name: 再設定のログの「reset → メールアドレス」を期待している試験（口の 1 本は K-313 が替える・画面の 1 本 qa-c-onboard.spec.ts は画面を載せ替える K-320 が替える）\n  cmd: git grep -n -E 'reset → ' -- apps packages\n  count: 2\n```\n\n### 決めた判断\n\n- 答えはいつも 201 `{ data: { accepted: true } }`。登録済み・登録していない・確認していない申し込みだけ・60 秒の内の 2 回目・送れなかった・背景で DB が落ちた のどれでも同じ（D-042）。違うのは形の違うメール（422）と送りすぎ（429）だけ。どちらも登録の有無に関わらない\n- 送るのを待たない。答えの後に送り、本番（Vercel の関数）では waitUntil で最後まで送り切る（待つと時間で有無が分かる・K-76 のリスク）\n- 送れたかは自分の送る関数（`requestReset`）が mailer を await して知る（部品の requestPasswordReset は送出の失敗を握りつぶすので使わない）\n- 記録は、今いる会社（抜けていない・招待中でない）にだけ書く。抜けた会社・招待中の会社には書かない（精査の後の切る段の決め）\n- 同じ人へは 60 秒に 1 通（D-128.141）。60 秒の内の 2 回目は何もしない（前のリンクはそのまま使える）。60 秒を過ぎた 2 回目は前の行を消してから送る（前のリンクは使えない）\n- 確認していない申し込みだけの人には送らない（まだ本人がいない・K-76）\n- 切る段の決め：背景で DB が落ちても答えは 201 のまま（K-76 の「DB が落ちた 500」は、答えを待たない形にしたので頼む口には当たらない。新しいパスワードを決める口 K-314 は 500）。落ちたことはログ（宛先の印）に出す",
+    "実施事項": "### 作り方\n\n| 欄 | 中身 |\n|---|---|\n| 手がかりの持ち方（K-314 と同じ・精査の後に決めた） | リンクの手がかりは `crypto.randomBytes(32)` の base64url。DB には**頭を残したハッシュ**で置く：identifier `reset-password:<sha256(手がかり) の base64url>`（`packages/auth/src/reset.ts` の `resetKey(token)` の 1 か所で作る）。部品（Better Auth 1.7.15）にも同じ形を設定する：`verification.storeIdentifier = { default: \"plain\", overrides: { \"reset-password:\": { hash: (id) => \"reset-password:\" + sha256b64url(id.slice(15)) } } }`（部品は `{ default, overrides }` と `{ hash }` の形だけを読む・verification-token-storage.mjs）。部品を直に使う道（K233-API-019・021）も同じ行を引ける。行の探し方は頭（`reset-password:`）と value（本人の id）のどちらでもよい |\n| 出したリンクの印（K-314 の期限切れ・使った・前のリンクの見分けに使う） | 送るときに、もう 1 行 `reset-password-seen:<同じハッシュ>`（value＝本人の id・期限 24 時間）を置く。部品は verification を引くたびに期限の過ぎた行を消す（internal-adapter.mjs の片付け）ので、リンクの行（30 分）が消えても印は 24 時間残る。K-314 は「リンクの行が無いか期限切れで、印が在る」を E-AUTH-006、「印も無い」を E-PAGE-006 にする |\n| 送る部品 `packages/auth/src/reset.ts`（新しい・package.json の exports に `./reset` を足す） | 部品の `auth.api.requestPasswordReset` は使わない（送れたかを握りつぶして返す・password.mjs の runInBackgroundOrAwait）。自分で 1 本の関数 `requestReset({ authPool, mailer, webBaseURL }, email): Promise<{ result: \"sent\" / \"failed\" / \"skipped\"; userId: string or null }>` を書く：① `normalizeEmail` で直し、kaname_auth.\"user\" から本人を引く（いなければ skipped・確認していない申し込みだけの人もいない扱い）② `reset-password:` の行が 60 秒の内に作られていれば skipped（D-128.141）③ 前の `reset-password:` の行を消す（印 `reset-password-seen:` は残す＝前のリンクは E-AUTH-006 になる）④ 新しい手がかりを作り、リンクの行（30 分）と印の行（24 時間）を 1 つのトランザクションで置く ⑤ `mailer` を await して送る（件名「Kaname のパスワードを再設定する」・本文にリンク `<web>/password-reset?token=…` と「30 分」・今の sendResetPassword の文面）。投げたら failed、通れば sent ⑥ 本番以外ではリンクを `[auth] リンク（reset → <宛先の印>）: <URL>` で 1 行出す（画面の試験の lastMailUrl が拾う形・宛先は mailTag）。送出先が無いときは `[auth] メールの送出先が無い（reset → <宛先の印>）: <URL>` |\n| 口の振る舞い `apps/api/src/features/F1/password-reset/index.ts` と hooks の口 `apps/api/src/hooks/password-reset.ts` | features に `passwordResetFeature({ auth, authPool, appPool, mailer?, config })`、hooks に `passwordResetHooks(d)`（verify-email と同じ形。中身は features を呼ぶだけ・contract_shape_test の K144-SHAPE-010 と目録の作り手が hooks を見る）。`apps/api/src/server.ts` の `contract.hooks` に足す。`requestPasswordReset`：① email を `normalizeEmail` で直し、`EMAIL_RE` に合わなければ 422・E-VAL-004（欄 email）② `requestReset` を**答えの後に走らせ**、すぐ 201 `{ data: { accepted: true } }` を返す（待つと登録されている人だけ遅くなる・D-042）③ 終わったら、result が sent・failed のとき `app.record_security_event_for_auth_user(userId, 'password_reset_requested', { sent })`（メール・手がかりは入れない）。例外は握りつぶさず、宛先の印つきで console.error に出す（メールアドレスは出さない） |\n| 答えの後に走らせる `apps/api/src/features/F1/password-reset/after-reply.ts` | `afterReply(work: Promise<unknown>)`：① 本番の組み立て（Vercel の関数・apps/api/vercel.json）では、Vercel が要求ごとに置く文脈（`globalThis[Symbol.for(\"@vercel/request-context\")].get().waitUntil`）に渡す（答えを返した後も、関数を止めずに最後まで送り切る。Vercel でない所では文脈が無いので何もしない）。`@vercel/functions` の waitUntil と同じ読み方を、部品を入れずに書く（部品は @vercel/oidc → @vercel/cli-config → zod 4.1.11 を連れてきて、本番の部品の弱点の検査 G44 が high で止めるため・2026-11-18 作る段で決めた）② 同じ promise を手元の集まりに入れ、`resetWorkIdle()` はその集まりが全部終わるのを待つ（試験の道具） |\n| 部品 `packages/auth/src/index.ts` | ① createAuth の送出の包み（46・49 行）がログに出す宛先を `mailTag(m.to)` に替える（D-128.146）② 上の `storeIdentifier` ③ 部品の sendResetPassword・resetPasswordTokenExpiresIn は残す（部品を直に使う道 K233-API-019〜021 のため） |\n| DB（migration 1 本・番号は今の本線の次の空き。取り込んだときに埋まっていたら次の空きへ付け替える：ファイル名・packages/db/src/index.ts・changes: の 3 か所。PM の決め 2026-11-18） | `0105_reset_security_events.sql`：`app.record_security_event_for_auth_user(p_auth_user_id text, p_kind text, p_detail jsonb default '{}') returns int`（security definer・search_path public, app）。`members where auth_user_id = p_auth_user_id and deleted_at is null` のうち、同じ会社・同じ人の `tenant_memberships` が抜けた（status left）・招待中（invited）・消した（deleted_at）でない人ごとに（会社を作った人は所属の行を持たないので members で見る。形は app.ticket_member_ok・0090 と同じ `not exists` の書き方）、その会社の `security_events`（tenant_id・kind_id・member_id・detail）を 1 行ずつ書き、書いた数を返す。**抜けた会社・招待中の会社には書かない**（前の会社の管理者に見せない）。止められた会社・人には書く（本人の記録として残す）。kaname_app・kaname_auth に execute。packages/db/src/index.ts の MIGRATIONS に足す。K-314 も使う |\n| 契約の形 `05_flow/screen_api.py`・`05_flow/build_api.py`・`scripts/ci/contract_shape_test.py` | screen_api.py：`INPUTS` に `\"requestPasswordReset\": (\"PasswordForgotInput\", {\"email\": \"string\"})`・`RESPONSES` に `(\"PasswordForgotAccepted\", {\"accepted\": \"boolean\"})`・`REQUIRED_INPUTS` に `[\"email\"]`・`ERRORS_4XX` に 422（E-VAL-004。EARS「IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない」）。汎用の 409（冪等キー）は外す。2xx の EARS は行為 A31 の裏側の文（「全部のセッションを失効」）になり、頼む口では違うので、screen_api.py に口ごとの上書きの表 `EARS_OK = {\"requestPasswordReset\": \"登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る\"}` を足し、build_api.py の 2xx の EARS（69 行）がこの表を先に見る形にする。contract_shape_test.py の `REQUIRED_INPUTS` にも `\"requestPasswordReset\": {\"email\"}` を足す（K144-SHAPE-020）。作り直しは `python3 scripts/tickets/regen_all.py` |\n| fuzz の的 `apps/api/test/fuzz/server.ts` | 新しい口の部品 `passwordResetHooks` を契約の fuzz の的に差す（送出先は差さない・認証の表は業務の接続で読む）。`scripts/ci/fuzz_targets.py` の EXEMPT には載せない（PM の決め 2026-11-18：fuzz で回るほうが守りが厚い。G36） |\n| 生成の試験の対応 `07_qa/test-plan/ears-elsewhere.json` | `requestPasswordReset`：file `apps/api/test/features/F1/password-forgot.test.ts`・reason「再設定を頼む口は、本物の DB の本人と verification・差し込んだ送出先（関門 C6）・答えの後の送りで確かめる（K-313）」。covers：`_ok`→K313-API-001・`_rejected_422`→K313-API-006・`_rate_limited`→K313-API-011・`_shape`→K313-API-012・`_too_large`→{file apps/api/test/features/contract/k144-contract.test.ts, mark K144-API-042}・`_session_unresolved`→{同じ file, mark K144-API-032}。作り直した後の名前がこの 6 つと違えば、作り直した名前に合わせて covers を書く（行は替えない） |\n| CI の範囲 `scripts/ci/ci_scope.json` | 試験のファイル `apps/api/test/features/F1/password-forgot.test.ts` が範囲の地図に無ければ足す。K313-API-015 はソースを読むので reads_ok に理由つきで足す |\n\n### 前からの試験を替える（書く段の最初に作り手が替える・変えた差分の精査を 1 回受ける）\n\n`apps/api/test/k233_auth_mail_paths.test.ts` の K233-API-023（送出先が無いときのログ）は、ログにメールアドレスそのものが出ることを期待している。D-128.146 と逆なので次のとおり替える（ほかの行は替えない）。\n\n書き替える前：\n\n```text\n    expect(lines[0]).toContain(`reset → ${email}`);\n```\n\n書き替えた後（`mailTag` は `@kaname/auth/signup` から import を足す）：\n\n```text\n    expect(lines[0]).toContain(`reset → ${mailTag(email)}`);\n    expect(lines[0]).not.toContain(email);\n```\n\nログにメールアドレスを出していた所と、それを期待していた試験（同じ形を全部出した）：\n\n```search\n- name: 送出の包みがログにメールアドレス（m.to）をそのまま出している所\n  cmd: git grep -n -F '${m.to}' -- packages apps/api/src\n  count: 2\n- name: 再設定のログの「reset → メールアドレス」を期待している試験（口の 1 本は K-313 が替える・画面の 1 本 qa-c-onboard.spec.ts は画面を載せ替える K-320 が替える）\n  cmd: git grep -n -E 'reset → ' -- apps packages\n  count: 2\n```\n\n### 決めた判断\n\n- 答えはいつも 201 `{ data: { accepted: true } }`。登録済み・登録していない・確認していない申し込みだけ・60 秒の内の 2 回目・送れなかった・背景で DB が落ちた のどれでも同じ（D-042）。違うのは形の違うメール（422）と送りすぎ（429）だけ。どちらも登録の有無に関わらない\n- 送るのを待たない。答えの後に送り、本番（Vercel の関数）では waitUntil で最後まで送り切る（待つと時間で有無が分かる・K-76 のリスク）\n- 送れたかは自分の送る関数（`requestReset`）が mailer を await して知る（部品の requestPasswordReset は送出の失敗を握りつぶすので使わない）\n- 記録は、今いる会社（抜けていない・招待中でない）にだけ書く。抜けた会社・招待中の会社には書かない（精査の後の切る段の決め）\n- 同じ人へは 60 秒に 1 通（D-128.141）。60 秒の内の 2 回目は何もしない（前のリンクはそのまま使える）。60 秒を過ぎた 2 回目は前の行を消してから送る（前のリンクは使えない）\n- 確認していない申し込みだけの人には送らない（まだ本人がいない・K-76）\n- 切る段の決め：背景で DB が落ちても答えは 201 のまま（K-76 の「DB が落ちた 500」は、答えを待たない形にしたので頼む口には当たらない。新しいパスワードを決める口 K-314 は 500）。落ちたことはログ（宛先の印）に出す",
     "テスト仕様と確認の結果": "`apps/api/test/features/F1/password-forgot.test.ts`（本番と同じ bootApi・本物の DB・本物の Better Auth・送出先は関門 C6 の差し込み口 `mail`）\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`kaname_auth.\"user\"`（有る・無い）・`kaname_auth.pending_signup`（確認していない申し込みだけ）・`kaname_auth.verification` の `reset-password:` の行（無い・60 秒の内に作った・60 秒より前に作った）・送出の結果（送れた・送れない・送出先が無い）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 登録済み・頼んだ行が無い | 再設定の画面でメールを送る | ログインしていない | 201・同じ答え。メールが 1 通（30 分・1 回だけ） | このチケット | K313-API-001 |\n| 登録していないメール | 同じ | 同じ | 201・同じ答え。メールも行も記録も残さない | このチケット | K313-API-002 |\n| 確認していない申し込みだけ | 同じ | 同じ | 201・同じ答え。再設定のメールは送らない | このチケット | K313-API-003 |\n| 登録済み・60 秒の内に頼んだ | もう一度送る | 同じ | 201・同じ答え。送らない。前のリンクの行はそのまま | このチケット | K313-API-007 |\n| 登録済み・60 秒より前に頼んだ | もう一度送る | 同じ | 201・同じ答え。前の行を消して 1 通 | このチケット（前のリンクが使えないことは K-314 の K314-API-006） | K313-API-008 |\n| どれでも | 再設定の画面を開く・ログイン中 | ログイン中 | 口は同じ（ログインを見ない）。画面の案内は K-320 | K-320 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K313-API-001 | 対象の状態 | 登録済みの人が頼む | 201・`{ data: { accepted: true } }`。答えの後の仕事が終わると、送出先に 1 通（宛先は本人・件名「Kaname のパスワードを再設定する」・本文にリンク `<web>/password-reset?token=…` と「30 分」）。verification の `reset-password:` の行が 1 つ・期限は DB の now() から 30 分（±5 秒）・identifier は `reset-password:<手がかりの sha256 の base64url>`。印の行 `reset-password-seen:` が 1 つ・期限 24 時間（±5 秒） |\n| K313-API-002 | 守り | 登録していないメール | 201・答えの体が 001 と同じ。送出先 0 通・verification の行 0・security_events にこの回の行 0 |\n| K313-API-003 | 対象の状態 | 確認していない申し込みだけ（pending_signup にだけ居る） | 201・答えの体が 001 と同じ。再設定のメール 0 通（確認のメールも送らない）・本人は作られない |\n| K313-API-004 | 守り | 送出先が 1.5 秒かかる | 登録済みも登録していないも、答えは 800 ミリ秒未満で返る（送るのを待たない）。登録済みの 1 通は後から届く |\n| K313-API-005 | 入力 | メールの大文字・前後と途中の空白・全角 | 正規化して同じ本人に 1 通（宛先は登録したメール） |\n| K313-API-006 | 入力 | メールが空・形が違う（`abc@`）・欄が無い | 422・code VALIDATION_ERROR の体・欄 email（空と形違いは E-VAL-004 の文）。送出先 0 通 |\n| K313-API-007 | 操作の揺れ | 60 秒の内に 2 回頼む | 2 回とも 201・同じ答え。送出先は 1 通のまま。verification の行は 1 つで、1 通目のリンクの行が残る |\n| K313-API-008 | 時間の流れ | 1 回目の行を 61 秒前にしてから 2 回目 | 送出先 2 通。verification の `reset-password:` の行は 1 つ（2 通目の分だけ。1 通目の行は消えた）。印の行 `reset-password-seen:` は 2 つ（1 通目の印も残る） |\n| K313-API-009 | 失敗 | 送出先が断る（`{ error }`） | 201・同じ答え。ログに「[mail] 送れなかった → 宛先#…」が出て「送った」は出ない・メールアドレスは出ない。security_events の password_reset_requested の detail.sent が false |\n| K313-API-010 | 失敗 | 背景で DB が落ちた（その人の verification への書き込みが失敗） | 201・同じ答え。送出先 0 通。console.error に宛先の印が出て、メールアドレスは出ない |\n| K313-API-011 | 守り | 同じ IP から 1 分に 11 回 | 11 回目は 429・`retry_after_sec` が 1〜60 の整数 |\n| K313-API-012 | 守り | 記録（関門 C2） | その人が今いる全部のワークスペース（2 社）の security_events に kind password_reset_requested が 1 行ずつ。detail にメールアドレス・手がかりが入っていない |\n| K313-API-013 | 守り | DB の中の手がかり | メールのリンクの手がかり（平文）が verification の identifier・value のどこにも無い（リンクの行も印の行も、頭を残したハッシュ） |\n| K313-API-014 | 守り | ログ（D-128.146） | 送れた・送れない・送出先が無い の 3 つの道で、console（log・warn・error）にメールアドレスが 1 度も出ない。宛先は「宛先#」の印で出る |\n| K313-API-015 | 守り | ログの書き方の検査（ソース） | packages/auth/src と apps/api/src/features/F1/password-reset の console.* の行に、メールアドレスを入れる形（`${m.to}`・`${email}`・`${user.email}`）が 0 か所 |\n| K313-API-016 | 守り | 本文の秘密（TP-MAIL-03） | 本文にパスワード・ほかの人のメールが入らない。再設定のリンクは 1 つだけ |\n| K313-API-017 | 守り | 抜けた会社（所属 left）と今の会社がある人が頼む | 記録 password_reset_requested は今の会社に 1 行だけ。抜けた会社には 0 行 |\n| K313-API-018 | 守り | 答えの頭（速さの検査 K-237 の決め・K237-API-005 から移した） | 登録済み・登録していないメール のどちらも、ログインしていなくてもログイン中（Bearer）で呼んでも、201 で頭に Server-Timing が無い（流した文の数で登録の有無を漏らさない） |\n\n### テストの型の受け（分類 RESET・MAIL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-RESET-01 無いメールで再設定を頼む | K313-API-002・003・004（答えと時間が同じ） |\n| TP-RESET-02 期限切れ・使い終わった・前のリンク | 前のリンクを作るところ（K313-API-008）。使えないことは K-314（K314-API-003〜007） |\n| TP-RESET-03 再設定したらほかのセッションが切れる | 要らない：頼む口は切らない。切るのは K-314（K314-API-001・015） |\n| TP-MAIL-01 送れなかったとき | K313-API-009（同じ答え・記録・ログ） |\n| TP-MAIL-02 二重に出ない | K313-API-007 |\n| TP-MAIL-03 本文に秘密を入れない | K313-API-016 |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 005・006 |\n| 対象の状態 | 該当 | 001・002・003 |\n| 時間の流れ | 該当 | 008（60 秒の境目の外）・007（内） |\n| 入口 | 該当 | 口は 1 つ。画面からの入口は K-320 |\n| 利用者の状態 | 要らない | 誰でも呼べる口でログインを見ない。ログイン中の案内は画面（K-320） |\n| 失敗 | 該当 | 009・010 |\n| 操作の揺れ | 該当 | 007（2 回押し） |\n| 守り | 該当 | 002・004・011〜017 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | 該当 | メールの送出先（Resend の鍵）は起動時の確かめ（startup.ts）が持つ。送出先が無いときの道は K313-API-014 |\n| G-12 切り替わりの瞬間 | 該当 | 60 秒の内と外（007・008） |\n| G-13 機能の組み合わせ | 該当 | 登録の確認待ち × 再設定（003） |\n| G-14 口座状態の波及 | N/A | 頼む口は口座の状態を変えない（変えるのは K-314） |\n| G-15 信号なし終了 | 該当 | 送出先が `{ error }` を返す＝送れていない（009）。背景の失敗を黙らせない（010） |\n| G-16 有限資源の枯渇 | 該当 | 1 回の要求で DB の接続は認証のプールから 1 本ずつ（背景も同じ）。上限は IP ごと 10 回／分（011）と人ごと 60 秒に 1 通（007） |\n\n### 確認の結果\n\n（実装の後に書く）",
     "K-76 の行の配り方（このチケットが持つ行）": "| K-76 の行 | 受け持ち |\n|---|---|\n| 無し（登録済み）× 送る | K313-API-001 |\n| 無し（登録していないメール） | K313-API-002・004 |\n| 無し（確認していない申し込みだけ） | K313-API-003 |\n| 入力：メールが空・形が違う | K313-API-006（画面の文は K-320） |\n| 入力：大文字小文字・空白・全角 | K313-API-005 |\n| 時間の流れ：続けて 2 回頼む | K313-API-007・008（2 回目のリンクだけ使えることは K314-API-006） |\n| 失敗：メールが送れない | K313-API-009（画面は K-320） |\n| 失敗：DB が落ちた | K313-API-010（頼む口）／K314-API-017・018（決める口） |\n| 操作の揺れ：2 回押し | K313-API-007（画面の 2 回押しは K-320） |\n| 守り：1 分に 11 回 | K313-API-011（決める口は K314-API-019） |\n| 守り：登録の有無 | K313-API-002・003・004 |\n| 守り：DB の中（手がかりはハッシュ） | K313-API-013 |\n| 守り：ログ（D-128.146） | K313-API-014・015 |\n| 守り：記録（頼んだ） | K313-API-012・017（再設定した は K314-API-001・022） |\n| 守り：関門 | 関門の静的な検査（CI の choke-points）。頼む口は C2（記録）と C6（送出）だけを通る |\n| TP-MAIL-03 本文 | K313-API-016 |",
     "成果物": "- 口 `apps/api/src/features/F1/password-reset/`・`apps/api/src/server.ts`・`packages/auth/src/reset.ts`（新しい）・`packages/auth/src/index.ts` の手直し・migration 1 本・契約の形（screen_api.py → 作り直し）・ears-elsewhere.json・前からの試験 k233 の 1 行\n- 単体の試験 `apps/api/test/features/F1/password-forgot.test.ts`（切る段が書いた）",
-    "決定ログ": "- 2026-11-17 依存の見直し（ticket-flow の切る段 7）：K-301 を待つ理由が無い（試験は K-301 の口・土台・ロックの文を使わない。同じ packages/auth/src/index.ts は足す行が別）ので depends_on から外した（触らない）。作業と行は変えない\n\n- D-042：登録の有無を漏らさない・IP ごとの上限。D-128.62：リンクは 30 分・1 回。D-128.141：同じ人へ 60 秒に 1 通。D-128.146：ログのメールは「宛先#ハッシュ」の印、出たら赤の検査\n- 切る段の決め（2026-11-17）：答えを待たずに返す・背景で DB が落ちても 201・記録は今いる会社に 1 行ずつ（関数を 1 本足す）・部品の道は閉じない（画面の載せ替え K-320 が閉じる）・手がかりは頭を残したハッシュ・出したリンクの印を 24 時間\n- 重さ（2026-11-17）：記録を全部の会社に書く関数（migration）が要るので重さは db にした（apps/web は触らない）。切り方.md の「—」から変えたことは PM に報告済み",
+    "決定ログ": "- 2026-11-18 作る段で見つけた試験の誤り 2 つを書く段に戻して直した（行の期待は変えない）：(1) kaname_auth.verification の列は camelCase（\"expiresAt\"・\"createdAt\"・\"updatedAt\"）。試験の引き方（resetRows・seenRows・K313-API-008 の時刻のずらし）を列の名前に合わせた (2) members.auth_user_id は一意（members_auth_user_id_key）なので、同じ人の 2 社目は人の行に auth_user_id を持たせず、所属の行 tenant_memberships.auth_user_id でログインに結ぶ（D-125.150・0089 と同じ）。記録の関数 app.record_security_event_for_auth_user もこの 2 つの結び方の両方を見る\n- 2026-11-18 作る段の決め：答えの後の送りは `@vercel/functions` を入れず、Vercel の要求の文脈の waitUntil を直に読む（部品が連れてくる zod 4.1.11 に high の弱点があり G44 が止めた。部品を入れなければ selected-stack.json・lock_dates.json・lockfile も変わらない）\n- 2026-11-18 PM の決め（.ticket-flow/pm-decisions-2026-11-18.md）：passwordResetHooks は fuzz の的に差す（EXEMPT にしない）・migration は今の本線の次の空き（今は 0105。取り込みで埋まっていたら次の空きへ付け替える）・親のチケット K-50・K-74・K-75・K-76 を c/段2 の版のまま写して運ぶ（changes: に足した）\n- 2026-11-17 依存の見直し（ticket-flow の切る段 7）：K-301 を待つ理由が無い（試験は K-301 の口・土台・ロックの文を使わない。同じ packages/auth/src/index.ts は足す行が別）ので depends_on から外した（触らない）。作業と行は変えない\n\n- D-042：登録の有無を漏らさない・IP ごとの上限。D-128.62：リンクは 30 分・1 回。D-128.141：同じ人へ 60 秒に 1 通。D-128.146：ログのメールは「宛先#ハッシュ」の印、出たら赤の検査\n- 切る段の決め（2026-11-17）：答えを待たずに返す・背景で DB が落ちても 201・記録は今いる会社に 1 行ずつ（関数を 1 本足す）・部品の道は閉じない（画面の載せ替え K-320 が閉じる）・手がかりは頭を残したハッシュ・出したリンクの印を 24 時間\n- 重さ（2026-11-17）：記録を全部の会社に書く関数（migration）が要るので重さは db にした（apps/web は触らない）。切り方.md の「—」から変えたことは PM に報告済み",
     "PM に確かめたいこと": "無い（重さを db にしたことは決定ログの行に書いた）",
     "リスクと懸念": "- 手がかりをハッシュで持つ形に変えると、変える前に送ったリンクは使えなくなる（出す時点で 30 分以内のものだけ）。出す時刻を選ぶ\n- 前の行を消す・印を残す作りは、部品の版を上げて行の名前やハッシュの形が変わると壊れる。K313-API-008・013 と K-314 の K314-API-003・006 で必ず通す\n- 画面の試験 `apps/web/tests/screens/qa-c-onboard.spec.ts` の 228 行（ログの「reset → メールアドレス」）は、このチケットが入ると赤になる。このチケットは migration（packages/db）を持つので、重さの上限（apps/web と packages/db を 1 本で持たない）により apps/web の試験を替えられない。替えるのは K-320（このチケットに依存する）。大分類の終わりの全部の CI の前に K-320 が入る",
     "申し送り": "- K-314：手がかりのハッシュ `resetKey`・印 `reset-password-seen:` は `@kaname/auth/reset`、記録は `app.record_security_event_for_auth_user`（kind password_reset_done）を使う\n- K-320：部品の道 3 本を閉じる・画面の試験 `apps/web/tests/screens/qa-c-onboard.spec.ts` の「reset → メールアドレス」の 1 行を宛先の印に替える\n- K-301：部品の道を閉じる（disabledPaths）ときに、再設定の 3 本はまだ閉じない（今の画面が使う。閉じるのは K-320）"
