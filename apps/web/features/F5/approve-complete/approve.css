@@ -12,9 +12,13 @@
 .k-ap-head > .k-page-sub {
   min-width: 0;
 }
+/* 見出しの横の数（前からの試験 K217-UI-017 がこの名前で数を探す） */
+.k63-count {
+  font-variant-numeric: tabular-nums;
+}
 /* 767 以下は外枠の鈴が帯の右に入る（帯を 1 行にする外枠の決まり）。続けて裁くは次の行へ回す（キャンバスの折り返し） */
 @media (max-width: 767px) {
-  .k-shell .k-ap-head:has(> .k-ap-next) {
+  .k-page-head.k-ap-head:has(> .k-ap-next) {
     flex-wrap: wrap;
   }
   .k-ap-head:has(> .k-ap-next)::after {

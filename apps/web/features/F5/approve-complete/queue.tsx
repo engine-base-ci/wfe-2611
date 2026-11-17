@@ -76,7 +76,7 @@ export function ApprovalsPage() {
   const rows = pages.flatMap((p) => p.rows);
   return (
     <TicketShell screen="approvals" crumbs={[{ label: "承認待ち" }]} counts={{ approvals: total }}>
-      <section className="k-root k-page k-ap" aria-labelledby="approvals-title">
+      <section className="k-root k-page" aria-labelledby="approvals-title">
         <header className="k-page-head k-ap-head">
           <h1 id="approvals-title">承認待ち</h1>
           {q.data ? (
