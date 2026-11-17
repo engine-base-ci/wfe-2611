@@ -183,6 +183,13 @@ export async function openCreate(page: Page, width = 1440) {
   const res = await page.goto("/tickets?new=1");
   expect(res?.status()).toBe(200);
 }
+/** 作った後に詳細へ移り切るのを待つ（K-260）。URL が移った（toHaveURL）だけでは、詳細の画面はまだ動き出していないことがある。
+ *  その間に鍵（kaname.token）を消すと、動き出した詳細の画面が鍵の無いことを見てログインへ移し、次の開き直しの goto が取り消される（ERR_ABORTED）。
+ *  詳細の見出し（差し替えた詳細の口の題名「作った」）は、詳細の画面が鍵を確かめて詳細の口を読んだ後にだけ出るので、これが出たら移り切った印 */
+export async function settledDetail(page: Page) {
+  await expect(page).toHaveURL(/\/tickets\/[0-9a-f-]+$/);
+  await expect(page.getByRole("heading", { level: 1, name: "作った" })).toBeVisible();
+}
 export const form = (page: Page) => page.getByRole("region", { name: "チケットを作る" });
 /** 続きの下書きを読み終えた（種別に既定のタスクが入る） */
 export const loaded = (page: Page) => expect(page.getByRole("combobox", { name: "種別" })).toContainText(/タスク|課題/);
