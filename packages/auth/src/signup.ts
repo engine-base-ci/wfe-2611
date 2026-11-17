@@ -61,7 +61,9 @@ async function recordLogin(appPool: pg.Pool, rec: SignInRecord | undefined, user
   try {
     await appPool.query("select app.record_login_event($1, $2, $3)", [userId, kind, rec.country]);
   } catch (e) {
-    console.error(`[auth] ログインの記録を書けなかった（${kind}）: ${(e as Error).message}`);
+    const x = e as { code?: unknown; name?: unknown } | null;
+    const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+    console.error(`[auth] ログインの記録を書けなかった（${kind}・${why}）`); // 文や値は出さない（種類だけ）
   }
 }
 
