@@ -128,8 +128,8 @@ export function passwordResetFeature(d: PasswordResetDeps) {
     }
     switch (r.result) {
       case "done":
-        if (r.followUpError)
-          console.error(`[reset] 決めた後の片付け・ロック・記録が落ちた: ${errSummary(r.followUpError)}`);
+        for (const e of r.followUpErrors)
+          console.error(`[reset] 決めた後の片付け・ロック・記録のどれかが落ちた: ${errSummary(e)}`);
         return { status: 201, body: { data: { reset: true } } };
       case "expired":
         return reply(410, "E-AUTH-006");

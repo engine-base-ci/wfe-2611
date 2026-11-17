@@ -137,7 +137,7 @@ export interface ResetWithLinkDeps {
   checkLeaked: (password: string) => Promise<LeakCheck>;
 }
 export type ResetWithLinkResult =
-  | { result: "done"; userId: string; pwned: LeakCheck; followUpError: unknown }
+  | { result: "done"; userId: string; pwned: LeakCheck; followUpErrors: unknown[] }
   | { result: "expired" | "invalid" | "short" | "long" | "leaked" }
   | { result: "down"; error: unknown; restoreError: unknown };
 
@@ -182,14 +182,25 @@ async function revokeThenChange(d: ResetWithLinkDeps, userId: string, password: 
   );
 }
 
-/** 済んだ後：ロックを消し（K-76）、今いる会社に記録を残す（関門 C2） */
-async function afterDone(d: ResetWithLinkDeps, userId: string): Promise<void> {
-  const u = await d.authPool.query<{ email: string }>('select email from kaname_auth."user" where id = $1', [userId]);
-  const email = u.rows[0]?.email;
-  if (email) await d.appPool.query("select app.login_ok($1)", [emailHash(email)]);
-  await d.appPool.query("select app.record_security_event_for_auth_user($1, 'password_reset_done', '{}'::jsonb)", [
-    userId,
-  ]);
+/** 済んだ後：取った行を消し・ロックを消し（K-76）・今いる会社に記録を残す（関門 C2）。1 つが落ちても残りは続け、落ちた物を返す */
+async function afterDone(d: ResetWithLinkDeps, hash: string, userId: string): Promise<unknown[]> {
+  const steps: Array<() => Promise<unknown>> = [
+    () => finishTaken(d.authPool, hash),
+    async () => {
+      const u = await d.authPool.query<{ email: string }>('select email from kaname_auth."user" where id = $1', [
+        userId,
+      ]);
+      const email = u.rows[0]?.email;
+      if (email) await d.appPool.query("select app.login_ok($1)", [emailHash(email)]);
+    },
+    () =>
+      d.appPool.query("select app.record_security_event_for_auth_user($1, 'password_reset_done', '{}'::jsonb)", [
+        userId,
+      ]),
+  ];
+  const errors: unknown[] = [];
+  for (const step of steps) await step().catch((e: unknown) => errors.push(e));
+  return errors;
 }
 
 /** 新しいパスワードを決める。判定の順：リンクを見る → 長さ → 漏れ → 取る → 切る → 変える（変えない値は変えない） */
@@ -227,12 +238,6 @@ export async function resetWithLink(
   }
   // 済んだ後の片付け・ロック・記録で落ちても、パスワードはもう変わっている（done を返し、落ちたことは呼ぶ側がログに残す）。
   //   取った行が残っても 30 分で切れ、頭が違うので二度と使えない
-  let followUpError: unknown = null;
-  try {
-    await finishTaken(d.authPool, hash);
-    await afterDone(d, userId);
-  } catch (e) {
-    followUpError = e;
-  }
-  return { result: "done", userId, pwned, followUpError };
+  const followUpErrors = await afterDone(d, hash, userId);
+  return { result: "done", userId, pwned, followUpErrors };
 }
