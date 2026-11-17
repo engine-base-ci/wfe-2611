@@ -534,6 +534,22 @@ textarea.k-input {
 .k-dialog[data-size="confirm"] {
   width: var(--k-c-dialog-confirm-width);
 }
+/* PC をつなぐの小窓（K-230・EdPC）：幅 580。置き場・影・余白は型のまま。題の下に補足を置き、足のボタンは 30 */
+.k-dialog[data-size="connect"] {
+  width: var(--k-c-dialog-connect-width);
+}
+.k-dialog-titles {
+  min-width: 0;
+}
+.k-dialog-sub {
+  color: var(--k-c-dialog-sub-fg);
+  font-size: var(--k-c-dialog-sub-text);
+  line-height: var(--k-c-dialog-sub-lh);
+  font-weight: var(--k-c-dialog-sub-fw);
+}
+.k-dialog[data-size="connect"] .k-dialog-actions .k-btn {
+  min-height: var(--k-c-dialog-connect-button-height);
+}
 .k-dialog-body {
   display: flex;
   flex-direction: column;

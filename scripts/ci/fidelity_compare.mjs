@@ -1,5 +1,5 @@
 // キャンバスと画面の見た目の値を比べる部品（K-216）。visual_fidelity.mjs と実ブラウザの突き合わせ（K-238）が使う。
-//   比べる値：計算後の CSS の値・箱の幅と高さ（width・height）・位置（x・y＝頁の左上から）・当たった要素全部の字の一覧（texts）
+//   比べる値：計算後の CSS の値・箱の幅と高さ（width・height）・位置（x・y＝頁の左上から。組の値の y_from があれば狭い幅の y はその箱の上端から）・当たった要素全部の字の一覧（texts）
 //   比べ方：±PX_TOLERANCE を許すのは箱の幅と高さ・x・y・余白（padding・margin・gap）だけ。ほかの px（角丸・文字の大きさ・行の高さ・線の太さ）は
 //           計算の丸めの差 ROUND_TOLERANCE 未満だけ同じ／書体の名前は先頭を大小を問わず／字の一覧は並びも数もちょうど同じ／
 //           それ以外（色・太さ・字の並び）はちょうど同じ。要素が無ければ「（無い）」で違う。
@@ -124,11 +124,17 @@ export const exitCode = (rows, strict) => (strict && mismatches(rows) > 0 ? 1 : 
 /** 道具の終わりの値：既定は違いがあれば 1、--report-only のときだけ 0（引数の誤りの 2 は道具が出す） */
 export const exitFor = (rows, opts) => exitCode(rows, !opts.reportOnly);
 
-/** Playwright の page から組の値を読む。side は "canvas" か "app"（pairs[i][side] がセレクタ）。当たる要素が無ければ {__count: 0} */
+/** Playwright の page から組の値を読む。side は "canvas" か "app"（pairs[i][side] がセレクタ）。当たる要素が無ければ {__count: 0}
+ *  組の値が y_from（{max_width, canvas, app, why}）を持てば、幅が max_width 以下のとき y を頁の上端でなくその箱（side のセレクタ）の上端から読む
+ *  （外枠の決まりで狭い幅の帯の高さがキャンバスと違う・口に無い字の行の高さだけを外す、など。訳 why は必ず書く・K-230）。箱が見えなければ y は「無い」 */
 export async function readVals(page, pairs, side) {
+  for (const p of pairs) {
+    if (p.y_from && !(typeof p.y_from.why === "string" && p.y_from.why.trim()))
+      throw new Error(`組の値 ${p.name} の y_from に訳（why）が無い`);
+  }
   return page.evaluate(
     (list) =>
-      list.map(({ sel, props }) => {
+      list.map(({ sel, props, yFrom }) => {
         // 見えない要素（display:none・visibility:hidden・大きさ 0・幅ごとに出し分ける複製）は「無い」
         const seen = (e) => {
           if (!e.checkVisibility({ visibilityProperty: true })) return false;
@@ -145,14 +151,27 @@ export async function readVals(page, pairs, side) {
           if (k === "width") return px(r.width);
           if (k === "height") return px(r.height);
           if (k === "x") return px(r.left + window.scrollX);
-          if (k === "y") return px(r.top + window.scrollY);
+          if (k === "y") {
+            if (yFrom && window.innerWidth <= yFrom.max) {
+              const box = [...document.querySelectorAll(yFrom.sel)].find(seen);
+              return box ? px(r.top - box.getBoundingClientRect().top) : null;
+            }
+            return px(r.top + window.scrollY);
+          }
           // innerText：見えている要素の中の隠れた子（display:none・visibility:hidden）の字を数えない
           if (k === "texts") return els.map((e) => (e.innerText ?? "").replace(/\s+/g, " ").trim());
           return cs.getPropertyValue(k);
         };
-        return { __count: els.length, ...Object.fromEntries(props.map((k) => [k, one(k)])) };
+        return {
+          __count: els.length,
+          ...Object.fromEntries(props.map((k) => [k, one(k)]).filter(([, v]) => v !== null)),
+        };
       }),
-    pairs.map((p) => ({ sel: p[side], props: p.props })),
+    pairs.map((p) => ({
+      sel: p[side],
+      props: p.props,
+      yFrom: p.y_from ? { sel: p.y_from[side], max: p.y_from.max_width } : null,
+    })),
   );
 }
 
