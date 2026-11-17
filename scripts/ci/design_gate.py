@@ -13,6 +13,8 @@
   D6 未使用  正本にあって画面がどこにも使っていない色・型の段（＝絵に描いた餅）
              --scales：文字の段の名前が --usage の下のどこにも出てこない（名前は完全に一致で数える・K-218）
   D7 段の数  文字の大きさの種類が design-gate.json の max_type_sizes（既定 10）を超える（K-218）
+  D8 生の長さ  画面の CSS の大きさ・余白・間・行の高さ・影・枠の太さなどに、トークン（var）を通らない生の長さがある。
+             --raw-lengths を付けた回だけ。決まりと台帳（減らすだけ）は design-gate.json の raw_lengths（K-261・design_raw_lengths.py）
 
 規約: .claude/rules/common/design-system.md
 """
@@ -21,6 +23,9 @@ import argparse, json, re, sys
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import design_raw_lengths  # noqa: E402
 
 GREY = re.compile(r"^#(?:(\w)\1\1|(\w\w)\2\2)$", re.I)          # #fff #000 #333 など無彩色
 HEX = re.compile(r"#[0-9a-fA-F]{3,8}\b")
@@ -275,14 +280,21 @@ def main() -> int:
     ap.add_argument("--scales", action="store_true",
                     help="文字の段を数える：使われない段（D6 段・--usage の下）と大きさの種類（D7）")
     ap.add_argument("--usage", nargs="*", default=[], help="--scales で段の名前を探すフォルダ（生成物のトークンは除く）")
+    ap.add_argument("--raw-lengths", action="store_true",
+                    help="D8 を流す：design-gate.json の raw_lengths の置き場の CSS に生の長さが無いか（台帳は減らすだけ・K-261）")
+    g = ap.add_mutually_exclusive_group()
+    g.add_argument("--ledger-base-ref", default=None, help="D8 の台帳を比べる版（本線との分かれ目）")
+    g.add_argument("--no-base", action="store_true", help="D8 の台帳を分かれ目と比べない（手元で流すとき）")
+    ap.add_argument("--shrink-ledger", action="store_true", help="D8 の台帳から直った分だけを減らして書き直す（足さない）")
     a = ap.parse_args()
 
     root = Path(a.design).resolve().parent
-    cfg = {}
+    cfg, cfg_file = {}, root / "design-gate.json"
     for up in [root, *root.parents]:
         f = up / "design-gate.json"
         if f.exists():
-            cfg = json.loads(f.read_text(encoding="utf-8")); break
+            cfg, cfg_file = json.loads(f.read_text(encoding="utf-8")), f
+            break
 
     src = load_source(Path(a.design))
     colors, fonts, sizes, radii = set(), set(), set(), set()
@@ -356,6 +368,11 @@ def main() -> int:
         type_sizes = {str(v.get("fontSize")) for v in (src.get("typography") or {}).values()
                       if isinstance(v, dict) and "fontSize" in v}
 
+    d8_bad, d8_note, d8_files = [], "", 0
+    if a.raw_lengths:
+        d8_bad, d8_note, d8_files = design_raw_lengths.run(cfg_file, cfg, a.ledger_base_ref, a.no_base, a.shrink_ledger,
+                                                           set(files))
+
     res = {
         "D1_色_正本に無い": {k: sorted(v)[:3] for k, v in sorted(bad_c.items())},
         "D2_書体_正本に無い": {k: sorted(v)[:3] for k, v in sorted(bad_f.items())},
@@ -369,10 +386,11 @@ def main() -> int:
         "D6_段_使われない": scale_unused if a.scales else "数えていません（--scales が無い）",
         "D7_段の数": ([f"大きさの種類 {len(type_sizes)} 個（上限 {max_sizes}）"] if len(type_sizes) > max_sizes else [])
                      if a.scales else "数えていません（--scales が無い）",
+        "D8_生の長さ": d8_bad if a.raw_lengths else "掛けていません（--raw-lengths が無い）",
     }
     fails = sum(len(res[k]) for k in ("D1_色_正本に無い", "D2_書体_正本に無い", "D3_角丸_段に無い",
                                       "D4_文字_段に無い", "D5_部品", "D6_未使用_色", "D6_未使用_文字",
-                                      "D6_段_使われない", "D7_段の数")
+                                      "D6_段_使われない", "D7_段の数", "D8_生の長さ")
                 if not isinstance(res[k], str))
     if a.json:
         print(json.dumps({"files": len(files), "fails": fails, "d5_parts": d5_parts, "d5_compared": d5_compared,
@@ -384,9 +402,11 @@ def main() -> int:
             if isinstance(v, str):
                 print(f"  {k}: {v}"); continue
             extra = f"  (部品 {d5_parts} 個・比べた値 {d5_compared} 個・訳で外した部品 {d5_free} 個)" \
-                if k == "D5_部品" else ""
-            print(f"  {k}: {len(v)} 件{extra}" + (f"  {list(v)[:8]}" if v and k != "D5_部品" else ""))
-            if k == "D5_部品":
+                if k == "D5_部品" else f"  (見た .css {d8_files} 本)" if k == "D8_生の長さ" else ""
+            print(f"  {k}: {len(v)} 件{extra}" + (f"  {list(v)[:8]}" if v and k not in ("D5_部品", "D8_生の長さ") else ""))
+            if k == "D8_生の長さ" and d8_note:
+                print(f"    （知らせ）{d8_note}")
+            if k in ("D5_部品", "D8_生の長さ"):
                 for line in v:
                     print(f"    {line}")
         print("PASS" if fails == 0 else f"不合格 {fails} 件")
