@@ -168,13 +168,17 @@ describe("K-304 パスキーで入る：ふつうの道", () => {
     expect(await counts(u)).toEqual({ auth: before.auth + 1, app: before.app + 1 });
   });
 
-  it("K304-API-003 入った印で契約の口を呼べる（Bearer）：GET /api/v1/me が 200", async () => {
+  // 契約の口は、作り終えている listSetupTasks（K-250）で見る。getMe は K-70 まで 501（作っていない口）なので使わない
+  it("K304-API-003 入った印で契約の口を呼べる（Bearer）：本物の解き方で解け、GET /api/v1/me/setup-tasks が 200。印なしは 401", async () => {
     const { u, a } = await userWithKey("bearer");
     const t = tokenOf(await passkeyLogin(u, a))!;
-    const me = await h.req("GET", "/api/v1/me", undefined, {
+    expect(await h.resolves(t, UA_A)).toBe(true);
+    const list = await h.req("GET", "/api/v1/me/setup-tasks", undefined, {
       headers: { authorization: `Bearer ${t}`, "user-agent": UA_A },
     });
-    expect(me.status, await me.clone().text()).toBe(200);
+    expect(list.status, await list.clone().text()).toBe(200);
+    const none = await h.req("GET", "/api/v1/me/setup-tasks", undefined, { headers: { "user-agent": UA_A } });
+    expect(none.status).toBe(401);
   });
 
   it("K304-API-004 2 段階認証を付けた人 × パスキーで入る：6 けたを聞かずにセッションができる（D-128.60・パスキーそれ自体が 2 段階）", async () => {
@@ -216,16 +220,28 @@ describe("K-304 パスキーで入る：ふつうの道", () => {
     expect(await count()).toBe(before + 1);
   });
 
-  it("K304-API-007 規約の新しい版が出ている（同意を消す）× パスキーで入る：そのセッションに同意し直しの印が立つ（パスワードと同じ hook・K-53）", async () => {
+  it("K304-API-007 規約の新しい版が出ている（本人はまだ同意していない）× パスキーで入る：そのセッションに同意し直しの印が立つ（パスワードと同じ hook・K-53）", async () => {
     const { u, a } = await userWithKey("terms");
-    await h.admin.query("delete from terms_consents where member_id = $1", [u.memberId]);
-    const r = await passkeyLogin(u, a);
-    expect(r.status).toBe(200);
-    const s = await h.admin.query<{ terms_pending: boolean }>(
-      `select s.terms_pending from sessions s join kaname_auth.session a on a.id = s.auth_session_id where a.token = $1`,
-      [tokenOf(r)],
+    // 新しい版を出す（K301-API-026 と同じ作り方。DB にある版の数に頼らない・ほかの試験が版を消していても同じに動く）
+    const ops = (await h.admin.query<{ id: string }>("select app.ops_tenant_id() as id")).rows[0]!.id;
+    const v = `${h.run}-terms`;
+    await h.admin.query(
+      "insert into terms_versions (tenant_id, kind, version, url, published_at) values ($1, 'terms', $2, $3, now())",
+      [ops, v, `https://kaname.example/terms/${v}`],
     );
-    expect(s.rows.map((x) => x.terms_pending)).toEqual([true]);
+    try {
+      const r = await passkeyLogin(u, a);
+      expect(r.status).toBe(200);
+      // set-auth-token は署名つきの値（kaname_auth.session.token そのものではない）。K301-API-026 と同じく、その人の生きた画面のセッションを引く
+      //   （準備のセッションは土台が閉じているので、生きた画面のセッションはこのログインの 1 つだけ）
+      const s = await h.admin.query<{ terms_pending: boolean }>(
+        "select terms_pending from sessions where member_id = $1 and revoked_at is null and kind_id = 'web'",
+        [u.memberId],
+      );
+      expect(s.rows.map((x) => x.terms_pending)).toEqual([true]);
+    } finally {
+      await h.admin.query("delete from terms_versions where version = $1", [v]);
+    }
   });
 });
 
