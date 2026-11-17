@@ -29,6 +29,11 @@ describe("POST /api/v1/auth/sign-in", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in.test.ts", "utf8")).toContain("K301-API-014");
   });
+  it("test_post_auth_sign_in_rejected_403_2", () => {
+    // UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない
+    // 本物の試験：apps/api/test/features/F1/login-gate.test.ts の「K303-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/login-gate.test.ts", "utf8")).toContain("K303-API-001");
+  });
   it("test_post_auth_sign_in_rejected_422_3", () => {
     // UNWANTED: IF メールアドレスかパスワードが空なら、Kaname は 422 と E-VAL-008 を返し、DB を引かず失敗の数に入れない
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-009」（同じ CI の G3 で流れる）
@@ -48,6 +53,11 @@ describe("POST /api/v1/auth/sign-in", () => {
     // UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-019」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in.test.ts", "utf8")).toContain("K301-API-019");
+  });
+  it("test_post_auth_sign_in_unavailable", () => {
+    // UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない
+    // 本物の試験：apps/api/test/features/F1/login-gate.test.ts の「K303-API-010」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/login-gate.test.ts", "utf8")).toContain("K303-API-010");
   });
   it("test_post_auth_sign_in_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない

@@ -6,7 +6,7 @@ import { symmetricDecrypt } from "better-auth/crypto";
 import { base32 } from "@better-auth/utils/base32";
 import { createOTP } from "@better-auth/utils/otp";
 import { uuidv7 } from "@kaname/db/id";
-import type { Auth } from "./index.js";
+import { LOGIN_BLOCKED_CODES, type Auth } from "./index.js";
 import { recordLoginEvent } from "./signup.js";
 
 // plugin（twoFactor）の endpoint は core の Auth 型に無いので、使う分だけをここで型に書く（zod の内部型を .d.ts に出さないため）
@@ -104,8 +104,8 @@ export type SignInCodeOutcome =
   | { ok: false; reason: "wrong"; userId: string }
   /** 6 けたの止め（E-AUTH-014）。retryAfterSec は止めの終わりまでの秒 */
   | { ok: false; reason: "locked"; userId: string; retryAfterSec: number }
-  /** セッションを作る所で部品の hook に断られた（止め・会社の人が無い など）。状態コードと code と文をそのまま答える */
-  | { ok: false; reason: "refused"; status: number; code: string; message: string };
+  /** セッションを作る所で止めの 1 か所（K-303）に断られた。状態コードと code をそのまま答える */
+  | { ok: false; reason: "refused"; status: number; code: string };
 
 export interface SignInCodeInput {
   /** パスワードの段で受け取った待ちの印（部品の 2 段階の待ちの Cookie の値） */
@@ -119,15 +119,13 @@ export interface SignInCodeInput {
   country: string | null;
 }
 
-/** 部品の APIError の形（status は名前・statusCode は数・body.code と body.message）。部品の版で型が変わっても形で見る */
-function apiError(e: unknown): { status: string; statusCode: number; code: string | null; message: string } | null {
-  const x = e as { status?: unknown; statusCode?: unknown; body?: { code?: unknown; message?: unknown } } | null;
+/** 部品の APIError の形（status は名前・statusCode は数・body.code）。部品の版で型が変わっても形で見る */
+function apiError(e: unknown): { statusCode: number; code: string | null } | null {
+  const x = e as { status?: unknown; statusCode?: unknown; body?: { code?: unknown } } | null;
   if (!x || typeof x !== "object" || typeof x.status !== "string") return null;
   return {
-    status: x.status,
     statusCode: typeof x.statusCode === "number" ? x.statusCode : 0,
     code: typeof x.body?.code === "string" ? x.body.code : null,
-    message: typeof x.body?.message === "string" ? x.body.message : "",
   };
 }
 const PENDING_GONE = new Set(["INVALID_TWO_FACTOR_COOKIE", "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE"]);
@@ -270,9 +268,10 @@ export async function verifySignInCode(
       await record("login_code_failed");
       return { ok: false, reason: "wrong", userId };
     }
-    // セッションを作る所の部品の hook の断り（止め 403・止めの確かめが落ちた 503）はそのまま答える。失敗の数には入らない
-    if ((x.statusCode === 403 || x.statusCode === 503) && x.code?.startsWith("E-"))
-      return { ok: false, reason: "refused", status: x.statusCode, code: x.code, message: x.message };
+    // セッションを作る所の止めの 1 か所（K-303 の session.create.before）の断り：人・会社の止め・抜けた（403）・止めの確かめが落ちた（503）。
+    //   状態コードと code をそのまま答える（文は口が目録から引く）。セッションは作られておらず、6 けたの失敗の数にも入らない
+    if (x.code && LOGIN_BLOCKED_CODES.has(x.code))
+      return { ok: false, reason: "refused", status: x.statusCode || 503, code: x.code };
     throw e;
   }
   if (step !== null) await rememberStep(authPool, userId, step);

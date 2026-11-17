@@ -44,11 +44,8 @@ export function signInCodeFeature(
       case "locked":
         return reply(429, "E-AUTH-014", { retry_after_sec: r.retryAfterSec });
       case "refused":
-        // 止め（K-303 の hook）に断られた：部品の状態コードと code と文をそのまま答える。セッションは作られていない
-        return {
-          status: r.status,
-          body: { error: r.status === 503 ? "unavailable" : "auth", code: r.code, message: r.message },
-        };
+        // 止め（K-303 の hook）に断られた：部品の状態コードと code をそのまま、文は目録から。抜けたは運営の連絡先つき（パスワードの口と同じ）
+        return reply(r.status, r.code, r.code === "E-AUTH-007" ? { detail: { ops_email: d.config.opsEmail } } : {});
     }
   };
 
