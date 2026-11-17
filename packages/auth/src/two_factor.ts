@@ -131,8 +131,9 @@ function apiError(e: unknown): { statusCode: number; code: string | null } | nul
 const PENDING_GONE = new Set(["INVALID_TWO_FACTOR_COOKIE", "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE"]);
 const WRONG = new Set(["INVALID_CODE", "INVALID_BACKUP_CODE"]);
 
-/** 待ちの印から、その待ちの行（kaname_auth.verification の 2fa-…）がまだ生きていれば本人の id を返す（期限は DB の now()） */
-async function pendingUser(authPool: pg.Pool, pending: string): Promise<string | null> {
+/** 待ちの印から、その待ちの行（kaname_auth.verification の 2fa-…）がまだ生きていれば本人の id を返す（期限は DB の now()）。
+ *  待ちの印を使い終わりにしない。管理者に頼む口（K-305）も同じ引き方で本人を引く */
+export async function pendingUser(authPool: pg.Pool, pending: string): Promise<string | null> {
   let v: string;
   try {
     v = decodeURIComponent(pending);
