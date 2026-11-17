@@ -21,4 +21,5 @@ export { Empty, Loading, ErrorState, NoAccess, ErrorPage, OfflineBanner, useOnli
 export { PAGE_ERROR, errorCodeOf, errorText, type ErrorText, type PageErrorCode } from "./error-of";
 export { PageBody, PageHeader, Section, Prose, TextLink, Row } from "./page";
 export { MeSub, type MeSubKey } from "./me-sub";
+export { Band, BandCaution, BandLine, NoticeBox, type BandProps, type BandTone } from "./band";
 export { DocTools, DOC_TOOL_ITEMS, type DocToolsProps } from "./doc-tools";

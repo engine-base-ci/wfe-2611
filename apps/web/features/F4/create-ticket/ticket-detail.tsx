@@ -2,7 +2,7 @@
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。K-226 でキャンバス TicketDetail の形にした：
 //   左に本文の箱（.k-page）：白いカード（頭の行・題名の行・帯・本文の道具の帯・区画）と、その下に子チケット・つながりのカード。
 //   右に属性パネル（幅 380・detail-panel.tsx）。1023 以下はパネルを本文の下に回す。
-//   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227・K-228。
+//   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227（承認待ち）・K-228。
 //   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
 //   layout="side"（K-252）：一覧の右に開く詳細。題名の行（帯と h1）・右のパネル・パネルを開く／閉じるを描かず、題名は h2。
 //     ログインの確かめと入り直しは一覧の画面が持つ（ここでは移らない）。エラーの見出しも h2（頁の h1 は一覧の 1 つ）
@@ -15,7 +15,7 @@ import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
-import { ApproveBand } from "@/features/F5/approve-complete/band";
+import { ApproveBand, canCompleteNow } from "@/features/F5/approve-complete/band";
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
@@ -224,6 +224,10 @@ function DetailView({
                 stageKey: d.stage?.key ?? null,
                 canDelegate: d.can?.delegate === true,
                 canDecide: d.approval?.can_decide === true,
+                approvalId: d.approval?.id ?? null,
+                hasAssignee: d.assignee !== null,
+                // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
+                completeShown: canCompleteNow(d, runs.current, runs.known),
               }}
               run={runs.current}
               onRun={runs.follow}
