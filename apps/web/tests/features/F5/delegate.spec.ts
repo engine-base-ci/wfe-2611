@@ -124,6 +124,19 @@ async function mockApi(page: Page, m: Mock): Promise<Mock> {
       await new Promise((r) => setTimeout(r, 200)); // 答えを待つ間（2 回押しを確かめる）
       reply = m.onDelegate();
       if (reply.status === 201) m.runs = [m.runSeq[0]!, ...m.runs];
+    } else if (m.approval && p === `/api/v1/approvals/${m.approval.id}` && req.method() === "GET") {
+      // 承認の 1 件（K-227：決められない人の帯の確認の要約はこの check_summary から。読めない間は出さない）
+      reply = {
+        status: 200,
+        body: {
+          data: {
+            approval: { id: m.approval.id, created_at: "2026-11-08T00:00:00Z" },
+            artifact_version: { version: 1, text: "見積のたたき台" },
+            check_summary: "検査なし（まだ流していません）",
+            cautions: [],
+          },
+        },
+      };
     } else if (p === `/api/v1/action_runs/${RUN}`) {
       const r = m.runSeq[Math.min(m.runReads, m.runSeq.length - 1)]!;
       m.runReads += 1;

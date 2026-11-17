@@ -10,7 +10,7 @@
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
-  "ui": 16,
+  "ui": 17,
   "packages": 13,
   "errors": 172,
   "stack": 53,
@@ -7385,6 +7385,16 @@
     "MeSub"
    ],
    "what": "自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。"
+  },
+  {
+   "file": "apps/web/components/k/band",
+   "exports": [
+    "Band",
+    "BandCaution",
+    "BandLine",
+    "NoticeBox"
+   ],
+   "what": "詳細の帯の箱（K-227・正本 components.band-*・キャンバス TicketDetail の main article [role=\"status\"]）。"
   },
   {
    "file": "apps/web/components/k/doc-tools",

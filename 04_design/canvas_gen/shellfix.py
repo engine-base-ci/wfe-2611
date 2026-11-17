@@ -143,9 +143,14 @@ NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NA
 # 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。画面の外枠と同じく上の帯を出さない（MobileList と同じ）。
 # 7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
 DETAIL_BOARDS = ("TicketDetail", "StRunning", "StFailed", "StBefore", "StConfirmDone", "StDone", "StDelegated")
+# K-227：767 以下は帯の箱の左右も、カードの中のほかの行（article>div の左右 16px）と同じ 16px にそろえる（画面の外枠の
+#   .k-detail-bands と同じ）。箱の中の余白は、ほかの行の 16px に上書きされないよう箱の余白（10px 12px・12px 14px）のまま保つ
+BAND_NARROW = ('article>div:is([role="status"],[role="alert"])[style*="margin: 0 20px"]{margin-left:16px !important;margin-right:16px !important}'
+               'article>div:is([role="status"],[role="alert"])[style*="padding: 10px 12px"]{padding-left:12px !important;padding-right:12px !important}'
+               'article>div:is([role="status"],[role="alert"])[style*="padding: 12px 14px"]{padding-left:14px !important;padding-right:14px !important}')
 NARROW_BY_BOARD.update({
-    f"{b}.dc.html": "/* kn-board-narrow（K-226）：画面の外枠と同じく上の帯を出さない（MobileList と同じ） */\n"
-                    "@media (max-width:767px){.kn-bar{display:none !important}}\n"
+    f"{b}.dc.html": "/* kn-board-narrow（K-226・K-227）：画面の外枠と同じく上の帯を出さない（MobileList と同じ）。帯の箱の左右はカードの行と同じ 16px */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}" + BAND_NARROW + "}\n"
     for b in DETAIL_BOARDS
 })
 # 必須の印「*」を項目名と同じ行に置く（K-225）。縦並び（flex の column）の label の中で、項目名の字と <b>*</b> が別々の段に割れて
