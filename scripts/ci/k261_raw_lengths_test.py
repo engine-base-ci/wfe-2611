@@ -21,8 +21,8 @@ GATE = ROOT / "scripts" / "ci" / "design_gate.py"
 CFG = ROOT / "design-gate.json"
 TESTPLAN = ROOT / "05_flow" / "build_testplan.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "v3-gate.yml"
-LEDGER_CAP_ROWS = 1295       # 台帳を入れた時点の行の数（K-261・Q の指摘 6 つを入れた後）。減らすだけ
-LEDGER_CAP_COUNT = 1419      # 台帳を入れた時点の生の値の数（count の和）
+LEDGER_CAP_ROWS = 1303       # 台帳を入れた時点の行の数（K-261・Q の指摘 6 つを入れた後）。減らすだけ
+LEDGER_CAP_COUNT = 1427      # 台帳を入れた時点の生の値の数（count の和）
 
 DESIGN = """---
 colors:
@@ -389,7 +389,7 @@ class D8(unittest.TestCase):
         トークンの行の高さは緑"""
         for why, css in {
             "font の / の後ろ": ".a { font: 600 var(--k-s-md)/1.4 sans-serif; }",
-            "font の 12px/1": ".a { font: 400 12px/1 sans-serif; }",
+            "font の /1": ".a { font: 400 var(--k-s-md)/1 sans-serif; }",
             "line-height で読む": ".a { --lh: 1.9; }\n.b { line-height: var(--lh); }",
             "font の / の後ろで読む": ".a { --lh: 1.9; }\n.b { font: 600 var(--k-s-md)/var(--lh) sans-serif; }",
         }.items():
@@ -436,6 +436,9 @@ class D8(unittest.TestCase):
             "変種つき": 'export const P = () => <p className="md:hover:text-[13.5px]" />;',
             "style 属性": "export const P = () => <p style={{ gap: 6 }} />;",
             "DOM の style": 'export function f(el: HTMLElement) { el.style.width = "12px"; }',
+            "DOM の setProperty": 'export function f(el: HTMLElement) { el.style.setProperty("gap", "6px"); }',
+            "DOM の Object.assign": 'export function f(el: HTMLElement) { Object.assign(el.style, { gap: "6px" }); }',
+            "DOM の setAttribute": 'export function f(el: HTMLElement) { el.setAttribute("style", "gap: 6px"); }',
         }.items():
             with self.subTest(why):
                 t = self.tree(".a { color: inherit; }\n")
@@ -457,6 +460,17 @@ class D8(unittest.TestCase):
         self.assertEqual(t.run("--raw-lengths").returncode, 0, "台帳に載った任意値で赤")
         t.put("web/p.tsx", 'export const P = () => <><p className="max-w-[920px]" /><i className="max-w-[920px]" /></>;\n')
         self.assertEqual(t.run("--raw-lengths").returncode, 1, "任意値を増やして緑")
+        # style 属性の鍵の値は中身の全部（途中で切らない）
+        body = "{{ " + ", ".join(f"p{i}: \"var(--k-s-md)\"" for i in range(8)) + ", gap: 6 }}"
+        self.assertGreater(len(body), 130)
+        t = self.tree(".a { color: inherit; }\n",
+                      ledger=[{"file": "web/p.tsx", "selector": "style 属性", "prop": "style", "value": body,
+                               "count": 1, "reason": "前からの値。その画面のチケットが直す"}])
+        t.put("web/p.tsx", f"export const P = () => <p style={body} />;\n")
+        r = t.run("--raw-lengths")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        t.put("web/p.tsx", f"export const P = () => <p style={body[:-3]}, padding: \"12px\" }}}} />;\n")
+        self.assertEqual(t.run("--raw-lengths").returncode, 1, "長い style 属性の後ろに足して緑")
 
 
 class RealTree(unittest.TestCase):
@@ -510,7 +524,7 @@ class RealTree(unittest.TestCase):
         self.assertIn("CI_BASE: ${{ steps.scope.outputs.base }}", yml[i - 600:i + 600])
 
     def test_K261_RL_017_division_with_class_gate(self) -> None:
-        """K261-RL-017 分担：style={…} は class_gate が新しい層で赤にする。D8 が見ない書き方（.scss など・.tsx の <style>）が無い"""
+        """K261-RL-017 分担：style={…} は class_gate が新しい層で赤にし、前の世代と app/ は D8 が台帳で数える。D8 が見ない書き方（.scss など・.tsx の <style>）が無い"""
         sys.path.insert(0, str(ROOT / "scripts" / "ci"))
         import class_gate  # noqa: PLC0415
 
