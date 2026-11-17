@@ -15,6 +15,7 @@ import { ticketHooks } from "../../src/hooks/tickets.js";
 import { delegateHooks } from "../../src/hooks/delegate.js";
 import { approveHooks } from "../../src/hooks/approve-complete.js";
 import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
+import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
@@ -32,6 +33,8 @@ Object.assign(
   delegateHooks(h.pool),
   approveHooks(h.pool),
   setupTaskHooks(h.pool),
+  // 再設定のメールを頼む（K-313）。送出先は差さない（送らずにログの道を通る）。認証の表は業務の接続でも読み書きできる（0004 の既定の権限）
+  passwordResetHooks({ authPool: h.pool, appPool: h.pool, config: { baseUrl: "http://127.0.0.1", webBaseUrl: null } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(

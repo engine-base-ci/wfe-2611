@@ -26,7 +26,6 @@ EXEMPT: dict[str, str] = {
     "signupHooks": "Better Auth と送るメールの差し込みが要り、偽のセッションの的では回せない。口の振る舞いは K-51 と packages/auth の試験が持つ",
     "verifyEmailHooks": "Better Auth と送るメールの差し込みが要り、偽のセッションの的では回せない。口の振る舞いは K-52 と packages/auth の試験が持つ",
     "consentTermsHooks": "同意し直しは Better Auth のセッションの印に頼り、偽のセッションの的では回せない。口の振る舞いは K-53 の試験が持つ",
-    "passwordResetHooks": "Better Auth の本物の部品と送るメールの差し込みが要り、偽のセッションの的では回せない。口の振る舞いは K-313・K-314 の試験が持つ",
 }
 
 _SPREAD = re.compile(r"\.\.\.\s*(\w+Hooks)\s*\(")
