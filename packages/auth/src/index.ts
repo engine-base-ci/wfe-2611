@@ -34,6 +34,12 @@ export interface Mail {
   kind: "verify" | "reset" | "new_device";
 }
 export type Mailer = (m: Mail) => Promise<void>;
+/** 2 段階の待ちの印の長さ（秒・K-301） */
+export const TWO_FACTOR_PENDING_SEC = 300;
+/** 閉じる部品の道（ロックと止めを通らない道・K-301） */
+export const DISABLED_PATHS = ["/sign-in/email"] as const;
+/** 部品のパスワードの段の道（2 段階を付けた人はここではセッションを写さない） */
+const PASSWORD_STEP_PATHS = new Set(["/sign-in/email"]);
 
 /** 型は core の Auth（plugin の endpoint 型は使わない＝zod の内部型を .d.ts に出さない） */
 export type Auth = ReturnType<typeof betterAuth<BetterAuthOptions>>;
@@ -110,7 +116,10 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       },
     },
     advanced: { database: { generateId: () => uuidv7(), joins: true } }, // session と user を 1 本で引く（K-233）
-    plugins: [twoFactor({ issuer: o.issuer ?? "Kaname" }), bearer()],
+    // 2 段階の待ちの印（パスワードを通った後・6 けたの前）は 5 分（部品の既定 10 分を直す・K-301）
+    plugins: [twoFactor({ issuer: o.issuer ?? "Kaname", twoFactorCookieMaxAge: TWO_FACTOR_PENDING_SEC }), bearer()],
+    // ロック（app.login_attempts）を通らない部品のログインの道は閉じる（404・K-301）。サーバーの中の auth.api.signInEmail は道を通らないので動く
+    disabledPaths: [...DISABLED_PATHS],
     databaseHooks: {
       user: {
         create: {
@@ -125,16 +134,31 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       session: {
         create: {
           // 認証のセッションができたら public.sessions に写す（失効の正はこちら）。会社に属していない利用者は null（登録の途中）
-          after: async (session) => {
+          after: async (session, ctx) => {
+            // 2 段階を付けた人のパスワードの段：部品は一度ふつうにセッションを作ってから消し、待ちの印に替える。
+            //   その間は写さない・規約の印も新しい端末の知らせも出さない（6 けたで入ったときのセッションで出す・K-301）
+            if (PASSWORD_STEP_PATHS.has((ctx as { path?: string } | null)?.path ?? "")) {
+              const u = await pool.query<{ on: boolean | null }>(
+                'select "twoFactorEnabled" as on from kaname_auth."user" where id = $1',
+                [session.userId],
+              );
+              if (u.rows[0]?.on) return;
+            }
             const ua = session.userAgent ?? "";
             const kind = /Kaname-Bridge/i.test(ua) ? "bridge" : /Kaname-API/i.test(ua) ? "api" : "web";
-            await o.appPool.query("select app.open_session($1, $2, $3, $4, $5)", [
-              session.id,
-              session.userId,
-              kind,
-              ua.slice(0, 200) || null,
-              null,
-            ]);
+            try {
+              await o.appPool.query("select app.open_session($1, $2, $3, $4, $5)", [
+                session.id,
+                session.userId,
+                kind,
+                ua.slice(0, 200) || null,
+                null,
+              ]);
+            } catch (e) {
+              // 写せなかったら認証側のセッションも消してから上げる（半分だけ入った状態を残さない・K-301・G-15）
+              await pool.query("delete from kaname_auth.session where id = $1", [session.id]).catch(() => undefined);
+              throw e;
+            }
             // 同意し直しの印（K-53・D-125.162）：今の版の利用規約かプライバシーポリシーにまだ同意していなければ、このセッションに立てる。
             //   パスワード・パスキー・2 段階の後・確認のメールで確定した直後のどれもこの hook を通る。Bridge のセッションには立てない（D-128.137）
             await o.appPool.query("select app.mark_session_terms($1)", [session.id]);

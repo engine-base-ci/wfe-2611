@@ -39,3 +39,10 @@ overrides:
   tinypool: "^2.1.2"
   "vite@7": "^7.3.7"
   dompurify: "^3.4.17"
+
+# 部品の弱点の検査（pnpm audit・G44）で、直った版がまだ無い知らせを、理由と見直す日をつけて 1 件ずつだけ外す（2026-11-18・PM の決め・K-301 が運ぶ）
+auditConfig:
+  ignoreGhsas:
+    # picomatch の ReDoS（4.0.7 以下・直った版がまだ無い）。入り方は better-auth → vitest → picomatch で、試験の道具の中だけ。本番で利用者の入力を通さない。
+    # 見直す日 2026-12-02：直った版が出たら overrides で上げて、この除外を外す
+    - GHSA-fc5q-39xc-vjpf

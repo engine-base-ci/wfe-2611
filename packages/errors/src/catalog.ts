@@ -34,8 +34,8 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-AUTH-002": {
     "id": "E-AUTH-002",
     "cls": "auth",
-    "message": "15 分間ロックしました。急ぐときはメールでロックを解除できます",
-    "action": "解除メールを送る／15 分待つ",
+    "message": "15 分間ロックしました。15 分たってから、もう一度入ってください",
+    "action": "15 分待ってから入り直す。急ぐときはパスキーかパスワードの再設定で入る",
     "undo": false,
     "severity": "critical",
     "support_code": "AUTH-002",

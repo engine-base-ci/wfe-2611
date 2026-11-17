@@ -251,7 +251,7 @@ describe("K-237 口ごとの DB の文の数（台帳の上限）", () => {
     expect(bogus.headers.get("server-timing")).toBeNull();
   });
 
-  it("K237-API-005 ログイン・登録・再設定の申し込みの答えには、登録の有無・ログイン中かどうか・成功か失敗かにかかわらず Server-Timing が無い（文の数で登録の有無を漏らさない・PM の決め）", async () => {
+  it("K237-API-005 登録の申し込みの答えには（ログインと再設定の申し込みは K301-API-027・K313-API-018 が見る）、登録の有無・ログイン中かどうか・成功か失敗かにかかわらず Server-Timing が無い（文の数で登録の有無を漏らさない・PM の決め）", async () => {
     const ghost = `k237-none-${Date.now().toString(36)}@example.com`;
     const post = (path: string, body: unknown, bearer: boolean) =>
       app.request(`http://localhost${path}`, {
@@ -264,18 +264,14 @@ describe("K-237 口ごとの DB の文の数（台帳の上限）", () => {
         },
         body: JSON.stringify(body),
       });
-    const BAD = "wrong-password-0000";
-    // [道, 中身, 待つ答えの番号]（口の手前で断られて緑にならないよう、番号も見る。契約の /api/v1/auth/* は口の振る舞いがまだ無い 501）
+    // [道, 中身, 待つ答えの番号]（口の手前で断られて緑にならないよう、番号も見る。契約の /api/v1/auth/sign-up は口の振る舞いがまだ無い 501）
+    // 段 2（K-50）で振る舞いが入る口・閉じる道は、ここに置くと入った時点で番号がずれて落ちるので、その口のチケットの試験が同じことを見る：
+    //   ログイン（契約の口・成功と失敗・在るメールと無いメール）→ K301-API-027／再設定の申し込み（契約の口・在るメールと無いメール）→ K313-API-018。
+    //   部品のログインの道は K-301 が、部品の再設定の申し込みの道は K-320 が、前の道すじのログインは K-316 が閉じる。
+    //   「再設定の申し込みは在るメールと無いメールで流す文の数が違う（だから頭に出してはいけない）」の確かめも、部品の道が閉じるので外した
     const cases: [string, unknown, number][] = [];
     for (const who of [email, ghost])
-      cases.push(
-        ["/api/auth/sign-in/email", { email: who, password: BAD }, 401],
-        ["/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }, 200],
-        ["/api/auth-ext/sign-in", { email: who, password: BAD }, 401],
-        ["/api/v1/auth/sign-in", { email: who, password: BAD }, 501],
-        ["/api/v1/auth/password/forgot", { email: who }, 501],
-        ["/api/v1/auth/sign-up", { email: who, password: PW, company_name: "K237 の会社" }, 501],
-      );
+      cases.push(["/api/v1/auth/sign-up", { email: who, password: PW, company_name: "K237 の会社" }, 501]);
     const leaked: string[] = [];
     const check = async (path: string, body: unknown, want: number, bearer: boolean) => {
       const r = await post(path, body, bearer);
@@ -285,22 +281,13 @@ describe("K-237 口ごとの DB の文の数（台帳の上限）", () => {
       if (st !== null) leaked.push(`${path}${bearer ? "（ログイン中）" : ""}（${r.status}）：${st}`);
     };
     for (const bearer of [false, true]) for (const [path, body, want] of cases) await check(path, body, want, bearer);
-    // 登録とログインの成功の答えにも無い
+    // 登録の成功の答えにも無い
     await check(
       "/api/auth/sign-up/email",
       { email: `k237-new-${Date.now().toString(36)}@example.com`, password: PW, name: "K237" },
       200,
       false,
     );
-    await check("/api/auth/sign-in/email", { email, password: PW }, 200, false);
-    await check("/api/auth-ext/sign-in", { email, password: PW }, 200, false);
-    // 守る値が本当にある場面か：再設定の申し込みは、在るメールと無いメールで流す文の数が違う（だから頭に出してはいけない）
-    const count = async (who: string) => {
-      hits.length = 0;
-      await post("/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }, false);
-      return hits.length;
-    };
-    expect(await count(email)).not.toBe(await count(ghost));
     expect(leaked, leaked.join("\n")).toEqual([]);
   });
 

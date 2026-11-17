@@ -111,7 +111,8 @@ export const MIGRATIONS = [
   "0104_read_sweep_quiet.sql",
   "0105_public_service_status.sql",
   "0106_reset_security_events.sql",
-  "0107_reset_revokes_memberships.sql",
+  "0107_login_events.sql",
+  "0108_reset_revokes_memberships.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

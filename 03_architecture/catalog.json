@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 41,
+  "api_built": 42,
   "api_only_later_phase": 20,
   "legacy_routes": 30,
   "db": 144,
@@ -443,9 +443,9 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-74"
+    "K-301"
    ]
   },
   {

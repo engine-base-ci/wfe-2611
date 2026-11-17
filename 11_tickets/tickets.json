@@ -3911,7 +3911,6 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/generated/post_auth_sign_in.test.ts",
     "apps/api/test/generated/post_auth_two_factor_verify.test.ts",
     "apps/api/test/generated/post_auth_sign_out.test.ts",
     "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
@@ -3926,7 +3925,6 @@
     "login"
    ],
    "apis": [
-    "signInWithPassword",
     "verifySignInCode",
     "signOut",
     "requestAdminRecovery"
@@ -13096,6 +13094,101 @@
     "申し送り": "- 無し"
    },
    "file": "11_tickets/K-265.md"
+  },
+  {
+   "id": "K-301",
+   "title": "パスワードで入る口（signInWithPassword・ロックの新しい文・無いメールも同じ答えと時間・閉じた部品の道）（K-74 の子）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-74",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。K-166 の見込みの根拠と同じ引き方（K-156 の実装の実測 1 時間 21 分を、行 30 以下・口 1 本の葉に割った）。前の道すじ（apps/api/src/auth/ext.ts の /sign-in と packages/auth/src/signup.ts の signInWithLock）をそのまま契約の口に写すので新しく書く量は少ない。足すのは記録の関数 1 本・閉じる道 1 つ・2 段階の待ちの 5 分。最初に取り込む K-301 の実測で K-302・K-306 を引き直す",
+   "decisions": [
+    "D-042",
+    "D-051.2",
+    "D-125.137",
+    "D-125.140",
+    "D-128.59",
+    "D-128.63",
+    "D-128.120",
+    "D-128.121",
+    "D-128.125",
+    "D-128.130",
+    "D-128.137",
+    "D-128.141",
+    "D-128.143"
+   ],
+   "split": "",
+   "prior_impl": "前の道すじ POST /api/auth-ext/sign-in（apps/api/src/auth/ext.ts 160〜202 行・signInWithLock・E-AUTH-001／002／007）。契約の口 signInWithPassword は契約だけ（501）",
+   "carry": [
+    "apps/api/test/k237_perf_budget.test.ts"
+   ],
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "tests": [
+    "apps/api/test/features/F1/sign-in.test.ts",
+    "apps/api/test/generated/post_auth_sign_in.test.ts"
+   ],
+   "depends_on": [],
+   "acts": [
+    "A13"
+   ],
+   "screens": [],
+   "apis": [
+    "signInWithPassword"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/db",
+    "@kaname/errors",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "db",
+    "shared",
+    "lockfile"
+   ],
+   "changes": [
+    "apps/api/src/features/F1/login/",
+    "apps/api/src/hooks/login.ts",
+    "apps/api/src/server.ts",
+    "packages/auth/src/index.ts",
+    "packages/auth/src/signup.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "07_qa/test-specs/errors.json",
+    "05_flow/screen_api.py",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "apps/api/test/features/F1/login.harness.ts",
+    "scripts/ci/ci_scope.json",
+    "apps/api/test/k237_perf_budget.test.ts",
+    "apps/api/test/fuzz/server.ts",
+    "scripts/ci/contract_shape_test.py",
+    "11_tickets/K-74.md",
+    ".gitleaksignore",
+    "pnpm-workspace.yaml"
+   ],
+   "sections": {
+    "目的": "登録を済ませた人が、ログインの画面でメールとパスワードを入れて入る **契約の口**（`POST /api/v1/auth/sign-in`）を作る。今は前の道すじ `POST /api/auth-ext/sign-in` にしか振る舞いが無く、契約の口は 501。\n\n- 2 段階を付けていない人は、その場でログインの印（token）を受け取る\n- 2 段階を付けている人は、まだ入らず、2 段階の **待ちの印**（pending・5 分）を受け取る。6 けたで入るのは K-302\n- 5 回違えたら 15 分ロック。ロックの文は D-128.141 で「15 分たってから、もう一度入ってください」に直す（解除のメールは作らない）\n- 無いメールでも、違うパスワードと同じ答え・同じくらいの時間で返す（D-042「有る無しを漏らさない」）\n- ロックを通らない部品の道 `POST /api/auth/sign-in/email` を閉じる（404）\n\n画面をこの口に載せ替えるのは K-316（重さの上限：この葉は apps/web に触らない）。前の道すじ `/api/auth-ext/sign-in` は画面と前からの試験 20 か所が使っているので、この葉では消さず、K-316 が画面を移すときに消す。",
+    "完了の条件": "- [ ] 下の表の 27 行（K301-API-001〜027）が本物の DB の上で緑（`apps/api/test/features/F1/sign-in.test.ts`・土台は `login.harness.ts`）\n- [ ] 契約の口 signInWithPassword が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_sign_in.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している\n- [ ] errors.json の E-AUTH-002 の文が直り、目録（packages/errors）が作り直されている\n- [ ] 前からの試験（apps/api/test/auth_ext.test.ts の前の道すじのログイン・packages/auth の試験）が緑のまま\n- [ ] 前からの試験の手直し 1 か所（carry：`apps/api/test/k237_perf_budget.test.ts` の K237-API-005。段 1 で入った試験で、段 2 で振る舞いが入る・閉じる道（契約のログイン 501・部品のログインの道・部品の再設定の申し込みの道・前の道すじのログイン・契約の再設定の申し込み 501）を外し、ログインの分は K301-API-027、再設定の申し込みの分は K313-API-018 に移した）が緑\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: AUTH\n\n- 親 K-74「ログインする」の子（段 2 の葉の切り方・07_functional/段2-F1/切り方.md）。K-74 の「決めた判断」をそのまま受ける\n- 依存：無し。K-300（段 2 の画面の部品とモックを本線に入れる葉）は待たない。この葉は口と DB と部品（packages/auth）だけで、画面のファイル（apps/web）を 1 つも触らないため（代表の決め・待ちを減らす案 3・2026-11-17）\n- 止められた人・会社（members.suspended_at・subscriptions.suspended_at）をセッションを作る前の 1 か所で断るのは K-303。**それまでの間**：この口は前の道すじと同じく、止められた人もパスワードが合えば入れる（今の振る舞いのまま。K-303 が K-301 の直後に入る）。会社の人が無い・抜けた（E-AUTH-007）は、前の道すじの確かめ（入った直後に解いて、解けなければ閉じて 403）をこの口に写す。K-303 が 1 か所に移しても答え（403・E-AUTH-007・生きたセッションなし）は変わらない\n- 2 段階の待ちの印で 6 けたを確かめる口は K-302。この葉は待ちの印を出し、その期限を 5 分にするところまで\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）",
+    "確かめたこと（切る段・2026-11-17）": "1. 前の道すじ `/api/auth-ext/sign-in`（ext.ts 160〜202 行）：`normalizeEmail` → 形が違えば 422・E-VAL-004（空もここで 422・E-VAL-004 にしていた。契約の口では空を E-VAL-008 に分ける）→ `signInWithLock`（`app.login_locked_until` → `auth.api.signInEmail` → 成功で `app.login_ok`／失敗で `app.login_failed`）→ 2 段階なら Cookie の値を `two_factor_cookie` で返す。E-AUTH-002 の文を手で書いている（\"急ぐときは…\"）\n2. ロックの判定は `locked_until > now()`（migration 0020）。ちょうど期限の時刻は入れる\n3. 2 段階の待ちは、部品が kaname_auth.verification に `2fa-<乱数>`（値＝本人の id・期限＝twoFactorCookieMaxAge 既定 600 秒）を作り、署名した Cookie で渡す。5 分にするのは `twoFactor({ twoFactorCookieMaxAge: 300 })`\n4. 新しい端末の知らせ（画面とメール）とセッションの写し（`app.open_session`）・規約の印（`app.mark_session_terms`）は `packages/auth/src/index.ts` の `databaseHooks.session.create.after`。メールが送れなくても `.catch` でログインを止めない\n5. セキュリティの記録 `app.record_security_event(tenant, kind, member, ip_region, detail)` は kaname_app で呼べるが、会社が要る。失敗のとき本人の会社を引く道が kaname_app に無い（members は行の守りの中）→ 会社を引いて書く関数を 1 本足す（下の DB）\n6. 閉じる部品の道：`/api/auth/sign-in/email` を呼んでいる所は、この葉の試験のほかに 0 か所。部品を直に呼ぶ `auth.api.signInEmail`（サーバーの中）は `disabledPaths` の外なので、signInWithLock は今のまま動く\n7. 口の入口（apps/api/src/contract/op.ts）：上限（1 分に 10 回・IP ごと）→ 認証（public なので無し）→ 振る舞い（hook の before）。上限の 429 は RATE_LIMITED・retry_after_sec 60\n\n```search\n- name: 閉じる部品の道を呼んでいる所（この葉の試験 sign-in.test.ts の 2 件は閉じたことを確かめる行なので外す。0 なので閉じても壊れない）\n  cmd: git grep -n -F '/api/auth/sign-in/email' -- apps packages ':!apps/api/test/features/F1/sign-in.test.ts'\n  count: 0\n- name: 前の道すじのログインを使っている所（この葉では消さない。消すのは K-316・決め 3。c/段2 の今の木で数えた）\n  cmd: git grep -n -F 'auth-ext/sign-in' -- apps packages\n  count: 20\n- name: E-AUTH-002 の古い文（errors.json・ext.ts・作り直す目録。ext.ts の文は K-316 が前の道すじと一緒に消す）\n  cmd: git grep -n -F '急ぐときはメールでロックを解除できます' -- apps packages 07_qa/test-specs/errors.json\n  count: 3\n```",
+    "依存の理由": "依存は無い（口と DB だけの葉で、ほかの葉の口・表・ファイルを前提にしない）",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 口の形（契約を直す） | `05_flow/screen_api.py` の `INPUTS` に `\"signInWithPassword\": (\"SignInInput\", {\"email\": \"string\", \"password\": \"string\"})`（strict・ほかの欄は 422）、`RESPONSES` に `\"signInWithPassword\": (\"SignInResult\", {\"token\": \"string?\", \"two_factor\": \"boolean\", \"pending\": \"string?\"})`、`ERRORS_4XX` に 401（E-AUTH-001・EARS「IF メールアドレスかパスワードが違うなら、Kaname は 401 と残り回数を返し、登録の有無を漏らさない」）・403（E-AUTH-007）・422（E-VAL-008・E-VAL-004）・429（E-AUTH-002・EARS「IF 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいパスワードでも入れない」）。作り手の順（`scripts/ci/generated.json`）で 08_api・packages/contracts・apps/api/test/generated を作り直す（手で直さない・K-52 と同じ） |\n| 口の振る舞い | `apps/api/src/features/F1/login/sign-in.ts`（新しく）に、前の道すじの /sign-in の中身を写す：① 欄が空・欄が無い → 422・E-VAL-008。これは hooks の `input`（前処理・op.ts の strict な形の確かめより前）で返す（`{}` が VALIDATION_ERROR にならないように・DB を引かない）② パスワードは **入口の正規化の前の値**（`c.req.json()` の生の値・登録の口 apps/api/src/features/F1/sign-up/index.ts:98-101 と同じ）を使う。入口（op.ts の normalize）は前後の空白を落とすので、そのままだと K301-API-012 が通らない。メールは `normalizeEmail` して `EMAIL_RE` に合わなければ 422・E-VAL-004（失敗の数に入れない）③ `signInWithLock`（下の「ログインの部品」の直しのあと）④ 成功・2 段階なし：入った直後にセッションを解き、解けなければ（会社の人が無い・抜けた）閉じて 403・E-AUTH-007 ⑤ 2 段階あり：`pending` に待ちの Cookie の値を入れて返す（Cookie の名前は入れない・中身の見えない文字列）⑥ 失敗：401・E-AUTH-001（文は `メールアドレスかパスワードが違います。あと N 回で 15 分ロックします`・`remaining`）／ロック：429・E-AUTH-002（文は errors.json から・`retry_after_sec`・`remaining: 0`）⑦ signInWithLock が投げ直した例外（DB が落ちた・セッションを写す所の失敗）は 500・E-PAGE-003（ログには種類だけ）。`apps/api/src/hooks/login.ts`（新しく）に `loginHooks` を置き、`apps/api/src/server.ts` の `contract.hooks` に足す（K-302・K-306 も同じファイルに足す） |\n| 時間をそろえる | 無いメールでも、部品がパスワードのハッシュを計算してから断ることを確かめる（K301-API-008 が赤なら、無いメールのときに同じ強さのハッシュを 1 回計算する処理を signInWithLock に足す） |\n| ログインの部品（packages/auth） | ① `twoFactor({ issuer, twoFactorCookieMaxAge: 300 })`（待ちの印 5 分）② `disabledPaths: [\"/sign-in/email\"]`（ロックを通らない道を閉じる。ほかの部品の道を閉じる葉は精査の後の決め 4）③ **2 段階の待ちになるパスワードの段では写さない**：部品（better-auth 1.7.15 の two-factor の after hook）は、パスワードが合うと一度ふつうにセッションを作ってから消す。その間に `databaseHooks.session.create.after` が走るので、hook の文脈の道が `/sign-in/email` で本人の `twoFactorEnabled` が真なら、`app.open_session`・規約の印・新しい端末の知らせ（画面とメール）を何もしない。6 けたで入ったとき（`/two-factor/verify-*` の道）にできるセッションで、ふだんどおり写して知らせる（K301-API-002・K-302 の K302-API-001）④ セッションを写す所（session.create.after の `app.open_session`）が例外になったら、認証側のセッションも消してから例外を上げる（半分だけ入った状態を残さない・K301-API-019）⑤ `signInWithLock`（packages/auth/src/signup.ts）：部品の「メールかパスワードが違う」（APIError の UNAUTHORIZED・INVALID_EMAIL_OR_PASSWORD）**だけ**を失敗に数えて `app.login_failed` を呼ぶ。ほかの例外（DB が落ちた・セッションを写す所の失敗）は数えずに投げ直す（口は 500・K301-API-019 で失敗の数が増えないことも見る）⑥ 記録は signInWithLock の中の 1 か所で書く（下の「記録の呼び方」）。引数に `{ authPool, country }` を足す（国は口が `countryOf(要求の頭)` で渡す） |\n| DB（migration 1 本） | `00NN_login_events.sql`（番号は取り込む時点の次の空き）：`app.record_login_event(p_auth_user_id text, p_kind text, p_ip_region text) returns int`（security definer・kaname_app に execute）。その本人が入っている会社ごと（members.auth_user_id・deleted_at is null）に `security_events` へ 1 行（kind_id＝p_kind・member_id・ip_region・detail は空）。本人がいなければ 0 行。種類は `login_succeeded`・`login_failed`・`login_locked`（K-302 が `login_code_failed`・`login_code_locked` を使う）。packages/db/src/index.ts の MIGRATIONS の末尾に足す。ip_region は `countryOf`（x-vercel-ip-country）だけ・IP そのものは入れない |\n| 記録の呼び方 | 置き場は `signInWithLock` の 1 か所（登録の確定・パスキー・6 けたの段の hook では書かない）。本人の id は、成功なら部品の答えの user.id、失敗とロックならメールから引く（`authUserIdByEmail(authPool, email)`・packages/auth/src/pending.ts の既存の関数・features/F1/login/ は生の pg を使わない）。成功（2 段階なしで印を渡したとき）は `login_succeeded`、失敗（1〜4 回目）は `login_failed`、5 回目（ロックした回）は `login_locked`。2 段階の待ちになったパスワードの段は書かない（6 けたで入ったときに K-302 が `login_succeeded` を書く）。無いメールは本人を引けないので書かない（答えは同じ）。ip_region は口が渡す国（x-vercel-ip-country）。メール・パスワードは detail に入れない |\n| エラーの正本 | `07_qa/test-specs/errors.json` の E-AUTH-002 の message を「15 分間ロックしました。15 分たってから、もう一度入ってください」に、action を「15 分待ってから入り直す。急ぐときはパスキーかパスワードの再設定で入る」に直す（D-128.141・番号は精査の後の決め 1 のとおり）。E-AUTH-001 の false_when「前後の空白と大文字小文字の違いだけなら通る」はパスワードにも読めて K301-API-012 と食い違うので、「メールアドレスの前後の空白と大文字小文字の違いだけなら通る（パスワードは 1 文字も直さない）」に直す。作り手で目録（packages/errors/src/catalog.ts・errors.md）を作り直し、`python3 scripts/ci/error_catalog.py gate` が緑 |\n| 生成の試験の対応 | `07_qa/test-plan/ears-elsewhere.json` に signInWithPassword（file：apps/api/test/features/F1/sign-in.test.ts・reason：本物のログインの部品と DB のロック・差し込んだ送出先で確かめる。生成の試験の偽のセッションでは確かめられない）を足す。作り直した後の名前に、種類で行を結ぶ：`_ok` → K301-API-001・`_rejected_401` → K301-API-003・`_rejected_403` → K301-API-014・`_rejected_422*` → K301-API-009（E-VAL-008）と K301-API-010（E-VAL-004）・`_rate_limited` → K301-API-020（ロックの 429 が別の名前になれば K301-API-004）・`_shape` → K301-API-024・`_server_error` → K301-API-019・`_session_unresolved` → k144-contract.test.ts の K144-API-032・`_too_large` → K144-API-042。it.todo を残さない |\n| 試験の土台 | `apps/api/test/features/F1/login.harness.ts` はこの葉の試験のコミットで持ち込む（K-302・K-306 の試験も読む。実装の段では変えない）。本人を作ったら、準備（登録の確定・2 段階を付ける）でできたセッションを閉じてから返す（精査の後の決め 7・`makeUser` の 1 か所）。足すエラーの番号は決め 1 で決め打ち（E-AUTH-013・014） |\n| 範囲の地図 | 生成の試験 post_auth_sign_in.test.ts が sign-in.test.ts を読むので、`scripts/ci/ci_scope.json` の data_links に `{ \"paths\": [\"apps/api/test/features/F1/sign-in.test.ts\", \"apps/api/test/features/F1/login.harness.ts\"], \"tests\": [\"apps/api/test/generated/post_auth_sign_in.test.ts\"] }` を足す（K-166 と同じ） |\n| 使う既存の実装 | `normalizeEmail`・`EMAIL_RE`・`emailHash`・`signInWithLock`（packages/auth/src/signup.ts）・`createSessionResolver`・`signOut`（resolver.ts・E-AUTH-007 のとき閉じる）・`app.login_failed`／`login_locked_until`／`login_ok`（migration 0020）・`app.record_security_event`（0003）・`countryOf`（device.ts）・`kanameError`（errors） |\n\n### 決めた判断\n\n（親 K-74 の「決めた判断」のうち、この葉に効く文）\n\n- パスワードの失敗は 5 回で 15 分ロック。無いメールでも同じように数え、同じ返事・同じくらいの時間で返す（D-042）\n- ロックは時間で外れるだけ。解除のメールは作らない。文は「15 分たってから、もう一度入ってください」（D-128.141）\n- 2 段階の待ちの印は 5 分（部品の既定の 10 分を直す）\n- 戻る先（next）・画面の出し分けは画面（K-316）\n- 新しい端末の知らせ（画面とメール・D-125.140）は今の hook のまま。メールが送れなくてもログインは止めない\n- 前の道すじはこの葉では消さず K-316 で消す／ログインの記録（成功・失敗・ロック）は会社ごとの security_events に、関数 `app.record_login_event` を 1 本足して書く（PM の決め・2026-11-17・聞くこと-2 の「PM が決めた作り方」）\n- 2 段階の人のパスワードの段では、sessions に写さず、新しい端末の知らせも成功の記録も出さない。どれも 6 けたで入ったときに出す（切る段の精査の後・2026-11-17）\n- パスワードの失敗に数えるのは「メールかパスワードが違う」だけ。DB が落ちた・写す所の失敗は数えず 500（同上）",
+    "テスト仕様と確認の結果": "行 ID は `K301-API-…`。試験は `apps/api/test/features/F1/sign-in.test.ts`（27 行）。\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`\"user\".\"twoFactorEnabled\"`・`\"twoFactor\"`の行（2 段階あり・なし）・`account.password`（パスワードあり）・`app.login_attempts.fails`／`locked_until`（失敗の数・ロック中）・`members.deleted_at`（抜けた）・`members.suspended_at`・`subscriptions.suspended_at`（止められた）・`sessions.revoked_at`／`revoke_reason_id`（切られた）・`sessions.terms_pending`（規約の印）・`kaname_auth.pending_signup`（確認していない申し込みだけ）\n\n| アカウントの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| パスワードだけ・2 段階なし | メールとパスワード（正しい） | ログインしていない | 201・token・two_factor=false・pending=null。sessions に 1 行・失敗の数の行は消える。その後に安全の設定へ進めない扱い（付けるまで進めない）は K-308 | このチケット（付けるまで進めないは K-308） | K301-API-001 |\n| パスワードだけ・2 段階あり | メールとパスワード（正しい） | ログインしていない | 201・token=null・two_factor=true・pending（5 分）。まだセッションは無い（sessions に写さない・新しい端末の知らせも成功の記録も出さない） | このチケット（6 けたは K-302） | K301-API-002 |\n| どれでも（失敗 1〜4 回目） | 違うパスワード | ログインしていない | 401・E-AUTH-001・残り回数（文と remaining）。正しく入れば数え直し | このチケット | K301-API-003 |\n| どれでも（失敗 5 回目） | 違うパスワード | ログインしていない | 429・E-AUTH-002（新しい文）・retry_after_sec 約 900・remaining 0 | このチケット | K301-API-004 |\n| ロック中 | 正しいパスワード | ログインしていない | 429・E-AUTH-002。セッションを作らない | このチケット | K301-API-005 |\n| ロック中（期限の直前・ちょうど・直後） | 正しいパスワード | ログインしていない | 直前 429・ちょうど（同じ取引の now() で判定）はロックの外・直後は 201 | このチケット | K301-API-006 |\n| ロック中 | パスワードを再設定する | ログインしていない | 再設定でロックが外れる | K-314 | — |\n| ロック中 | パスキーで入る | ログインしていない | 入れる（パスキーはロックの外） | K-304 | — |\n| 登録していない・確認していない申し込みだけ | メールとパスワード | ログインしていない | 401・E-AUTH-001（違うパスワードと同じ答え）。数えて 5 回目は 429 | このチケット | K301-API-007・K301-API-008 |\n| 会社の人が無い・抜けた | 正しいパスワード／違うパスワード | ログインしていない | 正しい：403・E-AUTH-007・生きたセッションなし。違う：401・E-AUTH-001 | このチケット（1 か所に移すのは K-303） | K301-API-014 |\n| 人が止められた・会社が止められた | パスワード | ログインしていない | 403（足すエラー）。それまでの間（K-303 が入るまで）は前の道すじと同じく入れる | K-303 | — |\n| どれでも | 2 つのタブで同時に | ログインしていない | 201 が 2 つ・セッション 2 つ | このチケット | K301-API-015 |\n| 国か端末が変わって切られた後 | パスワード | ログインしていない | 201 で普通に入れる。前のセッションは切れたまま | このチケット（切るのは K-20） | K301-API-016 |\n| どれでも（別の端末で初めて／同じ端末で 2 回目） | パスワード | ログインしていない | 初めて：画面の知らせとメールが 1 つずつ。2 回目：増えない | このチケット | K301-API-017 |\n| 規約の新しい版に未同意 | パスワード | ログインしていない | 201。セッションに同意し直しの印（その後の止めは K-53） | このチケット（止めは K-53） | K301-API-026 |\n| 2 段階あり（待ちの印あり） | 6 けた・バックアップコード | パスワードを通った直後 | 入る | K-302 | — |\n| どれでも | ログインの画面を開く・別のアカウントでログイン中・切れた後に戻る | — | 画面の振る舞い | K-316・K-317 | — |\n| 複数のワークスペースに入っている | ログインする | ログインしていない | どのワークスペースで入るか | 流れ F10（まだ切っていない） | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | メールかパスワードが空 | 422・E-VAL-008。DB を引かず、失敗の数に入れない | K301-API-009 |\n| 入力 | メールの形が違う | 422・E-VAL-004。失敗の数に入れない | K301-API-010 |\n| 入力 | メールの全角・前後と途中の空白・大文字 | 正規化して同じ人。失敗も同じ人で数える | K301-API-011 |\n| 入力 | パスワードの前後の空白 | 直さない（401） | K301-API-012 |\n| 入力 | 知らない欄 | 422（strict）。失敗の数に入れない | K301-API-013 |\n| 失敗 | セッションを写す所で失敗・DB が落ちた | 500・E-PAGE-003・認証側のセッションも残さない・パスワードの失敗に数えない | K301-API-019 |\n| 失敗 | 新しい端末の知らせのメールが送れない | 201・画面の知らせは残る・ログに残る | K301-API-018 |\n| 守り | 1 分に 11 回（同じ IP） | 429・RATE_LIMITED・retry_after_sec。11 回目は数えない | K301-API-020 |\n| 守り | ログ | パスワード・メール・ログインの印・待ちの印が出ない | K301-API-021 |\n| 守り | 記録 | 成功・失敗・ロックが会社の security_events に残る（IP は地域だけ）。無いメールは書かない | K301-API-022 |\n| 守り | 閉じた部品の道 | `/api/auth/sign-in/email` は 404 | K301-API-023 |\n| 守り | 関門 | features/F1/login/ は生の pg・fetch・better-auth を直に使わない | K301-API-024 |\n| 守り | 答えの形 | 201 の data は token・two_factor・pending だけ。401 にメールを入れない | K301-API-025 |\n| 守り | 答えの頭（速さの検査 K-237 の決め） | 成功（201）・違うパスワード（401）・無いメール（401）のどれも、ログイン中で呼んでも、頭に Server-Timing が無い（文の数で登録の有無を漏らさない） | K301-API-027 |\n| 守り | 違うパスワードと無いメール | 同じ答え・同じくらいの時間 | K301-API-007・K301-API-008 |\n\n### G 観点（G-11〜G-16）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外の置き場・秘密・外の API を使わない。メールは関門 C6 の送出先（K-51 で確かめた物）。migration は CI の空の DB に当てる既存の段で確かめる |\n| G-12 切り替わりの瞬間 | 該当 | ロックの期限の直前・ちょうど・直後（K301-API-006） |\n| G-13 機能の組み合わせ | 該当 | 2 つのタブで同時に（K301-API-015）・規約の新しい版 × ログイン（K301-API-026） |\n| G-14 口座状態の波及 | 該当 | 会社から抜けた人（K301-API-014）・切られた後に入り直す（K301-API-016）。止められた人は K-303 |\n| G-15 信号なし終了 | 該当 | セッションを写す所の失敗で半分だけ入らない（K301-API-019）・メールが送れなくても送れたと言わない（K301-API-018） |\n| G-16 有限資源の枯渇 | 該当 | 1 要求で DB の関数 3〜4 回（ロックを見る・部品・数える・記録）・接続はプール経由（関門 C2）。上限は 10 回／分／IP（K301-API-020）。消費の実測は L4 の負荷試験 |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-01 誤ったパスワードと無いメール | K301-API-007・K301-API-008・K301-API-014（止めの有無を探らせない） |\n| TP-AUTH-02 続けて失敗する | K301-API-003〜006 |\n| TP-AUTH-09 国・端末が変わった | K301-API-016・K301-API-017 |\n| TP-MAIL-01 送れなかったとき | K301-API-018 |\n| TP-MAIL-02 二重に出ない | K301-API-017（同じ端末で 2 回目は増えない） |\n\n要らない: TP-AUTH-03 2 段階のコードは K-302\n要らない: TP-AUTH-04 セッションが切れて戻ってくる画面は K-316\n要らない: TP-AUTH-05 ログアウトの後は K-306・K-317\n要らない: TP-AUTH-06 パスワードを変えた後は K-312・K-314\n要らない: TP-AUTH-07 本人確認の取り直しは K-19\n要らない: TP-AUTH-08 戻る先が外の道は画面 K-316\n要らない: TP-MAIL-03 新しい端末の知らせの本文は前からの hook の物で、この葉は文を変えない（本文の秘密の確かめは K-74 の申し送りのまま F10 の端末の一覧で・PM の決め 2026-11-17）",
+    "成果物": "- 口 `apps/api/src/features/F1/login/sign-in.ts`・`apps/api/src/hooks/login.ts`・server.ts の hooks／packages/auth の手直し（待ちの 5 分・閉じる道・写しの失敗・成功の記録）／migration `00NN_login_events.sql`／errors.json の E-AUTH-002／契約の形と生成物／ears-elsewhere／範囲の地図\n- 単体のテスト：`apps/api/test/features/F1/sign-in.test.ts`（27 行）・土台 `login.harness.ts`",
+    "決定ログ": "- 2026-11-18 作る段の手元の検査の赤で書く段に戻した：親は K-74 の apis から signInWithPassword、tests から post_auth_sign_in.test.ts だけを外す（KC7・TO2。c/段2 の親を丸ごと運ぶと、まだ入っていないほかの子の API が宙ぶらりんになり KC7・KC8 が赤になるので、PM が小さく外す形に決め直した）／新しい口 loginHooks を契約の fuzz の的 apps/api/test/fuzz/server.ts に本物のログインの部品で差す（PM の決め 2）／契約の形の試験 scripts/ci/contract_shape_test.py の写しの表（REQUIRED_INPUTS・VALUE_RANGES・UNEXPRESSIBLE_422）に signInWithPassword を足す（K144-SHAPE-020・024）。部品の弱点の検査（G44）に直った版の無い知らせ GHSA-fc5q-39xc-vjpf（picomatch）が新しく出て、どのチケットも止まるので、鎖の先頭の K-301 が pnpm-workspace.yaml の auditConfig.ignoreGhsas にこの 1 件だけを理由と見直す日（2026-12-02）つきで足す（PM の決め）。migration は本線の取り込みで K-307 が 0105 を使ったので 0106 に、さらに K-313 が 0106 を使ったので 0107 に付け替えた（PM の決め直し・入った順に取る）\n- 2026-11-17 代表の決め（待ちを減らす案 3）：口だけの葉は K-300 を待たない。depends_on から K-300 を外した（画面のファイルを触らない）\n- 2026-11-17 精査 R（差し戻し・指摘 7）を受けて直した：signInWithLock の失敗の数え方・2 段階のパスワードの段で写さない・パスワードは入口の正規化の前の値・空は input で E-VAL-008・記録の置き場を signInWithLock の 1 か所に・search の件数・ちょうどの判定。試験の土台は精査の後の決め 7（準備のセッションを閉じる）と決め 1（番号の決め打ち）に合わせた\n- 2026-11-17 PM の決め（聞くこと-2 の「PM が決めた作り方」・勧めのとおり）：前の道すじは K-316 で消す・`app.record_login_event` を足す（この葉の重さは db）・TP-MAIL-03 は F10\n- 2026-11-17 切る段で K-74 から分けた（段 2 の葉の切り方・葉は行 30 以下）。行は K-74 の表の口の行から、この葉の受け持ちを移した（K-74 の行との対応は下の「K-74 の行の配り先」）\n\n### K-74 の行の配り先（この葉の分）\n\nK-74 の状態の表：「パスワードだけ・2 段階あり × メールとパスワード」→ K301-API-002／「ロック中 × 正しい」→ 005・006／「登録していない・確認していない申し込みだけ」→ 007・008／「会社の人が無い・抜けた」→ 014（パスワードの道）／「2 つのタブ」→ 015／「国か端末が変わって切られた後」→ 016／「別の端末で初めて」「同じ端末で 2 回目」→ 017／「閉じた道（/sign-in/email）」→ 023。\nK-74 の入力・失敗・揺れ・守り：「空」→ 009／「形」→ 010／「正規化」→ 011／「パスワードの空白」→ 012／「ロックの 15 分の直前・ちょうど・直後」→ 006／「DB が落ちた」「写す所で失敗」→ 019／「メールが送れない」→ 018／「2 つのタブで同時に」→ 015／「1 分に 11 回」→ 020（ログインの分）／「違うパスワードと無いメール」→ 007・008／「ログ」→ 021（パスワード・メール）／「記録（成功・失敗・ロック）」→ 022／「閉じた部品の道」→ 023（/sign-in/email の分）／「関門」→ 024。",
+    "リスクと懸念": "- 時間をそろえる行（K301-API-008）は、中央値の比で見る（無いメールが違うパスワードの半分を下回らない）。CI の台が混んでも比は崩れにくいが、赤が出たら台の揺れか実装かをプローブで分ける（G-10）\n- `disabledPaths` が部品の版で、サーバーの中の `auth.api.signInEmail` も止めるように変わると、ログインが全部止まる。K301-API-001 と 023 が同時に見る",
+    "申し送り": "- K-316 へ：画面を契約の口に載せ替えたら、前の道すじ `/api/auth-ext/sign-in`（ext.ts）と `apps/web/lib/auth/ext.ts` の `signIn` を消し、前の道すじを使う試験（上の search の 20 か所）を契約の口に向け直す\n- K-302 へ：待ちの印は `pending`（中身の見えない文字列）。6 けたで入ったときの記録 `login_succeeded` は K-302 が書く（この葉の関数を使う）\n- K-303 へ：E-AUTH-007 の確かめ（入った直後に解いて閉じる）を、セッションを作る前の 1 か所（login_gate）に移す。答え（403・E-AUTH-007・生きたセッションなし）は K301-API-014 のまま\n- K-74 の頭の欄：apis から signInWithPassword、tests から apps/api/test/generated/post_auth_sign_in.test.ts を外す（この葉が持つ・test_owner_gate の TO2）"
+   },
+   "file": "11_tickets/K-301.md"
   },
   {
    "id": "K-307",

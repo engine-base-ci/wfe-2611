@@ -276,6 +276,23 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F1/login/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/sign-in.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/sign-in.test.ts",
+    "apps/api/test/features/F1/login.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_sign_in.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-forgot.test.ts"
    ],
    "tests": [

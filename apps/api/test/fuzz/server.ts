@@ -18,6 +18,7 @@ import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
 import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
+import { loginHooks } from "../../src/hooks/login.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
@@ -29,15 +30,17 @@ const h = await makeHarness();
 const DB_URL = process.env["DATABASE_URL"]!;
 await migrateAuth(DB_URL);
 const authPool = createPool({ databaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"), max: 2 });
-// 新しいパスワードを決める口（K-314）は、部品と同じ形でハッシュを作るために本物の認証の部品を、漏れの照合に関門 C1 を使う。
-//   照合の外への口は落ちている扱い（外に出ない・照合が落ちている間は通す D-128.134 の道を回る）
-const auth = createAuth({
+// ログイン（K-301）は本物のログインの部品（Better Auth・kaname_auth の表）で回す。偽のセッション（Bearer boss）は入口だけが読み、
+//   ログインの口は送られたメールとパスワードを部品で確かめる（登録の無いメールは 401・形の違うメールは 422・数の上限で 429）
+const login = createAuth({
   authDatabaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"),
   appPool: h.pool,
-  secret: "fuzz-test-auth-secret-0123456789",
-  baseURL: "http://127.0.0.1",
+  secret: "fuzz-test-secret-0123456789-abcdefghij",
+  baseURL: `http://127.0.0.1:${port}`,
   poolMax: 2,
 });
+// 新しいパスワードを決める口（K-314）は、部品と同じ形でハッシュを作るためにログインと同じ本物の認証の部品を、漏れの照合に関門 C1 を使う。
+//   照合の外への口は落ちている扱い（外に出ない・照合が落ちている間は通す D-128.134 の道を回る）
 const actions = new ActionGateway(h.repo, {}, new RateLimiter(600), 1_000, async () => {
   throw new Error("fuzz の的は外に出ない");
 });
@@ -59,12 +62,13 @@ Object.assign(
   // 再設定のメールを頼む（K-313）・新しいパスワードを決める（K-314）。送出先は差さない（外に送らず、ログの道を通る）。
   //   本人は認証の接続、記録は業務の接続（本物と同じ）
   passwordResetHooks({
-    auth: auth.auth,
+    auth: login.auth,
     authPool,
     appPool: h.pool,
     actions,
     config: { baseUrl: "http://127.0.0.1", webBaseUrl: null },
   }),
+  loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(
@@ -79,7 +83,7 @@ const stop = async () => {
   srv.close();
   await resetWorkIdle(); // 答えの後の仕事（再設定の送り）が終わってから接続を閉じる
   await authPool.end();
-  await auth.pool.end();
+  await login.pool.end();
   await h.close();
   process.exit(0);
 };
