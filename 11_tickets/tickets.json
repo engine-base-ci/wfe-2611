@@ -13694,7 +13694,8 @@
     "@kaname/auth"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/",
