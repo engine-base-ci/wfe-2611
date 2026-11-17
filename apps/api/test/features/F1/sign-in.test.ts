@@ -420,7 +420,7 @@ describe("K-301 パスワードで入る：守り", () => {
   });
 
   it("K301-API-027 答えの頭に Server-Timing が無い：成功（201）・違うパスワード（401）・登録していないメール（401）のどれも、ログイン中（Bearer）で呼んでも同じ（文の数で登録の有無を漏らさない・K237-API-005 から移した）", async () => {
-    const u = await h.makeUser("timing");
+    const u = await h.makeUser("timing-st"); // K301-API-008 の "timing" と同じ回で同じメールにならないように
     const ok = await h.signIn(u.email);
     expect(ok.status, await ok.clone().text()).toBe(201);
     const token = String((await h.json(ok)).data!["token"]);
