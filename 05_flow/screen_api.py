@@ -505,6 +505,8 @@ INPUTS = {
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
     "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
+    # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
+    "signOut": ("SignOutInput", {}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -859,6 +861,8 @@ RESPONSES = {
     "requestPasswordReset": ("PasswordForgotAccepted", {"accepted": "boolean"}),
     # パスワードで入った（K-301）。2 段階なし：token にログインの印・two_factor=false・pending=null。2 段階あり：token=null・two_factor=true・pending に待ちの印（中身の見えない文字列・5 分。6 けたで入るのは K-302）
     "signInWithPassword": ("SignInResult", {"token": "string?", "two_factor": "boolean", "pending": "string?"}),
+    # ログアウトした（K-306）。いつも signed_out=true。閉じたのはその画面のセッションだけ（別のブラウザ・PC は残る）
+    "signOut": ("SignedOut", {"signed_out": "boolean"}),
     # 新しいパスワードを決めた（K-314）。いつも reset=true。ログインの印は入れない（再設定の後は自動で入らない・D-125.140）
     "resetPassword": ("PasswordResetDone", {"reset": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない

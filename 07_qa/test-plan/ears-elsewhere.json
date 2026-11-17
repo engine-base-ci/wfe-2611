@@ -827,6 +827,27 @@
     }
    }
   },
+  "signOut": {
+   "file": "apps/api/test/features/F1/sign-out.test.ts",
+   "reason": "ログアウトは、本物のログインの部品（Better Auth のセッション）と sessions の行（app.close_session）・PC のつなぎで確かめる。生成の試験の偽のセッションでは、その画面だけ閉じて別のブラウザと PC が残ることを確かめられない（K-306）",
+   "covers": {
+    "test_post_auth_sign_out_ok": "K306-API-001",
+    "test_post_auth_sign_out_rejected_401": "K306-API-004",
+    "test_post_auth_sign_out_rejected_403": "K306-API-012",
+    "test_post_auth_sign_out_rejected_422": "K306-API-008",
+    "test_post_auth_sign_out_rejected_422_2": "K306-API-008",
+    "test_post_auth_sign_out_rate_limited": "K306-API-009",
+    "test_post_auth_sign_out_shape": "K306-API-001",
+    "test_post_auth_sign_out_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_sign_out_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
   "resetPassword": {
    "file": "apps/api/test/features/F1/password-reset.test.ts",
    "reason": "新しいパスワードを決める口は、本物の DB の verification・account・セッションの失効とロックで確かめる（K-314）",

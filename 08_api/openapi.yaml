@@ -9391,6 +9391,11 @@ components:
       - email
       - password
       x-required-by: hooks
+    SignOutInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: signOut
     PasswordResetInput:
       type: object
       properties:
@@ -9990,6 +9995,12 @@ components:
           type: string
           nullable: true
       x-operation: signInWithPassword
+    SignedOut:
+      type: object
+      properties:
+        signed_out:
+          type: boolean
+      x-operation: signOut
     PasswordResetDone:
       type: object
       properties:
@@ -13841,7 +13852,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/SignOutInput'
       responses:
         '201':
           description: 成功
@@ -13851,7 +13862,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/SignedOut'
                   meta:
                     type: object
         '401':
