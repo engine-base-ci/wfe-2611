@@ -13178,7 +13178,8 @@
     "apps/api/test/k237_perf_budget.test.ts",
     "apps/api/test/fuzz/server.ts",
     "scripts/ci/contract_shape_test.py",
-    "11_tickets/K-74.md"
+    "11_tickets/K-74.md",
+    ".gitleaksignore"
    ],
    "sections": {
     "目的": "登録を済ませた人が、ログインの画面でメールとパスワードを入れて入る **契約の口**（`POST /api/v1/auth/sign-in`）を作る。今は前の道すじ `POST /api/auth-ext/sign-in` にしか振る舞いが無く、契約の口は 501。\n\n- 2 段階を付けていない人は、その場でログインの印（token）を受け取る\n- 2 段階を付けている人は、まだ入らず、2 段階の **待ちの印**（pending・5 分）を受け取る。6 けたで入るのは K-302\n- 5 回違えたら 15 分ロック。ロックの文は D-128.141 で「15 分たってから、もう一度入ってください」に直す（解除のメールは作らない）\n- 無いメールでも、違うパスワードと同じ答え・同じくらいの時間で返す（D-042「有る無しを漏らさない」）\n- ロックを通らない部品の道 `POST /api/auth/sign-in/email` を閉じる（404）\n\n画面をこの口に載せ替えるのは K-316（重さの上限：この葉は apps/web に触らない）。前の道すじ `/api/auth-ext/sign-in` は画面と前からの試験 20 か所が使っているので、この葉では消さず、K-316 が画面を移すときに消す。",
