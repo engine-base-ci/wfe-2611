@@ -131,6 +131,7 @@
   { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
   { "paths": ["apps/web/tests/features/F5/approve-complete-approve.spec.ts", "apps/web/tests/features/F5/approve-complete-complete.spec.ts", "apps/web/tests/features/F5/approve-complete-execute.spec.ts", "apps/web/tests/features/F5/approve-complete-guard.spec.ts", "apps/web/tests/features/F5/approve-complete-queue.spec.ts", "apps/web/tests/features/F5/approve-complete-return.spec.ts", "apps/web/tests/features/F5/approve-complete-live.spec.ts"], "tests": ["apps/web/tests/features/F5/k247-band-settle.spec.ts"] },
   { "paths": ["scripts/ci/row_rules.mjs"], "tests": ["apps/api/test/authz_rows.test.ts"] },
+  { "paths": ["apps/api/src/contract/deps.ts"], "tests": ["apps/api/test/features/F1/my-security.test.ts"] },
   { "paths": ["scripts/ci/canvas_field_ledger.json"], "tests": ["apps/api/test/features/F4/ticket-list.test.ts"] },
   { "paths": ["apps/api/test/features/F4/ticket-list.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_tickets.test.ts"] },
   { "paths": ["apps/api/test/features/F4/setup-tasks.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_me_setup_tasks.test.ts", "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"] },
