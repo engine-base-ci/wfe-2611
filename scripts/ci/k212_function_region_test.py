@@ -75,8 +75,12 @@ class FunctionRegion(unittest.TestCase):
         self.assertTrue(WEB_VJ.is_file(), "画面のプロジェクトの Root（apps/web）に vercel.json が在る")
         web = load(WEB_VJ)
         self.assertEqual(web.get("regions"), [load(CONFIG)["function_region"]], "画面の処理の場所が決まりと同じ 1 つ")
-        self.assertEqual(sorted(web), ["$schema", "regions"],
-                         "場所のほかを書かない（組み立て・入れ方・framework は Next.js の見つけ方のまま）")
+        self.assertEqual(sorted(web), ["$schema", "headers", "regions"],
+                         "場所と中継の答えの頭（K-262）のほかを書かない（組み立て・入れ方・framework は Next.js の見つけ方のまま）")
+        # K-262：headers は /api/:path* の中継の答えを貯めさせない頭 1 つだけ（ほかの道・ほかの頭を足さない）
+        self.assertEqual(web["headers"], [{"source": "/api/:path*",
+                                           "headers": [{"key": "x-vercel-enable-rewrite-caching", "value": "0"}]}],
+                         "画面の vercel.json の headers は /api/:path* の x-vercel-enable-rewrite-caching: 0 だけ（K-262）")
 
     def test_K212_FR_008_docs_and_stack(self) -> None:
         doc = STAGING_MD.read_text(encoding="utf-8")

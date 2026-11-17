@@ -62,6 +62,8 @@ export interface TicketShellProps {
   onCreate?: () => void;
   /** 画面が読んだ PC の状態（true＝つながっている・null＝まだ読んでいる）。渡されたら外枠は PC の一覧を読まない（K-220） */
   bridgeConnected?: boolean | null;
+  /** 左のバーを 56 に畳ませる（一覧で横に詳細を開いた 1024〜1279・K-252） */
+  railed?: boolean;
   children: ReactNode;
 }
 
@@ -106,7 +108,16 @@ function useShellData(screen: string, ownCount: boolean, ownBridge: boolean) {
   return { who, scopes, waiting, devices };
 }
 
-export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected, children }: TicketShellProps) {
+/** グループの札の色（左のメニューの札と同じ色の順・グループの一覧の見出しの札にも使う） */
+export const scopeTone = (rows: ScopeRow[], id: string): Group["tone"] =>
+  TONES[
+    Math.max(
+      0,
+      rows.findIndex((s) => s.id === id),
+    ) % TONES.length
+  ]!;
+
+export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected, railed, children }: TicketShellProps) {
   const ownCount = counts?.["approvals"] !== undefined;
   const ownBridge = bridgeConnected !== undefined;
   const { who, scopes, waiting, devices } = useShellData(screen, ownCount, ownBridge);
@@ -136,6 +147,7 @@ export function TicketShell({ screen, crumbs, counts, onCreate, bridgeConnected,
       badges={badges}
       bridgeConnected={ownBridge ? bridgeConnected === true : devices.data === true}
       theme={readTheme()}
+      {...(railed ? { railed } : {})}
       {...(canCreate ? { onCreate: onCreate ?? (() => window.location.assign("/tickets?new=1")) } : {})}
       onSignOut={() => {
         void signOut().finally(() => window.location.assign("/login"));

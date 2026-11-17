@@ -124,6 +124,7 @@
   "62": ["scripts/ci/ci_lean*", "scripts/ci/ci_scope*", "scripts/ci/layer_audit*", "scripts/ci/stack_gate*", "scripts/ci/generated*"]
  },
  "data_links": [
+  { "paths": ["apps/web/vercel.json", "apps/web/middleware.ts", "apps/web/app/**", "apps/web/components/**", "apps/web/features/**", "apps/web/lib/**"], "tests": ["apps/web/test/k262-edge-proxy.test.ts"] },
   { "paths": ["05_flow/screen_api.py", "packages/contracts/src/types.ts", "08_api/openapi.yaml", "08_api/api-field-consumption.json"], "tests": ["apps/api/test/features/F4/me-workspace.test.ts"] },
   { "paths": ["scripts/ci/chat_one.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
   { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
@@ -418,8 +419,10 @@
   }
  ],
  "reads_ok": {
+  "apps/web/test/k262-edge-proxy.test.ts": "apps/web/vercel.json（中継の答えを貯めさせない頭）と、版に入っている画面のファイル全部（秘密を読むのが lib/edge-proxy.ts だけか）を読み、middleware を動的 import する。読む物は data_links で結ぶ（K-262）",
   "scripts/ci/k254_canvas_values_test.py": "04_design/canvas の絵・正本 DESIGN-kaname.md・作り手 04_design/canvas_gen・幅の台帳・fidelity.json・v3-gate.yml・ci_scope.json を読み、作り手と値の検査を写し（tempfile）で子プロセスに流す。G71 で spec の組が流す・K-254",
   "apps/web/tests/k/k224-create-frame.spec.ts": "04_design/fidelity.json（突き合わせの組 tickets-new）と scripts/ci/class_ledger.json（台帳）と 04_design/canvas の絵を読む（実ブラウザの試験は web の組が流す）・K-224",
+  "apps/web/tests/k/k225-create-sections.spec.ts": "04_design/fidelity.json（突き合わせの組 tickets-new-sections）・04_design/DESIGN-kaname.md（区画の見出しの部品）・04_design/canvas/Create.dc.html（絵）を読む（実ブラウザの試験は web の組が流す）・K-225",
   "apps/web/tests/k/k254-canvas-layout.spec.ts": "04_design/canvas の絵と幅の台帳 scripts/ci/canvas_layout_ledger.json を読む（data_links で絵か台帳が変わると web の組が流す）・K-254",
   "apps/web/tests/k/k220-bridge-shell.spec.ts": "04_design/fidelity.json（組 bridge-shell のセレクタ）と 04_design/canvas/MePC.dc.html を読む。どちらも 04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-220",
   "apps/web/tests/k/list-mock.ts": "04_design/fidelity.json を読む（一覧の画面の組の値。実ブラウザの試験は web の組が流す）・K-251",
@@ -431,8 +434,11 @@
   "apps/web/tests/k/k219-canvas-boards.spec.ts": "04_design/fidelity.json（組のセレクタ）と 04_design/canvas の絵を読む。どちらも 04_design/** で jobs.web.paths に在る（K-219）",
   "scripts/ci/k257_canvas_boards_test.py": "04_design/canvas の絵・canvas.json・対応表 canvas-screens.json・突き合わせの設定 fidelity.json・幅の台帳・見比べの 1 枚 canvas-review を読み、作り手 04_design/canvas_gen を写し（tempfile）で子プロセスに流す。G65 で spec の組が流す・K-257",
   "apps/web/tests/k/k257-canvas-boards.spec.ts": "04_design/canvas の絵・突き合わせの設定 fidelity.json・見比べの 1 枚 canvas-review を読む。どれも 04_design/** で jobs.web.paths に在る・K-257",
+  "apps/web/tests/k/k230-bridge-content.spec.ts": "04_design/fidelity.json（組 bridge-code・bridge-connected・bridge-installed のセレクタと持ち主）と 04_design/canvas の絵（EdPC・MePC・MePCInstalled）と scripts/ci/class_ledger.json（台帳に connect-pc の行が残っていないか）と apps/web/features/F3/connect-pc の .css・.ts・.tsx（生の大きさが無いか・小窓の型を使うか）を読む。04_design/** と apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-230",
   "apps/web/tests/k/k229-modals.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組の持ち主）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-229",
+  "apps/web/tests/k/k231-approvals.spec.ts": "scripts/ci/class_ledger.json（台帳）と 07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（突き合わせの組 approvals・approvals-empty）と 04_design/canvas の絵を読む（実ブラウザの試験は web の組が流す）・K-231",
   "apps/web/tests/k/kit.ts": "画面の試験の汎用の道具。突き合わせの設定 04_design/fidelity.json とキャンバスの絵を読む・K-257",
+  "apps/web/tests/k/k227-band-approval.spec.ts": "07_qa/test-specs/k/approve-complete.md（操作要素の表）と 04_design/fidelity.json（組 band-approval の持ち主と enrolled）を読む。どちらも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-227",
   "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
   "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",
   "scripts/ci/k218_design_canvas_test.py": "正本・トークン・設定・プレビュー・build_testplan.py を読み、作りものの木（tempfile）に design_gate を子プロセスで流す。G37 の末尾で spec の組が流す・K-218",

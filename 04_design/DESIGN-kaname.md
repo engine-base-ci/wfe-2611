@@ -438,7 +438,8 @@ components:
     padding: "0 {spacing.lg}"   # 高さは min-height の 30 で決める（上下の余白を置くと字 13px の行で 30 を超える・K-218）
   page-body:            # 本文の箱（下の余白。ほかの子は左右 spacing.lg 内側・帯の下から spacing.md）
     padding: "0 0 40px"
-  section-title:        # 区画の見出し（下に線）
+  # 区画の見出し（下に線）
+  section-title:
     typography: "{typography.section-title}"
     border: "1px solid {colors.line}"
     margin: "28px 0 {spacing.sm}"
@@ -583,6 +584,67 @@ components:
     border: "1px solid {colors.line}"
     rounded: "{rounded.full}"
     typography: "{typography.body-sm}"
+  # 詳細の帯（K-227・キャンバス TicketDetail の main article [role="status"]・D-143.2：値はキャンバスの実測）
+  band-approval:        # 承認待ちの帯の箱（淡い橙の地・線・角丸 field・余白 10px 12px。題と要約の塊が 1 行目・右寄せのボタンの並びが次の行・間 10px）
+    backgroundColor: "{state.warning-container}"
+    textColor: "{state.on-warning-container}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "10px 12px"
+    gap: "10px"
+  band-title:           # 帯の題（h3・13px・700・行の高さはキャンバスの本文の 1.7）
+    typography: "{typography.body}"
+    fontWeight: 700
+    lineHeight: 1.7
+  band-sub:             # 帯の要約と中の 1 行（12px・行の高さ 1.7）
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+  band-acts:            # 帯のボタンの並び（右寄せ・間 6px）
+    gap: "6px"
+  band-button:          # 帯の白地のボタン（自分で直す・差し戻す・止める）：線は帯の線
+    backgroundColor: "{colors.card}"
+    border: "1px solid {state.warning-line}"
+  band-caution:         # 帯の中の取り消せない注意の赤い箱（小窓の dialog-caution と同じ色・要約の下に 6px あけて・12px）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "4px 10px"
+    margin: "6px 0 0"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+  band-notice:          # 帯の region の中の口の失敗の知らせ（赤い箱・role=alert は 1 つ）
+    backgroundColor: "{state.danger-container}"
+    textColor: "{state.on-danger-container}"
+    border: "1px solid {state.danger-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+  artifact-card:        # 成果物のカード（帯の箱の下・白・線・角丸 field・余白 12・縮小と説明の間 14・狭ければ折り返す）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "12px"
+    gap: "14px"
+  artifact-head:        # 縮小の絵の代わりの字の頭（180×240 の白い紙・線・角丸 sm・余白 14・12px。長い字は切る）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.sm}"
+    padding: "14px"
+    width: "180px"
+    height: "240px"
+    typography: "{typography.body-sm}"
+  artifact-info:        # 縮小の右の説明（名前・ボタン）の基準の幅（flex-basis）
+    width: "240px"
+  artifact-meta:        # 名前の下の 12px の灰の行（成果物の版 N）
+    typography: "{typography.body-sm}"
+    textColor: "{colors.on-surface-variant}"
+  artifact-acts:        # 大きく見る・データを見る…の並び（名前の 8px 下・間 6px）
+    gap: "6px"
+    margin: "8px 0 0"
+  artifact-button:      # 成果物のボタン（高さ 30・余白 0 10px・12px）
+    height: "30px"
+    padding: "0 10px"
+    typography: "{typography.body-sm}"
   shell-tabs:           # スマホの下のタブ（幅 767 以下・キャンバス MobileList の 60px）。画面の下に貼り付く帯はこの高さの上に置く（K-224）
     height: "60px"
   # 作る画面（K-224・D-143.2：値はキャンバス Create の実測）
@@ -610,9 +672,13 @@ components:
   create-card-title:    # 箱の見出し（振り分け）
     typography: "{typography.body-md}"
     fontWeight: 700
-  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）
+  create-pick:          # グループと種別の選ぶ欄の幅（横に並べる）。間はキャンバスの 10（K-225 で 8 から直した）
     width: "160px"
-    gap: "{spacing.sm}"
+    gap: "10px"
+  create-label:         # 上の白い箱（グループ・種別・題名）の項目名の行の高さ（キャンバスは 12px の 1.6。共通の label の 1.5 はほかの画面のまま・K-225）
+    lineHeight: 1.6
+  create-number:        # 選ぶ欄の行の右の「番号は作ったときに付く」（キャンバスの下 8・左は寄せる）。幅 767 以下で行が割れたときの高さに効く（K-225）
+    margin: "0 0 8px auto"
   create-title:         # 題名の欄（キャンバスは高さ 40・15px・500。入口の欄 input-lg の 42 とは別）
     height: "40px"
     typography: "{typography.h3}"
@@ -665,6 +731,277 @@ components:
   create-foot-primary:  # 足元の帯の主ボタン「作る」（左右 18・紺の線）
     border: "1px solid {colors.primary}"
     padding: "0 18px"
+  # 承認待ち（K-231・D-143.2：値はキャンバス Approvals・ApEmpty の実測）
+  approvals-body:       # 本文の箱（帯の下。カードか空の箱を包む）
+    padding: "{spacing.md} {spacing.lg}"
+    gap: "12px"
+  approvals-next:       # 帯の主ボタン「続けて裁く」（高さは page-head-button の 30。左右 12・字 12px）
+    padding: "0 12px"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-card:       # カード 1 つ（道具の行・表・注記）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  approvals-tools:      # 道具の行（絞り込みの札・並べ替え・まとめて承認・決めた履歴）
+    padding: "10px 12px"
+    borderBottom: "1px solid {colors.line}"
+    gap: "{spacing.sm}"
+  approvals-chips:      # 絞り込みの札の並び
+    gap: "6px"
+  approvals-chip:       # 絞り込みの札（今いる札は紺の地に白字）
+    height: "26px"
+    padding: "0 10px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+  approvals-chip-on:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.on-primary}"
+    border: "1px solid {colors.primary}"
+  approvals-th:         # 表の見出しの行
+    height: "32px"
+    padding: "0 {spacing.sm}"
+    backgroundColor: "{colors.table-head}"
+    textColor: "{colors.on-surface-variant}"
+    borderBottom: "1px solid {colors.line}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-td:         # 表の行
+    height: "44px"
+    padding: "0 {spacing.sm}"
+    borderBottom: "1px solid {colors.line-soft}"
+  approvals-group:      # 期限の区切りの行（期限切れだけ赤の字・今日は黒）
+    height: "28px"
+    backgroundColor: "{colors.surface}"
+    typography: "{typography.body-sm}"
+    fontWeight: 500
+  approvals-title:      # 題名のリンク（黒字・下線なし）
+    textColor: "{colors.on-surface}"
+    fontWeight: 500
+  approvals-late:       # 期限の区切りの赤（期限切れだけ）と過ぎた期限の字
+    textColor: "{colors.error}"
+    fontWeight: 500
+  approvals-kind:       # 決めることの線の札
+    border: "1.5px solid {colors.primary}"
+    rounded: "{rounded.full}"
+    padding: "0 {spacing.sm}"
+    textColor: "{colors.primary}"
+    typography: "{typography.label-md}"
+  approvals-avatar:     # 誰からの頭文字の丸
+    width: "22px"
+    height: "22px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.on-surface-variant}"
+    textColor: "{colors.card}"
+    typography: "{typography.label-xs}"
+  approvals-from:       # 誰からの列（頭文字の丸と名前の間）
+    gap: "5px"
+  approvals-acts:       # 行のボタン（従と主の間・字 12px）
+    gap: "6px"
+    typography: "{typography.body-sm}"
+  approvals-note:       # カードの下の注記
+    padding: "{spacing.sm} 12px"
+    borderTop: "1px solid {colors.line-soft}"
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+  approvals-empty-title: # 空の箱の見出し（ApEmpty「いま決めるものはありません」16px・700）
+    typography: "{typography.section-title}"
+  approvals-empty-body: # 空の箱の説明（13px・行の高さ 1.7）
+    typography: "{typography.body}"
+    lineHeight: 1.7
+  state-empty-icon:     # 空の箱の見出しの上の印（ApEmpty の ✓）
+    width: "44px"
+    height: "44px"
+    rounded: "{rounded.field}"
+    backgroundColor: "{state.success}"
+    textColor: "{colors.card}"
+    typography: "{typography.h2}"
+  # 作る画面の本文の箱の中（K-225・キャンバス Create の本文の箱）。詳細の区画の見出しは前からの section-title（28・8）のまま、作る画面は名前を分けて持つ（PM の決め）
+  create-doc:           # 本文の箱の中の文書（道具の帯の下）。幅 900 は CSS の max-width で持つ
+    padding: "8px 28px 24px"
+    width: "900px"
+  # 作る画面の区画の見出し（16px・700・下に線）。2 つめから上 22
+  section-title-form:
+    typography: "{typography.section-title}"
+    lineHeight: 1.6
+    borderBottom: "1px solid {colors.line}"
+    margin: "22px 0 6px"
+    padding: "0 0 6px"
+  # 作る画面の最初の区画の見出し（上 20）
+  section-title-form-first:
+    margin: "20px 0 6px"
+  create-doc-add:       # 文書の下の「＋ 見出しを足す…」（点線の上の線・まだ使えない）
+    borderTop: "1px dashed {colors.line}"
+    margin: "18px 0 0"
+    padding: "10px 0 0"
+  create-spec:          # 本文の箱の「テスト仕様」の箱（線・角丸 8）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+  create-spec-acts:     # テスト仕様の箱の下の行（＋ 項目を足す・抜けを点検する）
+    backgroundColor: "{colors.table-head}"
+    padding: "7px 10px"
+    gap: "12px"
+  # PC と使った量・PC をつなぐ（K-230・D-143.2：値はキャンバス EdPC・MePC・MePCInstalled の実測。小窓の置き場・影・余白は dialog の型のまま）
+  dialog-connect:       # PC をつなぐの小窓の幅（EdPC 580）
+    width: "580px"
+  dialog-connect-button: # PC をつなぐの小窓の足のボタンの高さ（EdPC「あとで」30）
+    height: "30px"
+  dialog-sub:           # 小窓の頭の題の下の補足（「分身はこの PC で動く。3 分ほど」12px・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.6
+  pc-step:              # 3 段の 1 段（上に線・上下 12・丸と字の間 12）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "12px"
+  pc-step-dot:          # 段の丸（26・円・12px・700。済は緑・今は紺・まだは灰）
+    width: "26px"
+    height: "26px"
+    rounded: "{rounded.full}"
+    typography: "{typography.body-sm}"
+    fontWeight: 700
+  pc-step-title:        # 段の題（13px・600）
+    typography: "{typography.body}"
+    fontWeight: 600
+  pc-step-desc:         # 段の説明（12px・灰・行の高さ 1.7・題との間 2）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    margin: "2px 0 0"
+  pc-code:              # 接続コードの並び（上 6。キャンバスの箱は線の外に 34×42 なので上下に 1 足して行をそろえる）
+    margin: "6px 0 0"
+    padding: "1px 0"
+  pc-code-next:         # 接続コードの 2 つめからの箱の左の間（6・inline の箱で並べるので gap でなく余白）
+    margin: "0 0 0 6px"
+  pc-code-cell:         # 接続コードの 1 字の箱（34×42・線 紺・角丸 field・20px・700）
+    width: "34px"
+    height: "42px"
+    border: "1px solid {colors.primary}"
+    rounded: "{rounded.field}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.h1}"
+  pc-code-foot:         # コードの下の行（上 6・間 8）
+    margin: "6px 0 0"
+    gap: "{spacing.sm}"
+  pc-text-button:       # 字のリンクの形のボタン（新しいコード・12px・紺・400・行の高さ normal）
+    textColor: "{colors.primary}"
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+    lineHeight: normal
+  pc-note:              # 共用の PC の注意（淡い橙の箱・12px）
+    backgroundColor: "{state.warning-soft}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+    typography: "{typography.body-sm}"
+    gap: "{spacing.sm}"
+  pc-note-mark:         # 共用の PC の注意の「!」（濃い橙）
+    textColor: "{state.on-warning-container}"
+  pc-wait:              # 足の「アプリからの返事を待っています…」（12px・灰・点との間 6）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    gap: "6px"
+  pc-wait-dot:          # 待っている印の点（8・橙）
+    width: "8px"
+    height: "8px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{state.warning}"
+  pc-button:            # 小さなボタン（高さ 30・左右 12・12px・400・角丸 md）
+    height: "30px"
+    padding: "0 12px"
+    rounded: "{rounded.md}"
+    typography: "{typography.body-sm}"
+    fontWeight: 400
+  pc-button-primary:    # 小さなボタンの主（紺の線）
+    border: "1px solid {colors.primary}"
+  pc-wake:              # 直し方の箱の中の「Bridge を起こす」（角丸 field・600・上 6）
+    rounded: "{rounded.field}"
+    fontWeight: 600
+    margin: "6px 0 0"
+  pc-card:              # 白いカード（線・角丸 card・上下 4 左右 18）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.card}"
+    padding: "4px 18px"
+  pc-card-wide:         # 余白の大きいカード（この PC の Bridge・使った量：上下 14 左右 18・中の間 10）
+    padding: "14px 18px"
+    gap: "10px"
+  pc-card-head:         # カードの頭（題と右のボタン・上 12 下 4）
+    padding: "12px 0 4px"
+  pc-card-title:        # カードの題（13px・600）
+    typography: "{typography.body}"
+    fontWeight: 600
+  pc-row:               # カードの行（上に線・上下 12・間 12）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "12px"
+  pc-pill:              # 札（つながっている・切れている・いつも使う：11px・400・丸い）
+    padding: "1px 8px"
+    rounded: "{rounded.full}"
+    typography: "{typography.label-md}"
+    fontWeight: 400
+  pc-detail:            # 行の補足（11px・400・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label-md}"
+    fontWeight: 400
+  pc-fix:               # 直し方の箱（淡い橙・12px・行の高さ 1.7・上 8）
+    backgroundColor: "{state.warning-soft}"
+    border: "1px solid {state.warning-line}"
+    rounded: "{rounded.field}"
+    padding: "8px 10px"
+    typography: "{typography.body-sm}"
+    lineHeight: 1.7
+    margin: "8px 0 0"
+  pc-fix-msg:           # 直し方の箱の中の正本の文（上 6）
+    margin: "6px 0 0"
+  pc-more:              # 行の「…」（高さ 30・左右 12・線・角丸 md）
+    height: "30px"
+    padding: "0 12px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    typography: "{typography.body-sm}"
+  pc-usage:             # 使った量の 2 列（間 18）
+    gap: "18px"
+  pc-usage-col:         # 使った量の列の最小の幅（grid の minmax の 240）
+    width: "240px"
+  pc-bar:               # 使った量の帯（高さ 8・円・上 6）
+    height: "8px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.side-bg}"
+    margin: "6px 0 0"
+  pc-bar-fill:          # 帯の中身（紺）
+    backgroundColor: "{colors.primary}"
+  pc-set-row:           # 超えそうなときの行（上に線・上下 12・間 14・字の列の基準 240）
+    borderTop: "1px solid {colors.line-soft}"
+    padding: "12px 0"
+    gap: "14px"
+  pc-set-label:         # 超えそうなときの行の字の列の基準の幅（flex-basis 240）
+    width: "240px"
+  pc-switch:            # 切り替え（30×16・円・中の余白 2・つまみ 12）
+    width: "30px"
+    height: "16px"
+    rounded: "{rounded.full}"
+    padding: "2px"
+    backgroundColor: "{colors.line-strong}"
+  pc-switch-knob:       # 切り替えのつまみ（12・円・白）
+    width: "12px"
+    height: "12px"
+    rounded: "{rounded.full}"
+    backgroundColor: "{colors.card}"
+  pc-pick:              # 選ぶ欄（高さ 30・左右 10・線・角丸 md）
+    height: "30px"
+    padding: "0 10px"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+    backgroundColor: "{colors.card}"
+  pc-pick-min:          # 選ぶ欄の幅の下限（min-width 120）
+    width: "120px"
   # チケットの一覧（K-251・D-143.2：値はキャンバス OnHome・Main の実測）。帯（page-head）そのものの余白は 0 で、中の行が余白を持つ
   list-head-row:        # 帯の 1 行目（見出し・すべてのグループ）
     padding: "12px {spacing.lg} 0"
@@ -879,6 +1216,65 @@ components:
   list-box-row:         # 右の列の箱の 1 行（余白 10 12・下に淡い線）
     padding: "10px 12px"
     borderBottom: "1px solid {colors.line-soft}"
+  # 一覧（全部）・グループの一覧（K-252・キャンバス List）
+  list-scope-mark:      # グループの一覧の見出しの頭の札（26 角・角丸 md・11px・700・白い字。地はグループの色）
+    textColor: "{colors.on-primary}"
+    rounded: "{rounded.md}"
+    typography: "{typography.label-md}"
+    fontWeight: 700
+    width: "26px"
+    height: "26px"
+  list-search:          # 検索条件の箱（白・角丸 field・余白 12 14・行の間 10）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "12px 14px"
+    gap: "10px"
+  list-search-row:      # 検索条件の箱の頭の行（検索条件・かんたん／詳しく・保存・畳む。間 10）
+    gap: "10px"
+  list-search-chips:    # 状態・親子の札の行（間 6・12px）
+    gap: "6px"
+    typography: "{typography.body-sm}"
+  list-search-label:    # 札の行の頭の名前（状態の幅 40）
+    width: "40px"
+  list-search-chip:     # 状態・親子の札（高さ 24・角丸 full・左右 9・12px）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.full}"
+    padding: "0 9px"
+    typography: "{typography.body-sm}"
+    height: "24px"
+  list-search-seg:      # かんたん・詳しく の箱（線・角丸 md）
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.md}"
+  list-search-seg-item: # かんたん・詳しく の 1 つ（高さ 26・左右 10・12px）
+    padding: "0 10px"
+    typography: "{typography.body-sm}"
+    height: "26px"
+  list-search-fields:   # 種別〜言葉の格子（間 10）
+    gap: "10px"
+  list-search-field:    # 格子の 1 つ（名前と欄の間 3・12px・灰）
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.body-sm}"
+    gap: "3px"
+  list-search-input:    # 格子の欄（白・線・角丸 md・高さ 30・左右 8・12px）
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.on-surface}"
+    border: "1px solid {colors.line-strong}"
+    rounded: "{rounded.md}"
+    padding: "0 {spacing.sm}"
+    typography: "{typography.body-sm}"
+    height: "30px"
+  list-pick:            # 表の行の頭の選ぶ印の列（幅 32）
+    width: "32px"
+  list-detail-side:     # 一覧の右に開く詳細（白・線・角丸 field・幅 400・余白 16・D-128.14・D-128.165）
+    backgroundColor: "{colors.card}"
+    border: "1px solid {colors.line}"
+    rounded: "{rounded.field}"
+    padding: "{spacing.md}"
+    width: "400px"
+  list-detail-side-title: # 右に開く詳細の題名（h2・18px・700・余白は詳細の題名の行と同じ）
+    typography: "{typography.h2}"
+    fontWeight: 700
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

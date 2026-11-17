@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 38・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 16・共通の処理 13・エラー 172・部品 53・設定 39
+API 365（作った 38・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 172・部品 53・設定 41
 
 ## 共通の処理
 
@@ -41,6 +41,7 @@ API 365（作った 38・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/error-of` | PAGE_ERROR, errorCodeOf, errorText | どのエラーを出すか（K-26・D-069）。文言は正本（07_qa/test-specs/errors.json → @kaname/errors/catalog）の 1 件だけ。画面で文言を作らない |
 | `apps/web/components/k/page` | PageBody, PageHeader, Section, Prose, TextLink, Row | ページの型（K-217・D-143.3）。見た目は page.css（キャンバスの実測）。どれもクラスの名前を出すだけの薄い部品。 |
 | `apps/web/components/k/me-sub` | MeSub | 自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。 |
+| `apps/web/components/k/band` | Band, BandCaution, BandLine, NoticeBox | 詳細の帯の箱（K-227・正本 components.band-*・キャンバス TicketDetail の main article [role="status"]）。 |
 | `apps/web/components/k/doc-tools` | DocTools, DOC_TOOL_ITEMS | 本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。 |
 
 ## DB の表（境目と骨格）
@@ -581,6 +582,8 @@ API 365（作った 38・後のフェーズの行為だけ 20）・前の道す�
 | `MAIL_SUPPRESS_PREFIX` | staging／本番では空のまま（必ず送る） |
 | `BRIDGE_RELEASE_DIR` | 作った Bridge のインストーラを手元のフォルダから配る（開発だけ。staging／本番は空にして BRIDGE_RELEASE_BASE の置き場から配る） |
 | `BRIDGE_RELEASE_BASE` | 空＝まだ配布していない（画面は「まだ配布していません」と言い、自動更新も見に行かない） |
+| `KANAME_EDGE_SECRET` | 画面と口の両方のプロジェクトに同じ値をサーバーだけの環境変数で入れる（NEXT_PUBLIC にしない）。空なら写した頭を消すだけ。値は K-263 で入れる |
+| `KANAME_EDGE_ECHO` | 確かめの口 GET /api/edge/echo を開く（1 で開く）。staging の確かめ（scripts/ci/staging_edge_check.py）の間だけ。本番には入れない |
 
 ## 使っている部品
 

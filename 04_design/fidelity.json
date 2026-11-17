@@ -448,14 +448,14 @@
    "id": "tickets-list",
    "kind": "page",
    "canvas": "List",
-   "app": "/tickets",
+   "app": "/tickets?scope=22222222-0000-4000-8000-000000000001",
    "state": "tickets-list",
    "widths": [
     1440,
     375
    ],
    "owner": "K-252",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -475,7 +475,7 @@
      "name": "見出しの帯",
      "role": "head",
      "canvas": "main header",
-     "app": ".k-page-head",
+     "app": ".k-list-head",
      "props": [
       "background-color",
       "border-bottom-color",
@@ -492,7 +492,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-list-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -603,7 +603,7 @@
     375
    ],
    "owner": "K-225",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -640,7 +640,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "section[aria-label=\"本文\"]",
-     "app": ".k-panel form",
+     "app": "section[aria-label=\"本文\"]",
      "props": [
       "padding-top",
       "padding-left",
@@ -667,7 +667,7 @@
      "name": "主ボタン",
      "role": "primary",
      "canvas": "button[style*=\"padding: 0 18px\"]",
-     "app": ".k-panel form button[type=\"submit\"]",
+     "app": ".k-create-foot button[type=\"submit\"]",
      "props": [
       "height",
       "background-color",
@@ -751,13 +751,13 @@
     375
    ],
    "owner": "K-227",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "帯",
      "role": "band",
      "canvas": "main article [role=\"status\"]",
-     "app": "section.k62-band[aria-label=\"承認と実行\"]",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band",
      "props": [
       "background-color",
       "border-top-color",
@@ -772,7 +772,7 @@
      "name": "帯の題",
      "role": "band-title",
      "canvas": "main article [role=\"status\"] b",
-     "app": "section.k62-band[aria-label=\"承認と実行\"] :is(h2, h3)",
+     "app": "section[aria-label=\"承認と実行\"] [role=\"status\"].k-band h3",
      "props": [
       "font-size",
       "font-weight"
@@ -925,7 +925,7 @@
     375
    ],
    "owner": "K-231",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -950,9 +950,20 @@
       "background-color",
       "border-bottom-color",
       "border-bottom-width",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯の余白",
+     "role": "body",
+     "canvas": "main header > div",
+     "app": ".k-page-head",
+     "props": [
       "padding-top",
       "padding-left",
-      "height",
       "width",
       "x",
       "y"
@@ -962,7 +973,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-ap-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -984,7 +995,7 @@
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "小窓",
@@ -996,7 +1007,8 @@
       "border-radius",
       "background-color",
       "x",
-      "y"
+      "y",
+      "box-shadow"
      ]
     },
     {
@@ -1024,6 +1036,58 @@
       "x",
       "y"
      ]
+    },
+    {
+     "name": "コードの箱",
+     "role": "input",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] span[style*=\"height: 42px\"]:first-child",
+     "app": ".k-code-cell:first-child",
+     "props": [
+      "width",
+      "height",
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "font-size"
+     ]
+    },
+    {
+     "name": "段の題",
+     "role": "dialog-title",
+     "canvas": "[role=\"dialog\"][aria-label=\"PC をつなぐ\"] > div > div:nth-child(2) > div:nth-child(2) > div > b",
+     "app": ".k-steps > li:nth-child(2) .k-step-title",
+     "props": [
+      "font-size",
+      "font-weight"
+     ]
+    },
+    {
+     "name": "新しいコード",
+     "role": "primary",
+     "canvas": "[data-act=\"new-code\"]",
+     "app": "[data-act=\"new-code\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
+     ]
     }
    ]
   },
@@ -1031,14 +1095,14 @@
    "id": "bridge-connected",
    "kind": "page",
    "canvas": "MePC",
-   "app": "/setup/bridge",
+   "app": "/setup/bridge?from=%2Ftickets",
    "state": "bridge-connected",
    "widths": [
     1440,
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1082,6 +1146,84 @@
       "width",
       "x",
       "y"
+     ]
+    },
+    {
+     "name": "つないでいる PC のカード",
+     "role": "card",
+     "canvas": "main > div > section > div:nth-child(2)",
+     "app": ".k-pc-card[aria-labelledby=\"pc-list-title\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "＋ PC をつなぐ",
+     "role": "primary",
+     "canvas": "main > div > section > div:nth-child(2) > div:first-child > a",
+     "app": ".k-pc-card-head .k-btn",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "Bridge を起こす",
+     "role": "primary",
+     "canvas": "[data-act=\"wake\"]",
+     "app": "[data-act=\"wake\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ],
+     "y_from": {
+      "max_width": 767,
+      "canvas": "main > div > section > div:nth-child(2) span[style*=\"#FFF8EE\"]",
+      "app": ".k-pc-fix",
+      "why": "キャンバス MePC の行の補足には口に無い字（いま 1 件実行中（EG-127）・理由：PC がスリープしている）があり、画面は空で出す（嘘を書かない）。狭い幅ではその字が折り返して行の高さが違うので、起こすの y だけ直し方の箱の上端から比べる（PM の決め 2026-11-17・K-230）"
+     }
+    },
+    {
+     "name": "戻る",
+     "role": "band-title",
+     "canvas": "[data-act=\"back\"]",
+     "app": "[data-act=\"back\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
      ]
     }
    ]
@@ -1761,7 +1903,7 @@
     375
    ],
    "owner": "K-231",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1786,9 +1928,20 @@
       "background-color",
       "border-bottom-color",
       "border-bottom-width",
+      "height",
+      "width",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "見出しの帯の余白",
+     "role": "body",
+     "canvas": "main header > div",
+     "app": ".k-page-head",
+     "props": [
       "padding-top",
       "padding-left",
-      "height",
       "width",
       "x",
       "y"
@@ -1798,7 +1951,7 @@
      "name": "本文の箱",
      "role": "body",
      "canvas": "main > header + div",
-     "app": ".k-page",
+     "app": ".k-ap-body",
      "props": [
       "padding-top",
       "padding-left",
@@ -1820,7 +1973,7 @@
     375
    ],
    "owner": "K-230",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "見出し",
@@ -1864,6 +2017,49 @@
       "width",
       "x",
       "y"
+     ]
+    },
+    {
+     "name": "この PC の Bridge のカード",
+     "role": "card",
+     "canvas": "main > div > section > div:nth-child(2)",
+     "app": ".k-pc-this",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "このアカウントに切り替える",
+     "role": "primary",
+     "canvas": "[data-act=\"switch-account\"]",
+     "app": "[data-act=\"switch-account\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "前の設定の画面",
+     "role": "band-title",
+     "canvas": "[data-act=\"legacy\"]",
+     "app": "[data-act=\"legacy\"]",
+     "props": [
+      "font-size",
+      "font-weight",
+      "color",
+      "x"
      ]
     }
    ]

@@ -1,5 +1,5 @@
 {
-  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）",
+  "_doc": "design_gate.py（D1〜D7）のプロジェクト固有の設定。例外は必ず理由を書く。component_selectors は D5（正本の部品 → CSS の規則。shape は形の規則（1 つか一覧）で、変種の規則を上に重ねて比べる・K-218）。component_exempt はセレクタを持たない部品とその訳（訳の無い部品は D5 が赤）。max_type_sizes は D7（文字の大きさの種類の上限・design-system.md §3）。raw_lengths は D8（画面の CSS の生の長さ・--raw-lengths を付けた回だけ・K-261）：paths 見る置き場・token_css トークンの定義元・token_prefix トークンの頭・allow 許す値（理由つき・0 はどの単位の零にも当たる）・ledger 台帳（減らすだけ）",
   "ignore_files": ["_viewer.html", "DESIGN-kaname-preview.html", "font-compare.html"],
   "allow_colors": [
     {
@@ -134,6 +134,32 @@
     "create-foot-primary": ".k-create-foot .k-btn[data-variant=\"primary\"]",
     "create-assign-row": ".k-create-assign-row",
     "create-checks": ".k-create-checks",
+    "approvals-body": ".k-ap-body",
+    "approvals-card": ".k-ap-card",
+    "approvals-tools": ".k-ap-tools",
+    "approvals-chips": ".k-ap-chips",
+    "approvals-chip": ".k-ap-chip",
+    "approvals-chip-on": {
+      "selector": ".k-ap-chip[aria-pressed=\"true\"]",
+      "shape": ".k-ap-chip"
+    },
+    "approvals-th": ".k-ap-table th",
+    "approvals-td": ".k-ap-table td",
+    "approvals-group": ".k-ap-group > td",
+    "approvals-title": ".k-ap-title > a",
+    "approvals-late": ".k-ap-table td[data-late]",
+    "approvals-kind": ".k-ap-kind",
+    "approvals-avatar": ".k-ap-avatar",
+    "approvals-acts": ".k-ap-acts",
+    "approvals-note": ".k-ap-note",
+    "state-empty-icon": ".k-state-icon",
+    "approvals-from": ".k-ap-from",
+    "approvals-next": {
+      "selector": ".k-page-head.k-ap-head .k-btn.k-ap-next",
+      "shape": ".k-btn"
+    },
+    "approvals-empty-title": ".k-ap-body .k-state-title",
+    "approvals-empty-body": ".k-ap-body .k-state-body",
     "list-head-row": ".k-list-head-row",
     "list-views": ".k-list-views",
     "list-view": {
@@ -183,6 +209,20 @@
     "list-who": ".k-list-who",
     "list-late-icon": ".k-list-late svg",
     "list-ai-icon": ".k-list-ai svg",
+    "list-scope-mark": ".k-list-scope-mark",
+    "list-search": ".k-list-search",
+    "list-search-row": ".k-list-search-row",
+    "list-search-chips": ".k-list-search-chips",
+    "list-search-label": ".k-list-search-group:first-child .k-list-search-label",
+    "list-search-chip": ".k-list-search-chip",
+    "list-search-seg": ".k-list-search-seg",
+    "list-search-seg-item": ".k-list-search-seg-item",
+    "list-search-fields": ".k-list-search-fields",
+    "list-search-field": ".k-list-search-field",
+    "list-search-input": ".k-list-search-input",
+    "list-pick": ".k-list-table .k-list-pick",
+    "list-detail-side": ".k-list-detail",
+    "list-detail-side-title": ".k-list-detail-title",
     "shell-bar": ".k-bar",
     "detail-body": ".k-detail > .k-page",
     "detail-copy": ".k-detail-copy",
@@ -201,7 +241,60 @@
     "detail-avatar": ".k-detail-avatar",
     "run-band": ".k62-band",
     "run-sheet": ".k62-run-sheet",
-    "run-chip": ".k62-run-chip"
+    "run-chip": ".k62-run-chip",
+    "band-approval": {
+      "selector": ".k-band[data-tone=\"approval\"]",
+      "shape": ".k-band"
+    },
+    "band-title": ".k-band .k-band-title",
+    "band-sub": ".k-band-sub",
+    "band-acts": ".k-band-acts",
+    "band-button": ".k-band-acts .k-btn[data-variant=\"outlined\"]",
+    "band-caution": ".k-band-caution",
+    "band-notice": ".k-band-notice",
+    "artifact-card": ".k-artifact-card",
+    "artifact-head": ".k-artifact-head",
+    "artifact-meta": ".k-artifact-meta",
+    "artifact-acts": ".k-artifact-acts",
+    "artifact-button": ".k-artifact-acts .k-artifact-btn",
+    "section-title-form": ".k-create-doc h2",
+    "create-doc-add": ".k-create-doc-add",
+    "create-spec": ".k-create-spec-box",
+    "create-spec-acts": ".k-create-spec-acts",
+    "dialog-connect": ".k-dialog[data-size=\"connect\"]",
+    "dialog-connect-button": ".k-dialog[data-size=\"connect\"] .k-dialog-actions .k-btn",
+    "dialog-sub": ".k-dialog-sub",
+    "pc-step": ".k-steps > li",
+    "pc-step-dot": ".k-step-dot",
+    "pc-step-title": ".k-steps .k-step-title",
+    "pc-step-desc": ".k-step-desc",
+    "pc-code": ".k-code",
+    "pc-code-cell": ".k-code-cell",
+    "pc-code-foot": ".k-code-foot",
+    "pc-text-button": ".k-pc-text-btn",
+    "pc-note": ".k-pc-shared-note",
+    "pc-note-mark": ".k-pc-shared-note > b",
+    "pc-wait": ".k-pc-wait",
+    "pc-wait-dot": ".k-wait-dot",
+    "pc-button": ".k-btn.k-pc-btn[data-variant]",
+    "pc-button-primary": ".k-btn.k-pc-btn[data-variant=\"primary\"]",
+    "pc-wake": ".k-btn.k-pc-wake[data-variant]",
+    "pc-card": ".k-pc-card",
+    "pc-card-wide": ".k-pc-card.k-pc-this",
+    "pc-card-head": ".k-pc-card-head",
+    "pc-row": ".k-pc-row",
+    "pc-pill": ".k-pc-pill",
+    "pc-detail": ".k-pc-detail",
+    "pc-fix": ".k-pc-fix",
+    "pc-more": ".k-pc-more",
+    "pc-usage": ".k-pc-card.k-pc-usage",
+    "pc-bar": ".k-pc-bar",
+    "pc-bar-fill": ".k-pc-bar > span",
+    "pc-set-row": ".k-pc-set-row",
+    "pc-switch": ".k-pc-switch",
+    "pc-switch-knob": ".k-pc-switch > span",
+    "pc-pick": ".k-pc-pick",
+    "pc-card-title": ".k-pc-card h2"
   },
   "component_exempt": [
     {
@@ -321,6 +414,10 @@
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
+      "part": "artifact-info",
+      "reason": "成果物のカードの部品（K-227・features/F5/approve-complete/approve.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
       "part": "detail-reopen",
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は flex の基準の幅（flex-basis）と上の余白 で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
@@ -341,9 +438,55 @@
       "reason": "チケットの詳細の部品（K-226・features/F4/create-ticket/ticket-detail.css・components/k/k.css）。値は 左・上・下の 1 本の線（border-left・border-top・border-bottom）。D5 の border と書き方が違う で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
+      "part": "create-doc",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css）。幅 900 は CSS の max-width で持つ。D5 は width としか比べず、CSS を width にすると幅 375 で溢れる（K225-UI-009）。幅は K225-UI-009 と突き合わせの組が見る。余白はこのトークンだけを読む"
+    },
+    {
+      "part": "section-title-form-first",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-doc h2:first-of-type）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は K225-UI-002・K225-UI-013 が数で見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-number",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick > .k-create-number）。値は外の余白（margin）だけで、D5 が比べる性質に無い（D5 は margin を比べない）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の幅 375 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "create-label",
+      "reason": "作る画面の部品（K-225・features/F4/create-ticket/create-ticket.css の .k-create-pick .k-label・.k-create-title .k-label）。値は行の高さ（line-height）だけで、D5 が比べる性質に無い（D5 は地・字・線・角丸・余白・高さ・太さ・文字を比べる）。値は突き合わせの組 tickets-new-sections（K225-UI-012 の本文の箱の y）が見る。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-usage-col",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は grid の列の最小の幅（grid-template-columns の minmax） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-set-label",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は flex の基準の幅（flex-basis） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-pick-min",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-code-next",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "pc-fix-msg",
+      "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
       "part": "list-late",
       "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
-  "max_type_sizes": 10
+  "max_type_sizes": 10,
+  "raw_lengths": {
+    "paths": ["apps/web"],
+    "token_css": ["apps/web/styles/k-tokens.css", "apps/web/styles/tokens.css"],
+    "token_prefix": "--k-",
+    "allow": [
+      { "value": "0", "reason": "零は長さを持たない（どの単位でも同じ）" },
+      { "value": "100%", "reason": "親いっぱいはトークンにしない（大きさの決まりではなく親に合わせる指定）" }
+    ],
+    "ledger": "scripts/ci/raw_length_ledger.json"
+  }
 }

@@ -2,8 +2,10 @@
 // チケットの詳細（K-60 では読むだけ・道 /tickets/[id]）。K-226 でキャンバス TicketDetail の形にした：
 //   左に本文の箱（.k-page）：白いカード（頭の行・題名の行・帯・本文の道具の帯・区画）と、その下に子チケット・つながりのカード。
 //   右に属性パネル（幅 380・detail-panel.tsx）。1023 以下はパネルを本文の下に回す。
-//   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227・K-228。
+//   題名の行の下に承認と実行の帯（K-162・apps/web/features/F5/approve-complete/）と AI に任せるの帯（K-62）。帯の中身は K-227（承認待ち）・K-228。
 //   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
+//   layout="side"（K-252）：一覧の右に開く詳細。題名の行（帯と h1）・右のパネル・パネルを開く／閉じるを描かず、題名は h2。
+//     ログインの確かめと入り直しは一覧の画面が持つ（ここでは移らない）。エラーの見出しも h2（頁の h1 は一覧の 1 つ）
 import { useQuery } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,7 +15,7 @@ import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
-import { ApproveBand } from "@/features/F5/approve-complete/band";
+import { ApproveBand, canCompleteNow } from "@/features/F5/approve-complete/band";
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
@@ -67,7 +69,22 @@ export function TicketDetail({ id }: { id: string }) {
   );
 }
 
-function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => void }) {
+export type DetailLayout = "page" | "side";
+
+/** 一覧の右に開く詳細（K-252・D-128.165）。外枠は一覧の画面のもの */
+export function TicketDetailSide({ id }: { id: string }) {
+  return <DetailBody id={id} layout="side" />;
+}
+
+function DetailBody({
+  id,
+  onNumber,
+  layout = "page",
+}: {
+  id: string;
+  onNumber?: (n: string) => void;
+  layout?: DetailLayout;
+}) {
   const [d, setD] = useState<Detail | null>(null);
   const [code, setCode] = useState<string | null>(null);
   const here = `/tickets/${id}`;
@@ -81,29 +98,36 @@ function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => voi
         if (r.ok) {
           const detail = r.data as unknown as Detail;
           setD(detail);
-          onNumber(detail.ticket.number);
+          onNumber?.(detail.ticket.number);
         } else setCode(errorCodeOf(r));
       }),
     [id, onNumber],
   );
   useEffect(() => {
     if (!getToken()) {
-      window.location.replace(`/login?next=${encodeURIComponent(here)}`);
+      if (layout === "page") window.location.replace(`/login?next=${encodeURIComponent(here)}`);
       return;
     }
-    // 入口と同じ正式な uuid の確かめ（版と variant の桁まで・D-129.42・K-144）。違えば口を呼ばずに「見つからない」
+    // 入口と同じ正式な uuid の確かめ（版と variant の桁まで・D-129.42・K-144）。違えば口を呼ばずに「見つからない」。
+    //   横の詳細（K-252）でも同じに確かめる（id の出どころに関わらず・K252-UI-019）
     if (!isUuid(id)) {
       setCode(PAGE_ERROR.notFound);
       return;
     }
     void load();
-  }, [here, id, load]);
+  }, [here, id, load, layout]);
   if (code)
     return (
       <ErrorState
         code={code}
-        heading={1}
-        acts={code === PAGE_ERROR.sessionExpired ? [`/login?next=${encodeURIComponent(here)}`] : ["/tickets"]}
+        heading={layout === "side" ? 2 : 1}
+        acts={
+          layout === "side"
+            ? []
+            : code === PAGE_ERROR.sessionExpired
+              ? [`/login?next=${encodeURIComponent(here)}`]
+              : ["/tickets"]
+        }
       />
     );
   if (!d) return <Loading />;
@@ -113,6 +137,7 @@ function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => voi
     <DetailView
       id={id}
       d={d}
+      layout={layout}
       me={name}
       scopesSettled={!scopes.isPending}
       scopes={scopes.isSuccess ? scopes.data.rows : null}
@@ -125,6 +150,7 @@ function DetailBody({ id, onNumber }: { id: string; onNumber: (n: string) => voi
 function DetailView({
   id,
   d,
+  layout,
   me: myName,
   scopes,
   scopesSettled,
@@ -133,6 +159,7 @@ function DetailView({
 }: {
   id: string;
   d: Detail;
+  layout: DetailLayout;
   me: string;
   scopes: ScopeRow[] | null;
   /** グループの答え（失敗も含む）が届いたか。届く前の空のグループでパネルを描いてから描き替えない */
@@ -168,12 +195,20 @@ function DetailView({
   const changed = async () => {
     await Promise.all([reload(), runs.reload()]);
   };
+  const side = layout === "side";
+  const titleId = side ? "ticket-side-title" : "ticket-title";
   return (
-    <div className="k-detail">
-      <section className="k-root k-page" aria-labelledby="ticket-title">
+    <div className={side ? "k-detail k-detail-side" : "k-detail"}>
+      <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
         <article className="k-detail-card">
           <DetailMeta ticket={t} kind={d.kind} stage={d.stage} />
-          <DetailTitle title={t.title} me={myName} />
+          {side ? (
+            <h2 id={titleId} className="k-list-detail-title" title={t.title}>
+              {t.title}
+            </h2>
+          ) : (
+            <DetailTitle title={t.title} me={myName} />
+          )}
           <div className="k-detail-bands">
             <ApproveBand
               ticketId={id}
@@ -189,6 +224,10 @@ function DetailView({
                 stageKey: d.stage?.key ?? null,
                 canDelegate: d.can?.delegate === true,
                 canDecide: d.approval?.can_decide === true,
+                approvalId: d.approval?.id ?? null,
+                hasAssignee: d.assignee !== null,
+                // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
+                completeShown: canCompleteNow(d, runs.current, runs.known),
               }}
               run={runs.current}
               onRun={runs.follow}
@@ -217,7 +256,7 @@ function DetailView({
           </div>
         </section>
       </section>
-      {panelOpen ? null : (
+      {side || panelOpen ? null : (
         <button
           type="button"
           className="k-detail-reopen"
@@ -229,7 +268,7 @@ function DetailView({
           <PanelRight size={16} aria-hidden="true" />
         </button>
       )}
-      {scopesSettled ? (
+      {!side && scopesSettled ? (
         <DetailPanel
           ticket={t}
           assignee={d.assignee?.display_name ?? null}

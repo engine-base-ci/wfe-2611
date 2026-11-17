@@ -121,19 +121,44 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 NARROW_BY_BOARD = {
     "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
                       "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
+    # 自分の設定の PC と使った量（K-230）：画面の外枠と同じく、幅 767 以下は上の帯を出さない（下のタブは外枠の決まり）
+    "MePC.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}}\n",
+    "MePCInstalled.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
+                             "@media (max-width:767px){.kn-bar{display:none !important}}\n",
 }
+# 承認待ち（K-231：Approvals・ApEmpty）：767 以下は画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴（44px・右寄せ・外枠の .k-bell-inline）を置く。
+# 鈴は帯の中の div の ::after（要素は足さない・768 以上の絵は変わらない）。続けて裁く（a）は鈴の後ろ＝狭い幅では次の行へ回る（画面と同じ並び）
+BELL = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' "
+        "stroke='%23131B27' stroke-width='2'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.9 1.9 0 0 0 3.4 0'/%3E%3C/svg%3E")
+AP_NARROW = ("/* kn-board-narrow（K-231）：画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴の場所（44px）を置く。続けて裁くは鈴の後ろ */\n"
+             "@media (max-width:767px){.kn-bar{display:none !important}"
+             "main header>div::after{content:\"\";order:1;flex:none;width:44px;height:44px;margin-left:auto;"
+             "background:center/18px 18px no-repeat url(\"" + BELL + "\")}main header>div>a{order:2}}\n")
+NARROW_BY_BOARD.update({"Approvals.dc.html": AP_NARROW, "ApEmpty.dc.html": AP_NARROW})
 # 一覧の絵（K-251：OnHome・Main）：画面の外枠と同じく上の帯を出さず、見え方のタブは字を折り返さず 1 行のまま横に送る
 _LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
                 "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
-NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW})
+NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW, "List.dc.html": _LIST_NARROW})
 # 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。画面の外枠と同じく上の帯を出さない（MobileList と同じ）。
 # 7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
 DETAIL_BOARDS = ("TicketDetail", "StRunning", "StFailed", "StBefore", "StConfirmDone", "StDone", "StDelegated")
+# K-227：767 以下は帯の箱の左右も、カードの中のほかの行（article>div の左右 16px）と同じ 16px にそろえる（画面の外枠の
+#   .k-detail-bands と同じ）。箱の中の余白は、ほかの行の 16px に上書きされないよう箱の余白（10px 12px・12px 14px）のまま保つ
+BAND_NARROW = ('article>div:is([role="status"],[role="alert"])[style*="margin: 0 20px"]{margin-left:16px !important;margin-right:16px !important}'
+               'article>div:is([role="status"],[role="alert"])[style*="padding: 10px 12px"]{padding-left:12px !important;padding-right:12px !important}'
+               'article>div:is([role="status"],[role="alert"])[style*="padding: 12px 14px"]{padding-left:14px !important;padding-right:14px !important}')
 NARROW_BY_BOARD.update({
-    f"{b}.dc.html": "/* kn-board-narrow（K-226）：画面の外枠と同じく上の帯を出さない（MobileList と同じ） */\n"
-                    "@media (max-width:767px){.kn-bar{display:none !important}}\n"
+    f"{b}.dc.html": "/* kn-board-narrow（K-226・K-227）：画面の外枠と同じく上の帯を出さない（MobileList と同じ）。帯の箱の左右はカードの行と同じ 16px */\n"
+                    "@media (max-width:767px){.kn-bar{display:none !important}" + BAND_NARROW + "}\n"
     for b in DETAIL_BOARDS
 })
+# 必須の印「*」を項目名と同じ行に置く（K-225）。縦並び（flex の column）の label の中で、項目名の字と <b>*</b> が別々の段に割れて
+#   「種別」「*」「欄」の 3 段になっていた（絵の描き方の事故）。項目名と印を 1 つの span に包む。包んだ後は合わないので、何度流しても 1 回だけ
+REQ_INLINE_BOARDS = ("Create.dc.html",)
+REQ_INLINE = re.compile(r'(<label style="display: flex; flex-direction: column;[^"]*">)([^<]+?) (<b style="color: #B91C1C">\*</b>)')
+def req_inline(s):
+    return REQ_INLINE.sub(r"\1<span>\2 \3</span>", s)
 def section(f):
     ED = {"EdRule": "ai", "EdMemory": "ai", "EdClient": "clients", "EdContact": "clients", "EdMemberMenu": "company", "EdMemberRemove": "company", "EdGroup": "company", "EdApproval": "company", "EdSection": "company", "EdPC": "none", "EdMove": "tickets", "OnHome": "tickets", "EdKind": "company", "EdParent": "tickets", "EdTeach": "ai", "EdTypeChange": "tickets", "EdPlan": "company", "EdDeleteWs": "company", "EdLeaveWs": "none", "EdPasskey": "none", "EdInquiry": "none", "MbHelp": "none", "OnRoom": "ai", "OnKnowledge": "knowledge", "OnClients": "clients", "OnLoading": "tickets", "OnError": "tickets"}
     if f.replace(".dc.html", "") in ED: return ED[f.replace(".dc.html", "")]
@@ -155,6 +180,7 @@ for path in sorted(glob.glob(P + "*.dc.html")):
     if "kn-shell" in s: s = re.sub(r"\n/\* kn-shell.*?(?=</style>)", "\n", s, flags=re.S)
     s = re.sub(r"\n{2,}(?=</style>)", "\n", s, count=1)
     s = s.replace("</style>", CSS + NARROW_BY_BOARD.get(f, "") + "</style>", 1)
+    if f in REQ_INLINE_BOARDS: s = req_inline(s)
     # root
     i = s.index("</helmet>"); j = s.index(">", s.index("<div", i))
     root = s[s.index("<div", i):j+1]
