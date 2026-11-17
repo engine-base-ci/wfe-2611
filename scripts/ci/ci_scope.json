@@ -422,6 +422,7 @@
   "apps/web/tests/k/k224-create-frame.spec.ts": "04_design/fidelity.json（突き合わせの組 tickets-new）と scripts/ci/class_ledger.json（台帳）と 04_design/canvas の絵を読む（実ブラウザの試験は web の組が流す）・K-224",
   "apps/web/tests/k/k254-canvas-layout.spec.ts": "04_design/canvas の絵と幅の台帳 scripts/ci/canvas_layout_ledger.json を読む（data_links で絵か台帳が変わると web の組が流す）・K-254",
   "apps/web/tests/k/k220-bridge-shell.spec.ts": "04_design/fidelity.json（組 bridge-shell のセレクタ）と 04_design/canvas/MePC.dc.html を読む。どちらも 04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-220",
+  "apps/web/tests/k/list-mock.ts": "04_design/fidelity.json を読む（一覧の画面の組の値。実ブラウザの試験は web の組が流す）・K-251",
   "apps/web/tests/k/k138-shell.spec.ts": "04_design/fidelity.json・04_design/DESIGN-kaname.md・04_design/canvas と apps/web/features の .ts・.tsx を読む（実ブラウザの試験は web の組が流す）・K-138",
   "apps/web/tests/k/k221-login-frame.spec.ts": "04_design/fidelity.json（組 login・login-2fa のセレクタと持ち主）と 04_design/canvas の絵、ログインの画面のファイル apps/web/app/(outside)/login/page.tsx・apps/web/features/F1/login/login-form.tsx（部品の世代）を読む。絵と組は 04_design/** で、画面のファイルは apps/web/** で jobs.web.paths に在る（K-221）",
   "apps/web/tests/k/k232-legal-page.spec.ts": "04_design/fidelity.json（組 legal のセレクタと持ち主）・04_design/canvas の絵（LegalPage）・features/F1/consent-terms/legal-page.tsx（Callout の部品を使うか）・legal-page.css と styles/k-tokens.css（箱の幅と本文の行の高さを部品の値で読むか）を読む。04_design/** と apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-232",

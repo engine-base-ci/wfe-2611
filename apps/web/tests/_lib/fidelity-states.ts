@@ -14,7 +14,12 @@ const WS = "aaaaaaaa-0000-4000-8000-000000000001";
 const ME = "11111111-0000-4000-8000-000000000001";
 
 /** 外枠の口を差し替える：役 owner・名前 高本・会社 ENGINE BASE・承認待ち n・グループ 営業 EG・受託開発 JD・経理 KR・PC live（キャンバス Main と同じ人とデータ） */
-async function shellApi(page: Page, approvals: number): Promise<void> {
+/** 一覧の画面の組（K-251）が渡す、一覧の口の答えと、はじめにやることの口の答え。無ければ前のまま（一覧は 501・はじめにやることは 404） */
+interface ListReply {
+  tickets?: unknown[];
+  setupTasks?: unknown[];
+}
+async function shellApi(page: Page, approvals: number, list: ListReply = {}): Promise<void> {
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route) => {
@@ -55,12 +60,73 @@ async function shellApi(page: Page, approvals: number): Promise<void> {
       ]);
     else if (p === "/api/v1/ticket_kinds") r = ok([], { limit: 50 });
     else if (p === "/api/v1/members") r = ok([{ id: ME, display_name: "高本", kind_id: "human" }], { limit: 200 });
+    else if (p === "/api/v1/tickets" && req.method() === "GET" && list.tickets)
+      r = ok(list.tickets, { next_cursor: null });
     else if (p === "/api/v1/tickets" && req.method() === "GET")
       r = { status: 501, body: { error: "not_implemented", code: "NOT_IMPLEMENTED" } };
+    else if (p === "/api/v1/me/setup-tasks" && list.setupTasks) r = ok(list.setupTasks, { dismissed: false });
     else if (p === "/api/v1/me/ticket-drafts") r = ok([]);
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
   });
 }
+
+/** 一覧の画面の組（K-251）の行：キャンバス Main の自分に関わるものの 6 件（題名・番号・担当・期限は絵の値） */
+const LIST_ROWS = [
+  ["EG-128", "セイコー様へ 11月分の請求書を送る", "タスク", "awaiting_approval", "承認待ち", true, "2026-11-01", true],
+  ["JD-198", "京蟻 管理画面の表示崩れ（Safari）", "課題", "doing", "作業中", false, "2026-10-31", true],
+  ["EG-127", "発注ナビ 新着案件に応募文を出す", "タスク", "running", "実行中", true, "2026-11-02", false],
+  ["EG-121", "京蟻 見積の金額と単価の根拠を確認する", "QA", "checking", "確認中", true, "2026-11-02", false],
+  ["EG-119", "問い合わせ（山田様）に一次返信する", "タスク", "doing", "作業中", false, "2026-11-05", false],
+  ["JD-200", "受託開発 定例（議題・議事・決定）", "会議", "todo", "未着手", false, "2026-11-06", false],
+] as const;
+const listRows = (): unknown[] =>
+  LIST_ROWS.map(([number, title, kind, key, stage, ai, due, late], i) => ({
+    id: `0193c5a0-0000-7000-8000-00000000f${String(100 + i)}`,
+    number,
+    title,
+    kind: { id: `k-${kind}`, name: kind },
+    stage: { id: `s-${key}`, name: stage, key },
+    assignee: { id: ME, display_name: "高本" },
+    delegated_to_clone: ai,
+    due_on: due,
+    overdue: late,
+    updated_at: "2026-11-02T00:00:00Z",
+    parent_ticket_id: null,
+    depth: 1,
+  }));
+/** はじめにやることの口（K-250）の答え：パスキーは使えない・PC と ログイン情報はまだ */
+const SETUP_TASKS = [
+  {
+    key: "passkey",
+    label: "パスキーを付ける",
+    desc: "まだ付けられません。数には入れていません",
+    done: false,
+    href: null,
+    available: false,
+    optional: false,
+    skipped: false,
+  },
+  {
+    key: "pc",
+    label: "PC をつなぐ",
+    desc: "分身はあなたの PC で動く。つなぐまで、分身は話すだけで実行はしない",
+    done: false,
+    href: "/setup/bridge",
+    available: true,
+    optional: false,
+    skipped: false,
+  },
+  {
+    key: "credentials",
+    label: "ログイン情報を預ける",
+    desc: "分身に使わせるメール・サービスのログイン。値は誰にも見せない",
+    done: false,
+    href: "/settings/credentials",
+    available: true,
+    optional: true,
+    skipped: false,
+  },
+];
 
 /** 入口（登録・待つ）の口を差し替える（K-255）。ログインしていない人・規約の今の版は空・申し込みは pending。
  *  hold の口は答えない（確かめ中・読み込み中の状態を作る） */
@@ -378,6 +444,19 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     const tabs = page.locator(".k-tabs");
     await expect(tabs.locator(".k-nav-badge")).toHaveText("9");
     await expect(tabs.locator(".k-tab-create")).toBeVisible();
+  },
+  // 一覧の画面のはじめて（K-251・キャンバス OnHome）：0 件・書ける人・はじめにやることが残っている。空の箱と はじめにやること が出るまで待つ
+  "tickets-first": async (page, path) => {
+    await shellApi(page, 3, { tickets: [], setupTasks: SETUP_TASKS });
+    await page.goto(path);
+    await expect(page.locator('[data-state="empty"]')).toBeVisible();
+    await expect(page.getByRole("region", { name: "はじめにやること" })).toBeVisible();
+  },
+  // 一覧の画面の自分に関わるもの（K-251・キャンバス Main）：6 件。表の行が出るまで待つ
+  "tickets-main": async (page, path) => {
+    await shellApi(page, 3, { tickets: listRows() });
+    await page.goto(path);
+    await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
   },
   // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
   "tickets-new": async (page, path) => {
