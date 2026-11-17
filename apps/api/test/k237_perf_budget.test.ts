@@ -251,35 +251,56 @@ describe("K-237 口ごとの DB の文の数（台帳の上限）", () => {
     expect(bogus.headers.get("server-timing")).toBeNull();
   });
 
-  it("K237-API-005 ログイン・登録・再設定の申し込みの答え（セッションの無い要求）には、登録の有無にかかわらず Server-Timing が無い（文の数で登録の有無を漏らさない・PM の決め）", async () => {
+  it("K237-API-005 ログイン・登録・再設定の申し込みの答えには、登録の有無・ログイン中かどうか・成功か失敗かにかかわらず Server-Timing が無い（文の数で登録の有無を漏らさない・PM の決め）", async () => {
     const ghost = `k237-none-${Date.now().toString(36)}@example.com`;
-    const post = (path: string, body: unknown) =>
+    const post = (path: string, body: unknown, bearer: boolean) =>
       app.request(`http://localhost${path}`, {
         method: "POST",
-        headers: { "user-agent": UA, "content-type": "application/json", origin: "http://localhost:3123" },
+        headers: {
+          "user-agent": UA,
+          "content-type": "application/json",
+          origin: "http://localhost:3123",
+          ...(bearer ? { authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(body),
       });
-    const cases: [string, unknown][] = [];
-    for (const who of [email, ghost]) {
+    const BAD = "wrong-password-0000";
+    // [道, 中身, 待つ答えの番号]（口の手前で断られて緑にならないよう、番号も見る。契約の /api/v1/auth/* は口の振る舞いがまだ無い 501）
+    const cases: [string, unknown, number][] = [];
+    for (const who of [email, ghost])
       cases.push(
-        ["/api/auth/sign-in/email", { email: who, password: "wrong-password-0000" }],
-        ["/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }],
-        ["/api/auth-ext/sign-in", { email: who, password: "wrong-password-0000" }],
-        ["/api/v1/auth/sign-in", { email: who, password: "wrong-password-0000" }],
-        ["/api/v1/auth/password/forgot", { email: who }],
-        ["/api/v1/auth/sign-up", { email: who, password: PW, company_name: "K237 の会社" }],
+        ["/api/auth/sign-in/email", { email: who, password: BAD }, 401],
+        ["/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }, 200],
+        ["/api/auth-ext/sign-in", { email: who, password: BAD }, 401],
+        ["/api/v1/auth/sign-in", { email: who, password: BAD }, 501],
+        ["/api/v1/auth/password/forgot", { email: who }, 501],
+        ["/api/v1/auth/sign-up", { email: who, password: PW, company_name: "K237 の会社" }, 501],
       );
-    }
-    cases.push([
+    const leaked: string[] = [];
+    const check = async (path: string, body: unknown, want: number, bearer: boolean) => {
+      const r = await post(path, body, bearer);
+      const st = r.headers.get("server-timing");
+      if (r.status !== want)
+        leaked.push(`${path}${bearer ? "（ログイン中）" : ""}：答え ${r.status}（待つのは ${want}）`);
+      if (st !== null) leaked.push(`${path}${bearer ? "（ログイン中）" : ""}（${r.status}）：${st}`);
+    };
+    for (const bearer of [false, true]) for (const [path, body, want] of cases) await check(path, body, want, bearer);
+    // 登録とログインの成功の答えにも無い
+    await check(
       "/api/auth/sign-up/email",
       { email: `k237-new-${Date.now().toString(36)}@example.com`, password: PW, name: "K237" },
-    ]);
-    const leaked: string[] = [];
-    for (const [path, body] of cases) {
-      const r = await post(path, body);
-      const st = r.headers.get("server-timing");
-      if (st !== null) leaked.push(`${path}（${r.status}）：${st}`);
-    }
+      200,
+      false,
+    );
+    await check("/api/auth/sign-in/email", { email, password: PW }, 200, false);
+    await check("/api/auth-ext/sign-in", { email, password: PW }, 200, false);
+    // 守る値が本当にある場面か：再設定の申し込みは、在るメールと無いメールで流す文の数が違う（だから頭に出してはいけない）
+    const count = async (who: string) => {
+      hits.length = 0;
+      await post("/api/auth/request-password-reset", { email: who, redirectTo: "http://localhost:3123/reset" }, false);
+      return hits.length;
+    };
+    expect(await count(email)).not.toBe(await count(ghost));
     expect(leaked, leaked.join("\n")).toEqual([]);
   });
 
