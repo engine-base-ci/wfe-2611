@@ -4066,6 +4066,66 @@
    "support_code": "AUTH-012"
   },
   {
+   "id": "E-AUTH-013",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "code"
+   },
+   "when": "パスワードを通ってから 5 分を過ぎて 6 けたを送った・待ちの印をもう使った・待ちの印がでたらめ",
+   "false_when": "5 分の内の待ちの印",
+   "message": "時間が過ぎました。最初からログインし直してください",
+   "action": "メールとパスワードから入り直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "2 段階を付けた人",
+    "steps": [
+     "パスワードを通す",
+     "5 分待って 6 けたを送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.141"
+   ]
+  },
+  {
+   "id": "E-AUTH-014",
+   "class": "auth",
+   "where": {
+    "screen": "login",
+    "state": "code"
+   },
+   "when": "6 けたかバックアップコードを 5 回続けて違えた",
+   "false_when": "4 回まで・止めの 15 分を過ぎた",
+   "message": "コードを 5 回違えたので 15 分止めました。15 分たってから、もう一度入ってください",
+   "action": "15 分待つ。端末をなくしたなら『端末をなくした』から管理者に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "2 段階を付けた人",
+    "steps": [
+     "パスワードを通す",
+     "違う 6 けたを 5 回送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.141"
+   ]
+  },
+  {
    "id": "E-CHAT-001",
    "class": "connectivity",
    "where": {

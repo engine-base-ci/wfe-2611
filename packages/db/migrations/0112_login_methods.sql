@@ -1,4 +1,4 @@
--- 0111 入り方を数える・「付けるまで進めない」の印・ほかを切る（K-308・D-128.61・D-128.137・D-128.141）
+-- 0112 入り方を数える・「付けるまで進めない」の印・ほかを切る（K-308・D-128.61・D-128.137・D-128.141）
 --   ① app.login_methods(auth_user_id)：パスキーの数・パスワードの有無・2 段階の有無。認証の表（kaname_auth）は業務の接続から読めない
 --      （D-128.119）ので security definer の中だけで読む。migrate は migrateAuth より先に走るので、表は実行の時に引く（plpgsql の動的な文・
 --      表がまだ無ければ 0／false）。パスキーの表は部品（@better-auth/passkey・K-304）が足す
@@ -12,7 +12,7 @@
 --   ⑥ app.revoke_sessions_for_auth_user_except(auth_user_id, keep_auth_session_id, reason)：パスワードを変えたとき（K-312）に、
 --      その人の全部のワークスペースの端末と PC を、今の画面の 1 つのほか切る。人の引き方は 0109 と同じ（members.auth_user_id か
 --      所属の行 tenant_memberships.auth_user_id）。切るのは安全な側なので抜けた・招待中の会社の端末も切り、記録（sessions_revoked）は
---      今いる会社にだけ書く（0106 と同じ条件・前の会社の管理者に見せない）
+--      今いる会社にだけ書く（0111 の app.current_members_of_auth_user・記録の関数と同じ条件・前の会社の管理者に見せない）
 --   どの関数も PUBLIC から外し、アプリの接続（kaname_app）にだけ渡す（kaname_auth には付けない）
 
 create or replace function app.login_methods(p_auth_user_id text)
@@ -104,10 +104,7 @@ begin
   if p_auth_user_id is null or p_auth_user_id = '' then return 0; end if;
   for r in
     select m.id, m.tenant_id,
-           m.deleted_at is null and not exists (
-             select 1 from tenant_memberships tm
-              where tm.tenant_id = m.tenant_id and tm.member_id = m.id
-                and (tm.status in ('left', 'invited') or tm.deleted_at is not null)) as present
+           exists (select 1 from app.current_members_of_auth_user(p_auth_user_id) c where c.member_id = m.id) as present
       from members m
      where m.id in (select app.members_of_auth_user(p_auth_user_id))
   loop
@@ -126,4 +123,4 @@ end $$;
 revoke all on function app.revoke_sessions_for_auth_user_except(text, text, text) from public;
 grant execute on function app.revoke_sessions_for_auth_user_except(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0111_login_methods.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0112_login_methods.sql') on conflict do nothing;

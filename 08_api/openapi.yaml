@@ -9394,6 +9394,26 @@ components:
       - email
       - password
       x-required-by: hooks
+    SignInCodeInput:
+      type: object
+      properties:
+        pending:
+          type: string
+        code:
+          type: string
+          nullable: true
+          pattern: \S
+          maxLength: 64
+        backup_code:
+          type: string
+          nullable: true
+          pattern: \S
+          maxLength: 64
+      additionalProperties: false
+      x-operation: verifySignInCode
+      required:
+      - pending
+      x-required-by: hooks
     SignOutInput:
       type: object
       properties: {}
@@ -9998,6 +10018,14 @@ components:
           type: string
           nullable: true
       x-operation: signInWithPassword
+    SignInCodeResult:
+      type: object
+      properties:
+        token:
+          type: string
+        backup_codes_left:
+          type: integer
+      x-operation: verifySignInCode
     SignedOut:
       type: object
       properties:
@@ -14488,7 +14516,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/SignInCodeInput'
       responses:
         '201':
           description: 成功
@@ -14498,7 +14526,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/SignInCodeResult'
                   meta:
                     type: object
         '409':
@@ -14508,18 +14536,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VAL-009（契約に書けない値の決まり：code と backup_code の両方・どちらも無い（どちらか 1 つ））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - code と backup_code の両方・どちらも無い（どちらか 1 つ）
+        '401':
+          description: E-AUTH-004／E-AUTH-013
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: E-AUTH-011
+          description: E-AUTH-007
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
+        '429':
+          description: E-AUTH-014／RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
           description: E-PAGE-003
           content:
             application/json:
@@ -14531,8 +14573,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
