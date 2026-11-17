@@ -5379,35 +5379,88 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "本文に知らない欄（trust_device など・strict）・code と backup_code の両方・どちらも無い・待ちの印が無い",
+     "ears_form": "UNWANTED: IF 本文に知らない欄があるか、コードが 1 つでないなら、Kaname は 422 を返し、失敗の数に入れない"
+    },
+    {
+     "status": 401,
+     "code": "E-AUTH-004",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-004"
+     },
+     "errors": [
+      "E-AUTH-004"
+     ],
+     "trigger": "6 けたかバックアップコードが違う・使ったバックアップコード・同じ 30 秒に通ったコードをもう一度",
+     "ears_form": "UNWANTED: IF コードが違うなら、Kaname は 401 と E-AUTH-004 を返し、セッションを作らず失敗の数に入れる"
+    },
+    {
+     "status": 401,
+     "code": "E-AUTH-013",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-013"
+     },
+     "errors": [
+      "E-AUTH-013"
+     ],
+     "trigger": "待ちの印が切れた（5 分）・使い終わった・でたらめ",
+     "ears_form": "UNWANTED: IF 待ちの印が切れているかコードが違うなら、Kaname は 401 を返し、セッションを作らない"
     },
     {
      "status": 403,
-     "code": "E-AUTH-011",
+     "code": "E-AUTH-007",
      "body": {
       "error": "auth",
-      "code": "E-AUTH-011"
+      "code": "E-AUTH-007"
      },
      "errors": [
-      "E-AUTH-011",
-      "E-AUTH-012"
+      "E-AUTH-007"
      ],
-     "trigger": "6 けた（かバックアップコード）は合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
-     "ears_form": "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない"
+     "trigger": "コードは合っているが、会社の人が無い・抜けた（パスワードを通った後に抜けた）",
+     "ears_form": "UNWANTED: IF コードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない"
     },
     {
-     "status": 503,
+     "status": 422,
+     "code": "E-VAL-009",
+     "body": {
+      "error": "validation",
+      "code": "E-VAL-009"
+     },
+     "errors": [
+      "E-VAL-009"
+     ],
+     "trigger": "コードが空・64 文字を超える",
+     "ears_form": "UNWANTED: IF コードが空か 64 文字を超えるなら、Kaname は 422 と E-VAL-009 を返し、部品を呼ばず失敗の数に入れない"
+    },
+    {
+     "status": 429,
+     "code": "E-AUTH-014",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-014",
+      "retry_after_sec": 900
+     },
+     "errors": [
+      "E-AUTH-014"
+     ],
+     "trigger": "6 けたかバックアップコードを 5 回続けて違えた・止めの 15 分の間",
+     "ears_form": "UNWANTED: IF 6 けたを 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいコードでも入れない"
+    },
+    {
+     "status": 500,
      "code": "E-PAGE-003",
      "body": {
-      "error": "unavailable",
+      "error": "internal",
       "code": "E-PAGE-003"
      },
      "errors": [
       "E-PAGE-003"
      ],
-     "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
-     "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"
+     "trigger": "セッションを写す所で失敗した・部品の確かめの途中で DB が落ちた",
+     "ears_form": "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない"
     },
     {
      "status": 413,
@@ -5443,9 +5496,13 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/two-factor/verify が「パスキーで入る／メールとパスワードと 6 桁で入る」として呼ばれたとき THEN Kaname は「セッション（操作が無ければ 12 時間・長くて 7 日）。5 回失敗で 15 分止める」を行い 2xx を返す",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない",
-    "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない",
+    "UNWANTED: IF 本文に知らない欄があるか、コードが 1 つでないなら、Kaname は 422 を返し、失敗の数に入れない",
+    "UNWANTED: IF コードが違うなら、Kaname は 401 と E-AUTH-004 を返し、セッションを作らず失敗の数に入れる",
+    "UNWANTED: IF 待ちの印が切れているかコードが違うなら、Kaname は 401 を返し、セッションを作らない",
+    "UNWANTED: IF コードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない",
+    "UNWANTED: IF コードが空か 64 文字を超えるなら、Kaname は 422 と E-VAL-009 を返し、部品を呼ばず失敗の数に入れない",
+    "UNWANTED: IF 6 けたを 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいコードでも入れない",
+    "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",

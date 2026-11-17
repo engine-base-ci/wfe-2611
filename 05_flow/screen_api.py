@@ -506,6 +506,8 @@ INPUTS = {
     "requestPasswordReset": ("PasswordForgotInput", {"email": "string"}),
     # パスワードで入る（K-301）：メールとパスワードだけ（strict・ほかの欄は 422）。パスワードは入口の正規化の前の値を口が使う
     "signInWithPassword": ("SignInInput", {"email": "string", "password": "string"}),
+    # 確認のコードで入る（K-302）：待ちの印と、6 けたかバックアップコードのどちらか 1 つ（strict・trust_device を含むほかの欄は 422）
+    "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?"}),
     # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
     "signOut": ("SignOutInput", {}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
@@ -596,6 +598,30 @@ ERRORS_4XX = {
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
          "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
+    ],
+    # 確認のコードで入る（K-302・D-128.141）。コードが違う・待ちの印が切れた（401）・会社の人が無い（403）・入力（422）・6 けたの止め（429）・写す所の失敗（500）
+    "verifySignInCode": [
+        {"status": 401, "code": "E-AUTH-004", "body": {"error": "auth", "code": "E-AUTH-004"}, "errors": ["E-AUTH-004"],
+         "trigger": "6 けたかバックアップコードが違う・使ったバックアップコード・同じ 30 秒に通ったコードをもう一度",
+         "ears_form": "UNWANTED: IF コードが違うなら、Kaname は 401 と E-AUTH-004 を返し、セッションを作らず失敗の数に入れる"},
+        {"status": 401, "code": "E-AUTH-013", "body": {"error": "auth", "code": "E-AUTH-013"}, "errors": ["E-AUTH-013"],
+         "trigger": "待ちの印が切れた（5 分）・使い終わった・でたらめ",
+         "ears_form": "UNWANTED: IF 待ちの印が切れているかコードが違うなら、Kaname は 401 を返し、セッションを作らない"},
+        {"status": 403, "code": "E-AUTH-007", "body": {"error": "auth", "code": "E-AUTH-007"}, "errors": ["E-AUTH-007"],
+         "trigger": "コードは合っているが、会社の人が無い・抜けた（パスワードを通った後に抜けた）",
+         "ears_form": "UNWANTED: IF コードは合っているが会社の人が無いなら、Kaname は 403 と E-AUTH-007 を返し、生きたセッションを残さない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "本文に知らない欄（trust_device など・strict）・code と backup_code の両方・どちらも無い・待ちの印が無い",
+         "ears_form": "UNWANTED: IF 本文に知らない欄があるか、コードが 1 つでないなら、Kaname は 422 を返し、失敗の数に入れない"},
+        {"status": 422, "code": "E-VAL-009", "body": {"error": "validation", "code": "E-VAL-009"}, "errors": ["E-VAL-009"],
+         "trigger": "コードが空・64 文字を超える",
+         "ears_form": "UNWANTED: IF コードが空か 64 文字を超えるなら、Kaname は 422 と E-VAL-009 を返し、部品を呼ばず失敗の数に入れない"},
+        {"status": 429, "code": "E-AUTH-014", "body": {"error": "auth", "code": "E-AUTH-014", "retry_after_sec": 900}, "errors": ["E-AUTH-014"],
+         "trigger": "6 けたかバックアップコードを 5 回続けて違えた・止めの 15 分の間",
+         "ears_form": "UNWANTED: IF 6 けたを 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいコードでも入れない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "セッションを写す所で失敗した・部品の確かめの途中で DB が落ちた",
+         "ears_form": "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない"},
     ],
     # 承認する（K-162）。決まった・取り下げた承認（409・E-CONF-003）・入力の 422（体に知らない欄・id が uuid でない）・守りの判定で例外（503・E-PAGE-003）
     "approveApproval": [
@@ -771,6 +797,7 @@ REQUIRED_INPUTS = {
     "verifySignup": ["token"],                                           # apps/api/src/features/F1/verify-email/index.ts:227（E-PAGE-006）
     "requestPasswordReset": ["email"],                                   # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
+    "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
@@ -818,6 +845,7 @@ VALUE_RANGES = {
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
+    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
@@ -839,6 +867,7 @@ UNEXPRESSIBLE_422 = {
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
+    "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
@@ -877,6 +906,8 @@ RESPONSES = {
     "requestPasswordReset": ("PasswordForgotAccepted", {"accepted": "boolean"}),
     # パスワードで入った（K-301）。2 段階なし：token にログインの印・two_factor=false・pending=null。2 段階あり：token=null・two_factor=true・pending に待ちの印（中身の見えない文字列・5 分。6 けたで入るのは K-302）
     "signInWithPassword": ("SignInResult", {"token": "string?", "two_factor": "boolean", "pending": "string?"}),
+    # 確認のコードで入った（K-302）。token にログインの印・backup_codes_left に残りのバックアップコードの数。TOTP の鍵・コードは返さない
+    "verifySignInCode": ("SignInCodeResult", {"token": "string", "backup_codes_left": "integer"}),
     # ログアウトした（K-306）。いつも signed_out=true。閉じたのはその画面のセッションだけ（別のブラウザ・PC は残る）
     "signOut": ("SignedOut", {"signed_out": "boolean"}),
     # 新しいパスワードを決めた（K-314）。いつも reset=true。ログインの印は入れない（再設定の後は自動で入らない・D-125.140）

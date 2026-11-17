@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 43・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 175・部品 55・設定 41
+API 365（作った 44・後のフェーズの行為だけ 20）・前の道すじ 30・表 144・画面の部品 17・共通の処理 13・エラー 177・部品 55・設定 41
 
 ## 共通の処理
 
@@ -154,7 +154,7 @@ API 365（作った 43・後のフェーズの行為だけ 20）・前の道す�
 | `stepUp` | POST /api/v1/auth/step-up | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-19 |
 | `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
 | `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
-| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-74 |
+| `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-302 |
 | `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
 | `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
 | `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |

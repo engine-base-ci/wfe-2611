@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:316a016c95b13c2f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2fb6ecf43ad75258
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1754,9 +1754,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "verifySignInCode",
     "table": "sessions",
     "kind": "create",
-    "input": "SessionsInput",
+    "input": "SignInCodeInput",
     "success": 201,
-    "output": "Sessions",
+    "output": "SignInCodeResult",
     "outputList": false,
     "generic": false,
     "auth": "public",
@@ -1771,8 +1771,12 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      401,
+      401,
       403,
-      503,
+      422,
+      429,
+      500,
       413,
       429,
       503
@@ -18632,4 +18636,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "316a016c95b13c2f";
+export const OPENAPI_HASH = "2fb6ecf43ad75258";

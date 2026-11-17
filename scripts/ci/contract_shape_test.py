@@ -54,6 +54,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "verifySignup": {"token"},                         # apps/api/src/features/F1/verify-email/index.ts:227（無い・空は 422 E-PAGE-006・K52-API-015）
     "requestPasswordReset": {"email"},                 # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "signInWithPassword": {"email", "password"},       # apps/api/src/features/F1/login/sign-in.ts の input（無い・空は 422 E-VAL-008・K301-API-009）
+    "verifySignInCode": {"pending"},                   # apps/api/src/features/F1/login/sign-in-code.ts の input（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
@@ -116,6 +117,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     },
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009）
+    "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
@@ -132,6 +134,7 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
+    "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }

@@ -3911,7 +3911,6 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/generated/post_auth_two_factor_verify.test.ts",
     "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
    ],
    "depends_on": [
@@ -3924,7 +3923,6 @@
     "login"
    ],
    "apis": [
-    "verifySignInCode",
     "requestAdminRecovery"
    ],
    "sections": {
@@ -13394,6 +13392,93 @@
     "申し送り": "- K-316 へ：画面を契約の口に載せ替えたら、前の道すじ `/api/auth-ext/sign-in`（ext.ts）と `apps/web/lib/auth/ext.ts` の `signIn` を消し、前の道すじを使う試験（上の search の 20 か所）を契約の口に向け直す\n- K-302 へ：待ちの印は `pending`（中身の見えない文字列）。6 けたで入ったときの記録 `login_succeeded` は K-302 が書く（この葉の関数を使う）\n- K-303 へ：E-AUTH-007 の確かめ（入った直後に解いて閉じる）を、セッションを作る前の 1 か所（login_gate）に移す。答え（403・E-AUTH-007・生きたセッションなし）は K301-API-014 のまま\n- K-74 の頭の欄：apis から signInWithPassword、tests から apps/api/test/generated/post_auth_sign_in.test.ts を外す（この葉が持つ・test_owner_gate の TO2）"
    },
    "file": "11_tickets/K-301.md"
+  },
+  {
+   "id": "K-302",
+   "title": "確認のコードで入る口（verifySignInCode・バックアップコード・待ちの印 5 分・5 回違えたら 15 分・信頼する端末を外す）（K-74 の子）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-74",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。K-301 と同じ引き方（K-156 の実装の実測 1 時間 21 分を、行 30 以下・口 1 本の葉に割った）。前の道すじ /api/auth-ext/two-factor/verify を写し、部品の止め（accountLockout）を 5 回にし、待ちの印の切れと 6 けたの止めのエラーを 2 件足し、同じ 30 秒の使い回しの守りを足す。K-301 の実測で引き直す",
+   "decisions": [
+    "D-042",
+    "D-051.2",
+    "D-125.138",
+    "D-128.59",
+    "D-128.60",
+    "D-128.61",
+    "D-128.63",
+    "D-128.125",
+    "D-128.130",
+    "D-128.141",
+    "D-128.143"
+   ],
+   "split": "",
+   "prior_impl": "前の道すじ POST /api/auth-ext/two-factor/verify（apps/api/src/auth/ext.ts 204〜245 行・two_factor_cookie と code／backup_code・trust_device）。契約の口 verifySignInCode は契約だけ（501）",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "tests": [
+    "apps/api/test/features/F1/sign-in-code.test.ts",
+    "apps/api/test/generated/post_auth_two_factor_verify.test.ts"
+   ],
+   "depends_on": [
+    "K-301"
+   ],
+   "acts": [
+    "A13"
+   ],
+   "screens": [],
+   "apis": [
+    "verifySignInCode"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/errors",
+    "@kaname/contracts",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "shared",
+    "db"
+   ],
+   "changes": [
+    "apps/api/src/features/F1/login/",
+    "apps/api/src/hooks/login.ts",
+    "packages/auth/src/index.ts",
+    "packages/auth/src/two_factor.ts",
+    "packages/auth/src/signup.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "11_tickets/K-74.md",
+    "apps/api/test/fuzz/server.ts",
+    "scripts/ci/contract_shape_test.py",
+    "07_qa/test-specs/errors.json",
+    "05_flow/screen_api.py",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json"
+   ],
+   "sections": {
+    "目的": "2 段階認証を付けている人が、パスワードを通った後に受け取った **待ちの印**（K-301 の pending）と、認証アプリの 6 けた（またはバックアップコード）を送って入る **契約の口**（`POST /api/v1/auth/two-factor/verify`）を作る。今は前の道すじ `/api/auth-ext/two-factor/verify` にしか振る舞いが無く、契約の口は 501。\n\n- 6 けたは 30 秒で変わる。1 つ前（30 秒前）までは通し、2 つ前は通さない。同じコードを同じ 30 秒のうちに 2 回は通さない\n- 待ちの印は 5 分で切れる。切れた・使い終わった・でたらめの印は「時間が過ぎました。最初からログインし直してください」（E-AUTH-013）\n- 6 けたを 5 回違えたら、その人を 15 分止める（D-128.141・E-AUTH-014「コードを 5 回違えたので 15 分止めました…」）\n- バックアップコードは 1 つ 1 回。入ったら残りの数（backup_codes_left）を返す\n- 「この端末を信頼する」（30 日 6 けたを省く）は外す（D-128.60 は入るたびに 6 けた）\n\n画面をこの口に載せ替えるのは K-316。前の道すじは画面と前からの試験が使うので、この葉では消さない（K-316 が消す）。",
+    "完了の条件": "- [ ] 下の表の 22 行（K302-API-001〜022）が本物の DB の上で緑（`apps/api/test/features/F1/sign-in-code.test.ts`・土台は K-301 の `login.harness.ts`）\n- [ ] 契約の口 verifySignInCode が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_two_factor_verify.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している\n- [ ] errors.json に 2 件（待ちの印が切れた・6 けたの止め）が足され、目録が作り直されている\n- [ ] K-301 の試験（sign-in.test.ts）と前からの試験（apps/api/test/auth_ext.test.ts の 2 段階）が緑のまま\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: AUTH\n\n- 親 K-74 の子。依存は K-301（待ちの印を出す口・記録の関数 `app.record_login_event`・試験の土台）\n- K302-API-001（sessions が 1 つ増える）・K302-API-016・K302-API-020（login_succeeded が 1 つ増える）は、K-301 の「2 段階の人のパスワードの段では sessions に写さず、知らせも記録も出さない」（K301-API-002 が緑）に頼る。試験の土台は準備のセッションを閉じてから本人を返す（精査の後の決め 7）\n- 部品の口 `/api/auth/two-factor/verify-totp`・`/verify-backup-code` は、2 段階を **付ける** 画面（apps/web/app/(outside)/mfa-setup/page.tsx の `authClient.twoFactor.verifyTotp`）と前からの試験が使うので、この葉では閉じない。閉じるのは K-319（精査の後の決め 4・付ける画面を契約の口に移す葉。それまでの間：部品の口でも待ちの印で入れるが、6 けたの止め（部品の `\"twoFactor\"` の失敗の数）は同じ表で数えるので、5 回で止まるのは同じ）\n- 止められた人・会社の止めは K-303。この葉は K-303 を待たない（待ちを減らす・2026-11-17）。6 けたが合った後にセッションを作る所で部品の hook に断られたら、部品の APIError の status と code と文をそのまま答える振り分けはこの葉が作る（K-303 のコードに頼らない・⑥）。**それまでの間**：K-303 がまだ無ければ止めは起きない（会社の人が無い・抜けた E-AUTH-007 はこの口が入った直後に解いて閉じる形で返す・K302-API-016）。K-303 が入れば、抜けた人は止めの hook が E-AUTH-007 で断り、この口はその 403・E-AUTH-007 をそのまま返すので、K302-API-016 はどちらの順でも同じ答え。止めの 2 状態（人・会社の止め／止めの確かめが落ちた 503）を確かめる 2 行（元の行 023・024）は、両方が入った後の K-305 に移した（K305-API-022・023）\n- 端末をなくしたとき管理者に頼むのは K-305\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）",
+    "確かめたこと（切る段・2026-11-17）": "1. 前の道すじ（ext.ts 204〜245 行）：`two_factor_cookie` を Cookie にして部品の `verifyTOTP`／`verifyBackupCode` を呼ぶ。コードは NFKC と空白の除き。違えば 401・E-AUTH-004（文は手で書いている）。`trust_device` を部品に渡している\n2. 部品（better-auth 1.7.15 の two-factor）：待ちは `kaname_auth.verification` の `2fa-<乱数>`（値＝本人の id）と `2fa-attempts-<乱数>`（その待ちの印で試した数・5 回で「新しいコードを」）。人ごとの止めは `accountLockout`（既定 10 回・900 秒・`\"twoFactor\".\"failedVerificationCount\"`／`\"lockedUntil\"`）。止まっている間は TOO_MANY_REQUESTS\n3. 6 けたの確かめは `createOTP(...).verify(code)`（前後 1 つずつの幅）。同じコードの使い回しは部品では見ていない\n4. 部品の既定のバックアップコードは `xxxxx-xxxxx`（英字の大文字・小文字と数字・10 個）で、大文字と小文字を区別する。代表の答え（answer=6bdcb125e8f7）で、小文字と数字だけで作り、入れた字を小文字にそろえる\n5. 部品の止めは時刻を JavaScript の今（Date.now）で比べる。試験は DB の now() で `\"lockedUntil\"` をずらす（同じ台の時計）\n\n```search\n- name: 前の道すじの 2 段階の確かめを使っている所（この葉では消さない。消すのは K-316・決め 3。c/段2 の今の木で数えた：K-316 の試験の 2 件を含む）\n  cmd: git grep -n -F 'auth-ext/two-factor/verify' -- apps packages\n  count: 7\n- name: 部品の 6 けたの口を直に呼んでいる所（前からの試験・閉じるのは K-319）\n  cmd: git grep -n -F 'two-factor/verify-totp' -- apps packages\n  count: 1\n```",
+    "依存の理由": "- K-303: 触らない — （depends_on から外した）同時に走るときに重なる packages/auth/src/index.ts・apps/api/src/features/F1/login/・07_qa/test-specs/errors.json・05_flow/screen_api.py・scripts/ci/ci_scope.json は、足す所が別（errors.json は E-AUTH-011・012 と 013・014、screen_api.py は別の口、login/ は別のファイル）で、後から入る方が本線を取り込んで合わせる\n- K-301: 要る — 試験は K-301 の待ちの印（pending）を出す口と土台 login.harness.ts・記録の関数 app.record_login_event を前提にする（K302-API-001 は K-301 の「2 段階の人はパスワードの段で sessions に写さない」に頼る）。口の置き場 apps/api/src/features/F1/login/・hooks/login.ts も同じファイル",
+    "実施事項": "### 作り方（実装の詳細）\n\n| 欄 | 中身 |\n|---|---|\n| 口の形（契約を直す） | `05_flow/screen_api.py` の `INPUTS` に `\"verifySignInCode\": (\"SignInCodeInput\", {\"pending\": \"string\", \"code\": \"string?\", \"backup_code\": \"string?\"})`（strict・trust_device を含むほかの欄は 422）、`RESPONSES` に `\"verifySignInCode\": (\"SignInCodeResult\", {\"token\": \"string\", \"backup_codes_left\": \"integer\"})`、`ERRORS_4XX` に 401（E-AUTH-004・待ちの印が切れた の 2 つ。EARS「IF 待ちの印が切れているかコードが違うなら、Kaname は 401 を返し、セッションを作らない」）・403（E-AUTH-007）・422（E-VAL-009）・429（6 けたの止め。EARS「IF 6 けたを 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいコードでも入れない」）。作り手の順で作り直す（K-301 と同じ） |\n| 口の振る舞い | `apps/api/src/features/F1/login/sign-in-code.ts`（新しく）：① `code` と `backup_code` のどちらか 1 つだけ（両方・どちらも無い → 422）。空か 64 文字を超える → 422・E-VAL-009（部品を呼ばない・失敗の数に入れない）② 6 けたは NFKC・空白とハイフンを除く。バックアップコードは NFKC・空白を除き、ハイフンが無ければ 5 文字目の後に入れ、英字は小文字にそろえる（answer=6bdcb125e8f7）③ `pending` を部品の待ちの Cookie にして部品の verifyTOTP／verifyBackupCode を呼ぶ（trustDevice は渡さない）。要求の user-agent を部品に渡す頭に入れる（前の道すじ ext.ts:213-214 と同じ。セッションの device_label と新しい端末の見分けに使う・K302-API-017）④ 確かめの順：**待ちの印が生きているか**（無い・切れた・使った・でたらめ → 401・E-AUTH-013）→ **同じ 30 秒の使い回しの守り**（401・E-AUTH-004）→ **部品の確かめ**。待ちの印を先に見るので、使った待ちの印に同じ 6 けたを送ると E-AUTH-013（K302-API-002）⑤ コードが違う → 401・E-AUTH-004（文は errors.json）。部品の止めの数が 5 に届いた回と、止まっている間 → 429・E-AUTH-014（6 けたの止め）・`retry_after_sec`（lockedUntil までの秒）⑥ 入れたら、解いて会社の人が無ければ閉じて 403・E-AUTH-007（K-301 と同じ）。6 けたが合った後にセッションを作る所で部品の hook（K-303 の止め `session.create.before` の `app.login_gate`）に断られたら、部品の APIError の status と code と文をそのまま答える（403：人が止められた E-AUTH-011・会社が止められた E-AUTH-012・会社の人が無い・抜けた E-AUTH-007。文は errors.json）。止めの確かめが落ちた（関数を呼べない）ときの 503・E-PAGE-003 もそのまま答える。どちらもセッションを作らず、6 けたの失敗の数に入れない（K-303 のコードに頼らずに書ける。止めの 2 状態の確かめは K-305 の K305-API-022・023、E-AUTH-007 は K302-API-016・K-316 の UI-013 が verify の 403・E-AUTH-012 を前提にする）⑦ 答えは `{ token, backup_codes_left }`（残りのバックアップコードの数）⑧ 予期しない例外は 500・E-PAGE-003。`apps/api/src/hooks/login.ts` に足す |\n| ログインの部品（packages/auth） | ① `twoFactor({ accountLockout: { maxFailedAttempts: 5, durationSeconds: 900 } })`（D-128.141）② 同じ 30 秒の使い回しの守り：**契約の口 verifySignInCode の 6 けただけ**（部品の口を直に呼ぶ前からの試験・付けるときの 6 けたには掛けない。覚える関数は packages/auth に置き、口から呼ぶ）、通った 30 秒の番号を本人ごとに覚え（`kaname_auth.verification` に `totp-used-<本人の id>`・期限 90 秒）、同じか前の番号のコードは通さない（401・E-AUTH-004）。2 段階を付けるときの 6 けた（ログイン中の本人の確かめ）には掛けない ③ `packages/auth/src/two_factor.ts` の `verifyTotp` から `trustDevice` を外す ⑤ バックアップコードを小文字と数字だけで作る（`twoFactor({ backupCodeOptions: { customBackupCodesGenerate } })`・10 個・`xxxxx-xxxxx`・answer=6bdcb125e8f7。付けるときに出すのは K-311 だが、作る形はこの部品の設定 1 か所） ④ 6 けたで入ったときの記録 `login_succeeded`、違ったとき `login_code_failed`、止めた回 `login_code_locked`（K-301 の `app.record_login_event`） |\n| エラーの正本（errors.json に 2 件・番号は精査の後の決め 1 で決め打ち：E-AUTH-013・E-AUTH-014。本線でぶつかったら段 2 の全部の葉で一括に付け替える） | **E-AUTH-013（待ちの印が切れた）**：class `auth`・where `{screen: \"login\", state: \"code\"}`・when「パスワードを通ってから 5 分を過ぎて 6 けたを送った・待ちの印をもう使った・待ちの印がでたらめ」・false_when「5 分の内の待ちの印」・message「時間が過ぎました。最初からログインし直してください」・action「メールとパスワードから入り直す」・undo false・layers [UI, API]・must_not false・severity low・source [D-128.141]・reproduce `{setup: \"2 段階を付けた人\", steps: [\"パスワードを通す\", \"5 分待って 6 けたを送る\"], needs: \"なし\"}`。**E-AUTH-014（6 けたの止め）**：class `auth`・同じ where・when「6 けたかバックアップコードを 5 回続けて違えた」・false_when「4 回まで・止めの 15 分を過ぎた」・message「コードを 5 回違えたので 15 分止めました。15 分たってから、もう一度入ってください」・action「15 分待つ。端末をなくしたなら『端末をなくした』から管理者に頼む」・undo false・layers [UI, API]・must_not false・severity medium・source [D-128.141]。ほかの欄（support_code など）は E-AUTH-010 と同じ形で埋める。作り手で目録を作り直し、`python3 scripts/ci/error_catalog.py gate` が緑 |\n| 生成の試験の対応 | `07_qa/test-plan/ears-elsewhere.json` に verifySignInCode（file：apps/api/test/features/F1/sign-in-code.test.ts）を足す。作り直した後の名前に種類で結ぶ：`_ok` → K302-API-001・`_rejected_401` → K302-API-003・`_rejected_403` → K302-API-016・`_rejected_422*` → K302-API-012・`_rate_limited` → K302-API-018（6 けたの止めの 429 が別の名前になれば K302-API-007）・`_shape` → K302-API-021・`_server_error` → K302-API-017・`_session_unresolved` → K144-API-032・`_too_large` → K144-API-042 |\n| 範囲の地図 | `scripts/ci/ci_scope.json` の data_links に `{ \"paths\": [\"apps/api/test/features/F1/sign-in-code.test.ts\"], \"tests\": [\"apps/api/test/generated/post_auth_two_factor_verify.test.ts\"] }` |\n| 記録の関数をまとめる（PM の決め 2026-11-18） | migration 1 本（今の本線の次の空き・0108）：K-301 の `app.record_login_event` と K-313 の `app.record_security_event_for_auth_user` が同じに持つ「今いる会社の人」を引く部分（members が消えていない・members.auth_user_id か所属の行 tenant_memberships.auth_user_id・所属が抜けた／招待中／消したでない）を内部の関数 `app.current_members_of_auth_user(p_auth_user_id text) returns table(tenant_id uuid, member_id uuid)`（execute は誰にも渡さない）に切り出し、2 つの記録の関数はそれを呼ぶ形に作り直す。振る舞いは変えない（K-301 の sign-in.test.ts・K-313 と K-314 の試験を変えずに緑）。login_code の記録（④）はこの後に足す。packages/db/src/index.ts の MIGRATIONS に足す |\n| 使う既存の実装 | K-301 の `loginHooks`・`app.record_login_event`・試験の土台／前の道すじの 2 段階の中身（ext.ts）／部品の verifyTOTP・verifyBackupCode／`createSessionResolver`・`signOut` |\n\n### 決めた判断\n\n- 6 けたは 5 回違えたら 15 分止める（D-128.141）。止めは人ごと（待ちの印を取り直しても止まったまま）\n- 待ちの印は 5 分（K-301 が部品の値を直す）\n- 「この端末を信頼する」は外す（D-128.60）\n- パスキーで入る人には 6 けたを聞かない（K-304）\n- 切る段で決めた作り方：同じコードを同じ 30 秒に 2 回通さない守りは、サインインの 6 けただけに掛ける（付けるときの 6 けたに掛けると、付けた直後のログインで同じコードが通らない）",
+    "テスト仕様と確認の結果": "行 ID は `K302-API-…`。試験は `apps/api/test/features/F1/sign-in-code.test.ts`（22 行）。\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`kaname_auth.verification` の `2fa-…`（待ちの印の期限 `\"expiresAt\"`）・`\"twoFactor\".\"failedVerificationCount\"`／`\"lockedUntil\"`（6 けたの失敗の数・止め）・`\"twoFactor\".\"backupCodes\"`（残りのバックアップコード）・`members.deleted_at`\n\n| 待ちの印・アカウントの状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 期限内 | 正しい 6 けた | パスワードを通った直後 | 201・token・backup_codes_left 10・セッション 1 つ | このチケット | K302-API-001 |\n| 使い終わった | 同じ待ちの印をもう一度 | 入った後 | 401・待ちの印が切れた | このチケット | K302-API-002 |\n| 切れた（5 分を過ぎた） | 正しい 6 けた | パスワードを通った後 | 401・待ちの印が切れた・入れない | このチケット | K302-API-003 |\n| 期限の直前・直後 | 正しい 6 けた | — | 直前は入れる・直後は 401・E-AUTH-013（別の人で確かめ、使い回しの E-AUTH-004 と分ける） | このチケット | K302-API-004 |\n| でたらめ・前の版の Cookie の形・欄が無い | — | — | 401（同じ答え）・欄が無ければ 422 | このチケット | K302-API-005 |\n| 期限内（失敗 1〜4 回目） | 違う 6 けた | — | 401・E-AUTH-004・失敗の数が増える | このチケット | K302-API-006 |\n| 6 けたの止め（5 回目・止まっている間） | 違う・正しい 6 けた・新しい待ちの印 | — | 429・6 けたの止め・retry_after_sec 約 900 | このチケット | K302-API-007 |\n| 止めの期限の直前・直後 | 正しい 6 けた | — | 直前 429・直後 201 | このチケット | K302-API-008 |\n| 期限内 | バックアップコード／使ったバックアップコード | — | 201・残り 9／401・E-AUTH-004 | このチケット | K302-API-009 |\n| 期限内 | 「端末をなくした」→ 管理者に頼む | パスワードを通った直後 | 管理者に知らせ | K-305 | — |\n| 待ちの印なし | 管理者に頼む口を直に | — | 401 | K-305 | — |\n| 管理者が 2 段階を戻した後 | パスワード | — | 6 けたを聞かずに入る。K-73 から切る戻す口（resetMemberTwoFactor）ができるまでは、この状態にならない（この葉では起きない） | K-73 から切るチケット・K-308 | — |\n| パスワードを通った後・6 けたの前に会社から抜けた | 正しい 6 けた | — | 403・E-AUTH-007・生きたセッションなし | このチケット（1 か所に移すのは K-303） | K302-API-016 |\n| パスワードを通った後・6 けたの前に止められた（人・会社） | 正しい 6 けた | — | 403・E-AUTH-011（人）／E-AUTH-012（会社）・セッションを作らない（止めは K-303・振り分けはこのチケット・確かめは両方が入った後の K-305 に移した） | このチケット（振り分け）・確かめは K-305 | K305-API-022 |\n| どれでも | 正しい 6 けた（止めの確かめが落ちた） | — | 503・E-PAGE-003・セッションを作らない・失敗に数えない | このチケット（振り分け）・確かめは K-305（止めは K-303） | K305-API-023 |\n| 期限内 | 部品の口 /api/auth/two-factor/verify-totp を直に | — | それまでの間は入れる（止めは同じ表で数える）。閉じて 404 にするのは K-319 | K-319 | — |\n| どれでも | 6 けたの画面で戻る・再読み込み・自動で進むと Enter が重なる | — | 画面の振る舞い | K-316 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 入力 | バックアップコードのハイフンなし・空白・全角 | 部品の形にそろえて通る | K302-API-010 |\n| 入力 | バックアップコードを大文字で打つ（作るのは小文字と数字だけ） | 小文字にそろえて通る | K302-API-022 |\n| 入力 | 6 けたの全角・間の空白・ハイフン | そろえて通る | K302-API-011 |\n| 入力 | 空・65 文字・両方・どちらも無い | 422（空と長すぎは E-VAL-009）・失敗の数に入れない | K302-API-012 |\n| 時間の流れ | 1 つ前・2 つ前のコード | 1 つ前は通す・2 つ前は 401 | K302-API-013 |\n| 時間の流れ | 通ったコードを同じ 30 秒にもう一度 | 401・E-AUTH-004 | K302-API-014 |\n| 入力 | trust_device・前に付いた信頼の印 | 422・印があっても 6 けたを聞く | K302-API-015 |\n| 失敗 | セッションを写す所で失敗 | 500・E-PAGE-003・認証側のセッションも残さない | K302-API-017 |\n| 守り | 1 分に 11 回（同じ IP） | 429・RATE_LIMITED・11 回目は失敗に数えない | K302-API-018 |\n| 守り | ログ | 6 けた・バックアップコード・待ちの印・ログインの印が出ない | K302-API-019 |\n| 守り | 記録 | 6 けたで入った・違った・止めたが会社の security_events に残る | K302-API-020 |\n| 守り | 答えの形 | data は token・backup_codes_left だけ・鍵とコードを返さない | K302-API-021 |\n\n### G 観点（G-11〜G-16）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外のリソースを使わない（認証の表は migrateAuth が作る既存の物） |\n| G-12 切り替わりの瞬間 | 該当 | 待ちの印の 5 分の直前・直後（K302-API-004）・止めの直前・直後（K302-API-008）・6 けたの前に抜けた（K302-API-016） |\n| G-13 機能の組み合わせ | 該当 | 止め × 待ちの印の取り直し（K302-API-007）・信頼の印 × パスワード（K302-API-015） |\n| G-14 口座状態の波及 | 該当 | 6 けたの前に会社から抜けた（K302-API-016）。止められたは K-305（K305-API-022） |\n| G-15 信号なし終了 | 該当 | 写す所の失敗で半分だけ入らない（K302-API-017） |\n| G-16 有限資源の枯渇 | 該当 | 1 要求で部品の確かめ 1 回と記録 1 回・接続はプール経由。上限 10 回／分／IP（K302-API-018） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-02 続けて失敗する | K302-API-006〜008 |\n| TP-AUTH-03 2 段階のコードの期限切れ・使い回し・誤り | K302-API-002〜006・K302-API-009・K302-API-013・K302-API-014・K302-API-022 |\n\n要らない: TP-AUTH-01 誤ったパスワードと無いメールは K-301\n要らない: TP-AUTH-04 セッションが切れて戻ってくる画面は K-316（この口はパスワードを通った後の 6 けただけ）\n要らない: TP-AUTH-05 ログアウトした後に戻るのは K-306（口）・K-317（画面）\n要らない: TP-AUTH-06 パスワードを変えた・端末を外した後は K-312・K-314・自分の設定（A74）\n要らない: TP-AUTH-07 本人確認の取り直しは K-19（この口は取り直しを使わない）\n要らない: TP-AUTH-08 戻る先（next）が外の道は画面 K-316\n要らない: TP-AUTH-09 国・端末が変わったのは K-20（切る）・K-301（入り直す・新しい端末の知らせ）\n要らない: TP-MAIL-01〜03 この口はメールを送らない（新しい端末の知らせは K-301 の hook のまま）",
+    "成果物": "- 口 `apps/api/src/features/F1/login/sign-in-code.ts`・hooks／packages/auth の手直し（6 けたの止め 5 回・使い回しの守り・信頼する端末を外す・記録）／errors.json に 2 件／契約の形と生成物／ears-elsewhere／範囲の地図\n- 単体のテスト：`apps/api/test/features/F1/sign-in-code.test.ts`（22 行）",
+    "決定ログ": "- 2026-11-18 PM の決め：記録の関数の重なり（app.record_login_event・app.record_security_event_for_auth_user）の「今いる会社」を引く部分を内部の関数に切り出し、2 つから呼ぶ形にまとめる（login_code の記録を足す前に・migration・changes: に足した）。親 K-74 は本線の版から自分の口と生成の試験だけを外して運ぶ（changes: に足した）\n- 2026-11-17 待ちを減らす（ticket-flow の切る段 7）：K-303 を待つのは止めに断られたときの 2 行（元の行 023・024）と、その振り分けのためだけだったので、確かめの 2 行を両方が入った後の K-305 へ移した（K305-API-022・023・試験 apps/api/test/features/F1/sign-in-code-gate.test.ts）。depends_on を [K-301] にした（24 → 22 行）。振り分け（部品の APIError をそのまま答える）は K-303 に頼らず書けるのでこの葉に残す（差分の精査 cut-R-wait.md の指摘 1 で戻した）\n- 2026-11-17 切る段で K-74 から分けた\n- 2026-11-17 K-303 の担当からの頼み：6 けたの口も、止めで断られたら 403 と code（E-AUTH-011・012・007）、止めの確かめが落ちたら 503・E-PAGE-003 を返す（K-303 の止めは 6 けたの後のセッションを作る所でも効く・K-316 の UI-013 の前提）。行 023・024 を足し（22 → 24 行）、depends_on に K-303 を足した\n- 2026-11-17 精査 R（差し戻し・指摘 5）を受けて直した：K302-API-016 を前後の数で見る・K-301 の写さない決まりに頼ることを前提に書いた・確かめの順（待ちの印 → 使い回し → 部品）・K302-API-004 を別の人で E-AUTH-013 まで見る・user-agent を部品に渡す。番号は精査の後の決め 1 で E-AUTH-013・014 に決め打ち（試験も文で引く形をやめた）。部品の 6 けたの口を閉じる葉は決め 4 で K-319\n- 2026-11-17 代表の答え answer=6bdcb125e8f7（聞くこと-2 の ⑭）：バックアップコードは小文字と数字だけで作り、入れた字も小文字にそろえる。行 K302-API-022 を足した（21 → 22 行）\n- 2026-11-17 PM の決め（聞くこと-2 の「PM が決めた作り方」）：部品の 6 けたの口を閉じるのは K-311 以降（付ける画面が部品の口を使うため）。精査の後の決め 4 で、閉じる葉は K-319 に決まった\n\n### K-74 の行の配り先（この葉の分）\n\nK-74 の状態の表：「2 段階あり（待ちの印が期限内）× 6 けた」→ K302-API-001／「待ちの印が切れた」→ 003・004／「バックアップコード」「使ったバックアップコード」→ 009。\nK-74 の入力・失敗・揺れ・守り：「6 けたが空・64 文字を超える」→ 012／「6 けたの全角・空白・ハイフン」→ 011／「バックアップコードの大文字小文字・ハイフン」→ 010・022／「待ちの印の 5 分の直前・直後」→ 004／「1 つ前・2 つ前のコード」→ 013／「同じ 30 秒にもう一度」→ 014／「6 けたを続けて違える（5 回で 15 分）」→ 007・008／「1 分に 11 回」→ 018（6 けたの分）／「ログ」→ 019（6 けた・バックアップコード・待ちの印）／「閉じた部品の道（/two-factor/verify-*）」→ K-319 に回した（決め 4）／「信頼する端末を外す」（決めた判断）→ 015。",
+    "リスクと懸念": "- 部品の止めは JavaScript の今で比べ、試験は DB の now() でずらす。CI の容れ物では同じ台なので揃うが、DB を別の台に置く環境では境目の行（K302-API-008）が揺れうる\n- 6 けたの行は 30 秒の切れ目をまたぐと揺れるので、試験は切れ目の 3 秒前を避けて流す（awayFromStepEdge）",
+    "申し送り": "- K-319 へ（決め 4）：付ける画面を契約の口に移したら、部品の `/two-factor/verify-totp`・`/two-factor/verify-backup-code` を `disabledPaths` で閉じる（ロックと記録を通らない道を残さない）\n- K-316 へ：前の道すじ `/api/auth-ext/two-factor/verify` と画面の `verifyTwoFactor`（apps/web/lib/auth/ext.ts）を消し、契約の口に向け直す\n- K-74 の頭の欄：apis から verifySignInCode、tests から post_auth_two_factor_verify.test.ts を外す"
+   },
+   "file": "11_tickets/K-302.md"
   },
   {
    "id": "K-303",

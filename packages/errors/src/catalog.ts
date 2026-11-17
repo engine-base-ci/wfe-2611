@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。175 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。177 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2270,6 +2270,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "login",
       "state": "suspended-ws"
+    }
+  },
+  "E-AUTH-013": {
+    "id": "E-AUTH-013",
+    "cls": "auth",
+    "message": "時間が過ぎました。最初からログインし直してください",
+    "action": "メールとパスワードから入り直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-AUTH-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "code"
+    }
+  },
+  "E-AUTH-014": {
+    "id": "E-AUTH-014",
+    "cls": "auth",
+    "message": "コードを 5 回違えたので 15 分止めました。15 分たってから、もう一度入ってください",
+    "action": "15 分待つ。端末をなくしたなら『端末をなくした』から管理者に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-AUTH-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "login",
+      "state": "code"
     }
   },
   "E-CHAT-001": {
