@@ -2,7 +2,7 @@
 // AI に任せる（K-62）の読み直し。実行の一覧（listTicketRuns）と今の実行の 1 件（getActionRun）を @tanstack/react-query で読む。
 //   3 秒ごとの読み直しは、今の実行が待っている・動いている・確認待ちの間だけ。それ以外は読みに行かない（K62-UI-017）
 //   今の実行は一覧の先頭（いちばん新しい実行）。任せた直後だけ、一覧に出る前の実行を答えの run_id で読む（K63-UI-064〜067）
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { call } from "@/lib/api/call";
 
@@ -40,19 +40,30 @@ function isPinned(pinned: Pinned | null, list: RunView[] | undefined): boolean {
   return (list?.[0]?.id ?? null) === pinned.headWas;
 }
 
-export function useRuns(ticketId: string) {
+/** 実行の一覧の問い合わせ（詳細の最初の読み込みと、AI に任せるの帯の「今の実行を引く」で分け合う・口は 1 本・K-235） */
+export const runsKey = (ticketId: string) => ["k62", "runs", ticketId] as const;
+async function readRuns(ticketId: string): Promise<RunView[]> {
+  const r = await call("listTicketRuns", { params: { id: ticketId }, screenId: "tickets" });
+  if (!r.ok) throw new Error(r.code);
+  return r.data as unknown as RunView[];
+}
+/** 実行の一覧を今読み直す（同じ問い合わせの器を新しくする）。読めなければ null */
+export const fetchRuns = (qc: QueryClient, ticketId: string): Promise<RunView[] | null> =>
+  qc
+    .fetchQuery({ queryKey: runsKey(ticketId), queryFn: () => readRuns(ticketId), retry: false, staleTime: 0 })
+    .catch(() => null);
+
+/** 詳細の実行の一覧と今の実行。enabled は詳細と同時に最初に読むか（道の id で引けるので詳細の答えを待たない・K-235） */
+export function useRuns(ticketId: string, enabled = true) {
   const qc = useQueryClient();
   /** 任せた・別のタブで走っていた実行（答えの run_id）と、そのときの一覧の先頭。一覧に出るまでの間だけ、その実行を読む */
   const [pinned, setPinned] = useState<Pinned | null>(null);
   const runKey = (id: string | null) => ["k62", "run", id] as const;
-  const listKey = ["k62", "runs", ticketId] as const;
+  const listKey = runsKey(ticketId);
   const runs = useQuery({
     queryKey: listKey,
-    queryFn: async (): Promise<RunView[]> => {
-      const r = await call("listTicketRuns", { params: { id: ticketId }, screenId: "tickets" });
-      if (!r.ok) throw new Error(r.code);
-      return r.data as unknown as RunView[];
-    },
+    queryFn: () => readRuns(ticketId),
+    enabled,
     retry: false,
     // 先頭が走っている間と、任せた実行がまだ一覧に出ていない間（読み直しが失敗しても次で追いつく・K63-UI-072）
     refetchInterval: (q) => (isActive(q.state.data?.[0]) || pinned !== null ? POLL_MS : false),

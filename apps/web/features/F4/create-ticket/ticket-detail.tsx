@@ -6,16 +6,15 @@
 //   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
 //   layout="side"（K-252）：一覧の右に開く詳細。題名の行（帯と h1）・右のパネル・パネルを開く／閉じるを描かず、題名は h2。
 //     ログインの確かめと入り直しは一覧の画面が持つ（ここでは移らない）。エラーの見出しも h2（頁の h1 は一覧の 1 つ）
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { DocTools, ErrorState, Loading, Prose } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
-import { call } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
-import { ApproveBand, canCompleteNow } from "@/features/F5/approve-complete/band";
+import { ApproveBand, canCompleteNow, readTicket, ticketKey } from "@/features/F5/approve-complete/band";
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
@@ -92,16 +91,25 @@ function DetailBody({
   // 見ている人の名前（AI と話す・AI のタブ）とグループ（パネルの分類）。外枠と同じ鍵で分け合う
   const who = useQuery({ queryKey: ["me"], queryFn: me, enabled: signedIn, ...ONCE });
   const scopes = useQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes("tickets"), enabled: signedIn, ...ONCE });
+  // 実行の一覧は道の id で引けるので、詳細の答えを待たずに詳細と同時に読む（段を 1 にする・K-235）
+  const runs = useRuns(id, signedIn && isUuid(id));
+  const qc = useQueryClient();
+  // 詳細は帯の読み直しと同じ問い合わせの器（同じ口を 2 回呼ばない・同時に 2 回読んでも口は 1 回・K-235）
   const load = useCallback(
     () =>
-      call("getTicket", { params: { id }, screenId: "tickets" }).then((r) => {
-        if (r.ok) {
-          const detail = r.data as unknown as Detail;
-          setD(detail);
-          onNumber?.(detail.ticket.number);
-        } else setCode(errorCodeOf(r));
-      }),
-    [id, onNumber],
+      qc
+        .fetchQuery({ queryKey: ticketKey(id), queryFn: () => readTicket<Detail>(id), retry: false, staleTime: 0 })
+        .then(
+          (detail) => {
+            setD(detail);
+            onNumber?.(detail.ticket.number);
+          },
+          (e: unknown) => {
+            const r = (e as { result?: Parameters<typeof errorCodeOf>[0] }).result;
+            setCode(r ? errorCodeOf(r) : PAGE_ERROR.loadFailed);
+          },
+        ),
+    [qc, id, onNumber],
   );
   useEffect(() => {
     if (!getToken()) {
@@ -137,6 +145,7 @@ function DetailBody({
     <DetailView
       id={id}
       d={d}
+      runs={runs}
       layout={layout}
       me={name}
       scopesSettled={!scopes.isPending}
@@ -150,6 +159,7 @@ function DetailBody({
 function DetailView({
   id,
   d,
+  runs,
   layout,
   me: myName,
   scopes,
@@ -159,6 +169,7 @@ function DetailView({
 }: {
   id: string;
   d: Detail;
+  runs: ReturnType<typeof useRuns>;
   layout: DetailLayout;
   me: string;
   scopes: ScopeRow[] | null;
@@ -167,7 +178,6 @@ function DetailView({
   reload: () => Promise<void>;
   onTicket: (d: Detail) => void;
 }) {
-  const runs = useRuns(id);
   const [panelOpen, setPanelOpen] = useState(true);
   // パネルを閉じたら「パネルを開く」へ、開いたら「パネルを閉じる」へキーボードの場所を移す（押したボタンが消えて場所を失わない）
   const reopenRef = useRef<HTMLButtonElement>(null);

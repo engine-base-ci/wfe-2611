@@ -15,43 +15,50 @@ import { me } from "@/lib/auth/ext";
 import { TicketListPage } from "../ticket-list/list-page";
 import { CreateHead, type SaveView } from "./create-head";
 import { CreateTicket, type Choices, type KindChoice } from "./create-ticket";
-import { TicketShell, fetchScopes, type Scopes } from "./ticket-shell";
+import { readDraftList } from "./draft";
+import { ONCE, TicketShell, fetchScopes } from "./ticket-shell";
+
+/** 失敗を答えの形にする（同時に呼んだ口のうち、どれが落ちても残りを待ってから順に見る） */
+const settle = <T,>(p: Promise<T>): Promise<{ ok: true; value: T } | { ok: false; error: unknown }> =>
+  p.then(
+    (value) => ({ ok: true as const, value }),
+    (error: unknown) => ({ ok: false as const, error }),
+  );
 
 type Load =
   { state: "loading" } | { state: "error"; code: string } | { state: "ok"; choices: Choices; writable: boolean };
 
 export async function loadChoices(qc: QueryClient): Promise<Load> {
-  // 本人と本人の会社（下書きの写しの鍵・H1）。分からないうちは作る面を出さない（写しを読まない・書かない）
-  let who: Awaited<ReturnType<typeof me>>;
-  try {
-    who = await me();
-  } catch (e) {
-    // 入っていない（401）は入り直しへ（lib/auth/ext が鍵と写しを捨てる）。ほかは「読み込めませんでした」
-    const status = (e as { status?: number }).status;
-    return { state: "error", code: status === 401 ? PAGE_ERROR.sessionExpired : PAGE_ERROR.loadFailed };
-  }
-  // グループは外枠と同じ問い合わせ（口を 2 回呼ばない・K-138）
-  let scopes: Scopes;
-  try {
-    scopes = await fetchScopes(qc, "tickets");
-  } catch (e) {
-    const r = (e as { result?: Parameters<typeof errorCodeOf>[0] }).result;
-    return { state: "error", code: r ? errorCodeOf(r) : PAGE_ERROR.loadFailed };
-  }
-  const [kinds, members] = await Promise.all([
+  // 最初の読み込みの口は全部同時に呼ぶ（前の答えを待たない・K-235）：本人（外枠と同じ鍵 ["me"]・口を 2 回呼ばない）・
+  //   グループ（外枠と同じ問い合わせ・K-138）・種別・人・書きかけの一覧（本人が分かる前に呼んでおき、作る面が続きを選ぶ）
+  const drafts = readDraftList();
+  const [who, scopes, kinds, members] = await Promise.all([
+    settle(qc.fetchQuery({ queryKey: ["me"], queryFn: me, ...ONCE })),
+    settle(fetchScopes(qc, "tickets")),
     call("listTicketKinds", { screenId: "tickets" }),
     call("listMembers", { query: { limit: 200 }, screenId: "tickets" }),
   ]);
+  // 本人と本人の会社（下書きの写しの鍵・H1）。分からないうちは作る面を出さない（写しを読まない・書かない）
+  if (!who.ok) {
+    // 入っていない（401）は入り直しへ（lib/auth/ext が鍵と写しを捨てる）。ほかは「読み込めませんでした」
+    const status = (who.error as { status?: number }).status;
+    return { state: "error", code: status === 401 ? PAGE_ERROR.sessionExpired : PAGE_ERROR.loadFailed };
+  }
+  if (!scopes.ok) {
+    const r = (scopes.error as { result?: Parameters<typeof errorCodeOf>[0] }).result;
+    return { state: "error", code: r ? errorCodeOf(r) : PAGE_ERROR.loadFailed };
+  }
   for (const r of [kinds, members]) if (!r.ok) return { state: "error", code: errorCodeOf(r) };
   if (!kinds.ok || !members.ok) return { state: "error", code: PAGE_ERROR.loadFailed };
-  const all = scopes.rows;
-  const writableIds = new Set(scopes.writable);
+  const all = scopes.value.rows;
+  const writableIds = new Set(scopes.value.writable);
   return {
     state: "ok",
     writable: writableIds.size > 0,
     choices: {
-      workspace: String(who.tenant_id),
-      member: String(who.member_id),
+      workspace: String(who.value.tenant_id),
+      member: String(who.value.member_id),
+      drafts,
       scopes: all.filter((s) => writableIds.has(s.id)).map((s) => ({ id: s.id, name: s.name })),
       kinds: kinds.data as unknown as KindChoice[],
       // 担当者に選べるのは、抜けていない・止められていない人だけ

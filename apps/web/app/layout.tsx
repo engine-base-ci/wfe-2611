@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { Providers } from "@/components/providers";
 import { WEB_ENV } from "@/lib/env";
+import { apiPreconnect } from "@/lib/preconnect";
 import { THEME_COOKIE, parseTheme, themeAttr } from "@/lib/theme";
 // 新しい画面の書体（Noto Sans JP・D-128.3）。画面と同じ所から配る（CSP の font-src は self のまま）。使う画面だけが字の分を読む
 import "@fontsource-variable/noto-sans-jp";
@@ -17,9 +18,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // 根で落ちたときの受け皿（global-error）を実ブラウザで確かめる仕掛け（K-30）。開発用の見本が開けるときだけ効く（本番は devPages が false）
   if (WEB_ENV.devPages && jar.get("k-boom-root")?.value === "1") throw new Error("見本：根の layout で落とす");
   const theme = themeAttr(parseTheme(jar.get(THEME_COOKIE)?.value));
+  // 口が画面と別の住所なら、HTML の頭で先につなぐ（fetch は CORS なので crossorigin・K-235）。同じ住所なら出さない
+  const api = apiPreconnect(WEB_ENV.apiBase);
   return (
     <html lang="ja" {...(theme ? { "data-theme": theme } : {})}>
       <body className="min-h-dvh antialiased">
+        {api ? <link rel="preconnect" href={api} crossOrigin="anonymous" /> : null}
         <Providers>{children}</Providers>
       </body>
     </html>

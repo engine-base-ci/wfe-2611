@@ -83,17 +83,25 @@ interface Props<T extends BandTicket> {
   onChanged: () => Promise<void>;
 }
 
-/** 今の実行が走っている間だけ、3 秒ごとにチケットを読み直す（動いていないときは止める） */
+/** チケットの詳細の問い合わせ（詳細の最初の読み込みと帯の読み直しで分け合う・同じ口を 2 回呼ばない・K-235） */
+export const ticketKey = (ticketId: string) => ["k63", "ticket", ticketId] as const;
+/** チケットの詳細を読む。断られたら答え（result）をつけて投げる（読み直しの失敗では、前に読んだ答えを残す） */
+export async function readTicket<T>(ticketId: string): Promise<T> {
+  const r = await call("getTicket", { params: { id: ticketId }, screenId: "tickets" });
+  if (!r.ok) throw Object.assign(new Error(r.code), { result: r });
+  return r.data as unknown as T;
+}
+
+/** 今の実行が走っている間だけ、3 秒ごとにチケットを読み直す（動いていないときは止める）。
+ *  詳細が読んだ答えを同じ器から使い、走り出した直後に読み直さない（次の読み直しは 3 秒後） */
 function usePolledTicket<T>(ticketId: string, active: boolean, onTicket: (t: T) => void) {
   const polled = useQuery({
-    queryKey: ["k63", "ticket", ticketId],
+    queryKey: ticketKey(ticketId),
     enabled: active,
     retry: false,
+    staleTime: POLL_MS,
     refetchInterval: active ? POLL_MS : false,
-    queryFn: async (): Promise<T | null> => {
-      const r = await call("getTicket", { params: { id: ticketId }, screenId: "tickets" });
-      return r.ok ? (r.data as unknown as T) : null;
-    },
+    queryFn: () => readTicket<T>(ticketId),
   });
   const onTicketRef = useRef(onTicket);
   onTicketRef.current = onTicket;

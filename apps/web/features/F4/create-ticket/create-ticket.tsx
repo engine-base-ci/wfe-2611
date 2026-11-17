@@ -13,7 +13,7 @@ import { PAGE_ERROR, errorText } from "@/components/k/error-of";
 import { call, type CallErr } from "@/lib/api/call";
 import { jstClock, type SaveView } from "./create-head";
 import { CreateSections } from "./create-sections";
-import { DraftStore, loadDraft, tabDraftId, type DraftBody, type SaveState } from "./draft";
+import { DraftStore, loadDraft, tabDraftId, type DraftBody, type DraftList, type SaveState } from "./draft";
 import { NotifyPicker } from "./notify-picker";
 import { ParentPicker } from "./parent-picker";
 
@@ -27,6 +27,8 @@ export interface Choices {
   workspace: string;
   /** 本人（member の id）。下書きの写しの鍵は本人ごと（共有の PC で別の人に見せない・H1） */
   member: string;
+  /** 最初の読み込みで先に呼んでおいた書きかけの一覧の口（無ければ作る面が呼ぶ・K-235） */
+  drafts?: Promise<DraftList>;
   scopes: { id: string; name: string }[];
   kinds: KindChoice[];
   members: { id: string; display_name: string }[];
@@ -170,7 +172,7 @@ export function CreateTicket({
   useEffect(() => {
     let on = true;
     // 読めなくても（網が切れた・口が落ちた）、空の作る面を開く（D-128.62：書けないままにしない）
-    void loadDraft(owner)
+    void loadDraft(owner, choices.drafts)
       .catch(() => null)
       .then((got) => {
         if (!on) return;
@@ -188,7 +190,7 @@ export function CreateTicket({
     return () => {
       on = false;
     };
-  }, [owner, choices.kinds, choices.scopes]);
+  }, [owner, choices.drafts, choices.kinds, choices.scopes]);
 
   const set = (patch: Partial<DraftBody>) => {
     setD((cur) => {

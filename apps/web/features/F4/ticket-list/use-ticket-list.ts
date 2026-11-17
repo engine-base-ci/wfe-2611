@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallResult } from "@/lib/api/call";
 import type { OpName } from "@kaname/contracts";
+import { APPROVALS_KEY, ONCE, readApprovals, type ApprovalsAnswer } from "../create-ticket/ticket-shell";
 
 export type ListView = "mine" | "all";
 
@@ -259,24 +260,23 @@ export interface Waiting {
 
 export type Approvals = { state: "loading" } | { state: "error" } | { state: "ok"; rows: Waiting[] };
 
-/** 自分の承認を待っているもの（チケットが在る画面の右の列）。外枠の数の問い合わせとは別に、行を 5 件読む */
+const waitingOf = (a: ApprovalsAnswer): Waiting[] =>
+  (a.rows as Partial<Waiting>[]).map((w) => ({
+    id: String(w.id ?? ""),
+    ticket_id: w.ticket_id ?? null,
+    ticket_number: String(w.ticket_number ?? ""),
+    title: String(w.title ?? ""),
+  }));
+
+/** 自分の承認を待っているもの（チケットが在る画面の右の列）。外枠の数と同じ問い合わせ（5 件・APPROVALS_KEY）を分け合い、
+ *  一覧の答えを待たずに最初に読む（口は 1 本・K-235） */
 export function useApprovals(enabled: boolean): Approvals {
   const q = useQuery({
-    queryKey: ["k251-list", "approvals"],
+    queryKey: APPROVALS_KEY,
     enabled,
-    retry: false,
-    staleTime: Infinity,
-    refetchOnWindowFocus: false,
-    queryFn: async (): Promise<Waiting[]> => {
-      const r = await call("listApprovalQueue", { query: { limit: 5 }, screenId: "tickets" });
-      if (!r.ok) throw new Error(r.code);
-      return (r.data as unknown as Partial<Waiting>[]).map((w) => ({
-        id: String(w.id ?? ""),
-        ticket_id: w.ticket_id ?? null,
-        ticket_number: String(w.ticket_number ?? ""),
-        title: String(w.title ?? ""),
-      }));
-    },
+    ...ONCE,
+    queryFn: () => readApprovals("tickets"),
+    select: waitingOf,
   });
   if (q.isError) return { state: "error" };
   if (q.isSuccess) return { state: "ok", rows: q.data };

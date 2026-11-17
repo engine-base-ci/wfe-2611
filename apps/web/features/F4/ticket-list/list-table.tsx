@@ -1,11 +1,13 @@
 // チケットの表（K-251・キャンバス Main の表・一覧の共通の部品）。列は list-columns.tsx の 9 つのうち表示設定で選んだもの。
-//   番号と題名は /tickets/<id> へのリンク。担当者は頭文字の丸と名前、AI に任せていれば名前の横に「AI」の札（「〈名前〉のAI」とは書かない・D-128.26）。
+//   番号と題名は /tickets/<id> へのリンク（next/link：画面の中で移り、外枠の口を読み直さない・K-235）。担当者は頭文字の丸と名前、AI に任せていれば名前の横に「AI」の札（「〈名前〉のAI」とは書かない・D-128.26）。
 //   グループ・予定・実績は一覧の口に値が無いので空（D-144.3）。期限切れの行は期限の横に炎の印（読み上げ「期限切れ」）。題名は字のまま出す（K251-UI-016）。
 //   自分に関わるものは期限で区切る（期限切れ・今日まで・今週・来週以降・件数は出さない）。読んだ行全部を区切り直し、中は口の並びのまま。
 //   下に「もっと見る」（次がある時だけ・押している間は押せない）。次の分が読めなかったら、読んだ行を残して「もう一度」
 //   K-252：一覧・グループの一覧は行の頭に選ぶ印（まだ使えない・disabled。列の頭は td で見出しに数えない・selectable）。
 //     番号と題名のリンクは、広い幅（1024 以上）では移らずに右に詳細を開く（onOpen が開いたら移らない・修飾キーつきは移る）
 import { Bot, Flame } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
 import { Fragment, type MouseEvent, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
@@ -97,7 +99,7 @@ function cellOf(
   row: ListItem,
   onOpen?: OpenRow,
 ): { className?: string; late?: boolean; body: ReactNode } {
-  const href = `/tickets/${encodeURIComponent(row.id)}`;
+  const href = `/tickets/${encodeURIComponent(row.id)}` as Route;
   switch (key) {
     case "kind":
       return {
@@ -110,18 +112,18 @@ function cellOf(
     case "number":
       return {
         body: (
-          <a className="k-list-link k-list-number" href={href} onClick={openClick(row, onOpen)}>
+          <Link className="k-list-link k-list-number" href={href} prefetch={false} onClick={openClick(row, onOpen)}>
             {row.number}
-          </a>
+          </Link>
         ),
       };
     case "title":
       return {
         className: "k-list-title-cell",
         body: (
-          <a className="k-list-link" href={href} onClick={openClick(row, onOpen)}>
+          <Link className="k-list-link" href={href} prefetch={false} onClick={openClick(row, onOpen)}>
             {row.title}
-          </a>
+          </Link>
         ),
       };
     case "stage":

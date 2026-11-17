@@ -151,9 +151,11 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
   // はじめて（OnHome）は会社にチケットが 1 枚も無いときだけ。自分に関わるものが 0 件でも会社に在れば Main の形で表を空にする
   const first = list.state === "ok" && list.first;
   const viewer = useViewer(true);
-  const setup = useSetupTasks(first);
+  // 右の列の口（はじめにやること・承認待ち）は一覧の答えを待たずに最初に呼ぶ（段を 1 にする・K-235）。
+  //   はじめにやることは、はじめて（0 件）のときだけ箱を出す。承認待ちは外枠の数と同じ問い合わせ（口は 1 本）
+  const setup = useSetupTasks(true);
   // 右の列（承認待ちの行）は自分に関わるものだけ（一覧はキャンバス List に右の列が無い）
-  const approvals = useApprovals(list.state === "ok" && !first && mine);
+  const approvals = useApprovals(mine);
   const columns = useColumns();
   const shown = useMemo(
     () => (side.squeezed ? columns.visible.filter((k) => SIDE_COLUMNS.has(k)) : columns.visible),

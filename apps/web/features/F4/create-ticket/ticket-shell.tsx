@@ -3,7 +3,7 @@
 //   役と名前は前からある口（/api/auth-ext/me）を useMyRoles と同じ問い合わせ（鍵 ["me"]）で読む（契約の口 getMe は K-70）。
 //     読み中・失敗（401 など）・役の値が分からない（null・知らない値）あいだは役を渡さない：役の項目を出さない
 //   会社名は自分の情報の口の答えの workspace_name（口の側は K-253）。在れば頭文字と会社名、無ければどちらも出さない（D-145.16）
-//   外枠が読む口（グループ・承認待ちの数・PC）は 1 画面で 1 回ずつ。読み続けない・窓に戻っても読み直さない（G-16）。
+//   外枠が読む口（グループ・承認待ちの数・PC）は 1 画面で 1 回ずつ。承認待ちの数は一覧の右の列と同じ問い合わせ（APPROVALS_KEY・K-235）。読み続けない・窓に戻っても読み直さない（G-16）。
 //     グループの口は作る面の選択肢と同じ問い合わせ（SCOPES_KEY）で分け合う。失敗したら、その部分を出さないだけ（本文は出す）
 //   本当の値が無い物（グループの件数・知らせの数）は出さない（D-144.3）。承認待ちの数はどの画面でも出す（D-144.5）
 //   グループの行は絞り込みができるまでグレーで押せない（D-145.18）
@@ -24,7 +24,12 @@ const ROLE_OF: Record<string, RoleId> = { owner: "R1", admin: "R1", staff: "R3",
 /** グループの札の色（データの色の順に回す。キャンバスは 営業 teal・受託開発 plum・経理 amber） */
 const TONES: Group["tone"][] = ["teal", "plum", "amber", "indigo", "coral", "sage", "lavender", "teal-light"];
 /** 外枠の口は 1 画面で 1 回：自分では読み直さない */
-const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
+export const ONCE = {
+  retry: false,
+  staleTime: Infinity,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+} as const;
 
 export interface ScopeRow {
   id: string;
@@ -47,6 +52,21 @@ export async function readScopes(screen: string): Promise<Scopes> {
   const writable = ((r.meta["writable"] as unknown[] | undefined) ?? []).map(String);
   return { rows: r.data as unknown as ScopeRow[], writable };
 }
+/** 承認待ちの口の問い合わせの鍵（外枠の数と一覧の右の列「自分の承認を待っているもの」で分け合う・K-235）。
+ *  1 本の問い合わせ（5 件）で、数は答えの meta.counts.total、行は答えの data から読む */
+export const APPROVALS_KEY = ["k138-shell", "approvals"] as const;
+export const APPROVALS_LIMIT = 5;
+export interface ApprovalsAnswer {
+  rows: Record<string, unknown>[];
+  total: number;
+}
+export async function readApprovals(screen: string): Promise<ApprovalsAnswer> {
+  const r = await call("listApprovalQueue", { query: { limit: APPROVALS_LIMIT }, screenId: screen });
+  if (!r.ok) throw new Error(r.code);
+  const total = Number(((r.meta["counts"] ?? {}) as { total?: number }).total ?? 0);
+  return { rows: r.data as unknown as Record<string, unknown>[], total };
+}
+
 /** 作る面がグループを読む（外枠が読んでいれば同じ答えを使い、口を 2 回呼ばない） */
 export const fetchScopes = (qc: QueryClient, screen: string): Promise<Scopes> =>
   qc.fetchQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes(screen), ...ONCE });
@@ -86,14 +106,11 @@ function useShellData(screen: string, ownCount: boolean, ownBridge: boolean) {
     queryFn: () => readScopes(screen),
   });
   const waiting = useQuery({
-    queryKey: ["k138-shell", "approvals-count"],
+    queryKey: APPROVALS_KEY,
     enabled: signedIn && !ownCount,
     ...ONCE,
-    queryFn: async (): Promise<number> => {
-      const r = await call("listApprovalQueue", { query: { limit: 1 }, screenId: screen });
-      if (!r.ok) throw new Error(r.code);
-      return Number(((r.meta["counts"] ?? {}) as { total?: number }).total ?? 0);
-    },
+    queryFn: () => readApprovals(screen),
+    select: (a: ApprovalsAnswer): number => a.total,
   });
   const devices = useQuery({
     queryKey: ["k138-shell", "devices"],

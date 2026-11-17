@@ -13,7 +13,7 @@
 //     承認の後の実行（phase execute）… この帯の状態の文は出さない（K-63 の帯）。can.delegate なら任せる前の箱
 //   主ボタンは 1 つ：K-63 の帯が「完了にする」を出している間は「AI に任せる」を outlined（決める人の答え answer=5cf21973b39f）
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Band, BandLine, Button, NoticeBox } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
@@ -23,7 +23,7 @@ import { InertButton } from "@/features/F4/create-ticket/detail-head";
 import { CheckTable } from "@/features/F5/approve-complete/check-table";
 import { useApprovalDetail } from "@/features/F5/approve-complete/decide";
 import { RunSteps } from "./run-steps";
-import { isActive, type RunView } from "./use-run";
+import { fetchRuns, isActive, type RunView } from "./use-run";
 
 export interface BandTicket {
   id: string;
@@ -156,6 +156,7 @@ function RunBox({ run, delegate }: { run: RunView; delegate: ReactNode }) {
 }
 
 export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
+  const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
   const [waitUntil, setWaitUntil] = useState<number | null>(null);
@@ -198,7 +199,7 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
       const code = errorCodeOf(r);
       setNotice({ code, link: code === "E-CONN-001" });
       if (code === "E-CONF-013") {
-        const runId = typeof r.body["run_id"] === "string" ? r.body["run_id"] : await runIdOf(ticket.id);
+        const runId = typeof r.body["run_id"] === "string" ? r.body["run_id"] : await runIdOf(qc, ticket.id);
         if (runId) await onRun(runId);
       } else if (code === "E-CONF-014") await onChanged();
     } finally {
@@ -250,12 +251,11 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
   );
 }
 
-/** 別のタブで先に任せていた（409・E-CONF-013）：答えの run_id が無くても、今の実行を一覧から引く */
-async function runIdOf(ticketId: string): Promise<string | null> {
-  const r = await call("listTicketRuns", { params: { id: ticketId }, screenId: "tickets" });
-  if (!r.ok) return null;
-  const first = (r.data as unknown as RunView[])[0];
-  return first?.id ?? null;
+/** 別のタブで先に任せていた（409・E-CONF-013）：答えの run_id が無くても、今の実行を一覧から引く。
+ *  詳細と同じ実行の一覧の問い合わせを読み直す（器を分け合う・口を別に呼ばない・K-235） */
+async function runIdOf(qc: QueryClient, ticketId: string): Promise<string | null> {
+  const runs = await fetchRuns(qc, ticketId);
+  return runs?.[0]?.id ?? null;
 }
 
 function NoticeLine({ notice }: { notice: NonNullable<Notice> }) {

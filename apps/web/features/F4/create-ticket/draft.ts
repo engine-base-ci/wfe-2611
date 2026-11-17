@@ -3,7 +3,7 @@
 //   ログアウトとログイン切れで kaname.ticket-draft で始まる鍵は全部消す（lib/api/client の clearDraftCopies）。
 //   タブごとに下書きの id を持つ（sessionStorage）。2 つのタブで上書きし合わない。作れたら消し、作った後に届く保存は送らない
 import { isUuid } from "@kaname/contracts";
-import { call } from "@/lib/api/call";
+import { call, type CallResult } from "@/lib/api/call";
 import { DRAFT_COPY_PREFIX } from "@/lib/api/client";
 
 export interface DraftBody {
@@ -83,11 +83,20 @@ export function tabDraftId(o: DraftOwner): string {
 
 /** 続きの下書き：サーバーのこのタブの id → この PC の写し（同じ id） → サーバーの一番新しいもの（新しいタブで開いたとき）。
  *  別のタブの下書きを続きとして出したら、その id を sourceId に返す（作る口が source_draft_id で消す・H2） */
-export async function loadDraft(o: DraftOwner): Promise<{ body: DraftBody; sourceId: string | null } | null> {
+/** 下書きの一覧の口の答え（通信の失敗は null）。本人が分かる前から呼べる（作る面の最初の読み込みで同時に呼ぶ・K-235） */
+export type DraftList = CallResult<"listMyTicketDrafts"> | null;
+export const readDraftList = (): Promise<DraftList> =>
+  call("listMyTicketDrafts", { screenId: "tickets" }).catch(() => null);
+
+export async function loadDraft(
+  o: DraftOwner,
+  /** 先に呼んでおいた一覧の口（無ければここで呼ぶ） */
+  listed?: Promise<DraftList>,
+): Promise<{ body: DraftBody; sourceId: string | null } | null> {
   const id = tabDraftId(o);
   const copy = readCopy(o);
   // 一覧の口が通信の失敗で落ちても（例外）、この PC の写し（本人の鍵）があれば、それを出して作る面を開く（D-128.62）
-  const r = await call("listMyTicketDrafts", { screenId: "tickets" }).catch(() => null);
+  const r = await (listed ?? readDraftList());
   const list = r?.ok ? (r.data as unknown as { draft_id: string; body: DraftBody | null }[]) : [];
   const mine = list.find((d) => d.draft_id === id);
   if (mine?.body) return { body: mine.body, sourceId: null };
