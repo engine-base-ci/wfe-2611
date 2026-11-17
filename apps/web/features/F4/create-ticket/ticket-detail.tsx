@@ -109,8 +109,8 @@ function DetailBody({
       return;
     }
     // 入口と同じ正式な uuid の確かめ（版と variant の桁まで・D-129.42・K-144）。違えば口を呼ばずに「見つからない」。
-    //   横の詳細（K-252）の id は一覧の口の答えから来る（URL の字ではない）ので確かめない
-    if (layout === "page" && !isUuid(id)) {
+    //   横の詳細（K-252）でも同じに確かめる（id の出どころに関わらず・K252-UI-019）
+    if (!isUuid(id)) {
       setCode(PAGE_ERROR.notFound);
       return;
     }

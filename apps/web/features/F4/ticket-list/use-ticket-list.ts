@@ -66,6 +66,8 @@ export interface TicketList {
   loadingMore: boolean;
   /** 次の分が読めなかった（正本のエラーの ID） */
   moreError: string | null;
+  /** 読んだ行を残したまま読み直している（言葉を替えた直後。この間は「もっと見る」を受けない・K252-UI-020） */
+  reloading: boolean;
   reload: () => void;
   loadMore: () => void;
 }
@@ -91,6 +93,10 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
   /** 今の見え方とグループ（言葉だけを替えたときは、読んだ行を残して読み直す） */
   const shown = useRef<string | null>(null);
   const okNow = useRef(false);
+  const [reloading, setReloading] = useState(false);
+  /** 今の問い合わせ（見え方・言葉・グループ）。続きの答えは、始めた時と今が同じときだけ描く */
+  const asked = useRef("");
+  asked.current = `${view}|${q}|${scopeId ?? ""}`;
   const [loadingMore, setLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState<string | null>(null);
   const seq = useRef(0);
@@ -105,11 +111,13 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
     setLoadingMore(false);
     setMoreError(null);
     if (!keep) setList({ state: "loading" });
+    setReloading(keep);
     void (async () => {
       const r = await safeCall(() =>
         call("listTickets", { query: queryOf(view, { q, scopeId }), screenId: "tickets" }),
       );
       if (mine !== seq.current) return; // 後から切り替えた見え方の答えだけを描く
+      setReloading(false);
       if (!r?.ok) {
         if (r?.kind !== "unauthenticated") setList({ state: "error", code: codeOf(r) });
         return;
@@ -138,9 +146,10 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
   }, [enabled, reload]);
 
   const loadMore = useCallback(() => {
-    if (busy.current || list.state !== "ok" || !list.next) return;
+    if (busy.current || reloading || list.state !== "ok" || !list.next) return;
     busy.current = true;
     const mine = seq.current;
+    const startedFor = asked.current;
     const cursor = list.next;
     setLoadingMore(true);
     setMoreError(null);
@@ -150,7 +159,8 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
         screenId: "tickets",
       }),
     ).then((r) => {
-      if (mine !== seq.current) return;
+      // 読み直した後・言葉かグループを替えた後に届いた続きは描かない（前の言葉の行を新しい一覧に混ぜない）
+      if (mine !== seq.current || startedFor !== asked.current) return;
       busy.current = false;
       setLoadingMore(false);
       if (r?.ok) {
@@ -158,9 +168,9 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
         setList((cur) => (cur.state === "ok" ? { ...cur, rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur));
       } else if (r?.kind !== "unauthenticated") setMoreError(codeOf(r));
     });
-  }, [list, view, q, scopeId]);
+  }, [list, reloading, view, q, scopeId]);
 
-  return { list, loadingMore, moreError, reload, loadMore };
+  return { list, loadingMore, moreError, reloading, reload, loadMore };
 }
 
 /** はじめにやることの 1 件（K-250 の答えの形） */

@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { ErrorState, Loading } from "@/components/k";
-import { PAGE_ERROR } from "@/components/k/error-of";
+import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { ShellBell } from "@/components/k/shell";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
@@ -70,9 +70,20 @@ function useViewer(enabled: boolean): { name: string; canCreate: boolean } {
   };
 }
 
-/** ?scope= のグループ。none＝絞らない・pending＝グループを読んでいる・bad＝見えない／無い／uuid でない */
+/** ?scope= のグループ。none＝絞らない・pending＝グループを読んでいる・bad＝見えない／無い／uuid でない・
+ *  error＝グループの口が失敗した（読み込みの失敗。見つからないとは別・K252-UI-022） */
 type ScopeState =
-  { state: "none" } | { state: "pending" } | { state: "bad" } | { state: "ok"; row: ScopeRow; tone: string };
+  | { state: "none" }
+  | { state: "pending" }
+  | { state: "bad" }
+  | { state: "error"; code: string; retry: () => void }
+  | { state: "ok"; row: ScopeRow; tone: string };
+
+/** グループの口の失敗を正本のエラーの 1 件に（readScopes は口の答えを result に付けて投げる） */
+const scopeErrorCode = (e: unknown): string => {
+  const r = (e as { result?: Parameters<typeof errorCodeOf>[0] } | null)?.result;
+  return r ? errorCodeOf(r) : PAGE_ERROR.loadFailed;
+};
 
 function useScope(scope: string | null, enabled: boolean): ScopeState {
   const valid = scope !== null && isUuid(scope);
@@ -83,7 +94,8 @@ function useScope(scope: string | null, enabled: boolean): ScopeState {
     ...ONCE,
   });
   if (scope === null) return { state: "none" };
-  if (!valid || scopes.isError) return { state: "bad" };
+  if (!valid) return { state: "bad" };
+  if (scopes.isError) return { state: "error", code: scopeErrorCode(scopes.error), retry: () => void scopes.refetch() };
   if (!scopes.isSuccess) return { state: "pending" };
   const row = scopes.data.rows.find((s) => s.id === scope);
   return row ? { state: "ok", row, tone: scopeTone(scopes.data.rows, row.id) } : { state: "bad" };
@@ -147,18 +159,7 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
     () => (side.squeezed ? columns.visible.filter((k) => SIDE_COLUMNS.has(k)) : columns.visible),
     [columns.visible, side.squeezed],
   );
-  if (list.state === "loading")
-    return (
-      <div className="k-list-body">
-        <Loading />
-      </div>
-    );
-  if (list.state === "error")
-    return (
-      <div className="k-list-body">
-        <ErrorState code={list.code} acts={[data.reload]} />
-      </div>
-    );
+  const open = side.lookup !== null;
   if (first)
     return (
       <div className="k-list-body" data-first>
@@ -166,31 +167,43 @@ function ListBody({ view, scoped, data, side, onCreate, onQuery }: BodyProps) {
         <FirstSide setup={setup} />
       </div>
     );
-  const open = side.lookup !== null;
+  if (mine && list.state !== "ok")
+    return (
+      <div className="k-list-body">
+        {list.state === "loading" ? <Loading /> : <ErrorState code={list.code} acts={[data.reload]} />}
+      </div>
+    );
+  // 一覧・グループの一覧は、読み込み中・失敗の間も言葉の欄を出したまま（打った字を残す・K252-UI-021）
+  const content =
+    list.state === "loading" ? (
+      <Loading />
+    ) : list.state === "error" ? (
+      <ErrorState code={list.code} acts={[data.reload]} />
+    ) : (
+      <div className="k-list-panel">
+        {mine ? <MineFilter columns={columns} name={viewer.name} /> : <ListTools columns={columns} />}
+        <ListTable
+          rows={list.rows}
+          columns={shown}
+          sections={mine}
+          selectable={!mine}
+          onOpen={side.onOpen}
+          openId={side.openId}
+          hasMore={list.next !== null && !data.reloading}
+          loadingMore={data.loadingMore}
+          moreError={data.moreError}
+          onMore={data.loadMore}
+        />
+        {list.rows.length === 0 ? (
+          <p className="k-list-none">{mine ? "自分に関わるチケットはありません" : "条件に合うチケットはありません"}</p>
+        ) : null}
+      </div>
+    );
   return (
     <div className="k-list-body" data-split={open || undefined}>
       <section className="k-list-main" aria-labelledby="tickets-title">
         {mine ? <MineCards /> : <ListSearch onQuery={onQuery} />}
-        <div className="k-list-panel">
-          {mine ? <MineFilter columns={columns} name={viewer.name} /> : <ListTools columns={columns} />}
-          <ListTable
-            rows={list.rows}
-            columns={shown}
-            sections={mine}
-            selectable={!mine}
-            onOpen={side.onOpen}
-            openId={side.openId}
-            hasMore={list.next !== null}
-            loadingMore={data.loadingMore}
-            moreError={data.moreError}
-            onMore={data.loadMore}
-          />
-          {list.rows.length === 0 ? (
-            <p className="k-list-none">
-              {mine ? "自分に関わるチケットはありません" : "条件に合うチケットはありません"}
-            </p>
-          ) : null}
-        </div>
+        {content}
       </section>
       {mine && !open ? <MainSide name={viewer.name} approvals={approvals} /> : null}
       {side.lookup ? <ListDetailSide open={side.lookup} /> : null}
@@ -269,6 +282,10 @@ export function TicketListPage({ view, scope = null, open = null, onCreate }: Ti
         {!ready ? null : group.state === "bad" ? (
           <div className="k-list-body">
             <ErrorState code={PAGE_ERROR.notFound} acts={["/tickets?view=all"]} />
+          </div>
+        ) : group.state === "error" ? (
+          <div className="k-list-body">
+            <ErrorState code={group.code} acts={[group.retry]} />
           </div>
         ) : group.state === "pending" ? (
           <div className="k-list-body">
