@@ -313,7 +313,7 @@ describe("K-332 新しく作って参加：招待の状態 × 入力", () => {
     );
     await h.admin.query("revoke execute on function app.accept_invitation(text, text, text) from kaname_app");
     let r!: Response;
-    let logs = "";
+    let logs!: string;
     try {
       logs = await h.captureLogs(async () => {
         r = await h.accept(inv.token, { name: NAME, password: PW });
