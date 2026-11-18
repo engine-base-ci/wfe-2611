@@ -342,6 +342,15 @@ export function LoginForm({ next }: { next: string | null }) {
     asking.current = true;
     try {
       const r = await call("requestAdminRecovery", { body: { pending }, keepOn401: true, screenId: "login" });
+      if (!r.ok && r.code === "E-AUTH-013") {
+        // 待ちの印が切れた：確認のコードの画面と同じく止める。管理者のカードは「先にメールとパスワードで」の形に戻る（押し直しても通らない）
+        setMsg(textOf(r));
+        setCode(EMPTY_CODE);
+        setStopped(true);
+        setExpired(true);
+        setAsked(null);
+        return;
+      }
       const result = r.ok ? r.data.result : undefined;
       // 口が 5xx・答えの形が違うときも「送れなかった」（押し直せる）
       setAsked(result && ASKED_RESULTS.has(result) ? (result as Asked) : "failed");
@@ -360,6 +369,8 @@ export function LoginForm({ next }: { next: string | null }) {
       setStep("code");
       return;
     }
+    // 確認のコードの画面から来た（印が切れた・止められた）ときは、メールを残して最初の状態に戻す（前の文・止めの印を持ち越さない）
+    if (recoverFrom === "code") restart();
     focusMail.current = true;
     setStep("main");
   };

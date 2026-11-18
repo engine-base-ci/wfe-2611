@@ -29,13 +29,19 @@ export const authClient = createAuthClient({
     // 同意し直しが要る（K-53）：ほかの口と同じく、同意し直しの画面へ移す。要求を出した時刻を覚え、同意できた時刻より前の要求の 403 は見ない
     onRequest: (ctx) => {
       SENT.set(ctx, Date.now());
-      if (urlOf(ctx.url).includes(PASSKEY_VERIFY_PATH) && passkeyChallenge) {
-        const h = new Headers(ctx.headers);
+      const url = urlOf(ctx.url);
+      const isOptions = url.includes(PASSKEY_OPTIONS_PATH);
+      const isVerify = url.includes(PASSKEY_VERIFY_PATH);
+      if (!isOptions && !isVerify) return ctx;
+      // パスキーで入る 2 つの道には今の印（Bearer）を付けない：ログイン中だと部品が選べるパスキーを今の人の物だけに絞り、
+      //   別のアカウントのパスキーで入れなくなる（代表の答え ⑤・Q の指摘）
+      const h = new Headers(ctx.headers);
+      h.delete("authorization");
+      if (isVerify && passkeyChallenge) {
         h.set(CHALLENGE_HEADER, passkeyChallenge);
         passkeyChallenge = null;
-        return { ...ctx, headers: h };
       }
-      return ctx;
+      return { ...ctx, headers: h };
     },
     onError: (ctx) => {
       const b = ctx.error as { code?: unknown; message?: unknown } | null;
