@@ -78,7 +78,10 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
       r = m.on.verify(b);
     } else if (/^\/api\/auth\/passkey\/.*authenticate-options/.test(p)) {
       m.passkeyOptions += 1;
-      r = { status: 200, body: { challenge: "Y2gtazIyMQ", challenge_token: "ch-k221", rpId: "localhost", allowCredentials: [] } };
+      r = {
+        status: 200,
+        body: { challenge: "Y2gtazIyMQ", challenge_token: "ch-k221", rpId: "localhost", allowCredentials: [] },
+      };
     } else if (p === "/api/auth/get-session") r = { status: 200, body: { session: null, user: null } };
     else m.other.push(`${req.method()} ${p}`);
     if (r.delayMs) await new Promise((res) => setTimeout(res, r.delayMs));
