@@ -4,14 +4,14 @@
 //   口が 403・STEP_UP_REQUIRED なら取り直しの小窓（step-up.tsx）を出し、通ったら止まった操作を 1 回だけやり直す。
 //   2 段階の「付ける」（two-factor.tsx）とパスワードの「変える／決める」（change-password.tsx）は K-319。入っている端末・記録は流れ F10（グレー・口を呼ばない）。
 //   mfa_pending（付けるまで進めない・K-319・D-128.141）：外枠も第 2 ナビも出さず、入口の枠の SecurityForced。付け終わって読み直した印が下りたら next（中の道だけ）か / へ。
-//   ?back=1（ほかの画面から戻された・lib/mfa-gate.ts）なら戻された知らせ（口の文・無ければ E-AUTH-019）。箱の下のログアウトは signOut を 1 回呼んで /login へ
+//   ?back=1（ほかの画面から戻された・lib/mfa-gate.ts）なら戻された知らせ（口の文・無ければ決まった文）。箱の下のログアウトは signOut を 1 回呼んで /login へ
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ErrorState, Loading, MeSub, Toaster, useNotify } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallErr, type CallResult } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { signOut } from "@/lib/auth";
-import { clearMfaReason, mfaReason, MFA_REQUIRED_ERROR } from "@/lib/mfa-gate";
+import { clearMfaReason, mfaReason } from "@/lib/mfa-gate";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { usePasswordFlow } from "./change-password";
 import { hereNow, msgOf, offline, SCREEN } from "./common";
@@ -31,9 +31,9 @@ import {
 } from "./views";
 
 const expired = (): string => msgOf(PAGE_ERROR.sessionExpired);
-/** 戻された知らせ（口の文が無いとき・E-AUTH-019 が正本に無いとき） */
+/** 戻された知らせ（口の文が無いとき。文の番号は K-321 が正本に足す） */
 const BACK_TEXT = "入り方を 1 つ足してから使い始めます";
-const backNotice = (): string => mfaReason() || msgOf(MFA_REQUIRED_ERROR) || BACK_TEXT;
+const backNotice = (): string => mfaReason() || BACK_TEXT;
 /** 書く口の失敗の文（401 はログイン切れ・欄の理由・口の文・正本の文） */
 function writeFailText(r: CallErr, field?: string): string {
   if (r.status === 401) return expired();

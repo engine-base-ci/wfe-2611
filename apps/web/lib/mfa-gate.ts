@@ -1,12 +1,10 @@
 // 付けるまで進めない（K-319・D-128.141・answer=6bdcb125e8f7 ⑮）：口が 403・MFA_REQUIRED を返したら、どの画面からでも
 //   ログインと安全の画面（/mfa-setup?next=<今の道と問い>&back=1）へ移す。同意し直し（lib/terms-gate.ts）と同じ形。
-//   口が返した文（E-AUTH-019）は、戻された知らせとして出すためにこのタブの sessionStorage に渡す。ログインと安全の画面の中では移さない。
+//   口が返した文（戻された知らせ・番号は K-321 が正本に足す）は、戻された知らせとして出すためにこのタブの sessionStorage に渡す。ログインと安全の画面の中では移さない。
 //   ログインしていない（手元に印が無い）ときは移さない（ログアウトした直後の画面を閉じ込めない）。口の入口の 403 は K-321
 import { getToken } from "@/lib/api/client";
 
 export const MFA_REQUIRED = "MFA_REQUIRED";
-/** 戻された知らせの文の正本の番号（K-321 が errors.json に足す） */
-export const MFA_REQUIRED_ERROR = "E-AUTH-019";
 export const MFA_SETUP_PATH = "/mfa-setup";
 const REASON_KEY = "kaname.mfa.reason";
 
