@@ -1729,6 +1729,15 @@ K-316,ログインの画面を口につなぐ：パスワード・確認のコ�
 - [ ] 突き合わせの組 login・login-2fa（K-221 の持ち物・K221-UI-023）が替えずに緑
 - [ ] 画面が前の道すじ `/api/auth-ext/sign-in`・`/api/auth-ext/two-factor/verify` を 1 回も呼ばず（K316-UI-001・002）、その 2 つの道すじは消えて 404（K316-UI-022・精査の後の決め 3）
 - [ ] チケットの CI が緑"
+K-320,再設定の画面を契約の口につなぐ（メールを入れる・送りました・新しいパスワード・済んだ・リンクが使えない・ログイン中）・部品の道を閉じる（K-76 の葉）,タスク,K-76,未着手,実装,2026-11-24,F1・画面,"再設定の画面（/password-reset）を、前の部品の画面（components/ui・OutsideLayout・部品の口 `authClient.requestPasswordReset`・`authClient.resetPassword`）から、
+c/段2 で作った部品 `features/F1/password-reset/views.tsx` の `PasswordReset` に載せ替え、契約の口（K-313 の requestPasswordReset・K-314 の resetPassword）につなぐ。
+正の絵はモック `/dev/mock/f1/<状態>`（本番と同じ部品）。新しい見た目は書かない。
+
+載せ替えたら、部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）を閉じる（404）。","- [ ] 下の表の 26 行（K320-UI-001〜026）が緑：`apps/web/tests/k/k320-password-reset.spec.ts`
+- [ ] モックの写しと本番の写しを、頭の mock の 10 状態 × 幅 375・768・1440 で比べて同じ（K320-UI-024）
+- [ ] 前からの画面の試験を下の「前からの試験を替える」のとおりに替えて緑。ほかの前からの試験（login.spec.ts・k221-login-frame.spec.ts・sign-up.spec.ts のリンクの行）は替えずに緑
+- [ ] 押した結果（呼んだ口・移った先・出た文）まで実ブラウザで見る。幅 320〜1440 の横溢れ 0
+- [ ] チケットの CI が緑"
 K-322,確認のコードで入る口の守りを固める（同じ 6 けたを同時に送ってもセッションは 1 つ・確かめの後に DB が落ちたらその場で閉じて 500）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-19,F1・認証,"K-302 のレビュー（Q）の MEDIUM 2 件を直す。どちらも「入れてはいけないのに、生きたセッションが残る」穴。
 
 1. 同じ人が待ちの印を 2 つ持ち、同じ 6 けたを同時に 2 本送ると、両方が通ってセッションが 2 つできることがある。使い回しを見て（stepUsed）から覚える（rememberStep）までの間に、部品の確かめとセッション作りを挟んでいるため。「同じコードを同じ 30 秒に 2 回は通さない」（K-302 の決めた判断）が同時の要求で破れる
