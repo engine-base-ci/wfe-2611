@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { MATCH_WIDTHS, matchMock, type MatchOptions } from "./stage2-match";
+import { reloginOn, seedTokenOnce } from "./seed-token";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const ERRORS = (
@@ -142,9 +143,8 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     delete m.once[k];
     return v;
   };
-  await page.addInitScript((t) => {
-    if (!window.localStorage.getItem("kaname.token")) window.localStorage.setItem("kaname.token", t);
-  }, OLD_TOKEN);
+  // 印は、ログインの画面を除く最初の画面で 1 回だけ置く（K-338・seed-token.ts）。呼び直すと次の画面でもう 1 回置く
+  await seedTokenOnce(page, OLD_TOKEN);
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route, req: Request) => {
     const p = new URL(req.url()).pathname;
@@ -795,7 +795,12 @@ test("K319-UI-026 付けるまで進めないの途中でログインが切れ�
   await choice(page, "2 段階認証を付ける").click();
   await confirmWith(page);
   await expect(page).toHaveURL(/\/login\?next=%2Fmfa-setup/);
+  // 401 で画面が印を消したことを見る（ログインの画面に印は戻らない）
+  expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeNull();
+  // 入り直す：試験が自分で印を置いてから開く（次の /mfa-setup の画面の最初に 1 回だけ置く。ログインの画面には置かない）
+  await reloginOn(page, "/mfa-setup", OLD_TOKEN);
   await open(page);
+  expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe(OLD_TOKEN);
   await expect(page.locator(`${BOX} h1`)).toHaveText("入り方を 1 つ足してください");
   await choice(page, "2 段階認証を付ける").click();
   await confirmWith(page);
