@@ -30,6 +30,7 @@ import { passwordResetHooks } from "./hooks/password-reset.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
 import { serviceStatusHooks } from "./hooks/service-status.js";
 import { loginHooks } from "./hooks/login.js";
+import { invitationHooks } from "./hooks/invitations.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -161,6 +162,14 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...serviceStatusHooks({ appPool }),
         // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）
         ...loginHooks({ auth, appPool, authPool, config: { opsEmail: config.opsEmail } }),
+        // 招かれて参加する（K-331 下見。K-332・K-333 参加・K-334 送り直しも同じ hooks に足す）
+        ...invitationHooks({
+          auth,
+          appPool,
+          authPool,
+          ...(mailer ? { mailer } : {}),
+          config: { opsEmail: config.opsEmail, webBaseUrl: config.webBaseUrl ?? "" },
+        }),
         ...bridgeHooks({
           appPool,
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },

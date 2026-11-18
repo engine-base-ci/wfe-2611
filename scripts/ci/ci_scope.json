@@ -388,6 +388,24 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F2/invitations/**",
+    "apps/api/src/hooks/invitations.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-preview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F2/invitation-preview.test.ts",
+    "apps/api/test/features/F2/invite.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_invitations_token.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F3/connect-pc.test.ts"
    ],
    "tests": [

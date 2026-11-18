@@ -19,6 +19,7 @@ import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
+import { invitationHooks } from "../../src/hooks/invitations.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
@@ -69,6 +70,13 @@ Object.assign(
     config: { baseUrl: "http://127.0.0.1", webBaseUrl: null },
   }),
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
+  // 招待の下見（K-331）。偽のセッションは部品のセッションに無いので、ログインしていない扱いの道を回る
+  invitationHooks({
+    auth: login.auth,
+    appPool: h.pool,
+    authPool: login.pool,
+    config: { opsEmail: "ops-fuzz@example.com", webBaseUrl: "http://127.0.0.1" },
+  }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(

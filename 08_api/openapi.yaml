@@ -11232,6 +11232,34 @@ components:
           type: object
           nullable: true
       x-operation: getServiceStatus
+    InvitationPreview:
+      type: object
+      properties:
+        state:
+          type: string
+        workspace_name:
+          type: string
+        inviter_name:
+          type: string
+          nullable: true
+        group_name:
+          type: string
+          nullable: true
+        role:
+          type: string
+        message:
+          type: string
+          nullable: true
+        email:
+          type: string
+        expires_at:
+          type: string
+        account_exists:
+          type: boolean
+        signed_in:
+          type: object
+          nullable: true
+      x-operation: getInvitation
     ServiceStatus:
       type: object
       properties:
@@ -13378,7 +13406,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: public
-      x-permission-scope: 招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・役割・招いた人だけ
+      x-permission-scope: 招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・招いた人・グループ・役割・ひとことと、招待の状態・宛てのアカウントの有無・ログイン中の様子だけ（K-331）
       x-step-up: false
       security: []
       parameters:
@@ -13396,7 +13424,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Invitations'
+                    $ref: '#/components/schemas/InvitationPreview'
                   meta:
                     type: object
         '422':
@@ -13405,14 +13433,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '404':
+          description: E-INV-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:

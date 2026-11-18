@@ -2137,7 +2137,6 @@
    ],
    "apis": [],
    "tests": [
-    "apps/api/test/generated/get_auth_invitations_token.test.ts",
     "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
    ],
    "depends_on": [],
