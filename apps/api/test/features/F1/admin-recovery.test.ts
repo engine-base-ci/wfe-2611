@@ -274,6 +274,53 @@ describe("K-305 管理者に頼む：二重・時間・失敗", () => {
   });
 });
 
+describe("K-305 管理者に頼む：押し直しの行き止まりを作らない（Q の差し戻し・2026-11-18）", () => {
+  it("K305-API-024 no_admin の後に 1 時間の内にもう一度押す：no_admin のまま（already にしない）。記録も受け箱もメールも増えない", async () => {
+    const u = await requester("solo-again");
+    const sent = mails.length;
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("no_admin");
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("no_admin");
+    expect(mails.length).toBe(sent);
+    expect(await eventsOf(u.tenantId)).toHaveLength(1);
+  });
+
+  it("K305-API-025 送り中のまま止まった受け箱の行（届いた印も送れなかった印も無く、作ってから 2 分を過ぎた）：押し直すと送り直して sent。受け箱は 1 つのまま。作ってすぐの行は送り直さず already", async () => {
+    const { u, adm } = await setup("stuck");
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("sent");
+    // 送った後に「送り終えた記録」が書けなかった形にする（届いた印を消す）。作ってすぐなので、まだ送り中とみなす
+    await h.admin.query(
+      "update notifications set sent_at = null, failed_at = null where member_id = $1 and event_kind_id = $2",
+      [adm.memberId, EVENT],
+    );
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("already");
+    expect(mailsTo(adm.email)).toHaveLength(1);
+    // 作ってから 2 分を過ぎた（止まった）
+    await h.admin.query(
+      "update notifications set created_at = now() - interval '3 minutes' where member_id = $1 and event_kind_id = $2",
+      [adm.memberId, EVENT],
+    );
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("sent");
+    expect(mailsTo(adm.email)).toHaveLength(2);
+    expect(await noticesTo(adm.memberId)).toHaveLength(1);
+    expect(await eventsOf(u.tenantId)).toHaveLength(1);
+  });
+
+  it("K305-API-026 送れなかった管理者が、押し直す前に止められた：送り直さない（いまの管理者の条件で引き直す）。届いた管理者にも増えない", async () => {
+    const { u, adm } = await setup("gone-before-retry");
+    const adm2 = await addPerson(u.tenantId, "gone-before-retry-admin2", "admin");
+    failMailTo.add(adm2.email);
+    try {
+      expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("failed");
+    } finally {
+      failMailTo.delete(adm2.email);
+    }
+    await h.admin.query("update members set suspended_at = now(), suspended_by = id where id = $1", [adm2.memberId]);
+    expect(await resultOf(await ask({ pending: await pendingOf(h, u) }))).toBe("already");
+    expect(mailsTo(adm2.email)).toHaveLength(0);
+    expect(mailsTo(adm.email)).toHaveLength(1);
+  });
+});
+
 describe("K-305 管理者に頼む：入れない入口・入力・守り", () => {
   it("K305-API-011 待ちの印の欄が無い（体が空）：422（K-302 と同じ）。知らせも記録も作らない", async () => {
     const before = await allEvents();

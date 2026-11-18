@@ -1672,7 +1672,7 @@ K-304,パスキーで入る（@better-auth/passkey 1.7.15・passkey の表・チ
 - [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
 K-305,端末をなくした：ワークスペースの管理者に戻してもらうよう頼む口（requestAdminRecovery・入っている全部のワークスペースの管理者・1 時間に 1 回）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"2 段階認証を付けた人が、認証アプリの端末をなくし、バックアップコードも無いとき、パスワードを通った直後の **待ちの印** で「ワークスペースの管理者に再設定を頼む」を押すと、その人が入っている **全部のワークスペースの管理者**（本人を除く）に、受け箱の知らせとメールが 1 つずつ届く（D-128.141・D-128.59）。誰か 1 人が本人を確かめて 2 段階を戻せば済む（戻す口 resetMemberTwoFactor は K-73 から切るチケット）。頼んだことは各ワークスペースの記録（security_events）に残る。
 
-契約の口 `POST /api/v1/auth/recovery/admin-request`（requestAdminRecovery）を作る。今は 501。画面（端末をなくしたとき・頼みました・もう頼んであります・送れませんでした）は K-317。","- [ ] 下の表の 24 行（K305-API-001〜023・K305-DB-001）が本物の DB の上で緑（`apps/api/test/features/F1/admin-recovery.test.ts`・6 けたの口 × 止めの 2 行は `apps/api/test/features/F1/sign-in-code-gate.test.ts`）
+契約の口 `POST /api/v1/auth/recovery/admin-request`（requestAdminRecovery）を作る。今は 501。画面（端末をなくしたとき・頼みました・もう頼んであります・送れませんでした）は K-317。","- [ ] 下の表の 27 行（K305-API-001〜026・K305-DB-001）が本物の DB の上で緑（`apps/api/test/features/F1/admin-recovery.test.ts`・6 けたの口 × 止めの 2 行は `apps/api/test/features/F1/sign-in-code-gate.test.ts`）
 - [ ] 契約の口 requestAdminRecovery が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_recovery_admin_request.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している
 - [ ] 前の孫（K-301・K-302・K-303）の試験も緑のまま
 - [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
