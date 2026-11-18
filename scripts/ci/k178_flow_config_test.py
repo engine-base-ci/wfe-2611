@@ -14,7 +14,7 @@ WF = yaml.safe_load((ROOT / ".github/workflows" / CFG["ci"]["workflow"]).read_te
 
 class FlowConfigTest(unittest.TestCase):
     def test_K178_CF_001_preflight_runs_workflow_jobs_not_a_hand_list(self) -> None:
-        self.assertEqual(CFG.get("preflight_jobs"), ["static", "spec"])
+        self.assertEqual(CFG.get("preflight_jobs"), ["static", "spec", "spec-2", "spec-3"])   # spec は 3 組に分けた（K-323）
         self.assertEqual(CFG.get("preflight"), ["pnpm install --frozen-lockfile --prefer-offline --silent"])
         self.assertFalse(CFG.get("preflight_skip"), "手元で外す段は持たない（CI と同じに流す）")
         runs = "\n".join(str(s.get("run", "")) for j in CFG["preflight_jobs"] for s in WF["jobs"][j]["steps"])

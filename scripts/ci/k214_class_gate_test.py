@@ -335,9 +335,9 @@ class ReviewTest(unittest.TestCase):
 
 class WiringTest(unittest.TestCase):
     def test_K214_CG_016_runs_in_ci(self) -> None:
-        """K214-CG-016 CI の spec の組に G67 の段が 1 つ在り、class_gate.py の自己試験と、本線との分かれ目と比べる class_gate.py --ledger-base-ref とこの試験を流す。continue-on-error が無い"""
+        """K214-CG-016 CI の spec の組（K-323 で分けた spec-3）に G67 の段が 1 つ在り、class_gate.py の自己試験と、本線との分かれ目と比べる class_gate.py --ledger-base-ref とこの試験を流す。continue-on-error が無い"""
         wf = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
-        steps = [s for s in wf["jobs"]["spec"]["steps"] if str(s.get("name", "")).startswith("G67 ")]
+        steps = [s for s in wf["jobs"]["spec-3"]["steps"] if str(s.get("name", "")).startswith("G67 ")]
         self.assertEqual(len(steps), 1, "G67 の段が 1 つでない")
         run = steps[0]["run"]
         self.assertIn("python3 scripts/ci/class_gate.py " + SELF, run)
