@@ -14021,7 +14021,8 @@
     "@kaname/api",
     "@kaname/auth",
     "@kaname/errors",
-    "@kaname/contracts"
+    "@kaname/contracts",
+    "@kaname/db"
    ],
    "ci_wide": [
     "db",
