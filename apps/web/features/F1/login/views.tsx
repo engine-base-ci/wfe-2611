@@ -85,7 +85,9 @@ export function LoginMain(p: LoginMainProps) {
             いまは <b>{p.signedInAs}</b> でログイン中です。別のアカウントで入ると、今のログインは閉じます
           </NoteBox>
         ) : null}
+        {/* 使えないと分かったら別の要素にする（押せる形から薄く変わる途中を見せない・次への key と同じ） */}
         <Button
+          key={p.passkeyUnsupported ? "pk-unsupported" : "pk"}
           type="button"
           size="lg"
           data-act="passkey"
