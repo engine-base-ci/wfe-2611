@@ -4,6 +4,7 @@ import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { createTicketHooks } from "../features/F4/create-ticket/hooks.js";
 import { createTicketListHooks } from "../features/F4/ticket-list/hooks.js";
+import { defineHooks } from "./registry.js";
 
 export function ticketHooks(appPool: pg.Pool): Record<string, Hook> {
   const h = createTicketHooks(appPool);
@@ -18,3 +19,9 @@ export function ticketHooks(appPool: pg.Pool): Record<string, Hook> {
     saveMyTicketDraft: { ...h["saveMyTicketDraft"] },
   };
 }
+
+export const register = defineHooks({
+  name: "ticketHooks",
+  make: (d) => ticketHooks(d.appPool),
+  fuzz: "same",
+});

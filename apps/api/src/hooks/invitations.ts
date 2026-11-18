@@ -3,6 +3,7 @@
 import type { Hook } from "../contract/deps.js";
 import type { InvitationDeps } from "../features/F2/invitations/deps.js";
 import { invitationPreviewFeature } from "../features/F2/invitations/preview.js";
+import { defineHooks } from "./registry.js";
 
 export type { InvitationDeps, InvitationMailer } from "../features/F2/invitations/deps.js";
 
@@ -12,3 +13,16 @@ export function invitationHooks(d: InvitationDeps): Record<string, Hook> {
     getInvitation: { before: preview.read },
   };
 }
+
+export const register = defineHooks({
+  name: "invitationHooks",
+  make: (d) =>
+    invitationHooks({
+      auth: d.auth,
+      appPool: d.appPool,
+      authPool: d.authPool,
+      ...(d.mailer ? { mailer: d.mailer } : {}),
+      config: { opsEmail: d.config.opsEmail, webBaseUrl: d.config.webBaseUrl ?? "" },
+    }),
+  fuzz: "same",
+});

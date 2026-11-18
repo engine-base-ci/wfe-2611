@@ -55,6 +55,9 @@ COMMON_DIRS = (
     "07_qa/test-specs/errors.d/",
     "07_qa/test-plan/ears-elsewhere.d/",
     "scripts/ci/ci_scope.d/",
+    # 口の登録の一覧と閉じる道の断片（K-326）：口を足すチケットの皆が読む
+    "apps/api/src/hooks/all.generated.ts",
+    "packages/auth/src/disabled-paths.d/",
 )
 
 

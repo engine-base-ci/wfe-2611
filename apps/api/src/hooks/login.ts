@@ -5,6 +5,7 @@ import { loginFeature, type LoginDeps } from "../features/F1/login/sign-in.js";
 import { signInCodeFeature } from "../features/F1/login/sign-in-code.js";
 import { signOutFeature } from "../features/F1/login/sign-out.js";
 import { memberGoneCheck } from "../features/F1/login/shared.js";
+import { defineHooks } from "./registry.js";
 
 export function loginHooks(d: LoginDeps): Record<string, Hook> {
   const f = loginFeature(d);
@@ -16,3 +17,10 @@ export function loginHooks(d: LoginDeps): Record<string, Hook> {
     signOut: { before: out.signOut, noIdempotency: true },
   };
 }
+
+export const register = defineHooks({
+  name: "loginHooks",
+  make: (d) =>
+    loginHooks({ auth: d.auth, appPool: d.appPool, authPool: d.authPool, config: { opsEmail: d.config.opsEmail } }),
+  fuzz: "same",
+});

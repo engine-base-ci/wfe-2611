@@ -3,6 +3,7 @@
 //   答えに 1 回だけ渡す秘密（鍵の文字・バックアップコード）が入るので、冪等の器に答えを残さない
 import type { Hook } from "../contract/deps.js";
 import { twoFactorFeature, type TwoFactorDeps } from "../features/F1/two-factor/index.js";
+import { defineHooks } from "./registry.js";
 
 export function twoFactorHooks(d: TwoFactorDeps): Record<string, Hook> {
   const f = twoFactorFeature(d);
@@ -11,3 +12,9 @@ export function twoFactorHooks(d: TwoFactorDeps): Record<string, Hook> {
     confirmTwoFactor: { before: f.confirm, noIdempotency: true },
   };
 }
+
+export const register = defineHooks({
+  name: "twoFactorHooks",
+  make: (d) => twoFactorHooks({ auth: d.auth, appPool: d.appPool, authPool: d.authPool }),
+  fuzz: "same",
+});

@@ -3,6 +3,7 @@
 import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { delegateHooks as make } from "../features/F5/delegate/index.js";
+import { defineHooks } from "./registry.js";
 
 export function delegateHooks(appPool: pg.Pool): Record<string, Hook> {
   const h = make(appPool);
@@ -18,3 +19,11 @@ export function delegateHooks(appPool: pg.Pool): Record<string, Hook> {
     finishBridgeJob: { ...h["finishBridgeJob"] },
   };
 }
+
+// getTicket は K-60 の詳細（ticketHooks）に can.delegate を足した物に差し替える（並びに頼らない）
+export const register = defineHooks({
+  name: "delegateHooks",
+  make: (d) => delegateHooks(d.appPool),
+  fuzz: "same",
+  replaces: ["getTicket"],
+});

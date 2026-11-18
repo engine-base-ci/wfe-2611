@@ -840,6 +840,17 @@
    "readers": [
     "apps/web/write_results.mjs"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/server.ts",
+    "apps/api/test/fuzz/server.ts",
+    "apps/api/src/hooks/**",
+    "packages/auth/src/disabled-paths.d/**"
+   ],
+   "tests": [
+    "apps/api/test/k326-api-registry.test.ts"
+   ]
   }
  ],
  "reads_ok": {

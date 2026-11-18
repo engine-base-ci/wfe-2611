@@ -175,6 +175,14 @@
     "07_qa/test-plan/ears-elsewhere.json",
     "scripts/ci/ci_scope.json"
    ]
+  },
+  {
+   "name": "口の登録の一覧と閉じる道の断片（hooks の register → all.generated.ts・disabled-paths.d/ → disabled-paths.generated.ts・K-326）",
+   "run": "python3 scripts/ci/gen_ts_registries.py",
+   "outputs": [
+    "apps/api/src/hooks/all.generated.ts",
+    "packages/auth/src/disabled-paths.generated.ts"
+   ]
   }
  ],
  "checked_elsewhere": [

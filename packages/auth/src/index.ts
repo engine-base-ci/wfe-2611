@@ -14,6 +14,7 @@ import { RESET_PREFIX, resetHash } from "./reset.js";
 import { CODE_LOCK, generateBackupCodes } from "./two_factor.js";
 import { kanamePasskey, PASSKEY_DISABLED_PATHS } from "./passkey.js";
 import { kanamePasskeyManage, PASSKEY_STEP_UP_PATH } from "./passkeys.js";
+import { FRAGMENT_DISABLED_PATHS } from "./disabled-paths.generated.js";
 export {
   normalizePasskeyName,
   renamePasskeyOf,
@@ -77,6 +78,8 @@ export const DISABLED_PATHS = [
   ...FRESH_ONLY_PATHS,
   "/request-password-reset",
   "/reset-password",
+  // チケットごとに足す閉じる道（disabled-paths.d/K-<番号>.ts → 作り手 scripts/ci/gen_ts_registries.py・K-326）
+  ...FRAGMENT_DISABLED_PATHS,
 ] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {

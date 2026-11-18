@@ -4,6 +4,7 @@ import type pg from "pg";
 import type { Hook, HookArgs, HookReply } from "../contract/deps.js";
 import { deleteConversation, editMemory, newConversation, setConversation } from "../auth/agent-ops.js";
 import { unwritable } from "../contract/op.js";
+import { defineHooks } from "./registry.js";
 
 const notFound = (code: string, message: string): HookReply => ({
   status: 404,
@@ -64,3 +65,9 @@ export function agentHooks(pool: pg.Pool): Record<string, Hook> {
     },
   };
 }
+
+export const register = defineHooks({
+  name: "agentHooks",
+  make: (d) => agentHooks(d.appPool),
+  fuzz: "same",
+});

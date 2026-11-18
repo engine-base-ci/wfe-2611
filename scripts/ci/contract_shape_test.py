@@ -524,12 +524,15 @@ class ContractShapeTest(unittest.TestCase):
                       "createSignup", "verifySignup", "stepUp", "createConversation"):
             self.assertIn(op_id, regions, f"{op_id} の振る舞いを拾えていない（拾い方が壊れた）")
         self.assertIn(500, statuses_in(regions["consentToTerms"][0], cat, regions["consentToTerms"][1]), "同意の口の serverDown（500）を拾えていない")
-        # 口の振る舞いを足す所（apps/api/src/server.ts の hooks）は、全部 apps/api/src/hooks のファイルから来る（拾う対象の外に口を置かない）
-        server = (ROOT / "apps/api/src/server.ts").read_text(encoding="utf-8")
-        used = set(re.findall(r"\.\.\.(\w+Hooks)\(", server))
-        here = {n for f in HOOKS_DIR.glob("*.ts") for n in re.findall(r"export function (\w+Hooks)\(", f.read_text(encoding="utf-8"))}
-        self.assertTrue(used, "apps/api/src/server.ts の hooks を読めない")
-        self.assertEqual(sorted(used - here), [], "apps/api/src/hooks の外から足している口の振る舞い")
+        # 口の振る舞いを足す所（本物のサーバーと fuzz の的が束ねる一覧 apps/api/src/hooks/all.generated.ts・K-326）は、
+        #   全部 apps/api/src/hooks のファイルの register から来る（拾う対象の外に口を置かない）
+        listed = (HOOKS_DIR / "all.generated.ts").read_text(encoding="utf-8")
+        used = re.findall(r'import \{ register as \w+ \} from "\./([\w-]+)\.js"', listed)
+        self.assertTrue(used, "apps/api/src/hooks/all.generated.ts の一覧を読めない")
+        outside = [n for n in used
+                   if not (HOOKS_DIR / f"{n}.ts").is_file()
+                   or not re.search(r"export const register\b", (HOOKS_DIR / f"{n}.ts").read_text(encoding="utf-8"))]
+        self.assertEqual(outside, [], "apps/api/src/hooks のファイルの register でない物を一覧から差している")
         missing = []
         for op_id, (block, defs) in sorted(regions.items()):
             declared = {int(k) for k in operation(op_id)[2]["responses"]}

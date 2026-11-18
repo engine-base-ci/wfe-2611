@@ -9,11 +9,8 @@ import { createAuth } from "@kaname/auth";
 import { createDeviceResolver, createSessionResolver } from "@kaname/auth/resolver";
 import { mailTag } from "@kaname/auth/signup";
 import { withDevice } from "./middleware/tenant.js";
-import { bridgeHooks } from "./hooks/bridge.js";
-import { ticketHooks } from "./hooks/tickets.js";
-import { setupTaskHooks } from "./hooks/setup-tasks.js";
-import { delegateHooks } from "./hooks/delegate.js";
-import { approveHooks } from "./hooks/approve-complete.js";
+import { HOOK_MODULES } from "./hooks/all.generated.js";
+import { buildHooks } from "./hooks/registry.js";
 import { ObjectStore, s3Client, s3Driver, s3Presigner, type StorageDriver } from "@kaname/storage";
 import { createApp } from "./app.js";
 import { edgeRequest } from "./edge.js";
@@ -22,20 +19,6 @@ import { InfisicalVault, MemoryVault, SecretsGateway, type Vault } from "@kaname
 import { resendMail, signedMail, type MailLike } from "@kaname/notify";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
 import { assertApiStartup } from "./startup.js";
-import { agentHooks } from "./hooks/agent.js";
-import { authHooks } from "./hooks/auth.js";
-import { signupHooks } from "./hooks/signup.js";
-import { verifyEmailHooks } from "./hooks/verify-email.js";
-import { passwordResetHooks } from "./hooks/password-reset.js";
-import { consentTermsHooks } from "./hooks/consent-terms.js";
-import { serviceStatusHooks } from "./hooks/service-status.js";
-import { loginHooks } from "./hooks/login.js";
-import { invitationHooks } from "./hooks/invitations.js";
-import { mySecurityHooks } from "./hooks/my-security.js";
-import { passkeysHooks } from "./hooks/passkeys.js";
-import { adminRecoveryHooks } from "./hooks/admin-recovery.js";
-import { twoFactorHooks } from "./hooks/two-factor.js";
-import { changePasswordHooks } from "./hooks/change-password.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -144,6 +127,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     await close();
     throw e;
   }
+  // 口の工場に渡す材料（apps/api/src/hooks/registry.ts の HookDeps）
+  const hookDeps = { auth, appPool, authPool, repo, actions, objects, config, ...(mailer ? { mailer } : {}) };
   const app = createApp({
     version: o.version ?? "0.1.0",
     repo,
@@ -156,53 +141,9 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
     edgeEcho: config.edgeEcho === true,
     // 会話・記憶の契約の口は画面の口と同じ本体を通す。本人確認の取り直しはログインの部品に頼る（K-19）。登録は K-51、確認のリンクで確定するのは K-52、規約の今の版と同意は K-53
     contract: {
-      hooks: {
-        ...agentHooks(appPool),
-        ...authHooks(auth, appPool),
-        ...signupHooks({ authPool, repo, actions, ...(mailer ? { mailer } : {}), config }),
-        ...verifyEmailHooks({ auth, authPool, appPool, repo, ...(mailer ? { mailer } : {}), config }),
-        // 再設定のメールを頼む（K-313）。送るのは答えの後（D-042）。新しいパスワードを決める（K-314）は部品の形のハッシュと漏れの照合（関門 C1）を使う
-        ...passwordResetHooks({ auth, actions, authPool, appPool, ...(mailer ? { mailer } : {}), config }),
-        ...consentTermsHooks({ appPool }),
-        ...serviceStatusHooks({ appPool }),
-        // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）
-        ...loginHooks({ auth, appPool, authPool, config: { opsEmail: config.opsEmail } }),
-        // 招かれて参加する（K-331 下見。K-332・K-333 参加・K-334 送り直しも同じ hooks に足す）
-        ...invitationHooks({
-          auth,
-          appPool,
-          authPool,
-          ...(mailer ? { mailer } : {}),
-          config: { opsEmail: config.opsEmail, webBaseUrl: config.webBaseUrl ?? "" },
-        }),
-        // 自分の安全の設定を読む（K-308）
-        ...mySecurityHooks({ auth, appPool, authPool }),
-        // パスキーの名前を変える・外す（K-309）
-        ...passkeysHooks({ auth, appPool, authPool }),
-        // 2 段階認証を付ける（K-311）。鍵とバックアップコードは部品が包んで持つ（関門 C8）
-        ...twoFactorHooks({ auth, appPool, authPool }),
-        // パスワードを変える・決める（K-312）。変えたら今の画面のほかを全部のワークスペースで切る。漏れたパスワードの照合は関門 C1
-        ...changePasswordHooks({ auth, appPool, actions }),
-        // 端末をなくした：管理者に頼む（K-305）。メールは関門 C6 の 1 か所（mailer）を通る。本文に運営の連絡先
-        ...adminRecoveryHooks({
-          appPool,
-          authPool,
-          ...(mailer ? { mailer } : {}),
-          config: { opsEmail: config.opsEmail },
-        }),
-        ...bridgeHooks({
-          appPool,
-          release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },
-          objects,
-        }),
-        ...ticketHooks(appPool),
-        // はじめにやること（K-250）
-        ...setupTaskHooks(appPool),
-        // AI に任せる（K-62）。getTicket は K-60 の詳細に can.delegate を足したものに置き換わる
-        ...delegateHooks(appPool),
-        // 承認して完了する（K-63 の孫）。K-161 は承認待ちの一覧と 1 件・K-162 は承認する
-        ...approveHooks(appPool),
-      },
+      // 口の振る舞いは apps/api/src/hooks の各ファイルの register（作り手の一覧 all.generated.ts・K-326）。
+      //   getTicket は K-60 の詳細に can.delegate を足したもの（delegate の register が replaces で差し替える）
+      hooks: buildHooks(HOOK_MODULES, hookDeps, "server"),
     },
   });
   return { app, report, close };
