@@ -51,6 +51,8 @@ interface Mock {
   verifies: Record<string, unknown>[];
   /** 応答の要求の頭 x-passkey-challenge（チャレンジの受け渡し・精査の後の決め 5） */
   challengeHeads: string[];
+  /** パスキーの問いと応答の要求の頭 authorization（前の人の印を付けて行かない・Q の指摘） */
+  passkeyAuths: string[];
   recovers: Record<string, unknown>[];
   statusCalls: number;
   on: {
@@ -81,6 +83,7 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
     options: 0,
     verifies: [],
     challengeHeads: [],
+    passkeyAuths: [],
     recovers: [],
     statusCalls: 0,
     on: {
@@ -107,6 +110,7 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
     else if (p === "/api/v1/auth/two-factor/verify") r = { status: 201, body: { data: { token: "tok-k317" } } };
     else if (/^\/api\/auth\/passkey\/.*authenticate-options/.test(p)) {
       m.options += 1;
+      m.passkeyAuths.push(req.headers()["authorization"] ?? "");
       r = {
         status: 200,
         body: {
@@ -121,6 +125,7 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
     } else if (/^\/api\/auth\/passkey\/verify-authentication/.test(p)) {
       m.verifies.push((req.postDataJSON() as Record<string, unknown>) ?? {});
       m.challengeHeads.push(req.headers()["x-passkey-challenge"] ?? "");
+      m.passkeyAuths.push(req.headers()["authorization"] ?? "");
       r = m.on.passkeyVerify();
     } else if (p === "/api/v1/auth/recovery/admin-request") {
       m.recovers.push((req.postDataJSON() as Record<string, unknown>) ?? {});
@@ -654,6 +659,99 @@ test("K317-UI-028 ほかに管理者がいない（答えが result: no_admin）
   await ask.click();
   await expect(page.locator(`${BOX} .k-auth-result[data-tone="ok"]`)).toHaveText(new RegExp(MSG.noAdmin));
   await expect(ask).toBeDisabled();
+  await ask.click({ force: true });
+  expect(m.recovers).toHaveLength(1);
+});
+
+test("K317-UI-030 別のアカウントでログイン中にパスキーで入る：パスキーの問いと応答の要求に前の人の印（Authorization）を付けない（部品が選べるパスキーを前の人の物に絞らない・代表の答え ⑤・Q の指摘）。入れたら前のログインを前の印で 1 回閉じる", async ({
+  page,
+  baseURL,
+}) => {
+  const m = await mockAuth(page);
+  const outs: string[] = [];
+  await signedIn(page, "kimura@engine-base.example");
+  await page.route(/\/api\/v1\/auth\/sign-out$/, async (route, req) => {
+    if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS, body: "" });
+    outs.push(req.headers()["authorization"] ?? "");
+    await route.fulfill({
+      status: 201,
+      headers: CORS,
+      contentType: "application/json",
+      body: JSON.stringify({ data: {} }),
+    });
+  });
+  await authenticator(page, "internal");
+  await open(page, local(baseURL), 1440, `?next=${encodeURIComponent(NEXT)}`);
+  await passkeyBtn(page).click();
+  await page.waitForURL((u) => u.pathname === NEXT);
+  expect(m.options).toBe(1);
+  expect(m.verifies).toHaveLength(1);
+  expect(m.passkeyAuths).toEqual(["", ""]);
+  expect(outs).toEqual(["Bearer tok-other"]);
+  expect(await token(page)).toBe("tok-k317");
+});
+
+test("K317-UI-031 確認のコードの画面で待ちの印が切れた（401・E-AUTH-013）後に「端末をなくした」→「バックアップコードで入る」：ログインの画面はまっさら（赤の文なし・メールは残りパスワードは空・メールにフォーカス）。パスワードを入れ直すと確認のコードの画面がふつうに使え、6 けたで入れる（Q の指摘）", async ({
+  page,
+  baseURL,
+}) => {
+  await mockAuth(page, { twoFactor: true });
+  let expired = true;
+  let verifies = 0;
+  await page.route(/\/api\/v1\/auth\/two-factor\/verify$/, async (route, req) => {
+    if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS, body: "" });
+    verifies += 1;
+    await route.fulfill({
+      status: expired ? 401 : 201,
+      headers: CORS,
+      contentType: "application/json",
+      body: JSON.stringify(
+        expired
+          ? { code: "E-AUTH-013", message: "確認の時間が切れました。もう一度ログインしてください" }
+          : { data: { token: "tok-k317" } },
+      ),
+    });
+  });
+  await open(page, local(baseURL));
+  await passwordToCode(page);
+  await page.getByRole("textbox", { name: "確認のコード 1 けた目" }).click();
+  await page.keyboard.type("482913", { delay: 20 });
+  await expect(page.locator(BOX).getByRole("alert")).toBeVisible();
+  expect(verifies).toBe(1);
+  await page.locator(`${BOX} .k-login-alt-col`).getByRole("button", { name: "端末をなくした" }).click();
+  await expect(page.locator(`${BOX} h1`)).toHaveText("端末をなくしたとき");
+  await expect(recoverCard(page, "ワークスペースの管理者に再設定を頼む")).toBeDisabled();
+  await recoverCard(page, "バックアップコードで入る").click();
+  await expect(page.locator(`${BOX} h1`)).toHaveText("ログイン");
+  await expect(page.locator(BOX).getByRole("alert")).toHaveCount(0);
+  await expect(mail(page)).toHaveValue(EMAIL);
+  await expect(pass(page)).toHaveValue("");
+  await expect(mail(page)).toBeFocused();
+  expired = false;
+  await pass(page).fill(PASSWORD);
+  await page.locator(BOX).getByRole("button", { name: "次へ", exact: true }).click();
+  await expect(page.locator(`${BOX} h1`)).toHaveText("確認のコード");
+  await expect(page.locator(BOX).getByRole("button", { name: "入る", exact: true })).toBeEnabled();
+  await page.getByRole("textbox", { name: "確認のコード 1 けた目" }).click();
+  await page.keyboard.type("482913", { delay: 20 });
+  await page.waitForURL((u) => u.pathname === NEXT);
+  expect(verifies).toBe(2);
+});
+
+test("K317-UI-032 管理者に頼む口が「待ちの印が切れた」（401・E-AUTH-013）を返す：送れなかったとは出さず、管理者のカードは押せない形（「先にメールとパスワードで入ってから頼めます」）に戻る。もう一度押しても口は増えない（Q の指摘）", async ({
+  page,
+  baseURL,
+}) => {
+  const m = await mockAuth(page, { twoFactor: true });
+  m.on.recover = () => fail(401, "E-AUTH-013", "確認の時間が切れました。もう一度ログインしてください");
+  await open(page, local(baseURL));
+  await passwordToCode(page);
+  await page.locator(BOX).getByRole("button", { name: "端末をなくした" }).click();
+  const ask = recoverCard(page, "ワークスペースの管理者に再設定を頼む");
+  await ask.click();
+  await expect(ask).toBeDisabled();
+  await expect(ask).toContainText("先にメールとパスワードで入ってから頼めます");
+  await expect(page.locator(`${BOX} .k-auth-result`)).toHaveCount(0);
   await ask.click({ force: true });
   expect(m.recovers).toHaveLength(1);
 });
