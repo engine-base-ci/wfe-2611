@@ -3,6 +3,7 @@
 //   答えの扱いはどの画面でも同じ：401 は入り直し（入力途中は残す）・403 は権限が無い・404 は無い・422 は項目ごとの理由・429 は待つ秒数・501 はまだ作っていない口
 import { ENDPOINTS, type Ops, type OpName } from "@kaname/contracts";
 import { apiBase, getToken, notifyUnauthorized } from "./client";
+import { noticeMfaRequired } from "@/lib/mfa-gate";
 import { noticeTermsRequired } from "@/lib/terms-gate";
 
 export type CallArgs<K extends OpName> = ([Ops[K]["params"]] extends [never]
@@ -116,6 +117,8 @@ export async function call<K extends OpName>(op: K, args: CallArgs<K> = {} as Ca
   const code = String(json["code"] ?? json["error"] ?? res.status);
   // 同意し直しが要る（K-53）：どの画面からでも同意し直しの画面へ移す
   noticeTermsRequired(res.status, json["code"], json["message"], sentAt);
+  // 付けるまで進めない（K-319）：どの画面からでもログインと安全の画面へ移す
+  noticeMfaRequired(res.status, json["code"], json["message"]);
   const details = Array.isArray(json["details"]) ? (json["details"] as { field?: string; message?: string }[]) : [];
   // 正本のエラー（KanameError）は項目を detail.field で返す。文言は正本の message（K-51）
   const one = json["detail"] as { field?: unknown } | undefined;

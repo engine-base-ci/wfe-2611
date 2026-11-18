@@ -2,6 +2,7 @@
 // 401 は「入り直し」に落とす。入力途中の内容は draft（sessionStorage）に残して失わない
 import type { ApiError, ApiResponse } from "@kaname/contracts";
 import { WEB_ENV } from "@/lib/env";
+import { noticeMfaRequired } from "@/lib/mfa-gate";
 import { noticeTermsRequired } from "@/lib/terms-gate";
 import { ENDPOINTS, type EndpointDef, type EndpointKind } from "@kaname/contracts";
 
@@ -107,6 +108,7 @@ export async function request<T>(method: string, path: string, o: RequestOptions
   if (!res.ok) {
     const b = json as ApiError;
     noticeTermsRequired(res.status, b.code, b.message, sentAt); // 同意し直しが要る（K-53）
+    noticeMfaRequired(res.status, b.code, b.message); // 付けるまで進めない（K-319）
     throw new ApiRequestError(res.status, b);
   }
   return json as T;

@@ -4,7 +4,7 @@
 //   登録の直後でパスキーも 2 段階も無い人（mfa_pending・D-128.141）は入口の枠で「付けるまで進めない」（聞くこと 3 の勧め (a)）。
 //   入っている端末・最近の安全の記録は流れ F10 の機能なので、出すがグレー・値は空（D-145.9・D-144.3）
 import { Fingerprint, KeyRound, Laptop, Smartphone } from "lucide-react";
-import { useRef, type ChangeEvent, type ReactNode } from "react";
+import { useRef, type ChangeEvent, type ReactNode, type RefObject } from "react";
 import { Button, Confirm, Dialog, PasswordField, TextField } from "@/components/k";
 import { BackupCodes, ChoiceCard, NoteBox, QrBox, SecretText } from "@/components/k/auth-parts";
 import {
@@ -487,36 +487,51 @@ export function StepUpDialog({
   );
 }
 
-/** 2 段階認証を付ける（キャンバス MeTotp・Me2FA：本人確認 → QR → 6 けた） */
+/** 2 段階認証を付ける（キャンバス MeTotp・Me2FA：本人確認 → QR → 6 けた）。onCode を渡すと 6 けたの枠は呼ぶ側が持つ（本番）。
+ *  inputs を渡すと呼ぶ側が枠に焦点を戻せる（違う 6 けたの後）。確かめるはいつも押せる形（モックと同じ。そろっていなければ呼ぶ側が送らない） */
 export function TotpDialog({
   open,
   qrSvg,
   secret,
   code = ["", "", "", "", "", ""],
   error,
+  busy = false,
+  inputs: given,
+  onCode,
   onOpenChange,
+  onSubmit,
 }: {
   open: boolean;
   qrSvg: string;
   secret: string;
   code?: readonly string[];
   error?: string | null;
+  busy?: boolean;
+  inputs?: RefObject<(HTMLInputElement | null)[]>;
+  onCode?: (next: string[]) => void;
   onOpenChange?: (o: boolean) => void;
+  onSubmit?: () => void;
 }) {
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const own = useRef<(HTMLInputElement | null)[]>([]);
+  const inputs = given ?? own;
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 確かめている途中は閉じない（2 回目を送らせない）
+        onOpenChange?.(o);
+      }}
       size="connect"
       title="2 段階認証を付ける"
       subtitle="付けると、入るたびに認証アプリの 6 けたも打つ"
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>確かめる</Button>
+          <Button loading={busy} onClick={onSubmit}>
+            確かめる
+          </Button>
         </>
       }
     >
@@ -544,7 +559,7 @@ export function TotpDialog({
             state: "now",
             body: (
               <>
-                <CodeBoxes code={code} onCode={() => undefined} inputs={inputs} />
+                <CodeBoxes code={code} onCode={(n) => onCode?.(n)} inputs={inputs} />
                 {error ? (
                   <p role="alert" className="k-login-alert">
                     {error}
@@ -561,15 +576,24 @@ export function TotpDialog({
   );
 }
 
-/** バックアップコード（キャンバス MeBackup：いまだけ表示） */
+/** バックアップコード（キャンバス MeBackup：いまだけ表示）。押した時の受け口は呼ぶ側（本番） */
 export function BackupDialog({
   open,
   codes,
   onOpenChange,
+  onDownload,
+  onCopy,
+  onPrint,
+  onDone,
 }: {
   open: boolean;
   codes: readonly string[];
   onOpenChange?: (o: boolean) => void;
+  onDownload?: () => void;
+  onCopy?: () => void;
+  onPrint?: () => void;
+  /** 「保存したので閉じる」 */
+  onDone?: () => void;
 }) {
   return (
     <Dialog
@@ -577,15 +601,15 @@ export function BackupDialog({
       onOpenChange={onOpenChange}
       title="バックアップコード"
       subtitle="端末をなくしたときに入るためのコード。いまだけ表示する"
-      actions={<Button>保存したので閉じる</Button>}
+      actions={<Button onClick={onDone}>保存したので閉じる</Button>}
     >
       <BackupCodes
         codes={codes}
         actions={
           <>
-            <RowButton>ダウンロード（.txt）</RowButton>
-            <RowButton>写す</RowButton>
-            <RowButton>印刷</RowButton>
+            <RowButton onClick={onDownload}>ダウンロード（.txt）</RowButton>
+            <RowButton onClick={onCopy}>写す</RowButton>
+            <RowButton onClick={onPrint}>印刷</RowButton>
           </>
         }
       />
@@ -597,23 +621,60 @@ export function BackupDialog({
   );
 }
 
-/** パスワードを変える（今の画面は残し、ほかの端末・ワークスペース・PC は切る・D-128.141） */
+/** パスワードの小窓の欄の値（本番は呼ぶ側が持つ） */
+export interface PasswordValues {
+  current: string;
+  next: string;
+  again: string;
+}
+/** 欄ごとの理由（欄の下に出す） */
+export interface PasswordErrors {
+  current?: string | null;
+  next?: string | null;
+  again?: string | null;
+}
+
+/** パスワードを変える（今の画面は残し、ほかの端末・ワークスペース・PC は切る・D-128.141）。
+ *  values を渡すと欄は呼ぶ側が持つ（本番）。notice は欄に結びつかない知らせ（口の文・E-AUTH-020 など） */
 export function ChangePasswordDialog({
   open,
   error,
   hasPassword = true,
+  values,
+  errors,
+  notice,
+  busy = false,
+  onValues,
   onOpenChange,
+  onSubmit,
 }: {
   open: boolean;
   /** パスワードが無い人（パスキーだけ）は「パスワードを決める」：今のパスワードの欄を出さない（answer=9177d9dbe0d9 ②） */
   hasPassword?: boolean;
+  /** 「もう一度」の下の理由（モック） */
   error?: string | null;
+  values?: PasswordValues;
+  errors?: PasswordErrors;
+  notice?: string | null;
+  busy?: boolean;
+  onValues?: (v: PasswordValues) => void;
   onOpenChange?: (o: boolean) => void;
+  onSubmit?: () => void;
 }) {
+  const bind = (k: keyof PasswordValues) =>
+    values
+      ? {
+          value: values[k],
+          onChange: (e: ChangeEvent<HTMLInputElement>) => onValues?.({ ...values, [k]: e.target.value }),
+        }
+      : {};
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return;
+        onOpenChange?.(o);
+      }}
       title={hasPassword ? "パスワードを変える" : "パスワードを決める"}
       subtitle={
         hasPassword
@@ -622,27 +683,43 @@ export function ChangePasswordDialog({
       }
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>{hasPassword ? "変える" : "決める"}</Button>
+          <Button loading={busy} onClick={onSubmit}>
+            {hasPassword ? "変える" : "決める"}
+          </Button>
         </>
       }
     >
+      {notice ? (
+        <p role="alert" className="k-login-alert">
+          {notice}
+        </p>
+      ) : null}
       {hasPassword ? (
-        <PasswordField label="今のパスワード" name="current_password" autoComplete="current-password" />
+        <PasswordField
+          label="今のパスワード"
+          name="current_password"
+          autoComplete="current-password"
+          {...bind("current")}
+          error={errors?.current ?? undefined}
+        />
       ) : null}
       <PasswordField
         label="新しいパスワード"
         name="new_password"
         autoComplete="new-password"
         hint="12 文字以上・漏れたことのあるパスワードは使えない"
+        {...bind("next")}
+        error={errors?.next ?? undefined}
       />
       <PasswordField
         label="もう一度"
         name="new_password_again"
         autoComplete="new-password"
-        error={error ?? undefined}
+        {...bind("again")}
+        error={errors?.again ?? error ?? undefined}
       />
     </Dialog>
   );
