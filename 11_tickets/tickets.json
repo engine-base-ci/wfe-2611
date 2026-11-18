@@ -14857,9 +14857,12 @@
    "affects": [
     "@kaname/web",
     "@kaname/auth",
-    "@kaname/e2e"
+    "@kaname/e2e",
+    "@kaname/errors"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "packages/auth/src/",
     "apps/web/features/F1/security/",
