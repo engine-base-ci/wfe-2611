@@ -2732,6 +2732,10 @@
     "type": "uuid",
     "nullable": false
    },
+   "message": {
+    "type": "text",
+    "nullable": true
+   },
    "permission_preset": {
     "type": "jsonb",
     "nullable": false
@@ -5932,6 +5936,10 @@
    },
    "member_id": {
     "type": "uuid",
+    "nullable": false
+   },
+   "mfa_pending": {
+    "type": "boolean",
     "nullable": false
    },
    "revoke_reason_id": {

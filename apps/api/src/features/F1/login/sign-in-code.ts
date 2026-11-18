@@ -61,7 +61,8 @@ export function signInCodeFeature(
       });
       return await answer(r, ua);
     } catch (e) {
-      // DB が落ちた・セッションを写す所で失敗した：500（部品の側で半分だけ入ったセッションは消してある）
+      // DB が落ちた・セッションを写す所で失敗した：500。部品の hook の失敗は部品が、入った後の後処理の失敗は verifySignInCode が
+      //   その場でセッションを閉じてある（生きたセッションを残さない・K-322）
       console.error(`[login] 確認のコードのログインの途中で落ちた（${kindOf(e)}）`);
       return reply(500, "E-PAGE-003");
     }

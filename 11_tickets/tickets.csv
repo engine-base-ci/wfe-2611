@@ -357,7 +357,7 @@ K-74,ログインする（パスキー、またはメールとパスワードと
 K-75,パスキーを設定する（パスワードの人は 2 段階認証を設定する。パスキーの名前を変える・外す・パスワードを変える）,タスク,K-50,未着手,未定,2026-11-15,F1・認証,"ログインした本人が、安全の設定の画面で **パスキーを付ける**（いま使っている端末の指か顔で登録する）。パスキーを持たずパスワードで入る人は、代わりに **2 段階認証を付ける**（本人確認 → 認証アプリで QR を読み取る → 6 けたで確かめる → バックアップコード 10 個を 1 回だけ見せる・D-128.59・D-128.61）。
 
 同じ画面で、付いているパスキーの一覧・名前を変える・外す（最後の入り方は外せない）と、パスワードを変える（変えたらほかの端末と PC（Bridge）を切る）ができる。パスキーを付けたら、はじめにやることの「パスキー」に印が付く（D-125.146）。","- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑
-- 契約の口 `getMySecurity`・`renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 6 本の `it.todo` が本物のテストになって緑）
+- 契約の口 `renamePasskey`・`deletePasskey`・`changePassword`・`startTwoFactor`・`confirmTwoFactor` が 501 でない（apps/api/test/generated/ の 5 本の `it.todo` が本物のテストになって緑）。`getMySecurity` と `get_me_security.test.ts` は子 K-308 が受け持つ（2026-11-18）
 - 画面が部品の口を直に呼ぶ道（今の `authClient.twoFactor.enable`／`verifyTotp`）が消え、契約の口と、パスキーを付ける部品の口（`/api/auth/passkey/generate-register-options`・`/api/auth/passkey/verify-registration`）だけを呼んでいる
 - 本人確認の取り直しを通らない部品の道（`/api/auth/two-factor/enable`・`/two-factor/disable`・`/two-factor/generate-backup-codes`・`/change-password`・`/passkey/delete-passkey`・`/passkey/update-passkey`）が 404 になっている
 - 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザ（パスキーは Playwright の仮の認証器）の上で緑
@@ -1670,6 +1670,12 @@ K-304,パスキーで入る（@better-auth/passkey 1.7.15・passkey の表・チ
 - [ ] `migrateAuth` が `kaname_auth.passkey` を作る
 - [ ] 前の孫（K-301）の試験も緑のまま
 - [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
+K-305,端末をなくした：ワークスペースの管理者に戻してもらうよう頼む口（requestAdminRecovery・入っている全部のワークスペースの管理者・1 時間に 1 回）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"2 段階認証を付けた人が、認証アプリの端末をなくし、バックアップコードも無いとき、パスワードを通った直後の **待ちの印** で「ワークスペースの管理者に再設定を頼む」を押すと、その人が入っている **全部のワークスペースの管理者**（本人を除く）に、受け箱の知らせとメールが 1 つずつ届く（D-128.141・D-128.59）。誰か 1 人が本人を確かめて 2 段階を戻せば済む（戻す口 resetMemberTwoFactor は K-73 から切るチケット）。頼んだことは各ワークスペースの記録（security_events）に残る。
+
+契約の口 `POST /api/v1/auth/recovery/admin-request`（requestAdminRecovery）を作る。今は 501。画面（端末をなくしたとき・頼みました・もう頼んであります・送れませんでした）は K-317。","- [ ] 下の表の 28 行（K305-API-001〜027・K305-DB-001）が本物の DB の上で緑（`apps/api/test/features/F1/admin-recovery.test.ts`・6 けたの口 × 止めの 2 行は `apps/api/test/features/F1/sign-in-code-gate.test.ts`）
+- [ ] 契約の口 requestAdminRecovery が 501 でなく、契約の形（下の「口の形」）が作り直されている。`apps/api/test/generated/post_auth_recovery_admin_request.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している
+- [ ] 前の孫（K-301・K-302・K-303）の試験も緑のまま
+- [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
 K-306,ログアウトする口（signOut・その画面のセッションだけ閉じる・Bridge は残す）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-24,F1・認証,"ログイン中の人が「ログアウト」を押したとき、**その画面のセッションだけ** を閉じる契約の口（`POST /api/v1/auth/sign-out`）を作る。認証側のセッションを消し、sessions の行を `revoked_at` と理由 `logout` で閉じる。同じ人の別のブラウザのセッションと、PC（Bridge）のセッションは閉じない（D-125.140 が全部切ると決めたのはパスワードの変更・端末を外す・退会で、ログアウトは入っていない。Bridge は時間でも切らない D-128.121）。
 
 今の画面のログアウトは部品の口 `/api/auth/sign-out` を呼んでいて、sessions の行が開いたまま残る。画面をこの口に移し、部品の口を閉じるのは K-317（重さの上限：この葉は apps/web に触らない）。","- [ ] 下の表の 12 行（K306-API-001〜012）が本物の DB の上で緑（`apps/api/test/features/F1/sign-out.test.ts`・土台は K-301 の `login.harness.ts`）
@@ -1686,6 +1692,18 @@ K-307,いまの様子（誰でも読める稼働状況の口 getServiceStatus・
 - [ ] 契約の口 getServiceStatus が 501 でなく、答えの型が PublicServiceStatus に作り直されている（packages/contracts の ENDPOINTS の output）。`apps/api/test/generated/get_auth_service_status.test.ts` の `it.todo` が無く、ears-elsewhere.json の対応で本物の試験を指している
 - [ ] ログイン後の getServiceStatusForMember（GET /api/v1/service-status）の型は ServiceStatus のまま
 - [ ] 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回）が緑"
+K-308,安全の設定を読む口と「付けるまで進めない」の印（app.login_methods・sessions.mfa_pending・ほかを切る関数）（K-75 の子）,タスク,K-75,未着手,実装,2026-11-24,F1・認証,"（2026-11-17 切る段・枝 c/段2）古い形の K-75 を葉に分けた 1 本目。**DB と読む口だけ**（重さの上限：packages/db を触るので apps/web は触らない）。画面は K-318・K-319。
+
+ログインした本人が自分の安全の設定（パスキーの一覧・パスワードの有無・2 段階の有無・バックアップコードの残り・「付けるまで進めない」の印）を読める口 `getMySecurity` を作る。
+あわせて、K-309・K-311・K-312 が乗る DB の土台を 1 本の migration で足す：入り方を数える関数、登録の直後でパスキーも 2 段階も無い人のセッションに立てる印 `sessions.mfa_pending`（D-128.141）、入り方がそろったら印を下ろす関数、パスワードを変えたときに今の画面のほかを全部のワークスペースで切る関数。
+
+印を**立てる**のはこの葉。印が立っている間に**ほかの口を止める**（入口の 403・MFA_REQUIRED）のは K-321（止めると前からの画面の試験 50 本ほどが止まるので、画面の試験の道具を直せる葉に分けた・2026-11-17）。","- 下の表の、この葉の行（K308-DB-001〜009・K308-API-001〜013 の 22 行と、K308-API-020〜022 の 3 行・計 25 行）が全部緑：`apps/api/test/features/F1/my-security.test.ts`・`apps/api/test/features/F1/passkey-gate.test.ts`
+- 「ログインから 15 分の内は取り直し不要」の判定（`stepUpOrFreshLogin`・`requireStepUpOrFreshLogin()`）をこの葉が 1 か所に作る（案 3 で K-309 から移した）。K-309・K-311・K-312 はこれを使う
+- K-304 から移した「止め（K-303）がパスキーで入る道（K-304）でも効くか」の 3 行（K308-API-020〜022・`passkey-gate.test.ts`）が緑。止めそのものは K-303、パスキーで入る道は K-304 が作り、この葉は両方が入った後に確かめる（作るものは無い）
+- 契約の口 `getMySecurity` が 501 でない。答えの型が下の「作り方」のとおり（05_flow/screen_api.py の型を直し、生成物を作り直す）
+- 生成の試験 `apps/api/test/generated/get_me_security.test.ts` の 9 本の `it.todo` が、ears-elsewhere.json の covers か na（理由つき）で全部結ばれる（下の「生成の試験の対応」）
+- 前からの試験（K-53 の terms.test.ts・packages/auth の試験・qa-d.test.ts）が緑のまま（印を立てても止めないので変わらない）
+- 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑"
 K-313,再設定のメールを頼む口（いつも同じ答えと時間・同じ人へ 60 秒に 1 通・新しく送ったら前のリンクを消す・ログはメールの印）（K-76 の葉）,タスク,K-76,未着手,実装,2026-11-24,F1・認証,"パスワードを忘れた人が、再設定の画面でメールアドレスを入れて「再設定メールを送る」を押したときに呼ぶ契約の口 `requestPasswordReset`（POST /api/v1/auth/password/forgot）を作る（今は 501）。
 登録されていれば、30 分・1 回だけ使えるリンクのメールが 1 通届く（D-128.62）。登録されているかどうかは、答えの文・状態の番号・かかる時間のどれからも分からない（D-042）。
 同じ人へは 60 秒に 1 通まで。60 秒を過ぎて新しく送ると、前のリンクは使えなくなる（D-128.141）。ログに出る宛先はメールアドレスでなく「宛先#ハッシュ」の印（D-128.146）。
@@ -1723,8 +1741,33 @@ K-316,ログインの画面を口につなぐ：パスワード・確認のコ�
 - [ ] 突き合わせの組 login・login-2fa（K-221 の持ち物・K221-UI-023）が替えずに緑
 - [ ] 画面が前の道すじ `/api/auth-ext/sign-in`・`/api/auth-ext/two-factor/verify` を 1 回も呼ばず（K316-UI-001・002）、その 2 つの道すじは消えて 404（K316-UI-022・精査の後の決め 3）
 - [ ] チケットの CI が緑"
+K-320,再設定の画面を契約の口につなぐ（メールを入れる・送りました・新しいパスワード・済んだ・リンクが使えない・ログイン中）・部品の道を閉じる（K-76 の葉）,タスク,K-76,未着手,実装,2026-11-24,F1・画面,"再設定の画面（/password-reset）を、前の部品の画面（components/ui・OutsideLayout・部品の口 `authClient.requestPasswordReset`・`authClient.resetPassword`）から、
+c/段2 で作った部品 `features/F1/password-reset/views.tsx` の `PasswordReset` に載せ替え、契約の口（K-313 の requestPasswordReset・K-314 の resetPassword）につなぐ。
+正の絵はモック `/dev/mock/f1/<状態>`（本番と同じ部品）。新しい見た目は書かない。
+
+載せ替えたら、部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）を閉じる（404）。","- [ ] 下の表の 26 行（K320-UI-001〜026）が緑：`apps/web/tests/k/k320-password-reset.spec.ts`
+- [ ] モックの写しと本番の写しを、頭の mock の 10 状態 × 幅 375・768・1440 で比べて同じ（K320-UI-024）
+- [ ] 前からの画面の試験を下の「前からの試験を替える」のとおりに替えて緑。ほかの前からの試験（login.spec.ts・k221-login-frame.spec.ts・sign-up.spec.ts のリンクの行）は替えずに緑
+- [ ] 押した結果（呼んだ口・移った先・出た文）まで実ブラウザで見る。幅 320〜1440 の横溢れ 0
+- [ ] チケットの CI が緑"
+K-322,確認のコードで入る口の守りを固める（同じ 6 けたを同時に送ってもセッションは 1 つ・確かめの後に DB が落ちたらその場で閉じて 500）（K-74 の子）,タスク,K-74,未着手,実装,2026-11-19,F1・認証,"K-302 のレビュー（Q）の MEDIUM 2 件を直す。どちらも「入れてはいけないのに、生きたセッションが残る」穴。
+
+1. 同じ人が待ちの印を 2 つ持ち、同じ 6 けたを同時に 2 本送ると、両方が通ってセッションが 2 つできることがある。使い回しを見て（stepUsed）から覚える（rememberStep）までの間に、部品の確かめとセッション作りを挟んでいるため。「同じコードを同じ 30 秒に 2 回は通さない」（K-302 の決めた判断）が同時の要求で破れる
+2. 部品の確かめが通った後（セッションはもう作られている）、使った番号を覚える所・入った記録を書く所・残りのバックアップコードを数える所で DB が落ちると、500・E-PAGE-003 を返したのに、使えるセッションが残る。本人は入れていないと思っているのに、印は生きている
+
+直し方（Q のおすすめ・PM の決め 2026-11-18）：**番号を先に取って（覚えて）から確かめる**。部品に断られたら取った番号を戻す。通った後に落ちたら、その場でサインアウトしてから 500 を返す。","- [ ] 下の表の 6 行（K322-API-001〜006）が本物の DB の上で緑（`apps/api/test/features/F1/sign-in-code-claim.test.ts`・土台は `login.harness.ts`）
+- [ ] K-302 の試験（`apps/api/test/features/F1/sign-in-code.test.ts` の 22 行）と K-301 の試験（sign-in.test.ts）が変えずに緑のまま
+- [ ] チケットの CI が緑"
 K-330,段 3 の部品とモックの画面を本線に入れる（features/F2/invite/views・/dev/mock/f2 の 15 の状態・切る段の検査の口）（K-55 の葉）,タスク,K-55,未着手,実装,2026-11-20,F2・画面,"段 3（F2 招かれて参加する）の画面の部品 `features/F2/invite/views.tsx`（見た目だけ・動きは持たない）と、それを並べたモックの置き場 `/dev/mock/f2`（15 の状態）を本線に入れる。
 モックは代表 OK（answer=65b51ba7b8ba・2026-11-18：「あいだ」を漢字の「間」に・太字の見出しは真ん中、ほかは OK）。画面の葉 K-335・K-336 は、このモックを正の絵として本番の画面をつなぐ。
 
 あわせて、切る段の機械の検査の Kaname 側の口 `scripts/ci/cut_check.py`（範囲・前からの試験・試験の準備）と、その設定（ticket-flow.yaml の cut:）を本線に入れる（PM の頼み 2026-11-18：段 3 の最初の葉が運ぶ）。","- [ ] 下の表の行（K330-MK-001〜003・005〜007・K330-DS-001・K330-UI-001〜008・K330-CC-001〜012（MK-004 は精査で外した：K-335 が入ると必ず赤になる行だったため））が緑：`apps/web/tests/k/k330-stage3-mock.spec.ts`・`scripts/ci/k330_cut_check_test.py`
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-331,招待の下見の口（getInvitation・招いた人とグループと役割とひとこと・招待の状態・アカウントの有無とログイン中の様子・invitations.message）（K-55 の葉）,タスク,K-55,未着手,実装,2026-11-20,F2・認証,"招待のリンク（`/invite/:token`）を開いたときに画面が呼ぶ契約の口 `getInvitation`（GET /api/v1/auth/invitations/:token）を作る（今は 501）。
+招かれた人に「招待した人・グループ・役割・ひとこと」を見せ（D-128.62）、招待の状態（使える・期限切れ・取り消し・使われた）と、宛てのメールにアカウントがあるか・ログイン中ならメールが合うか・もう入っているか を返す。
+画面はこの答えだけで、新しく作る／ログインして参加する／今のアカウントで参加する／別のメール宛て／もう入っている／期限切れ… の形を決める（answer=becc3d3aa526・7fe1f09fdab4）。
+
+このチケットは口と DB だけ。参加の口は K-332・K-333、送り直しは K-334、画面は K-335・K-336。","- [ ] 下の表の 17 行（K331-API-001〜016・K331-DB-001）が緑：`apps/api/test/features/F2/invitation-preview.test.ts`
+- [ ] 契約の口 `getInvitation` が 501 でない。生成の試験 `apps/api/test/generated/get_auth_invitations_token.test.ts` の it.todo が 0（ears-elsewhere.json の covers で本物の試験を指す）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"

@@ -32,11 +32,11 @@
 | EP-017 | POST | `/api/v1/artifact_versions/:id/restore` | 作成・実行（artifact_versions）— 自分のAIの返事を成 | A95 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 503 |
 | EP-018 | PATCH | `/api/v1/artifacts/:id` | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の | A95 | 1 | member | C2 C4 | 401 403 404 422 413 429 403 503 |
 | EP-019 | GET | `/api/v1/audit_events` | 取得（audit_events）— 何をしたか追う（記録） | A33 | 1 | member |  | 401 403 422 429 403 503 |
-| EP-020 | GET | `/api/v1/auth/invitations/:token` | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントに | A03 | 1 | public |  | 422 429 503 |
+| EP-020 | GET | `/api/v1/auth/invitations/:token` | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントに | A03 | 1 | public |  | 422 404 503 429 503 |
 | EP-021 | POST | `/api/v1/auth/invitations/:token/accept` | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナ | A03 A96 | 1 | public | C2 | 409 422 413 429 503 |
 | EP-022 | POST | `/api/v1/auth/password/forgot` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 413 429 503 |
 | EP-023 | POST | `/api/v1/auth/password/reset` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 410 500 413 429 503 |
-| EP-024 | POST | `/api/v1/auth/recovery/admin-request` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 413 429 503 |
+| EP-024 | POST | `/api/v1/auth/recovery/admin-request` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 C6 | 409 422 401 500 413 429 503 |
 | EP-025 | GET | `/api/v1/auth/service-status` | 取得（auth）— ログインする（パスキー／パスワード＋2 段階）／ログ | A13 A135 | 2 | public |  | 422 500 429 503 |
 | EP-026 | POST | `/api/v1/auth/sign-in` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 401 403 403 422 422 429 500 503 413 429 503 |
 | EP-027 | POST | `/api/v1/auth/sign-out` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 413 429 503 |
@@ -47,7 +47,7 @@
 | EP-032 | POST | `/api/v1/auth/step-up` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 413 429 403 503 |
 | EP-033 | POST | `/api/v1/auth/terms/consent` | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | member | C2 | 401 403 409 422 500 413 429 503 |
 | EP-034 | GET | `/api/v1/auth/terms/current` | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | A96 | 1 | public |  | 422 500 429 503 |
-| EP-035 | POST | `/api/v1/auth/two-factor/verify` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 401 401 403 422 429 500 413 429 503 |
+| EP-035 | POST | `/api/v1/auth/two-factor/verify` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 401 401 403 422 429 500 403 503 413 429 503 |
 | EP-036 | POST | `/api/v1/bridge/claim` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | public | C1 C2 C4 | 409 422 413 429 502 503 |
 | EP-037 | POST | `/api/v1/bridge/credentials/:id/check-result` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 404 409 422 413 429 503 |
 | EP-038 | POST | `/api/v1/bridge/credentials/resolve` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 409 422 413 429 503 |
@@ -386,7 +386,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1030 ／ 内部専用 274 ／ どの画面にも出ない 0
+- 検査したフィールド 1031 ／ 内部専用 274 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

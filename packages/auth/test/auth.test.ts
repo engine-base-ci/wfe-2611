@@ -60,7 +60,14 @@ describe("登録 → 会社に属す → ログイン → 文脈", () => {
   });
   it("Bearer のトークンでテナント文脈が決まる（会社 a の担当者）", async () => {
     const r = await resolve()(bearer(token));
-    expect(r?.ctx).toEqual({ tenantId: S.tenantA, userId: S.staffA, role: "member", stepUpAt: null }); // ログインしただけでは本人確認の取り直しは無い
+    // ログインしただけでは本人確認の取り直しは無い。ログインの時刻（loginAt・部品のセッションの createdAt）は入る（K-308）
+    expect(r?.ctx).toEqual({
+      tenantId: S.tenantA,
+      userId: S.staffA,
+      role: "member",
+      stepUpAt: null,
+      loginAt: expect.any(Date),
+    });
   });
   it("トークンが無い・でたらめなら文脈は無い", async () => {
     expect(await resolve()(new Headers())).toBeNull();
