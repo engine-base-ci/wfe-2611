@@ -83,6 +83,9 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
         body: { challenge: "Y2gtazIyMQ", challenge_token: "ch-k221", rpId: "localhost", allowCredentials: [] },
       };
     } else if (p === "/api/auth/get-session") r = { status: 200, body: { session: null, user: null } };
+    // いまの様子（K-317：開いたときに 1 回読む）。帯なしの答え
+    else if (p === "/api/v1/auth/service-status")
+      r = { status: 200, body: { data: { incidents: [], maintenance: null } } };
     else m.other.push(`${req.method()} ${p}`);
     if (r.delayMs) await new Promise((res) => setTimeout(res, r.delayMs));
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
