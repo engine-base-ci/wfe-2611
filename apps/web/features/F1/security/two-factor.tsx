@@ -34,11 +34,12 @@ export interface TwoFactorFlow {
 export interface TwoFactorDeps {
   hasPassword: boolean;
   reload: () => Promise<void>;
-  notify: (text: string) => void;
+  /** 知らせを出す。stay なら本人が閉じるまで残す */
+  notify: (text: string, stay?: boolean) => void;
   /** パスワードを決める小窓を開く（notice は小窓に出す文）。決め終わったら then */
   askSetPassword: (notice: string | null, then: () => void) => void;
-  /** 付け終わった（呼ぶ側が読み直す） */
-  onFinished: () => void;
+  /** 付け終わった（呼ぶ側が読み直す）。noCodes はコードが答えに無かった（知らせを読ませるため、付けるまで進めないから自動で移らない） */
+  onFinished: (o: { noCodes: boolean }) => void;
 }
 
 /** バックアップコードをブラウザの保存で渡す（1 行 1 つ） */
@@ -153,8 +154,8 @@ export function useTwoFactor(d: TwoFactorDeps): TwoFactorFlow {
         setTotp(null);
         const got = Array.isArray(r.data.backup_codes) ? r.data.backup_codes : [];
         if (got.length > 0) return setCodes(got);
-        d.notify(NO_CODES);
-        return d.onFinished();
+        d.notify(NO_CODES, true);
+        return d.onFinished({ noCodes: true });
       }
       if (r.status === 401) return toLogin();
       if (r.status === 409) {
@@ -176,7 +177,7 @@ export function useTwoFactor(d: TwoFactorDeps): TwoFactorFlow {
   };
   const closeBackup = () => {
     setCodes(null);
-    d.onFinished();
+    d.onFinished({ noCodes: false });
   };
 
   const ui = (

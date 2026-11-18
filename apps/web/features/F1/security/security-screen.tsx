@@ -94,7 +94,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   const forcedSeen = useRef(false);
   const leaving = useRef(false);
   const notify = useNotify();
-  const notifyText = (text: string) => void notify(text);
+  const notifyText = (text: string, stay = false) => void notify(text, stay ? { type: "error" } : {});
   const password = usePasswordFlow({
     hasPassword: sec?.has_password === true,
     twoFactor: sec?.two_factor === true,
@@ -106,7 +106,11 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     reload: load,
     notify: notifyText,
     askSetPassword: password.openSet,
-    onFinished: () => void load(),
+    onFinished: ({ noCodes }) => {
+      // コードが来なかったときは、付けるまで進めないから自動で移らず、一覧と知らせ（作り直しが要る）を見せる
+      if (noCodes) forcedSeen.current = false;
+      void load();
+    },
   });
 
   // ログインしていなければ、問いを付けたままログインへ（口は呼ばない）
