@@ -79,6 +79,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
     "dismissSetupTasks": "key は無くてよい（無ければ箱を閉じる・K-250）。{} で 201",
+    "acceptInvitation": "name・password はログインしていない人だけが要る（条件つき・ログイン中は空の体・K-333）。無いときは口が 422 E-VAL-007・E-VAL-005（features/F2/invitations/accept.ts の check・K-332）",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
@@ -138,6 +139,8 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
+    # K-332：apps/api/src/features/F2/invitations/accept.ts の check（ログインしていない人だけが名前とパスワードを要る＝条件つきなので必須にしない）
+    "acceptInvitation": ["ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）", "パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）", "漏れたことのあるパスワード（E-VAL-011）"],
 }
 # 会話と記憶の口（hooks/agent.ts）の成功の答えの形（類 C/D の続き）：表の行ではなく、口が返すとおりの形
 AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {

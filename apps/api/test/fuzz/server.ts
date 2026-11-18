@@ -77,6 +77,7 @@ Object.assign(
     auth: login.auth,
     appPool: h.pool,
     authPool: login.pool,
+    actions, // 参加（K-332）の漏れの照合（関門 C1）。fuzz の外には出ない（照合できなければ通す）
     config: { opsEmail: "ops-fuzz@example.com", webBaseUrl: "http://127.0.0.1" },
   }),
   // 安全の設定を読む（K-308）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る

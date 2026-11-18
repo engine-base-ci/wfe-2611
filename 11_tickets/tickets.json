@@ -2136,9 +2136,7 @@
     "invite-accept"
    ],
    "apis": [],
-   "tests": [
-    "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
-   ],
+   "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F2「招かれて参加する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
