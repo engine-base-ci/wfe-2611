@@ -25,7 +25,8 @@ GATE = ROOT / "scripts" / "ci" / "generated_gate.py"
 CATALOG = "scripts/ci/generated.json"
 STRAYS = ["08_api/api-field-consumption.json", "08_api/ears-ac-seed.json", "08_api/lint-mapping.json"]
 # 目録の glob に当たっていたが、どの作り手も書かない物（手で持つ）。目録と changes_ignore から外す
-HAND = ["07_qa/test-plan/ears-elsewhere.json", "07_qa/test-plan/result-ledger.json", "packages/contracts/src/index.ts"]
+# ears-elsewhere.json は K-325 で .d/ から作る生成物になった（手で持つのは .d/ の断片）
+HAND = ["07_qa/test-plan/result-ledger.json", "packages/contracts/src/index.ts"]
 # glob を、作り手が実際に書くファイルの並びに替える（glob → 並び）
 EXACT = {
     "07_qa/test-plan/*": ["07_qa/test-plan/access-matrix.json", "07_qa/test-plan/ears-test-mapping.json", "07_qa/test-plan/test-plan.html",
