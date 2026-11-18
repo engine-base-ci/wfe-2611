@@ -81,6 +81,8 @@ class Groups(unittest.TestCase):
                 self.assertIn("!cancelled()", cond, "static が赤でも飛ばさない（K-143）")
                 self.assertNotIn("needs.static", cond, "static の結果・出力で spec の組を止めない")
                 self.assertTrue(gate_steps(j), "検査の段が 1 つも無い組を作らない")
+                # 組の鍵は spec と同じ 4 つだけ（continue-on-error・timeout-minutes・env・strategy などで赤を隠さない・形を変えない）
+                self.assertEqual(sorted(job), ["if", "needs", "runs-on", "steps"], "組の鍵が spec と違う")
 
 
 class SameGates(unittest.TestCase):
@@ -112,6 +114,8 @@ class SameGates(unittest.TestCase):
                     else:
                         self.assertEqual(cond, "${{ !cancelled() }}", "前の段が赤でも流す（条件は前と同じ）")
                     self.assertNotIn("continue-on-error", s)
+                    want_env = yaml.safe_load(g["env"]) if g.get("env") else None
+                    self.assertEqual(s.get("env"), want_env, "段の env（本線との分かれ目 CI_BASE など）は前と同じ")
 
 
 class Values(unittest.TestCase):
