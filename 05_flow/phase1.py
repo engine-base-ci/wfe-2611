@@ -123,6 +123,7 @@ ACTS = [
   ("A67", "運営に問い合わせる", EV, ["J14"], "困ったとき", ["D-125.24", "D-075.1"], "inquiry", "問い合わせを書いて送る", "—", "受信箱に届ける", ["C2", "C6"], 3),
   ("A68", "お知らせを見る", ALL, ["J14"], "随時", ["D-125.127"], "notices", "お知らせと稼働状況を見る", "—", "—", [], 3),
   ("A69", "プラン・利用量・請求書を見る", ["R1", "R2"], ["J14"], "月1", ["D-125.125"], "billing", "プラン・利用量・請求書を見る", "—", "—", [], 3),
+  ("A135", "ログインできない・困ったときに、自分で解くか運営に聞く", ALL, ["J14"], "まれ", ["D-128.146", "D-125.24", "D-125.127"], "help", "困りごとを選んで次の画面へ進む／稼働状況を見る／運営にメールする", "—", "誰でも読める稼働状況の口（公開の分だけ）を読む", [], 1),   # K-315：ログインしていない人の困ったとき（/help）
  ]),
  ("運営", [
   ("A60", "各ワークスペースの様子を見る（気にかける）", ["R6"], ["J15"], "毎日", ["D-125.129"], "ops-home", "会社の一覧でプラン・稼働・詰まりを見る", "—", "—", [], 3),
@@ -179,6 +180,7 @@ SCREEN_ADD = {
  "requests": ("届いた依頼", "取引先からの依頼とやり取りを見て、受けてチケットにする／断る", "受けてチケットにする", ["依頼", "取引先", "チケット"], True, "/requests", ["D-125.123", "D-125.46"]),
  "ops-team": ("運営：運営の人", "運営の場所に入れる人と、できること（問い合わせ・中を見る・お金・止める・お知らせ・配るもの・値段の案・値段を決める・運営の人）を決める。パスキーでしか入れない", "運営の人を足す", ["運営メンバー"], True, "/ops/team", ["D-128.70"]),
  "legal": ("規約・プライバシーポリシー", "利用規約とプライバシーポリシーの今の版を、登録の前でも読める", "読む", ["規約と同意"], False, "/legal/:kind", ["D-125.162", "D-128.137", "D-128.146"]),   # 文面のページ（K-53）。ログインを求めない・主ナビに出さない
+ "help": ("困ったとき", "ログインできない・困ったときに、よくある困りごとから次の画面へ進み、いまの稼働状況を見て、解けなければ運営にメールする", "困りごとを選ぶ", ["お知らせ"], False, "/help", ["D-128.146"]),   # K-315。ログインを求めない・主ナビに出さない
  "portal": ("クライアントの場所", "取引先の人が依頼を出し、やり取りし、進みと成果物を見て検収する", "依頼を出す", ["依頼", "検収", "成果物"], True, "/portal", ["D-125.46", "D-125.121", "D-125.122", "D-125.124"]),
 }
 
@@ -186,7 +188,7 @@ SCREEN_ADD = {
 ACT_MORE_SCREENS = {"A96": ["legal"]}
 
 MILESTONE_SCREENS = {
- 1: ["signup", "legal", "verify-email", "login", "password-reset", "mfa-setup", "account", "tickets", "approvals", "ai-activity", "clone-chat", "credentials", "bridge-setup", "ops-skills"],
+ 1: ["signup", "legal", "help", "verify-email", "login", "password-reset", "mfa-setup", "account", "tickets", "approvals", "ai-activity", "clone-chat", "credentials", "bridge-setup", "ops-skills"],
  2: ["invite-accept", "masters", "layers", "members", "member-detail", "rules", "work-types", "knowledge", "audit", "company-settings"],
  3: ["clients", "requests", "portal", "inquiry", "notices", "billing", "ops-home", "ops-tenant", "ops-support", "ops-notices", "ops-billing", "ops-team"],
 }

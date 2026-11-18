@@ -37,7 +37,7 @@
 | EP-022 | POST | `/api/v1/auth/password/forgot` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 413 429 503 |
 | EP-023 | POST | `/api/v1/auth/password/reset` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 410 500 413 429 503 |
 | EP-024 | POST | `/api/v1/auth/recovery/admin-request` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 C6 | 409 422 401 500 413 429 503 |
-| EP-025 | GET | `/api/v1/auth/service-status` | 取得（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public |  | 422 500 429 503 |
+| EP-025 | GET | `/api/v1/auth/service-status` | 取得（auth）— ログインする（パスキー／パスワード＋2 段階）／ログ | A13 A135 | 2 | public |  | 422 500 429 503 |
 | EP-026 | POST | `/api/v1/auth/sign-in` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 401 403 403 422 422 429 500 503 413 429 503 |
 | EP-027 | POST | `/api/v1/auth/sign-out` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | member | C2 | 401 403 409 422 413 429 503 |
 | EP-028 | POST | `/api/v1/auth/sign-up` | 作成・実行（auth）— アカウントを作る（会社名が空なら本人の名前で個 | A01 A96 | 1 | public | C2 | 409 422 500 413 429 503 |
@@ -381,7 +381,7 @@
 
 ## 3. 画面 ↔ API カバレッジ
 
-- 画面 36 ／ OK 35 ／ 未カバー ['legal']
+- 画面 37 ／ OK 36 ／ 未カバー ['legal']
 - endpoint の無い行為（v1）[]
 
 ## 4. 逆カバレッジ（フィールド → 画面）

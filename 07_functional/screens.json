@@ -46099,6 +46099,118 @@
    ]
   },
   {
+   "id": "help",
+   "name": "困ったとき",
+   "purpose": "ログインできない・困ったときに、よくある困りごとから次の画面へ進み、いまの稼働状況を見て、解けなければ運営にメールする",
+   "acts": [
+    "A135"
+   ],
+   "objects": [
+    "お知らせ"
+   ],
+   "primary_action": "困りごとを選ぶ",
+   "fields": [],
+   "layout": "single",
+   "actions": [
+    "困りごとを選ぶ"
+   ],
+   "states": [
+    {
+     "id": "n",
+     "label": "通常"
+    }
+   ],
+   "transitions": [],
+   "responsive": "375/768/1024/1440（横溢れ 0・本文 720 以上）",
+   "responsive_breakpoints": [
+    "375",
+    "768",
+    "1024",
+    "1440"
+   ],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ],
+   "edit_roles": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "related_apis": [
+    {
+     "act": "A135",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/service-status",
+     "table": "status_incidents",
+     "operation_id": "getServiceStatus",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-077",
+      "E-075"
+     ],
+     "choke_points": [],
+     "source": [
+      "D-128.146",
+      "D-125.24",
+      "D-125.127",
+      "D-125.167"
+     ]
+    }
+   ],
+   "required_apis": [
+    {
+     "act": "A135",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/service-status",
+     "table": "status_incidents",
+     "operation_id": "getServiceStatus",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-077",
+      "E-075"
+     ],
+     "choke_points": [],
+     "source": [
+      "D-128.146",
+      "D-125.24",
+      "D-125.127",
+      "D-125.167"
+     ]
+    }
+   ],
+   "related_entities": [
+    "E-075",
+    "E-076",
+    "E-077"
+   ],
+   "mock_path": null,
+   "route": "/help",
+   "meta_tags": {
+    "screen_id": "help",
+    "screen_name": "困ったとき",
+    "category": "outside",
+    "status": "decided",
+    "version": "v1"
+   },
+   "h1_text": "困ったとき",
+   "kpi_labels": [],
+   "section_h2_texts": [],
+   "checklist": [],
+   "release": "v1",
+   "has_shell": false,
+   "legacy_drift_notes": null,
+   "status": "decided",
+   "decided_at": "2026-11-18",
+   "source": [
+    "D-128.146"
+   ]
+  },
+  {
    "id": "portal",
    "name": "クライアントの場所",
    "purpose": "取引先の人が依頼を出し、やり取りし、進みと成果物を見て検収する",

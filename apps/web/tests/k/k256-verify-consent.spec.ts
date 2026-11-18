@@ -97,14 +97,6 @@ async function freeze(page: Page) {
   await page.clock.install({ time: new Date("2026-11-16T00:00:00Z") });
   await page.clock.pauseAt(new Date("2026-11-16T00:00:01Z"));
 }
-/** 要素から先祖までの不透明度を掛けた値（親にも薄さを掛けると二重になるのを見る） */
-const seenOpacity = (l: ReturnType<Page["locator"]>) =>
-  l.evaluate((e) => {
-    let v = 1;
-    for (let x: Element | null = e; x; x = x.parentElement) v *= Number(getComputedStyle(x).opacity);
-    return v;
-  });
-
 test("K256-UI-001 確定中（D-144.8）：見出し「確認しています」はすぐ出て、回る印と「登録を確定しています…」は 2.9 秒では出ず 3 秒を過ぎて出る（空の箱にしない・言うことは見出しと文の 2 つだけ）", async ({
   page,
 }) => {
@@ -243,7 +235,7 @@ const footLinks = async (page: Page) =>
     x.trim(),
   );
 
-test("K256-UI-004 期限切れの足元：いまの様子・困ったとき の順。いまの様子の画面はまだ無いので出すが押せない（aria-disabled・href なし・薄さ 0.55・押しても移らない）", async ({
+test("K256-UI-004 期限切れの足元：いまの様子・困ったとき の順。いまの様子は /help#status へ（href・aria-disabled なし・押すと /help#status）", async ({
   page,
 }) => {
   await mockApi(page, "expired");
@@ -251,13 +243,12 @@ test("K256-UI-004 期限切れの足元：いまの様子・困ったとき の�
   await expect(h1(page)).toHaveText("リンクの期限が切れました");
   expect(await footLinks(page)).toEqual(["いまの様子", "困ったとき"]);
   const status = page.getByRole("navigation", { name: "Kaname について" }).getByRole("link", { name: "いまの様子" });
-  await expect(status).toHaveAttribute("aria-disabled", "true");
-  expect(await status.getAttribute("href")).toBeNull();
-  expect(await seenOpacity(status), "先祖まで掛けた薄さ（二重にしない）").toBeCloseTo(0.55, 2);
+  await expect(status).toHaveAttribute("href", "/help#status");
+  expect(await status.getAttribute("aria-disabled")).toBeNull();
   const foot = page.getByRole("navigation", { name: "Kaname について" });
   expect((await foot.innerText()).replace(/\s+/g, " ").trim()).toBe("いまの様子 ・ 困ったとき");
-  await status.click({ force: true });
-  await expect(page).toHaveURL(/\/verify-email/);
+  await status.click();
+  await expect(page).toHaveURL(/\/help#status$/);
 });
 
 test("K256-UI-008 同意の足元：利用規約・プライバシー・困ったとき の 3 つ（「困ったとき」だけにしない）", async ({
