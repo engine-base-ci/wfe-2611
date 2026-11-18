@@ -17,6 +17,8 @@ import { agentHooks } from "../../../src/hooks/agent.js";
 import { approveHooks } from "../../../src/hooks/approve-complete.js"; // K-185：承認の口（K-161〜K-166）も同じ土台で叩く
 import { delegateHooks } from "../../../src/hooks/delegate.js";
 import { setupTaskHooks } from "../../../src/hooks/setup-tasks.js"; // K-250：はじめにやることの口も同じ土台で叩く
+import { passkeysHooks } from "../../../src/hooks/passkeys.js"; // K-309：パスキーの名前を変える・外すの口も同じ土台で叩く
+import type { Auth } from "@kaname/auth"; // K-309
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
@@ -141,6 +143,11 @@ beforeAll(async () => {
   // K-250 ここから：はじめにやることの口も足す（作った口の uuid の行 K144-API-058 を叩くため・土台の hooks は作った後に作り直さない）
   Object.assign(f.hooks, setupTaskHooks(f.pool));
   // K-250 ここまで
+  // K-309 ここから：パスキーの名前を変える・外すの口も足す（作った口の uuid の行 K144-API-059・060 を叩くため）。
+  //   偽の画面のログインはログインの部品のセッションを持たないので、部品の getSession は null（正しい uuid では 401 の道を回る）
+  const noAuthSession = { api: { getSession: async () => null } } as unknown as Auth;
+  Object.assign(f.hooks, passkeysHooks({ auth: noAuthSession, appPool: f.pool, authPool: f.pool }));
+  // K-309 ここまで
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -500,6 +507,8 @@ export const UUID_PARAM_CASES = [
   ["K144-API-054", "returnApproval", "path", "id"], // K-163
   ["K144-API-055", "completeTicket", "path", "id"], // K-165
   ["K144-API-058", "listSetupTasks", "query", "scope_id"], // K-250（一覧の口の問い合わせ scope_id）
+  ["K144-API-059", "renamePasskey", "path", "id"], // K-309
+  ["K144-API-060", "deletePasskey", "path", "id"], // K-309
 ] as const;
 // まだ作っていない口（501）の代表：形の違う id は 422 が 501 より先（PM の決め 2026-11-08 09:22・D-129.42）
 export const UNBUILT_UUID_CASE = ["answerAgentPermission", "path", "pid"] as const;
@@ -512,6 +521,7 @@ const BODIES: Record<string, unknown> = {
   // 承認して完了する（K-63 の孫）：必須の欄を入れて、正しい uuid では 422 にならない体（無い承認・チケットは 404）・このコメントは先に入る K-185 が持つ // K-185
   returnApproval: { note: "直してください" }, // K-163
   completeTicket: { todo_checked: [], todo_version: 1, conditions_confirmed: true }, // K-165
+  renamePasskey: { name: "仕事の Mac" }, // K-309
 };
 /** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
 const OTHER_PATH: Record<string, string> = { name: "ticket_read" };
