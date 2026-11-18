@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:cf7e297c7170ee1c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:adc891a4bbb67f48
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2144,6 +2144,7 @@ export const Invitations = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  message: z.string().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
 });
 export const InvitationsInput = z.strictObject({

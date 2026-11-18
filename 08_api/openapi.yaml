@@ -5968,6 +5968,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        message:
+          type: string
+          nullable: true
         updated_by:
           type: string
           format: uuid

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:cf7e297c7170ee1c
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:adc891a4bbb67f48
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -180,7 +180,7 @@ export type Imports = { file_ref?: string | null; detected_kind_id?: string | nu
 export type ImportsInput = { file_ref?: string | null; detected_kind_id?: string | null; proposal?: unknown | null; status_id?: string | null; applied_at?: string | null; applied_by?: string | null };
 export type Integrations = { service_id?: string | null; kind_id?: string | null; credential_id?: string | null; scopes?: string[] | null; status_id?: string | null; connected_at?: string | null; revoked_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
 export type IntegrationsInput = { service_id?: string | null; kind_id?: string | null; credential_id?: string | null; scopes?: string[] | null; status_id?: string | null; connected_at?: string | null; revoked_at?: string | null };
-export type Invitations = { email?: string; scope_id?: string | null; role_id?: string | null; permission_preset?: unknown; token_hash?: string; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type Invitations = { email?: string; scope_id?: string | null; role_id?: string | null; permission_preset?: unknown; token_hash?: string; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; message?: string | null; updated_by?: string | null };
 export type InvitationsInput = { email?: string; role_id?: string | null; permission_preset?: unknown; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null };
 export type PendingSignup = { email?: string; name?: string; company_name?: string; pw_iv?: string; token_hash?: string; expires_at?: string; sent_at?: string; send_error?: string; consumed_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PendingSignupInput = { email?: string; name?: string; company_name?: string; pw_iv?: string; expires_at?: string; sent_at?: string; send_error?: string; consumed_at?: string };

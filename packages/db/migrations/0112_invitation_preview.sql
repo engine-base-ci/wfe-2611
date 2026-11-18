@@ -11,8 +11,10 @@
 --      already_member は 0111 の app.current_members_of_auth_user（抜けた・招待中・消した所属は入らない）に招待の会社があるか。
 --      何も書かない（読むだけ）。トークンは hash で引く（平文を DB に置かない）
 alter table invitations add column if not exists message text;
-alter table invitations drop constraint if exists invitations_message_len;
-alter table invitations add constraint invitations_message_len check (message is null or char_length(message) <= 500);
+do $$ begin
+  alter table invitations add constraint invitations_message_len check (message is null or char_length(message) <= 500);
+exception when duplicate_object then null;
+end $$;
 
 create or replace function app.invitation_preview2(p_token_hash text, p_auth_user_id text default null)
 returns table (state text, workspace_name text, inviter_name text, group_name text, role text, message text, email text,
