@@ -131,6 +131,7 @@
   { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
   { "paths": ["apps/web/tests/features/F5/approve-complete-approve.spec.ts", "apps/web/tests/features/F5/approve-complete-complete.spec.ts", "apps/web/tests/features/F5/approve-complete-execute.spec.ts", "apps/web/tests/features/F5/approve-complete-guard.spec.ts", "apps/web/tests/features/F5/approve-complete-queue.spec.ts", "apps/web/tests/features/F5/approve-complete-return.spec.ts", "apps/web/tests/features/F5/approve-complete-live.spec.ts"], "tests": ["apps/web/tests/features/F5/k247-band-settle.spec.ts"] },
   { "paths": ["scripts/ci/row_rules.mjs"], "tests": ["apps/api/test/authz_rows.test.ts"] },
+  { "paths": ["apps/api/src/contract/deps.ts"], "tests": ["apps/api/test/features/F1/my-security.test.ts"] },
   { "paths": ["scripts/ci/canvas_field_ledger.json"], "tests": ["apps/api/test/features/F4/ticket-list.test.ts"] },
   { "paths": ["apps/api/test/features/F4/ticket-list.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_tickets.test.ts"] },
   { "paths": ["apps/api/test/features/F4/setup-tasks.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_me_setup_tasks.test.ts", "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"] },
@@ -365,6 +366,16 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/my-security.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_security.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-reset.test.ts"
    ],
    "tests": [
@@ -402,6 +413,24 @@
    ],
    "tests": [
     "apps/api/test/generated/get_auth_service_status.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F2/invitations/**",
+    "apps/api/src/hooks/invitations.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-preview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F2/invitation-preview.test.ts",
+    "apps/api/test/features/F2/invite.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_auth_invitations_token.test.ts"
    ]
   },
   {
@@ -551,6 +580,7 @@
   "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
   "apps/web/tests/k/k316-login.spec.ts": "ログインの画面のファイル apps/web/features/F1/login/login-form.tsx を読む（部品の世代：views の部品と契約の口だけを使うか・K316-UI-019）。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-316",
   "apps/web/tests/k/k317-login-passkey.spec.ts": "lib/auth/session.tsx・lib/auth/client.ts・features/F1/login/login-form.tsx を読み（部品の世代・K317-UI-023）、list-mock.ts を通して 04_design/fidelity.json を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-317",
+  "apps/web/tests/k/k320-password-reset.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（画面に出す文を実装からでなく正本から引く）。07_qa/test-specs/errors.json は jobs.web.paths に在り、正の絵（/dev/mock/f1/reset-*）は実ブラウザで開く（web の組が流す）・K-320",
   "apps/web/tests/k/k300-stage2-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f1/mocks.tsx・07_functional/段2-F1/切り方.md・写しの台本 07_functional/段2-F1/mock-shots.mjs・design-gate.json・04_design/DESIGN-kaname.md・apps/web/lib/theme.ts を読み、04_design/gen_tokens.py・gen_preview.py・scripts/ci/design_gate.py・k218_design_canvas_test.py を子プロセスで流す（K-300）",
   "apps/web/tests/k/k315-help.spec.ts": "流れ 05_flow/flow.json・flows.json と入口の枠 apps/web/features/F1/sign-up/frame.tsx・apps/web/lib/built-routes.ts を読み、scripts/ci/flow_gate.py・flow_db_gate.py・trace_gate.py を子プロセスで流す（画面 help と行為 A135 の照らし合わせ）。モックの頁 /dev/mock/f1/help-* は実ブラウザで開く（web の組が流す・K-315）",
   "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",

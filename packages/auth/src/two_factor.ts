@@ -45,7 +45,10 @@ export async function verifyTotp(
   code: string,
 ): Promise<{ token: string; headers: Headers }> {
   const r = await tf(auth).verifyTOTP({ headers, body: { code }, returnHeaders: true });
-  return { token: r.response.token, headers: r.headers };
+  // 2 段階を付ける確認（ログイン中）では、部品が新しいセッションを作って前のセッションを消すのに、答えの token は前の物を返す（better-auth 1.7.15）。
+  //   新しいセッションの印（set-auth-token・署名つき）があれば、その印の本体を返す（ログインの確認でも同じ値・K-308）
+  const fresh = r.headers.get("set-auth-token")?.split(".")[0];
+  return { token: fresh || r.response.token, headers: r.headers };
 }
 
 export async function disableTotp(auth: Auth, headers: Headers, password: string): Promise<void> {

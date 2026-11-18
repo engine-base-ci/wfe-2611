@@ -5,8 +5,9 @@ import { ENDPOINTS, isUuid, type EndpointDef } from "@kaname/contracts";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import type { Row, TableName } from "@kaname/db/repository";
 import type { Vars } from "../middleware/tenant.js";
-import type { ContractDeps, Hook, HookArgs } from "./deps.js";
-import { checkFor, stepUpFresh } from "./permissions.js";
+import type { ContractDeps, Hook, HookArgs, HookReply } from "./deps.js";
+import type { TenantContext } from "@kaname/db/context";
+import { checkFor, stepUpFresh, stepUpOrFreshLogin } from "./permissions.js";
 import { kanameError } from "@kaname/errors";
 export type { ContractDeps } from "./deps.js";
 
@@ -47,6 +48,22 @@ const decodeCursor = (s: string | undefined, keyed = false): number | null => {
 };
 const isRlsError = (e: unknown) => /row-level security|permission denied/.test(String(e));
 const pgCode = (e: unknown) => (e as { code?: string }).code ?? "";
+
+const STEP_UP_REQUIRED: HookReply = {
+  status: 403,
+  body: { error: "step_up_required", code: "STEP_UP_REQUIRED", message: "本人確認を取り直してから" },
+};
+/** hooks に渡す本人確認の守り 2 つ（入口の HookArgs もこれを使う）。通れば undefined、通らなければ 403・STEP_UP_REQUIRED
+ *  requireStepUp：直前 15 分の取り直し（D-125.139）／requireStepUpOrFreshLogin：取り直しかログインから 15 分の内（K-308） */
+export function stepUpGuards(
+  ctx: TenantContext,
+  now?: number,
+): Required<Pick<HookArgs, "requireStepUp" | "requireStepUpOrFreshLogin">> {
+  return {
+    requireStepUp: () => (stepUpFresh(ctx, now ?? Date.now()) ? undefined : STEP_UP_REQUIRED),
+    requireStepUpOrFreshLogin: () => (stepUpOrFreshLogin(ctx, now ?? Date.now()) ? undefined : STEP_UP_REQUIRED),
+  };
+}
 
 /** 同意し直しが要る（403・E-AUTH-010）。文は正本（errors.json）から引く */
 export const termsRequired = (c: Context) => {
@@ -301,13 +318,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       input,
       id,
       c,
-      requireStepUp: () =>
-        stepUpFresh(ctx)
-          ? undefined
-          : {
-              status: 403,
-              body: { error: "step_up_required", code: "STEP_UP_REQUIRED", message: "本人確認を取り直してから" },
-            },
+      ...stepUpGuards(ctx),
     };
     const run = execute(deps.hooks[operationId], args, list).then((r) => ({ hash: inputHash, ...r }));
     if (idemKey)

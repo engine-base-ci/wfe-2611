@@ -140,6 +140,22 @@
     }
    }
   },
+  "getInvitation": {
+   "file": "apps/api/test/features/F2/invitation-preview.test.ts",
+   "reason": "招待の下見は、本物のトークン（DB にはハッシュだけ）の招待の行と、本物のログインの部品のセッション（ログイン中の様子）と、認証の表（宛てのアカウントの有無）で確かめる。生成の試験の土台（偽のセッション・uuid の id）では確かめられない。道の値はトークンで 422 にする形が無く、受け付けない値（でたらめ・空白入り・長すぎ）は 404 で断る（K-331）",
+   "covers": {
+    "test_get_auth_invitations_token_ok": "K331-API-001",
+    "test_get_auth_invitations_token_rejected_422": "K331-API-006",
+    "test_get_auth_invitations_token_not_found": "K331-API-006",
+    "test_get_auth_invitations_token_session_unresolved": "K331-API-016",
+    "test_get_auth_invitations_token_rate_limited": "K331-API-013",
+    "test_get_auth_invitations_token_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_auth_invitations_token_shape": "K331-API-001"
+   }
+  },
   "createPairingCode": {
    "file": "apps/api/test/features/F3/connect-pc.test.ts",
    "reason": "K-57 の口は本物の PC の印の解決と本物の振る舞い（hooks）・接続コードの期限と 1 回だけ・配布物の置き場が要る。生成の試験の土台（偽のセッション・表の種の入力）では確かめられない（K-57）",
@@ -908,6 +924,29 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
+   }
+  },
+  "getMySecurity": {
+   "file": "apps/api/test/features/F1/my-security.test.ts",
+   "reason": "安全の設定を読む口は、本物のログインの部品（Better Auth のセッション・パスキーの表・2 段階とバックアップコード）と sessions の印（mfa_pending）で確かめる。生成の試験の偽のセッションでは部品のセッションが無く、入り方の数も印も作れない（K-308）",
+   "covers": {
+    "test_get_me_security_ok": "K308-API-001",
+    "test_get_me_security_ok_2": "K308-API-002",
+    "test_get_me_security_rejected_401": "K308-API-008",
+    "test_get_me_security_rate_limited": "K308-API-009",
+    "test_get_me_security_shape": "K308-API-004",
+    "test_get_me_security_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_me_security_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_me_security_rejected_403": "本人だけの口で役を見ない（権限を何も持たない人も自分の分は読める・受けは K308-API-006）",
+    "test_get_me_security_rejected_422": "入力を受けない GET（一覧の問い合わせは形だけ確かめて無視する）"
    }
   },
   "requestAdminRecovery": {
