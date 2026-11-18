@@ -84,9 +84,10 @@ async function mockApi(page: Page, o: Partial<Mock> = {}): Promise<Mock> {
           user: { id: ME, email: "me@example.com", name: "高本", emailVerified: true },
         },
       };
-    else if (p === "/api/auth/sign-out") {
+    else if (p === "/api/v1/auth/sign-out") {
+      // ログアウトは契約の口 signOut（K-306）。部品の道 /api/auth/sign-out は K-317 で閉じた（数えない）
       m.signOuts += 1;
-      r = { status: 200, body: { success: true } };
+      r = { status: 201, body: { data: { signed_out: true } } };
     } else if (p === "/api/auth-ext/me")
       r =
         m.meStatus === 200
