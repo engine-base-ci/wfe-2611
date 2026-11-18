@@ -179,22 +179,59 @@ async function stepOfCode(auth: Auth, authPool: pg.Pool, userId: string, code: s
 }
 
 const usedKey = (userId: string) => `totp-used-${userId}`;
-/** 同じ 30 秒の使い回しの守り：前に通った番号と同じか前の番号のコードなら true */
-async function stepUsed(authPool: pg.Pool, userId: string, step: number): Promise<boolean> {
-  const r = await authPool.query<{ value: string }>(
-    'select value from kaname_auth.verification where identifier = $1 and "expiresAt" > now()',
-    [usedKey(userId)],
-  );
-  return r.rows.some((x) => Number(x.value) >= step);
+/** 番号を取る前にあった覚えの行（戻すときに元に戻す） */
+interface StepClaim {
+  step: number;
+  prev: { value: string; expiresAt: Date } | null;
 }
-/** 通った番号を覚える（本人ごとに 1 行・90 秒） */
-async function rememberStep(authPool: pg.Pool, userId: string, step: number): Promise<void> {
-  await authPool.query("delete from kaname_auth.verification where identifier = $1", [usedKey(userId)]);
-  await authPool.query(
-    `insert into kaname_auth.verification (id, identifier, value, "expiresAt")
-     values ($1, $2, $3, now() + make_interval(secs => $4))`,
-    [uuidv7(), usedKey(userId), String(step), USED_STEP_TTL_SEC],
-  );
+/** 本人ごとの覚えの行を、錠（advisory lock）を張った 1 つの取引の中で読み書きする。同じ人の要求はここで 1 本ずつになる */
+async function underStepLock<T>(authPool: pg.Pool, userId: string, fn: (c: pg.PoolClient) => Promise<T>): Promise<T> {
+  const c = await authPool.connect();
+  try {
+    await c.query("begin");
+    await c.query("select pg_advisory_xact_lock(hashtext($1))", [usedKey(userId)]);
+    const out = await fn(c);
+    await c.query("commit");
+    return out;
+  } catch (e) {
+    await c.query("rollback").catch(() => undefined); // 元の例外を投げ直す（取引を閉じるだけ）
+    throw e;
+  } finally {
+    c.release();
+  }
+}
+/** 同じ 30 秒の使い回しの守り：部品を呼ぶ前に、通す番号を本人ごとに先に取る（K-322）。
+ *  前に取った番号と同じか後の番号なら null（使い回し）。取れたら前の行を控えて返す（断られたら releaseStep で戻す） */
+async function claimStep(authPool: pg.Pool, userId: string, step: number): Promise<StepClaim | null> {
+  return underStepLock(authPool, userId, async (c) => {
+    const r = await c.query<{ value: string; expiresAt: Date }>(
+      'select value, "expiresAt" from kaname_auth.verification where identifier = $1 and "expiresAt" > now()',
+      [usedKey(userId)],
+    );
+    if (r.rows.some((x) => Number(x.value) >= step)) return null;
+    const prev = r.rows[0] ? { value: r.rows[0].value, expiresAt: r.rows[0].expiresAt } : null;
+    await c.query("delete from kaname_auth.verification where identifier = $1", [usedKey(userId)]);
+    await c.query(
+      `insert into kaname_auth.verification (id, identifier, value, "expiresAt")
+       values ($1, $2, $3, now() + make_interval(secs => $4))`,
+      [uuidv7(), usedKey(userId), String(step), USED_STEP_TTL_SEC],
+    );
+    return { step, prev };
+  });
+}
+/** 取った番号を戻す（入れなかったコードは使ったことにしない）。自分の番号の行だけを消し、控えた前の行がまだ期限内なら戻す */
+async function releaseStep(authPool: pg.Pool, userId: string, claim: StepClaim): Promise<void> {
+  await underStepLock(authPool, userId, async (c) => {
+    const d = await c.query("delete from kaname_auth.verification where identifier = $1 and value = $2", [
+      usedKey(userId),
+      String(claim.step),
+    ]);
+    if ((d.rowCount ?? 0) > 0 && claim.prev && claim.prev.expiresAt.getTime() > Date.now())
+      await c.query(
+        `insert into kaname_auth.verification (id, identifier, value, "expiresAt") values ($1, $2, $3, $4)`,
+        [uuidv7(), usedKey(userId), claim.prev.value, claim.prev.expiresAt],
+      );
+  });
 }
 
 /** 6 けたの止めの状態（止まっていれば終わりまでの秒） */
@@ -219,9 +256,10 @@ async function backupCodesLeft(auth: Auth, authPool: pg.Pool, userId: string): P
   return Array.isArray(list) ? list.length : 0;
 }
 
-/** 確認のコードで入る：待ちの印 → 同じ 30 秒の使い回し → 部品の確かめ の順。
- *  6 けたで入った・違った・止めたを会社の security_events に残す（login_succeeded・login_code_failed・login_code_locked・app.record_login_event）。
- *  DB が落ちた・セッションを写す所の失敗は投げ直す（呼ぶ側が 500 にする。部品の側で半分だけ入ったセッションは消してある） */
+/** 確認のコードで入る：待ちの印 → 同じ 30 秒の使い回し（番号を先に取る）→ 部品の確かめ の順（K-302・K-322）。
+ *  6 けたで入った・違った・止めたを会社の security_events に残す（login_succeeded・login_code_failed・login_code_locked・app.record_login_event。
+ *  記録が書けなくてもログインは止めない）。番号を取った後に部品が断った・落ちたら、取った番号を戻す。
+ *  部品が通った後の後処理（残りの数）が落ちたら、その場でサインアウトし、取った番号を戻してから投げ直す（呼ぶ側が 500 にする。生きたセッションを残さない） */
 export async function verifySignInCode(
   auth: Auth,
   appPool: pg.Pool,
@@ -232,14 +270,26 @@ export async function verifySignInCode(
   if (!userId) return { ok: false, reason: "expired" };
   const record = (kind: string) => recordLoginEvent(appPool, userId, kind, input.country);
   const totpCode = input.code === undefined ? null : normalizeTotpCode(input.code);
-  let step: number | null = null;
+  let claim: StepClaim | null = null;
   if (totpCode !== null) {
-    step = await stepOfCode(auth, authPool, userId, totpCode);
-    if (step !== null && (await stepUsed(authPool, userId, step))) {
-      await record("login_code_failed");
-      return { ok: false, reason: "wrong", userId };
+    const step = await stepOfCode(auth, authPool, userId, totpCode);
+    if (step !== null) {
+      claim = await claimStep(authPool, userId, step);
+      if (!claim) {
+        await record("login_code_failed");
+        return { ok: false, reason: "wrong", userId };
+      }
     }
   }
+  // 取った番号を戻す。戻すのが落ちても元の答えは変えない（種類だけを出す。番号は 90 秒で切れる）
+  const release = async () => {
+    if (!claim) return;
+    try {
+      await releaseStep(authPool, userId, claim);
+    } catch (e) {
+      console.error(`[auth] 確認のコードの番号を戻せなかった（${errKind(e)}）`);
+    }
+  };
   const headers = new Headers({ cookie: `${await pendingCookieName(auth)}=${input.pending}` });
   if (input.userAgent) headers.set("user-agent", input.userAgent);
   let token: string;
@@ -254,28 +304,80 @@ export async function verifySignInCode(
           });
     token = r.response.token;
   } catch (e) {
-    const x = apiError(e);
-    if (!x) throw e;
-    if (x.code && PENDING_GONE.has(x.code)) return { ok: false, reason: "expired" };
-    if (x.code === "ACCOUNT_TEMPORARILY_LOCKED") {
-      return { ok: false, reason: "locked", userId, retryAfterSec: (await lockLeft(authPool, userId)) ?? 1 };
-    }
-    if (x.code && WRONG.has(x.code)) {
-      const left = await lockLeft(authPool, userId);
-      if (left !== null) {
-        await record("login_code_locked");
-        return { ok: false, reason: "locked", userId, retryAfterSec: left };
-      }
-      await record("login_code_failed");
-      return { ok: false, reason: "wrong", userId };
-    }
-    // セッションを作る所の止めの 1 か所（K-303 の session.create.before）の断り：人・会社の止め・抜けた（403）・止めの確かめが落ちた（503）。
-    //   状態コードと code をそのまま答える（文は口が目録から引く）。セッションは作られておらず、6 けたの失敗の数にも入らない
-    if (x.code && LOGIN_BLOCKED_CODES.has(x.code))
-      return { ok: false, reason: "refused", status: x.statusCode || 503, code: x.code };
+    await release();
+    return refusal(e, authPool, userId, record);
+  }
+  await record("login_succeeded");
+  try {
+    return { ok: true, token, userId, backupCodesLeft: await backupCodesLeft(auth, authPool, userId) };
+  } catch (e) {
+    // 閉じ切れたときだけ番号を戻す（生きたセッションが残ったまま同じコードをもう一度通さない）
+    if (await closeHalfOpen(auth, appPool, token, input.userAgent)) await release();
     throw e;
   }
-  if (step !== null) await rememberStep(authPool, userId, step);
-  await record("login_succeeded");
-  return { ok: true, token, userId, backupCodesLeft: await backupCodesLeft(auth, authPool, userId) };
+}
+
+/** 部品の断りを答えに振り分ける。知らない例外は投げ直す（呼ぶ側が 500 にする） */
+async function refusal(
+  e: unknown,
+  authPool: pg.Pool,
+  userId: string,
+  record: (kind: string) => Promise<void>,
+): Promise<SignInCodeOutcome> {
+  const x = apiError(e);
+  if (!x) throw e;
+  if (x.code && PENDING_GONE.has(x.code)) return { ok: false, reason: "expired" };
+  if (x.code === "ACCOUNT_TEMPORARILY_LOCKED") {
+    return { ok: false, reason: "locked", userId, retryAfterSec: (await lockLeft(authPool, userId)) ?? 1 };
+  }
+  if (x.code && WRONG.has(x.code)) {
+    const left = await lockLeft(authPool, userId);
+    if (left !== null) {
+      await record("login_code_locked");
+      return { ok: false, reason: "locked", userId, retryAfterSec: left };
+    }
+    await record("login_code_failed");
+    return { ok: false, reason: "wrong", userId };
+  }
+  // セッションを作る所の止めの 1 か所（K-303 の session.create.before）の断り：人・会社の止め・抜けた（403）・止めの確かめが落ちた（503）。
+  //   状態コードと code をそのまま答える（文は口が目録から引く）。セッションは作られておらず、6 けたの失敗の数にも入らない
+  if (x.code && LOGIN_BLOCKED_CODES.has(x.code))
+    return { ok: false, reason: "refused", status: x.statusCode || 503, code: x.code };
+  throw e;
+}
+
+/** 例外の種類だけ（DB の番号か名前）。文や値はログに出さない */
+function errKind(e: unknown): string {
+  const x = e as { code?: unknown; name?: unknown } | null;
+  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+}
+
+/** 部品が通った後に落ちた：作られたセッションをその場で閉じる。sessions の行と認証側のセッションを別々に閉じ、
+ *  片方が落ちてももう片方は閉じる（DB が不調で sessions の行を閉じられなくても、認証側を消せば印は解けない）。
+ *  全部閉じ切れたら true。落ちた段は種類だけを出す（呼ぶ側は元の例外で 500 にする。印・コードは出さない） */
+async function closeHalfOpen(
+  auth: Auth,
+  appPool: pg.Pool,
+  token: string,
+  userAgent: string | undefined,
+): Promise<boolean> {
+  const h = new Headers({ authorization: `Bearer ${token}` });
+  if (userAgent) h.set("user-agent", userAgent);
+  let closed = true;
+  const step = async (what: string, fn: () => Promise<unknown>) => {
+    try {
+      await fn();
+    } catch (e) {
+      closed = false;
+      console.error(`[auth] 確認のコードで入った後に落ち、${what}を閉じられなかった（${errKind(e)}）`);
+    }
+  };
+  let sessionId: string | null = null;
+  await step("セッションの読み取り", async () => {
+    sessionId = (await auth.api.getSession({ headers: h }))?.session.id ?? null;
+  });
+  if (sessionId)
+    await step("画面のセッション", () => appPool.query("select app.close_session($1, 'logout')", [sessionId]));
+  await step("認証側のセッション", () => auth.api.signOut({ headers: h }));
+  return closed;
 }

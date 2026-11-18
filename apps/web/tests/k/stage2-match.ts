@@ -63,6 +63,10 @@ export const AUTH_PAIRS: FidelityPair[] = [
   props: props as string[],
 }));
 
+/** 切り替わりの途中を読まない：動いている transition（短くしても次の描画までは前の値のまま）が全部終わるのを待つ（K-316） */
+const settle = (p: Page) =>
+  p.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => undefined))));
+
 export interface MatchOptions {
   /** 比べる役割の組（既定は入口の箱の AUTH_PAIRS）。外枠の中・小窓・困ったときの区画は、画面の葉が自分の組を渡す */
   pairs?: FidelityPair[];
@@ -82,26 +86,29 @@ export async function matchMock(
 ): Promise<{ rows: FidelityRow[]; bad: string[] }> {
   const pairs = opts.pairs ?? AUTH_PAIRS;
   const vp = { width, height: width === 375 ? 812 : 900 };
+  // 動きを止めて開く（globals.css が transition を 0.01ms にする）。フォーカスを外した直後・ボタンの形が変わった直後に、切り替わりの途中の色や薄さを読まない（K-316）
   const blockBridge = (p: Page) => p.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   mkdirSync(OUT, { recursive: true });
 
-  const mock = await browser.newPage({ viewport: vp, colorScheme: "light" });
+  const mock = await browser.newPage({ viewport: vp, colorScheme: "light", reducedMotion: "reduce" });
   await blockBridge(mock);
   expect((await mock.goto(`/dev/mock/f1/${id}`))?.status(), `モック ${id}`).toBe(200);
   await expect(mock.locator(`[data-mock="${id}"] h1`).first()).toBeVisible();
   await mock.evaluate(() => document.fonts.ready);
   await mock.mouse.move(0, 0);
+  await settle(mock);
   const mockVals = await readVals(mock, pairs, "canvas");
   const mockFonts = await loadedFonts(mock);
   await mock.screenshot({ path: join(OUT, `${id}-${width}-mock.png`), fullPage: true });
   await mock.close();
 
-  const app = await browser.newPage({ viewport: vp, colorScheme: "light" });
+  const app = await browser.newPage({ viewport: vp, colorScheme: "light", reducedMotion: "reduce" });
   await blockBridge(app);
   await drive(app);
   await app.evaluate(() => document.fonts.ready);
   if (opts.blur) await app.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   await app.mouse.move(0, 0);
+  await settle(app);
   const appVals = await readVals(app, pairs, "app");
   const appFonts = await loadedFonts(app);
   await app.screenshot({ path: join(OUT, `${id}-${width}-app.png`), fullPage: true });

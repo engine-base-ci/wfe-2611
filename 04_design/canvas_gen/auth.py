@@ -30,7 +30,7 @@ authpage("Auth2FA.dc.html", "2 段階認証",
   + boxes("4829")
   + '<div style="font-size: 11px; color: %s; text-align: center">数字は 30 秒ごとに変わる ・ 6 つそろうと自動で進む</div>' % MUTED
   + big("入る", "p", "Main.dc.html")
-  + '<div style="border-top: 1px solid #EDF0F4; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: center"><a href="AuthRecover.dc.html">認証アプリが使えない</a><span style="color: %s">この画面は 2 段階認証を付けている人だけに出る</span></div>' % MUTED)
+  + '<div style="border-top: 1px solid #EDF0F4; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: center"><a href="AuthRecover.dc.html">認証アプリが使えない</a><a href="AuthRecover.dc.html">端末をなくした</a><span style="color: %s">この画面は 2 段階認証を付けている人だけに出る</span></div>' % MUTED)
 # 3 端末をなくした
 opt = lambda ic, t, d, href: '<a href="%s" style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #DDE2E9; border-radius: 10px; padding: 12px 14px; text-decoration: none; color: #131B27">%s<span style="flex: 1"><b style="font-weight: 600; display: block">%s</b><span style="font-size: 12px; color: %s; line-height: 1.6">%s</span></span><span style="color: #8A94A3">›</span></a>' % (href, icon(ic, NAVY, 30), t, MUTED, d)
 authpage("AuthRecover.dc.html", "端末をなくしたとき",

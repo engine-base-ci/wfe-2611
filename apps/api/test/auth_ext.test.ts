@@ -1,6 +1,6 @@
-// /api/auth-ext（T-U-01〜05／09／10 の裏側）：登録で会社ができる・メールの正規化・既存メールは 409・5 回失敗で 15 分ロック・招待の下見と受諾・Bridge の接続コード・資格情報は参照だけ
+// /api/auth-ext（T-U-01・03／09／10 の裏側）：登録で会社ができる・メールの正規化・既存メールは 409・招待の下見と受諾・Bridge の接続コード・資格情報は参照だけ
+//   ログインと 2 段階（前の道すじ /sign-in・/two-factor/verify）は K-316 で消した。同じ振る舞いは契約の口の試験（features/F1/sign-in・sign-in-code）が持つ
 import { beforeAll, describe, expect, it } from "vitest";
-import { createHmac } from "node:crypto";
 import pg from "pg";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -100,95 +100,6 @@ describe("登録（T-U-01）", () => {
       headers: { authorization: `Bearer ${j.token}` },
     });
     expect(me.status).toBe(200);
-  });
-});
-
-describe("ログイン（T-U-05）", () => {
-  it("正しい組み合わせは 200 で token。大文字・空白の違いだけなら通る", async () => {
-    const email = `${uniq()}@example.com`;
-    await register(email, "C");
-    const r = await post("/api/auth-ext/sign-in", { email: ` ${email.toUpperCase()} `, password: PW });
-    expect(r.status).toBe(200);
-    expect(((await r.json()) as { data: { token: string } }).data.token).toBeTruthy();
-  });
-  it("間違えると 401 で残り回数が減り、5 回でロック（429・retry_after_sec）。正しいパスワードでも入れない", async () => {
-    const email = `${uniq()}@example.com`;
-    await register(email, "D");
-    const rems: number[] = [];
-    for (let i = 0; i < 4; i++) {
-      const r = await post("/api/auth-ext/sign-in", { email, password: "wrong-password-000" });
-      expect(r.status).toBe(401);
-      const j = (await r.json()) as { code: string; remaining: number; message: string };
-      expect(j.code).toBe("E-AUTH-001");
-      rems.push(j.remaining);
-      expect(j.message).toContain(`あと ${j.remaining} 回`);
-    }
-    expect(rems).toEqual([4, 3, 2, 1]);
-    const five = await post("/api/auth-ext/sign-in", { email, password: "wrong-password-000" });
-    expect(five.status).toBe(429);
-    const j = (await five.json()) as { code: string; retry_after_sec: number };
-    expect(j.code).toBe("E-AUTH-002");
-    expect(j.retry_after_sec).toBeGreaterThan(0);
-    expect((await post("/api/auth-ext/sign-in", { email, password: PW })).status).toBe(429);
-  });
-});
-
-describe("2 段階（T-U-04／05）", () => {
-  const totp = (secretBase32: string, at = Date.now()): string => {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    let bits = "";
-    for (const ch of secretBase32.toUpperCase().replace(/[^A-Z2-7]/g, ""))
-      bits += alphabet.indexOf(ch).toString(2).padStart(5, "0");
-    const key = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
-    const counter = Buffer.alloc(8);
-    counter.writeBigUInt64BE(BigInt(Math.floor(at / 30000)));
-    const h = createHmac("sha1", key).update(counter).digest();
-    const off = h[h.length - 1]! & 0xf;
-    const code =
-      ((h[off]! & 0x7f) << 24) | ((h[off + 1]! & 0xff) << 16) | ((h[off + 2]! & 0xff) << 8) | (h[off + 3]! & 0xff);
-    return String(code % 1_000_000).padStart(6, "0");
-  };
-  it("有効化 → ログインは two_factor=true と待ちの cookie → /two-factor/verify（6 桁）で token。違う 6 桁は 401 E-AUTH-004。回復コードでも入れる", async () => {
-    const email = `${uniq()}@example.com`;
-    const { token } = await register(email, "G");
-    const en = await post("/api/auth/two-factor/enable", { password: PW }, { authorization: `Bearer ${token}` });
-    expect(en.status).toBe(200);
-    const { totpURI, backupCodes } = (await en.json()) as { totpURI: string; backupCodes: string[] };
-    const secret = new URL(totpURI).searchParams.get("secret")!;
-    const ok = await post(
-      "/api/auth/two-factor/verify-totp",
-      { code: totp(secret) },
-      { authorization: `Bearer ${token}` },
-    );
-    expect(ok.status).toBe(200);
-    const si = await post("/api/auth-ext/sign-in", { email, password: PW });
-    expect(si.status).toBe(200);
-    const j = (await si.json()) as {
-      data: { token: string | null; two_factor: boolean; two_factor_cookie: string | null };
-    };
-    expect(j.data.two_factor).toBe(true);
-    expect(j.data.token).toBeNull();
-    expect(j.data.two_factor_cookie).toBeTruthy();
-    const bad1 = await post("/api/auth-ext/two-factor/verify", {
-      two_factor_cookie: j.data.two_factor_cookie,
-      code: "000000",
-    });
-    expect(bad1.status).toBe(401);
-    expect(((await bad1.json()) as { code: string }).code).toBe("E-AUTH-004");
-    const good = await post("/api/auth-ext/two-factor/verify", {
-      two_factor_cookie: j.data.two_factor_cookie,
-      code: totp(secret),
-    });
-    expect(good.status).toBe(200);
-    expect(((await good.json()) as { data: { token: string } }).data.token).toBeTruthy();
-    const si2 = (await (await post("/api/auth-ext/sign-in", { email, password: PW })).json()) as {
-      data: { two_factor_cookie: string };
-    };
-    const bc = await post("/api/auth-ext/two-factor/verify", {
-      two_factor_cookie: si2.data.two_factor_cookie,
-      backup_code: backupCodes[0],
-    });
-    expect(bc.status).toBe(200);
   });
 });
 

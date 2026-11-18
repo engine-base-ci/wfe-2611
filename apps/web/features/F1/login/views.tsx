@@ -4,7 +4,7 @@
 //   キャンバス AuthLogin・Auth2FA・AuthRecover・AuthAddPasskey。キャンバスに無い状態（ロック・止め・帯・別のアカウント・パスキーで入れない）は
 //   同じ部品で足した（07_functional/段2-F1/機能分解.md の 2 章）
 import Link from "next/link";
-import { useRef, type ReactNode } from "react";
+import { useRef, type ReactNode, type RefObject } from "react";
 import { Fingerprint, KeyRound, UserCog } from "lucide-react";
 import { Button, PasswordField, TextField } from "@/components/k";
 import { AuthIcon, ChoiceCard, NoteBox, ResultBox, StatusStrip, type ServiceIncident } from "@/components/k/auth-parts";
@@ -23,6 +23,21 @@ export function AuthPage({ status = [], children }: { status?: readonly ServiceI
     </div>
   );
 }
+
+/** まだつないでいない行き先（K-317 まで）：出すが押せない。href なし・Tab で止まらない・正本の使えない状態の薄さ（D-145.9） */
+function Unbuilt({ children }: { children: string }) {
+  return (
+    <a role="link" aria-disabled="true" tabIndex={-1} className="k-login-off">
+      {children}
+    </a>
+  );
+}
+
+/** 値を受ける口：変わったときの関数があれば呼ぶ側が値を持つ（本番）、無ければ決めた値を最初に入れるだけ（モック） */
+const valueOf = (value: string | undefined, onChange: ((v: string) => void) | undefined) =>
+  onChange
+    ? { value: value ?? "", onChange: (e: { target: { value: string } }) => onChange(e.target.value) }
+    : { defaultValue: value };
 
 function Alert({ msg }: { msg: string | null | undefined }) {
   return msg ? (
@@ -50,6 +65,15 @@ export interface LoginMainProps {
   onPasskey?: () => void;
   onSubmit?: () => void;
   onRecover?: () => void;
+  /** 欄が変わったとき（本番が値を持つ）。無ければ email・password は最初の値だけ（モック） */
+  onEmailChange?: (v: string) => void;
+  onPasswordChange?: (v: string) => void;
+  /** 「パスワードを忘れた」を押したとき（移る前に呼ぶ） */
+  onForgot?: () => void;
+  /** パスキー・スマホの QR がまだつながっていない（K-317 まで）：出すがグレーで押せない */
+  passkeyOff?: boolean;
+  /** 端末をなくした がまだつながっていない（K-317 まで）：出すがグレーで押せない */
+  recoverOff?: boolean;
 }
 
 /** ログイン（通常・失敗・ロック・パスキーで入れない・パスキーを使えない・別のアカウント） */
@@ -77,8 +101,8 @@ export function LoginMain(p: LoginMainProps) {
           size="lg"
           data-act="passkey"
           icon={<Fingerprint size={18} />}
-          disabled={p.passkeyUnsupported}
-          aria-disabled={p.passkeyUnsupported || undefined}
+          disabled={p.passkeyUnsupported || p.passkeyOff}
+          aria-disabled={p.passkeyUnsupported || p.passkeyOff || undefined}
           onClick={p.onPasskey}
         >
           パスキーで入る
@@ -89,9 +113,13 @@ export function LoginMain(p: LoginMainProps) {
           ) : (
             <>
               指・顔・PC のロックで入る。いちばん安全で速い ・ この PC にパスキーが無いときは{" "}
-              <button type="button" className="k-login-textbtn k-login-inline" onClick={p.onPasskey}>
-                スマホで QR を読み取る
-              </button>
+              {p.passkeyOff ? (
+                <Unbuilt>スマホで QR を読み取る</Unbuilt>
+              ) : (
+                <button type="button" className="k-login-textbtn k-login-inline" onClick={p.onPasskey}>
+                  スマホで QR を読み取る
+                </button>
+              )}
             </>
           )}
         </p>
@@ -115,7 +143,7 @@ export function LoginMain(p: LoginMainProps) {
             inputMode="email"
             autoComplete="email"
             placeholder="メール"
-            defaultValue={p.email}
+            {...valueOf(p.email, p.onEmailChange)}
             aria-invalid={p.msg ? true : undefined}
           />
           <PasswordField
@@ -125,19 +153,33 @@ export function LoginMain(p: LoginMainProps) {
             aria-label="パスワード"
             autoComplete="current-password"
             placeholder="パスワード"
-            defaultValue={p.password}
+            {...valueOf(p.password, p.onPasswordChange)}
             aria-invalid={p.msg ? true : undefined}
           />
         </div>
         <Alert msg={p.msg} />
-        <Button type="submit" size="lg" variant="outlined" loading={p.busy} disabled={p.locked}>
+        {/* 押せない間は別の要素にする（押せる形から薄く変わる途中を見せず、すぐ押せない形で出す） */}
+        <Button
+          key={p.locked ? "locked" : "open"}
+          type="submit"
+          size="lg"
+          variant="outlined"
+          loading={p.busy}
+          disabled={p.locked}
+        >
           次へ
         </Button>
         <div className="k-login-links">
-          <Link href="/password-reset">パスワードを忘れた</Link>
-          <button type="button" className="k-login-textbtn" onClick={p.onRecover}>
-            端末をなくした
-          </button>
+          <Link href="/password-reset" onClick={p.onForgot}>
+            パスワードを忘れた
+          </Link>
+          {p.recoverOff ? (
+            <Unbuilt>端末をなくした</Unbuilt>
+          ) : (
+            <button type="button" className="k-login-textbtn" onClick={p.onRecover}>
+              端末をなくした
+            </button>
+          )}
         </div>
         <p className="k-auth-alt">
           はじめての方は <Link href="/signup">アカウントを作る</Link>
@@ -161,14 +203,32 @@ export interface LoginCodeProps {
   onRestart?: () => void;
   /** 端末をなくした（管理者に頼む・answer=9177d9dbe0d9 ④） */
   onLost?: () => void;
+  /** バックアップコードの欄が変わったとき（本番が値を持つ）。無ければ backupValue は最初の値だけ（モック） */
+  onBackupChange?: (v: string) => void;
+  /** 「入る」を押したとき・Enter */
+  onSubmit?: () => void;
+  /** 6 つの枠（呼ぶ側が 1 つめへ戻すとき）。無ければ部品が持つ */
+  inputs?: RefObject<(HTMLInputElement | null)[]>;
+  /** 端末をなくした がまだつながっていない（K-317 まで）：出すがグレーで押せない */
+  recoverOff?: boolean;
 }
 
 /** 確認のコード（6 けた・バックアップコード・止め・待ちの印が切れた） */
 export function LoginCode(p: LoginCodeProps) {
-  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const own = useRef<(HTMLInputElement | null)[]>([]);
+  const inputs = p.inputs ?? own;
   return (
     <AuthFrame>
-      <form className="k-auth-form" data-auth="login" data-state="m" noValidate onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="k-auth-form"
+        data-auth="login"
+        data-state="m"
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          p.onSubmit?.();
+        }}
+      >
         {p.backup ? (
           <>
             <h1>バックアップコードで入る</h1>
@@ -182,7 +242,7 @@ export function LoginCode(p: LoginCodeProps) {
               aria-label="バックアップコード"
               autoComplete="off"
               placeholder="例：7KQM-2XPA"
-              defaultValue={p.backupValue}
+              {...valueOf(p.backupValue, p.onBackupChange)}
             />
           </>
         ) : (
@@ -202,11 +262,11 @@ export function LoginCode(p: LoginCodeProps) {
         )}
         <Alert msg={p.msg} />
         {p.stopped && p.onRestart ? (
-          <Button type="button" size="lg" variant="outlined" onClick={p.onRestart}>
+          <Button key="restart" type="button" size="lg" variant="outlined" onClick={p.onRestart}>
             最初からログインし直す
           </Button>
         ) : (
-          <Button type="submit" size="lg" loading={p.busy} disabled={p.stopped}>
+          <Button key={p.stopped ? "stopped" : "enter"} type="submit" size="lg" loading={p.busy} disabled={p.stopped}>
             入る
           </Button>
         )}
@@ -214,9 +274,15 @@ export function LoginCode(p: LoginCodeProps) {
           <button type="button" className="k-login-textbtn" onClick={p.onToggleBackup}>
             {p.backup ? "認証アプリの 6 けたで入る" : "認証アプリが使えない"}
           </button>
-          <button type="button" className="k-login-textbtn" onClick={p.onLost}>
-            端末をなくした
-          </button>
+          {p.recoverOff ? (
+            <button type="button" className="k-login-textbtn" aria-disabled="true" tabIndex={-1}>
+              端末をなくした
+            </button>
+          ) : (
+            <button type="button" className="k-login-textbtn" onClick={p.onLost}>
+              端末をなくした
+            </button>
+          )}
           <span className="k-login-muted">この画面は 2 段階認証を付けている人だけに出る</span>
         </div>
       </form>

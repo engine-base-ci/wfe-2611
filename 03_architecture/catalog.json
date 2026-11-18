@@ -8,7 +8,7 @@
   "api": 365,
   "api_built": 44,
   "api_only_later_phase": 20,
-  "legacy_routes": 30,
+  "legacy_routes": 28,
   "db": 144,
   "ui": 17,
   "packages": 13,
@@ -5897,8 +5897,6 @@
   "/onboard/testrun/cancel",
   "/setup-state",
   "/setup-step",
-  "/sign-in",
-  "/two-factor/verify",
   "/vault/credentials",
   "/vault/credentials/:id/answer",
   "/vault/credentials/:id/login-check"
