@@ -60,6 +60,9 @@ def four(e):
     # 同意し直し（K-53・D-125.162）：ログインの要る口は、同意し直しの印が立ったセッションでは 403・E-AUTH-010。規則で足す（口ごとに手で足さない）。
     #   PC の印の口（device）には印が立たない（D-128.137）。規約の 2 つの口・ログアウト・自分の取得は止めない（正本は screen_api.py の TERMS_OPEN_OPS・契約の termsOpen）
     if auth and e["auth"]["role"] != "device" and e.get("operation_id") not in _sa.TERMS_OPEN_OPS: out.append({"status": 403, "code": "E-AUTH-010", "body": {"error": "forbidden", "code": "E-AUTH-010"}, "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）", "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"})
+    # 付けるまで進めない（K-321・D-128.141）：ログインの要る口は、パスキーも 2 段階も無い人のセッション（印 mfa_pending）では 403・MFA_REQUIRED（E-AUTH-019）。
+    #   同意し直しの次に止める。PC の印の口（device）には印が立たない。止めない口は screen_api.py の MFA_OPEN_OPS（契約の mfaOpen）
+    if auth and e["auth"]["role"] != "device" and e.get("operation_id") not in _sa.MFA_OPEN_OPS: out.append({"status": 403, "code": "MFA_REQUIRED", "body": {"error": "forbidden", "code": "MFA_REQUIRED"}, "trigger": "パスキーも 2 段階認証も無い人のセッション（付けるまで進めないの印が立ったセッション・E-AUTH-019）", "ears_form": "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない"})
     # 入口でセッションを解けない（K-53・K-144 ⑬）：全部の口で止める側に倒して 503・E-PAGE-003。口ごとの ERRORS_4XX の後に足す（前に足すと 503 E-PAGE-007 の行に置き換えられて消える）
     out.append({"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）", "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"})
     return out
@@ -87,6 +90,7 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     e["access_control_policies"] = [pol["name"] for x in e["related_entities"] for pol in ent[x]["access_control_policies"] if (m == "GET" and "read" in pol["name"]) or (m != "GET" and "write" in pol["name"])]
     e["outputs_4xx"] = four(e); e["ears_ac_seed"] = ears(e)
     e["terms_open"] = e.get("operation_id") in _sa.TERMS_OPEN_OPS   # 同意し直しの間も止めない口（K-53）。契約の termsOpen になる
+    e["mfa_open"] = e.get("operation_id") in _sa.MFA_OPEN_OPS   # 付けるまで進めないの間も止めない口（K-321）。契約の mfaOpen になる
     e["list_ignores_scope"] = e.get("operation_id") in getattr(_sa, "LIST_OPS", set())   # 一覧の scope_id を形だけ見て無視する口（K-53）
     e["outward_side_effects"] = [chk[c]["name"] for c in sorted(e["choke_points"]) if c in chk and c != "C2"]
     e["side_effect_ordering"] = "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録" if m != "GET" else None

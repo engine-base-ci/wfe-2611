@@ -71,6 +71,12 @@ export const termsRequired = (c: Context) => {
   return c.json({ error: "forbidden", code: "E-AUTH-010", message: e.message ?? "" }, 403);
 };
 
+/** 付けるまで進めない（403・MFA_REQUIRED・K-321・D-128.141）：パスキーも 2 段階も無い人のセッション。文は正本（errors.json の E-AUTH-019）から引く */
+export const mfaRequired = (c: Context) => {
+  const e = kanameError("E-AUTH-019").toJSON() as { message?: string };
+  return c.json({ error: "forbidden", code: "MFA_REQUIRED", message: e.message ?? "" }, 403);
+};
+
 /** 入口の止めでセッションを解けなかった（K-53）：止める側に倒して 503・E-PAGE-003。ログには理由の種類だけ（メール・IP・トークンを出さない） */
 export const sessionUnresolved = (c: Context, where: string, e: unknown) => {
   console.error(`[terms] ${where}：セッションを解けなかったので止めた（${(e as Error)?.name ?? "Error"}）`);
@@ -196,6 +202,10 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       //      ほかを止める。副作用の前・記録も書かない。画面の表示に頼らず口で止める（PC のセッションには印が立たない・D-128.137）
       //      止めない口は契約の termsOpen（正本は 05_flow/screen_api.py の TERMS_OPEN_OPS）
       if (c.get("termsPending") && !def.termsOpen) return termsRequired(c);
+      // 2.55) 付けるまで進めない（K-321・D-128.141・代表の答え ⑮）：パスキーも 2 段階も無い人のセッション（印 mfa_pending）は、
+      //      安全の設定を読む・2 段階を付ける・取り直し・ログアウト・自分の取得・規約の口のほかを止める。同意し直しの次・役と権限より前・副作用の前・記録も書かない。
+      //      PC のセッションには印が立たない（D-128.137）。止めない口は契約の mfaOpen（正本は 05_flow/screen_api.py の MFA_OPEN_OPS）
+      if (c.get("mfaPending") && !def.mfaOpen) return mfaRequired(c);
       // 役は契約の auth と合うものだけ通す（合わなければ止める・ZT2・ZT4・ZT10）
       //   ops：運営の人だけ ／ client：取引先の人だけ（/portal/ の API）／ device：PC の印だけ（/bridge/ の API）
       //   member：社内の人。取引先の人と PC の印は通さない。運営は「中を見る」の許可がある間だけ

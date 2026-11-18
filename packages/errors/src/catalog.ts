@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。183 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。184 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2381,6 +2381,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "mfa-setup",
       "state": "sec-add-dup"
+    }
+  },
+  "E-AUTH-019": {
+    "id": "E-AUTH-019",
+    "cls": "gate",
+    "message": "入り方を 1 つ足してから使い始めます",
+    "action": "パスキーか 2 段階認証を付ける",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "AUTH-019",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "mfa-required"
     }
   },
   "E-AUTH-020": {

@@ -11537,7 +11537,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -11626,7 +11626,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -11721,7 +11721,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -11818,7 +11818,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -11925,7 +11925,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12026,7 +12026,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12122,7 +12122,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12230,7 +12230,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12338,7 +12338,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12452,7 +12452,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12555,7 +12555,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12662,7 +12662,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12757,7 +12757,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -12914,7 +12914,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -13052,7 +13052,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -13121,7 +13121,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -13209,7 +13209,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -13309,7 +13309,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -13456,7 +13456,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -15143,7 +15143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -15247,7 +15247,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -15356,7 +15356,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -16836,7 +16836,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -16948,7 +16948,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17054,7 +17054,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17229,7 +17229,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17342,7 +17342,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17418,7 +17418,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17499,7 +17499,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17581,7 +17581,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17711,7 +17711,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17786,7 +17786,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17874,7 +17874,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -17969,7 +17969,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18070,7 +18070,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18171,7 +18171,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18318,7 +18318,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18386,7 +18386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18466,7 +18466,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18547,7 +18547,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18668,7 +18668,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18750,7 +18750,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18836,7 +18836,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -18918,7 +18918,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19055,7 +19055,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19160,7 +19160,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19234,7 +19234,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19379,7 +19379,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19455,7 +19455,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19536,7 +19536,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19608,7 +19608,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19677,7 +19677,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19790,7 +19790,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19861,7 +19861,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -19946,7 +19946,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20025,7 +20025,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20106,7 +20106,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20188,7 +20188,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20369,7 +20369,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20502,7 +20502,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20608,7 +20608,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20752,7 +20752,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -20888,7 +20888,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21030,7 +21030,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21112,7 +21112,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21214,7 +21214,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21309,7 +21309,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21405,7 +21405,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21513,7 +21513,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21603,7 +21603,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21686,7 +21686,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21786,7 +21786,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21886,7 +21886,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21956,7 +21956,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22038,7 +22038,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22122,7 +22122,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22218,7 +22218,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22307,7 +22307,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22396,7 +22396,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22486,7 +22486,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22576,7 +22576,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22671,7 +22671,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22759,7 +22759,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22834,7 +22834,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22915,7 +22915,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22989,7 +22989,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23099,7 +23099,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23209,7 +23209,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23285,7 +23285,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23379,7 +23379,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23459,7 +23459,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23574,7 +23574,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23643,7 +23643,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23724,7 +23724,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23806,7 +23806,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -23957,7 +23957,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24025,7 +24025,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24106,7 +24106,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24187,7 +24187,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24275,7 +24275,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24369,7 +24369,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24463,7 +24463,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24544,7 +24544,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24619,7 +24619,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24700,7 +24700,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24787,7 +24787,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24907,7 +24907,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -24988,7 +24988,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25082,7 +25082,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25176,7 +25176,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25263,7 +25263,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25345,7 +25345,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25474,7 +25474,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25561,7 +25561,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25648,7 +25648,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25736,7 +25736,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25876,7 +25876,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -25968,7 +25968,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26078,7 +26078,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26173,7 +26173,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26277,7 +26277,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26434,7 +26434,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26513,7 +26513,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26593,7 +26593,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26678,7 +26678,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26763,7 +26763,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26848,7 +26848,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26920,7 +26920,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -26999,7 +26999,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27089,7 +27089,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27175,7 +27175,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27258,7 +27258,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27343,7 +27343,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27537,7 +27537,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27611,7 +27611,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27690,7 +27690,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27826,7 +27826,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -27899,7 +27899,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28010,7 +28010,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28079,7 +28079,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28153,7 +28153,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28367,7 +28367,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28441,7 +28441,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28569,7 +28569,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28648,7 +28648,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28730,7 +28730,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28822,7 +28822,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -28918,7 +28918,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29022,7 +29022,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29110,7 +29110,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29199,7 +29199,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29303,7 +29303,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29398,7 +29398,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29492,7 +29492,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29638,7 +29638,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29716,7 +29716,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29817,7 +29817,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -29910,7 +29910,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30006,7 +30006,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30106,7 +30106,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30244,7 +30244,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30326,7 +30326,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30454,7 +30454,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30530,7 +30530,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30611,7 +30611,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30737,7 +30737,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30808,7 +30808,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30892,7 +30892,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -30983,7 +30983,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31080,7 +31080,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31215,7 +31215,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31296,7 +31296,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31388,7 +31388,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31474,7 +31474,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31581,7 +31581,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31649,7 +31649,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31737,7 +31737,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31818,7 +31818,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -31940,7 +31940,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32011,7 +32011,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32094,7 +32094,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32178,7 +32178,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32269,7 +32269,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32366,7 +32366,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32492,7 +32492,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32571,7 +32571,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32682,7 +32682,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32791,7 +32791,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32860,7 +32860,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -32949,7 +32949,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33038,7 +33038,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33125,7 +33125,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33208,7 +33208,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33303,7 +33303,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33417,7 +33417,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33483,7 +33483,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33579,7 +33579,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33647,7 +33647,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33729,7 +33729,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33829,7 +33829,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -33923,7 +33923,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34048,7 +34048,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34130,7 +34130,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34225,7 +34225,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34337,7 +34337,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34485,7 +34485,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34563,7 +34563,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34693,7 +34693,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34777,7 +34777,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -34897,7 +34897,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35035,7 +35035,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35132,7 +35132,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35235,7 +35235,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35338,7 +35338,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35441,7 +35441,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35534,7 +35534,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35627,7 +35627,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35718,7 +35718,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35791,7 +35791,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35859,7 +35859,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -35941,7 +35941,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36029,7 +36029,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36144,7 +36144,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36214,7 +36214,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36295,7 +36295,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36378,7 +36378,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36466,7 +36466,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36546,7 +36546,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36678,7 +36678,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36751,7 +36751,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36833,7 +36833,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36915,7 +36915,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -36997,7 +36997,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37079,7 +37079,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37198,7 +37198,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37270,7 +37270,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37362,7 +37362,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37447,7 +37447,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37558,7 +37558,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37626,7 +37626,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37714,7 +37714,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37799,7 +37799,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -37933,7 +37933,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38001,7 +38001,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38067,7 +38067,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38146,7 +38146,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38236,7 +38236,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38324,7 +38324,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38414,7 +38414,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38497,7 +38497,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38579,7 +38579,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38662,7 +38662,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38776,7 +38776,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38852,7 +38852,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -38965,7 +38965,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39040,7 +39040,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39128,7 +39128,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39211,7 +39211,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39293,7 +39293,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39376,7 +39376,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39489,7 +39489,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39598,7 +39598,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39671,7 +39671,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39768,7 +39768,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39861,7 +39861,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -39941,7 +39941,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40023,7 +40023,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40153,7 +40153,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40241,7 +40241,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40383,7 +40383,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40522,7 +40522,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40605,7 +40605,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40731,7 +40731,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40819,7 +40819,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40909,7 +40909,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41032,7 +41032,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41113,7 +41113,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41211,7 +41211,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41303,7 +41303,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41387,7 +41387,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41511,7 +41511,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41598,7 +41598,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41704,7 +41704,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41785,7 +41785,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41880,7 +41880,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42002,7 +42002,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42084,7 +42084,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42227,7 +42227,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42320,7 +42320,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42438,7 +42438,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42528,7 +42528,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42631,7 +42631,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42734,7 +42734,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42863,7 +42863,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42973,7 +42973,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43060,7 +43060,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43189,7 +43189,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43267,7 +43267,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43387,7 +43387,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43465,7 +43465,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43555,7 +43555,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43647,7 +43647,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43751,7 +43751,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43849,7 +43849,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43953,7 +43953,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44057,7 +44057,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44188,7 +44188,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44265,7 +44265,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44336,7 +44336,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44411,7 +44411,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44487,7 +44487,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44565,7 +44565,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44642,7 +44642,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44707,7 +44707,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44797,7 +44797,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44880,7 +44880,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -44957,7 +44957,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45041,7 +45041,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45122,7 +45122,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45194,7 +45194,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45276,7 +45276,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45391,7 +45391,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45455,7 +45455,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45525,7 +45525,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45615,7 +45615,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45698,7 +45698,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45768,7 +45768,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45838,7 +45838,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45915,7 +45915,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:

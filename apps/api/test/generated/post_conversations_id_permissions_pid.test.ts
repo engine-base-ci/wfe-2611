@@ -1,6 +1,7 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。POST /api/v1/conversations/:id/permissions/:pid
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-import { describe, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/conversations/:id/permissions/:pid", () => {
   // EVENT-DRIVEN: WHEN POST /api/v1/conversations/:id/permissions/:pid が「許可に答える・許可のモードを選ぶ」として呼ばれたとき THEN Kaname は「答えは bridge_job_events と証跡に。「いつも」は permission_rules に。全部許可は本人が選んだときだけ・既定にしない」を行い 2xx を返す（自動側：Claude Code の許可の問いを会話に出す（今回だけ／いつも／しない＋一言）。モードは Claude Code の公式の選択肢をそのまま渡す）
@@ -23,6 +24,11 @@ describe("POST /api/v1/conversations/:id/permissions/:pid", () => {
   it.todo("test_post_conversations_id_permissions_pid_upstream_failed");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_post_conversations_id_permissions_pid_terms_pending");
+  it("test_post_conversations_id_permissions_pid_mfa_pending", () => {
+    // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+    // 本物の試験：apps/api/test/features/F1/mfa-gate.test.ts の「K321-API-001」（入口 1 か所の止め・同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/mfa-gate.test.ts", "utf8")).toContain("K321-API-001");
+  });
   // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
   it.todo("test_post_conversations_id_permissions_pid_session_unresolved");
   // UBIQUITOUS: POST /api/v1/conversations/:id/permissions/:pid の副作用は関門 C2・C5 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

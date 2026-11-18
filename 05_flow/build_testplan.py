@@ -36,6 +36,7 @@ def classify(line):
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
     if "E-AUTH-010" in line: return form, code, "access（同意し直し・K-53）", "backend-access-matrix", "terms_pending"   # 役の 403 と混ぜない
+    if "MFA_REQUIRED" in line: return form, code, "access（付けるまで進めない・K-321）", "backend-access-matrix", "mfa_pending"   # 役の 403 と混ぜない
     if code in ("401", "403"): return form, code, "access", "backend-access-matrix", "rejected_" + code
     if code == "429": return form, code, "unit", "backend-coverage", "rate_limited"
     if code == "413": return form, code, "unit（送る量の守り・1MB・D-130.1）", "backend-coverage", "too_large"   # K-144 回 11：体を受ける口の全部

@@ -1,5 +1,5 @@
 // EARS の対応表（07_qa/test-plan/ears-test-mapping.json）→ apps/api/test/generated/<slug>.test.ts。1 文 = 1 test（名前は対応表の test_function）。
-// 検査は種類ごとに固定：ok（2xx）／shape（応答の形）／rejected_401／rejected_403（副作用なし）／terms_pending（同意し直しの 403・K-53）／conflict（冪等）／rejected_422（正規化してから判定）／rate_limited（retry_after_sec）／upstream_failed／too_large（送る量の守り・413）（副作用は記録の前・502 で記録しない）／not_found
+// 検査は種類ごとに固定：ok（2xx）／shape（応答の形）／rejected_401／rejected_403（副作用なし）／terms_pending（同意し直しの 403・K-53）／mfa_pending（付けるまで進めないの 403・K-321）／conflict（冪等）／rejected_422（正規化してから判定）／rate_limited（retry_after_sec）／upstream_failed／too_large（送る量の守り・413）（副作用は記録の前・502 で記録しない）／not_found
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -7,10 +7,21 @@ const ROOT = process.cwd();
 const OUTDIR = "apps/api/test/generated";
 
 const kindOf = (fn) => {
-  const m = /_(ok|shape|rejected_401|rejected_403|rejected_422|terms_pending|session_unresolved|unavailable|conflict|rate_limited|upstream_failed|not_found|too_large)(?:_\d+)?$/.exec(fn);
+  const m = /_(ok|shape|rejected_401|rejected_403|rejected_422|terms_pending|mfa_pending|session_unresolved|unavailable|conflict|rate_limited|upstream_failed|not_found|too_large)(?:_\d+)?$/.exec(fn);
   return m ? m[1] : "ok";
 };
 const q = (s) => JSON.stringify(s);
+// 全部の口に同じ 1 か所の入口（apps/api/src/contract/op.ts）で効く止めは、口ごとに作らず、本物の試験 1 つに結ぶ（K-321）。
+//   付けるまで進めない（mfa_pending）：印は本物のログインの部品（K-308 の hook）が立てるので、偽のセッションの土台では作れない。
+//   まだ作っていない口（501）にも、止めは 501 より前に効く
+const CENTRAL = {
+  mfa_pending: { file: "apps/api/test/features/F1/mfa-gate.test.ts", mark: "K321-API-001" },
+};
+const centralRow = (x) => {
+  const c = CENTRAL[kindOf(x.test_function)];
+  if (!c) return null;
+  return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${c.file} の「${c.mark}」（入口 1 か所の止め・同じ CI の G3 で流れる）\n    expect(readFileSync(${q(c.file)}, "utf8")).toContain(${q(c.mark)});\n  });`;
+};
 const WHO = `const who = e.auth === "ops" ? "ops" : "boss";`;
 const CASE = {
   ok: () => `${WHO} const r = await h.call(e, who, await args(h, e, who)); expect([200, 201]).toContain(r.status); const b = (await r.json()) as { data: unknown }; expect(b.data).toBeDefined(); if (e.kind === "create") expect((b.data as { id: string }).id).toBeTruthy();`,
@@ -69,6 +80,8 @@ export function gen(root = ROOT) {
     if (away) {
       const body = rows.map((x) => {
         n++;
+        const cr = centralRow(x);
+        if (cr) return cr;
         // covers の値は「本物の試験の題」（口の file の中）か {file, mark}（別のファイル。1 つの口の試験が何枚かに分かれるとき・K-144 回 6）
         const c = away.covers?.[x.test_function];
         const mark = typeof c === "string" ? c : c?.mark;
@@ -96,12 +109,14 @@ ${body.join("\n")}
       //   「501 で止まり何も書かない」は apps/api/src/contract/authz.test.ts の「まだ作っていない口は止まる」が全部の口を 1 回の立ち上げで確かめる
       if (genericSet.has(rows[0].endpoint)) throw new Error(`${rows[0].endpoint} は表の素の読み書き（generic）で、まだ作っていない。authz.test.ts の 501 の確かめに入らないので、08_api/generic-ok.json に足すか振る舞いを作る`);
       n += rows.length;
+      const lines = rows.map((x) => centralRow(x) ?? `  // ${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`);
+      const anyCentral = rows.some((x) => centralRow(x));
       writeFileSync(join(root, file), `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-import { describe, it } from "vitest";
+${anyCentral ? 'import { readFileSync } from "node:fs";\nimport { describe, expect, it } from "vitest";' : 'import { describe, it } from "vitest";'}
 
 describe(${q(rows[0].endpoint)}, () => {
-${rows.map((x) => `  // ${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`).join("\n")}
+${lines.join("\n")}
 });
 `);
       continue;
@@ -109,12 +124,14 @@ ${rows.map((x) => `  // ${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test
     const tests = [];
     tests.push(...rows.map((x) => {
       n++;
+      const cr = centralRow(x);
+      if (cr) return cr;
       const kind = kindOf(x.test_function);
       const skip = (kind === "rate_limited" && false) ? ".skip" : "";
       return `  it${skip}(${q(x.test_function)}, async () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    ${CASE[kind](op)}\n  });`;
     }));
     const src = `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+${tests.some((t) => t.includes("readFileSync(")) ? 'import { readFileSync } from "node:fs";\n' : ""}import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { makeHarness, endpointOf, type Harness } from "../harness.js";
 ${tests.some((t) => t.includes("args(")) ? 'import { args } from "../args.js";\n' : ""}
 const e = endpointOf(${q(op)});

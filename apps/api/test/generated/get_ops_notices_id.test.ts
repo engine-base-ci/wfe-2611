@@ -1,6 +1,7 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。GET /api/v1/ops/notices/:id
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-import { describe, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { describe, expect, it } from "vitest";
 
 describe("GET /api/v1/ops/notices/:id", () => {
   // EVENT-DRIVEN: WHEN GET /api/v1/ops/notices/:id が「作って出す」として呼ばれたとき THEN Kaname は「対象に届ける」を行い 2xx を返す
@@ -17,6 +18,11 @@ describe("GET /api/v1/ops/notices/:id", () => {
   it.todo("test_get_ops_notices_id_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_get_ops_notices_id_terms_pending");
+  it("test_get_ops_notices_id_mfa_pending", () => {
+    // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+    // 本物の試験：apps/api/test/features/F1/mfa-gate.test.ts の「K321-API-001」（入口 1 か所の止め・同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/mfa-gate.test.ts", "utf8")).toContain("K321-API-001");
+  });
   // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
   it.todo("test_get_ops_notices_id_session_unresolved");
   // UNWANTED: IF お知らせの公開で対象の会社が 0 件（プラン未選択・該当なし）、公開日時が過去、または全社通知の送出が一部失敗した THEN Kaname は「対象の会社がありません。プランか会社を選んでください」を返し、対象を選び直す／失敗した分を再送する（E-ACT-038）

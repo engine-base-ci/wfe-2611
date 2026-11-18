@@ -559,6 +559,10 @@ LIST_OPS = {"getCurrentTerms"}
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
+# 付けるまで進めないの間も止めない口（K-321・D-128.141・代表の答え ⑮ answer=6bdcb125e8f7）：安全の設定を読む・2 段階を付ける 2 つ・取り直し・
+#   ログアウト・自分の取得・規約の 2 つ。名前を変える・外す・パスワードを変える・決める は入れない。ここが正本で、契約（registry の mfaOpen）に生成し、
+#   口の入口（apps/api/src/contract/op.ts）と 403・MFA_REQUIRED の EARS の規則（05_flow/build_api.py の four()）がそれを読む
+MFA_OPEN_OPS = {"getMySecurity", "startTwoFactor", "confirmTwoFactor", "stepUp", "signOut", "getMe", "getCurrentTerms", "consentToTerms"}
 
 # API を呼ばない画面の台帳（K-53・テスターのレビュー HIGH）。偽の API の対応を書かずに、理由つきでここに載せる。
 #   api_gate.py の A3・fb_gate.py の FB3・FB8 は、ここにあって scripts/ci/static_screens.py の S1〜S4 を満たす画面を被覆済みと数える
