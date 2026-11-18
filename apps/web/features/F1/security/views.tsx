@@ -4,7 +4,7 @@
 //   登録の直後でパスキーも 2 段階も無い人（mfa_pending・D-128.141）は入口の枠で「付けるまで進めない」（聞くこと 3 の勧め (a)）。
 //   入っている端末・最近の安全の記録は流れ F10 の機能なので、出すがグレー・値は空（D-145.9・D-144.3）
 import { Fingerprint, KeyRound, Laptop, Smartphone } from "lucide-react";
-import { useRef, type ReactNode } from "react";
+import { useRef, type ChangeEvent, type ReactNode } from "react";
 import { Button, Confirm, Dialog, PasswordField, TextField } from "@/components/k";
 import { BackupCodes, ChoiceCard, NoteBox, QrBox, SecretText } from "@/components/k/auth-parts";
 import {
@@ -64,6 +64,9 @@ export interface SecurityBodyProps extends SecurityState {
   onRemove?: (id: string) => void;
   onPassword?: () => void;
   onTwoFactor?: () => void;
+  /** まだ押せない（K-319 が入るまでの 2 段階の「付ける」とパスワードの「変える／決める」・D-145.9）。グレーで出し title「（準備中）」 */
+  pendingTwoFactor?: boolean;
+  pendingPassword?: boolean;
 }
 
 /** 本文（外枠の中のログインと安全）。題と補足は外枠の見出しの行（呼ぶ側） */
@@ -98,7 +101,15 @@ export function SecurityBody(p: SecurityBodyProps) {
           pill={
             <Pill tone={p.hasPassword ? "success" : "neutral"}>{p.hasPassword ? "使っている" : "使っていない"}</Pill>
           }
-          actions={<RowButton onClick={p.onPassword}>{p.hasPassword ? "変える" : "決める"}</RowButton>}
+          actions={
+            <RowButton
+              onClick={p.onPassword}
+              disabled={p.pendingPassword}
+              title={p.pendingPassword ? `${p.hasPassword ? "変える" : "決める"}（準備中）` : undefined}
+            >
+              {p.hasPassword ? "変える" : "決める"}
+            </RowButton>
+          }
         />
       </SettingCard>
       <SettingCard
@@ -133,7 +144,12 @@ export function SecurityBody(p: SecurityBodyProps) {
                 </RowButton>
               </>
             ) : (
-              <RowButton variant="primary" onClick={p.onTwoFactor}>
+              <RowButton
+                variant="primary"
+                onClick={p.onTwoFactor}
+                disabled={p.pendingTwoFactor}
+                title={p.pendingTwoFactor ? "付ける（準備中）" : undefined}
+              >
                 付ける
               </RowButton>
             )
@@ -233,30 +249,50 @@ export function SecurityForced({
   );
 }
 
-/** パスキーを足す（キャンバス EdPasskey） */
+/** 名前の欄の長さ（D-128.141） */
+export const PASSKEY_NAME_MAX = 40;
+/** モックの見本の名前（本番は端末の種類から作った名前を value で渡す） */
+const SAMPLE_NAME = "MacBook Pro（Chrome）";
+
+/** パスキーを足す（キャンバス EdPasskey）。value を渡すと欄は呼ぶ側が持つ（本番）。前後の空白を除いて空なら「足す」を押せない */
 export function AddPasskeyDialog({
   open,
   error,
+  value,
+  busy = false,
+  onValue,
   onOpenChange,
   onAdd,
 }: {
   open: boolean;
   error?: string | null;
+  value?: string;
+  busy?: boolean;
+  onValue?: (v: string) => void;
   onOpenChange?: (o: boolean) => void;
   onAdd?: () => void;
 }) {
+  const controlled = value !== undefined;
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 端末の手順の途中は閉じない（2 回目を送らせない）
+        onOpenChange?.(o);
+      }}
       title="パスキーを足す"
       subtitle="この端末・スマホ・パスワード管理アプリに足せる"
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button icon={<Fingerprint size={16} />} onClick={onAdd}>
+          <Button
+            icon={<Fingerprint size={16} />}
+            loading={busy}
+            disabled={controlled && value.trim() === ""}
+            onClick={onAdd}
+          >
             足す
           </Button>
         </>
@@ -265,7 +301,10 @@ export function AddPasskeyDialog({
       <TextField
         label="名前"
         name="passkey_name"
-        defaultValue="MacBook Pro（Chrome）"
+        maxLength={PASSKEY_NAME_MAX}
+        {...(controlled
+          ? { value, onChange: (e: ChangeEvent<HTMLInputElement>) => onValue?.(e.target.value) }
+          : { defaultValue: SAMPLE_NAME })}
         hint="40 文字まで。あとで変えられる"
         error={error ?? undefined}
       />
@@ -274,31 +313,57 @@ export function AddPasskeyDialog({
   );
 }
 
-/** パスキーの名前を変える */
+/** パスキーの名前を変える。value を渡すと欄は呼ぶ側が持つ（本番）。前後の空白を除いて空なら「変える」を押せない */
 export function RenamePasskeyDialog({
   open,
   name,
+  value,
+  error,
+  busy = false,
+  onValue,
   onOpenChange,
+  onSubmit,
 }: {
   open: boolean;
+  /** 今の名前（モックは欄の既定にする） */
   name: string;
+  value?: string;
+  error?: string | null;
+  busy?: boolean;
+  onValue?: (v: string) => void;
   onOpenChange?: (o: boolean) => void;
+  onSubmit?: () => void;
 }) {
+  const controlled = value !== undefined;
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return;
+        onOpenChange?.(o);
+      }}
       title="パスキーの名前を変える"
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>変える</Button>
+          <Button loading={busy} disabled={controlled && value.trim() === ""} onClick={onSubmit}>
+            変える
+          </Button>
         </>
       }
     >
-      <TextField label="名前" name="passkey_name" defaultValue={name} hint="40 文字まで" />
+      <TextField
+        label="名前"
+        name="passkey_name"
+        maxLength={PASSKEY_NAME_MAX}
+        {...(controlled
+          ? { value, onChange: (e: ChangeEvent<HTMLInputElement>) => onValue?.(e.target.value) }
+          : { defaultValue: name })}
+        hint="40 文字まで"
+        error={error ?? undefined}
+      />
     </Dialog>
   );
 }
@@ -308,19 +373,25 @@ export function RemovePasskeyConfirm({
   open,
   name,
   blocked,
+  busy = false,
   onOpenChange,
+  onConfirm,
 }: {
   open: boolean;
   name: string;
   /** 外せない理由（最後の 1 つ・取り直しが要る のエラーの文。番号は口の葉が errors.json に足す）。在れば外すを押せない */
   blocked?: string | null;
+  busy?: boolean;
   onOpenChange: (o: boolean) => void;
+  /** 「外す」（無ければ閉じるだけ・モック） */
+  onConfirm?: () => void;
 }) {
   return (
     <Confirm
       open={open}
       onOpenChange={onOpenChange}
-      onConfirm={() => onOpenChange(false)}
+      onConfirm={onConfirm ?? (() => onOpenChange(false))}
+      busy={busy}
       title="このパスキーを外しますか？"
       description={`「${name}」では入れなくなります。入っている端末は切れません`}
       confirmLabel="外す"
@@ -331,49 +402,87 @@ export function RemovePasskeyConfirm({
   );
 }
 
-/** 本人確認の取り直し（StepUpDialog・D-128.162。外す・パスワードを変える・2 段階を始める の前） */
+/** 本人確認の取り直し（StepUpDialog・D-128.162。外す・足す・パスワードを変える・2 段階を始める の前）。
+ *  パスワードのある人はパスワード（2 段階の人は 6 けたも）。パスワードの無い人（パスキーだけ）は欄を出さず「パスキーで確かめる」（answer=9177d9dbe0d9 ①）。
+ *  password を渡すと欄は呼ぶ側が持つ（本番） */
 export function StepUpDialog({
   open,
   reason,
   withCode,
+  withPasskey = false,
   error,
+  password,
+  code,
+  busy = false,
+  onPassword,
+  onCode,
   onOpenChange,
+  onSubmit,
 }: {
   open: boolean;
   reason: string;
   withCode: boolean;
+  /** パスワードの無い人：パスキーで確かめる */
+  withPasskey?: boolean;
   error?: string | null;
+  password?: string;
+  code?: readonly string[];
+  busy?: boolean;
+  onPassword?: (v: string) => void;
+  onCode?: (next: string[]) => void;
   onOpenChange?: (o: boolean) => void;
+  onSubmit?: () => void;
 }) {
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return;
+        onOpenChange?.(o);
+      }}
       title="本人か確かめます"
       subtitle={reason}
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>確かめる</Button>
+          <Button loading={busy} {...(withPasskey ? { icon: <Fingerprint size={16} /> } : {})} onClick={onSubmit}>
+            {withPasskey ? "パスキーで確かめる" : "確かめる"}
+          </Button>
         </>
       }
     >
-      <PasswordField
-        label="パスワード"
-        name="current_password"
-        autoComplete="current-password"
-        error={error ?? undefined}
-      />
-      {withCode ? (
+      {withPasskey ? (
         <>
-          <p className="k-auth-note">認証アプリの 6 けた</p>
-          <CodeBoxes code={["", "", "", "", "", ""]} onCode={() => undefined} inputs={inputs} />
+          <NoteBox>この端末のパスキー（指・顔・PC のロック）で確かめます</NoteBox>
+          {error ? (
+            <p role="alert" className="k-login-alert">
+              {error}
+            </p>
+          ) : null}
         </>
-      ) : null}
-      <NoteBox>パスキーがあれば、パスワードの代わりにパスキーで確かめられます</NoteBox>
+      ) : (
+        <>
+          <PasswordField
+            label="パスワード"
+            name="current_password"
+            autoComplete="current-password"
+            {...(password !== undefined
+              ? { value: password, onChange: (e: ChangeEvent<HTMLInputElement>) => onPassword?.(e.target.value) }
+              : {})}
+            error={error ?? undefined}
+          />
+          {withCode ? (
+            <>
+              <p className="k-auth-note">認証アプリの 6 けた</p>
+              <CodeBoxes code={code ?? ["", "", "", "", "", ""]} onCode={(n) => onCode?.(n)} inputs={inputs} />
+            </>
+          ) : null}
+          <NoteBox>パスキーがあれば、パスワードの代わりにパスキーで確かめられます</NoteBox>
+        </>
+      )}
     </Dialog>
   );
 }

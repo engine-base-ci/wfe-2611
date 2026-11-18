@@ -88,8 +88,8 @@
    ],
    "result": "",
    "task": "",
-   "status": "PASS",
-   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+   "status": "BLOCKED",
+   "note": "K-319 待ち（K-318 で前の 2 段階の登録の頁を作り替えた。2 段階の「付ける」は K-319 で押せるようになる）"
   },
   {
    "id": "J02-01",

@@ -13,7 +13,7 @@
   "ui": 17,
   "packages": 13,
   "errors": 183,
-  "stack": 55,
+  "stack": 56,
   "env": 41
  },
  "api": [
@@ -7508,6 +7508,10 @@
    {
     "package": "@better-auth/passkey",
     "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）"
+   },
+   {
+    "package": "@simplewebauthn/browser",
+    "for": "パスキーを足す・パスキーで本人確認を取り直す画面の端末の手順（startRegistration・startAuthentication。部品 @better-auth/passkey の中と同じ版・チャレンジを頭で受け渡すため部品の addPasskey を使わない・K-318）"
    },
    {
     "package": "@simplewebauthn/server",

@@ -1,6 +1,6 @@
 // T-U-05 ログイン。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import { HOME_RE, PW, api, loginAs, noOverflow, pwToggle, setupDone, signupViaApi, totp } from "../_lib/api";
+import { HOME_RE, PW, api, enableTotpViaApi, noOverflow, pwToggle, setupDone, signupViaApi, totp } from "../_lib/api";
 
 test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横溢れ 0・外の画面なので時点の部品は無い", async ({
   page,
@@ -74,16 +74,10 @@ test("SCR-LOGIN-002 SCR-LOGIN-030 SCR-LOGIN-031 SCR-LOGIN-032 SCR-LOGIN-033 SCR-
 }) => {
   const u = await signupViaApi();
   await setupDone(u); // 今日 が行き先になるのは はじめの設定を通し終わった人（D-089）
-  await loginAs(page, u.token);
-  await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "認証アプリを登録する" }).click();
-  const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
-  await page.getByLabel("アプリに出た6桁").fill(totp(secret));
-  await page.getByRole("button", { name: "登録する" }).click();
-  await expect(page.locator("[data-backup-codes] li")).toHaveCount(10);
-  const backup = (await page.locator("[data-backup-codes] li").first().textContent())!.trim();
-  await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
+  // 2 段階の下ごしらえは画面でなく契約の口で（K-318：前の 2 段階の登録の頁は無くなった）
+  const { secret, backupCodes } = await enableTotpViaApi(u.token);
+  expect(backupCodes).toHaveLength(10);
+  const backup = backupCodes[0]!;
   await page.goto("/login");
   await page.getByLabel("メールアドレス").fill(u.email);
   await page.getByLabel("パスワード", { exact: true }).fill(PW);

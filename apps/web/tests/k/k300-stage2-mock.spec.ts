@@ -167,11 +167,10 @@ test("K300-MK-003 切り方.md の表の画面の葉のモックの欄を開く�
   for (const [k, ids] of Object.entries(LEAVES)) expect([...(doc[k] ?? [])].sort(), k).toEqual([...ids].sort());
 });
 
-test("K300-MK-004 本番の画面の入れ物（/login・/password-reset・/mfa-setup の page.tsx と index。login-form は K-316 がつないだ）は、まだ段 2 の部品（views・auth-parts・setting-parts）を読まない（動きはつなぐ葉 K-316〜K-320 が入れる）", () => {
+test("K300-MK-004 本番の画面の入れ物（/login・/password-reset の page.tsx と index。login-form は K-316・/mfa-setup は K-318 がつないだ）は、まだ段 2 の部品（views・auth-parts・setting-parts）を読まない（動きはつなぐ葉 K-316〜K-320 が入れる）", () => {
   const pages = [
     "app/(outside)/login/page.tsx",
     "app/(outside)/password-reset/page.tsx",
-    "app/(outside)/mfa-setup/page.tsx",
     "features/F1/login/index.ts",
   ].map((p) => [p, readFileSync(join(WEB, p), "utf8")] as const);
   for (const [p, src] of pages) {

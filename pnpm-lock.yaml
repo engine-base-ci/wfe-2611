@@ -147,6 +147,9 @@ importers:
       '@kaname/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@simplewebauthn/browser':
+        specifier: 13.3.0
+        version: 13.3.0
       '@svar-ui/react-gantt':
         specifier: ^2.7.3
         version: 2.7.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

@@ -73,17 +73,30 @@ test.describe.serial("J-01 契約・登録", () => {
     expect(m[0]!.scope_id).not.toBeNull();
   });
 
-  test("J01-04 認証アプリを登録する → TOTP シークレットを暗号化保管（mfa-setup）", async ({ page }) => {
+  test("J01-04 認証アプリを登録する → TOTP シークレットを暗号化保管（mfa-setup・ログインと安全の 2 段階の「付ける」）", async ({
+    page,
+  }) => {
+    // K-318 で前の 2 段階の登録の頁が無くなり、ログインと安全の画面の 2 段階の「付ける」に替わった。
+    //   手順：「付ける」→ 本人確認のパスワード → 小窓の QR の鍵 → 6 けた → バックアップコード 10 個（押せるのは K-319 から・それまでは BLOCKED「K-319 待ち」）。
+    //   部品の名前（小窓の名前・6 けたの枠）は K-319 の切る段の試験（枝 c/段2 の k319-security-setup.spec.ts）と同じ。K-319 が取り込むときに fixme を外し、名前を確かめる
+    test.fixme(
+      true,
+      "K-319 待ち：2 段階の「付ける」は K-319 が入るまでグレーで押せない（plan.json の J01-04 は BLOCKED）",
+    );
     const r = await api<{ data: { token: string } }>("/api/v1/auth/sign-in", { email, password: PW });
     expect(r.status).toBe(201);
     await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), r.json.data.token);
     await page.goto("/mfa-setup");
-    await page.getByLabel("パスワード", { exact: true }).fill(PW);
-    await page.getByRole("button", { name: "認証アプリを登録する" }).click();
-    const secret = (await page.locator("[data-totp-secret]").textContent())!.replace(/\s+/g, "");
-    await page.getByLabel("アプリに出た6桁").fill(totp(secret));
-    await page.getByRole("button", { name: "登録する" }).click();
-    await expect(page.locator("[data-backup-codes] li")).toHaveCount(10);
+    const twoFactor = page.locator('section[aria-labelledby="security-title"] .k-set-row', { hasText: "認証アプリ" });
+    await twoFactor.getByRole("button", { name: "付ける", exact: true }).click();
+    const check = page.getByRole("dialog", { name: "本人か確かめます" });
+    await check.getByLabel("パスワード", { exact: true }).fill(PW);
+    await check.getByRole("button", { name: "確かめる" }).click();
+    const totpDialog = page.getByRole("dialog", { name: "2 段階認証を付ける" });
+    const secret = (await totpDialog.locator(".k-auth-secret").textContent())!.replace(/\s+/g, "");
+    await totpDialog.getByLabel("確認のコード 1 けた目").click();
+    await page.keyboard.type(totp(secret));
+    await expect(page.getByRole("dialog", { name: "バックアップコード" }).locator(".k-backup-code")).toHaveCount(10);
     const tf = await admin<{ enabled: boolean }>(
       'select "twoFactorEnabled" as enabled from kaname_auth."user" where email = $1',
       [email],

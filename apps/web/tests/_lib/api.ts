@@ -116,6 +116,22 @@ export function totp(secretBase32: string, at = Date.now()): string {
     ((h[off]! & 0x7f) << 24) | ((h[off + 1]! & 0xff) << 16) | ((h[off + 2]! & 0xff) << 8) | (h[off + 3]! & 0xff);
   return String(code % 1_000_000).padStart(6, "0");
 }
+/** 2 段階を契約の口で付ける（K-318・口は K-311 の startTwoFactor → confirmTwoFactor）。画面ではなく口で下ごしらえする。
+ *  ログインの直後に呼ぶ（15 分の内なので取り直しは要らない）。部品がセッションを作り直したら答えの token を以後使う */
+export async function enableTotpViaApi(
+  token: string,
+): Promise<{ secret: string; backupCodes: string[]; token: string }> {
+  const s = await api<{ data: { secret: string } }>("/api/v1/me/two-factor/enable", { password: PW }, token);
+  if (s.status !== 201) throw new Error(`two-factor/enable ${s.status} ${JSON.stringify(s.json)}`);
+  const secret = s.json.data.secret.replace(/\s+/g, "");
+  const c = await api<{ data: { backup_codes: string[]; token: string | null } }>(
+    "/api/v1/me/two-factor/confirm",
+    { code: totp(secret) },
+    token,
+  );
+  if (c.status !== 201) throw new Error(`two-factor/confirm ${c.status} ${JSON.stringify(c.json)}`);
+  return { secret, backupCodes: c.json.data.backup_codes, token: c.json.data.token ?? token };
+}
 /** メールのリンク：開発では API がログに URL を出す（Resend の鍵が無いとき）。KANAME_API_LOG が無ければ null */
 export function lastMailUrl(kind: "verify" | "reset", email: string): string | null {
   const p = process.env["KANAME_API_LOG"];
