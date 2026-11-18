@@ -276,7 +276,9 @@ describe("K-311 2 段階認証を始める・確かめる", () => {
     const s = await start(t);
     const now = ((await json(await confirm(t, totp(s.secret)))).data as Confirmed).token ?? t;
     const before = await factorRow(p.userId);
-    await stepUp(now);
+    // 2 段階を付けた人の取り直しはパスワードとその場の 6 けた（apps/api/src/hooks/auth.ts の stepUp）
+    const su = await req("POST", STEP_UP, { password: PW, code: totp(s.secret) }, { headers: bearer(now) });
+    expect(su.status, await su.clone().text()).toBe(201);
     const r = await req("POST", START, { password: PW }, { headers: bearer(now) });
     expect(r.status).toBe(409);
     const j = await json(r);
