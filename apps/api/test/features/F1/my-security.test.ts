@@ -404,6 +404,24 @@ describe("K-308 口：getMySecurity（自分の安全の設定を読む）", () 
     expect(d["two_factor_required"]).toBe(false);
   });
 
+  it("K308-API-013 2 段階の印はあるのにバックアップコードを読めない（部品の行が無い食い違い）：読む口は 200 で返し、two_factor true・mfa_pending・passkeys はそのまま、backup_codes_left だけ null（読めない）。中身もエラーの文も答えに出さない", async () => {
+    const p = await person("read-2fa-broken");
+    await insertPasskey(p.userId, "この Mac");
+    const { token } = await enable2fa(await login(p));
+    await admin.query('delete from kaname_auth."twoFactor" where "userId" = $1', [p.userId]);
+    const r = await req("GET", SECURITY, undefined, { headers: bearer(token) });
+    const text = await r.text();
+    expect(r.status, text).toBe(200);
+    const d = (JSON.parse(text) as { data: Record<string, unknown> & { passkeys: unknown[] } }).data;
+    expect(Object.keys(d).sort()).toEqual(ANSWER_KEYS);
+    expect(d["two_factor"]).toBe(true);
+    expect(d["backup_codes_left"]).toBeNull();
+    expect(d["two_factor_required"]).toBe(false);
+    expect(d["mfa_pending"]).toBe(false);
+    expect(d.passkeys).toHaveLength(1);
+    expect(text).not.toMatch(/BACKUP_CODES|backup codes/i);
+  });
+
   it("K308-API-004 答えの欄は決めた 6 つだけ。公開鍵・credential_id・TOTP の鍵・バックアップコード・端末の一覧・安全の記録は返さない", async () => {
     const p = await person("read-keys");
     await insertPasskey(p.userId, "鍵を持つ");
