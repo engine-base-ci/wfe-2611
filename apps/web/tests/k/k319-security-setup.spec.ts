@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { expect, test, type Page, type Request, type Route } from "@playwright/test";
 import type { FidelityPair } from "../../../../scripts/ci/fidelity_compare.mjs";
 import { MATCH_WIDTHS, matchMock, type MatchOptions } from "./stage2-match";
+import { replyGate } from "./reply-gate";
 import { reloginOn, seedTokenOnce } from "./seed-token";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
@@ -98,6 +99,8 @@ interface Mock {
   needStepUp: boolean;
   /** confirmTwoFactor の答えの token（null なら差し替えない） */
   newToken: string | null;
+  /** 答えを返す前に待つ門（K-339・reply-gate.ts）。2 回目を押し終わってから開ける */
+  hold: Partial<Record<"confirm" | "password", Promise<void>>>;
 }
 const ok = (data: unknown, status = 200): Reply => ({ status, body: { data, meta: {} } });
 const err = (status: number, code: string, message?: string): Reply => ({
@@ -136,6 +139,7 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     once: {},
     needStepUp: false,
     newToken: NEW_TOKEN,
+    hold: {},
     ...o,
   };
   const take = (k: keyof Mock["once"]): Reply | undefined => {
@@ -174,10 +178,12 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
           : ok({ otpauth_uri: `${URI}&n=${m.starts.length}`, secret: SECRET }, 201));
     } else if (method === "POST" && p === "/api/v1/me/two-factor/confirm") {
       m.confirms.push(body());
+      await m.hold.confirm;
       r = take("confirm") ?? ok({ backup_codes: CODES, token: m.newToken }, 201);
       if (r.status === 201) m.sec = { ...m.sec, two_factor: true, backup_codes_left: 10, mfa_pending: false };
     } else if (method === "PATCH" && p === "/api/v1/me/password") {
       m.passwords.push(body());
+      await m.hold.password;
       r = take("password") ?? (m.needStepUp ? err(403, "STEP_UP_REQUIRED") : ok({ revoked: 2 }));
     } else if (method === "POST" && p === "/api/v1/me/password") {
       m.sets.push(body());
@@ -237,6 +243,12 @@ const localUrl = (path: string): string => {
   const base = String(test.info().project.use.baseURL ?? "http://127.0.0.1:3123");
   return new URL(path, base.replace("127.0.0.1", "localhost")).toString();
 };
+/** 差し替えを替える前に今の画面を離れる（K-339）。残った画面の口が新しい差し替えの答え（403・MFA_REQUIRED など）で
+ *  移り始め、次の page.goto と先を取り合う（net::ERR_ABORTED）のを止める。外す途中の口が差し替えの無い本物へ出るのも止める */
+async function leave(page: Page) {
+  await page.goto("about:blank");
+  await page.unrouteAll({ behavior: "ignoreErrors" });
+}
 async function open(page: Page, width = 1440, path = "/mfa-setup", local = false) {
   await page.clock.setFixedTime(new Date(NOW));
   await page.setViewportSize({ width, height: 1000 });
@@ -375,7 +387,7 @@ test("K319-UI-003 全角の数字を打つ・空白入りを貼る：どちら�
   await page.keyboard.insertText("１２３４５６");
   await expect.poll(() => m.confirms.length).toBe(1);
   await backupDialog(page).getByRole("button", { name: "保存したので閉じる" }).click();
-  await page.unrouteAll({ behavior: "ignoreErrors" });
+  await leave(page);
   const m2 = await mockApi(page, PASSWORD_ONLY);
   await openList(page);
   await startTotp(page);
@@ -403,17 +415,24 @@ test("K319-UI-004 違う 6 けた（422・E-AUTH-004）：小窓の中に文・6
 test("K319-UI-005 二度送り：6 けた目の直後に Enter でも確かめは 1 回／「変える」を 2 回続けて押しても変えるの口は 1 回", async ({
   page,
 }) => {
-  const m = await mockApi(page, PASSWORD_ONLY);
+  // 答えは 2 回目を押し終わるまで止める（K-339）。止めないと答えが先に返り、Enter が開いたバックアップコードの小窓の
+  //   「保存したので閉じる」に当たって閉じる・2 回目の押しが閉じた小窓の下に当たる（どちらも答えを待つ間の 2 回目を確かめていない）
+  const confirmGate = replyGate();
+  const passwordGate = replyGate();
+  const m = await mockApi(page, PASSWORD_ONLY, { hold: { confirm: confirmGate.wait, password: passwordGate.wait } });
   await openList(page);
   await startTotp(page);
   await typeCode(page, "123456");
+  await expect.poll(() => m.confirms.length).toBe(1);
   await page.keyboard.press("Enter");
+  confirmGate.open();
   await expect(backupDialog(page)).toHaveCount(1);
   expect(m.confirms).toHaveLength(1);
   await backupDialog(page).getByRole("button", { name: "保存したので閉じる" }).click();
   await openPw(page);
   await fillPw(page, PW, NEW_PW, NEW_PW);
   await pwDialog(page).getByRole("button", { name: "変える", exact: true }).dblclick();
+  passwordGate.open();
   await expect(pwDialog(page)).toHaveCount(0);
   expect(m.passwords).toHaveLength(1);
 });
@@ -459,13 +478,17 @@ test("K319-UI-008 本人確認：違うパスワード（422・欄 password）�
   await expect(totpDialog(page)).toHaveCount(0);
   await expect(page).toHaveURL(/\/mfa-setup$/);
 
-  await page.unrouteAll({ behavior: "ignoreErrors" });
+  await leave(page);
   const m = await mockApi(page, PASSWORD_ONLY, { needStepUp: true });
   await openList(page);
   await toTwoFactor(page).click();
   await confirmWith(page);
   const again = checkDialog(page);
   await expect(again).toContainText("2 段階認証を付ける前に、本人か確かめます");
+  // 同じ小窓が 403 の答えで取り直しに替わる（欄が空になり、確かめるが押せる）のを待ってから打つ（K-339）。
+  //   待たずに打つと、答えが打った字を消し、空のまま押した「確かめる」は何も送らない
+  await expect(again.getByLabel("パスワード", { exact: true })).toHaveValue("");
+  await expect(again.getByRole("button", { name: "確かめる" })).toBeEnabled();
   await again.getByLabel("パスワード", { exact: true }).fill(PW);
   await again.getByRole("button", { name: "確かめる" }).click();
   await expect(totpDialog(page).getByRole("img", { name: "認証アプリで読み取る QR" })).toBeVisible();
@@ -700,8 +723,8 @@ test("K319-UI-021 付けるまで進めない → パスキー／2 段階で付�
   await expect(page).toHaveURL(/\/tickets$/);
   expect(m.regVerify).toBe(1);
 
-  await page.unrouteAll({ behavior: "ignoreErrors" });
   await page.evaluate(() => window.localStorage.removeItem("kaname.token"));
+  await leave(page);
   await mockApi(page, PENDING);
   await open(page, 1440, "/mfa-setup");
   const seen = pathsSeen(page);
@@ -928,8 +951,8 @@ test("K319-UI-029 幅 320〜1440：付けるまで進めない・2 段階・バ�
     expect(b!.x + b!.width).toBeLessThanOrEqual(w + 0.5);
   };
   for (const w of WIDTHS) {
-    await page.unrouteAll({ behavior: "ignoreErrors" });
     await page.evaluate(() => window.localStorage.removeItem("kaname.token")).catch(() => undefined);
+    await leave(page);
     await mockApi(page, PENDING);
     await open(page, w);
     expect(await over(), `幅 ${w} 付けるまで進めない`).toBe(0);
@@ -946,7 +969,7 @@ test("K319-UI-029 幅 320〜1440：付けるまで進めない・2 段階・バ�
       .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().right));
     expect(Math.max(...codes)).toBeLessThanOrEqual(w + 0.5);
     expect(await over(), `幅 ${w} バックアップコード`).toBe(0);
-    await page.unrouteAll({ behavior: "ignoreErrors" });
+    await leave(page);
     await mockApi(page, PASSWORD_2FA);
     await openList(page, w);
     await openPw(page);
