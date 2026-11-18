@@ -506,54 +506,6 @@
    "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
   },
   {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "shadow-[0_0_0_1px_var(--line)]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[12px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[13.5px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[13px]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "text-[14px]",
-   "count": 2,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
-   "file": "apps/web/app/(outside)/mfa-setup/page.tsx",
-   "selector": "className",
-   "prop": "任意値",
-   "value": "tracking-[0.12em]",
-   "count": 1,
-   "reason": "app/ の頁と前の世代の外枠（D-128.78 で新しい画面に入れ替える側）。入れ替えるときに台帳から消える"
-  },
-  {
    "file": "apps/web/app/(wizard)/onboard/draft/page.tsx",
    "selector": "className",
    "prop": "任意値",

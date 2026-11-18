@@ -4,12 +4,11 @@
 import { startAuthentication, startRegistration, WebAuthnError } from "@simplewebauthn/browser";
 import { CATALOG } from "@kaname/errors/catalog";
 import { call } from "@/lib/api/call";
-import { apiBase, getToken } from "@/lib/api/client";
+import { PASSKEY_CHALLENGE_HEADER, passkeyGet, passkeyPost } from "@/lib/auth/passkey-net";
 
-const REGISTER_OPTIONS = "/api/auth/passkey/generate-register-options";
-const REGISTER_VERIFY = "/api/auth/passkey/verify-registration";
-const AUTH_OPTIONS = "/api/auth/passkey/generate-authenticate-options";
-const CHALLENGE_HEADER = "x-passkey-challenge";
+const REGISTER_OPTIONS = "/api/auth/passkey/generate-register-options" as const;
+const REGISTER_VERIFY = "/api/auth/passkey/verify-registration" as const;
+const AUTH_OPTIONS = "/api/auth/passkey/generate-authenticate-options" as const;
 const CHALLENGE_FIELD = "challenge_token";
 /** この端末に付いている（口の 409・端末の InvalidStateError） */
 export const PASSKEY_EXISTS = "E-AUTH-018";
@@ -22,14 +21,6 @@ export type PasskeyResult =
 
 type Json = Record<string, unknown>;
 
-const bearer = (): Record<string, string> => {
-  const t = getToken();
-  return t ? { authorization: `Bearer ${t}` } : {};
-};
-async function readJson(res: Response): Promise<Json> {
-  const v: unknown = await res.json().catch(() => ({}));
-  return typeof v === "object" && v !== null ? (v as Json) : {};
-}
 function failOf(status: number, body: Json): PasskeyResult {
   const code = String(body["code"] ?? body["error"] ?? status);
   const message = typeof body["message"] === "string" ? body["message"] : null;
@@ -58,15 +49,11 @@ function deviceFail(e: unknown): PasskeyResult {
 }
 /** 始めの口（GET）を呼び、challenge_token と残り（端末に渡す options）に分ける */
 async function options(
-  path: string,
+  path: `/api/auth/passkey/${string}`,
 ): Promise<{ ok: true; token: string; options: Json } | { ok: false; fail: PasskeyResult }> {
-  const res = await fetch(`${apiBase()}${path}`, {
-    headers: { accept: "application/json", ...bearer() },
-    credentials: "omit",
-  });
-  const body = await readJson(res);
-  if (!res.ok) return { ok: false, fail: failOf(res.status, body) };
-  const { [CHALLENGE_FIELD]: token, ...rest } = body;
+  const res = await passkeyGet(path);
+  if (!res.ok) return { ok: false, fail: failOf(res.status, res.body) };
+  const { [CHALLENGE_FIELD]: token, ...rest } = res.body;
   return { ok: true, token: typeof token === "string" ? token : "", options: rest };
 }
 
@@ -87,19 +74,9 @@ async function addPasskeyOnce(name: string): Promise<PasskeyResult> {
   } catch (e: unknown) {
     return deviceFail(e);
   }
-  const res = await fetch(`${apiBase()}${REGISTER_VERIFY}`, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      [CHALLENGE_HEADER]: o.token,
-      ...bearer(),
-    },
-    credentials: "omit",
-    body: JSON.stringify({ response, name }),
-  });
+  const res = await passkeyPost(REGISTER_VERIFY, { response, name }, o.token);
   if (res.ok) return { ok: true };
-  return failOf(res.status, await readJson(res));
+  return failOf(res.status, res.body);
 }
 
 /** パスキーで本人確認を取り直す（パスワードの無い人・K-309） */
@@ -121,7 +98,7 @@ async function stepUpWithPasskeyOnce(): Promise<PasskeyResult> {
   }
   const r = await call("stepUp", {
     body: { passkey: response as Record<string, unknown> },
-    headers: { [CHALLENGE_HEADER]: o.token },
+    headers: { [PASSKEY_CHALLENGE_HEADER]: o.token },
     screenId: "mfa-setup",
     keepOn401: true,
   });
