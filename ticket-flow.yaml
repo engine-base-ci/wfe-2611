@@ -101,7 +101,7 @@ cut:
   smoke: "python3 scripts/ci/cut_check.py smoke --junit {junit} --tests {tests}"
   # 本体の赤（実装が無いから赤）と見分けるため「does not exist」は入れない（まだ無い列・関数・表を試験の本体が使うと、実装が無いのに準備の赤に見える）。
   #   準備の中の誤りは、フック（beforeAll など）と試験の外で落ちた物は文に関わらず赤（cutcheck.py の hook_rx）
-  setup_red: 'duplicate key|violates (foreign key|not-null|check|unique)|syntax error at|invalid input syntax'
+  setup_red: "duplicate key|violates (foreign key|not-null|check|unique)|syntax error at|invalid input syntax"
 # CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
 vm:
   label: linux-vm
