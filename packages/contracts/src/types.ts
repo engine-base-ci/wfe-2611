@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9c62d928df6f43d1
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:da5a11a7db3401b4
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -295,6 +295,8 @@ export type SignInInput = { email: string; password: string };
 export type SignInCodeInput = { pending: string; code?: string | null; backup_code?: string | null };
 export type SignOutInput = Record<string, never>;
 export type AdminRecoveryInput = { pending: string };
+export type TwoFactorStartInput = { password?: string | null };
+export type TwoFactorConfirmInput = { code: string };
 export type PasswordResetInput = { token: string; new_password: string };
 export type TermsConsentInput = { agree: boolean; terms_version_id: string; privacy_version_id: string };
 export type PairingCodeInput = Record<string, never>;
@@ -342,7 +344,8 @@ export type ConversationCreated = { id?: string; conversation_id?: string };
 export type ConversationUpdated = { id?: string; ok?: boolean };
 export type MemoryUpdated = { id?: string; ok?: boolean };
 export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number | null; mfa_pending?: boolean };
-export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
+export type TwoFactorSetup = { otpauth_uri?: string; secret?: string };
+export type TwoFactorEnabled = { backup_codes?: string[]; token?: string | null };
 export type BackupCodes = { codes?: string[] };
 export type StepUp = { step_up_at?: string; valid_until?: string };
 export type Me = { member?: Record<string, unknown>; workspaces?: string[]; workspace_name?: string | null };

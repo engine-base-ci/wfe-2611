@@ -384,3 +384,155 @@ async function closeHalfOpen(
   await step("認証側のセッション", () => auth.api.signOut({ headers: h }));
   return closed;
 }
+
+// ---- 2 段階を付ける（契約の口 startTwoFactor・confirmTwoFactor・K-311） ----
+
+export type StartTotpOutcome =
+  /** 始めた（まだ付いていない）。secret は認証アプリに手で入れる鍵の文字（URI の secret と同じ・この 1 回だけ渡す） */
+  | { ok: true; otpauthUri: string; secret: string }
+  /** もう付いている（鍵は変えない・E-AUTH-017） */
+  | { ok: false; reason: "already" }
+  /** パスワードが違う（鍵を作らない） */
+  | { ok: false; reason: "wrong_password" }
+  /** 同じ人の付ける操作がほかで走っている */
+  | { ok: false; reason: "busy" };
+
+export type ConfirmTotpOutcome =
+  /** 付いた。backupCodes は区切りの無い小文字と数字の 10 文字（この 1 回だけ渡す）。token は作り直したセッションの印（無ければ null） */
+  | { ok: true; backupCodes: string[]; token: string | null }
+  /** 始めていない（E-AUTH の外・409 CONFLICT） */
+  | { ok: false; reason: "not_started" }
+  /** もう付いている（コードは返さない・E-AUTH-017） */
+  | { ok: false; reason: "already" }
+  /** 6 けたの数字でない（そろえた後） */
+  | { ok: false; reason: "format" }
+  /** コードが違う（E-AUTH-004） */
+  | { ok: false; reason: "wrong" }
+  /** バックアップコードを引けない（付けない・503） */
+  | { ok: false; reason: "codes_unavailable" }
+  /** 同じ人の付ける操作がほかで走っている（2 回同時に送った後の 1 本） */
+  | { ok: false; reason: "busy" };
+
+const setupKey = (userId: string) => `totp-setup-${userId}`;
+
+/** 同じ人の「付ける」操作を 1 本ずつにする錠（取れなければ null・待たない）。錠の間は 1 本の接続を持つ（1 要求に 1 本・G-16） */
+async function underSetupLock<T>(authPool: pg.Pool, userId: string, fn: () => Promise<T>): Promise<T | null> {
+  const c = await authPool.connect();
+  try {
+    await c.query("begin");
+    const got = await c.query<{ ok: boolean }>("select pg_try_advisory_xact_lock(hashtext($1)) as ok", [
+      setupKey(userId),
+    ]);
+    if (got.rows[0]?.ok !== true) {
+      await c.query("rollback");
+      return null;
+    }
+    try {
+      return await fn();
+    } finally {
+      await c.query("commit").catch(() => undefined); // 錠を外すだけ（中で書いた物は無い）
+    }
+  } finally {
+    c.release();
+  }
+}
+
+/** 部品の表の状態：無い・途中（確かめていない）・付いている */
+async function setupState(authPool: pg.Pool, userId: string): Promise<"none" | "pending" | "enabled"> {
+  const r = await authPool.query<{ on: boolean | null; verified: boolean | null; has_row: boolean }>(
+    `select u."twoFactorEnabled" as on, t.verified, t.id is not null as has_row
+       from kaname_auth."user" u left join kaname_auth."twoFactor" t on t."userId" = u.id
+      where u.id = $1`,
+    [userId],
+  );
+  const x = r.rows[0];
+  if (x?.on === true || x?.verified === true) return "enabled";
+  return x?.has_row ? "pending" : "none";
+}
+
+/** 2 段階を始める：パスワードを確かめて鍵を作る（まだ付かない）。確かめていない途中なら前の鍵を捨てて新しい鍵にする */
+export async function startTotpSetup(
+  auth: Auth,
+  authPool: pg.Pool,
+  headers: Headers,
+  userId: string,
+  password: string,
+): Promise<StartTotpOutcome> {
+  const out = await underSetupLock(authPool, userId, async (): Promise<StartTotpOutcome> => {
+    if ((await setupState(authPool, userId)) === "enabled") return { ok: false, reason: "already" };
+    let uri: string;
+    try {
+      uri = (await enableTotp(auth, headers, password)).totpURI; // 部品が作ったバックアップコードは確かめの後に引く（ここでは渡さない）
+    } catch (e) {
+      const x = apiError(e);
+      if (x?.code === "INVALID_PASSWORD") return { ok: false, reason: "wrong_password" };
+      if (x?.code === "TOTP_ALREADY_ENABLED") return { ok: false, reason: "already" };
+      throw e;
+    }
+    const secret = new URL(uri).searchParams.get("secret") ?? "";
+    return { ok: true, otpauthUri: uri, secret };
+  });
+  return out ?? { ok: false, reason: "busy" };
+}
+
+/** バックアップコードを見せる形にする：部品の形（xxxxx-xxxxx）から区切りを除く（代表の答え ⑭・入れる側は K-302 の normalizeBackupCode が区切りを戻す） */
+const showBackupCode = (c: string): string => c.replace(/-/g, "");
+
+/** 2 段階を確かめて付ける。先にバックアップコードを引き（引けなければ付けない）、部品で 6 けたを確かめる。
+ *  部品は付けるときにセッションを作り直す：新しい印を返し、新しいセッションのログインの時刻は前のセッションのまま引き継ぐ
+ *  （付けた操作でログインから 15 分の枠を新しくしない）。前のセッションの写し（public.sessions）は呼ぶ側が閉じる */
+export async function confirmTotpSetup(
+  auth: Auth,
+  authPool: pg.Pool,
+  headers: Headers,
+  userId: string,
+  rawCode: string,
+): Promise<ConfirmTotpOutcome & { replacedSessionId?: string }> {
+  const out = await underSetupLock(
+    authPool,
+    userId,
+    async (): Promise<ConfirmTotpOutcome & { replacedSessionId?: string }> => {
+      const state = await setupState(authPool, userId);
+      if (state === "enabled") return { ok: false, reason: "already" };
+      if (state === "none") return { ok: false, reason: "not_started" };
+      const code = normalizeTotpCode(rawCode);
+      if (!/^[0-9]{6}$/.test(code)) return { ok: false, reason: "format" };
+      let codes: string[];
+      try {
+        const api = auth.api as unknown as {
+          viewBackupCodes: (x: { body: { userId: string } }) => Promise<{ backupCodes?: unknown }>;
+        };
+        const r = await api.viewBackupCodes({ body: { userId } });
+        if (!Array.isArray(r.backupCodes) || r.backupCodes.length === 0) throw new Error("NO_BACKUP_CODES");
+        codes = r.backupCodes.map((c) => showBackupCode(String(c)));
+      } catch (e) {
+        console.error(`[auth] 2 段階を付ける前にバックアップコードを引けなかった（${errKind(e)}）`); // 種類だけ
+        return { ok: false, reason: "codes_unavailable" };
+      }
+      const before = await auth.api.getSession({ headers });
+      if (!before) return { ok: false, reason: "not_started" };
+      let token: string;
+      try {
+        token = (await verifyTotp(auth, headers, code)).token;
+      } catch (e) {
+        const x = apiError(e);
+        if (x?.code === "INVALID_CODE") return { ok: false, reason: "wrong" };
+        if (x?.code === "TOTP_NOT_ENABLED") return { ok: false, reason: "not_started" };
+        throw e;
+      }
+      const replaced = token !== before.session.token;
+      if (replaced)
+        await authPool.query(`update kaname_auth.session set "createdAt" = $2 where token = $1`, [
+          token,
+          before.session.createdAt,
+        ]);
+      return {
+        ok: true,
+        backupCodes: codes,
+        token: replaced ? token : null,
+        ...(replaced ? { replacedSessionId: before.session.id } : {}),
+      };
+    },
+  );
+  return out ?? { ok: false, reason: "busy" };
+}

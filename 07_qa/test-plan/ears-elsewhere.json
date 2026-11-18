@@ -953,6 +953,60 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "startTwoFactor": {
+   "file": "apps/api/test/features/F1/two-factor-enable.test.ts",
+   "reason": "2 段階を付ける口は、本物のログインの部品（Better Auth のセッション・2 段階の表・バックアップコード）と、認証アプリの 6 けた（鍵から作る）で確かめる。生成の試験の偽のセッションでは部品のセッションも鍵も無い（K-311）",
+   "covers": {
+    "test_post_me_two_factor_enable_ok": "K311-API-001",
+    "test_post_me_two_factor_enable_rejected_401": "K311-API-019",
+    "test_post_me_two_factor_enable_rejected_403": "K311-API-010",
+    "test_post_me_two_factor_enable_rejected_422": "K311-API-009",
+    "test_post_me_two_factor_enable_shape": "K311-API-001",
+    "test_post_me_two_factor_enable_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_two_factor_enable_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_two_factor_enable_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_two_factor_enable_rejected_422_2": "入力の欄は password 1 つで、2 つ目の 422 の型が無い",
+    "test_post_me_two_factor_enable_rate_limited": "回数は入口の共通の数え。同じ型の確かめは confirmTwoFactor の K311-API-020 が持つ"
+   }
+  },
+  "confirmTwoFactor": {
+   "file": "apps/api/test/features/F1/two-factor-enable.test.ts",
+   "reason": "2 段階を付ける口は、本物のログインの部品（Better Auth のセッション・2 段階の表・バックアップコード）と、認証アプリの 6 けた（鍵から作る）で確かめる。生成の試験の偽のセッションでは部品のセッションも鍵も無い（K-311）",
+   "covers": {
+    "test_post_me_two_factor_confirm_ok": "K311-API-002",
+    "test_post_me_two_factor_confirm_rejected_401": "K311-API-019",
+    "test_post_me_two_factor_confirm_rejected_422": "K311-API-007",
+    "test_post_me_two_factor_confirm_rejected_422_2": "K311-API-008",
+    "test_post_me_two_factor_confirm_rate_limited": "K311-API-020",
+    "test_post_me_two_factor_confirm_shape": "K311-API-002",
+    "test_post_me_two_factor_confirm_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_two_factor_confirm_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_two_factor_confirm_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_two_factor_confirm_rejected_403": "取り直しの要らない本人の口で、役を見ない"
+   }
   }
  }
 }

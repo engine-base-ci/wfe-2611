@@ -4126,6 +4126,69 @@
    ]
   },
   {
+   "id": "E-AUTH-017",
+   "class": "auth",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "already"
+   },
+   "when": "2 段階認証がもう付いている人が、付ける操作（始める・確かめる）をもう一度した（古いタブ・口に直に）",
+   "false_when": "まだ付いていない・始めた途中（確かめる前）",
+   "message": "2 段階認証はもう付いています",
+   "action": "安全の設定の画面に戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "2 段階を付けた人",
+    "steps": [
+     "安全の設定を開く",
+     "付ける口をもう一度呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.59",
+    "D-128.61"
+   ],
+   "support_code": "AUTH-017"
+  },
+  {
+   "id": "E-AUTH-020",
+   "class": "auth",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "no-password"
+   },
+   "when": "パスワードを持たない人（パスキーだけで入る人）が、2 段階認証を付け始めようとした",
+   "false_when": "パスワードを決めた後（決めた後なら始められる）",
+   "message": "2 段階認証を付けるには、先にパスワードを決めてください",
+   "action": "パスワードを決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "パスキーだけで入る人（パスワードが無い）",
+    "steps": [
+     "安全の設定を開く",
+     "2 段階認証を付ける"
+    ],
+    "needs": "パスキー（パスワードの行を消す）"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.61"
+   ],
+   "support_code": "AUTH-020"
+  },
+  {
    "id": "E-CHAT-001",
    "class": "connectivity",
    "where": {

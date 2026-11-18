@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:9c62d928df6f43d1
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:da5a11a7db3401b4
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -178,8 +178,8 @@ export interface Ops {
   listMyTicketDrafts: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDraft[] };
   saveMyTicketDraft: { params: never; query: never; body: T.TicketDraftInput; data: T.TicketDraft };
   disableTwoFactor: { params: never; query: never; body: never; data: T.SecurityEvents };
-  confirmTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.BackupCodes };
-  startTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.TwoFactorSetup };
+  confirmTwoFactor: { params: never; query: never; body: T.TwoFactorConfirmInput; data: T.TwoFactorEnabled };
+  startTwoFactor: { params: never; query: never; body: T.TwoFactorStartInput; data: T.TwoFactorSetup };
   getMyUsage: { params: never; query: never; body: never; data: T.MyUsage };
   leaveWorkspace: { params: { id: string }; query: never; body: never; data: T.TenantMemberships };
   listMembers: { params: never; query: { "scope_id"?: string | number; "q"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Members[] };

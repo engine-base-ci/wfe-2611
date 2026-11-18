@@ -9429,6 +9429,26 @@ components:
       required:
       - pending
       x-required-by: hooks
+    TwoFactorStartInput:
+      type: object
+      properties:
+        password:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-operation: startTwoFactor
+    TwoFactorConfirmInput:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: \S
+          maxLength: 64
+      additionalProperties: false
+      x-operation: confirmTwoFactor
+      required:
+      - code
+      x-required-by: hooks
     PasswordResetInput:
       type: object
       properties:
@@ -10126,11 +10146,20 @@ components:
       properties:
         otpauth_uri:
           type: string
-        secret_masked:
-          type: string
-        expires_at:
+        secret:
           type: string
       x-operation: startTwoFactor
+    TwoFactorEnabled:
+      type: object
+      properties:
+        backup_codes:
+          type: array
+          items:
+            type: string
+        token:
+          type: string
+          nullable: true
+      x-operation: confirmTwoFactor
     BackupCodes:
       type: object
       properties:
@@ -27982,7 +28011,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityEventsInput'
+              $ref: '#/components/schemas/TwoFactorConfirmInput'
       responses:
         '201':
           description: 成功
@@ -27992,7 +28021,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/BackupCodes'
+                    $ref: '#/components/schemas/TwoFactorEnabled'
                   meta:
                     type: object
         '401':
@@ -28053,8 +28082,8 @@ paths:
       x-source:
       - D-042
       x-permission: self
-      x-permission-scope: 本人
-      x-step-up: true
+      x-permission-scope: 本人。パスワードの無い人（パスキーだけ）は先にパスワードを決める（409・E-AUTH-020）
+      x-step-up: login_or_step_up
       security:
       - session: []
       requestBody:
@@ -28062,7 +28091,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityEventsInput'
+              $ref: '#/components/schemas/TwoFactorStartInput'
       responses:
         '201':
           description: 成功

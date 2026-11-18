@@ -512,6 +512,10 @@ INPUTS = {
     "signOut": ("SignOutInput", {}),
     # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
     "requestAdminRecovery": ("AdminRecoveryInput", {"pending": "string"}),
+    # 2 段階を始める（K-311）：パスワードだけ（strict）。無い・空でも入口では断らない（パスワードの無い人の 409・E-AUTH-020 を先に返すため。空の 422 は口が持つ）
+    "startTwoFactor": ("TwoFactorStartInput", {"password": "string?"}),
+    # 2 段階を確かめる（K-311）：認証アプリの 6 けただけ（strict）。全角・間の空白は口が直す
+    "confirmTwoFactor": ("TwoFactorConfirmInput", {"code": "string"}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -811,6 +815,7 @@ REQUIRED_INPUTS = {
     "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
     "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": ["pending"],                                 # apps/api/src/features/F1/admin-recovery/index.ts（待ちの印が無いと 422・K-302 と同じ）
+    "confirmTwoFactor": ["code"],                                        # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K-311）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
@@ -860,6 +865,7 @@ VALUE_RANGES = {
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
         "todo_checked": {"items": {"type": "integer", "minimum": 0}},
@@ -936,8 +942,10 @@ RESPONSES = {
     "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
     # K-308：端末の一覧（sessions）と安全の記録（recent_events）は F10 の口に回した。mfa_pending は付けるまで進めない印（D-128.141）。backup_codes_left は部品が読めないとき null（K308-API-013）
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer?", "mfa_pending": "boolean"}),
-    "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
-    "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
+    # K-311：secret は認証アプリに手で入れる鍵の文字（この答えの 1 回だけ）。期限は設けない（PM が決めた作り方 2026-11-17）
+    "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret": "string"}),
+    # K-311：バックアップコード 10 個はこの答えの 1 回だけ。部品がセッションを作り直したら token に新しい印（無ければ null・画面は差し替える）
+    "confirmTwoFactor": ("TwoFactorEnabled", {"backup_codes": "string[]", "token": "string?"}),
     "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),
     "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
     "getMe": ("Me", {"member": "object", "workspaces": "array", "workspace_name": "string?"}),   # workspace_name：今いる会社の名前（前後の空白を取り、空なら null）。今は GET /api/auth-ext/me が返す（K-253）
@@ -1241,7 +1249,7 @@ PERMS = {
     "getMySecurity": ("self", "自分のものだけ", False),
     "renamePasskey": ("self", "自分のパスキーだけ", False),
     "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない", True),
-    "startTwoFactor": ("self", "本人", True),
+    "startTwoFactor": ("self", "本人。パスワードの無い人（パスキーだけ）は先にパスワードを決める（409・E-AUTH-020）", "login_or_step_up"),
     "confirmTwoFactor": ("self", "本人（コードがそろったら付く。バックアップコードは 1 回だけ見せる）", False),
     "disableTwoFactor": ("self", "本人。パスキーを持たずパスワードだけで入る人は外せない（D-128.61）", True),
     "regenerateBackupCodes": ("self", "本人（前のコードは使えなくなる）", True),

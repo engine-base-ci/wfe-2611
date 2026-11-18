@@ -56,6 +56,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "signInWithPassword": {"email", "password"},       # apps/api/src/features/F1/login/sign-in.ts の input（無い・空は 422 E-VAL-008・K301-API-009）
     "verifySignInCode": {"pending"},                   # apps/api/src/features/F1/login/sign-in-code.ts の input（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": {"pending"},               # apps/api/src/features/F1/admin-recovery/index.ts の input（待ちの印が無いと 422・K-302 と同じ・K305-API-011）
+    "confirmTwoFactor": {"code"},                      # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K311-API-007）
     "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
@@ -68,6 +69,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
 }
 # 体を受ける作った口のうち、無いことで 422 にする欄を持たないもの（理由つき。新しく作った口はどちらかに載せる）
 NO_REQUIRED_INPUTS: dict[str, str] = {
+    "startTwoFactor": "password は口が見る：パスワードの無い人は 409・E-AUTH-020 を先に返し、ある人で空なら 422 欄 password（入口の 422 で 409 に届かなくしない・K311-API-022）",
     "createPairingCode": "体は空の形（K-57）。{} で 201",
     "sendHeartbeat": "health・protocol・version はどれも無くてよい（無ければ空の並び・古い印として扱う・connect-pc/hooks.ts:136〜145）",
     "resendSignupEmail": "体は空の形。申し込みの印は頭 x-signup-token で受ける（D-128.142）",
@@ -119,6 +121,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
+    "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
     "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）

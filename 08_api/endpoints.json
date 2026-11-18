@@ -28112,8 +28112,8 @@
    "implementation_path": "apps/api/src/routes/security_events.ts::startTwoFactor",
    "permission": {
     "who": "self",
-    "scope": "本人",
-    "step_up": true
+    "scope": "本人。パスワードの無い人（パスキーだけ）は先にパスワードを決める（409・E-AUTH-020）",
+    "step_up": "login_or_step_up"
    },
    "path_params": [],
    "returns_list": false,
