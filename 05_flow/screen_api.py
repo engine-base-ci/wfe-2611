@@ -919,8 +919,8 @@ RESPONSES = {
     "createConversation": ("ConversationCreated", {"id": "uuid", "conversation_id": "uuid"}),
     "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),
     "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
-    # K-308：端末の一覧（sessions）と安全の記録（recent_events）は F10 の口に回した。mfa_pending は付けるまで進めない印（D-128.141）
-    "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer", "mfa_pending": "boolean"}),
+    # K-308：端末の一覧（sessions）と安全の記録（recent_events）は F10 の口に回した。mfa_pending は付けるまで進めない印（D-128.141）。backup_codes_left は部品が読めないとき null（K308-API-013）
+    "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer?", "mfa_pending": "boolean"}),
     "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
     "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
     "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),

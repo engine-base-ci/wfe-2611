@@ -10101,6 +10101,7 @@ components:
           type: boolean
         backup_codes_left:
           type: integer
+          nullable: true
         mfa_pending:
           type: boolean
       x-operation: getMySecurity

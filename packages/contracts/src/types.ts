@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0981f7b286dc0681
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6ef3072347570a40
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -339,7 +339,7 @@ export type TermsConsented = { consented?: boolean };
 export type ConversationCreated = { id?: string; conversation_id?: string };
 export type ConversationUpdated = { id?: string; ok?: boolean };
 export type MemoryUpdated = { id?: string; ok?: boolean };
-export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number; mfa_pending?: boolean };
+export type MySecurity = { passkeys?: string[]; has_password?: boolean; two_factor?: boolean; two_factor_required?: boolean; backup_codes_left?: number | null; mfa_pending?: boolean };
 export type TwoFactorSetup = { otpauth_uri?: string; secret_masked?: string; expires_at?: string };
 export type BackupCodes = { codes?: string[] };
 export type StepUp = { step_up_at?: string; valid_until?: string };

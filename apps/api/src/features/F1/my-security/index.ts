@@ -28,7 +28,8 @@ export interface MySecurity {
   has_password: boolean;
   two_factor: boolean;
   two_factor_required: boolean;
-  backup_codes_left: number;
+  /** 残りのバックアップコードの数。部品が読めないときは null（読めない・口全体は止めない） */
+  backup_codes_left: number | null;
   mfa_pending: boolean;
 }
 
@@ -46,13 +47,19 @@ export const twoFactorRequired = (s: { has_password: boolean; passkeys: number; 
   s.has_password && s.passkeys === 0 && !s.two_factor;
 
 export function mySecurityFeature(d: MySecurityDeps) {
-  /** 残っているバックアップコードの数（部品がサーバーの中だけで開く。中身はここで捨てる） */
-  const backupCodesLeft = async (userId: string): Promise<number> => {
+  /** 残っているバックアップコードの数（部品がサーバーの中だけで開く。中身はここで捨てる）。
+   *  2 段階の印はあるのに部品の行が無い・開けない食い違いでは null（読めない）を返し、口全体を 503 にしない（mfa_pending を読めなくしない・K308-API-013） */
+  const backupCodesLeft = async (userId: string): Promise<number | null> => {
     const api = d.auth.api as unknown as {
       viewBackupCodes: (x: { body: { userId: string } }) => Promise<{ backupCodes?: unknown }>;
     };
-    const r = await api.viewBackupCodes({ body: { userId } });
-    return Array.isArray(r.backupCodes) ? r.backupCodes.length : 0;
+    try {
+      const r = await api.viewBackupCodes({ body: { userId } });
+      return Array.isArray(r.backupCodes) ? r.backupCodes.length : null;
+    } catch (e) {
+      console.error(`[security] バックアップコードの数を読めなかった（${kindOf(e)}）`); // 種類だけ（中身・文は出さない）
+      return null;
+    }
   };
 
   const read = async (a: HookArgs): Promise<HookReply> => {

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0981f7b286dc0681
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:6ef3072347570a40
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3707,7 +3707,7 @@ export const MySecurity = z.strictObject({
   has_password: z.boolean().optional(),
   two_factor: z.boolean().optional(),
   two_factor_required: z.boolean().optional(),
-  backup_codes_left: z.number().int().optional(),
+  backup_codes_left: z.number().int().nullable().optional(),
   mfa_pending: z.boolean().optional(),
 });
 export const TwoFactorSetup = z.strictObject({
