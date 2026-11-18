@@ -545,6 +545,10 @@ describe("K-53 規約に同意する：同意の状態 × 入口 × 利用者の
     );
     const r = await req("POST", "/api/v1/auth/sign-up/verify", { token });
     expect(r.status, await r.clone().text()).toBe(201);
+    // 入り方を 1 つ持つ人にする（確定の直後の人には付けるまで進めないの印が立つ・K-321 の止めに当てない。ここで見るのは同意し直しの印）
+    const uid = (await admin.query<{ id: string }>('select id from kaname_auth."user" where email = $1', [e])).rows[0]!
+      .id;
+    await addTestEntry(uid);
     await expectOpen(String((((await json(r)).data ?? {}) as Record<string, unknown>)["token"]));
   });
 
