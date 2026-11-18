@@ -376,6 +376,17 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/two-factor-enable.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
+    "apps/api/test/generated/post_me_two_factor_confirm.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-reset.test.ts"
    ],
    "tests": [
