@@ -14988,6 +14988,91 @@
    "file": "11_tickets/K-320.md"
   },
   {
+   "id": "K-321",
+   "title": "付けるまで進めない：入口の 403（MFA_REQUIRED）と前からの試験の道具（K-75 の子）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-75",
+   "milestone": "F1",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "K-166 の実測（2026-11-13・試験 25 行・1 本 1 時間以下）から引いた。この葉は試験 9 行。入口の止めは同意し直し（K-53 の termsPending）と同じ形で、写して直す量が少ない。前からの試験の道具 3 つの手直しを含めて 1 時間以下。K-308 を取り込んだ実測で引き直す",
+   "decisions": [
+    "D-125.162",
+    "D-128.61",
+    "D-128.125",
+    "D-128.137",
+    "D-128.141",
+    "D-128.143",
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/mfa-gate.test.ts"
+   ],
+   "carry": [
+    "apps/web/tests/_lib/api.ts",
+    "apps/web/tests/_lib/newcomer.ts",
+    "apps/api/test/_pending.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/web/tests/skeleton/m1-signup-verify-terms.spec.ts"
+   ],
+   "depends_on": [
+    "K-308",
+    "K-311",
+    "K-312",
+    "K-319"
+   ],
+   "acts": [
+    "A97"
+   ],
+   "screens": [],
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/errors",
+    "@kaname/contracts",
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/contract/op.ts",
+    "apps/api/src/app.ts",
+    "apps/api/src/auth/ext.ts",
+    "apps/api/src/middleware/tenant.ts",
+    "05_flow/screen_api.py",
+    "05_flow/build_api.py",
+    "scripts/ci/contract.mjs",
+    "07_qa/test-specs/errors.json",
+    "apps/web/tests/_lib/api.ts",
+    "apps/web/tests/_lib/newcomer.ts",
+    "apps/api/test/_pending.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/web/tests/skeleton/m1-signup-verify-terms.spec.ts"
+   ],
+   "sections": {
+    "目的": "（2026-11-17 切る段・枝 c/段2）K-308 から分けた葉。代表の答え ⑮（answer=6bdcb125e8f7）：「付けるまで進めない」人がほかの画面を開いたら「入り方を 1 つ足してから使い始めます」と出し、安全の設定へ戻す。\n\nこの葉は**口の入口の止め**を作る。印（`sessions.mfa_pending`・K-308 が立てる）の立ったセッションでは、開いている口のほかを 403・`MFA_REQUIRED` で止め、何も書かない。画面が 403 を受けて安全の設定へ戻すのは K-319。\n止めを入れると、パスワードだけで入る前からの試験が止まる。そのため、前からの試験の道具を「入り方を 1 つ持つ人」を作る形に直す。\n\n**重さ**：口（apps/api）と画面の試験の道具（apps/web/tests/_lib）。packages/db は触らない（K-308 の関数を読むだけ）。",
+    "完了の条件": "- 下の表の、この葉の行（K321-API-001〜011 の 11 行）が全部緑：`apps/api/test/features/F1/mfa-gate.test.ts`\n- 前からの試験（口の試験と画面の試験）が、道具の手直し（carry）の後も緑。\n  - 口の試験：F1 の外 9 か所と、F1 の terms.test.ts 4 か所。\n  - 画面の試験：signupViaApi を使う 45 ファイルと、パスワードの欄に入れるもの。\n- 手元の CI（act・チケット 1 本につき 1 回）が緑。止めは全部の口に効くので、ci_wide に shared を書いた。",
+    "前提と制約": "分類: AUTH, PERM\n\n- 依存：K-308（`sessions.mfa_pending`・`app.session_mfa_pending(uuid)`・resolver の `mfaPending`・`app.settle_mfa_pending`）・K-311（startTwoFactor の振る舞い・K321-API-003 が 201 を見る）・K-312（setMyPassword の口・K321-API-004 が 403 を見る。無いと 404）・K-319（画面の戻し。K-319 は 403 を画面の試験で作って確かめる・精査の後の決め 8）\n- **それまでの間**：K-308 が入ってからこの葉が入るまでは、印は立つが止める所が無いので、今までどおり全部使える。この葉は K-319 の後に入るので、取り込んだ時点で付ける画面はもう契約の口（startTwoFactor・confirmTwoFactor）と、許す部品の道（パスキーを足す 2 本）を使っている（今の mfa-setup の画面が呼ぶ部品の `/two-factor/enable` は K-319 が閉じる・決め 4）。付ける道が無くて閉じ込められる間は無い\n- 画面の止め（403 を受けて `/mfa-setup?next=` へ戻す・「入り方を 1 つ足してから使い始めます」の表示）は K-319。順は K-319 → K-321（精査の後の決め 8。K-319 の depends_on から K-321 を外すのは K-319 の担当）\n- 取り直しの決まり（K-309 が契約の step_up を `login_or_step_up`＝ログインから 15 分の内か直前の取り直し、に変える）とは食い違わない：付けるまで進めないの止め（2.55）は役・権限・取り直しの確かめより前にあり、開いている口（startTwoFactor・confirmTwoFactor・stepUp など）は止めずに取り直しの確かめへ渡す。K321-API-003 の startTwoFactor はログインの直後なので、`login_or_step_up` でも取り直しは要らない（今の試験のまま通る）。K321-API-004 の `step_up_at` の書き込みは、開かない 4 つが取り直しのせいでなく止めのせいで 403 になることを見るためで、`login_or_step_up` でも意味は変わらない\n- 止め方は同意し直し（K-53・E-AUTH-010・`termsPending`・05_flow/screen_api.py の `TERMS_OPEN_OPS`）と同じ形にそろえる。両方が立っていれば同意し直しを先に返す（規約の同意が登録の順で先）\n- テストはチケットを作る人がコードまで書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）",
+    "依存の理由": "- K-308: 要る — 止めは K-308 の sessions.mfa_pending・app.session_mfa_pending(uuid)・resolver の mfaPending を読む（試験 MFA_FN も K-308 の関数）\n- K-311: 要る — K321-API-003 は印の立った人が startTwoFactor（K-311）を呼べて 201 になることを見る\n- K-312: 要る — K321-API-004 は setMyPassword（K-312）が止めで 403 になることを見る（口が無いと 404）\n- K-319: 要る — 製品の決まり：画面の戻し（403 を受けて /mfa-setup?next= へ）を K-319 が先に入れないと、登録の直後の人が止まる（精査の後の決め 8）",
+    "実施事項": "### 作り方\n\n| 欄 | 中身 |\n|---|---|\n| 開いている口の正本 | `05_flow/screen_api.py` に `MFA_OPEN_OPS = {\"getMySecurity\", \"startTwoFactor\", \"confirmTwoFactor\", \"stepUp\", \"signOut\", \"getMe\", \"getCurrentTerms\", \"consentToTerms\"}`。<br>開かない（代表の答え ⑮ の勧め）：renamePasskey・deletePasskey・changePassword・setMyPassword。<br>契約に `mfaOpen` を生成する（`scripts/ci/contract.mjs`）。EARS の 403 の行（`05_flow/build_api.py` の four()）も、E-AUTH-010 と同じ形で足す |\n| 口の入口 | `apps/api/src/contract/op.ts`：2.5) 同意し直しの次に 2.55) を置く。印が立ち、`def.mfaOpen` でなければ 403 `{ error: \"forbidden\", code: \"MFA_REQUIRED\", message: <E-AUTH-019 の文> }`。<br>副作用の前に止め、記録も書かない。PC（device）のセッションには印が立たない。<br>印は要求の文脈（`apps/api/src/middleware/tenant.ts`）が resolver の `mfaPending` から渡す |\n| 前の道すじの口 | `apps/api/src/auth/ext.ts`：同意し直しの止め（139〜155 行の `app.use`）と同じ所で、印が立っていれば止めない道（同意し直しと同じ `TERMS_OPEN_EXT`：/me・/sign-in・/two-factor/verify・/invitations/*）のほかを 403・MFA_REQUIRED にする。PC の印（x-bridge-session）だけの要求は今と同じく止めない。読めなければ 503（今の sessionUnresolved と同じ）。これで、印の立った人が前の道すじ（チャット・資格情報・PC の様子）を使えない（K321-API-011）。PC をつなぐ口（createPairingCode）は契約の口なので op.ts で止まる（K321-API-010） |\n| 認証の部品の口 | `apps/api/src/app.ts` の `/api/auth/*`：同意し直しの止めと同じ所で、印が立っていれば許した道のほかを 403・MFA_REQUIRED にする。<br>許す道：get-session・sign-out・passkey/generate-register-options・passkey/verify-registration。<br>読めなければ 503・E-PAGE-003（今の sessionUnresolved と同じ） |\n| エラーの正本 | `07_qa/test-specs/errors.json` に 1 件（既存の E-AUTH-010 と同じ欄を全部）。<br>**E-AUTH-019**：class gate・403・「入り方を 1 つ足してから使い始めます」・action「パスキーか 2 段階認証を付ける」。<br>番号は精査の後の決め 1 で決め打ち（本線でぶつかったら段 2 の全部の葉で一括に付け替える）。答えの code は `MFA_REQUIRED` |\n| 前からの試験の道具（carry・切る段で書いた・下の「前からの試験を替えた所」） | ① `apps/web/tests/_lib/api.ts` の `signupViaApi`：作った人に試験の鍵（`kaname_auth.passkey` に 1 行・名前「試験の鍵」）を置き、入り方を 1 つ持つ人にする。今のセッションの印も下ろす（K-53 の agree-terms と同じく、列が無ければ何もしない）<br>② `apps/web/tests/_lib/newcomer.ts`：画面から登録してログインする道具。付けるまで進めないの画面を通す試験（K-319）以外は、同じく試験の鍵を置く<br>③ `apps/api/test/_pending.ts`：確定した本人を作る道具に、同じく試験の鍵を置く<br>④ `apps/api/test/features/F1/terms.test.ts` の `person()`：同じく試験の鍵を置く（同意し直しの試験が、付けるまで進めないの止めに当たらないように）<br>道具は packages/db を触らない（SQL を道具の中に書く） |\n\n### 決めた判断\n\n- 試験の鍵は「付けた人」と同じ扱いにする。前からの試験は、パスワードでのログインをそのまま流せる（2 段階のコードを入れずに済む）\n- 印が下りたら、同じセッションのまま通す（K321-API-008）。入り直しは求めない",
+    "テスト仕様と確認の結果": "行 ID は K321-API-…（`apps/api/test/features/F1/mfa-gate.test.ts`）。画面の行は K-319。\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補：`sessions.mfa_pending`（立つ・下りる）・`sessions.terms_pending`・`sessions.kind_id`（web・bridge）\n\n| 印の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 立っている（K-75 の行 104） | ふつうの口（一覧） | ログイン中 | 403・MFA_REQUIRED「入り方を 1 つ足してから使い始めます」 | このチケット | K321-API-001 |\n| 立っている | 書く口 | ログイン中 | 403・MFA_REQUIRED。行を作らない | このチケット | K321-API-002 |\n| 立っている（K-75 の行 103） | 開いている口（安全の設定を読む・規約・取り直し・2 段階を始める・自分の取得） | ログイン中 | 止めない（200・201） | このチケット | K321-API-003 |\n| 立っている（⑮ の勧め） | 名前を変える・外す・パスワードを変える・決める | ログイン中・取り直しの内 | 403・MFA_REQUIRED。何も変わらない | このチケット | K321-API-004 |\n| 立っている | 認証の部品の口（ほかのセッションの取り消し／セッションを読む・パスキーを足すの始め） | ログイン中 | 403・MFA_REQUIRED／止めない | このチケット | K321-API-005 |\n| 立たない（K-75 の行 110） | PC（Bridge）のセッションで口を呼ぶ | PC | 止めない（D-128.137） | このチケット | K321-API-006 |\n| 同意し直しと両方 | ふつうの口 | ログイン中 | 同意し直し（403・E-AUTH-010）を先に返す | このチケット | K321-API-007 |\n| 下りた直後（K-75 の行 101） | ふつうの口 | 同じセッション | 200 | このチケット | K321-API-008 |\n| 立っている | PC をつなぐ口（接続コードを出す） | ログイン中 | 403・MFA_REQUIRED。接続コードを作らない（PC をつないで止めを抜けさせない） | このチケット | K321-API-010 |\n| 立っている | 前の道すじ（/api/auth-ext/bridge/state・/vault/credentials）／/api/auth-ext/me | ログイン中 | 403・MFA_REQUIRED（預けない）／止めない | このチケット | K321-API-011 |\n| 立っている（K-75 の行 104） | 道を直に打つ・ブックマーク・戻る | ログイン中 | 「入り方を 1 つ足してから使い始めます」・安全の設定へ戻す | K-319（画面） | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 観点 | 分岐 | 結果 | テスト |\n|---|---|---|---|\n| 失敗 | 入口で印を読めない（印を読む関数を呼べない） | 503・E-PAGE-003（止める側に倒す） | K321-API-009 |\n| 守り | 止めの順番 | 認証（401）→ 同意し直し（E-AUTH-010）→ 付けるまで進めない（MFA_REQUIRED）→ 役・権限。副作用の前 | K321-API-002・K321-API-007 |\n| 守り | 関門 | 止めは入口ごとに 1 か所（op.ts・app.ts・ext.ts の 3 つ）。口ごとに書かない | CI の静的な検査（choke-point の検査） |\n\n### G 観点（G-11〜G-16）\n\n| 観点 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外のリソースを使わない |\n| G-12 切り替わりの瞬間 | 該当 | 印が下りた直後に同じセッションで通る（K321-API-008） |\n| G-13 機能の組み合わせ | 該当 | 同意し直し × 付けるまで進めない（K321-API-007）・PC × 印（K321-API-006） |\n| G-14 口座状態の波及 | N/A | 印は入り方の有無で決まり、退会・停止の波及は K-303・F10 |\n| G-15 信号なし終了 | N/A | 外のプロセス・外の API を持たない |\n| G-16 有限資源の枯渇 | 該当 | 印は resolver の 1 本の文に足すだけで、問い合わせを増やさない（K-233 と同じ）。読めなければ 503（K321-API-009） |\n\n### テストの型の受け\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-AUTH-04 セッションが切れた・戻ってくる | 印が下りた後、同じセッションで続ける（K321-API-008）。入り直したときの印の立て直しは K-308 の K308-DB-007 |\n| TP-AUTH-09 国・端末が変わった | PC のセッションは止めない（K321-API-006） |\n| TP-PERM-01 役が合わない人 | 印の立った人は、役にかかわらず開いている口のほかを使えない（K321-API-001・K321-API-004） |\n| TP-PERM-02 権限を外した直後に押す | 止めは要求ごとに印を読むので、印が立った直後の要求から止まる（K321-API-001） |\n\n要らない: TP-AUTH-01 ログインの返事を作らない（K-301）\n要らない: TP-AUTH-02 続けて失敗する入力を持たない（止めは入力を読まない）\n要らない: TP-AUTH-03 2 段階のコードを受けない（K-311）\n要らない: TP-AUTH-05 ログアウトした後に開くのは画面（K-319）。口は 401（入口の共通の処理）\n要らない: TP-AUTH-06 パスワードを変えるは K-312\n要らない: TP-AUTH-07 取り直しの期限は K-309・K-311・K-312（ここは取り直しの口を止めないだけ・K321-API-003）\n要らない: TP-AUTH-08 戻す先（next）は画面（K-319）\n要らない: TP-PERM-03 id を受けない（入口の止めは行を読まない）\n要らない: TP-PERM-04 一覧・数を返さない（止めるだけ）\n要らない: TP-PERM-05 権限を付けた直後に効き方が変わる止めでない（入り方の有無だけで決まる）\n\n```search\n- name: 道具の手直しの対象：パスワードの欄に入れる画面の試験（ログインの画面と、預け先などほかの欄の両方を含む。ログインの画面から入るものは試験の鍵の道具を通す）\n  cmd: git grep -l -E 'getByLabel\\(\"パスワード\", \\{ exact: true \\}\\)\\.fill' -- apps/web/tests\n  count: 19\n- name: 道具の手直しの対象：signupViaApi で人を作る画面の試験（道具 1 か所の手直しで全部に効く）\n  cmd: git grep -l -E 'signupViaApi\\(' -- apps/web/tests\n  count: 45\n- name: 道具の手直しの対象：パスワードでログインする口の試験（F1 の外）（段 1 を締めた本線を取り込んで 9 → 10：apps/api/test/k262_edge_watch.test.ts の 1 か所が足された。resolver を直に呼び、口の入口を通らないので、印が立っても止まらない）\n  cmd: git grep -n -E 'signInWithLock\\(|signInEmail\\(' -- apps/api/test packages/auth/test ':!apps/api/test/features/F1/'\n  count: 10\n- name: 同意し直しの開いている口の正本を読む所（同じ所に MFA_OPEN_OPS を足す）\n  cmd: git grep -n -E 'TERMS_OPEN_OPS' -- 05_flow apps/api/src scripts\n  count: 6\n```",
+    "前からの試験を替えた所": "切る段で書き、流していない。どれも、パスキーの表（K-304）と印の列（K-308）がまだ無ければ何もしない形にしたので、**今の実装のままでも今の試験は通る**（赤→緑にならない）。K-304・K-308 が入った後は「入り方を 1 つ持つ人」を作り、この葉の止めに当てない。\n\n| ファイル | 替えた所 |\n|---|---|\n| `apps/web/tests/_lib/api.ts` | 道具 `addTestEntry(userId)` を足した（試験の鍵を 1 行置き、印を下ろす）。`signupViaApi` の最後で呼ぶ |\n| `apps/web/tests/_lib/newcomer.ts` | 「登録できました」の後、「続ける」の前に `addTestEntry` を呼ぶ |\n| `apps/api/test/_pending.ts` | 同じ道具 `addTestEntry(userId)` を足し、`verifiedUser` の中で呼ぶ |\n| `apps/api/test/features/F1/terms.test.ts` | `person()` と `opsPerson()` の最後で `addTestEntry` を呼ぶ |\n| `apps/web/tests/skeleton/m1-signup-verify-terms.spec.ts` | 道具 `readyToEnter(email)`（試験の鍵を置き印を下ろす）を足し、「登録できました」の「続ける」の前（K54-M1-01・05）と、中へ入る `canEnter(page, email)` の頭で呼ぶ（K54-M1-01・06・07）。登録の筋と同意し直しを見る試験で、付けるまで進めない（K-319）は見ない |\n\n### パスワードの欄に入れる画面の試験 19 本（search の 1 つ目）の扱い\n\n| ファイル | 人の作り方 | 止めに当たるか |\n|---|---|---|\n| apps/web/tests/_lib/newcomer.ts | 画面とメールで登録 | 道具の中で addTestEntry（上の表） |\n| apps/web/tests/skeleton/m1-signup-verify-terms.spec.ts | 画面とメールで登録（自分の signUpByForm） | readyToEnter を足した（上の表） |\n| apps/web/tests/screens/account-gone.spec.ts・credentials.spec.ts・login.spec.ts・mfa-setup.spec.ts・qa-b-credential-vault.spec.ts・qa-b-infisical.spec.ts・qa-b-login-check.spec.ts・qa-b-two-factor.spec.ts・qa-c-onboard.spec.ts・shared.spec.ts | signupViaApi | 当たらない（signupViaApi が試験の鍵を置く） |\n| apps/web/tests/screens/invite-accept.spec.ts | 招待を受けて入る（本物の口） | 当たらない：入った後は同意し直しの画面（/login?step=terms）までしか見ない。同意し直しが先に返る（K321-API-007）。招待の画面の中で同意を取る K-55 が入ったら、K-55 が試験の鍵を置く |\n| apps/web/tests/features/F1/terms.spec.ts・verify-email.spec.ts | 口を page.route で差し替える（signupViaApi の 1 か所は鍵つき） | 当たらない（本物の入口を通らない） |\n| apps/web/tests/k/k259-open-redirect.spec.ts・apps/web/tests/_lib/fidelity-states.ts | 口を page.route で差し替える | 当たらない |\n| apps/web/tests/k/k318-security.spec.ts・k319-security-setup.spec.ts | 口を差し替える・付けるまで進めないを自分で作る | 当たらない（K-318・K-319 が見る側） |",
+    "成果物": "- 入口の止め（op.ts・app.ts・ext.ts・tenant.ts）・開いている口の正本 MFA_OPEN_OPS と契約の mfaOpen・errors.json に 1 件\n- 前からの試験の道具 4 つと、登録の筋の画面の試験 1 本（m1-signup-verify-terms.spec.ts）の手直し（carry）\n- 単体のテスト：`apps/api/test/features/F1/mfa-gate.test.ts`（行 11）",
+    "決定ログ": "- 2026-11-17 代表の答え ⑮（answer=6bdcb125e8f7）：付けるまで進めない人がほかの画面を開いたら「入り方を 1 つ足してから使い始めます」と出し、安全の設定へ戻す。開いている口に「名前を変える・外す・パスワードを変える・決める」は入れない\n- 2026-11-17 精査 R（差し戻し・指摘 4）と精査の後の決め 8 を受けて直した（K-321 は別の担当から引き継いだ）：depends_on を K-308・K-311・K-312・K-319 に・前の道すじ（ext.ts）にも止めを置き行 K321-API-011 を足した・PC をつなぐ口の止めを行 K321-API-010 で見る（9 → 11 行）・それまでの間を前提に書いた・m1-signup-verify-terms.spec.ts を carry に足し、19 本の扱いを表にした・E-AUTH-019 の番号は決め 1 で決め打ち。K-309 の `login_or_step_up` と開いている口の一覧は食い違わないことを前提に書いた\n- 2026-11-17 切る段：K-308 から分けた。前からの試験の道具（画面の試験）を直す必要があり、重さの上限で K-308（db）には入れられなかった\n- D-128.141：登録の直後でパスキーも 2 段階も無い人は、付けるまで先へ進めない",
+    "リスクと懸念": "- 試験の鍵を置いた人は、安全の設定の一覧にパスキーが 1 本出る。安全の設定を見る画面の試験（K-318・K-319）は、自分で人を作る道具を使い、試験の鍵を置かない"
+   },
+   "file": "11_tickets/K-321.md"
+  },
+  {
    "id": "K-322",
    "title": "確認のコードで入る口の守りを固める（同じ 6 けたを同時に送ってもセッションは 1 つ・確かめの後に DB が落ちたらその場で閉じて 500）（K-74 の子）",
    "kind": "タスク",

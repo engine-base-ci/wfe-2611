@@ -52,6 +52,7 @@ export async function verifiedUser(
   });
   await poolOf(authUrl).query('update kaname_auth."user" set "emailVerified" = true where id = $1', [r.userId]);
   await agreeCurrentTerms(r.userId);
+  await addTestEntry(r.userId);
   if (!r.token) throw new Error("ログインの印が返らない");
   return { token: r.token, userId: r.userId, user_id: r.userId };
 }
@@ -60,4 +61,27 @@ export async function verifiedUser(
 export async function agreeCurrentTerms(userId: string, adminUrl = process.env["DATABASE_URL"]!): Promise<void> {
   const db = poolOf(adminUrl);
   await agreeTerms(async (sql, params) => (await db.query(sql, params)).rows, userId);
+}
+
+/** 入り方を 1 つ持つ人にする（K-321・D-128.141）：試験の鍵（kaname_auth.passkey に 1 行）を置き、その人の「付けるまで進めない」の印を下ろす。
+ *  パスキーの表（K-304）・印の列（K-308）がまだ無ければ何もしない（K-53 の agree-terms と同じ形）。画面の試験の道具（apps/web/tests/_lib/api.ts の addTestEntry）と同じ SQL */
+export async function addTestEntry(userId: string, adminUrl = process.env["DATABASE_URL"]!): Promise<void> {
+  const db = poolOf(adminUrl);
+  const t = (await db.query<{ t: string | null }>("select to_regclass('kaname_auth.passkey')::text as t")).rows[0];
+  if (t?.t)
+    await db.query(
+      `insert into kaname_auth.passkey (id, name, "publicKey", "userId", "credentialID", counter, "deviceType", "backedUp", transports, "createdAt")
+       values (gen_random_uuid()::text, '試験の鍵', 'test-entry', $1, 'test-entry-' || gen_random_uuid()::text, 0, 'singleDevice', false, 'internal', now())`,
+      [userId],
+    );
+  const col = await db.query(
+    "select 1 from information_schema.columns where table_schema = 'public' and table_name = 'sessions' and column_name = 'mfa_pending'",
+  );
+  if (col.rowCount)
+    await db.query(
+      `update sessions set mfa_pending = false where member_id in (
+         select id from members where auth_user_id = $1
+         union select member_id from tenant_memberships where auth_user_id = $1)`,
+      [userId],
+    );
 }

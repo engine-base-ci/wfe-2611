@@ -38,6 +38,7 @@ import { createPool } from "@kaname/db/pool";
 import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
 import { bootApi, type BootOptions } from "../../../src/server.js";
+import { addTestEntry } from "../../_pending.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DB_PKG = join(HERE, "..", "..", "..", "..", "..", "packages", "db");
@@ -170,6 +171,7 @@ const person = async (tag: string): Promise<Person> => {
       "insert into terms_consents (tenant_id, member_id, auth_user_id, terms_version_id, agreed_at) values ($1, $2, $3, $4, now())",
       [m.tenant_id, m.id, r.userId, v],
     );
+  await addTestEntry(r.userId); // 入り方を 1 つ持つ人にする（付けるまで進めないの止め・K-321 に当てない）
   return { email: e, userId: r.userId, memberId: m.id, tenantId: m.tenant_id };
 };
 /** 運営の人（運営のテナント app.ops_tenant_id() の人・D-128.172）を作り、基準の版に同意済みにする。
@@ -199,6 +201,7 @@ const opsPerson = async (tag: string): Promise<Person> => {
       "insert into terms_consents (tenant_id, member_id, auth_user_id, terms_version_id, agreed_at) values ($1, $2, $3, $4, now())",
       [opsTenant, memberId, r.userId, v],
     );
+  await addTestEntry(r.userId);
   return { email: e, userId: r.userId, memberId, tenantId: opsTenant };
 };
 const OPS_API = "/api/v1/ops/members"; // 運営の口（auth ops・listOpsMembers）
