@@ -7,7 +7,6 @@ import { base32 } from "@better-auth/utils/base32";
 import { createOTP } from "@better-auth/utils/otp";
 import { uuidv7 } from "@kaname/db/id";
 import { LOGIN_BLOCKED_CODES, type Auth } from "./index.js";
-import { signOut } from "./resolver.js";
 import { recordLoginEvent } from "./signup.js";
 
 // plugin（twoFactor）の endpoint は core の Auth 型に無いので、使う分だけをここで型に書く（zod の内部型を .d.ts に出さないため）
@@ -281,8 +280,14 @@ export async function verifySignInCode(
       }
     }
   }
+  // 取った番号を戻す。戻すのが落ちても元の答えは変えない（種類だけを出す。番号は 90 秒で切れる）
   const release = async () => {
-    if (claim) await releaseStep(authPool, userId, claim);
+    if (!claim) return;
+    try {
+      await releaseStep(authPool, userId, claim);
+    } catch (e) {
+      console.error(`[auth] 確認のコードの番号を戻せなかった（${errKind(e)}）`);
+    }
   };
   const headers = new Headers({ cookie: `${await pendingCookieName(auth)}=${input.pending}` });
   if (input.userAgent) headers.set("user-agent", input.userAgent);
@@ -305,8 +310,8 @@ export async function verifySignInCode(
   try {
     return { ok: true, token, userId, backupCodesLeft: await backupCodesLeft(auth, authPool, userId) };
   } catch (e) {
-    await closeHalfOpen(auth, appPool, token, input.userAgent);
-    await release();
+    // 閉じ切れたときだけ番号を戻す（生きたセッションが残ったまま同じコードをもう一度通さない）
+    if (await closeHalfOpen(auth, appPool, token, input.userAgent)) await release();
     throw e;
   }
 }
@@ -340,21 +345,38 @@ async function refusal(
   throw e;
 }
 
-/** 部品が通った後に落ちた：作られたセッションをその場で閉じる（sessions の行と認証側のセッション）。
- *  閉じるのも落ちたら種類だけを出す（呼ぶ側は元の例外で 500 にする。印・コードは出さない） */
+/** 例外の種類だけ（DB の番号か名前）。文や値はログに出さない */
+function errKind(e: unknown): string {
+  const x = e as { code?: unknown; name?: unknown } | null;
+  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+}
+
+/** 部品が通った後に落ちた：作られたセッションをその場で閉じる。sessions の行と認証側のセッションを別々に閉じ、
+ *  片方が落ちてももう片方は閉じる（DB が不調で sessions の行を閉じられなくても、認証側を消せば印は解けない）。
+ *  全部閉じ切れたら true。落ちた段は種類だけを出す（呼ぶ側は元の例外で 500 にする。印・コードは出さない） */
 async function closeHalfOpen(
   auth: Auth,
   appPool: pg.Pool,
   token: string,
   userAgent: string | undefined,
-): Promise<void> {
+): Promise<boolean> {
   const h = new Headers({ authorization: `Bearer ${token}` });
   if (userAgent) h.set("user-agent", userAgent);
-  try {
-    await signOut(auth, appPool, h);
-  } catch (e) {
-    const x = e as { code?: unknown; name?: unknown } | null;
-    const why = typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
-    console.error(`[auth] 確認のコードで入った後に落ち、セッションを閉じられなかった（${why}）`);
-  }
+  let closed = true;
+  const step = async (what: string, fn: () => Promise<unknown>) => {
+    try {
+      await fn();
+    } catch (e) {
+      closed = false;
+      console.error(`[auth] 確認のコードで入った後に落ち、${what}を閉じられなかった（${errKind(e)}）`);
+    }
+  };
+  let sessionId: string | null = null;
+  await step("セッションの読み取り", async () => {
+    sessionId = (await auth.api.getSession({ headers: h }))?.session.id ?? null;
+  });
+  if (sessionId)
+    await step("画面のセッション", () => appPool.query("select app.close_session($1, 'logout')", [sessionId]));
+  await step("認証側のセッション", () => auth.api.signOut({ headers: h }));
+  return closed;
 }
