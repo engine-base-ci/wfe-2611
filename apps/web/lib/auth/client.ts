@@ -3,6 +3,7 @@ import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
 import { passkeyClient } from "@better-auth/passkey/client";
 import { apiBase, getToken, setToken } from "@/lib/api/client";
+import { noticeMfaRequired } from "@/lib/mfa-gate";
 import { noticeTermsRequired } from "@/lib/terms-gate";
 
 /** 認証の部品の要求を出した時刻（要求の文脈ごと） */
@@ -46,6 +47,7 @@ export const authClient = createAuthClient({
     onError: (ctx) => {
       const b = ctx.error as { code?: unknown; message?: unknown } | null;
       noticeTermsRequired(ctx.response.status, b?.code, b?.message, SENT.get(ctx.request));
+      noticeMfaRequired(ctx.response.status, b?.code, b?.message); // 付けるまで進めない（K-319）
     },
     onSuccess: (ctx) => {
       if (urlOf(ctx.request.url).includes(PASSKEY_OPTIONS_PATH)) {

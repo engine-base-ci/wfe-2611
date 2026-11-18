@@ -816,7 +816,9 @@ for (const [id, path] of Object.entries(FORCED_PROD)) {
     }) => {
       const { rows, bad } = await matchMock(browser, id, w, async (page) => {
         await mockApi(page, PENDING);
-        await open(page, w, path);
+        // 入口の箱は縦の真ん中に置くので、matchMock が開いた高さのまま開く（open は高さ 1000 にする）
+        await page.clock.setFixedTime(new Date(NOW));
+        expect((await page.goto(path))?.status()).toBe(200);
         await expect(page.locator(`${BOX} h1`)).toHaveText("入り方を 1 つ足してください");
       });
       expect(rows.length, "比べた行がある").toBeGreaterThan(3);
@@ -897,7 +899,7 @@ for (const [id, c] of Object.entries(DIALOG_PROD)) {
         id,
         w,
         async (page) => {
-          await mockApi(page, c.sec, c.o);
+          await mockApi(page, c.sec, structuredClone(c.o)); // once は使うと消えるので、幅ごとに写して渡す
           await openList(page, w);
           await c.act(page);
           await expect(page.locator(DLG).last()).toBeVisible();
@@ -928,6 +930,7 @@ test("K319-UI-029 幅 320〜1440：付けるまで進めない・2 段階・バ�
     expect(await over(), `幅 ${w} 付けるまで進めない`).toBe(0);
     await choice(page, "2 段階認証を付ける").click();
     await confirmWith(page);
+    await expect(totpDialog(page)).toBeVisible(); // 本人確認の小窓が閉じきってから 2 段階の小窓を測る
     await inView();
     expect(await over(), `幅 ${w} 2 段階`).toBe(0);
     await typeCode(page, "123456");
