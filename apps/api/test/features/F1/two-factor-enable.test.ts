@@ -498,6 +498,44 @@ describe("K-311 守り", () => {
   });
 });
 
+describe("K-311 作り直したセッション", () => {
+  it("K311-API-023 付けた確かめで部品がセッションを作り直す：新しいセッションのログインの時刻（createdAt）と写しの始まりの時刻（issued_at）は前のまま。前の写しは閉じる", async () => {
+    const p = await person("session-age");
+    const t = await login(p);
+    await stepUp(t);
+    await ageLogin(t, 10); // ログインから 10 分（取り直しは直前なので始められる）
+    const oldId = await authSessionId(t);
+    const before = (
+      await admin.query<{ created: Date; issued: Date }>(
+        `select a."createdAt" as created, s.issued_at as issued
+           from kaname_auth.session a join sessions s on s.auth_session_id = a.id where a.id = $1`,
+        [oldId],
+      )
+    ).rows[0]!;
+    const s = await start(t);
+    const r = await confirm(t, totp(s.secret));
+    expect(r.status, await r.clone().text()).toBe(201);
+    const token = ((await json(r)).data as Confirmed).token;
+    expect(token, "部品が作り直した新しい印").toBeTruthy();
+    const newId = await authSessionId(token!);
+    expect(newId).not.toBe(oldId);
+    const after = (
+      await admin.query<{ created: Date; issued: Date }>(
+        `select a."createdAt" as created, s.issued_at as issued
+           from kaname_auth.session a join sessions s on s.auth_session_id = a.id where a.id = $1`,
+        [newId],
+      )
+    ).rows[0]!;
+    expect(new Date(after.created).getTime()).toBe(new Date(before.created).getTime());
+    expect(new Date(after.issued).getTime()).toBe(new Date(before.issued).getTime());
+    const old = await admin.query<{ revoked_at: Date | null }>(
+      "select revoked_at from sessions where auth_session_id = $1",
+      [oldId],
+    );
+    expect(old.rows[0]?.revoked_at, "前の写しは閉じる").not.toBeNull();
+  });
+});
+
 describe("K-311 代表の答え（⑭ バックアップコードの字・② パスワードの無い人）", () => {
   it("K311-API-021 バックアップコード 10 個は、どれも小文字の英字と数字だけ（大文字・記号を含まない）", async () => {
     const p = await person("lower");
