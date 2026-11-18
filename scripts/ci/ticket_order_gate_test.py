@@ -207,6 +207,29 @@ class PerCommitTest(Case):
         self.assertEqual(len(bad), 1, bad)
         self.assertTrue(bad[0].startswith(c[:10]) and "K-4 は K-1" in bad[0], bad)
 
+    def test_K159_CI_030_head_list_and_subjects_without_a_head_keep_the_old_rule(self):  # K-309
+        """K159-CI-030 入力（K-309・精査の指摘）：(a) 頭に並べた番号は区切り（空白・,・・）に関わらず全部が持ち主（K-2 の依存 K-1 を同じコミットで満たす・緑）。
+        (b)(c) 頭に番号が並んでいない件名（「fix: K-2 …」「K-2〜K-3 feat:」）は前のまま件名の全部の番号が持ち主で、依存の K-1 より前なら赤（黙って裁かれなくならない）"""
+        for subj in ("K-2 K-1 feat: まとめて作る", "K-2,K-1 feat: まとめて作る", "K-2・K-1 feat: まとめて作る"):
+            with self.subTest(subj=subj):
+                with tempfile.TemporaryDirectory() as d:
+                    r = Repo(d)
+                    r.tickets({"K-1": [], "K-2": ["K-1"]})
+                    start = r.commit("K-0 base", {"README.md": "x"})
+                    r.commit(subj, {"apps/a.ts": "a"})
+                    bad, _, n = g.check(d, "HEAD", start)
+                    self.assertEqual((bad, n), ([], 1))
+        for subj in ("fix: K-2 の口を作る", "K-2〜K-3 feat: まとめて作る"):
+            with self.subTest(subj=subj):
+                with tempfile.TemporaryDirectory() as d:
+                    r = Repo(d)
+                    r.tickets({"K-1": [], "K-2": ["K-1"], "K-3": []})
+                    start = r.commit("K-0 base", {"README.md": "x"})
+                    c = r.commit(subj, {"apps/a.ts": "a"})
+                    bad, _, n = g.check(d, "HEAD", start)
+                    self.assertEqual(n, 1)
+                    self.assertTrue(any(b.startswith(c[:10]) and "K-2 は K-1" in b for b in bad), bad)
+
     def test_K159_CI_022_process_config_is_not_implementation(self):
         """K159-CI-022 入力：11_tickets と ai-team.yaml だけに触る段取りのコミット（3fdbb37f「K-77 K-37 K-133 chore」の形）は、
         番号のチケットの依存が未完了でも実装に数えない（0 本・緑）。ai-team.yaml と実装のファイルの両方に触るコミットは実装に数え、赤"""
