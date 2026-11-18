@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 365,
-  "api_built": 48,
+  "api_built": 50,
   "api_only_later_phase": 20,
   "legacy_routes": 28,
   "db": 144,
   "ui": 17,
   "packages": 13,
-  "errors": 181,
+  "errors": 183,
   "stack": 55,
   "env": 41
  },
@@ -363,7 +363,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-55"
+   ]
   },
   {
    "op": "requestPasswordReset",
@@ -2843,9 +2845,9 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-311"
    ]
   },
   {
@@ -2858,9 +2860,9 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-311"
    ]
   },
   {

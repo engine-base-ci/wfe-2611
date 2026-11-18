@@ -139,6 +139,7 @@
   { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   { "paths": ["04_design/canvas/*.dc.html", "scripts/ci/canvas_layout_ledger.json"], "tests": ["apps/web/tests/k/k254-canvas-layout.spec.ts"] },
   { "paths": ["07_functional/段2-F1/mock-shots.mjs", "07_functional/段2-F1/切り方.md", "design-gate.json", "scripts/ci/design_gate.py", "scripts/ci/k218_design_canvas_test.py"], "tests": ["apps/web/tests/k/k300-stage2-mock.spec.ts"] },
+  { "paths": ["07_functional/段3-F2/mock-shots.mjs", "07_functional/段3-F2/切り方.md", "design-gate.json", "scripts/ci/design_gate.py"], "tests": ["apps/web/tests/k/k330-stage3-mock.spec.ts"] },
   { "paths": ["05_flow/flow.json", "05_flow/flows.json", "05_flow/phase1.py", "05_flow/screen_api.py", "05_flow/data.py", "05_flow/build_flow.py", "01_hearing/決定ログ_進行中.md", "03_architecture/choke-points.json", "scripts/ci/flow_gate.py", "scripts/ci/flow_db_gate.py", "scripts/ci/trace_gate.py", "apps/web/features/F1/sign-up/frame.tsx", "apps/web/lib/built-routes.ts"], "tests": ["apps/web/tests/k/k315-help.spec.ts"] },
   {
    "paths": [
@@ -377,6 +378,17 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/two-factor-enable.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_me_two_factor_enable.test.ts",
+    "apps/api/test/generated/post_me_two_factor_confirm.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-reset.test.ts"
    ],
    "tests": [
@@ -580,8 +592,10 @@
   "apps/web/tests/k/k228-bands.spec.ts": "07_qa/test-specs/k/delegate.md・approve-complete.md（操作要素の表）と 04_design/fidelity.json（6 組の持ち主と enrolled）・キャンバス（detail-kit.ts 経由）を読む。どれも 07_qa/test-specs/k/**・04_design/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-228",
   "apps/web/tests/k/k226-ticket-detail.spec.ts": "04_design/fidelity.json（組 ticket-detail のセレクタと持ち主）・台帳 scripts/ci/class_ledger.json・仕様の表 07_qa/test-specs/k/*.md を読む（実ブラウザの試験は web の組が流す）・K-226",
   "apps/web/tests/k/k316-login.spec.ts": "ログインの画面のファイル apps/web/features/F1/login/login-form.tsx を読む（部品の世代：views の部品と契約の口だけを使うか・K316-UI-019）。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-316",
+  "apps/web/tests/k/k317-login-passkey.spec.ts": "lib/auth/session.tsx・lib/auth/client.ts・features/F1/login/login-form.tsx を読み（部品の世代・K317-UI-023）、list-mock.ts を通して 04_design/fidelity.json を読む。apps/web/** で jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-317",
   "apps/web/tests/k/k320-password-reset.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（画面に出す文を実装からでなく正本から引く）。07_qa/test-specs/errors.json は jobs.web.paths に在り、正の絵（/dev/mock/f1/reset-*）は実ブラウザで開く（web の組が流す）・K-320",
   "apps/web/tests/k/k300-stage2-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f1/mocks.tsx・07_functional/段2-F1/切り方.md・写しの台本 07_functional/段2-F1/mock-shots.mjs・design-gate.json・04_design/DESIGN-kaname.md・apps/web/lib/theme.ts を読み、04_design/gen_tokens.py・gen_preview.py・scripts/ci/design_gate.py・k218_design_canvas_test.py を子プロセスで流す（K-300）",
+  "apps/web/tests/k/k330-stage3-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f2/mocks.tsx・部品 apps/web/features/F2/invite/views.tsx・07_functional/段3-F2/切り方.md・写しの台本 07_functional/段3-F2/mock-shots.mjs・本番の入れ物 apps/web/app/(outside)/invite/[token]/page.tsx を読み、scripts/ci/design_gate.py を子プロセスで流す（K-330）",
   "apps/web/tests/k/k315-help.spec.ts": "流れ 05_flow/flow.json・flows.json と入口の枠 apps/web/features/F1/sign-up/frame.tsx・apps/web/lib/built-routes.ts を読み、scripts/ci/flow_gate.py・flow_db_gate.py・trace_gate.py を子プロセスで流す（画面 help と行為 A135 の照らし合わせ）。モックの頁 /dev/mock/f1/help-* は実ブラウザで開く（web の組が流す・K-315）",
   "04_design/gen_preview.py": "正本（DESIGN-kaname.md）を読んでプレビューを書く作り手。04_design/** は spec の組（G37 が --check で流す）・K-218",
   "scripts/ci/k218_design_canvas_test.py": "正本・トークン・設定・プレビュー・build_testplan.py を読み、作りものの木（tempfile）に design_gate を子プロセスで流す。G37 の末尾で spec の組が流す・K-218",

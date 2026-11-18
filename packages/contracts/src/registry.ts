@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:daf570bba663cdc8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6cdb3868682185a0
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -8977,9 +8977,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "confirmTwoFactor",
     "table": "security_events",
     "kind": "create",
-    "input": "SecurityEventsInput",
+    "input": "TwoFactorConfirmInput",
     "success": 201,
-    "output": "BackupCodes",
+    "output": "TwoFactorEnabled",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -9027,7 +9027,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "startTwoFactor",
     "table": "security_events",
     "kind": "create",
-    "input": "SecurityEventsInput",
+    "input": "TwoFactorStartInput",
     "success": 201,
     "output": "TwoFactorSetup",
     "outputList": false,
@@ -9065,7 +9065,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
@@ -18644,4 +18644,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "daf570bba663cdc8";
+export const OPENAPI_HASH = "6cdb3868682185a0";

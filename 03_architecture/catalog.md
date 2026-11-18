@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 48・後のフェーズの行為だけ 20）・前の道すじ 28・表 144・画面の部品 17・共通の処理 13・エラー 181・部品 55・設定 41
+API 365（作った 50・後のフェーズの行為だけ 20）・前の道すじ 28・表 144・画面の部品 17・共通の処理 13・エラー 183・部品 55・設定 41
 
 ## 共通の処理
 
@@ -140,7 +140,7 @@ API 365（作った 48・後のフェーズの行為だけ 20）・前の道す�
 
 | 口 | 道 | 何をするか | 流れ | 状態 | 持ち主のチケット |
 |---|---|---|---|---|---|
-| `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） |  |
+| `acceptInvitation` | POST /api/v1/auth/invitations/:token/accept | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る） | F1,F2 | 契約だけ（501） | K-55 |
 | `requestPasswordReset` | POST /api/v1/auth/password/forgot | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-313 |
 | `resetPassword` | POST /api/v1/auth/password/reset | 作成・実行（auth）— パスワードを再設定する | F1 | 作った | K-314 |
 | `requestAdminRecovery` | POST /api/v1/auth/recovery/admin-request | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 契約だけ（501） | K-305 |
@@ -500,8 +500,8 @@ API 365（作った 48・後のフェーズの行為だけ 20）・前の道す�
 | `answerAgentPermission` | POST /api/v1/conversations/:id/permissions/:pid | 作成・実行（conversations）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `regenerateBackupCodes` | POST /api/v1/me/backup-codes | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `disableTwoFactor` | DELETE /api/v1/me/two-factor | 削除（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
-| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
+| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 作った | K-311 |
+| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 作った | K-311 |
 | `getMyUsage` | GET /api/v1/me/usage | 取得（me）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `resetMemberTwoFactor` | POST /api/v1/members/:id/two-factor/reset | 作成・実行（members）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `createArtifactFromMessage` | POST /api/v1/messages/:id/artifacts | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |

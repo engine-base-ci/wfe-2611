@@ -92,6 +92,16 @@ catch_up:
 # 切る段（大分類ごとにまとめて切った枝）から、1 本の分だけを持ち込む台本（K-187）
 cut:
   take: "python3 scripts/tickets/cut_take.py {ticket} {ref}"
+  # 切る段の機械の検査（2026-11-18・K-55 で足した・scripts/ci/cut_check.py）。cut-review の前に、切る段の枝の写しの根で流れる
+  carry_field: carry
+  scope_cmd: "python3 scripts/ci/cut_check.py scope --ticket {ticket} --files {files}"
+  scope_fields: [affects, ci_wide]
+  prior_tests_cmd: "python3 scripts/ci/cut_check.py prior --files {files}"
+  prior_heading: 前からの試験を替えた所
+  smoke: "python3 scripts/ci/cut_check.py smoke --junit {junit} --tests {tests}"
+  # 本体の赤（実装が無いから赤）と見分けるため「does not exist」は入れない（まだ無い列・関数・表を試験の本体が使うと、実装が無いのに準備の赤に見える）。
+  #   準備の中の誤りは、フック（beforeAll など）と試験の外で落ちた物は文に関わらず赤（cutcheck.py の hook_rx）
+  setup_red: "duplicate key|violates (foreign key|not-null|check|unique)|syntax error at|invalid input syntax"
 # CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
 vm:
   label: linux-vm

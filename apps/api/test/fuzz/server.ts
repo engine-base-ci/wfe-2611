@@ -23,6 +23,7 @@ import { invitationHooks } from "../../src/hooks/invitations.js";
 import { mySecurityHooks } from "../../src/hooks/my-security.js";
 import { passkeysHooks } from "../../src/hooks/passkeys.js";
 import { adminRecoveryHooks } from "../../src/hooks/admin-recovery.js";
+import { twoFactorHooks } from "../../src/hooks/two-factor.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
@@ -84,6 +85,8 @@ Object.assign(
   mySecurityHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
   // パスキーの名前を変える・外す（K-309）。偽のセッションはログインの部品のセッションを持たないので 401 の道を回る
   passkeysHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
+  // 2 段階認証を付ける（K-311）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
+  twoFactorHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
   // 端末をなくした：管理者に頼む（K-305）。送出先は差さない（外に送らない。宛先があれば送れなかった扱いで failed）。待ちの印は本物の認証の接続で引く
   adminRecoveryHooks({ appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );

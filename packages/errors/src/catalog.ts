@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。181 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。183 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2346,6 +2346,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "sec-remove-last"
     }
   },
+  "E-AUTH-017": {
+    "id": "E-AUTH-017",
+    "cls": "auth",
+    "message": "2 段階認証はもう付いています",
+    "action": "安全の設定の画面に戻る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-017",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "already"
+    }
+  },
   "E-AUTH-018": {
     "id": "E-AUTH-018",
     "cls": "conflict",
@@ -2363,6 +2381,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "mfa-setup",
       "state": "sec-add-dup"
+    }
+  },
+  "E-AUTH-020": {
+    "id": "E-AUTH-020",
+    "cls": "auth",
+    "message": "2 段階認証を付けるには、先にパスワードを決めてください",
+    "action": "パスワードを決める",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "no-password"
     }
   },
   "E-AUTH-021": {

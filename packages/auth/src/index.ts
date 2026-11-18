@@ -57,8 +57,10 @@ export const TWO_FACTOR_PENDING_SEC = 300;
 const FRESH_ONLY_PATHS = ["/list-sessions", "/unlink-account"] as const;
 /** 再設定の部品の道も閉じる（画面は契約の口 requestPasswordReset・resetPassword だけを呼ぶ・K-320）。
  *  disabledPaths は道とちょうど同じ文字のときだけ閉じるので、/reset-password/… と末尾の「/」は口の入口（apps/api の app.ts）が 404 にする */
+/** ログアウトの部品の道（/sign-out）も閉じる（K-317）：画面は契約の口 signOut（K-306・public.sessions も閉じる）だけを使う。sessions を閉じない道を残さない */
 export const DISABLED_PATHS = [
   "/sign-in/email",
+  "/sign-out",
   ...PASSKEY_DISABLED_PATHS,
   PASSKEY_STEP_UP_PATH,
   ...FRESH_ONLY_PATHS,
