@@ -83,7 +83,10 @@ async function mockApi(page: Page): Promise<Mock> {
     } else if (req.method() === "POST" && u.pathname === SIGN_OUT_PATH) {
       m.signOuts++;
       reply = { status: 201, body: { data: { ok: true } } };
-    } else if (req.method() === "GET" && /\/me$/.test(u.pathname)) reply = await m.on.me(req);
+    } else if (req.method() === "GET" && u.pathname === "/api/v1/auth/service-status")
+      // 誰でも読める口（K-307・auth public）は同意し直しの 403 を返さない。ログインの画面が開いたときに 1 回読む（K-317）
+      reply = { status: 200, body: { data: { incidents: [], maintenance: null } } };
+    else if (req.method() === "GET" && /\/me$/.test(u.pathname)) reply = await m.on.me(req);
     else reply = await m.on.other(req);
     await route.fulfill({ status: reply.status, contentType: "application/json", body: JSON.stringify(reply.body) });
   });

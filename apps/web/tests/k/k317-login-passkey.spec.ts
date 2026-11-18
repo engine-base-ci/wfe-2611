@@ -698,7 +698,7 @@ async function shellWithSignOut(page: Page, reply: Reply) {
   return out;
 }
 async function pressSignOut(page: Page) {
-  await page.getByRole("button", { name: /高本/ }).first().click();
+  await page.getByRole("button", { name: "自分のメニュー" }).click();
   await page.getByRole("menuitem", { name: "ログアウト" }).click();
 }
 
