@@ -7,7 +7,8 @@
 //   確かめる：始めていない → 409・CONFLICT／もう付いている → 409・E-AUTH-017／6 けたでない → 422・欄 code／
 //           バックアップコードを引けない → 503・E-PAGE-003（付けない）／違う → 422・E-AUTH-004／
 //           付いた → 201 { backup_codes, token }・security_events に two_factor_enabled・app.settle_mfa_pending（その人の全部のセッションの印を下ろす）。
-//           部品が作り直したセッションの印を token で返し、前のセッションの写し（public.sessions）も閉じる
+//           部品が作り直したセッションの印を token で返す。新しいセッションのログインの時刻と写しの始まりの時刻は前のまま引き継ぎ（付けた操作で
+//           15 分の枠も最長の長さも延ばさない）、前のセッションの写し（public.sessions）は閉じる
 //   ログに鍵の文字・otpauth の URI・6 けた・バックアップコード・パスワードを出さない（例外は種類だけ）。鍵とコードは部品が包んで持つ（関門 C8）
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
@@ -25,6 +26,10 @@ export interface TwoFactorDeps {
 
 /** 入口（op.ts）の 401 と同じ形 */
 const unauthenticated: HookReply = { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+const STEP_UP_REQUIRED: HookReply = {
+  status: 403,
+  body: { error: "step_up_required", code: "STEP_UP_REQUIRED", message: "本人確認を取り直してから" },
+};
 const fromCatalog = (status: number, code: string): HookReply => ({ status, body: kanameError(code).toJSON() });
 const invalid = (field: string, message: string): HookReply => ({
   status: 422,
@@ -60,7 +65,8 @@ export function twoFactorFeature(d: TwoFactorDeps) {
         userId,
       ]);
       if (m.rows[0]?.has_password !== true) return fromCatalog(409, "E-AUTH-020");
-      const guard = a.requireStepUpOrFreshLogin?.();
+      // 取り直しの守りはこの口の 1 層だけ（契約の login_or_step_up は入口が見ない）。判定が渡されなければ閉じた側に倒す
+      const guard = a.requireStepUpOrFreshLogin ? a.requireStepUpOrFreshLogin() : STEP_UP_REQUIRED;
       if (guard) return guard;
       const password = str(a.input["password"]);
       const r = await startTotpSetup(d.auth, d.authPool, headers, userId, password);
@@ -100,6 +106,12 @@ export function twoFactorFeature(d: TwoFactorDeps) {
         }
       }
       // ここから先は付いた後。記録・印・前の写しが落ちても、付いた事実とコードは返す（コードを二度と返せなくしない）
+      // 作り直したセッションの写しは、始まりの時刻を前の写しから引き継いでから（最長の長さを延ばさない）、前の写しを閉じる
+      if (r.newSessionId && r.replacedSessionId)
+        await settle(
+          () => d.appPool.query("select app.carry_session_age($1, $2)", [r.newSessionId, r.replacedSessionId]),
+          "写しの始まりの時刻",
+        );
       if (r.replacedSessionId)
         await settle(
           () => d.appPool.query("select app.close_session($1, 'logout')", [r.replacedSessionId]),
