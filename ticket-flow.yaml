@@ -35,7 +35,8 @@ weight:
   max: 1
 # changes: に書かなくてよい物：作り手が作り直す生成物（scripts/ci/generated.json の outputs）と決める人の答えの記録
 # 取り込みでぶつかったら本線の版にして作り直す物でもある（catch_up）。だから作り手が実際に書くファイルとちょうど同じにする（K-191）：
-# 手で持つ物（07_qa/test-plan/ears-elsewhere.json・result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
+# 手で持つ物（result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
+# 表の 3 つ（errors.json・ears-elsewhere.json・ci_scope.json）は <名前>.d/ から作る生成物（K-325）。足すチケットは <名前>.d/K-<番号>.json を changes: に書く
 changes_ignore:
   - ".github/workflows/release-gate.yml"
   - ".github/workflows/staging-e2e.yml"
@@ -54,10 +55,12 @@ changes_ignore:
   - "07_functional/functional-breakdown.md"
   - "07_functional/functional-breakdown.html"
   - "07_qa/test-plan/access-matrix.json"
+  - "07_qa/test-plan/ears-elsewhere.json"
   - "07_qa/test-plan/ears-test-mapping.json"
   - "07_qa/test-plan/test-plan.html"
   - "07_qa/test-plan/test-plan.json"
   - "07_qa/test-plan/test-plan.md"
+  - "07_qa/test-specs/errors.json"
   - "07_qa/test-specs/errors.md"
   - "08_api/API-SPEC.md"
   - "08_api/api-decisions.json"
@@ -84,6 +87,7 @@ changes_ignore:
   - "packages/contracts/src/schemas.ts"
   - "packages/contracts/src/types.ts"
   - "packages/errors/src/catalog.ts"
+  - "scripts/ci/ci_scope.json"
 # 本線が先に進んでいても、同じファイルを変えていなければ CI を流し直さずに取り込む（K-191・D-133.7）。
 # ぶつかってよいのは changes_ignore の物だけ：union の物は両方の行を残し、ほかは本線の版にして regen で作り直す
 catch_up:

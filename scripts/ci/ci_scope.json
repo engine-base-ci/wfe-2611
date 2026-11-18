@@ -26,7 +26,8 @@
   "ci": [
    ".github/**",
    "05_flow/build_testplan.py",
-   "scripts/dev/**", "scripts/spec-sync/**",
+   "scripts/dev/**",
+   "scripts/spec-sync/**",
    ".act-ci.env",
    "vitest.config.ts",
    "apps/*/playwright.config.ts",
@@ -45,7 +46,9 @@
  },
  "spec": {
   "generated": true,
-  "package_paths": ["apps/*/vercel.json"],
+  "package_paths": [
+   "apps/*/vercel.json"
+  ],
   "paths": [
    "05_flow/*.py",
    "05_flow/*.json",
@@ -68,7 +71,10 @@
    "infra/docker-compose.dev.yml",
    "infra/*.md",
    "infra/certs/**",
-   "infra/provision/README.md", "scripts/ci/**", "scripts/tickets/**", "scripts/qa/**"
+   "infra/provision/README.md",
+   "scripts/ci/**",
+   "scripts/tickets/**",
+   "scripts/qa/**"
   ]
  },
  "shared_min_dependents": 2,
@@ -115,32 +121,291 @@
  ],
  "_gates_doc": "重い検査（番号 → 関係するファイル）。scope=ticket では変えたファイルが当たるときだけ流す。全部の回は全部（K-172・D-133.7）",
  "gates": {
-  "27": ["spec-dependencies.yaml", "skill-pipeline.yaml", "scripts/ci/**", "scripts/tickets/**", "scripts/spec-sync/**", "00_research/**", "01_hearing/**", "02_tech_stack/**", "03_architecture/**", "04_design/**", "05_flow/**", "06_mockup/**", "07_functional/**", "07_qa/**", "07_tasks/**", "08_api/**", "08_schedule/**", "09_features/**", "10_skills/**", "11_tickets/**", "apps/**", "packages/**", "infra/docker-compose.dev.yml", "package.json"],
-  "36": ["08_api/**", "apps/api/src/**", "packages/contracts/**", "packages/db/**", "scripts/ci/schemathesis*"],
-  "38": ["scripts/ci/generated*", "05_flow/**", "08_api/**", "07_functional/**", "04_design/**", "03_architecture/**", "packages/contracts/**", "apps/web/app/**", "01_hearing/決定ログ*", "11_tickets/**", "07_qa/test-specs/**"],
-  "47": [".github/**", "scripts/ci/**", "05_flow/build_testplan.py", "package.json", "apps/**/*.ts", "apps/**/*.tsx", "apps/**/*.mts", "packages/**/*.ts", "packages/**/*.tsx", "packages/**/*.mts", "07_qa/test-specs/errors.json", "scripts/**/*.py", "scripts/**/*.mjs", "scripts/**/*.sh", "apps/*/scripts/**/*.mjs", "05_flow/*.py", "packages/db/migrations/**", "08_api/openapi.yaml", "08_api/db-columns.json", "08_api/endpoints.json", "08_api/types.ts"],
-  "56": ["11_tickets/**"],
-  "57": ["scripts/ci/ci_scope*", "scripts/ci/ticket_affects*", "scripts/ci/vitest_related*", "pnpm-workspace.yaml", "**/package.json", "package.json", "pnpm-lock.yaml", "apps/**/*.ts", "apps/**/*.tsx", "apps/**/*.mjs", "packages/**/*.ts", "packages/**/*.tsx", "packages/**/*.mjs", "03_architecture/choke-points.json", "scripts/ci/generated.json", "scripts/ci/web_select*", "scripts/ci/ticket_commit_gate*", "scripts/ci/ticket_order_gate*", "scripts/tickets/**", ".github/workflows/v3-gate.yml", "05_flow/build_testplan.py", "vitest.config.ts"],
-  "62": ["scripts/ci/ci_lean*", "scripts/ci/ci_scope*", "scripts/ci/layer_audit*", "scripts/ci/stack_gate*", "scripts/ci/generated*"]
+  "27": [
+   "spec-dependencies.yaml",
+   "skill-pipeline.yaml",
+   "scripts/ci/**",
+   "scripts/tickets/**",
+   "scripts/spec-sync/**",
+   "00_research/**",
+   "01_hearing/**",
+   "02_tech_stack/**",
+   "03_architecture/**",
+   "04_design/**",
+   "05_flow/**",
+   "06_mockup/**",
+   "07_functional/**",
+   "07_qa/**",
+   "07_tasks/**",
+   "08_api/**",
+   "08_schedule/**",
+   "09_features/**",
+   "10_skills/**",
+   "11_tickets/**",
+   "apps/**",
+   "packages/**",
+   "infra/docker-compose.dev.yml",
+   "package.json"
+  ],
+  "36": [
+   "08_api/**",
+   "apps/api/src/**",
+   "packages/contracts/**",
+   "packages/db/**",
+   "scripts/ci/schemathesis*"
+  ],
+  "38": [
+   "scripts/ci/generated*",
+   "05_flow/**",
+   "08_api/**",
+   "07_functional/**",
+   "04_design/**",
+   "03_architecture/**",
+   "packages/contracts/**",
+   "apps/web/app/**",
+   "01_hearing/決定ログ*",
+   "11_tickets/**",
+   "07_qa/test-specs/**"
+  ],
+  "47": [
+   ".github/**",
+   "scripts/ci/**",
+   "05_flow/build_testplan.py",
+   "package.json",
+   "apps/**/*.ts",
+   "apps/**/*.tsx",
+   "apps/**/*.mts",
+   "packages/**/*.ts",
+   "packages/**/*.tsx",
+   "packages/**/*.mts",
+   "07_qa/test-specs/errors.json",
+   "scripts/**/*.py",
+   "scripts/**/*.mjs",
+   "scripts/**/*.sh",
+   "apps/*/scripts/**/*.mjs",
+   "05_flow/*.py",
+   "packages/db/migrations/**",
+   "08_api/openapi.yaml",
+   "08_api/db-columns.json",
+   "08_api/endpoints.json",
+   "08_api/types.ts"
+  ],
+  "56": [
+   "11_tickets/**"
+  ],
+  "57": [
+   "scripts/ci/ci_scope*",
+   "scripts/ci/ticket_affects*",
+   "scripts/ci/vitest_related*",
+   "pnpm-workspace.yaml",
+   "**/package.json",
+   "package.json",
+   "pnpm-lock.yaml",
+   "apps/**/*.ts",
+   "apps/**/*.tsx",
+   "apps/**/*.mjs",
+   "packages/**/*.ts",
+   "packages/**/*.tsx",
+   "packages/**/*.mjs",
+   "03_architecture/choke-points.json",
+   "scripts/ci/generated.json",
+   "scripts/ci/web_select*",
+   "scripts/ci/ticket_commit_gate*",
+   "scripts/ci/ticket_order_gate*",
+   "scripts/tickets/**",
+   ".github/workflows/v3-gate.yml",
+   "05_flow/build_testplan.py",
+   "vitest.config.ts"
+  ],
+  "62": [
+   "scripts/ci/ci_lean*",
+   "scripts/ci/ci_scope*",
+   "scripts/ci/layer_audit*",
+   "scripts/ci/stack_gate*",
+   "scripts/ci/generated*"
+  ]
  },
  "data_links": [
-  { "paths": ["scripts/ci/perf_budget.json"], "tests": ["apps/api/test/k237_perf_budget.test.ts", "apps/web/tests/k/k237-screen-budget.spec.ts"] },
-  { "paths": ["apps/web/vercel.json", "apps/web/middleware.ts", "apps/web/app/**", "apps/web/components/**", "apps/web/features/**", "apps/web/lib/**"], "tests": ["apps/web/test/k262-edge-proxy.test.ts"] },
-  { "paths": ["05_flow/screen_api.py", "packages/contracts/src/types.ts", "08_api/openapi.yaml", "08_api/api-field-consumption.json"], "tests": ["apps/api/test/features/F4/me-workspace.test.ts"] },
-  { "paths": ["scripts/ci/chat_one.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
-  { "paths": ["scripts/ci/chat_one.test.mjs"], "tests": ["apps/web/tests/screens/agent-chat.spec.ts"] },
-  { "paths": ["apps/web/tests/features/F5/approve-complete-approve.spec.ts", "apps/web/tests/features/F5/approve-complete-complete.spec.ts", "apps/web/tests/features/F5/approve-complete-execute.spec.ts", "apps/web/tests/features/F5/approve-complete-guard.spec.ts", "apps/web/tests/features/F5/approve-complete-queue.spec.ts", "apps/web/tests/features/F5/approve-complete-return.spec.ts", "apps/web/tests/features/F5/approve-complete-live.spec.ts"], "tests": ["apps/web/tests/features/F5/k247-band-settle.spec.ts"] },
-  { "paths": ["scripts/ci/row_rules.mjs"], "tests": ["apps/api/test/authz_rows.test.ts"] },
-  { "paths": ["apps/api/src/contract/deps.ts"], "tests": ["apps/api/test/features/F1/my-security.test.ts"] },
-  { "paths": ["scripts/ci/canvas_field_ledger.json"], "tests": ["apps/api/test/features/F4/ticket-list.test.ts"] },
-  { "paths": ["apps/api/test/features/F4/ticket-list.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_tickets.test.ts"] },
-  { "paths": ["apps/api/test/features/F4/setup-tasks.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_me_setup_tasks.test.ts", "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"] },
-  { "paths": ["apps/api/test/features/F1/passkeys.test.ts", "apps/api/test/features/F1/terms.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/patch_me_passkeys_id.test.ts", "apps/api/test/generated/delete_me_passkeys_id.test.ts"] },
-  { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
-  { "paths": ["04_design/canvas/*.dc.html", "scripts/ci/canvas_layout_ledger.json"], "tests": ["apps/web/tests/k/k254-canvas-layout.spec.ts"] },
-  { "paths": ["07_functional/段2-F1/mock-shots.mjs", "07_functional/段2-F1/切り方.md", "design-gate.json", "scripts/ci/design_gate.py", "scripts/ci/k218_design_canvas_test.py"], "tests": ["apps/web/tests/k/k300-stage2-mock.spec.ts"] },
-  { "paths": ["07_functional/段3-F2/mock-shots.mjs", "07_functional/段3-F2/切り方.md", "design-gate.json", "scripts/ci/design_gate.py"], "tests": ["apps/web/tests/k/k330-stage3-mock.spec.ts"] },
-  { "paths": ["05_flow/flow.json", "05_flow/flows.json", "05_flow/phase1.py", "05_flow/screen_api.py", "05_flow/data.py", "05_flow/build_flow.py", "01_hearing/決定ログ_進行中.md", "03_architecture/choke-points.json", "scripts/ci/flow_gate.py", "scripts/ci/flow_db_gate.py", "scripts/ci/trace_gate.py", "apps/web/features/F1/sign-up/frame.tsx", "apps/web/lib/built-routes.ts"], "tests": ["apps/web/tests/k/k315-help.spec.ts"] },
+  {
+   "paths": [
+    "scripts/ci/perf_budget.json"
+   ],
+   "tests": [
+    "apps/api/test/k237_perf_budget.test.ts",
+    "apps/web/tests/k/k237-screen-budget.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/vercel.json",
+    "apps/web/middleware.ts",
+    "apps/web/app/**",
+    "apps/web/components/**",
+    "apps/web/features/**",
+    "apps/web/lib/**"
+   ],
+   "tests": [
+    "apps/web/test/k262-edge-proxy.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "packages/contracts/src/types.ts",
+    "08_api/openapi.yaml",
+    "08_api/api-field-consumption.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/me-workspace.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "scripts/ci/chat_one.mjs"
+   ],
+   "tests": [
+    "apps/web/tests/screens/agent-chat.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "scripts/ci/chat_one.test.mjs"
+   ],
+   "tests": [
+    "apps/web/tests/screens/agent-chat.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/tests/features/F5/approve-complete-approve.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-complete.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-execute.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-guard.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-queue.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-return.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-live.spec.ts"
+   ],
+   "tests": [
+    "apps/web/tests/features/F5/k247-band-settle.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "scripts/ci/row_rules.mjs"
+   ],
+   "tests": [
+    "apps/api/test/authz_rows.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/contract/deps.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/my-security.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "scripts/ci/canvas_field_ledger.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-list.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-list.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/setup-tasks.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_me_setup_tasks.test.ts",
+    "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/passkeys.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_me_passkeys_id.test.ts",
+    "apps/api/test/generated/delete_me_passkeys_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "infra/provision/**"
+   ],
+   "tests": [
+    "packages/storage/test/k133_private.test.ts",
+    "packages/storage/test/s3.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "04_design/canvas/*.dc.html",
+    "scripts/ci/canvas_layout_ledger.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k254-canvas-layout.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/段2-F1/mock-shots.mjs",
+    "07_functional/段2-F1/切り方.md",
+    "design-gate.json",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/k218_design_canvas_test.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k300-stage2-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/段3-F2/mock-shots.mjs",
+    "07_functional/段3-F2/切り方.md",
+    "design-gate.json",
+    "scripts/ci/design_gate.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k330-stage3-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/flow.json",
+    "05_flow/flows.json",
+    "05_flow/phase1.py",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "05_flow/data.py",
+    "05_flow/build_flow.py",
+    "01_hearing/決定ログ_進行中.md",
+    "03_architecture/choke-points.json",
+    "scripts/ci/flow_gate.py",
+    "scripts/ci/flow_db_gate.py",
+    "scripts/ci/trace_gate.py",
+    "apps/web/features/F1/sign-up/frame.tsx",
+    "apps/web/lib/built-routes.ts"
+   ],
+   "tests": [
+    "apps/web/tests/k/k315-help.spec.ts"
+   ]
+  },
   {
    "paths": [
     "07_qa/test-plan/access-matrix.json"
@@ -677,14 +942,42 @@
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）",
-  "registry": ["packages/db/src/index.ts", "11_tickets/**", "07_qa/**", "08_api/**", "07_functional/**", "05_flow/**", "01_hearing/**", "scripts/ci/ci_scope.json", ".github/**"],
-  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py"],
-  "web_own": ["apps/web/app/**"],
-  "web_tests": ["apps/web/tests/**"],
+  "registry": [
+   "packages/db/src/index.ts",
+   "11_tickets/**",
+   "07_qa/**",
+   "08_api/**",
+   "07_functional/**",
+   "05_flow/**",
+   "01_hearing/**",
+   "scripts/ci/ci_scope.json",
+   ".github/**"
+  ],
+  "all_on": [
+   "apps/web/playwright.config.ts",
+   "apps/web/package.json",
+   "pnpm-lock.yaml",
+   "package.json",
+   "scripts/ci/web_run.py",
+   "scripts/ci/web_select.py"
+  ],
+  "web_own": [
+   "apps/web/app/**"
+  ],
+  "web_tests": [
+   "apps/web/tests/**"
+  ],
   "gates": {
    "70": {
-    "tests": ["apps/web/tests/fidelity/fidelity.spec.ts"],
-    "on": ["scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", "04_design/fidelity.json", "04_design/canvas/**"]
+    "tests": [
+     "apps/web/tests/fidelity/fidelity.spec.ts"
+    ],
+    "on": [
+     "scripts/ci/fidelity_compare.mjs",
+     "scripts/ci/visual_fidelity.mjs",
+     "04_design/fidelity.json",
+     "04_design/canvas/**"
+    ]
    }
   }
  },

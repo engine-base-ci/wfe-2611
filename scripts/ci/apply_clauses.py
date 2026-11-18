@@ -3,7 +3,7 @@
    決定ログの節末に ### 決めたこと の表を足し、data.py の要素（role/job/act/object/screen/blueprint）の source に D-xxx.n を足し、
    文書（ER図・設計書・DESIGN）はトレーサビリティ表の行、errors.json は meta.source、selected-stack.json は _decisions に足す。
    out（理由）は clauses_out に、new_objects は proposals_objects.json に出す（人が見て OBJECTS に足す）。"""
-import json, re, sys, glob
+import json, re, subprocess, sys, glob
 LOG='01_hearing/決定ログ_進行中.md'; DATA='05_flow/data.py'
 PREFIX={"role":' ("{id}",', "job":' ("{id}",', "act":'  ("{id}",', "object":' ("{id}",', "screen":' "{id}":(', "blueprint":' "{id}":('}
 def add_src(L, kind, id_, cid):
@@ -52,6 +52,8 @@ def main():
     open(LOG,'w',encoding='utf-8').write(log); open(DATA,'w',encoding='utf-8').write('\n'.join(L))
     for f,items in docs.items():
         if f.endswith('.json'):
+            # errors.json は errors.d/ から作る生成物（K-325）：書き先は _base.json（生成物に書くと作り直しで消える）
+            if f.replace('\\','/').endswith('07_qa/test-specs/errors.json'): f=f[:-len('errors.json')]+'errors.d/_base.json'
             j=json.load(open(f,encoding='utf-8'))
             if 'errors' in j: j.setdefault('meta',{}).setdefault('source',[]); j['meta']['source']+=[c for c,_ in items if c not in j['meta']['source']]
             elif '_decisions' in j: j['_decisions'].setdefault('clauses',[]); j['_decisions']['clauses']+=[c for c,_ in items if c not in j['_decisions']['clauses']]
@@ -64,6 +66,7 @@ def main():
             if t.split('\n')[-1].startswith('|'): t+='\n'+''.join(f'| {c} | {i} | （決めたことの文） |\n' for c,i in items)
             else: t+='\n\n## 決めたことの文の反映（機械追記）\n'+''.join(f'- {c} {i}\n' for c,i in items)
             open(f,'w',encoding='utf-8').write(t.rstrip('\n')+'\n')
+    if any(f.replace('\\','/').endswith('07_qa/test-specs/errors.json') for f in docs): subprocess.run(['python3','scripts/ci/build_registries.py'],check=True)   # K-325：_base.json から errors.json を作り直す
     json.dump(props,open('proposals_objects.json','w',encoding='utf-8'),ensure_ascii=False,indent=1)
     print(stats); print('要素が見つからない参照', len(miss)); [print('  ',x) for x in miss[:30]]; print('new_objects', len(props))
 main()

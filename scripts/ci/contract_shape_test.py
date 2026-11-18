@@ -155,6 +155,14 @@ AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
     "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),                          # hooks/agent.ts:66
 }
 
+# チケットごとのファイル（contract_shape.d/K-xxx.py）の分を足す（K-325）。足せるのはこの 6 つの表だけ（OA・SCHEMAS などの読んだ値は足させない）
+sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+from registry_d import merge_py  # noqa: E402
+
+FRAGMENT_NAMES = ("REQUIRED_INPUTS", "NO_REQUIRED_INPUTS", "PATH_PATTERNS", "VALUE_RANGES", "UNEXPRESSIBLE_422", "AGENT_ANSWERS")
+merge_py(globals(), ROOT / "scripts" / "ci" / "contract_shape.d", names=FRAGMENT_NAMES,
+         helpers={"CODE_SEP": CODE_SEP, "CODE_CHAR": CODE_CHAR})
+
 # 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
 HOOKS_DIR = ROOT / "apps/api/src/hooks"
 # 共通の処理（apps/api/src/contract/op.ts）のうち、hooks から呼ばれて状態コードを返すもの

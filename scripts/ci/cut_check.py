@@ -48,10 +48,18 @@ COMMON_ENTRIES = (
 # パッケージの束ね口（packages/<名>/src/index.ts）：「@kaname/<名>」の import は全部ここに解けるので、共通の入口と同じに外す
 #   （段 2 の K-309 では packages/auth/src/index.ts だけで 35 件出ていた）
 PACKAGE_BARREL = re.compile(r"^packages/[^/]+/src/index\.ts$")
+# 共通の表のチケットごとの置き場（K-325）：下に置く K-xxx.* は、その表と同じく共通の入口として外す
+COMMON_DIRS = (
+    "05_flow/screen_api.d/",
+    "scripts/ci/contract_shape.d/",
+    "07_qa/test-specs/errors.d/",
+    "07_qa/test-plan/ears-elsewhere.d/",
+    "scripts/ci/ci_scope.d/",
+)
 
 
 def _common(path: str) -> bool:
-    return path in COMMON_ENTRIES or bool(PACKAGE_BARREL.match(path))
+    return path in COMMON_ENTRIES or path.startswith(COMMON_DIRS) or bool(PACKAGE_BARREL.match(path))
 
 
 def repo_root() -> pathlib.Path:
