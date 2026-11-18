@@ -38,11 +38,15 @@ function failOf(status: number, body: Json): PasskeyResult {
       ? "unauthenticated"
       : status === 403 && code === "STEP_UP_REQUIRED"
         ? "step_up"
-        : status === 409 || code === PASSKEY_EXISTS
+        : code === PASSKEY_EXISTS
           ? "exists"
           : "failed";
   return { ok: false, kind, status, code, message };
 }
+/** 網が切れた・口に届かない（fetch の例外）。正本の E-PAGE-008 の文を出す */
+export const NETWORK_FAIL = "E-PAGE-008";
+const netFail = (): PasskeyResult => ({ ok: false, kind: "failed", status: 0, code: NETWORK_FAIL, message: null });
+
 /** 端末の手順の失敗：もう付いている（InvalidStateError）か、やめた・時間切れ（それ以外） */
 function deviceFail(e: unknown): PasskeyResult {
   const name = e instanceof Error ? e.name : "";
@@ -68,6 +72,13 @@ async function options(
 
 /** パスキーを足す（名前は前後の空白を除いた値を呼ぶ側が渡す） */
 export async function addPasskey(name: string): Promise<PasskeyResult> {
+  try {
+    return await addPasskeyOnce(name);
+  } catch {
+    return netFail();
+  }
+}
+async function addPasskeyOnce(name: string): Promise<PasskeyResult> {
   const o = await options(REGISTER_OPTIONS);
   if (!o.ok) return o.fail;
   let response: unknown;
@@ -93,6 +104,13 @@ export async function addPasskey(name: string): Promise<PasskeyResult> {
 
 /** パスキーで本人確認を取り直す（パスワードの無い人・K-309） */
 export async function stepUpWithPasskey(): Promise<PasskeyResult> {
+  try {
+    return await stepUpWithPasskeyOnce();
+  } catch {
+    return netFail();
+  }
+}
+async function stepUpWithPasskeyOnce(): Promise<PasskeyResult> {
   const o = await options(AUTH_OPTIONS);
   if (!o.ok) return o.fail;
   let response: unknown;
@@ -111,12 +129,17 @@ export async function stepUpWithPasskey(): Promise<PasskeyResult> {
   return failOf(r.status, r.body);
 }
 
-/** 失敗を小窓に出す文にする（正本の文が在ればそれ・口の文・決まった文） */
-export function passkeyFailText(f: Extract<PasskeyResult, { ok: false }>, expired: string): string {
+/** 失敗を小窓に出す文にする（正本の文が在ればそれ・口の文・決まった文）。
+ *  cancelled は端末でやめた・時間切れのときの文（足すは PASSKEY_FAILED、取り直しは E-AUTH-021 の文を呼ぶ側が渡す） */
+export function passkeyFailText(
+  f: Extract<PasskeyResult, { ok: false }>,
+  expired: string,
+  cancelled: string = PASSKEY_FAILED,
+): string {
   if (f.kind === "unauthenticated" && f.code !== "STEP_UP_FAILED") return expired;
-  if (f.kind === "exists") return CATALOG[PASSKEY_EXISTS]?.message ?? PASSKEY_FAILED;
-  if (f.kind === "cancelled") return PASSKEY_FAILED;
-  return f.message ?? CATALOG[f.code]?.message ?? PASSKEY_FAILED;
+  if (f.kind === "exists") return CATALOG[PASSKEY_EXISTS]?.message ?? cancelled;
+  if (f.kind === "cancelled") return cancelled;
+  return f.message ?? CATALOG[f.code]?.message ?? cancelled;
 }
 
 /** パスキーの名前の既定：端末の種類から「<OS>（<ブラウザ>）」（K-309 の口の既定と同じ形。機種名はブラウザから分からない） */

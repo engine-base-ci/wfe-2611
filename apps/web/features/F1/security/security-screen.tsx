@@ -8,11 +8,11 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { CATALOG } from "@kaname/errors/catalog";
 import { ErrorState, Loading, MeSub } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
-import { call, type CallErr } from "@/lib/api/call";
+import { call, type CallErr, type CallResult } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { safeNext } from "./next";
-import { addPasskey, defaultPasskeyName, passkeyFailText } from "./passkey";
+import { addPasskey, defaultPasskeyName, NETWORK_FAIL, passkeyFailText } from "./passkey";
 import { StepUp } from "./step-up";
 import { removeBlockOf, passkeyRows, toState, type MySecurityAnswer } from "./to-state";
 import {
@@ -27,6 +27,10 @@ import {
 const SCREEN = "mfa-setup";
 const msgOf = (code: string): string => CATALOG[code]?.message ?? "";
 const expired = (): string => msgOf(PAGE_ERROR.sessionExpired);
+/** 網が切れた・口に届かない（call が投げた） */
+const offline = (): string => msgOf(NETWORK_FAIL);
+/** 今いる道（問いを付けたまま）。ログインから戻る先 */
+const hereNow = (): string => `${window.location.pathname}${window.location.search}`;
 /** 書く口の失敗の文（401 はログイン切れ・欄の理由・口の文・正本の文） */
 function writeFailText(r: CallErr, field?: string): string {
   if (r.status === 401) return expired();
@@ -34,7 +38,7 @@ function writeFailText(r: CallErr, field?: string): string {
   return r.message ?? msgOf(errorCodeOf(r));
 }
 
-type Pending = { kind: "add"; name: string } | { kind: "remove"; id: string };
+type Pending = { kind: "add"; name: string } | { kind: "remove"; id: string; name: string };
 const REASON: Record<Pending["kind"], string> = {
   add: "パスキーを足す前に、本人か確かめます",
   remove: "パスキーを外す前に、本人か確かめます",
@@ -45,9 +49,13 @@ function useSecurity() {
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const load = useCallback(async () => {
     setLoadErr(null);
-    const r = await call("getMySecurity", { screenId: SCREEN });
-    if (r.ok) setSec(r.data as MySecurityAnswer);
-    else setLoadErr(r.kind === "unauthenticated" ? PAGE_ERROR.sessionExpired : errorCodeOf(r));
+    try {
+      const r = await call("getMySecurity", { screenId: SCREEN });
+      if (r.ok) setSec(r.data as MySecurityAnswer);
+      else setLoadErr(r.kind === "unauthenticated" ? PAGE_ERROR.sessionExpired : errorCodeOf(r));
+    } catch {
+      setLoadErr(NETWORK_FAIL); // 網が切れた（口に届かない）
+    }
   }, []);
   return { sec, loadErr, load, setSec };
 }
@@ -71,6 +79,8 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   const [renameBusy, setRenameBusy] = useState(false);
   // 外す
   const [removeId, setRemoveId] = useState<string | null>(null);
+  /** 外すパスキーの名前（開いた時点の名前を持つ。別のタブで先に外され読み直しで行が消えても字が空にならない） */
+  const [removeName, setRemoveName] = useState("");
   const [removeErr, setRemoveErr] = useState<string | null>(null);
   const [removeBusy, setRemoveBusy] = useState(false);
   // 取り直し
@@ -82,8 +92,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     if (started.current) return;
     started.current = true;
     if (!getToken()) {
-      const here = `${window.location.pathname}${window.location.search}`;
-      window.location.replace(`/login?next=${encodeURIComponent(here)}`);
+      window.location.replace(`/login?next=${encodeURIComponent(hereNow())}`);
       return;
     }
     setUnsupported(typeof window.PublicKeyCredential !== "function");
@@ -157,6 +166,8 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
       if (!r.ok) return setRenameErr(writeFailText(r, "name"));
       setRenameId(null);
       void load();
+    } catch {
+      setRenameErr(offline()); // 書いた値は残す
     } finally {
       sending.current = false;
       setRenameBusy(false);
@@ -164,19 +175,29 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   };
 
   const openRemove = (id: string) => {
+    const row = sec ? passkeyRows(sec).find((k) => k.id === id) : undefined;
+    setRemoveName(row?.name ?? "");
     setRemoveErr(null);
     setRemoveId(id);
   };
-  const runRemove = async (id: string, retried: boolean) => {
-    const r = await call("deletePasskey", { params: { id }, screenId: SCREEN, keepOn401: true });
+  const runRemove = async (id: string, name: string, retried: boolean) => {
+    let r: CallResult<"deletePasskey">;
+    try {
+      r = await call("deletePasskey", { params: { id }, screenId: SCREEN, keepOn401: true });
+    } catch {
+      setRemoveName(name);
+      setRemoveId(id);
+      return setRemoveErr(offline());
+    }
     if (r.ok) {
       setRemoveId(null);
       return void load();
     }
     if (r.kind === "step_up" && !retried) {
       setRemoveId(null);
-      return setPending({ kind: "remove", id });
+      return setPending({ kind: "remove", id, name });
     }
+    setRemoveName(name);
     setRemoveId(id);
     setRemoveErr(writeFailText(r));
     if (r.kind === "conflict") void load(); // 別のタブで先に外した等：一覧を読み直す
@@ -186,7 +207,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     sending.current = true;
     setRemoveBusy(true);
     try {
-      await runRemove(removeId, false);
+      await runRemove(removeId, removeName, false);
     } finally {
       sending.current = false;
       setRemoveBusy(false);
@@ -200,7 +221,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
     sending.current = true;
     try {
       if (p.kind === "add") await runAdd(p.name, true);
-      else await runRemove(p.id, true);
+      else await runRemove(p.id, p.name, true);
     } finally {
       sending.current = false;
     }
@@ -222,7 +243,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   if (loadErr)
     return frame(
       loadErr === PAGE_ERROR.sessionExpired ? (
-        <ErrorState code={loadErr} acts={[`/login?next=${encodeURIComponent("/mfa-setup")}`]} />
+        <ErrorState code={loadErr} acts={[`/login?next=${encodeURIComponent(hereNow())}`]} />
       ) : (
         <ErrorState
           code={loadErr}
@@ -238,7 +259,6 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
   if (!sec) return frame(<Loading />);
 
   const state = toState(sec, new Date(), unsupported);
-  const target = removeId ? state.passkeys.find((k) => k.id === removeId) : undefined;
   const block = removeBlockOf(sec);
   const renameTarget = renameId ? state.passkeys.find((k) => k.id === renameId) : undefined;
   return frame(
@@ -274,7 +294,7 @@ export function SecurityScreen({ add, next }: { add: boolean; next: string | nul
       />
       <RemovePasskeyConfirm
         open={removeId !== null}
-        name={target?.name ?? ""}
+        name={removeName}
         blocked={removeErr ?? (block ? msgOf(block) : null)}
         busy={removeBusy}
         onOpenChange={(o) => {

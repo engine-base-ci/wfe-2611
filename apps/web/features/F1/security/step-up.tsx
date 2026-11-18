@@ -8,7 +8,7 @@ import { CATALOG } from "@kaname/errors/catalog";
 import { PAGE_ERROR } from "@/components/k/error-of";
 import { call } from "@/lib/api/call";
 import { EMPTY_CODE } from "../login/code-boxes";
-import { passkeyFailText, stepUpWithPasskey } from "./passkey";
+import { NETWORK_FAIL, passkeyFailText, stepUpWithPasskey } from "./passkey";
 import { StepUpDialog } from "./views";
 
 const expiredText = (): string => CATALOG[PAGE_ERROR.sessionExpired]?.message ?? "";
@@ -55,7 +55,7 @@ export function StepUp({ open, reason, withCode, withPasskey, onDone, onCancel }
       if (withPasskey) {
         const r = await stepUpWithPasskey();
         if (r.ok) return finish(true);
-        setError(passkeyFailText(r, expiredText()));
+        setError(passkeyFailText(r, expiredText(), failedText()));
         return;
       }
       const body = withCode ? { password, code: code.join("") } : { password };
@@ -63,6 +63,8 @@ export function StepUp({ open, reason, withCode, withPasskey, onDone, onCancel }
       if (r.ok) return finish(true);
       if (r.status === 401 && r.code !== "STEP_UP_FAILED") setError(expiredText());
       else setError(r.fields["password"] ?? r.fields["code"] ?? r.message ?? failedText());
+    } catch {
+      setError(CATALOG[NETWORK_FAIL]?.message ?? failedText()); // 網が切れた（口に届かない）
     } finally {
       sending.current = false;
       setBusy(false);
