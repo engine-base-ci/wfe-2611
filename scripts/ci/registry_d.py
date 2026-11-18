@@ -5,7 +5,7 @@
 表に足す分をチケットごとのファイルに分ければ、別のファイルなのでぶつからない。
 同じ鍵を 2 つのファイルが持てば、ここで止める（黙ってどちらかを取らない）。
 
-  fragments(dir, ".py")        置き場の断片を名前の順に出す（_base.json・README.md は外す。決まりに合わない名前は止める）
+  fragments(dir, ".py")        置き場の断片を名前の順に出す（_base.json・README.md・隠しファイルは外す。決まりに合わない名前は止める）
   merge_py(target, dir, ...)   .py の断片を 1 つずつ実行し、大文字の名前ごとに target の表へ足す
 
 足し方：dict は鍵ごと（同じ鍵は止める）・set は和・list はつなぐ。
@@ -36,7 +36,7 @@ def fragments(directory: Path, suffix: str) -> list[Path]:
         return []
     found: list[Path] = []
     for path in sorted(directory.iterdir()):
-        if path.name in SKIP:
+        if path.name in SKIP or path.name.startswith("."):   # 隠しファイル（Mac の .DS_Store など）は断片ではない
             continue
         if not FRAGMENT.match(path.name):
             raise RegistryConflict(
