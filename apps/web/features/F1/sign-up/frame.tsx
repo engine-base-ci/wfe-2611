@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { Route } from "next";
 import type { ReactNode } from "react";
-import { pendingRoute } from "@/lib/pending-route";
 import "./sign-up.css";
 
 // 規約の版の行き先（K-53）。画面は今の版の口（getCurrentTerms）が返す url を使う（features/F1/consent-terms/current-terms.ts）。
@@ -16,8 +15,9 @@ export interface TermsLinks {
   privacy: string;
 }
 export const DEFAULT_TERMS_LINKS: TermsLinks = { terms: TERMS_HREF, privacy: PRIVACY_HREF };
-// ログインしていない人の「困ったとき」の画面はまだ切っていない（ログイン後は 問い合わせ・お知らせ）
-export const HELP_HREF = pendingRoute("/help", "困ったとき（未切り出し）");
+// ログインしていない人の「困ったとき」（K-315）。いまの様子はその稼働状況の区画へ
+export const HELP_HREF = "/help" satisfies Route;
+export const STATUS_HREF = "/help#status" satisfies Route;
 
 /** 下の行き先の形。all＝利用規約・プライバシー・困ったとき／help＝困ったとき だけ（入れ物の待ち）／
  *  status＝「いまの様子 ・ 困ったとき」の 1 行（キャンバス AuthVerifyExpired・K-256） */
@@ -49,14 +49,11 @@ export function AuthFrame({
   );
 }
 
-/** 「いまの様子 ・ 困ったとき」（字の「・」で区切る 1 行）。いまの様子の画面はまだ無いので、出すが押せない
- *  （href なし・aria-disabled・Tab で止まらない・正本の使えない状態の薄さ・D-145.9） */
+/** 「いまの様子 ・ 困ったとき」（字の「・」で区切る 1 行）。いまの様子は困ったときの稼働状況（/help#status・K-315） */
 function StatusFoot() {
   return (
     <nav className="k-auth-foot" data-foot="status" aria-label="Kaname について">
-      <a role="link" aria-disabled="true" tabIndex={-1}>
-        いまの様子
-      </a>
+      <Link href={STATUS_HREF}>いまの様子</Link>
       {" ・ "}
       <Link href={HELP_HREF}>困ったとき</Link>
     </nav>

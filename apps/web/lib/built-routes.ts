@@ -19,6 +19,7 @@ export const BUILT_ROUTES: readonly string[] = [
   "/dev/shell",
   "/dev/ui",
   "/dev/views",
+  "/help",
   "/invite/:token",
   "/legal/:kind",
   "/login",

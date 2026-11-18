@@ -1,9 +1,9 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-16",
+ "frozen_at": "2026-11-18",
  "summary": {
-  "total_screens": 36,
+  "total_screens": 37,
   "total_apis": 365,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
@@ -3187,6 +3187,21 @@
    "coverage_status": "STATIC",
    "missing": [],
    "static_reason": "規約・プライバシーポリシーの文面は、ひな形（apps/web/content/legal/<kind>-v<版>.md）と設定（legalValues）だけで埋め、DB も API も読まない。画面だけを立ち上げる CI の段でも開け、?v= で古い版も出せるようにするため。今の版の名前と url は、リンクを出す登録の画面と同意し直しの画面が getCurrentTerms で取る"
+  },
+  {
+   "screen_id": "help",
+   "screen_name": "困ったとき",
+   "mock_path": null,
+   "required_apis": [
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/auth/service-status",
+     "act": "A135"
+    }
+   ],
+   "transitions": [],
+   "coverage_status": "OK",
+   "missing": []
   },
   {
    "screen_id": "portal",

@@ -823,13 +823,16 @@
    "endpoint": "GET /api/v1/auth/service-status",
    "feature_id": "F-004",
    "screen_ids": [
+    "help",
     "login"
    ],
    "acts": [
-    "A13"
+    "A13",
+    "A135"
    ],
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/auth/service-status が「パスキーで入る／メールとパスワードと 6 桁で入る」として呼ばれたとき THEN Kaname は「セッション（操作が無ければ 12 時間・長くて 7 日）。5 回失敗で 15 分止める」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/auth/service-status が「困りごとを選んで次の画面へ進む／稼働状況を見る／運営にメールする」として呼ばれたとき THEN Kaname は「誰でも読める稼働状況の口（公開の分だけ）を読む」を行い 2xx を返す",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 稼働状況を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、題も時刻も返さない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -839,9 +842,12 @@
    "source": [
     "D-042",
     "D-053.4",
+    "D-125.127",
     "D-125.137",
     "D-125.140",
-    "D-125.167"
+    "D-125.167",
+    "D-125.24",
+    "D-128.146"
    ]
   },
   {

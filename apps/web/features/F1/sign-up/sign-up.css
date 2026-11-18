@@ -177,11 +177,6 @@
   display: block;
   color: var(--k-on-surface-variant);
 }
-/* その画面がまだ無い行き先：正本の button-disabled の薄さで押せない形（隠さない・D-145.9） */
-.k-auth-foot a[aria-disabled="true"] {
-  opacity: var(--k-c-button-disabled-opacity);
-  cursor: not-allowed;
-}
 /* 箱の中の主の行き先（リンクの形のボタン・K-256）：下線を付けない */
 .k-auth a.k-btn {
   text-decoration: none;

@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-13",
+  "created_at": "2026-11-18",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -71,7 +71,8 @@
     "knowledge",
     "clients",
     "requests",
-    "legal"
+    "legal",
+    "help"
    ],
    "nav": [
     "tickets",
@@ -123,7 +124,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-13",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.1",
     "D-125.135"
@@ -192,7 +193,8 @@
     "knowledge",
     "clients",
     "requests",
-    "legal"
+    "legal",
+    "help"
    ],
    "nav": [
     "tickets",
@@ -246,7 +248,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-13",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.16",
     "D-125.117"
@@ -284,7 +286,8 @@
     "rules",
     "work-types",
     "knowledge",
-    "legal"
+    "legal",
+    "help"
    ],
    "nav": [
     "tickets",
@@ -329,7 +332,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-13",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.14",
     "D-125.115"
@@ -357,6 +360,7 @@
     "notices",
     "tickets",
     "legal",
+    "help",
     "portal"
    ],
    "nav": [
@@ -376,7 +380,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-13",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.43",
     "D-125.121",
@@ -436,7 +440,7 @@
     }
    ],
    "status": "decided",
-   "decided_at": "2026-11-13",
+   "decided_at": "2026-11-18",
    "source": [
     "D-125.23",
     "D-125.24",
@@ -943,6 +947,13 @@
    "R6": "edit"
   },
   "legal": {
+   "R1": "edit",
+   "R2": "edit",
+   "R3": "edit",
+   "R4": "view",
+   "R6": "-"
+  },
+  "help": {
    "R1": "edit",
    "R2": "edit",
    "R3": "edit",
