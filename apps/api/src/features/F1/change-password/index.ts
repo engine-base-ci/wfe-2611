@@ -50,7 +50,9 @@ const kindOf = (e: unknown): string => {
   const x = e as { code?: unknown; name?: unknown } | null;
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
 };
+/** 文字の数（下限は人が数える文字＝コードポイント）。上限は部品が UTF-16 の長さで比べるので、両方の大きい方で比べる（ほかを切った後に部品が断らない） */
 const chars = (s: string): number => [...s].length;
+const longest = (s: string): number => Math.max([...s].length, s.length);
 
 export function changePasswordFeature(d: ChangePasswordDeps) {
   registerPwned(d.actions);
@@ -72,7 +74,7 @@ export function changePasswordFeature(d: ChangePasswordDeps) {
     if (typeof pw !== "string") return invalid("new_password", "新しいパスワードが要る");
     const n = chars(pw);
     if (n < NEW_PASSWORD_MIN) return fromCatalog(422, "E-VAL-005", "new_password");
-    if (n > NEW_PASSWORD_MAX) return fromCatalog(422, "E-VAL-026", "new_password");
+    if (longest(pw) > NEW_PASSWORD_MAX) return fromCatalog(422, "E-VAL-026", "new_password");
     const r = await checkPwned(d.actions, a.ctx, pw);
     if (r.kind === "leaked") return fromCatalog(422, "E-VAL-011", "new_password");
     if (r.kind === "unavailable") console.warn(`[password] 漏れの照合が使えないので、照合せずに通す: ${r.reason}`);
@@ -96,7 +98,9 @@ export function changePasswordFeature(d: ChangePasswordDeps) {
       const r = await changePassword(d.auth, d.appPool, a.c.req.raw.headers, current, next as string);
       if (!r.ok) {
         if (r.reason === "no_session") return unauthenticated;
-        if (r.reason === "no_password") return conflict("パスワードがまだありません。先にパスワードを決めてください");
+        // パスワードの無い人（パスキーだけ）は、今のパスワードが合うことが無い。同じ 422・欄 current_password で決める口へ案内する
+        if (r.reason === "no_password")
+          return invalid("current_password", "パスワードがまだありません。先にパスワードを決めてください");
         await d.appPool
           .query("select app.record_security_event($1, 'password_change_failed', $2, null, '{}'::jsonb)", [
             a.ctx.tenantId,
@@ -106,12 +110,10 @@ export function changePasswordFeature(d: ChangePasswordDeps) {
         return invalid("current_password", "今のパスワードが違います");
       }
       for (const e of r.followUpErrors)
-        console.error(`[password] 変えた後に認証の側のほかのセッションを消せなかった（${kindOf(e)}）`);
-      const s = await d.auth.api.getSession({ headers: a.c.req.raw.headers });
-      if (s)
-        await recordAll(s.user.id, "password_changed").catch((e: unknown) =>
-          console.error(`[password] 変えた記録を残せなかった（${kindOf(e)}）`),
-        );
+        console.error(`[password] 変えた後に認証の側のほかのセッションの期限を切れなかった（${kindOf(e)}）`);
+      await recordAll(r.userId, "password_changed").catch((e: unknown) =>
+        console.error(`[password] 変えた記録を残せなかった（${kindOf(e)}）`),
+      );
       return { status: 200, body: { data: { revoked: r.revoked } } };
     } catch (e) {
       console.error(`[password] パスワードを変えられなかった（${kindOf(e)}）`);
@@ -129,7 +131,8 @@ export function changePasswordFeature(d: ChangePasswordDeps) {
       const m = await d.appPool.query<{ has_password: boolean }>("select has_password from app.login_methods($1)", [
         s.user.id,
       ]);
-      if (m.rows[0]?.has_password !== false) return conflict("もうパスワードがあります。変えるときは今のパスワードを入れてください");
+      if (m.rows[0]?.has_password !== false)
+        return conflict("もうパスワードがあります。変えるときは今のパスワードを入れてください");
       const raw = await rawFields(a);
       const next = pick(raw, a, "new_password");
       const bad = await checkNew(a, next);

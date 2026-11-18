@@ -102,10 +102,10 @@ export async function signOut(auth: Auth, appPool: pg.Pool, headers: Headers): P
   await auth.api.signOut({ headers });
 }
 
-/** パスワード変更の結果。no_session：部品のセッションが無い／no_password：パスワードを持たない人（決める口を使う）／
+/** パスワード変更の結果。no_session：部品のセッションが無い／no_password：パスワードを持たない人（決める口を使う）／userId：変えた人（記録に使う）／
  *  wrong_current：今のパスワードが違う（何も切らず変えない）／ok：変えた（revoked は切った Kaname のセッションの数） */
 export type ChangePasswordResult =
-  | { ok: true; revoked: number; followUpErrors: unknown[] }
+  | { ok: true; userId: string; revoked: number; followUpErrors: unknown[] }
   | { ok: false; reason: "no_session" | "no_password" | "wrong_current" };
 
 /** パスワード変更（D-128.141・D-125.140・D-125.150・K-312）。今の画面のセッションだけ残し、その人の全部のワークスペースの
@@ -143,5 +143,5 @@ export async function changePassword(
   } catch (e) {
     followUpErrors.push(e);
   }
-  return { ok: true, revoked: Number(r.rows[0]?.n ?? 0), followUpErrors };
+  return { ok: true, userId: s.user.id, revoked: Number(r.rows[0]?.n ?? 0), followUpErrors };
 }
