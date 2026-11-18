@@ -4,8 +4,9 @@
   python3 scripts/ci/ticket_order_gate.py             START..HEAD の実装のコミットを見る
   python3 scripts/ci/ticket_order_gate.py --selftest  依存が未完了・枝の外にだけある写しが赤になるか
 
-完了の決め方：依存のチケットを持ち主にする「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットの件名の頭に
-依存の番号も並べていればそれでもよい。持ち主は owners_of：頭に番号が並んでいれば頭の番号だけ、無ければ件名の全部の番号）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
+完了の決め方：依存のチケットの番号を件名に持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
+依存の番号も入っていればそれでもよい。満たす側は件名の全部の番号）。裁かれる側（どのチケットの依存を見るか）は持ち主 owners_of だけ：
+頭に番号が並んでいれば頭の番号、並んでいなければ件名の全部の番号（K-309）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
 ただし決まりを始めた START より前に作られたチケット（START..HEAD のどのコミットにも番号が出てこず、stage が
 確認中・完了のもの）は、番号の付いたコミットが無いので「決まりの前に入った」として通し、そのことを出す。
 文書だけのコミット（変えたファイルが全部、文書と生成物の置き場に入る）は見ない。進め方の設定（ai-team.yaml）も、この検査の中だけ
@@ -33,7 +34,8 @@ START = "2fc247a62ee2c34dd400118e301514c00b922777"  # ticket_commit_gate.py と�
 TICKET = re.compile(r"\bK-\d+\b")
 # 実装の持ち主：件名の頭に番号を並べた件名（「K-1 K-2 feat: …」）は、頭の番号だけ。件名の中に出てくるほかのチケットの番号は持ち主にしない
 #   （本線の cccf8b2c「K-304 fix: …K-309 まで閉じる」が K-309 の実装と数えられ、K-309 の G56 が赤になった・K-309・PM の決め 2026-11-18）。
-#   頭に番号が並んでいない件名（「fix: K-5 …」「K-1〜K-3 docs:」「K-1: fix」など）は、前のまま件名の全部の番号を持ち主にする（裁かないコミットを作らない）
+#   頭に番号が並んでいない件名（「fix: K-5 …」「K-1〜K-3 docs:」「K-1: fix」など）は、前のまま件名の全部の番号を持ち主にする（裁かないコミットを作らない）。
+#   持ち主は「依存を裁かれる側」だけに使う。「依存を満たす側」は前のまま件名の全部の番号で数える（狭めると、前に入った取り込みが過去にさかのぼって赤になる）
 SUBJECT_HEAD = re.compile(r"^(?:K-\d+[\s,・]+)+")
 
 
@@ -183,11 +185,13 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
         raise RuntimeError(f"{head_sha[:10]}（枝の先頭）の版の {TICKETS_JSON} が無いか読めない（JSON でない・\"tickets\" が無い）。読めなければ止める")
     gen = _generated_of(at_rev[f"{head_sha}:{GENERATED_JSON}"])
     mentioned = {k for _, s in rows for k in TICKET.findall(s)}
-    impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と番号
+    impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と、依存を裁く番号（持ち主・owners_of）
+    credit: dict[str, set[str]] = {}       # 依存を満たす側に数える番号（件名の全部の番号・前と同じ。満たす側を狭めて過去の取り込みを赤にしない）
     for sha, subj in rows:
         files = [f for f in git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", sha, cwd=root).splitlines() if f]
         if not _not_impl(files, gen):
             impl.append((sha, owners_of(subj)))
+            credit[sha] = set(TICKET.findall(subj))
     start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
     order = [start_sha] + [sha for sha, _ in rows]
     raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order])
@@ -260,7 +264,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     reported: set[tuple[str, str]] = set()
     for i, (sha, ids) in enumerate(impl):
         def has_impl_at(x: str, i: int = i, sha: str = sha, ids: set[str] = ids) -> bool:
-            return x in ids or any(x in prev_ids and is_ancestor(prev, sha, root) for prev, prev_ids in impl[:i])
+            return x in credit[sha] or any(x in credit[prev] and is_ancestor(prev, sha, root) for prev, _ in impl[:i])
         for tid in sorted(ids):
             for dep in deps_at(sha, tid):
                 why = satisfied(dep, has_impl_at)
@@ -273,7 +277,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
                 bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
     def has_impl_head(x: str) -> bool:
-        return any(x in ids for _, ids in impl)
+        return any(x in credit[c] for c, _ in impl)
     for tid in sorted({k for _, ids in impl for k in ids}):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
             if (tid, dep) in reported:
