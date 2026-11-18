@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6cdb3868682185a0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0bc974d4a86b1ccc
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -8491,14 +8491,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "PATCH",
+    "method": "POST",
     "path": "/api/v1/me/password",
-    "operationId": "changePassword",
+    "operationId": "setMyPassword",
     "table": "security_events",
-    "kind": "update",
-    "input": "SecurityEventsInput",
-    "success": 200,
-    "output": "SecurityEvents",
+    "kind": "create",
+    "input": "PasswordSetInput",
+    "success": 201,
+    "output": "PasswordSet",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -8514,6 +8514,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       401,
       403,
+      409,
       422,
       413,
       429,
@@ -8533,7 +8534,57 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
+      "row": null
+    },
+    "termsOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/me/password",
+    "operationId": "changePassword",
+    "table": "security_events",
+    "kind": "update",
+    "input": "PasswordChangeInput",
+    "success": 200,
+    "output": "PasswordChanged",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      422,
+      503,
+      413,
+      429,
+      403,
+      503
+    ],
+    "acts": [
+      "A97"
+    ],
+    "screens": [
+      "mfa-setup"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
@@ -18644,4 +18695,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "6cdb3868682185a0";
+export const OPENAPI_HASH = "0bc974d4a86b1ccc";

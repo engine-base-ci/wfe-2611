@@ -58,6 +58,8 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "requestAdminRecovery": {"pending"},               # apps/api/src/features/F1/admin-recovery/index.ts の input（待ちの印が無いと 422・K-302 と同じ・K305-API-011）
     "confirmTwoFactor": {"code"},                      # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K311-API-007）
     "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
+    "changePassword": {"current_password", "new_password"},   # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・欄ごと・K312-API-005・007）
+    "setMyPassword": {"new_password"},                 # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・K312-API-017）
     "renamePasskey": {"name"},                         # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
     "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい

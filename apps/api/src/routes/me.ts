@@ -15,6 +15,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/me/notification-settings/copy", op(deps, "copyNotificationSettings"));
   app.patch("/api/v1/me/passkeys/:id", op(deps, "renamePasskey"));
   app.delete("/api/v1/me/passkeys/:id", op(deps, "deletePasskey"));
+  app.post("/api/v1/me/password", op(deps, "setMyPassword"));
   app.patch("/api/v1/me/password", op(deps, "changePassword"));
   app.get("/api/v1/me/security", op(deps, "getMySecurity"));
   app.get("/api/v1/me/sessions", op(deps, "listMySessions"));

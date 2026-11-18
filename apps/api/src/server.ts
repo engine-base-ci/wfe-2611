@@ -35,6 +35,7 @@ import { mySecurityHooks } from "./hooks/my-security.js";
 import { passkeysHooks } from "./hooks/passkeys.js";
 import { adminRecoveryHooks } from "./hooks/admin-recovery.js";
 import { twoFactorHooks } from "./hooks/two-factor.js";
+import { changePasswordHooks } from "./hooks/change-password.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -180,6 +181,8 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...passkeysHooks({ auth, appPool, authPool }),
         // 2 段階認証を付ける（K-311）。鍵とバックアップコードは部品が包んで持つ（関門 C8）
         ...twoFactorHooks({ auth, appPool, authPool }),
+        // パスワードを変える・決める（K-312）。変えたら今の画面のほかを全部のワークスペースで切る。漏れたパスワードの照合は関門 C1
+        ...changePasswordHooks({ auth, appPool, actions }),
         // 端末をなくした：管理者に頼む（K-305）。メールは関門 C6 の 1 か所（mailer）を通る。本文に運営の連絡先
         ...adminRecoveryHooks({
           appPool,

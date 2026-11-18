@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-18",
  "summary": {
   "total_screens": 37,
-  "total_apis": 365,
+  "total_apis": 366,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -142,6 +142,11 @@
     {
      "role": "action",
      "endpoint": "PATCH /api/v1/me/password",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/password",
      "act": "A97"
     },
     {

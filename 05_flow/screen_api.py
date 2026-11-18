@@ -203,6 +203,7 @@ SCREEN_API = {
         ("DELETE", "/me/two-factor", "A04", "security_events", "disableTwoFactor", []),
         ("POST", "/me/backup-codes", "A04", "security_events", "regenerateBackupCodes", []),
         ("PATCH", "/me/password", "A97", "security_events", "changePassword", ["sessions"]),
+        ("POST", "/me/password", "A97", "security_events", "setMyPassword", ["sessions"]),   # K-312：パスワードの無い人（パスキーだけ）が決める（代表の答え ②）
         ("GET", "/me/sessions", "A74", "sessions", "listMySessions", []),
         ("DELETE", "/me/sessions/:id", "A74", "sessions", "revokeMySession", ["security_events"]),
         ("POST", "/me/sessions/revoke-others", "A74", "sessions", "revokeOtherSessions", ["security_events"]),
@@ -519,6 +520,10 @@ INPUTS = {
     "startTwoFactor": ("TwoFactorStartInput", {"password": "string?"}),
     # 2 段階を確かめる（K-311）：認証アプリの 6 けただけ（strict）。全角・間の空白は口が直す
     "confirmTwoFactor": ("TwoFactorConfirmInput", {"code": "string"}),
+    # パスワードを変える（K-312）：今と新しいパスワードだけ（strict）。値は入口が表記ゆらぎを直す前の体を口が読む（打ったとおり）
+    "changePassword": ("PasswordChangeInput", {"current_password": "string", "new_password": "string"}),
+    # パスワードを決める（K-312）：新しいパスワードだけ（strict）。パスワードの無い人だけ（ある人は 409）
+    "setMyPassword": ("PasswordSetInput", {"new_password": "string"}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -753,6 +758,24 @@ ERRORS_4XX = {
          "trigger": "メールアドレスが無い・空・形が違う（全角・大文字・前後と途中の空白は直してから見る）",
          "ears_form": "UNWANTED: IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない"},
     ],
+    # パスワードを変える（K-312・D-125.137・D-128.141）。新しいパスワードの決まり・今のパスワードが違う（422）・切る所か変える所で落ちた（503）
+    "changePassword": [
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
+         "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（欄 new_password）・今のパスワードが違う（欄 current_password・401 にしない）",
+         "ears_form": "UNWANTED: IF 新しいパスワードが決まりに合わないか今のパスワードが違うなら、Kaname は 422 と欄の理由を返し、端末を切らずパスワードを変えない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "ほかの端末を切る所（DB の関数）か、パスワードを変える所で落ちた",
+         "ears_form": "UNWANTED: IF ほかの端末を切る所で落ちたなら、Kaname は 503 と E-PAGE-003 を返し、パスワードを変えない"},
+    ],
+    # パスワードを決める（K-312・代表の答え ②）。もうある（409）・決まり（422）
+    "setMyPassword": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "CONFLICT"},
+         "trigger": "もうパスワードがある人が決めようとした（変えるのは changePassword）",
+         "ears_form": "UNWANTED: IF もうパスワードがあるなら、Kaname は 409 を返し、パスワードを変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
+         "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（欄 new_password）",
+         "ears_form": "UNWANTED: IF 新しいパスワードが決まりに合わないなら、Kaname は 422 と欄 new_password の理由を返し、パスワードを決めない"},
+    ],
     # 新しいパスワードを決める（K-314・D-125.137・D-125.140・D-128.62）。冪等キーは使わない（汎用の 409 は NO_GENERIC_409 で外す）
     "resetPassword": [
         {"status": 410, "code": "GONE", "body": {"error": "gone"}, "errors": ["E-AUTH-006", "E-PAGE-006"],
@@ -835,6 +858,8 @@ REQUIRED_INPUTS = {
     "requestAdminRecovery": ["pending"],                                 # apps/api/src/features/F1/admin-recovery/index.ts（待ちの印が無いと 422・K-302 と同じ）
     "confirmTwoFactor": ["code"],                                        # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K-311）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
+    "changePassword": ["current_password", "new_password"],              # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・欄ごと・K-312）
+    "setMyPassword": ["new_password"],                                   # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・K-312）
     "renamePasskey": ["name"],                                           # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
@@ -901,6 +926,8 @@ UNEXPRESSIBLE_422 = {
     "updateConversation": ["名前が null（空と同じ）"],
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],
+    "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
     "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
@@ -967,6 +994,9 @@ RESPONSES = {
     "confirmTwoFactor": ("TwoFactorEnabled", {"backup_codes": "string[]", "token": "string?"}),
     "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),
     "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
+    # K-312：revoked は切った Kaname のセッションの数（今の画面のほか・全部のワークスペースの端末と PC）
+    "changePassword": ("PasswordChanged", {"revoked": "integer"}),
+    "setMyPassword": ("PasswordSet", {"ok": "boolean"}),
     "getMe": ("Me", {"member": "object", "workspaces": "array", "workspace_name": "string?"}),   # workspace_name：今いる会社の名前（前後の空白を取り、空なら null）。今は GET /api/auth-ext/me が返す（K-253）
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
     # K-250：はじめにやること（passkey・pc・credentials の 3 つ）。passkey は機能ができるまで available false・行き先 null（D-145.11）。credentials は任意（optional）で「あとで」で飛ばせる（skipped・D-145.13）
@@ -1276,7 +1306,8 @@ PERMS = {
     "confirmTwoFactor": ("self", "本人（コードがそろったら付く。バックアップコードは 1 回だけ見せる）", False),
     "disableTwoFactor": ("self", "本人。パスキーを持たずパスワードだけで入る人は外せない（D-128.61）", True),
     "regenerateBackupCodes": ("self", "本人（前のコードは使えなくなる）", True),
-    "changePassword": ("self", "本人。変えたら全部の端末と Bridge を切る", True),
+    "changePassword": ("self", "本人。変えたら今の画面だけ残し、全部のワークスペースのほかの端末と Bridge を切る（D-128.141）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
+    "setMyPassword": ("self", "本人。パスワードの無い人（パスキーだけ）だけ。ある人は 409（代表の答え ②）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "listMySessions": ("self", "自分の端末だけ", False),
     "revokeMySession": ("self", "自分の端末だけ", False),
     "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", False),

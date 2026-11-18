@@ -5,8 +5,8 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 365,
-  "api_built": 50,
+  "api": 366,
+  "api_built": 52,
   "api_only_later_phase": 20,
   "legacy_routes": 28,
   "db": 144,
@@ -2668,6 +2668,21 @@
    ]
   },
   {
+   "op": "setMyPassword",
+   "method": "POST",
+   "path": "/api/v1/me/password",
+   "what": "作成・実行（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定",
+   "flows": [
+    "F1"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "security_events"
+   ],
+   "status": "作った",
+   "owner_tickets": []
+  },
+  {
    "op": "changePassword",
    "method": "PATCH",
    "path": "/api/v1/me/password",
@@ -2679,7 +2694,7 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-75",
     "K-312"

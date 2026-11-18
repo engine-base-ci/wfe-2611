@@ -102,17 +102,46 @@ export async function signOut(auth: Auth, appPool: pg.Pool, headers: Headers): P
   await auth.api.signOut({ headers });
 }
 
-/** パスワード変更：認証側の他セッションを消し、public.sessions も全部失効（G-14） */
+/** パスワード変更の結果。no_session：部品のセッションが無い／no_password：パスワードを持たない人（決める口を使う）／
+ *  wrong_current：今のパスワードが違う（何も切らず変えない）／ok：変えた（revoked は切った Kaname のセッションの数） */
+export type ChangePasswordResult =
+  | { ok: true; revoked: number; followUpErrors: unknown[] }
+  | { ok: false; reason: "no_session" | "no_password" | "wrong_current" };
+
+/** パスワード変更（D-128.141・D-125.140・D-125.150・K-312）。今の画面のセッションだけ残し、その人の全部のワークスペースの
+ *  ほかの端末と PC（Bridge）を切る。順は「今のパスワードを確かめる → 先にほかを切る（public.sessions が失効の正・切れずに残るより
+ *  入り直しを選ぶ）→ 変える → 認証の側のほかのセッションも期限を今にして効かなくする」。切る所で落ちたら投げる（変えない）。
+ *  部品の changePassword は revokeOtherSessions: false で呼ぶ（true だと今のセッションも消して印を作り直し、今の画面が残らない）。
+ *  認証の側のほかのセッションの行は消さずに残す（public.sessions の失効の理由 password_changed と結ぶ行を残す）。
+ *  変えた後の認証の側の片付けは落ちても変えた事実は戻らないので投げず、followUpErrors で返す（public.sessions は切ってある） */
 export async function changePassword(
   auth: Auth,
   appPool: pg.Pool,
   headers: Headers,
   currentPassword: string,
   newPassword: string,
-): Promise<void> {
+): Promise<ChangePasswordResult> {
   const s = await auth.api.getSession({ headers });
-  if (!s) throw new Error("セッションが無い");
-  await auth.api.changePassword({ headers, body: { currentPassword, newPassword, revokeOtherSessions: true } });
-  const m = await appPool.query<{ member_id: string }>("select member_id from app.session_alive($1)", [s.session.id]);
-  if (m.rows[0]) await appPool.query("select app.revoke_all_sessions($1, 'password_changed')", [m.rows[0].member_id]);
+  if (!s) return { ok: false, reason: "no_session" };
+  const ctx = await auth.$context;
+  const account = await ctx.internalAdapter.findCredentialAccount(s.user.id);
+  if (!account?.password) return { ok: false, reason: "no_password" };
+  if (!(await ctx.password.verify({ hash: account.password, password: currentPassword })))
+    return { ok: false, reason: "wrong_current" };
+  const r = await appPool.query<{ n: number }>(
+    "select app.revoke_sessions_for_auth_user_except($1, $2, 'password_changed') as n",
+    [s.user.id, s.session.id],
+  );
+  await auth.api.changePassword({ headers, body: { currentPassword, newPassword, revokeOtherSessions: false } });
+  const followUpErrors: unknown[] = [];
+  try {
+    const others = (await ctx.internalAdapter.listSessions(s.user.id))
+      .map((x) => x.token)
+      .filter((t) => t !== s.session.token);
+    const now = new Date();
+    for (const t of others) await ctx.internalAdapter.updateSession(t, { expiresAt: now });
+  } catch (e) {
+    followUpErrors.push(e);
+  }
+  return { ok: true, revoked: Number(r.rows[0]?.n ?? 0), followUpErrors };
 }

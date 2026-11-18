@@ -1074,6 +1074,58 @@
     "test_delete_me_passkeys_id_rejected_422": "体を受けない。id の形は入口の共通の確かめ（K-144）",
     "test_delete_me_passkeys_id_rate_limited": "回数は入口の共通の数えで、同じ口の型の確かめは renamePasskey の K309-API-024 が持つ"
    }
+  },
+  "changePassword": {
+   "file": "apps/api/test/features/F1/change-password.test.ts",
+   "reason": "パスワードを変える・決める口は、本物のログインの部品（Better Auth のセッション・kaname_auth.account のパスワードの行）と、全部のワークスペースのセッションで確かめる。生成の試験の偽のセッションでは部品のセッションもパスワードの行も無い（K-312）",
+   "covers": {
+    "test_patch_me_password_ok": "K312-API-001",
+    "test_patch_me_password_rejected_401": "K312-API-012",
+    "test_patch_me_password_rejected_403": "K312-API-008",
+    "test_patch_me_password_rejected_422": "K312-API-005",
+    "test_patch_me_password_rate_limited": "K312-API-013",
+    "test_patch_me_password_shape": "K312-API-001",
+    "test_patch_me_password_session_unresolved": "K312-API-011",
+    "test_patch_me_password_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_password_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_me_password_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   }
+  },
+  "setMyPassword": {
+   "file": "apps/api/test/features/F1/change-password.test.ts",
+   "reason": "パスワードを変える・決める口は、本物のログインの部品（Better Auth のセッション・kaname_auth.account のパスワードの行）と、全部のワークスペースのセッションで確かめる。生成の試験の偽のセッションでは部品のセッションもパスワードの行も無い（K-312）",
+   "covers": {
+    "test_post_me_password_ok": "K312-API-015",
+    "test_post_me_password_rejected_401": "K312-API-019",
+    "test_post_me_password_rejected_403": "K312-API-018",
+    "test_post_me_password_rejected_422": "K312-API-017",
+    "test_post_me_password_conflict": "K312-API-016",
+    "test_post_me_password_shape": "K312-API-015",
+    "test_post_me_password_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_me_password_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_me_password_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_post_me_password_rate_limited": "回数は入口の共通の数え。同じ型の確かめは changePassword の K312-API-013 が持つ"
+   }
   }
  }
 }
