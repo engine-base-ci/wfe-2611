@@ -18,7 +18,6 @@ const MOCKS_SRC = join(WEB, "app/(dev)/dev/mock/f2/mocks.tsx");
 const VIEWS_SRC = join(WEB, "features/F2/invite/views.tsx");
 const CUT_DOC = join(ROOT, "07_functional/段3-F2/切り方.md");
 const SHOTS_SRC = join(ROOT, "07_functional/段3-F2/mock-shots.mjs");
-const WIDTHS = [375, 768, 1440] as const;
 
 /** 画面の葉と、その葉が本物にするモックの状態（mocks.tsx の受け持ちと 07_functional/段3-F2/切り方.md の表のとおり・15 個） */
 const LEAVES: Record<string, readonly string[]> = {
