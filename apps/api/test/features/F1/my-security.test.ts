@@ -419,7 +419,9 @@ describe("K-308 口：getMySecurity（自分の安全の設定を読む）", () 
     expect(d["two_factor_required"]).toBe(false);
     expect(d["mfa_pending"]).toBe(false);
     expect(d.passkeys).toHaveLength(1);
-    expect(text).not.toMatch(/BACKUP_CODES|backup codes/i);
+    // 部品のエラーの印（BACKUP_CODES_NOT_ENABLED など）と文（Backup codes …）を出さない。答えの欄の名前 backup_codes_left には当てない
+    expect(text).not.toMatch(/BACKUP_CODES_[A-Z]/); // 印は大文字だけ（大小を見ないと欄の名前に当たる）
+    expect(text).not.toMatch(/backup codes/i);
   });
 
   it("K308-API-004 答えの欄は決めた 6 つだけ。公開鍵・credential_id・TOTP の鍵・バックアップコード・端末の一覧・安全の記録は返さない", async () => {
