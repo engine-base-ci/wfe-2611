@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:adc891a4bbb67f48
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9a91c610cb8fa3d4
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1237,9 +1237,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "requestAdminRecovery",
     "table": "security_events",
     "kind": "create",
-    "input": "SecurityEventsInput",
+    "input": "AdminRecoveryInput",
     "success": 201,
-    "output": "SecurityEvents",
+    "output": "AdminRecoveryResult",
     "outputList": false,
     "generic": false,
     "auth": "public",
@@ -1249,11 +1249,14 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     },
     "uuidParams": [],
     "chokePoints": [
-      "C2"
+      "C2",
+      "C6"
     ],
     "errors": [
       409,
       422,
+      401,
+      500,
       413,
       429,
       503
@@ -1779,6 +1782,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       500,
+      403,
+      503,
       413,
       429,
       503
@@ -18638,4 +18643,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "adc891a4bbb67f48";
+export const OPENAPI_HASH = "9a91c610cb8fa3d4";

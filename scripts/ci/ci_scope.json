@@ -283,6 +283,7 @@
    "tests": [
     "apps/api/test/features/F1/sign-in.test.ts",
     "apps/api/test/features/F1/sign-in-code.test.ts",
+    "apps/api/test/features/F1/sign-in-code-claim.test.ts",
     "apps/api/test/features/F1/sign-out.test.ts"
    ]
   },
@@ -297,10 +298,27 @@
   },
   {
    "paths": [
-    "apps/api/test/features/F1/sign-in-code.test.ts"
+    "apps/api/test/features/F1/sign-in-code.test.ts",
+    "apps/api/test/features/F1/sign-in-code-gate.test.ts"
    ],
    "tests": [
     "apps/api/test/generated/post_auth_two_factor_verify.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F1/admin-recovery.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_recovery_admin_request.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "08_api/endpoints.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/admin-recovery.test.ts"
    ]
   },
   {

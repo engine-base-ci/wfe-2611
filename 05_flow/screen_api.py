@@ -510,6 +510,8 @@ INPUTS = {
     "verifySignInCode": ("SignInCodeInput", {"pending": "string", "code": "string?", "backup_code": "string?"}),
     # ログアウト（K-306）：空の体だけ（strict・all・session_id などほかの欄は 422）。閉じるのは要求の印のセッションだけ
     "signOut": ("SignOutInput", {}),
+    # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
+    "requestAdminRecovery": ("AdminRecoveryInput", {"pending": "string"}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -590,15 +592,6 @@ ERRORS_4XX = {
          "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
          "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
     ],
-    # 6 けたで入る（K-302 が振る舞いを作る）。止めの 1 か所（K-303）で断られたら 403 と止めの文・止めの確かめが落ちたら 503（振り分けは K-302・確かめは K-305）
-    "verifySignInCode": [
-        {"status": 403, "code": "E-AUTH-011", "body": {"error": "auth", "code": "E-AUTH-011"}, "errors": ["E-AUTH-011", "E-AUTH-012"],
-         "trigger": "6 けた（かバックアップコード）は合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
-         "ears_form": "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない"},
-        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
-         "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
-         "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
-    ],
     # 確認のコードで入る（K-302・D-128.141）。コードが違う・待ちの印が切れた（401）・会社の人が無い（403）・入力（422）・6 けたの止め（429）・写す所の失敗（500）
     "verifySignInCode": [
         {"status": 401, "code": "E-AUTH-004", "body": {"error": "auth", "code": "E-AUTH-004"}, "errors": ["E-AUTH-004"],
@@ -622,6 +615,25 @@ ERRORS_4XX = {
         {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "セッションを写す所で失敗した・部品の確かめの途中で DB が落ちた",
          "ears_form": "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない"},
+        # 止めの 1 か所（K-303）に断られた・止めの確かめが落ちた（振り分けは K-302・確かめは K-305。前は同じ鍵が 2 つあり、こちらが消えていた）
+        {"status": 403, "code": "E-AUTH-011", "body": {"error": "auth", "code": "E-AUTH-011"}, "errors": ["E-AUTH-011", "E-AUTH-012"],
+         "trigger": "6 けた（かバックアップコード）は合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
+         "ears_form": "UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
+         "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
+    ],
+    # 端末をなくした：管理者に頼む（K-305・D-128.141）。待ちの印が切れた（401）・入力（422）・頼みを書く DB が落ちた（500）。冪等キーの 409 は使わない（1 時間の内の 2 回目は 201・already）
+    "requestAdminRecovery": [
+        {"status": 401, "code": "E-AUTH-013", "body": {"error": "auth", "code": "E-AUTH-013"}, "errors": ["E-AUTH-013"],
+         "trigger": "待ちの印が切れた（5 分）・でたらめ",
+         "ears_form": "UNWANTED: IF 待ちの印が切れているかでたらめなら、Kaname は 401 を返し、管理者に何も送らない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
+         "trigger": "待ちの印の欄が無い・文字でない・本文に知らない欄（strict）",
+         "ears_form": "UNWANTED: IF 待ちの印が無いか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も書かない"},
+        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "頼みを書く DB（app.request_admin_recovery）が落ちた・使えない",
+         "ears_form": "UNWANTED: IF 頼みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、何も送らない"},
     ],
     # 承認する（K-162）。決まった・取り下げた承認（409・E-CONF-003）・入力の 422（体に知らない欄・id が uuid でない）・守りの判定で例外（503・E-PAGE-003）
     "approveApproval": [
@@ -807,6 +819,7 @@ REQUIRED_INPUTS = {
     "requestPasswordReset": ["email"],                                   # apps/api/src/features/F1/password-reset/index.ts（無い・空・形違いは 422 E-VAL-004・K-313）
     "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
     "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
+    "requestAdminRecovery": ["pending"],                                 # apps/api/src/features/F1/admin-recovery/index.ts（待ちの印が無いと 422・K-302 と同じ）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
     "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
@@ -919,6 +932,8 @@ RESPONSES = {
     "verifySignInCode": ("SignInCodeResult", {"token": "string", "backup_codes_left": "integer"}),
     # ログアウトした（K-306）。いつも signed_out=true。閉じたのはその画面のセッションだけ（別のブラウザ・PC は残る）
     "signOut": ("SignedOut", {"signed_out": "boolean"}),
+    # 管理者に頼んだ（K-305）。sent（届けた）・already（1 時間の内に頼んである）・failed（1 通でも送れなかった・押し直せる）・no_admin（本人のほかに管理者がいない・運営が戻す）
+    "requestAdminRecovery": ("AdminRecoveryResult", {"result": "string"}),
     # 新しいパスワードを決めた（K-314）。いつも reset=true。ログインの印は入れない（再設定の後は自動で入らない・D-125.140）
     "resetPassword": ("PasswordResetDone", {"reset": "boolean"}),
     # 規約の今の版（K-53）：kind ごとに 1 つ。作った人・運営のテナントの ID は返さない

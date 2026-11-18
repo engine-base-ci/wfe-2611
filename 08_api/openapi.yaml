@@ -9419,6 +9419,16 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: signOut
+    AdminRecoveryInput:
+      type: object
+      properties:
+        pending:
+          type: string
+      additionalProperties: false
+      x-operation: requestAdminRecovery
+      required:
+      - pending
+      x-required-by: hooks
     PasswordResetInput:
       type: object
       properties:
@@ -10032,6 +10042,12 @@ components:
         signed_out:
           type: boolean
       x-operation: signOut
+    AdminRecoveryResult:
+      type: object
+      properties:
+        result:
+          type: string
+      x-operation: requestAdminRecovery
     PasswordResetDone:
       type: object
       properties:
@@ -13684,6 +13700,7 @@ paths:
       - login
       x-choke-points:
       - C2
+      - C6
       x-source:
       - D-042
       - D-053.4
@@ -13699,7 +13716,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityEventsInput'
+              $ref: '#/components/schemas/AdminRecoveryInput'
       responses:
         '201':
           description: 成功
@@ -13709,7 +13726,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SecurityEvents'
+                    $ref: '#/components/schemas/AdminRecoveryResult'
                   meta:
                     type: object
         '409':
@@ -13720,6 +13737,18 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: E-AUTH-013
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -14595,7 +14624,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: E-AUTH-007
+          description: E-AUTH-007／E-AUTH-011
           content:
             application/json:
               schema:
@@ -14612,14 +14641,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:
