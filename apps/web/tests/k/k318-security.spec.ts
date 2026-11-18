@@ -114,7 +114,6 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     renames: [],
     deletes: [],
     stepUps: [],
-    once: {},
     needStepUp: false,
     holdRead: false,
     ...o,
