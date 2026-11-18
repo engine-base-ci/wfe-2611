@@ -4,19 +4,25 @@
 //   答えの code で出し分ける：401 E-AUTH-001 違う／429 E-AUTH-002 ロック／429 そのほか 送りすぎ／403 E-AUTH-011・012・007 止め／
 //   確かめの 401 E-AUTH-004 違う・401 E-AUTH-013 待ちの印が切れた・429 E-AUTH-014 確認のコードの止め。
 //   待ちの印（pending）は画面のメモリだけに持つ（再読み込みで最初に戻る）。「この端末を信頼する」は送らない（D-128.60）。
-//   パスキー・スマホの QR・端末をなくした は K-317 がつなぐ。それまでは出すがグレーで押せない（D-145.9）
+//   K-317：パスキー（部品の口・lib/auth/client の signInWithPasskey）・スマホの QR（同じ手順・QR はブラウザが出す）・この PC の外で入った後の「入れました」・
+//   端末をなくした（requestAdminRecovery）・いまの様子の帯（getServiceStatus・読めなければ帯なし）・別のアカウントでログイン中（入れたら前のログインを signOut で閉じる）
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Route } from "next";
 import { CATALOG } from "@kaname/errors/catalog";
 import { call, type CallErr } from "@/lib/api/call";
-import { setToken } from "@/lib/api/client";
-import { refreshSession } from "@/lib/auth/client";
+import { clearDraftCopies, getToken, setToken } from "@/lib/api/client";
+import { passkeySupported, refreshSession, signInWithPasskey } from "@/lib/auth/client";
+import { useSession } from "@/lib/auth/session";
 import { afterLogin } from "@/lib/after-login";
+import type { ServiceIncident } from "@/components/k/auth-parts";
+import { toIncidents } from "@/features/F1/service-status/to-incidents";
 import { CODE_LENGTH, EMPTY_CODE } from "./code-boxes";
-import { LoginBlocked, LoginCode, LoginMain } from "./views";
+import { LoginAdded, LoginBlocked, LoginCode, LoginMain, LoginRecover } from "./views";
 
-type Step = "main" | "code" | "blocked";
+type Step = "main" | "code" | "blocked" | "recover" | "added";
+type Asked = "sent" | "already" | "failed" | "no_admin";
+const ASKED_RESULTS: ReadonlySet<string> = new Set(["sent", "already", "no_admin", "failed"]);
 const FALLBACK = "うまくいきませんでした。もう一度試してください";
 const NEED_CODE = "6 けたを入れてください";
 /** 空のバックアップコード：新しい文は作らず、正本の「コードが空」の文（E-VAL-009） */
@@ -51,6 +57,24 @@ export function LoginForm({ next }: { next: string | null }) {
   const sending = useRef(false); // 2 回押し・6 つそろった瞬間の重なりで口を 2 回呼ばない
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** パスキーで入れなかった（本人がやめた・時間切れ・この端末に無い） */
+  const [pkFailed, setPkFailed] = useState(false);
+  /** このブラウザはパスキーを使えない（出すがグレー・D-145.9） */
+  const [pkUnsupported, setPkUnsupported] = useState(false);
+  const [pkBusy, setPkBusy] = useState(false);
+  /** いまの様子の帯（障害・メンテナンス中）。読めなければ帯なし */
+  const [status, setStatus] = useState<ServiceIncident[]>([]);
+  const statusRead = useRef(false);
+  /** 別のアカウントでログイン中（next つきで開いた）：そのメール。入れたら前のログインを閉じる */
+  const [signedInAs, setSignedInAs] = useState<string | null>(null);
+  const otherToken = useRef<string | null>(null);
+  const sessionChecked = useRef(false);
+  /** 端末をなくしたとき：どこから来たか（確認のコードの画面からなら待ちの印があり管理者に頼める）と、頼んだ結果 */
+  const [recoverFrom, setRecoverFrom] = useState<"main" | "code">("main");
+  const [asked, setAsked] = useState<Asked | null>(null);
+  const asking = useRef(false);
+  const focusMail = useRef(false);
+  const { session } = useSession();
 
   useEffect(
     () => () => {
@@ -58,6 +82,39 @@ export function LoginForm({ next }: { next: string | null }) {
     },
     [],
   );
+
+  useEffect(() => setPkUnsupported(!passkeySupported()), []);
+
+  // いまの様子は開いたときに 1 回だけ読む（読めない・形が違うときは帯を出さず、ログインは止めない）
+  useEffect(() => {
+    if (statusRead.current) return;
+    statusRead.current = true;
+    call("getServiceStatus", { keepOn401: true, screenId: "login" })
+      .then((r) => {
+        if (r.ok) setStatus(toIncidents(r.data) ?? []);
+      })
+      .catch(() => undefined); // 網が切れた：帯なし（ログインの画面はそのまま使える）
+  }, []);
+
+  // ログイン中に開いた：next が無ければ入口へ。next があれば案内を出し、入れたときに閉じる前の印を覚える（開いただけでは閉じない）
+  useEffect(() => {
+    if (session === undefined || sessionChecked.current) return;
+    sessionChecked.current = true;
+    if (!session) return;
+    if (!next) {
+      router.replace(afterLogin(null));
+      return;
+    }
+    setSignedInAs(session.user.email);
+    otherToken.current = getToken();
+  }, [session, next, router]);
+
+  // 端末をなくしたときから「バックアップコードで入る」で戻った：メールの欄にフォーカス
+  useEffect(() => {
+    if (step !== "main" || !focusMail.current) return;
+    focusMail.current = false;
+    document.querySelector<HTMLInputElement>('[data-part="auth-box"] input[name="email"]')?.focus();
+  }, [step]);
 
   /** ロック・送りすぎの間だけ押せない。時間がたつと押せ、文は消える */
   const holdFor = (sec: number) => {
@@ -89,11 +146,29 @@ export function LoginForm({ next }: { next: string | null }) {
     }
   };
   // 行き先が今のログインの画面なら、移りが起きず回り続けるので入口（/）へ移す
-  const go = (token: string) => {
+  const dest = (): Route => {
+    const to = afterLogin(next);
+    return to === "/login" || to.startsWith("/login?") || to.startsWith("/login/") ? ("/" as Route) : to;
+  };
+  /** 別のアカウントで入れた後：前のログインを前の印で閉じる（1 回だけ・失敗しても先へ進む）。前の人の書きかけの写しも消す */
+  const closePrevious = async (token: string) => {
+    const prev = otherToken.current;
+    otherToken.current = null;
+    if (!prev || prev === token) return;
+    setToken(prev);
+    try {
+      await call("signOut", { body: {}, keepOn401: true, screenId: "login" });
+    } catch {
+      // 閉じられなかったことは口の側の記録に残る。新しいログインは止めない
+    }
+    clearDraftCopies();
+    setToken(token);
+  };
+  const go = async (token: string) => {
+    await closePrevious(token);
     setToken(token);
     refreshSession(); // ログインの部品の見え方（セッションの印）にも新しいログインを知らせる
-    const to = afterLogin(next);
-    router.push(to === "/login" || to.startsWith("/login?") || to.startsWith("/login/") ? ("/" as Route) : to);
+    router.push(dest());
   };
   /** メールとパスワードの画面へ戻る（止め・待ちの印が切れた の後）：メールは残し、パスワードと待ちの印は捨てる */
   const restart = () => {
@@ -107,14 +182,14 @@ export function LoginForm({ next }: { next: string | null }) {
     setStopped(false);
     setExpired(false);
   };
-  const block = (r: CallErr) => {
+  const block = (text: string) => {
     setPending(null);
-    setMsg(textOf(r));
+    setMsg(text);
     setStep("blocked");
   };
 
   const onSignInFail = (r: CallErr) => {
-    if (r.status === 403 && BLOCKED.has(r.code)) return block(r);
+    if (r.status === 403 && BLOCKED.has(r.code)) return block(textOf(r));
     if (r.status === 429 && r.code !== "E-AUTH-002" && r.retryAfterSec !== null) {
       setMsg(waitText(r.retryAfterSec));
       return holdFor(r.retryAfterSec);
@@ -125,6 +200,7 @@ export function LoginForm({ next }: { next: string | null }) {
 
   const submit = () => {
     if (locked) return;
+    setPkFailed(false);
     void run(async () => {
       const r = await call("signInWithPassword", { body: { email, password }, keepOn401: true, screenId: "login" });
       if (!r.ok) {
@@ -141,13 +217,13 @@ export function LoginForm({ next }: { next: string | null }) {
         setMsg(FALLBACK);
         return "stay";
       }
-      go(r.data.token);
+      await go(r.data.token);
       return "moving";
     });
   };
 
   const onVerifyFail = (r: CallErr, withCode: boolean) => {
-    if (r.status === 403 && BLOCKED.has(r.code)) return block(r);
+    if (r.status === 403 && BLOCKED.has(r.code)) return block(textOf(r));
     if (r.code === "E-AUTH-013" || r.code === "E-AUTH-014") {
       setMsg(textOf(r));
       setCode(EMPTY_CODE); // もう使わないコードは枠に残さない（止めた画面は空の枠・モック login-code-lock・login-tf-expired）
@@ -181,7 +257,7 @@ export function LoginForm({ next }: { next: string | null }) {
         setMsg(FALLBACK);
         return "stay";
       }
-      go(r.data.token);
+      await go(r.data.token);
       return "moving";
     });
 
@@ -221,6 +297,92 @@ export function LoginForm({ next }: { next: string | null }) {
     }
   };
 
+  // パスキーで入る・スマホの QR（同じ手順。QR はブラウザが出す）。パスワードのロックの外（ロック中でも押せる）
+  const passkey = async () => {
+    if (pkUnsupported || sending.current) return;
+    sending.current = true;
+    setPkBusy(true);
+    setPkFailed(false);
+    let moving = false;
+    try {
+      const r = await signInWithPasskey();
+      if (!r.ok) {
+        if (r.status === 403 && BLOCKED.has(r.code))
+          block(r.message ?? CATALOG[r.code as keyof typeof CATALOG]?.message ?? FALLBACK);
+        else setPkFailed(true);
+      } else if (r.crossPlatform) {
+        // この PC の外（スマホ・鍵）で入った：入れた。この PC にもパスキーを付けるかを聞く
+        await closePrevious(r.token);
+        setToken(r.token);
+        refreshSession();
+        setStep("added");
+      } else {
+        await go(r.token);
+        moving = true;
+      }
+    } catch {
+      setPkFailed(true);
+    } finally {
+      if (!moving) {
+        sending.current = false;
+        setPkBusy(false);
+      }
+    }
+  };
+
+  const openRecover = (from: "main" | "code") => {
+    setRecoverFrom(from);
+    setAsked(null);
+    setStep("recover");
+  };
+  /** 管理者に頼めるのは、パスワードを通った直後（待ちの印がある）だけ */
+  const canAsk = recoverFrom === "code" && pending !== null && !expired;
+  const ask = async () => {
+    if (!canAsk || !pending || asking.current || (asked !== null && asked !== "failed")) return;
+    asking.current = true;
+    try {
+      const r = await call("requestAdminRecovery", { body: { pending }, keepOn401: true, screenId: "login" });
+      const result = r.ok ? r.data.result : undefined;
+      // 口が 5xx・答えの形が違うときも「送れなかった」（押し直せる）
+      setAsked(result && ASKED_RESULTS.has(result) ? (result as Asked) : "failed");
+    } catch {
+      setAsked("failed"); // 網が切れた
+    } finally {
+      asking.current = false;
+    }
+  };
+  const recoverBackup = () => {
+    if (canAsk) {
+      setUseBackup(true);
+      setCode(EMPTY_CODE);
+      setBackup("");
+      setMsg(null);
+      setStep("code");
+      return;
+    }
+    focusMail.current = true;
+    setStep("main");
+  };
+
+  if (step === "added")
+    return (
+      <LoginAdded
+        onAdd={() => router.push(`/mfa-setup?add=passkey&next=${encodeURIComponent(dest())}` as Route)}
+        onSkip={() => router.push(dest())}
+      />
+    );
+
+  if (step === "recover")
+    return (
+      <LoginRecover
+        canAsk={canAsk}
+        asked={asked}
+        onBack={() => setStep(recoverFrom)}
+        onBackup={recoverBackup}
+        onAsk={() => void ask()}
+      />
+    );
+
   if (step === "blocked") return <LoginBlocked msg={msg ?? FALLBACK} onBack={restart} />;
 
   if (step === "code")
@@ -238,7 +400,7 @@ export function LoginForm({ next }: { next: string | null }) {
         onSubmit={submitCode}
         onToggleBackup={switchBackup}
         {...(expired ? { onRestart: restart } : {})}
-        recoverOff
+        onLost={() => openRecover("code")}
       />
     );
 
@@ -253,8 +415,13 @@ export function LoginForm({ next }: { next: string | null }) {
       onPasswordChange={setPassword}
       onSubmit={submit}
       onForgot={forgot}
-      passkeyOff
-      recoverOff
+      passkeyFailed={pkFailed}
+      passkeyUnsupported={pkUnsupported}
+      passkeyBusy={pkBusy}
+      status={status}
+      signedInAs={signedInAs}
+      onPasskey={() => void passkey()}
+      onRecover={() => openRecover("main")}
     />
   );
 }

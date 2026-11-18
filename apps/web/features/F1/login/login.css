@@ -12,12 +12,6 @@
   margin: var(--k-c-auth-lead-sub-margin);
 }
 
-/* 押せない行き先（まだ作っていない画面）：正本の使えない状態の薄さで出し、押せない形（隠さない・D-145.9） */
-.k-auth a.k-login-off {
-  opacity: var(--k-c-button-disabled-opacity);
-  cursor: not-allowed;
-}
-
 /* 区切り「またはメールとパスワード」：字の左右に線 */
 .k-login-sep {
   display: flex;

@@ -41,7 +41,8 @@ export type Mailer = (m: Mail) => Promise<void>;
 export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
 /** パスキーの部品のうち Kaname の決まりを通らない口（一覧・名前・外す）も閉じる（K-304） */
-export const DISABLED_PATHS = ["/sign-in/email", ...PASSKEY_DISABLED_PATHS] as const;
+/** ログアウトの部品の道（/sign-out）も閉じる（K-317）：画面は契約の口 signOut（K-306・public.sessions も閉じる）だけを使う。sessions を閉じない道を残さない */
+export const DISABLED_PATHS = ["/sign-in/email", "/sign-out", ...PASSKEY_DISABLED_PATHS] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
