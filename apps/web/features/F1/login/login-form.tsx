@@ -12,8 +12,7 @@ import type { Route } from "next";
 import { CATALOG } from "@kaname/errors/catalog";
 import { call, type CallErr } from "@/lib/api/call";
 import { clearDraftCopies, getToken, setToken } from "@/lib/api/client";
-import { passkeySupported, refreshSession, signInWithPasskey } from "@/lib/auth/client";
-import { useSession } from "@/lib/auth/session";
+import { authClient, passkeySupported, refreshSession, signInWithPasskey } from "@/lib/auth/client";
 import { afterLogin } from "@/lib/after-login";
 import type { ServiceIncident } from "@/components/k/auth-parts";
 import { toIncidents } from "@/features/F1/service-status/to-incidents";
@@ -68,13 +67,12 @@ export function LoginForm({ next }: { next: string | null }) {
   /** 別のアカウントでログイン中（next つきで開いた）：そのメール。入れたら前のログインを閉じる */
   const [signedInAs, setSignedInAs] = useState<string | null>(null);
   const otherToken = useRef<string | null>(null);
-  const sessionChecked = useRef(false);
+  const sessionChecked = useRef(false); // 開いたときに 1 回だけ見る（入れた後の印では見直さない）
   /** 端末をなくしたとき：どこから来たか（確認のコードの画面からなら待ちの印があり管理者に頼める）と、頼んだ結果 */
   const [recoverFrom, setRecoverFrom] = useState<"main" | "code">("main");
   const [asked, setAsked] = useState<Asked | null>(null);
   const asking = useRef(false);
   const focusMail = useRef(false);
-  const { session } = useSession();
 
   useEffect(
     () => () => {
@@ -97,17 +95,25 @@ export function LoginForm({ next }: { next: string | null }) {
   }, []);
 
   // ログイン中に開いた：next が無ければ入口へ。next があれば案内を出し、入れたときに閉じる前の印を覚える（開いただけでは閉じない）
+  //   印が無ければ見ない（Bearer だけ・D-051.2：印が無ければログインしていない。要らない口を呼ばない）
   useEffect(() => {
-    if (session === undefined || sessionChecked.current) return;
+    if (sessionChecked.current) return;
     sessionChecked.current = true;
-    if (!session) return;
-    if (!next) {
-      router.replace(afterLogin(null));
-      return;
-    }
-    setSignedInAs(session.user.email);
-    otherToken.current = getToken();
-  }, [session, next, router]);
+    const held = getToken();
+    if (!held) return;
+    authClient
+      .getSession()
+      .then(({ data }) => {
+        if (!data || getToken() !== held) return; // 読み終わる前に入り直した：前の印の話は終わっている
+        if (!next) {
+          router.replace(afterLogin(null));
+          return;
+        }
+        setSignedInAs(data.user.email);
+        otherToken.current = held;
+      })
+      .catch(() => undefined); // 読めない：ログイン中と見なさず、ふつうのログインの画面のまま
+  }, [next, router]);
 
   // 端末をなくしたときから「バックアップコードで入る」で戻った：メールの欄にフォーカス
   useEffect(() => {
