@@ -477,6 +477,43 @@ describe("K-309 パスキーを足す（部品の口・本人確認の取り直�
   });
 });
 
+describe("K-309 守り（レビューの指摘・確かめの口の新しいセッションと古いセッションで開く部品の口）", () => {
+  it("K309-API-031 足すの確かめに createSession: true を送る：200 でパスキーは付くが、新しいセッションは作らない（部品のセッションも public.sessions も増えず、印の頭も Cookie も返さない）", async () => {
+    const p = await person("add-no-session");
+    const t = await login(p);
+    const authSessions = async () =>
+      (await admin.query('select count(*)::int as n from kaname_auth.session where "userId" = $1', [p.userId])).rows[0]!
+        .n as number;
+    const beforeAuth = await authSessions();
+    const beforeLive = await liveSessions(p.memberId);
+    const begin = await req("GET", OPTIONS, undefined, { headers: bearer(t) });
+    expect(begin.status, await begin.clone().text()).toBe(200);
+    const options = (await begin.json()) as { challenge: string; rp: { id: string } } & Record<string, unknown>;
+    const finish = await req(
+      "POST",
+      VERIFY,
+      { response: attest(softKey(), options), createSession: true },
+      { headers: { ...bearer(t), ...carry(options) } },
+    );
+    expect(finish.status, await finish.clone().text()).toBe(200);
+    expect(finish.headers.get("set-auth-token")).toBeNull();
+    expect(finish.headers.getSetCookie().filter((c) => /session_token/.test(c))).toEqual([]);
+    expect(await passkeysOf(p.userId)).toHaveLength(1);
+    expect(await authSessions()).toBe(beforeAuth);
+    expect(await liveSessions(p.memberId)).toBe(beforeLive);
+  });
+
+  it("K309-API-032 古いセッション（ログインから 2 日）でも、部品の list-sessions・unlink-account は 404（セッションの印の一覧を返さない・freshAge を外したので道を閉じる）", async () => {
+    const p = await person("closed-paths");
+    const t = await login(p);
+    await ageLogin(t, 60 * 48);
+    expect((await req("GET", "/api/auth/list-sessions", undefined, { headers: bearer(t) })).status).toBe(404);
+    expect(
+      (await req("POST", "/api/auth/unlink-account", { providerId: "credential" }, { headers: bearer(t) })).status,
+    ).toBe(404);
+  });
+});
+
 describe("K-309 パスキーを足すときの名前（画面の欄の名前・K-318）", () => {
   it("K309-API-029 足すときに名前を送る：前後の空白を除き NFKC で保存。41 文字は 422・欄 name で行を作らない", async () => {
     const p = await person("add-name");
