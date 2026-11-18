@@ -20,6 +20,7 @@ import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
 import { invitationHooks } from "../../src/hooks/invitations.js";
+import { mySecurityHooks } from "../../src/hooks/my-security.js";
 import { adminRecoveryHooks } from "../../src/hooks/admin-recovery.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
@@ -78,6 +79,8 @@ Object.assign(
     authPool: login.pool,
     config: { opsEmail: "ops-fuzz@example.com", webBaseUrl: "http://127.0.0.1" },
   }),
+  // 安全の設定を読む（K-308）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
+  mySecurityHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
   // 端末をなくした：管理者に頼む（K-305）。送出先は差さない（外に送らない。宛先があれば送れなかった扱いで failed）。待ちの印は本物の認証の接続で引く
   adminRecoveryHooks({ appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );

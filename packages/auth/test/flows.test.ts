@@ -70,7 +70,14 @@ describe("招待（作る → 受ける → 取り消し）", () => {
     const member = await acceptInvitation(app, inv.token, su.user.id, "招かれた人");
     const si = await signIn(auth, email, password);
     const r = await createSessionResolver(auth, app)(bearer(si.token!));
-    expect(r?.ctx).toEqual({ tenantId: S.tenantA, userId: member, role: "member", stepUpAt: null });
+    // ログインの時刻（loginAt・部品のセッションの createdAt）も文脈に入る（K-308）
+    expect(r?.ctx).toEqual({
+      tenantId: S.tenantA,
+      userId: member,
+      role: "member",
+      stepUpAt: null,
+      loginAt: expect.any(Date),
+    });
     // 同意し直しの印（K-53）は ctx（DB に渡すテナントの文脈）に入れず、Resolved の termsPending に持つ。
     //   招待で入った人は今の版に同意していない（招待の画面の同意は K-55）ので、ログインでできたセッションには印が立つ
     expect(r?.termsPending, "招待で入った人は同意し直しの印が立つ（K-55 まで）").toBe(true);

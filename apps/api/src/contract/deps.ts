@@ -13,6 +13,8 @@ export interface HookArgs {
   c: Context;
   /** 条件つきの本人確認（取り消せない承認・管理者として招く など・D-125.139）。直前 15 分以内でなければ 403 の応答を返す */
   requireStepUp?: () => HookReply | void;
+  /** 取り直しが直前 15 分の内か、ログインから 15 分の内でなければ 403 の応答を返す（安全の設定の口・契約の step_up が "login_or_step_up"・K-308） */
+  requireStepUpOrFreshLogin?: () => HookReply | void;
 }
 /** raw：JSON でない答え（ファイルを流す・別の置き場へ渡す・K-57）。あれば body の代わりにそのまま返す */
 export type HookReply = { status: number; body: unknown; raw?: Response };

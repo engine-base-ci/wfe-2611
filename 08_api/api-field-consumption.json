@@ -8543,6 +8543,19 @@
    "reason": null
   },
   {
+   "entity": "invitations",
+   "field": "message",
+   "consumed_by_screens": [
+    "invite-accept",
+    "members",
+    "member-detail",
+    "clients",
+    "ops-team"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "pending_signup",
    "field": "email",
    "consumed_by_screens": [],

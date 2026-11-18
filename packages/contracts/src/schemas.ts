@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:9a91c610cb8fa3d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:132f7d2372ddf0c7
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1469,6 +1469,7 @@ export const Sessions = z.strictObject({
   health: z.unknown().nullable().optional(),
   health_at: z.iso.datetime({ offset: true }).nullable().optional(),
   last_ip: z.string().nullable().optional(),
+  mfa_pending: z.boolean().optional(),
   step_up_at: z.iso.datetime({ offset: true }).nullable().optional(),
   terms_pending: z.boolean().optional(),
   updated_by: z.uuid().nullable().optional(),
@@ -2138,13 +2139,13 @@ export const Invitations = z.strictObject({
   expires_at: z.iso.datetime({ offset: true }).optional(),
   accepted_member_id: z.uuid().nullable().optional(),
   revoked_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  message: z.string().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  message: z.string().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
 });
 export const InvitationsInput = z.strictObject({
@@ -2154,6 +2155,7 @@ export const InvitationsInput = z.strictObject({
   expires_at: z.iso.datetime({ offset: true }).optional(),
   accepted_member_id: z.uuid().nullable().optional(),
   revoked_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  message: z.string().nullable().optional(),
 });
 export const PendingSignup = z.strictObject({
   email: z.string().optional(),
@@ -3713,9 +3715,8 @@ export const MySecurity = z.strictObject({
   has_password: z.boolean().optional(),
   two_factor: z.boolean().optional(),
   two_factor_required: z.boolean().optional(),
-  backup_codes_left: z.number().int().optional(),
-  sessions: z.array(z.unknown()).optional(),
-  recent_events: z.array(z.unknown()).optional(),
+  backup_codes_left: z.number().int().nullable().optional(),
+  mfa_pending: z.boolean().optional(),
 });
 export const TwoFactorSetup = z.strictObject({
   otpauth_uri: z.string().optional(),

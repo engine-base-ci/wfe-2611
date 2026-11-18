@@ -227,6 +227,8 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
             // 同意し直しの印（K-53・D-125.162）：今の版の利用規約かプライバシーポリシーにまだ同意していなければ、このセッションに立てる。
             //   パスワード・パスキー・2 段階の後・確認のメールで確定した直後のどれもこの hook を通る。Bridge のセッションには立てない（D-128.137）
             await o.appPool.query("select app.mark_session_terms($1)", [session.id]);
+            // 付けるまで進めない印（K-308・D-128.141）：パスキーも 2 段階も無い人の画面のセッションに立てる。PC のセッションには立てない
+            await o.appPool.query("select app.mark_session_mfa($1)", [session.id]);
             // 新しい端末でのログインは本人に知らせる（画面の知らせは DB の関数が作る・メールはここ・D-125.140）
             const nd = await o.appPool.query<{ is_new: boolean }>(
               "select is_new from app.session_first_on_device($1, null, $2, $3)",
@@ -289,4 +291,26 @@ export async function sendPendingVerification(
   } catch (e) {
     return { sent: false, error: (e as Error).message || "送れませんでした", url };
   }
+}
+
+/** 本人のパスキーの一覧（安全の設定を読む口・K-308）。認証の表は認証の接続（kaname_auth）で読む（D-128.119）。
+ *  返すのは画面に出す欄だけ（公開鍵・credential_id・署名の回数は読まない）。作った順 */
+export interface PasskeySummary {
+  id: string;
+  name: string | null;
+  createdAt: Date | null;
+  backedUp: boolean;
+}
+export async function listPasskeysOf(authPool: pg.Pool, userId: string): Promise<PasskeySummary[]> {
+  const r = await authPool.query<{
+    id: string;
+    name: string | null;
+    created_at: Date | null;
+    backed_up: boolean | null;
+  }>(
+    `select id, name, "createdAt" as created_at, "backedUp" as backed_up from kaname_auth.passkey
+      where "userId" = $1 order by "createdAt" asc nulls last, id asc`,
+    [userId],
+  );
+  return r.rows.map((x) => ({ id: x.id, name: x.name, createdAt: x.created_at, backedUp: x.backed_up === true }));
 }

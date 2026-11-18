@@ -1,4 +1,4 @@
--- 0113 招待の下見（K-331・契約の口 getInvitation・関門 C2）
+-- 0114 招待の下見（K-331・契約の口 getInvitation・関門 C2）
 --   ① invitations.message：招いた人のひとこと（D-128.62）。空を許す・500 文字まで
 --   ② app.invitation_preview2(p_token_hash, p_auth_user_id)：リンクを開いた人が受ける前に見るもの。0020 の app.invitation_preview は
 --      前の道すじ（/api/auth-ext/invitations/*）が使うので残す（消すのは K-337）。
@@ -60,4 +60,4 @@ end $$;
 revoke all on function app.invitation_preview2(text, text) from public;
 grant execute on function app.invitation_preview2(text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0113_invitation_preview.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0114_invitation_preview.sql') on conflict do nothing;
