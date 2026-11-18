@@ -4,7 +4,7 @@
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）
 import { describe, expect, it } from "vitest";
 import { failMailTo, mails } from "../F1/login.harness.js";
-import { msg, setupInvite } from "./invite.harness.js";
+import { RESEND, msg, setupInvite } from "./invite.harness.js";
 
 const h = setupInvite("k334");
 const KIND = "invitation_resend_requested";
@@ -187,6 +187,23 @@ describe("K-334 送り直しを頼む：招待の状態 × 回数", () => {
     expect(logs).toContain("時刻を書けなかった");
     expect(await result(await h.resendRequest(inv.token))).toBe("sent");
     expect(await notes(o.tenantId)).toHaveLength(2);
+  });
+});
+
+describe("K-334 送り直しを頼む：入力", () => {
+  it("K334-API-013 体に知らない欄（email）を入れて頼む：422（体は空の形・strict）。知らせの行もメールも無く、頼んだ時刻も書かない", async () => {
+    const o = await h.owner("own013");
+    const inv = await h.invite(o, { expired: true });
+    const before = mails.length;
+    const r = await h.req("POST", RESEND(inv.token), { email: inv.email });
+    expect(r.status).toBe(422);
+    expect(await notes(o.tenantId)).toHaveLength(0);
+    expect(mails.length).toBe(before);
+    const t = await h.admin.query<{ t: Date | null }>(
+      "select resend_requested_at as t from invitations where id = $1",
+      [inv.id],
+    );
+    expect(t.rows[0]!.t).toBeNull();
   });
 });
 
