@@ -32,3 +32,9 @@
   align-self: flex-start;
   font-size: var(--k-text-body-sm);
 }
+
+/* パスキーの説明を主ボタンのすぐ下に寄せる（キャンバスの margin-top −6・login.css と同じ値）。
+   入口の枠の .k-auth-note { margin: 0 } と同じ強さだと、読み込む順（画面ごとに違う）で負けるので、form の中で 1 段強くする */
+.k-auth-form .k-login-pk-note {
+  margin: var(--k-c-auth-lead-sub-margin);
+}

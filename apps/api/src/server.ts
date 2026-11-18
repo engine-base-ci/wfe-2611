@@ -31,6 +31,7 @@ import { consentTermsHooks } from "./hooks/consent-terms.js";
 import { serviceStatusHooks } from "./hooks/service-status.js";
 import { loginHooks } from "./hooks/login.js";
 import { mySecurityHooks } from "./hooks/my-security.js";
+import { adminRecoveryHooks } from "./hooks/admin-recovery.js";
 import { nearLimitNotifier } from "./ops-alert.js";
 
 export interface BootOptions {
@@ -164,6 +165,13 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...loginHooks({ auth, appPool, authPool, config: { opsEmail: config.opsEmail } }),
         // 自分の安全の設定を読む（K-308）
         ...mySecurityHooks({ auth, appPool, authPool }),
+        // 端末をなくした：管理者に頼む（K-305）。メールは関門 C6 の 1 か所（mailer）を通る。本文に運営の連絡先
+        ...adminRecoveryHooks({
+          appPool,
+          authPool,
+          ...(mailer ? { mailer } : {}),
+          config: { opsEmail: config.opsEmail },
+        }),
         ...bridgeHooks({
           appPool,
           release: { dir: config.bridgeReleaseDir ?? "", base: config.bridgeReleaseBase ?? "" },

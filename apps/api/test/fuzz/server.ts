@@ -20,6 +20,7 @@ import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
 import { mySecurityHooks } from "../../src/hooks/my-security.js";
+import { adminRecoveryHooks } from "../../src/hooks/admin-recovery.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
@@ -72,6 +73,8 @@ Object.assign(
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
   // 安全の設定を読む（K-308）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
   mySecurityHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
+  // 端末をなくした：管理者に頼む（K-305）。送出先は差さない（外に送らない。宛先があれば送れなかった扱いで failed）。待ちの印は本物の認証の接続で引く
+  adminRecoveryHooks({ appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
 );
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(

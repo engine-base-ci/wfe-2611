@@ -49,6 +49,16 @@ describe("POST /api/v1/auth/two-factor/verify", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in-code.test.ts の「K302-API-017」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in-code.test.ts", "utf8")).toContain("K302-API-017");
   });
+  it("test_post_auth_two_factor_verify_rejected_403_2", () => {
+    // UNWANTED: IF 人かワークスペースが止められているなら、Kaname は 403 と止めの理由の文を返し、セッションを作らない
+    // 本物の試験：apps/api/test/features/F1/sign-in-code-gate.test.ts の「K305-API-022」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/sign-in-code-gate.test.ts", "utf8")).toContain("K305-API-022");
+  });
+  it("test_post_auth_two_factor_verify_unavailable", () => {
+    // UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない
+    // 本物の試験：apps/api/test/features/F1/sign-in-code-gate.test.ts の「K305-API-023」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/sign-in-code-gate.test.ts", "utf8")).toContain("K305-API-023");
+  });
   it("test_post_auth_two_factor_verify_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）

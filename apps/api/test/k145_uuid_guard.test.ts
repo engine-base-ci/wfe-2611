@@ -437,7 +437,7 @@ describe("K-145 送る量の守り（D-130.1・G-16）を前の道すじと node
     expect(await jobsOf(r.member)).toBe(jobs + 1);
   }, 60_000);
 
-  it("K145-API-012 本番と同じ node のサーバー（@hono/node-server）に、頭の無い 5MB の流れを /api/auth-ext/sign-in へ送ると 413 が返り、接続が閉じる（吊るさない）。サーバーは落ちない（/health が 200）", async () => {
+  it("K145-API-012 本番と同じ node のサーバー（@hono/node-server）に、頭の無い 5MB の流れを /api/v1/auth/sign-in へ送ると 413 が返り、接続が閉じる（吊るさない）。サーバーは落ちない（/health が 200）", async () => {
     const server: ServerType = await new Promise((resolve) => {
       const s = serve({ fetch: app.fetch, port: 0, hostname: "127.0.0.1" }, () => resolve(s));
     });
@@ -453,7 +453,7 @@ describe("K-145 送る量の守り（D-130.1・G-16）を前の道すじと node
             host: "127.0.0.1",
             port,
             method: "POST",
-            path: `${X}/sign-in`,
+            path: "/api/v1/auth/sign-in",
             headers: { "content-type": "application/json", "transfer-encoding": "chunked" },
           },
           (res) => {

@@ -1,4 +1,4 @@
--- 0112 入り方を数える・「付けるまで進めない」の印・ほかを切る（K-308・D-128.61・D-128.137・D-128.141）
+-- 0113 入り方を数える・「付けるまで進めない」の印・ほかを切る（K-308・D-128.61・D-128.137・D-128.141）
 --   ① app.login_methods(auth_user_id)：パスキーの数・パスワードの有無・2 段階の有無。認証の表（kaname_auth）は業務の接続から読めない
 --      （D-128.119）ので security definer の中だけで読む。migrate は migrateAuth より先に走るので、表は実行の時に引く（plpgsql の動的な文・
 --      表がまだ無ければ 0／false）。パスキーの表は部品（@better-auth/passkey・K-304）が足す
@@ -123,4 +123,4 @@ end $$;
 revoke all on function app.revoke_sessions_for_auth_user_except(text, text, text) from public;
 grant execute on function app.revoke_sessions_for_auth_user_except(text, text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0112_login_methods.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0113_login_methods.sql') on conflict do nothing;

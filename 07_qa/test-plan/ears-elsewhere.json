@@ -857,6 +857,14 @@
     "test_post_auth_two_factor_verify_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
+    },
+    "test_post_auth_two_factor_verify_rejected_403_2": {
+     "file": "apps/api/test/features/F1/sign-in-code-gate.test.ts",
+     "mark": "K305-API-022"
+    },
+    "test_post_auth_two_factor_verify_unavailable": {
+     "file": "apps/api/test/features/F1/sign-in-code-gate.test.ts",
+     "mark": "K305-API-023"
     }
    }
   },
@@ -922,6 +930,27 @@
    "na": {
     "test_get_me_security_rejected_403": "本人だけの口で役を見ない（権限を何も持たない人も自分の分は読める・受けは K308-API-006）",
     "test_get_me_security_rejected_422": "入力を受けない GET（一覧の問い合わせは形だけ確かめて無視する）"
+   }
+  },
+  "requestAdminRecovery": {
+   "file": "apps/api/test/features/F1/admin-recovery.test.ts",
+   "reason": "管理者に頼むは、本物のログインの部品の待ちの印・本物の DB の頼みの関数・差し込んだメールの送出先で確かめる。生成の試験の偽のセッションでは確かめられない（K-305）",
+   "covers": {
+    "test_post_auth_recovery_admin_request_ok": "K305-API-001",
+    "test_post_auth_recovery_admin_request_rejected_422": "K305-API-013",
+    "test_post_auth_recovery_admin_request_rejected_422_2": "K305-API-011",
+    "test_post_auth_recovery_admin_request_rejected_401": "K305-API-012",
+    "test_post_auth_recovery_admin_request_rate_limited": "K305-API-014",
+    "test_post_auth_recovery_admin_request_server_error": "K305-API-017",
+    "test_post_auth_recovery_admin_request_shape": "K305-API-018",
+    "test_post_auth_recovery_admin_request_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_recovery_admin_request_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
    }
   }
  }
