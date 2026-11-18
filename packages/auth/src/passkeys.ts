@@ -131,7 +131,8 @@ export function kanamePasskeyManage(o: PasskeyManageOptions): BetterAuthPlugin {
               if (n === null) throw nameRejected();
               name = n;
             }
-            return { context: { body: { ...body, name } } };
+            // createSession は受けない（部品が新しいセッションを作り、ログインの口を通らずに「ログインから 15 分の内」のセッションができる・レビューの指摘）
+            return { context: { body: { ...body, name, createSession: false } } };
           }),
         },
       ],

@@ -52,7 +52,15 @@ export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
 /** パスキーの部品のうち Kaname の決まりを通らない口（一覧・名前・外す）も閉じる（K-304） */
 /** パスキーで取り直す内部の口（K-309）も道は閉じる（サーバーの中の auth.api からだけ呼ぶ） */
-export const DISABLED_PATHS = ["/sign-in/email", ...PASSKEY_DISABLED_PATHS, PASSKEY_STEP_UP_PATH] as const;
+/** freshAge を 0 にしたので、部品の「1 日以内のセッション」で守っていた口のうち Kaname が使わない 2 つも閉じる（K-309・レビューの指摘）：
+ *  list-sessions（その人の全部のセッションの印を返す）・unlink-account（ログインの手段を外す） */
+const FRESH_ONLY_PATHS = ["/list-sessions", "/unlink-account"] as const;
+export const DISABLED_PATHS = [
+  "/sign-in/email",
+  ...PASSKEY_DISABLED_PATHS,
+  PASSKEY_STEP_UP_PATH,
+  ...FRESH_ONLY_PATHS,
+] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
