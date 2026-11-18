@@ -118,6 +118,8 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     needStepUp: false,
     holdRead: false,
     ...o,
+    // 1 回だけの差し替えは呼ぶたびに写す（同じ状態を幅ごとに回すとき、前の幅で使った once を後の幅に持ち越さない）
+    once: { ...(o.once ?? {}) },
   };
   await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), `tok-${WS}`);
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
@@ -863,6 +865,8 @@ for (const [id, c] of Object.entries(DIALOG_PROD)) {
           await openList(page, w, c.local);
           await c.act(page);
           await expect(page.locator(DLG).last()).toBeVisible();
+          // 小窓は画面に貼り付く（fixed）が、比べる y はページの座標。行を押して下へ動いた分を戻し、モック（動かずに開く）とそろえる
+          await page.evaluate(() => window.scrollTo(0, 0));
         },
         opts,
       );
