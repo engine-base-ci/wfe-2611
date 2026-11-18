@@ -28,14 +28,15 @@ const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
   re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
 }));
 
+/** 閉じた再設定の部品の道（K-320）。disabledPaths が当たらない /reset-password/… と末尾の「/」もここで 404（/api/auth を外した道） */
+const AUTH_RESET_CLOSED = /^\/(request-password-reset|reset-password)(\/.*)?$/;
+
 /** 同意し直しの間も通す認証の部品の口（K-53。/api/auth を外した道）。ほかは全部止める（新しく足した道は止まる側に倒す） */
 const AUTH_TERMS_OPEN = [
   /^\/sign-in(\/.*)?$/,
   /^\/sign-out$/,
   /^\/get-session$/,
   /^\/two-factor\/verify-(totp|backup-code|otp)$/,
-  /^\/request-password-reset$/,
-  /^\/reset-password(\/.*)?$/,
   /^\/ok$/,
 ];
 
@@ -120,6 +121,7 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   if (opts.auth)
     app.on(["GET", "POST"], "/api/auth/*", async (c) => {
       const sub = c.req.path.replace(/^\/api\/auth(?=\/|$)/, "") || "/";
+      if (AUTH_RESET_CLOSED.test(sub)) return c.json({ code: "NOT_FOUND" }, 404);
       const h = c.req.raw.headers;
       if (opts.resolve && !AUTH_TERMS_OPEN.some((re) => re.test(sub)) && (h.get("authorization") || h.get("cookie"))) {
         // 解こうとして落ちたら handler に渡さず止める側に倒す（fail-closed・503・E-PAGE-003）。解けて null（セッションが無い）はそのまま渡す

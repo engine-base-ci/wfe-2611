@@ -3306,6 +3306,32 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 404,
+     "code": "E-INV-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-INV-001"
+     },
+     "errors": [
+      "E-INV-001"
+     ],
+     "trigger": "招待のリンクの印が見つからない（でたらめ・古い・空白入り・512 文字を超える）",
+     "ears_form": "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、招待の中身を返さない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "招待の下見を読む DB（app.invitation_preview2）かセッションを読む所が落ちた",
+     "ears_form": "UNWANTED: IF 招待の下見を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -3329,6 +3355,8 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/auth/invitations/:token が「招待の中身（会社・層・役割）を見て参加する」として呼ばれたとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行い 2xx を返す",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、招待の中身を返さない",
+    "UNWANTED: IF 招待の下見を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
     "UBIQUITOUS: GET /api/v1/auth/invitations/:token の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
@@ -3341,7 +3369,7 @@
    "implementation_path": "apps/api/src/routes/invitations.ts::getInvitation",
    "permission": {
     "who": "public",
-    "scope": "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・役割・招いた人だけ",
+    "scope": "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・招いた人・グループ・役割・ひとことと、招待の状態・宛てのアカウントの有無・ログイン中の様子だけ（K-331）",
     "step_up": false
    },
    "path_params": [

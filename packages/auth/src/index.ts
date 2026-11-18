@@ -55,11 +55,15 @@ export const TWO_FACTOR_PENDING_SEC = 300;
 /** freshAge を 0 にしたので、部品の「1 日以内のセッション」で守っていた口のうち Kaname が使わない 2 つも閉じる（K-309・レビューの指摘）：
  *  list-sessions（その人の全部のセッションの印を返す）・unlink-account（ログインの手段を外す） */
 const FRESH_ONLY_PATHS = ["/list-sessions", "/unlink-account"] as const;
+/** 再設定の部品の道も閉じる（画面は契約の口 requestPasswordReset・resetPassword だけを呼ぶ・K-320）。
+ *  disabledPaths は道とちょうど同じ文字のときだけ閉じるので、/reset-password/… と末尾の「/」は口の入口（apps/api の app.ts）が 404 にする */
 export const DISABLED_PATHS = [
   "/sign-in/email",
   ...PASSKEY_DISABLED_PATHS,
   PASSKEY_STEP_UP_PATH,
   ...FRESH_ONLY_PATHS,
+  "/request-password-reset",
+  "/reset-password",
 ] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {

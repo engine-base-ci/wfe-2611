@@ -2137,7 +2137,6 @@
    ],
    "apis": [],
    "tests": [
-    "apps/api/test/generated/get_auth_invitations_token.test.ts",
     "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
    ],
    "depends_on": [],
@@ -14428,6 +14427,98 @@
    "file": "11_tickets/K-316.md"
   },
   {
+   "id": "K-320",
+   "title": "再設定の画面を契約の口につなぐ（メールを入れる・送りました・新しいパスワード・済んだ・リンクが使えない・ログイン中）・部品の道を閉じる（K-76 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-76",
+   "milestone": "F1",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。画面の部品（features/F1/password-reset/views.tsx）とモックは c/段2 でできているので、口をつなぐ入れ物（状態の切り替え・手がかりの扱い・60 秒の数え）30 分・部品の道を閉じる 5 分・前からの試験の替え 10 分・自分の確かめ（3 幅のモックとの突き合わせ）15 分。K-255（画面・見込み 2.5）より小さい",
+   "decisions": [
+    "D-042",
+    "D-087",
+    "D-125.137",
+    "D-125.140",
+    "D-128.62",
+    "D-128.125",
+    "D-128.141",
+    "D-128.143",
+    "D-128.147",
+    "D-144.7",
+    "D-145.9"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面は契約の口（requestPasswordReset・resetPassword・getMe）を呼ぶだけで、外への出口を自分で持たない。部品の道を閉じるのは入口の設定（disabledPaths）で、書き込み・送出・外への呼び出しを増やさない",
+   "tests": [
+    "apps/web/tests/k/k320-password-reset.spec.ts"
+   ],
+   "depends_on": [
+    "K-314",
+    "K-316"
+   ],
+   "acts": [
+    "A31"
+   ],
+   "screens": [
+    "password-reset"
+   ],
+   "apis": [],
+   "affects": [
+    "@kaname/web",
+    "@kaname/auth",
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "mock": [
+    "reset-ask",
+    "reset-ask-error",
+    "reset-sent",
+    "reset-signed-in",
+    "reset-new",
+    "reset-new-error",
+    "reset-done",
+    "reset-done-other",
+    "reset-dead",
+    "reset-invalid"
+   ],
+   "changes": [
+    "apps/web/app/(outside)/password-reset/page.tsx",
+    "apps/web/features/F1/password-reset/",
+    "packages/auth/src/index.ts",
+    "apps/api/src/app.ts",
+    "apps/web/tests/screens/password-reset.spec.ts",
+    "apps/web/tests/screens/qa-a1-chat.spec.ts",
+    "apps/web/tests/screens/qa-c-onboard.spec.ts",
+    "07_qa/test-specs/screens/password-reset.md",
+    "07_qa/test-plan/result-ledger.json",
+    "07_qa/test-specs/ops-blocked.json",
+    "07_tasks/tickets.json",
+    "07_tasks/tickets_plan.json",
+    "scripts/ci/ci_scope.json",
+    "scripts/ci/class_ledger.json"
+   ],
+   "sections": {
+    "目的": "再設定の画面（/password-reset）を、前の部品の画面（components/ui・OutsideLayout・部品の口 `authClient.requestPasswordReset`・`authClient.resetPassword`）から、\nc/段2 で作った部品 `features/F1/password-reset/views.tsx` の `PasswordReset` に載せ替え、契約の口（K-313 の requestPasswordReset・K-314 の resetPassword）につなぐ。\n正の絵はモック `/dev/mock/f1/<状態>`（本番と同じ部品）。新しい見た目は書かない。\n\n載せ替えたら、部品の道（`/api/auth/request-password-reset`・`/api/auth/reset-password`・`/api/auth/reset-password/:token`）を閉じる（404）。",
+    "完了の条件": "- [ ] 下の表の 26 行（K320-UI-001〜026）が緑：`apps/web/tests/k/k320-password-reset.spec.ts`\n- [ ] モックの写しと本番の写しを、頭の mock の 10 状態 × 幅 375・768・1440 で比べて同じ（K320-UI-024）\n- [ ] 前からの画面の試験を下の「前からの試験を替える」のとおりに替えて緑。ほかの前からの試験（login.spec.ts・k221-login-frame.spec.ts・sign-up.spec.ts のリンクの行）は替えずに緑\n- [ ] 押した結果（呼んだ口・移った先・出た文）まで実ブラウザで見る。幅 320〜1440 の横溢れ 0\n- [ ] チケットの CI が緑",
+    "前提と制約": "分類: RESET\n\n- 親 K-76 の葉。依存：K-314（K-313 も含む）。答えの形は K-313・K-314 の表のとおり\n- 画面の部品は c/段2 で作った物（K-300 で本線に入る）。済んだ画面の「別のアカウントでログイン中」の案内（`PasswordReset step=\"done\" otherAccount`）とモックの状態 `reset-done-other` も、代表の答え（answer=8467d5780a91 ⑫）を受けて c/段2 に入っている。このチケットは部品とモックを変えない\n- モックと比べる道具は共通の `apps/web/tests/k/stage2-match.ts`（`matchMock`）。K-300 が carry で本線に入れる（待ちを減らすために K-316 から移した）。K-316 に依存するのは、同じ前からの試験 apps/web/tests/screens/password-reset.spec.ts を K-316 が直し（65・66 行の道）、このチケットが消すから\n- 口は網の手前（page.route）で差し替える（K-221・K-255 と同じ）。部品の道を閉じたことだけは、本物の口（API_BASE）を叩いて確かめる（K320-UI-023）\n- 本人の Bridge（127.0.0.1:38617）に届かせない（網の手前で 404）\n- メールアドレスを URL に載せない（ログインの画面から引き継ぐのは sessionStorage）\n- テストはチケットを作る人が書き、実装する人は変えない（D-128.125）\n- 重さ：apps/web と packages/auth・apps/api の入口の設定。packages/db は触らない",
+    "依存の理由": "- K-314: 要る — 前からの画面の試験（qa-a1-chat・qa-c-onboard）が本物の再設定の口（K-313・K-314）を通る。部品の道を閉じるので、画面は契約の口だけを呼ぶ\n- K-316: 要る — 同じ前からの試験 apps/web/tests/screens/password-reset.spec.ts を両方が触る（K-316 は 65・66 行のログインの道を契約の口に替え、K-320 はファイルを消す）。qa-a1-chat.spec.ts も両方が替える",
+    "実施事項": "### 作り方\n\n| 欄 | 中身 |\n|---|---|\n| 入れ物 `apps/web/app/(outside)/password-reset/page.tsx` | 薄い入れ物にする（Suspense と `features/F1/password-reset` の `PasswordResetPage` を置くだけ）。前の OutsideLayout・components/ui・authClient の import を消す |\n| 画面の動き `apps/web/features/F1/password-reset/reset-page.tsx`（新しい）と `index.ts` | ① 開いたら `?token=` を読み、すぐ `history.replaceState` で URL から消し、手がかりは sessionStorage（このタブだけ・`kaname.reset-token`）に置く。手がかりがあれば step new、無ければ ask ② ログイン中か：印（getToken）があれば `call(\"getMe\")`。200 なら signedIn（ask で案内を出す）③ ask：送る前に `normalizeEmail` と同じ形（NFKC・空白を除く）で形を見て、空・形違いは E-VAL-004 の文を出して口を呼ばない。通れば `call(\"requestPasswordReset\", { body: { email } })` を 1 回だけ（押している間は busy）。201 → sent（email と 60 秒の数え）。429 → E-LIM-005 の文（{秒} に retry_after_sec）。ほかの失敗・網の切れ → E-PAGE-003 の文。どれも ask のまま入れたメールは残す ④ sent：60 秒たつまで「もう一度送る（n 秒あとから）」は押せない。たったら押せて、押すと ③ をもう一度 ⑤ new：2 つの欄が違えば「2 つのパスワードが違います」・12 文字より短ければ E-VAL-005 の文を出し、口を呼ばない。通れば `call(\"resetPassword\", { body: { token, new_password } })` ⑥ 201 → done。手がかりを sessionStorage から消す。ログイン中だったなら `call(\"getMe\")`：401 なら同じ人（その画面の印も切れた）→ 印を消す。200 なら別のアカウント → done に otherAccount ⑦ 410 E-AUTH-006 → dead・E-PAGE-006 → invalid。どちらも手がかりを消し、入れたパスワードは捨てる。dead・invalid の「再設定メールを送り直す」（部品の `<Link href=\"/password-reset\">`）は今の URL と同じなので、Next の移動では画面が作り直されない。入れ物は部品を包む要素の `onClickCapture` で `a[href=\"/password-reset\"]` の押下を拾い、step を ask に戻す（部品は変えない） ⑧ 422 → new のまま口の文（E-VAL-005・E-VAL-026・E-VAL-011。画面は 12 文字より短いのだけ自分で止め、長すぎ・漏れは口の文を出す）⑨ 500・網の切れ → new のまま E-PAGE-003 の文（手がかりは残す。もう一度押せる）⑩ ログインの画面から来たら、sessionStorage の `kaname.reset-email` を ask の欄に入れて消す |\n| 部品の道を閉じる `packages/auth/src/index.ts`・`apps/api/src/app.ts`（精査の後の決め 4） | ① createAuth の `disabledPaths` に `/request-password-reset`・`/reset-password` を足す（K-301 が disabledPaths を作っていればそこに足す）。disabledPaths は道とちょうど同じ文字のときだけ閉じる（better-auth の api/index.mjs）ので、② **`/reset-password/` で始まる道と、末尾に「/」の付いた 2 本（`/request-password-reset/`・`/reset-password/`）は、apps/api/src/app.ts の `/api/auth/*` を部品に渡す手前の入口で 404 を返す**（`/^\\/api\\/auth\\/(request-password-reset|reset-password)(\\/.*)?$/` に当たる道は全部 404・本体 `{ code: \"NOT_FOUND\" }`）③ apps/api/src/app.ts の同意し直しの間も通す道（AUTH_TERMS_OPEN）から 2 行（34・35 行）を消す。K-313・K-314 の口は部品の道を使わない（自分の送る・決める関数）ので、閉じても動く（K-313・K-314 の試験が緑のまま。affects に @kaname/api を入れたのでチケットの CI が流す） |\n| CI の範囲・台帳 `scripts/ci/ci_scope.json` | 作り手が最初に足す：`apps/web/tests/k/k320-password-reset.spec.ts` を範囲の地図に（無ければ）。この試験は 07_qa/test-specs/errors.json を読むので reads_ok に理由つきで足す（足さないと CS-032 で最初の CI が赤）。新しく使うクラスがあれば class_ledger.json に（G67） |\n\n### 前からの試験を替える（書く段の最初に作り手が替える・変えた差分の精査を 1 回受ける）\n\n前の画面を見ている試験（同じ形を全部出した）：\n\n```search\n- name: 再設定の画面の道を開いている・見ている前からの画面の試験（切る段の葉の試験 apps/web/tests/k を除く。c/段2 の今の木で数えた・5 ファイル）\n  cmd: git grep -n 'password-reset' -- apps/web/tests ':!apps/web/tests/k'\n  count: 17\n- name: 前の画面の文字（ボタンの名前・見出し・ログの宛先）を期待している所（同じく apps/web/tests/k を除く）\n  cmd: git grep -n -E '変更してログイン|再設定メールを送る|reset → ' -- apps/web/tests ':!apps/web/tests/k'\n  count: 17\n```\n\n| 試験 | 行 | 前 | 後 | 訳 |\n|---|---|---|---|---|\n| `apps/web/tests/screens/password-reset.spec.ts` | 全部（11 本） | 前の画面（見出し「パスワードの再設定」「送りました」「新しいパスワード」・ボタン「変更してログイン」・文「Bridge の接続はすべて切れます」）を見る | ファイルを消す。中身は k320-password-reset.spec.ts と K-313・K-314 の口の試験が持つ（下の「前の行の行き先」） | 画面を載せ替えたので前の見出しと文が無い |\n| `apps/web/tests/screens/qa-a1-chat.spec.ts` | 1144 行 | `getByRole(\"button\", { name: \"変更してログイン\" })` | `getByRole(\"button\", { name: \"パスワードを決める\" })` | ボタンの名前がモックの名前になった。ほか（1133〜1136・1137 の lastMailUrl・[data-state='s']）は替えない（lastMailUrl は宛先の印も拾う・views.tsx も data-state s を持つ） |\n| 同上 | 1145 行 | 「変更してログイン」を押した後に `toHaveURL(/\\/login$/)` を待つ | `[data-state='done']` が出るのを待ち、「ログインする」（link）を押してから `toHaveURL(/\\/login$/)` を待つ | 新しい画面は決めた後も /password-reset の done にとどまり、「ログインする」を押すまで移らない |\n| `apps/web/tests/screens/qa-c-onboard.spec.ts` | 226 行 | `[data-state='s'] h1` が「送りました」 | `[data-state='s'] h1` が「パスワードを作り直す」 | 送りましたの画面の見出しはモックの見出し |\n| 同上 | 228 行 | ログに `（reset → ${ok.email}）` | ログに `（reset → ${mailTag(ok.email)}）`（`mailTag` は `../_lib/api` から import） | K-313 がログの宛先を印にした（D-128.146）。K-313 は migration を持ち重さの上限で apps/web を触れないので、このチケットが替える |\n\n`apps/web/tests/k/k221-login-frame.spec.ts`（2 か所・リンクの先 /password-reset）・`login.spec.ts`（3 か所）・`sign-up.spec.ts`（1 か所）は道だけを見るので替えない。\n\n前の行の行き先（password-reset.spec.ts を消すとき、どの行もどこかが持つ）：SCR-PASSWORD-RESET-001・008〜010（4 幅・戻る）→ K320-UI-001・025／002・007・011〜015・022・023・026（未登録でも同じ・正規化）→ K320-UI-003 と K313-API-002・005／013・014（NFD）→ K313-API-005／003・027〜029・E-AUTH-006-B（2 つ違う・決める・新しいパスワードで入れる）→ K320-UI-012・013 と K314-API-001／E-AUTH-006-A・C（使った・期限切れ）→ K320-UI-015 と K314-API-003・005／「端末を失くした人の出口は置かない」→ K320-UI-001（モックと同じ要素だけ）／031（実際に送られログに残る）→ K313-API-001・009／034（届かないときに詰まらない）→ K320-UI-004・005／036（見る・隠す）→ K320-UI-019\n\n### 前の仕様の表と台帳を片付ける（K-52 の verify-email と同じ形）\n\n`apps/web/tests/screens/password-reset.spec.ts` を消すので、その行 ID（SCR-PASSWORD-RESET-…）を持つ所も片付ける：\n\n| 所 | すること |\n|---|---|\n| `07_qa/test-specs/screens/password-reset.md`（37 行） | ファイルを消す。行の行き先は上の「前の行の行き先」と次の行：004〜006（役割ごとの中身）→ 要らない（誰でも開く画面で、役割で中身が変わらない）／016〜021（G-11〜G-16）→ K-313・K-314・K-320 の G-11〜G-16 の表／024・025（回復コードで入る）→ ログインのバックアップコード（K-302・K-316）／030（発注者確認）→ 前の作業カードの手順。新しい流れでは K-50 の統合テスト（staging）／032（受信箱に届く）→ K-50 の統合テスト（staging）／033（文面に内部の言葉が無い）→ K313-API-016／035（送れなかったものを送ったにしない）→ K313-API-009 |\n| `07_tasks/tickets.json` の T-U-06 の `qa_rows.l1`（34 か所） | SCR-PASSWORD-RESET-… を外す（新しい行は 11_tickets の K-313・K-314・K-320 が持つ・D-128.114）。小さな置き換えで外し、`python3 scripts/ci/build_tickets.py --from-plan 07_tasks/tickets_plan.json` で tickets_plan.json を作り直し、`python3 scripts/ci/qa-ladder.py validate --spec 07_qa/test-specs --tickets 07_tasks/tickets.json`（G28）が緑なのを見る。07_tasks/TASK-CARDS.md・schedule.html は作り直さない置き場なのでそのまま |\n| `07_qa/test-plan/result-ledger.json`（30 か所） | SCR-PASSWORD-RESET-… の行を消す（台帳は減らすだけ・ci_results.py check） |\n| `07_qa/test-specs/ops-blocked.json`（1 か所） | SCR-PASSWORD-RESET-024 を消す（回復コードの判断はログインの葉が持つ） |\n| `apps/web/tests/screens/qa-c-onboard.spec.ts` の試験の名前 | SCR-PASSWORD-RESET-037・035 は名前に残す（K-52 で消した SCR-VERIFY-EMAIL-028 と同じ扱い・中身は上の表で替える） |\n\n### 決めた判断\n\n- 口の答えで画面を選ぶ：201（頼む）→ 送りました／201（決める）→ 済んだ／410 E-AUTH-006 → もう使えない／410 E-PAGE-006 → 正しくない／422 → 欄の下に口の文／429 → 待つ秒数の文／500・網の切れ → E-PAGE-003 の文（手がかりは残す）\n- 手がかりは URL から消し、sessionStorage（このタブだけ）に置く。再読み込みしても新しいパスワードの画面が出る（切る段の決め：K-76 の「メールのリンクをもう一度開いてください」の画面はモックに無いので、同じタブの再読み込みでは続きから決められる形にした）。済んだ・使えないで消す\n- 60 秒の数えは画面が自分で数える（口はいつも同じ答えなので、口からは分からない・D-128.141）\n- ログインの画面から入れたメールを引き継ぐのは sessionStorage（URL にメールを載せない）。書く側はログインの画面（K-316）\n- 画面の文は errors.json から引く（E-VAL-004・E-VAL-005・E-VAL-011・E-LIM-005・E-PAGE-003）。状態の画面の文（送りました・済んだ・もう使えない・正しくない）は部品（views.tsx）の文",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k320-password-reset.spec.ts`（実 Chrome・口は網の手前で差し替え・本人の Bridge は網の手前で 404。K320-UI-023 だけ本物の口）\n\n### 状態 × 入口 × 利用者の状態\n\n| 画面の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| ask | /password-reset を開く・ログインの「パスワードを忘れた」 | ログインしていない | メールの欄と「再設定メールを送る」。ログインから来たら入れたメールが入っている | このチケット（リンクの側は K-221・K-316） | K320-UI-001・021 |\n| ask | 同じ | ログイン中 | 案内「ログイン中は ログインと安全 から変えられます」（/mfa-setup）。メールの欄は出したまま | このチケット | K320-UI-008 |\n| sent | 送る | どれでも | 「登録されていれば…送りました」と 60 秒の数え | このチケット | K320-UI-003・004 |\n| new | メールのリンク（?token=） | ログインしていない | 新しいパスワードの 2 つの欄。URL から手がかりが消える | このチケット | K320-UI-009 |\n| new | リンクを別のブラウザで開く | ログインしていない | 同じ（口は K314-API-015） | このチケット | K320-UI-009 |\n| new | 再読み込み・戻る | どれでも | 同じタブなら新しいパスワードの画面のまま。URL に手がかりは無い | このチケット | K320-UI-010 |\n| done | 決める | ログインしていない・同じ人でログイン中 | 済んだ。「ログインする」で /login。同じ人なら画面の印も消える | このチケット | K320-UI-013 |\n| done | 決める | 別のアカウントでログイン中 | 済んだ＋別のアカウントの案内。今のアカウントはそのまま | このチケット | K320-UI-014 |\n| dead・invalid | 期限切れ・使い終わった・前のリンク・でたらめ・古いブックマーク | どれでも | それぞれの画面。「再設定メールを送り直す」で ask | このチケット | K320-UI-015・016 |\n| どれでも | 部品の口を直に呼ぶ | ログインしていない | 404 | このチケット | K320-UI-023 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K320-UI-001 | 対象の状態 | /password-reset を開く | data-auth reset・data-state n。h1「パスワードを作り直す」・欄「メールアドレス」・主「再設定メールを送る」・「← ログインに戻る」。戻るを押すと /login |\n| K320-UI-002 | 入力 | 空・形が違う（`takamoto@engine-base`）で送る | 欄の下に E-VAL-004 の文・欄が aria-invalid。口は 0 回。form は noValidate（ブラウザの止めに奪われない） |\n| K320-UI-003 | 対象の状態 | 正しいメール（前後の全角の空白つき）で送る | 口 forgot に 1 回・体の email は空白を除いた形。data-state s・本文に「登録されていれば、<メール> に作り直しのリンクを送りました」・「もう一度送る（60 秒あとから）」は押せない |\n| K320-UI-004 | 時間の流れ | 送ってから 59 秒・60 秒（時計を止めて進める） | 59 秒では押せない（「1 秒あとから」）。60 秒で「もう一度送る」が押せ、押すと口 forgot が 2 回目 |\n| K320-UI-005 | 操作の揺れ | 「再設定メールを送る」を続けて 2 回押す（口の答えを遅らせる） | 口 forgot は 1 回 |\n| K320-UI-006 | 守り | 口が 429（retry_after_sec 37） | ask のまま。E-LIM-005 の文で {秒} が 37。入れたメールは残る |\n| K320-UI-007 | 失敗 | 1 回目は網が切れる・2 回目は口が 500（2 回目の答えは遅らせる） | どちらも ask のまま E-PAGE-003 の文。2 回目を押すと答えを待つ間は文が消え、答えの後にまた出る。入れたメールは残る |\n| K320-UI-008 | 利用者の状態 | ログイン中（印があり getMe が 200）に開く | 案内「ログイン中は ログインと安全 から変えられます」・リンク先 /mfa-setup。メールの欄と主は出たまま |\n| K320-UI-009 | 入口 | `/password-reset?token=T` を開く | data-state p・h1「新しいパスワードを決める」。開いた直後に URL の search が空・履歴の今の項目にも手がかりが無い |\n| K320-UI-010 | 入口 | 新しいパスワードの画面で再読み込み | 新しいパスワードの画面のまま・URL に手がかりが無い。決めると口に元の手がかりが渡る |\n| K320-UI-011 | 入力 | 2 つのパスワードが違う | 2 つめの欄の下に「2 つのパスワードが違います」。口 reset は 0 回 |\n| K320-UI-012 | 入力 | 11 文字で 2 つそろえる | E-VAL-005 の文。口 reset は 0 回 |\n| K320-UI-013 | 対象の状態 | 12 文字以上でそろえて「パスワードを決める」 | 口 reset に 1 回・体 { token: T, new_password }。data-state done・「パスワードを作り直しました」。「ログインする」で /login。sessionStorage に手がかりが残らない。同じ人でログイン中だった（getMe が後で 401）なら画面の印（localStorage kaname.token）が消える |\n| K320-UI-014 | 利用者の状態 | 別のアカウントでログイン中に決める（getMe が前も後も 200） | done に「別のアカウントでログイン中です。新しいパスワードで入るには、ログアウトしてください」。画面の印はそのまま |\n| K320-UI-015 | 時間の流れ | 口が 410・E-AUTH-006（期限切れ・使った・前のリンク。開いたまま 30 分たってから押した） | data-state dead・「このリンクはもう使えません。もう一度、再設定メールを送ってください」。パスワードの欄は無い。「再設定メールを送り直す」で ask。再読み込みしても new に戻らない |\n| K320-UI-016 | 入力 | 口が 410・E-PAGE-006（でたらめ・古いブックマーク） | data-state invalid・「リンクが正しくありません…」。メールアドレスは出さない |\n| K320-UI-017 | 入力 | 口が 422・E-VAL-011（漏れたパスワード） | new のまま、欄の下に E-VAL-011 の文 |\n| K320-UI-018 | 失敗 | 1 回目は網が切れる・2 回目は口が 500（遅らせる）・3 回目は 201 | 1・2 回目は new のまま E-PAGE-003 の文（2 回目は待つ間に文が消え、答えの後にまた出る）。3 回目で done。3 回とも同じ手がかりが口に渡る |\n| K320-UI-019 | 入力 | パスワードを見る・隠す（D-087） | 2 つの欄とも既定は隠す・押すと見える・的は 24px 以上 |\n| K320-UI-020 | 操作の揺れ | 「パスワードを決める」を続けて 2 回押す | 口 reset は 1 回 |\n| K320-UI-021 | 入口 | ログインの画面から来た（sessionStorage `kaname.reset-email`。置く側はログインの画面・K-316 に頼む） | メールの欄に入っている・読んだら消える・URL にメールが無い |\n| K320-UI-022 | 守り | 部品の口を呼ばない | 画面の網に /api/auth/request-password-reset・/api/auth/reset-password が 1 度も出ない。呼ぶのは /api/v1/auth/password/forgot・reset だけ |\n| K320-UI-023 | 守り | 部品の道を閉じた（本物の口・API_BASE） | POST /api/auth/request-password-reset・/api/auth/request-password-reset/・/api/auth/reset-password・/api/auth/reset-password/、GET /api/auth/reset-password/x・/api/auth/reset-password/x/y が全部 404 |\n| K320-UI-024 | 対象の状態 | モックと本番（頭の mock の 10 状態 × 幅 375・768・1440・共通の道具 stage2-match.ts の matchMock） | 箱・見出し・説明・知らせ（ResultBox・NoteBox）・欄・ボタンの位置と大きさ（±2px）・字の大きさと太さ・色・地・線・角丸と、読み込んだ書体がモックと同じ。比べない値は無い。両方の写しを test-results/stage2-match/ に撮る |\n| K320-UI-025 | 入口 | 幅 320・375・768・1024・1440（ask・sent・new・done・dead） | 横溢れ 0・見出しの 1 文字目が画面の中 |\n| K320-UI-026 | 守り | 外への読み込み | 手がかりのある画面を開いて決めるまで、画面の網は自分の出どころと口（/api/）のほかに出ない（Referer で手がかりを外へ出さない） |\n\n### テストの型の受け（分類 RESET）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-RESET-01 無いメールで再設定を頼む | 画面は答えで分けない（K320-UI-003：口の答えはいつも同じ。登録の有無は K313-API-002） |\n| TP-RESET-02 期限切れ・使い終わった・前のリンク | K320-UI-015・016 |\n| TP-RESET-03 ほかのセッションが切れる | K320-UI-013（同じ人の印が消える）・K320-UI-014（別の人は残る）。口は K314-API-001・002 |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 002・011・012・016・017・019 |\n| 対象の状態 | 該当 | 001・003・013・024 |\n| 時間の流れ | 該当 | 004・015 |\n| 入口 | 該当 | 009・010・021・025 |\n| 利用者の状態 | 該当 | 008・013・014 |\n| 失敗 | 該当 | 007・018 |\n| 操作の揺れ | 該当 | 005・020 |\n| 守り | 該当 | 006・022・023・026 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 画面は外のリソースを持たない（送出・DB は口の側） |\n| G-12 切り替わりの瞬間 | 該当 | 60 秒の 59 と 60（004） |\n| G-13 機能の組み合わせ | 該当 | ログイン中 × 再設定（008・013・014） |\n| G-14 口座状態の波及 | 該当 | 決めた後に同じ人の画面の印を消す（013） |\n| G-15 信号なし終了 | 該当 | 口が落ちた・網が切れたときに「済んだ」と言わない（007・018） |\n| G-16 有限資源の枯渇 | N/A | 画面は口を 1 回ずつしか呼ばない（005・020） |\n\n### 確認の結果\n\n（実装の後に書く）",
+    "K-76 の行の配り方（このチケットが持つ行）": "| K-76 の行 | 受け持ち |\n|---|---|\n| 無し（登録済み）× 送る（画面） | K320-UI-003 |\n| 期限内 × 新しいパスワード（画面） | K320-UI-009・013 |\n| 期限内 × 別の端末・別のブラウザ（画面） | K320-UI-009（口は K314-API-015） |\n| 期限内 × ログイン中（同じ人） | K320-UI-013 |\n| 期限内 × 別のアカウントでログイン中 | K320-UI-014 |\n| 期限切れ・使い終わった・前のリンク（画面） | K320-UI-015 |\n| 無い（でたらめ・古いブックマーク）（画面） | K320-UI-016 |\n| どれでも × ログイン中に開く | K320-UI-008 |\n| ログインの画面の「パスワードをお忘れの方」 | K320-UI-021（リンクの先は K221-UI-008） |\n| 口を直に呼ぶ（部品の道）→ 404 | K320-UI-023 |\n| 入力：メールが空・形が違う（画面） | K320-UI-002 |\n| 入力：2 つが違う | K320-UI-011 |\n| 入力：11 文字（画面）・漏れた（画面） | K320-UI-012・017 |\n| 入力：見る・隠す | K320-UI-019 |\n| 時間の流れ：開いたまま 30 分を過ぎてから送る | K320-UI-015 |\n| 失敗：メールが送れない（画面） | K320-UI-003（答えは同じなので画面も同じ） |\n| 失敗：DB が落ちた（画面） | K320-UI-007・018 |\n| 操作の揺れ：2 回押し（画面） | K320-UI-005・020 |\n| 操作の揺れ：送った後に戻る・再読み込み | K320-UI-010・015 |\n| 守り：1 分に 11 回（画面） | K320-UI-006 |\n| 守り：URL の手がかり・Referer | K320-UI-009・026 |",
+    "成果物": "- 画面 `apps/web/app/(outside)/password-reset/page.tsx`・`apps/web/features/F1/password-reset/`（reset-page.tsx・index.ts・）・部品の道を閉じる設定・前からの試験 3 ファイル\n- 画面の試験 `apps/web/tests/k/k320-password-reset.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-17 待ちを減らす（ticket-flow の切る段 7）：モックと比べる道具 stage2-match.ts の carry を K-316 から K-300 へ移した。K-316 への依存は、同じ前からの試験 password-reset.spec.ts を K-316 が直し、このチケットが消すので残す（要る）。ログインの画面から来たメールの行（K320-UI-021）は、試験が sessionStorage を自分で置く形なので K-316 に頼らない\n\n- D-145.9：モック（キャンバス）に在る物は出す。D-087：パスワードの見る・隠す。D-128.141：60 秒に 1 通。D-125.140：再設定で全部の端末が入り直し\n- 代表の答え（2026-11-17・answer=8467d5780a91）：⑪ 送りましたの文はモックのまま・⑫ 済んだ画面で別のアカウントのときは 1 行出す（モックに reset-done-other）・リンクが正しくないときの文は勧めのとおり（画面は部品の文、口は E-PAGE-006 のまま）\n- 切る段の決め（2026-11-17）：手がかりは sessionStorage（このタブだけ）・メールの引き継ぎは sessionStorage・部品の道はこのチケットで閉じる（前の画面が使っていたため）",
+    "PM に確かめたいこと": "無い（送りましたの文・済んだ画面の別のアカウントの案内・リンクが正しくないときの文は、代表の答え answer=8467d5780a91 で決まった。決定ログの行）",
+    "リスクと懸念": "- 部品の道を閉じた後、口（K-313・K-314）が部品のサーバーの呼び出しで動き続けるかを、取り込みの前に K-313・K-314 の試験で確かめる（disabledPaths はふつう道だけを閉じる）\n- 前からの画面の試験（qa-a1-chat・qa-c-onboard）は本物の口を通す長い試験。K-313 が入ってからこのチケットが入るまで、qa-c-onboard の 228 行（ログの宛先）は赤になる（大分類の終わりの全部の CI の前にこのチケットが入る順）",
+    "申し送り": "- K-316（ログインの画面）：「パスワードを忘れた」を押したとき、メールの欄に入っていれば sessionStorage `kaname.reset-email` に置いてから /password-reset へ（URL にメールを載せない。K221-UI-008 の道は /password-reset のまま）。**K-316 にこの行と試験が無いので、K-316 の切る段に足すよう PM に頼んだ**（K320-UI-021 は読む側だけを持つ）\n- K-301：再設定の 3 本の部品の道はこのチケットが閉じる"
+   },
+   "file": "11_tickets/K-320.md"
+  },
+  {
    "id": "K-322",
    "title": "確認のコードで入る口の守りを固める（同じ 6 けたを同時に送ってもセッションは 1 つ・確かめの後に DB が落ちたらその場で閉じて 500）（K-74 の子）",
    "kind": "タスク",
@@ -14487,6 +14578,85 @@
     "扱わない（K-302 の Q の LOW・この葉の外）": "- 止まっている間に使った 6 けたを送ると 429 でなく 401・待ちの印の署名を見る前の記録・前の形のバックアップコードを小文字にそろえる件は、この葉では変えない（PM が決める）"
    },
    "file": "11_tickets/K-322.md"
+  },
+  {
+   "id": "K-331",
+   "title": "招待の下見の口（getInvitation・招いた人とグループと役割とひとこと・招待の状態・アカウントの有無とログイン中の様子・invitations.message）（K-55 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-55",
+   "milestone": "F2",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-20",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-313（口と DB・18 行・見込み 1 時間）から引いた：契約の形の直し（screen_api.py → 作り直し）15 分・口 1 本と下見の関数 20 分・migration 1 本 10 分・試験の土台を通す 10 分・自分の確かめ 5 分",
+   "decisions": [
+    "D-125.150",
+    "D-128.46",
+    "D-128.62",
+    "D-128.63",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-preview.test.ts",
+    "apps/api/test/generated/get_auth_invitations_token.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F2/invite.harness.ts"
+   ],
+   "depends_on": [],
+   "acts": [
+    "A03"
+   ],
+   "screens": [],
+   "apis": [
+    "getInvitation"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F2/invitations/",
+    "apps/api/src/hooks/invitations.ts",
+    "apps/api/src/server.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "05_flow/screen_api.py",
+    "05_flow/build_api.py",
+    "scripts/ci/contract_shape_test.py",
+    "scripts/ci/fuzz_targets.py",
+    "apps/api/test/fuzz/server.ts",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json",
+    "11_tickets/K-55.md"
+   ],
+   "sections": {
+    "目的": "招待のリンク（`/invite/:token`）を開いたときに画面が呼ぶ契約の口 `getInvitation`（GET /api/v1/auth/invitations/:token）を作る（今は 501）。\n招かれた人に「招待した人・グループ・役割・ひとこと」を見せ（D-128.62）、招待の状態（使える・期限切れ・取り消し・使われた）と、宛てのメールにアカウントがあるか・ログイン中ならメールが合うか・もう入っているか を返す。\n画面はこの答えだけで、新しく作る／ログインして参加する／今のアカウントで参加する／別のメール宛て／もう入っている／期限切れ… の形を決める（answer=becc3d3aa526・7fe1f09fdab4）。\n\nこのチケットは口と DB だけ。参加の口は K-332・K-333、送り直しは K-334、画面は K-335・K-336。",
+    "完了の条件": "- [ ] 下の表の 17 行（K331-API-001〜016・K331-DB-001）が緑：`apps/api/test/features/F2/invitation-preview.test.ts`\n- [ ] 契約の口 `getInvitation` が 501 でない。生成の試験 `apps/api/test/generated/get_auth_invitations_token.test.ts` の it.todo が 0（ears-elsewhere.json の covers で本物の試験を指す）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: INV\n\n- 依存：無い（ログインの土台 `apps/api/test/features/F1/login.harness.ts` は本線にある・K-301）\n- 招く側（招待を作る・送る）は F10（K-70）。試験は招待の行を DB に直に入れる（`invite.harness.ts`・このチケットが持ち込み、K-332〜K-334 が使う）\n- ログインは要らない口（契約の auth: public）。セッションがあれば読み、壊れた・切れた印はログインしていない扱い（401 にしない）\n- 上限は契約どおり 10 回／分／IP",
+    "依存の理由": "無い（depends_on は空）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・番号は取り込む時点の次の空き） | `<次の空き>_invitation_preview.sql`：① `alter table invitations add column if not exists message text` と `check (message is null or char_length(message) <= 500)` ② `app.invitation_preview2(p_token_hash text, p_auth_user_id text default null) returns table (state text, workspace_name text, inviter_name text, group_name text, role text, message text, email text, expires_at timestamptz, account_exists boolean, email_matches boolean, already_member boolean)`：security definer・`revoke all … from public`・`grant execute … to kaname_app`。state は used（accepted_member_id）＞ revoked（revoked_at か deleted_at）＞ expired（expires_at < now()）＞ ok の順。role は invitations.role_id が admin・manager・member・viewer・requester ならそのまま、ほかは member。inviter_name は created_by の members.display_name、group_name は scope_id の scopes.name（消したグループは null）。account_exists は kaname_auth.\"user\" に lower(email) が同じ行があるか（plpgsql で to_regclass を見てから引く・migrate は migrateAuth より先に走る）。signed_email・email_matches・already_member は p_auth_user_id があるときだけ（無ければ null。関数の returns にも signed_email text を足す）：already_member は 0111 の `app.current_members_of_auth_user` に招待の tenant_id がある。packages/db/src/index.ts の MIGRATIONS の末尾にも足す |\n| hook の形（K-332〜K-334 も同じ形に足していく） | `apps/api/src/hooks/invitations.ts` に `export interface InvitationDeps { auth: Auth; appPool: pg.Pool; authPool: pg.Pool; mailer?: Mailer; config: { opsEmail: string; webBaseUrl: string } }` と `export function invitationHooks(d: InvitationDeps): Record<string, Hook>`（server.ts の loginHooks・passwordResetHooks と同じ書き方。mailer は任意：K-334 の送り直しだけが使い、無ければ送れない扱い）。K-337 が運ぶ前からの試験（agent_memory・agent_artifacts）は `invitationHooks({ auth, appPool, authPool, config: { opsEmail, webBaseUrl } })` で呼ぶ |\n| 口 | `getInvitation`。振る舞いは `apps/api/src/features/F2/invitations/preview.ts`、hook は `apps/api/src/hooks/invitations.ts`（`invitationHooks`）を server.ts で contract.hooks に足して 501 を外す。トークンは 1〜512 文字でなければ関数を呼ばずに 404。セッションは resolver で読み、無い・壊れた・切れたは p_auth_user_id null。答え `{ data: { state, workspace_name, inviter_name, group_name, role, message, email, expires_at, account_exists, signed_in: null \\| { email, email_matches, already_member } } }（email はログイン中のアカウントのメール・別のメール宛ての画面で出す）`・`Cache-Control: private, no-store`。行が無ければ 404・E-INV-001。下見の関数が例外なら 503・E-PAGE-003（ログには例外の種類だけ・何も変えない） |\n| 契約の形 | `05_flow/screen_api.py` の getInvitation の答えを表の写し（Invitations・token_hash まで出る）から `InvitationPreview`（上の欄）に替え、404（E-INV-001）を足す → `05_flow/build_api.py` で作り直す（packages/contracts の生成物） |\n| 登録先（touch_rules） | fuzz の的 `apps/api/test/fuzz/server.ts` に invitationHooks を差す・`scripts/ci/contract_shape_test.py` と `scripts/ci/fuzz_targets.py` の表に getInvitation・`07_qa/test-plan/ears-elsewhere.json` の covers で生成の試験を本物の試験に結ぶ・`scripts/ci/ci_scope.json` に features/F2 の地図 |\n| 親 | 11_tickets/K-55.md の apis・tests から、このチケットの分（getInvitation・get_auth_invitations_token）を外す |",
+    "外に影響する手順": "- 1: DB を読む（下見の関数・セッションを解く）。書かない。失敗したら 503・E-PAGE-003 で何も変わらない（K331-API-016）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F2/invitation-preview.test.ts`（本番と同じ bootApi・本物の DB・本物の Better Auth。土台 invite.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`invitations` の accepted_member_id（有る・無い）・revoked_at・deleted_at（有る・無い）・expires_at（過ぎた・過ぎていない）・message（有る・無い）・scope_id（有る・無い）／宛てのメールの `kaname_auth.\"user\"`（有る・無い）／ログイン（無い・同じメール・別のメール・もう入っている・抜けた）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 使える | メールのリンク | ログインしていない・アカウント無し | 200・state ok・account_exists false・signed_in null | このチケット | K331-API-001 |\n| 使える・ひとこと無し・グループ無し | 同じ | 同じ | message・group_name は null | このチケット | K331-API-002 |\n| 期限切れ | 同じ | 同じ | 200・state expired（名前は出す） | このチケット | K331-API-003 |\n| 取り消し・消した | 同じ | 同じ | 200・state revoked | このチケット | K331-API-004 |\n| 使われた（期限切れでも） | 同じ | 同じ | 200・state used | このチケット | K331-API-005 |\n| 行が無い | でたらめ・古いリンク・長すぎ | 同じ | 404・E-INV-001 | このチケット | K331-API-006 |\n| 使える | 同じ | ログインしていない・アカウント有り | account_exists true | このチケット | K331-API-007 |\n| 使える | 同じ | ログイン中・同じメール | signed_in { email_matches true, already_member false } | このチケット | K331-API-008 |\n| 使える | 同じ | ログイン中・別のメール | signed_in { email_matches false, … } | このチケット | K331-API-009 |\n| 使える | 同じ | ログイン中・もう入っている／前に抜けた | already_member true／false | このチケット | K331-API-010 |\n| 使える | 同じ | ログインの印が壊れている | 200・signed_in null | このチケット | K331-API-015 |\n| どれでも | 画面 | どれでも | 画面の形 | K-335・K-336 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K331-API-001 | 対象の状態 | 使える招待・ログインしていない | 200。data の鍵はちょうど account_exists・email・expires_at・group_name・inviter_name・message・role・signed_in・state・workspace_name。state ok・workspace_name は招いたワークスペース名・inviter_name は空でない文字・role member・message は入れた文・email は宛て・expires_at は 6 日より先・account_exists false・signed_in null。答えに token_hash・tenant_id の文字が無い |\n| K331-API-002 | 入力 | ひとこと無し・グループ無し | 200・state ok・message null・group_name null |\n| K331-API-003 | 時間の流れ | 期限切れ | 200・state expired・workspace_name と inviter_name は出る |\n| K331-API-004 | 対象の状態 | 取り消し（revoked_at）・消した（deleted_at） | どちらも 200・state revoked |\n| K331-API-005 | 対象の状態 | 使われた（期限切れでもある） | 200・state used |\n| K331-API-006 | 入力 | でたらめ・空白入り・600 文字のトークン | どれも 404・本体に E-INV-001 とその文・data は無い（null） |\n| K331-API-007 | 利用者の状態 | 宛てにアカウントがある・ログインしていない | account_exists true・signed_in null |\n| K331-API-008 | 利用者の状態 | ログイン中・同じメール | signed_in は { email: 今のメール, email_matches: true, already_member: false }・account_exists true |\n| K331-API-009 | 利用者の状態 | ログイン中・別のメール | signed_in は { email: 今のメール, email_matches: false, already_member: false } |\n| K331-API-010 | 利用者の状態 | もう入っている／所属が left | 入っている：already_member true。left の人：{ email: その人のメール, email_matches: true, already_member: false } |\n| K331-API-011 | 入力 | role_id viewer・古い値 staff | viewer は viewer、staff は member |\n| K331-API-012 | 守り | 下見は何も変えない | 招待の updated_at と accepted_member_id は同じ・宛ての利用者の数も同じ（セッションは見ない） |\n| K331-API-013 | 守り | 同じ IP から 1 分に 11 回目 | 10 回は 200、11 回目は 429・retry_after_sec は 1〜60 の整数 |\n| K331-API-014 | 守り | 貯めない | Cache-Control に no-store |\n| K331-API-015 | 利用者の状態 | ログインの印が壊れている | 200・signed_in null（401 にしない） |\n| K331-API-016 | 失敗 | 手順 1 の失敗：下見の関数が使えない（実行の権限を外す） | 503・本体に E-PAGE-003。招待の updated_at は変わらない |\n| K331-DB-001 | 入力 | invitations.message の長さ | 500 文字は入る・501 文字は入れられない（例外）・null に戻せる |\n\n### テストの型の受け（分類 INV）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 期限切れ・取り消し・使い終わった招待を開く | K331-API-003・004・005（理由は state で返し、次の一手は画面 K-335） |\n| TP-INV-02 違うアカウントでログイン中に開く | K331-API-009（email_matches false を返す。勝手に参加させないのは K333-API-005・案内は K-336） |\n| TP-INV-03 既にメンバーの人が開く | K331-API-010（already_member。二重に参加させないのは K333-API-006） |\n| TP-INV-04 招いた人が権限を失った・抜けた後に開く | K331-API-004（抜けた人の招待は消える・D-128.96・消すのは招く側 F10。消した招待は revoked）。権限を失っただけなら招待はそのまま使える（招く側が取り消す） |\n| TP-INV-05 同じ人を 2 回招待する | 要らない：招待を作るのは招く側（F10・K-70）。下見は 1 つのトークンの 1 行だけを見る |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験。\n\n- apps/api/test/authz_rows.test.ts: 替えない — server.ts に invitationHooks を足すだけで、行の守り（RLS）の見本の口は変えない\n- apps/api/test/features/F1/password-forgot.test.ts: 替えない — server.ts と migration の一覧に足すだけで、再設定の口は変えない\n- apps/api/test/features/F1/password-reset.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/service-status.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/sign-up.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/terms.test.ts: 替えない — 同じ（前の道すじの招待の受け入れは K-335 まで残る）\n- apps/api/test/features/F1/verify-email.test.ts: 替えない — 同じ\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 契約の形の試験は作り直した生成物を読む（getInvitation の形が InvitationPreview になるのは生成物の側）\n- apps/api/test/k262_edge.test.ts: 替えない — server.ts の入口の順を変えない\n- apps/api/test/server.test.ts: 替えない — hook を 1 つ足すだけ\n- apps/api/test/vercel_entry.test.ts: 替えない — 入口を変えない\n- packages/db/src/index.test.ts: 替えない — MIGRATIONS の末尾に 1 行足すだけ（並びの検査はそのまま通る）\n- scripts/ci/ci_lean_test.py: 替えない — ci_scope.json に地図を 1 行足すだけ\n- scripts/ci/ci_scope_test.py: 替えない — 同じ\n- scripts/ci/fuzz_targets_test.py: 替えない — fuzz_targets.py の表に 1 行足すだけ（試験は表の形を見る）\n- scripts/ci/k177_web_scope_test.py: 替えない — 画面の範囲を変えない\n- scripts/ci/k185_hook_regions_test.py: 替えない — hook の書き方は今の hooks/*.ts と同じ形\n- scripts/ci/k187_cut_take_test.py: 替えない — 切る段の台本を変えない\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手（build_api.py）の置き場を変えない\n- scripts/ci/k204_staging_workflow_test.py: 替えない — workflow を変えない\n- scripts/ci/k245_g27_reach_test.py: 替えない — 新しい口の試験は ears-elsewhere.json で結ぶ（G27 の届き方は同じ）\n- scripts/ci/k248_scope_reach_test.py: 替えない — 新しい試験はファイルを読まない（読み先の登録が要らない）\n- scripts/ci/k330_cut_check_test.py: 替えない — K-330 の切る段の検査の口の自己試験。道を例の入力として文字で書いているだけで、このチケットの変更を読まない\n- scripts/ci/test_owner_gate.py: 替えない — 試験の持ち主の検査（名前が test_ で始まるので候補に入った）。ci_scope.json・workflow の道を文字で持つだけで、行を足しても検査の決まりは変わらない（持ち主の検査は切る段で緑を確かめた）",
+    "成果物": "- 口 `apps/api/src/features/F2/invitations/preview.ts`・`apps/api/src/hooks/invitations.ts`・server.ts・migration 1 本・契約の形（screen_api.py → 作り直し）・ears-elsewhere.json・fuzz の的と表\n- 単体の試験 `apps/api/test/features/F2/invitation-preview.test.ts` と土台 `invite.harness.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=becc3d3aa526・7fe1f09fdab4（07_functional/段3-F2/機能分解.md の 6 章）。下見はその形を決めるための欄を返す\n- 2026-11-18 切る段の決め：招待の状態は 200 の state で返し、410 にしない（画面は期限切れでも名前を出して送り直しを頼ませる・D-128.63）。404 は行が無いときだけ\n- 2026-11-18 切る段の決め：役割の古い値（staff など）は member として見せる（tenant_memberships.role の 5 つに合わせる・K-332 も同じ写し方）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- account_exists は、トークンを持つ人に「このメールにアカウントがあるか」を教える。トークンは宛てのメールに届いた物なので、宛ての本人だけが知る値（漏れたトークンでは宛てのメールのことしか分からない）。代表の答え ③（ログインして戻る）にこの欄が要る",
+    "申し送り": "- K-332・K-333・K-334：試験の土台 `invite.harness.ts` を使う。下見の関数 `app.invitation_preview2` の state の決め方（used ＞ revoked ＞ expired）に参加・送り直しの口も合わせる\n- K-335・K-336：画面は data.state と account_exists と signed_in だけで形を決める"
+   },
+   "file": "11_tickets/K-331.md"
   }
  ]
 }
