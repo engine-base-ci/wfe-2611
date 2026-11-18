@@ -495,7 +495,10 @@ SCREEN_API = {
 # 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]／string[]（後ろの ? は null 可）
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
-    "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
+    # 取り直し（K-19・K-309）：パスワード（2 段階の人はコードも）か、パスキーの応答（object・頭 x-passkey-challenge）のどちらか 1 つ
+    "stepUp": ("StepUpInput", {"password": "string", "code": "string", "passkey": "object"}),
+    # パスキーの名前を変える（K-309）：名前だけ（strict・ほかの欄は 422）。前後の空白を除き NFKC・1〜40 文字・制御文字なしは口が確かめる
+    "renamePasskey": ("PasskeyRenameInput", {"name": "string"}),
     # 登録（K-51）：保留の申し込みに預ける 4 つだけ。会社名は空でよい（D-125.135）。表の列（pw_iv など）は入力に出さない
     "createSignup": ("SignupInput", {"email": "string", "name": "string", "company_name": "string", "password": "string"}),
     # 送り直しは申し込みの印（頭 x-signup-token）だけで引く。本文にメールを載せない（D-128.142）
@@ -622,6 +625,12 @@ ERRORS_4XX = {
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
          "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
+    ],
+    # パスキーを外す（K-309・D-128.61）。最後の入り方（409・E-AUTH-015／パスワードだけで 2 段階が無くなる E-AUTH-016）は外さない
+    "deletePasskey": [
+        {"status": 409, "code": "E-AUTH-015", "body": {"error": "conflict", "code": "E-AUTH-015"}, "errors": ["E-AUTH-015", "E-AUTH-016"],
+         "trigger": "外すとパスキーが 0 本で、パスワードも 2 段階も無くなる（E-AUTH-015）・パスワードはあるが 2 段階が無い（E-AUTH-016）",
+         "ears_form": "UNWANTED: IF 外すと入り方が無くなるか、パスワードだけで 2 段階が無い状態になるなら、Kaname は 409 と E-AUTH-015・E-AUTH-016 を返し、パスキーを外さない"},
     ],
     # 端末をなくした：管理者に頼む（K-305・D-128.141）。待ちの印が切れた（401）・入力（422）・頼みを書く DB が落ちた（500）。冪等キーの 409 は使わない（1 時間の内の 2 回目は 201・already）
     "requestAdminRecovery": [
@@ -812,7 +821,7 @@ REQUIRED_INPUTS = {
     "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": ["pending"],                                 # apps/api/src/features/F1/admin-recovery/index.ts（待ちの印が無いと 422・K-302 と同じ）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
-    "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
+    "renamePasskey": ["name"],                                           # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
     "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
@@ -859,7 +868,7 @@ VALUE_RANGES = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
-    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
         "todo_checked": {"items": {"type": "integer", "minimum": 0}},
@@ -878,7 +887,8 @@ UNEXPRESSIBLE_422 = {
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
-    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
+    "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
     "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
@@ -1240,7 +1250,7 @@ PERMS = {
     # 自分の安全の設定
     "getMySecurity": ("self", "自分のものだけ", False),
     "renamePasskey": ("self", "自分のパスキーだけ", False),
-    "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない", True),
+    "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない。取り直しか、ログインから 15 分の内（K-309・代表の答え ⑬）", "login_or_step_up"),
     "startTwoFactor": ("self", "本人", True),
     "confirmTwoFactor": ("self", "本人（コードがそろったら付く。バックアップコードは 1 回だけ見せる）", False),
     "disableTwoFactor": ("self", "本人。パスキーを持たずパスワードだけで入る人は外せない（D-128.61）", True),

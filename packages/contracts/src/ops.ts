@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:9c62d928df6f43d1
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:06ddef73c1f1d5c4
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -166,7 +166,7 @@ export interface Ops {
   getNotificationSettings: { params: never; query: { "tenant_id"?: string | number }; body: never; data: T.NotificationSettings };
   updateNotificationSettings: { params: never; query: never; body: T.NotificationSettingsInput; data: T.NotificationSettings };
   copyNotificationSettings: { params: never; query: never; body: T.NotificationSettingsInput; data: T.NotificationSettings };
-  renamePasskey: { params: { id: string }; query: never; body: T.PasskeysInput; data: T.Passkeys };
+  renamePasskey: { params: { id: string }; query: never; body: T.PasskeyRenameInput; data: T.Passkeys };
   deletePasskey: { params: { id: string }; query: never; body: never; data: T.Passkeys };
   changePassword: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
   getMySecurity: { params: never; query: never; body: never; data: T.MySecurity };

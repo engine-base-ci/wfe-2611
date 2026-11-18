@@ -57,7 +57,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "verifySignInCode": {"pending"},                   # apps/api/src/features/F1/login/sign-in-code.ts の input（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": {"pending"},               # apps/api/src/features/F1/admin-recovery/index.ts の input（待ちの印が無いと 422・K-302 と同じ・K305-API-011）
     "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
-    "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
+    "renamePasskey": {"name"},                         # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
     "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい
     "saveMyTicketDraft": {"draft_id"},                 # apps/api/src/features/F4/create-ticket/hooks.ts:170
@@ -79,6 +79,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
     "dismissSetupTasks": "key は無くてよい（無ければ箱を閉じる・K-250）。{} で 201",
+    "stepUp": "password か passkey のどちらか 1 つ（条件つき・K-309）。どちらも無ければ口が 422（apps/api/src/hooks/auth.ts）",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
@@ -119,7 +120,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
-    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
@@ -133,7 +134,8 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
-    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
+    "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
     "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],

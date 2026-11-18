@@ -953,6 +953,57 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "renamePasskey": {
+   "file": "apps/api/test/features/F1/passkeys.test.ts",
+   "reason": "パスキーの名前を変える・外す口は、本物のログインの部品（Better Auth のセッション・kaname_auth.passkey の表・2 段階とパスワードの行）で確かめる。生成の試験の偽のセッションでは部品のセッションも認証の表も無い（K-309）",
+   "covers": {
+    "test_patch_me_passkeys_id_ok": "K309-API-008",
+    "test_patch_me_passkeys_id_rejected_401": "K309-API-023",
+    "test_patch_me_passkeys_id_not_found": "K309-API-012",
+    "test_patch_me_passkeys_id_rejected_422": "K309-API-009",
+    "test_patch_me_passkeys_id_rate_limited": "K309-API-024",
+    "test_patch_me_passkeys_id_shape": "K309-API-008",
+    "test_patch_me_passkeys_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_me_passkeys_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_me_passkeys_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    }
+   },
+   "na": {
+    "test_patch_me_passkeys_id_rejected_403": "本人だけの口で役を見ない。取り直しも要らない。他人の行は 404（K309-API-012）"
+   }
+  },
+  "deletePasskey": {
+   "file": "apps/api/test/features/F1/passkeys.test.ts",
+   "reason": "パスキーの名前を変える・外す口は、本物のログインの部品（Better Auth のセッション・kaname_auth.passkey の表・2 段階とパスワードの行）で確かめる。生成の試験の偽のセッションでは部品のセッションも認証の表も無い（K-309）",
+   "covers": {
+    "test_delete_me_passkeys_id_ok": "K309-API-014",
+    "test_delete_me_passkeys_id_rejected_401": "K309-API-023",
+    "test_delete_me_passkeys_id_rejected_403": "K309-API-018",
+    "test_delete_me_passkeys_id_not_found": "K309-API-012",
+    "test_delete_me_passkeys_id_shape": "K309-API-014",
+    "test_delete_me_passkeys_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_me_passkeys_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_me_passkeys_id_conflict": "K309-API-016"
+   },
+   "na": {
+    "test_delete_me_passkeys_id_rejected_422": "体を受けない。id の形は入口の共通の確かめ（K-144）",
+    "test_delete_me_passkeys_id_rate_limited": "回数は入口の共通の数えで、同じ口の型の確かめは renamePasskey の K309-API-024 が持つ"
+   }
   }
  }
 }

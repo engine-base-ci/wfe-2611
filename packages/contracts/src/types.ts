@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9c62d928df6f43d1
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:06ddef73c1f1d5c4
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -286,7 +286,8 @@ export type ScopeMemberships = { member_id?: string; scope_id?: string; is_prima
 export type ScopeMembershipsInput = { member_id?: string; is_primary?: boolean; role?: string; since?: string; changed_by?: string | null };
 export type RoleBundleDefaults = { role?: string; target_kind_id?: string; ability_id?: string; scope_kind?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type RoleBundleDefaultsInput = { role?: string; target_kind_id?: string; ability_id?: string; scope_kind?: string };
-export type StepUpInput = { password: string; code?: string };
+export type StepUpInput = { password?: string; code?: string; passkey?: Record<string, unknown> };
+export type PasskeyRenameInput = { name: string };
 export type SignupInput = { email: string; name: string; company_name?: string; password: string };
 export type SignupResendInput = Record<string, never>;
 export type SignupVerifyInput = { token: string };

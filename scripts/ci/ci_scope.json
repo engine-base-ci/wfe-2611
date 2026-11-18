@@ -135,6 +135,7 @@
   { "paths": ["scripts/ci/canvas_field_ledger.json"], "tests": ["apps/api/test/features/F4/ticket-list.test.ts"] },
   { "paths": ["apps/api/test/features/F4/ticket-list.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_tickets.test.ts"] },
   { "paths": ["apps/api/test/features/F4/setup-tasks.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/get_me_setup_tasks.test.ts", "apps/api/test/generated/post_me_setup_tasks_dismiss.test.ts"] },
+  { "paths": ["apps/api/test/features/F1/passkeys.test.ts", "apps/api/test/features/F1/terms.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"], "tests": ["apps/api/test/generated/patch_me_passkeys_id.test.ts", "apps/api/test/generated/delete_me_passkeys_id.test.ts"] },
   { "paths": ["infra/provision/**"], "tests": ["packages/storage/test/k133_private.test.ts", "packages/storage/test/s3.test.ts"] },
   { "paths": ["04_design/canvas/*.dc.html", "scripts/ci/canvas_layout_ledger.json"], "tests": ["apps/web/tests/k/k254-canvas-layout.spec.ts"] },
   { "paths": ["07_functional/段2-F1/mock-shots.mjs", "07_functional/段2-F1/切り方.md", "design-gate.json", "scripts/ci/design_gate.py", "scripts/ci/k218_design_canvas_test.py"], "tests": ["apps/web/tests/k/k300-stage2-mock.spec.ts"] },

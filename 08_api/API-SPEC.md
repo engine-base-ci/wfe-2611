@@ -177,7 +177,7 @@
 | EP-162 | PATCH | `/api/v1/me/notification-settings` | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member | C2 | 401 403 422 413 429 403 503 |
 | EP-163 | POST | `/api/v1/me/notification-settings/copy` | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member | C2 | 401 403 409 422 413 429 403 503 |
 | EP-164 | PATCH | `/api/v1/me/passkeys/:id` | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | A97 | 1 | member | C2 C8 | 401 403 404 422 413 429 403 503 |
-| EP-165 | DELETE | `/api/v1/me/passkeys/:id` | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | A97 | 1 | member | C2 C8 | 401 403 404 422 429 403 503 |
+| EP-165 | DELETE | `/api/v1/me/passkeys/:id` | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | A97 | 1 | member | C2 C8 | 401 403 404 422 409 429 403 503 |
 | EP-166 | PATCH | `/api/v1/me/password` | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | A97 | 1 | member | C2 C8 | 401 403 422 413 429 403 503 |
 | EP-167 | GET | `/api/v1/me/security` | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人 | A04 A97 | 1 | member | C8 | 401 403 422 429 403 503 |
 | EP-168 | GET | `/api/v1/me/sessions` | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | A74 | 1 | member |  | 401 403 422 429 403 503 |

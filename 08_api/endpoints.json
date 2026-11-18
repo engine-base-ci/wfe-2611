@@ -26336,6 +26336,20 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 409,
+     "code": "E-AUTH-015",
+     "body": {
+      "error": "conflict",
+      "code": "E-AUTH-015"
+     },
+     "errors": [
+      "E-AUTH-015",
+      "E-AUTH-016"
+     ],
+     "trigger": "外すとパスキーが 0 本で、パスワードも 2 段階も無くなる（E-AUTH-015）・パスワードはあるが 2 段階が無い（E-AUTH-016）",
+     "ears_form": "UNWANTED: IF 外すと入り方が無くなるか、パスワードだけで 2 段階が無い状態になるなら、Kaname は 409 と E-AUTH-015・E-AUTH-016 を返し、パスキーを外さない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -26372,6 +26386,7 @@
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 外すと入り方が無くなるか、パスワードだけで 2 段階が無い状態になるなら、Kaname は 409 と E-AUTH-015・E-AUTH-016 を返し、パスキーを外さない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
@@ -26387,8 +26402,8 @@
    "implementation_path": "apps/api/src/routes/passkeys.ts::deletePasskey",
    "permission": {
     "who": "self",
-    "scope": "自分のパスキーだけ。最後の入り方は消せない",
-    "step_up": true
+    "scope": "自分のパスキーだけ。最後の入り方は消せない。取り直しか、ログインから 15 分の内（K-309・代表の答え ⑬）",
+    "step_up": "login_or_step_up"
    },
    "path_params": [
     "id"

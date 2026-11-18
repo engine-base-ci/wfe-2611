@@ -10,7 +10,7 @@ import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { countryOf, ipOf } from "@kaname/auth/device";
 import { registerAll } from "./routes/index.js";
-import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from "./contract/op.js";
+import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, stepUpGuards, termsRequired } from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 import { serverTiming } from "./server-timing.js";
@@ -38,6 +38,10 @@ const AUTH_TERMS_OPEN = [
   /^\/reset-password(\/.*)?$/,
   /^\/ok$/,
 ];
+
+/** パスキーを足す部品の口（K-309）。始めの口の前で本人確認の取り直し（直前 15 分か、ログインから 15 分の内・D-128.141）を確かめる */
+const PASSKEY_REGISTER_OPTIONS = /^\/passkey\/generate-register-options$/;
+const PASSKEY_REGISTER = /^\/passkey\/(generate-register-options|verify-registration)$/;
 
 export function health(version = "0.1.0"): Health {
   const order = checkMigrationOrder(MIGRATIONS);
@@ -130,6 +134,15 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
           return sessionUnresolved(c, "認証の部品の口", e);
         }
         if (r?.termsPending) return termsRequired(c);
+        // パスキーを足す（K-309）：Kaname のセッション（public.sessions）が生きていなければ、部品のセッションが残っていても通さない。
+        //   始めの口は取り直しか、ログインから 15 分の内でなければ 403・STEP_UP_REQUIRED（チャレンジを作らない）
+        if (PASSKEY_REGISTER.test(sub)) {
+          if (!r) return c.json({ error: "unauthenticated", code: "UNAUTHENTICATED" }, 401);
+          const stale = PASSKEY_REGISTER_OPTIONS.test(sub)
+            ? stepUpGuards(r.ctx).requireStepUpOrFreshLogin()
+            : undefined;
+          if (stale) return c.json(stale.body as Record<string, unknown>, stale.status as 403);
+        }
       }
       // パスキーのチャレンジは Cookie でなく JSON と頭で受け渡す（K-304）。ほかの道はそのまま
       return withPasskeyChallenge(opts.auth!, c.req.raw, sub, (r) => opts.auth!.handler(r));

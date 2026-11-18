@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。177 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。181 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2306,6 +2306,81 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "login",
       "state": "code"
+    }
+  },
+  "E-AUTH-015": {
+    "id": "E-AUTH-015",
+    "cls": "conflict",
+    "message": "入り方が 1 つだけなので外せません。先にほかの入り方を付けてください",
+    "action": "パスキーかパスワードと 2 段階認証を付けてから外す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "AUTH-015",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-remove-last"
+    }
+  },
+  "E-AUTH-016": {
+    "id": "E-AUTH-016",
+    "cls": "conflict",
+    "message": "パスワードで入るには 2 段階認証が要ります。先に 2 段階認証を付けてください",
+    "action": "2 段階認証を付けてから外す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "AUTH-016",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-remove-last"
+    }
+  },
+  "E-AUTH-018": {
+    "id": "E-AUTH-018",
+    "cls": "conflict",
+    "message": "このパスキーは、もうこの端末に付いています",
+    "action": "そのまま使う／別の端末で足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-add-dup"
+    }
+  },
+  "E-AUTH-021": {
+    "id": "E-AUTH-021",
+    "cls": "auth",
+    "message": "本人か確かめられませんでした。もう一度確かめてください",
+    "action": "もう一度確かめる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "AUTH-021",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "step-up"
     }
   },
   "E-CHAT-001": {

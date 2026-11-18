@@ -9322,13 +9322,22 @@ components:
       properties:
         password:
           type: string
-          pattern: \S
         code:
           type: string
+        passkey:
+          type: object
       additionalProperties: false
       x-operation: stepUp
+    PasskeyRenameInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: \S
+      additionalProperties: false
+      x-operation: renamePasskey
       required:
-      - password
+      - name
       x-required-by: hooks
     SignupInput:
       type: object
@@ -14324,13 +14333,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：2 段階を使う人のコードが空（条件つき））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：2 段階を使う人のコードが空（条件つき）・password も passkey も無い・password が空（どちらか 1 つ・K-309）・passkey が object でない）
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - 2 段階を使う人のコードが空（条件つき）
+          - password も passkey も無い・password が空（どちらか 1 つ・K-309）
+          - passkey が object でない
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -26954,7 +26965,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PasskeysInput'
+              $ref: '#/components/schemas/PasskeyRenameInput'
       responses:
         '200':
           description: 成功
@@ -26986,11 +26997,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：NFKC と前後の空白を除いて 41 文字以上の名前・制御文字（改行・タブ・NUL など）を含む名前）
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - NFKC と前後の空白を除いて 41 文字以上の名前
+          - 制御文字（改行・タブ・NUL など）を含む名前
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -27027,8 +27041,8 @@ paths:
       - D-125.146
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のパスキーだけ。最後の入り方は消せない
-      x-step-up: true
+      x-permission-scope: 自分のパスキーだけ。最後の入り方は消せない。取り直しか、ログインから 15 分の内（K-309・代表の答え ⑬）
+      x-step-up: login_or_step_up
       security:
       - session: []
       parameters:
@@ -27070,6 +27084,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-AUTH-015
           content:
             application/json:
               schema:

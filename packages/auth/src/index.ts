@@ -13,6 +13,16 @@ import { mailTag } from "./signup.js";
 import { RESET_PREFIX, resetHash } from "./reset.js";
 import { CODE_LOCK, generateBackupCodes } from "./two_factor.js";
 import { kanamePasskey, PASSKEY_DISABLED_PATHS } from "./passkey.js";
+import { kanamePasskeyManage, PASSKEY_STEP_UP_PATH } from "./passkeys.js";
+export {
+  normalizePasskeyName,
+  renamePasskeyOf,
+  removePasskeyOf,
+  verifyPasskeyStepUp,
+  PASSKEY_LAST_METHOD,
+  PASSKEY_NEED_TWO_FACTOR,
+  type RemovePasskeyResult,
+} from "./passkeys.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -41,7 +51,8 @@ export type Mailer = (m: Mail) => Promise<void>;
 export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
 /** パスキーの部品のうち Kaname の決まりを通らない口（一覧・名前・外す）も閉じる（K-304） */
-export const DISABLED_PATHS = ["/sign-in/email", ...PASSKEY_DISABLED_PATHS] as const;
+/** パスキーで取り直す内部の口（K-309）も道は閉じる（サーバーの中の auth.api からだけ呼ぶ） */
+export const DISABLED_PATHS = ["/sign-in/email", ...PASSKEY_DISABLED_PATHS, PASSKEY_STEP_UP_PATH] as const;
 /** 止めの 1 か所（K-303）の答え → errors.json の id。人の止め・会社の止め・会社の人が無い・抜けた */
 export const LOGIN_BLOCKED: Readonly<Record<string, string>> = {
   member_suspended: "E-AUTH-011",
@@ -136,7 +147,10 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
         company_name: { type: "string", required: false, input: true },
       },
     },
-    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 },
+    // freshAge 0：部品の「作ってから 1 日以内のセッション」の確かめ（パスキーを足す口）を使わない。Kaname の決まりは
+    //   「直前 15 分の取り直しか、ログインから 15 分の内」で、API の入口（apps/api/src/app.ts）が確かめる（K-309・D-128.141）。
+    //   部品の 1 日の確かめが残ると、2 日前に入った人は取り直しても足せない
+    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60, freshAge: 0 },
     // 再設定のリンクの手がかりは DB に平文で置かない（K-313）。頭（reset-password:）を残したハッシュにし、自分の送る関数
     //   （reset.ts の resetKey）と同じ形にする。部品はこの { default, overrides } と { hash } の形だけを読む
     verification: {
@@ -160,6 +174,8 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       }),
       bearer(),
       ...kanamePasskey({ webBaseURL: web.href, authPool: pool, appPool: o.appPool }),
+      // パスキーを足すときの名前・記録・印と、パスキーでの取り直し（K-309）
+      kanamePasskeyManage({ webBaseURL: web.href, authPool: pool, appPool: o.appPool }),
     ],
     // ロック（app.login_attempts）を通らない部品のログインの道は閉じる（404・K-301）。サーバーの中の auth.api.signInEmail は道を通らないので動く
     disabledPaths: [...DISABLED_PATHS],
