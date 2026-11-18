@@ -14687,7 +14687,8 @@
     "apps/web/tests/screens/qa-c-onboard.spec.ts",
     "apps/e2e/journeys/j01.spec.ts",
     "07_qa/test-specs/screens/mfa-setup.md",
-    "07_qa/test-plan/result-ledger.json"
+    "07_qa/test-plan/result-ledger.json",
+    "07_qa/test-specs/journeys/plan.json"
    ],
    "mock": [
     "sec-passkey",
