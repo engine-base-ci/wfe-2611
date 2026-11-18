@@ -29,7 +29,7 @@ const NEW_PW = "brand-new-password-320";
 const WIDTHS = [320, 375, 768, 1024, 1440] as const;
 const SENT_TEXT = (e: string) => `登録されていれば、${e} に作り直しのリンクを送りました`;
 const DEAD_TEXT = "このリンクはもう使えません。もう一度、再設定メールを送ってください";
-const INVALID_TEXT = "リンクが正しくありません";
+const INVALID_TEXT = msg("E-PAGE-006"); // 正本 E-PAGE-006 の文（K-340）
 const MISMATCH = "2 つのパスワードが違います";
 const OTHER_ACCOUNT = "別のアカウントでログイン中です。新しいパスワードで入るには、ログアウトしてください";
 
@@ -323,7 +323,7 @@ test("K320-UI-015 口が 410・E-AUTH-006：dead・正本の文。パスワー�
   await expect(root(page)).toHaveAttribute("data-state", "n");
 });
 
-test("K320-UI-016 口が 410・E-PAGE-006：invalid・「リンクが正しくありません…」。メールアドレスは出さない", async ({
+test("K320-UI-016 口が 410・E-PAGE-006：invalid・正本 E-PAGE-006 の文「このリンクは使えなくなりました…」。メールアドレスは出さない", async ({
   page,
 }) => {
   const m = await mockApi(page);
