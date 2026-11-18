@@ -1,16 +1,6 @@
 // T-U-05 ログイン。テストの名前に正本の行 ID を持つ（op_gate.py）
 import { expect, test } from "@playwright/test";
-import {
-  HOME_RE,
-  PW,
-  api,
-  enableTotpViaApi,
-  noOverflow,
-  pwToggle,
-  setupDone,
-  signupViaApi,
-  totp,
-} from "../_lib/api";
+import { HOME_RE, PW, api, enableTotpViaApi, noOverflow, pwToggle, setupDone, signupViaApi, totp } from "../_lib/api";
 
 test("SCR-LOGIN-001 SCR-LOGIN-012 SCR-LOGIN-013 状態 通常：h1・4 幅で横溢れ 0・外の画面なので時点の部品は無い", async ({
   page,
