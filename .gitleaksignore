@@ -20,3 +20,4 @@ b8be126b2667ed5860918d686efdeca77ec7ab79:apps/api/test/features/F1/passkey-sign-
 ccd1db18b10102f21f6a566c01448dc20e7c2b86:apps/web/tests/k/k320-password-reset.spec.ts:generic-api-key:27
 6794cc5a3e2fcdc63ba9783b2e75987ef2c970f6:apps/api/test/features/F1/two-factor-enable.test.ts:generic-api-key:68
 6794cc5a3e2fcdc63ba9783b2e75987ef2c970f6:apps/api/test/features/F1/two-factor-enable.test.ts:generic-api-key:348
+b0e21ecee834e1f9ba497814a64ec58f0bd43c33:apps/api/test/features/F1/change-password.test.ts:generic-api-key:70
