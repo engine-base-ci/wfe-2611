@@ -7,7 +7,7 @@
 | 項目 | 数 |
 |---|---|
 | tickets | 218 |
-| l1_rows | 5128 |
+| l1_rows | 5094 |
 | ears_endpoints | 365 |
 | ears_tests | 3579 |
 | entities | 142 |
