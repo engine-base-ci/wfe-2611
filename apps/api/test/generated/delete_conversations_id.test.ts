@@ -1,5 +1,4 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。DELETE /api/v1/conversations/:id
-import { readFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { makeHarness, endpointOf, type Harness } from "../harness.js";
 import { args } from "../args.js";
@@ -41,10 +40,9 @@ describe("DELETE /api/v1/conversations/:id", () => {
     // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
     const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);
   });
-  it("test_delete_conversations_id_mfa_pending", () => {
+  it("test_delete_conversations_id_mfa_pending", async () => {
     // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
-    // 本物の試験：apps/api/test/features/F1/mfa-gate.test.ts の「K321-API-001」（入口 1 か所の止め・同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F1/mfa-gate.test.ts", "utf8")).toContain("K321-API-001");
+    const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "mfa", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("MFA_REQUIRED"); expect(await h.count(e.table)).toBe(before);
   });
   it("test_delete_conversations_id_session_unresolved", async () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない

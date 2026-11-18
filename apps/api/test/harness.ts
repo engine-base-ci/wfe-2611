@@ -13,8 +13,9 @@ import { createApp } from "../src/app.js";
 import type { ContractDeps, Hook } from "../src/contract/deps.js";
 
 /** pending：boss と同じ人で、同意し直しの印（K-53 の termsPending）が立ったセッション。生成の試験の terms_pending の型が使う */
+/** mfa：boss と同じ人で、付けるまで進めないの印（K-308 の mfaPending）が立ったセッション。生成の試験の mfa_pending の型が使う（K-321） */
 /** down：セッションを解く所が落ちる（resolve が例外を投げる）。生成の試験の session_unresolved の型が使う（K-53・K-144） */
-export type Who = "boss" | "staff" | "ops" | "opsB" | "pending" | "down" | "anon";
+export type Who = "boss" | "staff" | "ops" | "opsB" | "pending" | "mfa" | "down" | "anon";
 // 接続先は DATABASE_URL だけ（vitest は vitest.config.ts が決める・契約 fuzz は fuzz.sh を呼ぶ人が渡す）。手元の DB に黙って当てない
 const DB_URL =
   process.env["DATABASE_URL"] ??
@@ -76,6 +77,7 @@ export async function makeHarness(): Promise<Harness> {
     ops: { tenantId: S.opsTenant, userId: S.opsId, role: "ops", stepUpAt: new Date() }, // 対象の会社は x-tenant-id（call が表に合わせて入れる）。会社 a は許可あり
     opsB: { tenantId: S.tenantB, userId: S.opsId, role: "ops" }, // 会社 b は許可が期限切れ
     pending: { tenantId: S.tenantA, userId: S.bossA, role: "member", stepUpAt: new Date() }, // 印が立っている（下の resolve が termsPending を返す）
+    mfa: { tenantId: S.tenantA, userId: S.bossA, role: "member", stepUpAt: new Date() }, // 付けるまで進めないの印が立っている（下の resolve が mfaPending を返す）
   };
   const hooks: Record<string, Hook> = {};
   const limits: Record<string, number> = {};
@@ -83,11 +85,13 @@ export async function makeHarness(): Promise<Harness> {
   const hono = createApp({
     version: "test",
     repo,
-    // 印（termsPending）も返すので resolve（Resolved を返す形・K-53）で解く。印が立つのは pending だけ
+    // 印（termsPending・mfaPending）も返すので resolve（Resolved を返す形・K-53）で解く。同意し直しの印は pending だけ・付けるまで進めないの印は mfa だけ
     resolve: async (headers) => {
       const t = headers.get("authorization")?.replace(/^Bearer\s+/i, "") as Exclude<Who, "anon"> | undefined;
       if (t === "down") throw new Error("試験：セッションを解けない");
-      return t && who[t] ? { ctx: who[t], sessionId: "", authUserId: "", termsPending: t === "pending" } : null;
+      return t && who[t]
+        ? { ctx: who[t], sessionId: "", authUserId: "", termsPending: t === "pending", mfaPending: t === "mfa" }
+        : null;
     },
     contract: deps,
   });

@@ -11,9 +11,9 @@ const kindOf = (fn) => {
   return m ? m[1] : "ok";
 };
 const q = (s) => JSON.stringify(s);
-// 全部の口に同じ 1 か所の入口（apps/api/src/contract/op.ts）で効く止めは、口ごとに作らず、本物の試験 1 つに結ぶ（K-321）。
-//   付けるまで進めない（mfa_pending）：印は本物のログインの部品（K-308 の hook）が立てるので、偽のセッションの土台では作れない。
-//   まだ作っていない口（501）にも、止めは 501 より前に効く
+// 作った口の付けるまで進めない（mfa_pending）は、上の CASE が試験の土台（harness の who の mfa）で口ごとに確かめる。
+//   土台を使わない口（本物のログインの部品が要る ears-elsewhere の口）と、土台を立ち上げないまだ作っていない口（501 より前に止まる）は、
+//   止めが同じ 1 か所の入口（apps/api/src/contract/op.ts）にあるので、本物のログインで印を立てて止まることを見る本物の試験 1 つに結ぶ（K-321）
 const CENTRAL = {
   mfa_pending: { file: "apps/api/test/features/F1/mfa-gate.test.ts", mark: "K321-API-001" },
 };
@@ -31,6 +31,8 @@ const CASE = {
   rejected_403: () => `if (e.kind === "create" && e.perm.word === "self") { const a = await args(h, e, "staff"); const r = await h.call(e, "staff", a); expect([201, 403, 404]).toContain(r.status); if (r.status === 201) { const d = ((await r.json()) as { data: Record<string, unknown> }).data; for (const c of ["owner_member_id", "opened_by_member_id", "member_id", "requested_by", "uploaded_by"]) if (c in d) expect(d[c], "持ち主は呼んだ人").toBe(h.S.staffA); } return; } const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const who = e.auth === "ops" ? "boss" : e.kind === "list" || e.kind === "get" ? "opsB" : "staff"; const r = await h.call(e, who, a); expect([403, 404]).toContain(r.status); expect(await h.count(e.table)).toBe(before);`,
   // 同意し直し（K-53）：印の立ったセッション（harness の who の pending）で呼ぶと 403・E-AUTH-010。表の行の数は変わらない（副作用なし）
   terms_pending: () => `const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "pending", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("E-AUTH-010"); expect(await h.count(e.table)).toBe(before);`,
+  // 付けるまで進めない（K-321）：印の立ったセッション（harness の who の mfa）で呼ぶと 403・MFA_REQUIRED。表の行の数は変わらない（副作用なし）
+  mfa_pending: () => `const a = await args(h, e, e.auth === "ops" ? "ops" : "boss"); const before = await h.count(e.table); const r = await h.call(e, "mfa", a); expect(r.status).toBe(403); expect(((await r.json()) as { code: string }).code).toBe("MFA_REQUIRED"); expect(await h.count(e.table)).toBe(before);`,
   conflict: () => `if (e.kind !== "create") return; ${WHO} const a = await args(h, e, who); const k = { headers: { "idempotency-key": "k-" + Math.random().toString(36).slice(2) } }; const r1 = await h.call(e, who, { ...a, ...k }); expect([200, 201]).toContain(r1.status); const before = await h.count(e.table); const r2 = await h.call(e, who, { ...a, ...k }); expect(r2.status).toBe(r1.status); expect(await r2.json()).toEqual(await r1.clone().json()); expect(await h.count(e.table)).toBe(before); const r3 = await h.call(e, who, { ...a, body: { ...(a.body as object), __changed: 1 }, ...k }); expect(r3.status).toBe(409);`,
   rejected_422: () => `${WHO} if (e.kind === "list") { const r = await h.call(e, who, { query: { limit: "0" } }); expect(r.status).toBe(422); return; } if (e.kind === "get" || e.kind === "delete") { const r = await h.call(e, who, { id: "not-a-uuid" }); expect(r.status).toBe(422); return; } const a = await args(h, e, who); const before = await h.count(e.table); const r = await h.call(e, who, { ...a, body: { __unknown_field: "x", id: 12345 } }); expect(r.status).toBe(422); const b = (await r.json()) as { code: string; details: unknown[] }; expect(b.code).toBe("VALIDATION_ERROR"); expect(b.details.length).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); const r2 = await h.call(e, who, { ...a, body: "{not json" }); expect(r2.status).toBe(422);`,
   rate_limited: (op) => `${WHO} h.limits[${q(op)}] = 2; const a = await args(h, e, who); await h.call(e, who, a); await h.call(e, who, a); const before = await h.count(e.table); const r = await h.call(e, who, a); expect(r.status).toBe(429); const b = (await r.json()) as { code: string; retry_after_sec: number }; expect(b.code).toBe("RATE_LIMITED"); expect(b.retry_after_sec).toBeGreaterThan(0); expect(await h.count(e.table)).toBe(before); delete h.limits[${q(op)}];`,
@@ -124,14 +126,12 @@ ${lines.join("\n")}
     const tests = [];
     tests.push(...rows.map((x) => {
       n++;
-      const cr = centralRow(x);
-      if (cr) return cr;
       const kind = kindOf(x.test_function);
       const skip = (kind === "rate_limited" && false) ? ".skip" : "";
       return `  it${skip}(${q(x.test_function)}, async () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    ${CASE[kind](op)}\n  });`;
     }));
     const src = `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
-${tests.some((t) => t.includes("readFileSync(")) ? 'import { readFileSync } from "node:fs";\n' : ""}import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { makeHarness, endpointOf, type Harness } from "../harness.js";
 ${tests.some((t) => t.includes("args(")) ? 'import { args } from "../args.js";\n' : ""}
 const e = endpointOf(${q(op)});
