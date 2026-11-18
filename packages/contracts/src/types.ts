@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:b2033198c7b5e0a2
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:2fb6ecf43ad75258
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -683,9 +683,11 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/auth/service-status",
   "acts": [
-   "A13"
+   "A13",
+   "A135"
   ],
   "screens": [
+   "help",
    "login"
   ]
  },

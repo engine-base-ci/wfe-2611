@@ -185,6 +185,7 @@ SCREEN_API = {
         ("POST", "/auth/sign-out", "A13", "sessions", "signOut", []),
         ("GET", "/auth/service-status", "A13", "status_incidents", "getServiceStatus", ["notices"]),
     ],
+    "help": [("GET", "/auth/service-status", "A135", "status_incidents", "getServiceStatus", ["notices"])],   # K-315
     "password-reset": [
         ("POST", "/auth/password/forgot", "A31", "security_events", "requestPasswordReset", []),
         ("POST", "/auth/password/reset", "A31", "sessions", "resetPassword", ["security_events"]),

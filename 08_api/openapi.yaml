@@ -13708,20 +13708,25 @@ paths:
   /api/v1/auth/service-status:
     get:
       operationId: getServiceStatus
-      summary: 取得（auth）— ログインする（パスキー／パスワード＋2 段階）
+      summary: 取得（auth）— ログインする（パスキー／パスワード＋2 段階）／ログインできない・困ったときに、自分で解くか運営に聞く
       tags:
       - status_incidents
       x-acts:
       - A13
+      - A135
       x-screens:
+      - help
       - login
       x-choke-points: []
       x-source:
       - D-042
       - D-053.4
+      - D-125.127
       - D-125.137
       - D-125.140
       - D-125.167
+      - D-125.24
+      - D-128.146
       x-permission: public
       x-permission-scope: 誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）
       x-step-up: false

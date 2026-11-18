@@ -32,7 +32,7 @@ STEP_UP_REQUIRED = {"createCredential", "updateCredential", "updateMemberRole", 
                     "changeOpsWorkspacePlan", "resumeWorkspace", "issueOpsInvoices", "addOpsMember", "updateOpsMemberCaps", "removeOpsMember"}
 # PC がまだ印を持たないうちに呼ぶ口（接続コードそのものが鍵・1 分 5 回・10 分・1 回だけ・D-089・D-128.93・K-57）
 BRIDGE_PUBLIC = {"claimPairingCode"}
-PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept"}   # ログイン前の画面だけが public を使える
+PUBLIC_OK = {"signup", "verify-email", "login", "password-reset", "invite-accept", "help"}   # ログイン前の画面だけが public を使える
 
 
 def load_screen_api():

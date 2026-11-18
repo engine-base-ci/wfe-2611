@@ -1,8 +1,8 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-16",
+ "created_at": "2026-11-18",
  "summary": {
-  "screens_count": 73,
+  "screens_count": 74,
   "features_count": 32,
   "entities_count": 142,
   "uncovered_screens": [],
@@ -3328,6 +3328,27 @@
     "E-131 terms_consents"
    ],
    "related_apis": [],
+   "access_roles": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+   ]
+  },
+  {
+   "screen_id": "help",
+   "screen_name": "困ったとき",
+   "features": [
+    "F-015"
+   ],
+   "entities": [
+    "E-075 notices",
+    "E-076 notice_deliveries",
+    "E-077 status_incidents"
+   ],
+   "related_apis": [
+    "GET /api/auth/service-status"
+   ],
    "access_roles": [
     "R1",
     "R2",
@@ -11645,6 +11666,18 @@
    "required_apis": []
   },
   {
+   "screen_id": "help",
+   "screen_name": "困ったとき",
+   "required_apis": [
+    {
+     "act": "A135",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/auth/service-status"
+    }
+   ]
+  },
+  {
    "screen_id": "portal",
    "screen_name": "クライアントの場所",
    "required_apis": [
@@ -13114,6 +13147,7 @@
     "ops-disclosure",
     "ops-tenant",
     "tickets",
+    "help",
     "portal"
    ],
    "used_by_features": [
@@ -13141,7 +13175,8 @@
     "notices",
     "ops-notices",
     "ops-disclosure",
-    "ops-tenant"
+    "ops-tenant",
+    "help"
    ],
    "used_by_features": [
     "F-015",
@@ -13157,6 +13192,7 @@
     "notices",
     "ops-notices",
     "ops-disclosure",
+    "help",
     "portal"
    ],
    "used_by_features": [
@@ -15341,6 +15377,7 @@
    "feature_name": "困ったら運営に聞きたい。止まっているのが自分のせいか Kaname のせいか知りたい",
    "screens": [
     "billing",
+    "help",
     "inquiry",
     "notices"
    ],
@@ -15366,7 +15403,8 @@
    "api_endpoints_draft": [
     "GET /api/inquiries",
     "GET /api/notices",
-    "GET /api/plans"
+    "GET /api/plans",
+    "POST /api/notice_deliveries"
    ]
   },
   {
