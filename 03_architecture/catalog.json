@@ -345,7 +345,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-331"
+   ]
   },
   {
    "op": "acceptInvitation",

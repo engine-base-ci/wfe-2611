@@ -14159,6 +14159,85 @@
     "申し送り": "- K-317 へ：パスキー・QR・端末をなくした のグレーの印はこのチケットが足す。K-317 は印を外して動きをつなぎ、K221-UI-004・005・008・020 を替える。stage2-match.ts は K-300 が入れ、比べ方の揺れ（動きを止めて終わるのを待つ）はこのチケットが直した\n- K-301・K-302 へ：前の道すじはこのチケットが消す（決め 3）。K-301 の申し送り「ext.ts の E-AUTH-002 の古い文は K-316 が消す」も受けた\n- K-320 へ：「パスワードを忘れた」で sessionStorage `kaname.reset-email` に置く書く側はこのチケット（K316-UI-023）\n- K-319 へ：login.spec.ts SCR-LOGIN-002 は前の /mfa-setup の画面（「認証アプリを登録する」「アプリに出た6桁」・[data-backup-codes]）で 2 段階を付けている。安全の設定を載せ替えるときに、その前半を替える"
    },
    "file": "11_tickets/K-316.md"
+  },
+  {
+   "id": "K-331",
+   "title": "招待の下見の口（getInvitation・招いた人とグループと役割とひとこと・招待の状態・アカウントの有無とログイン中の様子・invitations.message）（K-55 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-55",
+   "milestone": "F2",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-20",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-313（口と DB・18 行・見込み 1 時間）から引いた：契約の形の直し（screen_api.py → 作り直し）15 分・口 1 本と下見の関数 20 分・migration 1 本 10 分・試験の土台を通す 10 分・自分の確かめ 5 分",
+   "decisions": [
+    "D-125.150",
+    "D-128.46",
+    "D-128.62",
+    "D-128.63",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-preview.test.ts",
+    "apps/api/test/generated/get_auth_invitations_token.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F2/invite.harness.ts"
+   ],
+   "depends_on": [],
+   "acts": [
+    "A03"
+   ],
+   "screens": [],
+   "apis": [
+    "getInvitation"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F2/invitations/",
+    "apps/api/src/hooks/invitations.ts",
+    "apps/api/src/server.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "05_flow/screen_api.py",
+    "05_flow/build_api.py",
+    "scripts/ci/contract_shape_test.py",
+    "scripts/ci/fuzz_targets.py",
+    "apps/api/test/fuzz/server.ts",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json",
+    "11_tickets/K-55.md"
+   ],
+   "sections": {
+    "目的": "招待のリンク（`/invite/:token`）を開いたときに画面が呼ぶ契約の口 `getInvitation`（GET /api/v1/auth/invitations/:token）を作る（今は 501）。\n招かれた人に「招待した人・グループ・役割・ひとこと」を見せ（D-128.62）、招待の状態（使える・期限切れ・取り消し・使われた）と、宛てのメールにアカウントがあるか・ログイン中ならメールが合うか・もう入っているか を返す。\n画面はこの答えだけで、新しく作る／ログインして参加する／今のアカウントで参加する／別のメール宛て／もう入っている／期限切れ… の形を決める（answer=becc3d3aa526・7fe1f09fdab4）。\n\nこのチケットは口と DB だけ。参加の口は K-332・K-333、送り直しは K-334、画面は K-335・K-336。",
+    "完了の条件": "- [ ] 下の表の 17 行（K331-API-001〜016・K331-DB-001）が緑：`apps/api/test/features/F2/invitation-preview.test.ts`\n- [ ] 契約の口 `getInvitation` が 501 でない。生成の試験 `apps/api/test/generated/get_auth_invitations_token.test.ts` の it.todo が 0（ears-elsewhere.json の covers で本物の試験を指す）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: INV\n\n- 依存：無い（ログインの土台 `apps/api/test/features/F1/login.harness.ts` は本線にある・K-301）\n- 招く側（招待を作る・送る）は F10（K-70）。試験は招待の行を DB に直に入れる（`invite.harness.ts`・このチケットが持ち込み、K-332〜K-334 が使う）\n- ログインは要らない口（契約の auth: public）。セッションがあれば読み、壊れた・切れた印はログインしていない扱い（401 にしない）\n- 上限は契約どおり 10 回／分／IP",
+    "依存の理由": "無い（depends_on は空）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・番号は取り込む時点の次の空き） | `<次の空き>_invitation_preview.sql`：① `alter table invitations add column if not exists message text` と `check (message is null or char_length(message) <= 500)` ② `app.invitation_preview2(p_token_hash text, p_auth_user_id text default null) returns table (state text, workspace_name text, inviter_name text, group_name text, role text, message text, email text, expires_at timestamptz, account_exists boolean, email_matches boolean, already_member boolean)`：security definer・`revoke all … from public`・`grant execute … to kaname_app`。state は used（accepted_member_id）＞ revoked（revoked_at か deleted_at）＞ expired（expires_at < now()）＞ ok の順。role は invitations.role_id が admin・manager・member・viewer・requester ならそのまま、ほかは member。inviter_name は created_by の members.display_name、group_name は scope_id の scopes.name（消したグループは null）。account_exists は kaname_auth.\"user\" に lower(email) が同じ行があるか（plpgsql で to_regclass を見てから引く・migrate は migrateAuth より先に走る）。signed_email・email_matches・already_member は p_auth_user_id があるときだけ（無ければ null。関数の returns にも signed_email text を足す）：already_member は 0111 の `app.current_members_of_auth_user` に招待の tenant_id がある。packages/db/src/index.ts の MIGRATIONS の末尾にも足す |\n| hook の形（K-332〜K-334 も同じ形に足していく） | `apps/api/src/hooks/invitations.ts` に `export interface InvitationDeps { auth: Auth; appPool: pg.Pool; authPool: pg.Pool; mailer?: Mailer; config: { opsEmail: string; webBaseUrl: string } }` と `export function invitationHooks(d: InvitationDeps): Record<string, Hook>`（server.ts の loginHooks・passwordResetHooks と同じ書き方。mailer は任意：K-334 の送り直しだけが使い、無ければ送れない扱い）。K-337 が運ぶ前からの試験（agent_memory・agent_artifacts）は `invitationHooks({ auth, appPool, authPool, config: { opsEmail, webBaseUrl } })` で呼ぶ |\n| 口 | `getInvitation`。振る舞いは `apps/api/src/features/F2/invitations/preview.ts`、hook は `apps/api/src/hooks/invitations.ts`（`invitationHooks`）を server.ts で contract.hooks に足して 501 を外す。トークンは 1〜512 文字でなければ関数を呼ばずに 404。セッションは resolver で読み、無い・壊れた・切れたは p_auth_user_id null。答え `{ data: { state, workspace_name, inviter_name, group_name, role, message, email, expires_at, account_exists, signed_in: null \\| { email, email_matches, already_member } } }（email はログイン中のアカウントのメール・別のメール宛ての画面で出す）`・`Cache-Control: private, no-store`。行が無ければ 404・E-INV-001。下見の関数が例外なら 503・E-PAGE-003（ログには例外の種類だけ・何も変えない） |\n| 契約の形 | `05_flow/screen_api.py` の getInvitation の答えを表の写し（Invitations・token_hash まで出る）から `InvitationPreview`（上の欄）に替え、404（E-INV-001）を足す → `05_flow/build_api.py` で作り直す（packages/contracts の生成物） |\n| 登録先（touch_rules） | fuzz の的 `apps/api/test/fuzz/server.ts` に invitationHooks を差す・`scripts/ci/contract_shape_test.py` と `scripts/ci/fuzz_targets.py` の表に getInvitation・`07_qa/test-plan/ears-elsewhere.json` の covers で生成の試験を本物の試験に結ぶ・`scripts/ci/ci_scope.json` に features/F2 の地図 |\n| 親 | 11_tickets/K-55.md の apis・tests から、このチケットの分（getInvitation・get_auth_invitations_token）を外す |",
+    "外に影響する手順": "- 1: DB を読む（下見の関数・セッションを解く）。書かない。失敗したら 503・E-PAGE-003 で何も変わらない（K331-API-016）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F2/invitation-preview.test.ts`（本番と同じ bootApi・本物の DB・本物の Better Auth。土台 invite.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（DB の列から出した）：`invitations` の accepted_member_id（有る・無い）・revoked_at・deleted_at（有る・無い）・expires_at（過ぎた・過ぎていない）・message（有る・無い）・scope_id（有る・無い）／宛てのメールの `kaname_auth.\"user\"`（有る・無い）／ログイン（無い・同じメール・別のメール・もう入っている・抜けた）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 使える | メールのリンク | ログインしていない・アカウント無し | 200・state ok・account_exists false・signed_in null | このチケット | K331-API-001 |\n| 使える・ひとこと無し・グループ無し | 同じ | 同じ | message・group_name は null | このチケット | K331-API-002 |\n| 期限切れ | 同じ | 同じ | 200・state expired（名前は出す） | このチケット | K331-API-003 |\n| 取り消し・消した | 同じ | 同じ | 200・state revoked | このチケット | K331-API-004 |\n| 使われた（期限切れでも） | 同じ | 同じ | 200・state used | このチケット | K331-API-005 |\n| 行が無い | でたらめ・古いリンク・長すぎ | 同じ | 404・E-INV-001 | このチケット | K331-API-006 |\n| 使える | 同じ | ログインしていない・アカウント有り | account_exists true | このチケット | K331-API-007 |\n| 使える | 同じ | ログイン中・同じメール | signed_in { email_matches true, already_member false } | このチケット | K331-API-008 |\n| 使える | 同じ | ログイン中・別のメール | signed_in { email_matches false, … } | このチケット | K331-API-009 |\n| 使える | 同じ | ログイン中・もう入っている／前に抜けた | already_member true／false | このチケット | K331-API-010 |\n| 使える | 同じ | ログインの印が壊れている | 200・signed_in null | このチケット | K331-API-015 |\n| どれでも | 画面 | どれでも | 画面の形 | K-335・K-336 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K331-API-001 | 対象の状態 | 使える招待・ログインしていない | 200。data の鍵はちょうど account_exists・email・expires_at・group_name・inviter_name・message・role・signed_in・state・workspace_name。state ok・workspace_name は招いたワークスペース名・inviter_name は空でない文字・role member・message は入れた文・email は宛て・expires_at は 6 日より先・account_exists false・signed_in null。答えに token_hash・tenant_id の文字が無い |\n| K331-API-002 | 入力 | ひとこと無し・グループ無し | 200・state ok・message null・group_name null |\n| K331-API-003 | 時間の流れ | 期限切れ | 200・state expired・workspace_name と inviter_name は出る |\n| K331-API-004 | 対象の状態 | 取り消し（revoked_at）・消した（deleted_at） | どちらも 200・state revoked |\n| K331-API-005 | 対象の状態 | 使われた（期限切れでもある） | 200・state used |\n| K331-API-006 | 入力 | でたらめ・空白入り・600 文字のトークン | どれも 404・本体に E-INV-001 とその文・data は無い（null） |\n| K331-API-007 | 利用者の状態 | 宛てにアカウントがある・ログインしていない | account_exists true・signed_in null |\n| K331-API-008 | 利用者の状態 | ログイン中・同じメール | signed_in は { email: 今のメール, email_matches: true, already_member: false }・account_exists true |\n| K331-API-009 | 利用者の状態 | ログイン中・別のメール | signed_in は { email: 今のメール, email_matches: false, already_member: false } |\n| K331-API-010 | 利用者の状態 | もう入っている／所属が left | 入っている：already_member true。left の人：{ email: その人のメール, email_matches: true, already_member: false } |\n| K331-API-011 | 入力 | role_id viewer・古い値 staff | viewer は viewer、staff は member |\n| K331-API-012 | 守り | 下見は何も変えない | 招待の updated_at と accepted_member_id は同じ・宛ての利用者の数も同じ（セッションは見ない） |\n| K331-API-013 | 守り | 同じ IP から 1 分に 11 回目 | 10 回は 200、11 回目は 429・retry_after_sec は 1〜60 の整数 |\n| K331-API-014 | 守り | 貯めない | Cache-Control に no-store |\n| K331-API-015 | 利用者の状態 | ログインの印が壊れている | 200・signed_in null（401 にしない） |\n| K331-API-016 | 失敗 | 手順 1 の失敗：下見の関数が使えない（実行の権限を外す） | 503・本体に E-PAGE-003。招待の updated_at は変わらない |\n| K331-DB-001 | 入力 | invitations.message の長さ | 500 文字は入る・501 文字は入れられない（例外）・null に戻せる |\n\n### テストの型の受け（分類 INV）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 期限切れ・取り消し・使い終わった招待を開く | K331-API-003・004・005（理由は state で返し、次の一手は画面 K-335） |\n| TP-INV-02 違うアカウントでログイン中に開く | K331-API-009（email_matches false を返す。勝手に参加させないのは K333-API-005・案内は K-336） |\n| TP-INV-03 既にメンバーの人が開く | K331-API-010（already_member。二重に参加させないのは K333-API-006） |\n| TP-INV-04 招いた人が権限を失った・抜けた後に開く | K331-API-004（抜けた人の招待は消える・D-128.96・消すのは招く側 F10。消した招待は revoked）。権限を失っただけなら招待はそのまま使える（招く側が取り消す） |\n| TP-INV-05 同じ人を 2 回招待する | 要らない：招待を作るのは招く側（F10・K-70）。下見は 1 つのトークンの 1 行だけを見る |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験。\n\n- apps/api/test/authz_rows.test.ts: 替えない — server.ts に invitationHooks を足すだけで、行の守り（RLS）の見本の口は変えない\n- apps/api/test/features/F1/password-forgot.test.ts: 替えない — server.ts と migration の一覧に足すだけで、再設定の口は変えない\n- apps/api/test/features/F1/password-reset.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/service-status.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/sign-up.test.ts: 替えない — 同じ\n- apps/api/test/features/F1/terms.test.ts: 替えない — 同じ（前の道すじの招待の受け入れは K-335 まで残る）\n- apps/api/test/features/F1/verify-email.test.ts: 替えない — 同じ\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 契約の形の試験は作り直した生成物を読む（getInvitation の形が InvitationPreview になるのは生成物の側）\n- apps/api/test/k262_edge.test.ts: 替えない — server.ts の入口の順を変えない\n- apps/api/test/server.test.ts: 替えない — hook を 1 つ足すだけ\n- apps/api/test/vercel_entry.test.ts: 替えない — 入口を変えない\n- packages/db/src/index.test.ts: 替えない — MIGRATIONS の末尾に 1 行足すだけ（並びの検査はそのまま通る）\n- scripts/ci/ci_lean_test.py: 替えない — ci_scope.json に地図を 1 行足すだけ\n- scripts/ci/ci_scope_test.py: 替えない — 同じ\n- scripts/ci/fuzz_targets_test.py: 替えない — fuzz_targets.py の表に 1 行足すだけ（試験は表の形を見る）\n- scripts/ci/k177_web_scope_test.py: 替えない — 画面の範囲を変えない\n- scripts/ci/k185_hook_regions_test.py: 替えない — hook の書き方は今の hooks/*.ts と同じ形\n- scripts/ci/k187_cut_take_test.py: 替えない — 切る段の台本を変えない\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手（build_api.py）の置き場を変えない\n- scripts/ci/k204_staging_workflow_test.py: 替えない — workflow を変えない\n- scripts/ci/k245_g27_reach_test.py: 替えない — 新しい口の試験は ears-elsewhere.json で結ぶ（G27 の届き方は同じ）\n- scripts/ci/k248_scope_reach_test.py: 替えない — 新しい試験はファイルを読まない（読み先の登録が要らない）\n- scripts/ci/k330_cut_check_test.py: 替えない — K-330 の切る段の検査の口の自己試験。道を例の入力として文字で書いているだけで、このチケットの変更を読まない\n- scripts/ci/test_owner_gate.py: 替えない — 試験の持ち主の検査（名前が test_ で始まるので候補に入った）。ci_scope.json・workflow の道を文字で持つだけで、行を足しても検査の決まりは変わらない（持ち主の検査は切る段で緑を確かめた）",
+    "成果物": "- 口 `apps/api/src/features/F2/invitations/preview.ts`・`apps/api/src/hooks/invitations.ts`・server.ts・migration 1 本・契約の形（screen_api.py → 作り直し）・ears-elsewhere.json・fuzz の的と表\n- 単体の試験 `apps/api/test/features/F2/invitation-preview.test.ts` と土台 `invite.harness.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=becc3d3aa526・7fe1f09fdab4（07_functional/段3-F2/機能分解.md の 6 章）。下見はその形を決めるための欄を返す\n- 2026-11-18 切る段の決め：招待の状態は 200 の state で返し、410 にしない（画面は期限切れでも名前を出して送り直しを頼ませる・D-128.63）。404 は行が無いときだけ\n- 2026-11-18 切る段の決め：役割の古い値（staff など）は member として見せる（tenant_memberships.role の 5 つに合わせる・K-332 も同じ写し方）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- account_exists は、トークンを持つ人に「このメールにアカウントがあるか」を教える。トークンは宛てのメールに届いた物なので、宛ての本人だけが知る値（漏れたトークンでは宛てのメールのことしか分からない）。代表の答え ③（ログインして戻る）にこの欄が要る",
+    "申し送り": "- K-332・K-333・K-334：試験の土台 `invite.harness.ts` を使う。下見の関数 `app.invitation_preview2` の state の決め方（used ＞ revoked ＞ expired）に参加・送り直しの口も合わせる\n- K-335・K-336：画面は data.state と account_exists と signed_in だけで形を決める"
+   },
+   "file": "11_tickets/K-331.md"
   }
  ]
 }
