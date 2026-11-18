@@ -22,7 +22,7 @@ export interface AdminRecoveryDeps {
   /** 認証の接続（待ちの印から本人を引く） */
   authPool: LoginDeps["authPool"];
   mailer?: AdminRecoveryMailer;
-  /** 運営の連絡先（メールの本文に書く・config.operator.email） */
+  /** 運営の連絡先（メールの本文に書く・config.opsEmail。ログインの口の ops_email と同じ値） */
   config: { opsEmail: string };
 }
 

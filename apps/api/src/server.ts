@@ -167,7 +167,7 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
           appPool,
           authPool,
           ...(mailer ? { mailer } : {}),
-          config: { opsEmail: config.operator.email },
+          config: { opsEmail: config.opsEmail },
         }),
         ...bridgeHooks({
           appPool,
