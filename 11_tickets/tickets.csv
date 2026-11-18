@@ -1846,6 +1846,6 @@ K-338,画面の試験 K319-UI-026 の揺れを止める（試験の差し替え�
 3. ログインの画面が口を呼ぶ → 差し替えが印の立った人に 403 MFA_REQUIRED を返す → `lib/mfa-gate.ts` が `/mfa-setup?next=…&back=1` へ移り始める
 4. 試験の次の `page.goto('/mfa-setup')` と、この移動が先を取り合う
 
-本物の画面では、401 の後は印が消えたままなので起きない（`noticeMfaRequired` は印が無ければ移さない）。","- [ ] K338-UI-001 が緑（`apps/web/tests/k/k319-security-setup.spec.ts`）
+本物の画面では、401 の後は印が消えたままなので起きない（`noticeMfaRequired` は印が無ければ移さない）。","- [ ] K338-UI-001 が緑（`apps/web/tests/k/k338-seed-once.spec.ts`）。印を開くたびに置き直す前の作りに戻すと赤になる
 - [ ] K338-UI-002・003 を手元で確かめた（下の judge-skip）
 - [ ] 手元の CI（このチケットの範囲）が緑"
