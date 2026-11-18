@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:34997e2016c6f273
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:132f7d2372ddf0c7
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -22,7 +22,7 @@ export interface Ops {
   restoreArtifactVersion: { params: { id: string }; query: never; body: T.ArtifactVersionsInput; data: T.ArtifactVersions };
   updateArtifact: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
   listAuditEvents: { params: never; query: { "q"?: string | number; "kind"?: string | number; "member_id"?: string | number; "ticket_id"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.AuditEvents[] };
-  getInvitation: { params: { token: string }; query: never; body: never; data: T.Invitations };
+  getInvitation: { params: { token: string }; query: never; body: never; data: T.InvitationPreview };
   acceptInvitation: { params: { token: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
   requestPasswordReset: { params: never; query: never; body: T.PasswordForgotInput; data: T.PasswordForgotAccepted };
   resetPassword: { params: never; query: never; body: T.PasswordResetInput; data: T.PasswordResetDone };

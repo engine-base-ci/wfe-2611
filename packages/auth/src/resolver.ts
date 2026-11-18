@@ -28,8 +28,17 @@ export function createDeviceResolver(appPool: pg.Pool) {
       authUserId: "",
       // PC のセッションには同意し直しの印を立てず止めない（K-53・D-128.137。Bridge は時間で切らないので、止めると PC 側の仕事が全部止まる）
       termsPending: false,
+      mfaPending: false,
     };
   };
+}
+
+/** 部品のセッションの作った時刻（Date か文字列）。読めなければ null（取り直しの判定は通さない側に倒れる） */
+function loginAtOf(session: { createdAt?: unknown }): Date | null {
+  const v = session.createdAt;
+  if (v === undefined || v === null) return null;
+  const d = v instanceof Date ? v : new Date(String(v));
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
 export interface Resolved {
@@ -39,6 +48,9 @@ export interface Resolved {
   /** 同意し直しの印（K-53）。立っている間は、規約の口・ログアウト・自分の取得のほかを止める。PC のセッションは常に false。
    *  ctx（DB に渡すテナントの文脈）には入れない */
   termsPending: boolean;
+  /** 付けるまで進めない印（K-308・D-128.141）。パスキーも 2 段階も無い人の画面のセッションに立つ。読むだけ（止めるのは入口の別の葉）。
+   *  PC のセッションは常に false */
+  mfaPending?: boolean;
   /** 会社から抜けた人か（D-131.7・K-166）。画面のログインの解決は、解けた時点で抜けていない（false）と分かる。
    *  持たない解決（PC の印など）は、入口が今までどおり DB で確かめる（K-233） */
   memberLeft?: boolean;
@@ -57,17 +69,26 @@ export function createSessionResolver(auth: Auth, appPool: pg.Pool) {
       tenant_id: string;
       at: Date | null;
       terms: boolean;
+      mfa: boolean;
     }>(
-      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms from app.session_check($1, $2, $3, $4) c",
+      "select c.session_id, c.member_id, c.tenant_id, app.session_step_up_at($1) as at, app.session_terms_pending(c.session_id) as terms, app.session_mfa_pending(c.session_id) as mfa from app.session_check($1, $2, $3, $4) c",
       [s.session.id, countryOf(headers), deviceOf(headers.get("user-agent")), ipOf(headers)],
     );
     const row = r.rows[0];
     if (!row) return null; // 失効済み・会社に属していない・人が抜けた・見張りで閉じた
     return {
-      ctx: { tenantId: row.tenant_id, userId: row.member_id, role: "member", stepUpAt: row.at ?? null },
+      ctx: {
+        tenantId: row.tenant_id,
+        userId: row.member_id,
+        role: "member",
+        stepUpAt: row.at ?? null,
+        // ログインした時刻（部品のセッションの createdAt）。ログインから 15 分の内は取り直しを求めない口がある（K-308）
+        loginAt: loginAtOf(s.session),
+      },
       sessionId: row.session_id,
       authUserId: s.user.id,
       termsPending: row.terms === true,
+      mfaPending: row.mfa === true,
       // 行が在る＝session_check が members.deleted_at is null で結んだ＝抜けていない（入口で member_left を引き直さない・K-233）
       memberLeft: false,
     };

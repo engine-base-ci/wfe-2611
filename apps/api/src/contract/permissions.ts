@@ -50,3 +50,9 @@ export const checkFor = (word: string): Check | undefined => CHECKS[word.startsW
 export const STEP_UP_MS = 15 * 60 * 1000;
 export const stepUpFresh = (ctx: TenantContext, now = Date.now()): boolean =>
   !!ctx.stepUpAt && now - new Date(ctx.stepUpAt).getTime() <= STEP_UP_MS;
+/** ログインしてから 15 分の内か（K-308・代表の答え ⑬）。ログインの時刻が無ければ false */
+export const loginFresh = (ctx: TenantContext, now = Date.now()): boolean =>
+  !!ctx.loginAt && now - new Date(ctx.loginAt).getTime() <= STEP_UP_MS;
+/** 取り直しが直前 15 分の内か、ログインから 15 分の内か（安全の設定の 4 つの口・契約の step_up が "login_or_step_up"・K-308） */
+export const stepUpOrFreshLogin = (ctx: TenantContext, now = Date.now()): boolean =>
+  stepUpFresh(ctx, now) || loginFresh(ctx, now);
