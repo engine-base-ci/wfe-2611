@@ -62,7 +62,7 @@ async function mockHeld(page: Page, gate: ReplyGate): Promise<{ confirms: unknow
   return seen;
 }
 
-test("K339-UI-001 確かめの答えを門で止めている間は答えを待つ形のまま（確かめるは busy・バックアップコードの小窓は出ない）で、その間の Enter は確かめを 2 回目送らず、門を開けると小窓が 1 つ出る", async ({
+test("K339-UI-001 確かめの答えを門で止めている間は答えを待つ形のまま（確かめるは busy・バックアップコードの小窓は出ない）で、その間に 6 けた目を打ち替えて 6 つそろえ直しても確かめは 2 回目を送らず、門を開けると小窓が 1 つ出る", async ({
   page,
 }) => {
   const gate = replyGate();
@@ -84,7 +84,10 @@ test("K339-UI-001 確かめの答えを門で止めている間は答えを待�
   await page.getByLabel("確認のコード 1 けた目").click();
   await page.keyboard.type("123456");
   await expect.poll(() => seen.confirms.length).toBe(1);
-  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter"); // 6 けたの枠の Enter は何もしない（code-boxes.tsx は Backspace だけを見る）
+  // 2 回目を本当に送る道：6 けた目を打ち替えると 6 つそろい直し、画面は確かめを送ろうとする（答えを待つ間の守りが無ければ 2 回目が届く）
+  await page.keyboard.type("7");
+  await expect(page.getByLabel("確認のコード 6 けた目")).toHaveValue("7");
   // 門を閉じている間：答えを待つ形のまま
   await expect(totp.getByRole("button", { name: "確かめる" })).toHaveAttribute("aria-busy", "true");
   const backup = page.getByRole("dialog", { name: "バックアップコード" });
