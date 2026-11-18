@@ -5,6 +5,7 @@
 //   ⓪ 下見の関数 app.invitation_preview2 で状態を見る：無い 404・E-INV-001／revoked 410・E-INV-002／used 410・E-INV-004／ok 409・E-INV-008
 //   ① 1 つの取引で宛てを引き（app.invitation_resend_targets）、24 時間の内に頼まれていれば 201 already。
 //      そうでなければ知らせの行を入れる（app.invitation_resend_record・送り中の行があれば空＝already）。例外なら 503・E-PAGE-003（何も残らない）
+//      前の回に送れなかった宛てがあれば、record はその宛ての行だけを返す（押し直しで届いた人に 2 通目を出さない）
 //   ③ 宛てごとに関門 C6 の送出の口（mailer）でメールを 1 通。送れたか／送れなかったかを知らせの行に書く（app.invitation_resend_mark）
 //   ④ 全員に届いたときだけ頼んだ時刻を書く（app.invitation_resend_stamp）→ 201 sent。1 つでも送れなければ時刻は触らず 201 failed
 //      （502 にしない・知らせの行は画面の中の知らせとして残す・1 日 1 回に数えない）。
@@ -98,20 +99,19 @@ export function invitationResendFeature(d: Pick<InvitationDeps, "appPool" | "mai
   };
 
   /** ③ の後：届いた・届かないを知らせの行に書き、全員に届いたら ④ 頼んだ時刻を書く。どちらも落ちても答えは変えない（メールは取り消せない） */
-  const finish = async (invitationId: string, rows: RecordRow[], failed: string[]): Promise<void> => {
+  //   mark が落ちたら、その回の行は送り中のまま 2 分残り、その間の押し直しは already になる（2 分たてば押し直せる・DB が落ちたときだけの道）
+  const finish = async (hash: string, invitationId: string, rows: RecordRow[], failed: string[]): Promise<void> => {
     const sent = rows.map((r) => r.notification_id).filter((id) => !failed.includes(id));
     try {
-      await d.appPool.query("select app.invitation_resend_mark($1, $2::uuid[], $3::uuid[])", [
-        invitationId,
-        sent,
-        failed,
-      ]);
+      await d.appPool.query("select app.invitation_resend_mark($1, $2::uuid[], $3::uuid[])", [hash, sent, failed]);
     } catch (e) {
       console.error(`[invitation] 招待 ${invitationId} の知らせに届いた印を書けなかった（${kindOf(e)}）`);
     }
     if (failed.length > 0) return;
     try {
-      await d.appPool.query("select app.invitation_resend_stamp($1)", [invitationId]);
+      const r = await d.appPool.query<{ ok: boolean }>("select app.invitation_resend_stamp($1) as ok", [hash]);
+      if (!r.rows[0]?.ok)
+        console.error(`[invitation] 招待 ${invitationId} の頼んだ時刻を書けなかった（届いた知らせが見つからない）`);
     } catch (e) {
       console.error(`[invitation] 招待 ${invitationId} の頼んだ時刻を書けなかった（${kindOf(e)}）`);
     }
@@ -137,7 +137,7 @@ export function invitationResendFeature(d: Pick<InvitationDeps, "appPool" | "mai
       return done("failed");
     }
     const failed = await sendAll(rows);
-    await finish(rows[0]!.invitation_id, rows, failed);
+    await finish(hash, rows[0]!.invitation_id, rows, failed);
     return done(failed.length > 0 ? "failed" : "sent");
   };
 

@@ -14,8 +14,11 @@ describe("POST /api/v1/auth/invitations/:token/resend-request", () => {
     // 本物の試験：apps/api/test/features/F2/invitation-resend-request.test.ts の「K334-API-006」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F2/invitation-resend-request.test.ts", "utf8")).toContain("K334-API-006");
   });
-  // 当てはまらない（体は空の形（strict）で、この口の振る舞いに 422 の分かれ道が無い。知らない欄の 422 は契約の入口（op.ts の strict な形の確かめ）が全部の口に同じに返し、空の体の口では K144-API-013 と契約の fuzz（G36）が見る。受け付けない道の値は 404（K334-API-007））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-  it.todo("test_post_auth_invitations_token_resend_request_rejected_422");
+  it("test_post_auth_invitations_token_resend_request_rejected_422", () => {
+    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+    // 本物の試験：apps/api/test/features/F2/invitation-resend-request.test.ts の「K334-API-013」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F2/invitation-resend-request.test.ts", "utf8")).toContain("K334-API-013");
+  });
   it("test_post_auth_invitations_token_resend_request_not_found", () => {
     // UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、誰にも知らせない
     // 本物の試験：apps/api/test/features/F2/invitation-resend-request.test.ts の「K334-API-007」（同じ CI の G3 で流れる）

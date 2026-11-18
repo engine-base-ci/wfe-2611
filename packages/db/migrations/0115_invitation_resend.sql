@@ -11,13 +11,14 @@
 --      members.auth_user_id が空・K-333）。招待の状態は見ない（状態は口が下見の関数 app.invitation_preview2 で先に見る）
 -- ③ app.invitation_resend_record(p_token_hash)：知らせの行（notifications・inapp・invitation_resend_requested）を宛てごとに入れて返す。
 --      招待の行を for update で取り（同時に 2 回押しても後の 1 つは前の確定を待つ）、期限切れでない・24 時間の内に頼まれた・
---      送り中（どちらの印も無く 2 分の内）の知らせがある、のどれかなら何も入れず空を返す（口は already）。
+--      送り中（どちらの印も無く、最後に触ってから 2 分の内）の知らせがある、のどれかなら何も入れず空を返す（口は already）。
+--      前の回に送れなかった宛てがあれば、新しい行を入れずに、その行だけを引き受けて返す（届いた人に 2 通目を出さない・0112 と同じ形）。
 --      payload は招待の id・宛ての招待のメール・招いた日・期限・ワークスペースの名前だけ（トークン・リンクは入れない・TP-MAIL-03）
--- ④ app.invitation_resend_mark(p_invitation, p_sent, p_failed)：口がメールを送り終えたら、その回の知らせの行に届いた（sent_at）・
+-- ④ app.invitation_resend_mark(p_token_hash, p_sent, p_failed)：口がメールを送り終えたら、その回の知らせの行に届いた（sent_at）・
 --      届かなかった（failed_at）を入れる（送り中の印を外す）
--- ⑤ app.invitation_resend_stamp(p_invitation)：全員に届いたときだけ、頼んだ時刻を書く。送れなかった回は書かない（1 日 1 回に数えない）
+-- ⑤ app.invitation_resend_stamp(p_token_hash)：全員に届いたときだけ、頼んだ時刻を書く（2 分の内に届いた知らせがある招待だけ）。送れなかった回は書かない（1 日 1 回に数えない）
 --
--- どれも security definer・search_path に pg_temp。public から外し kaname_app にだけ渡す。認証の表 kaname_auth."user" は同じ DB（0112 と同じ）
+-- mark・stamp もトークンで引く（招待の id だけで書かせない）。どれも security definer・search_path に pg_temp。public から外し kaname_app にだけ渡す。認証の表 kaname_auth."user" は同じ DB（0112 と同じ）
 alter table invitations add column if not exists resend_requested_at timestamptz;
 
 create or replace function app.invitation_resend_targets(p_token_hash text)
@@ -85,14 +86,35 @@ begin
     return;
   end if;
   if v_inv.resend_requested_at is not null and v_inv.resend_requested_at > now() - c_day then return; end if;
+  -- 送り中（どちらの印も無く、最後に触ってから 2 分の内）の知らせがあれば入れない（同時に 2 回押しても 2 通出さない）
   if exists (select 1 from notifications n
               where n.tenant_id = v_inv.tenant_id and n.event_kind_id = 'invitation_resend_requested'
                 and n.payload ->> 'invitation_id' = v_inv.id::text
                 and n.sent_at is null and n.failed_at is null and n.deleted_at is null
-                and n.created_at > now() - c_sending) then
+                and n.updated_at > now() - c_sending) then
     return;
   end if;
   select t.name into v_name from tenants t where t.id = v_inv.tenant_id;
+  -- 前の回（頼んだ時刻を書いた後の回）に送れなかった宛てがあれば、いまも宛てである人の分だけを引き受けて送り直す
+  --   （届いた人には 2 通目を出さない。failed_at を空にして数を足す。updated_at は trigger が今にする＝送り中の始まり・0112 と同じ形）
+  return query
+    with targets as (
+      select t.member_id, t.email from app.invitation_resend_targets(p_token_hash) t
+    ), claimed as (
+      update notifications n
+         set failed_at = null, retry_count = coalesce(n.retry_count, 0) + 1
+       where n.tenant_id = v_inv.tenant_id and n.event_kind_id = 'invitation_resend_requested'
+         and n.payload ->> 'invitation_id' = v_inv.id::text
+         and n.failed_at is not null and n.sent_at is null and n.deleted_at is null
+         and n.created_at > coalesce(v_inv.resend_requested_at, '-infinity'::timestamptz)
+         and n.member_id in (select tg.member_id from targets tg)
+      returning n.id, n.member_id
+    )
+    select cl.id, cl.member_id, tg.email, v_inv.id, v_inv.email, v_inv.created_at, v_inv.expires_at, v_name
+      from claimed cl join targets tg on tg.member_id = cl.member_id
+     order by cl.member_id;
+  if found then return; end if;
+  -- 新しい回：宛てごとに知らせの行を 1 つ
   return query
     with targets as (
       select t.member_id, t.email from app.invitation_resend_targets(p_token_hash) t
@@ -112,29 +134,45 @@ end $$;
 revoke all on function app.invitation_resend_record(text) from public;
 grant execute on function app.invitation_resend_record(text) to kaname_app;
 
-create or replace function app.invitation_resend_mark(p_invitation uuid, p_sent uuid[], p_failed uuid[]) returns int
+create or replace function app.invitation_resend_mark(p_token_hash text, p_sent uuid[], p_failed uuid[]) returns int
 language plpgsql security definer set search_path = public, app, pg_temp as $$
-declare v_n int;
+declare
+  v_inv invitations%rowtype;
+  v_n int;
 begin
+  select * into v_inv from invitations i where i.token_hash = p_token_hash;
+  if not found then return 0; end if;
   update notifications n
      set sent_at = case when n.id = any (coalesce(p_sent, '{}')) then now() else null end,
          failed_at = case when n.id = any (coalesce(p_failed, '{}')) then now() else null end
-   where n.event_kind_id = 'invitation_resend_requested'
-     and n.payload ->> 'invitation_id' = p_invitation::text
+   where n.tenant_id = v_inv.tenant_id and n.event_kind_id = 'invitation_resend_requested'
+     and n.payload ->> 'invitation_id' = v_inv.id::text
      and n.id = any (coalesce(p_sent, '{}') || coalesce(p_failed, '{}'))
      and n.sent_at is null and n.failed_at is null and n.deleted_at is null;
   get diagnostics v_n = row_count;
   return v_n;
 end $$;
-revoke all on function app.invitation_resend_mark(uuid, uuid[], uuid[]) from public;
-grant execute on function app.invitation_resend_mark(uuid, uuid[], uuid[]) to kaname_app;
+revoke all on function app.invitation_resend_mark(text, uuid[], uuid[]) from public;
+grant execute on function app.invitation_resend_mark(text, uuid[], uuid[]) to kaname_app;
 
-create or replace function app.invitation_resend_stamp(p_invitation uuid) returns void
+-- 頼んだ時刻は、この招待にいま届いた知らせ（2 分の内に sent_at を書いた行）があるときだけ書く（トークンで引く・届いていない招待は止めない）
+create or replace function app.invitation_resend_stamp(p_token_hash text) returns boolean
 language plpgsql security definer set search_path = public, app, pg_temp as $$
+declare
+  v_inv invitations%rowtype;
 begin
-  update invitations set resend_requested_at = now() where id = p_invitation;
+  select * into v_inv from invitations i where i.token_hash = p_token_hash;
+  if not found then return false; end if;
+  if not exists (select 1 from notifications n
+                  where n.tenant_id = v_inv.tenant_id and n.event_kind_id = 'invitation_resend_requested'
+                    and n.payload ->> 'invitation_id' = v_inv.id::text
+                    and n.sent_at > now() - interval '2 minutes' and n.deleted_at is null) then
+    return false;
+  end if;
+  update invitations set resend_requested_at = now() where id = v_inv.id;
+  return true;
 end $$;
-revoke all on function app.invitation_resend_stamp(uuid) from public;
-grant execute on function app.invitation_resend_stamp(uuid) to kaname_app;
+revoke all on function app.invitation_resend_stamp(text) from public;
+grant execute on function app.invitation_resend_stamp(text) to kaname_app;
 
 insert into app.schema_migrations (name) values ('0115_invitation_resend.sql') on conflict do nothing;

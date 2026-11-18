@@ -174,10 +174,8 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_auth_invitations_token_resend_request_shape": "K334-API-001"
-   },
-   "na": {
-    "test_post_auth_invitations_token_resend_request_rejected_422": "体は空の形（strict）で、この口の振る舞いに 422 の分かれ道が無い。知らない欄の 422 は契約の入口（op.ts の strict な形の確かめ）が全部の口に同じに返し、空の体の口では K144-API-013 と契約の fuzz（G36）が見る。受け付けない道の値は 404（K334-API-007）"
+    "test_post_auth_invitations_token_resend_request_shape": "K334-API-001",
+    "test_post_auth_invitations_token_resend_request_rejected_422": "K334-API-013"
    }
   },
   "createPairingCode": {
