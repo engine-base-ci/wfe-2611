@@ -8,6 +8,7 @@ ticket-flow の cutcheck.py が、切る段の枝の写し（一時の作業場�
       頭の欄に要る affects（変えたパッケージ）と ci_wide（範囲を広げる理由）を JSON で出す
   python3 scripts/ci/cut_check.py prior --files <changes: の物…>
       changes: のファイルを使う前からの試験（import で辿れる試験＋道を文字で書いている試験）を JSON の並びで出す
+      ほぼ全部の試験が読む共通の入口（COMMON_ENTRIES）とパッケージの束ね口（packages/<名>/src/index.ts）は探す元から外し、標準エラーに出す
   python3 scripts/ci/cut_check.py smoke --junit <出す道> --tests <tests: の物…>
       使い捨ての DB を作って migration を当て、新しい試験（vitest の物）を JUnit の報告つきで流し、DB を消す。
       見るのは準備・後片付けの赤だけ（判定は cutcheck.py）。画面の試験（apps/web/tests の .spec.ts）は流さない（口と画面の台が要るため）
@@ -33,6 +34,24 @@ PG_PORT = 55433
 TEXT_TEST_SUFFIXES = (".test.ts", ".test.tsx", ".test.mjs", ".test.js", ".spec.ts", ".spec.tsx", ".spec.mjs", "_test.py")
 PACKAGE_ROOT = re.compile(r"^(?:apps|packages)/[^/]+/")
 MIN_REL = 15   # パッケージの根からの道で照らすときの最短の長さ（src/index.ts のような短い道で無関係の試験を拾わない）
+# 共通の入口：ほぼ全部の試験が読む（口の入口・契約の fuzz の的・範囲の地図・エラーの一覧・画面と口の表）。
+#   changes: に在るだけで前からの試験が 50〜64 件出て、1 件ずつ「替える／替えない」を書く意味が無くなる（行き過ぎ・PM 2026-11-18）ので、探す元から外す。
+#   外した物は標準エラーに出す（黙って外さない）。ここへの響きは作る段の CI（チケットの範囲）が見る
+COMMON_ENTRIES = (
+    "apps/api/src/server.ts",
+    "apps/api/src/app.ts",
+    "apps/api/test/fuzz/server.ts",
+    "scripts/ci/ci_scope.json",
+    "07_qa/test-specs/errors.json",
+    "05_flow/screen_api.py",
+)
+# パッケージの束ね口（packages/<名>/src/index.ts）：「@kaname/<名>」の import は全部ここに解けるので、共通の入口と同じに外す
+#   （段 2 の K-309 では packages/auth/src/index.ts だけで 35 件出ていた）
+PACKAGE_BARREL = re.compile(r"^packages/[^/]+/src/index\.ts$")
+
+
+def _common(path: str) -> bool:
+    return path in COMMON_ENTRIES or bool(PACKAGE_BARREL.match(path))
 
 
 def repo_root() -> pathlib.Path:
@@ -131,6 +150,10 @@ def prior(files: list[str]) -> list[str]:
             skipped.append(f)   # まだ無い（これから足す）ファイル：使う前からの試験は無い
     if skipped:
         print("まだ無いので照らさない：" + "、".join(skipped), file=sys.stderr)
+    common = sorted(f for f in want if _common(f))
+    if common:
+        want -= set(common)
+        print("共通の入口なので照らさない（作る段の CI が見る）：" + "、".join(common), file=sys.stderr)
     # 文字で照らす道：根からの道と、パッケージの根からの道（試験が join(WEB, "app/…") のように相対で書く物）
     needles = {f: [f] + ([PACKAGE_ROOT.sub("", f)] if PACKAGE_ROOT.match(f) and len(PACKAGE_ROOT.sub("", f)) >= MIN_REL else [])
                for f in want}

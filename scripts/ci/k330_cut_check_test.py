@@ -46,9 +46,25 @@ class CutCheckTest(unittest.TestCase):
         self.assertNotIn("apps/bridge/test/guard.test.ts", got)
 
     def test_K330_CC_004_prior_text_reference(self) -> None:
-        """prior は、道を文字で書いている試験も出す（ci_scope.json を読む試験）"""
-        got = json.loads(run("prior", "--files", "scripts/ci/ci_scope.json").stdout)
-        self.assertIn("scripts/ci/ci_scope_test.py", got)
+        """prior は、道を文字で書いている試験も出す（台帳 class_ledger.json を読む試験）"""
+        got = json.loads(run("prior", "--files", "scripts/ci/class_ledger.json").stdout)
+        self.assertIn("scripts/ci/k214_class_gate_test.py", got)
+
+    def test_K330_CC_012_prior_skips_common_entries(self) -> None:
+        """ほぼ全部の試験が読む共通の入口（口の入口・fuzz の的・範囲の地図・エラーの一覧・画面と口の表）と
+        パッケージの束ね口（packages/<名>/src/index.ts）は探す元から外し、外したことを標準エラーに出す（PM 2026-11-18・行き過ぎを止める）"""
+        common = ["apps/api/src/server.ts", "apps/api/src/app.ts", "apps/api/test/fuzz/server.ts", "scripts/ci/ci_scope.json",
+                  "07_qa/test-specs/errors.json", "05_flow/screen_api.py", "packages/auth/src/index.ts"]
+        r = run("prior", "--files", *common)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout), [])
+        self.assertIn("共通の入口", r.stderr)
+        for f in common:
+            self.assertIn(f, r.stderr)
+        # 共通の入口と一緒に渡しても、ほかのファイルを使う試験は今までどおり出る
+        got = json.loads(run("prior", "--files", *common, "packages/auth/src/invitations.ts").stdout)
+        self.assertIn("packages/auth/test/flows.test.ts", got)
+        self.assertNotIn("apps/api/test/auth_routes.test.ts", got)
 
     def test_K330_CC_006_prior_japanese_test_name(self) -> None:
         """試験のファイルの名前が日本語でも読み落とさない（git ls-files を -z で読む・TP-TOOL-01）。
