@@ -4,7 +4,7 @@
   python3 scripts/ci/ticket_order_gate.py             START..HEAD の実装のコミットを見る
   python3 scripts/ci/ticket_order_gate.py --selftest  依存が未完了・枝の外にだけある写しが赤になるか
 
-完了の決め方：依存のチケットの番号を持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
+完了の決め方：依存のチケットの番号を件名の頭に持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
 依存の番号も入っていればそれでもよい）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
 ただし決まりを始めた START より前に作られたチケット（START..HEAD のどのコミットにも番号が出てこず、stage が
 確認中・完了のもの）は、番号の付いたコミットが無いので「決まりの前に入った」として通し、そのことを出す。
@@ -31,6 +31,15 @@ import tempfile
 
 START = "2fc247a62ee2c34dd400118e301514c00b922777"  # ticket_commit_gate.py と同じ起点（No Ticket, No Commit を始めた時点）
 TICKET = re.compile(r"\bK-\d+\b")
+# 実装の持ち主は件名の頭に並べた番号だけ（「K-1 K-2 feat: …」の K-1・K-2）。件名の中に出てくるほかのチケットの番号は持ち主にしない
+#   （本線の cccf8b2c「K-304 fix: …K-309 まで閉じる」が K-309 の実装と数えられ、K-309 の G56 が赤になった・K-309・PM の決め 2026-11-18）
+SUBJECT_HEAD = re.compile(r"^(?:K-\d+[\s,・]+)+")
+
+
+def owners_of(subj: str) -> set[str]:
+    """件名の頭の番号（実装の持ち主）。頭に番号が無ければ空"""
+    m = SUBJECT_HEAD.match(subj + " ")
+    return set(TICKET.findall(m.group(0))) if m else set()
 DOC_PREFIXES = ("01_hearing/", "11_tickets/", "07_qa/test-plan/", "README.md")
 DOC_PATTERNS = (re.compile(r"^07_qa/test-specs/.+\.md$"), re.compile(r"^03_architecture/catalog\.[a-z]+$"),
                 re.compile(r"^08_api/[^/]+\.md$"))
@@ -177,7 +186,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     for sha, subj in rows:
         files = [f for f in git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", sha, cwd=root).splitlines() if f]
         if not _not_impl(files, gen):
-            impl.append((sha, set(TICKET.findall(subj))))
+            impl.append((sha, owners_of(subj)))
     start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
     order = [start_sha] + [sha for sha, _ in rows]
     raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order])
