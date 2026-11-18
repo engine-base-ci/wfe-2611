@@ -4,7 +4,7 @@
 //     signInWithPassword（POST /api/v1/auth/sign-in）・verifySignInCode（POST /api/v1/auth/two-factor/verify）。前の道すじ /api/auth-ext/* は呼ばない。
 //   口の答えの形（K-301・K-302 が契約に書く）：成功 { data: { token, two_factor, pending } }（待ちの印の名前は pending・精査の後の決め 2）・失敗 { code, message, remaining?, retry_after_sec? }。
 //   口は網の手前で差し替える（口の振る舞いは K-301〜K-303 の口の試験が本物の DB で持つ）。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
-//   パスキー・スマホの QR・端末をなくした は K-317 がつなぐ。それまでは今のまま出すがグレーで押せない（D-145.9・K221-UI-004／005／008／020 が見る）。
+//   パスキー・スマホの QR・端末をなくした は K-317 がつないだ（押した後は k317-login-passkey.spec.ts・K221-UI-004／005／008／020 が見る）。K316-UI-018 は K-317 で外した。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -359,29 +359,6 @@ test("K316-UI-017 秘密を出さない：入って移るまでの間、ブラ�
     ).toEqual([]);
   expect(page.url()).not.toContain(encodeURIComponent(EMAIL));
   expect(page.url()).not.toContain(PASSWORD);
-});
-
-test("K316-UI-018 使えない物は K-317 まで今のまま：ログインの画面の「パスキーで入る」「スマホで QR を読み取る」「端末をなくした」と、確認のコードの画面の「端末をなくした」（認証アプリが使えないの下）を押しても口は呼ばれず（POST は 6 けたへ進む sign-in の 1 回だけ）、画面は変わらない", async ({
-  page,
-}) => {
-  await mockAuth(page, { twoFactor: true });
-  const posts: string[] = [];
-  page.on("request", (r) => {
-    if (r.method() === "POST" && /\/api\//.test(r.url())) posts.push(new URL(r.url()).pathname);
-  });
-  await open(page);
-  for (const name of ["パスキーで入る", "スマホで QR を読み取る", "端末をなくした"]) {
-    const el = page.locator(BOX).getByText(name, { exact: true }).first();
-    await el.click({ force: true });
-    await expect(page.locator(`${BOX} h1`), name).toHaveText("ログイン");
-  }
-  expect(posts).toEqual([]);
-  await toCode(page);
-  const lost = page.locator(`${BOX} .k-login-alt-col`).getByText("端末をなくした", { exact: true });
-  await expect(lost).toBeVisible();
-  await lost.click({ force: true });
-  await expect(page.locator(`${BOX} h1`)).toHaveText("確認のコード");
-  expect(posts).toEqual([SIGN_IN]);
 });
 
 test("K316-UI-019 部品の世代：login-form.tsx は views の LoginMain・LoginCode・LoginBlocked で組み、口は call の signInWithPassword・verifySignInCode だけ。lib/auth/ext の signIn・verifyTwoFactor と trust_device を使わない", () => {

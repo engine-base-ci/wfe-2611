@@ -24,15 +24,6 @@ export function AuthPage({ status = [], children }: { status?: readonly ServiceI
   );
 }
 
-/** まだつないでいない行き先（K-317 まで）：出すが押せない。href なし・Tab で止まらない・正本の使えない状態の薄さ（D-145.9） */
-function Unbuilt({ children }: { children: string }) {
-  return (
-    <a role="link" aria-disabled="true" tabIndex={-1} className="k-login-off">
-      {children}
-    </a>
-  );
-}
-
 /** 値を受ける口：変わったときの関数があれば呼ぶ側が値を持つ（本番）、無ければ決めた値を最初に入れるだけ（モック） */
 const valueOf = (value: string | undefined, onChange: ((v: string) => void) | undefined) =>
   onChange
@@ -70,10 +61,8 @@ export interface LoginMainProps {
   onPasswordChange?: (v: string) => void;
   /** 「パスワードを忘れた」を押したとき（移る前に呼ぶ） */
   onForgot?: () => void;
-  /** パスキー・スマホの QR がまだつながっていない（K-317 まで）：出すがグレーで押せない */
-  passkeyOff?: boolean;
-  /** 端末をなくした がまだつながっていない（K-317 まで）：出すがグレーで押せない */
-  recoverOff?: boolean;
+  /** パスキーの手順の途中：回る印で押せない（二度押しで問いを 2 回出さない） */
+  passkeyBusy?: boolean;
 }
 
 /** ログイン（通常・失敗・ロック・パスキーで入れない・パスキーを使えない・別のアカウント） */
@@ -96,13 +85,16 @@ export function LoginMain(p: LoginMainProps) {
             いまは <b>{p.signedInAs}</b> でログイン中です。別のアカウントで入ると、今のログインは閉じます
           </NoteBox>
         ) : null}
+        {/* 使えないと分かったら別の要素にする（押せる形から薄く変わる途中を見せない・次への key と同じ） */}
         <Button
+          key={p.passkeyUnsupported ? "pk-unsupported" : "pk"}
           type="button"
           size="lg"
           data-act="passkey"
           icon={<Fingerprint size={18} />}
-          disabled={p.passkeyUnsupported || p.passkeyOff}
-          aria-disabled={p.passkeyUnsupported || p.passkeyOff || undefined}
+          loading={p.passkeyBusy}
+          disabled={p.passkeyUnsupported}
+          aria-disabled={p.passkeyUnsupported || undefined}
           onClick={p.onPasskey}
         >
           パスキーで入る
@@ -113,13 +105,9 @@ export function LoginMain(p: LoginMainProps) {
           ) : (
             <>
               指・顔・PC のロックで入る。いちばん安全で速い ・ この PC にパスキーが無いときは{" "}
-              {p.passkeyOff ? (
-                <Unbuilt>スマホで QR を読み取る</Unbuilt>
-              ) : (
-                <button type="button" className="k-login-textbtn k-login-inline" onClick={p.onPasskey}>
-                  スマホで QR を読み取る
-                </button>
-              )}
+              <button type="button" className="k-login-textbtn k-login-inline" onClick={p.onPasskey}>
+                スマホで QR を読み取る
+              </button>
             </>
           )}
         </p>
@@ -173,13 +161,9 @@ export function LoginMain(p: LoginMainProps) {
           <Link href="/password-reset" onClick={p.onForgot}>
             パスワードを忘れた
           </Link>
-          {p.recoverOff ? (
-            <Unbuilt>端末をなくした</Unbuilt>
-          ) : (
-            <button type="button" className="k-login-textbtn" onClick={p.onRecover}>
-              端末をなくした
-            </button>
-          )}
+          <button type="button" className="k-login-textbtn" onClick={p.onRecover}>
+            端末をなくした
+          </button>
         </div>
         <p className="k-auth-alt">
           はじめての方は <Link href="/signup">アカウントを作る</Link>
@@ -209,8 +193,6 @@ export interface LoginCodeProps {
   onSubmit?: () => void;
   /** 6 つの枠（呼ぶ側が 1 つめへ戻すとき）。無ければ部品が持つ */
   inputs?: RefObject<(HTMLInputElement | null)[]>;
-  /** 端末をなくした がまだつながっていない（K-317 まで）：出すがグレーで押せない */
-  recoverOff?: boolean;
 }
 
 /** 確認のコード（6 けた・バックアップコード・止め・待ちの印が切れた） */
@@ -274,15 +256,9 @@ export function LoginCode(p: LoginCodeProps) {
           <button type="button" className="k-login-textbtn" onClick={p.onToggleBackup}>
             {p.backup ? "認証アプリの 6 けたで入る" : "認証アプリが使えない"}
           </button>
-          {p.recoverOff ? (
-            <button type="button" className="k-login-textbtn" aria-disabled="true" tabIndex={-1}>
-              端末をなくした
-            </button>
-          ) : (
-            <button type="button" className="k-login-textbtn" onClick={p.onLost}>
-              端末をなくした
-            </button>
-          )}
+          <button type="button" className="k-login-textbtn" onClick={p.onLost}>
+            端末をなくした
+          </button>
           <span className="k-login-muted">この画面は 2 段階認証を付けている人だけに出る</span>
         </div>
       </form>

@@ -32,6 +32,15 @@
       "port": 3241
     },
     {
+      "name": "web-s3-mock",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=\"$HOME/.nvm/versions/node/v22.23.2/bin:$PATH\"; cd apps/web && NEXT_PUBLIC_API_BASE=http://127.0.0.1:3399 KANAME_DEV_PAGES=1 NEXT_PUBLIC_KANAME_DEV_PAGES=1 pnpm exec next dev --port 3341"
+      ],
+      "port": 3341
+    },
+    {
       "name": "web-s2-mock-prod",
       "runtimeExecutable": "bash",
       "runtimeArgs": [

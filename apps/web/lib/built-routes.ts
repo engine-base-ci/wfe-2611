@@ -16,6 +16,8 @@ export const BUILT_ROUTES: readonly string[] = [
   "/dev/memory",
   "/dev/mock/f1",
   "/dev/mock/f1/:id",
+  "/dev/mock/f2",
+  "/dev/mock/f2/:id",
   "/dev/shell",
   "/dev/ui",
   "/dev/views",
