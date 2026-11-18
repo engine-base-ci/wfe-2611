@@ -144,13 +144,14 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     delete m.once[k];
     return v;
   };
-  // 印を置くのは、この mockApi の後の最初の画面で 1 回だけ（K-338）。開くたびに置き直すと、画面が印を消してログインへ移した
-  //   （401 の toLogin・ログアウト）後のログインの画面にも印が戻り、その画面の口の 403・MFA_REQUIRED で /mfa-setup へ移り始めて
-  //   試験の次の page.goto と先を取り合う（揺れ）。本物ではログインへ移った後は印が無い。mockApi を呼び直すと新しい目印で 1 回置く
+  // 印を置くのは、この mockApi の後の、ログインの画面を除く最初の画面で 1 回だけ（K-338）。開くたびに置き直すと、画面が印を消して
+  //   ログインへ移した（401 の toLogin・ログアウト）後のログインの画面にも印が戻り、その画面の口の 403・MFA_REQUIRED で /mfa-setup へ
+  //   移り始めて試験の次の page.goto と先を取り合う（揺れ）。ログインの画面を最初に開く試験（UI-021・UI-023）も同じ筋道になるので、
+  //   ログインの画面には置かない（本物でもログインの画面の人は印を持たない）。mockApi を呼び直すと新しい目印で 1 回置く
   seedRuns += 1;
   await page.addInitScript(
     ([t, key]) => {
-      if (window.sessionStorage.getItem(key)) return;
+      if (window.location.pathname === "/login" || window.sessionStorage.getItem(key)) return;
       window.sessionStorage.setItem(key, "1");
       if (!window.localStorage.getItem("kaname.token")) window.localStorage.setItem("kaname.token", t);
     },
