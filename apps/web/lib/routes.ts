@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:cd593e941db358d3
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json）。手で直さない。flow:5be5104bde7d4d13
 export interface RouteDef {
   id: string;
   route: string;
@@ -189,7 +189,7 @@ export const ROUTES: readonly RouteDef[] = [
   {
     "id": "mfa-setup",
     "route": "/mfa-setup",
-    "needsLogin": false,
+    "needsLogin": true,
     "release": "v1"
   },
   {

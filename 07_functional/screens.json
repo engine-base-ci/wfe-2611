@@ -1460,7 +1460,7 @@
    "section_h2_texts": [],
    "checklist": [],
    "release": "v1",
-   "has_shell": false,
+   "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
    "decided_at": "2026-11-18",

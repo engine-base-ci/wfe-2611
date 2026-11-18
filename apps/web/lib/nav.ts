@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:8694473d718b773e
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:17a514abc715d29c
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -555,8 +555,8 @@ export const NAV: NavData = {
       "id": "mfa-setup",
       "name": "安全の設定",
       "route": "/mfa-setup",
-      "needsLogin": false,
-      "hasShell": false,
+      "needsLogin": true,
+      "hasShell": true,
       "roles": [
         "R1",
         "R2",
