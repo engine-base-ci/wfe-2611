@@ -542,6 +542,17 @@ test("K317-UI-017 いまの様子が読めない（500・網が切れた）：�
 
 // ---- ログイン中に開いた・ログアウト（K-306） ----
 
+/** 前の人の書きかけの写しを 1 回だけ置く（このタブで最初の読み込みのとき。移った後に置き直さない） */
+const DRAFT_KEY = "kaname.ticket-draft:k317-other";
+async function previousDraft(page: Page) {
+  await page.addInitScript((k) => {
+    if (window.sessionStorage.getItem("k317-draft-placed")) return;
+    window.sessionStorage.setItem("k317-draft-placed", "1");
+    window.localStorage.setItem(k, "前の人の書きかけ");
+  }, DRAFT_KEY);
+}
+const draft = (page: Page) => page.evaluate((k) => window.localStorage.getItem(k), DRAFT_KEY);
+
 async function signedIn(page: Page, email: string) {
   await page.addInitScript(() => window.localStorage.setItem("kaname.token", "tok-other"));
   await page.route(/\/api\/auth\/get-session$/, (route) =>
@@ -597,6 +608,7 @@ test("K317-UI-027 別のアカウントでログイン中に入る：新しい�
     if (r.method() === "POST" && (p === "/api/v1/auth/sign-in" || p === "/api/v1/auth/sign-out")) order.push(p);
   });
   await signedIn(page, "kimura@engine-base.example");
+  await previousDraft(page);
   await page.route(/\/api\/v1\/auth\/sign-out$/, async (route, req) => {
     if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS, body: "" });
     outs.push(req.headers()["authorization"] ?? "");
@@ -616,6 +628,7 @@ test("K317-UI-027 別のアカウントでログイン中に入る：新しい�
   await expect(page.locator(BOX).getByRole("alert")).toBeVisible();
   expect(outs, "失敗では前のログインを閉じない").toEqual([]);
   expect(await token(page)).toBe("tok-other");
+  expect(await draft(page), "失敗では前の人の書きかけの写しを消さない").toBe("前の人の書きかけ");
   m.on.signIn = () => ({
     status: 201,
     body: { data: { token: "tok-k317", two_factor: false, pending: null } },
@@ -626,6 +639,7 @@ test("K317-UI-027 別のアカウントでログイン中に入る：新しい�
   expect(outs).toEqual(["Bearer tok-other"]);
   expect(order.lastIndexOf("/api/v1/auth/sign-in")).toBeLessThan(order.indexOf("/api/v1/auth/sign-out"));
   expect(await token(page)).toBe("tok-k317");
+  expect(await draft(page), "前のログインを閉じたら前の人の書きかけの写しも消す（決定ログ・作る段の判断）").toBeNull();
 
   // 6 けたの道：パスワードを通った時点では閉じず、6 けたで入れた後に前のログインを閉じる
   m.on.signIn = () => ({ status: 201, body: { data: { token: null, two_factor: true, pending: "tf-k317" } } });
@@ -670,6 +684,7 @@ test("K317-UI-030 別のアカウントでログイン中にパスキーで入�
   const m = await mockAuth(page);
   const outs: string[] = [];
   await signedIn(page, "kimura@engine-base.example");
+  await previousDraft(page);
   await page.route(/\/api\/v1\/auth\/sign-out$/, async (route, req) => {
     if (req.method() === "OPTIONS") return route.fulfill({ status: 204, headers: CORS, body: "" });
     outs.push(req.headers()["authorization"] ?? "");
@@ -689,6 +704,7 @@ test("K317-UI-030 別のアカウントでログイン中にパスキーで入�
   expect(m.passkeyAuths).toEqual(["", ""]);
   expect(outs).toEqual(["Bearer tok-other"]);
   expect(await token(page)).toBe("tok-k317");
+  expect(await draft(page)).toBeNull();
 });
 
 test("K317-UI-031 確認のコードの画面で待ちの印が切れた（401・E-AUTH-013）後に「端末をなくした」→「バックアップコードで入る」：ログインの画面はまっさら（赤の文なし・メールは残りパスワードは空・メールにフォーカス）。パスワードを入れ直すと確認のコードの画面がふつうに使え、6 けたで入れる（Q の指摘）", async ({
