@@ -138,6 +138,8 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "updateConversation": ["名前が null（空と同じ）"],
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],   # K-312
+    "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],   # K-312
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
     "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],

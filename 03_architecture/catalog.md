@@ -157,8 +157,8 @@ API 366（作った 52・後のフェーズの行為だけ 20）・前の道す�
 | `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-302 |
 | `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-309 |
 | `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-309 |
-| `setMyPassword` | POST /api/v1/me/password | 作成・実行（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った |  |
-| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-75,K-312 |
+| `setMyPassword` | POST /api/v1/me/password | 作成・実行（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-312 |
+| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-312 |
 | `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-308 |
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |

@@ -389,6 +389,17 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F1/change-password.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_me_password.test.ts",
+    "apps/api/test/generated/post_me_password.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F1/password-reset.test.ts"
    ],
    "tests": [
