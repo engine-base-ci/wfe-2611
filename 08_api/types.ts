@@ -683,9 +683,11 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/auth/service-status",
   "acts": [
-   "A13"
+   "A13",
+   "A135"
   ],
   "screens": [
+   "help",
    "login"
   ]
  },

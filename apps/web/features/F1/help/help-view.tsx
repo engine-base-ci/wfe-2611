@@ -5,13 +5,17 @@ import Link from "next/link";
 import { KeyRound, Lock, Mail, Smartphone } from "lucide-react";
 import { ChoiceCard, NoteBox, type ServiceIncident } from "@/components/k/auth-parts";
 import { Pill } from "@/components/k/setting-parts";
+import { Loading } from "@/components/k/states";
 import { AuthFrame } from "../sign-up/frame";
 import "../login/views.css";
 import "./help.css";
 
+/** 稼働状況。一覧（空なら「ふつう」）・null は読めなかった（その区画だけ「いまは読めません」・ほかは出す）・
+ *  "loading" は答えを待っている（区画の中だけ。3 秒より長いときだけ「読み込んでいます…」・D-144.8） */
+export type HelpStatus = readonly ServiceIncident[] | null | "loading";
+
 export interface HelpViewProps {
-  /** 稼働状況。null は読めなかった（その区画だけ「いまは読めません」・ほかは出す） */
-  status: readonly ServiceIncident[] | null;
+  status: HelpStatus;
   opsEmail: string;
 }
 
@@ -52,7 +56,9 @@ export function HelpView({ status, opsEmail }: HelpViewProps) {
         </section>
         <section aria-labelledby="help-status" className="k-help-sec" id="status">
           <h2 id="help-status">いまの稼働状況</h2>
-          {status === null ? (
+          {status === "loading" ? (
+            <Loading />
+          ) : status === null ? (
             <NoteBox>いまは稼働状況を読めません。少したってから開き直してください</NoteBox>
           ) : status.length === 0 ? (
             <p className="k-help-row">
@@ -61,8 +67,8 @@ export function HelpView({ status, opsEmail }: HelpViewProps) {
             </p>
           ) : (
             <ul className="k-help-list">
-              {status.map((s) => (
-                <li key={`${s.kind}-${s.title}`} className="k-help-row">
+              {status.map((s, i) => (
+                <li key={`${i}-${s.kind}-${s.title}`} className="k-help-row">
                   <span className="k-help-main">
                     <b>{s.title}</b>
                     <span className="k-help-when">{s.when}</span>

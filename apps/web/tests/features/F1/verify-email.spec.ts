@@ -293,11 +293,11 @@ row(R["K52-UI-020"], async (page) => {
   const foot = page.getByRole("navigation", { name: "Kaname について" });
   expect((await foot.getByRole("link").allInnerTexts()).map((x) => x.trim())).toEqual(["いまの様子", "困ったとき"]);
   const status = foot.getByRole("link", { name: "いまの様子", exact: true });
-  await expect(status).toHaveAttribute("aria-disabled", "true");
-  expect(await status.getAttribute("href")).toBeNull();
-  expect(Number(await status.evaluate((e) => getComputedStyle(e).opacity))).toBeCloseTo(0.55, 2);
-  await status.click({ force: true });
-  await expect(page).toHaveURL(/\/verify-email/);
+  // いまの様子は困ったとき（/help）の稼働状況へ移る（K-315 で画面ができた）
+  await expect(status).toHaveAttribute("href", "/help#status");
+  expect(await status.getAttribute("aria-disabled")).toBeNull();
+  await status.click();
+  await expect(page).toHaveURL(/\/help#status$/);
 });
 row(R["K52-UI-021"], async (page) => {
   await mockApi(page);
