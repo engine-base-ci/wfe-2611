@@ -134,9 +134,9 @@ def main(argv: list[str] | None = None) -> int:
         for out in stale:
             print(f"作り直しが要る：{out}（python3 scripts/ci/build_registries.py）", file=sys.stderr)
         return 1 if stale else 0
-    for out, text in texts:
+    for out, text in texts:   # 中身が同じでも毎回書く（生成物の目録の F6：作り手が書くファイルと outputs をちょうど同じに）
+        out.write_text(text, encoding="utf-8")
         if out in stale:
-            out.write_text(text, encoding="utf-8")
             print(f"書いた：{out}")
     return 0
 
