@@ -6,7 +6,6 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 import { seedTokenOnce, TOKEN_KEY } from "./seed-token";
 
 const WS = "aaaaaaaa-0000-4000-8000-000000000338";
-const ME = "11111111-0000-4000-8000-000000000338";
 const TOKEN = `tok-${WS}`;
 const PW = "correct-horse-battery-1";
 const NOW = "2026-11-18T03:00:00Z";
