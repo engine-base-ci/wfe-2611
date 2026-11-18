@@ -14520,7 +14520,8 @@
    "affects": [
     "@kaname/api",
     "@kaname/db",
-    "@kaname/contracts"
+    "@kaname/contracts",
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",

@@ -172,7 +172,7 @@ describe("K-334 送り直しを頼む：招待の状態 × 回数", () => {
       `create trigger ${fn} before update on invitations for each row execute function public.${fn}()`,
     );
     let r!: Response;
-    let logs = "";
+    let logs!: string;
     try {
       logs = await h.captureLogs(async () => {
         r = await h.resendRequest(inv.token);
