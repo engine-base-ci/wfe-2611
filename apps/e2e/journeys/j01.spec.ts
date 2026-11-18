@@ -77,7 +77,12 @@ test.describe.serial("J-01 契約・登録", () => {
     page,
   }) => {
     // K-318 で前の 2 段階の登録の頁が無くなり、ログインと安全の画面の 2 段階の「付ける」に替わった。
-    //   手順：「付ける」→ 本人確認のパスワード → 小窓の QR の鍵 → 6 けた → バックアップコード 10 個（押せるのは K-319 から・それまでは BLOCKED「K-319 待ち」）
+    //   手順：「付ける」→ 本人確認のパスワード → 小窓の QR の鍵 → 6 けた → バックアップコード 10 個（押せるのは K-319 から・それまでは BLOCKED「K-319 待ち」）。
+    //   部品の名前（小窓の名前・6 けたの枠）は K-319 の切る段の試験（枝 c/段2 の k319-security-setup.spec.ts）と同じ。K-319 が取り込むときに fixme を外し、名前を確かめる
+    test.fixme(
+      true,
+      "K-319 待ち：2 段階の「付ける」は K-319 が入るまでグレーで押せない（plan.json の J01-04 は BLOCKED）",
+    );
     const r = await api<{ data: { token: string } }>("/api/v1/auth/sign-in", { email, password: PW });
     expect(r.status).toBe(201);
     await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), r.json.data.token);
