@@ -2740,6 +2740,10 @@
     "type": "jsonb",
     "nullable": false
    },
+   "resend_requested_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "revoked_at": {
     "type": "timestamp with time zone",
     "nullable": true

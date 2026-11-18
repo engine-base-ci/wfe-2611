@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:132f7d2372ddf0c7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:15bf4809b9cc49d9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1120,6 +1120,56 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "acts": [
       "A03",
       "A96"
+    ],
+    "screens": [
+      "invite-accept"
+    ],
+    "perm": {
+      "word": "public",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/auth/invitations/:token/resend-request",
+    "operationId": "requestInvitationResend",
+    "table": "invitations",
+    "kind": "create",
+    "input": "InvitationResendInput",
+    "success": 201,
+    "output": "InvitationResendResult",
+    "outputList": false,
+    "generic": false,
+    "auth": "public",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "ip"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      409,
+      422,
+      404,
+      410,
+      503,
+      413,
+      429,
+      503
+    ],
+    "acts": [
+      "A03"
     ],
     "screens": [
       "invite-accept"
@@ -18643,4 +18693,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "132f7d2372ddf0c7";
+export const OPENAPI_HASH = "15bf4809b9cc49d9";

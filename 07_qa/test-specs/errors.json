@@ -5052,6 +5052,63 @@
    ]
   },
   {
+   "id": "E-INV-004",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待がもう使われた（参加した後のリンクを開いた・参加した後に送り直しを頼んだ）",
+   "false_when": "まだ使われていない招待",
+   "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
+   "action": "ログインする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "参加した後の招待のリンクを開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.63"
+   ]
+  },
+  {
+   "id": "E-INV-008",
+   "class": "conflict",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "まだ使える招待（期限の内・取り消されていない・使われていない）で送り直しを頼んだ",
+   "false_when": "期限（7 日）が過ぎた招待",
+   "message": "この招待はまだ使えます。届いたリンクから参加してください",
+   "action": "届いたリンクから参加する",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "期限の内の招待で、送り直しを頼む口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.63"
+   ]
+  },
+  {
    "id": "E-PAGE-001",
    "class": "not_found",
    "where": {

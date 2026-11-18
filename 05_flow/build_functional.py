@@ -147,7 +147,7 @@ def _api_row(aid, m, path, table, opid, tb):
         return ({"act": aid, "role": "data_fetch" if m == "GET" else "action", "method": m, "path_draft": "/api" + path, "table": table, "operation_id": opid,
                     "auth": "session（会社・層・権限）", "related_entities": [ent_by_tbl[x] for x in tb], "choke_points": _chokes(aid, m, opid), "source": src})
 _FILE_OPS = {"createTicketAttachment", "createTicketImport"}
-_NOTIFY_OPS = {"createTicketMessage", "createTicketHandover", "answerTicketHandover", "requestAcceptance", "requestAdminRecovery"}
+_NOTIFY_OPS = {"createTicketMessage", "createTicketHandover", "answerTicketHandover", "requestAcceptance", "requestAdminRecovery", "requestInvitationResend"}
 def _chokes(aid, m, opid):
     c = set(BP.get(aid, {}).get("choke_points", []))
     if m != "GET": c.add("C2")              # DB に書く API は全部 C2（永続化）を通る

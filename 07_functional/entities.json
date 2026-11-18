@@ -8885,6 +8885,10 @@
     {
      "name": "message",
      "note": "招いた人のひとこと・500 文字まで・空可"
+    },
+    {
+     "name": "resend_requested_at",
+     "note": "最後に送り直しを頼まれて全員に届いた時刻・空可・1 日 1 回の判定・K-334"
     }
    ],
    "relations": [],
@@ -8939,7 +8943,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14） / 下見は DB の関数 `app.invitation_preview2`（読むだけ・状態は used ＞ revoked ＞ expired ＞ ok）← D-128.62・D-128.63・K-331・0114",
+   "note": "**★新設（D-026・D-037）。**招待。取り消しで `token_hash` は即無効（G-14） / 下見は DB の関数 `app.invitation_preview2`（読むだけ・状態は used ＞ revoked ＞ expired ＞ ok）← D-128.62・D-128.63・K-331・0114 / 送り直しの頼みは `app.invitation_resend_targets`（宛て＝招いた人か管理者）・`app.invitation_resend_record`（知らせの行）← D-128.63・K-334・0115",
    "status": "decided",
    "decided_at": "2026-11-18",
    "source": [

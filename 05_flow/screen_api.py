@@ -193,6 +193,7 @@ SCREEN_API = {
     "invite-accept": [
         ("GET", "/auth/invitations/:token", "A03", "invitations", "getInvitation", ["tenants", "scopes"]),
         ("POST", "/auth/invitations/:token/accept", "A03|A96", "invitations", "acceptInvitation", ["members", "tenant_memberships", "terms_consents"]),
+        ("POST", "/auth/invitations/:token/resend-request", "A03", "invitations", "requestInvitationResend", ["notifications"]),
     ],
     "mfa-setup": [
         ("GET", "/me/security", "A97|A04", "passkeys", "getMySecurity", ["sessions", "security_events"]),
@@ -512,6 +513,8 @@ INPUTS = {
     "signOut": ("SignOutInput", {}),
     # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
     "requestAdminRecovery": ("AdminRecoveryInput", {"pending": "string"}),
+    # 送り直しを頼む（K-334）：空の体だけ（strict・ほかの欄は 422）。招待は道のトークンで引く
+    "requestInvitationResend": ("InvitationResendInput", {}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -705,6 +708,22 @@ ERRORS_4XX = {
     ],
     # いまの様子を読む（K-307）。DB が落ちたら「ふつう」（空）を返さず中身も返さない
     # 招待の下見（K-331・D-128.62・D-128.63）。使えない招待（期限切れ・取り消し・使われた）は 200 の state で返し、行が無いときだけ 404
+    # 送り直しを頼む（K-334・D-128.63）。期限切れの招待だけ。行が無い 404・まだ使える 409・取り消し／使われた 410・宛てを引く DB が落ちた 503。
+    #   24 時間の内の 2 回目は 201・already、メールが送れなかったら 201・failed（502 にしない）
+    "requestInvitationResend": [
+        {"status": 404, "code": "E-INV-001", "body": {"error": "not_found", "code": "E-INV-001"}, "errors": ["E-INV-001"],
+         "trigger": "招待のリンクの印が見つからない（でたらめ・古い・512 文字を超える）",
+         "ears_form": "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、誰にも知らせない"},
+        {"status": 409, "code": "E-INV-008", "body": {"error": "conflict", "code": "E-INV-008"}, "errors": ["E-INV-008"],
+         "trigger": "招待はまだ使える（期限の内・取り消されていない・使われていない）",
+         "ears_form": "UNWANTED: IF 招待がまだ使えるなら、Kaname は 409 と E-INV-008 を返し、誰にも知らせない"},
+        {"status": 410, "code": "E-INV-002", "body": {"error": "gone", "code": "E-INV-002"}, "errors": ["E-INV-002", "E-INV-004"],
+         "trigger": "招待が取り消された（E-INV-002）・もう使われた（E-INV-004）",
+         "ears_form": "UNWANTED: IF 招待が取り消されたかもう使われたなら、Kaname は 410 と E-INV-002／E-INV-004 を返し、誰にも知らせない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "招待の状態を読む・宛てを引く・知らせの行を入れる DB（app.invitation_resend_targets）が落ちた・使えない",
+         "ears_form": "UNWANTED: IF 宛てを引く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、知らせの行もメールも残さない"},
+    ],
     "getInvitation": [
         {"status": 404, "code": "E-INV-001", "body": {"error": "not_found", "code": "E-INV-001"}, "errors": ["E-INV-001"],
          "trigger": "招待のリンクの印が見つからない（でたらめ・古い・空白入り・512 文字を超える）",
@@ -1037,6 +1056,8 @@ RESPONSES = {
     "getInvitation": ("InvitationPreview", {"state": "string", "workspace_name": "string", "inviter_name": "string?", "group_name": "string?",
                                             "role": "string", "message": "string?", "email": "string", "expires_at": "string",
                                             "account_exists": "boolean", "signed_in": "object?"}),
+    # 送り直しを頼んだ（K-334）。sent（知らせた）・already（24 時間の内に頼んである）・failed（1 通でも送れなかった・押し直せる）
+    "requestInvitationResend": ("InvitationResendResult", {"result": "string"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
@@ -1250,6 +1271,7 @@ PERMS = {
     "resetPassword": ("public", "再設定のリンクを持つ人（1 回だけ・期限つき）。済んだら全部の端末と Bridge を切る（D-125.140）", False),
     "getInvitation": ("public", "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・招いた人・グループ・役割・ひとことと、招待の状態・宛てのアカウントの有無・ログイン中の様子だけ（K-331）", False),
     "acceptInvitation": ("public", "招待のリンクを持つ人。ログイン中なら今のアカウントで入り、無ければ作る（D-125.150）", False),
+    "requestInvitationResend": ("public", "期限切れの招待のリンクを持つ人。招いた人（居なければ管理者）に送り直しを頼む知らせが届く。同じ招待で 1 日 1 回（D-128.63・K-334）", False),
     # 自分の安全の設定
     "getMySecurity": ("self", "自分のものだけ", False),
     "renamePasskey": ("self", "自分のパスキーだけ", False),

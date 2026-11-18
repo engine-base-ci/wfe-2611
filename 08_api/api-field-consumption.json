@@ -7289,6 +7289,7 @@
    "entity": "notifications",
    "field": "member_id",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7317,6 +7318,7 @@
    "entity": "notifications",
    "field": "channel_id",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7345,6 +7347,7 @@
    "entity": "notifications",
    "field": "event_kind_id",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7373,6 +7376,7 @@
    "entity": "notifications",
    "field": "payload",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7408,6 +7412,7 @@
    "entity": "notifications",
    "field": "sent_at",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7436,6 +7441,7 @@
    "entity": "notifications",
    "field": "failed_at",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -7464,6 +7470,7 @@
    "entity": "notifications",
    "field": "retry_count",
    "consumed_by_screens": [
+    "invite-accept",
     "mfa-setup",
     "login",
     "bridge-setup",
@@ -8545,6 +8552,19 @@
   {
    "entity": "invitations",
    "field": "message",
+   "consumed_by_screens": [
+    "invite-accept",
+    "members",
+    "member-detail",
+    "clients",
+    "ops-team"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "invitations",
+   "field": "resend_requested_at",
    "consumed_by_screens": [
     "invite-accept",
     "members",

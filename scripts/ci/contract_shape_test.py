@@ -78,6 +78,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
+    "requestInvitationResend": "体は空の形（K-334）。招待は道のトークンで引く。{} で 201（期限切れの招待）。知らない欄は 422（契約の strict）",
     "dismissSetupTasks": "key は無くてよい（無ければ箱を閉じる・K-250）。{} で 201",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く

@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-18",
  "summary": {
   "total_screens": 37,
-  "total_apis": 365,
+  "total_apis": 366,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -88,6 +88,11 @@
      "role": "action",
      "endpoint": "POST /api/v1/auth/invitations/:token/accept",
      "act": "A96"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/:token/resend-request",
+     "act": "A03"
     }
    ],
    "transitions": [],

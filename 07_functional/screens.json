@@ -668,6 +668,32 @@
       "D-125.162",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/resend-request",
+     "table": "invitations",
+     "operation_id": "requestInvitationResend",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
     }
    ],
    "required_apis": [
@@ -745,6 +771,32 @@
       "D-125.162",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/:token/resend-request",
+     "table": "invitations",
+     "operation_id": "requestInvitationResend",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-091",
+      "E-080"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.150",
+      "D-125.121",
+      "D-026",
+      "D-125.167",
+      "D-037",
+      "D-125.152",
+      "D-126.18"
+     ]
     }
    ],
    "related_entities": [
@@ -756,7 +808,8 @@
     "E-129",
     "E-002",
     "E-001",
-    "E-131"
+    "E-131",
+    "E-080"
    ],
    "mock_path": "06_mockup/v1/v1-invite-accept.html",
    "route": "/invite/:token",
