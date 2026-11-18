@@ -19,6 +19,7 @@ import { serviceStatusHooks } from "../../src/hooks/service-status.js";
 import { passwordResetHooks } from "../../src/hooks/password-reset.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
 import { loginHooks } from "../../src/hooks/login.js";
+import { invitationHooks } from "../../src/hooks/invitations.js";
 import { mySecurityHooks } from "../../src/hooks/my-security.js";
 import { adminRecoveryHooks } from "../../src/hooks/admin-recovery.js";
 import { twoFactorHooks } from "../../src/hooks/two-factor.js";
@@ -72,6 +73,13 @@ Object.assign(
     config: { baseUrl: "http://127.0.0.1", webBaseUrl: null },
   }),
   loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
+  // 招待の下見（K-331）。偽のセッションは部品のセッションに無いので、ログインしていない扱いの道を回る
+  invitationHooks({
+    auth: login.auth,
+    appPool: h.pool,
+    authPool: login.pool,
+    config: { opsEmail: "ops-fuzz@example.com", webBaseUrl: "http://127.0.0.1" },
+  }),
   // 安全の設定を読む（K-308）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
   mySecurityHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
   // 2 段階認証を付ける（K-311）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る

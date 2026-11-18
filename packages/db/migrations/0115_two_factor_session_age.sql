@@ -1,4 +1,4 @@
--- 0114 2 段階を付けたときに作り直したセッションの写しに、前のセッションの始まりの時刻を引き継ぐ（K-311・D-128.141・関門 C2）
+-- 0115 2 段階を付けたときに作り直したセッションの写しに、前のセッションの始まりの時刻を引き継ぐ（K-311・D-128.141・関門 C2）
 --   部品（Better Auth）は 2 段階を付ける確かめのときに、新しいセッションを作って前のセッションを消す。新しい写し（public.sessions）は
 --   app.open_session で issued_at = now() になり、最長の長さの判定（app.session_check の max_age・0083）が数え直しになる
 --   （付けた操作でセッションの最長が延びる）。新しい行の issued_at を前の行の値にそろえる（遅くするだけ・早める側には動かさない）。
@@ -22,4 +22,4 @@ end $$;
 revoke all on function app.carry_session_age(text, text) from public;
 grant execute on function app.carry_session_age(text, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0114_two_factor_session_age.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0115_two_factor_session_age.sql') on conflict do nothing;

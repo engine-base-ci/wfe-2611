@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T06:03:27",
+ "generated_at": "2026-11-18T11:24:10",
  "inputs": {
   "tickets": "07_tasks/tickets.json",
   "roster": "07_tasks/roster.json",
@@ -14,7 +14,7 @@
   "errors": "07_qa/test-specs/errors.json"
  },
  "summary": {
-  "as_of": "2026-10-20",
+  "as_of": "2026-11-18",
   "by_status": {
    "done": 119,
    "todo": 99
@@ -24,10 +24,10 @@
   "progress_pct": 68,
   "epic": 16,
   "story": 218,
-  "subtask": 6050,
+  "subtask": 6016,
   "subtask_by": {
    "impl": 637,
-   "test": 5128,
+   "test": 5094,
    "mock": 285
   },
   "critical_path": [
@@ -38,7 +38,7 @@
    "T-I-01",
    "T-I-19"
   ],
-  "critical_path_days": 40,
+  "critical_path_days": 60,
   "cycle": [],
   "ghost_dependencies": [],
   "unassignable": [],
@@ -7887,12 +7887,12 @@
     "T-F-08"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "backend",
    "estimate_hours": 39.8,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-11-10",
+   "start": "2026-11-19",
+   "finish": "2026-12-09",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8020,12 +8020,12 @@
     "T-D-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 6.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8140,12 +8140,12 @@
     "T-F-10"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "backend",
    "estimate_hours": 33.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-26",
+   "start": "2026-11-18",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -8260,12 +8260,12 @@
     "T-F-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "backend",
    "estimate_hours": 36.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-26",
+   "start": "2026-11-18",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -8394,12 +8394,12 @@
     "T-F-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "backend",
    "estimate_hours": 42.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-27",
+   "start": "2026-11-18",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -9932,40 +9932,6 @@
     "T-U-06.t1",
     "T-U-06.t2",
     "T-U-06.t3",
-    "T-U-06.t4",
-    "T-U-06.t5",
-    "T-U-06.t6",
-    "T-U-06.t7",
-    "T-U-06.t8",
-    "T-U-06.t9",
-    "T-U-06.t10",
-    "T-U-06.t11",
-    "T-U-06.t12",
-    "T-U-06.t13",
-    "T-U-06.t14",
-    "T-U-06.t15",
-    "T-U-06.t16",
-    "T-U-06.t17",
-    "T-U-06.t18",
-    "T-U-06.t19",
-    "T-U-06.t20",
-    "T-U-06.t21",
-    "T-U-06.t22",
-    "T-U-06.t23",
-    "T-U-06.t24",
-    "T-U-06.t25",
-    "T-U-06.t26",
-    "T-U-06.t27",
-    "T-U-06.t28",
-    "T-U-06.t29",
-    "T-U-06.t30",
-    "T-U-06.t31",
-    "T-U-06.t32",
-    "T-U-06.t33",
-    "T-U-06.t34",
-    "T-U-06.t35",
-    "T-U-06.t36",
-    "T-U-06.t37",
     "T-U-06.m1"
    ],
    "depends_on": [
@@ -10018,40 +9984,6 @@
      "A31"
     ],
     "qa_rows": [
-     "SCR-PASSWORD-RESET-001",
-     "SCR-PASSWORD-RESET-002",
-     "SCR-PASSWORD-RESET-003",
-     "SCR-PASSWORD-RESET-004",
-     "SCR-PASSWORD-RESET-005",
-     "SCR-PASSWORD-RESET-006",
-     "SCR-PASSWORD-RESET-007",
-     "SCR-PASSWORD-RESET-008",
-     "SCR-PASSWORD-RESET-009",
-     "SCR-PASSWORD-RESET-010",
-     "SCR-PASSWORD-RESET-011",
-     "SCR-PASSWORD-RESET-012",
-     "SCR-PASSWORD-RESET-013",
-     "SCR-PASSWORD-RESET-014",
-     "SCR-PASSWORD-RESET-015",
-     "SCR-PASSWORD-RESET-016",
-     "SCR-PASSWORD-RESET-017",
-     "SCR-PASSWORD-RESET-018",
-     "SCR-PASSWORD-RESET-019",
-     "SCR-PASSWORD-RESET-020",
-     "SCR-PASSWORD-RESET-021",
-     "SCR-PASSWORD-RESET-023",
-     "SCR-PASSWORD-RESET-037",
-     "SCR-PASSWORD-RESET-026",
-     "SCR-PASSWORD-RESET-027",
-     "SCR-PASSWORD-RESET-036",
-     "SCR-PASSWORD-RESET-028",
-     "SCR-PASSWORD-RESET-029",
-     "SCR-PASSWORD-RESET-030",
-     "SCR-PASSWORD-RESET-031",
-     "SCR-PASSWORD-RESET-032",
-     "SCR-PASSWORD-RESET-033",
-     "SCR-PASSWORD-RESET-034",
-     "SCR-PASSWORD-RESET-035",
      "E-AUTH-006-A",
      "E-AUTH-006-B",
      "E-AUTH-006-C"
@@ -11429,12 +11361,12 @@
     "T-A-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11719,12 +11651,12 @@
     "T-A-08"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -11932,12 +11864,12 @@
     "T-A-13"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -12214,12 +12146,12 @@
     "T-A-14"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13156,12 +13088,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13328,12 +13260,12 @@
     "T-A-10"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13497,12 +13429,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13695,12 +13627,12 @@
     "T-A-10"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -13908,12 +13840,12 @@
     "T-A-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.1,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14148,12 +14080,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14348,12 +14280,12 @@
     "T-A-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14528,12 +14460,12 @@
     "T-A-11"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14686,12 +14618,12 @@
     "T-A-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -14854,12 +14786,12 @@
     "T-A-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-21",
+   "start": "2026-11-18",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15048,12 +14980,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15302,12 +15234,12 @@
     "T-A-17"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-21",
+   "start": "2026-11-18",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15539,12 +15471,12 @@
     "T-A-15"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15701,12 +15633,12 @@
     "T-A-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -15863,12 +15795,12 @@
     "T-A-07"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
+   "start": "2026-11-19",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16039,12 +15971,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-21",
+   "start": "2026-11-18",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16220,12 +16152,12 @@
     "T-A-09"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16444,12 +16376,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.5,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16669,12 +16601,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -16848,12 +16780,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.9,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17011,12 +16943,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17164,12 +17096,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17331,12 +17263,12 @@
     "T-A-16"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17496,12 +17428,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17643,12 +17575,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17792,12 +17724,12 @@
     "T-A-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.3,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -17969,12 +17901,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.5,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18136,12 +18068,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
+   "start": "2026-11-19",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18287,12 +18219,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18432,12 +18364,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
+   "start": "2026-11-19",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18574,12 +18506,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18718,12 +18650,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -18897,12 +18829,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 2.2,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-22",
+   "start": "2026-11-19",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19068,12 +19000,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-23",
+   "start": "2026-11-20",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19240,12 +19172,12 @@
     "T-A-20"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19418,12 +19350,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19567,12 +19499,12 @@
     "T-A-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19726,12 +19658,12 @@
     "T-A-24"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -19884,12 +19816,12 @@
     "T-A-24"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20028,12 +19960,12 @@
     "T-A-24"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.1,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20208,12 +20140,12 @@
     "T-A-22"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20401,12 +20333,12 @@
     "T-A-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20550,12 +20482,12 @@
     "T-A-26"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20717,12 +20649,12 @@
     "T-A-28"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.7,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -20897,12 +20829,12 @@
     "T-A-28"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21035,12 +20967,12 @@
     "T-A-27"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-11-26",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21155,12 +21087,12 @@
     "T-A-27"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "ui",
    "estimate_hours": 1.3,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21276,12 +21208,12 @@
     "T-U-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 9.0,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-23",
+   "start": "2026-11-20",
+   "finish": "2026-11-24",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -21353,12 +21285,12 @@
     "T-U-13"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 6.0,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21443,12 +21375,12 @@
     "T-U-23"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-23",
-   "finish": "2026-10-26",
+   "start": "2026-11-24",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21518,12 +21450,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-11-12",
-   "finish": "2026-11-12",
+   "start": "2026-12-11",
+   "finish": "2026-12-11",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21598,12 +21530,12 @@
     "T-U-58"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "integration",
    "estimate_hours": 8.0,
    "estimate_default": false,
-   "start": "2026-11-13",
-   "finish": "2026-11-16",
+   "start": "2026-12-14",
+   "finish": "2026-12-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21675,12 +21607,12 @@
     "T-U-49"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-11-27",
+   "finish": "2026-11-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21750,12 +21682,12 @@
     "T-U-51"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-11-27",
+   "finish": "2026-11-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21824,12 +21756,12 @@
     "T-U-55"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-11-12",
-   "finish": "2026-11-12",
+   "start": "2026-12-11",
+   "finish": "2026-12-11",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -21964,12 +21896,12 @@
     "T-U-12"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "integration",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22043,12 +21975,12 @@
     "T-U-21"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 5.2,
    "estimate_default": false,
-   "start": "2026-10-23",
-   "finish": "2026-10-23",
+   "start": "2026-11-24",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22111,12 +22043,12 @@
     "T-U-25"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.8,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22182,12 +22114,12 @@
     "T-U-31"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 2.4,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22248,12 +22180,12 @@
     "T-U-34"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-10-26",
-   "finish": "2026-10-26",
+   "start": "2026-11-25",
+   "finish": "2026-11-25",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22330,12 +22262,12 @@
     "T-U-47"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 3.8,
    "estimate_default": false,
-   "start": "2026-10-28",
-   "finish": "2026-10-28",
+   "start": "2026-11-27",
+   "finish": "2026-11-27",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22394,12 +22326,12 @@
     "T-U-40"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.4,
    "estimate_default": false,
-   "start": "2026-10-27",
-   "finish": "2026-10-27",
+   "start": "2026-11-26",
+   "finish": "2026-11-26",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22471,12 +22403,12 @@
     "T-U-57"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "integration",
    "estimate_hours": 3.4,
    "estimate_default": false,
-   "start": "2026-11-12",
-   "finish": "2026-11-13",
+   "start": "2026-12-11",
+   "finish": "2026-12-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22558,12 +22490,12 @@
     "T-U-22"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "R1",
    "layer": "integration",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-10-23",
-   "finish": "2026-10-23",
+   "start": "2026-11-24",
+   "finish": "2026-11-24",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22625,12 +22557,12 @@
     "T-I-03"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "polish",
    "estimate_hours": 1.6,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-12",
+   "start": "2026-12-10",
+   "finish": "2026-12-11",
    "critical": true,
    "tentative": false,
    "assignable": [
@@ -22692,12 +22624,12 @@
     "T-I-05"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "polish",
    "estimate_hours": 5.0,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-19",
+   "start": "2026-12-17",
+   "finish": "2026-12-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22756,12 +22688,12 @@
     "T-F-01"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "polish",
    "estimate_hours": 0.8,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22837,12 +22769,12 @@
     "T-I-18"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "polish",
    "estimate_hours": 1.2,
    "estimate_default": false,
-   "start": "2026-11-17",
-   "finish": "2026-11-18",
+   "start": "2026-12-16",
+   "finish": "2026-12-17",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22904,12 +22836,12 @@
     "T-A-23"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-11",
-   "finish": "2026-11-11",
+   "start": "2026-12-10",
+   "finish": "2026-12-10",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -22976,12 +22908,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R1",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-12",
-   "finish": "2026-11-12",
+   "start": "2026-12-11",
+   "finish": "2026-12-11",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23052,12 +22984,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-12",
-   "finish": "2026-11-13",
+   "start": "2026-12-11",
+   "finish": "2026-12-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23128,12 +23060,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-13",
-   "finish": "2026-11-13",
+   "start": "2026-12-14",
+   "finish": "2026-12-14",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23203,12 +23135,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-13",
-   "finish": "2026-11-16",
+   "start": "2026-12-14",
+   "finish": "2026-12-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23279,12 +23211,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-16",
-   "finish": "2026-11-16",
+   "start": "2026-12-15",
+   "finish": "2026-12-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23355,12 +23287,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-16",
-   "finish": "2026-11-17",
+   "start": "2026-12-15",
+   "finish": "2026-12-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23430,12 +23362,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 4.0,
    "estimate_default": false,
-   "start": "2026-11-17",
-   "finish": "2026-11-17",
+   "start": "2026-12-16",
+   "finish": "2026-12-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23506,12 +23438,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-16",
-   "finish": "2026-11-16",
+   "start": "2026-12-15",
+   "finish": "2026-12-15",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23582,12 +23514,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-17",
-   "finish": "2026-11-18",
+   "start": "2026-12-16",
+   "finish": "2026-12-17",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23658,12 +23590,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-11-16",
-   "finish": "2026-11-17",
+   "start": "2026-12-15",
+   "finish": "2026-12-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23734,12 +23666,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-12-17",
+   "finish": "2026-12-17",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23810,12 +23742,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-17",
-   "finish": "2026-11-17",
+   "start": "2026-12-16",
+   "finish": "2026-12-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23886,12 +23818,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-18",
-   "finish": "2026-11-18",
+   "start": "2026-12-17",
+   "finish": "2026-12-17",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -23962,12 +23894,12 @@
     "T-S-01"
    ],
    "blocked_by": [],
-   "wave": "W3",
+   "wave": "R2",
    "layer": "content",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-11-17",
-   "finish": "2026-11-17",
+   "start": "2026-12-16",
+   "finish": "2026-12-16",
    "critical": false,
    "tentative": false,
    "assignable": [
@@ -24393,12 +24325,12 @@
    ],
    "depends_on": [],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 3.5,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-21",
+   "start": "2026-11-18",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -24633,12 +24565,12 @@
    ],
    "depends_on": [],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -24712,12 +24644,12 @@
     "T-B-03"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 2.0,
    "estimate_default": false,
-   "start": "2026-10-22",
-   "finish": "2026-10-22",
+   "start": "2026-11-20",
+   "finish": "2026-11-20",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -24795,12 +24727,12 @@
     "T-B-09"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 4.5,
    "estimate_default": false,
-   "start": "2026-10-21",
-   "finish": "2026-10-21",
+   "start": "2026-11-19",
+   "finish": "2026-11-19",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -24946,12 +24878,12 @@
    ],
    "depends_on": [],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "backend",
    "estimate_hours": 3.0,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -27773,12 +27705,12 @@
     "T-F-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -27835,12 +27767,12 @@
     "T-F-18"
    ],
    "blocked_by": [],
-   "wave": "W2",
+   "wave": "W3",
    "layer": "spec",
    "estimate_hours": 2.7,
    "estimate_default": false,
-   "start": "2026-10-20",
-   "finish": "2026-10-20",
+   "start": "2026-11-18",
+   "finish": "2026-11-18",
    "critical": false,
    "tentative": true,
    "assignable": [
@@ -52493,448 +52425,6 @@
    "id": "T-U-06.t1",
    "kind": "subtask",
    "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-001 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-001"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t2",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-002 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-002"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t3",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-003 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-003"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t4",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-004 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-004"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t5",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-005 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-005"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t6",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-006 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-006"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t7",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-007 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-007"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t8",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-008 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-008"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t9",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-009 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-009"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t10",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-010 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-010"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t11",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-011 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-011"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t12",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-012 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-012"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t13",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-013 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-013"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t14",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-014 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-014"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t15",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-015 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-015"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t16",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-016 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-016"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t17",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-017 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-017"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t18",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-018 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-018"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t19",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-019 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-019"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t20",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-020 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-020"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t21",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-021 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-021"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t22",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-023 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-023"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t23",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-037 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-037"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t24",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-026 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-026"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t25",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-027 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-027"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t26",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-036 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-036"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t27",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-028 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-028"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t28",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-029 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-029"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t29",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-030 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-030"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t30",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-031 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-031"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t31",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-032 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-032"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t32",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-033 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-033"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t33",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-034 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-034"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t34",
-   "kind": "subtask",
-   "sub": "test",
-   "title": "L1 SCR-PASSWORD-RESET-035 を staging で流して PASS/BLOCKED を正本に書く",
-   "parent": "T-U-06",
-   "status": "todo",
-   "links": {
-    "qa_rows": [
-     "SCR-PASSWORD-RESET-035"
-    ]
-   }
-  },
-  {
-   "id": "T-U-06.t35",
-   "kind": "subtask",
-   "sub": "test",
    "title": "L1 E-AUTH-006-A を staging で流して PASS/BLOCKED を正本に書く",
    "parent": "T-U-06",
    "status": "todo",
@@ -52945,7 +52435,7 @@
    }
   },
   {
-   "id": "T-U-06.t36",
+   "id": "T-U-06.t2",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-AUTH-006-B を staging で流して PASS/BLOCKED を正本に書く",
@@ -52958,7 +52448,7 @@
    }
   },
   {
-   "id": "T-U-06.t37",
+   "id": "T-U-06.t3",
    "kind": "subtask",
    "sub": "test",
    "title": "L1 E-AUTH-006-C を staging で流して PASS/BLOCKED を正本に書く",

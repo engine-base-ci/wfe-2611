@@ -1141,7 +1141,9 @@ test("SCR-CLONE-CHAT-035 G-14 パスワードを変えると、会話を開い�
   const fresh = "new-password-qa-a1-12345";
   await other.getByLabel("新しいパスワード", { exact: true }).fill(fresh);
   await other.getByLabel("もう一度").fill(fresh);
-  await other.getByRole("button", { name: "変更してログイン" }).click();
+  await other.getByRole("button", { name: "パスワードを決める" }).click();
+  await expect(other.locator("[data-state='done']")).toBeVisible({ timeout: 15_000 });
+  await other.getByRole("link", { name: "ログインする" }).click();
   await expect(other).toHaveURL(/\/login$/, { timeout: 15_000 });
   await other.close();
   expect

@@ -2,7 +2,7 @@
  "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
  "at": "2026-11-09",
- "count": 2332,
+ "count": 2302,
  "rows": [
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -8155,126 +8155,6 @@
   {
    "file": "07_qa/test-specs/screens/ops-home.md",
    "id": "API-17-023"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-001"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-002"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-003"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-004"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-005"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-006"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-007"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-008"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-009"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-010"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-011"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-012"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-013"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-014"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-015"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-020"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-021"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-023"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-037"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-026"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-027"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-036"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-028"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-029"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-031"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-034"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-035"
-  },
-  {
-   "file": "07_qa/test-specs/screens/password-reset.md",
-   "id": "SCR-PASSWORD-RESET-022"
   },
   {
    "file": "07_qa/test-specs/screens/policies.md",

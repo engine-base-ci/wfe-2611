@@ -223,9 +223,9 @@ test("SCR-PASSWORD-RESET-037 SCR-PASSWORD-RESET-035 ボタン「再設定メー�
   await expect(page.locator("[data-state='n']")).toBeVisible();
   await page.getByLabel("メールアドレス").fill(ok.email);
   await page.getByRole("button", { name: "再設定メールを送る" }).click();
-  await expect(page.locator("[data-state='s'] h1")).toHaveText("送りました");
+  await expect(page.locator("[data-state='s'] h1")).toHaveText("パスワードを作り直す");
   const readLog = () => readFileSync(process.env["KANAME_API_LOG"]!, "utf8");
-  await expect.poll(() => readLog().includes(`（reset → ${ok.email}）`), { timeout: 15_000 }).toBe(true);
+  await expect.poll(() => readLog().includes(`（reset → ${mailTag(ok.email)}）`), { timeout: 15_000 }).toBe(true);
   // 送出先が拒む宛先（登録はある）
   const email = rejectedEmail();
   await signupViaApi("拒まれる再設定の社", email);

@@ -30,6 +30,7 @@ import { passwordResetHooks } from "./hooks/password-reset.js";
 import { consentTermsHooks } from "./hooks/consent-terms.js";
 import { serviceStatusHooks } from "./hooks/service-status.js";
 import { loginHooks } from "./hooks/login.js";
+import { invitationHooks } from "./hooks/invitations.js";
 import { mySecurityHooks } from "./hooks/my-security.js";
 import { adminRecoveryHooks } from "./hooks/admin-recovery.js";
 import { twoFactorHooks } from "./hooks/two-factor.js";
@@ -164,6 +165,14 @@ export async function bootApi(config: Config, o: BootOptions = {}): Promise<Boot
         ...serviceStatusHooks({ appPool }),
         // ログイン（K-301 パスワード。K-302 確認のコード・K-306 ログアウトも同じ hooks に足す）
         ...loginHooks({ auth, appPool, authPool, config: { opsEmail: config.opsEmail } }),
+        // 招かれて参加する（K-331 下見。K-332・K-333 参加・K-334 送り直しも同じ hooks に足す）
+        ...invitationHooks({
+          auth,
+          appPool,
+          authPool,
+          ...(mailer ? { mailer } : {}),
+          config: { opsEmail: config.opsEmail, webBaseUrl: config.webBaseUrl ?? "" },
+        }),
         // 自分の安全の設定を読む（K-308）
         ...mySecurityHooks({ auth, appPool, authPool }),
         // 2 段階認証を付ける（K-311）。鍵とバックアップコードは部品が包んで持つ（関門 C8）

@@ -708,6 +708,15 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、版も url も返さない"},
     ],
     # いまの様子を読む（K-307）。DB が落ちたら「ふつう」（空）を返さず中身も返さない
+    # 招待の下見（K-331・D-128.62・D-128.63）。使えない招待（期限切れ・取り消し・使われた）は 200 の state で返し、行が無いときだけ 404
+    "getInvitation": [
+        {"status": 404, "code": "E-INV-001", "body": {"error": "not_found", "code": "E-INV-001"}, "errors": ["E-INV-001"],
+         "trigger": "招待のリンクの印が見つからない（でたらめ・古い・空白入り・512 文字を超える）",
+         "ears_form": "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、招待の中身を返さない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "招待の下見を読む DB（app.invitation_preview2）かセッションを読む所が落ちた",
+         "ears_form": "UNWANTED: IF 招待の下見を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"},
+    ],
     "getServiceStatus": [
         {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "稼働状況を読む DB（障害とお知らせ）が落ちた",
@@ -1032,6 +1041,10 @@ RESPONSES = {
     "getOpsNotice": ("OpsNoticeDetail", {"notice": "object", "updates": "array", "affects": "object", "placements": "array"}),
     # いまの様子（K-307・誰でも）：直っていない障害（公開したお知らせに結んだもの）といま中のメンテナンスだけ。ログイン後の口の型 ServiceStatus とは分ける
     "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),
+    # 招待の下見（K-331）：表の写し（token_hash まで出る）でなく、画面が形を決める欄だけ。signed_in はログイン中だけ { email, email_matches, already_member }
+    "getInvitation": ("InvitationPreview", {"state": "string", "workspace_name": "string", "inviter_name": "string?", "group_name": "string?",
+                                            "role": "string", "message": "string?", "email": "string", "expires_at": "string",
+                                            "account_exists": "boolean", "signed_in": "object?"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
@@ -1243,7 +1256,7 @@ PERMS = {
     "signOut": ("self", "本人", False),
     "requestPasswordReset": ("public", "誰でも。メールの有る無しにかかわらず同じ答え", False),
     "resetPassword": ("public", "再設定のリンクを持つ人（1 回だけ・期限つき）。済んだら全部の端末と Bridge を切る（D-125.140）", False),
-    "getInvitation": ("public", "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・役割・招いた人だけ", False),
+    "getInvitation": ("public", "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・招いた人・グループ・役割・ひとことと、招待の状態・宛てのアカウントの有無・ログイン中の様子だけ（K-331）", False),
     "acceptInvitation": ("public", "招待のリンクを持つ人。ログイン中なら今のアカウントで入り、無ければ作る（D-125.150）", False),
     # 自分の安全の設定
     "getMySecurity": ("self", "自分のものだけ", False),
