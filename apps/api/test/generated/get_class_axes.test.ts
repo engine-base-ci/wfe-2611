@@ -1,7 +1,6 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。GET /api/v1/class_axes
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 describe("GET /api/v1/class_axes", () => {
   // EVENT-DRIVEN: WHEN GET /api/v1/class_axes が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）
@@ -16,11 +15,8 @@ describe("GET /api/v1/class_axes", () => {
   it.todo("test_get_class_axes_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_get_class_axes_terms_pending");
-  it("test_get_class_axes_mfa_pending", () => {
-    // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
-    // 本物の試験：apps/api/test/features/F1/mfa-gate.test.ts の「K321-API-001」（入口 1 か所の止め・同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F1/mfa-gate.test.ts", "utf8")).toContain("K321-API-001");
-  });
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_get_class_axes_mfa_pending");
   // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
   it.todo("test_get_class_axes_session_unresolved");
   // UBIQUITOUS: GET /api/v1/class_axes の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う

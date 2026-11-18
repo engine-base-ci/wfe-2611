@@ -24,5 +24,5 @@ try {
   process.exit(1);
 }
 await vitest.close();
-process.stdout.write(JSON.stringify(out) + "\n");
-process.exit(0);
+// 書き終わってから終わる（管に出すとき、64KB を超える答えは書き終わる前の process.exit で途中で切れ、JSON でなくなる・K-321）
+process.stdout.write(JSON.stringify(out) + "\n", () => process.exit(0));

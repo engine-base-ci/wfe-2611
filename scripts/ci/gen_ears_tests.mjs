@@ -13,14 +13,17 @@ const kindOf = (fn) => {
 const q = (s) => JSON.stringify(s);
 // 作った口の付けるまで進めない（mfa_pending）は、上の CASE が試験の土台（harness の who の mfa）で口ごとに確かめる。
 //   土台を使わない口（本物のログインの部品が要る ears-elsewhere の口）と、土台を立ち上げないまだ作っていない口（501 より前に止まる）は、
-//   止めが同じ 1 か所の入口（apps/api/src/contract/op.ts）にあるので、本物のログインで印を立てて止まることを見る本物の試験 1 つに結ぶ（K-321）
+//   止めが同じ 1 か所の入口（apps/api/src/contract/op.ts）にあるので、口ごとには作らず、理由つきの it.todo にする。止まることは
+//   本物のログインで印を立てる本物の試験（apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011）と、作った口の上の CASE が受ける（K-321）。
+//   生成の試験からその試験のファイルを読まない（読むと生成の試験の全部を CI の範囲の data_links に書くことになる）
 const CENTRAL = {
-  mfa_pending: { file: "apps/api/test/features/F1/mfa-gate.test.ts", mark: "K321-API-001" },
+  mfa_pending:
+    "止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る",
 };
 const centralRow = (x) => {
-  const c = CENTRAL[kindOf(x.test_function)];
-  if (!c) return null;
-  return `  it(${q(x.test_function)}, () => {\n    // ${x.ears_text.replace(/\n/g, " ")}\n    // 本物の試験：${c.file} の「${c.mark}」（入口 1 か所の止め・同じ CI の G3 で流れる）\n    expect(readFileSync(${q(c.file)}, "utf8")).toContain(${q(c.mark)});\n  });`;
+  const why = CENTRAL[kindOf(x.test_function)];
+  if (!why) return null;
+  return `  // 当てはまらない（${why}）：${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`;
 };
 const WHO = `const who = e.auth === "ops" ? "ops" : "boss";`;
 const CASE = {
@@ -112,10 +115,9 @@ ${body.join("\n")}
       if (genericSet.has(rows[0].endpoint)) throw new Error(`${rows[0].endpoint} は表の素の読み書き（generic）で、まだ作っていない。authz.test.ts の 501 の確かめに入らないので、08_api/generic-ok.json に足すか振る舞いを作る`);
       n += rows.length;
       const lines = rows.map((x) => centralRow(x) ?? `  // ${x.ears_text.replace(/\n/g, " ")}\n  it.todo(${q(x.test_function)});`);
-      const anyCentral = rows.some((x) => centralRow(x));
       writeFileSync(join(root, file), `// 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。${rows[0].endpoint}
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-${anyCentral ? 'import { readFileSync } from "node:fs";\nimport { describe, expect, it } from "vitest";' : 'import { describe, it } from "vitest";'}
+import { describe, it } from "vitest";
 
 describe(${q(rows[0].endpoint)}, () => {
 ${lines.join("\n")}

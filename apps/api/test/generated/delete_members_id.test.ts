@@ -1,7 +1,6 @@
 // 生成物（scripts/ci/gen_ears_tests.mjs ← 07_qa/test-plan/ears-test-mapping.json）。手で直さない。DELETE /api/v1/members/:id
 // まだ作っていない口。501 で止まることは apps/api/src/contract/authz.test.ts が確かめる。作ったら本物の試験になる（D-128.148）
-import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 describe("DELETE /api/v1/members/:id", () => {
   // EVENT-DRIVEN: WHEN DELETE /api/v1/members/:id が「担当中のチケットと承認を引き継いでから抜けさせる」として呼ばれたとき THEN Kaname は「セッションを失効」を行い 2xx を返す
@@ -18,11 +17,8 @@ describe("DELETE /api/v1/members/:id", () => {
   it.todo("test_delete_members_id_rate_limited");
   // UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない
   it.todo("test_delete_members_id_terms_pending");
-  it("test_delete_members_id_mfa_pending", () => {
-    // UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
-    // 本物の試験：apps/api/test/features/F1/mfa-gate.test.ts の「K321-API-001」（入口 1 か所の止め・同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F1/mfa-gate.test.ts", "utf8")).toContain("K321-API-001");
-  });
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_delete_members_id_mfa_pending");
   // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
   it.todo("test_delete_members_id_session_unresolved");
   // UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を返し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）
