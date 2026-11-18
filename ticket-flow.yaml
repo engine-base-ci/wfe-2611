@@ -25,10 +25,10 @@ notices:
     ]
   build: ["npx prettier --check --ignore-unknown {changed}", "npx eslint --no-warn-ignored {changed}"]
 answers: 01_hearing/decider-answers.jsonl
-# GitHub に出す前に：依存を入れ、CI の定義（v3-gate.yml）の static・spec の組をそのまま手元で流す（まっさらな写しで・K-178）
+# GitHub に出す前に：依存を入れ、CI の定義（v3-gate.yml）の static・spec（spec・spec-2・spec-3）の組をそのまま手元で流す（まっさらな写しで・K-178）
 # 手で選んだ検査の一覧は持たない（CI だけが流す検査が漏れ、出してから赤で戻った・K-161）
 preflight: ["pnpm install --frozen-lockfile --prefer-offline --silent"]
-preflight_jobs: [static, spec]
+preflight_jobs: [static, spec, spec-2, spec-3]   # spec は 3 組に分けた（K-323）
 # 重さ：1 本が触ってよい重い組は 1 つ（画面と DB を 1 本で触ると CI 1 回が 17 分・K-161）
 weight:
   groups: { web: ["apps/web/**"], db: ["packages/db/**"] }
