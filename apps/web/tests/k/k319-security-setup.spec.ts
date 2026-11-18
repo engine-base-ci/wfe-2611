@@ -119,6 +119,8 @@ const MFA_OPEN = [
   "/api/auth/passkey/verify-registration",
 ];
 
+/** mockApi を呼んだ回数（印を 1 回だけ置く目印を呼ぶごとに分ける） */
+let seedRuns = 0;
 async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Mock> {
   const m: Mock = {
     sec: structuredClone(sec),
@@ -142,9 +144,18 @@ async function mockApi(page: Page, sec: Sec, o: Partial<Mock> = {}): Promise<Moc
     delete m.once[k];
     return v;
   };
-  await page.addInitScript((t) => {
-    if (!window.localStorage.getItem("kaname.token")) window.localStorage.setItem("kaname.token", t);
-  }, OLD_TOKEN);
+  // 印を置くのは、この mockApi の後の最初の画面で 1 回だけ（K-338）。開くたびに置き直すと、画面が印を消してログインへ移した
+  //   （401 の toLogin・ログアウト）後のログインの画面にも印が戻り、その画面の口の 403・MFA_REQUIRED で /mfa-setup へ移り始めて
+  //   試験の次の page.goto と先を取り合う（揺れ）。本物ではログインへ移った後は印が無い。mockApi を呼び直すと新しい目印で 1 回置く
+  seedRuns += 1;
+  await page.addInitScript(
+    ([t, key]) => {
+      if (window.sessionStorage.getItem(key)) return;
+      window.sessionStorage.setItem(key, "1");
+      if (!window.localStorage.getItem("kaname.token")) window.localStorage.setItem("kaname.token", t);
+    },
+    [OLD_TOKEN, `k338.seeded.${seedRuns}`] as const,
+  );
   await page.route(/127\.0\.0\.1:38617/, (route) => route.fulfill({ status: 404, body: "" }));
   await page.route(/\/api\/(v1|auth-ext|auth)\//, async (route: Route, req: Request) => {
     const p = new URL(req.url()).pathname;
@@ -795,12 +806,39 @@ test("K319-UI-026 付けるまで進めないの途中でログインが切れ�
   await choice(page, "2 段階認証を付ける").click();
   await confirmWith(page);
   await expect(page).toHaveURL(/\/login\?next=%2Fmfa-setup/);
+  // 401 で画面が印を消したことを見る（ログインの画面に印は戻らない）
+  expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeNull();
+  // 入り直す：試験が自分で印を置いてから開く（次の /mfa-setup の画面の最初に 1 回だけ置く。ログインの画面には置かない）
+  await page.addInitScript((t) => {
+    if (window.location.pathname !== "/mfa-setup" || window.sessionStorage.getItem("k338.relogin")) return;
+    window.sessionStorage.setItem("k338.relogin", "1");
+    window.localStorage.setItem("kaname.token", t);
+  }, OLD_TOKEN);
   await open(page);
+  expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBe(OLD_TOKEN);
   await expect(page.locator(`${BOX} h1`)).toHaveText("入り方を 1 つ足してください");
   await choice(page, "2 段階認証を付ける").click();
   await confirmWith(page);
   await expect(totpDialog(page).getByRole("img", { name: "認証アプリで読み取る QR" })).toBeVisible();
   expect(m.starts).toHaveLength(2);
+});
+
+test("K338-UI-001 試験の差し替えの作り（K-338）：401 で画面が印を消してログインへ移った後、差し替えは印を置き直さない（ログインの画面は /mfa-setup へ移り始めない）", async ({
+  page,
+}) => {
+  await mockApi(page, PENDING, { once: { start: err(401, "UNAUTHENTICATED") } });
+  const moves: string[] = [];
+  page.on("request", (r) => {
+    if (r.isNavigationRequest() && r.frame() === page.mainFrame()) moves.push(r.url());
+  });
+  await open(page);
+  await choice(page, "2 段階認証を付ける").click();
+  await confirmWith(page);
+  await expect(page).toHaveURL(/\/login\?next=%2Fmfa-setup$/);
+  await page.waitForLoadState("networkidle"); // ログインの画面の口が全部返り終わるまで待つ（移り始めるならこの間に始まる）
+  expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeNull();
+  await expect(page).toHaveURL(/\/login\?next=%2Fmfa-setup$/);
+  expect(moves.filter((u) => new URL(u).pathname === "/mfa-setup" && new URL(u).searchParams.has("back"))).toEqual([]);
 });
 
 // ---------------------------------------------------------------- モックと本番の突き合わせ（共通の道具 matchMock・決め 11）
