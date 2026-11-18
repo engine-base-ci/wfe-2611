@@ -31,12 +31,12 @@ WF = yaml.safe_load(WF_TEXT)
 JOBS = WF["jobs"]
 ON = WF.get("on", WF.get(True))   # YAML 1.1 は on を真偽に読むことがある
 UNIT = [f"unit-{i}" for i in range(1, 7)]
-DB_JOBS = ["database", "spec", "web"] + UNIT
+DB_JOBS = ["database", "spec", "spec-2", "spec-3", "web"] + UNIT   # spec は 3 組に分けた（K-323）
 JUNIT_JOBS = UNIT + ["spec", "web"]
 RELEASE = yaml.safe_load((ROOT / ".github" / "workflows" / "release-gate.yml").read_text(encoding="utf-8"))["jobs"]
 # 重い検査は組と名前の頭で特定する（G27 の番号は static にも別の段がある）
 HEAVY = {"27": ("spec", "G27 層の棚卸し"), "36": ("database", "G36 "), "38": ("spec", "G38 "), "47": ("spec", "G47 "),
-         "56": ("spec", "G56 "), "57": ("spec", "G57 "), "62": ("spec", "G62 ")}
+         "56": ("spec-2", "G56 "), "57": ("spec", "G57 "), "62": ("spec", "G62 ")}
 
 
 def steps(job: str) -> list[dict]:
