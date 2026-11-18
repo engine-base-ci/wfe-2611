@@ -224,8 +224,11 @@ test("K330-UI-007 新しく作って参加（inv-new）：頭文字の印・「�
   await page.getByRole("button", { name: /パスワードを(見る|表示)/ }).click();
   await expect(pw).toHaveAttribute("type", "text");
   await expect(page.getByRole("button", { name: "参加する" })).toBeEnabled();
-  await expect(page.getByRole("link", { name: "利用規約" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "プライバシー" })).toBeVisible();
+  // 同意の文（main の中）のリンク。枠の足元（nav「Kaname について」）にも同じ名前のリンクがあるので main に絞る
+  const main = page.getByRole("main");
+  await expect(main.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", "/legal/terms");
+  await expect(main.getByRole("link", { name: "プライバシー" })).toHaveAttribute("href", "/legal/privacy");
+  await expect(main.getByText("に同意したことになる")).toBeVisible();
   await expect(page.getByRole("link", { name: "ログインして入る" })).toHaveAttribute(
     "href",
     /^\/login\?next=%2Finvite%2F/,
