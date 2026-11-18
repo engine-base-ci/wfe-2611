@@ -8,10 +8,10 @@ import { CATALOG } from "@kaname/errors";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
-import { createDeviceResolver, createSessionResolver, signOut, type Resolved } from "@kaname/auth/resolver";
+import { createDeviceResolver, createSessionResolver, type Resolved } from "@kaname/auth/resolver";
 import { readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
-import { EMAIL_RE, normalizeEmail, signInWithLock, signUp } from "@kaname/auth/signup";
+import { signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
@@ -99,10 +99,10 @@ export function hostOf(v: string): string | null {
 }
 /** この版より古い Bridge には仕事を渡さない（定義は features/F3/connect-pc/hooks.ts・K-57 に移した） */
 export { BRIDGE_PROTOCOL_MIN };
-/** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・ログイン・2 段階の確認・招待の下見と受諾（ログアウトは契約の口 signOut） */
+/** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・招待の下見と受諾（ログアウトは契約の口 signOut） */
 /** 成果物の本文を受ける口（書き出す・直して保存）。送る量の守りで断るときも成果物の上限の答え（E-ART-001）にする（K-145） */
 const ARTIFACT_BODY = /^\/agent\/artifacts(\/[^/]+\/versions)?$/;
-const TERMS_OPEN_EXT = [/^\/me$/, /^\/sign-in$/, /^\/two-factor\/verify$/, /^\/invitations\/[^/]+(\/accept)?$/];
+const TERMS_OPEN_EXT = [/^\/me$/, /^\/invitations\/[^/]+(\/accept)?$/];
 export function authExt(d: AuthExtDeps): Hono {
   const app = new Hono();
   const fresh = createSessionResolver(d.auth, d.appPool);
@@ -156,94 +156,7 @@ export function authExt(d: AuthExtDeps): Hono {
 
   // 登録・待つ画面の状態・送り直しは契約の口（POST /api/v1/auth/sign-up・GET …/status・POST …/resend）に移した（K-51・apps/api/src/features/F1/sign-up/）。
   // 確認のリンクで確定するのも契約の口（POST /api/v1/auth/sign-up/verify・K-52・apps/api/src/features/F1/verify-email/）に移した
-
-  // ログイン（T-U-05）：5 回で 15 分ロック（E-AUTH-001／002）。2 段階なら token 無しで twoFactor=true
-  app.post("/sign-in", async (c) => {
-    const b = (await c.req.json().catch(() => ({}))) as { email?: string; password?: string };
-    const email = normalizeEmail(String(b.email ?? ""));
-    if (!EMAIL_RE.test(email) || !b.password)
-      return bad(c, 422, "E-VAL-004", "メールアドレスとパスワードを入れてください");
-    const r = await signInWithLock(d.auth, d.appPool, email, b.password, c.req.header("user-agent"));
-    if (r.ok && !r.twoFactor && r.token) {
-      // 入れたのに会社の人（member）が無い（会社が消えた・登録の途中で壊れた）。ログインだけ通して先で空白にしない（E-AUTH-007）。
-      // その場で閉じ、理由と次の一手を返す
-      const h = new Headers({ authorization: `Bearer ${r.token}` });
-      if (!(await resolve(h))) {
-        await signOut(d.auth, d.appPool, h).catch(() => undefined);
-        return bad(
-          c,
-          403,
-          "E-AUTH-007",
-          "このアカウントは、会社の登録が見つからないため使えません。もう一度アカウントを作るか、運営に連絡してください",
-          { ops_email: d.config.opsEmail },
-        );
-      }
-    }
-    if (r.ok) {
-      // 2 段階の待ち状態は Better Auth が Cookie で持つ。画面は別 origin・Bearer だけなので、その値を JSON で返し /two-factor/verify で受け取る
-      return c.json({
-        data: { token: r.token, two_factor: r.twoFactor, two_factor_cookie: r.twoFactor ? r.cookie : null },
-      });
-    }
-    if (r.lockedUntil) {
-      const sec = Math.max(1, Math.ceil((r.lockedUntil.getTime() - Date.now()) / 1000));
-      return bad(c, 429, "E-AUTH-002", "15 分間ロックしました。急ぐときはメールでロックを解除できます", {
-        retry_after_sec: sec,
-        remaining: 0,
-      });
-    }
-    return bad(
-      c,
-      401,
-      "E-AUTH-001",
-      `メールアドレスかパスワードが違います。あと ${r.remaining} 回で 15 分ロックします`,
-      { remaining: r.remaining },
-    );
-  });
-
-  // 2 段階の確認（T-U-05）：6 桁か回復コード。待ち状態の cookie は sign-in が返したもの
-  app.post("/two-factor/verify", async (c) => {
-    const b = (await c.req.json().catch(() => ({}))) as {
-      two_factor_cookie?: string;
-      code?: string;
-      backup_code?: string;
-      trust_device?: boolean;
-    };
-    if (!b.two_factor_cookie) return bad(c, 401, "E-AUTH-004", "ログインからやり直してください");
-    const headers = new Headers({ cookie: b.two_factor_cookie });
-    const ua = c.req.header("user-agent");
-    if (ua) headers.set("user-agent", ua);
-    const api = d.auth.api as unknown as {
-      verifyTOTP: (o: {
-        headers: Headers;
-        body: { code: string; trustDevice?: boolean };
-        returnHeaders: true;
-      }) => Promise<{ response: { token: string } }>;
-      verifyBackupCode: (o: {
-        headers: Headers;
-        body: { code: string };
-        returnHeaders: true;
-      }) => Promise<{ response: { token: string } }>;
-    };
-    try {
-      const code = String(b.code ?? b.backup_code ?? "")
-        .normalize("NFKC")
-        .replace(/\s+/g, "");
-      const r = b.backup_code
-        ? await api.verifyBackupCode({ headers, body: { code }, returnHeaders: true })
-        : await api.verifyTOTP({ headers, body: { code, trustDevice: !!b.trust_device }, returnHeaders: true });
-      return c.json({ data: { token: r.response.token } });
-    } catch {
-      return bad(
-        c,
-        401,
-        "E-AUTH-004",
-        b.backup_code
-          ? "回復コードが違います。10 個のうち、まだ使っていないものを入れてください"
-          : "6 桁が違います。認証アプリの今の数字を入れてください（時刻のずれにも注意）",
-      );
-    }
-  });
+  // ログイン（パスワード）と 2 段階の確認は契約の口（POST /api/v1/auth/sign-in・…/two-factor/verify・K-301・K-302）に移し、前の道すじは K-316 で消した
 
   // 招待の下見（T-U-03）：会社名・役割・期限。無効ならその理由
   app.get("/invitations/:token", async (c) => {

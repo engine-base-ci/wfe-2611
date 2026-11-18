@@ -237,8 +237,8 @@ async function loginApi(page: Page): Promise<void> {
       status: 401,
       body: { error: "unauthenticated", code: "UNAUTHENTICATED" },
     };
-    if (p === "/api/auth-ext/sign-in")
-      r = { status: 200, body: { data: { token: null, two_factor: true, two_factor_cookie: "tf-fidelity" } } };
+    if (p === "/api/v1/auth/sign-in")
+      r = { status: 200, body: { data: { token: null, two_factor: true, pending: "tf-fidelity" } } };
     else if (p === "/api/auth/get-session") r = { status: 200, body: { session: null, user: null } };
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
   });

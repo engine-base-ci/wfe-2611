@@ -74,8 +74,8 @@ test.describe.serial("J-01 契約・登録", () => {
   });
 
   test("J01-04 認証アプリを登録する → TOTP シークレットを暗号化保管（mfa-setup）", async ({ page }) => {
-    const r = await api<{ data: { token: string } }>("/api/auth-ext/sign-in", { email, password: PW });
-    expect(r.status).toBe(200);
+    const r = await api<{ data: { token: string } }>("/api/v1/auth/sign-in", { email, password: PW });
+    expect(r.status).toBe(201);
     await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), r.json.data.token);
     await page.goto("/mfa-setup");
     await page.getByLabel("パスワード", { exact: true }).fill(PW);

@@ -28,8 +28,8 @@ async function mockApi(page: Page): Promise<void> {
     const p = new URL(req.url()).pathname;
     const json = (status: number, body: unknown) =>
       route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
-    if (req.method() === "POST" && p === "/api/auth-ext/sign-in")
-      return json(200, { data: { token: "tok-k259", two_factor: false, two_factor_cookie: null } });
+    if (req.method() === "POST" && p === "/api/v1/auth/sign-in")
+      return json(200, { data: { token: "tok-k259", two_factor: false, pending: null } });
     if (req.method() === "GET" && p === `/api/auth-ext/invitations/${TOKEN}`)
       return json(200, {
         data: {

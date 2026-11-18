@@ -62,8 +62,8 @@ test("SCR-PASSWORD-RESET-003 SCR-PASSWORD-RESET-027 SCR-PASSWORD-RESET-028 SCR-P
   await page.getByLabel("もう一度").fill(fresh);
   await page.getByRole("button", { name: "変更してログイン" }).click();
   await expect(page).toHaveURL(/\/login$/);
-  expect((await api("/api/auth-ext/sign-in", { email: u.email, password: PW })).status).toBe(401);
-  expect((await api("/api/auth-ext/sign-in", { email: u.email, password: fresh })).status).toBe(200);
+  expect((await api("/api/v1/auth/sign-in", { email: u.email, password: PW })).status).toBe(401);
+  expect((await api("/api/v1/auth/sign-in", { email: u.email, password: fresh })).status).toBe(201);
 });
 test("E-AUTH-006-A E-AUTH-006-C 使用済み・期限切れのリンクは文言と一手（もう一度メールを送る）", async ({ page }) => {
   await page.goto("/password-reset?token=used-or-expired-token");

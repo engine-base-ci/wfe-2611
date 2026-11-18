@@ -1145,8 +1145,8 @@ test("SCR-CLONE-CHAT-035 G-14 パスワードを変えると、会話を開い�
   await expect(other).toHaveURL(/\/login$/, { timeout: 15_000 });
   await other.close();
   expect
-    .soft((await api("/api/auth-ext/sign-in", { email: u.email, password: fresh })).status, "パスワードは変わった")
-    .toBe(200);
+    .soft((await api("/api/v1/auth/sign-in", { email: u.email, password: fresh })).status, "パスワードは変わった")
+    .toBe(201);
   // 0 秒で：古い鍵は 401、Bridge も 401
   expect
     .soft((await api("/api/auth-ext/agent/state", undefined, u.token)).status, "会話を開いていた端末の古い鍵")
@@ -1190,7 +1190,7 @@ test("SCR-CLONE-CHAT-037 G-16 同じ人が会話の状態を 40 本同時に読�
     rs.filter((s) => s >= 500),
     "5xx が無い",
   ).toEqual([]);
-  expect((await api("/api/auth-ext/sign-in", { email: u.email, password: PW })).status, "ログインが落ちない").toBe(200);
+  expect((await api("/api/v1/auth/sign-in", { email: u.email, password: PW })).status, "ログインが落ちない").toBe(201);
   await page.reload();
   await expect(page.locator('[data-part="conversation"]')).toBeVisible({ timeout: 30_000 });
 });

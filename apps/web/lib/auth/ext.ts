@@ -73,16 +73,7 @@ export const verifySignup = async (token: string) => {
   }
   return r;
 };
-export const signIn = (b: { email: string; password: string }) =>
-  ext<{ token: string | null; two_factor: boolean; two_factor_cookie: string | null }>("/sign-in", b).then(
-    (r) => (r.token && (setToken(r.token), refreshSession()), r),
-  );
-export const verifyTwoFactor = (b: {
-  two_factor_cookie: string;
-  code?: string;
-  backup_code?: string;
-  trust_device?: boolean;
-}) => ext<{ token: string }>("/two-factor/verify", b).then((r) => (setToken(r.token), refreshSession(), r));
+// ログイン（パスワード・確認のコード）は契約の口（signInWithPassword・verifySignInCode）を features/F1/login が直に呼ぶ。前の道すじの呼び手は K-316 で消した
 export const invitationPreview = (token: string) =>
   ext<{
     tenant_name: string;
