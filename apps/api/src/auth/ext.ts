@@ -1,5 +1,5 @@
 // 認証の拡張ルート（/api/auth-ext/*・境界 B2 の外側の口）。Better Auth の /api/auth/* に無い「Kaname としての段取り」：
-//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・招待の下見と受諾・Bridge の接続コード・資格情報を預ける（関門 C8）
+//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・Bridge の接続コード・資格情報を預ける（関門 C8）
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
 import { agentToolRoutes } from "./agent-tools.js";
 import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
@@ -7,11 +7,9 @@ import { Hono } from "hono";
 import { CATALOG } from "@kaname/errors";
 import type pg from "pg";
 import type { Auth } from "@kaname/auth";
-import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createDeviceResolver, createSessionResolver, type Resolved } from "@kaname/auth/resolver";
 import { mfaRequired, readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
-import { signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
 import { withTenant } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
@@ -99,10 +97,10 @@ export function hostOf(v: string): string | null {
 }
 /** この版より古い Bridge には仕事を渡さない（定義は features/F3/connect-pc/hooks.ts・K-57 に移した） */
 export { BRIDGE_PROTOCOL_MIN };
-/** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得・招待の下見と受諾（ログアウトは契約の口 signOut） */
 /** 成果物の本文を受ける口（書き出す・直して保存）。送る量の守りで断るときも成果物の上限の答え（E-ART-001）にする（K-145） */
 const ARTIFACT_BODY = /^\/agent\/artifacts(\/[^/]+\/versions)?$/;
-const TERMS_OPEN_EXT = [/^\/me$/, /^\/invitations\/[^/]+(\/accept)?$/];
+/** 同意し直しの間も止めない前の道すじ（K-53）：自分の取得だけ（ログアウトは契約の口 signOut。招待の下見と受諾は契約の口に移して消した・K-337） */
+const TERMS_OPEN_EXT = [/^\/me$/];
 export function authExt(d: AuthExtDeps): Hono {
   const app = new Hono();
   const fresh = createSessionResolver(d.auth, d.appPool);
@@ -161,66 +159,7 @@ export function authExt(d: AuthExtDeps): Hono {
   // 確認のリンクで確定するのも契約の口（POST /api/v1/auth/sign-up/verify・K-52・apps/api/src/features/F1/verify-email/）に移した
   // ログイン（パスワード）と 2 段階の確認は契約の口（POST /api/v1/auth/sign-in・…/two-factor/verify・K-301・K-302）に移し、前の道すじは K-316 で消した
 
-  // 招待の下見（T-U-03）：会社名・役割・期限。無効ならその理由
-  app.get("/invitations/:token", async (c) => {
-    const r = await d.appPool.query<{
-      tenant_name: string;
-      role_id: string | null;
-      email: string;
-      expires_at: Date;
-      revoked: boolean;
-      accepted: boolean;
-      expired: boolean;
-    }>("select * from app.invitation_preview($1)", [hashToken(c.req.param("token"))]);
-    const row = r.rows[0];
-    if (!row) return bad(c, 404, "E-INV-001", "この招待は見つかりません。もう一度招待してもらってください");
-    return c.json({
-      data: {
-        tenant_name: row.tenant_name,
-        role_id: row.role_id ?? "member",
-        email: row.email,
-        expires_at: row.expires_at,
-        valid: !(row.revoked || row.accepted || row.expired),
-        reason: row.revoked ? "revoked" : row.accepted ? "accepted" : row.expired ? "expired" : null,
-      },
-    });
-  });
-  // 招待を受ける（T-U-03）：名前とパスワードだけ。メールは招待のもの。登録 → メンバーを作り層を結ぶ（app.accept_invitation）
-  app.post("/invitations/:token/accept", async (c) => {
-    const token = c.req.param("token");
-    const b = (await c.req.json().catch(() => ({}))) as { name?: string; password?: string };
-    const name = String(b.name ?? "")
-      .normalize("NFKC")
-      .trim();
-    if (!name) return bad(c, 422, "E-VAL-007", "お名前を入れてください", { field: "name" });
-    if (!b.password || b.password.length < 12)
-      return bad(c, 422, "E-VAL-005", "パスワードは 12 文字以上にしてください", { field: "password" });
-    const pv = await d.appPool.query<{ email: string; revoked: boolean; accepted: boolean; expired: boolean }>(
-      "select email, revoked, accepted, expired from app.invitation_preview($1)",
-      [hashToken(token)],
-    );
-    const inv = pv.rows[0];
-    if (!inv || inv.revoked || inv.accepted || inv.expired)
-      return bad(
-        c,
-        410,
-        "E-INV-002",
-        "この招待は取り消されています。招待した人が取り消したか、7 日の期限を過ぎました。もう一度招待してもらってください",
-      );
-    const u = await signUp(d.auth, { email: inv.email, password: b.password, name });
-    const memberId = await acceptInvitation(d.appPool, token, u.userId, name);
-    // メンバーができた後にセッションを写す。先に認証の利用者を作るので、セッションの hook の時点ではまだメンバーが無い
-    // （写さないと、参加した直後は何を押しても「ログインしてください」になる）
-    await d.appPool.query("select app.open_sessions_for_user($1)", [u.userId]);
-    // 受諾で写したセッションにだけ同意し直しの印を決める（K-53）。その人のほかのセッションは決め直さない（版が出た時点でログイン中の
-    // セッションはそのまま使える・D-125.162）。招待の画面の中で同意を取るのは K-55。それまでは次の画面で同意し直しの画面を見る
-    const copied = await d.authPool.query<{ id: string }>(
-      'select id from kaname_auth.session where "userId" = $1 and "expiresAt" > now()',
-      [u.userId],
-    );
-    for (const r of copied.rows) await d.appPool.query("select app.mark_session_terms($1)", [r.id]);
-    return c.json({ data: { token: u.token, member_id: memberId } }, 201);
-  });
+  // 招待の下見と受諾は契約の口（GET /api/v1/auth/invitations/:token・POST …/accept・K-331〜K-333・apps/api/src/features/F2/invitations/）に移し、前の道すじは K-337 で消した
 
   // はじめの設定の進み具合（T-U-09〜・D-089）。1 PCをつなぐ → 6 本番へ。0 は「まだ何もしていない」。
   // 画面はこれを見て、通していない人を今いる段へ戻す（入口・アプリの枠の両方）

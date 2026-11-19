@@ -19,8 +19,11 @@ import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 import { createInvitation } from "@kaname/auth/invitations";
+import { ActionGateway, RateLimiter } from "@kaname/actions";
+import { joinByInvitation } from "./invite_join.js";
+import { invitationHooks } from "../src/hooks/invitations.js";
 import { pairForTest, pairMemberForTest } from "./bridge_pair.js";
 import { isMovedBridgePath, oldBridge, type OldBridge } from "./bridge_contract.js";
 import { withDevice } from "../src/middleware/tenant.js";
@@ -76,7 +79,22 @@ beforeAll(async () => {
     auth,
     // PC の口は契約の口（K-57・K-62）。PC の印で解き、振る舞いは delegate の hooks
     resolve: withDevice(createSessionResolver(auth, appPool), createDeviceResolver(appPool)) as never,
-    contract: { hooks: delegateHooks(appPool) },
+    contract: {
+      hooks: {
+        ...delegateHooks(appPool),
+        // 招待は契約の口で受ける（K-337 で前の道すじから移した）。参加の口の hook（K-331〜K-333 の invitationHooks）を差す
+        ...invitationHooks({
+          auth,
+          appPool,
+          authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+          // 参加の口の漏れたパスワードの照合（関門 C1）。試験は外に出ない（照合が落ちている間は照合せずに通す・D-128.134）
+          actions: new ActionGateway(repo, {}, new RateLimiter(600), 1_000, async () => {
+            throw new Error("試験は外に出ない");
+          }),
+          config: { opsEmail: "ops@example.com", webBaseUrl: "http://127.0.0.1:3123" },
+        }),
+      },
+    },
     authExt: authExt({
       auth,
       appPool,
@@ -122,14 +140,8 @@ async function invite(bossMember: string) {
     { tenantId: t, userId: bossMember, role: "member" },
     { email: `${uniq()}@example.com`, roleId: "staff" },
   );
-  const ac = await json<{ token: string; member_id: string }>(
-    post(`/invitations/${inv.token}/accept`, { name: `担当 ${uniq().slice(-4)}`, password: PW }),
-  );
-  // 招待で入った人の同意は K-55。それまでは今の版に同意済みにする（K-53 の同意し直しの 403 で止まらないように）
-  await agreeCurrentTerms(
-    (await admin.query("select auth_user_id from members where id = $1", [ac.member_id])).rows[0]
-      .auth_user_id as string,
-  );
+  // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
+  const ac = await joinByInvitation(app, admin, inv.token, `担当 ${uniq().slice(-4)}`, PW);
   const H = { authorization: `Bearer ${ac.token}` };
   return { H, B: await pairBridge(ac.member_id), member: ac.member_id };
 }

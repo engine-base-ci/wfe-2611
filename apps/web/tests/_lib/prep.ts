@@ -7,7 +7,7 @@
 //   api.ts は画面の試験のほとんどが読むので、ここでは変えない（変えると、チケットの範囲の CI が読んでいる試験を全部流す）
 import { randomBytes } from "node:crypto";
 import type { Page } from "@playwright/test";
-import { API, PW, admin, agreeCurrentTerms, api, sha256, uniqEmail } from "./api";
+import { API, PW, addTestEntry, admin, api, sha256, uniqEmail } from "./api";
 import type { Newcomer } from "./newcomer";
 import { testPc, type TestPc } from "./test-pc";
 
@@ -88,12 +88,13 @@ export async function teammate(me: Newcomer, name = "同僚"): Promise<{ memberI
     "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'member', $3, now() + interval '7 days', $4)",
     [tenant[0]!.t, email, sha256(token), me.memberId],
   );
-  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, { name, password: PW });
-  if (r.status !== 200 && r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
+  // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
+  const r = await api<{ data: { token: string } }>(`/api/v1/auth/invitations/${token}/accept`, { name, password: PW });
+  if (r.status !== 201) throw new Error(`招待を受ける口が ${r.status}`);
   const u = await admin<{ id: string; m: string }>(
     `select u.id, m.id as m from kaname_auth."user" u join members m on m.auth_user_id = u.id where u.email = $1`,
     [email],
   );
-  await agreeCurrentTerms(u[0]!.id); // 招待で入る人の同意は K-55 の受け持ち。それまでは道具が今の版への同意を入れる
+  await addTestEntry(u[0]!.id); // 入り方を 1 つ持つ人にする（付けるまで進めないの印を下ろす・K-337）
   return { memberId: u[0]!.m, token: r.json.data.token };
 }

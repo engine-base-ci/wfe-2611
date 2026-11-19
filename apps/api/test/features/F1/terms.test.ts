@@ -1155,7 +1155,7 @@ describe("K-53 運営の人は同意し直しで止めない（D-128.172）", ()
 });
 
 describe("K-53 テスターのレビュー 2 回目で足した行（招待の受諾の印・入口の止めの fail-closed）", () => {
-  it("K53-API-039 古い版だけ × 招待を受けて新しいセッション B ができる・版が出る前から開いていたセッション A がある：A は止まらず（D-125.162）、B だけ止まる。受諾は写した B にだけ印を立てる（その人の全部のセッションを決め直さない）", async () => {
+  it("K53-API-039 古い版だけ × 招待を受けて新しいセッション B ができる・版が出る前から開いていたセッション A がある：A は止まらず（D-125.162）、B も止まらない。招待の受諾（契約の口・K-332）は画面の中で今の版に同意したことにする（続けると同意・K-55）。受諾はその人の全部のセッションを決め直さない（K-337 で前の道すじから契約の口へ移した・切る段で替えた）", async () => {
     const boss = await person("invite-boss");
     const v = await publishBoth("v2-invite");
     const tag = `${RUN}-invite-a`; // 受ける人の名前（下の仕掛けが、この名前の member が入った瞬間だけ動く）
@@ -1181,9 +1181,14 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
         { tenantId: boss.tenantId, userId: boss.memberId, role: "member" },
         { email: email("invite-a"), roleId: "staff" },
       );
-      const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, { name: tag, password: PW });
+      const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, { name: tag, password: PW });
       expect(ac.status, await ac.clone().text()).toBe(201);
-      const d = (await json(ac)).data as { token: string; member_id: string };
+      const mid = (
+        await admin.query<{ id: string }>("select id from members where tenant_id = $1 and display_name = $2", [
+          boss.tenantId,
+          tag,
+        ])
+      ).rows[0]!.id;
       const a = await admin.query<{ id: string; terms_pending: boolean }>(
         "select id, terms_pending from sessions where auth_session_id = $1",
         [`${tag}-session-a`],
@@ -1193,16 +1198,21 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
       );
       const readA = await appRole.query<{ p: boolean }>("select app.session_terms_pending($1) as p", [a.rows[0]!.id]);
       expect(readA.rows[0]?.p, "A は止まらない").toBe(false);
-      // 受諾で写したセッション B は、今の版に同意していないので止まる（招待の画面の中で同意を取るのは K-55）
+      // 受諾でできたセッション B は、受諾が今の版に同意したことにするので止まらない（招待の画面の中で同意・K-55）
       const b = await admin.query<{ terms_pending: boolean }>(
         "select terms_pending from sessions where member_id = $1 and revoked_at is null and auth_session_id <> $2",
-        [d.member_id, `${tag}-session-a`],
+        [mid, `${tag}-session-a`],
       );
       expect(
         b.rows.map((x) => x.terms_pending),
-        "受諾で写したセッション B にだけ印が立つ",
-      ).toEqual([true]);
-      await expectBlocked(d.token);
+        "受諾でできたセッション B は印が下りている",
+      ).toEqual([false]);
+      const agreed = await admin.query(
+        `select 1 from terms_consents c join members m on m.auth_user_id = c.auth_user_id
+          where m.id = $1 and c.terms_version_id = any($2::uuid[])`,
+        [mid, [v.terms, v.privacy]],
+      );
+      expect(agreed.rowCount, "今の版の 2 つ（規約・プライバシー）に同意が記録される").toBe(2);
     } finally {
       await admin.query("drop trigger if exists k53_seed_session_a on members");
       await admin.query(`drop function if exists ${fn}()`);

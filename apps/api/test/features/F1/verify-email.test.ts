@@ -894,7 +894,7 @@ describe("K-52 送り直し・招待・完了のメール・表記ゆらぎ（�
       { email: email("invitee"), roleId: "staff" },
     );
     const tenantsBefore = Number((await admin.query<{ n: string }>("select count(*) as n from tenants")).rows[0]!.n);
-    const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, {
+    const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, {
       name: "招かれた 人",
       password: PW,
     });
@@ -1140,7 +1140,7 @@ describe("K-52 片付けの関数の守りと、確定を始めた後の招待�
       { tenantId: bm.tenant_id, userId: bm.id, role: "member" },
       { email: email("guard-two-staff"), roleId: "staff" },
     );
-    const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, {
+    const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, {
       name: "二人目 の人",
       password: PW,
     });
@@ -1200,7 +1200,7 @@ describe("K-52 片付けの関数の守りと、確定を始めた後の招待�
           { timeout: 15_000 },
         )
         .toBe(1);
-      const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, {
+      const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, {
         name: "招かれた 人",
         password: PW,
       });
@@ -1471,7 +1471,7 @@ describe("K-52 片付けが落ちたとき・片付ける相手の見分け（3 
     let r!: Response;
     try {
       r = await raceWithOtherPath(t, e, [52046, 52047], "k52_race_invite_pw", async () => {
-        const ac = await req("POST", `/api/auth-ext/invitations/${inv.token}/accept`, {
+        const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, {
           name: "招かれた 人",
           password: OTHER_PW,
         });

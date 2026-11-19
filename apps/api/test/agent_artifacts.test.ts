@@ -17,9 +17,12 @@ import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createInvitation } from "@kaname/auth/invitations";
+import { ActionGateway, RateLimiter } from "@kaname/actions";
+import { joinByInvitation } from "./invite_join.js";
+import { invitationHooks } from "../src/hooks/invitations.js";
 import { createApp } from "../src/app.js";
 import { authExt } from "../src/auth/ext.js";
-import { agreeCurrentTerms, keepAuth, verifiedUser } from "./_pending.js";
+import { keepAuth, verifiedUser } from "./_pending.js";
 import { ARTIFACT_TEXT_MAX, titleOf } from "../src/auth/artifacts.js";
 
 const DB_PKG = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "packages", "db");
@@ -77,6 +80,21 @@ beforeAll(async () => {
     repo,
     auth,
     resolve: createSessionResolver(auth, appPool),
+    contract: {
+      hooks: {
+        // 招待は契約の口で受ける（K-337 で前の道すじから移した）。参加の口の hook（K-331〜K-333 の invitationHooks）を差す
+        ...invitationHooks({
+          auth,
+          appPool,
+          authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+          // 参加の口の漏れたパスワードの照合（関門 C1）。試験は外に出ない（照合が落ちている間は照合せずに通す・D-128.134）
+          actions: new ActionGateway(repo, {}, new RateLimiter(600), 1_000, async () => {
+            throw new Error("試験は外に出ない");
+          }),
+          config: { opsEmail: "ops@example.com", webBaseUrl: "http://127.0.0.1:3123" },
+        }),
+      },
+    },
     authExt: authExt({
       auth,
       appPool,
@@ -237,14 +255,8 @@ describe("成果物（D-106）", () => {
       { tenantId: t, userId: bossMember, role: "member" },
       { email: `${uniq()}@example.com`, roleId: "staff" },
     );
-    const staff = await json<{ token: string; member_id: string }>(
-      post(`/invitations/${inv.token}/accept`, { name: "担当", password: PW }),
-    );
-    // 招待で入った人の同意は K-55。それまでは今の版に同意済みにする（K-53 の同意し直しの 403 で、見たいはずの 404 が隠れないように）
-    await agreeCurrentTerms(
-      (await admin.query("select auth_user_id from members where id = $1", [staff.member_id])).rows[0]
-        .auth_user_id as string,
-    );
+    // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
+    const staff = await joinByInvitation(app, admin, inv.token, `担当 ${uniq().slice(-4)}`, PW);
     const S = { authorization: `Bearer ${staff.token}` };
     const other = await signUp();
     for (const h of [S, other.H]) {
