@@ -1183,7 +1183,6 @@ describe("K-53 テスターのレビュー 2 回目で足した行（招待の�
       );
       const ac = await req("POST", `/api/v1/auth/invitations/${inv.token}/accept`, { name: tag, password: PW });
       expect(ac.status, await ac.clone().text()).toBe(201);
-      const d = (await json(ac)).data as { token: string; workspace_id: string };
       const mid = (
         await admin.query<{ id: string }>("select id from members where tenant_id = $1 and display_name = $2", [
           boss.tenantId,
