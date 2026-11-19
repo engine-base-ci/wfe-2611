@@ -17,6 +17,7 @@ import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 import { ObjectStore } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { createInvitation } from "@kaname/auth/invitations";
+import { ActionGateway, RateLimiter } from "@kaname/actions";
 import { joinByInvitation } from "./invite_join.js";
 import { invitationHooks } from "../src/hooks/invitations.js";
 import { createApp } from "../src/app.js";
@@ -86,6 +87,10 @@ beforeAll(async () => {
           auth,
           appPool,
           authPool: new pg.Pool({ connectionString: AUTH_URL, max: 2 }),
+          // 参加の口の漏れたパスワードの照合（関門 C1）。試験は外に出ない（照合が落ちている間は照合せずに通す・D-128.134）
+          actions: new ActionGateway(repo, {}, new RateLimiter(600), 1_000, async () => {
+            throw new Error("試験は外に出ない");
+          }),
           config: { opsEmail: "ops@example.com", webBaseUrl: "http://127.0.0.1:3123" },
         }),
       },
