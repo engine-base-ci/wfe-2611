@@ -111,6 +111,31 @@ def tricky_repo(d: str) -> tuple[Repo, str, str]:
     return r, start, base
 
 
+def skew_repo(d: str) -> tuple[Repo, str, dict[str, str]]:
+    """一覧（git log --reverse）の順が先祖の順と食い違う形（精査 R の指摘）。START → A → P（本線）、P から枝を作り X（親 P より日付が古い）、
+    本線に Q を足して X の枝を取り込む（M）。一覧は A → X → P → Q → M の順になり、
+    ・A は P を通って X の先祖で、一覧でも X より前（直す前の版は数える → 一覧の順になめて先祖を作ると落とす）
+    ・P は X の親だが、一覧では X より後ろ（直す前の版は「前の実装のコミット」に入れず数えない → 絞り込みを忘れると緑に緩む）
+    A・P・X はどれも実装のコミットで、X のチケット K-13 は A の K-11 と P の K-12 の両方に依存する。(リポジトリ, START, 名前 → sha)"""
+    r = Repo(d)
+    r.tickets({"K-11": {"depends_on": [], "stage": "未着手"}, "K-12": {"depends_on": [], "stage": "未着手"},
+               "K-13": {"depends_on": ["K-11", "K-12"], "stage": "未着手"}, "K-14": {"depends_on": [], "stage": "未着手"}})
+    r.t = 1_700_000_000 + 1_000
+    start = r.commit("K-0 base", {"README.md": "x"})
+    r.t = 1_700_000_000 + 1_140
+    a = r.commit("K-11 feat: A", {"apps/a.ts": "a"})
+    r.t = 1_700_000_000 + 1_940
+    p = r.commit("K-12 feat: P", {"apps/p.ts": "p"})
+    r.git("checkout", "-q", "-b", "x")
+    r.t = 1_700_000_000 + 1_440
+    x = r.commit("K-13 feat: X（親 P より日付が古い）", {"apps/x.ts": "x"})
+    r.git("checkout", "-q", "main")
+    r.t = 1_700_000_000 + 2_940
+    q = r.commit("K-14 feat: Q", {"apps/q.ts": "q"})
+    m = r.merge("x", "K-13 Merge branch 'x'")
+    return r, start, {"A": a, "P": p, "X": x, "Q": q, "M": m}
+
+
 def violation_repos(d: str) -> list[tuple[str, str, str | None]]:
     """前からの違反の型（依存より先に作る・枝の外の実装・外して戻した依存・済んでいない子の親・枝の先頭の依存）と、緑の型。
     (写しのフォルダ, START, 比べる元か None) のリスト"""
@@ -231,17 +256,26 @@ class SameAnswerTest(unittest.TestCase):
             for must in ("apps/画面の部品.ts", "apps/c d.ts", "apps/新しい名前.ts", "apps/old name.ts", "lib/z.ts", '"apps/a\\"q.ts"'):
                 self.assertIn(must, names)                    # 形が写しに本当にある（何も見ずに同じにならない）
             self.assertTrue(any(len(p) == 2 and not f for _, _, f, p in got))
-            is_anc = g.ancestry(got)
-            shas = [x[0] for x in got]
-            for a in shas:
-                for b in shas:
-                    want = subprocess.run(["git", "merge-base", "--is-ancestor", a, b], cwd=d).returncode == 0
-                    self.assertEqual(is_anc(a, b), want, f"{a[:8]} → {b[:8]}")
+            self.assert_ancestry(d, got)
+        with tempfile.TemporaryDirectory() as d:
+            r, start, c = skew_repo(d)
+            got = g.commit_log(d, start, c["M"])
+            order = [x[0] for x in got]
+            self.assertEqual(order, [c[k] for k in ("A", "X", "P", "Q", "M")])   # 形が写しに本当にある（子 X が親 P より前）
+            self.assert_ancestry(d, got)
+
+    def assert_ancestry(self, d: str, got: list) -> None:
+        is_anc = g.ancestry(got)
+        shas = [x[0] for x in got]
+        for a in shas:
+            for b in shas:
+                want = subprocess.run(["git", "merge-base", "--is-ancestor", a, b], cwd=d).returncode == 0
+                self.assertEqual(is_anc(a, b), want, f"{a[:8]} → {b[:8]}")
 
     def test_K341_CI_003_output_is_identical_to_the_version_before(self):
         """K341-CI-003 守り（回帰）：直す前の版（OLD_BLOB）と直した版を同じ写しで流し、出力（★ の違反の一覧・決まりの前に入ったとして通した依存・
         実装のコミットの数・PASS／FAIL の行）と終わりの番号が 1 字も違わない。写しは K341-CI-002 の形（取り込み・関わりの無い歴史・日付の
-        食い違い）を、比べる元なし・ありの両方と、前からの違反の型（依存より先・枝の外・外して戻す・枝の先頭・parent を外した子）と緑の型。
+        食い違い）を、比べる元なし・ありの両方と、一覧の順が先祖の順と食い違う写し（skew_repo・K-13 が一覧で後ろの親 P の K-12 に依存して赤）と、前からの違反の型（依存より先・枝の外・外して戻す・枝の先頭・parent を外した子）と緑の型。
         赤の型は本当に FAIL で ★ を出し、緑の型は PASS（比べるだけで何も見ていない、にならない）"""
         old = subprocess.run(["git", "cat-file", "blob", OLD_BLOB], cwd=ROOT, check=True, capture_output=True).stdout
         with tempfile.TemporaryDirectory() as d:
@@ -249,7 +283,8 @@ class SameAnswerTest(unittest.TestCase):
             with open(old_script, "wb") as f:
                 f.write(old)
             r, start, base = tricky_repo(os.path.join(d, "tricky"))
-            cases = [(r.d, start, None), (r.d, start, base)] + violation_repos(os.path.join(d, "v"))
+            sk, sk_start, _ = skew_repo(os.path.join(d, "skew"))
+            cases = [(r.d, start, None), (r.d, start, base), (sk.d, sk_start, None)] + violation_repos(os.path.join(d, "v"))
             fails = passes = 0
             for repo, s, b in cases:
                 with self.subTest(repo=os.path.basename(repo), base=b):
@@ -258,7 +293,7 @@ class SameAnswerTest(unittest.TestCase):
                     self.assertEqual(got, want)
                     fails += want[0] == 1 and "★" in want[1] and "FAIL" in want[1]
                     passes += want[0] == 0 and "PASS" in want[1]
-            self.assertGreaterEqual(fails, 5)
+            self.assertGreaterEqual(fails, 6)
             self.assertGreaterEqual(passes, 1)
 
 
