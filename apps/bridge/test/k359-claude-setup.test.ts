@@ -392,6 +392,88 @@ describe("K-359 入れる（installClaude）", { timeout: 30_000 }, () => {
   });
 });
 
+/** 作り物の npm（node の台本）。置き場の npm.json の mode で振る舞いを変え、受けた引数と環境の名前を npm-calls.jsonl に、pid を pids に書く */
+const fakeNpmScript = (d: string) => `#!${process.execPath}
+const { readFileSync, appendFileSync } = require("node:fs");
+const DIR = ${JSON.stringify(d)};
+const mode = JSON.parse(readFileSync(DIR + "/npm.json", "utf8")).mode;
+appendFileSync(DIR + "/npm-calls.jsonl", JSON.stringify({ args: process.argv.slice(2), env: Object.keys(process.env) }) + "\\n");
+appendFileSync(DIR + "/pids", process.pid + "\\n");
+if (mode === "ok") { process.stdout.write("added 3 packages in 2s\\n"); process.exit(0); }
+if (mode === "fail") { process.stderr.write("npm WARN x\\nnpm ERR! code EACCES\\n"); process.exit(1); }
+process.stdout.write("idealTree: timing\\n");
+setInterval(() => {}, 1000);
+`;
+
+describe("K-359 入れる（本物の走らせ方と探し方：run・broken を差し込まない）", { timeout: 30_000 }, () => {
+  let npm = "";
+  const setNpm = (mode: "ok" | "fail" | "hang") => writeFileSync(join(dir, "npm.json"), JSON.stringify({ mode }));
+  const npmCalls = () => lines("npm-calls.jsonl").map((l) => JSON.parse(l) as { args: string[]; env: string[] });
+  beforeAll(() => {
+    npm = join(dir, "npm");
+    writeFileSync(npm, fakeNpmScript(dir));
+    chmodSync(npm, 0o755);
+  });
+  beforeEach(() => {
+    writeFileSync(join(dir, "npm-calls.jsonl"), "");
+  });
+
+  it("K359-BR-028 手順 1 を本物の走らせ方で：作り物の npm が成功・終了コード 1・返らない・置き場に無い。返らないときは起こした子が本当に止まる", async () => {
+    process.env["ANTHROPIC_API_KEY"] = K359_FAKE_API_KEY;
+    const base = { forget: () => undefined, broken: async () => null, npm: () => npm };
+    // 成功：台本が呼ばれた後は claude が見つかる
+    setNpm("ok");
+    const steps: Step[] = [];
+    const ok = await installClaude((s) => steps.push(s), {
+      ...base,
+      find: async () => (npmCalls().length > 0 ? "/usr/local/bin/claude" : null),
+    });
+    expect(ok).toEqual({ ok: true, message: "入りました。次に「ログインする」を押してください" });
+    expect(npmCalls()).toHaveLength(1);
+    expect(npmCalls()[0]!.args).toEqual(NPM_ARGS);
+    expect(npmCalls()[0]!.env).not.toContain("ANTHROPIC_API_KEY");
+    expect(steps).toContainEqual({ text: "added 3 packages in 2s", state: "doing" });
+    // 終了コード 1：最後の 1 行を添える
+    setNpm("fail");
+    const ng = await installClaude(() => undefined, { ...base, find: async () => null });
+    expect(ng).toEqual({ ok: false, message: "入れられませんでした（npm ERR! code EACCES）" });
+    // 返らない：時間切れの文で返り、起こした子はもう生きていない（止める関数は本物）
+    setNpm("hang");
+    writeFileSync(join(dir, "pids"), "");
+    const late = await installClaude(() => undefined, { ...base, find: async () => null, timeoutMs: 1_500 });
+    expect(late).toEqual({ ok: false, message: "時間がかかりすぎたので止めました。もう一度押してください" });
+    expect(pids()).toHaveLength(1);
+    await vi.waitFor(() => expect(alive(pids()[0]!)).toBe(false), { timeout: 5_000 });
+    expect(installProgress().running).toBe(false);
+    // 置き場に無い npm：起こせなくても投げず、入ったと言わない
+    const none = await installClaude(() => undefined, {
+      ...base,
+      npm: () => join(dir, "no-such-npm"),
+      find: async () => null,
+    });
+    expect(none.ok).toBe(false);
+    expect(none.message.startsWith("入れられませんでした")).toBe(true);
+  });
+
+  it("K359-BR-029 本物の探し方（壊れた置き場をこの台の npm の全体の置き場と決まった置き場から探す）：投げずにちょうど 2 行", async () => {
+    const auth = vi.fn(async () => ({ loggedIn: true }));
+    const c = await claudeChecks({ find: async () => null, auth });
+    expect(c).toHaveLength(2);
+    expect(c[0]!.name).toBe(NAME_CC);
+    expect(c[0]!.ok).toBe(false);
+    // この台に壊れた置き場が在るかどうかで、直し方は install か repair（在れば E-CONN-011・無ければエラーの ID なし）
+    expect(["install", "repair"]).toContain(c[0]!.fix);
+    expect(c[0]!.code).toBe(c[0]!.fix === "repair" ? "E-CONN-011" : undefined);
+    expect(c[1]).toMatchObject({
+      name: NAME_LOGIN,
+      ok: false,
+      fix: "install",
+      detail: "先に Claude Code を入れてください",
+    });
+    expect(auth).not.toHaveBeenCalled();
+  });
+});
+
 /** 本物のこの PC の口を番号 0 で開く */
 async function local(over: Partial<Parameters<typeof startLocalServer>[0]> = {}) {
   const calls = { install: 0, login: 0, code: [] as string[], check: 0, claim: 0 };
