@@ -1893,6 +1893,14 @@ K-331,招待の下見の口（getInvitation・招いた人とグループと役�
 - [ ] 契約の口 `getInvitation` が 501 でない。生成の試験 `apps/api/test/generated/get_auth_invitations_token.test.ts` の it.todo が 0（ears-elsewhere.json の covers で本物の試験を指す）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-332,新しく作って参加する口（acceptInvitation・ログインしていない人・名前とパスワード・所属とグループを結ぶ・入った直後は付けるまで進めない）（K-55 の葉）,タスク,K-55,未着手,実装,2026-11-21,F2・認証,"招待の画面で、まだアカウントの無い人が名前とパスワードを入れて「参加する」を押したときに呼ぶ契約の口 `acceptInvitation`（POST /api/v1/auth/invitations/:token/accept）の、ログインしていない人の分を作る（今は 501）。
+入り方は段 1 の登録と同じ形（代表の答え answer=becc3d3aa526 ①）：名前とパスワードで本人を作り、招かれたワークスペースに所属させ、入った直後のセッションは「付けるまで進めない」（段 2 の印 mfa_pending）。メールは招待のリンクが届いたことで確かめ済み。規約は画面の中で同意したことにする（続けると同意・D-128.137・K-53 の申し送り「招待で入る人の同意は K-55」）。
+あわせて、受諾の DB の関数を作り直し、所属の行（tenant_memberships）とグループの所属（scope_memberships）も作って権限の束を結ぶ（flow.json の A03 の裏側。今の関数は members しか作らない）。
+
+ログイン中の人が今のアカウントで参加する分は K-333、画面は K-335。","- [ ] 下の表の 19 行（K332-API-001〜019）が緑：`apps/api/test/features/F2/invitation-accept-new.test.ts`
+- [ ] 契約の口 `acceptInvitation` が 501 でない。生成の試験 `apps/api/test/generated/post_auth_invitations_token_accept.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-332.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-338,画面の試験 K319-UI-026 の揺れを止める（試験の差し替えが開くたびに印を置き直し、ログインの画面が /mfa-setup へ移り始めて次の open と取り合う）（K-50 の葉）,タスク,K-50,未着手,実装,2026-11-19,F1・画面,"K-319 の画面の試験 `K319-UI-026`（付けるまで進めないの途中でログインが切れた → 入り直して開く）が揺れている（本線で 10 回中 3 回・K-321 の木で 10 回中 1 回落ちる。落ち方は 2 回目の open の `page.goto('/mfa-setup')` が `net::ERR_ABORTED`）。このせいで K-321 が取り込めない（決める人の答え answer=763ae7150039・列の先頭の割り込み）。
 
 原因は試験の作りで、画面ではない（調べの記録：/private/tmp/claude-501/probe-k319/）。

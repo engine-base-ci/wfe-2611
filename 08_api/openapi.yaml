@@ -9721,6 +9721,17 @@ components:
       required:
       - note
       x-required-by: hooks
+    InvitationAcceptInput:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-operation: acceptInvitation
     TicketCompleteInput:
       type: object
       properties:
@@ -11353,6 +11364,16 @@ components:
           type: object
           nullable: true
       x-operation: getInvitation
+    InvitationAccepted:
+      type: object
+      properties:
+        token:
+          type: string
+        workspace_id:
+          type: string
+        next:
+          type: string
+      x-operation: acceptInvitation
     ServiceStatus:
       type: object
       properties:
@@ -13581,7 +13602,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationAcceptInput'
       responses:
         '201':
           description: 成功
@@ -13591,17 +13612,45 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Invitations'
+                    $ref: '#/components/schemas/InvitationAccepted'
                   meta:
                     type: object
-        '409':
-          description: CONFLICT
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
+          x-unexpressible-422:
+          - ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）
+          - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
+          - 漏れたことのあるパスワード（E-VAL-011）
+        '403':
+          description: E-AUTH-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-INV-006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: E-INV-002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -13614,12 +13663,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

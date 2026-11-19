@@ -2135,12 +2135,8 @@
    "screens": [
     "invite-accept"
    ],
-   "apis": [
-    "acceptInvitation"
-   ],
-   "tests": [
-    "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
-   ],
+   "apis": [],
+   "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F2「招かれて参加する」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
@@ -15689,6 +15685,93 @@
     "申し送り": "- K-332・K-333・K-334：試験の土台 `invite.harness.ts` を使う。下見の関数 `app.invitation_preview2` の state の決め方（used ＞ revoked ＞ expired）に参加・送り直しの口も合わせる\n- K-335・K-336：画面は data.state と account_exists と signed_in だけで形を決める"
    },
    "file": "11_tickets/K-331.md"
+  },
+  {
+   "id": "K-332",
+   "title": "新しく作って参加する口（acceptInvitation・ログインしていない人・名前とパスワード・所属とグループを結ぶ・入った直後は付けるまで進めない）（K-55 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-55",
+   "milestone": "F2",
+   "area": "認証",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-313（口と DB・18 行・見込み 1 時間）と段 1 の K-52（登録の確定）の口の部分から引いた：口 1 本（入力の整え・利用者を作る・失敗したら消す）20 分・migration 1 本（受諾の関数の作り直し）15 分・契約の形 10 分・自分の確かめ 10 分",
+   "decisions": [
+    "D-125.150",
+    "D-128.62",
+    "D-128.63",
+    "D-128.125",
+    "D-128.137",
+    "D-128.141"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/generated/post_auth_invitations_token_accept.test.ts"
+   ],
+   "carry": [
+    "07_qa/test-specs/errors.d/K-55.json"
+   ],
+   "depends_on": [
+    "K-331",
+    "K-308"
+   ],
+   "acts": [
+    "A03"
+   ],
+   "screens": [],
+   "apis": [
+    "acceptInvitation"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/db",
+    "@kaname/contracts",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F2/invitations/",
+    "apps/api/src/hooks/invitations.ts",
+    "packages/auth/src/invitations.ts",
+    "packages/db/migrations/",
+    "packages/db/src/index.ts",
+    "07_qa/test-specs/errors.d/K-332.json",
+    "07_qa/test-specs/errors.d/_base.json",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-332.py",
+    "scripts/ci/contract_shape.d/K-332.py",
+    "apps/api/test/fuzz/server.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-332.json",
+    "scripts/ci/ci_scope.d/K-332.json",
+    "11_tickets/K-55.md"
+   ],
+   "sections": {
+    "目的": "招待の画面で、まだアカウントの無い人が名前とパスワードを入れて「参加する」を押したときに呼ぶ契約の口 `acceptInvitation`（POST /api/v1/auth/invitations/:token/accept）の、ログインしていない人の分を作る（今は 501）。\n入り方は段 1 の登録と同じ形（代表の答え answer=becc3d3aa526 ①）：名前とパスワードで本人を作り、招かれたワークスペースに所属させ、入った直後のセッションは「付けるまで進めない」（段 2 の印 mfa_pending）。メールは招待のリンクが届いたことで確かめ済み。規約は画面の中で同意したことにする（続けると同意・D-128.137・K-53 の申し送り「招待で入る人の同意は K-55」）。\nあわせて、受諾の DB の関数を作り直し、所属の行（tenant_memberships）とグループの所属（scope_memberships）も作って権限の束を結ぶ（flow.json の A03 の裏側。今の関数は members しか作らない）。\n\nログイン中の人が今のアカウントで参加する分は K-333、画面は K-335。",
+    "完了の条件": "- [ ] 下の表の 19 行（K332-API-001〜019）が緑：`apps/api/test/features/F2/invitation-accept-new.test.ts`\n- [ ] 契約の口 `acceptInvitation` が 501 でない。生成の試験 `apps/api/test/generated/post_auth_invitations_token_accept.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-332.json` の covers）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: INV\n\n- 依存：K-331（試験の土台 invite.harness.ts・下見の関数・hook のファイル）と K-308（段 2：sessions.mfa_pending と、セッションを作った後に印を立てる hook）\n- 前の道すじ `/api/auth-ext/invitations/*` はこの葉では消さない（今の画面と前からの試験が使う）。消すのは K-337\n- `packages/auth/src/invitations.ts` の `acceptInvitation(appPool, token, authUserId, name)` の形と、断るときの文（「無効」「既に」を含む）は変えない（前からの試験 packages/auth/test/flows.test.ts が見る）\n- 上限は契約どおり 10 回／分／IP",
+    "依存の理由": "- K-331: 要る — 同じファイル（apps/api/src/hooks/invitations.ts・features/F2/invitations/・screen_api.py の招待の節）を足していく。試験はこのチケットの土台 invite.harness.ts と下見（state used）を使う\n- K-308: 要る — 試験 K332-API-003 が段 2 の列 sessions.mfa_pending と、セッションを作ると印を立てる hook（session.create.after の app.mark_session_mfa）を見る（登録と同じ形・代表の答え ①）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・番号は取り込む時点の次の空き） | `<次の空き>_accept_invitation.sql`：`app.accept_invitation(p_token_hash text, p_auth_user_id text, p_display_name text) returns uuid` を作り直す（形は同じ）。① 招待を for update で読み、行が無い（inv.id is null）→ 例外（文に「無効」・前からの試験 flows.test.ts の「でたらめなトークンは無効」）、used → 'used'、revoked/deleted → 'revoked'、expires_at < now() → 'expired' の例外（insufficient_privilege・文に「無効」と理由の語）② グループは invitations.scope_id（消したグループならワークスペースのいちばん上のグループ）③ members（tenant・scope・kind human・display_name・role_id・auth_user_id・created_by＝招いた人）④ tenant_memberships（role＝招待の role_id が admin・manager・member・viewer・requester ならそのまま・ほかは member・status active・joined_at now()・auth_user_id）⑤ scope_memberships（主の所属・role は manager か viewer ならそのまま・ほかは member）⑥ accepted_member_id ⑦ security_events invitation_accepted ⑧ 今の版の規約（app.current_terms() の全部）に terms_consents を 1 行ずつ（同じ取引）。今の「どこかの会社にもう居れば断る」は外す（D-125.150。2 つ目の会社は K-333）。migration の最後に `revoke all on function app.accept_invitation(text, text, text) from public;` と `grant execute on function app.accept_invitation(text, text, text) to kaname_app, kaname_auth;`（0005 は public から外していないので、外さないと試験の「kaname_app から実行権を外す」が効かない）。packages/db/src/index.ts の MIGRATIONS の末尾に足す |\n| 口（ログインしていない人） | `apps/api/src/features/F2/invitations/accept.ts`。順：① トークンの形（1〜512 文字）→ 下見の関数で状態を見る（無い 404・E-INV-001／revoked 410・E-INV-002／expired 410・E-INV-003／used 410・E-INV-004）② ワークスペースが止められている（subscriptions.suspended_at）→ 403・E-AUTH-012（K-303 と同じ文）③ 名前：NFKC・前後の空白を落とす・1〜100 文字（違えば 422・E-VAL-007）④ パスワード：12〜128 文字（11 以下 E-VAL-005・129 以上 E-VAL-026）・漏れたパスワードの照合は登録と同じ ⑤ 宛てのメールに利用者がいれば 409・E-INV-006 ⑥ 部品で利用者を作る（会社名を渡さない・emailVerified を立てる・セッションは作らない＝部品の自動ログインを使わない・下の「外に影響する手順」の 1。作るときに同じメールが先にあった（同時に 2 回押した負けの方）→ 409・E-INV-006 で何も消さない。それ以外で作れない → 503・E-PAGE-003）→ 受諾の関数（②・規約の同意も同じ取引の中で今の版に記録する）→ 受諾の関数（手順 2）が招待の状態（used・revoked・expired）で断ったら、この要求で作った利用者を id で消して 410（メールで引いて消さない：勝った方の利用者を消さないため）、それ以外の例外なら同じく id で消して 503・E-PAGE-003（消すのも失敗したらログに招待の id と「後片付け」を出して 503。宛てのメールはログに出さない）⑦ 部品でセッションを作る（手順 3・session.create.after が mfa_pending を立て、規約は手順 2 で同意済みなので同意し直しの印は立たない。失敗したら参加は取り消さずに 503）⑧ 201 `{ data: { token, workspace_id, next: \"/mfa-setup\" } }`（token はログインの口 K-301 と同じく部品のセッションの token そのもの＝kaname_auth.session.token・署名つきの値にしない）・`Cache-Control: private, no-store`。体の email は読まない。ログに宛てのメールとパスワードを出さない（宛先は mailTag の印） |\n| 同時に 2 回 | 先に利用者を作れた方だけが先へ進む。負けた方は利用者を作るところで同じメールが先にある → 409・E-INV-006（何も消さない）。両方が利用者を作れた場合は無い（メールは一意）。受諾の関数の for update で、2 回目の受諾は used（410） |\n| エラー | `07_qa/test-specs/errors.d/K-332.json` に E-INV-003（この招待は期限（7 日）が過ぎました。送り直しを頼めます）・E-INV-006（このメールアドレスにはもうアカウントがあります。ログインしてから参加してください）を足す。E-INV-004（この招待はもう使われています。参加した人は、ログインして入ってください）は K-334 も使うので、切る段の枝に置いた `07_qa/test-specs/errors.d/K-55.json` を carry: でそのまま持ち込む（K-334 も同じファイルを同じ中身で持ち込むので、どちらが先に入ってもぶつからない・中身を直さない）。前からある E-INV-002 は `07_qa/test-specs/errors.d/_base.json` の行の文を「この招待は取り消されています。招待した人に、もう一度招待してもらってください」に直す（07_functional/段3-F2/機能分解.md の 4 章）。番号が本線で埋まっていたら段 3 の全部の葉で一括に付け替える |\n| 契約の形 | `05_flow/screen_api.py` の前からある acceptInvitation の行（足すのではなく前からの行を直すので、断片ではなく本体を直す。断片 `05_flow/screen_api.d/K-332.py` は置かない：changes: に載せたのは、新しい口の登録先の決まり（touch_rules）がこの住所を求めるため。このチケットは新しい口を足さないので、空のまま作らない）と `scripts/ci/contract_shape.d/K-332.py`（契約の形の 6 つの表に足す行）。acceptInvitation：入力を `{ name?, password? }`、答えを `{ token, workspace_id, next }` に替え、403・404・409・410 を足す → build_api.py で作り直す |\n| 登録先（touch_rules） | fuzz の的・`scripts/ci/contract_shape.d/K-332.py`・`07_qa/test-plan/ears-elsewhere.d/K-332.json`（生成の試験の covers・ops の鍵 acceptInvitation）・`scripts/ci/ci_scope.d/K-332.json`（新しい試験の data_links・reads_ok）。作ったら `python3 scripts/ci/build_registries.py` で生成物を作り直す |\n| 親 | 11_tickets/K-55.md から acceptInvitation と post_auth_invitations_token_accept を外す（K-333 も同じ口の行を持つ。外すのは先に入る方） |",
+    "外に影響する手順": "- 1: 認証の利用者を作る（kaname_auth.\"user\"・account） [残る] — 後の手順が失敗したら消す（後片付け）。失敗したら 503・E-PAGE-003 で何も残らない（K332-API-016）。後片付けの失敗は K332-API-018\n- 2: 受諾（members・所属・グループの所属・規約の同意・accepted_member_id・出来事 を 1 つの取引）。失敗したら取引ごと戻り、手順 1 の利用者を消して 503（K332-API-017）\n- 3: セッションを作る（kaname_auth.session・sessions・印）。失敗したら 503。参加は取り消さない（手順 2 は正しい参加として残す・ログインの画面から入れる）（K332-API-019）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F2/invitation-accept-new.test.ts`（本番と同じ bootApi・本物の DB・本物の Better Auth。土台 invite.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 使える | 招待の画面で参加する | ログインしていない・アカウント無し | 201・作る・mfa_pending・同意 | このチケット | K332-API-001〜003 |\n| 期限切れ・取り消し・使われた | 同じ | 同じ | 410・それぞれの番号 | このチケット | K332-API-006 |\n| 行が無い | 同じ | 同じ | 404・E-INV-001 | このチケット | K332-API-007 |\n| 使える | 同じ | ログインしていない・アカウント有り | 409・E-INV-006 | このチケット | K332-API-008 |\n| ワークスペースが止められた | 同じ | 同じ | 403・E-AUTH-012 | このチケット | K332-API-011 |\n| 使える | 同じ | ログイン中 | 今のアカウントで参加 | K-333 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K332-API-001 | 対象の状態 | 使える招待・名前とパスワード | 201・data の鍵はちょうど next・token・workspace_id。workspace_id は招いたワークスペース・next は \"/mfa-setup\"・token で本物の解き方でログインできている |\n| K332-API-002 | 対象の状態 | 作られる物（招待の役割 viewer） | 宛ての利用者が 1 人（emailVerified true）・members が 1 行（招いたワークスペース・招待のグループ・名前）・tenant_memberships が 1 行（role viewer・status active・joined_at あり）・scope_memberships が [{ 招待のグループ, is_primary true }]・招待の accepted_member_id がその人・security_events に invitation_accepted が 1 行・tenants の数は変わらない |\n| K332-API-003 | 利用者の状態 | 入った直後のセッション | その印の sessions の行の mfa_pending が true・app.current_terms() のどの版にも同意の行がある・app.session_terms_pending が false |\n| K332-API-004 | 入力 | 名前の整え・空・長すぎ | 「　ｷﾑﾗ　優 」は 201 で display_name「キムラ 優」。\"\"・空白だけ・101 文字は 422・E-VAL-007 で利用者も受諾の印も無い |\n| K332-API-005 | 入力 | パスワードの長さ | 11 文字は 422・E-VAL-005、129 文字は 422・E-VAL-026。どちらも利用者も受諾の印も無い |\n| K332-API-006 | 時間の流れ | 期限切れ・取り消し・使われた | それぞれ 410・E-INV-003／E-INV-002／E-INV-004 とその文。宛ての利用者は 0 |\n| K332-API-007 | 入力 | 行が無い | 404・E-INV-001 |\n| K332-API-008 | 利用者の状態 | 宛てにアカウントがある | 409・E-INV-006。利用者は 1 人のまま・招待は使われない・送ったパスワードではログインできない（パスワードは変わらない） |\n| K332-API-009 | 守り | 体に別の email | 201。利用者のメールは招待の宛て・別のアドレスの利用者は 0 |\n| K332-API-010 | 操作の揺れ | 同じ招待を同時に 2 回 | 201 はちょうど 1 回・もう 1 回は 410 か 409。宛ての利用者は 1 人・members は 1 行 |\n| K332-API-011 | 対象の状態 | ワークスペースが止められた（subscriptions に止めた行を入れる・会社を作っても subscriptions の行はできないため） | 403・E-AUTH-012。利用者も受諾の印も無い |\n| K332-API-012 | 対象の状態 | 招待のグループが消えている | 201。members.scope_id と主のグループの所属（scope_memberships の is_primary）は、そのワークスペースのいちばん上の生きたグループ（作りかけを消す確かめは K332-API-017） |\n| K332-API-013 | 守り | 同じ IP から 1 分に 11 回目 | 429・retry_after_sec は 1〜60 の整数 |\n| K332-API-014 | 守り | 貯めない・ログ | 201・Cache-Control に no-store。その間のログに宛てのメールとパスワードの文字が無い |\n| K332-API-015 | 時間の流れ | 参加した後の下見 | 下見の state が used |\n| K332-API-016 | 失敗 | 手順 1 の失敗：利用者を作れない（引き金で断る） | 503・E-PAGE-003。宛ての利用者 0・members 0・招待は使われない |\n| K332-API-017 | 失敗 | 手順 2 の失敗：受諾の関数が使えない（手順 1 の利用者を消す） | 503・E-PAGE-003。宛ての利用者 0（作った利用者を消した）・招待は使われない |\n| K332-API-018 | 失敗 | 手順 2 が失敗し、手順 1 の後片付け（利用者を消す）も失敗 | 503・E-PAGE-003。宛ての利用者は 1 人残る・招待は使われない・ログに招待の id と「後片付け」があり宛てのメールは無い |\n| K332-API-019 | 失敗 | 手順 3 の失敗：セッションを作れない | 503・E-PAGE-003。members は 1 行・招待は使われた（取り消さない）。ログインの口でそのメールとパスワードで 201 |\n\n### テストの型の受け（分類 INV）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 期限切れ・取り消し・使い終わった招待を開く | K332-API-006・015（理由の番号を返す。次の一手は画面 K-335） |\n| TP-INV-02 違うアカウントでログイン中に開く | 要らない：この葉はログインしていない人の分。ログイン中は K333-API-005 |\n| TP-INV-03 既にメンバーの人が開く | K332-API-008（アカウントがある人は作らずに断る。ログイン中のメンバーは K333-API-006） |\n| TP-INV-04 招いた人が権限を失った・抜けた後に開く | 要らない：抜けた人の招待は招く側（F10）が消す（D-128.96）。消した招待は K332-API-006 の取り消しと同じ 410 |\n| TP-INV-05 同じ人を 2 回招待する | 要らない：招待を作るのは F10（K-70）。同じ招待を 2 回受ける揺れは K332-API-010 |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験。\n\n- apps/api/test/agent_artifacts.test.ts: 替えない — packages/auth/src/invitations.ts の createInvitation は変えない。受諾は K-337 まで前の道すじのまま（関数の形と断る文は同じ）\n- apps/api/test/agent_memory.test.ts: 替えない — 同じ\n- apps/api/test/auth_ext.test.ts: 替えない — 前の道すじの受諾は関数の形が同じなので 201・2 回目 410・無い 404 のまま（消すのは K-337）\n- apps/api/test/authz_rows.test.ts: 替えない — hook を足すだけで行の守りの見本は変えない\n- apps/api/test/features/F1/terms.test.ts: 替えない — K53-API-039 は前の道すじの受諾を見る。関数が所属の行を足しても、セッションの写し方と同意し直しの印は前の道すじのまま（替えるのは K-337）\n- apps/api/test/features/F1/verify-email.test.ts: 替えない — 招待で入る人は会社を作らない（K52-API-035）・確定の途中に入られたら 409 は、関数が所属の行を足しても同じ\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 作り直した生成物を読む\n- apps/web/test/k-error-of.test.ts: 替えない — errors.d/ の断片に E-INV を足し E-INV-002 の文を直すだけ。試験が見る番号（E-PAGE・E-AUTH）は変えない\n- apps/web/tests/states.spec.ts: 替えない — 同じ（招待の文を見ない）\n- packages/auth/test/flows.test.ts: 替えない — acceptInvitation の形と断る文（無効・既に）は変えない。受けると担当者になってログインできる・取り消しは即無効・でたらめは無効 はそのまま\n- packages/db/src/index.test.ts: 替えない — MIGRATIONS の末尾に 1 行足すだけ\n- scripts/ci/ci_scope_test.py: 替えない — 地図に 1 行足すだけ\n- scripts/ci/fuzz_targets_test.py: 替えない — 的を足すだけ\n- scripts/ci/k177_web_scope_test.py: 替えない — 画面の範囲を変えない\n- scripts/ci/k185_hook_regions_test.py: 替えない — hook の書き方は同じ形\n- scripts/ci/k187_cut_take_test.py: 替えない — 切る段の台本を変えない\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手を変えない\n- scripts/ci/k245_g27_reach_test.py: 替えない — ears-elsewhere.d/K-332.json（作り手が ears-elsewhere.json に足す）で結ぶ\n- scripts/ci/k248_scope_reach_test.py: 替えない — 新しい試験はファイルを読まない\n- scripts/ci/ci_lean_test.py: 替えない — 地図（ci_scope.d/K-332.json）に行を足すだけ\n- scripts/ci/k204_staging_workflow_test.py: 替えない — workflow を変えない\n- scripts/ci/k330_cut_check_test.py: 替えない — K-330 の切る段の検査の口の自己試験。道を例の入力として文字で書いているだけで、このチケットの変更を読まない\n- scripts/ci/errors_used.test.mjs: 替えない — 作り手が errors.d/ から作る errors.json を読み、使われているエラーの番号を数える検査の自己試験。番号を足すと、その番号を使う口の葉の実装で使われる（errors_used の検査は CI で見る）\n- scripts/ci/test_owner_gate.py: 替えない — 試験の持ち主の検査（名前が test_ で始まるので候補に入った）。ci_scope.json（作り手が ci_scope.d/ から作る）・workflow の道を文字で持つだけで、断片に行を足しても検査の決まりは変わらない（持ち主の検査は切る段で緑を確かめた）",
+    "成果物": "- 口 `apps/api/src/features/F2/invitations/accept.ts`・hook・migration 1 本・errors.d/ の断片・契約の形\n- 単体の試験 `apps/api/test/features/F2/invitation-accept-new.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=becc3d3aa526 ①（入り方は登録と同じ）・③（アカウントがある人はログインして戻る → 口は 409・E-INV-006 で作らない）\n- 2026-11-18 切る段の決め：受諾は今の版の規約に同意したことにする（画面に「続けると同意」の文・段 1 の登録と同じ D-128.137）。前の道すじは同意し直しの印を立てていた（K-53 の「招待で入る人の同意は K-55」をここで受ける）\n- 2026-11-18 切る段の決め：役割の古い値（staff など）は所属の行で member にする（tenant_memberships.role の決まった 5 つ）。members.role_id は招待の値のまま（前からの画面の権限の読み方を変えない）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- 利用者を作る（認証の DB）と所属を作る（アプリの DB）は 1 つの取引にできない。途中で落ちたら作った利用者を消す（K332-API-012）。消すのにも落ちたら利用者だけ残る（次に同じ招待で受けると 409・E-INV-006 になる）。その時は運営が消す。ログに招待の id と「利用者だけ残った」を出す",
+    "申し送り": "- K-333：同じ口のログイン中の分。受諾の関数の「もう居れば断る」はこの葉で外した。2 つ目の会社の members は auth_user_id を空にし、所属の行の auth_user_id で本人に結ぶ（members.auth_user_id は一意）\n- K-335：答えの next にそのまま移る（/mfa-setup）\n- K-337：前の道すじの受諾を消し、前からの試験を契約の口に移す",
+    "表の住所（2026-11-19・K-325 が入った後）": "共通の表に足す分は、チケットごとのファイルに書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない。"
+   },
+   "file": "11_tickets/K-332.md"
   },
   {
    "id": "K-338",

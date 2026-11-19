@@ -1,4 +1,5 @@
 // 段 3（F2 招かれて参加する）の招待の口が共に使う依存（K-331 下見。K-332・K-333 参加・K-334 送り直しも同じ形に足す）
+import type { ActionGateway } from "@kaname/actions";
 import type { Auth } from "@kaname/auth";
 import type pg from "pg";
 
@@ -12,6 +13,8 @@ export interface InvitationDeps {
   appPool: pg.Pool;
   /** 認証の接続（kaname_auth の表） */
   authPool: pg.Pool;
+  /** 外への口（関門 C1）。新しく作って参加する人のパスワードの漏れの照合（登録の行為をそのまま使う・K-332） */
+  actions: ActionGateway;
   mailer?: InvitationMailer;
   config: { opsEmail: string; webBaseUrl: string };
 }
