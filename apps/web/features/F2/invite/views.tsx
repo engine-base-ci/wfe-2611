@@ -38,10 +38,19 @@ export const ROLE_LABEL: Record<InviteRole, string> = {
   requester: "依頼する側",
 };
 
+/** 赤の知らせの文（K-335）。口が失敗しても画面は移らず、押し直せる */
+export const INVITE_NOTICE = {
+  /** 参加の口・送り直しの口が答えない（503 など） */
+  down: "いま Kaname の調子が悪くなっています。少し待ってから、もう一度押してください",
+  /** 送り直しの口の答えが failed（メールが送れなかった） */
+  resendFailed: "送れませんでした。もう一度押してください",
+} as const;
+
 /** 下見の答え（getInvitation）を画面の言葉にした物 */
 export interface InvitePreview {
   workspaceName: string;
-  inviterName: string;
+  /** 招いた人の名前。行が残っていない招待（下見の答えが null）は null：名前の所を「招待した人」と読ませ、頭の行からは外す */
+  inviterName: string | null;
   /** グループ（層）の名前。決めていない招待は空 */
   groupName: string | null;
   role: InviteRole;
@@ -64,9 +73,14 @@ export interface InviteAcceptProps {
   preview?: InvitePreview;
   /** 入力の誤り（口の 422 の文・E-VAL-*） */
   errors?: { name?: string; password?: string };
+  /** 赤の知らせ（押した口が失敗した・K-335）。新しく作って参加の主ボタンの上と、期限切れのボタンの上に出す。押し直せる */
+  notice?: string | null;
   /** 送りすぎのあと何秒（429） */
   waitSec?: number;
   busy?: boolean;
+  /** ログイン中の 2 つのボタン（今のアカウントで参加・ログアウトして開き直す）を、出したまま押せない形にする。
+   *  押した後は K-336 が入れる。それまでは押しても何も起きないので、グレーで押せない形で出す（隠さない・answer=78cb822fc1f1） */
+  signedLocked?: boolean;
   links?: TermsLinks;
   /** 新しく作って参加（名前とパスワード）・今のアカウントで参加（引数なし） */
   onJoin?: (v?: InviteJoin) => void;
@@ -77,6 +91,9 @@ export interface InviteAcceptProps {
   /** もう入っているワークスペースを開く先 */
   openHref?: string;
 }
+
+/** 招いた人の呼び方（名前があれば「〈名前〉 さん」・無ければ「招待した人」） */
+const inviterOf = (p: InvitePreview): string => (p.inviterName ? `${p.inviterName} さん` : "招待した人");
 
 const initialOf = (s: string): string => [...s.replace(/^(株式会社|有限会社|合同会社)\s*/, "").trim()][0] ?? "?";
 
@@ -92,7 +109,8 @@ function InviteHead({ p, title }: { p: InvitePreview; title?: string }) {
       </div>
       <h1>{title ?? `${p.workspaceName} に招待されています`}</h1>
       <p className="k-auth-lead" data-kind="sub">
-        {p.inviterName} さんから ・ {group}
+        {p.inviterName ? `${p.inviterName} さんから ・ ` : ""}
+        {group}
         {ROLE_LABEL[p.role]} として
       </p>
       {p.message ? (
@@ -165,7 +183,7 @@ export function InviteAccept(p: InviteAcceptProps) {
         body="招待した人が取り消しました。招待した人に、もう一度招待してもらってください"
       >
         <NoteBox>
-          {pv.workspaceName} ・ {pv.inviterName} さんからの招待
+          {pv.workspaceName} ・ {inviterOf(pv)}からの招待
         </NoteBox>
       </Dead>
     );
@@ -183,16 +201,17 @@ export function InviteAccept(p: InviteAcceptProps) {
         <div className="k-auth-form" data-auth="invite" data-state={p.state}>
           <h1>この招待は期限が過ぎました</h1>
           <p className="k-auth-lead k-login-left" data-kind="body">
-            招待は 7 日の間使えます。{pv.workspaceName} の {pv.inviterName} さんに、送り直しを頼めます
+            招待は 7 日の間使えます。{pv.workspaceName} の {inviterOf(pv)}に、送り直しを頼めます
           </p>
           {p.state === "resent" ? (
             <ResultBox tone="ok">
-              {pv.inviterName} さんに、送り直しを頼みました。新しい招待のメールが届いたら、そのリンクから入ってください
+              {inviterOf(pv)}に、送り直しを頼みました。新しい招待のメールが届いたら、そのリンクから入ってください
             </ResultBox>
           ) : null}
           {p.state === "resent-already" ? (
             <ResultBox tone="ok">今日はもう頼んであります。新しい招待のメールを待ってください</ResultBox>
           ) : null}
+          {p.state === "expired" && p.notice ? <ResultBox tone="bad">{p.notice}</ResultBox> : null}
           <Button
             size="lg"
             variant={p.state === "expired" ? "primary" : "outlined"}
@@ -214,7 +233,7 @@ export function InviteAccept(p: InviteAcceptProps) {
             この招待は {pv.email} 宛てです。いまは {pv.signedInEmail} でログインしています。{pv.email}{" "}
             のアカウントで入ってください
           </ResultBox>
-          <Button size="lg" loading={p.busy} onClick={p.onSignOut}>
+          <Button size="lg" loading={p.busy} disabled={p.signedLocked} onClick={p.onSignOut}>
             ログアウトして開き直す
           </Button>
         </div>
@@ -237,7 +256,7 @@ export function InviteAccept(p: InviteAcceptProps) {
         <div className="k-auth-form" data-auth="invite" data-state="signed">
           <InviteHead p={pv} />
           <TextField size="lg" label="メール" name="email" value={pv.email} readOnly />
-          <Button size="lg" loading={p.busy} onClick={() => p.onJoin?.()}>
+          <Button size="lg" loading={p.busy} disabled={p.signedLocked} onClick={() => p.onJoin?.()}>
             今のアカウントで参加する
           </Button>
           <p className="k-auth-note">
@@ -295,6 +314,7 @@ export function InviteAccept(p: InviteAcceptProps) {
           hint="12 文字以上。漏れたことのあるパスワードは使えない。入った後に、パスキーか 2 段階認証を付ける"
           error={p.errors?.password}
         />
+        {p.notice ? <ResultBox tone="bad">{p.notice}</ResultBox> : null}
         <Button type="submit" size="lg" loading={p.busy}>
           参加する
         </Button>

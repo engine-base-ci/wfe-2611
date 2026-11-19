@@ -76,19 +76,7 @@ export const verifySignup = async (token: string) => {
   return r;
 };
 // ログイン（パスワード・確認のコード）は契約の口（signInWithPassword・verifySignInCode）を features/F1/login が直に呼ぶ。前の道すじの呼び手は K-316 で消した
-export const invitationPreview = (token: string) =>
-  ext<{
-    tenant_name: string;
-    role_id: string;
-    email: string;
-    expires_at: string;
-    valid: boolean;
-    reason: string | null;
-  }>(`/invitations/${encodeURIComponent(token)}`, undefined, "GET");
-export const acceptInvitation = (token: string, b: { name: string; password: string }) =>
-  ext<{ token: string | null; member_id: string }>(`/invitations/${encodeURIComponent(token)}/accept`, b).then(
-    (r) => (r.token && (setToken(r.token), refreshSession()), r),
-  );
+// 招待の下見と参加は契約の口を features/F2/invite が直に呼ぶ。前の道すじ（/invitations/*）の呼び手は K-335 で消した
 export type TwoFactorKind = "none" | "totp" | "sms" | "email" | "push";
 export const storeCredential = (b: {
   service_name: string;
