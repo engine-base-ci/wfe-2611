@@ -38,7 +38,9 @@ class Secrets(unittest.TestCase):
         self.assertIs(c["extend"]["useDefault"], True)
         self.assertEqual(len(c["allowlists"]), 1)
         a = c["allowlists"][0]
-        self.assertEqual(sorted(a["paths"]), sorted(["^apps/api/test/_fake/", "^apps/web/test/_fake/"]))
+        # K-350 が Bridge と通しの試験の置き場 2 つを足した（2026-11-19 PM の決め）
+        self.assertEqual(sorted(a["paths"]), sorted(["^apps/api/test/_fake/", "^apps/web/test/_fake/",
+                                                     "^apps/bridge/test/_fake/", "^apps/e2e/_fake/"]))
         for key in ("regexes", "stopwords", "commits"):
             self.assertNotIn(key, a)
         self.assertNotIn("allowlist", c)
@@ -65,7 +67,10 @@ class Secrets(unittest.TestCase):
         hit = lambda s: any(r.search(s) for r in rx)  # noqa: E731
         self.assertTrue(hit("apps/api/test/_fake/secrets.ts"))
         self.assertTrue(hit("apps/web/test/_fake/secrets.ts"))
-        for miss in ("apps/api/test/fuzz/server.ts", "apps/api/test/_fake2/x.ts", "apps/web/tests/_fake/x.ts"):
+        self.assertTrue(hit("apps/bridge/test/_fake/secrets.ts"))
+        self.assertTrue(hit("apps/e2e/_fake/secrets.ts"))
+        for miss in ("apps/api/test/fuzz/server.ts", "apps/api/test/_fake2/x.ts", "apps/web/tests/_fake/x.ts",
+                     "apps/bridge/src/_fake/x.ts", "apps/e2e/journeys/_fake/x.ts"):
             self.assertFalse(hit(miss), miss)
 
     def test_K328_SEC_006_scope_map(self) -> None:

@@ -6,7 +6,6 @@
 import { Bot, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
-import { ShellBell } from "@/components/k/shell";
 
 const DAY_MS = 86_400_000;
 const JST_MS = 9 * 3_600_000;
@@ -155,10 +154,6 @@ export function DetailTitle({ title, me }: { title: string; me: string }) {
         <h1 id="ticket-title" title={title}>
           {title}
         </h1>
-        {/* 767 以下は鈴を見出しの右に置く（キャンバス MobileList・K-138）。題名の行の高さは変えない */}
-        <span className="k-detail-bell">
-          <ShellBell />
-        </span>
       </div>
       <div className="k-page-acts">
         <InertButton>複製</InertButton>

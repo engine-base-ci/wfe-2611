@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:714f4691585c54e2
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:e24b85e7c869348c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3821,6 +3821,7 @@ export const BridgeHeartbeat = z.strictObject({
   ok: z.boolean().optional(),
   browser: z.string().nullable().optional(),
   outdated: z.boolean().optional(),
+  device_id: z.string().optional(),
 });
 export const BridgeDevice = z.strictObject({
   id: z.string().optional(),
@@ -3830,6 +3831,7 @@ export const BridgeDevice = z.strictObject({
   connected_at: z.string().optional(),
   version: z.string().nullable().optional(),
   health: z.array(z.unknown()).optional(),
+  health_at: z.string().nullable().optional(),
   revoke_reason: z.string().nullable().optional(),
 });
 export const TicketDetail = z.strictObject({

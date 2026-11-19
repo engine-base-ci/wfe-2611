@@ -215,7 +215,7 @@ test("K220-UI-007 第 2 ナビの注：「アカウントは 1 人 1 つ。預�
   expect((await note.boundingBox())!.y).toBeGreaterThan(last.y);
 });
 
-test("K220-UI-008 第 2 ナビの幅：1440 は 232px（項目の字が出る）・1023 は 64px（絵だけ・字は隠れる）・375 は本文の上の横 1 列（横に送れ、画面は溢れない）", async ({
+test("K220-UI-008 第 2 ナビの幅：1440 は 232px（項目の字が出る）・1023 は 64px（絵だけ・字は隠れる）・375 は本文の上のボタン 1 つ「自分の設定 › PC と使った量 ▾」（項目の列は隠れ、画面は溢れない・2026-11-18 代表の直し・K-350）", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
@@ -228,8 +228,10 @@ test("K220-UI-008 第 2 ナビの幅：1440 は 232px（項目の字が出る）
   const s = await rect(page, SUB);
   const h = await rect(page, `${BODY} h1`);
   expect(s.y + s.height).toBeLessThanOrEqual(h.y);
-  expect(await css(page, SUB, "overflow-x")).toBe("auto");
-  expect(await css(page, SUB, "flex-direction")).toBe("row");
+  const pick = page.locator(SUB).getByRole("button", { name: "自分の設定の中を選ぶ" });
+  await expect(pick).toBeVisible();
+  await expect(pick).toHaveText("自分の設定 › PC と使った量 ▾");
+  await expect(page.locator(`${SUB} .k-me-sub-t`).first()).toBeHidden();
   expect(await overflowX(page)).toBe(0);
 });
 
@@ -316,17 +318,26 @@ test("K220-UI-012 幅 320・375・768・1024・1440：横溢れ 0・見出しの
   expect(bad).toEqual([]);
 });
 
-test("K220-UI-013 幅 375：本文の一番下（前の設定の画面へのリンク）まで送ると、下のタブに隠れない", async ({ page }) => {
+// K-367：前の画面への導線（「前の設定の画面」のリンク）を消したので、本文の一番下の物（本文の中で下の端がいちばん下の、大きさのある要素）で見る。
+//   導線が在っても無くても同じ形で通る
+test("K220-UI-013 幅 375：本文の一番下まで送ると、本文の一番下の物が下のタブに隠れない", async ({ page }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page, 375);
-  const link = page.getByRole("link", { name: "前の設定の画面" });
-  await link.scrollIntoViewIfNeeded();
+  await expect(page.locator(`${BODY} h1`)).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  const l = (await link.boundingBox())!;
   const tabs = page.getByRole("navigation", { name: "下のタブ" });
   await expect(tabs).toBeVisible();
   const t = (await tabs.boundingBox())!;
-  expect(l.y + l.height).toBeLessThanOrEqual(t.y);
+  const bottom = await page.locator(BODY).evaluate((root) =>
+    Math.max(
+      ...[...root.querySelectorAll("*")]
+        .map((e) => e.getBoundingClientRect())
+        .filter((r) => r.width > 1 && r.height > 1) // 読み上げだけの 1px の物（sr-only）は見た目に無いので外す
+        .map((r) => r.bottom),
+    ),
+  );
+  expect(bottom).toBeGreaterThan(0);
+  expect(bottom).toBeLessThanOrEqual(t.y);
 });
 
 interface Group {
