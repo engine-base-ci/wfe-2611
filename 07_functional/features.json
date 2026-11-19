@@ -76,6 +76,8 @@
     "E-SIG-004",
     "E-TO-005",
     "E-INV-004",
+    "E-INV-003",
+    "E-INV-006",
     "E-INV-008"
    ],
    "policies": [
@@ -502,6 +504,8 @@
     "E-INV-001",
     "E-INV-002",
     "E-INV-004",
+    "E-INV-003",
+    "E-INV-006",
     "E-INV-008"
    ],
    "policies": [

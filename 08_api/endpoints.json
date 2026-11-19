@@ -3671,23 +3671,87 @@
    ],
    "outputs_4xx": [
     {
-     "status": 409,
-     "code": "CONFLICT",
-     "body": {
-      "error": "conflict"
-     },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
-    },
-    {
      "status": 422,
      "code": "VALIDATION_ERROR",
      "body": {
-      "error": "validation_failed",
-      "details": []
+      "error": "validation",
+      "code": "E-VAL-007"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-007",
+      "E-VAL-005",
+      "E-VAL-026",
+      "E-VAL-011"
+     ],
+     "trigger": "名前が空・100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い（E-VAL-005）・128 文字を超える（E-VAL-026）・漏れたもの（E-VAL-011）・本文に知らない欄",
+     "ears_form": "UNWANTED: IF 名前かパスワードが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、利用者を作らず招待も使わない"
+    },
+    {
+     "status": 403,
+     "code": "E-AUTH-012",
+     "body": {
+      "error": "auth",
+      "code": "E-AUTH-012"
+     },
+     "errors": [
+      "E-AUTH-012"
+     ],
+     "trigger": "招いたワークスペースが止められている（subscriptions.suspended_at）",
+     "ears_form": "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない"
+    },
+    {
+     "status": 404,
+     "code": "E-INV-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-INV-001"
+     },
+     "errors": [
+      "E-INV-001"
+     ],
+     "trigger": "招待のリンクの印が見つからない（でたらめ・古い・512 文字を超える）",
+     "ears_form": "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、何も作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-INV-006",
+     "body": {
+      "error": "conflict",
+      "code": "E-INV-006"
+     },
+     "errors": [
+      "E-INV-006"
+     ],
+     "trigger": "ログインしていない人が新しく作って参加しようとしたが、宛てのメールにもうアカウントがある（同時に 2 回押した負けの方も）",
+     "ears_form": "UNWANTED: IF 宛てのメールにもうアカウントがあるなら、Kaname は 409 と E-INV-006 を返し、利用者を作らず招待も使わない"
+    },
+    {
+     "status": 410,
+     "code": "E-INV-002",
+     "body": {
+      "error": "not_found",
+      "code": "E-INV-002"
+     },
+     "errors": [
+      "E-INV-002",
+      "E-INV-003",
+      "E-INV-004"
+     ],
+     "trigger": "招待が取り消された（E-INV-002）・期限切れ（E-INV-003）・もう使われた（E-INV-004）",
+     "ears_form": "UNWANTED: IF 招待が取り消し・期限切れ・使われたなら、Kaname は 410 とその理由の番号を返し、利用者を作らない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "招待を読む DB・利用者を作る所・受諾の関数・セッションを作る所が落ちた",
+     "ears_form": "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない"
     },
     {
      "status": 413,
@@ -3723,8 +3787,12 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/:token/accept が「招待の中身（会社・層・役割）を見て参加する」として呼ばれたとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/:token/accept が「規約とプライバシーポリシーを読んで同意する」として呼ばれたとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行い 2xx を返す",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 名前かパスワードが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、利用者を作らず招待も使わない",
+    "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない",
+    "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、何も作らない",
+    "UNWANTED: IF 宛てのメールにもうアカウントがあるなら、Kaname は 409 と E-INV-006 を返し、利用者を作らず招待も使わない",
+    "UNWANTED: IF 招待が取り消し・期限切れ・使われたなら、Kaname は 410 とその理由の番号を返し、利用者を作らない",
+    "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",

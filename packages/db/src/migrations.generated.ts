@@ -117,4 +117,5 @@ export const MIGRATIONS = [
   "0115_two_factor_session_age.sql",
   "0116_password_change_events.sql",
   "20261119051731_invitation_resend.sql",
+  "20261119051732_accept_invitation.sql",
 ] as const;

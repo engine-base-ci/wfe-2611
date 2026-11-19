@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。186 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。188 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2977,7 +2977,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-INV-002": {
     "id": "E-INV-002",
     "cls": "not_found",
-    "message": "この招待は取り消されています。招待した人が取り消したか、7 日の期限を過ぎました。もう一度招待してもらってください",
+    "message": "この招待は取り消されています。招待した人に、もう一度招待してもらってください",
     "action": "招待した人にもう一度招待してもらう",
     "undo": false,
     "severity": "medium",
@@ -3366,6 +3366,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "medium",
     "support_code": "E-INV-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-003": {
+    "id": "E-INV-003",
+    "cls": "not_found",
+    "message": "この招待は期限（7 日）が過ぎました。送り直しを頼めます",
+    "action": "送り直しを頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-006": {
+    "id": "E-INV-006",
+    "cls": "conflict",
+    "message": "このメールアドレスにはもうアカウントがあります。ログインしてから参加してください",
+    "action": "ログインしてから参加する",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-006",
     "must_not": false,
     "layers": [
       "UI",

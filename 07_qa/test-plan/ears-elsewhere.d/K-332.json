@@ -1,0 +1,28 @@
+{
+ "ops": {
+  "acceptInvitation": {
+   "file": "apps/api/test/features/F2/invitation-accept-new.test.ts",
+   "reason": "招待で参加する口は、本物のトークン（DB にはハッシュだけ）の招待の行と、本物のログインの部品（利用者・パスワードのアカウント・セッションの hook の mfa_pending）と、所属・グループ・規約の同意の行で確かめる。生成の試験の土台（偽のセッション・表の種の入力）では招待のトークンも宛ての利用者も作れない（K-332）",
+   "covers": {
+    "test_post_auth_invitations_token_accept_ok": "K332-API-001",
+    "test_post_auth_invitations_token_accept_ok_2": "K332-API-003",
+    "test_post_auth_invitations_token_accept_rejected_422": "K332-API-004",
+    "test_post_auth_invitations_token_accept_rejected_403": "K332-API-011",
+    "test_post_auth_invitations_token_accept_not_found": "K332-API-007",
+    "test_post_auth_invitations_token_accept_conflict": "K332-API-008",
+    "test_post_auth_invitations_token_accept_gone": "K332-API-006",
+    "test_post_auth_invitations_token_accept_session_unresolved": "K332-API-017",
+    "test_post_auth_invitations_token_accept_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_invitations_token_accept_rate_limited": "K332-API-013",
+    "test_post_auth_invitations_token_accept_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_auth_invitations_token_accept_shape": "K332-API-002"
+   }
+  }
+ }
+}
