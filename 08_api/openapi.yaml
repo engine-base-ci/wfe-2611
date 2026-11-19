@@ -10358,6 +10358,8 @@ components:
           nullable: true
         outdated:
           type: boolean
+        device_id:
+          type: string
       x-operation: sendHeartbeat
     BridgeDevice:
       type: object
@@ -10381,6 +10383,9 @@ components:
           type: array
           items:
             type: object
+        health_at:
+          type: string
+          nullable: true
         revoke_reason:
           type: string
           nullable: true
