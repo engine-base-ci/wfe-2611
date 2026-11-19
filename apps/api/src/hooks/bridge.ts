@@ -2,6 +2,7 @@
 // ここは「作った口」の一覧（生成の試験と目録がこのフォルダを見る）
 import type { Hook } from "../contract/deps.js";
 import { connectPcHooks, type ConnectPcDeps } from "../features/F3/connect-pc/hooks.js";
+import { defineHooks } from "./registry.js";
 
 export function bridgeHooks(d: ConnectPcDeps): Record<string, Hook> {
   const h = connectPcHooks(d);
@@ -14,3 +15,14 @@ export function bridgeHooks(d: ConnectPcDeps): Record<string, Hook> {
     downloadBridgeRelease: { ...h["downloadBridgeRelease"] },
   };
 }
+
+export const register = defineHooks({
+  name: "bridgeHooks",
+  make: (d) =>
+    bridgeHooks({
+      appPool: d.appPool,
+      release: { dir: d.config.bridgeReleaseDir ?? "", base: d.config.bridgeReleaseBase ?? "" },
+      objects: d.objects,
+    }),
+  fuzz: "same",
+});

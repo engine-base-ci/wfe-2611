@@ -1,4 +1,5 @@
-// migration の適用（関門 C2 の中）。migrations/NNNN_*.sql → 同番号の policies/NNNN_*.sql の順に、未適用だけを 1 トランザクションで流す。
+// migration の適用（関門 C2 の中）。一覧の順に migrations/<名前>.sql → 同じ名前の policies/<名前>.sql を、未適用だけ 1 トランザクションずつ流す。
+// 名前は 4 けた（NNNN_名前.sql）か時刻（YYYYMMDDHHMMSS_名前.sql）。一覧は作り手 gen_migrations.py が作る migrations.generated.ts。
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import pg from "pg";
@@ -35,14 +36,18 @@ export async function migrate(
   databaseUrl: string,
   dir: string,
   env: Record<string, string | undefined> = {}, // 役割のパスワード（packages/config の rolePasswords() を渡す。ここでは環境を直接読まない）
+  names: readonly string[] = MIGRATIONS, // 当てる一覧（既定は作り手の生成物）
 ): Promise<MigrateResult> {
-  const order = checkMigrationOrder(MIGRATIONS);
+  const order = checkMigrationOrder(names);
   if (!order.ok) throw new Error(`migration の並びが崩れている: ${order.reason}`);
   const files = readdirSync(join(dir, "migrations"))
     .filter((f) => f.endsWith(".sql"))
     .sort();
-  const unknown = files.filter((f) => !(MIGRATIONS as readonly string[]).includes(f));
-  if (unknown.length) throw new Error(`MIGRATIONS に無い migration ファイル: ${unknown.join(", ")}（index.ts に足す）`);
+  const unknown = files.filter((f) => !names.includes(f));
+  if (unknown.length)
+    throw new Error(
+      `MIGRATIONS に無い migration ファイル: ${unknown.join(", ")}（python3 scripts/ci/gen_migrations.py で一覧を作り直す）`,
+    );
   const client = new pg.Client({ connectionString: databaseUrl });
   await client.connect();
   const applied: string[] = [];
@@ -56,7 +61,7 @@ export async function migrate(
     const done = new Set(
       (await client.query<{ name: string }>("select name from app.schema_migrations")).rows.map((r) => r.name),
     );
-    for (const name of MIGRATIONS) {
+    for (const name of names) {
       if (done.has(name)) {
         skipped.push(name);
         continue;

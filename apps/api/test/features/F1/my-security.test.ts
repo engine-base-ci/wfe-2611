@@ -511,7 +511,7 @@ describe("K-308 口：getMySecurity（自分の安全の設定を読む）", () 
     const r = await req("GET", SECURITY, undefined, { headers: bearer(t) });
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBe(60);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 });
 
 describe("K-308 取り直しの判定（ログインから 15 分の内は取り直し不要・案 3 で K-309 から移した）", () => {

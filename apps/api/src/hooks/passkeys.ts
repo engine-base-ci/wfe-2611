@@ -2,6 +2,7 @@
 //   上限・認証・同意し直しの止めは契約の入口（op.ts）が先に確かめる。外すの取り直しの判定は口の中（requireStepUpOrFreshLogin）
 import type { Hook } from "../contract/deps.js";
 import { passkeysFeature, type PasskeysDeps } from "../features/F1/passkeys/index.js";
+import { defineHooks } from "./registry.js";
 
 export function passkeysHooks(d: PasskeysDeps): Record<string, Hook> {
   const f = passkeysFeature(d);
@@ -10,3 +11,9 @@ export function passkeysHooks(d: PasskeysDeps): Record<string, Hook> {
     deletePasskey: { before: f.remove },
   };
 }
+
+export const register = defineHooks({
+  name: "passkeysHooks",
+  make: (d) => passkeysHooks({ auth: d.auth, appPool: d.appPool, authPool: d.authPool }),
+  fuzz: "same",
+});

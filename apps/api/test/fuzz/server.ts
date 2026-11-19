@@ -9,33 +9,19 @@ import { localDriver } from "@kaname/storage/local";
 import { ENDPOINTS } from "@kaname/contracts";
 import type { TableName } from "@kaname/db/repository";
 import { makeHarness } from "../harness.js";
-import { agentHooks } from "../../src/hooks/agent.js";
-import { bridgeHooks } from "../../src/hooks/bridge.js";
-import { ticketHooks } from "../../src/hooks/tickets.js";
-import { delegateHooks } from "../../src/hooks/delegate.js";
-import { approveHooks } from "../../src/hooks/approve-complete.js";
-import { setupTaskHooks } from "../../src/hooks/setup-tasks.js";
-import { serviceStatusHooks } from "../../src/hooks/service-status.js";
-import { passwordResetHooks } from "../../src/hooks/password-reset.js";
+import { HOOK_MODULES } from "../../src/hooks/all.generated.js";
+import { buildHooks, type HookDeps } from "../../src/hooks/registry.js";
 import { resetWorkIdle } from "../../src/features/F1/password-reset/index.js";
-import { loginHooks } from "../../src/hooks/login.js";
-import { invitationHooks } from "../../src/hooks/invitations.js";
-import { mySecurityHooks } from "../../src/hooks/my-security.js";
-import { passkeysHooks } from "../../src/hooks/passkeys.js";
-import { adminRecoveryHooks } from "../../src/hooks/admin-recovery.js";
-import { twoFactorHooks } from "../../src/hooks/two-factor.js";
-import { changePasswordHooks } from "../../src/hooks/change-password.js";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
-import { createPool } from "@kaname/db/pool";
+import type { Config } from "@kaname/config";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
-// 認証の表（kaname_auth）は認証の接続からしか触れない（0059）。再設定の口（K-313）は本物のサーバーと同じく認証の接続で本人を引く
+// 認証の表（kaname_auth）は認証の接続からしか触れない（0059）。認証の接続は下のログインの部品の 1 つ（login.pool）にそろえる
 const DB_URL = process.env["DATABASE_URL"]!;
 await migrateAuth(DB_URL);
-const authPool = createPool({ databaseUrl: DB_URL.replace(/\/\/[^@]*@/, "//kaname_auth:kaname_auth@"), max: 2 });
 // ログイン（K-301）は本物のログインの部品（Better Auth・kaname_auth の表）で回す。偽のセッション（Bearer boss）は入口だけが読み、
 //   ログインの口は送られたメールとパスワードを部品で確かめる（登録の無いメールは 401・形の違うメールは 422・数の上限で 429）
 const login = createAuth({
@@ -50,49 +36,31 @@ const login = createAuth({
 const actions = new ActionGateway(h.repo, {}, new RateLimiter(600), 1_000, async () => {
   throw new Error("fuzz の的は外に出ない");
 });
-// 本物のサーバー（src/server.ts）と同じ hooks を差す。差さない工場は scripts/ci/fuzz_targets.py の EXEMPT（理由つき）だけ（K-62・D-095）
+// 本物のサーバー（src/server.ts）と同じ一覧（apps/api/src/hooks/all.generated.ts）を差す（K-326）。的から外す工場と、的だけ違う引数で作る工場は、
+//   各 hooks のファイルの register の fuzz に書く（理由つき・scripts/ci/fuzz_targets.py が見る・K-62・D-095）
 //   PC をつなぐ（K-57）の置き場は試験の一時フォルダの偽物。外の置き場の署名は作らない（配布物の受け取りは 404 の形で回る）
 const objects = new ObjectStore(h.repo, localDriver(mkdtempSync(join(tmpdir(), "fuzz-obj-"))), {
   signingSecret: "fuzz-test-files",
   externalSigner: { presignGet: async () => null },
 });
-Object.assign(
-  h.hooks,
-  agentHooks(h.pool),
-  bridgeHooks({ appPool: h.pool, release: { dir: "", base: "" }, objects }),
-  ticketHooks(h.pool),
-  delegateHooks(h.pool),
-  approveHooks(h.pool),
-  setupTaskHooks(h.pool),
-  serviceStatusHooks({ appPool: h.pool }),
-  // 再設定のメールを頼む（K-313）・新しいパスワードを決める（K-314）。送出先は差さない（外に送らず、ログの道を通る）。
-  //   本人は認証の接続、記録は業務の接続（本物と同じ）
-  passwordResetHooks({
-    auth: login.auth,
-    authPool,
-    appPool: h.pool,
-    actions,
-    config: { baseUrl: "http://127.0.0.1", webBaseUrl: null },
-  }),
-  loginHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
-  // 招待の下見（K-331）。偽のセッションは部品のセッションに無いので、ログインしていない扱いの道を回る
-  invitationHooks({
-    auth: login.auth,
-    appPool: h.pool,
-    authPool: login.pool,
-    config: { opsEmail: "ops-fuzz@example.com", webBaseUrl: "http://127.0.0.1" },
-  }),
-  // 安全の設定を読む（K-308）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
-  mySecurityHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
-  // パスキーの名前を変える・外す（K-309）。偽のセッションはログインの部品のセッションを持たないので 401 の道を回る
-  passkeysHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
-  // 2 段階認証を付ける（K-311）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 の道を回る
-  twoFactorHooks({ auth: login.auth, appPool: h.pool, authPool: login.pool }),
-  // パスワードを変える・決める（K-312）。偽のセッション（Bearer boss）はログインの部品のセッションを持たないので 401 か取り直しの 403 の道を回る
-  changePasswordHooks({ auth: login.auth, appPool: h.pool, actions }),
-  // 端末をなくした：管理者に頼む（K-305）。送出先は差さない（外に送らない。宛先があれば送れなかった扱いで failed）。待ちの印は本物の認証の接続で引く
-  adminRecoveryHooks({ appPool: h.pool, authPool: login.pool, config: { opsEmail: "ops-fuzz@example.com" } }),
-);
+// 的の設定は口の答えに効く値だけを持つ（Config の全部の欄は持たない）。送出先（mailer）は差さない（外に送らず、ログの道を通る）
+const fuzzConfig = {
+  opsEmail: "ops-fuzz@example.com",
+  webBaseUrl: "http://127.0.0.1",
+  baseUrl: "http://127.0.0.1",
+  bridgeReleaseDir: "",
+  bridgeReleaseBase: "",
+} as unknown as Config;
+const fuzzDeps: HookDeps = {
+  auth: login.auth,
+  appPool: h.pool,
+  authPool: login.pool,
+  repo: h.repo,
+  actions,
+  objects,
+  config: fuzzConfig,
+};
+Object.assign(h.hooks, buildHooks(HOOK_MODULES, fuzzDeps, "fuzz"));
 // 作った口（入口が 501 で止めない口）：op.ts の 3.5 と同じ決め方。fuzz はこの口だけを回す（まだの口が 501 で止まることは生成の試験が見る）
 const built = ENDPOINTS.filter(
   (e) => h.hooks[e.operationId] || (e.generic && h.repo.hasColumn(e.table as TableName, "id")),
@@ -105,7 +73,6 @@ const srv = serve({ fetch: h.fetch, port, hostname: "127.0.0.1" }, () =>
 const stop = async () => {
   srv.close();
   await resetWorkIdle(); // 答えの後の仕事（再設定の送り）が終わってから接続を閉じる
-  await authPool.end();
   await login.pool.end();
   await h.close();
   process.exit(0);
