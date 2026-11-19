@@ -109,7 +109,13 @@ function MobileSub({ current }: { current: MeSubKey }) {
   return (
     <div className="k-me-sub-m">
       <M.Root>
-        <M.Trigger className="k-btn" data-variant="outlined" data-size="md" aria-label="自分の設定の中を選ぶ">
+        {/* 読み上げと声の操作の名前は、見えている字（自分の設定 › いまの項目）で始める。▾ は飾りなので名前に入れない */}
+        <M.Trigger
+          className="k-btn"
+          data-variant="outlined"
+          data-size="md"
+          aria-label={`自分の設定 › ${now?.label ?? ""}（自分の設定の中を選ぶ）`}
+        >
           自分の設定 › {now?.label ?? ""} ▾
         </M.Trigger>
         <M.Portal>

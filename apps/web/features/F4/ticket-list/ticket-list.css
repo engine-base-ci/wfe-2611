@@ -883,8 +883,7 @@ button.k-list-tool:hover {
 }
 
 /* 右の列は、本文の左の列と並ぶ幅が無いとき（1023 以下）本文の下に折り返す（flex-wrap・キャンバスの aside と同じ） */
-/* 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ね、行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ・作る面の帯と同じ形）。
-   数の札は 2 列（キャンバスの 4 列の格子の折り返し） */
+/* 767 以下：数の札は 2 列（キャンバスの 4 列の格子の折り返し）。知らせの鈴は上の帯にあり、見出しの行には置かない（D-147） */
 @media (max-width: 767px) {
   /* 狭い幅は箱の位置の基準を表の箱の頭の行にし、箱を表の箱の幅に収める（ボタンが右の端に無くても画面の外に出ない） */
   .k-list-columns-anchor {
@@ -898,11 +897,6 @@ button.k-list-tool:hover {
   /* Main の右の列は幅いっぱい（キャンバスの aside{max-width:none}） */
   .k-list-body:not([data-first]) > .k-list-side {
     max-width: 100%;
-  }
-  .k-list-head-row > button {
-    position: absolute;
-    top: var(--k-s-xs);
-    right: var(--k-s-sm);
   }
   .k-list-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));

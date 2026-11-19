@@ -59,19 +59,14 @@
   color: var(--k-on-surface-variant);
   white-space: nowrap;
 }
-/* 幅 767 以下：外枠の鈴（44px）は見出しの行の右の端に重ねて置き、帯の行の高さを見出しの字の高さのままにする（キャンバスの帯と同じ高さ）。
-   外枠が見出しの行を折り返さない決まり（鈴を見出しの右に置く）を、この帯だけ折り返す形に替える */
+/* 幅 767 以下：この帯は折り返す形にし、見出しの行の右の端を空ける（キャンバスの帯と同じ折り返し）。
+   前は見出しの右に外枠の鈴を重ねていた。鈴は上の帯へ移ったので、ここに鈴の決まりは無い（D-147） */
 @media (max-width: 767px) {
   header.k-page-head.k-create-head {
     flex-wrap: wrap;
   }
   .k-create-head h1 {
     max-width: calc(100% - var(--k-s-xl));
-  }
-  .k-create-head > button {
-    position: absolute;
-    top: var(--k-s-xs);
-    right: var(--k-s-sm);
   }
 }
 
