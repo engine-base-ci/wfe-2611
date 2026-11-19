@@ -36,4 +36,5 @@ apps/web/lib/routes.legacy.ts
 apps/bridge/src/renderer/tokens.css
 apps/api/src/hooks/all.generated.ts
 packages/auth/src/disabled-paths.generated.ts
+packages/db/src/migrations.generated.ts
 scripts/spec-sync/audit-manifest.yaml
