@@ -15990,7 +15990,8 @@
     "inv-down"
    ],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/e2e"
    ],
    "ci_wide": [],
    "changes": [
