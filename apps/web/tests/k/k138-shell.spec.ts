@@ -772,15 +772,15 @@ test("K138-SH-029 左上の会社の印：口の答えに会社名（workspace_n
   expect((await top.locator(".k-ws-name").innerText()).replace("▾", "").trim()).toBe("");
 });
 
-test("K138-SH-030 幅 767 以下（375）はキャンバス MobileList どおり：上の帯（いまの場所・題・探す・自分の札）は出さず、見える見出しは本文の 1 つだけ。鈴は本文の見出しの右（グレー）。自分のメニューは下のタブの「メニュー」の中", async ({
+test("K138-SH-030 幅 767 以下（375）は上の帯を出す（2026-11-18 代表がキャンバス MobileList の決めを変えた・K-350）：帯の左に会社の印と名前、右に 探す（グレー）・知らせ（グレー）・自分のメニュー。いまの場所と帯の題は出さず、見える題は本文の h1 だけ。本文の見出しの右に鈴は無い。引き出し「メニュー（全部）」に自分のメニューは無い", async ({
   page,
 }) => {
-  await mockApi(page);
+  await mockApi(page, { workspaceName: "ENGINE BASE" });
   for (const path of [PATHS.tickets, PATHS.detail, PATHS.approvals]) {
     await open(page, path, 375);
     const h1 = page.locator("#k-main h1").first();
     await expect(h1, path).toBeVisible();
-    // 見えている見出し（h1・h2・帯の題）のうち、画面の題として出るのは本文の h1 の 1 つだけ
+    // 見えている見出し（h1・帯の題）のうち、画面の題として出るのは本文の h1 の 1 つだけ
     const titles = await page.evaluate(
       () =>
         [...document.querySelectorAll("h1, .k-bar-title")].filter((e) => {
@@ -789,24 +789,34 @@ test("K138-SH-030 幅 767 以下（375）はキャンバス MobileList どおり
         }).length,
     );
     expect(titles, path).toBe(1);
+    const bar = page.locator("header.k-bar");
+    await expect(bar, path).toBeVisible();
+    expect(Math.round((await bar.boundingBox())!.height), `${path} 帯の高さ`).toBe(48);
+    await expect(bar.locator(".k-bar-ws"), path).toHaveText("E");
+    await expect(bar.locator(".k-bar-ws-name"), path).toHaveText("ENGINE BASE");
     await expect(page.getByRole("navigation", { name: "いまの場所" }), path).toBeHidden();
     await expect(page.getByRole("search"), path).toBeHidden();
-    await expect(page.getByRole("button", { name: "自分のメニュー" }), path).toBeHidden();
-    const bell = page.locator(".k-bell");
+    const searchOpen = bar.getByRole("button", { name: "探す（準備中）" });
+    await expect(searchOpen, path).toBeVisible();
+    await expect(searchOpen, path).toHaveAttribute("aria-disabled", "true");
+    await expect(bar.getByRole("button", { name: "自分のメニュー" }), path).toBeVisible();
+    // 鈴は帯の中の 1 つだけ（本文の見出しの右には置かない）
+    await expect(page.locator(".k-bell"), path).toHaveCount(1);
+    const bell = bar.locator(".k-bell");
     await expect(bell, path).toBeVisible();
     await expect(bell, path).toHaveAttribute("aria-disabled", "true");
-    const [hb, bb] = await Promise.all([
-      h1.evaluate((e) => e.getBoundingClientRect().toJSON()),
-      bell.evaluate((e) => e.getBoundingClientRect().toJSON()),
-    ]);
-    expect(bb.left, `${path} 鈴は見出しの右`).toBeGreaterThanOrEqual(hb.right);
-    expect(bb.top < hb.bottom && bb.bottom > hb.top, `${path} 鈴は見出しと同じ行`).toBe(true);
+    await expect(page.locator("#k-main .k-bell"), path).toHaveCount(0);
+    expect(await overflowX(page), path).toBe(0);
   }
   await open(page, PATHS.tickets, 375);
+  await page.locator("header.k-bar").getByRole("button", { name: "自分のメニュー" }).click();
+  await expect(page.getByRole("menu")).toContainText("高本");
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toHaveCount(0);
   await page.getByRole("navigation", { name: "下のタブ" }).getByRole("button", { name: "メニュー" }).click();
   const sheet = page.getByRole("navigation", { name: "メニュー（全部）" });
-  await sheet.getByRole("button", { name: "自分のメニュー" }).click();
-  await expect(page.getByRole("menu")).toContainText("高本");
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole("button", { name: "自分のメニュー" })).toHaveCount(0);
 });
 
 interface Group {

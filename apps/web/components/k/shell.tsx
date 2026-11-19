@@ -8,7 +8,7 @@
 //   使えない項目は role と aria-disabled と tabIndex で読み上げとキーボードに伝える（Enter でも動かない）
 //   767 以下はキャンバス MobileList どおり上の帯を出さない。鈴は本文の見出しの右（ShellBell を本文が置く）・自分のメニューは下のタブの「メニュー」の中
 import { Menu as M } from "@base-ui/react/menu";
-import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, type LucideIcon } from "lucide-react";
+import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, X, type LucideIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
@@ -79,11 +79,11 @@ interface BellState {
 }
 const BellContext = createContext<BellState>({ narrow: false });
 
-function BellButton({ notices, onNotices, inline }: Omit<BellState, "narrow"> & { inline?: boolean }) {
+function BellButton({ notices, onNotices }: Omit<BellState, "narrow">) {
   return (
     <button
       type="button"
-      className={inline ? "k-icon-btn k-bell k-bell-inline" : "k-icon-btn k-bell"}
+      className="k-icon-btn k-bell"
       aria-label={notices ? `知らせ（${notices} 件）` : "知らせ"}
       aria-disabled={onNotices ? undefined : true}
       title={onNotices ? undefined : "知らせ（準備中）"}
@@ -95,10 +95,10 @@ function BellButton({ notices, onNotices, inline }: Omit<BellState, "narrow"> & 
   );
 }
 
-/** 767 以下で本文の見出しの右に置く鈴（キャンバス MobileList）。広い画面では帯にあるので何も出さない */
+/** 前は 767 以下で本文の見出しの右に鈴を置いた（キャンバス MobileList）。2026-11-18 代表の指摘で、スマホも上の帯に鈴・探す・自分のアイコンを置く形にしたので、どの幅でも何も出さない（呼んでいる画面は、その画面を直す葉が外す） */
 export function ShellBell() {
-  const b = useContext(BellContext);
-  return b.narrow ? <BellButton notices={b.notices} onNotices={b.onNotices} inline /> : null;
+  useContext(BellContext);
+  return null;
 }
 
 export interface Crumb {
@@ -271,6 +271,8 @@ export function Shell(p: ShellProps) {
   const [railed, setRailed] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [sheet, setSheet] = useState(false);
+  // スマホの帯：探すの虫眼鏡を押すと、帯の幅いっぱいに探す欄が開く
+  const [searching, setSearching] = useState(false);
   useEffect(() => {
     setRailed(readPref(NAV_KEY) ?? false);
     setPanelOpen(readPref(PANEL_KEY) ?? window.matchMedia("(min-width: 1180px)").matches);
@@ -388,11 +390,6 @@ export function Shell(p: ShellProps) {
         <span className="k-pc-dot" aria-hidden="true" />
         <span className="k-nav-label">{p.bridgeConnected ? "PC つながっている" : "PC をつないでいない"}</span>
       </div>
-      {inSheet ? (
-        <div className="k-sheet-me">
-          <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
-        </div>
-      ) : null}
     </>
   );
 
@@ -409,7 +406,12 @@ export function Shell(p: ShellProps) {
         {sidebar(false)}
       </nav>
       <div className="k-body">
-        <header className="k-bar">
+        <header className="k-bar" data-searching={searching || undefined}>
+          <span className="k-ws-mark k-bar-ws" aria-hidden="true">
+            {p.workspace.initial}
+          </span>
+          {/* スマホの帯の左：会社の名前（画面の名前は本文の見出しにあるので重ねない） */}
+          <span className="k-bar-ws-name">{p.workspace.name}</span>
           <nav aria-label="いまの場所" className="k-crumbs">
             <ol>
               {p.crumbs.map((c, i) => (
@@ -434,6 +436,22 @@ export function Shell(p: ShellProps) {
           </nav>
           <b className="k-bar-title">{title}</b>
           <div className="k-bar-tools">
+            {narrow ? (
+              <button
+                type="button"
+                className="k-icon-btn k-bar-search-open"
+                aria-label={canSearch ? "探す" : "探す（準備中）"}
+                aria-disabled={canSearch ? undefined : true}
+                title={canSearch ? undefined : "探す（準備中）"}
+                onClick={() => {
+                  if (!canSearch) return;
+                  setSearching(true);
+                  requestAnimationFrame(() => searchBox.current?.focus());
+                }}
+              >
+                <Search size={18} aria-hidden="true" />
+              </button>
+            ) : null}
             <form role="search" className="k-search" data-disabled={canSearch ? undefined : true} onSubmit={search}>
               <label>
                 <Search size={14} aria-hidden="true" />
@@ -450,9 +468,19 @@ export function Shell(p: ShellProps) {
                   ⌘K
                 </span>
               </label>
+              {narrow ? (
+                <button
+                  type="button"
+                  className="k-icon-btn"
+                  aria-label="探すを閉じる"
+                  onClick={() => setSearching(false)}
+                >
+                  <X size={18} aria-hidden="true" />
+                </button>
+              ) : null}
             </form>
-            {narrow ? null : <BellButton notices={p.notices} onNotices={p.onNotices} />}
-            {narrow ? null : <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />}
+            <BellButton notices={p.notices} onNotices={p.onNotices} />
+            <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
             {p.panel ? (
               <button
                 type="button"

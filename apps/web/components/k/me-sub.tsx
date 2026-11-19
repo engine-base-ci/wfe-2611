@@ -3,6 +3,7 @@
 //   作った画面（BUILT_ROUTES に在る道）だけ押せる。ほかは出すが押せない（href なし・aria-disabled・Tab で止まらない・正本の使えない状態の薄さ・D-145.9）。
 //   目に見える「準備中」の字は出さない（指を置くと title で読める・D-144.1）。件数は本当の数を返す口が無いので出さない（D-144.3）
 //   幅：1024 以上は 232px・768〜1023 は 64px（絵だけ）・767 以下は本文の上の横 1 列（横に送れる）。見た目は me-sub.css
+import { Menu as M } from "@base-ui/react/menu";
 import { Fragment, type ReactNode } from "react";
 import { isBuilt } from "@/lib/built-routes";
 import "./me-sub.css";
@@ -102,10 +103,51 @@ function SubItem({ it, current }: { it: Item; current: boolean }) {
   );
 }
 
+/** 767 以下：横に流れる帯の代わりに「自分の設定 › いまの項目 ▾」のボタン 1 つ。押すと項目を全部、縦の一覧で開く（段 4 の下絵・代表の直し 2026-11-18） */
+function MobileSub({ current }: { current: MeSubKey }) {
+  const now = SECTIONS.flatMap((s) => s.items).find((it) => it.key === current);
+  return (
+    <div className="k-me-sub-m">
+      <M.Root>
+        <M.Trigger className="k-btn" data-variant="outlined" data-size="md" aria-label="自分の設定の中を選ぶ">
+          自分の設定 › {now?.label ?? ""} ▾
+        </M.Trigger>
+        <M.Portal>
+          <M.Positioner sideOffset={6} align="start">
+            <M.Popup className="k-select-popup k-menu">
+              {SECTIONS.map((s) => (
+                <Fragment key={s.head}>
+                  <div className="k-menu-head">{s.head}</div>
+                  {s.items.map((it) =>
+                    it.key !== current && !isBuilt(it.href) ? (
+                      <M.Item key={it.key} className="k-select-item" disabled title={`${it.label}（準備中）`}>
+                        {it.label}
+                      </M.Item>
+                    ) : (
+                      <M.Item
+                        key={it.key}
+                        className="k-select-item"
+                        render={<a href={it.href} aria-current={it.key === current ? "page" : undefined} />}
+                      >
+                        {it.label}
+                      </M.Item>
+                    ),
+                  )}
+                </Fragment>
+              ))}
+            </M.Popup>
+          </M.Positioner>
+        </M.Portal>
+      </M.Root>
+    </div>
+  );
+}
+
 /** 自分の設定の第 2 ナビ。current は今いる項目 */
 export function MeSub({ current }: { current: MeSubKey }) {
   return (
     <aside aria-label="自分の設定の中" className="k-me-sub">
+      <MobileSub current={current} />
       {SECTIONS.map((s) => (
         <Fragment key={s.head}>
           <div className="k-me-sub-h">{s.head}</div>
