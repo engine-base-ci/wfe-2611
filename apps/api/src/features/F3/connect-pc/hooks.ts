@@ -162,14 +162,31 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
           : [];
         const withVersion = outdated ? [...health, OUTDATED_CHECK] : health;
         const version = typeof a.input["version"] === "string" ? a.input["version"].slice(0, 40) : null;
-        const ok = await d.appPool.query<{ ok: boolean }>("select app.bridge_beat($1, $2::jsonb, $3) as ok", [
-          sid,
-          raw === undefined && !outdated ? null : JSON.stringify(withVersion),
-          version,
-        ]);
-        if (!ok.rows[0]?.ok) return { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
-        const br = await d.appPool.query<{ b: string | null }>("select app.bridge_browser($1) as b", [sid]);
-        return { status: 201, body: { data: { ok: true, browser: br.rows[0]?.b ?? null, outdated } } };
+        let alive: boolean;
+        let browser: string | null;
+        try {
+          const ok = await d.appPool.query<{ ok: boolean }>("select app.bridge_beat($1, $2::jsonb, $3) as ok", [
+            sid,
+            raw === undefined && !outdated ? null : JSON.stringify(withVersion),
+            version,
+          ]);
+          alive = ok.rows[0]?.ok === true;
+          const br = alive
+            ? await d.appPool.query<{ b: string | null }>("select app.bridge_browser($1) as b", [sid])
+            : null;
+          browser = br?.rows[0]?.b ?? null;
+        } catch (e) {
+          // DB に書けない・読めない：503・E-PAGE-003（K-360）。Bridge は次の知らせ（60 秒ごと）で送り直す。
+          //   書く所（app.bridge_beat）で落ちたら、何も変わらず前の報告のまま。読む所（app.bridge_browser）で落ちたら、
+          //   知らせ（最後に見えた時刻・自己診断・報告の時刻）は残り、答えだけ 503 になる（送り直しても行は増えない）。
+          //   答えに DB の文を出さない（D-130.2）。ログは口の名前と例外の名前だけ（PC の印・番号・DB の文を出さない）。
+          //   状態は 503 を直に書く（目録の E-PAGE-003 の種類 dependency は 409 になるので fromCatalog は使わない）
+          console.error(`[bridge] sendHeartbeat: 生きている知らせを残せなかった（${(e as Error)?.name ?? "Error"}）`);
+          return { status: 503, body: new KanameError("E-PAGE-003").toJSON() };
+        }
+        if (!alive) return { status: 401, body: { error: "unauthenticated", code: "UNAUTHENTICATED" } };
+        // device_id はその PC の番号（sessions.id＝一覧 listMyDevices の id）。PC の印ではない（K-360・画面が「この行はこの PC か」を見分ける）
+        return { status: 201, body: { data: { ok: true, browser, outdated, device_id: sid } } };
       },
     },
     listMyDevices: {

@@ -112,7 +112,7 @@ async function ready() {
   const B = { "x-bridge-session": bp.token };
   const member = (await admin.query("select member_id from sessions where id = $1", [bp.sid])).rows[0]
     .member_id as string;
-  return { H, B, member };
+  return { H, B, member, sid: bp.sid };
 }
 
 describe("禁止の宛先を Bridge に渡す・止めた記録（D-107）", () => {
@@ -221,7 +221,7 @@ describe("Bridge からの知らせ（D-119.4）", () => {
 
 describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
   it("CHT-37-009 既定は自分の Chrome。PC の画面で選んだ値が次の仕事に渡り、Bridge の窓でも同じ値を変えられ、心拍の返事で窓に写る。会話の無い仕事には渡らない", async () => {
-    const { H, B } = await ready();
+    const { H, B, sid } = await ready();
     const s1 = await json<{ job_id: string }>(post("/agent/say", { text: "開いて" }, H));
     const j1 = await json<{ job_id: string; browser: string }>(post("/bridge/take", { protocol: 5 }, B));
     expect(j1).toMatchObject({ job_id: s1.job_id, browser: "chrome" });
@@ -234,6 +234,7 @@ describe("AI が使うブラウザを Kaname で選ぶ（D-120）", () => {
       ok: true,
       browser: "off",
       outdated: false,
+      device_id: sid, // その PC の番号（sessions.id・K-360）。PC の印ではない
     });
     const s2 = await json<{ job_id: string }>(post("/agent/say", { text: "もう一度" }, H));
     expect(await json(post("/bridge/take", { protocol: 5 }, B))).toMatchObject({ job_id: s2.job_id, browser: "off" });
