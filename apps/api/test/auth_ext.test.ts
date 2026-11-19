@@ -7,7 +7,6 @@ import { dirname, join } from "node:path";
 import { migrate } from "@kaname/db/migrate";
 import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth, type Mail } from "@kaname/auth";
-import { createInvitation } from "@kaname/auth/invitations";
 import { createSessionResolver } from "@kaname/auth/resolver";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
@@ -100,37 +99,6 @@ describe("登録（T-U-01）", () => {
       headers: { authorization: `Bearer ${j.token}` },
     });
     expect(me.status).toBe(200);
-  });
-});
-
-describe("招待（T-U-03）", () => {
-  it("下見で会社名・役割・期限が見え、名前とパスワードで受けると会社の一員になる。取り消し済みは 410", async () => {
-    const boss = `${uniq()}@example.com`;
-    const { token } = await register(boss, "招く会社");
-    const ctx = await admin.query(
-      'select m.id, m.tenant_id from members m join kaname_auth."user" u on u.id = m.auth_user_id where u.email = $1',
-      [boss],
-    );
-    const repo = await createRepository(appPool);
-    const inv = await createInvitation(
-      repo,
-      { tenantId: ctx.rows[0].tenant_id, userId: ctx.rows[0].id, role: "member" },
-      { email: `${uniq()}@example.com`, roleId: "staff" },
-    );
-    const pv = await app.request(`http://localhost/api/auth-ext/invitations/${inv.token}`);
-    expect(pv.status).toBe(200);
-    const p = (await pv.json()) as { data: { tenant_name: string; role_id: string; valid: boolean } };
-    expect(p.data).toMatchObject({ tenant_name: "招く会社", role_id: "staff", valid: true });
-    const ac = await post(`/api/auth-ext/invitations/${inv.token}/accept`, { name: "佐藤 健", password: PW });
-    expect(ac.status).toBe(201);
-    const m = await admin.query("select display_name, tenant_id from members where id = $1", [
-      ((await ac.json()) as { data: { member_id: string } }).data.member_id,
-    ]);
-    expect(m.rows[0]).toMatchObject({ display_name: "佐藤 健", tenant_id: ctx.rows[0].tenant_id });
-    const again = await post(`/api/auth-ext/invitations/${inv.token}/accept`, { name: "x", password: PW });
-    expect(again.status).toBe(410);
-    expect((await app.request("http://localhost/api/auth-ext/invitations/no-such-token")).status).toBe(404);
-    void token;
   });
 });
 

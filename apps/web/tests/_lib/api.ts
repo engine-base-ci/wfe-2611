@@ -193,14 +193,14 @@ export async function viewerViaApi() {
     "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, 'viewer', $3, now() + interval '7 days', $4)",
     [boss.tenantId, email, sha256(token), boss.memberId],
   );
-  const r = await api<{ data: { token: string } }>(`/api/auth-ext/invitations/${token}/accept`, {
+  // 招待は契約の口で受ける（K-337 で前の道すじから移した・切る段で替えた）。受諾は今の版に同意したことにする（K-332）
+  const r = await api<{ data: { token: string } }>(`/api/v1/auth/invitations/${token}/accept`, {
     name: "閲覧のみ QA",
     password: PW,
   });
-  if (r.status !== 200 && r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
-  // 招待で入る人の同意は K-55 の受け持ち。それまでは、この道具が今の版への同意を入れる（K-53 の同意し直しで止まらないように）
+  if (r.status !== 201) throw new Error(`accept ${r.status} ${JSON.stringify(r.json)}`);
   const u = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
-  await agreeCurrentTerms(u[0]!.id);
+  await addTestEntry(u[0]!.id); // 入り方を 1 つ持つ人にする（K-321 の道具・K-337）
   return { ...boss, token: r.json.data.token, email };
 }
 
