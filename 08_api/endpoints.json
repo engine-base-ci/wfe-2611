@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-19",
-  "frozen_at": "2026-11-19",
+  "created_at": "2026-11-20",
+  "frozen_at": "2026-11-20",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -17056,21 +17056,29 @@
     },
     {
      "status": 403,
-     "code": "FORBIDDEN",
+     "code": "E-CRED-007",
      "body": {
-      "error": "forbidden"
+      "error": "permission",
+      "code": "E-CRED-007"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [
+      "E-CRED-007"
+     ],
+     "trigger": "ワークスペースに預けるのに、credentials の edit が無い",
+     "ears_form": "UNWANTED: IF ワークスペースに預ける権限が無いなら、Kaname は 403 と E-CRED-007 を返し、金庫に置かず行も作らない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CRED-006",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CRED-006"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CRED-006"
+     ],
+     "trigger": "同じ層（ワークスペースの中・自分の物の中）に、消していない・失効していない同じ名前の物がある（同時に預けた負けの方も）",
+     "ears_form": "UNWANTED: IF 同じ層に同じ名前の物が預けてあるなら、Kaname は 409 と E-CRED-006 を返し、金庫に物を残さず行も作らない"
     },
     {
      "status": 422,
@@ -17079,8 +17087,54 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-CRED-001",
+      "E-CRED-002",
+      "E-CRED-003",
+      "E-CRED-004",
+      "E-CRED-005",
+      "E-VAL-003"
+     ],
+     "trigger": "名前の形（E-CRED-001）・使える場所の形と数（E-CRED-002）・使える場所が無い（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）・層／種類／2 段階の種類が決まった値の外・本文に知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も作らない"
+    },
+    {
+     "status": 403,
+     "code": "STEP_UP_REQUIRED",
+     "body": {
+      "error": "step_up_required",
+      "code": "STEP_UP_REQUIRED"
+     },
+     "trigger": "本人確認の取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎている",
+     "ears_form": "UNWANTED: IF 取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎているなら、Kaname は 403 と STEP_UP_REQUIRED を返し、金庫に置かず行も作らない"
+    },
+    {
+     "status": 502,
+     "code": "E-SEC-001",
+     "body": {
+      "error": "dependency",
+      "code": "E-SEC-001"
+     },
+     "errors": [
+      "E-SEC-001"
+     ],
+     "trigger": "暗号化した中身を預かり先（金庫）に置けなかった",
+     "ears_form": "UNWANTED: IF 預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行を作らない"
+    },
+    {
+     "status": 503,
+     "code": "E-SEC-002",
+     "body": {
+      "error": "dependency",
+      "code": "E-SEC-002"
+     },
+     "errors": [
+      "E-SEC-002",
+      "E-SEC-003",
+      "E-PAGE-003"
+     ],
+     "trigger": "staging／本番で消える保管先のまま（E-SEC-002）・預かり先の上限に当たった（E-SEC-003 と retry_after_sec）・判定を読む DB か行を書く DB が落ちた（E-PAGE-003・置いた金庫の物は失効させる）",
+     "ears_form": "UNWANTED: IF 預かれない・預かり先が混んでいる・行を書く DB が落ちたなら、Kaname は 503 と E-SEC-002／E-SEC-003／E-PAGE-003 を返し、行を作らず金庫の物を生かしたまま残さない"
     },
     {
      "status": 413,
@@ -17136,9 +17190,12 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/credentials が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF ワークスペースに預ける権限が無いなら、Kaname は 403 と E-CRED-007 を返し、金庫に置かず行も作らない",
+    "UNWANTED: IF 同じ層に同じ名前の物が預けてあるなら、Kaname は 409 と E-CRED-006 を返し、金庫に物を残さず行も作らない",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も作らない",
+    "UNWANTED: IF 取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎているなら、Kaname は 403 と STEP_UP_REQUIRED を返し、金庫に置かず行も作らない",
+    "UNWANTED: IF 預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行を作らない",
+    "UNWANTED: IF 預かれない・預かり先が混んでいる・行を書く DB が落ちたなら、Kaname は 503 と E-SEC-002／E-SEC-003／E-PAGE-003 を返し、行を作らず金庫の物を生かしたまま残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -17157,8 +17214,8 @@
    "implementation_path": "apps/api/src/routes/credentials.ts::createCredential",
    "permission": {
     "who": "self",
-    "scope": "自分のものを預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須（D-128.57）",
-    "step_up": true
+    "scope": "自分の個人の物か、edit を持つ人はワークスペースの物を預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須。取り直しか、ログインから 15 分の内（D-125.139・D-128.57）",
+    "step_up": "login_or_step_up"
    },
    "path_params": [],
    "returns_list": false,

@@ -318,6 +318,7 @@ export type ApprovalReturnInput = { note: string };
 export type InvitationAcceptInput = { name?: string | null; password?: string | null };
 export type TicketCompleteInput = { todo_checked: string[]; todo_version: number; conditions_confirmed: boolean };
 export type InvitationResendInput = Record<string, never>;
+export type CredentialCreateInput = { layer: string; kind: string; name: string; description?: string | null; login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations: string[]; expires_on?: string | null };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:714f4691585c54e2
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:43daffd27aa94887
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -101,7 +101,7 @@ export interface Ops {
   stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   streamConversation: { params: { id: string }; query: never; body: never; data: T.Messages };
   listCredentials: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Credential[] };
-  createCredential: { params: never; query: never; body: T.CredentialsInput; data: T.Credentials };
+  createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };
   updateCredential: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   deleteCredential: { params: { id: string }; query: never; body: never; data: T.Credentials };
   checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };

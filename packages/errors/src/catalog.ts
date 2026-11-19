@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。190 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。197 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3463,6 +3463,125 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "invite-accept",
       "state": "a"
+    }
+  },
+  "E-CRED-001": {
+    "id": "E-CRED-001",
+    "cls": "validation",
+    "message": "名前は英大文字・数字・_ で、英字から始めてください（64 文字まで）",
+    "action": "名前を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-002": {
+    "id": "E-CRED-002",
+    "cls": "validation",
+    "message": "使える場所はドメイン（例：example.com）で、20 個までにしてください",
+    "action": "使える場所を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-003": {
+    "id": "E-CRED-003",
+    "cls": "validation",
+    "message": "使える場所を 1 つ以上入れてください。この宛先にだけ使います",
+    "action": "使う宛先のドメインを入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-004": {
+    "id": "E-CRED-004",
+    "cls": "validation",
+    "message": "期限は今日以降の日付にしてください",
+    "action": "期限を直すか空にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-005": {
+    "id": "E-CRED-005",
+    "cls": "validation",
+    "message": "ログイン情報は ID とパスワード、API キー・値は値だけを入れてください",
+    "action": "中身を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-006": {
+    "id": "E-CRED-006",
+    "cls": "conflict",
+    "message": "同じ名前のものがもう預けてあります。別の名前にするか、前のものを上書きしてください",
+    "action": "名前を変えるか上書きする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-007": {
+    "id": "E-CRED-007",
+    "cls": "permission",
+    "message": "ワークスペースに預けたものを変えられるのは管理者だけです。自分だけのものとして預けてください",
+    "action": "自分だけに預ける／管理者に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CRED-007",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
     }
   }
 };
