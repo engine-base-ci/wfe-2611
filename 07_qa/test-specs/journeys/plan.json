@@ -88,8 +88,8 @@
    ],
    "result": "",
    "task": "",
-   "status": "PASS",
-   "note": "apps/e2e/journeys・実 Chrome・2026-09-21"
+   "status": "BLOCKED",
+   "note": "K-319 で手順を付けるまで進めないの画面（札「2 段階認証を付ける」）に替えて fixme を外した。流れの試験は staging で流す（ローカルでは流さない）ので、staging で流すまで BLOCKED・2026-11-18"
   },
   {
    "id": "J02-01",

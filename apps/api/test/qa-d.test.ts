@@ -1589,21 +1589,35 @@ describe("G-14 口座状態の波及（本物の認証のセッション）", ()
           );
         else await admin.query("update members set deleted_at = now() where id = $1", [m]);
         const after: string[] = [];
+        // パスワードの変更は、変えた今の画面（web）だけ残し、ほかの端末と PC を切る（D-128.141・K-312。前は今の画面も切っていた）
+        const keepsWeb = trig === "パスワードの変更";
         for (const e of eps)
           for (const [label, tk] of [
             ["画面", web.token!],
             ["Bridge", bridge.token!],
           ] as const) {
             const r = await hit(e, tk);
+            if (keepsWeb && label === "画面") {
+              if (r.status === 401) after.push(`${label} ${e.operationId}=401（今の画面は残るはず）`);
+              continue;
+            }
             const code = r.status === 401 ? ((await r.json()) as { code: string }).code : "";
             if (r.status !== 401 || code !== "UNAUTHENTICATED") after.push(`${label} ${e.operationId}=${r.status}`);
           }
-        expect(after, "失効の後に 401 UNAUTHENTICATED にならなかった口").toEqual([]);
+        expect(
+          after,
+          "失効の後に 401 UNAUTHENTICATED にならなかった口（パスワードの変更では、今の画面が切れた口）",
+        ).toEqual([]);
         if (trig !== "退会（人が抜ける）") {
           const alive = await admin.query("select kind_id from sessions where member_id = $1 and revoked_at is null", [
             m,
           ]);
-          expect(alive.rowCount, "sessions が全部 revoked").toBe(0);
+          if (keepsWeb)
+            expect(
+              alive.rows.map((r) => r.kind_id),
+              "今の画面だけが残る",
+            ).toEqual(["web"]);
+          else expect(alive.rowCount, "sessions が全部 revoked").toBe(0);
         }
       },
       60_000,

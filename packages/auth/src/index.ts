@@ -13,6 +13,16 @@ import { mailTag } from "./signup.js";
 import { RESET_PREFIX, resetHash } from "./reset.js";
 import { CODE_LOCK, generateBackupCodes } from "./two_factor.js";
 import { kanamePasskey, PASSKEY_DISABLED_PATHS } from "./passkey.js";
+import { kanamePasskeyManage, PASSKEY_STEP_UP_PATH } from "./passkeys.js";
+export {
+  normalizePasskeyName,
+  renamePasskeyOf,
+  removePasskeyOf,
+  verifyPasskeyStepUp,
+  PASSKEY_LAST_METHOD,
+  PASSKEY_NEED_TWO_FACTOR,
+  type RemovePasskeyResult,
+} from "./passkeys.js";
 
 export interface AuthOptions {
   /** 認証ロール（kaname_auth）で接続する URL。schema auth に読み書きする */
@@ -41,11 +51,30 @@ export type Mailer = (m: Mail) => Promise<void>;
 export const TWO_FACTOR_PENDING_SEC = 300;
 /** 閉じる部品の道（ロックと止めを通らない道・K-301） */
 /** パスキーの部品のうち Kaname の決まりを通らない口（一覧・名前・外す）も閉じる（K-304） */
+/** パスキーで取り直す内部の口（K-309）も道は閉じる（サーバーの中の auth.api からだけ呼ぶ） */
+/** freshAge を 0 にしたので、部品の「1 日以内のセッション」で守っていた口のうち Kaname が使わない 2 つも閉じる（K-309・レビューの指摘）：
+ *  list-sessions（その人の全部のセッションの印を返す）・unlink-account（ログインの手段を外す） */
+const FRESH_ONLY_PATHS = ["/list-sessions", "/unlink-account"] as const;
 /** 再設定の部品の道も閉じる（画面は契約の口 requestPasswordReset・resetPassword だけを呼ぶ・K-320）。
  *  disabledPaths は道とちょうど同じ文字のときだけ閉じるので、/reset-password/… と末尾の「/」は口の入口（apps/api の app.ts）が 404 にする */
+/** ログアウトの部品の道（/sign-out）も閉じる（K-317）：画面は契約の口 signOut（K-306・public.sessions も閉じる）だけを使う。sessions を閉じない道を残さない */
+/** 前の 2 段階の登録の頁とパスワードを変える頁だけが使っていた部品の道も閉じる（K-319・画面は契約の口 startTwoFactor・confirmTwoFactor・
+ *  changePassword・setMyPassword だけを使う）。中身はサーバーの中の auth.api から呼ぶ（道を閉じても auth.api は効く） */
+const OLD_SCREEN_PATHS = [
+  "/two-factor/enable",
+  "/two-factor/disable",
+  "/two-factor/generate-backup-codes",
+  "/two-factor/verify-totp",
+  "/two-factor/verify-backup-code",
+  "/change-password",
+] as const;
 export const DISABLED_PATHS = [
   "/sign-in/email",
+  ...OLD_SCREEN_PATHS,
+  "/sign-out",
   ...PASSKEY_DISABLED_PATHS,
+  PASSKEY_STEP_UP_PATH,
+  ...FRESH_ONLY_PATHS,
   "/request-password-reset",
   "/reset-password",
 ] as const;
@@ -143,7 +172,10 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
         company_name: { type: "string", required: false, input: true },
       },
     },
-    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 },
+    // freshAge 0：部品の「作ってから 1 日以内のセッション」の確かめ（パスキーを足す口）を使わない。Kaname の決まりは
+    //   「直前 15 分の取り直しか、ログインから 15 分の内」で、API の入口（apps/api/src/app.ts）が確かめる（K-309・D-128.141）。
+    //   部品の 1 日の確かめが残ると、2 日前に入った人は取り直しても足せない
+    session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60, freshAge: 0 },
     // 再設定のリンクの手がかりは DB に平文で置かない（K-313）。頭（reset-password:）を残したハッシュにし、自分の送る関数
     //   （reset.ts の resetKey）と同じ形にする。部品はこの { default, overrides } と { hash } の形だけを読む
     verification: {
@@ -167,6 +199,8 @@ export function createAuth(o: AuthOptions): { auth: Auth; pool: pg.Pool } {
       }),
       bearer(),
       ...kanamePasskey({ webBaseURL: web.href, authPool: pool, appPool: o.appPool }),
+      // パスキーを足すときの名前・記録・印と、パスキーでの取り直し（K-309）
+      kanamePasskeyManage({ webBaseURL: web.href, authPool: pool, appPool: o.appPool }),
     ],
     // ロック（app.login_attempts）を通らない部品のログインの道は閉じる（404・K-301）。サーバーの中の auth.api.signInEmail は道を通らないので動く
     disabledPaths: [...DISABLED_PATHS],

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 365（作った 47・後のフェーズの行為だけ 20）・前の道すじ 28・表 144・画面の部品 17・共通の処理 13・エラー 180・部品 55・設定 41
+API 366（作った 53・後のフェーズの行為だけ 20）・前の道すじ 28・表 144・画面の部品 17・共通の処理 13・エラー 187・部品 56・設定 41
 
 ## 共通の処理
 
@@ -155,9 +155,10 @@ API 365（作った 47・後のフェーズの行為だけ 20）・前の道す�
 | `consentToTerms` | POST /api/v1/auth/terms/consent | 作成・実行（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
 | `getCurrentTerms` | GET /api/v1/auth/terms/current | 取得（auth）— 規約に同意する（どの版に同意したかが残る） | F1 | 作った | K-53 |
 | `verifySignInCode` | POST /api/v1/auth/two-factor/verify | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | F1 | 作った | K-302 |
-| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
-| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
-| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 契約だけ（501） | K-75 |
+| `renamePasskey` | PATCH /api/v1/me/passkeys/:id | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-309 |
+| `deletePasskey` | DELETE /api/v1/me/passkeys/:id | 削除（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-309 |
+| `setMyPassword` | POST /api/v1/me/password | 作成・実行（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-312 |
+| `changePassword` | PATCH /api/v1/me/password | 更新（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-312 |
 | `getMySecurity` | GET /api/v1/me/security | 取得（me）— 2段階認証を設定する／パスキーを設定する（パスワードの人は 2 段階認証を設定 | F1 | 作った | K-308 |
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
@@ -500,8 +501,8 @@ API 365（作った 47・後のフェーズの行為だけ 20）・前の道す�
 | `answerAgentPermission` | POST /api/v1/conversations/:id/permissions/:pid | 作成・実行（conversations）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `regenerateBackupCodes` | POST /api/v1/me/backup-codes | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `disableTwoFactor` | DELETE /api/v1/me/two-factor | 削除（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
-| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-75 |
+| `confirmTwoFactor` | POST /api/v1/me/two-factor/confirm | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 作った | K-311 |
+| `startTwoFactor` | POST /api/v1/me/two-factor/enable | 作成・実行（me）— 2段階認証を設定する | （後のフェーズ） | 作った | K-311 |
 | `getMyUsage` | GET /api/v1/me/usage | 取得（me）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `resetMemberTwoFactor` | POST /api/v1/members/:id/two-factor/reset | 作成・実行（members）— 2段階認証を設定する | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `createArtifactFromMessage` | POST /api/v1/messages/:id/artifacts | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会話の横で開いて直す | （後のフェーズ） | 契約だけ（501） | K-73 |
@@ -592,6 +593,7 @@ API 365（作った 47・後のフェーズの行為だけ 20）・前の道す�
 | `@aws-sdk/s3-request-presigner` | 外の置き場（Bridge の配布物）の期限つき URL を置き場の仕組み（S3 の署名つき URL・SigV4）で作る（関門 C4・D-128.160） |
 | `@better-auth/utils` | ログインの部品の中の道具 |
 | `@better-auth/passkey` | パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91） |
+| `@simplewebauthn/browser` | パスキーを足す・パスキーで本人確認を取り直す画面の端末の手順（startRegistration・startAuthentication。部品 @better-auth/passkey の中と同じ版・チャレンジを頭で受け渡すため部品の addPasskey を使わない・K-318） |
 | `@simplewebauthn/server` | パスキーの応答の確かめ（署名の回数が戻ったときに、ほかが正しいかを部品と同じ道具で見る・K-304。部品 @better-auth/passkey の中と同じ版） |
 | `@eslint/js` | 書き方の検査（G1） |
 | `@fontsource-variable/noto-sans-jp` | 記録にある名前のまま |

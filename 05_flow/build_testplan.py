@@ -36,6 +36,7 @@ def classify(line):
     if form == "EVENT-DRIVEN": return form, code, "contract+integration", "backend-coverage", "ok"
     if form == "UBIQUITOUS": return form, code, "contract", "backend-coverage", "shape"
     if "E-AUTH-010" in line: return form, code, "access（同意し直し・K-53）", "backend-access-matrix", "terms_pending"   # 役の 403 と混ぜない
+    if "MFA_REQUIRED" in line: return form, code, "access（付けるまで進めない・K-321）", "backend-access-matrix", "mfa_pending"   # 役の 403 と混ぜない
     if code in ("401", "403"): return form, code, "access", "backend-access-matrix", "rejected_" + code
     if code == "429": return form, code, "unit", "backend-coverage", "rate_limited"
     if code == "413": return form, code, "unit（送る量の守り・1MB・D-130.1）", "backend-coverage", "too_large"   # K-144 回 11：体を受ける口の全部
@@ -112,7 +113,7 @@ SPEC_GATES = [
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md $RUNNER_TEMP/req.md && python3 scripts/ci/trace_gate.py --index && cmp $RUNNER_TEMP/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 55, "name": "No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47）", "script": "python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py", "job": "spec", "blocking": True})
-SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 56, "name": "取り込む順（depends_on の実装が先に枝にある・K-94）", "script": "python3 scripts/ci/k341_order_gate_speed_test.py && python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 62, "name": "CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156）", "script": "python3 scripts/ci/ci_lean_test.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 57, "name": "チケットの CI の範囲の台本の試験（K-107）", "script": "python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014）", "script": "python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130", "job": "spec", "blocking": True})
@@ -121,7 +122,7 @@ SPEC_GATES.append({"id": 60, "name": "決める人の決定の行が、決める
 #   base と取り込む先は組の出力・入力なので run の命令の文字に入れず env で渡す（K107-CS-034）
 SPEC_GATES.append({"id": 63, "name": "決める人の答えの記録は和で移す（前の版にあった答えを落としていない・比べる版が読めない・無いなら赤・K-146）", "script": "python3 scripts/ci/answers_merge.py --selftest && python3 scripts/ci/answers_merge.py check 01_hearing/decider-answers.jsonl --base \"$CI_ANSWERS_BASE\" --target \"$CI_TARGET_REF\"", "env": "          CI_ANSWERS_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 64, "name": "着手前のチケットの期待結果は起きる結果で・別のチケットに回した機能はそれまでの間を書く（K13・K14・K-146・D-129.52）", "script": "python3 scripts/ci/ticket_rows_gate.py --selftest && python3 scripts/ci/ticket_process_test.py && python3 scripts/ci/ticket_rows_ci.py", "job": "spec", "blocking": True})
-SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k219_canvas_states_test.py && python3 scripts/ci/k257_canvas_boards_test.py && python3 scripts/ci/k258_web_defer_test.py && python3 scripts/ci/k232_fidelity_doc_test.py && python3 scripts/ci/k262_staging_edge_test.py && python3 scripts/ci/k237_perf_ledger_test.py && python3 scripts/ci/k237_staging_perf_test.py && python3 scripts/ci/k248_scope_reach_test.py", "job": "spec", "blocking": True})
+SPEC_GATES.append({"id": 65, "name": "CI の形の試験（DB は組の中で・重い検査もチケットの範囲だけ・JUnit の記録・K-172／組ごとの Linux の VM・K-173）", "script": "python3 scripts/ci/k172_ci_shape_test.py && python3 scripts/ci/k173_vm_test.py && python3 scripts/ci/k174_flow_config_test.py && python3 scripts/ci/k175_flow_config_test.py && python3 scripts/ci/k176_web_junit_test.py && python3 scripts/ci/k177_web_scope_test.py && python3 scripts/ci/k178_flow_config_test.py && python3 scripts/ci/k186_web_artifact_test.py && python3 scripts/ci/k187_cut_take_test.py && python3 scripts/ci/k188_human_sheet_test.py && python3 scripts/ci/k191_regen_all_test.py && python3 scripts/ci/k192_scope_deps_test.py && python3 scripts/ci/k193_hook_timeout_test.py && python3 scripts/ci/k195_runner_chrome_test.py && python3 scripts/ci/k196_results_on_mainline_test.py && python3 scripts/ci/k200_staging_health_test.py && python3 scripts/ci/k206_author_gate_test.py && python3 scripts/ci/k204_staging_workflow_test.py && python3 scripts/ci/k97_bridge_build_test.py && python3 scripts/ci/k65_staging_spec_test.py && python3 scripts/ci/k208_staging_expect_test.py && python3 scripts/ci/k210_gate_holes_test.py && python3 scripts/ci/k245_g27_reach_test.py && python3 scripts/ci/k213_design_parent_test.py && python3 scripts/ci/k212_function_region_test.py && python3 scripts/ci/k246_function_config_test.py && python3 scripts/ci/fidelity_config.py --selftest && python3 scripts/ci/k216_fidelity_config_test.py && node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=junit/spec-k216-mjs.xml scripts/ci/k216_fidelity_compare.test.mjs && python3 scripts/ci/k219_canvas_states_test.py && python3 scripts/ci/k257_canvas_boards_test.py && python3 scripts/ci/k258_web_defer_test.py && python3 scripts/ci/k232_fidelity_doc_test.py && python3 scripts/ci/k262_staging_edge_test.py && python3 scripts/ci/k237_perf_ledger_test.py && python3 scripts/ci/k237_staging_perf_test.py && python3 scripts/ci/k330_cut_check_test.py && python3 scripts/ci/k323_spec_split_test.py && python3 scripts/ci/k325_registries_test.py && python3 scripts/ci/k248_scope_reach_test.py", "job": "spec", "blocking": True})
 # コミットの名義（author のメールのドメイン）が配る側のチームの物でなければ赤（K-206）。static の組＝出す前の手元の検査でも流れる。
 #   比べる元は範囲の段（G0）の出力なので run の命令の文字に入れず env で渡す
 SPEC_GATES.append({"id": 66, "name": "コミットの名義がチームの物（本線との差分のコミットの author のメールのドメイン・K-206）", "script": "python3 scripts/ci/author_gate.py --base-ref \"$CI_BASE\"", "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n", "job": "static", "blocking": True})
@@ -141,6 +142,13 @@ SPEC_GATES.append({"id": 72, "name": "画面の CSS の生の長さ（大きさ�
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
 SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
+# spec の組を 3 つに分けて static の後に同時に流す（K-323）。段の名前・命令・if は変えず、置く組だけを変える。
+#   実測（2026-11-18 の緑の 3 回の中央値・秒）：G56 281・G67 147・G65 110・G57 41・G27 10・ほか 21 段は合計 約 50・組の準備 約 40。
+#   いちばん重い G56 を 1 組（spec-2）、次の G67 を 1 組（spec-3）、残りは spec（前からの試験が spec の組に置くと決めている段は全部ここ）。
+#   どの組も spec と同じ準備（部品・DB・本線との分かれ目 scope）を持ち、scope の出力は自分の組の段から同じ入力で出す（組をまたいで渡さない）
+SPEC_GROUP = {56: "spec-2", 67: "spec-3"}
+SPEC_GROUPS = ["spec", "spec-2", "spec-3"]
+SPEC_GATES = [{**g, "job": SPEC_GROUP.get(g["id"], g["job"])} for g in SPEC_GATES]
 # ---------------------------------------------------------------- 単体の試験（G3）を 6 つに分けて同時に流す（D-128.140）
 #   全部（回帰）は取り込みの前だけ。分けた 1 つずつが自分の Postgres を持ち（GitHub でも act でも job ごと・DB の番号は割り当て）、
 #   結果（vitest の blob。coverage も入る）を unit が集めて合わせ、同じ閾値（vitest.config.ts）を合わせた結果に当てる。
@@ -177,7 +185,7 @@ ALL_GATES = [{**g, "script": UNIT_MERGE, "env": UNIT_ENV + f"          CI_FULL: 
 def yrun(script): return json.dumps(script, ensure_ascii=False) if re.search(r"[{}\[\]]|: |^[!&*|>%@`#]", script) else script   # YAML の素の値にできない命令は "…" で
 # 重い検査（K-172・D-133.7）：scope=ticket では、範囲の台本の出力 gates（",27,57," の形）に入っているときだけ流す。scope=full は全部。
 #   G27 は spec の「層の棚卸し」（static にも同じ番号の別の段がある）。database の組は static の出力、spec の組は自分の scope の段を見る
-HEAVY = {27: "spec", 36: "database", 38: "spec", 47: "spec", 56: "spec", 57: "spec", 62: "spec"}
+HEAVY = {27: "spec", 36: "database", 38: "spec", 47: "spec", 56: "spec-2", 57: "spec", 62: "spec"}   # G56 は spec-2 の組（K-323）
 def gate_if(g):
     if HEAVY.get(g["id"]) != g["job"]:
         return "!cancelled()"
@@ -243,9 +251,18 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
         if: ${{{{ {SO}.unit == 'true' }}}}
         with: {{ pattern: vitest-blob-*, path: {UNIT_DIR}, merge-multiple: true }}
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'unit')}"""
+# spec-2・spec-3（K-323）：spec と同じ準備と分かれ目の段・自分の検査の段・DB を消す段。Python の試験・JUnit は spec の組だけ（この組は JUnit を書かない）
+SPEC_MORE = "".join(f"""
+  {job}:
+    runs-on: [self-hosted, linux-vm]
+    # spec の組を分けた 1 つ（K-323）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
+    needs: [static]
+    if: ${{{{ !cancelled() }}}}
+    steps:
+{NODE}{DB_START}{SPEC_SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == job)}{DB_STOP}""" for job in SPEC_GROUPS[1:])
 yml = f"""# .github/workflows/v3-gate.yml — Kaname CI ゲート {len(ALL_GATES)} 本（05_flow/build_testplan.py が生成。手で直さない）
 # 方針: {FG['policy']}
-# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec（仕様の層・Python）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
+# 段: static（静的・関門）→ database（実 Postgres・RLS・契約）／ unit-1〜unit-{UNIT_SHARDS}（単体の試験を分けて同時に・それぞれ自分の Postgres）→ unit（合わせて coverage の閾値）／ spec・spec-2・spec-3（仕様の層・重い G56 と G67 を別の組に分けて同時に・K-323）／ task-gate（そのタスクの L1 行）→ auto-merge。staging を指す統合テスト（G15）はここに無い：別の定義 staging-e2e.yml を main から手で起こす（K-204）
 # GitHub の上では自動で流さない（D-128.135）。CI はこの workflow をそのまま手元で act で流す（D-128.147・K-47）。GitHub では手で押したときだけ動く
 # G0（static の 5 段目）：チケットの CI の範囲（K-107・D-128.169）。全部は scope=full（既定）。act_ci.sh が scope=auto・base を渡した回だけ、
 #   unit-1〜6・database・web を影響の範囲に絞る（static・spec は毎回）。外から来る値は env で渡す（run の命令の文字に入れない）
@@ -306,11 +323,11 @@ jobs:
         env:
           CI_PY_TESTS: ${{{{ steps.scope.outputs.py_tests }}}}
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
-{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}
+{''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}{SPEC_MORE}
   task-gate:
     runs-on: [self-hosted, linux-vm]
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
-    needs: [spec]
+    needs: [{', '.join(SPEC_GROUPS)}]
     steps:
 {PYS}      - name: "ブランチ名からタスク ID を取る（task/T-A-01 → T-A-01）"
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
@@ -379,14 +396,14 @@ jobs:
 {DB_STOP}  junit:
     runs-on: [self-hosted, linux-vm]
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
-    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, spec, web]
+    needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, web]
     if: always()
     steps:
       - uses: actions/upload-artifact/merge@v4
         with: {{ name: junit, pattern: junit-*, delete-merged: false }}
   auto-merge:
     runs-on: [self-hosted, linux-vm]
-    needs: [static, database, unit, spec, task-gate]
+    needs: [static, database, unit, {', '.join(SPEC_GROUPS)}, task-gate]
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
     permissions: {{ contents: write, pull-requests: write }}
     steps:

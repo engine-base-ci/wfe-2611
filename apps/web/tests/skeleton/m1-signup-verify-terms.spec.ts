@@ -6,7 +6,7 @@
 //   ★前提：API を RESEND_API_KEY（試験の値）と RESEND_BASE_URL=http://127.0.0.1:<QA_MAILBOX_PORT> で立てる（CI の web の組の G59）
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
-import { API, PW, admin, uniq, uniqEmail } from "../_lib/api";
+import { API, PW, addTestEntry, admin, uniq, uniqEmail } from "../_lib/api";
 import { elapseSignup } from "../_lib/clock";
 import { Mailbox, linkIn } from "../_lib/mailbox";
 
@@ -138,8 +138,16 @@ async function agreeOnTerms(page: Page): Promise<void> {
   await page.getByRole("button", { name: "同意して続ける" }).click();
   await expect(page).not.toHaveURL(TERMS_STEP, { timeout: 15_000 });
 }
-/** 中へ入れる（チャットの画面を開いても同意し直しへ戻されない。はじめの設定が済んでいない人は、はじめの設定へ移る・D-089） */
-async function canEnter(page: Page): Promise<void> {
+/** 入り方を 1 つ持つ人にする（試験の鍵を置き、今のセッションの「付けるまで進めない」の印を下ろす・K-321）。
+ *  この試験は登録と同意し直しを見るもので、付けるまで進めない（K-319）は見ないので、「続ける」・中へ入る前に呼ぶ */
+async function readyToEnter(email: string): Promise<void> {
+  const [u] = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
+  await addTestEntry(u!.id);
+}
+/** 中へ入れる（チャットの画面を開いても同意し直しへ戻されない。はじめの設定が済んでいない人は、はじめの設定へ移る・D-089）。
+ *  入る前に、その人を入り方を 1 つ持つ人にする（readyToEnter） */
+async function canEnter(page: Page, email: string): Promise<void> {
+  await readyToEnter(email);
   await page.goto("/ai/chat");
   await page.waitForLoadState("networkidle");
   await expect(page).toHaveURL(/\/(ai\/chat|setup\/bridge)$/);
@@ -163,10 +171,11 @@ test("K54-M1-01 正常：登録 → 受け箱のメールのリンク → 使い
   expect(mail.subject).toContain("メールアドレスの確認");
   await openLink(page, linkIn(mail, "/verify-email"));
   await expect(heading(page, "登録できました")).toBeVisible();
+  await readyToEnter(w.email);
   await page.getByRole("button", { name: "続ける", exact: true }).click();
   await expect(page, "使い始めの画面（チケットの画面）へ入る").toHaveURL(/\/tickets$/);
   expect(await tokenOf(page), "ログインの印を持つ").toBeTruthy();
-  await canEnter(page);
+  await canEnter(page, w.email);
   const me = await confirmed(w.email);
   expect(me, "本人は 1 人").toHaveLength(1);
   expect(me[0]).toMatchObject({ verified: true, company: w.company, display_name: w.name, user_name: w.name });
@@ -264,6 +273,7 @@ test("K54-M1-05 別のブラウザ：登録は A、リンクは B → B で確�
   try {
     await openLink(b.page, await linkOf(w));
     await expect(heading(b.page, "登録できました")).toBeVisible();
+    await readyToEnter(w.email);
     await b.page.getByRole("button", { name: "続ける", exact: true }).click();
     await expect(b.page).toHaveURL(/\/tickets$/);
   } finally {
@@ -289,7 +299,7 @@ test("K54-M1-06 規約の新しい版：確定のあと新しい版を出して�
     await loginByForm(page, w.email);
     await stuckOnTerms(page);
     await agreeOnTerms(page);
-    await canEnter(page);
+    await canEnter(page, w.email);
     const me = (await confirmed(w.email))[0]!;
     const agreed = (await agreedVersions(me.user_id)).map((a) => a.terms_version_id);
     for (const id of ids) expect(agreed, "新しい版への同意が残る").toContain(id);
@@ -317,7 +327,7 @@ test("K54-M1-07 途中でやめる：登録のあと新しい版 → リンク �
       await loginByForm(later.page, w.email);
       await stuckOnTerms(later.page);
       await agreeOnTerms(later.page);
-      await canEnter(later.page);
+      await canEnter(later.page, w.email);
     } finally {
       await later.ctx.close();
     }

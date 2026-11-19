@@ -1832,6 +1832,17 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/me/password",
+   "implementation_path": "apps/api/src/routes/security_events.ts::setMyPassword",
+   "screen_ids_referencing": [
+    "mfa-setup"
+   ],
+   "acts": [
+    "A97"
+   ]
+  },
+  {
    "method": "PATCH",
    "path": "/api/v1/me/password",
    "implementation_path": "apps/api/src/routes/security_events.ts::changePassword",

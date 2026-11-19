@@ -59,6 +59,28 @@ export function pendingToken(email: string): string {
   if (!t) throw new Error(`リンクに token が無い: ${url}`);
   return t;
 }
+/** 入り方を 1 つ持つ人にする（K-321・D-128.141）：試験の鍵（kaname_auth.passkey に 1 行・名前「試験の鍵」）を置き、
+ *  その人の今のセッションの「付けるまで進めない」の印（sessions.mfa_pending）を下ろす。付けるまで進めないを見る試験（K-319）は使わない。
+ *  パスキーの表（K-304）・印の列（K-308）がまだ無ければ何もしない（K-53 の agree-terms と同じ形） */
+export async function addTestEntry(userId: string): Promise<void> {
+  const [t] = await admin<{ t: string | null }>("select to_regclass('kaname_auth.passkey')::text as t");
+  if (t?.t)
+    await admin(
+      `insert into kaname_auth.passkey (id, name, "publicKey", "userId", "credentialID", counter, "deviceType", "backedUp", transports, "createdAt")
+       values (gen_random_uuid()::text, '試験の鍵', 'test-entry', $1, 'test-entry-' || gen_random_uuid()::text, 0, 'singleDevice', false, 'internal', now())`,
+      [userId],
+    );
+  const col = await admin(
+    "select 1 from information_schema.columns where table_schema = 'public' and table_name = 'sessions' and column_name = 'mfa_pending'",
+  );
+  if (col.length)
+    await admin(
+      `update sessions set mfa_pending = false where member_id in (
+         select id from members where auth_user_id = $1
+         union select member_id from tenant_memberships where auth_user_id = $1)`,
+      [userId],
+    );
+}
 /** 会社ごと登録して token を返す（画面の前提）。申し込み → 確認 まで通す */
 export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
   await signupPending(company, email);
@@ -75,6 +97,7 @@ export async function signupViaApi(company = "QA 社", email = uniqEmail()) {
     [email],
   );
   await c.end();
+  await addTestEntry(m.rows[0]!.auth_user_id); // 入り方を 1 つ持つ人にする（K-321）
   return {
     email,
     token: r.json.data.token,
@@ -115,6 +138,22 @@ export function totp(secretBase32: string, at = Date.now()): string {
   const code =
     ((h[off]! & 0x7f) << 24) | ((h[off + 1]! & 0xff) << 16) | ((h[off + 2]! & 0xff) << 8) | (h[off + 3]! & 0xff);
   return String(code % 1_000_000).padStart(6, "0");
+}
+/** 2 段階を契約の口で付ける（K-318・口は K-311 の startTwoFactor → confirmTwoFactor）。画面ではなく口で下ごしらえする。
+ *  ログインの直後に呼ぶ（15 分の内なので取り直しは要らない）。部品がセッションを作り直したら答えの token を以後使う */
+export async function enableTotpViaApi(
+  token: string,
+): Promise<{ secret: string; backupCodes: string[]; token: string }> {
+  const s = await api<{ data: { secret: string } }>("/api/v1/me/two-factor/enable", { password: PW }, token);
+  if (s.status !== 201) throw new Error(`two-factor/enable ${s.status} ${JSON.stringify(s.json)}`);
+  const secret = s.json.data.secret.replace(/\s+/g, "");
+  const c = await api<{ data: { backup_codes: string[]; token: string | null } }>(
+    "/api/v1/me/two-factor/confirm",
+    { code: totp(secret) },
+    token,
+  );
+  if (c.status !== 201) throw new Error(`two-factor/confirm ${c.status} ${JSON.stringify(c.json)}`);
+  return { secret, backupCodes: c.json.data.backup_codes, token: c.json.data.token ?? token };
 }
 /** メールのリンク：開発では API がログに URL を出す（Resend の鍵が無いとき）。KANAME_API_LOG が無ければ null */
 export function lastMailUrl(kind: "verify" | "reset", email: string): string | null {

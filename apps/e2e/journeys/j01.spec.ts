@@ -73,17 +73,26 @@ test.describe.serial("J-01 契約・登録", () => {
     expect(m[0]!.scope_id).not.toBeNull();
   });
 
-  test("J01-04 認証アプリを登録する → TOTP シークレットを暗号化保管（mfa-setup）", async ({ page }) => {
+  test("J01-04 認証アプリを登録する → TOTP シークレットを暗号化保管（mfa-setup・ログインと安全の 2 段階の「付ける」）", async ({
+    page,
+  }) => {
+    // K-318 で前の 2 段階の登録の頁が無くなり、ログインと安全の画面に替わった。登録の直後でパスキーも 2 段階も無い人は
+    //   付けるまで進めない（入口の枠・K-319）ので、札「2 段階認証を付ける」から始める。
+    //   手順：札 → 本人確認のパスワード → 小窓の QR の鍵 → 6 けた → バックアップコード 10 個。部品の名前は k319-security-setup.spec.ts と同じ
     const r = await api<{ data: { token: string } }>("/api/v1/auth/sign-in", { email, password: PW });
     expect(r.status).toBe(201);
     await page.addInitScript((t) => window.localStorage.setItem("kaname.token", t), r.json.data.token);
     await page.goto("/mfa-setup");
-    await page.getByLabel("パスワード", { exact: true }).fill(PW);
-    await page.getByRole("button", { name: "認証アプリを登録する" }).click();
-    const secret = (await page.locator("[data-totp-secret]").textContent())!.replace(/\s+/g, "");
-    await page.getByLabel("アプリに出た6桁").fill(totp(secret));
-    await page.getByRole("button", { name: "登録する" }).click();
-    await expect(page.locator("[data-backup-codes] li")).toHaveCount(10);
+    await expect(page.locator('[data-part="auth-box"] h1')).toHaveText("入り方を 1 つ足してください");
+    await page.locator('[data-part="auth-box"] .k-auth-choice', { hasText: "2 段階認証を付ける" }).click();
+    const check = page.getByRole("dialog", { name: "本人か確かめます" });
+    await check.getByLabel("パスワード", { exact: true }).fill(PW);
+    await check.getByRole("button", { name: "確かめる" }).click();
+    const totpDialog = page.getByRole("dialog", { name: "2 段階認証を付ける" });
+    const secret = (await totpDialog.locator(".k-auth-secret").textContent())!.replace(/\s+/g, "");
+    await totpDialog.getByLabel("確認のコード 1 けた目").click();
+    await page.keyboard.type(totp(secret));
+    await expect(page.getByRole("dialog", { name: "バックアップコード" }).locator(".k-backup-code")).toHaveCount(10);
     const tf = await admin<{ enabled: boolean }>(
       'select "twoFactorEnabled" as enabled from kaname_auth."user" where email = $1',
       [email],

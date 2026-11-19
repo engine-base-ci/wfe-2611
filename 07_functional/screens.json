@@ -1033,6 +1033,29 @@
      ]
     },
     {
+     "act": "A97",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/password",
+     "table": "security_events",
+     "operation_id": "setMyPassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A74",
      "role": "data_fetch",
      "method": "GET",
@@ -1329,6 +1352,29 @@
      ]
     },
     {
+     "act": "A97",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/me/password",
+     "table": "security_events",
+     "operation_id": "setMyPassword",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-073",
+      "E-061"
+     ],
+     "choke_points": [
+      "C2",
+      "C8"
+     ],
+     "source": [
+      "D-125.137",
+      "D-125.138",
+      "D-125.146",
+      "D-125.167"
+     ]
+    },
+    {
      "act": "A74",
      "role": "data_fetch",
      "method": "GET",
@@ -1460,7 +1506,7 @@
    "section_h2_texts": [],
    "checklist": [],
    "release": "v1",
-   "has_shell": false,
+   "has_shell": true,
    "legacy_drift_notes": null,
    "status": "decided",
    "decided_at": "2026-11-18",

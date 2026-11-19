@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:365cf23cf1eb5b8c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d784a074882239b3
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -35,6 +35,8 @@ export interface EndpointDef {
   };
   /** 同意し直し（K-53）の間も止めない口（規約の 2 つ・ログアウト・自分の取得）。正本は 05_flow/screen_api.py の TERMS_OPEN_OPS */
   termsOpen: boolean;
+  /** 付けるまで進めない（K-321・D-128.141）の間も止めない口。正本は 05_flow/screen_api.py の MFA_OPEN_OPS */
+  mfaOpen: boolean;
   /** 一覧の scope_id（グループで絞る）を形だけ確かめて無視する口。正本は 05_flow/screen_api.py の LIST_OPS */
   ignoresScope: boolean;
 }
@@ -71,6 +73,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -93,6 +96,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -123,6 +127,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -145,6 +150,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -178,6 +184,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -200,6 +207,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -235,6 +243,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -257,6 +266,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -290,6 +300,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -312,6 +323,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -341,6 +353,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -363,6 +376,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -398,6 +412,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -420,6 +435,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -453,6 +469,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -475,6 +492,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -509,6 +527,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -531,6 +550,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -566,6 +586,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -589,6 +610,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -624,6 +646,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -646,6 +669,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -676,6 +700,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -695,6 +720,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -725,6 +751,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -744,6 +771,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -770,6 +798,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -789,6 +818,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -815,6 +845,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -834,6 +865,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -863,6 +895,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -885,6 +918,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -919,6 +953,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -941,6 +976,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -974,6 +1010,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -996,6 +1033,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1025,6 +1063,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -1044,6 +1083,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1088,6 +1128,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1139,6 +1180,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1185,6 +1227,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1233,6 +1276,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1282,6 +1326,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1327,6 +1372,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1381,6 +1427,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1429,6 +1476,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": true,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -1477,6 +1525,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1523,6 +1572,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1565,6 +1615,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1614,6 +1665,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1663,6 +1715,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -1712,6 +1765,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": true,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -1755,6 +1809,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": true,
+    "mfaOpen": true,
     "ignoresScope": true
   },
   {
@@ -1809,6 +1864,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1858,6 +1914,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1910,6 +1967,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1959,6 +2017,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -1988,6 +2047,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2007,6 +2067,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2042,6 +2103,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2064,6 +2126,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2098,6 +2161,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2120,6 +2184,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2165,6 +2230,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2216,6 +2282,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2268,6 +2335,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2322,6 +2390,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2370,6 +2439,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2424,6 +2494,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2478,6 +2549,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2532,6 +2604,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2585,6 +2658,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2634,6 +2708,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2688,6 +2763,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2739,6 +2815,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2788,6 +2865,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2821,6 +2899,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2840,6 +2919,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2872,6 +2952,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2891,6 +2972,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2921,6 +3003,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -2940,6 +3023,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -2988,6 +3072,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3021,6 +3106,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3043,6 +3129,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3069,6 +3156,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3088,6 +3176,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3121,6 +3210,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3143,6 +3233,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3175,6 +3266,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3197,6 +3289,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3231,6 +3324,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3253,6 +3347,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3282,6 +3377,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3301,6 +3397,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3331,6 +3428,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3353,6 +3451,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3387,6 +3486,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3409,6 +3509,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3444,6 +3545,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3466,6 +3568,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3501,6 +3604,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3523,6 +3627,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3558,6 +3663,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3580,6 +3686,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3606,6 +3713,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3627,6 +3735,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3658,6 +3767,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3677,6 +3787,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3706,6 +3817,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3728,6 +3840,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3761,6 +3874,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3783,6 +3897,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3812,6 +3927,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3834,6 +3950,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3868,6 +3985,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3890,6 +4008,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3919,6 +4038,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3941,6 +4061,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -3974,6 +4095,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -3996,6 +4118,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4022,6 +4145,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4041,6 +4165,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4070,6 +4195,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4089,6 +4215,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4120,6 +4247,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4139,6 +4267,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4165,6 +4294,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4184,6 +4314,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4214,6 +4345,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4233,6 +4365,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4259,6 +4392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4278,6 +4412,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4304,6 +4439,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4323,6 +4459,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4349,6 +4486,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4368,6 +4506,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4394,6 +4533,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4413,6 +4553,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4445,6 +4586,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4465,6 +4607,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4494,6 +4637,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4516,6 +4660,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4548,6 +4693,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4570,6 +4716,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4601,6 +4748,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4623,6 +4771,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4659,6 +4808,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4681,6 +4831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4713,6 +4864,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4735,6 +4887,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4771,6 +4924,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4794,6 +4948,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4830,6 +4985,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4852,6 +5008,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4888,6 +5045,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4910,6 +5068,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4942,6 +5101,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -4964,6 +5124,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -4994,6 +5155,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5013,6 +5175,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5044,6 +5207,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5063,6 +5227,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5096,6 +5261,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5118,6 +5284,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5150,6 +5317,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5172,6 +5340,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5206,6 +5375,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5228,6 +5398,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5262,6 +5433,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5284,6 +5456,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5315,6 +5488,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5335,6 +5509,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5366,6 +5541,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5388,6 +5564,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5414,6 +5591,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5433,6 +5611,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5459,6 +5638,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5478,6 +5658,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5509,6 +5690,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5528,6 +5710,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5557,6 +5740,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5579,6 +5763,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5613,6 +5798,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5635,6 +5821,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5669,6 +5856,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5691,6 +5879,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5722,6 +5911,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5741,6 +5931,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5772,6 +5963,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5791,6 +5983,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5823,6 +6016,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5842,6 +6036,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5876,6 +6071,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5895,6 +6091,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5926,6 +6123,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5945,6 +6143,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -5974,6 +6173,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -5993,6 +6193,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6023,6 +6224,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6042,6 +6244,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6072,6 +6275,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6091,6 +6295,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6117,6 +6322,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6136,6 +6342,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6162,6 +6369,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6181,6 +6389,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6207,6 +6416,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6226,6 +6436,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6259,6 +6470,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6281,6 +6493,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6314,6 +6527,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6336,6 +6550,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6362,6 +6577,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6381,6 +6597,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6407,6 +6624,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6426,6 +6644,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6456,6 +6675,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6475,6 +6695,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6504,6 +6725,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6526,6 +6748,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6559,6 +6782,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6581,6 +6805,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6611,6 +6836,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6630,6 +6856,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6660,6 +6887,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6679,6 +6907,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6708,6 +6937,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6730,6 +6960,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6762,6 +6993,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6784,6 +7016,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6817,6 +7050,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6839,6 +7073,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6872,6 +7107,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6894,6 +7130,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6926,6 +7163,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -6948,6 +7186,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -6979,6 +7218,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7001,6 +7241,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7030,6 +7271,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7052,6 +7294,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7085,6 +7328,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7107,6 +7351,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7136,6 +7381,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7158,6 +7404,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7187,6 +7434,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7209,6 +7457,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7242,6 +7491,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7264,6 +7514,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7297,6 +7548,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7319,6 +7571,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7352,6 +7605,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7374,6 +7628,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7403,6 +7658,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7425,6 +7681,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7458,6 +7715,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7480,6 +7738,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7509,6 +7768,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7531,6 +7791,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7564,6 +7825,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7586,6 +7848,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7616,6 +7879,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7635,6 +7899,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7667,6 +7932,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7686,6 +7952,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7712,6 +7979,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7732,6 +8000,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7765,6 +8034,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7788,6 +8058,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7821,6 +8092,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7844,6 +8116,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7877,6 +8150,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7899,6 +8173,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7932,6 +8207,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -7954,6 +8230,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -7999,6 +8276,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": true,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -8028,6 +8306,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8047,6 +8326,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8077,6 +8357,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8096,6 +8377,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8127,6 +8409,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8146,6 +8429,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8176,6 +8460,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8195,6 +8480,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8225,6 +8511,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8244,6 +8531,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8272,6 +8560,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8291,6 +8580,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8320,6 +8610,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8339,6 +8630,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8369,6 +8661,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8388,6 +8681,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8396,7 +8690,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "renamePasskey",
     "table": "passkeys",
     "kind": "update",
-    "input": "PasskeysInput",
+    "input": "PasskeyRenameInput",
     "success": 200,
     "output": "Passkeys",
     "outputList": false,
@@ -8421,6 +8715,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8440,6 +8735,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8470,7 +8766,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
       429,
+      403,
       403,
       503
     ],
@@ -8487,10 +8785,63 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/me/password",
+    "operationId": "setMyPassword",
+    "table": "security_events",
+    "kind": "create",
+    "input": "PasswordSetInput",
+    "success": 201,
+    "output": "PasswordSet",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2",
+      "C8"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A97"
+    ],
+    "screens": [
+      "mfa-setup"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": "login_or_step_up",
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8499,9 +8850,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "changePassword",
     "table": "security_events",
     "kind": "update",
-    "input": "SecurityEventsInput",
+    "input": "PasswordChangeInput",
     "success": 200,
-    "output": "SecurityEvents",
+    "output": "PasswordChanged",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -8518,8 +8869,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       413,
       429,
+      403,
       403,
       503
     ],
@@ -8536,10 +8889,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8588,6 +8942,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -8614,6 +8969,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8633,6 +8989,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8664,6 +9021,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8686,6 +9044,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8716,6 +9075,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8735,6 +9095,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8763,6 +9124,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8782,6 +9144,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8812,6 +9175,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8831,6 +9195,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8857,6 +9222,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8876,6 +9242,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8906,6 +9273,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8925,6 +9293,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8953,6 +9322,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -8972,6 +9342,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -8980,9 +9351,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "confirmTwoFactor",
     "table": "security_events",
     "kind": "create",
-    "input": "SecurityEventsInput",
+    "input": "TwoFactorConfirmInput",
     "success": 201,
-    "output": "BackupCodes",
+    "output": "TwoFactorEnabled",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -9022,6 +9393,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -9030,7 +9402,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "startTwoFactor",
     "table": "security_events",
     "kind": "create",
-    "input": "SecurityEventsInput",
+    "input": "TwoFactorStartInput",
     "success": 201,
     "output": "TwoFactorSetup",
     "outputList": false,
@@ -9068,10 +9440,11 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": true,
     "ignoresScope": false
   },
   {
@@ -9098,6 +9471,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9117,6 +9491,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9148,6 +9523,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9170,6 +9546,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9198,6 +9575,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9217,6 +9595,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9246,6 +9625,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9265,6 +9645,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9296,6 +9677,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9315,6 +9697,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9347,6 +9730,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9366,6 +9750,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9400,6 +9785,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9419,6 +9805,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9451,6 +9838,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9470,6 +9858,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9499,6 +9888,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9518,6 +9908,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9551,6 +9942,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9570,6 +9962,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9602,6 +9995,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9621,6 +10015,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9654,6 +10049,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9673,6 +10069,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9707,6 +10104,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9727,6 +10125,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9753,6 +10152,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9772,6 +10172,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9802,6 +10203,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9821,6 +10223,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9853,6 +10256,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9875,6 +10279,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9906,6 +10311,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9928,6 +10334,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -9961,6 +10368,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -9984,6 +10392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10018,6 +10427,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10040,6 +10450,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10066,6 +10477,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10085,6 +10497,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10118,6 +10531,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10140,6 +10554,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10168,6 +10583,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10187,6 +10603,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10219,6 +10636,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10241,6 +10659,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10271,6 +10690,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10290,6 +10710,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10316,6 +10737,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10335,6 +10757,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10364,6 +10787,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10383,6 +10807,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10416,6 +10841,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10435,6 +10861,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10469,6 +10896,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10488,6 +10916,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10522,6 +10951,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10541,6 +10971,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10567,6 +10998,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10586,6 +11018,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10619,6 +11052,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10638,6 +11072,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10668,6 +11103,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10687,6 +11123,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10717,6 +11154,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10736,6 +11174,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10764,6 +11203,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10783,6 +11223,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10814,6 +11255,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10833,6 +11275,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10866,6 +11309,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10885,6 +11329,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10917,6 +11362,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10936,6 +11382,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -10962,6 +11409,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -10981,6 +11429,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11012,6 +11461,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11031,6 +11481,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11060,6 +11511,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11079,6 +11531,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11112,6 +11565,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11131,6 +11585,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11165,6 +11620,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11184,6 +11640,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11218,6 +11675,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11237,6 +11695,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11265,6 +11724,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11284,6 +11744,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11315,6 +11776,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11334,6 +11796,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11364,6 +11827,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11383,6 +11847,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11411,6 +11876,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11430,6 +11896,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11462,6 +11929,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11481,6 +11949,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11515,6 +11984,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11534,6 +12004,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11569,6 +12040,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11588,6 +12060,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11619,6 +12092,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11638,6 +12112,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11673,6 +12148,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11692,6 +12168,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11727,6 +12204,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11746,6 +12224,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11774,6 +12253,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11793,6 +12273,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11819,6 +12300,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11838,6 +12320,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11864,6 +12347,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11883,6 +12367,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11912,6 +12397,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11931,6 +12417,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -11965,6 +12452,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -11984,6 +12472,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12015,6 +12504,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12034,6 +12524,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12065,6 +12556,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12084,6 +12576,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12114,6 +12607,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12133,6 +12627,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12164,6 +12659,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12183,6 +12679,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12217,6 +12714,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12236,6 +12734,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12270,6 +12769,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12289,6 +12789,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12315,6 +12816,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12334,6 +12836,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12363,6 +12866,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12382,6 +12886,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12411,6 +12916,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12430,6 +12936,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12459,6 +12966,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12478,6 +12986,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12507,6 +13016,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12526,6 +13036,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12556,6 +13067,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12575,6 +13087,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12609,6 +13122,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12628,6 +13142,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12661,6 +13176,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12680,6 +13196,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12713,6 +13230,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12732,6 +13250,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12765,6 +13284,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12784,6 +13304,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12817,6 +13338,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12836,6 +13358,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12869,6 +13392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12888,6 +13412,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12918,6 +13443,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12937,6 +13463,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -12963,6 +13490,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -12982,6 +13510,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13011,6 +13540,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13030,6 +13560,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13064,6 +13595,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13083,6 +13615,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13114,6 +13647,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13133,6 +13667,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13159,6 +13694,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13178,6 +13714,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13209,6 +13746,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13228,6 +13766,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13257,6 +13796,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13276,6 +13816,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13310,6 +13851,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13329,6 +13871,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13360,6 +13903,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13379,6 +13923,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13408,6 +13953,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13427,6 +13973,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13455,6 +14002,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13476,6 +14024,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13507,6 +14056,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13528,6 +14078,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13557,6 +14108,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13579,6 +14131,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13611,6 +14164,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13633,6 +14187,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13664,6 +14219,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13686,6 +14242,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13716,6 +14273,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13737,6 +14295,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13763,6 +14322,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13782,6 +14342,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13812,6 +14373,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13831,6 +14393,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13863,6 +14426,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13885,6 +14449,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13916,6 +14481,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13938,6 +14504,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -13966,6 +14533,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -13985,6 +14553,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14015,6 +14584,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14034,6 +14604,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14066,6 +14637,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14085,6 +14657,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14114,6 +14687,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14136,6 +14710,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14162,6 +14737,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14181,6 +14757,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14207,6 +14784,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14226,6 +14804,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14252,6 +14831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14271,6 +14851,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14305,6 +14886,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14327,6 +14909,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14360,6 +14943,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14382,6 +14966,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14414,6 +14999,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14436,6 +15022,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14469,6 +15056,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14492,6 +15080,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14523,6 +15112,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14542,6 +15132,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14571,6 +15162,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14593,6 +15185,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14626,6 +15219,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14648,6 +15242,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14674,6 +15269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14693,6 +15289,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14726,6 +15323,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14745,6 +15343,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14771,6 +15370,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14790,6 +15390,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14823,6 +15424,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14842,6 +15444,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14873,6 +15476,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14895,6 +15499,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14928,6 +15533,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -14950,6 +15556,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -14982,6 +15589,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15004,6 +15612,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15038,6 +15647,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15060,6 +15670,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15086,6 +15697,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15105,6 +15717,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15133,6 +15746,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15154,6 +15768,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15185,6 +15800,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15206,6 +15822,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15235,6 +15852,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15257,6 +15875,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15289,6 +15908,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15314,6 +15934,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15345,6 +15966,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15367,6 +15989,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15401,6 +16024,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15423,6 +16047,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15455,6 +16080,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15477,6 +16103,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15510,6 +16137,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15532,6 +16160,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15569,6 +16198,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15592,6 +16222,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15622,6 +16253,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15644,6 +16276,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15678,6 +16311,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15700,6 +16334,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15730,6 +16365,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15752,6 +16388,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15785,6 +16422,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15807,6 +16445,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15843,6 +16482,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15865,6 +16505,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15894,6 +16535,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15916,6 +16558,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -15949,6 +16592,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -15971,6 +16615,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16007,6 +16652,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16029,6 +16675,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16058,6 +16705,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16080,6 +16728,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16116,6 +16765,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16138,6 +16788,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16172,6 +16823,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16197,6 +16849,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16226,6 +16879,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16248,6 +16902,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16277,6 +16932,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16299,6 +16955,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16332,6 +16989,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16354,6 +17012,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16388,6 +17047,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16410,6 +17070,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16439,6 +17100,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16461,6 +17123,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16494,6 +17157,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16517,6 +17181,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16548,6 +17213,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16570,6 +17236,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16602,6 +17269,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16624,6 +17292,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16654,6 +17323,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16676,6 +17346,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16711,6 +17382,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16733,6 +17405,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16768,6 +17441,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16790,6 +17464,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16825,6 +17500,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16847,6 +17523,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16876,6 +17553,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16898,6 +17576,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16927,6 +17606,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -16949,6 +17629,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -16982,6 +17663,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17004,6 +17686,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17034,6 +17717,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17056,6 +17740,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17086,6 +17771,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17106,6 +17792,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17133,6 +17820,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17152,6 +17840,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17184,6 +17873,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17203,6 +17893,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17233,6 +17924,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17255,6 +17947,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17290,6 +17983,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17312,6 +18006,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17346,6 +18041,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17368,6 +18064,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17403,6 +18100,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17425,6 +18123,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17460,6 +18159,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17482,6 +18182,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17517,6 +18218,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17539,6 +18241,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17569,6 +18272,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       429,
       502,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17591,6 +18295,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       }
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17617,6 +18322,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17636,6 +18342,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17665,6 +18372,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17684,6 +18392,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17710,6 +18419,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17729,6 +18439,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17758,6 +18469,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17777,6 +18489,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17807,6 +18520,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17826,6 +18540,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17853,6 +18568,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17872,6 +18588,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17902,6 +18619,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17921,6 +18639,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -17953,6 +18672,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -17972,6 +18692,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18003,6 +18724,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18022,6 +18744,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18052,6 +18775,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18071,6 +18795,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18101,6 +18826,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18120,6 +18846,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18146,6 +18873,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18165,6 +18893,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18194,6 +18923,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18213,6 +18943,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18243,6 +18974,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18262,6 +18994,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18288,6 +19021,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18307,6 +19041,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18333,6 +19068,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18352,6 +19088,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18382,6 +19119,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18401,6 +19139,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18433,6 +19172,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18452,6 +19192,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18483,6 +19224,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18502,6 +19244,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18528,6 +19271,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       422,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18547,6 +19291,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18576,6 +19321,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18595,6 +19341,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   },
   {
@@ -18625,6 +19372,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       413,
       429,
       403,
+      403,
       503
     ],
     "acts": [
@@ -18644,7 +19392,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": null
     },
     "termsOpen": false,
+    "mfaOpen": false,
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "365cf23cf1eb5b8c";
+export const OPENAPI_HASH = "d784a074882239b3";

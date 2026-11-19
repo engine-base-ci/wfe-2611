@@ -2,8 +2,10 @@
 // パスワードを再設定する画面の見た目（段 2・K-76 の孫・枝 c/段2）。部品先行のモックと本番が同じこの部品を使う。動きは持たない。
 //   キャンバス AuthReset（送りました）。キャンバスに無い状態（メールを入れる・新しいパスワード・済んだ・リンクが使えない・ログイン中）は同じ部品で足した
 import Link from "next/link";
+import { CATALOG } from "@kaname/errors/catalog";
 import { Button, PasswordField, TextField } from "@/components/k";
 import { NoteBox, ResultBox } from "@/components/k/auth-parts";
+import { PAGE_ERROR } from "@/components/k/error-of";
 import { AuthFrame } from "../sign-up/frame";
 import "../login/login.css";
 import "../login/views.css";
@@ -83,7 +85,7 @@ export function PasswordReset(p: PasswordResetProps) {
           <ResultBox tone="bad">
             {p.step === "dead"
               ? "このリンクはもう使えません。もう一度、再設定メールを送ってください"
-              : "リンクが正しくありません。メールのリンクをそのまま開くか、もう一度送ってください"}
+              : CATALOG[PAGE_ERROR.linkExpired]?.message}
           </ResultBox>
           <NoteBox>リンクは 30 分のあいだ、1 回だけ使えます。新しく頼むと、前のリンクは使えなくなります</NoteBox>
           <Link href="/password-reset" className="k-btn" data-variant="outlined" data-size="lg">

@@ -129,6 +129,9 @@ importers:
       '@base-ui/react':
         specifier: 1.9.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@better-auth/passkey':
+        specifier: 1.7.15
+        version: 1.7.15(@better-auth/core@1.7.15(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-call@1.4.4(zod@4.6.7))(jose@6.2.12)(kysely@0.29.5)(nanostores@1.5.3))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.15(next@15.5.28(@playwright/test@1.63.0)(@types/node@24.13.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.23.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@3.2.7(@types/debug@4.1.13)(@types/node@24.13.5)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.13)))(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.3)
       '@fontsource-variable/noto-sans-jp':
         specifier: 5.3.1
         version: 5.3.1
@@ -144,6 +147,9 @@ importers:
       '@kaname/errors':
         specifier: workspace:*
         version: link:../../packages/errors
+      '@simplewebauthn/browser':
+        specifier: 13.3.0
+        version: 13.3.0
       '@svar-ui/react-gantt':
         specifier: ^2.7.3
         version: 2.7.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

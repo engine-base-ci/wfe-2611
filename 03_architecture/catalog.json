@@ -5,15 +5,15 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 365,
-  "api_built": 47,
+  "api": 366,
+  "api_built": 53,
   "api_only_later_phase": 20,
   "legacy_routes": 28,
   "db": 144,
   "ui": 17,
   "packages": 13,
-  "errors": 180,
-  "stack": 55,
+  "errors": 187,
+  "stack": 56,
   "env": 41
  },
  "api": [
@@ -2645,9 +2645,9 @@
    "tables": [
     "passkeys"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-309"
    ]
   },
   {
@@ -2662,9 +2662,26 @@
    "tables": [
     "passkeys"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-309"
+   ]
+  },
+  {
+   "op": "setMyPassword",
+   "method": "POST",
+   "path": "/api/v1/me/password",
+   "what": "作成・実行（me）— パスキーを設定する（パスワードの人は 2 段階認証を設定",
+   "flows": [
+    "F1"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "security_events"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-312"
    ]
   },
   {
@@ -2679,9 +2696,9 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-312"
    ]
   },
   {
@@ -2845,9 +2862,9 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-311"
    ]
   },
   {
@@ -2860,9 +2877,9 @@
    "tables": [
     "security_events"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-75"
+    "K-311"
    ]
   },
   {
@@ -7491,6 +7508,10 @@
    {
     "package": "@better-auth/passkey",
     "for": "パスキーで入る（ログインの部品のパスキー。中で @simplewebauthn/server・K-304・D-128.91）"
+   },
+   {
+    "package": "@simplewebauthn/browser",
+    "for": "パスキーを足す・パスキーで本人確認を取り直す画面の端末の手順（startRegistration・startAuthentication。部品 @better-auth/passkey の中と同じ版・チャレンジを頭で受け渡すため部品の addPasskey を使わない・K-318）"
    },
    {
     "package": "@simplewebauthn/server",

@@ -2,7 +2,7 @@
 """発注者確認の手順（Rule 12）を操作要素の一覧から機械で出す。1 チケット＝1 本＝単体で触れる。
 
   python3 scripts/ci/gen_handoff.py --tickets 07_tasks/tickets.json --screens 07_functional/screens.json \
-      --ops 07_qa/test-specs/ops --spec 07_qa/test-specs --out 07_tasks/handoff --base http://127.0.0.1:3124 [--task T-U-05 …]
+      --ops 07_qa/test-specs/ops --spec 07_qa/test-specs --out 07_tasks/handoff --base http://localhost:3124 [--task T-U-05 …]
 
 規則:
   H1 そのチケットだけで完結させる。前に要るもの（入る・データを置く）を「その前に」に書く
@@ -86,7 +86,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tickets", required=True); ap.add_argument("--screens", required=True); ap.add_argument("--ops", required=True)
     ap.add_argument("--spec", required=True); ap.add_argument("--out", required=True)
-    ap.add_argument("--task", action="append", default=[]); ap.add_argument("--base", default="http://127.0.0.1:3124")
+    ap.add_argument("--task", action="append", default=[]); ap.add_argument("--base", default="http://localhost:3124")
     a = ap.parse_args()
     # 画面の言葉と手順の言葉をそろえる（モックは例の人の名前で描く。実物はまだその名前を持たない）
     cfgp = os.path.join(a.spec, "handoff.json")
