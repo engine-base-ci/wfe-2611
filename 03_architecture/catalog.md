@@ -309,7 +309,7 @@ API 367（作った 54・後のフェーズの行為だけ 20）・前の道す�
 | `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
-| `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
+| `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56,K-351 |
 | `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
