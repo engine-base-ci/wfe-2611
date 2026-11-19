@@ -263,12 +263,12 @@ test("SCR-LOGIN-037 ボタン「ログイン」：通常は正しい組み合わ
   expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeTruthy();
 });
 
-test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・閲覧のみとして、どちらも押すとその役割の会員が 1 人でき、はじめの設定へ進む", async ({
+test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・閲覧のみとして、どちらも押すとその役割の会員が 1 人でき、付けるまで進めないの画面へ進む（K-335 で契約の口と段 3 の部品に載せ替え・切る段で替えた）", async ({
   page,
 }) => {
-  for (const [role, state] of [
-    ["staff", "n"],
-    ["viewer", "r4"],
+  for (const [role, membership] of [
+    ["staff", "member"],
+    ["viewer", "viewer"],
   ] as const) {
     const boss = await signupViaApi("招く会社");
     const token = randomBytes(24).toString("base64url");
@@ -278,18 +278,18 @@ test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・�
       [boss.tenantId, email, role, sha256(token), boss.memberId],
     );
     await page.goto(`/invite/${token}`);
-    await expect(page.locator(`form[data-state='${state}']`)).toBeVisible({ timeout: 15_000 });
-    await page.getByLabel("お名前").fill(role === "staff" ? "担当 太郎" : "閲覧 花子");
+    await expect(page.locator("form[data-auth='invite'][data-state='new']")).toBeVisible({ timeout: 15_000 });
+    await page.getByLabel("名前").fill(role === "staff" ? "担当 太郎" : "閲覧 花子");
     await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "参加する" }).click();
-    // K-55（招待の画面の中で同意を取る）までは、招待で入った人は今の版に同意していないので、同意し直しの画面に移る（K-53・D-128.137）
-    await expect(page).toHaveURL(/\/login\?step=terms/, { timeout: 20_000 });
+    // 入り方は登録と同じ：参加の後は「付けるまで進めない」（answer=becc3d3aa526 ①）。規約は画面の中で同意（続けると同意）
+    await expect(page).toHaveURL(/\/mfa-setup/, { timeout: 20_000 });
     expect(
-      await count("select count(*)::int as n from members where tenant_id = $1 and role_id = $2", [
-        boss.tenantId,
-        role,
-      ]),
-      `${role} が 1 人`,
+      await count(
+        "select count(*)::int as n from tenant_memberships where tenant_id = $1 and role = $2 and status = 'active'",
+        [boss.tenantId, membership],
+      ),
+      `${role} が所属 ${membership} で 1 人`,
     ).toBe(1);
     const inv = await admin<{ m: string | null }>(
       "select accepted_member_id as m from invitations where token_hash = $1",

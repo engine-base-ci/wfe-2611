@@ -74,6 +74,8 @@ export interface MatchOptions {
   skip?: readonly string[];
   /** 本番の側の入力欄の値を読む前にそろえる（モックの値と同じにする）・フォーカスを外す */
   blur?: boolean;
+  /** モックの置き場（既定 /dev/mock/f1・段 3 の画面の葉は /dev/mock/f2・K-335 が足した） */
+  base?: string;
 }
 
 /** モックの状態 id と、本番の画面をその状態にする手順を受け、同じ幅で値を比べた行を返す */
@@ -92,7 +94,7 @@ export async function matchMock(
 
   const mock = await browser.newPage({ viewport: vp, colorScheme: "light", reducedMotion: "reduce" });
   await blockBridge(mock);
-  expect((await mock.goto(`/dev/mock/f1/${id}`))?.status(), `モック ${id}`).toBe(200);
+  expect((await mock.goto(`${opts.base ?? "/dev/mock/f1"}/${id}`))?.status(), `モック ${id}`).toBe(200);
   await expect(mock.locator(`[data-mock="${id}"] h1`).first()).toBeVisible();
   await mock.evaluate(() => document.fonts.ready);
   await mock.mouse.move(0, 0);

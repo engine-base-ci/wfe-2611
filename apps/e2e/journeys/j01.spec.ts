@@ -60,11 +60,12 @@ test.describe.serial("J-01 契約・登録", () => {
       [tenantId, uniqEmail(), sha256(inviteToken), memberId],
     );
     await page.goto(`/invite/${inviteToken}`);
-    await expect(page.locator("form[data-state='n']")).toContainText("通しの会社");
-    await page.getByLabel("お名前").fill("招かれた人");
+    // K-335 で段 3 の部品と契約の口に載せ替え（切る段で替えた）：参加の後は「付けるまで進めない」（answer=becc3d3aa526 ①）
+    await expect(page.locator("h1")).toHaveText("通しの会社 に招待されています");
+    await page.getByLabel("名前").fill("招かれた人");
     await page.getByLabel("パスワード", { exact: true }).fill(PW);
     await page.getByRole("button", { name: "参加する" }).click();
-    await page.waitForURL(/\/today/).catch(() => undefined);
+    await expect(page).toHaveURL(/\/mfa-setup/, { timeout: 15_000 });
     const m = await admin<{ scope_id: string | null }>(
       "select scope_id from members where tenant_id = $1 and display_name = '招かれた人'",
       [tenantId],

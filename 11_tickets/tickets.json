@@ -15856,6 +15856,95 @@
    "file": "11_tickets/K-334.md"
   },
   {
+   "id": "K-335",
+   "title": "招待の画面を口につなぐ：新しく作って参加・使えない招待（期限切れの送り直し・取り消し・使われた・見つからない）・送りすぎ・調子が悪い（K-55 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-55",
+   "milestone": "F2",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-320（再設定の画面を口につなぐ・26 行）から引いた：入れ物（口を呼び状態を決める）25 分・前の部品の画面を消す 5 分・前からの画面の試験 4 本を通す 15 分・見た目の突き合わせ 15 分",
+   "decisions": [
+    "D-065.2",
+    "D-087.1",
+    "D-128.62",
+    "D-128.63",
+    "D-128.125",
+    "D-128.137"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。口（C2・C6）は K-331・K-332・K-334 が持ち、画面は呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k335-invite-new.spec.ts"
+   ],
+   "carry": [
+    "apps/web/test/_fake/secrets.ts",
+    "apps/web/tests/screens/invite-accept.spec.ts",
+    "apps/web/tests/screens/qa-c-onboard.spec.ts",
+    "apps/web/tests/k/k259-open-redirect.spec.ts",
+    "apps/e2e/journeys/j01.spec.ts",
+    "apps/web/tests/k/stage2-match.ts"
+   ],
+   "depends_on": [
+    "K-330",
+    "K-332",
+    "K-334"
+   ],
+   "acts": [
+    "A03"
+   ],
+   "screens": [
+    "invite-accept"
+   ],
+   "apis": [],
+   "mock": [
+    "inv-new",
+    "inv-new-error",
+    "inv-new-nomsg",
+    "inv-expired",
+    "inv-resent",
+    "inv-resent-already",
+    "inv-revoked",
+    "inv-used",
+    "inv-notfound",
+    "inv-wait",
+    "inv-down"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/app/(outside)/invite/[token]/page.tsx",
+    "apps/web/features/F2/invite/",
+    "apps/web/lib/auth/ext.ts",
+    "scripts/ci/raw_length_ledger.json",
+    "07_qa/test-specs/screens/invite-accept.md",
+    "11_tickets/K-55.md"
+   ],
+   "sections": {
+    "目的": "招待のリンク `/invite/:token` の本番の画面を、段 3 の部品（`features/F2/invite/views.tsx`・K-330）と契約の口（下見 K-331・参加 K-332・送り直し K-334）につなぐ。この葉はログインしていない人の分：新しく作って参加・入力の誤り・期限切れ（送り直しを頼む）・取り消し・使われた・見つからない・送りすぎ・調子が悪い。\n正の絵はモック `/dev/mock/f2/<状態>`（代表 OK answer=65b51ba7b8ba）。前の部品の画面（T-U-03・「あなたに見えるもの」の一覧つき）は消す（answer=7fe1f09fdab4 ⑥）。",
+    "完了の条件": "- [ ] 下の表の行（K335-UI-001〜013）が緑：`apps/web/tests/k/k335-invite-new.spec.ts`\n- [ ] 前からの画面の試験 4 本（下の「前からの試験を替えた所」・切る段で替えて carry で運ぶ）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: INV\n\n- 依存：K-330（部品とモック）・K-332（参加の口）・K-334（送り直しの口）。下見の口 K-331 は K-332・K-334 が先に要る\n- 画面は見た目の部品に値と押したときの関数を渡すだけ（新しい見た目を書かない）。モックに無い 1 つ（送り直しが送れなかった：答え failed）は、期限切れの状態のまま赤の知らせ「送れませんでした。もう一度押してください」を出しボタンを押せるままにする（部品に 1 つ足す・モックの 15 の状態は変えない）\n- ログイン中の人の分（アカウントがある・同じメール・別のメール・もう入っている）は K-336。この葉では、下見の答えが account_exists か signed_in なら K-336 の状態を出す分かれ道だけを入れ、押した後は K-336 が入れる\n- 前の道すじ（/api/auth-ext/invitations/*）の口は K-337 が消す。この葉は画面からの呼び出し（apps/web/lib/auth/ext.ts の invitationPreview・acceptInvitation）を消す",
+    "依存の理由": "- K-330: 要る — 部品 views.tsx とモック（見た目の突き合わせの正）を本線に入れる葉\n- K-332: 要る — 画面の試験が本物の参加の口（201・next /mfa-setup）を押す\n- K-334: 要る — 画面の試験 K335-UI-006 が本物の送り直しの口（sent・already）を押す",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 入れ物 | `apps/web/features/F2/invite/invite-page.tsx`（\"use client\"）：開くと下見を 1 回だけ呼ぶ（GET /api/v1/auth/invitations/<token>・印があれば Bearer を載せる）。答えから状態：404 → notfound・429 → wait（retry_after_sec）・503 → down・state expired → expired・revoked → revoked・used → used・ok で account_exists／signed_in が無い → new（ほかは K-336 の状態）。参加：名前とパスワードを送り、422 は欄ごとの文（E-VAL-007 は名前・E-VAL-005／026 はパスワード）・201 は data.token を kaname.token に置き data.next へ移る・410／404 は下見と同じ状態へ・409 E-INV-006 は account の状態へ。送っている間は主ボタンを待ちの形（二度押しで 2 回呼ばない）。送り直し：sent → resent・already → resent-already・failed → expired のまま赤の知らせ。期限の日は expires_at を「M/D」に |\n| 本番の道 | `apps/web/app/(outside)/invite/[token]/page.tsx` を入れ物を出すだけにする（前の部品の画面を消す） |\n| 生の値の台帳 | `scripts/ci/raw_length_ledger.json` に前の page.tsx の行が 9 つある（text-[13px]・gap-[9px] など）。page.tsx を作り替えると G72（design_gate --raw-lengths --ledger-base-ref）が「台帳を減らす」で赤になるので、`python3 scripts/ci/design_gate.py … --raw-lengths --shrink-ledger` で 9 行を消す |\n| 画面の正本 | `07_qa/test-specs/screens/invite-accept.md`：021・022 の欄の名前を「名前」「メール」に、003 を「取り消し・見つからない」に、004・005（役割ごとの「見えるもの」）を N/A（理由：answer=7fe1f09fdab4 ⑥）に直す。替えた試験の行 ID と中身をそろえる |\n| 部品 | views.tsx に赤の知らせ notice（ResultBox bad・role=alert）を 1 つ足す。文は「送れませんでした。もう一度押してください」（送り直しの failed）と「いま Kaname の調子が悪くなっています。少し待ってから、もう一度押してください」（参加の口の 503）。モックの 15 の状態は変えない |\n| 前の呼び出し | `apps/web/lib/auth/ext.ts` の invitationPreview・acceptInvitation を消す（使う所は 0。検索の件数は下） |\n| 規約のリンク | 今の版の url（features/F1/consent-terms/current-terms.ts の useCurrentTerms・段 1 と同じ） |\n| 親 | 11_tickets/K-55.md から screens・tests の残り（このチケットの分）を外す |\n\n```search\ngit grep -n \"invitationPreview\\|acceptInvitation\" -- 'apps/web/**/*.ts' 'apps/web/**/*.tsx' ':!apps/web/tests/**'\n6\n```\n\n（6 件：apps/web/lib/auth/ext.ts の 2 つの定義と、前の画面 app/(outside)/invite/[token]/page.tsx の 4 か所（import・型・下見・受諾）。消した後は 0）",
+    "外に影響する手順": "画面は口を呼ぶだけ（DB に書く・外を呼ぶのは口の葉）。呼んだ口が失敗したときの画面：\n\n- 1: 下見の口を呼ぶ。失敗（429・503）したら少し待って・調子が悪い のページ（K335-UI-008）\n- 2: 参加の口を呼ぶ。失敗（503）したらページは移らず、入れた値を残して赤の知らせ（K335-UI-011）\n- 3: 送り直しの口を呼ぶ。失敗（result failed）したら赤の知らせで押し直せる（K335-UI-012）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k335-invite-new.spec.ts`（実 Chrome・本物の口と DB。招待の行は DB に直に入れる）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 使える | メールのリンク | ログインしていない・アカウント無し | 新しく作って参加の画面（モック inv-new） | このチケット | K335-UI-001〜005・009・010 |\n| 期限切れ | 同じ | 同じ | 送り直しを頼む → 頼みました／もう頼んである | このチケット | K335-UI-006 |\n| 取り消し・使われた・無い | 同じ | 同じ | それぞれの見出し | このチケット | K335-UI-007 |\n| どれでも | 同じ | 送りすぎ・調子が悪い | 少し待って／調子が悪い | このチケット | K335-UI-008 |\n| 使える | 同じ | アカウント有り・ログイン中 | ログインして参加・今のアカウントで参加 など | K-336 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K335-UI-001 | 入口 | 幅 375・768・1440 × inv-new | モックと本番で、箱・見出し・文・入力・主ボタン・注・下の行の値が同じ（px は ±2・matchMock の bad が空） |\n| K335-UI-002 | 入口 | 開く | h1「株式会社下見 に招待されています」。GET /api/v1/auth/invitations/… がちょうど 1 回・/api/auth-ext/invitations は 0 回 |\n| K335-UI-003 | 対象の状態 | 名前とパスワードで参加する | /mfa-setup へ移る。宛てのメールの members が招いたワークスペースに居て、招待の accepted_member_id がその人 |\n| K335-UI-004 | 入力 | ① 名前が空・パスワードは正しい ② 名前あり・パスワード 11 文字（口は誤りを 1 つずつ返す） | ① 「お名前を入れてください」② 「パスワードは 12 文字以上にしてください」。どちらも URL は /invite/<token> のまま |\n| K335-UI-005 | 入力 | ひとことの無い招待 | [data-part=invite-message] が 0 個 |\n| K335-UI-006 | 時間の流れ | 期限切れ → 送り直しを頼む ×2 | h1「この招待は期限が過ぎました」→ 押すと「送り直しを頼みました」が出てボタンは押せない。開き直して押すと「今日はもう頼んであります。新しい招待のメールを待ってください」 |\n| K335-UI-007 | 対象の状態 | 取り消し・使われた・無い | h1 がそれぞれ「この招待は取り消されています」「この招待はもう使われています」（「ログインする」の href は /login）「この招待は見つかりません」 |\n| K335-UI-008 | 失敗 | 手順 1 の失敗：下見が 429（retry_after_sec 37）・503 | h1「少し待ってください」と「37 秒たってから」／h1「いま Kaname の調子が悪くなっています」 |\n| K335-UI-009 | 入口 | ログインして入る・規約 | 「ログインして入る」の href は /login?next=<encodeURIComponent(\"/invite/<token>\")>。利用規約とプライバシーの href は、今の版の口の答えの terms・privacy の url と等しい |\n| K335-UI-010 | 操作の揺れ | 幅 375 で二度押し | /mfa-setup へ移り、POST …/accept はちょうど 1 回 |\n| K335-UI-011 | 失敗 | 手順 2 の失敗：参加の口が 503 | 赤の知らせ（role=alert）「いま Kaname の調子が悪くなっています。少し待ってから、もう一度押してください」・URL は /invite/<token> のまま・名前の欄は「木村 優」のまま・「参加する」は押せる |\n| K335-UI-012 | 失敗 | 手順 3 の失敗：送り直しの口が result failed | 赤の知らせ「送れませんでした。もう一度押してください」・「送り直しを頼む」は押せる |\n| K335-UI-013 | 対象の状態 | 下見の後に参加の口が断った | 409・E-INV-006 → 「ログインして参加する」（account の形）、410・E-INV-003 → 「この招待は期限が過ぎました」。URL は /invite/<token> のまま |\n\n### テストの型の受け（分類 INV）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 期限切れ・取り消し・使い終わった招待を開く | K335-UI-006・007（理由と次の一手：送り直しを頼む・もう一度招待してもらう・ログインする） |\n| TP-INV-02 違うアカウントでログイン中に開く | 要らない：ログイン中は K-336（K336-UI-004） |\n| TP-INV-03 既にメンバーの人が開く | 要らない：K-336（K336-UI-005） |\n| TP-INV-04 招いた人が権限を失った・抜けた後に開く | 要らない：抜けた人の招待は招く側が消す（取り消しと同じ画面・K335-UI-007） |\n| TP-INV-05 同じ人を 2 回招待する | 要らない：招待を作るのは F10。参加の二度押しは K335-UI-010 |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）は、この葉の changes: を import する試験を 0 件と出した（画面の試験は道で開くので import しない）。道 /invite/<token> を開く前からの画面の試験は検索で出し、全部替えた（切る段で替えて carry で運ぶ・作る段では替えられない）。\n\n```search\ngit grep -ln \"/invite/\" -- 'apps/web/tests/**/*.ts' 'apps/e2e/**/*.ts' ':!apps/web/tests/k/k335-invite-new.spec.ts' ':!apps/web/tests/k/k336-invite-signed.spec.ts'\n5\n```\n\n（5 本：4 本は替えた。残る 1 本は K-330 のモックの試験で、扱いは下の行に書いた）\n\n- apps/web/tests/screens/invite-accept.spec.ts: 替える — 前の画面の状態（n・r4・x）と欄の名前（お名前・メールアドレス）と行き先（/login?step=terms）を、新しい画面（data-auth=invite・名前・メール・/mfa-setup）に替えた。行 ID（SCR-INVITE-ACCEPT-…・E-NF-001-A〜C）はそのまま。「見える範囲が先に出る」は「あなたに見えるもの」が無いことに替えた（代表の答え ⑥）。役割は所属の行で見る\n- apps/web/tests/screens/qa-c-onboard.spec.ts: 替える — SCR-INVITE-ACCEPT-026 を同じ形に替えた（staff は所属 member・viewer は所属 viewer で 1 人）\n- apps/web/tests/k/k259-open-redirect.spec.ts: 替える — 網の手前の差し替えを契約の口（下見・参加）と新しい答えの形に替え、参加の後の行き先を /mfa-setup に替えた（URL の next は読まない・外へ出ないことは同じ）\n- apps/e2e/journeys/j01.spec.ts: 替える — J01-03 の見出し・欄の名前・行き先を替えた\n- apps/web/tests/k/k330-stage3-mock.spec.ts: 替えない — モックの置き場と部品だけを開く（本番の page.tsx を見ていた K330-MK-004 は精査の後に外した。この葉が page.tsx を入れ物にしても赤にならない）\n- apps/web/tests/k/stage2-match.ts: 替える — matchMock にモックの置き場 base を渡せる口を足した（既定は /dev/mock/f1 のまま。段 2 の試験は変わらない）\n- scripts/ci/k330_cut_check_test.py: 替えない — K-330 の切る段の検査の口の自己試験。道を例の入力として文字で書いているだけで、このチケットの変更を読まない",
+    "成果物": "- 入れ物 `apps/web/features/F2/invite/invite-page.tsx`・本番の道の page.tsx・部品の 1 つの知らせ\n- 画面の試験 `apps/web/tests/k/k335-invite-new.spec.ts`（切る段が書いた）と、前からの画面の試験 4 本の替え（切る段が替えた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=becc3d3aa526 ①（参加の後は /mfa-setup）・7fe1f09fdab4 ⑤（送り直しを頼む）⑥（あなたに見えるもの は出さない）・65b51ba7b8ba（モック OK）\n- 2026-11-18 切る段の決め：送り直しが送れなかった（failed）はモックに状態を足さず、期限切れの画面のまま赤の知らせを出す（押し直せる・TP-MAIL-01）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- 前の道すじの口（/api/auth-ext/invitations/*）が消えたことは K-337 の K337-API-001 が見る（この葉の試験には入れない：K-337 が入るまで満たせないため）",
+    "申し送り": "- K-336：入れ物の分かれ道に、account・signed・other・member の 4 つの状態の押した後（ログインして戻る・今のアカウントで参加・ログアウトして開き直す）を入れる\n- K-337：前の道すじの口を消す",
+    "表の住所（2026-11-19・K-325〜K-327 が入った後）": "- この葉は画面だけ。口・hooks・閉じる道（K-326）も migration（K-327）も足さないので、`apps/api/src/hooks/`・`apps/api/test/fuzz/server.ts`・`packages/auth/src/disabled-paths.d/`・`packages/db/` は触らない。共通の表（errors.d・ears-elsewhere.d・ci_scope.d・contract_shape.d・screen_api.d）にも足す行は無い\n- K-328 の形に直した（2026-11-19・切る段）：この葉が書く・替える行の作り物の値（短すぎるパスワード `short-pw-11`・口を差し替える招待の札 `wait-token`・`down-token`・運ぶ k259 の替えた行の印 `tok-k259`）は `apps/web/test/_fake/secrets.ts` の `K335_SHORT_PASSWORD`・`K335_WAIT_INVITE_TOKEN`・`K335_DOWN_INVITE_TOKEN`・`K259_SESSION_TOKEN` に置き、試験は `../../test/_fake/secrets` から import する（web の試験は apps/web/tests/ にあるが、置き場は K-328 の決めの apps/web/test/_fake/）。置き場は carry: で運ぶ。`.gitleaksignore` と `.gitleaks.toml` は触らない。パスワード `PW` は前からの `apps/web/tests/_lib/api.ts` の物を使う（替えない）。k259 の替えない行（ログインの口の答えの `tok-k259`・`TOKEN`・`k259-password-x1`）と、運ぶ前からの試験の替えない行は K-328 のとおり自分の文字のまま。同じ置き場に K-336 も 1 行足す（K-335 の分は `K262_EDGE_SECRET` の直後、K-336 の分はファイルの終わり）"
+   },
+   "file": "11_tickets/K-335.md"
+  },
+  {
    "id": "K-338",
    "title": "画面の試験 K319-UI-026 の揺れを止める（試験の差し替えが開くたびに印を置き直し、ログインの画面が /mfa-setup へ移り始めて次の open と取り合う）（K-50 の葉）",
    "kind": "タスク",

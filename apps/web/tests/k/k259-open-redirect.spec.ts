@@ -5,6 +5,7 @@
 //   外の出どころへの要求は context.route で受けて数える（本物の外へは出ない）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type BrowserContext, type Page, type Route } from "@playwright/test";
+import { K259_SESSION_TOKEN } from "../../test/_fake/secrets";
 
 const API_RE = /\/api\/(v1|auth-ext|auth)\//;
 const EVIL_RE = /^https?:\/\/([^/]*\.)?evil\.(com|example)(:\d+)?\//i;
@@ -30,19 +31,26 @@ async function mockApi(page: Page): Promise<void> {
       route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
     if (req.method() === "POST" && p === "/api/v1/auth/sign-in")
       return json(200, { data: { token: "tok-k259", two_factor: false, pending: null } });
-    if (req.method() === "GET" && p === `/api/auth-ext/invitations/${TOKEN}`)
+    // 招待の下見と参加は契約の口（K-331・K-332・K-335 で載せ替え・切る段で替えた）
+    if (req.method() === "GET" && p === `/api/v1/auth/invitations/${TOKEN}`)
       return json(200, {
         data: {
-          tenant_name: "招く会社",
-          role_id: "staff",
+          state: "ok",
+          workspace_name: "招く会社",
+          inviter_name: "招く人",
+          group_name: null,
+          role: "member",
+          message: null,
           email: "k259@example.com",
           expires_at: new Date(Date.now() + 86_400_000).toISOString(),
-          valid: true,
-          reason: null,
+          account_exists: false,
+          signed_in: null,
         },
       });
-    if (req.method() === "POST" && p === `/api/auth-ext/invitations/${TOKEN}/accept`)
-      return json(200, { data: { token: "tok-k259", member_id: "00000000-0000-4000-8000-000000000259" } });
+    if (req.method() === "POST" && p === `/api/v1/auth/invitations/${TOKEN}/accept`)
+      return json(201, {
+        data: { token: K259_SESSION_TOKEN, workspace_id: "00000000-0000-4000-8000-000000000259", next: "/mfa-setup" },
+      });
     if (p === "/api/auth/get-session") return json(200, null);
     return json(401, { error: "unauthenticated", code: "UNAUTHENTICATED", message: "ログインしてください" });
   });
@@ -117,13 +125,13 @@ test("K259-UI-002 同じ出どころの next（/tickets?tab=1）はそのまま�
   expect(a.moved()[0]?.pathname).toBe("/tickets");
   await a.page.close();
 
-  // 招待の受諾：next を付けて開いても、参加した後の行き先は / （入口が振り分ける）
+  // 招待の受諾：next を付けて開いても、参加した後の行き先は口の答えの next（同じ出どころの /mfa-setup）。URL の next は読まない（K-335 で載せ替え）
   const b = await openFresh(context, `/invite/${TOKEN}?next=/%5Cevil.com`);
-  await b.page.getByLabel("お名前").fill("佐藤 健");
+  await b.page.getByLabel("名前").fill("佐藤 健");
   await b.page.getByLabel("パスワード", { exact: true }).fill("k259-password-x1");
   await b.page.getByRole("button", { name: "参加する" }).click();
-  await expect.poll(() => b.moved().map((u) => `${u.origin}${u.pathname}`)).toContain(`${origin}/`);
+  await expect.poll(() => b.moved().map((u) => `${u.origin}${u.pathname}`)).toContain(`${origin}/mfa-setup`);
   expect(b.moved().filter((u) => u.origin !== origin)).toEqual([]);
-  expect(b.moved()[0]?.pathname).toBe("/");
+  expect(b.moved()[0]?.pathname).toBe("/mfa-setup");
   expect(evil, "外の出どころへの要求").toEqual([]);
 });
