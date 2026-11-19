@@ -647,7 +647,7 @@ describe("K-92 一覧の口：入力・守り", () => {
     } finally {
       f.limits["listTickets"] = saved!;
     }
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 
   it("K92-API-030 ログに題名と q が出ない", async () => {
     const w = await world();

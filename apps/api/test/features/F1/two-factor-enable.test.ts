@@ -495,7 +495,7 @@ describe("K-311 守り", () => {
     const r = await confirm(t, "000000");
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBe(60);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 });
 
 describe("K-311 作り直したセッション", () => {

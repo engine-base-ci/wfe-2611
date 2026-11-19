@@ -6,16 +6,16 @@
 //   ★前提：API を RESEND_API_KEY（試験の値）と RESEND_BASE_URL=http://127.0.0.1:<QA_MAILBOX_PORT> で立てる（CI の web の組の G59）
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { expect, test, type Browser, type BrowserContext, type Page } from "@playwright/test";
-import { API, PW, addTestEntry, admin, uniq, uniqEmail } from "../_lib/api";
+import { API, PW, admin, uniq, uniqEmail } from "../_lib/api";
 import { elapseSignup } from "../_lib/clock";
 import { Mailbox, linkIn } from "../_lib/mailbox";
+import { TERMS_STEP, agreeOnTerms, readyToEnter } from "../_lib/terms-steps";
 
 const box = new Mailbox();
 test.beforeAll(() => box.open());
 test.afterAll(() => box.close());
 
 const API_ORIGIN = new URL(API).origin;
-const TERMS_STEP = /\/login\?step=terms/;
 const MSG = {
   expired: "リンクの期限が切れました。もう一度登録してください",
   oldLink: "このリンクは使えません。新しく届いたメールのリンクを開いてください",
@@ -131,22 +131,6 @@ async function stuckOnTerms(page: Page): Promise<void> {
   await expect(heading(page, "利用規約とプライバシーポリシーが新しくなりました")).toBeVisible();
   await page.goto("/ai/chat");
   await expect(page, "同意の前に他の画面へ行けない").toHaveURL(TERMS_STEP, { timeout: 15_000 });
-}
-/** 同意し直しの画面で同意する → 同意し直しの画面を出る。
- *  同意すると画面はすぐ next（チャット）へ移り、その画面の口を呼ぶ。ログインし直した人のセッションには付けるまで進めない（K-321）の印が
- *  立っているので、移る前に印を下ろす（readyToEnter）。移った後に下ろすと、移った先の 403・MFA_REQUIRED が少し後に /mfa-setup へ移し、
- *  次の goto と取り合う（K-342・CI の VM の重さで出た） */
-async function agreeOnTerms(page: Page, email: string): Promise<void> {
-  await readyToEnter(email);
-  await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
-  await page.getByRole("button", { name: "同意して続ける" }).click();
-  await expect(page).not.toHaveURL(TERMS_STEP, { timeout: 15_000 });
-}
-/** 入り方を 1 つ持つ人にする（試験の鍵を置き、今のセッションの「付けるまで進めない」の印を下ろす・K-321）。
- *  この試験は登録と同意し直しを見るもので、付けるまで進めない（K-319）は見ないので、「続ける」・中へ入る前に呼ぶ */
-async function readyToEnter(email: string): Promise<void> {
-  const [u] = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [email]);
-  await addTestEntry(u!.id);
 }
 /** 中へ入れる（チャットの画面を開いても同意し直しへ戻されない。はじめの設定が済んでいない人は、はじめの設定へ移る・D-089）。
  *  入る前に、その人を入り方を 1 つ持つ人にする（readyToEnter） */
