@@ -42,6 +42,7 @@ import pathlib
 import re
 import subprocess
 import sys
+import unicodedata
 from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
@@ -240,32 +241,33 @@ def _git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
 
 
-def _base_text(root: pathlib.Path, ref: str) -> tuple[str | None, list[str]]:
-    """分かれ目の版の設定の字。版が読めなければ (None, 赤)。版に設定がまだ無ければ空の字"""
+def _base_text(root: pathlib.Path, ref: str) -> tuple[bool, str | None, list[str]]:
+    """分かれ目の版の設定。(版に設定が在るか, 設定の字, 赤) を返す。版や設定が読めなければ字は None で赤。
+    版に設定がまだ無ければ (False, None, [])。在る・無いは字の中身で見分けない（中身が空の設定は「在る」）"""
     if _git(root, "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode != 0:
-        return None, [f"分かれ目の版 {ref} が読めない"]
+        return False, None, [f"分かれ目の版 {ref} が読めない"]
     if _git(root, "cat-file", "-e", f"{ref}:{CONFIG}").returncode != 0:
-        return "", []
+        return False, None, []
     r = _git(root, "show", f"{ref}:{CONFIG}")
     if r.returncode != 0:
-        return None, [f"{ref}:{CONFIG} が読めない：{r.stderr.strip()}"]
-    return r.stdout, []
+        return True, None, [f"{ref}:{CONFIG} が読めない：{r.stderr.strip()}"]
+    return True, r.stdout, []
 
 
 def base_groups(root: pathlib.Path, ref: str) -> tuple[list[dict] | None, list[str]]:
     """分かれ目の版の組。版が読めなければ赤。版に設定がまだ無ければ空（前の組が無い）"""
-    text, errs = _base_text(root, ref)
-    if text is None:
+    exists, text, errs = _base_text(root, ref)
+    if errs:
         return None, errs
-    if text == "":
+    if not exists or text is None:
         return [], []
     return load_groups(text, f"{ref}:{CONFIG}")
 
 
 def base_removed(root: pathlib.Path, ref: str) -> list[Any]:
     """分かれ目の版の設定に在った、外した対の記録（版や設定が読めない・removed が無いなら空。読めない赤は base_groups が出す）"""
-    text, _ = _base_text(root, ref)
-    if not text:
+    _, text, _ = _base_text(root, ref)
+    if text is None:
         return []
     try:
         data = json.loads(text)
@@ -387,14 +389,19 @@ SCREEN_DIR = "apps/web/app/"
 SCREEN_FILE = "/page.tsx"
 
 
+def _plain(v: Any) -> bool:
+    """空でない文字で、制御の字（改行・NUL など）も壊れた字（片割れのサロゲート）も無い。git に渡せて、そのまま出せる字"""
+    return _str(v) and not any(unicodedata.category(ch) in ("Cc", "Cs") for ch in v)
+
+
 def _removed_where(i: int, e: Any) -> str:
-    if isinstance(e, dict) and _str(e.get("group")) and _str(e.get("pair")):
+    if isinstance(e, dict) and _plain(e.get("group")) and _plain(e.get("pair")):
         return f"removed[{i}]（{e['group']}・{e['pair']}）"
     return f"removed[{i}]"
 
 
-def load_removed(text: str) -> tuple[list[dict], list[str]]:
-    """設定の頭の、外した対の記録（removed）。無ければ空。(形の正しい記録, 形の赤) を返す"""
+def load_removed(text: str) -> tuple[list[tuple[int, dict]], list[str]]:
+    """設定の頭の、外した対の記録（removed）。無ければ空。(形の正しい記録と removed の中の番号, 形の赤) を返す"""
     try:
         data = json.loads(text)
     except json.JSONDecodeError:
@@ -404,7 +411,7 @@ def load_removed(text: str) -> tuple[list[dict], list[str]]:
     removed = data["removed"]
     if not isinstance(removed, list):
         return [], [f"{CONFIG} の removed（外した対の記録）が並びでない"]
-    good: list[dict] = []
+    good: list[tuple[int, dict]] = []
     errs: list[str] = []
     seen: set[tuple[str, str]] = set()
     for i, e in enumerate(removed):
@@ -415,9 +422,10 @@ def load_removed(text: str) -> tuple[list[dict], list[str]]:
         bad = [f"{where}：欄 {k} が無い" for k in REMOVED_KEYS if k not in e]
         bad += [f"{where}：知らない欄 {k!r}（書けるのは {'・'.join(REMOVED_KEYS)}）" for k in e if k not in REMOVED_KEYS]
         bad += [f"{where}：欄 {k} が空でない文字でない" for k in REMOVED_KEYS if k in e and not _str(e[k])]
-        if _str(e.get("why")) and len("".join(e["why"].split())) < WHY_MIN:
+        bad += [f"{where}：欄 {k} に制御の字（改行・NUL など）か壊れた字が在る" for k in REMOVED_KEYS if _str(e.get(k)) and not _plain(e[k])]
+        if _plain(e.get("why")) and len("".join(e["why"].split())) < WHY_MIN:
             bad.append(f"{where}：why（訳）が {WHY_MIN} 字に足りない")
-        if _str(e.get("decision")) and not DECISION_RE.fullmatch(e["decision"]):
+        if _plain(e.get("decision")) and not DECISION_RE.fullmatch(e["decision"]):
             bad.append(f"{where}：decision {e['decision']!r} が決定の番号の形（D-<数> か D-<数>.<数>）でない")
         if not bad:
             key = (e["group"], e["pair"])
@@ -427,7 +435,7 @@ def load_removed(text: str) -> tuple[list[dict], list[str]]:
         if bad:
             errs += bad
         else:
-            good.append(e)
+            good.append((i, e))
     return good, errs
 
 
@@ -467,19 +475,20 @@ def _pair_names(g: Any) -> set[str]:
     return {str(p.get("name")) for p in g.get("pairs") or [] if isinstance(p, dict)}
 
 
-def check_removed(root: pathlib.Path, ref: str, removed: list[dict], before: list[Any],
+def check_removed(root: pathlib.Path, ref: str, removed: list[tuple[int, dict]], before: list[Any],
                   base: list[dict], cur: list[Any]) -> tuple[frozenset[tuple[str, str]], list[str]]:
     """外した対の記録の確かめ。(赤から外してよい（組, 対）, 赤) を返す。
     前に入った記録（分かれ目の版に同じ記録が在る）は、残っていることだけを見て、何も通さない。
     通す力を持つのは、この版で新しく足して、確かめが全部通った記録だけ"""
     errs: list[str] = []
+    records = [e for _, e in removed]
     for i, b in enumerate(before):
-        if b not in removed:
+        if b not in records:
             errs.append(f"分かれ目の版に在った記録 {_removed_where(i, b)} が、今の版に同じ字で残っていない（記録は消せない・書き替えられない）")
     base_by = {g["id"]: g for g in base if isinstance(g, dict) and _str(g.get("id"))}
     cur_by = {g["id"]: g for g in cur if isinstance(g, dict) and _str(g.get("id"))}
     passed: set[tuple[str, str]] = set()
-    for i, e in enumerate(removed):
+    for i, e in removed:
         if e in before:
             continue
         where = _removed_where(i, e)
