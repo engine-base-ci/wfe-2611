@@ -2038,7 +2038,7 @@ K-350,段 4 の外枠・自分の設定・小窓の直しと、預けたログ�
 2. **預けたログイン情報の部品とモック**：部品 `features/F3/credentials/views.tsx`（見た目だけ）と、それを並べた開発用の置き場 `/dev/mock/f3`（14 の状態）。画面の葉 K-356・K-357 はこのモックを正の絵として本番の画面をつなぐ
 
 あわせて、キャンバス MobileList の決め（スマホでは上の帯を出さない・鈴は本文の見出しの右）を変えたことを決定ログと正本 DESIGN-kaname.md に書き、**キャンバスの絵（04_design/canvas）も新しい決めに合わせる**（下の「確かめたこと」：合わせないと見た目の突き合わせ G70 の幅 375 の組が赤になる）。
-K-57（PC をつなぐ）は PM の決め（`.ticket-flow/pm-decisions-2026-11-18.md`）で閉じる（stage を完了に）。","- [ ] 下の表の行（K350-MK-001〜005・K350-DS-001・K350-DC-001〜002・K350-CV-001・K350-UI-001〜007・K350-SH-001〜006・K350-MS-001〜003・K350-SC-001〜002）が緑：`apps/web/tests/k/k350-stage4-mock.spec.ts`
+K-57（PC をつなぐ）は PM の決め（`.ticket-flow/pm-decisions-2026-11-18.md`）で閉じる（stage を完了に）。","- [ ] 下の表の行（K350-MK-001〜005・K350-DS-001・K350-DC-001〜002・K350-CV-001・K350-UI-001〜007・K350-SH-001〜007・K350-MS-001〜003・K350-SC-001〜002）が緑：`apps/web/tests/k/k350-stage4-mock.spec.ts`
 - [ ] K350-UI-008（人が確かめる）を代表が実機で見て OK
 - [ ] 切る段で替えた前からの試験 3 本（K138-SH-030・K220-UI-008・K328-SEC-001／005）が緑（carry で運ぶ）
 - [ ] 自分の確かめ（人が確かめる・gitleaks は CI の容れ物に無い）：`gitleaks dir apps/bridge/test/_fake --config .gitleaks.toml` と `gitleaks dir apps/e2e/_fake --config .gitleaks.toml` が 0 件
