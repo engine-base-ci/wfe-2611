@@ -1632,6 +1632,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
    "destinations": {
     "type": "text[]",
     "nullable": false
@@ -1652,6 +1656,10 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "layer": {
+    "type": "text",
+    "nullable": false
+   },
    "login_check_at": {
     "type": "timestamp with time zone",
     "nullable": true
@@ -1663,6 +1671,10 @@
    "login_check_state": {
     "type": "text",
     "nullable": true
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
    },
    "owner_member_id": {
     "type": "uuid",

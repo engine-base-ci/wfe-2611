@@ -1159,7 +1159,7 @@ QUERIES = {
     "listRules": ["scope", "client_id"],
     "listWorkTypes": ["origin", "sort"],
     "listCloneActivity": ["kind", "from", "to"],
-    "listCredentials": ["tenant_id"],
+    "listCredentials": [],   # 絞り込みを受けない（会社はセッションから決める・cursor と limit は形だけ・K-351）
     "listPlanProposals": ["state"],
     "listPlanHistory": ["plan_id"],
     "getNotificationSettings": ["tenant_id"],
@@ -1363,7 +1363,7 @@ PERMS = {
     "updateNotificationSettings": ("self", "同上。新しい端末で入った知らせは止められない", False),
     "copyNotificationSettings": ("self", "自分が入っているワークスペースにだけ写せる", False),
     # 預けたログイン情報（値はだれにも返さない）
-    "listCredentials": ("self", "自分のものと、自分が使える層・ワークスペースのものの名前だけ。値は返さない", False),
+    "listCredentials": ("self", "自分の個人の物と、自分のワークスペースの物の名前と使い方だけ。値と金庫の参照は返さない（D-128.57）", False),
     "createCredential": ("self", "自分のものを預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須（D-128.57）", True),
     "updateCredential": ("self", "自分のものの上書き・使える場所の変更", True),
     "deleteCredential": ("self", "自分のもの。消したらすぐ使えなくなる", False),

@@ -3619,6 +3619,45 @@
   },
   {
    "entity": "credentials",
+   "field": "name",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "account",
+    "ops-tenant",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
+   "field": "description",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "account",
+    "ops-tenant",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
+   "field": "layer",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "account",
+    "ops-tenant",
+    "member-detail"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "credentials",
    "field": "service_id",
    "consumed_by_screens": [
     "bridge-setup",
