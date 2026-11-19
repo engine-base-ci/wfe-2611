@@ -1,0 +1,189 @@
+/* PC の行に差す部品（pc-row-parts.tsx・段 4 の下絵）。値は正本のトークン（--k-*）だけ。生の色・大きさを書かない。
+   箱は今の「直し方」の箱（.k-pc-fix・--k-c-pc-fix-*）と同じ形。選ぶ欄の字は小窓の選ぶ行（--k-c-dialog-check-*）と同じ */
+
+/* ---- 部品を差した行は、切れている行と同じく上に揃える（PC の絵と「…」が行の真ん中に下がらない） ---- */
+.k-pc-row:has(.k-pc-part, .k-pc-browser, .k-pc-part-note) {
+  align-items: flex-start;
+}
+
+/* ---- 区画の箱（Claude Code・ブラウザの直し方） ---- */
+.k-pc-part {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  margin: var(--k-c-pc-fix-margin);
+  padding: var(--k-c-pc-fix-pad);
+  border: var(--k-c-pc-fix-border);
+  border-radius: var(--k-c-pc-fix-radius);
+  background: var(--k-c-pc-fix-bg);
+  font-size: var(--k-c-pc-fix-text);
+  line-height: var(--k-c-pc-fix-lh);
+  min-width: 0;
+}
+.k-pc-part-title {
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface);
+}
+.k-pc-part-text,
+.k-pc-part-meta {
+  margin: 0;
+}
+.k-pc-part-meta {
+  color: var(--k-on-surface-variant);
+}
+.k-pc-part-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin: var(--k-c-pc-wake-margin);
+}
+
+/* ---- 行の中の知らせ ---- */
+.k-pc-part-note {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-pc-part-note[data-tone="ok"] {
+  color: var(--k-st-success);
+}
+.k-pc-part-note[data-tone="danger"] {
+  color: var(--k-st-danger);
+}
+
+/* ---- ログインの途中（入口とコードの欄） ---- */
+.k-pc-login {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  margin: var(--k-c-pc-wake-margin);
+  padding: var(--k-c-pc-step-pad);
+  border-top: var(--k-c-pc-step-border-top);
+}
+.k-pc-login-steps {
+  margin: 0;
+  list-style: decimal;
+  padding-left: var(--k-s-lg);
+  color: var(--k-on-surface-variant);
+}
+.k-pc-login-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: flex-end;
+}
+.k-pc-login-row > :first-child {
+  flex: 1 1 var(--k-c-pc-set-label-width);
+  min-width: 0;
+}
+
+/* ---- AI が使うブラウザを選ぶ ---- */
+.k-pc-browser {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-c-dialog-check-gap);
+  min-width: 0;
+  margin: var(--k-c-pc-fix-margin);
+  padding: var(--k-c-pc-fix-pad);
+  border: var(--k-c-pc-card-border);
+  border-radius: var(--k-c-pc-fix-radius);
+}
+.k-pc-browser-legend {
+  padding: 0 var(--k-s-xs);
+  font-size: var(--k-c-pc-detail-text);
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface);
+}
+.k-pc-choice {
+  display: flex;
+  gap: var(--k-c-dialog-check-gap);
+  align-items: flex-start;
+  min-width: 0;
+  font-size: var(--k-c-dialog-check-text);
+  line-height: var(--k-c-dialog-check-lh);
+  cursor: pointer;
+}
+.k-pc-choice input {
+  flex: none;
+  /* 丸を 1 行目の字の真ん中にそろえる（箱の高さを行の高さに・丸は箱の真ん中に描かれる） */
+  height: 1lh;
+  margin-block: 0;
+  accent-color: var(--k-primary);
+}
+.k-pc-choice input:disabled,
+.k-pc-browser[aria-busy="true"] .k-pc-choice {
+  cursor: not-allowed;
+}
+.k-pc-choice-label {
+  display: block;
+  color: var(--k-on-surface);
+}
+.k-pc-choice-tag {
+  color: var(--k-on-surface-variant);
+}
+.k-pc-choice-desc {
+  display: block;
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
+
+/* ---- つなぎ方を見る ---- */
+.k-pc-fix-steps > summary {
+  cursor: pointer;
+  color: var(--k-primary);
+}
+.k-pc-fix-steps > ol {
+  margin: var(--k-s-xs) 0 0;
+  list-style: decimal;
+  padding-left: var(--k-s-lg);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- 「…」を押せる形にする（行の「…」は今グレー・K-363 で押せる） ---- */
+.k-pc-more.k-pc-more-on {
+  opacity: 1;
+  cursor: pointer;
+}
+.k-pc-more.k-pc-more-on:hover {
+  background: var(--k-select);
+}
+.k-pc-menu-danger {
+  color: var(--k-st-danger);
+}
+
+/* ---- 押せない「＋ PC をつなぐ」の理由（見出しの行のすぐ下・字は行の補足と同じ） ---- */
+.k-pc-add-reason {
+  margin: 0;
+  padding: 0 0 var(--k-s-sm);
+  font-size: var(--k-c-pc-detail-text);
+  color: var(--k-c-pc-detail-fg);
+}
+
+/* ---- OS の警告の越え方（K-374 の小窓の受け取る段・K-375 の入れ直す区画）。開き方は「つなぎ方を見る」と同じ ---- */
+.k-pc-os-warning {
+  min-width: 0;
+  margin: var(--k-s-xs) 0 0;
+}
+.k-pc-os-warning > summary {
+  cursor: pointer;
+  color: var(--k-primary);
+}
+.k-pc-os-warning-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  margin: var(--k-s-xs) 0 0;
+  color: var(--k-on-surface-variant);
+}
+.k-pc-os-warning-body p {
+  margin: 0;
+}
+.k-pc-os-warning-body ol {
+  margin: 0;
+  list-style: decimal;
+  padding-left: var(--k-s-lg);
+}
+.k-pc-os-warning-os {
+  font-weight: var(--k-fw-label-md);
+  color: var(--k-on-surface);
+}

@@ -16697,6 +16697,124 @@
    "file": "11_tickets/K-350.md"
   },
   {
+   "id": "K-369",
+   "title": "段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-22",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い段 3 の K-330（切る段の枝で作り終えた部品とモックを carry で運ぶ・状態 15・見込み 0.5）と、段 4 の K-350（同じ形・見込み 1 のうち運ぶだけの所 0.3）から引いた：写す 5 分・mocks.tsx の持ち主の字を K-<数> にそろえる 5 分・道の一覧を作り手で作り直す 2 分・CI の範囲の地図 5 分・試験を流して直す 10 分（切る段で 27 行のうち 25 行が緑・1 行は人が確かめる・赤の 1 行 MK-002 はこの葉の作る段の物・下の「確かめたこと」）。代表の答えで部品が変わったときの直しは切る段で済ませる（この見込みに入れない）。answer=7cf148a79dc9 で足した 7 つの状態・部品 2 つ・小窓の差す所 1 つは切る段で作り終えたので、運ぶ物が増えるだけで見込みは変えない",
+   "decisions": [
+    "D-128.125",
+    "D-145.9",
+    "D-146.1"
+   ],
+   "split": "",
+   "prior_impl": "c/段4（d3f231a9。部品先行の PC の行の下絵。代表 OK 済み 2026-11-19）",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・その写し・道の一覧（生成物）だけ。口・DB・外への送り出し・秘密に触らない（部品は値を props で受け、口は呼ばない）",
+   "tests": [
+    "apps/web/tests/k/k369-pc-row-mock.spec.ts"
+   ],
+   "carry": [
+    "07_qa/test-specs/errors.d/K-369.json",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx",
+    "apps/web/features/F3/connect-pc/pair-device.ts",
+    "apps/web/features/F3/connect-pc/pc-row-parts.css",
+    "apps/web/features/F3/connect-pc/connect-dialog.tsx",
+    "apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f3-pc/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f3-pc/[id]/page.tsx",
+    "07_functional/段4-F3/shots-pc/measure.json"
+   ],
+   "depends_on": [
+    "K-350"
+   ],
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup"
+   ],
+   "apis": [],
+   "mock": [
+    "pc-claude-missing",
+    "pc-claude-installing",
+    "pc-claude-install-error",
+    "pc-claude-broken",
+    "pc-claude-login",
+    "pc-claude-code",
+    "pc-claude-code-error",
+    "pc-claude-done",
+    "pc-claude-other-device",
+    "pc-asleep",
+    "pc-browser-pick",
+    "pc-browser-saved",
+    "pc-browser-fix",
+    "pc-browser-checking",
+    "pc-browser-ok",
+    "pc-browser-still",
+    "pc-browser-timeout",
+    "pc-browser-asleep",
+    "pc-menu",
+    "pc-remove",
+    "pc-remove-stepup",
+    "pc-removed",
+    "pc-remove-error",
+    "pc-phone",
+    "pc-os-warning",
+    "pc-os-warning-mac",
+    "pc-os-warning-win",
+    "pc-bridge-outdated",
+    "pc-bridge-reinstalling",
+    "pc-bridge-reinstall-error",
+    "pc-bridge-outdated-phone"
+   ],
+   "flow": "PC の行で、足りない物を直し・AI が使うブラウザを選び・古い Bridge を入れ直し・要らない PC を外す",
+   "affects": [
+    "@kaname/web",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "07_qa/test-specs/errors.d/K-369.json",
+    "07_qa/test-specs/errors.json",
+    "packages/errors/src/catalog.ts",
+    "07_qa/test-specs/errors.md",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx",
+    "apps/web/features/F3/connect-pc/pair-device.ts",
+    "apps/web/features/F3/connect-pc/pc-row-parts.css",
+    "apps/web/features/F3/connect-pc/connect-dialog.tsx",
+    "apps/web/app/(dev)/dev/mock/f3-pc/",
+    "07_functional/段4-F3/shots-pc/",
+    "apps/web/lib/built-routes.ts",
+    "scripts/ci/ci_scope.d/K-369.json",
+    "scripts/ci/ci_scope.json"
+   ],
+   "sections": {
+    "目的": "段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。\n\n- 部品 `apps/web/features/F3/connect-pc/pc-row-parts.tsx`（と `pc-row-parts.css`）：見た目だけ。値と押した結果は props で受け、口は呼ばない\n  - `ClaudeCodeFix`：Claude Code の足りない物と直し方（入れる・取り直す・ログインする・ほかの PC では理由だけ・眠っている PC は報告の時刻）→ K-361\n  - `BrowserChoice`・`BrowserFix`：AI が使うブラウザを選ぶ欄と、Chrome とつながらないときのその場の一手 → K-368\n  - `PcMoreMenu`・`RemovePcConfirm`：行の「…」のメニューと、外す確かめの小窓（取り直しは段 2 の StepUpDialog）→ K-363\n  - `AddPcButton`・`AddPcReason`（`.k-pc-add-reason`）：見出しの行の「＋ PC をつなぐ」と、Bridge を入れられない端末（スマホ・タブレット）で押せない理由の 1 行（代表の決め 2026-11-19「PC をつなぐのは PC でしかできない」）→ K-373\n  - `OsWarning`：OS の警告（署名の前の版を初めて開くと止まる）の越え方（Mac は「このまま開く」・Windows は「詳細情報 → 実行」。受け取った OS の分だけ・閉じた形）。前の画面 /setup/bridge/legacy の `[data-os-warning]` の字のまま → K-374（つなぐ小窓）・K-375（入れ直す区画）\n  - `BridgeReinstall`：Bridge が古い（自己診断の fix=update・E-CONN-012）PC の行の入れ直す一手（Mac 用／Windows 用を受け取る・受け取った後の知らせと越え方・失敗の文・スマホでは開く場所だけ）→ K-375\n- 小窓の差す所 `apps/web/features/F3/connect-pc/connect-dialog.tsx` の `takeHelp`（受け取る段の中、受け取るの字のリンクの下に差す物）：渡さなければ今の絵のまま（キャンバス EdPC との突き合わせ K230-UI-019 は変わらない）。K-374 が受け取った後に `OsWarning` を渡す。モックの pc-os-warning* は本番の `ConnectDialog` にこの差す所で `OsWarning` を渡して描く\n- 見分けの関数 `apps/web/features/F3/connect-pc/pair-device.ts`（`canPairHere`・`pairHintsOf`）：この端末に Bridge を入れられるかを OS で決める（画面の幅でなく）。K-373 の試験（K373-UI-002）が import する。K-375 もスマホで受け取るボタンを出さないのに使う\n- モック `/dev/mock/f3-pc`：本番と同じ部品（features/F3/connect-pc・components/k）を決めた値で並べた 31 の状態。画面の葉 K-361・K-373・K-368・K-363・K-374・K-375 はこのモックを正の絵として本番の画面をつなぐ（見た目の突き合わせはこのモックと比べる）\n\nキャンバス（04_design/canvas の MePC・EdPC・MePCInstalled）には PC の行の自己診断の区画・選ぶ欄・メニュー・外す小窓の絵が無い（K-361・K-363 の「探した結果」）。だから正の絵はこのモックにする（design-system.md §8・D-146.1）。",
+    "完了の条件": "- [ ] 下の表の行（K369-MK-001〜005・K369-EC-001・K369-DS-001・K369-UI-001〜016・K369-UI-018〜020）が緑：`apps/web/tests/k/k369-pc-row-mock.spec.ts`\n- [ ] K369-UI-017（人が確かめる）：代表が下絵を見て OK と言う。前からの 24 の状態 × 3 幅は済み（2026-11-19 の会話・PM の決定の控えに記録。K-350 の書き方と同じで、答え ID は求めない）。answer=7cf148a79dc9 で足した 7 つ（pc-os-warning*・pc-bridge-*）は代表に見てもらうのを待っている（まとめ役が聞く）\n- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: TOOL\n\n- **代表の OK（2026-11-19・会話で・PC の行の下絵と A の 1〜8 は勧めの形のまま・PM の決定の控え）**。下絵の字と形が正\n- 部品は段 1〜3 の部品（components/k の Button・Confirm・TextField・Callout・メニューは `@base-ui/react/menu`・F1/security の StepUpDialog）と正本のトークン（`--k-*`）だけで組んである。新しいトークンは足していない（K369-DS-001・K369-MK-004 で見る。切る段で design_gate を流して PASS・下の「確かめたこと」）\n- 文は目録（07_qa/test-specs/errors.json）から引く物は番号で引く（E-CONN-001・E-CONN-011・E-CONN-012・E-CONN-014・E-CONN-016・E-CONN-017・E-PAGE-003。E-CONN-012 は入れ直す区画の題・E-CONN-014 は受け取れなかったモックの文で、どちらも前から目録に在る）。代表の答え 7（2026-11-19・勧めのとおり）：ログインしていないときの文はこの画面用に分けた。新しい番号 E-CONN-016（「Claude Code にログインできていません。下の「ログインする」を押して、ブラウザで 1 回許可してください」）は この葉の errors.d 断片（07_qa/test-specs/errors.d/K-369.json・carry）が持ち（部品が先に引くので K-361 から移した）、部品の引く番号（CLAUDE_TITLE の login）と K369-EC-001・K369-UI-006 の期待は切る段で直した（2026-11-19）。E-CONN-010 は Bridge の窓の文として残る（K-359）。2026-11-19 PM の決め：ほかの端末で見ている行（mine=false・pc-phone の 2 行目）には「ログインする」のボタンが無いので、E-CONN-016 の「下の『ログインする』を押して…」は合わない。部品の ClaudeCodeFix は、mine=false でログインしていない行の題を、ボタンを言わない新しい番号 **E-CONN-017**（「この PC の Claude Code にログインできていません」・一手「その PC でこの画面を開いて、ログインする」）で引く（目録に合う文が無かった：E-CONN-010 は Bridge の窓のボタンを言う。E-CONN-015 は飛ばした番号）。E-CONN-017 も同じ断片 errors.d/K-369.json が持つ。切る段で生成物（errors.json・catalog.ts・errors.md）を作り直し、写し shots-pc の pc-phone の 3 枚を撮り直した\n- モックの置き場は `(dev)` の中（本番では notFound・段 2〜3 と同じ）。置き場は /dev/mock/f3 と分けた（K-350 の K350-UI-001「f3 の索引のリンクがちょうど 14」に響かない）\n- 今の PC の行（pc-cards.tsx の Row）は変えない。モックの MockRow は Row と同じクラスと並びで組んだ写し。本番で行に部品を差す所（PcList の renderExtra）は K-361、「…」を PcMoreMenu に替えるのは K-363 が作る\n- 新しい口・DB は無い\n- 代表の答え answer=7cf148a79dc9（2026-11-19）で足した物（切る段で作った）：部品 `OsWarning`・`BridgeReinstall`、小窓の差す所 `ConnectDialog` の `takeHelp`、モック 7 つ（K-374：pc-os-warning・pc-os-warning-mac・pc-os-warning-win／K-375：pc-bridge-outdated・pc-bridge-reinstalling・pc-bridge-reinstall-error・pc-bridge-outdated-phone）。部品と差す所はこの葉が先に運び（K-374・K-375 はこの葉に依存する）、本物の画面につなぐのは K-374・K-375。越え方の字は前の画面 /setup/bridge/legacy の `[data-os-warning]` のまま、入れ直しの題は目録の E-CONN-012\n- 越え方は受け取った後だけ小窓に出す（切る段の決め）：受け取る前の小窓は今の絵（キャンバス EdPC）のまま。前の画面はいつも出していたが、受け取る前に出すと小窓が高くなり、EdPC との突き合わせ（K230-UI-019 の bridge-code）の「新しいコード」「あとで」の y がずれる。越え方が要るのは受け取った物を開くときなので、受け取った後で足りる\n- Bridge が古い行は入れ直す区画だけを出す（切る段の決め・代表の答え A-3「先に直す物だけ」と同じ考え）：古い Bridge には仕事を渡さない（D-109）ので、Claude Code の直し方・ブラウザの欄・その場の一手は入れ直した後でよい",
+    "確かめたこと（切る段・2026-11-19）": "- 2026-11-19 夕（answer=7cf148a79dc9 の 7 つを足した後・c/段4 の 441865b0 の物）：切る段の置き場（next dev・3441）で試験を 1 回流した。人が確かめる UI-017 を除く 26 行のうち 25 行が緑（UI-019・020 と、31／93 にそろえた MK-001・003、MK-005 を含む）。赤は MK-002 の 1 行だけで、この葉が作る段でする物（下の実施事項：mocks.tsx の前からの 23 の状態の持ち主の字を K-<数> だけにする。足した 8 つ＝pc-phone と pc-os-warning*・pc-bridge-* は切る段で済み）\n- 赤の 1 行 MK-002 と、作る段で作り直す MK-005 の中身（どちらもこの葉が作る段でする物・下の実施事項）：\n  - MK-002：前からの 23 の状態の ticket の字は「K-361 UI-001」「K-90 画面 UI-002」の形（行の番号つき・K-90 の画面の葉は今 K-368）で、canvas_field_gate の逆向きの検査（状態の持ち主は K-<数> の形）でも赤\n  - MK-005：c/段4 では本線を取り込んだときに作り手で道の一覧を作り直したので今は緑。作る段の木（本線＋この葉が運ぶ物）では `apps/web/lib/built-routes.ts` が本線の版に戻り、/dev/mock/f3-pc の 2 行が無い（`python3 scripts/ci/gen_built_routes.py --app apps/web/app --out <写し>` と比べて差は 2 行だけ）ので、実施事項のとおり作り直す\n- 2026-11-19 夜（2 回目の精査の直しの後）：モック pc-phone の 2 行目を生きている行に直し（眠っている行なのに報告の時刻が無かった・K-373 の精査の指摘）、写し pc-phone の 3 枚（375・768・1440）だけを撮り直した。測りの値 measure.json の 3 行は前と同じ（横のはみ出し 0・h1「PC と使った量」）で、ファイルは変わらない。ほかの 90 枚は触っていない。直した後に切る段の置き場（3441）で k369-pc-row-mock.spec.ts を 1 回流した：26 行のうち 25 行が緑（pc-phone を見る K369-UI-006・018 と MK-003 を含む）・赤は MK-002 の 1 行だけ（作る段の物・上のとおり）\n- design_gate（K369-DS-001 と同じ引数）を c/段4 で流して PASS・FAIL 0。pc-row-parts.css の `var(--k-*)` は全部 `apps/web/styles/k-tokens.css` に在る\n- 写し（07_functional/段4-F3/shots-pc）は 93 枚と measure.json 93 行（31 × 3 幅・answer=7cf148a79dc9 の 7 つを足した後・2026-11-19 夕に撮り直した）で、横のはみ出し 0・小窓のボタンは画面の中（K369-MK-003）\n- 押せる物の大きさ：文の中のリンク「この入口」（48×17）は WCAG 2.5.8 の例外（文の中のリンク）なので見ない。ボタン・選ぶ行・「…」は 24px 以上（K369-UI-015 が緑）\n- 変えるファイルの重なり：K-350 の changes: の `07_functional/段4-F3/`（フォルダごと）・`apps/web/lib/built-routes.ts` と重なる → 依存にした（下の「依存の理由」）。K-361・K-363・K-368・K-373・K-374・K-375 は `apps/web/features/F3/connect-pc/`（K-361 はフォルダごと）を変えるので、向こうがこの葉に依存する（各葉の「依存の理由」に書いてある）。`connect-dialog.tsx` はこの葉のほかは K-361（フォルダごと）だけが変え得る（K-361 はこの葉に依存）",
+    "依存の理由": "- K-350: 要る — 同じファイル（`07_functional/段4-F3/` をフォルダごと・`apps/web/lib/built-routes.ts`）を変える。あわせて、モックと写しは K-350 の外枠（スマホの上の帯）・自分の設定の第 2 ナビ（MeSub）・小窓の型（.k-dialog の頭と足の固定）の上で撮った物で、K-350 の前に入れると K369-UI-002・016 と写し（MK-003）の前提が本線に無い",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）。carry: に書けるのは切る段の枝に在る字のファイルだけ（持ち込みの台本 scripts/tickets/cut_take.py はフォルダと絵を運べない）。だから、写しの置き場 `07_functional/段4-F3/shots-pc/` のうち、測りの値 `measure.json` は carry が運び、写しの写真（PNG 93 枚）は `git archive c/段4 07_functional/段4-F3/shots-pc | tar -x -C .` で写す（作業場所の根から・絵が壊れない。measure.json も同じ中身で上書きされる。1 枚ずつなら K-350 と同じ `git show 'c/段4:07_functional/段4-F3/shots-pc/<名前>' > '07_functional/段4-F3/shots-pc/<名前>'`）。写した後に `git diff --stat c/段4 -- 07_functional/段4-F3/shots-pc/` が空で、PNG が 93 枚在ることを確かめる（K369-MK-003 が数える）。changes: の 07_functional/段4-F3/shots-pc/ の中。見分けの関数 `features/F3/connect-pc/pair-device.ts`（canPairHere・pairHintsOf）も運ぶ（K-373 の試験が import し、K-375 が使う。2026-11-19 精査 R1）。小窓の差す所を足した `features/F3/connect-pc/connect-dialog.tsx` も運ぶ（answer=7cf148a79dc9） |\n| モックの持ち主の字 | `apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx` の MOCKS の 31 の状態の `ticket` を K-<数> の字だけにする（K-361：pc-claude-* の 9 つと pc-asleep／K-373：pc-phone（切る段で済み）／K-368：pc-browser-* の 8 つ／K-363：pc-menu・pc-remove・pc-remove-stepup・pc-removed・pc-remove-error／K-374：pc-os-warning*（3 つ・切る段で済み）／K-375：pc-bridge-*（4 つ・切る段で済み））。行の番号（「UI-001」など）は label の後ろか注に移してよい（索引に出す字）。1 行の形は `{ id: \"…\", screen: \"bridge-setup\", label: \"…\", ticket: \"K-…\" }`（canvas_field_gate と K369-MK-001・002 が読む） |\n| 道の一覧（生成物） | `python3 scripts/ci/gen_built_routes.py --app apps/web/app --out apps/web/lib/built-routes.ts` で作り直す（/dev/mock/f3-pc・/dev/mock/f3-pc/:id の 2 行が足される）。手で書かない |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-369.json`：data_links に `{\"paths\": [\"07_functional/段4-F3/shots-pc/measure.json\", \"07_qa/test-specs/errors.json\", \"scripts/ci/design_gate.py\", \"scripts/ci/gen_built_routes.py\"], \"tests\": [\"apps/web/tests/k/k369-pc-row-mock.spec.ts\"]}`、reads_ok に試験が読む物（モックの置き場・部品・写し・errors.json・built-routes.ts）と子プロセスの design_gate.py を書く（K-350 の行と同じ形）。`python3 scripts/ci/build_registries.py` で `scripts/ci/ci_scope.json` に足し合わせる |\n| 代表の答えの直し（切る段） | 答えで部品が変わったら、c/段4 で部品・モック・写し（`node ../../07_functional/段4-F3/mock-shots.mjs ../../07_functional/段4-F3/shots-pc f3-pc`・3441 で置き場を立ててから。根に @playwright/test が無いので apps/web に一時の写しを置いて流し、終わったら消す。1 つの状態だけ撮り直すときは、出す場所を一時の置き場にして 4 つ目の引数に状態の頭を付け（例 `… <一時の置き場> f3-pc pc-phone`）、その状態の PNG 3 枚と measure.json のその 3 行だけを入れ替える：台本は出す場所の measure.json を撮った分だけで書き直すため）を直し、K369-UI-006〜014・019・020 と K369-EC-001 の行の期待を直す。作る段ではしない |\n| 試験を流して緑にする | 画面の試験は手元のブラウザで（.claude/launch.json の web-s4-mock・3441） |\n\n### 速さ（今の値と目標の値）\n\n部品とモックは口を呼ばない。この葉で画面ごとの口の数は増えない。\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数 | 部品は口を呼ばない（本番の画面の入れ物が呼ぶ・K-361・K-363・K-368・K-374・K-375） | 同じ（0 増える） |\n| 直列の段・二重の要求 | 変わらない | 変わらない |\n| 新しい住所 | /dev/mock/f3-pc・/dev/mock/f3-pc/:id（開発用・本番では notFound） | 本番の住所は増えない |\n| 認証の要る答えの Cache-Control | 口を足さないので対象なし | 対象なし |",
+    "表の住所": "- CI の範囲の地図は `scripts/ci/ci_scope.d/K-369.json`（K-325 の .d/）。新しい口・エラー・ears・契約の形は無いので、ほかの .d/ は足さない\n- K-325〜K-327 は本線に入った（口の登録は葉ごとの hooks のファイルの register・migration は時刻の名前で一覧は生成物）。この葉は口も migration も足さないので、その形で直す所は無い\n- K-328（.gitleaks の外し方）は本線に入った。この葉の試験に秘密に見える作り物の値は無いので、置き場（_fake/secrets.ts）は使わない",
+    "外に影響する手順": "- なし — 画面の部品・開発用のモック・写し・道の一覧（生成物）だけ。DB に書かない・外を呼ばない・セッションや錠を作らない",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k369-pc-row-mock.spec.ts`（実 Chrome と、ファイル・検査の道具を読む試験）。口は網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。固定の待ちは使わない（移り終わりと要素を待つ）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| モックの 31 の状態 | 索引・直に開く・幅 375／768／1440 | （開発用の置き場・ログインの前提なし） | どれも描け、横のはみ出し 0 | このチケット | K369-UI-001〜005 |\n| Claude Code が無い・本体が無い・ログインしていない・途中・できた | この PC の行 | ログイン中 | 題・ボタン・入口とコードの欄・知らせ | このチケット（見た目）／K-361（本物の口） | K369-UI-006・007 |\n| ほかの PC・眠っている PC・ほかの端末で見ている login の行 | ほかの行 | ログイン中 | 理由と開く場所だけ（login の題はボタンを言わない E-CONN-017）・報告の時刻・押せるボタンなし | このチケット／K-361 | K369-UI-006 |\n| ブラウザ：選ぶ前・選んだ・つながらない・確かめ中・結果・眠っている PC | PC の行 | ログイン中 | 選ぶ欄・その場の一手・結果の文 | このチケット／K-368 | K369-UI-008・009 |\n| つなぐ小窓で受け取った後（Mac・Windows・越え方を開いた） | 小窓の受け取る段 | ログイン中 | 越え方の見出し・受け取った OS の手順 | このチケット／K-374 | K369-UI-019 |\n| Bridge が古い PC：受け取る前・受け取った・受け取れない・スマホ | 古い行 | ログイン中 | 入れ直す区画・知らせ・越え方・開く場所 | このチケット／K-375 | K369-UI-020 |\n| 「…」→ 外す確かめ → 取り直し → 外した／外せない | PC の行・キーボード | ログイン中 | メニュー・小窓・知らせ | このチケット／K-363 | K369-UI-010〜014・016 |\n| 本物の口の答え | 本番の /setup/bridge | ログイン中 | モックの状態ごとの見た目 | K-361・K-373・K-368・K-363・K-374・K-375 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K369-MK-001 | 入力 | モックの状態の数 | mocks.tsx の ticket を持つ状態が 31 個で重なり無し、画面の葉 K-361（10）・K-373（1）・K-368（8）・K-363（5）・K-374（3）・K-375（4）の和とちょうど同じ |\n| K369-MK-002 | 守り | 状態の持ち主 | 31 個のどれも ticket が K-<数> の字だけで、その状態を本物にする画面の葉（口の葉を指さない）・screen は bridge-setup |\n| K369-MK-003 | 入力 | 写しと測り | 07_functional/段4-F3/shots-pc に 31 × 3 幅の 93 枚と measure.json の 93 行。どれも over 0・tabsOver 0・buttonsSeen が false でない・h1「PC と使った量」（つなぐ小窓の 3 つは「PC と使った量|PC をつなぐ」） |\n| K369-MK-004 | 守り | 見た目だけの部品 | pc-row-parts.tsx に fetch・lib/api・useEffect・useRouter・lib/auth の import・style=・#色・px が無い。pc-row-parts.css（注を除く）に #色・rgb()・hsl()・px が無く、var(--k-*) を使う |\n| K369-MK-005 | 入口 | 道の一覧 | isBuilt(\"/dev/mock/f3-pc\") と isBuilt(\"/dev/mock/f3-pc/pc-menu\") が true |\n| K369-EC-001 | 守り | 目録の番号 | 部品とモックが errorText で引く番号はちょうど E-CONN-001・E-CONN-011・E-CONN-012・E-CONN-014・E-CONN-016・E-CONN-017・E-PAGE-003 で、どれも errors.json に在る |\n| K369-DS-001 | 守り | 正本の値 | design_gate.py（--part --scales --usage）の出力に FAIL が無い |\n| K369-UI-001 | 入口 | 索引 | /dev/mock/f3-pc に h2「bridge-setup」と 31 のリンク（/dev/mock/f3-pc/<状態>） |\n| K369-UI-002 | 入力 | 幅 375 | 31 の状態が 200 で開き、「この状態はありません」が無く、h1 は「PC と使った量」の 1 つ（つなぐ小窓の pc-os-warning* の 3 つは小窓の題「PC をつなぐ」と合わせて 2 つ）、横のはみ出し 0 |\n| K369-UI-003 | 入力 | 幅 768 | 同上 |\n| K369-UI-004 | 入力 | 幅 1440 | 同上 |\n| K369-UI-005 | 失敗 | 描き直し | 31 の状態で pageerror と hydration の知らせが 0 |\n| K369-UI-006 | 対象の状態 | Claude Code の区画 | 入っていない：題「Claude Code が入っていません」・押せる「Claude Code を入れる」。本体が無い：題は E-CONN-011 の文・「Claude Code を取り直す」。ログインしていない：題は E-CONN-016 の文（この画面用）・「ログインする」。途中：リンク「この入口」が https://claude.ai/… を新しい窓（noopener）で開き、欄「ブラウザに出たコード」が空で「決定」は押せない。ほかの PC：「Bridge が入っている PC でこの画面を開いてください」でボタン 0。眠っている PC：「11/15 09:00 の報告」でボタン 0。ほかの端末で見ている行が login（pc-phone の 2 行目）：題は E-CONN-017 の文（「この PC の Claude Code にログインできていません」）で「ログインする」の字は無く、「Bridge が入っている PC でこの画面を開いてください」でボタン 0 |\n| K369-UI-007 | 失敗 | 行の中の知らせの役 | 入れている途中「Claude Code を入れています（1〜2 分）」とできた「ログインできました。これで仕事を渡せます」は role=status、入れられなかった「この PC の Bridge に届きませんでした…」とコードが違った「ログインできませんでした…」は role=alert（欄の字 K361-BAD-CODE は残る） |\n| K369-UI-008 | 入力 | AI が使うブラウザを選ぶ欄 | 組の名前「AI が使うブラウザ」にラジオ 3 つ（自分の Chrome（既定）・Bridge 専用のブラウザ・使わない）。pc-browser-pick は自分の Chrome、pc-browser-saved は Bridge 専用が選ばれ status「変えました。次の仕事から使います」 |\n| K369-UI-009 | 失敗 | その場の一手 | 題「AI が Chrome を使えません。」・リンク「Chrome ウェブストアで開く」（chromewebstore.google.com/detail/claude/…・noopener）・「もう一度確かめる」「Bridge 専用に切り替える」が押せる。確かめ中はボタンが「確かめています…」で切り替えは押せず status「確かめています（1 分ほどかかります）…」。まだ・返ってこない・眠っている PC の文は role=alert |\n| K369-UI-010 | 入口 | 「…」のメニュー | 「…（高本の MacBook の操作）」のメニューの項目は「この PC を外す」の 1 つ |\n| K369-UI-011 | 対象の状態 | 外す確かめの小窓 | alertdialog「「高本の MacBook」を外しますか？」に「預けたログイン情報もこの PC からは取り出せなくなります」と「待っている仕事は消えません」。ボタンは やめる・外す の順で、焦点は やめる |\n| K369-UI-012 | 守り | 取り直しの小窓 | dialog「本人か確かめます」に「PC を外す前に、本人か確かめます」とパスワードの欄、ボタンは やめる・確かめる |\n| K369-UI-013 | 対象の状態 | 外した・外せなかった | 外した：本文に「外しました。もう一度つなぐときは、この画面からつなぎ直してください」・一覧は事務所の Mac mini の 1 行。外せなかった：本文に E-PAGE-003 の文・一覧は 2 行 |\n| K369-UI-014 | 入口 | キーボード | 「…」に焦点 → Enter でメニューが開き「この PC を外す」に焦点 → Esc でメニューが閉じ、焦点は「…」に戻る |\n| K369-UI-015 | 入力 | 押せる物の大きさ（幅 375） | pc-claude-code・pc-browser-fix・pc-browser-pick・pc-removed で、部品の中のボタン・選ぶ行（.k-pc-choice）・「…」は幅も高さも 24px 以上（文の中のリンクは WCAG 2.5.8 の例外） |\n| K369-UI-016 | 入力 | 小窓 × 高さ 812・560（幅 375） | pc-remove・pc-remove-stepup・pc-os-warning・pc-os-warning-mac・pc-os-warning-win で、頭の上端と足の上端が 0 以上・足の下端が画面の高さ以下 |\n| K369-UI-017 | 利用者の状態 | 代表が下絵を見る | 人が確かめる：代表が `.ticket-flow/side-notes/段4-PCの行-下絵.html`（31 の状態 × 3 幅）を見て OK と言う（前からの 24 は済み・2026-11-19 の会話・PM の決定の控え。answer=7cf148a79dc9 で足した 7 つは見てもらうのを待っている） |\n| K369-UI-018 | 入口 | スマホで開いた画面（pc-phone・幅 375）と PC の画面（pc-browser-pick） | pc-phone：見出しの行の「＋ PC をつなぐ」（AddPcButton・data-act=\"add-pc\"）がちょうど 1 つで押せない（disabled）。すぐ下に理由の 1 行（AddPcReason・.k-pc-add-reason）「つなぐ PC で、この画面を開いてください」が見え、ボタンの aria-describedby がその id を指す。pc-browser-pick：ボタンは押せて理由の 1 行は 0 個 |\n| K369-UI-019 | 対象の状態 | OS の警告の越え方（つなぐ小窓・幅 1440） | 3 つとも 1 段目の丸は ✓ で、越え方（[data-os-warning]）は 1 段目の中に 1 つ。pc-os-warning：閉じた形で見出し「「開いていません」「PC が保護されました」と出たとき」・小窓の role=status に「ダウンロードを始めました」。pc-os-warning-mac：開いて「中身の問題ではありません」・Mac の手順 4 つ（「このまま開く」を含む）だけ。pc-os-warning-win：開いて手順「「詳細情報」を押す」「「実行」を押す」だけ |\n| K369-UI-020 | 対象の状態 | Bridge を入れ直す一手（幅 1440・375） | pc-bridge-outdated：題は E-CONN-012 の文・「Mac 用を受け取る」「Windows 用を受け取る」が押せ、その行に選ぶ欄は無い。pc-bridge-reinstalling：role=status「受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます」と越え方（Mac の分だけ）。pc-bridge-reinstall-error：role=alert に E-CONN-014 の文。pc-bridge-outdated-phone（幅 375）：区画のボタン 0・「その PC でこの画面を開いて、入れ直してください」 |\n\n```judge-skip\n- K369-UI-017: 人が確かめる（代表が下絵を見て OK と言う。前からの 24 の状態は済み・2026-11-19 の会話で、PM の決定の控えに記録。答え ID は求めない・K-350 の UI-008 と同じ書き方。answer=7cf148a79dc9 で足した 7 つは代表が見るのを待っている）\n```\n\n### テストの型の受け（分類 TOOL）\n\n段 2〜4 の部品とモックを運ぶ葉（K-300・K-330・K-350）と同じ分類にした。\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K369-MK-003（07_functional/段4-F3/shots-pc） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K369-MK-001・002（ticket を持つ状態がちょうど 31 個でなければ赤）・K369-MK-003（93 行でなければ赤）・K369-EC-001（引く番号の集合がちょうど 7 つ）・K369-UI-015（押せる物が 0 なら赤） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：この葉の試験は CI の web の組の容れ物でも手元でも同じ命令で、K369-DS-001 の design_gate.py は CI の static の段と同じ引数 |\n\nほかの観点：入口（索引・幅・キーボード）・失敗（描き直しの誤り・知らせの役）・守り（見た目だけ・正本の値・目録の番号）・利用者の状態（代表の目）。時間の流れは見る物が無い（口も期限も無い）。操作の揺れ（二度押し・同時）は画面の葉 K-361・K-363・K-368 が本物の口で受ける。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験 14 本（今の c/段4 で流した数・この葉の試験と段 4 の兄弟の葉の試験を含む。2026-11-19 夜に数え直した：K-373・K-374・K-375 の試験 3 本が足され、K-361 の試験は一覧から外れた）。替える物は無い。\n\n```search\npython3 scripts/ci/cut_check.py prior --files <この葉の changes:>\n14\n```\n\n（errors.d・errors.json・ci_scope.json は共通の入口なので prior は照らさない・作る段の CI が見る。packages/errors/src/catalog.ts は照らすので、それを読む前からの試験 4 本が出る）\n\n- apps/web/tests/k/k138-shell.spec.ts: 替えない — built-routes.ts の isBuilt で外枠のナビの「準備中」を見るだけ。この葉が足す /dev/mock/f3-pc の 2 行は外枠のナビに無い\n- apps/web/tests/k/k315-help.spec.ts: 替えない — 手引きのリンクの先が built-routes.ts に在るかを見るだけ。開発用の置き場は手引きに出ない\n- apps/web/tests/k/k350-stage4-mock.spec.ts: 替えない — /dev/mock/f3 の 14 の状態と外枠を見る。置き場を分けたので f3 の索引のリンクの数（K350-UI-001）は変わらない。K350-MK-005（ShellBell・k-bell-inline・k-sheet-me が無い）は pc-row-parts.tsx・f3-pc にも無い（検索 0 件）\n- apps/web/tests/reachability.spec.ts: 替えない — built-routes.ts の道を全部開いて 404 が無いかを見る。/dev/mock/f3-pc は 200、/dev/mock/f3-pc/:id は「この状態はありません」の 200（K-350 の /dev/mock/f3 と同じ）\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手を流し直して生成物が 1 字も変わらないかを見る。built-routes.ts は作り手で作り直すので緑のまま\n- apps/web/tests/k/k369-pc-row-mock.spec.ts: 替えない — この葉の試験（tests:）。changes: に無いので一覧に出る\n- scripts/ci/contract_shape_test.py: 替えない — catalog.ts から E-XXX-NNN の状態コードを読むだけ。この葉が足す E-CONN-016・017 は cls が同じ形で、口の契約の形の行は増えない\n- scripts/ci/errors_used.test.mjs: 替えない — 作り物の木で生成と参照の検査を試す（本物の catalog.ts は読まない）\n- scripts/ci/k245_g27_reach_test.py: 替えない — catalog.ts だけを変えた回で層の検査（G27）が流れることを見るだけ。この葉の回でもそのとおり流れる\n- scripts/ci/k257_canvas_boards_test.py: 替えない — キャンバスの絵の字を catalog.ts の文と比べる。比べる番号（MePC・EdPC の文）は変えない。足すのは新しい番号 E-CONN-016・017 だけ\n- apps/web/tests/k/k373-pc-row-phone-match.spec.ts: 替えない — 段 4 の葉 K-373 の試験（その葉が運ぶ）。pair-device.ts の canPairHere を import し、/dev/mock/f3-pc の 11 の状態を正の絵として比べる（K-373 は K-369 に依存）\n- apps/web/tests/k/k374-os-warning.spec.ts: 替えない — 段 4 の葉 K-374 の試験（その葉が運ぶ）。connect-dialog.tsx の差す所と部品 OsWarning・モック pc-os-warning* を使う（K-374 は K-369 に依存）\n- apps/web/tests/k/k375-bridge-reinstall.spec.ts: 替えない — 段 4 の葉 K-375 の試験（その葉が運ぶ）。部品 BridgeReinstall・モック pc-bridge-* を使う（K-375 は K-369 に依存）\n- apps/web/tests/k/k368-pc-browser.spec.ts: 替えない — 同じ段 4 の葉 K-368 の試験（その葉が運ぶ）。/dev/mock/f3-pc のモックを正の絵として比べる\n\n```search\ngrep -rlE \"ShellBell|k-bell-inline|k-sheet-me\" apps/web/features/F3/connect-pc \"apps/web/app/(dev)/dev/mock/f3-pc\"\n0\n```",
+    "成果物": "- 部品 `features/F3/connect-pc/pc-row-parts.tsx`・`pc-row-parts.css`\n- 小窓の差す所を足した `features/F3/connect-pc/connect-dialog.tsx`・見分けの関数 `features/F3/connect-pc/pair-device.ts`・エラーの目録の断片 `07_qa/test-specs/errors.d/K-369.json`\n- モックの置き場 `apps/web/app/(dev)/dev/mock/f3-pc/`（31 の状態）と写し `07_functional/段4-F3/shots-pc/`（93 枚と measure.json）\n- 道の一覧（生成物）・CI の範囲の地図",
+    "決定ログ": "- 2026-11-19 まとめ役：PC の行の下絵を本番と同じ部品で /dev/mock/f3-pc に作った（c/段4 の d3f231a9）。キャンバスに絵が無いので、正の絵はこのモック（D-146.1）。キャンバスに在る「…」はグレーでなく押せる形にする（K-363 が機能をつなぐ・D-145.9）\n- 2026-11-19 切る段の決め：モックの置き場は /dev/mock/f3 と分ける（K-350 の 14 の状態の数の行に響かせない）\n- 2026-11-19 切る段の決め：状態の持ち主の字は K-<数> だけ（canvas_field_gate の逆向きの検査が読む形）。K-90 の画面の葉の状態の持ち主は K-368\n- 代表の OK（2026-11-19・会話で・PC の行の下絵と A の 1〜8 は勧めの形のまま・PM の決定の控え）。決定ログの節（D-147.x・PM が書く）に結ぶ\n- 2026-11-19 精査 R1 の直し：pair-device.ts を carry に足した・AddPcButton／AddPcReason を目的に足し K369-UI-018 で見る・UI-017 は済み（答え ID を求めない）・古い字（写し 72・番号 5 つ・K-328 は入った）・prior の数え直し（そのときは 8。今の数は上の「前からの試験を替えた所」の 14）\n- 2026-11-19 代表の答え answer=7cf148a79dc9：OS の警告の越え方を新しい画面の受け取る段に足す（K-374）・PC の行に Bridge を入れ直す一手を足す（K-375）。部品 OsWarning・BridgeReinstall と小窓の差す所 takeHelp とモック 7 つはこの葉が運ぶ（K-374・K-375 が先にこの葉に依存する形・部品先行）\n- 2026-11-19 切る段の決め：越え方は受け取った後だけ小窓に出す（受け取る前の小窓はキャンバス EdPC の絵のまま）・Bridge が古い行は入れ直す区画だけを出す（A-3 と同じ考え）\n- 2026-11-19 まとめ役：K-361 を分けて K-373 ができた。pc-phone の持ち主は K-373\n- 2026-11-19 夜・2 回目の精査の直し（まとめ役の決め）：① carry: から写しのフォルダ（07_functional/段4-F3/shots-pc/）を外し、字のファイル measure.json だけを carry に書く。PNG 93 枚は作る段で `git archive` で写す（持ち込みの台本はフォルダと絵を運べない）② モック pc-phone の 2 行目を生きている行に直し、写し 3 枚を撮り直した（K-373 の精査の指摘・絵の側を直す）③ prior を 14 に数え直した",
+    "PM に確かめたいこと": "- answer=7cf148a79dc9 で足した 7 つの状態（pc-os-warning*・pc-bridge-*）を代表に見てもらう（K369-UI-017）。見て形が変わったら、部品・モック・写しとこの葉・K-374・K-375 の行の期待を切る段で直す（前からの 24 の状態は OK 済み）"
+   },
+   "file": "11_tickets/K-369.md"
+  },
+  {
    "id": "K-376",
    "title": "CI の段の命令の並び（G65・G47）をチケットごとのファイル（scripts/ci/g65.d・g47.d）から作る（K-324 の葉）",
    "kind": "タスク",

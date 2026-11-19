@@ -2045,6 +2045,23 @@ K-57（PC をつなぐ）は PM の決め（`.ticket-flow/pm-decisions-2026-11-1
 - [ ] 作り手で作り直したキャンバスの絵が切る段の枝の絵と 1 字も同じ：`git diff --stat c/段4 -- 04_design/canvas/` が空（実施事項「キャンバスの絵」）
 - [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の入れた組が全部の幅で緑（外枠を変えたので G70 は全部の組を流す・canvas: [全部の組]）
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）,タスク,K-56,未着手,実装,2026-11-22,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。
+
+- 部品 `apps/web/features/F3/connect-pc/pc-row-parts.tsx`（と `pc-row-parts.css`）：見た目だけ。値と押した結果は props で受け、口は呼ばない
+  - `ClaudeCodeFix`：Claude Code の足りない物と直し方（入れる・取り直す・ログインする・ほかの PC では理由だけ・眠っている PC は報告の時刻）→ K-361
+  - `BrowserChoice`・`BrowserFix`：AI が使うブラウザを選ぶ欄と、Chrome とつながらないときのその場の一手 → K-368
+  - `PcMoreMenu`・`RemovePcConfirm`：行の「…」のメニューと、外す確かめの小窓（取り直しは段 2 の StepUpDialog）→ K-363
+  - `AddPcButton`・`AddPcReason`（`.k-pc-add-reason`）：見出しの行の「＋ PC をつなぐ」と、Bridge を入れられない端末（スマホ・タブレット）で押せない理由の 1 行（代表の決め 2026-11-19「PC をつなぐのは PC でしかできない」）→ K-373
+  - `OsWarning`：OS の警告（署名の前の版を初めて開くと止まる）の越え方（Mac は「このまま開く」・Windows は「詳細情報 → 実行」。受け取った OS の分だけ・閉じた形）。前の画面 /setup/bridge/legacy の `[data-os-warning]` の字のまま → K-374（つなぐ小窓）・K-375（入れ直す区画）
+  - `BridgeReinstall`：Bridge が古い（自己診断の fix=update・E-CONN-012）PC の行の入れ直す一手（Mac 用／Windows 用を受け取る・受け取った後の知らせと越え方・失敗の文・スマホでは開く場所だけ）→ K-375
+- 小窓の差す所 `apps/web/features/F3/connect-pc/connect-dialog.tsx` の `takeHelp`（受け取る段の中、受け取るの字のリンクの下に差す物）：渡さなければ今の絵のまま（キャンバス EdPC との突き合わせ K230-UI-019 は変わらない）。K-374 が受け取った後に `OsWarning` を渡す。モックの pc-os-warning* は本番の `ConnectDialog` にこの差す所で `OsWarning` を渡して描く
+- 見分けの関数 `apps/web/features/F3/connect-pc/pair-device.ts`（`canPairHere`・`pairHintsOf`）：この端末に Bridge を入れられるかを OS で決める（画面の幅でなく）。K-373 の試験（K373-UI-002）が import する。K-375 もスマホで受け取るボタンを出さないのに使う
+- モック `/dev/mock/f3-pc`：本番と同じ部品（features/F3/connect-pc・components/k）を決めた値で並べた 31 の状態。画面の葉 K-361・K-373・K-368・K-363・K-374・K-375 はこのモックを正の絵として本番の画面をつなぐ（見た目の突き合わせはこのモックと比べる）
+
+キャンバス（04_design/canvas の MePC・EdPC・MePCInstalled）には PC の行の自己診断の区画・選ぶ欄・メニュー・外す小窓の絵が無い（K-361・K-363 の「探した結果」）。だから正の絵はこのモックにする（design-system.md §8・D-146.1）。","- [ ] 下の表の行（K369-MK-001〜005・K369-EC-001・K369-DS-001・K369-UI-001〜016・K369-UI-018〜020）が緑：`apps/web/tests/k/k369-pc-row-mock.spec.ts`
+- [ ] K369-UI-017（人が確かめる）：代表が下絵を見て OK と言う。前からの 24 の状態 × 3 幅は済み（2026-11-19 の会話・PM の決定の控えに記録。K-350 の書き方と同じで、答え ID は求めない）。answer=7cf148a79dc9 で足した 7 つ（pc-os-warning*・pc-bridge-*）は代表に見てもらうのを待っている（まとめ役が聞く）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-376,CI の段の命令の並び（G65・G47）をチケットごとのファイル（scripts/ci/g65.d・g47.d）から作る（K-324 の葉）,タスク,K-324,未着手,実装,2026-11-19,共通・CI,"`05_flow/build_testplan.py` の G65（CI の形の試験）の命令は、自己試験を `&&` でつないだ 1 行（今 43 本）。自己試験を足すチケットは全部この 1 行を変えるので、同時に作ると取り込みでぶつかる（11 月に入ってからこの行を変えたコミットは 43 本。2026-11-19 にも 2 本がぶつかった）。
 同じ形の G47（検査の自己試験・13 本）も 6 回変わり、うち 1 回は取り込みで足しを落としていた（K-62 の直し「取り込みで落とした G47 の足し」）。
 
