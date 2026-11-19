@@ -2132,9 +2132,7 @@
     "D-128.136"
    ],
    "split": "これから",
-   "screens": [
-    "invite-accept"
-   ],
+   "screens": [],
    "apis": [],
    "tests": [],
    "depends_on": [],
