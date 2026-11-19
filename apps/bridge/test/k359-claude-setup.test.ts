@@ -440,7 +440,8 @@ describe("K-359 入れる（本物の走らせ方と探し方：run・broken を
     // 返らない：時間切れの文で返り、起こした子はもう生きていない（止める関数は本物）
     setNpm("hang");
     writeFileSync(join(dir, "pids"), "");
-    const late = await installClaude(() => undefined, { ...base, find: async () => null, timeoutMs: 1_500 });
+    // 上限は 5 秒：台が混んでいても、台本が pid を書き終えてから止める（先に止めると、止まったことを確かめる相手が無い）
+    const late = await installClaude(() => undefined, { ...base, find: async () => null, timeoutMs: 5_000 });
     expect(late).toEqual({ ok: false, message: "時間がかかりすぎたので止めました。もう一度押してください" });
     expect(pids()).toHaveLength(1);
     await vi.waitFor(() => expect(alive(pids()[0]!)).toBe(false), { timeout: 5_000 });
@@ -793,5 +794,52 @@ describe("K-359 この PC の印（device_id）", { timeout: 30_000 }, () => {
       a.srv.close();
       b.srv.close();
     }
+  });
+
+  it("K359-BR-030 同じ番号は知らせ直さない。番号が変わったとき・鍵が通らなくなった後の最初の知らせでは知らせ直す", async () => {
+    // 偽の Kaname：生きている知らせに、順に dev-a・dev-a・dev-b・401・dev-b・その後はずっと dev-b を返す
+    const script: (string | 401)[] = ["dev-a", "dev-a", "dev-b", 401, "dev-b"];
+    let beatsSeen = 0;
+    const kaname = createServer((req, res) => {
+      req.on("data", () => undefined);
+      req.on("end", () => {
+        const url = req.url ?? "";
+        const send = (data: unknown, status = 200) => {
+          res.writeHead(status, { "content-type": "application/json" });
+          res.end(JSON.stringify({ data }));
+        };
+        if (url.endsWith("/bridge/heartbeat")) {
+          const step = script[Math.min(beatsSeen, script.length - 1)]!;
+          beatsSeen += 1;
+          if (step === 401) return send({ error: "gone" }, 401);
+          return send({ ok: true, browser: null, outdated: false, device_id: step }, 201);
+        }
+        if (url.endsWith("/bridge/jobs/take"))
+          return send({ job: null, forbidden_domains: [], next_ms: 50, outdated: false }, 201);
+        return send({ ok: true });
+      });
+    });
+    await new Promise<void>((r) => kaname.listen(0, "127.0.0.1", r));
+    const a = kaname.address();
+    const ids: string[] = [];
+    let gone = 0;
+    const stop = startLoop({
+      apiBase: `http://127.0.0.1:${typeof a === "object" && a ? a.port : 0}`,
+      sessionId: () => `kpc_${"k".repeat(43)}`,
+      health: async () => [],
+      onChange: () => undefined,
+      onGone: () => void (gone += 1),
+      onDeviceId: (x: string) => ids.push(x),
+      heartbeatMs: 100,
+    });
+    try {
+      // 知らせは 1 本ずつ順に送る。7 回目が届いた＝6 回目までの答えは受け終わっている
+      await vi.waitFor(() => expect(beatsSeen).toBeGreaterThanOrEqual(7), { timeout: 15_000 });
+    } finally {
+      stop();
+      kaname.close();
+    }
+    expect(ids).toEqual(["dev-a", "dev-b", "dev-b"]);
+    expect(gone).toBe(1);
   });
 });
