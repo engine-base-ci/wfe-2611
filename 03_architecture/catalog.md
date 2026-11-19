@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 367（作った 55・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 17・共通の処理 13・エラー 190・部品 56・設定 41
+API 367（作った 55・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 192・部品 56・設定 41
 
 ## 共通の処理
 
@@ -29,6 +29,7 @@ API 367（作った 55・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/button` | Button | ボタン（K-24・正本 components.button-*）。1 画面に主ボタン（primary）は 1 つ。danger は取り消せない操作 |
 | `apps/web/components/k/field` | TextField, TextArea, PasswordField | 入力（K-24・正本 components.input）。見出し・説明・理由（422 の項目ごとの理由）を 1 つの組にする（Base UI Field） |
 | `apps/web/components/k/select` | Select | 選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる |
+| `apps/web/components/k/menu` | Menu, MenuTrigger, MenuPopup, MenuItem | メニューの型（K-369・Base UI Menu）。開くボタン 1 つと、開いた箱の中の項目の並び（行の「…」など）。 |
 | `apps/web/components/k/table` | Table | 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える） |
 | `apps/web/components/k/badge` | Badge | 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ） |
 | `apps/web/components/k/tabs` | Tabs | タブ（K-24・Base UI Tabs）。←→ で移り、選んだタブの中身だけを出す（読み上げは tablist / tab / tabpanel） |

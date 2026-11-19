@@ -9,6 +9,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { ENDPOINTS } from "@kaname/contracts/registry";
 import { SCHEMAS } from "@kaname/contracts/schemas";
 import { s3Client, s3Presigner } from "@kaname/storage";
@@ -22,6 +23,7 @@ import type { Auth } from "@kaname/auth"; // K-309
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, nextIp, type Fixture, type Person } from "../fixture.js";
 import { FAKE_S3, startFakeS3 } from "../../fake-s3.js";
+import { late, readK144Leaves } from "./k144-leaves.js"; // K-378：葉が足す分は置き場 k144.d の葉ごとのファイルから読む
 
 let f: Fixture;
 let T: { tenantId: string; rootScope: string };
@@ -148,6 +150,7 @@ beforeAll(async () => {
   const noAuthSession = { api: { getSession: async () => null } } as unknown as Auth;
   Object.assign(f.hooks, passkeysHooks({ auth: noAuthSession, appPool: f.pool, authPool: f.pool }));
   // K-309 ここまで
+  await LEAVES.setup(f); // K-378：葉の準備（自分の口の振る舞いを土台に足す）を番号の順に
   f.limits["createTicket"] = 10_000;
   f.limits["saveMyTicketDraft"] = 10_000;
   f.limits["createPairingCode"] = 10_000;
@@ -523,6 +526,8 @@ const BODIES: Record<string, unknown> = {
   completeTicket: { todo_checked: [], todo_version: 1, conditions_confirmed: true }, // K-165
   renamePasskey: { name: "仕事の Mac" }, // K-309
 };
+// K-378：これから口を作る葉は、上の並びと体に行を足さず、置き場 k144.d に K-<自分の番号>.ts を置く（試験を集める時に 1 回読む・重なりは読む所が止める）
+const LEAVES = await readK144Leaves({ file: fileURLToPath(import.meta.url), UUID_PARAM_CASES, BODIES });
 /** uuid でない道の値（:name など）の正しい値。callKanameTool の道具の名前は決まった名前だけ（PATH_PATTERNS・K-62） */
 const OTHER_PATH: Record<string, string> = { name: "ticket_read" };
 /** 頭で受ける値（HEADERS）。callKanameTool の道具の鍵は 32 字以上（合わない鍵は口が 403）・K-62 */
@@ -537,7 +542,7 @@ const hit = (op: string, where: "path" | "query", name: string, value: string) =
     where === "path" && p === name ? encodeURIComponent(value) : (OTHER_PATH[p] ?? randomUUID()),
   );
   if (where === "query") path += `?${name}=${encodeURIComponent(value)}`;
-  const body = d.method === "GET" || d.method === "DELETE" ? undefined : (BODIES[op] ?? {});
+  const body = d.method === "GET" || d.method === "DELETE" ? undefined : (BODIES[op] ?? LEAVES.BODIES[op] ?? {});
   // PC の口（auth device）は PC の印で入る。画面のセッションだと役が合わず 403（入口の uuid の確かめより前・op.ts の順）
   const who = d.auth === "device" ? { "x-bridge-session": pcToken } : writer.auth;
   return f.req(d.method, path, {
@@ -547,7 +552,7 @@ const hit = (op: string, where: "path" | "query", name: string, value: string) =
 };
 
 describe("K-144 ⑫ 入口が uuid の道の値と問い合わせを確かめる（registry の uuidParams・権限の確かめより前・D-129.42）", () => {
-  for (const [row, op, where, name] of UUID_PARAM_CASES) {
+  for (const [row, op, where, name] of [...UUID_PARAM_CASES, ...LEAVES.UUID_PARAM_CASES]) {
     it(`${row} ${op} の ${where === "path" ? "道の値 :" : "問い合わせ ?"}${name}：uuid でない（36 個のハイフン・版の桁が 0）は 422・欄 ${name}・理由 uuid。正しい uuid は 422 にしない${where === "query" ? "・空の値は指定なし" : ""}`, async () => {
       expect(def(op).errors).toContain(422);
       for (const v of ["------------------------------------", "3fa85f64-5717-0562-b3fc-2c963f66afa6", "not-a-uuid"]) {
@@ -641,6 +646,22 @@ describe("K-144 ⑬ 類 C（回 6）：入口がセッションを解けない�
     expect(bad).toEqual([]);
     expect(reached, "振る舞い（hooks）に届いた").toBe(0);
   });
+});
+
+// K-378：葉だけの試験（置き場 k144.d の葉のファイルの tests）を番号の順に並べる。準備で入る値は、葉が試験の中で読む時に取りに行く
+LEAVES.tests({
+  f: late(() => f),
+  T: late(() => T),
+  writer: late(() => writer),
+  mate: late(() => mate),
+  pcToken: () => pcToken,
+  def,
+  json,
+  conforms,
+  fields,
+  uuidReason,
+  count,
+  hit,
 });
 
 // 類 E（回 9・Q5 回 8 追加-1）：口が「無い」ことで 422 にする欄（必須の欄）。契約の入力の形の required とちょうど同じ

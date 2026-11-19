@@ -10,9 +10,9 @@
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
-  "ui": 17,
+  "ui": 18,
   "packages": 13,
-  "errors": 190,
+  "errors": 192,
   "stack": 56,
   "env": 41
  },
@@ -7318,6 +7318,16 @@
     "Select"
    ],
    "what": "選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる"
+  },
+  {
+   "file": "apps/web/components/k/menu",
+   "exports": [
+    "Menu",
+    "MenuTrigger",
+    "MenuPopup",
+    "MenuItem"
+   ],
+   "what": "メニューの型（K-369・Base UI Menu）。開くボタン 1 つと、開いた箱の中の項目の並び（行の「…」など）。"
   },
   {
    "file": "apps/web/components/k/table",

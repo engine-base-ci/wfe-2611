@@ -6085,6 +6085,66 @@
    "source": [
     "D-128.63"
    ]
+  },
+  {
+   "id": "E-CONN-016",
+   "class": "auth",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "e"
+   },
+   "when": "「PC と使った量」の画面の PC の行で、その PC の Claude Code にログインしていない（自己診断の 2 行目が fix login）",
+   "false_when": "ログイン済み。または Claude Code がまだ入っていない（入れるが先）",
+   "message": "Claude Code にログインできていません。下の「ログインする」を押して、ブラウザで 1 回許可してください",
+   "action": "この画面の「ログインする」を押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge がつながっている PC で「PC と使った量」を開く",
+    "steps": [
+     "この PC の Claude Code にログインしていない状態で画面を開く"
+    ],
+    "needs": "この PC の Claude Code"
+   },
+   "source": [
+    "D-091",
+    "D-093.5"
+   ],
+   "severity": "high"
+  },
+  {
+   "id": "E-CONN-017",
+   "class": "auth",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "e"
+   },
+   "when": "「PC と使った量」の画面で、ほかの端末（その PC でない PC・スマホ・Bridge の無い端末）から見ている PC の行の Claude Code にログインしていない（自己診断の 2 行目が fix login・行に押せるボタンが無い）",
+   "false_when": "ログイン済み。または その PC で開いている（E-CONN-016 が出て「ログインする」を押せる）。または Claude Code がまだ入っていない（入れるが先）",
+   "message": "この PC の Claude Code にログインできていません",
+   "action": "その PC でこの画面を開いて、ログインする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "Bridge"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge がつながっている PC とは別の端末（スマホなど）で「PC と使った量」を開く",
+    "steps": [
+     "Claude Code にログインしていない PC の行を見る"
+    ],
+    "needs": "ログインしていない Claude Code の入った PC"
+   },
+   "source": [
+    "D-091",
+    "D-093.5"
+   ],
+   "severity": "high"
   }
  ],
  "meta": {

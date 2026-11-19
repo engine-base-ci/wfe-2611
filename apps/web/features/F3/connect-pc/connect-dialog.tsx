@@ -3,6 +3,7 @@
 //   幅は size="connect"（580）・題は h1（小窓が開くと後ろが読み上げの木から外れ、読み上げの h1 を小窓の題 1 つにする）・頭の補足は subtitle。
 //   本文は 3 段（丸・題・説明）と共用の PC の注意、足は「あとで」と待っている印。開いたときのフォーカスは足の最初のボタン（「あとで」）。
 //   接続コードの 1 字ずつの箱は inline の箱で並べる（innerText を改行の無い 6 字にする・staging と m2 が読む）
+//   takeHelp：受け取る段（1 段目）の中、受け取るの字のリンクの下に差す物（K-374 が受け取った後に OS の警告の越え方 OsWarning を渡す）。渡さなければ今の絵のまま
 import type { KeyboardEvent, ReactNode } from "react";
 import { Button, Dialog } from "@/components/k";
 
@@ -64,6 +65,8 @@ export interface ConnectDialogProps {
   onNewCode: () => void;
   /** 小窓の中に出す知らせ（受け取りの結果・待って・失敗） */
   notice?: ReactNode;
+  /** 受け取る段の中に差す物（受け取った後の OS の警告の越え方・K-374） */
+  takeHelp?: ReactNode;
 }
 
 export function ConnectDialog({
@@ -75,6 +78,7 @@ export function ConnectDialog({
   onTake,
   onNewCode,
   notice,
+  takeHelp,
 }: ConnectDialogProps) {
   return (
     <Dialog
@@ -100,6 +104,7 @@ export function ConnectDialog({
         <Step n={1} state={received ? "done" : "now"} title="常駐アプリを入れる">
           Mac・Windows に入れる小さなアプリ。ブラウザを動かし、預けたログイン情報を入れる役目 ・{" "}
           <Take os="mac" label="Mac 用" onTake={onTake} /> ／ <Take os="win" label="Windows 用" onTake={onTake} />
+          {takeHelp}
         </Step>
         <Step n={2} state="now" title="アプリにこのコードを入れる">
           {code ? (
