@@ -508,6 +508,10 @@
       "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },
     {
+      "part": "pc-menu-min",
+      "reason": "PC と使った量の PC の行の部品（K-369・features/F3/connect-pc/pc-row-parts.css の .k-pc-menu）。値は 幅の下限（min-width） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
       "part": "pc-code-next",
       "reason": "PC と使った量の部品（K-230・features/F3/connect-pc/connect-pc.css）。値は 外の余白（margin） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     },

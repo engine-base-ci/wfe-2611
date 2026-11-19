@@ -853,6 +853,7 @@
   --k-c-pc-more-text: var(--k-text-body-sm);
   --k-c-pc-more-lh: var(--k-lh-body-sm);
   --k-c-pc-more-fw: var(--k-fw-body-sm);
+  --k-c-pc-menu-min-width: 220px;
   --k-c-pc-usage-gap: 18px;
   --k-c-pc-usage-col-width: 240px;
   --k-c-pc-bar-height: 8px;
