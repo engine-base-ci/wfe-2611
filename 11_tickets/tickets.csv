@@ -2026,6 +2026,15 @@ K-343,口の試験と DB を使う試験の時間の上限を、vitest の既定
 - 命令（package.json・CI の定義・vitest を起こす台本 scripts/ci/ci_scope.py の unit_argv・cut_check.py・spec-dependencies.yaml）で --testTimeout を渡して上書きしている所は無い","- [ ] K343-TT-001〜004 が緑（`scripts/ci/k343_test_timeout_test.py`）
 - [ ] K343-TT-005 を手元で確かめた（下の judge-skip）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-360,PC の一覧に自己診断の時刻（health_at）を足し、生きている知らせの答えに PC の番号（device_id）を足す（listMyDevices・sendHeartbeat・BridgeDevice の契約・migration 1 本）（K-89 の葉 ②）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89 の口・DB・契約の分。PC の行に「足りない物と直し方」を出す画面（K-361）が要る値を、契約の口で運べるようにする。
+
+- `listMyDevices`（GET /api/v1/bridge/devices）の各 PC に、自己診断が届いた時刻 `health_at` を足す。自己診断 `health` は今も返しているが、いつの報告か分からないので、眠っている PC の古い報告を「〈時刻〉の報告」と出せない
+- `sendHeartbeat`（POST /api/v1/bridge/heartbeat）の答えに、その PC の番号 `device_id`（一覧の id と同じ・PC の印ではない）を足す。Bridge（K-359）がこれを覚えてこの PC の口 /ping で返し、画面が「この行はこの PC か」を見分ける（名前では見分けない・D-128.174）
+- 契約 `BridgeDevice`（知らない鍵を通さない strictObject）と `BridgeHeartbeat` に 2 つの欄を足す。足さずに返すと契約の形の試験（K144-API-010）が落ちる
+
+自己診断を運ぶのは今の生きている知らせ（K-57）のまま（D-090「自己診断は Kaname に返す」）。新しい表・列は作らない（`sessions.health`・`sessions.health_at` は migration 0027 からある）。","- [ ] 下の表の 13 行（K360-API-001〜013）が本物の DB の上で緑：`apps/api/test/features/F3/device-health.test.ts`
+- [ ] 契約の形の試験（apps/api/test/features/contract/k144-contract.test.ts の K144-API-010）と K-57 の口の試験（apps/api/test/features/F3/connect-pc.test.ts）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-376,CI の段の命令の並び（G65・G47）をチケットごとのファイル（scripts/ci/g65.d・g47.d）から作る（K-324 の葉）,タスク,K-324,未着手,実装,2026-11-19,共通・CI,"`05_flow/build_testplan.py` の G65（CI の形の試験）の命令は、自己試験を `&&` でつないだ 1 行（今 43 本）。自己試験を足すチケットは全部この 1 行を変えるので、同時に作ると取り込みでぶつかる（11 月に入ってからこの行を変えたコミットは 43 本。2026-11-19 にも 2 本がぶつかった）。
 同じ形の G47（検査の自己試験・13 本）も 6 回変わり、うち 1 回は取り込みで足しを落としていた（K-62 の直し「取り込みで落とした G47 の足し」）。
 
