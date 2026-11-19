@@ -22,6 +22,7 @@
 """
 from __future__ import annotations
 import csv, glob, io, json, os, re, sys
+from collections.abc import Mapping
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DIR = os.path.join(ROOT, "11_tickets")
@@ -63,6 +64,25 @@ def parse(path: str) -> dict:
 
 def load() -> list[dict]:
     return sorted((parse(p) for p in glob.glob(os.path.join(DIR, "K-*.md"))), key=lambda t: int(t["id"].split("-")[1]))
+
+
+def parent_map(ts: list[dict]) -> dict[str, str | None]:
+    """チケットの番号 → 親の番号（親が無ければ None）"""
+    return {t["id"]: (t.get("parent") or None) for t in ts}
+
+
+def prefer_descendants(ids: list[str], parent_of: Mapping[str, str | None]) -> list[str]:
+    """同じ口・試験を親と子（孫まで）が持つときは、いちばん下の子を持ち主と数える（K-328）。
+    ids のうち、ほかの id の先祖である物を外す。順は保つ。親子でない物（兄弟など）はそのまま残す"""
+    ancestors: set[str] = set()
+    for i in ids:
+        seen: set[str] = set()
+        cur = parent_of.get(i)
+        while cur and cur not in seen:   # 輪になっていても止まる（輪は K6 ではなく K2 が見る）
+            seen.add(cur)
+            ancestors.add(cur)
+            cur = parent_of.get(cur)
+    return [i for i in ids if i not in ancestors]
 
 
 AI_SESSION = re.compile(r"claude|セッション|session|\bAI\b|gpt|codex|copilot", re.I)

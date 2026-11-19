@@ -15444,6 +15444,70 @@
    "file": "11_tickets/K-327.md"
   },
   {
+   "id": "K-328",
+   "title": "秘密の検査の行足しと親チケットの書き換えをやめる（試験の作り物の値は _fake/ に集めて .gitleaks.toml の path で外す・親と子が同じ口と試験を持っても子を持ち主にする）（K-324 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-324",
+   "milestone": "共通",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-19",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。作り物の値の置き場 2 つと .gitleaks.toml 10 分・持ち主の決め方（build_index の 1 関数と 2 つの検査）25 分・自分の確かめ（gitleaks を流す）10 分",
+   "decisions": [
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "秘密の検査の設定と、チケットの持ち主の数え方だけ。外界に触らない",
+   "tests": [
+    "scripts/ci/k328_secrets_parents_test.py"
+   ],
+   "depends_on": [
+    "K-327"
+   ],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    ".gitleaks.toml",
+    ".gitleaksignore",
+    "apps/api/test/_fake/secrets.ts",
+    "apps/web/test/_fake/secrets.ts",
+    "scripts/tickets/build_index.py",
+    "scripts/tickets/coverage_gate.py",
+    "scripts/ci/test_owner_gate.py",
+    "scripts/ci/ci_scope.d/_base.json",
+    "scripts/ci/ci_scope.json",
+    "05_flow/build_testplan.py",
+    "11_tickets/K-328.md"
+   ],
+   "sections": {
+    "目的": "残りの 2 つのぶつかりの元を無くす（.ticket-flow/research/delay-2026-11-18.md 3.2：.gitleaksignore 6 回・親チケット 3 回）。\n\n1. **秘密の検査**：試験に作り物の秘密（Better Auth の試験の鍵など）を書くたびに、`.gitleaksignore` に「コミット:ファイル:規則:行」を 1 行足していた。行の番号に結び付くので、試験を少し直すだけで同じ値がまた引っかかり、全部のチケットが同じファイルの終わりに足した。作り物の値の置き場 `apps/api/test/_fake/secrets.ts`・`apps/web/test/_fake/secrets.ts` を作り、`.gitleaks.toml` の path でその 2 つの置き場だけを検査から外す。次から作り物の値を書くチケットは置き場に足して import する。`.gitleaksignore` は消す（検査は出す前に「本線..チケットの先頭」の足した行だけを見るので、もう本線に入った 20 行の値は見られない。前からの試験 45 本は替えない）\n2. **親チケット**：まとまりを切ると、親の `apis:`・`tests:` に子と同じ口と試験が残る。二重の検査（KC7・TO2）が止めるので、子は入るたびに親から自分の行を外していた（同じ親のファイルを全部の子が書き換えた）。親と子（孫まで）が同じ口・試験を持つときは、いちばん下の子を持ち主と数える。子は親を書き換えない\n\n振る舞いは変えない：前からの試験は 1 本も替えない。秘密の検査はほかの全部の道で今までどおり既定の規則で見る。兄弟（親子でない 2 つ）が同じ口・試験を持てば、今までどおり止める。",
+    "完了の条件": "- [ ] 下の表の 12 行（K328-SEC-001〜006・K328-PAR-001〜006）が緑：`scripts/ci/k328_secrets_parents_test.py`\n- [ ] 自分の確かめ：`gitleaks git --log-opts <本線>..HEAD .` が 0 件（.gitleaksignore 無しで）。置き場 2 つは `gitleaks dir apps/{api,web}/test/_fake --config .gitleaks.toml` で 0 件・既定の規則だけなら当たる（外し方が効いている）。`gitleaks dir apps` は前からの試験の作り物の値（替えない）で当たるので、件数が今までと変わらないことだけを見る\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 依存：K-327（同じファイル：05_flow/build_testplan.py の gate 65 の 1 行と scripts/ci/ci_scope.d/_base.json）\n- gitleaks は 8.30（`[extend] useDefault = true` と `[[allowlists]]` の paths）。CI の workflow では流れず、ticket-flow の `ci.py` が出す前に `gitleaks git --log-opts base..HEAD` で流す（リポジトリの根の .gitleaks.toml を読む）\n- 外すのは道（path）だけ。値の正規表現や止め語（stopwords）で外さない（ほかの道に同じ形の本物が来ても見つける）\n- `.ticket-flow/local.yaml` の catch_up.union の `.gitleaksignore` は PM の控えなので触らない（申し送り）",
+    "依存の理由": "- K-327: 要る — 同じファイル（05_flow/build_testplan.py の gate 65 の同じ 1 行に試験を足す・ci_scope.d/_base.json）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作り物の値の置き場 | `apps/api/test/_fake/secrets.ts`（新規）：今の試験に書かれた作り物の値を名前つきで export（`TEST_AUTH_SECRET`（Better Auth の試験の鍵）・`K313_AUTH_SECRET`・`K314_AUTH_SECRET`・`K262_EDGE_SECRET`・`FUZZ_AUTH_SECRET` など。値は今の試験の値と 1 文字も変えない。前からの試験はまだ自分の文字のまま持つ）。`apps/web/test/_fake/secrets.ts`（新規）：`K262_EDGE_SECRET`・`K320_RESET_TOKEN`。先頭に「試験の作り物の値（本物の秘密ではない）。.gitleaks.toml がこの置き場だけを外す」 |\n| 検査の設定 | `.gitleaks.toml`（新規）：`title`・`[extend] useDefault = true`・`[[allowlists]]` に description と `paths = ['''^apps/api/test/_fake/''', '''^apps/web/test/_fake/''']` だけ。`.gitleaksignore` を消す。`scripts/ci/ci_scope.d/_base.json` の `no_test_paths` の `.gitleaksignore` を `.gitleaks.toml` に替えて ci_scope.json を作り直す |\n| 持ち主の決め方 | `scripts/tickets/build_index.py` に `prefer_descendants(ids: list[str], parent_of: Mapping[str, str \\| None]) -> list[str]`（ids のうち、ほかの id の先祖である物を外す。孫まで辿る・順は保つ）。`scripts/tickets/coverage_gate.py` は owner_o を作る所を関数 `op_owners(ts: list[dict]) -> dict[str, list[dict]]` に出し、口ごとの持ち主に prefer_descendants を掛ける（KC7・KC8 はこの値を使う）。`scripts/ci/test_owner_gate.py` の `owners()` も同じく掛ける（TO2）。TO4 は「apis: の口の生成した試験を、そのチケットか子孫が持つ」で通す |\n| 試験の組み込み | `05_flow/build_testplan.py` の gate 65 の `k248_scope_reach_test.py` の直前に `python3 scripts/ci/k328_secrets_parents_test.py`（k248 の試験が自分を最後に置くことを求める） |",
+    "外に影響する手順": "無い（試験の値の置き場と、リポジトリの中の検査だけ）",
+    "テスト仕様と確認の結果": "`scripts/ci/k328_secrets_parents_test.py`（unittest・DB なし。SEC は本物のリポジトリを読む・PAR は偽のチケットで検査の関数を呼ぶ）\n\n| ID | 観点 | 前提 | 操作 | 期待結果 |\n|---|---|---|---|---|\n| K328-SEC-001 | 設定の形 | 本物の `.gitleaks.toml` | tomllib で読む | `extend.useDefault` が真・`allowlists` が 1 つで paths がちょうど `^apps/api/test/_fake/`・`^apps/web/test/_fake/` の 2 つ・regexes と stopwords と commits を持たない |\n| K328-SEC-002 | 行足しをやめた | 本物のリポジトリ | `.gitleaksignore` を見る | 無い |\n| K328-SEC-003 | 置き場の先頭 | 置き場の 2 ファイル | 先頭の 3 行 | どちらも「本物の秘密ではない」と「.gitleaks.toml」を含む |\n| K328-SEC-004 | 値は今の試験と同じ | 作り物の値 6 つ（test-secret-0123456789-abcdefghijklmnop・test-secret-k313-0123456789-abcdefghij・test-secret-k314-0123456789-abcdefghij・k262-edge-secret-0123456789abcdef・rp_k320_0123456789abcdefghijklmnopqrstuv・fuzz-test-secret-0123456789-abcdefghij） | 置き場の 2 ファイルの文字を読む | 6 つの値が全部、どちらかの置き場に `\"<値>\"` としてそのまま在る（api に 5 つ・web に k262 と rp_k320） |\n| K328-SEC-005 | 外す道の当たり | `.gitleaks.toml` の paths の正規表現 | `apps/api/test/_fake/secrets.ts`・`apps/web/test/_fake/secrets.ts`・`apps/api/test/fuzz/server.ts`・`apps/api/test/_fake2/x.ts`・`apps/web/tests/_fake/x.ts` に当てる | 前の 2 つだけに当たる |\n| K328-SEC-006 | 地図 | 本物の ci_scope.json | no_test_paths | `.gitleaks.toml` があり `.gitleaksignore` が無い |\n| K328-PAR-001 | 先祖を外す | parent_of：C→P・P→G・G→なし | `prefer_descendants([\"G\", \"P\", \"C\"], …)`・`([\"P\", \"X\"], …)` | `[\"C\"]`・`[\"P\", \"X\"]`（親子でない X は残る） |\n| K328-PAR-002 | 試験の持ち主・親子 | 親 P（tests [x]・split これから）と子 C（parent P・tests [x]） | `test_owner_gate.check(…)` | TO2 が出ない |\n| K328-PAR-003 | 試験の持ち主・兄弟 | 子 C1 と C2（どちらも parent P）が tests [x] | check | TO2 が出て、文に C1 と C2 |\n| K328-PAR-004 | 口の持ち主・親子 | 親 P（apis [opX]・tests [gen/opX]）と子 C（parent P・apis [opX]・tests [gen/opX]） | check（gen_ops に gen/opX → opX） | TO2・TO4 が出ない |\n| K328-PAR-005 | KC7・親子 | 親 P と子 C が apis [opX] | `coverage_gate.op_owners(ts)` | opX の持ち主が [C] だけ |\n| K328-PAR-006 | KC7・兄弟 | 兄弟 C1・C2 が apis [opX] | op_owners | opX の持ち主が [C1, C2]（KC7 は今までどおり止める） |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：外す道は英字の 2 つだけ（K328-SEC-001・005） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K328-SEC-005（外す道がほかの道に当たらない）・K328-PAR-003・006（兄弟の重なりは今までどおり止まる） |\n| TP-TOOL-03 容れ物の中と手元で違う | 要らない：gitleaks は CI の容れ物では流れず、出す前に手元の ci.py だけが流す。設定はリポジトリの根の .gitleaks.toml 1 つ（自分の確かめで手元の 8.30 で流す） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した 14 件と、文字で読む前からの試験（下の search）。\n\n- scripts/ci/ci_lean_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/ci_results_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/ci_scope_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/contract_shape_test.py: 替えない — 持ち主の数え方も秘密の検査も読まない\n- scripts/ci/k172_ci_shape_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k178_flow_config_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k191_regen_all_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k237_perf_ledger_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k237_staging_perf_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k245_g27_reach_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k248_scope_reach_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/k258_web_defer_test.py: 替えない — 本物の ci_scope.json を読むが、変えるのは no_test_paths の 1 行（.gitleaksignore → .gitleaks.toml）だけで、見ている欄は変えない\n- scripts/ci/ticket_affects_test.py: 替えない — チケットの affects を見る。持ち主の数え方は兄弟の重なりのまま\n- scripts/ci/ticket_process_test.py: 替えない — チケットの形を見る。親が子と同じ口を持っても止まらなくなるのは、親子の時だけ\n\n```search\ngit grep -lF \"test-secret-0123456789-abcdefghijklmnop\" -- apps packages   # 作り物の値を書いている試験\ngit grep -lF \"k262-edge-secret-0123456789abcdef\" -- apps packages\ngit grep -lE \"test-secret-k31[34]|rp_k320_0123|fuzz-test-secret\" -- apps packages\ngit grep -l \"gitleaksignore\" -- scripts ticket-flow.yaml ai-team.yaml       # 読む側\n```",
+    "成果物": "- `.gitleaks.toml`・作り物の値の置き場 2 つ・持ち主の決め方（build_index.py・coverage_gate.py・test_owner_gate.py）\n- 単体の試験 `scripts/ci/k328_secrets_parents_test.py`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 PM の決め（代表の指示）：.gitleaksignore の行足しをやめ、試験の作り物の置き場を .gitleaks.toml の path の除外にする\n- 2026-11-18 切る段の決め：親と子が同じ口・試験を持つときは子を持ち主と数え、子は親を書き換えない（親の apis・tests はまとまりの見通しとして残してよい）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- 前からの試験の作り物の値の行を後のチケットが書き直すと、その行が足した行になって検査に当たる。そのときは値を置き場に移して import する（その 1 行だけ）\n- `_fake/` に本物の秘密を置くと検査が見ない。置き場の先頭の註と、レビューの見る所（_fake/ に足した値が作り物か）で守る\n- 親に残った口を子が持たないまま子を切り終えると、親が持ち主のままになる（今と同じ。KC8 が見る）",
+    "申し送り": "- 次から試験に作り物の秘密を書くチケット：値は `_fake/secrets.ts` に足して import する。.gitleaks.toml は触らない\n- 次から切るチケット：子は親の apis・tests を書き換えない（changes: に親を書かない）\n- PM：入った後、`.ticket-flow/local.yaml` の catch_up.union から `.gitleaksignore` を外す\n- 作っている途中のチケット（K-328 より前に始めた物）が自分の .gitleaksignore の行を足していると、本線で消した後の取り込みは「消した／変えた」のぶつかりになり union では解けない。そのチケットは作り物の値を `_fake/secrets.ts` に移して import し、自分の .gitleaksignore の行を消してから取り込む"
+   },
+   "file": "11_tickets/K-328.md"
+  },
+  {
    "id": "K-330",
    "title": "段 3 の部品とモックの画面を本線に入れる（features/F2/invite/views・/dev/mock/f2 の 15 の状態・切る段の検査の口）（K-55 の葉）",
    "kind": "タスク",
