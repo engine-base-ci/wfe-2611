@@ -256,7 +256,7 @@ void app.whenReady().then(() => {
     loginCode: (code: string) => submitCode(code),
     loginCancel: () => cancelLogin(),
     installProgress,
-    deviceId: () => readState().deviceId ?? null,
+    deviceId: () => readState().deviceId,
   });
   // 仕事の間だけ OS に「寝ないで」を頼む（D-124.1）。画面は消えてよい・ふたを閉じたら従う・電源の設定は変えない
   const awake = createAwake(powerSaveBlocker);
@@ -282,11 +282,8 @@ void app.whenReady().then(() => {
       writeState({ ...readState(), browser: b });
       for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:browser", b);
     },
-    onDeviceId: (id) => {
-      const st = readState();
-      if (st.deviceId === id) return; // 同じ値なら書き直さない（知らせのたびにファイルを書かない）
-      writeState({ ...st, deviceId: id });
-    },
+    // 同じ番号を知らせ直さないのは輪の側（loop.ts）。ここは受けた番号を書くだけ（入口には分かれ道を書かない）
+    onDeviceId: (id) => writeState({ ...readState(), deviceId: id }),
     dataDir: app.getPath("userData"),
     onOutdated: () => void updater?.checkNow(),
     onChange: (s) => {

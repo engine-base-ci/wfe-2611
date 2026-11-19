@@ -76,8 +76,11 @@ export interface LoopDeps {
   dataDir?: string;
   /** Kaname に知らされた、この端末で AI が使うブラウザ（D-120.1）。窓に同じ値を出す */
   onBrowser?: (b: Browser) => void;
-  /** Kaname がこの PC に付けた番号（生きている知らせの答えの device_id）。画面が「この行はこの PC か」を見分けるのに使う */
+  /** Kaname がこの PC に付けた番号（生きている知らせの答えの device_id）。画面が「この行はこの PC か」を見分けるのに使う。
+   *  この輪の最初の知らせで 1 回、その後は番号が変わったときと、鍵が通らなくなった（onGone）後の最初の知らせで呼ぶ */
   onDeviceId?: (id: string) => void;
+  /** 試験だけ：生きている知らせの間（本人の PC では 60 秒） */
+  heartbeatMs?: number;
   /** 試験だけ：1 回のログインを画面に出さずに動かす（本人の PC では出す・D-119.6） */
   loginCheckHeadless?: boolean;
   /** 試験だけ：2 段階のコード・承認の返事を待つ上限（本人の PC では 10 分・D-117.5） */
@@ -106,6 +109,13 @@ const RETRY_MS = 5_000;
 
 export function startLoop(d: LoopDeps): () => void {
   const state: LoopState = { alive: false, lastBeatAt: null, working: null, lastError: null };
+  // 前に知らせた PC の番号。同じ番号は知らせ直さない（受け手が知らせのたびにファイルを書かないように、判定はここに置く）
+  let toldDeviceId: string | null = null;
+  /** この端末の鍵が通らなくなった。受け手は覚えた番号も捨てるので、次につながったときは同じ番号でも知らせ直す */
+  const gone = (): void => {
+    toldDeviceId = null;
+    d.onGone();
+  };
   let stopped = false;
   // 止めたら待ち受け中の問い合わせも切る（つなぎ直した後に古い輪が仕事を取らない）
   const abort = new AbortController();
@@ -132,10 +142,10 @@ export function startLoop(d: LoopDeps): () => void {
       if (!r.ok) {
         // 鍵が通らない＝この端末はもう登録されていない（退会・停止・権限変更・つなぎ直し・接続を外した）。
         // 覚えたままにすると「つながっています」と言い続ける（G-14 口座状態の波及）
-        const gone = [401, 403, 410].includes(r.status); // 404 は「その仕事が無い」であって鍵の話ではない
-        state.lastError = gone ? "この端末の接続は切れています。つなぎ直してください" : `Kaname が ${r.status}`;
+        const lost = [401, 403, 410].includes(r.status); // 404 は「その仕事が無い」であって鍵の話ではない
+        state.lastError = lost ? "この端末の接続は切れています。つなぎ直してください" : `Kaname が ${r.status}`;
         state.alive = false;
-        if (gone) d.onGone();
+        if (lost) gone();
         d.onChange({ ...state });
         return null;
       }
@@ -176,7 +186,7 @@ export function startLoop(d: LoopDeps): () => void {
         if ([401, 403, 410].includes(r.status)) {
           state.lastError = "この端末の接続は切れています。つなぎ直してください";
           state.alive = false;
-          d.onGone();
+          gone();
           d.onChange({ ...state });
           return;
         }
@@ -206,8 +216,12 @@ export function startLoop(d: LoopDeps): () => void {
     });
     // Kaname が正本の選択（D-120.1）を窓に写す
     if (ok?.browser) d.onBrowser?.(ok.browser);
-    // この PC の番号。答えに無い（前の版の Kaname）・文字でないなら覚えない
-    if (typeof ok?.device_id === "string" && ok.device_id) d.onDeviceId?.(ok.device_id);
+    // この PC の番号。答えに無い（前の版の Kaname）・文字でないなら知らせない。前に知らせた番号と同じなら知らせ直さない
+    const id = ok?.device_id;
+    if (typeof id === "string" && id && id !== toldDeviceId) {
+      toldDeviceId = id;
+      d.onDeviceId?.(id);
+    }
     if (ok) {
       state.alive = true;
       state.lastBeatAt = new Date().toISOString();
@@ -555,7 +569,7 @@ export function startLoop(d: LoopDeps): () => void {
   };
 
   void beat();
-  const h = setInterval(() => void beat(), HEARTBEAT_MS);
+  const h = setInterval(() => void beat(), d.heartbeatMs ?? HEARTBEAT_MS);
   void mirror(); // つながったら、まず記録から取り戻す
   void run();
   return () => {

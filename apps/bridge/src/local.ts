@@ -39,8 +39,8 @@ interface Deps {
   loginCancel: () => void;
   /** 入れる作業の途中の行（画面が押した後の様子を見せる）。渡さなければ「走っていない・行なし」 */
   installProgress?: () => { running: boolean; steps: { text: string; state: string }[] };
-  /** Kaname がこの PC に付けた番号（生きている知らせの答えで覚えた物）。画面が「この行はこの PC か」を見分ける。まだ無ければ null */
-  deviceId?: () => string | null;
+  /** Kaname がこの PC に付けた番号（生きている知らせの答えで覚えた物）。画面が「この行はこの PC か」を見分ける。まだ無ければ /ping は null を返す */
+  deviceId?: () => string | null | undefined;
 }
 
 /** 本文を JSON の入れ物として読む。読めない・入れ物でない（null・配列・文字だけ）ときは null を返す。
