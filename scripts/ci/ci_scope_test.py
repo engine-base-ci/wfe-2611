@@ -985,7 +985,8 @@ class RealRepoTest(unittest.TestCase):
         self.assertEqual(set(db["paths"]), {"packages/db/migrations/**", "packages/db/policies/**",
                                             "07_functional/entities.json", "07_qa/test-plan/access-matrix.json"})
         self.assertEqual(db["migrations"], ["packages/db/migrations/**"])
-        self.assertEqual(db["migration_list"]["file"], "packages/db/src/index.ts")
+        # 一覧は作り手が作る生成物（K-327・migration の名前を時刻にした）
+        self.assertEqual(db["migration_list"]["file"], "packages/db/src/migrations.generated.ts")
         # 関門 C2 の gateway_path（03_architecture/choke-points.json）と同じ所を DB の入口として見る
         c2 = next(c for c in json.loads((ROOT / "03_architecture/choke-points.json").read_text(encoding="utf-8"))["choke_points"] if c["id"] == "C2")
         self.assertEqual(db["gateway"], [c2["gateway_path"].rstrip("/") + "/**"])
