@@ -358,6 +358,28 @@ def returns_raw(text: str) -> bool:
             return True
     return False
 
+
+K144 = "apps/api/test/features/contract/k144-contract.test.ts"
+K144_LEAVES = "apps/api/test/features/contract/k144.d"   # 葉ごとのファイル（K-<番号>.ts）の置き場（K-378）
+UUID_ROW = re.compile(r'\["K144-API-\d{3}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]')
+
+
+def k144_uuid_rows(root: pathlib.Path = ROOT) -> list[tuple[str, str, str, str]]:
+    """入口の uuid の行の全部：(口, path か query, 値の名前, 書いてあるファイル)。
+    本体 k144-contract.test.ts の UUID_PARAM_CASES の中と、置き場 k144.d の葉ごとのファイル（K-<番号>.ts）の字から拾う（K-378）。
+    葉のファイルは字のどこに在っても拾う（読む所 k144-leaves.ts が「字から拾った行＝動く行」を確かめる）"""
+    src = (root / K144).read_text(encoding="utf-8")
+    block = re.search(r"UUID_PARAM_CASES = \[(.*?)\] as const;", src, re.S)
+    if block is None:
+        raise AssertionError("UUID_PARAM_CASES が無い")
+    rows = [(*r, K144) for r in UUID_ROW.findall(block.group(1))]
+    place = root / K144_LEAVES
+    leaves = sorted((f for f in place.glob("K-*.ts") if re.fullmatch(r"K-[1-9]\d*\.ts", f.name)), key=lambda f: int(f.stem[2:])) if place.is_dir() else []
+    for f in leaves:
+        rows += [(*r, f"{K144_LEAVES}/{f.name}") for r in UUID_ROW.findall(f.read_text(encoding="utf-8"))]
+    return rows
+
+
 class ContractShapeTest(unittest.TestCase):
     # ---- 作り手が書ける形（R1 #3）
     def test_K144_SHAPE_001_input_and_answer_types_are_in_the_generator_vocabulary(self) -> None:
@@ -565,7 +587,7 @@ class ContractShapeTest(unittest.TestCase):
 
     def test_K144_SHAPE_017_every_built_op_has_an_entrance_uuid_row(self) -> None:
         """回 3（R1 #9）：作った口（hooks がある口か、表の素の読み書きで表がある口＝op.ts の 501 の外）の uuid の道の値と問い合わせは、
-        全部 apps/api/test/features/contract/k144-contract.test.ts の UUID_PARAM_CASES に 422 の行がある（数えて 1 対 1）。
+        全部 apps/api/test/features/contract/k144-contract.test.ts の UUID_PARAM_CASES か、置き場 k144.d の葉ごとのファイル（K-378）に 422 の行がある（数えて 1 対 1）。
         まだ作っていない口の代表 UNBUILT_UUID_CASE（422 が 501 より先）は、本当にまだ作っていない口の uuid の値を指す"""
         built = set(hook_regions())
         generic: dict[str, tuple[bool, str]] = {}
@@ -577,10 +599,11 @@ class ContractShapeTest(unittest.TestCase):
                 generic[m.group(1)] = (bool(g and g.group(1) == "true"), t.group(1) if t else "")
         built |= {o for o, (g, t) in generic.items() if g and "id" in DBC.get(t, {})}
         want = {(o, i, n) for o, i, n, _sc in self._id_params() if o in built}
-        src = (ROOT / "apps/api/test/features/contract/k144-contract.test.ts").read_text(encoding="utf-8")
-        block = re.search(r"UUID_PARAM_CASES = \[(.*?)\] as const;", src, re.S)
-        self.assertIsNotNone(block, "UUID_PARAM_CASES が無い")
-        got = set(re.findall(r'\["K144-API-\d{3}",\s*"(\w+)",\s*"(path|query)",\s*"(\w+)"\]', block.group(1)))  # type: ignore[union-attr]
+        src = (ROOT / K144).read_text(encoding="utf-8")
+        rows = k144_uuid_rows()   # 本体の行と、置き場 k144.d の葉ごとのファイルの行（K-378）
+        got = {(o, i, n) for o, i, n, _f in rows}
+        twice = sorted(f"{o} {i} {n}：" + "・".join(f for a, b, c, f in rows if (a, b, c) == (o, i, n)) for o, i, n in got if sum((a, b, c) == (o, i, n) for a, b, c, _f in rows) > 1)
+        self.assertEqual(twice, [], "同じ口の同じ値の行が 2 つある（本体か葉のファイルのどちらか 1 つにする）")
         self.assertEqual(sorted(want - got), [], "作った口の uuid の値なのに、入口の 422 の行が無い")
         self.assertEqual(sorted(got - want), [], "作った口の uuid の値でないものが行にある（口が消えたか、まだ作っていない）")
         u = re.search(r'UNBUILT_UUID_CASE = \["(\w+)",\s*"(path|query)",\s*"(\w+)"\]', src)
