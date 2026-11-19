@@ -36,7 +36,8 @@ const devices = async (p: Person) => {
 const one = async (p: Person, id: string) => (await devices(p)).find((d) => d["id"] === id)!;
 const sessionRow = async (id: string) =>
   (await f.admin.query<Row>("select health, health_at, last_seen_at from sessions where id = $1", [id])).rows[0]!;
-const ms = (v: unknown) => new Date(String(v)).getTime();
+/** 時刻をミリ秒に。DB の行の時刻（Date）はそのまま読む（String(Date) は秒までしか出ないので、文字に直すとミリ秒が落ちる） */
+const ms = (v: unknown) => (v instanceof Date ? v : new Date(String(v))).getTime();
 
 /** Claude Code の 2 行（Bridge の claudeChecks の形・K-359） */
 const INSTALL = [
