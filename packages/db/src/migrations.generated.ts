@@ -120,5 +120,6 @@ export const MIGRATIONS = [
   "20261119051732_accept_invitation.sql",
   "20261119070749_join_invitation.sql",
   "20261119120000_device_health_at.sql",
+  "20261119120100_device_browser.sql",
   "20261119120400_credentials_layer.sql",
 ] as const;

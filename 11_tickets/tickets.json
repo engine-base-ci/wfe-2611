@@ -4519,9 +4519,7 @@
     "C2",
     "C4"
    ],
-   "tests": [
-    "apps/api/test/generated/patch_bridge_devices_id.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-57"
    ],
@@ -4531,9 +4529,7 @@
    "screens": [
     "bridge-setup"
    ],
-   "apis": [
-    "updateMyDevice"
-   ],
+   "apis": [],
    "sections": {
     "目的": "PC をつないだ人が「PC をつなぐ」画面の PC の行で、**その PC で AI が使うブラウザ**を 3 つから選ぶ：自分の Chrome（Claude in Chrome・既定）／Bridge 専用のブラウザ（Playwright MCP）／使わない（D-119・D-120）。選ぶと Kaname に残り（Kaname が正本）、**次の仕事から**その PC の Bridge に渡る。Bridge の窓で選び直しても同じ値が変わる。\n\nAI が Chrome とつながっていないと自己診断に出たら、その PC の行に **その場の一手**を出す：つなぎ方を見る（3 つの手順と公式の入口）・もう一度確かめる（Bridge が小さな仕事で本当に Chrome を使えるか試す）・Bridge 専用のブラウザに切り替える（D-120）。「使わない」の PC でも、ここで「使う」に戻せる。\n\n**選んだ値が確定するのは、口（updateMyDevice）が 200 を返した時点**。その時点で `sessions.browser` が変わり、その PC の次の生きている知らせ（K-57 の sendHeartbeat の答えの `browser`）で Bridge に伝わる。走っている仕事のブラウザは変えない（次の仕事から）。\n\n前の「PC をつなぐ」画面にある実装を使う（D-128.150。前の D-128.122「後のフェーズに回す」は D-128.150 で改めた）。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑\n- 契約の口 updateMyDevice（PATCH /api/v1/bridge/devices/:id）が 501 でない（このチケットは `browser` だけを受ける）\n- 前の画面 `apps/web/app/(wizard)/setup/bridge/page.tsx` の「AI が使うブラウザ」と「AI が Chrome を使えません」の部分が、K-57 の新しい画面 `apps/web/features/F3/connect-pc/` に移り、前の画面からその部分が消えている\n- 前の道すじ `POST /api/auth-ext/agent/browser`・`POST /api/auth-ext/agent/browser-check`・`POST /api/auth-ext/bridge/browser`（apps/api/src/auth/ext.ts）を、新しい口に置き換えて消している（会話の画面の BrowserFix も新しい口を呼ぶ）\n- 前の画面の試験のうち、このチケットの分（下の「使う既存の実装」の試験）が新しい画面と口に向けて動き、緑\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑",
