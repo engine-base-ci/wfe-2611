@@ -1,5 +1,7 @@
 // 預けたログイン情報の一覧の口（K-351）：listCredentials。読むだけ（DB に書かない・金庫も外も呼ばない）。
-//   見えるのは、自分の個人の物と、自分のワークスペースの物（行の守り credentials_read の上で読む）。消した物・失効した物は出さない。
+//   見えるのは、自分の個人の物と、自分のワークスペースの物。消した物・失効した物は出さない。
+//   守りは 2 重：行の守り（credentials_read）の上で読み、口の文でも同じ条件（ワークスペースの物か、自分が持ち主）で絞る
+//   （守りの作り直しで行の守りが緩んでも、他人の個人の物を一覧に出さない）。
 //   並び：名前の順。同じ名前は個人が先（近い層が勝つ・D-125.149）。数が少ない一覧なので全部を返す（上限 500 行・超えたら切ってログに 1 行）。
 //   取引は 1 つ（withTenant）・文は 2 つ（edit の有無・一覧）。行ごとに引かない。ログに名前・参照・人の id を出さない
 import type pg from "pg";
@@ -12,6 +14,7 @@ export const LIST_MAX = 500;
 
 const LIST_SQL = `${CREDENTIAL_SELECT}
  where c.tenant_id = app.tenant_id() and c.deleted_at is null and c.revoked_at is null
+   and (c.layer = 'workspace' or c.owner_member_id = app.user_id())
  order by c.name, (c.layer = 'workspace'), c.created_at
  limit $1`;
 
