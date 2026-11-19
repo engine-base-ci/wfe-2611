@@ -76,6 +76,8 @@ export interface LoopDeps {
   dataDir?: string;
   /** Kaname に知らされた、この端末で AI が使うブラウザ（D-120.1）。窓に同じ値を出す */
   onBrowser?: (b: Browser) => void;
+  /** Kaname がこの PC に付けた番号（生きている知らせの答えの device_id）。画面が「この行はこの PC か」を見分けるのに使う */
+  onDeviceId?: (id: string) => void;
   /** 試験だけ：1 回のログインを画面に出さずに動かす（本人の PC では出す・D-119.6） */
   loginCheckHeadless?: boolean;
   /** 試験だけ：2 段階のコード・承認の返事を待つ上限（本人の PC では 10 分・D-117.5） */
@@ -198,12 +200,14 @@ export function startLoop(d: LoopDeps): () => void {
   let beating: Promise<void> = Promise.resolve();
   const beat = (): Promise<void> => (beating = beating.then(beatOnce, beatOnce));
   const beatOnce = async (): Promise<void> => {
-    const ok = await post<{ ok: boolean; browser?: Browser | null }>("/v1/bridge/heartbeat", {
+    const ok = await post<{ ok: boolean; browser?: Browser | null; device_id?: unknown }>("/v1/bridge/heartbeat", {
       health: await d.health(),
       protocol: BRIDGE_PROTOCOL,
     });
     // Kaname が正本の選択（D-120.1）を窓に写す
     if (ok?.browser) d.onBrowser?.(ok.browser);
+    // この PC の番号。答えに無い（前の版の Kaname）・文字でないなら覚えない
+    if (typeof ok?.device_id === "string" && ok.device_id) d.onDeviceId?.(ok.device_id);
     if (ok) {
       state.alive = true;
       state.lastBeatAt = new Date().toISOString();
