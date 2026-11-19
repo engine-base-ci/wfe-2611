@@ -9,14 +9,15 @@ const h = setupLogin("k337");
 
 describe("K-337 前の道すじを消した", () => {
   it("K337-API-001 前の道すじの下見 GET /api/auth-ext/invitations/:token と受諾 POST …/accept は どちらも 404（下見も受諾もできない）", async () => {
-    expect((await h.req("GET", `/api/auth-ext/invitations/${K337_ANY_INVITE_TOKEN}`)).status).toBe(404);
-    expect(
-      (
-        await h.req("POST", `/api/auth-ext/invitations/${K337_ANY_INVITE_TOKEN}/accept`, {
-          name: "佐藤 健",
-          password: PW,
-        })
-      ).status,
-    ).toBe(404);
+    // 前の下見の口は、無い札にも 404（E-INV-001）を返していた。口そのものが無いことは、答えの code が NOT_FOUND（当たる口が無い）で見分ける
+    const preview = await h.req("GET", `/api/auth-ext/invitations/${K337_ANY_INVITE_TOKEN}`);
+    expect(preview.status).toBe(404);
+    expect((await h.json(preview))["code"], "下見：当たる口が無い（前の口の E-INV-001 でない）").toBe("NOT_FOUND");
+    const accept = await h.req("POST", `/api/auth-ext/invitations/${K337_ANY_INVITE_TOKEN}/accept`, {
+      name: "佐藤 健",
+      password: PW,
+    });
+    expect(accept.status).toBe(404);
+    expect((await h.json(accept))["code"], "受諾：当たる口が無い（前の口は無い札に 410・E-INV-002）").toBe("NOT_FOUND");
   });
 });
