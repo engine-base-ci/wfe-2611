@@ -167,7 +167,9 @@ test.describe("K-335 招待の画面：招待の状態 × ログインしてい�
     await expect(page.getByText(/送り直しを頼みました/)).toBeVisible();
     await expect(page.getByRole("button", { name: "送り直しを頼む" })).toBeDisabled();
     // 招いた人に、送り直しの頼みのメールが 1 通届いている（sent は本当に送れたとき・K-334）
-    expect((await box.waitFor(o.email, 1, /送り直し/)).to).toBe(o.email.toLowerCase());
+    //   招く側は区画で使い回すので、招いた人宛ての送り直しのメールのうち、本文にこの招待の宛て（inv.email）がある物を待つ
+    await box.waitFor(o.email, 1, /送り直し/);
+    await expect.poll(() => box.mails(o.email, /送り直し/).filter((m) => m.text.includes(inv.email)).length).toBe(1);
     await open(page, inv.token);
     await page.getByRole("button", { name: "送り直しを頼む" }).click();
     await expect(page.getByText("今日はもう頼んであります。新しい招待のメールを待ってください")).toBeVisible();
@@ -227,6 +229,10 @@ test.describe("K-335 招待の画面：招待の状態 × ログインしてい�
     const main = page.getByRole("main");
     await expect(main.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", urlOf("terms"));
     await expect(main.getByRole("link", { name: "プライバシー" })).toHaveAttribute("href", urlOf("privacy"));
+    // 枠の下の行き先（Kaname について）の 2 つも、同じ今の版の url
+    const foot = page.getByRole("navigation", { name: "Kaname について" });
+    await expect(foot.getByRole("link", { name: "利用規約" })).toHaveAttribute("href", urlOf("terms"));
+    await expect(foot.getByRole("link", { name: "プライバシー" })).toHaveAttribute("href", urlOf("privacy"));
   });
 
   test("K335-UI-010 幅 375：参加のあいだ二度押ししても参加の口は 1 回だけ（押している間は主ボタンが待ちの形で押せない）", async ({
@@ -440,17 +446,27 @@ test.describe("K-335 招待の画面：招待の状態 × ログインしてい�
     await expect(page.locator("h1")).toHaveText("いま Kaname の調子が悪くなっています");
   });
 
-  test("K335-UI-017 招いた人の行が無い招待（created_by が空）：使える招待は頭の行が「〈グループ〉の メンバー として」（「さんから」が出ない）。期限切れは「株式会社下見 の 招待した人に、送り直しを頼めます」。null・undefined の字が出ない", async ({
+  test("K335-UI-017 招いた人の行が無い招待（created_by が空）：名前を出す 4 つの所 ① 使える招待の頭の行は「〈グループ〉の メンバー として」（「さんから」が出ない）② 期限切れの文は「株式会社下見 の 招待した人に、送り直しを頼めます」③ 頼んだ後の箱は「招待した人に、送り直しを頼みました」④ 取り消しの箱は「株式会社下見 ・ 招待した人からの招待」。どれも null・undefined の字が出ない", async ({
     page,
   }) => {
+    const main = page.getByRole("main");
     const [scope] = await admin<{ name: string }>("select name from scopes where id = $1", [o.scopeId]);
     const usable = await invite(o, { noInviter: true });
     await open(page, usable.token);
     await expect(page.locator(".k-auth-lead")).toHaveText(`${scope!.name}の メンバー として`);
-    await expect(page.locator('[data-auth="invite"]')).not.toContainText(/さんから|null|undefined/);
+    await expect(main).not.toContainText(/さんから|null|undefined/);
     const expired = await invite(o, { noInviter: true, expired: true });
+    await page.route(RESEND, (r) => r.fulfill(json(201, { data: { result: "sent" } })));
     await open(page, expired.token);
     await expect(page.locator(".k-auth-lead")).toContainText("株式会社下見 の 招待した人に、送り直しを頼めます");
-    await expect(page.locator('[data-auth="invite"]')).not.toContainText(/null|undefined/);
+    await expect(main).not.toContainText(/null|undefined/);
+    await page.getByRole("button", { name: "送り直しを頼む" }).click();
+    await expect(main.getByRole("status")).toContainText("招待した人に、送り直しを頼みました");
+    await expect(main).not.toContainText(/さんに|null|undefined/);
+    const revoked = await invite(o, { noInviter: true, revoked: true });
+    await open(page, revoked.token);
+    await expect(page.locator("h1")).toHaveText("この招待は取り消されています");
+    await expect(main.locator(".k-auth-note-box")).toHaveText("株式会社下見 ・ 招待した人からの招待");
+    await expect(main).not.toContainText(/さんから|null|undefined/);
   });
 });
