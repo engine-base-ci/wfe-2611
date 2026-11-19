@@ -58,6 +58,9 @@ COMMON_DIRS = (
     # 口の登録の一覧と閉じる道の断片（K-326）：口を足すチケットの皆が読む
     "apps/api/src/hooks/all.generated.ts",
     "packages/auth/src/disabled-paths.d/",
+    # CI の段の命令の並び（K-376）：自己試験を足すチケットの皆が触る
+    "scripts/ci/g65.d/",
+    "scripts/ci/g47.d/",
 )
 
 

@@ -199,7 +199,9 @@ class Wiring(unittest.TestCase):
         g65 = [s for s in _spec_steps() if str(s.get("name", "")).startswith("G65 ")]
         self.assertEqual(len(g65), 1)
         self.assertIn("python3 scripts/ci/k245_g27_reach_test.py", g65[0]["run"])
-        self.assertIn("python3 scripts/ci/k245_g27_reach_test.py", BUILD_TESTPLAN.read_text(encoding="utf-8"))
+        import gate_cmds  # noqa: E402  G65 の並びは scripts/ci/g65.d から作り手（BUILD_TESTPLAN）が作る（K-376）
+        self.assertIn("python3 scripts/ci/k245_g27_reach_test.py",
+                      gate_cmds.commands(ROOT / "scripts" / "ci" / "g65.d", last="python3 scripts/ci/k248_scope_reach_test.py"))
 
 
 if __name__ == "__main__":

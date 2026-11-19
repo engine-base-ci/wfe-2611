@@ -5997,6 +5997,68 @@
    ]
   },
   {
+   "id": "E-INV-005",
+   "class": "permission",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "ログイン中の人が、別のメールアドレス宛ての招待で「今のアカウントで参加する」を押した",
+   "false_when": "宛てのメールアドレスと今のアカウントのメールアドレスが同じ（大文字と小文字は同じに見る）",
+   "message": "この招待は別のメールアドレス宛てです。そのアドレスのアカウントで入ってください",
+   "action": "宛てのアカウントで入り直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "別のメールアドレスのアカウントでログインしたまま、招待のリンクを開いて参加する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.150",
+    "D-128.62",
+    "D-128.63"
+   ]
+  },
+  {
+   "id": "E-INV-007",
+   "class": "conflict",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "ログイン中の人が、もう入っているワークスペースの招待で参加しようとした",
+   "false_when": "そのワークスペースにまだ入っていない・前に抜けた",
+   "message": "このワークスペースにはもう入っています",
+   "action": "そのワークスペースを開く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "もう入っているワークスペースの招待のリンクを、ログインしたまま開いて参加する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.150",
+    "D-128.62",
+    "D-128.63"
+   ]
+  },
+  {
    "id": "E-INV-008",
    "class": "conflict",
    "where": {

@@ -137,7 +137,10 @@ class PerfLedger(unittest.TestCase):
         links = json.loads(SCOPE.read_text(encoding="utf-8"))["data_links"]
         tests = {t for ln in links if "scripts/ci/perf_budget.json" in ln.get("paths", []) for t in ln.get("tests", [])}
         self.assertTrue(set(TS_READERS) <= tests, tests)
-        g65 = next(ln for ln in TESTPLAN.read_text(encoding="utf-8").splitlines() if '"id": 65,' in ln)
+        import sys  # noqa: E402
+        sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+        import gate_cmds  # noqa: E402  G65 の並びは scripts/ci/g65.d から作り手（TESTPLAN）が作る（K-376）
+        g65 = gate_cmds.commands(ROOT / "scripts" / "ci" / "g65.d", last="python3 scripts/ci/k248_scope_reach_test.py")
         gate = GATE.read_text(encoding="utf-8")
         for cmd in PY_TESTS:
             self.assertIn(cmd, g65)

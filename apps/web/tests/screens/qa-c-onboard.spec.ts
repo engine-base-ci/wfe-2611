@@ -20,6 +20,7 @@ import {
   mailTag,
 } from "../_lib/api";
 import { startAgentBridge, type AgentBridge } from "../_lib/agent-bridge";
+import { ownIp } from "../_lib/newcomer";
 
 let bridges: AgentBridge[] = [];
 test.beforeEach(({ page }) => hideRealBridge(page));
@@ -277,6 +278,8 @@ test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・�
       "insert into invitations (tenant_id, email, role_id, token_hash, expires_at, created_by) values ($1, $2, $3, $4, now() + interval '7 days', $5)",
       [boss.tenantId, email, role, sha256(token), boss.memberId],
     );
+    // 下見の口は 10 回／分／IP（K-331）。同じ回の CI でほかの招待の試験と続けて流れるので、別の IP の頭を付ける（口の答えは作らない）
+    await ownIp(page.context(), 35);
     await page.goto(`/invite/${token}`);
     await expect(page.locator("form[data-auth='invite'][data-state='new']")).toBeVisible({ timeout: 15_000 });
     await page.getByLabel("名前").fill(role === "staff" ? "担当 太郎" : "閲覧 花子");
