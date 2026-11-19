@@ -2062,7 +2062,7 @@ K-352,預ける口（createCredential・本人確認の取り直し・金庫に�
 保存の前に本人確認を取り直す（直前 15 分の取り直しか、ログインから 15 分の内なら省く・D-125.139・K-308 の判定 requireStepUpOrFreshLogin）。
 ログイン情報なら、預けた人の PC に 1 回ログインを試す仕事を積む（D-117・代表の答え ac0813ee7c21 ③）。確かめの口そのもの（もう一度試す・コードを答える・PC が結果を返す）は K-355。","- [ ] 下の表の 25 行（K352-API-001〜025）が緑：`apps/api/test/features/F3/credentials-create.test.ts`（土台 credentials.harness.ts・K-351）
 - [ ] 契約の口 `createCredential` が 501 でない。生成の試験 `apps/api/test/generated/post_credentials.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-352.json` の covers）
-- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替えるのは apps/api/test/step_up.test.ts の口の選び方 1 か所）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-360,PC の一覧に自己診断の時刻（health_at）を足し、生きている知らせの答えに PC の番号（device_id）を足す（listMyDevices・sendHeartbeat・BridgeDevice の契約・migration 1 本）（K-89 の葉 ②）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89 の口・DB・契約の分。PC の行に「足りない物と直し方」を出す画面（K-361）が要る値を、契約の口で運べるようにする。
 
