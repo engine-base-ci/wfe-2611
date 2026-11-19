@@ -932,6 +932,17 @@
    "tests": [
     "apps/web/tests/k/k350-stage4-mock.spec.ts"
    ]
+  },
+  {
+   "paths": [
+    "07_functional/段4-F3/shots-pc/measure.json",
+    "07_qa/test-specs/errors.json",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/gen_built_routes.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k369-pc-row-mock.spec.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1033,7 +1044,8 @@
   "apps/e2e/staging/_lib/scrub-reporter.ts": "自分の回の JUnit の記録を読んで、伏せて書き戻す。リポジトリのファイルは読まない（K-65）",
   "apps/e2e/staging/k65-walking-skeleton.spec.ts": "台の一時の置き場に自分で置いた数（承認から帯が替わるまでの秒）を読む。リポジトリのファイルは読まない（K-65）",
   "apps/web/tests/k/k340-local-texts.spec.ts": "手元の立ち上げ scripts/dev/up.sh（data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json・画面のコード apps/web/{app,features,components,lib} を読む（古い文が残っていないか）。どれも jobs.web.paths か data_links に在る（実ブラウザの試験は web の組が流す）・K-340",
-  "apps/web/tests/k/k350-stage4-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3/mocks.tsx・部品 apps/web/features/F3/credentials/views.tsx・画面のコード apps/web/{components,features,app}（鈴を外した後に名前が残っていないか）・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段4-F3/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・正本 04_design/DESIGN-kaname.md・キャンバスの絵 04_design/canvas/*.dc.html（作り手 shellfix.py・mb.py を data_links で結ぶ）・11_tickets/K-57.md・秘密の検査の設定 .gitleaks.toml・作り物の秘密の置き場（apps/{api,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts）を読み、scripts/ci/design_gate.py を子プロセスで流す（K-350）"
+  "apps/web/tests/k/k350-stage4-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3/mocks.tsx・部品 apps/web/features/F3/credentials/views.tsx・画面のコード apps/web/{components,features,app}（鈴を外した後に名前が残っていないか）・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段4-F3/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・正本 04_design/DESIGN-kaname.md・キャンバスの絵 04_design/canvas/*.dc.html（作り手 shellfix.py・mb.py を data_links で結ぶ）・11_tickets/K-57.md・秘密の検査の設定 .gitleaks.toml・作り物の秘密の置き場（apps/{api,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts）を読み、scripts/ci/design_gate.py を子プロセスで流す（K-350）",
+  "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）",

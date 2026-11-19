@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。190 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。192 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3463,6 +3463,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "invite-accept",
       "state": "a"
+    }
+  },
+  "E-CONN-016": {
+    "id": "E-CONN-016",
+    "cls": "auth",
+    "message": "Claude Code にログインできていません。下の「ログインする」を押して、ブラウザで 1 回許可してください",
+    "action": "この画面の「ログインする」を押す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "E-CONN-016",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "Bridge"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "e"
+    }
+  },
+  "E-CONN-017": {
+    "id": "E-CONN-017",
+    "cls": "auth",
+    "message": "この PC の Claude Code にログインできていません",
+    "action": "その PC でこの画面を開いて、ログインする",
+    "undo": false,
+    "severity": "high",
+    "support_code": "E-CONN-017",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "Bridge"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "e"
     }
   }
 };

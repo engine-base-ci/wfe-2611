@@ -11,6 +11,10 @@
 //   代表の答え answer=7cf148a79dc9（2026-11-19）で足した 7 つ：
 //     pc-os-warning*（K-374）… つなぐ小窓（ConnectDialog）の受け取る段に、受け取った後だけ OS の警告の越え方（OsWarning）。受け取る前の小窓は今の絵（キャンバス EdPC）のまま
 //     pc-bridge-*（K-375）… Bridge が古い PC の行は、入れ直す区画（BridgeReinstall）だけを出す（先に直す物だけ・A-3 と同じ考え）。スマホでは受け取るボタンを出さず開く場所だけ
+//   代表の答えを待っている所（仮の形のまま本線に入れる・2026-11-19 夜・K369-UI-017）：下の一覧で「仮：」の注が付いた 8 つの状態。
+//     足した 7 つの下絵（pc-os-warning* の 3 つ・pc-bridge-* の 4 つ）と、直した pc-phone の OK。
+//     あわせて、OS の警告をいつ出すか（今の仮の形：受け取った後だけ）と、Bridge が古い行の出し方（今の仮の形：入れ直す区画だけ）。
+//     答えで形が変わったら、部品・モック・写しと行の期待を切る段で直す（この葉の作る段ではしない）
 import type { ReactNode } from "react";
 import { Button, Shell, MeSub, Toaster, Callout } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
@@ -41,111 +45,142 @@ export interface MockEntry {
 }
 
 export const MOCKS: readonly MockEntry[] = [
+  // 下絵を作ったときに見た行：K-361 UI-001
   {
     id: "pc-claude-missing",
     screen: "bridge-setup",
     label: "Claude Code が入っていない（この PC）",
-    ticket: "K-361 UI-001",
+    ticket: "K-361",
   },
-  { id: "pc-claude-installing", screen: "bridge-setup", label: "Claude Code を入れている途中", ticket: "K-361 UI-002" },
-  { id: "pc-claude-install-error", screen: "bridge-setup", label: "入れられなかった", ticket: "K-361 UI-004・017" },
+  // 下絵を作ったときに見た行：K-361 UI-002
+  { id: "pc-claude-installing", screen: "bridge-setup", label: "Claude Code を入れている途中", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-361 UI-004・017
+  { id: "pc-claude-install-error", screen: "bridge-setup", label: "入れられなかった", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-361 UI-003
   {
     id: "pc-claude-broken",
     screen: "bridge-setup",
     label: "本体が落ちてきていない（取り直す）",
-    ticket: "K-361 UI-003",
+    ticket: "K-361",
   },
-  { id: "pc-claude-login", screen: "bridge-setup", label: "ログインしていない", ticket: "K-361 UI-005" },
+  // 下絵を作ったときに見た行：K-361 UI-005
+  { id: "pc-claude-login", screen: "bridge-setup", label: "ログインしていない", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-361 UI-005・008
   {
     id: "pc-claude-code",
     screen: "bridge-setup",
     label: "ログインの途中：入口とコードの欄",
-    ticket: "K-361 UI-005・008",
+    ticket: "K-361",
   },
-  { id: "pc-claude-code-error", screen: "bridge-setup", label: "コードが違った", ticket: "K-361 UI-007" },
-  { id: "pc-claude-done", screen: "bridge-setup", label: "ログインできた", ticket: "K-361 UI-006" },
+  // 下絵を作ったときに見た行：K-361 UI-007
+  { id: "pc-claude-code-error", screen: "bridge-setup", label: "コードが違った", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-361 UI-006
+  { id: "pc-claude-done", screen: "bridge-setup", label: "ログインできた", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-361 UI-010・011・014
   {
     id: "pc-claude-other-device",
     screen: "bridge-setup",
     label: "ほかの PC の行：理由と開く場所だけ",
-    ticket: "K-361 UI-010・011・014",
+    ticket: "K-361",
   },
-  { id: "pc-asleep", screen: "bridge-setup", label: "眠っている PC：報告の時刻", ticket: "K-361 UI-012" },
+  // 下絵を作ったときに見た行：K-361 UI-012
+  { id: "pc-asleep", screen: "bridge-setup", label: "眠っている PC：報告の時刻", ticket: "K-361" },
+  // 下絵を作ったときに見た行：K-368 UI-002
   {
     id: "pc-browser-pick",
     screen: "bridge-setup",
     label: "AI が使うブラウザを選ぶ（自分の Chrome・既定）",
-    ticket: "K-90 画面 UI-002",
+    ticket: "K-368",
   },
-  { id: "pc-browser-saved", screen: "bridge-setup", label: "選んだ：変えました", ticket: "K-90 画面 UI-003" },
+  // 下絵を作ったときに見た行：K-368 UI-003
+  { id: "pc-browser-saved", screen: "bridge-setup", label: "選んだ：変えました", ticket: "K-368" },
+  // 下絵を作ったときに見た行：K-368 UI-010
   {
     id: "pc-browser-fix",
     screen: "bridge-setup",
     label: "Chrome とつながらない：その場の一手",
-    ticket: "K-90 画面 UI-010",
+    ticket: "K-368",
   },
-  { id: "pc-browser-checking", screen: "bridge-setup", label: "もう一度確かめている", ticket: "K-90 画面 UI-011・015" },
-  { id: "pc-browser-ok", screen: "bridge-setup", label: "確かめた：つながった", ticket: "K-90 画面 UI-011" },
+  // 下絵を作ったときに見た行：K-368 UI-011・015
+  { id: "pc-browser-checking", screen: "bridge-setup", label: "もう一度確かめている", ticket: "K-368" },
+  // 下絵を作ったときに見た行：K-368 UI-011
+  { id: "pc-browser-ok", screen: "bridge-setup", label: "確かめた：つながった", ticket: "K-368" },
+  // 下絵を作ったときに見た行：K-368 UI-012
   {
     id: "pc-browser-still",
     screen: "bridge-setup",
     label: "確かめた：まだつながっていない",
-    ticket: "K-90 画面 UI-012",
+    ticket: "K-368",
   },
+  // 下絵を作ったときに見た行：K-368 UI-013
   {
     id: "pc-browser-timeout",
     screen: "bridge-setup",
     label: "確かめた：結果が返ってこない",
-    ticket: "K-90 画面 UI-013",
+    ticket: "K-368",
   },
+  // 下絵を作ったときに見た行：K-368 UI-014・K-365 API-004
   {
     id: "pc-browser-asleep",
     screen: "bridge-setup",
     label: "眠っている PC で確かめた",
-    ticket: "K-90 画面 UI-014・K-365 API-004",
+    ticket: "K-368",
   },
-  { id: "pc-menu", screen: "bridge-setup", label: "行の「…」：この PC を外す", ticket: "K-363 UI-001" },
-  { id: "pc-remove", screen: "bridge-setup", label: "外す確かめの小窓", ticket: "K-363 UI-002" },
-  { id: "pc-remove-stepup", screen: "bridge-setup", label: "外す前の本人確認の取り直し", ticket: "K-363 UI-006" },
-  { id: "pc-removed", screen: "bridge-setup", label: "外した", ticket: "K-363 UI-004" },
+  // 下絵を作ったときに見た行：K-363 UI-001
+  { id: "pc-menu", screen: "bridge-setup", label: "行の「…」：この PC を外す", ticket: "K-363" },
+  // 下絵を作ったときに見た行：K-363 UI-002
+  { id: "pc-remove", screen: "bridge-setup", label: "外す確かめの小窓", ticket: "K-363" },
+  // 下絵を作ったときに見た行：K-363 UI-006
+  { id: "pc-remove-stepup", screen: "bridge-setup", label: "外す前の本人確認の取り直し", ticket: "K-363" },
+  // 下絵を作ったときに見た行：K-363 UI-004
+  { id: "pc-removed", screen: "bridge-setup", label: "外した", ticket: "K-363" },
+  // 下絵を作ったときに見た行：K-363 UI-012
   {
     id: "pc-remove-error",
     screen: "bridge-setup",
     label: "外せなかった（Kaname の調子が悪い）",
-    ticket: "K-363 UI-012",
+    ticket: "K-363",
   },
+  // 仮：直した形（2 行目を生きている行に・E-CONN-017 の題）の代表の OK を待っている（K369-UI-017）
   {
     id: "pc-phone",
     screen: "bridge-setup",
     label: "スマホで開いた：PC をつなぐは押せず理由の 1 行・行の操作は使える",
     ticket: "K-373",
   },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   {
     id: "pc-os-warning",
     screen: "bridge-setup",
     label: "つなぐ小窓：Mac 用を受け取った後（越え方は閉じた形）",
     ticket: "K-374",
   },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   { id: "pc-os-warning-mac", screen: "bridge-setup", label: "つなぐ小窓：Mac の越え方を開いた", ticket: "K-374" },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   {
     id: "pc-os-warning-win",
     screen: "bridge-setup",
     label: "つなぐ小窓：Windows の越え方を開いた",
     ticket: "K-374",
   },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   { id: "pc-bridge-outdated", screen: "bridge-setup", label: "Bridge が古い：入れ直す一手", ticket: "K-375" },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   {
     id: "pc-bridge-reinstalling",
     screen: "bridge-setup",
     label: "入れ直し：Mac 用を受け取った（越え方つき）",
     ticket: "K-375",
   },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   {
     id: "pc-bridge-reinstall-error",
     screen: "bridge-setup",
     label: "入れ直し：受け取れなかった（まだ配布していない）",
     ticket: "K-375",
   },
+  // 仮：answer=7cf148a79dc9 で足した下絵。代表が見るのを待っている（K369-UI-017）。答えで形が変わったら切る段で直す
   {
     id: "pc-bridge-outdated-phone",
     screen: "bridge-setup",
