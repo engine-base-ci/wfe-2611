@@ -132,8 +132,12 @@ async function stuckOnTerms(page: Page): Promise<void> {
   await page.goto("/ai/chat");
   await expect(page, "同意の前に他の画面へ行けない").toHaveURL(TERMS_STEP, { timeout: 15_000 });
 }
-/** 同意し直しの画面で同意する → 同意し直しの画面を出る */
-async function agreeOnTerms(page: Page): Promise<void> {
+/** 同意し直しの画面で同意する → 同意し直しの画面を出る。
+ *  同意すると画面はすぐ next（チャット）へ移り、その画面の口を呼ぶ。ログインし直した人のセッションには付けるまで進めない（K-321）の印が
+ *  立っているので、移る前に印を下ろす（readyToEnter）。移った後に下ろすと、移った先の 403・MFA_REQUIRED が少し後に /mfa-setup へ移し、
+ *  次の goto と取り合う（K-342・CI の VM の重さで出た） */
+async function agreeOnTerms(page: Page, email: string): Promise<void> {
+  await readyToEnter(email);
   await page.getByLabel("利用規約とプライバシーポリシーに同意します").check();
   await page.getByRole("button", { name: "同意して続ける" }).click();
   await expect(page).not.toHaveURL(TERMS_STEP, { timeout: 15_000 });
@@ -298,7 +302,7 @@ test("K54-M1-06 規約の新しい版：確定のあと新しい版を出して�
     await page.evaluate(() => window.localStorage.removeItem("kaname.token")); // 入り直す
     await loginByForm(page, w.email);
     await stuckOnTerms(page);
-    await agreeOnTerms(page);
+    await agreeOnTerms(page, w.email);
     await canEnter(page, w.email);
     const me = (await confirmed(w.email))[0]!;
     const agreed = (await agreedVersions(me.user_id)).map((a) => a.terms_version_id);
@@ -326,7 +330,7 @@ test("K54-M1-07 途中でやめる：登録のあと新しい版 → リンク �
     try {
       await loginByForm(later.page, w.email);
       await stuckOnTerms(later.page);
-      await agreeOnTerms(later.page);
+      await agreeOnTerms(later.page, w.email);
       await canEnter(later.page, w.email);
     } finally {
       await later.ctx.close();
