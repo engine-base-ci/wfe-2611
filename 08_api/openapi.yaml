@@ -13642,7 +13642,7 @@ paths:
           - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
           - 漏れたことのあるパスワード（E-VAL-011）
         '403':
-          description: E-AUTH-012
+          description: E-AUTH-012／E-INV-005
           content:
             application/json:
               schema:
@@ -13654,7 +13654,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-INV-006
+          description: E-INV-006／E-INV-007
           content:
             application/json:
               schema:

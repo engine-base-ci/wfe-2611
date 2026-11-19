@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。188 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。190 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3402,6 +3402,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "medium",
     "support_code": "E-INV-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-005": {
+    "id": "E-INV-005",
+    "cls": "permission",
+    "message": "この招待は別のメールアドレス宛てです。そのアドレスのアカウントで入ってください",
+    "action": "宛てのアカウントで入り直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-007": {
+    "id": "E-INV-007",
+    "cls": "conflict",
+    "message": "このワークスペースにはもう入っています",
+    "action": "そのワークスペースを開く",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-007",
     "must_not": false,
     "layers": [
       "UI",

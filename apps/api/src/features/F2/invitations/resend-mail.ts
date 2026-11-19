@@ -19,19 +19,18 @@ const DAY = new Intl.DateTimeFormat("ja-JP", {
 });
 
 /** 頼まれた招待の事実から文面を組む */
+//   行は 1 つの文字列の中の改行でつなぐ（配列の .join は使わない）。契約の形の検査（scripts/ci/contract_shape_test.py）は
+//   同じ hooks から読むファイルの定義を名前で辿るので、参加の口の関数 join（403 を返す）と名前が重なり、
+//   この口が 403 を返すと読まれる（実際は通らない道）
 export function resendRequestMail(f: ResendRequestFacts): { subject: string; text: string } {
   const where = f.workspace_name ? `「${f.workspace_name}」` : "ワークスペース";
-  return {
-    subject: RESEND_REQUEST_SUBJECT,
-    text: [
-      `${where}に招待した ${f.invitee_email} さんから、招待の送り直しを頼まれました。`,
-      "招待のリンクの期限が過ぎていたため、参加できなかったようです。",
-      "",
-      `招いた日：${DAY.format(new Date(f.invited_at))}`,
-      `期限：${DAY.format(new Date(f.expires_at))}`,
-      "",
-      "参加してもらうには、Kaname のメンバーの画面から新しい招待を出してください。",
-      "心当たりが無ければ、このメールは無視してかまいません。",
-    ].join("\n"),
-  };
+  const text = `${where}に招待した ${f.invitee_email} さんから、招待の送り直しを頼まれました。
+招待のリンクの期限が過ぎていたため、参加できなかったようです。
+
+招いた日：${DAY.format(new Date(f.invited_at))}
+期限：${DAY.format(new Date(f.expires_at))}
+
+参加してもらうには、Kaname のメンバーの画面から新しい招待を出してください。
+心当たりが無ければ、このメールは無視してかまいません。`;
+  return { subject: RESEND_REQUEST_SUBJECT, text };
 }

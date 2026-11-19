@@ -141,6 +141,32 @@ export function acceptRefusal(e: unknown): "not_found" | "used" | "revoked" | "e
   return x.hint === "not_found" || x.hint === "used" || x.hint === "revoked" || x.hint === "expired" ? x.hint : null;
 }
 
+/** ログイン中の人が今のアカウントで参加する（K-333・app.join_invitation）。所属を足す（前に抜けた所属は戻す）・出来事・
+ *  そのログインの印の sessions の行の付け替えを、関数の中の 1 つの取引で行う。返すのは招かれたワークスペースと新しい所属の人 */
+export async function joinInvitation(
+  appPool: pg.Pool,
+  token: string,
+  authUserId: string,
+  authSessionId: string,
+): Promise<{ tenantId: string; memberId: string }> {
+  const r = await appPool.query<{ tenant_id: string; member_id: string }>(
+    "select * from app.join_invitation($1, $2, $3)",
+    [hashToken(token), authUserId, authSessionId],
+  );
+  const row = r.rows[0];
+  if (!row) throw new Error("参加の関数が行を返さなかった");
+  return { tenantId: row.tenant_id, memberId: row.member_id };
+}
+
+/** 参加の関数（app.join_invitation）が断った理由（例外の hint）。招待の状態に加え、別のメール宛て・もう入っている。それ以外の例外は null */
+export function joinRefusal(
+  e: unknown,
+): "not_found" | "used" | "revoked" | "expired" | "wrong_email" | "already_member" | null {
+  const x = e as { code?: unknown; hint?: unknown } | null;
+  if (x?.code !== "42501") return null;
+  return x.hint === "wrong_email" || x.hint === "already_member" ? x.hint : acceptRefusal(e);
+}
+
 /** その人のセッションを部品で作る（K-332）。セッションの hook（止め・Kaname の sessions への写し・同意し直しと付けるまで進めない印）を通る。
  *  端末の印（user-agent）は渡さない（登録の確定と同じく、最初のログインを新しい端末と数えない・D-128.137）。返すのはログインの印（session.token） */
 export async function openSessionFor(auth: Auth, userId: string): Promise<string> {
