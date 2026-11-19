@@ -1,0 +1,11 @@
+# 秘密の検査（gitleaks 8.30）の設定。既定の規則をそのまま使い、試験の作り物の値の置き場 2 つの道だけを外す（K-328）。
+# 外すのは道だけ。値の正規表現や止め語では外さない（ほかの道に同じ形の本物が来ても見つける）。
+# 試験に作り物の秘密を書くときは apps/{api,web}/test/_fake/secrets.ts に足して import する（.gitleaksignore は使わない）。
+title = "Kaname の秘密の検査"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "試験の作り物の値の置き場（本物の秘密ではない）"
+paths = ['''^apps/api/test/_fake/''', '''^apps/web/test/_fake/''']
