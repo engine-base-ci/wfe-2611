@@ -9,6 +9,16 @@ export {
   type PasswordFieldProps,
 } from "./field";
 export { Select, type SelectOption, type SelectProps } from "./select";
+export {
+  Menu,
+  MenuTrigger,
+  MenuPopup,
+  MenuItem,
+  type MenuProps,
+  type MenuTriggerProps,
+  type MenuPopupProps,
+  type MenuItemProps,
+} from "./menu";
 export { Table, type Column, type TableProps } from "./table";
 export { Badge, type BadgeTone } from "./badge";
 export { Tabs, type TabItem, type TabsProps } from "./tabs";

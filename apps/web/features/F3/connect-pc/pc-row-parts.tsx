@@ -9,9 +9,8 @@
 //   BridgeReinstall … Bridge が古い（自己診断の fix=update・E-CONN-012）PC の行の、入れ直す一手（K-375・同じ答え）
 // どれも見せるだけの部品：値と押した結果は props で受け、口は呼ばない（口につなぐのは各チケットの画面の葉）。
 // 値は正本（DESIGN-kaname.md → styles/k-tokens.css）のトークンだけ。生の色・大きさは pc-row-parts.css にも書かない
-import { Menu as M } from "@base-ui/react/menu";
 import type { ReactNode } from "react";
-import { Button, Confirm, TextField } from "@/components/k";
+import { Button, Confirm, Menu, MenuItem, MenuPopup, MenuTrigger, TextField } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
 import "./pc-row-parts.css";
 
@@ -290,6 +289,7 @@ export function BrowserFix({ checking = false, result, openSteps = false, onChec
 
 /* ---------------- 行の「…」のメニューと外す確かめ（K-363） ---------------- */
 
+/** 行の「…」のメニュー。メニューの型（components/k/menu.tsx）を使う（この置き場は Base UI を直に読まない・K-230 の守り） */
 export function PcMoreMenu({
   name,
   onRemove,
@@ -300,20 +300,16 @@ export function PcMoreMenu({
   defaultOpen?: boolean;
 }) {
   return (
-    <M.Root defaultOpen={defaultOpen}>
-      <M.Trigger className="k-pc-more k-pc-more-on" aria-label={`…（${name} の操作）`}>
+    <Menu defaultOpen={defaultOpen}>
+      <MenuTrigger className="k-pc-more k-pc-more-on" label={`…（${name} の操作）`}>
         …
-      </M.Trigger>
-      <M.Portal>
-        <M.Positioner sideOffset={6} align="end">
-          <M.Popup className="k-select-popup k-pc-menu">
-            <M.Item className="k-select-item k-pc-menu-danger" onClick={onRemove}>
-              この PC を外す
-            </M.Item>
-          </M.Popup>
-        </M.Positioner>
-      </M.Portal>
-    </M.Root>
+      </MenuTrigger>
+      <MenuPopup align="end" className="k-pc-menu">
+        <MenuItem className="k-pc-menu-danger" onSelect={onRemove}>
+          この PC を外す
+        </MenuItem>
+      </MenuPopup>
+    </Menu>
   );
 }
 
