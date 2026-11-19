@@ -26,6 +26,7 @@
   "ci": [
    ".github/**",
    "05_flow/build_testplan.py",
+   "scripts/ci/gate_cmds.py", "scripts/ci/g65.d/**", "scripts/ci/g47.d/**",
    "scripts/dev/**", "scripts/spec-sync/**",
    ".act-ci.env",
    "vitest.config.ts",
