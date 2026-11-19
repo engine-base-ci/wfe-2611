@@ -15622,14 +15622,12 @@
    "split": "",
    "choke_points": [],
    "choke_none": "手元の立ち上げの台本と、画面に出す文だけ。口・DB・外への送り出しは触らない（パスキーの rpID は前から WEB_BASE_URL の 1 つ目から決まる。口のコードは変えない）",
-   "canvas": [],
-   "canvas_none": "文の差し替えだけで、配置・大きさ・値は変えない。正の絵（モック /dev/mock/f1/login-wait・reset-invalid）は同じ部品の文を正本から引くので、モックと本番の突き合わせ（K316-UI-021・K320-UI-024）はそのまま",
+   "mock": [
+    "login-wait",
+    "reset-invalid"
+   ],
    "tests": [
-    "apps/web/tests/k/k340-local-texts.spec.ts",
-    "apps/web/tests/k/k316-login.spec.ts",
-    "apps/web/tests/k/k320-password-reset.spec.ts",
-    "apps/web/tests/features/F3/connect-pc.spec.ts",
-    "07_qa/test-specs/k/connect-pc.md"
+    "apps/web/tests/k/k340-local-texts.spec.ts"
    ],
    "depends_on": [],
    "acts": [
@@ -15652,6 +15650,10 @@
     "ci"
    ],
    "changes": [
+    "apps/web/tests/k/k316-login.spec.ts",
+    "apps/web/tests/k/k320-password-reset.spec.ts",
+    "apps/web/tests/features/F3/connect-pc.spec.ts",
+    "07_qa/test-specs/k/connect-pc.md",
     "scripts/dev/up.sh",
     "apps/web/features/F1/login/login-form.tsx",
     "apps/web/features/F3/connect-pc/connect-pc.tsx",
