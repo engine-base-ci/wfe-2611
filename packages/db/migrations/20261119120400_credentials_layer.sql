@@ -9,14 +9,13 @@
 -- ③ layer：workspace／personal。既定は personal（前の道すじの insert は持ち主＝本人の個人の物）
 -- ④ 一意：ワークスペースは会社の中で 1 つ・個人は持ち主の中で 1 つ。消した物と失効しただけの物は名前をふさがない
 --      （見えず直せない物が名前だけふさぐのを避ける・代表の答え answer=449e72553c59）
-alter table credentials add column if not exists name text not null
-  default ('LOGIN_' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8)));
+-- 行ごとに違う名前を入れるために、わざと行ごとに引く既定（volatile）にする。表の書き換えが走るが、預けたログイン情報は 1 社で多くても数十行の小さな表
+-- squawk-ignore adding-field-with-default
+alter table credentials add column if not exists name text not null default ('LOGIN_' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8)));
 alter table credentials add column if not exists description text;
 alter table credentials add column if not exists layer text not null default 'personal';
 
-alter table credentials drop constraint if exists credentials_name_check;
 alter table credentials add constraint credentials_name_check check (name ~ '^[A-Z][A-Z0-9_]{0,63}$');
-alter table credentials drop constraint if exists credentials_layer_check;
 alter table credentials add constraint credentials_layer_check check (layer in ('workspace', 'personal'));
 
 create unique index if not exists credentials_workspace_name_uq on credentials (tenant_id, name)
