@@ -72,9 +72,10 @@ export function parseName(v: unknown): string | HookReply {
   return NAME_RE.test(name) ? name : fail("E-CRED-001", "name");
 }
 
-/** ⑧ 説明：前後の空白を落とし、空は null（長さの上限は置かない・D-130.1） */
+/** ⑧ 説明：前後の空白を落とし、空は null（長さの上限は置かない・D-130.1）。DB の文字の列に入らない NUL だけは除く（金庫に置いた後で行が作れなくなるのを避ける） */
 export function parseDescription(v: unknown): string | null {
-  return text(v) || null;
+  // eslint-disable-next-line no-control-regex -- 保存できない NUL を除く
+  return text(typeof v === "string" ? v.replace(/\u0000/g, "") : v) || null;
 }
 
 /** ② 使える場所：1〜20 個のドメイン。URL・大文字・全角・末尾の点は直す。重なりは前の順で 1 つに。
