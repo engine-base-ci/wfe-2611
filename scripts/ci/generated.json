@@ -175,6 +175,21 @@
     "07_qa/test-plan/ears-elsewhere.json",
     "scripts/ci/ci_scope.json"
    ]
+  },
+  {
+   "name": "口の登録の一覧と閉じる道の断片（hooks の register → all.generated.ts・disabled-paths.d/ → disabled-paths.generated.ts・K-326）",
+   "run": "python3 scripts/ci/gen_ts_registries.py",
+   "outputs": [
+    "apps/api/src/hooks/all.generated.ts",
+    "packages/auth/src/disabled-paths.generated.ts"
+   ]
+  },
+  {
+   "name": "migration の一覧（packages/db/migrations/*.sql → migrations.generated.ts の MIGRATIONS・K-327）",
+   "run": "python3 scripts/ci/gen_migrations.py",
+   "outputs": [
+    "packages/db/src/migrations.generated.ts"
+   ]
   }
  ],
  "checked_elsewhere": [

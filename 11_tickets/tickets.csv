@@ -1851,6 +1851,26 @@ K-325,表をチケットごとのファイルに分ける（screen_api.py・契�
 - [ ] 作り直した 3 つの生成物の中身が、移す前の本線の版と同じ（下の「自分の確かめ」）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-326,口の登録と部品の閉じる道を、作り手が作る一覧にする（hooks の register・server.ts と fuzz の的は一覧から差す・閉じる道は disabled-paths.d/K-xxx.ts）（K-324 の葉）,タスク,K-324,未着手,実装,2026-11-19,共通・CI,"口を足すチケットは、今は `apps/api/src/server.ts` の contract.hooks に `...xxxHooks(…)` を 1 行、`apps/api/test/fuzz/server.ts` に同じ工場を 1 行、`packages/auth/src/index.ts` の DISABLED_PATHS に道と註を足す。どのチケットも同じ所に足すので、同時に作るとぶつかった（.ticket-flow/research/delay-2026-11-18.md の 3.2：口の入口 2 回・閉じる道 3 回・fuzz の的 5 回）。
+
+このチケットは、
+- hooks のファイル（`apps/api/src/hooks/<名>.ts`）が自分で `export const register` を持ち、作り手がフォルダを見て一覧 `apps/api/src/hooks/all.generated.ts` を作る。server.ts と fuzz の的は一覧から差す（口を足すチケットは自分の hooks のファイルだけを触る）
+- 閉じる道は `packages/auth/src/disabled-paths.d/K-<番号>.ts` に置き、作り手が `packages/auth/src/disabled-paths.generated.ts` にまとめる
+にする。同じ口（operationId）を 2 つの hooks が持てば、束ねる所で止める（今は後から広げた方が黙って勝つ）。わざと差し替える物（今は delegateHooks の getTicket だけ：K-60 の詳細に can.delegate を足した物）は、差し替える側が register に `replaces: [""getTicket""]` と書き、並びに関わらずその側が持つ。
+
+振る舞いは変えない：本物のサーバーと fuzz の的が差す口の集まり・fuzz で外す 4 つの工場とその理由・閉じる道の集まりは、今と同じ。","- [ ] 下の表の 20 行（K326-BIND-001〜012・K326-GEN-001〜008）が緑：`apps/api/test/k326-api-registry.test.ts`・`scripts/ci/k326_ts_registries_test.py`
+- [ ] 自分の確かめ（下）の 2 つが同じ
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-327,migration の名前を時刻にして飛びを許す（新しい物は YYYYMMDDHHMMSS_名前.sql・一覧は作り手が作る・今の 4 けたと schema_migrations はそのまま読む）（K-324 の葉）,タスク,K-324,未着手,実装,2026-11-19,共通・DB,"migration は 4 けたの続き番号（0001〜）で、並びの検査が飛び番と重なりを止める。同時に作る 2 本は必ず同じ「次の番号」を取り、後から入る方が毎回ファイル名・`packages/db/src/index.ts` の一覧の 1 行・中の名前を付け替え、CI をもう 1 回流していた（今日 15 回・.ticket-flow/research/delay-2026-11-18.md 3.2）。
+
+このチケットは、
+- 新しい migration の名前を `YYYYMMDDHHMMSS_<名前>.sql`（UTC の時刻・作った時点）にし、続き番号を求めない（飛びを許す）
+- 一覧 `MIGRATIONS` を手で書かず、作り手が `packages/db/migrations/` を見て `packages/db/src/migrations.generated.ts` に作る（ぶつかっても本線の版にして作り直す生成物）
+にする。今ある 4 けたの物と、`app.schema_migrations`（名前で持つ）の中身は変えずに読める。","- [ ] 下の表の 13 行（K327-DB-001〜008・K327-GEN-001〜005）が緑：`packages/db/test/k327-migration-names.test.ts`・`scripts/ci/k327_migrations_gen_test.py`
+- [ ] 今の DB（全部当たっている開発の DB）に `migrate` を流して applied が 0 件（自分の確かめ）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-330,段 3 の部品とモックの画面を本線に入れる（features/F2/invite/views・/dev/mock/f2 の 15 の状態・切る段の検査の口）（K-55 の葉）,タスク,K-55,未着手,実装,2026-11-20,F2・画面,"段 3（F2 招かれて参加する）の画面の部品 `features/F2/invite/views.tsx`（見た目だけ・動きは持たない）と、それを並べたモックの置き場 `/dev/mock/f2`（15 の状態）を本線に入れる。
 モックは代表 OK（answer=65b51ba7b8ba・2026-11-18：「あいだ」を漢字の「間」に・太字の見出しは真ん中、ほかは OK）。画面の葉 K-335・K-336 は、このモックを正の絵として本番の画面をつなぐ。
 

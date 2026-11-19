@@ -1,4 +1,4 @@
--- 0117 招待を受ける（K-332・契約の口 acceptInvitation・関門 C2）
+-- 20261119051732_accept_invitation 招待を受ける（K-332・契約の口 acceptInvitation・関門 C2）
 --   ① app.invitation_for_accept(p_token_hash)：口が認証の利用者を作る前に見るもの（招待の id・ワークスペース・宛てのメール・状態・ワークスペースが止められているか）。
 --      state は 0114 の下見と同じ順（used ＞ revoked ＞ expired ＞ ok）。行が無ければ 0 行。何も書かない
 --   ② app.accept_invitation を作り直す（形は 0005 と同じ。前の道すじ /api/auth-ext/invitations/*/accept と packages/auth の acceptInvitation もこれを呼ぶ）。
@@ -96,4 +96,4 @@ end $$;
 revoke all on function app.agree_current_terms_on_invite(uuid, text) from public;
 grant execute on function app.agree_current_terms_on_invite(uuid, text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0117_accept_invitation.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('20261119051732_accept_invitation.sql') on conflict do nothing;

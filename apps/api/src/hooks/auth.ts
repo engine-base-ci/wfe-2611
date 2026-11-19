@@ -10,6 +10,7 @@ import type pg from "pg";
 import { verifyPasskeyStepUp, type Auth } from "@kaname/auth";
 import { kanameError } from "@kaname/errors";
 import type { Hook } from "../contract/deps.js";
+import { defineHooks } from "./registry.js";
 
 const STEP_UP_MS = 15 * 60 * 1000;
 /** パスキーのチャレンジの頭（apps/api/src/auth/passkey-challenge.ts と同じ） */
@@ -82,3 +83,12 @@ export function authHooks(auth: Auth, appPool: pg.Pool): Record<string, Hook> {
     },
   };
 }
+
+// 契約 fuzz の的からは外す（理由は skip に書く・scripts/ci/fuzz_targets.py が理由の空を赤にする）
+export const register = defineHooks({
+  name: "authHooks",
+  make: (d) => authHooks(d.auth, d.appPool),
+  fuzz: {
+    skip: "Better Auth の本物の部品が要り、偽のセッション（Bearer boss）の的では回せない。口の振る舞いは K-51〜K-53 と packages/auth の試験が持つ",
+  },
+});

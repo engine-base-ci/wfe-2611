@@ -1,0 +1,22 @@
+// 生成物・手で直さない（scripts/ci/gen_ts_registries.py）
+import type { HookModule } from "./registry.js";
+import { register as adminRecovery } from "./admin-recovery.js";
+import { register as agent } from "./agent.js";
+import { register as approveComplete } from "./approve-complete.js";
+import { register as auth } from "./auth.js";
+import { register as bridge } from "./bridge.js";
+import { register as changePassword } from "./change-password.js";
+import { register as consentTerms } from "./consent-terms.js";
+import { register as delegate } from "./delegate.js";
+import { register as invitations } from "./invitations.js";
+import { register as login } from "./login.js";
+import { register as mySecurity } from "./my-security.js";
+import { register as passkeys } from "./passkeys.js";
+import { register as passwordReset } from "./password-reset.js";
+import { register as serviceStatus } from "./service-status.js";
+import { register as setupTasks } from "./setup-tasks.js";
+import { register as signup } from "./signup.js";
+import { register as tickets } from "./tickets.js";
+import { register as twoFactor } from "./two-factor.js";
+import { register as verifyEmail } from "./verify-email.js";
+export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approveComplete, auth, bridge, changePassword, consentTerms, delegate, invitations, login, mySecurity, passkeys, passwordReset, serviceStatus, setupTasks, signup, tickets, twoFactor, verifyEmail];

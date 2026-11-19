@@ -3,6 +3,7 @@
 import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { approveHooks as make } from "../features/F5/approve-complete/index.js";
+import { defineHooks } from "./registry.js";
 
 export function approveHooks(appPool: pg.Pool): Record<string, Hook> {
   const h = make(appPool);
@@ -14,3 +15,9 @@ export function approveHooks(appPool: pg.Pool): Record<string, Hook> {
     completeTicket: { ...h["completeTicket"] },
   };
 }
+
+export const register = defineHooks({
+  name: "approveHooks",
+  make: (d) => approveHooks(d.appPool),
+  fuzz: "same",
+});

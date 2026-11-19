@@ -5,6 +5,7 @@ import type { InvitationDeps } from "../features/F2/invitations/deps.js";
 import { invitationPreviewFeature } from "../features/F2/invitations/preview.js";
 import { invitationAcceptFeature } from "../features/F2/invitations/accept.js";
 import { registerPwned } from "../features/F1/sign-up/pwned.js";
+import { defineHooks } from "./registry.js";
 
 export type { InvitationDeps, InvitationMailer } from "../features/F2/invitations/deps.js";
 
@@ -18,3 +19,17 @@ export function invitationHooks(d: InvitationDeps): Record<string, Hook> {
     acceptInvitation: { input: accept.input, before: accept.accept, noIdempotency: true },
   };
 }
+
+export const register = defineHooks({
+  name: "invitationHooks",
+  make: (d) =>
+    invitationHooks({
+      auth: d.auth,
+      appPool: d.appPool,
+      authPool: d.authPool,
+      actions: d.actions, // 参加（K-332）の漏れたパスワードの照合（関門 C1・登録と同じ行為）
+      ...(d.mailer ? { mailer: d.mailer } : {}),
+      config: { opsEmail: d.config.opsEmail, webBaseUrl: d.config.webBaseUrl ?? "" },
+    }),
+  fuzz: "same",
+});

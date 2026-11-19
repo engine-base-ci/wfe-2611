@@ -3,6 +3,7 @@
 import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { createSetupTaskHooks } from "../features/F4/setup-tasks/hooks.js";
+import { defineHooks } from "./registry.js";
 
 export function setupTaskHooks(appPool: pg.Pool): Record<string, Hook> {
   const h = createSetupTaskHooks(appPool);
@@ -11,3 +12,9 @@ export function setupTaskHooks(appPool: pg.Pool): Record<string, Hook> {
     dismissSetupTasks: { ...h["dismissSetupTasks"] },
   };
 }
+
+export const register = defineHooks({
+  name: "setupTaskHooks",
+  make: (d) => setupTaskHooks(d.appPool),
+  fuzz: "same",
+});

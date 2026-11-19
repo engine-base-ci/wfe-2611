@@ -56,7 +56,7 @@ brief:
     - "試験の DB は docker の pgvector/pgvector:pg16 を、割り当てられた番号で立て、DATABASE_URL で指す。終わったら止めて消す。docker が止まっていたら nohup dockerd >/dev/null 2>&1 & で立ち上げてよい"
     - "画面を組み立てると apps/web/tsconfig.json が書き換わる。組み立ての前に写しを取り、終わったら写しで戻す（git で戻さない）"
     - "生成物（flow.json・openapi・registry・test-plan・catalog・要件一覧）は直に直さず、作り手（05_flow/phase1.py → build_flow.py、screen_api.py → build_api.py → build_testplan.py、contract.mjs gen、build_catalog.py）を回す"
-    - "migration を足した・直したときは、取り込む順の次の空き番号で packages/db/src/index.ts の MIGRATIONS に足し、空の DB に当てて pnpm db:columns → python3 05_flow/build_api.py → pnpm ci:contract:gen を回す"
+    - "migration を足した・直したときは、UTC の時刻の名前（packages/db/migrations/YYYYMMDDHHMMSS_名前.sql）で作り、python3 scripts/ci/gen_migrations.py で packages/db/src/migrations.generated.ts の MIGRATIONS を作り直し、空の DB に当てて pnpm db:columns → python3 05_flow/build_api.py → pnpm ci:contract:gen を回す"
     - "試験の結果の欄（07_qa/test-specs の「結果」）は手で書かない。CI の記録から機械で書く"
     - "作ったチケットの tests: と screens: に、作った試験と画面を書く（G53・G14）"
   role_extra:
@@ -82,7 +82,7 @@ verify: bash ~/.claude/skills/ai-team-delivery/scripts/ci/act_ci.sh # CI は act
 
 # レーンは使わない（2026-11-09 D-132）。作業場所はチケットごと（.claude/worktrees/<名前>）。成果物の重なりは state.py start が警告し、pm_merge の守りが止める
 
-lock_exempt: [packages/db/src/index.ts] # MIGRATIONS の 1 行ずつ足す台帳（重なりは pm_merge.sh が止める）
+lock_exempt: [packages/db/src/migrations.generated.ts] # MIGRATIONS の一覧（作り手 gen_migrations.py の生成物・ぶつかったら作り直す）
 required_rules: [test-ladder.md, lessons-learned.md, ai-driven-process.md, choke-points.md]
 scan_ignore_files: [eslint.config.mjs] # .claude/** の除外は K-103 で足した
 
