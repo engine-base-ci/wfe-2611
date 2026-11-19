@@ -196,16 +196,6 @@
   width: var(--k-c-detail-more-width);
   padding: var(--k-c-detail-more-pad);
 }
-/* 767 以下の見出しの右の鈴（K-138）が題名の行の高さを変えない（鈴を題名の行の高さに収める） */
-.k-detail-bell {
-  flex: none;
-  display: flex;
-  margin-left: auto;
-  margin-block: calc(var(--k-s-sm) * -1);
-}
-.k-detail-bell:empty {
-  display: none;
-}
 
 /* ---- 帯の場所（中身は K-227・K-228） ---- */
 .k-detail-bands {

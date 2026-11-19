@@ -6,10 +6,11 @@
 //   キャンバスに在る物は機能がまだでも出す（D-145.9）：作っていない項目・探す欄・知らせの鈴は、正本の「使えない状態」の薄さで押せない形にする。
 //   目に見える「準備中」の字は出さない（指を置くと title で読める・D-144.1）。帯の題は見出しにしない（1 画面の h1 は本文の 1 つ・K-138）
 //   使えない項目は role と aria-disabled と tabIndex で読み上げとキーボードに伝える（Enter でも動かない）
-//   767 以下はキャンバス MobileList どおり上の帯を出さない。鈴は本文の見出しの右（ShellBell を本文が置く）・自分のメニューは下のタブの「メニュー」の中
+//   767 以下にも上の帯を出す（高さ 48・D-147）：左に会社の印と名前、右に 探す（虫眼鏡を押すと帯の幅いっぱいに開く）・知らせの鈴・自分のメニュー。
+//   いまの場所と帯の題は出さない（題は本文の h1）。鈴は帯の 1 つだけで、本文の見出しの右には置かない。下のタブの「メニュー」の引き出しに自分のメニューは無い
 import { Menu as M } from "@base-ui/react/menu";
-import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, type LucideIcon } from "lucide-react";
-import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, X, type LucideIcon } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
@@ -59,7 +60,7 @@ const Icon = ({ name, size = 16 }: { name: string; size?: number }) => {
   return <C size={size} aria-hidden="true" strokeWidth={2} />;
 };
 
-/** 767 以下か（キャンバス MobileList の形にする幅） */
+/** 767 以下か（スマホの帯の形にする幅：探すは虫眼鏡のボタンから開く） */
 function useNarrow(): boolean {
   const [narrow, setNarrow] = useState(false);
   useEffect(() => {
@@ -72,18 +73,16 @@ function useNarrow(): boolean {
   return narrow;
 }
 
-interface BellState {
-  narrow: boolean;
+interface BellProps {
   notices?: number | undefined;
   onNotices?: (() => void) | undefined;
 }
-const BellContext = createContext<BellState>({ narrow: false });
 
-function BellButton({ notices, onNotices, inline }: Omit<BellState, "narrow"> & { inline?: boolean }) {
+function BellButton({ notices, onNotices }: BellProps) {
   return (
     <button
       type="button"
-      className={inline ? "k-icon-btn k-bell k-bell-inline" : "k-icon-btn k-bell"}
+      className="k-icon-btn k-bell"
       aria-label={notices ? `知らせ（${notices} 件）` : "知らせ"}
       aria-disabled={onNotices ? undefined : true}
       title={onNotices ? undefined : "知らせ（準備中）"}
@@ -93,12 +92,6 @@ function BellButton({ notices, onNotices, inline }: Omit<BellState, "narrow"> & 
       {notices ? <b aria-hidden="true">{notices}</b> : null}
     </button>
   );
-}
-
-/** 767 以下で本文の見出しの右に置く鈴（キャンバス MobileList）。広い画面では帯にあるので何も出さない */
-export function ShellBell() {
-  const b = useContext(BellContext);
-  return b.narrow ? <BellButton notices={b.notices} onNotices={b.onNotices} inline /> : null;
 }
 
 export interface Crumb {
@@ -268,26 +261,40 @@ export function Shell(p: ShellProps) {
       })
     : EMPTY_NAV;
   const searchBox = useRef<HTMLInputElement>(null);
+  const searchOpen = useRef<HTMLButtonElement>(null);
   const [railed, setRailed] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [sheet, setSheet] = useState(false);
+  // スマホの帯：探すの虫眼鏡を押すと、帯の幅いっぱいに探す欄が開く
+  const [searching, setSearching] = useState(false);
   useEffect(() => {
     setRailed(readPref(NAV_KEY) ?? false);
     setPanelOpen(readPref(PANEL_KEY) ?? window.matchMedia("(min-width: 1180px)").matches);
   }, []);
-  // ⌘K（Ctrl+K）で探す欄へ。探すが使えないあいだは何もしない
   const canSearch = Boolean(p.onSearch);
+  // スマホの帯の探す欄を開く：欄は開くまで描かれないので、開いた後の描き直しを待って焦点を入れる
+  const openSearch = () => {
+    setSearching(true);
+    requestAnimationFrame(() => searchBox.current?.focus());
+  };
+  // 閉じる（× と Esc）：欄も × も消えるので、焦点を虫眼鏡のボタンへ戻す（焦点を見失わせない）
+  const closeSearch = () => {
+    setSearching(false);
+    requestAnimationFrame(() => searchOpen.current?.focus());
+  };
+  // ⌘K（Ctrl+K）で探す欄へ。スマホの帯では欄を開いてから焦点を入れる。探すが使えないあいだは何もしない
   useEffect(() => {
     if (!canSearch) return;
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        searchBox.current?.focus();
+        if (narrow) openSearch();
+        else searchBox.current?.focus();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [canSearch]);
+  }, [canSearch, narrow]);
   const toggleNav = () => {
     setRailed((v) => (writePref(NAV_KEY, !v), !v));
   };
@@ -388,11 +395,6 @@ export function Shell(p: ShellProps) {
         <span className="k-pc-dot" aria-hidden="true" />
         <span className="k-nav-label">{p.bridgeConnected ? "PC つながっている" : "PC をつないでいない"}</span>
       </div>
-      {inSheet ? (
-        <div className="k-sheet-me">
-          <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
-        </div>
-      ) : null}
     </>
   );
 
@@ -409,7 +411,12 @@ export function Shell(p: ShellProps) {
         {sidebar(false)}
       </nav>
       <div className="k-body">
-        <header className="k-bar">
+        <header className="k-bar" data-searching={searching || undefined}>
+          <span className="k-ws-mark k-bar-ws" aria-hidden="true">
+            {p.workspace.initial}
+          </span>
+          {/* スマホの帯の左：会社の名前（画面の名前は本文の見出しにあるので重ねない） */}
+          <span className="k-bar-ws-name">{p.workspace.name}</span>
           <nav aria-label="いまの場所" className="k-crumbs">
             <ol>
               {p.crumbs.map((c, i) => (
@@ -434,6 +441,21 @@ export function Shell(p: ShellProps) {
           </nav>
           <b className="k-bar-title">{title}</b>
           <div className="k-bar-tools">
+            {narrow ? (
+              <button
+                ref={searchOpen}
+                type="button"
+                className="k-icon-btn k-bar-search-open"
+                aria-label={canSearch ? "探す" : "探す（準備中）"}
+                aria-disabled={canSearch ? undefined : true}
+                title={canSearch ? undefined : "探す（準備中）"}
+                onClick={() => {
+                  if (canSearch) openSearch();
+                }}
+              >
+                <Search size={18} aria-hidden="true" />
+              </button>
+            ) : null}
             <form role="search" className="k-search" data-disabled={canSearch ? undefined : true} onSubmit={search}>
               <label>
                 <Search size={14} aria-hidden="true" />
@@ -445,14 +467,28 @@ export function Shell(p: ShellProps) {
                   placeholder="チケット・ナレッジ・決定を探す"
                   disabled={!canSearch}
                   aria-disabled={canSearch ? undefined : true}
+                  onKeyDown={(e) => {
+                    // スマホの帯で開いた欄は Esc でも閉じる（広い幅の欄は開け閉めが無いので何もしない）。
+                    //   変換中（日本語を打っている途中）の Esc は変換をやめるためのキーなので閉じない（Safari は keyCode 229 で届く）
+                    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
+                    if (e.key === "Escape" && searching) {
+                      e.preventDefault();
+                      closeSearch();
+                    }
+                  }}
                 />
                 <span className="k-search-key" aria-hidden="true">
                   ⌘K
                 </span>
               </label>
+              {narrow ? (
+                <button type="button" className="k-icon-btn" aria-label="探すを閉じる" onClick={closeSearch}>
+                  <X size={18} aria-hidden="true" />
+                </button>
+              ) : null}
             </form>
-            {narrow ? null : <BellButton notices={p.notices} onNotices={p.onNotices} />}
-            {narrow ? null : <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />}
+            <BellButton notices={p.notices} onNotices={p.onNotices} />
+            <MeMenu me={nav.me} member={p.member} theme={p.theme} onSignOut={p.onSignOut} />
             {p.panel ? (
               <button
                 type="button"
@@ -469,9 +505,7 @@ export function Shell(p: ShellProps) {
         </header>
         <div className="k-work">
           <main id="k-main" className="k-main" tabIndex={-1}>
-            <BellContext.Provider value={{ narrow, notices: p.notices, onNotices: p.onNotices }}>
-              {p.children}
-            </BellContext.Provider>
+            {p.children}
           </main>
           {p.panel ? (
             <aside id="k-panel" aria-label="自分の AI" className="k-panel" hidden={!panelOpen}>

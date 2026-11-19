@@ -483,7 +483,10 @@ textarea.k-input {
   width: var(--k-c-dialog-form-width);
   max-width: calc(100vw - 2 * var(--k-s-lg));
   max-height: calc(100dvh - 2 * var(--k-s-xl));
-  overflow-y: auto;
+  /* 頭と足（ボタン）はいつも見え、中身だけがスクロールする（段 4 の下絵の代表の直し 2026-11-18：どの小窓でもボタンは固定） */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-sizing: border-box;
   padding: 0;
   background: var(--k-c-dialog-bg);
@@ -500,6 +503,7 @@ textarea.k-input {
 }
 .k-dialog-head {
   /* 頭（StModal）：題と右上の ×・下に線。本文と足は左右 18px */
+  flex: none;
   display: flex;
   align-items: center;
   gap: var(--k-s-sm);
@@ -551,6 +555,10 @@ textarea.k-input {
   min-height: var(--k-c-dialog-connect-button-height);
 }
 .k-dialog-body {
+  /* 中身だけがスクロールする（頭と足は固定） */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--k-c-dialog-body-gap);
@@ -565,6 +573,7 @@ textarea.k-input {
   color: var(--k-on-surface-variant);
 }
 .k-dialog-actions {
+  flex: none;
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;

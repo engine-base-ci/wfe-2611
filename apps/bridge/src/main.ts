@@ -12,9 +12,9 @@ import { join, dirname } from "node:path";
 import { startLocalServer } from "./local";
 import { BRIDGE_UA, claimCode, defaultDeviceLabel, loadMachineId } from "./pairing";
 import { BRIDGE_PROTOCOL, startLoop, type Browser, type LoopState } from "./loop";
-import { stopCurrent, isRunning, findClaude, warmShellPath, chromeState } from "./runner";
-import { brokenInstall, installClaude } from "./install-claude";
-import { authStatus, cancelLogin, startLogin, submitCode } from "./login";
+import { stopCurrent, isRunning, warmShellPath, chromeState } from "./runner";
+import { claudeChecks, installClaude, installProgress, type Check } from "./install-claude";
+import { cancelLogin, startLogin, submitCode } from "./login";
 import { startUpdater, type Updater } from "./update";
 import { browserCheck, findPlaywrightMcp } from "./browser";
 import { version as VERSION } from "../package.json";
@@ -36,6 +36,8 @@ interface State {
   sessionId?: string;
   /** AI が使うブラウザ（D-119.2）。既定は本人の Chrome（Claude in Chrome） */
   browser?: Browser;
+  /** Kaname がこの PC に付けた番号（生きている知らせの答えで覚える）。この PC の口 /ping が画面に返す。秘密ではない */
+  deviceId?: string;
 }
 const BROWSERS: readonly Browser[] = ["chrome", "dedicated", "off"];
 let updater: Updater | null = null;
@@ -97,29 +99,8 @@ async function claim(
   return { ok: true };
 }
 
-/** 自己診断：Bridge が仕事をできる状態かを自分で確かめて、結果を画面に返す（手順 4） */
-interface Check {
-  name: string;
-  ok: boolean;
-  detail: string;
-  /** 直し方（人に見せるボタンの言葉が変わる）。install＝入れる／repair＝取り直す */
-  fix?: "install" | "repair" | "login" | null;
-}
-/** ログインできているか。claude 自身に聞くので速く、本人のサブスクを消費しない */
-async function loggedIn(bin: string): Promise<Check> {
-  const name = "Claude Code にログインできている";
-  if (!bin) return { name, ok: false, detail: "先に Claude Code を入れてください", fix: "install" };
-  const st = await authStatus();
-  return {
-    name,
-    ok: st.loggedIn,
-    detail: st.loggedIn
-      ? "できています"
-      : "まだログインしていません。下の「ログインする」を押してください（ターミナルは開きません）",
-    fix: st.loggedIn ? null : "login",
-  };
-}
-
+/** 自己診断：Bridge が仕事をできる状態かを自分で確かめて、結果を画面に返す（手順 4）。
+ *  Claude Code の 2 行（ある・ログインできている）は install-claude.ts の claudeChecks（electron を読まずに試せる） */
 async function selfCheck(): Promise<Check[]> {
   const out: Check[] = [];
   const which = async (cmd: string) => {
@@ -130,21 +111,7 @@ async function selfCheck(): Promise<Check[]> {
       return "";
     }
   };
-  // 「無い」と「入っているが壊れている」は直し方が違う。人に同じ文言を見せない。
-  // 実例：npm の claude が 500 バイトのエラー用の紙だけ残り、本体が落ちてきていない（取り直しで直る）
-  const claude = (await findClaude()) ?? "";
-  const broken = claude ? null : await brokenInstall();
-  out.push({
-    name: "本人のサブスクの Claude Code がある",
-    ok: !!claude,
-    detail: claude
-      ? claude
-      : broken
-        ? `入ってはいますが、本体が落ちてきていません（${broken.replace("/install.cjs", "")}）。下の「Claude Code を取り直す」で直ります`
-        : "この PC にありません。下の「Claude Code を入れる」で入れられます（置き場が違うなら KANAME_CLAUDE_BIN で指せます）",
-    fix: claude ? null : broken ? "repair" : "install",
-  });
-  out.push(await loggedIn(claude));
+  out.push(...(await claudeChecks()));
   const chrome =
     process.platform === "darwin"
       ? existsSync("/Applications/Google Chrome.app")
@@ -288,6 +255,8 @@ void app.whenReady().then(() => {
     loginStart: () => startLogin(),
     loginCode: (code: string) => submitCode(code),
     loginCancel: () => cancelLogin(),
+    installProgress,
+    deviceId: () => readState().deviceId,
   });
   // 仕事の間だけ OS に「寝ないで」を頼む（D-124.1）。画面は消えてよい・ふたを閉じたら従う・電源の設定は変えない
   const awake = createAwake(powerSaveBlocker);
@@ -302,6 +271,7 @@ void app.whenReady().then(() => {
       const rest = { ...st, connected: false };
       delete rest.sessionId; // 覚えている鍵を捨てる
       delete rest.connectedAt;
+      delete rest.deviceId; // つなぎ直すと別の番号になる
       writeState(rest);
       for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:state", { connected: false });
     },
@@ -312,6 +282,8 @@ void app.whenReady().then(() => {
       writeState({ ...readState(), browser: b });
       for (const w of BrowserWindow.getAllWindows()) w.webContents.send("bridge:browser", b);
     },
+    // 同じ番号を知らせ直さないのは輪の側（loop.ts）。ここは受けた番号を書くだけ（入口には分かれ道を書かない）
+    onDeviceId: (id) => writeState({ ...readState(), deviceId: id }),
     dataDir: app.getPath("userData"),
     onOutdated: () => void updater?.checkNow(),
     onChange: (s) => {

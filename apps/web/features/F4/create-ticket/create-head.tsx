@@ -3,8 +3,7 @@
 //   作り方は「自分で書く」だけが使える。AI と話して作る・過去のチケットから複製 は出すが押せない（D-145.5・D-144.1：「準備中」の字は目に見せず title にだけ）
 //   保存の状態は、開いた直後（まだ残していない）は空。サーバーに残したら答えの saved_at を日本時間で、残せなかったら短く「下書きを残せませんでした」
 //     （詳しい知らせは本文の箱「下書きをサーバーに残せませんでした」。同じ文を 2 か所に出さない・answer=d4790d24d5e2・D-128.62）
-//   幅 767 以下は外枠の鈴を見出しの右に置く（ShellBell・K-138）
-import { ShellBell } from "@/components/k/shell";
+//   知らせの鈴は外枠の上の帯にある（どの幅でも・D-147）。この帯には置かない
 
 export type SaveView = { kind: "none" } | { kind: "saved"; at: string } | { kind: "failed" };
 
@@ -40,7 +39,6 @@ export function CreateHead({ save }: { save: SaveView }) {
       <span className="k-create-saved" role="status" aria-label="下書きの保存">
         {text}
       </span>
-      <ShellBell />
     </header>
   );
 }
