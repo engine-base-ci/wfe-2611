@@ -144,10 +144,13 @@ export function CredentialsBody(p: CredentialsBodyProps) {
           { value: "personal", label: "自分だけ", panel: p.tab === "personal" ? <List p={p} /> : null },
         ]}
       />
-      <SettingNote>
-        ワークスペース（{p.workspaceName}）の物は、ここの分身みんなが使えます。自分だけ（{p.personalName}
-        ）の物は、あなたの分身の実行でだけ使えます。同じ名前が両方にあれば、自分だけの方を使います
-      </SettingNote>
+      {/* 注は li なので ul の中に置く（一覧の項目として読み上げられる・カードの中の注と同じ並びの形） */}
+      <ul className="k-set-list">
+        <SettingNote>
+          ワークスペース（{p.workspaceName}）の物は、ここの分身みんなが使えます。自分だけ（{p.personalName}
+          ）の物は、あなたの分身の実行でだけ使えます。同じ名前が両方にあれば、自分だけの方を使います
+        </SettingNote>
+      </ul>
     </>
   );
 }

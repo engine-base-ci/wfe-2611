@@ -66,23 +66,35 @@ export interface MockEntry {
   id: string;
   screen: "credentials";
   label: string;
+  /** この状態を本物にする画面の葉（canvas_field_gate とその葉の頭の欄 mock: が突き合わせる） */
+  ticket: string;
 }
 
 export const MOCKS: readonly MockEntry[] = [
-  { id: "cred-list", screen: "credentials", label: "一覧（使える・コードが要る・期限が近い・パスワードが違う）" },
-  { id: "cred-empty", screen: "credentials", label: "まだ預けていない" },
-  { id: "cred-personal", screen: "credentials", label: "自分だけのタブ" },
-  { id: "cred-failed", screen: "credentials", label: "一覧を読めない" },
-  { id: "cred-checking", screen: "credentials", label: "預けた直後：確かめている" },
-  { id: "cred-no-pc", screen: "credentials", label: "PC がつながっていない：つながると確かめる" },
-  { id: "cred-forbidden", screen: "credentials", label: "規約で禁止のサービス：試さない" },
-  { id: "cred-add-login", screen: "credentials", label: "預ける：ログイン情報" },
-  { id: "cred-add-key", screen: "credentials", label: "預ける：API キー・値" },
-  { id: "cred-add-error", screen: "credentials", label: "預ける：名前の形が違う・同じ名前がある" },
-  { id: "cred-stepup", screen: "credentials", label: "預ける前の本人確認の取り直し" },
-  { id: "cred-edit", screen: "credentials", label: "上書き（ログイン情報：ID とパスワードを両方入れ直す）" },
-  { id: "cred-remove", screen: "credentials", label: "消す" },
-  { id: "cred-code", screen: "credentials", label: "確かめの途中：SMS のコードを入れる" },
+  {
+    id: "cred-list",
+    screen: "credentials",
+    label: "一覧（使える・コードが要る・期限が近い・パスワードが違う）",
+    ticket: "K-356",
+  },
+  { id: "cred-empty", screen: "credentials", label: "まだ預けていない", ticket: "K-356" },
+  { id: "cred-personal", screen: "credentials", label: "自分だけのタブ", ticket: "K-356" },
+  { id: "cred-failed", screen: "credentials", label: "一覧を読めない", ticket: "K-356" },
+  { id: "cred-checking", screen: "credentials", label: "預けた直後：確かめている", ticket: "K-357" },
+  { id: "cred-no-pc", screen: "credentials", label: "PC がつながっていない：つながると確かめる", ticket: "K-357" },
+  { id: "cred-forbidden", screen: "credentials", label: "規約で禁止のサービス：試さない", ticket: "K-357" },
+  { id: "cred-add-login", screen: "credentials", label: "預ける：ログイン情報", ticket: "K-372" },
+  { id: "cred-add-key", screen: "credentials", label: "預ける：API キー・値", ticket: "K-372" },
+  { id: "cred-add-error", screen: "credentials", label: "預ける：名前の形が違う・同じ名前がある", ticket: "K-372" },
+  { id: "cred-stepup", screen: "credentials", label: "預ける前の本人確認の取り直し", ticket: "K-372" },
+  {
+    id: "cred-edit",
+    screen: "credentials",
+    label: "上書き（ログイン情報：ID とパスワードを両方入れ直す）",
+    ticket: "K-357",
+  },
+  { id: "cred-remove", screen: "credentials", label: "消す", ticket: "K-357" },
+  { id: "cred-code", screen: "credentials", label: "確かめの途中：SMS のコードを入れる", ticket: "K-357" },
 ];
 
 function Page({

@@ -6,10 +6,11 @@
 //   キャンバスに在る物は機能がまだでも出す（D-145.9）：作っていない項目・探す欄・知らせの鈴は、正本の「使えない状態」の薄さで押せない形にする。
 //   目に見える「準備中」の字は出さない（指を置くと title で読める・D-144.1）。帯の題は見出しにしない（1 画面の h1 は本文の 1 つ・K-138）
 //   使えない項目は role と aria-disabled と tabIndex で読み上げとキーボードに伝える（Enter でも動かない）
-//   767 以下はキャンバス MobileList どおり上の帯を出さない。鈴は本文の見出しの右（ShellBell を本文が置く）・自分のメニューは下のタブの「メニュー」の中
+//   767 以下にも上の帯を出す（高さ 48・D-147）：左に会社の印と名前、右に 探す（虫眼鏡を押すと帯の幅いっぱいに開く）・知らせの鈴・自分のメニュー。
+//   いまの場所と帯の題は出さない（題は本文の h1）。鈴は帯の 1 つだけで、本文の見出しの右には置かない。下のタブの「メニュー」の引き出しに自分のメニューは無い
 import { Menu as M } from "@base-ui/react/menu";
 import { Bell, CircleUser, Inbox, LifeBuoy, PanelLeft, PanelRight, Search, X, type LucideIcon } from "lucide-react";
-import { createContext, useContext, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BUILT_ROUTES } from "@/lib/built-routes";
 import type { RoleId } from "@/lib/nav";
 import type { Theme } from "@/lib/theme";
@@ -59,7 +60,7 @@ const Icon = ({ name, size = 16 }: { name: string; size?: number }) => {
   return <C size={size} aria-hidden="true" strokeWidth={2} />;
 };
 
-/** 767 以下か（キャンバス MobileList の形にする幅） */
+/** 767 以下か（スマホの帯の形にする幅：探すは虫眼鏡のボタンから開く） */
 function useNarrow(): boolean {
   const [narrow, setNarrow] = useState(false);
   useEffect(() => {
@@ -72,14 +73,12 @@ function useNarrow(): boolean {
   return narrow;
 }
 
-interface BellState {
-  narrow: boolean;
+interface BellProps {
   notices?: number | undefined;
   onNotices?: (() => void) | undefined;
 }
-const BellContext = createContext<BellState>({ narrow: false });
 
-function BellButton({ notices, onNotices }: Omit<BellState, "narrow">) {
+function BellButton({ notices, onNotices }: BellProps) {
   return (
     <button
       type="button"
@@ -93,12 +92,6 @@ function BellButton({ notices, onNotices }: Omit<BellState, "narrow">) {
       {notices ? <b aria-hidden="true">{notices}</b> : null}
     </button>
   );
-}
-
-/** 前は 767 以下で本文の見出しの右に鈴を置いた（キャンバス MobileList）。2026-11-18 代表の指摘で、スマホも上の帯に鈴・探す・自分のアイコンを置く形にしたので、どの幅でも何も出さない（呼んでいる画面は、その画面を直す葉が外す） */
-export function ShellBell() {
-  useContext(BellContext);
-  return null;
 }
 
 export interface Crumb {
@@ -497,9 +490,7 @@ export function Shell(p: ShellProps) {
         </header>
         <div className="k-work">
           <main id="k-main" className="k-main" tabIndex={-1}>
-            <BellContext.Provider value={{ narrow, notices: p.notices, onNotices: p.onNotices }}>
-              {p.children}
-            </BellContext.Provider>
+            {p.children}
           </main>
           {p.panel ? (
             <aside id="k-panel" aria-label="自分の AI" className="k-panel" hidden={!panelOpen}>

@@ -15,7 +15,6 @@ import { messageOf } from "./message";
 import { ApproveConfirm } from "./approve-confirm";
 import { ReturnDialog } from "./return-dialog";
 import { getToken } from "@/lib/api/client";
-import { ShellBell } from "@/components/k/shell";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { QueueCard } from "./queue-table";
 import "./approve.css";
@@ -87,7 +86,6 @@ export function ApprovalsPage() {
           {q.data && !q.isError && rows.length > 0 ? (
             <Button className="k-ap-next" aria-disabled="true" tabIndex={-1}>{`続けて裁く（${total} 件）`}</Button>
           ) : null}
-          <ShellBell />
         </header>
         <div className="k-ap-body">
           {q.isError ? (
