@@ -100,13 +100,13 @@ function noticeOf(r: CallErr): string {
   return INVITE_NOTICE.down;
 }
 
-/** 422 の文を欄に分ける（口は誤りを 1 つずつ返す）。欄が分からなければ null */
+/** 422 の文を欄に分ける（口はいまは誤りを 1 つずつ返す。2 つ返ってきたら 2 つとも出す）。欄が分からなければ null */
 function errorsOf(r: CallErr): Errors | null {
   const text = r.message ?? catalogText(r.code);
   const name = r.fields["name"] ?? (r.code === "E-VAL-007" ? text : undefined);
-  if (name) return { name };
   const password = r.fields["password"] ?? (/^E-VAL-(005|011|026)$/.test(r.code) ? text : undefined);
-  return password ? { password } : null;
+  if (!name && !password) return null;
+  return { ...(name ? { name } : {}), ...(password ? { password } : {}) };
 }
 
 export function InvitePage() {
