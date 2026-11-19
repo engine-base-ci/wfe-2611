@@ -24,6 +24,11 @@ describe("POST /api/v1/auth/invitations/:token/accept", () => {
     // 本物の試験：apps/api/test/features/F2/invitation-accept-new.test.ts の「K332-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F2/invitation-accept-new.test.ts", "utf8")).toContain("K332-API-011");
   });
+  it("test_post_auth_invitations_token_accept_rejected_403_2", () => {
+    // UNWANTED: IF ログイン中の人のメールが招待の宛てと違うなら、Kaname は 403 と E-INV-005 を返し、所属を作らず招待も使わず、その画面も切り替えない
+    // 本物の試験：apps/api/test/features/F2/invitation-accept-signed.test.ts の「K333-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F2/invitation-accept-signed.test.ts", "utf8")).toContain("K333-API-005");
+  });
   it("test_post_auth_invitations_token_accept_not_found", () => {
     // UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、何も作らない
     // 本物の試験：apps/api/test/features/F2/invitation-accept-new.test.ts の「K332-API-007」（同じ CI の G3 で流れる）
@@ -33,6 +38,11 @@ describe("POST /api/v1/auth/invitations/:token/accept", () => {
     // UNWANTED: IF 宛てのメールにもうアカウントがあるなら、Kaname は 409 と E-INV-006 を返し、利用者を作らず招待も使わない
     // 本物の試験：apps/api/test/features/F2/invitation-accept-new.test.ts の「K332-API-008」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F2/invitation-accept-new.test.ts", "utf8")).toContain("K332-API-008");
+  });
+  it("test_post_auth_invitations_token_accept_conflict_2", () => {
+    // UNWANTED: IF ログイン中の人がもうそのワークスペースに入っているなら、Kaname は 409 と E-INV-007 を返し、役割を変えず招待も使わない
+    // 本物の試験：apps/api/test/features/F2/invitation-accept-signed.test.ts の「K333-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F2/invitation-accept-signed.test.ts", "utf8")).toContain("K333-API-006");
   });
   it("test_post_auth_invitations_token_accept_gone", () => {
     // UNWANTED: IF 招待が取り消し・期限切れ・使われたなら、Kaname は 410 とその理由の番号を返し、利用者を作らない

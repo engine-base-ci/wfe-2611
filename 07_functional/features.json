@@ -77,7 +77,9 @@
     "E-TO-005",
     "E-INV-004",
     "E-INV-003",
-    "E-INV-006"
+    "E-INV-006",
+    "E-INV-005",
+    "E-INV-007"
    ],
    "policies": [
     "C2",
@@ -504,7 +506,9 @@
     "E-INV-002",
     "E-INV-004",
     "E-INV-003",
-    "E-INV-006"
+    "E-INV-006",
+    "E-INV-005",
+    "E-INV-007"
    ],
    "policies": [
     "C2"
