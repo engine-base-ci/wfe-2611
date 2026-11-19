@@ -117,11 +117,16 @@ class Parts(unittest.TestCase):
         self.assertIn("_base.txt", str(e.exception))
 
     def test_K376_GL_006_names(self) -> None:
-        for bad in ("extra.txt", "k-1.txt", "K-1.py", "K-1.txt.bak"):
+        for bad in ("extra.txt", "k-1.txt", "K-1.py", "K-1.txt.bak", "K-007.txt", "K-0.txt"):
             d = write(Path(self.tmp.name) / f"bad-{bad}", {"_base.txt": "cmd a\n", bad: "cmd x\n"})
             with self.assertRaises(GateListError, msg=bad) as e:
                 gate_cmds.commands(d)
             self.assertIn(bad, str(e.exception))
+        sub = write(Path(self.tmp.name) / "bad-dir", {"_base.txt": "cmd a\n"})
+        (sub / "K-2.txt").mkdir()
+        with self.assertRaises(GateListError) as e3:
+            gate_cmds.commands(sub)
+        self.assertIn("K-2.txt", str(e3.exception))
         ok = write(self.dir, {"_base.txt": "cmd a\n", "README.md": "cmd readme\n", ".DS_Store": "x"})
         self.assertEqual(gate_cmds.commands(ok), ["cmd a"])
 
@@ -137,8 +142,10 @@ class Parts(unittest.TestCase):
     def test_K376_GL_008_one_command_per_line(self) -> None:
         write(self.dir, {"_base.txt": "# 説明\n\n  cmd a  \n", "K-2.txt": "cmd b\n"})
         self.assertEqual(gate_cmds.commands(self.dir), ["cmd a", "cmd b"])
-        for joined in ("cmd x && cmd y", "cmd x; cmd y", "cmd x || cmd y"):
-            d = write(Path(self.tmp.name) / f"j{len(joined)}{joined[6]}", {"_base.txt": "cmd a\n", "K-9.txt": joined + "\n"})
+        joins = ("cmd x && cmd y", "cmd x; cmd y", "cmd x || cmd y", "cmd x  # メモ", "cmd x | tee y", "cmd x & cmd y",
+                 "cmd `x`", "cmd $(x)")
+        for i, joined in enumerate(joins):
+            d = write(Path(self.tmp.name) / f"j{i}", {"_base.txt": "cmd a\n", "K-9.txt": joined + "\n"})
             with self.assertRaises(GateListError, msg=joined) as e:
                 gate_cmds.commands(d)
             self.assertIn("K-9.txt", str(e.exception))
@@ -157,8 +164,11 @@ class Parts(unittest.TestCase):
         repo.mkdir()
 
         def git(*args: str) -> subprocess.CompletedProcess:
-            return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid", *args], cwd=repo,
+            done = subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid",
+                                   "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", *args], cwd=repo,
                                   capture_output=True, text=True)
+            self.assertEqual(done.returncode, 0, f"git {' '.join(args)}: {done.stdout}{done.stderr}")
+            return done
 
         git("init", "-q", "-b", "main")
         write(repo / "g.d", {"_base.txt": "cmd a\nlast one\n"})
@@ -174,6 +184,8 @@ class Parts(unittest.TestCase):
         merged = git("merge", "-q", "--no-edit", "tb")
         self.assertEqual(merged.returncode, 0, merged.stdout + merged.stderr)
         self.assertEqual(gate_cmds.commands(repo / "g.d", last="last one"), ["cmd a", "cmd one", "cmd two", "last one"])
+        self.assertEqual(sorted(git("ls-files", "g.d").stdout.split()), ["g.d/K-1.txt", "g.d/K-2.txt", "g.d/_base.txt"])
+        self.assertEqual(git("status", "--porcelain").stdout, "", "取り込んだ後に作業ツリーに残り物が無い")
 
 
 class Real(unittest.TestCase):
@@ -183,7 +195,8 @@ class Real(unittest.TestCase):
         self.assertEqual(g65[-1], K248)
         self.assertIn(ME, g65)
         self.assertEqual(Path(G65_DIR / "K-376.txt").read_text(encoding="utf-8").split(), ME.split(), "このチケットの分は K-376.txt")
-        self.assertEqual(gate_cmds.commands(G47_DIR), OLD_G47, "G47 は移す前と同じ命令が同じ順")
+        g47 = gate_cmds.commands(G47_DIR)
+        self.assertEqual(g47[:len(OLD_G47)], OLD_G47, "G47 は _base の分が移す前と同じ命令が同じ順（後ろはチケットごとの足し）")
 
     def test_K376_GL_012_builder_and_generated(self) -> None:
         text = BUILDER.read_text(encoding="utf-8")
@@ -218,7 +231,9 @@ class Real(unittest.TestCase):
         for d in ("scripts/ci/g65.d/**", "scripts/ci/g47.d/**"):
             self.assertIn(d, full_ci)
             self.assertIn(d, base_ci)
-        self.assertIn("05_flow/build_testplan.py", full_ci)
+        for f in ("05_flow/build_testplan.py", "scripts/ci/gate_cmds.py"):
+            self.assertIn(f, full_ci, "作り手と作り手が読む部品は CI の定義の作り手の扱い")
+            self.assertIn(f, base_ci)
         for f in ("scripts/ci/g65.d/K-1.txt", "scripts/ci/g47.d/_base.txt"):
             self.assertTrue(ci_scope.match(f, full_ci), f)
             self.assertTrue(cut_check._common(f), f)
