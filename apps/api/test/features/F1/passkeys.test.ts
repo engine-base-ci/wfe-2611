@@ -731,7 +731,7 @@ describe("K-309 守り", () => {
     const r = await req("PATCH", pk(id), { name: "61 回目" }, { headers: bearer(t) });
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBe(60);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 });
 
 describe("K-309 本人確認の取り直しをパスキーで（stepUp・代表の答え ①）", () => {

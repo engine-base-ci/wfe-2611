@@ -149,7 +149,7 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 | G53 | 試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140） | `python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py` | spec |  |
 | G54 | 決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147） | `cp 01_hearing/要件一覧.md $RUNNER_TEMP/req.md && python3 scripts/ci/trace_gate.py --index && cmp $RUNNER_TEMP/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py` | spec |  |
 | G55 | No Ticket, No Commit（コミットにチケットの番号・D-128.147・K-47） | `python3 scripts/ci/ticket_commit_gate.py --selftest && python3 scripts/ci/ticket_commit_gate.py` | spec |  |
-| G56 | 取り込む順（depends_on の実装が先に枝にある・K-94） | `python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"` | spec-2 |  |
+| G56 | 取り込む順（depends_on の実装が先に枝にある・K-94） | `python3 scripts/ci/k341_order_gate_speed_test.py && python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"` | spec-2 |  |
 | G62 | CI の無駄を止める台本の試験（範囲の表の spec・層の棚卸しの elsewhere・部品の出た日の記録・K-156） | `python3 scripts/ci/ci_lean_test.py` | spec |  |
 | G57 | チケットの CI の範囲の台本の試験（K-107） | `python3 scripts/ci/ci_scope_test.py && python3 scripts/ci/ticket_affects_test.py` | spec |  |
 | G60 | 決める人の決定の行が、決める人への問い合わせの答えの記録と結びつく（130 番の決定から照らす・129 番までは答えの記録が無いので外す・K-103・L-014） | `python3 scripts/ci/decision_source_gate.py --selftest && python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` | spec |  |

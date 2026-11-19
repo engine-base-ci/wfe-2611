@@ -190,7 +190,7 @@ test("K316-UI-005 ロック中（429・E-AUTH-002・retry_after_sec 900）：新
   await expect(alertBox(page)).toHaveCount(0);
 });
 
-test("K316-UI-006 送りすぎ（429・回数の守り・retry_after_sec 42）：「続けて押されました。42 秒たってから、もう一度押してください」が出て「次へ」は押せない。42 秒たつと押せる", async ({
+test("K316-UI-006 送りすぎ（429・回数の守り・retry_after_sec 42）：正本 E-LIM-005 の文「送りすぎです。42秒たってから、もう一度お試しください」が出て「次へ」は押せない。42 秒たつと押せる", async ({
   page,
 }) => {
   await page.clock.install({ time: new Date("2026-11-20T00:00:00Z") });
@@ -198,7 +198,7 @@ test("K316-UI-006 送りすぎ（429・回数の守り・retry_after_sec 42）�
   m.on.signIn = () => fail(429, "RATE_LIMITED", "回数の上限です", { retry_after_sec: 42 });
   await open(page);
   await signIn(page);
-  await expect(alertBox(page)).toHaveText("続けて押されました。42 秒たってから、もう一度押してください");
+  await expect(alertBox(page)).toHaveText("送りすぎです。42秒たってから、もう一度お試しください");
   await expect(nextBtn(page)).toBeDisabled();
   await page.clock.runFor(43_000);
   await expect(nextBtn(page)).toBeEnabled();

@@ -517,7 +517,7 @@ describe("K-312 守り", () => {
     const r = await change(t, "wrong-horse-battery-9", NEW_PW);
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBe(60);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 
   it("K312-API-014 ログ：変える間（通ったとき・今のパスワードが違うとき）に、今のパスワードも新しいパスワードも出ない", async () => {
     const out: string[] = [];
