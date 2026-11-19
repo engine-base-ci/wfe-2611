@@ -105,7 +105,8 @@ for (m, p), e in sorted(eps.items(), key=lambda kv: (kv[0][1], ["GET", "POST", "
     _ld = getattr(_sa, "LIST_DETAILS", {}).get(e.get("operation_id"))   # 一覧の口の細目（K-92）：問い合わせと答えの meta をその口の形に
     if _ld:
         e["inputs"]["query"] = list(_sa.QUERIES.get(e["operation_id"], ["scope_id"])) + ["cursor", "limit"] + (["sort"] if _ld.get("sort", True) else [])
-        e["outputs_2xx"]["body"] = f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}[], meta: {_ld['meta']} }}"
+        _meta = f", meta: {_ld['meta']}" if "meta" in _ld else ""   # meta を返さない一覧（K-351）は data だけ
+        e["outputs_2xx"]["body"] = f"{{ data: {''.join(w.capitalize() for w in tname.split('_'))}[]{_meta} }}"
     e["id"] = f"EP-{len(endpoints)+1:03d}"; e["feature_id"] = e["features"][0] if e["features"] else None
     endpoints.append(e)
 # 行為 → endpoint の逆被覆

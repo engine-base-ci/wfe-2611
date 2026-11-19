@@ -161,7 +161,7 @@ erDiagram
 | `action_runs` | `<scoped>` / `task_id` / `action_kind_id` / **`choke_point_id`** / `service_id` / `procedure_id` / `status_id`（running／done／stopped／cancelled） / `started_at` / `finished_at` / `tokens_in` / `tokens_out` / `cost` / `error_summary`（止まった理由） / **`ai_employee_id`** / **`duty_id`**（どのAI社員がどの担当業務を ← D-116.4） / **`mode_id`**（test＝外に出ない／live ← D-028.2） / **`bridge_job_id`**（本人の PC で動いた仕事。成果物は artifacts.source_job_id で結ぶ ← D-121.2） | **`choke_point_id` を記録**（どの関門を通ったか） |
 | `service_registry` | `<common>` / `name` / `domain` / `automation_verdict_id` / `notes` | `verdict` = api / allowed / unspecified / **forbidden** / **bank**。forbidden と bank の `domain` は、仕事を渡すたびに Bridge が本人の Claude Code に「使わない道具」とフックの一覧として渡す（D-107.1〜D-107.3）。見抜けない形は `notes` に書く（D-107.6） |
 | `credential_kinds` | `key` / `label` | **マスタ**（password_totp / oauth2 / api_key / basic / email_otp / saml）← **E15** |
-| `credentials` | `<scoped>` / `service_id` / **`service_name`**（本人が入れたサービス名 ← D-108.4）/ **`service_domain`**（宛先 ← D-108.4）/ `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ**。一覧は `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3） |
+| `credentials` | `<scoped>` / **`name`**（名前で管理 ← D-125.148。英大文字で始まり英大文字・数字・_ で 64 文字まで）/ **`description`** / **`layer`**（workspace ／ personal ← D-125.149）/ `service_id` / **`service_name`**（本人が入れたサービス名 ← D-108.4）/ **`service_domain`**（宛先 ← D-108.4）/ `kind_id`（＋ llm_api_key・D-083.3）/ `provider_id`（anthropic ／ openai ／ google）/ **`vault_ref`** / `owner_member_id` / `revoked_at` | **実体は持たない。vault の参照 ID のみ**。一覧は契約の口 `listCredentials`（名前と使い方だけ・K-351）。前の一覧 `app.my_credentials`（サービス名・台帳の可否・状態だけ・D-108.3）は前の道すじを消すまで残る。名前の一意：ワークスペースは会社の中で 1 つ・個人は持ち主の中で 1 つ（消した物・失効した物は数えない）。守り：個人の物は持ち主だけが読む・書く／ワークスペースの物は同じ会社の人が読み、書くのは `credentials` のワークスペース全体の edit を持つ人だけ（D-128.57 ①） |
 
 ---
 
@@ -466,7 +466,7 @@ erDiagram
 - `clones`：`auto_memory`（自動で覚える。既定 入・D-128.90）。許可のモードは `members.agent_permission_mode` のまま
 
 自分の設定で足す列（D-128.55・D-128.57・D-128.58）：
-- `credentials`（預けたログイン情報）：`scope_id`（自分・層・ワークスペース）/ `destinations text[]`（使える場所：ドメイン・API の宛先。ここ以外では実行器が入れない・送らない）/ `read_only`（見るだけ）/ `client_id` / `purpose` / `expires_at` / `use_count` / `last_used_at`。取り出せるのは、持ち主（自分のものは本人の分身の実行・層やワークスペースのものはその範囲の人の実行）の PC の実行器だけで、宛先が合うときだけ（D-128.57）
+- `credentials`（預けたログイン情報）：`name`（名前）/ `description`（説明）/ `layer`（workspace ／ personal。個人の物は持ち主だけが読む・書く・K-351）/ `scope_id`（自分・層・ワークスペース）/ `destinations text[]`（使える場所：ドメイン・API の宛先。ここ以外では実行器が入れない・送らない）/ `read_only`（見るだけ）/ `client_id` / `purpose` / `expires_at` / `use_count` / `last_used_at`。取り出せるのは、持ち主（自分のものは本人の分身の実行・層やワークスペースのものはその範囲の人の実行）の PC の実行器だけで、宛先が合うときだけ（D-128.57）
 - `members`：`call_name`（呼ばれ方・20 文字）/ `avatar_ref` / `language` / `theme` / `week_start` / `timezone` / `setup_dismissed_at`（はじめにやることを閉じた）。名前は 100 文字まで（D-128.58）
 
 

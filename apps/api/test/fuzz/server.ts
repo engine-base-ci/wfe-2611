@@ -16,6 +16,8 @@ import { migrateAuth } from "@kaname/auth/migrate";
 import { createAuth } from "@kaname/auth";
 import { ActionGateway, RateLimiter } from "@kaname/actions";
 import type { Config } from "@kaname/config";
+import { randomBytes } from "node:crypto";
+import { MemoryVault, SecretsGateway } from "@kaname/secrets";
 
 const port = Number(process.env["FUZZ_PORT"] ?? 4791);
 const h = await makeHarness();
@@ -58,6 +60,8 @@ const fuzzDeps: HookDeps = {
   repo: h.repo,
   actions,
   objects,
+  // 預かり先の関門は外に出さないメモリの保管先（的の設定に env は無いので開発の扱い・K-351）
+  secrets: new SecretsGateway(h.repo, new MemoryVault(), randomBytes(32)),
   config: fuzzConfig,
 };
 Object.assign(h.hooks, buildHooks(HOOK_MODULES, fuzzDeps, "fuzz"));
