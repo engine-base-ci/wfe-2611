@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 
 BASE = "_base.txt"
-TICKET = re.compile(r"^K-([1-9]\d*)\.txt$")
+TICKET = re.compile(r"^K-([1-9][0-9]*)\.txt$")   # ASCII の数字だけ（全角の数字は止める）
 SKIP = ("README.md",)
 JOINERS = (";", "|", "&", "#", "`", "$(")
 
