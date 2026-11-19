@@ -361,6 +361,11 @@
   clip: rect(0 0 0 0);
   margin: 0;
 }
+/* 会社の印と名前は広い画面では左のメニューにあるので、帯ではスマホだけ出す */
+.k-bar-ws,
+.k-bar-ws-name {
+  display: none;
+}
 .k-bar-tools {
   margin-left: auto;
   display: flex;
@@ -530,30 +535,71 @@
   display: none;
 }
 @media (max-width: 767px) {
-  /* キャンバス MobileList どおり上の帯は出さない（見出しは本文の 1 つ・鈴は本文の見出しの右・自分のメニューは下のタブの「メニュー」） */
-  .k-nav,
-  .k-bar {
+  /* 左のメニューは下のタブとメニューの引き出しへ。上の帯は残し（2026-11-18 代表）、会社の印・画面の題・探す・知らせ・自分のアイコンを置く */
+  .k-nav {
     display: none;
   }
-  /* 本文の見出しの右の鈴はキャンバス MobileList どおり 44px・本文の字の色 */
-  .k-bell-inline {
-    flex: none;
-    width: 44px;
-    height: 44px;
-    margin-left: auto;
-    color: var(--k-on-surface);
+  .k-bar {
+    gap: var(--k-s-sm);
+    padding: 0 var(--k-s-sm) 0 var(--k-s-md);
   }
-  /* 長い見出しでも鈴が下の行に落ちない（見出しが縮む） */
-  .k-shell :has(> .k-bell-inline) {
-    flex-wrap: nowrap;
+  .k-bar-ws {
+    display: grid;
   }
-  .k-shell :has(> .k-bell-inline) > h1 {
+  .k-crumbs {
+    display: none;
+  }
+  .k-bar-ws-name {
+    display: block;
+    flex: 1;
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--k-text-body-md);
+    font-weight: var(--k-fw-h3);
   }
-  .k-sheet-me {
-    padding: var(--k-s-sm) 10px;
-    border-top: 1px solid var(--k-line-soft);
+  .k-bar-tools {
+    gap: 0;
+  }
+  .k-bar-tools .k-icon-btn {
+    width: var(--k-c-shell-bar-tool-width);
+    height: var(--k-c-shell-bar-tool-height);
+  }
+  .k-bar-search-open[aria-disabled="true"] {
+    opacity: var(--k-c-button-disabled-opacity);
+    cursor: not-allowed;
+  }
+  /* 探す欄は虫眼鏡を押したときだけ、帯の幅いっぱいに開く */
+  .k-bar .k-search {
+    display: none;
+  }
+  .k-bar[data-searching] > :not(.k-bar-tools),
+  .k-bar[data-searching] .k-bar-tools > :not(.k-search) {
+    display: none;
+  }
+  .k-bar[data-searching] .k-bar-tools {
+    flex: 1;
+    margin-left: 0;
+  }
+  .k-bar[data-searching] .k-search {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--k-s-xs);
+  }
+  .k-bar[data-searching] .k-search label {
+    flex: 1;
+    width: auto;
+    max-width: none;
+    height: var(--k-c-shell-bar-search-height);
+  }
+  /* iPhone が勝手に拡大しないよう、スマホの探す欄だけ 16px */
+  .k-bar[data-searching] .k-search input {
+    font-size: var(--k-text-input);
+  }
+  .k-bar .k-search-key {
+    display: none;
   }
   .k-body {
     padding-bottom: 60px;

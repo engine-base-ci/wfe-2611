@@ -116,32 +116,49 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 @media (max-width:1023px){.kn-nav{flex-basis:56px !important;padding:10px 6px !important}.kn-lbl{display:none !important}.kn-top{flex-direction:column;padding:4px 0 !important}.kn-tg{margin-left:0 !important}.kn-item{justify-content:center;padding:0 !important}}
 @media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
 """ + NARROW
-# 絵ごとの幅 767 以下の決まり（画面の外枠と同じく上の帯を出さない・足元の帯を下のタブ 60px の上に置く など）。
-# kn-shell の塊の中に足すので、shellfix.py を何度流しても 1 回だけ（K-224：Create・K-226：TicketDetail）
+# 幅 767 以下の上の帯（D-147・2026-11-18 代表の直し・answer=0a262be577b2）：画面の外枠（components/k/shell.tsx・shell.css）と同じく、
+#   スマホにも高さ 48px の上の帯を出す。左に会社の印と名前、右に 探す（虫眼鏡。押すと探す欄が帯の幅いっぱいに開き × で戻る）・知らせ・自分のアイコン。
+#   いまの場所は出さない（題は本文の h1）。前の決め（MobileList どおり上の帯を出さない・承認待ちは見出しの右に鈴の場所）は D-147 で置き換えた
+WS_MARK = 'width: 24px; height: 24px; flex: none; border-radius: 6px; background: %s; color: #FFFFFF; place-items: center; font-size: 12px; font-weight: 700'
+WS_NAME = 'flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 600; color: #131B27'
+ICON_BTN = 'width: 44px; height: 44px; flex: none; border-radius: 6px; place-items: center; color: #4A5563; cursor: pointer'
+SV18 = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">%s</svg>'
+MAG = '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path>'
+XX = '<path d="M18 6 6 18M6 6l12 12"></path>'
+BAR_OPEN = re.compile(r'<div class="kn-bar" style="[^"]*">')
+SEARCH_LABEL = re.compile(r'<label style="[^"]*">(?:(?!</label>).)*?<input type="search".*?</label>', re.S)
+def mobile_bar(s, ops):
+    """上の帯に、スマホの帯の物（会社の印と名前・虫眼鏡・探すを閉じる）を足す。帯ごとに 1 回だけ（何度流しても同じ）"""
+    m = BAR_OPEN.search(s)
+    if not m: return s
+    end = s.index("</span></div>", m.end())
+    bar = s[m.end():end]
+    if 'class="kn-bar-ws"' in bar: return s
+    mark, name, bg = ("K", "Kaname", "#131B27") if ops else ("E", "ENGINE BASE", "#22345C")
+    head = ('<span class="kn-bar-ws" aria-hidden="true" style="%s">%s</span><span class="kn-bar-ws-name" style="%s">%s</span>'
+            % (WS_MARK % bg, mark, WS_NAME, name))
+    sm = SEARCH_LABEL.search(bar)
+    if sm:
+        opener = '<label for="kn-tg-search" class="kn-bar-search-open" aria-label="探す" title="探す" style="%s">%s</label>' % (ICON_BTN, SV18 % MAG)
+        closer = '<label for="kn-tg-search" class="kn-bar-search-close" aria-label="探すを閉じる" title="探すを閉じる" style="%s">%s</label>' % (ICON_BTN, SV18 % XX)
+        bar = bar[:sm.start()] + opener + sm.group(0) + closer + bar[sm.end():]
+    return s[:m.end()] + head + bar + s[end:]
+MOBILE_BAR_CSS = """/* kn-mobile-bar（D-147）：幅 767 以下の上の帯は画面の外枠と同じ（会社の印と名前・探す・知らせ・自分のアイコン。いまの場所は出さない） */
+.kn-bar-ws,.kn-bar-ws-name,.kn-bar-search-open,.kn-bar-search-close{display:none}
+@media (max-width:767px){.kn-bar{gap:8px !important;padding:0 8px 0 16px !important}.kn-bar>nav[aria-label="いまの場所"]{display:none !important}.kn-bar-ws{display:grid}.kn-bar-ws-name{display:block}.kn-bar>span[style*="margin-left: auto"]{gap:0 !important}.kn-bar>span>label:has(input[type="search"]){display:none !important}.kn-bar-search-open{display:grid}.kn-bar>span>[aria-label^="知らせ"]{width:44px !important;height:44px !important}.kn-bar-search-open:hover,.kn-bar-search-close:hover{background:#DDE2E9}
+body:has(#kn-tg-search:checked) .kn-bar>:not(span[style*="margin-left: auto"]),body:has(#kn-tg-search:checked) .kn-bar>span>:not(label){display:none !important}body:has(#kn-tg-search:checked) .kn-bar-search-open{display:none !important}body:has(#kn-tg-search:checked) .kn-bar>span[style*="margin-left: auto"]{flex:1;margin-left:0 !important;gap:4px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"]){display:flex !important;flex:1;width:auto !important;max-width:none !important;height:36px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"])>span:last-child{display:none}body:has(#kn-tg-search:checked) .kn-bar-search-close{display:grid}}
+"""
+CSS = CSS + MOBILE_BAR_CSS
+# 絵ごとの幅 767 以下の決まり（足元の帯を下のタブ 60px の上に置く など）。kn-shell の塊の中に足すので、shellfix.py を何度流しても 1 回だけ（K-224：Create・K-226：TicketDetail）
 NARROW_BY_BOARD = {
-    "Create.dc.html": "/* kn-board-narrow（K-224）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、足元の帯を下のタブ（60px）の上に置く */\n"
-                      "@media (max-width:767px){.kn-bar{display:none !important}main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
-    # 自分の設定の PC と使った量（K-230）：画面の外枠と同じく、幅 767 以下は上の帯を出さない（下のタブは外枠の決まり）
-    "MePC.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
-                    "@media (max-width:767px){.kn-bar{display:none !important}}\n",
-    "MePCInstalled.dc.html": "/* kn-board-narrow（K-230）：画面の外枠と同じく幅 767 以下は上の帯を出さない（MobileList と同じ） */\n"
-                             "@media (max-width:767px){.kn-bar{display:none !important}}\n",
+    "Create.dc.html": "/* kn-board-narrow（K-224）：足元の帯を下のタブ（60px）の上に置く */\n"
+                      "@media (max-width:767px){main>div[style*=\"position: sticky; bottom: 0\"]{bottom:60px !important}}\n",
 }
-# 承認待ち（K-231：Approvals・ApEmpty）：767 以下は画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴（44px・右寄せ・外枠の .k-bell-inline）を置く。
-# 鈴は帯の中の div の ::after（要素は足さない・768 以上の絵は変わらない）。続けて裁く（a）は鈴の後ろ＝狭い幅では次の行へ回る（画面と同じ並び）
-BELL = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' "
-        "stroke='%23131B27' stroke-width='2'%3E%3Cpath d='M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9'/%3E%3Cpath d='M10.3 21a1.9 1.9 0 0 0 3.4 0'/%3E%3C/svg%3E")
-AP_NARROW = ("/* kn-board-narrow（K-231）：画面の外枠と同じく上の帯を出さず、見出しの帯の右に鈴の場所（44px）を置く。続けて裁くは鈴の後ろ */\n"
-             "@media (max-width:767px){.kn-bar{display:none !important}"
-             "main header>div::after{content:\"\";order:1;flex:none;width:44px;height:44px;margin-left:auto;"
-             "background:center/18px 18px no-repeat url(\"" + BELL + "\")}main header>div>a{order:2}}\n")
-NARROW_BY_BOARD.update({"Approvals.dc.html": AP_NARROW, "ApEmpty.dc.html": AP_NARROW})
-# 一覧の絵（K-251：OnHome・Main）：画面の外枠と同じく上の帯を出さず、見え方のタブは字を折り返さず 1 行のまま横に送る
-_LIST_NARROW = ("/* kn-board-narrow（K-251）：画面の外枠と同じく上の帯を出さず（MobileList と同じ）、見え方のタブは字を折り返さず横に送る */\n"
-                "@media (max-width:767px){.kn-bar{display:none !important}nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
+# 一覧の絵（K-251：OnHome・Main・List）：見え方のタブは字を折り返さず 1 行のまま横に送る
+_LIST_NARROW = ("/* kn-board-narrow（K-251）：見え方のタブは字を折り返さず横に送る */\n"
+                "@media (max-width:767px){nav[aria-label=\"チケットの見え方\"]>a{white-space:nowrap;flex:none}}\n")
 NARROW_BY_BOARD.update({"OnHome.dc.html": _LIST_NARROW, "Main.dc.html": _LIST_NARROW, "List.dc.html": _LIST_NARROW})
-# 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。画面の外枠と同じく上の帯を出さない（MobileList と同じ）。
-# 7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
+# 詳細の形の絵（K-226：詳細と帯の 7 枚・K-257 が同じ形にそろえた）。7 枚とも同じにする：帯の位置を TicketDetail とそろえる約束（K257-UI-013）を保つ
 DETAIL_BOARDS = ("TicketDetail", "StRunning", "StFailed", "StBefore", "StConfirmDone", "StDone", "StDelegated")
 # K-227：767 以下は帯の箱の左右も、カードの中のほかの行（article>div の左右 16px）と同じ 16px にそろえる（画面の外枠の
 #   .k-detail-bands と同じ）。箱の中の余白は、ほかの行の 16px に上書きされないよう箱の余白（10px 12px・12px 14px）のまま保つ
@@ -149,8 +166,8 @@ BAND_NARROW = ('article>div:is([role="status"],[role="alert"])[style*="margin: 0
                'article>div:is([role="status"],[role="alert"])[style*="padding: 10px 12px"]{padding-left:12px !important;padding-right:12px !important}'
                'article>div:is([role="status"],[role="alert"])[style*="padding: 12px 14px"]{padding-left:14px !important;padding-right:14px !important}')
 NARROW_BY_BOARD.update({
-    f"{b}.dc.html": "/* kn-board-narrow（K-226・K-227）：画面の外枠と同じく上の帯を出さない（MobileList と同じ）。帯の箱の左右はカードの行と同じ 16px */\n"
-                    "@media (max-width:767px){.kn-bar{display:none !important}" + BAND_NARROW + "}\n"
+    f"{b}.dc.html": "/* kn-board-narrow（K-226・K-227）：帯の箱の左右はカードの行と同じ 16px */\n"
+                    "@media (max-width:767px){" + BAND_NARROW + "}\n"
     for b in DETAIL_BOARDS
 })
 # 必須の印「*」を項目名と同じ行に置く（K-225）。縦並び（flex の column）の label の中で、項目名の字と <b>*</b> が別々の段に割れて
@@ -189,7 +206,10 @@ for path in sorted(glob.glob(P + "*.dc.html")):
     if "data-shell" not in nr: nr = nr.replace("<div ", "<div data-shell ", 1)
     inputs = '\n <input type="checkbox" id="kn-tg-nav" class="kn-tgc" aria-label="メニューを閉じる"><input type="checkbox" id="kn-tg-side" class="kn-tgc" aria-label="パネルを閉じる">'
     if 'id="kn-tg-nav"' in s: inputs = ""
+    if 'id="kn-tg-search"' not in s and 'class="kn-bar"' in s:   # スマホの帯の虫眼鏡で開く探す欄（D-147）
+        inputs += '<input type="checkbox" id="kn-tg-search" class="kn-tgc" aria-label="探す欄を開く">'
     s = s[:s.index("<div", i)] + nr + inputs + s[j+1:]
+    s = mobile_bar(s, f.startswith("Op"))
     # nav
     m = re.search(r' <nav aria-label="メニュー".*?</nav>\n', s, flags=re.S)
     if m: s = s[:m.start()] + (nav_ops(opsec(f)) if f.startswith("Op") else nav(section(f))) + s[m.end():]

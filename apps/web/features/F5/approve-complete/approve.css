@@ -16,7 +16,7 @@
 .k63-count {
   font-variant-numeric: tabular-nums;
 }
-/* 767 以下は外枠の鈴が帯の右に入る（帯を 1 行にする外枠の決まり）。続けて裁くは次の行へ回す（キャンバスの折り返し） */
+/* 767 以下は、続けて裁くを次の行へ回す（キャンバスの折り返し。知らせの鈴は上の帯にあり、この帯には入らない・D-147） */
 @media (max-width: 767px) {
   .k-page-head.k-ap-head:has(> .k-ap-next) {
     flex-wrap: wrap;
