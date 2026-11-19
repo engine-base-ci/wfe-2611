@@ -3,7 +3,7 @@
 //   似たもの：K-54 の試験のファイルの中の signUpByForm（そのファイルの中だけ）・api.ts の signupViaApi（API のログからリンクを拾い、画面を通らない）。
 //   ここは画面とメールを通して、ログインの印を持った人を返す（中間テスト 2 以降の筋の頭に置く）
 import { expect, type BrowserContext, type Page } from "@playwright/test";
-import { API, PW, admin, uniq, uniqEmail } from "./api";
+import { API, PW, addTestEntry, admin, uniq, uniqEmail } from "./api";
 import { linkIn, type Mailbox } from "./mailbox";
 
 const API_ORIGIN = new URL(API).origin;
@@ -39,6 +39,9 @@ export async function newcomer(page: Page, box: Mailbox, tag: string): Promise<N
   const res = await page.goto(linkIn(await box.waitFor(w.email), "/verify-email"));
   expect(res?.status(), "メールのリンクの先が開ける").toBe(200);
   await expect(page.getByRole("heading", { level: 1, name: "登録できました" })).toBeVisible();
+  // 入り方を 1 つ持つ人にしてから進む（付けるまで進めない・K-321。付けるまで進めないを通す試験は K-319 が自分で人を作る）
+  const [u] = await admin<{ id: string }>('select id from kaname_auth."user" where email = $1', [w.email]);
+  await addTestEntry(u!.id);
   await page.getByRole("button", { name: "続ける", exact: true }).click();
   await expect(page, "使い始めの画面（チケットの画面）へ入る").toHaveURL(/\/tickets$/);
   const token = await page.evaluate(() => window.localStorage.getItem("kaname.token"));

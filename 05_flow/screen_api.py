@@ -193,7 +193,6 @@ SCREEN_API = {
     "invite-accept": [
         ("GET", "/auth/invitations/:token", "A03", "invitations", "getInvitation", ["tenants", "scopes"]),
         ("POST", "/auth/invitations/:token/accept", "A03|A96", "invitations", "acceptInvitation", ["members", "tenant_memberships", "terms_consents"]),
-        ("POST", "/auth/invitations/:token/resend-request", "A03", "invitations", "requestInvitationResend", ["notifications"]),
     ],
     "mfa-setup": [
         ("GET", "/me/security", "A97|A04", "passkeys", "getMySecurity", ["sessions", "security_events"]),
@@ -204,6 +203,7 @@ SCREEN_API = {
         ("DELETE", "/me/two-factor", "A04", "security_events", "disableTwoFactor", []),
         ("POST", "/me/backup-codes", "A04", "security_events", "regenerateBackupCodes", []),
         ("PATCH", "/me/password", "A97", "security_events", "changePassword", ["sessions"]),
+        ("POST", "/me/password", "A97", "security_events", "setMyPassword", ["sessions"]),   # K-312：パスワードの無い人（パスキーだけ）が決める（代表の答え ②）
         ("GET", "/me/sessions", "A74", "sessions", "listMySessions", []),
         ("DELETE", "/me/sessions/:id", "A74", "sessions", "revokeMySession", ["security_events"]),
         ("POST", "/me/sessions/revoke-others", "A74", "sessions", "revokeOtherSessions", ["security_events"]),
@@ -496,7 +496,10 @@ SCREEN_API = {
 # 表の行ではない答えの形（operationId → 名前と項目）。項目の型は string／integer／number／boolean／object／array／uuid／uuid[]／string[]（後ろの ? は null 可）
 # 表の行ではない入力の形（K-19）。無い口は「表の名前＋Input」
 INPUTS = {
-    "stepUp": ("StepUpInput", {"password": "string", "code": "string"}),
+    # 取り直し（K-19・K-309）：パスワード（2 段階の人はコードも）か、パスキーの応答（object・頭 x-passkey-challenge）のどちらか 1 つ
+    "stepUp": ("StepUpInput", {"password": "string", "code": "string", "passkey": "object"}),
+    # パスキーの名前を変える（K-309）：名前だけ（strict・ほかの欄は 422）。前後の空白を除き NFKC・1〜40 文字・制御文字なしは口が確かめる
+    "renamePasskey": ("PasskeyRenameInput", {"name": "string"}),
     # 登録（K-51）：保留の申し込みに預ける 4 つだけ。会社名は空でよい（D-125.135）。表の列（pw_iv など）は入力に出さない
     "createSignup": ("SignupInput", {"email": "string", "name": "string", "company_name": "string", "password": "string"}),
     # 送り直しは申し込みの印（頭 x-signup-token）だけで引く。本文にメールを載せない（D-128.142）
@@ -513,8 +516,14 @@ INPUTS = {
     "signOut": ("SignOutInput", {}),
     # 管理者に頼む（K-305）：待ちの印だけ（strict・ほかの欄は 422。欄の名前は K-302 の verifySignInCode と同じ）
     "requestAdminRecovery": ("AdminRecoveryInput", {"pending": "string"}),
-    # 送り直しを頼む（K-334）：空の体だけ（strict・ほかの欄は 422）。招待は道のトークンで引く
-    "requestInvitationResend": ("InvitationResendInput", {}),
+    # 2 段階を始める（K-311）：パスワードだけ（strict）。無い・空でも入口では断らない（パスワードの無い人の 409・E-AUTH-020 を先に返すため。空の 422 は口が持つ）
+    "startTwoFactor": ("TwoFactorStartInput", {"password": "string?"}),
+    # 2 段階を確かめる（K-311）：認証アプリの 6 けただけ（strict）。全角・間の空白は口が直す
+    "confirmTwoFactor": ("TwoFactorConfirmInput", {"code": "string"}),
+    # パスワードを変える（K-312）：今と新しいパスワードだけ（strict）。値は入口が表記ゆらぎを直す前の体を口が読む（打ったとおり）
+    "changePassword": ("PasswordChangeInput", {"current_password": "string", "new_password": "string"}),
+    # パスワードを決める（K-312）：新しいパスワードだけ（strict）。パスワードの無い人だけ（ある人は 409）
+    "setMyPassword": ("PasswordSetInput", {"new_password": "string"}),
     # 新しいパスワードを決める（K-314）：リンクの手がかりと新しいパスワードだけ。本人は手がかりから引く（体に入れさせない）
     "resetPassword": ("PasswordResetInput", {"token": "string", "new_password": "string"}),
     # 規約に同意する（K-53）：同意の印と、同意する今の版（利用規約・プライバシーポリシー）の ID だけ。テナントと人はセッションから決める（体に入れても無視する）
@@ -550,6 +559,10 @@ LIST_OPS = {"getCurrentTerms"}
 # 同意し直しの間も止めない口（K-53・D-125.162）：規約の 2 つ・ログアウト・自分の取得。ここが正本で、契約（registry の termsOpen）に生成し、
 #   口の入口（apps/api/src/contract/op.ts）と 403・E-AUTH-010 の EARS の規則（05_flow/build_api.py の four()）がそれを読む
 TERMS_OPEN_OPS = {"consentToTerms", "getCurrentTerms", "signOut", "getMe"}
+# 付けるまで進めないの間も止めない口（K-321・D-128.141・代表の答え ⑮ answer=6bdcb125e8f7）：安全の設定を読む・2 段階を付ける 2 つ・取り直し・
+#   ログアウト・自分の取得・規約の 2 つ。名前を変える・外す・パスワードを変える・決める は入れない。ここが正本で、契約（registry の mfaOpen）に生成し、
+#   口の入口（apps/api/src/contract/op.ts）と 403・MFA_REQUIRED の EARS の規則（05_flow/build_api.py の four()）がそれを読む
+MFA_OPEN_OPS = {"getMySecurity", "startTwoFactor", "confirmTwoFactor", "stepUp", "signOut", "getMe", "getCurrentTerms", "consentToTerms"}
 
 # API を呼ばない画面の台帳（K-53・テスターのレビュー HIGH）。偽の API の対応を書かずに、理由つきでここに載せる。
 #   api_gate.py の A3・fb_gate.py の FB3・FB8 は、ここにあって scripts/ci/static_screens.py の S1〜S4 を満たす画面を被覆済みと数える
@@ -625,6 +638,12 @@ ERRORS_4XX = {
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
          "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
+    ],
+    # パスキーを外す（K-309・D-128.61）。最後の入り方（409・E-AUTH-015／パスワードだけで 2 段階が無くなる E-AUTH-016）は外さない
+    "deletePasskey": [
+        {"status": 409, "code": "E-AUTH-015", "body": {"error": "conflict", "code": "E-AUTH-015"}, "errors": ["E-AUTH-015", "E-AUTH-016"],
+         "trigger": "外すとパスキーが 0 本で、パスワードも 2 段階も無くなる（E-AUTH-015）・パスワードはあるが 2 段階が無い（E-AUTH-016）",
+         "ears_form": "UNWANTED: IF 外すと入り方が無くなるか、パスワードだけで 2 段階が無い状態になるなら、Kaname は 409 と E-AUTH-015・E-AUTH-016 を返し、パスキーを外さない"},
     ],
     # 端末をなくした：管理者に頼む（K-305・D-128.141）。待ちの印が切れた（401）・入力（422）・頼みを書く DB が落ちた（500）。冪等キーの 409 は使わない（1 時間の内の 2 回目は 201・already）
     "requestAdminRecovery": [
@@ -708,22 +727,6 @@ ERRORS_4XX = {
     ],
     # いまの様子を読む（K-307）。DB が落ちたら「ふつう」（空）を返さず中身も返さない
     # 招待の下見（K-331・D-128.62・D-128.63）。使えない招待（期限切れ・取り消し・使われた）は 200 の state で返し、行が無いときだけ 404
-    # 送り直しを頼む（K-334・D-128.63）。期限切れの招待だけ。行が無い 404・まだ使える 409・取り消し／使われた 410・宛てを引く DB が落ちた 503。
-    #   24 時間の内の 2 回目は 201・already、メールが送れなかったら 201・failed（502 にしない）
-    "requestInvitationResend": [
-        {"status": 404, "code": "E-INV-001", "body": {"error": "not_found", "code": "E-INV-001"}, "errors": ["E-INV-001"],
-         "trigger": "招待のリンクの印が見つからない（でたらめ・古い・512 文字を超える）",
-         "ears_form": "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、誰にも知らせない"},
-        {"status": 409, "code": "E-INV-008", "body": {"error": "conflict", "code": "E-INV-008"}, "errors": ["E-INV-008"],
-         "trigger": "招待はまだ使える（期限の内・取り消されていない・使われていない）",
-         "ears_form": "UNWANTED: IF 招待がまだ使えるなら、Kaname は 409 と E-INV-008 を返し、誰にも知らせない"},
-        {"status": 410, "code": "E-INV-002", "body": {"error": "gone", "code": "E-INV-002"}, "errors": ["E-INV-002", "E-INV-004"],
-         "trigger": "招待が取り消された（E-INV-002）・もう使われた（E-INV-004）",
-         "ears_form": "UNWANTED: IF 招待が取り消されたかもう使われたなら、Kaname は 410 と E-INV-002／E-INV-004 を返し、誰にも知らせない"},
-        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
-         "trigger": "招待の状態を読む・宛てを引く・知らせの行を入れる DB（app.invitation_resend_targets）が落ちた・使えない",
-         "ears_form": "UNWANTED: IF 宛てを引く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、知らせの行もメールも残さない"},
-    ],
     "getInvitation": [
         {"status": 404, "code": "E-INV-001", "body": {"error": "not_found", "code": "E-INV-001"}, "errors": ["E-INV-001"],
          "trigger": "招待のリンクの印が見つからない（でたらめ・古い・空白入り・512 文字を超える）",
@@ -758,6 +761,24 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-004"],
          "trigger": "メールアドレスが無い・空・形が違う（全角・大文字・前後と途中の空白は直してから見る）",
          "ears_form": "UNWANTED: IF メールアドレスが空か形が違うなら、Kaname は 422 と欄 email の理由を返し、何も送らない"},
+    ],
+    # パスワードを変える（K-312・D-125.137・D-128.141）。新しいパスワードの決まり・今のパスワードが違う（422）・切る所か変える所で落ちた（503）
+    "changePassword": [
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
+         "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（欄 new_password）・今のパスワードが違う（欄 current_password・401 にしない）",
+         "ears_form": "UNWANTED: IF 新しいパスワードが決まりに合わないか今のパスワードが違うなら、Kaname は 422 と欄の理由を返し、端末を切らずパスワードを変えない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "ほかの端末を切る所（DB の関数）か、パスワードを変える所で落ちた",
+         "ears_form": "UNWANTED: IF ほかの端末を切る所で落ちたなら、Kaname は 503 と E-PAGE-003 を返し、パスワードを変えない"},
+    ],
+    # パスワードを決める（K-312・代表の答え ②）。もうある（409）・決まり（422）
+    "setMyPassword": [
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "CONFLICT"},
+         "trigger": "もうパスワードがある人が決めようとした（変えるのは changePassword）",
+         "ears_form": "UNWANTED: IF もうパスワードがあるなら、Kaname は 409 を返し、パスワードを変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
+         "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（欄 new_password）",
+         "ears_form": "UNWANTED: IF 新しいパスワードが決まりに合わないなら、Kaname は 422 と欄 new_password の理由を返し、パスワードを決めない"},
     ],
     # 新しいパスワードを決める（K-314・D-125.137・D-125.140・D-128.62）。冪等キーは使わない（汎用の 409 は NO_GENERIC_409 で外す）
     "resetPassword": [
@@ -839,8 +860,11 @@ REQUIRED_INPUTS = {
     "signInWithPassword": ["email", "password"],                         # apps/api/src/features/F1/login/sign-in.ts（無い・空は 422 E-VAL-008）
     "verifySignInCode": ["pending"],                                     # apps/api/src/features/F1/login/sign-in-code.ts（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": ["pending"],                                 # apps/api/src/features/F1/admin-recovery/index.ts（待ちの印が無いと 422・K-302 と同じ）
+    "confirmTwoFactor": ["code"],                                        # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K-311）
     "resetPassword": ["token", "new_password"],                          # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
-    "stepUp": ["password"],                                              # apps/api/src/hooks/auth.ts:23
+    "changePassword": ["current_password", "new_password"],              # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・欄ごと・K-312）
+    "setMyPassword": ["new_password"],                                   # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・K-312）
+    "renamePasskey": ["name"],                                           # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": ["agree", "terms_version_id", "privacy_version_id"],   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019）
     "claimPairingCode": ["code"],                                        # apps/api/src/features/F3/connect-pc/code.ts:28
     "saveMyTicketDraft": ["draft_id"],                                   # apps/api/src/features/F4/create-ticket/hooks.ts:170
@@ -887,7 +911,8 @@ VALUE_RANGES = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009）
-    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
+    "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
         "todo_checked": {"items": {"type": "integer", "minimum": 0}},
@@ -905,8 +930,11 @@ UNEXPRESSIBLE_422 = {
     "updateConversation": ["名前が null（空と同じ）"],
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],
+    "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
-    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
+    "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
     "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
@@ -964,10 +992,15 @@ RESPONSES = {
     "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),
     # K-308：端末の一覧（sessions）と安全の記録（recent_events）は F10 の口に回した。mfa_pending は付けるまで進めない印（D-128.141）。backup_codes_left は部品が読めないとき null（K308-API-013）
     "getMySecurity": ("MySecurity", {"passkeys": "array", "has_password": "boolean", "two_factor": "boolean", "two_factor_required": "boolean", "backup_codes_left": "integer?", "mfa_pending": "boolean"}),
-    "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret_masked": "string", "expires_at": "string"}),
-    "confirmTwoFactor": ("BackupCodes", {"codes": "array"}),
+    # K-311：secret は認証アプリに手で入れる鍵の文字（この答えの 1 回だけ）。期限は設けない（PM が決めた作り方 2026-11-17）
+    "startTwoFactor": ("TwoFactorSetup", {"otpauth_uri": "string", "secret": "string"}),
+    # K-311：バックアップコード 10 個はこの答えの 1 回だけ。部品がセッションを作り直したら token に新しい印（無ければ null・画面は差し替える）
+    "confirmTwoFactor": ("TwoFactorEnabled", {"backup_codes": "string[]", "token": "string?"}),
     "regenerateBackupCodes": ("BackupCodes", {"codes": "array"}),
     "stepUp": ("StepUp", {"step_up_at": "string", "valid_until": "string"}),
+    # K-312：revoked は切った Kaname のセッションの数（今の画面のほか・全部のワークスペースの端末と PC）
+    "changePassword": ("PasswordChanged", {"revoked": "integer"}),
+    "setMyPassword": ("PasswordSet", {"ok": "boolean"}),
     "getMe": ("Me", {"member": "object", "workspaces": "array", "workspace_name": "string?"}),   # workspace_name：今いる会社の名前（前後の空白を取り、空なら null）。今は GET /api/auth-ext/me が返す（K-253）
     "getMyUsage": ("MyUsage", {"five_hour": "object", "month": "object", "by_workspace": "array", "notify_at_percent": "integer", "on_exhausted": "string"}),
     # K-250：はじめにやること（passkey・pc・credentials の 3 つ）。passkey は機能ができるまで available false・行き先 null（D-145.11）。credentials は任意（optional）で「あとで」で飛ばせる（skipped・D-145.13）
@@ -1056,8 +1089,6 @@ RESPONSES = {
     "getInvitation": ("InvitationPreview", {"state": "string", "workspace_name": "string", "inviter_name": "string?", "group_name": "string?",
                                             "role": "string", "message": "string?", "email": "string", "expires_at": "string",
                                             "account_exists": "boolean", "signed_in": "object?"}),
-    # 送り直しを頼んだ（K-334）。sent（知らせた）・already（24 時間の内に頼んである）・failed（1 通でも送れなかった・押し直せる）
-    "requestInvitationResend": ("InvitationResendResult", {"result": "string"}),
     "getServiceStatusForMember": ("ServiceStatus", {"components": "array", "banner": "object", "maintenance": "object"}),
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
@@ -1271,16 +1302,16 @@ PERMS = {
     "resetPassword": ("public", "再設定のリンクを持つ人（1 回だけ・期限つき）。済んだら全部の端末と Bridge を切る（D-125.140）", False),
     "getInvitation": ("public", "招待のリンクを持つ人（期限つき）。見せるのはワークスペースの名前・招いた人・グループ・役割・ひとことと、招待の状態・宛てのアカウントの有無・ログイン中の様子だけ（K-331）", False),
     "acceptInvitation": ("public", "招待のリンクを持つ人。ログイン中なら今のアカウントで入り、無ければ作る（D-125.150）", False),
-    "requestInvitationResend": ("public", "期限切れの招待のリンクを持つ人。招いた人（居なければ管理者）に送り直しを頼む知らせが届く。同じ招待で 1 日 1 回（D-128.63・K-334）", False),
     # 自分の安全の設定
     "getMySecurity": ("self", "自分のものだけ", False),
     "renamePasskey": ("self", "自分のパスキーだけ", False),
-    "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない", True),
-    "startTwoFactor": ("self", "本人", True),
+    "deletePasskey": ("self", "自分のパスキーだけ。最後の入り方は消せない。取り直しか、ログインから 15 分の内（K-309・代表の答え ⑬）", "login_or_step_up"),
+    "startTwoFactor": ("self", "本人。パスワードの無い人（パスキーだけ）は先にパスワードを決める（409・E-AUTH-020）", "login_or_step_up"),
     "confirmTwoFactor": ("self", "本人（コードがそろったら付く。バックアップコードは 1 回だけ見せる）", False),
     "disableTwoFactor": ("self", "本人。パスキーを持たずパスワードだけで入る人は外せない（D-128.61）", True),
     "regenerateBackupCodes": ("self", "本人（前のコードは使えなくなる）", True),
-    "changePassword": ("self", "本人。変えたら全部の端末と Bridge を切る", True),
+    "changePassword": ("self", "本人。変えたら今の画面だけ残し、全部のワークスペースのほかの端末と Bridge を切る（D-128.141）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
+    "setMyPassword": ("self", "本人。パスワードの無い人（パスキーだけ）だけ。ある人は 409（代表の答え ②）。取り直しか、ログインから 15 分の内（代表の答え ⑬）", "login_or_step_up"),
     "listMySessions": ("self", "自分の端末だけ", False),
     "revokeMySession": ("self", "自分の端末だけ", False),
     "revokeOtherSessions": ("self", "自分の端末だけ（この端末以外）", False),
@@ -1508,3 +1539,13 @@ PERMS = {
     "getServiceStatus": ("public", "誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）", False),
     "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
 }
+
+# チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
+from registry_d import merge_py as _merge_py  # noqa: E402
+
+_merge_py(globals(), _Path(__file__).resolve().parent / "screen_api.d", screen_lists=("SCREEN_API",),
+          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR})

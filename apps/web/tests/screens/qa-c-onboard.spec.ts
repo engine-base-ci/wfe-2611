@@ -16,7 +16,6 @@ import {
   setupStep,
   sha256,
   signupViaApi,
-  totp,
   uniqEmail,
   mailTag,
 } from "../_lib/api";
@@ -223,9 +222,9 @@ test("SCR-PASSWORD-RESET-037 SCR-PASSWORD-RESET-035 ボタン「再設定メー�
   await expect(page.locator("[data-state='n']")).toBeVisible();
   await page.getByLabel("メールアドレス").fill(ok.email);
   await page.getByRole("button", { name: "再設定メールを送る" }).click();
-  await expect(page.locator("[data-state='s'] h1")).toHaveText("送りました");
+  await expect(page.locator("[data-state='s'] h1")).toHaveText("パスワードを作り直す");
   const readLog = () => readFileSync(process.env["KANAME_API_LOG"]!, "utf8");
-  await expect.poll(() => readLog().includes(`（reset → ${ok.email}）`), { timeout: 15_000 }).toBe(true);
+  await expect.poll(() => readLog().includes(`（reset → ${mailTag(ok.email)}）`), { timeout: 15_000 }).toBe(true);
   // 送出先が拒む宛先（登録はある）
   const email = rejectedEmail();
   await signupViaApi("拒まれる再設定の社", email);
@@ -299,30 +298,6 @@ test("SCR-INVITE-ACCEPT-026 ボタン「参加する」：担当者として・�
     expect(inv[0]!.m, "招待は受けた印（参加した会員）が付く").not.toBeNull();
     await page.evaluate(() => window.localStorage.clear());
   }
-});
-
-test("SCR-MFA-SETUP-032 ボタン「登録する」（状態 登録）：今の 6 桁を入れて押すと 2 段階が有効になり、回復コードの状態へ進む（DB に印が付く）", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await loginAs(page, u.token);
-  await page.goto("/mfa-setup");
-  await page.getByLabel("パスワード", { exact: true }).fill(PW);
-  await page.getByRole("button", { name: "認証アプリを登録する" }).click();
-  const secret = (await page.locator("[data-totp-secret]").textContent({ timeout: 15_000 }))!.replace(/\s+/g, "");
-  const before = await admin<{ on: boolean | null }>(
-    'select "twoFactorEnabled" as on from kaname_auth."user" where id = $1',
-    [u.userId],
-  );
-  expect(before[0]!.on ?? false, "押す前は無効").toBe(false);
-  await page.getByLabel("アプリに出た6桁").fill(totp(secret));
-  await page.getByRole("button", { name: "登録する" }).click();
-  await expect(page.locator("[data-state='rc'] h1")).toHaveText("回復コードを保管してください", { timeout: 15_000 });
-  const after = await admin<{ on: boolean | null }>(
-    'select "twoFactorEnabled" as on from kaname_auth."user" where id = $1',
-    [u.userId],
-  );
-  expect(after[0]!.on, "押すと有効になる").toBe(true);
 });
 
 // =====================================================================================

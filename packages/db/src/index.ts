@@ -119,7 +119,9 @@ export const MIGRATIONS = [
   "0112_admin_recovery.sql",
   "0113_login_methods.sql",
   "0114_invitation_preview.sql",
-  "0115_invitation_resend.sql",
+  "0115_two_factor_session_age.sql",
+  "0116_password_change_events.sql",
+  "0117_invitation_resend.sql",
 ] as const;
 
 /** migration 名の並びを検査する。重複・順序違い・4 桁でない名前があれば理由を返す。 */

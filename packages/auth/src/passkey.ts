@@ -11,18 +11,17 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import type { BetterAuthPlugin } from "better-auth";
 import type pg from "pg";
 import { countryOf } from "./device.js";
+import { duplicatePasskey, passkeyExists } from "./passkeys.js";
 
 /** 部品の既定のチャレンジの Cookie の名前（接頭辞の前）。実際の名前は createAuthCookie で引く（passkey-challenge.ts） */
 export const PASSKEY_CHALLENGE_COOKIE = "better-auth-passkey";
 /** 閉じる部品の道：一覧・名前・外すは契約の口（K-308 の getMySecurity・K-309 の renamePasskey／deletePasskey）で作る。
- *  付ける 2 つの口も、本人確認の取り直し（D-128.141）を通す K-309 が開けるまで閉じる（部品は 1 日以内のセッションしか見ないので、
- *  それまでに開けておくと、盗まれた印で他人のパスキーを付けられる・Q の指摘） */
+ *  付ける 2 つの口（generate-register-options・verify-registration）は K-309 で開けた。始めの口の前で本人確認の取り直し
+ *  （直前 15 分か、ログインから 15 分の内・D-128.141）を API の入口（apps/api/src/app.ts）が確かめる */
 export const PASSKEY_DISABLED_PATHS = [
   "/passkey/delete-passkey",
   "/passkey/update-passkey",
   "/passkey/list-user-passkeys",
-  "/passkey/generate-register-options",
-  "/passkey/verify-registration",
 ] as const;
 const VERIFY_AUTHENTICATION = "/passkey/verify-authentication";
 /** 写されたパスキーの疑いの記録の種類（security_events.kind_id） */
@@ -126,5 +125,20 @@ export function kanamePasskey(o: PasskeyOptions): BetterAuthPlugin[] {
       ],
     },
   };
-  return [passkey({ rpID: web.hostname, rpName: "Kaname", origin: web.origin }) as unknown as BetterAuthPlugin, guard];
+  // 登録の確かめが通った後・行を作る前：同じ認証器（credential id）がもう付いていれば 409・E-AUTH-018 で作らない（K-309）
+  const registration = {
+    afterVerification: async ({
+      verification,
+    }: {
+      verification: { registrationInfo?: { credential?: { id?: string } } };
+    }) => {
+      const id = verification.registrationInfo?.credential?.id;
+      if (id && (await passkeyExists(o.authPool, id))) throw duplicatePasskey();
+      return undefined;
+    },
+  };
+  return [
+    passkey({ rpID: web.hostname, rpName: "Kaname", origin: web.origin, registration }) as unknown as BetterAuthPlugin,
+    guard,
+  ];
 }

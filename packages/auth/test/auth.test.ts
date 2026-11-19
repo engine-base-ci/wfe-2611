@@ -96,12 +96,12 @@ describe("登録 → 会社に属す → ログイン → 文脈", () => {
     const live = await admin.query("select id from sessions where member_id = $1 and revoked_at is null", [S.staffA]);
     expect(live.rowCount).toBe(0);
   });
-  it("パスワード変更で全端末が失効する", async () => {
+  it("パスワード変更で、変えた今の画面のほかの端末が失効する（今の画面は残る・D-128.141・K-312）", async () => {
     const a = await auth.api.signInEmail({ body: { email, password } });
     const b = await auth.api.signInEmail({ body: { email, password } });
     await changePassword(auth, app, bearer(a.token), password, "another-long-passphrase-42");
     expect(await resolve()(bearer(b.token))).toBeNull();
-    expect(await resolve()(bearer(a.token))).toBeNull();
+    expect(await resolve()(bearer(a.token))).not.toBeNull();
     const back = await auth.api.signInEmail({ body: { email, password: "another-long-passphrase-42" } });
     expect(await resolve()(bearer(back.token))).not.toBeNull();
   });

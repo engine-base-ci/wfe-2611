@@ -8,6 +8,7 @@ import type { ServiceIncident } from "@/components/k/auth-parts";
 import { LoginAdded, LoginBlocked, LoginCode, LoginMain, LoginRecover } from "@/features/F1/login/views";
 import { PasswordReset } from "@/features/F1/password-reset/views";
 import { HelpView } from "@/features/F1/help/help-view";
+import { waitText } from "@/features/F1/sign-up/wait-text";
 import {
   AddPasskeyDialog,
   BackupDialog,
@@ -192,7 +193,7 @@ export function MockView({ id, theme, qrSvg }: { id: string; theme: Theme; qrSvg
     case "login-lock":
       return <LoginMain email={EMAIL} locked msg="15 分間ロックしました。15 分たってから、もう一度入ってください" />;
     case "login-wait":
-      return <LoginMain email={EMAIL} locked msg="続けて押されました。42 秒たってから、もう一度押してください" />;
+      return <LoginMain email={EMAIL} locked msg={waitText(42)} />;
     case "login-m":
       return <CodeOf n={4} />;
     case "login-m-error":

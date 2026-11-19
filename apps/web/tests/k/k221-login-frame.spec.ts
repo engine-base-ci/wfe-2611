@@ -3,9 +3,9 @@
 //   登録と同じ入口の枠（features/F1/sign-up/frame.tsx の AuthFrame・箱 [data-part="auth-box"]）と k の部品（size lg）に載せる。
 //   口（/api/v1/auth/sign-in・/api/v1/auth/two-factor/verify）は網の手前で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
 //   画面の形（実装の役が作る）：
-//     h1「ログイン」・主「パスキーで入る」（[data-act="passkey"]・使えない：グレー 0.55・押しても何も起きない）・その下の説明と「スマホで QR を読み取る」（使えない）・
+//     h1「ログイン」・主「パスキーで入る」（[data-act="passkey"]・押せる：K-317 がつないだ）・その下の説明と「スマホで QR を読み取る」（button・押せる・QR はブラウザが出す）・
 //     区切り「またはメールとパスワード」・目に見える項目名の無い 2 つの欄（placeholder「メール」「パスワード」・読み上げの名前は「メールアドレス」「パスワード」）・
-//     従「次へ」（submit・outlined）・「パスワードを忘れた｜端末をなくした（使えない）」・線の下に「はじめての方は アカウントを作る」
+//     従「次へ」（submit・outlined）・「パスワードを忘れた｜端末をなくした（button・押せる：K-317）」・線の下に「はじめての方は アカウントを作る」
 //     6 けた：h1「確認のコード」・6 つの枠（1 つめだけ autocomplete="one-time-code"）・6 つそろうと自動で進む・主「入る」・「認証アプリが使えない」でバックアップコードへ
 //   期待は決める人の決まり（D-145.9：キャンバスに在る物は機能がまだでも出し、使えない物はグレーで押せない）と、PM の決め（30 日きかないのチェックは出さない・幅 375 の入力欄はキャンバスの側を直す）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
@@ -32,7 +32,6 @@ const WHITE = "rgb(255, 255, 255)";
 const LINE = "rgb(221, 226, 233)";
 const INK = "rgb(19, 27, 39)";
 const MUTED = "rgb(74, 85, 99)";
-const DISABLED_OPACITY = 0.55; // 本番の組み立てでは ".55" になることがあるので数で比べる
 const WIDTHS = [320, 375, 768, 1024, 1440] as const;
 const NEXT = "/legal/terms"; // 入った後の行き先（口を読まない画面にして、入ったことを道で見る）
 
@@ -41,6 +40,8 @@ interface Mock {
   signIns: Record<string, unknown>[];
   verifies: Record<string, unknown>[];
   other: string[];
+  /** 部品のパスキーの口の問い（generate-authenticate-options）の回数（K-317） */
+  passkeyOptions: number;
   on: { signIn: (b: Record<string, unknown>) => Reply; verify: (b: Record<string, unknown>) => Reply };
 }
 const fail = (status: number, code: string, message: string): Reply => ({ status, body: { code, message } });
@@ -50,6 +51,7 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
     signIns: [],
     verifies: [],
     other: [],
+    passkeyOptions: 0,
     on: {
       signIn: () => ({
         status: 200,
@@ -74,13 +76,37 @@ async function mockAuth(page: Page, o: { twoFactor?: boolean } = {}): Promise<Mo
       const b = (req.postDataJSON() as Record<string, unknown>) ?? {};
       m.verifies.push(b);
       r = m.on.verify(b);
+    } else if (/^\/api\/auth\/passkey\/.*authenticate-options/.test(p)) {
+      m.passkeyOptions += 1;
+      r = {
+        status: 200,
+        body: { challenge: "Y2gtazIyMQ", challenge_token: "ch-k221", rpId: "localhost", allowCredentials: [] },
+      };
     } else if (p === "/api/auth/get-session") r = { status: 200, body: { session: null, user: null } };
+    // いまの様子（K-317：開いたときに 1 回読む）。帯なしの答え
+    else if (p === "/api/v1/auth/service-status")
+      r = { status: 200, body: { data: { incidents: [], maintenance: null } } };
     else m.other.push(`${req.method()} ${p}`);
     if (r.delayMs) await new Promise((res) => setTimeout(res, r.delayMs));
     await route.fulfill({ status: r.status, contentType: "application/json", body: JSON.stringify(r.body) });
   });
   return m;
 }
+/** navigator.credentials.get を数え、本人がやめた（NotAllowedError）で返す（K-317：押した後のブラウザの手順を止める） */
+async function refusePasskey(page: Page) {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __k221get: number };
+    w.__k221get = 0;
+    Object.defineProperty(navigator.credentials, "get", {
+      configurable: true,
+      value: () => {
+        w.__k221get += 1;
+        return Promise.reject(new DOMException("やめた", "NotAllowedError"));
+      },
+    });
+  });
+}
+const getCalls = (page: Page) => page.evaluate(() => (window as unknown as { __k221get?: number }).__k221get ?? 0);
 async function open(page: Page, width = 1440, q = `?next=${encodeURIComponent(NEXT)}`) {
   await page.setViewportSize({ width, height: 1000 });
   const res = await page.goto(`/login${q}`);
@@ -161,10 +187,11 @@ test("K221-UI-003 見出し：h1「ログイン」は 18px・700・#131B27・真
   await expect(page.locator("form[data-state='n']")).toHaveCount(1);
 });
 
-test("K221-UI-004 主「パスキーで入る」：見えていて紺・高さ 44・角丸 8・14px・500。使えない（グレー 0.55・disabled・aria-disabled）で、押しても Enter でも口を呼ばない", async ({
+test("K221-UI-004 主「パスキーで入る」：見えていて紺・高さ 44・角丸 8・14px・500。押せる（disabled・aria-disabled が無い・薄さ 1・K-317）。押すと部品の口の問いが 1 回（navigator.credentials.get はやめたで返す）", async ({
   page,
 }) => {
   const m = await mockAuth(page);
+  await refusePasskey(page);
   await open(page);
   const pk = page.locator(`${BOX} [data-act="passkey"]`);
   await expect(pk).toBeVisible();
@@ -174,14 +201,12 @@ test("K221-UI-004 主「パスキーで入る」：見えていて紺・高さ 4
   expect(await pk.evaluate((e) => getComputedStyle(e).borderTopLeftRadius)).toBe("8px");
   expect(await pk.evaluate((e) => getComputedStyle(e).fontSize)).toBe("14px");
   expect(await pk.evaluate((e) => getComputedStyle(e).fontWeight)).toBe("500");
-  expect(Number(await pk.evaluate((e) => getComputedStyle(e).opacity))).toBeCloseTo(DISABLED_OPACITY, 2);
-  await expect(pk).toBeDisabled();
-  await expect(pk).toHaveAttribute("aria-disabled", "true");
-  await pk.click({ force: true });
-  await pk.focus();
-  expect(await page.evaluate(() => document.activeElement?.getAttribute("data-act") ?? "")).not.toBe("passkey");
-  await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/login/);
+  expect(Number(await pk.evaluate((e) => getComputedStyle(e).opacity))).toBe(1);
+  await expect(pk).toBeEnabled();
+  expect(await pk.getAttribute("aria-disabled")).toBeNull();
+  await pk.click();
+  await expect.poll(() => getCalls(page)).toBe(1);
+  expect(m.passkeyOptions).toBe(1);
   expect(m.signIns).toHaveLength(0);
   expect(m.other).toEqual([]);
   const pkBox = (await pk.boundingBox())!;
@@ -189,20 +214,24 @@ test("K221-UI-004 主「パスキーで入る」：見えていて紺・高さ 4
   expect(pkBox.y, "パスキーが一番上の主ボタン（メールの欄より上）").toBeLessThan(mailBox.y);
 });
 
-test("K221-UI-005 パスキーの説明と区切り：「スマホで QR を読み取る」は使えない（グレー・aria-disabled・押しても移らない）。区切り「またはメールとパスワード」が線と一緒に出る", async ({
+test("K221-UI-005 パスキーの説明と区切り：「スマホで QR を読み取る」は button で押せる。押すと部品の口の問いが 1 回で、Kaname の QR の画面（.k-auth-qr）は出ない（answer=fe708d209427）。区切り「またはメールとパスワード」が線と一緒に出る", async ({
   page,
 }) => {
-  await mockAuth(page);
+  const m = await mockAuth(page);
+  await refusePasskey(page);
   await open(page);
   const note = page.locator(BOX).getByText(/指・顔・PC のロックで入る/);
   expect(await note.evaluate((e) => getComputedStyle(e).fontSize)).toBe("11px");
   expect(await note.evaluate((e) => getComputedStyle(e).color)).toBe(MUTED);
-  const qr = page.locator(BOX).getByRole("link", { name: "スマホで QR を読み取る" });
-  await expect(qr).toHaveAttribute("aria-disabled", "true");
-  expect(await qr.getAttribute("href")).toBeNull();
-  expect(Number(await qr.evaluate((e) => getComputedStyle(e).opacity))).toBeCloseTo(DISABLED_OPACITY, 2);
-  await qr.click({ force: true });
+  const qr = page.locator(BOX).getByRole("button", { name: "スマホで QR を読み取る" });
+  await expect(qr).toBeEnabled();
+  expect(await qr.getAttribute("aria-disabled")).toBeNull();
+  await qr.click();
+  await expect.poll(() => getCalls(page)).toBe(1);
+  expect(m.passkeyOptions).toBe(1);
+  await expect(page.locator(".k-auth-qr")).toHaveCount(0);
   await expect(page).toHaveURL(/\/login/);
+  await expect(page.locator(`${BOX} h1`)).toHaveText("ログイン");
   const sep = page.locator(BOX).getByText("またはメールとパスワード", { exact: true });
   await expect(sep).toBeVisible();
   expect(await sep.evaluate((e) => getComputedStyle(e).fontSize)).toBe("11px");
@@ -255,7 +284,7 @@ test("K221-UI-007 従「次へ」：白地・線 1px #DDE2E9・字 #131B27・高
   await expect(page.locator(BOX).getByRole("button", { name: "ログイン" })).toHaveCount(0);
 });
 
-test("K221-UI-008 下のリンク：「パスワードを忘れた」は /password-reset・「端末をなくした」は使えない（グレー）・線の下に「はじめての方は アカウントを作る」（/signup）", async ({
+test("K221-UI-008 下のリンク：「パスワードを忘れた」は /password-reset・「端末をなくした」は button で押せ、押すと h1「端末をなくしたとき」（K-317）・線の下に「はじめての方は アカウントを作る」（/signup）", async ({
   page,
 }) => {
   await mockAuth(page);
@@ -263,10 +292,12 @@ test("K221-UI-008 下のリンク：「パスワードを忘れた」は /passwo
   await page.locator(BOX).getByRole("link", { name: "パスワードを忘れた" }).click();
   await expect(page).toHaveURL(/\/password-reset$/);
   await open(page);
-  const lost = page.locator(BOX).getByRole("link", { name: "端末をなくした" });
-  await expect(lost).toHaveAttribute("aria-disabled", "true");
-  expect(await lost.getAttribute("href")).toBeNull();
-  expect(Number(await lost.evaluate((e) => getComputedStyle(e).opacity))).toBeCloseTo(DISABLED_OPACITY, 2);
+  const lost = page.locator(BOX).getByRole("button", { name: "端末をなくした" });
+  await expect(lost).toBeEnabled();
+  expect(await lost.getAttribute("aria-disabled")).toBeNull();
+  await lost.click();
+  await expect(page.locator(`${BOX} h1`)).toHaveText("端末をなくしたとき");
+  await open(page);
   const row = page.locator(`${BOX} .k-login-links`);
   expect(await row.evaluate((e) => getComputedStyle(e).fontSize)).toBe("12px");
   expect(await row.evaluate((e) => getComputedStyle(e).justifyContent)).toBe("space-between");
@@ -479,24 +510,25 @@ test("K221-UI-019 入力欄の字：幅 1440 は 14px（キャンバス）・幅
   }
 });
 
-test("K221-UI-020 キーボード：Tab はメール → パスワード（→ 見る・隠す）→ 次へ と進み、使えないパスキー・QR・端末をなくした には止まらない", async ({
+test("K221-UI-020 キーボード：Tab は パスキーで入る → スマホで QR を読み取る → メール → パスワード（→ 見る・隠す）→ 次へ → パスワードを忘れた → 端末をなくした の順に止まる（押せる物は Tab で止まる・K317-UI-024 と同じ順）", async ({
   page,
 }) => {
   await mockAuth(page);
   await open(page);
-  await mail(page).focus();
-  const seen: string[] = [];
-  for (let i = 0; i < 6; i += 1) {
+  await page.locator(`${BOX} [data-act="passkey"]`).focus();
+  const name = () =>
+    page.evaluate(() => {
+      const a = document.activeElement as HTMLElement | null;
+      return (a?.getAttribute("aria-label") ?? a?.textContent ?? "").trim();
+    });
+  const seen = [await name()];
+  for (let i = 0; i < 8; i += 1) {
     await page.keyboard.press("Tab");
-    seen.push(
-      await page.evaluate(() => {
-        const a = document.activeElement as HTMLElement | null;
-        return a?.getAttribute("aria-label") ?? a?.textContent?.trim() ?? "";
-      }),
-    );
+    seen.push(await name());
   }
-  expect(seen.slice(0, 3).join("|")).toMatch(/^パスワード\|パスワードを表示\|次へ$/);
-  for (const s of seen) expect(["パスキーで入る", "スマホで QR を読み取る", "端末をなくした"]).not.toContain(s);
+  expect(seen.join("|")).toMatch(
+    /^パスキーで入る\|スマホで QR を読み取る\|メールアドレス\|パスワード\|(パスワードを表示\|)?次へ\|パスワードを忘れた\|端末をなくした/,
+  );
 });
 
 test("K221-UI-021 幅 320・375・768・1024・1440：横溢れ 0・見出しの 1 文字目が画面の中（ログインと 6 けた）", async ({

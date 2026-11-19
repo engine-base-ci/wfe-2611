@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:408115abb8b5c425
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b321c0832bdcf97d
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -167,9 +167,10 @@ export interface Ops {
   getNotificationSettings: { params: never; query: { "tenant_id"?: string | number }; body: never; data: T.NotificationSettings };
   updateNotificationSettings: { params: never; query: never; body: T.NotificationSettingsInput; data: T.NotificationSettings };
   copyNotificationSettings: { params: never; query: never; body: T.NotificationSettingsInput; data: T.NotificationSettings };
-  renamePasskey: { params: { id: string }; query: never; body: T.PasskeysInput; data: T.Passkeys };
+  renamePasskey: { params: { id: string }; query: never; body: T.PasskeyRenameInput; data: T.Passkeys };
   deletePasskey: { params: { id: string }; query: never; body: never; data: T.Passkeys };
-  changePassword: { params: never; query: never; body: T.SecurityEventsInput; data: T.SecurityEvents };
+  setMyPassword: { params: never; query: never; body: T.PasswordSetInput; data: T.PasswordSet };
+  changePassword: { params: never; query: never; body: T.PasswordChangeInput; data: T.PasswordChanged };
   getMySecurity: { params: never; query: never; body: never; data: T.MySecurity };
   listMySessions: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Sessions[] };
   revokeMySession: { params: { id: string }; query: never; body: never; data: T.Sessions };
@@ -179,8 +180,8 @@ export interface Ops {
   listMyTicketDrafts: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDraft[] };
   saveMyTicketDraft: { params: never; query: never; body: T.TicketDraftInput; data: T.TicketDraft };
   disableTwoFactor: { params: never; query: never; body: never; data: T.SecurityEvents };
-  confirmTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.BackupCodes };
-  startTwoFactor: { params: never; query: never; body: T.SecurityEventsInput; data: T.TwoFactorSetup };
+  confirmTwoFactor: { params: never; query: never; body: T.TwoFactorConfirmInput; data: T.TwoFactorEnabled };
+  startTwoFactor: { params: never; query: never; body: T.TwoFactorStartInput; data: T.TwoFactorSetup };
   getMyUsage: { params: never; query: never; body: never; data: T.MyUsage };
   leaveWorkspace: { params: { id: string }; query: never; body: never; data: T.TenantMemberships };
   listMembers: { params: never; query: { "scope_id"?: string | number; "q"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Members[] };

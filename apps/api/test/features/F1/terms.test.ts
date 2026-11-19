@@ -38,6 +38,7 @@ import { createPool } from "@kaname/db/pool";
 import type { Config } from "@kaname/config";
 import type { MailLike } from "@kaname/notify";
 import { bootApi, type BootOptions } from "../../../src/server.js";
+import { addTestEntry } from "../../_pending.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DB_PKG = join(HERE, "..", "..", "..", "..", "..", "packages", "db");
@@ -170,6 +171,7 @@ const person = async (tag: string): Promise<Person> => {
       "insert into terms_consents (tenant_id, member_id, auth_user_id, terms_version_id, agreed_at) values ($1, $2, $3, $4, now())",
       [m.tenant_id, m.id, r.userId, v],
     );
+  await addTestEntry(r.userId); // 入り方を 1 つ持つ人にする（付けるまで進めないの止め・K-321 に当てない）
   return { email: e, userId: r.userId, memberId: m.id, tenantId: m.tenant_id };
 };
 /** 運営の人（運営のテナント app.ops_tenant_id() の人・D-128.172）を作り、基準の版に同意済みにする。
@@ -199,6 +201,7 @@ const opsPerson = async (tag: string): Promise<Person> => {
       "insert into terms_consents (tenant_id, member_id, auth_user_id, terms_version_id, agreed_at) values ($1, $2, $3, $4, now())",
       [opsTenant, memberId, r.userId, v],
     );
+  await addTestEntry(r.userId);
   return { email: e, userId: r.userId, memberId, tenantId: opsTenant };
 };
 const OPS_API = "/api/v1/ops/members"; // 運営の口（auth ops・listOpsMembers）
@@ -542,6 +545,10 @@ describe("K-53 規約に同意する：同意の状態 × 入口 × 利用者の
     );
     const r = await req("POST", "/api/v1/auth/sign-up/verify", { token });
     expect(r.status, await r.clone().text()).toBe(201);
+    // 入り方を 1 つ持つ人にする（確定の直後の人には付けるまで進めないの印が立つ・K-321 の止めに当てない。ここで見るのは同意し直しの印）
+    const uid = (await admin.query<{ id: string }>('select id from kaname_auth."user" where email = $1', [e])).rows[0]!
+      .id;
+    await addTestEntry(uid);
     await expectOpen(String((((await json(r)).data ?? {}) as Record<string, unknown>)["token"]));
   });
 

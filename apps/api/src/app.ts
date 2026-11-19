@@ -10,7 +10,14 @@ import { KanameError, recordErrorEvent } from "@kaname/errors";
 import { ENDPOINTS } from "@kaname/contracts";
 import { countryOf, ipOf } from "@kaname/auth/device";
 import { registerAll } from "./routes/index.js";
-import { DB_INPUT_REPLY, dbInputFailure, sessionUnresolved, termsRequired } from "./contract/op.js";
+import {
+  DB_INPUT_REPLY,
+  dbInputFailure,
+  mfaRequired,
+  sessionUnresolved,
+  stepUpGuards,
+  termsRequired,
+} from "./contract/op.js";
 import { defaultDeps } from "./contract/memory.js";
 import type { ContractDeps } from "./contract/deps.js";
 import { serverTiming } from "./server-timing.js";
@@ -28,16 +35,24 @@ const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
   re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
 }));
 
+/** 閉じた再設定の部品の道（K-320）。disabledPaths が当たらない /reset-password/… と末尾の「/」もここで 404（/api/auth を外した道） */
+const AUTH_RESET_CLOSED = /^\/(request-password-reset|reset-password)(\/.*)?$/;
+
 /** 同意し直しの間も通す認証の部品の口（K-53。/api/auth を外した道）。ほかは全部止める（新しく足した道は止まる側に倒す） */
 const AUTH_TERMS_OPEN = [
   /^\/sign-in(\/.*)?$/,
   /^\/sign-out$/,
   /^\/get-session$/,
   /^\/two-factor\/verify-(totp|backup-code|otp)$/,
-  /^\/request-password-reset$/,
-  /^\/reset-password(\/.*)?$/,
   /^\/ok$/,
 ];
+
+/** パスキーを足す部品の口（K-309）。始めの口の前で本人確認の取り直し（直前 15 分か、ログインから 15 分の内・D-128.141）を確かめる */
+const PASSKEY_REGISTER_OPTIONS = /^\/passkey\/generate-register-options$/;
+const PASSKEY_REGISTER = /^\/passkey\/(generate-register-options|verify-registration)$/;
+/** 付けるまで進めない（K-321・D-128.141）の間も通す認証の部品の口：セッションを読む・ログアウト・パスキーを足す 2 本。ほかは全部止める
+ *  （同意し直しの一覧 AUTH_TERMS_OPEN に当たる道はセッションを解かずに渡すので、ここに来ない） */
+const AUTH_MFA_OPEN = [/^\/get-session$/, /^\/sign-out$/, PASSKEY_REGISTER];
 
 export function health(version = "0.1.0"): Health {
   const order = checkMigrationOrder(MIGRATIONS);
@@ -116,6 +131,7 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   if (opts.auth)
     app.on(["GET", "POST"], "/api/auth/*", async (c) => {
       const sub = c.req.path.replace(/^\/api\/auth(?=\/|$)/, "") || "/";
+      if (AUTH_RESET_CLOSED.test(sub)) return c.json({ code: "NOT_FOUND" }, 404);
       const h = c.req.raw.headers;
       if (opts.resolve && !AUTH_TERMS_OPEN.some((re) => re.test(sub)) && (h.get("authorization") || h.get("cookie"))) {
         // 解こうとして落ちたら handler に渡さず止める側に倒す（fail-closed・503・E-PAGE-003）。解けて null（セッションが無い）はそのまま渡す
@@ -130,6 +146,17 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
           return sessionUnresolved(c, "認証の部品の口", e);
         }
         if (r?.termsPending) return termsRequired(c);
+        // 付けるまで進めない（K-321）：同意し直しの次。印が立っていれば、許した道のほかを handler に渡さず 403・MFA_REQUIRED
+        if (r?.mfaPending && !AUTH_MFA_OPEN.some((re) => re.test(sub))) return mfaRequired(c);
+        // パスキーを足す（K-309）：Kaname のセッション（public.sessions）が生きていなければ、部品のセッションが残っていても通さない。
+        //   始めの口は取り直しか、ログインから 15 分の内でなければ 403・STEP_UP_REQUIRED（チャレンジを作らない）
+        if (PASSKEY_REGISTER.test(sub)) {
+          if (!r) return c.json({ error: "unauthenticated", code: "UNAUTHENTICATED" }, 401);
+          const stale = PASSKEY_REGISTER_OPTIONS.test(sub)
+            ? stepUpGuards(r.ctx).requireStepUpOrFreshLogin()
+            : undefined;
+          if (stale) return c.json(stale.body as Record<string, unknown>, stale.status as 403);
+        }
       }
       // パスキーのチャレンジは Cookie でなく JSON と頭で受け渡す（K-304）。ほかの道はそのまま
       return withPasskeyChallenge(opts.auth!, c.req.raw, sub, (r) => opts.auth!.handler(r));
@@ -147,9 +174,10 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
         const r = await opts.resolve!(c.req.raw.headers);
         if (!r) return null;
         // 抜けた人の答え（memberLeft）を持つ解決はそのまま渡し、入口で DB を引き直さない（K-233）
+        const mfaPending = r.mfaPending === true; // 付けるまで進めないの印（K-321・入口 op.ts が止める）
         return r.memberLeft === undefined
-          ? { ctx: r.ctx, termsPending: r.termsPending }
-          : { ctx: r.ctx, termsPending: r.termsPending, memberLeft: r.memberLeft };
+          ? { ctx: r.ctx, termsPending: r.termsPending, mfaPending }
+          : { ctx: r.ctx, termsPending: r.termsPending, mfaPending, memberLeft: r.memberLeft };
       }
     : legacy
       ? async (c) => {

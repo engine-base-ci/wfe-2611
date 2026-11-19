@@ -9,7 +9,7 @@ import type pg from "pg";
 import type { Auth } from "@kaname/auth";
 import { acceptInvitation, hashToken } from "@kaname/auth/invitations";
 import { createDeviceResolver, createSessionResolver, type Resolved } from "@kaname/auth/resolver";
-import { readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
+import { mfaRequired, readBodyLimited, sessionUnresolved, termsRequired, TOO_LARGE } from "../contract/op.js";
 import { BRIDGE_PROTOCOL_MIN } from "../features/F3/connect-pc/hooks.js";
 import { signUp } from "@kaname/auth/signup";
 import type { Repository } from "@kaname/db/repository";
@@ -137,6 +137,7 @@ export function authExt(d: AuthExtDeps): Hono {
     return next();
   });
   // 同意し直し（K-53・D-125.162）：印が立ったセッションは、止めない道のほかを 403・E-AUTH-010 で止める（契約の口の入口 op.ts と同じ決まり）。
+  //   付けるまで進めない（K-321）の印も同じ所・同じ止めない道で、403・MFA_REQUIRED で止める（前の道すじで預ける・PC の様子を読むを使わせない）。
   //   全部の route より前に 1 つだけ置く。PC のセッション（x-bridge-session）は Better Auth のセッションでないので印を見ない（D-128.137）
   app.use("*", async (c, next) => {
     const path = c.req.path.replace(/^\/api\/auth-ext(?=\/|$)/, "") || "/";
@@ -151,6 +152,8 @@ export function authExt(d: AuthExtDeps): Hono {
       return sessionUnresolved(c, "前の道すじ", e);
     }
     if (r?.termsPending) return termsRequired(c);
+    // 付けるまで進めない（K-321・D-128.141）：同意し直しの次。止めない道は同意し直しと同じ（上の TERMS_OPEN_EXT）
+    if (r?.mfaPending) return mfaRequired(c);
     return next();
   });
 

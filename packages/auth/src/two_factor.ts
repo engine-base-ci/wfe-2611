@@ -384,3 +384,186 @@ async function closeHalfOpen(
   await step("認証側のセッション", () => auth.api.signOut({ headers: h }));
   return closed;
 }
+
+// ---- 2 段階を付ける（契約の口 startTwoFactor・confirmTwoFactor・K-311） ----
+
+export type StartTotpOutcome =
+  /** 始めた（まだ付いていない）。secret は認証アプリに手で入れる鍵の文字（URI の secret と同じ・この 1 回だけ渡す） */
+  | { ok: true; otpauthUri: string; secret: string }
+  /** もう付いている（鍵は変えない・E-AUTH-017） */
+  | { ok: false; reason: "already" }
+  /** パスワードが違う（鍵を作らない） */
+  | { ok: false; reason: "wrong_password" }
+  /** 同じ人の付ける操作がほかで走っている */
+  | { ok: false; reason: "busy" };
+
+export type ConfirmTotpOutcome =
+  /** 付いた。backupCodes は区切りの無い小文字と数字の 10 文字（この 1 回だけ渡す）。token は作り直したセッションの印（無ければ null） */
+  | { ok: true; backupCodes: string[]; token: string | null }
+  /** 始めていない（E-AUTH の外・409 CONFLICT） */
+  | { ok: false; reason: "not_started" }
+  /** もう付いている（コードは返さない・E-AUTH-017） */
+  | { ok: false; reason: "already" }
+  /** 6 けたの数字でない（そろえた後） */
+  | { ok: false; reason: "format" }
+  /** コードが違う（E-AUTH-004） */
+  | { ok: false; reason: "wrong" }
+  /** バックアップコードを引けない（付けない・503） */
+  | { ok: false; reason: "codes_unavailable" }
+  /** 同じ人の付ける操作がほかで走っている（2 回同時に送った後の 1 本） */
+  | { ok: false; reason: "busy" };
+
+const setupKey = (userId: string) => `totp-setup-${userId}`;
+/** 付ける操作の札の長さ（秒）。途中で落ちて札が残っても、この長さで切れる */
+const SETUP_CLAIM_TTL_SEC = 120;
+
+/** 同じ人の「付ける」操作を 1 本ずつにする：札（kaname_auth.verification の totp-setup-<人>）を短い取引の中で取る（取れなければ false・待たない）。
+ *  錠は札を取る取引の中だけで持ち、付ける操作の間は接続を持たない（中で部品が同じ接続の束を使っても待ちで詰まらない・G-16） */
+async function claimSetup(authPool: pg.Pool, userId: string): Promise<boolean> {
+  const c = await authPool.connect();
+  try {
+    await c.query("begin");
+    await c.query("select pg_advisory_xact_lock(hashtext($1))", [setupKey(userId)]);
+    const r = await c.query('select 1 from kaname_auth.verification where identifier = $1 and "expiresAt" > now()', [
+      setupKey(userId),
+    ]);
+    if ((r.rowCount ?? 0) > 0) {
+      await c.query("rollback");
+      return false;
+    }
+    await c.query("delete from kaname_auth.verification where identifier = $1", [setupKey(userId)]);
+    await c.query(
+      `insert into kaname_auth.verification (id, identifier, value, "expiresAt")
+       values ($1, $2, $3, now() + make_interval(secs => $4))`,
+      [uuidv7(), setupKey(userId), userId, SETUP_CLAIM_TTL_SEC],
+    );
+    await c.query("commit");
+    return true;
+  } catch (e) {
+    await c.query("rollback").catch(() => undefined); // 元の例外を投げ直す（取引を閉じるだけ）
+    throw e;
+  } finally {
+    c.release();
+  }
+}
+
+/** 札を取ってから fn を流し、終わったら札を返す（取れなければ null）。札を返すのが落ちても答えは変えない（札は長さで切れる） */
+async function underSetupLock<T>(authPool: pg.Pool, userId: string, fn: () => Promise<T>): Promise<T | null> {
+  if (!(await claimSetup(authPool, userId))) return null;
+  try {
+    return await fn();
+  } finally {
+    await authPool
+      .query("delete from kaname_auth.verification where identifier = $1", [setupKey(userId)])
+      .catch((e: unknown) => console.error(`[auth] 2 段階を付ける操作の札を返せなかった（${errKind(e)}）`));
+  }
+}
+
+/** 部品の表の状態：無い・途中（確かめていない）・付いている */
+async function setupState(authPool: pg.Pool, userId: string): Promise<"none" | "pending" | "enabled"> {
+  const r = await authPool.query<{ on: boolean | null; verified: boolean | null; has_row: boolean }>(
+    `select u."twoFactorEnabled" as on, t.verified, t.id is not null as has_row
+       from kaname_auth."user" u left join kaname_auth."twoFactor" t on t."userId" = u.id
+      where u.id = $1`,
+    [userId],
+  );
+  const x = r.rows[0];
+  if (x?.on === true || x?.verified === true) return "enabled";
+  return x?.has_row ? "pending" : "none";
+}
+
+/** 2 段階を始める：パスワードを確かめて鍵を作る（まだ付かない）。確かめていない途中なら前の鍵を捨てて新しい鍵にする */
+export async function startTotpSetup(
+  auth: Auth,
+  authPool: pg.Pool,
+  headers: Headers,
+  userId: string,
+  password: string,
+): Promise<StartTotpOutcome> {
+  const out = await underSetupLock(authPool, userId, async (): Promise<StartTotpOutcome> => {
+    if ((await setupState(authPool, userId)) === "enabled") return { ok: false, reason: "already" };
+    let uri: string;
+    try {
+      uri = (await enableTotp(auth, headers, password)).totpURI; // 部品が作ったバックアップコードは確かめの後に引く（ここでは渡さない）
+    } catch (e) {
+      const x = apiError(e);
+      if (x?.code === "INVALID_PASSWORD") return { ok: false, reason: "wrong_password" };
+      if (x?.code === "TOTP_ALREADY_ENABLED") return { ok: false, reason: "already" };
+      throw e;
+    }
+    const secret = new URL(uri).searchParams.get("secret") ?? "";
+    return { ok: true, otpauthUri: uri, secret };
+  });
+  return out ?? { ok: false, reason: "busy" };
+}
+
+/** バックアップコードを見せる形にする：部品の形（xxxxx-xxxxx）から区切りを除く（代表の答え ⑭・入れる側は K-302 の normalizeBackupCode が区切りを戻す） */
+const showBackupCode = (c: string): string => c.replace(/-/g, "");
+
+/** 2 段階を確かめて付ける。先にバックアップコードを引き（引けなければ付けない）、部品で 6 けたを確かめる。
+ *  部品は付けるときにセッションを作り直す：新しい印を返し、新しいセッションのログインの時刻は前のセッションのまま引き継ぐ
+ *  （付けた操作でログインから 15 分の枠を新しくしない）。写し（public.sessions）の始まりの時刻の引き継ぎと前の写しを閉じるのは呼ぶ側 */
+export async function confirmTotpSetup(
+  auth: Auth,
+  authPool: pg.Pool,
+  headers: Headers,
+  userId: string,
+  rawCode: string,
+): Promise<ConfirmTotpOutcome & { replacedSessionId?: string; newSessionId?: string }> {
+  const out = await underSetupLock(
+    authPool,
+    userId,
+    async (): Promise<ConfirmTotpOutcome & { replacedSessionId?: string; newSessionId?: string }> => {
+      const state = await setupState(authPool, userId);
+      if (state === "enabled") return { ok: false, reason: "already" };
+      if (state === "none") return { ok: false, reason: "not_started" };
+      const code = normalizeTotpCode(rawCode);
+      if (!/^[0-9]{6}$/.test(code)) return { ok: false, reason: "format" };
+      let codes: string[];
+      try {
+        const api = auth.api as unknown as {
+          viewBackupCodes: (x: { body: { userId: string } }) => Promise<{ backupCodes?: unknown }>;
+        };
+        const r = await api.viewBackupCodes({ body: { userId } });
+        if (!Array.isArray(r.backupCodes) || r.backupCodes.length === 0) throw new Error("NO_BACKUP_CODES");
+        codes = r.backupCodes.map((c) => showBackupCode(String(c)));
+      } catch (e) {
+        console.error(`[auth] 2 段階を付ける前にバックアップコードを引けなかった（${errKind(e)}）`); // 種類だけ
+        return { ok: false, reason: "codes_unavailable" };
+      }
+      const before = await auth.api.getSession({ headers });
+      if (!before) return { ok: false, reason: "not_started" };
+      let token: string;
+      try {
+        token = (await verifyTotp(auth, headers, code)).token;
+      } catch (e) {
+        const x = apiError(e);
+        if (x?.code === "INVALID_CODE") return { ok: false, reason: "wrong" };
+        if (x?.code === "TOTP_NOT_ENABLED") return { ok: false, reason: "not_started" };
+        throw e;
+      }
+      const replaced = token !== before.session.token;
+      // ここから先は付いた後。ログインの時刻の引き継ぎが落ちても、付いた事実とコードと新しい印は返す（コードを二度と返せなくしない）
+      let newSessionId: string | undefined;
+      if (replaced)
+        newSessionId = await authPool
+          .query<{ id: string }>(`update kaname_auth.session set "createdAt" = $2 where token = $1 returning id`, [
+            token,
+            before.session.createdAt,
+          ])
+          .then((r) => r.rows[0]?.id)
+          .catch((e: unknown) => {
+            console.error(`[auth] 2 段階を付けた後にログインの時刻を引き継げなかった（${errKind(e)}）`);
+            return undefined;
+          });
+      return {
+        ok: true,
+        backupCodes: codes,
+        token: replaced ? token : null,
+        ...(replaced ? { replacedSessionId: before.session.id } : {}),
+        ...(newSessionId ? { newSessionId } : {}),
+      };
+    },
+  );
+  return out ?? { ok: false, reason: "busy" };
+}

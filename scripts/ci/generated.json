@@ -166,6 +166,15 @@
    "outputs": [
     "05_flow/使ってもらい方.md"
    ]
+  },
+  {
+   "name": "表の足し合わせ（<名前>.d/ → errors.json・ears-elsewhere.json・ci_scope.json・K-325）",
+   "run": "python3 scripts/ci/build_registries.py",
+   "outputs": [
+    "07_qa/test-specs/errors.json",
+    "07_qa/test-plan/ears-elsewhere.json",
+    "scripts/ci/ci_scope.json"
+   ]
   }
  ],
  "checked_elsewhere": [

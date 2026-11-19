@@ -56,8 +56,11 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
     "signInWithPassword": {"email", "password"},       # apps/api/src/features/F1/login/sign-in.ts の input（無い・空は 422 E-VAL-008・K301-API-009）
     "verifySignInCode": {"pending"},                   # apps/api/src/features/F1/login/sign-in-code.ts の input（待ちの印が無いと 422。code と backup_code はどちらか 1 つ・条件つき）
     "requestAdminRecovery": {"pending"},               # apps/api/src/features/F1/admin-recovery/index.ts の input（待ちの印が無いと 422・K-302 と同じ・K305-API-011）
+    "confirmTwoFactor": {"code"},                      # apps/api/src/features/F1/two-factor/index.ts（無い・空・6 けたでないは 422 欄 code・K311-API-007）
     "resetPassword": {"token", "new_password"},       # apps/api/src/features/F1/password-reset/index.ts（無い・文字でないは 422・K-314）
-    "stepUp": {"password"},                            # apps/api/src/hooks/auth.ts:23。code は 2 段階を使う人だけ（auth.ts:31・条件つき）
+    "changePassword": {"current_password", "new_password"},   # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・欄ごと・K312-API-005・007）
+    "setMyPassword": {"new_password"},                 # apps/api/src/features/F1/change-password/index.ts（無い・文字でないは 422・K312-API-017）
+    "renamePasskey": {"name"},                         # apps/api/src/features/F1/passkeys/index.ts（無い・空・41 文字以上・制御文字は 422・欄 name・K-309）
     "consentToTerms": {"agree", "terms_version_id", "privacy_version_id"},   # apps/api/src/features/F1/consent-terms/index.ts:72・88〜90（E-VAL-019・同意する版の ID が要る）
     "claimPairingCode": {"code"},                      # apps/api/src/features/F3/connect-pc/code.ts:28。device_label・machine_id は送らなくてよい
     "saveMyTicketDraft": {"draft_id"},                 # apps/api/src/features/F4/create-ticket/hooks.ts:170
@@ -68,6 +71,7 @@ REQUIRED_INPUTS: dict[str, set[str]] = {
 }
 # 体を受ける作った口のうち、無いことで 422 にする欄を持たないもの（理由つき。新しく作った口はどちらかに載せる）
 NO_REQUIRED_INPUTS: dict[str, str] = {
+    "startTwoFactor": "password は口が見る：パスワードの無い人は 409・E-AUTH-020 を先に返し、ある人で空なら 422 欄 password（入口の 422 で 409 に届かなくしない・K311-API-022）",
     "createPairingCode": "体は空の形（K-57）。{} で 201",
     "sendHeartbeat": "health・protocol・version はどれも無くてよい（無ければ空の並び・古い印として扱う・connect-pc/hooks.ts:136〜145）",
     "resendSignupEmail": "体は空の形。申し込みの印は頭 x-signup-token で受ける（D-128.142）",
@@ -78,8 +82,8 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
-    "requestInvitationResend": "体は空の形（K-334）。招待は道のトークンで引く。{} で 201（期限切れの招待）。知らない欄は 422（契約の strict）",
     "dismissSetupTasks": "key は無くてよい（無ければ箱を閉じる・K-250）。{} で 201",
+    "stepUp": "password か passkey のどちらか 1 つ（条件つき・K-309）。どちらも無ければ口が 422（apps/api/src/hooks/auth.ts）",
 }
 # 類 F（回 9・Q5 回 8 追加-2）：道の値を口が値域つきで断る（422）口。契約の道の値の形に値域（pattern）を書く
 PATH_PATTERNS: dict[tuple[str, str], str] = {
@@ -120,7 +124,8 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignup": {"token": {"pattern": "\\S"}},      # apps/api/src/features/F1/verify-email/index.ts:226〜227（空は 422・形が違えば 410）
     "signInWithPassword": {"email": {"pattern": "\\S"}, "password": {"pattern": "\\S"}},   # apps/api/src/features/F1/login/sign-in.ts（空は 422 E-VAL-008・K301-API-009）
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
-    "stepUp": {"password": {"pattern": "\\S"}},         # apps/api/src/hooks/auth.ts:21〜23
+    "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
+    "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
@@ -133,8 +138,11 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "updateConversation": ["名前が null（空と同じ）"],
     "updateMemory": ["覚えることが null（空と同じ）"],
     "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
+    "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],   # K-312
+    "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],   # K-312
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
-    "stepUp": ["2 段階を使う人のコードが空（条件つき）"],
+    "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
+    "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
     "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
     "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
@@ -146,6 +154,14 @@ AGENT_ANSWERS: dict[str, tuple[str, dict[str, str]]] = {
     "updateConversation": ("ConversationUpdated", {"id": "uuid", "ok": "boolean"}),             # hooks/agent.ts:50
     "updateMemory": ("MemoryUpdated", {"id": "uuid", "ok": "boolean"}),                          # hooks/agent.ts:66
 }
+
+# チケットごとのファイル（contract_shape.d/K-xxx.py）の分を足す（K-325）。足せるのはこの 6 つの表だけ（OA・SCHEMAS などの読んだ値は足させない）
+sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+from registry_d import merge_py  # noqa: E402
+
+FRAGMENT_NAMES = ("REQUIRED_INPUTS", "NO_REQUIRED_INPUTS", "PATH_PATTERNS", "VALUE_RANGES", "UNEXPRESSIBLE_422", "AGENT_ANSWERS")
+merge_py(globals(), ROOT / "scripts" / "ci" / "contract_shape.d", names=FRAGMENT_NAMES,
+         helpers={"CODE_SEP": CODE_SEP, "CODE_CHAR": CODE_CHAR})
 
 # 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
 HOOKS_DIR = ROOT / "apps/api/src/hooks"

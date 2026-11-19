@@ -2,6 +2,7 @@
 import { call } from "@/lib/api/call";
 import { apiBase, getToken, notifyUnauthorized, setToken } from "@/lib/api/client";
 import { refreshSession } from "./client";
+import { noticeMfaRequired } from "@/lib/mfa-gate";
 import { noticeTermsRequired } from "@/lib/terms-gate";
 
 export interface ExtError {
@@ -50,6 +51,7 @@ export async function ext<T>(path: string, body?: unknown, method = "POST"): Pro
   // ログインそのものの失敗（E-AUTH-001 等）は各画面が文言で出すので、ここでは UNAUTHENTICATED だけを見る
   if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
   noticeTermsRequired(res.status, json.code, json.message, sentAt); // 同意し直しが要る（K-53）
+  noticeMfaRequired(res.status, json.code, json.message); // 付けるまで進めない（K-319）
   if (!res.ok)
     throw new AuthExtError({
       status: res.status,
@@ -304,6 +306,7 @@ export async function agentAttach(file: File): Promise<{ id: string; name: strin
   };
   if (res.status === 401 && json.code === "UNAUTHENTICATED") notifyUnauthorized();
   noticeTermsRequired(res.status, json.code, json.message, sentAt); // 同意し直しが要る（K-53）
+  noticeMfaRequired(res.status, json.code, json.message); // 付けるまで進めない（K-319）
   if (!res.ok || !json.data)
     throw new AuthExtError({
       status: res.status,

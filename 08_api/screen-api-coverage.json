@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-18",
+ "frozen_at": "2026-11-19",
  "summary": {
   "total_screens": 37,
-  "total_apis": 366,
+  "total_apis": 367,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -147,6 +147,11 @@
     {
      "role": "action",
      "endpoint": "PATCH /api/v1/me/password",
+     "act": "A97"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/me/password",
      "act": "A97"
     },
     {

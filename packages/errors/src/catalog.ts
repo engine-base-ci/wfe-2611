@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。179 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。186 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -2308,6 +2308,136 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "code"
     }
   },
+  "E-AUTH-015": {
+    "id": "E-AUTH-015",
+    "cls": "conflict",
+    "message": "入り方が 1 つだけなので外せません。先にほかの入り方を付けてください",
+    "action": "パスキーかパスワードと 2 段階認証を付けてから外す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "AUTH-015",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-remove-last"
+    }
+  },
+  "E-AUTH-016": {
+    "id": "E-AUTH-016",
+    "cls": "conflict",
+    "message": "パスワードで入るには 2 段階認証が要ります。先に 2 段階認証を付けてください",
+    "action": "2 段階認証を付けてから外す",
+    "undo": false,
+    "severity": "high",
+    "support_code": "AUTH-016",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-remove-last"
+    }
+  },
+  "E-AUTH-017": {
+    "id": "E-AUTH-017",
+    "cls": "auth",
+    "message": "2 段階認証はもう付いています",
+    "action": "安全の設定の画面に戻る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-017",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "already"
+    }
+  },
+  "E-AUTH-018": {
+    "id": "E-AUTH-018",
+    "cls": "conflict",
+    "message": "このパスキーは、もうこの端末に付いています",
+    "action": "そのまま使う／別の端末で足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "sec-add-dup"
+    }
+  },
+  "E-AUTH-019": {
+    "id": "E-AUTH-019",
+    "cls": "gate",
+    "message": "入り方を 1 つ足してから使い始めます",
+    "action": "パスキーか 2 段階認証を付ける",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "AUTH-019",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "mfa-required"
+    }
+  },
+  "E-AUTH-020": {
+    "id": "E-AUTH-020",
+    "cls": "auth",
+    "message": "2 段階認証を付けるには、先にパスワードを決めてください",
+    "action": "パスワードを決める",
+    "undo": false,
+    "severity": "low",
+    "support_code": "AUTH-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "no-password"
+    }
+  },
+  "E-AUTH-021": {
+    "id": "E-AUTH-021",
+    "cls": "auth",
+    "message": "本人か確かめられませんでした。もう一度確かめてください",
+    "action": "もう一度確かめる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "AUTH-021",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "mfa-setup",
+      "state": "step-up"
+    }
+  },
   "E-CHAT-001": {
     "id": "E-CHAT-001",
     "cls": "connectivity",
@@ -2862,41 +2992,6 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "a"
     }
   },
-  "E-INV-004": {
-    "id": "E-INV-004",
-    "cls": "not_found",
-    "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
-    "action": "ログインする",
-    "undo": false,
-    "severity": "medium",
-    "support_code": "E-INV-004",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "invite-accept",
-      "state": "a"
-    }
-  },
-  "E-INV-008": {
-    "id": "E-INV-008",
-    "cls": "conflict",
-    "message": "この招待はまだ使えます。届いたリンクから参加してください",
-    "action": "届いたリンクから参加する",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-INV-008",
-    "must_not": false,
-    "layers": [
-      "API"
-    ],
-    "where": {
-      "screen": "invite-accept",
-      "state": "a"
-    }
-  },
   "E-PAGE-001": {
     "id": "E-PAGE-001",
     "cls": "not_found",
@@ -3261,6 +3356,41 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "running"
+    }
+  },
+  "E-INV-004": {
+    "id": "E-INV-004",
+    "cls": "not_found",
+    "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
+    "action": "参加した人はログインして入る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-008": {
+    "id": "E-INV-008",
+    "cls": "conflict",
+    "message": "この招待はまだ使えます。届いたリンクから参加してください",
+    "action": "届いたリンクから参加する",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-008",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
     }
   }
 };

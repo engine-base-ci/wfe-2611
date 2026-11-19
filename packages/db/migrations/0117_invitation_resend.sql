@@ -1,4 +1,4 @@
--- 0115 招待の送り直しを頼む（K-334・契約の口 requestInvitationResend・D-128.63・answer=7fe1f09fdab4 ⑤・関門 C2）
+-- 0117 招待の送り直しを頼む（K-334・契約の口 requestInvitationResend・D-128.63・answer=7fe1f09fdab4 ⑤・関門 C2）
 --   期限（7 日）が過ぎた招待を開いた人が「送り直しを頼む」を押すと、招いた人（もう居なければそのワークスペースの管理者全員）に知らせる。
 --   同じ招待で 1 日 1 回。送り直すのは招いた人が新しい招待を出すことで、この口は招待そのものを変えない（頼んだ時刻だけを書く）。
 --
@@ -175,4 +175,4 @@ end $$;
 revoke all on function app.invitation_resend_stamp(text) from public;
 grant execute on function app.invitation_resend_stamp(text) to kaname_app;
 
-insert into app.schema_migrations (name) values ('0115_invitation_resend.sql') on conflict do nothing;
+insert into app.schema_migrations (name) values ('0117_invitation_resend.sql') on conflict do nothing;

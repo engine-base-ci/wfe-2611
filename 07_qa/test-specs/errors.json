@@ -4126,6 +4126,230 @@
    ]
   },
   {
+   "id": "E-AUTH-015",
+   "class": "conflict",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "sec-remove-last"
+   },
+   "when": "最後の入り方のパスキーを外そうとした（外すとパスキーが 0 本になり、パスワードも 2 段階認証も無い）",
+   "false_when": "ほかにパスキーがある・2 段階認証が付いている（パスワードと 6 けたで入れる）",
+   "message": "入り方が 1 つだけなので外せません。先にほかの入り方を付けてください",
+   "action": "パスキーかパスワードと 2 段階認証を付けてから外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "パスキー 1 本だけで入る人（パスワードなし）",
+    "steps": [
+     "安全の設定でそのパスキーを外す"
+    ],
+    "needs": "パスワードの行を消せる環境"
+   },
+   "severity": "high",
+   "source": [
+    "D-128.61",
+    "D-128.141"
+   ],
+   "support_code": "AUTH-015"
+  },
+  {
+   "id": "E-AUTH-016",
+   "class": "conflict",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "sec-remove-last"
+   },
+   "when": "パスワードはあるが 2 段階認証が無い人が、最後のパスキーを外そうとした（パスワードだけで入る状態になる）",
+   "false_when": "ほかにパスキーがある・2 段階認証が付いている",
+   "message": "パスワードで入るには 2 段階認証が要ります。先に 2 段階認証を付けてください",
+   "action": "2 段階認証を付けてから外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "パスワードとパスキー 1 本で入る人（2 段階認証なし）",
+    "steps": [
+     "安全の設定でそのパスキーを外す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "high",
+   "source": [
+    "D-128.61",
+    "D-128.141"
+   ],
+   "support_code": "AUTH-016"
+  },
+  {
+   "id": "E-AUTH-017",
+   "class": "auth",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "already"
+   },
+   "when": "2 段階認証がもう付いている人が、付ける操作（始める・確かめる）をもう一度した（古いタブ・口に直に）",
+   "false_when": "まだ付いていない・始めた途中（確かめる前）",
+   "message": "2 段階認証はもう付いています",
+   "action": "安全の設定の画面に戻る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "2 段階を付けた人",
+    "steps": [
+     "安全の設定を開く",
+     "付ける口をもう一度呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.59",
+    "D-128.61"
+   ],
+   "support_code": "AUTH-017"
+  },
+  {
+   "id": "E-AUTH-018",
+   "class": "conflict",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "sec-add-dup"
+   },
+   "when": "もう付いている認証器（同じ credential）で、パスキーをもう一度足そうとした",
+   "false_when": "別の端末・別の認証器で足す",
+   "message": "このパスキーは、もうこの端末に付いています",
+   "action": "そのまま使う／別の端末で足す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "この端末のパスキーが 1 本付いている",
+    "steps": [
+     "同じ端末でパスキーを足す"
+    ],
+    "needs": "同じ認証器（試験の仮の認証器でよい）"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.141"
+   ],
+   "support_code": "AUTH-018"
+  },
+  {
+   "id": "E-AUTH-019",
+   "class": "gate",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "mfa-required"
+   },
+   "when": "登録の直後でパスキーも 2 段階認証も無い人（付けるまで進めないの印が立ったセッション）が、安全の設定・2 段階を付ける・取り直し・ログアウト・自分の取得・規約のほかの画面・口を使おうとした",
+   "false_when": "パスキーか 2 段階認証を 1 つ付けた後（同じセッションのまま通る）・PC（Bridge）のセッション・安全の設定を読む・2 段階を付ける・パスキーを足す・取り直し・ログアウト・自分の取得・規約の口",
+   "message": "入り方を 1 つ足してから使い始めます",
+   "action": "パスキーか 2 段階認証を付ける",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "登録したばかりで、パスキーも 2 段階認証も付けていないアカウント",
+    "steps": [
+     "パスワードでログインする",
+     "チケットの画面を開く"
+    ],
+    "needs": "パスキーも 2 段階認証も無い人（登録の直後）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.141",
+    "D-128.137",
+    "D-125.162"
+   ],
+   "support_code": "AUTH-019"
+  },
+  {
+   "id": "E-AUTH-020",
+   "class": "auth",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "no-password"
+   },
+   "when": "パスワードを持たない人（パスキーだけで入る人）が、2 段階認証を付け始めようとした",
+   "false_when": "パスワードを決めた後（決めた後なら始められる）",
+   "message": "2 段階認証を付けるには、先にパスワードを決めてください",
+   "action": "パスワードを決める",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "パスキーだけで入る人（パスワードが無い）",
+    "steps": [
+     "安全の設定を開く",
+     "2 段階認証を付ける"
+    ],
+    "needs": "パスキー（パスワードの行を消す）"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.61"
+   ],
+   "support_code": "AUTH-020"
+  },
+  {
+   "id": "E-AUTH-021",
+   "class": "auth",
+   "where": {
+    "screen": "mfa-setup",
+    "state": "step-up"
+   },
+   "when": "本人確認の取り直しで、パスワードが違う・パスキーで確かめられない（他人のパスキー・チャレンジの期限切れ・チャレンジなし・署名が違う）",
+   "false_when": "正しいパスワード（2 段階の人は正しい 6 けたも）・この人のパスキーで 5 分の内のチャレンジ",
+   "message": "本人か確かめられませんでした。もう一度確かめてください",
+   "action": "もう一度確かめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "ログインして 15 分を過ぎた人",
+    "steps": [
+     "パスキーを外す",
+     "取り直しの小窓で違うパスワードを入れる"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-125.139",
+    "D-128.141"
+   ],
+   "support_code": "AUTH-021"
+  },
+  {
    "id": "E-CHAT-001",
    "class": "connectivity",
    "where": {
@@ -5052,63 +5276,6 @@
    ]
   },
   {
-   "id": "E-INV-004",
-   "class": "not_found",
-   "where": {
-    "screen": "invite-accept",
-    "state": "a"
-   },
-   "when": "招待がもう使われた（参加した後のリンクを開いた・参加した後に送り直しを頼んだ）",
-   "false_when": "まだ使われていない招待",
-   "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
-   "action": "ログインする",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "invite-accept の画面",
-    "steps": [
-     "参加した後の招待のリンクを開く"
-    ],
-    "needs": "なし"
-   },
-   "severity": "medium",
-   "source": [
-    "D-128.63"
-   ]
-  },
-  {
-   "id": "E-INV-008",
-   "class": "conflict",
-   "where": {
-    "screen": "invite-accept",
-    "state": "a"
-   },
-   "when": "まだ使える招待（期限の内・取り消されていない・使われていない）で送り直しを頼んだ",
-   "false_when": "期限（7 日）が過ぎた招待",
-   "message": "この招待はまだ使えます。届いたリンクから参加してください",
-   "action": "届いたリンクから参加する",
-   "undo": false,
-   "layers": [
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "invite-accept の画面",
-    "steps": [
-     "期限の内の招待で、送り直しを頼む口を直に呼ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-128.63"
-   ]
-  },
-  {
    "id": "E-PAGE-001",
    "class": "not_found",
    "where": {
@@ -5737,6 +5904,64 @@
     "D-128.163"
    ],
    "support_code": "TO-005"
+  },
+  {
+   "id": "E-INV-004",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待がもう受けられた（used）",
+   "false_when": "まだ受けていない招待",
+   "message": "この招待はもう使われています。参加した人は、ログインして入ってください",
+   "action": "参加した人はログインして入る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "一度参加に使った招待のリンクをもう一度開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.62",
+    "D-128.63"
+   ]
+  },
+  {
+   "id": "E-INV-008",
+   "class": "conflict",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "まだ使える招待（期限の内・取り消されていない・使われていない）で送り直しを頼んだ",
+   "false_when": "期限（7 日）が過ぎた招待",
+   "message": "この招待はまだ使えます。届いたリンクから参加してください",
+   "action": "届いたリンクから参加する",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "期限の内の招待で、送り直しを頼む口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.63"
+   ]
   }
  ],
  "meta": {

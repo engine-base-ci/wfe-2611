@@ -180,6 +180,7 @@ export function gen(root = ROOT) {
       chokePoints: e.choke_points ?? [], errors: (e.outputs_4xx ?? []).map((x) => x.status), acts: e.acts ?? [], screens: e.screens ?? [],
       perm: permOf({ ...e, path: hono }, d.tag || slug(p).split("_")[0], m),
       termsOpen: e.terms_open === true,
+      mfaOpen: e.mfa_open === true,
       ignoresScope: e.list_ignores_scope === true,
     });
     const last = eps[eps.length - 1];
@@ -226,6 +227,8 @@ export interface EndpointDef {
   };
   /** 同意し直し（K-53）の間も止めない口（規約の 2 つ・ログアウト・自分の取得）。正本は 05_flow/screen_api.py の TERMS_OPEN_OPS */
   termsOpen: boolean;
+  /** 付けるまで進めない（K-321・D-128.141）の間も止めない口。正本は 05_flow/screen_api.py の MFA_OPEN_OPS */
+  mfaOpen: boolean;
   /** 一覧の scope_id（グループで絞る）を形だけ確かめて無視する口。正本は 05_flow/screen_api.py の LIST_OPS */
   ignoresScope: boolean;
 }

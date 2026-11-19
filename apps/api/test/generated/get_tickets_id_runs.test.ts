@@ -41,6 +41,8 @@ describe("GET /api/v1/tickets/:id/runs", () => {
     // 本物の試験：apps/api/test/features/F5/delegate.test.ts の「K62-API-060」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/delegate.test.ts", "utf8")).toContain("K62-API-060");
   });
+  // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
+  it.todo("test_get_tickets_id_runs_mfa_pending");
   it("test_get_tickets_id_runs_session_unresolved", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）

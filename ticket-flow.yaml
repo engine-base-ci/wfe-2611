@@ -25,17 +25,18 @@ notices:
     ]
   build: ["npx prettier --check --ignore-unknown {changed}", "npx eslint --no-warn-ignored {changed}"]
 answers: 01_hearing/decider-answers.jsonl
-# GitHub に出す前に：依存を入れ、CI の定義（v3-gate.yml）の static・spec の組をそのまま手元で流す（まっさらな写しで・K-178）
+# GitHub に出す前に：依存を入れ、CI の定義（v3-gate.yml）の static・spec（spec・spec-2・spec-3）の組をそのまま手元で流す（まっさらな写しで・K-178）
 # 手で選んだ検査の一覧は持たない（CI だけが流す検査が漏れ、出してから赤で戻った・K-161）
 preflight: ["pnpm install --frozen-lockfile --prefer-offline --silent"]
-preflight_jobs: [static, spec]
+preflight_jobs: [static, spec, spec-2, spec-3] # spec は 3 組に分けた（K-323）
 # 重さ：1 本が触ってよい重い組は 1 つ（画面と DB を 1 本で触ると CI 1 回が 17 分・K-161）
 weight:
   groups: { web: ["apps/web/**"], db: ["packages/db/**"] }
   max: 1
 # changes: に書かなくてよい物：作り手が作り直す生成物（scripts/ci/generated.json の outputs）と決める人の答えの記録
 # 取り込みでぶつかったら本線の版にして作り直す物でもある（catch_up）。だから作り手が実際に書くファイルとちょうど同じにする（K-191）：
-# 手で持つ物（07_qa/test-plan/ears-elsewhere.json・result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
+# 手で持つ物（result-ledger.json・packages/contracts/src/index.ts）は載せない。変えるチケットが changes: に書く
+# 表の 3 つ（errors.json・ears-elsewhere.json・ci_scope.json）は <名前>.d/ から作る生成物（K-325）。足すチケットは <名前>.d/K-<番号>.json を changes: に書く
 changes_ignore:
   - ".github/workflows/release-gate.yml"
   - ".github/workflows/staging-e2e.yml"
@@ -54,10 +55,12 @@ changes_ignore:
   - "07_functional/functional-breakdown.md"
   - "07_functional/functional-breakdown.html"
   - "07_qa/test-plan/access-matrix.json"
+  - "07_qa/test-plan/ears-elsewhere.json"
   - "07_qa/test-plan/ears-test-mapping.json"
   - "07_qa/test-plan/test-plan.html"
   - "07_qa/test-plan/test-plan.json"
   - "07_qa/test-plan/test-plan.md"
+  - "07_qa/test-specs/errors.json"
   - "07_qa/test-specs/errors.md"
   - "08_api/API-SPEC.md"
   - "08_api/api-decisions.json"
@@ -84,6 +87,7 @@ changes_ignore:
   - "packages/contracts/src/schemas.ts"
   - "packages/contracts/src/types.ts"
   - "packages/errors/src/catalog.ts"
+  - "scripts/ci/ci_scope.json"
 # 本線が先に進んでいても、同じファイルを変えていなければ CI を流し直さずに取り込む（K-191・D-133.7）。
 # ぶつかってよいのは changes_ignore の物だけ：union の物は両方の行を残し、ほかは本線の版にして regen で作り直す
 catch_up:
@@ -92,6 +96,16 @@ catch_up:
 # 切る段（大分類ごとにまとめて切った枝）から、1 本の分だけを持ち込む台本（K-187）
 cut:
   take: "python3 scripts/tickets/cut_take.py {ticket} {ref}"
+  # 切る段の機械の検査（2026-11-18・K-55 で足した・scripts/ci/cut_check.py）。cut-review の前に、切る段の枝の写しの根で流れる
+  carry_field: carry
+  scope_cmd: "python3 scripts/ci/cut_check.py scope --ticket {ticket} --files {files}"
+  scope_fields: [affects, ci_wide]
+  prior_tests_cmd: "python3 scripts/ci/cut_check.py prior --files {files}"
+  prior_heading: 前からの試験を替えた所
+  smoke: "python3 scripts/ci/cut_check.py smoke --junit {junit} --tests {tests}"
+  # 本体の赤（実装が無いから赤）と見分けるため「does not exist」は入れない（まだ無い列・関数・表を試験の本体が使うと、実装が無いのに準備の赤に見える）。
+  #   準備の中の誤りは、フック（beforeAll など）と試験の外で落ちた物は文に関わらず赤（cutcheck.py の hook_rx）
+  setup_red: "duplicate key|violates (foreign key|not-null|check|unique)|syntax error at|invalid input syntax"
 # CI の台：組ごとに使い捨ての Linux の VM（~/.claude/skills/ticket-flow/scripts/vm.py・K-173 の実測で 3 台×3 コア）
 vm:
   label: linux-vm

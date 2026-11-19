@@ -142,6 +142,7 @@
     "DELETE /api/me/two-factor",
     "POST /api/me/backup-codes",
     "PATCH /api/me/password",
+    "POST /api/me/password",
     "GET /api/me/sessions",
     "DELETE /api/me/sessions/:id",
     "POST /api/me/sessions/revoke-others",
@@ -3558,6 +3559,12 @@
      "act": "A97",
      "role": "action",
      "method": "PATCH",
+     "path_draft": "/api/me/password"
+    },
+    {
+     "act": "A97",
+     "role": "action",
+     "method": "POST",
      "path_draft": "/api/me/password"
     },
     {

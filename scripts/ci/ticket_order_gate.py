@@ -4,8 +4,9 @@
   python3 scripts/ci/ticket_order_gate.py             START..HEAD の実装のコミットを見る
   python3 scripts/ci/ticket_order_gate.py --selftest  依存が未完了・枝の外にだけある写しが赤になるか
 
-完了の決め方：依存のチケットの番号を持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
-依存の番号も入っていればそれでもよい）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
+完了の決め方：依存のチケットの番号を件名に持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
+依存の番号も入っていればそれでもよい。満たす側は件名の全部の番号）。裁かれる側（どのチケットの依存を見るか）は持ち主 owners_of だけ：
+頭に番号が並んでいれば頭の番号、並んでいなければ件名の全部の番号（K-309）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
 ただし決まりを始めた START より前に作られたチケット（START..HEAD のどのコミットにも番号が出てこず、stage が
 確認中・完了のもの）は、番号の付いたコミットが無いので「決まりの前に入った」として通し、そのことを出す。
 文書だけのコミット（変えたファイルが全部、文書と生成物の置き場に入る）は見ない。進め方の設定（ai-team.yaml）も、この検査の中だけ
@@ -31,6 +32,17 @@ import tempfile
 
 START = "2fc247a62ee2c34dd400118e301514c00b922777"  # ticket_commit_gate.py と同じ起点（No Ticket, No Commit を始めた時点）
 TICKET = re.compile(r"\bK-\d+\b")
+# 実装の持ち主：件名の頭に番号を並べた件名（「K-1 K-2 feat: …」）は、頭の番号だけ。件名の中に出てくるほかのチケットの番号は持ち主にしない
+#   （本線の cccf8b2c「K-304 fix: …K-309 まで閉じる」が K-309 の実装と数えられ、K-309 の G56 が赤になった・K-309・PM の決め 2026-11-18）。
+#   頭に番号が並んでいない件名（「fix: K-5 …」「K-1〜K-3 docs:」「K-1: fix」など）は、前のまま件名の全部の番号を持ち主にする（裁かないコミットを作らない）。
+#   持ち主は「依存を裁かれる側」だけに使う。「依存を満たす側」は前のまま件名の全部の番号で数える（狭めると、前に入った取り込みが過去にさかのぼって赤になる）
+SUBJECT_HEAD = re.compile(r"^(?:K-\d+[\s,・]+)+")
+
+
+def owners_of(subj: str) -> set[str]:
+    """実装の持ち主の番号。頭に番号が並んでいれば頭の番号だけ、並んでいなければ件名の全部の番号"""
+    m = SUBJECT_HEAD.match(subj + " ")
+    return set(TICKET.findall(m.group(0) if m else subj))
 DOC_PREFIXES = ("01_hearing/", "11_tickets/", "07_qa/test-plan/", "README.md")
 DOC_PATTERNS = (re.compile(r"^07_qa/test-specs/.+\.md$"), re.compile(r"^03_architecture/catalog\.[a-z]+$"),
                 re.compile(r"^08_api/[^/]+\.md$"))
@@ -95,10 +107,47 @@ def _generated_of(raw: bytes | None) -> set[str]:
     return {o for g in (d.get("generators", []) if isinstance(d, dict) else []) for o in g.get("outputs", [])}
 
 
-def _tickets_of(raw: bytes | None) -> dict[str, dict] | None:
-    """tickets.json の中身 → {番号: チケット}。無い・JSON でない・"tickets" が無いなら None"""
+# 作り手（scripts/tickets/build_index.py・字下げ 1）の形の tickets.json：頭と終わりが決まった文字で、チケットの間は「},\n  {」
+_LIST_HEAD = b'{\n "tickets": [\n'
+_LIST_TAIL = b"\n ]\n}"
+_LIST_SEP = b"},\n  {"
+_BAD = object()   # 読めないかけらの印
+
+
+def _ticket_list_fast(raw: bytes, chunks: dict[bytes, object]) -> list | None:
+    """作り手の形なら、チケット 1 つずつの文字を読み解いて覚え（chunks）、版が変わっても同じ文字は読み直さない（K-341）。
+    元の文字＝頭 + 「,\n  」でつないだ各かけら + 終わり（どれも ASCII）なので、どのかけらも UTF-8 として読めて 1 つの JSON の値として
+    読めれば、全体を decode("utf-8") して json.loads した "tickets" と同じ並びになる（切り方を誤ったかけらは読めない）。
+    形が違う・読めないかけらがあれば None（全体を読む前の道に戻る）"""
+    body = raw.rstrip(b" \t\n\r")
+    if not (body.startswith(_LIST_HEAD) and body.endswith(_LIST_TAIL)):
+        return None
+    parts = body[len(_LIST_HEAD):len(body) - len(_LIST_TAIL)].split(_LIST_SEP)
+    out = []
+    last = len(parts) - 1
+    for i, part in enumerate(parts):
+        key = (b"{" if i else b"") + part + (b"}" if i < last else b"")
+        v = chunks.get(key, _BAD)
+        if v is _BAD and key not in chunks:
+            try:
+                v = json.loads(key.decode("utf-8"))
+            except ValueError:   # UnicodeDecodeError も含む
+                v = _BAD
+            chunks[key] = v
+        if v is _BAD:
+            return None
+        out.append(v)
+    return out
+
+
+def _tickets_of(raw: bytes | None, chunks: dict[bytes, object] | None = None) -> dict[str, dict] | None:
+    """tickets.json の中身 → {番号: チケット}。無い・JSON でない・"tickets" が無いなら None。
+    chunks（かけらの覚え）を渡すと、作り手の形の版はかけらごとに読む（答えは同じ・K-341）"""
     if raw is None:
         return None
+    ts = _ticket_list_fast(raw, chunks) if chunks is not None else None
+    if ts is not None:
+        return {t["id"]: t for t in ts if isinstance(t, dict) and "id" in t}
     try:
         d = json.loads(raw.decode("utf-8"))
     except (ValueError, UnicodeDecodeError):
@@ -109,16 +158,34 @@ def _tickets_of(raw: bytes | None) -> dict[str, dict] | None:
     return {t["id"]: t for t in ts if isinstance(t, dict) and "id" in t}
 
 
-def read_versions(root: str, specs: list[str]) -> dict[str, bytes | None]:
-    """["<rev>:<path>", …] → 中身（無ければ None）。git cat-file --batch を 1 回だけ流す"""
+def read_versions(root: str, specs: list[str], dedupe: bool = False) -> dict[str, bytes | None]:
+    """["<rev>:<path>", …] → 中身（無ければ None）。git cat-file --batch を 1 回だけ流す。
+    dedupe=True は先に git cat-file --batch-check で中身の印を聞き、同じ中身は 1 回だけ読む（同じ bytes を返す・git は 2 回・K-341）"""
     if not specs:
         return {}
-    r = subprocess.run(["git", "cat-file", "--batch"], input="".join(s + "\n" for s in specs).encode("utf-8"),
-                       capture_output=True, cwd=root)
-    if r.returncode != 0:
-        raise RuntimeError(f"git cat-file --batch: {r.stderr.decode('utf-8', 'replace').strip()[:200]}")
+    if dedupe:
+        r = subprocess.run(["git", "cat-file", "--batch-check"], input="".join(s + "\n" for s in specs).encode("utf-8"),
+                           capture_output=True, cwd=root)
+        if r.returncode != 0:
+            raise RuntimeError(f"git cat-file --batch-check: {r.stderr.decode('utf-8', 'replace').strip()[:200]}")
+        ids: dict[str, str | None] = {}
+        for s, line in zip(specs, r.stdout.decode("utf-8", "replace").split("\n")):
+            parts = line.split(" ")
+            ids[s] = parts[0] if len(parts) == 3 and parts[2].isdigit() else None
+        blobs = read_versions(root, list(dict.fromkeys(i for i in ids.values() if i)))
+        return {s: (blobs[i] if i else None) for s, i in ids.items()}
+    # 頼む名前は一時ファイルから渡し、答えは 1 回の read で受ける（大きな答えを細かく待つより速い・K-341）
+    with tempfile.TemporaryFile() as inp, tempfile.TemporaryFile() as err:
+        inp.write("".join(s + "\n" for s in specs).encode("utf-8"))
+        inp.seek(0)
+        p = subprocess.Popen(["git", "cat-file", "--batch"], stdin=inp, stdout=subprocess.PIPE, stderr=err, cwd=root)
+        buf = p.stdout.read()
+        p.stdout.close()
+        if p.wait() != 0:
+            err.seek(0)
+            raise RuntimeError(f"git cat-file --batch: {err.read().decode('utf-8', 'replace').strip()[:200]}")
     out: dict[str, bytes | None] = {}
-    buf, pos = r.stdout, 0
+    pos = 0
     for s in specs:
         nl = buf.index(b"\n", pos)
         head = buf[pos:nl].decode("utf-8", "replace")
@@ -166,30 +233,34 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     base（比べる元）を渡すと、子を分かれ目の版と枝の中の版から和で数える（外した子を数え続ける・K-210）。渡さなければ枝の先頭の版だけ"""
     head_sha = git("rev-parse", "--verify", f"{rev}^{{commit}}", cwd=root).strip()
     family_at = _family_versions(root, head_sha, base) if base is not None else []
-    rows = [l.split("\t", 1) for l in git("log", "--reverse", "--format=%H%x09%s", f"{start}..{head_sha}", cwd=root).splitlines() if "\t" in l]
+    log = commit_log(root, start, head_sha)
+    rows = [(sha, subj) for sha, subj, _, _ in log]
     at_rev = read_versions(root, [f"{head_sha}:{TICKETS_JSON}", f"{head_sha}:{GENERATED_JSON}"])
     tickets = _tickets_of(at_rev[f"{head_sha}:{TICKETS_JSON}"])
     if tickets is None:
         raise RuntimeError(f"{head_sha[:10]}（枝の先頭）の版の {TICKETS_JSON} が無いか読めない（JSON でない・\"tickets\" が無い）。読めなければ止める")
     gen = _generated_of(at_rev[f"{head_sha}:{GENERATED_JSON}"])
     mentioned = {k for _, s in rows for k in TICKET.findall(s)}
-    impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と番号
-    for sha, subj in rows:
-        files = [f for f in git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", sha, cwd=root).splitlines() if f]
+    impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と、依存を裁く番号（持ち主・owners_of）
+    credit: dict[str, set[str]] = {}       # 依存を満たす側に数える番号（件名の全部の番号・前と同じ。満たす側を狭めて過去の取り込みを赤にしない）
+    for sha, subj, files, _ in log:
         if not _not_impl(files, gen):
-            impl.append((sha, set(TICKET.findall(subj))))
+            impl.append((sha, owners_of(subj)))
+            credit[sha] = set(TICKET.findall(subj))
     start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
     order = [start_sha] + [sha for sha, _ in rows]
-    raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order])
-    parsed: dict[bytes, dict[str, dict] | None] = {}
+    raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order], dedupe=True)
+    # 同じ中身の版は read_versions(dedupe=True) が同じ bytes の物を返すので、物の id で覚える（2.7MB の中身を毎回ハッシュしない・K-341）
+    parsed: dict[int, dict[str, dict] | None] = {}
+    chunks: dict[bytes, object] = {}   # チケット 1 つずつの文字 → 読み解いた値（版をまたいで使い回す・K-341）
 
     def version(c: str) -> dict[str, dict] | None:
         raw = raw_at.get(f"{c}:{TICKETS_JSON}")
         if raw is None:
             return None
-        if raw not in parsed:
-            parsed[raw] = _tickets_of(raw)
-        return parsed[raw]
+        if id(raw) not in parsed:
+            parsed[id(raw)] = _tickets_of(raw, chunks)
+        return parsed[id(raw)]
 
     # 外して戻した依存を通さない（テスター Q 回 1 の #2・PM の判断 (ア)）：START の版と、枝の中のそれより前の版に一度でも
     # 載っていた依存を、実装のコミットごとに覚える（git log の順。並んだ枝の版も数えるので、緩む側には倒れない）
@@ -228,8 +299,8 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     #   base を渡した回は、分かれ目の版と枝の中の版に一度でも parent として載っていた子を数える（枝で parent を外しても親を満たさない・K-210）。
     #   起点を START にしない：本線で済む前に消した子・付け替えた子で、親が永久に満たせなくなるため
     children: dict[str, set[str]] = {}
-    fam_raw = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in family_at]) if family_at else {}
-    for ver in [tickets] + [_tickets_of(r) or {} for r in dict.fromkeys(v for v in fam_raw.values() if v is not None)]:
+    fam_raw = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in family_at], dedupe=True) if family_at else {}
+    for ver in [tickets] + [_tickets_of(r, chunks) or {} for r in dict.fromkeys(v for v in fam_raw.values() if v is not None)]:
         for kid, tk in ver.items():
             if tk.get("parent"):
                 children.setdefault(str(tk["parent"]), set()).add(kid)
@@ -246,11 +317,17 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
             return "子が全部済んだ親"
         return None
 
+    # 先祖かは git に 1 本ずつ聞かず、一覧の親から作ったビットで見る（K-341）。「前の実装のコミット impl[:i]」は一覧で前の物（ビットの番号が小さい）
+    pos, anc_bits = _ancestor_bits(log)
+    credit_bits: dict[str, int] = {}
+    for c, _ in impl:
+        for x in credit[c]:
+            credit_bits[x] = credit_bits.get(x, 0) | (1 << pos[c])
     bad, legacy = [], []
     reported: set[tuple[str, str]] = set()
-    for i, (sha, ids) in enumerate(impl):
-        def has_impl_at(x: str, i: int = i, sha: str = sha, ids: set[str] = ids) -> bool:
-            return x in ids or any(x in prev_ids and is_ancestor(prev, sha, root) for prev, prev_ids in impl[:i])
+    for sha, ids in impl:
+        def has_impl_at(x: str, sha: str = sha) -> bool:
+            return x in credit[sha] or bool(credit_bits.get(x, 0) & anc_bits[sha] & ((1 << pos[sha]) - 1))
         for tid in sorted(ids):
             for dep in deps_at(sha, tid):
                 why = satisfied(dep, has_impl_at)
@@ -263,7 +340,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
                 bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
     def has_impl_head(x: str) -> bool:
-        return any(x in ids for _, ids in impl)
+        return any(x in credit[c] for c, _ in impl)
     for tid in sorted({k for _, ids in impl for k in ids}):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
             if (tid, dep) in reported:
@@ -276,6 +353,51 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
                 continue
             bad.append(f"{head_sha[:10]} 枝の先頭：{tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（枝の先頭の depends_on）")
     return bad, sorted(set(legacy)), len(impl)
+
+
+def commit_log(root: str, start: str, head_sha: str) -> list[tuple[str, str, list[str], list[str]]]:
+    """start..head_sha のコミットを git log --reverse の順に (sha, 件名, 変えたファイル, 親) で返す。git を 1 回だけ呼ぶ（K-341）。
+    変えたファイルは 1 本ずつの git diff-tree --no-commit-id --name-only -r --root と同じ：名前の付け替えを見ない（消した名前と足した名前）・
+    取り込みのコミットは空・根は全部・名前の書き方（core.quotePath=false の引用）も同じ"""
+    out = git("-c", "log.showSignature=false", "log", "--reverse", "--no-renames", "--root", "--diff-merges=off", "--name-only",
+              "--format=%x00%H%x09%P%x09%s", f"{start}..{head_sha}", cwd=root)
+    rows: list[tuple[str, str, list[str], list[str]]] = []
+    for chunk in out.split("\x00")[1:]:
+        head, _, body = chunk.partition("\n")
+        sha, parents, subj = head.split("\t", 2)
+        rows.append((sha, subj, [f for f in body.splitlines() if f], parents.split()))
+    return rows
+
+
+def _ancestor_bits(log: list[tuple[str, str, list[str], list[str]]]) -> tuple[dict[str, int], dict[str, int]]:
+    """一覧の番号と、コミットごとの「先祖（自分を含む）の番号のビット」。範囲の外の親は見ない
+    （範囲の 2 つのコミットの間の道は範囲の中だけを通る：途中が START の先祖なら、端も START の先祖で範囲に無い）"""
+    pos = {sha: i for i, (sha, _, _, _) in enumerate(log)}
+    parents = {sha: [p for p in ps if p in pos] for sha, _, _, ps in log}
+    bits: dict[str, int] = {}
+    for root_sha in pos:
+        stack = [root_sha]
+        while stack:
+            c = stack[-1]
+            if c in bits:
+                stack.pop()
+                continue
+            todo = [p for p in parents[c] if p not in bits]
+            if todo:
+                stack.extend(todo)
+                continue
+            b = 1 << pos[c]
+            for p in parents[c]:
+                b |= bits[p]
+            bits[c] = b
+            stack.pop()
+    return pos, bits
+
+
+def ancestry(log: list[tuple[str, str, list[str], list[str]]]):
+    """commit_log の一覧から「a は b の先祖か（同じも真）」を答える関数。git merge-base --is-ancestor a b と同じ答え（一覧の中の組）"""
+    pos, bits = _ancestor_bits(log)
+    return lambda a, b: a in pos and b in bits and bool(bits[b] >> pos[a] & 1)
 
 
 def is_ancestor(a: str, b: str, root: str) -> bool:

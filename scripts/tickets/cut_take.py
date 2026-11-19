@@ -8,6 +8,7 @@
   ② 頭の欄 carry: に書いたファイルをそのまま写す
   ③ 印つきの共有の試験（SHARED）：まだ本線に入っていないほかのチケットの印の行（行の末尾の `// K-xxx`）と範囲（`// K-xxx ここから`〜`ここまで`）を外して写す
   ④ 07_qa/test-plan/ears-elsewhere.json：指す試験のファイルが無い covers と、本線に無くて試験のファイルも無い口の塊を外して写す
+     （07_qa/test-plan/ears-elsewhere.d/ のあるリポジトリでは生成物なので足し合わせない。carry: の断片から作り手が作る・K-325）
   ⑤ 作り手を流す（チケットの一覧・生成の試験・テスト計画・要件一覧・目録）。生成物は写さない
 切る段の枝が本線より古くても、本線に後から入った分を消さない：共有の試験と carry: のファイルは、分かれ目の版を元に 3 方向で合わせる
 （ぶつかったら止める → 切る段の枝に本線を取り込んでからやり直す）。ears-elsewhere.json は本線の口と covers を残し、切る段の分を足す。
@@ -25,9 +26,11 @@ import tempfile
 
 SHARED = ["apps/api/test/features/contract/k144-contract.test.ts"]
 EARS = "07_qa/test-plan/ears-elsewhere.json"
+EARS_D = "07_qa/test-plan/ears-elsewhere.d"   # K-325：在れば ears-elsewhere.json は断片から作る生成物（carry: の断片をそのまま写す）
 TICKETS = "11_tickets"
 GENERATORS = [
     "python3 scripts/tickets/build_index.py",
+    "python3 scripts/ci/build_registries.py",   # K-325：写した断片から表の生成物を作ってから生成の試験を作る（.d/ の無いリポジトリでは流さない）
     "node scripts/ci/gen_ears_tests.mjs",
     "python3 05_flow/build_testplan.py",
     "python3 scripts/ci/build_catalog.py",
@@ -147,7 +150,8 @@ def take(repo: pathlib.Path, tid: str, ref: str, shared: list[str] | None = None
             ours = _show(repo, "HEAD", f)
             # 印の無い行は分かれ目から変わらない前提。切る段の版から、まだのチケットの印を外したものを本線の版と合わせる
             files[f] = merge3(f, filter_marks(base, keep) if base is not None else None, ours, filter_marks(body, keep))
-    ears = _show(repo, ref, EARS)
+    # .d/ のあるリポジトリでは ears-elsewhere.json は生成物：3 つの版の足し合わせをせず、carry: の断片から作り手が作る（K-325）
+    ears = None if (repo / EARS_D).is_dir() else _show(repo, ref, EARS)
     if ears is not None:
         base = _show(repo, "HEAD", EARS)
         def text_of(path: str) -> str | None:
@@ -163,6 +167,8 @@ def take(repo: pathlib.Path, tid: str, ref: str, shared: list[str] | None = None
         p.write_text(body, encoding="utf-8")
     if regenerate:
         for cmd in GENERATORS:
+            if "build_registries.py" in cmd and not (repo / EARS_D).is_dir():
+                continue
             r = subprocess.run(cmd, shell=True, cwd=repo, capture_output=True, text=True)
             if r.returncode != 0:
                 raise SystemExit(f"止めた — 作り手が落ちた：{cmd}\n{(r.stdout + r.stderr)[-600:]}")
