@@ -15688,6 +15688,66 @@
     "申し送り": "- パスキーの宛先は WEB_BASE_URL の 1 つ目で決まる。手元・staging・本番とも、1 つ目は人が開く住所（IP でない名前）にする\n- 待つ秒数の文は `features/F1/sign-up/wait-text.ts` の waitText を使う"
    },
    "file": "11_tickets/K-340.md"
+  },
+  {
+   "id": "K-341",
+   "title": "取り込む順の検査（G56）を速くする（git をコミット 1 本ずつ呼ばず、まとめて 1〜数回で読む。確かめの中身と出す文は変えない）（K-324 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-324",
+   "milestone": "共通",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-19",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。直すのは検査の台本 1 つ（ticket_order_gate.py）の読み方だけ。まとめて読む関数 2 つ 20 分・本物で新旧の出力を比べる 15 分（直す前の版は手元で 1 回 2〜3 分）・試験の組み込み 5 分・報告 20 分",
+   "decisions": [
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の台本と、その試験だけ。外界に触らない（git の読み出しだけ）",
+   "canvas": [],
+   "canvas_none": "画面を変えないチケット（CI の検査の台本だけ）。正の絵の組は持たない",
+   "tests": [
+    "scripts/ci/k341_order_gate_speed_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/ticket_order_gate.py",
+    "05_flow/build_testplan.py",
+    ".github/workflows/v3-gate.yml",
+    ".github/workflows/release-gate.yml",
+    ".github/workflows/staging-e2e.yml",
+    "07_qa/test-plan/**",
+    "11_tickets/K-341.md",
+    "11_tickets/README.md",
+    "11_tickets/tickets.csv",
+    "11_tickets/tickets.json"
+   ],
+   "sections": {
+    "目的": "取り込む順の検査 G56（`scripts/ci/ticket_order_gate.py`）と、その自己試験 `scripts/ci/ticket_order_gate_test.py` が遅すぎて、CI が止まる（決める人の答え answer=ce634d1e2cc7・列の先頭の割り込み）。\n\n- CI の台（Linux の VM）の上で、自己試験 20 本が 34 分（2,052 秒）。うち 2,050 秒は本物の作業場所を見る 1 本（K159-CI-019）\n- 本体は 19 分たっても終わらず、止めた（run 44430179653 の spec-2）\n- 手元の Mac では本体が 1 回 1 分半〜2 分（user 30 秒・system 40 秒）。git を 3,690 回呼んでいる（コミットごとの `git diff-tree` 1,268 回・`git merge-base --is-ancestor` 2,422 回）\n\ngit の呼び出しを、コミットの数によらない数回にまとめる。確かめの中身（何を違反とするか）と出す文は 1 つも変えない。",
+    "完了の条件": "- [ ] 下の表の K341-CI-001〜003 が緑（`scripts/ci/k341_order_gate_speed_test.py`）\n- [ ] K341-CI-004・005 を確かめた（下の judge-skip）\n- [ ] 前からの試験（ticket_order_gate_test.py・--selftest・k210_gate_holes_test.py・ci_scope_test.py・ci_lean_test.py）が変えずに緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 依存：無い\n- 変えない物：`check(root, rev, start, base)` の形と戻り値・赤の文・「決まりの前に入ったとして通した依存」の文・main の出力と終わりの番号・`--selftest`・共有の `is_doc_only`／`generated_outputs`／`generator_scripts`／`_not_impl`（ci_scope.py が使う）\n- 速さは時間で確かめない（台で揺れる）。git を呼ぶ回数を数える\n- 前からの自己試験（K-159 が持ち主）は変えない。遅かったのは本物の作業場所を見る 1 本（K159-CI-019）が本体を 1 回流すからで、本体が速くなれば一緒に速くなる",
+    "依存の理由": "無い（depends_on は空）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| コミットの一覧をまとめて読む | `scripts/ci/ticket_order_gate.py` に `commit_log(root: str, start: str, head_sha: str) -> list[tuple[str, str, list[str], list[str]]]` を足す。`git log --reverse --no-renames --root --diff-merges=off --name-only --format=%x00%H%x09%P%x09%s start..head_sha` を 1 回だけ呼び、(sha, 件名, 変えたファイル, 親) を git log の順に返す。変えたファイルは 1 本ずつの `git diff-tree --no-commit-id --name-only -r --root` と同じ（名前の付け替えは消した名前と足した名前・取り込みのコミットは空・範囲に入った根は全部・core.quotePath=false の引用）。署名の表示の設定で行が増えないよう `-c log.showSignature=false` |\n| 先祖かをまとめて出す | `ancestry(log) -> Callable[[str, str], bool]`（一覧の中の組で `git merge-base --is-ancestor a b` と同じ答え）と、その元の `_ancestor_bits(log)`（一覧の番号と、コミットごとの先祖の番号のビット）。親の辺は一覧の中だけを辿る（範囲の 2 つのコミットの間の道は範囲の中だけを通る） |\n| check を付け替える | `check` の `git log` と、コミットごとの `git diff-tree` を `commit_log` 1 回に替える。`has_impl_at` の「前の実装のコミット impl[:i] のどれかが先祖で、その件名に番号がある」を、ビット（番号ごとの「その番号を件名に持つ実装のコミット」のビット ＆ 先祖のビット ＆ 一覧で前の物）で出す。一覧の順が先祖の順と食い違うとき（親より日付の古いコミット）も、前のまま「一覧で前の物だけ」を数える。`is_ancestor` は残す（前の形を変えない） |\n| 試験の組み込み | `05_flow/build_testplan.py` の gate 56 の命令の頭に `python3 scripts/ci/k341_order_gate_speed_test.py &&` を足し、作り手で `.github/workflows/v3-gate.yml` を作り直す（今後 G56 を直すチケットでも流れる） |",
+    "外に影響する手順": "無い（リポジトリの中の台本と試験だけ。DB・外の口・秘密に触らない）",
+    "テスト仕様と確認の結果": "`scripts/ci/k341_order_gate_speed_test.py`（unittest・DB なし。写しのリポジトリは一時フォルダに作る）\n\n| ID | 観点 | 前提 | 操作 | 期待結果 |\n|---|---|---|---|---|\n| K341-CI-001 | 守り（G-16 有限の資源） | 写しのリポジトリ 2 つ：実装のコミット 6 本と 36 本（5 本ごとに枝を作って --no-ff で取り込む） | `check()` の間に `subprocess.run` で呼んだ git を数える（比べる元なし・あり） | 6 本と 36 本で回数が同じ。比べる元なしは 8 回以下・ありは 12 回以下（直す前は 1 本ごとに増える） |\n| K341-CI-002 | 入力（TP-TOOL-01・02） | 写しのリポジトリ：枝と --no-ff の取り込み・関わりの無い歴史の取り込み（その根が範囲に入る）・git mv の付け替え・日本語／空白／引用符の名前・変えたファイルの無いコミット・親より日付の古いコミット | `commit_log` と `ancestry` を、1 本ずつ git に聞いた答えと比べる | 並びと件名が `git log --reverse --format=%H%x09%s` と同じ。各コミットの変えたファイルが `git diff-tree --no-commit-id --name-only -r --root` と同じ並び、親が `git rev-list --parents -n 1` と同じ。範囲の全部の組で `ancestry` が `git merge-base --is-ancestor` と同じ。写しに上の形が本当にある（日本語・空白・引用符・付け替えの両方の名前・別の根のファイル・空の取り込み） |\n| K341-CI-003 | 守り（回帰） | 直す前の版（git の中の blob c27ded84…・本線 c93019c7 の版）を一時ファイルに書き出す。写し：K341-CI-002 の形（比べる元なし・あり）と、前からの違反の型 5 つ（依存より先に作る・枝の外の実装・外して戻した依存・枝の先頭の依存が無い・枝で parent を外した子）と緑の型 1 つ | 両方の版の main を `--start`（と `--base-ref`）つきで流す | 出力（★ の違反の行・決まりの前に入ったとして通した依存の行・数の行・PASS／FAIL の行）と終わりの番号が 1 字も違わない。FAIL で ★ を出す写しが 5 つ以上・PASS が 1 つ以上（比べるだけで何も見ていない、にならない） |\n| K341-CI-004 | 守り（回帰・本物） | 本線の今の版（この枝の分かれ目 c93019c7） | 手元で直す前の版と直した版の本体を、比べる元なし・あり（本線）で流す | 4 つの出力と終わりの番号が 1 字も違わない（cmp で同じ）。直した版の本体が手元で 10 秒以内。記録を .ticket-flow/out/K-341/ に残す |\n| K341-CI-005 | 守り（G-16・CI の台） | このチケットの CI（組ごとの Linux の VM） | G56 の段（自己試験・--selftest・本体）の時間を CI の記録で見る | 1 分以内（直す前は 34 分の後に本体が 19 分で終わらず止めた） |\n\n```judge-skip\n- K341-CI-004: 直す前の版の本体は本物の作業場所で手元でも 2 分前後、CI の台では 19 分で終わらない。CI では流せないので、手元で流した 4 つの出力と時間を .ticket-flow/out/K-341/ に残す\n- K341-CI-005: CI の段の時間は、試験の中からは見られない（試験は時間で落とさない）。このチケットの CI の記録の段の時間を報告に書く\n```\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K341-CI-002（日本語・空白・引用符の名前が 1 本ずつの diff-tree と同じ書き方で出る） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K341-CI-003（赤の型が本当に FAIL・緑の型が PASS を出したうえで同じ）・K341-CI-002（写しに形が本当にある） |\n| TP-TOOL-03 容れ物の中と手元で違う | K341-CI-001（時間でなく git の回数で見るので、台の速さで結果が変わらない）・K341-CI-005 |",
+    "前からの試験を替えた所": "本体を読む・呼ぶ前からの試験を全部出し、1 件ずつ見た。\n\n```search\n- name: 本体を読む・呼ぶ試験と台本（自分の試験と本体を除く）\n  cmd: git grep -l -F 'ticket_order_gate' -- scripts apps packages 05_flow ':!scripts/ci/ticket_order_gate.py' ':!scripts/ci/k341_order_gate_speed_test.py'\n  count: 8\n```\n\n- scripts/ci/ticket_order_gate_test.py: 替えない — check の形・戻り値・赤の文は変えない。本物を見る K159-CI-019 は本体が速くなって一緒に速くなる\n- scripts/ci/k210_gate_holes_test.py: 替えない — check(base=…) の答えと、G56 の命令に `python3 scripts/ci/ticket_order_gate.py --base-ref \"$CI_BASE\"` が入っていること（頭に 1 つ足しても入っている）を見る\n- scripts/ci/ci_scope_test.py: 替えない — 共有の is_doc_only・generated_outputs が同じ物かを見る。変えない\n- scripts/ci/ci_lean_test.py: 替えない — generator_scripts を見る。変えない\n- scripts/ci/ci_scope.py: 替えない（試験でない）— _not_impl・generated_outputs・generator_scripts・is_doc_only を使う。変えない\n- scripts/ci/ci_scope.json・scripts/ci/ci_scope.d/_base.json: 替えない（地図とその元）— `scripts/ci/ticket_order_gate*` の道を持つだけ\n- 05_flow/build_testplan.py: 替える（試験でない）— gate 56 の命令の頭に自分の試験を足す",
+    "成果物": "- `scripts/ci/ticket_order_gate.py` の `commit_log`・`ancestry`・`_ancestor_bits` と check の付け替え\n- 単体の試験 `scripts/ci/k341_order_gate_speed_test.py`\n- G56 の命令に自分の試験（build_testplan.py と作り直した workflow）",
+    "決定ログ": "- 2026-11-19 決める人の答え answer=ce634d1e2cc7：取り込む順の検査 G56 が CI の台で止まるほど遅いのを、列の先頭の割り込みで直す（確かめの中身は変えず、git の呼び出しをまとめる）",
+    "PM に確かめたいこと": "無い",
+    "リスクと懸念": "- K341-CI-003 は直す前の版を git の中の blob（c27ded84…）として読む。本線の歴史に在る物なので CI（fetch-depth: 0）でも読める。後で G56 の決まりをわざと変えるチケットは、この行の比べる相手を自分の版に替えるか、決まりの変わる写しを外す\n- 新しい git の選び（`--diff-merges=off`）は git 2.31 から。CI の台の git が古ければ止まる（その時は外して既定の動きに任せる）",
+    "申し送り": "- コミットごとの問い合わせを足すときは、git を 1 本ずつ呼ばず、`commit_log` の一覧と `ancestry` を使う（CI の台では 1 回の git が手元の数十倍かかる）"
+   },
+   "file": "11_tickets/K-341.md"
   }
  ]
 }
