@@ -2178,8 +2178,7 @@
    ],
    "split": "これから",
    "screens": [
-    "bridge-setup",
-    "credentials"
+    "bridge-setup"
    ],
    "apis": [
     "answerCredentialLoginCheck",

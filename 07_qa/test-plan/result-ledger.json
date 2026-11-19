@@ -2,7 +2,7 @@
  "_doc": "まだ流し直していない「CI の印の無い PASS」の行（D-129.51）。減らすだけ（ci_results.py check が本線の版と比べる）。流し直して印を付けたら行を消す（K-150）。行を足さない。「PASS（該当なし…）」は該当なし（N/A）なので載せない",
  "made_by": "ci_results.py ledger",
  "at": "2026-11-09",
- "count": 2277,
+ "count": 2220,
  "rows": [
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -154,18 +154,6 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-05-004"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-05-005"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-05-006"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-07-001"
   },
   {
@@ -238,27 +226,11 @@
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-14-001"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-14-002"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-14-003"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-14-005"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
    "id": "BRG-14-007"
-  },
-  {
-   "file": "07_qa/test-specs/bridge.md",
-   "id": "BRG-14-008"
   },
   {
    "file": "07_qa/test-specs/bridge.md",
@@ -326,18 +298,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-VAL-003-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-VAL-003-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-VAL-003-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-VAL-004-A"
   },
   {
@@ -390,10 +350,6 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-GATE-003-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-SIG-002-A"
   },
   {
@@ -403,10 +359,6 @@
   {
    "file": "07_qa/test-specs/errors.md",
    "id": "E-SIG-002-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-DATA-001-B"
   },
   {
    "file": "07_qa/test-specs/errors.md",
@@ -498,27 +450,7 @@
   },
   {
    "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-001-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-001-C"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-002-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
    "id": "E-SEC-003-A"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-003-B"
-  },
-  {
-   "file": "07_qa/test-specs/errors.md",
-   "id": "E-SEC-003-C"
   },
   {
    "file": "07_qa/test-specs/errors.md",
@@ -5614,34 +5546,6 @@
   },
   {
    "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-38-001"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-38-002"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-38-003"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-39-001"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-39-002"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-39-003"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
-   "id": "CHT-39-004"
-  },
-  {
-   "file": "07_qa/test-specs/screens/clone-chat.md",
    "id": "CHT-40-001"
   },
   {
@@ -6306,59 +6210,11 @@
   },
   {
    "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-001"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-002"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-003"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-005"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
    "id": "SCR-CREDENTIALS-006"
   },
   {
    "file": "07_qa/test-specs/screens/credentials.md",
    "id": "SCR-CREDENTIALS-007"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-008"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-017"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-018"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-019"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-020"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-021"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-022"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-023"
   },
   {
    "file": "07_qa/test-specs/screens/credentials.md",
@@ -6375,90 +6231,6 @@
   {
    "file": "07_qa/test-specs/screens/credentials.md",
    "id": "SCR-CREDENTIALS-029"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-034"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-035"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-036"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-037"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-038"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-039"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-040"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-052"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-053"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-041"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-056"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-043"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-044"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-048"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-054"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-055"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-051"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-046"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-050"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-045"
-  },
-  {
-   "file": "07_qa/test-specs/screens/credentials.md",
-   "id": "SCR-CREDENTIALS-033"
   },
   {
    "file": "07_qa/test-specs/screens/goal-edit.md",
