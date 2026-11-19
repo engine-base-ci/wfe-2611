@@ -467,9 +467,36 @@ test("K350-SH-006 幅 320・375・768：外枠の見本とモック cred-list �
   }
 });
 
+test("K350-SH-007 幅 375（外枠の見本・探せる）の探す欄の閉じ方と焦点：× で閉じると焦点は虫眼鏡のボタンに戻り、開いた欄で Esc を押しても閉じて焦点が戻り、⌘K（Ctrl+K）でも欄が開いて焦点が入る", async ({
+  page,
+}) => {
+  await openShell(page, 375);
+  const bar = page.locator("header.k-bar");
+  const open = bar.getByRole("button", { name: "探す", exact: true });
+  const box = bar.getByRole("search").locator("input");
+  // × で閉じる：欄も × も消えるので、焦点は虫眼鏡のボタンへ戻る（焦点を見失わない）
+  await open.click();
+  await expect(box).toBeFocused();
+  await bar.getByRole("button", { name: "探すを閉じる" }).click();
+  await expect(box).toBeHidden();
+  await expect(open).toBeFocused();
+  // キーボードで開き（虫眼鏡に焦点 → Enter）、Esc で閉じる
+  await page.keyboard.press("Enter");
+  await expect(box).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(box).toBeHidden();
+  await expect(bar).not.toHaveAttribute("data-searching", /.*/);
+  await expect(bar.locator(".k-bar-ws-name")).toBeVisible();
+  await expect(open).toBeFocused();
+  // ⌘K（Ctrl+K）：スマホの帯でも欄が開いて焦点が入る
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(box).toBeVisible();
+  await expect(box).toBeFocused();
+});
+
 // ---- 実ブラウザ：自分の設定の第 2 ナビ（スマホはボタン 1 つの一覧） ----
 
-test("K350-MS-001 幅 375（モック cred-list）：第 2 ナビはボタン「自分の設定 › 預けたログイン情報 ▾」1 つ（項目の列は隠れる）。押すと縦の一覧で、作った画面は押せるリンク・作っていない画面は押せない・いまの項目に aria-current", async ({
+test("K350-MS-001 幅 375（モック cred-list）：第 2 ナビはボタン「自分の設定 › 預けたログイン情報 ▾」1 つ（項目の列は隠れる・読み上げの名前も見える字で始まる）。押すと縦の一覧で、作った画面は押せるリンク・作っていない画面は押せない・いまの項目に aria-current", async ({
   page,
 }) => {
   await guard(page);
@@ -478,6 +505,8 @@ test("K350-MS-001 幅 375（モック cred-list）：第 2 ナビはボタン「
   const pick = sub.getByRole("button", { name: "自分の設定の中を選ぶ" });
   await expect(pick).toBeVisible();
   await expect(pick).toHaveText("自分の設定 › 預けたログイン情報 ▾");
+  // 読み上げと声の操作の名前は、見えている字（自分の設定 › いまの項目）で始まる（見える字と名前が食い違わない）
+  await expect(pick).toHaveAccessibleName(/^自分の設定 › 預けたログイン情報/);
   await expect(sub.locator(".k-me-sub-t").first()).toBeHidden();
   const [s, h] = await Promise.all([sub.boundingBox(), page.locator("#k-main h1").boundingBox()]);
   expect(s!.y + s!.height, "第 2 ナビは見出しの上").toBeLessThanOrEqual(h!.y);
