@@ -138,7 +138,7 @@ describe("K-352 預ける口", () => {
       service_domain: "hacchu-navi.example",
     });
     expect(String(row["vault_ref"])).toMatch(/^sec_/);
-    expect(new Date(String(row["expires_at"])).toISOString()).toBe("2027-11-10T14:59:59.999Z");
+    expect((row["expires_at"] as Date).toISOString()).toBe("2027-11-10T14:59:59.999Z");
     expect(await h.plain(me, String(row["vault_ref"]))).toEqual({
       login: "taka@example.com",
       password: PASSWORD,
@@ -155,7 +155,7 @@ describe("K-352 預ける口", () => {
     expect(r.status, await r.clone().text()).toBe(201);
     const d = (await h.json(r)).data as Record<string, unknown>;
     expect(d).toMatchObject({ kind: "key", two_factor: "none", destinations: ["api.freee.co.jp"], expires_on: null });
-    expect(d["login_check"]).toEqual({ state: null, detail: null, at: null });
+    expect(d["login_check"]).toEqual({ state: null, detail: null, at: null, request_id: null });
     const row = (await h.row(String(d["id"])))!;
     expect(row["kind_id"]).toBe("api_key");
     expect(await h.plain(me, String(row["vault_ref"]))).toEqual({ value: KEY_VALUE });
