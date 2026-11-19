@@ -24,7 +24,7 @@ status() {
   say "いまの状態"
   if docker ps --format '{{.Names}}' | grep -qx "$PG_CONTAINER"; then ok "DB（docker $PG_CONTAINER）動いている"; else ng "DB（docker $PG_CONTAINER）止まっている"; fi
   [ "$(alive http://127.0.0.1:$API_PORT/health)" = 200 ] && ok "API  http://127.0.0.1:$API_PORT" || ng "API  http://127.0.0.1:$API_PORT 応答なし"
-  [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ] && ok "画面 http://127.0.0.1:$WEB_PORT" || ng "画面 http://127.0.0.1:$WEB_PORT 応答なし"
+  [ "$(alive http://127.0.0.1:$WEB_PORT/login)" = 200 ] && ok "画面 http://localhost:$WEB_PORT" || ng "画面 http://localhost:$WEB_PORT 応答なし"
 }
 
 stop() {
@@ -82,15 +82,16 @@ if [ -f "$ROOT/.env" ]; then
 fi
 PORT=$API_PORT
 BASE_URL="http://127.0.0.1:$API_PORT"
-# 画面の出どころ（CORS）。本番ビルド 3124 と next dev 3123 の両方を許す
-WEB_BASE_URL="http://127.0.0.1:$WEB_PORT,http://localhost:$WEB_PORT,http://localhost:3123,http://127.0.0.1:3123"   # 3123 は Playwright が自分で立てる next dev（127.0.0.1 でも開く）
+# 画面の出どころ（CORS）。本番ビルド 3124 と next dev 3123 の両方を許す。
+# 1 つ目が画面の正の住所（メールのリンク・パスキーの rpID と origin の元）。ブラウザは IP の住所ではパスキーを作らないので localhost を 1 つ目にする（K-340）
+WEB_BASE_URL="http://localhost:$WEB_PORT,http://127.0.0.1:$WEB_PORT,http://localhost:3123,http://127.0.0.1:3123"   # 3123 は Playwright が自分で立てる next dev（127.0.0.1 でも開く）
 KANAME_DEV_FAKE_BUCKET=1   # MinIO を立てずに触るため（添付の保存だけ使えない）
 # 作った Bridge のインストーラを、画面のダウンロードのボタンから配る（署名・置き場が決まる前の橋渡し）
 BRIDGE_RELEASE_DIR="$ROOT/apps/bridge/release"
 KANAME_API_LOG="$LOG/api.log"
 set +a
 ok "ローカルの既定を読んだ（.env.example）"
-echo "  メールが届かなくても http://127.0.0.1:$WEB_PORT/dev/mail からリンクを押せる"
+echo "  メールが届かなくても http://localhost:$WEB_PORT/dev/mail からリンクを押せる"
 
 # ---- 3. API
 say "3／4 API"
@@ -124,10 +125,11 @@ fi
 
 say "触れます"
 cat <<EOM
-  ここから始める   http://127.0.0.1:$WEB_PORT/signup
-  見本（土台）     http://127.0.0.1:$WEB_PORT/dev/shell
+  ここから始める   http://localhost:$WEB_PORT/signup
+  パスキー         localhost の住所で開く（127.0.0.1 などの IP の住所では、ブラウザがパスキーを作らない）
+  見本（土台）     http://localhost:$WEB_PORT/dev/shell
   手順（何を見るか） 07_tasks/handoff/README.md
-  メールの受信箱   http://127.0.0.1:$WEB_PORT/dev/mail（送れなくてもここからリンクを押せる）
+  メールの受信箱   http://localhost:$WEB_PORT/dev/mail（送れなくてもここからリンクを押せる）
   テストの後片付け bash scripts/dev/clean-qa.sh（自動テストが作った口座だけ消す）
   止める           bash scripts/dev/up.sh --stop
 EOM

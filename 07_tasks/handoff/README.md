@@ -9,35 +9,35 @@
 bash scripts/dev/up.sh
 ```
 
-- 画面 http://127.0.0.1:3124　API http://127.0.0.1:3011
+- 画面 http://localhost:3124　API http://127.0.0.1:3011
 - 止める `bash scripts/dev/up.sh --stop`／今どうなっているか `bash scripts/dev/up.sh --status`
 - **メールは実際に送ります（Resend・差出人は noreply@engine-base.com）。** 送信ドメインは検証済みなので、どの宛先にも届きます。送れなかったときは `.dev-logs/api.log` に「[mail] 送れなかった → …」と理由が出ます
 - 運営（ENGINE BASE）の宛先は **info@engine-base.com**（問い合わせの届け先・運営アカウントのログイン名）
-- **メールが届かないときは http://127.0.0.1:3124/dev/mail を開いてください。** 送ったリンクが並んでいて、そこから押して先へ進めます（ローカルで確かめるためだけの画面）
+- **メールが届かないときは http://localhost:3124/dev/mail を開いてください。** 送ったリンクが並んでいて、そこから押して先へ進めます（ローカルで確かめるためだけの画面）
 - 自分のAI（自分の PC の Bridge が動かす本物の Claude Code）と話せます。先に「自分のPCをつなぐ」で Kaname Bridge を入れてつないでください。まだ作っていないものは、各手順の「今はまだ押せないもの」に理由つきで書いてあります
 
 ## 今 触れるもの
 
 | # | チケット | 画面 | URL | 手順 | 状態 |
 |---|---|---|---|---|---|
-| 1 | T-U-01 | アカウントを作る | http://127.0.0.1:3124/signup | [T-U-01.md](T-U-01.md) | 未確認 |
-| 2 | T-U-02 | メールを確認する | http://127.0.0.1:3124/verify-email | [T-U-02.md](T-U-02.md) | 未確認 |
-| 3 | T-U-03 | 招待を受けて参加する | http://127.0.0.1:3124/invite/:token | [T-U-03.md](T-U-03.md) | 未確認 |
-| 4 | T-U-04 | 2段階認証を設定する | http://127.0.0.1:3124/mfa-setup | [T-U-04.md](T-U-04.md) | 未確認 |
-| 5 | T-U-05 | ログインする | http://127.0.0.1:3124/login | [T-U-05.md](T-U-05.md) | 未確認 |
-| 6 | T-U-06 | パスワードの再設定 | http://127.0.0.1:3124/password-reset | [T-U-06.md](T-U-06.md) | 未確認 |
-| 7 | T-U-07 | 自分のAIと話す | http://127.0.0.1:3124/onboard/interview | [T-U-07.md](T-U-07.md) | 未確認 |
-| 8 | T-U-08 | たたき台を確かめる | http://127.0.0.1:3124/onboard/draft | [T-U-08.md](T-U-08.md) | 未確認 |
-| 9 | T-U-09 | 自分のPCをつなぐ | http://127.0.0.1:3124/setup/bridge | [T-U-09.md](T-U-09.md) | 未確認 |
-| 10 | T-U-10 | ログイン情報を預ける | http://127.0.0.1:3124/settings/credentials | [T-U-10.md](T-U-10.md) | 未確認 |
-| 11 | T-U-11 | テストで動かす | http://127.0.0.1:3124/onboard/testrun | [T-U-11.md](T-U-11.md) | 未確認 |
-| 12 | T-U-12 | 本番に切り替える | http://127.0.0.1:3124/onboard/golive | [T-U-12.md](T-U-12.md) | 未確認 |
-| 13 | T-U-17 | 自分のAIと話す | http://127.0.0.1:3124/ai/chat | [T-U-17.md](T-U-17.md) | 未確認 |
-| 14 | T-US-08 | 自分のAIと話す | http://127.0.0.1:3124/ai/chat | [T-US-08.md](T-US-08.md) | 未確認 |
+| 1 | T-U-01 | アカウントを作る | http://localhost:3124/signup | [T-U-01.md](T-U-01.md) | 未確認 |
+| 2 | T-U-02 | メールを確認する | http://localhost:3124/verify-email | [T-U-02.md](T-U-02.md) | 未確認 |
+| 3 | T-U-03 | 招待を受けて参加する | http://localhost:3124/invite/:token | [T-U-03.md](T-U-03.md) | 未確認 |
+| 4 | T-U-04 | 2段階認証を設定する | http://localhost:3124/mfa-setup | [T-U-04.md](T-U-04.md) | 未確認 |
+| 5 | T-U-05 | ログインする | http://localhost:3124/login | [T-U-05.md](T-U-05.md) | 未確認 |
+| 6 | T-U-06 | パスワードの再設定 | http://localhost:3124/password-reset | [T-U-06.md](T-U-06.md) | 未確認 |
+| 7 | T-U-07 | 自分のAIと話す | http://localhost:3124/onboard/interview | [T-U-07.md](T-U-07.md) | 未確認 |
+| 8 | T-U-08 | たたき台を確かめる | http://localhost:3124/onboard/draft | [T-U-08.md](T-U-08.md) | 未確認 |
+| 9 | T-U-09 | 自分のPCをつなぐ | http://localhost:3124/setup/bridge | [T-U-09.md](T-U-09.md) | 未確認 |
+| 10 | T-U-10 | ログイン情報を預ける | http://localhost:3124/settings/credentials | [T-U-10.md](T-U-10.md) | 未確認 |
+| 11 | T-U-11 | テストで動かす | http://localhost:3124/onboard/testrun | [T-U-11.md](T-U-11.md) | 未確認 |
+| 12 | T-U-12 | 本番に切り替える | http://localhost:3124/onboard/golive | [T-U-12.md](T-U-12.md) | 未確認 |
+| 13 | T-U-17 | 自分のAIと話す | http://localhost:3124/ai/chat | [T-U-17.md](T-U-17.md) | 未確認 |
+| 14 | T-US-08 | 自分のAIと話す | http://localhost:3124/ai/chat | [T-US-08.md](T-US-08.md) | 未確認 |
 
 ## 土台（画面ではなく見本で見る）
 
-サイドバー・自分のAIのパネル・部品・タイムラインは、見本の画面 **http://127.0.0.1:3124/dev/shell**・`/dev/ui`・`/dev/views` で役割と時点を切り替えて見ます。
+サイドバー・自分のAIのパネル・部品・タイムラインは、見本の画面 **http://localhost:3124/dev/shell**・`/dev/ui`・`/dev/views` で役割と時点を切り替えて見ます。
 
 | チケット | 中身 | 手順 | 状態 |
 |---|---|---|---|

@@ -26,7 +26,7 @@ HEAD = "// 生成物・手で直さない（scripts/ci/gen_ts_registries.py）"
 
 _FACTORY = re.compile(r"export\s+function\s+\w+Hooks\s*\(")
 _REGISTER = re.compile(r"export\s+const\s+register\b")
-_PART_NAME = re.compile(r"^K-(\d+)\.ts$")
+_PART_NAME = re.compile(r"^K-([1-9]\d*)\.ts$")  # 先頭の 0 は止める（K-01.ts は K-1.js を import してしまう）
 _PATHS = re.compile(r"export\s+const\s+PATHS\s*=\s*\[(.*?)\]", re.S)
 _STR = re.compile(r"\"(/[^\"]*)\"")
 _BASE = re.compile(r"export\s+const\s+DISABLED_PATHS\s*=\s*\[(.*?)\]\s*as\s+const", re.S)

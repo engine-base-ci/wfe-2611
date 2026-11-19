@@ -331,7 +331,7 @@ row(R["K57-UI-017"], async (page) => {
   const m = await mockApi(page);
   m.on.code = () => ({ status: 429, body: { error: "rate_limited", code: "RATE_LIMITED", retry_after_sec: 60 } });
   await open(page);
-  await expect(page.getByText(/60 秒たってから/)).toBeVisible();
+  await expect(page.getByText("送りすぎです。60秒たってから、もう一度お試しください")).toBeVisible(); // 正本 E-LIM-005（K-340）
 });
 
 row(R["K57-UI-018"], async (page) => {
