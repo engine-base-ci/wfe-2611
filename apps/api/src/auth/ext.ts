@@ -1,5 +1,5 @@
 // 認証の拡張ルート（/api/auth-ext/*・境界 B2 の外側の口）。Better Auth の /api/auth/* に無い「Kaname としての段取り」：
-//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・招待の下見と受諾・Bridge の接続コード・資格情報を預ける（関門 C8）
+//   登録（会社を作る hook はパッケージ側）・ロック付きログイン・Bridge の接続コード・資格情報を預ける（関門 C8）
 // 契約（08_api）の外なのは、認証の操作が Better Auth の口に属するため（T-F-05）。画面のタスク T-U-01〜05／09／10 が使う
 import { agentToolRoutes } from "./agent-tools.js";
 import { BROWSER_CHECK_PROMPT, BROWSERS, ONBOARD_REMEMBER, type Browser } from "./conventions.js";
