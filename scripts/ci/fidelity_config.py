@@ -14,6 +14,18 @@
   ・本線との分かれ目（--base-ref）で enrolled だった組が、消えた・false になった・(値の name, 値, 幅) の集まりが前の版を含まない・
     前の版に在った値（name）のセレクタが変わった・絵や画面の道や state（画面を整える鍵）が変わった。版が読めなければ赤（版はあるが設定がまだ無い版は、前の組が無いとして扱う）
   ・比べ方の指定（--base-ref か --no-base）が無い
+外した対の記録（設定の頭の "removed"・K-377）：入れた組から比べる物を外せる、ただ 1 つの道。黙って減らす道ではない
+  "removed": [{"group": 組の id, "pair": 対の name, "ticket": 画面を消したチケット, "decision": 決定の番号, "why": 訳, "gone": 消した画面のファイル}]
+  ・通すのは「その組の、その対を、対ごと外す」ことだけ。対を残して値や幅を減らす・セレクタや絵や state を替える・組を消す・enrolled を戻す・
+    記録に無い対を外す、は記録が在っても赤
+  ・記録の形：removed は並び・要素は上の 6 つの欄だけ（欠ける・知らない欄は赤）・値は空でない文字・why は空白を除いて 10 字以上・
+    decision は D-<数> か D-<数>.<数>・同じ（group, pair）は 1 つだけ
+  ・この版で新しく足した記録の確かめ（--base-ref の回）：gone は根からの道（.. や絶対の道は赤）で、画面のファイル（apps/web/app/ の下の page.tsx）で、
+    --base-ref の版にファイルとして在り、今の木に無い／11_tickets/<ticket>.md が在り、頭の欄 decisions: に decision が、changes: に gone が
+    ちょうど同じ字で在る／group は --base-ref の版の設定に在る組で、pair はその組に在った対／pair は今の組に残っていない（書いただけは赤）
+  ・記録は消せない・書き替えられない：--base-ref の版に在った記録は、今の版にも 1 字も変えずに在る（無ければ赤）。前に入った記録は残っていること
+    だけを見て、もう何も通さない（赤から外す力を持つのは、この版で新しく足して確かめの通った記録だけ）
+  ・--no-base の回は記録の形だけを見る（弱めない検査を流さない回なので、記録が何かを通すことも無い）
 入っていない組の見張り（--owners-done --base-ref <版>・K-238）：
   ・enrolled でない組の数を「入っていない組 N / M」で出す
   ・持ち主が取り込み済みなのに enrolled でない組があれば赤（組の id と持ち主を同じ行に出す）。
@@ -27,6 +39,7 @@ from __future__ import annotations
 import argparse
 import json
 import pathlib
+import re
 import subprocess
 import sys
 from typing import Any
@@ -227,16 +240,39 @@ def _git(root: pathlib.Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
 
 
-def base_groups(root: pathlib.Path, ref: str) -> tuple[list[dict] | None, list[str]]:
-    """分かれ目の版の組。版が読めなければ赤。版に設定がまだ無ければ空（前の組が無い）"""
+def _base_text(root: pathlib.Path, ref: str) -> tuple[str | None, list[str]]:
+    """分かれ目の版の設定の字。版が読めなければ (None, 赤)。版に設定がまだ無ければ空の字"""
     if _git(root, "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}").returncode != 0:
         return None, [f"分かれ目の版 {ref} が読めない"]
     if _git(root, "cat-file", "-e", f"{ref}:{CONFIG}").returncode != 0:
-        return [], []
+        return "", []
     r = _git(root, "show", f"{ref}:{CONFIG}")
     if r.returncode != 0:
         return None, [f"{ref}:{CONFIG} が読めない：{r.stderr.strip()}"]
-    return load_groups(r.stdout, f"{ref}:{CONFIG}")
+    return r.stdout, []
+
+
+def base_groups(root: pathlib.Path, ref: str) -> tuple[list[dict] | None, list[str]]:
+    """分かれ目の版の組。版が読めなければ赤。版に設定がまだ無ければ空（前の組が無い）"""
+    text, errs = _base_text(root, ref)
+    if text is None:
+        return None, errs
+    if text == "":
+        return [], []
+    return load_groups(text, f"{ref}:{CONFIG}")
+
+
+def base_removed(root: pathlib.Path, ref: str) -> list[Any]:
+    """分かれ目の版の設定に在った、外した対の記録（版や設定が読めない・removed が無いなら空。読めない赤は base_groups が出す）"""
+    text, _ = _base_text(root, ref)
+    if not text:
+        return []
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return []
+    removed = data.get("removed") if isinstance(data, dict) else None
+    return removed if isinstance(removed, list) else []
 
 
 STAGES = {"未着手", "作業中", "確認中", "完了", "保留"}
@@ -258,6 +294,14 @@ def _head(md: pathlib.Path, key: str) -> str | None:
 
 def _stage(md: pathlib.Path) -> str | None:
     return _head(md, "stage")
+
+
+def _head_list(md: pathlib.Path, key: str) -> list[str]:
+    """チケットの頭の、並びの欄（decisions: [a, b] の形）の要素。行が無ければ空"""
+    raw = (_head(md, key) or "").strip()
+    if raw.startswith("[") and raw.endswith("]"):
+        raw = raw[1:-1]
+    return [x for x in (part.strip().strip("'\"") for part in raw.split(",")) if x]
 
 
 def ticket_tree(root: pathlib.Path) -> tuple[dict[str, list[str]], dict[str, str | None]]:
@@ -336,8 +380,126 @@ def _measures(g: dict) -> set[tuple[str, str, int]]:
     return out
 
 
-def check_ratchet(base: list[dict], cur: list[Any]) -> list[str]:
-    """分かれ目で enrolled だった組は、消せない・戻せない・比べるもの（値の name×値×幅）を減らせない・セレクタを替えられない"""
+REMOVED_KEYS = ("group", "pair", "ticket", "decision", "why", "gone")
+WHY_MIN = 10
+DECISION_RE = re.compile(r"D-\d+(\.\d+)?")
+SCREEN_DIR = "apps/web/app/"
+SCREEN_FILE = "/page.tsx"
+
+
+def _removed_where(i: int, e: Any) -> str:
+    if isinstance(e, dict) and _str(e.get("group")) and _str(e.get("pair")):
+        return f"removed[{i}]（{e['group']}・{e['pair']}）"
+    return f"removed[{i}]"
+
+
+def load_removed(text: str) -> tuple[list[dict], list[str]]:
+    """設定の頭の、外した対の記録（removed）。無ければ空。(形の正しい記録, 形の赤) を返す"""
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return [], []   # 読めない赤は load_groups が出す
+    if not isinstance(data, dict) or "removed" not in data:
+        return [], []
+    removed = data["removed"]
+    if not isinstance(removed, list):
+        return [], [f"{CONFIG} の removed（外した対の記録）が並びでない"]
+    good: list[dict] = []
+    errs: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    for i, e in enumerate(removed):
+        where = _removed_where(i, e)
+        if not isinstance(e, dict):
+            errs.append(f"{where}：記録が表でない")
+            continue
+        bad = [f"{where}：欄 {k} が無い" for k in REMOVED_KEYS if k not in e]
+        bad += [f"{where}：知らない欄 {k!r}（書けるのは {'・'.join(REMOVED_KEYS)}）" for k in e if k not in REMOVED_KEYS]
+        bad += [f"{where}：欄 {k} が空でない文字でない" for k in REMOVED_KEYS if k in e and not _str(e[k])]
+        if _str(e.get("why")) and len("".join(e["why"].split())) < WHY_MIN:
+            bad.append(f"{where}：why（訳）が {WHY_MIN} 字に足りない")
+        if _str(e.get("decision")) and not DECISION_RE.fullmatch(e["decision"]):
+            bad.append(f"{where}：decision {e['decision']!r} が決定の番号の形（D-<数> か D-<数>.<数>）でない")
+        if not bad:
+            key = (e["group"], e["pair"])
+            if key in seen:
+                bad.append(f"{where}：同じ組と対の記録が 2 つ在る（1 つの対に書ける記録は 1 つ）")
+            seen.add(key)
+        if bad:
+            errs += bad
+        else:
+            good.append(e)
+    return good, errs
+
+
+def _gone_errors(root: pathlib.Path, ref: str, gone: str) -> list[str]:
+    """消した画面のファイル（gone）：根からの道・画面のファイルの形・分かれ目の版にファイルとして在る・今の木に無い"""
+    parts = gone.split("/")
+    if gone.startswith("/") or "\\" in gone or any(x in ("", ".", "..") for x in parts):
+        return [f"gone {gone!r} が根からの道でない（絶対の道・.. は書けない）"]
+    if not (gone.startswith(SCREEN_DIR) and gone.endswith(SCREEN_FILE)):
+        return [f"gone {gone!r} が画面のファイル（{SCREEN_DIR} の下の page.tsx）でない"]
+    errs: list[str] = []
+    if _git(root, "cat-file", "-t", f"{ref}:{gone}").stdout.strip() != "blob":
+        errs.append(f"gone {gone} が分かれ目の版 {ref} にファイルとして無い（消した画面ではない）")
+    if (root / gone).exists() or (root / gone).is_symlink():
+        errs.append(f"gone {gone} が今の木にまだ在る（画面を消していない）")
+    return errs
+
+
+def _ticket_errors(root: pathlib.Path, e: dict) -> list[str]:
+    """画面を消したチケットの md：在る・頭の欄 decisions: に decision・changes: に gone（どちらも要素がちょうど同じ字）"""
+    tid = e["ticket"]
+    md = root / "11_tickets" / f"{tid}.md"
+    if "/" in tid or "\\" in tid or not md.is_file():
+        return [f"チケット 11_tickets/{tid}.md が無い"]
+    errs: list[str] = []
+    if e["decision"] not in _head_list(md, "decisions"):
+        errs.append(f"チケット {tid} の頭の欄 decisions: に {e['decision']} が無い")
+    if e["gone"] not in _head_list(md, "changes"):
+        errs.append(f"チケット {tid} の頭の欄 changes: に {e['gone']} が無い（その画面を消すチケットではない）")
+    return errs
+
+
+def _pair_names(g: Any) -> set[str]:
+    """組の対の name の集まり（組が無い・表でないなら空）"""
+    if not isinstance(g, dict):
+        return set()
+    return {str(p.get("name")) for p in g.get("pairs") or [] if isinstance(p, dict)}
+
+
+def check_removed(root: pathlib.Path, ref: str, removed: list[dict], before: list[Any],
+                  base: list[dict], cur: list[Any]) -> tuple[frozenset[tuple[str, str]], list[str]]:
+    """外した対の記録の確かめ。(赤から外してよい（組, 対）, 赤) を返す。
+    前に入った記録（分かれ目の版に同じ記録が在る）は、残っていることだけを見て、何も通さない。
+    通す力を持つのは、この版で新しく足して、確かめが全部通った記録だけ"""
+    errs: list[str] = []
+    for i, b in enumerate(before):
+        if b not in removed:
+            errs.append(f"分かれ目の版に在った記録 {_removed_where(i, b)} が、今の版に同じ字で残っていない（記録は消せない・書き替えられない）")
+    base_by = {g["id"]: g for g in base if isinstance(g, dict) and _str(g.get("id"))}
+    cur_by = {g["id"]: g for g in cur if isinstance(g, dict) and _str(g.get("id"))}
+    passed: set[tuple[str, str]] = set()
+    for i, e in enumerate(removed):
+        if e in before:
+            continue
+        where = _removed_where(i, e)
+        bad = _gone_errors(root, ref, e["gone"]) + _ticket_errors(root, e)
+        if e["group"] not in base_by:
+            bad.append(f"組 {e['group']} が分かれ目の版の設定に無い")
+        elif e["pair"] not in _pair_names(base_by[e["group"]]):
+            bad.append(f"対 {e['pair']} が分かれ目の版の組 {e['group']} に無い（外した対ではない）")
+        if e["pair"] in _pair_names(cur_by.get(e["group"])):
+            bad.append(f"対 {e['pair']} が今の組 {e['group']} にまだ在る（記録を書いただけで外していない）")
+        if bad:
+            errs += [f"{where}：{x}" for x in bad]
+        else:
+            passed.add((e["group"], e["pair"]))
+    return frozenset(passed), errs
+
+
+def check_ratchet(base: list[dict], cur: list[Any], waived: frozenset[tuple[str, str]] = frozenset()) -> list[str]:
+    """分かれ目で enrolled だった組は、消せない・戻せない・比べるもの（値の name×値×幅）を減らせない・セレクタを替えられない。
+    waived（確かめの通った、外した対の記録の（組, 対））の対を対ごと外した分だけは赤にしない"""
     now = {g.get("id"): g for g in cur if isinstance(g, dict)}
     errs: list[str] = []
     for b in base:
@@ -354,7 +516,10 @@ def check_ratchet(base: list[dict], cur: list[Any]) -> list[str]:
             if g.get(key) != b.get(key):
                 errs.append(f"{gid}：分かれ目で入っていた組の {key} を {b.get(key)!r} から {g.get(key)!r} に替えた")
         lost = _measures(b) - _measures(g)
+        kept = _pair_names(g)
         for name, prop, w in sorted(lost):
+            if (gid, name) in waived and name not in kept:
+                continue   # 記録つきで対ごと外した（K-377）
             errs.append(f"{gid}・{name}：分かれ目で比べていた {prop}（幅 {w}）を外した")
         cur_pairs = {p.get("name"): p for p in g.get("pairs") or [] if isinstance(p, dict)}
         for p in b.get("pairs") or []:
@@ -370,15 +535,20 @@ def run(root: pathlib.Path, required: list[str], base_ref: str | None, no_base: 
     path = root / CONFIG
     if not path.is_file():
         return [f"{CONFIG} が無い"]
-    groups, errs = load_groups(path.read_text(encoding="utf-8"), CONFIG)
+    text = path.read_text(encoding="utf-8")
+    groups, errs = load_groups(text, CONFIG)
     if errs:
         return errs
     errs = check_shape(root, groups, required)
+    removed, rerrs = load_removed(text)
+    errs += rerrs
     if base_ref:
         base, berrs = base_groups(root, base_ref)
         errs += berrs
         if base is not None:
-            errs += check_ratchet(base, groups)
+            waived, werrs = check_removed(root, base_ref, removed, base_removed(root, base_ref), base, groups)
+            errs += werrs
+            errs += check_ratchet(base, groups, waived)
     elif not no_base:
         errs.append("比べ方の指定が無い（--base-ref <版> か --no-base）")
     return errs
