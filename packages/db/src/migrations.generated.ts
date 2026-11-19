@@ -119,4 +119,5 @@ export const MIGRATIONS = [
   "20261119051731_invitation_resend.sql",
   "20261119051732_accept_invitation.sql",
   "20261119070749_join_invitation.sql",
+  "20261119120400_credentials_layer.sql",
 ] as const;

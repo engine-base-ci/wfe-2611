@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 367,
-  "api_built": 54,
+  "api_built": 55,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
@@ -1609,7 +1609,7 @@
    "op": "listCredentials",
    "method": "GET",
    "path": "/api/v1/credentials",
-   "what": "取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える",
+   "what": "取得（credentials）— 預けたログイン情報を名前の順に見る（自分の個人とワークスペース）",
    "flows": [
     "F3"
    ],
@@ -1617,9 +1617,8 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56",
     "K-351"
    ]
   },

@@ -7,6 +7,7 @@ import type { Config } from "@kaname/config";
 import type { Repository } from "@kaname/db/repository";
 import type { ActionGateway } from "@kaname/actions";
 import type { ObjectStore } from "@kaname/storage";
+import type { SecretsGateway } from "@kaname/secrets";
 import type { Hook } from "../contract/deps.js";
 
 /** メールの送出（関門 C6 の 1 か所・server.ts が署名と返信先を付けて作る） */
@@ -21,6 +22,8 @@ export interface HookDeps {
   actions: ActionGateway;
   mailer?: HookMailer;
   objects: ObjectStore;
+  /** 預かり先の関門（C8）。預けたログイン情報の口が使う（K-351 が足した） */
+  secrets: SecretsGateway;
   config: Config;
 }
 

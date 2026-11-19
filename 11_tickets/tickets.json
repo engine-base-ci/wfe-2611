@@ -2186,14 +2186,12 @@
     "checkCredentialLogin",
     "createCredential",
     "deleteCredential",
-    "listCredentials",
     "reportCredentialCheck",
     "resolveCredential",
     "updateCredential"
    ],
    "tests": [
     "apps/api/test/generated/delete_credentials_id.test.ts",
-    "apps/api/test/generated/get_credentials.test.ts",
     "apps/api/test/generated/patch_credentials_id.test.ts",
     "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts",
     "apps/api/test/generated/post_bridge_credentials_resolve.test.ts",

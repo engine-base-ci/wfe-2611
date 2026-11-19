@@ -6343,8 +6343,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write"
+    "credentials_personal_write",
+    "credentials_workspace_write"
    ],
    "outputs_4xx": [
     {
@@ -6514,8 +6514,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write"
+    "credentials_personal_write",
+    "credentials_workspace_write"
    ],
    "outputs_4xx": [
     {
@@ -16879,7 +16879,7 @@
    "access_control_policies": [
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
-    "credentials_tenant_read",
+    "credentials_read",
     "credentials_ops_read_with_grant",
     "skills_catalog_read"
    ],
@@ -16971,11 +16971,11 @@
     "秘密の読み出し"
    ],
    "side_effect_ordering": null,
-   "description": "取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える",
+   "description": "取得（credentials）— 預けたログイン情報を名前の順に見る（自分の個人とワークスペース）",
    "implementation_path": "apps/api/src/routes/credentials.ts::listCredentials",
    "permission": {
     "who": "self",
-    "scope": "自分のものと、自分が使える層・ワークスペースのものの名前だけ。値は返さない",
+    "scope": "自分の個人の物と、自分のワークスペースの物の名前と使い方だけ。値と金庫の参照は返さない（D-128.57）",
     "step_up": false
    },
    "path_params": [],
@@ -16984,15 +16984,13 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Credentials[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Credentials[] }"
    },
    "id": "EP-098",
    "feature_id": "F-017"
@@ -17043,8 +17041,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write"
+    "credentials_personal_write",
+    "credentials_workspace_write"
    ],
    "outputs_4xx": [
     {
@@ -17222,8 +17220,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write"
+    "credentials_personal_write",
+    "credentials_workspace_write"
    ],
    "outputs_4xx": [
     {
@@ -17405,8 +17403,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write"
+    "credentials_personal_write",
+    "credentials_workspace_write"
    ],
    "outputs_4xx": [
     {
@@ -17577,8 +17575,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write",
+    "credentials_personal_write",
+    "credentials_workspace_write",
     "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
@@ -17771,8 +17769,8 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "credentials_self_only_write",
-    "credentials_permission_write",
+    "credentials_personal_write",
+    "credentials_workspace_write",
     "bridge_jobs_self_only_write"
    ],
    "outputs_4xx": [
@@ -29339,7 +29337,7 @@
    "access_control_policies": [
     "members_tenant_read",
     "members_ops_read_with_grant",
-    "credentials_tenant_read",
+    "credentials_read",
     "credentials_ops_read_with_grant",
     "sessions_tenant_read",
     "sessions_ops_read_with_grant"
@@ -31043,8 +31041,8 @@
    "access_control_policies": [
     "members_permission_write",
     "memories_self_only_write",
-    "credentials_self_only_write",
-    "credentials_permission_write",
+    "credentials_personal_write",
+    "credentials_workspace_write",
     "conversations_self_only_write",
     "account_events_self_only_write",
     "account_events_permission_write",
@@ -31762,7 +31760,7 @@
     "memories_ops_read_with_grant",
     "approvals_read",
     "approvals_ops_read_with_grant",
-    "credentials_tenant_read",
+    "credentials_read",
     "credentials_ops_read_with_grant",
     "tickets_read",
     "tickets_client_read",
@@ -41400,7 +41398,7 @@
     "tenants_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
-    "credentials_tenant_read",
+    "credentials_read",
     "credentials_ops_read_with_grant",
     "subscriptions_tenant_read",
     "subscriptions_ops_read_with_grant",
