@@ -3,7 +3,7 @@
 //   口：getInvitation（K-331）・acceptInvitation（K-333）・signOut（K-306）。ログインの画面は今の /login（next は同じ出どころの道だけ・lib/after-login.ts）。
 //   準備（書く段で直した・2026-11-19・K-335 の試験で見つかったのと同じ形）：口の回数の上限は IP ごと（下見・ログイン・登録とも 10 回／分）なので、
 //     開くページごとに別の IP の頭を付ける（ownIp・口の答えは作らない）。登録は試験の機械から呼ぶので IP が 1 つになる：
-//     招く側と本人はこのファイルで 1 回だけ登録して使い回し、ワークスペースの名前を見る試験（003・005・009）だけが招く側を自分で登録する
+//     招く側・本人・3 つ目のワークスペース（009・013）はこのファイルで 1 回だけ登録して使い回し、ワークスペースの名前を見る 003・005 だけが招く側を自分で登録する
 //     （このファイルで 5 回。前後に流れる招待の画面の試験の登録と同じ 1 分に入っても 10 回を超えない）。招待の行は試験ごとに新しく入れる。
 //     本人のセッションを変える・消す試験（003・004・010・012・013）は、使い回す本人の印（me.token）を壊さないように、
 //     ログインの口で新しいセッションを作って使う（freshToken・登録は増やさない）。期待結果は変えていない
@@ -86,6 +86,18 @@ const ACCEPT = /\/api\/v1\/auth\/invitations\/[^/]+\/accept$/;
 const SIGN_OUT = /\/api\/v1\/auth\/sign-out$/;
 const DOWN_AGAIN = "いま Kaname の調子が悪くなっています。少し待ってから、もう一度押してください";
 const storedToken = (page: Page) => page.evaluate(() => window.localStorage.getItem("kaname.token"));
+/** この PC の書きかけの写し（K-60・鍵が kaname.ticket-draft で始まる）を 2 つの置き場に 1 つずつ置く／残っている数を数える */
+const DRAFT_KEY = "kaname.ticket-draft:qa";
+const putDrafts = (page: Page) =>
+  page.evaluate((k) => {
+    window.localStorage.setItem(k, "書きかけ");
+    window.sessionStorage.setItem(k, "書きかけ");
+  }, DRAFT_KEY);
+const draftsLeft = (page: Page) =>
+  page.evaluate(
+    (k) => [window.localStorage, window.sessionStorage].filter((store) => store.getItem(k) !== null).length,
+    DRAFT_KEY,
+  );
 /** その印のセッションを消す（別の所でログアウトした・切れた） */
 const dropSession = (token: string) => admin("delete from kaname_auth.session where token = $1", [token]);
 
@@ -101,14 +113,17 @@ const sessionTenant = async (token: string) =>
 // 招く側のワークスペース（本番の値をモックの値にそろえる：名前・招いた人・グループ）と、アカウントのある本人。このファイルで 1 回だけ登録する。
 //   この 2 人の印（host.token・me.token）のセッションは、どの試験も変えない・消さない（002 は画面からログインして新しいセッションを作るだけ・
 //   008・009・011・014 の参加とログアウトの口は作り物の答え・セッションを変える試験は freshToken の新しいセッションを使う）。
-//   003 で本人は「株式会社切り替え先」の所属が 1 つ増えるが、ほかの試験の招待は別のワークスペースの物なので、下見の形（同じメール・別のメール）は変わらない
+//   009 の参加の口は作り物なので「株式会社断り」には誰も入らない。003 で本人は「株式会社切り替え先」の所属が 1 つ増えるが、ほかの試験の招待は別のワークスペースの物なので、下見の形（同じメール・別のメール）は変わらない
 let host: Owner;
 let me: Owner;
+/** 3 つ目のワークスペース「株式会社断り」（host も me も入っていない）。009 と 013 の招待の元 */
+let refuser: Owner;
 test.beforeAll(async () => {
   host = await withEntry(await signupViaApi("株式会社ENGINE BASE"));
   await admin("update members set display_name = '高本 聖斗' where id = $1", [host.memberId]);
   await admin("update scopes set name = '経理グループ' where id = $1", [host.scopeId]);
   me = await withEntry(await signupViaApi("株式会社わたし"));
+  refuser = await signupViaApi("株式会社断り");
 });
 
 test.describe("K-336 招待の画面：見た目はモックどおり", () => {
@@ -185,10 +200,12 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
       page.getByText(new RegExp(`この招待は ${someoneElse} 宛てです。いまは ${me.email} でログインしています`)),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: /参加する/ })).toHaveCount(0);
+    await putDrafts(page);
     await page.getByRole("button", { name: "ログアウトして開き直す" }).click();
     await expect(page.getByRole("button", { name: "参加する" })).toBeVisible();
     await expect(page).toHaveURL(new RegExp(`/invite/${inv.token}$`));
     expect(await page.evaluate(() => window.localStorage.getItem("kaname.token"))).toBeNull();
+    expect(await draftsLeft(page), "この PC の書きかけの写しも消えた").toBe(0);
     const left = await admin<{ n: number }>("select count(*)::int as n from kaname_auth.session where token = $1", [
       leaving,
     ]);
@@ -277,7 +294,6 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
   test("K336-UI-009 下見の後に参加の口が断った：409・E-INV-007 → 「〈ワークスペース〉にはもう入っています」へ、403・E-INV-005 → 「ログアウトして開き直す」の形（別のメール宛て）へ。ページの URL は /invite/<token> のまま", async ({
     page,
   }) => {
-    const refuser = await signupViaApi("株式会社断り");
     await loginAs(page, me.token);
     for (const [status, code, see] of [
       [409, "E-INV-007", "株式会社断り にはもう入っています"],
@@ -317,10 +333,12 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
     const out = page.getByRole("button", { name: "ログアウトして開き直す" });
     await expect(out).toBeVisible();
     await dropSession(second);
+    await putDrafts(page);
     await out.click();
     await expect(page.getByRole("button", { name: "参加する" })).toBeVisible();
     await expect(page).toHaveURL(new RegExp(`/invite/${other.token}$`));
     expect(await storedToken(page)).toBeNull();
+    expect(await draftsLeft(page), "この PC の書きかけの写しも消えた").toBe(0);
   });
 
   test("K336-UI-011 「今のアカウントで参加する」の口のほかの断り：429 → 赤の知らせに正本 E-LIM-005 の文（口の秒）／403・E-AUTH-012 → 赤の知らせに口の文／410・E-INV-003 → 期限切れ／410・E-INV-002 → 取り消し／410・E-INV-004 → 使われた／404 → 見つからない／409・E-INV-006 → ログインして参加／網が切れた → 赤の知らせで同じボタンを押せる。どれもページは移らない", async ({
@@ -389,12 +407,13 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
     await expect(join).toBeEnabled();
   });
 
-  test("K336-UI-012 「ログアウトして開き直す」の口のほかの失敗：429 → 赤の知らせに正本 E-LIM-005 の文（口の秒）／網が切れた → 赤の知らせ。どちらもページは移らず、kaname.token は残り、同じボタンをもう一度押せる", async ({
+  test("K336-UI-012 「ログアウトして開き直す」の口の失敗（503・429・網が切れた）：503 と網の切れ → 赤の知らせ／429 → 赤の知らせに正本 E-LIM-005 の文（口の秒）。どれもページは移らず、kaname.token とこの PC の書きかけの写しは残り、同じボタンをもう一度押せる", async ({
     page,
   }) => {
     const token = await freshToken(page, me);
     const out = page.getByRole("button", { name: "ログアウトして開き直す" });
     for (const [reply, text] of [
+      [json(503, { code: "E-PAGE-003" }), DOWN_AGAIN],
       [
         json(429, { error: "rate_limited", code: "RATE_LIMITED", retry_after_sec: 41 }),
         "送りすぎです。41秒たってから、もう一度お試しください",
@@ -405,10 +424,12 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
       await page.unrouteAll({ behavior: "ignoreErrors" });
       await page.route(SIGN_OUT, (r) => (reply ? r.fulfill(reply) : r.abort()));
       await openAs(page, token, inv.token);
+      await putDrafts(page);
       await out.click();
       await expect(page.getByRole("alert").filter({ hasText: text })).toBeVisible();
       await expect(page).toHaveURL(new RegExp(`/invite/${inv.token}$`));
       expect(await storedToken(page)).toBe(token);
+      expect(await draftsLeft(page), "書きかけの写しは残る").toBe(2);
       await expect(out).toBeEnabled();
     }
   });
@@ -416,14 +437,15 @@ test.describe("K-336 招待の画面：ログインの状態 × 招待", () => {
   test("K336-UI-013 開いた後に別のアカウントへ入り直してから「今のアカウントで参加する」を押した（本物の口が 403・E-INV-005）：「ログアウトして開き直す」の形になり、文のログイン中のメールは入り直したアカウントの物（下見の時のメールではない）。招待は使われないまま", async ({
     page,
   }) => {
-    const inv = await invite(host, me.email);
+    // 招く側は「株式会社断り」。入り直す先の host は、宛てでもなく、このワークスペースに入ってもいない人
+    const inv = await invite(refuser, me.email);
     const mine = await freshToken(page, me);
-    const insider = await freshToken(page, host); // 入り直す先（宛てではないアカウント）
+    const another = await freshToken(page, host);
     await openAs(page, mine, inv.token);
     const join = page.getByRole("button", { name: "今のアカウントで参加する" });
     await expect(join).toBeVisible();
     // 別のタブで入り直した（同じ置き場の印が替わる）
-    await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), insider);
+    await page.evaluate((t) => window.localStorage.setItem("kaname.token", t), another);
     await join.click();
     await expect(page.getByRole("button", { name: "ログアウトして開き直す" })).toBeVisible();
     await expect(
