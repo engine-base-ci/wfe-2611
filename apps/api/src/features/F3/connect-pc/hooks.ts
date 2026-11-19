@@ -176,7 +176,9 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
             : null;
           browser = br?.rows[0]?.b ?? null;
         } catch (e) {
-          // DB に書けない・読めない：503・E-PAGE-003（K-360）。前の報告はそのまま残り、Bridge は次の知らせ（60 秒ごと）で送り直す。
+          // DB に書けない・読めない：503・E-PAGE-003（K-360）。Bridge は次の知らせ（60 秒ごと）で送り直す。
+          //   書く所（app.bridge_beat）で落ちたら、何も変わらず前の報告のまま。読む所（app.bridge_browser）で落ちたら、
+          //   知らせ（最後に見えた時刻・自己診断・報告の時刻）は残り、答えだけ 503 になる（送り直しても行は増えない）。
           //   答えに DB の文を出さない（D-130.2）。ログは口の名前と例外の名前だけ（PC の印・番号・DB の文を出さない）。
           //   状態は 503 を直に書く（目録の E-PAGE-003 の種類 dependency は 409 になるので fromCatalog は使わない）
           console.error(`[bridge] sendHeartbeat: 生きている知らせを残せなかった（${(e as Error)?.name ?? "Error"}）`);
