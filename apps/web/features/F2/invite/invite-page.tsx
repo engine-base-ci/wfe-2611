@@ -90,6 +90,22 @@ function viewOfPreview(d: Raw): View {
   return s === "ok" ? { state: usableState(d), preview } : { state: "down" };
 }
 
+/** 下見の口を呼んで画面の様子にする：404 → 見つからない／429 → 少し待って（口の秒）／そのほかの失敗・網の切れ → 調子が悪い */
+async function readPreview(token: string): Promise<View> {
+  try {
+    const r = await call("getInvitation", { params: { token }, keepOn401: true, screenId: SCREEN });
+    if (r.ok) return viewOfPreview((r.data ?? {}) as Raw);
+    if (r.status === 404) return { state: "notfound" };
+    if (r.status === 429) return { state: "wait", waitSec: r.retryAfterSec ?? WAIT_SEC };
+    return { state: "down" };
+  } catch {
+    return { state: "down" }; // 網が切れた（口が答えない）
+  }
+}
+
+/** ログイン中の人の形（もう入っている・同じメール・別のメール宛て）か */
+const isSignedState = (s: InviteState): boolean => s === "member" || s === "signed" || s === "other";
+
 /** 口が断った答え → 下見と同じ画面（無い・取り消し・期限切れ・使われた）。当たらなければ null */
 function deadOf(r: CallErr): InviteState | null {
   if (r.status === 404) return "notfound";
@@ -136,16 +152,8 @@ export function InvitePage() {
 
   /** 下見を呼んで画面を決める */
   const load = useCallback(async (t: string) => {
-    try {
-      const r = await call("getInvitation", { params: { token: t }, keepOn401: true, screenId: SCREEN });
-      if (loaded.current !== t) return; // 別の招待を開き直した後に届いた答えは捨てる
-      if (r.ok) return setView(viewOfPreview((r.data ?? {}) as Raw));
-      if (r.status === 404) return setView({ state: "notfound" });
-      if (r.status === 429) return setView({ state: "wait", waitSec: r.retryAfterSec ?? WAIT_SEC });
-      setView({ state: "down" });
-    } catch {
-      if (loaded.current === t) setView({ state: "down" }); // 網が切れた（口が答えない）
-    }
+    const now = await readPreview(t);
+    if (loaded.current === t) setView(now); // 別の招待を開き直した後に届いた答えは捨てる
   }, []);
 
   useEffect(() => {
@@ -184,16 +192,20 @@ export function InvitePage() {
   };
 
   /** 参加の口が、下見の後に変わった様子で断った → その様子の画面へ（下見の中身は残す）。当たらなければ false。
-   *  別のメール宛て（下見の後に別のアカウントへ入り直した）は、出すログイン中のメールが下見の時の物と違うので、中身だけ読み直す（形は口の断りのまま） */
+   *  別のメール宛て（下見の後に別のアカウントへ入り直した）だけは、出すログイン中のメールが下見の時の物と違うので、形を替える前に下見を読み直す：
+   *  ログイン中のメールが読めたら「別のメール宛ての形＋読み直した中身」を 1 回で置く（形は口の断りのとおり）。
+   *  読めなければ（口が答えない・ログインが切れていた・招待が使えなくなっていた）、読み直した下見の結果の画面を出す（下見の時のメールでうその文を出さない） */
   const toChanged = async (r: CallErr): Promise<boolean> => {
     const state = changedOf(r);
     if (!state) return false;
-    setView((x) => (x ? { ...x, state } : x));
-    if (state !== "other") return true;
-    const again = await call("getInvitation", { params: { token }, keepOn401: true, screenId: SCREEN });
-    const fresh = again.ok ? previewOf((again.data ?? {}) as Raw) : null;
-    // ログイン中のメールが読めたときだけ入れ替える。読めなければ（網の切れは run が赤の知らせにする）下見の時の中身のまま
-    if (fresh?.signedInEmail && loaded.current === token) setView((x) => (x ? { ...x, preview: fresh } : x));
+    if (state !== "other") {
+      setView((x) => (x ? { ...x, state } : x));
+      return true;
+    }
+    const now = await readPreview(token);
+    if (loaded.current !== token) return true;
+    const signedNow = isSignedState(now.state) && now.preview?.signedInEmail;
+    setView(signedNow ? { state: "other", preview: now.preview } : now);
     return true;
   };
 
