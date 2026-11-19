@@ -2,7 +2,7 @@
 """発注者確認の入口（README）を機械で出す。「今 dev で触れるチケット」と「その順番」。
 
   python3 scripts/ci/gen_handoff_index.py --tickets 07_tasks/tickets.json --screens 07_functional/screens.json \
-      --spec 07_qa/test-specs --out 07_tasks/handoff/README.md --base http://127.0.0.1:3124
+      --spec 07_qa/test-specs --out 07_tasks/handoff/README.md --base http://localhost:3124
 
 触れる＝status done かつ画面のタスク（層 ui）。並びは はじめの設定の順（flow の画面の順）。
 各行に 状態（未確認／OK／NG）を出す。手順ファイルの `OK:` を読む。
@@ -25,7 +25,7 @@ def state_of(fp: str) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tickets", required=True); ap.add_argument("--screens", required=True); ap.add_argument("--spec", required=True)
-    ap.add_argument("--out", required=True); ap.add_argument("--base", default="http://127.0.0.1:3124")
+    ap.add_argument("--out", required=True); ap.add_argument("--base", default="http://localhost:3124")
     a = ap.parse_args()
     S = {s["id"]: s for s in json.load(open(a.screens, encoding="utf-8"))["items"]}
     order = {sid: i for i, sid in enumerate(S)}

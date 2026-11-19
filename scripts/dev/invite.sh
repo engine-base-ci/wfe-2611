@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 ROLE="${1:-staff}"
 PG=kaname-pg
-BASE="${BASE:-http://127.0.0.1:3124}"
+BASE="${BASE:-http://localhost:3124}"   # 画面の住所は localhost（up.sh の WEB_BASE_URL の 1 つ目と同じ・K-340）
 API="${API:-http://127.0.0.1:3011}"
 EMAIL="invite-$(date +%s)@example.com"
 PW="correct-horse-battery-1"

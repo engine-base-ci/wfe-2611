@@ -1317,7 +1317,7 @@
   {
    "id": 56,
    "name": "取り込む順（depends_on の実装が先に枝にある・K-94）",
-   "script": "python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref \"$CI_BASE\"",
+   "script": "python3 scripts/ci/k341_order_gate_speed_test.py && python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref \"$CI_BASE\"",
    "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
    "job": "spec-2",
    "blocking": true

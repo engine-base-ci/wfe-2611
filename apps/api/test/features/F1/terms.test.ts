@@ -929,7 +929,7 @@ describe("K-53 操作の揺れ・守り", () => {
     const r = await consent(t, agreeTo(base));
     expect(r.status).toBe(429);
     expect(Number((await json(r))["retry_after_sec"])).toBeGreaterThan(0);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 
   it("K53-API-028 今の版を読む口を 1 分に 11 回（同じ IP）：11 回目は 429・待つ秒数", async () => {
     const ip = nextIp();

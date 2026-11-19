@@ -16,6 +16,7 @@ import { authClient, passkeySupported, refreshSession, signInWithPasskey } from 
 import { afterLogin } from "@/lib/after-login";
 import type { ServiceIncident } from "@/components/k/auth-parts";
 import { toIncidents } from "@/features/F1/service-status/to-incidents";
+import { waitText } from "@/features/F1/sign-up/wait-text"; // 送りすぎ（429 のロック以外）の文は正本 E-LIM-005（K-340）
 import { CODE_LENGTH, EMPTY_CODE } from "./code-boxes";
 import { LoginAdded, LoginBlocked, LoginCode, LoginMain, LoginRecover } from "./views";
 
@@ -34,8 +35,6 @@ const MS_PER_SEC = 1000;
 /** バックアップコードは全角を半角にし、前後の空白を落とすだけ（大小は口がそろえる） */
 const tidyBackup = (v: string): string => v.normalize("NFKC").trim();
 const textOf = (r: CallErr): string => r.message ?? CATALOG[r.code as keyof typeof CATALOG]?.message ?? FALLBACK;
-/** 回数の守りの 429（ロック・確認のコードの止めでないもの）：画面で文を作る（connect-pc と同じ文） */
-const waitText = (sec: number): string => `続けて押されました。${sec} 秒たってから、もう一度押してください`;
 
 export function LoginForm({ next }: { next: string | null }) {
   const router = useRouter();

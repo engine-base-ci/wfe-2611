@@ -676,7 +676,7 @@ describe("K-57 配布物（受け取る・新しい版を見に来る）", () =>
     } finally {
       set("");
     }
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 });
 
 describe("K-57 入力・失敗・操作の揺れ・守り", () => {
@@ -812,7 +812,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
     const r = await f.req("POST", "/bridge/pairing-codes", { body: {}, headers: p.auth });
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBeGreaterThan(0);
-  });
+  }, 60_000); // 何十回も続けて口を呼ぶ送りすぎの確かめ（重い台でも既定の 5 秒で切らない）
 
   it("K57-API-040 守り：PC の印でコードを出す口・端末の一覧を呼ぶ／画面のログインで生きている知らせを呼ぶ：403（役が合わない・ZT10）", async () => {
     const p = await newPerson();

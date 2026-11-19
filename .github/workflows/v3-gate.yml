@@ -701,7 +701,7 @@ jobs:
         if: ${{ !cancelled() && (steps.scope.outputs.full == 'true' || contains(steps.scope.outputs.gates, ',56,')) }}
         env:
           CI_BASE: ${{ steps.scope.outputs.base }}
-        run: python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"
+        run: python3 scripts/ci/k341_order_gate_speed_test.py && python3 scripts/ci/ticket_order_gate_test.py && python3 scripts/ci/ticket_order_gate.py --selftest && python3 scripts/ci/ticket_order_gate.py --base-ref "$CI_BASE"
       - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true

@@ -16,6 +16,7 @@ import { call, type CallErr } from "@/lib/api/call";
 import { getToken } from "@/lib/api/client";
 import { getInstaller, pairViaLocal, useWhere, wake } from "@/lib/bridge-presence";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
+import { waitText } from "@/features/F1/sign-up/wait-text";
 import { pollDevices, type Device } from "./devices";
 import { ConnectDialog, type Os } from "./connect-dialog";
 import { codeWait } from "./code-wait";
@@ -217,7 +218,7 @@ export function ConnectPc({ from }: { from: string | null }) {
   const problemNote =
     problem?.kind === "wait" ? (
       <Callout tone="warn" title="少し待ってください">
-        続けて押されました。{problem.sec} 秒たってから、もう一度押してください。
+        {waitText(problem.sec)}
       </Callout>
     ) : problem?.kind === "code" ? (
       <ErrorState code={problem.code} acts={[() => void newCode()]} />
