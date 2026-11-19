@@ -152,9 +152,10 @@ class Builder(unittest.TestCase):
         self.assertEqual(len(g65), 1)
         self.assertIn(ME, str(g65[0].get("run", "")), "CI の形の試験（G65）でこの試験が毎回流れる（作り直しで形が戻らない）")
         self.assertIn("python3 scripts/ci/k172_ci_shape_test.py", str(g65[0].get("run", "")), "前からの試験も残る")
-        line = [ln for ln in BUILDER_TEXT.splitlines() if '"id": 65,' in ln]
-        self.assertEqual(len(line), 1)
-        self.assertIn(ME, line[0])
+        import sys  # noqa: E402
+        sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+        import gate_cmds  # noqa: E402  G65 の並びは scripts/ci/g65.d から作り手が作る（K-376）
+        self.assertIn(ME, gate_cmds.commands(ROOT / "scripts" / "ci" / "g65.d", last="python3 scripts/ci/k248_scope_reach_test.py"))
 
 
 class FlowConfig(unittest.TestCase):
