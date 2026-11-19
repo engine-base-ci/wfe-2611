@@ -356,8 +356,10 @@ describe("K-351 名前・説明・層の列（migration）", () => {
 
   it("K351-API-020 上限：501 件ある人の一覧は 500 件で切り（名前の順の先頭 500 件）、ログに「一覧を 500 行で切った」が 1 行出る。ログに名前・値の参照は無い。500 件ちょうどの人はログに出ない", async () => {
     await h.ready();
-    const many = await freshPerson();
-    const just = await freshPerson();
+    // 2 人は新しい会社に作る（会社 A には前の行が入れたワークスペースの物があり、それも一覧に出るので、件数と先頭の名前が決まらない）
+    const D = await h.company("K351 会社 D（上限）");
+    const many = await h.person(D.tenantId, D.rootScope, { name: "501 件の人" });
+    const just = await h.person(D.tenantId, D.rootScope, { name: "500 件の人" });
     const fill = (p: Person, n: number, tag: string) =>
       h.admin.query(
         `insert into credentials (tenant_id, scope_id, owner_member_id, vault_ref, kind_id, two_factor_id, destinations, layer, name)
