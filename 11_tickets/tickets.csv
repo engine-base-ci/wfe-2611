@@ -2053,7 +2053,7 @@ K-359,Bridge の側で Claude Code の自己診断と直し方を整える（無
 - この PC の口 `/login-code` は本文が JSON として読めないとき 422 で返し、口ごと落ちない
 - 画面が「この行はこの PC か」を見分けられるように、Bridge は生きている知らせの答えの `device_id`（K-360 が足す）を覚え、この PC の口 `/ping` で返す
 
-本人の資格情報（パスワード・コード・トークン）は Bridge も Kaname も AI も持たない（D-017・D-092 ①）。コードは Claude Code の標準入力にそのまま渡すだけで、Kaname のサーバーには届かない。","- [ ] 下の表の 27 行（K359-BR-001〜027）が緑：`apps/bridge/test/k359-claude-setup.test.ts`
+本人の資格情報（パスワード・コード・トークン）は Bridge も Kaname も AI も持たない（D-017・D-092 ①）。コードは Claude Code の標準入力にそのまま渡すだけで、Kaname のサーバーには届かない。","- [ ] 下の表の 29 行（K359-BR-001〜029）が緑：`apps/bridge/test/k359-claude-setup.test.ts`
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-360,PC の一覧に自己診断の時刻（health_at）を足し、生きている知らせの答えに PC の番号（device_id）を足す（listMyDevices・sendHeartbeat・BridgeDevice の契約・migration 1 本）（K-89 の葉 ②）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89 の口・DB・契約の分。PC の行に「足りない物と直し方」を出す画面（K-361）が要る値を、契約の口で運べるようにする。
