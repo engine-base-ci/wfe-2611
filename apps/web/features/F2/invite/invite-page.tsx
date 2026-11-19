@@ -1,10 +1,14 @@
 "use client";
-// 招待を受けて参加する（/invite/:token・A03・K-335）。見た目は段 3 の部品（views の InviteAccept）。ここは動きだけ。
-//   口は契約の口だけ：下見 getInvitation（K-331）・参加 acceptInvitation（K-332）・送り直しを頼む requestInvitationResend（K-334）。
+// 招待を受けて参加する（/invite/:token・A03・K-335・K-336）。見た目は段 3 の部品（views の InviteAccept）。ここは動きだけ。
+//   口は契約の口だけ：下見 getInvitation（K-331）・参加 acceptInvitation（K-332・K-333）・送り直しを頼む requestInvitationResend（K-334）・ログアウト signOut（K-306）。
 //   開くと下見を 1 回だけ呼び、答えで画面を選ぶ：404 → 見つからない／429 → 少し待って（口の秒）／そのほかの失敗 → 調子が悪い／
-//   期限切れ・取り消し・使われた → それぞれの画面／使える → 新しく作って参加（宛てにアカウントがある・ログイン中は K-336 の状態）。
-//   参加：201 → 口が返した印を置き、口が返した行き先（付けるまで進めない /mfa-setup）へ。422 → 欄の下に口の文。
-//   410・404 → 下見と同じ画面。409 E-INV-006 → ログインして参加。そのほかの失敗 → 画面は移らず赤の知らせ（入れた値は残る）。
+//   期限切れ・取り消し・使われた → それぞれの画面／使える → ログイン中（もう入っている・同じメール・別のメール宛て）・宛てにアカウントがある・新しく作って参加。
+//   ログイン中かどうかは下見の答えの signed_in だけで決める（画面で別に「誰か」を聞かない。印が切れていればログインしていない形）。
+//   新しく作って参加：201 → 口が返した印を置き、口が返した行き先（付けるまで進めない /mfa-setup）へ。422 → 欄の下に口の文。
+//   今のアカウントで参加（体なし）：201 → 口が返した印を置き、口が返した行き先（招かれたワークスペースのはじめ「/」）へ。
+//   410・404 → 下見と同じ画面。409 E-INV-006 → ログインして参加。409 E-INV-007 → もう入っています。403 E-INV-005 → 別のメール宛て。
+//   そのほかの失敗 → 画面は移らず赤の知らせ（入れた値は残る）。
+//   ログアウトして開き直す：ログアウトの口が通ったら、この PC の印を消して下見を読み直す（ログインしていない形）。失敗したら印は消さず赤の知らせ。
 //   送り直し：sent → 頼みました／already → 今日はもう頼んである／failed → 期限切れのまま赤の知らせ（押し直せる）。
 //   URL の next は読まない（行き先は口の答えだけ・同じ出どころの道だけ・K-259）
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,7 +17,7 @@ import { useParams, useRouter } from "next/navigation";
 import { CATALOG } from "@kaname/errors/catalog";
 import { sameOriginPath } from "@/lib/after-login";
 import { call, type CallErr } from "@/lib/api/call";
-import { setToken } from "@/lib/api/client";
+import { clearDraftCopies, setToken } from "@/lib/api/client";
 import { refreshSession } from "@/lib/auth/client";
 import { linksOf, useCurrentTerms } from "../../F1/consent-terms/current-terms";
 import { AuthLoading } from "../../F1/sign-up/auth-loading";
@@ -30,6 +34,8 @@ import {
 const SCREEN = "invite-accept";
 /** 参加した直後の行き先（口の答えに行き先が無い・外を向いているとき）。付けるまで進めない */
 const AFTER_JOIN = "/mfa-setup" as Route;
+/** 今のアカウントで参加した後の行き先（口の答えに行き先が無い・外を向いているとき）。入口が今の時点を見て振り分ける */
+const AFTER_SIGNED_JOIN = "/" as Route;
 /** 口が秒を返さなかった送りすぎの待ち（口の上限の窓と同じ 1 分） */
 const WAIT_SEC = 60;
 
@@ -91,6 +97,14 @@ function deadOf(r: CallErr): InviteState | null {
   if (r.code === "E-INV-002") return "revoked";
   if (r.code === "E-INV-003") return "expired";
   return r.code === "E-INV-004" ? "used" : null;
+}
+
+/** 参加の口が、下見の後に変わった様子で断った答え → その様子の画面。当たらなければ null。
+ *  E-INV-006：宛てのメールでアカウントができた／E-INV-007：もう入っている／E-INV-005：別のメール宛て（別のアカウントに入り直した） */
+function changedOf(r: CallErr): InviteState | null {
+  if (r.status === 409 && r.code === "E-INV-006") return "account";
+  if (r.status === 409 && r.code === "E-INV-007") return "member";
+  return r.status === 403 && r.code === "E-INV-005" ? "other" : null;
 }
 
 /** 画面は移らないときの赤の知らせ：送りすぎは待つ秒数の文・止められたワークスペースは口の文・ほかは調子が悪い */
@@ -169,12 +183,26 @@ export function InvitePage() {
     return true;
   };
 
-  const onJoin = (v?: InviteJoin) => {
-    if (!v) return; // 今のアカウントで参加（引数なし）は K-336
+  /** 参加の口が、下見の後に変わった様子で断った → その様子の画面へ（下見の中身は残す）。当たらなければ false。
+   *  別のメール宛て（下見の後に別のアカウントへ入り直した）は、出すログイン中のメールが下見の時の物と違うので、中身だけ読み直す（形は口の断りのまま） */
+  const toChanged = async (r: CallErr): Promise<boolean> => {
+    const state = changedOf(r);
+    if (!state) return false;
+    setView((x) => (x ? { ...x, state } : x));
+    if (state !== "other") return true;
+    const again = await call("getInvitation", { params: { token }, keepOn401: true, screenId: SCREEN });
+    const fresh = again.ok ? previewOf((again.data ?? {}) as Raw) : null;
+    // ログイン中のメールが読めたときだけ入れ替える。読めなければ（網の切れは run が赤の知らせにする）下見の時の中身のまま
+    if (fresh?.signedInEmail && loaded.current === token) setView((x) => (x ? { ...x, preview: fresh } : x));
+    return true;
+  };
+
+  /** 参加する。v があれば新しく作って参加（名前とパスワード）、無ければ今のアカウントで参加（体なし・K-336） */
+  const onJoin = (v?: InviteJoin) =>
     void run(async () => {
       const r = await call("acceptInvitation", {
         params: { token },
-        body: { name: v.name, password: v.password },
+        body: v ? { name: v.name, password: v.password } : {},
         keepOn401: true,
         screenId: SCREEN,
       });
@@ -185,12 +213,15 @@ export function InvitePage() {
           setToken(session);
           refreshSession(); // ログインの部品の見え方（セッションの印）にも新しいログインを知らせる
         }
-        router.push(session ? sameOriginPath(str(joined["next"]), AFTER_JOIN) : ("/login" as Route));
+        const fallback = v ? AFTER_JOIN : AFTER_SIGNED_JOIN;
+        router.push(session ? sameOriginPath(str(joined["next"]), fallback) : ("/login" as Route));
         return "leave";
       }
-      if (toDead(r)) return "stay";
-      if (r.status === 409 && r.code === "E-INV-006") {
-        setView((x) => (x ? { ...x, state: "account" } : x)); // 下見の後に、宛てのメールでアカウントができた
+      if (toDead(r) || (await toChanged(r))) return "stay";
+      if (r.status === 422 && !v) {
+        // 体なしの参加に欄の誤りが返った＝押す前にログインが切れて、口がログインしていない人として受けた。
+        // この形には欄が無いので、下見を読み直して今の形（ログインして参加 など）を出す
+        await load(token);
         return "stay";
       }
       const byField = r.status === 422 ? errorsOf(r) : null;
@@ -198,7 +229,21 @@ export function InvitePage() {
       else setNotice(noticeOf(r));
       return "stay";
     });
-  };
+
+  /** ログアウトして開き直す（別のメール宛て）。口が通ったら（もう切れていた 401 も）この PC の印を消し、同じ招待をログインしていない形で読み直す */
+  const onSignOut = () =>
+    void run(async () => {
+      const r = await call("signOut", { body: {}, keepOn401: true, screenId: SCREEN });
+      if (!r.ok && r.status !== 401) {
+        setNotice(noticeOf(r)); // 失敗したら印は消さない（押し直せる）
+        return "stay";
+      }
+      setToken(null);
+      clearDraftCopies(); // ログアウトはどこからでも、この PC の書きかけの写しを消す（lib/auth の signOut と同じ・K-60）
+      refreshSession();
+      await load(token);
+      return "stay";
+    });
 
   const onResend = () =>
     void run(async () => {
@@ -232,9 +277,9 @@ export function InvitePage() {
       notice={notice}
       busy={busy}
       links={links}
-      signedLocked
       onJoin={onJoin}
       onResend={onResend}
+      onSignOut={onSignOut}
       loginHref={`/login?next=${encodeURIComponent(`/invite/${token}`)}`}
       openHref="/"
     />

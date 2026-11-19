@@ -73,18 +73,16 @@ export interface InviteAcceptProps {
   preview?: InvitePreview;
   /** 入力の誤り（口の 422 の文・E-VAL-*） */
   errors?: { name?: string; password?: string };
-  /** 赤の知らせ（押した口が失敗した・K-335）。新しく作って参加の主ボタンの上と、期限切れのボタンの上に出す。押し直せる */
+  /** 赤の知らせ（押した口が失敗した・K-335）。新しく作って参加・期限切れ・ログイン中の 2 つ（今のアカウントで参加・別のメール宛て）の、押したボタンの上に出す。押し直せる */
   notice?: string | null;
   /** 送りすぎのあと何秒（429） */
   waitSec?: number;
   busy?: boolean;
-  /** ログイン中の 2 つのボタン（今のアカウントで参加・ログアウトして開き直す）を、出したまま押せない形にする。
-   *  押した後は K-336 が入れる。それまでは押しても何も起きないので、グレーで押せない形で出す（隠さない・answer=78cb822fc1f1） */
-  signedLocked?: boolean;
   links?: TermsLinks;
   /** 新しく作って参加（名前とパスワード）・今のアカウントで参加（引数なし） */
   onJoin?: (v?: InviteJoin) => void;
   onResend?: () => void;
+  /** ログアウトして開き直す（別のメール宛て） */
   onSignOut?: () => void;
   /** ログインして戻る先（/login?next=/invite/<token>） */
   loginHref?: string;
@@ -233,7 +231,8 @@ export function InviteAccept(p: InviteAcceptProps) {
             この招待は {pv.email} 宛てです。いまは {pv.signedInEmail} でログインしています。{pv.email}{" "}
             のアカウントで入ってください
           </ResultBox>
-          <Button size="lg" loading={p.busy} disabled={p.signedLocked} onClick={p.onSignOut}>
+          {p.notice ? <ResultBox tone="bad">{p.notice}</ResultBox> : null}
+          <Button size="lg" loading={p.busy} onClick={p.onSignOut}>
             ログアウトして開き直す
           </Button>
         </div>
@@ -256,7 +255,8 @@ export function InviteAccept(p: InviteAcceptProps) {
         <div className="k-auth-form" data-auth="invite" data-state="signed">
           <InviteHead p={pv} />
           <TextField size="lg" label="メール" name="email" value={pv.email} readOnly />
-          <Button size="lg" loading={p.busy} disabled={p.signedLocked} onClick={() => p.onJoin?.()}>
+          {p.notice ? <ResultBox tone="bad">{p.notice}</ResultBox> : null}
+          <Button size="lg" loading={p.busy} onClick={() => p.onJoin?.()}>
             今のアカウントで参加する
           </Button>
           <p className="k-auth-note">
