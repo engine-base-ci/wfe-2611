@@ -7,6 +7,10 @@
 //       → 失敗したら作った利用者を id で消す（後片付け）⑦ セッションを作る（手順 3・失敗しても参加は取り消さない）⑧ 201。
 //   上限（10 回／分／IP）は契約の入口（op.ts）が先に確かめる。体の email は読まない（宛ては招待のもの）。
 //   ログに宛てのメール・パスワード・トークンを出さない（宛先は mailTag の印・例外は種類だけ）
+// K-333 今のアカウントで参加する（ログイン中の人・D-125.150）：入口がセッションを解けたら（ctx.role が member）この分に入り、体は読まない。
+//   順：① ② は同じ → 別のメール宛て 403・E-INV-005（answer=becc3d3aa526 ②）→ もう入っている 409・E-INV-007（answer=7fe1f09fdab4 ⑦）
+//       → app.join_invitation（所属を足す・前に抜けた所属は戻す・出来事・そのログインの印だけ招かれた所へ付け替え を 1 つの取引）→ 201 { 今の印, workspace_id, next "/" }。
+//   宛てともう入っているの判定は関数の中（招待の行を for update で読んだ後）でする。招待の状態以外の失敗は 503・E-PAGE-003（取引ごと戻り何も残らない）
 import { checkPwned } from "../../F1/sign-up/pwned.js";
 import { cleanText } from "../../F1/sign-up/input.js";
 import { OPS_TENANT_ID } from "../../F1/sign-up/index.js";
@@ -15,6 +19,8 @@ import {
   acceptRefusal,
   createInvitedUser,
   invitationForAccept,
+  joinInvitation,
+  joinRefusal,
   openSessionFor,
   type InvitationForAccept,
 } from "@kaname/auth/invitations";
@@ -33,6 +39,8 @@ export const PASSWORD_MIN = 12;
 export const PASSWORD_MAX = 128;
 /** 入った直後に移る画面（付けるまで進めない・K-308） */
 export const NEXT_AFTER_JOIN = "/mfa-setup";
+/** ログイン中の人が参加した後に移る画面（招かれたワークスペースのはじめ・K-333） */
+export const NEXT_AFTER_SIGNED_JOIN = "/";
 
 const OPS_CTX: TenantContext = { tenantId: OPS_TENANT_ID, userId: null, role: "anonymous" };
 
@@ -89,6 +97,36 @@ export function invitationAcceptFeature(d: InvitationDeps) {
     }
   };
 
+  /** ログイン中の本人（認証の利用者とセッション）。入口が会社の人として解けたときだけ。無ければ null（ログインしていない人の分） */
+  const signedIn = async (a: HookArgs): Promise<{ userId: string; sessionId: string; token: string } | null> => {
+    if (a.ctx.role !== "member") return null;
+    const s = await d.auth.api.getSession({ headers: a.c.req.raw.headers });
+    return s ? { userId: s.user.id, sessionId: s.session.id, token: s.session.token } : null;
+  };
+
+  /** 今のアカウントで参加する（K-333） */
+  const join = async (
+    token: string,
+    inv: InvitationForAccept,
+    me: { userId: string; sessionId: string; token: string },
+  ): Promise<HookReply> => {
+    try {
+      const r = await joinInvitation(d.appPool, token, me.userId, me.sessionId);
+      return {
+        status: 201,
+        body: { data: { token: me.token, workspace_id: r.tenantId, next: NEXT_AFTER_SIGNED_JOIN } },
+      };
+    } catch (e) {
+      const why = joinRefusal(e);
+      if (why === "wrong_email") return reply(403, "E-INV-005");
+      if (why === "already_member") return reply(409, "E-INV-007");
+      if (why === "used" || why === "revoked" || why === "expired") return reply(410, GONE[why]);
+      if (why === "not_found") return reply(404, "E-INV-001");
+      console.error(`[invitation] 今のアカウントで参加できなかった（招待 ${inv.invitationId}・${kindOf(e)}）`);
+      return unavailable();
+    }
+  };
+
   const accept = async (a: HookArgs): Promise<HookReply> => {
     const token = a.c.req.param("token") ?? "";
     if (token.length < 1 || token.length > TOKEN_MAX) return reply(404, "E-INV-001");
@@ -102,6 +140,14 @@ export function invitationAcceptFeature(d: InvitationDeps) {
     if (!inv) return reply(404, "E-INV-001");
     if (inv.state !== "ok") return reply(410, GONE[inv.state]);
     if (inv.workspaceSuspended) return reply(403, "E-AUTH-012");
+    let me: Awaited<ReturnType<typeof signedIn>>;
+    try {
+      me = await signedIn(a);
+    } catch (e) {
+      console.error(`[invitation] セッションを読めなかった（${kindOf(e)}）`);
+      return unavailable();
+    }
+    if (me) return join(token, inv, me);
     const ok = await check(a);
     if ("status" in ok) return ok;
 

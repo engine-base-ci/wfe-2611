@@ -256,14 +256,18 @@ class ErrorsGateReachTest(unittest.TestCase):
 
 class WiringTest(unittest.TestCase):
     def test_K248_G57_016_runs_in_g65(self) -> None:
-        g65 = [g for g in re.findall(r'"script": "([^"]*k172_ci_shape_test[^"]*)"', BUILDER.read_text(encoding="utf-8"))]
-        self.assertEqual(len(g65), 1)
-        self.assertTrue(g65[0].endswith(f"&& {ME}"), "G65 の並びの最後")
-        self.assertIn("python3 scripts/ci/k245_g27_reach_test.py", g65[0], "ほかの試験を消さない")
+        # G65 の並びはチケットごとのファイル scripts/ci/g65.d から作り手が作る（K-376）。最後に置くのは作り手の G65_LAST
+        import gate_cmds  # noqa: E402
+        self.assertRegex(BUILDER.read_text(encoding="utf-8"), r'G65_LAST = "' + re.escape(ME) + '"', "作り手が k248 を最後に置く")
+        self.assertRegex(BUILDER.read_text(encoding="utf-8"), r'gate_cmds\.script\(.*g65\.d.*last=G65_LAST',
+                         "作り手が G65 の並びに G65_LAST を渡す")
+        g65 = gate_cmds.script(ROOT / "scripts" / "ci" / "g65.d", last=ME)
+        self.assertIn("python3 scripts/ci/k245_g27_reach_test.py", g65, "ほかの試験を消さない")
         wf = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
         st = [s for s in wf["jobs"]["spec"]["steps"] if str(s.get("name", "")).startswith("G65 ")]
         self.assertEqual(len(st), 1)
-        self.assertTrue(st[0]["run"].endswith(ME))
+        self.assertEqual(st[0]["run"].strip(), g65, "CI の定義の G65 が置き場から作った並び（最後が k248）とちょうど同じ")
+        self.assertTrue(st[0]["run"].strip().endswith(f"&& {ME}"), "G65 の並びの最後")
 
     def test_K248_G57_017_old_57_globs_kept(self) -> None:
         globs = json.loads(RULES_PATH.read_text(encoding="utf-8"))["gates"][SCOPE_GATE]
