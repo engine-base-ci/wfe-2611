@@ -1037,10 +1037,10 @@ class ContractShapeTest(unittest.TestCase):
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:
-        idx = (ROOT / "packages/db/src/index.ts").read_text(encoding="utf-8")
+        idx = (ROOT / "packages/db/src/migrations.generated.ts").read_text(encoding="utf-8")
         m = re.search(r"export const MIGRATIONS = \[(.*?)\]", idx, re.S)
-        self.assertIsNotNone(m, "packages/db/src/index.ts に MIGRATIONS が無い")
-        names = re.findall(r'"(\d{4}_[^"]+\.sql)"', m.group(1))  # type: ignore[union-attr]
+        self.assertIsNotNone(m, "packages/db/src/migrations.generated.ts に MIGRATIONS が無い")
+        names = re.findall(r'"(\d{4}_[^"]+\.sql|\d{14}_[^"]+\.sql)"', m.group(1))  # type: ignore[union-attr]
         return [(n, (ROOT / "packages/db/migrations" / n).read_text(encoding="utf-8")) for n in names]
 
     def _last_function(self, name: str) -> str:

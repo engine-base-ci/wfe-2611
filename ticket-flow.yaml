@@ -84,6 +84,7 @@ changes_ignore:
   - "apps/web/lib/routes.ts"
   - "apps/web/styles/k-tokens.css"
   - "packages/auth/src/disabled-paths.generated.ts"
+  - "packages/db/src/migrations.generated.ts"
   - "packages/contracts/src/ops.ts"
   - "packages/contracts/src/registry.ts"
   - "packages/contracts/src/schemas.ts"
