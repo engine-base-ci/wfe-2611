@@ -25,6 +25,10 @@ export default defineConfig({
     //   （43375496021・authz_rows）、spec の組は 2 回（43381413825・43400367373）が 11 秒で切れた。
     //   切れた回の下限を入れて、実測は 最大 11 秒 × 3 ＝ 33 秒。CI の記録が変わったら scripts/ci/hook_timeout.py measure で引き直す
     hookTimeout: 33_000,
+    // 試験の本体の上限（既定は 5 秒）。CI の台が混むと（CI を 3 本同時に流すと）、パスワードを確かめる重い計算を含む口の試験が
+    //   5 秒を超えて赤になった（ログインの試験 13 本）。確かめの中身は変えず、口の試験と DB を使う試験の全部をここ 1 か所で 30 秒にする
+    //   （決める人の答え answer=c58ca37bdab7）。もっと長く要る試験（何十回も続けて口を叩く など）だけ、試験の最後の引数で長くする
+    testTimeout: 30_000,
     env: databaseUrl ? { DATABASE_URL: databaseUrl } : {},
     // 別の vitest（別の段・別の端末）が同じ DB を同時に使わないよう、試験の間は DB に勧告ロックを持つ（取れるまで待つ）
     globalSetup: ["packages/db/test/global-lock.ts"],
