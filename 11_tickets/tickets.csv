@@ -1970,18 +1970,18 @@ K-343,口の試験と DB を使う試験の時間の上限を、vitest の既定
 
 ```search
 - name: vitest の設定（defineConfig）を持つファイル
-  cmd: git grep -l -F 'from ""vitest/config""'
+  cmd: git grep -l -F 'from ""vitest/config""' -- ':!11_tickets'
   count: 1
 - name: 準備の上限（hookTimeout）を書いている設定・台本（試験のファイルと文書を除く）
   cmd: git grep -n -E 'hookTimeout *:' -- vitest.config.ts 'apps/*/package.json' 'packages/*/package.json' package.json .github 05_flow/build_testplan.py
   count: 1
-- name: 命令で上限を上書きしている所（package.json・CI の定義・作り手）
-  cmd: git grep -n -E -e '--(test|hook)-?[Tt]imeout' -- package.json 'apps/*/package.json' 'packages/*/package.json' .github 05_flow/build_testplan.py
+- name: 命令で上限を上書きしている所（リポジトリの全部。vitest を起こす scripts/ci/ci_scope.py・cut_check.py・spec-dependencies.yaml・CI の定義・package.json を含む。チケットの文書と K343 の試験自身を除く）
+  cmd: git grep -n -I -E -e '--(test|hook)-?[Tt]imeout' -- . ':!11_tickets' ':!scripts/ci/k343_test_timeout_test.py'
   count: 0
 ```
 
 - 設定は根の vitest.config.ts だけ（include に apps/*/test・packages/*/test・packages/*/src の試験が入る）。apps/api にも packages にも別の設定は無いので、ここ 1 か所で全部に効く
 - hookTimeout は今 33 秒（K-193・決定 D-133.2「実測の最大 × 3」）。30 秒以上なので変えない（式と注釈もそのまま。K-193・K-156 の試験がその形を見ている）
-- 命令（package.json・CI の定義）で --testTimeout を渡して上書きしている所は無い","- [ ] K343-TT-001〜004 が緑（`scripts/ci/k343_test_timeout_test.py`）
+- 命令（package.json・CI の定義・vitest を起こす台本 scripts/ci/ci_scope.py の unit_argv・cut_check.py・spec-dependencies.yaml）で --testTimeout を渡して上書きしている所は無い","- [ ] K343-TT-001〜004 が緑（`scripts/ci/k343_test_timeout_test.py`）
 - [ ] K343-TT-005 を手元で確かめた（下の judge-skip）
 - [ ] 手元の CI（このチケットの範囲）が緑"
