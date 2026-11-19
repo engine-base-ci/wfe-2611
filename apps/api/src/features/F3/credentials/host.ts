@@ -5,9 +5,11 @@
 
 // ---- 名前の取り出しと合わせ方（apps/bridge/src/host.ts と同じ字） ----
 /** URL か名前から、宛先の名前（小文字・末尾の点なし・日本語は punycode）を取り出す。取り出せなければ null。
- *  userinfo（@ の前）・道・問い合わせ・断片・ポートは名前に入らない（new URL の hostname だけを使う） */
+ *  userinfo（@ の前）・道・問い合わせ・断片・ポートは名前に入らない（new URL の hostname だけを使う）。
+ *  読む前に字を変えない（NFKC をかけない）：全角の区切り（／ ＃ ？ ＼）を半角に直すと、ブラウザが読む行き先と違う名前になる
+ *  （例 https://example.com／@evil.test/ の行き先は evil.test）。全角の英字と点・日本語の名前は new URL が自分で直す */
 export function hostnameOf(v: string): string | null {
-  const s = v.normalize("NFKC").trim();
+  const s = v.trim();
   if (s === "" || /\s/.test(s)) return null;
   let url: URL;
   try {
@@ -22,7 +24,7 @@ export function hostnameOf(v: string): string | null {
 
 /** 使える場所の 1 つを整える。頭の「*.」（下の名前だけに当てる印）は外して整え、付け直す */
 export function destinationOf(v: string): string | null {
-  const s = v.normalize("NFKC").trim();
+  const s = v.trim();
   const wild = s.startsWith("*.");
   const host = hostnameOf(wild ? s.slice(2) : s);
   if (host === null) return null;
