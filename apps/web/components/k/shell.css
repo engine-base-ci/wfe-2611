@@ -563,8 +563,8 @@
     gap: 0;
   }
   .k-bar-tools .k-icon-btn {
-    width: 44px;
-    height: 44px;
+    width: var(--k-c-shell-bar-tool-width);
+    height: var(--k-c-shell-bar-tool-height);
   }
   .k-bar-search-open[aria-disabled="true"] {
     opacity: var(--k-c-button-disabled-opacity);
@@ -592,7 +592,7 @@
     flex: 1;
     width: auto;
     max-width: none;
-    height: 36px;
+    height: var(--k-c-shell-bar-search-height);
   }
   /* iPhone が勝手に拡大しないよう、スマホの探す欄だけ 16px */
   .k-bar[data-searching] .k-search input {

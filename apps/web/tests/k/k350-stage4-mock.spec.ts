@@ -401,7 +401,7 @@ test("K350-SH-002 幅 375（外枠の見本・探せる）：虫眼鏡を押す�
   expect(await overflowX(page)).toBe(0);
 });
 
-test("K350-SH-003 幅 375（モック・探せない）：グレーの虫眼鏡を押しても、Enter でも探す欄は開かず、帯はそのまま", async ({
+test("K350-SH-003 幅 375（モック・探せない）：グレーの虫眼鏡を押しても、Enter でも、⌘K（Ctrl+K）でも探す欄は開かず、帯はそのまま", async ({
   page,
 }) => {
   await guard(page);
@@ -411,6 +411,7 @@ test("K350-SH-003 幅 375（モック・探せない）：グレーの虫眼鏡�
   await open.click({ force: true });
   await open.focus();
   await page.keyboard.press("Enter");
+  await page.keyboard.press("ControlOrMeta+k");
   await expect(bar.getByRole("search")).toBeHidden();
   await expect(bar.locator(".k-bar-ws-name")).toBeVisible();
   await expect(bar).not.toHaveAttribute("data-searching", /.*/);
@@ -467,7 +468,7 @@ test("K350-SH-006 幅 320・375・768：外枠の見本とモック cred-list �
   }
 });
 
-test("K350-SH-007 幅 375（外枠の見本・探せる）の探す欄の閉じ方と焦点：× で閉じると焦点は虫眼鏡のボタンに戻り、開いた欄で Esc を押しても閉じて焦点が戻り、⌘K（Ctrl+K）でも欄が開いて焦点が入る", async ({
+test("K350-SH-007 幅 375（外枠の見本・探せる）の探す欄の閉じ方と焦点：× で閉じると焦点は虫眼鏡のボタンに戻り、開いた欄で Esc を押しても閉じて焦点が戻り（変換中の Esc では閉じない）、⌘K（Ctrl+K）でも欄が開いて焦点が入る", async ({
   page,
 }) => {
   await openShell(page, 375);
@@ -482,6 +483,10 @@ test("K350-SH-007 幅 375（外枠の見本・探せる）の探す欄の閉じ�
   await expect(open).toBeFocused();
   // キーボードで開き（虫眼鏡に焦点 → Enter）、Esc で閉じる
   await page.keyboard.press("Enter");
+  await expect(box).toBeFocused();
+  // 変換中（日本語を打っている途中）の Esc は変換をやめるためのキー：欄は閉じず、焦点も欄のまま
+  await box.dispatchEvent("keydown", { key: "Escape", isComposing: true });
+  await expect(bar).toHaveAttribute("data-searching", "true");
   await expect(box).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(box).toBeHidden();

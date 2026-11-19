@@ -261,6 +261,7 @@ export function Shell(p: ShellProps) {
       })
     : EMPTY_NAV;
   const searchBox = useRef<HTMLInputElement>(null);
+  const searchOpen = useRef<HTMLButtonElement>(null);
   const [railed, setRailed] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
   const [sheet, setSheet] = useState(false);
@@ -270,19 +271,30 @@ export function Shell(p: ShellProps) {
     setRailed(readPref(NAV_KEY) ?? false);
     setPanelOpen(readPref(PANEL_KEY) ?? window.matchMedia("(min-width: 1180px)").matches);
   }, []);
-  // ⌘K（Ctrl+K）で探す欄へ。探すが使えないあいだは何もしない
   const canSearch = Boolean(p.onSearch);
+  // スマホの帯の探す欄を開く：欄は開くまで描かれないので、開いた後の描き直しを待って焦点を入れる
+  const openSearch = () => {
+    setSearching(true);
+    requestAnimationFrame(() => searchBox.current?.focus());
+  };
+  // 閉じる（× と Esc）：欄も × も消えるので、焦点を虫眼鏡のボタンへ戻す（焦点を見失わせない）
+  const closeSearch = () => {
+    setSearching(false);
+    requestAnimationFrame(() => searchOpen.current?.focus());
+  };
+  // ⌘K（Ctrl+K）で探す欄へ。スマホの帯では欄を開いてから焦点を入れる。探すが使えないあいだは何もしない
   useEffect(() => {
     if (!canSearch) return;
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        searchBox.current?.focus();
+        if (narrow) openSearch();
+        else searchBox.current?.focus();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [canSearch]);
+  }, [canSearch, narrow]);
   const toggleNav = () => {
     setRailed((v) => (writePref(NAV_KEY, !v), !v));
   };
@@ -431,15 +443,14 @@ export function Shell(p: ShellProps) {
           <div className="k-bar-tools">
             {narrow ? (
               <button
+                ref={searchOpen}
                 type="button"
                 className="k-icon-btn k-bar-search-open"
                 aria-label={canSearch ? "探す" : "探す（準備中）"}
                 aria-disabled={canSearch ? undefined : true}
                 title={canSearch ? undefined : "探す（準備中）"}
                 onClick={() => {
-                  if (!canSearch) return;
-                  setSearching(true);
-                  requestAnimationFrame(() => searchBox.current?.focus());
+                  if (canSearch) openSearch();
                 }}
               >
                 <Search size={18} aria-hidden="true" />
@@ -456,18 +467,22 @@ export function Shell(p: ShellProps) {
                   placeholder="チケット・ナレッジ・決定を探す"
                   disabled={!canSearch}
                   aria-disabled={canSearch ? undefined : true}
+                  onKeyDown={(e) => {
+                    // スマホの帯で開いた欄は Esc でも閉じる（広い幅の欄は開け閉めが無いので何もしない）。
+                    //   変換中（日本語を打っている途中）の Esc は変換をやめるためのキーなので閉じない（Safari は keyCode 229 で届く）
+                    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
+                    if (e.key === "Escape" && searching) {
+                      e.preventDefault();
+                      closeSearch();
+                    }
+                  }}
                 />
                 <span className="k-search-key" aria-hidden="true">
                   ⌘K
                 </span>
               </label>
               {narrow ? (
-                <button
-                  type="button"
-                  className="k-icon-btn"
-                  aria-label="探すを閉じる"
-                  onClick={() => setSearching(false)}
-                >
+                <button type="button" className="k-icon-btn" aria-label="探すを閉じる" onClick={closeSearch}>
                   <X size={18} aria-hidden="true" />
                 </button>
               ) : null}

@@ -462,6 +462,11 @@ components:
     width: "30px"
   shell-bar:            # 外枠の上の帯の高さ（K-138・shell.css の .k-bar）。幅 767 以下も同じ高さで出す（D-147）。上に貼り付く物はこの下に置く（K-226）
     height: "48px"
+  shell-bar-tool:       # スマホ（幅 767 以下）の上の帯の道具（探す・探すを閉じる・知らせ・右のパネルの開け閉め）の押せる大きさ。指で押せる 44px（D-147・shell.css の 767 以下の .k-bar-tools .k-icon-btn）
+    width: "44px"
+    height: "44px"
+  shell-bar-search:     # スマホの上の帯で、虫眼鏡を押して開いた探す欄の高さ（D-147・shell.css の 767 以下の .k-bar[data-searching] .k-search label）
+    height: "36px"
   # チケットの詳細（K-226・キャンバス TicketDetail の実測）
   detail-body:          # 本文の箱（カードと子チケット・つながりのカードを縦に並べる）
     padding: "{spacing.md} {spacing.lg} 40px"
