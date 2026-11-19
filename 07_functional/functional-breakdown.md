@@ -56,7 +56,7 @@
 | E-039 | `action_runs` | 5. 実行・統制 | scope_layered | 3 | D-062 |
 | E-040 | `service_registry` | 5. 実行・統制 | account_scoped | 3 | D-013 D-041 D-107 D-107.1 |
 | E-041 | `credential_kinds` | 5. 実行・統制 | none | 2 | D-010 |
-| E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 |
+| E-042 | `credentials` | 5. 実行・統制 | scope_layered | 4 | D-004 D-017 D-108.3 D-128.57 |
 | E-043 | `conversations` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-062.5 D-090.1 D-104 D-104.1 |
 | E-044 | `bridge_jobs` | 6. 会話・成果物・証跡 | scope_layered | 3 | D-090 D-090.2 D-090.4 D-090.5 |
 | E-045 | `bridge_job_states` | 6. 会話・成果物・証跡 | none | 2 | D-090 D-090.4 D-093.3 |

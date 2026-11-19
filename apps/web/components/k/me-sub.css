@@ -135,25 +135,27 @@
     padding: 0;
   }
 }
+/* 767 以下で出す「自分の設定 › いまの項目 ▾」のボタン（ふだんは隠す） */
+.k-me-sub-m {
+  display: none;
+}
 @media (max-width: 767px) {
   .k-me-wrap {
     flex-direction: column;
     min-height: 0;
   }
+  /* 横に流れる帯をやめ、ボタン 1 つにする（押すと縦の一覧・段 4 の下絵の代表の直し） */
   .k-me-sub {
     width: auto;
-    flex-direction: row;
-    overflow-x: auto;
     border-right: 0;
     border-bottom: 1px solid var(--k-line);
-    padding: 6px var(--k-s-sm);
+    padding: var(--k-s-sm);
   }
-  .k-me-sub-t {
-    display: inline;
+  .k-me-sub > :not(.k-me-sub-m) {
+    display: none;
   }
-  .k-me-sub-i {
-    flex: none;
-    padding: 0 10px;
+  .k-me-sub-m {
+    display: block;
   }
   .k-page.k-me-page {
     max-width: none;

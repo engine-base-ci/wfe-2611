@@ -349,6 +349,21 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "本人の仕事の出来事を足すだけ（直さない・消さない）", "source": ["D-128.93"]},
         ops_read("bridge_job_events"),
     ],
+    # ---- 預けたログイン情報（K-351・D-128.57 ①）：層はワークスペースと個人の 2 つ。個人の物は持ち主だけが読む・書く（権限のある人も他人の個人の物に触れない）。
+    #      ワークスペースの物は同じ会社の人が読み（名前と使い方だけ。値は金庫）、書くのはワークスペース全体の edit を持つ人だけ（既定は管理者）。
+    #      守りの名前を self_only_write にしない（場合表の「自分の行だけ」の扱いは持ち主の列だけで決まる表のもの。ここは層でも分かれる）
+    "credentials": [
+        {"name": "credentials_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (layer = 'workspace' OR owner_member_id = {U})",
+         "rationale": "ワークスペースの物は同じ会社の人・個人の物は持ち主だけ（管理者にも他人の個人の物は見せない）", "source": ["D-128.57", "D-125.148"]},
+        {"name": "credentials_personal_write", "operation": "insert,update,delete", "role": "member",
+         "predicate": f"tenant_id = {T} AND layer = 'personal' AND owner_member_id = {U}",
+         "rationale": "個人の物は持ち主だけが預け・直し・消す。他人を持ち主にして作れない", "source": ["D-128.57"]},
+        {"name": "credentials_workspace_write", "operation": "insert,update,delete", "role": "member",
+         "predicate": f"tenant_id = {T} AND layer = 'workspace' AND has_permission({U}, 'credentials', NULL, 'edit')",
+         "rationale": "ワークスペースの物を預け・直し・消すのは、ワークスペース全体の edit を持つ人だけ（既定は管理者）", "source": ["D-128.57", "D-125.148"]},
+        ops_read("credentials"),
+    ],
     # パスキーはログインの部品（Better Auth）の側に置き、業務の表からは読めない（D-128.119）。public に表を作らない。作っても誰も読めない
     "passkeys": [{"name": "passkeys_no_app_access", "operation": "select", "role": "member", "predicate": "false",
                   "rationale": "パスキーはログインの部品の側（kaname_auth）。アプリの役からは読めない。自分の設定の一覧はログインの部品の口が出す（D-128.119）", "source": ["D-128.119"]}],

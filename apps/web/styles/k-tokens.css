@@ -374,6 +374,9 @@
   --k-c-doc-tool-pad: 0 6px;
   --k-c-doc-tool-min-width: 30px;
   --k-c-shell-bar-height: 48px;
+  --k-c-shell-bar-tool-width: 44px;
+  --k-c-shell-bar-tool-height: 44px;
+  --k-c-shell-bar-search-height: 36px;
   --k-c-detail-body-pad: var(--k-s-md) var(--k-s-lg) 40px;
   --k-c-detail-body-gap: 12px;
   --k-c-detail-body-basis-width: 640px;
@@ -850,6 +853,7 @@
   --k-c-pc-more-text: var(--k-text-body-sm);
   --k-c-pc-more-lh: var(--k-lh-body-sm);
   --k-c-pc-more-fw: var(--k-fw-body-sm);
+  --k-c-pc-menu-min-width: 220px;
   --k-c-pc-usage-gap: 18px;
   --k-c-pc-usage-col-width: 240px;
   --k-c-pc-bar-height: 8px;

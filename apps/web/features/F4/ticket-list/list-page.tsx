@@ -14,7 +14,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { isUuid } from "@kaname/contracts";
 import { ErrorState, Loading } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
-import { ShellBell } from "@/components/k/shell";
 import { getToken } from "@/lib/api/client";
 import { me } from "@/lib/auth/ext";
 import { SCOPES_KEY, TicketShell, readScopes, scopeTone, type ScopeRow } from "../create-ticket/ticket-shell";
@@ -118,7 +117,6 @@ function ListHead({ view, scope }: { view: ListView; scope: ScopeState }) {
         ) : scope.state === "none" ? (
           <span className="k-list-dim">すべてのグループ</span>
         ) : null}
-        <ShellBell />
       </div>
       <ListViews view={view} />
     </header>

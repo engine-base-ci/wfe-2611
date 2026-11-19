@@ -76,6 +76,7 @@
  "files_per_shard": 40,
  "affects_required_from": 108,
  "coverage_src": {
+  "_doc": "変えた src のカバレッジの対象。入口のファイル（**/cli.ts・Bridge の apps/bridge/src/main.ts）は外す：main.ts は electron を読むので vitest から読めず、変えるとファイルごと 0% で数えられる（K-359・2026-11-19 PM の決め）。条件：main.ts に分かれ道や計算を書かない（部品を呼ぶ・イベントをつなぐ行だけ。分かれ道は試験から読める部品の側に置く）",
   "include": [
    "packages/*/src/**/*.ts",
    "apps/*/src/**/*.ts"
@@ -84,6 +85,7 @@
    "**/*.test.ts",
    "**/*.d.ts",
    "**/cli.ts",
+   "apps/bridge/src/main.ts",
    "packages/contracts/src/types.ts",
    "packages/contracts/src/ops.ts",
    "packages/errors/src/catalog.ts"

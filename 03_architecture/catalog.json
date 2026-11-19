@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 367,
-  "api_built": 54,
+  "api_built": 55,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
-  "ui": 17,
+  "ui": 18,
   "packages": 13,
-  "errors": 190,
+  "errors": 192,
   "stack": 56,
   "env": 41
  },
@@ -1610,7 +1610,7 @@
    "op": "listCredentials",
    "method": "GET",
    "path": "/api/v1/credentials",
-   "what": "取得（credentials）— 設定（ログイン情報・API キー・決まった値）を整える",
+   "what": "取得（credentials）— 預けたログイン情報を名前の順に見る（自分の個人とワークスペース）",
    "flows": [
     "F3"
    ],
@@ -1618,9 +1618,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-351"
    ]
   },
   {
@@ -7319,6 +7319,16 @@
     "Select"
    ],
    "what": "選ぶ（K-24・Base UI Select）。キーボード（↑↓・Enter・文字で飛ぶ）と読み上げは Base UI に任せる"
+  },
+  {
+   "file": "apps/web/components/k/menu",
+   "exports": [
+    "Menu",
+    "MenuTrigger",
+    "MenuPopup",
+    "MenuItem"
+   ],
+   "what": "メニューの型（K-369・Base UI Menu）。開くボタン 1 つと、開いた箱の中の項目の並び（行の「…」など）。"
   },
   {
    "file": "apps/web/components/k/table",

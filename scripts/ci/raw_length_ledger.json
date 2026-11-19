@@ -6786,22 +6786,6 @@
    "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
   },
   {
-   "file": "apps/web/components/k/me-sub.css",
-   "selector": "@media (max-width: 767px) >> .k-me-sub",
-   "prop": "padding",
-   "value": "6px var(--k-s-sm)",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
-   "file": "apps/web/components/k/me-sub.css",
-   "selector": "@media (max-width: 767px) >> .k-me-sub-i",
-   "prop": "padding",
-   "value": "0 10px",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
    "file": "apps/web/components/k/shell.css",
    "selector": ".k-avatar",
    "prop": "height",
@@ -7331,22 +7315,6 @@
   },
   {
    "file": "apps/web/components/k/shell.css",
-   "selector": "@media (max-width: 767px) >> .k-bell-inline",
-   "prop": "height",
-   "value": "44px",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
-   "file": "apps/web/components/k/shell.css",
-   "selector": "@media (max-width: 767px) >> .k-bell-inline",
-   "prop": "width",
-   "value": "44px",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
-   "file": "apps/web/components/k/shell.css",
    "selector": "@media (max-width: 767px) >> .k-body",
    "prop": "padding-bottom",
    "value": "60px",
@@ -7390,22 +7358,6 @@
    "selector": "@media (max-width: 767px) >> .k-sheet .k-nav-item",
    "prop": "min-height",
    "value": "44px",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
-   "file": "apps/web/components/k/shell.css",
-   "selector": "@media (max-width: 767px) >> .k-sheet-me",
-   "prop": "border-top",
-   "value": "1px solid var(--k-line-soft)",
-   "count": 1,
-   "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
-  },
-  {
-   "file": "apps/web/components/k/shell.css",
-   "selector": "@media (max-width: 767px) >> .k-sheet-me",
-   "prop": "padding",
-   "value": "var(--k-s-sm) 10px",
    "count": 1,
    "reason": "K-261 の前からある生の値。その画面・部品のチケットがトークンにして台帳から消す"
   },

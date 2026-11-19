@@ -7149,185 +7149,177 @@
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_tenant_read",
+   "policy": "credentials_read",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "同じ会社・見える範囲",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (layer = 'workspace' OR owner_member_id = current_setting('app.user_id', true)::uuid)",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-128.57",
+    "D-125.148"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_tenant_read",
+   "policy": "credentials_read",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "同じ会社・見えない層",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (layer = 'workspace' OR owner_member_id = current_setting('app.user_id', true)::uuid)",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-128.57",
+    "D-125.148"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_tenant_read",
+   "policy": "credentials_read",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "他の会社（SET LOCAL を別テナントに）",
    "expected": "NG（0 行）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (layer = 'workspace' OR owner_member_id = current_setting('app.user_id', true)::uuid)",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-128.57",
+    "D-125.148"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_tenant_read",
+   "policy": "credentials_read",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "select",
    "case": "SET LOCAL を飛ばす",
    "expected": "NG（0 行・エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND scope_id = ANY(visible_scopes(current_setting('app.user_id', true)::uuid))",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (layer = 'workspace' OR owner_member_id = current_setting('app.user_id', true)::uuid)",
    "source": [
-    "D-026.1",
-    "D-058.5",
-    "D-073.1"
+    "D-128.57",
+    "D-125.148"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_self_only_write",
+   "policy": "credentials_personal_write",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "insert,update,delete",
    "case": "権限あり・自分の範囲",
    "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'personal' AND owner_member_id = current_setting('app.user_id', true)::uuid",
    "source": [
-    "D-073.1"
+    "D-128.57"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限なし（担当者・閲覧のみ）",
-   "expected": "OK（自分の行だけ）・他人の行は NG",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-042",
-   "table": "credentials",
-   "policy": "credentials_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "他の会社",
-   "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-042",
-   "table": "credentials",
-   "policy": "credentials_self_only_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "SET LOCAL を飛ばす",
-   "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND owner_member_id = current_setting('app.user_id', true)::uuid",
-   "source": [
-    "D-073.1"
-   ]
-  },
-  {
-   "entity": "E-042",
-   "table": "credentials",
-   "policy": "credentials_permission_write",
-   "role": "member",
-   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
-   "operation": "insert,update,delete",
-   "case": "権限あり・自分の範囲",
-   "expected": "OK",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', scope_id, 'edit')",
-   "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
-   ]
-  },
-  {
-   "entity": "E-042",
-   "table": "credentials",
-   "policy": "credentials_permission_write",
+   "policy": "credentials_personal_write",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "insert,update,delete",
    "case": "権限なし（担当者・閲覧のみ）",
    "expected": "NG（403・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', scope_id, 'edit')",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'personal' AND owner_member_id = current_setting('app.user_id', true)::uuid",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-128.57"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_permission_write",
+   "policy": "credentials_personal_write",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "insert,update,delete",
    "case": "他の会社",
    "expected": "NG（0 行・副作用なし）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', scope_id, 'edit')",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'personal' AND owner_member_id = current_setting('app.user_id', true)::uuid",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-128.57"
    ]
   },
   {
    "entity": "E-042",
    "table": "credentials",
-   "policy": "credentials_permission_write",
+   "policy": "credentials_personal_write",
    "role": "member",
    "role_ja": "会社の人（R1〜R4・権限で分かれる）",
    "operation": "insert,update,delete",
    "case": "SET LOCAL を飛ばす",
    "expected": "NG（エラー）",
-   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', scope_id, 'edit')",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'personal' AND owner_member_id = current_setting('app.user_id', true)::uuid",
    "source": [
-    "D-073.1",
-    "D-073.2",
-    "D-073.3"
+    "D-128.57"
+   ]
+  },
+  {
+   "entity": "E-042",
+   "table": "credentials",
+   "policy": "credentials_workspace_write",
+   "role": "member",
+   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "operation": "insert,update,delete",
+   "case": "権限あり・自分の範囲",
+   "expected": "OK",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'workspace' AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', N",
+   "source": [
+    "D-128.57",
+    "D-125.148"
+   ]
+  },
+  {
+   "entity": "E-042",
+   "table": "credentials",
+   "policy": "credentials_workspace_write",
+   "role": "member",
+   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "operation": "insert,update,delete",
+   "case": "権限なし（担当者・閲覧のみ）",
+   "expected": "NG（403・副作用なし）",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'workspace' AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', N",
+   "source": [
+    "D-128.57",
+    "D-125.148"
+   ]
+  },
+  {
+   "entity": "E-042",
+   "table": "credentials",
+   "policy": "credentials_workspace_write",
+   "role": "member",
+   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "operation": "insert,update,delete",
+   "case": "他の会社",
+   "expected": "NG（0 行・副作用なし）",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'workspace' AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', N",
+   "source": [
+    "D-128.57",
+    "D-125.148"
+   ]
+  },
+  {
+   "entity": "E-042",
+   "table": "credentials",
+   "policy": "credentials_workspace_write",
+   "role": "member",
+   "role_ja": "会社の人（R1〜R4・権限で分かれる）",
+   "operation": "insert,update,delete",
+   "case": "SET LOCAL を飛ばす",
+   "expected": "NG（エラー）",
+   "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND layer = 'workspace' AND has_permission(current_setting('app.user_id', true)::uuid, 'credentials', N",
+   "source": [
+    "D-128.57",
+    "D-125.148"
    ]
   },
   {
@@ -7341,11 +7333,7 @@
    "expected": "OK",
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
+    "D-128.68"
    ]
   },
   {
@@ -7359,11 +7347,7 @@
    "expected": "NG（0 行）",
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
+    "D-128.68"
    ]
   },
   {
@@ -7377,11 +7361,7 @@
    "expected": "NG（顧客が許可した範囲・期限の中だけ OK）",
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
+    "D-128.68"
    ]
   },
   {
@@ -7395,11 +7375,7 @@
    "expected": "NG（0 行・エラー）",
    "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = credentials.tenant_id AND g.expires_at > now() A",
    "source": [
-    "D-074.5",
-    "D-125.128",
-    "D-128.68",
-    "D-128.108",
-    "D-077.7"
+    "D-128.68"
    ]
   },
   {
