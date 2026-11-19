@@ -57,7 +57,7 @@ test("USH-00-019 通していない人が先の段の画面を直接開くと、
   await loginAs(page, u.token);
   await page.goto("/settings/credentials"); // 段 4
   await expect(page).toHaveURL(/\/onboard\/interview$/, { timeout: 15_000 });
-  await expect(page.getByRole("heading", { name: "ログイン情報を預ける" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "預けたログイン情報" })).toHaveCount(0); // K-356：新しい画面の見出し
 });
 
 test("USH-00-020 いま開いている画面がその段そのものなら通す", async ({ page }) => {
@@ -66,7 +66,7 @@ test("USH-00-020 いま開いている画面がその段そのものなら通す
   await markStep(u.memberId, 3);
   await loginAs(page, u.token);
   await page.goto("/settings/credentials"); // 段 4＝次にやる段
-  await expect(page.locator("h1")).toHaveText("ログイン情報を預ける", { timeout: 15_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "預けたログイン情報" })).toBeVisible({ timeout: 15_000 }); // K-356：新しい画面の見出し
 });
 
 test("USH-00-021 進み具合は戻らない（前の段を開き直しても記録は下がらない）", async ({ page }) => {

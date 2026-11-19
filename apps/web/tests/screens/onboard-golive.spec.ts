@@ -101,7 +101,7 @@ test("SCR-ONBOARD-GOLIVE-001 SCR-ONBOARD-GOLIVE-002 SCR-ONBOARD-GOLIVE-005 SCR-O
   // 一手（E-DEP-004-C）：連携を直す → ログイン情報。戻って「止めたまま本番へ」
   await cred.locator("[data-fix]").click();
   await expect(page).toHaveURL(/\/settings\/credentials/, { timeout: 15_000 });
-  await expect(page.locator("h1").first()).toHaveText("ログイン情報を預ける");
+  await expect(page.getByRole("heading", { level: 1, name: "預けたログイン情報" })).toBeVisible(); // K-356：新しい画面の見出し
   await page.goto("/onboard/golive");
   await expect(check(page, `goal:${sales.aiId}`)).toBeVisible({ timeout: 15_000 });
   await check(page, `goal:${sales.aiId}`).locator("[data-pause]").click();
@@ -178,13 +178,13 @@ test("SCR-ONBOARD-GOLIVE-029 警告（黄）：ログインをまだ確かめて
   const sales = await employee(u, "営業社員", "発注ナビの新着を台帳に入れる", ["freee"]);
   await goal(u, [sales]);
   // 預けた直後は「ログインできるか」をまだ確かめていない（Bridge の実物は無い）→ 警告
-  const c = await api<{ data: { id: string } }>(
-    "/api/auth-ext/vault/credentials",
-    { service_name: "freee", login: "qa@example.com", password: "Pass-word-1234" },
-    u.token,
+  // K-358：預ける前の道すじ（/api/auth-ext/vault/credentials）を消したので、行を直に置く（本番に切り替える判定は行の service_name と login_check_state だけを読む）
+  const c = await admin<{ id: string }>(
+    "insert into credentials (tenant_id, scope_id, owner_member_id, service_name, kind_id, vault_ref, created_by) values ($1, $2, $3, 'freee', 'basic', 'sec_golive_test', $3) returning id",
+    [u.tenantId, u.scopeId, u.memberId],
   );
-  expect(c.status).toBe(201);
-  await admin("update credentials set login_check_state = 'pending' where id = $1", [c.json.data.id]);
+  expect(c).toHaveLength(1);
+  await admin("update credentials set login_check_state = 'pending' where id = $1", [c[0]!.id]);
   await loginAs(page, u.token);
   await page.goto("/onboard/golive");
   const cred = check(page, `cred:${sales.aiId}:freee`);

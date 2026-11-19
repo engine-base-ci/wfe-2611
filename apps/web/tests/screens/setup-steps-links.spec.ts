@@ -1,9 +1,9 @@
 // はじめの設定の段の帯：5 テスト（T-U-11）と 6 本番へ（T-U-12）ができたので、通し終えた人には各画面から 5・6 がリンクで開く（G-04・D-116.2）。
-//   行は各画面のもの（bridge-setup・credentials・onboard-draft・onboard-interview・onboard-testrun・onboard-golive）。6 ができて自動の BLOCKED が外れた分
+//   行は各画面のもの（onboard-draft・onboard-interview・onboard-testrun・onboard-golive。bridge-setup・credentials は新しい画面に段の帯が無いので外した）。6 ができて自動の BLOCKED が外れた分
 import { expect, test } from "@playwright/test";
 import { bridgeRow, loginAs, setupStep, signupViaApi } from "../_lib/api";
 
-test("SCR-BRIDGE-SETUP-093 SCR-BRIDGE-SETUP-094 SCR-CREDENTIALS-038 SCR-CREDENTIALS-039 SCR-ONBOARD-DRAFT-030 SCR-ONBOARD-DRAFT-031 SCR-ONBOARD-INTERVIEW-059 SCR-ONBOARD-INTERVIEW-060 SCR-ONBOARD-TESTRUN-010 SCR-ONBOARD-TESTRUN-027 SCR-ONBOARD-GOLIVE-027 通し終えた人：どの段の画面からも「5. テスト」「6. 本番へ」がリンクで、実在ルート（200）で開く", async ({
+test("SCR-ONBOARD-DRAFT-030 SCR-ONBOARD-DRAFT-031 SCR-ONBOARD-INTERVIEW-059 SCR-ONBOARD-INTERVIEW-060 SCR-ONBOARD-TESTRUN-010 SCR-ONBOARD-TESTRUN-027 SCR-ONBOARD-GOLIVE-027 通し終えた人：どの段の画面からも「5. テスト」「6. 本番へ」がリンクで、実在ルート（200）で開く", async ({
   page,
 }) => {
   const u = await signupViaApi();
@@ -12,8 +12,8 @@ test("SCR-BRIDGE-SETUP-093 SCR-BRIDGE-SETUP-094 SCR-CREDENTIALS-038 SCR-CREDENTI
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const from of [
-    "/setup/bridge",
-    "/settings/credentials",
+    // /setup/bridge は外した（K-57 の新しい PC の画面に「手順」の帯は無い。この開く元は K-57 が入った時から通らなかった＝前からある別の場所の問題。SCR-BRIDGE-SETUP-093・094 は K-367 が置き換え先なしの BLOCKED にする）
+    // /settings/credentials は K-356 で外した（新しい画面に段の帯は無い・SCR-CREDENTIALS-038・039 は置き換え先 K372-UI-017 の BLOCKED）
     "/onboard/draft",
     "/onboard/interview",
     "/onboard/testrun",

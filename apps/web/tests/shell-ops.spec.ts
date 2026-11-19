@@ -33,8 +33,8 @@ for (const [id, label] of [
 const BRIDGE_H1 = /^(PC と使った量|PC をつなぐ)$/;
 for (const [id, href, h1] of [
   ["USH-01-042", "/setup/bridge", BRIDGE_H1],
-  ["USH-01-043", "/settings/credentials", "ログイン情報を預ける"],
-] as const) {
+  ["USH-01-043", "/settings/credentials", /^預けたログイン情報$/], // K-356：新しい画面の見出し（読み上げの見出しで見る）
+] as [string, string, string | RegExp][]) {
   test(`${id} サイドバーのリンク ${href} を押すと開く（200・h1）`, async ({ page }) => {
     const u = await signupViaApi();
     await setupStep(u.memberId, 6); // アプリの枠の画面は、はじめの設定を通した人だけが開ける（D-089）。通していない人は設定の途中へ戻る
