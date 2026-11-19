@@ -148,6 +148,10 @@
 .k-pc-more.k-pc-more-on:hover {
   background: var(--k-select);
 }
+/* 「…」で開くメニューの箱（幅の下限は正本の pc-menu-min。外枠の自分のメニューの決まり .k-menu は本文で使わない・G67） */
+.k-pc-menu {
+  min-width: var(--k-c-pc-menu-min-width);
+}
 .k-pc-menu-danger {
   color: var(--k-st-danger);
 }

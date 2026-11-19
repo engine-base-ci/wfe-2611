@@ -306,7 +306,7 @@ export function PcMoreMenu({
       </M.Trigger>
       <M.Portal>
         <M.Positioner sideOffset={6} align="end">
-          <M.Popup className="k-select-popup k-menu">
+          <M.Popup className="k-select-popup k-pc-menu">
             <M.Item className="k-select-item k-pc-menu-danger" onClick={onRemove}>
               この PC を外す
             </M.Item>

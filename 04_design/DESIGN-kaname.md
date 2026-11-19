@@ -1045,6 +1045,8 @@ components:
     backgroundColor: "{colors.card}"
     textColor: "{colors.on-surface}"
     typography: "{typography.body-sm}"
+  pc-menu-min:          # 行の「…」で開くメニューの箱の幅の下限（min-width 220・外枠の自分のメニューの箱と同じ幅）
+    width: "220px"
   pc-usage:             # 使った量の 2 列（間 18）
     gap: "18px"
   pc-usage-col:         # 使った量の列の最小の幅（grid の minmax の 240）
