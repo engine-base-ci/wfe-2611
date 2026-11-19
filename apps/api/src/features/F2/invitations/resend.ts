@@ -99,11 +99,19 @@ export function invitationResendFeature(d: Pick<InvitationDeps, "appPool" | "mai
   };
 
   /** ③ の後：届いた・届かないを知らせの行に書き、全員に届いたら ④ 頼んだ時刻を書く。どちらも落ちても答えは変えない（メールは取り消せない） */
-  //   mark が落ちたら、その回の行は送り中のまま 2 分残り、その間の押し直しは already になる（2 分たてば押し直せる・DB が落ちたときだけの道）
+  //   mark が落ちたら 1 回だけやり直す（つながりが切れただけなら、次の 1 回で書ける。mark はまだ印の無い行だけを書くので、2 回流しても同じ）。
+  //   それでも落ちたら、その回の行は送り中のまま 2 分残り、その間の押し直しは already になる（2 分たてば押し直せる・DB が落ちたままのときだけの道）
   const finish = async (hash: string, invitationId: string, rows: RecordRow[], failed: string[]): Promise<void> => {
     const sent = rows.map((r) => r.notification_id).filter((id) => !failed.includes(id));
+    const mark = () =>
+      d.appPool.query("select app.invitation_resend_mark($1, $2::uuid[], $3::uuid[])", [hash, sent, failed]);
     try {
-      await d.appPool.query("select app.invitation_resend_mark($1, $2::uuid[], $3::uuid[])", [hash, sent, failed]);
+      await mark().catch((e: unknown) => {
+        console.error(
+          `[invitation] 招待 ${invitationId} の知らせに届いた印を書けなかった（${kindOf(e)}）。もう 1 回書く`,
+        );
+        return mark();
+      });
     } catch (e) {
       console.error(`[invitation] 招待 ${invitationId} の知らせに届いた印を書けなかった（${kindOf(e)}）`);
     }
