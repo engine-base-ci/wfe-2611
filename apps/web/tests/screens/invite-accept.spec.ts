@@ -5,9 +5,17 @@
 import { expect, test } from "@playwright/test";
 import { randomBytes } from "node:crypto";
 import { pwToggle, admin, noOverflow, PW, sha256, signupViaApi, uniqEmail } from "../_lib/api";
+import { ownIp } from "../_lib/newcomer";
 
+// 下見の口は 10 回／分／IP（K-331）。このファイルだけで 9 回開き、同じ回の CI でほかの招待の試験（k335・qa-c-onboard）と続けて流れるので、
+//   試験ごとに別の IP の頭を付ける（利用者ごとに別の IP にする道具・K-58。口の答えは作らない。上限そのものは口の試験が持つ）
+test.beforeEach(({ context }) => ownIp(context, 35));
+
+// 招く側の会社はこのファイルで 1 回だけ登録して使い回す（登録の口も 10 回／分／IP。招待の行は試験ごとに新しく入れる）
+let invitingBoss: Awaited<ReturnType<typeof signupViaApi>> | undefined;
 async function invite(roleId: string, opts: { revoked?: boolean; email?: string } = {}) {
-  const boss = await signupViaApi("招く会社");
+  invitingBoss ??= await signupViaApi("招く会社");
+  const boss = invitingBoss;
   const token = randomBytes(24).toString("base64url");
   const email = opts.email ?? uniqEmail();
   await admin(
