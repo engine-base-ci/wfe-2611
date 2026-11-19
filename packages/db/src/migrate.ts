@@ -1,5 +1,5 @@
 // migration の適用（関門 C2 の中）。一覧の順に migrations/<名前>.sql → 同じ名前の policies/<名前>.sql を、未適用だけ 1 トランザクションずつ流す。
-// 名前は 4 けた（NNNN_名前.sql）か時刻（YYYYMMDDHHMMSS_名前.sql）。一覧は作り手の生成物（migrations.generated.ts）。
+// 名前は 4 けた（NNNN_名前.sql）か時刻（YYYYMMDDHHMMSS_名前.sql）。一覧は作り手 gen_migrations.py が作る migrations.generated.ts。
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import pg from "pg";
