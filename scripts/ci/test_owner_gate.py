@@ -16,9 +16,9 @@
   ・まだ切っていないまとまり（split: これから）が持つ試験は、そのまとまりを切るまでチケットの実行に入らない
 赤になるもの:
   TO1 どのチケットにも属さない試験のファイル（作ったチケットの tests: に書く）
-  TO2 2 つ以上のチケットに属する試験のファイル
+  TO2 2 つ以上のチケットに属する試験のファイル（親と子（孫まで）が同じ試験を書けば、いちばん下の子を持ち主と数える・K-328）
   TO3 tests: に書いたのに、どのファイルにも当たらない（消した・名前を変えた）
-  TO4 apis: に書いた口の、生成した試験を別のチケットが持つ（か、生成した試験が無い）
+  TO4 apis: に書いた口の、生成した試験を別のチケット（自分の子孫でない物）が持つ（か、生成した試験が無い）
   TO5 契約の口（08_api/endpoints.json）に生成した試験が無い・生成した試験が契約に無い口を指す（権限の試験の持ち主が決まらない）
   TO6 切ったチケットが、apis: に無い口の生成した試験を持つ（口の持ち主は apis: が正本）
 """
@@ -154,7 +154,8 @@ def owners(tickets: list[dict], files: list[str]) -> tuple[dict[str, list[str]],
             for f in hit:
                 if t["id"] not in out.setdefault(f, []):
                     out[f].append(t["id"])
-    return out, dead
+    parent_of = build_index.parent_map(tickets)   # 親と子（孫まで）が同じ試験を書けば、いちばん下の子が持ち主（K-328）
+    return {f: build_index.prefer_descendants(k, parent_of) for f, k in out.items()}, dead
 
 
 def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None], endpoints: list[str],
@@ -178,11 +179,24 @@ def check(tickets: list[dict], files: list[str], gen_ops: dict[str, str | None],
     for op in endpoints:
         if op not in op_file:
             bad.append(f"TO5 契約の口 {op} に生成した試験（{GEN}）が無い（権限の試験の持ち主が決まらない）")
+    parent_of = build_index.parent_map(tickets)
+
+    def mine_or_below(tid: str, ids: list[str]) -> bool:   # そのチケットか、その子孫が持つ（K-328）
+        for i in ids:
+            cur: str | None = i
+            seen: set[str] = set()
+            while cur and cur not in seen:
+                if cur == tid:
+                    return True
+                seen.add(cur)
+                cur = parent_of.get(cur)
+        return False
+
     for t in tickets:
         mine = {gen_ops.get(f) for f, k in own.items() if t["id"] in k and f in gen_ops}
         for op in t.get("apis") or []:
             f = op_file.get(op)
-            if not f or t["id"] not in own.get(f, []):
+            if not f or not mine_or_below(t["id"], own.get(f, [])):
                 bad.append(f"TO4 {t['id']} の apis: の {op} の生成した試験を、{t['id']} が持っていない（{', '.join(own.get(f, [])) or '持ち主なし'}）")
         if t.get("split") != "これから":
             extra = sorted(op for op in mine if op and op not in (t.get("apis") or []))

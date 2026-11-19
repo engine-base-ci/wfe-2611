@@ -8,7 +8,7 @@
  KC4 1 作業のチケットは choke_points（触る関門 C1〜C8）か choke_none（触らない理由）を持つ。apis を持つなら、その API の関門を全部書いている
  KC5 チケットの screens・apis・choke_points が実在する（無い画面・API・関門を書かない）
  KC6 後回しの決定（flow.json の deferred・決定ログの「段階 2：」の行）が、どれかのチケットの decisions にある（後回しは日程から消えない）
- KC7 1 本の API は、apis に書くなら 1 枚のチケットだけ。画面を複数のまとまりで分けている API（tickets など）は、どれか 1 枚の apis に明示する（二重・宙ぶらりんを作らない）
+ KC7 1 本の API は、apis に書くなら 1 枚のチケットだけ（親と子（孫まで）が同じ口を書けば、いちばん下の子を持ち主と数える・K-328）。画面を複数のまとまりで分けている API（tickets など）は、どれか 1 枚の apis に明示する（二重・宙ぶらりんを作らない）
  KC8 1 作業まで切ったまとまりの画面の API は、全部どれかの 1 作業のチケットの apis にある（か、別のまとまりの apis に明示してある）。切ったのに子に入っていない API を作らない
 
 まだ 1 作業に切っていないまとまり（split: これから）が持つ画面・API は「まだ切っていない」と数える（赤にしない）。
@@ -18,9 +18,24 @@ import argparse, json, os, re, sys
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, os.path.dirname(__file__))
-from build_index import load  # noqa: E402
+from build_index import load, parent_map, prefer_descendants  # noqa: E402
 
 CHOKE = {f"C{i}" for i in range(1, 9)}
+
+
+def op_owners(ts: list[dict]) -> dict[str, list[dict]]:
+    """口 → apis: に書いたチケット。親と子（孫まで）が同じ口を書けば、いちばん下の子だけを持ち主と数える（K-328）。
+    兄弟（親子でない 2 つ）が同じ口を書けば、両方を残す（KC7 が止める）"""
+    by_op: dict[str, list[dict]] = {}
+    for t in ts:
+        for o in t.get("apis", []):
+            by_op.setdefault(o, []).append(t)
+    parent_of = parent_map(ts)
+    out: dict[str, list[dict]] = {}
+    for o, owners in by_op.items():
+        keep = set(prefer_descendants([t["id"] for t in owners], parent_of))
+        out[o] = [t for t in owners if t["id"] in keep]
+    return out
 
 
 def main() -> int:
@@ -39,12 +54,10 @@ def main() -> int:
     fails: list[tuple[str, str]] = []
 
     owner_s: dict = {}
-    owner_o: dict = {}
     for t in ts:
         for s in t.get("screens", []):
             owner_s.setdefault(s, []).append(t)
-        for o in t.get("apis", []):
-            owner_o.setdefault(o, []).append(t)
+    owner_o = op_owners(ts)
 
     m = [s for s in v1s if s not in owner_s]
     if m:

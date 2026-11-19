@@ -89,7 +89,7 @@
   ]
  },
  "no_test_paths": [
-  ".gitleaksignore",
+  ".gitleaks.toml",
   "00_research/**",
   "01_hearing/**",
   "02_tech_stack/**",
