@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:bc84b7cf9d6d9fa0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:7e0980b3c9ab61b9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2281,6 +2281,63 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": "always",
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/bridge/devices/:id/browser-check",
+    "operationId": "checkMyDeviceBrowser",
+    "table": "bridge_jobs",
+    "kind": "create",
+    "input": "DeviceBrowserCheckInput",
+    "success": 201,
+    "output": "DeviceBrowserCheck",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
       "row": null
     },
     "termsOpen": false,
@@ -19507,4 +19564,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "bc84b7cf9d6d9fa0";
+export const OPENAPI_HASH = "7e0980b3c9ab61b9";
