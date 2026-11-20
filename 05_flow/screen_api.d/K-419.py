@@ -1,6 +1,7 @@
 # K-419 招く口（createInvitations）と、メンバーの並びを読む口（getWorkspaceMembers）
 # 招く（K-419・D-148.1・D-148.23・D-148.29）：メール（何人でも・1〜50）・グループ・役割・ひとこと（500 文字まで）。strict（ほかの欄は 422）。
 #   役割は member・manager・viewer・admin の 4 つ（admin のときだけ本人確認を取り直す）。全部か無しか（1 人でも形の違う宛て・入っている人がいれば誰も招かない）
+import invite_patterns as _IP  # 宛ての pattern（scripts/ci/invite_patterns.py・口は apps/api/src/features/F10/invite/patterns.ts と同じ字・K419-API-024 が照らす）
 INPUTS = {
     "createInvitations": ("InvitationsCreateInput", {"emails": "string[]", "scope_id": "uuid", "role_key": "string", "message": "string?"}),
 }
@@ -18,18 +19,13 @@ REQUIRED_INPUTS = {
 # apps/api/src/features/F10/invite/create.ts（宛ての数・形・入っている人は口が 422 にする。役割は 4 つだけ・ひとこと 500 文字まで）
 VALUE_RANGES = {
     "createInvitations": {
-        "emails": {"minItems": 1},
+        "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "pattern": _IP.EMAIL}},
         "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
         "message": {"maxLength": 500},
     },
 }
 
-UNEXPRESSIBLE_422 = {
-    "createInvitations": [
-        "宛てがメールの形でない（そろえた後の字で見る・E-INV-009）",
-        "一度に 50 人を超える宛て（E-INV-012）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 宛ての形（E-INV-009）と人数（E-INV-012）は VALUE_RANGES の pattern・maxItems で契約に書いた（K-419・PM の決め 2026-11-21 02:25）
 
 # 招く：権限（403）・本人確認（403）・入力の形（422）・グループが無い（404）・もう入っている人（409）。並び：権限（403）
 ERRORS_4XX = {

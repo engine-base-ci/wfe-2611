@@ -2,10 +2,10 @@
 //   入口（op.ts）が先に確かめる：ログイン・権限（members の invite・会社全体＝管理者の束と個別に付けた人。マネージャーは招けない）・
 //   上限・冪等・体の形（emails・scope_id・role_key・message。知らない項目は 422）。順：
 //   ⓪ 欠け・決まった値の外（宛てが無い・役割が 4 つの外・ひとこと 501 文字）は 422・VALIDATION_ERROR（契約の VALUE_RANGES と同じ）
-//   ① 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる
-//   ② 51 人以上 → 422・E-INV-012
+//   ① 送られた並びの数（重なりを落とす前）が 51 以上 → 422・E-INV-012（契約の maxItems 50 と同じ）
+//   ② 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる（そろえるのは ④ の形の確かめの後）
 //   ③ 管理者として招く（role_key admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
-//   ④ 全部か無しか：EMAIL_RE に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
+//   ④ 全部か無しか：そろえる前の字が INVITE_EMAIL_PATTERN（契約の emails の items の pattern と同じ字）に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
 //      形の誤りだけを 422 で返し、DB の中身で決まる断りは ⑤ の 409・404 に分ける（口が断る番号の決め・answer=431fc50df51b）
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
 //      グループが会社に無い・消した → 404・E-INV-011。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
@@ -14,12 +14,13 @@
 //   ⑦ 201 { invitations: [{ id, email, expires_at, mail }] }
 import { createHash, randomBytes } from "node:crypto";
 import type pg from "pg";
-import { EMAIL_RE, mailTag, normalizeEmail } from "@kaname/auth/signup";
+import { mailTag, normalizeEmail } from "@kaname/auth/signup";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HookDeps } from "../../../hooks/registry.js";
 import { inviteMail } from "./mail.js";
+import { INVITE_EMAIL_PATTERN } from "./patterns.js";
 
 /** 一度に招ける人数 */
 export const INVITE_MAX = 50;
@@ -129,6 +130,9 @@ export function normalizeEmails(raw: unknown): string[] {
   return out;
 }
 
+/** 打ったとおりの宛てを照らす正規表現（契約の pattern と同じ字） */
+const EMAIL_PATTERN = new RegExp(INVITE_EMAIL_PATTERN);
+
 export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" | "config">) {
   /** ⑤ 1 つの取引：メールの文面に要る名前を読み、招待を作る（呼んだ人の権限は関数の中でも見る） */
   const store = async (
@@ -202,24 +206,24 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
   return async (a: HookArgs): Promise<HookReply> => {
     const bad = checkInput(a.input);
     if (bad) return bad;
-    const emails = normalizeEmails(a.input["emails"]);
+    const raw = a.input["emails"] as string[]; // checkInput が文字の並びだと確かめ済み
     const scope = String(a.input["scope_id"] ?? "");
     const role = String(a.input["role_key"] ?? "");
     const rawMessage = a.input["message"];
     const message = typeof rawMessage === "string" && rawMessage !== "" ? rawMessage : null;
-    if (emails.length > INVITE_MAX) return invalid("E-INV-012", [detail("E-INV-012", "emails")]);
-    if (emails.length === 0) return invalid("E-INV-009", [detail("E-INV-009", "emails")]);
+    if (raw.length > INVITE_MAX) return invalid("E-INV-012", [detail("E-INV-012", "emails")]);
     if (role === "admin") {
       // 判定が渡されなければ閉じた側に倒す
       const stale = a.requireStepUp ? a.requireStepUp() : STEP_UP_REQUIRED;
       if (stale) return stale;
     }
-    const badEmails = emails.filter((e) => !EMAIL_RE.test(e));
+    const badEmails = raw.filter((e) => !EMAIL_PATTERN.test(e));
     if (badEmails.length > 0)
       return invalid(
         "E-INV-009",
-        badEmails.map((e) => detail("E-INV-009", "emails", e)),
+        [...new Set(badEmails.map(normalizeEmail))].map((e) => detail("E-INV-009", "emails", e)),
       );
+    const emails = normalizeEmails(raw);
     const tokens = emails.map(() => randomBytes(TOKEN_BYTES).toString("base64url"));
     let stored: { rows: Created[]; facts: Facts };
     try {
