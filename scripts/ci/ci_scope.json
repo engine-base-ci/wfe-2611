@@ -1229,6 +1229,14 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261121090400_handover_switch.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-switch.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/handovers-read.ts",
     "apps/api/src/features/F8/handovers/list.ts",
     "apps/api/src/features/F4/create-ticket/hooks.ts"
