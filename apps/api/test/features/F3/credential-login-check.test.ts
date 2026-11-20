@@ -34,6 +34,16 @@ const asking = async (p: Pc, id: string, job: string, request = "r1") => {
   expect(r.status, await r.clone().text()).toBe(201);
 };
 const code = async (r: Response) => ((await h.json(r)).data as Record<string, unknown>)["code"];
+/** 同じワークスペースのほかの人が預けたワークスペースの物にする（持ち主を同じ会社の別の人の行に替え、層を workspace にする） */
+const toTeammates = async (w: Who, id: string): Promise<void> => {
+  const other = (
+    await h.admin.query<{ id: string }>(
+      "insert into members (tenant_id, scope_id, kind_id, display_name) select tenant_id, scope_id, 'human', '同じワークスペースのほかの人' from members where id = $1 returning id",
+      [w.user.memberId],
+    )
+  ).rows[0]!.id;
+  await h.admin.query("update credentials set layer = 'workspace', owner_member_id = $2 where id = $1", [id, other]);
+};
 
 describe("K-355 checkCredentialLogin（もう一度確かめる）", () => {
   it(
@@ -234,13 +244,15 @@ describe("K-355 checkCredentialLogin（もう一度確かめる）", () => {
   );
 
   it(
-    "K355-API-006 守り：ほかの人の個人の物・ほかのワークスペースの物・消した物は 404（在るかを漏らさない）。仕事は積まない",
+    "K355-API-006 守り：ほかの人の個人の物・ほかのワークスペースの物・消した物は 404（在るかを漏らさない）。同じワークスペースのほかの人が預けたワークスペースの物は入口の 403（一覧で見えるので在るかは漏れない・代表の答え answer=431fc50df51b）。どれも仕事は積まない",
     async () => {
       const a = await h.who("own-a");
       const b = await h.who("own-b");
       const mine = await h.cred(a);
       const gone = await h.cred(b);
+      const teammates = await h.cred(b);
       await h.admin.query("update credentials set deleted_at = now() where id = $1", [gone]);
+      await toTeammates(b, teammates);
       // PC は預けた後につなぐ（つないだ後に預けると、預ける口が確かめの仕事を 1 つ積み、下の「仕事は 0」を満たせない）
       await h.pc(b);
       for (const [label, id] of [
@@ -250,9 +262,12 @@ describe("K-355 checkCredentialLogin（もう一度確かめる）", () => {
         const r = await h.check(b, id);
         expect(r.status, label).toBe(404);
       }
-      expect(await h.count("select count(*) as n from bridge_jobs where credential_id = any($1)", [[mine, gone]])).toBe(
-        0,
-      );
+      const ws = await h.check(b, teammates);
+      expect(ws.status, "同じワークスペースのほかの人の物").toBe(403);
+      expect((await h.json(ws))["code"]).toBe("FORBIDDEN");
+      expect(
+        await h.count("select count(*) as n from bridge_jobs where credential_id = any($1)", [[mine, gone, teammates]]),
+      ).toBe(0);
     },
     T,
   );
@@ -454,13 +469,18 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
   );
 
   it(
-    "K355-API-014 守り：ほかの人の物に答える → 404・答えの行は作らない",
+    "K355-API-014 守り：ほかのワークスペースの人が答える → 404。同じワークスペースのほかの人が預けたワークスペースの物に答える → 入口の 403（代表の答え answer=431fc50df51b）。どちらも答えの行は作らない",
     async () => {
-      const { p, id, job } = await started("other-owner");
+      const { w, p, id, job } = await started("other-owner");
       await asking(p, id, job);
       const stranger = await h.who("stranger");
       const r = await h.answer(stranger, id, { request_ref: "r1", code: "123456" });
       expect(r.status).toBe(404);
+      // 持ち主を同じワークスペースのほかの人に替えると、w はその人の物に答えることになる（PC が頼んでいる最中のまま）
+      await toTeammates(w, id);
+      const ws = await h.answer(w, id, { request_ref: "r1", code: "123456" });
+      expect(ws.status, "同じワークスペースのほかの人の物").toBe(403);
+      expect((await h.json(ws))["code"]).toBe("FORBIDDEN");
       expect(
         await h.count("select count(*) as n from bridge_job_events where job_id = $1 and kind = 'answer'", [job]),
       ).toBe(0);
