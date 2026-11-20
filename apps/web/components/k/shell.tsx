@@ -214,7 +214,7 @@ function MeMenu({
         ▾
       </M.Trigger>
       <M.Portal>
-        <M.Positioner sideOffset={6} align="end">
+        <M.Positioner className="k-popup-layer" sideOffset={6} align="end">
           <M.Popup className="k-select-popup k-menu">
             <div className="k-menu-head">{member.name}</div>
             {me.map((it) =>
