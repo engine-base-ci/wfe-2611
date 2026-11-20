@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-20 凍結）
+# Kaname API 設計書 v1.0（2026-11-21 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -295,7 +295,7 @@
 | EP-280 | POST | `/api/v1/scopes` | 作成・実行（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-281 | PATCH | `/api/v1/scopes/:id` | 更新（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-282 | GET | `/api/v1/scopes/:id/overview` | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガン | A58 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-283 | GET | `/api/v1/search` | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | A21 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-283 | GET | `/api/v1/search` | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのペー | A21 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-284 | GET | `/api/v1/service-status` | 取得（service-status）— お知らせを見る | A68 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-285 | GET | `/api/v1/shell` | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント | A58 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-286 | PATCH | `/api/v1/test_specs/:id` | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 413 429 502 403 403 503 |
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-20 凍結（endpoints 369）
+- v1.0 2026-11-21 凍結（endpoints 369）

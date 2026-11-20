@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:7e0980b3c9ab61b9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:0c80185c43c34a92
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -285,7 +285,7 @@ export interface Ops {
   createScope: { params: never; query: never; body: T.ScopesInput; data: T.Scopes };
   updateScope: { params: { id: string }; query: never; body: T.ScopesInput; data: T.Scopes };
   getScopeOverview: { params: { id: string }; query: never; body: never; data: T.ScopeOverview };
-  search: { params: never; query: { "q"?: string | number; "kinds"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.SearchHit[] };
+  search: { params: never; query: { "q"?: string | number; "kinds"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.SearchHit[] };
   getServiceStatusForMember: { params: never; query: never; body: never; data: T.ServiceStatus };
   getShell: { params: never; query: never; body: never; data: T.Shell };
   updateTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
