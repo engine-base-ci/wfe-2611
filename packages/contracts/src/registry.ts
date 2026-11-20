@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:7328722a50038098
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:075f863cd59ab9ba
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1922,6 +1922,58 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "POST",
+    "path": "/api/v1/bridge/browser",
+    "operationId": "setBridgeBrowser",
+    "table": "sessions",
+    "kind": "create",
+    "input": "BridgeBrowserInput",
+    "success": 201,
+    "output": "BridgeBrowser",
+    "outputList": false,
+    "generic": false,
+    "auth": "device",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      413,
+      429,
+      502,
+      503
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
     "path": "/api/v1/bridge/claim",
     "operationId": "claimPairingCode",
     "table": "sessions",
@@ -2194,7 +2246,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "Sessions",
+    "output": "RevokedDevice",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5291,9 +5343,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateCredential",
     "table": "credentials",
     "kind": "update",
-    "input": "CredentialsInput",
+    "input": "CredentialUpdateInput",
     "success": 200,
-    "output": "Credentials",
+    "output": "Credential",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5313,6 +5365,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      403,
+      409,
+      502,
+      503,
       413,
       429,
       403,
@@ -5332,10 +5388,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": {
         "table": "credentials",
-        "sql": "owner_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -5350,7 +5406,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "Credentials",
+    "output": "CredentialDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5370,6 +5426,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -5391,7 +5448,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "credentials",
-        "sql": "owner_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -19456,4 +19513,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "7328722a50038098";
+export const OPENAPI_HASH = "075f863cd59ab9ba";

@@ -26,9 +26,11 @@ export interface StepUpProps {
   onDone: () => void;
   /** やめた（何も送らない） */
   onCancel: () => void;
+  /** 口を呼ぶときの画面の印（既定は "mfa-setup"・K-363 の PC を外すは "bridge-setup"） */
+  screenId?: string;
 }
 
-export function StepUp({ open, reason, withCode, withPasskey, onDone, onCancel }: StepUpProps) {
+export function StepUp({ open, reason, withCode, withPasskey, onDone, onCancel, screenId = "mfa-setup" }: StepUpProps) {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState<string[]>([...EMPTY_CODE]);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export function StepUp({ open, reason, withCode, withPasskey, onDone, onCancel }
         return;
       }
       const body = withCode ? { password, code: code.join("") } : { password };
-      const r = await call("stepUp", { body, screenId: "mfa-setup", keepOn401: true });
+      const r = await call("stepUp", { body, screenId, keepOn401: true });
       if (r.ok) return finish(true);
       if (r.status === 401 && r.code !== "STEP_UP_FAILED") setError(expiredText());
       else setError(r.fields["password"] ?? r.fields["code"] ?? r.message ?? failedText());
