@@ -1245,6 +1245,14 @@
    "tests": [
     "apps/api/test/generated/get_tickets_id_handovers.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F8/handover/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k411-pass-detail.spec.ts"
+   ]
   }
  ],
  "reads_ok": {
