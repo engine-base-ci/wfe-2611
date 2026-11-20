@@ -2304,3 +2304,15 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-429,fuzz が見つけた前からの口の食い違い（K-62）を契約の形に合わせる（実行の 1 件・一覧は phase・status が空の行を返さず、一覧の limit／cursor／sort は契約の形だけを受けて 422）・契約 fuzz G36 の揺れを根から止める,タスク,K-62,未着手,実装,2026-11-24,F5・API,"契約の fuzz（Schemathesis・CI の G36）が、K-62 の 2 つの口で契約と口の食い違いを見つけ、どの葉の CI でも G36 が揺れて赤になる（K-401・K-407 の CI で出た。GitHub の回 44728943303）。食い違いは 2 つ。
+
+1. **答えの phase・status が空になる**（ST108）：契約（`ActionRunView`）は phase・status を「文字（空を許さない）」としているが、DB は `action_runs.phase`・`status_id` の空を許す（0011・0092 の check は「空か make・execute」）。fuzz の種（`seedGenericRows`）は表の列を埋めるだけなので、チケットに結んだ実行の行を phase・status 空のまま作る。読む関数（`app.action_run_view`・`app.ticket_runs_view`）はそれをそのまま返し、契約違反の答えになる
+2. **一覧が契約外の sort を受け付ける**（ST201）：契約の `listTicketRuns` は sort を「表の列名 27 個の enum」・limit を 1〜200・cursor を数 1〜9 桁としているのに、口（`apps/api/src/features/F5/delegate/people.ts`）は問い合わせを見ない。`sort=-58800` が 200 で通る。共通の入口（op.ts）が一覧の問い合わせを確かめるのは `kind: list` の口だけで、この口は `kind: get`（答えが配列）なので素通りする
+
+
+決め（控え帳 `.ticket-flow/drift.md`・answer=f0f290e785a9）：**422 は契約に書ける形の誤りだけ・検査の例外は足さない**。なので契約と口のどちらかを、実際の振る舞いに正しく合わせる。K-62 のチケットと決定ログで確かめた結果：
+
+- phase・status：K-62 のチケットは「ticket_id・phase は口が必ず入れる」（契約の NOT_NULL_ANSWERS）と決めている。実行の行を作る道は 4 つ（`app.ticket_delegate`〔0092〕・`approvals` の承認〔0096〕・差し戻し〔0097〕・完了〔0100〕）で、どれも phase と status_id を入れる（`git grep ""insert into action_runs""` で確かめた）。**空は「AI に任せた実行」の姿ではなく、種が作る生の行だけ**。なので **契約は変えず、読む関数が空の行を実行として返さない**（1 件は 404・一覧は外す）
+- sort：契約はすでに enum（表の列名）を書いている。**口が契約と同じ形だけを受ける**（契約の形から外れたら 422・欄 sort）。limit・cursor も同じ型の誤りなので同じ確かめを通す（fuzz は同じ口に limit・cursor も当てる）","- [ ] 下の表の 11 行（K429-API-001〜010・K429-DB-001）が緑：`apps/api/test/features/F5/k429_runs_shape.test.ts`
+- [ ] 前からの試験（K-62 の delegate.test.ts・k144-contract.test.ts・k234_one_transaction.test.ts など）が全部緑（この葉の範囲 ci_wide db）
+- [ ] 手元の CI（このチケットの範囲）が緑。契約の fuzz の G36 が、この 2 つの口で赤にならない"
