@@ -9826,6 +9826,41 @@ components:
       - name
       - destinations
       x-required-by: hooks
+    CredentialUpdateInput:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        value:
+          type: string
+        two_factor:
+          type: string
+          enum:
+          - none
+          - totp
+          - sms
+          - email
+          - push
+        totp_secret:
+          type: string
+        destinations:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 20
+        expires_on:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        reason:
+          type: string
+      additionalProperties: false
+      x-operation: updateCredential
     CredentialLoginCheckInput:
       type: object
       properties: {}
@@ -9930,6 +9965,17 @@ components:
           pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
       additionalProperties: false
       x-operation: updateMyDevice
+      required:
+      - browser
+      x-required-by: hooks
+    BridgeBrowserInput:
+      type: object
+      properties:
+        browser:
+          type: string
+          pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
+      additionalProperties: false
+      x-operation: setBridgeBrowser
       required:
       - browser
       x-required-by: hooks
@@ -11615,7 +11661,14 @@ components:
           type: string
         updated_at:
           type: string
-      x-operation: createCredential
+      x-operation: updateCredential
+    CredentialDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteCredential
     CredentialLoginCheck:
       type: object
       properties:
@@ -11641,6 +11694,20 @@ components:
           type: string
           nullable: true
       x-operation: reportCredentialCheck
+    RevokedDevice:
+      type: object
+      properties:
+        id:
+          type: string
+        device_label:
+          type: string
+          nullable: true
+        revoked_at:
+          type: string
+          nullable: true
+        revoke_reason:
+          type: string
+      x-operation: revokeMyDevice
     DeviceBrowser:
       type: object
       properties:
@@ -11650,6 +11717,12 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    BridgeBrowser:
+      type: object
+      properties:
+        browser:
+          type: string
+      x-operation: setBridgeBrowser
     Error:
       type: object
       properties:
@@ -15127,6 +15200,117 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/bridge/browser:
+    post:
+      operationId: setBridgeBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - sessions
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: device
+      x-permission-scope: その人の PC（その PC 自身の AI が使うブラウザだけ。Kaname が正本で、画面で変えたのと同じ値・D-120）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BridgeBrowserInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BridgeBrowser'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：大文字の値（CHROME など・NFKC で小文字にならない））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 大文字の値（CHROME など・NFKC で小文字にならない）
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/bridge/claim:
     post:
       operationId: claimPairingCode
@@ -15746,7 +15930,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/RevokedDevice'
                   meta:
                     type: object
         '401':
@@ -21552,8 +21736,8 @@ paths:
       - D-125.151
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のものの上書き・使える場所の変更
-      x-step-up: true
+      x-permission-scope: 自分の個人の物か、edit を持つ人はワークスペースの物の値・使える場所・期限・説明の上書き。名前・層・種類は変えない。取り直しか、ログインから 15 分の内（D-125.139・D-128.57）
+      x-step-up: login_or_step_up
       security:
       - session: []
       parameters:
@@ -21568,7 +21752,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialUpdateInput'
       responses:
         '200':
           description: 成功
@@ -21578,7 +21762,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/Credential'
                   meta:
                     type: object
         '401':
@@ -21588,7 +21772,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-CRED-007／STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21600,7 +21784,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）・変える物が無い（空・理由だけ・E-CRED-008））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）
+          - 日本の今日より前・暦に無い期限（E-CRED-004）
+          - 種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）
+          - 変える物が無い（空・理由だけ・E-CRED-008）
+        '409':
+          description: E-CRED-009
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: E-SEC-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-SEC-002／E-PAGE-003
           content:
             application/json:
               schema:
@@ -21613,12 +21820,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21653,7 +21854,7 @@ paths:
       - D-125.151
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のもの。消したらすぐ使えなくなる
+      x-permission-scope: 自分の個人の物か、edit を持つ人はワークスペースの物。消したらすぐ使えなくなり、金庫の値も失効（D-128.57）
       x-step-up: false
       security:
       - session: []
@@ -21673,7 +21874,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialDeleted'
                   meta:
                     type: object
         '401':
@@ -21683,7 +21884,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-CRED-007／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21700,14 +21901,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:

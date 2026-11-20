@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-19",
+ "created_at": "2026-11-20",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -366,6 +366,7 @@
     "POST /api/bridge/credentials/resolve",
     "POST /api/bridge/credentials/:id/check-result",
     "GET /api/bridge/files/:ref",
+    "POST /api/bridge/browser",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3872,6 +3873,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/bridge/files/:ref"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser"
     },
     {
      "role": "transition",
