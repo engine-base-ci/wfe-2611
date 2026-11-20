@@ -7726,13 +7726,18 @@ components:
           type: string
         decided_note: &id694
           type: string
+          nullable: true
         cancelled_at: &id695
           type: string
           format: date-time
+          nullable: true
         cancelled_by: &id696
           type: string
+          format: uuid
+          nullable: true
         cancel_reason: &id697
           type: string
+          nullable: true
         id:
           type: string
           format: uuid
@@ -41374,10 +41379,14 @@ paths:
         schema:
           type: string
           enum:
+          - cancel_reason
+          - cancelled_at
+          - cancelled_by
           - created_at
           - created_by
           - decided_at
           - decided_by
+          - decided_note
           - deleted_at
           - id
           - promoted_to

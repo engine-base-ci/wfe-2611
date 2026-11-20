@@ -17976,7 +17976,8 @@
    "affects": [
     "@kaname/api",
     "@kaname/contracts",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",
