@@ -7,6 +7,7 @@
 //                                                               invitations: [{ id, email, scope_id, role, expires_at, left_days }], alerts: [], count } }
 //     createInvitations    POST /invitations ← { emails: string[]（1〜50）, scope_id, role_key, message? } → 201 { data: { invitations: [{ id, email, expires_at, mail }] } }
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
+import { execFileSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -16,6 +17,7 @@ import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
 import { createDeviceResolver } from "@kaname/auth/resolver";
 import { createApp } from "../../../src/app.js";
+import { INVITE_EMAIL_PATTERN } from "../../../src/features/F10/invite/patterns.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
@@ -453,6 +455,56 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect((await json(r))["code"]).toBe("E-INV-012");
     expect(await n("select count(*) as n from invitations where email = any($1)", [many])).toBe(0);
     expect((await invite(admin, base(many.slice(0, 50)))).status).toBe(201);
+  });
+
+  it("K419-API-024 口が打ったとおりに照らす宛ての pattern（patterns.ts の INVITE_EMAIL_PATTERN）と人数（INVITE_MAX）は、契約（08_api/openapi.yaml の InvitationsCreateInput の emails）の items の pattern・maxItems・minItems と 1 字も違わない", () => {
+    const py =
+      "import yaml,json,sys;d=yaml.safe_load(open(sys.argv[1]));" +
+      "e=d['components']['schemas']['InvitationsCreateInput']['properties']['emails'];" +
+      "print(json.dumps({'pattern':e['items']['pattern'],'max':e['maxItems'],'min':e['minItems']}))";
+    const yamlPath = join(ROOT, "08_api/openapi.yaml");
+    const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as {
+      pattern: string;
+      max: number;
+      min: number;
+    };
+    expect(got.pattern).toBe(INVITE_EMAIL_PATTERN);
+    expect(got.max).toBe(50);
+    expect(got.min).toBe(1);
+  });
+
+  it("K419-API-025 人数は送られた並びの数（重なりを落とす前）で数える：同じ宛てを重ねた 51 個（そろえると 2 つ）は 422・E-INV-012・招待 0。重ねて 50 個（そろえると 25 人）は 201・25 人", async () => {
+    await ready();
+    const two = [fresh("dup-a"), fresh("dup-b")];
+    const over = Array.from({ length: 51 }, (_, i) => two[i % 2]!);
+    const r = await invite(admin, base(over));
+    expect(r.status).toBe(422);
+    expect((await json(r))["code"]).toBe("E-INV-012");
+    expect(await n("select count(*) as n from invitations where email = any($1)", [two])).toBe(0);
+    const uniq = Array.from({ length: 25 }, (_, i) => fresh(`dd${i}`));
+    const ok = await invite(admin, base([...uniq, ...uniq]));
+    expect(ok.status).toBe(201);
+    expect(((await json(ok)).data as { invitations: unknown[] }).invitations).toHaveLength(25);
+  });
+
+  it("K419-API-026 宛ては、そろえる前の字を契約の pattern で照らす：中に空白がある・@ が全角で 2 つ・ドメインに点が無い字は 422・E-INV-009（details の字はそろえた後の字）・招待 0。前後の全角の空白・全角の @ と点は通って 201", async () => {
+    await ready();
+    const before = mails.length;
+    const id = randomUUID().slice(0, 6);
+    const r = await invite(admin, base([`ki mura${id}@engine-base.example`, `kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`]));
+    expect(r.status).toBe(422);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    expect((j.details ?? []).map((d) => [d.email, d.code])).toEqual([
+      [`kimura${id}@engine-base.example`, "E-INV-009"],
+      [`kimura${id}@@engine-base.example`, "E-INV-009"],
+      [`kimura${id}@engine-base`, "E-INV-009"],
+    ]);
+    expect(mails.length).toBe(before);
+    const e = `ok${id}@engine-base.example`;
+    const fullAt = `\u3000${e.replace("@", "＠").replace(".", "．")}\u3000`;
+    expect((await invite(admin, base([fullAt]))).status).toBe(201);
+    expect(await invRows(e)).toHaveLength(1);
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
