@@ -10073,26 +10073,24 @@ components:
               - hold_reason
             - required:
               - resume_condition
-      - anyOf:
-        - not:
+      oneOf:
+      - properties:
+          priority:
+            enum:
+            - high
+        required:
+        - priority
+        - priority_reason
+      - not:
+          anyOf:
+          - required:
+            - priority_reason
+          - properties:
+              priority:
+                enum:
+                - high
             required:
             - priority
-        - properties:
-            priority:
-              enum:
-              - mid
-        - required:
-          - priority_reason
-      - anyOf:
-        - not:
-            required:
-            - priority_reason
-        - required:
-          - priority
-          properties:
-            priority:
-              enum:
-              - high
     ScopeOverview:
       type: object
       properties:

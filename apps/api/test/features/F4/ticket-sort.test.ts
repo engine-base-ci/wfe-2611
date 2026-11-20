@@ -17,6 +17,7 @@
 //
 // 口の振る舞い（K-387 の apps/api/src/hooks/ticket-update.ts の register）は、試験の本体（it の中）の ready() で 1 回だけ読む。
 //   実装の前（切る段の smoke）に、まだ無いファイルを準備で読んで準備ごと落とさないため（準備の赤と本体の赤を分ける・answer=8f745003d023）。
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -51,6 +52,92 @@ const bare = (j: Json): void => {
 };
 const NO_SUCH = "00000000-0000-4000-8000-0000000000aa";
 const jst = (days = 0): string => new Date(Date.now() + 9 * 3600_000 + days * 86400_000).toISOString().slice(0, 10);
+
+/**
+ * 契約（08_api/openapi.yaml）の updateTicket の入力の oneOf を読む小さな道具（K440-API-002）。
+ * openapi.yaml は build_api.py が固定の形（2 スペース・列は鍵と同じ字下げ）で出すので、その形だけを読む。
+ * 評価するのは required・properties の enum・not・anyOf・oneOf だけ（INPUT_RULES に書ける言葉）。
+ */
+type Y = string | number | boolean | null | Y[] | { [k: string]: Y };
+function parseYamlBlock(text: string): Y {
+  const lines = text.split("\n").filter((l) => l.trim() !== "" && !l.trim().startsWith("#"));
+  let i = 0;
+  const indentOf = (l: string): number => l.length - l.trimStart().length;
+  const scalar = (v: string): Y => {
+    const t = v.trim();
+    if (/^(["']).*\1$/.test(t)) return t.slice(1, -1);
+    if (t === "true") return true;
+    if (t === "false") return false;
+    if (t === "null") return null;
+    return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : t;
+  };
+  const block = (ind: number): Y => (lines[i]!.trimStart().startsWith("- ") ? seq(ind) : map(ind));
+  const seq = (ind: number): Y[] => {
+    const out: Y[] = [];
+    while (i < lines.length && indentOf(lines[i]!) === ind && lines[i]!.trimStart().startsWith("- ")) {
+      const rest = lines[i]!.trimStart().slice(2);
+      if (/^[^\s:][^:]*:(?: |$)/.test(rest)) {
+        lines[i] = " ".repeat(ind + 2) + rest;
+        out.push(block(ind + 2));
+      } else {
+        out.push(scalar(rest));
+        i++;
+      }
+    }
+    return out;
+  };
+  const map = (ind: number): { [k: string]: Y } => {
+    const out: { [k: string]: Y } = {};
+    while (i < lines.length && indentOf(lines[i]!) === ind && !lines[i]!.trimStart().startsWith("- ")) {
+      const m = /^([^\s:][^:]*):(?: (.*))?$/.exec(lines[i]!.trimStart());
+      if (!m) throw new Error(`読めない行: ${lines[i]}`);
+      i++;
+      const next = lines[i];
+      if (m[2] !== undefined && m[2] !== "") out[m[1]!] = scalar(m[2]);
+      else if (
+        next !== undefined &&
+        (indentOf(next) > ind || (indentOf(next) === ind && next.trimStart().startsWith("- ")))
+      )
+        out[m[1]!] = block(indentOf(next));
+      else out[m[1]!] = null;
+    }
+    return out;
+  };
+  return block(indentOf(lines[0]!));
+}
+const isObj = (v: unknown): v is { [k: string]: unknown } => typeof v === "object" && v !== null && !Array.isArray(v);
+function satisfies(schema: unknown, v: unknown): boolean {
+  if (!isObj(schema)) return true;
+  if (
+    Array.isArray(schema["required"]) &&
+    isObj(v) &&
+    !schema["required"].every((k) => typeof k === "string" && k in v)
+  )
+    return false;
+  if (isObj(schema["properties"]) && isObj(v))
+    for (const [k, ps] of Object.entries(schema["properties"])) if (k in v && !satisfies(ps, v[k])) return false;
+  if (Array.isArray(schema["enum"]) && !schema["enum"].includes(v)) return false;
+  if ("not" in schema && satisfies(schema["not"], v)) return false;
+  if (Array.isArray(schema["anyOf"]) && !schema["anyOf"].some((x) => satisfies(x, v))) return false;
+  if (Array.isArray(schema["oneOf"]) && schema["oneOf"].filter((x) => satisfies(x, v)).length !== 1) return false;
+  return true;
+}
+/** openapi.yaml の `x-operation: updateTicket` を持つ入力の形の、最上位の oneOf だけを取り出す */
+function updateTicketOneOf(): Y[] {
+  const lines = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..", "..", "08_api", "openapi.yaml"),
+    "utf8",
+  ).split("\n");
+  const at = lines.indexOf("      x-operation: updateTicket");
+  expect(at, "openapi.yaml に x-operation: updateTicket の入力の形が在る").toBeGreaterThan(0);
+  let from = at;
+  while (from > 0 && !/^ {4}\S/.test(lines[from - 1]!)) from--;
+  let to = at;
+  while (to < lines.length && !/^ {0,4}\S/.test(lines[to + 1] ?? "x")) to++;
+  const shape = parseYamlBlock(lines.slice(from, to + 1).join("\n")) as { oneOf?: Y[] };
+  expect(Array.isArray(shape.oneOf), "updateTicket の入力に oneOf が在る").toBe(true);
+  return shape.oneOf!;
+}
 
 interface World {
   tenantId: string;
@@ -216,6 +303,16 @@ describe("K-440 優先度・親", () => {
     for (const [label, body] of cases) await field422(await patch(w.boss, t.id, body), "priority_reason", label);
     expect(await row(t.id)).toMatchObject({ priority: "mid", priority_reason: null });
     expect((await lines(t.id)).length).toBe(0);
+    // 契約の oneOf を読んで、口と同じ答えを言うこと（高で理由なし・中で理由つき・理由だけは無効、何も無い・中だけ・高で理由つきは有効）
+    const rule = { oneOf: updateTicketOneOf() };
+    for (const bad of [
+      { priority: "high" },
+      { priority: "mid", priority_reason: "急ぎ" },
+      { priority_reason: "理由だけ" },
+    ])
+      expect(satisfies(rule, bad), `契約は無効と言う ${JSON.stringify(bad)}`).toBe(false);
+    for (const ok of [{}, { priority: "mid" }, { priority: "high", priority_reason: "急ぎ" }])
+      expect(satisfies(rule, ok), `契約は有効と言う ${JSON.stringify(ok)}`).toBe(true);
   });
 
   it("K440-API-003 高 → 中は理由の列が空・知らない値は 422・高のまま理由だけ直すと 1 行", async () => {

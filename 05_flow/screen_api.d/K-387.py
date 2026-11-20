@@ -81,8 +81,9 @@ INPUT_RULES = {
                    {"required": ["hold_reason", "resume_condition"]}]},
         {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["hold"]}}},
                    {"not": {"anyOf": [{"required": ["hold_reason"]}, {"required": ["resume_condition"]}]}}]},
-        # K-440：優先度が高なら理由が要る／理由は優先度が高のときだけ
-        {"anyOf": [{"not": {"required": ["priority"]}}, {"properties": {"priority": {"enum": ["mid"]}}}, {"required": ["priority_reason"]}]},
-        {"anyOf": [{"not": {"required": ["priority_reason"]}}, {"required": ["priority"], "properties": {"priority": {"enum": ["high"]}}}]},
-    ]},
+    ],
+        # K-440：優先度と理由の組み合わせ（条件つきの必須・422・欄 priority_reason）。高なら理由が要る・理由は高のときだけ。
+        #   {priority:high}・{priority:mid, reason}・{reason だけ} は無効、{}・{priority:mid}・{priority:high, reason} は有効（oneOf の 2 つ目は「理由が在る、または優先度が高」ではない）
+        "oneOf": [{"properties": {"priority": {"enum": ["high"]}}, "required": ["priority", "priority_reason"]},
+                  {"not": {"anyOf": [{"required": ["priority_reason"]}, {"properties": {"priority": {"enum": ["high"]}}, "required": ["priority"]}]}}]},
 }

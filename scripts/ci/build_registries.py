@@ -7,7 +7,7 @@
 
 kind：errors（07_qa/test-specs/errors.json）・ears（07_qa/test-plan/ears-elsewhere.json）・ci_scope（scripts/ci/ci_scope.json）。
 _base.json が先、続いて K- の番号の順に足す。同じ鍵を 2 つのファイルが持てば止め、何も書かない。
-ただし ears の ops は、断片どうしが同じ口を持てる（covers は足し合わせ・covers 以外は同じ値だけ・K-440）。
+ただし ears の ops は、ファイルどうしが同じ口を持てる（covers は足し合わせ・同じ名前は同じ値だけ・covers 以外は書かないか同じ値だけ・K-440）。
 """
 from __future__ import annotations
 
@@ -30,8 +30,8 @@ TARGETS = {
 }
 
 # kind → 鍵ごとの足し方。("list_by", 鍵の名前)＝リストをつなぎ、項目の鍵が重なれば止める／
-# ("dict",)＝鍵ごと・重なれば止める／("op_covers",)＝("dict",) と同じだが、断片どうしが同じ口（op）を持てる：
-# covers は足し合わせ（同じ名前を 2 つが結べば止める）、covers 以外の鍵は両方にあって値が違えば止める（_base.json の口は断片が足せない）／("list",)＝つなぐ／("unique_list",)＝つなぎ、同じ値が 2 つなら止める。
+# ("dict",)＝鍵ごと・重なれば止める／("op_covers",)＝("dict",) と同じだが、ファイルどうし（_base.json と断片を含む）が同じ口（op）を持てる：
+# covers は足し合わせ（同じ名前を同じ値で結ぶなら 1 つにまとめ、違う値なら止める）、covers 以外の鍵は書かないか同じ値だけ／("list",)＝つなぐ／("unique_list",)＝つなぎ、同じ値が 2 つなら止める。
 # ここに無い鍵は _base.json だけが持てる。
 RULES: dict[str, dict[str, tuple]] = {
     "errors": {"errors": ("list_by", "id"), "classes": ("list_by", "id")},
@@ -94,22 +94,39 @@ def _add(kind: str, out: dict, key: str, value: object, source: str, owners: dic
     out[key] = [*out.get(key, []), *value]
 
 
-def _merge_op(kind: str, key: str, op: str, have: object, item: object, who: dict[str, str], first: str, source: str) -> dict:
-    """同じ口（op）を 2 つの断片が持つとき：covers は足し合わせ、covers 以外の鍵は同じ値だけ許す。
-    who は「その名前・鍵を最初に足した断片」（口を最初に書いた断片とは限らない）。止める文にはその断片を出す"""
-    if not isinstance(have, dict) or not isinstance(item, dict):
-        raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} を両方持つ（足し合わせられるのは covers を持つオブジェクトだけ）")
+def _provenance(owners: dict[tuple[str, str], str], key: str, op: str, have: dict, first: str) -> dict[str, str]:
+    """その口の covers の名前・covers 以外の鍵を、最初に足した断片（_base.json を含む）に結ぶ表。まだ無ければ今の中身を first の物として作る"""
+    sentinel = (key, f"{op}/#")
+    if sentinel not in owners:
+        owners[sentinel] = first
+        for k in have:
+            if k != "covers":
+                owners[(key, f"{op}/{k}")] = first
+        for name in have.get("covers") or {}:
+            owners[(key, f"{op}/covers/{name}")] = first
+    prefix = f"{op}/"
+    return {sub[len(prefix):]: who for (kk, sub), who in owners.items() if kk == key and sub.startswith(prefix) and sub != f"{op}/#"}
+
+
+def _merge_op(kind: str, key: str, op: str, have: dict, item: object, who: dict[str, str], source: str) -> dict:
+    """同じ口（op）を 2 つ以上のファイルが持つとき：covers は足し合わせる（同じ名前は同じ値なら 1 つにまとめ、違う値なら止める）。
+    covers 以外の鍵は、書かないか同じ値だけ。止める文には、その名前・鍵を最初に足したファイルと今のファイルを出す。who は更新する"""
+    if not isinstance(item, dict):
+        raise RegistryConflict(f"{kind}: {source} の {key} の {op} はオブジェクトで書く")
     covers = dict(have.get("covers") or {})
     for name, to in (item.get("covers") or {}).items():
         if name in covers:
-            raise RegistryConflict(f"{kind}: {who.get('covers/' + str(name), first)} と {source} が {key} の {op} の covers の {name} を両方結ぶ")
+            if covers[name] != to:
+                raise RegistryConflict(f"{kind}: {who.get('covers/' + str(name), '?')} と {source} が {key} の {op} の covers の {name} を違う値で結ぶ")
+            continue
         covers[name] = to
         who["covers/" + str(name)] = source
     for k, v in item.items():
-        if k != "covers" and k in have and have[k] != v:
-            raise RegistryConflict(f"{kind}: {who.get(str(k), first)} と {source} が {key} の {op} の {k} を違う値で持つ（足し合わせるのは covers だけ）")
-        if k != "covers":
-            who.setdefault(str(k), source)
+        if k == "covers":
+            continue
+        if k in have and have[k] != v:
+            raise RegistryConflict(f"{kind}: {who.get(str(k), '?')} と {source} が {key} の {op} の {k} を違う値で持つ（足し合わせるのは covers だけ）")
+        who.setdefault(str(k), source)
     merged = {**have, **{k: v for k, v in item.items() if k != "covers"}}
     if covers:
         merged["covers"] = covers
@@ -123,22 +140,19 @@ def _add_op_covers(kind: str, out: dict, key: str, value: object, source: str, o
     for k, item in value.items():
         first = owners.get((key, str(k)))
         if first is None:
+            if not isinstance(item, dict):
+                raise RegistryConflict(f"{kind}: {source} の {key} の {k} はオブジェクトで書く")
             owners[(key, str(k))] = source
             merged[k] = item
-            # 口を最初に書いた断片が、その口の covers 以外の鍵と covers の名前の持ち主
-            if isinstance(item, dict):
-                for kk in item:
-                    if kk != "covers":
-                        owners[(key, f"{k}/{kk}")] = source
-                for n in item.get("covers") or {}:
-                    owners[(key, f"{k}/covers/{n}")] = source
-        elif first == "_base.json":
-            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {k} を両方持つ")
-        else:
-            who = {sub[len(str(k)) + 1:]: o for (kk, sub), o in owners.items() if kk == key and sub.startswith(f"{k}/")}
-            merged[k] = _merge_op(kind, key, str(k), merged[k], item, who, first, source)
-            for sub, o in who.items():
-                owners[(key, f"{k}/{sub}")] = o
+            _provenance(owners, key, str(k), item, source)
+            continue
+        have = merged[k]
+        if not isinstance(have, dict):
+            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {k} を両方持つ（足し合わせられるのはオブジェクトだけ）")
+        who = _provenance(owners, key, str(k), have, first)
+        merged[k] = _merge_op(kind, key, str(k), have, item, who, source)
+        for sub, owner in who.items():
+            owners[(key, f"{k}/{sub}")] = owner
     out[key] = merged
 
 
