@@ -2090,6 +2090,17 @@ K-352,預ける口（createCredential・本人確認の取り直し・金庫に�
 - [ ] 契約の口 `createCredential` が 501 でない。生成の試験 `apps/api/test/generated/post_credentials.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-352.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替えるのは apps/api/test/step_up.test.ts の口の選び方 1 か所）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-354,PC がログイン情報を取り出す口 resolveCredential（PC の印・動いている仕事・持ち主の分身か範囲の人・使える場所だけ・PC の鍵でしか開けない封）と、Bridge の取り出しと確かめを契約の口へつなぎ替える（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-26,F3・預けたログイン情報,"PC（Bridge）の実行器が、いま動いている仕事のためにだけ、預けたログイン情報を 1 件取り出す契約の口 `resolveCredential`（POST /api/v1/bridge/credentials/resolve・device）を作る（今は 501）。D-128.57 の 4 つの守りのうち、口の側で持つ ②④ と ① を入れる：
+
+1. 取り出しを頼めるのは、つないだ PC の常駐アプリ（PC の印）で、その PC が取った動いている仕事（running・asking）のためだけ（④・D-102.2）
+2. 個人の物は持ち主の分身の仕事だけ。ワークスペースの物はそのワークスペースの人の仕事だけ（①）
+3. 入れる場所（宛先のドメイン）が、その情報の「使える場所」の中のときだけ。外なら止めて持ち主に知らせる（②）
+4. 答えは平文を返さない形：PC がその回だけの鍵の組を作って公開の鍵を送り、口はそれでしか開けない封で返す（関門 C8 の外に平文が出ない。ログ・中継・AI の道に乗っても読めない）
+
+あわせて Bridge の取り出し（apps/bridge/src/vault.ts）と、確かめの道（login-check.ts・two-factor.ts・loop.ts）を、前の道すじ（/api/auth-ext/bridge/credentials/resolve・/bridge/credentials/check-result・/bridge/ask・/bridge/code）から契約の口（この口と K-355 の reportCredentialCheck）へつなぎ替える。前の道すじの口そのものは K-358 が消す。","- [ ] 下の表の 30 行（K354-API-001〜019・K354-BRG-001〜011）が緑：`apps/api/test/features/F3/credential-resolve.test.ts`・`apps/bridge/test/k354-credential-bridge.test.ts`
+- [ ] 契約の口 `resolveCredential` が 501 でない。生成の試験の it.todo が `07_qa/test-plan/ears-elsewhere.d/K-354.json` の covers か na（理由つき）で全部結ばれる
+- [ ] 前からの Bridge の試験 5 本（切る段で替えて carry で運ぶ）が緑。ほかの前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-355,預けた後のログインの確かめの口（checkCredentialLogin・answerCredentialLoginCheck・reportCredentialCheck・確かめの仕事は使える場所の 1 つ目を開く・コードは PC にだけ 1 回渡る）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-25,F3・預けたログイン情報,"預けたログイン情報で、自分の PC（Bridge）が 1 回だけログインして確かめる動き（D-117・代表の答え answer=ac0813ee7c21 ③「段 4 に入れる」）の口を、契約の口として作る（今はどれも 501）。
 
 - `checkCredentialLogin`（POST /api/v1/credentials/:id/login-check・本人）：「もう一度確かめる」。確かめの仕事を 1 つ積む
