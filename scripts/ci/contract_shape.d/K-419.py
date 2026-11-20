@@ -9,7 +9,7 @@ PATH_PATTERNS = {}
 # 役割は決まった 4 つ・ひとこと 500 文字まで（宛ての数の上限 50 は口が E-INV-012 で断るので契約には書かない）
 VALUE_RANGES = {
     "createInvitations": {
-        "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "pattern": _IP.EMAIL}},
+        "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "maxLength": _IP.EMAIL_MAX_LENGTH, "pattern": _IP.EMAIL}},
         "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
         "message": {"maxLength": 500},
     },

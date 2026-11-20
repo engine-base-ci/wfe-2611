@@ -5,7 +5,7 @@
 //   ① 送られた並びの数（重なりを落とす前）が 51 以上 → 422・E-INV-012（契約の maxItems 50 と同じ）
 //   ② 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる（そろえるのは ④ の形の確かめの後）
 //   ③ 管理者として招く（role_key admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
-//   ④ 全部か無しか：そろえる前の字が INVITE_EMAIL_PATTERN（契約の emails の items の pattern と同じ字）に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
+//   ④ 全部か無しか：そろえる前の字が 320 字を超える（pattern の前に確かめる）か INVITE_EMAIL_PATTERN（契約の emails の items の pattern と同じ字）に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
 //      形の誤りだけを 422 で返し、DB の中身で決まる断りは ⑤ の 409・404 に分ける（口が断る番号の決め・answer=431fc50df51b）
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
 //      グループが会社に無い・消した → 404・E-INV-011。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
@@ -20,7 +20,7 @@ import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HookDeps } from "../../../hooks/registry.js";
 import { inviteMail } from "./mail.js";
-import { INVITE_EMAIL_PATTERN } from "./patterns.js";
+import { INVITE_EMAIL_MAX_LENGTH, INVITE_EMAIL_PATTERN } from "./patterns.js";
 
 /** 一度に招ける人数 */
 export const INVITE_MAX = 50;
@@ -130,6 +130,10 @@ export function normalizeEmails(raw: unknown): string[] {
 /** 打ったとおりの宛てを照らす正規表現（契約の pattern と同じ字） */
 const EMAIL_PATTERN = new RegExp(INVITE_EMAIL_PATTERN);
 
+/** 宛て 1 つが決まりに合うか：長さ（打ったとおりの字・契約の maxLength と同じ数え方）を先に見て、pattern はそのあとに当てる */
+const emailOk = (e: string): boolean =>
+  e.length <= 2 * INVITE_EMAIL_MAX_LENGTH && Array.from(e).length <= INVITE_EMAIL_MAX_LENGTH && EMAIL_PATTERN.test(e);
+
 export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" | "config">) {
   /** ⑤ 1 つの取引：メールの文面に要る名前を読み、招待を作る（呼んだ人の権限は関数の中でも見る） */
   const store = async (
@@ -214,7 +218,7 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
       const stale = a.requireStepUp ? a.requireStepUp() : STEP_UP_REQUIRED;
       if (stale) return stale;
     }
-    const badEmails = raw.filter((e) => !EMAIL_PATTERN.test(e));
+    const badEmails = raw.filter((e) => !emailOk(e));
     if (badEmails.length > 0)
       return invalid(
         "E-INV-009",

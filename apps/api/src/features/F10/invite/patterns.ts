@@ -12,5 +12,8 @@ const DOT = "[.․﹒．]";
 const NOT = `[^@＠﹫${WS}]`;
 const SP = `[${WS}]*`;
 
+/** 宛て 1 つの長さの上限（打ったとおりの字・そろえる前）。pattern を当てる前に確かめる（長い入力で正規表現が二乗の時間にならないため・PM の決め 2026-11-21 03:40）。契約の items.maxLength と同じ */
+export const INVITE_EMAIL_MAX_LENGTH = 320;
+
 /** 宛て 1 つ：空白（半角・全角・中も）は許し、そろえるときに落ちる。@ で 2 つに分かれ、後ろの名前の中ほどに点がある（前と同じ形） */
 export const INVITE_EMAIL_PATTERN = `^${SP}(?:${NOT}${SP})+${AT}${SP}${NOT}(?:${SP}${NOT})*${SP}${DOT}(?:${SP}${NOT})+${SP}$`;

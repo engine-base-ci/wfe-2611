@@ -19,7 +19,7 @@ REQUIRED_INPUTS = {
 # apps/api/src/features/F10/invite/create.ts（宛ての数・形・入っている人は口が 422 にする。役割は 4 つだけ・ひとこと 500 文字まで）
 VALUE_RANGES = {
     "createInvitations": {
-        "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "pattern": _IP.EMAIL}},
+        "emails": {"minItems": 1, "maxItems": 50, "items": {"type": "string", "maxLength": _IP.EMAIL_MAX_LENGTH, "pattern": _IP.EMAIL}},
         "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
         "message": {"maxLength": 500},
     },
