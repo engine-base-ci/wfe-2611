@@ -5941,6 +5941,7 @@ components:
       properties:
         email: &id517
           type: string
+          nullable: true
         scope_id:
           type: string
           format: uuid
@@ -10011,6 +10012,25 @@ components:
       - scope_id
       - role_key
       x-required-by: hooks
+    InvitationLinkCreateInput:
+      type: object
+      properties:
+        scope_id:
+          type: string
+          format: uuid
+        role_key:
+          type: string
+          enum:
+          - member
+          - manager
+          - viewer
+          - admin
+      additionalProperties: false
+      x-operation: createInvitationLink
+      required:
+      - scope_id
+      - role_key
+      x-required-by: hooks
     InvitationJoinConfirmInput:
       type: object
       properties:
@@ -11631,6 +11651,7 @@ components:
           nullable: true
         email:
           type: string
+          nullable: true
         expires_at:
           type: string
         account_exists:
@@ -23141,22 +23162,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-INV-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-INV-009（契約に書けない値の決まり：宛てがメールの形でない（そろえた後の字で見る・E-INV-009）・宛てがもうこのワークスペースに入っている人（E-INV-010）・グループがこの会社に無い・消した（E-INV-011）・一度に 50 人を超える宛て（E-INV-012））
+          description: E-INV-009（契約に書けない値の決まり：宛てがメールの形でない（そろえた後の字で見る・E-INV-009）・一度に 50 人を超える宛て（E-INV-012））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - 宛てがメールの形でない（そろえた後の字で見る・E-INV-009）
-          - 宛てがもうこのワークスペースに入っている人（E-INV-010）
-          - グループがこの会社に無い・消した（E-INV-011）
           - 一度に 50 人を超える宛て（E-INV-012）
+        '404':
+          description: E-INV-011
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -23395,7 +23420,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationLinkCreateInput'
       responses:
         '201':
           description: 成功
@@ -23415,19 +23440,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
+          description: STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-011
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -23440,12 +23471,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

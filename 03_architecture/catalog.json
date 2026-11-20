@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 66,
+  "api_built": 67,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
@@ -1938,7 +1938,7 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-421"
    ]

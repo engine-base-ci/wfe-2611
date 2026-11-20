@@ -5,10 +5,10 @@
 //   ① 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる
 //   ② 51 人以上 → 422・E-INV-012
 //   ③ 管理者として招く（role_key admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
-//   ④ 全部か無しか：EMAIL_RE に合わない宛て（E-INV-009）・もうこのワークスペースに入っている人（E-INV-010）が 1 つでもあれば、どの宛ても招かず
-//      422 と details（宛てごと・入れた順）。入っている人は DB の関数（app.invitation_members_in）で引く
+//   ④ 全部か無しか：EMAIL_RE に合わない宛て（E-INV-009）が 1 つでもあれば、どの宛ても招かず 422 と details（宛てごと・入れた順）。
+//      形の誤りだけを 422 で返し、DB の中身で決まる断りは ⑤ の 409・404 に分ける（口が断る番号の決め・answer=431fc50df51b）
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
-//      グループが会社に無い・消した → 422・E-INV-011。DB が落ちた → 503・E-PAGE-003（何も残らない）
+//      グループが会社に無い・消した → 404・E-INV-011。もう入っている人が 1 人でもいる → 409・E-INV-010（details は宛てごと）。DB が落ちた → 503・E-PAGE-003（何も残らない）
 //   ⑥ 取引が終わってから宛てごとに 1 通（関門 C6）。送れたら mail "sent"・送れなかったら "failed" と証跡 invitation.mail_failed。
 //      証跡を書けなければログに招待の id だけ（宛てのメールは出さない・ドメインだけを証跡に書く）
 //   ⑦ 201 { invitations: [{ id, email, expires_at, mail }] }
@@ -56,8 +56,8 @@ const kindOf = (e: unknown): string => {
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
 };
 
-const invalid = (code: string, details: Detail[]): HookReply => ({
-  status: 422,
+const invalid = (code: string, details: Detail[], status = 422): HookReply => ({
+  status,
   body: { ...kanameError(code).toJSON(), details },
 });
 const detail = (code: string, field: string, email?: string): Detail => ({
@@ -100,7 +100,7 @@ function checkInput(input: Record<string, unknown>): HookReply | null {
 /** DB の関数が断った例外 → 答え。分からない例外は 503（何も残らない） */
 function refused(e: unknown): HookReply {
   const { code, hint, detail: dt } = pgInfo(e);
-  if (code === "42501" && hint === "E-INV-011") return invalid("E-INV-011", [detail("E-INV-011", "scope_id")]);
+  if (code === "42501" && hint === "E-INV-011") return invalid("E-INV-011", [detail("E-INV-011", "scope_id")], 404);
   if (code === "42501") return forbidden();
   if (code === "22023" && hint === "E-INV-010")
     return invalid(
@@ -109,6 +109,7 @@ function refused(e: unknown): HookReply {
         .split("\n")
         .filter((s) => s !== "")
         .map((s) => detail("E-INV-010", "emails", s)),
+      409,
     );
   console.error(`[invite] 招く取引が落ちた（${kindOf(e)}）`);
   return unavailable();
@@ -129,28 +130,6 @@ export function normalizeEmails(raw: unknown): string[] {
 }
 
 export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" | "config">) {
-  /** ④ 形の違う宛てがあるとき：入っている人も引いて、入れた順に混ぜた details */
-  const mixedDetails = async (a: HookArgs, emails: string[]): Promise<Detail[] | HookReply> => {
-    const ok = emails.filter((e) => EMAIL_RE.test(e));
-    let inside = new Set<string>();
-    if (ok.length > 0) {
-      try {
-        inside = await withTenant(d.appPool, a.ctx, async (cl) => {
-          const r = await cl.query<{ email: string }>("select email from app.invitation_members_in($1::text[])", [ok]);
-          return new Set(r.rows.map((x) => x.email));
-        });
-      } catch (e) {
-        return refused(e);
-      }
-    }
-    const out: Detail[] = [];
-    for (const e of emails) {
-      if (!EMAIL_RE.test(e)) out.push(detail("E-INV-009", "emails", e));
-      else if (inside.has(e)) out.push(detail("E-INV-010", "emails", e));
-    }
-    return out;
-  };
-
   /** ⑤ 1 つの取引：メールの文面に要る名前を読み、招待を作る（呼んだ人の権限は関数の中でも見る） */
   const store = async (
     a: HookArgs,
@@ -235,10 +214,12 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
       const stale = a.requireStepUp ? a.requireStepUp() : STEP_UP_REQUIRED;
       if (stale) return stale;
     }
-    if (emails.some((e) => !EMAIL_RE.test(e))) {
-      const details = await mixedDetails(a, emails);
-      return Array.isArray(details) ? invalid(details[0]!.code, details) : details;
-    }
+    const badEmails = emails.filter((e) => !EMAIL_RE.test(e));
+    if (badEmails.length > 0)
+      return invalid(
+        "E-INV-009",
+        badEmails.map((e) => detail("E-INV-009", "emails", e)),
+      );
     const tokens = emails.map(() => randomBytes(TOKEN_BYTES).toString("base64url"));
     let stored: { rows: Created[]; facts: Facts };
     try {

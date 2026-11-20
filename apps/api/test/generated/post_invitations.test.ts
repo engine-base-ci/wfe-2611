@@ -19,15 +19,20 @@ describe("POST /api/v1/invitations", () => {
     // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-018」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-018");
   });
+  it("test_post_invitations_conflict", () => {
+    // UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と宛てごとの理由を返し、どの宛ても招かずメールも送らない
+    // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-011」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-011");
+  });
   it("test_post_invitations_rejected_422", () => {
-    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+    // UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない
     // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-010」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-010");
   });
-  it("test_post_invitations_rejected_422_2", () => {
-    // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない
-    // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-019」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-019");
+  it("test_post_invitations_not_found", () => {
+    // UNWANTED: IF 選んだグループがこの会社に無い、または消してあるなら、Kaname は 404 と E-INV-011 を返し、どの宛ても招かずメールも送らない
+    // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-014」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-014");
   });
   it("test_post_invitations_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない

@@ -3760,7 +3760,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-INV-010": {
     "id": "E-INV-010",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "もうこのワークスペースに入っています",
     "action": "その宛てを外す",
     "undo": false,
@@ -3778,7 +3778,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-INV-011": {
     "id": "E-INV-011",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "このグループには招けません",
     "action": "グループを選び直す",
     "undo": false,

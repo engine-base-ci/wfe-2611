@@ -27,5 +27,6 @@ import { register as signup } from "./signup.js";
 import { register as tickets } from "./tickets.js";
 import { register as twoFactor } from "./two-factor.js";
 import { register as verifyEmail } from "./verify-email.js";
+import { register as workspaceInvitationLink } from "./workspace-invitation-link.js";
 import { register as workspaceInvitations } from "./workspace-invitations.js";
-export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approveComplete, auth, bridgeBrowser, bridge, changePassword, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, delegate, deviceBrowser, deviceRevoke, invitationConfirm, invitations, login, mySecurity, passkeys, passwordReset, serviceStatus, setupTasks, signup, tickets, twoFactor, verifyEmail, workspaceInvitations];
+export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approveComplete, auth, bridgeBrowser, bridge, changePassword, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, delegate, deviceBrowser, deviceRevoke, invitationConfirm, invitations, login, mySecurity, passkeys, passwordReset, serviceStatus, setupTasks, signup, tickets, twoFactor, verifyEmail, workspaceInvitationLink, workspaceInvitations];
