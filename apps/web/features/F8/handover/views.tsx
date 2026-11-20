@@ -230,7 +230,7 @@ export function PickDialog({
           value={query}
           {...(onQueryChange ? { onChange: (e) => onQueryChange(e.target.value) } : { readOnly: true })}
         />
-        {none ? (
+        {none && query.trim() !== "" ? (
           <p className="k-hnd-empty" role="status">
             {`「${query.trim()}」に合う人がいません。名前かメールの一部で探してください（止まっている人・招待中の人も出ます）`}
           </p>
