@@ -3144,12 +3144,10 @@
     "createTicketMessage",
     "deleteTicketMessage",
     "starTicketMessage",
-    "updateTicketDecision",
     "updateTicketMessage"
    ],
    "tests": [
     "apps/api/test/generated/delete_ticket_messages_id.test.ts",
-    "apps/api/test/generated/patch_ticket_decisions_id.test.ts",
     "apps/api/test/generated/patch_ticket_messages_id.test.ts",
     "apps/api/test/generated/post_ticket_messages_id_star.test.ts",
     "apps/api/test/generated/post_tickets_id_messages.test.ts"
