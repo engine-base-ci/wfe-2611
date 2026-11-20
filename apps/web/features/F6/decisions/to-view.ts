@@ -20,9 +20,9 @@ export interface DecisionRow {
 const ORDER = { live: 0, revised: 1, cancelled: 2 } as const;
 const statusOf = (r: DecisionRow): DecisionView["status"] =>
   r.cancelled ? "cancelled" : r.superseded_by_id ? "revised" : "live";
-const day = (iso: string): string => mmddTime(iso).slice(0, 5);
+export const day = (iso: string): string => mmddTime(iso).slice(0, 5);
 /** 表示名の最初の語（呼ばれ方・D-128.58） */
-const callName = (name: string | null | undefined): string => (name ?? "").trim().split(/[\s\u3000]+/)[0] ?? "";
+export const callName = (name: string | null | undefined): string => (name ?? "").trim().split(/[\s\u3000]+/)[0] ?? "";
 
 export function toViews(rows: readonly DecisionRow[]): DecisionView[] {
   const byId = new Map(rows.map((r) => [r.id, r]));

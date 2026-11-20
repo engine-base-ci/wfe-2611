@@ -3,6 +3,7 @@
 //   ほかの区画・一覧の右に開く詳細（layout="side"・K-252）は今の区画（children）のまま。口を呼ぶのは区画の入れ物（section.tsx）の中だけ。
 import type { ReactNode } from "react";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
+import { useOpenMessage } from "../thread/from-message";
 import { DecisionsSection } from "./section";
 
 interface SlotSection {
@@ -22,6 +23,7 @@ export function SectionSlot({
   children: ReactNode;
   section: SlotSection;
 }): ReactNode {
+  const openMessage = useOpenMessage();
   if (section.key !== "decisions" || ticket.layout !== "page") return <>{children}</>;
   return (
     <DecisionsSection
@@ -29,6 +31,7 @@ export function SectionSlot({
       myName={ticket.me}
       label={section.label}
       intro={section.body?.text?.trim() ? section.body.text : undefined}
+      onSource={openMessage}
     />
   );
 }
