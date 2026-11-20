@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:29ee80d1d15d09d3
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:fb9fe96a0ab0eb83
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -319,6 +319,7 @@ export type InvitationAcceptInput = { name?: string | null; password?: string | 
 export type TicketCompleteInput = { todo_checked: string[]; todo_version: number; conditions_confirmed: boolean };
 export type InvitationResendInput = Record<string, never>;
 export type CredentialCreateInput = { layer: string; kind: string; name: string; description?: string | null; login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations: string[]; expires_on?: string | null };
+export type CredentialResolveInput = { job_id: string; credential_id: string; destination: string; executor_key: string };
 export type CredentialLoginCheckInput = Record<string, never>;
 export type CredentialLoginAnswerInput = { request_ref: string; code?: string; approved?: boolean };
 export type CredentialCheckReportInput = { job_id: string; state: string; detail?: string; request_ref?: string; ask_kind?: string; text?: string };
@@ -380,7 +381,7 @@ export type ApprovalDecided = { id?: string; decision?: string | null; decided_a
 export type BridgeFinish = { ok?: boolean; outcome?: string };
 export type BridgeToolResult = { result?: Record<string, unknown> | null };
 export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; checks?: Record<string, unknown> };
-export type ResolvedCredential = { ref?: string; ciphertext_for_executor?: string; destinations?: string[]; expires_at?: string | null };
+export type ResolvedCredential = { credential_id?: string; kind?: string; name?: string; destinations?: string[]; two_factor?: string; expires_at?: string | null; server_key?: string; iv?: string; tag?: string; ciphertext_for_executor?: string };
 export type WorkTypeUploadCheck = { package?: Record<string, unknown>; checks?: string[]; passed?: boolean; test_scenarios?: number; changelog?: string | null };
 export type PlanProposalImpact = { tenants?: number; monthly_revenue_diff?: number; existing_from?: string; new_from?: string | null; by_workspace?: string[] };
 export type RuleCheck = { conflicts?: string[]; similar?: string[]; needs_approval_from?: string; warnings?: string[] };

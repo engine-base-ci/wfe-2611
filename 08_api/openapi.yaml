@@ -9826,6 +9826,29 @@ components:
       - name
       - destinations
       x-required-by: hooks
+    CredentialResolveInput:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        credential_id:
+          type: string
+          format: uuid
+        destination:
+          type: string
+          maxLength: 2048
+        executor_key:
+          type: string
+          maxLength: 200
+      additionalProperties: false
+      x-operation: resolveCredential
+      required:
+      - job_id
+      - credential_id
+      - destination
+      - executor_key
+      x-required-by: hooks
     CredentialLoginCheckInput:
       type: object
       properties: {}
@@ -10737,17 +10760,30 @@ components:
     ResolvedCredential:
       type: object
       properties:
-        ref:
+        credential_id:
           type: string
-        ciphertext_for_executor:
+          format: uuid
+        kind:
+          type: string
+        name:
           type: string
         destinations:
           type: array
           items:
             type: object
+        two_factor:
+          type: string
         expires_at:
           type: string
           nullable: true
+        server_key:
+          type: string
+        iv:
+          type: string
+        tag:
+          type: string
+        ciphertext_for_executor:
+          type: string
       x-operation: resolveCredential
     WorkTypeUploadCheck:
       type: object
@@ -15374,7 +15410,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialResolveInput'
       responses:
         '201':
           description: 成功
@@ -15394,7 +15430,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN
+          description: E-CRED-010／E-CRED-011／E-CRED-015
           content:
             application/json:
               schema:
@@ -15406,7 +15442,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：名前に直せない入れる場所・253 文字を超える名前（入口が字をそろえる前の字で new URL の hostname を取り出す）・X25519 の公開の鍵として読めない executor_key（base64 で 44 バイトの SPKI でない））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 名前に直せない入れる場所・253 文字を超える名前（入口が字をそろえる前の字で new URL の hostname を取り出す）
+          - X25519 の公開の鍵として読めない executor_key（base64 で 44 バイトの SPKI でない）
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: E-SEC-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-SEC-003／E-PAGE-003
           content:
             application/json:
               schema:
@@ -15419,12 +15476,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

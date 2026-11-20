@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。204 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。205 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3579,6 +3579,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-015": {
+    "id": "E-CRED-015",
+    "cls": "gate",
+    "message": "使える場所の外には入れません。必要なら、預けたログイン情報の使える場所に足してください",
+    "action": "預けたログイン情報の使える場所に足す（持ち主に知らせる）",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CRED-015",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
     ],
     "where": {
       "screen": "credentials"

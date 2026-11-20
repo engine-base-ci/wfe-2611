@@ -123,5 +123,6 @@ export const MIGRATIONS = [
   "20261119120100_device_browser.sql",
   "20261119120400_credentials_layer.sql",
   "20261119120600_credential_login_check.sql",
+  "20261119120700_credential_resolve.sql",
   "20261119120800_credential_service_tenant.sql",
 ] as const;

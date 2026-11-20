@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:29ee80d1d15d09d3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fb9fe96a0ab0eb83
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -41,7 +41,7 @@ export interface Ops {
   verifySignInCode: { params: never; query: never; body: T.SignInCodeInput; data: T.SignInCodeResult };
   claimPairingCode: { params: never; query: never; body: T.BridgeClaimInput; data: T.BridgeClaim };
   reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialCheckReportInput; data: T.CredentialCheckReport };
-  resolveCredential: { params: never; query: never; body: T.CredentialsInput; data: T.ResolvedCredential };
+  resolveCredential: { params: never; query: never; body: T.CredentialResolveInput; data: T.ResolvedCredential };
   listMyDevices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.BridgeDevice[] };
   updateMyDevice: { params: { id: string }; query: never; body: T.DeviceBrowserInput; data: T.DeviceBrowser };
   revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.Sessions };
