@@ -78,13 +78,13 @@ export function DetailScope({ children }: Wrap): ReactNode {
   return <>{children}</>;
 }
 
-/** 右のパネルの「担当」の「担当者」の値（children＝今の顔と名前）。入口が pass・distribute のときだけ区画へ */
+/** 右のパネルの「担当」の「担当者」の値（children＝今の顔と名前）。入口の有る無しにかかわらず区画へ渡す（入口が無い人は読むだけの欄） */
 export function AssigneeSlot({ ticket, children }: Wrap): ReactNode {
   const meId = useMeId();
   const { handover, kinds } = useMemo(() => handoverOf(ticket.detail), [ticket.detail]);
   const assignee = assigneeIdOf(ticket.detail);
   const entry = entryOf(kinds, assignee !== null && assignee === meId);
-  if (entry !== "pass" && entry !== "distribute") return <>{children}</>;
+  // 入口が無い人（閲覧のみ・取引先など）にも、担当者がいれば読むだけの欄を描かせる（担当者がいなければ AssigneeAction が今の表示を返す）
   return (
     <AssigneeAction
       ticket={ticket}
