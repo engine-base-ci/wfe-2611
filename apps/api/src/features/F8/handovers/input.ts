@@ -67,7 +67,7 @@ export function parseCreate(input: Row, now: number = Date.now()): HookReply | C
   if (due !== null) {
     if (!ISO_WITH_ZONE.test(due) || Number.isNaN(Date.parse(due)))
       return invalid("reply_due", "時差つきの日時（ISO 8601）");
-    if (Date.parse(due) <= now) return fromCatalog("E-HND-008", 422, { field: "reply_due" });
+    if (Date.parse(due) <= now) return fromCatalog("E-HND-008", 409); // 時刻で決まる断り（今より後でない）＝今の状態ではできない
   }
   const sw = parseSwitch(input["switch"]);
   if (sw === null) return switchError();

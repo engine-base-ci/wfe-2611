@@ -347,17 +347,12 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(await handoverCount(w)).toBe(0);
   });
 
-  it("K401-API-014 返事の期限が今より前は 422・E-HND-008", async () => {
+  it("K401-API-014 返事の期限が今より前は 409・E-HND-008（時刻で決まる断り・欄なし）", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     for (const due of [future(-1), future(-60 * 24)]) {
-      const j = await refused(
-        await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: due })),
-        422,
-        "E-HND-008",
-        "reply_due",
-      );
+      const j = await refused(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: due })), 409, "E-HND-008");
       expect(j["message"]).toBe("返事の期限は今より後にしてください");
     }
     expect(await handoverCount(w)).toBe(0);
@@ -516,12 +511,12 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 
-  it("K401-API-024 上へ上げるの渡し（kind escalate）に答えると 422・E-HND-001。行は待っているまま", async () => {
+  it("K401-API-024 上へ上げるの渡し（kind escalate）に答えると 409・E-HND-001。行は待っているまま", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     const hid = await h.waiting(w, { ticketId: t.id, kind: "escalate", to: w.mgr });
-    await refused(await h.answer(w.mgr, hid, { decision: "accept" }), 422, "E-HND-001");
+    await refused(await h.answer(w.mgr, hid, { decision: "accept" }), 409, "E-HND-001");
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 });

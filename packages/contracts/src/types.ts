@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a0d41d4efac3e1b6
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:af2c9458e0189b08
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -322,7 +322,7 @@ export type CredentialCreateInput = { layer: string; kind: string; name: string;
 export type CredentialUpdateInput = { login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations?: string[]; expires_on?: string | null; description?: string | null; reason?: string };
 export type DeviceBrowserInput = { browser: string };
 export type BridgeBrowserInput = { browser: string };
-export type TicketHandoverCreateInput = { kind: string; to_member_id?: string | null; to_scope_id?: string | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown> | null; notify_managers?: boolean | null; replaces?: string | null };
+export type TicketHandoverCreateInput = { kind: string; to_member_id?: string | null; to_scope_id?: string | null; reason: string; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown> | null; notify_managers?: boolean | null; replaces?: string | null };
 export type TicketHandoverAnswerInput = { decision: string; decline_reason?: string | null; switch?: Record<string, unknown> | null };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };

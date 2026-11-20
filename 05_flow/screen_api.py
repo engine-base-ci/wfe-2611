@@ -944,12 +944,14 @@ VALUE_RANGES = {
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
-        "todo_checked": {"items": {"type": "integer", "minimum": 0}},
-        "todo_version": {"minimum": 0},
+        "todo_checked": {"items": {"type": "integer", "minimum": 0, "maximum": 2147483647}},   # 口は int4 の範囲の外を 422（complete.ts の INT_MAX）
+        "todo_version": {"minimum": 0, "maximum": 2147483647},
         "conditions_confirmed": {"enum": [True]},
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
+# 欄をまたぐ形の決まり（口が 422 で断る欄の組み合わせ）。その口の入力の形の allOf に JSON Schema のまま書く（作り手 build_api.py の INPUT_RULES・K-401）
+INPUT_RULES: dict[str, list] = {}
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
