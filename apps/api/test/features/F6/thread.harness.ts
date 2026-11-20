@@ -81,7 +81,14 @@ export interface Item {
   actor: Who | null;
   message: MessageView | null;
   changes: { field: string; from: string | null; to: string | null; note?: string | null }[] | null;
-  run: { id: string; summary: string; started_at: string | null; finished_at: string | null; minutes: number | null; result: string } | null;
+  run: {
+    id: string;
+    summary: string;
+    started_at: string | null;
+    finished_at: string | null;
+    minutes: number | null;
+    result: string;
+  } | null;
   deleted: { by: Who; author: Who; by_manager: boolean } | null;
 }
 /** 答えの 1 件の鍵（K-383・K-385・K-386 の答えは全部この形） */
@@ -117,13 +124,29 @@ export interface ThreadKit {
   stranger: Person;
   outsider: Person;
   /** 契約の口を叩く（path は /api/v1 から） */
-  req: (p: Person | null, method: string, path: string, body?: unknown, headers?: Record<string, string>) => Promise<Response>;
+  req: (
+    p: Person | null,
+    method: string,
+    path: string,
+    body?: unknown,
+    headers?: Record<string, string>,
+  ) => Promise<Response>;
   json: (r: Response) => Promise<J>;
   one: <R = Record<string, unknown>>(sql: string, p?: unknown[]) => Promise<R>;
   num: (sql: string, p?: unknown[]) => Promise<number>;
   /** 新しい人（試験どうしで人を使い回さない） */
-  person: (name: string, o?: { scope?: string; ability?: "edit" | "view" | null; company?: Company }) => Promise<Person>;
-  ticket: (o?: { scope?: string; tenant?: string; assignee?: Person; creator?: Person; stage?: string; title?: string }) => Promise<Ticket>;
+  person: (
+    name: string,
+    o?: { scope?: string; ability?: "edit" | "view" | null; company?: Company },
+  ) => Promise<Person>;
+  ticket: (o?: {
+    scope?: string;
+    tenant?: string;
+    assignee?: Person;
+    creator?: Person;
+    stage?: string;
+    title?: string;
+  }) => Promise<Ticket>;
   /** やり取りの 1 行を DB に直に入れる（口を使わない・行の守りの外）。at は今から何分前か */
   post: (
     t: Ticket,
@@ -220,7 +243,15 @@ export function setupThread(hooks: readonly string[]): ThreadKit {
     const t = await k.one<{ id: string; number: string }>(
       `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, created_by, due_on)
        values ($1, $2, '', $3, $4, $5, $6, $7, (now() + interval '3 days')::date) returning id, number`,
-      [tenant, scope, kind.id, stage.id, o.title ?? `請求書を送る ${randomUUID().slice(0, 8)}`, (o.assignee ?? k.boss).id, (o.creator ?? k.writer).id],
+      [
+        tenant,
+        scope,
+        kind.id,
+        stage.id,
+        o.title ?? `請求書を送る ${randomUUID().slice(0, 8)}`,
+        (o.assignee ?? k.boss).id,
+        (o.creator ?? k.writer).id,
+      ],
     );
     return { ...t, tenant, scope };
   };
@@ -266,7 +297,8 @@ export function setupThread(hooks: readonly string[]): ThreadKit {
       await k.one<{ def: string }>("select pg_get_functiondef('app.ticket_visible(uuid)'::regprocedure) as def")
     ).def;
     // 0102 の本体を写し、題名の条件だけを足す（ほかの試験のチケットには効かない）
-    await k.f.admin.query(`create or replace function app.ticket_visible(tid uuid) returns boolean language plpgsql stable security definer set search_path = public, app as $$
+    await k.f.admin
+      .query(`create or replace function app.ticket_visible(tid uuid) returns boolean language plpgsql stable security definer set search_path = public, app as $$
     begin
       if exists (select 1 from tickets x where x.id = tid and x.title = '${title}') then
         raise exception 'K38x の試験で守りを壊した';

@@ -26,7 +26,8 @@ const h = setupThread(["ticket-timeline"]);
 const tl = (p: Person | null, t: Ticket, q = "") => h.req(p, "GET", `/tickets/${t.id}/timeline${q}`);
 const items = async (r: Response) => ((await h.json(r)).data ?? []) as Item[];
 const meta = async (r: Response) => (await h.json(r)).meta as Record<string, unknown>;
-const pick = async (p: Person, t: Ticket, id: string) => (await items(await tl(p, t, "?limit=100"))).find((x) => x.id === id)!;
+const pick = async (p: Person, t: Ticket, id: string) =>
+  (await items(await tl(p, t, "?limit=100"))).find((x) => x.id === id)!;
 const seen = (t: Ticket, p: Person, minutesAgo: number) =>
   h.f.admin.query(
     "insert into app.ticket_thread_seen (tenant_id, ticket_id, member_id, seen_at) values ($1, $2, $3, now() - make_interval(mins => $4))",
@@ -47,7 +48,11 @@ describe("K-383 やり取りを読む：並び・形・続き", () => {
     const other = await h.ticket();
     await h.post(other, h.writer, { body: "別のチケットの書き込み", at: 50 });
     const p1 = await h.post(t, h.writer, { body: "見積もりを確認してください", at: 40 });
-    const c1 = await h.post(t, h.boss, { kind: "change", at: 30, changes: [{ field: "stage", from: "未着手", to: "作業中" }] });
+    const c1 = await h.post(t, h.boss, {
+      kind: "change",
+      at: 30,
+      changes: [{ field: "stage", from: "未着手", to: "作業中" }],
+    });
     const s1 = await h.post(t, h.boss, { kind: "system", body: "高本がAIに任せました", at: 20 });
     const r1 = await h.run(t, h.boss, { at: 15 });
     const p2 = await h.post(t, h.boss, { body: "確認しました", at: 10 });
@@ -187,24 +192,47 @@ describe("K-383 絞り込み・新しい・数・候補", () => {
     const left = await h.person("抜けた人");
     await h.f.admin.query("update members set deleted_at = now() where id = $1", [left.id]);
     const stopped = await h.person("止められた人");
-    await h.f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [stopped.id, h.boss.id]);
+    await h.f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      stopped.id,
+      h.boss.id,
+    ]);
     const people = (await meta(await tl(h.writer, t)))["people"] as (Record<string, unknown> & { member_id: string })[];
     const ids = people.map((p) => p.member_id);
     for (const p of [h.boss, h.writer, h.viewer, h.manager, approver]) expect(ids, p.id).toContain(p.id);
     for (const p of [h.stranger, h.outsider, left, stopped]) expect(ids, p.id).not.toContain(p.id);
     expect(new Set(ids).size).toBe(ids.length);
     const boss = people.find((p) => p.member_id === h.boss.id)!;
-    expect(Object.keys(boss).sort()).toEqual(["call_name", "display_name", "is_approver", "is_assignee", "label", "member_id"]);
+    expect(Object.keys(boss).sort()).toEqual([
+      "call_name",
+      "display_name",
+      "is_approver",
+      "is_assignee",
+      "label",
+      "member_id",
+    ]);
     expect(boss).toMatchObject({ display_name: "高本", is_assignee: true, is_approver: false, label: "担当者" });
-    expect(people.find((p) => p.member_id === approver.id)).toMatchObject({ is_assignee: false, is_approver: true, label: "承認する人" });
-    expect(people.find((p) => p.member_id === h.viewer.id)).toMatchObject({ is_assignee: false, is_approver: false, label: "開発" });
+    expect(people.find((p) => p.member_id === approver.id)).toMatchObject({
+      is_assignee: false,
+      is_approver: true,
+      label: "承認する人",
+    });
+    expect(people.find((p) => p.member_id === h.viewer.id)).toMatchObject({
+      is_assignee: false,
+      is_approver: false,
+      label: "開発",
+    });
   });
 });
 
 describe("K-383 1 件の中身（消した跡・直した印・引用・☆・名前・できること・決定）", () => {
   it("K383-API-009 消した書き込みは kind deleted の跡で message は null（本文・@・引用・☆ を返さない）。本人が消せば by_manager false、マネージャーが人の物を消せば true", async () => {
     const t = await h.ticket();
-    const mine = await h.post(t, h.writer, { body: "本人が消した秘密の文", mentions: [h.boss], reactions: { star: [h.boss.id] }, at: 20 });
+    const mine = await h.post(t, h.writer, {
+      body: "本人が消した秘密の文",
+      mentions: [h.boss],
+      reactions: { star: [h.boss.id] },
+      at: 20,
+    });
     const theirs = await h.post(t, h.writer, { body: "マネージャーが消した文", at: 10 });
     await del(mine, h.writer);
     await del(theirs, h.manager);
@@ -224,10 +252,10 @@ describe("K-383 1 件の中身（消した跡・直した印・引用・☆・�
     const t = await h.ticket();
     const src = await h.post(t, h.boss, { body: "元の書き込み\n2 行目\n3 行目", at: 30 });
     const q = await h.post(t, h.writer, { body: "返事", quoteOf: src, at: 20 });
-    await h.f.admin.query("update ticket_messages set quote_text = $2, edited_at = now() - interval '5 minutes' where id = $1", [
-      q,
-      "元の書き込み\n2 行目",
-    ]);
+    await h.f.admin.query(
+      "update ticket_messages set quote_text = $2, edited_at = now() - interval '5 minutes' where id = $1",
+      [q, "元の書き込み\n2 行目"],
+    );
     await del(src, h.boss);
     const d = await pick(h.writer, t, q);
     expect(d.message!.quote).toEqual({ id: src, excerpt: "元の書き込み\n2 行目" });
@@ -386,7 +414,10 @@ describe("K-383 守り・入力・失敗", () => {
     expect(await h.num("select count(*) as n from app.ticket_thread_seen where ticket_id = $1", [t.id])).toBe(0);
     await seen(t, h.boss, 60);
     const at = () =>
-      h.one<{ s: Date }>("select seen_at as s from app.ticket_thread_seen where ticket_id = $1 and member_id = $2", [t.id, h.boss.id]);
+      h.one<{ s: Date }>("select seen_at as s from app.ticket_thread_seen where ticket_id = $1 and member_id = $2", [
+        t.id,
+        h.boss.id,
+      ]);
     const before = (await at()).s.getTime();
     await tl(h.boss, t);
     expect((await at()).s.getTime()).toBe(before);
