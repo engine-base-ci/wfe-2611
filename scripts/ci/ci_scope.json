@@ -1062,6 +1062,16 @@
     "apps/api/test/generated/patch_ticket_handovers_id.test.ts",
     "apps/api/test/generated/get_handover_rules.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F8/handovers/create/pass.ts",
+    "apps/api/src/features/F8/handovers/notify.ts",
+    "apps/api/src/features/F8/handovers/mail.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-pass.test.ts"
+   ]
   }
  ],
  "reads_ok": {
