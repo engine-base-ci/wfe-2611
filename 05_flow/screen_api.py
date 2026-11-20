@@ -1203,7 +1203,7 @@ PERMS = {
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ", False),
-    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
+    "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
     "listMyTicketDrafts": ("self", "自分の下書きだけ（いま入っているワークスペースの分）", False),

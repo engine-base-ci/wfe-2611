@@ -27,6 +27,15 @@ export const ROW_EXEMPT = {
     "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
 };
 
+/**
+ * 口ごとに入口で行を読まない口（理由が必須・K-489）。ROW_EXEMPT は道の頭（:id の前の段）で引く表で、同じ道の別の口には効かない。
+ * 道の頭では書き分けられない口だけをここに置く（除外の表を継ぎ足さない。apps/api/src/contract/authz.test.ts の EXEMPT_OPS と口の名前が 1 対 1）。
+ */
+export const OP_ROW_EXEMPT = {
+  restoreTicket:
+    "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる。戻せる人と見える・見えないは DB の関数 app.ticket_restore と口が持つ（K-489）",
+};
+
 const ME = "app.user_id()";
 const TICKET_PEOPLE = (t) => `(${t}.assignee_member_id = ${ME} or ${t}.created_by = ${ME} or app.manages_scope(${t}.scope_id))`;
 const VIA_TICKET = (col = "ticket_id") => `exists (select 1 from tickets t where t.id = ${col} and ${TICKET_PEOPLE("t")})`;
@@ -125,6 +134,7 @@ function updatePredicate(root, table) {
 /** 口 1 本の行の確かめ。null＝行を読まない（:id が無い・言葉が行に結ばない）。{error} は契約の生成で赤 */
 export function rowOf(root, e, word) {
   if (!ROW_WORDS.includes(word)) return null;
+  if (OP_ROW_EXEMPT[e.operationId]) return null;
   const m = /^(.*?)\/:id(\/|$)/.exec(e.path);
   if (!m) return null; // 一覧・作る：行の守り（RLS）が絞る。作る先の確かめは RLS の insert
   const base = m[1];

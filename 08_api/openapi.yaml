@@ -9988,6 +9988,11 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketRestoreInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: restoreTicket
     ScopeOverview:
       type: object
       properties:
@@ -11766,6 +11771,15 @@ components:
         restorable_until:
           type: string
       x-operation: deleteTicket
+    TicketRestored:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        restored_count:
+          type: integer
+      x-operation: restoreTicket
     Error:
       type: object
       properties:
@@ -42780,7 +42794,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 消した本人と、そのグループのマネージャー・管理者（D-128.84）
+      x-permission-scope: 消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る
       x-step-up: false
       security:
       - session: []
@@ -42796,7 +42810,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketRestoreInput'
       responses:
         '201':
           description: 成功
@@ -42806,7 +42820,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketRestored'
                   meta:
                     type: object
         '401':
@@ -42816,7 +42830,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-040／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42828,13 +42842,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-DEL-041
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42847,12 +42867,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

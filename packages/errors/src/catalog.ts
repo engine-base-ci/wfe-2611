@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。215 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。219 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3885,6 +3885,74 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-DEL-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-040": {
+    "id": "E-DEL-040",
+    "cls": "permission",
+    "message": "消したチケットを戻せるのは、消した本人と、このグループのマネージャー・管理者です",
+    "action": "消した人かマネージャーに頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-040",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-041": {
+    "id": "E-DEL-041",
+    "cls": "conflict",
+    "message": "このチケットはもう戻っています",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-042": {
+    "id": "E-DEL-042",
+    "cls": "conflict",
+    "message": "消してから 30 日を過ぎているので、もう戻せません",
+    "action": "戻せないので、必要なら新しく作る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-043": {
+    "id": "E-DEL-043",
+    "cls": "conflict",
+    "message": "このチケットの親が消えています。先に親を戻してください",
+    "action": "親を先に戻す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-043",
     "must_not": false,
     "layers": [
       "UI",

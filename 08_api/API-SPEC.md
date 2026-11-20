@@ -339,7 +339,7 @@
 | EP-324 | POST | `/api/v1/tickets/:id/links` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-325 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-326 | GET | `/api/v1/tickets/:id/references` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-327 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-327 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-328 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
 | EP-329 | PATCH | `/api/v1/tickets/:id/sections/:key` | 更新（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-330 | GET | `/api/v1/tickets/:id/test-specs` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
