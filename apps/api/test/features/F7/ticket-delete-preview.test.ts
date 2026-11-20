@@ -197,11 +197,11 @@ describe("K-487 消す前の下見：子・孫の分と見えない子", () => {
     const p = await w.make(w.creator);
     await w.make(w.creator, { parent: p }); // 見える子
     const hidden = await w.make(w.creator, { parent: p });
-    await w.k.f.admin.query("update tickets set scope_id = $2, created_by = $3 where id = $1", [
-      hidden,
-      w.otherScope,
-      w.stranger.id,
-    ]);
+    // 担当者も付け替える（作る口は作った人を担当にするので、そのままだと作った人が担当者として見えてしまう）
+    await w.k.f.admin.query(
+      "update tickets set scope_id = $2, created_by = $3, assignee_member_id = $3 where id = $1",
+      [hidden, w.otherScope, w.stranger.id],
+    );
     const hiddenGrand = await w.make(w.stranger, { parent: hidden, scope: w.otherScope });
     await w.approval(hidden, w.stranger);
     await w.approval(hiddenGrand, w.stranger);
@@ -260,12 +260,20 @@ describe("K-487 消す前の下見：権限と見える範囲（P14）", () => {
 
   it("K487-API-010 消せない人：見るだけの人・担当者だけの人（作った人でも edit でもない）は 403・E-DEL-001。何も書かない", async () => {
     const t = await w.make(w.creator, { assignee: w.assignee });
-    for (const p of [w.viewer, w.assignee, w.manager, w.admin]) {
-      const r = await w.preview(p, t);
-      expect(r.status, p.id).toBe(403);
-      expect((await json(r)).code, p.id).toBe("E-DEL-001");
+    // 管理者は会員にした時に役割の束で tickets の edit（会社全体）を持つ。「edit の無い管理者」を作るため、その束の行だけを一時的に失効させる（終わりに必ず戻す）
+    const bundle = "grantee_member_id = $1 and target_kind_id = 'tickets' and bundle_role is not null";
+    await w.k.f.admin.query(`update permissions set revoked_at = now() where ${bundle}`, [w.admin.id]);
+    try {
+      for (const p of [w.viewer, w.assignee, w.manager, w.admin]) {
+        const r = await w.preview(p, t);
+        expect(r.status, p.id).toBe(403);
+        expect((await json(r)).code, p.id).toBe("E-DEL-001");
+      }
+    } finally {
+      await w.k.f.admin.query(`update permissions set revoked_at = null where ${bundle}`, [w.admin.id]);
     }
     expect((await w.row(t)).deleted_at).toBeNull();
+    expect((await w.preview(w.admin, t)).status).toBe(200); // 束の edit を持つ管理者は消せる側（edit を持つ人）
   });
 
   it("K487-API-011 見えない人・無い id・消した後：404（別の会社・見えないグループ・無い id・もう消えたチケット）", async () => {
