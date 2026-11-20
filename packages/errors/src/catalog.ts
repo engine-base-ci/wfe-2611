@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。199 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。202 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3618,6 +3618,62 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-VAL-042": {
+    "id": "E-VAL-042",
+    "cls": "validation",
+    "message": "決めたことを書いてください",
+    "action": "決めたことを書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-VAL-043": {
+    "id": "E-VAL-043",
+    "cls": "validation",
+    "message": "決めた人は、この会社のメンバーから選んでください",
+    "action": "決めた人を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-043",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-VAL-044": {
+    "id": "E-VAL-044",
+    "cls": "validation",
+    "message": "元の書き込みが見つかりません。やり取りを読み直してください",
+    "action": "やり取りを読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-044",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
     }
   }
 };

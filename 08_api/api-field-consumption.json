@@ -10920,6 +10920,42 @@
    "reason": null
   },
   {
+   "entity": "ticket_decisions",
+   "field": "decided_note",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_by",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancel_reason",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "ticket_messages",
    "field": "<common>",
    "consumed_by_screens": [],

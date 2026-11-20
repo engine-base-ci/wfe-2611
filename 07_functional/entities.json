@@ -11603,6 +11603,22 @@
     {
      "name": "promoted_to",
      "note": "このチケットだけ・取引先のルール"
+    },
+    {
+     "name": "decided_note",
+     "note": "決めた人のひとこと"
+    },
+    {
+     "name": "cancelled_at",
+     "note": null
+    },
+    {
+     "name": "cancelled_by",
+     "note": null
+    },
+    {
+     "name": "cancel_reason",
+     "note": "取り消しは印と理由を残し消さない・⑰"
     }
    ],
    "relations": [
@@ -11658,14 +11674,15 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.40・D-125.63）**",
+   "note": "**★新設（D-125.40・D-125.63）**。決めたことの 2000 字の決まりを外し、空白だけを断る決まりにした（D-130.1・K-390）",
    "status": "decided",
    "decided_at": "2026-11-20",
    "source": [
     "D-125",
     "D-125.40",
     "D-125.63",
-    "D-128"
+    "D-128",
+    "D-130.1"
    ]
   },
   {

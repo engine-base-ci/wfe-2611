@@ -124,4 +124,5 @@ export const MIGRATIONS = [
   "20261119120400_credentials_layer.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120130000_ticket_timeline.sql",
+  "20261120130700_ticket_decisions.sql",
 ] as const;
