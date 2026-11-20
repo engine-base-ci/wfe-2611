@@ -266,12 +266,26 @@ export async function mockApi(page: Page, items: Item[], o: Partial<Mock> = {}):
   return m;
 }
 
-/** 本物の人（会社名・名前はモックと同じ）。段は既定で通し終わり */
-export async function person(step = 6) {
+type Person = Awaited<ReturnType<typeof signupViaApi>>;
+async function signupPerson(step: number): Promise<Person> {
   const u = await signupViaApi(WS_NAME);
   await admin("update members set display_name = $2 where id = $1", [u.memberId, ME_NAME]);
   await setupStep(u.memberId, step);
   return u;
+}
+/** 段を通し終えた人（6）は 1 人を使い回す。登録の口は 1 分 10 回／IP で、node から呼ぶので IP の頭を付けられない。
+ *  試験ごとに登録すると 1 本のファイルで 11 人目から 429 になる。段を通し終えた人は、どの試験も DB を変えない
+ *  （預けたログイン情報の口は網の手前で差し替え・段を通す口は呼ばない）ので、使い回しても試験どうしが影響しない。
+ *  ほかの段の人は、段を通す口で DB の段が進むので毎回登録する（1 つの作業の中で失敗して作り直されたら、また 1 人だけ登録する） */
+let finished: Promise<Person> | null = null;
+/** 本物の人（会社名・名前はモックと同じ）。段は既定で通し終わり */
+export async function person(step = 6): Promise<Person> {
+  if (step !== 6) return signupPerson(step);
+  finished ??= signupPerson(6).catch((e: unknown) => {
+    finished = null; // 失敗は使い回さない（次の試験でもう一度登録する）
+    throw e;
+  });
+  return finished;
 }
 export async function open(page: Page, width = 1440, path = PATH) {
   await page.clock.setFixedTime(new Date(NOW));
