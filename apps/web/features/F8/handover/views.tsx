@@ -796,7 +796,12 @@ function BandOf({ kind, who, at, reason, ask, due, carry, acts }: Omit<HandoverB
       );
     case "offering":
       return (
-        <Band tone="wait" title={`${who}さんに、引き継ぎを申し出ています`} sub={at} acts={acts ?? [btn("取り消す")]}>
+        <Band
+          tone="wait"
+          title={`${who}さんに引き継ぎを申し出ています`}
+          sub={`担当者は返事が来るまで${who}さんのまま ・ ${at ?? ""}`}
+          acts={acts ?? [btn("取り消す")]}
+        >
           <BandLine>{`理由：${reason ?? ""}`}</BandLine>
         </Band>
       );
