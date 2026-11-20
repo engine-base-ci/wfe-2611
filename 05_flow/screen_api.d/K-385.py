@@ -10,7 +10,7 @@ REQUIRED_INPUTS = {"createTicketMessage": ["body"]}
 # 本文は空白だけでない（全角の空白・改行も。JS の \S は全角の空白も空白に数える）。形の決まりなので契約の VALUE_RANGES に書く（K-355 と同じ・代表の答え answer=431fc50df51b）
 VALUE_RANGES = {"createTicketMessage": {"body": {"pattern": "\\S"}}}
 
-UNEXPRESSIBLE_422: dict = {}   # 形の決まりは全部 REQUIRED_INPUTS・VALUE_RANGES で契約に書いた。DB の中身で決まる断りは 404（検査の例外は足さない）
+UNEXPRESSIBLE_422: dict = {}   # 形の決まりは REQUIRED_INPUTS・VALUE_RANGES（fuzz の入力を絞る）で契約に書いた。本文の空は口の前処理が E-VAL-027 で断る（実装の答えが正）。DB の中身で決まる断りは 404（検査の例外は足さない）
 
 RESPONSES = {
     "createTicketMessage": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
@@ -18,9 +18,9 @@ RESPONSES = {
 
 ERRORS_4XX = {
     "createTicketMessage": [
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-027"],
-         "trigger": "形の誤り：本文が無い・空・空白だけ（全角の空白・改行も・E-VAL-027）。ほかに知らない欄・形の違う値",
-         "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と欄ごとの理由（E-VAL-027 を含む）を返し、書き込みも受け箱の行も作らない"},
+        {"status": 422, "code": "E-VAL-027", "body": {"error": "validation", "code": "E-VAL-027", "details": []}, "errors": ["E-VAL-027"],
+         "trigger": "本文が無い・空・空白だけ（全角の空白・改行も・口の前処理が断る・欄 body の明細 1 件）",
+         "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない"},
         {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
          "trigger": "@ する人・知らせる人・引用元が選べない（そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み・消した書き込み。DB の中身で決まるので 422 にしない・欄の名前も出さない）",
          "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない"},

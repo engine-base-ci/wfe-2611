@@ -30,7 +30,7 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-013");
   });
   it("test_post_tickets_id_messages_rejected_422_2", () => {
-    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と欄ごとの理由（E-VAL-027 を含む）を返し、書き込みも受け箱の行も作らない
+    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-009");
   });

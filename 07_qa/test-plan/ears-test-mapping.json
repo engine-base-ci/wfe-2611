@@ -145959,7 +145959,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "422",
-   "ears_text": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と欄ごとの理由（E-VAL-027 を含む）を返し、書き込みも受け箱の行も作らない",
+   "ears_text": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない",
    "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
    "test_function": "test_post_tickets_id_messages_rejected_422_2",
    "test_level": "unit（検証・表記ゆらぎ）",
