@@ -10,9 +10,6 @@ UNEXPRESSIBLE_422 = {
     "createTicketMessage": [
         "本文が全角の空白・改行だけ（E-VAL-027）",
         "@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）",
-        "stage_id と stage_key の両方",
-        "stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）",
-        "段の欄が無いか stage_key todo・doing なのに保留の理由か再開の条件を付けた",
     ],
 }
 AGENT_ANSWERS = {}

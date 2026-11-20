@@ -19,11 +19,19 @@ UNEXPRESSIBLE_422 = {
     "createTicketMessage": [
         "本文が全角の空白・改行だけ（E-VAL-027）",
         "@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）",
-        # K-389：契約の形全体の決まり（INPUT_RULES・K-355）が本線に入ったら、下の 3 つは INPUT_RULES に移して消す（K-387 と同じ）
-        "stage_id と stage_key の両方",
-        "stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）",
-        "段の欄が無いか stage_key todo・doing なのに保留の理由か再開の条件を付けた",
     ],
+}
+
+# 形全体の決まり（欄をまたぐ決まり・K-355 の INPUT_RULES の書き方・代表の答え answer=f0f290e785a9：検査の例外は足さない・K-389・K-387 と同じ）
+#   段は stage_id か stage_key の片方だけ／stage_key hold は理由と条件が要る／理由と条件は stage_key hold か stage_id（保留かは DB で見る・409 E-CONF-036）のときだけ付けられる
+INPUT_RULES = {
+    "createTicketMessage": {"allOf": [
+        {"not": {"required": ["stage_id", "stage_key"]}},
+        {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["todo", "doing"]}}},
+                   {"required": ["hold_reason", "resume_condition"]}]},
+        {"anyOf": [{"required": ["stage_id"]}, {"required": ["stage_key"], "properties": {"stage_key": {"enum": ["hold"]}}},
+                   {"not": {"anyOf": [{"required": ["hold_reason"]}, {"required": ["resume_condition"]}]}}]},
+    ]},
 }
 
 RESPONSES = {
