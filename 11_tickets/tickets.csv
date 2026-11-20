@@ -2358,6 +2358,17 @@ K-475,検索条件を保存する・開く口（listSavedViews・createSavedView
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-476,検索条件を直す・消す口（updateSavedView・deleteSavedView）と、作った人・会社・見せる相手の書き換えを DB で止める引き金（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-26,F7・毎日見る・探す・片付ける,"保存した検索条件（K-475）を直す・消す口を作る。契約の口 `updateSavedView`（PATCH /api/v1/saved_views/:id）と `deleteSavedView`（DELETE /api/v1/saved_views/:id）は今 501。契約の権限の文は「作った本人」だが、決定 D-128.119 は「グループに見せた条件は、使うだけ・直す消すは作った人とそのグループのマネージャー」なので、文を決定に合わせて直す（契約の側が誤り）。
+
+- 直せる人・消せる人：作った人と、見せているグループのマネージャー（グループの全員向けの物だけ。自分だけの物は作った人だけ）。入口の行の確かめ（`scripts/ci/row_rules.mjs` の saved_views：作った人か `app.manages_scope(scope_id)`・前からある）と、行の守りの update（`has_permission(…, 'saved_views', scope_id, 'edit')`）の 2 層
+- 見せる相手（share・scope_id）を変えられるのは作った人だけ。マネージャーは名前・条件・列・詰め方だけ直せる（見せる相手を勝手に変えられない）
+- 消すのは「消した印」（`deleted_at`）を付けるだけ（行は残す・証跡を残す）。消した条件の名前は、同じ人がまた使える
+- DB の 2 層目：今の行の守りの update は、直す人が `member_id`（作った人）や `tenant_id` を書き換えられ（マネージャーが自分の物にできる）、作った人が見えないグループへ見せ直せる（insert にはある見えるグループの確かめが update に無い）。引き金 `app.saved_views_guard` で止める","- [ ] 下の表の 29 行（K476-API-001〜029）が緑：`apps/api/test/features/F7/saved-views-edit.test.ts`（土台 `saved-views.harness.ts`・K-475 が運ぶ）
+- [ ] 契約の口 `updateSavedView`・`deleteSavedView` が 501 でない。生成の試験 `patch_saved_views_id.test.ts`・`delete_saved_views_id.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-476.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts の回で、この葉の行 K144-API-876（updateSavedView の道の値 :id）と K144-API-866（deleteSavedView）が通る（葉のファイル `k144.d/K-476.ts`）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-601,段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-23,F7・文書,"段 8（K-67・F7 毎日見る・探す・片付ける）の決定 D-151.1〜20（範囲・知らせの読んだ・探す・保存した検索条件・期限・止まった一手・消す／戻す ほか）を、決定ログの新しい節 §151 として本線に入れる。
 
 段 8 のほかの葉は decisions: に D-151.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（PM の決め 2026-11-20・段 9 の K-425 と同じ。前は部品とモックを運ぶ K-460 が決定ログも運ぶ形で、依存の無い口の葉が先に始まると止まった）。段 8 のほかの葉（口・DB の葉と、K-460 の部品）はこの葉に依存する。","- [ ] 下の表の 4 行（K601-DC-001〜004）が緑：`scripts/ci/k601_decision_log_test.py`
