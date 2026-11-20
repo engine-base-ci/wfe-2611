@@ -18,7 +18,9 @@
 //     kind_id：login で totp → password_totp、ほかの login → basic、key → api_key
 //     確かめ（D-117）：login だけ、預けた本人の PC に 1 回ログインを試す仕事を積む（app.credential_login_check_enqueue）。
 //       PC が無い → login_check.state no_bridge・規約で禁止の宛先 → forbidden・積めた → pending。積めなくても 201（state は null のまま・ログに残す）
+import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
+import { NAME_PATTERN } from "../../../src/features/F3/credentials/input.js";
 import { RateLimited } from "@kaname/secrets";
 import { setupCredentials, type Person } from "./credentials.harness.js";
 // 作り物の秘密の値は _fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
@@ -198,17 +200,32 @@ describe("K-352 預ける口", () => {
     expect(ok.status, await ok.clone().text()).toBe(201);
   });
 
-  it("K352-API-006 名前：全角・小文字・前後の空白は直して大文字で保存。形違い（数字始まり・日本語・空・65 文字）は契約の pattern で 422・VALIDATION_ERROR（欄 name）で何も置かない", async () => {
+  it("K352-API-006 名前：全角・小文字・前後の空白は直して大文字で保存。形違い（数字始まり・日本語・空・65 文字・ß）は 422・E-CRED-001 で何も置かない。前後は全角の空白でもよい", async () => {
     await h.ready();
     const me = await fresh();
     const r = await post(me, keyBody({ name: " ｈａｃｃｈｕ_navi " }));
     expect(r.status, await r.clone().text()).toBe(201);
     expect(((await h.json(r)).data as Record<string, unknown>)["name"]).toBe("HACCHU_NAVI");
+    // 前後は全角の空白（U+3000）でも受ける（契約の pattern の前後の空白は trim が落とす字）
+    const wide = await post(me, keyBody({ name: "\u3000ｗｉｄｅ_ｎａｍｅ\u3000" }));
+    expect(wide.status, await wide.clone().text()).toBe(201);
+    expect(((await h.json(wide)).data as Record<string, unknown>)["name"]).toBe("WIDE_NAME");
     const puts = h.vault.puts.length;
-    for (const bad of ["1ABC", "発注ナビ", "", `A${"B".repeat(64)}`])
-      await expect422(await post(me, keyBody({ name: bad })), "VALIDATION_ERROR", "name");
+    // ß・ı・ſ は大文字にすると英字になるが、打ったとおりが契約の pattern に合わないので断る
+    for (const bad of ["1ABC", "発注ナビ", "", `A${"B".repeat(64)}`, "ßTEST", "ıAB", "ſAB"])
+      await expect422(await post(me, keyBody({ name: bad })), "E-CRED-001", "name");
     expect(h.vault.puts.length).toBe(puts);
-    expect(await rowsOf(me)).toHaveLength(1);
+    expect(await rowsOf(me)).toHaveLength(2);
+  });
+
+  it("K352-API-026 名前の pattern：口が打ったとおりに照らす pattern（input.ts の NAME_PATTERN）は、契約（08_api/openapi.yaml の CredentialCreateInput.name）の pattern と 1 字も違わない", () => {
+    const yaml = readFileSync(new URL("../../../../../08_api/openapi.yaml", import.meta.url), "utf8");
+    const block = yaml.slice(yaml.indexOf("\n    CredentialCreateInput:\n"));
+    const m = /\n {8}name:\n {10}type: string\n {10}pattern: (.*)\n/.exec(block);
+    expect(m, "契約に名前の pattern が無い").not.toBeNull();
+    const text = m![1]!;
+    const written = text.startsWith("'") ? text.slice(1, -1).replace(/''/g, "'") : text;
+    expect(written).toBe(NAME_PATTERN);
   });
 
   // 失効しただけ（消していない）の物は名前の重なりに数えない（代表の答え answer=449e72553c59）
