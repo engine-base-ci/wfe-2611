@@ -3806,7 +3806,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**すべての提案の入口**",
+   "note": "**すべての提案の入口**。足す（承認待ちになる）と承認する人の受け箱に知らせの行が出る（引き金 `approvals_notify_requested`・K-463）",
    "status": "decided",
    "decided_at": "2026-11-19",
    "source": [
