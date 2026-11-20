@@ -2213,3 +2213,14 @@ PM の決め（2026-11-19）：**画面の組に専用の段を 1 つ足す小�
 - [ ] 前からの自己試験（下の「前からの試験を替えた所」）が緑。替えたのは切る段が運ぶ 2 本だけ
 - [ ] 作り手を流し直した生成物（CI の定義・試験計画・範囲の地図）が最新（`python3 scripts/tickets/regen_all.py`）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-380,チケットの詳細と承認待ちに、段 7・段 9 が後から中身を足す差し込み口を 1 回で入れる（入れた時点では何も出さない・題名の下の帯の順を 1 か所で決める）と、詳細の頭の行の幅 767 以下を横に並べて 2 行までにする（K-66 の葉・段 7 と段 9 の共通の先頭）,タスク,K-66,未着手,実装,2026-11-25,F6・画面,"チケットの詳細（`/tickets/<id>`・一覧の右に開く詳細）と承認待ち（`/approvals`）は、これから段 7（F6 自分で進める・話す・決める）と段 9（F8 渡す・配る）が同時に中身を足す。2 つの段の葉が同じ前からのファイル（`ticket-detail.tsx`・`detail-panel.tsx`・`detail-head.tsx`・`queue-table.tsx`）を取り合わないように、**差し込み口だけを先に 1 回で入れる**（PM の決め・切り方.md 5 章の案 A）。
+
+- 差し込み口の先は流れごとのファイル `apps/web/features/F6/detail-slots.tsx`（段 7）と `apps/web/features/F8/handover/detail-slots.tsx`（段 9・段 9 の切る段の名前に合わせた）。**この葉ではどれも中身（children）をそのまま返すか、何も出さない（null）**。だから詳細と承認待ちの見た目と操作は今のまま
+- もう 1 つ、**先読みの差し込み口** `F6.usePrefetchDetail(id, enabled)` を詳細の本体（`ticket-detail.tsx` の DetailBody・`useRuns` の横）で呼ぶ。差し込み口の先（DetailScope・PanelTabsSlot など）は詳細の答えが届いた後に描かれるので、そこで段 7 の口（やり取りの最初の 20 件・K-392）を読み始めると直列の段が 2 になる（K392-UI-002 と前からの K235-UI-003「答えの後に出た口 0」が赤）。道の id で引ける口は、答えを待たずに詳細と同時に出す（K-235 と同じ）。**この葉の `usePrefetchDetail` は何もしない関数**（口を呼ばない・状態を持たない）。K-382 が `features/F6/prefetch.ts`（やり取りの `thread/prefetch.ts` と決定の一覧の `decisions/prefetch.ts` を両方呼ぶ・どちらも何もしない形）から書き出す形に直し、K-392 が thread/prefetch.ts、K-397 が decisions/prefetch.ts の中身（react-query の prefetchQuery）を作る
+- 題名の下の帯は 1 つだけ（D-128.178・D-129.10）。順は「承認・実行（今ある F5 の帯）→ 渡し（段 9）→ 保留（段 7）」（代表の答え ㉓・answer=56812da22008 の段 7 の分）。**この順を 1 か所（`features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`）で決める**。後ろの帯は、前に出ている帯があれば譲る（`bandYieldTo`）。保留の帯が譲っている間に段の札の横に「理由を見る」を出すのは段 7 の K-395 が `ticket.bands` を読んで決める
+- あわせて、幅 767 以下の詳細の頭の行（開始日・期限・段の札）が 2 列の格子で 3 段になっていたのを、横に並べて頭の行を 2 行までにする（代表の直し answer=fabd031f9b37 の 4・`.ticket-flow/side-notes/段7-詳細の頭.md`）。直すのは `ticket-detail.css` の 1 か所だけ。キャンバスの詳細の形の絵 7 枚も同じ形に作り直す（作り直さないと見た目の突き合わせ G70 の幅 375 の組が赤になる・D-146.1）","- [ ] 下の表の行（K380-SL-001〜004・K380-CS-001・K380-CV-001・K380-UI-001〜007）が緑：`apps/web/tests/k/k380-detail-slots.spec.ts`
+- [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の詳細の 8 組（ticket-detail・band-approval・band-running・band-failed・band-before・band-confirm-done・band-done・band-delegated）が幅 1440・375 で緑（頭の行の高さが変わるので、作り直した絵と同じ y になること）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 作り直した絵 7 枚を幅 375 で開き、札と期限の字がいちばん長い絵（「（1 日過ぎ）」の期限を持つ StBefore など）でも頭の行の 2 行目（開始日・期限・段の札）が 1 行に収まり、題名と帯の y が絵ごとにずれない（見た目の突き合わせの 375 の組が緑になることで見る。収まらない絵が出たら絵を手で直さず止めて報告）
+- [ ] 作り手で作り直した絵が切る段で確かめた差と同じ：`git diff --stat -- 04_design/` に出るのが changes: の 10 ファイルだけ（実施事項「キャンバスの絵」）
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
