@@ -257,7 +257,7 @@ test("K363-UI-006 取り直しが要る（パスワードの人）：403・STEP_
   await expect(checkDlg(page)).toBeVisible();
   await expect(checkDlg(page)).toContainText(REASON);
   await expect(checkDlg(page).locator(".k-login-code-box")).toHaveCount(0);
-  await checkDlg(page).getByLabel("パスワード").fill(PW);
+  await checkDlg(page).getByLabel("パスワード", { exact: true }).fill(PW);
   await checkDlg(page).getByRole("button", { name: "確かめる", exact: true }).click();
   await expect(page.getByRole("status").filter({ hasText: DONE })).toBeVisible();
   expect(m.stepUps).toEqual([{ password: PW }]);
@@ -273,7 +273,7 @@ test("K363-UI-007 取り直しが要る（2 段階の人）：小窓に 6 けた
   await startRemove(page);
   await pressRemove(page);
   await expect(checkDlg(page).locator(".k-login-code-box")).toHaveCount(6);
-  await checkDlg(page).getByLabel("パスワード").fill(PW);
+  await checkDlg(page).getByLabel("パスワード", { exact: true }).fill(PW);
   await checkDlg(page).locator(".k-login-code-box").first().click();
   await page.keyboard.type("123456");
   await checkDlg(page).getByRole("button", { name: "確かめる", exact: true }).click();
@@ -310,7 +310,7 @@ test("K363-UI-010 取り直しのパスワードが違う（stepUp 401・STEP_UP
   await open(page);
   await startRemove(page);
   await pressRemove(page);
-  await checkDlg(page).getByLabel("パスワード").fill(K363_WRONG_STEP_PW);
+  await checkDlg(page).getByLabel("パスワード", { exact: true }).fill(K363_WRONG_STEP_PW);
   await checkDlg(page).getByRole("button", { name: "確かめる", exact: true }).click();
   await expect(checkDlg(page)).toContainText(msg("E-AUTH-021"));
   await expect(checkDlg(page)).toBeVisible();
