@@ -264,10 +264,15 @@ describe("権限の試験：行に結ぶ言葉（K-15・ZT4）", () => {
   // 除外（scripts/ci/row_rules.mjs の ROW_EXEMPT）：パスキー（認証の側の表）と、つないだ PC（アカウントのもの・D-128.156。
   //   持ち主は口と DB の関数の 2 重で確かめる・D-128.166・K-364）
   const EXEMPT = ["/api/v1/me/passkeys", "/api/v1/bridge/devices/"];
-  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーとつないだ PC だけ）", () => {
-    expect(withId.filter((e) => !e.perm.row && !EXEMPT.some((x) => e.path.startsWith(x))).map((e) => e.path)).toEqual(
-      [],
-    );
+  // 口ごとの除外（scripts/ci/row_rules.mjs の OP_ROW_EXEMPT・K-489）：消したチケットを戻す口は、入口で行の守りの中に行を読むと消した行は見えず必ず 404 になる。
+  //   戻せる人（消した本人・グループのマネージャー・管理者）と見える・見えないは DB の関数 app.ticket_restore と口が持つ
+  const EXEMPT_OPS = ["restoreTicket"];
+  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキー・つないだ PC・消したチケットを戻す口だけ）", () => {
+    expect(
+      withId
+        .filter((e) => !e.perm.row && !EXEMPT.some((x) => e.path.startsWith(x)) && !EXEMPT_OPS.includes(e.operationId))
+        .map((e) => e.path),
+    ).toEqual([]);
   });
   const rows = withId.filter((e) => e.perm.row);
   it.each(rows.map((e) => [`${e.method} ${e.path}`, e] as const))(
