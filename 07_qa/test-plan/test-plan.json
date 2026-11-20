@@ -604,11 +604,11 @@
   "tickets": 218,
   "l1_rows": 5094,
   "ears_endpoints": 369,
-  "ears_tests": 3976,
+  "ears_tests": 3979,
   "entities": 142,
   "policies": 409,
   "access_cases": 1526,
-  "errors": 210,
+  "errors": 218,
   "journey_rows": 88,
   "critical_tasks": 88
  },

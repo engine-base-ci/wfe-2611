@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:72d35c7382534d6c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:94ac220fbf1672b6
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -277,8 +277,8 @@ export interface Ops {
   updateRule: { params: { id: string }; query: never; body: T.PoliciesInput; data: T.Policies };
   deleteRule: { params: { id: string }; query: never; body: never; data: T.Policies };
   checkRule: { params: never; query: never; body: T.PoliciesInput; data: T.RuleCheck };
-  listSavedViews: { params: never; query: { "share"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.SavedViews[] };
-  createSavedView: { params: never; query: never; body: T.SavedViewsInput; data: T.SavedViews };
+  listSavedViews: { params: never; query: { "share"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.SavedView[] };
+  createSavedView: { params: never; query: never; body: T.SavedViewInput; data: T.SavedView };
   updateSavedView: { params: { id: string }; query: never; body: T.SavedViewsInput; data: T.SavedViews };
   deleteSavedView: { params: { id: string }; query: never; body: never; data: T.SavedViews };
   listScopes: { params: never; query: { "layer_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Scopes[] };

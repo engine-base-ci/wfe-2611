@@ -9994,6 +9994,73 @@ components:
       required:
       - browser
       x-required-by: hooks
+    SavedViewInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+          pattern: ^\s*[^\s\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]*[^\s\u0000-\u001f\u007f-\u009f])?\s*$
+        share:
+          type: string
+          enum:
+          - self
+          - group
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+          maxProperties: 8
+          propertyNames:
+            pattern: ^[A-Za-z0-9_]{1,40}$
+          additionalProperties:
+            anyOf:
+            - type: string
+              maxLength: 500
+            - type: number
+            - type: boolean
+            - type: object
+              maxProperties: 32
+              propertyNames:
+                pattern: ^[A-Za-z0-9_]{1,40}$
+              additionalProperties:
+                anyOf:
+                - type: string
+                  maxLength: 500
+                - type: number
+                - type: boolean
+        columns:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 50
+        density:
+          type: string
+          enum:
+          - normal
+          - compact
+      additionalProperties: false
+      x-operation: createSavedView
+      required:
+      - name
+      x-required-by: hooks
+      anyOf:
+      - not:
+          required:
+          - share
+      - properties:
+          share:
+            enum:
+            - self
+      - required:
+        - scope_id
+        properties:
+          scope_id:
+            type: string
     ScopeOverview:
       type: object
       properties:
@@ -11781,6 +11848,42 @@ components:
         created_at:
           type: string
       x-operation: listNotifications
+    SavedView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        share:
+          type: string
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+        columns:
+          type: array
+          items:
+            type: string
+        density:
+          type: string
+        member_id:
+          type: string
+          format: uuid
+        member_name:
+          type: string
+        mine:
+          type: boolean
+        can_edit:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      x-operation: createSavedView
     Error:
       type: object
       properties:
@@ -37866,7 +37969,7 @@ paths:
   /api/v1/saved_views:
     get:
       operationId: listSavedViews
-      summary: 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）
+      summary: 取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）
       tags:
       - saved_views
       x-acts:
@@ -37893,6 +37996,9 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - self
+          - group
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -37906,26 +38012,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - columns
-          - created_at
-          - created_by
-          - deleted_at
-          - density
-          - filters
-          - id
-          - member_id
-          - name
-          - scope_id
-          - share
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -37937,7 +38023,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SavedViews'
+                      $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -37990,7 +38076,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: グループの全員に見せるのはそのグループの人
+      x-permission-scope: グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）
       x-step-up: false
       security:
       - session: []
@@ -37999,7 +38085,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SavedViewsInput'
+              $ref: '#/components/schemas/SavedViewInput'
       responses:
         '201':
           description: 成功
@@ -38009,7 +38095,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -38025,13 +38111,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-VWS-005／E-VWS-006
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VWS-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-VWS-004
           content:
             application/json:
               schema:

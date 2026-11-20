@@ -46834,7 +46834,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "description": "取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）",
    "implementation_path": "apps/api/src/routes/saved_views.ts::listSavedViews",
    "permission": {
     "who": "self",
@@ -46847,15 +46847,14 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "share",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: SavedViews[], meta?: { cursor, limit, total } }"
+    "body": "{ data: SavedViews[] }"
    },
    "id": "EP-275",
    "feature_id": "F-004"
@@ -46916,12 +46915,16 @@
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-VWS-005",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-VWS-005"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-VWS-005"
+     ],
+     "trigger": "同じ人の消していない保存した条件に、同じ名前（大文字小文字・全角半角の違いも同じ）がもうある（同時の 2 回目も）",
+     "ears_form": "UNWANTED: IF 同じ人の消していない条件に同じ名前があるなら、Kaname は 409 と E-VWS-005 を返し、条件も証跡も増やさない"
     },
     {
      "status": 422,
@@ -46930,8 +46933,52 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "知らない欄（member_id・tenant_id・created_by など・strict）・名前が無い・share と density が決めた言葉の外・scope_id が uuid でない",
+     "ears_form": "UNWANTED: IF 入力が契約の形に合わないなら、Kaname は 422 と欄ごとの理由を返し、条件も証跡も書かない"
+    },
+    {
+     "status": 404,
+     "code": "E-VWS-004",
+     "body": {
+      "error": "not_found",
+      "code": "E-VWS-004"
+     },
+     "errors": [
+      "E-VWS-004"
+     ],
+     "trigger": "見せるグループ（scope_id）が無い・別の会社のグループ・消したグループ・自分に見えないグループ（自分だけの保存に付けた scope_id も同じ。在るかを教えない）",
+     "ears_form": "UNWANTED: IF 見せるグループが無いか見えないなら、Kaname は 404 と E-VWS-004 を返し、保存した条件も証跡も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-VWS-006",
+     "body": {
+      "error": "conflict",
+      "code": "E-VWS-006"
+     },
+     "errors": [
+      "E-VWS-006"
+     ],
+     "trigger": "同じ人が作った消していない保存した条件が 50 件ある（51 件目・同時の 2 回目も）",
+     "ears_form": "UNWANTED: IF 同じ人の消していない条件が 50 件あるなら、Kaname は 409 と E-VWS-006 を返し、条件も証跡も増やさない"
+    },
+    {
+     "status": 422,
+     "code": "E-VWS-001",
+     "body": {
+      "error": "validation",
+      "code": "E-VWS-001"
+     },
+     "errors": [
+      "E-VWS-001",
+      "E-VWS-002",
+      "E-VWS-003",
+      "E-VWS-007",
+      "E-VWS-008"
+     ],
+     "trigger": "名前が空・空白だけ（E-VWS-001）／61 文字以上（E-VWS-002）／グループの全員に見せるのに見せるグループが無い・null（E-VWS-003）／条件・列の形か大きさが決まりの外（E-VWS-007）／名前の途中に制御文字（E-VWS-008）",
+     "ears_form": "UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、条件も証跡も書かない"
     },
     {
      "status": 413,
@@ -46988,8 +47035,11 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/saved_views が「タブで切り替える・絞り込みを保存する」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 同じ人の消していない条件に同じ名前があるなら、Kaname は 409 と E-VWS-005 を返し、条件も証跡も増やさない",
+    "UNWANTED: IF 入力が契約の形に合わないなら、Kaname は 422 と欄ごとの理由を返し、条件も証跡も書かない",
+    "UNWANTED: IF 見せるグループが無いか見えないなら、Kaname は 404 と E-VWS-004 を返し、保存した条件も証跡も書かない",
+    "UNWANTED: IF 同じ人の消していない条件が 50 件あるなら、Kaname は 409 と E-VWS-006 を返し、条件も証跡も増やさない",
+    "UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、条件も証跡も書かない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -47006,7 +47056,7 @@
    "implementation_path": "apps/api/src/routes/saved_views.ts::createSavedView",
    "permission": {
     "who": "self",
-    "scope": "グループの全員に見せるのはそのグループの人",
+    "scope": "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）",
     "step_up": false
    },
    "path_params": [],

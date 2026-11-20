@@ -1247,7 +1247,7 @@ PERMS = {
     "createTicketAttachment": ("write", "そのグループの人（大きさ・種類の上限）", False),
     "requestAcceptance": ("assignee", "担当者とマネージャー。送る先はその取引先の人だけ", False),
     "listSavedViews": ("self", "自分のものと、グループの全員に見せたもの", False),
-    "createSavedView": ("self", "グループの全員に見せるのはそのグループの人", False),
+    "createSavedView": ("self", "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）", False),
     "updateSavedView": ("self", "作った本人", False),
     "deleteSavedView": ("self", "作った本人", False),
     "listNotifications": ("self", "自分あてだけ", False),
