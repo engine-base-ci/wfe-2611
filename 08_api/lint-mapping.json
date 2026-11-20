@@ -3568,6 +3568,18 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handovers",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::listTicketHandovers",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A110",
+    "A51"
+   ]
+  },
+  {
    "method": "POST",
    "path": "/api/v1/tickets/:id/handovers",
    "implementation_path": "apps/api/src/routes/ticket_handovers.ts::createTicketHandover",

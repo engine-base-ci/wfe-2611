@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-20",
  "summary": {
   "total_screens": 37,
-  "total_apis": 370,
+  "total_apis": 371,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2677,6 +2677,16 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/handover-preview",
      "act": "A48"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A51"
     }
    ],
    "transitions": [],

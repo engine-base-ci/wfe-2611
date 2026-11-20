@@ -2986,7 +2986,9 @@
     "GET /api/clients",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
-    "GET /api/tickets/:id/handover-preview"
+    "GET /api/tickets/:id/handover-preview",
+    "GET /api/tickets/:id/handovers",
+    "GET /api/tickets/:id/handovers"
    ],
    "access_roles": [
     "R1",
@@ -11119,6 +11121,18 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets/:id/handover-preview"
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
     }
    ]
   },
