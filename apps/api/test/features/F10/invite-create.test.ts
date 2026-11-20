@@ -491,7 +491,10 @@ describe("K-419 メールで招く（createInvitations）", () => {
     await ready();
     const before = mails.length;
     const id = randomUUID().slice(0, 6);
-    const r = await invite(admin, base([`ki mura${id}@engine-base.example`, `kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`]));
+    const r = await invite(
+      admin,
+      base([`ki mura${id}@engine-base.example`, `kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`]),
+    );
     expect(r.status).toBe(422);
     const j = await json(r);
     expect(j["code"]).toBe("E-INV-009");
