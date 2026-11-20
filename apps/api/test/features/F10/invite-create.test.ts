@@ -579,7 +579,7 @@ describe("K-419 メールで招く（createInvitations）", () => {
     }
   });
 
-  it("K419-API-028 宛て 1 つの長さは打ったとおりの字で 320 字まで：321 字は 422・E-INV-009・招待 0・メール 0。320 字ちょうどは 201（PM の決め 2026-11-21 03:40）", async () => {
+  it("K419-API-028 宛て 1 つの長さは打ったとおりの字（コードポイント）で 320 字まで：321 字は 422・E-INV-009・招待 0・メール 0・details に字は載せず欄・順番・訳だけ。320 字ちょうど（サロゲート対の字を混ぜても）は 201（PM の決め 2026-11-21 03:40・03:55）", async () => {
     await ready();
     const before = mails.length;
     const tail = "@engine-base.example";
@@ -587,24 +587,37 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(ok).toHaveLength(INVITE_EMAIL_MAX_LENGTH);
     const over = `${"b".repeat(INVITE_EMAIL_MAX_LENGTH + 1 - tail.length)}${tail}`;
     expect(over).toHaveLength(INVITE_EMAIL_MAX_LENGTH + 1);
-    const r = await invite(admin, base([over]));
+    const r = await invite(admin, base([fresh("first"), over]));
     expect(r.status).toBe(422);
-    expect((await json(r))["code"]).toBe("E-INV-009");
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    // 長すぎる宛ては字を返さない（切ると黙って切ることになる・K144-SHAPE-027）：欄・順番・訳だけ
+    expect(j.details).toEqual([{ field: "emails", index: 1, code: "E-INV-009", message: msg("E-INV-009") }]);
+    expect(JSON.stringify(j)).not.toContain("bbbbbbbb");
     expect(await invRows(over)).toHaveLength(0);
     expect(mails.length).toBe(before);
     expect((await invite(admin, base([ok]))).status).toBe(201);
     expect(await invRows(ok)).toHaveLength(1);
+    // サロゲート対（1 字が UTF-16 で 2 つ）を混ぜた 320 字：数え方はコードポイント（契約の maxLength と同じ）なので通る
+    const smile = "\u{1F600}".repeat(10);
+    const pairs = `${smile}${"c".repeat(INVITE_EMAIL_MAX_LENGTH - 10 - tail.length - 8)}${randomUUID().slice(0, 8)}${tail}`;
+    expect(Array.from(pairs)).toHaveLength(INVITE_EMAIL_MAX_LENGTH);
+    expect(pairs.length).toBeGreaterThan(INVITE_EMAIL_MAX_LENGTH);
+    expect((await invite(admin, base([pairs]))).status).toBe(201);
+    expect(await invRows(pairs)).toHaveLength(1);
   });
 
-  it("K419-API-029 点を 16000 個並べた長い入力は、pattern を当てる前に長さで断る：すぐ（1 秒の内）422・E-INV-009・招待 0", async () => {
+  it("K419-API-029 pattern が二乗の時間になる長い入力（a@ + 「b.」の 64000 回 + @・pattern だけを当てると約 19 秒）は、pattern を当てる前に長さで断る：3 秒の内に 422・E-INV-009・招待 0", async () => {
     await ready();
-    const evil = `a@b${".".repeat(16000)}!`;
+    const evil = `a@${"b.".repeat(64000)}@`;
     const t0 = Date.now();
     const r = await invite(admin, base([evil]));
-    expect(Date.now() - t0).toBeLessThan(1000);
+    expect(Date.now() - t0).toBeLessThan(3000);
     expect(r.status).toBe(422);
-    expect((await json(r))["code"]).toBe("E-INV-009");
-    expect(await n("select count(*) as n from invitations where email like 'a@b.%'")).toBe(0);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    expect(j.details).toEqual([{ field: "emails", index: 0, code: "E-INV-009", message: msg("E-INV-009") }]);
+    expect(await n("select count(*) as n from invitations where email like 'a@b.b.%'")).toBe(0);
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
