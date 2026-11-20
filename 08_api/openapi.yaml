@@ -40393,6 +40393,19 @@ paths:
                       next_cursor:
                         type: string
                         nullable: true
+                      counts:
+                        type: object
+                        properties:
+                          overdue:
+                            type: integer
+                          today:
+                            type: integer
+                          assigned:
+                            type: integer
+                          ai:
+                            type: integer
+                          approve:
+                            type: integer
         '401':
           description: UNAUTHENTICATED
           content:

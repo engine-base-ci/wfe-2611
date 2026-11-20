@@ -7,10 +7,14 @@ QUERIES = {
                     "due", "delegated", "approving", "due_from", "due_to", "start_from", "start_to", "overdue", "fire", "parent", "fields"],
 }
 META = {
-    "listTickets": {"next_cursor": {"type": "string", "nullable": True}},   # 次の分の鍵（keyset・最後の分は null）。総数も数も返さない（D-144.3・K-92）
+    "listTickets": {
+        "next_cursor": {"type": "string", "nullable": True},   # 次の分の鍵（keyset・最後の分は null）。総数は返さない（D-144.3・K-92）
+        # 数の札（K-474・D-128.111）：自分に関わるもの（view=mine）の 1 回目（cursor なし）の答えだけに付く。完了は数えない・「渡されたもの」は数えない（D-148.13）
+        "counts": {"type": "object", "properties": {"overdue": {"type": "integer"}, "today": {"type": "integer"}, "assigned": {"type": "integer"}, "ai": {"type": "integer"}, "approve": {"type": "integer"}}},
+    },
 }
 LIST_DETAILS = {
-    "listTickets": {"limit_max": 100, "desc": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限切れの印）", "meta": "{ next_cursor }"},
+    "listTickets": {"limit_max": 100, "desc": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限切れの印）", "meta": "{ next_cursor, counts? }"},
 }
 # 問い合わせの値域を契約に書く（K-468 の仕組み・口が 422 にするのは契約に書ける形に合わない値だけ）
 #   view：mine か all。done：true か false。q：送られたままの文字で 100 文字まで（query.ts の Q_MAX）。

@@ -51289,7 +51289,7 @@
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Tickets[], meta: { next_cursor } }"
+    "body": "{ data: Tickets[], meta: { next_cursor, counts? } }"
    },
    "id": "EP-302",
    "feature_id": "F-004"
