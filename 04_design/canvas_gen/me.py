@@ -81,21 +81,22 @@ page("MeLogin2FA.dc.html", "自分の設定 2 段階認証を付けている", "
 # ---------- PC と使った量 ----------
 # MePC の持ち主は k257.py（今の画面に在る操作を描き足した・K-257）。ここで書き直すと描き足しが消えるので書かない
 # ---------- 預けたログイン情報 ----------
-def sec(name, desc, ws, used, last, st, dest=""):
+def sec(name, desc, used, st, dest=""):
+    # 使われ方は「これまでに N 回 ・ 最後 MM/DD」の 1 行だけ（代表の答え answer=e34268dbfbac・使うもの・この 1 か月の回数・チケット番号は出さない・K-356）
     d = ('<span style="display: block; font-size: 11px; color: #186F69; margin-top: 2px">使える場所：' + dest + '</span>') if dest else ""
     return ('<div style="display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-top: 1px solid #EDF0F4"><span style="color: #4A5563">' + SV % IC2["key"] + '</span>'
         + '<span style="flex: 1; min-width: 0"><code style="font-size: 13px; font-weight: 600">' + name + '</code><span style="display: block; font-size: 11px; color: ' + MUTED + '">' + desc + '</span>' + d + '</span>'
-        + '<span style="width: 150px; font-size: 12px">' + ws + '</span><span style="width: 170px; font-size: 12px; color: ' + MUTED + '">' + used + "<br>" + last + '</span><span style="width: 110px">' + st + '</span>'
+        + '<span style="width: 170px; font-size: 12px; color: ' + MUTED + '">' + used + '</span><span style="width: 110px">' + st + '</span>'
         + '<span style="display: flex; gap: 6px">' + btn("上書き", "", "MeSecretEdit.dc.html") + btn("消す", "d") + '</span></div>')
 body = (ttl("預けたログイン情報", "分身が使うパスワード・鍵・値。名前で呼び、値は誰にも見せない", btn("＋ 預ける", "p", "MeSecretAdd.dc.html"))
   + '<div style="display: flex; gap: 10px; align-items: center; background: #F7F8FA; border-radius: 10px; padding: 10px 14px; font-size: 12px">' + icon("鍵", NAVY, 24) + '<span style="flex: 1; line-height: 1.7">保存した値はあなたにも分身にも見えません。分身は名前で頼むだけで、値を入れるのは PC の実行器です。入れてよいのは「使える場所」だけ。できるのは <b style="font-weight: 600">上書き</b> と <b style="font-weight: 600">消す</b> だけ。</span></div>'
   + '<div style="display: flex; gap: 6px; align-items: center">' + chip("株式会社ENGINE BASE", True) + chip("高本 聖斗（個人）") + chip("京蟻システム") + '<span style="margin-left: auto; font-size: 12px; color: %s">ワークスペースごとに分かれる</span></div>' % MUTED
-  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; overflow: hidden"><div style="display: flex; gap: 12px; padding: 8px 16px; font-size: 11px; color: %s; background: #FAFBFC"><span style="width: 16px"></span><span style="flex: 1">名前</span><span style="width: 150px">使うもの</span><span style="width: 170px">使われ方</span><span style="width: 110px">状態</span><span style="width: 120px"></span></div>' % MUTED
-  + sec("GMAIL_WORK", "会社の Gmail（送信用）", "やり方「請求書を作って送る」ほか 2", "この 1 か月で 18 回", "最後 11/01 EG-128", OKP("使える"), "mail.google.com ・ smtp.gmail.com")
-  + sec("HACCHU_NAVI_LOGIN", "発注ナビのログイン", "やり方「求人の応募文」", "この 1 か月で 22 回", "最後 今日 EG-127", OKP("使える"), "hacchu-navi.example")
-  + sec("FREEE_API_KEY", "会計ソフトの API キー", "やり方「経費の申請」", "この 1 か月で 3 回", "最後 10/29", WARN("あと 9 日で期限"), "api.freee.co.jp")
-  + sec("SEIKO_PORTAL", "セイコー様の請求書システム（見るだけ）", "取引先：セイコー", "この 1 か月で 1 回", "最後 11/01 ・ 今回だけ許可", OKP("使える"), "portal.seiko.example（見るだけ）")
-  + sec("MAIL_SIGNATURE", "メールの署名（値）", "やり方「問い合わせに返す」ほか", "この 1 か月で 9 回", "最後 10/31", OKP("使える"))
+  + '<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radius: 10px; overflow: hidden"><div style="display: flex; gap: 12px; padding: 8px 16px; font-size: 11px; color: %s; background: #FAFBFC"><span style="width: 16px"></span><span style="flex: 1">名前</span><span style="width: 170px">使われ方</span><span style="width: 110px">状態</span><span style="width: 120px"></span></div>' % MUTED
+  + sec("GMAIL_WORK", "会社の Gmail（送信用）", "これまでに 18 回 ・ 最後 11/01", OKP("使える"), "mail.google.com ・ smtp.gmail.com")
+  + sec("HACCHU_NAVI_LOGIN", "発注ナビのログイン", "これまでに 22 回 ・ 最後 今日", OKP("使える"), "hacchu-navi.example")
+  + sec("FREEE_API_KEY", "会計ソフトの API キー", "これまでに 3 回 ・ 最後 10/29", WARN("あと 1 日で期限"), "api.freee.co.jp")
+  + sec("SEIKO_PORTAL", "セイコー様の請求書システム（見るだけ）", "これまでに 1 回 ・ 最後 11/01", OKP("使える"), "portal.seiko.example（見るだけ）")
+  + sec("MAIL_SIGNATURE", "メールの署名（値）", "これまでに 9 回 ・ 最後 10/31", OKP("使える"))
   + '</div><div style="font-size: 12px; color: %s">ワークスペース全体や層で共有するログイン情報は、ワークスペースの管理 › 設定 で管理者が預ける（自分のものと同じ名前なら、自分のものが先）</div>' % MUTED)
 SP = page("MeSecrets.dc.html", "自分の設定 預けたログイン情報", "預けたログイン情報", body)
 # ---------- 預ける（小窓） ----------
@@ -127,11 +128,13 @@ body = (ttl("知らせ", "ワークスペースごとに決める")
   + blk("静かにする時間", [("夜と休みの日", "このあいだはメールを送らない（受け箱にはたまる）", sel("平日 20:00〜8:00 ・ 土日")), ("いま止める", "", chip("1 時間") + chip("今日いっぱい") + chip("明日の朝まで")), ("止めていても知らせる", "急ぎのものだけ", check("承認を待っている（期限が今日）", True) + check("分身が止まった", True))]))
 page("MeNotify.dc.html", "自分の設定 知らせ", "知らせ", body)
 
-s2 = modal(SP, mhead("FREEE_API_KEY を上書きする", "MeSecrets.dc.html", icon("鍵", NAVY, 28), "前の値は消え、戻せない。見ることもできない")
-  + mbody('<div>' + lab("新しい値") + '<div style="display: flex; gap: 8px; align-items: center; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 8px; padding: 0 10px; height: 38px"><span style="flex: 1; letter-spacing: 3px">••••••••••••••••••••••</span><span style="font-size: 11px; color: %s">貼り付けた ・ 40 文字</span></div></div>' % MUTED
-  + '<div>' + lab("使える場所") + '<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 8px; display: flex; gap: 4px; flex-wrap: wrap; align-items: center">' + pill("api.freee.co.jp ×", "#E3F1EF", "#186F69") + '<span style="font-size: 12px; color: #4A5563">＋ 足す</span></div></div>'
+# 上書き（ログイン情報）は ID とパスワードを両方入れ直す（代表の答え answer=e34268dbfbac・モック cred-edit と同じ SEIKO_PORTAL・K-356）
+s2 = modal(SP, mhead("SEIKO_PORTAL を上書きする", "MeSecrets.dc.html", icon("鍵", NAVY, 28), "前の値は消え、戻せない。見ることもできない")
+  + mbody('<div>' + lab("新しいログイン ID", "（パスワードだけを替えるときも、ID とパスワードを両方入れる）") + field("") + '</div>'
+  + '<div>' + lab("新しいパスワード") + '<div style="display: flex; gap: 8px; align-items: center; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 8px; padding: 0 10px; height: 38px"><span style="flex: 1; letter-spacing: 3px">••••••••••••</span></div></div>'
+  + '<div>' + lab("使える場所") + '<div style="border: 1px solid #DDE2E9; border-radius: 8px; padding: 6px 8px; display: flex; gap: 4px; flex-wrap: wrap; align-items: center">' + pill("portal.seiko.example ×", "#E3F1EF", "#186F69") + '<span style="font-size: 12px; color: #4A5563">＋ 足す</span></div></div>'
   + '<div>' + lab("期限") + field("2027/11/10 ▾") + '</div>'
-  + '<div>' + lab("なぜ上書きするか", "（任意・記録に残る）") + field("会計ソフトで作り直したため", True) + '</div>'
+  + '<div>' + lab("なぜ上書きするか", "（任意・記録に残る）") + field("サービスの側でパスワードを変えたため", True) + '</div>'
   + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px">このあと実行される分から新しい値を使う。いま実行中のもの（なし）はそのまま</div>')
   + mfoot(btn("やめる", "", "MeSecrets.dc.html"), btn("本人確認して上書き", "p", "MeSecrets.dc.html")), 540, "上書きする")
 save("MeSecretEdit.dc.html", "ログイン情報を上書きする", s2)

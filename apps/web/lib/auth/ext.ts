@@ -77,15 +77,7 @@ export const verifySignup = async (token: string) => {
 };
 // ログイン（パスワード・確認のコード）は契約の口（signInWithPassword・verifySignInCode）を features/F1/login が直に呼ぶ。前の道すじの呼び手は K-316 で消した
 // 招待の下見と参加は契約の口を features/F2/invite が直に呼ぶ。前の道すじ（/invitations/*）の呼び手は K-335 で消した
-export type TwoFactorKind = "none" | "totp" | "sms" | "email" | "push";
-export const storeCredential = (b: {
-  service_name: string;
-  login: string;
-  password: string;
-  totp_secret?: string;
-  two_factor?: TwoFactorKind;
-}) => ext<{ id: string; vault_ref: string; service_name: string | null }>("/vault/credentials", b);
-
+// 預けたログイン情報の一覧は契約の口（listCredentials）を features/F3/credentials が直に呼ぶ。前の道すじ（/vault/credentials）の画面の呼び手は K-356 で消した
 /** 自分のこと（役割）。一覧では自分の行が返らないことがあるので専用の口から（D-086） */
 export const me = () =>
   ext<{ member_id: string; tenant_id: string; display_name: string | null; role_id: string | null }>(
@@ -530,41 +522,3 @@ export const goLiveSwitch = (accept_warnings: boolean) =>
   ext<{ ok: boolean; live_at: string }>("/onboard/golive", { accept_warnings });
 export const goLivePause = (employee_id: string, paused: boolean, reason = "") =>
   ext<{ ok: boolean }>("/onboard/golive/pause", { employee_id, paused, reason });
-export type Verdict = "api" | "allowed" | "unspecified" | "forbidden" | "bank";
-export interface MyCredential {
-  id: string;
-  service_name: string;
-  service_domain: string;
-  verdict: Verdict;
-  kind: string;
-  state: "stored" | "connected" | "revoked";
-  ref_tail: string;
-  /** 2 段階認証の種類（D-117.2） */
-  two_factor: TwoFactorKind;
-  /** 預けた直後の 1 回のログイン（D-117.1）。まだ無ければ null */
-  login_check: { state: LoginCheckState; detail: string | null; at: string | null } | null;
-  /** いま本人に頼んでいること（D-117.3）：コードを入れる／スマホで承認した。無ければ null */
-  asking: { request_id: string; kind: "code" | "approve"; text: string } | null;
-  created_at: string;
-}
-export type LoginCheckState =
-  | "pending"
-  | "running"
-  | "ok"
-  | "bad_password"
-  | "needs_2fa"
-  | "bad_code"
-  | "captcha"
-  | "forbidden"
-  | "unreachable"
-  | "no_form"
-  | "no_bridge"
-  | "stopped"
-  | "no_answer";
-/** コードを入れる／スマホで承認したと知らせる（D-117.3）。コードは Bridge が取った時点で消える */
-export const answerCredential = (id: string, b: { request_id: string; code?: string; approved?: boolean }) =>
-  ext<{ ok: boolean }>(`/vault/credentials/${id}/answer`, b);
-/** もう一度試す（D-117.5）：本人が押したときだけ */
-export const retryLoginCheck = (id: string) =>
-  ext<{ login_check_job_id: string }>(`/vault/credentials/${id}/login-check`, {});
-export const myCredentials = () => ext<MyCredential[]>("/vault/credentials", undefined, "GET");
