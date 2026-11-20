@@ -3,7 +3,8 @@
   {
    "paths": [
     "apps/api/src/features/F3/ai-browser/**",
-    "apps/api/src/hooks/bridge-browser.ts"
+    "apps/api/src/hooks/bridge-browser.ts",
+    "packages/db/migrations/20261120143736_bridge_set_browser_acl.sql"
    ],
    "tests": [
     "apps/api/test/features/F3/ai-browser-bridge.test.ts"
