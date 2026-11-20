@@ -10055,6 +10055,84 @@ components:
         properties:
           scope_id:
             type: string
+    SavedViewUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 60
+          pattern: ^\s*[^\s\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]*[^\s\u0000-\u001f\u007f-\u009f])?\s*$
+        share:
+          type: string
+          enum:
+          - self
+          - group
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+          maxProperties: 8
+          propertyNames:
+            pattern: ^[A-Za-z0-9_]{1,40}$
+          additionalProperties:
+            anyOf:
+            - type: string
+              maxLength: 500
+            - type: number
+            - type: boolean
+            - type: object
+              maxProperties: 32
+              propertyNames:
+                pattern: ^[A-Za-z0-9_]{1,40}$
+              additionalProperties:
+                anyOf:
+                - type: string
+                  maxLength: 500
+                - type: number
+                - type: boolean
+        columns:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 50
+        density:
+          type: string
+          enum:
+          - normal
+          - compact
+      additionalProperties: false
+      x-operation: updateSavedView
+      allOf:
+      - anyOf:
+        - required:
+          - name
+        - required:
+          - share
+        - required:
+          - scope_id
+        - required:
+          - filters
+        - required:
+          - columns
+        - required:
+          - density
+      - anyOf:
+        - not:
+            required:
+            - share
+        - properties:
+            share:
+              enum:
+              - self
+        - required:
+          - scope_id
+          properties:
+            scope_id:
+              type: string
     ScopeOverview:
       type: object
       properties:
@@ -11841,7 +11919,14 @@ components:
           type: string
         updated_at:
           type: string
-      x-operation: createSavedView
+      x-operation: updateSavedView
+    SavedViewDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteSavedView
     Error:
       type: object
       properties:
@@ -38131,7 +38216,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: 作った本人
+      x-permission-scope: 作った人と、グループの全員向けの物は見せているグループのマネージャー（名前・条件・列・詰め方だけ。見せる相手を変えられるのは作った人だけ）
       x-step-up: false
       security:
       - session: []
@@ -38147,7 +38232,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SavedViewsInput'
+              $ref: '#/components/schemas/SavedViewUpdateInput'
       responses:
         '200':
           description: 成功
@@ -38157,7 +38242,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -38167,19 +38252,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-VWS-020／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-VWS-004
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VWS-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-VWS-005／E-VWS-021
           content:
             application/json:
               schema:
@@ -38222,7 +38313,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: 作った本人
+      x-permission-scope: 作った人と、グループの全員向けの物は見せているグループのマネージャー
       x-step-up: false
       security:
       - session: []
@@ -38242,7 +38333,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedViewDeleted'
                   meta:
                     type: object
         '401':

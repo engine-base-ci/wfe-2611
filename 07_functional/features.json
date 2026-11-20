@@ -90,7 +90,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
@@ -809,7 +811,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
@@ -1794,7 +1798,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C1",
@@ -2278,7 +2284,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C1",
@@ -3575,7 +3583,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
@@ -5208,7 +5218,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
@@ -7439,7 +7451,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
@@ -7798,7 +7812,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2"
@@ -8086,7 +8102,9 @@
     "E-VWS-005",
     "E-VWS-006",
     "E-VWS-007",
-    "E-VWS-008"
+    "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021"
    ],
    "policies": [
     "C2",
