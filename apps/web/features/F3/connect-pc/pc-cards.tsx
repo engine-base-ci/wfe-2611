@@ -26,7 +26,7 @@ export function jstStamp(iso: string | null | undefined, time = false): string |
 /** 一覧の口は、つないだ日（connected_at）も返す（契約 BridgeDevice）。devices.ts の型に無いので、ここで足して読む */
 type Dev = Device & { connected_at?: string | null };
 
-const nameOf = (d: Dev) => d.device_label ?? "この PC";
+export const nameOf = (d: Dev) => d.device_label ?? "この PC";
 
 function PcIcon() {
   return (
@@ -48,7 +48,21 @@ function More({ name }: { name: string }) {
   );
 }
 
-function Row({ d, first, onWake }: { d: Dev; first: boolean; onWake: () => void }) {
+function Row({
+  d,
+  first,
+  onWake,
+  extra,
+  more,
+}: {
+  d: Dev;
+  first: boolean;
+  onWake: () => void;
+  /** 本文の最後に差す物（K-349・pc-row-extra.tsx） */
+  extra?: ReactNode;
+  /** 「…」の代わりに出す物（K-349・pc-row-more.tsx）。無ければ今の押せない「…」 */
+  more?: ReactNode;
+}) {
   const name = nameOf(d);
   const pill =
     d.state === "live" ? (
@@ -101,6 +115,7 @@ function Row({ d, first, onWake }: { d: Dev; first: boolean; onWake: () => void 
             Bridge を起こす
           </Button>
         </span>
+        {extra}
       </section>
     );
   } else {
@@ -118,14 +133,15 @@ function Row({ d, first, onWake }: { d: Dev; first: boolean; onWake: () => void 
             {d.version ? `・Bridge ${d.version}` : ""}
           </span>
         ) : null}
+        {extra}
       </span>
     );
   }
   return (
-    <li className="k-pc-row" data-state={d.state}>
+    <li className="k-pc-row" data-state={d.state} data-device={d.id}>
       <PcIcon />
       {main}
-      <More name={name} />
+      {more ?? <More name={name} />}
     </li>
   );
 }
@@ -135,8 +151,12 @@ export interface PcListProps {
   /** 「＋ PC をつなぐ」を押した（無ければボタンを出さない：この PC の Bridge のとき・キャンバス MePCInstalled） */
   onAdd?: (() => void) | undefined;
   onWake: () => void;
+  /** 行の本文の最後に差す物（K-349・pc-row-extra.tsx）。無ければ何も差さない */
+  renderExtra?: ((d: Device) => ReactNode) | undefined;
+  /** 行の「…」の代わりに出す物（K-349・pc-row-more.tsx）。無ければ今の押せない「…」 */
+  renderMore?: ((d: Device) => ReactNode) | undefined;
 }
-export function PcList({ devices, onAdd, onWake }: PcListProps) {
+export function PcList({ devices, onAdd, onWake, renderExtra, renderMore }: PcListProps) {
   return (
     <section className="k-pc-card" aria-labelledby="pc-list-title">
       <div className="k-pc-card-head">
@@ -150,7 +170,7 @@ export function PcList({ devices, onAdd, onWake }: PcListProps) {
       {devices.length ? (
         <ul className="k-pc-list">
           {devices.map((d, i) => (
-            <Row key={d.id} d={d} first={i === 0} onWake={onWake} />
+            <Row key={d.id} d={d} first={i === 0} onWake={onWake} extra={renderExtra?.(d)} more={renderMore?.(d)} />
           ))}
         </ul>
       ) : (
