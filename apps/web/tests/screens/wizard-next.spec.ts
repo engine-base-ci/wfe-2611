@@ -97,18 +97,15 @@ test("CHT-36-003 まだ自分のAI に答えていないと、話すの帯は押
   await expect(page.locator("[data-wiz-next-note]")).toHaveText("自分のAI に 1 つ答えると進めます");
 });
 
-test("CHT-36-007 CHT-36-004 ログイン情報を預けて段 4 を通すと、4 の帯は「次へ：5. テスト」で 5 に移る。5 の帯は「本番に切り替える」で、AI社員がいなければ押せず理由が出る。6 は届いていない段", async ({
+// CHT-36-007（ログイン情報の画面の帯「次へ：5. テスト」）は K-356 が画面を作り替えたので外した（新しい画面に段の帯は無い・置き換え先 K372-UI-017）
+test("CHT-36-004 段 4 を通した人の 5 の帯は「本番に切り替える」で、AI社員がいなければ押せず理由が出る。6 は届いていない段", async ({
   page,
 }) => {
   const u = await signupViaApi();
   await setupStep(u.memberId, 4);
   await loginAs(page, u.token);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/settings/credentials");
-  await expect(bar(page)).toBeVisible({ timeout: 20_000 });
-  await expect(go(page)).toHaveText(/次へ：5\. テスト/);
-  await go(page).click();
-  await expect(page).toHaveURL(/\/onboard\/testrun/, { timeout: 15_000 });
+  await page.goto("/onboard/testrun");
   await expect(page.locator("body")).not.toContainText("404");
   // 5 の帯：AI社員がいないので押せず、何をすれば進めるかが書いてある。6 はまだ無いので段の帯にリンクが無い
   await expect(bar(page)).toBeVisible({ timeout: 20_000 });

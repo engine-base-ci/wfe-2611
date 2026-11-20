@@ -679,8 +679,9 @@ def gates_for(changes: list[str], rules: dict, full: bool) -> list[str]:
 
 
 def gate_cfg(repo: str, cfg: dict) -> dict:
-    """入れた組（04_design/fidelity.json の enrolled: true）が 1 つでもあれば、専用の段に always を付けた設定を返す（K-238）。
-    画面のコードを後で変えても、web の組が起きる回には突き合わせを流して見た目のずれを止める。入れた組が 0 なら元のまま"""
+    """入れた組（04_design/fidelity.json の enrolled: true）が 1 つでもあれば、設定に always_when_enrolled が真の専用の段に always を付けた設定を返す（K-238）。
+    画面のコードを後で変えても、web の組が起きる回には突き合わせを流して見た目のずれを止める。入れた組が 0 なら元のまま。
+    印の無い段（Bridge の通しの段 73 など）は毎回にしない：チケットの CI では on に当たる変更のときだけ選ぶ（K-379）"""
     path = os.path.join(repo, "04_design", "fidelity.json")
     try:
         groups = json.load(open(path, encoding="utf-8")).get("groups") or [] if os.path.isfile(path) else []
@@ -688,7 +689,8 @@ def gate_cfg(repo: str, cfg: dict) -> dict:
         groups = []   # 形の誤りは G69 の設定の検査が赤にする
     if not any(isinstance(g, dict) and g.get("enrolled") is True for g in groups):
         return cfg
-    return {**cfg, "gates": {k: {**v, "always": True} for k, v in (cfg.get("gates") or {}).items()}}
+    return {**cfg, "gates": {k: ({**v, "always": True} if v.get("always_when_enrolled") is True else v)
+                             for k, v in (cfg.get("gates") or {}).items()}}
 
 
 def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list[str]) -> dict:

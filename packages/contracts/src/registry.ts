@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:a99da836b3143a22
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9957df2a3432a1b8
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2130,9 +2130,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateMyDevice",
     "table": "sessions",
     "kind": "update",
-    "input": "SessionsInput",
+    "input": "DeviceBrowserInput",
     "success": 200,
-    "output": "Sessions",
+    "output": "DeviceBrowser",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -2174,10 +2174,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "sessions",
-        "sql": "member_id = app.user_id()"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -2232,10 +2229,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": "always",
-      "row": {
-        "table": "sessions",
-        "sql": "member_id = app.user_id()"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -19456,4 +19450,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "a99da836b3143a22";
+export const OPENAPI_HASH = "9957df2a3432a1b8";

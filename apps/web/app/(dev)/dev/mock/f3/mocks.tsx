@@ -124,8 +124,16 @@ function Page({
         <div className="k-me-wrap">
           <MeSub current="credentials" />
           <section className="k-page k-me-page" aria-labelledby="credentials-title">
-            <CredentialsHead />
-            <CredentialsBody workspaceName={WS} personalName={ME} tab={tab} items={items} failed={failed} />
+            {/* モックは押せる形で見せる（キャンバスどおり。本番は口がつながるまで灰色：「預ける」は預ける小窓の葉・行の操作は上書きと確かめの葉） */}
+            <CredentialsHead addReady />
+            <CredentialsBody
+              workspaceName={WS}
+              personalName={ME}
+              tab={tab}
+              items={items}
+              failed={failed}
+              rowActionsReady
+            />
           </section>
         </div>
       </Shell>
