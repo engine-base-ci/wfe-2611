@@ -81,6 +81,13 @@ describe("CHT-39-002 SMS・メール・スマホ承認は Bridge が止まって
       body: { job_id: JOB, state: "asking", ask_kind: "code", text: "発注ナビ から届いたSMSのコードを入れてください" },
     });
     expect(typeof posted[0]!.body["request_ref"]).toBe("string");
+    // 体の鍵はちょうどこれだけ（契約の口は知らない欄を 422 で止める。request_id を残して送らない）
+    expect(Object.keys(posted[0]!.body).sort()).toEqual(["ask_kind", "job_id", "request_ref", "state", "text"]);
+    expect(
+      posted
+        .filter((p) => p.path === "/bridge/code")
+        .every((p) => Object.keys(p.body).sort().join(",") === "job_id,request_ref,state"),
+    ).toBe(true);
     // 答えが来るまで同じ request_ref で取りに行く（頼むのは 1 回）
     expect(posted.filter((p) => p.path === "/bridge/ask")).toHaveLength(1);
     expect(

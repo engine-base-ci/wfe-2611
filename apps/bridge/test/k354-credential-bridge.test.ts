@@ -299,11 +299,14 @@ describe("K-354 確かめの途中を契約の口へ（コードを頼む・待�
       path: reportPath(CRED),
       body: { job_id: JOB, ask_kind: "code", text: "発注ナビ から届いた SMS のコードを入れてください" },
     });
+    // 体の鍵はちょうどこれだけ（K-355 の口は知らない欄を 422 で止める。request_id を残して送る実装を落とす）
+    expect(Object.keys(asks[0]!.body).sort()).toEqual(["ask_kind", "job_id", "request_ref", "state", "text"]);
     const rid = asks[0]!.body["request_ref"];
     expect(typeof rid).toBe("string");
     const ws = seen.filter((s) => s.body["state"] === "waiting");
     expect(ws.length).toBe(3);
     expect(ws.every((s) => s.path === reportPath(CRED) && s.body["request_ref"] === rid)).toBe(true);
+    expect(ws.every((s) => Object.keys(s.body).sort().join(",") === "job_id,request_ref,state")).toBe(true);
     expect(seen.every((s) => s.path.startsWith("/api/v1/"))).toBe(true);
   });
 
@@ -319,6 +322,7 @@ describe("K-354 確かめの途中を契約の口へ（コードを頼む・待�
     const asks = seen.filter((s) => s.body["state"] === "asking");
     expect(asks).toHaveLength(1);
     expect(asks[0]!.body["ask_kind"]).toBe("approve");
+    expect(Object.keys(asks[0]!.body).sort()).toEqual(["ask_kind", "job_id", "request_ref", "state", "text"]);
     const waited = seen.filter((s) => s.body["state"] === "waiting").length;
     expect(waited).toBeGreaterThanOrEqual(3);
     expect(waited).toBeLessThanOrEqual(25);
