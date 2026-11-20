@@ -102,7 +102,9 @@ async function ready(page: Page, items: Item[], after: Mock["after"] = null): Pr
   return m;
 }
 const codeBtn = (page: Page) =>
-  page.locator(`${SEC} .k-set-row`, { hasText: "HACCHU_NAVI_LOGIN" }).getByRole("button", { name: "コードを入れる", exact: true });
+  page
+    .locator(`${SEC} .k-set-row`, { hasText: "HACCHU_NAVI_LOGIN" })
+    .getByRole("button", { name: "コードを入れる", exact: true });
 const dialog = (page: Page) => page.getByRole("dialog", { name: "HACCHU_NAVI_LOGIN のコードを入れる" });
 
 test("K630-UI-001 頼みの印あり（request_id=rq-c2）・SMS：コードを入れて「PC に渡す」→ 口に { request_ref, code } が 1 回・小窓が閉じる（前からの動きのまま）", async ({
@@ -142,7 +144,7 @@ test("K630-UI-003 頼みの印が null・スマホのアプリで承認（push�
   expect(m.answers).toEqual([]);
 });
 
-test("K630-UI-004 頼みの印が空の字（request_id=\"\"）：空は無いのと同じ。口は 0 回・文が出る", async ({ page }) => {
+test('K630-UI-004 頼みの印が空の字（request_id=""）：空は無いのと同じ。口は 0 回・文が出る', async ({ page }) => {
   const m = await ready(page, [item("sms", "")]);
   await codeBtn(page).click();
   const d = dialog(page);
