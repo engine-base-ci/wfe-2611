@@ -403,7 +403,7 @@ export interface HandoverDialogProps {
   busy?: boolean;
   /** 返事の期限の欄の type（既定 text。本物は日時の欄） */
   dueType?: string;
-  /** 小窓の上の橙の文（口が 409 で断ったときなど・E-HND-003）。無ければ出さない */
+  /** 小窓の上の橙の文（口が 409 で断ったときなど）。無ければ出さない */
   callout?: string;
   /** 頭の下の対象の行（既定はモックの字） */
   target?: ReactNode;
