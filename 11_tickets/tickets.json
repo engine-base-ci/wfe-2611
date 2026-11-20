@@ -17370,6 +17370,91 @@
    "file": "11_tickets/K-364.md"
   },
   {
+   "id": "K-366",
+   "title": "Bridge の窓でも AI が使うブラウザを選び直せる口（setBridgeBrowser・新しい口）と Bridge の窓の呼び先（K-90 の葉 ③）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "PC",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。DB を変えない口 1 本（今の関数 app.bridge_set_browser を呼ぶだけ・前の /bridge/browser の中身を移す）15 分・新しい口の登録先（契約・fuzz・形・ears・範囲）15 分・Bridge の呼び先を外に出して替える 10 分・自分の確かめ 5 分。試験 14 行（口 8・Bridge 6）。K-364 の見込み（22 行・1 時間）の 4 分の 3 と見た",
+   "decisions": [
+    "D-120",
+    "D-128.125",
+    "D-128.137",
+    "D-128.143"
+   ],
+   "split": "",
+   "choke_points": [
+    "C1",
+    "C2",
+    "C4"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+    "apps/bridge/test/browser-choice.test.ts",
+    "apps/api/test/generated/post_bridge_browser.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/_fake/secrets.ts",
+    "apps/bridge/test/_fake/secrets.ts"
+   ],
+   "depends_on": [
+    "K-364",
+    "K-359",
+    "K-350"
+   ],
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup"
+   ],
+   "apis": [
+    "setBridgeBrowser"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/bridge",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F3/ai-browser/bridge-browser.ts",
+    "apps/api/src/hooks/bridge-browser.ts",
+    "apps/bridge/src/main.ts",
+    "apps/bridge/src/browser-choice.ts",
+    "05_flow/screen_api.d/K-366.py",
+    "scripts/ci/contract_shape.d/K-366.py",
+    "07_qa/test-plan/ears-elsewhere.d/K-366.json",
+    "scripts/ci/ci_scope.d/K-366.json",
+    "11_tickets/K-90.md"
+   ],
+   "flow": "PC をつないで AI が使うブラウザを選ぶ",
+   "sections": {
+    "目的": "PC の中の Bridge の窓でも、その PC で AI が使うブラウザを選び直せるようにする（D-120「Bridge の窓でも変えられる」・代表の答え answer=0a262be577b2 ②）。Kaname が正本で、窓で変えても画面で変えても同じ値（`sessions.browser`）が変わる。\n契約に PC が呼ぶ口 `setBridgeBrowser`（POST /api/v1/bridge/browser・PC の印・60 回／分）を足し、前の道すじ `POST /api/auth-ext/bridge/browser`（apps/api/src/auth/ext.ts 472〜481 行）の中身（`app.bridge_set_browser`・0057）を移す。\nBridge の窓の「AI が使うブラウザ」（apps/bridge/src/main.ts 203〜222 行の `bridge:set-browser`）の呼び先を、前の道すじから新しい口に替える。呼び方は electron を読まずに試せるよう `apps/bridge/src/browser-choice.ts` に出す（pairing.ts の claimCode と同じ形）。\n\nPC の印で呼ぶので、その PC 自身の値だけが変わる（他の PC は選べない）。DB は変えない（今の関数を使う）。",
+    "完了の条件": "- [ ] 下の表の 14 行（K366-API-001〜008・K366-BR-001〜006）が緑：`apps/api/test/features/F3/ai-browser-bridge.test.ts`・`apps/bridge/test/browser-choice.test.ts`（K366-BR-006 は人が確かめる）\n- [ ] 契約に口 `setBridgeBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_browser.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-366.json` の covers）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: PERM, EXT\n\n- 関門の宣言（頭の欄 choke_points）：宣言は契約の口の関門と同じにする（関門の宣言の検査 KC4）。この葉の口の宣言は [C1, C2, C4]\n- 依存：K-364（K366-API-007 が updateMyDevice を使う・422 の文を pick.ts から import する・試験の手助け leaf-hooks.ts）・K-359（同じファイル apps/bridge/src/main.ts。K-89 ① が自己診断の Claude Code の行を外に出す）。口の登録はこの葉の hooks のファイル `apps/api/src/hooks/bridge-browser.ts`（K-326・ほかの葉のファイルに足さない）\n- 前の道すじ `/api/auth-ext/bridge/browser` はこの葉では消さない（前からの試験 bridge_blocked.test.ts が叩く）。消すのは K-367\n- DB の関数 `app.bridge_set_browser(p_session, p_browser)`（0057）は変えない（その PC の行で、外していなければ書く・3 つ以外は false）\n- Bridge が窓の値を変えるのは、Kaname が受けた後だけ（今のまま。どちらが本当か分からなくしない）\n- 試験はこの葉を作る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "目録で探した結果": "| 使うもの | どこ | 使い方 |\n|---|---|---|\n| PC の印の解決 | K-57 の device 解決（apps/api/src/app.ts の withDevice・`app.bridge_device_check`） | 入口がそのまま使う（ctx.sessionId がその PC の行。外した・知らない印は 401） |\n| 書く関数 | `app.bridge_set_browser(p_session, p_browser)`（0057） | そのまま呼ぶ（PC の行そのものなので持ち主の確かめは要らない） |\n| 同じ形の PC の口 | `sendHeartbeat`（connect-pc/hooks.ts・device の言葉・ctx.sessionId） | 口の書き方を合わせる |\n| Bridge の呼び方の見本 | `apps/bridge/src/pairing.ts` の `claimCode`（fetch を差し替えられる・BRIDGE_UA） | `chooseBrowserOnKaname` を同じ形で書く |\n| 窓の値を写す所 | main.ts の `writeState({ ...readState(), browser })`・loop.ts の onBrowser（生きている知らせの答え） | 変えない |\n| 探したが無かったもの | 契約の PC の口で、PC 自身のブラウザを変える物 | 新しく `setBridgeBrowser` を足す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 口 | `apps/api/src/features/F3/ai-browser/bridge-browser.ts` に `setBridgeBrowser` の hook（before）。① ctx.sessionId が無ければ 401 `{ error: \"unauthenticated\", code: \"UNAUTHENTICATED\" }` ② `browser`（入口が NFKC と前後の空白を落とした後）が無い・3 つ以外 → 422（欄 browser・K-364 と同じ文）③ `select app.bridge_set_browser($1, $2) as ok`。false（外した直後など）→ 401 UNAUTHENTICATED ④ 201 `{ data: { browser } }`。DB の例外は 503・E-PAGE-003（ログは `[ai-browser] 窓からの選び直しを書けなかった（<例外の名前>）` だけ・PC の id と印を出さない） |\n| 口の登録（K-326 の register） | `apps/api/src/hooks/bridge-browser.ts`（新しいファイル）：`export function bridgeBrowserHooks(d: Pick<HookDeps, \"appPool\">): Record<string, Hook>`（setBridgeBrowser の before・中身は features/F3/ai-browser/bridge-browser.ts）と `export const register = defineHooks({ name: \"bridgeBrowserHooks\", make: (d) => bridgeBrowserHooks(d), fuzz: \"same\" })`。hooks/bridge.ts と features/F3/ai-browser/index.ts には足さない。server.ts と fuzz の的は直に書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` の一覧から差す）。試験は手助け leaf-hooks.ts（K-364）で device-browser と bridge-browser を最初の要求のときに足す |\n| 契約の形 | `05_flow/screen_api.d/K-366.py`：`SCREEN_API[\"bridge-setup\"]` に `(\"POST\", \"/bridge/browser\", \"A09\", \"sessions\", \"setBridgeBrowser\", [])`・`INPUTS[\"setBridgeBrowser\"] = (\"BridgeBrowserInput\", {\"browser\": \"string\"})`・`RESPONSES[\"setBridgeBrowser\"] = (\"BridgeBrowser\", {\"browser\": \"string\"})`・`REQUIRED_INPUTS[\"setBridgeBrowser\"] = [\"browser\"]`・`VALUE_RANGES[\"setBridgeBrowser\"]`（K-364 と同じ pattern）・`PERMS[\"setBridgeBrowser\"] = (\"device\", \"その人の PC（その PC 自身の AI が使うブラウザだけ。Kaname が正本で、画面で変えたのと同じ値・D-120）\", False)`・`ERRORS_4XX[\"setBridgeBrowser\"]`（401 UNAUTHENTICATED・422 VALIDATION_ERROR）。`scripts/ci/contract_shape.d/K-366.py`：`REQUIRED_INPUTS[\"setBridgeBrowser\"] = {\"browser\"}`・`VALUE_RANGES[\"setBridgeBrowser\"]`（同じ）・`UNEXPRESSIBLE_422[\"setBridgeBrowser\"] = [\"大文字の値（CHROME など・NFKC で小文字にならない）\"]`。`python3 05_flow/build_api.py` で作り直す |\n| 登録先（touch_rules） | 口の登録（上）・`07_qa/test-plan/ears-elsewhere.d/K-366.json`（ops の鍵 setBridgeBrowser・file は口の試験・covers は下）・`scripts/ci/ci_scope.d/K-366.json`（data_links：`apps/api/src/features/F3/ai-browser/**` → 口の試験・`apps/bridge/src/browser-choice.ts` → Bridge の試験）。zt_gate は PERMS の言葉 device と道 /bridge/ で通る（ZT10）。`python3 scripts/ci/build_registries.py` |\n| Bridge | `apps/bridge/src/browser-choice.ts` に `chooseBrowserOnKaname(apiBase: string, token: string \\| null \\| undefined, browser: string, fetchImpl: typeof fetch = fetch): Promise<{ ok: true } \\| { ok: false; message?: string }>`：① browser が chrome・dedicated・off 以外 → 送らずに `{ ok: false }` ② 印が無い → 送らずに `{ ok: false, message: \"Kaname につないでから選んでください\" }` ③ `POST ${apiBase}/api/v1/bridge/browser`（頭 content-type・x-bridge-session・user-agent BRIDGE_UA・体 `{ browser }`・5 秒で止める）④ 2xx → `{ ok: true }`／401 → `{ ok: false, message: \"この PC のつながりが切れています。つなぎ直してください\" }`／ほかの状態 → `Kaname に届きませんでした（<状態の番号>）`／投げた（届かない・時間切れ）→ `Kaname に届きませんでした`。main.ts の `bridge:set-browser` はこれを呼び、ok のときだけ `writeState` で窓の値を変える（前の道すじの fetch を消す） |\n| 古い葉 K-90 から外す | `11_tickets/K-90.md`：この葉が受け持つ口（apis:）・試験（tests:）・行を古い葉 K-90 の頭の欄と表から外す（K-90 は split で子に配る・2026-11-19 まとめ役。K-90 の閉じ方と split の欄はまとめ役が書く。同じ md を兄弟の葉も直すので、overlap_ok にはまとめ役が足す） |\n\n### 生成の試験の結び（ears-elsewhere.d/K-366.json の covers）\n\nok → K366-API-001／rejected_401 → K366-API-004／rejected_403 → K366-API-004／rejected_422 → K366-API-003／rate_limited → K366-API-006／shape → K366-API-001／upstream_failed → K366-API-008。ほか（too_large・session_unresolved など入口が同じもの）は K-57 の sendHeartbeat と同じく k144-contract の行に結ぶ（作り手が出す名前に合わせる）",
+    "外に影響する手順": "- S1: DB に書く（その PC の sessions.browser を 1 行・`app.bridge_set_browser` の 1 つの update）。失敗したら何も変わらない（K366-API-008）\n- S2: 外を呼ぶ（Bridge から Kaname の口へ 1 回）。失敗したら窓の値は変えず、窓に理由の文を出す（K366-BR-004・005）",
+    "テスト仕様と確認の結果": "口：`apps/api/test/features/F3/ai-browser-bridge.test.ts`（本番と同じ入口・本物の DB・本物の PC の印の解決）。Bridge：`apps/bridge/test/browser-choice.test.ts`（Kaname の代わりは手元の小さなサーバー・pairing.test.ts と同じ形）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| chrome | Bridge の窓で dedicated | PC の印 | 201・DB と人の一覧と知らせの答えが dedicated | このチケット | K366-API-001 |\n| 2 台 | A の窓で off | PC の印（A） | A だけ変わる | このチケット | K366-API-005 |\n| 外した PC | 窓で選ぶ | 切れた印 | 401。窓は「つなぎ直して」 | このチケット | K366-API-004・K366-BR-004 |\n| どれでも | 口を直に | 頭が無い・形だけ合う印・画面のログイン | 401・401・403 | このチケット | K366-API-004 |\n| 画面と窓で同時に違う値 | 両方 | ログイン中と PC の印 | どちらも受け、最後は片方の値に揃う | このチケット | K366-API-007 |\n| Kaname に届かない | 窓で選ぶ | PC の印 | 窓の値は変えず理由を出す | このチケット | K366-BR-005 |\n| 窓の中のラジオ | 押す | 人 | 窓の印が変わり、Kaname の画面を開き直すと同じ値 | このチケット | K366-BR-006（人が確かめる） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K366-API-001 | 対象の状態 | PC の印で dedicated | 201・data の鍵はちょうど browser で \"dedicated\"。DB・人の一覧・その PC の次の生きている知らせの答えの browser が \"dedicated\" |\n| K366-API-002 | 入力 | 3 つの値を順に（off・chrome）と表記ゆらぎ（全角の \"ｄｅｄｉｃａｔｅｄ\"・前後に空白の \" off \"） | どれも 201 で、DB がその値（全角は dedicated・空白は off） |\n| K366-API-003 | 入力 | browser が \"firefox\"・\"\"・\"CHROME\"・1・null／browser と一緒に device_id（別の PC の id）／空の体 {} | どれも 422（欄 browser か知らない欄）。DB は chrome のまま。別の PC の値も変わらない |\n| K366-API-004 | 守り | 頭 x-bridge-session が無い／形だけ合う知らない印／外した PC の印／画面のログイン（人）で呼ぶ | 401／401／401／403。どれも DB は変わらない |\n| K366-API-005 | 守り | 同じ人の PC 2 台で A の印から off | A は off・B は chrome のまま |\n| K366-API-006 | 守り | 同じ PC の印で 1 分に 61 回目 | 429・retry_after_sec は 1〜60 の整数 |\n| K366-API-007 | 操作の揺れ | 画面（updateMyDevice・K-364）から dedicated と、窓（この口）から off を同時に | どちらも 2xx。DB・人の一覧・知らせの答えが同じ 1 つの値で、dedicated か off のどちらか |\n| K366-API-008 | 失敗 | S1 の失敗：kaname_app から app.bridge_set_browser の実行権を外して選ぶ（終わりに戻す） | 503・E-PAGE-003。DB は chrome のまま |\n| K366-BR-001 | 対象の状態 | 2xx が返る | `{ ok: true }`。呼んだのは POST /api/v1/bridge/browser の 1 回だけ・頭 x-bridge-session が印・user-agent が BRIDGE_UA・体は `{\"browser\":\"dedicated\"}` |\n| K366-BR-002 | 入力 | browser が \"firefox\"・\"\" | 送らずに `{ ok: false }`（サーバーに届いた数は 0） |\n| K366-BR-003 | 利用者の状態 | 印が無い（null・空） | 送らずに `{ ok: false, message: \"Kaname につないでから選んでください\" }` |\n| K366-BR-004 | 失敗 | 401・422・429・503 が返る | 401 は「この PC のつながりが切れています。つなぎ直してください」、ほかは「Kaname に届きませんでした（<状態の番号>）」。どれも ok は false |\n| K366-BR-005 | 失敗 | S2 の失敗：届かない（つながらない番地）・fetch が投げる | `{ ok: false, message: \"Kaname に届きませんでした\" }`。渡す signal は時間で止まる AbortSignal |\n| K366-BR-006 | 対象の状態 | Bridge の窓で「Bridge 専用のブラウザ」を押す（人が確かめる） | 窓の印が専用に変わる。Kaname の「PC と使った量」を開き直すと、その PC が専用（画面の葉が入った後）。Kaname を止めて押すと窓の印は変わらず「Kaname に届きませんでした」 |\n\n```judge-skip\n- K366-BR-006: Bridge の窓は electron なので CI では押せない。人が確かめる（窓の印と画面の値）\n```\n\n### テストの型の受け（分類 PERM・EXT）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-PERM-01 役が合わない人 | K366-API-004（画面のログインで PC の口） |\n| TP-PERM-02 権限を外した直後に押す | K366-API-004（外した PC の印） |\n| TP-PERM-03 他の会社の ID を直接 | K366-API-003（体に別の PC の id は受けない）・K366-API-005 |\n| TP-PERM-04 一覧・数 | K366-API-005 |\n| TP-EXT-01 外が落ちた・遅い | K366-BR-005（届かない・5 秒で止める） |\n| TP-EXT-02 外が想定外の形 | K366-BR-004（思っていない状態の番号） |\n| TP-EXT-03 同じ通知が 2 回 | K366-API-002（同じ値を何度送っても同じ）・K366-API-007 |\n\n要らない: TP-PERM-05 選べるかは「その PC の印か」だけで決まり、後から付ける権限で変わらない",
+    "前からの試験を替えた所": "cut_check.py prior（changes: を渡す）の今の答えは 0 件（口の登録が葉ごとの hooks のファイルになる前は 3 件：bridge_blocked・k237_perf_budget・fuzz_targets_test.py。手で足した物として、替えない訳を下に残す）。main.ts を読む試験と、前の道すじ /bridge/browser を叩く試験を手で探した。\n\n- name: Bridge の main.ts・窓の ipc を使う前からの試験と道具\n\n```search\ngit grep -ln \"src/main\\|bridge:set-browser\" -- 'apps/bridge/test/**' 'apps/web/tests/**' 'scripts/ci/*test*'\n3\n```\n\n- name: 道 bridge/browser を叩く前からの試験\n\n```search\ngit grep -ln \"bridge/browser\" -- 'apps/api/test/**' 'apps/web/tests/**' 'apps/bridge/test/**' ':!apps/api/test/features/F3/ai-browser-bridge.test.ts' ':!apps/bridge/test/browser-choice.test.ts' ':!apps/api/test/features/F3/legacy-pc-routes.test.ts'\n1\n```\n\n（除いたのは、この葉の試験 ai-browser-bridge.test.ts・browser-choice.test.ts と、段 4 の葉 K-367 が足す legacy-pc-routes.test.ts。前からの試験ではなく、その葉が運ぶ。作る段の木で同じ件数になるように除いた）\n\n- apps/api/test/bridge_blocked.test.ts: 替えない — 前の道すじ /bridge/browser を叩く。この葉は前の道すじを消さない（消すのは K-367）\n- apps/api/test/k237_perf_budget.test.ts: 替えない — 台帳に載った道の文の数は変わらない。新しい口は天井の内（入口の分＋1）\n- scripts/ci/fuzz_targets_test.py: 替えない — hooks のファイルの register と fuzz の差し方を見る。この葉の register（bridgeBrowserHooks）は fuzz \"same\" で、外す理由を持たない\n- apps/web/tests/_lib/f5-flow.ts・_lib/test-pc.ts: 替えない — apps/bridge/src/main.ts の場所から部品を読む（createRequire の起点）だけで、窓の ipc は呼ばない\n- scripts/ci/ci_scope_test.py: 替えない — 例の道 apps/x/src/main.ts を文字で持つだけ（この葉の main.ts を読まない）",
+    "依存の理由": "- K-364: 要る — 本物の口を試験が使う：K366-API-007 は画面の口 updateMyDevice（K-364）で選んだ値と、窓から選んだ値が同じ列に入ることを見る。422 の文は K-364 の pick.ts から import する。試験の手助け leaf-hooks.ts も K-364 が持ち込む\n- K-350: 要る — 置き場：作り物の秘密の値を足す置き場 `apps/bridge/test/_fake/secrets.ts` と、そこだけを外す .gitleaks.toml の道は K-350 が作る（2026-11-19 PM の決め）。この葉は自分の区切りで値を足すだけなので、置き場が先に要る\n- （依存にしない）同じ置き場 `apps/bridge/test/_fake/secrets.ts` に K-354・K-359・K-366 が作り物の秘密の値を足す。どの葉も自分の区切り（`// ---- K-366（…）----` から `// ---- K-366 ここまで ----`）だけを足すので、取り込みは足した区切りの和にできる（置き場は overlap_ok・PM が足した）\n- K-359: 要る — 同じファイル apps/bridge/src/main.ts（K-89 ① が自己診断の Claude Code の行を外に出し、窓の ipc を触る）\n\n（前は K-365・K-355 も待っていた：features/F3/ai-browser/index.ts・apps/api/src/hooks/bridge.ts・fuzz の的を共通の順で足すため。口の登録が葉ごとの hooks のファイル（K-326）になり、この葉は自分のファイル（hooks/bridge-browser.ts・ai-browser/bridge-browser.ts）だけを書くので、変えるファイルが重ならない。2026-11-19 PM の決め「変えるファイルが重ならない形にする」）\n- （依存にしない）同じ置き場 `apps/api/test/_fake/secrets.ts` に K-352・K-353・K-354・K-355・K-358・K-366 が作り物の秘密の値を足す。どの葉も自分の区切り（`// ---- K-366（…）----` から `// ---- K-366 ここまで ----`）だけを足すので、取り込みは足した区切りの和にできる（置き場を catch_up.union に足すのはまとめ役に頼んだ）",
+    "速さ（今の値と目標の値）": "| 見るもの | 今 | 目標 |\n|---|---|---|\n| 新しい口 POST /api/v1/bridge/browser の文の数・取引 | 前の道すじで 1（入口の外） | 入口の分（PC の印の解決）＋1・取引 0 |\n| 画面の口の数・直列の段 | — | 画面は変えない |\n| 新しい住所 | — | 1 つ（/api/v1/bridge/browser）。前の /api/auth-ext/bridge/browser は K-367 で消えるので、締めで同じ数に戻る |\n| 認証の要る答えの Cache-Control | — | private, no-store（入口の共通） |",
+    "成果物": "- 口 `apps/api/src/features/F3/ai-browser/bridge-browser.ts`・契約の形・登録先・Bridge の `browser-choice.ts` と main.ts の呼び先\n- 単体の試験 `apps/api/test/features/F3/ai-browser-bridge.test.ts`・`apps/bridge/test/browser-choice.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=0a262be577b2（PM 経由）②：Bridge の窓でも選び直せる。口 setBridgeBrowser を足す\n- 2026-11-19 切る段の決め：答えは 201 `{ browser }`（PC の口の POST は sendHeartbeat と同じ 201）。外した直後に関数が false を返したら 401（Bridge は印を捨ててつなぎ直す・K-57 と同じ）",
+    "表の住所（2026-11-19・K-325〜K-327 が本線に入った後の形）": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-366.*`）に書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/bridge-browser.ts` の `export const register = defineHooks({…})` に書く（K-326）。`apps/api/src/server.ts` と fuzz の的 `apps/api/test/fuzz/server.ts` は直に書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧 `apps/api/src/hooks/all.generated.ts` を作り、両方がそこから差す・生成物）\n- この葉は migration を足さない（DB を変えない・今の関数 app.bridge_set_browser を呼ぶだけ）\n- K-328 の形に直した：試験の作り物の秘密の値（K366_UNKNOWN_DEVICE_TOKEN（ai-browser-bridge.test.ts の組み立てた PC の札））は `apps/api/test/_fake/secrets.ts` の「K-366」の区切りに置き、試験から import する（.gitleaks.toml がこの置き場だけを外す）。置き場は carry: で切る段の版を運ぶ（作る段では変えない）。Bridge の試験 apps/bridge/test/browser-choice.test.ts の組み立てていた TOKEN は、`apps/bridge/test/_fake/secrets.ts`（K-350 が作る置き場）の「K-366」の区切りに K366_BRIDGE_TOKEN（同じ値 kpc_ と c 43 字）として置き、試験から import する（2026-11-19 PM の決め）。置き場は carry: で運び、K-350 に依存する",
+    "申し送り": "- K-367：前の道すじ /api/auth-ext/bridge/browser を消し、bridge_blocked.test.ts の該当の行を契約の口に移す"
+   },
+   "file": "11_tickets/K-366.md"
+  },
+  {
    "id": "K-369",
    "title": "段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）",
    "kind": "タスク",
