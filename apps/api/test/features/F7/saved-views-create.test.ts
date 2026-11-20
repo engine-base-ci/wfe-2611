@@ -223,8 +223,9 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
   });
 
   it("K475-API-013 グループの全員に見せて保存：201・同じグループの同僚の一覧に出る・別のグループの席の人には出ない。並び・まとめ方・列は filters・columns の中身のまま返る", async () => {
-    const p = await freshPerson("見せて保存する人");
-    const filters = { view: "mine", sort: "due", group_by: "assignee", stage: ["todo", "doing"] };
+    // 見せるグループ g1 が見える席（g1 の席）の人が保存する。filters の値は文字・数・真偽か 1 段の入れ物（配列は値に使えない・K475-API-019）
+    const p = await freshPerson("見せて保存する人", W.g1);
+    const filters = { view: "mine", sort: "due", group_by: "assignee", stage: "todo,doing" };
     const columns = ["title", "due_on", "assignee"];
     const r = await createView(p, {
       name: "営業の今週",
@@ -514,7 +515,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
   });
 
   it("K475-API-027 証跡：保存すると証跡 saved_views.create（関門 C2）が 1 つ残り、中身は share だけで名前・条件は入らない。一覧を開いても証跡は増えない", async () => {
-    const p = await freshPerson("証跡の人");
+    const p = await freshPerson("証跡の人", W.g1); // g1 が見える席（見えないグループは 404・K475-API-018）
     const before = await num("select count(*) as n from audit_events where actor_member_id = $1", [p.id]);
     const r = await createView(p, {
       name: "証跡に名前を残さない",
