@@ -6540,7 +6540,12 @@
     "E-CRED-006",
     "E-CRED-007",
     "E-CRED-008",
-    "E-CRED-009"
+    "E-CRED-009",
+    "E-CRED-010",
+    "E-CRED-011",
+    "E-CRED-012",
+    "E-CRED-013",
+    "E-CRED-014"
    ],
    "policies": [
     "C1",
