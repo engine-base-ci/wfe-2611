@@ -2064,6 +2064,18 @@ K-352,預ける口（createCredential・本人確認の取り直し・金庫に�
 - [ ] 契約の口 `createCredential` が 501 でない。生成の試験 `apps/api/test/generated/post_credentials.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-352.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替えるのは apps/api/test/step_up.test.ts の口の選び方 1 か所）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-355,預けた後のログインの確かめの口（checkCredentialLogin・answerCredentialLoginCheck・reportCredentialCheck・確かめの仕事は使える場所の 1 つ目を開く・コードは PC にだけ 1 回渡る）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-25,F3・預けたログイン情報,"預けたログイン情報で、自分の PC（Bridge）が 1 回だけログインして確かめる動き（D-117・代表の答え answer=ac0813ee7c21 ③「段 4 に入れる」）の口を、契約の口として作る（今はどれも 501）。
+
+- `checkCredentialLogin`（POST /api/v1/credentials/:id/login-check・本人）：「もう一度確かめる」。確かめの仕事を 1 つ積む
+- `answerCredentialLoginCheck`（POST /api/v1/credentials/:id/login-check/answer・本人）：確かめの途中で PC が頼んだコード（SMS・メール）か「スマホで承認した」を返す
+- `reportCredentialCheck`（POST /api/v1/bridge/credentials/:id/check-result・PC）：PC が途中（コードを頼む・答えを待つ）と結果を知らせる
+
+前の道すじ（apps/api/src/auth/ext.ts の `/vault/credentials/:id/login-check`・`/vault/credentials/:id/answer`・`/bridge/credentials/check-result`・`/bridge/code`・Bridge の `/bridge/ask` の確かめの分）の中身を、契約の口に移す（08_api/phase1/05_自分の設定とPC.md §3：`/bridge/code` は check-result に入る）。前の道すじはこの葉では消さない（今の画面・Bridge・前からの試験が使う。消すのは K-358）。Bridge をこの口へつなぎ替えるのは K-354。
+
+預けた直後に 1 回積む（createCredential の中）は K-352。その時に呼ぶ「積む」関数は、この葉で作り直す（下の実施事項 ①）。","- [ ] 下の表の 29 行（K355-API-001〜029）が緑：`apps/api/test/features/F3/credential-login-check.test.ts`
+- [ ] 3 本の口が 501 でない。生成の試験 3 本の it.todo が `07_qa/test-plan/ears-elsewhere.d/K-355.json` の covers か na（理由つき）で全部結ばれる
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-359,Bridge の側で Claude Code の自己診断と直し方を整える（無い・本体が落ちてきていない・ログインしていない／入れる作業の重なりと時間切れと途中の行・ログインの待ち・この PC の口）（K-89 の葉 ①）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89「Claude Code を入れてログインする」の Bridge（PC 側）の分。画面（K-361）が PC の行に「足りない物と直し方」を出し、押した後の様子を見せられるように、Bridge の側を整える。
 
 - 自己診断の Claude Code の 2 行（ある・ログインできている）を、electron を読まずに試せる関数 `claudeChecks()` に外へ出し、直し方（fix：install／repair／login）とエラーの ID（code：repair は E-CONN-011・login は E-CONN-010）を付ける
