@@ -19611,12 +19611,17 @@
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-INV-010",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-INV-010",
+      "details": []
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-INV-010"
+     ],
+     "trigger": "宛てがもうこのワークスペースに入っている人（E-INV-010。止めている人も）",
+     "ears_form": "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と宛てごとの理由を返し、どの宛ても招かずメールも送らない"
     },
     {
      "status": 422,
@@ -19628,12 +19633,24 @@
      },
      "errors": [
       "E-INV-009",
-      "E-INV-010",
-      "E-INV-011",
       "E-INV-012"
      ],
-     "trigger": "メールの形でない宛て（E-INV-009）・もう入っている人（E-INV-010）・グループが会社に無い（E-INV-011）・51 人以上（E-INV-012）・役割が決まった値の外・ひとこと 501 文字・宛てが空・知らない欄（strict）",
-     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない"
+     "trigger": "メールの形でない宛て（E-INV-009）・51 人以上（E-INV-012）・役割が決まった値の外・ひとこと 501 文字・宛てが空・知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない"
+    },
+    {
+     "status": 404,
+     "code": "E-INV-011",
+     "body": {
+      "error": "not_found",
+      "code": "E-INV-011",
+      "details": []
+     },
+     "errors": [
+      "E-INV-011"
+     ],
+     "trigger": "選んだグループがこの会社に無い・消した（E-INV-011）",
+     "ears_form": "UNWANTED: IF 選んだグループがこの会社に無い、または消してあるなら、Kaname は 404 と E-INV-011 を返し、どの宛ても招かずメールも送らない"
     },
     {
      "status": 413,
@@ -19690,8 +19707,9 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/invitations が「メールと層と権限の束を選んで招く」として呼ばれたとき THEN Kaname は「招待（7 日）を送る」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 管理者として招くのに取り直しが直前 15 分の内に無いなら、Kaname は 403 と STEP_UP_REQUIRED を返し、招待もメールも作らない",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない",
+    "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と宛てごとの理由を返し、どの宛ても招かずメールも送らない",
+    "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない",
+    "UNWANTED: IF 選んだグループがこの会社に無い、または消してあるなら、Kaname は 404 と E-INV-011 を返し、どの宛ても招かずメールも送らない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",

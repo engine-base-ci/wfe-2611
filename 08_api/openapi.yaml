@@ -22751,22 +22751,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-INV-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-INV-009（契約に書けない値の決まり：宛てがメールの形でない（そろえた後の字で見る・E-INV-009）・宛てがもうこのワークスペースに入っている人（E-INV-010）・グループがこの会社に無い・消した（E-INV-011）・一度に 50 人を超える宛て（E-INV-012））
+          description: E-INV-009（契約に書けない値の決まり：宛てがメールの形でない（そろえた後の字で見る・E-INV-009）・一度に 50 人を超える宛て（E-INV-012））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - 宛てがメールの形でない（そろえた後の字で見る・E-INV-009）
-          - 宛てがもうこのワークスペースに入っている人（E-INV-010）
-          - グループがこの会社に無い・消した（E-INV-011）
           - 一度に 50 人を超える宛て（E-INV-012）
+        '404':
+          description: E-INV-011
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:

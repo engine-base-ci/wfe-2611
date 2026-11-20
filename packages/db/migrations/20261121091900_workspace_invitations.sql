@@ -16,8 +16,6 @@
 --      detail にその宛て（小文字・入れた順）を改行でつなぐ。宛てごとに、同じ宛ての招待中の招待を revoked_at で取り消し、新しい招待を 1 行
 --      （期限 now()+7 日・role_id・message・created_by 呼んだ人・token_hash は口が作った sha256）。証跡 invitation.created を招待ごとに 1 行
 --      （payload は宛てのドメインだけ）。宛てと token_hash は同じ数・宛ては口がそろえた後の小文字（この関数も lower で見る）
--- ③ app.invitation_members_in(p_emails)：宛ての中で、もうこの会社に入っている人の宛て（小文字）を入れた順で返す（読むだけ）。
---      口が、形の違う宛てが混じるときに入っている人も同時に画面へ返すために使う（②の判定と同じ条件・条件は 1 つの関数 app.invitation_member_emails にまとめる）
 --
 -- どれも security definer・search_path に pg_temp・public から外し kaname_app にだけ渡す。認証の表 kaname_auth."user" は同じ DB（0112 と同じ・plpgsql なので migration の時点で無くてよい）
 
@@ -40,19 +38,6 @@ begin
    order by t.ord;
 end $$;
 revoke all on function app.invitation_member_emails(text[]) from public;
-
-create or replace function app.invitation_members_in(p_emails text[])
-returns table (email text)
-language plpgsql stable security definer set search_path = public, app, pg_temp as $$
-begin
-  if app.tenant_id() is null or app.user_id() is null
-     or not has_permission(app.user_id(), 'members', null, 'invite') then
-    raise exception '招く権限が無い' using errcode = 'insufficient_privilege';
-  end if;
-  return query select * from app.invitation_member_emails(p_emails);
-end $$;
-revoke all on function app.invitation_members_in(text[]) from public;
-grant execute on function app.invitation_members_in(text[]) to kaname_app;
 
 create or replace function app.workspace_members() returns jsonb
 language plpgsql stable security definer set search_path = public, app, pg_temp as $$
