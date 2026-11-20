@@ -19008,7 +19008,9 @@
    "tests": [
     "apps/api/test/features/F4/ticket-sort.test.ts"
    ],
-   "carry": [],
+   "carry": [
+    "apps/api/test/features/F6/progress.test.ts"
+   ],
    "depends_on": [
     "K-387",
     "K-430"
