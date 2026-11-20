@@ -19,8 +19,8 @@ export const cleanText = (v: unknown): string => (typeof v === "string" ? v.repl
 /** 前後の空白（全角の空白・改行・タブも）を落として空か */
 export const isBlank = (s: string): boolean => s.trim() === ""; // trim は全角の空白（U+3000）・改行・タブも落とす
 
-/** 時差つきの ISO 8601（2026-11-23T18:00:00+09:00・Z も可） */
-const ISO_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,6})?)?(Z|[+-]\d{2}:\d{2})$/;
+/** 時差つきの ISO 8601（2026-11-23T18:00:00+09:00・Z も可・秒は必須＝契約の date-time と同じ） */
+const ISO_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}:\d{2})$/;
 const SWITCH_BOOL_KEYS = new Set(["children", "links", "group"]);
 
 /** 切り替えの形：object で、鍵は children・links・group（真偽）と axes（uuid の並び）だけ。違えば null */
@@ -67,7 +67,7 @@ export function parseCreate(input: Row, now: number = Date.now()): HookReply | C
   if (due !== null) {
     if (!ISO_WITH_ZONE.test(due) || Number.isNaN(Date.parse(due)))
       return invalid("reply_due", "時差つきの日時（ISO 8601）");
-    if (Date.parse(due) <= now) return fromCatalog("E-HND-008", 422, { field: "reply_due" });
+    if (Date.parse(due) <= now) return fromCatalog("E-HND-008", 409); // 時刻で決まる断り（今より後でない）＝今の状態ではできない
   }
   const sw = parseSwitch(input["switch"]);
   if (sw === null) return switchError();

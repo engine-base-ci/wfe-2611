@@ -51,7 +51,7 @@ function targetReply(v: Record<string, unknown>): HookReply | null {
     return fromCatalog("E-HND-006", 409, { detail: { 名前: asText(v["名前"]), 訳: TARGET_SUSPENDED[reason] } });
   if (reason === "gone") return fromCatalog("E-HND-014", 404);
   if (reason === "self") return fromCatalog("E-HND-010", 409);
-  if (reason === "missing") return fromCatalog("E-HND-013", 422, { field: "to_member_id" });
+  if (reason === "missing") return fromCatalog("E-HND-013", 422, { field: "to_member_id" }); // 契約の形（pass・distribute は相手かグループが要る）の外の入力
   if (reason === "scope") return fromCatalog("E-HND-012", 404);
   return null;
 }
@@ -72,6 +72,6 @@ export function replyOf(v: { error: string; [k: string]: unknown }, where = "答
   if (word === "switch") return fromCatalog("E-HND-011", 409);
   if (word === "replaces_decided" || word === "decided")
     return fromCatalog("E-HND-005", 409, { detail: { 状態: asText(v["state"]) } });
-  if (word === "due") return fromCatalog("E-HND-008", 422, { field: "reply_due" });
+  if (word === "due") return fromCatalog("E-HND-008", 409);
   return down(where, `知らない答え（${word}）`);
 }
