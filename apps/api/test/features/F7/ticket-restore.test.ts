@@ -102,8 +102,9 @@ describe("K-489 戻す：誰が・いつまで", () => {
     const t = await w.make(w.creator);
     const r = await w.restore(w.manager, t);
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe("E-DEL-041");
-    expect(((await json(r))["details"] ?? null) === null).toBe(true); // 409 には details を付けない
+    const body = await json(r); // 本文は 1 回だけ読む
+    expect(body.code).toBe("E-DEL-041");
+    expect((body["details"] ?? null) === null).toBe(true); // 409 には details を付けない
     const e = await w.restore(w.editor, t);
     expect(e.status).toBe(403);
     expect(await code(e)).toBe("E-DEL-040");
