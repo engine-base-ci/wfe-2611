@@ -374,6 +374,12 @@ describe("K-461 知らせを読む口", () => {
       "insert into scopes (tenant_id, name, ticket_prefix) values ($1, '見えないグループ', 'ZZ') returning id",
       [T.tenantId],
     );
+    // 席が会社の全体のままだと、権限（permissions）を外しても席の層で全部見えたままになる。席を別の層に移し、会社の全体は権限だけで見える形にする
+    const seat = await one<{ id: string }>(
+      "insert into scopes (tenant_id, name, ticket_prefix) values ($1, '読む人の席', 'ZS') returning id",
+      [T.tenantId],
+    );
+    await f.admin.query("update members set scope_id = $2 where id = $1", [p.id, seat.id]);
     const hidden = await ticket({ assignee: other, scope: sc.id, title: "見えないチケット" });
     const n1 = await notice(p, {
       kind: "approval.requested",
@@ -650,7 +656,7 @@ describe("K-461 知らせを読む口", () => {
     const a = await notice(p, { kind: "bridge.connected", payload: bridge("起こした人なし"), ageMin: 2 });
     const b = await notice(p, {
       kind: "bridge.connected",
-      payload: bridge("別の会社の人が起こした"),
+      payload: bridge("他社の人が起こした設定"),
       actor: outsider.id,
       ageMin: 1,
     });
