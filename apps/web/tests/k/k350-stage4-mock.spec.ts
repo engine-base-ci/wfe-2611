@@ -242,7 +242,6 @@ test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則
     "apps/e2e/journeys/j02.spec.ts",
     "apps/e2e/journeys/_fake/x.ts",
     "x/apps/e2e/_fake/x.ts",
-    "packages/contracts/src/ops.ts",
   ])
     expect(hit(p), p).toBe(false);
   // 規則の中の例外：[[rules]] は generic-api-key の 1 つ・その allowlists も 1 つだけ。規則そのもの（式・鍵の語・乱雑さ）は既定のまま上書きしない
@@ -256,8 +255,11 @@ test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則
   expect(onlyPaths).toEqual(["^packages/contracts/src/(ops|registry|schemas|types)\\.ts$"]);
   expect(values).toEqual(["^(openapi:)?[0-9a-f]{16}$"]);
   const pathRe = new RegExp(onlyPaths[0]!);
-  for (const f of ["ops", "registry", "schemas", "types"])
+  // 契約の型の 4 ファイルは、規則の中の例外の道には当たり、全体の外す道には当たらない（道は組み立てる：字のままだと範囲の検査が「読む物」と取り違える）
+  for (const f of ["ops", "registry", "schemas", "types"]) {
     expect(pathRe.test(`packages/contracts/src/${f}.ts`), f).toBe(true);
+    expect(hit(`packages/contracts/src/${f}.ts`), f).toBe(false);
+  }
   for (const p of [
     "packages/contracts/src/index.ts",
     "packages/contracts/src/x/ops.ts",
