@@ -3,6 +3,7 @@
 //   題名の行（h1・右に 複製・〈見ている人〉のAI と話す・ほかの操作）。
 //   本当の値が無い字は空にする（「—」を出さない・作成者の名前は口が返さないので出さない）。
 //   複製・AI と話す・ほかの操作はまだ使えない：押せない形で出す（D-145.9）。番号のコピーは手元のクリップボードだけ
+//   段の札は StagePill。詳細の本体は段 7 の差し込み口（F6.StageSlot）で包んだ札を stageSlot に渡す（K-380）
 import { Bot, Copy } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/k";
@@ -85,14 +86,29 @@ export interface HeadTicket {
   due_on: string | null;
 }
 
+export type HeadStage = { key?: string | null; name: string } | null;
+
+/** 頭の行の段の札（段が無ければ出さない） */
+export function StagePill({ stage }: { stage: HeadStage }) {
+  if (!stage) return null;
+  return (
+    <span data-part="stage" className="k-detail-stage" data-stage={stage.key ?? undefined}>
+      {stage.name}
+    </span>
+  );
+}
+
 export function DetailMeta({
   ticket,
   kind,
   stage,
+  stageSlot,
 }: {
   ticket: HeadTicket;
   kind: { name: string; color?: string | null } | null;
-  stage: { key?: string | null; name: string } | null;
+  stage: HeadStage;
+  /** 段の札の差し込み口（K-380・渡されれば札の代わりに置く。無ければ StagePill） */
+  stageSlot?: ReactNode;
 }) {
   const [copied, setCopied] = useState("");
   const over = daysOver(ticket.due_on);
@@ -136,11 +152,7 @@ export function DetailMeta({
             {ticket.due_on ? `${mmdd(ticket.due_on)}${over > 0 ? `（${over} 日過ぎ）` : ""}` : ""}
           </b>
         </span>
-        {stage ? (
-          <span data-part="stage" className="k-detail-stage" data-stage={stage.key ?? undefined}>
-            {stage.name}
-          </span>
-        ) : null}
+        {stageSlot ?? <StagePill stage={stage} />}
       </span>
     </div>
   );
