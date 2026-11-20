@@ -39184,7 +39184,7 @@ paths:
       - D-125.40
       - D-125.63
       x-permission: write
-      x-permission-scope: そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）
+      x-permission-scope: そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-CONF-037）
       x-step-up: false
       security:
       - session: []

@@ -49017,7 +49017,7 @@
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
    "permission": {
     "who": "write",
-    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）",
+    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-CONF-037）",
     "step_up": false
    },
    "path_params": [
