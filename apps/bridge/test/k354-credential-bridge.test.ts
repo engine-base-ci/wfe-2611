@@ -287,7 +287,7 @@ describe("K-354 確かめの途中を契約の口へ（コードを頼む・待�
     ...over,
   });
 
-  it("K354-BRG-007 頼む：check-result に asking（request_id・ask_kind code・本人に見せる文）を 1 回だけ送り、waiting で答えを待ち、来たコードを返す", async () => {
+  it("K354-BRG-007 頼む：check-result に asking（request_ref・ask_kind code・本人に見せる文）を 1 回だけ送り、waiting で答えを待ち、来たコードを返す", async () => {
     seen = [];
     waits = 0;
     answerAfter = 3;
@@ -299,11 +299,11 @@ describe("K-354 確かめの途中を契約の口へ（コードを頼む・待�
       path: reportPath(CRED),
       body: { job_id: JOB, ask_kind: "code", text: "発注ナビ から届いた SMS のコードを入れてください" },
     });
-    const rid = asks[0]!.body["request_id"];
+    const rid = asks[0]!.body["request_ref"];
     expect(typeof rid).toBe("string");
     const ws = seen.filter((s) => s.body["state"] === "waiting");
     expect(ws.length).toBe(3);
-    expect(ws.every((s) => s.path === reportPath(CRED) && s.body["request_id"] === rid)).toBe(true);
+    expect(ws.every((s) => s.path === reportPath(CRED) && s.body["request_ref"] === rid)).toBe(true);
     expect(seen.every((s) => s.path.startsWith("/api/v1/"))).toBe(true);
   });
 

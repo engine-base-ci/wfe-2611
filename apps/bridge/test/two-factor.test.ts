@@ -80,13 +80,13 @@ describe("CHT-39-002 SMS・メール・スマホ承認は Bridge が止まって
       path: "/bridge/ask",
       body: { job_id: JOB, state: "asking", ask_kind: "code", text: "発注ナビ から届いたSMSのコードを入れてください" },
     });
-    expect(typeof posted[0]!.body["request_id"]).toBe("string");
-    // 答えが来るまで同じ request_id で取りに行く（頼むのは 1 回）
+    expect(typeof posted[0]!.body["request_ref"]).toBe("string");
+    // 答えが来るまで同じ request_ref で取りに行く（頼むのは 1 回）
     expect(posted.filter((p) => p.path === "/bridge/ask")).toHaveLength(1);
     expect(
       posted
         .filter((p) => p.path === "/bridge/code")
-        .every((p) => p.body["request_id"] === posted[0]!.body["request_id"]),
+        .every((p) => p.body["request_ref"] === posted[0]!.body["request_ref"]),
     ).toBe(true);
   });
   it("CHT-39-002 スマホで承認は TwoFactorApprove で頼み、「承認した」が来たら進む", async () => {
