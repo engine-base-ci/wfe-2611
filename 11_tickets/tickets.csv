@@ -2064,6 +2064,16 @@ K-352,預ける口（createCredential・本人確認の取り直し・金庫に�
 - [ ] 契約の口 `createCredential` が 501 でない。生成の試験 `apps/api/test/generated/post_credentials.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-352.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替えるのは apps/api/test/step_up.test.ts の口の選び方 1 か所）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-353,上書きの口（updateCredential・値・使える場所・期限・理由・本人確認）と消す口（deleteCredential・金庫から失効・すぐ使えない）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-26,F3・預けたログイン情報,"預けたログイン情報の「上書き」の小窓で「本人確認して上書き」を押したときの口 `updateCredential`（PATCH /api/v1/credentials/:id）と、
+「消す」の確かめで「消す」を押したときの口 `deleteCredential`（DELETE /api/v1/credentials/:id）を作る（どちらも今は 501）。
+
+- 上書き：新しい値（ログイン情報なら ID とパスワード、API キー・値なら値）・使える場所・期限・説明・2 段階の種類と、なぜ上書きするか（記録に残る）を受ける。値は見せない・上書きだけ（D-125.151）。前の値は金庫で失効させ、戻せない。値を変えたら PC がもう一度ログインして確かめる（D-117・下絵の小窓の文）。保存の前に本人確認を取り直す（D-128.57「預ける・上書きは本人確認を取り直す」・K-308 の判定）。名前・層・種類は変えられない（D-125.151）
+- 消す：行を消し（論理削除・D-128.84）、すぐ使えなくし（revoked_at）、金庫の物を失効させる。確かめの途中の仕事は止める。消した後は同じ名前でもう一度預けられる（下絵の注意の文）
+
+画面は K-357。","- [ ] 下の表の 29 行（K353-API-001〜029）が緑：`apps/api/test/features/F3/credentials-update-delete.test.ts`（土台 credentials.harness.ts・K-351）
+- [ ] 契約の口 `updateCredential`・`deleteCredential` が 501 でない。生成の試験 `patch_credentials_id.test.ts`・`delete_credentials_id.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-353.json`）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-359,Bridge の側で Claude Code の自己診断と直し方を整える（無い・本体が落ちてきていない・ログインしていない／入れる作業の重なりと時間切れと途中の行・ログインの待ち・この PC の口）（K-89 の葉 ①）,タスク,K-56,未着手,実装,2026-11-21,F3・PC,"古い K-89「Claude Code を入れてログインする」の Bridge（PC 側）の分。画面（K-361）が PC の行に「足りない物と直し方」を出し、押した後の様子を見せられるように、Bridge の側を整える。
 
 - 自己診断の Claude Code の 2 行（ある・ログインできている）を、electron を読まずに試せる関数 `claudeChecks()` に外へ出し、直し方（fix：install／repair／login）とエラーの ID（code：repair は E-CONN-011・login は E-CONN-010）を付ける
