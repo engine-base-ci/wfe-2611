@@ -17784,6 +17784,8 @@
     "bridge-setup",
     "clone-chat"
    ],
+   "canvas": [],
+   "canvas_none": "キャンバスに選ぶ欄と一手の絵は無い（下絵 /dev/mock/f3-pc が正）。口と部品の結線だけでキャンバスの絵は変えない",
    "apis": [],
    "mock": [
     "pc-browser-pick",
