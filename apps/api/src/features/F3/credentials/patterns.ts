@@ -26,18 +26,18 @@ export const NAME_PATTERN = `^[${WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚ�
 const DOT = "[.．。｡]";
 const EXCL =
   "\\x00-\\x20\\x7f-\\x9f!\"#$%&'()*+,./:;<=>?@\\[\\\\\\]\\^`{|}~" +
-  "\\u00a0\\u1680\\u2000-\\u206f\\u3000-\\u3004\\u3008-\\u303f\\uff01-\\uff0f\\uff1a-\\uff20\\uff3b-\\uff3e\\uff40\\uff5b-\\uff65\\ufeff\\ufff0-\\uffff";
+  "\\u00a0\\u1680\\u2000-\\u200f\\u2016-\\u206f\\u3000-\\u3004\\u3008-\\u303f\\uff01-\\uff0c\\uff0e\\uff0f\\uff1a-\\uff20\\uff3b-\\uff3e\\uff40\\uff5b-\\uff65\\ufeff\\ufff0-\\uffff" +
+  "\\u2100-\\u2101\\u2105-\\u2106\\u2488-\\u249b\\u2a74\\u33c2\\u33c7\\u33d8\\ufe13\\ufe16\\ufe19\\ufe30\\ufe47-\\ufe48\\ufe52\\ufe55-\\ufe56\\ufe5f\\ufe68\\ufe6b";
 const LC = `[^${EXCL}]`;
 const NLC = `[^${EXCL}0-9０-９]`;
-const NOT_XN = `(?!${word("xn")}--)`;
-const LABEL = `${NOT_XN}${LC}+`;
-const TLD = `${NOT_XN}${LC}*${NLC}${LC}*`;
+const LABEL = `${LC}+`;
+const TLD = `${LC}*${NLC}${LC}*`;
 const HOST = `((?:${LABEL}${DOT})+${TLD}${DOT}?)`;
 const END = `(?:[:：/／?？#＃]|[${WS}]|$)`;
 const SUFFIX_LOOK = `(?!(?:${PUBLIC_SUFFIXES_LIST.map((x) => [...x].map((c) => (c === "." ? DOT : ch(c))).join("")).join("|")})${DOT}?${END})`;
 const SCHEME = `(?:${word("http")}${ch("s")}?[:：][/／][/／])?`;
 const USERINFO = `(?:[^${WS}/／?？#＃\\\\]*[@＠])?`;
-const PORT = "(?:[:：][0-9０-９]{1,5})?";
+const PORT = "(?:[:：][0-9０-９]{0,5})?";
 const PATH = `(?:[/／?？#＃][^${WS}]*)?`;
 export const DESTINATION_PATTERN = `^[${WS}]*(\\*${DOT})?${SCHEME}${USERINFO}${SUFFIX_LOOK}${HOST}${PORT}${PATH}[${WS}]*$`;
 

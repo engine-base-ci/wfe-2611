@@ -22,7 +22,7 @@ VALUE_RANGES = {
         "layer": {"enum": ["workspace", "personal"]},
         "kind": {"enum": ["login", "key"]},
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}, "description": "契約の pattern に合っても、互換形で書いた公開の接尾辞だけ（ᶜo.jp・ⓒⓞ.jp など）は 422・E-CRED-002 で断る（預けた物がどこでも使えてしまうのを防ぐ守り・K-383）"},
         "name": {"pattern": _CP.NAME},
         "login": {"pattern": _CP.LOGIN},
         "password": {"minLength": 1},

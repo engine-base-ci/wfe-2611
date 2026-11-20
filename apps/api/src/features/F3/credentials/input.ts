@@ -62,14 +62,19 @@ export function parseDescription(v: unknown): string | null {
   return text(typeof v === "string" ? v.replace(/\u0000/g, "") : v) || null;
 }
 
-/** 打ったとおりの使える場所 1 つから、同じ pattern の取り出し（1 番目＝頭の *. ・2 番目＝ホスト）で名前を取る。
- *  ホストは domainToASCII で小文字・punycode にし、末尾の点を 1 つ落とす（new URL には頼らない）。pattern に合えば受ける。
- *  公開の接尾辞だけ・名前にならない形（空のラベル）は最後の砦として断る（pattern の外の字の組み合わせでだけ起きる） */
+const NAME_SHAPE = /^[^.]+(\.[^.]+)+$/;
+
+/** 打ったとおりの使える場所 1 つから、同じ pattern の取り出し（1 番目＝頭の *. ・2 番目＝ホスト）で名前を取る（new URL には頼らない）。
+ *  ホストは domainToASCII で小文字・punycode にする。IDNA が受けない字（未割り当て・結合記号・数字だけの名前になる字など）で
+ *  空や不正が返っても、pattern に合えば断らず、NFKC・小文字にした字のまま持つ（点の区切りは . にそろえ、末尾の点は 1 つ落とす）。
+ *  断るのは公開の接尾辞だけ（互換形の綴り ᶜo.jp など pattern を通るものも、預けた物がどこでも使えてしまう守りのため E-CRED-002） */
 function destinationFrom(typed: string): string | null {
   const m = DESTINATION_RE_RAW.exec(typed);
   if (!m) return null;
-  const host = domainToASCII(m[2] ?? "").replace(/\.$/, "");
-  if (!/^[^.]+(\.[^.]+)+$/.test(host) || PUBLIC_SUFFIXES.has(host)) return null;
+  const folded = (h: string): string => h.normalize("NFKC").toLowerCase().replace(/[。｡．]/g, ".").replace(/\.$/, "");
+  const ascii = domainToASCII(m[2] ?? "").replace(/\.$/, "");
+  const host = NAME_SHAPE.test(ascii) ? ascii : folded(m[2] ?? "");
+  if (!NAME_SHAPE.test(host) || PUBLIC_SUFFIXES.has(host) || PUBLIC_SUFFIXES.has(folded(m[2] ?? ""))) return null;
   return m[1] ? `*.${host}` : host;
 }
 
