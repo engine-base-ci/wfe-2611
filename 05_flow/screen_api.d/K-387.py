@@ -52,9 +52,17 @@ ERRORS_4XX = {
     ],
 }
 
-# 契約に書けない値の決まり（口の振る舞いのまま 422・scripts/ci/contract_shape.d/K-387.py と同じ並び）。
-#   K-355 の形全体の決まり（INPUT_RULES）が本線に入ったら、ここは INPUT_RULES に移して空にする
-UNEXPRESSIBLE_422 = {
-    "updateTicket": ["stage_id と stage_key の両方", "stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）",
-                     "stage_key todo・doing に保留の理由か再開の条件を付けた", "ほかの欄（E-VAL-018・前処理）", "空の体"],
+# 形全体の決まり（欄をまたぐ決まり・K-355 の INPUT_RULES の書き方・代表の答え answer=f0f290e785a9：検査の例外は足さない）。口の振る舞いと同じ 422
+#   1 段は stage_id か stage_key の片方だけ／空の体は断る（どれか 1 欄は要る）／stage_key hold は理由と条件が要る／stage_key todo・doing は理由と条件を付けない
+#   「ほかの欄（題名・期限など）」は入力の形に無い欄＝知らない欄なので、形が断る（E-VAL-018 の前処理と同じ 422）
+_FIELDS = ["stage_id", "stage_key", "actual_minutes", "hold_reason", "resume_condition"]
+INPUT_RULES = {
+    "updateTicket": {"allOf": [
+        {"not": {"required": ["stage_id", "stage_key"]}},
+        {"anyOf": [{"required": [f]} for f in _FIELDS]},
+        {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["todo", "doing"]}}},
+                   {"required": ["hold_reason", "resume_condition"]}]},
+        {"anyOf": [{"not": {"required": ["stage_key"]}}, {"properties": {"stage_key": {"enum": ["hold"]}}},
+                   {"not": {"anyOf": [{"required": ["hold_reason"]}, {"required": ["resume_condition"]}]}}]},
+    ]},
 }
