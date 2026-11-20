@@ -18,7 +18,7 @@ import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
 import { createDeviceResolver } from "@kaname/auth/resolver";
 import { createApp } from "../../../src/app.js";
-import { INVITE_EMAIL_PATTERN } from "../../../src/features/F10/invite/patterns.js";
+import { INVITE_EMAIL_MAX_LENGTH, INVITE_EMAIL_PATTERN } from "../../../src/features/F10/invite/patterns.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
@@ -466,18 +466,21 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect((await invite(admin, base(many.slice(0, 50)))).status).toBe(201);
   });
 
-  it("K419-API-024 口が打ったとおりに照らす宛ての pattern（patterns.ts の INVITE_EMAIL_PATTERN）と人数（INVITE_MAX）は、契約（08_api/openapi.yaml の InvitationsCreateInput の emails）の items の pattern・maxItems・minItems と 1 字も違わない", () => {
+  it("K419-API-024 口が打ったとおりに照らす宛ての pattern（patterns.ts の INVITE_EMAIL_PATTERN）と人数（INVITE_MAX）は、契約（08_api/openapi.yaml の InvitationsCreateInput の emails）の items の pattern・maxLength（320）・maxItems・minItems と 1 字も違わない", () => {
     const py =
       "import yaml,json,sys;d=yaml.safe_load(open(sys.argv[1]));" +
       "e=d['components']['schemas']['InvitationsCreateInput']['properties']['emails'];" +
-      "print(json.dumps({'pattern':e['items']['pattern'],'max':e['maxItems'],'min':e['minItems']}))";
+      "print(json.dumps({'pattern':e['items']['pattern'],'max':e['maxItems'],'min':e['minItems'],'len':e['items']['maxLength']}))";
     const yamlPath = join(ROOT, "08_api/openapi.yaml");
     const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as {
       pattern: string;
       max: number;
       min: number;
+      len: number;
     };
     expect(got.pattern).toBe(INVITE_EMAIL_PATTERN);
+    expect(got.len).toBe(INVITE_EMAIL_MAX_LENGTH);
+    expect(INVITE_EMAIL_MAX_LENGTH).toBe(320);
     expect(got.max).toBe(50);
     expect(got.min).toBe(1);
   });
@@ -574,6 +577,34 @@ describe("K-419 メールで招く（createInvitations）", () => {
       expect(EMAIL_RE.test(normalizeEmail(typed)), `U+${c.toString(16)} は前の口は受けた`).toBe(true);
       expect(re.test(typed), `U+${c.toString(16)} は今は断る`).toBe(false);
     }
+  });
+
+  it("K419-API-028 宛て 1 つの長さは打ったとおりの字で 320 字まで：321 字は 422・E-INV-009・招待 0・メール 0。320 字ちょうどは 201（PM の決め 2026-11-21 03:40）", async () => {
+    await ready();
+    const before = mails.length;
+    const tail = "@engine-base.example";
+    const ok = `${"a".repeat(INVITE_EMAIL_MAX_LENGTH - tail.length - 8)}${randomUUID().slice(0, 8)}${tail}`;
+    expect(ok).toHaveLength(INVITE_EMAIL_MAX_LENGTH);
+    const over = `${"b".repeat(INVITE_EMAIL_MAX_LENGTH + 1 - tail.length)}${tail}`;
+    expect(over).toHaveLength(INVITE_EMAIL_MAX_LENGTH + 1);
+    const r = await invite(admin, base([over]));
+    expect(r.status).toBe(422);
+    expect((await json(r))["code"]).toBe("E-INV-009");
+    expect(await invRows(over)).toHaveLength(0);
+    expect(mails.length).toBe(before);
+    expect((await invite(admin, base([ok]))).status).toBe(201);
+    expect(await invRows(ok)).toHaveLength(1);
+  });
+
+  it("K419-API-029 点を 16000 個並べた長い入力は、pattern を当てる前に長さで断る：すぐ（1 秒の内）422・E-INV-009・招待 0", async () => {
+    await ready();
+    const evil = `a@b${".".repeat(16000)}!`;
+    const t0 = Date.now();
+    const r = await invite(admin, base([evil]));
+    expect(Date.now() - t0).toBeLessThan(1000);
+    expect(r.status).toBe(422);
+    expect((await json(r))["code"]).toBe("E-INV-009");
+    expect(await n("select count(*) as n from invitations where email like 'a@b.%'")).toBe(0);
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
