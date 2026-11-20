@@ -2241,3 +2241,15 @@ K-390,決定を読む口（listTicketDecisions）・足す口（createTicketDeci
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-391,決定を改める・取り消す口（updateTicketDecision。改めるは新しい行でつなぎ古い方に印・取り消しは印と理由を残す・取引先のルールは段 12 まで断る）（K-66 の葉）,タスク,K-66,未着手,実装,2026-11-26,F6・決める,"契約の口 `updateTicketDecision`（PATCH /api/v1/ticket_decisions/:id・今は 501）を作る。決定は上書きしない（D-125.63）。
+
+- **改める**（action revise）：新しい決定の行を足し、改めた元（古い行）の superseded_by_id に新しい行をつなぐ。古い方は「改められた」の印が付き、字は変わらない。新しい決定の決めた人は改めた本人、理由は「改める理由」（仮・空でよい）
+- **取り消す**（action cancel）：取り消した時刻・取り消した人・理由を付けて残す（消さない・代表の答え ⑰）。一覧では下に回る（K-390 の並び）
+- **同時にほかの人が改めていたら断る**（409 E-CONF-031「この決定は、いま別の人が改めました。読み直してから、もう一度お試しください」・㉒）。取り消し済みなら 409 E-CONF-033（仮）
+- **取引先のルールにする**（action promote）は取引先の画面（段 12・F11）まで断る（422 E-VAL-018「取引先の画面ができてから使えます」）
+- 改めた・取り消したら担当者と承認する人に受け箱で知らせ（自分は除く）、やり取りに 1 行（⑲）","- [ ] 下の表の 17 行（K391-API-001〜017）が緑：`apps/api/test/features/F6/decision-update.test.ts`（土台は K-390 の decisions.harness.ts）
+- [ ] 契約の口 `updateTicketDecision` が 501 でない。生成の試験 `apps/api/test/generated/patch_ticket_decisions_id.test.ts` の it.todo が、na（理由つき）を除いて 0
+- [ ] 共有の試験 k144-contract.test.ts の回で、この葉の行 K144-API-760 が通る（葉のファイル `k144.d/K-391.ts`）
+- [ ] K-390 の試験 decisions.test.ts が緑のまま
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
