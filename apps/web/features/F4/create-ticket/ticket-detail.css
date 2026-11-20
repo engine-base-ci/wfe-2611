@@ -2,7 +2,7 @@
    色・文字・角丸・余白の段から作ったトークン（--k-*）だけを読む。生の色・大きさは書かない（@media の区切りのほか）。
    形：.k-detail（横並び）＝ 本文の箱 section.k-page（白いカード article.k-detail-card と 子チケット・つながりのカード）
        ＋（閉じたときだけ）パネルを開くボタン ＋ 右の属性パネル aside.k-detail-panel（幅 380・左に線・1024 以上は上に貼り付く）。
-   1023 以下はパネルを本文の下に回す。767 以下はカードの中の左右の余白を spacing.md にし、頭の行の右（開始日・期限・段）を 2 列の格子にする。
+   1023 以下はパネルを本文の下に回す。767 以下はカードの中の左右の余白を spacing.md にし、頭の行の右（開始日・期限・段）は横に並べて頭の行を 2 行までにする（代表の直し answer=fabd031f9b37）。
    外枠の上の帯（shell-bar の高さ・上に貼り付く）がある幅では、上に貼り付く物（本文の道具の帯・パネル）をその下に置く */
 
 /* ---- 並べ方 ---- */
@@ -451,7 +451,7 @@
   }
 }
 
-/* ---- 767 以下：外枠の上の帯が無い（上の端に貼り付く）・カードの中の左右 spacing.md・頭の行の右は 2 列の格子 ---- */
+/* ---- 767 以下：外枠の上の帯が無い（上の端に貼り付く）・カードの中の左右 spacing.md・頭の行の右は横に並べて 2 行まで（代表の直し answer=fabd031f9b37） ---- */
 @media (max-width: 767px) {
   .k-detail {
     min-height: 0;
@@ -471,8 +471,10 @@
     padding-right: var(--k-s-md);
   }
   .k-detail-meta-side {
-    display: grid;
-    grid-template-columns: max-content max-content;
-    justify-items: start;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--k-s-xs) var(--k-s-sm);
+    margin-left: 0;
   }
 }

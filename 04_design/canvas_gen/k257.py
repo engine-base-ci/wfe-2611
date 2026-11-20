@@ -135,8 +135,8 @@ PILL = re.compile(r'(<span style="font-size: 12px; font-weight: 500; border-radi
 # 幅 1023 以下は右のパネルを本文の下に回す（画面の K-226 と shellfix の今の境目 1023）。kn-shell の前に置くので shellfix が消さない
 NARROW = ("/* k257-detail */\n@media (max-width:1023px){div:has(>aside[aria-label=\"チケットのパネル\"]){flex-direction:column}"
           "aside[aria-label=\"チケットのパネル\"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}"
-          # 幅 767 以下は、上の行の日付と札を 2 列の格子にする（札の字の長さで行の折り返しが変わり、帯の位置が絵ごとにずれないように）
-          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:grid !important;grid-template-columns:max-content max-content;justify-items:start;row-gap:4px}}"
+          # 幅 767 以下は、上の行の日付と札を 2 行目に横に並べる（頭の行は 2 行まで・段 7 の代表の直し answer=fabd031f9b37・画面の ticket-detail.css と同じ）
+          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:flex !important;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-left:0 !important}}"
           # ボタンの名前は 1 行（並びは折り返す）。代表の答え answer=ba0d9572fc77・PM の決め
           "article :is(a[style*=\"height: 30px\"],a[style*=\"height: 32px\"],button){white-space:nowrap}article div:has(>a[style*=\"height: 30px\"]){flex-wrap:wrap}\n")
 # 承認待ち：ボタンの名前は 1 行・右の並びは折り返す
