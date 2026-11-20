@@ -10,7 +10,7 @@ VALUE_RANGES = {
         "kind": {"enum": ["login", "key"]},
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
         "destinations": {"minItems": 1, "maxItems": 20},
-        "name": {"pattern": "^[A-Z][A-Z0-9_]{0,63}$"},
+        "name": {"pattern": "^[ \\t\\n\\r]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[ \\t\\n\\r]*$"},
     },
 }
 UNEXPRESSIBLE_422 = {

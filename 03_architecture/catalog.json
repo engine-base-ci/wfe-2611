@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 368,
-  "api_built": 62,
+  "api": 369,
+  "api_built": 66,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 145,
   "ui": 18,
   "packages": 13,
-  "errors": 201,
+  "errors": 207,
   "stack": 56,
   "env": 41
  },
@@ -668,9 +668,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -739,6 +739,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-362"
+   ]
+  },
+  {
+   "op": "checkMyDeviceBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "bridge_jobs"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-365"
    ]
   },
   {
@@ -1702,9 +1719,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1719,9 +1736,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -6106,10 +6123,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "bridge_pairing_codes",
