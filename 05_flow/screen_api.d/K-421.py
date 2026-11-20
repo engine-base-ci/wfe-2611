@@ -18,24 +18,21 @@ VALUE_RANGES = {
     },
 }
 
-UNEXPRESSIBLE_422 = {
-    "createInvitationLink": [
-        "グループがこの会社に無い・消した（E-INV-011）",
-    ],
-}
+# 契約に書けない形の誤りは無い（グループが無い・消したは DB の中身で決まるので 404・E-INV-011）
+UNEXPRESSIBLE_422 = {}
 
-# リンクを作る：権限（403）・本人確認（403）・入力（422）・DB が落ちた（503）
+# リンクを作る：権限（403）・本人確認（403）・入力の形（422）・グループが無い（404）・DB が落ちた（503）
 ERRORS_4XX = {
     "createInvitationLink": [
         {"status": 403, "code": "STEP_UP_REQUIRED", "body": {"error": "step_up_required", "code": "STEP_UP_REQUIRED"},
          "trigger": "管理者として入るリンクを作るのに、本人確認の取り直しが直前 15 分の内に無い",
          "ears_form": "UNWANTED: IF 管理者として入るリンクを作るのに取り直しが直前 15 分の内に無いなら、Kaname は 403 と STEP_UP_REQUIRED を返し、招待を作らない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "code": "VALIDATION_ERROR"},
-         "trigger": "グループが無い・役割が決まった値の外・知らない欄（strict）",
+         "trigger": "グループを選んでいない・役割が決まった値の外・知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 を返し、招待のリンクを作らない"},
-        {"status": 422, "code": "E-INV-011", "body": {"error": "validation", "code": "E-INV-011", "details": []}, "errors": ["E-INV-011"],
+        {"status": 404, "code": "E-INV-011", "body": {"error": "not_found", "code": "E-INV-011", "details": []}, "errors": ["E-INV-011"],
          "trigger": "グループがこの会社に無い・消した（E-INV-011）",
-         "ears_form": "UNWANTED: IF グループがこの会社に無い・消したなら、Kaname は 422 と E-INV-011 を返し、招待のリンクを作らない"},
+         "ears_form": "UNWANTED: IF グループがこの会社に無い・消したなら、Kaname は 404 と E-INV-011 を返し、招待のリンクを作らない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "招待の行と証跡を書く DB が落ちた",
          "ears_form": "UNWANTED: IF 招待を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、招待も証跡も残さない"},

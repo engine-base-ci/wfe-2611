@@ -2,7 +2,7 @@
 --   宛てのメールを持たない招待（＝招待のリンク）を作り、F2 の下見と今のアカウントで参加を、その招待に合わせる。
 --   ① invitations.email の not null を外す（宛てのメールが空＝招待のリンク。種類の列は足さない。メールで招いた物は今までどおり必ず宛てを持つ）
 --   ② app.create_invitation_link(p_scope, p_role, p_token_hash)：招く権限（members の invite・会社全体）の判定は app.create_invitations と同じ式。
---      権限が無ければ 42501（hint なし）・役割が 4 つの外なら 22023・グループがこの会社に無い／消した → 42501・hint E-INV-011。
+--      権限が無ければ 42501（hint なし）・役割が 4 つの外なら 22023・グループがこの会社に無い／消した → 42501・hint E-INV-011（口が 404 で返す）。
 --      招待を 1 行（email 空・期限 now()+7 日・created_by 呼んだ人）と証跡 invitation.link_created（payload に招待 id・グループ・役割だけ。トークンは書かない）を 1 つの取引で
 --   ③ app.invitation_preview2 を作り直す（形は 0114 のまま）：宛てが空なら account_exists は false・ログイン中の email_matches は true
 --   ④ app.join_invitation を作り直す（形は 20261119070749 のまま）：宛ての照らし合わせ（wrong_email）は宛てのメールが在る招待だけ

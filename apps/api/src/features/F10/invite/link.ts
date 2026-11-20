@@ -1,10 +1,10 @@
 // 招待のリンクを作る口（K-421）：createInvitationLink（POST /api/v1/invitations/link・D-148.22・D-148.51）。
 //   宛てのメールを持たない、7 日・1 回だけの招待。入口（op.ts）が先に確かめる：ログイン（401）・権限（members の invite・会社全体。マネージャーは 403）・
 //   上限・体の形（scope_id・role_key。知らない項目は 422）。順：
-//   ⓪ 欠け・決まった値の外（グループが無い・役割が 4 つの外）は 422・VALIDATION_ERROR
+//   ⓪ 欠け・決まった値の外（グループを選んでいない・役割が 4 つの外）は 422・VALIDATION_ERROR（形の誤りだけ。グループが会社に無いのは DB の中身で決まるので ② で 404）
 //   ① 管理者として入るリンク（role_key admin）だけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
 //   ② 32 バイトの乱数のトークンを作り、1 つの取引（app.create_invitation_link）で招待の行と証跡を書く（DB には sha256 だけ）。
-//      グループが会社に無い・消した → 422・E-INV-011／権限が無い → 403／DB が落ちた → 503・E-PAGE-003（何も残らない）
+//      グループが会社に無い・消した → 404・E-INV-011／権限が無い → 403／DB が落ちた → 503・E-PAGE-003（何も残らない）
 //   ③ 201 { data: { url, expires_at } }・（Cache-Control: private, no-store は入口の app.ts が全部の答えに付ける。答えにトークンが入るので冪等の器には残さない＝hooks の noIdempotency）
 //   ログ・証跡にトークンとリンクの住所を書かない（ログは場所と例外の種類だけ）
 import { createHash, randomBytes } from "node:crypto";
@@ -47,7 +47,7 @@ function refused(e: unknown): HookReply {
   if (code === "42501" && hint === "E-INV-011") {
     const err = kanameError("E-INV-011").toJSON();
     return {
-      status: 422,
+      status: 404,
       body: {
         ...err,
         details: [{ field: "scope_id", code: "E-INV-011", message: kanameError("E-INV-011").entry.message }],

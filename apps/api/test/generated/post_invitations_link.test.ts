@@ -24,8 +24,8 @@ describe("POST /api/v1/invitations/link", () => {
     // 本物の試験：apps/api/test/features/F10/invite-link.test.ts の「K421-API-005」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-link.test.ts", "utf8")).toContain("K421-API-005");
   });
-  it("test_post_invitations_link_rejected_422_2", () => {
-    // UNWANTED: IF グループがこの会社に無い・消したなら、Kaname は 422 と E-INV-011 を返し、招待のリンクを作らない
+  it("test_post_invitations_link_not_found", () => {
+    // UNWANTED: IF グループがこの会社に無い・消したなら、Kaname は 404 と E-INV-011 を返し、招待のリンクを作らない
     // 本物の試験：apps/api/test/features/F10/invite-link.test.ts の「K421-API-002」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-link.test.ts", "utf8")).toContain("K421-API-002");
   });

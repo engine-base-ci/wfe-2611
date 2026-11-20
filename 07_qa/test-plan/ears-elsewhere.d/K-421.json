@@ -9,7 +9,7 @@
     "test_post_invitations_link_rejected_401": "K421-API-004",
     "test_post_invitations_link_rejected_403": "K421-API-004",
     "test_post_invitations_link_rejected_422": "K421-API-005",
-    "test_post_invitations_link_rejected_422_2": "K421-API-002",
+    "test_post_invitations_link_not_found": "K421-API-002",
     "test_post_invitations_link_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"

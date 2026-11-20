@@ -390,11 +390,11 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(mails.length).toBe(before);
   });
 
-  it("K419-API-011 もうこのワークスペースに入っている人（大文字で入れても）：422・E-INV-010・招待 0・メール 0", async () => {
+  it("K419-API-011 もうこのワークスペースに入っている人（大文字で入れても）：409・E-INV-010・招待 0・メール 0", async () => {
     await ready();
     const before = mails.length;
     const r = await invite(admin, base([member.email.toUpperCase()]));
-    expect(r.status).toBe(422);
+    expect(r.status).toBe(409);
     const j = await json(r);
     expect(j["code"]).toBe("E-INV-010");
     expect(j.details?.[0]).toMatchObject({ field: "emails", email: member.email, code: "E-INV-010" });
@@ -402,15 +402,16 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(mails.length).toBe(before);
   });
 
-  it("K419-API-012 形の違う字と入っている人が混じる：422・details に 2 つ（E-INV-009 と E-INV-010・入れた順）・招待 0（下絵 inv-error）", async () => {
+  it("K419-API-012 形の違う字と入っている人が混じる：形の誤りが先に 422・details は E-INV-009 だけ（入っている人は 409 の話で、形を直した次の回に出す）・招待 0", async () => {
     await ready();
+    const before = mails.length;
     const r = await invite(admin, base(["kimura@engine-base", member.email]));
     expect(r.status).toBe(422);
     const j = await json(r);
-    expect((j.details ?? []).map((d) => [d.email, d.code])).toEqual([
-      ["kimura@engine-base", "E-INV-009"],
-      [member.email, "E-INV-010"],
-    ]);
+    expect(j["code"]).toBe("E-INV-009");
+    expect((j.details ?? []).map((d) => [d.email, d.code])).toEqual([["kimura@engine-base", "E-INV-009"]]);
+    expect(await invRows(member.email)).toHaveLength(0);
+    expect(mails.length).toBe(before);
   });
 
   it("K419-API-013 招待中の人に重ねて招く：201・前の招待は取り消し（revoked_at）・新しい招待 1 つ・メール 1 通（代表に聞くこと 3 の勧め）", async () => {
@@ -427,7 +428,7 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(mails.slice(before).filter((m) => m.to === e)).toHaveLength(1);
   });
 
-  it("K419-API-014 グループが別の会社の物・在らない id・消した：422・E-INV-011・招待 0", async () => {
+  it("K419-API-014 グループが別の会社の物・在らない id・消した：404・E-INV-011・招待 0", async () => {
     await ready();
     const gone = (
       await f.admin.query<{ id: string }>(
@@ -438,7 +439,7 @@ describe("K-419 メールで招く（createInvitations）", () => {
     for (const s of [O.rootScope, randomUUID(), gone]) {
       const e = fresh("scope");
       const r = await invite(admin, base([e], { scope_id: s }));
-      expect(r.status, s).toBe(422);
+      expect(r.status, s).toBe(404);
       expect((await json(r))["code"]).toBe("E-INV-011");
       expect(await invRows(e)).toHaveLength(0);
     }

@@ -6438,7 +6438,7 @@
   },
   {
    "id": "E-INV-010",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "members",
     "state": "invite"
@@ -6468,7 +6468,7 @@
   },
   {
    "id": "E-INV-011",
-   "class": "validation",
+   "class": "not_found",
    "where": {
     "screen": "members",
     "state": "invite"

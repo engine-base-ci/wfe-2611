@@ -11,9 +11,5 @@ VALUE_RANGES = {
         "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
     },
 }
-UNEXPRESSIBLE_422 = {
-    "createInvitationLink": [
-        "グループがこの会社に無い・消した（E-INV-011）",
-    ],
-}
+UNEXPRESSIBLE_422 = {}
 AGENT_ANSWERS = {}
