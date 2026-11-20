@@ -1,7 +1,7 @@
 // 答えるの種類ごとのファイル：申し出に答える（K-408・D-148.12）。渡す＝申し出た人に担当者が替わる（受け箱だけ）・断る＝理由を残して知らせる。
-//   申し出は一緒に切り替える物を選ばないので、答えに switch が付いていたら断る（この種類だけの決まり）
+//   申し出は一緒に切り替える物を選ばないので、答えに switch が付いていたら断る（この種類だけの決まり・形の誤りなので番号なしの 422）
 import { withTenant } from "@kaname/db/context";
-import { down, kindOf, replyOf } from "../errors.js";
+import { down, invalid, kindOf, replyOf } from "../errors.js";
 import type { AnswerKind } from "../kinds.js";
 import { sendHandoverMails, type MailRow } from "../notify.js";
 
@@ -9,7 +9,7 @@ type OfferAnswer = { ok?: boolean; error?: string; handover?: unknown; mails?: M
 
 export const answerOffer: AnswerKind = async (c) => {
   const where = "申し出に答える";
-  if (c.input.switch !== null) return replyOf({ error: "switch", field: "switch" }, where);
+  if (c.input.switch !== null) return invalid("switch", "申し出に答えるときは一緒に切り替える物を選べません");
   let v: OfferAnswer;
   try {
     v = await withTenant(c.d.appPool, c.a.ctx, async (cl) => {

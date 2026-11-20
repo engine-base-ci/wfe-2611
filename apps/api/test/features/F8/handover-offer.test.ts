@@ -11,7 +11,7 @@
 //   createTicketHandover POST  /tickets/:id/handovers ← { kind: "offer", reason }（相手・期限は付けない）→ 201 { data: TicketHandoverCreated（16 の鍵） }
 //   answerTicketHandover PATCH /ticket_handovers/:id  ← { decision: "accept" } | { decision: "decline", decline_reason } → 200 { data: TicketHandoverAnswered（16 の鍵） }
 //   受け箱の行：handover.offered（担当者へ・受け箱＋メール event offered）・handover.accepted（申し出た人へ・受け箱だけ）・handover.declined（申し出た人へ・受け箱＋メール event declined）
-//   断る：AI が動いている・承認を待っている 409 E-HND-003・待っている渡しがある 409 E-HND-004・もう決まっていた 409 E-HND-005・申し出た人が止まった 422 E-HND-006（どれも K-401 の番号）
+//   断る：AI が動いている・承認を待っている 409 E-HND-003・待っている渡しがある 409 E-HND-004・もう決まっていた 409 E-HND-005・申し出た人が止まった 409 E-HND-006・抜けた（消した）404 E-HND-014（どれも K-401 の番号）
 import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -438,14 +438,14 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
     expect((await decline(a, waitingApproval.id, "AI の結果を見てから決める")).status).toBe(200);
   });
 
-  it("K408-API-010 申し出た人が止まった・抜けた後 × 「渡す」（G-14）：止まった人は 422 E-HND-006（今は選べません）・抜けた（消した）人は 422 E-HND-014（見つかりません）。どちらも担当者は替わらない・申し出は待ったまま（断るか、申し出た人が取り下げる）", async () => {
+  it("K408-API-010 申し出た人が止まった・抜けた後 × 「渡す」（G-14）：止まった人は 409 E-HND-006（今は選べません）・抜けた（消した）人は 404 E-HND-014（見つかりません）。どちらも担当者は替わらない・申し出は待ったまま（断るか、申し出た人が取り下げる）", async () => {
     await ready();
     const a = await human("高本 010");
     const b = await human("鈴木 010");
     const { t, id } = await offered(a, b);
     await f.admin.query("update members set suspended_at = now(), suspended_by = id where id = $1", [b.id]);
     const r = await give(a, id);
-    expect(r.status).toBe(422);
+    expect(r.status).toBe(409);
     expect((await json(r))["code"]).toBe("E-HND-006");
     expect(await assigneeOf(t.id)).toBe(a.id);
     expect((await handoversOf(t.id))[0]).toMatchObject({ state: "waiting" });
@@ -453,7 +453,7 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
     const gone = await offered(a, c);
     await f.admin.query("update members set deleted_at = now() where id = $1", [c.id]);
     const r2 = await give(a, gone.id);
-    expect(r2.status).toBe(422);
+    expect(r2.status).toBe(404);
     expect((await json(r2))["code"]).toBe("E-HND-014");
     expect(await assigneeOf(gone.t.id)).toBe(a.id);
     expect((await handoversOf(gone.t.id))[0]).toMatchObject({ state: "waiting" });
@@ -521,7 +521,7 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
     expect((await json(asB)).data).toMatchObject({ ticket: { id: t.id } });
   });
 
-  it("K408-API-018 答える口に switch を送る（申し出の渡すは切り替えを受けない・K-403 と同じ）× 渡す・断る：どちらも 422・E-HND-011・欄 switch。申し出は待ったまま・担当者そのまま・申し出た人の受け箱は 0", async () => {
+  it("K408-API-018 答える口に switch を送る（申し出の渡すは切り替えを受けない・K-403 と同じ）× 渡す・断る：どちらも 422・番号なし（VALIDATION_ERROR）・欄 switch（形の誤り・K-401 の決め）。申し出は待ったまま・担当者そのまま・申し出た人の受け箱は 0", async () => {
     await ready();
     const a = await human("高本 018");
     const b = await human("鈴木 018");
@@ -534,7 +534,7 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
       const r = await req("PATCH", `/ticket_handovers/${id}`, { body, headers: auth(a) });
       expect(r.status, JSON.stringify(body)).toBe(422);
       const e = (await json(r)) as unknown as { code?: string; field?: string; details?: { field: string }[] };
-      expect(e.code).toBe("E-HND-011");
+      expect(e.code).toBe("VALIDATION_ERROR");
       expect(e.details?.map((x) => x.field) ?? [e.field]).toContain("switch");
     }
     expect((await handoversOf(t.id))[0]).toMatchObject({ state: "waiting", decided_at: null });
