@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:ba6cde2a418cf58e
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:4e23902819994d64
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3205,11 +3205,11 @@ export const TicketHandovers = z.strictObject({
   state: z.string().optional(),
   decline_reason: z.string().nullable().optional(),
   decided_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  notify_managers: z.string().optional(),
-  reminded_at: z.iso.datetime({ offset: true }).optional(),
-  overdue_notified_at: z.iso.datetime({ offset: true }).optional(),
-  switch_applied: z.record(z.string(), z.unknown()).optional(),
-  answered_by: z.string().optional(),
+  notify_managers: z.boolean().optional(),
+  reminded_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  overdue_notified_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  switch_applied: z.unknown().nullable().optional(),
+  answered_by: z.uuid().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -3231,11 +3231,11 @@ export const TicketHandoversInput = z.strictObject({
   state: z.string().optional(),
   decline_reason: z.string().nullable().optional(),
   decided_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  notify_managers: z.string().optional(),
-  reminded_at: z.iso.datetime({ offset: true }).optional(),
-  overdue_notified_at: z.iso.datetime({ offset: true }).optional(),
-  switch_applied: z.record(z.string(), z.unknown()).optional(),
-  answered_by: z.string().optional(),
+  notify_managers: z.boolean().optional(),
+  reminded_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  overdue_notified_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  switch_applied: z.unknown().nullable().optional(),
+  answered_by: z.uuid().nullable().optional(),
 });
 export const SavedViews = z.strictObject({
   member_id: z.uuid().optional(),

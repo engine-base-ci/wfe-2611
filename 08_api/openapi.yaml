@@ -8808,18 +8808,21 @@ components:
           format: date-time
           nullable: true
         notify_managers: &id806
-          type: string
+          type: boolean
         reminded_at: &id807
           type: string
           format: date-time
+          nullable: true
         overdue_notified_at: &id808
           type: string
           format: date-time
+          nullable: true
         switch_applied: &id809
-          type: object
-          additionalProperties: true
+          nullable: true
         answered_by: &id810
           type: string
+          format: uuid
+          nullable: true
         id:
           type: string
           format: uuid
