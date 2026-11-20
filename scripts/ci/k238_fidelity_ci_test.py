@@ -15,6 +15,7 @@ CI の spec の組（G69）と web の組（G70）で流れ、比べ方を変え
 
 範囲を決める台本（web_select.py・ci_scope.py・web_run.py）の 3 つ目の選ぶ先「専用の段の画面の試験」（ci_scope.json の web_select.gates）：
   G48・G59 の一覧に無く、専用の段（G70）が流す画面の試験。比べ方の道具・突き合わせの試験の道具を変えた差分で選ばれ、関係ない画面の差分では選ばれない。
+  専用の段はほかにも在る（73＝Bridge の輪と Chrome・K-379）。この試験は選んだ一覧のうち 70 の答えだけを見る（K-379 の切る段で、一覧まるごとの比べから替えた）。
 """
 from __future__ import annotations
 
@@ -325,13 +326,13 @@ class GateSelectTest(unittest.TestCase):
         for f, tid in cases:
             r = pick([f], tid)
             f = f"{f}（{tid}）"
-            self.assertEqual(r["gates"], {"70": [FID]}, f)
+            self.assertEqual(r["gates"]["70"], [FID], f)
             self.assertEqual((r["g48"], r["g59"]), ([], []), f)
             p = {"mode": "ticket", "jobs": {"unit": False, "database": False, "web": True}, "errors": [], "reasons": []}
             out = ci_scope.with_web_selection(p, r)
             self.assertTrue(out["jobs"]["web"], f)
             self.assertEqual(out["errors"], [], f)
-            self.assertEqual(json.loads(ci_scope.outputs({**self.base_plan(), **out})["web_gates"]), {"70": [FID]})
+            self.assertEqual(json.loads(ci_scope.outputs({**self.base_plan(), **out})["web_gates"])["70"], [FID])
 
     def test_K238_VF_024_web_off_stays_off(self) -> None:
         """K238-VF-024 web の組が起きていない回（jobs.web が False）は、専用の段に当たっても False のまま（起こすかは jobs.web の地図が決める）。止める文は出さず web_gates は出す"""
@@ -340,7 +341,7 @@ class GateSelectTest(unittest.TestCase):
         out = ci_scope.with_web_selection(p, r)
         self.assertFalse(out["jobs"]["web"])
         self.assertEqual(out["errors"], [])
-        self.assertEqual(out["web_gates"], {"70": [FID]})
+        self.assertEqual(out["web_gates"]["70"], [FID])
 
     @staticmethod
     def base_plan() -> dict:
@@ -351,7 +352,7 @@ class GateSelectTest(unittest.TestCase):
         """K238-VF-025 関係ない画面の差分（別のチケットの画面のコード・別の試験の部品）では専用の段 70 は選ばれない（G48 の答えは前と同じ）"""
         for f in ("apps/web/app/a/page.tsx", "apps/web/tests/_lib/row.ts"):
             r = pick([f])
-            self.assertEqual(r["gates"], {"70": []}, f)
+            self.assertEqual(r["gates"]["70"], [], f)
             self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], f)
         # 入れた組が 1 つでもあれば、web の組が起きる回には専用の段を必ず選ぶ（G48 の答えは同じ）。入れた組が 0 なら上のまま。
         # ci_scope が実際に選ぶ所（_web_pick）を偽の木に当てる。fidelity.json が無い・壊れているときは always を付けない（例外で落ちない。形の誤りは G69 が赤にする）
@@ -371,10 +372,10 @@ class GateSelectTest(unittest.TestCase):
                 else:
                     f.write_text(text, encoding="utf-8")
                 r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, plan, "K-99")
-                self.assertEqual(r["gates"], {"70": want}, text)
+                self.assertEqual(r["gates"]["70"], want, text)
                 # always が付いても G48・G59 は全部に倒れない（チケットの CI はチケットの範囲だけ）
                 r = pick(["apps/web/tests/_lib/row.ts"], cfg=ci_scope.gate_cfg(str(tmp), web_cfg()))
-                self.assertEqual((r["gates"], r["g48"], r["g59"]), ({"70": want}, ["apps/web/tests/k/a.spec.ts"], []), text)
+                self.assertEqual((r["gates"]["70"], r["g48"], r["g59"]), (want, ["apps/web/tests/k/a.spec.ts"], []), text)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
@@ -402,11 +403,11 @@ class GateSelectTest(unittest.TestCase):
         for changed, tid in cases:
             a, b = pick(changed, tid), pick(changed, tid, without)
             self.assertEqual((a["g48"], a["g59"], a["tasks"]), (b["g48"], b["g59"], b["tasks"]), changed)
-        self.assertEqual(pick(["apps/web/package.json"])["gates"], {"70": [FID]}, "画面の試験の設定を変えたら専用の段も全部")
+        self.assertEqual(pick(["apps/web/package.json"])["gates"]["70"], [FID], "画面の試験の設定を変えたら専用の段も全部")
         # 全部に倒れる回（共通の画面のコード・トークンの CSS）は専用の段も全部（見た目にいちばん効く変更で突き合わせを流す）
         for f in ("apps/web/styles/k-tokens.css", "apps/web/components/k/shell.tsx"):
             r = pick([f])
-            self.assertEqual(r["gates"], {"70": [FID]}, f)
+            self.assertEqual(r["gates"]["70"], [FID], f)
             self.assertEqual(r["g48"], G48, f)
 
     def test_K238_VF_028_runner_runs_only_selected(self) -> None:
