@@ -18,7 +18,11 @@ import { makeFixture, type Fixture, type Person } from "../fixture.js";
 // ---- 決めた文と言葉（11_tickets/K-387.md・K-388.md の表・errors.d/K-387.json）----
 export const CONF_BUSY = "E-CONF-030"; // AI が動いている間と承認待ちの間は、状態を変えられません（㉒）
 export const CONF_DONE = "E-CONF-032"; // 完了したチケットは、開き直してから状態を変える
-export const VAL_STAGE = "E-VAL-040"; // この状態には、ここから変えられません（仕組みの段・完了・無い段）
+export const CONF_STAGE = "E-CONF-034"; // この状態には、ここから変えられません（段の id で仕組みの段・完了の段を選んだ・409）
+export const CONF_HOLD_NEED = "E-CONF-035"; // 段の id で保留の段を選んだのに理由か条件が無い（409）
+export const CONF_HOLD_NOT = "E-CONF-036"; // 保留でないのに保留の理由か条件を書こうとした（409）
+export const NOT_FOUND = "E-PAGE-001"; // 指した段が無い・別の会社の段・消した段（404）
+export const HOLD_NOT_TEXT = "保留にしていないチケットには、保留の理由と再開の条件を書けません";
 export const VAL_HOLD_REASON = "E-VAL-041"; // 保留の理由を書いてください（D-125.33・正のモック prog-hold-dialog の欄の下の文）
 export const VAL_HOLD_RESUME = "E-VAL-047"; // 再開の条件を書いてください（同じ・欄ごとに番号を分けた）
 export const HOLD_REASON_TEXT = "保留の理由を書いてください";

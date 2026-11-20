@@ -34,7 +34,7 @@ revoke all on function app.ticket_progress_row(tickets) from public;
 --   p の鍵：stage_id か stage_key（どちらか 1 つ）・actual_minutes（null は空にする）・hold_reason・resume_condition。無い鍵は変えない。
 --   p_line が true なら変更の 1 行（kind change）を書き、段が変わり担当者が自分でない今のメンバーなら受け箱の行を 1 つ書く。
 --   false なら 1 行も知らせも書かず、答えの changes と notify_assignee（知らせるはずの担当者の id か null）を呼んだ側に渡す（K-389）。
---   見る順：今のメンバーか → チケット → 守りの判定（例外は guard_failed）→ 行き先の段 → 段が変わるなら今の段（busy・done）→ 保留の理由と条件 → 実績
+--   見る順：今のメンバーか → チケット → 守りの判定（例外は guard_failed）→ 行き先の段（stage_both・stage_missing・stage_fixed）→ 段が変わるなら今の段（busy・done）→ 保留の理由と条件 → 実績
 create or replace function app.ticket_progress_set(p_ticket uuid, p jsonb, p_line boolean default true) returns jsonb
 language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare v_tenant uuid := app.tenant_id(); v_me uuid := app.user_id(); t tickets%rowtype;
@@ -47,7 +47,7 @@ declare v_tenant uuid := app.tenant_id(); v_me uuid := app.user_id(); t tickets%
         v_changes jsonb := '[]'::jsonb; v_fields text[] := '{}'; v_parts text[] := '{}';
         v_body text; v_msg uuid; v_notify uuid;
         c_ctrl constant text := E'[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]';   -- 制御文字（タブ・改行・復帰は残す）
-        c_space constant text := E' \t\r\n　';                              -- 空かどうかを見るときに前後から落とす空白
+        c_space constant text := E' \t\n\x0B\f\r\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000\uFEFF';   -- 空かどうかを見るときに前後から落とす空白（入口の JavaScript の \s と同じ字・契約の pattern と合わせる）
         c_uuid constant text := '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$';
         c_minutes_max constant integer := 100000;   -- 作る口の見込みと同じ値域（0〜100000）
 begin
@@ -74,13 +74,16 @@ begin
     v_field := case when v_p ? 'stage_id' then 'stage_id' else 'stage_key' end;
     v_raw := v_p ->> v_field;
     if v_field = 'stage_id' then
-      if coalesce(v_raw, '') !~ c_uuid then return jsonb_build_object('error', 'bad_stage', 'fields', jsonb_build_array(v_field)); end if;
+      if coalesce(v_raw, '') !~ c_uuid then return jsonb_build_object('error', 'stage_missing', 'fields', jsonb_build_array(v_field)); end if;
       select * into nxt from ticket_stages s where s.id = v_raw::uuid and s.tenant_id = v_tenant and s.deleted_at is null;
     else
       select * into nxt from ticket_stages s where s.key = v_raw and s.tenant_id = v_tenant and s.deleted_at is null;
     end if;
-    if nxt.id is null or nxt.is_fixed or coalesce(nxt.key, '') = 'done' then
-      return jsonb_build_object('error', 'bad_stage', 'fields', jsonb_build_array(v_field));
+    -- 断る番号は役割で分ける（代表の答え answer=f0f290e785a9）：指した段が無い・別の会社・消した → stage_missing（口は 404）、
+    --   仕組みの段・完了の段（段の口では移せない）→ stage_fixed（口は 409）
+    if nxt.id is null then return jsonb_build_object('error', 'stage_missing', 'fields', jsonb_build_array(v_field)); end if;
+    if nxt.is_fixed or coalesce(nxt.key, '') = 'done' then
+      return jsonb_build_object('error', 'stage_fixed', 'fields', jsonb_build_array(v_field));
     end if;
   end if;
   v_moved := nxt.id is distinct from cur.id;
@@ -104,9 +107,9 @@ begin
   v_old_resume := case when v_was_hold then t.resume_condition end;
   if v_hold then
     v_reason := case when v_p ? 'hold_reason' then nullif(btrim(regexp_replace(v_p ->> 'hold_reason', c_ctrl, '', 'g'), c_space), '')
-                     else v_old_reason end;
+                     when v_field is not null then null else v_old_reason end;   -- 段を送って保留にするなら、理由と条件も体に要る（契約の決まりと同じ）
     v_resume := case when v_p ? 'resume_condition' then nullif(btrim(regexp_replace(v_p ->> 'resume_condition', c_ctrl, '', 'g'), c_space), '')
-                     else v_old_resume end;
+                     when v_field is not null then null else v_old_resume end;   -- 段を送って保留にするなら、理由と条件も体に要る（契約の決まりと同じ）
     if v_reason is null then v_missing := array_append(v_missing, 'hold_reason'); end if;
     if v_resume is null then v_missing := array_append(v_missing, 'resume_condition'); end if;
     if cardinality(v_missing) > 0 then return jsonb_build_object('error', 'hold_required', 'fields', to_jsonb(v_missing)); end if;

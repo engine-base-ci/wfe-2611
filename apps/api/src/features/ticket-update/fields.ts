@@ -10,10 +10,12 @@ import { progressFields } from "../F6/progress/fields.js";
 /** 組の答え：書けた（答えの data に足す鍵）か、断った（その答えをそのまま返し、同じ処理で書いた物は全部戻す） */
 export type GroupResult = { ok: true; data: Row } | { ok: false; reply: HookReply };
 
-/** 欄の組。apply は送られた欄のうち fields に入る物だけを受け、口の 1 つの処理（withTenant）の中で書く */
+/** 欄の組。apply は送られた欄のうち fields に入る物だけを受け、口の 1 つの処理（withTenant）の中で書く。
+ *  inputIssues は前処理で、契約に書ける形の決まり（422）だけを DB を引く前に断る（DB の中身で決まる断りは apply の 404・409） */
 export interface TicketFieldGroup {
   name: string;
   fields: readonly string[];
+  inputIssues?: (raw: Row) => HookReply | null;
   apply: (cl: pg.PoolClient, ticketId: string, input: Row) => Promise<GroupResult>;
 }
 

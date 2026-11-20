@@ -7,7 +7,11 @@ import {
   setupProgress,
   CONF_BUSY,
   CONF_DONE,
-  VAL_STAGE,
+  CONF_STAGE,
+  CONF_HOLD_NEED,
+  CONF_HOLD_NOT,
+  HOLD_NOT_TEXT,
+  NOT_FOUND,
   HOLD_REASON_TEXT,
   HOLD_RESUME_TEXT,
   VAL_HOLD_REASON,
@@ -136,20 +140,24 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     ]);
   });
 
-  it("K387-API-005 保留にするのに理由か再開の条件が無い・空・空白だけ（全角の空白も）：422・理由が足りなければ E-VAL-041・条件だけなら E-VAL-047・無い欄ごとの明細（欄ごとの文）・何も書かない", async () => {
+  it("K387-API-005 保留にするのに理由か再開の条件が無い・空・空白だけ（全角の空白も）：段の鍵（stage_key hold）なら形の誤りで 422・理由が足りなければ E-VAL-041・条件だけなら E-VAL-047／段の id で保留の段を選んだなら 409 E-CONF-035／無い欄ごとの明細（欄ごとの文）・何も書かない", async () => {
     const t = await ticket({ stage: "doing" });
     const hold = await stageOf(T.tenantId, "hold");
     const before = await snapshot(t.id);
     const text: Record<string, string> = { hold_reason: HOLD_REASON_TEXT, resume_condition: HOLD_RESUME_TEXT };
-    const cases: [Record<string, unknown>, string, string[]][] = [
-      [{ stage_id: hold }, VAL_HOLD_REASON, ["hold_reason", "resume_condition"]],
-      [{ stage_id: hold, hold_reason: "返事待ち" }, VAL_HOLD_RESUME, ["resume_condition"]],
-      [{ stage_id: hold, hold_reason: "　 ", resume_condition: "来たら" }, VAL_HOLD_REASON, ["hold_reason"]],
-      [{ stage_id: hold, hold_reason: "返事待ち", resume_condition: "" }, VAL_HOLD_RESUME, ["resume_condition"]],
+    const cases: [Record<string, unknown>, number, string, string[]][] = [
+      [{ stage_key: "hold" }, 422, VAL_HOLD_REASON, ["hold_reason", "resume_condition"]],
+      [{ stage_key: "hold", hold_reason: "返事待ち" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
+      [{ stage_key: "hold", hold_reason: "　 ", resume_condition: "来たら" }, 422, VAL_HOLD_REASON, ["hold_reason"]],
+      [{ stage_key: "hold", hold_reason: "返事待ち", resume_condition: "" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
+      [{ stage_id: hold }, 409, CONF_HOLD_NEED, ["hold_reason", "resume_condition"]],
+      [{ stage_id: hold, hold_reason: "返事待ち" }, 409, CONF_HOLD_NEED, ["resume_condition"]],
+      [{ stage_id: hold, hold_reason: "　 ", resume_condition: "来たら" }, 409, CONF_HOLD_NEED, ["hold_reason"]],
+      [{ stage_id: hold, hold_reason: "返事待ち", resume_condition: "" }, 409, CONF_HOLD_NEED, ["resume_condition"]],
     ];
-    for (const [body, code, want] of cases) {
+    for (const [body, status, code, want] of cases) {
       const r = await patch(boss, t.id, body);
-      expect(r.status, JSON.stringify(body)).toBe(422);
+      expect(r.status, JSON.stringify(body)).toBe(status);
       const j = await json(r);
       expect(j["code"], JSON.stringify(body)).toBe(code);
       expect(fields(j).sort(), JSON.stringify(body)).toEqual(want);
@@ -158,48 +166,62 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K387-API-006 保留でない行き先に理由を付けた（作業中にする＋hold_reason）：422・欄 hold_reason「保留にするときだけ書けます」・何も書かない", async () => {
+  it("K387-API-006 保留でないのに理由か再開の条件を書こうとした：段の鍵（stage_key todo・doing）に付けたら形の誤りで 422・欄ごとに「保留にするときだけ書けます」／段の id で保留でない段を選んだか、保留でないチケットの理由だけ直すなら 409 E-CONF-036・欄ごとの明細・何も書かない", async () => {
     const t = await ticket();
     const before = await snapshot(t.id);
-    const r = await patch(boss, t.id, { stage_id: await stageOf(T.tenantId, "doing"), hold_reason: "念のため" });
-    expect(r.status).toBe(422);
-    const j = await json(r);
-    expect(j["code"]).toBe("VALIDATION_ERROR");
-    expect(j.details).toEqual([{ field: "hold_reason", message: "保留にするときだけ書けます" }]);
+    const k = await patch(boss, t.id, { stage_key: "doing", hold_reason: "念のため" });
+    expect(k.status).toBe(422);
+    const jk = await json(k);
+    expect(jk["code"]).toBe("VALIDATION_ERROR");
+    expect(jk.details).toEqual([{ field: "hold_reason", message: "保留にするときだけ書けます" }]);
+    const bodies: [Record<string, unknown>, string[]][] = [
+      [{ stage_id: await stageOf(T.tenantId, "doing"), hold_reason: "念のため" }, ["hold_reason"]],
+      [{ hold_reason: "念のため", resume_condition: "来たら" }, ["hold_reason", "resume_condition"]],
+    ];
+    for (const [body, want] of bodies) {
+      const r = await patch(boss, t.id, body);
+      expect(r.status, JSON.stringify(body)).toBe(409);
+      const j = await json(r);
+      expect(j["code"], JSON.stringify(body)).toBe(CONF_HOLD_NOT);
+      expect(fields(j).sort(), JSON.stringify(body)).toEqual(want);
+      for (const d of j.details ?? []) expect(d.message).toBe(HOLD_NOT_TEXT);
+    }
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K387-API-007 行き先が仕組みの段（確認中・承認待ち・実行中）：422 E-VAL-040・欄 stage_id・何も書かない（D-125.68）", async () => {
+  it("K387-API-007 段の id で行き先が仕組みの段（確認中・承認待ち・実行中）：今の状態ではできないので 409 E-CONF-034・欄 stage_id・何も書かない（D-125.68）", async () => {
     const t = await ticket({ stage: "doing" });
     const before = await snapshot(t.id);
     for (const key of ["checking", "awaiting_approval", "running"]) {
       const r = await patch(boss, t.id, { stage_id: await stageOf(T.tenantId, key) });
-      expect(r.status, key).toBe(422);
+      expect(r.status, key).toBe(409);
       const j = await json(r);
-      expect(j["code"], key).toBe(VAL_STAGE);
+      expect(j["code"], key).toBe(CONF_STAGE);
       expect(fields(j), key).toEqual(["stage_id"]);
     }
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K387-API-008 行き先が完了：422 E-VAL-040・欄 stage_id・何も書かない（完了は完了の小窓＝completeTicket を通す・③）", async () => {
+  it("K387-API-008 段の id で行き先が完了：409 E-CONF-034・欄 stage_id・何も書かない（完了は完了の小窓＝completeTicket を通す・③）", async () => {
     const t = await ticket({ stage: "doing" });
     const before = await snapshot(t.id);
     const r = await patch(boss, t.id, { stage_id: await stageOf(T.tenantId, "done") });
-    expect(r.status).toBe(422);
-    expect((await json(r))["code"]).toBe(VAL_STAGE);
+    expect(r.status).toBe(409);
+    expect((await json(r))["code"]).toBe(CONF_STAGE);
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K387-API-009 行き先が別の会社の段・消した段・無い uuid：422 E-VAL-040・欄 stage_id・何も書かない", async () => {
+  it("K387-API-009 段の id が指す段が別の会社の段・消した段・無い uuid：指した物が無いので 404 E-PAGE-001・欄 stage_id・何も書かない（在るかを漏らさない）", async () => {
     const t = await ticket();
     const gone = await customStage(T.tenantId, "消した段");
     await f.admin.query("update ticket_stages set deleted_at = now() where id = $1", [gone]);
     const before = await snapshot(t.id);
     for (const id of [await stageOf(O.tenantId, "doing"), gone, "8b0e3f7a-2c4d-4e5f-9a6b-7c8d9e0f1a2b"]) {
       const r = await patch(boss, t.id, { stage_id: id });
-      expect(r.status, id).toBe(422);
-      expect((await json(r))["code"], id).toBe(VAL_STAGE);
+      expect(r.status, id).toBe(404);
+      const j = await json(r);
+      expect(j["code"], id).toBe(NOT_FOUND);
+      expect(fields(j), id).toEqual(["stage_id"]);
     }
     expect(await snapshot(t.id)).toEqual(before);
   });
@@ -520,7 +542,7 @@ describe("K-387 詳細（getTicket）の変えられるか・AI の分の時間�
     expect(await stageKeyOf(h.id)).toBe("hold");
   });
 
-  it("K387-API-028 段は鍵（stage_key：todo・doing・hold）でも選べる。鍵と id の両方・知らない鍵・仕組みの段と完了の鍵は 422（両方は欄 stage_key・ほかは E-VAL-040）・何も書かない", async () => {
+  it("K387-API-028 段は鍵（stage_key：todo・doing・hold）でも選べる。鍵と id の両方・todo・doing・hold でない鍵（仕組みの段と完了の鍵も）は形の誤りで 422（どちらも欄 stage_key）・何も書かない", async () => {
     const t = await ticket();
     expect((await patch(boss, t.id, { stage_key: "doing" })).status).toBe(200);
     expect((await row(t.id)).stage_key).toBe("doing");
@@ -532,7 +554,7 @@ describe("K-387 詳細（getTicket）の変えられるか・AI の分の時間�
       const r = await patch(boss, t.id, { stage_key: key });
       expect(r.status, key).toBe(422);
       const j = await json(r);
-      expect(j["code"], key).toBe(VAL_STAGE);
+      expect(j["code"], key).toBe("VALIDATION_ERROR");
       expect(fields(j), key).toEqual(["stage_key"]);
     }
     expect(await snapshot(t.id)).toEqual(before);

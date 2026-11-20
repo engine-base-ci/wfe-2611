@@ -1,6 +1,6 @@
 // チケットを直す口（updateTicket）の振る舞い（K-387）。欄の組は fields.ts の表（TICKET_FIELD_GROUPS）が持つ。
 //   前処理（input）：表のどの組にも無い欄が 1 つでもあれば 422 E-VAL-018（欄ごとに「この欄はまだ変えられません」・鍵の名前の順）。
-//     空の体は 422（欄 body「変える欄がありません」）。体が入れ物でなければ入口（契約の strict な形）に任せる。
+//     空の体は 422（欄 body「変える欄がありません」）。組の形の決まり（inputIssues・契約に書ける物だけ）も 422。体が入れ物でなければ入口（契約の strict な形）に任せる。
 //   before：1 つの処理（withTenant）で、送られた欄を持つ組の apply を表の順に呼び、組の答えから答えを組み立てる。
 //     組が断ったら、その処理で書いた物を全部戻して（例外で rollback）組の答えを返す。書く所の DB の失敗は 500 E-PAGE-003（何も残らない）。
 //   ログに理由の字・題名を出さない（場所と例外の種類だけ）
@@ -54,6 +54,12 @@ export function checkUpdateInput(
         },
       },
     };
+  // 組ごとの形の決まり（送られた欄を持つ組だけ・表の順）
+  for (const g of groups) {
+    if (!g.inputIssues || !g.fields.some((f) => f in raw)) continue;
+    const issue = g.inputIssues(raw);
+    if (issue) return { reply: issue };
+  }
   return { input: raw };
 }
 
