@@ -18,9 +18,16 @@
 //     kind_id：login で totp → password_totp、ほかの login → basic、key → api_key
 //     確かめ（D-117）：login だけ、預けた本人の PC に 1 回ログインを試す仕事を積む（app.credential_login_check_enqueue）。
 //       PC が無い → login_check.state no_bridge・規約で禁止の宛先 → forbidden・積めた → pending。積めなくても 201（state は null のまま・ログに残す）
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { NAME_PATTERN } from "../../../src/features/F3/credentials/input.js";
+import {
+  DESTINATION_PATTERN,
+  EXPIRES_PATTERN,
+  LOGIN_PATTERN,
+  NAME_PATTERN,
+  TOTP_PATTERN,
+} from "../../../src/features/F3/credentials/patterns.js";
 import { RateLimited } from "@kaname/secrets";
 import { setupCredentials, type Person } from "./credentials.harness.js";
 // 作り物の秘密の値は _fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
@@ -101,6 +108,14 @@ const expect422 = async (r: Response, code: string, field: string) => {
   const j = await h.json(r);
   expect(j["code"]).toBe(code);
   expect(((j["details"] as { field?: string }[] | undefined) ?? []).map((d) => d.field)).toContain(field);
+};
+
+// 時刻や預けた物の状態で決まる断り：409・欄は付けない
+const expect409 = async (r: Response, code: string) => {
+  expect(r.status, await r.clone().text()).toBe(409);
+  const j = await h.json(r);
+  expect(j["code"]).toBe(code);
+  expect(j["field"]).toBeUndefined();
 };
 
 describe("K-352 預ける口", () => {
@@ -218,14 +233,24 @@ describe("K-352 預ける口", () => {
     expect(await rowsOf(me)).toHaveLength(2);
   });
 
-  it("K352-API-026 名前の pattern：口が打ったとおりに照らす pattern（input.ts の NAME_PATTERN）は、契約（08_api/openapi.yaml の CredentialCreateInput.name）の pattern と 1 字も違わない", () => {
-    const yaml = readFileSync(new URL("../../../../../08_api/openapi.yaml", import.meta.url), "utf8");
-    const block = yaml.slice(yaml.indexOf("\n    CredentialCreateInput:\n"));
-    const m = /\n {8}name:\n {10}type: string\n {10}pattern: (.*)\n/.exec(block);
-    expect(m, "契約に名前の pattern が無い").not.toBeNull();
-    const text = m![1]!;
-    const written = text.startsWith("'") ? text.slice(1, -1).replace(/''/g, "'") : text;
-    expect(written).toBe(NAME_PATTERN);
+  it("K352-API-026 口が打ったとおりに照らす pattern（patterns.ts の名前・使える場所・認証アプリの鍵・期限）は、契約（08_api/openapi.yaml の CredentialCreateInput・CredentialUpdateInput）の pattern と 1 字も違わない", () => {
+    const py =
+      "import yaml,json,sys;d=yaml.safe_load(open(sys.argv[1]));s=d['components']['schemas'];" +
+      "c=s['CredentialCreateInput']['properties'];u=s['CredentialUpdateInput']['properties'];" +
+      "print(json.dumps({'name':c['name']['pattern'],'destinations':c['destinations']['items']['pattern'],'totp':c['totp_secret']['pattern']," +
+      "'expires':c['expires_on']['pattern'],'login':c['login']['pattern'],'uDestinations':u['destinations']['items']['pattern']," +
+      "'uTotp':u['totp_secret']['pattern'],'uExpires':u['expires_on']['pattern'],'uLogin':u['login']['pattern']}))";
+    const yamlPath = fileURLToPath(new URL("../../../../../08_api/openapi.yaml", import.meta.url));
+    const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as Record<string, string>;
+    expect(got["name"]).toBe(NAME_PATTERN);
+    expect(got["destinations"]).toBe(DESTINATION_PATTERN);
+    expect(got["totp"]).toBe(TOTP_PATTERN);
+    expect(got["expires"]).toBe(EXPIRES_PATTERN);
+    expect(got["login"]).toBe(LOGIN_PATTERN);
+    expect(got["uDestinations"]).toBe(DESTINATION_PATTERN);
+    expect(got["uTotp"]).toBe(TOTP_PATTERN);
+    expect(got["uExpires"]).toBe(EXPIRES_PATTERN);
+    expect(got["uLogin"]).toBe(LOGIN_PATTERN);
   });
 
   // 失効しただけ（消していない）の物は名前の重なりに数えない（代表の答え answer=449e72553c59）
@@ -307,14 +332,18 @@ describe("K-352 預ける口", () => {
     expect(await rowsOf(me)).toHaveLength(0);
   });
 
-  it("K352-API-010 期限：日本の今日は 201。昨日・暦に無い日（2027-02-30）・形違い（2027/11/10）は 422・E-CRED-004。null と無いは期限なし", async () => {
+  it("K352-API-010 期限：日本の今日は 201。昨日は 409・E-CRED-004（欄なし）。暦に無い日（2027-02-30・2027-02-29）・形違い（2027/11/10・全角の数字）は 422・VALIDATION_ERROR（欄 expires_on）。うるう日（2096-02-29）は 201。null と無いは期限なし", async () => {
     await h.ready();
     const me = await fresh();
     const today = await post(me, keyBody({ expires_on: jstDay(0) }));
     expect(today.status, await today.clone().text()).toBe(201);
     expect(((await h.json(today)).data as Record<string, unknown>)["expires_on"]).toBe(jstDay(0));
-    for (const bad of [jstDay(-1), "2027-02-30", "2027/11/10"])
-      await expect422(await post(me, keyBody({ expires_on: bad })), "E-CRED-004", "expires_on");
+    // 日本の今日より前は時刻で決まるので 409・E-CRED-004（欄なし）。形違い・暦に無い日・全角の数字は契約の pattern に合わず 422（欄 expires_on）
+    await expect409(await post(me, keyBody({ expires_on: jstDay(-1) })), "E-CRED-004");
+    for (const bad of ["2027-02-30", "2027/11/10", "２０２７-１１-１０", "2027-13-01", "2027-02-29"])
+      await expect422(await post(me, keyBody({ expires_on: bad })), "VALIDATION_ERROR", "expires_on");
+    const leap = await post(me, keyBody({ name: "LEAP_DAY", expires_on: "2096-02-29" }));
+    expect(leap.status, await leap.clone().text()).toBe(201);
     const none = await post(me, keyBody({ expires_on: null }));
     expect(((await h.json(none)).data as Record<string, unknown>)["expires_on"]).toBeNull();
   });
