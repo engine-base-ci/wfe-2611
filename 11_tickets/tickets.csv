@@ -2333,3 +2333,21 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-627,spec-sync の L（層の棚卸し G21）の DB の層が、手元の古い kaname_test（migration が 0075 で止まった残り物）で偽の赤になる：手元では使い捨ての DB を作って試験を流し、終わったら必ず捨てる道具 db_fresh_run.mjs を足す（CI では渡された DB をそのまま使う）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の L は `layer_audit.py --run` で、層ごとの check を実際に流す。その中の `packages/db/migrations/*.sql` の層（D-145・D-133.6 の db: true）は `pnpm exec vitest run packages/db/test` を流す。PM の実行では **29 件が赤**（32 秒）だった。原因を調べた（実測）：
+
+1. この Mac の `kaname_test`（`127.0.0.1:55433`）は、`app.schema_migrations` が `0075_workspace_people.sql` で止まった**古い残り物**（tenants 2 行・migration が 128 本ある今の木に追いついていない）。vitest は DATABASE_URL が無いとここにつなぐ。
+2. 残り物の上で今の migration を当てると、`0076_clone_ops.sql` の `insert into operations … app.ops_tenant_id()` が `operations_tenant_id_fkey` で落ちる → 18 のファイルが起動で落ちて 29 件が赤。
+3. **使い捨ての新しい DB（`kaname_tmp_pmsync`）で同じ vitest を流すと、181 本のうち 180 が緑**（実測：169 秒）。残る 1 本（`repository.test.ts`「init は表が無いと落ちる」）は、`URL.replace(/\/kaname_test$/, ""/postgres"")` が **DB の名前が `kaname_test` のときだけ**管理 DB に替わる書き方で、別の名前だと同じ DB のまま「表が在る」になり赤になる。これは試験の誤り（名前の決め打ち）。
+
+判断：
+
+| 赤 | 判断 |
+|---|---|
+| 29 件（古い kaname_test） | **検査の設定の抜け**：製品の食い違いではなく、手元の DB が古い。CI は毎回まっさらな DB なので出ない。手元の `kaname_test` を作り直す（Docker に触る・本人の DB を壊す）のではなく、**層の検査が自分で使い捨ての DB を作って捨てる**ようにする（memory の「DATABASE_URL_ADMIN=…/kaname_tmp_<番号>（使い捨て）」と同じ運用を道具にする） |
+| 1 件（repository.test.ts） | **本当の食い違い（試験の誤り）**：名前を決め打ちしない書き方に直す（`/\/[^/?]+$/`）。carry: で切る段が直した版を運ぶ |
+
+検査は緩めない：vitest は今のまま全部流す（`packages/db/test` 全部）。DB を黙って切り替えるのではなく、DATABASE_URL が env に在れば（CI）そのまま使い、無いときだけ使い捨てを作る。","- [ ] 下の表の 12 行（K627-FRESH-001〜012）が緑：`python3 scripts/ci/k627_db_fresh_run_test.py`（手元の PG（55433）が立っているときに流す。行 004・005・009・011 は DB を作って捨てる）
+- [ ] `packages/db/test/repository.test.ts` が名前を決め打ちせず、使い捨ての DB でも緑（行 008・009）
+- [ ] 層の検査 `packages/db/migrations/*.sql` が、手元で `python3 scripts/ci/layer_audit.py --run --db-range true` の中で緑（古い kaname_test のままでも）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-627.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
