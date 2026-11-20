@@ -198,7 +198,7 @@ describe("K-352 預ける口", () => {
     expect(ok.status, await ok.clone().text()).toBe(201);
   });
 
-  it("K352-API-006 名前：全角・小文字・前後の空白は直して大文字で保存。形違い（数字始まり・日本語・空・65 文字）は 422・E-CRED-001 で何も置かない", async () => {
+  it("K352-API-006 名前：全角・小文字・前後の空白は直して大文字で保存。形違い（数字始まり・日本語・空・65 文字）は契約の pattern で 422・VALIDATION_ERROR（欄 name）で何も置かない", async () => {
     await h.ready();
     const me = await fresh();
     const r = await post(me, keyBody({ name: " ｈａｃｃｈｕ_navi " }));
@@ -206,7 +206,7 @@ describe("K-352 預ける口", () => {
     expect(((await h.json(r)).data as Record<string, unknown>)["name"]).toBe("HACCHU_NAVI");
     const puts = h.vault.puts.length;
     for (const bad of ["1ABC", "発注ナビ", "", `A${"B".repeat(64)}`])
-      await expect422(await post(me, keyBody({ name: bad })), "E-CRED-001", "name");
+      await expect422(await post(me, keyBody({ name: bad })), "VALIDATION_ERROR", "name");
     expect(h.vault.puts.length).toBe(puts);
     expect(await rowsOf(me)).toHaveLength(1);
   });
