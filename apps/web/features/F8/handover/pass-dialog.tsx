@@ -5,7 +5,7 @@
 //   K-413 の「別の人にする」は replaces（今待っている渡しの id）を渡して同じ一続きを使う
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNotify } from "@/components/k";
-import { PAGE_ERROR, errorCodeOf, errorText } from "@/components/k/error-of";
+import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { catalogMessage } from "@/features/F5/approve-complete/message";
 import { call } from "@/lib/api/call";
@@ -198,6 +198,14 @@ function blockedText(p: Preview): string | undefined {
   }
 }
 
+/** 小窓の頭の下の対象の行（「EG-119 問い合わせ（山田様）に一次返信する」）。getTicket の ticket の番号と題名 */
+function targetOf(detail: SlotTicket["detail"]): string | null {
+  const t = rec(detail["ticket"]);
+  const number = str(t?.["number"]);
+  const title = str(t?.["title"]);
+  return number !== null && title !== null ? `${number} ${title}` : null;
+}
+
 const newKey = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 const without = (e: HandoverErrors, key: keyof HandoverErrors): HandoverErrors => {
@@ -232,10 +240,38 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
   const [errors, setErrors] = useState<HandoverErrors>({});
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [callout, setCallout] = useState<string | null>(null);
   const started = useRef(false);
   const gen = useRef(0);
   const sending = useRef(false);
   const key = useRef("");
+
+  /** 下見を 1 回読む。読めなければ相手を選ぶ小窓の中に知らせと「もう一度読む」を出す（書き直さず読み直す） */
+  const read = async (mine: number) => {
+    const failed = (code: string) => {
+      setLoadError(catalogMessage(code));
+      setPhase("pick");
+    };
+    try {
+      const r = await call("previewTicketHandover", { params: { id: ticket.id }, screenId: "tickets" });
+      if (gen.current !== mine) return;
+      if (!r.ok) return r.status === 401 ? onClose() : failed(errorCodeOf(r));
+      const p = readPreview(r.data);
+      if (p === null) return failed(PAGE_ERROR.loadFailed);
+      setPv(p);
+      setValues((v) => ({ ...v, due: jstInputOf(p.defaultReplyDue) }));
+      setPhase("pick");
+    } catch {
+      if (gen.current === mine) failed(PAGE_ERROR.offline);
+    }
+  };
+  const retry = () => {
+    const mine = ++gen.current;
+    setLoadError(null);
+    setPhase("loading");
+    void read(mine);
+  };
 
   useEffect(() => {
     if (!open) {
@@ -256,26 +292,10 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
     setNotifyManagers(false);
     setErrors({});
     setNotice(null);
+    setCallout(null);
+    setLoadError(null);
     setBusy(false);
-    const fail = (code: string) => {
-      const t = errorText(code);
-      notify(t.title, { type: "error", ...(t.body ? { description: t.body } : {}) });
-      onClose();
-    };
-    void (async () => {
-      try {
-        const r = await call("previewTicketHandover", { params: { id: ticket.id }, screenId: "tickets" });
-        if (gen.current !== mine) return;
-        if (!r.ok) return r.status === 401 ? onClose() : fail(errorCodeOf(r));
-        const p = readPreview(r.data);
-        if (p === null) return fail(PAGE_ERROR.loadFailed);
-        setPv(p);
-        setValues({ reason: "", ask: "", due: jstInputOf(p.defaultReplyDue) });
-        setPhase("pick");
-      } catch {
-        if (gen.current === mine) fail(PAGE_ERROR.offline);
-      }
-    })();
+    void read(mine);
     // 開いた時に 1 回だけ読む（notify・onClose・ticket の描き直しで読み直さない）
   }, [open]);
 
@@ -283,6 +303,7 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
   const rows = useMemo(() => (pv ? carryRows(pv, who, over) : []), [pv, who, over]);
   const members = useMemo(() => (pv ? pv.candidates.map(memberOf) : []), [pv]);
   const blocked = pv ? blockedText(pv) : undefined;
+  const target = targetOf(ticket.detail);
   const aiBlocked = pv?.blocked === "ai_running" || pv?.blocked === "approval";
 
   const pick = (id: string) => {
@@ -311,8 +332,9 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
       case "E-HND-006":
       case "E-HND-014":
         return setErrors({ to: text });
-      case "E-HND-004":
       case "E-HND-003":
+        return setCallout(text);
+      case "E-HND-004":
         return setNotice(text);
       default:
         return setNotice(fallback);
@@ -328,10 +350,12 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
     if (dueText !== "" && (due === null || Date.parse(due) <= Date.now())) local.due = catalogMessage("E-HND-008");
     if (local.reason || local.due) {
       setErrors(local);
-      return setNotice(null);
+      setNotice(null);
+      return setCallout(null);
     }
     setErrors({});
     setNotice(null);
+    setCallout(null);
     sending.current = true;
     setBusy(true);
     try {
@@ -383,7 +407,9 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
         onQueryChange={setQuery}
         onPick={pick}
         onClose={onClose}
+        {...(target ? { target } : {})}
         {...(blocked ? { blocked } : {})}
+        {...(loadError ? { notice: loadError, onRetry: retry } : {})}
       />
       <HandoverDialog
         open={open && phase === "pass"}
@@ -403,7 +429,9 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
         onChangeTo={() => setPhase("pick")}
         onSubmit={() => void submit()}
         onClose={onClose}
+        {...(target ? { target } : {})}
         {...(notice ? { notice } : {})}
+        {...(callout ? { callout } : {})}
       />
     </>
   );

@@ -11,8 +11,8 @@ import { AssigneeValue } from "./views";
 
 export interface AssigneeActionProps {
   ticket: SlotTicket;
-  /** 入口（pass・distribute） */
-  entry: Exclude<HandoverEntry, "offer">;
+  /** 入口（pass・distribute）。入口が無い人（offer・null）でも、担当者がいれば読むだけ（plain）の欄を描く */
+  entry: HandoverEntry | null;
   /** 名前の下の「→ 〇〇（返事待ち）」の〇〇（待っていなければ null） */
   note: string | null;
   /** AI が動いている・承認待ち（渡せない・D-148.6）。▾ は押せる形のまま、小窓に訳を出す */
