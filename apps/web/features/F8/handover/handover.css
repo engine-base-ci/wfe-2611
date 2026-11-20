@@ -22,10 +22,6 @@
 .k-hnd-assignee-btn:hover {
   color: var(--k-primary);
 }
-.k-hnd-assignee-btn[aria-disabled="true"] {
-  opacity: var(--k-c-button-disabled-opacity);
-  cursor: not-allowed;
-}
 .k-hnd-assignee-note {
   color: var(--k-on-surface-variant);
   font-size: var(--k-text-body-sm);
@@ -219,17 +215,4 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--k-s-sm);
   margin-top: var(--k-s-sm);
-}
-
-/* ---- 詳細の頭（幅 767 以下）：開始日・期限・段の札を横に並べ、頭の行を 2 行までにする。
-   段 7（c/段7 の features/F6/progress/progress.css の .k-detail-meta-side.k-prog-meta-side）と同じ並べ方。
-   今の詳細（ticket-detail.css）は 2 列の格子で段の札が 3 行目に落ちる。本番は detail-head の直しを 1 回だけ入れる（段 7 の S7-D0 か段 9 の 9-W0 の先に入る方） ---- */
-@media (max-width: 767px) {
-  .k-hnd-head .k-detail-meta-side {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--k-s-xs);
-    margin-left: 0;
-  }
 }

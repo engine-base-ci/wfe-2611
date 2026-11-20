@@ -125,7 +125,7 @@ ACTS = [
     ("招く（F10 の葉を前に出す）", ("inv-members", "inv-sent")),
 ]
 
-MOCK_ENTRY = re.compile(r'\{\s*id:\s*"([^"]+)",\s*screen:\s*"([^"]+)",\s*label:\s*"([^"]+)",\s*ticket:\s*"[^"]*",\s*leaf:\s*"([^"]+)"', re.S)
+MOCK_ENTRY = re.compile(r'\{\s*id:\s*"([^"]+)",\s*screen:\s*"([^"]+)",\s*label:\s*"([^"]+)",\s*ticket:\s*"([^"]+)"', re.S)
 
 
 def jpeg(path: Path, width: int | None = None, q: int = 80) -> str:
@@ -193,7 +193,7 @@ def build(shots: Path, q: int, wide: int | None) -> str:
         out.append(
             f'<section id="{E(sid)}"><h2>{i}. {E(label)} <small>{E(sid)}</small></h2>'
             f'<p class="what">{E(what)}</p>'
-            f'<p class="meta">画面：{E(screen)} ・ 製品の時点：{E(PS.get(sid, "PS0 から"))} ・ 仮の葉：{E(leaf)} ・ 聞くこと：{E(q_no)}</p>'
+            f'<p class="meta">画面：{E(screen)} ・ 製品の時点：{E(PS.get(sid, "PS0 から"))} ・ 持ち主の葉：{E(leaf)} ・ 聞くこと：{E(q_no)}</p>'
             f'<div class="r"><figure><img alt="{E(sid)} 幅 375" width="260" src="{jpeg(shots / f"{sid}-375.png", None, q)}"><figcaption>幅 375</figcaption></figure>'
             f'<figure><img alt="{E(sid)} 幅 1440" width="720" src="{jpeg(shots / f"{sid}-1440.png", wide, q)}"><figcaption>幅 1440</figcaption></figure></div></section>'
         )

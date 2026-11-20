@@ -3,9 +3,9 @@
 //   features/F10/invite/views.tsx・features/F4 の詳細の頭・components/k）を、決めた値で並べる。1 つの id ＝ 1 つの状態。
 //   代表の答え（2026-11-20 朝・仮。代表が見直す）：0 横に渡す・配るだけ＋招く葉を前に／1 入口は詳細の右の「担当者 ▾」／2 本人は合意・マネージャーは配る・
 //   直に書き換える道は作らない／4 渡し中も全部できる／5 AI が動いている・承認待ちは渡せない／残り 16 個は勧めのとおり（段9-代表に聞くこと.md）
-//   詳細の右のパネルと承認待ちの表は、今の本線（detail-panel.tsx・queue-table.tsx）と同じクラスと並びをここで組む。本番では 9-W0 が
-//   差し込み口（パネルの担当者の値・題名の下の帯・表の行の種類）を作り、そこに features/F8 の部品が入る（下絵では今の部品を変えない）
-//   持ち主（ticket）は番号の枠が決まるまで K-0（まだ無いチケット）。仮の葉の名前は leaf。PM が枠を決めたら葉の番号に替える
+//   詳細の右のパネルと承認待ちの表は、今の本線（detail-panel.tsx・queue-table.tsx）と同じクラスと並びをここで組む。本番では K-380 が置いた
+//   差し込み口（パネルの担当者の値・題名の下の帯・表の行の種類）の先（features/F8/handover/detail-slots.tsx）に、画面の葉が features/F8 の部品を入れる
+//   状態の持ち主（ticket）は画面の葉の番号（K-411〜K-415・招く葉 K-420）。本物にする葉はこのモックを正の絵にして本番をつなぐ
 //   上へ上げる（A112）は今回切らない。キャンバスに在るのは承認待ちの絞り込みの札（上位の承認・判断を仰がれた）だけで、今の本線どおりグレー
 import { Bot, PanelRight } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
@@ -46,10 +46,8 @@ export interface MockEntry {
   id: string;
   screen: "tickets" | "approvals" | "members";
   label: string;
-  /** この状態を本物にする画面の葉（11_tickets/K-411〜K-415・招く葉 K-420） */
+  /** この状態を本物にする画面の葉（11_tickets/K-411〜K-415・招く葉 K-420）。持ち主はこの番号だけ */
   ticket: string;
-  /** 下絵の頁に出す葉の名前（ticket と同じ番号・07_functional/段9-F8/切り方.md） */
-  leaf: string;
 }
 
 export const MOCKS: readonly MockEntry[] = [
@@ -59,173 +57,151 @@ export const MOCKS: readonly MockEntry[] = [
     screen: "tickets",
     label: "詳細：担当者が見る（入口は右の「担当者 ▾」）",
     ticket: "K-411",
-    leaf: "K-411",
   },
   {
     id: "f8-pick",
     screen: "tickets",
     label: "相手を選ぶ小窓（探す欄・今週の件数・選べない人）",
     ticket: "K-411",
-    leaf: "K-411",
   },
   {
     id: "f8-pick-search",
     screen: "tickets",
     label: "相手を選ぶ小窓：名前・メールで絞った",
     ticket: "K-411",
-    leaf: "K-411",
   },
-  { id: "f8-pick-none", screen: "tickets", label: "相手を選ぶ小窓：合う人がいない", ticket: "K-411", leaf: "K-411" },
-  { id: "f8-pass", screen: "tickets", label: "引き継いでもらうの小窓", ticket: "K-411", leaf: "K-411" },
+  { id: "f8-pick-none", screen: "tickets", label: "相手を選ぶ小窓：合う人がいない", ticket: "K-411" },
+  { id: "f8-pass", screen: "tickets", label: "引き継いでもらうの小窓", ticket: "K-411" },
   {
     id: "f8-pass-error",
     screen: "tickets",
     label: "小窓：入力の誤り・相手が選べなくなった",
     ticket: "K-411",
-    leaf: "K-411",
   },
   {
     id: "f8-pass-refused",
     screen: "tickets",
     label: "小窓：口が断った（いま別の渡しの返事を待っている）",
     ticket: "K-411",
-    leaf: "K-411",
   },
   {
     id: "f8-blocked",
     screen: "tickets",
     label: "AI が動いている・承認待ちのチケットは渡せない",
     ticket: "K-411",
-    leaf: "K-411",
   },
-  { id: "f8-waiting-sender", screen: "tickets", label: "渡した人：渡し中の帯", ticket: "K-413", leaf: "K-413" },
+  { id: "f8-waiting-sender", screen: "tickets", label: "渡した人：渡し中の帯", ticket: "K-413" },
   {
     id: "f8-reminded",
     screen: "tickets",
     label: "渡した人：催促した（1 日 1 回まで）",
     ticket: "K-413",
-    leaf: "K-413",
   },
-  { id: "f8-withdraw", screen: "tickets", label: "渡した人：取り消す確かめ", ticket: "K-413", leaf: "K-413" },
-  { id: "f8-overdue", screen: "tickets", label: "渡した人：返事の期限が過ぎた", ticket: "K-413", leaf: "K-413" },
-  { id: "f8-declined-sender", screen: "tickets", label: "渡した人：断られた", ticket: "K-413", leaf: "K-413" },
-  { id: "f8-taken-sender", screen: "tickets", label: "渡した人：受けてもらえた", ticket: "K-412", leaf: "K-412" },
+  { id: "f8-withdraw", screen: "tickets", label: "渡した人：取り消す確かめ", ticket: "K-413" },
+  { id: "f8-overdue", screen: "tickets", label: "渡した人：返事の期限が過ぎた", ticket: "K-413" },
+  { id: "f8-declined-sender", screen: "tickets", label: "渡した人：断られた", ticket: "K-413" },
+  { id: "f8-taken-sender", screen: "tickets", label: "渡した人：受けてもらえた", ticket: "K-412" },
   {
     id: "f8-queue",
     screen: "approvals",
     label: "渡された人：承認待ちに「渡された」の行",
     ticket: "K-412",
-    leaf: "K-412",
   },
   {
     id: "f8-waiting-recipient",
     screen: "tickets",
     label: "渡された人：詳細の帯（受ける／断る）",
     ticket: "K-412",
-    leaf: "K-412",
   },
   {
     id: "f8-decline",
     screen: "approvals",
     label: "渡された人：断る小窓（理由が必須）",
     ticket: "K-412",
-    leaf: "K-412",
   },
   {
     id: "f8-accepted",
     screen: "tickets",
     label: "渡された人：受けた後（担当者になった）",
     ticket: "K-412",
-    leaf: "K-412",
   },
   {
     id: "f8-gone",
     screen: "tickets",
     label: "渡された人：もう取り消された渡しを開いた",
     ticket: "K-412",
-    leaf: "K-412",
   },
   {
     id: "f8-offer-entry",
     screen: "tickets",
     label: "担当者でない人：題名の下の「引き継ぐ（申し出る）」",
     ticket: "K-414",
-    leaf: "K-414",
   },
   {
     id: "f8-offer",
     screen: "tickets",
     label: "担当者でない人：申し出る小窓（理由が必須）",
     ticket: "K-414",
-    leaf: "K-414",
   },
   {
     id: "f8-offer-answer",
     screen: "approvals",
     label: "担当者：申し出に答える（承認待ちの行）",
     ticket: "K-414",
-    leaf: "K-414",
   },
-  { id: "f8-offer-band", screen: "tickets", label: "担当者：申し出の帯（詳細）", ticket: "K-414", leaf: "K-414" },
+  { id: "f8-offer-band", screen: "tickets", label: "担当者：申し出の帯（詳細）", ticket: "K-414" },
   // 束 B：上から配る
   {
     id: "f8-pick-manager",
     screen: "tickets",
     label: "マネージャー：相手を選ぶ小窓（人かグループ）",
     ticket: "K-415",
-    leaf: "K-415",
   },
-  { id: "f8-distribute", screen: "tickets", label: "マネージャー：配る小窓（人へ）", ticket: "K-415", leaf: "K-415" },
+  { id: "f8-distribute", screen: "tickets", label: "マネージャー：配る小窓（人へ）", ticket: "K-415" },
   {
     id: "f8-distribute-group",
     screen: "tickets",
     label: "マネージャー：配る小窓（グループへ）",
     ticket: "K-415",
-    leaf: "K-415",
   },
   {
     id: "f8-distributed",
     screen: "tickets",
     label: "配られた人：すぐ担当者（合意なし）",
     ticket: "K-415",
-    leaf: "K-415",
   },
   {
     id: "f8-group-waiting",
     screen: "tickets",
     label: "配った人：グループに配り中の帯",
     ticket: "K-415",
-    leaf: "K-415",
   },
   {
     id: "f8-group",
     screen: "approvals",
     label: "グループの人：担当を決める・自分が持つ",
     ticket: "K-415",
-    leaf: "K-415",
   },
   // 共通
-  { id: "f8-noperm", screen: "tickets", label: "閲覧のみの人：▾ も申し出も出ない", ticket: "K-411", leaf: "K-411" },
-  { id: "f8-failed", screen: "tickets", label: "渡しの様子を読めない", ticket: "K-411", leaf: "K-411" },
+  { id: "f8-noperm", screen: "tickets", label: "閲覧のみの人：▾ も申し出も出ない", ticket: "K-411" },
+  { id: "f8-failed", screen: "tickets", label: "渡しの様子を読めない", ticket: "K-411" },
   // 招く（F10 の葉を前に出す）
-  { id: "inv-members", screen: "members", label: "メンバーの画面：「＋ 招く」", ticket: "K-420", leaf: "K-420" },
-  { id: "inv-dialog", screen: "members", label: "招くの小窓", ticket: "K-420", leaf: "K-420" },
+  { id: "inv-members", screen: "members", label: "メンバーの画面：「＋ 招く」", ticket: "K-420" },
+  { id: "inv-dialog", screen: "members", label: "招くの小窓", ticket: "K-420" },
   {
     id: "inv-error",
     screen: "members",
     label: "招くの小窓：メールの形が違う・もう入っている",
     ticket: "K-420",
-    leaf: "K-420",
   },
-  { id: "inv-link", screen: "members", label: "招くの小窓：招待のリンクを作った", ticket: "K-420", leaf: "K-420" },
+  { id: "inv-link", screen: "members", label: "招くの小窓：招待のリンクを作った", ticket: "K-420" },
   {
     id: "inv-stepup",
     screen: "members",
     label: "管理者として招く前の本人確認の取り直し",
     ticket: "K-420",
-    leaf: "K-420",
   },
-  { id: "inv-sent", screen: "members", label: "招いた：招待中の行", ticket: "K-420", leaf: "K-420" },
+  { id: "inv-sent", screen: "members", label: "招いた：招待中の行", ticket: "K-420" },
 ];
 
 // ---------------------------------------------------------------- 見本の値
@@ -981,7 +957,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
           viewer="sato"
           approvals={2}
           assignee={<AssigneeValue name="高本 聖斗" mode="plain" />}
-          band={<HandoverBand kind="withdrawn" who="高本" at="11/20 11:40" />}
+          band={<HandoverBand kind="gone" who="高本" at="11/20 11:40" />}
         />
       );
     case "f8-offer-entry":
@@ -1113,7 +1089,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
         />
       );
     case "f8-failed":
-      return <Detail theme={theme} band={<HandoverBand kind="failed" who="" />} />;
+      return <Detail theme={theme} band={<HandoverBand kind="read-failed" who="" />} />;
     case "inv-members":
       return <Members theme={theme} />;
     case "inv-dialog":
