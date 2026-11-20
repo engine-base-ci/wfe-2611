@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。209 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。217 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3790,6 +3790,149 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-VWS-001": {
+    "id": "E-VWS-001",
+    "cls": "validation",
+    "message": "名前を入れてください",
+    "action": "名前を入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-002": {
+    "id": "E-VWS-002",
+    "cls": "validation",
+    "message": "名前は 60 文字までにしてください",
+    "action": "名前を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-003": {
+    "id": "E-VWS-003",
+    "cls": "validation",
+    "message": "グループの全員に見せるときは、見せるグループを選んでください",
+    "action": "見せるグループを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-004": {
+    "id": "E-VWS-004",
+    "cls": "not_found",
+    "message": "見せるグループが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+    "action": "見せるグループを選び直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-VWS-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-005": {
+    "id": "E-VWS-005",
+    "cls": "conflict",
+    "message": "同じ名前の保存した条件が、もうあります。別の名前にしてください",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-006": {
+    "id": "E-VWS-006",
+    "cls": "conflict",
+    "message": "保存できる条件は 50 件までです。いらないものを消してから保存してください",
+    "action": "いらない条件を消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-007": {
+    "id": "E-VWS-007",
+    "cls": "validation",
+    "message": "条件の形が正しくありません。条件・列の並び・大きさを確かめてください",
+    "action": "条件を作り直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-007",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-008": {
+    "id": "E-VWS-008",
+    "cls": "validation",
+    "message": "名前に改行などの制御文字は使えません",
+    "action": "名前を打ち直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
     }
   }
 };

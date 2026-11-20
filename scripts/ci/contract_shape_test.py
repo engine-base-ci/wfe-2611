@@ -1093,6 +1093,8 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
                                                           ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
+        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
+        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:

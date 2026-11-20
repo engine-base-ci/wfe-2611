@@ -287,8 +287,8 @@
 | EP-272 | PATCH | `/api/v1/rules/:id` | 更新（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-273 | DELETE | `/api/v1/rules/:id` | 削除（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
 | EP-274 | POST | `/api/v1/rules/check` | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・や | A118 A131 | 2 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-275 | GET | `/api/v1/saved_views` | 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-276 | POST | `/api/v1/saved_views` | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・ | A58 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-275 | GET | `/api/v1/saved_views` | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分 | A58 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-276 | POST | `/api/v1/saved_views` | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・ | A58 | 1 | member | C2 | 401 403 409 422 404 409 422 413 429 403 403 503 |
 | EP-277 | PATCH | `/api/v1/saved_views/:id` | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-278 | DELETE | `/api/v1/saved_views/:id` | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
 | EP-279 | GET | `/api/v1/scopes` | 取得（scopes）— グループを作る・直す（メンバーの中） | A117 | 1 | member |  | 401 403 422 429 403 403 503 |

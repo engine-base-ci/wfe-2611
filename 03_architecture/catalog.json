@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 66,
+  "api_built": 68,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 209,
+  "errors": 217,
   "stack": 56,
   "env": 41
  },
@@ -4398,7 +4398,7 @@
    "op": "listSavedViews",
    "method": "GET",
    "path": "/api/v1/saved_views",
-   "what": "取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "what": "取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）",
    "flows": [
     "F7"
    ],
@@ -4406,7 +4406,7 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-67",
     "K-475"
@@ -4424,7 +4424,7 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-67",
     "K-475"

@@ -82,7 +82,15 @@
     "E-INV-007",
     "E-INV-008",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
@@ -793,7 +801,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
@@ -1770,7 +1786,15 @@
     "E-CONN-016",
     "E-CONN-017",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C1",
@@ -2246,7 +2270,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C1",
@@ -3535,7 +3567,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
@@ -5160,7 +5200,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
@@ -7383,7 +7431,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
@@ -7734,7 +7790,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2"
@@ -8014,7 +8078,15 @@
     "E-SIG-004",
     "E-TO-005",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-VWS-001",
+    "E-VWS-002",
+    "E-VWS-003",
+    "E-VWS-004",
+    "E-VWS-005",
+    "E-VWS-006",
+    "E-VWS-007",
+    "E-VWS-008"
    ],
    "policies": [
     "C2",
