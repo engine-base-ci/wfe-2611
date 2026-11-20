@@ -16981,6 +16981,8 @@
    "screens": [
     "bridge-setup"
    ],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口と DB だけ・画面の選ぶ欄とその場の一手は画面の葉が持つ）。正の絵の組は持たない",
    "apis": [
     "updateMyDevice"
    ],
