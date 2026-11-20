@@ -149,7 +149,12 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
       [{ stage_key: "hold" }, 422, VAL_HOLD_REASON, ["hold_reason", "resume_condition"]],
       [{ stage_key: "hold", hold_reason: "返事待ち" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
       [{ stage_key: "hold", hold_reason: "　 ", resume_condition: "来たら" }, 422, VAL_HOLD_REASON, ["hold_reason"]],
-      [{ stage_key: "hold", hold_reason: "返事待ち", resume_condition: "" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
+      [
+        { stage_key: "hold", hold_reason: "返事待ち", resume_condition: "" },
+        422,
+        VAL_HOLD_RESUME,
+        ["resume_condition"],
+      ],
       [{ stage_id: hold }, 409, CONF_HOLD_NEED, ["hold_reason", "resume_condition"]],
       [{ stage_id: hold, hold_reason: "返事待ち" }, 409, CONF_HOLD_NEED, ["resume_condition"]],
       [{ stage_id: hold, hold_reason: "　 ", resume_condition: "来たら" }, 422, VAL_HOLD_REASON, ["hold_reason"]],
