@@ -53,7 +53,11 @@ const fieldsOf = (v: unknown): string[] => (Array.isArray(v) ? v.map((x) => Stri
 
 /** DB の関数 app.ticket_progress_set の答え { error: <言葉>, fields? } → 答え。知らない言葉は止める側（503）。
  *  sent はこの組に送られた欄（stage_key で選んだときの断りは形の誤り＝前処理と同じ 422・stage_id か段なしは DB の中身で決まる 409） */
-export function replyOf(r: { error?: unknown; fields?: unknown }, where: string, sent: Readonly<Record<string, unknown>>): HookReply {
+export function replyOf(
+  r: { error?: unknown; fields?: unknown },
+  where: string,
+  sent: Readonly<Record<string, unknown>>,
+): HookReply {
   const word = String(r.error);
   const fields = fieldsOf(r.fields);
   const byKey = sent["stage_key"] !== undefined;

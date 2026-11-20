@@ -69,4 +69,3 @@ export const progressFields: TicketFieldGroup = {
   inputIssues: progressIssues,
   apply,
 };
-
