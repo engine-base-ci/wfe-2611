@@ -94,18 +94,22 @@ def _add(kind: str, out: dict, key: str, value: object, source: str, owners: dic
     out[key] = [*out.get(key, []), *value]
 
 
-def _merge_op(kind: str, key: str, op: str, have: dict, item: object, first: str, source: str) -> dict:
-    """同じ口（op）を 2 つの断片が持つとき：covers は足し合わせ、covers 以外の鍵は同じ値だけ許す"""
+def _merge_op(kind: str, key: str, op: str, have: object, item: object, who: dict[str, str], first: str, source: str) -> dict:
+    """同じ口（op）を 2 つの断片が持つとき：covers は足し合わせ、covers 以外の鍵は同じ値だけ許す。
+    who は「その名前・鍵を最初に足した断片」（口を最初に書いた断片とは限らない）。止める文にはその断片を出す"""
     if not isinstance(have, dict) or not isinstance(item, dict):
         raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} を両方持つ（足し合わせられるのは covers を持つオブジェクトだけ）")
     covers = dict(have.get("covers") or {})
     for name, to in (item.get("covers") or {}).items():
         if name in covers:
-            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} の covers の {name} を両方結ぶ")
+            raise RegistryConflict(f"{kind}: {who.get('covers/' + str(name), first)} と {source} が {key} の {op} の covers の {name} を両方結ぶ")
         covers[name] = to
+        who["covers/" + str(name)] = source
     for k, v in item.items():
         if k != "covers" and k in have and have[k] != v:
-            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} の {k} を違う値で持つ（足し合わせるのは covers だけ）")
+            raise RegistryConflict(f"{kind}: {who.get(str(k), first)} と {source} が {key} の {op} の {k} を違う値で持つ（足し合わせるのは covers だけ）")
+        if k != "covers":
+            who.setdefault(str(k), source)
     merged = {**have, **{k: v for k, v in item.items() if k != "covers"}}
     if covers:
         merged["covers"] = covers
@@ -121,10 +125,20 @@ def _add_op_covers(kind: str, out: dict, key: str, value: object, source: str, o
         if first is None:
             owners[(key, str(k))] = source
             merged[k] = item
+            # 口を最初に書いた断片が、その口の covers 以外の鍵と covers の名前の持ち主
+            if isinstance(item, dict):
+                for kk in item:
+                    if kk != "covers":
+                        owners[(key, f"{k}/{kk}")] = source
+                for n in item.get("covers") or {}:
+                    owners[(key, f"{k}/covers/{n}")] = source
         elif first == "_base.json":
             raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {k} を両方持つ")
         else:
-            merged[k] = _merge_op(kind, key, str(k), merged[k], item, first, source)
+            who = {sub[len(str(k)) + 1:]: o for (kk, sub), o in owners.items() if kk == key and sub.startswith(f"{k}/")}
+            merged[k] = _merge_op(kind, key, str(k), merged[k], item, who, first, source)
+            for sub, o in who.items():
+                owners[(key, f"{k}/{sub}")] = o
     out[key] = merged
 
 

@@ -59,6 +59,15 @@ class OpCovers(Tmp):
             build_registries.build("ears", self.d)
         for word in ("opA", "K-1.json", "K-2.json", "t_one"):
             self.assertIn(word, str(cm.exception))
+        # 3 つ目の断片が、2 つ目の断片が足した covers を結ぶ：止める文には持ち主の K-2.json が出る（口を最初に書いた K-1.json でない）
+        self.put_json("K-2.json", {"ops": {"opA": {"covers": {"t_two": "ROW-2"}}}})
+        self.put_json("K-3.json", {"ops": {"opA": {"covers": {"t_two": "ROW-3"}}}})
+        with self.assertRaises(registry_d.RegistryConflict) as cm:
+            build_registries.build("ears", self.d)
+        for word in ("opA", "K-2.json", "K-3.json", "t_two"):
+            self.assertIn(word, str(cm.exception))
+        self.assertNotIn("K-1.json", str(cm.exception))
+        (self.d / "K-3.json").unlink()
         # _base.json の口は断片が足せない
         self.put_json("K-2.json", {"ops": {"opB": {"covers": {"t_x": "ROW-1"}}}})
         with self.assertRaises(registry_d.RegistryConflict) as cm:
