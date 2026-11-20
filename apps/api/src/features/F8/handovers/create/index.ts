@@ -1,5 +1,5 @@
 // 渡す口の振り分け（createTicketHandover・POST /tickets/:id/handovers・入口の行の言葉は write＝app.ticket_writable(id)・K-401）。
-//   1 入力（上へ上げるは段 9 では作らない・422・E-HND-001）→ 2 共通の確かめ（DB の 1 取引・読むだけ）→ 3 種類ごとのファイルへ。
+//   1 入力（上へ上げるは契約の外の種類・422・E-HND-001）→ 2 共通の確かめ（DB の 1 取引・読むだけ）→ 3 種類ごとのファイルへ。
 //   種類ごとのファイルは各葉（K-402 pass・K-408 offer・K-409 distribute・K-410 グループに配る）が本物にする。振り分けはこのファイルだけが書く
 import type { HookArgs, HookReply } from "../../../../contract/deps.js";
 import type { HandoverDeps } from "../deps.js";

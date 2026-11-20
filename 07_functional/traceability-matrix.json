@@ -366,6 +366,7 @@
     "POST /api/bridge/credentials/resolve",
     "POST /api/bridge/credentials/:id/check-result",
     "GET /api/bridge/files/:ref",
+    "POST /api/bridge/browser",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -606,8 +607,7 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals",
-    "E-080 notifications"
+    "E-030 memory_proposals"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -3881,6 +3881,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/bridge/files/:ref"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser"
     },
     {
      "role": "transition",
@@ -13294,7 +13300,6 @@
     "mfa-setup",
     "login",
     "bridge-setup",
-    "approvals",
     "clone-chat",
     "members",
     "ops-support",

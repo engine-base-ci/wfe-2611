@@ -121,9 +121,12 @@ export const MIGRATIONS = [
   "20261119070749_join_invitation.sql",
   "20261119120000_device_health_at.sql",
   "20261119120100_device_browser.sql",
+  "20261119120200_device_revoke.sql",
   "20261119120400_credentials_layer.sql",
   "20261119120500_credential_soft_delete.sql",
+  "20261119120600_credential_login_check.sql",
   "20261119120800_credential_service_tenant.sql",
+  "20261120143736_bridge_set_browser_acl.sql",
   "20261121090100_handover_base.sql",
   "20261121090600_handover_sender.sql",
 ] as const;

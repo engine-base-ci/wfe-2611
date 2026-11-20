@@ -23,6 +23,12 @@ RESPONSES = {
     "remindTicketHandover": ("HandoverReminded", {"id": "uuid", "reminded_at": "string"}),
 }
 
+# 答えの欄が、表の null を許す列と同じ名前でも null を返さないもの（取り消すと必ず決めた時刻が入り、催促すると必ず催促した時刻が入る）
+NOT_NULL_ANSWERS = {
+    "withdrawTicketHandover.decided_at": "取り消した時刻（DB の関数が now() を入れた行の値）を必ず返し、null にはしない（ticket_handovers.decided_at は待っている間 null 可）",
+    "remindTicketHandover.reminded_at": "催促した時刻（DB の関数が now() を入れた行の値）を必ず返し、null にはしない（ticket_handovers.reminded_at は催促前 null 可）",
+}
+
 # メールが送れたか（受け箱の行は送れなくても残る・画面は成功の小さな知らせに「メールは届きませんでした」を足すかを K-413 が決める）
 META = {"remindTicketHandover": {"mail": "string"}}
 

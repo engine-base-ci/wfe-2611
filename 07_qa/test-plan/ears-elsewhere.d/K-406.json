@@ -21,10 +21,11 @@
     },
     "test_post_ticket_handovers_id_withdraw_ok_2": "K406-API-006",
     "test_post_ticket_handovers_id_withdraw_ok_3": "K406-API-001",
-    "test_post_ticket_handovers_id_withdraw_conflict": "K406-API-003"
-   },
-   "na": {
-    "test_post_ticket_handovers_id_withdraw_too_large": "体は空の形（strict）で、大きな体は入口の共通の上限が 413 にする（K-144）"
+    "test_post_ticket_handovers_id_withdraw_conflict": "K406-API-003",
+    "test_post_ticket_handovers_id_withdraw_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    }
   },
   "remindTicketHandover": {
@@ -47,10 +48,11 @@
      "mark": "K144-API-032"
     },
     "test_post_ticket_handovers_id_remind_ok_2": "K406-API-010",
-    "test_post_ticket_handovers_id_remind_conflict": "K406-API-013"
-   },
-   "na": {
-    "test_post_ticket_handovers_id_remind_too_large": "体は空の形（strict）で、大きな体は入口の共通の上限が 413 にする（K-144）"
+    "test_post_ticket_handovers_id_remind_conflict": "K406-API-013",
+    "test_post_ticket_handovers_id_remind_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
    }
   }
  }
