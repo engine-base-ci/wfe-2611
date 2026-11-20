@@ -103,6 +103,9 @@ export const OP_RULES = {
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
+  //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
+  takeoverActionRun: `true`,
 };
 
 let ENT = null;

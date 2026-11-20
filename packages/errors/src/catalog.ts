@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。207 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。214 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3756,6 +3756,136 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-STP-001": {
+    "id": "E-STP-001",
+    "cls": "permission",
+    "message": "自分で直すにできるのは、このチケットの担当者だけです",
+    "action": "担当者に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-STP-001",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-STP-002": {
+    "id": "E-STP-002",
+    "cls": "conflict",
+    "message": "いまは自分で直すに切り替えられません（承認待ち・完了のとき、または承認の後の実行です）",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STP-002",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-STP-003": {
+    "id": "E-STP-003",
+    "cls": "conflict",
+    "message": "もう自分で進めることにしています",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STP-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-STP-004": {
+    "id": "E-STP-004",
+    "cls": "conflict",
+    "message": "この実行はもう新しい実行に替わっています",
+    "action": "画面を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STP-004",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-STP-010": {
+    "id": "E-STP-010",
+    "cls": "timeout",
+    "message": "承認から 24 時間を過ぎたので、実行の前にもう一度確かめます",
+    "action": "承認をもう一度確かめる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-STP-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-STP-011": {
+    "id": "E-STP-011",
+    "cls": "connectivity",
+    "message": "AI がブラウザを使えませんでした。Chrome を開き、拡張機能「Claude in Chrome」が入っていて、この Claude と同じアカウントでログインしているか確かめてください",
+    "action": "Chrome と拡張機能を確かめる",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-STP-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
+    }
+  },
+  "E-STP-012": {
+    "id": "E-STP-012",
+    "cls": "dependency",
+    "message": "AI が途中で止まりました（理由の種類は分かりません）。もう一度「AI に任せる」か、自分で直すを選べます",
+    "action": "AI に任せ直す／自分で直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STP-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "stopped"
     }
   }
 };

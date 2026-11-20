@@ -266,6 +266,10 @@
     "type": "text",
     "nullable": true
    },
+   "taken_over_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "task_id": {
     "type": "uuid",
     "nullable": true

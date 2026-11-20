@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-20",
+ "frozen_at": "2026-11-21",
  "summary": {
   "total_screens": 37,
-  "total_apis": 369,
+  "total_apis": 368,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -886,11 +886,6 @@
      "role": "action",
      "endpoint": "POST /api/v1/clones/me/activity/export",
      "act": "A53"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/action_runs/:id/retry",
-     "act": "A57"
     },
     {
      "role": "action",
