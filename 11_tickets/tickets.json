@@ -17925,6 +17925,98 @@
    "file": "11_tickets/K-379.md"
   },
   {
+   "id": "K-419",
+   "title": "招く（口と DB）：メンバーの並びを読む getWorkspaceMembers・メールで招く createInvitations（招待の入力にグループの欄・何人でも・管理者として招くときは本人確認の取り直し）（K-70 の葉・段 9 の前に出す）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-70",
+   "milestone": "F10",
+   "area": "人とアカウント",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-351（読む口 1 本と migration 1 本・試験 20 行・見込み 1 時間）と段 3 の K-334（送り直しを頼む口・メール・試験 18 行）から引いた：migration 1 本（読む関数 1 つ・招く関数 1 つ）20 分・口 2 本（並びの形・招く・メールの文面）20 分・契約の .d と登録先 5 分・自分の確かめ 15 分。招待のリンク（createInvitationLink）は K-421（PM の決め 2026-11-20）",
+   "decisions": [
+    "D-026",
+    "D-128.62",
+    "D-128.63",
+    "D-128.97",
+    "D-125.115",
+    "D-148.1",
+    "D-148.22",
+    "D-148.23",
+    "D-148.28",
+    "D-148.29",
+    "D-148.47"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-create.test.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-425"
+   ],
+   "acts": [
+    "A36"
+   ],
+   "screens": [],
+   "apis": [
+    "getWorkspaceMembers",
+    "createInvitations"
+   ],
+   "canvas": [],
+   "canvas_none": "口と DB だけ（メンバーの画面と招くの小窓は画面の葉 K-420）。apps/web を変えない",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/hooks/workspace-invitations.ts",
+    "apps/api/src/features/F10/invite/members.ts",
+    "apps/api/src/features/F10/invite/create.ts",
+    "apps/api/src/features/F10/invite/mail.ts",
+    "packages/db/migrations/20261121091900_workspace_invitations.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/screen_api.d/K-419.py",
+    "scripts/ci/contract_shape.d/K-419.py",
+    "07_qa/test-plan/ears-elsewhere.d/K-419.json",
+    "07_qa/test-specs/errors.d/K-419.json",
+    "scripts/ci/ci_scope.d/K-419.json",
+    "08_api/phase1/07_ワークスペースの管理.md",
+    "11_tickets/K-70.md"
+   ],
+   "flow": "人を招く",
+   "sections": {
+    "目的": "段 9（F8 渡す・配る）を人が画面で確かめるには 2 人目が要るが、今の本線には「人を招く」側が無い（範囲.md 0 章）。代表の答え（answer=56812da22008）で、F10 の「人を招く」を段 9 の前に出す。この葉はその口と DB：\n\n- `getWorkspaceMembers`（GET /api/v1/workspace/members）：メンバーの画面（キャンバス WsPeople・D-148.28）の並び。グループごとの人（名前・メール・役割・グループの役割・止めているか・PC の様子）と、招待中の行\n- `createInvitations`（POST /api/v1/invitations）：メールで招く（何人でも・グループ・役割・ひとこと・D-148.29）。招待の入力に **グループの欄を足す**（D-148.23）。管理者として招くときは本人確認を取り直す（契約の step_up \"admin_role\"・D-128.97）\n\n画面（メンバーの画面・招くの小窓・本人確認の小窓・グレーの物）は K-420。役割を変える ▾・「⋯」・＋ グループ・送り直す・このグループに招く・決まり／記録／設定は F10 の残り（D-148.22・この葉は作らない）。",
+    "完了の条件": "- [ ] 下の表の 23 行（K419-API-001〜023）が緑：`apps/api/test/features/F10/invite-create.test.ts`\n- [ ] 契約の口 getWorkspaceMembers・createInvitations が 501 でない。生成の試験 2 本の it.todo が、na（理由つき）を除いて 0（ears-elsewhere.d/K-419.json の covers）\n- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: LIST, INV, MAIL\n\n- 招待の表 invitations は在る（0004・scope_id・role_id・message 0114）。招いた人が参加する側（F2：下見・新しく作って参加・ログインして参加・送り直しを頼む）も在る。この葉の招待は F2 の参加の関数（宛てのメールと本人のメールが同じかを見る）でそのまま使える形（宛てのメールを必ず持つ）で作る\n- **入口の権限**は契約のまま：getWorkspaceMembers は members の view（会社全体）・createInvitations は members の invite（会社全体）を持つ人（管理者の束・個別に付けた人）。マネージャーは招けない（D-128.97）\n- **管理者として招く**（role_id admin）ときだけ本人確認を取り直す（15 分の内・deps.requireStepUp）。取り直しが無ければ 403・STEP_UP_REQUIRED（画面は取り直しの小窓を開いて 1 回だけ送り直す・K-420）\n- **メールのそろえ方**：登録と同じ `normalizeEmail`（packages/auth/src/signup.ts：NFKC・空白を全部消す・小文字）と `EMAIL_RE`。そろえて同じになる宛ては 1 つにまとめる。表記ゆらぎの守りはサーバーが最後の砦（画面も「足す」のときに同じ形で見る・K-420）\n- **全部か無しか**：形の違う宛て・もう入っている人が 1 つでもあれば、どの宛ても招かない（422・details に宛てごと）。画面は書いた中身を残して直させる（D-148.31・下絵 inv-error）\n- **招待中の人に重ねて招く**：前の招待を取り消し（revoked_at）、新しく作ってメールを送る（決まった：D-148.47・answer=3d444fc8d59f。送り直すのボタンはグレーなので、これが送り直しの代わりになる）\n- 上限：一度に 50 人まで（E-INV-012）・ひとことは 500 文字まで（列の check と同じ・0114）\n- 招待の期限は 7 日（F2 の既定・D-128.62）。トークンは 32 バイトの乱数（base64url）・DB には sha256 だけ（packages/auth/src/invitations.ts の createInvitation と同じ形）\n- **招待のリンク**（createInvitationLink：だれでも 1 回だけ入れるリンク）は **K-421**（PM の決め 2026-11-20・D-148.22）。宛てのメールを持たない招待（invitations.email を空に）と、F2 の参加の関数の直しは K-421 が持つ。この葉の並びの関数は、宛てのメールが空の招待（招待のリンク）を招待中の並びに出さない（`i.email is not null` の条件。この葉が入る時点では email は空にならないので何も変わらず、K-421 が入った後にリンクの招待が空の宛ての行で出ない）\n- PC の様子（WsPeople の状態の列）：sessions の bridge の行のいちばん新しい last_seen_at から。1 日の内＝ok・それより前＝away（何日前か）・行が無い＝never・閲覧のみ／依頼する側＝none（分身なし）。画面の字は K-420\n- 上の 1 行（alerts）は空の並びを返す（PC がつながっていない人の知らせは F10 の残り）",
+    "依存の理由": "段 9 のほかの葉への依存は無い（招く口・メンバーの並びの口は段 9 のほかの葉と同じファイルを触らない。招待の表と F2 の参加の関数は読むだけ）。\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う：`normalizeEmail`・`EMAIL_RE`（packages/auth/src/signup.ts）・`hashToken`（packages/auth/src/invitations.ts）・契約の入口 op.ts（401・403・422・429・冪等の器・step_up の requireStepUp）・`withTenant`・メールの送出（関門 C6・hooks の mailer・K-334 の送り直しを頼むメールと同じ）・証跡 audit_events・F2 の招待の下見の関数が宛てのメールを読む形（security definer で kaname_auth.\"user\" を読む・0114）\n- 使わない：`createInvitation`（packages/auth/src/invitations.ts）は行の守りの insert（invitations の edit）で 1 行ずつ作る。何人でも全部か無しかで作り、重ねた招待を取り消し、もう入っている人を認証の側の表で見るので、DB の関数 1 つにする（形・トークンの作り方は同じ）\n- 作る：口の登録 `apps/api/src/hooks/workspace-invitations.ts`（K-326 の register。前からの invitations.ts は F2 の参加の口なので触らない）・`apps/api/src/features/F10/invite/`（members.ts・create.ts・mail.ts）・DB の関数 2 つ。探したが同じ形の物は無い",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前） | `packages/db/migrations/20261121091900_workspace_invitations.sql`：① `app.workspace_members() returns jsonb`（security definer・search_path 固定・app.tenant_id() の会社だけ）：グループ（scopes・消していない・作った順・上のグループが先）ごとに、主の所属（members.scope_id）と兼ねる所属（scope_memberships）の人。tenant_memberships の status が left の人・消した人は出さない。人ごとに `{ id, name（display_name）, email（kaname_auth.\"user\"）, role（tenant_memberships.role）, group_role（そのグループの scope_memberships.role か null）, primary（このグループが主の所属か）, other_groups（主のグループの行だけ：兼ねるグループの名前の並び。兼ねる側の行は []）, self, suspended, pc, pc_days_away }`。招待中（取り消していない・使われていない・期限の内・宛てのメールが在る＝招待のリンクは出さない・K-421）は `{ id, email, scope_id, role, expires_at, left_days（残りを日で切り上げ）}`。count は人（重ねない）と招待中の和。alerts は [] ② `app.create_invitations(p_emails text[], p_scope uuid, p_role text, p_message text, p_token_hashes text[]) returns table (invitation_id uuid, email text, expires_at timestamptz)`：呼んだ人が members の invite を持たなければ 42501。グループが同じ会社に無い／消した → E-INV-011（hint）。もう入っている人（kaname_auth.\"user\" の lower(email) が同じで、この会社の tenant_memberships が active か suspended）→ 例外の detail に宛ての並び（E-INV-010）。宛てごとに、同じ宛ての招待中の招待を revoked_at で取り消し、新しい招待を 1 行（期限 now()+7 日・created_by 呼んだ人）。証跡 invitation.created を招待ごとに 1 行（payload は宛てのドメインだけ・メール全体は書かない）。全部を 1 つの取引で。一覧は作り手 `gen_migrations.py`（生成物） |\n| 口（並び） | `apps/api/src/features/F10/invite/members.ts`：withTenant の中で `select app.workspace_members()` を 1 回。200 `{ data: { groups, invitations, alerts, count } }`・`Cache-Control: private, no-store` |\n| 口（招く） | `apps/api/src/features/F10/invite/create.ts`：入力 `{ emails: string[]（1〜50）, scope_id: uuid, role_id: \"member\" \\| \"manager\" \\| \"viewer\" \\| \"admin\", message?: string（〜500）}`。① 宛てを normalizeEmail でそろえて重なりを外す ② 51 人以上 → 422・E-INV-012 ③ EMAIL_RE に合わない宛て → 422・E-INV-009・details `[{ field: \"emails\", email, code, message }]`（入れた順）④ role_id が admin なら deps.requireStepUp()（403・STEP_UP_REQUIRED）⑤ 宛てごとに 32 バイトのトークンを作り、`app.create_invitations` を呼ぶ（もう入っている人の detail → 422・E-INV-010）。形の違う宛てが在るときは関数を呼ばず、入っている人だけを読む文 1 本で引いて details に入れた順で混ぜる⑥ 取引が終わってから 1 通ずつメール（関門 C6）。送れたら mail \"sent\"、送れなかったら mail \"failed\" と証跡 invitation.mail_failed（payload は invitation_id と宛てのドメイン）。証跡を書けなかったら `console.error(\"[invite] 招待のメールの結果を書けなかった\", invitation_id)`（宛ては出さない）。201 `{ data: { invitations: [{ id, email, expires_at, mail }] } }` |\n| メールの文面 | `apps/api/src/features/F10/invite/mail.ts`：件名「【Kaname】<招いた人>さんから「<ワークスペース名>」への招待が届きました」。本文：ワークスペース名・招いた人・グループ・役割・ひとこと（在れば）・招待のリンク `<webBaseUrl>/invite/<トークン>`・期限（日本の日付）・心当たりが無ければ無視してよい。行は 1 つの文字列の中の改行でつなぐ（K-334 の resend-mail.ts と同じ訳） |\n| 口の登録 | `apps/api/src/hooks/workspace-invitations.ts`（新しい）：`getWorkspaceMembers: { before }`・`createInvitations: { input, before }` と `export const register = defineHooks({ name: \"workspaceInvitationHooks\", make, fuzz: \"same\" })`。材料は appPool・repo・mailer・config（webBaseUrl） |\n| 契約 | `05_flow/screen_api.d/K-419.py`：INPUTS `\"createInvitations\": (\"InvitationsCreateInput\", {\"emails\": \"string[]\", \"scope_id\": \"uuid\", \"role_id\": \"string\", \"message\": \"string?\"})`（role_id は member・manager・viewer・admin の 4 つ。emails は 1〜50）・RESPONSES `\"createInvitations\": (\"InvitationsSent\", {\"invitations\": \"array\"})`・ERRORS_4XX（getWorkspaceMembers：403。createInvitations：403 権限・403 STEP_UP_REQUIRED・422 E-INV-009〜012）・PERMS の説明は今のまま。getWorkspaceMembers の答えの形（WorkspaceMembers：groups・invitations・alerts・count）は screen_api.py の今のまま（中の形はこの md と contract_shape.d に書く）→ `python3 05_flow/build_api.py` |\n| 契約の形・登録先 | `scripts/ci/contract_shape.d/K-419.py`（getWorkspaceMembers は体を受けない・createInvitations の message は任意）・`07_qa/test-plan/ears-elsewhere.d/K-419.json`（下）・`scripts/ci/ci_scope.d/K-419.json`（data_links：hooks/workspace-invitations.ts・features/F10/invite/**・migration → invite-create.test.ts。試験は hooks のファイルを動的 import で読むので reads_ok に訳を 1 行） |\n| エラー | `07_qa/test-specs/errors.d/K-419.json`：E-INV-009（422・「<宛て> はメールの形ではありません」の元の文「メールの形ではありません」）・E-INV-010（422・もうこのワークスペースに入っています）・E-INV-011（422・このグループには招けません）・E-INV-012（422・一度に招けるのは 50 人までです）。文は仮（下絵 inv-error の字） |\n| 資料 | `08_api/phase1/07_ワークスペースの管理.md` の 11・12 行に入力（グループの欄）・答えの形・全部か無しか・重ねた招待の取り消しを書く |\n| 親 | `11_tickets/K-70.md` の tests から get_workspace_members.test.ts・post_invitations.test.ts を外す（post_invitations_link.test.ts は残す） |\n\n### 生成の試験（ears-elsewhere.d/K-419.json）\n\n```json\n{\"ops\": {\n \"getWorkspaceMembers\": {\"file\": \"apps/api/test/features/F10/invite-create.test.ts\",\n  \"reason\": \"メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）\",\n  \"covers\": {\"test_get_workspace_members_ok\": \"K419-API-001\", \"test_get_workspace_members_shape\": \"K419-API-001\",\n             \"test_get_workspace_members_rejected_401\": \"K419-API-005\", \"test_get_workspace_members_rejected_403\": \"K419-API-005\"},\n  \"na\": {\"test_get_workspace_members_rejected_422\": \"入力を受けない GET\"}},\n \"createInvitations\": {\"file\": \"apps/api/test/features/F10/invite-create.test.ts\",\n  \"reason\": \"招く口は、宛ての形・もう入っている人・重ねた招待・本人確認の取り直し・メールの成否で答えが変わる（K-419）\",\n  \"covers\": {\"test_post_invitations_ok\": \"K419-API-007\", \"test_post_invitations_shape\": \"K419-API-007\",\n             \"test_post_invitations_rejected_401\": \"K419-API-019\", \"test_post_invitations_rejected_403\": \"K419-API-018\",\n             \"test_post_invitations_rejected_422\": \"K419-API-010\", \"test_post_invitations_rejected_422_2\": \"K419-API-019\"},\n  \"na\": {}}}}\n```\n\n作り直した契約で生成の試験の名前が変われば、出た名前に covers の鍵を合わせ、余る名前（上限・同意し直し・セッション・大きすぎる体）は na に理由を書くか、前例（K-351）どおり受けの試験に結ぶ。",
+    "外に影響する手順": "1. DB に書く：重ねた招待の取り消し・招待の行・証跡を 1 つの取引で（失敗したら何も残らない）\n2. メールを送る（関門 C6）：宛てごとに 1 通 [残る]（1 は残る。招待中の行に出るので、招いた人は重ねて招けば送り直せる）\n3. 後片付け：送れなかった証跡（invitation.mail_failed）を書く",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F10/invite-create.test.ts`（本物の DB・本物の行の守り・口の入口は createApp と契約の op・偽の画面のログイン・メールは試験の偽）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（宛て・招待） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| まだ入っていない宛て | 招くの小窓 | 管理者・招く権限を付けた人 | 201・招待 1・メール 1 | このチケット | K419-API-007〜009・018 |\n| 同じ | 同じ | マネージャー・普通のメンバー | 403 | このチケット（入口の権限） | K419-API-018 |\n| 同じ（役割 admin） | 同じ | 管理者・取り直し無し／古い | 403・STEP_UP_REQUIRED | このチケット | K419-API-017 |\n| 同じ（役割 admin） | 取り直しの小窓の後に送り直す | 管理者・取り直し 15 分の内 | 201 | このチケット | K419-API-017 |\n| 招待中（期限の内） | 招くの小窓（重ねて） | 管理者 | 201・前の招待を取り消して新しく 1 | このチケット | K419-API-013 |\n| 期限切れ・取り消し・使われた | メンバーの画面 | 管理者 | 招待中に出ない | このチケット | K419-API-002 |\n| もう入っている人 | 招くの小窓 | 管理者 | 422・E-INV-010・招待 0 | このチケット | K419-API-011・012 |\n| 形の違う宛て | 招くの小窓（口を直に） | 管理者 | 422・E-INV-009・招待 0 | このチケット（画面も足すときに見る・K-420） | K419-API-010・012 |\n| どれでも | メンバーの画面 | 普通のメンバー・閲覧のみ | 403 | このチケット | K419-API-005 |\n| どれでも | 口を直に | ログインしていない | 401 | このチケット | K419-API-005・019 |\n| 別の会社の人・招待 | メンバーの画面 | 別の会社の管理者 | 出ない | このチケット | K419-API-006 |\n| 招待を使って参加 | 届いたリンク | 招かれた人 | F2 の参加の口（K-332・K-333）がそのまま使える（宛てのメールを持つ招待） | K-332・K-333 | 統合 K-418 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K419-API-001 | 対象の状態 | 管理者が並びを読む | 200・no-store・グループは営業・受託開発の順・高本は role admin・self true・primary true・other_groups []・兼ねる田中は両方のグループに出る（営業の行は primary true・other_groups [受託開発]、受託開発の行は primary false）・別の会社の人は出ない・count は人（重ねない）と招待中の和 |\n| K419-API-002 | 時間の流れ | 招待中・期限切れ・取り消し・使われた | 招待中だけが出る・role・scope_id・left_days 7（6 日 2 時間を切り上げ） |\n| K419-API-003 | 対象の状態 | PC の様子 | 今日 ok・3 日前 away（pc_days_away 3）・行なし never（null）・閲覧のみ none |\n| K419-API-004 | 対象の状態 | 止めた人・外した人 | 止めた人は suspended true で出る・status left の人は出ない |\n| K419-API-005 | 守り | 普通のメンバー・閲覧のみ・ログインしていない | 403（data なし）・403・401 |\n| K419-API-006 | 守り | 別の会社の管理者 | この会社の人と招待は 1 つも出ない |\n| K419-API-007 | 対象の状態 | 1 人を招く | 201・答え 1（mail sent）・招待の行（グループ・役割・ひとこと・作った人・期限 7 日・token_hash は 64 けた）・メール 1（件名に会社名・本文のリンクのトークンの sha256 が token_hash と同じ・ひとこと）・証跡 invitation.created 1 |\n| K419-API-008 | 入力 | 3 人 | 201・答え 3・招待 3・メール 3・リンクは宛てごとに違う |\n| K419-API-009 | 入力（表記ゆらぎ） | 全角・大文字・前後の空白・同じ宛て 3 つ | 小文字の半角 1 つにそろう・招待 1 |\n| K419-API-010 | 入力 | 形の違う宛て 3 つ（と正しい宛て 1 つ） | 422・E-INV-009・details は 3 つ（字・field emails・errors.json の文）・正しい宛ても招待 0・メール 0 |\n| K419-API-011 | 入力 | もう入っている人（大文字で） | 422・E-INV-010・details の宛ては小文字・招待 0・メール 0 |\n| K419-API-012 | 入力 | 形の違う宛てと入っている人が混じる | 422・details は入れた順に E-INV-009・E-INV-010 |\n| K419-API-013 | 操作の揺れ | 招待中の人に重ねて招く | 201・前の招待に revoked_at・生きている招待は 1 つ・メール 1 |\n| K419-API-014 | 入力 | グループが別の会社・在らない・消した | 422・E-INV-011・招待 0 |\n| K419-API-015 | 入力 | 51 人・50 人 | 51 は 422・E-INV-012・招待 0。50 は 201 |\n| K419-API-016 | 入力 | ひとこと 501・500 文字 | 501 は 422・招待 0。500 は 201・そのまま残る |\n| K419-API-017 | 守り | 管理者として招く（取り直し無し・16 分前・1 分前） | 無し・16 分前は 403・STEP_UP_REQUIRED・招待 0。1 分前は 201・role_id admin |\n| K419-API-018 | 守り | マネージャー・招く権限を付けたメンバー | マネージャー 403・招待 0。権限を付けたメンバーは 201（取り直し無しで・役割 member） |\n| K419-API-019 | 入力 | 知らない役割・空の宛て・ログインしていない | 422・422・401・招待 0 |\n| K419-API-020 | 操作の揺れ | 二度押し（同じ Idempotency-Key） | 2 回とも 201・同じ答え・招待 1・メール 1 |\n| K419-API-021 | 失敗 | 手順 1 の失敗（3 人目の行で例外） | 503・E-PAGE-003・3 人とも招待 0・メール 0 |\n| K419-API-022 | 失敗 | 手順 2（メール）が 1 人だけ失敗 [残る] | 201・その人 mail failed・ほかは sent・招待の行は残り招待中に出る・証跡 invitation.mail_failed（payload はドメインだけ） |\n| K419-API-023 | 失敗 | 手順 2 の後片付け（証跡）も失敗 | 201・ログに「招待のメールの結果を書けなかった」1 行（宛ての字は無い）・招待の行は残る |\n\n### テストの型の受け（分類 LIST・INV・MAIL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-LIST-01 0 件・1 件・境目 | K419-API-001（数人）・002（招待中 1）。ページを持たない口（1 つの会社の人は多くても数百・全部を返す） |\n| TP-LIST-02 同じ値の並び | K419-API-001（グループは作った順） |\n| 絞り込みの URL・探す語 | 要らない：絞り込みと探す語を受けない口（画面の中で並べるだけ） |\n| 招待：期限・取り消し・使われた | K419-API-002・013 |\n| 招待：もう入っている人 | K419-API-011・012 |\n| 招待：権限・本人確認 | K419-API-017・018 |\n| 招待：表記ゆらぎ | K419-API-009 |\n| メール：届く・届かない・中身・秘密を出さない | K419-API-007・022・023（ログと証跡に宛ての字を出さない） |\n| TP-INV-01 招待の期限切れ・取り消し・使い終わった招待を開く | K419-API-002（招待中に出ない）。開く側は F2（K-331〜K-333） |\n| 要らない: TP-INV-02 招待されたメールと違うアカウントで開くは参加する側（F2 の K-333 の wrong_email） | — |\n| TP-INV-03 既にメンバーの人を招く | K419-API-011・012 |\n| 要らない: TP-INV-04 招待した人が権限を失った・抜けた後に開くは参加する側（F2）と人を外す（F10 の残り） | — |\n| TP-INV-05 同じ人を 2 回招待する | K419-API-009（同じ宛ては 1 つ）・013（招待中に重ねて招く） |\n| 要らない: TP-LIST-03 絞り込みを持たない口（URL に載せる絞り込みが無い） | — |\n| 要らない: TP-LIST-04 探す語を受けない口 | — |\n| TP-MAIL-01 送れなかった | K419-API-022・023 |\n| TP-MAIL-02 同じ知らせが二重に出る | K419-API-020（二度押しでメール 1）・009（重なりを外してメール 1） |\n| TP-MAIL-03 本文 | K419-API-007（件名に会社名・本文に招待のリンクとひとこと・リンクの sha256 が token_hash） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（メンバーの画面・K-420） | 画面が無い | 開いたときに 1 本（getWorkspaceMembers）。招いた後は 1 回読み直す |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 並び：1 取引・文 1 つ（関数）。招く：1 取引（関数 1 回・入っている人を引く文 1 つ）＋取引の外でメールの結果の証跡 |\n| 認証の要る答えの Cache-Control | — | private, no-store |\n| 新しい住所 | — | 増えない（どちらも契約に在る） |",
+    "前からの試験を替えた所": "招待の表に書き、招く口の契約の入力を作り直すので、招待・招く口を読む前からの試験を探した。\n\n```search\ngit grep -l \"createInvitations\\|getWorkspaceMembers\\|workspace/members\\|v1/invitations\\\"\\|\\\"/invitations\\\"\" -- apps/api/test packages/db/test apps/web/tests scripts/ci ':!apps/api/test/generated/*' ':!apps/api/test/features/F10/*'\n2\ngit grep -l \"invitations\" -- apps/api/test packages/db/test ':!apps/api/test/generated/*' ':!apps/api/test/features/F10/*'\n11\n```\n\n- apps/web/tests/k/showcase.spec.ts: 替えない — 役 R1 のナビの行き先が /workspace/members/groups であることを字で見るだけ。道もナビも変えない\n- scripts/ci/zt_gate.py: 替えない（試験でない・検査の道具）— createInvitations を本人確認を取り直す口の並びに持つ。契約の step_up \"admin_role\" は変えない\n- apps/api/test/agent_artifacts.test.ts・agent_memory.test.ts・features/F1/terms.test.ts・features/F1/verify-email.test.ts・features/F1/mfa-gate.test.ts: 替えない — packages/auth/src/invitations.ts の createInvitation か招待の行を直に入れて参加を通す。この葉は createInvitation と表の列を変えない\n- apps/api/test/features/F2/invitation-accept-new.test.ts・invitation-preview.test.ts・invitation-resend-request.test.ts・invite.harness.ts・legacy-invite-routes.test.ts: 替えない — F2 の参加の口。招待の行を直に入れる。この葉は F2 の関数・口・hooks/invitations.ts を変えない\n- apps/api/test/invite_join.ts: 替えない（試験の道具）— 同じ",
+    "成果物": "- migration 1 本（関数 2 つ）・口 2 本（members.ts・create.ts・mail.ts）と hooks のファイル・契約の .d・登録先・エラー・資料・親の行\n- 単体の試験 `invite-create.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：招く口は全部か無しか（1 つでも形の違う宛て・入っている人があれば招かない）。画面は書いた中身を残して直させる（D-148.31）\n- 2026-11-20 切る段の決め：宛ては登録と同じ normalizeEmail でそろえる（途中の空白も消える）\n- 2026-11-20 切る段の決め：招く関数は 1 つの DB の関数（security definer）。行の守りの insert（invitations の edit）ではなく、契約の権限（members の invite）を関数の中でも見る（守りは入口と関数の 2 層）\n- 2026-11-20 切る段の決め：証跡とログに宛てのメール全体を書かない（ドメインだけ）",
+    "PM に確かめたいこと": "- **決まった（PM の決め 2026-11-20）**：招待のリンク（createInvitationLink）と、それで参加できるようにする F2 の参加の関数の直しは、新しい葉 **K-421**（親 K-70）が持つ。この葉は入れない（並びの関数でリンクの招待を招待中に出さない条件だけ持つ）\n- 代表に聞くこと → 決まった（answer=3d444fc8d59f・D-148.47）：招待中の人にもう一度「招く」を押したら、前の招待を取り消して新しく送る。勧めのとおり。試験 K419-API-013 はこの形",
+    "表の住所": "- 口の登録はこの葉の hooks のファイル `apps/api/src/hooks/workspace-invitations.ts`（K-326）。前からの `hooks/invitations.ts`（F2 の参加の口）は触らない\n- migration は時刻の名前（K-327・`2026112109NN00`・NN＝19）。一覧は生成物\n- 招く口の入力は `05_flow/screen_api.d/K-419.py` の INPUTS（screen_api.py に createInvitations の INPUTS は無いので重ならない）。getWorkspaceMembers の答えの形は screen_api.py の今のまま（直すときは本体）\n- エラーは errors.d/K-419.json（E-INV-009〜012：前からの E-INV- の次の空き）。E-INV-013〜015 は K-422（K-421 は番号を足さない）\n- 招待のリンクは K-421（同じ 08_api/phase1/07_ワークスペースの管理.md の別の行を直す・K-421 はこの葉に依存）"
+   },
+   "file": "11_tickets/K-419.md"
+  },
+  {
    "id": "K-425",
    "title": "段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線に入れる（文書だけ・K-68 の葉）",
    "kind": "タスク",

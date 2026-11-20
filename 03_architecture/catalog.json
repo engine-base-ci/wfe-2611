@@ -1857,7 +1857,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "revokeInvitation",
@@ -5756,7 +5758,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "updateWorkspacePermissions",
