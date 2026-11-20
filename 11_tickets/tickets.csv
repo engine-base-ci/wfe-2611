@@ -2353,3 +2353,16 @@ F5 の帯は、AI が動いていない・承認待ちでもない間も出て�
 - [ ] 替えた前からの試験 K380-UI-003（`apps/web/tests/k/k380-detail-slots.spec.ts`）と、替えない K-380 の残りの行が緑
 - [ ] 替えない前からの試験（下の「前からの試験を替えた所」）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-631,直し：チケットの CI が画面の試験を後回しにする回（web=defer）でも、画面の組み立ての型の確かめ（next typegen ＋ tsc）を流す（K-357 の型のずれが本線に素通りした穴・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-22,F3・CI,"設定 `ci.web_defer` のとき、チケットの CI は workflow に `web=defer` を渡す。画面の組（web）は `if: … && inputs.web != 'defer'` で組ごと流れず、その中の `pnpm --filter @kaname/web build:test`（next build）も流れない。next build は画面の型の確かめを兼ねているので、**画面の型のずれがチケットの CI を素通りする**。実際に K-357 が、K-355 が契約で必須にした `request_ref` を送らない画面（`apps/web/features/F3/credentials/check-credential.tsx`）を本線に入れ、本線の画面の組み立てが壊れた（K-630 が直している）。
+
+スキル ticket-flow の約束（references/ci-contract.md の `web` の入力・design.md「画面の試験を後回しにする」）：**defer の回に流さないのは画面の試験（ブラウザで動かす行）だけで、画面の組み立て（build・型の確かめ）は defer の回も必ず流す**。この葉は CI の定義をこの約束に合わせる。
+
+- 画面の範囲を含むチケットの CI（static の出力 `web` が true）で、`web=defer` の回に、画面の型の確かめを **static の組の 1 段**として流す：`NEXT_DIST_DIR=.next-prod pnpm --filter @kaname/web exec next typegen && pnpm --filter @kaname/web exec tsc --noEmit`
+- **next build が見る型と同じ物を見る**：`NEXT_DIST_DIR=.next-prod` で typegen（route の型：`link.d.ts`＝typedRoutes の `Link` の型・`validator.ts`＝ページの props の型）を作ってから tsc。**出力先を build:test と同じ `.next-prod` にする理由**：`apps/web/tsconfig.json` は `.next` を exclude し `.next-prod/types/**` だけを include しているので、typegen の既定の出力先（`.next/types`）だと tsc に入るのは `next-env.d.ts` が参照する `routes.d.ts` だけで、`link.d.ts` と `validator.ts` が数えられず、next build より弱い確かめになる（きれいな木で `tsc --listFiles` を見て確かめた：既定の出力先は `.next/types/routes.d.ts` 1 件・`NEXT_DIST_DIR=.next-prod` なら `routes.d.ts`・`link.d.ts`・`validator.ts` の 3 件。K-357 の型のずれは素の tsc でも出るが、`Link` と props の型の誤りは後者でないと出ない）
+- **時間を測って選んだ**（このチケットを切るとき・同じ Mac の木・負荷 8）：typegen ＋ tsc は **11 秒**、`build:test`（next build）は本線の木で **1 分 35 秒**かかって型の誤りで止まった（コンパイルのあと型の確かめ。web の組はその前に DB・API・Chrome の準備が要る）。速い方の typegen ＋ tsc にする
+- **web=run の回では流さない**（web の組の next build が同じ型を見る・二重にしない）。条件は `inputs.web != 'run'`
+- **出す前の手元の検査（preflight）でも流れる**：手元の検査は static を流し（`ticket-flow.yaml` の `preflight_jobs`）、web の入力を渡さない（空）。空は `!= 'run'` なので流れる。画面の組は手元の検査に入っていないので、二重にならない","- [ ] 下の表の K631-CI-001〜004 が緑：`python3 scripts/ci/k631_web_types_test.py`
+- [ ] 替えた前からの試験（k258_web_defer_test.py）と、替えない前からの試験 12 本が緑
+- [ ] 作り手を流し直した生成物（CI の定義 .github/workflows/v3-gate.yml・試験計画 07_qa/test-plan/test-plan.*）が最新（`python3 scripts/tickets/regen_all.py`）
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 型のずれがあれば赤になることを、壊した写しで 1 回確かめた結果が「確かめたこと」に書いてある"

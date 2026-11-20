@@ -113,8 +113,10 @@ class WebConcurrency(unittest.TestCase):
                 hits.append(f"{name}.env")
             for st in job.get("steps", []):
                 if "inputs.web" in str(st):
-                    hits.append(f"{name}: {st.get('name')}")
-        self.assertEqual(hits, ["web.if"], "inputs.web を読むのは web の組の if だけ（ほかの組・段は今までどおり）")
+                    # K-631：画面の型の確かめ（static の組の 1 段）は、web=run の回に二重に流さないため inputs.web を読む
+                    is_types = name == "static" and "next typegen" in str(st.get("run", "")) and "inputs.web != 'run'" in str(st.get("if", ""))
+                    hits.append(f"{name}: types" if is_types else f"{name}: {st.get('name')}")
+        self.assertEqual(hits, ["static: types", "web.if"], "inputs.web を読むのは web の組の if と、画面の型の確かめの段（K-631）だけ（ほかの組・段は今までどおり）")
         self.assertNotIn("inputs.web", str(WF.get("env", "")))
 
 
