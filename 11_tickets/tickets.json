@@ -3142,18 +3142,12 @@
    "screens": [],
    "apis": [
     "createTicketDecision",
-    "deleteTicketMessage",
     "listTicketDecisions",
-    "starTicketMessage",
-    "updateTicketDecision",
-    "updateTicketMessage"
+    "updateTicketDecision"
    ],
    "tests": [
-    "apps/api/test/generated/delete_ticket_messages_id.test.ts",
     "apps/api/test/generated/get_tickets_id_decisions.test.ts",
     "apps/api/test/generated/patch_ticket_decisions_id.test.ts",
-    "apps/api/test/generated/patch_ticket_messages_id.test.ts",
-    "apps/api/test/generated/post_ticket_messages_id_star.test.ts",
     "apps/api/test/generated/post_tickets_id_decisions.test.ts"
    ],
    "depends_on": [],

@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 367,
-  "api_built": 59,
+  "api_built": 62,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 145,
@@ -4753,9 +4753,8 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66",
     "K-386"
    ]
   },
@@ -4771,9 +4770,8 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66",
     "K-386"
    ]
   },
@@ -4789,9 +4787,8 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66",
     "K-386"
    ]
   },

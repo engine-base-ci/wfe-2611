@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:75ba41d71127906f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:ad52a6beefdba2b9
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15556,9 +15556,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateTicketMessage",
     "table": "ticket_messages",
     "kind": "update",
-    "input": "TicketMessagesInput",
+    "input": "TicketMessageEditInput",
     "success": 200,
-    "output": "TicketMessages",
+    "output": "TimelineItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15578,6 +15578,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      422,
+      503,
       413,
       429,
       403,
@@ -15615,7 +15617,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "TicketMessages",
+    "output": "TimelineItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15635,6 +15637,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -15647,7 +15650,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "self",
+      "word": "read",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -15656,7 +15659,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "ticket_messages",
-        "sql": "author_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -15669,9 +15672,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "starTicketMessage",
     "table": "ticket_messages",
     "kind": "create",
-    "input": "TicketMessagesInput",
+    "input": "TicketMessageStarInput",
     "success": 201,
-    "output": "TicketMessages",
+    "output": "TicketMessageStar",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15692,6 +15695,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -19447,4 +19451,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "75ba41d71127906f";
+export const OPENAPI_HASH = "ad52a6beefdba2b9";
