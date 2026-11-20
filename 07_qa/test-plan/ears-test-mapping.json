@@ -135562,7 +135562,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "409",
-   "ears_text": "UNWANTED: IF 完了したチケットの段を開き直さずに変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない",
+   "ears_text": "UNWANTED: IF 完了したチケットの段を、作業中への開き直し以外に変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない",
    "test_file": "apps/api/test/generated/patch_tickets_id.test.ts",
    "test_function": "test_patch_tickets_id_conflict_2",
    "test_level": "unit（冪等）",

@@ -1042,6 +1042,15 @@
    "tests": [
     "apps/api/test/generated/patch_tickets_id.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261120130500_ticket_reopen.sql",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress-reopen.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1155,7 +1164,8 @@
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
   "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
-  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）"
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
+  "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
