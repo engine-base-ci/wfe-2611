@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 368,
+ "endpoints_count": 369,
  "ac_seeds": [
   {
    "endpoint": "POST /api/v1/acceptances/:id/remind",
@@ -10367,6 +10367,46 @@
     "D-125.91",
     "D-125.92",
     "D-125.94"
+   ]
+  },
+  {
+   "endpoint": "GET /api/v1/tickets/:id/handovers",
+   "feature_id": "F-010",
+   "screen_ids": [
+    "tickets"
+   ],
+   "acts": [
+    "A110",
+    "A51"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/handovers が「受ける／理由を書いて断る」として呼ばれたとき THEN Kaname は「責任者を切り替える・知らせる」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/handovers が「相手・理由・お願い・返事の期限を書いて渡す」として呼ばれたとき THEN Kaname は「渡し中にして相手に知らせる」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: GET /api/v1/tickets/:id/handovers の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-008.6",
+    "D-032",
+    "D-058",
+    "D-058.8",
+    "D-061",
+    "D-061.4",
+    "D-068",
+    "D-068.1",
+    "D-068.8",
+    "D-125.14",
+    "D-125.167",
+    "D-125.88",
+    "D-125.89",
+    "D-125.90"
    ]
   },
   {

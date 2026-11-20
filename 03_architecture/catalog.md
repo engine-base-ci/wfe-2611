@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 368（作った 64・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 222・部品 56・設定 41
+API 369（作った 65・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 222・部品 56・設定 41
 
 ## 共通の処理
 
@@ -415,6 +415,7 @@ API 368（作った 64・後のフェーズの行為だけ 20）・前の道す�
 | `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-401 |
 | `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-401 |
 | `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |
+| `listTicketHandovers` | GET /api/v1/tickets/:id/handovers | 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで） | F8 | 作った | K-405 |
 | `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |

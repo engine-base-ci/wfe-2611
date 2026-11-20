@@ -10133,6 +10133,21 @@ components:
           nullable: true
         created_at:
           type: string
+        handover_kind:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        carry_children:
+          type: integer
+          nullable: true
+        to_scope_name:
+          type: string
+          nullable: true
+        ticket_scope_name:
+          type: string
+          nullable: true
       x-operation: listApprovalQueue
     ApprovalDetail:
       type: object
@@ -10639,6 +10654,13 @@ components:
         hold:
           type: object
           nullable: true
+        handover:
+          type: object
+          nullable: true
+        handover_kinds:
+          type: array
+          items:
+            type: string
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -11842,6 +11864,53 @@ components:
         created_at:
           type: string
       x-operation: answerTicketHandover
+    TicketHandover:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        ticket_scope:
+          type: object
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        overdue:
+          type: boolean
+        switch:
+          type: object
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        reminded_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        can:
+          type: object
+      x-operation: listTicketHandovers
     Error:
       type: object
       properties:
@@ -42124,6 +42193,137 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   /api/v1/tickets/{id}/handovers:
+    get:
+      operationId: listTicketHandovers
+      summary: 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A110
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-008.6
+      - D-032
+      - D-058
+      - D-058.8
+      - D-061
+      - D-061.4
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.90
+      x-permission: read
+      x-permission-scope: そのチケットを読める人と、その渡しを渡した人・答える人。別の会社・見えない人には返さない（D-128.115）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - answered_by
+          - ask
+          - created_at
+          - created_by
+          - decided_at
+          - decline_reason
+          - deleted_at
+          - from_member_id
+          - id
+          - kind
+          - notify_managers
+          - overdue_notified_at
+          - reason
+          - reminded_at
+          - reply_due
+          - state
+          - switch
+          - switch_applied
+          - tenant_id
+          - ticket_id
+          - to_member_id
+          - to_scope_id
+          - updated_at
+          - updated_by
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketHandover'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       operationId: createTicketHandover
       summary: 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ

@@ -563,8 +563,8 @@
  "inputs": {
   "tickets": 218,
   "l1_rows": 5094,
-  "ears_endpoints": 368,
-  "ears_tests": 3967,
+  "ears_endpoints": 369,
+  "ears_tests": 3978,
   "entities": 142,
   "policies": 410,
   "access_cases": 1530,

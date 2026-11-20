@@ -39455,6 +39455,64 @@
       "D-068.1",
       "D-068.8"
      ]
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
     }
    ],
    "required_apis": [
@@ -41523,6 +41581,64 @@
       "D-058.7",
       "D-061.3",
       "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.88",
+      "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers",
+     "table": "ticket_handovers",
+     "operation_id": "listTicketHandovers",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-004",
+      "E-002"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
       "D-068.1",
       "D-068.8"
      ]
