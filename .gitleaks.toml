@@ -1,6 +1,6 @@
 # 秘密の検査（gitleaks 8.30）の設定。既定の規則をそのまま使い、試験の作り物の値の置き場 4 つの道だけを外す（K-328・Bridge と通しの試験の 2 つは K-350）。
 # 外すのは道だけ。値の正規表現や止め語では外さない（ほかの道に同じ形の本物が来ても見つける）。
-# 例外：契約の生成物 4 ファイルの openapi.yaml の要約（16 けたの 16 進）だけは、道と値の両方がそろうときに外す（下の規則 generic-api-key の allowlists・K-362・answer=2fd73e54782f）。
+# 例外：契約の型の 4 ファイル（packages/contracts/src の ops・registry・schemas・types）の openapi.yaml の要約（16 けたの 16 進）だけは、道と値の両方がそろうときに外す（下の規則 generic-api-key の allowlists・K-362・answer=2fd73e54782f）。
 # 試験に作り物の秘密を書くときは apps/{api,web,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts に足して import する（.gitleaksignore は使わない）。
 title = "Kaname の秘密の検査"
 
