@@ -102,7 +102,13 @@ for (const [id, c] of Object.entries(DIALOG_PROD)) {
           await openList(page, w);
           await c.act(page);
           await expect(page.locator(DLG).last()).toBeVisible();
-          await page.evaluate(() => window.scrollTo(0, 0));
+          // 小窓は中身だけがスクロールする（K-350）。入れた欄までスクロールした中身も頭に戻してから比べる
+          await page.evaluate(() => {
+            window.scrollTo(0, 0);
+            document.querySelectorAll(".k-dialog-body").forEach((e) => {
+              e.scrollTop = 0;
+            });
+          });
         },
         opts,
       );
@@ -436,7 +442,7 @@ test("K372-UI-016 「やめる」と Esc：何も送らず小窓が閉じる。�
   const d = addDialog(page);
   await expect(d.getByLabel("名前", { exact: true })).toHaveValue("");
   await expect(d.getByLabel("パスワード", { exact: true })).toHaveValue("");
-  await expect(d.getByRole("combobox", { name: "種類" })).toContainText("ログイン情報（ID とパスワード）");
+  await expect(d.getByRole("combobox", { name: "種類", exact: true })).toContainText("ログイン情報（ID とパスワード）");
   await expect(d.getByRole("combobox", { name: "2 段階の種類" })).toContainText("なし");
   await expect(d.getByRole("combobox", { name: "預ける先" })).toContainText(WS_NAME);
   await page.keyboard.press("Escape");
