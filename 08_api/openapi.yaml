@@ -9881,6 +9881,17 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: checkMyDeviceBrowser
+    BridgeBrowserInput:
+      type: object
+      properties:
+        browser:
+          type: string
+          pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
+      additionalProperties: false
+      x-operation: setBridgeBrowser
+      required:
+      - browser
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11601,6 +11612,12 @@ components:
           type: string
           format: uuid
       x-operation: checkMyDeviceBrowser
+    BridgeBrowser:
+      type: object
+      properties:
+        browser:
+          type: string
+      x-operation: setBridgeBrowser
     Error:
       type: object
       properties:
@@ -15074,6 +15091,117 @@ paths:
                 $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/bridge/browser:
+    post:
+      operationId: setBridgeBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - sessions
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: device
+      x-permission-scope: その人の PC（その PC 自身の AI が使うブラウザだけ。Kaname が正本で、画面で変えたのと同じ値・D-120）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BridgeBrowserInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BridgeBrowser'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：大文字の値（CHROME など・NFKC で小文字にならない））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 大文字の値（CHROME など・NFKC で小文字にならない）
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
