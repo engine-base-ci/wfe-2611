@@ -196,7 +196,7 @@ test("K381-UI-002 箱は小窓の後ろの幕の層より下：z-index 80 の覆
   expect(await topmostInside(item)).toBe(false);
 });
 
-test("K381-UI-003 外枠の自分のメニュー（shell.tsx・幅 1440・/dev/mock/f3-pc/pc-menu の外枠）：開いた箱の「ログアウト」は、z-index 20・45 の覆いを足してもいちばん上", async ({
+test("K381-UI-003 外枠の自分のメニュー（shell.tsx・幅 1440・/dev/mock/f3-pc/pc-menu の外枠）：開いた箱の「預けたログイン情報」は、z-index 20・45 の覆いを足してもいちばん上", async ({
   page,
 }) => {
   await guard(page);
@@ -204,7 +204,7 @@ test("K381-UI-003 外枠の自分のメニュー（shell.tsx・幅 1440・/dev/m
   await page.keyboard.press("Escape");
   await expect(page.getByRole("menuitem")).toHaveCount(0);
   await page.getByRole("button", { name: "自分のメニュー", exact: true }).click();
-  const item = page.getByRole("menuitem", { name: "ログアウト" });
+  const item = page.getByRole("menuitem", { name: "預けたログイン情報" });
   await expect(item).toBeVisible();
   expect((await layerOf(item)).cls).toContain("k-popup-layer");
   for (const z of [20, 45]) {
@@ -235,7 +235,7 @@ test("K381-UI-005 選ぶ欄（select.tsx）が小窓の中で開く（/dev/mock/
   await openMock(page, "/dev/mock/f3/cred-add-login", 1440);
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
-  await dialog.getByRole("combobox", { name: "種類" }).click();
+  await dialog.getByRole("combobox", { name: "種類", exact: true }).click();
   const option = page.getByRole("option").first();
   await expect(option).toBeVisible();
   expect((await layerOf(option)).cls).toContain("k-popup-layer");
