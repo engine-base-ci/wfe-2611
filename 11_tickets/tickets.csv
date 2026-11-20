@@ -2333,6 +2333,19 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-485,止まった AI の仕事から「自分で直す」口（takeoverActionRun）と、止まった理由の種類（reason_kind・taken_over_at）を実行の答えに足す。retryActionRun は契約から外す（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-24,F7・止まった理由,"チケットの詳細の「止まった」帯（K-62 の `delegate-band.tsx`・画面は K-486 が直す）の 2 つを口にする。
+
+1. **自分で直す** `takeoverActionRun`（POST /api/v1/action_runs/:id/takeover・今は 501）：AI の仕事を外し、チケットを担当者が自分で進める形にする（D-151.17）。実行の記録に `taken_over_at` を立て（止まった理由の文は書き換えず履歴に残す）、`tickets.delegated_to_clone` を下ろし、段は作業中のまま（動いている実行を引き取ったときだけ「実行中」から作業中に戻す）、やり取りに仕組みの 1 行「〈名〉が自分で進めることにしました」、証跡 1 行。まだ動いている・待っている実行は、その場で止める（PC には止める合図が届き、後から結果が返ってきても生き返らない）。権限は担当者だけ。
+2. **止まった理由の種類** `reason_kind`：K-62 の `getActionRun`・`listTicketRuns` の答え（ActionRunView）に、`reason_kind`（pc_closed・approval_expired・bridge_outdated・claude_missing・claude_login・browser_unreachable・unknown・止まっていなければ null）と `taken_over_at` を足す。**止める所（約 10 の DB の関数）は直さず、読むとき `stopped_reason` の文と E 番号から決める**（PM の決め P7）。判定の表は 1 か所（`apps/api/src/features/F7/stopped/reason-kind.ts`）。**答えに `reason_kind` を足す処理も 1 つにする**：`reason-kind.ts` の `withReasonKind(run)`（`{ ...run, reason_kind: reasonKindOf(run.status, run.stopped_reason) }` を返す純関数）を、読む 2 つの口（getActionRun・listTicketRuns）と自分で直す口（takeoverActionRun）の 3 つが同じに使う。`reason_kind` は DB の関数 `app.action_run_json` には無く、口の側で足す物（ActionRunView の 16 欄のうち DB の関数が持つのは 15 欄・`taken_over_at` まで）。
+
+「もう一度」は K-62 の「AI に任せる」と同じ働きなので新しい口を作らず、契約の `retryActionRun`（POST /action_runs/:id/retry）を契約から外す（`08_api/retired-endpoints.json` に根拠 D-129.11・D-151.17）。前の道すじ `/api/auth-ext/agent/resume` の行き先は `delegateTicket` に付け替える。
+
+「直し方を AI に伝える」（段 6・K-61）は触らない。画面（理由ごとの一手・押せる「自分で直す」）は K-486。","- [ ] 下の表の 30 行（K485-API-001〜030）が緑：`apps/api/test/features/F7/stopped-takeover.test.ts`（土台は段 1 の `F5/delegate-kit.ts`・`F3/leaf-hooks.ts`・変えない）
+- [ ] 契約の口 `takeoverActionRun` が 501 でない。生成の試験 `apps/api/test/generated/post_action_runs_id_takeover.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-485.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-885（`k144.d/K-485.ts`・carry）が緑
+- [ ] `retryActionRun` が契約・生成物・K-67 の apis から消え、`08_api/retired-endpoints.json` に 1 行ある。生成の試験 `post_action_runs_id_retry.test.ts` は作り手が作らなくなる
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-601,段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-23,F7・文書,"段 8（K-67・F7 毎日見る・探す・片付ける）の決定 D-151.1〜20（範囲・知らせの読んだ・探す・保存した検索条件・期限・止まった一手・消す／戻す ほか）を、決定ログの新しい節 §151 として本線に入れる。
 
 段 8 のほかの葉は decisions: に D-151.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（PM の決め 2026-11-20・段 9 の K-425 と同じ。前は部品とモックを運ぶ K-460 が決定ログも運ぶ形で、依存の無い口の葉が先に始まると止まった）。段 8 のほかの葉（口・DB の葉と、K-460 の部品）はこの葉に依存する。","- [ ] 下の表の 4 行（K601-DC-001〜004）が緑：`scripts/ci/k601_decision_log_test.py`
