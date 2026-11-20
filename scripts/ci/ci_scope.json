@@ -975,6 +975,45 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credentials-update-delete.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credentials-update-delete.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_credentials_id.test.ts",
+    "apps/api/test/generated/delete_credentials_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/remove-pc/**",
+    "apps/api/src/hooks/device-revoke.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/remove-pc.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/remove-pc.test.ts",
+    "apps/api/test/features/contract/k144.d/K-362.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "packages/db/migrations/**",
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/device-*.ts",
@@ -991,6 +1030,33 @@
    ],
    "tests": [
     "apps/api/test/generated/patch_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/bridge-browser.ts",
+    "packages/db/migrations/20261120143736_bridge_set_browser_acl.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_browser.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/browser-choice.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/browser-choice.test.ts"
    ]
   },
   {
@@ -1141,6 +1207,7 @@
   "apps/web/tests/k/k349-connect-pc-split.spec.ts": "apps/web/features/F3/connect-pc の区画のファイル（.ts・.tsx）を字で読む（出す名前・並べる所のつなぎ・行の差す所）。apps/web/** は jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-349",
   "apps/web/tests/k/k350-stage4-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3/mocks.tsx・部品 apps/web/features/F3/credentials/views.tsx・画面のコード apps/web/{components,features,app}（鈴を外した後に名前が残っていないか）・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段4-F3/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・正本 04_design/DESIGN-kaname.md・キャンバスの絵 04_design/canvas/*.dc.html（作り手 shellfix.py・mb.py を data_links で結ぶ）・11_tickets/K-57.md・秘密の検査の設定 .gitleaks.toml・作り物の秘密の置き場（apps/{api,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts）を読み、scripts/ci/design_gate.py を子プロセスで流す（K-350）",
   "apps/api/test/features/F3/credentials.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/credentials-*.ts を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-351",
+  "apps/api/test/features/contract/k144.d/K-353.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/credentials-mock.ts": "試験の共通の道具。文言の正本 07_qa/test-specs/errors.json を読む（口の差し替えの答えの文）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-356",
   "apps/bridge/test/k359-claude-setup.test.ts": "一時のフォルダ（mkdtemp）に作り物の claude の台本と記録を書いて読み、子プロセスで動かす（Bridge の入れる・ログインの処理が呼ぶ相手）。リポジトリの中の物は読まない・K-359",
   "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
