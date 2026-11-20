@@ -1,0 +1,36 @@
+# K-391 決定を改める・取り消す口（updateTicketDecision）
+#   体：action（必須・revise＝改める／cancel＝取り消す／promote＝取引先のルールにする＝段 12 まで 422 E-VAL-018）・text（revise のとき必須・字数の上限なし）・reason（revise は改める理由で空でよい・cancel は必須）。
+#   知らない欄は 422（strict）。答え TicketDecisionChange は decision（新しい決定・取り消したときは取り消した決定）と previous（改めた元の決定・取り消したときは null）と message_id（やり取りに足した 1 行）。
+#   decision・previous は K-390 の TicketDecision と同じ 12 の鍵（画面 K-398 が読む）
+INPUTS = {
+    "updateTicketDecision": ("TicketDecisionUpdateInput", {"action": "string", "text": "string?", "reason": "string?"}),
+}
+
+REQUIRED_INPUTS = {
+    "updateTicketDecision": ["action"],
+}
+
+VALUE_RANGES = {
+    "updateTicketDecision": {"action": {"enum": ["revise", "cancel", "promote"]}},
+}
+
+RESPONSES = {
+    "updateTicketDecision": ("TicketDecisionChange", {"decision": "object", "previous": "object?", "message_id": "uuid"}),
+}
+
+ERRORS_4XX = {
+    "updateTicketDecision": [
+        {"status": 409, "code": "E-CONF-031", "body": {"error": "conflict", "code": "E-CONF-031"}, "errors": ["E-CONF-031", "E-CONF-033"],
+         "trigger": "読んだ後にほかの人が先に改めた（改められた決定を改める・取り消す・E-CONF-031）／取り消した（取り消した決定を改める・取り消す・E-CONF-033）。読み直してからもう一度",
+         "ears_form": "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない"},
+        {"status": 422, "code": "E-VAL-042", "body": {"error": "validation_failed", "code": "E-VAL-042"}, "errors": ["E-VAL-042", "E-VAL-045"],
+         "trigger": "改めるとき新しい決定が無い・空・空白だけ・制御文字だけ（E-VAL-042・欄 text）／取り消すとき理由が無い・空・空白だけ・制御文字だけ（E-VAL-045・欄 reason）。action が無い・知らない言葉は 422 VALIDATION_ERROR（欄 action）",
+         "ears_form": "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない"},
+        {"status": 422, "code": "E-VAL-018", "body": {"error": "validation_failed", "code": "E-VAL-018"}, "errors": ["E-VAL-018"],
+         "trigger": "取引先のルールにした（action が promote・段 12 の取引先の画面ができるまで使えない・details の文は「取引先の画面ができてから使えます」）",
+         "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "守りの判定（今のメンバーか・書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
+         "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"},
+    ],
+}

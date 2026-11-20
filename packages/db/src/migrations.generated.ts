@@ -128,4 +128,5 @@ export const MIGRATIONS = [
   "20261120130000_ticket_timeline.sql",
   "20261120130100_ticket_thread_seen_mark.sql",
   "20261120130700_ticket_decisions.sql",
+  "20261120130800_ticket_decision_revise.sql",
 ] as const;

@@ -1229,7 +1229,7 @@ PERMS = {
     "starTicketMessage": ("read", "そのチケットを見られる人（自分の印だけ）", False),
     "listTicketDecisions": ("read", "そのチケットを見られる人（見るだけの人も読める）", False),
     "createTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は足せない・⑧）。決めた人は同じ会社の今のメンバー（既定は本人）", False),
-    "updateTicketDecision": ("write", "そのグループの人。取引先のルールにするのは取引先の担当とマネージャー", False),
+    "updateTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）", False),
     "createTicketHandover": ("write", "渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者", False),
     "answerTicketHandover": ("recipient", "渡された・判断を仰がれた相手だけ", False),
     "listTicketLinks": ("read", "両方のチケットを見られる人（片方が見えないときは番号だけ）", False),

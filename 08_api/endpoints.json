@@ -48389,13 +48389,57 @@
     },
     {
      "status": 422,
-     "code": "VALIDATION_ERROR",
+     "code": "E-VAL-042",
      "body": {
       "error": "validation_failed",
-      "details": []
+      "code": "E-VAL-042"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-042",
+      "E-VAL-045"
+     ],
+     "trigger": "改めるとき新しい決定が無い・空・空白だけ・制御文字だけ（E-VAL-042・欄 text）／取り消すとき理由が無い・空・空白だけ・制御文字だけ（E-VAL-045・欄 reason）。action が無い・知らない言葉は 422 VALIDATION_ERROR（欄 action）",
+     "ears_form": "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-031",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-031"
+     },
+     "errors": [
+      "E-CONF-031",
+      "E-CONF-033"
+     ],
+     "trigger": "読んだ後にほかの人が先に改めた（改められた決定を改める・取り消す・E-CONF-031）／取り消した（取り消した決定を改める・取り消す・E-CONF-033）。読み直してからもう一度",
+     "ears_form": "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない"
+    },
+    {
+     "status": 422,
+     "code": "E-VAL-018",
+     "body": {
+      "error": "validation_failed",
+      "code": "E-VAL-018"
+     },
+     "errors": [
+      "E-VAL-018"
+     ],
+     "trigger": "取引先のルールにした（action が promote・段 12 の取引先の画面ができるまで使えない・details の文は「取引先の画面ができてから使えます」）",
+     "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "守りの判定（今のメンバーか・書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"
     },
     {
      "status": 413,
@@ -48453,7 +48497,10 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない",
+    "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない",
+    "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）",
+    "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -48470,7 +48517,7 @@
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
    "permission": {
     "who": "write",
-    "scope": "そのグループの人。取引先のルールにするのは取引先の担当とマネージャー",
+    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）",
     "step_up": false
    },
    "path_params": [

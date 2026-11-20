@@ -9950,6 +9950,26 @@ components:
       required:
       - text
       x-required-by: hooks
+    TicketDecisionUpdateInput:
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+          - revise
+          - cancel
+          - promote
+        text:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-operation: updateTicketDecision
+      required:
+      - action
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11727,6 +11747,18 @@ components:
           type: string
           format: uuid
       x-operation: createTicketDecision
+    TicketDecisionChange:
+      type: object
+      properties:
+        decision:
+          type: object
+        previous:
+          type: object
+          nullable: true
+        message_id:
+          type: string
+          format: uuid
+      x-operation: updateTicketDecision
     Error:
       type: object
       properties:
@@ -38760,7 +38792,7 @@ paths:
       - D-125.40
       - D-125.63
       x-permission: write
-      x-permission-scope: そのグループの人。取引先のルールにするのは取引先の担当とマネージャー
+      x-permission-scope: そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）
       x-step-up: false
       security:
       - session: []
@@ -38776,7 +38808,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketDecisionsInput'
+              $ref: '#/components/schemas/TicketDecisionUpdateInput'
       responses:
         '200':
           description: 成功
@@ -38786,7 +38818,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketDecisions'
+                    $ref: '#/components/schemas/TicketDecisionChange'
                   meta:
                     type: object
         '401':
@@ -38808,7 +38840,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-042／E-VAL-018
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-CONF-031
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -38821,12 +38865,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
