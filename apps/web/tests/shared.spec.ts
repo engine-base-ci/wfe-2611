@@ -59,5 +59,5 @@ test("USH-04-001 認証の配管：未ログインで守られた画面は入り
   await page.getByLabel("パスワード", { exact: true }).fill(PW);
   await page.getByRole("button", { name: "次へ", exact: true }).click();
   await expect(page).toHaveURL(/\/settings\/credentials$/, { timeout: 15_000 });
-  await expect(page.locator("h1")).toHaveText("ログイン情報を預ける");
+  await expect(page.getByRole("heading", { level: 1, name: "預けたログイン情報" })).toBeVisible(); // K-356：新しい画面の見出し
 });

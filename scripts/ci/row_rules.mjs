@@ -23,6 +23,8 @@ export const ID_TABLE = {
 /** 入口で行を読まない口（理由が必須）。認証の側の表など、public の表に無いもの */
 export const ROW_EXEMPT = {
   "/api/v1/me/passkeys": "パスキーは認証の側の表（auth スキーマ・D-128.119）。本人の分だけを認証の仕組みが引く。入口は役（member）と本人確認の取り直しまで",
+  "/api/v1/bridge/devices":
+    "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
 };
 
 const ME = "app.user_id()";
