@@ -811,9 +811,12 @@ ERRORS_4XX = {
     ],
     # 新しいパスワードを決める（K-314・D-125.137・D-125.140・D-128.62）。冪等キーは使わない（汎用の 409 は NO_GENERIC_409 で外す）
     "resetPassword": [
-        {"status": 410, "code": "GONE", "body": {"error": "gone"}, "errors": ["E-AUTH-006", "E-PAGE-006"],
-         "trigger": "リンクが期限切れ（30 分）・使い終わった・新しく頼んだ後の前のリンク（E-AUTH-006）・無い（でたらめ・空・24 時間を過ぎた・E-PAGE-006）",
-         "ears_form": "UNWANTED: IF リンクが期限切れ・使用済み・前のリンク・無いなら、Kaname は 410 と次の一手を返し、パスワードを変えない"},
+        {"status": 410, "code": "GONE", "body": {"error": "gone"}, "errors": ["E-AUTH-006"],
+         "trigger": "リンクが期限切れ（30 分）・使い終わった・新しく頼んだ後の前のリンク（E-AUTH-006）",
+         "ears_form": "UNWANTED: IF リンクが期限切れ・使用済み・前のリンクなら、Kaname は 410 と次の一手を返し、パスワードを変えない"},
+        {"status": 409, "code": "E-PAGE-006", "body": {"error": "not_found", "code": "E-PAGE-006"}, "errors": ["E-PAGE-006"],
+         "trigger": "リンクが無い（でたらめ・空・空白だけ）。形どおりの入力が DB の中身で断られる所なので 422・410 にしない（K-638）",
+         "ears_form": "UNWANTED: IF リンクが無い（でたらめ・空）なら、Kaname は 409 と E-PAGE-006 を返し、パスワードを変えない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
          "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（手がかり・新しいパスワードの欄が無いときも 422）",
          "ears_form": "UNWANTED: IF 新しいパスワードが 12 文字より短いか 128 文字を超えるか漏れたものなら、Kaname は 422 と欄 new_password の理由を返し、端末を切らずパスワードを変えない"},
