@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-19
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-20
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -218,7 +218,7 @@
 | password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 8 | R1 R2 R3 R4 |
 | onboard-interview | 自分のAIと話す | A06 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-draft | たたき台を確かめる | A07 A08 | 1 | 0 | 2 | 15 | R1 R2 |
-| bridge-setup | PC をつなぐ | A09 | 11 | 48 | 71 | 18 | R1 R2 R3 |
+| bridge-setup | PC をつなぐ | A09 | 11 | 48 | 73 | 18 | R1 R2 R3 |
 | credentials | 預けたログイン情報 | A10 | 5 | 48 | 54 | 7 | R1 R2 R3 |
 | onboard-testrun | テストで動かす | A11 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 1 | 0 | 1 | 10 | R1 R2 |
