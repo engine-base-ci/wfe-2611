@@ -10083,12 +10083,18 @@ components:
                 enum:
                 - offer
         - properties:
-            to_member_id: &id862
+            to_member_id:
               nullable: true
               enum:
               - null
-            to_scope_id: *id862
-            reply_due: *id862
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
+            reply_due:
+              nullable: true
+              enum:
+              - null
       - anyOf:
         - not:
             required:
@@ -10098,7 +10104,10 @@ components:
                 enum:
                 - pass
         - properties:
-            to_scope_id: *id862
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
       - anyOf:
         - not:
             required:
