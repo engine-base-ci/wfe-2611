@@ -493,6 +493,17 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "implementation_path": "apps/api/src/routes/bridge_jobs.ts::checkMyDeviceBrowser",
+   "screen_ids_referencing": [
+    "bridge-setup"
+   ],
+   "acts": [
+    "A09"
+   ]
+  },
+  {
    "method": "GET",
    "path": "/api/v1/bridge/files/:ref",
    "implementation_path": "apps/api/src/routes/attachments.ts::getFileForBridge",
