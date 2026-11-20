@@ -172,13 +172,31 @@ interface CheckIds {
   credentialId: string;
 }
 
+/** 結果の文の上限（K-355 の reportCredentialCheck が detail を 400 字までで受ける。超えると 422 で結果が残らない） */
+export const DETAIL_MAX = 400;
+/** 文に入れる名前 1 つの上限・並べる使える場所の数 */
+const NAME_MAX = 60;
+const PLACES_SHOWN = 3;
+/** 字（コードポイント）で数えて n 字に収める。切ったら末尾を … にする */
+export function clip(s: string, n: number): string {
+  const chars = [...s];
+  return chars.length <= n ? s : `${chars.slice(0, n - 1).join("")}…`;
+}
+
 /** 入れる直前の確かめ：いまの画面の名前が使える場所の外なら、入れずに止める理由を返す（中なら null） */
 function outside(page: Page, c: Credential): LoginCheckResult | null {
   const now = page.url();
   if (hostAllowed(now, c.destinations)) return null;
+  const shown = c.destinations.slice(0, PLACES_SHOWN).map((d) => clip(d, NAME_MAX));
+  const rest = c.destinations.length - shown.length;
+  const places = shown.length ? `${shown.join("・")}${rest > 0 ? ` ほか ${rest} 件` : ""}` : "なし";
+  const screen = clip(hostnameOf(now) ?? "名前の分からない画面", NAME_MAX);
   return {
     state: "stopped",
-    detail: `使える場所（${c.destinations.join("・") || "なし"}）の外の画面（${hostnameOf(now) ?? "名前の分からない画面"}）に移ったので、入れずに止めました。必要なら使える場所に足してください`,
+    detail: clip(
+      `使える場所（${places}）の外の画面（${screen}）に移ったので、入れずに止めました。必要なら使える場所に足してください`,
+      DETAIL_MAX,
+    ),
   };
 }
 
@@ -390,8 +408,18 @@ const NO_TARGET: LoginCheckResult = {
 };
 
 /** Kaname から受け取った login_check の仕事を 1 回だけこなす。target は仕事の prompt（開く先）。鍵は use の中だけ。ブラウザは必ず閉じる。
- *  開く先が無ければ Chrome を開かず、取り出しも頼まない */
+ *  開く先が無ければ Chrome を開かず、取り出しも頼まない。結果の文は必ず DETAIL_MAX 字に収める（Kaname の文を含む道も） */
 export async function runLoginCheck(
+  d: LoginCheckDeps,
+  jobId: string,
+  credentialId: string,
+  target: string,
+): Promise<LoginCheckResult> {
+  const r = await checkOnce(d, jobId, credentialId, target);
+  return { state: r.state, detail: clip(r.detail, DETAIL_MAX) };
+}
+
+async function checkOnce(
   d: LoginCheckDeps,
   jobId: string,
   credentialId: string,
@@ -441,7 +469,7 @@ export async function runLoginCheck(
     if (e instanceof CredentialError)
       return {
         state: "stopped",
-        detail: `ログイン情報を受け取れませんでした（${e.message}）${e.handoff ? `。${e.handoff}` : ""}`,
+        detail: `ログイン情報を受け取れませんでした（${clip(e.message, NAME_MAX * 2)}）${e.handoff ? `。${clip(e.handoff, NAME_MAX)}` : ""}`,
       };
     return { state: "stopped", detail: "ログインを試している途中で止まりました。預け直すともう一度試します" };
   } finally {
