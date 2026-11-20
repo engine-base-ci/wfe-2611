@@ -11,7 +11,6 @@ export const PUBLIC_SUFFIXES_LIST: readonly string[] = [
 /** trim が落とす字（全角の空白 U+3000 も） */
 const WS = " \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff";
 const ch = (c: string): string => {
-  if (c === ".") return "[.．]";
   const full = String.fromCharCode(c.charCodeAt(0) - 0x61 + 0xff41);
   return `[${c}${c.toUpperCase()}${full}${String.fromCharCode(full.charCodeAt(0) - 0x20)}]`;
 };
@@ -20,30 +19,41 @@ const word = (s: string): string => [...s].map(ch).join("");
 /** 名前：半角と全角の英字で始まり、英字・数字・_ の 64 文字まで。ß・ı・ſ のように大文字にすると英字になる字は入れない */
 export const NAME_PATTERN = `^[${WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[${WS}]*$`;
 
-const ALNUM = "A-Za-z0-9Ａ-Ｚａ-ｚ０-９";
-const JP = "ぁ-ゖァ-ヶー一-龥";
+// ---- 使える場所 1 つ（表記ゆらぎの決まり：前に受けていた入力は今も受ける）----
+// scheme（全角の ：／／ も）・@ の前・ポート・道・問い合わせ・断片は任意。ホストのラベルは「空白・区切り・記号以外の字の 1 字以上」
+// （字の種類・長さで絞らない＝日本語・々・ハングル・キリル・混ざり・長い名前を受ける）。頭の *. も受ける。公開の接尾辞だけは断る。
+// 口は同じ pattern で打ったとおりを照らし、同じ pattern の取り出し（1 番目＝頭の *. ・2 番目＝ホスト）で名前を取る
+const DOT = "[.．。｡]";
+const EXCL =
+  "\\x00-\\x20\\x7f-\\x9f!\"#$%&'()*+,./:;<=>?@\\[\\\\\\]\\^`{|}~" +
+  "\\u00a0\\u1680\\u2000-\\u206f\\u3000-\\u3004\\u3008-\\u303f\\uff01-\\uff0f\\uff1a-\\uff20\\uff3b-\\uff3e\\uff40\\uff5b-\\uff65\\ufeff\\ufff0-\\uffff";
+const LC = `[^${EXCL}]`;
+const NLC = `[^${EXCL}0-9０-９]`;
 const NOT_XN = `(?!${word("xn")}--)`;
-const ASCII_LABEL = `${NOT_XN}[${ALNUM}](?:[${ALNUM}-]{0,61}[${ALNUM}])?`;
-const JP_LABEL = `[${JP}](?:[${JP}${ALNUM}-]{0,8}[${JP}${ALNUM}])?`;
-const LABEL = `(?:${ASCII_LABEL}|${JP_LABEL})`;
-const TLD = `${NOT_XN}[A-Za-zＡ-Ｚａ-ｚ][${ALNUM}-]{1,62}`;
-const HOST = `(?:${LABEL}[.．])+${TLD}[.．]?`;
-const SUFFIX_LOOK = `(?!(?:\\*[.．])?(?:${PUBLIC_SUFFIXES_LIST.map(word).join("|")})[.．]?(?:[/?#]|[${WS}]|$))`;
-const SCHEME = `${word("http")}${ch("s")}?://`;
-const USERINFO = "(?:[A-Za-z0-9._~%!$&'()*+,;:=-]+@)?";
-const PATH = "(?:[/?#][A-Za-z0-9._~%!$&'()*+,;=:@/?#-]*)?";
-/** 使える場所 1 つ：URL（http・https・@ の前・道・問い合わせ・断片）・大文字・全角・日本語の名前・末尾の点・頭の *. 。公開の接尾辞だけは入れない */
-export const DESTINATION_PATTERN = `^[${WS}]*(?:${SCHEME}${USERINFO}${SUFFIX_LOOK}${HOST}${PATH}|${SUFFIX_LOOK}(?:\\*[.．])?${HOST})[${WS}]*$`;
+const LABEL = `${NOT_XN}${LC}+`;
+const TLD = `${NOT_XN}${LC}*${NLC}${LC}*`;
+const HOST = `((?:${LABEL}${DOT})+${TLD}${DOT}?)`;
+const END = `(?:[:：/／?？#＃]|[${WS}]|$)`;
+const SUFFIX_LOOK = `(?!(?:${PUBLIC_SUFFIXES_LIST.map((x) => [...x].map((c) => (c === "." ? DOT : ch(c))).join("")).join("|")})${DOT}?${END})`;
+const SCHEME = `(?:${word("http")}${ch("s")}?[:：][/／][/／])?`;
+const USERINFO = `(?:[^${WS}/／?？#＃\\\\]*[@＠])?`;
+const PORT = "(?:[:：][0-9０-９]{1,5})?";
+const PATH = `(?:[/／?？#＃][^${WS}]*)?`;
+export const DESTINATION_PATTERN = `^[${WS}]*(\\*${DOT})?${SCHEME}${USERINFO}${SUFFIX_LOOK}${HOST}${PORT}${PATH}[${WS}]*$`;
 
-/** 認証アプリの鍵：半角の空白と大文字・小文字・全角の Base32 を 16 字以上 */
-export const TOTP_PATTERN = "^[ \\t]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \\t]*){16,}=*[ \\t]*$";
+/** 認証アプリの鍵：空白（WS）を挟んでよい大文字・小文字・全角の Base32 を 16 字以上。詰めの = は全角の ＝ も */
+export const TOTP_PATTERN = `^[${WS}]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][${WS}]*){16,}[=＝]*[${WS}]*$`;
 
-const M31 = "(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])";
-const M30 = "(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)";
-const FEB = "02-(?:0[1-9]|1[0-9]|2[0-8])";
-const LEAP = "(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:00|0[48]|[2468][048]|[13579][26])00)-02-29";
-/** 期限：年-月-日（半角の数字）。暦に在る日だけ。日本の今日との前後は口が決める（時刻で決まる・409） */
-export const EXPIRES_PATTERN = `^[${WS}]*(?:[0-9]{4}-(?:${M31}|${M30}|${FEB})|${LEAP})[${WS}]*$`;
+// 期限：年-月-日（全角の数字とハイフンも）。暦に在る日だけ（うるう年の 2 月 29 日まで）。日本の今日との前後は口が決める（時刻で決まる・409）
+const H = "[-－]";
+const M31 = `(?:[0０][13578１３５７８]|[1１][02０２])${H}(?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][01０１])`;
+const M30 = `(?:[0０][469４６９]|[1１][1１])${H}(?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][0０])`;
+const FEB = `[0０][2２]${H}(?:[0０][1-9１-９]|[1１][0-9０-９]|[2２][0-8０-８])`;
+const LEAP =
+  "(?:[0-9０-９]{2}(?:[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])" +
+  "|(?:[0０]{2}|[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])[0０]{2})" +
+  `${H}[0０][2２]${H}[2２][9９]`;
+export const EXPIRES_PATTERN = `^[${WS}]*(?:[0-9０-９]{4}${H}(?:${M31}|${M30}|${FEB})|${LEAP})[${WS}]*$`;
 
 /** ログイン名：空白だけでない */
 export const LOGIN_PATTERN = "\\S";

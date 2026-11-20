@@ -2,10 +2,10 @@
 //   表記ゆらぎ（全角半角・前後の空白）は入口（op.ts の normalize）が揃えた後に来るが、ここでも同じに直す（サーバーが最後の砦）。
 //   秘密の中身（パスワード・鍵の値）だけは、入口が直す前の値（打ったとおり）を受け取って確かめる。値はログにもエラーにも出さない。
 //   エラーの文は正本（errors.json → @kaname/errors）から引く
+import { domainToASCII } from "node:url";
 import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 import { todayJst } from "../../F4/create-ticket/input.js";
-import { destinationOf } from "./host.js";
 import { DESTINATION_RE_RAW, EXPIRES_RE_RAW, LOGIN_RE_RAW, NAME_RE_RAW, PUBLIC_SUFFIXES_LIST } from "./patterns.js";
 
 export { NAME_PATTERN } from "./patterns.js";
@@ -14,8 +14,6 @@ export { NAME_PATTERN } from "./patterns.js";
 export const NAME_RE = /^[A-Z][A-Z0-9_]{0,63}$/;
 /** 使える場所の数の上限 */
 export const DESTINATIONS_MAX = 20;
-/** 使える場所の形：点で区切った名前（頭の *. は下の名前だけの印）。点の無い名前・IP は通さない */
-const DESTINATION_RE = /^(\*\.)?([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$/;
 /** 公開の接尾辞（形の確かめの最後の砦。一覧は patterns.ts） */
 export const PUBLIC_SUFFIXES: ReadonlySet<string> = new Set(PUBLIC_SUFFIXES_LIST);
 export const LAYERS = ["workspace", "personal"] as const;
@@ -64,19 +62,27 @@ export function parseDescription(v: unknown): string | null {
   return text(typeof v === "string" ? v.replace(/\u0000/g, "") : v) || null;
 }
 
-/** ② 使える場所：1〜20 個のドメイン。URL・大文字・全角・末尾の点は直す。重なりは前の順で 1 つに。
- *  無い・空は 422・E-CRED-003。ドメインでない物・公開の接尾辞だけ・21 個以上は 422・E-CRED-002 */
+/** 打ったとおりの使える場所 1 つから、同じ pattern の取り出し（1 番目＝頭の *. ・2 番目＝ホスト）で名前を取る。
+ *  ホストは domainToASCII で小文字・punycode にし、末尾の点を 1 つ落とす（new URL には頼らない）。pattern に合えば受ける。
+ *  公開の接尾辞だけ・名前にならない形（空のラベル）は最後の砦として断る（pattern の外の字の組み合わせでだけ起きる） */
+function destinationFrom(typed: string): string | null {
+  const m = DESTINATION_RE_RAW.exec(typed);
+  if (!m) return null;
+  const host = domainToASCII(m[2] ?? "").replace(/\.$/, "");
+  if (!/^[^.]+(\.[^.]+)+$/.test(host) || PUBLIC_SUFFIXES.has(host)) return null;
+  return m[1] ? `*.${host}` : host;
+}
+
+/** ② 使える場所：1〜20 個のドメイン。打ったとおりを契約と同じ pattern で照らし、URL・大文字・全角・日本語・ポート・道は直して名前にする。
+ *  重なりは前の順で 1 つに。無い・空は 422・E-CRED-003。ドメインでない物・公開の接尾辞だけ・21 個以上は 422・E-CRED-002 */
 export function parseDestinations(v: unknown, rawList: unknown = v): string[] | HookReply {
   if (!Array.isArray(v) || v.length === 0) return fail("E-CRED-003", "destinations");
   if (v.length > DESTINATIONS_MAX) return fail("E-CRED-002", "destinations");
   const out: string[] = [];
-  for (const [i, raw] of v.entries()) {
-    // 先に打ったとおりを契約と同じ pattern で照らす（合わなければ使える場所の形違い）
+  for (let i = 0; i < v.length; i++) {
     const typed = Array.isArray(rawList) ? rawList[i] : undefined;
-    if (typeof typed !== "string" || !DESTINATION_RE_RAW.test(typed)) return fail("E-CRED-002", "destinations");
-    const d = typeof raw === "string" ? destinationOf(raw) : null;
-    if (d === null || !DESTINATION_RE.test(d) || PUBLIC_SUFFIXES.has(d.replace(/^\*\./, "")))
-      return fail("E-CRED-002", "destinations");
+    const d = typeof typed === "string" ? destinationFrom(typed) : null;
+    if (d === null) return fail("E-CRED-002", "destinations");
     if (!out.includes(d)) out.push(d);
   }
   return out;
