@@ -44,7 +44,7 @@ RESPONSES = {
     "answerTicketHandover": ("TicketHandoverAnswered", dict(_HANDOVER)),
 }
 
-# 渡す：権限（403）・見えない（404）・止まり（409）・入力と相手と切り替え（422）
+# 渡す：権限（403）・見えない・相手やグループが無い（404）・止まり・相手が止まっている・自分・切り替えが決まりと合わない（409）・入力の形（422）（控え帳 answer=431fc50df51b・f0f290e785a9）
 # 答える：答える人でない（403）・無い（404）・もう決まった／止まり（409）・入力（422）
 # 下見：できる種類が無い（403）・見えない（404）
 # 判定の所が落ちたときの 503・E-PAGE-003 は、全部の口に付く入口の行（build_api.py の four）と同じ番号なので足さない（同じ番号の行を 2 つにしない）
@@ -53,14 +53,14 @@ ERRORS_4XX = {
         {"status": 403, "code": "E-HND-002", "body": {"error": "permission", "code": "E-HND-002"}, "errors": ["E-HND-002"],
          "trigger": "担当者でない人の引き継いでもらう・管理しない人の配る・閲覧のみの人・別の人にする（replaces）が自分の渡した待っている渡しでない",
          "ears_form": "UNWANTED: IF その人がその種類で渡せないなら、Kaname は 403 と E-HND-002 を返し、何も書かない"},
-        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "見えない・別の会社・消したチケット・無い id（有ることも漏らさない）",
-         "ears_form": "UNWANTED: IF 見えないチケットに渡そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"},
-        {"status": 409, "code": "E-HND-004", "body": {"error": "conflict", "code": "E-HND-004"}, "errors": ["E-HND-003", "E-HND-004", "E-HND-005", "E-HND-009"],
-         "trigger": "AI が動いている・承認を待っている（E-HND-003）・同じチケットに待っている渡しがある（E-HND-004）・別の人にするの渡しがもう決まっていた（E-HND-005）・完了したチケット（E-HND-009）",
-         "ears_form": "UNWANTED: IF そのチケットが今は渡せない状態なら、Kaname は 409 と E-HND-003／E-HND-004／E-HND-005／E-HND-009 を返し、何も書かない"},
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-HND-001", "E-HND-006", "E-HND-007", "E-HND-008", "E-HND-010", "E-HND-011", "E-HND-012", "E-HND-013", "E-HND-014"],
-         "trigger": "上へ上げる（E-HND-001）・相手が止まっている／招待中（E-HND-006）・理由が空（E-HND-007）・返事の期限が今より後でない（E-HND-008）・相手が自分（E-HND-010）・切り替えが決まりと合わない（E-HND-011）・グループが無い（E-HND-012）・相手がいない（E-HND-013）・相手が見つからない（E-HND-014）・種類の値・欄の組み合わせ・期限の形・知らない欄（strict）",
+        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001", "E-HND-012", "E-HND-014"],
+         "trigger": "見えない・別の会社・消したチケット・無い id（有ることも漏らさない）・相手が無い人・別の会社・消した・抜けた人（E-HND-014）・グループが無い・別の会社・消した（E-HND-012）",
+         "ears_form": "UNWANTED: IF 見えないチケット・無い相手・無いグループに渡そうとしたなら、Kaname は 404 と E-PAGE-001／E-HND-014／E-HND-012 を返し、何も書かない"},
+        {"status": 409, "code": "E-HND-004", "body": {"error": "conflict", "code": "E-HND-004"}, "errors": ["E-HND-003", "E-HND-004", "E-HND-005", "E-HND-006", "E-HND-009", "E-HND-010", "E-HND-011"],
+         "trigger": "相手が止まっている／招待中（E-HND-006）・相手が自分（E-HND-010）・切り替えがワークスペースの決まりと合わない（E-HND-011）・AI が動いている・承認を待っている（E-HND-003）・同じチケットに待っている渡しがある（E-HND-004）・別の人にするの渡しがもう決まっていた（E-HND-005）・完了したチケット（E-HND-009）",
+         "ears_form": "UNWANTED: IF そのチケットが今は渡せない状態なら、Kaname は 409 と E-HND-003／E-HND-004／E-HND-005／E-HND-006／E-HND-009／E-HND-010／E-HND-011 を返し、何も書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-HND-001", "E-HND-007", "E-HND-008", "E-HND-013"],
+         "trigger": "上へ上げる（E-HND-001）・理由が空（E-HND-007）・返事の期限が今より後でない（E-HND-008）・相手もグループも選んでいない（E-HND-013）・種類の値・欄の組み合わせ・期限の形・切り替えの形・NUL を含む文・知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も書かない"},
     ],
     "answerTicketHandover": [
@@ -70,11 +70,11 @@ ERRORS_4XX = {
         {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
          "trigger": "無い・別の会社の渡し（有ることも漏らさない）",
          "ears_form": "UNWANTED: IF 無い渡しに答えようとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"},
-        {"status": 409, "code": "E-HND-005", "body": {"error": "conflict", "code": "E-HND-005"}, "errors": ["E-HND-005", "E-HND-003", "E-HND-009"],
-         "trigger": "もう決まった渡し（受けた・断った・取り消された・二度押し）（E-HND-005）・受けるときにチケットが止まっている（E-HND-003・E-HND-009）",
-         "ears_form": "UNWANTED: IF その渡しがもう決まっているか今は受けられないなら、Kaname は 409 と E-HND-005／E-HND-003／E-HND-009 を返し、何も書かない"},
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-HND-001", "E-HND-007", "E-HND-011"],
-         "trigger": "上へ上げるの渡し（E-HND-001）・断る理由が空（E-HND-007）・切り替えの形（E-HND-011）・決め方の値・知らない欄（strict）",
+        {"status": 409, "code": "E-HND-005", "body": {"error": "conflict", "code": "E-HND-005"}, "errors": ["E-HND-005", "E-HND-003", "E-HND-009", "E-HND-011"],
+         "trigger": "もう決まった渡し（受けた・断った・取り消された・二度押し）（E-HND-005）・受けるときにチケットが止まっている（E-HND-003・E-HND-009）・切り替えがワークスペースの決まりと合わない（E-HND-011）",
+         "ears_form": "UNWANTED: IF その渡しがもう決まっているか今は受けられないなら、Kaname は 409 と E-HND-005／E-HND-003／E-HND-009／E-HND-011 を返し、何も書かない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-HND-001", "E-HND-007"],
+         "trigger": "上へ上げるの渡し（E-HND-001）・断る理由が空（E-HND-007）・切り替えの形・NUL を含む文・決め方の値・知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も書かない"},
     ],
     "previewTicketHandover": [
@@ -93,13 +93,13 @@ UNEXPRESSIBLE_422 = {
         "上へ上げる（escalate）は段 9 では作らない（E-HND-001）",
         "理由が空・空白だけ（E-HND-007）",
         "返事の期限が日時の形でない・今より後でない（E-HND-008）",
-        "相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）",
-        "一緒に切り替えるものの形・決まりと合わない（E-HND-011）",
+        "相手がいない（E-HND-013）",
+        "一緒に切り替えるものの形（番号なし）",
         "申し出に相手・期限を付けた・人とグループの両方",
     ],
     "answerTicketHandover": [
         "断る理由が空（E-HND-007）",
-        "一緒に切り替えるものの形（E-HND-011）",
+        "一緒に切り替えるものの形（番号なし）",
         "上へ上げるの渡し（E-HND-001）",
     ],
 }
