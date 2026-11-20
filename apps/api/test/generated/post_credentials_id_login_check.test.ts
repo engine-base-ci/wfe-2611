@@ -12,7 +12,7 @@ describe("POST /api/v1/credentials/:id/login-check", () => {
   // 当てはまらない（ログインの印が無い・失効した人の 401 は全部の口で同じ 1 か所の入口（op.ts）が返す。この口は自分で持たない（PC の口の 401 は K355-API-025））：UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
   it.todo("test_post_credentials_id_login_check_rejected_401");
   it("test_post_credentials_id_login_check_rejected_403", () => {
-    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない
     // 本物の試験：apps/api/test/features/F3/credential-login-check.test.ts の「K355-API-006」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/credential-login-check.test.ts", "utf8")).toContain("K355-API-006");
   });

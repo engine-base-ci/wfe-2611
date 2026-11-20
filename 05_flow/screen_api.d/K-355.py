@@ -23,21 +23,22 @@ REQUIRED_INPUTS = {
 # apps/api/src/features/F3/credentials/login-check.ts（state は 11 種・detail は 400 字・text は 300 字・ask_kind は code か approve・request_ref は 100 字まで）
 VALUE_RANGES = {
     "answerCredentialLoginCheck": {
-        "request_ref": {"maxLength": 100},
+        "request_ref": {"pattern": "\\S", "maxLength": 100},
+        "code": {"pattern": f"^[{_CODE_SEP}]*(?:[0-9A-Za-z０-９Ａ-Ｚａ-ｚ][{_CODE_SEP}]*){{1,64}}$"},
+        "approved": {"enum": [True]},
     },
     "reportCredentialCheck": {
         "state": {"enum": ["ok", "bad_password", "needs_2fa", "bad_code", "captcha", "unreachable", "no_form", "stopped", "no_answer", "asking", "waiting"]},
         "detail": {"maxLength": 400},
         "text": {"maxLength": 300},
         "ask_kind": {"enum": ["code", "approve"]},
-        "request_ref": {"maxLength": 100},
+        "request_ref": {"pattern": "\\S", "maxLength": 100},
     },
 }
 
 UNEXPRESSIBLE_422 = {
     "answerCredentialLoginCheck": [
         "code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）",
-        "NFKC と空白・ハイフンを落として空か 64 文字を超えるコード（E-VAL-009）",
     ],
     "reportCredentialCheck": [
         "asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref）",
@@ -49,6 +50,9 @@ UNEXPRESSIBLE_422 = {
 #   知らせる（PC）：外した PC の印（401）・ほかの PC の仕事・違う情報・確かめでない仕事（404）・終わった仕事（409・E-CRED-010）・入力（422）・関数が落ちた（503）
 ERRORS_4XX = {
     "checkCredentialLogin": [
+        {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"}, "errors": [],
+         "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+         "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない"},
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "預けたログイン情報が無い・消した・本人（預けた人）の物でない（ワークスペースの物も預けた人だけ）",
          "ears_form": "UNWANTED: IF 本人が預けた物でないなら、Kaname は 404 を返し、在るかを漏らさず確かめの仕事を積まない"},
@@ -66,6 +70,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 確かめを積めないなら、Kaname は 503 と E-PAGE-003 を返し、仕事も行の状態も変えない"},
     ],
     "answerCredentialLoginCheck": [
+        {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"}, "errors": [],
+         "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+         "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、答えの行を作らない"},
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "預けたログイン情報が無い・消した・本人（預けた人）の物でない",
          "ears_form": "UNWANTED: IF 本人が預けた物でないなら、Kaname は 404 を返し、答えの行を作らない"},
@@ -73,7 +80,7 @@ ERRORS_4XX = {
          "trigger": "その頼み（request_ref）を PC が出していない・確かめが終わった・止まった",
          "ears_form": "UNWANTED: IF いまコードを頼まれていないなら、Kaname は 404 と E-CRED-014 を返し、答えの行を作らない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-009"],
-         "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが空か 64 字を超える（E-VAL-009）・本文に知らない欄（strict）",
+         "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが区切りを挟んだ英数字 1〜64 個でない（E-VAL-009）・本文に知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "答えを置く DB の関数が使えない",

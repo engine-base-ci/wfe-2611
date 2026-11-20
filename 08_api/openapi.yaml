@@ -9836,11 +9836,15 @@ components:
       properties:
         request_ref:
           type: string
+          pattern: \S
           maxLength: 100
         code:
           type: string
+          pattern: ^[\s\-‐‑‒–—―ー−－]*(?:[0-9A-Za-z０-９Ａ-Ｚａ-ｚ][\s\-‐‑‒–—―ー−－]*){1,64}$
         approved:
           type: boolean
+          enum:
+          - true
       additionalProperties: false
       x-operation: answerCredentialLoginCheck
       required:
@@ -9871,6 +9875,7 @@ components:
           maxLength: 400
         request_ref:
           type: string
+          pattern: \S
           maxLength: 100
         ask_kind:
           type: string
@@ -21871,14 +21876,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）・NFKC と空白・ハイフンを落として空か 64 文字を超えるコード（E-VAL-009））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）
-          - NFKC と空白・ハイフンを落として空か 64 文字を超えるコード（E-VAL-009）
         '503':
           description: E-PAGE-003
           content:

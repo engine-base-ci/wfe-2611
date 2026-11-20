@@ -17673,10 +17673,12 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [],
+     "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+     "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない"
     },
     {
      "status": 404,
@@ -17805,7 +17807,7 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/credentials/:id/login-check が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない",
     "UNWANTED: IF 本人が預けた物でないなら、Kaname は 404 を返し、在るかを漏らさず確かめの仕事を積まない",
     "UNWANTED: IF いま確かめているなら、Kaname は 409 と E-CRED-012 を返し、仕事を増やさない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -17915,10 +17917,12 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [],
+     "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+     "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、答えの行を作らない"
     },
     {
      "status": 404,
@@ -17950,7 +17954,7 @@
      "errors": [
       "E-VAL-009"
      ],
-     "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが空か 64 字を超える（E-VAL-009）・本文に知らない欄（strict）",
+     "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが区切りを挟んだ英数字 1〜64 個でない（E-VAL-009）・本文に知らない欄（strict）",
      "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない"
     },
     {
@@ -18033,7 +18037,7 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/credentials/:id/login-check/answer が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、答えの行を作らない",
     "UNWANTED: IF 本人が預けた物でないなら、Kaname は 404 を返し、答えの行を作らない",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない",
