@@ -6569,7 +6569,9 @@
     "E-CRED-004",
     "E-CRED-005",
     "E-CRED-006",
-    "E-CRED-007"
+    "E-CRED-007",
+    "E-CRED-008",
+    "E-CRED-009"
    ],
    "policies": [
     "C1",
