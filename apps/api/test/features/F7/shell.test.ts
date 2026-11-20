@@ -104,6 +104,13 @@ async function world(prefix = "KS") {
   const me = await member("見る人", { co });
   const viewer = await member("見るだけの人", { co, ability: "view" });
   const none = await member("何も無い人", { co, ability: null });
+  // 人の席（members.scope_id）の木は、権限が無くてもその人に見える（visible_scopes）。席が会社の全体のままだと「何も見られない人」にも
+  // 全部のグループと同僚が見せた条件が見える。席を消したグループに移し（口は消したグループを出さない）、会社の全体は権限だけで見える形にする
+  const seat = await one<{ id: string }>(
+    "insert into scopes (tenant_id, name, ticket_prefix, deleted_at) values ($1, '何も無い人の席', 'ZN', now()) returning id",
+    [co.tenantId],
+  );
+  await f.admin.query("update members set scope_id = $2 where id = $1", [none.id, seat.id]);
   return { co, me, viewer, none };
 }
 const mk = (
