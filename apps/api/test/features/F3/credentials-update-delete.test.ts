@@ -26,6 +26,7 @@
 //     止めた後に新しい仕事を積めなかった回は、行は stopped のまま残る（0065 の引き金が止めた時に写す）
 //   失効しただけ（revoked_at あり・消していない）の物は、上書きも消すも 404（一覧に出ない物・代表の答え answer=449e72553c59）
 import { beforeAll, describe, expect, it } from "vitest";
+import { kanameError } from "@kaname/errors";
 import { RateLimited } from "@kaname/secrets";
 import { setupCredentials, type Person } from "./credentials.harness.js";
 // 作り物の秘密の値は _fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
@@ -98,12 +99,15 @@ const jobs = async (credentialId: string) =>
       [credentialId],
     )
   ).rows;
-// 時刻や預けた物の状態で決まる断り：409・欄は付けない
+// 時刻や預けた物の状態で決まる断り：409・欄は付けない。本文全体（error・文）を正本の番号と照らす
 const expect409 = async (r: Response, code: string) => {
   expect(r.status, await r.clone().text()).toBe(409);
   const j = await h.json(r);
+  expect(j["error"]).toBe("conflict");
   expect(j["code"]).toBe(code);
+  expect(j["message"]).toBe(kanameError(code).entry.message);
   expect(j["field"]).toBeUndefined();
+  expect(j["details"]).toBeUndefined();
 };
 const expect422 = async (r: Response, code: string, field?: string) => {
   expect(r.status, await r.clone().text()).toBe(422);

@@ -28,6 +28,7 @@ import {
   NAME_PATTERN,
   TOTP_PATTERN,
 } from "../../../src/features/F3/credentials/patterns.js";
+import { kanameError } from "@kaname/errors";
 import { RateLimited } from "@kaname/secrets";
 import { setupCredentials, type Person } from "./credentials.harness.js";
 // 作り物の秘密の値は _fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
@@ -110,12 +111,15 @@ const expect422 = async (r: Response, code: string, field: string) => {
   expect(((j["details"] as { field?: string }[] | undefined) ?? []).map((d) => d.field)).toContain(field);
 };
 
-// 時刻や預けた物の状態で決まる断り：409・欄は付けない
+// 時刻や預けた物の状態で決まる断り：409・欄は付けない。本文全体（error・文）を正本の番号と照らす
 const expect409 = async (r: Response, code: string) => {
   expect(r.status, await r.clone().text()).toBe(409);
   const j = await h.json(r);
+  expect(j["error"]).toBe("conflict");
   expect(j["code"]).toBe(code);
+  expect(j["message"]).toBe(kanameError(code).entry.message);
   expect(j["field"]).toBeUndefined();
+  expect(j["details"]).toBeUndefined();
 };
 
 describe("K-352 預ける口", () => {
@@ -309,6 +313,41 @@ describe("K-352 預ける口", () => {
       "evil.test",
       "a.example.net",
     ]);
+    // 前から受けている形は今も受ける（表記ゆらぎ）：ポート・scheme なしの道と user@・日本語の道・全角の ：／／・々・日本語以外の IDN・IDN の TLD・混ざり・長い日本語
+    const more = await post(
+      me,
+      keyBody({
+        destinations: [
+          "https://example.com:8080/",
+          "example.org:8080",
+          "example.net/path",
+          "user@example.edu",
+          "https://example.dev/日本語",
+          "ｈｔｔｐｓ：／／example.io",
+          "佐々木.jp",
+          "한국.kr",
+          "пример.рф",
+          "例え.みんな",
+          "abc日本.example.com",
+          "あいうえおかきくけこさ.jp",
+        ],
+      }),
+    );
+    expect(more.status, await more.clone().text()).toBe(201);
+    expect(((await h.json(more)).data as Record<string, unknown>)["destinations"]).toEqual([
+      "example.com",
+      "example.org",
+      "example.net",
+      "example.edu",
+      "example.dev",
+      "example.io",
+      "xn--u6jy55gilq.jp",
+      "xn--3e0b707e.kr",
+      "xn--e1afmkfd.xn--p1ai",
+      "xn--r8jz45g.xn--q9jyb4c",
+      "xn--abc-v08fl0d.example.com",
+      "xn--l8jegikgoqsuw.jp",
+    ]);
   });
 
   // 公開の接尾辞だけ（co.jp・*.co.jp・ne.jp）を断る（代表の答え answer=449e72553c59）
@@ -335,7 +374,7 @@ describe("K-352 預ける口", () => {
     expect(await rowsOf(me)).toHaveLength(0);
   });
 
-  it("K352-API-010 期限：日本の今日は 201。昨日は 409・E-CRED-004（欄なし）。暦に無い日（2027-02-30・2027-02-29）・形違い（2027/11/10・全角の数字）は 422・VALIDATION_ERROR（欄 expires_on）。うるう日（2096-02-29）は 201。null と無いは期限なし", async () => {
+  it("K352-API-010 期限：日本の今日は 201。昨日は 409・E-CRED-004（欄なし）。暦に無い日（2027-02-30・2027-02-29・全角の ２０２７－０２－２９）・形違い（2027/11/10）は 422・VALIDATION_ERROR（欄 expires_on）。うるう日（2096-02-29）と全角の数字・ハイフンは 201。null と無いは期限なし", async () => {
     await h.ready();
     const me = await fresh();
     const today = await post(me, keyBody({ expires_on: jstDay(0) }));
@@ -343,10 +382,17 @@ describe("K-352 預ける口", () => {
     expect(((await h.json(today)).data as Record<string, unknown>)["expires_on"]).toBe(jstDay(0));
     // 日本の今日より前は時刻で決まるので 409・E-CRED-004（欄なし）。形違い・暦に無い日・全角の数字は契約の pattern に合わず 422（欄 expires_on）
     await expect409(await post(me, keyBody({ expires_on: jstDay(-1) })), "E-CRED-004");
-    for (const bad of ["2027-02-30", "2027/11/10", "２０２７-１１-１０", "2027-13-01", "2027-02-29"])
+    for (const bad of ["2027-02-30", "2027/11/10", "2027-13-01", "2027-02-29", "２０２７－０２－２９"])
       await expect422(await post(me, keyBody({ expires_on: bad })), "VALIDATION_ERROR", "expires_on");
     const leap = await post(me, keyBody({ name: "LEAP_DAY", expires_on: "2096-02-29" }));
     expect(leap.status, await leap.clone().text()).toBe(201);
+    // 全角の数字とハイフンは前から受けている（表記ゆらぎ）。半角に直して日付を見る
+    const wide = jstDay(2)
+      .replace(/\d/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0xfee0))
+      .replace(/-/g, "－");
+    const w = await post(me, keyBody({ expires_on: wide }));
+    expect(w.status, await w.clone().text()).toBe(201);
+    expect(((await h.json(w)).data as Record<string, unknown>)["expires_on"]).toBe(jstDay(2));
     const none = await post(me, keyBody({ expires_on: null }));
     expect(((await h.json(none)).data as Record<string, unknown>)["expires_on"]).toBeNull();
   });
@@ -384,6 +430,17 @@ describe("K-352 預ける口", () => {
     const row = (await h.row(String(d["id"])))!;
     expect(row["kind_id"]).toBe("password_totp");
     expect((await h.plain(me, String(row["vault_ref"])))?.["totp_secret"]).toBe(K352_TOTP_SECRET);
+    // アプリからのコピーで入る形も受ける：全角の空白・改行・nbsp を挟む／全角の ＝ で詰める（表記ゆらぎ・前から受けている）
+    const t = K352_TOTP_SECRET;
+    const messy = `${t.slice(0, 4)}\u3000${t.slice(4, 8)}\n${t.slice(8, 12)}\u00a0${t.slice(12)}`;
+    const m = await post(me, loginBody({ two_factor: "totp", totp_secret: messy }));
+    expect(m.status, await m.clone().text()).toBe(201);
+    const mRow = (await h.row(String(((await h.json(m)).data as Record<string, unknown>)["id"])))!;
+    expect((await h.plain(me, String(mRow["vault_ref"])))?.["totp_secret"]).toBe(t);
+    const padded = await post(me, loginBody({ two_factor: "totp", totp_secret: `${t}＝＝` }));
+    expect(padded.status, await padded.clone().text()).toBe(201);
+    const pRow = (await h.row(String(((await h.json(padded)).data as Record<string, unknown>)["id"])))!;
+    expect((await h.plain(me, String(pRow["vault_ref"])))?.["totp_secret"]).toBe(`${t}==`);
   });
 
   it("K352-API-013 知らない欄（vault_ref・owner_member_id）と、決まった値の外（layer・kind・two_factor）は 422 で何も置かない", async () => {
