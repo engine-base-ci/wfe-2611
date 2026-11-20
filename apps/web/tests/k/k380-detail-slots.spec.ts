@@ -195,7 +195,11 @@ test("K380-CS-001 ticket-detail.css：幅 767 以下の .k-detail-meta-side は�
   expect(body).toMatch(/display:\s*flex/);
   expect(body).toMatch(/flex-wrap:\s*wrap/);
   expect(body).toMatch(/margin-left:\s*0/);
-  expect(body).toMatch(/gap:\s*var\(--k-s-xs\)\s*(;|$)/m);
+  // gap の系統（gap・row-gap・column-gap）の宣言はちょうど 1 つで、縦横とも var(--k-s-xs)（上書き・折り返しも落とす）
+  const gaps = [...body.matchAll(/(?:^|;)\s*((?:row-|column-)?gap)\s*:\s*([^;]*)/g)].map(
+    (m) => `${m[1]}: ${m[2]!.trim()}`,
+  );
+  expect(gaps).toEqual(["gap: var(--k-s-xs)"]);
 });
 
 test("K380-CV-001 キャンバスの詳細の形の絵 7 枚と作り手 k257.py：幅 767 以下の頭の行の右（開始日・期限・札）は横に並べる決まり（display:flex !important;flex-wrap:wrap）で、2 列の格子の決まりは無い", () => {
