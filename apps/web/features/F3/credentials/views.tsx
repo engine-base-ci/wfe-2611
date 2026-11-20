@@ -14,16 +14,27 @@ import { Pill, RowButton, SettingCard, SettingNote, SettingRow, type PillTone } 
 
 /** ログインの確かめの結果（D-117・PC が 1 回ログインして確かめる） */
 export type CheckState =
-  "ok" | "checking" | "bad_password" | "needs_code" | "captcha" | "forbidden" | "no_pc" | "expiring";
+  | "ok"
+  | "unchecked"
+  | "checking"
+  | "bad_password"
+  | "needs_code"
+  | "captcha"
+  | "forbidden"
+  | "no_pc"
+  | "stopped"
+  | "expiring";
 
 export const CHECK_LABEL: Record<CheckState, { tone: PillTone; label: string }> = {
   ok: { tone: "success", label: "使える" },
+  unchecked: { tone: "neutral", label: "まだ確かめていない" },
   checking: { tone: "neutral", label: "確かめている" },
   bad_password: { tone: "warning", label: "パスワードが違う" },
   needs_code: { tone: "warning", label: "コードが要る" },
   captcha: { tone: "warning", label: "画像の確認で止まった" },
   forbidden: { tone: "neutral", label: "規約で禁止・試さない" },
   no_pc: { tone: "neutral", label: "PC がつながると確かめる" },
+  stopped: { tone: "warning", label: "止まった" },
   expiring: { tone: "warning", label: "期限が近い" },
 };
 
@@ -52,6 +63,10 @@ export interface CredentialsBodyProps {
   items: readonly CredentialItem[];
   /** 一覧を読めなかった（口の失敗） */
   failed?: boolean;
+  /** タブを替えた（入れ物がタブを持つ。口は呼び直さない） */
+  onTab?: (tab: "workspace" | "personal") => void;
+  /** 行の操作（上書き・消す・コードを入れる・もう一度確かめる）を押せる。既定は押せない灰色（押せるようにするのは上書きと確かめの葉） */
+  rowActionsReady?: boolean;
   onAdd?: () => void;
   onEdit?: (id: string) => void;
   onRemove?: (id: string) => void;
@@ -59,12 +74,13 @@ export interface CredentialsBodyProps {
   onCode?: (id: string) => void;
 }
 
-export function CredentialsHead({ onAdd }: { onAdd?: () => void }) {
+/** 見出し。「預ける」は出すが、addReady が無ければ灰色で押せない（押せるようにするのは預ける小窓の葉・D-145.9） */
+export function CredentialsHead({ onAdd, addReady = false }: { onAdd?: () => void; addReady?: boolean }) {
   return (
     <header className="k-page-head">
       <h1 id="credentials-title">預けたログイン情報</h1>
       <p className="k-desc">分身が使うパスワードと鍵。名前で呼び、値は誰にも見せない</p>
-      <Button icon={<KeyRound size={16} />} onClick={onAdd}>
+      <Button icon={<KeyRound size={16} />} onClick={onAdd} disabled={!addReady}>
         預ける
       </Button>
     </header>
@@ -72,18 +88,25 @@ export function CredentialsHead({ onAdd }: { onAdd?: () => void }) {
 }
 
 function rowActions(it: CredentialItem, p: CredentialsBodyProps): ReactNode {
+  const off = !p.rowActionsReady;
   return (
     <>
       {it.state === "needs_code" ? (
-        <RowButton variant="primary" onClick={() => p.onCode?.(it.id)}>
+        <RowButton variant="primary" disabled={off} onClick={() => p.onCode?.(it.id)}>
           コードを入れる
         </RowButton>
       ) : null}
       {it.state === "bad_password" || it.state === "captcha" ? (
-        <RowButton onClick={() => p.onRecheck?.(it.id)}>もう一度確かめる</RowButton>
+        <RowButton disabled={off} onClick={() => p.onRecheck?.(it.id)}>
+          もう一度確かめる
+        </RowButton>
       ) : null}
-      <RowButton onClick={() => p.onEdit?.(it.id)}>上書き</RowButton>
-      <RowButton onClick={() => p.onRemove?.(it.id)}>消す</RowButton>
+      <RowButton disabled={off} onClick={() => p.onEdit?.(it.id)}>
+        上書き
+      </RowButton>
+      <RowButton disabled={off} onClick={() => p.onRemove?.(it.id)}>
+        消す
+      </RowButton>
     </>
   );
 }
@@ -139,6 +162,7 @@ export function CredentialsBody(p: CredentialsBodyProps) {
       <Tabs
         label="預ける先"
         value={p.tab}
+        onValueChange={(v) => p.onTab?.(v === "personal" ? "personal" : "workspace")}
         items={[
           { value: "workspace", label: "ワークスペース", panel: p.tab === "workspace" ? <List p={p} /> : null },
           { value: "personal", label: "自分だけ", panel: p.tab === "personal" ? <List p={p} /> : null },
