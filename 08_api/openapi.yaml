@@ -11751,6 +11751,21 @@ components:
         browser:
           type: string
       x-operation: setBridgeBrowser
+    TicketDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deleted_count:
+          type: integer
+        withdrawn_approvals:
+          type: integer
+        stopped_runs:
+          type: integer
+        restorable_until:
+          type: string
+      x-operation: deleteTicket
     Error:
       type: object
       properties:
@@ -40600,7 +40615,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー（子の扱いを選ぶ）
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ
       x-step-up: false
       security:
       - session: []
@@ -40611,6 +40626,28 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: children
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - ''
+          - move
+          - cascade
+          - detach
+      - name: parent_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: reason
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          maxLength: 400
       responses:
         '200':
           description: 成功
@@ -40620,7 +40657,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketDeleted'
                   meta:
                     type: object
         '401':
@@ -40630,7 +40667,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -40647,14 +40684,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-DEL-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
