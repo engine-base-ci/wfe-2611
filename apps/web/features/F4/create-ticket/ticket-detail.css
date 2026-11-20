@@ -474,7 +474,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--k-s-xs) var(--k-s-sm);
+    gap: var(--k-s-xs);
     margin-left: 0;
   }
 }

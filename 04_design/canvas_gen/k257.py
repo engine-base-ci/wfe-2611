@@ -137,7 +137,7 @@ NARROW = ("/* k257-detail */\n@media (max-width:1023px){div:has(>aside[aria-labe
           "aside[aria-label=\"チケットのパネル\"]{width:auto !important;border-left:0 !important;border-top:1px solid #DDE2E9 !important}}"
           # 幅 767 以下は、上の行の日付と札を 2 行目に横に並べる（頭の行は 2 行まで・段 7 の代表の直し answer=fabd031f9b37・画面の ticket-detail.css と同じ。
           # 間は絵の span の style の gap: 14px より強くする＝!important）
-          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:flex !important;flex-wrap:wrap;align-items:center;gap:4px 8px !important;margin-left:0 !important}}"
+          "@media (max-width:767px){article>div:first-child>span[style*=\"margin-left: auto\"]{display:flex !important;flex-wrap:wrap;align-items:center;gap:4px !important;margin-left:0 !important}}"
           # ボタンの名前は 1 行（並びは折り返す）。代表の答え answer=ba0d9572fc77・PM の決め
           "article :is(a[style*=\"height: 30px\"],a[style*=\"height: 32px\"],button){white-space:nowrap}article div:has(>a[style*=\"height: 30px\"]){flex-wrap:wrap}\n")
 # 承認待ち：ボタンの名前は 1 行・右の並びは折り返す
