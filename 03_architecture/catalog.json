@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
-  "api_built": 65,
+  "api": 370,
+  "api_built": 69,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
-  "ui": 18,
+  "ui": 19,
   "packages": 13,
-  "errors": 207,
+  "errors": 221,
   "stack": 56,
   "env": 41
  },
@@ -1775,7 +1775,7 @@
    "op": "listHandoverRules",
    "method": "GET",
    "path": "/api/v1/handover_rules",
-   "what": "取得（handover_rules）— 渡されたものを受ける／断る（理由）",
+   "what": "取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）",
    "flows": [
     "F8"
    ],
@@ -1783,9 +1783,9 @@
    "tables": [
     "handover_rules"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
    ]
   },
   {
@@ -4638,9 +4638,9 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
    ]
   },
   {
@@ -5171,6 +5171,23 @@
    ]
   },
   {
+   "op": "previewTicketHandover",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handover-preview",
+   "what": "取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "tickets"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-401"
+   ]
+  },
+  {
    "op": "createTicketHandover",
    "method": "POST",
    "path": "/api/v1/tickets/:id/handovers",
@@ -5182,9 +5199,9 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
    ]
   },
   {
@@ -7294,7 +7311,9 @@
     "F6",
     "F7"
    ],
-   "reads": [],
+   "reads": [
+    "F8"
+   ],
    "boundary": true
   },
   {
@@ -7482,6 +7501,13 @@
     "DOC_TOOL_ITEMS"
    ],
    "what": "本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。"
+  },
+  {
+   "file": "apps/web/components/k/search-field",
+   "exports": [
+    "SearchField"
+   ],
+   "what": "探す欄の型（段 9・代表の直し 2026-11-20）。虫眼鏡と入力を 1 つの枠に入れ、焦点が中に入ったら枠全体に輪を出す（:focus-within）。"
   }
  ],
  "common": {

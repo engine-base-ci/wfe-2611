@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:7e0980b3c9ab61b9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:34ad044f3a990f3a
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -5743,7 +5743,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "HandoverRules",
+    "output": "HandoverRule",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -15199,9 +15199,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "answerTicketHandover",
     "table": "ticket_handovers",
     "kind": "update",
-    "input": "TicketHandoversInput",
+    "input": "TicketHandoverAnswerInput",
     "success": 200,
-    "output": "TicketHandovers",
+    "output": "TicketHandoverAnswered",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15221,6 +15221,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
       413,
       429,
       403,
@@ -15244,7 +15245,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "ticket_handovers",
-        "sql": "to_member_id = app.user_id()"
+        "sql": "app.handover_answerer(id, app.user_id(), false)"
       }
     },
     "termsOpen": false,
@@ -16960,14 +16961,69 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/tickets/:id/handover-preview",
+    "operationId": "previewTicketHandover",
+    "table": "tickets",
+    "kind": "get",
+    "input": null,
+    "success": 200,
+    "output": "HandoverPreview",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A111",
+      "A48",
+      "A51"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "POST",
     "path": "/api/v1/tickets/:id/handovers",
     "operationId": "createTicketHandover",
     "table": "ticket_handovers",
     "kind": "create",
-    "input": "TicketHandoversInput",
+    "input": "TicketHandoverCreateInput",
     "success": 201,
-    "output": "TicketHandovers",
+    "output": "TicketHandoverCreated",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -19564,4 +19620,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "7e0980b3c9ab61b9";
+export const OPENAPI_HASH = "34ad044f3a990f3a";

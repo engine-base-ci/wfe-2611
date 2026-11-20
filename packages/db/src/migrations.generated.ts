@@ -128,4 +128,6 @@ export const MIGRATIONS = [
   "20261119120600_credential_login_check.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120143736_bridge_set_browser_acl.sql",
+  "20261121090100_handover_base.sql",
+  "20261121090300_handover_answer_pass.sql",
 ] as const;

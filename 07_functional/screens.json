@@ -39515,6 +39515,101 @@
       "D-125.98",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A48",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.94",
+      "D-125.167",
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ]
     }
    ],
    "required_apis": [
@@ -41480,6 +41575,101 @@
       "D-125.7",
       "D-125.98",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A48",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview",
+     "table": "tickets",
+     "operation_id": "previewTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-106",
+      "E-115",
+      "E-004",
+      "E-002",
+      "E-135",
+      "E-136"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.94",
+      "D-125.167",
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
      ]
     }
    ],
