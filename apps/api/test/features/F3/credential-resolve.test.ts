@@ -357,7 +357,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
   );
 
   it(
-    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空、job_id が無いのは 422（契約の形）。名前に読めない宛先（Bridge の試験と同じ表 credential-host-cases.json の「名前として読めない」宛先：全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）と 253 文字を超える名前は、使える場所に入りようが無いので 403・E-CRED-015（知らせも証跡も残さない）。use_count はそのまま",
+    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空か空白だけ、job_id が無いのは 422（契約の形）。名前に読めない宛先（Bridge の試験と同じ表 credential-host-cases.json の「名前として読めない」宛先：全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）と 253 文字を超える名前は、使える場所に入りようが無いので 403・E-CRED-015（知らせも証跡も残さない）。use_count はそのまま",
     async () => {
       const { w, p, id } = await setup("input");
       const job = await chatTaken(p, w.user.memberId, w.user.tenantId);
@@ -368,6 +368,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
         body(job, id, Buffer.alloc(10).toString("base64")),
         body(job, id, ed),
         body(job, id, pub, ""),
+        body(job, id, pub, "   "),
         { credential_id: id, destination: "hacchu-navi.example", executor_key: pub },
       ]) {
         const r = await h.resolve(p, b);
