@@ -157,7 +157,11 @@
    "apps/api/src/**",
    "packages/contracts/**",
    "packages/db/**",
-   "scripts/ci/schemathesis*"
+   "scripts/ci/schemathesis*",
+   "scripts/ci/fuzz.sh",
+   "scripts/ci/fuzz_limited.py",
+   "scripts/ci/fuzz_targets.py",
+   "apps/api/test/fuzz/**"
   ],
   "38": [
    "scripts/ci/generated*",
@@ -1238,7 +1242,10 @@
    "paths": [
     "08_api/**",
     "07_qa/test-plan/**",
-    "07_functional/entities.json"
+    "07_functional/entities.json",
+    "scripts/ci/fuzz.sh",
+    "scripts/ci/fuzz_limited.py",
+    "scripts/ci/fuzz_targets.py"
    ]
   },
   "web": {

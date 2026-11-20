@@ -119,7 +119,7 @@
  "_gates_doc": "重い検査（番号 → 関係するファイル）。scope=ticket では変えたファイルが当たるときだけ流す。全部の回は全部（K-172・D-133.7）",
  "gates": {
   "27": ["spec-dependencies.yaml", "skill-pipeline.yaml", "scripts/ci/**", "scripts/tickets/**", "scripts/spec-sync/**", "00_research/**", "01_hearing/**", "02_tech_stack/**", "03_architecture/**", "04_design/**", "05_flow/**", "06_mockup/**", "07_functional/**", "07_qa/**", "07_tasks/**", "08_api/**", "08_schedule/**", "09_features/**", "10_skills/**", "11_tickets/**", "apps/**", "packages/**", "infra/docker-compose.dev.yml", "package.json"],
-  "36": ["08_api/**", "apps/api/src/**", "packages/contracts/**", "packages/db/**", "scripts/ci/schemathesis*"],
+  "36": ["08_api/**", "apps/api/src/**", "packages/contracts/**", "packages/db/**", "scripts/ci/schemathesis*", "scripts/ci/fuzz.sh", "scripts/ci/fuzz_limited.py", "scripts/ci/fuzz_targets.py", "apps/api/test/fuzz/**"],
   "38": ["scripts/ci/generated*", "05_flow/**", "08_api/**", "07_functional/**", "04_design/**", "03_architecture/**", "packages/contracts/**", "apps/web/app/**", "01_hearing/決定ログ*", "11_tickets/**", "07_qa/test-specs/**"],
   "47": [".github/**", "scripts/ci/**", "05_flow/build_testplan.py", "package.json", "apps/**/*.ts", "apps/**/*.tsx", "apps/**/*.mts", "packages/**/*.ts", "packages/**/*.tsx", "packages/**/*.mts", "07_qa/test-specs/errors.json", "scripts/**/*.py", "scripts/**/*.mjs", "scripts/**/*.sh", "apps/*/scripts/**/*.mjs", "05_flow/*.py", "packages/db/migrations/**", "08_api/openapi.yaml", "08_api/db-columns.json", "08_api/endpoints.json", "08_api/types.ts"],
   "56": ["11_tickets/**"],
@@ -735,7 +735,10 @@
    "paths": [
     "08_api/**",
     "07_qa/test-plan/**",
-    "07_functional/entities.json"
+    "07_functional/entities.json",
+    "scripts/ci/fuzz.sh",
+    "scripts/ci/fuzz_limited.py",
+    "scripts/ci/fuzz_targets.py"
    ]
   },
   "web": {
