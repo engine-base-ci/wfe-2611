@@ -2365,6 +2365,17 @@ K-405,渡されたものを承認待ちに並べる（app.approval_queue・app.a
 - [ ] 詳細を開いたときの口の数は 6 本のまま（速さの台帳 `scripts/ci/perf_budget.json` と k237 の試験は替えず緑）。getTicket の文の数も増えない（K234-API-004 が今のまま緑）
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑。特に K-161 の承認待ちの試験（approve-complete-queue・guard）と K-234／K-236（文の数・片付けの文）が今のまま
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-406,渡した人が取り消す・催促する（口 2 本 withdrawTicketHandover・remindTicketHandover と、渡し中に完了・消したときの自動の取り消し）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-24,F8・渡す・配る,"渡し中の帯（f8-waiting-sender・f8-overdue）の「取り消す」「催促する」で呼ぶ口を 2 本足す（契約に無い口・PM に知らせ済みの 4 本のうち 2 本）。
+
+- **取り消す** `withdrawTicketHandover`（POST /api/v1/ticket_handovers/:id/withdraw）：渡した人だけ。待っている渡しを withdrawn にし、相手に「取り消されました」を受け箱で知らせる（メールは出さない・D-148.19）。申し出た人の取り下げ（D-148.12「申し出た人はいつでも取り下げられる」）・配った人のグループ宛ての取り消し（f8-group-waiting の「取り消す」）も同じ口
+- **催促する** `remindTicketHandover`（POST /api/v1/ticket_handovers/:id/remind）：渡した人だけ。同じ渡しで 1 日 1 回まで・期限の前でも押せる・自動の催促はしない（D-148.8）。相手に受け箱の行とメール（D-148.19・メールに理由とお願いは書かない）
+- **渡し中に完了にする・消す**と、渡しを自動で取り消して相手に知らせる（D-148.5）。完了と消すの口（F5・F4）は触らず、tickets の引き金で持つ
+
+「別の人にする」は K-402 の渡す口の入力 `replaces`（待っている自分の渡しを取り消してから新しく渡すのを 1 取引で・K-401 の gate が確かめる）で、この葉に口は足さない（画面 K-413 は取り消す口と渡す口を 2 回呼ばない）。取り消しの受け箱の行の形（`handover.withdrawn`・dedupe_key `handover_withdrawn:<渡し>:<相手>`・payload の cause）は、K-402 の replaces（cause ""replaced""）とこの葉（cause ""sender""・""completed""・""deleted""）で同じ形にそろえる。","- [ ] 下の表の 23 行（K406-API-001〜023）が緑：`apps/api/test/features/F8/handover-sender.test.ts`（土台は K-63 の `approve-complete.harness.ts`・変えない）
+- [ ] 契約の口 2 本が在り、生成の試験 `post_ticket_handovers_id_withdraw.test.ts`・`post_ticket_handovers_id_remind.test.ts` の it.todo が、na（理由つき）を除いて 0（`ears-elsewhere.d/K-406.json`）
+- [ ] 共有の試験 k144 の葉の行 K144-API-960・961（`k144.d/K-406.ts`・carry・k144 の番号は葉ごとの枠：K-406＝960〜961）が緑
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-411,画面：詳細の「担当者 ▾」から相手を選んで引き継いでもらう（相手を選ぶ小窓・引き継いでもらうの小窓・渡し中の帯・渡しの様子を読めない帯・担当者の下の返事待ち）（K-68 の葉・9-W1）,タスク,K-68,未着手,実装,2026-11-25,F8・画面,"担当者本人が、チケットの詳細の右のパネルの「担当者 ▾」から相手を選び、理由・お願い・返事の期限・一緒に切り替える物を添えて「引き継いでもらう」を頼めるようにする（行為 A51・入口は代表の答え D-148.2）。頼んだ後は題名の下に「渡し中」の帯が出て、担当者の下に「→ 〇〇（返事待ち）」が出る。相手が受けるまで担当者は自分のまま（D-125.88）。帯・担当者の欄・▾ は getTicket の答えの今の渡し（`handover`）と見ている人ができる種類（`handover_kinds`）だけで決める（K-405 が載せる・詳細の口は 6 のまま・PM の決め 2026-11-20）。
 
 - 正の絵はモック `/dev/mock/f8/<状態>`（この葉の 10 の状態・下の mock:）。部品は K-400 が運んだ `features/F8/handover/views.tsx`（`AssigneeValue`・`PickDialog`・`HandoverDialog`・`HandoverBand`）をそのまま使い、値と動きを渡す（views.tsx は触らない）

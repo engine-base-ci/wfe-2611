@@ -2988,7 +2988,12 @@
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handovers",
-    "GET /api/tickets/:id/handovers"
+    "GET /api/tickets/:id/handovers",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/remind",
+    "POST /api/ticket_handovers/:id/remind"
    ],
    "access_roles": [
     "R1",
@@ -11133,6 +11138,36 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
     }
    ]
   },
