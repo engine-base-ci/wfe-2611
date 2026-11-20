@@ -71,7 +71,12 @@ const NAME_SHAPE = /^[^.]+(\.[^.]+)+$/;
 function destinationFrom(typed: string): string | null {
   const m = DESTINATION_RE_RAW.exec(typed);
   if (!m) return null;
-  const folded = (h: string): string => h.normalize("NFKC").toLowerCase().replace(/[。｡．]/g, ".").replace(/\.$/, "");
+  const folded = (h: string): string =>
+    h
+      .normalize("NFKC")
+      .toLowerCase()
+      .replace(/[。｡．]/g, ".")
+      .replace(/\.$/, "");
   const ascii = domainToASCII(m[2] ?? "").replace(/\.$/, "");
   const host = NAME_SHAPE.test(ascii) ? ascii : folded(m[2] ?? "");
   if (!NAME_SHAPE.test(host) || PUBLIC_SUFFIXES.has(host) || PUBLIC_SUFFIXES.has(folded(m[2] ?? ""))) return null;
