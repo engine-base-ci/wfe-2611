@@ -7,6 +7,7 @@
 
 kind：errors（07_qa/test-specs/errors.json）・ears（07_qa/test-plan/ears-elsewhere.json）・ci_scope（scripts/ci/ci_scope.json）。
 _base.json が先、続いて K- の番号の順に足す。同じ鍵を 2 つのファイルが持てば止め、何も書かない。
+ただし ears の ops は、断片どうしが同じ口を持てる（covers は足し合わせ・covers 以外は同じ値だけ・K-440）。
 """
 from __future__ import annotations
 
@@ -29,11 +30,12 @@ TARGETS = {
 }
 
 # kind → 鍵ごとの足し方。("list_by", 鍵の名前)＝リストをつなぎ、項目の鍵が重なれば止める／
-# ("dict",)＝鍵ごと・重なれば止める／("list",)＝つなぐ／("unique_list",)＝つなぎ、同じ値が 2 つなら止める。
+# ("dict",)＝鍵ごと・重なれば止める／("op_covers",)＝("dict",) と同じだが、断片どうしが同じ口（op）を持てる：
+# covers は足し合わせ（同じ名前を 2 つが結べば止める）、covers 以外の鍵は両方にあって値が違えば止める（_base.json の口は断片が足せない）／("list",)＝つなぐ／("unique_list",)＝つなぎ、同じ値が 2 つなら止める。
 # ここに無い鍵は _base.json だけが持てる。
 RULES: dict[str, dict[str, tuple]] = {
     "errors": {"errors": ("list_by", "id"), "classes": ("list_by", "id")},
-    "ears": {"ops": ("dict",)},
+    "ears": {"ops": ("op_covers",)},
     "ci_scope": {"data_links": ("list",), "reads_ok": ("dict",), "no_test_paths": ("unique_list",)},
 }
 
@@ -54,7 +56,7 @@ def _owner_map(kind: str, base: dict) -> dict[tuple[str, str], str]:
         value = base.get(key)
         if rule[0] == "list_by":
             owners.update({(key, str(item.get(rule[1]))): "_base.json" for item in value or []})
-        elif rule[0] == "dict":
+        elif rule[0] in ("dict", "op_covers"):
             owners.update({(key, str(k)): "_base.json" for k in value or {}})
         elif rule[0] == "unique_list":
             owners.update({(key, str(v)): "_base.json" for v in value or []})
@@ -78,6 +80,9 @@ def _add(kind: str, out: dict, key: str, value: object, source: str, owners: dic
             _claim(owners, kind, key, str(k), source)
         out[key] = {**out.get(key, {}), **value}
         return
+    if rule[0] == "op_covers":
+        _add_op_covers(kind, out, key, value, source, owners)
+        return
     if not isinstance(value, list):
         raise RegistryConflict(f"{kind}: {source} の {key} はリストで書く")
     if rule[0] == "list_by":
@@ -87,6 +92,40 @@ def _add(kind: str, out: dict, key: str, value: object, source: str, owners: dic
         for item in value:
             _claim(owners, kind, key, str(item), source)
     out[key] = [*out.get(key, []), *value]
+
+
+def _merge_op(kind: str, key: str, op: str, have: dict, item: object, first: str, source: str) -> dict:
+    """同じ口（op）を 2 つの断片が持つとき：covers は足し合わせ、covers 以外の鍵は同じ値だけ許す"""
+    if not isinstance(have, dict) or not isinstance(item, dict):
+        raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} を両方持つ（足し合わせられるのは covers を持つオブジェクトだけ）")
+    covers = dict(have.get("covers") or {})
+    for name, to in (item.get("covers") or {}).items():
+        if name in covers:
+            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} の covers の {name} を両方結ぶ")
+        covers[name] = to
+    for k, v in item.items():
+        if k != "covers" and k in have and have[k] != v:
+            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {op} の {k} を違う値で持つ（足し合わせるのは covers だけ）")
+    merged = {**have, **{k: v for k, v in item.items() if k != "covers"}}
+    if covers:
+        merged["covers"] = covers
+    return merged
+
+
+def _add_op_covers(kind: str, out: dict, key: str, value: object, source: str, owners: dict[tuple[str, str], str]) -> None:
+    if not isinstance(value, dict):
+        raise RegistryConflict(f"{kind}: {source} の {key} はオブジェクトで書く")
+    merged = dict(out.get(key, {}))
+    for k, item in value.items():
+        first = owners.get((key, str(k)))
+        if first is None:
+            owners[(key, str(k))] = source
+            merged[k] = item
+        elif first == "_base.json":
+            raise RegistryConflict(f"{kind}: {first} と {source} が {key} の {k} を両方持つ")
+        else:
+            merged[k] = _merge_op(kind, key, str(k), merged[k], item, first, source)
+    out[key] = merged
 
 
 def build(kind: str, directory: Path) -> dict:
