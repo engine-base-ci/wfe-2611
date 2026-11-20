@@ -126,17 +126,17 @@ describe("K-409 人に配る", () => {
     await unchanged(t.id, P().mgr.id, before);
   });
 
-  it("K409-API-007 相手が止まっている人は 422・E-HND-006、別の会社の人・在らない id は 422・E-HND-014（K-401 の共通の確かめ）・何も変わらない", async () => {
+  it("K409-API-007 相手が止まっている人は 409・E-HND-006、別の会社の人・在らない id は 404・E-HND-014（K-401 の共通の確かめ・DB の中身で決まる断りは 404／409）・何も変わらない", async () => {
     await h.ready();
-    for (const [to, code] of [
-      [P().stopped.id, "E-HND-006"],
-      [P().outsider.id, "E-HND-014"],
-      [randomUUID(), "E-HND-014"],
+    for (const [to, code, status] of [
+      [P().stopped.id, "E-HND-006", 409],
+      [P().outsider.id, "E-HND-014", 404],
+      [randomUUID(), "E-HND-014", 404],
     ] as const) {
       const t = await h.ticket({ assignee: P().boss });
       const before = h.mails.length;
       const r = await h.distribute(P().mgr, t.id, body(to));
-      expect(r.status, to).toBe(422);
+      expect(r.status, to).toBe(status);
       expect((await h.json(r))["code"]).toBe(code);
       await unchanged(t.id, P().boss.id, before);
     }

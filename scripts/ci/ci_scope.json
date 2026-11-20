@@ -1065,6 +1065,16 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F8/handovers/create/distribute.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute.ts",
+    "packages/db/migrations/20261121090900_handover_distribute.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-person.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/handover-claim.ts",
     "apps/api/src/features/F8/handovers/create/distribute-group.ts",
     "apps/api/src/features/F8/handovers/answer/distribute-group.ts",
@@ -1190,6 +1200,7 @@
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
   "apps/api/test/features/F8/handover.harness.ts": "口の hooks のファイル apps/api/src/hooks/handovers.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-401。後ろの葉（K-402〜K-404）は自分の断片に paths → 自分の試験の 1 行を足す",
   "apps/api/test/features/contract/k144.d/K-401.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handovers.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-401",
+  "apps/api/test/features/F8/distribute.harness.ts": "段 9 の口の hooks のファイル apps/api/src/hooks/handover*.ts を existsSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-409",
   "apps/api/test/features/contract/k144.d/K-410.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handover-claim.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-410"
  },
  "web_select": {
