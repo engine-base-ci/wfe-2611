@@ -30,7 +30,7 @@ export const ROW_EXEMPT = {
  *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
 export const ROW_EXEMPT_FIELDS = {
   deleteTicketLink: {
-    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）が、外せるのは両端のどちらか 1 つに書ける人で、相手が見えなくてもよい（K-441・PM の決め）。入口の確かめは相手が見えない人を 404 にしてしまう。見える・書けるは DB の関数 app.ticket_link_remove が確かめる",
+    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
   },
 };
 const exemptField = (op, field) => {
