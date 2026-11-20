@@ -1076,6 +1076,8 @@ class ContractShapeTest(unittest.TestCase):
     # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
     #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
     SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
+        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
         "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
         "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
         "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],
@@ -1093,8 +1095,6 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
                                                           ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
-        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
-        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:
