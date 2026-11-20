@@ -958,6 +958,25 @@
   {
    "paths": [
     "packages/db/migrations/**",
+    "apps/api/src/features/F3/remove-pc/**",
+    "apps/api/src/hooks/device-revoke.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/remove-pc.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/remove-pc.test.ts",
+    "apps/api/test/features/contract/k144.d/K-362.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**",
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/device-*.ts",
     "apps/api/src/hooks/bridge-browser.ts"

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 367（作った 56・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 192・部品 56・設定 41
+API 367（作った 57・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 192・部品 56・設定 41
 
 ## 共通の処理
 
@@ -305,7 +305,7 @@ API 367（作った 56・後のフェーズの行為だけ 20）・前の道す�
 | `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 作った | K-364 |
-| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-91,K-362 |
+| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 作った | K-362 |
 | `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |

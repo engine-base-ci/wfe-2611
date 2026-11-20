@@ -4580,9 +4580,7 @@
     "C2",
     "C4"
    ],
-   "tests": [
-    "apps/api/test/generated/delete_bridge_devices_id.test.ts"
-   ],
+   "tests": [],
    "depends_on": [
     "K-57",
     "K-75",
@@ -4594,9 +4592,7 @@
    "screens": [
     "bridge-setup"
    ],
-   "apis": [
-    "revokeMyDevice"
-   ],
+   "apis": [],
    "sections": {
     "目的": "PC をつないだ人が「PC をつなぐ」画面（/setup/bridge）の PC の行で「この PC を外す」を押し、確かめの小窓で「外す」を押すと、**その PC の印が使えなくなる**。外した PC の Bridge は、次の知らせ（生きている知らせ・仕事の問い合わせ）で 401 を受けて印を捨て、窓に「つなぎ直してください」を出し、Kaname に仕事を取りに来なくなる。預けたログイン情報も、その PC からは取り出せなくなる（D-128.57）。もう一度使うときは、この画面からつなぎ直す（K-57）。\n\nPC はアカウントのもの（D-128.156）なので、どのワークスペースの画面からでも外せて、外せばどのワークスペースでも使えない。他の人の PC には触れない。**外した PC が受け取って動いていた仕事だけ**を「止まった」にし、「PC を外したので止まりました」を残す。もう 1 台で動いている仕事は止めない。まだ受け取られていない待ちの仕事は残す（D-128.155・D-128.163）。\n\n**外したことが確定するのは、口（revokeMyDevice）が 200 を返した時点。** その時点で PC の行に外した時刻と理由「端末を外した」が付き（`sessions.revoked_at`・`revoke_reason_id`）、セキュリティの出来事に 1 件残る。外すのは大事な操作なので、**直前 15 分の内に本人確認を取り直していなければ、口は止める**（D-125.139・契約の stepUp: always）。画面は K-75 の取り直しの小窓 `StepUpDialog` を出し、取り直したら続けて外す（D-128.162）。\n\n前の「PC をつなぐ」画面（/setup/bridge/legacy・D-128.164）にある実装を使う（D-128.150）。",
     "完了の条件": "- 下の 2 つの表の「このチケット」のマスと、全部の分岐のテストが緑（表の「テスト」の列の行 ID がどれも緑）\n- 契約の口 revokeMyDevice（DELETE /api/v1/bridge/devices/:id）が 501 でない\n- 前の画面 `apps/web/app/(wizard)/setup/bridge/legacy/page.tsx`（K-57 の取り込みの後の住所・D-128.164）の「この端末を外す」（Devices の revoke）が、K-57 の新しい画面 `apps/web/features/F3/connect-pc/` の PC の行に移り、前の画面からその部分が消えている\n- 前の画面の試験 `apps/web/tests/screens/qa-b-bridge-setup.spec.ts` の SCR-BRIDGE-SETUP-070（hold/k57-k60 の 502〜532 行）は、このチケットの remove-pc の試験（K91-UI-001〜013・K91-API-001・003）に書き直したので消している\n- 前の道すじ `POST /api/auth-ext/agent/bridge-revoke`（apps/api/src/auth/ext.ts）と画面の口 `agentRevokeBridge`（apps/web/lib/auth/ext.ts）を、新しい口に置き換えて消している\n- 単体のテスト（下の表で「このチケット」が受け持つマスと、全部の分岐）が本物の DB と本物のブラウザの上で緑\n- 手元の CI（.github/workflows を act で・チケット 1 本につき 1 回・D-128.147）が緑",
@@ -16982,6 +16978,8 @@
     "A09"
    ],
    "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口と DB だけ・PC の行の「この PC を外す」と小窓は画面の葉 K-363 が持つ）。正の絵の組は持たない",
    "apis": [
     "revokeMyDevice"
    ],

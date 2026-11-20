@@ -11469,6 +11469,20 @@ components:
         updated_at:
           type: string
       x-operation: listCredentials
+    RevokedDevice:
+      type: object
+      properties:
+        id:
+          type: string
+        device_label:
+          type: string
+          nullable: true
+        revoked_at:
+          type: string
+          nullable: true
+        revoke_reason:
+          type: string
+      x-operation: revokeMyDevice
     DeviceBrowser:
       type: object
       properties:
@@ -15574,7 +15588,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/RevokedDevice'
                   meta:
                     type: object
         '401':
