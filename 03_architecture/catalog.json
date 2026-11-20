@@ -9,7 +9,7 @@
   "api_built": 58,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 144,
+  "db": 145,
   "ui": 18,
   "packages": 13,
   "errors": 199,
@@ -5371,7 +5371,6 @@
    ],
    "status": "作った",
    "owner_tickets": [
-    "K-66",
     "K-383"
    ]
   },
@@ -7246,6 +7245,14 @@
    "reads": [
     "F4"
    ],
+   "boundary": false
+  },
+  {
+   "table": "ticket_thread_seen",
+   "class": "internal",
+   "why": "人ごと・チケットごとの最後にやり取りを開いた時刻（app スキーマ・アプリの役は直に触れない）。やり取りを読む口が関門 C2 の関数 app.ticket_timeline で読み（「新しい」の印と数）、K-384 の口が書く（K-383）",
+   "writes": [],
+   "reads": [],
    "boundary": false
   },
   {

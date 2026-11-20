@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:05849e7531482803
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:83020d810e3c5077
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2824,6 +2824,10 @@ export const TicketMessages = z.strictObject({
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
   reactions: z.unknown().optional(),
+  notify_member_ids: z.array(z.uuid()).optional(),
+  quote_text: z.string().nullable().optional(),
+  edited_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  deleted_by: z.uuid().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2841,6 +2845,10 @@ export const TicketMessagesInput = z.strictObject({
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
   reactions: z.unknown().optional(),
+  notify_member_ids: z.array(z.uuid()).optional(),
+  quote_text: z.string().nullable().optional(),
+  edited_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  deleted_by: z.uuid().nullable().optional(),
 });
 export const ReferenceLogs = z.strictObject({
   ticket_id: z.uuid().optional(),
