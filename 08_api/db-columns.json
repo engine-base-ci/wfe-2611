@@ -1024,6 +1024,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "target_session_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false

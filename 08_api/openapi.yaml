@@ -2990,6 +2990,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        target_session_id:
+          type: string
+          format: uuid
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -9900,6 +9904,102 @@ components:
           type: string
       additionalProperties: false
       x-operation: updateCredential
+    CredentialLoginCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswerInput:
+      type: object
+      properties:
+        request_ref:
+          type: string
+          pattern: \S
+          maxLength: 100
+        code:
+          type: string
+          pattern: ^[\s\-‐‑‒–—―ー−－]*(?:[0-9A-Za-z０-９Ａ-Ｚａ-ｚ][\s\-‐‑‒–—―ー−－]*){1,64}$
+        approved:
+          type: boolean
+          enum:
+          - true
+      additionalProperties: false
+      x-operation: answerCredentialLoginCheck
+      required:
+      - request_ref
+      x-required-by: hooks
+      oneOf:
+      - required:
+        - code
+        not:
+          required:
+          - approved
+      - required:
+        - approved
+        not:
+          required:
+          - code
+    CredentialCheckReportInput:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - ok
+          - bad_password
+          - needs_2fa
+          - bad_code
+          - captcha
+          - unreachable
+          - no_form
+          - stopped
+          - no_answer
+          - asking
+          - waiting
+        detail:
+          type: string
+          maxLength: 400
+        request_ref:
+          type: string
+          pattern: \S
+          maxLength: 100
+        ask_kind:
+          type: string
+          enum:
+          - code
+          - approve
+        text:
+          type: string
+          maxLength: 300
+      additionalProperties: false
+      x-operation: reportCredentialCheck
+      required:
+      - job_id
+      - state
+      x-required-by: hooks
+      oneOf:
+      - properties:
+          state:
+            enum:
+            - asking
+            - waiting
+        required:
+        - request_ref
+      - properties:
+          state:
+            enum:
+            - ok
+            - bad_password
+            - needs_2fa
+            - bad_code
+            - captcha
+            - unreachable
+            - no_form
+            - stopped
+            - no_answer
     DeviceBrowserInput:
       type: object
       properties:
@@ -9911,6 +10011,11 @@ components:
       required:
       - browser
       x-required-by: hooks
+    DeviceBrowserCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkMyDeviceBrowser
     BridgeBrowserInput:
       type: object
       properties:
@@ -11651,6 +11756,31 @@ components:
           type: string
           format: uuid
       x-operation: deleteCredential
+    CredentialLoginCheck:
+      type: object
+      properties:
+        state:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswer:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+      x-operation: answerCredentialLoginCheck
+    CredentialCheckReport:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        code:
+          type: string
+          nullable: true
+      x-operation: reportCredentialCheck
     RevokedDevice:
       type: object
       properties:
@@ -11674,6 +11804,13 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    DeviceBrowserCheck:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+      x-operation: checkMyDeviceBrowser
     BridgeBrowser:
       type: object
       properties:
@@ -15462,7 +15599,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialCheckReportInput'
       responses:
         '201':
           description: 成功
@@ -15472,7 +15609,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialCheckReport'
                   meta:
                     type: object
         '401':
@@ -15494,13 +15631,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15513,12 +15656,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15958,6 +16095,128 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/bridge/devices/{id}/browser-check:
+    post:
+      operationId: checkMyDeviceBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - bridge_jobs
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: self
+      x-permission-scope: 自分のアカウントの PC だけ。その PC に宛てた確かめの仕事を 1 つ積む（本人のサブスクを少し使うので 1 分 10 回）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceBrowserCheckInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeviceBrowserCheck'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-CONN-018
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:
@@ -21969,7 +22228,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginCheckInput'
       responses:
         '201':
           description: 成功
@@ -21979,7 +22238,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginCheck'
                   meta:
                     type: object
         '401':
@@ -22001,13 +22260,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-012／E-CRED-013／E-CRED-011
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -22020,12 +22285,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -22077,7 +22336,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginAnswerInput'
       responses:
         '201':
           description: 成功
@@ -22087,7 +22346,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginAnswer'
                   meta:
                     type: object
         '401':
@@ -22103,7 +22362,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-CRED-014
           content:
             application/json:
               schema:
@@ -22120,6 +22379,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -22128,12 +22393,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

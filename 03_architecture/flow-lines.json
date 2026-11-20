@@ -9,6 +9,7 @@
   "action_runs",
   "approvals",
   "attachments",
+  "bridge_jobs",
   "checks",
   "clients",
   "conversations",
@@ -141,11 +142,15 @@
   },
   "bridge_jobs": {
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F3→F5",
+    "F5→F3"
+   ]
   },
   "bridge_pairing_codes": {
    "writes": [

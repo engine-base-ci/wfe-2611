@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d67f6ea86b5c546c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:23b1f7d5289b4387
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2028,9 +2028,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "reportCredentialCheck",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialCheckReportInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialCheckReport",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2051,6 +2051,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       503
@@ -2280,6 +2281,63 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": "always",
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/bridge/devices/:id/browser-check",
+    "operationId": "checkMyDeviceBrowser",
+    "table": "bridge_jobs",
+    "kind": "create",
+    "input": "DeviceBrowserCheckInput",
+    "success": 201,
+    "output": "DeviceBrowserCheck",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
       "row": null
     },
     "termsOpen": false,
@@ -5454,9 +5512,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "checkCredentialLogin",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialLoginCheckInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialLoginCheck",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5477,6 +5535,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -5512,9 +5573,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "answerCredentialLoginCheck",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialLoginAnswerInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialLoginAnswer",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5535,6 +5596,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      404,
+      503,
       413,
       429,
       403,
@@ -19505,4 +19568,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "d67f6ea86b5c546c";
+export const OPENAPI_HASH = "23b1f7d5289b4387";
