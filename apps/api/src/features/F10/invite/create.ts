@@ -30,7 +30,7 @@ const MESSAGE_MAX = 500;
 /** トークンの長さ（バイト）。DB には sha256 だけを置く（packages/auth/src/invitations.ts と同じ形） */
 const TOKEN_BYTES = 32;
 
-type Detail = { field: string; email?: string; code: string; message: string };
+type Detail = { field: string; email?: string; index?: number; code: string; message: string };
 interface Created {
   invitation_id: string;
   email: string;
@@ -131,8 +131,27 @@ export function normalizeEmails(raw: unknown): string[] {
 const EMAIL_PATTERN = new RegExp(INVITE_EMAIL_PATTERN);
 
 /** 宛て 1 つが決まりに合うか：長さ（打ったとおりの字・契約の maxLength と同じ数え方）を先に見て、pattern はそのあとに当てる */
-const emailOk = (e: string): boolean =>
-  e.length <= 2 * INVITE_EMAIL_MAX_LENGTH && Array.from(e).length <= INVITE_EMAIL_MAX_LENGTH && EMAIL_PATTERN.test(e);
+const tooLong = (e: string): boolean =>
+  e.length > 2 * INVITE_EMAIL_MAX_LENGTH || Array.from(e).length > INVITE_EMAIL_MAX_LENGTH;
+const emailOk = (e: string): boolean => !tooLong(e) && EMAIL_PATTERN.test(e);
+
+/** E-INV-009 の details：形の違う宛てはそろえた後の字ごと（重なりは 1 つ・入れた順）。長すぎる宛ては字を載せず、欄・順番・訳だけ（黙って切らない） */
+function badEmailDetails(raw: string[]): Detail[] {
+  const seen = new Set<string>();
+  const out: Detail[] = [];
+  for (const [i, e] of raw.entries()) {
+    if (emailOk(e)) continue;
+    if (tooLong(e)) {
+      out.push({ ...detail("E-INV-009", "emails"), index: i });
+      continue;
+    }
+    const n = normalizeEmail(e);
+    if (seen.has(n)) continue;
+    seen.add(n);
+    out.push(detail("E-INV-009", "emails", n));
+  }
+  return out;
+}
 
 export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" | "config">) {
   /** ⑤ 1 つの取引：メールの文面に要る名前を読み、招待を作る（呼んだ人の権限は関数の中でも見る） */
@@ -218,12 +237,8 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
       const stale = a.requireStepUp ? a.requireStepUp() : STEP_UP_REQUIRED;
       if (stale) return stale;
     }
-    const badEmails = raw.filter((e) => !emailOk(e));
-    if (badEmails.length > 0)
-      return invalid(
-        "E-INV-009",
-        [...new Set(badEmails.map(normalizeEmail))].map((e) => detail("E-INV-009", "emails", e)),
-      );
+    const badDetails = badEmailDetails(raw);
+    if (badDetails.length > 0) return invalid("E-INV-009", badDetails);
     const emails = normalizeEmails(raw);
     const tokens = emails.map(() => randomBytes(TOKEN_BYTES).toString("base64url"));
     let stored: { rows: Created[]; facts: Facts };
