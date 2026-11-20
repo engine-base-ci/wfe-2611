@@ -13,16 +13,24 @@ export const LIMIT_MAX = 100;
 export const FILTERS = ["all", "talk", "mine"] as const;
 export type Filter = (typeof FILTERS)[number];
 
-const TIME_RE = /^(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}(:?\d{2})?)$/;
+const TIME_RE = /^((\d{4})-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-](\d{2}):?(\d{2})?)$/;
+/** PostgreSQL の時差の上限（±15:59 まで。それより大きい時差は DB が例外にする） */
+const OFFSET_HOURS_MAX = 15;
 
-/** 日時として読めるか（字のまま DB に渡すので、日付が暦に在るかまで見る） */
+/** 日時として読めるか（字のまま DB に渡すので、DB が受け付ける字だけを通す：日付が暦に在る・年 0000 でない・時差が ±15:59 の中） */
 function isTime(s: string): boolean {
   const m = TIME_RE.exec(s);
   if (!m || Number.isNaN(Date.parse(s))) return false;
-  const day = m[1]!;
+  const [, day, year, , , offH, offM] = m as unknown as [string, string, string, string?, string?, string?, string?];
+  if (year === "0000") return false;
+  if (offH !== undefined && (Number(offH) > OFFSET_HOURS_MAX || Number(offM ?? "0") > 59)) return false;
   const d = new Date(`${day}T00:00:00Z`);
   return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(day);
 }
+
+/** DB が日時の字を受け付けなかった（形・範囲・時差）。上の確かめを抜けた字も 422 にする（障害の 503 と分ける） */
+const BAD_TIME_CODES = new Set(["22007", "22008", "22009"]);
+const isBadTime = (e: unknown): boolean => BAD_TIME_CODES.has(String((e as { code?: unknown })?.code ?? ""));
 
 export interface TimelineQuery {
   limit: number;
@@ -77,6 +85,7 @@ export function createListTicketTimeline(appPool: pg.Pool): (a: HookArgs) => Pro
         return r.rows[0]?.v ?? null;
       });
     } catch (e) {
+      if (beforeAt !== null && isBadTime(e)) return invalid("before_at", "日時");
       return down("やり取りを読む", e);
     }
     if (!v) return notFound();
