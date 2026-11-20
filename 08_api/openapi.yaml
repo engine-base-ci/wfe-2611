@@ -9826,6 +9826,17 @@ components:
       - name
       - destinations
       x-required-by: hooks
+    DeviceBrowserInput:
+      type: object
+      properties:
+        browser:
+          type: string
+          pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
+      additionalProperties: false
+      x-operation: updateMyDevice
+      required:
+      - browser
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -10448,6 +10459,8 @@ components:
         health_at:
           type: string
           nullable: true
+        browser:
+          type: string
         revoke_reason:
           type: string
           nullable: true
@@ -11507,6 +11520,15 @@ components:
         updated_at:
           type: string
       x-operation: createCredential
+    DeviceBrowser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        browser:
+          type: string
+      x-operation: updateMyDevice
     Error:
       type: object
       properties:
@@ -15466,7 +15488,7 @@ paths:
       - D-125.146
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分の PC だけ（名前・いつも使う）
+      x-permission-scope: 自分のアカウントの PC だけ（AI が使うブラウザ・K-364）
       x-step-up: false
       security:
       - session: []
@@ -15482,7 +15504,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SessionsInput'
+              $ref: '#/components/schemas/DeviceBrowserInput'
       responses:
         '200':
           description: 成功
@@ -15492,7 +15514,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Sessions'
+                    $ref: '#/components/schemas/DeviceBrowser'
                   meta:
                     type: object
         '401':
@@ -15514,11 +15536,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：大文字の値（CHROME など・NFKC で小文字にならない））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 大文字の値（CHROME など・NFKC で小文字にならない）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:

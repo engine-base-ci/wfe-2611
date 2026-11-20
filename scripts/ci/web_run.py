@@ -102,8 +102,9 @@ def main() -> int:
                 return 1
             if not sel:
                 rest = json.loads(os.environ.get("CI_WEB_SPECS") or "[]") + json.loads(os.environ.get("CI_WEB_OTHER") or "[]")
-                if rest:
-                    print(f"gate {gid}：この回は専用の段の画面の試験が選ばれていない（G48・G59 だけ流す）")
+                # 専用の段が 2 つ以上あるので、ほかの専用の段に流す物が在れば、この段は選ばれなかっただけ（K-379）
+                if rest or any(v for k, v in gates.items() if k != gid):
+                    print(f"gate {gid}：この回は専用の段 {gid} の画面の試験が選ばれていない（ほかの段だけ流す）")
                     return 0
                 print(f"★ gate {gid}：web の組が動いているのに、どの段にも流す画面の試験が無い（範囲の台本の出力が渡っていない）")
                 return 1
