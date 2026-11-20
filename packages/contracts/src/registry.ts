@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:32571f4a6d70b39d
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d52537ec812a3e41
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -5229,9 +5229,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createCredential",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialCreateInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "Credential",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5249,6 +5249,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      403,
+      502,
+      503,
       413,
       429,
       403,
@@ -5268,7 +5271,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": null
     },
     "termsOpen": false,
@@ -5281,9 +5284,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "updateCredential",
     "table": "credentials",
     "kind": "update",
-    "input": "CredentialsInput",
+    "input": "CredentialUpdateInput",
     "success": 200,
-    "output": "Credentials",
+    "output": "Credential",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5303,6 +5306,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      403,
+      409,
+      502,
+      503,
       413,
       429,
       403,
@@ -5322,10 +5329,10 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
-      "stepUp": "always",
+      "stepUp": "login_or_step_up",
       "row": {
         "table": "credentials",
-        "sql": "owner_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -5340,7 +5347,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "Credentials",
+    "output": "CredentialDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5360,6 +5367,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -5381,7 +5389,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "credentials",
-        "sql": "owner_member_id = app.user_id()"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -19441,4 +19449,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "32571f4a6d70b39d";
+export const OPENAPI_HASH = "d52537ec812a3e41";

@@ -9775,6 +9775,92 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: requestInvitationResend
+    CredentialCreateInput:
+      type: object
+      properties:
+        layer:
+          type: string
+          enum:
+          - workspace
+          - personal
+        kind:
+          type: string
+          enum:
+          - login
+          - key
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        login:
+          type: string
+        password:
+          type: string
+        value:
+          type: string
+        two_factor:
+          type: string
+          enum:
+          - none
+          - totp
+          - sms
+          - email
+          - push
+        totp_secret:
+          type: string
+        destinations:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 20
+        expires_on:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-operation: createCredential
+      required:
+      - layer
+      - kind
+      - name
+      - destinations
+      x-required-by: hooks
+    CredentialUpdateInput:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        value:
+          type: string
+        two_factor:
+          type: string
+          enum:
+          - none
+          - totp
+          - sms
+          - email
+          - push
+        totp_secret:
+          type: string
+        destinations:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 20
+        expires_on:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        reason:
+          type: string
+      additionalProperties: false
+      x-operation: updateCredential
     DeviceBrowserInput:
       type: object
       properties:
@@ -11468,7 +11554,14 @@ components:
           type: string
         updated_at:
           type: string
-      x-operation: listCredentials
+      x-operation: updateCredential
+    CredentialDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteCredential
     RevokedDevice:
       type: object
       properties:
@@ -21287,8 +21380,8 @@ paths:
       - D-125.151
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のものを預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須（D-128.57）
-      x-step-up: true
+      x-permission-scope: 自分の個人の物か、edit を持つ人はワークスペースの物を預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須。取り直しか、ログインから 15 分の内（D-125.139・D-128.57）
+      x-step-up: login_or_step_up
       security:
       - session: []
       requestBody:
@@ -21296,7 +21389,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialCreateInput'
       responses:
         '201':
           description: 成功
@@ -21306,7 +21399,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/Credential'
                   meta:
                     type: object
         '401':
@@ -21316,19 +21409,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-CRED-007／STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-006
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）・使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）
+          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）
+          - 日本の今日より前・暦に無い期限（E-CRED-004）
+          - 種類ごとの中身の欠けと混ざり（E-CRED-005）
+          - 認証アプリの鍵の形と有無（E-VAL-003）
+        '502':
+          description: E-SEC-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-SEC-002／E-PAGE-003
           content:
             application/json:
               schema:
@@ -21341,12 +21452,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21382,8 +21487,8 @@ paths:
       - D-125.151
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のものの上書き・使える場所の変更
-      x-step-up: true
+      x-permission-scope: 自分の個人の物か、edit を持つ人はワークスペースの物の値・使える場所・期限・説明の上書き。名前・層・種類は変えない。取り直しか、ログインから 15 分の内（D-125.139・D-128.57）
+      x-step-up: login_or_step_up
       security:
       - session: []
       parameters:
@@ -21398,7 +21503,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialUpdateInput'
       responses:
         '200':
           description: 成功
@@ -21408,7 +21513,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/Credential'
                   meta:
                     type: object
         '401':
@@ -21418,7 +21523,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-CRED-007／STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21430,7 +21535,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）・変える物が無い（空・理由だけ・E-CRED-008））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）
+          - 日本の今日より前・暦に無い期限（E-CRED-004）
+          - 種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）
+          - 変える物が無い（空・理由だけ・E-CRED-008）
+        '409':
+          description: E-CRED-009
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: E-SEC-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-SEC-002／E-PAGE-003
           content:
             application/json:
               schema:
@@ -21443,12 +21571,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21483,7 +21605,7 @@ paths:
       - D-125.151
       - D-125.167
       x-permission: self
-      x-permission-scope: 自分のもの。消したらすぐ使えなくなる
+      x-permission-scope: 自分の個人の物か、edit を持つ人はワークスペースの物。消したらすぐ使えなくなり、金庫の値も失効（D-128.57）
       x-step-up: false
       security:
       - session: []
@@ -21503,7 +21625,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialDeleted'
                   meta:
                     type: object
         '401':
@@ -21513,7 +21635,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-CRED-007／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -21530,14 +21652,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:

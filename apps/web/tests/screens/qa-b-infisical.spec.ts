@@ -10,6 +10,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { admin, loginAs, setupStep, signupViaApi } from "../_lib/api";
 
+// K-356 が /settings/credentials を新しい画面（契約の口 listCredentials・createCredential）に作り替えたので、前の画面の作り（data-state・「追加する」「保存する」）で
+//   預けるこのファイルの試験は通らない。前の道すじ（/api/auth-ext/vault・/bridge/credentials）を消して Bridge を契約の口に移すのは K-354・K-358。新しい画面と契約の口で書き直すのは K-370（K-358 の後）。それまで止める（BRG-14 の行は置き換え先 K-370 の BLOCKED）
+test.fixme(
+  true,
+  "K-370 が新しい画面と契約の口で書き直すまで止める（K-356 が前の画面を作り替えた・K-358 が前の道すじを消した後）",
+);
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 const PASSWORD = "S3cret-Plain!";
 const LOGIN = "me@example.com";

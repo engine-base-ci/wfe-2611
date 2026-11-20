@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:32571f4a6d70b39d
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d52537ec812a3e41
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -101,9 +101,9 @@ export interface Ops {
   stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   streamConversation: { params: { id: string }; query: never; body: never; data: T.Messages };
   listCredentials: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Credential[] };
-  createCredential: { params: never; query: never; body: T.CredentialsInput; data: T.Credentials };
-  updateCredential: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
-  deleteCredential: { params: { id: string }; query: never; body: never; data: T.Credentials };
+  createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };
+  updateCredential: { params: { id: string }; query: never; body: T.CredentialUpdateInput; data: T.Credential };
+  deleteCredential: { params: { id: string }; query: never; body: never; data: T.CredentialDeleted };
   checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   answerCredentialLoginCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   createExport: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };

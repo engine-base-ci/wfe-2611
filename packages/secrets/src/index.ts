@@ -56,6 +56,12 @@ export type Outcome =
   | { status: "done"; value: string; auditId?: string }
   | { status: "denied" | "failed"; reason: string; handoff: string; auditId?: string; retryAfterSec?: number };
 
+/** ログに出す例外の種類（code か name だけ。文は値を含みうるので出さない） */
+const errorKind = (e: unknown): string => {
+  const x = e as { code?: unknown; name?: unknown } | null;
+  return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
+};
+
 /** ログ・スクリーンショット向け：先頭 2 文字だけ残して隠す */
 export function mask(value: string): string {
   if (!value) return "";
@@ -119,8 +125,31 @@ export class SecretsGateway {
         handoff: "もう一度保存する。続くときは運営に連絡する",
       };
     }
-    const auditId = await this.repo.audit(ctx, "secret.store", "secret", ref, "C8", { kind, length: plaintext.length }); // 値は書かない
-    return { status: "done", value: { ref }, auditId };
+    try {
+      const auditId = await this.repo.audit(ctx, "secret.store", "secret", ref, "C8", {
+        kind,
+        length: plaintext.length,
+      }); // 値は書かない
+      return { status: "done", value: { ref }, auditId };
+    } catch (e) {
+      // 金庫に置いた後の証跡が書けなかった（K-348・手順 S2）。参照は呼び元に返せないので、置いた物を失効させてから failed を返す
+      console.error(`[secrets] 預かった記録を残せなかった（参照 ${ref}・${errorKind(e)}）。保管を取り消す`);
+      return {
+        status: "failed",
+        reason: await this.undoStore(ctx.tenantId, ref),
+        handoff: "もう一度保存する。続くときは運営に連絡する",
+      };
+    }
+  }
+  /** store の後片付け：置いた物を失効させる。失効も落ちたらログに参照と種類だけ残す（後片付けの後片付けはしない・1 段まで） */
+  private async undoStore(tenantId: string, ref: string): Promise<string> {
+    try {
+      await this.vault.revoke(ref, tenantId);
+      return "預かった記録を残せなかったので、保管を取り消しました";
+    } catch (e) {
+      console.error(`[secrets] 後片付け：保管を取り消せなかった（参照 ${ref}・${errorKind(e)}）`);
+      return "預かった記録を残せず、保管の取り消しもできませんでした";
+    }
   }
   /** 取り出す：実行器（Bridge の入力器）だけが呼ぶ。AI の文脈（role が ai）は拒否 */
   async resolve(ref: string, ctx: TenantContext & { caller?: "executor" | "ai" | "screen" }): Promise<Outcome> {

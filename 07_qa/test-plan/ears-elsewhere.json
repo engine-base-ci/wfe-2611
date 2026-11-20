@@ -1203,6 +1203,86 @@
     "test_get_credentials_rejected_422": "入力を受けない GET（cursor・limit は入口の共通の形の確かめ・K-144）"
    }
   },
+  "createCredential": {
+   "file": "apps/api/test/features/F3/credentials-create.test.ts",
+   "reason": "預ける口は本物の秘密の関門（会社ごとの鍵・金庫に入れる・失効）と行の守り・権限・本人確認の取り直しの時刻で答えが変わる。生成の試験の偽のセッションでは時刻も金庫の失敗も作れない（K-352）",
+   "covers": {
+    "test_post_credentials_ok": "K352-API-001",
+    "test_post_credentials_rejected_401": "K352-API-023",
+    "test_post_credentials_rejected_403": "K352-API-004",
+    "test_post_credentials_rejected_403_2": "K352-API-005",
+    "test_post_credentials_conflict": "K352-API-007",
+    "test_post_credentials_rejected_422": "K352-API-006",
+    "test_post_credentials_upstream_failed": "K352-API-017",
+    "test_post_credentials_session_unresolved": "K352-API-018",
+    "test_post_credentials_rate_limited": "K352-API-024",
+    "test_post_credentials_terms_pending": "K352-API-025",
+    "test_post_credentials_shape": "K352-API-001",
+    "test_post_credentials_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_credentials_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "updateCredential": {
+   "file": "apps/api/test/features/F3/credentials-update-delete.test.ts",
+   "reason": "上書きは本物の秘密の関門（金庫の入れ替え・失効）・行の守り・権限・本人確認の取り直しの時刻で答えが変わる。生成の試験の偽のセッションでは作れない（K-353）",
+   "covers": {
+    "test_patch_credentials_id_ok": "K353-API-001",
+    "test_patch_credentials_id_rejected_401": "K353-API-026",
+    "test_patch_credentials_id_rejected_403": "K353-API-011",
+    "test_patch_credentials_id_rejected_403_2": "K353-API-009",
+    "test_patch_credentials_id_not_found": "K353-API-010",
+    "test_patch_credentials_id_conflict": "K353-API-016",
+    "test_patch_credentials_id_rejected_422": "K353-API-005",
+    "test_patch_credentials_id_upstream_failed": "K353-API-012",
+    "test_patch_credentials_id_session_unresolved": "K353-API-013",
+    "test_patch_credentials_id_shape": "K353-API-001",
+    "test_patch_credentials_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_credentials_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_credentials_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_patch_credentials_id_rate_limited": "回数は入口の共通の数えで、同じ表の口の型の確かめは createCredential の K352-API-024 が持つ"
+   }
+  },
+  "deleteCredential": {
+   "file": "apps/api/test/features/F3/credentials-update-delete.test.ts",
+   "reason": "消すは DB の関数（行と確かめの仕事を 1 つの取引で止める）と金庫の失効を通る。生成の試験の偽のセッションでは金庫も持ち主も作れない（K-353）",
+   "covers": {
+    "test_delete_credentials_id_ok": "K353-API-018",
+    "test_delete_credentials_id_rejected_401": "K353-API-026",
+    "test_delete_credentials_id_rejected_403": "K353-API-020",
+    "test_delete_credentials_id_not_found": "K353-API-021",
+    "test_delete_credentials_id_session_unresolved": "K353-API-024",
+    "test_delete_credentials_id_shape": "K353-API-018",
+    "test_delete_credentials_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_credentials_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_credentials_id_rejected_422": "体を受けない。id の形は入口の共通の確かめ（K-144）",
+    "test_delete_credentials_id_rate_limited": "回数は入口の共通の数えで、同じ表の口の型の確かめは createCredential の K352-API-024 が持つ"
+   }
+  },
   "revokeMyDevice": {
    "file": "apps/api/test/features/F3/remove-pc.test.ts",
    "reason": "PC はアカウントのもので、持ち主は口と DB の関数の 2 重で確かめる（D-128.166）。生成の試験の種では PC の引き取り（接続コード）・取り直しの時刻・別のワークスペースの自分・他の人の PC・受け取った仕事を作れない（K-362）",
