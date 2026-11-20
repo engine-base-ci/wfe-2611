@@ -9837,10 +9837,12 @@ components:
           format: uuid
         destination:
           type: string
+          pattern: \S
           maxLength: 2048
         executor_key:
           type: string
           maxLength: 200
+          pattern: ^MCowBQYDK2VuAyEA[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$
       additionalProperties: false
       x-operation: resolveCredential
       required:
@@ -15442,14 +15444,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：名前に直せない入れる場所・253 文字を超える名前（入口が字をそろえる前の字で new URL の hostname を取り出す）・X25519 の公開の鍵として読めない executor_key（base64 で 44 バイトの SPKI でない））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 名前に直せない入れる場所・253 文字を超える名前（入口が字をそろえる前の字で new URL の hostname を取り出す）
-          - X25519 の公開の鍵として読めない executor_key（base64 で 44 バイトの SPKI でない）
         '404':
           description: NOT_FOUND
           content:

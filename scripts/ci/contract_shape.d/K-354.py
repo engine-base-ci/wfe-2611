@@ -5,13 +5,8 @@ REQUIRED_INPUTS = {
 }
 VALUE_RANGES = {
     "resolveCredential": {
-        "destination": {"maxLength": 2048},
-        "executor_key": {"maxLength": 200},
+        "destination": {"pattern": "\\S", "maxLength": 2048},   # 空・空白だけは 422（名前に読めない・253 字超は口の 403 E-CRED-015）
+        "executor_key": {"maxLength": 200, "pattern": "^MCowBQYDK2VuAyEA[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$"},   # X25519 の SPKI の DER 44 バイト（頭の 12 バイトは決まった字）の base64
     },
 }
-UNEXPRESSIBLE_422 = {
-    "resolveCredential": [
-        "名前に直せない入れる場所・253 文字を超える名前（入口が字をそろえる前の字で new URL の hostname を取り出す）",
-        "X25519 の公開の鍵として読めない executor_key（base64 で 44 バイトの SPKI でない）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 形の決まりは VALUE_RANGES に書いた。名前に読めない宛先は形でなく使える場所の外（403 E-CRED-015・代表の答え answer=431fc50df51b・f0f290e785a9）

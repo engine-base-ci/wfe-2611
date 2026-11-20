@@ -85,14 +85,15 @@ async function rawBody(a: HookArgs): Promise<Record<string, unknown>> {
 interface ResolveInput {
   job: string;
   credential: string;
-  /** 送られたままの宛先（名前を取り出せる・名前は 253 文字まで） */
+  /** 送られたままの宛先 */
   destination: string;
-  /** 宛先から取り出した名前（知らせと証跡に書くのはこれだけ） */
-  host: string;
+  /** 宛先から取り出した名前（知らせと証跡に書くのはこれだけ）。名前に読めない・253 文字を超える宛先は null（使える場所に入りようが無いので③で 403） */
+  host: string | null;
   executor: KeyObject;
 }
 
-/** ① 体の形：job_id・credential_id は文字（uuid の形は入口が確かめ済み）、宛先は入口の前の字で名前に直せる、PC の鍵は X25519 */
+/** ① 体の形：job_id・credential_id は文字（uuid の形は入口が確かめ済み）、宛先は文字、PC の鍵は X25519（形は入口の契約の pattern が確かめ済み）。
+ *  宛先が名前に読めないのは形の誤りでなく使える場所の外（契約に書けない 422 は持たない・代表の答え answer=431fc50df51b・f0f290e785a9） */
 export function parseResolve(input: Record<string, unknown>, raw: Record<string, unknown>): ResolveInput | HookReply {
   const job = typeof input["job_id"] === "string" ? input["job_id"] : "";
   if (!job) return invalid("job_id", "仕事の id が要ります");
@@ -100,9 +101,8 @@ export function parseResolve(input: Record<string, unknown>, raw: Record<string,
   if (!credential) return invalid("credential_id", "ログイン情報の id が要ります");
   const destination = raw["destination"];
   if (typeof destination !== "string") return invalid("destination", "入れる場所を入れてください");
-  const host = hostnameOf(destination);
-  if (host === null || host.length > HOST_MAX)
-    return invalid("destination", `入れる場所は、1〜${HOST_MAX} 文字の名前か URL にしてください`);
+  const named = hostnameOf(destination);
+  const host = named !== null && named.length <= HOST_MAX ? named : null;
   const executor = readExecutorKey(input["executor_key"]);
   if (!executor) return invalid("executor_key", "PC の鍵（X25519 の公開の鍵）を送ってください");
   return { job, credential, destination, host, executor };
@@ -200,6 +200,7 @@ export function createResolveCredential(d: ResolveDeps): (a: HookArgs) => Promis
     if (typeof v.vault_ref !== "string" || typeof v.tenant_id !== "string" || typeof v.member !== "string")
       return unavailable();
     // ③ 使える場所の合わせ（入口の前の字の宛先で）。外なら止めて持ち主に知らせる（知らせが残せなくても止める）
+    if (p.host === null) return forbidden("E-CRED-015"); // 名前に読めない宛先：名前が無いので知らせも証跡も残さない
     if (!hostAllowed(p.destination, Array.isArray(v.destinations) ? v.destinations : [])) {
       try {
         await d.appPool.query("select app.credential_wrong_place($1, $2, $3, $4)", [sid, p.job, p.credential, p.host]);

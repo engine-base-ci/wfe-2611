@@ -19,7 +19,7 @@ const PASSWORD = K355_PASSWORD;
 
 /** 宛先の判定の表（Bridge の試験 apps/bridge/test/k354-credential-bridge.test.ts の K354-BRG-005 と同じ 1 つのファイルを字として読む。
  *  片方だけ直って、口と Bridge の判定がずれる事を止める）。target＝送る宛先、host＝ブラウザが読む行き先の名前（名前として読めない宛先は null）、
- *  allowed＝使える場所 destinations に入るか。口は allowed なら 201（K354-API-005）、host が在って外なら 403（K354-API-010）、host が null なら 422（K354-API-013）。
+ *  allowed＝使える場所 destinations に入るか。口は allowed なら 201（K354-API-005）、host が在って外なら 403（K354-API-010）、host が null（名前に読めない・253 字超）でも 403・E-CRED-015（K354-API-013。使える場所に入りようが無い。名前が無いので知らせと証跡は残さない）。
  *  入口は体の字を先に NFKC にする（apps/api/src/contract/op.ts の normalize）ので、口は宛先だけ、その前の字で名前を取り出す。
  *  NFKC の後の字で読むと、全角の区切り（／ ＃ ？ ＼）を @ の前に置いた宛先が、ブラウザの行き先と違う名前で使える場所に当たる */
 type HostCase = { target: string; host: string | null; allowed: boolean; note: string };
@@ -357,7 +357,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
   );
 
   it(
-    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空・254 文字、job_id が無い、Bridge の試験と同じ表（credential-host-cases.json）の「名前として読めない」宛先（全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）は 422。use_count はそのまま",
+    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空、job_id が無いのは 422（契約の形）。名前に読めない宛先（Bridge の試験と同じ表 credential-host-cases.json の「名前として読めない」宛先：全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）と 253 文字を超える名前は、使える場所に入りようが無いので 403・E-CRED-015（知らせも証跡も残さない）。use_count はそのまま",
     async () => {
       const { w, p, id } = await setup("input");
       const job = await chatTaken(p, w.user.memberId, w.user.tenantId);
@@ -368,7 +368,6 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
         body(job, id, Buffer.alloc(10).toString("base64")),
         body(job, id, ed),
         body(job, id, pub, ""),
-        body(job, id, pub, `${"a".repeat(250)}.com`),
         { credential_id: id, destination: "hacchu-navi.example", executor_key: pub },
       ]) {
         const r = await h.resolve(p, b);
@@ -376,11 +375,25 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
       }
       // 名前として読めない宛先：入口の NFKC の後の字で読むと「hacchu-navi.example/evil.test/」になり使える場所に当たってしまう形を含む
       expect(HOST_UNREADABLE.length, "表の「名前として読めない」行").toBeGreaterThanOrEqual(5);
-      for (const c of HOST_UNREADABLE) {
-        const r = await h.resolve(p, body(job, id, pub, c.target));
-        expect(r.status, `${c.note}: ${c.target}`).toBe(422);
+      for (const target of [...HOST_UNREADABLE.map((c) => c.target), `${"a".repeat(250)}.com`]) {
+        const r = await h.resolve(p, body(job, id, pub, target));
+        expect(r.status, target).toBe(403);
+        expect((await h.json(r))["code"], target).toBe(E.wrongPlace);
       }
       expect(await useCount(id)).toBe(0);
+      // 名前が取れないので、持ち主への知らせも証跡（wrong_destination）も残さない
+      expect(
+        await h.count(
+          "select count(*) as n from notifications where member_id = $1 and event_kind_id = 'credential.wrong_destination'",
+          [w.user.memberId],
+        ),
+      ).toBe(0);
+      expect(
+        await h.count(
+          "select count(*) as n from audit_events where action = 'credential.bridge_denied' and target_id = $1 and payload->>'reason' = 'wrong_destination'",
+          [id],
+        ),
+      ).toBe(0);
     },
     T,
   );
