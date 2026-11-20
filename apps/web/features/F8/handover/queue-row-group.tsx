@@ -31,9 +31,6 @@ const GONE = "E-HND-005";
 /** 「MM/DD」（チケットの期限 YYYY-MM-DD から・読めなければ空） */
 const dayOf = (dueOn: string | null): string => (dueOn ? `${dueOn.slice(5, 7)}/${dueOn.slice(8, 10)}` : "");
 
-/** 知らせの中身に role=alert を付ける（小さな知らせの入れ物は role を持たないので、読み上げの強さはここで決める） */
-const asAlert = (text: string): string => (<span role="alert">{text}</span>) as unknown as string;
-
 // ---------------------------------------------------------------- 人を決める：相手を選ぶ小窓（そのチケットの下見の人）
 interface AssignFlowProps {
   row: QueueRow;
@@ -120,7 +117,7 @@ function AssignFlow({ row, groupName, onClose, onRefresh }: AssignFlowProps) {
       const text = fill(catalogMessage(code), rec(r.body["detail"]));
       if (code === GONE) {
         onClose();
-        notify(asAlert(text));
+        notify(text, { type: "error" });
         await onRefresh();
         return;
       }
@@ -178,7 +175,7 @@ function useGroupRow(row: QueueRow) {
     if (out.code === GONE) {
       // もう決まっていた（別の人が先に持った・取り消された）：読み直して行を消し、文を知らせる
       await refresh();
-      notify(asAlert(catalogMessage(GONE)));
+      notify(catalogMessage(GONE), { type: "error" });
       return;
     }
     setError(out.text); // 断れない（E-HND-152）・送れない など：行に残し、行の中に出す
