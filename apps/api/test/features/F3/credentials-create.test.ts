@@ -241,7 +241,10 @@ describe("K-352 預ける口", () => {
       "'expires':c['expires_on']['pattern'],'login':c['login']['pattern'],'uDestinations':u['destinations']['items']['pattern']," +
       "'uTotp':u['totp_secret']['pattern'],'uExpires':u['expires_on']['pattern'],'uLogin':u['login']['pattern']}))";
     const yamlPath = fileURLToPath(new URL("../../../../../08_api/openapi.yaml", import.meta.url));
-    const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as Record<string, string>;
+    const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as Record<
+      string,
+      string
+    >;
     expect(got["name"]).toBe(NAME_PATTERN);
     expect(got["destinations"]).toBe(DESTINATION_PATTERN);
     expect(got["totp"]).toBe(TOTP_PATTERN);
