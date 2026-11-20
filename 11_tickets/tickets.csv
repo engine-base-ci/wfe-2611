@@ -2315,3 +2315,18 @@ K-430,段 5 の決定ログ §150（D-150.1〜33）を本線に入れる（文�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 5 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-441,つながりを読む・足す・外す口（listTicketLinks・createTicketLink・deleteTicketLink：関連と派生元だけ。片方が見えない人には番号だけ）と、複製の口が呼ぶ派生元のつながりの DB の関数（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・チケット,"詳細の「つながりを足す」「外す」と、つながりの一覧（画面は K-452）が呼ぶ契約の口 3 本を作る（今は 501）：`listTicketLinks`（GET /api/v1/tickets/:id/links）・`createTicketLink`（POST /api/v1/tickets/:id/links）・`deleteTicketLink`（DELETE /api/v1/ticket_links/:id）。
+
+- つながりは **関連** と **派生元** の 2 つだけ（D-125.50・D-128.80・D-150.16。依存・重複・ウォッチは持たない）
+- 関連は向きが無い。**片方を外すと両方のチケットから消える**（行は 1 つ。足すときの向きは決めない）。足せるのは **両方のチケットに書ける人**（D-150.16）
+- 派生元は「このチケット（:id）の派生元は相手」。行は from＝このチケット・to＝派生元。一覧では、派生した側は `side: ""derived""`、元の側は `side: ""source""` で出す
+- **片方が見えない人には番号だけ**（phase1・D-128.115）：相手のチケットが見えないなら、番号だけ返し、題名・段・グループは null、id も null にする。答えは表の写し（TicketLinks）ではなく、番号・題名・段・グループの形に作り直す
+- **子の一覧も同じ答えで返す**（`meta.children`・K-452 が使う）：このチケットを親とする、消していない・呼んだ人に見える子チケット（番号・題名・段・グループ）。今ある口では子の一覧が読めない（getTicket に子が無く、listTickets の親の絞り込みは K-67 まで 422）ので、つながりの一覧の答えに載せる。親の行は getTicket の物なので足さない（親子は tickets.parent_ticket_id で、つながりの表には入れない・D-150.16）
+- **複製（K-438）が派生元のつながりを入れる DB の関数 `app.ticket_link_derive` を、この葉が持つ**（D-150.27：複製・派生元の書き場所は ticket_links。`tickets.derived_from_ticket_id` は使わない）。名前と引数は下の「表の住所」
+
+つながりを足す・外すの小窓と一覧の見た目は K-452（画面）。親は K-440（親子は tickets.parent_ticket_id で、つながりの表には入れない）。","- [ ] 下の表の 30 行（K441-API-001〜030）が緑：`apps/api/test/features/F4/ticket-links.test.ts`
+- [ ] 契約の口 3 本が 501 でない。生成の試験 `get_tickets_id_links`・`post_tickets_id_links`・`delete_ticket_links_id` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-441.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-541〜543（3 口の道の値 :id）が通る（葉のファイル `k144.d/K-441.ts`・carry）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
