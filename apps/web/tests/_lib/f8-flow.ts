@@ -83,7 +83,8 @@ export const openQueue = async (page: Page): Promise<void> => {
 /** 題名の下の帯（題で選ぶ） */
 export const bandOf = (page: Page, title: RegExp): Locator =>
   page.locator(".k-detail-bands .k-band").filter({ has: page.locator(".k-band-title", { hasText: title }) });
-export const handoverBands = (page: Page): Locator => page.locator(".k-detail-bands .k-band");
+/** 渡しの帯だけ（入れ物の直下の帯。「AI に任せる」「承認と実行」の帯は section の中にあるので数えない） */
+export const handoverBands = (page: Page): Locator => page.locator(".k-detail-bands > .k-band");
 /** 承認待ちの渡しの行（題名で選ぶ） */
 export const queueRow = (page: Page, title: string): Locator => page.locator("tr.k-hnd-row").filter({ hasText: title });
 export const panelAssignee = (page: Page): Locator =>

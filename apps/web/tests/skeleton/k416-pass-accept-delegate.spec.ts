@@ -2,7 +2,7 @@
 //   （流れをまたぐ F8 → F5 の 1 行）を、本物のブラウザ 2 つ（渡す人・渡された人）・本物の DB・本物の口と、試験の PC でつなぐ。
 //   中の 1 本 1 本の分岐は単体の試験（口：K-402〜K-405 の apps/api/test/features/F8・画面：K-411・K-412 の apps/web/tests/k）が持つ。
 //   ここは「つないだときにだけ出るもの」を見る：渡す人の画面の操作が渡された人の承認待ちに並ぶか・受けると担当者と子が DB でそろって移り、
-//   両方の画面がそれを出すか・知らせ（受け箱の行とメール）が決めた人にだけ届くか・新しい担当者の AI が動き、前の担当者は任せられないか・
+//   両方の画面がそれを出すか・知らせ（受け箱の行とメール）が決めた人にだけ届くか・新しい担当者の AI（押した人の PC）が動くか・
 //   承認する人が新しい担当者に替わるか・渡し中に AI に任せたら受けられないか・開いたままの古い画面から二度は受けられないか。
 //   口は網の手前で差し替えない（1 人目だけ届く頭 x-forwarded-for を足す）。2 人目は prep.ts の teammate を _lib/f8-flow.ts の mateOf で別のブラウザに持たせる。
 //   PC は K-58 の試験の PC（_lib/test-pc.ts）・AI は決まった答え（_lib/f5-flow.ts の AI）。この PC の中だけの口（38617）は開かない。
@@ -10,6 +10,7 @@
 //   ★前提：CI の web の組の G59 と同じ（API を試験の受け箱へ・画面は BASE_URL）。
 //   テストはチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）
 import { expect, test, type Page } from "@playwright/test";
+import { admin } from "../_lib/api";
 import { AI, approvalsOf, workOf, type Job, type PcWork } from "../_lib/f5-flow";
 import {
   acceptInQueue,
@@ -31,7 +32,7 @@ import {
 } from "../_lib/f8-flow";
 import { Mailbox } from "../_lib/mailbox";
 import { newcomer, ownIp, type Newcomer } from "../_lib/newcomer";
-import { asPerson, pairedPc, ticketOf } from "../_lib/prep";
+import { pairedPc, ticketOf } from "../_lib/prep";
 import type { TestPc } from "../_lib/test-pc";
 
 const box = new Mailbox();
@@ -118,7 +119,7 @@ test("K416-M1-01 正常：渡す人が画面で引き継いでもらう（子 1 
   expect(await handoverNotesOf(r.mate.memberId, r.t), "渡された人の受け箱に 1 行").toHaveLength(1);
   await openTicket(r.mate.page, r.t, r.title);
   await expect(bandOf(r.mate.page, new RegExp(MSG.asked))).toContainText(REASON);
-  await expect(delegateBtn(r.mate.page), "答える前は担当者でないので任せられない").toHaveCount(0);
+  await expect(panelAssignee(r.mate.page), "答える前の担当者は渡す人のまま（D-125.88）").toContainText(r.me.name);
   await openQueue(r.mate.page);
   await expect(queueRow(r.mate.page, r.title)).toContainText("渡された");
   // 受ける
@@ -143,7 +144,7 @@ test("K416-M1-01 正常：渡す人が画面で引き継いでもらう（子 1 
   expect(box.mails(r.me.email, /引き継/), "渡した人にメールは出ない").toHaveLength(0);
 });
 
-test("K416-M1-02 F8 → F5：受けた新しい担当者が AI に任せられ、仕事は新しい担当者の PC に届く。前の担当者は任せられず（画面にボタンなし・口は断る）、承認する人は新しい担当者になる", async ({
+test("K416-M1-02 F8 → F5：受けた新しい担当者が AI に任せられ、仕事は押した人（新しい担当者）の PC に届く。作り終えると承認する人は新しい担当者になり、前の担当者の承認待ちは空（D-128.138・D-128.25）", async ({
   page,
   browser,
 }) => {
@@ -161,11 +162,8 @@ test("K416-M1-02 F8 → F5：受けた新しい担当者が AI に任せられ�
   await delegateBtn(r.mate.page).click();
   const job = await takeSoon(w, "任せた仕事は新しい担当者の PC に渡る（D-125.156）");
   expect(job).toMatchObject({ kind: "ticket", ticket_id: r.t, phase: "make" });
-  // 前の担当者：ボタンは無く、口から押しても断られる
-  await openTicket(page, r.t, r.title);
-  await expect(delegateBtn(page)).toHaveCount(0);
-  const again = await asPerson(page, r.me.token, "POST", `/tickets/${r.t}/delegate`, {});
-  expect(again.status, "前の担当者は任せられない").toBe(403);
+  const [owner] = await admin<{ member_id: string }>("select member_id from bridge_jobs where id = $1", [job.job_id]);
+  expect(owner?.member_id, "仕事の持ち主は押した人（新しい担当者）").toBe(r.mate.memberId);
   // 作り終えたら、承認する人は新しい担当者
   expect((await w.finish(job.job_id, { state: "done", result: AI.made })).outcome).toBe("awaiting_approval");
   const [a] = await approvalsOf(r.t);
@@ -239,7 +237,7 @@ test("K416-M1-05 渡し中に渡す人が AI に任せた → 渡された人が
   expect(await assigneeOf(r.t)).toBe(r.me.memberId);
 });
 
-test("K416-M1-06 操作の揺れ：渡された人が詳細の帯と承認待ちを 2 つのタブで開き、承認待ちで受けた後に古い帯の「受ける」を押す → 口は断り（409）、渡しの行も担当者も 1 回目のまま", async ({
+test("K416-M1-06 操作の揺れ：渡された人が詳細の帯と承認待ちを 2 つのタブで開き、承認待ちで受けた後に古い帯の「受ける」を押す → 口は断り（409・E-HND-005）、読み直した後に帯が「担当者になりました」に替わり、渡しの行も担当者も 1 回目のまま", async ({
   page,
   browser,
 }) => {
@@ -255,7 +253,7 @@ test("K416-M1-06 操作の揺れ：渡された人が詳細の帯と承認待ち
   const res = tabB.waitForResponse((x) => x.request().method() === "PATCH" && /\/ticket_handovers\//.test(x.url()));
   await bandOf(tabB, new RegExp(MSG.asked)).getByRole("button", { name: "受ける", exact: true }).click();
   expect((await res).status(), "二度は受けない").toBe(409);
-  await expect(tabB.getByRole("alert")).toBeVisible();
+  await expect(bandOf(tabB, new RegExp(MSG.became)), "読み直した後、古い帯は受けた帯に替わる").toBeVisible();
   const [after] = await handoversOf(r.t);
   expect(after, "渡しの行は 1 回目のまま").toEqual(first);
   expect(await handoversOf(r.t)).toHaveLength(1);
