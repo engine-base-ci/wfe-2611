@@ -984,7 +984,7 @@ HEADERS = {
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
-    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
+    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "descendants": "integer", "attachments": "integer", "artifacts": "integer", "pending_approvals": "integer", "links": "integer", "running_runs": "integer", "descendant_pending_approvals": "integer", "descendant_running_runs": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
     "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
@@ -1197,7 +1197,7 @@ PERMS = {
     "updateTicket": ("write", "そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
-    "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
+    "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "担当者・作成者・マネージャー（子の扱いを選ぶ）", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),

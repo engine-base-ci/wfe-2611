@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-20 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-21 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -10029,9 +10029,21 @@ components:
       properties:
         children:
           type: integer
+        descendants:
+          type: integer
         attachments:
           type: integer
         artifacts:
+          type: integer
+        pending_approvals:
+          type: integer
+        links:
+          type: integer
+        running_runs:
+          type: integer
+        descendant_pending_approvals:
+          type: integer
+        descendant_running_runs:
           type: integer
         restorable_until:
           type: string
@@ -41986,7 +41998,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）
       x-step-up: false
       security:
       - session: []
@@ -42016,7 +42028,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42033,14 +42045,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
