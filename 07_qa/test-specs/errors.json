@@ -6289,6 +6289,64 @@
    ]
   },
   {
+   "id": "E-CRED-008",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "上書きに変える物が無い（空の体・理由だけ）",
+   "false_when": "新しい値か、使える場所・期限・説明・2 段階の種類のどれかがある",
+   "message": "変える物がありません。新しい値か、使える場所・期限・説明を入れてください",
+   "action": "変える物を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で、預けた物の「上書き」の小窓を開く",
+    "steps": [
+     "何も変えずに、理由だけを入れて「本人確認して上書き」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.151",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-009",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "同じ物の中身を、ほかの画面が先に上書きした（値の入れ替えがぶつかった）",
+   "false_when": "その物の中身を、ほかの画面が同じときに上書きしていない",
+   "message": "ほかの画面で同時に上書きされました。開き直してから、もう一度上書きしてください",
+   "action": "開き直してもう一度",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面を 2 つ開く",
+    "steps": [
+     "2 つの画面で同じ物の上書きの小窓を開き、両方で新しい値を入れてほぼ同時に上書きする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.151",
+    "D-128.57"
+   ]
+  },
+  {
    "id": "E-CONN-018",
    "class": "conflict",
    "where": {
