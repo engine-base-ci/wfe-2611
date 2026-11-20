@@ -113,6 +113,7 @@ D5_KEYS = {
     "borderTop": ("border-top",), "borderBottom": ("border-bottom",), "rounded": ("border-radius",),
     "padding": ("padding",), "height": ("min-height", "height"), "width": ("width",),
     "fontWeight": ("font-weight",), "typography": ("font-size",), "gap": ("gap",), "opacity": ("opacity",),
+    "zIndex": ("z-index",),
 }
 REF = re.compile(r"\{(\w+)\.([\w-]+)\}")
 
