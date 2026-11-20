@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0029844d3d7b1207
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:4602377c2a627038
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15254,6 +15254,64 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "POST",
+    "path": "/api/v1/ticket_handovers/:id/claim",
+    "operationId": "claimTicketHandover",
+    "table": "ticket_handovers",
+    "kind": "create",
+    "input": "TicketHandoverClaimInput",
+    "success": 201,
+    "output": "TicketHandoverClaimed",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A111"
+    ],
+    "screens": [
+      "approvals"
+    ],
+    "perm": {
+      "word": "recipient",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "ticket_handovers",
+        "sql": "app.handover_answerer(id, app.user_id(), false)"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
     "path": "/api/v1/ticket_handovers/:id/remind",
     "operationId": "remindTicketHandover",
     "table": "ticket_handovers",
@@ -19801,4 +19859,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "0029844d3d7b1207";
+export const OPENAPI_HASH = "4602377c2a627038";

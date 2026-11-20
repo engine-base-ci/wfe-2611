@@ -608,7 +608,8 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals"
+    "E-030 memory_proposals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -623,6 +624,7 @@
     "POST /api/approvals/bulk",
     "GET /api/approvals/history",
     "PATCH /api/ticket_handovers/:id",
+    "POST /api/ticket_handovers/:id/claim",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -4646,6 +4648,12 @@
      "role": "action",
      "method": "PATCH",
      "path_draft": "/api/ticket_handovers/:id"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim"
     },
     {
      "role": "transition",
@@ -13321,6 +13329,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",

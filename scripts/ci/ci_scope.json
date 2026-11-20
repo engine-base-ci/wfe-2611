@@ -1268,6 +1268,29 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F8/handovers/create/distribute.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute.ts",
+    "packages/db/migrations/20261121090900_handover_distribute.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-person.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/handover-claim.ts",
+    "apps/api/src/features/F8/handovers/create/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/claim.ts",
+    "packages/db/migrations/20261121091000_handover_group.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F8/handover/"
    ],
    "tests": [
@@ -1399,7 +1422,9 @@
   "apps/api/test/features/F8/handover-queue-read.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-read.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-405",
   "apps/api/test/features/contract/k144.d/K-405.ts": "準備（setup）で apps/api/src/hooks/handovers-read.ts を動的 import で読む。読む物と試験は data_links で結ぶ・K-405",
   "apps/api/test/features/F8/handover-sender.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-sender.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-406",
-  "apps/api/test/features/contract/k144.d/K-406.ts": "準備（setup）で apps/api/src/hooks/handovers-sender.ts を動的 import で読む・K-406"
+  "apps/api/test/features/contract/k144.d/K-406.ts": "準備（setup）で apps/api/src/hooks/handovers-sender.ts を動的 import で読む・K-406",
+  "apps/api/test/features/F8/distribute.harness.ts": "段 9 の口の hooks のファイル apps/api/src/hooks/handover*.ts を existsSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-409",
+  "apps/api/test/features/contract/k144.d/K-410.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handover-claim.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-410"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",

@@ -10239,6 +10239,17 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: remindTicketHandover
+    TicketHandoverClaimInput:
+      type: object
+      properties:
+        member_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: claimTicketHandover
+      required:
+      - member_id
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -12242,6 +12253,21 @@ components:
         reminded_at:
           type: string
       x-operation: remindTicketHandover
+    TicketHandoverClaimed:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        ticket_id:
+          type: string
+          format: uuid
+        assignee_member_id:
+          type: string
+          format: uuid
+      x-operation: claimTicketHandover
     Error:
       type: object
       properties:
@@ -39633,6 +39659,101 @@ paths:
                 $ref: '#/components/schemas/Error'
         '409':
           description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/claim:
+    post:
+      operationId: claimTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      x-screens:
+      - approvals
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.167
+      - D-125.91
+      - D-125.92
+      x-permission: recipient
+      x-permission-scope: グループに配られた渡しの答える人（そのグループを管理する人・app.handover_answerer）だけ。グループの人を担当者に決める（D-125.118）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketHandoverClaimInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketHandoverClaimed'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
