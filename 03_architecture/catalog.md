@@ -408,7 +408,7 @@ API 369（作った 65・後のフェーズの行為だけ 20）・前の道す�
 | `createSavedView` | POST /api/v1/saved_views | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
-| `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
+| `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67,K-477 |
 | `search` | GET /api/v1/search | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | F7 | 契約だけ（501） | K-67 |
 | `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
