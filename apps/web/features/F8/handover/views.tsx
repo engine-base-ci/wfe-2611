@@ -37,6 +37,9 @@ export interface PickGroup {
   name: string;
 }
 
+/** 小窓の頭の下の対象の行（モックの字。本物の画面は target で差し替える） */
+const TARGET = "EG-119 問い合わせ（山田様）に一次返信する";
+
 /** 小窓の閉じる手段（やめる・× ・Esc）。答えを待つ間（busy）は閉じない */
 const closeOn =
   (onClose: (() => void) | undefined, busy = false) =>
@@ -174,6 +177,12 @@ export interface PickDialogProps {
   onPickGroup?: (groupId: string) => void;
   /** やめる・× ・Esc */
   onClose?: () => void;
+  /** 頭の下の対象の行（既定はモックの字） */
+  target?: ReactNode;
+  /** 下見が読めないときなどの赤い知らせ */
+  notice?: string;
+  /** 知らせの下の「もう一度読む」（渡すと出る） */
+  onRetry?: () => void;
 }
 
 /** 相手を選ぶ小窓（キャンバス TdAssignee の「担当者」の箱を小窓にした形）。上に探す欄（名前・メールで絞る・代表の直し 2026-11-20） */
@@ -188,6 +197,9 @@ export function PickDialog({
   onPick,
   onPickGroup,
   onClose,
+  target,
+  notice,
+  onRetry,
 }: PickDialogProps) {
   const people = members.filter((m) => matchesQuery([m.name, m.email], query));
   const teams = (groups ?? []).filter((g) => matchesQuery([g.name, g.code], query));
@@ -197,7 +209,7 @@ export function PickDialog({
       title="担当者を選ぶ"
       open={open}
       onOpenChange={closeOn(onClose)}
-      target="EG-119 問い合わせ（山田様）に一次返信する"
+      target={target ?? TARGET}
       actions={
         <Button variant="outlined" {...(onClose ? { onClick: onClose } : {})}>
           やめる
@@ -206,6 +218,12 @@ export function PickDialog({
     >
       <div className="k-dialog-stack">
         {blocked ? <Callout tone="warn">{blocked}</Callout> : null}
+        {notice ? <NoticeBox>{notice}</NoticeBox> : null}
+        {notice && onRetry ? (
+          <Button variant="outlined" size="sm" onClick={onRetry}>
+            もう一度読む
+          </Button>
+        ) : null}
         <p className="k-hnd-intro">{intro}</p>
         <SearchField
           label={groups ? "名前・メール・グループで探す" : "名前・メールで探す"}
@@ -385,6 +403,10 @@ export interface HandoverDialogProps {
   busy?: boolean;
   /** 返事の期限の欄の type（既定 text。本物は日時の欄） */
   dueType?: string;
+  /** 小窓の上の橙の文（口が 409 で断ったときなど・E-HND-003）。無ければ出さない */
+  callout?: string;
+  /** 頭の下の対象の行（既定はモックの字） */
+  target?: ReactNode;
 }
 
 /** 引き継いでもらうの小窓（キャンバス StModal） */
@@ -404,6 +426,8 @@ export function HandoverDialog({
   onClose,
   busy = false,
   dueType = "text",
+  callout,
+  target,
 }: HandoverDialogProps) {
   const edit = (key: keyof HandoverValues) =>
     onChange ? (v: string) => onChange({ [key]: v } as Partial<HandoverValues>) : undefined;
@@ -412,10 +436,11 @@ export function HandoverDialog({
       title="引き継いでもらう"
       open={open}
       onOpenChange={closeOn(onClose, busy)}
-      target="EG-119 問い合わせ（山田様）に一次返信する"
+      target={target ?? TARGET}
       actions={<Foot label="引き継いでもらう" busy={busy} onSubmit={onSubmit} onClose={onClose} />}
     >
       <div className="k-dialog-stack">
+        {callout ? <Callout tone="warn">{callout}</Callout> : null}
         {notice ? <NoticeBox>{notice}</NoticeBox> : null}
         <ToRow label="渡す相手" value={to} error={errors.to} onChange={onChangeTo} />
         <TextBox label="理由" required value={values.reason} error={errors.reason} onChange={edit("reason")} />
@@ -471,6 +496,8 @@ export interface DistributeDialogProps {
   busy?: boolean;
   /** 口が断ったときの赤い知らせ。書いた中身は消さない */
   notice?: string;
+  /** 頭の下の対象の行（既定はモックの字） */
+  target?: ReactNode;
 }
 
 /** 配る小窓（マネージャー・合意なしの既定・聞くこと 15 の勧め） */
@@ -487,13 +514,14 @@ export function DistributeDialog({
   onClose,
   busy = false,
   notice,
+  target,
 }: DistributeDialogProps) {
   return (
     <Dialog
       title="配る"
       open={open}
       onOpenChange={closeOn(onClose, busy)}
-      target="EG-119 問い合わせ（山田様）に一次返信する"
+      target={target ?? TARGET}
       actions={<Foot label="配る" busy={busy} onSubmit={onSubmit} onClose={onClose} />}
     >
       <div className="k-dialog-stack">
@@ -529,6 +557,8 @@ export interface DeclineDialogProps {
   busy?: boolean;
   /** 口が断ったときの赤い知らせ。書いた中身は消さない */
   notice?: string;
+  /** 頭の下の対象の行（既定はモックの字） */
+  target?: ReactNode;
 }
 
 /** 断る小窓（理由は必須・承認待ちの行からも詳細の帯からも同じ） */
@@ -542,13 +572,14 @@ export function DeclineDialog({
   onClose,
   busy = false,
   notice,
+  target,
 }: DeclineDialogProps) {
   return (
     <Dialog
       title="断る"
       open={open}
       onOpenChange={closeOn(onClose, busy)}
-      target="EG-119 問い合わせ（山田様）に一次返信する"
+      target={target ?? TARGET}
       actions={<Foot label="断る" tone="danger" busy={busy} onSubmit={onSubmit} onClose={onClose} />}
     >
       <div className="k-dialog-stack">
@@ -572,6 +603,8 @@ export interface OfferDialogProps {
   busy?: boolean;
   /** 口が断ったときの赤い知らせ。書いた中身は消さない */
   notice?: string;
+  /** 頭の下の対象の行（既定はモックの字） */
+  target?: ReactNode;
 }
 
 /** 引き継ぐ（申し出る）の小窓（返事の期限は付けない・聞くこと 11 の勧め） */
@@ -585,13 +618,14 @@ export function OfferDialog({
   onClose,
   busy = false,
   notice,
+  target,
 }: OfferDialogProps) {
   return (
     <Dialog
       title="引き継ぎを申し出る"
       open={open}
       onOpenChange={closeOn(onClose, busy)}
-      target="EG-119 問い合わせ（山田様）に一次返信する"
+      target={target ?? TARGET}
       actions={<Foot label="申し出る" busy={busy} onSubmit={onSubmit} onClose={onClose} />}
     >
       <div className="k-dialog-stack">
