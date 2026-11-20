@@ -5,6 +5,8 @@
 //               move なのに無い・空なら、ここでは 422 にせず null のまま関数へ渡す（移し先を指していないのは 404・E-DEL-014）
 //   reason    ：任意。前後の空白を落とす前の字数（コードポイント）が 400 を超えたら 422（欄 reason・契約の maxLength 400 と同じ数え方）。
 //               そのあと前後の空白（全角を含む）を落とし、空は null。NFKC のそろえは画面（K-590）の仕事で、ここではしない
+import { isUuid } from "@kaname/contracts";
+
 export const REASON_MAX = 400;
 export const CHILDREN_MODES = ["move", "cascade", "detach"] as const;
 export type ChildrenMode = (typeof CHILDREN_MODES)[number];
@@ -21,8 +23,6 @@ export interface DeleteInput {
 }
 export type Parsed = { ok: true; value: DeleteInput } | { ok: false; details: Issue[] };
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /** raw は届いたままの問い合わせ（空の値も含む） */
 export function parseDeleteQuery(raw: Record<string, string>): Parsed {
   const details: Issue[] = [];
@@ -30,7 +30,7 @@ export function parseDeleteQuery(raw: Record<string, string>): Parsed {
   if (childrenRaw !== "" && !(CHILDREN_MODES as readonly string[]).includes(childrenRaw))
     details.push({ field: "children", message: "move・cascade・detach のどれか" });
   const parentRaw = raw["parent_id"] ?? "";
-  if (parentRaw !== "" && !UUID.test(parentRaw)) details.push({ field: "parent_id", message: "uuid" });
+  if (parentRaw !== "" && !isUuid(parentRaw)) details.push({ field: "parent_id", message: "uuid" });
   const reasonRaw = raw["reason"] ?? "";
   if ([...reasonRaw].length > REASON_MAX) details.push({ field: "reason", message: `${REASON_MAX} 文字まで` });
   if (details.length) return { ok: false, details };
