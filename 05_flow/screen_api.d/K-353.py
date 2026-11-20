@@ -15,16 +15,32 @@ RESPONSES = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": _K352_DEST},
+        "login": {"pattern": "\S"},
+        "password": {"minLength": 1},
+        "value": {"minLength": 1},
+        "totp_secret": {"pattern": _K352_TOTP},
+        "expires_on": {"format": "date"},
     },
+}
+
+# 形全体の決まり（INPUT_RULES）：変える物が 1 つは要る（E-CRED-008）。中身は、何も替えない・login と password を両方・value だけ、のどれか（E-CRED-005）
+_K353_NO_CONTENT = {"anyOf": [{"required": [x]} for x in ("login", "password", "value", "totp_secret")]}
+INPUT_RULES = {
+    "updateCredential": {"allOf": [
+        {"anyOf": [{"required": [x]} for x in ("login", "password", "value", "two_factor", "totp_secret", "destinations", "expires_on", "description")]},
+        {"anyOf": [
+            {"not": _K353_NO_CONTENT},
+            {"required": ["login", "password"], "not": {"required": ["value"]}},
+            {"required": ["value"], "not": {"anyOf": [{"required": [x]} for x in ("login", "password", "two_factor", "totp_secret")]}},
+        ]},
+    ]},
 }
 
 UNEXPRESSIBLE_422 = {
     "updateCredential": [
-        "使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）",
-        "日本の今日より前・暦に無い期限（E-CRED-004）",
-        "種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）",
-        "変える物が無い（空・理由だけ・E-CRED-008）",
+        "日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）",
+        "預けた物の種類で決まる中身の混ざり（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・E-CRED-005・E-VAL-003）",
     ],
 }
 

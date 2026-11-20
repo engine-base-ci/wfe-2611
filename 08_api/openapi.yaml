@@ -9814,16 +9814,19 @@ components:
           - key
         name:
           type: string
-          pattern: ^[ \t\n\r]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[ \t\n\r]*$
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
         description:
           type: string
           nullable: true
         login:
           type: string
+          pattern: \S
         password:
           type: string
+          minLength: 1
         value:
           type: string
+          minLength: 1
         two_factor:
           type: string
           enum:
@@ -9834,15 +9837,64 @@ components:
           - push
         totp_secret:
           type: string
+          pattern: ^[ \t]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t]*){16,}=*[ \t]*$
         destinations:
           type: array
           items:
             type: string
+            pattern: ^(\*\.)?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$
+            not:
+              enum:
+              - co.jp
+              - ne.jp
+              - or.jp
+              - ac.jp
+              - ad.jp
+              - ed.jp
+              - go.jp
+              - gr.jp
+              - lg.jp
+              - co.uk
+              - org.uk
+              - ac.uk
+              - gov.uk
+              - com.au
+              - net.au
+              - org.au
+              - co.nz
+              - co.kr
+              - com.cn
+              - com.tw
+              - com.sg
+              - com.br
+              - '*.co.jp'
+              - '*.ne.jp'
+              - '*.or.jp'
+              - '*.ac.jp'
+              - '*.ad.jp'
+              - '*.ed.jp'
+              - '*.go.jp'
+              - '*.gr.jp'
+              - '*.lg.jp'
+              - '*.co.uk'
+              - '*.org.uk'
+              - '*.ac.uk'
+              - '*.gov.uk'
+              - '*.com.au'
+              - '*.net.au'
+              - '*.org.au'
+              - '*.co.nz'
+              - '*.co.kr'
+              - '*.com.cn'
+              - '*.com.tw'
+              - '*.com.sg'
+              - '*.com.br'
           minItems: 1
           maxItems: 20
         expires_on:
           type: string
           nullable: true
+          format: date
       additionalProperties: false
       x-operation: createCredential
       required:
@@ -9851,15 +9903,90 @@ components:
       - name
       - destinations
       x-required-by: hooks
+      anyOf:
+      - properties:
+          kind:
+            enum:
+            - login
+          two_factor:
+            enum:
+            - none
+            - sms
+            - email
+            - push
+        required:
+        - kind
+        - login
+        - password
+        - two_factor
+        not:
+          anyOf:
+          - required:
+            - value
+          - required:
+            - totp_secret
+      - properties:
+          kind:
+            enum:
+            - login
+        required:
+        - kind
+        - login
+        - password
+        not:
+          anyOf:
+          - required:
+            - two_factor
+          - required:
+            - value
+          - required:
+            - totp_secret
+      - properties:
+          kind:
+            enum:
+            - login
+          two_factor:
+            enum:
+            - totp
+        required:
+        - kind
+        - login
+        - password
+        - two_factor
+        - totp_secret
+        not:
+          anyOf:
+          - required:
+            - value
+      - properties:
+          kind:
+            enum:
+            - key
+        required:
+        - kind
+        - value
+        not:
+          anyOf:
+          - required:
+            - login
+          - required:
+            - password
+          - required:
+            - two_factor
+          - required:
+            - totp_secret
     CredentialUpdateInput:
       type: object
       properties:
         login:
           type: string
+          pattern: \S
         password:
           type: string
+          minLength: 1
         value:
           type: string
+          minLength: 1
         two_factor:
           type: string
           enum:
@@ -9870,15 +9997,64 @@ components:
           - push
         totp_secret:
           type: string
+          pattern: ^[ \t]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t]*){16,}=*[ \t]*$
         destinations:
           type: array
           items:
             type: string
+            pattern: ^(\*\.)?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$
+            not:
+              enum:
+              - co.jp
+              - ne.jp
+              - or.jp
+              - ac.jp
+              - ad.jp
+              - ed.jp
+              - go.jp
+              - gr.jp
+              - lg.jp
+              - co.uk
+              - org.uk
+              - ac.uk
+              - gov.uk
+              - com.au
+              - net.au
+              - org.au
+              - co.nz
+              - co.kr
+              - com.cn
+              - com.tw
+              - com.sg
+              - com.br
+              - '*.co.jp'
+              - '*.ne.jp'
+              - '*.or.jp'
+              - '*.ac.jp'
+              - '*.ad.jp'
+              - '*.ed.jp'
+              - '*.go.jp'
+              - '*.gr.jp'
+              - '*.lg.jp'
+              - '*.co.uk'
+              - '*.org.uk'
+              - '*.ac.uk'
+              - '*.gov.uk'
+              - '*.com.au'
+              - '*.net.au'
+              - '*.org.au'
+              - '*.co.nz'
+              - '*.co.kr'
+              - '*.com.cn'
+              - '*.com.tw'
+              - '*.com.sg'
+              - '*.com.br'
           minItems: 1
           maxItems: 20
         expires_on:
           type: string
           nullable: true
+          format: date
         description:
           type: string
           nullable: true
@@ -9886,6 +10062,53 @@ components:
           type: string
       additionalProperties: false
       x-operation: updateCredential
+      allOf:
+      - anyOf:
+        - required:
+          - login
+        - required:
+          - password
+        - required:
+          - value
+        - required:
+          - two_factor
+        - required:
+          - totp_secret
+        - required:
+          - destinations
+        - required:
+          - expires_on
+        - required:
+          - description
+      - anyOf:
+        - not:
+            anyOf:
+            - required:
+              - login
+            - required:
+              - password
+            - required:
+              - value
+            - required:
+              - totp_secret
+        - required:
+          - login
+          - password
+          not:
+            required:
+            - value
+        - required:
+          - value
+          not:
+            anyOf:
+            - required:
+              - login
+            - required:
+              - password
+            - required:
+              - two_factor
+            - required:
+              - totp_secret
     CredentialLoginCheckInput:
       type: object
       properties: {}
@@ -21841,16 +22064,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）
-          - 日本の今日より前・暦に無い期限（E-CRED-004）
-          - 種類ごとの中身の欠けと混ざり（E-CRED-005）
-          - 認証アプリの鍵の形と有無（E-VAL-003）
+          - 日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）
         '502':
           description: E-SEC-001
           content:
@@ -21954,16 +22174,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）・変える物が無い（空・理由だけ・E-CRED-008））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）・預けた物の種類で決まる中身の混ざり（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・E-CRED-005・E-VAL-003））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）
-          - 日本の今日より前・暦に無い期限（E-CRED-004）
-          - 種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）
-          - 変える物が無い（空・理由だけ・E-CRED-008）
+          - 日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）
+          - 預けた物の種類で決まる中身の混ざり（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・E-CRED-005・E-VAL-003）
         '409':
           description: E-CRED-009
           content:

@@ -9,6 +9,12 @@ import { destinationOf } from "./host.js";
 
 /** 名前の形：英字から始まる英大文字・数字・_ の 64 文字まで（DB の check と同じ・D-125.148） */
 export const NAME_RE = /^[A-Z][A-Z0-9_]{0,63}$/;
+/** 名前の前後に許す空白（trim が落とす字。全角の空白 U+3000 も）。契約の pattern と同じ字（05_flow/screen_api.d/K-352.py の _K352_WS・試験 K352-API-026 が同じ字か照らす） */
+const NAME_WS = " \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff";
+/** 打ったとおりの名前の形（契約の pattern・正規化の前に照らす）：半角と全角の英字で始まり、英字・数字・_ の 64 文字まで。
+ *  ß・ı・ſ のように大文字にすると英字になる字は入れない（断る） */
+export const NAME_PATTERN = `^[${NAME_WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[${NAME_WS}]*$`;
+const NAME_RAW_RE = new RegExp(NAME_PATTERN);
 /** 使える場所の数の上限 */
 export const DESTINATIONS_MAX = 20;
 /** 使える場所の形：点で区切った名前（頭の *. は下の名前だけの印）。点の無い名前・IP は通さない */
@@ -67,7 +73,9 @@ const oneOf = <T extends string>(v: unknown, set: readonly T[]): T | null =>
   typeof v === "string" && (set as readonly string[]).includes(v) ? (v as T) : null;
 
 /** ① 名前：全角・小文字・前後の空白は直して大文字に。形が違えば 422・E-CRED-001 */
-export function parseName(v: unknown): string | HookReply {
+export function parseName(v: unknown, raw: unknown = v): string | HookReply {
+  // 先に打ったとおりを契約と同じ pattern で照らす（ß などを大文字化で英字にして受けない）。その後に直した形で DB の check と同じ形を見る
+  if (typeof raw !== "string" || !NAME_RAW_RE.test(raw)) return fail("E-CRED-001", "name");
   const name = text(v).toUpperCase();
   return NAME_RE.test(name) ? name : fail("E-CRED-001", "name");
 }

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:f050353b2beb08a8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8975a2c138001371
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3584,7 +3584,7 @@ export const CredentialCreateInput = z.strictObject({
   two_factor: z.string().optional(),
   totp_secret: z.string().optional(),
   destinations: z.array(z.string()).optional(),
-  expires_on: z.string().nullable().optional(),
+  expires_on: z.iso.date().nullable().optional(),
 });
 export const CredentialUpdateInput = z.strictObject({
   login: z.string().optional(),
@@ -3593,7 +3593,7 @@ export const CredentialUpdateInput = z.strictObject({
   two_factor: z.string().optional(),
   totp_secret: z.string().optional(),
   destinations: z.array(z.string()).optional(),
-  expires_on: z.string().nullable().optional(),
+  expires_on: z.iso.date().nullable().optional(),
   description: z.string().nullable().optional(),
   reason: z.string().optional(),
 });

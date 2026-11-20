@@ -89,7 +89,7 @@ const isNameTaken = (e: unknown): boolean => {
 function check(input: Record<string, unknown>, rawBody: Record<string, unknown>): Checked | HookReply {
   const lk = parseLayerKind(input);
   if (isReply(lk)) return lk;
-  const name = parseName(input["name"]);
+  const name = parseName(input["name"], rawBody["name"]);
   if (isReply(name)) return name;
   const destinations = parseDestinations(input["destinations"]);
   if (isReply(destinations)) return destinations;

@@ -95,6 +95,17 @@ PATH_PATTERNS: dict[tuple[str, str], str] = {
 
 # 類 G（回 9 の続き・PM の判断 2026-11-09）：契約の形に合う値を口が 422 で断る体の値。書ける値域は契約の欄に足す（type・format・nullable は変えない＝入口の zod は変わらない）。
 #   値域は口が受ける値の集合より狭く書かない（狭いと契約の外の値を口が受けて fuzz の ST201）。書けない分だけ広く、その分は UNEXPRESSIBLE_422 に理由を書く
+# 契約に書く値の決まり（K-383・PM の決め answer=431fc50df51b）。口（apps/api/src/features/F3/credentials/input.ts・vault.ts）が断る形のうち、書ける物は全部ここに書く。
+#   名前：打ったとおりを、口も同じ pattern（input.ts の NAME_PATTERN）で照らす。前後の空白は trim が落とす字（全角の空白 U+3000 も）
+_K352_WS = " \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff"
+_K352_NAME = f"^[{_K352_WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{{0,63}}[{_K352_WS}]*$"
+#   使える場所：点で区切った小文字の名前（頭の *. は下の名前だけ）。公開の接尾辞だけ（co.jp など）は入れない（口の PUBLIC_SUFFIXES・enum の否定）。
+#   口は URL・大文字・全角・日本語の名前も直して受ける（契約はその狭い形だけを書く。書けない広がりの分は口が受けるだけ）
+_K352_SUFFIXES = ["co.jp", "ne.jp", "or.jp", "ac.jp", "ad.jp", "ed.jp", "go.jp", "gr.jp", "lg.jp", "co.uk", "org.uk", "ac.uk", "gov.uk", "com.au", "net.au", "org.au", "co.nz", "co.kr", "com.cn", "com.tw", "com.sg", "com.br"]
+_K352_DEST = {"type": "string", "pattern": r"^(\*\.)?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$",
+              "not": {"enum": _K352_SUFFIXES + ["*." + x for x in _K352_SUFFIXES]}}
+#   認証アプリの鍵：空白（半角）と小文字・全角は直して Base32 の 16 字以上（vault.ts の TOTP_RE）
+_K352_TOTP = r"^[ \t]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t]*){16,}=*[ \t]*$"
 CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
 VALUE_RANGES: dict[str, dict[str, dict]] = {
@@ -161,7 +172,7 @@ from registry_d import merge_py  # noqa: E402
 
 FRAGMENT_NAMES = ("REQUIRED_INPUTS", "NO_REQUIRED_INPUTS", "PATH_PATTERNS", "VALUE_RANGES", "UNEXPRESSIBLE_422", "AGENT_ANSWERS")
 merge_py(globals(), ROOT / "scripts" / "ci" / "contract_shape.d", names=FRAGMENT_NAMES,
-         helpers={"CODE_SEP": CODE_SEP, "CODE_CHAR": CODE_CHAR})
+         helpers={"CODE_SEP": CODE_SEP, "CODE_CHAR": CODE_CHAR, "_K352_NAME": _K352_NAME, "_K352_DEST": _K352_DEST, "_K352_TOTP": _K352_TOTP})
 
 # 口の振る舞い（hooks）の入口。ここに並ぶ口が全部、拾う対象（K-57・K-60 だけでなく今ある口の全部・PM の続きの指示 2026-11-08）
 HOOKS_DIR = ROOT / "apps/api/src/hooks"
