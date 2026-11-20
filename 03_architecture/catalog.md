@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 69・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 19・共通の処理 13・エラー 221・部品 56・設定 41
+API 371（作った 71・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 19・共通の処理 13・エラー 228・部品 56・設定 41
 
 ## 共通の処理
 
@@ -338,7 +338,7 @@ API 370（作った 69・後のフェーズの行為だけ 20）・前の道す�
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印） | F4,F7 | 作った | K-92 |
 | `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
-| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 契約だけ（501） | K-67 |
+| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -418,6 +418,7 @@ API 370（作った 69・後のフェーズの行為だけ 20）・前の道す�
 | `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-401 |
 | `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-401 |
 | `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |
+| `listTicketHandovers` | GET /api/v1/tickets/:id/handovers | 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで） | F8 | 作った | K-405 |
 | `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |

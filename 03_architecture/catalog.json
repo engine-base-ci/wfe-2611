@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
-  "api_built": 69,
+  "api": 371,
+  "api_built": 71,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 19,
   "packages": 13,
-  "errors": 221,
+  "errors": 228,
   "stack": 56,
   "env": 41
  },
@@ -4910,9 +4910,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-387"
    ]
   },
   {
@@ -5185,6 +5185,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-401"
+   ]
+  },
+  {
+   "op": "listTicketHandovers",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handovers",
+   "what": "取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-405"
    ]
   },
   {

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:34ad044f3a990f3a
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:5390bf295108ff19
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -307,7 +307,7 @@ export interface Ops {
   listTickets: { params: never; query: { "view"?: string | number; "q"?: string | number; "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Tickets[] };
   createTicket: { params: never; query: never; body: T.TicketCreateInput; data: T.Tickets };
   getTicket: { params: { id: string }; query: never; body: never; data: T.TicketDetail };
-  updateTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
+  updateTicket: { params: { id: string }; query: never; body: T.TicketUpdateInput; data: T.TicketUpdated };
   deleteTicket: { params: { id: string }; query: never; body: never; data: T.Tickets };
   requestAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.Conversations };
@@ -324,6 +324,7 @@ export interface Ops {
   previewTicketDelete: { params: { id: string }; query: never; body: never; data: T.TicketDeletePreview };
   dryRunTicket: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   previewTicketHandover: { params: { id: string }; query: never; body: never; data: T.HandoverPreview };
+  listTicketHandovers: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketHandover[] };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverCreateInput; data: T.TicketHandoverCreated };
   previewTicketKindChange: { params: { id: string }; query: never; body: never; data: T.TicketKindChangePreview };
   listTicketLinks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketLinks[] };
