@@ -86,3 +86,20 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 見えないチケットの下見なら、Kaname は 404 と E-PAGE-001 を返し、中身を返さない"},
     ],
 }
+
+# 契約に書けない値の決まり（口の振る舞いのまま 422・apps/api/src/features/F8/handovers/input.ts と app.handover_gate）
+UNEXPRESSIBLE_422 = {
+    "createTicketHandover": [
+        "上へ上げる（escalate）は段 9 では作らない（E-HND-001）",
+        "理由が空・空白だけ（E-HND-007）",
+        "返事の期限が日時の形でない・今より後でない（E-HND-008）",
+        "相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）",
+        "一緒に切り替えるものの形・決まりと合わない（E-HND-011）",
+        "申し出に相手・期限を付けた・人とグループの両方",
+    ],
+    "answerTicketHandover": [
+        "断る理由が空（E-HND-007）",
+        "一緒に切り替えるものの形（E-HND-011）",
+        "上へ上げるの渡し（E-HND-001）",
+    ],
+}

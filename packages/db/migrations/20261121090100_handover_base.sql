@@ -321,13 +321,14 @@ language sql stable security definer set search_path = public, app, pg_temp as $
 $$;
 
 -- ---------------------------------------------------------------- 渡す前の下見（D-148.2・D-148.15・D-148.18）。見えない・消した・下書きのチケットは null。
---   できる種類が無い人には kinds だけを返す（口が 403 にして中身を返さない）。文は 1 つ（数は group by で 1 回）
+--   できる種類が無い人には kinds だけを返す（口が 403 にして中身を返さない）。文は 1 つ（数は group by で 1 回）。
+--   候補の人は 500 人まで（501 人目があれば candidates_over を true にする。口がログに 1 行出し、答えには載せない）
 create or replace function app.handover_preview(p_ticket uuid) returns jsonb
 language plpgsql stable security definer set search_path = public, app, pg_temp as $$
 declare
   v_me uuid := app.user_id(); t tickets%rowtype; v_kinds text[]; v_kinds_scope text[];
   v_monday date := date_trunc('week', now() at time zone 'Asia/Tokyo')::date;
-  v_waiting jsonb; v_rules jsonb; v_children jsonb; v_links jsonb; v_group jsonb; v_cands jsonb; v_groups jsonb := '[]'::jsonb;
+  v_waiting jsonb; v_rules jsonb; v_children jsonb; v_links jsonb; v_group jsonb; v_cands jsonb; v_over boolean; v_groups jsonb := '[]'::jsonb;
 begin
   if v_me is null or app.tenant_id() is null or not app.member_ok() then return null; end if;
   select * into t from tickets x where x.id = p_ticket and x.tenant_id = app.tenant_id() and x.deleted_at is null;
@@ -368,7 +369,9 @@ begin
      group by w.assignee_member_id
   ), people as (
     select m.id, m.display_name, m.scope_id, u.email::text as email, app.handover_member_state(m.id) as state,
-           coalesce(wk.n, 0) as week
+           coalesce(wk.n, 0) as week,
+           row_number() over (order by (m.id = t.assignee_member_id) desc, (m.id = v_me) desc,
+                                       (app.handover_member_state(m.id) = 'active') desc, m.display_name, m.id) as rn
       from members m
       left join tenant_memberships tm on tm.member_id = m.id and tm.tenant_id = m.tenant_id and tm.deleted_at is null
       left join kaname_auth."user" u on u.id = coalesce(m.auth_user_id, tm.auth_user_id)
@@ -382,8 +385,9 @@ begin
            'group', case when g.id is null then null else jsonb_build_object('id', g.id, 'name', g.name, 'code', g.ticket_prefix) end,
            'manager', app.handover_manages(pp.id, pp.scope_id), 'week', pp.week, 'state', pp.state,
            'self', pp.id = v_me, 'current', pp.id = t.assignee_member_id, 'in_group', app.handover_in_group(pp.id, t.scope_id))
-           order by (pp.id = t.assignee_member_id) desc, (pp.id = v_me) desc, (pp.state = 'active') desc, pp.display_name, pp.id), '[]'::jsonb)
-    into v_cands
+           order by pp.rn) filter (where pp.rn <= 500), '[]'::jsonb),
+         coalesce(bool_or(pp.rn > 500), false)
+    into v_cands, v_over
     from people pp left join scopes g on g.id = pp.scope_id;
 
   if 'distribute' = any (v_kinds) or 'distribute' = any (v_kinds_scope) then
@@ -397,7 +401,7 @@ begin
     'waiting', v_waiting,
     'default_reply_due', app.handover_default_due(now()),
     'rules', v_rules, 'children', v_children, 'links', v_links, 'group', v_group,
-    'candidates', v_cands, 'groups', v_groups);
+    'candidates', v_cands, 'candidates_over', v_over, 'groups', v_groups);
 end $$;
 
 -- ---------------------------------------------------------------- 決まりを読む（会社の分・children・links・group・axis の順・軸の名前つき）

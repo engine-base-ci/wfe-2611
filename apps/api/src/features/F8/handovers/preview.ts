@@ -8,7 +8,7 @@ import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HandoverDeps } from "./deps.js";
 import { fromCatalog, notFound } from "./errors.js";
 
-/** 候補の人の上限 */
+/** 候補の人の上限（DB の関数 app.handover_preview と同じ数） */
 export const CANDIDATES_MAX = 500;
 
 export function previewHandover(d: HandoverDeps) {
@@ -22,8 +22,8 @@ export function previewHandover(d: HandoverDeps) {
     if (!v) return notFound();
     const kinds = Array.isArray(v["kinds"]) ? (v["kinds"] as string[]) : [];
     if (kinds.length === 0) return fromCatalog("E-HND-002", 403);
-    const cands = Array.isArray(v["candidates"]) ? (v["candidates"] as unknown[]) : [];
-    if (cands.length > CANDIDATES_MAX) console.warn(`[handover] 下見の候補の人を ${CANDIDATES_MAX} 人で切った`);
+    // 候補の人は DB の関数が 500 人で切る（501 人目があれば印 candidates_over。答えには載せない）
+    if (v["candidates_over"] === true) console.warn(`[handover] 下見の候補の人を ${CANDIDATES_MAX} 人で切った`);
     return {
       status: 200,
       body: {
@@ -36,7 +36,7 @@ export function previewHandover(d: HandoverDeps) {
           children: v["children"],
           links: v["links"],
           group: v["group"],
-          candidates: cands.slice(0, CANDIDATES_MAX),
+          candidates: Array.isArray(v["candidates"]) ? v["candidates"] : [],
           groups: v["groups"] ?? [],
         },
       },
