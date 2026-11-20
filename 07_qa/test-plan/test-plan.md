@@ -13,7 +13,7 @@
 | entities | 142 |
 | policies | 410 |
 | access_cases | 1530 |
-| errors | 215 |
+| errors | 217 |
 | journey_rows | 88 |
 | critical_tasks | 88 |
 
