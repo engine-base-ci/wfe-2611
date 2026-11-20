@@ -852,7 +852,9 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       return (
         <Detail
           theme={theme}
-          assignee={<AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行（承認）が終わってから渡してください" />}
+          assignee={
+            <AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行（承認）が終わってから渡してください" />
+          }
           dialog={
             <PickDialog
               open
