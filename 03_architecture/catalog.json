@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 65,
+  "api_built": 68,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 207,
+  "errors": 210,
   "stack": 56,
   "env": 41
  },
@@ -4770,9 +4770,8 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59",
     "K-441"
    ]
   },
@@ -5209,7 +5208,7 @@
    "op": "listTicketLinks",
    "method": "GET",
    "path": "/api/v1/tickets/:id/links",
-   "what": "取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
+   "what": "取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children",
    "flows": [
     "F4"
    ],
@@ -5217,9 +5216,8 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59",
     "K-441"
    ]
   },
@@ -5235,9 +5233,8 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59",
     "K-441"
    ]
   },

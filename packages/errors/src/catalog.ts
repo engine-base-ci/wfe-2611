@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。207 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。210 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3756,6 +3756,63 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-LNK-001": {
+    "id": "E-LNK-001",
+    "cls": "conflict",
+    "message": "同じチケットとはつなげられません",
+    "action": "ほかのチケットを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
+    }
+  },
+  "E-LNK-002": {
+    "id": "E-LNK-002",
+    "cls": "conflict",
+    "message": "このチケットとは、もうつながっています",
+    "action": "つながりの一覧を見る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
+    }
+  },
+  "E-LNK-003": {
+    "id": "E-LNK-003",
+    "cls": "conflict",
+    "message": "派生元が輪になるので、つなげられません",
+    "action": "ほかのチケットを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
     }
   }
 };

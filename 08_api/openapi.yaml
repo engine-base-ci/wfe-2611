@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-20 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-21 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9988,6 +9988,23 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketLinkInput:
+      type: object
+      properties:
+        other_ticket_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+          enum:
+          - related
+          - derived_from
+      additionalProperties: false
+      x-operation: createTicketLink
+      required:
+      - other_ticket_id
+      - kind
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11739,6 +11756,31 @@ components:
         browser:
           type: string
       x-operation: setBridgeBrowser
+    TicketLink:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        side:
+          type: string
+          nullable: true
+        other:
+          type: object
+        can_remove:
+          type: boolean
+        created_at:
+          type: string
+      x-operation: createTicketLink
+    TicketLinkDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteTicketLink
     Error:
       type: object
       properties:
@@ -39831,7 +39873,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketLinks'
+                    $ref: '#/components/schemas/TicketLinkDeleted'
                   meta:
                     type: object
         '401':
@@ -39847,7 +39889,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
@@ -39858,14 +39900,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -42343,7 +42385,7 @@ paths:
   /api/v1/tickets/{id}/links:
     get:
       operationId: listTicketLinks
-      summary: 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても
+      summary: 取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children
       tags:
       - ticket_links
       x-acts:
@@ -42407,9 +42449,12 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TicketLinks'
+                      $ref: '#/components/schemas/TicketLink'
                   meta:
                     type: object
+                    properties:
+                      children:
+                        type: array
         '401':
           description: UNAUTHENTICATED
           content:
@@ -42423,7 +42468,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
@@ -42434,14 +42479,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -42478,7 +42523,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketLinksInput'
+              $ref: '#/components/schemas/TicketLinkInput'
       responses:
         '201':
           description: 成功
@@ -42488,7 +42533,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketLinks'
+                    $ref: '#/components/schemas/TicketLink'
                   meta:
                     type: object
         '401':
@@ -42504,19 +42549,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-LNK-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42529,12 +42580,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
