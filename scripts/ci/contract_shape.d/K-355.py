@@ -21,11 +21,4 @@ VALUE_RANGES = {
         "request_ref": {"pattern": "\\S", "maxLength": 100},
     },
 }
-UNEXPRESSIBLE_422 = {
-    "answerCredentialLoginCheck": [
-        "code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）",
-    ],
-    "reportCredentialCheck": [
-        "asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた（代表の答え answer=431fc50df51b）

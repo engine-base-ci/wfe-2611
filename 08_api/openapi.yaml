@@ -9850,6 +9850,17 @@ components:
       required:
       - request_ref
       x-required-by: hooks
+      oneOf:
+      - required:
+        - code
+        not:
+          required:
+          - approved
+      - required:
+        - approved
+        not:
+          required:
+          - code
     CredentialCheckReportInput:
       type: object
       properties:
@@ -9891,6 +9902,26 @@ components:
       - job_id
       - state
       x-required-by: hooks
+      oneOf:
+      - properties:
+          state:
+            enum:
+            - asking
+            - waiting
+        required:
+        - request_ref
+      - properties:
+          state:
+            enum:
+            - ok
+            - bad_password
+            - needs_2fa
+            - bad_code
+            - captcha
+            - unreachable
+            - no_form
+            - stopped
+            - no_answer
     DeviceBrowserInput:
       type: object
       properties:
@@ -15280,13 +15311,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref）
         '503':
           description: E-PAGE-003
           content:
@@ -21876,13 +21905,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）
         '503':
           description: E-PAGE-003
           content:

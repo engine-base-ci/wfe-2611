@@ -36,13 +36,19 @@ VALUE_RANGES = {
     },
 }
 
-UNEXPRESSIBLE_422 = {
-    "answerCredentialLoginCheck": [
-        "code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）",
-    ],
-    "reportCredentialCheck": [
-        "asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref）",
-    ],
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた（代表の答え answer=431fc50df51b）
+
+# 形全体の決まり（代表の答え answer=431fc50df51b）：答えは code と approved のどちらか 1 つ・PC の知らせは asking と waiting のとき request_ref が要る
+_RESULTS = ["ok", "bad_password", "needs_2fa", "bad_code", "captcha", "unreachable", "no_form", "stopped", "no_answer"]
+INPUT_RULES = {
+    "answerCredentialLoginCheck": {"oneOf": [
+        {"required": ["code"], "not": {"required": ["approved"]}},
+        {"required": ["approved"], "not": {"required": ["code"]}},
+    ]},
+    "reportCredentialCheck": {"oneOf": [
+        {"properties": {"state": {"enum": ["asking", "waiting"]}}, "required": ["request_ref"]},
+        {"properties": {"state": {"enum": _RESULTS}}},
+    ]},
 }
 
 # 確かめる（本人）：無い・ほかの人の物・消した物（404）・確かめている最中／API キー／失効・期限切れ（409）・関数が落ちた（503）
