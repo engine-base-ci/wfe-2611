@@ -78,6 +78,8 @@ interface Ping {
   version: string;
   device_label: string;
   connected: boolean;
+  /** この PC の Bridge がつながっている PC の id（K-359）。一覧の行の id と同じなら「この PC の行」。古い Bridge は返さない */
+  device_id?: string | null;
 }
 /** この PC で Bridge が動いているか。動いていなければ null（他所のサイトからは 403 で見えない） */
 async function ping(signal: AbortSignal): Promise<Ping | null> {
@@ -97,6 +99,8 @@ export interface Check {
   detail: string;
   /** 直し方。install＝入れる／repair＝取り直す／login＝ログインする（何を出すかをこれで決める） */
   fix?: "install" | "repair" | "login" | null;
+  /** 目録のエラーの ID（K-359：repair → E-CONN-011／login → E-CONN-010） */
+  code?: string;
 }
 /** この PC の Bridge が確かめた結果（何が足りないか）。つながる前でも読める */
 export async function localChecks(): Promise<Check[] | null> {
@@ -107,14 +111,33 @@ export async function localChecks(): Promise<Check[] | null> {
     return null;
   }
 }
+/** この PC の Bridge に届かなかったときの文（e.message の英語をそのまま人に見せない・K-361） */
+export const LOCAL_UNREACHABLE =
+  "この PC の Bridge に届きませんでした。Bridge が開いているか確かめてから、もう一度押してください";
+
+export interface InstallProgress {
+  running: boolean;
+  steps: { text: string; state: string }[];
+}
+/** 入れている途中の行（K-359 の GET /install-progress）。読めなければ null */
+export async function installProgress(): Promise<InstallProgress | null> {
+  try {
+    const r = await fetch(`${LOCAL}/install-progress`);
+    if (!r.ok) return null;
+    const j = (await r.json()) as Partial<InstallProgress>;
+    return { running: j.running === true, steps: Array.isArray(j.steps) ? j.steps : [] };
+  } catch {
+    return null;
+  }
+}
 /** Claude Code を入れる（D-091）。押すのは人、やるのは Bridge。この PC の中だけの口なので他所からは押せない */
 export async function installClaude(): Promise<{ ok: boolean; message: string }> {
   try {
     const r = await fetch(`${LOCAL}/install-claude`, { method: "POST" });
     const j = (await r.json().catch(() => ({}))) as { message?: string };
     return { ok: r.ok, message: j.message ?? (r.ok ? "入りました" : `うまくいきませんでした（${r.status}）`) };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Bridge に届きません" };
+  } catch {
+    return { ok: false, message: LOCAL_UNREACHABLE };
   }
 }
 /** ログインの窓を開く。承認するのは本人（D-091.3） */
@@ -123,8 +146,8 @@ export async function loginClaude(): Promise<{ ok: boolean; url?: string; messag
     const r = await fetch(`${LOCAL}/login-claude`, { method: "POST" });
     const j = (await r.json().catch(() => ({}))) as { message?: string; url?: string };
     return { ok: r.ok, ...(j.url ? { url: j.url } : {}), message: j.message ?? "ブラウザで承認してください" };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Bridge に届きません" };
+  } catch {
+    return { ok: false, message: LOCAL_UNREACHABLE };
   }
 }
 /** 始めたログインを止める（画面を離れる・やり直す） */
@@ -145,8 +168,8 @@ export async function loginCode(code: string): Promise<{ ok: boolean; message: s
     });
     const j = (await r.json().catch(() => ({}))) as { message?: string };
     return { ok: r.ok, message: j.message ?? (r.ok ? "ログインできました" : "ログインできませんでした") };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Bridge に届きません" };
+  } catch {
+    return { ok: false, message: LOCAL_UNREACHABLE };
   }
 }
 
@@ -169,8 +192,8 @@ export async function pairViaLocal(
       message: j.message ?? `うまくいきませんでした（${r.status}）`,
       ...(j.reason === "other_account" ? { otherAccount: true } : {}),
     };
-  } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Bridge に届きません" };
+  } catch {
+    return { ok: false, message: LOCAL_UNREACHABLE };
   }
 }
 

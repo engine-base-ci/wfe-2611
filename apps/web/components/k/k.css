@@ -264,6 +264,10 @@ textarea.k-input {
   cursor: pointer;
   text-align: left;
 }
+/* 選ぶ欄の開いた一覧は小窓（.k-dialog・81）より上に出す（小窓の中の選ぶ欄が小窓の裏に隠れて押せなかった・K-372） */
+.k-select-positioner {
+  z-index: 82;
+}
 .k-select-popup {
   min-width: var(--anchor-width);
   max-height: var(--available-height);
