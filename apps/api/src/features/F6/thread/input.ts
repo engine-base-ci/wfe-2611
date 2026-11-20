@@ -27,6 +27,21 @@ export interface PostPayload {
   mention_member_ids: string[];
   notify_member_ids: string[];
   quote_of_id: string | null;
+  // K-389：段の欄（送ったものだけ入る。DB の関数は鍵があるかで決める）
+  stage_key?: string;
+  stage_id?: string;
+  hold_reason?: string;
+  resume_condition?: string;
+}
+
+/** 書き込みと一緒に送れる段の欄（K-389・K-387 の段の組の欄から実績を除いた物） */
+export const STAGE_FIELDS = ["stage_key", "stage_id", "hold_reason", "resume_condition"] as const;
+
+/** 送られた段の欄だけを取り出す（無い欄は鍵ごと入れない） */
+export function stageFieldsOf(input: Row): Partial<Pick<PostPayload, (typeof STAGE_FIELDS)[number]>> {
+  return Object.fromEntries(STAGE_FIELDS.filter((k) => input[k] !== undefined).map((k) => [k, input[k]])) as Partial<
+    Pick<PostPayload, (typeof STAGE_FIELDS)[number]>
+  >;
 }
 
 const idList = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []);
@@ -39,5 +54,6 @@ export function toPostPayload(input: Row, me: string): PostPayload {
     mention_member_ids: uniqueIds(idList(input["mention_member_ids"])),
     notify_member_ids: withoutMe(uniqueIds(idList(input["notify_member_ids"])), me),
     quote_of_id: typeof quote === "string" && quote !== "" ? quote : null,
+    ...stageFieldsOf(input),
   };
 }

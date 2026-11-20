@@ -15,27 +15,41 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-015");
   });
   it("test_post_tickets_id_messages_rejected_403", () => {
-    // UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
+    // UNWANTED: IF 段を変えられない人が段の欄を付けて書いたなら、Kaname は 403 を返し、書き込みも段も残さない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
   });
   it("test_post_tickets_id_messages_not_found", () => {
-    // UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // UNWANTED: IF 指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF AI が動いている間か承認待ちの間に段を変えて書こうとしたら、Kaname は 409 と E-CONF-030 を返し、書き込みも残さない
+  it.todo("test_post_tickets_id_messages_conflict");
   it("test_post_tickets_id_messages_rejected_422", () => {
-    // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
+    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-013」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-013");
   });
   it("test_post_tickets_id_messages_rejected_422_2", () => {
-    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない
+    // UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-009");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 完了したチケットの段を開き直さずに変えて書こうとしたら、Kaname は 409 と E-CONF-032 を返し、書き込みも残さない
+  it.todo("test_post_tickets_id_messages_conflict_2");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 書き込みの口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、書き込みも残さない
+  it.todo("test_post_tickets_id_messages_conflict_3");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、書き込みも残さない
+  it.todo("test_post_tickets_id_messages_conflict_4");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 保留でない段を選んで保留の理由か条件を付けたなら、Kaname は 409 と E-CONF-036 を返し、書き込みも残さない
+  it.todo("test_post_tickets_id_messages_conflict_5");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も書かない
   it.todo("test_post_tickets_id_messages_rejected_422_3");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+  it.todo("test_post_tickets_id_messages_not_found_2");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・書き込み・知らせを前のまま残す
+  it.todo("test_post_tickets_id_messages_server_error");
   it("test_post_tickets_id_messages_session_unresolved", () => {
     // UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない（止める側に倒す）
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
