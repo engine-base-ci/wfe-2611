@@ -957,6 +957,24 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credentials-create.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credentials-create.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_credentials.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "packages/db/migrations/**",
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/device-*.ts",

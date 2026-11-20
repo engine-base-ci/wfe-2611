@@ -1364,7 +1364,7 @@ PERMS = {
     "copyNotificationSettings": ("self", "自分が入っているワークスペースにだけ写せる", False),
     # 預けたログイン情報（値はだれにも返さない）
     "listCredentials": ("self", "自分の個人の物と、自分のワークスペースの物の名前と使い方だけ。値と金庫の参照は返さない（D-128.57）", False),
-    "createCredential": ("self", "自分のものを預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須（D-128.57）", True),
+    "createCredential": ("self", "自分の個人の物か、edit を持つ人はワークスペースの物を預ける。値は書くだけで二度と返さない。使える場所（宛先）が必須。取り直しか、ログインから 15 分の内（D-125.139・D-128.57）", "login_or_step_up"),
     "updateCredential": ("self", "自分のものの上書き・使える場所の変更", True),
     "deleteCredential": ("self", "自分のもの。消したらすぐ使えなくなる", False),
     "checkCredentialLogin": ("self", "自分のもの。自分の PC で試しにログインして確かめる（値は PC の実行器だけが使う）", False),

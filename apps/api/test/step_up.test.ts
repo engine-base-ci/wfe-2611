@@ -104,8 +104,11 @@ const stepUpAt = async (member: string) =>
       [member],
     )
   ).rows[0]?.at ?? null;
-// いつも本人確認が要る社内の口（中身は作っていなくても、本人確認の段は 501 より前に止める）
-const ALWAYS = ENDPOINTS.find((e) => e.perm.stepUp === "always" && e.auth === "member" && !e.path.includes(":"))!;
+// いつも本人確認が要る社内の口（中身は作っていなくても、本人確認の段は 501 より前に止める）。
+//   本人の口（self）から選ぶ：管理者だけの口は、ふつうの人だと本人確認の段より前の権限の段で 403 FORBIDDEN になり、本人確認の段に届かない
+const ALWAYS = ENDPOINTS.find(
+  (e) => e.perm.stepUp === "always" && e.auth === "member" && e.perm.word === "self" && !e.path.includes(":"),
+)!;
 
 describe("本人確認の取り直し（K-19）", () => {
   it("正しいパスワードで時刻が付き、いつも要る口が STEP_UP_REQUIRED で止まらなくなる", async () => {

@@ -6087,6 +6087,208 @@
    ]
   },
   {
+   "id": "E-CRED-001",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "名前が英字から始まる英大文字・数字・_ の 64 文字まででない（全角・小文字・前後の空白は直した後）",
+   "false_when": "英字から始まる英大文字・数字・_ の 64 文字までの名前（小文字・全角は直して通す）",
+   "message": "名前は英大文字・数字・_ で、英字から始めてください（64 文字まで）",
+   "action": "名前を直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "名前に「1ABC」と入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-002",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "使える場所にドメインでない物（点が無い・IP・空白・道だけ・公開の接尾辞だけ（co.jp など））があるか、21 個以上",
+   "false_when": "ドメイン（example.com・*.example.com）が 1〜20 個",
+   "message": "使える場所はドメイン（例：example.com）で、20 個までにしてください",
+   "action": "使える場所を直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "使える場所に「localhost」と入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-003",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "使える場所が無い・空",
+   "false_when": "使える場所が 1 つ以上ある",
+   "message": "使える場所を 1 つ以上入れてください。この宛先にだけ使います",
+   "action": "使う宛先のドメインを入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "使える場所を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-004",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "期限が日本の今日より前・暦に無い・年-月-日の形でない",
+   "false_when": "期限が今日以降の日付か、空（期限なし）",
+   "message": "期限は今日以降の日付にしてください",
+   "action": "期限を直すか空にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "期限に昨日の日付を入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-005",
+   "class": "validation",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "ログイン情報で ID かパスワードが空・API キー・値で値が空・種類に合わない中身がある",
+   "false_when": "ログイン情報に ID とパスワード、API キー・値に値だけが入っている",
+   "message": "ログイン情報は ID とパスワード、API キー・値は値だけを入れてください",
+   "action": "中身を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "ログイン情報を選び、パスワードを空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-006",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "同じ層（ワークスペースの中・自分の物の中）に同じ名前が預けてある",
+   "false_when": "その層にまだ無い名前（消した物・失効した物と同じ名前は使える）",
+   "message": "同じ名前のものがもう預けてあります。別の名前にするか、前のものを上書きしてください",
+   "action": "名前を変えるか上書きする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "もう預けてある名前と同じ名前を入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.148",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-007",
+   "class": "permission",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "ワークスペースに預ける・ワークスペースの物を直す・消すのに、credentials の edit が無い",
+   "false_when": "credentials の edit を持つ人（既定は管理者）か、自分だけの物として預ける",
+   "message": "ワークスペースに預けたものを変えられるのは管理者だけです。自分だけのものとして預けてください",
+   "action": "自分だけに預ける／管理者に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の画面で「預ける」の小窓を開く",
+    "steps": [
+     "管理者でない人が、預ける先にワークスペースを選んで保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.57"
+   ]
+  },
+  {
    "id": "E-CONN-016",
    "class": "auth",
    "where": {
