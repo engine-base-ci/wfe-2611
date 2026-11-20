@@ -911,17 +911,6 @@ PATH_PATTERNS = {
 }
 # 類 G（K-144 ⑳・㉟）：契約の形に合う値を口が 422 で断る体の値のうち、書ける値域（operationId → 欄 → 値域の言葉）。
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
-# 契約に書く値の決まり（K-383・PM の決め answer=431fc50df51b）。口（apps/api/src/features/F3/credentials/input.ts・vault.ts）が断る形のうち、書ける物は全部ここに書く。
-#   名前：打ったとおりを、口も同じ pattern（input.ts の NAME_PATTERN）で照らす。前後の空白は trim が落とす字（全角の空白 U+3000 も）
-_K352_WS = " \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff"
-_K352_NAME = f"^[{_K352_WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{{0,63}}[{_K352_WS}]*$"
-#   使える場所：点で区切った小文字の名前（頭の *. は下の名前だけ）。公開の接尾辞だけ（co.jp など）は入れない（口の PUBLIC_SUFFIXES・enum の否定）。
-#   口は URL・大文字・全角・日本語の名前も直して受ける（契約はその狭い形だけを書く。書けない広がりの分は口が受けるだけ）
-_K352_SUFFIXES = ["co.jp", "ne.jp", "or.jp", "ac.jp", "ad.jp", "ed.jp", "go.jp", "gr.jp", "lg.jp", "co.uk", "org.uk", "ac.uk", "gov.uk", "com.au", "net.au", "org.au", "co.nz", "co.kr", "com.cn", "com.tw", "com.sg", "com.br"]
-_K352_DEST = {"type": "string", "pattern": r"^(\*\.)?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$",
-              "not": {"enum": _K352_SUFFIXES + ["*." + x for x in _K352_SUFFIXES]}}
-#   認証アプリの鍵：空白（半角）と小文字・全角は直して Base32 の 16 字以上（vault.ts の TOTP_RE）
-_K352_TOTP = r"^[ \t]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t]*){16,}=*[ \t]*$"
 _CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 _CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
 VALUE_RANGES = {
@@ -1593,6 +1582,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
+import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
 
 _merge_py(globals(), _Path(__file__).resolve().parent / "screen_api.d", screen_lists=("SCREEN_API",),
-          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR, "_K352_NAME": _K352_NAME, "_K352_DEST": _K352_DEST, "_K352_TOTP": _K352_TOTP})
+          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR, "_CP": _CP})

@@ -15,12 +15,12 @@ RESPONSES = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": _K352_DEST},
-        "login": {"pattern": "\S"},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}},
+        "login": {"pattern": _CP.LOGIN},
         "password": {"minLength": 1},
         "value": {"minLength": 1},
-        "totp_secret": {"pattern": _K352_TOTP},
-        "expires_on": {"format": "date"},
+        "totp_secret": {"pattern": _CP.TOTP},
+        "expires_on": {"pattern": _CP.EXPIRES},
     },
 }
 
@@ -37,12 +37,7 @@ INPUT_RULES = {
     ]},
 }
 
-UNEXPRESSIBLE_422 = {
-    "updateCredential": [
-        "日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）",
-        "預けた物の種類で決まる中身の混ざり（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・E-CRED-005・E-VAL-003）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた。今日より前の期限・預けた物の種類で決まる混ざりは 409（K-383・PM の決め）
 
 # 上書き：権限（403）・本人確認（403）・見えない（404）・ぶつかった（409）・入力（422）・金庫に置けない（502）・預かれない／混んでいる／Kaname の側（503）
 # 消す：権限（403）・見えない（404）・Kaname の側（503）
@@ -60,8 +55,14 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-CRED-009", "body": {"error": "conflict", "code": "E-CRED-009"}, "errors": ["E-CRED-009"],
          "trigger": "同じ物の中身を、ほかの画面が先に上書きした（値の入れ替えがぶつかった）",
          "ears_form": "UNWANTED: IF 同じ物の中身をほかの画面が先に上書きしたなら、Kaname は 409 と E-CRED-009 を返し、置いた金庫の物を失効させて行は先の上書きのままにする"},
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-002", "E-CRED-003", "E-CRED-004", "E-CRED-005", "E-CRED-008", "E-VAL-003"],
-         "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
+        {"status": 409, "code": "E-CRED-004", "body": {"error": "conflict", "code": "E-CRED-004"}, "errors": ["E-CRED-004"],
+         "trigger": "期限が日本の今日より前（時刻で決まる）",
+         "ears_form": "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も変えない"},
+        {"status": 409, "code": "E-CRED-015", "body": {"error": "conflict", "code": "E-CRED-015"}, "errors": ["E-CRED-015"],
+         "trigger": "預けた物の種類や 2 段階の状態と合わない中身（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・認証アプリの鍵の有無が合わない）",
+         "ears_form": "UNWANTED: IF 預けた物の種類や 2 段階の状態と合わない中身なら、Kaname は 409 と E-CRED-015 を返し、金庫に置かず行も変えない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-002", "E-CRED-003", "E-CRED-005", "E-CRED-008", "E-VAL-003"],
+         "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限の形（暦に無い・年-月-日でない）・中身の欠け（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も変えない"},
         {"status": 502, "code": "E-SEC-001", "body": {"error": "dependency", "code": "E-SEC-001"}, "errors": ["E-SEC-001"],
          "trigger": "新しい中身を預かり先（金庫）に置けなかった",

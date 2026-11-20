@@ -6,45 +6,24 @@ import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 import { todayJst } from "../../F4/create-ticket/input.js";
 import { destinationOf } from "./host.js";
+import {
+  DESTINATION_RE_RAW,
+  EXPIRES_RE_RAW,
+  LOGIN_RE_RAW,
+  NAME_RE_RAW,
+  PUBLIC_SUFFIXES_LIST,
+} from "./patterns.js";
+
+export { NAME_PATTERN } from "./patterns.js";
 
 /** 名前の形：英字から始まる英大文字・数字・_ の 64 文字まで（DB の check と同じ・D-125.148） */
 export const NAME_RE = /^[A-Z][A-Z0-9_]{0,63}$/;
-/** 名前の前後に許す空白（trim が落とす字。全角の空白 U+3000 も）。契約の pattern と同じ字（05_flow/screen_api.d/K-352.py の _K352_WS・試験 K352-API-026 が同じ字か照らす） */
-const NAME_WS = " \\t\\n\\r\\v\\f\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff";
-/** 打ったとおりの名前の形（契約の pattern・正規化の前に照らす）：半角と全角の英字で始まり、英字・数字・_ の 64 文字まで。
- *  ß・ı・ſ のように大文字にすると英字になる字は入れない（断る） */
-export const NAME_PATTERN = `^[${NAME_WS}]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[${NAME_WS}]*$`;
-const NAME_RAW_RE = new RegExp(NAME_PATTERN);
 /** 使える場所の数の上限 */
 export const DESTINATIONS_MAX = 20;
 /** 使える場所の形：点で区切った名前（頭の *. は下の名前だけの印）。点の無い名前・IP は通さない */
 const DESTINATION_RE = /^(\*\.)?([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{1,62}$/;
-/** 公開の接尾辞（誰でも下に名前を取れる 2 段の名前）。これだけを使える場所にすると、よその会社の宛先にも当たる（代表の答え answer=449e72553c59）。
- *  1 段だけの名前（jp・com）は形の確かめが先に断る。全部の一覧（Public Suffix List）は部品の追加が要るので、日本とよく使う国の分だけを持つ */
-export const PUBLIC_SUFFIXES: ReadonlySet<string> = new Set([
-  "co.jp",
-  "ne.jp",
-  "or.jp",
-  "ac.jp",
-  "ad.jp",
-  "ed.jp",
-  "go.jp",
-  "gr.jp",
-  "lg.jp",
-  "co.uk",
-  "org.uk",
-  "ac.uk",
-  "gov.uk",
-  "com.au",
-  "net.au",
-  "org.au",
-  "co.nz",
-  "co.kr",
-  "com.cn",
-  "com.tw",
-  "com.sg",
-  "com.br",
-]);
+/** 公開の接尾辞（形の確かめの最後の砦。一覧は patterns.ts） */
+export const PUBLIC_SUFFIXES: ReadonlySet<string> = new Set(PUBLIC_SUFFIXES_LIST);
 export const LAYERS = ["workspace", "personal"] as const;
 export const KINDS = ["login", "key"] as const;
 export const TWO_FACTORS = ["none", "totp", "sms", "email", "push"] as const;
@@ -65,6 +44,11 @@ export const invalid = (field: string, message: string): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
 });
+/** 時刻や預けた物の状態で決まる断り：409（欄は付けない）。番号は正本のエラーのまま */
+export const conflict409 = (code: string): HookReply => {
+  const e = kanameError(code);
+  return { status: 409, body: { ...e.toJSON(), error: "conflict" } };
+};
 export const isReply = (v: unknown): v is HookReply =>
   typeof v === "object" && v !== null && "status" in v && "body" in v;
 
@@ -75,7 +59,7 @@ const oneOf = <T extends string>(v: unknown, set: readonly T[]): T | null =>
 /** ① 名前：全角・小文字・前後の空白は直して大文字に。形が違えば 422・E-CRED-001 */
 export function parseName(v: unknown, raw: unknown = v): string | HookReply {
   // 先に打ったとおりを契約と同じ pattern で照らす（ß などを大文字化で英字にして受けない）。その後に直した形で DB の check と同じ形を見る
-  if (typeof raw !== "string" || !NAME_RAW_RE.test(raw)) return fail("E-CRED-001", "name");
+  if (typeof raw !== "string" || !NAME_RE_RAW.test(raw)) return fail("E-CRED-001", "name");
   const name = text(v).toUpperCase();
   return NAME_RE.test(name) ? name : fail("E-CRED-001", "name");
 }
@@ -88,11 +72,14 @@ export function parseDescription(v: unknown): string | null {
 
 /** ② 使える場所：1〜20 個のドメイン。URL・大文字・全角・末尾の点は直す。重なりは前の順で 1 つに。
  *  無い・空は 422・E-CRED-003。ドメインでない物・公開の接尾辞だけ・21 個以上は 422・E-CRED-002 */
-export function parseDestinations(v: unknown): string[] | HookReply {
+export function parseDestinations(v: unknown, rawList: unknown = v): string[] | HookReply {
   if (!Array.isArray(v) || v.length === 0) return fail("E-CRED-003", "destinations");
   if (v.length > DESTINATIONS_MAX) return fail("E-CRED-002", "destinations");
   const out: string[] = [];
-  for (const raw of v) {
+  for (const [i, raw] of v.entries()) {
+    // 先に打ったとおりを契約と同じ pattern で照らす（合わなければ使える場所の形違い）
+    const typed = Array.isArray(rawList) ? rawList[i] : undefined;
+    if (typeof typed !== "string" || !DESTINATION_RE_RAW.test(typed)) return fail("E-CRED-002", "destinations");
     const d = typeof raw === "string" ? destinationOf(raw) : null;
     if (d === null || !DESTINATION_RE.test(d) || PUBLIC_SUFFIXES.has(d.replace(/^\*\./, "")))
       return fail("E-CRED-002", "destinations");
@@ -101,16 +88,18 @@ export function parseDestinations(v: unknown): string[] | HookReply {
   return out;
 }
 
-/** ③ 期限：無いか null は期限なし。年-月-日の形で暦に在り、日本の今日以降でなければ 422・E-CRED-004。
- *  通れば、行に入れる時刻（その日の日本の終わり）を返す。日本の今日はチケットの期限と同じ数え方（create-ticket の todayJst） */
-export function parseExpiresOn(v: unknown, today: string = todayJst()): { expiresAt: string | null } | HookReply {
+/** ③ 期限：無いか null は期限なし。打ったとおりが契約と同じ pattern（年-月-日・暦に在る日）に合わなければ 422（欄 expires_on）。
+ *  日本の今日より前は時刻で決まるので 409・E-CRED-004。通れば、行に入れる時刻（その日の日本の終わり）を返す。
+ *  日本の今日はチケットの期限と同じ数え方（create-ticket の todayJst） */
+export function parseExpiresOn(
+  v: unknown,
+  today: string = todayJst(),
+  raw: unknown = v,
+): { expiresAt: string | null } | HookReply {
   if (v === undefined || v === null) return { expiresAt: null };
+  if (typeof raw !== "string" || !EXPIRES_RE_RAW.test(raw)) return invalid("expires_on", "年-月-日（暦に在る日）");
   const day = text(v);
-  const real =
-    /^\d{4}-\d{2}-\d{2}$/.test(day) &&
-    !Number.isNaN(Date.parse(`${day}T00:00:00Z`)) &&
-    new Date(`${day}T00:00:00Z`).toISOString().startsWith(day);
-  if (!real || day < today) return fail("E-CRED-004", "expires_on");
+  if (day < today) return conflict409("E-CRED-004");
   return { expiresAt: `${day} 23:59:59.999+09:00` };
 }
 
@@ -118,13 +107,14 @@ export function parseExpiresOn(v: unknown, today: string = todayJst()): { expire
 export type SecretContent =
   { kind: "login"; login: string; password: string; twoFactor: TwoFactor } | { kind: "key"; value: string };
 
-/** ④⑤ 中身：ログイン情報は ID とパスワード（と 2 段階の種類）、API キー・値は値だけ。欠け・種類の混ざりは 422・E-CRED-005（欄の名前つき）。
+/** ④⑤ 中身（mixed：預けた物の種類と合わない混ざりの答え。預ける口は 422・上書きの口は預けた物の状態で決まるので 409）：ログイン情報は ID とパスワード（と 2 段階の種類）、API キー・値は値だけ。欠け・種類の混ざりは 422・E-CRED-005（欄の名前つき）。
  *  input は入口が形を確かめた体、rawBody は入口が直す前の体（パスワードと値は打ったとおりに預ける）。
  *  認証アプリの鍵（totp_secret）の形と有無は vault.ts の parseTotpSecret が見る（ここでは鍵に付いていないことだけ） */
 export function parseContent(
   kind: Kind,
   input: Record<string, unknown>,
   rawBody: Record<string, unknown>,
+  mixed: (field: string) => HookReply = (field) => fail("E-CRED-005", field),
 ): SecretContent | HookReply {
   const has = (k: string): boolean => input[k] !== undefined;
   const asTyped = (k: string): string => {
@@ -132,12 +122,15 @@ export function parseContent(
     return typeof v === "string" ? v : "";
   };
   if (kind === "key") {
-    for (const k of ["login", "password", "two_factor", "totp_secret"]) if (has(k)) return fail("E-CRED-005", k);
+    for (const k of ["login", "password", "two_factor", "totp_secret"]) if (has(k)) return mixed(k);
     const value = asTyped("value");
     if (value === "") return fail("E-CRED-005", "value");
     return { kind, value };
   }
-  if (has("value")) return fail("E-CRED-005", "value");
+  if (has("value")) return mixed("value");
+  // ID は打ったとおりが契約と同じ pattern（空白だけでない）に合うこと。直した形を預ける
+  const typedLogin = rawBody["login"] ?? input["login"];
+  if (typeof typedLogin !== "string" || !LOGIN_RE_RAW.test(typedLogin)) return fail("E-CRED-005", "login");
   const login = text(input["login"]);
   if (login === "") return fail("E-CRED-005", "login");
   const password = asTyped("password");

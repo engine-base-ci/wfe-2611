@@ -15,20 +15,20 @@ REQUIRED_INPUTS = {
     "createCredential": ["layer", "kind", "name", "destinations"],
 }
 
-# 値の決まりの共通の定数（_K352_NAME・_K352_DEST・_K352_TOTP）は 05_flow/screen_api.py と scripts/ci/contract_shape_test.py に在る（口の input.ts の NAME_PATTERN と同じ字）
+# 値の決まりの pattern は scripts/ci/credential_patterns.py（_CP）。口は apps/api/src/features/F3/credentials/patterns.ts の同じ字（試験 K352-API-026 が照らす）
 # apps/api/src/features/F3/credentials/input.ts（層・種類・2 段階の種類は決まった値だけ・使える場所は 1〜20 個）
 VALUE_RANGES = {
     "createCredential": {
         "layer": {"enum": ["workspace", "personal"]},
         "kind": {"enum": ["login", "key"]},
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": _K352_DEST},
-        "name": {"pattern": _K352_NAME},
-        "login": {"pattern": "\\S"},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}},
+        "name": {"pattern": _CP.NAME},
+        "login": {"pattern": _CP.LOGIN},
         "password": {"minLength": 1},
         "value": {"minLength": 1},
-        "totp_secret": {"pattern": _K352_TOTP},
-        "expires_on": {"format": "date"},
+        "totp_secret": {"pattern": _CP.TOTP},
+        "expires_on": {"pattern": _CP.EXPIRES},
     },
 }
 
@@ -44,11 +44,7 @@ INPUT_RULES = {
     ]},
 }
 
-UNEXPRESSIBLE_422 = {
-    "createCredential": [
-        "日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた。今日より前の期限は時刻で決まるので 409（K-383・PM の決め）
 
 # 預ける（K-352）。権限（403）・本人確認（403）・同じ名前（409）・入力（422）・金庫に置けない（502）・預かれない／混んでいる／Kaname の側（503）
 ERRORS_4XX = {
@@ -62,8 +58,11 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-CRED-006", "body": {"error": "conflict", "code": "E-CRED-006"}, "errors": ["E-CRED-006"],
          "trigger": "同じ層（ワークスペースの中・自分の物の中）に、消していない・失効していない同じ名前の物がある（同時に預けた負けの方も）",
          "ears_form": "UNWANTED: IF 同じ層に同じ名前の物が預けてあるなら、Kaname は 409 と E-CRED-006 を返し、金庫に物を残さず行も作らない"},
-        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-001", "E-CRED-002", "E-CRED-003", "E-CRED-004", "E-CRED-005", "E-VAL-003"],
-         "trigger": "名前の形（E-CRED-001）・使える場所の形と数（E-CRED-002）・使える場所が無い（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）・層／種類／2 段階の種類が決まった値の外・本文に知らない欄（strict）",
+        {"status": 409, "code": "E-CRED-004", "body": {"error": "conflict", "code": "E-CRED-004"}, "errors": ["E-CRED-004"],
+         "trigger": "期限が日本の今日より前（時刻で決まる）",
+         "ears_form": "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も作らない"},
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-CRED-001", "E-CRED-002", "E-CRED-003", "E-CRED-005", "E-VAL-003"],
+         "trigger": "名前の形（E-CRED-001）・使える場所の形と数（E-CRED-002）・使える場所が無い（E-CRED-003）・期限の形（暦に無い・年-月-日でない）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）・層／種類／2 段階の種類が決まった値の外・本文に知らない欄（strict）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も作らない"},
         {"status": 502, "code": "E-SEC-001", "body": {"error": "dependency", "code": "E-SEC-001"}, "errors": ["E-SEC-001"],
          "trigger": "暗号化した中身を預かり先（金庫）に置けなかった",

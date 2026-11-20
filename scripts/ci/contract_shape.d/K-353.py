@@ -7,17 +7,12 @@ NO_REQUIRED_INPUTS = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20, "items": _K352_DEST},
-        "login": {"pattern": "\S"},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": _CP.DEST}},
+        "login": {"pattern": _CP.LOGIN},
         "password": {"minLength": 1},
         "value": {"minLength": 1},
-        "totp_secret": {"pattern": _K352_TOTP},
-        "expires_on": {"format": "date"},
+        "totp_secret": {"pattern": _CP.TOTP},
+        "expires_on": {"pattern": _CP.EXPIRES},
     },
 }
-UNEXPRESSIBLE_422 = {
-    "updateCredential": [
-        "日本の今日より前の期限（E-CRED-004・日付の形と暦は契約に書いた）",
-        "預けた物の種類で決まる中身の混ざり（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・E-CRED-005・E-VAL-003）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた。今日より前の期限・預けた物の種類で決まる混ざりは 409（K-383・PM の決め）
