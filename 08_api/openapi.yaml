@@ -9834,7 +9834,7 @@ components:
     CredentialLoginAnswerInput:
       type: object
       properties:
-        request_id:
+        request_ref:
           type: string
           maxLength: 100
         code:
@@ -9844,7 +9844,7 @@ components:
       additionalProperties: false
       x-operation: answerCredentialLoginCheck
       required:
-      - request_id
+      - request_ref
       x-required-by: hooks
     CredentialCheckReportInput:
       type: object
@@ -9869,7 +9869,7 @@ components:
         detail:
           type: string
           maxLength: 400
-        request_id:
+        request_ref:
           type: string
           maxLength: 100
         ask_kind:
@@ -15253,13 +15253,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：asking・waiting で request_id が無い（VALIDATION_ERROR・欄 request_id））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - asking・waiting で request_id が無い（VALIDATION_ERROR・欄 request_id）
+          - asking・waiting で request_ref が無い（VALIDATION_ERROR・欄 request_ref）
         '503':
           description: E-PAGE-003
           content:

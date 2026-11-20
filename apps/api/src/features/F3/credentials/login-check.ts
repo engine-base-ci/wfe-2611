@@ -61,7 +61,7 @@ const errorReply = (code: unknown): HookReply | null => {
   return make ? make() : null;
 };
 
-/** request_id：1〜100 字の文字列。無い・空・長すぎるは null */
+/** request_ref（PC が頼みごとに付ける印・Claude の CLI の control_request の request_id の値）：1〜100 字の文字列。無い・空・長すぎるは null */
 function parseRequestId(v: unknown): string | null {
   if (typeof v !== "string") return null;
   const s = v.trim();
@@ -70,8 +70,8 @@ function parseRequestId(v: unknown): string | null {
 
 /** 答える体：code と approved はどちらか 1 つ。code は NFKC と空白・ハイフンを落として 1〜64 字。approved true は "approved" として置く */
 export function parseAnswer(input: Record<string, unknown>): { request: string; code: string } | HookReply {
-  const request = parseRequestId(input["request_id"]);
-  if (!request) return invalid("request_id", "頼みの id（1〜100 文字）を入れてください");
+  const request = parseRequestId(input["request_ref"]);
+  if (!request) return invalid("request_ref", "頼みの id（1〜100 文字）を入れてください");
   const hasCode = input["code"] !== undefined && input["code"] !== null;
   const hasApproved = input["approved"] !== undefined && input["approved"] !== null;
   if (hasCode === hasApproved) return invalid("code", "コードか「スマホで承認した」のどちらか 1 つを送ってください");
@@ -94,7 +94,7 @@ export interface ReportInput {
   text: string | null;
 }
 
-/** PC の知らせの体：state は決まった 11 種・detail は 400 字まで・asking と waiting は request_id・asking の ask_kind は code か approve・text は 300 字まで */
+/** PC の知らせの体：state は決まった 11 種・detail は 400 字まで・asking と waiting は request_ref・asking の ask_kind は code か approve・text は 300 字まで */
 export function parseReport(input: Record<string, unknown>): ReportInput | HookReply {
   const job = typeof input["job_id"] === "string" ? input["job_id"] : "";
   if (!job) return invalid("job_id", "仕事の id が要ります");
@@ -108,10 +108,10 @@ export function parseReport(input: Record<string, unknown>): ReportInput | HookR
   if (typeof askKind !== "string" || !(ASK_KINDS as readonly string[]).includes(askKind))
     return invalid("ask_kind", "code か approve です");
   const needsRequest = state === "asking" || state === "waiting";
-  const request = input["request_id"] === undefined ? null : parseRequestId(input["request_id"]);
-  if (input["request_id"] !== undefined && request === null)
-    return invalid("request_id", "頼みの id（1〜100 文字）を入れてください");
-  if (needsRequest && request === null) return invalid("request_id", "頼みの id が要ります");
+  const request = input["request_ref"] === undefined ? null : parseRequestId(input["request_ref"]);
+  if (input["request_ref"] !== undefined && request === null)
+    return invalid("request_ref", "頼みの id（1〜100 文字）を入れてください");
+  if (needsRequest && request === null) return invalid("request_ref", "頼みの id が要ります");
   return { job, state, detail, request, askKind, text };
 }
 

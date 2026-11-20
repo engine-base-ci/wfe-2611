@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:0156fceee25f6cf7
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a99da836b3143a22
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -320,8 +320,8 @@ export type TicketCompleteInput = { todo_checked: string[]; todo_version: number
 export type InvitationResendInput = Record<string, never>;
 export type CredentialCreateInput = { layer: string; kind: string; name: string; description?: string | null; login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations: string[]; expires_on?: string | null };
 export type CredentialLoginCheckInput = Record<string, never>;
-export type CredentialLoginAnswerInput = { request_id: string; code?: string; approved?: boolean };
-export type CredentialCheckReportInput = { job_id: string; state: string; detail?: string; request_id?: string; ask_kind?: string; text?: string };
+export type CredentialLoginAnswerInput = { request_ref: string; code?: string; approved?: boolean };
+export type CredentialCheckReportInput = { job_id: string; state: string; detail?: string; request_ref?: string; ask_kind?: string; text?: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };

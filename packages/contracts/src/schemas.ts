@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:0156fceee25f6cf7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:a99da836b3143a22
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3581,7 +3581,7 @@ export const CredentialLoginCheckInput = z.strictObject({
 
 });
 export const CredentialLoginAnswerInput = z.strictObject({
-  request_id: z.string().optional(),
+  request_ref: z.string().optional(),
   code: z.string().optional(),
   approved: z.boolean().optional(),
 });
@@ -3589,7 +3589,7 @@ export const CredentialCheckReportInput = z.strictObject({
   job_id: z.uuid().optional(),
   state: z.string().optional(),
   detail: z.string().optional(),
-  request_id: z.string().optional(),
+  request_ref: z.string().optional(),
   ask_kind: z.string().optional(),
   text: z.string().optional(),
 });

@@ -6397,7 +6397,7 @@
       "details": []
      },
      "errors": [],
-     "trigger": "知らない state・401 字以上の detail・301 字以上の text・asking と waiting で request_id が無い・ask_kind が code／approve でない・本文に知らない欄（strict）",
+     "trigger": "知らない state・401 字以上の detail・301 字以上の text・asking と waiting で request_ref が無い・ask_kind が code／approve でない・本文に知らない欄（strict）",
      "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も仕事も変えない"
     },
     {
@@ -17948,7 +17948,7 @@
      "errors": [
       "E-VAL-009"
      ],
-     "trigger": "code と approved の両方・どちらも無い・request_id が無いか 100 字を超える・コードが空か 64 字を超える（E-VAL-009）・本文に知らない欄（strict）",
+     "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが空か 64 字を超える（E-VAL-009）・本文に知らない欄（strict）",
      "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない"
     },
     {
@@ -17961,7 +17961,7 @@
      "errors": [
       "E-CRED-014"
      ],
-     "trigger": "その頼み（request_id）を PC が出していない・確かめが終わった・止まった",
+     "trigger": "その頼み（request_ref）を PC が出していない・確かめが終わった・止まった",
      "ears_form": "UNWANTED: IF いまコードを頼まれていないなら、Kaname は 404 と E-CRED-014 を返し、答えの行を作らない"
     },
     {

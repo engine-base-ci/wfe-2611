@@ -2072,7 +2072,7 @@ K-355,預けた後のログインの確かめの口（checkCredentialLogin・ans
 
 前の道すじ（apps/api/src/auth/ext.ts の `/vault/credentials/:id/login-check`・`/vault/credentials/:id/answer`・`/bridge/credentials/check-result`・`/bridge/code`・Bridge の `/bridge/ask` の確かめの分）の中身を、契約の口に移す（08_api/phase1/05_自分の設定とPC.md §3：`/bridge/code` は check-result に入る）。前の道すじはこの葉では消さない（今の画面・Bridge・前からの試験が使う。消すのは K-358）。Bridge をこの口へつなぎ替えるのは K-354。
 
-預けた直後に 1 回積む（createCredential の中）は K-352。その時に呼ぶ「積む」関数は、この葉で作り直す（下の実施事項 ①）。","- [ ] 下の表の 29 行（K355-API-001〜029）が緑：`apps/api/test/features/F3/credential-login-check.test.ts`
+預けた直後に 1 回積む（createCredential の中）は K-352。その時に呼ぶ「積む」関数は、この葉で作り直す（下の実施事項 ①）。","- [ ] 下の表の 30 行（K355-API-001〜030）が緑：`apps/api/test/features/F3/credential-login-check.test.ts`
 - [ ] 3 本の口が 501 でない。生成の試験 3 本の it.todo が `07_qa/test-plan/ears-elsewhere.d/K-355.json` の covers か na（理由つき）で全部結ばれる
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
