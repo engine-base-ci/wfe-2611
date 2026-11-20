@@ -2333,3 +2333,17 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-622,spec-sync の監査を、リポジトリの写し（scripts/spec-sync）だけで全段そろえて回せる形にする（組織のスキルの置き場の版で回すと、Kaname の書き方を直した D・G・H が使われず偽の赤が出る・P の project_audit.py の写しが無く「実在しない」で赤）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の監査（A・B・C・D・F・G・H・L・P・T）を、2026-11-21 に組織のスキル（`~/.claude/skills/spec-sync-orchestrator/assets/scripts/spec-validator.py`）の版で回したら、本線の木で次の赤が出た。原因を調べると、**大半は製品の食い違いではなく、使った道具の版が違っただけ**だった：
+
+| 段 | 赤の中身 | 原因（調べた結果） | 判断 |
+|---|---|---|---|
+| D | `AD-012` ほかの線が html を指して JSON として読めず落ちる | 組織のスキルの tier_d.py は、しまった画面の見本（.html）を指す追跡の行を読めない。リポジトリの写し `scripts/spec-sync/tier_d.py` は K-34・K-45 で直してあり、同じ地図で落ちない（実測：写しの版は最後まで走る） | **設定の抜け（道具の版）**：写しで回す |
+| F | `screen_to_mock` ほか 7 つが「id_source.file 未指定」 | 組織の版は古い `id_source` の形だけを読む。写しの `spec-validator.py` は `command` で書いた行を流して終わりの値で判定する（K-34）。実測：写しで F は緑 | 同上 |
+| G | `vendor_sql` ほか 3 つが「検査が用意されていない」 | 組織の版は `command` を読まない。写しの `tier_g.py` は読んで流す。実測：node の部品をそろえて流すと G は緑（4 件とも OK） | 同上 |
+| H | 関門 C2 が 2 件・C4 が 3 件の迂回 | 組織の版は例外台帳の `packages/auth/` のようなバッククォートのフォルダを読めない。写しの `tier_h.py` は読む。**台帳には既に登録がある**：X-003（packages/auth/・C2）・X-004（packages/db/・C4 の migration と policy の SQL を起動時に読む）。写しで H は緑 | **正しい例外（登録済み）**：新しい例外は足さない |
+| P | 「project_audit.py が実在しない」 | 写しのフォルダに project_audit.py だけ無い（K-34 の写しが D・G・H・F だけだった）。組織の版で回すと P が走る | **設定の抜け**：この葉で写しに足す |
+
+この葉は、写しのフォルダに project_audit.py を足して、audit-manifest.yaml が名指しする全段の実体がリポジトリの中にそろうようにする。組織のスキルの版は直さない（PM がスキルの側へ K-34 の差分を戻す・申し送り）。","- [ ] 下の表の 7 行（K622-TOOL-001〜007）が緑：`python3 scripts/ci/k622_spec_sync_tools_test.py`
+- [ ] `scripts/spec-sync/project_audit.py` が在り、`python3 scripts/spec-sync/project_audit.py --project-root . --json` が終わりの値 0 か 2 で JSON を出す（この葉では P が赤のまま 2 でよい・緑にするのは K-625・K-626）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-622.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義（生成物）に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
