@@ -20,9 +20,9 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
   });
   it("test_post_tickets_id_messages_not_found", () => {
-    // UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
-    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
+    // UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない
+    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-006");
   });
   it("test_post_tickets_id_messages_rejected_422", () => {
     // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
@@ -30,12 +30,15 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-013");
   });
   it("test_post_tickets_id_messages_rejected_422_2", () => {
-    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない
+    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と欄ごとの理由（E-VAL-027 を含む）を返し、書き込みも受け箱の行も作らない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-009");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない
-  it.todo("test_post_tickets_id_messages_rejected_422_3");
+  it("test_post_tickets_id_messages_not_found_2", () => {
+    // UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
+  });
   it("test_post_tickets_id_messages_server_error", () => {
     // UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-017」（同じ CI の G3 で流れる）
