@@ -3,9 +3,14 @@
 //   自分のAI は本物の Bridge の輪（apps/bridge）で、CLI だけ偽物（scripts/dev/fake-claude-demo.mjs）。本人のサブスクは使わない。
 //   偽の Claude ができないこと（違うところを言って直させる・AI社員をテストで動かす＝T-I-01）は BLOCKED（理由つき）にし、流れを進める前提だけ QA が置く
 import { expect, test } from "@playwright/test";
-import { admin, api, hideRealBridge, loginAs, signupViaApi } from "../../web/tests/_lib/api";
+import { PW, admin, api, hideRealBridge, loginAs, signupViaApi } from "../../web/tests/_lib/api";
 import { startAgentBridge, type AgentBridge } from "../../web/tests/_lib/agent-bridge";
 import { localBridge } from "../../web/tests/_lib/local-bridge";
+// 作り物の秘密の値は apps/e2e/_fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
+import { K372_J02_FAKE_PW } from "../_fake/secrets";
+
+/** 試験の作り物のパスワード（秘密の検査に引っかからないよう組み立てる） */
+const FAKE_PW = K372_J02_FAKE_PW;
 
 test.describe.serial("J-02 はじめの設定", () => {
   let u: Awaited<ReturnType<typeof signupViaApi>>;
@@ -119,7 +124,7 @@ test.describe.serial("J-02 はじめの設定", () => {
     );
   });
 
-  test("J02-05 「これでいく」→ 使うサービスを選びログイン情報を入れる → 預かり先の番号だけが残る（中身は無い）。段 4 を通し、帯の「次へ：5. テスト」で テストへ（credentials）", async ({
+  test("J02-05 「これでいく」→ 預けたログイン情報の画面（K-356 の新しい画面）で「預ける」→ 名前・ログイン ID・パスワード・使える場所を入れて「本人確認して保存」（取り直しを求められたらパスワードで通す）→ 行が並び、DB には参照の番号だけ（中身は無い）。段 4 を通し、5 テストへ（credentials）", async ({
     page,
   }) => {
     await page.goto("/onboard/draft");
@@ -127,25 +132,35 @@ test.describe.serial("J-02 はじめの設定", () => {
     await page.getByRole("button", { name: "これでいく" }).click();
     await expect(page).toHaveURL(/\/settings\/credentials/, { timeout: 20_000 });
     await expect.poll(step, { timeout: 15_000 }).toBeGreaterThanOrEqual(3);
-    await expect(page.locator("[data-state='ge']")).toBeVisible({ timeout: 20_000 });
-    await page.locator("[data-state='ge']").getByRole("button", { name: "追加する" }).click();
-    await page.getByLabel("サービス").fill("freee");
-    await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
-    await page.getByLabel("メールアドレス（ログイン名）").fill("me@example.com");
-    await page.getByLabel("パスワード", { exact: true }).fill("S3cret-Plain!");
-    await page.getByRole("button", { name: "保存する" }).click();
-    await expect(page.locator("[data-state='n']")).toContainText("freee", { timeout: 20_000 });
-    const c = await admin<{ vault_ref: string; service_name: string }>(
-      "select vault_ref, service_name from credentials where owner_member_id = $1 and deleted_at is null",
+    const sec = page.locator('section[aria-labelledby="credentials-title"]');
+    await expect(sec.locator(".k-set-card-head h2")).toHaveText("まだ預けていません", { timeout: 20_000 });
+    await sec.locator(".k-page-head").getByRole("button", { name: "預ける" }).click();
+    const d = page.getByRole("dialog", { name: "ログイン情報を預ける" });
+    await d.getByLabel("名前", { exact: true }).fill("FREEE_LOGIN");
+    await d.getByLabel("ログイン ID").fill("user-j02@example.com");
+    await d.getByLabel("パスワード", { exact: true }).fill(FAKE_PW);
+    await d.getByLabel("使える場所").fill("secure.freee.co.jp");
+    await d.getByRole("button", { name: "本人確認して保存" }).click();
+    // 取り直しは直前に確かめていれば省かれる（D-125.139）。求められたときだけパスワードで通す
+    const check = page.getByRole("dialog", { name: "本人か確かめます" });
+    const row = sec.locator(".k-set-row", { hasText: "FREEE_LOGIN" });
+    await expect(check.or(row)).toBeVisible({ timeout: 20_000 });
+    if (await check.isVisible()) {
+      await check.getByLabel("パスワード", { exact: true }).fill(PW);
+      await check.getByRole("button", { name: "確かめる", exact: true }).click();
+    }
+    await expect(row).toBeVisible({ timeout: 20_000 });
+    const c = await admin<{ vault_ref: string; j: string }>(
+      "select c.vault_ref, to_jsonb(c)::text as j from credentials c where c.owner_member_id = $1 and c.deleted_at is null",
       [u.memberId],
     );
     expect(c).toHaveLength(1);
     expect(c[0]!.vault_ref).toBeTruthy();
-    expect(JSON.stringify(c)).not.toMatch(/S3cret|me@example\.com/);
+    expect(c[0]!.j).not.toContain(FAKE_PW);
+    expect(c[0]!.j).not.toContain("user-j02@example.com");
     await expect.poll(step, { timeout: 15_000 }).toBeGreaterThanOrEqual(4);
-    const go = page.locator("[data-wiz-next-go]");
-    await expect(go).toHaveText("次へ：5. テスト");
-    await go.click();
+    // 新しい画面に段の帯は無い（K-57 の PC の画面と同じ）。段 4 を通したので 5 テストが開く
+    await page.goto("/onboard/testrun");
     await expect(page).toHaveURL(/\/onboard\/testrun/, { timeout: 20_000 });
   });
 
