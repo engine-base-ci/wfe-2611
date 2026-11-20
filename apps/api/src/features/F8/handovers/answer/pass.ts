@@ -2,7 +2,7 @@
 //   口は言葉を HTTP にする（言葉の表は errors.ts の replyOf の 1 か所）。断るときだけ、取引の後に渡した人へメールを 1 通送る（関門 C6）
 import { withTenant } from "@kaname/db/context";
 import type { HookReply } from "../../../../contract/deps.js";
-import { down, fromCatalog, kindOf, replyOf } from "../errors.js";
+import { down, invalid, kindOf, replyOf } from "../errors.js";
 import type { AnswerKind } from "../kinds.js";
 import { sendHandoverMails, type MailRow } from "../notify.js";
 
@@ -17,8 +17,9 @@ type PassAnswer = {
 const WHERE = "答える pass";
 
 export const answerPass: AnswerKind = async (c): Promise<HookReply> => {
-  // 種類 pass の受けるでは switch を受けない（渡した人が小窓で決めた物を使う）
-  if (c.input.switch !== null) return fromCatalog("E-HND-011", 422, { field: "switch" });
+  // 種類 pass の答えでは switch を受けない（渡した人が小窓で決めた物を使う）。DB の中身で決まる断りではなく入力の種類の誤りなので、番号なしの 422（E-HND-011 は 409・ワークスペースの決まりと合わない場合）
+  if (c.input.switch !== null)
+    return invalid("switch", "引き継いでもらうの答えでは切り替えるものを選べません（渡した人が決めた物を使います）");
   let v: PassAnswer;
   try {
     v = await withTenant(c.d.appPool, c.a.ctx, async (cl) => {
