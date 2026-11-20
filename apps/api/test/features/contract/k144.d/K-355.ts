@@ -13,7 +13,7 @@ export const leaf: K144Leaf = {
     ["K144-API-069", "reportCredentialCheck", "path", "id"], // K-355（PC の口・PC の印で叩く）
   ],
   BODIES: {
-    answerCredentialLoginCheck: { request_id: "rq-k144", code: "123456" }, // K-355
+    answerCredentialLoginCheck: { request_ref: "rq-k144", code: "123456" }, // K-355
     reportCredentialCheck: { job_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6", state: "ok" }, // K-355
   },
 };

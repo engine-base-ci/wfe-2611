@@ -27,7 +27,7 @@ const asking = async (p: Pc, id: string, job: string, request = "r1") => {
   const r = await h.report(p, id, {
     job_id: job,
     state: "asking",
-    request_id: request,
+    request_ref: request,
     ask_kind: "code",
     text: "発注ナビ の SMS のコード",
   });
@@ -295,6 +295,37 @@ describe("K-355 checkCredentialLogin（もう一度確かめる）", () => {
     },
     T,
   );
+
+  it(
+    "K355-API-030 上書きで使える場所を替えた後：台帳の判定は今の使える場所で決まる（預けた時に結んだ service_id のままでは決めない）。禁止のサービスから外した物は 201 pending で開く先は今の場所、禁止のサービスの下の名前に替えた物は 201 forbidden で仕事を積まない",
+    async () => {
+      const w = await h.who("moved");
+      const bad = `bank-${w.user.memberId.slice(0, 8)}.example`;
+      await h.admin.query(
+        "insert into service_registry (tenant_id, name, domain, automation_verdict_id) values ($1, '禁止の例（替えた後）', $2, 'forbidden')",
+        [w.user.tenantId, bad],
+      );
+      // 禁止のサービスに当たる場所で預ける（預けた時に service_id が禁止のサービスに結ばれる）→ 上書きで別の場所に替えた（service_id は前のまま）
+      const away = await h.cred(w, { destinations: [bad] });
+      expect((await h.credRow(away))["login_check_state"]).toBe("forbidden");
+      await h.admin.query("update credentials set destinations = $2 where id = $1", [away, ["ok-moved.example"]]);
+      // 禁止でない場所で預ける → 上書きで禁止のサービスの下の名前に替えた
+      const into = await h.cred(w, { destinations: ["ok-before.example"] });
+      await h.admin.query("update credentials set destinations = $2 where id = $1", [into, [`login.${bad}`]]);
+      await h.pc(w);
+      const r1 = await h.check(w, away);
+      expect(r1.status, await r1.clone().text()).toBe(201);
+      const d1 = (await h.json(r1)).data!;
+      expect(d1["state"]).toBe("pending");
+      expect((await h.jobRow(String(d1["job_id"])))["prompt"]).toBe("https://ok-moved.example/");
+      const r2 = await h.check(w, into);
+      expect(r2.status, await r2.clone().text()).toBe(201);
+      expect((await h.json(r2)).data).toEqual({ state: "forbidden", job_id: null });
+      expect(await h.count("select count(*) as n from bridge_jobs where credential_id = $1", [into])).toBe(0);
+      expect((await h.credRow(into))["login_check_state"]).toBe("forbidden");
+    },
+    T,
+  );
 });
 
 describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える）", () => {
@@ -303,7 +334,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
     async () => {
       const { w, p, id, job } = await started("ans");
       await asking(p, id, job);
-      const r = await h.answer(w, id, { request_id: "r1", code: "123456" });
+      const r = await h.answer(w, id, { request_ref: "r1", code: "123456" });
       expect(r.status, await r.clone().text()).toBe(201);
       expect((await h.json(r)).data).toEqual({ accepted: true });
       const ev = (
@@ -334,11 +365,11 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       await h.report(p, id, {
         job_id: job,
         state: "asking",
-        request_id: "r2",
+        request_ref: "r2",
         ask_kind: "approve",
         text: "スマホで承認してください",
       });
-      const r = await h.answer(w, id, { request_id: "r2", approved: true });
+      const r = await h.answer(w, id, { request_ref: "r2", approved: true });
       expect(r.status, await r.clone().text()).toBe(201);
       const ev = (
         await h.admin.query("select payload from bridge_job_events where job_id = $1 and kind = 'answer'", [job])
@@ -355,7 +386,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
     async () => {
       const { w, p, id, job } = await started("nfkc");
       await asking(p, id, job, "r3");
-      expect((await h.answer(w, id, { request_id: "r3", code: "１２３ ４５６" })).status).toBe(201);
+      expect((await h.answer(w, id, { request_ref: "r3", code: "１２３ ４５６" })).status).toBe(201);
       const v = (
         await h.admin.query(
           "select payload->>'code' as c from bridge_job_events where job_id = $1 and kind = 'answer'",
@@ -364,7 +395,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       ).rows[0] as { c: string };
       expect(v.c).toBe("123456");
       await asking(p, id, job, "r4");
-      expect((await h.answer(w, id, { request_id: "r4", code: "123-456" })).status).toBe(201);
+      expect((await h.answer(w, id, { request_ref: "r4", code: "123-456" })).status).toBe(201);
       const v2 = (
         await h.admin.query(
           "select payload->>'code' as c from bridge_job_events where job_id = $1 and kind = 'answer' and request_id = 'r4'",
@@ -382,15 +413,15 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       const { w, p, id, job } = await started("empty");
       await asking(p, id, job);
       for (const body of [
-        { request_id: "r1", code: "" },
-        { request_id: "r1", code: "　 " },
-        { request_id: "r1", code: "1".repeat(65) },
+        { request_ref: "r1", code: "" },
+        { request_ref: "r1", code: "　 " },
+        { request_ref: "r1", code: "1".repeat(65) },
       ]) {
         const r = await h.answer(w, id, body);
         expect(r.status, JSON.stringify(body)).toBe(422);
         expect((await h.json(r))["code"]).toBe(E.codeEmpty);
       }
-      for (const body of [{ request_id: "r1", code: "123456", approved: true }, { request_id: "r1" }]) {
+      for (const body of [{ request_ref: "r1", code: "123456", approved: true }, { request_ref: "r1" }]) {
         const r = await h.answer(w, id, body);
         expect(r.status, JSON.stringify(body)).toBe(422);
       }
@@ -402,15 +433,15 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
   );
 
   it(
-    "K355-API-013 頼まれていない（違う request_id・確かめが終わった）：404・E-CRED-014 とその文。答えの行は作らない",
+    "K355-API-013 頼まれていない（違う request_ref・確かめが終わった）：404・E-CRED-014 とその文。答えの行は作らない",
     async () => {
       const { w, p, id, job } = await started("notasked");
-      let r = await h.answer(w, id, { request_id: "never", code: "123456" });
+      let r = await h.answer(w, id, { request_ref: "never", code: "123456" });
       expect(r.status).toBe(404);
       expect((await h.json(r))["code"]).toBe(E.notAsked);
       await asking(p, id, job);
       expect((await h.report(p, id, { job_id: job, state: "stopped", detail: "止めました" })).status).toBe(201);
-      r = await h.answer(w, id, { request_id: "r1", code: "123456" });
+      r = await h.answer(w, id, { request_ref: "r1", code: "123456" });
       expect(r.status).toBe(404);
       const j = await h.json(r);
       expect(j["code"]).toBe(E.notAsked);
@@ -428,7 +459,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       const { p, id, job } = await started("other-owner");
       await asking(p, id, job);
       const stranger = await h.who("stranger");
-      const r = await h.answer(stranger, id, { request_id: "r1", code: "123456" });
+      const r = await h.answer(stranger, id, { request_ref: "r1", code: "123456" });
       expect(r.status).toBe(404);
       expect(
         await h.count("select count(*) as n from bridge_job_events where job_id = $1 and kind = 'answer'", [job]),
@@ -442,8 +473,8 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
     async () => {
       const { w, p, id, job } = await started("twice");
       await asking(p, id, job);
-      expect((await h.answer(w, id, { request_id: "r1", code: "111111" })).status).toBe(201);
-      expect((await h.answer(w, id, { request_id: "r1", code: "222222" })).status).toBe(201);
+      expect((await h.answer(w, id, { request_ref: "r1", code: "111111" })).status).toBe(201);
+      expect((await h.answer(w, id, { request_ref: "r1", code: "222222" })).status).toBe(201);
       const rows = (
         await h.admin.query(
           "select payload->>'code' as c from bridge_job_events where job_id = $1 and kind = 'answer'",
@@ -461,7 +492,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       const { w, p, id, job } = await started("log");
       await asking(p, id, job);
       const logs = await h.captureLogs(async () => {
-        expect((await h.answer(w, id, { request_id: "r1", code: "975310" })).status).toBe(201);
+        expect((await h.answer(w, id, { request_ref: "r1", code: "975310" })).status).toBe(201);
       });
       expect(logs).not.toContain("975310");
     },
@@ -474,7 +505,7 @@ describe("K-355 answerCredentialLoginCheck（頼まれたコードに答える�
       const { w, p, id, job } = await started("s2");
       await asking(p, id, job);
       await h.withoutFn("app.credential_check_answer(uuid, uuid, text, text)", async () => {
-        const r = await h.answer(w, id, { request_id: "r1", code: "123456" });
+        const r = await h.answer(w, id, { request_ref: "r1", code: "123456" });
         expect(r.status).toBe(503);
         expect((await h.json(r))["code"]).toBe("E-PAGE-003");
       });
@@ -536,7 +567,7 @@ describe("K-355 reportCredentialCheck（PC が途中と結果を知らせる）"
   }, 240_000);
 
   it(
-    "K355-API-020 途中 asking：201 { code: null }。仕事は asking、頼みの行（ask・種類・本人に見せる文）が 1 つ。同じ request_id を 2 回送っても 1 つ",
+    "K355-API-020 途中 asking：201 { code: null }。仕事は asking、頼みの行（ask・種類・本人に見せる文）が 1 つ。同じ request_ref を 2 回送っても 1 つ",
     async () => {
       const { p, id, job } = await started("rep-ask");
       await asking(p, id, job);
@@ -559,9 +590,9 @@ describe("K-355 reportCredentialCheck（PC が途中と結果を知らせる）"
     async () => {
       const { w, p, id, job } = await started("rep-wait");
       await asking(p, id, job);
-      const wait = () => h.report(p, id, { job_id: job, state: "waiting", request_id: "r1" });
+      const wait = () => h.report(p, id, { job_id: job, state: "waiting", request_ref: "r1" });
       expect(await code(await wait())).toBeNull();
-      expect((await h.answer(w, id, { request_id: "r1", code: "654321" })).status).toBe(201);
+      expect((await h.answer(w, id, { request_ref: "r1", code: "654321" })).status).toBe(201);
       expect(await code(await wait())).toBe("654321");
       expect(await code(await wait())).toBeNull();
       const ev = (
@@ -612,14 +643,14 @@ describe("K-355 reportCredentialCheck（PC が途中と結果を知らせる）"
   );
 
   it(
-    "K355-API-024 入力：知らない state・401 文字の detail・asking で request_id が無い・ask_kind が code／approve でない は 422。行も仕事も変えない",
+    "K355-API-024 入力：知らない state・401 文字の detail・asking で request_ref が無い・ask_kind が code／approve でない は 422。行も仕事も変えない",
     async () => {
       const { p, id, job } = await started("rep-422");
       for (const body of [
         { job_id: job, state: "great" },
         { job_id: job, state: "ok", detail: "あ".repeat(401) },
         { job_id: job, state: "asking", ask_kind: "code", text: "x" },
-        { job_id: job, state: "asking", request_id: "r1", ask_kind: "voice", text: "x" },
+        { job_id: job, state: "asking", request_ref: "r1", ask_kind: "voice", text: "x" },
       ]) {
         const r = await h.report(p, id, body);
         expect(r.status, JSON.stringify(body).slice(0, 80)).toBe(422);
