@@ -109,7 +109,7 @@ describe("K-410 グループに配る", () => {
     expect(await h.assigneeOf(t.id)).toBe(P().mgr.id);
   });
 
-  it("K410-API-004 グループが別の会社の物・在らない id・消した：どれも 422・E-HND-012（K-401 の共通の確かめ）・渡しの行 0", async () => {
+  it("K410-API-004 グループが別の会社の物・在らない id・消した：どれも 404・E-HND-012（K-401 の共通の確かめ・DB の中身で決まる断り）・渡しの行 0", async () => {
     await h.ready();
     const gone = (
       await h.f.admin.query<{ id: string }>(
@@ -120,7 +120,7 @@ describe("K-410 グループに配る", () => {
     for (const s of [h.O.rootScope, randomUUID(), gone]) {
       const t = await h.ticket({ assignee: P().boss });
       const r = await h.distribute(P().mgr, t.id, toGroup(s));
-      expect(r.status, s).toBe(422);
+      expect(r.status, s).toBe(404);
       expect((await h.json(r))["code"]).toBe("E-HND-012");
       expect(await h.handoversOf(t.id)).toHaveLength(0);
       expect(await h.assigneeOf(t.id)).toBe(P().boss.id);
