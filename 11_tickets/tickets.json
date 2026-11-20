@@ -18671,7 +18671,12 @@
     "scripts/ci/ci_scope.d/K-383.json",
     "03_architecture/ER図.md",
     "08_api/db-columns.json",
-    "11_tickets/K-66.md"
+    "11_tickets/K-66.md",
+    "05_flow/screen_api.d/K-353.py",
+    "scripts/ci/contract_shape.d/K-353.py",
+    "scripts/ci/contract_shape_test.py",
+    "apps/api/src/features/F3/credentials/input.ts",
+    "apps/api/src/features/F3/credentials/create.ts"
    ],
    "flow": "自分でやるチケットを進めて、話して、決める",
    "sections": {
