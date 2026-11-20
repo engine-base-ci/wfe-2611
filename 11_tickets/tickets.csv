@@ -2100,6 +2100,18 @@ K-353,上書きの口（updateCredential・値・使える場所・期限・理�
 - [ ] 契約の口 `updateCredential`・`deleteCredential` が 501 でない。生成の試験 `patch_credentials_id.test.ts`・`delete_credentials_id.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-353.json`）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-355,預けた後のログインの確かめの口（checkCredentialLogin・answerCredentialLoginCheck・reportCredentialCheck・確かめの仕事は使える場所の 1 つ目を開く・コードは PC にだけ 1 回渡る）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-25,F3・預けたログイン情報,"預けたログイン情報で、自分の PC（Bridge）が 1 回だけログインして確かめる動き（D-117・代表の答え answer=ac0813ee7c21 ③「段 4 に入れる」）の口を、契約の口として作る（今はどれも 501）。
+
+- `checkCredentialLogin`（POST /api/v1/credentials/:id/login-check・本人）：「もう一度確かめる」。確かめの仕事を 1 つ積む
+- `answerCredentialLoginCheck`（POST /api/v1/credentials/:id/login-check/answer・本人）：確かめの途中で PC が頼んだコード（SMS・メール）か「スマホで承認した」を返す
+- `reportCredentialCheck`（POST /api/v1/bridge/credentials/:id/check-result・PC）：PC が途中（コードを頼む・答えを待つ）と結果を知らせる
+
+前の道すじ（apps/api/src/auth/ext.ts の `/vault/credentials/:id/login-check`・`/vault/credentials/:id/answer`・`/bridge/credentials/check-result`・`/bridge/code`・Bridge の `/bridge/ask` の確かめの分）の中身を、契約の口に移す（08_api/phase1/05_自分の設定とPC.md §3：`/bridge/code` は check-result に入る）。前の道すじはこの葉では消さない（今の画面・Bridge・前からの試験が使う。消すのは K-358）。Bridge をこの口へつなぎ替えるのは K-354。
+
+預けた直後に 1 回積む（createCredential の中）は K-352。その時に呼ぶ「積む」関数は、この葉で作り直す（下の実施事項 ①）。","- [ ] 下の表の 30 行（K355-API-001〜030）が緑：`apps/api/test/features/F3/credential-login-check.test.ts`
+- [ ] 3 本の口が 501 でない。生成の試験 3 本の it.todo が `07_qa/test-plan/ears-elsewhere.d/K-355.json` の covers か na（理由つき）で全部結ばれる
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-356,預けたログイン情報の画面（/settings/credentials）を口につなぐ：一覧・空・読めない・自分だけのタブ。前の画面（T-U-10）を作り替え、前からの試験を片付ける（K-56 の葉・預ける小窓は K-372）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"自分の設定 › 預けたログイン情報（`/settings/credentials`・画面 credentials）を、段 4 の部品（`features/F3/credentials/views.tsx`・K-350 が本線に入れる）と契約の口 listCredentials（K-351）につなぐ。
 この葉は **一覧（ワークスペース・自分だけのタブ）・空・読めない** の分と、前の画面の作り替え・前からの試験の片付け。預ける小窓（本人確認して保存・はじめの設定の段 4）は K-372、上書き・消す・確かめの結果・もう一度確かめる・コードを入れる は K-357。
 正の絵はモック `/dev/mock/f3/<状態>`（代表 OK answer=0a262be577b2）。前の画面（T-U-10・WizardLayout・状態 n/a/i/s/ge・462 行）は、この葉で新しい入れ物に作り替える（下の「## 依存の理由」）。","- [ ] 下の表の行（K356-UI-001・003〜009・025・027・029）が緑：`apps/web/tests/k/k356-credentials-list-add.spec.ts`

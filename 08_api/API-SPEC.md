@@ -51,7 +51,7 @@
 | EP-036 | POST | `/api/v1/auth/two-factor/verify` | 作成・実行（auth）— ログインする（パスキー／パスワード＋2 段階） | A13 | 1 | public | C2 | 409 422 401 401 403 422 429 500 403 503 413 429 503 |
 | EP-037 | POST | `/api/v1/bridge/browser` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | device | C1 C2 C4 | 401 403 409 422 413 429 502 503 |
 | EP-038 | POST | `/api/v1/bridge/claim` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | public | C1 C2 C4 | 409 422 413 429 502 503 |
-| EP-039 | POST | `/api/v1/bridge/credentials/:id/check-result` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 404 409 422 413 429 503 |
+| EP-039 | POST | `/api/v1/bridge/credentials/:id/check-result` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 404 409 422 503 413 429 503 |
 | EP-040 | POST | `/api/v1/bridge/credentials/resolve` | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった | A10 | 1 | device | C2 C8 | 401 403 409 422 413 429 503 |
 | EP-041 | GET | `/api/v1/bridge/devices` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 429 502 403 403 503 |
 | EP-042 | PATCH | `/api/v1/bridge/devices/:id` | 更新（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 422 413 429 502 403 403 503 |
@@ -116,8 +116,8 @@
 | EP-101 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 502 503 413 429 403 403 503 |
 | EP-102 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 502 503 413 429 403 403 503 |
 | EP-103 | DELETE | `/api/v1/credentials/:id` | 削除（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 503 429 403 403 503 |
-| EP-104 | POST | `/api/v1/credentials/:id/login-check` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-105 | POST | `/api/v1/credentials/:id/login-check/answer` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-104 | POST | `/api/v1/credentials/:id/login-check` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 409 409 503 413 429 403 403 503 |
+| EP-105 | POST | `/api/v1/credentials/:id/login-check/answer` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 404 503 413 429 403 403 503 |
 | EP-106 | POST | `/api/v1/exports` | 作成・実行（exports）— 記録を書き出す（本人確認） | A40 | 2 | member | C2 C4 | 401 403 409 422 413 429 403 403 503 |
 | EP-107 | GET | `/api/v1/exports/:id` | 取得（exports）— 記録を書き出す（本人確認） | A40 | 1 | member | C4 | 401 403 404 422 429 403 403 503 |
 | EP-108 | GET | `/api/v1/handover_rules` | 取得（handover_rules）— 渡されたものを受ける／断る（理由 | A110 | 1 | member |  | 401 403 422 429 403 403 503 |

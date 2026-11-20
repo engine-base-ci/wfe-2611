@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:10ea4f00b4f9414e
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:7e0980b3c9ab61b9
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -320,6 +320,9 @@ export type TicketCompleteInput = { todo_checked: string[]; todo_version: number
 export type InvitationResendInput = Record<string, never>;
 export type CredentialCreateInput = { layer: string; kind: string; name: string; description?: string | null; login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations: string[]; expires_on?: string | null };
 export type CredentialUpdateInput = { login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations?: string[]; expires_on?: string | null; description?: string | null; reason?: string };
+export type CredentialLoginCheckInput = Record<string, never>;
+export type CredentialLoginAnswerInput = { request_ref: string; code?: string; approved?: boolean };
+export type CredentialCheckReportInput = { job_id: string; state: string; detail?: string; request_ref?: string; ask_kind?: string; text?: string };
 export type DeviceBrowserInput = { browser: string };
 export type DeviceBrowserCheckInput = Record<string, never>;
 export type BridgeBrowserInput = { browser: string };
@@ -430,6 +433,9 @@ export type ServiceStatus = { components?: string[]; banner?: Record<string, unk
 export type InvitationResendResult = { result?: string };
 export type Credential = { id?: string; name?: string; description?: string | null; layer?: string; kind?: string; two_factor?: string; destinations?: string[]; expires_on?: string | null; use_count?: number; last_used_at?: string | null; login_check?: Record<string, unknown>; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type CredentialDeleted = { id?: string };
+export type CredentialLoginCheck = { state?: string; job_id?: string | null };
+export type CredentialLoginAnswer = { accepted?: boolean };
+export type CredentialCheckReport = { accepted?: boolean; code?: string | null };
 export type RevokedDevice = { id?: string; device_label?: string | null; revoked_at?: string | null; revoke_reason?: string };
 export type DeviceBrowser = { id?: string; browser?: string };
 export type DeviceBrowserCheck = { job_id?: string };
