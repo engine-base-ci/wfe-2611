@@ -395,7 +395,7 @@ describe("K-441 つながりの口", () => {
     ).toBe(0);
   });
 
-  it("K441-API-010 足す：相手が無い・消した・別の会社・自分に見えない → 404・E-PAGE-001・欄 other_ticket_id", async () => {
+  it("K441-API-010 足す：足す側（:id）が無い・消した・別の会社・見えない→入口の 404（NOT_FOUND）／相手が無い・消した・別の会社・自分に見えない→口の 404（E-PAGE-001）・どちらも欄なし", async () => {
     const w = await world();
     const other = await world();
     const a = await mk(w, w.g1);
@@ -403,6 +403,14 @@ describe("K-441 つながりの口", () => {
     await f.admin.query("update tickets set deleted_at = now() where id = $1", [deleted.id]);
     const foreign = await mk(other, other.g1);
     const hidden = await mk(w, w.g2);
+    // 足す側（道の :id）：入口の行の確かめが止める（見えない・無い・消した・別の会社は同じ答え）
+    for (const side of [NO_SUCH, deleted.id, foreign.id, hidden.id]) {
+      const r = await add(w.e1, side, { other_ticket_id: a.id, kind: "related" });
+      const j = await asJson(r);
+      expect(r.status, side).toBe(404);
+      expect(j["code"], side).toBe("NOT_FOUND");
+      bare(j);
+    }
     for (const target of [NO_SUCH, deleted.id, foreign.id, hidden.id]) {
       const r = await add(w.e1, a.id, { other_ticket_id: target, kind: "related" });
       const j = await asJson(r);
@@ -565,6 +573,11 @@ describe("K-441 つながりの口", () => {
     }
     const rOther = await rm(other.boss, id);
     expect(rOther.status).toBe(404);
+    {
+      const b = await asJson(rOther);
+      expect(b["code"]).toBe("E-PAGE-001");
+      bare(b);
+    }
     expect((await live(a.id, b.id)).length).toBe(1);
     expect((await audits("ticket_link.delete", w.tenantId)).length).toBe(0);
   });
