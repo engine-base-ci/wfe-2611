@@ -405,6 +405,17 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/bridge/browser",
+   "implementation_path": "apps/api/src/routes/sessions.ts::setBridgeBrowser",
+   "screen_ids_referencing": [
+    "bridge-setup"
+   ],
+   "acts": [
+    "A09"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/bridge/claim",
    "implementation_path": "apps/api/src/routes/sessions.ts::claimPairingCode",
    "screen_ids_referencing": [
