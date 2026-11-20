@@ -65,9 +65,8 @@ describe("K-476 検索条件を直す（updateSavedView・本物の DB）", () =
       before["density"],
       before["share"],
     ]);
-    expect(new Date(String(after["updated_at"])).getTime()).toBeGreaterThan(
-      new Date(String(before["updated_at"])).getTime(),
-    );
+    // updated_at は Date（ミリ秒まで）。String に直すと秒までに切れて、種と直しが同じ秒だと増えて見えない
+    expect((after["updated_at"] as Date).getTime()).toBeGreaterThan((before["updated_at"] as Date).getTime());
     const a = (
       await f.admin.query(
         "select payload, choke_point_id from audit_events where action = 'saved_views.update' and target_id = $1",
@@ -338,7 +337,7 @@ describe("K-476 検索条件を直す（updateSavedView・本物の DB）", () =
     const r = await patchView(c, id, { name: "NOOP", filters: { q: "a" }, density: "compact" });
     expect(r.status).toBe(200);
     const after = await viewRow(id);
-    expect(new Date(String(after["updated_at"])).getTime()).toBe(new Date(String(before["updated_at"])).getTime());
+    expect((after["updated_at"] as Date).getTime()).toBe((before["updated_at"] as Date).getTime());
     expect(await audits("saved_views.update", id)).toBe(0);
   });
 });
