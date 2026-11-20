@@ -17923,6 +17923,70 @@
     "表の住所（2026-11-19）": "- 自己試験の命令は `scripts/ci/g65.d/K-379.txt`（K-376 の形）。読み手の登録は断片 `scripts/ci/ci_scope.d/K-379.json`（reads_ok）。段の設定（web_select.gates）と組を起こす道（jobs.web.paths）は本体 `scripts/ci/ci_scope.d/_base.json`（断片に書けない鍵）\n- 口・migration・エラーの番号・契約の形は足さない"
    },
    "file": "11_tickets/K-379.md"
+  },
+  {
+   "id": "K-424",
+   "title": "契約 fuzz（G36）の的だけ口の回数の上限を大きくし、入口の上限に当たった回を数えて赤にする（奥の振る舞いまで届かせ、当たり外れの赤を無くす・本番の上限は変えない・K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測 K-377（CI の検査の道具 1 つと自己試験 1 本・G65 の置き場に 1 行・0.75 時間）から、設定の読みが無い分を引いた：記録を数える道具 scripts/ci/fuzz_limited.py を書く 10 分（25 行ほど）・fuzz.sh に 4 行足す 5 分・範囲の地図の本体に 2 か所足して作り手を流す 5 分・G65 の置き場の 1 行 1 分・新しい自己試験 7 行と vitest 9 行と前からの自己試験 1 本を流して確かめる 10 分。的の差し替え（apps/api/test/fuzz/limits.ts）と的のサーバーのつなぎ（apps/api/test/fuzz/server.ts）は試験の置き場の中のファイルなので切る段が書いて運ぶ（carry:）。上限を上げると G36 の 1 回が延びる（下の「速さ」・CI 1 回分の待ちは見込みの外）",
+   "decisions": [
+    "D-128.113",
+    "D-095",
+    "D-133.7",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の置き場の中の的（apps/api/test/fuzz）と CI の台本（scripts/ci）と自己試験だけ。本番のコード（apps/api/src）は変えない。的は CI の中で立てた使い捨ての DB と口だけを叩き、外に出ない",
+   "tests": [
+    "apps/api/test/fuzz/k424_fuzz_limits.test.ts",
+    "scripts/ci/k424_fuzz_limited_test.py"
+   ],
+   "carry": [
+    "apps/api/test/fuzz/limits.ts",
+    "apps/api/test/fuzz/server.ts"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/fuzz.sh",
+    "scripts/ci/fuzz_limited.py",
+    "scripts/ci/g65.d/K-424.txt",
+    "scripts/ci/ci_scope.d/_base.json"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "契約 fuzz（G36・`scripts/ci/fuzz.sh`・schemathesis）は、作った口を契約から作った入力・契約の外の入力で叩き、500 を出さない・形どおりの入力を断らない・答えの形が契約どおり、を見る。ところが今は、**ほとんどの例が入口の回数の上限（429）で断られて、奥の振る舞いに届いていない**。\n\n- 原因：的（`apps/api/test/fuzz/server.ts`）は試験の土台（makeHarness）の上限の差し替え口 `h.limits` を空のまま立てるので、入口（`apps/api/src/contract/op.ts` の 1) 上限）は契約の値（口の 6 割が 60／分・3 割が 120／分・14 本が 10／分・1 本が 5／分）で数える。鍵は人（Bearer boss の 1 人）か IP（的は x-forwarded-for を付けないので、全部が `unknown` の 1 つ）なので、fuzz の全部の例が同じ鍵に積まれる\n- 実測（K-353 の CI 回 44682070516 の G36）：59 本で 4844 例・21.8 秒。schemathesis 自身が「Rate limited: 16 operations mostly returned 429 responses」と出している\n- そのため、奥の不具合は「上限に当たる前の最初の数十例」に入ったときだけ赤になる。例の順と時間（VM の混み具合で 1 分の窓に入る数が変わる）で、同じ版でも赤になったり緑になったりする（K-355・K-352 の申し送り・`.ticket-flow/followups.md`）\n\n直し方（1 つの形・特例を足さない）：\n\n1. **的だけ、全部の口の上限を大きくする**（`FUZZ_PER_MINUTE = 1_000_000`）。試験の土台の差し替え口 `h.limits` に入れる。qa-d.test.ts（BIG）・ticket-list.test.ts などが前から使う形と同じ。本番のサーバー（`src/server.ts`）は差し替え口を使わず契約の値のまま\n2. **入口の上限に当たった回を数えて赤にする**：的の fetch を包み、入口が上限で断った要求（429 かつ code RATE_LIMITED）を 1 行ずつ記録する。fuzz.sh は schemathesis の後に記録を数え、1 回でもあれば道ごとの回数を出して赤（新しい上限の道ができて奥に届かなくなったら、黙って緑にしない）\n3. fuzz が見る物は弱めない：schemathesis の設定（`scripts/ci/schemathesis.toml`）・例の数・seed・並びは変えない。429 を「断った」と数える並びもそのまま（ログインの締め出し E-AUTH-002 などの 429 は製品の振る舞いで、入口の上限とは別）\n\n選ばなかった形：**fuzz の要求ごとに別の人・別の IP として数える**。要求ごとに鍵が新しければ毎回届くが、そのためには schemathesis で要求ごとに頭（x-forwarded-for・Bearer）を変える仕掛けが要り、人ごとの鍵の口のために偽のセッションの人を何十人も作る要がある。的と fuzz.sh の作りが大きくなるわりに、見る物は上げる形と同じ。上限で 429 を返すこと自体は、入口の 1 つの道（op.ts の 1)）からしか出ず、生成の試験（`apps/api/test/generated/*` の `*_rate_limited`・「3 回目が 429・RATE_LIMITED・副作用なし」）と K424-FZ-004 が見ている（ただし生成の試験の `*_rate_limited` は、まだ it.todo の口も多い。それは生成の試験の側の話で、この葉では触らない・申し送り）。",
+    "完了の条件": "- [ ] 下の表の K424-FZ-001〜009 が緑：`npx vitest run apps/api/test/fuzz/k424_fuzz_limits.test.ts`（本物の DB・使い捨て）\n- [ ] 下の表の K424-CI-001〜007 が緑：`python3 scripts/ci/k424_fuzz_limited_test.py`\n- [ ] 前からの自己試験 `python3 scripts/ci/fuzz_targets_test.py` が緑（替えない）\n- [ ] チケットの CI の G36 が流れて緑で、その記録に `[G36] 入口の上限（429 RATE_LIMITED）は 0 回` が出る（範囲の地図を直したので、この葉のチケットの CI で G36 が流れる・K424-CI-007。CI の記録を見て確かめる・下の judge-skip）。schemathesis の終わりの Warnings に「Rate limited」が残っても、それは製品の 429（ログインの締め出し E-AUTH-002・6 けたの E-AUTH-014 など）なので、この条件では見ない（出た口と code を確かめの報告に書く）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 本番の上限は変えない。`apps/api/src` のどのファイルも変えない（K424-FZ-009 が見る）\n- 的の 2 つのファイル（`apps/api/test/fuzz/limits.ts`・`apps/api/test/fuzz/server.ts`）は試験の置き場（`apps/api/test/`）の中なので、作る段では書き換えられない（軸 A1）。**切る段が書いて carry: で運ぶ**。作る段で書くのは fuzz.sh・fuzz_limited.py・G65 の置き場の 3 つだけ\n- 的の `server.ts` は前からの試験が字で見る（K326-BIND-006：`buildHooks(HOOK_MODULES,` と `\"fuzz\"` を持ち、`〜Hooks(` を直に呼ばない）。足した `applyFuzzLimits(` と `recordEntryLimited(` はその形に当たらない\n- fuzz.sh は前からの試験 K62-CI-007 が字で見る（`scripts/ci/fuzz_targets.py` を的を立てる前に流す）。この並びは変えない\n- 範囲の地図：今は G36 を起こすファイル（`scripts/ci/ci_scope.d/_base.json` の gates \"36\"）に fuzz.sh・数える道具・的（`apps/api/test/fuzz/**`）が無く、それらだけを変えた回は G36 が流れない（前からある穴・K-62・K-250・K-305 などで的を変えた回も G36 なしで入っていた見込み）。この葉で gates \"36\" に `scripts/ci/fuzz.sh`・`scripts/ci/fuzz_limited.py`・`scripts/ci/fuzz_targets.py`・`apps/api/test/fuzz/**` を、database の組を起こすファイル（jobs.database.paths）に同じ 3 つの台本を足す（的は @kaname/api の中なので、組は packages で起きる）。ci_scope.json は作り手（`python3 scripts/tickets/regen_all.py`）が作り直す生成物\n- 記録の 1 行は「方法 道」（例 `POST /api/v1/credentials`）。的の fetch の高さでは operationId が分からないので道で数える\n- G36 が上限を外して奥まで届くと、**今まで 429 に隠れていた奥の不具合（500・形どおりの入力を断る ST202 など）が前からある口で出るかもしれない**（下の「リスクと懸念」）",
+    "依存の理由": "依存は無い。変えるファイルのうち fuzz.sh・fuzz_limited.py・g65.d/K-424.txt・運ぶ的の 2 つは、段 4 のほかの葉の changes:・tests:・carry: に無い（K-326 から、口の葉は的を直に書かず作り手の一覧から差す）。範囲の地図の本体 `scripts/ci/ci_scope.d/_base.json` は K-324・K-358・K-370 も変える（どれもまだ始まっていない・変える所は別の行）。同じファイルを変える葉は同時に作らない決まりを `flow.py start` が機械で止めるので、依存にはせず、先に始めた方が先に入る（この葉は小さいので先に入れるのが良い）。K-355（作る段）はこの赤の当たり外れを受けているが、ファイルは重ならないので待たせない。",
+    "実施事項": "1. `scripts/ci/fuzz_limited.py`（新しいファイル）：`python3 scripts/ci/fuzz_limited.py <記録>`。記録の各行の前後の空白を落とし、空の行は数えない。0 回（ファイルが無い・空）なら `[G36] 入口の上限（429 RATE_LIMITED）は 0 回` と出して exit 0。1 回以上なら `[G36] 入口の上限（429 RATE_LIMITED）に <合計> 回当たった` と、道ごとに `  <方法 道> ×<回数>`（多い順・同じ数は 1 行（方法 道）の字の順）を出して exit 1\n2. `scripts/ci/fuzz.sh`：\n   - 的を立てる行に `FUZZ_LIMITED=\"$TMP/limited.log\"` を足す（`FUZZ_BUILT=…` と同じ行）\n   - schemathesis を流す行の前に `rc=0`、流す行の終わりに ` || rc=$?`（set -e で止まらず、赤を rc に持つ）\n   - その後に `python3 scripts/ci/fuzz_limited.py \"$TMP/limited.log\" || rc=1` と、最後の行 `exit \"$rc\"`\n3. `scripts/ci/g65.d/K-424.txt`：`python3 scripts/ci/k424_fuzz_limited_test.py` の 1 行\n4. `scripts/ci/ci_scope.d/_base.json`：gates \"36\" の並びの終わりに `scripts/ci/fuzz.sh`・`scripts/ci/fuzz_limited.py`・`scripts/ci/fuzz_targets.py`・`apps/api/test/fuzz/**` を、jobs.database.paths の終わりに `scripts/ci/fuzz.sh`・`scripts/ci/fuzz_limited.py`・`scripts/ci/fuzz_targets.py` を足し、作り手 `python3 scripts/tickets/regen_all.py` で `scripts/ci/ci_scope.json` を作り直す\n5. 運ぶ物（切る段が書いた・作る段では変えない）：`apps/api/test/fuzz/limits.ts`（FUZZ_PER_MINUTE・fuzzLimits・applyFuzzLimits・isEntryLimited・recordEntryLimited）と `apps/api/test/fuzz/server.ts`（hooks を差した後に `applyFuzzLimits(h, ENDPOINTS)`・serve の fetch を `recordEntryLimited(h.fetch, process.env[\"FUZZ_LIMITED\"])` で包む）",
+    "外に影響する手順": "無い（的は CI の中の使い捨ての DB と口だけを叩く。記録は fuzz.sh の一時フォルダ `$TMP` に書き、終わりに trap が消す）。",
+    "テスト仕様と確認の結果": "| ID | 観点 | 項目 | 期待結果 | 試験 |\n|---|---|---|---|---|\n| K424-FZ-001 | 入力 | 全部の口に的の上限 | `fuzzLimits(ENDPOINTS)` の鍵が契約の口の全部とちょうど同じで、どの値も 1,000,000。契約の一番大きい上限 × 1000 以上 | vitest |\n| K424-FZ-002 | 守り | 契約の値を変えない | 呼ぶ前と後で契約の perMinute が同じ。毎回別の表を返す。差し替え口のほかの鍵は残る | vitest |\n| K424-FZ-003 | 対象の状態 | 的の上限を入れた土台 | 契約で 1 分 10 回の getServiceStatus を 11 回叩いて、429 が 0 回 | vitest（本物の DB） |\n| K424-FZ-004 | 守り | 本番と同じ土台（差し替えなし） | 同じ口の 1〜10 回目は 429 でなく、11 回目が 429・code RATE_LIMITED | vitest（本物の DB） |\n| K424-FZ-005 | 入口 | 的のつなぎ | server.ts が limits.js を読み、hooks を差した後・サーバーを立てる（const srv = serve(）前に `applyFuzzLimits(h, ENDPOINTS)`、fetch を `recordEntryLimited(h.fetch, process.env[\"FUZZ_LIMITED\"])` で包む | vitest（字） |\n| K424-FZ-006 | 入力 | 入口の 429 の見分け | 429＋RATE_LIMITED は数える（体はあとで読める）。429＋E-AUTH-002・200＋RATE_LIMITED・JSON でない 429 は数えない | vitest |\n| K424-FZ-007 | 対象の状態 | 記録 | 入口の 429 の要求だけ `POST /api/v1/busy` の 1 行が記録に入り（問い合わせの字は入れない）、200 は入らない。どちらの答えも状態と体がそのまま読める | vitest |\n| K424-FZ-008 | 失敗 | 記録の置き場が無い | 置き場が undefined・空の字なら、今いるフォルダの中身が前後で同じ（「undefined」の名前のファイルもできない）で、429 の答えはそのまま返る | vitest |\n| K424-FZ-009 | 守り | 本番は読まない | apps/api/src の .ts/.tsx に `fuzz/limits`・FUZZ_PER_MINUTE・applyFuzzLimits・fuzzLimits の字が 0 件 | vitest |\n| K424-CI-001 | 失敗 | 記録が無い | exit 0・`[G36] 入口の上限（429 RATE_LIMITED）は 0 回` | python |\n| K424-CI-002 | 入力 | 空・空白だけ | 空・改行だけ・空白とタブだけのどれも exit 0・「は 0 回」 | python |\n| K424-CI-003 | 入力 | 当たった | 5 行（前後の空白つきを含む）で exit 1・「に 5 回当たった」・`POST /api/v1/credentials ×3`・`GET /api/v1/a ×1`・`GET /api/v1/b ×1` の順 | python |\n| K424-CI-004 | 入口 | fuzz.sh のつなぎ | 的を立てる行（server.ts を `&` で起こす行）に `FUZZ_LIMITED=\"$TMP/limited.log\"`。schemathesis の行の後に `python3 scripts/ci/fuzz_limited.py \"$TMP/limited.log\"` | python（字） |\n| K424-CI-005 | 失敗 | 両方の赤を出す | schemathesis の前に `rc=0`・その命令の終わりが `\\|\\| rc=$?`・その後に `… fuzz_limited.py \"$TMP/limited.log\" \\|\\| rc=1`・最後の行が `exit \"$rc\"` | python（字） |\n| K424-CI-006 | 入口 | CI から流れる | g65.d/K-424.txt に `python3 scripts/ci/k424_fuzz_limited_test.py` があり、どの行も `python3 scripts/ci/<名前>.py` の形 | python |\n| K424-CI-007 | 入口 | 範囲の地図 | 作り直した ci_scope.json で、fuzz.sh・fuzz_limited.py・fuzz_targets.py・的の server.ts・limits.ts のどれを変えてもチケットの CI の重い検査に 36 が入り、3 つの台本は database の組も起こす。関係の無い apps/web/README.md では 36 が入らない | python |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: TP-TOOL-01 この葉が読み書きするファイル（記録 `$TMP/limited.log`・的の 2 つ・fuzz.sh）の名前に日本語は無い。記録の中身は道の字（英数と /）だけ |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K424-CI-001・003（記録が無ければ 0 回・在れば名指しで 1）と K424-FZ-007（的が入口の 429 を本当に記録する）の組で、記録が書かれ読まれていることを見る。K424-FZ-004（差し替えなしでは 11 回目が 429）で、FZ-003 の「429 が 0 回」が上限を外したからだと分かる。K424-CI-005（schemathesis の赤でも数える行まで進む）・K424-CI-006（G65 から流れる）・K424-CI-007（この葉の台本と的を変えた回に G36 が本当に起きる） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 的の上限は環境の値ではなく的のコードの定数（FUZZ_PER_MINUTE）で、CI の VM でも手元でも同じ。記録の置き場だけ fuzz.sh が渡す（無ければ書かない・K424-FZ-008）。schemathesis の版（4.33.0）・設定は変えない |\n\n```judge-skip\nG36 の記録の「入口の上限は 0 回」：CI の G36 の段の出力（JUnit の行ではない）。作る段の TS がチケットの CI の記録を開いて確かめ、確かめの報告に回の番号とその 1 行を貼る（人が確かめる）。Warnings の Rate limited の行が残っていれば、口と code も貼る\n```\n\n状態 × 入口 × 利用者の状態の表：要らない（状態を持つ物を作らない。的の上限は立てたときに 1 回入れるだけ）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出したのは 3 本で、うち `apps/api/test/fuzz/k424_fuzz_limits.test.ts` と `scripts/ci/k424_fuzz_limited_test.py` はこの葉の試験（tests:）。前からの試験は fuzz_targets_test.py の 1 本。server.ts と範囲の地図の本体 _base.json は共通の入口として prior が照らさない（_base.json の gates のキーの組を見る k172_ci_shape_test.py は、キーを変えないので替えない）。server.ts は、的のファイルと fuzz.sh を字で見る試験を git grep でも数えた（5 本のうち k424_fuzz_limited_test.py はこの葉の試験。harness.ts は試験の形のファイルでないので数に入らない）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files scripts/ci/fuzz.sh scripts/ci/fuzz_limited.py scripts/ci/g65.d/K-424.txt scripts/ci/ci_scope.d/_base.json apps/api/test/fuzz/server.ts apps/api/test/fuzz/limits.ts\n3\n```\n\n```search\ngit grep -l -e \"fuzz/server\" -e \"fuzz\\.sh\" -- '*.test.ts' '*_test.py' '*.spec.ts'\n5\n```\n\n- scripts/ci/fuzz_targets_test.py: 替えない — K62-CI-007 は fuzz.sh で fuzz_targets.py が的を立てる前に在ることと workflow の字を見る。この葉はその並びを変えない（切る段で下書きの fuzz.sh に当てて緑を確かめた）\n- apps/api/test/k326-api-registry.test.ts: 替えない — K326-BIND-006 は的の server.ts に `buildHooks(HOOK_MODULES,` と `\"fuzz\"` が在り、`〜Hooks(` を直に呼ばないことを見る。足した `applyFuzzLimits(h, ENDPOINTS)`・`recordEntryLimited(` は `Hooks(` の形でない\n- scripts/ci/k328_secrets_parents_test.py: 替えない — 的の server.ts の道の字を「_fake の外の道」の例に使うだけ\n- scripts/ci/k330_cut_check_test.py: 替えない — 的の server.ts の道の字を共通の入口の例に使うだけ\n- （数の外）apps/api/test/harness.ts: 替えない — 試験の土台（試験の形のファイルではない）。差し替え口 limits は前からある形のまま使う",
+    "速さ（今の値と目標の値）": "| 物 | 今 | 目標 |\n|---|---|---|\n| G36 の 1 回（K-353 の範囲・59 本・4844 例） | 21.8 秒（多くが入口の 429 で速く返る） | 奥まで届く分だけ延びる。目安 3 分以内（例の数・seed は変えない）。超えたら申し送りに実測を書き、例の数を減らすかは PM が決める（この葉では変えない） |\n| 画面ごとの口の数・直列の段・Cache-Control | 変えない（本番のコードを変えない） | 同じ |",
+    "成果物": "- `scripts/ci/fuzz_limited.py`（新しい）・`scripts/ci/fuzz.sh`（4 行）・`scripts/ci/g65.d/K-424.txt`（新しい）・`scripts/ci/ci_scope.d/_base.json`（2 か所）\n- 運ぶ物：`apps/api/test/fuzz/limits.ts`（新しい）・`apps/api/test/fuzz/server.ts`（3 行）\n- 試験：`apps/api/test/fuzz/k424_fuzz_limits.test.ts`・`scripts/ci/k424_fuzz_limited_test.py`",
+    "決定ログ": "- D-128.113：守りの漏れを CI で止める（契約 fuzz はその一つ）。奥まで届かない fuzz は守りの検査になっていない\n- D-095：検査は作った時点で CI に並べる。新しい数える道具は fuzz.sh から、自己試験は G65 から流れる\n- D-133.7：チケットの CI はチケットの範囲だけ。この葉は CI の台本を変えるので範囲は ci（ci_wide）\n- D-128.125：試験は切る段がコードまで書き、作る段は変えない（的の 2 つは試験の置き場なので切る段が運ぶ）\n- PM の決め（2026-11-20 15:20・followups）：本番の上限は変えず、CI の fuzz の回だけ上限の扱いを変える葉を切る",
+    "リスクと懸念": "- **奥の不具合が前からある口で出る**：上限を外すと、今まで 429 に隠れていた 500・ST202 などがチケットの CI の G36 で赤になるかもしれない（範囲の地図を直したので、この葉のチケットの CI で G36 が流れる。G36 は範囲に依らず、作った口の全部（今は 59 本ほど）を回す）。出たら、作る段の TS はその場で直さず、出た口・例・schemathesis の再現の命令を全部集めて 1 回で PM に出す（今のチケットが取り込めなくなる物なので、PM が決める人に聞いて、直しの葉を前に入れるか決める）。この葉の中で schemathesis の設定に外す口を足して緑にすることはしない（検査を緩めない）\n- 製品の 429（ログインの締め出し E-AUTH-002・6 けたの E-AUTH-014・部品の中の回数の制限）は、上限を外すと例がたくさん届くので、Warnings に「Rate limited」が出るかもしれない。これは入口の上限ではないので赤にしない（数えるのは code RATE_LIMITED だけ）。出たら口と code を、ほかの見つけた物と一緒に 1 回で PM に出す\n- 切る段では schemathesis が手元に無いので、上限を外した G36 を前もって流していない。奥の不具合が出るかどうかは、作る段のチケットの CI で初めて分かる\n- G36 の時間が延びる（上の「速さ」）",
+    "申し送り": "- K-355・K-352 の申し送りの「fuzz の回だけ上限を上げるか IP を分ける」はこの葉で閉じる（上げる形を選んだ。訳は「目的」）\n- 生成の試験の `*_rate_limited` は、作った口でもまだ it.todo の物がある（例：post_me_password）。上限の 429 を口ごとに見る所なので、生成の試験の側で埋める葉を PM が切るか決める\n- ログインの部品（Better Auth）の中の回数の制限は入口の上限ではないので、この葉では触らない。G36 でそこが奥まで届かないと分かったら別の葉にする",
+    "表の住所（2026-11-20）": "- 口・エラー・ears・契約の形の表の .d/ は足さない（新しい口が無い）。範囲の地図は、断片（`scripts/ci/ci_scope.d/K-424.json`）ではなく本体 `scripts/ci/ci_scope.d/_base.json` の前からある 2 か所（gates \"36\"・jobs.database.paths）に足す（前からある行を直すので本体）。切る段の範囲の道具が出した affects・ci_wide は頭の欄のとおり・地図に無いファイルは無い"
+   },
+   "file": "11_tickets/K-424.md"
   }
  ]
 }
