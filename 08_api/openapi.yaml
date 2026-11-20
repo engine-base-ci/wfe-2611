@@ -5941,6 +5941,7 @@ components:
       properties:
         email: &id517
           type: string
+          nullable: true
         scope_id:
           type: string
           format: uuid
@@ -9901,6 +9902,25 @@ components:
       - scope_id
       - role_key
       x-required-by: hooks
+    InvitationLinkCreateInput:
+      type: object
+      properties:
+        scope_id:
+          type: string
+          format: uuid
+        role_key:
+          type: string
+          enum:
+          - member
+          - manager
+          - viewer
+          - admin
+      additionalProperties: false
+      x-operation: createInvitationLink
+      required:
+      - scope_id
+      - role_key
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11510,6 +11530,7 @@ components:
           nullable: true
         email:
           type: string
+          nullable: true
         expires_at:
           type: string
         account_exists:
@@ -23005,7 +23026,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationLinkCreateInput'
       responses:
         '201':
           description: 成功
@@ -23025,19 +23046,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
+          description: STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-INV-011（契約に書けない値の決まり：グループがこの会社に無い・消した（E-INV-011））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - グループがこの会社に無い・消した（E-INV-011）
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -23050,12 +23073,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

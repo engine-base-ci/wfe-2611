@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 367（作った 61・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 205・部品 56・設定 41
+API 367（作った 62・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 205・部品 56・設定 41
 
 ## 共通の処理
 
@@ -167,7 +167,7 @@ API 367（作った 61・後のフェーズの行為だけ 20）・前の道す�
 | `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-419 |
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
-| `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） | K-421 |
+| `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-421 |
 | `getMe` | GET /api/v1/me | 取得（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `updateMe` | PATCH /api/v1/me | 更新（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |
 | `uploadAvatar` | POST /api/v1/me/avatar | 作成・実行（me）— 自分のアカウント・端末・テナント・使用量を整える | F10 | 契約だけ（501） | K-70 |

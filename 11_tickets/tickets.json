@@ -3507,7 +3507,6 @@
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
-    "apps/api/test/generated/post_invitations_link.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
     "apps/api/test/generated/post_me_email_change.test.ts",
     "apps/api/test/generated/post_me_email_change_verify.test.ts",

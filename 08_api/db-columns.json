@@ -2734,7 +2734,7 @@
    },
    "email": {
     "type": "text",
-    "nullable": false
+    "nullable": true
    },
    "expires_at": {
     "type": "timestamp with time zone",

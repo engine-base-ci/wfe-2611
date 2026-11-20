@@ -861,7 +861,7 @@ EARS_OK = {
     "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
 }
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
-NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）
+NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "createInvitationLink"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）／K-421：答えにリンクのトークンが入る（器に残さない・二度押しで 2 本のリンクができ、どちらも使える）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
@@ -1118,7 +1118,7 @@ RESPONSES = {
     "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),
     # 招待の下見（K-331）：表の写し（token_hash まで出る）でなく、画面が形を決める欄だけ。signed_in はログイン中だけ { email, email_matches, already_member }
     "getInvitation": ("InvitationPreview", {"state": "string", "workspace_name": "string", "inviter_name": "string?", "group_name": "string?",
-                                            "role": "string", "message": "string?", "email": "string", "expires_at": "string",
+                                            "role": "string", "message": "string?", "email": "string?", "expires_at": "string",
                                             "account_exists": "boolean", "signed_in": "object?"}),
     # 招待で参加した（K-332）：ログインの印（部品のセッションの token）・入ったワークスペース・次に移る画面（入った直後は /mfa-setup）
     "acceptInvitation": ("InvitationAccepted", {"token": "string", "workspace_id": "string", "next": "string"}),
