@@ -2347,3 +2347,37 @@ K-622,spec-sync の監査を、リポジトリの写し（scripts/spec-sync）�
 - [ ] `scripts/spec-sync/project_audit.py` が在り、`python3 scripts/spec-sync/project_audit.py --project-root . --json` が終わりの値 0 か 2 で JSON を出す（この葉では P が赤のまま 2 でよい・緑にするのは K-625・K-626）
 - [ ] G65 の置き場 `scripts/ci/g65.d/K-622.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義（生成物）に入っている
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-625,spec-sync の P2「検査の穴」のうち、台帳・登録の断片（.d）・設定の層 58 件に、その層を本当に読む検査（layer_checks）を結ぶ（K-325 の断片・K-237 の台帳などが、増えたのに layer_checks に行が無い）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の P2 は「地図が参照しているのに、機械の検査も『手で見る＋理由』も無い成果物」を出す（実測：150 件）。内訳を調べた：
+
+| 層 | 件数 | 判断 |
+|---|---|---|
+| `11_tickets/_old/*`・`07_qa/ci-results/*`・`聞くこと_K-146.md` | 92（83 + 8 + 1） | 保管・証拠：K-626 が理由つきで『見ない』と宣言する（この葉は触らない） |
+| 台帳・断片・設定（この葉の持ち物） | **58** | **本当の食い違い（layer_checks に行が無い）**：K-325・K-237・K-206 ほかが足した台帳と `.d` の断片が、増えたのに layer_checks に足されなかった |
+
+この葉は、台帳・断片・設定の層ごとに、**その層の名前を実際に読む検査**を結ぶ。実在する検査は全部ある（実測）：
+
+| 層 | 結ぶ検査（候補・実測で在る物） |
+|---|---|
+| `scripts/ci/ci_scope.json`・`ci_scope.d/` | `ci_scope_test.py`・`k325_registries_test.py` |
+| `07_qa/test-plan/ears-elsewhere.d/` | `k325_registries_test.py` |
+| `scripts/ci/contract_shape.d/` | `contract_shape_test.py` |
+| `scripts/ci/g47.d/`・`g65.d/` | `k376_gate_lists_test.py` |
+| `author_gate.json` | `k206_author_gate_test.py` |
+| `canvas_field_ledger.json` | `k215_canvas_field_test.py` |
+| `canvas_layout_ledger.json` | `k254_canvas_values_test.py`（k215 はこの名前を読まない） |
+| `class_ledger.json` | `k214_class_gate_test.py` |
+| `lock_dates.json` | `stack_gate.py`（読むのは既に `deprecated_baseline.json` の行で使っている） |
+| `perf_budget.json` | `k237_perf_ledger_test.py` |
+| `raw_length_ledger.json` | `design_gate.py --raw-lengths`（置き場は design-gate.json の raw_lengths が名指し） |
+| `runner_tools.json` | `k195_runner_chrome_test.py` |
+| `staging_region.json`・`apps/web/vercel.json` | `k212_function_region_test.py` |
+| `07_qa/test-plan/result-ledger.json` | `ci_results_ledger_test.py` |
+| `ticket-flow.yaml` | `k174_flow_config_test.py` |
+| `ai-team.yaml`・`ci-gates.yaml` | 旧い進め方（ai-team-delivery）の設定：manual（今の進め方は ticket-flow.yaml・どの検査も読まない・理由を書く） |
+| `*.d/README.md`（断片の置き方の説明） | manual（理由：断片は <読む検査> が読んで使う） |
+
+候補は実測した物で、決めるのは実装の担当（置き場の名前を本当に読む検査だけ。試験 004 が名前を読むかを見る）。","- [ ] 下の表の 7 行（K625-LAY-001〜007）が緑：`python3 scripts/ci/k625_layer_ledgers_test.py`
+- [ ] `python3 scripts/spec-sync/project_audit.py --project-root . --json` の P2 に、この葉の層（台帳・断片・設定）が 1 件も無い（`11_tickets/_old`・`07_qa/ci-results`・`聞くこと_K-146` は K-626）
+- [ ] 手元で `python3 scripts/ci/layer_audit.py`（--run なし）と `python3 scripts/ci/ci_wiring_gate.py` が緑（elsewhere の印が本当に流れている。全体のこの確かめは試験でなく完了の条件で、K-629 も見る）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-625.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
