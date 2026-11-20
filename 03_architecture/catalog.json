@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 368,
-  "api_built": 61,
+  "api": 369,
+  "api_built": 65,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 202,
+  "errors": 207,
   "stack": 56,
   "env": 41
  },
@@ -623,6 +623,23 @@
    ]
   },
   {
+   "op": "setBridgeBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/browser",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "sessions"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-366"
+   ]
+  },
+  {
    "op": "claimPairingCode",
    "method": "POST",
    "path": "/api/v1/bridge/claim",
@@ -651,9 +668,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1702,9 +1719,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1719,9 +1736,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
