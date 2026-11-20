@@ -8807,6 +8807,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        notify_managers: &id806
+          type: string
+        reminded_at: &id807
+          type: string
+          format: date-time
+        overdue_notified_at: &id808
+          type: string
+          format: date-time
+        switch_applied: &id809
+          type: object
+          additionalProperties: true
+        answered_by: &id810
+          type: string
         id:
           type: string
           format: uuid
@@ -8838,6 +8851,7 @@ components:
       - D-125
       - D-125.70
       - D-128
+      - D-148.20
     TicketHandoversInput:
       type: object
       properties:
@@ -8853,24 +8867,29 @@ components:
         state: *id803
         decline_reason: *id804
         decided_at: *id805
+        notify_managers: *id806
+        reminded_at: *id807
+        overdue_notified_at: *id808
+        switch_applied: *id809
+        answered_by: *id810
       additionalProperties: false
     SavedViews:
       type: object
       properties:
-        member_id: &id806
+        member_id: &id811
           type: string
           format: uuid
-        name: &id807
+        name: &id812
           type: string
-        share: &id808
+        share: &id813
           type: string
         scope_id:
           type: string
           format: uuid
           nullable: true
-        filters: &id809 {}
-        columns: &id810 {}
-        density: &id811
+        filters: &id814 {}
+        columns: &id815 {}
+        density: &id816
           type: string
         id:
           type: string
@@ -8906,31 +8925,31 @@ components:
     SavedViewsInput:
       type: object
       properties:
-        member_id: *id806
-        name: *id807
-        share: *id808
-        filters: *id809
-        columns: *id810
-        density: *id811
+        member_id: *id811
+        name: *id812
+        share: *id813
+        filters: *id814
+        columns: *id815
+        density: *id816
       additionalProperties: false
     TicketImports:
       type: object
       properties:
-        uploaded_by: &id812
+        uploaded_by: &id817
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        source: &id813
+        source: &id818
           type: string
-        mapping: &id814 {}
-        rows: &id815
+        mapping: &id819 {}
+        rows: &id820
           type: integer
-        errors: &id816 {}
-        state: &id817
+        errors: &id821 {}
+        state: &id822
           type: string
-        committed_at: &id818
+        committed_at: &id823
           type: string
           format: date-time
           nullable: true
@@ -8970,42 +8989,42 @@ components:
     TicketImportsInput:
       type: object
       properties:
-        uploaded_by: *id812
-        source: *id813
-        mapping: *id814
-        rows: *id815
-        errors: *id816
-        state: *id817
-        committed_at: *id818
+        uploaded_by: *id817
+        source: *id818
+        mapping: *id819
+        rows: *id820
+        errors: *id821
+        state: *id822
+        committed_at: *id823
       additionalProperties: false
     LearningCandidates:
       type: object
       properties:
-        owner_member_id: &id819
+        owner_member_id: &id824
           type: string
           format: uuid
-        trigger: &id820
+        trigger: &id825
           type: string
-        proposed_as: &id821
+        proposed_as: &id826
           type: string
-        text: &id822
+        text: &id827
           type: string
-        evidence: &id823 {}
-        check_result: &id824 {}
-        decided_by: &id825
+        evidence: &id828 {}
+        check_result: &id829 {}
+        decided_by: &id830
           type: string
           format: uuid
           nullable: true
-        state: &id826
+        state: &id831
           type: string
-        decided_at: &id827
+        decided_at: &id832
           type: string
           format: date-time
           nullable: true
-        result_type: &id828
+        result_type: &id833
           type: string
           nullable: true
-        result_id: &id829
+        result_id: &id834
           type: string
           format: uuid
           nullable: true
@@ -9046,34 +9065,34 @@ components:
     LearningCandidatesInput:
       type: object
       properties:
-        owner_member_id: *id819
-        trigger: *id820
-        proposed_as: *id821
-        text: *id822
-        evidence: *id823
-        check_result: *id824
-        decided_by: *id825
-        state: *id826
-        decided_at: *id827
-        result_type: *id828
-        result_id: *id829
+        owner_member_id: *id824
+        trigger: *id825
+        proposed_as: *id826
+        text: *id827
+        evidence: *id828
+        check_result: *id829
+        decided_by: *id830
+        state: *id831
+        decided_at: *id832
+        result_type: *id833
+        result_id: *id834
       additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
-        member_id: &id830
+        member_id: &id835
           type: string
           format: uuid
-        code_hash: &id831
+        code_hash: &id836
           type: string
-        expires_at: &id832
+        expires_at: &id837
           type: string
           format: date-time
-        used_at: &id833
+        used_at: &id838
           type: string
           format: date-time
           nullable: true
-        used_session_id: &id834
+        used_session_id: &id839
           type: string
           format: uuid
           nullable: true
@@ -9111,11 +9130,11 @@ components:
     BridgePairingCodesInput:
       type: object
       properties:
-        member_id: *id830
-        code_hash: *id831
-        expires_at: *id832
-        used_at: *id833
-        used_session_id: *id834
+        member_id: *id835
+        code_hash: *id836
+        expires_at: *id837
+        used_at: *id838
+        used_session_id: *id839
       additionalProperties: false
     NotificationSettings:
       type: object
@@ -9154,41 +9173,41 @@ components:
     OpsPlanProposals:
       type: object
       properties:
-        plan_id: &id835
+        plan_id: &id840
           type: string
           format: uuid
-        from_version: &id836
+        from_version: &id841
           type: integer
           nullable: true
-        to_version: &id837
+        to_version: &id842
           type: integer
           nullable: true
-        changes: &id838 {}
-        existing_policy: &id839
+        changes: &id843 {}
+        existing_policy: &id844
           type: string
-        notice_days: &id840
+        notice_days: &id845
           type: integer
           nullable: true
-        new_from: &id841
+        new_from: &id846
           type: string
           format: date
           nullable: true
-        reason: &id842
+        reason: &id847
           type: string
-        proposed_by: &id843
+        proposed_by: &id848
           type: string
           format: uuid
-        decided_by: &id844
+        decided_by: &id849
           type: string
           format: uuid
           nullable: true
-        state: &id845
+        state: &id850
           type: string
-        decided_at: &id846
+        decided_at: &id851
           type: string
           format: date-time
           nullable: true
-        return_reason: &id847
+        return_reason: &id852
           type: string
           nullable: true
         id:
@@ -9225,37 +9244,37 @@ components:
     OpsPlanProposalsInput:
       type: object
       properties:
-        plan_id: *id835
-        from_version: *id836
-        to_version: *id837
-        changes: *id838
-        existing_policy: *id839
-        notice_days: *id840
-        new_from: *id841
-        reason: *id842
-        proposed_by: *id843
-        decided_by: *id844
-        state: *id845
-        decided_at: *id846
-        return_reason: *id847
+        plan_id: *id840
+        from_version: *id841
+        to_version: *id842
+        changes: *id843
+        existing_policy: *id844
+        notice_days: *id845
+        new_from: *id846
+        reason: *id847
+        proposed_by: *id848
+        decided_by: *id849
+        state: *id850
+        decided_at: *id851
+        return_reason: *id852
       additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
-        member_id: &id848
+        member_id: &id853
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        is_primary: &id849
+        is_primary: &id854
           type: boolean
-        role: &id850
+        role: &id855
           type: string
-        since: &id851
+        since: &id856
           type: string
           format: date
-        changed_by: &id852
+        changed_by: &id857
           type: string
           format: uuid
           nullable: true
@@ -9294,22 +9313,22 @@ components:
     ScopeMembershipsInput:
       type: object
       properties:
-        member_id: *id848
-        is_primary: *id849
-        role: *id850
-        since: *id851
-        changed_by: *id852
+        member_id: *id853
+        is_primary: *id854
+        role: *id855
+        since: *id856
+        changed_by: *id857
       additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
-        role: &id853
+        role: &id858
           type: string
-        target_kind_id: &id854
+        target_kind_id: &id859
           type: string
-        ability_id: &id855
+        ability_id: &id860
           type: string
-        scope_kind: &id856
+        scope_kind: &id861
           type: string
         id:
           type: string
@@ -9334,10 +9353,10 @@ components:
     RoleBundleDefaultsInput:
       type: object
       properties:
-        role: *id853
-        target_kind_id: *id854
-        ability_id: *id855
-        scope_kind: *id856
+        role: *id858
+        target_kind_id: *id859
+        ability_id: *id860
+        scope_kind: *id861
       additionalProperties: false
     StepUpInput:
       type: object
@@ -9871,6 +9890,67 @@ components:
       x-operation: updateMyDevice
       required:
       - browser
+      x-required-by: hooks
+    TicketHandoverCreateInput:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+          - pass
+          - offer
+          - distribute
+          - escalate
+        to_member_id:
+          type: string
+          format: uuid
+          nullable: true
+        to_scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        switch:
+          type: object
+          nullable: true
+        notify_managers:
+          type: boolean
+          nullable: true
+        replaces:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: createTicketHandover
+      required:
+      - kind
+      x-required-by: hooks
+    TicketHandoverAnswerInput:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum:
+          - accept
+          - decline
+        decline_reason:
+          type: string
+          nullable: true
+        switch:
+          type: object
+          nullable: true
+      additionalProperties: false
+      x-operation: answerTicketHandover
+      required:
+      - decision
       x-required-by: hooks
     ScopeOverview:
       type: object
@@ -11571,6 +11651,150 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    HandoverPreview:
+      type: object
+      properties:
+        kinds:
+          type: array
+          items:
+            type: string
+        blocked:
+          type: string
+          nullable: true
+        waiting:
+          type: object
+          nullable: true
+        default_reply_due:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+        children:
+          type: object
+        links:
+          type: object
+        group:
+          type: object
+        candidates:
+          type: array
+          items:
+            type: object
+        groups:
+          type: array
+          items:
+            type: object
+      x-operation: previewTicketHandover
+    HandoverRule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        target:
+          type: string
+        axis_id:
+          type: string
+          format: uuid
+          nullable: true
+        axis_name:
+          type: string
+          nullable: true
+        mode:
+          type: string
+      x-operation: listHandoverRules
+    TicketHandoverCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        switch:
+          type: object
+        switch_applied:
+          type: object
+          nullable: true
+        notify_managers:
+          type: boolean
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+      x-operation: createTicketHandover
+    TicketHandoverAnswered:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ticket_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        state:
+          type: string
+        from:
+          type: object
+        to:
+          type: object
+          nullable: true
+        to_scope:
+          type: object
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        ask:
+          type: string
+          nullable: true
+        reply_due:
+          type: string
+          nullable: true
+        switch:
+          type: object
+        switch_applied:
+          type: object
+          nullable: true
+        notify_managers:
+          type: boolean
+        decline_reason:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+      x-operation: answerTicketHandover
     Error:
       type: object
       properties:
@@ -22030,7 +22254,7 @@ paths:
   /api/v1/handover_rules:
     get:
       operationId: listHandoverRules
-      summary: 取得（handover_rules）— 渡されたものを受ける／断る（理由）
+      summary: 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）
       tags:
       - handover_rules
       x-acts:
@@ -22061,22 +22285,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - axis_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - mode
-          - target
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -22088,7 +22296,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/HandoverRules'
+                      $ref: '#/components/schemas/HandoverRule'
                   meta:
                     type: object
         '401':
@@ -38690,7 +38898,7 @@ paths:
       - D-125.88
       - D-125.90
       x-permission: recipient
-      x-permission-scope: 渡された・判断を仰がれた相手だけ
+      x-permission-scope: 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）
       x-step-up: false
       security:
       - session: []
@@ -38706,7 +38914,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketHandoversInput'
+              $ref: '#/components/schemas/TicketHandoverAnswerInput'
       responses:
         '200':
           description: 成功
@@ -38716,7 +38924,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketHandovers'
+                    $ref: '#/components/schemas/TicketHandoverAnswered'
                   meta:
                     type: object
         '401':
@@ -38726,19 +38934,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
           content:
             application/json:
               schema:
@@ -41746,6 +41960,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/handover-preview:
+    get:
+      operationId: previewTicketHandover
+      summary: 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）
+      tags:
+      - tickets
+      x-acts:
+      - A111
+      - A48
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-008.6
+      - D-024
+      - D-032
+      - D-058
+      - D-058.7
+      - D-058.8
+      - D-061
+      - D-061.3
+      - D-061.4
+      - D-061.5
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      - D-125.94
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人のうち、渡す・配る・申し出るのどれかができる人（できなければ 403）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverPreview'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/tickets/{id}/handovers:
     post:
       operationId: createTicketHandover
@@ -41787,7 +42095,7 @@ paths:
       - D-125.96
       - D-125.97
       x-permission: write
-      x-permission-scope: 渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者
+      x-permission-scope: 渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・取引先・止まっている人はできない（D-148.3・D-148.18）
       x-step-up: false
       security:
       - session: []
@@ -41803,7 +42111,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketHandoversInput'
+              $ref: '#/components/schemas/TicketHandoverCreateInput'
       responses:
         '201':
           description: 成功
@@ -41813,7 +42121,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketHandovers'
+                    $ref: '#/components/schemas/TicketHandoverCreated'
                   meta:
                     type: object
         '401':
@@ -41823,19 +42131,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-HND-004
           content:
             application/json:
               schema:

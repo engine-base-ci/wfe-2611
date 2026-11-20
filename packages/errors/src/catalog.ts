@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。201 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。215 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3652,6 +3652,244 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-HND-001": {
+    "id": "E-HND-001",
+    "cls": "validation",
+    "message": "この渡し方は、まだ使えません",
+    "action": "別の渡し方を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-002": {
+    "id": "E-HND-002",
+    "cls": "permission",
+    "message": "このチケットでは、この操作はできません",
+    "action": "担当者かグループを管理する人に頼む",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-003": {
+    "id": "E-HND-003",
+    "cls": "conflict",
+    "message": "AI の実行（承認）が終わってから渡してください",
+    "action": "AI の実行か承認が終わるのを待つ",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-004": {
+    "id": "E-HND-004",
+    "cls": "conflict",
+    "message": "いま{名前}さんの返事を待っています。先にその渡しを取り消してください",
+    "action": "前の渡しを取り消してから渡し直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-005": {
+    "id": "E-HND-005",
+    "cls": "conflict",
+    "message": "この渡しはもう決まっています（受けた・断った・取り消された）",
+    "action": "画面を開き直して今の状態を見る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-006": {
+    "id": "E-HND-006",
+    "cls": "validation",
+    "message": "{名前}さんは今は選べません（{訳}）。別の人を選んでください",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-007": {
+    "id": "E-HND-007",
+    "cls": "validation",
+    "message": "理由を書いてください",
+    "action": "理由を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-007",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-008": {
+    "id": "E-HND-008",
+    "cls": "validation",
+    "message": "返事の期限は今より後にしてください",
+    "action": "返事の期限を今より後にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-009": {
+    "id": "E-HND-009",
+    "cls": "conflict",
+    "message": "完了した・消したチケットは渡せません",
+    "action": "開き直してから、別のチケットで渡す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-009",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-010": {
+    "id": "E-HND-010",
+    "cls": "validation",
+    "message": "自分には渡せません。別の人を選んでください",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-011": {
+    "id": "E-HND-011",
+    "cls": "validation",
+    "message": "一緒に切り替えるものの選び方が、ワークスペースの決まりと合いません",
+    "action": "切り替えるものを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-012": {
+    "id": "E-HND-012",
+    "cls": "validation",
+    "message": "渡す先のグループが見つかりません。選び直してください",
+    "action": "グループを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-013": {
+    "id": "E-HND-013",
+    "cls": "validation",
+    "message": "渡す相手を選んでください",
+    "action": "相手を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-014": {
+    "id": "E-HND-014",
+    "cls": "validation",
+    "message": "選んだ人が見つかりません。選び直してください",
+    "action": "相手を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };

@@ -103,6 +103,14 @@ export const OP_RULES = {
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（K-401・D-148.17）。
+  //   状態は見ない（決まった渡しに答えた人には 403 でなく 409・E-HND-005 を口が返す）。RULES.recipient は替えない（ほかの口に効かせない）。
+  //   関数 app.handover_answer_gate も中で同じ判定をする（守りは 2 層）
+  answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
+
+  // 段9:K-406 取り消す・催促するの行はこの下
+
+  // 段9:K-410 人を決めるの行はこの下
 };
 
 let ENT = null;

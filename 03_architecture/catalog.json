@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 367,
-  "api_built": 59,
+  "api": 368,
+  "api_built": 63,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 201,
+  "errors": 215,
   "stack": 56,
   "env": 41
  },
@@ -1741,7 +1741,7 @@
    "op": "listHandoverRules",
    "method": "GET",
    "path": "/api/v1/handover_rules",
-   "what": "取得（handover_rules）— 渡されたものを受ける／断る（理由）",
+   "what": "取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）",
    "flows": [
     "F8"
    ],
@@ -1749,9 +1749,8 @@
    "tables": [
     "handover_rules"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68",
     "K-401"
    ]
   },
@@ -4605,9 +4604,8 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68",
     "K-401"
    ]
   },
@@ -5139,6 +5137,23 @@
    ]
   },
   {
+   "op": "previewTicketHandover",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handover-preview",
+   "what": "取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "tickets"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-401"
+   ]
+  },
+  {
    "op": "createTicketHandover",
    "method": "POST",
    "path": "/api/v1/tickets/:id/handovers",
@@ -5150,9 +5165,8 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68",
     "K-401"
    ]
   },
@@ -7262,7 +7276,9 @@
     "F6",
     "F7"
    ],
-   "reads": [],
+   "reads": [
+    "F8"
+   ],
    "boundary": true
   },
   {

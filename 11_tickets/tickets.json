@@ -3264,16 +3264,8 @@
    ],
    "split": "これから",
    "screens": [],
-   "apis": [
-    "answerTicketHandover",
-    "createTicketHandover",
-    "listHandoverRules"
-   ],
-   "tests": [
-    "apps/api/test/generated/get_handover_rules.test.ts",
-    "apps/api/test/generated/patch_ticket_handovers_id.test.ts",
-    "apps/api/test/generated/post_tickets_id_handovers.test.ts"
-   ],
+   "apis": [],
+   "tests": [],
    "depends_on": [],
    "sections": {
     "目的": "流れ F8「渡す・配る」を、新しい形のチケット（利用者の 1 つの操作＝1 つの実装・ai-driven-process.md §3）に切るまでの入れ物。古い形の未着手のチケットから、画面・API・決定を引き継いだ（D-128.136）。",
