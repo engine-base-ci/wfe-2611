@@ -498,7 +498,7 @@ test("SCR-ONBOARD-DRAFT-062 「これでいく（次：4. ログイン情報）�
   await expect(go).toBeEnabled();
   await go.click();
   await expect(page).toHaveURL(/\/settings\/credentials$/);
-  await expect(page.locator("h1")).toHaveText("ログイン情報を預ける");
+  await expect(page.getByRole("heading", { level: 1, name: "預けたログイン情報" })).toBeVisible(); // K-356：新しい画面の見出し
   expect((await admin<{ s: number }>("select setup_step as s from members where id = $1", [u.memberId]))[0]!.s).toBe(3);
   // たたき台 の状態からも
   await page.goto("/onboard/draft");
@@ -681,71 +681,6 @@ test("SCR-ONBOARD-DRAFT-063 SCR-ONBOARD-DRAFT-064 ボタン「Opus 5.5」「中�
   expect({ model: j.model, effort: j.effort }).toEqual({ model: "claude-opus-5-5", effort: "medium" });
 });
 
-// =====================================================================================
-// ログイン情報を預ける（T-U-10）
-// =====================================================================================
-
-/** 追加する → サービス → 入力 → 保存する。預けたものが 1 件増える */
-async function addCredential(page: Page, service: string) {
-  await page.getByLabel("サービス").fill(service);
-  await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
-  await expect(page.locator("[data-state='i']")).toContainText(`${service} のログイン情報`);
-  await page.getByLabel("メールアドレス（ログイン名）").fill("me@example.com");
-  await page.getByLabel("パスワード", { exact: true }).fill("S3cret-Plain!");
-  await page.getByRole("button", { name: "保存する" }).click();
-  await expect(page.locator("[data-state='n']")).toContainText(service, { timeout: 15_000 });
-}
-
-test("SCR-CREDENTIALS-051 ボタン「保存する」（入力・空）：空の状態から入れて押すと預けたものに並び（DB は預かり先の番号だけ）、2 件目も入力から押すと増える", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 3);
-  await loginAs(page, u.token);
-  await page.goto("/settings/credentials");
-  await expect(page.locator("[data-state='ge']")).toBeVisible({ timeout: 15_000 });
-  await page.locator("[data-state='ge']").getByRole("button", { name: "追加する" }).click();
-  await addCredential(page, "保存テスト社");
-  expect(
-    await count("select count(*)::int as n from credentials where tenant_id = $1 and vault_ref like 'sec_%'", [
-      u.tenantId,
-    ]),
-  ).toBe(1);
-  await page.locator("[data-state='n']").getByRole("button", { name: "追加する" }).click();
-  await addCredential(page, "二件目社");
-  expect(await count("select count(*)::int as n from credentials where tenant_id = $1", [u.tenantId])).toBe(2);
-  await page.reload();
-  await expect(page.locator("[data-state='n']")).toContainText("二件目社", { timeout: 15_000 });
-});
-
-test("SCR-CREDENTIALS-056 SCR-CREDENTIALS-050 「次へ：5. テスト」（預けたもの・追加する・入力）：はじめの設定 4 を通した後は下の帯の「次へ：5. テスト」がどの状態でも押せ、5 テストで動かす（/onboard/testrun）に移る（「Kaname を開く」は 5 ができたので無い）", async ({
-  page,
-}) => {
-  const u = await signupViaApi();
-  await setupStep(u.memberId, 3);
-  await loginAs(page, u.token);
-  await page.goto("/settings/credentials");
-  await expect(page.locator("[data-state='ge']")).toBeVisible({ timeout: 15_000 });
-  await page.locator("[data-state='ge']").getByRole("button", { name: "追加する" }).click();
-  await addCredential(page, "開く前の社"); // 1 件預けると段 4 を通す（D-089）
-  const go = page.locator("[data-wiz-next-go]");
-  for (const state of ["n", "a", "i"] as const) {
-    await page.goto("/settings/credentials");
-    await expect(page.locator("[data-state='n']")).toBeVisible({ timeout: 15_000 });
-    if (state !== "n") {
-      await page.locator("[data-state='n']").getByRole("button", { name: "追加する" }).click();
-      await expect(page.locator("[data-state='a']")).toBeVisible();
-      if (state === "i") {
-        await page.getByLabel("サービス").fill("入力中の社");
-        await page.getByRole("button", { name: "ログイン情報を入れる" }).click();
-        await expect(page.locator("[data-state='i']")).toBeVisible();
-      }
-    }
-    await expect(go).toHaveText(/次へ：5\. テスト/);
-    await expect(go).toBeEnabled();
-    await expect(page.getByRole("link", { name: "Kaname を開く" })).toHaveCount(0);
-    await go.click();
-    await page.waitForURL(/\/onboard\/testrun/, { timeout: 20_000 });
-    await expect(page.locator("h1")).toHaveText("テストで動かす");
-  }
-});
+// ログイン情報を預ける（T-U-10）の SCR-CREDENTIALS-051・050・056 は、K-356 が画面を作り替えたので消した。
+//   置き換え先：預けて一覧に並ぶ・読み直して残る＝K372-UI-002・006、1 件預けると段 4 を通す＝K372-UI-017（預ける小窓は K-356 から K-372 に分けた）。
+//   「次へ：5. テスト」の帯は新しい画面に無い（K-57 の PC の画面と同じ・代表の答え待ち）
