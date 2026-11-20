@@ -29,25 +29,26 @@ META = {
     "listTicketLinks": {"children": "array"},
 }
 
-# 読む：見えない・無い・消した・別の会社（404）・Kaname の側（503）
-# 足す：書けない（403・:id か相手）・見えない・無い・消した・別の会社（404・在るかを漏らさない）・自分自身（409）・もうつながっている（409）・派生元が輪（409）・入力（422）・Kaname の側（503）
-# 外す：両端のどちらにも書けない（403）・どちらも見えない・外した行・無い id（404）・Kaname の側（503）
+# 読む：チケットが見えない・無い・消した・別の会社（入口の 404・NOT_FOUND）・Kaname の側（503）
+# 足す：足す側（:id）が見えない・無い・別の会社（入口の 404・NOT_FOUND）・足す側に書けない（入口の 403・欄なし）・相手が見えない・無い・消した・別の会社（口の 404・E-PAGE-001・在るかを漏らさない）・
+#       相手に書けない（口の 403・欄 other_ticket_id）・自分自身（409）・もうつながっている（409）・派生元が輪（409）・入力（422）・Kaname の側（503）
+# 外す：両端のどちらにも書けない（403）・どちらも見えない・外した行・無い id（口の 404・E-PAGE-001。道の :id の行の確かめは欄で名指しして外した・scripts/ci/row_rules.mjs の ROW_EXEMPT_FIELDS）・Kaname の側（503）
 ERRORS_4XX = {
     "listTicketLinks": [
-        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "チケットが無い・消した・別の会社・自分に見えない（在るかを漏らさない）",
-         "ears_form": "UNWANTED: IF チケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、つながりも子も返さない"},
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},
+         "trigger": "チケットが無い・消した・別の会社・自分に見えない（入口の行の確かめ・在るかを漏らさない）",
+         "ears_form": "UNWANTED: IF チケットが見えないなら、Kaname は 404 を返し、つながりも子も返さない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "つながりを読む DB が落ちた・DB の関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF つながりを読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も返さず何も書かない"},
     ],
     "createTicketLink": [
         {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"},
-         "trigger": "足す側（:id）のチケットか相手のチケットに書けない（欄 id か other_ticket_id）・会社の人でない",
-         "ears_form": "UNWANTED: IF 足す側か相手のチケットに書けないなら、Kaname は 403 と書けなかった欄を返し、行も証跡も書かない"},
-        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "足す側のチケットか相手のチケットが無い・消した・別の会社・自分に見えない（在るかを漏らさない）",
-         "ears_form": "UNWANTED: IF 足す側か相手のチケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も書かない"},
+         "trigger": "足す側（:id）のチケットに書けない（入口の行の確かめ・欄なし）・相手のチケットに書けない（欄 other_ticket_id）・会社の人でない",
+         "ears_form": "UNWANTED: IF 足す側か相手のチケットに書けないなら、Kaname は 403 を返し（相手に書けないときは欄 other_ticket_id つき）、行も証跡も書かない"},
+        {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": ["E-PAGE-001"],
+         "trigger": "足す側（:id）のチケットが無い・消した・別の会社・自分に見えない（入口の行の確かめ・NOT_FOUND）／相手のチケットが無い・消した・別の会社・自分に見えない（口の答え・E-PAGE-001）。どちらも在るかを漏らさない",
+         "ears_form": "UNWANTED: IF 足す側か相手のチケットが見えないなら、Kaname は 404 を返し、行も証跡も書かない"},
         {"status": 409, "code": "E-LNK-001", "body": {"error": "conflict", "code": "E-LNK-001"}, "errors": ["E-LNK-001", "E-LNK-002", "E-LNK-003"],
          "trigger": "同じチケットとつなごうとした（E-LNK-001）・もうつながっている（同じ向き・関連の逆向きを含む・E-LNK-002）・派生元が輪になる（E-LNK-003）",
          "ears_form": "UNWANTED: IF 自分自身とつなごうとしたか、もうつながっているか、派生元が輪になるなら、Kaname は 409 とその理由（E-LNK-001・002・003）を返し、行も証跡も書かない"},

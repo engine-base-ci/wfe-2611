@@ -17,7 +17,7 @@ describe("GET /api/v1/tickets/:id/links", () => {
   // 当てはまらない（見えないときは 404（有ることを漏らさない）で、読む口に 403 は無い（受けは K441-API-004））：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
   it.todo("test_get_tickets_id_links_rejected_403");
   it("test_get_tickets_id_links_not_found", () => {
-    // UNWANTED: IF チケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、つながりも子も返さない
+    // UNWANTED: IF チケットが見えないなら、Kaname は 404 を返し、つながりも子も返さない
     // 本物の試験：apps/api/test/features/F4/ticket-links.test.ts の「K441-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-links.test.ts", "utf8")).toContain("K441-API-004");
   });

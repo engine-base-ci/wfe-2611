@@ -26,14 +26,16 @@ export const ROW_EXEMPT = {
   "/api/v1/bridge/devices":
     "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
 };
-/** 入口で行を読まない口（口の名前で外す・理由が必須）。:id が指す表の行の見え方と、口が見せたい物が違う口 */
-export const ROW_EXEMPT_OPS = {
-  listTicketLinks:
-    "つながりを読む：見えないチケットも、無い id も、別の会社も、口が同じ 404（E-PAGE-001）で答える。入口の行の確かめは別の 404（NOT_FOUND）を返してしまう（K-441・DB の関数 app.ticket_links_list が見えるかを確かめる）",
-  createTicketLink:
-    "つながりを足す：書けない 403 は足す側か相手かの欄（id・other_ticket_id）を付けて、無い・見えない 404 は E-PAGE-001 で、口が答える。入口の行の確かめは欄なしの 403 と別の 404 を返してしまう（K-441・DB の関数 app.ticket_link_add が見える・書けるを確かめる）",
-  deleteTicketLink:
-    "つながりを外す：行の守りは両端が見える人にしか行を見せないが、外せるのは両端のどちらか 1 つに書ける人（相手が見えなくてもよい・K-441 の PM の決め）。DB の関数 app.ticket_link_remove が見える・書けるを確かめる",
+/** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
+ *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
+export const ROW_EXEMPT_FIELDS = {
+  deleteTicketLink: {
+    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）が、外せるのは両端のどちらか 1 つに書ける人で、相手が見えなくてもよい（K-441・PM の決め）。入口の確かめは相手が見えない人を 404 にしてしまう。見える・書けるは DB の関数 app.ticket_link_remove が確かめる",
+  },
+};
+const exemptField = (op, field) => {
+  const why = ROW_EXEMPT_FIELDS[op]?.[field];
+  return typeof why === "string" && why.trim() !== "";
 };
 
 const ME = "app.user_id()";
@@ -128,9 +130,9 @@ function updatePredicate(root, table) {
 /** 口 1 本の行の確かめ。null＝行を読まない（:id が無い・言葉が行に結ばない）。{error} は契約の生成で赤 */
 export function rowOf(root, e, word) {
   if (!ROW_WORDS.includes(word)) return null;
-  if (ROW_EXEMPT_OPS[e.operationId]) return null;
   const m = /^(.*?)\/:id(\/|$)/.exec(e.path);
   if (!m) return null; // 一覧・作る：行の守り（RLS）が絞る。作る先の確かめは RLS の insert
+  if (exemptField(e.operationId, "id")) return null; // 欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS）
   const base = m[1];
   if (ROW_EXEMPT[base]) return null;
   const table = ID_TABLE[base] ?? base.split("/").pop();
