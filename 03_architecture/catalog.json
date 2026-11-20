@@ -5,8 +5,8 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 367,
-  "api_built": 58,
+  "api": 368,
+  "api_built": 59,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 145,
@@ -5372,6 +5372,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-383"
+   ]
+  },
+  {
+   "op": "markTicketTimelineSeen",
+   "method": "POST",
+   "path": "/api/v1/tickets/:id/timeline/seen",
+   "what": "作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "flows": [
+    "F6"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_messages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-384"
    ]
   },
   {
