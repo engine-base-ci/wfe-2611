@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:d401fcb9d644ae27
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:f0a88426e8a1ea9c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -1083,6 +1083,7 @@ export const BridgeJobs = z.strictObject({
   scope_id: z.uuid().nullable().optional(),
   stop_requested_at: z.iso.datetime({ offset: true }).nullable().optional(),
   taken_session_id: z.uuid().nullable().optional(),
+  target_session_id: z.uuid().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
 });
 export const BridgeJobsInput = z.strictObject({

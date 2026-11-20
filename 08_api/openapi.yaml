@@ -2990,6 +2990,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        target_session_id:
+          type: string
+          format: uuid
+          nullable: true
         updated_by:
           type: string
           format: uuid
