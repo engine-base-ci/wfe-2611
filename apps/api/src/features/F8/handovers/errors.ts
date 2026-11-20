@@ -45,9 +45,9 @@ const TARGET_SUSPENDED: Record<string, string> = { suspended: "止まってい�
 const asText = (v: unknown): string => (typeof v === "string" ? v : "");
 
 /** 相手の断り（欄 to_member_id か to_scope_id） */
-function targetReply(v: { reason?: unknown; 名前?: unknown }): HookReply | null {
-  const reason = asText(v.reason);
-  if (reason in TARGET_SUSPENDED)
+function targetReply(v: Record<string, unknown>): HookReply | null {
+  const reason = asText(v["reason"]);
+  if (Object.hasOwn(TARGET_SUSPENDED, reason))
     return fromCatalog("E-HND-006", 422, {
       field: "to_member_id",
       detail: { 名前: asText(v["名前"]), 訳: TARGET_SUSPENDED[reason] },
