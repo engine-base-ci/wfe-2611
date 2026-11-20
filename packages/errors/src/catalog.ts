@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。209 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。210 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3756,6 +3756,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-NTF-001": {
+    "id": "E-NTF-001",
+    "cls": "conflict",
+    "message": "知らせの続きを読めませんでした。最初から読み直してください",
+    "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-NTF-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "notifications"
     }
   },
   "E-SRC-001": {

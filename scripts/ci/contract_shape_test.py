@@ -1093,6 +1093,9 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
                                                           ("[...wellFormed(s)].slice(0, max)", "Bridge が送る欄（道具の名前・対象・todo の文・止めた先・セッションの id・返事 200000 字・途中の 1 行 400 字。人が書く欄でない）を文字（コードポイント）の単位で切る 1 か所の clip。呼ぶ所は clip(…) の 10 か所（K62-API-033・K62-API-082）")],
+        # K-461：知らせの一覧（DB から limit+1 件取った行を次の分の有無を見た後に limit 件に戻す）と、payload の写しを短くする clip（文字の単位）
+        "apps/api/src/features/F7/notifications/list.ts": [("rows.slice(0, q.limit)", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
+        "apps/api/src/features/F7/notifications/shape.ts": [("Array.from(s).slice(0, CLIP_MAX)", "payload の写しを短くする（人が書く入力でない・文字（コードポイント）の単位で切る）")],
     }
 
     def _migration_texts(self) -> list[tuple[str, str]]:

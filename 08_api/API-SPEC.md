@@ -215,7 +215,7 @@
 | EP-200 | POST | `/api/v1/messages/:id/artifacts` | 作成・実行（messages）— 自分のAIの返事を成果物に書き出し、会 | A95 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-201 | GET | `/api/v1/notices` | 取得（notices）— お知らせを見る | A68 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-202 | POST | `/api/v1/notices/:id/read` | 作成・実行（notices）— お知らせを見る | A68 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-203 | GET | `/api/v1/notifications` | 取得（notifications）— 知らせを見てチケットへ行く | A109 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-203 | GET | `/api/v1/notifications` | 取得（notifications）— 自分宛ての知らせを新しい順に見る（ | A109 | 1 | member |  | 401 403 422 409 429 403 403 503 |
 | EP-204 | PATCH | `/api/v1/notifications/:id` | 更新（notifications）— 知らせを見てチケットへ行く | A109 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-205 | POST | `/api/v1/notifications/read-all` | 作成・実行（notifications）— 知らせを見てチケットへ行く | A109 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-206 | GET | `/api/v1/ops/inquiries` | 取得（ops）— 問い合わせに答える | A70 | 1 | ops |  | 401 403 422 429 403 403 503 |
@@ -390,7 +390,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1035 ／ 内部専用 274 ／ どの画面にも出ない 0
+- 検査したフィールド 1036 ／ 内部専用 274 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

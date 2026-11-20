@@ -1179,6 +1179,36 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/notifications-*.ts",
+    "apps/api/src/hooks/shell.ts",
+    "apps/api/src/features/F7/notifications/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261123080100_notifications_read_at.sql",
+    "05_flow/rls_policies.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_notifications.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/search.ts",
     "apps/api/src/features/F7/search/**"
    ],
@@ -1315,6 +1345,9 @@
   "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）",
   "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
   "apps/web/tests/k/k382-stage7-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f6/mocks.tsx・F6 の部品と CSS と区画のファイル（apps/web/features/F6）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しの台本 07_functional/段7-F6/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・決定ログに足す行.md・答えの記録 01_hearing/decider-answers.jsonl を読み、scripts/ci/design_gate.py を子プロセスで流す（K-382）",
+  "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/F7/notify.harness.ts": "入っている葉の hooks のファイル（notifications-*.ts・shell.ts）を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-461",
+  "apps/api/test/features/F7/notifications-list.test.ts": "本線の migration（packages/db/migrations/*.sql）と画面の道（apps/web/app の page.tsx）を読んで、種類の表と行き先を照らす（K461-API-015・016）。読む物は apps/web/app と packages/db/migrations の変更で、試験の対象は同じ試験",
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）"
  },
  "web_select": {
