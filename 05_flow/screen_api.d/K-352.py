@@ -22,12 +22,12 @@ VALUE_RANGES = {
         "kind": {"enum": ["login", "key"]},
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
         "destinations": {"minItems": 1, "maxItems": 20},
+        "name": {"pattern": "^[A-Z][A-Z0-9_]{0,63}$"},
     },
 }
 
 UNEXPRESSIBLE_422 = {
     "createCredential": [
-        "名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）",
         "使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）",
         "日本の今日より前・暦に無い期限（E-CRED-004）",
         "種類ごとの中身の欠けと混ざり（E-CRED-005）",

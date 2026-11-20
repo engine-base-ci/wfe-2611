@@ -34,10 +34,3 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "setMyPassword"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
-
-# K-352：ログイン情報を預ける口は、名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）・
-#   使える場所の形（E-CRED-002）・期限の暦（E-CRED-004）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）を 422 で断る。
-#   どれも契約の形（string）では書けない（x-unexpressible-422）ので、この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
-[[operations]]
-include-operation-id = "createCredential"
-checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]

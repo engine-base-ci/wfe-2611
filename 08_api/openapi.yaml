@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-20 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-21 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9810,6 +9810,7 @@ components:
           - key
         name:
           type: string
+          pattern: ^[A-Z][A-Z0-9_]{0,63}$
         description:
           type: string
           nullable: true
@@ -21581,13 +21582,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）・使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）
           - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）
           - 日本の今日より前・暦に無い期限（E-CRED-004）
           - 種類ごとの中身の欠けと混ざり（E-CRED-005）
