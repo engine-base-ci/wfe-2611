@@ -34,3 +34,20 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "setMyPassword"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-401：渡す口・答える口は、理由が空（E-HND-007）・返事の期限が今より後でない（E-HND-008）・相手がいない（E-HND-013）・人とグループの両方・
+#   申し出に相手や期限を付けた、などを 422 で断る。どれも契約の形（string・uuid・date-time）では書けない（x-unexpressible-422）ので、
+#   この 2 つの口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "createTicketHandover"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "answerTicketHandover"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-401（重ねた元の K-63 の口）：チケットを完了する口は、todo_version・todo_checked の番号が安全な整数（2 の 53 乗 − 1）を超えると 422 で断る。
+#   契約の形（integer・最小 0）は上限を書かない。形どおりの入力を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "completeTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
