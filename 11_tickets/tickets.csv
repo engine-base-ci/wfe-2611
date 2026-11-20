@@ -2083,6 +2083,19 @@ K-360,PC の一覧に自己診断の時刻（health_at）を足し、生きて�
 - [ ] 契約の形の試験（apps/api/test/features/contract/k144-contract.test.ts の K144-API-010）と K-57 の口の試験（apps/api/test/features/F3/connect-pc.test.ts）が替えずに緑
 - [ ] 替えた前からの試験 apps/api/test/bridge_blocked.test.ts（CHT-37-009・生きている知らせの答えをまるごと比べる 1 か所に device_id を足した・carry で運ぶ）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-364,AI が使うブラウザを PC ごとに選ぶ口（updateMyDevice・browser だけ）・一覧に browser・PC はアカウントのもの（守りは口と DB の関数の 2 重）（K-90 の葉 ①）,タスク,K-56,未着手,実装,2026-11-23,F3・PC,"PC をつないだ人が、**その PC で AI が使うブラウザ**を 3 つから選べる口を作る：自分の Chrome（`chrome`・既定）／Bridge 専用のブラウザ（`dedicated`）／使わない（`off`）（D-119・D-120）。
+契約の口 `updateMyDevice`（PATCH /api/v1/bridge/devices/:id・今は 501）を、`{ browser }` だけを受ける口にする。名前・いつも使う PC は段 4 では作らない（代表の答え answer=0a262be577b2 ③・F3 の後のチケットで同じ口に欄を足す）。
+
+選んだ値が確定するのは、この口が 200 を返した時点。その時点で `sessions.browser` が変わり、その PC の次の生きている知らせ（K-57 の sendHeartbeat の答えの `browser`・今のまま）で Bridge に伝わる。走っている仕事のブラウザは変えない（Bridge が仕事を取ったときに決める・今の browserFor のまま）。
+一覧の口 `listMyDevices` の 1 行にも `browser` を足す（画面の選ぶ欄が今の値を出すため）。
+
+PC はアカウントのもの（D-128.137・D-128.156・代表の答え ④）。どのワークスペースの画面からでも自分の PC を選べ、他の人の PC には触れない。
+今の入口の行の確かめ（perm.row `member_id = app.user_id()`）は、行の守り（sessions は `tenant_id = app.tenant_id()`）の中で読むので、別のワークスペースでつないだ自分の PC が 404 になる。だから `/api/v1/bridge/devices/:id` の口は入口の行の確かめから外し（row_rules.mjs の ROW_EXEMPT）、「自分のアカウントの PC か」を **口の中と DB の関数の 2 重**で確かめる（D-128.166）。この外し方は同じ道の revokeMyDevice（K-362）・checkMyDeviceBrowser（K-365）にも効く（PM の決め：perm.row は K-90 の葉が持つ）。
+
+画面の選ぶ欄とその場の一手（BrowserFix）は、画面の重さ（web）を別の葉に分ける（weight の決まり：1 本が触る重い組は 1 つ。この葉は db）。Bridge の窓から選び直す口は K-366。","- [ ] 下の表の 22 行（K364-API-001〜022）が緑：`apps/api/test/features/F3/ai-browser-pick.test.ts`
+- [ ] 契約の口 `updateMyDevice` が 501 でない。生成の試験 `apps/api/test/generated/patch_bridge_devices_id.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-364.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/api/src/contract/authz.test.ts` は切る段で替えた版を carry: で運ぶ）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）,タスク,K-56,未着手,実装,2026-11-22,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。
 
 - 部品 `apps/web/features/F3/connect-pc/pc-row-parts.tsx`（と `pc-row-parts.css`）：見た目だけ。値と押した結果は props で受け、口は呼ばない
@@ -2137,4 +2150,20 @@ K-378,共有の試験 k144-contract.test.ts に葉が足す分を、葉ごとの
 - [ ] 下の表の K378-KL-019 が緑：本体 `apps/api/test/features/contract/k144-contract.test.ts` の回の中で、この葉自身の葉のファイル `k144.d/K-378.ts` の試験が流れて通る（CI が判定する。本体が置き場を読まない・葉だけの試験を並べないと「流れていない」で赤）
 - [ ] 本体 k144-contract.test.ts が、今までと同じ試験を全部流して緑（この葉の時点で置き場に在る葉のファイルは、この葉自身の K-378.ts だけ。試験の数は K378-KL-019 の 1 本だけ増える）
 - [ ] 契約の形の検査（`python3 scripts/ci/contract_shape_test.py`）が緑（置き場に入口の uuid の行が無ければ、今までと同じ 23 行で 1 対 1。この葉自身の K-378.ts は行を持たない）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-379,CI の画面の組に、Bridge の輪が Chrome を動かす通しの画面の試験の専用の段（G73）を足す。全部の CI では必ず流し、チケットの CI では Bridge と預けたログイン情報の道を変えた葉だけ（K-56 の葉・K-370 の前）,タスク,K-56,未着手,実装,2026-11-20,F3・CI,"預けたログイン情報の通しの道（画面 → 本物の口 → 本物の Bridge の輪 → 本物の Chrome → 的のログイン画面）を確かめる画面の試験は、今の CI のどの段も流していない。CI の画面の組（web）が流すのは G48（e2e:k の一覧）・G59（中間テスト）・G70（見た目の突き合わせ）だけで、Bridge の組み立て（apps/bridge/dist）も無い。だから段 4 の K-370 の通しの 8 行は「手元で流して記録を残す」仮の形（人が確かめる行）になっていた。
+
+2026-11-19 のお試し（使い捨ての枝 tf-trial/bridge-chrome・run 44513671610・44514676916）で、**CI の VM の中で Bridge の輪が Chrome を動かせる**と分かった：画面の組の準備の後に `pnpm --filter @kaname/bridge build`（1〜2 秒）を足すだけで、VM の像の Chrome（google-chrome-stable）を Bridge が頭なしで起こし、Bridge の仕事 5 件が全部閉じた。env は画面の組の今のままで足り、xvfb も Electron の本体も要らない。
+
+PM の決め（2026-11-19）：**画面の組に専用の段を 1 つ足す小さな葉を先に切る**。この葉がそれ。
+
+- 画面の組の「画面を立ち上げる」の後に、① Bridge を組み立てる段 ② 専用の段 **G73**（`scripts/ci/web_run.py gate 73`・K-238 の G70 と同じ形・JUnit は別の名前 `junit/web-bridge.xml`）を足す
+- **全部の CI では必ず流す**。**チケットの CI では、Bridge と預けたログイン情報の道を変えた葉だけ**（範囲の地図 `web_select.gates` の 73 の on に当たる変更・その段の試験を持つチケットと依存のチケット）
+- この葉が入る時点では K-370 の通しの試験はまだ無い（K-370 は K-358 の後）。本線の今の `apps/web/tests/screens/qa-b-login-check.spec.ts` は、セッションの見張り（端末が変わると閉じる・K-20）とぶつかって落ちるので段の試験にできない。だからこの葉は、**段 4 のほかの葉で壊れない小さな見張りの試験を 1 本**持つ（`apps/web/tests/bridge/k379-bridge-chrome.spec.ts`・3 行）：組み立てた Bridge の、Chrome を起こすいちばん下の部品で頭なしの Chrome を起こし、的 `/dev/fake-login` を開いて読む・入れる・押す。Kaname の口（預ける道・仕事の道）は通さない
+- K-370 は、この葉の後に、通しの 2 本をこの段の試験の一覧に足す（K-370 の「依存の理由」）
+
+前からの通しの試験 `apps/e2e/journeys`（j01・j02）が CI で流れていない件は、この葉に入れない（PM が代表に聞く）。","- [ ] 下の表の K379-CI-001〜010 が緑：`python3 scripts/ci/k379_bridge_gate_test.py`
+- [ ] 下の表の K379-BRG-001〜003 が緑：手元で Bridge を組み立て、的が出る形の画面（KANAME_DEV_PAGES=1）を自分の番号で立てて `apps/web/tests/bridge/k379-bridge-chrome.spec.ts` を流す。CI では、画面の行なので取り込んだ後の画面の回（`ci.py web`）で専用の段 G73 が流して判定する
+- [ ] 前からの自己試験（下の「前からの試験を替えた所」）が緑。替えたのは切る段が運ぶ 2 本だけ
+- [ ] 作り手を流し直した生成物（CI の定義・試験計画・範囲の地図）が最新（`python3 scripts/tickets/regen_all.py`）
 - [ ] 手元の CI（このチケットの範囲）が緑"

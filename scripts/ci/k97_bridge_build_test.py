@@ -105,8 +105,16 @@ class BridgeBuild(unittest.TestCase):
         self.assertEqual(bad, [], "輪（loop・pairing から届くファイル）が Electron の部品を import する：Linux の台の node で動かない")
 
     def test_K97_BB_005_ticket_ci_stays_light(self) -> None:
-        text = (ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8")
-        self.assertNotRegex(text, BUILD, "ふだんのチケットの CI では組み立てない（要る試験は staging の回と手元だけ）")
+        # K-379 の切る段で替えた（PM の決め 2026-11-19）：画面の組（web）だけは、Bridge の輪が Chrome を動かす専用の段（G73）のために組み立てる（1 段まで）。
+        #   ほかの組（static・spec・unit・database など）では今までどおり組み立てない。画面の組の段の形（ちょうど 1 つ・G73 の前）は K-379 の試験が見る
+        jobs = yaml.safe_load((ROOT / ".github/workflows/v3-gate.yml").read_text(encoding="utf-8"))["jobs"]
+        self.assertIn("web", jobs)
+        for name, job in jobs.items():
+            hits = [s for s in job.get("steps") or [] if re.search(BUILD, str(s.get("run", "")))]
+            if name == "web":
+                self.assertLessEqual(len(hits), 1, "画面の組の組み立ては 1 段まで")
+            else:
+                self.assertEqual(hits, [], f"{name} の組では組み立てない（ふだんのチケットの CI を重くしない。組み立てるのは画面の組・staging の回・手元だけ）")
 
     def test_K97_BB_006_dist_not_committed(self) -> None:
         out = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-z", "apps/bridge/dist"], capture_output=True).stdout
