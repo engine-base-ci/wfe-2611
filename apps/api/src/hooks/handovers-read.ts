@@ -8,7 +8,9 @@ import { defineHooks } from "./registry.js";
 export function handoverReadHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
     // 詳細の渡しの記録（読むだけ・新しい 50 件・文 1 つ）
-    listTicketHandovers: { before: listTicketHandovers({ appPool }) },
+    listTicketHandovers: {
+      before: listTicketHandovers({ appPool }),
+    },
   };
 }
 
