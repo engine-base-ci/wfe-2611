@@ -6,13 +6,7 @@ import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 import { todayJst } from "../../F4/create-ticket/input.js";
 import { destinationOf } from "./host.js";
-import {
-  DESTINATION_RE_RAW,
-  EXPIRES_RE_RAW,
-  LOGIN_RE_RAW,
-  NAME_RE_RAW,
-  PUBLIC_SUFFIXES_LIST,
-} from "./patterns.js";
+import { DESTINATION_RE_RAW, EXPIRES_RE_RAW, LOGIN_RE_RAW, NAME_RE_RAW, PUBLIC_SUFFIXES_LIST } from "./patterns.js";
 
 export { NAME_PATTERN } from "./patterns.js";
 
