@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。199 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。204 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3618,6 +3618,98 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-CONF-030": {
+    "id": "E-CONF-030",
+    "cls": "conflict",
+    "message": "AI が動いている間と承認待ちの間は、状態を変えられません",
+    "action": "今の実行・承認が終わるのを待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-030",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-032": {
+    "id": "E-CONF-032",
+    "cls": "conflict",
+    "message": "完了したチケットは、開き直してから状態を変えてください",
+    "action": "「作業中（開き直す）」で開き直してから状態を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-032",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-040": {
+    "id": "E-VAL-040",
+    "cls": "validation",
+    "message": "この状態には、ここから変えられません",
+    "action": "ほかの状態を選ぶ（完了は「完了にする」から）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-040",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-041": {
+    "id": "E-VAL-041",
+    "cls": "validation",
+    "message": "保留の理由を書いてください",
+    "action": "保留の理由を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-047": {
+    "id": "E-VAL-047",
+    "cls": "validation",
+    "message": "再開の条件を書いてください",
+    "action": "再開の条件を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-047",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
     }
   }
 };
