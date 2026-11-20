@@ -2361,6 +2361,24 @@ K-472,一覧の絞り込みの受け皿（13 欄を欄ごとの表にして 1 �
 - [ ] 契約（`screen_api.d/K-472.py`）で listTickets の問い合わせが view・q・scope_id・kind_id・stage_id・assignee_id・client_id・done（＋ cursor・limit）になり、view は `enum: [""mine"", ""all""]`・done は `enum: [""true"", ""false""]`・q は `maxLength: 100` を契約の問い合わせの欄に持つ（`QUERY_RANGES`・K-468 が作る仕組み）。cursor の `pattern`（base64url・200 字）は作り手が持つ。契約の 4xx に 409（E-LST-001）が入る。生成物の差が無い
 - [ ] **契約に書けない決まりの例外の表を使わない**：`screen_api.d/K-472.py` にその表の行が無く、契約の `listTickets` の 422 に `x-unexpressible-422` の印が付かない。`scripts/ci/contract_shape_test.py` の K144_SHAPE_028（K-468 が足す）・K144_SHAPE_024 が緑。`scripts/ci/schemathesis.toml` から listTickets の例外（422 を受け付けとして数える行）を消しても契約の fuzz（G36）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-473,一覧の絞り込み：期限・開始日の範囲・期限切れ・炎・親・並び・見せる欄（listTickets の表に 9 行と、13 欄の外の 3 行（期限なし・AI に任せている・自分が承認）を足す・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-25,F7・毎日見る・探す・片付ける,"一覧の口 `listTickets` に、残りの 9 欄を足す。K-472 が作った欄の表に 1 行ずつ足すだけで、受け皿そのものは作り直さない（ただし並びと答えの鍵は where の表に入らないので、小さな表を 2 つ足す）。
+
+- **日付の範囲**：`due_from`・`due_to`・`start_from`・`start_to`（`YYYY-MM-DD`・両端を含む）。日の無いチケットは、その範囲を付けると出ない。始めが終わりより後は間違いにせず 0 件。カレンダー・ガント・「期限が無い 4 件」の入口（A58）
+- **期限切れ・炎**：`overdue`・`fire`（`true`／`false`）。期限が日本時間の今日より前で完了でないものが期限切れ。炎は今は期限切れと同じ（D-125.12・D-125.61）で、期限間近を足すのは F9 の後（1 か所＝`isFire` だけが広がる）
+- **親**：`parent`（`none`＝親の無いもの・`any`＝親のあるもの・`<uuid>`＝その直接の子）。一覧の「親子：親だけ／子だけ」とガントの親子（D-125.13）
+- **並び**：`sort`（`due_on`・`start_on`＝近い順で日の無いものは最後／`updated_at`・`created_at`＝新しい順。同じ値は更新の新しい順 → id）。付けないときは今のまま（mine は期限の近い順・all は更新の新しい順）。次の分の鍵（cursor）は並びごとに作る
+- **見せる欄**：`fields`（`start_on`・`priority`・`estimate_minutes`・`actual_minutes`・`scope` をコンマで）。付けた欄だけ 1 件の鍵に足す（付けなければ K-92 の 12 個のまま）。「表示設定（列）」で出す列のためで、行の数・並び・次の分は変えない
+
+- **13 欄の外の 3 欄**（K-472 の `done` と同じ扱い・`LIST_FIELDS` に入れない。画面 K-478 の「期限が無い」の入口・「AI に任せている」「自分が承認」の絞りの札が使う・K-478 の PM への確かめの勧めで足す）：
+  - `due`：`none`＝期限の無いものだけ（カレンダーの「日が無いもの」の入口・A58）。`none` 以外は 422
+  - `delegated`：`true`＝**自分が AI に任せているもの**（担当が自分で `delegated_to_clone`）／`false`＝それ以外。K-474 の数 `ai` と同じ集まり（数と絞った件数がずれると画面が嘘をつく）
+  - `approving`：`true`＝**自分が承認する決めていないもの**（`approvals` の承認する人が自分・`decision` が無い・取り下げ・行を消した・チケットを消したものは除く）／`false`＝それ以外。K-474 の数 `approve` と同じ集まり
+
+これで 13 欄が全部使える（K-472 の `NOT_YET` が空になる）。数の札（meta.counts）は K-474。","- [ ] 下の表の 24 行（K473-API-001〜024）が緑：`apps/api/test/features/F7/list-ranges.test.ts`（土台 `list.harness.ts`）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑（K-472 が運ぶ `ticket-list.test.ts` の版を含む）
+- [ ] 契約（`screen_api.d/K-472.py`）で listTickets の問い合わせが 13 欄＋done・due・delegated・approving になり（sort は `LIST_DETAILS` の `""sort"": False` を外して契約の共通の形で付く）、生成物の差が無い
+- [ ] **契約に書けない決まりの例外の表を使わない**：契約の `listTickets` の 422 に `x-unexpressible-422` の印が付かず、日付（`format: date`）・真偽・`due`・`parent`・`sort`・`fields` の値の範囲は、契約の問い合わせの欄（`screen_api.d/K-472.py` の `QUERY_RANGES[""listTickets""]`）に書いてある。読めない続きの鍵は 409・E-LST-001（K-472 の物）で、契約に書けないまま残る 422 は無い。`scripts/ci/contract_shape_test.py` の K144_SHAPE_028（K-468 が足す）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-601,段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-23,F7・文書,"段 8（K-67・F7 毎日見る・探す・片付ける）の決定 D-151.1〜20（範囲・知らせの読んだ・探す・保存した検索条件・期限・止まった一手・消す／戻す ほか）を、決定ログの新しい節 §151 として本線に入れる。
 
 段 8 のほかの葉は decisions: に D-151.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（PM の決め 2026-11-20・段 9 の K-425 と同じ。前は部品とモックを運ぶ K-460 が決定ログも運ぶ形で、依存の無い口の葉が先に始まると止まった）。段 8 のほかの葉（口・DB の葉と、K-460 の部品）はこの葉に依存する。","- [ ] 下の表の 4 行（K601-DC-001〜004）が緑：`scripts/ci/k601_decision_log_test.py`
