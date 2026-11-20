@@ -1126,6 +1126,27 @@
    "tests": [
     "apps/api/test/generated/post_tickets_id_timeline_seen.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-decisions.ts",
+    "apps/api/src/features/F6/decisions/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1243,7 +1264,9 @@
   "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
   "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
   "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
-  "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384"
+  "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
+  "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
+  "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",

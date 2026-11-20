@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 368,
-  "api_built": 62,
+  "api_built": 64,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 145,
   "ui": 18,
   "packages": 13,
-  "errors": 201,
+  "errors": 204,
   "stack": 56,
   "env": 41
  },
@@ -5055,7 +5055,7 @@
    "op": "listTicketDecisions",
    "method": "GET",
    "path": "/api/v1/tickets/:id/decisions",
-   "what": "取得（tickets）— 決定を記録する（AI の候補を確定・直接書く）",
+   "what": "取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した）",
    "flows": [
     "F6"
    ],
@@ -5063,9 +5063,9 @@
    "tables": [
     "ticket_decisions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-390"
    ]
   },
   {
@@ -5080,9 +5080,9 @@
    "tables": [
     "ticket_decisions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-390"
    ]
   },
   {

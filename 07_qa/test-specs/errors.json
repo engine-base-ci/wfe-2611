@@ -6405,6 +6405,99 @@
     "D-093.5"
    ],
    "severity": "high"
+  },
+  {
+   "id": "E-VAL-042",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、決めたことが無い・空・空白だけ（全角も）・制御文字だけ（K-390）",
+   "false_when": "決めたことに字がある（字数の上限は無い）",
+   "message": "決めたことを書いてください",
+   "action": "決めたことを書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケットの詳細",
+    "steps": [
+     "決定を足す欄を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40",
+    "D-130.1"
+   ],
+   "support_code": "VAL-042"
+  },
+  {
+   "id": "E-VAL-043",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、決めた人が同じ会社の今のメンバーでない（別の会社の人・外された人・止められた人・無い id・K-390）",
+   "false_when": "決めた人を送らない（本人になる）か、同じ会社の今のメンバー",
+   "message": "決めた人は、この会社のメンバーから選んでください",
+   "action": "決めた人を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "決めた人に別の会社の人の id を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40"
+   ],
+   "support_code": "VAL-043"
+  },
+  {
+   "id": "E-VAL-044",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "書き込みから決定にするとき、元の書き込みがこのチケットの消していない書き込みでない（別のチケット・変更の 1 行・仕組みの行・消した書き込み・無い id・K-390）",
+   "false_when": "元の書き込みを送らない（直接書く）か、このチケットの消していない書き込み",
+   "message": "元の書き込みが見つかりません。やり取りを読み直してください",
+   "action": "やり取りを読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケットで、やり取りの書き込みを決定にする画面を開いたまま、別の人がその書き込みを消す",
+    "steps": [
+     "開いたままの画面で決定を足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40"
+   ],
+   "support_code": "VAL-044"
   }
  ],
  "meta": {

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 368（作った 62・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 201・部品 56・設定 41
+API 368（作った 64・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 204・部品 56・設定 41
 
 ## 共通の処理
 
@@ -394,8 +394,8 @@ API 368（作った 62・後のフェーズの行為だけ 20）・前の道す�
 | `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
-| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
-| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
+| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した） | F6 | 作った | K-390 |
+| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-390 |
 | `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-383,K-392 |
 | `markTicketTimelineSeen` | POST /api/v1/tickets/:id/timeline/seen | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-384,K-392 |
