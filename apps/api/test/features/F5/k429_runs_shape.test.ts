@@ -33,8 +33,7 @@ async function emptyRun(ticketId: string, phase: string | null, status: string |
   );
   return r[0]!.id;
 }
-const runs = async (p: Person, t: string, qs = "") =>
-  k.f.req("GET", `/tickets/${t}/runs${qs}`, { headers: p.auth });
+const runs = async (p: Person, t: string, qs = "") => k.f.req("GET", `/tickets/${t}/runs${qs}`, { headers: p.auth });
 const details = (b: Record<string, unknown>) => (b["details"] ?? []) as { field: string; message: string }[];
 
 /** 契約（08_api/openapi.yaml）の listTicketRuns の sort の enum（文字をそのまま読む。契約と口がずれたら赤） */
@@ -138,7 +137,10 @@ describe("K-429 一覧の問い合わせは契約の形だけを受ける（limi
       expect(r.status, `sort=${bad}`).toBe(422);
       const b = await json(r);
       expect(b.code, `sort=${bad}`).toBe("VALIDATION_ERROR");
-      expect(details(b).map((d) => d.field), `sort=${bad}`).toContain("sort");
+      expect(
+        details(b).map((d) => d.field),
+        `sort=${bad}`,
+      ).toContain("sort");
       expect(b.data).toBeUndefined();
     }
     expect(await k.n("select count(*) as n from action_runs")).toBe(before);
@@ -173,7 +175,10 @@ describe("K-429 一覧の問い合わせは契約の形だけを受ける（limi
     for (const [qs, field] of cases) {
       const r = await runs(owner, t, qs);
       expect(r.status, qs).toBe(422);
-      expect(details(await json(r)).map((d) => d.field), qs).toContain(field);
+      expect(
+        details(await json(r)).map((d) => d.field),
+        qs,
+      ).toContain(field);
     }
     for (const qs of ["?limit=1", "?limit=200", "?cursor=0", "?cursor=123456789", "?limit=&cursor=&sort="]) {
       expect((await runs(owner, t, qs)).status, qs).toBe(200);
@@ -185,7 +190,9 @@ describe("K-429 一覧の問い合わせは契約の形だけを受ける（limi
     await delegateOk(k, owner, t);
     const none = await k.f.req("GET", `/tickets/${t}/runs?sort=-58800`);
     expect(none.status).toBe(401);
-    const asPc = await k.f.req("GET", `/tickets/${t}/runs?sort=-58800`, { headers: { "x-bridge-session": ownerPc.token } });
+    const asPc = await k.f.req("GET", `/tickets/${t}/runs?sort=-58800`, {
+      headers: { "x-bridge-session": ownerPc.token },
+    });
     expect(asPc.status).toBe(403);
     const hidden = await runs(outsider, t, "?sort=-58800");
     expect(hidden.status).toBe(404);
@@ -224,7 +231,9 @@ describe("K-429 読む関数の守り（作り直した関数の権限と、中�
     const t = await k.ticket(owner);
     const real = await delegateOk(k, owner, t);
     const stamp = () =>
-      k.q<{ t: string }>("select max(updated_at)::text as t from action_runs where ticket_id = $1", [t]).then((r) => r[0]!.t);
+      k
+        .q<{ t: string }>("select max(updated_at)::text as t from action_runs where ticket_id = $1", [t])
+        .then((r) => r[0]!.t);
     const before = await stamp();
     expect((await k.run(owner, real.run_id)).status).toBe(200);
     expect((await runs(owner, t)).status).toBe(200);
