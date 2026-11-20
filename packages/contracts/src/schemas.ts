@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:b112e77c2df79a50
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:05849e7531482803
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3606,12 +3606,14 @@ export const SearchHit = z.strictObject({
   url: z.string().optional(),
 });
 export const TimelineItem = z.strictObject({
+  id: z.string().optional(),
   kind: z.string().optional(),
   at: z.string().optional(),
-  actor_member_id: z.string().optional(),
-  message: z.record(z.string(), z.unknown()).optional(),
+  actor: z.record(z.string(), z.unknown()).nullable().optional(),
+  message: z.record(z.string(), z.unknown()).nullable().optional(),
   changes: z.array(z.unknown()).nullable().optional(),
-  run: z.record(z.string(), z.unknown()).optional(),
+  run: z.record(z.string(), z.unknown()).nullable().optional(),
+  deleted: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const TestSpecLint = z.strictObject({
   missing: z.array(z.unknown()).optional(),

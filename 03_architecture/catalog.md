@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 367（作った 57・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 199・部品 56・設定 41
+API 367（作った 58・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 199・部品 56・設定 41
 
 ## 共通の処理
 
@@ -396,7 +396,7 @@ API 367（作った 57・後のフェーズの行為だけ 20）・前の道す�
 | `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
 | `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
 | `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
-| `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66,K-383 |
+| `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-66,K-383 |
 | `retryActionRun` | POST /api/v1/action_runs/:id/retry | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | K-67 |
 | `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | K-67 |
 | `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |

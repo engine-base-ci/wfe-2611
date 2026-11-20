@@ -56363,7 +56363,7 @@
     "通知送出"
    ],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "description": "取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）",
    "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketTimeline",
    "permission": {
     "who": "read",
@@ -56379,11 +56379,17 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "filter",
+     "before_at",
+     "before_id",
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: TicketMessages[], meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketMessages[], meta: { limit, older_count, new_count, mine_count, post_count, people? } }"
    },
    "id": "EP-332",
    "feature_id": "F-010"

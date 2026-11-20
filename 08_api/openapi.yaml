@@ -9902,14 +9902,18 @@ components:
     TimelineItem:
       type: object
       properties:
+        id:
+          type: string
         kind:
           type: string
         at:
           type: string
-        actor_member_id:
-          type: string
+        actor:
+          type: object
+          nullable: true
         message:
           type: object
+          nullable: true
         changes:
           type: array
           items:
@@ -9917,6 +9921,10 @@ components:
           nullable: true
         run:
           type: object
+          nullable: true
+        deleted:
+          type: object
+          nullable: true
       x-operation: listTicketTimeline
     TestSpecLint:
       type: object
@@ -43037,7 +43045,7 @@ paths:
   /api/v1/tickets/{id}/timeline:
     get:
       operationId: listTicketTimeline
-      summary: 取得（tickets）— チケットのスレッドで話す（@ で知らせる）
+      summary: 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）
       tags:
       - ticket_messages
       x-acts:
@@ -43061,6 +43069,22 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: filter
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: before_at
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: before_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -43073,28 +43097,7 @@ paths:
         schema:
           type: integer
           minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - author_member_id
-          - body
-          - changes
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind
-          - mentions
-          - quote_of_id
-          - reactions
-          - tenant_id
-          - ticket_id
-          - updated_at
-          - updated_by
+          maximum: 100
       responses:
         '200':
           description: 成功
@@ -43109,6 +43112,17 @@ paths:
                       $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
+                    properties:
+                      older_count:
+                        type: integer
+                      new_count:
+                        type: integer
+                      mine_count:
+                        type: integer
+                      post_count:
+                        type: integer
+                      people:
+                        type: array
         '401':
           description: UNAUTHENTICATED
           content:

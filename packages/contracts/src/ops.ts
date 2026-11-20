@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b112e77c2df79a50
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:05849e7531482803
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -334,7 +334,7 @@ export interface Ops {
   createTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
   lintTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecLint };
   suggestTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
-  listTicketTimeline: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TimelineItem[] };
+  listTicketTimeline: { params: { id: string }; query: { "filter"?: string | number; "before_at"?: string | number; "before_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TimelineItem[] };
   listTicketVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketSectionVersions[] };
   restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.TicketSectionVersionsInput; data: T.TicketSectionVersions };
   listWorkTypeCandidates: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Skills[] };

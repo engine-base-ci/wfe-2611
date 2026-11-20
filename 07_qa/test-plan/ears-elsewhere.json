@@ -1250,6 +1250,28 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "listTicketTimeline": {
+   "file": "apps/api/test/features/F6/thread-timeline.test.ts",
+   "reason": "やり取りの並び・続き・絞り込み・新しい数は、書き込みの時刻と書いた人・最後に開いた時刻・行の守り（チケットが見えるか）の組み合わせで答えが変わる。生成の試験の種では作れない（K-383）",
+   "covers": {
+    "test_get_tickets_id_timeline_ok": "K383-API-001",
+    "test_get_tickets_id_timeline_rejected_401": "K383-API-018",
+    "test_get_tickets_id_timeline_rejected_403": "K383-API-016",
+    "test_get_tickets_id_timeline_not_found": "K383-API-016",
+    "test_get_tickets_id_timeline_rejected_422": "K383-API-019",
+    "test_get_tickets_id_timeline_rate_limited": "K383-API-018",
+    "test_get_tickets_id_timeline_shape": "K383-API-001",
+    "test_get_tickets_id_timeline_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_timeline_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
   }
  }
 }

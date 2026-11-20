@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:b112e77c2df79a50
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:05849e7531482803
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -324,7 +324,7 @@ export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
 export type SearchHit = { kind?: string; id?: string; title?: string; snippet?: string; url?: string };
-export type TimelineItem = { kind?: string; at?: string; actor_member_id?: string; message?: Record<string, unknown>; changes?: string[] | null; run?: Record<string, unknown> };
+export type TimelineItem = { id?: string; kind?: string; at?: string; actor?: Record<string, unknown> | null; message?: Record<string, unknown> | null; changes?: string[] | null; run?: Record<string, unknown> | null; deleted?: Record<string, unknown> | null };
 export type TestSpecLint = { missing?: string[]; warnings?: string[] };
 export type TicketCompletion = { ticket?: Record<string, unknown>; knowledge_candidates?: string[]; skipped_reason?: string };
 export type BulkResult = { updated?: string[]; skipped?: string[] };
