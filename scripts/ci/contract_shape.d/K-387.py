@@ -10,7 +10,4 @@ VALUE_RANGES = {
                      "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK}},
 }
 
-UNEXPRESSIBLE_422 = {
-    "updateTicket": ["stage_id と stage_key の両方", "stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）",
-                     "stage_key todo・doing に保留の理由か再開の条件を付けた", "ほかの欄（E-VAL-018・前処理）", "空の体"],
-}
+UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES（05_flow/screen_api.d/K-387.py）で契約に書いた（代表の答え answer=f0f290e785a9）
