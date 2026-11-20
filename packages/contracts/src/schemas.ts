@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:6931ebc7f4514613
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:c2ed8dd21aeb9cc3
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3620,6 +3620,9 @@ export const TicketUpdateInput = z.strictObject({
   actual_minutes: z.number().int().nullable().optional(),
   hold_reason: z.string().optional(),
   resume_condition: z.string().optional(),
+  priority: z.string().optional(),
+  priority_reason: z.string().optional(),
+  parent_ticket_id: z.uuid().nullable().optional(),
 });
 export const ScopeOverview = z.strictObject({
   by_stage: z.array(z.unknown()).optional(),
@@ -4352,7 +4355,7 @@ export const BridgeBrowser = z.strictObject({
 });
 export const TicketUpdated = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
-  stage: z.record(z.string(), z.unknown()).optional(),
+  stage: z.record(z.string(), z.unknown()).nullable().optional(),
   changed: z.boolean().optional(),
   message_id: z.uuid().nullable().optional(),
 });

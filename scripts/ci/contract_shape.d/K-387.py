@@ -7,7 +7,8 @@ NO_REQUIRED_INPUTS = {
 _NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
 VALUE_RANGES = {
     "updateTicket": {"actual_minutes": {"minimum": 0, "maximum": 100000}, "stage_key": {"enum": ["todo", "doing", "hold"]},
-                     "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK}},
+                     "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK},
+                     "priority": {"enum": ["mid", "high"]}, "priority_reason": {"pattern": _NOT_BLANK}},   # priority・priority_reason は K-440
 }
 
 UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES（05_flow/screen_api.d/K-387.py）で契約に書いた（代表の答え answer=f0f290e785a9）

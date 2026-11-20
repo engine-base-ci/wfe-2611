@@ -35,7 +35,7 @@ describe("PATCH /api/v1/tickets/:id", () => {
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-020");
   });
   it("test_patch_tickets_id_not_found", () => {
-    // UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない
+    // UNWANTED: IF チケットか指した段・親が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-020」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-020");
   });
@@ -69,6 +69,14 @@ describe("PATCH /api/v1/tickets/:id", () => {
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-006」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-006");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F6/progress.test.ts）：UNWANTED: IF チケット自身を親にしようとしたなら、Kaname は 409 と E-TKT-001 を返し、何も書かない
+  it.todo("test_patch_tickets_id_conflict_6");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/progress.test.ts）：UNWANTED: IF 自分の子孫を親にしようとしたなら、Kaname は 409 と E-TKT-002 を返し、何も書かない
+  it.todo("test_patch_tickets_id_conflict_7");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/progress.test.ts）：UNWANTED: IF 親子が 3 段を超える親を決めようとしたなら、Kaname は 409 と E-TKT-003 を返し、何も書かない
+  it.todo("test_patch_tickets_id_conflict_8");
+  // 本物の試験はまだ無い（apps/api/test/features/F6/progress.test.ts）：UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない
+  it.todo("test_patch_tickets_id_conflict_9");
   it("test_patch_tickets_id_rejected_422_2", () => {
     // UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-028」（同じ CI の G3 で流れる）
