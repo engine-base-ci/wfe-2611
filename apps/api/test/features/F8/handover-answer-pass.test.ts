@@ -215,14 +215,14 @@ describe("K-403 受ける／断る（answerTicketHandover・kind pass）", () =>
     expect(logs).not.toContain(WHY);
   });
 
-  it("K403-API-012 種類 pass の受けるに switch を送ると 422・E-HND-011・待っているまま", async () => {
+  it("K403-API-012 種類 pass の受けるに switch を送ると番号なしの 422（VALIDATION_ERROR）・待っているまま", async () => {
     await h.ready();
     const w = await h.world();
     const { hid } = await waitingPass(w);
     const r = await h.answer(w.sato, hid, { decision: "accept", switch: { children: true } });
     expect(r.status).toBe(422);
     const j = await h.json(r);
-    expect(j.code).toBe("E-HND-011");
+    expect(j.code).toBe("VALIDATION_ERROR");
     expect(j.details?.map((x) => x.field) ?? [j.field]).toContain("switch");
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
