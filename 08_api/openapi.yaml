@@ -38975,14 +38975,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：断る理由が空（E-HND-007）・一緒に切り替えるものの形（E-HND-011）・上へ上げるの渡し（E-HND-001））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：断る理由が空（E-HND-007）・一緒に切り替えるものの形（番号なし）・上へ上げるの渡し（E-HND-001））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - 断る理由が空（E-HND-007）
-          - 一緒に切り替えるものの形（E-HND-011）
+          - 一緒に切り替えるものの形（番号なし）
           - 上へ上げるの渡し（E-HND-001）
         '409':
           description: E-HND-005
@@ -42277,7 +42277,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：上へ上げる（escalate）は段 9 では作らない（E-HND-001）・理由が空・空白だけ（E-HND-007）・返事の期限が日時の形でない・今より後でない（E-HND-008）・相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）・一緒に切り替えるものの形・決まりと合わない（E-HND-011）・申し出に相手・期限を付けた・人とグループの両方）
+          description: VALIDATION_ERROR（契約に書けない値の決まり：上へ上げる（escalate）は段 9 では作らない（E-HND-001）・理由が空・空白だけ（E-HND-007）・返事の期限が日時の形でない・今より後でない（E-HND-008）・相手がいない（E-HND-013）・一緒に切り替えるものの形（番号なし）・申し出に相手・期限を付けた・人とグループの両方）
           content:
             application/json:
               schema:
@@ -42286,8 +42286,8 @@ paths:
           - 上へ上げる（escalate）は段 9 では作らない（E-HND-001）
           - 理由が空・空白だけ（E-HND-007）
           - 返事の期限が日時の形でない・今より後でない（E-HND-008）
-          - 相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）
-          - 一緒に切り替えるものの形・決まりと合わない（E-HND-011）
+          - 相手がいない（E-HND-013）
+          - 一緒に切り替えるものの形（番号なし）
           - 申し出に相手・期限を付けた・人とグループの両方
         '413':
           description: PAYLOAD_TOO_LARGE
