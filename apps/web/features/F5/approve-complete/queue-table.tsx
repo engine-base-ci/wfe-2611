@@ -4,9 +4,9 @@
 //   本当の値が無い字は空（種別：口がチケットの種別を返さない・期限なし）。札の件数は「すべて」だけ（種類ごとの数を返す口が無い）。
 //   区切りの名前と並びは前からの決め（D-128.36）。名前と件数は別の span（ちょうどの字で探す前からの試験とぶつけない）
 //   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380。渡された行は K-412 の queue-row-pass.tsx が描く）
-//   幅 767 以下は表を隠し、表の後ろの 1 件 1 枚のカード（queue-card.tsx・K-412・D-148.26）を出す。小さな知らせ（受けた・もう決まっていた）の置き場もここ
+//   幅 767 以下は表を隠し、表の後ろの 1 件 1 枚のカード（queue-card.tsx・K-412・D-148.26）を出す。小さな知らせの置き場は queue.tsx
 import { Fragment, type ReactNode } from "react";
-import { Button, Toaster } from "@/components/k";
+import { Button } from "@/components/k";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { DUE_GROUPS, dueGroupOf, jstDay, type DueGroup } from "./due";
 import type { QueueRow } from "./queue";
@@ -31,7 +31,7 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
     ([, rs]) => rs.length > 0,
   );
   return (
-    <Toaster>
+    <>
       <section className="k-ap-card k-hnd-q-table" aria-label="承認待ちの一覧">
         <Tools total={total} />
         <div className="k-ap-scroll">
@@ -74,7 +74,7 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
         <p className="k-ap-note">{NOTE}</p>
       </section>
       <QueueCards rows={groups.flatMap(([, rs]) => rs)} total={total} acts={acts} />
-    </Toaster>
+    </>
   );
 }
 
