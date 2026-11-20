@@ -136,7 +136,7 @@ begin
   if v_moved and v_hold then
     v_parts := v_parts || ('保留にした（理由：' || v_reason || '・再開の条件：' || v_resume || '）');
   elsif v_reopen then
-    v_parts := v_parts || '開き直した';   -- ★ K-388
+    v_parts := array_append(v_parts, '開き直した'::text);   -- ★ K-388
   elsif v_moved then
     v_parts := v_parts || ('状態を ' || cur.name || ' → ' || nxt.name || ' に変えた');
   elsif 'hold_reason' = any(v_fields) or 'resume_condition' = any(v_fields) then
