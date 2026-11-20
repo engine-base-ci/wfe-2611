@@ -1190,7 +1190,7 @@ QUERIES = {
 PERMS = {
     # チケット
     "listTickets": ("read", "見られるグループのチケットだけ（RLS）", False),
-    "getScopeOverview": ("read", "そのグループを見られる人", False),
+    "getScopeOverview": ("read", "そのグループが見える人（席のグループとその下・権限の付いたグループ。見えないグループは 404）。数えるのは見えるチケットだけ", False),
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
