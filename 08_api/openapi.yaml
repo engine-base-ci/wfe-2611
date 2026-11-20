@@ -9746,6 +9746,9 @@ components:
         password:
           type: string
           nullable: true
+        email:
+          type: string
+          nullable: true
       additionalProperties: false
       x-operation: acceptInvitation
     TicketCompleteInput:
@@ -9900,6 +9903,17 @@ components:
       - emails
       - scope_id
       - role_key
+      x-required-by: hooks
+    InvitationJoinConfirmInput:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: \S
+      additionalProperties: false
+      x-operation: confirmInvitationJoin
+      required:
+      - token
       x-required-by: hooks
     ScopeOverview:
       type: object
@@ -11527,6 +11541,12 @@ components:
           type: string
         next:
           type: string
+        state:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
       x-operation: acceptInvitation
     ServiceStatus:
       type: object
@@ -11608,6 +11628,17 @@ components:
           items:
             type: object
       x-operation: createInvitations
+    InvitationJoinConfirmed:
+      type: object
+      properties:
+        token:
+          type: string
+        workspace_id:
+          type: string
+          format: uuid
+        next:
+          type: string
+      x-operation: confirmInvitationJoin
     Error:
       type: object
       properties:
@@ -13828,7 +13859,7 @@ paths:
       responses:
         '201':
           description: 成功
-          content:
+          content: &id857
             application/json:
               schema:
                 type: object
@@ -13838,7 +13869,7 @@ paths:
                   meta:
                     type: object
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011））
+          description: VALIDATION_ERROR／E-INV-013（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011）・リンクの招待で新しく参加するときのメールが無い・空・形が違う（E-INV-013））
           content:
             application/json:
               schema:
@@ -13847,6 +13878,7 @@ paths:
           - ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）
           - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
           - 漏れたことのあるパスワード（E-VAL-011）
+          - リンクの招待で新しく参加するときのメールが無い・空・形が違う（E-INV-013）
         '403':
           description: E-AUTH-012／E-INV-005
           content:
@@ -13889,6 +13921,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '202':
+          description: 受け付けた（まだ決まっていない）
+          content: *id857
   /api/v1/auth/invitations/{token}/resend-request:
     post:
       operationId: requestInvitationResend
@@ -13958,6 +13993,98 @@ paths:
                 $ref: '#/components/schemas/Error'
         '410':
           description: E-INV-002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/invitations/confirm:
+    post:
+      operationId: confirmInvitationJoin
+      summary: 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る）
+      tags:
+      - invitations
+      x-acts:
+      - A03
+      - A96
+      x-screens:
+      - invite-accept
+      x-choke-points:
+      - C2
+      x-source:
+      - D-026
+      - D-037
+      - D-125.121
+      - D-125.150
+      - D-125.152
+      - D-125.162
+      - D-125.167
+      - D-126.18
+      x-permission: public
+      x-permission-scope: 確認のメールのリンクを持つ人。押した時点で参加が決まる（D-148.51）
+      x-step-up: false
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationJoinConfirmInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationJoinConfirmed'
+                  meta:
+                    type: object
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-AUTH-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-INV-006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: E-INV-014
           content:
             application/json:
               schema:

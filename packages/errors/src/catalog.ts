@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。205 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。208 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3724,6 +3724,60 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "members",
       "state": "invite"
+    }
+  },
+  "E-INV-013": {
+    "id": "E-INV-013",
+    "cls": "validation",
+    "message": "メールアドレスを入れてください",
+    "action": "メールアドレスを入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-014": {
+    "id": "E-INV-014",
+    "cls": "not_found",
+    "message": "確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください",
+    "action": "招待のリンクから、もう一度参加する",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
+    }
+  },
+  "E-INV-015": {
+    "id": "E-INV-015",
+    "cls": "not_found",
+    "message": "この確認のリンクはもう使われています。ログインして入ってください",
+    "action": "ログインして入る",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-INV-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "invite-accept",
+      "state": "a"
     }
   }
 };
