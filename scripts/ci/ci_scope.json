@@ -1051,6 +1051,15 @@
    "tests": [
     "apps/api/test/features/F10/invite-create.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
+   ]
   }
  ],
  "reads_ok": {
