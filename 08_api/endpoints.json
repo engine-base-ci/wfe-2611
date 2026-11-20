@@ -54748,6 +54748,19 @@
      "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない"
     },
     {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "書き込みと受け箱の行を 1 つの取引で書く所で DB が落ちた",
+     "ears_form": "UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）"
+    },
+    {
      "status": 503,
      "code": "E-PAGE-003",
      "body": {
@@ -54819,6 +54832,7 @@
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない",
     "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない",
+    "UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）",
     "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない（止める側に倒す）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",

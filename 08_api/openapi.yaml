@@ -42216,6 +42216,12 @@ paths:
           x-unexpressible-422:
           - 本文が全角の空白・改行だけ（E-VAL-027）
           - '@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）'
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:
