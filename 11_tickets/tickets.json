@@ -17958,10 +17958,12 @@
    "screens": [],
    "apis": [],
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/contracts"
    ],
    "ci_wide": [
-    "ci"
+    "ci",
+    "shared"
    ],
    "changes": [
     "scripts/ci/fuzz.sh",
