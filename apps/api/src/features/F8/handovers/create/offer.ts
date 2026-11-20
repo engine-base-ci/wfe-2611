@@ -1,4 +1,35 @@
-// 渡すの種類ごとのファイル（空の形・K-401）。K-408 が本物にする（このファイルだけを書き換える）
-import { notReady, type CreateKind } from "../kinds.js";
+// 渡すの種類ごとのファイル：申し出る（K-408・D-148.12）。DB の関数 app.handover_offer が 1 取引で
+//   渡しの行・担当者の受け箱の行・証跡を書き、メールの宛てを返す。メールは取引の後に出す（関門 C6・失敗しても 201 のまま）
+import { withTenant } from "@kaname/db/context";
+import { down, kindOf, replyOf } from "../errors.js";
+import type { CreateKind } from "../kinds.js";
+import { sendHandoverMails, type MailRow } from "../notify.js";
 
-export const createOffer: CreateKind = async () => notReady();
+type OfferAnswer = { ok?: boolean; error?: string; handover?: unknown; mails?: MailRow[]; [k: string]: unknown } | null;
+
+export const createOffer: CreateKind = async (c) => {
+  const where = "申し出る";
+  let v: OfferAnswer;
+  try {
+    v = await withTenant(c.d.appPool, c.a.ctx, async (cl) => {
+      const r = await cl.query<{ v: OfferAnswer }>("select app.handover_offer($1, $2::jsonb) as v", [
+        c.ticketId,
+        JSON.stringify(c.input),
+      ]);
+      return r.rows[0]?.v ?? null;
+    });
+  } catch (e) {
+    return down(where, `例外（${kindOf(e)}）`);
+  }
+  if (!v) return down(where, "答えが無い");
+  if (typeof v.error === "string") return replyOf(v as { error: string }, where);
+  if (v.ok !== true || !v.handover) return down(where, "知らない答え");
+  const handover = v.handover as { id: string };
+  await sendHandoverMails(
+    c.d,
+    { tenantId: c.a.ctx.tenantId ?? "", userId: c.a.ctx.userId ?? "" },
+    v.mails ?? [],
+    `offer:${handover.id}`,
+  );
+  return { status: 201, body: { data: v.handover } };
+};
