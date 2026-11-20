@@ -2347,6 +2347,15 @@ K-461,知らせを読む口（listNotifications）と、読んだ印の列 read_
 - [ ] 共有の試験 k144-contract.test.ts に、この葉の葉のファイル `k144.d/K-461.ts` の行（K144-API-861）が加わって緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-462,既読にする・全部既読にする（readNotification・readAllNotifications・入力を read だけに作り直す・別人の行は 404）（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-25,F7・知らせ,"鈴の知らせを押したとき（既読にしてチケットへ行く）と「すべて既読にする」を押したときに呼ぶ契約の口 `readNotification`（PATCH /api/v1/notifications/:id）と `readAllNotifications`（POST /api/v1/notifications/read-all）を作る（今は 501）。
+
+今の入力 `NotificationsInput` は表の写しで、`member_id`・`payload`・`sent_at` まで送れてしまう。これを **`read`（真偽）だけ** に作り直す（読んだ印を付けるか戻すか。ほかの欄は 422）。別の人の行・別の会社の行・無い行は **404**（有ることも漏らさない）。全部既読は体が空で、何度呼んでも同じ（2 回目は 0 件）。
+
+書くのは `read_at` だけ（K-461 の列）。メールの印の `sent_at`・`failed_at` には触らない（段 9 の印・D-151.2）。","- [ ] 下の表の 20 行（K462-API-001〜020）が緑：`apps/api/test/features/F7/notifications-read.test.ts`（土台 `notify.harness.ts`・K-461）
+- [ ] 契約の口 `readNotification`・`readAllNotifications` が 501 でない。生成の試験 `patch_notifications_id.test.ts`・`post_notifications_read_all.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-462.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts に、この葉の葉のファイル `k144.d/K-462.ts` の行（K144-API-862）が加わって緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-468,探す口の置き場（search・種類ごとのファイル・入力の確かめ）と、チケットの探し方（題名・番号・見えるものだけ・種類ごと上位 5 件・総数なし）（K-67 の葉）,タスク,K-67,未着手,実装,2026-11-24,F7・毎日見る・探す・片付ける,"上の帯の探す欄（⌘K）が呼ぶ契約の口 `search`（GET /api/v1/search・今は 501）を作る。チケット・決定・自分の会話・ナレッジのページを 1 回でまとめて探す（D-127.4）。画面は K-471。
 
 この葉でやるのは 2 つ。
