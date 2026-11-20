@@ -2171,6 +2171,16 @@ K-365,もう一度確かめる仕事をその PC に宛てる口（checkMyDevice
 - [ ] 契約に口 `checkMyDeviceBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_devices_id_browser_check.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-365.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-368,PC の行で AI が使うブラウザを選ぶ欄と、Chrome とつながらないときのその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を契約の口につなぐ。会話の 1 行の一手も同じ口へ（K-90 の葉 ④・画面）,タスク,K-56,未着手,実装,2026-11-27,F3・画面,"「PC と使った量」（/setup/bridge・K-57 の `features/F3/connect-pc`）の「つないでいる PC」の行に、**その PC で AI が使うブラウザ**を選ぶ欄（自分の Chrome（既定）／Bridge 専用のブラウザ／使わない・D-119・D-120）を出し、押すと口 `updateMyDevice`（K-364）をその PC の id で呼ぶ。今の値は一覧 `listMyDevices` の `browser`（K-364）。
+
+その PC の自己診断の Chrome の行が ✗ で、選んでいるのが自分の Chrome のときだけ、選ぶ欄の下にその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を出す。「もう一度確かめる」は口 `checkMyDeviceBrowser`（K-365）をその PC の id で呼び、一覧のその PC の `health_at`（K-360）が新しくなるのを待って（上限 90 秒）結果を出す。
+
+会話の 1 行の一手（`components/ai/browser-fix.tsx`・自分のAIと話す）も同じ処理（`lib/device-browser.ts`）に替え、前の道すじ `/api/auth-ext/agent/browser`・`/agent/browser-check` を呼ばなくする（L-008：同じ処理は 1 つ。前の道すじを消すのは K-367）。会話の一手の見た目と字は変えない。
+
+代表の答え（2026-11-19・下絵 /dev/mock/f3-pc の OK と A の 1〜8）：ラジオ 3 つを常に出す（A-2 ①）・Claude Code が無い／ログインしていない間はブラウザの欄を出さない（A-3）・眠っている PC の文は下絵どおり（A-8）。決めた中身は下絵の字が正。","- [ ] 下の表の 25 行（K368-UI-001〜025・001 はモック 8 つ × 幅 3 つ）が緑：`apps/web/tests/k/k368-pc-browser.spec.ts`
+- [ ] 前からの試験 `apps/web/tests/screens/browser-notice.spec.ts`（切る段で新しい画面と口に替えて carry で運ぶ）が緑
+- [ ] 下の「前からの試験を替えた所」で「替えない」とした試験が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）,タスク,K-56,未着手,実装,2026-11-22,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。
 
 - 部品 `apps/web/features/F3/connect-pc/pc-row-parts.tsx`（と `pc-row-parts.css`）：見た目だけ。値と押した結果は props で受け、口は呼ばない
