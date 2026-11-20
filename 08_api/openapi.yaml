@@ -9872,6 +9872,35 @@ components:
       required:
       - browser
       x-required-by: hooks
+    InvitationsCreateInput:
+      type: object
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        scope_id:
+          type: string
+          format: uuid
+        role_id:
+          type: string
+          enum:
+          - member
+          - manager
+          - viewer
+          - admin
+        message:
+          type: string
+          nullable: true
+          maxLength: 500
+      additionalProperties: false
+      x-operation: createInvitations
+      required:
+      - emails
+      - scope_id
+      - role_id
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11571,6 +11600,14 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    InvitationsSent:
+      type: object
+      properties:
+        invitations:
+          type: array
+          items:
+            type: object
+      x-operation: createInvitations
     Error:
       type: object
       properties:
@@ -22688,7 +22725,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationsCreateInput'
       responses:
         '201':
           description: 成功
@@ -22698,7 +22735,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Invitations'
+                    $ref: '#/components/schemas/InvitationsSent'
                   meta:
                     type: object
         '401':
@@ -22708,7 +22745,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -22720,11 +22757,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-INV-009（契約に書けない値の決まり：宛てがメールの形でない（そろえた後の字で見る・E-INV-009）・宛てがもうこのワークスペースに入っている人（E-INV-010）・グループがこの会社に無い・消した（E-INV-011）・一度に 50 人を超える宛て（E-INV-012））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 宛てがメールの形でない（そろえた後の字で見る・E-INV-009）
+          - 宛てがもうこのワークスペースに入っている人（E-INV-010）
+          - グループがこの会社に無い・消した（E-INV-011）
+          - 一度に 50 人を超える宛て（E-INV-012）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:

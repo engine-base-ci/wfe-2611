@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9f9df27a0139fa5c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c00c7c978947d6c0
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -5993,9 +5993,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createInvitations",
     "table": "invitations",
     "kind": "create",
-    "input": "InvitationsInput",
+    "input": "InvitationsCreateInput",
     "success": 201,
-    "output": "Invitations",
+    "output": "InvitationsSent",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -19449,4 +19449,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "9f9df27a0139fa5c";
+export const OPENAPI_HASH = "c00c7c978947d6c0";

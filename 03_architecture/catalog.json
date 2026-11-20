@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 367,
-  "api_built": 59,
+  "api_built": 61,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 201,
+  "errors": 205,
   "stack": 56,
   "env": 41
  },
@@ -1856,7 +1856,7 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-419"
    ]
@@ -5757,7 +5757,7 @@
    "tables": [
     "members"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-419"
    ]
