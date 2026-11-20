@@ -40,7 +40,8 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
   // 指した人・書き込みが無い・見えない（同じ会社の今のメンバーでない・このチケットの消していない書き込みでない）は 404（形の誤りではない・代表の答え answer=431fc50df51b・f0f290e785a9）
   if (word === "bad_decider")
     return fromCatalog("E-PAGE-001", 404, { field: "decided_by_member_id", message: DECIDER_NOT_FOUND });
-  if (word === "bad_source") return fromCatalog("E-PAGE-001", 404, { field: "source_message_id", message: SOURCE_NOT_FOUND });
+  if (word === "bad_source")
+    return fromCatalog("E-PAGE-001", 404, { field: "source_message_id", message: SOURCE_NOT_FOUND });
   // 取引先のルールにする：段 12 の取引先の画面ができるまで、今の状態ではできない（409・PM の決め）。details は決めた文
   if (word === "not_yet") return fromCatalog("E-CONF-037", 409, { field: "promoted_to", message: CLIENT_RULE_LATER });
   if (word === "bad_promoted")
