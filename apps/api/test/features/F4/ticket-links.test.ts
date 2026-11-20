@@ -8,7 +8,9 @@
 //   deleteTicketLink  DELETE /api/v1/ticket_links/:id    200 { data: { id } }（論理削除）
 //   Link = { id, kind, side: "derived" | "source" | null, other: { id, number, title, stage: {id,key,name}, scope: {id,name}, visible }, can_remove, created_at }
 //          相手が見えないときは other = { id: null, number, title: null, stage: null, scope: null, visible: false }
-//   断る：404 E-PAGE-001（見えない・無い・消した・別の会社）／403 FORBIDDEN／409 E-LNK-001（自分自身）・E-LNK-002（もうつながっている）・E-LNK-003（派生元が輪）／503 E-PAGE-003
+//   断る：道の id のチケットが見えない・無い・消した・別の会社は入口の 404（NOT_FOUND・欄なし）、足す・外すで書けないのは入口の 403（FORBIDDEN・欄なし）。
+//        相手（other_ticket_id）が見えない・無い・別の会社・外すときのつながりの行の見えない・外した行は口の 404（E-PAGE-001・欄なし）。相手に書けないのは口の 403（欄 other_ticket_id）。
+//        409 E-LNK-001（自分自身）・E-LNK-002（もうつながっている）・E-LNK-003（派生元が輪）／503 E-PAGE-003
 // DB の関数（packages/db/migrations/20261122094100_ticket_links.sql）:
 //   app.ticket_link_derive(p_ticket uuid, p_source uuid) returns jsonb  … 複製（K-438）が呼ぶ。{ok, id, created} か {error: gone|same|cycle|duplicate}
 //
@@ -260,7 +262,7 @@ describe("K-441 つながりの口", () => {
     expect((await listOk(w.boss, a.id)).map((l) => l.other.number).sort()).toEqual([gone.number, keep.number].sort());
   });
 
-  it("K441-API-004 一覧：見えないチケット・別の会社・消したチケット・無い uuid は 404（E-PAGE-001）", async () => {
+  it("K441-API-004 一覧：見えないチケット・別の会社・消したチケット・無い uuid は入口の 404（NOT_FOUND・欄なし）", async () => {
     const w = await world();
     const other = await world();
     const hiddenTicket = await mk(w, w.g2);
@@ -277,7 +279,7 @@ describe("K-441 つながりの口", () => {
       expect(r.status).toBe(404);
       {
         const b = await asJson(r);
-        expect(b["code"]).toBe("E-PAGE-001");
+        expect(b["code"]).toBe("NOT_FOUND");
         bare(b);
       }
     }
@@ -413,13 +415,13 @@ describe("K-441 つながりの口", () => {
     ).toBe(0);
   });
 
-  it("K441-API-011 足す：:id に書けない人・相手に書けない人 → 403（欄 id／other_ticket_id）・行は増えない", async () => {
+  it("K441-API-011 足す：:id に書けない人→入口の 403（欄なし）・相手に書けない人→403（欄 other_ticket_id）・行は増えない", async () => {
     const w = await world();
     const mine = await mk(w, w.g1);
     const sameGroup = await mk(w, w.g1);
     const r1 = await add(w.viewer, mine.id, { other_ticket_id: sameGroup.id, kind: "related" });
     expect(r1.status).toBe(403);
-    expect(JSON.stringify(await asJson(r1))).toContain('"id"');
+    bare(await asJson(r1));
     // 相手は見えるが書けない：営業の人（g1 に書ける）に、別グループ「閲覧グループ」を読むだけ（view）で見せ、そこのチケットを相手にする
     const viewerOnlyScope = await f.admin
       .query<{ id: string }>(
