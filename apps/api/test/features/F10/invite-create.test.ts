@@ -400,7 +400,10 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(r.status).toBe(409);
     const j = await json(r);
     expect(j["code"]).toBe("E-INV-010");
-    expect(j.details?.[0]).toMatchObject({ field: "emails", email: member.email, code: "E-INV-010" });
+    // 控え帳 20:50 の形（PM の決め 2026-11-21 03:00）：409 は field・details を付けず、入っている宛ては detail（単数）で返す
+    expect(j["detail"]).toEqual({ already: [member.email] });
+    expect(j.details).toBeUndefined();
+    expect(j["field"]).toBeUndefined();
     expect(await invRows(member.email)).toHaveLength(0);
     expect(mails.length).toBe(before);
   });
@@ -443,7 +446,12 @@ describe("K-419 メールで招く（createInvitations）", () => {
       const e = fresh("scope");
       const r = await invite(admin, base([e], { scope_id: s }));
       expect(r.status, s).toBe(404);
-      expect((await json(r))["code"]).toBe("E-INV-011");
+      const j = await json(r);
+      expect(j["code"]).toBe("E-INV-011");
+      // 無いグループと見えないグループは同じ答え：field・details を付けない（PM の決め 2026-11-21 03:00）
+      expect(j.details).toBeUndefined();
+      expect(j["field"]).toBeUndefined();
+      expect(j["detail"]).toEqual({});
       expect(await invRows(e)).toHaveLength(0);
     }
   });
@@ -519,8 +527,19 @@ describe("K-419 メールで招く（createInvitations）", () => {
     }
   });
 
-  it("K419-API-027 前の口（normalizeEmail でそろえてから EMAIL_RE で見る）が受けていた形は今も受け、断っていた形は今も断る：全 BMP の 1 字を宛ての 7 か所に入れて、前の判定と契約の pattern の判定が同じ（NFKC で 2 字以上に開いて点か @ を含む 27 字は点と数えないので除く）", () => {
+  it("K419-API-027 前の口（normalizeEmail でそろえてから EMAIL_RE で見る）が受けていた形は今も受け、断っていた形は今も断る：全 BMP の 1 字を宛ての 7 か所に入れて、前の判定と契約の pattern の判定が同じ。例外は NFKC で 2 字以上に開いて点か @ を含む 27 字だけ（PM の決め 2026-11-21 03:00・前は受けたが今は断る）で、名指しして断ることを確かめる", () => {
     const re = new RegExp(INVITE_EMAIL_PATTERN);
+    // 例外の 27 字：‥ … ⒈〜⒛ ㏂ ㏇ ㏘ ︙ ︰
+    const REFUSED = [
+      0x2025,
+      0x2026,
+      ...Array.from({ length: 20 }, (_, i) => 0x2488 + i),
+      0x33c2,
+      0x33c7,
+      0x33d8,
+      0xfe19,
+      0xfe30,
+    ];
     const spots = [
       (c: string) => `a${c}@b.co`,
       (c: string) => `a@b${c}.co`,
@@ -531,11 +550,15 @@ describe("K-419 メールで招く（createInvitations）", () => {
       (c: string) => `a@b${c}c`,
     ];
     const diff: string[] = [];
+    const opened: number[] = [];
     for (let c = 0; c <= 0xffff; c++) {
       if (c >= 0xd800 && c <= 0xdfff) continue;
       const ch = String.fromCharCode(c);
       const nfkc = ch.normalize("NFKC");
-      if (nfkc.length > 1 && /[@.]/.test(nfkc)) continue;
+      if (nfkc.length > 1 && /[@.]/.test(nfkc)) {
+        opened.push(c);
+        continue;
+      }
       for (const at of spots) {
         const typed = at(ch);
         if (EMAIL_RE.test(normalizeEmail(typed)) !== re.test(typed))
@@ -543,6 +566,14 @@ describe("K-419 メールで招く（createInvitations）", () => {
       }
     }
     expect(diff).toEqual([]);
+    // 例外は名指しの 27 字だけ（増えても減っても気づく）
+    expect(opened).toEqual(REFUSED);
+    // 前の口は受け、今は断る（点と数えると、前は断っていた形を新しく受けてしまうため）
+    for (const c of REFUSED) {
+      const typed = `a@b${String.fromCharCode(c)}c`;
+      expect(EMAIL_RE.test(normalizeEmail(typed)), `U+${c.toString(16)} は前の口は受けた`).toBe(true);
+      expect(re.test(typed), `U+${c.toString(16)} は今は断る`).toBe(false);
+    }
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
