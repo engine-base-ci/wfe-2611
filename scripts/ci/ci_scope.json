@@ -1044,6 +1044,27 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-update.ts",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/handovers.ts",
     "apps/api/src/features/F8/handovers/**"
    ],
@@ -1175,6 +1196,8 @@
   "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）",
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
+  "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/api/test/features/F8/handover.harness.ts": "口の hooks のファイル apps/api/src/hooks/handovers.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-401。後ろの葉（K-402〜K-404）は自分の断片に paths → 自分の試験の 1 行を足す",
   "apps/api/test/features/contract/k144.d/K-401.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handovers.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-401"
  },

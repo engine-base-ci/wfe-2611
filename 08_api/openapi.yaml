@@ -9894,6 +9894,31 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketUpdateInput:
+      type: object
+      properties:
+        stage_id:
+          type: string
+          format: uuid
+        stage_key:
+          type: string
+          enum:
+          - todo
+          - doing
+          - hold
+        actual_minutes:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100000
+        hold_reason:
+          type: string
+          pattern: '[^\s\u0000-\u001f\u007f]'
+        resume_condition:
+          type: string
+          pattern: '[^\s\u0000-\u001f\u007f]'
+      additionalProperties: false
+      x-operation: updateTicket
     TicketHandoverCreateInput:
       type: object
       properties:
@@ -10607,6 +10632,11 @@ components:
           type: object
           nullable: true
         completed:
+          type: object
+          nullable: true
+        time:
+          type: object
+        hold:
           type: object
           nullable: true
       x-operation: getTicket
@@ -11654,6 +11684,20 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    TicketUpdated:
+      type: object
+      properties:
+        ticket:
+          type: object
+        stage:
+          type: object
+        changed:
+          type: boolean
+        message_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: updateTicket
     HandoverPreview:
       type: object
       properties:
@@ -40358,7 +40402,7 @@ paths:
       - D-125.97
       - D-125.98
       x-permission: write
-      x-permission-scope: そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人
+      x-permission-scope: そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）
       x-step-up: false
       security:
       - session: []
@@ -40374,7 +40418,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketUpdateInput'
       responses:
         '200':
           description: 成功
@@ -40384,7 +40428,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketUpdated'
                   meta:
                     type: object
         '401':
@@ -40400,13 +40444,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-018／VALIDATION_ERROR（契約に書けない値の決まり：stage_id と stage_key の両方・stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）・stage_key todo・doing に保留の理由か再開の条件を付けた・ほかの欄（E-VAL-018・前処理）・空の体）
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - stage_id と stage_key の両方
+          - stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）
+          - stage_key todo・doing に保留の理由か再開の条件を付けた
+          - ほかの欄（E-VAL-018・前処理）
+          - 空の体
+        '409':
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -40419,12 +40487,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
