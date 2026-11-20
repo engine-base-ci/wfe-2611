@@ -14,6 +14,23 @@ VALUE_RANGES = {
     "updateTicketDecision": {"action": {"enum": ["revise", "cancel", "promote"]}},
 }
 
+# 形全体の決まり（欄をまたぐ決まり・K-355 の INPUT_RULES の書き方・代表の答え answer=f0f290e785a9：検査の例外は足さない・K-387 と同じ）
+#   改める（revise）は新しい決定 text が要り空・空白・制御文字だけでない（E-VAL-042）／取り消す（cancel）は理由 reason が要り空・空白・制御文字だけでない（E-VAL-045）
+#   revise の reason は空でよく、cancel の text は読まない。取引先のルールにする（promote）は段 12 まで口が E-VAL-018 で断る（下の ERRORS_4XX・契約の形では action の言葉の 1 つ）
+_NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
+INPUT_RULES = {
+    "updateTicketDecision": {"oneOf": [
+        {"properties": {"action": {"enum": ["revise"]}, "text": {"pattern": _NOT_BLANK}}, "required": ["text"]},
+        {"properties": {"action": {"enum": ["cancel"]}, "reason": {"pattern": _NOT_BLANK}}, "required": ["reason"]},
+        {"properties": {"action": {"enum": ["promote"]}}},
+    ]},
+}
+
+# 契約に書けない値の決まり：取引先のルールにする（promote）だけ残す（段 12 まで E-VAL-018・持ち主待ち＝代表の控え帳 drift.md の答え 431fc50df51b・f0f290e785a9 の洗い直しの対象）
+UNEXPRESSIBLE_422 = {
+    "updateTicketDecision": ["取引先のルールにする（E-VAL-018・段 12 まで）"],
+}
+
 RESPONSES = {
     "updateTicketDecision": ("TicketDecisionChange", {"decision": "object", "previous": "object?", "message_id": "uuid"}),
 }
