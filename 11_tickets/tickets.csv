@@ -2289,3 +2289,12 @@ K-383,やり取りを読む口（listTicketTimeline）と、最後にやり取�
 - [ ] 共有の試験 k144 の入口の uuid の行 K144-API-700・701（葉のファイル `k144.d/K-383.ts`）が緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 出す前に Squawk（G58）を手元で流して緑（段 4 の学び）・手元の CI（このチケットの範囲）が緑"
+K-384,最後にやり取りを開いた時刻を書く口（markTicketTimelineSeen・POST /tickets/{id}/timeline/seen・新しい口・読める人なら誰でも・何度呼んでも同じ）（K-66 の葉）,タスク,K-66,未着手,実装,2026-11-26,F6・やり取り,"代表の答え ⑬（answer=f5cd1647389f）「人ごと・チケットごとに最後にやり取りを開いた時刻を覚え、それより後のほかの人の書き込みに『新しい』・タブにその数」の、**時刻を書く側**を作る。
+読む側（新しい数・印）は K-383 の listTicketTimeline。書く口は契約に無いので、**新しい契約の口** `markTicketTimelineSeen`（POST /api/v1/tickets/:id/timeline/seen）を足す。
+
+画面（K-392）は、タブ「やり取り」を開いて最初の 20 件を出した後に、出したいちばん新しい行の時刻（seen_at）を付けて 1 回呼ぶ（K392-UI-004）。
+口は自分の 1 行（app.ticket_thread_seen）を書くだけ。前の時刻より前には戻さず、これからの時刻は今に直す。何度呼んでも 1 行。","- [ ] 下の表の 12 行（K384-API-001〜012）が緑：`apps/api/test/features/F6/thread-seen.test.ts`（土台は K-383 の `thread.harness.ts`）
+- [ ] 新しい口が契約（08_api・packages/contracts の生成物）に在り、作り直しで出る生成の試験 `apps/api/test/generated/post_tickets_id_timeline_seen.test.ts`（作り手の生成物・changes_ignore。新しい口なので切る段の枝にはまだ無く、tests: には書かない）の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-384.json` の covers）
+- [ ] 共有の試験 k144 の入口の uuid の行 K144-API-710（葉のファイル `k144.d/K-384.ts`）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 出す前に Squawk（G58）を手元で流して緑・手元の CI（このチケットの範囲）が緑"

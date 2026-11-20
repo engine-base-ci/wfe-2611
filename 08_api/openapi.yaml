@@ -9892,6 +9892,14 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketTimelineSeenInput:
+      type: object
+      properties:
+        seen_at:
+          type: string
+          nullable: true
+      additionalProperties: false
+      x-operation: markTicketTimelineSeen
     ScopeOverview:
       type: object
       properties:
@@ -11613,6 +11621,14 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    TicketTimelineSeen:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+        seen_at:
+          type: string
+      x-operation: markTicketTimelineSeen
     Error:
       type: object
       properties:
@@ -43240,6 +43256,103 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/timeline/seen:
+    post:
+      operationId: markTicketTimelineSeen
+      summary: 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる）
+      tags:
+      - ticket_messages
+      x-acts:
+      - A107
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-125.131
+      - D-125.167
+      - D-125.29
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人（自分の『最後にやり取りを開いた時刻』だけを書く・⑬）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketTimelineSeenInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketTimelineSeen'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：seen_at が日時として読めない（空・字・暦に無い日））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - seen_at が日時として読めない（空・字・暦に無い日）
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:

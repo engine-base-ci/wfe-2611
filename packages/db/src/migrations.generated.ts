@@ -126,4 +126,5 @@ export const MIGRATIONS = [
   "20261119120500_credential_soft_delete.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120130000_ticket_timeline.sql",
+  "20261120130100_ticket_thread_seen_mark.sql",
 ] as const;
