@@ -73,10 +73,17 @@ describe("K-488 消す：チケット 1 枚（子なし）", () => {
 
   it("K488-API-003 消せない人（見るだけ・担当者だけ・マネージャー・管理者で edit が無く作った人でもない）：403・E-DEL-001。何も変わらない", async () => {
     const t = await w.make(w.creator, { assignee: w.assignee });
-    for (const p of [w.viewer, w.assignee, w.manager, w.admin]) {
-      const r = await w.del(p, t);
-      expect(r.status, p.id).toBe(403);
-      expect(await code(r), p.id).toBe("E-DEL-001");
+    // 管理者は会員にした時に役割の束で tickets の edit（会社全体）を持つ。「edit の無い管理者」を作るため、その束の行だけを一時的に失効させる（終わりに必ず戻す）
+    const bundle = "grantee_member_id = $1 and target_kind_id = 'tickets' and bundle_role is not null";
+    await w.k.f.admin.query(`update permissions set revoked_at = now() where ${bundle}`, [w.admin.id]);
+    try {
+      for (const p of [w.viewer, w.assignee, w.manager, w.admin]) {
+        const r = await w.del(p, t);
+        expect(r.status, p.id).toBe(403);
+        expect(await code(r), p.id).toBe("E-DEL-001");
+      }
+    } finally {
+      await w.k.f.admin.query(`update permissions set revoked_at = null where ${bundle}`, [w.admin.id]);
     }
     expect(await isDeleted(t)).toBe(false);
     expect(await w.audit("tickets.delete", t)).toHaveLength(0);
@@ -110,7 +117,7 @@ describe("K-488 消す：チケット 1 枚（子なし）", () => {
     expect(await isDeleted(d)).toBe(false);
     // 字数は前後の空白を落とす前で数える（落とせば 400 字に収まっても、契約の maxLength 400 を超えたら 422）
     const e = await w.make(w.creator);
-    const padded = await w.del(w.creator, e, { reason: `　　${"あ".repeat(400)}` });
+    const padded = await w.del(w.creator, e, { reason: `\u3000\u3000${"あ".repeat(400)}` });
     expect(padded.status).toBe(422);
     expect(((await json(padded))["details"] as { field: string }[]).map((x) => x.field)).toEqual(["reason"]);
     expect(await isDeleted(e)).toBe(false);
@@ -143,8 +150,9 @@ describe("K-488 消す：子・孫がいる親の扱い（D-125.62）", () => {
     const c = await w.make(w.creator, { parent: p });
     const r = await w.del(w.creator, p);
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe("E-DEL-010");
-    expect(((await json(r))["details"] ?? null) === null).toBe(true); // 409 には details を付けない
+    const body = await json(r);
+    expect(body.code).toBe("E-DEL-010");
+    expect((body["details"] ?? null) === null).toBe(true); // 409 には details を付けない
     expect(await isDeleted(p)).toBe(false);
     expect(await isDeleted(c)).toBe(false);
   });
@@ -162,10 +170,10 @@ describe("K-488 消す：子・孫がいる親の扱い（D-125.62）", () => {
     expect((await w.row(c2)).parent_ticket_id).toBe(dest);
     expect((await w.row(g)).parent_ticket_id).toBe(c1);
     expect(await isDeleted(c1)).toBe(false);
-    const got = await data<{ parent_ticket_id: string | null }>(
+    const got = await data<{ ticket: { parent_ticket_id: string | null } }>(
       await w.k.f.req("GET", `/tickets/${c1}`, { headers: w.creator.auth }),
     );
-    expect(got.parent_ticket_id).toBe(dest);
+    expect(got.ticket.parent_ticket_id).toBe(dest);
   });
 
   it("K488-API-009 move の移し先が使えない：見えない・別の会社・無い・消えている・指していない（parent_id が無い・空）→ 404・E-DEL-014（欄は付けない）。何も変わらない", async () => {
