@@ -66,7 +66,11 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     expect(ls[0]!.changes).toEqual([{ field: "stage", from: "未着手", to: "作業中" }]);
     expect(await notices(t.id)).toHaveLength(0);
     // 見るだけの人も、行の守りの中で変更の 1 行を読める（やり取りに出る）
-    const seen = await asMember<{ n: string }>(viewer, "select count(*) as n from ticket_messages where ticket_id = $1 and kind = 'change'", [t.id]);
+    const seen = await asMember<{ n: string }>(
+      viewer,
+      "select count(*) as n from ticket_messages where ticket_id = $1 and kind = 'change'",
+      [t.id],
+    );
     expect(Number(seen.n)).toBe(1);
   });
 
@@ -79,9 +83,16 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     });
     expect(r.status, await r.clone().text()).toBe(200);
     const msgId = (await json(r)).data!["message_id"];
-    expect(await row(t.id)).toMatchObject({ stage_key: "hold", hold_reason: "先方の返事待ち", resume_condition: "先方の返事が来たら", updated_by: writer.id });
+    expect(await row(t.id)).toMatchObject({
+      stage_key: "hold",
+      hold_reason: "先方の返事待ち",
+      resume_condition: "先方の返事が来たら",
+      updated_by: writer.id,
+    });
     const ls = await lines(t.id);
-    expect(ls.map((l) => l.body)).toEqual(["佐藤 が保留にした（理由：先方の返事待ち・再開の条件：先方の返事が来たら）"]);
+    expect(ls.map((l) => l.body)).toEqual([
+      "佐藤 が保留にした（理由：先方の返事待ち・再開の条件：先方の返事が来たら）",
+    ]);
     expect(ls[0]!.changes).toEqual([
       { field: "stage", from: "作業中", to: "保留" },
       { field: "hold_reason", from: null, to: "先方の返事待ち" },
@@ -95,7 +106,12 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     expect(Object.keys(ns[0]!.payload).sort()).toEqual(["message_id", "number", "stage", "ticket_id", "url"]);
     expect(ns[0]!.payload["stage"]).toEqual({ key: "hold", name: "保留" });
     expect(JSON.stringify(ns[0]!.payload)).not.toContain("先方の返事待ち");
-    expect(await num("select count(*) as n from notifications where member_id = $1 and payload->>'ticket_id' = $2::text", [writer.id, t.id])).toBe(0);
+    expect(
+      await num("select count(*) as n from notifications where member_id = $1 and payload->>'ticket_id' = $2::text", [
+        writer.id,
+        t.id,
+      ]),
+    ).toBe(0);
   });
 
   it("K387-API-003 保留 × 作業中に戻す：200・理由と再開の条件の列は空になる・1 行「保留 → 作業中」", async () => {
@@ -110,8 +126,14 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     const t = await heldTicket();
     const r = await patch(boss, t.id, { hold_reason: "見積の確認待ち", resume_condition: "11/25 に聞き直す" });
     expect(r.status, await r.clone().text()).toBe(200);
-    expect(await row(t.id)).toMatchObject({ stage_key: "hold", hold_reason: "見積の確認待ち", resume_condition: "11/25 に聞き直す" });
-    expect((await lines(t.id)).map((l) => l.body)).toEqual(["高本 が保留の理由を直した（理由：見積の確認待ち・再開の条件：11/25 に聞き直す）"]);
+    expect(await row(t.id)).toMatchObject({
+      stage_key: "hold",
+      hold_reason: "見積の確認待ち",
+      resume_condition: "11/25 に聞き直す",
+    });
+    expect((await lines(t.id)).map((l) => l.body)).toEqual([
+      "高本 が保留の理由を直した（理由：見積の確認待ち・再開の条件：11/25 に聞き直す）",
+    ]);
   });
 
   it("K387-API-005 保留にするのに理由か再開の条件が無い・空・空白だけ（全角の空白も）：422・理由が足りなければ E-VAL-041・条件だけなら E-VAL-047・無い欄ごとの明細（欄ごとの文）・何も書かない", async () => {
@@ -188,7 +210,9 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     const r = await patch(boss, t.id, { stage_id: review });
     expect(r.status, await r.clone().text()).toBe(200);
     expect((await json(r)).data!["stage"]).toEqual({ id: review, key: null, name: "社内確認" });
-    expect((await one<{ stage_id: string }>("select stage_id from tickets where id = $1", [t.id])).stage_id).toBe(review);
+    expect((await one<{ stage_id: string }>("select stage_id from tickets where id = $1", [t.id])).stage_id).toBe(
+      review,
+    );
     expect((await lines(t.id)).map((l) => l.body)).toEqual(["高本 が状態を 作業中 → 社内確認 に変えた"]);
   });
 
@@ -238,7 +262,11 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
 
 describe("K-387 実績（人が使った時間）", () => {
   it("K387-API-014 実績を 90 分にする（担当者でない人・完了したチケット・承認待ちのチケットでも）：200・列が 90・1 行「実績を 1 時間 30 分 に変えた」・知らせなし（⑦）", async () => {
-    for (const t of [await ticket({ stage: "doing" }), await doneTicket(), await ticket({ stage: "awaiting_approval" })]) {
+    for (const t of [
+      await ticket({ stage: "doing" }),
+      await doneTicket(),
+      await ticket({ stage: "awaiting_approval" }),
+    ]) {
       const r = await patch(writer, t.id, { actual_minutes: 90 });
       expect(r.status, await r.clone().text()).toBe(200);
       expect((await row(t.id)).actual_minutes).toBe(90);
@@ -274,7 +302,9 @@ describe("K-387 実績（人が使った時間）", () => {
     const r = await patch(writer, t.id, { stage_id: await stageOf(T.tenantId, "doing"), actual_minutes: 60 });
     expect(r.status, await r.clone().text()).toBe(200);
     expect(await row(t.id)).toMatchObject({ stage_key: "doing", actual_minutes: 60 });
-    expect((await lines(t.id)).map((l) => l.body)).toEqual(["佐藤 が状態を 未着手 → 作業中 に変えた・実績を 1 時間 に変えた"]);
+    expect((await lines(t.id)).map((l) => l.body)).toEqual([
+      "佐藤 が状態を 未着手 → 作業中 に変えた・実績を 1 時間 に変えた",
+    ]);
     expect((await notices(t.id)).map((n) => n.member_id)).toEqual([boss.id]);
   });
 });
@@ -313,7 +343,10 @@ describe("K-387 入力と守り", () => {
     const gone = await ticket();
     await f.admin.query("update tickets set deleted_at = now() where id = $1", [gone.id]);
     const stopped = await f.person(T.tenantId, T.rootScope, { name: "止められた人", ticketAbility: "edit" });
-    await f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [stopped.id, boss.id]);
+    await f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      stopped.id,
+      boss.id,
+    ]);
     const body = { stage_id: await stageOf(T.tenantId, "doing") };
     const before = await snapshot(t.id);
     expect((await patch(viewer, t.id, body)).status).toBe(403);
@@ -340,11 +373,22 @@ describe("K-387 入力と守り", () => {
     const t = await ticket();
     const before = await snapshot(t.id);
     const p = JSON.stringify({ stage_id: await stageOf(T.tenantId, "doing") });
-    const v = await asMember<{ v: Record<string, unknown> }>(viewer, "select app.ticket_progress_set($1, $2::jsonb) as v", [t.id, p]);
+    const v = await asMember<{ v: Record<string, unknown> }>(
+      viewer,
+      "select app.ticket_progress_set($1, $2::jsonb) as v",
+      [t.id, p],
+    );
     expect(v.v["error"]).toBe("not_writable");
     const stopped = await f.person(T.tenantId, T.rootScope, { name: "止められた人 2", ticketAbility: "edit" });
-    await f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [stopped.id, boss.id]);
-    const s = await asMember<{ v: Record<string, unknown> }>(stopped, "select app.ticket_progress_set($1, $2::jsonb) as v", [t.id, p]);
+    await f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      stopped.id,
+      boss.id,
+    ]);
+    const s = await asMember<{ v: Record<string, unknown> }>(
+      stopped,
+      "select app.ticket_progress_set($1, $2::jsonb) as v",
+      [t.id, p],
+    );
     expect(s.v["error"]).toBe("not_member");
     expect(await snapshot(t.id)).toEqual(before);
   });
@@ -352,13 +396,19 @@ describe("K-387 入力と守り", () => {
   it("K387-API-023 同時に 2 人が段を変える（作業中 → 保留 と 作業中 → 未着手）：どちらも 200・1 行が 2 つ・2 つ目の「前」は 1 つ目の「後」", async () => {
     const t = await ticket({ stage: "doing" });
     const [a, b] = await Promise.all([
-      patch(boss, t.id, { stage_id: await stageOf(T.tenantId, "hold"), hold_reason: "待ち", resume_condition: "来たら" }),
+      patch(boss, t.id, {
+        stage_id: await stageOf(T.tenantId, "hold"),
+        hold_reason: "待ち",
+        resume_condition: "来たら",
+      }),
       patch(writer, t.id, { stage_id: await stageOf(T.tenantId, "todo") }),
     ]);
     expect([a.status, b.status]).toEqual([200, 200]);
     const ls = await lines(t.id);
     expect(ls).toHaveLength(2);
-    const ch = ls.map((l) => (l.changes as { field: string; from: string; to: string }[]).find((c) => c.field === "stage")!);
+    const ch = ls.map((l) =>
+      (l.changes as { field: string; from: string; to: string }[]).find((c) => c.field === "stage")!,
+    );
     expect(ch[1]!.from).toBe(ch[0]!.to);
     const name = await one<{ name: string }>(
       "select s.name from tickets t join ticket_stages s on s.id = t.stage_id where t.id = $1",
@@ -404,7 +454,11 @@ describe("K-387 入力と守り", () => {
     );
     try {
       // 担当者（boss）でない人が段を変える＝担当者の受け箱に 1 行を書く所で落ちる
-      const r = await patch(writer, t.id, { stage_key: "hold", hold_reason: "先方の返事待ち", resume_condition: "返事が来たら" });
+      const r = await patch(writer, t.id, {
+        stage_key: "hold",
+        hold_reason: "先方の返事待ち",
+        resume_condition: "返事が来たら",
+      });
       expect(r.status).toBe(500);
       const j = await json(r);
       expect(j["code"]).toBe("E-PAGE-003");
@@ -446,12 +500,21 @@ describe("K-387 詳細（getTicket）の変えられるか・AI の分の時間�
     const d = (await json(await detail(boss, t.id))).data!;
     expect(d["time"]).toEqual({ estimate_minutes: 30, human_minutes: 60, ai_minutes: 12 });
     expect(d["hold"]).toBeNull();
-    expect((await json(await detail(boss, (await ticket()).id))).data!["time"]).toEqual({ estimate_minutes: null, human_minutes: 0, ai_minutes: 0 });
+    expect((await json(await detail(boss, (await ticket()).id))).data!["time"]).toEqual({
+      estimate_minutes: null,
+      human_minutes: 0,
+      ai_minutes: 0,
+    });
     const h = await ticket({ stage: "doing" });
     expect(
       (await patch(writer, h.id, { stage_key: "hold", hold_reason: "待ち", resume_condition: "来たら" })).status,
     ).toBe(200);
-    const held = (await json(await detail(boss, h.id))).data!["hold"] as { reason: string; resume: string; at: string; by: string | null };
+    const held = (await json(await detail(boss, h.id))).data!["hold"] as {
+      reason: string;
+      resume: string;
+      at: string;
+      by: string | null;
+    };
     expect(held).toMatchObject({ reason: "待ち", resume: "来たら", by: "佐藤" });
     expect(Number.isNaN(Date.parse(held.at))).toBe(false);
     expect(await stageKeyOf(h.id)).toBe("hold");
@@ -474,5 +537,4 @@ describe("K-387 詳細（getTicket）の変えられるか・AI の分の時間�
     }
     expect(await snapshot(t.id)).toEqual(before);
   });
-
 });

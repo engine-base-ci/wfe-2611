@@ -35,13 +35,21 @@ export let writer: Person; // 同じグループの書ける人（担当者で�
 export let viewer: Person; // 見るだけの人
 export let outsider: Person; // 別の会社の人
 
-export type J = Record<string, unknown> & { data?: Record<string, unknown>; details?: { field: string; message: string }[] };
+export type J = Record<string, unknown> & {
+  data?: Record<string, unknown>;
+  details?: { field: string; message: string }[];
+};
 export const json = async (r: Response) => (await r.clone().json()) as J;
 export const one = async <R = Record<string, unknown>>(sql: string, p: unknown[] = []) =>
   (await f.admin.query(sql, p)).rows[0] as R;
 export const num = async (sql: string, p: unknown[] = []) => Number((await one<{ n: string }>(sql, p)).n);
 export const fields = (j: J) => (j.details ?? []).map((d) => d.field);
-export const ctxOf = (p: Person): TenantContext => ({ tenantId: p.tenantId, userId: p.id, role: "member", stepUpAt: null });
+export const ctxOf = (p: Person): TenantContext => ({
+  tenantId: p.tenantId,
+  userId: p.id,
+  role: "member",
+  stepUpAt: null,
+});
 /** 行の守りの中（アプリの接続・その人の文脈）で 1 つの値を返す SQL を流す（口を通さない DB の 2 層目の確かめ） */
 export const asMember = async <R>(p: Person, sql: string, args: unknown[] = []) =>
   withTenant(f.pool as pg.Pool, ctxOf(p), async (cl) => (await cl.query(sql, args)).rows[0] as R);
@@ -73,7 +81,10 @@ export function useHooks(names: readonly string[], extra: Record<string, () => P
 }
 
 /** 土台を立てる（各ファイルの頭で 1 回）。extra は葉が足す hooks のファイルの読み方（K-389 が K-385 の書き込みの口を足す） */
-export function setupProgress(names: readonly string[] = ["ticket-update"], extra: Parameters<typeof useHooks>[1] = {}) {
+export function setupProgress(
+  names: readonly string[] = ["ticket-update"],
+  extra: Parameters<typeof useHooks>[1] = {},
+) {
   beforeAll(async () => {
     f = await makeFixture([ticketHooks]);
     T = await f.company("K387 の会社", "PG");
@@ -153,7 +164,11 @@ export async function doneTicket(o: Parameters<typeof ticket>[0] = {}): Promise<
 /** 保留の形を DB に直に置く（理由と再開の条件つき） */
 export async function heldTicket(reason = "先方の返事待ち", resume = "先方の返事が来たら"): Promise<Ticket> {
   const t = await ticket({ stage: "hold" });
-  await f.admin.query("update tickets set hold_reason = $2, resume_condition = $3 where id = $1", [t.id, reason, resume]);
+  await f.admin.query("update tickets set hold_reason = $2, resume_condition = $3 where id = $1", [
+    t.id,
+    reason,
+    resume,
+  ]);
   return t;
 }
 /** 実行の記録（AI の分の時間）を DB に直に置く。分は started_at から finished_at まで。finished が null なら走っている */
@@ -194,7 +209,14 @@ export const row = (ticketId: string) =>
   );
 export const lines = (ticketId: string) =>
   f.admin
-    .query<{ id: string; kind: string; body: string | null; changes: unknown; author_member_id: string | null; created_by: string | null }>(
+    .query<{
+      id: string;
+      kind: string;
+      body: string | null;
+      changes: unknown;
+      author_member_id: string | null;
+      created_by: string | null;
+    }>(
       "select id, kind, body, changes, author_member_id, created_by from ticket_messages where ticket_id = $1 and kind = 'change' order by created_at, id",
       [ticketId],
     )
@@ -220,7 +242,8 @@ export const breakWritable = async <R>(title: string, body: () => Promise<R>): P
   const orig = (
     await one<{ def: string }>("select pg_get_functiondef('app.ticket_writable(uuid)'::regprocedure) as def")
   ).def;
-  await f.admin.query(`create or replace function app.ticket_writable(tid uuid) returns boolean language plpgsql stable security definer set search_path = public, app as $$
+  await f.admin
+    .query(`create or replace function app.ticket_writable(tid uuid) returns boolean language plpgsql stable security definer set search_path = public, app as $$
     begin
       if exists (select 1 from tickets x where x.id = tid and x.title = '${title}') then
         raise exception 'K387 の試験で守りを壊した';
