@@ -10229,6 +10229,16 @@ components:
             decline_reason:
               type: string
               pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f\ufeff][^\u0000]*$
+    HandoverWithdrawInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: withdrawTicketHandover
+    HandoverRemindInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: remindTicketHandover
     ScopeOverview:
       type: object
       properties:
@@ -12212,6 +12222,26 @@ components:
         can:
           type: object
       x-operation: listTicketHandovers
+    HandoverWithdrawn:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        state:
+          type: string
+        decided_at:
+          type: string
+      x-operation: withdrawTicketHandover
+    HandoverReminded:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reminded_at:
+          type: string
+      x-operation: remindTicketHandover
     Error:
       type: object
       properties:
@@ -39603,6 +39633,231 @@ paths:
                 $ref: '#/components/schemas/Error'
         '409':
           description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/remind:
+    post:
+      operationId: remindTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-008.6
+      - D-032
+      - D-058
+      - D-058.8
+      - D-061
+      - D-061.4
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      x-permission: self
+      x-permission-scope: 渡した人だけ（申し出は申し出た人・配るは配った人）。行の決まり from_member_id（K-406）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverRemindInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverReminded'
+                  meta:
+                    type: object
+                    properties:
+                      mail:
+                        type: string
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket_handovers/{id}/withdraw:
+    post:
+      operationId: withdrawTicketHandover
+      summary: 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）
+      tags:
+      - ticket_handovers
+      x-acts:
+      - A111
+      - A48
+      - A51
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      - C6
+      x-source:
+      - D-008.6
+      - D-024
+      - D-032
+      - D-058
+      - D-058.7
+      - D-058.8
+      - D-061
+      - D-061.3
+      - D-061.4
+      - D-061.5
+      - D-068
+      - D-068.1
+      - D-068.8
+      - D-125.14
+      - D-125.167
+      - D-125.88
+      - D-125.89
+      - D-125.91
+      - D-125.92
+      - D-125.94
+      x-permission: self
+      x-permission-scope: 渡した人だけ（申し出は申し出た人・配るは配った人）。行の決まり from_member_id（K-406）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandoverWithdrawInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/HandoverWithdrawn'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-HND-002／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-HND-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
