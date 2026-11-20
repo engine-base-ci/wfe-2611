@@ -51250,7 +51250,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了で絞る・期限切れの印）",
+   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限切れの印）",
    "implementation_path": "apps/api/src/routes/tickets.ts::listTickets",
    "permission": {
     "who": "read",
@@ -51271,8 +51271,20 @@
      "assignee_id",
      "client_id",
      "done",
+     "due",
+     "delegated",
+     "approving",
+     "due_from",
+     "due_to",
+     "start_from",
+     "start_to",
+     "overdue",
+     "fire",
+     "parent",
+     "fields",
      "cursor",
-     "limit"
+     "limit",
+     "sort"
     ]
    },
    "outputs_2xx": {
