@@ -13,6 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { EMAIL_RE, normalizeEmail } from "@kaname/auth/signup";
 import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
 import { createDeviceResolver } from "@kaname/auth/resolver";
@@ -487,27 +488,61 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(((await json(ok)).data as { invitations: unknown[] }).invitations).toHaveLength(25);
   });
 
-  it("K419-API-026 宛ては、そろえる前の字を契約の pattern で照らす：中に空白がある・@ が全角で 2 つ・ドメインに点が無い字は 422・E-INV-009（details の字はそろえた後の字）・招待 0。前後の全角の空白・全角の @ と点は通って 201", async () => {
+  it("K419-API-026 宛ては、そろえる前の字を契約の pattern で照らす：@ が全角で 2 つ・ドメインに点が無い・@ が無い字は 422・E-INV-009（details の字はそろえた後の字）・招待 0・メール 0。中に空白（半角・全角）・前後の全角の空白・全角の @ と点・小さい @ と点は、そろえて 201（前の口と同じ・PM の決め 2026-11-21 02:45）", async () => {
     await ready();
     const before = mails.length;
     const id = randomUUID().slice(0, 6);
     const r = await invite(
       admin,
-      base([`ki mura${id}@engine-base.example`, `kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`]),
+      base([`kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`, `kimura${id}engine-base.example`]),
     );
     expect(r.status).toBe(422);
     const j = await json(r);
     expect(j["code"]).toBe("E-INV-009");
     expect((j.details ?? []).map((d) => [d.email, d.code])).toEqual([
-      [`kimura${id}@engine-base.example`, "E-INV-009"],
       [`kimura${id}@@engine-base.example`, "E-INV-009"],
       [`kimura${id}@engine-base`, "E-INV-009"],
+      [`kimura${id}engine-base.example`, "E-INV-009"],
     ]);
     expect(mails.length).toBe(before);
-    const e = `ok${id}@engine-base.example`;
-    const fullAt = `\u3000${e.replace("@", "＠").replace(".", "．")}\u3000`;
-    expect((await invite(admin, base([fullAt]))).status).toBe(201);
-    expect(await invRows(e)).toHaveLength(1);
+    const e = (tag: string) => `${tag}${id}@engine-base.example`;
+    const forms: [string, string][] = [
+      [e("sp"), `sp ${id}@engine-base.example`.replace("sp ", "s p")],
+      [e("fw"), `\u3000${e("fw").replace("@", "＠").replace(".", "．")}\u3000`],
+      [e("mid"), `mi\u3000d${id} @ engine-base . example`],
+      [e("sm"), `${e("sm").replace("@", "﹫").replace(".", "․")}`],
+    ];
+    for (const [want, typed] of forms) {
+      const ok = await invite(admin, base([typed]));
+      expect(ok.status, typed).toBe(201);
+      expect(await invRows(want.replace(/\s/g, ""))).toHaveLength(1);
+    }
+  });
+
+  it("K419-API-027 前の口（normalizeEmail でそろえてから EMAIL_RE で見る）が受けていた形は今も受け、断っていた形は今も断る：全 BMP の 1 字を宛ての 7 か所に入れて、前の判定と契約の pattern の判定が同じ（NFKC で 2 字以上に開いて点か @ を含む 27 字は点と数えないので除く）", () => {
+    const re = new RegExp(INVITE_EMAIL_PATTERN);
+    const spots = [
+      (c: string) => `a${c}@b.co`,
+      (c: string) => `a@b${c}.co`,
+      (c: string) => `a@b.${c}co`,
+      (c: string) => `${c}a@b.co`,
+      (c: string) => `a@b.co${c}`,
+      (c: string) => `a@${c}b.co`,
+      (c: string) => `a@b${c}c`,
+    ];
+    const diff: string[] = [];
+    for (let c = 0; c <= 0xffff; c++) {
+      if (c >= 0xd800 && c <= 0xdfff) continue;
+      const ch = String.fromCharCode(c);
+      const nfkc = ch.normalize("NFKC");
+      if (nfkc.length > 1 && /[@.]/.test(nfkc)) continue;
+      for (const at of spots) {
+        const typed = at(ch);
+        if (EMAIL_RE.test(normalizeEmail(typed)) !== re.test(typed))
+          diff.push(`U+${c.toString(16)} ${JSON.stringify(typed)}`);
+      }
+    }
+    expect(diff).toEqual([]);
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
