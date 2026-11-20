@@ -15,10 +15,15 @@ const rejected = (code: string, field: string): HookReply => {
   return { status: e.status, body: { ...e.toJSON(), field, details: [{ field, message: e.entry.message }] } };
 };
 
+/** 見えない物（404・E-PAGE-001）。欄の名前も明細も付けない（前からある 404 E-PAGE-001 と同じ形） */
+const pageNotFound = (): HookReply => {
+  const e = new KanameError("E-PAGE-001");
+  return { status: e.status, body: e.toJSON() };
+};
+
 interface PostResult {
   item?: unknown;
   error?: string;
-  field?: string;
 }
 
 /** 本文が空：入口の前処理で断る（本文が無いのも空と同じ答え・E-VAL-027） */
@@ -52,7 +57,8 @@ export function createPostTicketMessage(appPool: pg.Pool): (a: HookArgs) => Prom
     if (v?.item !== undefined && v.item !== null) return { status: 201, body: { data: v.item } };
     if (v?.error === "not_found") return notFound();
     if (v?.error === "empty") return rejected("E-VAL-027", "body");
-    if (v?.error === "not_selectable" && v.field) return rejected("E-VAL-014", v.field);
+    // @・知らせる人・引用元が選べない（見られない・抜けた・止められた・別のチケット・消した）は DB の中身で決まるので 422 にせず 404（欄も明細も付けない＝在るかを漏らさない・控え帳 2026-11-21 01:15）
+    if (v?.error === "not_selectable") return pageNotFound();
     return down("やり取りに書く（知らない答え）", new Error("unknown"));
   };
 }

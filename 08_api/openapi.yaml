@@ -42656,7 +42656,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001／NOT_FOUND
           content:
             application/json:
               schema:
@@ -42668,14 +42668,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-027／E-VAL-014（契約に書けない値の決まり：本文が全角の空白・改行だけ（E-VAL-027）・@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 本文が全角の空白・改行だけ（E-VAL-027）
-          - '@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）'
         '500':
           description: E-PAGE-003
           content:
