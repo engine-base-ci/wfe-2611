@@ -122,6 +122,12 @@ const expect409 = async (r: Response, code: string) => {
   expect(j["details"]).toBeUndefined();
 };
 
+// NFKC で「.」を含む 2 字以上に開く互換の 27 字（‥ … ⒈〜⒛ ㏂ ㏇ ㏘ ︙ ︰）と、「?」「/」を含む 7 字（⁇ ⁈ ⁉ ℀ ℁ ℅ ℆）。前は受けたが、点や区切りと数えると前は断っていた形を新しく受けるため断る例外
+const COMPAT_DOT_CHARS = [
+  "\u2025", "\u2026", "\u2047", "\u2048", "\u2049", "\u2100", "\u2101", "\u2105", "\u2106", "\u33c2", "\u33c7", "\u33d8", "\ufe19", "\ufe30",
+  ...Array.from({ length: 20 }, (_, i) => String.fromCharCode(0x2488 + i)),
+]; // prettier-ignore
+
 describe("K-352 預ける口", () => {
   it("K352-API-001 個人のログイン情報を預ける（ログインから 15 分の内・PC がつながっている）：201・答えは一覧と同じ形で値と参照を返さない。行・金庫の中身・確かめの仕事ができる", async () => {
     await h.ready();
@@ -348,6 +354,31 @@ describe("K-352 預ける口", () => {
       "xn--abc-v08fl0d.example.com",
       "xn--l8jegikgoqsuw.jp",
     ]);
+    // そのままの punycode・全角ハイフン・横棒・空のポート・IDNA が受けない字（未割り当て・結合記号・数字だけの名前になる字）は断らず、
+    // NFKC・小文字の字のまま名前にして保存する。「＼@」はブラウザの読み方（＼ は区切りでなく @ の前の字）に合わせ、行き先は evil.test
+    const odd = ["a¨.example.com", "\u0301a.example.com", "example.①"];
+    const kept = await post(
+      me,
+      keyBody({
+        destinations: [
+          "xn--r8jz45g.jp",
+          "ａ－ｂ.example.com",
+          "a‐b.example.net",
+          "https://example.org:/",
+          ...odd,
+          "https://example.edu＼@evil.test/",
+        ],
+      }),
+    );
+    expect(kept.status, await kept.clone().text()).toBe(201);
+    expect(((await h.json(kept)).data as Record<string, unknown>)["destinations"]).toEqual([
+      "xn--r8jz45g.jp",
+      "a-b.example.com",
+      "xn--ab-v1t.example.net", // U+2010 は IDNA が受ける字なので punycode になる（前と同じ）
+      "example.org",
+      ...odd.map((x) => x.normalize("NFKC").toLowerCase()),
+      "evil.test",
+    ]);
   });
 
   // 公開の接尾辞だけ（co.jp・*.co.jp・ne.jp）を断る（代表の答え answer=449e72553c59）
@@ -368,6 +399,19 @@ describe("K-352 預ける口", () => {
       ["co.jp"],
       ["*.co.jp"],
       ["NE.JP"],
+      // 互換形で書いた公開の接尾辞だけは、pattern を通っても預けた物がどこでも使えてしまう守りのため断る（契約の 422 の説明に名指し）
+      ["ᶜo.jp"],
+      ["ⓒⓞ.jp"],
+      ...COMPAT_DOT_CHARS.map((c) => [`a${c}b.example.com`]),
+      // 前は受けたが今は断る例外（実際に打たれない形・「前に受けていた入力は今も受ける」の例外として名指し）：
+      //   バックスラッシュ・百分率形のホスト・ゼロ幅空白・、〃〈〉など U+3001〜303F と U+2012 以外の U+2016〜2027 の約物
+      ["https://example.com\\path"],
+      ["%41bc.example.com"],
+      ["a\u200b.example.com"],
+      ["a、b.example.com"],
+      ["a〃b.example.com"],
+      ["a〈b〉.example.com"],
+      ["a†b.example.com"],
     ])
       await expect422(await post(me, keyBody({ destinations: bad })), "E-CRED-002", "destinations");
     expect(h.vault.puts.length).toBe(puts);
