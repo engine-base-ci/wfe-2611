@@ -1062,6 +1062,14 @@
     "apps/api/test/generated/patch_ticket_handovers_id.test.ts",
     "apps/api/test/generated/get_handover_rules.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261121090400_handover_switch.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-switch.test.ts"
+   ]
   }
  ],
  "reads_ok": {
