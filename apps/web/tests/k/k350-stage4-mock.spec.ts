@@ -213,7 +213,10 @@ test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則
   const top = at < 0 ? conf : conf.slice(0, at);
   const rules = at < 0 ? "" : conf.slice(at);
   // 全体：allowlists はちょうど 1 つで、道だけ（値の正規表現・止め語・コミット・条件では外さない）
+  //   全体の [[allowlists]] は [[rules]] の後ろにも書けて全体に効くので、ファイル全体で数えて 1 つ・規則の側には 0 にする
+  expect(conf.match(/^\[\[allowlists\]\]$/gm) ?? []).toHaveLength(1);
   expect(top.match(/^\[\[allowlists\]\]$/gm) ?? []).toHaveLength(1);
+  expect(rules.match(/^\[\[allowlists\]\]$/gm) ?? []).toHaveLength(0);
   expect(top).not.toMatch(/^(regexes|stopwords|commits|condition|regexTarget)\s*=/m);
   const listOf = (part: string, key: string): string[] => {
     const line = part.split("\n").find((l) => l.startsWith(`${key} = `));
