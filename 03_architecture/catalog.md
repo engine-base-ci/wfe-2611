@@ -401,7 +401,7 @@ API 369（作った 66・後のフェーズの行為だけ 20）・前の道す�
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `retryActionRun` | POST /api/v1/action_runs/:id/retry | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | K-67 |
 | `takeoverActionRun` | POST /api/v1/action_runs/:id/takeover | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた | F7 | 契約だけ（501） | K-67 |
-| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |
+| `listNotifications` | GET /api/v1/notifications | 取得（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67,K-461 |
 | `readNotification` | PATCH /api/v1/notifications/:id | 更新（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |
 | `readAllNotifications` | POST /api/v1/notifications/read-all | 作成・実行（notifications）— 知らせを見てチケットへ行く | F7 | 契約だけ（501） | K-67 |
 | `listSavedViews` | GET /api/v1/saved_views | 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
