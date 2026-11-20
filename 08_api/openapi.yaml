@@ -9857,6 +9857,31 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketMessageInput:
+      type: object
+      properties:
+        body:
+          type: string
+          pattern: \S
+        mention_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        notify_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        quote_of_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: createTicketMessage
+      required:
+      - body
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -9945,7 +9970,7 @@ components:
         deleted:
           type: object
           nullable: true
-      x-operation: listTicketTimeline
+      x-operation: createTicketMessage
     TestSpecLint:
       type: object
       properties:
@@ -42128,8 +42153,8 @@ paths:
       - D-125.131
       - D-125.167
       - D-125.29
-      x-permission: write
-      x-permission-scope: そのグループの人（閲覧のみは書けない）
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）
       x-step-up: false
       security:
       - session: []
@@ -42145,7 +42170,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketMessagesInput'
+              $ref: '#/components/schemas/TicketMessageInput'
       responses:
         '201':
           description: 成功
@@ -42155,7 +42180,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
         '401':
@@ -42183,7 +42208,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-027／E-VAL-014（契約に書けない値の決まり：本文が全角の空白・改行だけ（E-VAL-027）・@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 本文が全角の空白・改行だけ（E-VAL-027）
+          - '@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42196,12 +42230,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

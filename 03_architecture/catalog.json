@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 367,
-  "api_built": 58,
+  "api_built": 59,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 145,
   "ui": 18,
   "packages": 13,
-  "errors": 199,
+  "errors": 200,
   "stack": 56,
   "env": 41
  },
@@ -5216,9 +5216,8 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66",
     "K-385"
    ]
   },

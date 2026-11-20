@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。199 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。200 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3618,6 +3618,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-VAL-027": {
+    "id": "E-VAL-027",
+    "cls": "validation",
+    "message": "書き込む文を書いてください",
+    "action": "文を書いてから送る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-027",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "talk"
     }
   }
 };

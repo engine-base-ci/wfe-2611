@@ -1223,7 +1223,7 @@ PERMS = {
     "stopActionRun": ("assignee", "担当者・承認する人・マネージャー", False),
     "listTicketReferences": ("read", "そのチケットを見られる人。見られないページは題名も出さない", False),
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
-    "createTicketMessage": ("write", "そのグループの人（閲覧のみは書けない）", False),
+    "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
     "updateTicketMessage": ("self", "書いた本人", False),
     "deleteTicketMessage": ("self", "書いた本人（マネージャーは消した印を残して消せる）", False),
     "starTicketMessage": ("read", "そのチケットを見られる人（自分の印だけ）", False),
