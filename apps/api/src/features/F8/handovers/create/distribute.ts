@@ -10,10 +10,10 @@ import { sendHandoverMails, type MailRow } from "../notify.js";
 type Answer =
   { ok: true; handover_id: string; handover: unknown; mails: MailRow[] } | { error: string; [k: string]: unknown };
 
-/** この葉が足す断り：閲覧のみ・取引先の人／今の担当者を相手に選んだ（409） */
+/** この葉が足す断り：閲覧のみ・取引先の人／今の担当者を相手に選んだ（409・K-401 の決めどおり 409 に欄・details は付けない） */
 function reply(v: { error: string; [k: string]: unknown }): HookReply {
-  if (v.error === "viewer") return fromCatalog("E-HND-130", 409, { field: "to_member_id" });
-  if (v.error === "current") return fromCatalog("E-HND-131", 409, { field: "to_member_id" });
+  if (v.error === "viewer") return fromCatalog("E-HND-130", 409);
+  if (v.error === "current") return fromCatalog("E-HND-131", 409);
   return replyOf(v, "人に配る");
 }
 

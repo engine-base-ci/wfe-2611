@@ -27,7 +27,7 @@ describe("PATCH /api/v1/ticket_handovers/:id", () => {
     expect(readFileSync("apps/api/test/features/F8/handover-base.test.ts", "utf8")).toContain("K401-API-023");
   });
   it("test_patch_ticket_handovers_id_conflict", () => {
-    // UNWANTED: IF その渡しがもう決まっているか今は受けられないなら、Kaname は 409 と E-HND-005／E-HND-003／E-HND-009／E-HND-011 を返し、何も書かない
+    // UNWANTED: IF その渡しがもう決まっているか今は受けられないなら、Kaname は 409 と E-HND-001／E-HND-005／E-HND-003／E-HND-009／E-HND-011 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F8/handover-base.test.ts の「K401-API-022」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F8/handover-base.test.ts", "utf8")).toContain("K401-API-022");
   });
