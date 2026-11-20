@@ -996,6 +996,25 @@
   {
    "paths": [
     "packages/db/migrations/**",
+    "apps/api/src/features/F3/remove-pc/**",
+    "apps/api/src/hooks/device-revoke.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/remove-pc.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/remove-pc.test.ts",
+    "apps/api/test/features/contract/k144.d/K-362.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**",
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/device-*.ts",
     "apps/api/src/hooks/bridge-browser.ts"
@@ -1011,6 +1030,33 @@
    ],
    "tests": [
     "apps/api/test/generated/patch_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/bridge-browser.ts",
+    "packages/db/migrations/20261120143736_bridge_set_browser_acl.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_browser.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/browser-choice.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/browser-choice.test.ts"
    ]
   },
   {

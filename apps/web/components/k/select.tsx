@@ -53,7 +53,7 @@ export function Select({
           <S.Icon aria-hidden="true">▾</S.Icon>
         </S.Trigger>
         <S.Portal>
-          <S.Positioner sideOffset={4} alignItemWithTrigger={false}>
+          <S.Positioner className="k-select-positioner" sideOffset={4} alignItemWithTrigger={false}>
             <S.Popup className="k-select-popup">
               {options.map((o) => (
                 <S.Item key={o.value} value={o.value} disabled={o.disabled} className="k-select-item">

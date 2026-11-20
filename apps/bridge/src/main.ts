@@ -11,6 +11,7 @@ import { chmodSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "n
 import { join, dirname } from "node:path";
 import { startLocalServer } from "./local";
 import { BRIDGE_UA, claimCode, defaultDeviceLabel, loadMachineId } from "./pairing";
+import { chooseBrowserOnKaname } from "./browser-choice";
 import { BRIDGE_PROTOCOL, startLoop, type Browser, type LoopState } from "./loop";
 import { stopCurrent, isRunning, warmShellPath, chromeState } from "./runner";
 import { claudeChecks, installClaude, installProgress, type Check } from "./install-claude";
@@ -169,20 +170,10 @@ ipcMain.handle("bridge:claim", (_e, code: string) => claim(String(code ?? "")));
 ipcMain.handle("bridge:check", () => selfCheck());
 ipcMain.handle("bridge:set-browser", async (_e, b: string) => {
   if (!BROWSERS.includes(b as Browser)) return { ok: false };
-  // Kaname が正本（D-120.1）。先に Kaname に送り、通ったら窓の値も変える。つながっていなければ変えない（どちらが本当か分からなくしない）
-  const sid = readState().sessionId;
-  if (!sid) return { ok: false, message: "Kaname につないでから選んでください" };
-  try {
-    const r = await fetch(`${API_BASE}/api/auth-ext/bridge/browser`, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
-      body: JSON.stringify({ browser: b }),
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!r.ok) return { ok: false, message: `Kaname に届きませんでした（${r.status}）` };
-  } catch {
-    return { ok: false, message: "Kaname に届きませんでした" };
-  }
+  // Kaname が正本（D-120.1）。先に Kaname の口（setBridgeBrowser・K-366）に送り、通ったら窓の値も変える。
+  //   つながっていなければ変えない（どちらが本当か分からなくしない）
+  const r = await chooseBrowserOnKaname(API_BASE, readState().sessionId, b);
+  if (!r.ok) return r;
   writeState({ ...readState(), browser: b as Browser });
   return { ok: true };
 });
