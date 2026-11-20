@@ -457,13 +457,15 @@ describe("K-477 グループの概要を読む（getScopeOverview・本物の DB
     const m = (await import("../../../src/hooks/scope-overview.js")) as {
       scopeOverviewHooks: (p: pg.Pool) => Record<string, Hook>;
     };
-    const saved = f.hooks["getScopeOverview"];
+    // 口の遅い読み込み（beforeAll の f.req の包み）をここで済ませてから、差し替えの前の口を取る（単独で流しても、先に読み込みが走って差し替えを上書きしない）
+    expect((await overview(w.a, w.g1)).status).toBe(200);
+    const saved = f.hooks["getScopeOverview"]!;
     f.hooks["getScopeOverview"] = m.scopeOverviewHooks(counted)["getScopeOverview"]!;
     try {
       const r = await overview(w.a, w.g1);
       expect(r.status, await r.clone().text()).toBe(200);
     } finally {
-      f.hooks["getScopeOverview"] = saved!;
+      f.hooks["getScopeOverview"] = saved;
     }
     // 取引は 1 つ。中身の文は 3 つ（グループが見えるか・内訳・最近の更新・合計は内訳から足す）と、取引の出入り（begin・文脈の設定・commit）
     expect(hits.filter((x) => /^\s*begin\b/i.test(x))).toHaveLength(1);
