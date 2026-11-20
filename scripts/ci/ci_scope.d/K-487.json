@@ -1,6 +1,6 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/ticket-delete-preview.ts", "apps/api/src/features/F7/ticket-delete/**", "packages/db/migrations/20261123080700_ticket_delete_preview.sql"],
+  {"paths": ["apps/api/src/hooks/ticket-delete-preview.ts", "apps/api/src/features/F7/ticket-delete/**", "packages/db/migrations/20261123082700_ticket_delete_preview.sql"],
    "tests": ["apps/api/test/features/F7/ticket-delete-preview.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"]},
   {"paths": ["apps/api/test/features/F7/ticket-delete-preview.test.ts", "apps/api/test/features/contract/k144-contract.test.ts", "apps/api/test/features/F1/terms.test.ts"],
    "tests": ["apps/api/test/generated/get_tickets_id_delete_preview.test.ts"]}
