@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:99fef21aeafa2272
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d67f6ea86b5c546c
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -39,12 +39,13 @@ export interface Ops {
   consentToTerms: { params: never; query: never; body: T.TermsConsentInput; data: T.TermsConsented };
   getCurrentTerms: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.CurrentTerms[] };
   verifySignInCode: { params: never; query: never; body: T.SignInCodeInput; data: T.SignInCodeResult };
+  setBridgeBrowser: { params: never; query: never; body: T.BridgeBrowserInput; data: T.BridgeBrowser };
   claimPairingCode: { params: never; query: never; body: T.BridgeClaimInput; data: T.BridgeClaim };
   reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   resolveCredential: { params: never; query: never; body: T.CredentialsInput; data: T.ResolvedCredential };
   listMyDevices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.BridgeDevice[] };
   updateMyDevice: { params: { id: string }; query: never; body: T.DeviceBrowserInput; data: T.DeviceBrowser };
-  revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.Sessions };
+  revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.RevokedDevice };
   getFileForBridge: { params: { ref: string }; query: never; body: never; data: T.Attachments };
   sendHeartbeat: { params: never; query: never; body: T.BridgeHeartbeatInput; data: T.BridgeHeartbeat };
   putArtifactFromBridge: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
@@ -102,8 +103,8 @@ export interface Ops {
   streamConversation: { params: { id: string }; query: never; body: never; data: T.Messages };
   listCredentials: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Credential[] };
   createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };
-  updateCredential: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
-  deleteCredential: { params: { id: string }; query: never; body: never; data: T.Credentials };
+  updateCredential: { params: { id: string }; query: never; body: T.CredentialUpdateInput; data: T.Credential };
+  deleteCredential: { params: { id: string }; query: never; body: never; data: T.CredentialDeleted };
   checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   answerCredentialLoginCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
   createExport: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };

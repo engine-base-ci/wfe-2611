@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。202 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。204 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3575,6 +3575,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "medium",
     "support_code": "E-CRED-007",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-008": {
+    "id": "E-CRED-008",
+    "cls": "validation",
+    "message": "変える物がありません。新しい値か、使える場所・期限・説明を入れてください",
+    "action": "変える物を入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-009": {
+    "id": "E-CRED-009",
+    "cls": "conflict",
+    "message": "ほかの画面で同時に上書きされました。開き直してから、もう一度上書きしてください",
+    "action": "開き直してもう一度",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-009",
     "must_not": false,
     "layers": [
       "UI",

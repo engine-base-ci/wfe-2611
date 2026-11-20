@@ -6,7 +6,7 @@
 //   代表の答え answer=e34268dbfbac：上書きでログイン情報を替えるときは ID とパスワードを両方入れ直す（上書きの小窓に「新しいログイン ID」）・
 //   使われ方は「これまでに N 回 ・ 最後 MM/DD」だけ（使うもの・この 1 か月の回数・チケット番号は出さない）
 //   段 1・段 2 の部品（components/k・setting-parts・auth-parts・F1/security の本人確認の取り直し）だけで組み、新しい見た目を書かない
-import type { ReactNode } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 import { KeyRound } from "lucide-react";
 import { Button, Confirm, Dialog, PasswordField, Select, Tabs, TextField } from "@/components/k";
 import { NoteBox, ResultBox } from "@/components/k/auth-parts";
@@ -179,64 +179,128 @@ export function CredentialsBody(p: CredentialsBodyProps) {
   );
 }
 
-/** 預ける（小窓）。種類：ログイン情報（ID・パスワード・2 段階の種類）／API キー・値 */
+/** 2 段階の種類（ログイン情報のときだけ） */
+export type CredentialTwoFactor = "none" | "totp" | "sms" | "email" | "push";
+/** 預ける小窓の欄（口の欄の名前と同じ。欄ごとの文はこの名前で受ける） */
+export type CredentialField =
+  | "name"
+  | "description"
+  | "login"
+  | "password"
+  | "value"
+  | "two_factor"
+  | "totp_secret"
+  | "destinations"
+  | "expires_on";
+/** 預ける小窓に入れた値（入れたままの字。直し方と送る形は入れ物が持つ） */
+export interface AddCredentialValues {
+  kind: "login" | "key";
+  layer: "workspace" | "personal";
+  name: string;
+  description: string;
+  login: string;
+  password: string;
+  value: string;
+  two_factor: CredentialTwoFactor;
+  totp_secret: string;
+  destinations: string;
+  expires_on: string;
+}
+/** 開いたときの値：ログイン情報・ワークスペース・2 段階 なし・欄は空 */
+export const EMPTY_CREDENTIAL: AddCredentialValues = {
+  kind: "login",
+  layer: "workspace",
+  name: "",
+  description: "",
+  login: "",
+  password: "",
+  value: "",
+  two_factor: "none",
+  totp_secret: "",
+  destinations: "",
+  expires_on: "",
+};
+export type AddCredentialErrors = Partial<Record<CredentialField, string>>;
+
+const TWO_FACTORS: readonly CredentialTwoFactor[] = ["none", "totp", "sms", "email", "push"];
+const asTwoFactor = (v: string | null): CredentialTwoFactor => TWO_FACTORS.find((t) => t === v) ?? "none";
+
+/** 預ける（小窓）。種類：ログイン情報（ID・パスワード・2 段階の種類）／API キー・値。
+ *  欄はブラウザの自動入力と保存を止める（本人の Kaname のパスワードを外のサイトの物として預けない・外のサイトの値をブラウザに残さない・D-128.57）。
+ *  値と押す関数は入れ物（本番は credentials-screen・モックは mocks.tsx）が渡す。error は小窓の赤の知らせ（口の文） */
 export function AddCredentialDialog({
   open,
-  kind,
+  values,
   workspaceName,
   errors,
+  error,
+  busy = false,
+  onValue,
+  onSubmit,
   onOpenChange,
 }: {
   open: boolean;
-  kind: "login" | "key";
+  values: AddCredentialValues;
   workspaceName: string;
-  errors?: { name?: string; value?: string; destinations?: string };
+  errors?: AddCredentialErrors;
+  error?: string | null;
+  busy?: boolean;
+  /** 欄を替えた（替えた欄だけ） */
+  onValue?: (patch: Partial<AddCredentialValues>) => void;
+  onSubmit?: () => void;
   onOpenChange?: (o: boolean) => void;
 }) {
+  const v = values;
+  const text = (
+    k: "name" | "description" | "login" | "password" | "value" | "totp_secret" | "destinations" | "expires_on",
+  ) => ({
+    value: v[k],
+    onChange: (e: ChangeEvent<HTMLInputElement>) => onValue?.({ [k]: e.target.value }),
+    error: errors?.[k],
+  });
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 送っている間は閉じない
+        onOpenChange?.(o);
+      }}
       title="ログイン情報を預ける"
       subtitle="保存したら、値は二度と見られない"
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>本人確認して保存</Button>
+          <Button loading={busy} onClick={onSubmit}>
+            本人確認して保存
+          </Button>
         </>
       }
     >
+      {error ? <ResultBox tone="bad">{error}</ResultBox> : null}
       <Select
         label="種類"
         name="kind"
-        value={kind}
+        value={v.kind}
+        onValueChange={(k) => onValue?.({ kind: k === "key" ? "key" : "login" })}
         options={[
           { value: "login", label: "ログイン情報（ID とパスワード）" },
           { value: "key", label: "API キー・値" },
         ]}
       />
-      <TextField
-        label="名前"
-        name="name"
-        defaultValue={kind === "login" ? "HACCHU_NAVI_LOGIN" : "FREEE_API_KEY"}
-        hint="英大文字と _。分身はこの名前で頼む"
-        error={errors?.name}
-      />
-      <TextField
-        label="説明（任意）"
-        name="description"
-        defaultValue={kind === "login" ? "発注ナビのログイン" : "会計ソフトの API キー"}
-      />
-      {kind === "login" ? (
+      <TextField label="名前" name="name" hint="英大文字と _。分身はこの名前で頼む" {...text("name")} />
+      <TextField label="説明（任意）" name="description" {...text("description")} />
+      {v.kind === "login" ? (
         <>
-          <TextField label="ログイン ID" name="login" defaultValue="takamoto@engine-base.example" />
-          <PasswordField label="パスワード" name="password" error={errors?.value} />
+          <TextField label="ログイン ID" name="login" autoComplete="off" {...text("login")} />
+          <PasswordField label="パスワード" name="password" autoComplete="new-password" {...text("password")} />
           <Select
             label="2 段階の種類"
             name="two_factor"
-            value="sms"
+            value={v.two_factor}
+            onValueChange={(t) => onValue?.({ two_factor: asTwoFactor(t) })}
+            error={errors?.two_factor}
             description="SMS・メール・スマホのときは、確かめるときに PC が止まってあなたにコードを頼む"
             options={[
               { value: "none", label: "なし" },
@@ -246,27 +310,35 @@ export function AddCredentialDialog({
               { value: "push", label: "スマホのアプリで承認" },
             ]}
           />
+          {v.two_factor === "totp" ? (
+            <PasswordField
+              label="認証アプリの鍵"
+              name="totp_secret"
+              autoComplete="new-password"
+              {...text("totp_secret")}
+            />
+          ) : null}
         </>
       ) : (
-        <PasswordField label="値" name="value" error={errors?.value} />
+        <PasswordField label="値" name="value" autoComplete="new-password" {...text("value")} />
       )}
       <TextField
         label="使える場所"
         name="destinations"
-        defaultValue={kind === "login" ? "hacchu-navi.example" : "api.freee.co.jp"}
         hint="この宛先にだけ入れる・送る。ほかの所では使わない（カンマで複数）"
-        error={errors?.destinations}
+        {...text("destinations")}
       />
       <Select
         label="預ける先"
-        name="scope"
-        value="workspace"
+        name="layer"
+        value={v.layer}
+        onValueChange={(l) => onValue?.({ layer: l === "personal" ? "personal" : "workspace" })}
         options={[
           { value: "workspace", label: workspaceName },
           { value: "personal", label: "自分だけ" },
         ]}
       />
-      <TextField label="期限（任意）" name="expires_at" defaultValue="2027/11/10" hint="近づいたら知らせる" />
+      <TextField label="期限（任意）" name="expires_on" hint="近づいたら知らせる" {...text("expires_on")} />
       <NoteBox>保存の前にパスキーで本人確認を取り直します（15 分の内に確かめていれば省きます）</NoteBox>
     </Dialog>
   );
