@@ -6,6 +6,8 @@
 //   本文は文字として出す（HTML やスクリプトを動かさない）。戻る道は外枠の上の帯のいまの場所（チケット › 番号・K-138）
 //   layout="side"（K-252）：一覧の右に開く詳細。題名の行（帯と h1）・右のパネル・パネルを開く／閉じるを描かず、題名は h2。
 //     ログインの確かめと入り直しは一覧の画面が持つ（ここでは移らない）。エラーの見出しも h2（頁の h1 は一覧の 1 つ）
+//   差し込み口（K-380）：段 7（features/F6/detail-slots.tsx）と段 9（features/F8/handover/detail-slots.tsx）が後から中身を足す所。
+//     今はどれも中身をそのまま返すか何も出さない。題名の下の帯の順は detail-slots.ts の BAND_ORDER 1 か所（承認・実行 → 渡し → 保留）
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PanelRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -18,8 +20,11 @@ import { ApproveBand, canCompleteNow, readTicket, ticketKey } from "@/features/F
 import { DelegateBand } from "@/features/F5/delegate/delegate-band";
 import { ACTIVE, useRuns } from "@/features/F5/delegate/use-run";
 import "@/features/F5/delegate/delegate.css";
-import { DetailMeta, DetailTitle, InertButton } from "./detail-head";
+import * as F6 from "@/features/F6/detail-slots";
+import * as F8 from "@/features/F8/handover/detail-slots";
+import { DetailMeta, DetailTitle, InertButton, StagePill } from "./detail-head";
 import { DetailPanel } from "./detail-panel";
+import { bandYieldTo, useBandOrder, type SlotDetail, type SlotTicket } from "./detail-slots";
 import { SCOPES_KEY, TicketShell, readScopes, type ScopeRow } from "./ticket-shell";
 import "./ticket-detail.css";
 
@@ -93,6 +98,8 @@ function DetailBody({
   const scopes = useQuery({ queryKey: SCOPES_KEY, queryFn: () => readScopes("tickets"), enabled: signedIn, ...ONCE });
   // 実行の一覧は道の id で引けるので、詳細の答えを待たずに詳細と同時に読む（段を 1 にする・K-235）
   const runs = useRuns(id, signedIn && isUuid(id));
+  // 段 7 の口を詳細と同時に先読みする差し込み口（この葉では何もしない・K-392）。一覧の右の詳細はパネルを描かないので読まない
+  F6.usePrefetchDetail(id, signedIn && isUuid(id) && layout === "page");
   const qc = useQueryClient();
   // 詳細は帯の読み直しと同じ問い合わせの器（同じ口を 2 回呼ばない・同時に 2 回読んでも口は 1 回・K-235）
   const load = useCallback(
@@ -207,91 +214,123 @@ function DetailView({
   };
   const side = layout === "side";
   const titleId = side ? "ticket-side-title" : "ticket-title";
+  const bands = useBandOrder();
+  const st: SlotTicket = {
+    id,
+    layout,
+    me: myName,
+    detail: d as unknown as SlotDetail,
+    bands: bands.shown,
+    reload,
+  };
   return (
-    <div className={side ? "k-detail k-detail-side" : "k-detail"}>
-      <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
-        <article className="k-detail-card">
-          <DetailMeta ticket={t} kind={d.kind} stage={d.stage} />
-          {side ? (
-            <h2 id={titleId} className="k-list-detail-title" title={t.title}>
-              {t.title}
-            </h2>
-          ) : (
-            <DetailTitle title={t.title} me={myName} />
+    <F6.DetailScope ticket={st}>
+      <F8.DetailScope ticket={st}>
+        <div className={side ? "k-detail k-detail-side" : "k-detail"}>
+          <section className={side ? "k-root k-detail-side-body" : "k-root k-page"} aria-labelledby={titleId}>
+            <article className="k-detail-card">
+              <DetailMeta
+                ticket={t}
+                kind={d.kind}
+                stage={d.stage}
+                stageSlot={
+                  <F6.StageSlot ticket={st}>
+                    <StagePill stage={d.stage} />
+                  </F6.StageSlot>
+                }
+              />
+              {side ? (
+                <h2 id={titleId} className="k-list-detail-title" title={t.title}>
+                  {t.title}
+                </h2>
+              ) : (
+                <DetailTitle title={t.title} me={myName} />
+              )}
+              <F6.TitleSlot ticket={st} />
+              <div className="k-detail-bands" ref={bands.ref} data-shown={[...bands.shown].join(" ") || undefined}>
+                <ApproveBand
+                  ticketId={id}
+                  ticket={d}
+                  run={runs.current}
+                  runKnown={runs.known}
+                  onTicket={onTicket}
+                  onChanged={changed}
+                />
+                <DelegateBand
+                  ticket={{
+                    id,
+                    stageKey: d.stage?.key ?? null,
+                    canDelegate: d.can?.delegate === true,
+                    canDecide: d.approval?.can_decide === true,
+                    approvalId: d.approval?.id ?? null,
+                    hasAssignee: d.assignee !== null,
+                    // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
+                    completeShown: canCompleteNow(d, runs.current, runs.known),
+                  }}
+                  run={runs.current}
+                  onRun={runs.follow}
+                  onChanged={changed}
+                />
+                <F8.HandoverBandSlot
+                  ticket={st}
+                  yieldTo={bandYieldTo("handover", bands.shown)}
+                  onWant={bands.want("handover")}
+                />
+                <F6.HoldBandSlot ticket={st} yieldTo={bandYieldTo("hold", bands.shown)} onWant={bands.want("hold")} />
+              </div>
+              <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
+                <InertButton size="sm" className="k-detail-versions">
+                  版と差分
+                </InertButton>
+              </DocTools>
+              <div className="k-detail-doc">
+                {d.sections.map((s) => (
+                  <F6.SectionSlot key={s.key} ticket={st} section={s}>
+                    <section className="k-section" aria-label={s.label}>
+                      <h2 id={`sec-${s.key}`}>{s.label}</h2>
+                      <Prose>{s.body?.text ?? ""}</Prose>
+                    </section>
+                  </F6.SectionSlot>
+                ))}
+              </div>
+            </article>
+            <section className="k-detail-links" aria-label="子チケット・つながり">
+              <div className="k-detail-links-head">
+                <h2>子チケット・つながり</h2>
+                <InertButton size="sm">子を足す</InertButton>
+                <InertButton size="sm">つながりを足す</InertButton>
+              </div>
+            </section>
+          </section>
+          {side || panelOpen ? null : (
+            <button
+              type="button"
+              className="k-detail-reopen"
+              aria-label="パネルを開く"
+              title="パネルを開く"
+              ref={reopenRef}
+              onClick={() => togglePanel(true)}
+            >
+              <PanelRight size={16} aria-hidden="true" />
+            </button>
           )}
-          <div className="k-detail-bands">
-            <ApproveBand
-              ticketId={id}
-              ticket={d}
-              run={runs.current}
-              runKnown={runs.known}
-              onTicket={onTicket}
-              onChanged={changed}
+          {!side && scopesSettled ? (
+            <DetailPanel
+              ticket={t}
+              assignee={d.assignee?.display_name ?? null}
+              approver={d.approval?.approver_name ?? null}
+              scopes={scopes}
+              sections={d.sections}
+              runs={runs.runs}
+              me={myName}
+              hidden={!panelOpen}
+              closeRef={closeRef}
+              onClose={() => togglePanel(false)}
+              slot={st}
             />
-            <DelegateBand
-              ticket={{
-                id,
-                stageKey: d.stage?.key ?? null,
-                canDelegate: d.can?.delegate === true,
-                canDecide: d.approval?.can_decide === true,
-                approvalId: d.approval?.id ?? null,
-                hasAssignee: d.assignee !== null,
-                // 主ボタンは 1 つ：承認と実行の帯が「完了にする」を出している間だけ「AI に任せる」を outlined に（同じ判定を使う・D31）
-                completeShown: canCompleteNow(d, runs.current, runs.known),
-              }}
-              run={runs.current}
-              onRun={runs.follow}
-              onChanged={changed}
-            />
-          </div>
-          <DocTools label="本文の道具" note={`「/」で部品を入れる ・ 本文の版 ${version}`}>
-            <InertButton size="sm" className="k-detail-versions">
-              版と差分
-            </InertButton>
-          </DocTools>
-          <div className="k-detail-doc">
-            {d.sections.map((s) => (
-              <section key={s.key} className="k-section" aria-label={s.label}>
-                <h2 id={`sec-${s.key}`}>{s.label}</h2>
-                <Prose>{s.body?.text ?? ""}</Prose>
-              </section>
-            ))}
-          </div>
-        </article>
-        <section className="k-detail-links" aria-label="子チケット・つながり">
-          <div className="k-detail-links-head">
-            <h2>子チケット・つながり</h2>
-            <InertButton size="sm">子を足す</InertButton>
-            <InertButton size="sm">つながりを足す</InertButton>
-          </div>
-        </section>
-      </section>
-      {side || panelOpen ? null : (
-        <button
-          type="button"
-          className="k-detail-reopen"
-          aria-label="パネルを開く"
-          title="パネルを開く"
-          ref={reopenRef}
-          onClick={() => togglePanel(true)}
-        >
-          <PanelRight size={16} aria-hidden="true" />
-        </button>
-      )}
-      {!side && scopesSettled ? (
-        <DetailPanel
-          ticket={t}
-          assignee={d.assignee?.display_name ?? null}
-          approver={d.approval?.approver_name ?? null}
-          scopes={scopes}
-          sections={d.sections}
-          runs={runs.runs}
-          me={myName}
-          hidden={!panelOpen}
-          closeRef={closeRef}
-          onClose={() => togglePanel(false)}
-        />
-      ) : null}
-    </div>
+          ) : null}
+        </div>
+      </F8.DetailScope>
+    </F6.DetailScope>
   );
 }

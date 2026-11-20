@@ -2167,6 +2167,14 @@ PC はアカウントのもの（D-128.137・D-128.156・代表の答え ④）�
 - [ ] 契約の口 `updateMyDevice` が 501 でない。生成の試験 `apps/api/test/generated/patch_bridge_devices_id.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-364.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/api/src/contract/authz.test.ts` は切る段で替えた版を carry: で運ぶ）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-366,Bridge の窓でも AI が使うブラウザを選び直せる口（setBridgeBrowser・新しい口）と Bridge の窓の呼び先（K-90 の葉 ③）,タスク,K-56,未着手,実装,2026-11-27,F3・PC,"PC の中の Bridge の窓でも、その PC で AI が使うブラウザを選び直せるようにする（D-120「Bridge の窓でも変えられる」・代表の答え answer=0a262be577b2 ②）。Kaname が正本で、窓で変えても画面で変えても同じ値（`sessions.browser`）が変わる。
+契約に PC が呼ぶ口 `setBridgeBrowser`（POST /api/v1/bridge/browser・PC の印・60 回／分）を足し、前の道すじ `POST /api/auth-ext/bridge/browser`（apps/api/src/auth/ext.ts 472〜481 行）の中身（`app.bridge_set_browser`・0057）を移す。
+Bridge の窓の「AI が使うブラウザ」（apps/bridge/src/main.ts 203〜222 行の `bridge:set-browser`）の呼び先を、前の道すじから新しい口に替える。呼び方は electron を読まずに試せるよう `apps/bridge/src/browser-choice.ts` に出す（pairing.ts の claimCode と同じ形）。
+
+PC の印で呼ぶので、その PC 自身の値だけが変わる（他の PC は選べない）。DB は変えない（今の関数を使う）。","- [ ] 下の表の 14 行（K366-API-001〜008・K366-BR-001〜006）が緑：`apps/api/test/features/F3/ai-browser-bridge.test.ts`・`apps/bridge/test/browser-choice.test.ts`（K366-BR-006 は人が確かめる）
+- [ ] 契約に口 `setBridgeBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_browser.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-366.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）,タスク,K-56,未着手,実装,2026-11-22,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。
 
 - 部品 `apps/web/features/F3/connect-pc/pc-row-parts.tsx`（と `pc-row-parts.css`）：見た目だけ。値と押した結果は props で受け、口は呼ばない
@@ -2246,4 +2254,21 @@ PM の決め（2026-11-19）：**画面の組に専用の段を 1 つ足す小�
 - [ ] 下の表の K379-BRG-001〜003 が緑：手元で Bridge を組み立て、的が出る形の画面（KANAME_DEV_PAGES=1）を自分の番号で立てて `apps/web/tests/bridge/k379-bridge-chrome.spec.ts` を流す。CI では、画面の行なので取り込んだ後の画面の回（`ci.py web`）で専用の段 G73 が流して判定する
 - [ ] 前からの自己試験（下の「前からの試験を替えた所」）が緑。替えたのは切る段が運ぶ 2 本だけ
 - [ ] 作り手を流し直した生成物（CI の定義・試験計画・範囲の地図）が最新（`python3 scripts/tickets/regen_all.py`）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-380,チケットの詳細と承認待ちに、段 7・段 9 が後から中身を足す差し込み口を 1 回で入れる（入れた時点では何も出さない・題名の下の帯の順を 1 か所で決める）と、詳細の頭の行の幅 767 以下を横に並べて 2 行までにする（K-66 の葉・段 7 と段 9 の共通の先頭）,タスク,K-66,未着手,実装,2026-11-25,F6・画面,"チケットの詳細（`/tickets/<id>`・一覧の右に開く詳細）と承認待ち（`/approvals`）は、これから段 7（F6 自分で進める・話す・決める）と段 9（F8 渡す・配る）が同時に中身を足す。2 つの段の葉が同じ前からのファイル（`ticket-detail.tsx`・`detail-panel.tsx`・`detail-head.tsx`・`queue-table.tsx`）を取り合わないように、**差し込み口だけを先に 1 回で入れる**（PM の決め・切り方.md 5 章の案 A）。
+
+- 差し込み口の先は流れごとのファイル `apps/web/features/F6/detail-slots.tsx`（段 7）と `apps/web/features/F8/handover/detail-slots.tsx`（段 9・段 9 の切る段の名前に合わせた）。**この葉ではどれも中身（children）をそのまま返すか、何も出さない（null）**。だから詳細と承認待ちの見た目と操作は今のまま
+- もう 1 つ、**先読みの差し込み口** `F6.usePrefetchDetail(id, enabled)` を詳細の本体（`ticket-detail.tsx` の DetailBody・`useRuns` の横）で呼ぶ。差し込み口の先（DetailScope・PanelTabsSlot など）は詳細の答えが届いた後に描かれるので、そこで段 7 の口（やり取りの最初の 20 件・K-392）を読み始めると直列の段が 2 になる（K392-UI-002 と前からの K235-UI-003「答えの後に出た口 0」が赤）。道の id で引ける口は、答えを待たずに詳細と同時に出す（K-235 と同じ）。**この葉の `usePrefetchDetail` は何もしない関数**（口を呼ばない・状態を持たない）。K-382 が `features/F6/prefetch.ts`（やり取りの `thread/prefetch.ts` と決定の一覧の `decisions/prefetch.ts` を両方呼ぶ・どちらも何もしない形）から書き出す形に直し、K-392 が thread/prefetch.ts、K-397 が decisions/prefetch.ts の中身（react-query の prefetchQuery）を作る
+- 題名の下の帯は 1 つだけ（D-128.178・D-129.10）。順は「承認・実行（今ある F5 の帯）→ 渡し（段 9）→ 保留（段 7）」（代表の答え ㉓・answer=56812da22008 の段 7 の分）。**この順を 1 か所（`features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`）で決める**。後ろの帯は、前に出ている帯があれば譲る（`bandYieldTo`）。保留の帯が譲っている間に段の札の横に「理由を見る」を出すのは段 7 の K-395 が `ticket.bands` を読んで決める
+- あわせて、幅 767 以下の詳細の頭の行（開始日・期限・段の札）が 2 列の格子で 3 段になっていたのを、横に並べて頭の行を 2 行までにする（代表の直し answer=fabd031f9b37 の 4・`.ticket-flow/side-notes/段7-詳細の頭.md`）。直すのは `ticket-detail.css` の 1 か所だけ。キャンバスの詳細の形の絵 7 枚も同じ形に作り直す（作り直さないと見た目の突き合わせ G70 の幅 375 の組が赤になる・D-146.1）","- [ ] 下の表の行（K380-SL-001〜004・K380-CS-001・K380-CV-001・K380-UI-001〜007）が緑：`apps/web/tests/k/k380-detail-slots.spec.ts`
+- [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の詳細の 8 組（ticket-detail・band-approval・band-running・band-failed・band-before・band-confirm-done・band-done・band-delegated）が幅 1440・375 で緑（頭の行の高さが変わるので、作り直した絵と同じ y になること）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 作り直した絵 7 枚を幅 375 で開き、札と期限の字がいちばん長い絵（「（1 日過ぎ）」の期限を持つ StBefore など）でも頭の行の 2 行目（開始日・期限・段の札）が 1 行に収まり、題名と帯の y が絵ごとにずれない（見た目の突き合わせの 375 の組が緑になることで見る。収まらない絵が出たら絵を手で直さず止めて報告）
+- [ ] 作り手で作り直した絵が切る段で確かめた差と同じ：`git diff --stat -- 04_design/` に出るのが changes: の 10 ファイルだけ（実施事項「キャンバスの絵」）
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線に入れる（文書だけ・K-68 の葉）,タスク,K-68,未着手,実装,2026-11-23,F8・文書,"段 9（K-68・F8）の決定 D-148.1〜51（代表の答え 0〜33・下絵の直し・知らせの消え方）を、決定ログの新しい節 §148 として本線に入れる。あわせて、その答えの記録（answer=3d444fc8d59f）を `01_hearing/decider-answers.jsonl` に入れる。
+
+段 9 のほかの葉は decisions: に D-148.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（PM の決め 2026-11-20・前は K-400 が作る段で足す形だった）。段 9 のほかの葉はこの葉に依存する（依存はまとめ役が張る）。","- [ ] 下の表の 4 行（K425-DC-001〜004）が緑：`scripts/ci/k425_decision_log_test.py`
+- [ ] 決定の検査（trace_gate・decision_source_gate）が緑
+- [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
