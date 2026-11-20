@@ -1328,6 +1328,28 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "setBridgeBrowser": {
+   "file": "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+   "reason": "PC の印で呼ぶ口は、本物の PC の印の解決（接続コードで引き取った印・外した PC）と本物の DB の関数 app.bridge_set_browser が要る。生成の試験の土台（偽のセッション・表の種の入力）では PC の印も外した PC も作れない（K-366）",
+   "covers": {
+    "test_post_bridge_browser_ok": "K366-API-001",
+    "test_post_bridge_browser_rejected_401": "K366-API-004",
+    "test_post_bridge_browser_rejected_403": "K366-API-004",
+    "test_post_bridge_browser_rejected_422": "K366-API-002",
+    "test_post_bridge_browser_rejected_422_2": "K366-API-003",
+    "test_post_bridge_browser_rate_limited": "K366-API-006",
+    "test_post_bridge_browser_upstream_failed": "K366-API-008",
+    "test_post_bridge_browser_shape": "K366-API-001",
+    "test_post_bridge_browser_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_browser_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
   }
  }
 }
