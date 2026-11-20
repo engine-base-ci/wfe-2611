@@ -185,7 +185,7 @@ test("K380-SL-004 帯の並びは ticket-detail.tsx の .k-detail-bands の中�
   expect([...at].sort((a, b) => a - b)).toEqual(at);
 });
 
-test("K380-CS-001 ticket-detail.css：幅 767 以下の .k-detail-meta-side は横に並べて折り返す（display: flex・flex-wrap: wrap・margin-left: 0・gap は var(--k-s-xs) var(--k-s-sm)）。2 列の格子（grid-template-columns: max-content max-content）はどこにも無い", () => {
+test("K380-CS-001 ticket-detail.css：幅 767 以下の .k-detail-meta-side は横に並べて折り返す（display: flex・flex-wrap: wrap・margin-left: 0・gap は縦横とも var(--k-s-xs)＝2 桁の日数でも幅 375 で 1 行に収める）。2 列の格子（grid-template-columns: max-content max-content）はどこにも無い", () => {
   const css = code(src(`${F4}/ticket-detail.css`));
   expect(css).not.toMatch(/grid-template-columns:\s*max-content\s+max-content/);
   const mq = css.slice(css.indexOf("@media (max-width: 767px)"));
@@ -195,7 +195,7 @@ test("K380-CS-001 ticket-detail.css：幅 767 以下の .k-detail-meta-side は�
   expect(body).toMatch(/display:\s*flex/);
   expect(body).toMatch(/flex-wrap:\s*wrap/);
   expect(body).toMatch(/margin-left:\s*0/);
-  expect(body).toMatch(/gap:\s*var\(--k-s-xs\)\s+var\(--k-s-sm\)/);
+  expect(body).toMatch(/gap:\s*var\(--k-s-xs\)\s*(;|$)/m);
 });
 
 test("K380-CV-001 キャンバスの詳細の形の絵 7 枚と作り手 k257.py：幅 767 以下の頭の行の右（開始日・期限・札）は横に並べる決まり（display:flex !important;flex-wrap:wrap）で、2 列の格子の決まりは無い", () => {
