@@ -215,16 +215,30 @@ describe("K-403 受ける／断る（answerTicketHandover・kind pass）", () =>
     expect(logs).not.toContain(WHY);
   });
 
-  it("K403-API-012 種類 pass の受けるに switch を送ると番号なしの 422（VALIDATION_ERROR）・待っているまま", async () => {
+  it("K403-API-012 種類 pass の受ける・断るに switch を送ると番号なしの 422（VALIDATION_ERROR）・待っているまま・担当者は変わらず知らせも証跡も残らない", async () => {
     await h.ready();
     const w = await h.world();
-    const { hid } = await waitingPass(w);
-    const r = await h.answer(w.sato, hid, { decision: "accept", switch: { children: true } });
-    expect(r.status).toBe(422);
-    const j = await h.json(r);
-    expect(j.code).toBe("VALIDATION_ERROR");
-    expect(j.details?.map((x) => x.field) ?? [j.field]).toContain("switch");
-    expect((await h.handover(hid))!["state"]).toBe("waiting");
+    const { t, hid } = await waitingPass(w);
+    for (const body of [
+      { decision: "accept", switch: { children: true } },
+      { ...decline(), switch: { children: true } },
+    ]) {
+      const r = await h.answer(w.sato, hid, body);
+      expect(r.status).toBe(422);
+      const j = await h.json(r);
+      expect(j.code).toBe("VALIDATION_ERROR");
+      expect(j.details?.map((x) => x.field) ?? [j.field]).toContain("switch");
+      expect((await h.handover(hid))!["state"]).toBe("waiting");
+      expect(await h.assigneeOf(t.id)).toBe(w.boss.id);
+    }
+    expect((await h.notes(w.boss.id, "handover.accepted")).length).toBe(0);
+    expect((await h.notes(w.boss.id, "handover.declined")).length).toBe(0);
+    expect(
+      await h.num(
+        "select count(*) as n from audit_events where action in ('handover.accept', 'handover.decline') and target_id = $1",
+        [hid],
+      ),
+    ).toBe(0);
   });
 
   it("K403-API-013 手順 S3 失敗（送った印を書けない＝S2 の後片付けの失敗）：200・断られた・メールは届く・ログに「印を書けなかった」", async () => {
