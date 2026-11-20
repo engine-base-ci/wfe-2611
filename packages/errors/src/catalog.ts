@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。208 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。209 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3776,6 +3776,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-046": {
+    "id": "E-VAL-046",
+    "cls": "validation",
+    "message": "時間と分は 0 以上の整数で入れてください（分は 0〜59）",
+    "action": "時間と分を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-046",
+    "must_not": false,
+    "layers": [
+      "UI"
     ],
     "where": {
       "screen": "tickets",
