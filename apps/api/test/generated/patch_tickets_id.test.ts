@@ -35,7 +35,7 @@ describe("PATCH /api/v1/tickets/:id", () => {
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-020");
   });
   it("test_patch_tickets_id_not_found", () => {
-    // UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）
+    // UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-020」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-020");
   });
@@ -54,15 +54,25 @@ describe("PATCH /api/v1/tickets/:id", () => {
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-012」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-012");
   });
-  it("test_patch_tickets_id_rejected_422_2", () => {
-    // UNWANTED: IF 選べない段を行き先にしたなら、Kaname は 422 と E-VAL-040 を返し、何も書かない
+  it("test_patch_tickets_id_conflict_3", () => {
+    // UNWANTED: IF 段の口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-007」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-007");
   });
-  it("test_patch_tickets_id_rejected_422_3", () => {
-    // UNWANTED: IF 保留にするのに理由か再開の条件が無いなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047）を返し、何も書かない
+  it("test_patch_tickets_id_conflict_4", () => {
+    // UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-005」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-005");
+  });
+  it("test_patch_tickets_id_conflict_5", () => {
+    // UNWANTED: IF 保留でないのに保留の理由か条件を書こうとしたら、Kaname は 409 と E-CONF-036 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-006");
+  });
+  it("test_patch_tickets_id_rejected_422_2", () => {
+    // UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-028」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-028");
   });
   it("test_patch_tickets_id_server_error", () => {
     // UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す

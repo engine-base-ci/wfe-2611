@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。204 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。206 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3658,14 +3658,50 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "progress"
     }
   },
-  "E-VAL-040": {
-    "id": "E-VAL-040",
-    "cls": "validation",
+  "E-CONF-034": {
+    "id": "E-CONF-034",
+    "cls": "conflict",
     "message": "この状態には、ここから変えられません",
     "action": "ほかの状態を選ぶ（完了は「完了にする」から）",
     "undo": false,
     "severity": "low",
-    "support_code": "VAL-040",
+    "support_code": "CONF-034",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-035": {
+    "id": "E-CONF-035",
+    "cls": "conflict",
+    "message": "保留にするときは、保留の理由と再開の条件を書いてください",
+    "action": "保留の理由と再開の条件を書いてから、もう一度保留にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-035",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-036": {
+    "id": "E-CONF-036",
+    "cls": "conflict",
+    "message": "保留にしていないチケットには、保留の理由と再開の条件を書けません",
+    "action": "保留にしてから理由と条件を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-036",
     "must_not": false,
     "layers": [
       "API",
