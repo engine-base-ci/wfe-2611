@@ -2241,3 +2241,18 @@ PM の決め（2026-11-19）：**画面の組に専用の段を 1 つ足す小�
 - [ ] 前からの自己試験（下の「前からの試験を替えた所」）が緑。替えたのは切る段が運ぶ 2 本だけ
 - [ ] 作り手を流し直した生成物（CI の定義・試験計画・範囲の地図）が最新（`python3 scripts/tickets/regen_all.py`）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-426,DB の関数を、誰でも（PUBLIC）呼べる形から外す（migration を流す役の既定の権限から PUBLIC を外し、今ある関数は一度に外して、呼ぶ役に要る物だけを渡す・D-128.171 を関数ごとでなく根本で守る・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-23,F3・DB,"本線の migration を全部当てた DB で、**app のスキーマの security definer の関数 254 件のうち 146 件を、誰でも（PUBLIC）実行できる**（2026-11-20 切る段で数えた。数える SQL は下）。
+security definer の関数は持ち主（migration を流す管理者）の権限で動くので、行の守り（RLS）を越えて読み書きできる。例：`app.agent_set_browser` は、呼べさえすれば、どの人の PC の値でも書ける。
+決まり D-128.171（security definer の関数は、呼んでよい役だけに execute を渡し public から外す）は前からあり、関数ごとに `revoke all … from public` を書いて守ってきたが、書き忘れた 146 件が残った（関数ごとに人が思い出す守りは必ず漏れる・L-004）。
+
+この葉は関数ごとに revoke を並べず、**根本を消す**：
+
+1. **これから作る関数**：migration を流す役の既定の権限（`alter default privileges`）から PUBLIC の execute を外す。新しく作った関数は、初めから誰にも渡らない（呼ぶ役に渡すのは、今までどおり migration に `grant execute … to kaname_app` を書く）
+2. **今ある関数**：app のスキーマの関数全部と、public のスキーマの security definer の関数 2 つ（0002 の `visible_scopes`・`has_permission`）から、PUBLIC を一度に外す。あわせて、持ち主・kaname_app・kaname_auth のほかの役に明示で渡した実行権（staging／本番の Supabase の anon・authenticated・service_role・手で作った kaname_ci_read など）と、migration を流す役の既定の権限でほかの役に渡す行も外す（呼んでよい役を 3 つに決め、それ以外は名前を挙げずに全部外す。Supabase の役の名前を決め打ちしない）
+3. **呼ぶ役に要る物だけ渡す**：呼び手の権限で動く所（行の守り・呼び手の権限の関数と引き金の本文・アプリの文）が呼ぶ物で、まだ kaname_app に明示で渡していない 6 つだけを渡す
+4. **戻らないことを試験で守る**：「PUBLIC と、決めた 3 つのほかの役が実行できる関数は 0 件」を DB の試験の行にする（検査の台本は足さない）
+
+製品の振る舞いは変えない（今 kaname_app が呼んでいる関数は全部、後も呼べる）。","- [ ] 下の表の 13 行（K426-DB-001〜011・013・014）が緑：`packages/db/test/k426_function_execute_private.test.ts`（K426-DB-012 は人が確かめる）
+- [ ] DB を使う前からの試験（apps/api/test・packages/db/test・この葉の範囲 ci_wide db・shared）が全部緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
