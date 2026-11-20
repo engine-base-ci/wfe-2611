@@ -140,7 +140,7 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     ]);
   });
 
-  it("K387-API-005 保留にするのに理由か再開の条件が無い・空・空白だけ（全角の空白も）：段の鍵（stage_key hold）なら形の誤りで 422・理由が足りなければ E-VAL-041・条件だけなら E-VAL-047／段の id で保留の段を選んだなら 409 E-CONF-035／無い欄ごとの明細（欄ごとの文）・何も書かない", async () => {
+  it("K387-API-005 保留にするのに理由か再開の条件が無い・空・空白だけ（全角の空白も）：段の鍵（stage_key hold）なら形の誤りで 422・理由が足りなければ E-VAL-041・条件だけなら E-VAL-047／空・空白だけは段の id でも契約の pattern に合わない形の誤りで 422／段の id で保留の段を選んで理由か条件が無い（送っていない）なら 409 E-CONF-035／無い欄ごとの明細（欄ごとの文）・何も書かない", async () => {
     const t = await ticket({ stage: "doing" });
     const hold = await stageOf(T.tenantId, "hold");
     const before = await snapshot(t.id);
@@ -152,8 +152,8 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
       [{ stage_key: "hold", hold_reason: "返事待ち", resume_condition: "" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
       [{ stage_id: hold }, 409, CONF_HOLD_NEED, ["hold_reason", "resume_condition"]],
       [{ stage_id: hold, hold_reason: "返事待ち" }, 409, CONF_HOLD_NEED, ["resume_condition"]],
-      [{ stage_id: hold, hold_reason: "　 ", resume_condition: "来たら" }, 409, CONF_HOLD_NEED, ["hold_reason"]],
-      [{ stage_id: hold, hold_reason: "返事待ち", resume_condition: "" }, 409, CONF_HOLD_NEED, ["resume_condition"]],
+      [{ stage_id: hold, hold_reason: "　 ", resume_condition: "来たら" }, 422, VAL_HOLD_REASON, ["hold_reason"]],
+      [{ stage_id: hold, hold_reason: "返事待ち", resume_condition: "" }, 422, VAL_HOLD_RESUME, ["resume_condition"]],
     ];
     for (const [body, status, code, want] of cases) {
       const r = await patch(boss, t.id, body);
@@ -174,6 +174,9 @@ describe("K-387 段を変える（作業の段・人が動かす）", () => {
     const jk = await json(k);
     expect(jk["code"]).toBe("VALIDATION_ERROR");
     expect(jk.details).toEqual([{ field: "hold_reason", message: "保留にするときだけ書けます" }]);
+    const kt = await patch(boss, t.id, { stage_key: "todo", resume_condition: "来たら" });
+    expect(kt.status).toBe(422);
+    expect((await json(kt)).details).toEqual([{ field: "resume_condition", message: "保留にするときだけ書けます" }]);
     const bodies: [Record<string, unknown>, string[]][] = [
       [{ stage_id: await stageOf(T.tenantId, "doing"), hold_reason: "念のため" }, ["hold_reason"]],
       [{ hold_reason: "念のため", resume_condition: "来たら" }, ["hold_reason", "resume_condition"]],
