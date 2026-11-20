@@ -317,18 +317,8 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect((await h.create(w.boss, t.id, h.passBody(w.sato, { state: "accepted" }))).status).toBe(422);
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: "明日" })), "reply_due");
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: "2026-11-23" })), "reply_due");
-    await refused(
-      await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { owner: true } })),
-      422,
-      "E-HND-011",
-      "switch",
-    );
-    await refused(
-      await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { children: "yes" } })),
-      422,
-      "E-HND-011",
-      "switch",
-    );
+    await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { owner: true } })), "switch");
+    await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { children: "yes" } })), "switch");
     await shape422(
       await h.create(w.sato, t.id, { kind: "offer", to_member_id: w.boss.id, reason: "手が空いたので" }),
       "to_member_id",
@@ -351,6 +341,9 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
       const j = await refused(await h.create(w.boss, t.id, body), 422, "E-HND-007", "reason");
       expect(j["message"]).toBe("理由を書いてください");
     }
+    // NUL は黙って取り除かず 422（answer=c8b3f4c3aef8）
+    await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reason: "あ\u0000い" })), "reason");
+    await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { ask: "お\u0000願い" })), "ask");
     expect(await handoverCount(w)).toBe(0);
   });
 
@@ -370,20 +363,26 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(await handoverCount(w)).toBe(0);
   });
 
-  it("K401-API-015 相手：無い・自分・止まっている・招待中・見つからない人は 422（E-HND-013・010・006・014）", async () => {
+  it("K401-API-015 相手：選んでいないは 422・E-HND-013／自分・止まっている・招待中は 409（E-HND-010・006）／見つからない人・グループは 404（E-HND-014・012）", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     const noTo = without(h.passBody(w.sato), "to_member_id");
     await refused(await h.create(w.boss, t.id, noTo), 422, "E-HND-013", "to_member_id");
-    await refused(await h.create(w.boss, t.id, h.passBody(w.boss)), 422, "E-HND-010", "to_member_id");
-    const s = await refused(await h.create(w.boss, t.id, h.passBody(w.stopped)), 422, "E-HND-006", "to_member_id");
+    await refused(await h.create(w.boss, t.id, h.passBody(w.boss)), 409, "E-HND-010");
+    const s = await refused(await h.create(w.boss, t.id, h.passBody(w.stopped)), 409, "E-HND-006");
     expect(String(s.detail?.["名前"])).toContain("田中");
     expect(s.detail?.["訳"]).toBe("止まっています");
-    const i = await refused(await h.create(w.boss, t.id, h.passBody(w.invited)), 422, "E-HND-006", "to_member_id");
+    const i = await refused(await h.create(w.boss, t.id, h.passBody(w.invited)), 409, "E-HND-006");
     expect(i.detail?.["訳"]).toBe("招待中です");
     for (const p of [w.outsider, w.left, { ...w.sato, id: randomUUID() }])
-      await refused(await h.create(w.boss, t.id, h.passBody(p)), 422, "E-HND-014", "to_member_id");
+      await refused(await h.create(w.boss, t.id, h.passBody(p)), 404, "E-HND-014");
+    // グループが無い（配る・管理する人が選んだ id がどのグループでもない）→ 404・E-HND-012
+    await refused(
+      await h.create(w.mgr, t.id, { kind: "distribute", to_scope_id: randomUUID(), reason: "展示会の準備を優先" }),
+      404,
+      "E-HND-012",
+    );
     expect(await handoverCount(w)).toBe(0);
   });
 
@@ -420,30 +419,19 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(await handoverCount(w)).toBe(1); // 置いた 1 本だけ
   });
 
-  it("K401-API-018 一緒に切り替える：決まりが never の物・相手がいるグループへ移す・軸を選ぶと 422・E-HND-011", async () => {
+  it("K401-API-018 一緒に切り替える：決まりが never の物・相手がいるグループへ移す・軸を選ぶと 409・E-HND-011", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     await h.f.admin.query("update handover_rules set mode = 'never' where tenant_id = $1 and target = 'children'", [
       w.co.tenantId,
     ]);
-    await refused(
-      await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { children: true } })),
-      422,
-      "E-HND-011",
-      "switch",
-    );
-    await refused(
-      await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { group: true } })),
-      422,
-      "E-HND-011",
-      "switch",
-    );
+    await refused(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { children: true } })), 409, "E-HND-011");
+    await refused(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { group: true } })), 409, "E-HND-011");
     await refused(
       await h.create(w.boss, t.id, h.passBody(w.jdMember, { switch: { axes: [randomUUID()] } })),
-      422,
+      409,
       "E-HND-011",
-      "switch",
     );
     expect(await handoverCount(w)).toBe(0);
   });
@@ -503,7 +491,7 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     }
   });
 
-  it("K401-API-023 答える形：decision が無い・知らない値・断る理由が空・知らない欄は 422", async () => {
+  it("K401-API-023 答える形：decision が無い・知らない値・断る理由が空・NUL を含む・知らない欄は 422", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
@@ -521,6 +509,10 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
         "decline_reason",
       );
     expect((await h.answer(w.sato, hid, { decision: "accept", state: "accepted" })).status).toBe(422);
+    await shape422(
+      await h.answer(w.sato, hid, { decision: "decline", decline_reason: "手が\u0000回らない" }),
+      "decline_reason",
+    );
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 
