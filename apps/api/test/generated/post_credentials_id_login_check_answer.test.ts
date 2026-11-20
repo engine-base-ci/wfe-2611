@@ -17,7 +17,7 @@ describe("POST /api/v1/credentials/:id/login-check/answer", () => {
     expect(readFileSync("apps/api/test/features/F3/credential-login-check.test.ts", "utf8")).toContain("K355-API-014");
   });
   it("test_post_credentials_id_login_check_answer_not_found", () => {
-    // UNWANTED: IF 本人が預けた物でないなら、Kaname は 404 を返し、答えの行を作らない
+    // UNWANTED: IF 見えない物（無い・ほかのワークスペースの物・ほかの人の個人の物・自分の消した物）なら、Kaname は 404 を返し、答えの行を作らない
     // 本物の試験：apps/api/test/features/F3/credential-login-check.test.ts の「K355-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/credential-login-check.test.ts", "utf8")).toContain("K355-API-014");
   });
