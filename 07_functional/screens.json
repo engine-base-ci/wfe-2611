@@ -3713,6 +3713,48 @@
      ]
     },
     {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser",
+     "table": "sessions",
+     "operation_id": "setBridgeBrowser",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
+     ]
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -4946,6 +4988,48 @@
       "D-125.157",
       "D-126.15",
       "D-125.167"
+     ]
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser",
+     "table": "sessions",
+     "operation_id": "setBridgeBrowser",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-061"
+     ],
+     "choke_points": [
+      "C1",
+      "C2",
+      "C4"
+     ],
+     "source": [
+      "D-125.143",
+      "D-125.146",
+      "D-055",
+      "D-125.167",
+      "D-015",
+      "D-004",
+      "D-004.1",
+      "D-015.1",
+      "D-015.6",
+      "D-019.1",
+      "D-040.4",
+      "D-055.1",
+      "D-055.2",
+      "D-055.3",
+      "D-109.3",
+      "D-119.1",
+      "D-119.2",
+      "D-119.4",
+      "D-120.1",
+      "D-120.2",
+      "D-120.3",
+      "D-120.4",
+      "D-125.142"
      ]
     },
     {
@@ -7966,9 +8050,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-106"
      ],
      "choke_points": [
       "C2",
@@ -8770,9 +8852,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-106"
      ],
      "choke_points": [
       "C2",
@@ -9205,8 +9285,7 @@
     "E-119",
     "E-037",
     "E-052",
-    "E-030",
-    "E-080"
+    "E-030"
    ],
    "mock_path": "06_mockup/v1/v1-approvals.html",
    "route": "/approvals",
@@ -38765,9 +38844,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -38799,9 +38876,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -38831,9 +38906,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -38855,9 +38928,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -38880,9 +38951,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-106"
      ],
      "choke_points": [
       "C2",
@@ -40894,9 +40963,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -40928,9 +40995,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -40960,9 +41025,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -40984,9 +41047,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-080"
      ],
      "choke_points": [
       "C2",
@@ -41009,9 +41070,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-136",
-      "E-106",
-      "E-080",
-      "E-052"
+      "E-106"
      ],
      "choke_points": [
       "C2",

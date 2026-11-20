@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。222 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。227 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3613,6 +3613,92 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "layers": [
       "UI",
       "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-010": {
+    "id": "E-CRED-010",
+    "cls": "gate",
+    "message": "動いている仕事のためにだけ使えます",
+    "action": "PC の Bridge を新しい版にする（次の仕事を待つ）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-010",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-011": {
+    "id": "E-CRED-011",
+    "cls": "dependency",
+    "message": "このログイン情報は失効しているか、期限が過ぎています。預け直してください",
+    "action": "預け直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CRED-011",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-012": {
+    "id": "E-CRED-012",
+    "cls": "conflict",
+    "message": "いま確かめています。終わるまで待ってください",
+    "action": "終わるまで待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-012",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-013": {
+    "id": "E-CRED-013",
+    "cls": "conflict",
+    "message": "API キー・値はログインして確かめません",
+    "action": "なし（確かめは要らない）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-013",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-014": {
+    "id": "E-CRED-014",
+    "cls": "not_found",
+    "message": "いまはコードを頼まれていません（もう答えたか、確かめが止まりました）",
+    "action": "一覧を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
     ],
     "where": {
       "screen": "credentials"
