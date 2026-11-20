@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:94ac220fbf1672b6
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:b16f157906e895db
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -4236,6 +4236,7 @@ export const OpsWorkspaceBilling = z.strictObject({
   invoices: z.array(z.unknown()).optional(),
 });
 export const Shell = z.strictObject({
+  member: z.record(z.string(), z.unknown()).optional(),
   approvals_waiting: z.number().int().optional(),
   notifications_unread: z.number().int().optional(),
   groups: z.array(z.unknown()).optional(),
@@ -4243,6 +4244,7 @@ export const Shell = z.strictObject({
   setup_left: z.number().int().optional(),
   banner: z.record(z.string(), z.unknown()).optional(),
   workspace: z.record(z.string(), z.unknown()).optional(),
+  saved_views: z.array(z.unknown()).nullable().optional(),
 });
 export const OpsShell = z.strictObject({
   inquiries_unassigned: z.number().int().optional(),

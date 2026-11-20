@@ -1481,6 +1481,28 @@
     "test_get_notifications_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
    }
   },
+  "getShell": {
+   "file": "apps/api/test/features/F7/shell.test.ts",
+   "reason": "外枠の数と帯は、行の守り（見えるグループ・チケット）・承認・知らせ・PC・障害の帯の組み合わせで答えが変わる。生成の試験の種ではそれらを作れない（K-465）",
+   "covers": {
+    "test_get_shell_ok": "K465-API-001",
+    "test_get_shell_rejected_401": "K465-API-012",
+    "test_get_shell_rejected_403": "K465-API-012",
+    "test_get_shell_rate_limited": "K465-API-013",
+    "test_get_shell_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_shell_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_shell_rejected_422": "入力を受けない GET（問い合わせ・体の形の確かめは入口の共通・K-144）",
+    "test_get_shell_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
+   }
+  },
   "search": {
    "file": "apps/api/test/features/F7/search-tickets.test.ts",
    "reason": "探すは、見える範囲（行の守り）・消したもの・他の人の下書き・権限の付け外しの組み合わせで答えが変わる。生成の試験の種では会社・人・権限・チケットを作れない（K-468）",

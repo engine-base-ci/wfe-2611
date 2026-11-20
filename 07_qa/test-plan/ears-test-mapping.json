@@ -126698,7 +126698,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/shell が「タブで切り替える・絞り込みを保存する」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/shell が「タブで切り替える・絞り込みを保存する」として呼ばれたとき THEN Kaname は「外枠の数と帯（自分・会社・承認待ち・未読・グループの件数・PC・はじめにやること・障害の帯・保存した検索条件）を 1 本で返す（外枠が読む口を 1 本にまとめる・D-151.7）」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_shell.test.ts",
    "test_function": "test_get_shell_ok",
    "test_level": "contract+integration",
