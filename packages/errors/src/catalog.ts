@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。199 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。200 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3582,6 +3582,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "credentials"
+    }
+  },
+  "E-CONN-018": {
+    "id": "E-CONN-018",
+    "cls": "conflict",
+    "message": "PC の Bridge が動いていないので確かめられません。Bridge を起こしてから押してください",
+    "action": "Bridge を起こす",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CONN-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "browser_check_asleep"
     }
   },
   "E-CONN-016": {

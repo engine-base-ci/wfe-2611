@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b112e77c2df79a50
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d401fcb9d644ae27
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -45,6 +45,7 @@ export interface Ops {
   listMyDevices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.BridgeDevice[] };
   updateMyDevice: { params: { id: string }; query: never; body: T.DeviceBrowserInput; data: T.DeviceBrowser };
   revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.Sessions };
+  checkMyDeviceBrowser: { params: { id: string }; query: never; body: T.DeviceBrowserCheckInput; data: T.DeviceBrowserCheck };
   getFileForBridge: { params: { ref: string }; query: never; body: never; data: T.Attachments };
   sendHeartbeat: { params: never; query: never; body: T.BridgeHeartbeatInput; data: T.BridgeHeartbeat };
   putArtifactFromBridge: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
