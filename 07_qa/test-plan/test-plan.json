@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "project": "Kaname",
- "created_at": "2026-11-20",
+ "created_at": "2026-11-21",
  "skill": "test-verification",
  "_doc": "05_flow/build_testplan.py が上流（tickets・EARS・entities・foundation_gates・choke-points・stack）から機械生成。手で直さない",
  "source": [
@@ -577,7 +577,27 @@
   "D-149.6",
   "D-149.7",
   "D-149.8",
-  "D-149.9"
+  "D-149.9",
+  "D-151.1",
+  "D-151.10",
+  "D-151.11",
+  "D-151.12",
+  "D-151.13",
+  "D-151.14",
+  "D-151.15",
+  "D-151.16",
+  "D-151.17",
+  "D-151.18",
+  "D-151.19",
+  "D-151.2",
+  "D-151.20",
+  "D-151.3",
+  "D-151.4",
+  "D-151.5",
+  "D-151.6",
+  "D-151.7",
+  "D-151.8",
+  "D-151.9"
  ],
  "inputs": {
   "tickets": 218,
