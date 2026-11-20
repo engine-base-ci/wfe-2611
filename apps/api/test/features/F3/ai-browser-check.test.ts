@@ -66,7 +66,7 @@ const newPerson = (o: Parameters<Fixture["person"]>[2] = {}) => f.person(T1.tena
 
 beforeAll(async () => {
   f = await makeFixture();
-  leafHooks(f, ["device-browser-check"]); // 葉の hooks のファイル（K-326 の register）を最初の要求で足す
+  leafHooks(f, ["device-browser-check", "delegate"]); // 葉の hooks のファイル（K-326 の register）を最初の要求で足す
   T1 = await f.company("K365 の会社 1");
   T2 = await f.company("K365 の会社 2");
 }, 60_000);
