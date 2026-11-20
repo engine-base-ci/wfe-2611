@@ -245,6 +245,13 @@ const ST: Record<string, StageView> = {
 };
 const DEFAULT_NOTIFY = ["鈴木", "佐藤"] as const; // 担当者と承認する人（自分は除く）
 
+/** 決定の小窓の「決めた人」の見本（本番は口が返す今のメンバー） */
+const DECISION_PEOPLE = [
+  { value: "me", label: "高本 聖斗" },
+  { value: "suzuki", label: "鈴木 一郎" },
+  { value: "sato", label: "佐藤 花子" },
+];
+
 const DECISIONS: DecisionView[] = [
   {
     id: "d3",
@@ -783,6 +790,7 @@ function view(id: string, theme: Theme): ReactNode {
           dialog={
             <DecisionDialog
               open
+              people={DECISION_PEOPLE}
               from={{
                 who: "鈴木 一郎",
                 time: "11/01 10:20",
@@ -802,7 +810,7 @@ function view(id: string, theme: Theme): ReactNode {
           theme={theme}
           ps="PS0"
           stage={menu(ST.doing!)}
-          dialog={<DecisionDialog open errors={{ text: "決めたことを書いてください" }} />}
+          dialog={<DecisionDialog open people={DECISION_PEOPLE} errors={{ text: "決めたことを書いてください" }} />}
         />
       );
     case "dec-revise":
