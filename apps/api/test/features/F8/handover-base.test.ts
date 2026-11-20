@@ -343,6 +343,7 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     }
     // NUL は黙って取り除かず 422（answer=c8b3f4c3aef8）
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reason: "あ\u0000い" })), "reason");
+    await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { ask: "お\u0000願い" })), "ask");
     expect(await handoverCount(w)).toBe(0);
   });
 
@@ -362,7 +363,7 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(await handoverCount(w)).toBe(0);
   });
 
-  it("K401-API-015 相手：選んでいないは 422・E-HND-013／自分・止まっている・招待中は 409（E-HND-010・006）／見つからない人は 404・E-HND-014", async () => {
+  it("K401-API-015 相手：選んでいないは 422・E-HND-013／自分・止まっている・招待中は 409（E-HND-010・006）／見つからない人・グループは 404（E-HND-014・012）", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
@@ -376,6 +377,12 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(i.detail?.["訳"]).toBe("招待中です");
     for (const p of [w.outsider, w.left, { ...w.sato, id: randomUUID() }])
       await refused(await h.create(w.boss, t.id, h.passBody(p)), 404, "E-HND-014");
+    // グループが無い（配る・管理する人が選んだ id がどのグループでもない）→ 404・E-HND-012
+    await refused(
+      await h.create(w.mgr, t.id, { kind: "distribute", to_scope_id: randomUUID(), reason: "展示会の準備を優先" }),
+      404,
+      "E-HND-012",
+    );
     expect(await handoverCount(w)).toBe(0);
   });
 
@@ -484,7 +491,7 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     }
   });
 
-  it("K401-API-023 答える形：decision が無い・知らない値・断る理由が空・知らない欄は 422", async () => {
+  it("K401-API-023 答える形：decision が無い・知らない値・断る理由が空・NUL を含む・知らない欄は 422", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
@@ -502,6 +509,10 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
         "decline_reason",
       );
     expect((await h.answer(w.sato, hid, { decision: "accept", state: "accepted" })).status).toBe(422);
+    await shape422(
+      await h.answer(w.sato, hid, { decision: "decline", decline_reason: "手が\u0000回らない" }),
+      "decline_reason",
+    );
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 
