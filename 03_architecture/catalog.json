@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
-  "api_built": 68,
+  "api": 370,
+  "api_built": 69,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
-  "ui": 18,
+  "ui": 19,
   "packages": 13,
-  "errors": 220,
+  "errors": 221,
   "stack": 56,
   "env": 41
  },
@@ -739,6 +739,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-362"
+   ]
+  },
+  {
+   "op": "checkMyDeviceBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "bridge_jobs"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-365"
    ]
   },
   {
@@ -6123,10 +6140,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "bridge_pairing_codes",
@@ -7483,6 +7501,13 @@
     "DOC_TOOL_ITEMS"
    ],
    "what": "本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。"
+  },
+  {
+   "file": "apps/web/components/k/search-field",
+   "exports": [
+    "SearchField"
+   ],
+   "what": "探す欄の型（段 9・代表の直し 2026-11-20）。虫眼鏡と入力を 1 つの枠に入れ、焦点が中に入ったら枠全体に輪を出す（:focus-within）。"
   }
  ],
  "common": {

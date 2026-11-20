@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 68・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 220・部品 56・設定 41
+API 370（作った 69・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 19・共通の処理 13・エラー 221・部品 56・設定 41
 
 ## 共通の処理
 
@@ -44,6 +44,7 @@ API 369（作った 68・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/me-sub` | MeSub | 自分の設定の第 2 ナビ（K-220・キャンバス MePC の aside.kn-sub）。自分の設定の画面の本文の中に、本文の箱の左に置く。 |
 | `apps/web/components/k/band` | Band, BandCaution, BandLine, NoticeBox | 詳細の帯の箱（K-227・正本 components.band-*・キャンバス TicketDetail の main article [role="status"]）。 |
 | `apps/web/components/k/doc-tools` | DocTools, DOC_TOOL_ITEMS | 本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。 |
+| `apps/web/components/k/search-field` | SearchField | 探す欄の型（段 9・代表の直し 2026-11-20）。虫眼鏡と入力を 1 つの枠に入れ、焦点が中に入ったら枠全体に輪を出す（:focus-within）。 |
 
 ## DB の表（境目と骨格）
 
@@ -59,7 +60,7 @@ API 369（作った 68・後のフェーズの行為だけ 20）・前の道す�
 | `attachments` | skeleton | F11,F12,F4,F9 | F5 | ○ |
 | `audit_events` | skeleton |  | F10 |  |
 | `bridge_job_events` | skeleton | F5 |  |  |
-| `bridge_jobs` | skeleton | F5 |  |  |
+| `bridge_jobs` | skeleton | F3,F5 |  | ○ |
 | `bridge_pairing_codes` | skeleton | F3 |  |  |
 | `checks` | skeleton | F5 | F4 | ○ |
 | `class_axes` | skeleton |  | F4 |  |
@@ -307,6 +308,7 @@ API 369（作った 68・後のフェーズの行為だけ 20）・前の道す�
 | `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 作った | K-364 |
 | `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 作った | K-362 |
+| `checkMyDeviceBrowser` | POST /api/v1/bridge/devices/:id/browser-check | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-365 |
 | `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |

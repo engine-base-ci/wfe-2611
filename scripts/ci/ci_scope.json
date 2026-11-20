@@ -1056,6 +1056,34 @@
   },
   {
    "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/device-*.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/bridge-take-guard.test.ts",
+    "apps/api/test/features/F5/delegate-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_devices_id_browser_check.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/bridge-browser.ts",
     "packages/db/migrations/20261120143736_bridge_set_browser_acl.sql"
@@ -1134,6 +1162,17 @@
    ],
    "tests": [
     "apps/web/tests/k/k381-popup-layer.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/段9-F8/mock-shots.mjs",
+    "04_design/DESIGN-kaname.md",
+    "design-gate.json",
+    "scripts/ci/design_gate.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k400-stage9-mock.spec.ts"
    ]
   },
   {
@@ -1278,11 +1317,13 @@
   "apps/web/tests/k/k363-remove-pc.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-363",
   "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
   "apps/api/test/features/contract/k144.d/K-364.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-365.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts（K-364 が運ぶ）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）",
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
   "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）",
   "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
+  "apps/web/tests/k/k400-stage9-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f8/mocks.tsx・部品 apps/web/features/F8/handover/（views.tsx・handover.css・detail-slots.tsx・slot-dispatch.tsx・use-handovers.ts・区画のファイル 10 個）と apps/web/features/F10/invite/views.tsx・探す欄の型 apps/web/components/k/search-field.tsx・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段9-F8/mock-shots.mjs・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-400）",
   "apps/api/test/features/F8/handover.harness.ts": "口の hooks のファイル apps/api/src/hooks/handovers.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-401。後ろの葉（K-402〜K-404）は自分の断片に paths → 自分の試験の 1 行を足す",
   "apps/api/test/features/contract/k144.d/K-401.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handovers.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-401"
  },

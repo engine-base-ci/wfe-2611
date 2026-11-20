@@ -44,6 +44,7 @@
   "D-068",
   "D-069",
   "D-069.8",
+  "D-070",
   "D-073.1",
   "D-074.1",
   "D-074.5",
@@ -561,12 +562,12 @@
  "inputs": {
   "tickets": 218,
   "l1_rows": 5094,
-  "ears_endpoints": 369,
-  "ears_tests": 3975,
+  "ears_endpoints": 370,
+  "ears_tests": 3988,
   "entities": 142,
   "policies": 410,
   "access_cases": 1530,
-  "errors": 220,
+  "errors": 221,
   "journey_rows": 88,
   "critical_tasks": 88
  },

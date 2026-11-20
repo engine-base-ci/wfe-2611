@@ -268,6 +268,7 @@
   --k-c-dialog-check-gap: 6px;
   --k-c-dialog-stack-gap: 12px;
   --k-c-dialog-select-height: 35px;
+  --k-c-search-focus-border: 2px solid var(--k-primary);
   --k-c-dialog-textarea-height: 64px;
   --k-c-field-required-fg: var(--k-error);
   --k-c-field-required-text: var(--k-text-body-sm);
