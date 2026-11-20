@@ -21,7 +21,8 @@
    },
    "na": {
     "test_get_tickets_id_links_rejected_403": "見えないときは 404（有ることを漏らさない）で、読む口に 403 は無い（受けは K441-API-004）",
-    "test_get_tickets_id_links_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-541）"
+    "test_get_tickets_id_links_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-541）",
+    "test_get_tickets_id_links_not_found_2": "入口の確かめの後で消える・見えなくなる競合だけで、入口の 404（K441-API-004）と同じ 404。口の答えは E-PAGE-001（関数が null を返す枝）で、試験で競合を作れない（K-441）"
    }
   },
   "createTicketLink": {
@@ -48,7 +49,8 @@
     "test_post_tickets_id_links_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
-    }
+    },
+    "test_post_tickets_id_links_not_found_2": "K441-API-010"
    }
   },
   "deleteTicketLink": {

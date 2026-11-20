@@ -1,6 +1,6 @@
 // つながりの口（K-441）の DB の答えの言葉 → HTTP と errors.json の文。文言はコードに書かず正本（errors.json）から引く。
 //   404（見えない・無い・消した・別の会社）と 409（E-LNK-001〜003）には field・details・detail を付けない（在るかを漏らさない・控え帳 2026-11-21）。
-//   403 は FORBIDDEN。足すときだけ書けなかった欄（id＝:id のチケット・other_ticket_id＝相手）を付ける。
+//   403 は FORBIDDEN。足すとき、相手に書けないときだけ欄 other_ticket_id を付ける（足す側 :id に書けないのは入口の 403・欄なし）。
 //   知らない言葉・関数の例外は 503・E-PAGE-003（止める側に倒す）。ログは場所と例外の種類だけ（題名・番号を出さない）
 import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
@@ -25,7 +25,6 @@ const bare = (status: number, code: string): HookReply => {
 export const notFound = (): HookReply => bare(404, "E-PAGE-001");
 
 const WRITE_MESSAGE: Record<string, string> = {
-  id: "このチケットには書けません",
   other_ticket_id: "つなぐ相手のチケットには書けません",
 };
 

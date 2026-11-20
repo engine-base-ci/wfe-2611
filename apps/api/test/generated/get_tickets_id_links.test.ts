@@ -23,6 +23,8 @@ describe("GET /api/v1/tickets/:id/links", () => {
   });
   // 当てはまらない（入力は道の id だけ（uuid の確かめは入口の共通・K144-API-541））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_tickets_id_links_rejected_422");
+  // 当てはまらない（入口の確かめの後で消える・見えなくなる競合だけで、入口の 404（K441-API-004）と同じ 404。口の答えは E-PAGE-001（関数が null を返す枝）で、試験で競合を作れない（K-441））：UNWANTED: IF 入口の確かめの後でチケットが見えなくなったなら、Kaname は 404 と E-PAGE-001 を返し、つながりも子も返さない
+  it.todo("test_get_tickets_id_links_not_found_2");
   it("test_get_tickets_id_links_session_unresolved", () => {
     // UNWANTED: IF つながりを読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も返さず何も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-links.test.ts の「K441-API-028」（同じ CI の G3 で流れる）

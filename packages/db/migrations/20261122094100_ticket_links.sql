@@ -135,7 +135,8 @@ declare v_tenant uuid := app.tenant_id(); v_me uuid := app.user_id(); v_other uu
 begin
   if v_tenant is null or v_me is null or not app.approval_member_now() then return jsonb_build_object('error', 'not_member'); end if;
   if not app.ticket_visible(p_ticket) then return jsonb_build_object('error', 'not_found'); end if;
-  if not app.ticket_writable(p_ticket) then return jsonb_build_object('error', 'not_writable', 'field', 'id'); end if;
+  -- 足す側に書けないのは、口の入口の行の確かめが先に 403（欄なし）で止める。ここは競合（入口の後で権限が変わった）の守りで、欄は付けない
+  if not app.ticket_writable(p_ticket) then return jsonb_build_object('error', 'not_writable'); end if;
   if v_txt is null or v_txt !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then return jsonb_build_object('error', 'not_found'); end if;
   v_other := v_txt::uuid;
   if not app.ticket_visible(v_other) then return jsonb_build_object('error', 'not_found'); end if;

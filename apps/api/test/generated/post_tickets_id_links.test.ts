@@ -20,7 +20,7 @@ describe("POST /api/v1/tickets/:id/links", () => {
     expect(readFileSync("apps/api/test/features/F4/ticket-links.test.ts", "utf8")).toContain("K441-API-011");
   });
   it("test_post_tickets_id_links_not_found", () => {
-    // UNWANTED: IF 足す側か相手のチケットが見えないなら、Kaname は 404 を返し、行も証跡も書かない
+    // UNWANTED: IF 足す側のチケットが見えないなら、Kaname は 404 を返し、行も証跡も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-links.test.ts の「K441-API-010」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-links.test.ts", "utf8")).toContain("K441-API-010");
   });
@@ -33,6 +33,11 @@ describe("POST /api/v1/tickets/:id/links", () => {
     // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も証跡も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-links.test.ts の「K441-API-013」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-links.test.ts", "utf8")).toContain("K441-API-013");
+  });
+  it("test_post_tickets_id_links_not_found_2", () => {
+    // UNWANTED: IF 相手のチケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-links.test.ts の「K441-API-010」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-links.test.ts", "utf8")).toContain("K441-API-010");
   });
   it("test_post_tickets_id_links_session_unresolved", () => {
     // UNWANTED: IF つながりを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、行も証跡も残さない

@@ -2327,6 +2327,6 @@ K-441,つながりを読む・足す・外す口（listTicketLinks・createTicke
 つながりを足す・外すの小窓と一覧の見た目は K-452（画面）。親は K-440（親子は tickets.parent_ticket_id で、つながりの表には入れない）。","- [ ] 下の表の 30 行（K441-API-001〜030）が緑：`apps/api/test/features/F4/ticket-links.test.ts`
 - [ ] 契約の口 3 本が 501 でない。生成の試験 `get_tickets_id_links`・`post_tickets_id_links`・`delete_ticket_links_id` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-441.json` の covers）
 - [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-541〜543（3 口の道の値 :id）が通る（葉のファイル `k144.d/K-441.ts`・carry）
-- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/api/src/contract/authz.test.ts` の 1 つだけ替える）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
