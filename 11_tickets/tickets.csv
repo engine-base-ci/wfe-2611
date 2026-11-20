@@ -2028,6 +2028,14 @@ K-343,口の試験と DB を使う試験の時間の上限を、vitest の既定
 - 命令（package.json・CI の定義・vitest を起こす台本 scripts/ci/ci_scope.py の unit_argv・cut_check.py・spec-dependencies.yaml）で --testTimeout を渡して上書きしている所は無い","- [ ] K343-TT-001〜004 が緑（`scripts/ci/k343_test_timeout_test.py`）
 - [ ] K343-TT-005 を手元で確かめた（下の judge-skip）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-348,預けたログイン情報のまわりの、会社をまたぐ結びつきを DB で止め（台帳のサービスを引く関数を自分の会社と運営の行に絞る・credentials.service_id の会社の一致を DB で見る）、金庫に置いた後の証跡が落ちたら失効させる（秘密の関門 C8）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-25,F3・預けたログイン情報,"調べ（`.ticket-flow/research/security-credentials-2026-11-20.md`・読むだけ・本線 0c91285f）で見つかった、預けたログイン情報のまわりの前からの穴 2 つを、段 4 の新しい口（K-352 の預ける口・K-353 の上書き）が本線に入る前後のどちらでも効く形で閉じる。
+
+1. **会社をまたぐ結びつき（HIGH：台帳に複数の会社の行が在れば）**：`app.credential_service(p_name, p_domain)`（0047・security definer）は台帳 `service_registry`（会社ごとの表・tenant_id not null）を会社の条件なしで引き、いちばん古い行の id を返す。預ける口 K-352 はこの関数で行の `service_id` を決める（K-352 の実施事項 ⑦）。`credentials.service_id` は FK だけで会社の一致を見ない。結ばれると、確かめの仕事を積む関数（0065 の `credential_login_check_enqueue` の 23 行目）や本番に切り替える判定（0070 の 75 行目）・K-355 の新しい確かめの関数が、別の会社の台帳の可否（automation_verdict_id）を読む。別の会社が台帳に「api」と書けば、規約で禁止のサービスの確かめが通り、「forbidden」と書けば別の会社の確かめが止まる
+2. **金庫に置いた後の証跡が落ちると金庫に物が残る（MEDIUM）**：秘密の関門 `packages/secrets/src/index.ts` の `store` は、金庫に置いた（vault.put）後の証跡（repo.audit）が try の外で、落ちると参照を返さずに例外になる。呼ぶ口（K-352・K-353）は参照を受け取れないので失効させられず、消せない暗号文が金庫に残る
+
+この葉は DB の関数と引き金、秘密の関門の 1 か所だけを直す。口の振る舞い（K-352・K-353 の md）は変えない（どちらの口も、この葉の後は同じ呼び方のまま安全になる）。","- [ ] 下の表の行（K348-DB-001〜010・K348-SEC-001〜003）が緑：`packages/db/test/credential_service_tenant.test.ts`・`packages/secrets/test/store_audit.test.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・db と shared の組）が緑"
 K-350,段 4 の外枠・自分の設定・小窓の直しと、預けたログイン情報の部品とモック（/dev/mock/f3 の 14 の状態）を本線に入れ、キャンバスの絵も決めに合わせる。K-57 を閉じる（K-56 の葉・W0）,タスク,K-56,未着手,実装,2026-11-21,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作り終えた物を本線に入れる。中身は 2 つ：
 
 1. **外枠と自分の設定と小窓の直し**（下絵を見た代表の直し・2026-11-18 の会話と answer=0a262be577b2）
