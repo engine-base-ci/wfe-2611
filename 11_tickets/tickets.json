@@ -19043,6 +19043,62 @@
     "決定ログ": "- 2026-11-20 PM の決め：段 9 の決定ログ §148 は、K-400 から外して新しい葉 K-425（依存なし・文書だけ）で先に本線に入れる。段 9 のほかの葉はこの葉に依存する"
    },
    "file": "11_tickets/K-425.md"
+  },
+  {
+   "id": "K-624",
+   "title": "spec-sync の D6（モック ↔ 画面）が、キャンバスの絵が無く「本番と同じ部品で作った開発用のモック」を正にした画面（canvas-screens.json の mock_only・理由つき）を『作っている画面』に数える（help が「作っていない画面」で赤・段 2 以降は画面が増えるたびに赤になる）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-120",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い K-621（0.5 時間）と同じ：tier_d.py の D6 の数え方 1 か所に mock_only を足す 10 分・試験 7 行（作りものの根は 4 ファイルの写し）を流して確かめる 15 分",
+   "decisions": [
+    "D-128.125",
+    "D-128.149",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の道具・台帳・設定と自己試験だけ。外へ送らない・秘密に触らない・DB に書かない（K-627 だけ使い捨ての DB を作って捨てる）",
+   "tests": [
+    "scripts/ci/k624_d6_mock_only_test.py"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（検査の道具・台帳・設定の中身だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/spec-sync/tier_d.py",
+    "scripts/ci/g65.d/K-624.txt"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "spec-sync の D6 は「flow.json の第 1 フェーズの画面が、全部モックに在るか（と逆）」を見る。Kaname のモックの正はキャンバスの絵（`04_design/canvas/*.dc.html`・対応表 `04_design/canvas-screens.json`）だが、K-315 で **キャンバスに絵が無く、正が本番と同じ部品で作った開発用のモック（/dev/mock）の画面**（help）ができ、対応表の `mock_only`（理由つき）に載せた。canvas_gate.py（CV4）はこれを知っているが、**tier_d.py の D6 は知らず、help を「作っていない画面」と赤にしている**（実測：D6 作っていない画面 1 / 37: help）。\n\nこれは **検査の設定の抜け**（食い違いではない）。しかも段 2 以降は絵ではなく開発用のモックが正になる（D-143・「段 2 からモックは本番の部品で作る」）ので、画面が増えるたびに D6 が赤になる。D6 を外す・件数を決め打ちで許す直しはしない。**D6 の「作っている」を、キャンバスの絵が在る画面 ＋ mock_only に理由つきで載せた画面にする**。実在・二重（絵と mock_only の両方）・flow の第 1 フェーズにあるかは、今までどおり canvas_gate.py の CV4 が見る（D6 は数えるだけで、検査を緩めない）。",
+    "完了の条件": "- [ ] 下の表の 7 行（K624-D6-001〜007）が緑：`python3 scripts/ci/k624_d6_mock_only_test.py`\n- [ ] `python3 scripts/spec-sync/tier_d.py --project-root . --json` の failures に D6 の行が無い（本物の木・help を数える）\n- [ ] G65 の置き場 `scripts/ci/g65.d/K-624.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 変えるのは `scripts/spec-sync/tier_d.py` の D6 の数え方 1 か所（`made = set(MOCKS)` の所）。`screen_mock_index.file`（今は `04_design/canvas-screens.json`）の `mock_only`（画面 ID → 理由）を読み、**理由が空でない（空白だけも空）物だけ**を made に足す。ほかの D 検査・出力の形・終わりの値は変えない\n- `mock_only` の読み先は `screen_mock_index.file` の JSON の `mock_only` 鍵。鍵が無いプロジェクトは今までどおり（絵だけ）。名前を決め打ちして Kaname にだけ効く書き方にしない\n- 「どの画面でもないモック」（`extra = made - 画面の ID`）には mock_only も含める：flow.json に無い画面が mock_only に在れば赤（試験 005）\n- 組織のスキルの tier_d.py は直さない（PM がスキルへ戻す・K-622 の申し送り）",
+    "依存の理由": "- 依存は無い。変えるファイル（scripts/spec-sync/tier_d.py・g65.d/K-624.txt）は、ほかの葉と重ならない（K-622 は README・project_audit.py だけ・K-623 は spec-dependencies.yaml だけ）\n- tier_d を名指しするのは audit-manifest.yaml の 1 行と README の表の 1 行だけで、どちらも変えない（README の表を変える葉は K-622 で、この葉と重ならない）\n- この葉が無くても K-623 の試験は書ける（D6 以外を見る）。K-629 の記録の D が緑になるにはこの葉が要る\n\n```search\ngit grep -n \"tier_d\" -- scripts ':!scripts/spec-sync/tier_d.py' ':!scripts/ci/k62*' ':!scripts/ci/g65.d'\n2\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| D6 の数え方 | `scripts/spec-sync/tier_d.py`：D6 の `made` に、`screen_mock_index.file` の JSON の `mock_only` のうち理由が空でない画面の ID を足す（`extra` の計算にも同じ made を使う） |\n| G65 の置き場 | 新しい `scripts/ci/g65.d/K-624.txt` に 1 行 `python3 scripts/ci/k624_d6_mock_only_test.py`。作り手を流し直す |\n| 目録で探した結果 | 使う：tier_d.py の `resolve_mocks`・`screen_mock_index` の読み（K-45）。作る：mock_only の数え方。似た物：canvas_gate.py の CV4（同じ mock_only を理由・実在・二重で検査する）は別の検査で、この葉は触らない |",
+    "外に影響する手順": "- なし — 検査の道具の数え方 1 か所と自己試験だけ。mock_only の実在を確かめる検査は canvas_gate.py が持つ",
+    "テスト仕様と確認の結果": "`scripts/ci/k624_d6_mock_only_test.py`（unittest。作りものの根（地図・決定ログ・flow.json・canvas-screens.json の写しだけ）で tier_d.py を子プロセスで流し、JSON の failures のうち D6 の行を見る）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K624-D6-001 | 入口 | 本物の木で D6 の行を見る | D6 の行が 0 件（help が mock_only で数えられ、『作っていない画面』も『どの画面でもないモック』も出ない）・help は mock_only に在る |\n| K624-D6-002 | 対象の状態 | 作りものの根の flow.json へ第 1 フェーズの画面を 1 つ足す（絵も mock_only も無い） | D6 が赤で『D6 作っていない画面』にその画面が出る・help は出ない |\n| K624-D6-003 | 対象の状態 | 同じ画面を、理由つきで mock_only に載せる | D6 の赤が消える（『作っていない画面』『どの画面でもないモック』とも出ない） |\n| K624-D6-004 | 入力 | 同じ画面を、理由が空文字・空白だけの mock_only に載せる | どちらも数えない：D6 が赤のまま、その画面が出る |\n| K624-D6-005 | 守り | flow.json に無い名前を、理由つきで mock_only に載せる | D6 が赤で『D6 どの画面でもないモック』にその名前が出る（mock_only が画面でない物の逃げ道にならない） |\n| K624-D6-006 | 守り | 絵の側：対応表の画面を 1 つ空（絵なし）にする | D6 が赤で、その画面が『作っていない画面』に出る（絵の側の双方向は今のまま） |\n| K624-D6-007 | 守り | `scripts/ci/g65.d/` を探す | この試験の命令を持つファイルは K-624.txt のちょうど 1 つ（CI から回る） |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K624-D6-001（本物の画面の名前・日本語の決定ログを読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K624-D6-002（赤）と K624-D6-003（緑）の組で、D6 が mock_only の中身を読んでいる。K624-D6-004・006（赤の条件が効く） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K624-D6-001〜006（作りものの根と本物の木で同じ結果） |\n\nほかの観点：利用者の状態・画面の入口は無い（道具）。失敗（画面でない名前が mock_only に載る）は K624-D6-005 が受ける。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 0 件。替える物は無い。\n\n```search\npython3 scripts/ci/cut_check.py prior --files scripts/spec-sync/tier_d.py\n0\n```",
+    "速さ（今の値と目標の値）": "画面も口も変えない。tier_d.py は 4 秒。D6 の数え方に JSON を 1 つ読むだけで、時間は変わらない。",
+    "成果物": "- `scripts/spec-sync/tier_d.py` の D6 の数え方（1 か所）・G65 の置き場の 1 行\n- 自己試験 `scripts/ci/k624_d6_mock_only_test.py`（切る段が書いた）",
+    "決定ログ": "- 2026-11-21 PM の依頼：spec-sync の監査が本線の木で緑になり、K-621 の印つきの記録を運べるようにする。検査を緩める・黙って外す直しはしない（各類は「本当の食い違い（直す）」「検査の設定の抜け（設定を足す）」「正しい例外（台帳に理由・期限・代替案つき）」のどれかに決めた）\n- 2026-11-21 切る段の決め：D6 の赤は『検査の設定の抜け』（検査が mock_only を知らない）。D6 を外さず、数え方を canvas_gate.py の CV4 と同じ意味にそろえる\n- 2026-11-21 切る段の決め：理由が空の mock_only は数えない（理由の無い逃げ道を作らない）\n- D-128.125：テストはチケットを切る人が書き、実装する人は変えない",
+    "リスクと懸念": "- 写しの tier_d.py だけを直す。組織のスキルの tier_d.py は D6 を同じ形で数えるので、組織の版が直るまで写しを使う前提（K-622）\n- mock_only に載せた画面の『正のモックが本当に在る』は canvas_gate.py の CV4 が見る。CV4 を外すと D6 が空回りする（今は CV4 が G27 の層に入っている）",
+    "申し送り": "- 段 5・8・10 は画面の絵を持たない（開発用のモックが正）。それらの画面を flow.json に足す葉は、canvas-screens.json の mock_only に理由つきで足す必要がある（足さないと D6 が『作っていない画面』で赤になる・canvas_gate の CV4 も同じ）"
+   },
+   "file": "11_tickets/K-624.md"
   }
  ]
 }
