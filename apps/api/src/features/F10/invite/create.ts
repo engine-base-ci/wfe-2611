@@ -1,10 +1,10 @@
 // メールで招く口（K-419）：createInvitations（POST /api/v1/invitations・D-148.1・D-148.23・D-148.29・D-148.47）。
 //   入口（op.ts）が先に確かめる：ログイン・権限（members の invite・会社全体＝管理者の束と個別に付けた人。マネージャーは招けない）・
-//   上限・冪等・体の形（emails・scope_id・role_id・message。知らない項目は 422）。順：
+//   上限・冪等・体の形（emails・scope_id・role_key・message。知らない項目は 422）。順：
 //   ⓪ 欠け・決まった値の外（宛てが無い・役割が 4 つの外・ひとこと 501 文字）は 422・VALIDATION_ERROR（契約の VALUE_RANGES と同じ）
 //   ① 宛てを登録と同じ normalizeEmail（NFKC・空白を全部消す・小文字）でそろえ、そろえて同じになる宛ては 1 つにまとめる
 //   ② 51 人以上 → 422・E-INV-012
-//   ③ 管理者として招く（role_id admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
+//   ③ 管理者として招く（role_key admin）ときだけ、本人確認が直前 15 分の内か（無ければ 403・STEP_UP_REQUIRED）
 //   ④ 全部か無しか：EMAIL_RE に合わない宛て（E-INV-009）・もうこのワークスペースに入っている人（E-INV-010）が 1 つでもあれば、どの宛ても招かず
 //      422 と details（宛てごと・入れた順）。入っている人は DB の関数（app.invitation_members_in）で引く
 //   ⑤ 1 つの取引（app.create_invitations）で、同じ宛ての招待中の招待を取り消して新しい招待を作り、証跡を書く。
@@ -23,7 +23,7 @@ import { inviteMail } from "./mail.js";
 
 /** 一度に招ける人数 */
 export const INVITE_MAX = 50;
-/** 役割（契約の role_id は決まった 4 つ）とひとことの長さ（invitations_message_len と同じ 500 文字） */
+/** 役割（契約の role_key は決まった 4 つ）とひとことの長さ（invitations_message_len と同じ 500 文字） */
 const ROLES = ["member", "manager", "viewer", "admin"] as const;
 const MESSAGE_MAX = 500;
 /** トークンの長さ（バイト）。DB には sha256 だけを置く（packages/auth/src/invitations.ts と同じ形） */
@@ -89,8 +89,8 @@ function checkInput(input: Record<string, unknown>): HookReply | null {
     return badField("emails", "宛てを 1 つ以上入れてください");
   if (typeof input["scope_id"] !== "string" || input["scope_id"] === "")
     return badField("scope_id", "グループを選んでください");
-  if (typeof input["role_id"] !== "string" || !(ROLES as readonly string[]).includes(input["role_id"]))
-    return badField("role_id", ROLES.join("／"));
+  if (typeof input["role_key"] !== "string" || !(ROLES as readonly string[]).includes(input["role_key"]))
+    return badField("role_key", ROLES.join("／"));
   const m = input["message"];
   if (m !== undefined && m !== null && (typeof m !== "string" || Array.from(m).length > MESSAGE_MAX))
     return badField("message", `${MESSAGE_MAX} 文字まで`);
@@ -225,7 +225,7 @@ export function createCreateInvitations(d: Pick<HookDeps, "appPool" | "mailer" |
     if (bad) return bad;
     const emails = normalizeEmails(a.input["emails"]);
     const scope = String(a.input["scope_id"] ?? "");
-    const role = String(a.input["role_id"] ?? "");
+    const role = String(a.input["role_key"] ?? "");
     const rawMessage = a.input["message"];
     const message = typeof rawMessage === "string" && rawMessage !== "" ? rawMessage : null;
     if (emails.length > INVITE_MAX) return invalid("E-INV-012", [detail("E-INV-012", "emails")]);

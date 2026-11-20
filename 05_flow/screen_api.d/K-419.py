@@ -2,7 +2,7 @@
 # 招く（K-419・D-148.1・D-148.23・D-148.29）：メール（何人でも・1〜50）・グループ・役割・ひとこと（500 文字まで）。strict（ほかの欄は 422）。
 #   役割は member・manager・viewer・admin の 4 つ（admin のときだけ本人確認を取り直す）。全部か無しか（1 人でも形の違う宛て・入っている人がいれば誰も招かない）
 INPUTS = {
-    "createInvitations": ("InvitationsCreateInput", {"emails": "string[]", "scope_id": "uuid", "role_id": "string", "message": "string?"}),
+    "createInvitations": ("InvitationsCreateInput", {"emails": "string[]", "scope_id": "uuid", "role_key": "string", "message": "string?"}),
 }
 
 # 招いた答え：招待ごとに id・宛て（そろえた後の小文字）・期限・メールを送れたか（sent／failed）。トークンは答えに出さない（メールのリンクにだけある）
@@ -12,14 +12,14 @@ RESPONSES = {
 
 # apps/api/src/features/F10/invite/create.ts の入力（宛て・グループ・役割は無ければ 422）
 REQUIRED_INPUTS = {
-    "createInvitations": ["emails", "scope_id", "role_id"],
+    "createInvitations": ["emails", "scope_id", "role_key"],
 }
 
 # apps/api/src/features/F10/invite/create.ts（宛ての数・形・入っている人は口が 422 にする。役割は 4 つだけ・ひとこと 500 文字まで）
 VALUE_RANGES = {
     "createInvitations": {
         "emails": {"minItems": 1},
-        "role_id": {"enum": ["member", "manager", "viewer", "admin"]},
+        "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
         "message": {"maxLength": 500},
     },
 }

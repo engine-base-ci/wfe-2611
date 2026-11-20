@@ -9883,7 +9883,7 @@ components:
         scope_id:
           type: string
           format: uuid
-        role_id:
+        role_key:
           type: string
           enum:
           - member
@@ -9899,7 +9899,7 @@ components:
       required:
       - emails
       - scope_id
-      - role_id
+      - role_key
       x-required-by: hooks
     ScopeOverview:
       type: object

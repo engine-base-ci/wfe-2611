@@ -1,7 +1,7 @@
 # K-419 招く口（createInvitations）の契約の形の表に足す分（K-325 の断片）。getWorkspaceMembers は体を受けない GET なので足す行は無い
-# apps/api/src/features/F10/invite/create.ts（emails・scope_id・role_id は無ければ 422。message は無くてよい）
+# apps/api/src/features/F10/invite/create.ts（emails・scope_id・role_key は無ければ 422。message は無くてよい）
 REQUIRED_INPUTS = {
-    "createInvitations": {"emails", "scope_id", "role_id"},
+    "createInvitations": {"emails", "scope_id", "role_key"},
 }
 NO_REQUIRED_INPUTS = {}
 PATH_PATTERNS = {}
@@ -9,7 +9,7 @@ PATH_PATTERNS = {}
 VALUE_RANGES = {
     "createInvitations": {
         "emails": {"minItems": 1},
-        "role_id": {"enum": ["member", "manager", "viewer", "admin"]},
+        "role_key": {"enum": ["member", "manager", "viewer", "admin"]},
         "message": {"maxLength": 500},
     },
 }

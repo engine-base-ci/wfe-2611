@@ -5,7 +5,7 @@
 //   入力の形（K-419 の契約・05_flow/screen_api.d/K-419.py）:
 //     getWorkspaceMembers  GET  /workspace/members → 200 { data: { groups: [{ id, code, name, members: [{ id, name, email, role, group_role, primary, other_groups, self, suspended, pc, pc_days_away }] }],
 //                                                               invitations: [{ id, email, scope_id, role, expires_at, left_days }], alerts: [], count } }
-//     createInvitations    POST /invitations ← { emails: string[]（1〜50）, scope_id, role_id, message? } → 201 { data: { invitations: [{ id, email, expires_at, mail }] } }
+//     createInvitations    POST /invitations ← { emails: string[]（1〜50）, scope_id, role_key, message? } → 201 { data: { invitations: [{ id, email, expires_at, mail }] } }
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
@@ -83,7 +83,7 @@ const invite = (p: Person, body: Record<string, unknown>, o: { su?: number; key?
 const base = (emails: string[], o: Record<string, unknown> = {}) => ({
   emails,
   scope_id: T.rootScope,
-  role_id: "member",
+  role_key: "member",
   message: "営業の問い合わせをいっしょに回してもらいます",
   ...o,
 });
@@ -468,13 +468,13 @@ describe("K-419 メールで招く（createInvitations）", () => {
     await ready();
     for (const su of [undefined, Date.now() - 16 * 60_000]) {
       const e = fresh("admin");
-      const r = await invite(admin, base([e], { role_id: "admin" }), { su });
+      const r = await invite(admin, base([e], { role_key: "admin" }), { su });
       expect(r.status).toBe(403);
       expect((await json(r))["code"]).toBe("STEP_UP_REQUIRED");
       expect(await invRows(e)).toHaveLength(0);
     }
     const e = fresh("admin-ok");
-    expect((await invite(admin, base([e], { role_id: "admin" }), { su: Date.now() - 60_000 })).status).toBe(201);
+    expect((await invite(admin, base([e], { role_key: "admin" }), { su: Date.now() - 60_000 })).status).toBe(201);
     expect((await invRows(e))[0]!["role_id"]).toBe("admin");
   });
 
@@ -491,7 +491,7 @@ describe("K-419 メールで招く（createInvitations）", () => {
   it("K419-API-019 役割が知らない値・宛てが空の並び：422・招待 0。ログインしていない：401", async () => {
     await ready();
     const e = fresh("role");
-    expect((await invite(admin, base([e], { role_id: "owner" }))).status).toBe(422);
+    expect((await invite(admin, base([e], { role_key: "owner" }))).status).toBe(422);
     expect((await invite(admin, base([]))).status).toBe(422);
     expect(await invRows(e)).toHaveLength(0);
     expect((await req("POST", "/invitations", { body: base([fresh("anon")]) })).status).toBe(401);
