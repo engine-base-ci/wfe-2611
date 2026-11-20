@@ -739,6 +739,9 @@ ERRORS_4XX = {
     ],
     # 招待で参加する（K-332 ログインしていない人・K-333 ログイン中は今のアカウントで参加し、その画面だけ招かれた所へ切り替える・別のメール宛ては 403・もう入っていれば 409・answer=becc3d3aa526）。冪等キーは使わない（答えにログインの印が入る・汎用の 409 は NO_GENERIC_409 で外す）
     "acceptInvitation": [
+        {"status": 401, "code": "UNAUTHENTICATED", "body": {"error": "unauthenticated", "code": "UNAUTHENTICATED"},
+         "trigger": "ログインしていない人が、宛てのメールを持たない招待（リンクの招待・K-421）で参加しようとした（確認のメールの道 K-422 が入るまでの間・ログインしてから参加）",
+         "ears_form": "UNWANTED: IF ログインしていない人が宛てのメールを持たない招待で参加しようとしたなら、Kaname は 401 と UNAUTHENTICATED を返し、利用者も所属も作らず招待も使わない"},
         {"status": 403, "code": "E-AUTH-012", "body": {"error": "auth", "code": "E-AUTH-012"}, "errors": ["E-AUTH-012"],
          "trigger": "招いたワークスペースが止められている（subscriptions.suspended_at）",
          "ears_form": "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない"},
@@ -950,6 +953,9 @@ VALUE_RANGES = {
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
+# 形全体の決まり（欄をまたぐ決まり・K-355）：operationId → JSON Schema の言葉（oneOf／anyOf／allOf／not だけ）。その口の入力の形にそのまま重ねる。
+#   中で使う欄の名前（properties・required）は入力の形に在る物だけ（作り手 05_flow/build_api.py が確かめて止める）。チケットごとの分は screen_api.d に書く
+INPUT_RULES: dict[str, dict] = {}
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",

@@ -2100,6 +2100,18 @@ K-353,上書きの口（updateCredential・値・使える場所・期限・理�
 - [ ] 契約の口 `updateCredential`・`deleteCredential` が 501 でない。生成の試験 `patch_credentials_id.test.ts`・`delete_credentials_id.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-353.json`）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-355,預けた後のログインの確かめの口（checkCredentialLogin・answerCredentialLoginCheck・reportCredentialCheck・確かめの仕事は使える場所の 1 つ目を開く・コードは PC にだけ 1 回渡る）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-25,F3・預けたログイン情報,"預けたログイン情報で、自分の PC（Bridge）が 1 回だけログインして確かめる動き（D-117・代表の答え answer=ac0813ee7c21 ③「段 4 に入れる」）の口を、契約の口として作る（今はどれも 501）。
+
+- `checkCredentialLogin`（POST /api/v1/credentials/:id/login-check・本人）：「もう一度確かめる」。確かめの仕事を 1 つ積む
+- `answerCredentialLoginCheck`（POST /api/v1/credentials/:id/login-check/answer・本人）：確かめの途中で PC が頼んだコード（SMS・メール）か「スマホで承認した」を返す
+- `reportCredentialCheck`（POST /api/v1/bridge/credentials/:id/check-result・PC）：PC が途中（コードを頼む・答えを待つ）と結果を知らせる
+
+前の道すじ（apps/api/src/auth/ext.ts の `/vault/credentials/:id/login-check`・`/vault/credentials/:id/answer`・`/bridge/credentials/check-result`・`/bridge/code`・Bridge の `/bridge/ask` の確かめの分）の中身を、契約の口に移す（08_api/phase1/05_自分の設定とPC.md §3：`/bridge/code` は check-result に入る）。前の道すじはこの葉では消さない（今の画面・Bridge・前からの試験が使う。消すのは K-358）。Bridge をこの口へつなぎ替えるのは K-354。
+
+預けた直後に 1 回積む（createCredential の中）は K-352。その時に呼ぶ「積む」関数は、この葉で作り直す（下の実施事項 ①）。","- [ ] 下の表の 30 行（K355-API-001〜030）が緑：`apps/api/test/features/F3/credential-login-check.test.ts`
+- [ ] 3 本の口が 501 でない。生成の試験 3 本の it.todo が `07_qa/test-plan/ears-elsewhere.d/K-355.json` の covers か na（理由つき）で全部結ばれる
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-356,預けたログイン情報の画面（/settings/credentials）を口につなぐ：一覧・空・読めない・自分だけのタブ。前の画面（T-U-10）を作り替え、前からの試験を片付ける（K-56 の葉・預ける小窓は K-372）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"自分の設定 › 預けたログイン情報（`/settings/credentials`・画面 credentials）を、段 4 の部品（`features/F3/credentials/views.tsx`・K-350 が本線に入れる）と契約の口 listCredentials（K-351）につなぐ。
 この葉は **一覧（ワークスペース・自分だけのタブ）・空・読めない** の分と、前の画面の作り替え・前からの試験の片付け。預ける小窓（本人確認して保存・はじめの設定の段 4）は K-372、上書き・消す・確かめの結果・もう一度確かめる・コードを入れる は K-357。
 正の絵はモック `/dev/mock/f3/<状態>`（代表 OK answer=0a262be577b2）。前の画面（T-U-10・WizardLayout・状態 n/a/i/s/ge・462 行）は、この葉で新しい入れ物に作り替える（下の「## 依存の理由」）。","- [ ] 下の表の行（K356-UI-001・003〜009・025・027・029）が緑：`apps/web/tests/k/k356-credentials-list-add.spec.ts`
@@ -2139,6 +2151,21 @@ K-361,PC の行に Claude Code の足りない物と直し方を出す（入れ�
 - （この葉の外）見た目の機械の突き合わせはこの葉には無い（PM の決めで最後の葉 K-373 の K373-UI-004 に分けた）。画面の見た目が「できた」と言えるのは、K-373 の突き合わせが緑になったとき（この葉の完了では言わない）
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-362,PC を外す口（revokeMyDevice・本人確認の取り直し 15 分・外した PC の印を使えなくする・その PC が受け取った仕事だけ止める・セキュリティの出来事に 1 件）（K-56 の葉・古い K-91 の ①）,タスク,K-56,未着手,実装,2026-11-24,F3・PC,"つないだ本人が「この PC を外す」を押したときに呼ぶ契約の口 `revokeMyDevice`（DELETE /api/v1/bridge/devices/:id）を作る（今は 501）。
+外すと **その PC の印が次の知らせから全部の口で使えなくなる**（生きている知らせ・仕事を取りに来る・預けたログイン情報を取り出す。どれも K-57 の PC の印の解決 `app.bridge_device_check` が `revoked_at` の付いた行を引かないので 401）。
+**その PC が受け取って動いていた仕事だけ** を「止まった」にし、理由「PC を外したので止まりました」を残す。もう 1 台が受け取った仕事・まだ誰も受け取っていない待ちの仕事は変えない（D-128.155・D-128.163）。
+外すのは大事な操作なので、**直前 15 分の内に本人確認を取り直していなければ口は止める**（契約の stepUp: always・D-125.139。入口 op.ts の 3.2 が 403・STEP_UP_REQUIRED）。
+
+画面（PC の行の「この PC を外す」・確かめの小窓・取り直しの小窓）は K-363。前の画面と前の道すじ `/api/auth-ext/agent/bridge-revoke` を消すのは K-367。","- [ ] 下の表の 28 行（K362-API-001〜028）が緑：`apps/api/test/features/F3/remove-pc.test.ts`
+- [ ] 契約の口 `revokeMyDevice` が 501 でない。生成の試験 `apps/api/test/generated/delete_bridge_devices_id.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-362.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-363,PC の行の「…」から PC を外す：確かめの小窓・本人確認の取り直しの小窓（StepUp）・外した後の一覧（K-56 の葉・古い K-91 の ②）,タスク,K-56,未着手,実装,2026-11-25,F3・画面,"「PC と使った量」（/setup/bridge・K-57 の画面）の「つないでいる PC」の行の「…」（PC の操作のメニュー・今はグレーで押せない）を押せるようにし、メニューの「この PC を外す」→ 確かめの小窓の「外す」で、口 `revokeMyDevice`（K-362）を呼ぶ。
+口が 403・STEP_UP_REQUIRED を返したら、本人確認の取り直しの小窓（段 2 の部品 `StepUp`・K-318・D-128.162）を出し、通ったら同じ PC を続けて外す（もう一度押させない）。外したら一覧を読み直して行を消し、「外しました。もう一度つなぐときは、この画面からつなぎ直してください」を出す。
+
+前の画面 /setup/bridge/legacy の「この端末を外す」は、この葉では消さない（前の画面ごと K-367 が消す）。この画面の下の「前の設定の画面」の文も K-367 が消す（それまで前の画面にも外すがあるので、文は正しい）。","- [ ] 下の表の 18 行（K363-UI-001〜018・018 はモック 3 つ × 幅 3 つ）が緑：`apps/web/tests/k/k363-remove-pc.spec.ts`
+- [ ] 前からの画面の試験 K230-UI-012（切る段で替えて carry で運ぶ）が緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-364,AI が使うブラウザを PC ごとに選ぶ口（updateMyDevice・browser だけ）・一覧に browser・PC はアカウントのもの（守りは口と DB の関数の 2 重）（K-90 の葉 ①）,タスク,K-56,未着手,実装,2026-11-23,F3・PC,"PC をつないだ人が、**その PC で AI が使うブラウザ**を 3 つから選べる口を作る：自分の Chrome（`chrome`・既定）／Bridge 専用のブラウザ（`dedicated`）／使わない（`off`）（D-119・D-120）。
 契約の口 `updateMyDevice`（PATCH /api/v1/bridge/devices/:id・今は 501）を、`{ browser }` だけを受ける口にする。名前・いつも使う PC は段 4 では作らない（代表の答え answer=0a262be577b2 ③・F3 の後のチケットで同じ口に欄を足す）。
 
@@ -2151,6 +2178,24 @@ PC はアカウントのもの（D-128.137・D-128.156・代表の答え ④）�
 画面の選ぶ欄とその場の一手（BrowserFix）は、画面の重さ（web）を別の葉に分ける（weight の決まり：1 本が触る重い組は 1 つ。この葉は db）。Bridge の窓から選び直す口は K-366。","- [ ] 下の表の 22 行（K364-API-001〜022）が緑：`apps/api/test/features/F3/ai-browser-pick.test.ts`
 - [ ] 契約の口 `updateMyDevice` が 501 でない。生成の試験 `apps/api/test/generated/patch_bridge_devices_id.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-364.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（`apps/api/src/contract/authz.test.ts` は切る段で替えた版を carry: で運ぶ）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-365,もう一度確かめる仕事をその PC に宛てる口（checkMyDeviceBrowser・新しい口）・仕事の宛先の列と受け取る関数の条件（K-90 の葉 ②）,タスク,K-56,未着手,実装,2026-11-27,F3・PC,"AI が Chrome とつながっていないとき、その場で「もう一度確かめる」を押すと、**押した PC に宛てた**小さな仕事（タブの一覧を見るだけ）を 1 つ積む口を作る（D-120「もう一度確かめる」・代表の答え answer=0a262be577b2 ①）。
+契約に口 `checkMyDeviceBrowser`（POST /api/v1/bridge/devices/:id/browser-check・本人・10 回／分／人）を足す。
+
+前の道すじ `POST /api/auth-ext/agent/browser-check` の中身 `app.agent_browser_check`（0057）は**人に宛てる**ので、PC が 2 台あると押していない PC が確かめてしまう。仕事に宛先の PC の列 `bridge_jobs.target_session_id` を足し、仕事を受け取る関数 `app.bridge_take_job` に「宛先が無いか、自分宛て」の条件を 1 つ足す。
+確かめの結果は、Bridge がその仕事の後に送る自己診断（生きている知らせの health・K-57 のまま）で PC の行に出る。会話には出さない（D-120）。PC が眠っているときは始めず、理由を返す。
+
+画面のその場の一手（BrowserFix）がこの口を呼ぶ。BrowserFix は画面の重さ（web）を別の葉に分ける（この葉は db）。","- [ ] 下の表の 21 行（K365-API-001〜021）が緑：`apps/api/test/features/F3/ai-browser-check.test.ts`
+- [ ] 契約に口 `checkMyDeviceBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_devices_id_browser_check.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-365.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-366,Bridge の窓でも AI が使うブラウザを選び直せる口（setBridgeBrowser・新しい口）と Bridge の窓の呼び先（K-90 の葉 ③）,タスク,K-56,未着手,実装,2026-11-27,F3・PC,"PC の中の Bridge の窓でも、その PC で AI が使うブラウザを選び直せるようにする（D-120「Bridge の窓でも変えられる」・代表の答え answer=0a262be577b2 ②）。Kaname が正本で、窓で変えても画面で変えても同じ値（`sessions.browser`）が変わる。
+契約に PC が呼ぶ口 `setBridgeBrowser`（POST /api/v1/bridge/browser・PC の印・60 回／分）を足し、前の道すじ `POST /api/auth-ext/bridge/browser`（apps/api/src/auth/ext.ts 472〜481 行）の中身（`app.bridge_set_browser`・0057）を移す。
+Bridge の窓の「AI が使うブラウザ」（apps/bridge/src/main.ts 203〜222 行の `bridge:set-browser`）の呼び先を、前の道すじから新しい口に替える。呼び方は electron を読まずに試せるよう `apps/bridge/src/browser-choice.ts` に出す（pairing.ts の claimCode と同じ形）。
+
+PC の印で呼ぶので、その PC 自身の値だけが変わる（他の PC は選べない）。DB は変えない（今の関数を使う）。","- [ ] 下の表の 14 行（K366-API-001〜008・K366-BR-001〜006）が緑：`apps/api/test/features/F3/ai-browser-bridge.test.ts`・`apps/bridge/test/browser-choice.test.ts`（K366-BR-006 は人が確かめる）
+- [ ] 契約に口 `setBridgeBrowser` が在り、生成の試験 `apps/api/test/generated/post_bridge_browser.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-366.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）,タスク,K-56,未着手,実装,2026-11-22,F3・画面,"段 4（K-56・F3 使い始めの準備の残り）の切る段の枝 `c/段4` で作った「PC と使った量」の PC の行の部品と、それを並べた開発用の置き場 `/dev/mock/f3-pc`（31 の状態）を本線に入れる（W0 の K-350 と同じ形の、部品先行の葉）。
 
@@ -2168,6 +2213,15 @@ K-369,段 4 の PC の行の部品（Claude Code の直し方・AI が使うブ�
 キャンバス（04_design/canvas の MePC・EdPC・MePCInstalled）には PC の行の自己診断の区画・選ぶ欄・メニュー・外す小窓の絵が無い（K-361・K-363 の「探した結果」）。だから正の絵はこのモックにする（design-system.md §8・D-146.1）。","- [ ] 下の表の行（K369-MK-001〜005・K369-EC-001・K369-DS-001・K369-UI-001〜016・K369-UI-018〜020）が緑：`apps/web/tests/k/k369-pc-row-mock.spec.ts`
 - [ ] K369-UI-017（人が確かめる）：代表が下絵を見て OK と言う。前からの 24 の状態 × 3 幅は済み（2026-11-19 の会話・PM の決定の控えに記録。K-350 の書き方と同じで、答え ID は求めない）。answer=7cf148a79dc9 で足した 7 つ（pc-os-warning*・pc-bridge-*）は代表に見てもらうのを待っている（まとめ役が聞く）
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-372,預けたログイン情報の画面の「預ける」小窓（本人確認して保存）を契約の口 createCredential につなぎ、はじめの設定の段 4 を通す（K-56 の葉・K-356 から分けた）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"預けたログイン情報の画面（`/settings/credentials`・入れ物は K-356）の「預ける」を押せるようにし、小窓（ログイン情報／API キー・値・預ける先・2 段階の種類・使える場所・期限）を契約の口 createCredential（K-352）につなぐ。
+口が本人確認の取り直しを求めたら段 2 の取り直し（StepUp・K-318）をはさみ、同じ体で 1 回だけ送り直す。はじめの設定の途中の人が 1 件預けたら段 4（D-089・「ログイン情報を 1 件預ける」）を通す。
+正の絵はモック `/dev/mock/f3/cred-add-login`・`cred-add-key`・`cred-add-error`・`cred-stepup`（代表 OK answer=0a262be577b2）。
+
+この葉は K-356 から分けた（2026-11-19 まとめ役・K-356 の見込みが 1.5 時間で上限を超えたため）。行は消さずに移し、行 ID を K356-UI-0xx から K372-UI-0xx に振り直した（下の表の「元」）。","- [ ] 下の表の行（K372-UI-001〜021）が緑：`apps/web/tests/k/k372-credentials-add.spec.ts`
+- [ ] 切る段で替えた通しの試験 j02 の J02-05（carry で運ぶ）が緑
+- [ ] K-356 の試験（k356-credentials-list-add.spec.ts）が緑のまま（「預ける」が押せる形でも通る作り）
+- [ ] 正本の行（credentials.md の保存・取り直し・段の帯の行）の置き換え先が K372 の行 ID になっている
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-376,CI の段の命令の並び（G65・G47）をチケットごとのファイル（scripts/ci/g65.d・g47.d）から作る（K-324 の葉）,タスク,K-324,未着手,実装,2026-11-19,共通・CI,"`05_flow/build_testplan.py` の G65（CI の形の試験）の命令は、自己試験を `&&` でつないだ 1 行（今 43 本）。自己試験を足すチケットは全部この 1 行を変えるので、同時に作ると取り込みでぶつかる（11 月に入ってからこの行を変えたコミットは 43 本。2026-11-19 にも 2 本がぶつかった）。
 同じ形の G47（検査の自己試験・13 本）も 6 回変わり、うち 1 回は取り込みで足しを落としていた（K-62 の直し「取り込みで落とした G47 の足し」）。
@@ -2223,6 +2277,27 @@ PM の決め（2026-11-19）：**画面の組に専用の段を 1 つ足す小�
 - [ ] 前からの自己試験（下の「前からの試験を替えた所」）が緑。替えたのは切る段が運ぶ 2 本だけ
 - [ ] 作り手を流し直した生成物（CI の定義・試験計画・範囲の地図）が最新（`python3 scripts/tickets/regen_all.py`）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-380,チケットの詳細と承認待ちに、段 7・段 9 が後から中身を足す差し込み口を 1 回で入れる（入れた時点では何も出さない・題名の下の帯の順を 1 か所で決める）と、詳細の頭の行の幅 767 以下を横に並べて 2 行までにする（K-66 の葉・段 7 と段 9 の共通の先頭）,タスク,K-66,未着手,実装,2026-11-25,F6・画面,"チケットの詳細（`/tickets/<id>`・一覧の右に開く詳細）と承認待ち（`/approvals`）は、これから段 7（F6 自分で進める・話す・決める）と段 9（F8 渡す・配る）が同時に中身を足す。2 つの段の葉が同じ前からのファイル（`ticket-detail.tsx`・`detail-panel.tsx`・`detail-head.tsx`・`queue-table.tsx`）を取り合わないように、**差し込み口だけを先に 1 回で入れる**（PM の決め・切り方.md 5 章の案 A）。
+
+- 差し込み口の先は流れごとのファイル `apps/web/features/F6/detail-slots.tsx`（段 7）と `apps/web/features/F8/handover/detail-slots.tsx`（段 9・段 9 の切る段の名前に合わせた）。**この葉ではどれも中身（children）をそのまま返すか、何も出さない（null）**。だから詳細と承認待ちの見た目と操作は今のまま
+- もう 1 つ、**先読みの差し込み口** `F6.usePrefetchDetail(id, enabled)` を詳細の本体（`ticket-detail.tsx` の DetailBody・`useRuns` の横）で呼ぶ。差し込み口の先（DetailScope・PanelTabsSlot など）は詳細の答えが届いた後に描かれるので、そこで段 7 の口（やり取りの最初の 20 件・K-392）を読み始めると直列の段が 2 になる（K392-UI-002 と前からの K235-UI-003「答えの後に出た口 0」が赤）。道の id で引ける口は、答えを待たずに詳細と同時に出す（K-235 と同じ）。**この葉の `usePrefetchDetail` は何もしない関数**（口を呼ばない・状態を持たない）。K-382 が `features/F6/prefetch.ts`（やり取りの `thread/prefetch.ts` と決定の一覧の `decisions/prefetch.ts` を両方呼ぶ・どちらも何もしない形）から書き出す形に直し、K-392 が thread/prefetch.ts、K-397 が decisions/prefetch.ts の中身（react-query の prefetchQuery）を作る
+- 題名の下の帯は 1 つだけ（D-128.178・D-129.10）。順は「承認・実行（今ある F5 の帯）→ 渡し（段 9）→ 保留（段 7）」（代表の答え ㉓・answer=56812da22008 の段 7 の分）。**この順を 1 か所（`features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`）で決める**。後ろの帯は、前に出ている帯があれば譲る（`bandYieldTo`）。保留の帯が譲っている間に段の札の横に「理由を見る」を出すのは段 7 の K-395 が `ticket.bands` を読んで決める
+- あわせて、幅 767 以下の詳細の頭の行（開始日・期限・段の札）が 2 列の格子で 3 段になっていたのを、横に並べて頭の行を 2 行までにする（代表の直し answer=fabd031f9b37 の 4・`.ticket-flow/side-notes/段7-詳細の頭.md`）。直すのは `ticket-detail.css` の 1 か所だけ。キャンバスの詳細の形の絵 7 枚も同じ形に作り直す（作り直さないと見た目の突き合わせ G70 の幅 375 の組が赤になる・D-146.1）","- [ ] 下の表の行（K380-SL-001〜004・K380-CS-001・K380-CV-001・K380-UI-001〜007）が緑：`apps/web/tests/k/k380-detail-slots.spec.ts`
+- [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の詳細の 8 組（ticket-detail・band-approval・band-running・band-failed・band-before・band-confirm-done・band-done・band-delegated）が幅 1440・375 で緑（頭の行の高さが変わるので、作り直した絵と同じ y になること）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 作り直した絵 7 枚を幅 375 で開き、札と期限の字がいちばん長い絵（「（1 日過ぎ）」の期限を持つ StBefore など）でも頭の行の 2 行目（開始日・期限・段の札）が 1 行に収まり、題名と帯の y が絵ごとにずれない（見た目の突き合わせの 375 の組が緑になることで見る。収まらない絵が出たら絵を手で直さず止めて報告）
+- [ ] 作り手で作り直した絵が切る段で確かめた差と同じ：`git diff --stat -- 04_design/` に出るのが changes: の 10 ファイルだけ（実施事項「キャンバスの絵」）
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-381,メニューと選ぶ欄の開いた箱が、画面の上に貼り付く帯（詳細の本文の道具の帯・上の帯・下のタブ）の下に潜らないよう、箱の置き場（Base UI の Positioner）に重なりの順を持たせる。値は正本のトークン（K-66 の葉・段 4 の PC の行のメニューにも効く）,タスク,K-66,未着手,実装,2026-11-25,F6・画面,"メニューの型（`components/k/menu.tsx`・K-369）・選ぶ欄（`select.tsx`）・外枠の自分のメニュー（`shell.tsx`）・自分の設定の第 2 ナビ（`me-sub.tsx`）の開いた箱は、Base UI の置き場（Positioner）が transform で重なりの層を作り、重なりの順（z-index）を持たない。だから画面の上に貼り付く物（詳細の本文の道具の帯 z-index 1・上の帯 20・スマホの右のパネル 30・下のタブ 40・メニューの引き出し 45）と重なると、**箱がその下に潜る**（段 7 の下絵で、頭の行の段の札のメニューが本文の道具の帯の下に潜った。下絵は F6 の CSS で `[role=""presentation""]:has(> .k-prog-menu) { z-index: 2 }` を当てて避けていた）。
+
+箱の置き場の 4 か所に共通のクラス `k-popup-layer` を付け、重なりの順を正本のトークン `--k-c-popup-layer-z`（正本の部品 `popup-layer` の `zIndex`）で 1 か所で決める。使う側が置き場を狙って避ける形はやめる（段 7 の下絵の避け方は K-382 が運ぶ時点で消してある）。
+
+- 層の高さは **70**：今の画面の CSS の z-index のうち、小窓の後ろの幕（80）より下の物で一番高いのは前の外枠（`components/shell/shell.css`）の 50〜60 と AI の成果物の板（`components/ai/chat.css`）の 61。それより上・幕より下。小窓（81）の中で開く選ぶ欄は、Base UI の置き場が小窓の外（body）に出るので 70 では小窓の裏に回る（K-372 が直した不具合）。選ぶ欄の一覧だけ専用の層 popup-layer-field（82）で小窓の上に出す（K381-UI-005 で見る）
+- あわせて、メニューの型の開くボタン `MenuTrigger` に `disabled?` を足す（段 7 の K-395 が、段を送っている間に段の札を押せなくするのに使う・まとめ役の決め）。押せない間は `aria-disabled=""true""` を付け、押しても・Enter・Space・↓ でも箱を開かない。Base UI の Trigger に native の `disabled` は渡さない（渡すと焦点がボタンから落ち、送り終わったときに焦点が迷子になる）
+- 効く所：段 4 の PC の行の「…」のメニュー（K-369 の `PcMoreMenu`・本物の画面につなぐのは K-363）と、段 4 で本線に入る・作っている葉の PC の行の部品（K-349・K-361・K-373）が使う選ぶ欄とメニュー、段 7 の段の札のメニュー（K-395）・書き込みの「…」（K-394）・書く欄の「状態 ▾」（K-396）、段 9 の箱。どれもこの型を使うので、使う側で避けなくてよくなる","- [ ] 下の表の行（K381-SRC-001・002・K381-TK-001・002・K381-DS-001・K381-UI-001〜005）が緑：`apps/web/tests/k/k381-popup-layer.spec.ts`
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 見た目の突き合わせ `apps/web/tests/fidelity/fidelity.spec.ts` の入れた組が緑（箱は閉じた状態の突き合わせに出ないので変わらない・canvas: [全部の組]）
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
 K-419,招く（口と DB）：メンバーの並びを読む getWorkspaceMembers・メールで招く createInvitations（招待の入力にグループの欄・何人でも・管理者として招くときは本人確認の取り直し）（K-70 の葉・段 9 の前に出す）,タスク,K-70,未着手,実装,2026-11-23,F10・人とアカウント,"段 9（F8 渡す・配る）を人が画面で確かめるには 2 人目が要るが、今の本線には「人を招く」側が無い（範囲.md 0 章）。代表の答え（answer=56812da22008）で、F10 の「人を招く」を段 9 の前に出す。この葉はその口と DB：
 
 - `getWorkspaceMembers`（GET /api/v1/workspace/members）：メンバーの画面（キャンバス WsPeople・D-148.28）の並び。グループごとの人（名前・メール・役割・グループの役割・止めているか・PC の様子）と、招待中の行
