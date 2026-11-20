@@ -52,7 +52,7 @@ begin
   if p_kind is null or p_kind not in ('related', 'derived_from') then return jsonb_build_object('error', 'bad_kind'); end if;
   perform 1 from tickets where id in (p_from, p_to) and tenant_id = v_tenant and deleted_at is null order by id for update;
   select count(*) into v_n from tickets where id in (p_from, p_to) and tenant_id = v_tenant and deleted_at is null;
-  if v_n <> case when p_from = p_to then 1 else 2 end then return jsonb_build_object('error', 'gone'); end if;
+  if v_n < (case when p_from = p_to then 1 else 2 end) then return jsonb_build_object('error', 'gone'); end if;
   if p_from = p_to then return jsonb_build_object('error', 'same'); end if;
   -- 同じ組（関連は逆向きも）に消していない行が在る
   if exists (select 1 from ticket_links l

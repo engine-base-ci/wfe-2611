@@ -6,16 +6,23 @@ import { kanameError } from "@kaname/errors";
 import type { HookReply } from "../../../contract/deps.js";
 
 /** 正本のエラーを、欄なし・detail なしの形で。status は正本の class から決まる物を、404・503 は呼ぶ側が決める */
-const bare = (code: string, status: number): HookReply => {
+const bare = (status: number, code: string): HookReply => {
   const j = kanameError(code).toJSON();
   return {
     status,
-    body: { error: j.error, code: j.code, message: j.message, action: j.action, undo: j.undo, support_code: j.support_code },
+    body: {
+      error: j.error,
+      code: j.code,
+      message: j.message,
+      action: j.action,
+      undo: j.undo,
+      support_code: j.support_code,
+    },
   };
 };
 
 /** 無い・見えない・消した・別の会社（在るかを漏らさない） */
-export const notFound = (): HookReply => bare("E-PAGE-001", 404);
+export const notFound = (): HookReply => bare(404, "E-PAGE-001");
 
 const WRITE_MESSAGE: Record<string, string> = {
   id: "このチケットには書けません",
@@ -33,25 +40,38 @@ export const forbidden = (field?: string): HookReply => ({
 });
 
 /** 入力の形違い（422・欄つき）。入口（op.ts）と同じ形 */
-export const invalid = (field: string, message: string): HookReply => ({
+export const invalid = (details: { field: string; message: string }[]): HookReply => ({
   status: 422,
-  body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message }] },
+  body: { error: "validation_failed", code: "VALIDATION_ERROR", details },
 });
 
 /** 止める側に倒す（503・E-PAGE-003）。ログには場所と言葉の種類だけ */
 export const down = (where: string, word: string): HookReply => {
   console.error(`[ticket-links] ${where}：${word}なので止める側に倒した`);
-  return bare("E-PAGE-003", 503);
+  return bare(503, "E-PAGE-003");
 };
 
-/** DB の関数の答え { error[, field] } → 答え。知らない言葉は止める側（言葉は記録にだけ残し、答えに出さない） */
-export function replyOf(r: { error?: unknown; field?: unknown }, where: string): HookReply {
-  const word = String(r.error);
+/** 足す・外すに共通の言葉：見えない・無い（404）・書けない・会社の人でない（403）。当てはまらなければ null */
+function commonReply(word: string, field: unknown): HookReply | null {
   if (word === "not_found" || word === "gone") return notFound();
-  if (word === "not_writable") return forbidden(typeof r.field === "string" ? r.field : undefined);
+  if (word === "not_writable") return forbidden(typeof field === "string" ? field : undefined);
   if (word === "not_member") return forbidden();
-  if (word === "same") return bare("E-LNK-001", 409);
-  if (word === "duplicate") return bare("E-LNK-002", 409);
-  if (word === "cycle") return bare("E-LNK-003", 409);
-  return down(where, `知らない答え（${word.slice(0, 40)}）`);
+  return null;
+}
+
+/** 足す口の DB の関数の答え { error[, field] } → 答え（409 の 3 つを持つ）。知らない言葉は止める側（言葉は記録にだけ残し、答えに出さない） */
+export function replyOfAdd(r: { error?: unknown; field?: unknown }, where: string): HookReply {
+  const word = String(r.error);
+  const common = commonReply(word, r.field);
+  if (common) return common;
+  if (word === "same") return bare(409, "E-LNK-001");
+  if (word === "duplicate") return bare(409, "E-LNK-002");
+  if (word === "cycle") return bare(409, "E-LNK-003");
+  return down(where, `知らない答え（${word}）`);
+}
+
+/** 外す口の DB の関数の答え { error } → 答え（409 は無い）。知らない言葉は止める側 */
+export function replyOfRemove(r: { error?: unknown }, where: string): HookReply {
+  const word = String(r.error);
+  return commonReply(word, undefined) ?? down(where, `知らない答え（${word}）`);
 }

@@ -1502,10 +1502,11 @@
     "test_post_tickets_id_links_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_links_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
-   },
-   "na": {
-    "test_post_tickets_id_links_too_large": "入口の共通の 1MB の守り（K-144）。この口の体は欄 2 つだけ"
    }
   },
   "deleteTicketLink": {

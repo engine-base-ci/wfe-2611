@@ -6,10 +6,11 @@
 //   足す：見えて書ける 2 つのチケットだけ。外す：両端のどちらか 1 つに書ける人（相手が見えなくてもよい）。
 //   知らせ・やり取りの 1 行は作らない（D-125.130・D-128.45）。ログに題名・番号を出さない（場所と例外の種類だけ）
 import type pg from "pg";
+import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Row } from "@kaname/db/repository";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
-import { down, notFound, replyOf } from "./errors.js";
+import { down, invalid, notFound, replyOfAdd, replyOfRemove } from "./errors.js";
 import { toChild, toLink } from "./shape.js";
 
 /** 一覧に出すつながり・子の上限（DB の関数も同じ数で切る） */
@@ -17,6 +18,8 @@ export const LIST_MAX = 200;
 
 /** 足す口が受ける欄は 2 つだけ（知らない欄は欄の名前で 422） */
 const INPUT_FIELDS: readonly string[] = ["other_ticket_id", "kind"];
+/** つながりの種類は 2 つだけ（関連・派生元） */
+const KINDS: readonly string[] = ["related", "derived_from"];
 
 interface ListAnswer {
   items: unknown[];
@@ -56,21 +59,24 @@ export function createTicketLinkHooks(appPool: pg.Pool): Record<string, Hook> {
         }),
     },
     createTicketLink: {
-      // 知らない欄はその欄の名前で 422（入口の strict な形は欄の名前を出さないので、ここで先に断る）。形の確かめは入口が続けてする
+      // 入口の契約の形（zod）は欄が無い・kind が 2 つ以外を通すので、ここで欄の名前つきの 422 にする（契約の値域は REQUIRED_INPUTS・VALUE_RANGES と同じ）。
+      //   知らない欄もその欄の名前で断る（入口の strict な形は欄の名前を出さない）。形の確かめは入口が続けてする
       input: (raw: unknown) => {
         if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return { input: raw as Row };
-        const unknown = Object.keys(raw).filter((k) => !INPUT_FIELDS.includes(k));
-        if (unknown.length === 0) return { input: raw as Row };
-        return {
-          reply: {
-            status: 422,
-            body: {
-              error: "validation_failed",
-              code: "VALIDATION_ERROR",
-              details: unknown.map((field) => ({ field, message: "知らない欄です" })),
-            },
-          },
-        };
+        const body = raw as Row;
+        const details = [
+          ...Object.keys(body)
+            .filter((k) => !INPUT_FIELDS.includes(k))
+            .map((field) => ({ field, message: "知らない欄です" })),
+          ...(typeof body["other_ticket_id"] === "string" && isUuid(body["other_ticket_id"])
+            ? []
+            : [{ field: "other_ticket_id", message: "uuid" }]),
+          ...(typeof body["kind"] === "string" && KINDS.includes(body["kind"])
+            ? []
+            : [{ field: "kind", message: "related か derived_from" }]),
+        ];
+        if (details.length === 0) return { input: raw as Row };
+        return { reply: invalid(details) };
       },
       before: async (a: HookArgs) =>
         guarded("つながりを足す", async () => {
@@ -86,7 +92,7 @@ export function createTicketLinkHooks(appPool: pg.Pool): Record<string, Hook> {
                 ])
               ).rows[0]!.v,
           );
-          if (r["ok"] !== true) return replyOf(r, "つながりを足す");
+          if (r["ok"] !== true) return replyOfAdd(r, "つながりを足す");
           return { status: 201, body: { data: toLink(r["link"]) } };
         }),
     },
@@ -101,7 +107,7 @@ export function createTicketLinkHooks(appPool: pg.Pool): Record<string, Hook> {
               (await cl.query<{ v: Record<string, unknown> }>("select app.ticket_link_remove($1::uuid) as v", [a.id]))
                 .rows[0]!.v,
           );
-          if (r["ok"] !== true) return replyOf(r, "つながりを外す");
+          if (r["ok"] !== true) return replyOfRemove(r, "つながりを外す");
           return { status: 200, body: { data: { id: r["id"] } } };
         }),
     },
