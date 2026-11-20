@@ -995,6 +995,32 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/bridge-browser.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_browser.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/browser-choice.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/browser-choice.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "07_functional/段4-F3/shots-pc/measure.json",
     "07_qa/test-specs/errors.json",
     "scripts/ci/design_gate.py",
