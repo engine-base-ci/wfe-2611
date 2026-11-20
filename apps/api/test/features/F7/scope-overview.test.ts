@@ -26,7 +26,6 @@ interface World {
   outsider: Person;
   otherRoot: string; // 別の会社の root
 }
-let W: World;
 
 type J = Record<string, unknown> & { data?: Record<string, unknown> };
 const json = async (r: Response) => (await r.clone().json()) as J;
@@ -54,7 +53,7 @@ const overviewOk = async (who: Person, scope: string): Promise<Overview> => {
 };
 const counts = (o: Overview) => Object.fromEntries(o.by_stage.map((x) => [x.stage.key ?? x.stage.name, x.count]));
 
-/** 新しい会社を作り、その中にグループと人を置く（試験ごとの会社＝ほかの試験の物と混ぜない）。W は全体の会社。個別の試験は freshWorld を使う */
+/** 新しい会社を作り、その中にグループと人を置く（試験ごとの会社＝ほかの試験の物と混ぜない）。試験ごとに呼ぶ */
 async function world(label: string): Promise<World> {
   const A = await f.company(`K477 ${label}`, "OA");
   const B = await f.company(`K477 ${label} の別の会社`, "OB");
@@ -161,7 +160,6 @@ async function message(
 
 beforeAll(async () => {
   f = await makeFixture([]);
-  W = await world("全体");
   f.limits["getScopeOverview"] = 10_000;
   // 口の振る舞いは最初の要求の前に 1 回だけ読む（準備で読まない）
   let loading: Promise<void> | null = null;
@@ -430,16 +428,46 @@ describe("K-477 グループの概要を読む（getScopeOverview・本物の DB
     ).toBe(before);
   });
 
-  it("K477-API-016 文の数：1 つの取引（begin 1）で、文は 4 つ以内（Server-Timing の q）", async () => {
+  it("K477-API-016 文の数：口が 1 つの取引（begin 1）で流す DB の文は、begin・文脈の設定・commit を含めて 12 以下（土台の外で、口の appPool に数え器を掛けて数える。Server-Timing の頭は本物のログインにだけ付き、偽のログインでは付かない）", async () => {
     const w = await world("文の数");
     const t = await ticket(w, { scope: w.g1 });
     await message(w, t, {});
-    const r = await overview(w.a, w.g1);
-    expect(r.status).toBe(200);
-    const st = r.headers.get("server-timing") ?? "";
-    const q = /(?:^|,)\s*q;desc="statements";dur=(\d+)/.exec(st);
-    expect(q, st).not.toBeNull();
-    // begin・set local の設定・commit を含めて数える：中身の文 4 つ（グループが見えるか・内訳・最近の更新・合計は内訳から足す）＋取引の出入りの分の余裕
-    expect(Number(q![1])).toBeLessThanOrEqual(12);
+    // 口に渡す接続の取り先（appPool）を数え器つきに替える：connect が貸す接続の query を包み、流れた文を hits に残す（元の接続は変えない）
+    const hits: string[] = [];
+    const counted = new Proxy(f.pool, {
+      get(target, prop, recv) {
+        if (prop !== "connect") return Reflect.get(target, prop, recv) as unknown;
+        return async () => {
+          const cl = await target.connect();
+          return new Proxy(cl, {
+            get(c, p) {
+              if (p === "query")
+                return (...a: unknown[]) => {
+                  const q = a[0];
+                  hits.push(typeof q === "string" ? q : String((q as { text?: string } | null)?.text ?? ""));
+                  return (c.query as (...x: unknown[]) => unknown)(...a);
+                };
+              const v = Reflect.get(c, p) as unknown;
+              return typeof v === "function" ? (v as (...x: unknown[]) => unknown).bind(c) : v;
+            },
+          });
+        };
+      },
+    });
+    const m = (await import("../../../src/hooks/scope-overview.js")) as {
+      scopeOverviewHooks: (p: pg.Pool) => Record<string, Hook>;
+    };
+    const saved = f.hooks["getScopeOverview"];
+    f.hooks["getScopeOverview"] = m.scopeOverviewHooks(counted)["getScopeOverview"]!;
+    try {
+      const r = await overview(w.a, w.g1);
+      expect(r.status, await r.clone().text()).toBe(200);
+    } finally {
+      f.hooks["getScopeOverview"] = saved!;
+    }
+    // 取引は 1 つ。中身の文は 3 つ（グループが見えるか・内訳・最近の更新・合計は内訳から足す）と、取引の出入り（begin・文脈の設定・commit）
+    expect(hits.filter((x) => /^\s*begin\b/i.test(x))).toHaveLength(1);
+    expect(hits.length, hits.join("\n")).toBeGreaterThanOrEqual(1);
+    expect(hits.length, hits.join("\n")).toBeLessThanOrEqual(12);
   });
 });
