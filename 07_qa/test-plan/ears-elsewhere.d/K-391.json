@@ -9,7 +9,6 @@
     "test_patch_ticket_decisions_id_rejected_403": "K391-API-012",
     "test_patch_ticket_decisions_id_not_found": "K391-API-012",
     "test_patch_ticket_decisions_id_rejected_422": "K391-API-002",
-    "test_patch_ticket_decisions_id_rejected_422_2": "K391-API-009",
     "test_patch_ticket_decisions_id_conflict": "K391-API-004",
     "test_patch_ticket_decisions_id_unavailable": "K391-API-014",
     "test_patch_ticket_decisions_id_rate_limited": "K391-API-016",
@@ -25,7 +24,8 @@
     "test_patch_ticket_decisions_id_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
-    }
+    },
+    "test_patch_ticket_decisions_id_conflict_2": "K391-API-009"
    }
   }
  }

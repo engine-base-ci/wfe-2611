@@ -228,12 +228,12 @@ describe("K-391 決定を取り消す", () => {
 });
 
 describe("K-391 入力と守り", () => {
-  it("K391-API-009 取引先のルールにする（action promote）：422 E-VAL-018・欄 action「取引先の画面ができてから使えます」・promoted_to は ticket のまま", async () => {
+  it("K391-API-009 取引先のルールにする（action promote）：409 E-CONF-037・欄 action「取引先の画面ができてから使えます」・promoted_to は ticket のまま", async () => {
     const t = await ticket();
     const id = await decision(t);
     const before = await snapshot(t.id);
     const r = await change(boss, id, { action: "promote" });
-    expect(r.status).toBe(422);
+    expect(r.status).toBe(409);
     const j = await json(r);
     expect(j["code"]).toBe(VAL_NOT_YET);
     expect(j.details).toEqual([{ field: "action", message: CLIENT_RULE_LATER }]);

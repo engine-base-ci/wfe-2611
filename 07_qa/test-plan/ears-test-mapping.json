@@ -128341,11 +128341,11 @@
     "tickets"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "422",
-   "ears_text": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）",
    "test_file": "apps/api/test/generated/patch_ticket_decisions_id.test.ts",
-   "test_function": "test_patch_ticket_decisions_id_rejected_422_2",
-   "test_level": "unit（検証・表記ゆらぎ）",
+   "test_function": "test_patch_ticket_decisions_id_conflict_2",
+   "test_level": "unit（冪等）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []
