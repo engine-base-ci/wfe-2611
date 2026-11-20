@@ -328,8 +328,8 @@
 | EP-313 | GET | `/api/v1/tickets/:id/checks` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
 | EP-314 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
 | EP-315 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
-| EP-316 | GET | `/api/v1/tickets/:id/decisions` | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-317 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-316 | GET | `/api/v1/tickets/:id/decisions` | 取得（ticket_decisions）— チケットの決定を見る（生きて | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-317 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-318 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-319 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-320 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |
@@ -346,7 +346,7 @@
 | EP-331 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-332 | POST | `/api/v1/tickets/:id/test-specs/lint` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-333 | POST | `/api/v1/tickets/:id/test-specs/suggest` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-334 | GET | `/api/v1/tickets/:id/timeline` | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-334 | GET | `/api/v1/tickets/:id/timeline` | 取得（ticket_messages）— やり取りを新しい方から読む（前 | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-335 | GET | `/api/v1/tickets/:id/versions` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-336 | POST | `/api/v1/tickets/:id/versions/:v/restore` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-337 | GET | `/api/v1/tickets/:id/work-type-candidates` | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数な | A130 | 1 | member |  | 401 403 404 422 429 403 403 503 |
@@ -390,7 +390,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1035 ／ 内部専用 274 ／ どの画面にも出ない 0
+- 検査したフィールド 1043 ／ 内部専用 274 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

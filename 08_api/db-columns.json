@@ -7002,6 +7002,18 @@
    }
   },
   "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7016,6 +7028,10 @@
    },
    "decided_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
     "nullable": true
    },
    "deleted_at": {
@@ -7320,6 +7336,14 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "deleted_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "edited_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "id": {
     "type": "uuid",
     "nullable": false
@@ -7332,8 +7356,16 @@
     "type": "uuid[]",
     "nullable": false
    },
+   "notify_member_ids": {
+    "type": "uuid[]",
+    "nullable": false
+   },
    "quote_of_id": {
     "type": "uuid",
+    "nullable": true
+   },
+   "quote_text": {
+    "type": "text",
     "nullable": true
    },
    "reactions": {

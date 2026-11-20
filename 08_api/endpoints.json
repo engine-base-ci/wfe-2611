@@ -53789,11 +53789,11 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— 決定を記録する（AI の候補を確定・直接書く）",
+   "description": "取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した）",
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::listTicketDecisions",
    "permission": {
     "who": "read",
-    "scope": "そのチケットを見られる人",
+    "scope": "そのチケットを見られる人（見るだけの人も読める）",
     "step_up": false
    },
    "path_params": [
@@ -53805,11 +53805,15 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "scope_id",
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: TicketDecisions[], meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketDecisions[], meta: { can_write } }"
    },
    "id": "EP-316",
    "feature_id": "F-023"
@@ -53868,31 +53872,55 @@
     },
     {
      "status": 404,
-     "code": "NOT_FOUND",
+     "code": "E-PAGE-001",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "E-PAGE-001"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "チケットが無い・別の会社・消した・見えない／決めた人が同じ会社の今のメンバーでない（別の会社・外された・止められた・無い id・欄 decided_by_member_id）／元の書き込みがこのチケットの消していない書き込みでない（別のチケット・変更の 1 行・仕組みの行・消した物・無い id・欄 source_message_id）。在るかを漏らさない",
+     "ears_form": "UNWANTED: IF チケットか決めた人か元の書き込みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CONF-037",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-037"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-037"
+     ],
+     "trigger": "取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・details の文は「取引先の画面ができてから使えます」）",
+     "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）"
     },
     {
      "status": 422,
-     "code": "VALIDATION_ERROR",
+     "code": "E-VAL-042",
      "body": {
       "error": "validation_failed",
-      "details": []
+      "code": "E-VAL-042"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-042"
+     ],
+     "trigger": "決めたことが無い・空・空白だけ・制御文字だけ（E-VAL-042・欄 text）。書いた人・決めた時刻・改めた先など知らない欄を送ると 422 VALIDATION_ERROR",
+     "ears_form": "UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "守りの判定（今のメンバーか・書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"
     },
     {
      "status": 413,
@@ -53949,9 +53977,10 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/decisions が「決めたこと・理由を書く／AI の候補を確定する」として呼ばれたとき THEN Kaname は「決定と改めた先を残す」を行い 2xx を返す（自動側：スレッドから決定の候補を出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF チケットか決めた人か元の書き込みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない",
+    "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）",
+    "UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない",
+    "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -53968,7 +53997,7 @@
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::createTicketDecision",
    "permission": {
     "who": "write",
-    "scope": "そのグループの人",
+    "scope": "そのチケットを書ける人（見るだけの人は足せない・⑧）。決めた人は同じ会社の今のメンバー（既定は本人）",
     "step_up": false
    },
    "path_params": [
@@ -56950,7 +56979,7 @@
     "通知送出"
    ],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "description": "取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）",
    "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketTimeline",
    "permission": {
     "who": "read",
@@ -56966,11 +56995,17 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "filter",
+     "before_at",
+     "before_id",
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: TicketMessages[], meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketMessages[], meta: { limit, older_count, new_count, mine_count, post_count, people? } }"
    },
    "id": "EP-334",
    "feature_id": "F-010"
