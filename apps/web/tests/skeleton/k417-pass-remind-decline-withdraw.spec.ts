@@ -54,6 +54,7 @@ const MSG = {
   withdrawn: "この渡しは取り消されました", // f8-gone
   withdrawTitle: "渡しを取り消しますか？", // f8-withdraw
   reminded: "催促しました（同じ渡しは 1 日 1 回まで）", // f8-reminded の小さな知らせ
+  remindOnce: "今日はもう催促しました", // 2 回目の催促を口が断ったときの帯の知らせ（正本 E-HND-080 の文）
 } as const;
 const SECTIONS = {
   purpose: "先方に出す見積のたたき台を作って送る",
@@ -134,7 +135,8 @@ test("K417-M2-02 催促：期限切れの帯の「催促する」→ 小さな�
   const second = await again;
   expect(second.status(), "同じ渡しは 1 日 1 回まで（K-406 の 409）").toBe(409);
   expect(((await second.json()) as { code?: string }).code, "K-406 の番号（今日はもう催促しました）").toBe("E-HND-080");
-  await expect(page.getByRole("alert")).toBeVisible();
+  // Next の読み上げの部品（next-route-announcer）も role=alert なので、帯の知らせ（正本 E-HND-080 の文）に絞る
+  await expect(page.getByRole("alert").filter({ hasText: MSG.remindOnce })).toBeVisible();
   expect(await handoverNotesOf(r.mate.memberId, r.t)).toHaveLength(notes + 1);
   expect(handoverMails(r.mate.email)).toHaveLength(mails + 1);
 });
