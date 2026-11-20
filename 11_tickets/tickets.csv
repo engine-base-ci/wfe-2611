@@ -2361,3 +2361,17 @@ K-623,決定ログの D-129〜D-148 の確定済みの決定 19 件を、spec-de
 - [ ] 本物の絵 183 枚が全部、上の帯（`kn-mobile-bar` か `kn-mbar`）を持つ（D-147 の gate を手元で流して 0）
 - [ ] G65 の置き場 `scripts/ci/g65.d/K-623.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-626,spec-sync の P（プロジェクト全体の棚卸し）の残りの穴を塞ぐ：保管・証拠の層 92 件は理由つきで『見ない』と宣言し、鮮度の遅れ 4 件（apps/*/package.json）は原因（K-350.md の例の書き方を決定と読む誤読）を直し、P が緑になる,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"K-625 で台帳・断片・設定の層を結んだ後、P に残る穴は次のとおり（実測）：
+
+| 穴 | 件数 | 中身 | 判断 |
+|---|---|---|---|
+| P2 `11_tickets/_old/*` | 83 | 置き換え前のチケットの保管（KN-*・K-128 ほか）。決定ログのどの reflect_in も名指ししていない | **正しい例外**：`project_audit.ignore` に `path: 11_tickets/_old/`・理由つき（既に `apps/web/pw-reports/` などが ignore に、`06_mockup/_old/` が stale_ok に、同じ形で宣言してある） |
+| P2 `07_qa/ci-results/*.json` | 8 | CI の回の記録（機械が書く証拠）。成果物ではない | **正しい例外**：`ignore`（同じ形・理由：証拠。読むのは ci_results.py の判定） |
+| P2 `01_hearing/聞くこと_K-146.md` | 1 | K-146 の聞き取りの記録 | **K-623 が片付ける**：AD-136 の線（reflect_in が名指し・marker D-136）が入ると P2 から消える。この葉は何も足さず、試験 PAU-001 で消えたことだけを見る（二重の宣言を作らない） |
+| P3 鮮度 4 件 | 4 | `apps/api|bridge|e2e|web/package.json` が「最新の参照 < この層を名指しした決定 D-147」 | **原因は分かった（実測）**：`11_tickets/K-350.md` の 96 行が例として書いた `〔HTML コメントの決定の印〕decision: D-147 status: confirmed … reflect_in: [apps/web/components/k, …] summary: … 〔印の終わり〕` を、project_audit.py の `decisions_in` が決定の正本として読んでいる（出力の sources に `K-350.md` が出る）。`need_by_artifact` は名前を部分一致で当てるので、反映先 `apps/web/components/k` の `k` が `package.json` の字に当たる。**本物の D-147 は package.json を名指ししない**。→ **本当の食い違い（例の書き方）を直す**：K-350.md の例を `〔HTML コメント〕` で始めない書き方にする（stale_ok で隠さない）。道具（写し）の読み方の直し（決定の正本だけを読む・部分一致をやめる）は組織のスキルの穴で、PM への申し送り |
+| P6 未着手 2 件 | 2 | `apps/bridge/release/builder-debug.yml`・`kaname-bridge.json`（配布物の組み立ての出力・組み立てた PC にだけ在る） | 赤にならない（P の status は P6 を数えない）。触らない |
+
+見ないと宣言してよいのは**保管（置き換え前の記録）と検査の証拠だけ**（既にある行の『同上』の理由・組み立ての出力の置き場の行は、この葉の範囲外）で、決定ログの reflect_in が名指しした層は宣言できない（試験 PAU-004）。","- [ ] 下の表の 7 行（K626-PAU-001〜007）が緑：`python3 scripts/ci/k626_p_audit_closed_test.py`
+- [ ] `python3 scripts/spec-sync/project_audit.py --project-root . --json` の status が `pass`（P1〜P5 が全部空・P3 の 4 件が消えた）。本物の木全体のこの確かめは試験でなく、K-629 の完了の条件が見る
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-626.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
