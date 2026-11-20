@@ -983,7 +983,7 @@ RESPONSES = {
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
-    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
+    "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
