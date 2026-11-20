@@ -2182,20 +2182,14 @@
     "credentials"
    ],
    "apis": [
-    "answerCredentialLoginCheck",
-    "checkCredentialLogin",
     "deleteCredential",
-    "reportCredentialCheck",
     "resolveCredential",
     "updateCredential"
    ],
    "tests": [
     "apps/api/test/generated/delete_credentials_id.test.ts",
     "apps/api/test/generated/patch_credentials_id.test.ts",
-    "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts",
-    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts",
-    "apps/api/test/generated/post_credentials_id_login_check.test.ts",
-    "apps/api/test/generated/post_credentials_id_login_check_answer.test.ts"
+    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -16931,6 +16925,8 @@
     "A10"
    ],
    "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口と DB だけ・確かめの結果とコードを入れる所の画面は K-357 が持つ）。正の絵の組は持たない",
    "apis": [
     "checkCredentialLogin",
     "answerCredentialLoginCheck",

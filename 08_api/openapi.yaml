@@ -9826,6 +9826,66 @@ components:
       - name
       - destinations
       x-required-by: hooks
+    CredentialLoginCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswerInput:
+      type: object
+      properties:
+        request_id:
+          type: string
+          maxLength: 100
+        code:
+          type: string
+        approved:
+          type: boolean
+      additionalProperties: false
+      x-operation: answerCredentialLoginCheck
+      required:
+      - request_id
+      x-required-by: hooks
+    CredentialCheckReportInput:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - ok
+          - bad_password
+          - needs_2fa
+          - bad_code
+          - captcha
+          - unreachable
+          - no_form
+          - stopped
+          - no_answer
+          - asking
+          - waiting
+        detail:
+          type: string
+          maxLength: 400
+        request_id:
+          type: string
+          maxLength: 100
+        ask_kind:
+          type: string
+          enum:
+          - code
+          - approve
+        text:
+          type: string
+          maxLength: 300
+      additionalProperties: false
+      x-operation: reportCredentialCheck
+      required:
+      - job_id
+      - state
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -11507,6 +11567,31 @@ components:
         updated_at:
           type: string
       x-operation: createCredential
+    CredentialLoginCheck:
+      type: object
+      properties:
+        state:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswer:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+      x-operation: answerCredentialLoginCheck
+    CredentialCheckReport:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        code:
+          type: string
+          nullable: true
+      x-operation: reportCredentialCheck
     Error:
       type: object
       properties:
@@ -15130,7 +15215,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialCheckReportInput'
       responses:
         '201':
           description: 成功
@@ -15140,7 +15225,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialCheckReport'
                   meta:
                     type: object
         '401':
@@ -15162,13 +15247,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：asking・waiting で request_id が無い（VALIDATION_ERROR・欄 request_id））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - asking・waiting で request_id が無い（VALIDATION_ERROR・欄 request_id）
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15181,12 +15274,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21614,7 +21701,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginCheckInput'
       responses:
         '201':
           description: 成功
@@ -21624,7 +21711,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginCheck'
                   meta:
                     type: object
         '401':
@@ -21646,13 +21733,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-012／E-CRED-013／E-CRED-011
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21665,12 +21758,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21722,7 +21809,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginAnswerInput'
       responses:
         '201':
           description: 成功
@@ -21732,7 +21819,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginAnswer'
                   meta:
                     type: object
         '401':
@@ -21748,7 +21835,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-CRED-014
           content:
             application/json:
               schema:
@@ -21760,7 +21847,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR（契約に書けない値の決まり：code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）・NFKC と空白・ハイフンを落として空か 64 文字を超えるコード（E-VAL-009））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - code と approved の両方・どちらも無い（VALIDATION_ERROR・欄 code）
+          - NFKC と空白・ハイフンを落として空か 64 文字を超えるコード（E-VAL-009）
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21773,12 +21869,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
