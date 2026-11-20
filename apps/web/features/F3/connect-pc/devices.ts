@@ -8,6 +8,10 @@ export interface Device {
   state: "waiting" | "live" | "asleep";
   last_seen_at: string | null;
   version: string | null;
+  /** その PC の Bridge の自己診断（K-360）。並びでなければ無いのと同じ（claude-code.tsx の claudeFixOf が読む） */
+  health?: unknown;
+  /** 自己診断の報告の時刻（K-360）。眠っている PC の古い報告に添える */
+  health_at?: string | null;
 }
 export const POLL_MS = 5_000;
 

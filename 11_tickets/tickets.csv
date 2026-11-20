@@ -2090,6 +2090,16 @@ K-352,預ける口（createCredential・本人確認の取り直し・金庫に�
 - [ ] 契約の口 `createCredential` が 501 でない。生成の試験 `apps/api/test/generated/post_credentials.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-352.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替えるのは apps/api/test/step_up.test.ts の口の選び方 1 か所）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-353,上書きの口（updateCredential・値・使える場所・期限・理由・本人確認）と消す口（deleteCredential・金庫から失効・すぐ使えない）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-26,F3・預けたログイン情報,"預けたログイン情報の「上書き」の小窓で「本人確認して上書き」を押したときの口 `updateCredential`（PATCH /api/v1/credentials/:id）と、
+「消す」の確かめで「消す」を押したときの口 `deleteCredential`（DELETE /api/v1/credentials/:id）を作る（どちらも今は 501）。
+
+- 上書き：新しい値（ログイン情報なら ID とパスワード、API キー・値なら値）・使える場所・期限・説明・2 段階の種類と、なぜ上書きするか（記録に残る）を受ける。値は見せない・上書きだけ（D-125.151）。前の値は金庫で失効させ、戻せない。値を変えたら PC がもう一度ログインして確かめる（D-117・下絵の小窓の文）。保存の前に本人確認を取り直す（D-128.57「預ける・上書きは本人確認を取り直す」・K-308 の判定）。名前・層・種類は変えられない（D-125.151）
+- 消す：行を消し（論理削除・D-128.84）、すぐ使えなくし（revoked_at）、金庫の物を失効させる。確かめの途中の仕事は止める。消した後は同じ名前でもう一度預けられる（下絵の注意の文）
+
+画面は K-357。","- [ ] 下の表の 29 行（K353-API-001〜029）が緑：`apps/api/test/features/F3/credentials-update-delete.test.ts`（土台 credentials.harness.ts・K-351）
+- [ ] 契約の口 `updateCredential`・`deleteCredential` が 501 でない。生成の試験 `patch_credentials_id.test.ts`・`delete_credentials_id.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-353.json`）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-356,預けたログイン情報の画面（/settings/credentials）を口につなぐ：一覧・空・読めない・自分だけのタブ。前の画面（T-U-10）を作り替え、前からの試験を片付ける（K-56 の葉・預ける小窓は K-372）,タスク,K-56,未着手,実装,2026-11-26,F3・画面,"自分の設定 › 預けたログイン情報（`/settings/credentials`・画面 credentials）を、段 4 の部品（`features/F3/credentials/views.tsx`・K-350 が本線に入れる）と契約の口 listCredentials（K-351）につなぐ。
 この葉は **一覧（ワークスペース・自分だけのタブ）・空・読めない** の分と、前の画面の作り替え・前からの試験の片付け。預ける小窓（本人確認して保存・はじめの設定の段 4）は K-372、上書き・消す・確かめの結果・もう一度確かめる・コードを入れる は K-357。
 正の絵はモック `/dev/mock/f3/<状態>`（代表 OK answer=0a262be577b2）。前の画面（T-U-10・WizardLayout・状態 n/a/i/s/ge・462 行）は、この葉で新しい入れ物に作り替える（下の「## 依存の理由」）。","- [ ] 下の表の行（K356-UI-001・003〜009・025・027・029）が緑：`apps/web/tests/k/k356-credentials-list-add.spec.ts`
@@ -2116,6 +2126,27 @@ K-360,PC の一覧に自己診断の時刻（health_at）を足し、生きて�
 自己診断を運ぶのは今の生きている知らせ（K-57）のまま（D-090「自己診断は Kaname に返す」）。新しい表・列は作らない（`sessions.health`・`sessions.health_at` は migration 0027 からある）。","- [ ] 下の表の 13 行（K360-API-001〜013）が本物の DB の上で緑：`apps/api/test/features/F3/device-health.test.ts`
 - [ ] 契約の形の試験（apps/api/test/features/contract/k144-contract.test.ts の K144-API-010）と K-57 の口の試験（apps/api/test/features/F3/connect-pc.test.ts）が替えずに緑
 - [ ] 替えた前からの試験 apps/api/test/bridge_blocked.test.ts（CHT-37-009・生きている知らせの答えをまるごと比べる 1 か所に device_id を足した・carry で運ぶ）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-361,PC の行に Claude Code の足りない物と直し方を出す（入れる・取り直す・ログインする・ほかの端末では理由だけ・眠っている PC は報告の時刻）。出し分けは K-349 が置いた行の差す所の置き場（pc-row-extra.tsx）に書く（K-89 の葉 ③。スマホでつながない形と見た目の突き合わせは K-373 に分けた）,タスク,K-56,未着手,実装,2026-11-24,F3・画面,"古い K-89 の画面の分。「PC と使った量」（/setup/bridge・K-57 の `features/F3/connect-pc`）の「つないでいる PC」の行に、その PC の Claude Code の足りない物（入っていない・本体が落ちてきていない・ログインしていない）と直し方を出す。人はターミナルを触らない（D-091）。
+
+- **この PC の行**（この PC の Bridge の /ping の device_id と行の id が同じ・K-359）：直し方のボタン（「Claude Code を入れる」／「Claude Code を取り直す」／「ログインする」）が押せる。押すとこの PC の口（K-359）が動き、入れている途中の行・結果が行の中に出る。ログインは入口のリンクとコードの欄を出し、Bridge が `claude auth status` で確かめて「できた」と返したら区画が消える
+- **ほかの PC の行・Bridge の無い端末で開いたとき・古い Bridge**：足りない物と「Bridge が入っている PC でこの画面を開いてください」だけ。押せるボタンは出さない（D-091「どこから押せるか」）
+- **眠っている PC の古い報告**：「〈MM/DD HH:MM〉の報告」と時刻を添える（一覧の health_at・K-360）
+- **スマホ・タブレット（Bridge を入れられない端末）で開いたとき**の「＋ PC をつなぐ」を押せない形と、区画の見た目のモックとの突き合わせは、K-373 に分けた（2026-11-19 PM の決め・この葉の見込みが上限 1 時間を超えたため）
+- 行に部品を差す所（`PcList` の `renderExtra`）と行の印（`li.k-pc-row` の `data-device`）は、新しい葉 K-349 が先に入れる（2026-11-19 夜 PM の決め）。この葉は、どの行に何を出すかの出し分けの置き場 `pc-row-extra.tsx`（K-349 が中身を空で置く hook `usePcRowExtra`）に Claude Code の分を書く。並べる所 connect-pc.tsx と pc-cards.tsx は触らない。後の画面の葉も同じ hook に足す：AI が使うブラウザの欄は K-368、Bridge を入れ直す一手は K-375（K-361 → K-368 → K-375 の順に、自分の分かれ道を足す）。外す（K-363）は行の「…」に差す別の置き場 `pc-row-more.tsx` を使うので、この葉とファイルが重ならない（順が無い・並べて作れる）。口と DB だけの葉 K-364・K-365 は画面のファイルを変えない
+
+入っていてログイン済みなら何も出さない（済んだ手順を見せ続けない）。Claude Code が無くても、チケットを作る・自分で進めることはできる（D-125.142・D-125.143）。この区画に「入れるまで先へ行けない」の道は作らない。","- [ ] 下の表の 22 行（K361-UI-001〜020・025・026。元の 021〜024 は K-373 に移した）が緑：`apps/web/tests/k/k361-claude-code.spec.ts`（実 Chrome・口の差し替えは共通の道具 `apps/web/tests/k/claude-code-mock.ts`。試験ではない道具なので頭の欄は tests: でなく carry: で運ぶ。この葉が運び、K-373 も使う）
+- （この葉の外）見た目の機械の突き合わせはこの葉には無い（PM の決めで最後の葉 K-373 の K373-UI-004 に分けた）。画面の見た目が「できた」と言えるのは、K-373 の突き合わせが緑になったとき（この葉の完了では言わない）
+- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
+- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-362,PC を外す口（revokeMyDevice・本人確認の取り直し 15 分・外した PC の印を使えなくする・その PC が受け取った仕事だけ止める・セキュリティの出来事に 1 件）（K-56 の葉・古い K-91 の ①）,タスク,K-56,未着手,実装,2026-11-24,F3・PC,"つないだ本人が「この PC を外す」を押したときに呼ぶ契約の口 `revokeMyDevice`（DELETE /api/v1/bridge/devices/:id）を作る（今は 501）。
+外すと **その PC の印が次の知らせから全部の口で使えなくなる**（生きている知らせ・仕事を取りに来る・預けたログイン情報を取り出す。どれも K-57 の PC の印の解決 `app.bridge_device_check` が `revoked_at` の付いた行を引かないので 401）。
+**その PC が受け取って動いていた仕事だけ** を「止まった」にし、理由「PC を外したので止まりました」を残す。もう 1 台が受け取った仕事・まだ誰も受け取っていない待ちの仕事は変えない（D-128.155・D-128.163）。
+外すのは大事な操作なので、**直前 15 分の内に本人確認を取り直していなければ口は止める**（契約の stepUp: always・D-125.139。入口 op.ts の 3.2 が 403・STEP_UP_REQUIRED）。
+
+画面（PC の行の「この PC を外す」・確かめの小窓・取り直しの小窓）は K-363。前の画面と前の道すじ `/api/auth-ext/agent/bridge-revoke` を消すのは K-367。","- [ ] 下の表の 28 行（K362-API-001〜028）が緑：`apps/api/test/features/F3/remove-pc.test.ts`
+- [ ] 契約の口 `revokeMyDevice` が 501 でない。生成の試験 `apps/api/test/generated/delete_bridge_devices_id.test.ts` の it.todo が 0（`07_qa/test-plan/ears-elsewhere.d/K-362.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-364,AI が使うブラウザを PC ごとに選ぶ口（updateMyDevice・browser だけ）・一覧に browser・PC はアカウントのもの（守りは口と DB の関数の 2 重）（K-90 の葉 ①）,タスク,K-56,未着手,実装,2026-11-23,F3・PC,"PC をつないだ人が、**その PC で AI が使うブラウザ**を 3 つから選べる口を作る：自分の Chrome（`chrome`・既定）／Bridge 専用のブラウザ（`dedicated`）／使わない（`off`）（D-119・D-120）。
 契約の口 `updateMyDevice`（PATCH /api/v1/bridge/devices/:id・今は 501）を、`{ browser }` だけを受ける口にする。名前・いつも使う PC は段 4 では作らない（代表の答え answer=0a262be577b2 ③・F3 の後のチケットで同じ口に欄を足す）。
