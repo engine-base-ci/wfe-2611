@@ -99,17 +99,15 @@ export function toView(a: MembersAnswer): MembersView {
   const groups = a.groups.map((g, i): MemberGroup => {
     const invited = a.invitations
       .filter((v) => v.scope_id === g.id)
-      .map(
-        (v): MemberRow => ({
-          id: v.id,
-          name: "",
-          email: v.email,
-          role: ROLE_LABEL[v.role] ?? v.role,
-          state: "",
-          stateTone: "none",
-          invitedLeft: `${v.left_days} 日`,
-        }),
-      );
+      .map((v): MemberRow => ({
+        id: v.id,
+        name: "",
+        email: v.email,
+        role: ROLE_LABEL[v.role] ?? v.role,
+        state: "",
+        stateTone: "none",
+        invitedLeft: `${v.left_days} 日`,
+      }));
     return { code: g.code, name: g.name, tone: TONES[i % TONES.length]!, rows: [...g.members.map(toRow), ...invited] };
   });
   return { groups, scopes: a.groups.map((g) => ({ id: g.id, name: g.name })), count: a.count };

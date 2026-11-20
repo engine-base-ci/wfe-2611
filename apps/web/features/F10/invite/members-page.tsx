@@ -155,8 +155,8 @@ export function MembersPage() {
           : await call("createInvitationLink", { body: req.body, screenId: SCREEN });
       if (r.ok) {
         pending.current = null;
-        if (req.kind === "link") return setLink((r.data as { url?: string }).url ?? null);
-        const sent = ((r.data as { invitations?: Sent[] }).invitations ?? []) as Sent[];
+        if (req.kind === "link") return setLink((r.data as unknown as { url?: string }).url ?? null);
+        const sent = (r.data as unknown as { invitations?: Sent[] }).invitations ?? [];
         setOpen(false);
         const failed = failedText(sent);
         notify(sentText(sent, req.body.emails.length), failed ? { description: failed } : {});
@@ -215,14 +215,12 @@ export function MembersPage() {
         <>
           <WsHead name={company} initial={company.slice(0, 1)} />
           <div className="k-me-wrap">
-            <WsSub {...(view ? { members: view.count } : {})} />
+            <WsSub members={view?.count ?? 0} />
             <MembersBody
               groups={view?.groups ?? []}
               inviteDisabled={!view}
               onInvite={openDialog}
-              {...(members.isError
-                ? { failure: { text: LOAD_FAILED, onRetry: () => void members.refetch() } }
-                : {})}
+              {...(members.isError ? { failure: { text: LOAD_FAILED, onRetry: () => void members.refetch() } } : {})}
             />
           </div>
         </>

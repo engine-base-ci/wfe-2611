@@ -47,7 +47,7 @@ const WS_ITEMS: SubItem[] = [
 ];
 
 /** ワークスペースの管理の第 2 ナビ（自分の設定の第 2 ナビ MeSub と同じ形・クラス。メンバーのほかは F9・F10 の残りなので押せない） */
-export function WsSub({ members }: { members?: number }) {
+export function WsSub({ members }: { members: number }) {
   return (
     <aside aria-label="ワークスペースの管理の中" className="k-me-sub">
       <div className="k-me-sub-m">
@@ -72,7 +72,7 @@ export function WsSub({ members }: { members?: number }) {
               <Icon size={16} aria-hidden="true" />
             </span>
             <span className="k-me-sub-t">{it.label}</span>
-            {it.key === "members" && members !== undefined ? <span className="k-inv-sub-count">{members}</span> : null}
+            {it.key === "members" ? <span className="k-inv-sub-count">{members}</span> : null}
           </>
         );
         return it.key === "members" ? (

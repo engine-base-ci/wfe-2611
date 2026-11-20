@@ -1187,6 +1187,15 @@
   },
   {
    "paths": [
+    "apps/web/features/F10/invite/**",
+    "apps/web/app/(work)/members/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k420-members-invite.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitation-link.ts",
     "apps/api/src/features/F10/invite/link.ts",
     "apps/api/src/features/F2/invitations/**",
