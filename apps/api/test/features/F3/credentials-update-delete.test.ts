@@ -393,13 +393,15 @@ describe("K-353 上書きの口", () => {
     // 2 本とも前の参照を読み、金庫に置き終わるまで、行の錠で書き込みを止めてから放す（同時を作る）。
     //   錠が無いと、2 本目が入口で新しい接続を開く間に 1 本目が書き終わり、正しく順番の 2 回（200・200）になる回がある
     const lock = await h.admin.connect();
+    const put = h.vault.put.bind(h.vault);
+    let open = false;
     let rs: Response[];
     try {
       await lock.query("begin");
+      open = true;
       await lock.query("select 1 from credentials where id = $1 for update", [c.id]);
       let release!: () => void;
       const bothPlaced = new Promise<void>((r) => (release = r));
-      const put = h.vault.put.bind(h.vault);
       let n = 0;
       h.vault.put = async (ref, s) => {
         await put(ref, s);
@@ -409,11 +411,14 @@ describe("K-353 上書きの口", () => {
         patch(me, c.id, { value: K353_RACE_VALUE_1 }),
         patch(me, c.id, { value: K353_RACE_VALUE_2 }),
       ]);
-      await bothPlaced;
-      h.vault.put = put;
+      // 2 本とも置く前に答えが返った（置く前に書く誤った実装など）ときも固まらず、下の期待で落とす
+      await Promise.race([bothPlaced, both]);
       await lock.query("commit");
+      open = false;
       rs = await both;
     } finally {
+      h.vault.put = put;
+      if (open) await lock.query("rollback");
       lock.release();
     }
     expect(rs.map((r) => r.status).sort()).toEqual([200, 409]);
