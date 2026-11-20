@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:9f9df27a0139fa5c
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:16e73ef9c3e55b81
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -429,7 +429,7 @@ export type InvitationResendResult = { result?: string };
 export type Credential = { id?: string; name?: string; description?: string | null; layer?: string; kind?: string; two_factor?: string; destinations?: string[]; expires_on?: string | null; use_count?: number; last_used_at?: string | null; login_check?: Record<string, unknown>; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type CredentialDeleted = { id?: string };
 export type DeviceBrowser = { id?: string; browser?: string };
-export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
+export type UpdateConversationInput = { title?: string; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 
 export const ENDPOINTS = [

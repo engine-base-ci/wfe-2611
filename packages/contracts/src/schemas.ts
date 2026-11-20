@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:9f9df27a0139fa5c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:16e73ef9c3e55b81
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -4296,7 +4296,7 @@ export const DeviceBrowser = z.strictObject({
   browser: z.string().optional(),
 });
 export const UpdateConversationInput = z.strictObject({
-  title: z.string().nullable().optional(),
+  title: z.string().optional(),
   participant_member_ids: z.array(z.uuid()).nullable().optional(),
   area: z.string().nullable().optional(),
   subject_type: z.string().nullable().optional(),

@@ -7,7 +7,7 @@ NO_REQUIRED_INPUTS = {
 VALUE_RANGES = {
     "updateCredential": {
         "two_factor": {"enum": ["none", "totp", "sms", "email", "push"]},
-        "destinations": {"minItems": 1, "maxItems": 20},
+        "destinations": {"minItems": 1, "maxItems": 20, "items": {"type": "string", "pattern": "^(?!(?:\\*\\.)?(?:co\\.jp|ne\\.jp|or\\.jp|ac\\.jp|ad\\.jp|ed\\.jp|go\\.jp|gr\\.jp|lg\\.jp|co\\.uk|org\\.uk|ac\\.uk|gov\\.uk|com\\.au|net\\.au|org\\.au|co\\.nz|co\\.kr|com\\.cn|com\\.tw|com\\.sg|com\\.br)$)(?!.*xn--)(?:\\*\\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{1,62}$"}},   # features/F3/credentials/input.ts の DESTINATION_RE と PUBLIC_SUFFIXES（小文字の名前だけ。URL・大文字・全角は口が直してから確かめる）
     },
 }
 UNEXPRESSIBLE_422 = {
