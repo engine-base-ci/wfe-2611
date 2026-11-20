@@ -184,6 +184,13 @@ SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.output
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
                f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
                "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
+# 画面の組み立ての型の確かめ（K-631）：チケットの CI が画面の試験を後回しにする回（web=defer）でも、next build が見る型（route の型＋tsc）は流す。
+#   web=run の回は web の組の next build（build:test）が同じ型を見るので流さない（二重にしない）。出す前の手元の検査は web の入力を渡さない（空）ので、
+#   ここ（static）で流れる。DB もブラウザも要らない軽い段（11 秒ほど）。typegen の出力先は build:test と同じ .next-prod：
+#   tsconfig は .next を除き .next-prod/types だけを数えるので、揃えないと Link の型（link.d.ts）とページの型（validator.ts）が tsc に入らない。G0（id: scope）より後ろに置く
+WEB_TYPES_STEP = ('      - name: "画面の型の確かめ（next typegen ＋ tsc・web=defer の回も画面の組み立ての型は流す。web=run の回は web の組の next build が同じ型を見る・K-631）"\n'
+                  "        if: ${{ !cancelled() && steps.scope.outputs.web == 'true' && inputs.web != 'run' }}\n"
+                  "        run: NEXT_DIST_DIR=.next-prod pnpm --filter @kaname/web exec next typegen && pnpm --filter @kaname/web exec tsc --noEmit\n")
 def unit_if(i): return f"!cancelled() && {SO}.unit == 'true'" + (f" && fromJSON({SO}.unit_shards) >= {i}" if i > 1 else "")
 ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in (4, 6, 12) else ("e2e" if g["id"] == 15 else "static"))} for g in FG["merge_gates"]] + SPEC_GATES
 ALL_GATES = [{**g, "script": UNIT_MERGE, "env": UNIT_ENV + f"          CI_FULL: ${{{{ {SO}.full }}}}\n", "name": g["name"] + f"（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）"} if g["id"] == 3 else g for g in ALL_GATES]
@@ -307,7 +314,7 @@ jobs:
   static:
     runs-on: [self-hosted, linux-vm]
 {SCOPE_OUTPUTS}    steps:
-{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}
+{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
   database:
     runs-on: [self-hosted, linux-vm]
     needs: [static]
