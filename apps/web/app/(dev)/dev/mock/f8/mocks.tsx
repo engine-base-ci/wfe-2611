@@ -727,6 +727,8 @@ const INVITE_VALUES = {
   message: "営業の問い合わせをいっしょに回してもらいます",
 };
 
+// 第 2 ナビの「メンバー N」の N は人の数（2 つのグループに入っている人は 1 人・パネルの行の総数ではない・PM の決め 2026-11-20）。
+//   今のモックでは 5（招いた後の inv-sent は 6）
 function Members({
   theme,
   invited = false,
@@ -755,7 +757,7 @@ function Members({
     >
       <WsHead name="株式会社ENGINE BASE" initial="E" />
       <div className="k-me-wrap">
-        <WsSub members={groups.reduce((n, g) => n + g.rows.length, 0)} />
+        <WsSub members={new Set(groups.flatMap((g) => g.rows.map((r) => r.email))).size} />
         <MembersBody groups={groups} />
       </div>
     </Frame>
