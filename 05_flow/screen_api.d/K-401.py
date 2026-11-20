@@ -34,23 +34,23 @@ VALUE_RANGES = {
     "answerTicketHandover": {"decision": {"enum": ["accept", "decline"]}, "decline_reason": {"pattern": _NO_NUL}, "switch": _SWITCH},
 }
 
-# 欄をまたぐ形の決まり（口が 422 で断る組み合わせ）。A なら B ＝ anyOf[A でない, B]（OpenAPI 3.0 に if/then は無い）
+# 形全体の決まり（口が 422 で断る欄の組み合わせ・K-355 の INPUT_RULES の書き方）。A なら B ＝ anyOf[A でない, B]（OpenAPI 3.0 に if/then は無い）
 _NULL = {"nullable": True, "enum": [None]}
 def _str(f): return {"required": [f], "properties": {f: {"type": "string"}}}   # 欄があって null でない
 def _kind(k): return {"required": ["kind"], "properties": {"kind": {"enum": [k]}}}
 def _implies(a, b): return {"anyOf": [{"not": a}, b]}
 INPUT_RULES = {
-    "createTicketHandover": [
+    "createTicketHandover": {"allOf": [
         {"not": {"allOf": [_str("to_member_id"), _str("to_scope_id")]}},                                  # 人とグループの両方は選べない
         _implies(_kind("offer"), {"properties": {"to_member_id": _NULL, "to_scope_id": _NULL, "reply_due": _NULL}}),   # 申し出は相手も期限も付けない
         _implies(_kind("pass"), {"properties": {"to_scope_id": _NULL}}),                                  # 引き継いでもらうは人を選ぶ
         _implies(_str("replaces"), _kind("pass")),                                                        # 別の人にするのは引き継いでもらうだけ
         _implies({"anyOf": [_kind("pass"), _kind("distribute")]}, {"anyOf": [_str("to_member_id"), _str("to_scope_id")]}),   # 相手かグループが要る
-    ],
-    "answerTicketHandover": [
+    ]},
+    "answerTicketHandover": {"allOf": [
         _implies({"required": ["decision"], "properties": {"decision": {"enum": ["decline"]}},},
                  {"required": ["decline_reason"], "properties": {"decline_reason": {"type": "string", "pattern": _VISIBLE}}}),   # 断るは理由が要る
-    ],
+    ]},
 }
 
 QUERIES = {

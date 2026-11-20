@@ -214,7 +214,15 @@ def qparams(names, table, op=None):
 #   同じ形を必須か値域の違う口と分け合っているなら、その口に自分の形 <operationId の頭を大文字>Input を作る（欄は同じ・知らない項目は許さない）。
 #   写しは copy.deepcopy（同じ辞書を 2 か所に置くと YAML の別名が出て、contract.mjs が欄を読めない。表の入力の欄は答えの形と辞書を分け合っている）
 _REQ = getattr(_sa, "REQUIRED_INPUTS", {}); _RANGES = getattr(_sa, "VALUE_RANGES", {})
-_RULES = getattr(_sa, "INPUT_RULES", {})   # 欄をまたぐ形の決まり（K-401）：その口の入力の形の allOf に書く（JSON Schema のまま・欄の値域とは別）
+# 形全体の決まり（INPUT_RULES・K-355）：oneOf／anyOf／allOf／not だけを、その口の入力の形にそのまま重ねる。中の欄の名前は形に在る物だけ
+_RULES = getattr(_sa, "INPUT_RULES", {}); _RULE_WORDS = {"oneOf", "anyOf", "allOf", "not"}
+def _rule_fields(node):
+    """決まりの中で使う欄の名前（properties の鍵・required の並び）を、入れ子まで全部出す"""
+    if isinstance(node, list):
+        for x in node: yield from _rule_fields(x)
+    elif isinstance(node, dict):
+        yield from node.get("properties", {}); yield from node.get("required", [])
+        for v in node.values(): yield from _rule_fields(v)
 def _in_name(e):
     tname = e.get("table") or e["path"].split("/")[3]
     return getattr(_sa, "INPUTS", {}).get(e.get("operation_id"), ("".join(w.capitalize() for w in tname.split("_")) + "Input",))[0]
@@ -222,7 +230,7 @@ _body_ops = [(e["implementation_path"].split("::")[1], _in_name(e)) for e in end
 _in_of = dict(_body_ops)
 for _op in list(_REQ) + list(_RANGES) + list(_RULES):
     if _op not in _in_of: raise SystemExit(f"05_flow/screen_api.py の REQUIRED_INPUTS・VALUE_RANGES・INPUT_RULES の口 {_op} が、体を受ける口に無い")
-_sig = lambda o: json.dumps([_REQ.get(o, []), _RANGES.get(o, {}), _RULES.get(o, [])], ensure_ascii=False, sort_keys=True)
+_sig = lambda o: json.dumps([_REQ.get(o, []), _RANGES.get(o, {}), _RULES.get(o, {})], ensure_ascii=False, sort_keys=True)
 _EMPTY = _sig("")
 for _name in dict.fromkeys(n for _, n in _body_ops):
     _sharers = [o for o, n in _body_ops if n == _name]
@@ -237,8 +245,12 @@ for _name in dict.fromkeys(n for _, n in _body_ops):
         for _k in _REQ.get(_op, []) + list(_RANGES.get(_op, {})):
             if _k not in sc["properties"]: raise SystemExit(f"{_op} の欄 {_k} が入力の形 {_own} に無い")
         if _op in _REQ: sc["required"] = list(_REQ[_op]); sc["x-required-by"] = "hooks"   # 無いときの答えは口の振る舞い（入口の zod は .optional() のまま）
+        _rules = _RULES.get(_op, {})
+        if set(_rules) - _RULE_WORDS: raise SystemExit(f"{_op} の INPUT_RULES に使えない言葉 {sorted(set(_rules) - _RULE_WORDS)}（oneOf／anyOf／allOf／not だけ）")
+        for _k in _rule_fields(_rules):
+            if _k not in sc["properties"]: raise SystemExit(f"{_op} の INPUT_RULES の欄 {_k} が入力の形 {_own} に無い")
+        sc.update(copy.deepcopy(_rules))
         for _k, _words in _RANGES.get(_op, {}).items(): sc["properties"][_k] = {**copy.deepcopy(sc["properties"][_k]), **copy.deepcopy(_words)}
-        if _op in _RULES: sc["allOf"] = copy.deepcopy(_RULES[_op])
 paths = {}
 for e in endpoints:
     tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}

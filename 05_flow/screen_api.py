@@ -66,8 +66,8 @@ SCREEN_API = {
         ("GET", "/tickets/:id/decisions", "A108", "ticket_decisions", "listTicketDecisions", []),
         ("POST", "/tickets/:id/decisions", "A108", "ticket_decisions", "createTicketDecision", []),
         ("PATCH", "/ticket_decisions/:id", "A108", "ticket_decisions", "updateTicketDecision", ["policies"]),
-        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", [T, "notifications", "audit_events"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
+        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", ["notifications"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T]),
         # つながり・成果物・検収
         ("GET", "/tickets/:id/links", "A103", "ticket_links", "listTicketLinks", []),
         ("POST", "/tickets/:id/links", "A103", "ticket_links", "createTicketLink", []),
@@ -105,7 +105,7 @@ SCREEN_API = {
         ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", ["checks"]),
         ("POST", "/approvals/bulk", "A15", "approvals", "bulkApprove", ["action_runs", "audit_events"]),
         ("GET", "/approvals/history", "A15", "approvals", "listApprovalHistory", ["tickets"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", ["tickets"]),
     ],
     # ---------------------------------------------------------------- 分身の部屋（08_api/phase1/03_分身の部屋.md）
     "clone-chat": [
@@ -950,8 +950,9 @@ VALUE_RANGES = {
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
-# 欄をまたぐ形の決まり（口が 422 で断る欄の組み合わせ）。その口の入力の形の allOf に JSON Schema のまま書く（作り手 build_api.py の INPUT_RULES・K-401）
-INPUT_RULES: dict[str, list] = {}
+# 形全体の決まり（欄をまたぐ決まり・K-355）：operationId → JSON Schema の言葉（oneOf／anyOf／allOf／not だけ）。その口の入力の形にそのまま重ねる。
+#   中で使う欄の名前（properties・required）は入力の形に在る物だけ（作り手 05_flow/build_api.py が確かめて止める）。チケットごとの分は screen_api.d に書く
+INPUT_RULES: dict[str, dict] = {}
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
@@ -1232,8 +1233,8 @@ PERMS = {
     "listTicketDecisions": ("read", "そのチケットを見られる人", False),
     "createTicketDecision": ("write", "そのグループの人", False),
     "updateTicketDecision": ("write", "そのグループの人。取引先のルールにするのは取引先の担当とマネージャー", False),
-    "createTicketHandover": ("write", "渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・取引先・止まっている人はできない（D-148.3・D-148.18）", False),
-    "answerTicketHandover": ("recipient", "答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）", False),
+    "createTicketHandover": ("write", "渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者", False),
+    "answerTicketHandover": ("recipient", "渡された・判断を仰がれた相手だけ", False),
     "listTicketLinks": ("read", "両方のチケットを見られる人（片方が見えないときは番号だけ）", False),
     "createTicketLink": ("write", "両方のチケットに書ける人", False),
     "deleteTicketLink": ("write", "そのグループの人", False),
