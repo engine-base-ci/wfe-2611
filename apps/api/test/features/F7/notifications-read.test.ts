@@ -8,7 +8,7 @@
 //     200 { data: Item }（K-461 の一覧の 1 件と同じ形・鍵 12 個）。自分宛てで、一覧に出る行（種類が表にあり・チケットが見える・inapp・消していない）だけ。
 //     それ以外（別の人宛て・別の会社・無い id・メールの印の行・消した行・知らない種類・見えないチケット）は 404 E-NTF-010（有ることも漏らさない）
 //   readAllNotifications POST /api/v1/notifications/read-all  体 {}（strict・ほかの欄は 422）
-//     200 { data: { read: <この呼び出しで読んだことにした行の数> } }。対象は「一覧に出る未読」だけ（自分宛て）。何度呼んでも同じ（2 回目は read 0）
+//     201 { data: { read: <この呼び出しで読んだことにした行の数> } }（POST の成功は契約で 201・作り手 build_api.py が固定）。対象は「一覧に出る未読」だけ（自分宛て）。何度呼んでも同じ（2 回目は read 0）
 //   どちらも本人・Cache-Control: private, no-store・書くのは read_at だけ（sent_at・failed_at・updated_by 以外の列は変えない）
 // 守りは 2 層：行の守り（notifications_self_read・notifications_self_only_write）と、口の文の条件（member_id が自分）。
 import { describe, expect, it } from "vitest";
@@ -238,7 +238,7 @@ describe("K-462 既読にする・全部既読にする", () => {
     expect((await rowOf(id))!["member_id"]).toBe(p.id);
   });
 
-  it("K462-API-008 全部既読：200 で { read: 件数 }。自分の未読が全部 read_at を持ち、別の人の行・別の会社の行・メールの印の行は変わらない", async () => {
+  it("K462-API-008 全部既読：201 で { read: 件数 }。自分の未読が全部 read_at を持ち、別の人の行・別の会社の行・メールの印の行は変わらない", async () => {
     await ready();
     const p = await member("読む人");
     const b = await member("別の人");
@@ -251,7 +251,7 @@ describe("K-462 既読にする・全部既読にする", () => {
     const mail = await notice(p, { kind: "bridge.connected", channel: "email", payload: bridge() });
     const theirs = await notice(outsider, { kind: "bridge.connected", payload: bridge() });
     const r = await readAll(p);
-    expect(r.status, await r.clone().text()).toBe(200);
+    expect(r.status, await r.clone().text()).toBe(201);
     expect(((await json(r))["data"] as { read: number }).read).toBe(3);
     for (const id of mine) expect(await readAt(id), id).not.toBeNull();
     for (const id of [yours, mail, theirs]) expect(await readAt(id), id).toBeNull();
@@ -259,19 +259,19 @@ describe("K-462 既読にする・全部既読にする", () => {
     expect((await pageOf(p)).data).toHaveLength(3);
   });
 
-  it("K462-API-009 何度呼んでも同じ：2 回目は { read: 0 }・読んだ時刻は変わらない。最初から 1 件も無い人も 200 で { read: 0 }", async () => {
+  it("K462-API-009 何度呼んでも同じ：2 回目は { read: 0 }・読んだ時刻は変わらない。最初から 1 件も無い人も 201 で { read: 0 }", async () => {
     await ready();
     const p = await member("読む人");
     const id = await notice(p, { kind: "bridge.connected", payload: bridge() });
     expect(((await json(await readAll(p)))["data"] as { read: number }).read).toBe(1);
     const first = await readAt(id);
     const again = await readAll(p);
-    expect(again.status).toBe(200);
+    expect(again.status).toBe(201);
     expect(((await json(again))["data"] as { read: number }).read).toBe(0);
     expect(await readAt(id)).toEqual(first);
     const empty = await member("何も無い人");
     const r = await readAll(empty);
-    expect(r.status).toBe(200);
+    expect(r.status).toBe(201);
     expect(((await json(r))["data"] as { read: number }).read).toBe(0);
   });
 
@@ -317,6 +317,7 @@ describe("K-462 既読にする・全部既読にする", () => {
     const q = await member("読む人 2");
     for (let i = 1; i <= 4; i++) await notice(q, { kind: "bridge.connected", payload: bridge(`PC ${i}`), ageMin: i });
     const [x, y] = await Promise.all([readAll(q), readAll(q)]);
+    expect([x.status, y.status]).toEqual([201, 201]);
     const sum = ((await json(x))["data"] as { read: number }).read + ((await json(y))["data"] as { read: number }).read;
     expect(sum).toBe(4);
   });
@@ -340,7 +341,7 @@ describe("K-462 既読にする・全部既読にする", () => {
       expect((await markRead(p, id)).status).toBe(200);
       const r1 = await markRead(p, id);
       expect(r1.status).toBe(429);
-      expect((await readAll(p)).status).toBe(200);
+      expect((await readAll(p)).status).toBe(201);
       const r2 = await readAll(p);
       expect(r2.status).toBe(429);
       for (const r of [r1, r2]) {
@@ -357,8 +358,11 @@ describe("K-462 既読にする・全部既読にする", () => {
     await ready();
     const p = await member("読む人");
     const id = await notice(p, { kind: "bridge.connected", payload: bridge() });
-    for (const r of [await markRead(p, id), await readAll(p)]) {
-      expect(r.status).toBe(200);
+    for (const [r, want] of [
+      [await markRead(p, id), 200],
+      [await readAll(p), 201],
+    ] as const) {
+      expect(r.status).toBe(want);
       const cc = r.headers.get("cache-control") ?? "";
       expect(cc).toContain("private");
       expect(cc).toContain("no-store");
@@ -374,7 +378,7 @@ describe("K-462 既読にする・全部既読にする", () => {
     await loosened(async () => {
       const r = await markRead(a, yours);
       expect(r.status).toBe(404);
-      expect((await readAll(a)).status).toBe(200);
+      expect((await readAll(a)).status).toBe(201);
     });
     expect(await readAt(yours)).toBeNull();
     expect(await readAt(mine)).not.toBeNull();
@@ -418,7 +422,7 @@ describe("K-462 既読にする・全部既読にする", () => {
       Number((await one<{ n: string }>("select count(*) as n from audit_events where tenant_id = $1", [p.tenantId])).n);
     const before = await n();
     expect((await markRead(p, id)).status).toBe(200);
-    expect((await readAll(p)).status).toBe(200);
+    expect((await readAll(p)).status).toBe(201);
     expect(await n()).toBe(before);
   });
   it("K462-API-020 取引先の人・運営の人は 403：どちらの口も会社の人だけ。行は変わらない", async () => {
