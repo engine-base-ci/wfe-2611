@@ -2357,7 +2357,7 @@ K-472,一覧の絞り込みの受け皿（13 欄を欄ごとの表にして 1 �
 - 画面は K-478・K-479。期限・開始日・親・並び・見せる欄は K-473、数の札は K-474
 - あわせて、**前からある一覧の 422 のうち契約に書けなかった 2 つを、契約に書ける形に直す**（PM 2026-11-21 05:30・控え帳 2026-11-20 16:51「422 は契約に書ける形の誤りだけ」）：①探す言葉 `q` は「送られたままの文字で 100 文字まで」（契約の `maxLength: 100`・そろえた後の数えをやめる）②続きの鍵（cursor）は形（base64url・200 字）に合うのに読めないとき 422 でなく **409・E-LST-001**（欄なし・「最初から読み直してください」）。これで listTickets に契約に書けず残る 422 は 0 になる","- [ ] 下の表の 17 行（K472-API-001〜017）が緑：`apps/api/test/features/F7/list-filters.test.ts`（土台 `list.harness.ts`）
 - [ ] 運ぶ前からの試験 `apps/api/test/features/F4/ticket-list.test.ts`（K92-API-001・009・024 を替えた版）が緑（ほかの K92 の行は替えずに緑）
-- [ ] 共有の試験の回で K144-API-872〜875 が緑（`k144.d/K-472.ts`）
+- [ ] 共有の試験の回で K144-API-872〜876 が緑（`k144.d/K-472.ts`）
 - [ ] 契約（`screen_api.d/K-472.py`）で listTickets の問い合わせが view・q・scope_id・kind_id・stage_id・assignee_id・client_id・done（＋ cursor・limit）になり、view は `enum: [""mine"", ""all""]`・done は `enum: [""true"", ""false""]`・q は `maxLength: 100` を契約の問い合わせの欄に持つ（`QUERY_RANGES`・K-468 が作る仕組み）。cursor の `pattern`（base64url・200 字）は作り手が持つ。契約の 4xx に 409（E-LST-001）が入る。生成物の差が無い
 - [ ] **契約に書けない決まりの例外の表を使わない**：`screen_api.d/K-472.py` にその表の行が無く、契約の `listTickets` の 422 に `x-unexpressible-422` の印が付かない。`scripts/ci/contract_shape_test.py` の K144_SHAPE_028（K-468 が足す）・K144_SHAPE_024 が緑。`scripts/ci/schemathesis.toml` から listTickets の例外（422 を受け付けとして数える行）を消しても契約の fuzz（G36）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"

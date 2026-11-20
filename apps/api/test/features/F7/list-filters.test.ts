@@ -276,8 +276,12 @@ describe("K-472 一覧の絞り込み：人・段・種別・取引先・完了"
     for (const over of ["あ".repeat(101), ` ${"あ".repeat(100)}`, `${"あ".repeat(100)} `]) {
       const r = await list(f, w.me, `view=all&q=${q(over)}`);
       expect(r.status, over).toBe(422);
-      expect(((await r.json()) as { code?: string }).code, over).toBe("E-VAL-017");
-      expect(await fieldsOf(r), over).toContain("q");
+      const body = (await r.json()) as { code?: string; details?: { field: string }[] };
+      expect(body.code, over).toBe("E-VAL-017");
+      expect(
+        (body.details ?? []).map((d) => d.field),
+        over,
+      ).toContain("q");
     }
     expect(await status(`${" ".repeat(10)}${"あ".repeat(90)}`)).toBe(200);
     expect(await status("㌔".repeat(60))).toBe(200);
