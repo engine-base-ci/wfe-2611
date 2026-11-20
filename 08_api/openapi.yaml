@@ -40192,7 +40192,7 @@ paths:
   /api/v1/tickets:
     get:
       operationId: listTickets
-      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）
+      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了で絞る・期限切れの印）
       tags:
       - tickets
       x-acts:
@@ -40226,17 +40226,53 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - mine
+          - all
       - name: q
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          maxLength: 100
       - name: scope_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
           format: uuid
+      - name: kind_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: stage_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: assignee_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: client_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: done
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -40282,6 +40318,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
           content:
             application/json:
               schema:

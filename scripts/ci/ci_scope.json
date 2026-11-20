@@ -1195,6 +1195,14 @@
    "tests": [
     "apps/api/test/generated/get_search.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/list-filters.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets.test.ts"
+   ]
   }
  ],
  "reads_ok": {
