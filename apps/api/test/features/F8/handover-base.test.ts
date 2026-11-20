@@ -1,7 +1,7 @@
 // K-401「渡しの口の置き場と、渡す前の下見の口」の単体の試験（口・本物の DB）。名前の頭の行 ID（K401-…）は 11_tickets/K-401.md の表に 1 対 1。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。土台は ./handover.harness.ts。
 // この葉の口は、種類ごとのファイルの空の形（まだ使えません）を見ない：振り分けの前で止まる行（入力・見える・権限・止まり・相手・切り替え）と、
-//   上へ上げる（段 9 ではずっと 422・E-HND-001）だけを見る（空の形を見ると、後ろの葉 K-402〜K-410 が入ったときに赤になる）。
+//   上へ上げる（渡す口は契約の外の種類で 422・答える口は今の状態ではできないで 409・E-HND-001）だけを見る（空の形を見ると、後ろの葉 K-402〜K-410 が入ったときに赤になる）。
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { setupHandover, msg, type World } from "./handover.harness.js";
@@ -317,6 +317,10 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect((await h.create(w.boss, t.id, h.passBody(w.sato, { state: "accepted" }))).status).toBe(422);
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: "明日" })), "reply_due");
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: "2026-11-23" })), "reply_due");
+    await shape422(
+      await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: "2099-11-23T18:00+09:00" })),
+      "reply_due",
+    ); // 秒が無い形は契約（date-time）と同じく受けない
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { owner: true } })), "switch");
     await shape422(await h.create(w.boss, t.id, h.passBody(w.sato, { switch: { children: "yes" } })), "switch");
     await shape422(
@@ -347,17 +351,14 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
     expect(await handoverCount(w)).toBe(0);
   });
 
-  it("K401-API-014 返事の期限が今より前は 422・E-HND-008", async () => {
+  it("K401-API-014 返事の期限が今より前は 409・E-HND-008（時刻で決まる断り・欄なし）", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     for (const due of [future(-1), future(-60 * 24)]) {
-      const j = await refused(
-        await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: due })),
-        422,
-        "E-HND-008",
-        "reply_due",
-      );
+      const j = await refused(await h.create(w.boss, t.id, h.passBody(w.sato, { reply_due: due })), 409, "E-HND-008");
+      expect(j["details"], "409 に欄・details を付けない").toBeUndefined();
+      expect(j["field"], "409 に欄・details を付けない").toBeUndefined();
       expect(j["message"]).toBe("返事の期限は今より後にしてください");
     }
     expect(await handoverCount(w)).toBe(0);
@@ -516,12 +517,15 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 
-  it("K401-API-024 上へ上げるの渡し（kind escalate）に答えると 422・E-HND-001。行は待っているまま", async () => {
+  it("K401-API-024 上へ上げるの渡し（kind escalate）に答えると 409・E-HND-001。行は待っているまま", async () => {
     await h.ready();
     const w = await h.world();
     const t = await h.ticket(w);
     const hid = await h.waiting(w, { ticketId: t.id, kind: "escalate", to: w.mgr });
-    await refused(await h.answer(w.mgr, hid, { decision: "accept" }), 422, "E-HND-001");
+    const j = await refused(await h.answer(w.mgr, hid, { decision: "accept" }), 409, "E-HND-001");
+    expect(j["message"]).toBe(msg("E-HND-001"));
+    expect(j["details"], "409 に欄・details を付けない").toBeUndefined();
+    expect(j["field"], "409 に欄・details を付けない").toBeUndefined();
     expect((await h.handover(hid))!["state"]).toBe("waiting");
   });
 });
