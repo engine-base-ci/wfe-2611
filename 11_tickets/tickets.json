@@ -17421,9 +17421,11 @@
    "affects": [
     "@kaname/api",
     "@kaname/bridge",
-    "@kaname/contracts"
+    "@kaname/contracts",
+    "@kaname/db"
    ],
    "ci_wide": [
+    "db",
     "shared"
    ],
    "changes": [
