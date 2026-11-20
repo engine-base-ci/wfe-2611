@@ -34,9 +34,24 @@ begin
                 and j.state_id in ('queued', 'running', 'asking') and j.deleted_at is null) then
     return jsonb_build_object('error', 'busy');
   end if;
-  -- 台帳の判定は、その会社の行か運営の共通の行だけを見る（ほかの会社が足した台帳の行に、名前の重なりで結ばれても効かせない）
-  select s.automation_verdict_id into v_verdict from service_registry s
-   where s.id = c.service_id and s.deleted_at is null and (s.tenant_id = c.tenant_id or s.tenant_id = app.ops_tenant_id());
+  -- 台帳の判定は、その会社の行か運営の共通の行だけを見る（ほかの会社が足した台帳の行に、名前の重なりで結ばれても効かせない）。
+  --   使える場所を持つ物は、今の使える場所（*. を外した名前とその下の名前）で引く。上書きで使える場所を替えても service_id・service_domain は
+  --   預けた時のままなので、それでは前のサービスで判定してしまう（K-353 からの知らせ）。使える場所の 1 つでも禁止・銀行に当たれば試さない。
+  --   使える場所を持たない前の道すじの物だけ、預けた時に結んだ service_id で引く（K-358 まで）
+  if cardinality(coalesce(c.destinations, '{}'::text[])) > 0 then
+    select x.verdict into v_verdict
+      from (select s.automation_verdict_id as verdict,
+                   lower(regexp_replace(regexp_replace(coalesce(s.domain, ''), '^[a-z]+://', '', 'i'), '^www\.|/.*$', '', 'g')) as dom
+              from service_registry s
+             where s.deleted_at is null and (s.tenant_id = c.tenant_id or s.tenant_id = app.ops_tenant_id())
+               and s.automation_verdict_id in ('forbidden', 'bank')) x,
+           (select lower(regexp_replace(d, '^\*\.', '')) as host from unnest(c.destinations) as t(d)) h
+     where x.dom <> '' and (h.host = x.dom or right(h.host, length(x.dom) + 1) = '.' || x.dom)
+     limit 1;
+  else
+    select s.automation_verdict_id into v_verdict from service_registry s
+     where s.id = c.service_id and s.deleted_at is null and (s.tenant_id = c.tenant_id or s.tenant_id = app.ops_tenant_id());
+  end if;
   if v_verdict in ('forbidden', 'bank') then
     update credentials set login_check_state = 'forbidden', login_check_detail = '規約で自動操作が禁止のサービスなので、ログインは試しません', login_check_at = now() where id = c.id;
     return jsonb_build_object('state', 'forbidden', 'job_id', null);
