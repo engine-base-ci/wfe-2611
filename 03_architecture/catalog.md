@@ -334,8 +334,8 @@ API 367（作った 61・後のフェーズの行為だけ 20）・前の道す�
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印） | F4,F7 | 作った | K-92 |
-| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
-| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387 |
+| `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60,K-395 |
+| `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387,K-395 |
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -385,7 +385,7 @@ API 367（作った 61・後のフェーズの行為だけ 20）・前の道す�
 | `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | K-61 |
-| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 作った | K-165 |
+| `completeTicket` | POST /api/v1/tickets/:id/complete | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す | F5 | 作った | K-165,K-395 |
 | `delegateTicket` | POST /api/v1/tickets/:id/delegate | 作成・実行（tickets）— AI に任せる | F5 | 作った | K-62 |
 | `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61 |
 | `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 作った | K-62 |
