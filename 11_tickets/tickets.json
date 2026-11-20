@@ -18613,6 +18613,63 @@
     "決定ログ": "- 2026-11-20 PM の決め：段 9 の決定ログ §148 は、K-400 から外して新しい葉 K-425（依存なし・文書だけ）で先に本線に入れる。段 9 のほかの葉はこの葉に依存する"
    },
    "file": "11_tickets/K-425.md"
+  },
+  {
+   "id": "K-428",
+   "title": "場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "DB",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い K-426（DB の目録だけを変える葉・0.75 時間）より小さい：問い合わせ 1 つを書き換える 10 分（書き換え先の文は下の実施事項に全文書いた）・種を使う DB の試験の全部を手元の使い捨ての DB で流して確かめる 20 分（切る段で同じ形の文を手元の DB に当てて、前の文と行の集合が同じ・2.7 秒が 0.23 秒になることを確かめ済み）。migration も口も画面も触らない",
+   "decisions": [
+    "D-128.125",
+    "D-128.143",
+    "D-133.2"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の種（管理者の接続で DB の目録を読むだけ）の読み方を変える。書き込み・外への送信・口の経路は変えない",
+   "tests": [
+    "packages/db/test/k428_seed_fk_catalog.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（試験の種の中の問い合わせ 1 つ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "packages/db/src/seed_generic.ts"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "場合表の種 `seedAccessMatrix`（`packages/db/src/seeds.ts`）は、表ごとの種を `seedGenericRows`（`packages/db/src/seed_generic.ts`）に任せ、その最初に **外部キーの一覧を information_schema の 3 つのビュー（table_constraints・key_column_usage・constraint_column_usage）の結合で引いている**。この結合は、表が増えるほど急に遅くなる（constraint_column_usage は、各制約ごとに権限を確かめながら列を引き直すビュー）。\n\n- 手元の開発の試験 DB（kaname_test・表 134・外部キー 370 本）で、この 1 文だけ **約 2.7 秒**。CI の台が混むと、表 138 で約 20 秒になる\n- 種を呼ぶ DB の試験の準備（`beforeAll`・上限 33 秒＝vitest.config.ts の hookTimeout）が、混んだ CI で時間切れになって赤になった（K-402・K-404 の CI）。種を呼ぶ試験は 30 ファイル（`git grep -l seedAccessMatrix` の 32 件から、種の本体 seeds.ts・cli.ts を除く。うち 2 つ（apps/api/test/harness.ts・packages/db/test/global-lock.ts）は試験の補助のファイル）なので、表が増えるほど全部の DB の試験に効く\n\nこの葉は **同じ行の集合を、目録（pg_constraint・pg_class・pg_attribute）で引き直す**。切る段で手元の DB（kaname_test）に当てた結果：前の文と新しい文の行の集合が同じ（370 行・差 0）、2.7 秒が 0.23 秒（約 12 倍）。\n\n結果が変わる所は 1 つだけ：**2 列以上の外部キー**。前の文は元の列と先の列を組にせず全部の組み合わせを出す（2 列なら 4 行）。新しい文は列の順に組にする（2 行）。今の DB に 2 列の外部キーは 0 本（`select count(*) from pg_constraint where contype='f' and array_length(conkey,1)>1` が 0）なので今は差が出ない。種は `fkOf(table, col)` で「その列の先」を 1 つ探すので、組にする方が正しい（前の出し方は先の列を取り違える元になる）。これは切る段の決め（下の決定ログ）。",
+    "完了の条件": "- [ ] 下の表の 6 行（K428-DB-001〜005・007）が緑：`packages/db/test/k428_seed_fk_catalog.test.ts`（K428-DB-006 は人が確かめる）\n- [ ] 種を使う前からの試験（packages/db/test と apps/api/test の DB を使う物の全部・この葉の範囲 ci_wide shared）が全部緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 関門：試験の種が DB の目録を読むだけ（C2 の書き込みの経路は変えない）\n- **変えるのは `seed_generic.ts` の外部キーを引く 1 文だけ**。主キーの文（同じ情報源の `table_constraints` と `key_column_usage` の結合・0.2 秒）・列の文（`information_schema.columns`・0.6 秒）・CHECK の文（すでに pg_constraint）は変えない（切る段で 4 つの文を手元の DB で測った：外部キーの文だけが遅い）。種の他の部分・`seeds.ts`・`matrix.ts`・`cli.ts`・`repository.ts` の information_schema の引きも変えない\n- **列の別名は変えない**：読む側（`Fk` 型・`fkOf`・依存順の計算）が `table`・`col`・`refTable`・`refCol` を使う。表の名前は `pg_class.relname`（修飾も引用符も付かない）で出す。`regclass::text` は接続の探す道（search_path）で形が変わる（public 以外なら修飾が付く）ので使わない\n- 文は **引数なし・1 回だけ**引く（今と同じ）。表ごとに引かない\n- 対象は public のスキーマの表から public のスキーマの表への外部キー（`c.connamespace` と `fr.relnamespace` の両方が public）。前の文は先の表が別のスキーマにある外部キーを返さない（結合が `ccu.table_schema = tc.table_schema` のため・切る段で別のスキーマに作って確かめた）ので、新しい文も返さない（返すと種が public に無い表を先に持つ列を、先の種を探して失敗する）\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）。切る段では、準備の誤りだけを見るために 1 回流した（K428-DB-002・003 が実装が無いからの赤・001・004・005 は前の文でも緑になる「同じ結果」の行）\n- 試験の DB は本物の Postgres。手元の共通の `kaname_test` には他の葉の種が残っていて migration が落ちることがある（operations の外部キー）ので、切る段では使い捨ての DB（`kaname_tmp_k428`・切る段で作って流した）を使った",
+    "依存の理由": "なし：`seed_generic.ts` のこの 1 文だけを変える。同じファイルを変える先の葉は無い（呼ぶ側のコードは `seeds.ts` だけ（下の search））。\n\n```search\ngit grep -ln \"seed_generic\" -- 'packages/*/src' apps\n1\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 外部キーの文を書き換える | `packages/db/src/seed_generic.ts` の `fks` を引く 1 文（`information_schema.table_constraints` の結合）を、次の全文に置き換える。読む側の型 `Fk` と `c.query<Fk>(...)` の呼び方は変えない |\n| 使う部品と版 | 新しい部品は入れない（pg ^8.23.0・PostgreSQL の目録だけ） |\n| 目録で探した結果 | 使う：`seed_generic.ts` の `Fk` 型・`fkOf`・依存順の計算、DB の目録 pg_constraint・pg_class・pg_attribute。作る物は無い（置き換えるだけ）。探したが他に外部キーを information_schema から引く所は無い（下の search）。似た物：`seed_generic.ts` の CHECK の文がすでに `pg_constraint ... connamespace = 'public'::regnamespace` で引いている（この葉の引き方と同じ形） |\n\n書き換え先の文（切る段で手元の DB に当てて、前の文と行の集合が同じ・2 列でも組になることを確かめた）：\n\n```sql\nselect r.relname::text as \"table\", a.attname::text as col, fr.relname::text as \"refTable\", ra.attname::text as \"refCol\"\nfrom pg_constraint c\njoin pg_class r on r.oid = c.conrelid\njoin pg_class fr on fr.oid = c.confrelid\ncross join lateral unnest(c.conkey, c.confkey) as k(attnum, refattnum)\njoin pg_attribute a on a.attrelid = c.conrelid and a.attnum = k.attnum\njoin pg_attribute ra on ra.attrelid = c.confrelid and ra.attnum = k.refattnum\nwhere c.contype = 'f' and c.connamespace = 'public'::regnamespace\n  and fr.relnamespace = 'public'::regnamespace\n```\n\n外部キーを information_schema から引いている所（今は 1 件・この葉が消す）：\n\n```search\ngit grep -ln \"constraint_column_usage\" -- packages apps scripts ':!packages/db/test/k428_seed_fk_catalog.test.ts'\n1\n```\n\n（1 件：`packages/db/src/seed_generic.ts`。ほかの information_schema の引き `cli.ts`・`matrix.ts`・`repository.ts`・`seed_generic.ts` の主キーと列の文は `constraint_column_usage` を使わず、測って速かったので触らない）",
+    "外に影響する手順": "なし（DB の目録を読むだけ。書かない・外へ出さない）。",
+    "テスト仕様と確認の結果": "`packages/db/test/k428_seed_fk_catalog.test.ts`（本物の Postgres・migration を全部当てた DB）。種を流している間に出た文を、種の中身を変えずに覗いて集める（`Proxy` で `query` を包む）。固定の待ちは使わない。時間そのものは台で揺れるので比べない（使う系と結果で見る）。\n\n### 状態 × 入口 × 利用者の状態\n\n要らない：状態を持つ物を作らない。入口は種の呼び出し 1 つ（管理者の接続）だけ。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K428-DB-001 | 入力 | 種が使う外部キーの文と、前の文（information_schema の結合・試験に写しておく）を、同じ DB に流す | 2 つの行の集合（`表.列>先の表.先の列`）が同じ。空でなく、数が DB の目録の外部キーの本数（1 列の物）と同じ（何も見ていないのに緑にならない）。2 列の外部キーを持つ表は両側から外して比べる |\n| K428-DB-002 | 守り | 種を 1 回流している間に出た文を全部見る | 外部キーを引く文（列の別名 refTable を持つ文）はちょうど 1 つ・文に `pg_constraint` があり `information_schema` と `constraint_column_usage` が無い。種の中のどの文にも `constraint_column_usage` と、`information_schema` と `FOREIGN KEY` を一緒に持つ文は無い。引数（`$1`）は無い |\n| K428-DB-003 | 入力 | 1 つの取引で、2 列の外部キーを持つ表（k428_child の a・b → k428_parent の a・b）と 1 列の外部キー（one_id → k428_one の id）を作り、種が使う文を流す | k428_child の行がちょうど 3 つ：a→a・b→b・one_id→id（元の列と先の列が組になる・4 行にならない）。取引を戻した後、`k428_` の表の行は 0 |\n| K428-DB-004 | 失敗 | 取引の中で `search_path` を `pg_catalog` だけにして流す | 行の集合は変えない前と同じ。表の名前は全部 `[a-z0-9_]+`（修飾も引用符も付かない） |\n| K428-DB-005 | 操作の揺れ | 種を同じ DB に続けて 2 回流す（1 回目は準備で・2 回目はこの行の中で流す＝準備の上限 33 秒に 2 回分を乗せない） | どちらも落ちない。種が返す表の集合（`rows` のキー）は 2 回で同じ・100 より多い。外部キーを持つ表の半分より多くに種がある・`tickets` と `members` に種がある |\n| K428-DB-007 | 入力 | 1 つの取引で、別のスキーマ（k428_other）に表を作り、public の表（k428_x）からそこへ外部キーを張って、前の文と種が使う文を流す | 前の文は k428_x の行を返さない（基準）。種が使う文も k428_x の行を返さない（0 行・別のスキーマの先を足して種を壊さない）。外部キーが 0 本の DB の形は、種が 1 回流れて落ちないこと（準備と K428-DB-005）で見える |\n| K428-DB-006 | 守り | 人が確かめる：作る段の TS が、実装の前と後の同じ DB で、外部キーを引く文だけを `explain (analyze, buffers)` で流し、実行時間の前後と、種を使う試験 1 本（`packages/db/test/tickets.test.ts`）の準備（beforeAll）の時間の前後を、チケットの CI の記録の回の番号とあわせて報告に貼る | 文の実行時間が前の 1/3 以下。tickets.test.ts の準備が短くなる（台の揺れは別に書く） |\n\n```judge-skip\nK428-DB-006: 時間そのものは台の混み方で揺れる（手元の測りでは 2.7 秒が 0.23 秒・CI の混んだ台では 20 秒の元の数字）ので、機械の判定には使わない。使う系の違い（K428-DB-002）と結果の同じさ（001・003・004・005）を機械で見て、時間は作る段の TS が前後を測って報告に貼る（人が確かめる）\n```\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：この葉が読み書きするのは DB の目録（表・列の名前は英数と下線だけ・migration の表の名前に日本語は無い）。K428-DB-004 が表の名前の形（`[a-z0-9_]+`）を見る |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K428-DB-001（空でなく、数が目録の外部キーの本数と同じ）・K428-DB-003・007（本物の表を足して行が出る）・K428-DB-002（文を覗く仕掛けが外部キーの文を 1 つ見つける。見つからなければ赤） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K428-DB-004（接続の探す道が違っても同じ結果）。CI の VM と手元は同じ PostgreSQL の目録なので、版の違いは文の中の関数（unnest の複数引数・lateral）が PostgreSQL 9.4 以上で使えることだけ（この DB は 16.13） |",
+    "前からの試験を替えた所": "切る段の検査（`python3 scripts/ci/cut_check.py prior --files <changes:>`）が出した、changes: を使う前からの試験。\n\n```search\npython3 scripts/ci/cut_check.py prior --files packages/db/src/seed_generic.ts\n0\n```\n\n0 件。種 `seedAccessMatrix` を呼ぶ前からの試験は 30 ファイルあるが、どれも種の返す形（`Seeded`）を使うだけで、外部キーの文を直に見ない。種の結果は同じ（K428-DB-001・005）なので、替えない。\n\n```search\ngit grep -ln \"seedAccessMatrix\" -- packages apps ':!packages/db/test/k428_seed_fk_catalog.test.ts'\n32\n```",
+    "速さ（今の値と目標の値）": "口も画面も変えない。種の準備の中の文の数も変えない（外部キーの文は今も 1 回）。文 1 つの時間だけが変わる。\n\n| | 今の値 | 目標の値 |\n|---|---|---|\n| 外部キーを引く文（手元の使い捨て DB・表 134・外部キー 370） | 約 2.7 秒 | 0.5 秒以下（切る段で 0.23 秒） |\n| 種を 1 回流す間に出る外部キーの文 | 1 | 1（増やさない） |\n| 準備（beforeAll）の上限 | 33 秒（vitest.config.ts・変えない） | 変えない（上限を上げて逃げない） |",
+    "成果物": "- `packages/db/src/seed_generic.ts` の外部キーの文（置き換え 1 か所）\n- 単体の試験 `packages/db/test/k428_seed_fk_catalog.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：直す場所は依頼にあった `seeds.ts` ではなく `seed_generic.ts`（外部キーの文が書いてあるのはここ・`seeds.ts` は呼ぶだけ）。changes: は `seed_generic.ts` だけにした\n- 2026-11-20 切る段の決め：直すのは外部キーの文だけ。主キーの文と列の文は information_schema のまま（測って 0.2 秒・0.6 秒で、列の文は型の名前の写し（data_type・udt_name の対応）が前と食い違う恐れが大きい割に得が小さい）\n- 2026-11-20 切る段の決め：2 列以上の外部キーは、新しい文では列の順に組にする（前は全部の組み合わせで行が増えた）。今の DB に 2 列の外部キーは無く、種は列ごとに「先」を 1 つ探すので、組の方が正しい。試験は 2 列の物を作って 3 行になることを見る（K428-DB-003）。前との比べ（001）は 2 列の外部キーを持つ表を両側から外すので、将来 2 列の外部キーが増えても偽の赤にならない\n- 2026-11-20 切る段の決め：時間の上限の数字で試験を赤にしない（台で揺れる）。使う系（information_schema を引かない・1 回）と結果の同じさで見て、時間は人が確かめる行（K428-DB-006）にした。準備の上限（33 秒）は上げない\n- 代表に聞くことは無い（製品のふるまい・画面・権限に触らない・試験の種の中の 1 文）",
+    "リスクと懸念": "- 新しい文は PostgreSQL の目録の列（`conkey`・`confkey`）を直に使う。目録の形が変わるのは PostgreSQL の大きな版が上がるときだけで、そのとき K428-DB-001・003 が赤になる\n- information_schema は「自分が持つ権限で見える表」だけを返すが、目録は全部を返す。種を流す役は管理者（superuser）なので結果は同じ（切る段で確かめ済み・K428-DB-001）。管理者でない役でこの種を流す作りは今無い\n- 同じ形の遅い引き（`information_schema.columns` と主キーの結合）は残る。表が 300 を超えて 1 秒を越えるようになったら別の葉で直す（今は 0.6 秒・0.2 秒）",
+    "申し送り": "- 実装は文 1 つの置き換えだけ。実装の前後で `K428-DB-006` の時間を測って報告に貼る\n- ほかの葉：種を使う DB の試験の準備が時間切れになったら、準備の上限（hookTimeout）を上げる前に、準備の中で遅い文を測る（この葉と同じ手）"
+   },
+   "file": "11_tickets/K-428.md"
   }
  ]
 }
