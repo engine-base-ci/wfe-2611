@@ -20,7 +20,7 @@ describe("POST /api/v1/invitations", () => {
     expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-018");
   });
   it("test_post_invitations_conflict", () => {
-    // UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と宛てごとの理由を返し、どの宛ても招かずメールも送らない
+    // UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と入っている宛ての一覧（detail）を返し、どの宛ても招かずメールも送らない
     // 本物の試験：apps/api/test/features/F10/invite-create.test.ts の「K419-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-create.test.ts", "utf8")).toContain("K419-API-011");
   });

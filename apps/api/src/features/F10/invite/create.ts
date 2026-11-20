@@ -101,17 +101,14 @@ function checkInput(input: Record<string, unknown>): HookReply | null {
 /** DB の関数が断った例外 → 答え。分からない例外は 503（何も残らない） */
 function refused(e: unknown): HookReply {
   const { code, hint, detail: dt } = pgInfo(e);
-  if (code === "42501" && hint === "E-INV-011") return invalid("E-INV-011", [detail("E-INV-011", "scope_id")], 404);
+  // 404 と 409 は field・details を付けない（控え帳 20:50・PM の決め 2026-11-21 03:00）。無いグループと見えないグループは同じ答え
+  if (code === "42501" && hint === "E-INV-011") return { status: 404, body: kanameError("E-INV-011").toJSON() };
   if (code === "42501") return forbidden();
   if (code === "22023" && hint === "E-INV-010")
-    return invalid(
-      "E-INV-010",
-      dt
-        .split("\n")
-        .filter((s) => s !== "")
-        .map((s) => detail("E-INV-010", "emails", s)),
-      409,
-    );
+    return {
+      status: 409,
+      body: kanameError("E-INV-010", { already: dt.split("\n").filter((x) => x !== "") }).toJSON(),
+    };
   console.error(`[invite] 招く取引が落ちた（${kindOf(e)}）`);
   return unavailable();
 }

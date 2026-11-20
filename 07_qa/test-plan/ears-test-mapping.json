@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-11-20",
+ "created_at": "2026-11-21",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -47918,7 +47918,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "409",
-   "ears_text": "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と宛てごとの理由を返し、どの宛ても招かずメールも送らない",
+   "ears_text": "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と入っている宛ての一覧（detail）を返し、どの宛ても招かずメールも送らない",
    "test_file": "apps/api/test/generated/post_invitations.test.ts",
    "test_function": "test_post_invitations_conflict",
    "test_level": "unit（冪等）",
