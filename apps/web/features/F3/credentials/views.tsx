@@ -226,6 +226,7 @@ const TWO_FACTORS: readonly CredentialTwoFactor[] = ["none", "totp", "sms", "ema
 const asTwoFactor = (v: string | null): CredentialTwoFactor => TWO_FACTORS.find((t) => t === v) ?? "none";
 
 /** 預ける（小窓）。種類：ログイン情報（ID・パスワード・2 段階の種類）／API キー・値。
+ *  欄はブラウザの自動入力と保存を止める（本人の Kaname のパスワードを外のサイトの物として預けない・外のサイトの値をブラウザに残さない・D-128.57）。
  *  値と押す関数は入れ物（本番は credentials-screen・モックは mocks.tsx）が渡す。error は小窓の赤の知らせ（口の文） */
 export function AddCredentialDialog({
   open,
@@ -292,8 +293,8 @@ export function AddCredentialDialog({
       <TextField label="説明（任意）" name="description" {...text("description")} />
       {v.kind === "login" ? (
         <>
-          <TextField label="ログイン ID" name="login" {...text("login")} />
-          <PasswordField label="パスワード" name="password" {...text("password")} />
+          <TextField label="ログイン ID" name="login" autoComplete="off" {...text("login")} />
+          <PasswordField label="パスワード" name="password" autoComplete="new-password" {...text("password")} />
           <Select
             label="2 段階の種類"
             name="two_factor"
@@ -310,11 +311,16 @@ export function AddCredentialDialog({
             ]}
           />
           {v.two_factor === "totp" ? (
-            <PasswordField label="認証アプリの鍵" name="totp_secret" {...text("totp_secret")} />
+            <PasswordField
+              label="認証アプリの鍵"
+              name="totp_secret"
+              autoComplete="new-password"
+              {...text("totp_secret")}
+            />
           ) : null}
         </>
       ) : (
-        <PasswordField label="値" name="value" {...text("value")} />
+        <PasswordField label="値" name="value" autoComplete="new-password" {...text("value")} />
       )}
       <TextField
         label="使える場所"
