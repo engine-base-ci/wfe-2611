@@ -5526,7 +5526,7 @@
   },
   {
    "id": "E-CONN-013",
-   "class": "validation",
+   "class": "not_found",
    "where": {
     "screen": "bridge-setup",
     "state": "code_invalid"

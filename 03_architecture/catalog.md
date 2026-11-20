@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 65・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 207・部品 56・設定 41
+API 369（作った 66・後のフェーズの行為だけ 20）・前の道すじ 26・表 144・画面の部品 18・共通の処理 13・エラー 207・部品 56・設定 41
 
 ## 共通の処理
 
@@ -457,7 +457,7 @@ API 369（作った 65・後のフェーズの行為だけ 20）・前の道す�
 | `requestRuleException` | POST /api/v1/learning_candidates/:id/exception-request | 作成・実行（learning_candidates）— ルールを置く（会社・層・個人・取引先） | F9 | 契約だけ（501） | K-69 |
 | `postponeLearningCandidate` | POST /api/v1/learning_candidates/:id/later | 作成・実行（learning_candidates）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `listMemories` | GET /api/v1/memories | 取得（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
-| `createMemory` | POST /api/v1/memories | 作成・実行（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69,K-639 |
+| `createMemory` | POST /api/v1/memories | 作成・実行（memories）— 自分の AI に教える（覚えて） | F9 | 作った | K-69,K-639 |
 | `updateMemory` | PATCH /api/v1/memories/:id | 更新（memories）— 自分の AI に教える（覚えて） | F9 | 作った | K-69,K-639 |
 | `deleteMemory` | DELETE /api/v1/memories/:id | 削除（memories）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `promoteMemoryToRule` | POST /api/v1/memories/:id/promote | 作成・実行（memories）— ルールを置く（会社・層・個人・取引先）／自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |

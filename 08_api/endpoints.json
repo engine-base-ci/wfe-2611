@@ -6409,6 +6409,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 404,
+     "code": "E-CONN-013",
+     "body": {
+      "error": "not_found",
+      "code": "E-CONN-013"
+     },
+     "errors": [
+      "E-CONN-013"
+     ],
+     "trigger": "形どおりの接続コードが使えない（違う・期限切れ・使い終わった・出し直す前。どれかを見分けさせない・D-089）。欄・details は付けない",
+     "ears_form": "UNWANTED: IF 接続コードが使えないなら、Kaname は 404 と E-CONN-013 を返し、PC を作らず、どの理由かを漏らさない"
+    },
+    {
      "status": 413,
      "code": "PAYLOAD_TOO_LARGE",
      "body": {
@@ -6452,6 +6465,7 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/claim が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 接続コードが使えないなら、Kaname は 404 と E-CONN-013 を返し、PC を作らず、どの理由かを漏らさない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 5/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
