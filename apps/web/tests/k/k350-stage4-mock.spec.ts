@@ -205,14 +205,22 @@ test("K350-SC-001 作り物の秘密の置き場 2 つ（apps/bridge/test/_fake/
   }
 });
 
-test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則のまま、外す道は試験の作り物の置き場 4 つ（api・web・bridge・e2e）だけで、ほかの道には当たらない", () => {
+test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則のまま、全体で外す道は試験の作り物の置き場 4 つ（api・web・bridge・e2e）だけで、ほかの道には当たらない。例外は規則 generic-api-key の中の 1 つだけ：契約の型の 4 ファイルの openapi.yaml の要約（16 けたの 16 進）を、道と値の両方がそろうときだけ外す（K-362・代表の答え answer=2fd73e54782f）", () => {
   const conf = readFileSync(join(ROOT, ".gitleaks.toml"), "utf8");
   expect(conf).toMatch(/^useDefault = true$/m);
-  expect(conf.match(/^\[\[allowlists\]\]$/gm) ?? []).toHaveLength(1);
-  expect(conf).not.toMatch(/^(regexes|stopwords|commits)\s*=/m);
-  const line = conf.split("\n").find((l) => l.startsWith("paths = "));
-  expect(line, "paths の行が無い").toBeTruthy();
-  const paths = [...line!.matchAll(/'''([^']+)'''/g)].map((m) => m[1]!);
+  // 全体（最初の [[rules]] より前）と、規則の中（[[rules]] から後）に分けて見る
+  const at = conf.search(/^\[\[rules\]\]$/m);
+  const top = at < 0 ? conf : conf.slice(0, at);
+  const rules = at < 0 ? "" : conf.slice(at);
+  // 全体：allowlists はちょうど 1 つで、道だけ（値の正規表現・止め語・コミット・条件では外さない）
+  expect(top.match(/^\[\[allowlists\]\]$/gm) ?? []).toHaveLength(1);
+  expect(top).not.toMatch(/^(regexes|stopwords|commits|condition|regexTarget)\s*=/m);
+  const listOf = (part: string, key: string): string[] => {
+    const line = part.split("\n").find((l) => l.startsWith(`${key} = `));
+    expect(line, `${key} の行が無い`).toBeTruthy();
+    return [...line!.matchAll(/'''([^']+)'''/g)].map((m) => m[1]!);
+  };
+  const paths = listOf(top, "paths");
   expect([...paths].sort()).toEqual(
     ["^apps/api/test/_fake/", "^apps/bridge/test/_fake/", "^apps/e2e/_fake/", "^apps/web/test/_fake/"].sort(),
   );
@@ -231,8 +239,48 @@ test("K350-SC-002 秘密の検査の設定（.gitleaks.toml）は既定の規則
     "apps/e2e/journeys/j02.spec.ts",
     "apps/e2e/journeys/_fake/x.ts",
     "x/apps/e2e/_fake/x.ts",
+    "packages/contracts/src/ops.ts",
   ])
     expect(hit(p), p).toBe(false);
+  // 規則の中の例外：[[rules]] は generic-api-key の 1 つ・その allowlists も 1 つだけ。規則そのもの（式・鍵の語・乱雑さ）は既定のまま上書きしない
+  expect(conf.match(/^\[\[rules\]\]$/gm) ?? []).toHaveLength(1);
+  expect(conf.match(/^\[\[rules\.allowlists\]\]$/gm) ?? []).toHaveLength(1);
+  expect(rules).toMatch(/^id = "generic-api-key"$/m);
+  expect(rules).not.toMatch(/^(regex|keywords|entropy|path|secretGroup|stopwords|commits|regexTarget)\s*=/m);
+  expect(rules).toMatch(/^condition = "AND"$/m);
+  const onlyPaths = listOf(rules, "paths");
+  const values = listOf(rules, "regexes");
+  expect(onlyPaths).toEqual(["^packages/contracts/src/(ops|registry|schemas|types)\\.ts$"]);
+  expect(values).toEqual(["^(openapi:)?[0-9a-f]{16}$"]);
+  const pathRe = new RegExp(onlyPaths[0]!);
+  for (const f of ["ops", "registry", "schemas", "types"])
+    expect(pathRe.test(`packages/contracts/src/${f}.ts`), f).toBe(true);
+  for (const p of [
+    "packages/contracts/src/index.ts",
+    "packages/contracts/src/x/ops.ts",
+    "packages/contracts/src/opsXts",
+    "x/packages/contracts/src/ops.ts",
+    "apps/api/src/ops.ts",
+  ])
+    expect(pathRe.test(p), p).toBe(false);
+  // 値：16 けたの 16 進（と openapi: の頭）だけ。本物の鍵の形（sk- で始まる値・32 けた以上・大文字・長さ違い）は当たらない。
+  //   鍵の形は秘密の検査に当たらないよう、ここで組み立てる（ファイルに字として書かない）
+  const valueRe = new RegExp(values[0]!);
+  const hex16 = "0123456789abcdef";
+  expect(valueRe.test(hex16)).toBe(true);
+  expect(valueRe.test(`openapi:${hex16}`)).toBe(true);
+  for (const v of [
+    `sk-${hex16.repeat(3)}`,
+    `sk-proj-${hex16}`,
+    hex16.repeat(2),
+    hex16.repeat(4),
+    hex16.slice(1),
+    `${hex16}0`,
+    hex16.toUpperCase(),
+    `openapi:${hex16.repeat(2)}`,
+    `x${hex16}`,
+  ])
+    expect(valueRe.test(v), v).toBe(false);
 });
 
 // ---- 実ブラウザ：モックの全部の状態が描ける ----
