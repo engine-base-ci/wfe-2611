@@ -29,6 +29,8 @@ export interface ResolveDeps {
 
 /** 宛先の名前の長さの上限（DNS の名前の上限） */
 export const HOST_MAX = 253;
+/** 入れる場所の字数の上限（契約の maxLength と同じ・screen_api.d/K-354.py） */
+const DESTINATION_MAX = 2048;
 /** PC の公開の鍵：X25519 の SPKI の DER（44 バイト）を base64 */
 const EXECUTOR_KEY_BYTES = 44;
 const BASE64_RE = /^[A-Za-z0-9+/]+={0,2}$/;
@@ -100,7 +102,9 @@ export function parseResolve(input: Record<string, unknown>, raw: Record<string,
   const credential = typeof input["credential_id"] === "string" ? input["credential_id"] : "";
   if (!credential) return invalid("credential_id", "ログイン情報の id が要ります");
   const destination = raw["destination"];
-  if (typeof destination !== "string") return invalid("destination", "入れる場所を入れてください");
+  // 契約の決まり（screen_api.d/K-354.py の VALUE_RANGES：pattern `\S`・maxLength 2048）と同じ数で生の字を照らす（空・空白だけは 422）
+  if (typeof destination !== "string" || !/\S/.test(destination) || destination.length > DESTINATION_MAX)
+    return invalid("destination", "入れる場所を入れてください");
   const named = hostnameOf(destination);
   const host = named !== null && named.length <= HOST_MAX ? named : null;
   const executor = readExecutorKey(input["executor_key"]);
