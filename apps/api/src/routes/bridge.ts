@@ -11,6 +11,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/bridge/devices", op(deps, "listMyDevices"));
   app.patch("/api/v1/bridge/devices/:id", op(deps, "updateMyDevice"));
   app.delete("/api/v1/bridge/devices/:id", op(deps, "revokeMyDevice"));
+  app.post("/api/v1/bridge/devices/:id/browser-check", op(deps, "checkMyDeviceBrowser"));
   app.get("/api/v1/bridge/files/:ref", op(deps, "getFileForBridge"));
   app.post("/api/v1/bridge/heartbeat", op(deps, "sendHeartbeat"));
   app.post("/api/v1/bridge/jobs/take", op(deps, "takeBridgeJob"));

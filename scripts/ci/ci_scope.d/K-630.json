@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"
+ }
+}
