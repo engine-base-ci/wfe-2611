@@ -19,9 +19,9 @@ export const STAGE_KEYS = ["todo", "doing", "hold"] as const;
 const HOLD_FIELDS = ["hold_reason", "resume_condition"] as const;
 const MINUTES_MAX = 100000;
 
-/** 空白（JavaScript の \s）と制御文字だけの字か（契約の pattern `[^\s\u0000-\u001f\u007f]` に合わない） */
+/** 契約の pattern に合わない字か：空白（JavaScript の \s）と制御文字だけ、または NUL を含む（NUL はどの口でも入口で 422・黙って取り除かない・answer=c8b3f4c3aef8） */
 // eslint-disable-next-line no-control-regex
-const blank = (v: string): boolean => v.replace(/[\u0000-\u001f\u007f]/g, " ").trim() === "";
+const blank = (v: string): boolean => v.includes("\u0000") || v.replace(/[\u0000-\u001f\u007f]/g, " ").trim() === "";
 
 /** 形の決まり（契約に書ける物だけ）。違えば 422 の答え、合えば null。型の違い（数でない・null の字の欄）は入口の契約の確かめに任せる */
 export function progressIssues(raw: Row): HookReply | null {
@@ -47,13 +47,13 @@ export function progressIssues(raw: Row): HookReply | null {
 
 type Progress = Row & { error?: unknown; fields?: unknown };
 
-/** DB の字の列と jsonb に入らない物（NUL・対にならないサロゲート）を入口で除く（断らない・切らない・F5 の差し戻しの理由と同じ・D-131.1）。
- *  空かどうかは前処理（blank）と DB の関数が見るので、除いた後に空になる字は同じ 422 になる */
+/** jsonb に入らない対にならないサロゲートを U+FFFD にする（NUL は前処理が 422 にするのでここへ来ない） */
 const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
-// eslint-disable-next-line no-control-regex
-const clean = (v: unknown): unknown => (typeof v === "string" ? v.replace(LONE_SURROGATE, "\uFFFD").replace(/\u0000/g, "") : v);
+const clean = (v: unknown): unknown => (typeof v === "string" ? v.replace(LONE_SURROGATE, "\uFFFD") : v);
 const cleaned = (input: Row): Row =>
-  Object.fromEntries(Object.entries(input).map(([k, v]) => [k, (HOLD_FIELDS as readonly string[]).includes(k) ? clean(v) : v]));
+  Object.fromEntries(
+    Object.entries(input).map(([k, v]) => [k, (HOLD_FIELDS as readonly string[]).includes(k) ? clean(v) : v]),
+  );
 
 async function apply(cl: pg.PoolClient, ticketId: string, input: Row): Promise<GroupResult> {
   const where = "段・実績・保留を変える";
