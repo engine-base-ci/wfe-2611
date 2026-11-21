@@ -1,4 +1,5 @@
 # K-352 預ける口（createCredential）の契約の形の表に足す分（K-325 の断片）
+import credential_patterns as _CP  # 手助けは断片の中で読む（置き場の断片を 1 つずつ実行する試験にも通る・K-383）
 # apps/api/src/features/F3/credentials/create.ts の check（無ければ 422・使える場所は E-CRED-003）
 REQUIRED_INPUTS = {
     "createCredential": {"layer", "kind", "name", "destinations"},
