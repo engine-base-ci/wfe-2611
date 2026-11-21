@@ -15,6 +15,7 @@ import {
   RemoveCredentialConfirm,
   type AddCredentialValues,
   type CredentialItem,
+  type EditCredentialValues,
 } from "@/features/F3/credentials/views";
 import { StepUpDialog } from "@/features/F1/security/views";
 import type { Theme } from "@/lib/theme";
@@ -63,6 +64,16 @@ const ITEMS: CredentialItem[] = [
     note: "11/18 10:20 に確かめた",
   },
 ];
+
+/** 上書きの小窓の見本の値（ログイン情報 SEIKO_PORTAL の上書き・部品の既定から外した物・モックの見た目は前と同じ） */
+const EDIT_VALUES: EditCredentialValues = {
+  login: "",
+  password: "",
+  value: "",
+  destinations: "portal.seiko.example",
+  expires_on: "2027/11/10",
+  reason: "サービスの側でパスワードを変えたため",
+};
 
 /** 預ける小窓の見本の値（部品の既定から外した物・モックの見た目は前と同じ） */
 const ADD_LOGIN: AddCredentialValues = {
@@ -228,7 +239,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
         />
       );
     case "cred-edit":
-      return <Page theme={theme} dialog={<EditCredentialDialog open item={ITEMS[3]!} />} />;
+      return <Page theme={theme} dialog={<EditCredentialDialog open item={ITEMS[3]!} values={EDIT_VALUES} />} />;
     case "cred-remove":
       return (
         <Page

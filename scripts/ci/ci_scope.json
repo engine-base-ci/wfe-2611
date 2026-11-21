@@ -1163,6 +1163,19 @@
    "tests": [
     "apps/web/tests/k/k381-popup-layer.spec.ts"
    ]
+  },
+  {
+   "paths": [
+    "07_functional/段7-F6/mock-shots.mjs",
+    "07_functional/段7-F6/決定ログに足す行.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/gen_built_routes.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k382-stage7-mock.spec.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1276,11 +1289,15 @@
   "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
   "apps/api/test/features/contract/k144.d/K-364.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts を動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-365.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts（K-364 が運ぶ）を動的 import する。ファイルは読まない（K-378）",
+  "apps/web/tests/k/k368-pc-browser.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-368",
   "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）",
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
   "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）",
-  "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）"
+  "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
+  "apps/web/tests/k/k382-stage7-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f6/mocks.tsx・F6 の部品と CSS と区画のファイル（apps/web/features/F6）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しの台本 07_functional/段7-F6/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・決定ログに足す行.md・答えの記録 01_hearing/decider-answers.jsonl を読み、scripts/ci/design_gate.py を子プロセスで流す（K-382）",
+  "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
