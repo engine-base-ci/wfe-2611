@@ -36,6 +36,27 @@ export function normalize(v: unknown): unknown {
     return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, normalize(x)]));
   return v;
 }
+/** 入口の NUL（K-427・D-130.2）：PostgreSQL の text・jsonb は NUL（U+0000）を入れられず、落ちると 500 になる。
+ *  どこにあっても形の誤りとして断る。文字列の値と、オブジェクトのキーを入れ子の中まで見る。
+ *  欄の名前は入れ子の道（親.子・配列は親.0・根は body）。キーの NUL は、キーを出さずそのキーを持つオブジェクトの道を返す */
+export function nulIssues(v: unknown, path: string): { field: string; message: string }[] {
+  const out: { field: string; message: string }[] = [];
+  const stack: [unknown, string][] = [[v, path]];
+  while (stack.length) {
+    const [x, at] = stack.pop()!;
+    if (typeof x === "string") {
+      if (x.includes("\u0000")) out.push({ field: at, message: "使えない文字" });
+    } else if (Array.isArray(x)) {
+      x.forEach((e, i) => stack.push([e, `${at}.${i}`]));
+    } else if (x && typeof x === "object") {
+      for (const [k, e] of Object.entries(x as Record<string, unknown>)) {
+        if (k.includes("\u0000")) out.push({ field: at, message: "使えない文字" });
+        stack.push([e, at === "body" ? k : `${at}.${k}`]);
+      }
+    }
+  }
+  return out;
+}
 // 続きの印は、何件目から読むかの数（10 進の文字列・最大 9 桁）。画面はもらったものを返すだけ（契約は pattern で書ける形にした・K-35）
 //   鍵の文字列（base64url の 1〜200 字）を受けると宣言した口（KEY_CURSOR_OPS）だけは、鍵の文字列も通す。中身（鍵の形）はその口が確かめる（D-131.9・K-161）。
 //   宣言の無い一覧の口は今までどおり位置の数だけ（契約の生成器 05_flow/build_api.py の KEY_CURSOR_OPS と同じ集まり）
@@ -237,6 +258,12 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     //      正式な uuid か確かめる。形の違う id が DB の ::uuid に届いて 500 にならないように
     const badIds = uuidParamIssues(c, def);
     if (badIds.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badIds });
+    // 3.0b) 入口の NUL（K-427）：道の値・問い合わせの値のどれかに NUL があれば、uuid と同じ所で 422（送った字は答えに出さない）
+    const badNul = [
+      ...Object.entries(c.req.param()).flatMap(([k, v]) => nulIssues(v, k)),
+      ...Object.entries(c.req.queries()).flatMap(([k, vs]) => vs.flatMap((v) => nulIssues(v, k))),
+    ];
+    if (badNul.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badNul });
     // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
     if (def.auth !== "public") {
       const check = checkFor(def.perm.word);
@@ -274,6 +301,9 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
       } catch {
         return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: [{ field: "body", message: "JSON" }] });
       }
+      // 体の NUL（K-427）：口の前処理・契約の形より前に断る
+      const badBodyNul = nulIssues(raw, "body");
+      if (badBodyNul.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badBodyNul });
       // 口の前処理（K-53 の同意：同意の印が無いのを正本のエラーで返す）。前処理の後も、必ず契約の strict な形で確かめる（知らない項目は 422・K-144）
       const pre = deps.hooks[operationId]?.input?.(raw);
       if (pre && "reply" in pre) return c.json(pre.reply.body, pre.reply.status as 400);
@@ -353,7 +383,7 @@ export type Reply = { status: number; body: unknown; raw?: Response };
 /** 同じ冪等キーで処理中の要求（キーに会社・本人を含む）。終わったら消え、結果は idempotency の器に残る */
 const INFLIGHT = new Map<string, Promise<(Reply & { hash: string }) | undefined>>();
 /** 入力が DB の決まりに合わないときの番号：外部キー・形・null・数の桁あふれ・check 違反 */
-const DB_INPUT_CODES = new Set(["23503", "22P02", "23502", "22003", "23514"]);
+const DB_INPUT_CODES = new Set(["23503", "22P02", "23502", "22003", "23514", "22021", "22P05"]);
 /** 入力が DB の決まりに合わずに落ちた例外なら、記録に書く番号（と制約の名前）を返す。違えば null。
  *  契約の口（下の execute）と口の外（app.ts の onError・前の道すじの 2 層目・K-145）で同じ写しを使う */
 export function dbInputFailure(ex: unknown): { code: string; constraint: string | null } | null {
