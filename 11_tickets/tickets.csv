@@ -2333,6 +2333,24 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-427,入口（op.ts）で NUL（U+0000）を含む入力を 422 で断る（道の値・問い合わせ・体の文字列とキー・Postgres の text は NUL を入れられず listTickets の q が 500 になっていた・DB の番号 22021・22P05 も 2 層目で 422・契約 fuzz は NUL を作らない設定に・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-23,F3・入口,"契約 fuzz（G36）が、前からある口 listTickets を `GET /api/v1/tickets?limit=86&scope_id=<uuid>&cursor=&view=&q=<NUL を含むでたらめな字>` で叩くと **500**（`{""error"":""internal""}`）になることを見つけた（K-365 の CI。K-365 の変更とは関係ない）。
+
+原因は NUL（U+0000）だった（2026-11-20 切る段で確かめた）：
+
+- 使い捨ての DB で node-postgres から `select $1::text`（値に NUL）を流すと、PostgreSQL が `22021 invalid byte sequence for encoding ""UTF8"": 0x00` で落ちる。`select $1::jsonb`（JSON の中に `\u0000`）は `22P05 unsupported Unicode escape sequence`。NUL の無い全角・絵文字・`\u0001` は通る
+- listTickets の q は入口を何も確かめずに通り、題名の絞り込みの SQL の値になる（`apps/api/src/features/F4/ticket-list/query.ts` の `normalizeQ` は NFKC・trim・小文字だけ）。入口が落ちた番号を 422 に写す表（`apps/api/src/contract/op.ts` の `DB_INPUT_CODES`）には 22021・22P05 が無いので、500 になる
+- listTickets の試験を今の版に当てると、この形で 500 になることを切る段で確かめた（試験 K427-API-006）
+
+同じ形は listTickets だけではない。**どの口でも、文字列を DB に渡す口は NUL で 500 になりうる**。契約 fuzz は schemathesis の既定（`generation.allow-x00` が真）で NUL を作るので、口の例が上限（429）に邪魔されず奥に届くようになるほど（K-424）、別の口でも赤になる。fuzz の乱数しだいでどのチケットの CI でも赤になりうる。
+
+この葉は口ごとに直さず、**入口の 1 か所**で直す：
+
+1. **入口（op.ts の `handler`）**：道の値・問い合わせ（名前でなく値）・体（JSON の文字列とキー・入れ子の中まで）のどれにでも NUL があれば、口の振る舞いに届く前に **422・VALIDATION_ERROR**（エラー ID は前からある物のまま・新しく作らない）・欄の名前・理由「使えない文字」。答えに送った字は出さない（代表の決め answer=f0f290e785a9：422＝形の誤り）
+2. **2 層目**：入口をすり抜けた NUL（契約の口の外の前の道すじ `apps/api/src/auth/ext.ts` など）が DB に届いて落ちたときの番号 22021・22P05 も、前から 22P02 などが入っている `DB_INPUT_CODES` に足し、`app.ts` の `onError` と `execute` が 500 でなく 422・決まった文で答える（D-130.2 と同じ写し）
+3. **契約 fuzz は NUL を作らない設定に**：`scripts/ci/schemathesis.toml` に `[generation] allow-x00 = false`。NUL は契約の形（string）では書けないが入口が必ず断る字なので、fuzz が「形どおりの入力」として作ると 422 を赤と数える（positive_data_acceptance）。入口が断ることはこの葉の試験（K427-API-001〜004）が見る","- [ ] 下の表の 8 行（K427-API-001〜007・009）が緑：`apps/api/test/k427_nul_input.test.ts`（K427-API-008 は人が確かめる）
+- [ ] 前からの試験のうち替えた 3 つ（sign-up・connect-pc・approve-complete-return。切る段で替え済み・carry で運ぶ）と、替えない前からの試験（apps/api/test と契約の入口の試験 全部）が緑
+- [ ] 手元の CI（このチケットの範囲。範囲の地図で G36 が流れる）が緑で、契約 fuzz（G36）が listTickets で 500 を出さない
+- [ ] 手元の速い検査（prettier・eslint）が緑"
 K-620,直し：題名の下の帯の順の器 useBandOrder が「AI に任せる」の任せる前の箱や「完了にする」の箱も approve と数え、渡しの帯・保留の帯が出ず担当者の欄に「AI の実行が終わってから渡してください」が出る（AI が動いている・承認待ちの帯だけを data-busy で数える）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-22,F8・画面,"段 9 の中間テスト K-416（M1-01・M1-06）が見つけた不具合を直す。
 
 チケットの詳細の題名の下の帯は、順を 1 か所（K-380 の `apps/web/features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`：承認・実行 → 渡し → 保留）で決め、後ろの帯は前に出ている帯に譲る（`bandYieldTo`）。前に出ているかを決める帯の順の器 `useBandOrder` は、**帯の入れ物 `.k-detail-bands` の直下に F5 の帯（`section.k62-band`）が 1 つでも在れば approve と数えていた**。
