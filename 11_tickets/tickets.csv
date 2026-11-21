@@ -2333,6 +2333,26 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-620,直し：題名の下の帯の順の器 useBandOrder が「AI に任せる」の任せる前の箱や「完了にする」の箱も approve と数え、渡しの帯・保留の帯が出ず担当者の欄に「AI の実行が終わってから渡してください」が出る（AI が動いている・承認待ちの帯だけを data-busy で数える）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-22,F8・画面,"段 9 の中間テスト K-416（M1-01・M1-06）が見つけた不具合を直す。
+
+チケットの詳細の題名の下の帯は、順を 1 か所（K-380 の `apps/web/features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`：承認・実行 → 渡し → 保留）で決め、後ろの帯は前に出ている帯に譲る（`bandYieldTo`）。前に出ているかを決める帯の順の器 `useBandOrder` は、**帯の入れ物 `.k-detail-bands` の直下に F5 の帯（`section.k62-band`）が 1 つでも在れば approve と数えていた**。
+
+F5 の帯は、AI が動いていない・承認待ちでもない間も出ている：
+
+- 「AI に任せる」の帯（`delegate-band.tsx`）の **任せる前の白い箱**（直せる人なら誰にでも出る・D-128.138）
+- 「承認と実行」の帯（`band.tsx`）の **⑥「完了にする」の箱**（作業中で走っている実行が無ければ、会社の人なら誰にでも出る・`app.ticket_band` の can_complete）・**⑤ 実行が止まった箱**・**⑦ 完了の箱**
+- 「AI に任せる」の帯の **作る段の止まった箱**（stopped・cancelled）
+
+そのため、作業中のチケットでは渡した人・受けた担当者・ほとんどの member で、
+
+1. 段 9 の `HandoverBandSlot`（K-400 の slot-dispatch.tsx）が `yieldTo` を受けて何も描かない（渡しの帯「返事を待っています」「頼まれています」などが出ない）
+2. 段 9 の `AssigneeSlot` が `blocked={ticket.bands.has(""approve"")}` で、AI が動いていないのに担当者の欄に「AI の実行が終わってから渡してください」を出す（D-148.24 の「AI が動いているとき」の形）
+3. 段 7 の `HoldBandSlot`（K-395）の保留の帯も同じく譲って出ない
+
+**直し方**：F5 の 2 つの帯は、**AI が動いている（queued・running・asking）か承認待ち**を出している間だけ、帯の `section` に印の属性 `data-busy` を付ける。帯の順の器は `:scope > section.k62-band[data-busy]` が在るときだけ approve と数える。帯の section は状態が替わっても同じ要素のまま（React は作り直さない）なので、器は直下の子の出入りに加えて `data-busy` の付け外しも見張る。","- [ ] 下の表の 13 行（K620-UI-001〜013）が緑：`apps/web/tests/k/k620-band-busy.spec.ts`
+- [ ] 替えた前からの試験 K380-UI-003（`apps/web/tests/k/k380-detail-slots.spec.ts`）と、替えない K-380 の残りの行が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-630,直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-21,F3・画面,"本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：
 
 `./features/F3/credentials/check-credential.tsx:84:9 … Type '{ approved: boolean; request_ref?: undefined; }' is not assignable to type 'CredentialLoginAnswerInput'. Type 'undefined' is not assignable to type 'string'.`
