@@ -47,12 +47,20 @@ export function progressIssues(raw: Row): HookReply | null {
 
 type Progress = Row & { error?: unknown; fields?: unknown };
 
+/** DB の字の列と jsonb に入らない物（NUL・対にならないサロゲート）を入口で除く（断らない・切らない・F5 の差し戻しの理由と同じ・D-131.1）。
+ *  空かどうかは前処理（blank）と DB の関数が見るので、除いた後に空になる字は同じ 422 になる */
+const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+// eslint-disable-next-line no-control-regex
+const clean = (v: unknown): unknown => (typeof v === "string" ? v.replace(LONE_SURROGATE, "\uFFFD").replace(/\u0000/g, "") : v);
+const cleaned = (input: Row): Row =>
+  Object.fromEntries(Object.entries(input).map(([k, v]) => [k, (HOLD_FIELDS as readonly string[]).includes(k) ? clean(v) : v]));
+
 async function apply(cl: pg.PoolClient, ticketId: string, input: Row): Promise<GroupResult> {
   const where = "段・実績・保留を変える";
   const r = (
     await cl.query<{ v: Progress | null }>("select app.ticket_progress_set($1, $2::jsonb) as v", [
       ticketId,
-      JSON.stringify(input),
+      JSON.stringify(cleaned(input)),
     ])
   ).rows[0]?.v;
   if (!r) return { ok: false, reply: replyOf({ error: "empty" }, where, input) };
