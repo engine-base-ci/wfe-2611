@@ -1219,6 +1219,27 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-update.ts",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-decisions.ts",
     "apps/api/src/features/F6/decisions/**"
    ],
@@ -1421,6 +1442,8 @@
   "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
   "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
   "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
+  "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
   "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）",
   "apps/api/test/features/F6/decision-update.test.ts": "改める口の hooks のファイル（apps/api/src/hooks/ticket-decision-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-391）",
