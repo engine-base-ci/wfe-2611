@@ -20,9 +20,9 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
   });
   it("test_post_tickets_id_messages_not_found", () => {
-    // UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
-    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
+    // UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない
+    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-006」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-006");
   });
   it("test_post_tickets_id_messages_rejected_422", () => {
     // UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない
@@ -30,12 +30,20 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-013");
   });
   it("test_post_tickets_id_messages_rejected_422_2", () => {
-    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない
+    // UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-009");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない
-  it.todo("test_post_tickets_id_messages_rejected_422_3");
+  it("test_post_tickets_id_messages_not_found_2", () => {
+    // UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
+  });
+  it("test_post_tickets_id_messages_server_error", () => {
+    // UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）
+    // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-017」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-017");
+  });
   it("test_post_tickets_id_messages_session_unresolved", () => {
     // UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない（止める側に倒す）
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
@@ -58,8 +66,11 @@ describe("POST /api/v1/tickets/:id/messages", () => {
   });
   // 当てはまらない（止めは全部の口で同じ 1 か所の入口（op.ts）。本物のログインで印を立てて止まることは apps/api/test/features/F1/mfa-gate.test.ts の K321-API-001〜011、口ごとの止めは作った口の生成の試験 mfa_pending が見る）：UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない
   it.todo("test_post_tickets_id_messages_mfa_pending");
-  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-post.test.ts）：UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
-  it.todo("test_post_tickets_id_messages_session_unresolved_2");
+  it("test_post_tickets_id_messages_session_unresolved_2", () => {
+    // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   it("test_post_tickets_id_messages_shape", () => {
     // UBIQUITOUS: POST /api/v1/tickets/:id/messages の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-001」（同じ CI の G3 で流れる）

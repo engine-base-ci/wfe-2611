@@ -55492,13 +55492,16 @@
     },
     {
      "status": 404,
-     "code": "NOT_FOUND",
+     "code": "E-PAGE-001",
      "body": {
       "error": "not_found",
-      "code": "NOT_FOUND"
+      "code": "E-PAGE-001"
      },
-     "trigger": "チケットが無い・見えない・消した",
-     "ears_form": "UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない"
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "@ する人・知らせる人・引用元が選べない（そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み・消した書き込み。DB の中身で決まるので 422 にしない・欄の名前も出さない）",
+     "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない"
     },
     {
      "status": 409,
@@ -55514,26 +55517,37 @@
      "code": "E-VAL-027",
      "body": {
       "error": "validation",
-      "code": "E-VAL-027"
+      "code": "E-VAL-027",
+      "details": []
      },
      "errors": [
       "E-VAL-027"
      ],
-     "trigger": "本文が無い・空・空白だけ（全角の空白・改行も）",
-     "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない"
+     "trigger": "本文が無い・空・空白だけ（全角の空白・改行も・口の前処理が断る・欄 body の明細 1 件）",
+     "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない"
     },
     {
-     "status": 422,
-     "code": "E-VAL-014",
+     "status": 404,
+     "code": "NOT_FOUND",
      "body": {
-      "error": "validation",
-      "code": "E-VAL-014"
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "trigger": "チケットが無い・見えない・消した",
+     "ears_form": "UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない"
+    },
+    {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
      },
      "errors": [
-      "E-VAL-014"
+      "E-PAGE-003"
      ],
-     "trigger": "@ する人・知らせる人・引用元が選べない（見られない・抜けた・止められた・別のチケットの書き込み・消した書き込み）",
-     "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない"
+     "trigger": "書き込みと受け箱の行を 1 つの取引で書く所で DB が落ちた",
+     "ears_form": "UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）"
     },
     {
      "status": 503,
@@ -55603,10 +55617,11 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/messages が「スレッドに書く・@ を付ける」として呼ばれたとき THEN Kaname は「@ の相手に知らせる」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない",
+    "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない",
-    "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない",
+    "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない",
+    "UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない",
+    "UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）",
     "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も書かない（止める側に倒す）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",

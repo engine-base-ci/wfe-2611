@@ -6,11 +6,12 @@
 //   createTicketMessage  POST /api/v1/tickets/:id/messages（そのチケットを読める人。閲覧のみの人も書ける・answer=eaa451436670 ⑧・60 回／分／人）
 //     体 { body: string（必須・上限なし・守りは送る量 1MB だけ・D-130.1）, mention_member_ids?: uuid[], notify_member_ids?: uuid[], quote_of_id?: uuid | null }（strict）
 //     201 { data: TimelineItem（K-383 と同じ形・kind post）}・Cache-Control: private, no-store
-//     @ と知らせる人：そのチケットを見られる、抜けていない・止められていない人だけ（ほかは 422・E-VAL-014・欄の名前つき・何も書かない）。重なりは 1 つにし、知らせる人から自分を外す
+//     @ と知らせる人：そのチケットを見られる、抜けていない・止められていない人だけ（ほかは 404・E-PAGE-001・欄も明細も付けない＝在るかを漏らさない・何も書かない。DB の中身で決まる断りは 422 にしない・控え帳 2026-11-21 01:15）。重なりは 1 つにし、知らせる人から自分を外す
 //     受け箱：(@ ∪ 知らせる人) − 自分 に 1 人 1 通（@ された人は ticket.mentioned、ほかは ticket.message）。本文は入れない。dedupe_key ticket.message:<書き込み>:<人>
 //     引用：同じチケットの、消していない書き込み（kind post）だけ。元の頭の 2 行を quote_text に写す（元を消しても字は残る・⑮3）
 //     書き込みと受け箱の行は 1 つの取引（app.ticket_message_post）。途中で落ちたら何も残らない（500・E-PAGE-003）
-//     本文が無い・空・空白だけ（全角の空白も）は 422・E-VAL-027（新しい番号・errors.d/K-385.json）
+//     本文が無い・空・空白だけ（全角の空白も）は 422（形の誤り・契約の pattern \S と必須。欄 body に E-VAL-027 の文・新しい番号・errors.d/K-385.json）
+import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { ITEM_KEYS, MESSAGE_KEYS, setupThread, who, type Item, type Person, type Ticket } from "./thread.harness.js";
 
@@ -29,6 +30,20 @@ const inbox = (t: Ticket) =>
     .then((r) => r.rows);
 const fieldsOf = async (r: Response) =>
   (((await h.json(r))["details"] ?? []) as { field: string }[]).map((x) => x.field);
+/** 存在しない id（無い物）。選べない物と答えの本文全体が一致することを見る（無い物と選べない物は同じ答え・控え帳 2026-11-21 01:30） */
+const sameAnswer = async (a: Response, b: Response, why: string) => {
+  expect(a.status, why).toBe(b.status);
+  expect(await h.json(a), why).toEqual(await h.json(b));
+};
+/** 選べない人・引用元の断り：404・E-PAGE-001・欄も明細も無い（在るかを漏らさない） */
+const expectHidden = async (r: Response, why: string) => {
+  expect(r.status, why).toBe(404);
+  const j = await h.json(r);
+  expect(j["code"], why).toBe("E-PAGE-001");
+  expect(j["field"], why).toBeUndefined();
+  expect(j["details"], why).toBeUndefined();
+  expect(j["detail"], why).toBeUndefined();
+};
 
 describe("K-385 書き込む：ふつう", () => {
   it("K385-API-001 ふつう：本文と @ と知らせる人で書くと 201。答えは TimelineItem（kind post・自分の書き込みなので直す・消すができ、新しくない）。DB に 1 行、受け箱は自分以外に 1 人 1 通・貯めない", async () => {
@@ -128,7 +143,7 @@ describe("K-385 書き込む：ふつう", () => {
 });
 
 describe("K-385 書き込む：選べない人・引用・入力", () => {
-  it("K385-API-006 @ に、そのチケットを見られない人（同じ会社の別のグループ）・別の会社の人・会社から抜けた人・止められた人を入れると 422・E-VAL-014・欄 mention_member_ids。書き込みも知らせも残らない", async () => {
+  it("K385-API-006 @ に、そのチケットを見られない人（同じ会社の別のグループ）・別の会社の人・会社から抜けた人・止められた人を入れると 404・E-PAGE-001（欄も明細も付けない）。書き込みも知らせも残らない", async () => {
     const t = await h.ticket();
     const left = await h.person("抜けた人");
     await h.f.admin.query("update members set deleted_at = now() where id = $1", [left.id]);
@@ -139,26 +154,33 @@ describe("K-385 書き込む：選べない人・引用・入力", () => {
     ]);
     for (const p of [h.stranger, h.outsider, left, stopped]) {
       const r = await send(h.writer, t, { body: "呼ぶ", mention_member_ids: [p.id] });
-      expect(r.status, p.id).toBe(422);
-      expect((await h.json(r))["code"]).toBe("E-VAL-014");
-      expect(await fieldsOf(r)).toContain("mention_member_ids");
+      await expectHidden(r, p.id);
     }
+    const ghost = await send(h.writer, t, { body: "呼ぶ", mention_member_ids: [randomUUID()] });
+    await expectHidden(ghost, "存在しない人");
+    await sameAnswer(
+      ghost,
+      await send(h.writer, t, { body: "呼ぶ", mention_member_ids: [h.outsider.id] }),
+      "@ の存在しない人",
+    );
     expect(await msgs(t)).toBe(0);
     expect(await inbox(t)).toHaveLength(0);
   });
 
-  it("K385-API-007 知らせる人に見られない人を入れると 422・E-VAL-014・欄 notify_member_ids で何も残らない。グループの外の担当者・承認する人（関わっている人）は選べる", async () => {
+  it("K385-API-007 知らせる人に見られない人を入れると 404・E-PAGE-001（欄も明細も付けない）で何も残らない。グループの外の担当者・承認する人（関わっている人）は選べる", async () => {
     const t = await h.ticket({ assignee: h.stranger });
     const bad = await send(h.writer, t, { body: "知らせる", notify_member_ids: [h.outsider.id] });
-    expect(bad.status).toBe(422);
-    expect(await fieldsOf(bad)).toContain("notify_member_ids");
+    await expectHidden(bad, "notify");
+    const ghost = await send(h.writer, t, { body: "知らせる", notify_member_ids: [randomUUID()] });
+    await expectHidden(ghost, "存在しない人");
+    await sameAnswer(ghost, bad, "知らせる人の存在しない人");
     expect(await msgs(t)).toBe(0);
     const ok = await send(h.writer, t, { body: "担当者に知らせる", notify_member_ids: [h.stranger.id] });
     expect(ok.status).toBe(201);
     expect((await inbox(t)).map((x) => x.member_id)).toEqual([h.stranger.id]);
   });
 
-  it("K385-API-008 引用：同じチケットの書き込みなら頭の 2 行を写す（元を後で消しても字は残る）。消した書き込み・別のチケットの書き込み・仕組みの行は 422・欄 quote_of_id", async () => {
+  it("K385-API-008 引用：同じチケットの書き込みなら頭の 2 行を写す（元を後で消しても字は残る）。消した書き込み・別のチケットの書き込み・仕組みの行は 404・E-PAGE-001（欄も明細も付けない）", async () => {
     const t = await h.ticket();
     const src = await h.post(t, h.boss, { body: "1 行目\n2 行目\n3 行目" });
     const r = await send(h.writer, t, { body: "返事です", quote_of_id: src });
@@ -176,9 +198,11 @@ describe("K-385 書き込む：選べない人・引用・入力", () => {
     const sys = await h.post(t, null, { kind: "system", body: "仕組みの行" });
     for (const q of [src, other, sys]) {
       const bad = await send(h.writer, t, { body: "引用", quote_of_id: q });
-      expect(bad.status, q).toBe(422);
-      expect(await fieldsOf(bad)).toContain("quote_of_id");
+      await expectHidden(bad, q);
     }
+    const ghost = await send(h.writer, t, { body: "引用", quote_of_id: randomUUID() });
+    await expectHidden(ghost, "存在しない書き込み");
+    await sameAnswer(ghost, await send(h.writer, t, { body: "引用", quote_of_id: other }), "存在しない引用元");
     expect(await msgs(t)).toBe(2); // 元の 1 行と、最初の返事だけ
   });
 
