@@ -21109,8 +21109,7 @@
    "choke_points": [],
    "choke_none": "口の試験の準備（beforeAll）に migrateAuth の呼び出しを足すだけ。製品のコード・口・DB の形・外には触らない",
    "tests": [
-    "scripts/ci/k644_migrate_auth_test.py",
-    "apps/api/test/features/fixture.ts"
+    "scripts/ci/k644_migrate_auth_test.py"
    ],
    "carry": [],
    "depends_on": [],
@@ -21126,7 +21125,8 @@
     "ci"
    ],
    "changes": [
-    "scripts/ci/g65.d/K-644.txt"
+    "scripts/ci/g65.d/K-644.txt",
+    "apps/api/test/features/fixture.ts"
    ],
    "flow": "CI を直す",
    "sections": {
