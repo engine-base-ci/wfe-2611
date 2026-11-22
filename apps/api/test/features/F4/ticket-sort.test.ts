@@ -779,4 +779,47 @@ describe("K-440 優先度・親", () => {
     expect((await audits(w.tenantId)).length).toBe(0);
     expect((await notesOf(t.id)).length).toBe(0);
   });
+
+  it("K440-API-027 知らせは 1 回の要求で 1 人に 1 通：担当者でない人が段と優先度と親を一緒に変えても、担当者の受け箱の行は 1 つで、変えた欄の名前が全部入る（代表の答え ⑮7）", async () => {
+    const w = await world();
+    const p = await mk(w, w.g1, { due: jst(10) });
+    const t = await mk(w, w.g1, { due: jst(3), assignee: w.e1.id });
+    await patchOk(w.boss, t.id, {
+      stage_key: "doing",
+      priority: "high",
+      priority_reason: "段と一緒",
+      parent_ticket_id: p.id,
+    });
+    const all = (
+      await f.admin.query(
+        "select event_kind_id, payload from notifications where payload->>'ticket_id' = $1 and member_id = $2 order by created_at, id",
+        [t.id, w.e1.id],
+      )
+    ).rows as { event_kind_id: string; payload: { fields?: string[] } }[];
+    expect(all.length).toBe(1);
+    expect(all[0]!.event_kind_id).toBe("ticket.stage_changed");
+    expect(all[0]!.payload.fields).toEqual(["priority", "parent"]);
+    expect(JSON.stringify(all[0]!.payload)).not.toContain("段と一緒");
+  });
+
+  it("K440-API-028 対にならないサロゲートを含む理由：段の組と同じく U+FFFD に置き換えて 200 で書く（欄によって答えを変えない）", async () => {
+    const w = await world();
+    const t = await mk(w, w.g1);
+    const ok = await patchOk(w.boss, t.id, { priority: "high", priority_reason: "急ぎ\uD800の理由\uDC00" });
+    expect(ok["changed"]).toBe(true);
+    expect(await row(t.id)).toMatchObject({ priority: "high", priority_reason: "急ぎ\uFFFDの理由\uFFFD" });
+  });
+
+  it("K440-API-029 錠の順：段と親を一緒に送る要求と、親だけの要求が逆向きに同時に来ても、行き詰まらず 200 が 1 つと 409 が 1 つ（会社の錠を先に取る）", async () => {
+    const w = await world();
+    for (let n = 0; n < 6; n++) {
+      const a = await mk(w, w.g1, { due: jst(8) });
+      const b = await mk(w, w.g1, { due: jst(8) });
+      const rs = await Promise.all([
+        patch(w.boss, a.id, { stage_key: "doing", parent_ticket_id: b.id }),
+        patch(w.e1, b.id, { parent_ticket_id: a.id }),
+      ]);
+      expect(rs.map((r) => r.status).sort(), `${n} 回目`).toEqual([200, 409]);
+    }
+  });
 });

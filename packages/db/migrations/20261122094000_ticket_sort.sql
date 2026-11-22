@@ -169,14 +169,24 @@ begin
     values (t.tenant_id, t.id, v_me, 'change', v_body, v_changes, v_me)
   returning id into v_msg;
   -- 担当者でない人が変えたときだけ、担当者（今のメンバー：抜けた・止められた人は除く）の受け箱に知らせる（画面の中だけ・メールは出さない・D-125.130・D-150.32）。
-  --   本文はチケットの id・番号・リンク・変更の 1 行の id・変えた欄の名前だけ（題名・理由の字は入れない）。1 回の要求が何を変えても行は 1 つ
+  --   本文はチケットの id・番号・リンク・変更の 1 行の id・変えた欄の名前だけ（題名・理由の字は入れない）。1 回の要求が何を変えても行は 1 つ（同じ取引で既に在る行には欄を足す）
   if t.assignee_member_id is not null and t.assignee_member_id <> v_me and app.ticket_member_ok(t.tenant_id, t.assignee_member_id) then
     v_notify := t.assignee_member_id;
-    insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
-      values (t.tenant_id, v_notify, 'inapp', 'ticket.sort_changed',
-              jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
-                                 'fields', to_jsonb(v_fields)),
-              'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    -- 1 回の要求は 1 人に 1 通（代表の答え ⑮7）：同じ取引で、この人・このチケットの受け箱の行が既に在れば（段の組が先に書いた行など）、
+    --   新しく書かず、その行の fields に変えた欄の名前を足す。無ければ新しく書く
+    update notifications n
+       set payload = n.payload || jsonb_build_object('fields', coalesce(n.payload -> 'fields', '[]'::jsonb) || to_jsonb(v_fields))
+     where n.tenant_id = t.tenant_id and n.member_id = v_notify and n.channel_id = 'inapp'
+       and n.event_kind_id in ('ticket.stage_changed', 'ticket.sort_changed')
+       and n.payload ->> 'ticket_id' = t.id::text
+       and n.xmin = pg_current_xact_id()::xid;
+    if not found then
+      insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
+        values (t.tenant_id, v_notify, 'inapp', 'ticket.sort_changed',
+                jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
+                                   'fields', to_jsonb(v_fields)),
+                'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    end if;
   end if;
   -- 証跡（関門 C2）。中身は変えた欄の名前だけ（理由の字を残さない）
   insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, choke_point_id, payload, created_by)
