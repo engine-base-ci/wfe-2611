@@ -82,6 +82,9 @@ export function decodeCursor(s: string): { createdKey: string; id: string } | nu
   if (!Array.isArray(arr) || arr.length !== 2 || !arr.every((x) => typeof x === "string")) return null;
   const [key, id] = arr as [string, string];
   if (!STAMP.test(key) || Number.isNaN(Date.parse(key)) || !isUuid(id)) return null;
+  // 暦に無い日時（2026-02-30 など）は V8 が翌月に丸めて通すので、丸めが起きた鍵は読めない鍵にする（DB に行かせて 503 にしない）
+  const head = /^[0-9T:-]{19}/.exec(key)?.[0] ?? "";
+  if (!new Date(`${head}Z`).toISOString().startsWith(head)) return null;
   return { createdKey: key, id };
 }
 
