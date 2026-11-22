@@ -10334,6 +10334,20 @@ components:
           type: string
           format: uuid
           nullable: true
+        fields:
+          type: object
+          minProperties: 1
+          propertyNames:
+            format: uuid
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: number
+            - type: boolean
+            - type: array
+              items:
+                type: string
+            nullable: true
       additionalProperties: false
       x-operation: updateTicket
       allOf:
@@ -10358,6 +10372,8 @@ components:
           - priority_reason
         - required:
           - parent_ticket_id
+        - required:
+          - fields
       - anyOf:
         - not:
             required:
@@ -41093,7 +41109,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004／E-FLD-001／E-FLD-002／E-FLD-003／E-FLD-004
           content:
             application/json:
               schema:

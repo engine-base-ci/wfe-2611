@@ -51771,7 +51771,7 @@
      "errors": [
       "E-PAGE-001"
      ],
-     "trigger": "チケットが無い・別の会社・消した（入口の行の守り）か、段の id（stage_id）が指す段が無い・別の会社の段・消した段（欄 stage_id）か、親（parent_ticket_id）が指すチケットが無い・別の会社・消した・自分に見えない（欄・明細なし）",
+     "trigger": "チケットが無い・別の会社・消した（入口の行の守り）か、段の id（stage_id）が指す段が無い・別の会社の段・消した段（欄 stage_id）か、親（parent_ticket_id）が指すチケットが無い・別の会社・消した・自分に見えない、会社の項目（fields）の鍵が指す項目が無い・別の会社・消した（欄・明細なし）",
      "ears_form": "UNWANTED: IF チケットか指した段・親が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
     },
     {
@@ -51909,6 +51909,58 @@
      "ears_form": "UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない"
     },
     {
+     "status": 409,
+     "code": "E-FLD-001",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-001"
+     },
+     "errors": [
+      "E-FLD-001"
+     ],
+     "trigger": "会社の項目（fields）の値を、そのチケットの種別に出ない項目に入れようとした（項目に種別の行があって、このチケットの種別が入っていない。消した種別の行しか無い項目も同じ・欄・明細なし）",
+     "ears_form": "UNWANTED: IF そのチケットの種別に出ない項目に値を入れようとしたなら、Kaname は 409 と E-FLD-001 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-002",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-002"
+     },
+     "errors": [
+      "E-FLD-002"
+     ],
+     "trigger": "会社の項目（fields）の値が、選択肢に無い（1 つ選ぶ・複数選ぶ。別の項目の選択肢の id・マスタから外した選択肢も同じ・欄・明細なし）",
+     "ears_form": "UNWANTED: IF 選択肢に無い値を項目に入れようとしたなら、Kaname は 409 と E-FLD-002 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-003",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-003"
+     },
+     "errors": [
+      "E-FLD-003"
+     ],
+     "trigger": "会社の項目（fields）の値が、項目の型と合わない（数に文字・日付に暦に無い日や別の書き方・チェックに文字・選ぶ型に数・欄・明細なし）",
+     "ears_form": "UNWANTED: IF 項目の型と合わない値を入れようとしたなら、Kaname は 409 と E-FLD-003 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-004",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-004"
+     },
+     "errors": [
+      "E-FLD-004"
+     ],
+     "trigger": "必須の会社の項目（fields）を空にしようとした（null・空の文字・空白だけ・空の並び。必須のチェックは false も同じ・欄・明細なし）",
+     "ears_form": "UNWANTED: IF 必須の項目を空にしようとしたなら、Kaname は 409 と E-FLD-004 を返し、何も書かない"
+    },
+    {
      "status": 422,
      "code": "VALIDATION_ERROR",
      "body": {
@@ -51919,7 +51971,7 @@
       "E-VAL-041",
       "E-VAL-047"
      ],
-     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
+     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）・会社の項目の欄 fields が object でない・空・鍵が uuid でない（大文字小文字違いで重なるも）・値が文字・数・真偽・文字の並び・null のどれでもない・NUL を含む（欄 fields）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
      "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない"
     },
     {
@@ -51932,7 +51984,7 @@
      "errors": [
       "E-PAGE-003"
      ],
-     "trigger": "書く所（段・保留・優先度・親の列・変更の 1 行・担当者の受け箱の行・証跡）で DB が落ちた（1 つの処理なので何も残らない・ログは場所と例外の種類だけ）",
+     "trigger": "書く所（段・保留・優先度・親の列・会社の項目の値の行・変更の 1 行・担当者の受け箱の行・証跡）で DB が落ちた（1 つの処理なので何も残らない・ログは場所と例外の種類だけ）",
      "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す"
     },
     {
@@ -52017,6 +52069,10 @@
     "UNWANTED: IF 自分の子孫を親にしようとしたなら、Kaname は 409 と E-TKT-002 を返し、何も書かない",
     "UNWANTED: IF 親子が 3 段を超える親を決めようとしたなら、Kaname は 409 と E-TKT-003 を返し、何も書かない",
     "UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない",
+    "UNWANTED: IF そのチケットの種別に出ない項目に値を入れようとしたなら、Kaname は 409 と E-FLD-001 を返し、何も書かない",
+    "UNWANTED: IF 選択肢に無い値を項目に入れようとしたなら、Kaname は 409 と E-FLD-002 を返し、何も書かない",
+    "UNWANTED: IF 項目の型と合わない値を入れようとしたなら、Kaname は 409 と E-FLD-003 を返し、何も書かない",
+    "UNWANTED: IF 必須の項目を空にしようとしたなら、Kaname は 409 と E-FLD-004 を返し、何も書かない",
     "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない",
     "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",

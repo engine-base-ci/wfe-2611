@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。223 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。227 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4043,6 +4043,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "must_not": false,
     "layers": [
       "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-001": {
+    "id": "E-FLD-001",
+    "cls": "conflict",
+    "message": "この項目は、このチケットの種別では使えません",
+    "action": "項目の一覧を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-002": {
+    "id": "E-FLD-002",
+    "cls": "conflict",
+    "message": "選べない値が含まれています。選択肢から選び直してください",
+    "action": "選択肢から選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-003": {
+    "id": "E-FLD-003",
+    "cls": "conflict",
+    "message": "この項目に入れられない形の値です",
+    "action": "値を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-FLD-004": {
+    "id": "E-FLD-004",
+    "cls": "conflict",
+    "message": "必須の項目は空にできません。値を入れてください",
+    "action": "値を入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "FLD-004",
+    "must_not": false,
+    "layers": [
       "API",
       "DB"
     ],
