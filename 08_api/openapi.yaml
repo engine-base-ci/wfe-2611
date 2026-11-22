@@ -10318,10 +10318,10 @@ components:
           maximum: 100000
         hold_reason:
           type: string
-          pattern: '[^\s\u0000-\u001f\u007f]'
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
         resume_condition:
           type: string
-          pattern: '[^\s\u0000-\u001f\u007f]'
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
       additionalProperties: false
       x-operation: updateTicket
       allOf:
