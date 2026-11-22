@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:63a76b4d81a7cbcb
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:56241054079a1e9e
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -117,7 +117,7 @@ export interface Ops {
   postInquiryMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   resolveMyInquiry: { params: { id: string }; query: never; body: T.InquiriesInput; data: T.Inquiries };
   uploadInquiryAttachment: { params: never; query: never; body: T.AttachmentsInput; data: T.Attachments };
-  createInvitations: { params: never; query: never; body: T.InvitationsInput; data: T.Invitations };
+  createInvitations: { params: never; query: never; body: T.InvitationsCreateInput; data: T.InvitationsSent };
   revokeInvitation: { params: { id: string }; query: never; body: never; data: T.Invitations };
   resendInvitation: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
   createInvitationLink: { params: never; query: never; body: T.InvitationsInput; data: T.InvitationLink };
