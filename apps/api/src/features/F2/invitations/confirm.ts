@@ -20,6 +20,7 @@ import {
   openLinkJoinPassword,
   openSessionFor,
   releaseLinkJoin,
+  sealOffLinkJoin,
   type ClaimedLinkJoin,
   type InvitationForAccept,
 } from "@kaname/auth/invitations";
@@ -144,6 +145,13 @@ export function invitationConfirmFeature(d: InvitationDeps) {
       if (why === "not_found") return closeAnd(row, reply(404, "E-INV-001"));
       console.error(`[invite-link] 受諾できなかった → ${mailTag(row.email)}: ${kindOf(e)}`);
       return releaseAndFail(row);
+    }
+
+    // 参加が決まった：包んだパスワードを保留の行から消す（落ちても答えは変えない・ログに種類だけ）
+    try {
+      await sealOffLinkJoin(pool, row.id);
+    } catch (e) {
+      console.error(`[invite-link] 包んだパスワードを空にできなかった（${kindOf(e)}）`);
     }
 
     // 手順 S6：セッションを作る。失敗しても参加は取り消さない（パスワードでログインできる）

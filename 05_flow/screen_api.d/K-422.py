@@ -20,7 +20,10 @@ REQUIRED_INPUTS = {
 }
 
 # 確認のトークンが空白だけは契約の決まりで書く（K-355 の request_ref と同じ書き方・UNEXPRESSIBLE_422 には足さない）
+_EMAIL = "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"   # 登録（createSignup）・K-638 と同じ（NFKC で直した後に口の EMAIL_RE で見るより狭く書く）
 VALUE_RANGES = {
+    # リンクの招待で新しく入る人が送るメールの形（空・空白だけ・形違いは 422・E-INV-013。無いときは招待の行で決まるので契約に書かず 409）
+    "acceptInvitation": {"email": {"pattern": _EMAIL}},
     "confirmInvitationJoin": {"token": {"pattern": "\\S"}},
 }
 

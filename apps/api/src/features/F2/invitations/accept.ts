@@ -72,8 +72,12 @@ const GONE: Record<Exclude<InvitationForAccept["state"], "ok">, string> = {
 export function invitationAcceptFeature(d: InvitationDeps) {
   /** 前処理：体の email は残す（読むのはリンクの招待で新しく入るときだけ・メールで招いた招待は体の email を読まない＝K332-API-009）。
    *  ほかの欄は契約の strict な形が確かめる */
-  const input = (raw: unknown): { input: Record<string, unknown> } => {
+  const input = (raw: unknown): { input: Record<string, unknown> } | { reply: HookReply } => {
     const b = raw && typeof raw === "object" && !Array.isArray(raw) ? { ...(raw as Record<string, unknown>) } : {};
+    // 送られたメールの形（空・空白だけ・形違い）は契約の VALUE_RANGES の pattern と同じ決まり：422・E-INV-013・欄 email。
+    //   メールが送られていないときは招待の行（宛てが無いか）で決まるので、ここでは見ない（linkJoin が 409）
+    const e = b["email"];
+    if (typeof e === "string" && !EMAIL_RE.test(normalizeEmail(e))) return { reply: reply(422, "E-INV-013", "email") };
     return { input: b };
   };
 
@@ -175,7 +179,8 @@ export function invitationAcceptFeature(d: InvitationDeps) {
   ): Promise<HookReply> => {
     const rawEmail = a.input["email"];
     const email = typeof rawEmail === "string" ? normalizeEmail(rawEmail) : "";
-    if (!email || !EMAIL_RE.test(email)) return reply(422, "E-INV-013", "email");
+    // 送られていない（宛てのメールが無い招待は体のメールが要る）：招待の行で決まる断りなので 409（欄・details は付けない）
+    if (!email) return reply(409, "E-INV-013");
     try {
       if (await authUserIdByEmail(d.authPool, email)) return reply(409, "E-INV-006");
     } catch (e) {
@@ -206,12 +211,12 @@ export function invitationAcceptFeature(d: InvitationDeps) {
       url: `${d.config.webBaseUrl}${CONFIRM_PATH}${put.token}`,
     });
     let sendError: string | null = null;
-    if (!d.mailer) sendError = "メールの送出先が設定されていない";
+    if (!d.mailer) sendError = "no_mailer";
     else {
       try {
         await d.mailer({ to: email, subject: mail.subject, text: mail.text });
       } catch (e) {
-        sendError = (e as Error).message || "送れませんでした";
+        sendError = kindOf(e); // 保留の行に残すのは例外の種類だけ（文には宛てのメールや外のサービスの中身が入りうる）
         console.error(`[invite-link] 確認のメールを送れなかった → ${mailTag(email)}: ${kindOf(e)}`);
       }
     }

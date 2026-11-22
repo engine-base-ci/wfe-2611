@@ -12,9 +12,10 @@ create table if not exists kaname_auth.invitation_link_joins (
   tenant_id     uuid not null,
   email         text not null,
   display_name  text not null,
-  pw_iv         text not null,
-  pw_tag        text not null,
-  pw_data       text not null,
+  -- 包んだパスワード：参加が決まった後と閉じた後は空にする（持つ理由が無い・保留の申し込み pending_signup と同じ形）
+  pw_iv         text,
+  pw_tag        text,
+  pw_data       text,
   token_hash    text not null,
   expires_at    timestamptz not null,
   -- 送れたか。送れていないのに「送りました」と画面に出さないため（G-15）

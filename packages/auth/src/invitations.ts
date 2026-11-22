@@ -324,7 +324,15 @@ export async function releaseLinkJoin(authPool: pg.Pool, id: string): Promise<vo
 /** 参加が決まらないと分かった保留の行を閉じる（印は戻さない・閉じた行は「無い」と同じ） */
 export async function closeLinkJoin(authPool: pg.Pool, id: string): Promise<void> {
   await authPool.query(
-    "update kaname_auth.invitation_link_joins set deleted_at = now(), updated_at = now() where id = $1",
+    "update kaname_auth.invitation_link_joins set deleted_at = now(), pw_iv = null, pw_tag = null, pw_data = null, updated_at = now() where id = $1",
+    [id],
+  );
+}
+
+/** 参加が決まった：包んだパスワードを空にする（行は「使われた」と「期限切れ」を分けるために残す・sealOffPending と同じ） */
+export async function sealOffLinkJoin(authPool: pg.Pool, id: string): Promise<void> {
+  await authPool.query(
+    "update kaname_auth.invitation_link_joins set pw_iv = null, pw_tag = null, pw_data = null, updated_at = now() where id = $1",
     [id],
   );
 }
