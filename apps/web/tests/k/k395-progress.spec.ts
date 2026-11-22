@@ -326,7 +326,7 @@ const DRIVE: Record<string, { s: S; go: (page: Page) => Promise<void>; also?: "b
   "prog-hold-reason": {
     s: {
       stage: "hold",
-      run: { phase: "execute", status: "stopped", pc: "live", stopped_reason: "PC が答えませんでした" },
+      run: { phase: "execute", status: "running", pc: "live" },
       asMock: true,
     },
     go: async (page) => {
@@ -410,6 +410,7 @@ test('K395-UI-004 作業中で札を押す：項目は 未着手・作業中 ✓
   const p = await progressApi(page, { stage: "doing" });
   await openDetail(page);
   await stageBtn(page).click();
+  await expect(menu(page)).toBeVisible();
   expect(await itemTexts(page)).toEqual(["未着手", "作業中✓", "保留理由を書く", "完了確かめて完了にする…"]);
   await expect(item(page, "確かめて完了にする")).not.toHaveAttribute("aria-disabled", "true");
   await stageItem(page, "todo").click();
@@ -544,13 +545,13 @@ test('K395-UI-010 保留中を開く：帯の小さな字は「11/01 10:41 佐�
   expect(p.patches).toEqual([{ stage_key: "doing" }]);
 });
 
-test("K395-UI-011 保留 ＋ 承認と実行の帯が「実行が止まりました」を出している：保留の帯は出ず、札の横の「理由を見る」で理由・再開の条件・保留にした人と時刻。保留でない段・帯が出る保留では出ない", async ({
+test("K395-UI-011 保留 ＋ 承認と実行の帯が「実行中」を出している（AI が動いている間は保留の帯が譲る・K-620）：保留の帯は出ず、札の横の「理由を見る」で理由・再開の条件・保留にした人と時刻。保留でない段・帯が出る保留では出ない", async ({
   page,
 }) => {
-  const stopped = { phase: "execute", status: "stopped", pc: "live", stopped_reason: "PC が答えませんでした" };
-  const p = await progressApi(page, { stage: "hold", run: stopped });
+  const running = { phase: "execute", status: "running", pc: "live" };
+  const p = await progressApi(page, { stage: "hold", run: running });
   await openDetail(page);
-  await expect(page.locator(".k-detail-bands")).toContainText("実行が止まりました");
+  await expect(page.locator(".k-detail-bands")).toContainText("実行中");
   await expect(band(page)).toHaveCount(0);
   const why = meta(page).getByRole("button", { name: "理由を見る" });
   await why.click();
@@ -565,7 +566,7 @@ test("K395-UI-011 保留 ＋ 承認と実行の帯が「実行が止まりまし
   await page.reload();
   await expect(band(page)).toBeVisible();
   await expect(meta(page).getByRole("button", { name: "理由を見る" })).toHaveCount(0);
-  p.s = { stage: "doing", run: stopped };
+  p.s = { stage: "doing", run: running };
   await page.reload();
   await expect(meta(page).getByRole("button", { name: "理由を見る" })).toHaveCount(0);
   expect(p.patches).toEqual([]);
@@ -623,6 +624,7 @@ test('K395-UI-014 完了のチケットの札：項目は「完了 ✓」と線�
   await openDetail(page);
   await expect(page.locator(".k-detail-bands")).toContainText("完了しました（");
   await stageBtn(page).click();
+  await expect(menu(page)).toBeVisible();
   expect(await itemTexts(page)).toEqual(["完了✓", "作業中開き直す"]);
   await expect(menu(page).locator(".k-prog-sep")).toHaveCount(1);
   await item(page, "開き直す").click();
@@ -894,6 +896,7 @@ test('K395-UI-025 会社が足した段（鍵が null・名前「見積中」）
   await openDetail(page);
   await expect(stagePart(page)).toHaveText("見積中");
   await stageBtn(page).click();
+  await expect(menu(page)).toBeVisible();
   expect(await itemTexts(page)).toEqual(["未着手", "作業中", "保留理由を書く", "完了作業中にしてから"]);
   await expect(item(page, "作業中にしてから")).toHaveAttribute("aria-disabled", "true");
   await stageItem(page, "doing").click();
