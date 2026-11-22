@@ -35,7 +35,6 @@ const MSG = {
   textReq: "決めたことを書いてください", // E-VAL-042（口の葉 K-390 が正本に足す・モック dec-add と同じ）
   byInvalid: "決めた人は、この会社のメンバーから選んでください", // 404 E-PAGE-001 の欄 decided_by_member_id の文（K-390）
   aiInert: "AI が一文にまとめた案 ── AI の案は、自分の AI と話す画面ができてから使えます", // ⑯
-  clientLater: "取引先の画面ができてから使えます", // ㉒
   peopleFailed: "ほかのメンバーを読み込めませんでした（自分を選べます）", // 切る段の仮
   gone: "元の書き込みは消されました", // ⑪
   forbidden:
@@ -235,7 +234,7 @@ test("K397-UI-008 閲覧のみ（meta.can_write false）：一覧と作るとき
 
 // ---------------------------------------------------------------- 足す
 
-test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレーの箱（押せない）・決めた人の既定は本人・候補 3 人・取引先のルールは押せない・本文と食い違う箱は無い・焦点は決めたこと", async ({
+test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレーの箱（押せない）・決めた人の既定は本人・候補 3 人・取引先の選び肢は無い・本文と食い違う箱は無い・焦点は決めたこと", async ({
   page,
 }) => {
   await decisionsApi(page);
@@ -253,9 +252,9 @@ test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレ�
   await expect(page.getByRole("option")).toHaveText(["高本 聖斗", "鈴木 一郎", "佐藤 花子"]);
   await page.keyboard.press("Escape");
   await expect(dlg.getByRole("radio", { name: "このチケットだけ" })).toBeChecked();
-  const client = dlg.getByRole("radio", { name: /取引先のルールにする/ });
-  await expect(client).toBeDisabled();
-  await expect(dlg.locator('label[aria-disabled="true"]')).toHaveAttribute("title", MSG.clientLater);
+  // 取引先を持たない（answer=4961f0280e9a）：「取引先のルールにする」の選び肢は無い
+  await expect(dlg.getByRole("radio", { name: /取引先/ })).toHaveCount(0);
+  await expect(dlg).not.toContainText("取引先");
   await expect(dlg).not.toContainText("本文と食い違う");
   await expect(dlg.getByRole("button", { name: "やめる" })).toBeVisible();
   await expect(sendBtn(page)).toBeVisible();

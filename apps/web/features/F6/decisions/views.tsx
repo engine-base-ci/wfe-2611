@@ -3,7 +3,7 @@
 //   口はまだつながない（読む・足す・改める・取り消す口は K-390・K-391、画面の結線は K-397・K-398）。ここは値を受け取って描くだけ。
 //   代表の答え（2026-11-20）：⑯ 段 7 は人が書く所まで（AI の案の欄と本文を直す案はグレーで出す）／⑰ 取り消しは印と理由を付けて残す（消さない）／
 //   ⑱ 決めた人は既定が本人・ほかの人とひとことを選べる／⑲ 担当者と承認する人に知らせ、やり取りにも 1 行／⑳ 作るときに書いた字は上に残し、下に一覧
-//   取引先のルールにする（段 12）は押せない形（D-145.9）
+//   取引先を持たないので「取引先のルールにする」の選び肢は無い（answer=4961f0280e9a）
 import { useEffect, useState, type ReactNode, type Ref } from "react";
 import { Button, Callout, Confirm, Dialog, Select, TextArea, TextField } from "@/components/k";
 import "./decisions.css";
@@ -161,7 +161,7 @@ export interface DecisionDialogProps {
   onSubmit?: (values: DecisionFormValues) => void;
 }
 
-/** 決定にする（書き込みから）／決定を足す（直接書く）小窓。AI の案の欄・取引先のルール・本文を直す案はグレー */
+/** 決定にする（書き込みから）／決定を足す（直接書く）小窓。AI の案の欄・本文を直す案はグレー */
 export function DecisionDialog({
   open,
   from,
@@ -250,9 +250,6 @@ export function DecisionDialog({
         <legend>どこまで効かせる</legend>
         <label>
           <input type="radio" name="decision_scope" defaultChecked /> このチケットだけ
-        </label>
-        <label aria-disabled="true" title="取引先の画面ができてから使えます">
-          <input type="radio" name="decision_scope" disabled /> 取引先のこれから（取引先のルールにする）
         </label>
       </fieldset>
       {from ? (
