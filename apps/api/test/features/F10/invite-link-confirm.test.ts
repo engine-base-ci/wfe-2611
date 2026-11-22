@@ -379,6 +379,17 @@ describe("K-422 確認のリンクを押す（confirmInvitationJoin）", () => {
     expect((await joinsOf(other)).rows).toHaveLength(0);
   });
 
+  it("K422-API-031 送られたメールの形は招待の種類によらず契約の決まり：メールで招いた招待でも email が空・形違いなら 422・E-INV-013（欄 email）。利用者は作らない", async () => {
+    const host = await h.owner("host015b");
+    const inv = await h.invite(host);
+    for (const email of ["", "x"]) {
+      const r = await h.accept(inv.token, { name: NAME, password: PW, email });
+      expect(r.status, JSON.stringify(email)).toBe(422);
+      expect(JSON.stringify(await h.json(r))).toContain("E-INV-013");
+    }
+    expect(await h.authUsers(inv.email)).toBe(0);
+  });
+
   it("K422-API-016 確認の前に同じメールのアカウントができた：409・E-INV-006・利用者は 1 のまま（増えない）・保留の行は閉じる", async () => {
     const host = await h.owner("host016");
     const tk = await linkOf(host);
