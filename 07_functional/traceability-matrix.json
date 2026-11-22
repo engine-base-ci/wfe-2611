@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-22",
+ "created_at": "2026-11-23",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -2985,6 +2985,7 @@
     "GET /api/handover_rules",
     "GET /api/members",
     "GET /api/clients",
+    "POST /api/tickets/:id/timeline/seen",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
@@ -11107,6 +11108,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen"
     },
     {
      "act": "A51",
