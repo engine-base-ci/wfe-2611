@@ -320,7 +320,6 @@ function Toast({ title }: { title: string }) {
 function Panel({ assignee, viewer }: { assignee: ReactNode; viewer: Viewer }) {
   const rows: [string, ReactNode][] = [
     ["担当者", assignee],
-    ["業務の型", ""],
     ["承認する人", ""],
   ];
   return (
