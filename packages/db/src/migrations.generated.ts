@@ -132,4 +132,5 @@ export const MIGRATIONS = [
   "20261120143736_bridge_set_browser_acl.sql",
   "20261120215500_runs_view_real_runs_only.sql",
   "20261121091900_workspace_invitations.sql",
+  "20261122090300_custom_fields.sql",
 ] as const;
