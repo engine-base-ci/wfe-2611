@@ -41,11 +41,14 @@
     "test_post_saved_views_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_saved_views_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_post_saved_views_rejected_403": "役が合わない人の止めは入口の共通（op.ts）。見えないグループは 403 でなく 404 E-VWS-004（K475-API-018）",
-    "test_post_saved_views_too_large": "入口の共通の 1MB の守り（K-144）。この口の体は小さな欄 6 つだけ（条件は欄 8 個までの小さな入れ物）"
+    "test_post_saved_views_rejected_403": "役が合わない人の止めは入口の共通（op.ts）。見えないグループは 403 でなく 404 E-VWS-004（K475-API-018）"
    }
   }
  }
