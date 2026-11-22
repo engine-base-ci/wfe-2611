@@ -19469,12 +19469,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "listTicketDecisions",
-    "createTicketDecision",
-    "listMembers",
-    "getTicket"
-   ],
+   "apis": [],
    "mock": [
     "dec-log",
     "dec-empty",
