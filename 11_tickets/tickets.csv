@@ -2403,6 +2403,24 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-427,入口（op.ts）で NUL（U+0000）を含む入力を 422 で断る（道の値・問い合わせ・体の文字列とキー・Postgres の text は NUL を入れられず listTickets の q が 500 になっていた・DB の番号 22021・22P05 も 2 層目で 422・契約 fuzz は NUL を作らない設定に・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-23,F3・入口,"契約 fuzz（G36）が、前からある口 listTickets を `GET /api/v1/tickets?limit=86&scope_id=<uuid>&cursor=&view=&q=<NUL を含むでたらめな字>` で叩くと **500**（`{""error"":""internal""}`）になることを見つけた（K-365 の CI。K-365 の変更とは関係ない）。
+
+原因は NUL（U+0000）だった（2026-11-20 切る段で確かめた）：
+
+- 使い捨ての DB で node-postgres から `select $1::text`（値に NUL）を流すと、PostgreSQL が `22021 invalid byte sequence for encoding ""UTF8"": 0x00` で落ちる。`select $1::jsonb`（JSON の中に `\u0000`）は `22P05 unsupported Unicode escape sequence`。NUL の無い全角・絵文字・`\u0001` は通る
+- listTickets の q は入口を何も確かめずに通り、題名の絞り込みの SQL の値になる（`apps/api/src/features/F4/ticket-list/query.ts` の `normalizeQ` は NFKC・trim・小文字だけ）。入口が落ちた番号を 422 に写す表（`apps/api/src/contract/op.ts` の `DB_INPUT_CODES`）には 22021・22P05 が無いので、500 になる
+- listTickets の試験を今の版に当てると、この形で 500 になることを切る段で確かめた（試験 K427-API-006）
+
+同じ形は listTickets だけではない。**どの口でも、文字列を DB に渡す口は NUL で 500 になりうる**。契約 fuzz は schemathesis の既定（`generation.allow-x00` が真）で NUL を作るので、口の例が上限（429）に邪魔されず奥に届くようになるほど（K-424）、別の口でも赤になる。fuzz の乱数しだいでどのチケットの CI でも赤になりうる。
+
+この葉は口ごとに直さず、**入口の 1 か所**で直す：
+
+1. **入口（op.ts の `handler`）**：道の値・問い合わせ（名前でなく値）・体（JSON の文字列とキー・入れ子の中まで）のどれにでも NUL があれば、口の振る舞いに届く前に **422・VALIDATION_ERROR**（エラー ID は前からある物のまま・新しく作らない）・欄の名前・理由「使えない文字」。答えに送った字は出さない（代表の決め answer=f0f290e785a9：422＝形の誤り）
+2. **2 層目**：入口をすり抜けた NUL（契約の口の外の前の道すじ `apps/api/src/auth/ext.ts` など）が DB に届いて落ちたときの番号 22021・22P05 も、前から 22P02 などが入っている `DB_INPUT_CODES` に足し、`app.ts` の `onError` と `execute` が 500 でなく 422・決まった文で答える（D-130.2 と同じ写し）
+3. **契約 fuzz は NUL を作らない設定に**：`scripts/ci/schemathesis.toml` に `[generation] allow-x00 = false`。NUL は契約の形（string）では書けないが入口が必ず断る字なので、fuzz が「形どおりの入力」として作ると 422 を赤と数える（positive_data_acceptance）。入口が断ることはこの葉の試験（K427-API-001〜004）が見る","- [ ] 下の表の 8 行（K427-API-001〜007・009）が緑：`apps/api/test/k427_nul_input.test.ts`（K427-API-008 は人が確かめる）
+- [ ] 前からの試験のうち替えた 3 つ（sign-up・connect-pc・approve-complete-return。切る段で替え済み・carry で運ぶ）と、替えない前からの試験（apps/api/test と契約の入口の試験 全部）が緑
+- [ ] 手元の CI（このチケットの範囲。範囲の地図で G36 が流れる）が緑で、契約 fuzz（G36）が listTickets で 500 を出さない
+- [ ] 手元の速い検査（prettier・eslint）が緑"
 K-428,場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-24,F3・DB,"場合表の種 `seedAccessMatrix`（`packages/db/src/seeds.ts`）は、表ごとの種を `seedGenericRows`（`packages/db/src/seed_generic.ts`）に任せ、その最初に **外部キーの一覧を information_schema の 3 つのビュー（table_constraints・key_column_usage・constraint_column_usage）の結合で引いている**。この結合は、表が増えるほど急に遅くなる（constraint_column_usage は、各制約ごとに権限を確かめながら列を引き直すビュー）。
 
 - 手元の開発の試験 DB（kaname_test・表 134・外部キー 370 本）で、この 1 文だけ **約 2.7 秒**。CI の台が混むと、表 138 で約 20 秒になる
@@ -2536,3 +2554,14 @@ K-640,直し：CI の定義の全部の組の台（runs-on）を、リポジト�
 - [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・`staging-e2e.yml`・`release-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。作り手を流すと `07_qa/test-plan/access-matrix.json` の 1 行が変わることがある（この葉と無関係の前からの揺れ）：それは取り込まず、元の版のままにする
 - [ ] 手元の CI（このチケットの範囲）が緑
 - [ ] 変数が無い回で、組が今までと同じ台（self-hosted・linux-vm）に載ることを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
+K-641,直し：GitHub の台（ubuntu-24.04）に無い道具を、画面の組の中で入れる（lsof を入っていなければ入れる・ブラウザは --with-deps で日本語の字体と部品をそろえる・Mac の箱の像では何も増えない・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-23,F3・CI,"K-640 で CI の定義の台を変数 CI_RUNNER で替えられる形にした。公開の側で GitHub の台（ubuntu-24.04）に載せたとき、**Mac の箱の像（tf-golden）に入っていて GitHub の台に入っていない物**で組が落ちる、あるいは静かに別の結果になる所を、段の中で入れて塞ぐ。調べた全部の道具の表は `.ticket-flow/side-notes/CI-GitHubの台-調べ.md`。要るのは 2 つだけ（それ以外は台に在る・または定義が自分で入れている）。
+
+- **lsof**：web の組の「画面と口の番号が空いているか」「立てた API と画面を止める」が `lsof -ti tcp:<番号>` を呼ぶ。像には apt で入れてあるが、GitHub の台（Ubuntu 24.04 の runner-images・2026-11-16 版の apt の一覧）には無い。無いと `lsof` が見つからず、番号の確かめが「空いている」と読んで素通りする（`lsof … >/dev/null 2>&1` の戻りが 127 で「使われていない」側に倒れる）か、止めた後の確かめが空振りする。**段の中で、入っていなければ入れる**（`command -v lsof` で見て、無ければ `sudo apt-get update` の後に `sudo apt-get install -y -qq lsof`）。入っていれば何もしない（像の Mac の箱では sudo も apt も呼ばない）
+- **ブラウザの部品と字体**：web の組は `playwright install chromium`（--with-deps なし）。像は温めのとき `playwright install --with-deps chromium` を流していて、`--with-deps` は Chromium が動く部品に加え、日本語の字体（fonts-ipafont-gothic・fonts-wqy-zenhei。本線の Playwright 1.63 の `nativeDeps` で確かめた）を入れる。GitHub の台には日本語の字体が無く、**日本語の画面の文字の幅が像と違う**（折り返し・溢れの測りと見た目の突き合わせ G48・G70 が像と別の結果になりうる）。像と同じ命令（`--with-deps`）にそろえる。像の Mac の箱では部品も字体も入っているので、実際に入れる物は無い（apt の更新に数秒）
+
+- 道具の段は **web の組だけ**に置く（lsof を呼ぶのは web の組だけ。ほかの組の時間を増やさない）。入れる物は lsof 1 つだけで、入れる道は台の apt だけ（外から取って流さない・版は台の Ubuntu の配布の版）
+- 台の選び（K-640）には触らない。Docker・Postgres・Python・Node・pnpm・Chrome・jq・git・curl・sudo は GitHub の台（x64）に在る、または定義が自分で入れている（actions/setup-python・setup-node・pnpm/action-setup・ci_venv.sh）ので何もしない（表のとおり）","- [ ] 下の表の K641-CI-001〜005 が緑：`python3 scripts/ci/k641_hosted_tools_test.py`
+- [ ] 替えない前からの試験が緑（k172・k175・k176 の基準・k177・k195・k258・k323・k376・k191・ci_scope_test。k175 は `playwright install( --with-deps)? chromium` を許し、k195 は Chrome を入れる命令が定義に無いことを見る）
+- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。`access-matrix.json` の揺れは取り込まない（K-640 と同じ）
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 公開の側で GitHub の台に載せた回で、web の組の番号の確かめが lsof を見つけ、ブラウザが日本語を描くことを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
