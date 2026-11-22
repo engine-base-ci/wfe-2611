@@ -3,7 +3,7 @@
 //   NUL は入口の前処理が 422 にするのでここへ来ない
 const LONE_SURROGATE = /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
 
-export const wellFormed = (s: string): string => s.replace(LONE_SURROGATE, "�");
+export const wellFormed = (s: string): string => s.replace(LONE_SURROGATE, "\uFFFD");
 
 /** 文字のときだけ整える（ほかの型はそのまま） */
 export const cleanString = (v: unknown): unknown => (typeof v === "string" ? wellFormed(v) : v);
