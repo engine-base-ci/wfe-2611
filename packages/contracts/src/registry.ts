@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:7e0980b3c9ab61b9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:fd51c9c0197d85a7
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -3284,53 +3284,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "checks",
         "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
       }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/class_axes",
-    "operationId": "listClassAxes",
-    "table": "class_axes",
-    "kind": "list",
-    "input": null,
-    "success": 200,
-    "output": "ClassAxes",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A103"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -15138,6 +15091,56 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/ticket-fields",
+    "operationId": "listTicketFields",
+    "table": "custom_fields",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketField",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "kind_id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      404,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A103"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "PATCH",
     "path": "/api/v1/ticket_decisions/:id",
     "operationId": "updateTicketDecision",
@@ -19564,4 +19567,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "7e0980b3c9ab61b9";
+export const OPENAPI_HASH = "fd51c9c0197d85a7";

@@ -414,6 +414,9 @@ erDiagram
   class_axes ||--o{ class_values : "値"
   scopes ||--o{ scope_memberships : "入っている人（兼ねる）"
   tickets ||--o{ ticket_class_values : "分類"
+  custom_fields ||--o{ custom_field_kinds : "出す種別"
+  custom_fields ||--o{ ticket_field_values : "値"
+  tickets ||--o{ ticket_field_values : "会社の項目の値"
 ```
 
 | テーブル | 主な列 | 備考 |
@@ -424,9 +427,12 @@ erDiagram
 | **`ticket_kinds`** | `<common>` / `name` / `color` / `position` / `is_builtin` | **★新設（D-125.30）。**タスク・QA・課題・会議。会社が足す（上限 10） |
 | **`kind_sections`** | `<common>` / `kind_id` / `section_key` / `label` / `mode`（必須・出す・外す）/ `position` / `default_test_specs jsonb` | **★新設（D-125.52・D-128.48）。**ワークスペースの管理 › 決まり › チケットの形 |
 | **`ticket_stages`** | `<common>` / `name` / `position` / `is_fixed`（確認中・承認待ち・実行中は製品が固定） | **★新設（D-125.38）。**会社が直せる段は上限 8 |
-| **`class_axes`** | `<common>` / `key` / `name` / `is_builtin` / `position` | **★新設（D-125.67）。**会社が足す軸は上限 5 |
-| **`class_values`** | `<common>` / `axis_id` / `label` / `color` / `position` | 値の並び・色 |
-| **`ticket_class_values`** | `<common>` / `ticket_id` / `value_id` | チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115） |
+| **`class_axes`** | `<common>` / `key` / `name` / `is_builtin` / `position` | **★新設（D-125.67）。**会社が足す軸は上限 5。**凍結（K-563・会社の項目へ移した）** |
+| **`class_values`** | `<common>` / `axis_id` / `label` / `color` / `position` | 値の並び・色。**凍結（K-563・会社の項目へ移した）** |
+| **`ticket_class_values`** | `<common>` / `ticket_id` / `value_id` | チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）。**凍結（K-563・会社の項目へ移した）** |
+| **`custom_fields`** | `<common>` / `name` / `field_type`（短い文字・長い文章・数・日付・1 つ選ぶ・複数選ぶ・チェック）/ `required` / `description` / `options jsonb`（選ぶ型だけ `[{id, name, position}]`）/ `position` | **★新設（K-563・D-150.36・D-150.37）。**会社が足す項目。分類の軸は「1 つ選ぶ」の項目に移した（項目の id＝軸の id）。数に上限なし |
+| **`custom_field_kinds`** | `<common>` / `field_id` / `kind_id` | どの種別で出すか。行が無い項目は全部の種別（K-563） |
+| **`ticket_field_values`** | `<common>` / `ticket_id` / `field_id` / `value jsonb`（null 不可） | チケットごとの会社の項目の値。読めるのは元のチケットを読める人（K-563） |
 | **`handover_rules`** | `<common>` / `target`（子・孫のチケット／派生・関連のチケット／所属グループ／会社が足した軸の値 ← D-125.70）/ `axis_id`（target が軸のとき）/ `mode`（毎回聞く・いつも・しない） | **★新設（D-125.70・D-125.71）。**渡すときに一緒に切り替えるもの |
 | **`test_specs`** | `<common>` / `ticket_id` / `check_kind`（① 機械・② AI・③ 人）/ `title` / `judge_type` / `params jsonb` / `version` / `off_reason`（OFF にした理由） | **★新設（D-125.17・D-125.79）** |
 | **`checks`** | `<common>` / `ticket_id`（行の守りのため元のチケットを持つ）/ `test_spec_id` / `spec_version` / `artifact_version_id` / `attempt` / `result`（通過・落ちた・不確か）/ `evidence jsonb`（根拠の引用）/ `runner`（server・bridge・human）/ `checked_by_member_id` | **★新設（D-125.18・D-126.24）。**① はサーバー、② は本人の PC（Bridge）、③ は人 |

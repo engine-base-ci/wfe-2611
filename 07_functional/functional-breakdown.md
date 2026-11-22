@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-20
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-22
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -6,7 +6,7 @@
 
 | 種別 | 件数 | 根拠（source）| 備考 |
 |---|---|---|---|
-| エンティティ | 142 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
+| エンティティ | 145 | 全件 | ER図 §1〜§14 の表から。table_name・tenant_isolation・access_control_policies |
 | 機能 | 32 | 全件 | 用事 24 ＋ 関門 8。api_endpoints（下書き）・ears_ac_seed |
 | ロール | 5 | 全件 | 権限の型（誰に×何に×どの層で×できること）を access_predicate_expr で |
 | 画面 | 74 | 全件 | flow.json と 1 対 1。states はモックの状態タブ、transitions はモックのリンクから |
@@ -128,6 +128,9 @@
 | E-112 | `class_axes` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.67 D-128 |
 | E-113 | `class_values` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 |
 | E-114 | `ticket_class_values` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-128.115 |
+| E-144 | `custom_fields` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 D-150.36 D-150.37 |
+| E-145 | `custom_field_kinds` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 |
+| E-146 | `ticket_field_values` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-128 |
 | E-115 | `handover_rules` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.70 D-125.71 D-128 |
 | E-116 | `test_specs` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.17 D-125.79 D-128 |
 | E-117 | `checks` | 16. 第1フェーズの表 | account_scoped | 3 | D-125 D-125.18 D-126.24 D-128 |
