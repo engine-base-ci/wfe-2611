@@ -117,7 +117,7 @@ describe("K-386 直す", () => {
     expect((await msg(id)).body).toBe(big);
   });
 
-  it("K386-API-006 S1 の失敗（直して新しく @ した人の受け箱の行を書く所で DB が落ちた）：500・E-PAGE-003。1 つの取引なので本文も直した時刻も前のまま", async () => {
+  it("K386-API-006 S1 の失敗（直して新しく @ した人の受け箱の行を書く所で DB が落ちた）：503・E-PAGE-003。1 つの取引なので本文も直した時刻も前のまま", async () => {
     const t = await h.ticket();
     const id = await h.post(t, h.writer, { body: "前の文" });
     await h.f.admin.query(`create or replace function public.k386_break() returns trigger language plpgsql as $$
@@ -127,7 +127,7 @@ describe("K-386 直す", () => {
     );
     try {
       const r = await edit(h.writer, id, { body: "@高本 直す", mention_member_ids: [h.boss.id] });
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     } finally {
       await h.f.admin.query("drop trigger if exists k386_break on notifications");
@@ -201,7 +201,7 @@ describe("K-386 消す", () => {
     expect(d).toEqual({ text: "月末締め", source_message_id: id, deleted_at: null });
   });
 
-  it("K386-API-011 S2 の失敗（証跡を書く所で DB が落ちた）：500・E-PAGE-003。1 つの取引なので消えていない", async () => {
+  it("K386-API-011 S2 の失敗（証跡を書く所で DB が落ちた）：503・E-PAGE-003。1 つの取引なので消えていない", async () => {
     const t = await h.ticket();
     const id = await h.post(t, h.writer, { body: "消せない" });
     await h.f.admin.query(`create or replace function public.k386_audit_break() returns trigger language plpgsql as $$
@@ -211,7 +211,7 @@ describe("K-386 消す", () => {
     );
     try {
       const r = await del(h.writer, id);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     } finally {
       await h.f.admin.query("drop trigger if exists k386_audit_break on audit_events");
@@ -341,7 +341,7 @@ describe("K-386 3 つの口に共通の守り・失敗", () => {
     expect(m).toMatchObject({ body: "壊れたとき", edited_at: null, deleted_at: null, reactions: {} });
   });
 
-  it("K386-API-018 S3 の失敗（☆ の印を書く所で DB が落ちた）：500・E-PAGE-003。印は前のまま", async () => {
+  it("K386-API-018 S3 の失敗（☆ の印を書く所で DB が落ちた）：503・E-PAGE-003。印は前のまま", async () => {
     const t = await h.ticket();
     const id = await h.post(t, h.writer, { body: "☆ が書けない", reactions: { star: [h.viewer.id] } });
     await h.f.admin.query(`create or replace function public.k386_star_break() returns trigger language plpgsql as $$
@@ -351,7 +351,7 @@ describe("K-386 3 つの口に共通の守り・失敗", () => {
     );
     try {
       const r = await star(h.boss, id);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await h.json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(JSON.stringify(j)).not.toContain("書けなくした");
