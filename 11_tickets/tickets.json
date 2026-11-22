@@ -19285,7 +19285,8 @@
     "talk-narrow"
    ],
    "affects": [
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/api"
    ],
    "ci_wide": [],
    "changes": [
