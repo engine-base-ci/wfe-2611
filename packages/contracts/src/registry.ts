@@ -17793,7 +17793,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
-      500,
+      503,
       413,
       429,
       403,
