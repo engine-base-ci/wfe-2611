@@ -19623,10 +19623,12 @@
    "apis": [],
    "affects": [
     "@kaname/api",
+    "@kaname/contracts",
     "@kaname/db"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261123086400_notify_ai_stopped.sql",
