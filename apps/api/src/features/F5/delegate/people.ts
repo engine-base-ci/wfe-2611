@@ -17,6 +17,11 @@ const fromCatalog = (code: string, status: number, extra: Record<string, unknown
   status,
   body: { ...kanameError(code).toJSON(), ...extra },
 });
+/** 体から detail を外す（E-CONF-020 は {error, code, message, action, undo, support_code} だけ） */
+const noDetail = (r: HookReply): HookReply => {
+  const { detail: _detail, ...rest } = r.body as Record<string, unknown>;
+  return { ...r, body: rest };
+};
 const down = (where: string, e: unknown): HookReply => {
   console.error(`[delegate] ${where}：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
   return fromCatalog("E-PAGE-003", 503);
@@ -53,7 +58,7 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
           case "NO_PC":
             return fromCatalog("E-CONN-001", 409, { href: SETUP_BRIDGE });
           case "NO_SPEC":
-            return fromCatalog("E-CONF-020", 409);
+            return noDetail(fromCatalog("E-CONF-020", 409));
           case "REASON_INVALID":
             return {
               status: 422,
