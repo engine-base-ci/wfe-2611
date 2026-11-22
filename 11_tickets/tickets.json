@@ -19062,7 +19062,8 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F6/thread-seen.test.ts"
+    "apps/api/test/features/F6/thread-seen.test.ts",
+    "apps/api/test/generated/post_tickets_id_timeline_seen.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-384.ts"
@@ -19352,10 +19353,10 @@
    "choke_points": [],
    "choke_none": "画面だけ。読むのは口の葉 K-383（listTicketTimeline・関門 C2 の読む側）、最後に開いた時刻を書くのは K-384（markTicketTimelineSeen・C2）。画面は契約の口を呼ぶだけで、外には何も出さない（メールも出さない・D-125.130）",
    "tests": [
-    "apps/web/tests/k/k392-thread-read.spec.ts",
-    "apps/web/tests/k/thread-mock.ts"
+    "apps/web/tests/k/k392-thread-read.spec.ts"
    ],
    "carry": [
+    "apps/web/tests/k/thread-mock.ts",
     "apps/web/tests/k/k235-first-load.spec.ts",
     "scripts/ci/k237_perf_ledger_test.py",
     "apps/web/tests/k/detail-kit.ts",
@@ -19372,10 +19373,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "listTicketTimeline",
-    "markTicketTimelineSeen"
-   ],
+   "apis": [],
    "mock": [
     "talk-list",
     "talk-empty",
