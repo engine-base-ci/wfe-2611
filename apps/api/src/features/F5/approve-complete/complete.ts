@@ -12,7 +12,7 @@ import { withTenant, type TenantContext } from "@kaname/db/context";
 import type { Repository } from "@kaname/db/repository";
 import { NotifyGateway, type NotifyEvent, type Transport } from "@kaname/notify";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
-import { fromCatalog, replyOf } from "./errors.js";
+import { fromCatalog, invalid, replyOf } from "./errors.js";
 
 export const COMPLETED_KIND = "ticket.completed";
 /** 完了のときのナレッジの候補は、骨格では出さない（D-128.138） */
@@ -89,6 +89,13 @@ const completedReply = (t: Completed): HookReply => ({
 async function complete(pool: pg.Pool, a: HookArgs, o: CompleteOptions): Promise<HookReply> {
   const where = "完了にする";
   // 欄があること・型（並び・整数・真偽）は入口が契約の形で確かめ済み。todo_checked・todo_version は受けても中身を見ない（前の小窓が送り続ける・D-150.42）
+  //   送られたときの形（番号が整数の並び・版が 0 以上の整数）だけここで確かめる。形の誤りは 422（中身の突き合わせはしない）
+  const checked = a.input["todo_checked"];
+  if (checked !== undefined && (!Array.isArray(checked) || !checked.every((x) => Number.isInteger(x))))
+    return invalid("todo_checked", "実施事項の番号（0 からの整数）の並びで送ってください");
+  const version = a.input["todo_version"];
+  if (version !== undefined && (!Number.isInteger(version) || (version as number) < 0))
+    return invalid("todo_version", "実施事項の版（0 以上の整数）を送ってください");
   let r: Completed | undefined;
   try {
     r = await withTenant(
