@@ -11,13 +11,13 @@ export const fromCatalog = (
   o: { field?: string; detail?: Record<string, unknown>; message?: string } = {},
 ): HookReply => {
   const e = kanameError(code, o.detail ?? {});
-  return {
-    status,
-    body: {
-      ...e.toJSON(),
-      ...(o.field ? { field: o.field, details: [{ field: o.field, message: o.message ?? e.entry.message }] } : {}),
-    },
+  const body: Record<string, unknown> = {
+    ...e.toJSON(),
+    ...(o.field ? { field: o.field, details: [{ field: o.field, message: o.message ?? e.entry.message }] } : {}),
   };
+  // 404 には field・details・detail を付けない（在るかを漏らさない・控え帳 2026-11-20 16:51）：正本の体の空の detail も外す
+  if (status === 404) delete body["detail"];
+  return { status, body };
 };
 
 /** 入力の形違い（422・欄つき）。入口（op.ts）と同じ形 */
