@@ -13,8 +13,8 @@ RESPONSES = {
     "updateTicket": ("TicketUpdated", {"ticket": "object", "stage": "object?", "changed": "boolean", "message_id": "uuid?"}),   # stage は段・実績・保留の欄を送ったときだけ（K-440 で省けるにした）
 }
 
-# 保留の理由と再開の条件は、空白（\s）と制御文字だけでない字（空・空白だけは 422 E-VAL-041・047・字数の上限は置かない D-130.1）
-_NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
+# 保留の理由と再開の条件は、空白（\s）と制御文字だけでない字で、NUL（U+0000）を含まない（空・空白だけ・NUL を含むは 422 E-VAL-041・047・NUL はどの口でも入口で 422 の決め answer=c8b3f4c3aef8・字数の上限は置かない D-130.1）
+_NOT_BLANK = "^[^\\u0000]*[^\\s\\u0000-\\u001f\\u007f][^\\u0000]*$"
 VALUE_RANGES = {
     "updateTicket": {"actual_minutes": {"minimum": 0, "maximum": 100000}, "stage_key": {"enum": ["todo", "doing", "hold"]},
                      "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK},
