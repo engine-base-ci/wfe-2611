@@ -1533,6 +1533,10 @@
     "test_patch_ticket_messages_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_ticket_messages_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {}
@@ -1547,7 +1551,7 @@
     "test_delete_ticket_messages_id_not_found": "K386-API-010",
     "test_delete_ticket_messages_id_shape": "K386-API-008",
     "test_delete_ticket_messages_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-386.ts",
      "mark": "K144-API-731"
     },
     "test_delete_ticket_messages_id_rate_limited": "K386-API-016",
@@ -1556,6 +1560,10 @@
      "mark": "K53-API-005"
     },
     "test_delete_ticket_messages_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_ticket_messages_id_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
@@ -1574,7 +1582,7 @@
     "test_post_ticket_messages_id_star_rate_limited": "K386-API-016",
     "test_post_ticket_messages_id_star_shape": "K386-API-012",
     "test_post_ticket_messages_id_star_rejected_422_2": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-386.ts",
      "mark": "K144-API-732"
     },
     "test_post_ticket_messages_id_star_too_large": {
@@ -1586,6 +1594,10 @@
      "mark": "K53-API-005"
     },
     "test_post_ticket_messages_id_star_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_messages_id_star_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }

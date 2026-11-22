@@ -30,10 +30,17 @@ interface EditResult {
 export const inputEdit = inputPost;
 
 /** 関数 1 回を、守りの判定の後に呼ぶ。守りの例外は 503、書く所の例外は 500 */
+/** 呼ぶ DB の関数ごとの文（関数の名前を文に埋め込まない・G10） */
+const CALL_SQL = {
+  ticket_message_edit: "select app.ticket_message_edit($1, $2::jsonb) as v",
+  ticket_message_delete: "select app.ticket_message_delete($1) as v",
+  ticket_message_star: "select app.ticket_message_star($1) as v",
+} as const;
+
 async function run(
   appPool: pg.Pool,
   a: HookArgs,
-  fn: string,
+  fn: keyof typeof CALL_SQL,
   args: unknown[],
   where: string,
 ): Promise<EditResult | HookReply> {
@@ -43,10 +50,7 @@ async function run(
       // 守りの判定を先に 1 回（ここで例外なら止める側に倒す）。見えるかの答えは関数の中でもう一度見る
       await cl.query("select app.ticket_visible(m.ticket_id) as ok from ticket_messages m where m.id = $1", [a.id]);
       stage = "write";
-      const r = await cl.query<{ v: EditResult | null }>(
-        `select app.${fn}($1${args.length ? ", $2::jsonb" : ""}) as v`,
-        [a.id as string, ...args],
-      );
+      const r = await cl.query<{ v: EditResult | null }>(CALL_SQL[fn], [a.id as string, ...args]);
       return r.rows[0]?.v ?? {};
     });
   } catch (e) {

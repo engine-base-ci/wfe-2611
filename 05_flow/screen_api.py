@@ -950,6 +950,8 @@ VALUE_RANGES = {
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
+# 成功の状態コード（既定は POST 201・それ以外 200）。POST でも 200 を返す口（押すたびに付く・外れる ☆ など・K-386）だけここに書く
+OK_STATUS: dict[str, int] = {}
 # 形全体の決まり（欄をまたぐ決まり・K-355）：operationId → JSON Schema の言葉（oneOf／anyOf／allOf／not だけ）。その口の入力の形にそのまま重ねる。
 #   中で使う欄の名前（properties・required）は入力の形に在る物だけ（作り手 05_flow/build_api.py が確かめて止める）。チケットごとの分は screen_api.d に書く
 INPUT_RULES: dict[str, dict] = {}
