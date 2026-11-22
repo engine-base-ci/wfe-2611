@@ -3850,7 +3850,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-NTF-001": {
     "id": "E-NTF-001",
     "cls": "conflict",
-    "message": "知らせの続きを読めませんでした。最初から読み直してください",
+    "message": "お知らせの続きを読めませんでした。最初から読み直してください",
     "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
     "undo": false,
     "severity": "low",
