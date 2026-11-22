@@ -26,6 +26,7 @@
 //     止めた後に新しい仕事を積めなかった回は、行は stopped のまま残る（0065 の引き金が止めた時に写す）
 //   失効しただけ（revoked_at あり・消していない）の物は、上書きも消すも 404（一覧に出ない物・代表の答え answer=449e72553c59）
 import { beforeAll, describe, expect, it } from "vitest";
+import { kanameError } from "@kaname/errors";
 import { RateLimited } from "@kaname/secrets";
 import { setupCredentials, type Person } from "./credentials.harness.js";
 // 作り物の秘密の値は _fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
@@ -98,6 +99,16 @@ const jobs = async (credentialId: string) =>
       [credentialId],
     )
   ).rows;
+// 時刻や預けた物の状態で決まる断り：409・欄は付けない。本文全体（error・文）を正本の番号と照らす
+const expect409 = async (r: Response, code: string) => {
+  expect(r.status, await r.clone().text()).toBe(409);
+  const j = await h.json(r);
+  expect(j["error"]).toBe("conflict");
+  expect(j["code"]).toBe(code);
+  expect(j["message"]).toBe(kanameError(code).entry.message);
+  expect(j["field"]).toBeUndefined();
+  expect(j["details"]).toBeUndefined();
+};
 const expect422 = async (r: Response, code: string, field?: string) => {
   expect(r.status, await r.clone().text()).toBe(422);
   const j = await h.json(r);
@@ -201,18 +212,17 @@ describe("K-353 上書きの口", () => {
     expect((await jobs(c.id)).length).toBe(before);
   });
 
-  it("K353-API-005 中身の欠け：login の物に password だけ・鍵の物に login・totp にするのに鍵が無い は 422。行も金庫も変わらない", async () => {
+  it("K353-API-005 中身の欠けと混ざり：login の物に password だけは 422・E-CRED-005（欄 login）。鍵の物に login・totp にするのに鍵が無いは預けた物の状態で決まるので 409・E-CRED-015（欄なし）。行も金庫も変わらない", async () => {
     await h.ready();
     const me = await fresh();
     const c = await make(me);
     const k = await make(me, { kind: "key" });
     const puts = h.vault.puts.length;
     await expect422(await patch(me, c.id, { password: NEW_PW }), "E-CRED-005", "login");
-    await expect422(await patch(me, k.id, { login: "x@example.com" }), "E-CRED-005", "login");
-    await expect422(
+    await expect409(await patch(me, k.id, { login: "x@example.com" }), "E-CRED-015");
+    await expect409(
       await patch(me, c.id, { login: "a@example.com", password: NEW_PW, two_factor: "totp" }),
-      "E-VAL-003",
-      "totp_secret",
+      "E-CRED-015",
     );
     expect(h.vault.puts.length).toBe(puts);
     expect((await h.row(c.id))!["vault_ref"]).toBe(c.ref);
@@ -238,7 +248,7 @@ describe("K-353 上書きの口", () => {
     expect(await h.row(c.id)).toMatchObject({ name: c.name, layer: "personal", kind_id: "api_key" });
   });
 
-  it("K353-API-008 使える場所と期限の形違い：空の並びは E-CRED-003・形違いは E-CRED-002・昨日は E-CRED-004（どれも 422）", async () => {
+  it("K353-API-008 使える場所と期限の形違い：空の並びは 422・E-CRED-003・形違いは 422・E-CRED-002・昨日は 409・E-CRED-004（欄なし）", async () => {
     await h.ready();
     const me = await fresh();
     const c = await make(me, { kind: "key" });
@@ -247,7 +257,7 @@ describe("K-353 上書きの口", () => {
     const yesterday = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(
       new Date(Date.now() - 86_400_000),
     );
-    await expect422(await patch(me, c.id, { expires_on: yesterday }), "E-CRED-004", "expires_on");
+    await expect409(await patch(me, c.id, { expires_on: yesterday }), "E-CRED-004");
   });
 
   it("K353-API-009 本人確認：ログインから 16 分・取り直し無しは 403・STEP_UP_REQUIRED で何も変わらない。取り直し 14 分前なら 200", async () => {
