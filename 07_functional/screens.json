@@ -39462,6 +39462,27 @@
       "D-125.98",
       "D-125.167"
      ]
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen",
+     "table": "ticket_messages",
+     "operation_id": "markTicketTimelineSeen",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.29",
+      "D-125.131",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -41427,6 +41448,27 @@
      "source": [
       "D-125.7",
       "D-125.98",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen",
+     "table": "ticket_messages",
+     "operation_id": "markTicketTimelineSeen",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.29",
+      "D-125.131",
       "D-125.167"
      ]
     }

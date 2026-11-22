@@ -2983,7 +2983,8 @@
     "GET /api/ticket-fields",
     "GET /api/handover_rules",
     "GET /api/members",
-    "GET /api/clients"
+    "GET /api/clients",
+    "POST /api/tickets/:id/timeline/seen"
    ],
    "access_roles": [
     "R1",
@@ -11092,6 +11093,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen"
     }
    ]
   },
