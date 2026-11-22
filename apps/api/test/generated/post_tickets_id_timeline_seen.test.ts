@@ -31,6 +31,8 @@ describe("POST /api/v1/tickets/:id/timeline/seen", () => {
     // 本物の試験：apps/api/test/features/F6/thread-seen.test.ts の「K384-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-seen.test.ts", "utf8")).toContain("K384-API-009");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F6/thread-seen.test.ts）：UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、時刻を前のまま残す
+  it.todo("test_post_tickets_id_timeline_seen_server_error");
   it("test_post_tickets_id_timeline_seen_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
