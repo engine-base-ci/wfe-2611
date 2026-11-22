@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:cbbddb0e03a1efc3
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:60fffc3b0dd30097
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -314,7 +314,7 @@ export type BridgeHeartbeatInput = { health?: unknown; protocol?: unknown; versi
 export type TicketCreateInput = { scope_id: string; kind_id: string; title: string; assignee_member_id: string; due_on: string; start_on?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string; estimate_minutes?: unknown | null; sections?: Record<string, unknown>; notify_member_ids?: string[]; draft_id?: string; source_draft_id?: string };
 export type TicketDraftInput = { draft_id: string; body?: Record<string, unknown>; discard?: boolean };
 export type DismissSetupTasksInput = { key?: string };
-export type TicketDelegateInput = Record<string, never>;
+export type TicketDelegateInput = { no_spec_reason?: string };
 export type BridgeTakeInput = { wait_sec?: number; protocol?: number; idle?: boolean };
 export type BridgeProgressInput = { seq?: number; kind: string; text?: string; agent_session_id?: string; model?: string; tool?: unknown; usage?: unknown; todos?: unknown; windows?: unknown; blocked?: unknown };
 export type BridgeFinishInput = { state: string; result?: string; reason?: string; agent_session_id?: string };

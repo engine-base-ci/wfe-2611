@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:cbbddb0e03a1efc3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:60fffc3b0dd30097
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3595,7 +3595,7 @@ export const DismissSetupTasksInput = z.strictObject({
   key: z.string().optional(),
 });
 export const TicketDelegateInput = z.strictObject({
-
+  no_spec_reason: z.string().optional(),
 });
 export const BridgeTakeInput = z.strictObject({
   wait_sec: z.number().int().optional(),

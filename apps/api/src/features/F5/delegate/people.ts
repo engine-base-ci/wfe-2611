@@ -32,7 +32,10 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
       before: async (a: HookArgs) => {
         let r: Record<string, unknown> | undefined;
         try {
-          r = await inTenant<Record<string, unknown>>(a, "select app.ticket_delegate($1) as v", [a.id]);
+          r = await inTenant<Record<string, unknown>>(a, "select app.ticket_delegate($1, $2) as v", [
+            a.id,
+            typeof a.input["no_spec_reason"] === "string" ? a.input["no_spec_reason"] : null,
+          ]);
         } catch (e) {
           return down("任せる", e);
         }
@@ -49,6 +52,13 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
             return fromCatalog("E-CONF-014", 409);
           case "NO_PC":
             return fromCatalog("E-CONN-001", 409, { href: SETUP_BRIDGE });
+          case "NO_SPEC":
+            return fromCatalog("E-CONF-020", 409);
+          case "REASON_INVALID":
+            return {
+              status: 422,
+              body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field: "no_spec_reason" }] },
+            };
           case "NOT_FOUND":
             return notFound();
           default:

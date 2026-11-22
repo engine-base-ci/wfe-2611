@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。226 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。227 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4098,6 +4098,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-CONF-020": {
+    "id": "E-CONF-020",
+    "cls": "conflict",
+    "message": "確認項目が 1 つもありません。確認項目を足すか、使わない理由を書いてから任せてください",
+    "action": "確認項目を足す／理由を書く",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "CONF-020",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "delegate"
     }
   }
 };

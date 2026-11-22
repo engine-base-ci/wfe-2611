@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-22 凍結）
+# Kaname API 設計書 v1.0（2026-11-23 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -330,7 +330,7 @@
 | EP-315 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
 | EP-316 | GET | `/api/v1/tickets/:id/decisions` | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-317 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-318 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-318 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 409 413 429 502 403 403 503 |
 | EP-319 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-320 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-321 | POST | `/api/v1/tickets/:id/handovers` | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる | A111 A112 A48 A51 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-22 凍結（endpoints 369）
+- v1.0 2026-11-23 凍結（endpoints 369）

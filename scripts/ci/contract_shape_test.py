@@ -78,7 +78,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
     "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
-    "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
+    "delegateTicket": "使わない理由 no_spec_reason は無くてよい（K-565）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",

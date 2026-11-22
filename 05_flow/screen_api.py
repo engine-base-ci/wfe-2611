@@ -541,7 +541,7 @@ INPUTS = {
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
     # K-62：AI に任せる。任せる体は空（担当者・人・プロンプトは入れさせない・押した人の AI が動く・D-128.138）。PC の口は仕事の id を道すじで受ける（体に入れない）
-    "delegateTicket": ("TicketDelegateInput", {}),
+    "delegateTicket": ("TicketDelegateInput", {"no_spec_reason": "string"}),   # K-565：確認項目が 0 件のときに送る使わない理由（1〜500 字・無くてよい）
     "takeBridgeJob": ("BridgeTakeInput", {"wait_sec": "integer", "protocol": "integer", "idle": "boolean"}),
     "reportJobProgress": ("BridgeProgressInput", {"seq": "integer", "kind": "string", "text": "string", "agent_session_id": "uuid", "model": "string",
                                                   "tool": "any", "usage": "any", "todos": "any", "windows": "any", "blocked": "any"}),
@@ -705,9 +705,12 @@ ERRORS_4XX = {
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-013", "run_id": ""}, "errors": ["E-CONN-001", "E-CONF-013", "E-CONF-014"],
          "trigger": "PC を一度もつないでいない・外した（E-CONN-001）／同じチケットに走っている実行がある（E-CONF-013・今の run_id）／承認待ち・完了（E-CONF-014）",
          "ears_form": "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない"},
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-020"}, "errors": ["E-CONF-020"],
+         "trigger": "確認項目が 1 つも無く、使わない理由（no_spec_reason）も送られていない（本文の行が在るチケットだけ・K-565）",
+         "ears_form": "UNWANTED: IF 確認項目が 1 つも無く使わない理由も無いなら、Kaname は 409 と E-CONF-020 を返し、仕事も実行の記録も理由も積まない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
-         "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）",
-         "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"},
+         "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）・使わない理由が空・空白だけ・501 字以上・文字でない",
+         "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるか使わない理由の形が違うなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"},
     ],
     # 規約に同意する（K-53・D-128.146）。版が古い（409・今の版の並び current）・同意の印が無い（422）。冪等キーは使わない（同じ版の 2 回目は 1 回目の行のまま）
     "consentToTerms": [
@@ -931,6 +934,7 @@ VALUE_RANGES = {
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
     },
+    "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # K-565：app.ticket_delegate が最後の砦（REASON_INVALID）
     "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
     "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
