@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
+  "created_at": "2026-11-23",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -88,7 +88,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -450,7 +453,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-001",
     "D-001.5",
@@ -585,7 +588,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-026",
     "D-037",
@@ -675,7 +678,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-042",
     "D-053.3",
@@ -806,7 +809,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -1645,7 +1651,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-002",
     "D-003.1",
@@ -1790,7 +1796,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -2128,7 +2137,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.7",
     "D-004",
@@ -2273,7 +2282,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -2709,7 +2721,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -2962,7 +2974,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-006.2",
     "D-010",
@@ -3280,7 +3292,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003",
     "D-003.1",
@@ -3473,7 +3485,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -3573,7 +3585,10 @@
     "E-INV-010",
     "E-INV-011",
     "E-INV-012",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -4169,7 +4184,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -4654,7 +4669,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003",
     "D-003.1",
@@ -5098,7 +5113,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-010.7",
     "D-015",
@@ -5205,7 +5220,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -5672,7 +5690,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.7",
     "D-010",
@@ -5807,7 +5825,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-030",
     "D-030.10",
@@ -6009,7 +6027,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-002",
     "D-002.2",
@@ -6497,7 +6515,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-002",
     "D-002.2",
@@ -6873,7 +6891,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -7035,7 +7053,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-030.6",
     "D-037",
@@ -7166,7 +7184,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -7360,7 +7378,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-026",
     "D-026.2",
@@ -7436,7 +7454,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7596,7 +7617,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-125.121",
     "D-125.123",
@@ -7737,7 +7758,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-125.121",
     "D-125.122",
@@ -7794,7 +7815,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2"
@@ -7994,7 +8018,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-007",
     "D-012",
@@ -8081,7 +8105,10 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-NTF-001",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -8364,7 +8391,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-003.9",
     "D-007",
@@ -8485,7 +8512,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-013",
     "D-014",
@@ -8730,7 +8757,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-010",
     "D-038",
@@ -8841,7 +8868,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-004",
     "D-007",
@@ -8918,7 +8945,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-029",
     "D-025",
@@ -8984,7 +9011,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-015",
     "D-044",
@@ -9082,7 +9109,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-012",
     "D-043",
@@ -9150,7 +9177,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-002",
     "D-004",
@@ -9217,7 +9244,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-22",
+   "decided_at": "2026-11-23",
    "source": [
     "D-017",
     "D-042",
