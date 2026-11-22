@@ -2476,7 +2476,7 @@ K-583,updateTicket の組「予定時間」（estimate_minutes：整数 0〜1000
 - **変えたら、同じ取引でやり取りに 1 行**（`ticket_messages` の kind `change`・1 回の要求に 1 行・書いた人は変えた人）：「〈名前〉が予定時間を〈前〉 → 〈後〉に変えました」。値の見せ方：0〜59 は「N 分」・60 の倍数は「H 時間」・それ以外は「H 時間 M 分」・空は「（空）」。changes は `[{ field: ""estimate_minutes"", from, to, raw_from, raw_to }]`（`from`・`to` は見せる字か null・**`raw_from`・`raw_to` は分の整数か null**。版の戻しの K-576 が `raw_from` で戻す）
 - **担当者でない人が変えたときは、担当者の受け箱に知らせる**（D-150.32 と同じ形・自分で変えたら知らせない・担当者がいない・会社から抜けた・止められた人なら知らせない）。1 回の要求は 1 通・メールは出さない。下の「代表に聞くこと」1
 
-画面で予定時間を直す所（時間の字を分にして送る）は K-569。読む口 `getTicket` の予定時間は K-560。","- [ ] 下の表の 17 行（K583-API-001〜017）が緑：`apps/api/test/features/F4/ticket-estimate.test.ts`
+画面で予定時間を直す所（時間の字を分にして送る）は K-569。読む口 `getTicket` の予定時間は K-560。","- [ ] 下の表の 18 行（K583-API-001〜018）が緑：`apps/api/test/features/F4/ticket-estimate.test.ts`
 - [ ] 生成の試験 `patch_tickets_id` の it.todo が、`na`（理由つき）を除いて増えない（この葉は新しい断りの番号を足さない＝足す名前が無い。K-440・K-564 が足した 409 の名前の後ろに続く名前は無い）
 - [ ] 契約の `updateTicket` の入力に `estimate_minutes`（整数・0〜100000・null 可）が足され、前からの試験は下の「前からの試験を替えた所」のとおり（`progress.test.ts` の K387-API-018 の 1 行だけを替える）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑

@@ -25,10 +25,11 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { withTenant } from "@kaname/db/context";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
+import { bare as bareReply, down, replyOf } from "../../../src/features/F4/ticket-estimate/errors.js";
 import { makeFixture, type Fixture, type Person } from "../fixture.js";
 
 let f: Fixture;
@@ -512,5 +513,38 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
       existsSync(join(ROOT, "07_qa", "test-specs", "errors.d", "K-583.json")),
       "この葉は断りの番号を足さない（置き場を作らない）",
     ).toBe(false);
+  });
+
+  it("K583-API-018 関数の答えの言葉 → 答え（口の前の守りを通れば出ない 2 層目）：not_found 404・E-PAGE-001／not_member・not_writable 403・FORBIDDEN／bad_minutes 422（欄 estimate_minutes）／知らない言葉・空は止める側 503・E-PAGE-003（ログは場所と言葉だけ）。404・503 の体に field・details・detail が無い", () => {
+    const gone = replyOf({ error: "not_found" }, "予定時間を変える");
+    expect(gone.status).toBe(404);
+    expect(gone.body).toMatchObject({ code: "E-PAGE-001" });
+    bare(gone.body as Json);
+    for (const word of ["not_member", "not_writable"]) {
+      const r = replyOf({ error: word }, "予定時間を変える");
+      expect(r.status, word).toBe(403);
+      expect(r.body, word).toEqual({ error: "forbidden", code: "FORBIDDEN" });
+    }
+    const bad = replyOf({ error: "bad_minutes" }, "予定時間を変える");
+    expect(bad.status).toBe(422);
+    expect(bad.body).toMatchObject({ code: "VALIDATION_ERROR", details: [{ field: "estimate_minutes" }] });
+    const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    try {
+      for (const r of [
+        replyOf({ error: "guard_failed" }, "予定時間を変える"),
+        replyOf({ error: "empty" }, "予定時間を変える"),
+        down("予定時間を変える", "x"),
+      ]) {
+        expect(r.status).toBe(503);
+        expect(r.body).toMatchObject({ code: "E-PAGE-003" });
+        bare(r.body as Json);
+      }
+      const logged = spy.mock.calls.map((c) => String(c[0])).join("\n");
+      expect(logged).toContain("[ticket-estimate]");
+      expect(logged).toContain("guard_failed");
+    } finally {
+      spy.mockRestore();
+    }
+    expect(bareReply("E-PAGE-003", 503).status).toBe(503);
   });
 });
