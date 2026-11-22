@@ -2650,7 +2650,7 @@
     },
     {
      "role": "data_fetch",
-     "endpoint": "GET /api/v1/class_axes",
+     "endpoint": "GET /api/v1/ticket-fields",
      "act": "A103"
     },
     {
