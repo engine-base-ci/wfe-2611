@@ -13,6 +13,8 @@ import sys
 import unittest
 
 import yaml
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 WF = ROOT / ".github" / "workflows"
@@ -67,7 +69,7 @@ class StagingWorkflow(unittest.TestCase):
         self.assertNotIn("has-ui", text("v3-gate.yml"), "頭の注釈や条件に、札で起きる e2e の書き方が残っている")
 
     def test_K204_CI_003_own_vm_only(self) -> None:
-        self.assertEqual(job()["runs-on"], ["self-hosted", "linux-vm"])
+        self.assertEqual(default_of(job()["runs-on"]), ["self-hosted", "linux-vm"], "変数 CI_RUNNER が無ければ自分の VM（K-640）")
         self.assertNotRegex(text(), r"ubuntu-|macos-|windows-", "GitHub の台を使わない")
 
     def test_K204_CI_004_secrets_only_where_needed(self) -> None:

@@ -15,6 +15,9 @@ import re
 import unittest
 
 import yaml
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
@@ -98,7 +101,7 @@ class WebConcurrency(unittest.TestCase):
         web = JOBS["web"]
         self.assertNotIn("concurrency", web, "web の組は回をまたいで同時に走れる（組ごとに使い捨ての VM・番号は VM の中だけ）")
         self.assertNotIn("kaname-web", WF_TEXT, "kaname-web の group が CI の定義のどこにも無い")
-        self.assertEqual(web.get("runs-on"), ["self-hosted", "linux-vm"], "組ごとに使い捨ての Linux の VM で走る（同時に走れる前提）")
+        self.assertEqual(default_of(web.get("runs-on")), ["self-hosted", "linux-vm"], "組ごとに使い捨ての Linux の VM で走る（同時に走れる前提）")
         # 定義の頭の concurrency（同じ枝の古い回を止める）はそのまま
         self.assertEqual(WF.get("concurrency"), {"group": "${{ github.workflow }}-${{ github.ref }}", "cancel-in-progress": True})
         # 古いコメント（Mac の台は 1 台・同時に 1 つだけ）を残さない

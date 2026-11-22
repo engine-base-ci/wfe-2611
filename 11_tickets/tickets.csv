@@ -2366,3 +2366,17 @@ K-631,直し：チケットの CI が画面の試験を後回しにする回（w
 - [ ] 作り手を流し直した生成物（CI の定義 .github/workflows/v3-gate.yml・試験計画 07_qa/test-plan/test-plan.*）が最新（`python3 scripts/tickets/regen_all.py`）
 - [ ] 手元の CI（このチケットの範囲）が緑
 - [ ] 型のずれがあれば赤になることを、壊した写しで 1 回確かめた結果が「確かめたこと」に書いてある"
+K-640,直し：CI の定義の全部の組の台（runs-on）を、リポジトリの変数 CI_RUNNER で替えられる形にする（変数が無ければ今までの Mac の VM・GitHub の台でも同じ定義が動く入口・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-23,F3・CI,"CI の箱が自分の Mac の使い捨ての VM 4 台だけで、1 本 30〜70 分かかって詰まっている（代表の決め 2026-11-22）。そこで「CI を回すためだけの公開のリポジトリ」を別に作り、GitHub の台でも回す。**本体のリポジトリは非公開のまま、今の Mac の箱（self-hosted・ラベル linux-vm）も今までどおり使える形を保つ**。スキル ticket-flow の側（CI の枝を上げる先・回を出す先を別のリポジトリにする設定）は PM が直す。この葉は、CI の定義の台の書き方だけ。
+
+今は CI の定義 3 つ（v3-gate.yml 16 組・staging-e2e.yml 1 組・release-gate.yml 1 組）の全部が `runs-on: [self-hosted, linux-vm]` と直書きで、GitHub の台では 1 つの組も始まらない（self-hosted の箱が無いと待ち続ける）。
+
+- 全部の組を `runs-on: ${{ fromJSON(vars.CI_RUNNER || '[""self-hosted"",""linux-vm""]') }}` にする。**変数 CI_RUNNER が無い（非公開の側）なら今までと同じ台**。公開の側は変数 CI_RUNNER に GitHub の台の名前（例 `""ubuntu-24.04""`）を入れるだけで、同じ定義がそのまま動く
+- 式は**作り手（05_flow/build_testplan.py）に定数 `RUNS_ON` を 1 つだけ**置き、12 か所の `runs-on:` の行はどれも `{RUNS_ON}` を差す。生成物（3 つの定義・試験計画）は作り手を流し直して作る（手で書かない）
+- **台の式が読むのは変数 CI_RUNNER だけ**。入力（inputs）・秘密（secrets）・github・env を読ませない（外から来る値で台を選べてしまうのを塞ぐ。`inputs` で台を選ぶと、手で起こした回の入力で別の台に載せられる）
+- staging-e2e.yml と release-gate.yml も同じ式にする（変数は 1 つで全部の定義の台が決まる）。staging-e2e の `environment: staging`・`if: github.ref == 'refs/heads/main'`・secrets の書き方は変えない（公開の側にその Environment が無ければ、その定義は起こしても動かない。それでよい）
+- 台の名前（`ubuntu-24.04` など）は定義にも作り手にも**書かない**。変数にだけ置く（K-204 の「GitHub の台を使わない」の試験は、台の名前を書かない形に言い換えて残す）
+- 前からの試験 6 本（K-172・K-173・K-174・K-204・K-258・K-323 の自己試験）が `runs-on` を配列と直に比べていたのを、「変数が無いときの台」を読む `default_of`（k640 の試験が持つ）で比べる形に替える（carry）。比べる値（`[""self-hosted"",""linux-vm""]`）は変えない＝検査を緩めない","- [ ] 下の表の K640-CI-001〜007 が緑：`python3 scripts/ci/k640_runs_on_test.py`
+- [ ] 替えた前からの試験 6 本が緑（k172・k173・k174・k204・k258・k323）。替えない前からの試験（k175・k176・k177・k186・k195・k245・k248・k237 の 2 本・k376・k191・ci_scope_test・contract_shape_test）が緑
+- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・`staging-e2e.yml`・`release-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。作り手を流すと `07_qa/test-plan/access-matrix.json` の 1 行が変わることがある（この葉と無関係の前からの揺れ）：それは取り込まず、元の版のままにする
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 変数が無い回で、組が今までと同じ台（self-hosted・linux-vm）に載ることを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
