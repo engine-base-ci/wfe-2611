@@ -97,6 +97,22 @@ describe("K-389 書き込みと一緒に段を変える", () => {
     ]);
   });
 
+  it("K389-API-014 保留の理由・再開の条件に対にならないサロゲートがあっても書ける：201・保留の列の片割れの字は U+FFFD（jsonb に入らず 503 にしない・K-387 の口と同じ置き換え）", async () => {
+    const t = await ticket({ stage: "doing" });
+    const r = await say(boss, t.id, {
+      body: "待ちます",
+      stage_key: "hold",
+      hold_reason: "返事\uD800待ち",
+      resume_condition: "来たら\uDC00再開",
+    });
+    expect(r.status, await r.clone().text()).toBe(201);
+    expect(await row(t.id)).toMatchObject({
+      stage_key: "hold",
+      hold_reason: "返事\uFFFD待ち",
+      resume_condition: "来たら\uFFFD再開",
+    });
+  });
+
   it("K389-API-003 段の id で保留を選んで再開の条件が無い：409 E-CONF-035（欄 resume_condition・文は「再開の条件を書いてください」）・書き込みも段も残らない（1 つの取引）", async () => {
     const t = await ticket({ stage: "doing" });
     const r = await say(boss, t.id, {
