@@ -1275,6 +1275,14 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F10/invite-link.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/post_invitations_link.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-fields-read.ts",
     "apps/api/src/features/F4/ticket-fields/**",
     "03_architecture/db-catalog.json"
