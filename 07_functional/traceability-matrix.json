@@ -367,6 +367,7 @@
     "POST /api/bridge/credentials/:id/check-result",
     "GET /api/bridge/files/:ref",
     "POST /api/bridge/devices/:id/browser-check",
+    "POST /api/bridge/browser",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3879,6 +3880,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/bridge/devices/:id/browser-check"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser"
     },
     {
      "role": "transition",

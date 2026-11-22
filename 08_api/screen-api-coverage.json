@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-20",
  "summary": {
   "total_screens": 37,
-  "total_apis": 368,
+  "total_apis": 369,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -375,6 +375,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/bridge/devices/:id/browser-check",
+     "act": "A09"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/bridge/browser",
      "act": "A09"
     }
    ],
