@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
-  "frozen_at": "2026-11-22",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -48993,19 +48993,6 @@
      "ears_form": "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない"
     },
     {
-     "status": 409,
-     "code": "E-CONF-037",
-     "body": {
-      "error": "conflict",
-      "code": "E-CONF-037"
-     },
-     "errors": [
-      "E-CONF-037"
-     ],
-     "trigger": "取引先のルールにした（action が promote・段 12 の取引先の画面ができるまで今の状態ではできない・details の文は「取引先の画面ができてから使えます」）",
-     "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）"
-    },
-    {
      "status": 503,
      "code": "E-PAGE-003",
      "body": {
@@ -49076,7 +49063,6 @@
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない",
     "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない",
-    "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -49094,7 +49080,7 @@
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
    "permission": {
     "who": "write",
-    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-CONF-037）",
+    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）",
     "step_up": false
    },
    "path_params": [
