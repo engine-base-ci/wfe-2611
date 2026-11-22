@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:111e2238ff41e37a
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:36f019aa48f7fe13
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2825,6 +2825,10 @@ export const TicketMessages = z.strictObject({
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
   reactions: z.unknown().optional(),
+  notify_member_ids: z.array(z.uuid()).optional(),
+  quote_text: z.string().nullable().optional(),
+  edited_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  deleted_by: z.uuid().nullable().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
@@ -2842,6 +2846,10 @@ export const TicketMessagesInput = z.strictObject({
   changes: z.unknown().nullable().optional(),
   quote_of_id: z.uuid().nullable().optional(),
   reactions: z.unknown().optional(),
+  notify_member_ids: z.array(z.uuid()).optional(),
+  quote_text: z.string().nullable().optional(),
+  edited_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  deleted_by: z.uuid().nullable().optional(),
 });
 export const ReferenceLogs = z.strictObject({
   ticket_id: z.uuid().optional(),
@@ -3654,12 +3662,14 @@ export const SearchHit = z.strictObject({
   url: z.string().optional(),
 });
 export const TimelineItem = z.strictObject({
+  id: z.string().optional(),
   kind: z.string().optional(),
   at: z.string().optional(),
-  actor_member_id: z.string().optional(),
-  message: z.record(z.string(), z.unknown()).optional(),
+  actor: z.record(z.string(), z.unknown()).nullable().optional(),
+  message: z.record(z.string(), z.unknown()).nullable().optional(),
   changes: z.array(z.unknown()).nullable().optional(),
-  run: z.record(z.string(), z.unknown()).optional(),
+  run: z.record(z.string(), z.unknown()).nullable().optional(),
+  deleted: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 export const TestSpecLint = z.strictObject({
   missing: z.array(z.unknown()).optional(),

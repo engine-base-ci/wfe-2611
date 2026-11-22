@@ -12,6 +12,9 @@
 //       要約は確認の 12px の字（札にしない）・ボタンなし。担当者がいなければ出さない（K-63 の帯がその文の箱を出す・箱は 1 つ・K-227）
 //     承認の後の実行（phase execute）… この帯の状態の文は出さない（K-63 の帯）。can.delegate なら任せる前の箱
 //   主ボタンは 1 つ：K-63 の帯が「完了にする」を出している間は「AI に任せる」を outlined（決める人の答え answer=5cf21973b39f）
+//   帯の section の印 data-busy（K-620）：AI が動いている（作る段の queued・running・asking）か承認待ちの間だけ付ける。
+//   任せる前の箱・止まった箱（stopped・cancelled）・知らせだけのときは付けない。題名の下の帯の順の器（F4 の detail-slots.ts・
+//   属性の名前は両方の注に書く）がこの印の付いた帯だけを「承認・実行の帯」と数え、渡し・保留の帯に譲らせる。帯の section は状態が替わっても同じ要素のまま
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く
 import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -209,6 +212,8 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
 
   if (!showButton && !showRun && !showMade && !notice) return null;
   const stopped = showRun && !!run && !active;
+  /** AI が動いている・承認待ちの間だけ data-busy（押している間の busy とは別・K-620） */
+  const bandBusy = (showRun && active) || showMade;
   const delegateButton = showButton ? (
     <Button
       variant={ticket.completeShown ? "outlined" : "primary"}
@@ -220,7 +225,7 @@ export function DelegateBand({ ticket, run, onRun, onChanged }: Props) {
     </Button>
   ) : null;
   return (
-    <section aria-label="AI に任せる" className="k62-band k-section">
+    <section aria-label="AI に任せる" className="k62-band k-section" data-busy={bandBusy ? "" : undefined}>
       {notice ? <NoticeLine notice={notice} /> : null}
       {showRun && run && stopped ? (
         // 止まった帯の箱と確認の結果の表は 1 つの並び（間 14px・キャンバス StFailed）
