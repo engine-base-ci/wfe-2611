@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
-  "frozen_at": "2026-11-22",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -51446,7 +51446,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了で絞る・期限切れの印）",
+   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）",
    "implementation_path": "apps/api/src/routes/tickets.ts::listTickets",
    "permission": {
     "who": "read",
@@ -51465,7 +51465,6 @@
      "kind_id",
      "stage_id",
      "assignee_id",
-     "client_id",
      "done",
      "cursor",
      "limit"

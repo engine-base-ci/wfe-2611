@@ -3,7 +3,7 @@
 //   mine：担当者が自分（AI に任せているものも）か、自分が承認する（決めていない）もの（D-128.11・D-128.161）。all：見えるもの全部。
 //   並び：mine は期限の近い順（無いものは最後）→ 更新の新しい順 → id。all は更新の新しい順 → id。次の分は keyset（読んでいる間に動いても重ならない）。
 //   印は期限切れだけ（D-128.159）：日本時間の今日より前の期限で、段が完了でないもの。総数・数は返さない（D-144.3）。
-//   絞り込み（K-472）：欄ごとの表 FILTERS（query.ts）が where の条件と値を足す（kind_id・stage_id・assignee_id・client_id・done）。全部 AND・値は $10 から
+//   絞り込み（K-472）：欄ごとの表 FILTERS（query.ts）が where の条件と値を足す（kind_id・stage_id・assignee_id・done）。全部 AND・値は $10 から
 //   select は 1 本（関門 C2・withTenant の接続 1 本）。ログに題名と q を出さない
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
