@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-20 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-22 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -2987,6 +2987,10 @@ components:
           format: date-time
           nullable: true
         taken_session_id:
+          type: string
+          format: uuid
+          nullable: true
+        target_session_id:
           type: string
           format: uuid
           nullable: true
@@ -7514,16 +7518,165 @@ components:
         ticket_id: *id666
         value_id: *id667
       additionalProperties: false
-    HandoverRules:
+    CustomFields:
       type: object
       properties:
-        target: &id668
+        name: &id668
           type: string
-        axis_id: &id669
+        field_type: &id669
+          type: string
+        required: &id670
+          type: boolean
+        description: &id671
+          type: string
+          nullable: true
+        options: &id672 {}
+        position: &id673
+          type: integer
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
           type: string
           format: uuid
           nullable: true
-        mode: &id670
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
+      x-table: custom_fields
+      x-source:
+      - D-125
+      - D-128
+      - D-150.36
+      - D-150.37
+    CustomFieldsInput:
+      type: object
+      properties:
+        name: *id668
+        field_type: *id669
+        required: *id670
+        description: *id671
+        options: *id672
+        position: *id673
+      additionalProperties: false
+    CustomFieldKinds:
+      type: object
+      properties:
+        field_id: &id674
+          type: string
+          format: uuid
+        kind_id: &id675
+          type: string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
+      x-table: custom_field_kinds
+      x-source:
+      - D-125
+      - D-128
+    CustomFieldKindsInput:
+      type: object
+      properties:
+        field_id: *id674
+        kind_id: *id675
+      additionalProperties: false
+    TicketFieldValues:
+      type: object
+      properties:
+        ticket_id: &id676
+          type: string
+          format: uuid
+        field_id: &id677
+          type: string
+          format: uuid
+        value: &id678 {}
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - id
+      x-table: ticket_field_values
+      x-source:
+      - D-125
+      - D-128
+    TicketFieldValuesInput:
+      type: object
+      properties:
+        ticket_id: *id676
+        field_id: *id677
+        value: *id678
+      additionalProperties: false
+    HandoverRules:
+      type: object
+      properties:
+        target: &id679
+          type: string
+        axis_id: &id680
+          type: string
+          format: uuid
+          nullable: true
+        mode: &id681
           type: string
         id:
           type: string
@@ -7560,27 +7713,27 @@ components:
     HandoverRulesInput:
       type: object
       properties:
-        target: *id668
-        axis_id: *id669
-        mode: *id670
+        target: *id679
+        axis_id: *id680
+        mode: *id681
       additionalProperties: false
     TestSpecs:
       type: object
       properties:
-        ticket_id: &id671
+        ticket_id: &id682
           type: string
           format: uuid
-        check_kind: &id672
+        check_kind: &id683
           type: string
-        title: &id673
+        title: &id684
           type: string
-        judge_type: &id674
+        judge_type: &id685
           type: string
           nullable: true
-        params: &id675 {}
+        params: &id686 {}
         version:
           type: integer
-        off_reason: &id676
+        off_reason: &id687
           type: string
           nullable: true
         id:
@@ -7618,36 +7771,36 @@ components:
     TestSpecsInput:
       type: object
       properties:
-        ticket_id: *id671
-        check_kind: *id672
-        title: *id673
-        judge_type: *id674
-        params: *id675
-        off_reason: *id676
+        ticket_id: *id682
+        check_kind: *id683
+        title: *id684
+        judge_type: *id685
+        params: *id686
+        off_reason: *id687
       additionalProperties: false
     Checks:
       type: object
       properties:
-        ticket_id: &id677
+        ticket_id: &id688
           type: string
           format: uuid
-        test_spec_id: &id678
+        test_spec_id: &id689
           type: string
           format: uuid
-        spec_version: &id679
+        spec_version: &id690
           type: integer
-        artifact_version_id: &id680
+        artifact_version_id: &id691
           type: string
           format: uuid
           nullable: true
-        attempt: &id681
+        attempt: &id692
           type: integer
-        result: &id682
+        result: &id693
           type: string
-        evidence: &id683 {}
-        runner: &id684
+        evidence: &id694 {}
+        runner: &id695
           type: string
-        checked_by_member_id: &id685
+        checked_by_member_id: &id696
           type: string
           format: uuid
           nullable: true
@@ -7686,43 +7839,43 @@ components:
     ChecksInput:
       type: object
       properties:
-        ticket_id: *id677
-        test_spec_id: *id678
-        spec_version: *id679
-        artifact_version_id: *id680
-        attempt: *id681
-        result: *id682
-        evidence: *id683
-        runner: *id684
-        checked_by_member_id: *id685
+        ticket_id: *id688
+        test_spec_id: *id689
+        spec_version: *id690
+        artifact_version_id: *id691
+        attempt: *id692
+        result: *id693
+        evidence: *id694
+        runner: *id695
+        checked_by_member_id: *id696
       additionalProperties: false
     TicketDecisions:
       type: object
       properties:
-        ticket_id: &id686
+        ticket_id: &id697
           type: string
           format: uuid
-        text: &id687
+        text: &id698
           type: string
-        reason: &id688
+        reason: &id699
           type: string
           nullable: true
-        decided_by: &id689
+        decided_by: &id700
           type: string
           format: uuid
           nullable: true
-        decided_at: &id690
+        decided_at: &id701
           type: string
           format: date-time
-        source_message_id: &id691
+        source_message_id: &id702
           type: string
           format: uuid
           nullable: true
-        superseded_by_id: &id692
+        superseded_by_id: &id703
           type: string
           format: uuid
           nullable: true
-        promoted_to: &id693
+        promoted_to: &id704
           type: string
         id:
           type: string
@@ -7759,42 +7912,58 @@ components:
     TicketDecisionsInput:
       type: object
       properties:
-        ticket_id: *id686
-        text: *id687
-        reason: *id688
-        decided_by: *id689
-        decided_at: *id690
-        source_message_id: *id691
-        superseded_by_id: *id692
-        promoted_to: *id693
+        ticket_id: *id697
+        text: *id698
+        reason: *id699
+        decided_by: *id700
+        decided_at: *id701
+        source_message_id: *id702
+        superseded_by_id: *id703
+        promoted_to: *id704
       additionalProperties: false
     TicketMessages:
       type: object
       properties:
-        ticket_id: &id694
+        ticket_id: &id705
           type: string
           format: uuid
-        author_member_id: &id695
+        author_member_id: &id706
           type: string
           format: uuid
           nullable: true
-        kind: &id696
+        kind: &id707
           type: string
-        body: &id697
+        body: &id708
           type: string
           nullable: true
-        mentions: &id698
+        mentions: &id709
           type: array
           items:
             type: string
             format: uuid
-        changes: &id699
+        changes: &id710
           nullable: true
-        quote_of_id: &id700
+        quote_of_id: &id711
           type: string
           format: uuid
           nullable: true
-        reactions: &id701 {}
+        reactions: &id712 {}
+        notify_member_ids: &id713
+          type: array
+          items:
+            type: string
+            format: uuid
+        quote_text: &id714
+          type: string
+          nullable: true
+        edited_at: &id715
+          type: string
+          format: date-time
+          nullable: true
+        deleted_by: &id716
+          type: string
+          format: uuid
+          nullable: true
         id:
           type: string
           format: uuid
@@ -7831,38 +8000,42 @@ components:
     TicketMessagesInput:
       type: object
       properties:
-        ticket_id: *id694
-        author_member_id: *id695
-        kind: *id696
-        body: *id697
-        mentions: *id698
-        changes: *id699
-        quote_of_id: *id700
-        reactions: *id701
+        ticket_id: *id705
+        author_member_id: *id706
+        kind: *id707
+        body: *id708
+        mentions: *id709
+        changes: *id710
+        quote_of_id: *id711
+        reactions: *id712
+        notify_member_ids: *id713
+        quote_text: *id714
+        edited_at: *id715
+        deleted_by: *id716
       additionalProperties: false
     ReferenceLogs:
       type: object
       properties:
-        ticket_id: &id702
+        ticket_id: &id717
           type: string
           format: uuid
-        action_run_id: &id703
-          type: string
-          format: uuid
-          nullable: true
-        ref_type: &id704
-          type: string
-        ref_id: &id705
+        action_run_id: &id718
           type: string
           format: uuid
           nullable: true
-        url: &id706
+        ref_type: &id719
+          type: string
+        ref_id: &id720
+          type: string
+          format: uuid
+          nullable: true
+        url: &id721
           type: string
           nullable: true
-        title: &id707
+        title: &id722
           type: string
           nullable: true
-        seen_at: &id708
+        seen_at: &id723
           type: string
           format: date-time
         id:
@@ -7900,54 +8073,54 @@ components:
     ReferenceLogsInput:
       type: object
       properties:
-        ticket_id: *id702
-        action_run_id: *id703
-        ref_type: *id704
-        ref_id: *id705
-        url: *id706
-        title: *id707
-        seen_at: *id708
+        ticket_id: *id717
+        action_run_id: *id718
+        ref_type: *id719
+        ref_id: *id720
+        url: *id721
+        title: *id722
+        seen_at: *id723
       additionalProperties: false
     KnowledgePages:
       type: object
       properties:
-        is_personal: &id709
+        is_personal: &id724
           type: boolean
-        parent_page_id: &id710
+        parent_page_id: &id725
           type: string
           format: uuid
           nullable: true
-        title: &id711
+        title: &id726
           type: string
-        owner_member_id: &id712
+        owner_member_id: &id727
           type: string
           format: uuid
-        state: &id713
+        state: &id728
           type: string
-        verify_interval_days: &id714
+        verify_interval_days: &id729
           type: integer
           nullable: true
-        verified_at: &id715
+        verified_at: &id730
           type: string
           format: date-time
           nullable: true
-        verify_due_on: &id716
+        verify_due_on: &id731
           type: string
           format: date
           nullable: true
-        topics: &id717
+        topics: &id732
           type: array
           items:
             type: string
-        current_version: &id718
+        current_version: &id733
           type: integer
-        form: &id719
+        form: &id734
           type: string
-        archived_at: &id720
+        archived_at: &id735
           type: string
           format: date-time
           nullable: true
-        archived_to_page_id: &id721
+        archived_to_page_id: &id736
           type: string
           format: uuid
           nullable: true
@@ -7989,63 +8162,63 @@ components:
     KnowledgePagesInput:
       type: object
       properties:
-        is_personal: *id709
-        parent_page_id: *id710
-        title: *id711
-        owner_member_id: *id712
-        state: *id713
-        verify_interval_days: *id714
-        verified_at: *id715
-        verify_due_on: *id716
-        topics: *id717
-        current_version: *id718
-        form: *id719
-        archived_at: *id720
-        archived_to_page_id: *id721
+        is_personal: *id724
+        parent_page_id: *id725
+        title: *id726
+        owner_member_id: *id727
+        state: *id728
+        verify_interval_days: *id729
+        verified_at: *id730
+        verify_due_on: *id731
+        topics: *id732
+        current_version: *id733
+        form: *id734
+        archived_at: *id735
+        archived_to_page_id: *id736
       additionalProperties: false
     KnowledgePageVersions:
       type: object
       properties:
-        page_id: &id722
+        page_id: &id737
           type: string
           format: uuid
         version:
           type: integer
-        kind: &id723
+        kind: &id738
           type: string
-        body: &id724 {}
-        note: &id725
+        body: &id739 {}
+        note: &id740
           type: string
           nullable: true
-        author_member_id: &id726
+        author_member_id: &id741
           type: string
           format: uuid
           nullable: true
-        proposed_from_ticket_id: &id727
+        proposed_from_ticket_id: &id742
           type: string
           format: uuid
           nullable: true
-        proposed_by_clone: &id728
+        proposed_by_clone: &id743
           type: boolean
-        decision: &id729
+        decision: &id744
           type: string
           nullable: true
-        decline_reason: &id730
+        decline_reason: &id745
           type: string
           nullable: true
-        decided_by: &id731
+        decided_by: &id746
           type: string
           format: uuid
           nullable: true
-        decided_at: &id732
+        decided_at: &id747
           type: string
           format: date-time
           nullable: true
-        published_by: &id733
+        published_by: &id748
           type: string
           format: uuid
           nullable: true
-        published_at: &id734
+        published_at: &id749
           type: string
           format: date-time
           nullable: true
@@ -8082,19 +8255,19 @@ components:
     KnowledgePageVersionsInput:
       type: object
       properties:
-        page_id: *id722
-        kind: *id723
-        body: *id724
-        note: *id725
-        author_member_id: *id726
-        proposed_from_ticket_id: *id727
-        proposed_by_clone: *id728
-        decision: *id729
-        decline_reason: *id730
-        decided_by: *id731
-        decided_at: *id732
-        published_by: *id733
-        published_at: *id734
+        page_id: *id737
+        kind: *id738
+        body: *id739
+        note: *id740
+        author_member_id: *id741
+        proposed_from_ticket_id: *id742
+        proposed_by_clone: *id743
+        decision: *id744
+        decline_reason: *id745
+        decided_by: *id746
+        decided_at: *id747
+        published_by: *id748
+        published_at: *id749
       additionalProperties: false
     KnowledgeLinks:
       type: object
@@ -8130,19 +8303,19 @@ components:
     Clients:
       type: object
       properties:
-        name: &id735
+        name: &id750
           type: string
-        owner_member_id: &id736
+        owner_member_id: &id751
           type: string
           format: uuid
           nullable: true
-        visibility: &id737
+        visibility: &id752
           type: string
-        default_share: &id738 {}
-        routing: &id739
+        default_share: &id753 {}
+        routing: &id754
           type: string
           nullable: true
-        email_domain: &id740
+        email_domain: &id755
           type: string
           nullable: true
         id:
@@ -8181,17 +8354,17 @@ components:
     ClientsInput:
       type: object
       properties:
-        name: *id735
-        owner_member_id: *id736
-        visibility: *id737
-        default_share: *id738
-        routing: *id739
-        email_domain: *id740
+        name: *id750
+        owner_member_id: *id751
+        visibility: *id752
+        default_share: *id753
+        routing: *id754
+        email_domain: *id755
       additionalProperties: false
     ClientGroups:
       type: object
       properties:
-        client_id: &id741
+        client_id: &id756
           type: string
           format: uuid
         scope_id:
@@ -8231,26 +8404,26 @@ components:
     ClientGroupsInput:
       type: object
       properties:
-        client_id: *id741
+        client_id: *id756
       additionalProperties: false
     ClientContacts:
       type: object
       properties:
-        client_id: &id742
+        client_id: &id757
           type: string
           format: uuid
-        name: &id743
+        name: &id758
           type: string
-        email: &id744
+        email: &id759
           type: string
           nullable: true
-        role: &id745
+        role: &id760
           type: string
-        member_id: &id746
+        member_id: &id761
           type: string
           format: uuid
           nullable: true
-        cc_role: &id747
+        cc_role: &id762
           type: string
         id:
           type: string
@@ -8285,44 +8458,44 @@ components:
     ClientContactsInput:
       type: object
       properties:
-        client_id: *id742
-        name: *id743
-        email: *id744
-        role: *id745
-        member_id: *id746
-        cc_role: *id747
+        client_id: *id757
+        name: *id758
+        email: *id759
+        role: *id760
+        member_id: *id761
+        cc_role: *id762
       additionalProperties: false
     ClientRequests:
       type: object
       properties:
-        client_id: &id748
+        client_id: &id763
           type: string
           format: uuid
-        contact_id: &id749
+        contact_id: &id764
           type: string
           format: uuid
           nullable: true
-        title: &id750
+        title: &id765
           type: string
-        body: &id751
+        body: &id766
           type: string
           nullable: true
-        due_on: &id752
+        due_on: &id767
           type: string
           format: date
           nullable: true
-        state: &id753
+        state: &id768
           type: string
-        ticket_id: &id754
-          type: string
-          format: uuid
-          nullable: true
-        routed_scope_id: &id755
+        ticket_id: &id769
           type: string
           format: uuid
           nullable: true
-        questions: &id756 {}
-        decline_reason: &id757
+        routed_scope_id: &id770
+          type: string
+          format: uuid
+          nullable: true
+        questions: &id771 {}
+        decline_reason: &id772
           type: string
           nullable: true
         id:
@@ -8359,48 +8532,48 @@ components:
     ClientRequestsInput:
       type: object
       properties:
-        client_id: *id748
-        contact_id: *id749
-        title: *id750
-        body: *id751
-        due_on: *id752
-        state: *id753
-        ticket_id: *id754
-        routed_scope_id: *id755
-        questions: *id756
-        decline_reason: *id757
+        client_id: *id763
+        contact_id: *id764
+        title: *id765
+        body: *id766
+        due_on: *id767
+        state: *id768
+        ticket_id: *id769
+        routed_scope_id: *id770
+        questions: *id771
+        decline_reason: *id772
       additionalProperties: false
     Acceptances:
       type: object
       properties:
-        ticket_id: &id758
+        ticket_id: &id773
           type: string
           format: uuid
-        artifact_version_id: &id759
+        artifact_version_id: &id774
           type: string
           format: uuid
           nullable: true
-        contact_id: &id760
+        contact_id: &id775
           type: string
           format: uuid
-        due_on: &id761
+        due_on: &id776
           type: string
           format: date
           nullable: true
-        message: &id762
+        message: &id777
           type: string
           nullable: true
-        result: &id763
+        result: &id778
           type: string
           nullable: true
-        comment: &id764
+        comment: &id779
           type: string
           nullable: true
-        decided_at: &id765
+        decided_at: &id780
           type: string
           format: date-time
           nullable: true
-        reminded_at: &id766
+        reminded_at: &id781
           type: string
           format: date-time
           nullable: true
@@ -8438,30 +8611,30 @@ components:
     AcceptancesInput:
       type: object
       properties:
-        ticket_id: *id758
-        artifact_version_id: *id759
-        contact_id: *id760
-        due_on: *id761
-        message: *id762
-        result: *id763
-        comment: *id764
-        decided_at: *id765
-        reminded_at: *id766
+        ticket_id: *id773
+        artifact_version_id: *id774
+        contact_id: *id775
+        due_on: *id776
+        message: *id777
+        result: *id778
+        comment: *id779
+        decided_at: *id780
+        reminded_at: *id781
       additionalProperties: false
     TenantMemberships:
       type: object
       properties:
-        auth_user_id: &id767
+        auth_user_id: &id782
           type: string
           nullable: true
-        member_id: &id768
+        member_id: &id783
           type: string
           format: uuid
-        role: &id769
+        role: &id784
           type: string
-        status: &id770
+        status: &id785
           type: string
-        joined_at: &id771
+        joined_at: &id786
           type: string
           format: date-time
           nullable: true
@@ -8500,22 +8673,22 @@ components:
     TenantMembershipsInput:
       type: object
       properties:
-        auth_user_id: *id767
-        member_id: *id768
-        role: *id769
-        status: *id770
-        joined_at: *id771
+        auth_user_id: *id782
+        member_id: *id783
+        role: *id784
+        status: *id785
+        joined_at: *id786
       additionalProperties: false
     TermsVersions:
       type: object
       properties:
-        kind: &id772
+        kind: &id787
           type: string
         version:
           type: string
-        url: &id773
+        url: &id788
           type: string
-        published_at: &id774
+        published_at: &id789
           type: string
           format: date-time
         id:
@@ -8552,26 +8725,26 @@ components:
     TermsVersionsInput:
       type: object
       properties:
-        kind: *id772
-        url: *id773
-        published_at: *id774
+        kind: *id787
+        url: *id788
+        published_at: *id789
       additionalProperties: false
     TermsConsents:
       type: object
       properties:
-        member_id: &id775
+        member_id: &id790
           type: string
           format: uuid
-        auth_user_id: &id776
+        auth_user_id: &id791
           type: string
           nullable: true
-        terms_version_id: &id777
+        terms_version_id: &id792
           type: string
           format: uuid
-        agreed_at: &id778
+        agreed_at: &id793
           type: string
           format: date-time
-        ip: &id779
+        ip: &id794
           type: string
           nullable: true
         id:
@@ -8608,31 +8781,31 @@ components:
     TermsConsentsInput:
       type: object
       properties:
-        member_id: *id775
-        auth_user_id: *id776
-        terms_version_id: *id777
-        agreed_at: *id778
-        ip: *id779
+        member_id: *id790
+        auth_user_id: *id791
+        terms_version_id: *id792
+        agreed_at: *id793
+        ip: *id794
       additionalProperties: false
     Passkeys:
       type: object
       properties:
-        auth_user_id: &id780
+        auth_user_id: &id795
           type: string
           format: uuid
-        credential_id: &id781
+        credential_id: &id796
           type: string
           format: uuid
-        public_key: &id782
+        public_key: &id797
           type: string
-        name: &id783
+        name: &id798
           type: string
-        transports: &id784
+        transports: &id799
           type: string
-        last_used_at: &id785
+        last_used_at: &id800
           type: string
           format: date-time
-        revoked_at: &id786
+        revoked_at: &id801
           type: string
           format: date-time
         id:
@@ -8659,24 +8832,24 @@ components:
     PasskeysInput:
       type: object
       properties:
-        auth_user_id: *id780
-        credential_id: *id781
-        public_key: *id782
-        name: *id783
-        transports: *id784
-        last_used_at: *id785
-        revoked_at: *id786
+        auth_user_id: *id795
+        credential_id: *id796
+        public_key: *id797
+        name: *id798
+        transports: *id799
+        last_used_at: *id800
+        revoked_at: *id801
       additionalProperties: false
     Operations:
       type: object
       properties:
-        key: &id787
+        key: &id802
           type: string
-        name: &id788
+        name: &id803
           type: string
-        kind: &id789
+        kind: &id804
           type: string
-        current_version: &id790
+        current_version: &id805
           type: integer
         id:
           type: string
@@ -8713,21 +8886,21 @@ components:
     OperationsInput:
       type: object
       properties:
-        key: *id787
-        name: *id788
-        kind: *id789
-        current_version: *id790
+        key: *id802
+        name: *id803
+        kind: *id804
+        current_version: *id805
       additionalProperties: false
     TicketLinks:
       type: object
       properties:
-        from_ticket_id: &id791
+        from_ticket_id: &id806
           type: string
           format: uuid
-        to_ticket_id: &id792
+        to_ticket_id: &id807
           type: string
           format: uuid
-        kind: &id793
+        kind: &id808
           type: string
         id:
           type: string
@@ -8764,46 +8937,46 @@ components:
     TicketLinksInput:
       type: object
       properties:
-        from_ticket_id: *id791
-        to_ticket_id: *id792
-        kind: *id793
+        from_ticket_id: *id806
+        to_ticket_id: *id807
+        kind: *id808
       additionalProperties: false
     TicketHandovers:
       type: object
       properties:
-        ticket_id: &id794
+        ticket_id: &id809
           type: string
           format: uuid
-        kind: &id795
+        kind: &id810
           type: string
-        from_member_id: &id796
-          type: string
-          format: uuid
-        to_member_id: &id797
+        from_member_id: &id811
           type: string
           format: uuid
-          nullable: true
-        to_scope_id: &id798
+        to_member_id: &id812
           type: string
           format: uuid
           nullable: true
-        reason: &id799
+        to_scope_id: &id813
+          type: string
+          format: uuid
+          nullable: true
+        reason: &id814
           type: string
           nullable: true
-        ask: &id800
+        ask: &id815
           type: string
           nullable: true
-        reply_due: &id801
+        reply_due: &id816
           type: string
           format: date-time
           nullable: true
-        switch: &id802 {}
-        state: &id803
+        switch: &id817 {}
+        state: &id818
           type: string
-        decline_reason: &id804
+        decline_reason: &id819
           type: string
           nullable: true
-        decided_at: &id805
+        decided_at: &id820
           type: string
           format: date-time
           nullable: true
@@ -8841,36 +9014,36 @@ components:
     TicketHandoversInput:
       type: object
       properties:
-        ticket_id: *id794
-        kind: *id795
-        from_member_id: *id796
-        to_member_id: *id797
-        to_scope_id: *id798
-        reason: *id799
-        ask: *id800
-        reply_due: *id801
-        switch: *id802
-        state: *id803
-        decline_reason: *id804
-        decided_at: *id805
+        ticket_id: *id809
+        kind: *id810
+        from_member_id: *id811
+        to_member_id: *id812
+        to_scope_id: *id813
+        reason: *id814
+        ask: *id815
+        reply_due: *id816
+        switch: *id817
+        state: *id818
+        decline_reason: *id819
+        decided_at: *id820
       additionalProperties: false
     SavedViews:
       type: object
       properties:
-        member_id: &id806
+        member_id: &id821
           type: string
           format: uuid
-        name: &id807
+        name: &id822
           type: string
-        share: &id808
+        share: &id823
           type: string
         scope_id:
           type: string
           format: uuid
           nullable: true
-        filters: &id809 {}
-        columns: &id810 {}
-        density: &id811
+        filters: &id824 {}
+        columns: &id825 {}
+        density: &id826
           type: string
         id:
           type: string
@@ -8906,31 +9079,31 @@ components:
     SavedViewsInput:
       type: object
       properties:
-        member_id: *id806
-        name: *id807
-        share: *id808
-        filters: *id809
-        columns: *id810
-        density: *id811
+        member_id: *id821
+        name: *id822
+        share: *id823
+        filters: *id824
+        columns: *id825
+        density: *id826
       additionalProperties: false
     TicketImports:
       type: object
       properties:
-        uploaded_by: &id812
+        uploaded_by: &id827
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        source: &id813
+        source: &id828
           type: string
-        mapping: &id814 {}
-        rows: &id815
+        mapping: &id829 {}
+        rows: &id830
           type: integer
-        errors: &id816 {}
-        state: &id817
+        errors: &id831 {}
+        state: &id832
           type: string
-        committed_at: &id818
+        committed_at: &id833
           type: string
           format: date-time
           nullable: true
@@ -8970,42 +9143,42 @@ components:
     TicketImportsInput:
       type: object
       properties:
-        uploaded_by: *id812
-        source: *id813
-        mapping: *id814
-        rows: *id815
-        errors: *id816
-        state: *id817
-        committed_at: *id818
+        uploaded_by: *id827
+        source: *id828
+        mapping: *id829
+        rows: *id830
+        errors: *id831
+        state: *id832
+        committed_at: *id833
       additionalProperties: false
     LearningCandidates:
       type: object
       properties:
-        owner_member_id: &id819
+        owner_member_id: &id834
           type: string
           format: uuid
-        trigger: &id820
+        trigger: &id835
           type: string
-        proposed_as: &id821
+        proposed_as: &id836
           type: string
-        text: &id822
+        text: &id837
           type: string
-        evidence: &id823 {}
-        check_result: &id824 {}
-        decided_by: &id825
+        evidence: &id838 {}
+        check_result: &id839 {}
+        decided_by: &id840
           type: string
           format: uuid
           nullable: true
-        state: &id826
+        state: &id841
           type: string
-        decided_at: &id827
+        decided_at: &id842
           type: string
           format: date-time
           nullable: true
-        result_type: &id828
+        result_type: &id843
           type: string
           nullable: true
-        result_id: &id829
+        result_id: &id844
           type: string
           format: uuid
           nullable: true
@@ -9046,34 +9219,34 @@ components:
     LearningCandidatesInput:
       type: object
       properties:
-        owner_member_id: *id819
-        trigger: *id820
-        proposed_as: *id821
-        text: *id822
-        evidence: *id823
-        check_result: *id824
-        decided_by: *id825
-        state: *id826
-        decided_at: *id827
-        result_type: *id828
-        result_id: *id829
+        owner_member_id: *id834
+        trigger: *id835
+        proposed_as: *id836
+        text: *id837
+        evidence: *id838
+        check_result: *id839
+        decided_by: *id840
+        state: *id841
+        decided_at: *id842
+        result_type: *id843
+        result_id: *id844
       additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
-        member_id: &id830
+        member_id: &id845
           type: string
           format: uuid
-        code_hash: &id831
+        code_hash: &id846
           type: string
-        expires_at: &id832
+        expires_at: &id847
           type: string
           format: date-time
-        used_at: &id833
+        used_at: &id848
           type: string
           format: date-time
           nullable: true
-        used_session_id: &id834
+        used_session_id: &id849
           type: string
           format: uuid
           nullable: true
@@ -9111,11 +9284,11 @@ components:
     BridgePairingCodesInput:
       type: object
       properties:
-        member_id: *id830
-        code_hash: *id831
-        expires_at: *id832
-        used_at: *id833
-        used_session_id: *id834
+        member_id: *id845
+        code_hash: *id846
+        expires_at: *id847
+        used_at: *id848
+        used_session_id: *id849
       additionalProperties: false
     NotificationSettings:
       type: object
@@ -9154,41 +9327,41 @@ components:
     OpsPlanProposals:
       type: object
       properties:
-        plan_id: &id835
+        plan_id: &id850
           type: string
           format: uuid
-        from_version: &id836
+        from_version: &id851
           type: integer
           nullable: true
-        to_version: &id837
+        to_version: &id852
           type: integer
           nullable: true
-        changes: &id838 {}
-        existing_policy: &id839
+        changes: &id853 {}
+        existing_policy: &id854
           type: string
-        notice_days: &id840
+        notice_days: &id855
           type: integer
           nullable: true
-        new_from: &id841
+        new_from: &id856
           type: string
           format: date
           nullable: true
-        reason: &id842
+        reason: &id857
           type: string
-        proposed_by: &id843
+        proposed_by: &id858
           type: string
           format: uuid
-        decided_by: &id844
+        decided_by: &id859
           type: string
           format: uuid
           nullable: true
-        state: &id845
+        state: &id860
           type: string
-        decided_at: &id846
+        decided_at: &id861
           type: string
           format: date-time
           nullable: true
-        return_reason: &id847
+        return_reason: &id862
           type: string
           nullable: true
         id:
@@ -9225,37 +9398,37 @@ components:
     OpsPlanProposalsInput:
       type: object
       properties:
-        plan_id: *id835
-        from_version: *id836
-        to_version: *id837
-        changes: *id838
-        existing_policy: *id839
-        notice_days: *id840
-        new_from: *id841
-        reason: *id842
-        proposed_by: *id843
-        decided_by: *id844
-        state: *id845
-        decided_at: *id846
-        return_reason: *id847
+        plan_id: *id850
+        from_version: *id851
+        to_version: *id852
+        changes: *id853
+        existing_policy: *id854
+        notice_days: *id855
+        new_from: *id856
+        reason: *id857
+        proposed_by: *id858
+        decided_by: *id859
+        state: *id860
+        decided_at: *id861
+        return_reason: *id862
       additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
-        member_id: &id848
+        member_id: &id863
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        is_primary: &id849
+        is_primary: &id864
           type: boolean
-        role: &id850
+        role: &id865
           type: string
-        since: &id851
+        since: &id866
           type: string
           format: date
-        changed_by: &id852
+        changed_by: &id867
           type: string
           format: uuid
           nullable: true
@@ -9294,22 +9467,22 @@ components:
     ScopeMembershipsInput:
       type: object
       properties:
-        member_id: *id848
-        is_primary: *id849
-        role: *id850
-        since: *id851
-        changed_by: *id852
+        member_id: *id863
+        is_primary: *id864
+        role: *id865
+        since: *id866
+        changed_by: *id867
       additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
-        role: &id853
+        role: &id868
           type: string
-        target_kind_id: &id854
+        target_kind_id: &id869
           type: string
-        ability_id: &id855
+        ability_id: &id870
           type: string
-        scope_kind: &id856
+        scope_kind: &id871
           type: string
         id:
           type: string
@@ -9334,10 +9507,10 @@ components:
     RoleBundleDefaultsInput:
       type: object
       properties:
-        role: *id853
-        target_kind_id: *id854
-        ability_id: *id855
-        scope_kind: *id856
+        role: *id868
+        target_kind_id: *id869
+        ability_id: *id870
+        scope_kind: *id871
       additionalProperties: false
     StepUpInput:
       type: object
@@ -9790,15 +9963,19 @@ components:
           - key
         name:
           type: string
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[A-Za-zＡ-Ｚａ-ｚ][A-Za-z0-9_Ａ-Ｚａ-ｚ０-９＿]{0,63}[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
         description:
           type: string
           nullable: true
         login:
           type: string
+          pattern: \S
         password:
           type: string
+          minLength: 1
         value:
           type: string
+          minLength: 1
         two_factor:
           type: string
           enum:
@@ -9809,15 +9986,23 @@ components:
           - push
         totp_secret:
           type: string
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*){16,}[=＝]*[
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
         destinations:
           type: array
           items:
             type: string
+            pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(\*[.．。｡])?(?:[hHｈＨ][tTｔＴ][tTｔＴ][pPｐＰ][sSｓＳ]?[:：][/／][/／])?(?:[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff/／?？#＃\\]*[@＠])?(?!(?:[cCｃＣ][oOｏＯ][.．。｡][jJｊＪ][pPｐＰ]|[nNｎＮ][eEｅＥ][.．。｡][jJｊＪ][pPｐＰ]|[oOｏＯ][rRｒＲ][.．。｡][jJｊＪ][pPｐＰ]|[aAａＡ][cCｃＣ][.．。｡][jJｊＪ][pPｐＰ]|[aAａＡ][dDｄＤ][.．。｡][jJｊＪ][pPｐＰ]|[eEｅＥ][dDｄＤ][.．。｡][jJｊＪ][pPｐＰ]|[gGｇＧ][oOｏＯ][.．。｡][jJｊＪ][pPｐＰ]|[gGｇＧ][rRｒＲ][.．。｡][jJｊＪ][pPｐＰ]|[lLｌＬ][gGｇＧ][.．。｡][jJｊＪ][pPｐＰ]|[cCｃＣ][oOｏＯ][.．。｡][uUｕＵ][kKｋＫ]|[oOｏＯ][rRｒＲ][gGｇＧ][.．。｡][uUｕＵ][kKｋＫ]|[aAａＡ][cCｃＣ][.．。｡][uUｕＵ][kKｋＫ]|[gGｇＧ][oOｏＯ][vVｖＶ][.．。｡][uUｕＵ][kKｋＫ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][aAａＡ][uUｕＵ]|[nNｎＮ][eEｅＥ][tTｔＴ][.．。｡][aAａＡ][uUｕＵ]|[oOｏＯ][rRｒＲ][gGｇＧ][.．。｡][aAａＡ][uUｕＵ]|[cCｃＣ][oOｏＯ][.．。｡][nNｎＮ][zZｚＺ]|[cCｃＣ][oOｏＯ][.．。｡][kKｋＫ][rRｒＲ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][cCｃＣ][nNｎＮ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][tTｔＴ][wWｗＷ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][sSｓＳ][gGｇＧ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][bBｂＢ][rRｒＲ])[.．。｡]?(?:[:：/／?？#＃]|[
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]|$))((?:[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]+[.．。｡])+[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]*[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b0-9０-９][^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]*[.．。｡]?)(?:[:：][0-9０-９]{0,5})?(?:[/／?？#＃][^
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*)?[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
           minItems: 1
           maxItems: 20
+          description: 契約の pattern に合っても、互換形で書いた公開の接尾辞だけ（ᶜo.jp・ⓒⓞ.jp など）は 422・E-CRED-002 で断る（預けた物がどこでも使えてしまうのを防ぐ守り・K-383）
         expires_on:
           type: string
           nullable: true
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(?:[0-9０-９]{4}[-－](?:(?:[0０][13578１３５７８]|[1１][02０２])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][01０１])|(?:[0０][469４６９]|[1１][1１])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][0０])|[0０][2２][-－](?:[0０][1-9１-９]|[1１][0-9０-９]|[2２][0-8０-８]))|(?:[0-9０-９]{2}(?:[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])|(?:[0０]{2}|[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])[0０]{2})[-－][0０][2２][-－][2２][9９])[
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
       additionalProperties: false
       x-operation: createCredential
       required:
@@ -9826,15 +10011,90 @@ components:
       - name
       - destinations
       x-required-by: hooks
+      anyOf:
+      - properties:
+          kind:
+            enum:
+            - login
+          two_factor:
+            enum:
+            - none
+            - sms
+            - email
+            - push
+        required:
+        - kind
+        - login
+        - password
+        - two_factor
+        not:
+          anyOf:
+          - required:
+            - value
+          - required:
+            - totp_secret
+      - properties:
+          kind:
+            enum:
+            - login
+        required:
+        - kind
+        - login
+        - password
+        not:
+          anyOf:
+          - required:
+            - two_factor
+          - required:
+            - value
+          - required:
+            - totp_secret
+      - properties:
+          kind:
+            enum:
+            - login
+          two_factor:
+            enum:
+            - totp
+        required:
+        - kind
+        - login
+        - password
+        - two_factor
+        - totp_secret
+        not:
+          anyOf:
+          - required:
+            - value
+      - properties:
+          kind:
+            enum:
+            - key
+        required:
+        - kind
+        - value
+        not:
+          anyOf:
+          - required:
+            - login
+          - required:
+            - password
+          - required:
+            - two_factor
+          - required:
+            - totp_secret
     CredentialUpdateInput:
       type: object
       properties:
         login:
           type: string
+          pattern: \S
         password:
           type: string
+          minLength: 1
         value:
           type: string
+          minLength: 1
         two_factor:
           type: string
           enum:
@@ -9845,15 +10105,23 @@ components:
           - push
         totp_secret:
           type: string
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(?:[A-Za-zＡ-Ｚａ-ｚ2-7２-７][ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*){16,}[=＝]*[
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
         destinations:
           type: array
           items:
             type: string
+            pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(\*[.．。｡])?(?:[hHｈＨ][tTｔＴ][tTｔＴ][pPｐＰ][sSｓＳ]?[:：][/／][/／])?(?:[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff/／?？#＃\\]*[@＠])?(?!(?:[cCｃＣ][oOｏＯ][.．。｡][jJｊＪ][pPｐＰ]|[nNｎＮ][eEｅＥ][.．。｡][jJｊＪ][pPｐＰ]|[oOｏＯ][rRｒＲ][.．。｡][jJｊＪ][pPｐＰ]|[aAａＡ][cCｃＣ][.．。｡][jJｊＪ][pPｐＰ]|[aAａＡ][dDｄＤ][.．。｡][jJｊＪ][pPｐＰ]|[eEｅＥ][dDｄＤ][.．。｡][jJｊＪ][pPｐＰ]|[gGｇＧ][oOｏＯ][.．。｡][jJｊＪ][pPｐＰ]|[gGｇＧ][rRｒＲ][.．。｡][jJｊＪ][pPｐＰ]|[lLｌＬ][gGｇＧ][.．。｡][jJｊＪ][pPｐＰ]|[cCｃＣ][oOｏＯ][.．。｡][uUｕＵ][kKｋＫ]|[oOｏＯ][rRｒＲ][gGｇＧ][.．。｡][uUｕＵ][kKｋＫ]|[aAａＡ][cCｃＣ][.．。｡][uUｕＵ][kKｋＫ]|[gGｇＧ][oOｏＯ][vVｖＶ][.．。｡][uUｕＵ][kKｋＫ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][aAａＡ][uUｕＵ]|[nNｎＮ][eEｅＥ][tTｔＴ][.．。｡][aAａＡ][uUｕＵ]|[oOｏＯ][rRｒＲ][gGｇＧ][.．。｡][aAａＡ][uUｕＵ]|[cCｃＣ][oOｏＯ][.．。｡][nNｎＮ][zZｚＺ]|[cCｃＣ][oOｏＯ][.．。｡][kKｋＫ][rRｒＲ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][cCｃＣ][nNｎＮ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][tTｔＴ][wWｗＷ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][sSｓＳ][gGｇＧ]|[cCｃＣ][oOｏＯ][mMｍＭ][.．。｡][bBｂＢ][rRｒＲ])[.．。｡]?(?:[:：/／?？#＃]|[
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]|$))((?:[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]+[.．。｡])+[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]*[^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b0-9０-９][^\x00-\x20\x7f-\x9f!"#$%&'()*+,./:;<=>?@\[\\\]\^`{|}~\u00a0\u1680\u2000-\u200f\u2016-\u206f\u3000-\u3004\u3008-\u303f\uff01-\uff0c\uff0e\uff0f\uff1a-\uff20\uff3b-\uff3e\uff40\uff5b-\uff65\ufeff\ufff0-\uffff\u2100-\u2101\u2105-\u2106\u2488-\u249b\u2a74\u33c2\u33c7\u33d8\ufe13\ufe16\ufe19\ufe30\ufe47-\ufe48\ufe52\ufe55-\ufe56\ufe5f\ufe68\ufe6b]*[.．。｡]?)(?:[:：][0-9０-９]{0,5})?(?:[/／?？#＃][^
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*)?[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
           minItems: 1
           maxItems: 20
+          description: 契約の pattern に合っても、互換形で書いた公開の接尾辞だけ（ᶜo.jp・ⓒⓞ.jp など）は 422・E-CRED-002 で断る（預けた物がどこでも使えてしまうのを防ぐ守り・K-383）
         expires_on:
           type: string
           nullable: true
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(?:[0-9０-９]{4}[-－](?:(?:[0０][13578１３５７８]|[1１][02０２])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][01０１])|(?:[0０][469４６９]|[1１][1１])[-－](?:[0０][1-9１-９]|[12１２][0-9０-９]|[3３][0０])|[0０][2２][-－](?:[0０][1-9１-９]|[1１][0-9０-９]|[2２][0-8０-８]))|(?:[0-9０-９]{2}(?:[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])|(?:[0０]{2}|[0０][48４８]|[2468２４６８][048０４８]|[13579１３５７９][26２６])[0０]{2})[-－][0０][2２][-－][2２][9９])[
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
         description:
           type: string
           nullable: true
@@ -9861,6 +10129,149 @@ components:
           type: string
       additionalProperties: false
       x-operation: updateCredential
+      allOf:
+      - anyOf:
+        - required:
+          - login
+        - required:
+          - password
+        - required:
+          - value
+        - required:
+          - two_factor
+        - required:
+          - totp_secret
+        - required:
+          - destinations
+        - required:
+          - expires_on
+        - required:
+          - description
+      - anyOf:
+        - not:
+            anyOf:
+            - required:
+              - login
+            - required:
+              - password
+            - required:
+              - value
+            - required:
+              - totp_secret
+        - required:
+          - login
+          - password
+          not:
+            required:
+            - value
+        - required:
+          - value
+          not:
+            anyOf:
+            - required:
+              - login
+            - required:
+              - password
+            - required:
+              - two_factor
+            - required:
+              - totp_secret
+    CredentialLoginCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswerInput:
+      type: object
+      properties:
+        request_ref:
+          type: string
+          pattern: \S
+          maxLength: 100
+        code:
+          type: string
+          pattern: ^[\s\-‐‑‒–—―ー−－]*(?:[0-9A-Za-z０-９Ａ-Ｚａ-ｚ][\s\-‐‑‒–—―ー−－]*){1,64}$
+        approved:
+          type: boolean
+          enum:
+          - true
+      additionalProperties: false
+      x-operation: answerCredentialLoginCheck
+      required:
+      - request_ref
+      x-required-by: hooks
+      oneOf:
+      - required:
+        - code
+        not:
+          required:
+          - approved
+      - required:
+        - approved
+        not:
+          required:
+          - code
+    CredentialCheckReportInput:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        state:
+          type: string
+          enum:
+          - ok
+          - bad_password
+          - needs_2fa
+          - bad_code
+          - captcha
+          - unreachable
+          - no_form
+          - stopped
+          - no_answer
+          - asking
+          - waiting
+        detail:
+          type: string
+          maxLength: 400
+        request_ref:
+          type: string
+          pattern: \S
+          maxLength: 100
+        ask_kind:
+          type: string
+          enum:
+          - code
+          - approve
+        text:
+          type: string
+          maxLength: 300
+      additionalProperties: false
+      x-operation: reportCredentialCheck
+      required:
+      - job_id
+      - state
+      x-required-by: hooks
+      oneOf:
+      - properties:
+          state:
+            enum:
+            - asking
+            - waiting
+        required:
+        - request_ref
+      - properties:
+          state:
+            enum:
+            - ok
+            - bad_password
+            - needs_2fa
+            - bad_code
+            - captcha
+            - unreachable
+            - no_form
+            - stopped
+            - no_answer
     DeviceBrowserInput:
       type: object
       properties:
@@ -9869,6 +10280,22 @@ components:
           pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
       additionalProperties: false
       x-operation: updateMyDevice
+      required:
+      - browser
+      x-required-by: hooks
+    DeviceBrowserCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkMyDeviceBrowser
+    BridgeBrowserInput:
+      type: object
+      properties:
+        browser:
+          type: string
+          pattern: ^\s*(?:[cｃ][hｈ][rｒ][oｏ][mｍ][eｅ]|[dｄ][eｅ][dｄ][iｉ][cｃ][aａ][tｔ][eｅ][dｄ]|[oｏ][fｆ][fｆ])\s*$
+      additionalProperties: false
+      x-operation: setBridgeBrowser
       required:
       - browser
       x-required-by: hooks
@@ -9897,6 +10324,41 @@ components:
           pattern: '[^\s\u0000-\u001f\u007f]'
       additionalProperties: false
       x-operation: updateTicket
+    InvitationsCreateInput:
+      type: object
+      properties:
+        emails:
+          type: array
+          items:
+            type: string
+            maxLength: 320
+            pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(?:[^@＠﹫ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff][ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*)+[@＠﹫][
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^@＠﹫ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff](?:[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^@＠﹫
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff])*[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[.․﹒．](?:[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^@＠﹫
+              \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff])+[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
+          minItems: 1
+          maxItems: 50
+        scope_id:
+          type: string
+          format: uuid
+        role_key:
+          type: string
+          enum:
+          - member
+          - manager
+          - viewer
+          - admin
+        message:
+          type: string
+          nullable: true
+          maxLength: 500
+      additionalProperties: false
+      x-operation: createInvitations
+      required:
+      - emails
+      - scope_id
+      - role_key
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -9962,14 +10424,18 @@ components:
     TimelineItem:
       type: object
       properties:
+        id:
+          type: string
         kind:
           type: string
         at:
           type: string
-        actor_member_id:
-          type: string
+        actor:
+          type: object
+          nullable: true
         message:
           type: object
+          nullable: true
         changes:
           type: array
           items:
@@ -9977,6 +10443,10 @@ components:
           nullable: true
         run:
           type: object
+          nullable: true
+        deleted:
+          type: object
+          nullable: true
       x-operation: listTicketTimeline
     TestSpecLint:
       type: object
@@ -11592,6 +12062,31 @@ components:
           type: string
           format: uuid
       x-operation: deleteCredential
+    CredentialLoginCheck:
+      type: object
+      properties:
+        state:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: checkCredentialLogin
+    CredentialLoginAnswer:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+      x-operation: answerCredentialLoginCheck
+    CredentialCheckReport:
+      type: object
+      properties:
+        accepted:
+          type: boolean
+        code:
+          type: string
+          nullable: true
+      x-operation: reportCredentialCheck
     RevokedDevice:
       type: object
       properties:
@@ -11615,6 +12110,19 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    DeviceBrowserCheck:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+      x-operation: checkMyDeviceBrowser
+    BridgeBrowser:
+      type: object
+      properties:
+        browser:
+          type: string
+      x-operation: setBridgeBrowser
     TicketUpdated:
       type: object
       properties:
@@ -11629,6 +12137,36 @@ components:
           format: uuid
           nullable: true
       x-operation: updateTicket
+    InvitationsSent:
+      type: object
+      properties:
+        invitations:
+          type: array
+          items:
+            type: object
+      x-operation: createInvitations
+    TicketField:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        field_type:
+          type: string
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          type: array
+          items:
+            type: object
+        position:
+          type: integer
+      x-operation: listTicketFields
     Error:
       type: object
       properties:
@@ -15106,6 +15644,117 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/bridge/browser:
+    post:
+      operationId: setBridgeBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - sessions
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: device
+      x-permission-scope: その人の PC（その PC 自身の AI が使うブラウザだけ。Kaname が正本で、画面で変えたのと同じ値・D-120）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BridgeBrowserInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BridgeBrowser'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：大文字の値（CHROME など・NFKC で小文字にならない））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 大文字の値（CHROME など・NFKC で小文字にならない）
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/bridge/claim:
     post:
       operationId: claimPairingCode
@@ -15252,7 +15901,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialCheckReportInput'
       responses:
         '201':
           description: 成功
@@ -15262,7 +15911,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialCheckReport'
                   meta:
                     type: object
         '401':
@@ -15284,13 +15933,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15303,12 +15958,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15748,6 +16397,128 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/bridge/devices/{id}/browser-check:
+    post:
+      operationId: checkMyDeviceBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - bridge_jobs
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: self
+      x-permission-scope: 自分のアカウントの PC だけ。その PC に宛てた確かめの仕事を 1 つ積む（本人のサブスクを少し使うので 1 分 10 回）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceBrowserCheckInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeviceBrowserCheck'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-CONN-018
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:
@@ -17649,101 +18420,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/class_axes:
-    get:
-      operationId: listClassAxes
-      summary: 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても
-      tags:
-      - class_axes
-      x-acts:
-      - A103
-      x-screens:
-      - tickets
-      x-choke-points: []
-      x-source:
-      - D-125.167
-      - D-125.7
-      - D-125.98
-      x-permission: read
-      x-permission-scope: 同上
-      x-step-up: false
-      security:
-      - session: []
-      parameters:
-      - name: cursor
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          pattern: ^[0-9]{1,9}$
-      - name: limit
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - is_builtin
-          - key
-          - name
-          - position
-          - tenant_id
-          - updated_at
-          - updated_by
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ClassAxes'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/v1/client_contacts/{id}:
     patch:
       operationId: updateClientContact
@@ -19017,10 +19693,14 @@ paths:
           - created_at
           - created_by
           - deleted_at
+          - deleted_by
+          - edited_at
           - id
           - kind
           - mentions
+          - notify_member_ids
           - quote_of_id
+          - quote_text
           - reactions
           - tenant_id
           - ticket_id
@@ -21459,23 +22139,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-CRED-006
+          description: E-CRED-006／E-CRED-004
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）・使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 名前の形（NFKC・大文字に直した後で英字から始まる英大文字・数字・_ の 64 文字まで・E-CRED-001）
-          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）
-          - 日本の今日より前・暦に無い期限（E-CRED-004）
-          - 種類ごとの中身の欠けと混ざり（E-CRED-005）
-          - 認証アプリの鍵の形と有無（E-VAL-003）
         '502':
           description: E-SEC-001
           content:
@@ -21579,18 +22253,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）・日本の今日より前・暦に無い期限（E-CRED-004）・種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）・変える物が無い（空・理由だけ・E-CRED-008））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 使える場所の形（URL・全角を直した後のドメイン・E-CRED-002）と、空の並び（E-CRED-003）
-          - 日本の今日より前・暦に無い期限（E-CRED-004）
-          - 種類ごとの中身の欠けと混ざり（ログイン情報は login と password を両方・鍵は value だけ・E-CRED-005）・認証アプリの鍵の形と有無（E-VAL-003）
-          - 変える物が無い（空・理由だけ・E-CRED-008）
         '409':
-          description: E-CRED-009
+          description: E-CRED-009／E-CRED-004／E-CRED-015
           content:
             application/json:
               schema:
@@ -21755,7 +22424,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginCheckInput'
       responses:
         '201':
           description: 成功
@@ -21765,7 +22434,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginCheck'
                   meta:
                     type: object
         '401':
@@ -21787,13 +22456,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CRED-012／E-CRED-013／E-CRED-011
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21806,12 +22481,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -21863,7 +22532,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CredentialsInput'
+              $ref: '#/components/schemas/CredentialLoginAnswerInput'
       responses:
         '201':
           description: 成功
@@ -21873,7 +22542,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Credentials'
+                    $ref: '#/components/schemas/CredentialLoginAnswer'
                   meta:
                     type: object
         '401':
@@ -21889,7 +22558,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-CRED-014
           content:
             application/json:
               schema:
@@ -21906,6 +22575,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -21914,12 +22589,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -22746,7 +23415,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationsCreateInput'
       responses:
         '201':
           description: 成功
@@ -22756,7 +23425,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Invitations'
+                    $ref: '#/components/schemas/InvitationsSent'
                   meta:
                     type: object
         '401':
@@ -22766,19 +23435,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-INV-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-INV-009
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-011
           content:
             application/json:
               schema:
@@ -38641,6 +39316,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/ticket-fields:
+    get:
+      operationId: listTicketFields
+      summary: 取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）
+      tags:
+      - custom_fields
+      x-acts:
+      - A103
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-125.7
+      - D-125.98
+      x-permission: read
+      x-permission-scope: そのワークスペースのメンバー
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: kind_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketField'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/ticket_decisions/{id}:
     patch:
       operationId: updateTicketDecision
@@ -43172,7 +43937,7 @@ paths:
   /api/v1/tickets/{id}/timeline:
     get:
       operationId: listTicketTimeline
-      summary: 取得（tickets）— チケットのスレッドで話す（@ で知らせる）
+      summary: 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）
       tags:
       - ticket_messages
       x-acts:
@@ -43196,6 +43961,22 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: filter
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: before_at
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: before_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -43208,28 +43989,7 @@ paths:
         schema:
           type: integer
           minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - author_member_id
-          - body
-          - changes
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - kind
-          - mentions
-          - quote_of_id
-          - reactions
-          - tenant_id
-          - ticket_id
-          - updated_at
-          - updated_by
+          maximum: 100
       responses:
         '200':
           description: 成功
@@ -43244,6 +44004,17 @@ paths:
                       $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
+                    properties:
+                      older_count:
+                        type: integer
+                      new_count:
+                        type: integer
+                      mine_count:
+                        type: integer
+                      post_count:
+                        type: integer
+                      people:
+                        type: array
         '401':
           description: UNAUTHENTICATED
           content:
