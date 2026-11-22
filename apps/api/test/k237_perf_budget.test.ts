@@ -26,7 +26,7 @@ import { delegateHooks } from "../src/hooks/delegate.js";
 import { approveHooks } from "../src/hooks/approve-complete.js";
 import { bridgeHooks } from "../src/hooks/bridge.js";
 import { setupTaskHooks } from "../src/hooks/setup-tasks.js";
-import { ticketTimelineHooks } from "../src/hooks/ticket-timeline.js";
+import { ticketDecisionHooks } from "../src/hooks/ticket-decisions.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -147,7 +147,7 @@ beforeAll(async () => {
         ...delegateHooks(appPool),
         ...approveHooks(appPool),
         ...setupTaskHooks(appPool),
-        ...ticketTimelineHooks(appPool),
+        ...ticketDecisionHooks(appPool),
       },
       limits: {},
     },
