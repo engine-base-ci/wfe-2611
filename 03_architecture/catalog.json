@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 76,
+  "api_built": 77,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 224,
+  "errors": 226,
   "stack": 56,
   "env": 41
  },
@@ -4518,7 +4518,7 @@
    "op": "search",
    "method": "GET",
    "path": "/api/v1/search",
-   "what": "取得（search）— 探す（チケット・ナレッジのページ・決定・会話）",
+   "what": "取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない",
    "flows": [
     "F7"
    ],
@@ -4526,9 +4526,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-468"
    ]
   },
   {
