@@ -228,6 +228,10 @@ DB_STOP = """      - name: DB を消す（赤でも必ず）
         if: always()
         run: docker rm -f "kaname-ci-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}" >/dev/null 2>&1 || true
 """
+# GitHub の台（ubuntu-24.04）に無い lsof を、入っていなければ入れる（Mac の箱の像には在るので何も呼ばない・K-641）。更新が落ちたら入れるに進まない
+TOOLS_STEP = """      - name: 台の道具をそろえる（lsof・入っていれば飛ばす・K-641）
+        run: command -v lsof >/dev/null 2>&1 || { sudo apt-get update -qq && sudo apt-get install -y -qq lsof; }
+"""
 # Python の部品は台に置いた venv（回をまたいで使い回す・組の中で pip install しない）
 VENV = ("      - uses: actions/setup-python@v5   # VM の Python は 3.12。GitHub の台と同じく版を用意する（K-173）\n"
         "        with: { python-version: '3.14' }\n"
@@ -373,8 +377,8 @@ jobs:
       LEGAL_SECRETS_PROVIDER: 試験の秘密の置き場
       LEGAL_STORAGE_PROVIDER: 試験の置き場
     steps:
-{NODE}{DB_START}      - run: pnpm --filter @kaname/web exec playwright install chromium
-      - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
+{NODE}{DB_START}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium   # 像の温めと同じ・字体と apt の部品をそろえる（K-641）
+{TOOLS_STEP}      - name: 画面と口の番号が空いているか（手元の開発のサーバーに当たって古いコードで緑にしない・K-172）
         run: |
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 番号 $port が使われている（手元の開発のサーバーなど）。止めてから流し直す"; exit 1; fi; done
           echo "KANAME_API_LOG=$RUNNER_TEMP/api.log" >> "$GITHUB_ENV"   # 口の記録の置き場（画面の試験が読む・回ごとの置き場）

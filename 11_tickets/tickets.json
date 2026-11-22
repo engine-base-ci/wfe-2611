@@ -2405,7 +2405,6 @@
     "getTicketImport",
     "lintTestSpecs",
     "listChecks",
-    "listClassAxes",
     "listClients",
     "listTestSpecs",
     "listTicketArtifacts",
@@ -2426,7 +2425,6 @@
     "apps/api/test/generated/delete_test_specs_id.test.ts",
     "apps/api/test/generated/delete_ticket_links_id.test.ts",
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
-    "apps/api/test/generated/get_class_axes.test.ts",
     "apps/api/test/generated/get_clients.test.ts",
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
     "apps/api/test/generated/get_ticket_stages.test.ts",
@@ -19245,6 +19243,69 @@
    "file": "11_tickets/K-425.md"
   },
   {
+   "id": "K-427",
+   "title": "入口（op.ts）で NUL（U+0000）を含む入力を 422 で断る（道の値・問い合わせ・体の文字列とキー・Postgres の text は NUL を入れられず listTickets の q が 500 になっていた・DB の番号 22021・22P05 も 2 層目で 422・契約 fuzz は NUL を作らない設定に・K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "入口",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い K-145（入口の uuid の確かめ・op.ts に確かめを足す）と K-426（1 か所の直し＋試験・見込み 0.75 時間）から引いた：op.ts の確かめ 1 つ（走査の関数 20 行と、問い合わせ・体の 2 か所の呼び出し・2 層目の番号 2 つ）15 分・契約 fuzz の設定 1 行 5 分・前からの試験 3 つの NUL の行を替えた版を carry で運ぶ（切る段で替え済み）・この葉の試験 9 行（うち人が確かめる 1）と前からの試験（apps/api/test・契約 fuzz G36）を手元の使い捨ての DB で流して確かめる 25 分",
+   "decisions": [
+    "D-129.42",
+    "D-130.1",
+    "D-130.2",
+    "D-130.4"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "入口で字を調べて断るだけ。外に出ない・書かない。関門 C1〜C8 の呼び方は変えない",
+   "tests": [
+    "apps/api/test/k427_nul_input.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F1/sign-up.test.ts",
+    "apps/api/test/features/F3/connect-pc.test.ts",
+    "apps/api/test/features/F5/approve-complete-return.test.ts"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（入口の字の確かめだけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/api/src/contract/op.ts",
+    "scripts/ci/schemathesis.toml"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "契約 fuzz（G36）が、前からある口 listTickets を `GET /api/v1/tickets?limit=86&scope_id=<uuid>&cursor=&view=&q=<NUL を含むでたらめな字>` で叩くと **500**（`{\"error\":\"internal\"}`）になることを見つけた（K-365 の CI。K-365 の変更とは関係ない）。\n\n原因は NUL（U+0000）だった（2026-11-20 切る段で確かめた）：\n\n- 使い捨ての DB で node-postgres から `select $1::text`（値に NUL）を流すと、PostgreSQL が `22021 invalid byte sequence for encoding \"UTF8\": 0x00` で落ちる。`select $1::jsonb`（JSON の中に `\\u0000`）は `22P05 unsupported Unicode escape sequence`。NUL の無い全角・絵文字・`\\u0001` は通る\n- listTickets の q は入口を何も確かめずに通り、題名の絞り込みの SQL の値になる（`apps/api/src/features/F4/ticket-list/query.ts` の `normalizeQ` は NFKC・trim・小文字だけ）。入口が落ちた番号を 422 に写す表（`apps/api/src/contract/op.ts` の `DB_INPUT_CODES`）には 22021・22P05 が無いので、500 になる\n- listTickets の試験を今の版に当てると、この形で 500 になることを切る段で確かめた（試験 K427-API-006）\n\n同じ形は listTickets だけではない。**どの口でも、文字列を DB に渡す口は NUL で 500 になりうる**。契約 fuzz は schemathesis の既定（`generation.allow-x00` が真）で NUL を作るので、口の例が上限（429）に邪魔されず奥に届くようになるほど（K-424）、別の口でも赤になる。fuzz の乱数しだいでどのチケットの CI でも赤になりうる。\n\nこの葉は口ごとに直さず、**入口の 1 か所**で直す：\n\n1. **入口（op.ts の `handler`）**：道の値・問い合わせ（名前でなく値）・体（JSON の文字列とキー・入れ子の中まで）のどれにでも NUL があれば、口の振る舞いに届く前に **422・VALIDATION_ERROR**（エラー ID は前からある物のまま・新しく作らない）・欄の名前・理由「使えない文字」。答えに送った字は出さない（代表の決め answer=f0f290e785a9：422＝形の誤り）\n2. **2 層目**：入口をすり抜けた NUL（契約の口の外の前の道すじ `apps/api/src/auth/ext.ts` など）が DB に届いて落ちたときの番号 22021・22P05 も、前から 22P02 などが入っている `DB_INPUT_CODES` に足し、`app.ts` の `onError` と `execute` が 500 でなく 422・決まった文で答える（D-130.2 と同じ写し）\n3. **契約 fuzz は NUL を作らない設定に**：`scripts/ci/schemathesis.toml` に `[generation] allow-x00 = false`。NUL は契約の形（string）では書けないが入口が必ず断る字なので、fuzz が「形どおりの入力」として作ると 422 を赤と数える（positive_data_acceptance）。入口が断ることはこの葉の試験（K427-API-001〜004）が見る",
+    "完了の条件": "- [ ] 下の表の 8 行（K427-API-001〜007・009）が緑：`apps/api/test/k427_nul_input.test.ts`（K427-API-008 は人が確かめる）\n- [ ] 前からの試験のうち替えた 3 つ（sign-up・connect-pc・approve-complete-return。切る段で替え済み・carry で運ぶ）と、替えない前からの試験（apps/api/test と契約の入口の試験 全部）が緑\n- [ ] 手元の CI（このチケットの範囲。範囲の地図で G36 が流れる）が緑で、契約 fuzz（G36）が listTickets で 500 を出さない\n- [ ] 手元の速い検査（prettier・eslint）が緑",
+    "前提と制約": "分類: PERM\n\n- 入口の順は変えない：送る量（413）→ 上限（429）→ 認証（401）→ 認可（403）→ 入口の uuid（422）→ ... のうち、**問い合わせと道の値の NUL は入口の uuid と同じ 3.0 の所**（権限の言葉の段 3.1 と、まだ作っていない口の 501 より前）、**体の NUL は体を読んで正規化した直後**（口の前処理 `hooks.input` より前・契約の形 zod の前）。未ログインは 401 のまま（K427-API-006）\n- 体の NUL は、`normalize`（NFKC・trim）の後の値を走査する。NFKC も trim も NUL を消さないので、届いたままの体に NUL があるかと同じ。口の hooks が `c.req.json()` で読む届いたままの体（K-144 で入口が器に入れた物）に NUL があるときも、その前に 422 になる\n- 走査は文字列の値・オブジェクトのキーの両方を、入れ子（配列・オブジェクト）の中まで見る。jsonb の列はキーの NUL でも 22P05 で落ちる。欄の名前は入れ子の道（`sections.<キー>`・配列は `items.0`）。キーの NUL のときは、キーそのものを出さず、そのキーを持つオブジェクトの道（根なら `body`）\n- 走査は 1 回の要求ごとに値の長さの和だけ（体は 1MB が上限・問い合わせは短い）。文の数・取引の数・住所は増えない\n- **前の動き（前から決まっていた振る舞い）が変わる所**：次の 3 つの口は、今まで NUL を**黙って取り除いて 201** にしていた。この葉の後は入口が 422 で断る。NUL は人が打てる字ではなく（貼り付けやファイルの読み込みでだけ入る）、取り除くと入れた物と保存した物が食い違う（D-130.4「人が自由に書く欄を黙って切らない」と同じ向き）。NUL 以外の制御文字（`\\u0001` など）を取り除く今までの振る舞いは変えない：\n  - 登録の name・company_name（`apps/api/src/features/F1/sign-up/input.ts` の CONTROL）→ K51-API-018 の NUL の行を替えた\n  - PC の名前 device_label（`/bridge/claim`・K57-API-030）→ NUL の行を替えた\n  - 差し戻しの理由 note（`apps/api/src/features/F5/approve-complete/decide.ts`・K63 の差し戻し）→ NUL の行を替えた\n  - 預けたログイン情報の text の NUL 除去（`apps/api/src/features/F3/credentials/input.ts` の `replace(/\\u0000/g, \"\")`）は、入口が先に断るので NUL の分は使われなくなる（本体は消さない）。その口の前からの試験に NUL の行は無い\n  - 入口の後ろで NUL を取り除く部品の NUL の分が使われなくなるだけで、消す直しはこの葉でしない（NUL 以外の制御文字の除去に使っているため）\n  - パスキーの名前（K309-API-011）は前から NUL を 422 で断る。変わらない\n- 契約の口の外（前の道すじ `apps/api/src/auth/ext.ts` など）は入口の走査を通らない。2 層目（DB の番号 22021・22P05 → 422）で 500 を防ぐ。前の道すじを契約の口へ移す葉（K-358 などの前の道すじを消す葉）が、移した口は入口の走査に乗る\n- 契約 fuzz の設定は `[generation] allow-x00 = false` の 1 行だけ。例の数・seed・並び・ほかの確かめは変えない。NUL を断ることは入口の試験が見る（fuzz が NUL を作らない代わりに、試験が全部の置き場所を見る）\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "目録で探した結果": "- 入口の確かめの置き場は既にある：`apps/api/src/contract/op.ts` の `uuidParamIssues`（3.0・道の値と問い合わせの uuid）・`normalize`（体の表記ゆらぎ）・`dbInputFailure`・`DB_INPUT_CODES`・`DB_INPUT_REPLY`（D-130.2）。この葉は同じ場所に同じ形で足す（新しいファイルも新しいエラー ID も作らない）\n- `app.ts` の `onError` と `op.ts` の `execute` は同じ `dbInputFailure` を使う（K-145）。番号を表に足せば両方が 422 に写す\n- NUL を扱う前からの部品：sign-up・approve-complete・credentials の入力整形は NUL を取り除く（上の「前の動き」）。パスキーの名前は NUL を 422 で断る。DB の層に NUL を弾く制約は無い（text には入らないので要らない）\n- 探したが無かった物：契約（openapi）の string に NUL を禁じる pattern は無い（107 か所の pattern はどれも別の形）。この葉は契約を変えず、fuzz の設定で NUL を作らないようにする（選ばなかった形は下の「リスクと懸念」）",
+    "依存の理由": "依存は無い。変えるファイルは op.ts・schemathesis.toml と、前からの試験 3 つの NUL の行だけ。\n\n- op.ts を変える先の葉（未着手の K-161・K-162・K-166・K-234 など）は、切る段の枝には残っているが、本線では取り込み済みか別のファイルの変更（機械の重なり検査 `start_overlap` が、始めるとき作っている途中の葉との重なりを止める）\n- `scripts/ci/schemathesis.toml` を変える作っている途中の葉は無い（K-424 は的と fuzz.sh を変え、設定のファイルは変えない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 入口の走査 | `apps/api/src/contract/op.ts`：NUL を調べる関数 `nulIssues(v, path)`（文字列に `\\u0000` があれば `{field: path, message: \"使えない文字\"}`・配列とオブジェクトは中まで・オブジェクトのキーも）を足す。3.0 の `uuidParamIssues` の隣で、問い合わせ（`c.req.queries()` の値）と道の値（`c.req.param()`）を走査し、あれば 422・VALIDATION_ERROR・details に入れる。体は `normalize(JSON.parse(...))` の直後・`hooks.input` の前で `nulIssues` を流し、あれば 422 |\n| 2 層目 | `DB_INPUT_CODES` に `\"22021\"`・`\"22P05\"` を足す |\n| fuzz の設定 | `scripts/ci/schemathesis.toml` の先頭に理由の注と `[generation]` `allow-x00 = false` を足す（既存の `[checks.…]`・`[[operations]]` は変えない） |\n| 試験 | この葉の試験（切る段が書いた）と、替えた前からの試験 3 つ（切る段が替えた・carry）と、替えない前からの試験を手元の使い捨ての DB で流して緑を見る。契約 fuzz は `scripts/ci/fuzz.sh`（`.ticket-flow/tools/heavy.sh` 越し）で 1 回 |\n\n欄の名前の道の作り方（試験が見る形）：オブジェクトの欄は `親.子`、配列の要素は `親.0`。根の文字列は `body`。問い合わせの NUL は問い合わせの名前（`q`・`view`・`x`）。\n\n### 切る段で確かめたこと（2026-11-20・使い捨ての DB kaname_tmp_k427）\n\n- node-postgres で `select $1::text`（NUL 入り）→ 22021、`select $1::jsonb`（`\\u0000` 入り）→ 22P05、全角・絵文字・`\\u0001` → 通る（上の原因）\n- 切る段で書いた試験を今の版に流すと、K427-API-006 の「NUL の q で 500」が出る（原因が NUL の q であること）。試験 7 行のうち 500 になる物と 422 を期待して届かない物が赤で、K427-API-005（ふつうの字）は今の版でも通る形\n- NUL を使う前からの試験は 4 つ（下の search）：passkeys（今も 422・変わらない）・sign-up・connect-pc・approve-complete-return の 3 つ（NUL を黙って取り除いて 201 を期待していた）を切る段で替えた\n- `st`（schemathesis 4.33）の設定の鍵は `generation.allow-x00`（`schemathesis run --help` の `--generation-allow-x00` と `config/_generation.py` の `allow-x00`）",
+    "外に影響する手順": "外に影響する手順は無い（入口で字を調べて断るだけ。DB に書かない・外を呼ばない・セッションや錠を作らない・後片付けは無い）。落ちる所は走査の中の例外だけで、走査は文字列と配列とオブジェクトを歩く純粋な関数なので、例外は起きない形にする（深い入れ子は JSON.parse が先に断る・1MB が上限）。",
+    "テスト仕様と確認の結果": "`apps/api/test/k427_nul_input.test.ts`（本物の Postgres・本物の口 listTickets・createTicket・listScopes の振る舞い。会社と人は試験ごとに新しく作る）\n\n### 状態 × 入口 × 利用者の状態\n\n対象は入力の字（NUL を含む／含まない）× 入口（問い合わせ・体の文字列・体の入れ子の値とキー・DB に直に）× 利用者（ログインしていない／している）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 問い合わせ q に NUL（先頭・途中・末尾・NUL だけ） | 一覧の口 listTickets（契約 fuzz の形） | ログイン中 | 422・VALIDATION_ERROR・欄 q・送った字を出さない | このチケット | K427-API-001 |\n| 問い合わせ view に NUL／一覧でない口の使わない欄に NUL | listTickets・listScopes | ログイン中 | 422・その欄の名前。NUL の無い同じ口は 200 | このチケット | K427-API-002 |\n| 道の値（uuid でない token）に NUL | 公開の口 getInvitation・acceptInvitation | ログインしていない（公開の口） | 422・VALIDATION_ERROR・欄 token（401 を挟まない）。NUL の無い token は入口の確かめを通る | このチケット | K427-API-009 |\n| 体の title に NUL | createTicket | ログイン中 | 422・欄 title・チケットは増えない。NUL の無い同じ題は 201 | このチケット | K427-API-003 |\n| 体の入れ子の値・キーに NUL | createTicket の sections | ログイン中 | 422・欄 sections.<キー>／キーのときは VALIDATION_ERROR。増えない | このチケット | K427-API-004 |\n| NUL でない字（全角・絵文字・タブ・改行・\\u0001） | listTickets・createTicket | ログイン中 | 通る（200・201）・q で出る | このチケット | K427-API-005 |\n| NUL | listTickets | ログインしていない | 401（422 でない）。ログイン中の人が断られた直後のふつうの要求は 200 | このチケット | K427-API-006 |\n| 入口をすり抜けた NUL | DB に直に（前の道すじなど） | — | DB の番号 22021・22P05 を 422 に写す・時間切れなど別の番号は 500 のまま | このチケット | K427-API-007 |\n| 契約 fuzz が NUL を作る | 全部の口 | fuzz | 作らない設定（allow-x00 = false）。入口の断りは試験が見る | このチケット（人が確かめる） | K427-API-008 |\n| 登録・PC の引き取り・差し戻しに NUL | signUp・/bridge/claim・差し戻し | — | 入口の 422（前は取り除いて 201）。NUL 以外の制御文字は今までどおり取り除く | 前からの試験を替えた版 | K51-API-018・K57-API-030・K63-API-041 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K427-API-001 | 入力・守り | listTickets に `limit=86&scope_id=<自分のグループ>&cursor=&view=&q=<でたらめな字と NUL>`（契約 fuzz が 500 を見つけた形）。続けて NUL を先頭・途中・末尾・NUL だけにした q | 500 でなく 422・code が VALIDATION_ERROR・details に欄 q・答えの文に送ったでたらめな字を含まない。4 つの形とも 422 |\n| K427-API-002 | 入力・入口 | listTickets の view に NUL。GET /scopes の使わない欄 x に NUL。NUL の無い view=all・x=ab | 前の 2 つは 422 でそれぞれ欄 view・x を details に含む。NUL の無い 2 つは 200 |\n| K427-API-003 | 入力・時間の流れ | createTicket の title の先頭・途中・末尾に NUL。続けて NUL の無い同じ題 | NUL の 3 つは 422・欄 title で、会社のチケットの数は変わらない。NUL の無い題は 201 でチケットが 1 つ増える |\n| K427-API-004 | 入力・守り | createTicket の sections の欄の値に NUL（欄の名前は種類の最初の欄）・sections のキー自体に NUL | どちらも 422。値のときは details に欄 sections.<キー>、キーのときは code が VALIDATION_ERROR。jsonb まで届かず、会社のチケットの数は変わらない |\n| K427-API-005 | 入力・操作の揺れ | 全角・絵文字・タブ入りの題を作り、その全角・絵文字・メモの語と `a\\u0001b`・改行入りの q で view=all の一覧を呼ぶ | 作るのは 201。q の 5 つは全部 200（NUL でない字を断らない）。全角の q で題が引ける |\n| K427-API-006 | 利用者の状態・入口の順 | ログインしていない人が q に NUL。ログイン中の人が q に NUL（422）の直後に view=all&q=a | 未ログインは 401（422 でない）。ログイン中は 422 で、直後のふつうの要求は 200 |\n| K427-API-007 | 失敗・守り | `dbInputFailure` に番号 22021・22P05・22P02（前から）・57014（時間切れ）・番号の無い Error | 22021・22P05・22P02 は null でない（DB の決まりに合わない入力）。57014 と番号の無い Error は null（500 のまま） |\n| K427-API-009 | 入力・入口 | 公開の口（認証の段が無い）の GET /auth/invitations/ab%00cd と POST /auth/invitations/ab%00cd/accept（道の値 token は uuid でない・入口の uuid の確かめの対象外）。NUL の無い token の GET | NUL の 2 つは 422・code が VALIDATION_ERROR・details の欄が token だけ。NUL の無い token は 422 にならない（口が無い試験の土台では 501・本物では 404 などの口の答え） |\n| K427-API-008 | 守り | 人が確かめる：チケットの CI の契約 fuzz（G36）の記録 | G36 が流れて緑・listTickets で 500 が出ない。`scripts/ci/schemathesis.toml` に `allow-x00 = false` がある |\n\n```judge-skip\n- K427-API-008: 契約 fuzz（G36）は schemathesis が乱数で作った入力を的の本物のサーバーに当てる重い検査で、単体の試験の行にできない。チケットの CI（範囲の地図で scripts/ci/schemathesis* を変えると G36 が流れる）の記録で、人が緑と listTickets の 500 が無いことを見る\n```\n\n### テストの型の受け（分類 PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-PERM-01 役が合わない人 | 要らない：入口の字の確かめで、役の判定は変えない。ログインしていない人の NUL が 401 のまま（入口の順）は K427-API-006 |\n| TP-PERM-02 権限を外した直後に押す | 要らない：権限を変えない |\n| TP-PERM-03 他の会社の ID を直接 | 要らない：id の確かめ（入口の uuid）は変えず、NUL の確かめを同じ所に足すだけ。会社をまたぐ守りは行の守りのまま |\n| TP-PERM-04 一覧・数 | K427-API-001・002（一覧の q・view）・K427-API-003・004（断った後のチケットの数が変わらない）・K427-API-009（道の値） |\n| TP-PERM-05 後から付ける権限 | 要らない：権限を付けない |",
+    "速さ（今の値と目標の値）": "| 見る物 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数・直列の段 | 変えない | 変えない |\n| 口ごとの文の数・取引の数 | 変えない（NUL の確かめは DB に行く前に断るので、NUL の要求は文 0 まで減る） | 同じ |\n| 入口の字の走査 | 無い | 要求ごとに値の長さの和だけ（体は 1MB が上限・問い合わせは短い）。1 回の走査は 1 ミリ秒未満の見込み |\n| 新しい住所が増えるか | 増えない | 増えない |\n| 認証の要る答えの Cache-Control | 変えない（private・no-store のまま） | 同じ |\n| staging での答えの時間の前後 | — | 変わらない（NUL でない要求の道は走査が 1 回増えるだけ） |",
+    "前からの試験を替えた所": "切る段の検査（`python3 scripts/ci/cut_check.py prior --files <changes:>`）が出した、changes: を使う前からの試験。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/api/src/contract/op.ts scripts/ci/schemathesis.toml\n6\n```\n\n- apps/api/src/contract/authz.test.ts: 替えない — 入口の権限の段（401・403・404・501）を `op()` に自前の依存を差して見る。字は NUL を使わず、NUL の確かめは 401・403 より後ろ（3.0）に足すので、行の答えは変わらない\n- apps/api/test/features/F1/my-security.test.ts: 替えない — 自分のセキュリティの口。NUL を送らない。入口の確かめは足すだけで答えは変わらない\n- apps/api/test/features/F3/credential-resolve.test.ts: 替えない — 口の注が `normalize` に触れるだけ。体に NUL を送らない\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 契約と振る舞いの突き合わせ（uuid・知らない項目・状態コード）。NUL を使わない。422 の並びと形は変えない\n- apps/api/test/k262_edge.test.ts: 替えない — IP と国を読む所（op.ts の ipOf）を見る。変えない\n- scripts/ci/contract_shape_test.py: 替えない — 契約の形と作った口の突き合わせ。口も契約も変えない\n\nNUL を使う前からの試験（この葉の試験を除く）：\n\n```search\ngit grep -lE \"u0000|%00|x00\" -- apps/api/test \":!apps/api/test/k427_nul_input.test.ts\"\n4\n```\n\n- apps/api/test/features/F1/sign-up.test.ts（K51-API-018）: **替える**（切る段で替えた版を carry で運ぶ）— 名前に NUL で 201 を期待していた。NUL だけは 422・欄 name・申し込みの行が増えない行を足し、NUL 以外の制御文字（`\\u0001`・`\\u0007`・`\\u001b`）を取り除く行は残した\n- apps/api/test/features/F3/connect-pc.test.ts（K57-API-030）: **替える**（carry）— PC の名前の NUL で 201（取り除く）を期待していた。NUL は 422・欄 device_label（コードは使われないまま残り、同じコードで引き取れる）に替え、`\\u0007` を取り除く行は `\\u0001` と `\\u0007` で残した\n- apps/api/test/features/F5/approve-complete-return.test.ts（K63 の差し戻しの理由）: **替える**（carry）— 理由の NUL を取り除いて 201・「NUL だけなら E-VAL-020」を期待していた。NUL でない制御文字（`\\u0002`・`\\u0001`・`\\u001f`）に替えて残し、NUL は 422（E-VAL-020 でない）の行を足した\n- apps/api/test/features/F1/passkeys.test.ts（K309-API-011）: 替えない — パスキーの名前の NUL は前から 422 で、入口が先に断っても結果は同じ（422）",
+    "成果物": "- 入口の NUL の走査と 2 層目の番号 2 つ（op.ts）・契約 fuzz の設定 1 行\n- 単体の試験 `apps/api/test/k427_nul_input.test.ts`（切る段が書いた）と、替えた前からの試験 3 つ",
+    "決定ログ": "- 2026-11-20 代表の決め（answer=f0f290e785a9）：口が断る番号は役割で分ける（422＝形の誤り・契約に書ける物だけ／404＝指した物が無い・見えない／409＝今の状態ではできない）。NUL を含む入力は形の誤りとして 422\n- 2026-11-20 PM の方針：口ごとに直さず、入口の 1 か所で NUL を 422 で断る（新しいエラー ID は作らない・前からの VALIDATION_ERROR）\n- 2026-11-20 切る段の決め：問い合わせ・道の値の走査は入口の uuid の確かめ（3.0）と同じ所。道の値は uuid の確かめの対象外の口（公開の招待の token など）の分もここで断る（試験 K427-API-009）、体の走査は正規化の直後。未ログインは 401 のまま（入口の順を変えない）\n- 2026-11-20 切る段の決め：2 層目として DB の番号 22021・22P05 も 422 に写す。前の道すじなど入口を通らない所でも 500 にしない（K-145 の 22P02 と同じ形）\n- 2026-11-20 切る段の決め：契約 fuzz は `allow-x00 = false`（NUL を作らない）。入口が 422 で断ると、fuzz が NUL を形どおりの入力として作ったときに positive_data_acceptance が 422 を赤と数えるため。fuzz が見る物を弱めないために、NUL の断りは試験（K427-API-001〜004）が全部の置き場所で見る\n- 2026-11-20 代表の決め（answer=c8b3f4c3aef8）：NUL を含む入力はどの口でも 422 で断る。登録の name・company_name、PC の名前、差し戻しの理由の「黙って取り除く」はやめて 422 にする（前からの試験 3 つを替えた版を carry で運ぶ）。契約 fuzz の allow-x00 = false は「NUL を形どおりの入力として作らない」設定で、決まり（422＝形の誤り・NUL は形の誤り）に沿う",
+    "リスクと懸念": "- **前の動きが変わる 3 つ**：NUL を黙って取り除いていた 3 つの口が 422 になる。代表が決めた（answer=c8b3f4c3aef8）。「取り除く」案（`normalize` に NUL の除去）は選ばなかった\n- **選ばなかった形（契約に NUL を禁じる pattern を書く）**：契約の作り手（`05_flow/build_api.py`）で全部の string に `pattern` を足すと、schemathesis の設定を変えずに NUL を作らなくできる。ただし 107 か所の既存の pattern と合わさり、openapi.yaml・型・契約の形の表・生成の試験が全部変わる大きい直しになる。入口の断り＋fuzz の設定 1 行のほうが小さく、見る物（NUL を断ること）は試験が持つ。形を契約に載せるのは別の葉で決める（PM に出す）\n- 契約 fuzz の設定で NUL を作らなくすると、NUL を口の外の前の道すじに送る確かめは fuzz からは無くなる。前の道すじは 2 層目（番号 22021・22P05 → 422）で 500 を防ぎ、K427-API-007 が番号の写しを見る。前の道すじを契約の口に移す葉が、移した口で入口の走査に乗る\n- 深く入れ子の JSON で走査が再帰で落ちないか：JSON.parse が先に深さの上限（V8 の既定）で断るので、走査に届く深さは限られる。走査は再帰でなく、行きがけの順に配列の道で歩く形にしてもよい（実装の自由）",
+    "表の住所（2026-11-20）": "- 口も契約も足さないので、口の登録（`05_flow/screen_api.d/`）・契約の形（`scripts/ci/contract_shape.d/`）・ears・範囲の地図の .d/ は足さない。エラーも新しく作らない（VALIDATION_ERROR は前から）\n- 範囲の地図：`scripts/ci/schemathesis*` は G36 の範囲に入っている（`scripts/ci/ci_scope.d/_base.json` の gates \"36\"）ので、設定を変えるとチケットの CI で契約 fuzz が流れる",
+    "申し送り": "- 聞くことは解決済み：NUL を取り除いていた 3 つの口を 422 に変える点は代表の答え answer=c8b3f4c3aef8（決定ログ）。設計はこのまま\n- 実装の自由：走査の関数名・再帰か反復か・理由の文（試験は「使えない文字」ではなく、欄の名前と code だけを見る。試験が理由の文を見る行は無い）\n- 2 層目の `DB_INPUT_CODES` は、`op.ts` の `execute`・`app.ts` の `onError` の両方に効く（同じ `dbInputFailure`）。`app.ts` は変えなくてよい\n- 取り込み後：listTickets の契約 fuzz の例外（`scripts/ci/schemathesis.toml` の `[[operations]] listTickets`）の見直しは K-424 の後の葉（断る番号の決まりに揃える直し）が持つ。この葉は触らない"
+   },
+   "file": "11_tickets/K-427.md"
+  },
+  {
    "id": "K-428",
    "title": "場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）",
    "kind": "タスク",
@@ -19581,6 +19642,105 @@
    "file": "11_tickets/K-485.md"
   },
   {
+   "id": "K-563",
+   "title": "会社が足す項目の表（custom_fields・custom_field_kinds・ticket_field_values）と読む口（listTicketFields）・分類の軸の中身を「1 つ選ぶ」の項目に移して凍結・listClassAxes を外す（K-59 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "会社が足す項目",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の葉 K-351（migration 1 本・読む口 1 本・行の守りの作り直し・試験 20 行・1 時間）と段 9 の K-402（DB の関数 1 本・試験 16 行・1 時間）から引いた：migration 1 本（表 3 つ・守りと引き金・移しの関数・権限の束）25 分・行の守りの生成（rls_policies.py と gen_rls.py）5 分・読む口 1 本（形を作るだけ）10 分・listClassAxes を外す所と契約の形と登録先 10 分・自分の確かめ 10 分で合わせて 60 分。表と移しと読む口を 1 枚に収めたので上限ぎりぎり（超えるなら「表と移し」「読む口」に分ける）。試験 17 行は切る段で書いた",
+   "decisions": [
+    "D-125.67",
+    "D-128.45",
+    "D-130.1",
+    "D-150.1",
+    "D-150.36",
+    "D-150.37",
+    "D-150.46",
+    "D-150.50",
+    "D-150.51"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/generated/get_ticket_fields.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/contract/k144.d/K-563.ts"
+   ],
+   "depends_on": [
+    "K-430"
+   ],
+   "acts": [
+    "A103"
+   ],
+   "screens": [],
+   "apis": [
+    "listTicketFields"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（表・読む口・移しだけ）。項目の表の見た目は画面の葉 K-569 が持つ（正は /dev/mock/f4v2 の f4v2-create-custom・f4v2-create-missing）。マスタを作る・直す画面は段 10",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261122090300_custom_fields.sql",
+    "packages/db/policies/20261122090300_custom_fields.sql",
+    "packages/db/src/migrations.generated.ts",
+    "05_flow/rls_policies.py",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-563.py",
+    "scripts/ci/contract_shape.d/K-563.py",
+    "apps/api/src/hooks/ticket-fields-read.ts",
+    "apps/api/src/features/F4/ticket-fields/list.ts",
+    "apps/api/src/features/F4/ticket-fields/shape.ts",
+    "apps/api/src/routes/class_axes.ts",
+    "apps/api/src/routes/index.ts",
+    "apps/api/test/generated/get_class_axes.test.ts",
+    "apps/api/test/features/contract/k144.d/K-563.ts",
+    "07_qa/test-plan/ears-elsewhere.d/K-563.json",
+    "scripts/ci/ci_scope.d/K-563.json",
+    "03_architecture/db-catalog.json",
+    "03_architecture/ER図.md",
+    "08_api/db-columns.json",
+    "08_api/phase1/01_チケット.md",
+    "11_tickets/K-59.md"
+   ],
+   "flow": "会社の項目を使ってチケットを作る・直す",
+   "sections": {
+    "目的": "詳細と作る面の「項目の表」に、会社が足した項目を、用意してある項目と同じ表に同じ形で並べる（D-150.36・D-150.37）。この葉は **表と読む口と、分類の軸からの移し**まで（マスタを作る・直す口と画面は段 10・値を書く口は K-564・K-437）。\n\n- **表 3 つ**（新設）：`custom_fields`（会社の項目：名前・型・必須・説明・選択肢・並び）・`custom_field_kinds`（どの種別で出すか。行が 1 つも無ければ全部の種別・消した行しか無ければどの種別にも出ない）・`ticket_field_values`（チケットごとの値）\n- **読む口** `listTicketFields`（GET /api/v1/ticket-fields?kind_id=<uuid>）：その種別で出す項目を並びの順に、必須・説明・型・選択肢つきで返す。読めるのはワークスペースのメンバー（読むだけの人も、チケットが見えない人も。マスタを読む口なので `listTicketKinds` と同じ線）\n- **分類の軸の移し**（D-150.46）：`class_axes`（作り付けでない物）を「1 つ選ぶ」の項目に、`class_values` を選択肢に、`ticket_class_values` を `ticket_field_values` に移す。3 つの表は**凍結**（消さない・コードが読まない）。作り付けの軸 `priority`（優先度）は移さない（優先度は `tickets.priority` の列）。`handover_rules.axis_id`（段 9 の渡すの決まり）は触らない\n- **`listClassAxes`（GET /class_axes）は外す**。道・契約・生成の試験・目録の行をなくす\n\n値の形（K-564・K-437 が書き、K-569 が読む。この葉の表の約束）：`ticket_field_values.value` は jsonb で null でない。型ごとに 短い文字・長い文章＝文字／数＝数／日付＝`YYYY-MM-DD` の文字／1 つ選ぶ＝選択肢の id の文字／複数選ぶ＝選択肢の id の文字の配列／チェック＝真偽。**値の形と必須・選択肢に在るかの確かめは書く口（K-564・K-437）が持つ**。この葉の表は null だけ断る。",
+    "完了の条件": "- [ ] 下の表の 17 行（K563-API-001〜017）が緑：`apps/api/test/features/F4/ticket-fields.test.ts`\n- [ ] 契約の口 `listTicketFields` が 501 でない。生成の試験 `get_ticket_fields` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-563.json` の covers）\n- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-530（`listTicketFields` の問い合わせ kind_id）が通る\n- [ ] `listClassAxes` を使う所が 0（下の「前からの試験を替えた所」の検索と同じ命令で、外す所以外に残らない）\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, LIST, PERM\n\n- **口は 1 本・新しい専用の答え**。入力は問い合わせ `kind_id`（uuid・任意）だけ。cursor・limit は入口の共通の形の確かめだけで、全部を返す。並べ替え・絞り込みは `kind_id` 以外受けない\n- **断る番号**（控え帳：422＝契約に書ける形の誤りだけ／404＝無い・見えない／409＝今の状態ではできない）：`kind_id` が uuid の形でない → 番号なしの **422・VALIDATION_ERROR**（欄 `kind_id`・入口の共通の確かめ。K144-API-530）／種別が無い・消された・別の会社 → **404**（体は `{ error, code }` だけで `field`・`details`・`detail` を付けない）／ログインなし 401。この口は 403・409 を返さない\n- **種別の絞り込み**：`kind_id` があれば、その種別の行（`custom_field_kinds`・消していない）がある項目と、種別の行が 1 つも無い項目（全部の種別に出る）を返す（**消した行も数える**：種別の行が 1 つも無い＝消した行も無い項目だけが全部の種別に出る。消した行しか無い項目は、どの種別にも出ない＝自分で種別から外した項目が全部の種別に出直さない。PM の決め 2026-11-22）。`kind_id` が無ければ消していない項目を全部返す\n- **並び**：`position` の昇順・同じなら作った順（`created_at`）・`id`。消した項目（`deleted_at`）は出さない。選択肢は `options` の中の `position` の順\n- **答えの形** `TicketField = { id, name, field_type, required, description, options, position }`（鍵ちょうど 7）。`options` は選ぶ型（select・multi_select）だけ `[{ id, name, position }]`、ほかの型は `[]`。`description` は文か null。会社の id・作った人・時刻は出さない\n- **型は 7 つ**：`short_text`・`long_text`・`number`・`date`・`select`・`multi_select`・`check`（D-150.37）\n- **項目の数に上限は置かない**（D-130.1。前の軸は 5 まで・今回は決まっていない）。選択肢の数にも置かない。名前は空白（全角・タブを含む）を除いて 1〜40 字（同じ会社の消していない物で一意）。説明は空白だけでなければ長さの上限なし\n- **移しは migration の中で 1 回・DB の関数 `app.custom_fields_move_axes` が持つ**（何度流しても増えない。試験が同じ関数を直に呼ぶ）。項目の id は軸の id・選択肢の id は値の id・値（select）は選択肢の id の文字 — だから**段 9 の `handover_rules.axis_id` は項目の id としてそのまま読み替えられる**（付け替えは要らない）\n- **移す物と移さない物**：作り付けでなく消していない軸だけ／消した値は選択肢にしない／値の行は、消していない行で値が消していない物だけ（消したチケットの値も写す）。同じ軸に 2 つ付いていた物（古い表は 1 つに絞っていなかった）は、最初に付けた 1 つだけ写す（1 つ選ぶは 1 つ）。種別の行は作らない（全部の種別に出る）。必須にはしない\n- **凍結の印**：`03_architecture/db-catalog.json` の `class_axes` を `skeleton` から `frozen` に（理由「会社が足す項目に移した（K-563・D-150.46）。コードは使わない」）。`class_values`・`ticket_class_values` は前から `frozen`。新しい 3 つの表は `skeleton`（読む口が使う）で、理由を書く。凍結の表を `apps/*/src` が使い始めると CI（flow_db_gate の FD3）が赤にするので、`routes/class_axes.ts` と `hooks` の参照をこの葉で消す\n- **行の守り**（`05_flow/rls_policies.py` → `gen_rls.py`）：`custom_fields`・`custom_field_kinds` は `workspace_master`（メンバーは読む・直せるのは `custom_fields` の edit を持つ人）／`ticket_field_values` は `child_of_ticket`（元のチケットを読める人が読み、書ける人が書く）。権限の資源名 `custom_fields` を `target_kinds` に足し、管理者の束に入れる（`app.refresh_role_bundle_defaults()` と全員の `app.apply_role_bundles` を migration の最後で呼ぶ・0080 の決まり）\n- 外へ出ない：メールも知らせも出さない。AI も PC も呼ばない\n- ログに項目の名前・説明を出さない（会社の id と例外の種類だけ）\n- **共有の試験 `k144-contract.test.ts` をこの葉は変えない**（運ぶのは葉のファイル `k144.d/K-563.ts` だけ）。共有の試験 `k144-contract.test.ts` は、持ち込みの台本 `scripts/tickets/cut_take.py` が**どの葉の持ち込みでも写す**（SHARED）。写すのは「印の無い行の全部」と「本線に入った葉か自分の印（行の末尾の `// K-<番号>`）の行」で、まだの葉の印の行は外れる。だから切る段の枝の版は**本線の版に、葉の印つきの行を足すだけ**にする（印の無い行を直すと、先の葉の契約を前提にした行が手前の葉に入って赤になる＝2026-11-22 に K-563 で 6 本赤になった元）。この葉の持ち込みで入る k144-contract.test.ts の差は 0 行（`python3 scripts/tickets/cut_take.py` の印の絞りで確かめた・2026-11-22）\n- **生成の試験（tests: の `apps/api/test/generated/…`）は切る段の枝に無い**（新しい口の契約から作り手が出す物で、口が契約に入るまで作れない）。**作る段の最初に**、契約の断片（`05_flow/screen_api.d/K-<番号>.py` と `scripts/ci/contract_shape.d/K-<番号>.py`）を足して作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成の試験を作り、**実装より先に 1 つのコミットにする**（その後は変えない。K-563 の作る段で、ここで止まった・2026-11-22）",
+    "依存の理由": "- K-430: 要る — この葉の decisions: の D-150.n を決定ログ §150 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-430 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う：`withTenant`・`app.ticket_visible`・`app.ticket_writable`（0072）・`app.set_updated_at`・`target_kinds`（0002）・`workspace_master`・`child_of_ticket`・`ops_read`（`05_flow/rls_policies.py`）・`ticket_kinds`（0071）・`app.refresh_role_bundle_defaults`・`app.apply_role_bundles`（0080）・`app.ticket_child_same_tenant` の書き方（0071）・K-351 の hooks の書き方（`apps/api/src/hooks/credentials-list.ts`・register・fuzz: \"same\"）・`listTicketKinds` の読み方（`apps/api/src/features/F4/create-ticket/hooks.ts`）\n- 作る：表 3 つ・`app.custom_fields_move_axes`・`app.custom_field_same_tenant`（引き金の関数）・`apps/api/src/hooks/ticket-fields-read.ts`・`apps/api/src/features/F4/ticket-fields/`（list.ts・shape.ts）。探したが同じ形の物は無かった（前の `class_axes` は 軸＋値の 2 表で「1 つ選ぶ」だけ・上限 5・必須も説明も型も持たない）。形の近い物＝K-351 の一覧の口（行 → 答えの形・守りの 2 重）と、0071 の軸と値の表",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前・K-327） | `packages/db/migrations/20261122090300_custom_fields.sql`（同じ時刻の policies を `packages/db/policies/` に）。① `custom_fields`：`id uuid pk`・`tenant_id uuid not null references tenants(id)`・`name text not null`・`field_type text not null check (field_type in ('short_text','long_text','number','date','select','multi_select','check'))`・`required boolean not null default false`・`description text`・`options jsonb not null default '[]'::jsonb`・`position int not null default 0`・共通の列（created_at・updated_at・created_by・updated_by・deleted_at）。check：名前は `length(btrim(name, E' \\t\\r\\n　')) between 1 and 40`・説明は `description is null or length(btrim(description, E' \\t\\r\\n　')) > 0`・`jsonb_typeof(options) = 'array'`・`field_type in ('select','multi_select') or options = '[]'::jsonb`。一意の索引 `custom_fields_name_uq on custom_fields (tenant_id, name) where deleted_at is null`。索引 `custom_fields_tenant_idx on custom_fields (tenant_id)` ② `custom_field_kinds`：`id`・`tenant_id`・`field_id uuid not null references custom_fields(id)`・`kind_id uuid not null references ticket_kinds(id)`・共通の列。一意の索引 `custom_field_kinds_uq on custom_field_kinds (field_id, kind_id) where deleted_at is null`・`custom_field_kinds_tenant_idx`・`custom_field_kinds_kind_idx on (kind_id)` ③ `ticket_field_values`：`id`・`tenant_id`・`ticket_id uuid not null references tickets(id)`・`field_id uuid not null references custom_fields(id)`・`value jsonb not null`・共通の列。一意の索引 `ticket_field_values_uq on ticket_field_values (ticket_id, field_id) where deleted_at is null`・`ticket_field_values_ticket_idx on (ticket_id)` ④ 引き金：3 表に `app.set_updated_at`（0071 と同じ形）・`app.custom_field_same_tenant()`（security definer・search_path に pg_temp・custom_field_kinds は項目と種別、ticket_field_values はチケットと項目がどちらも同じ会社の物でなければ `22023` の例外「会社が違う」）を `before insert or update` で ⑤ `target_kinds` に `custom_fields`・`custom_field_kinds`・`ticket_field_values` を足す（`on conflict do nothing`・0071 と同じ。権限の資源名 `custom_fields` が `permissions.target_kind_id` の外部キーになる） ⑥ `app.custom_fields_move_axes(p_tenant uuid) returns jsonb`（security definer・search_path に pg_temp・public から外す）：その会社の `class_axes`（`is_builtin` でなく `deleted_at` が空）を `custom_fields` に写す（id＝軸の id・name＝軸の名前（同じ会社で消していない名前が既にあれば末尾に「（軸）」を足す）・field_type `select`・required false・options＝その軸の消していない `class_values` を position・id の順に `[{id, name: label, position: 1 からの番号}]`・position＝軸の position・created_by・updated_by＝軸の物）。`on conflict (id) do nothing`。次に `ticket_class_values`（消していない行・値が消していない物・軸が写した軸）を、チケットと軸ごとに `created_at, id` が最初の 1 行だけ `ticket_field_values` に写す（field_id＝軸の id・value＝`to_jsonb(value の id の文字)`）。`on conflict do nothing`。答えは `{fields: 今回写した項目の数, values: 今回写した値の数}`。migration の最後に全部の会社へ呼ぶ（`select app.custom_fields_move_axes(id) from tenants`）。以後に作られた会社の軸は無い（新しい会社の `app.ticket_basics` は作り付けの優先度の軸だけを作る）。⑦ 最後に `select app.refresh_role_bundle_defaults();` と、全員の `app.apply_role_bundles`（0080 の決まり）を呼び、管理者の束に `custom_fields` を入れる。`class_axes`・`class_values`・`ticket_class_values` の列・行・引き金は変えない（凍結）。一覧は作り手 `python3 scripts/ci/gen_migrations.py` が packages/db/src/migrations.generated.ts に作る（生成物・手で書かない） |\n| 行の守り | `05_flow/rls_policies.py` の POLICIES に足す：`\"custom_fields\": workspace_master(\"custom_fields\")`・`\"custom_field_kinds\": workspace_master(\"custom_field_kinds\")`・`\"ticket_field_values\": child_of_ticket(\"ticket_field_values\")`。`python3 05_flow/build_functional.py` で entities.json を作り直し、`python3 scripts/ci/gen_rls.py --tables custom_fields,custom_field_kinds,ticket_field_values -o packages/db/policies/20261122090300_custom_fields.sql`（migration と同じ名前）で作る（policies は生成物・手で直さない） |\n| 口（読む） | `apps/api/src/features/F4/ticket-fields/list.ts`：withTenant の 1 取引・文は 2 つ。① `kind_id` があれば `select 1 from ticket_kinds where id = $1 and deleted_at is null`（無い・消された・別の会社は行の守りで見えない → 404）② `select … from custom_fields f where f.deleted_at is null and ($1::uuid is null or not exists (select 1 from custom_field_kinds k where k.field_id = f.id) or exists (select 1 from custom_field_kinds k where k.field_id = f.id and k.kind_id = $1 and k.deleted_at is null)) order by f.position, f.created_at, f.id`。200 `{ data: TicketField[] }`・`Cache-Control: private, no-store`。`shape.ts`：`toTicketField(row)`（鍵ちょうど 7・`options` は選ぶ型だけ `position` の順に整える・ほかは `[]`・K-564・K-437 が同じ形で使う） |\n| 口の登録（K-326 の register） | `apps/api/src/hooks/ticket-fields-read.ts`（新しいファイル）：`export function ticketFieldsReadHooks(d: HookDeps): Record<string, Hook>`（`listTicketFields` の before だけ）と `export const register = defineHooks({ name: \"ticketFieldsReadHooks\", make: (d) => ticketFieldsReadHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的に差す行は書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧 all.generated.ts に入れる） |\n| `listClassAxes` を外す | `05_flow/screen_api.py`（前からある行を直すので本体）：SCREEN_API の `(\"GET\", \"/class_axes\", \"A103\", \"class_axes\", \"listClassAxes\", [\"class_values\"])`（91 行）を `(\"GET\", \"/ticket-fields\", \"A103\", \"custom_fields\", \"listTicketFields\", [\"custom_field_kinds\"])` に置き換える・PERMS の `\"listClassAxes\": (\"read\", \"同上\", False)`（1254 行）を `\"listTicketFields\": (\"read\", \"そのワークスペースのメンバー\", False)` に置き換える。`apps/api/src/routes/class_axes.ts` を消し、`apps/api/src/routes/index.ts` の import と呼び出し（14・67 行）を外す（routes は生成物なので、作り手 `scripts/ci/contract.mjs gen` が `routes/custom_fields.ts` を作り、古い `class_axes.ts` を消す）。`apps/api/test/generated/get_class_axes.test.ts` は作り手 gen_ears_tests.mjs が消し、`get_ticket_fields.test.ts` を作る。`packages/contracts/src/{ops,registry,schemas,types}.ts`・`08_api/*`・`03_architecture/catalog.*` は作り手で作り直す |\n| 契約の形（K-563 の分） | `05_flow/screen_api.d/K-563.py`：`RESPONSES = {\"listTicketFields\": (\"TicketField\", {\"id\": \"uuid\", \"name\": \"string\", \"field_type\": \"string\", \"required\": \"boolean\", \"description\": \"string?\", \"options\": \"array\", \"position\": \"integer\"})}`・`QUERIES = {\"listTicketFields\": [\"kind_id\"]}`・`LIST_DETAILS = {\"listTicketFields\": {\"sort\": False, \"desc\": \"取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）\"}}`・`ERRORS_4XX`（listTicketFields：404。404 の body は `{\"error\": …, \"code\": …}` だけで field・details・detail を書かない。403・409・502 は返さないので書かない＝生成の試験の rejected_403・upstream_failed は na）→ `python3 05_flow/build_api.py` で作り直す。`scripts/ci/contract_shape.d/K-563.py` は空の 6 つの表（体を受けない GET なので足す行は無い。登録先の決まりが住所を求めるので置く） |\n| 登録先（touch_rules） | 口の登録は hooks のファイルの register（上・fuzz は \"same\"）・`05_flow/screen_api.d/K-563.py`・`scripts/ci/contract_shape.d/K-563.py`・`07_qa/test-plan/ears-elsewhere.d/K-563.json`（下の「生成の試験」）・`scripts/ci/ci_scope.d/K-563.json`（下の「範囲の地図」）。`python3 scripts/ci/build_registries.py`・`python3 scripts/ci/gen_ts_registries.py`・`python3 scripts/ci/gen_migrations.py` で生成物を作り直す |\n| 目録・文書 | `03_architecture/db-catalog.json`：`class_axes` を `frozen` に（理由は上）・`custom_fields`・`custom_field_kinds`・`ticket_field_values` を `skeleton` で足す（理由「第 1 フェーズの口が使う（K-563）」）。`python3 scripts/ci/flow_db_gate.py --lines` で `flow-lines.json` を、`pnpm db:columns` で `08_api/db-columns.json` を、`python3 scripts/ci/build_catalog.py` で `catalog.json`・`catalog.md` を作り直す。`03_architecture/ER図.md`：表 3 つの行と関係（`custom_fields ||--o{ custom_field_kinds`・`ticket_field_values`）を足し、`class_axes`・`class_values`・`ticket_class_values` の行に「凍結（K-563・会社の項目へ移した）」を書き足す。`08_api/phase1/01_チケット.md` の 52〜55 行目あたりの `GET /class_axes` の行を `GET /ticket-fields` に直す |\n| 親 | 11_tickets/K-59.md の apis から listClassAxes を、tests から apps/api/test/generated/get_class_axes.test.ts を外す |\n\n### 受け持ちをまたぐ名前\n\n| 名前 | 中身 | 使う葉 |\n|---|---|---|\n| 表 `custom_fields` | 会社の項目のマスタ。`field_type` 7 つ・`required`・`description`・`options`（`[{id, name, position}]`）・`position` | 段 10（マスタの口と画面）・K-564・K-437・K-569 |\n| 表 `custom_field_kinds` | どの種別で出すか（行が 1 つも無い項目は全部の種別・消した行しか無い項目はどの種別にも出ない） | 段 10・K-564・K-437（その種別に出ない項目の値は 409） |\n| 表 `ticket_field_values` | チケットごとの値。`value` は jsonb（値の形は上の「目的」） | K-564（書く）・K-437（作るとき書く）・K-560（getTicket の `fields`）・段 8 の一覧 |\n| `listTicketFields` の答え `TicketField` と `features/F4/ticket-fields/shape.ts` の `toTicketField` | 鍵 7 | K-569（項目の表）・K-564・K-437 |\n| 項目の id ＝ 軸の id・選択肢の id ＝ 値の id | 移した項目・選択肢の id。段 9 の `handover_rules.axis_id` は項目の id としてそのまま読み替えられる | 段 9（K-401 ほか）・段 10 |\n| `app.custom_fields_move_axes(p_tenant uuid) returns jsonb` | 軸 → 項目の移し（何度でも流せる） | この葉の migration・試験 |\n| 権限の資源名 `custom_fields`（`target_kinds`・管理者の束） | マスタを直せる人 | 段 10 |\n\n### 生成の試験（ears-elsewhere.d/K-563.json）\n\n```json\n{\"ops\": {\"listTicketFields\": {\"file\": \"apps/api/test/features/F4/ticket-fields.test.ts\",\n  \"reason\": \"会社の項目の一覧は、種別の指定・消した項目・別の会社の行で答えが変わる。生成の試験の偽のセッションでは項目も種別も作れない（K-563）\",\n  \"covers\": {\"test_get_ticket_fields_ok\": \"K563-API-001\", \"test_get_ticket_fields_shape\": \"K563-API-001\",\n             \"test_get_ticket_fields_rejected_401\": \"K563-API-008\", \"test_get_ticket_fields_not_found\": \"K563-API-006\",\n             \"test_get_ticket_fields_rate_limited\": \"K563-API-009\",\n             \"test_get_ticket_fields_terms_pending\": {\"file\": \"apps/api/test/features/F1/terms.test.ts\", \"mark\": \"K53-API-005\"},\n             \"test_get_ticket_fields_session_unresolved\": {\"file\": \"apps/api/test/features/contract/k144-contract.test.ts\", \"mark\": \"K144-API-032\"},\n             \"test_get_ticket_fields_rejected_422\": {\"file\": \"apps/api/test/features/contract/k144.d/K-563.ts\", \"mark\": \"K144-API-530\"}},\n  \"na\": {\"test_get_ticket_fields_rejected_403\": \"読むだけの口で、会社のメンバーなら誰でも読める（行の守りの外の人は入口が 401・404 で止める。受けは K563-API-005・008）\",\n         \"test_get_ticket_fields_upstream_failed\": \"外を呼ばない（AI も PC も呼ばない）\"}}}}\n```\n\n契約を作り直したら生成の試験の名前が変わることがある（作り手 gen_ears_tests.mjs が出す名前に covers の鍵を合わせる。出た名前で 1 対 1 に結び、余る名前は na に理由を書く）。入口の uuid の行 K144-API-530 は、葉のファイル `apps/api/test/features/contract/k144.d/K-563.ts`（`UUID_PARAM_CASES: [[\"K144-API-530\", \"listTicketFields\", \"query\", \"kind_id\"]]`・setup で hooks のファイル `ticket-fields-read` を読む）が受ける（共有の試験への足し分で、切る段が書いた。置き方は k144.d の README・carry で運ぶ）。\n\n### 範囲の地図（ci_scope.d/K-563.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/hooks/ticket-fields-read.ts\", \"apps/api/src/features/F4/ticket-fields/**\"],\n   \"tests\": [\"apps/api/test/features/F4/ticket-fields.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"]}\n ],\n \"reads_ok\": {\n  \"apps/api/test/features/F4/ticket-fields.test.ts\": \"読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563\",\n  \"apps/api/test/features/contract/k144.d/K-563.ts\": \"葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563\"\n }\n}\n```",
+    "外に影響する手順": "- なし — 読むだけ（口は読むだけ。軸の移しは migration が 1 回だけ流す DB の処理で、請求の手順ではない）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F4/ticket-fields.test.ts`（本物の DB・本物の口の入口・偽の画面のログイン。準備は DB に直に入れる。土台はこのファイルの中）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 項目あり・種別を選んだ | 作る面・詳細の項目の表を開く（読む） | 書く人 | 200・その種別の項目と全部の種別の項目が並びの順 | このチケット | K563-API-001〜003 |\n| 項目あり・種別を選んでいない | 読む | 書く人 | 200・消していない項目を全部 | このチケット | K563-API-004 |\n| 項目 0 件 | 読む | 書く人 | 200・data [] | このチケット | K563-API-004 |\n| どれでも | 読む | 読むだけの人・チケットが見えない人 | 200（マスタはメンバーが読む） | このチケット | K563-API-005 |\n| 種別が無い・消された・別の会社 | 読む | 書く人 | 404 | このチケット | K563-API-006 |\n| 種別の id が壊れている | 読む | 書く人 | 422 | このチケット | K563-API-007 |\n| どれでも | 読む | ログインしていない | 401 | このチケット | K563-API-008 |\n| どれでも | 項目・種別の行・値を直に書く（口を通らない） | DB | 守りで断る | このチケット | K563-API-011〜013 |\n| 軸が残っている（前の形の会社） | 移し（migration） | — | 項目・選択肢・値になる・何度でも同じ | このチケット | K563-API-014〜016 |\n| どれでも | `GET /class_axes` | 書く人 | 404（道が無い） | このチケット | K563-API-010 |\n| どれでも | 項目を作る・直す・値を書く | — | 段 10・K-564・K-437 | 段 10・K-564・K-437 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K563-API-001 | 対象の状態 | 読む（書く人） | 200・data は position の順（同じなら作った順）の id の並び・消した項目と別の会社の項目は無い・鍵はちょうど 7（description・field_type・id・name・options・position・required）・説明は文か null・`Cache-Control` に no-store |\n| K563-API-002 | 入力 | 型 7 つ | 7 つの型の項目が field_type・required のとおり返る。options は 1 つ選ぶ・複数選ぶだけが `{id, name, position}` を position の順（1・2・3）で持ち、ほかの 5 つの型は [] |\n| K563-API-003 | 入力 | 種別で絞る | その種別の行がある項目はその種別だけ・種別の行が 1 つも無い（消した行も無い）項目は全部の種別・2 つの種別に行がある項目はどちらでも出る。唯一の種別の行を消した項目（消した行しか無い）は、その種別にもほかの種別にも出ない（全部の種別に出直さない）。種別を指さない読みには出る |\n| K563-API-004 | 入力 | 種別を指さない・0 件 | 消していない項目を全部（種別の行があっても）。項目が 1 つも無い会社は 200・data [] |\n| K563-API-005 | 利用者の状態 | 読むだけの人・チケットが見えない人が読む | どちらも 200・項目が読める |\n| K563-API-006 | 入口 | 種別が無い・消された・別の会社の種別 | どれも 404・体は `{ error: not_found, code: NOT_FOUND }` の 2 つの鍵だけ（field・details・detail なし） |\n| K563-API-007 | 入力 | 種別の id が uuid の形でない | 422・VALIDATION_ERROR・details に kind_id |\n| K563-API-008 | 利用者の状態 | ログインしていない | 401 |\n| K563-API-009 | 守り | 1 分あたりの上限を超えた読み | 3 回目は 429・`retry_after_sec` が数 |\n| K563-API-010 | 入口 | 外した道 `GET /class_axes` | 404（道そのものが無い・501 でない）。読む口 `/ticket-fields` は 200 |\n| K563-API-011 | 守り | 項目の守り（口を通さずに書く） | 型の外・名前が空白だけ（全角・タブも）・41 字・選ぶ型でないのに選択肢がある・選択肢が配列でない は DB が断る（23514）／同じ会社の消していない同じ名前は断る（23505）。40 字・消した後の同じ名前・別の会社の同じ名前は入る |\n| K563-API-012 | 守り | 種別の行・値の表の守り | 別の会社の種別・項目・チケットは DB が断る（22023）／同じ組・同じチケットと項目の 2 行目は断る（23505）／値が null は断る（23502） |\n| K563-API-013 | 守り | 行の守り | 別の会社の人は項目も値も読めず書けない（0 行）／edit の権限が無い人は項目を足せない（拒まれる）／権限のある人は足せる／管理者の束に custom_fields の edit が入っている／値はチケットを書ける人が書き、チケットが見えない人（チケットのグループの隣のグループの人。根のグループの人は下のグループのチケットが見えるので、準備ではチケットを下のグループに置く）は読めず直せず、読むだけの人は直せない |\n| K563-API-014 | 対象の状態 | 軸 → 項目 | 作り付けでなく消していない軸だけが「1 つ選ぶ」の項目になる（id・名前・並びは軸のまま・必須でない）。値が選択肢（id は値の id・名前・並びは 1 から）・消した値は無い。消した軸・作り付けの優先度の軸は移らない。種別の行は作らない（読むと全部の種別に出る） |\n| K563-API-015 | 対象の状態 | 付けた値 → 項目の値 | 選択肢の id の文字になる。同じ軸に 2 つ付いていた物は最初の 1 つだけ。消した行・消した値の行は移らない。消したチケットの値は写す |\n| K563-API-016 | 操作の揺れ | 移しを 2 回流す・凍結の表の行・別の会社 | 2 回目は 0 件で増えない（答えの fields と values が 1 → 0）。軸・値・付けた値の行数は移す前と同じ（消さない）。別の会社には触れない |\n| K563-API-017 | 守り | 凍結の印 | `db-catalog.json` で class_axes・class_values・ticket_class_values が frozen で理由つき・新しい 3 つの表は skeleton か internal。`apps/api/src` のどのファイルにも class_axes・class_values・ticket_class_values・listClassAxes の字が無い |\n\n### テストの型の受け（分類 CRUD・LIST・PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| 作る・作った物を読み直す | 要らない: 作る・直す口はこの葉に無い（マスタは段 10・値は K-564・K-437）。移した物を別の読みで確かめるのは K563-API-014（DB の行）・015 |\n| TP-PERM-01 役が合わない人 | K563-API-005（読むだけの人・見えない人も読める）・013（権限が無い人は書けない） |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | 要らない: 権限は口を呼ぶたびに入口が今の権限（行の守り）で決める |\n| TP-PERM-03 他の会社の ID を直接指定する | K563-API-006（別の会社の種別 404）・013（別の会社の人は読めず書けない）・001（別の会社の項目は出ない） |\n| TP-PERM-04 一覧・数・検索 | K563-API-001（別の会社・消した項目）・003（種別で絞る）。数と検索は持たない口 |\n| TP-PERM-05 権限を付けた直後 | 要らない: TP-PERM-02 と同じ訳（要求ごとに今の権限で決める） |\n| TP-CRUD-01 2 人が同時に直す | 要らない: この口は読むだけ。直す口は段 10 |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | K563-API-006（消された種別）・011（消した項目の名前を使い回せる）・001（消した項目は出ない） |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 要らない: 消す・戻す口は段 10 |\n| TP-CRUD-04 2 回押し | K563-API-016（移しを 2 回流しても増えない） |\n| TP-CRUD-05 保存の途中で失敗 | 要らない: 書く口が無い。移しは関数の 1 つの取引（失敗すれば migration ごと戻る） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 要らない: 画面の動き（K-569）。口は 401（K563-API-008） |\n| TP-LIST-01 0 件・1 件・ページの境目の件数 | K563-API-004（0 件）・001（複数）。ページ送りは無い（cursor・limit は形だけ） |\n| TP-LIST-02 並び替えの値が同じものが多い | K563-API-001（同じ position は作った順）・002（選択肢の並び） |\n| TP-LIST-03 絞り込みの組み合わせを URL で開き直す・共有する | K563-API-003（kind_id だけが絞り込み。URL にそのまま載る） |\n| TP-LIST-04 表記ゆれ・記号・とても長い語で探す | 要らない: 探す語を受けない口。名前の長さ・空白・全角は K563-API-011 |\n| 入力の境界・表記ゆらぎ・状態 | 名前 K563-API-011（全角空白・タブ・40 字・41 字）・種別の id K563-API-006・007 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（作る面・詳細の項目の表・K-569） | 無い（`listClassAxes` は契約だけで 501・画面は使っていない） | 項目の表を開いたとき 1 本（listTicketFields・種別を指して 1 回。種別を変えたら 1 本）。同じ画面の `listTicketKinds` と並べて呼ぶ |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 読む：1 取引・文は種別なしで 1・種別ありで 2 |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（入口の共通） |\n| 新しい住所 | — | `/ticket-fields` が 1 つ増え、`/class_axes` が 1 つ減る |\n| staging での答えの時間の前後 | — | 実測なし。staging で記録 |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"listClassAxes\\|class_axes\\|ticket_class_values\\|class_values\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'apps/*/tests/**/*.ts' 'packages/*/test/*.ts' 'scripts/ci/*_test.py' ':!apps/api/test/features/F4/ticket-fields.test.ts'\n2\n```\n\n- apps/api/test/generated/get_class_axes.test.ts: 替える — 生成物（口を外すので作り手 gen_ears_tests.mjs が消し、`get_ticket_fields.test.ts` を作る）\n- packages/db/test/tickets.test.ts: 替えない — 軸と値の表の守り（作り付けの優先度の軸・足す軸は 5 まで・値の会社の整合）を見る試験。3 つの表も引き金も `app.ticket_basics` も変えない（凍結するだけで行は残る）ので、そのまま通る",
+    "成果物": "- migration 1 本（表 3 つ・守りと引き金・`app.custom_fields_move_axes`・権限の束）と policies 1 本（生成）・読む口の hooks のファイルと `features/F4/ticket-fields/` の 2 ファイル・`listClassAxes` を外した契約と生成物・登録先の断片 4 つ\n- 単体の試験 `ticket-fields.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-21 PM の決め（D-150.46）：分類の軸は会社が足す項目の「1 つ選ぶ」にまとめる。今の 3 つの表は中身を移して凍結。作り付けの優先度の軸は移さない\n- 2026-11-21 切る段の決め：項目の id は軸の id・選択肢の id は値の id にする。段 9 の `handover_rules.axis_id` を付け替えずに項目の id として読めるようにするため\n- 2026-11-21 切る段の決め：読める人はワークスペースのメンバー全員（`listTicketKinds` と同じ線）。項目の数・選択肢の数に上限は置かない（D-130.1）。種別を指さなければ消していない項目を全部返す\n- 2026-11-21 切る段の決め：同じ軸に 2 つ付いていた値は、最初に付けた 1 つだけ移す（1 つ選ぶは 1 つ。前の表は 1 つに絞っていなかった。残りは凍結の表に残る）",
+    "PM の既定（代表が違うと言えば直す）": "代表に聞くことは無い。PM の決めは：項目の移し方（id を引き継ぐ・必須にしない・種別の行は作らない）／読める人はメンバー全員／種別を指さない読みは全部返す。",
+    "リスクと懸念": "- 見込みが 1 時間ぎりぎり。超えるなら「表と移し（migration・行の守り・試験 011〜016・017）」と「読む口（hooks・list.ts・契約・試験 001〜010）」の 2 本に分け、読む口は表の葉に依存する（番号はまとめ役が決める）\n- 移しは migration の中で全部の会社に 1 回流す。staging・本番に古い軸が多いと時間がかかるので、作る段で staging の軸の数を数えてから出す。同じ軸に 2 つ付いた値を落とす件数は、移しの前に `select count(*)` で数えて報告に書く\n- `app.ticket_basics`（新しい会社の初めの行）は作り付けの優先度の軸を今も作る。凍結の表に行が増えるだけで害は無いので、この葉は触らない（コードは軸の表を読まない）。段 10 が軸の表を消すかを決める\n- 値の形（型ごと）の確かめはこの葉に無い（書く口が持つ）。表は null だけ断る。K-564・K-437 が型ごとの確かめを 1 つの DB の関数にまとめる前提",
+    "申し送り": "- K-564（会社の項目の値を書く）：`ticket_field_values` に書く。必須の項目を空にできない・選択肢に無い値・その種別に出ない項目は 409（欄なし）・型の形の誤り（数でない・日付でない）は 422（D-150.51）。`screen_api.py` の `updateTicket` の関連の表の欄（22 行の `ticket_class_values`）を `ticket_field_values` に直す\n- K-437（作る口）：作るときの `fields` は `ticket_field_values` に書く。会社が必須にした項目が空なら 409\n- K-560（getTicket）：`fields` は `custom_fields`・`ticket_field_values` から読む。凍結の表は読まない\n- K-569（項目の表）：項目は `listTicketFields` の答えを並びの順に出す。必須は＊・説明は薄い字の一文\n- 段 8（一覧・期限）：一覧の列・絞り込み・CSV が分類の軸を読んでいれば `ticket_field_values` に読み替える。当たり方の一覧は PM に別に知らせる\n- 段 9（渡す）：`handover_rules.axis_id` は項目の id（＝軸の id）と同じ値なので付け替えは要らない。`app.handover_rules_list()` が `class_axes` を結んで `axis_name` を返しているなら、`custom_fields` の名前を返すように直す（段 9 の K-401 の持ち物・`git show c/段9:11_tickets/K-401.md` の `listHandoverRules`）\n- 段 10：`class_axes`・`class_values`・`ticket_class_values` は凍結（読まない・書かない）。決定ログ D-152.11（「軸と値の凍結は軸と値の保存の葉が解く」）と K-496・K-505・K-509 の「軸の葉」は、軸の保存を `custom_fields` の保存（マスタの口）に読み替える。`getTicketShape`・`saveTicketShape`・`previewTicketShapeChange` の `axes` は `custom_fields` に直す（`screen_api.py` の 326〜328 行の関連の表）\n- 段 8・9・10 の枝（c/段8・c/段9・c/段10）のコードに `listClassAxes` の呼び出しは無い（`git grep -n \"listClassAxes\" c/段8 c/段9 c/段10 -- apps packages/db/src` が 0 件。残るのは契約・目録・古いチケットの文書だけ）",
+    "表の住所（2026-11-21）": "- 表・関数は時刻の名前の migration `packages/db/migrations/20261122090300_custom_fields.sql`（K-327）。行の守りは同じ名前の policies（生成物）。口の登録は hooks のファイル `apps/api/src/hooks/ticket-fields-read.ts`（K-326）。口の本体は `apps/api/src/features/F4/ticket-fields/`\n- 共通の表に足す分は `.d/` の K-563 の断片（screen_api.d・contract_shape.d・ears-elsewhere.d・ci_scope.d）と、k144.d の `K-563.ts`\n- 前からある行（`05_flow/screen_api.py` の本体）を直すのは `listClassAxes` の SCREEN_API の行と PERMS の行だけ。`rls_policies.py` は 3 行を足す。`db-catalog.json`・`ER図.md`・`08_api/phase1/01_チケット.md`・`11_tickets/K-59.md` は行の足し・別々の所（overlap_ok）"
+   },
+   "file": "11_tickets/K-563.md"
+  },
+  {
    "id": "K-601",
    "title": "段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）",
    "kind": "タスク",
@@ -19722,6 +19882,63 @@
     "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 13 行と替える 1 行"
    },
    "file": "11_tickets/K-620.md"
+  },
+  {
+   "id": "K-622",
+   "title": "spec-sync の監査を、リポジトリの写し（scripts/spec-sync）だけで全段そろえて回せる形にする（組織のスキルの置き場の版で回すと、Kaname の書き方を直した D・G・H が使われず偽の赤が出る・P の project_audit.py の写しが無く「実在しない」で赤）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-120",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い K-621（検査の道具 1 つと自己試験 1 本・0.5 時間）と同じ：project_audit.py を組織のスキルから写す 3 分・README の表に 1 行 5 分・試験 7 行を流して確かめる 10 分。口・DB・画面は触らない",
+   "decisions": [
+    "D-128.125",
+    "D-128.149",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の道具・台帳・設定と自己試験だけ。外へ送らない・秘密に触らない・DB に書かない（K-627 だけ使い捨ての DB を作って捨てる）",
+   "tests": [
+    "scripts/ci/k622_spec_sync_tools_test.py"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（検査の道具・台帳・設定の中身だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/spec-sync/project_audit.py",
+    "scripts/spec-sync/README.md",
+    "scripts/ci/g65.d/K-622.txt"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "spec-sync の監査（A・B・C・D・F・G・H・L・P・T）を、2026-11-21 に組織のスキル（`~/.claude/skills/spec-sync-orchestrator/assets/scripts/spec-validator.py`）の版で回したら、本線の木で次の赤が出た。原因を調べると、**大半は製品の食い違いではなく、使った道具の版が違っただけ**だった：\n\n| 段 | 赤の中身 | 原因（調べた結果） | 判断 |\n|---|---|---|---|\n| D | `AD-012` ほかの線が html を指して JSON として読めず落ちる | 組織のスキルの tier_d.py は、しまった画面の見本（.html）を指す追跡の行を読めない。リポジトリの写し `scripts/spec-sync/tier_d.py` は K-34・K-45 で直してあり、同じ地図で落ちない（実測：写しの版は最後まで走る） | **設定の抜け（道具の版）**：写しで回す |\n| F | `screen_to_mock` ほか 7 つが「id_source.file 未指定」 | 組織の版は古い `id_source` の形だけを読む。写しの `spec-validator.py` は `command` で書いた行を流して終わりの値で判定する（K-34）。実測：写しで F は緑 | 同上 |\n| G | `vendor_sql` ほか 3 つが「検査が用意されていない」 | 組織の版は `command` を読まない。写しの `tier_g.py` は読んで流す。実測：node の部品をそろえて流すと G は緑（4 件とも OK） | 同上 |\n| H | 関門 C2 が 2 件・C4 が 3 件の迂回 | 組織の版は例外台帳の `packages/auth/` のようなバッククォートのフォルダを読めない。写しの `tier_h.py` は読む。**台帳には既に登録がある**：X-003（packages/auth/・C2）・X-004（packages/db/・C4 の migration と policy の SQL を起動時に読む）。写しで H は緑 | **正しい例外（登録済み）**：新しい例外は足さない |\n| P | 「project_audit.py が実在しない」 | 写しのフォルダに project_audit.py だけ無い（K-34 の写しが D・G・H・F だけだった）。組織の版で回すと P が走る | **設定の抜け**：この葉で写しに足す |\n\nこの葉は、写しのフォルダに project_audit.py を足して、audit-manifest.yaml が名指しする全段の実体がリポジトリの中にそろうようにする。組織のスキルの版は直さない（PM がスキルの側へ K-34 の差分を戻す・申し送り）。",
+    "完了の条件": "- [ ] 下の表の 7 行（K622-TOOL-001〜007）が緑：`python3 scripts/ci/k622_spec_sync_tools_test.py`\n- [ ] `scripts/spec-sync/project_audit.py` が在り、`python3 scripts/spec-sync/project_audit.py --project-root . --json` が終わりの値 0 か 2 で JSON を出す（この葉では P が赤のまま 2 でよい・緑にするのは K-625・K-626）\n- [ ] G65 の置き場 `scripts/ci/g65.d/K-622.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義（生成物）に入っている\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 写すのは組織のスキルの `assets/scripts/project_audit.py` を **1 字も変えずに**（README の既存の決まり「組織のスキルのものをそのまま写した」と同じ）。直したい穴が見つかったら写しを直さず PM に知らせる\n- `scripts/spec-sync/README.md` の表に project_audit.py の行を足し、回し方の一覧に `--tier` なしで全段を回す命令（`python3 scripts/spec-sync/spec-validator.py --project-root .`）と、P を単独で回す命令を足す。写しを使う理由（組織のスキルの版は Kaname の書き方を読めない）を 1 文で書く\n- audit-manifest.yaml は変えない（P の行は既に在る）\n- `spec-validator.py` は写し（`scripts/spec-sync/`）で回す。組織のスキルの版で回した結果を記録に使わない（記録を書く道具は K-628）",
+    "依存の理由": "- 依存は無い。変えるファイル（project_audit.py・README.md・g65.d/K-622.txt）は、ほかの葉と重ならない（README.md を触る葉はこの葉だけ。K-624 は tier_d.py だけ）\n- project_audit.py を名指しするのは audit-manifest.yaml の 1 行（78 行目）だけで、中身は変えない\n- 後ろの葉がこの葉に頼る：K-625・K-626 は P を `scripts/spec-sync/project_audit.py` で回して確かめる（写しが無いと試験が動かない）\n\n```search\ngit grep -n \"project_audit\" -- scripts ':!scripts/ci/k622_spec_sync_tools_test.py' ':!scripts/ci/k625_layer_ledgers_test.py' ':!scripts/ci/k626_p_audit_closed_test.py'\n1\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 写す | `cp ~/.claude/skills/spec-sync-orchestrator/assets/scripts/project_audit.py scripts/spec-sync/project_audit.py`（変えない） |\n| README | `scripts/spec-sync/README.md`：組織のスキルへの差分の道を `.qa/spec-sync/KN-50/…` に直す（今は `K-34/…` と書いてあるが実物は KN-50）。表に `project_audit.py`（P の棚卸し・組織の版のまま写した・manifest が名指しするので実体が要る）の行。「回し方」に全段の 1 行と `--tier` の説明を足す |\n| G65 の置き場 | 新しい `scripts/ci/g65.d/K-622.txt` に 1 行 `python3 scripts/ci/k622_spec_sync_tools_test.py`。作り手を流し直す（`python3 scripts/tickets/regen_all.py`） |\n| 目録で探した結果 | 使う：audit-manifest.yaml の段の台帳・既存の写し 4 本。作る：project_audit.py の写し。似た物：なし（P を回す道具は組織のスキルの版だけ） |",
+    "外に影響する手順": "- なし — リポジトリの中の検査の道具の写しと自己試験だけ。DB に書かない・外を呼ばない",
+    "テスト仕様と確認の結果": "`scripts/ci/k622_spec_sync_tools_test.py`（unittest。manifest・本物の木・作りものの根（tempfile）を読む。project_audit.py は子プロセスで流す）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K622-TOOL-001 | 守り | audit-manifest.yaml の kind: script の段（D・G・H・T・P・L）の実体を探す | 全部が `scripts/spec-sync/` の中か prefer_project の道に在る（無い段が 1 つでもあれば名前を出して赤） |\n| K622-TOOL-002 | 入口 | 本物の木で `project_audit.py --project-root . --json` を流す | 終わりの値は 0 か 2（1・例外は無い）。JSON に P1_map_holes・P2_no_check・P3_stale・P4_ghosts・P5_sources_without_check・unregistered_decisions・P6_not_started・P7_duplicate_keys・status が在る |\n| K622-TOOL-003 | 守り | README の表を読む | `project_audit.py` の行が表の行として在り、`--tier` の説明が在る |\n| K622-TOOL-004 | 失敗 | 依存マップ（spec-dependencies.yaml）の無い根で流す | 終わりの値 2・出力に「依存マップ」・標準エラーに Traceback が出ない |\n| K622-TOOL-005 | 入力 | 本物の木で流し、正本の読み先を見る（日本語の名前のファイル） | sources に `01_hearing/決定ログ_進行中.md` が在り、決定の数が 100 より多い |\n| K622-TOOL-006 | 守り | manifest の段の ID を並べる | A・B・C・D・F・G・H・T・P・L の 10 段が全部在る（段が黙って減らない） |\n| K622-TOOL-007 | 守り | `scripts/ci/g65.d/` を探す | この試験の命令を持つファイルは K-622.txt のちょうど 1 つ（CI から回る） |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K622-TOOL-005（本物の決定ログ `決定ログ_進行中.md` を読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K622-TOOL-001（段の実体が在る）・K622-TOOL-006（段が減らない）・K622-TOOL-007（CI から回る） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K622-TOOL-001・K622-TOOL-002（組織のスキルの置き場でなく、リポジトリの中だけで回る＝手元の版と容れ物の版が同じ） |\n\nほかの観点：利用者の状態・画面の入口は無い（道具）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 0 件。替える物は無い。\n\n```search\npython3 scripts/ci/cut_check.py prior --files scripts/spec-sync/project_audit.py scripts/spec-sync/README.md\n0\n```",
+    "速さ（今の値と目標の値）": "画面も口も変えない。project_audit.py は成果物 1,600 件ほどを数える（数秒）。CI の時間は変わらない。",
+    "成果物": "- `scripts/spec-sync/project_audit.py`（組織の版の写し）・README の表と回し方・G65 の置き場の 1 行\n- 自己試験 `scripts/ci/k622_spec_sync_tools_test.py`（切る段が書いた）",
+    "決定ログ": "- 2026-11-21 PM の依頼：spec-sync の監査が本線の木で緑になり、K-621 の印つきの記録を運べるようにする。検査を緩める・黙って外す直しはしない（各類は「本当の食い違い（直す）」「検査の設定の抜け（設定を足す）」「正しい例外（台帳に理由・期限・代替案つき）」のどれかに決めた）\n- 2026-11-21 切る段の決め：D・F・G・H の赤は写しの版で回せば出ない（実測）。組織のスキルの版を『直す』のではなく、K-34 の差分を PM がスキルへ戻す（スキルは PM が直す・この葉は触らない）\n- 2026-11-21 切る段の決め：H の C2・C4 の 5 件は例外台帳に登録済み（X-003・X-004）。台帳を足さない・緩めない\n- D-128.125：テストはチケットを切る人が書き、実装する人は変えない",
+    "リスクと懸念": "- 写しは、組織のスキルの版が変わると古くなる。差分を見る手段は無い（README の「直した版が組織のスキルに入るまで写しを使う」の運用のまま）。申し送りの PM の手でスキルへ戻す\n- project_audit.py の写しは 400 行ほどで、リポジトリの行数の決まり（800 行）の中",
+    "申し送り": "- **PM に（スキル）**：`.qa/spec-sync/KN-50/spec-sync-orchestrator.patch`（実物の置き場は KN-50。README の `K-34` の道は誤りなので、この葉で README の同じ行も KN-50 に直す）を組織のスキルへ当てる（D の html 追跡・F の command・G の command・H の表の読み）。当てると、組織の版でも本線の木で D・F・G・H が緑になる。この葉・K-623 以降の葉は、組織の版が直るまでは写しで回す前提で書いてある"
+   },
+   "file": "11_tickets/K-622.md"
   },
   {
    "id": "K-623",
@@ -20027,6 +20244,62 @@
     "見込み": "0.75 時間（頭の欄の estimate_basis のとおり）。試験 7 行（定義 5・作り手 1・読み手 1）"
    },
    "file": "11_tickets/K-640.md"
+  },
+  {
+   "id": "K-641",
+   "title": "直し：GitHub の台（ubuntu-24.04）に無い道具を、画面の組の中で入れる（lsof を入っていなければ入れる・ブラウザは --with-deps で日本語の字体と部品をそろえる・Mac の箱の像では何も増えない・K-56 の葉・PM の直し）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮（作り手に段を 1 つ足す直しの実測はまだ無い）。形の近い K-631（作り手に段を足す・自己試験 1 本・0.5 時間）より試験の行が 1 行多い：作り手に段 1 つと命令 1 つの置き換え 5 分・作り直し 3 分・自己試験（偽の sudo・lsof を置いて本物の bash で流す）の確かめ 5 分・手元の試験 10 分・出す前の手元の検査と自分の確かめ 7 分・余裕 15 分。試験は 5 行。前からの試験は替えない（k175・k195 は今の命令の形を許す）。前の遅れは足さない",
+   "decisions": [
+    "D-128.147",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の CI の作り手（05_flow/build_testplan.py）と、その自己試験だけ。製品のコード・口・DB・外には触らない。入れる道具は台の apt の lsof だけ",
+   "tests": [
+    "scripts/ci/k641_hosted_tools_test.py"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-640"
+   ],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（CI の定義の段を足すだけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "05_flow/build_testplan.py",
+    "scripts/ci/g65.d/K-641.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-640 で CI の定義の台を変数 CI_RUNNER で替えられる形にした。公開の側で GitHub の台（ubuntu-24.04）に載せたとき、**Mac の箱の像（tf-golden）に入っていて GitHub の台に入っていない物**で組が落ちる、あるいは静かに別の結果になる所を、段の中で入れて塞ぐ。調べた全部の道具の表は `.ticket-flow/side-notes/CI-GitHubの台-調べ.md`。要るのは 2 つだけ（それ以外は台に在る・または定義が自分で入れている）。\n\n- **lsof**：web の組の「画面と口の番号が空いているか」「立てた API と画面を止める」が `lsof -ti tcp:<番号>` を呼ぶ。像には apt で入れてあるが、GitHub の台（Ubuntu 24.04 の runner-images・2026-11-16 版の apt の一覧）には無い。無いと `lsof` が見つからず、番号の確かめが「空いている」と読んで素通りする（`lsof … >/dev/null 2>&1` の戻りが 127 で「使われていない」側に倒れる）か、止めた後の確かめが空振りする。**段の中で、入っていなければ入れる**（`command -v lsof` で見て、無ければ `sudo apt-get update` の後に `sudo apt-get install -y -qq lsof`）。入っていれば何もしない（像の Mac の箱では sudo も apt も呼ばない）\n- **ブラウザの部品と字体**：web の組は `playwright install chromium`（--with-deps なし）。像は温めのとき `playwright install --with-deps chromium` を流していて、`--with-deps` は Chromium が動く部品に加え、日本語の字体（fonts-ipafont-gothic・fonts-wqy-zenhei。本線の Playwright 1.63 の `nativeDeps` で確かめた）を入れる。GitHub の台には日本語の字体が無く、**日本語の画面の文字の幅が像と違う**（折り返し・溢れの測りと見た目の突き合わせ G48・G70 が像と別の結果になりうる）。像と同じ命令（`--with-deps`）にそろえる。像の Mac の箱では部品も字体も入っているので、実際に入れる物は無い（apt の更新に数秒）\n\n- 道具の段は **web の組だけ**に置く（lsof を呼ぶのは web の組だけ。ほかの組の時間を増やさない）。入れる物は lsof 1 つだけで、入れる道は台の apt だけ（外から取って流さない・版は台の Ubuntu の配布の版）\n- 台の選び（K-640）には触らない。Docker・Postgres・Python・Node・pnpm・Chrome・jq・git・curl・sudo は GitHub の台（x64）に在る、または定義が自分で入れている（actions/setup-python・setup-node・pnpm/action-setup・ci_venv.sh）ので何もしない（表のとおり）",
+    "完了の条件": "- [ ] 下の表の K641-CI-001〜005 が緑：`python3 scripts/ci/k641_hosted_tools_test.py`\n- [ ] 替えない前からの試験が緑（k172・k175・k176 の基準・k177・k195・k258・k323・k376・k191・ci_scope_test。k175 は `playwright install( --with-deps)? chromium` を許し、k195 は Chrome を入れる命令が定義に無いことを見る）\n- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。`access-matrix.json` の揺れは取り込まない（K-640 と同じ）\n- [ ] 手元の CI（このチケットの範囲）が緑\n- [ ] 公開の側で GitHub の台に載せた回で、web の組の番号の確かめが lsof を見つけ、ブラウザが日本語を描くことを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある",
+    "前提と制約": "分類: TOOL\n\n- 依存：K-640（台の式）。同じ作り手 05_flow/build_testplan.py を触る（K-640 が runs-on の行・この葉が web の組の段）。K-631 も同じ作り手に static の組の段を足すが、変える場所は重ならない\n- **台は ubuntu-24.04（x64）を勧める**（PM に聞くこと 1）：arm（ubuntu-24.04-arm）には Google Chrome が無い（runner-images の arm の一覧の「Omitted software」に Chrome がある）。Bridge の通しの試験（G73）は `channel: \"chrome\"` で Google Chrome を使い、k195 の決まりで CI に Chrome が無ければ飛ばさず落ちる。x64 には Chrome 157 が入っている。この葉は台の名前を決めず、Chrome を入れる段も足さない（足すと台ごとに分かれる）\n- `playwright install --with-deps` は apt を使うので sudo が要る。GitHub の台の runner は sudo が通り、像の runner の利用者も sudoers に入っている（vm.py の像の作り方：`runner ALL=(ALL) NOPASSWD:ALL`）。どちらでも同じ命令が動く\n- 命令の置き方：道具の段は、番号の確かめ（lsof を最初に呼ぶ段）より前。ブラウザの段は今の位置のまま（命令だけ `--with-deps` に替える）\n- 「入っていれば飛ばす」は `command -v`。命令は `&&` でつなぎ、更新が落ちたら install に進まない。段は赤で止まる（`|| true` で握りつぶさない）\n- 試験を書いた後は変えない（D-128.125）。実装の前に試験を流して赤を確かめない",
+    "確かめたこと（切る段・2026-11-22）": "- GitHub の台の道具の一覧（actions/runner-images の Ubuntu 24.04・イメージ 20261116.376.1）を読んだ：Docker 28.0.4・Git 2.56.1・jq 1.7・Python 3.12.3（既定。3.14 は setup-python が入れる）・Node 22.23.5・Google Chrome 157・Chromium・PostgreSQL 16 が在る。apt の一覧に **lsof は無い**（`grep -c lsof` が 0）。sudo・unzip・zip・curl・xvfb は在る\n- 本線の Playwright（1.63.0）の `nativeDeps`（ubuntu24.04-x64）に、fonts-ipafont-gothic・fonts-wqy-zenhei・fonts-liberation・fonts-noto-color-emoji ほかが入っている。`--with-deps` の有る無しで入る字体が違う\n- 使い捨ての作業場所（本線の写し）で作り手に段 1 つと命令の置き換えを足して流し直し、web の組の段が「playwright install --with-deps chromium」→「台の道具をそろえる」→「番号が空いているか」の順になり、k641 の試験 5 行が緑。前からの試験（k172・k173・k174・k175・k177・k186・k195・k204・k237 の 2 本・k245・k248・k258・k323・k376・k191・ci_scope_test・contract_shape_test）は、K-640 の替えを足した版で全部緑\n- 命令は、偽の sudo・lsof を PATH に置いた本物の bash で、lsof あり（呼ぶ物なし）・無し（update → install の順）・更新が落ちる・install が落ちるの 4 通りを流して確かめた（k641 の K641-CI-002・003）",
+    "依存の理由": "K-640：この葉の試験は web の組の段を読み、台の式（変数）が先に決まっていてから、道具を決める。取り込みの順は K-640 の後",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作り手に定数 | `05_flow/build_testplan.py`：`VENV` の前に `TOOLS_STEP`（`DB_START` と同じ置き方の複数行の文字）。名前は `台の道具をそろえる（lsof・入っていれば飛ばす・K-641）`、命令は `command -v lsof >/dev/null 2>&1 \\|\\| { sudo apt-get update -qq && sudo apt-get install -y -qq lsof; }` |\n| web の組に置く | `{NODE}{DB_START}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium` の直後に `{TOOLS_STEP}`。命令の `chromium` の前に `--with-deps` を足す（行末のコメントに「像の温めと同じ・字体と apt をそろえる・K-641」） |\n| 登録先 | `scripts/ci/g65.d/K-641.txt`（1 行：`python3 scripts/ci/k641_hosted_tools_test.py`・切る段で置いた）。置いたら作り手を流し直す |\n| 作り直し | `python3 scripts/tickets/regen_all.py`（定義と試験計画は生成物。手で書かない・changes: に書かない） |\n| 自分の確かめ | ① `python3 scripts/ci/k641_hosted_tools_test.py` ② 前からの試験（上の確かめたこと）③ 生成物の web の組の段の並びを目で見る ④ `ci.py recheck K-641` |\n| 使う部品と版 | Python 3.14・PyYAML（今の版）・bash。新しい部品は入れない。道具は台の apt の lsof（Ubuntu 24.04 の配布の版） |\n| 目録で探した結果 | 使う：作り手の段の定数の置き方（`DB_START`・`DB_STOP`・`VENV`）・像の温めの命令（ticket-flow.yaml の vm.warm）と同じ `--with-deps`。道具をそろえる既存の段は無い。無い物を作らない |\n\n```search\ngit grep -n \"lsof\" -- 05_flow/build_testplan.py .github/workflows\n4\n```\n\n4 件：作り手 2（番号の確かめ・止めた後の確かめ）・生成物 v3-gate.yml 2（同じ 2 か所）。ほかの組・ほかの定義・スクリプト（kill_tree.sh は pgrep）は lsof を呼ばない。`scripts/dev/up.sh` の lsof は手元の開発用で、CI の組では動かない。\n\n```search\ngit grep -n \"playwright install\" -- 05_flow/build_testplan.py ticket-flow.yaml\n3\n```\n\n3 件：web の組（作り手・この葉で `--with-deps` にする）・staging-e2e の組（すでに `--with-deps`）・像の温め（ticket-flow.yaml・`--with-deps`）。\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| web の組の追加時間 | 0 秒 | Mac の箱の像：apt の更新だけで数秒増える（入れる物は無い）。GitHub の台：lsof 1 つ入れる数秒＋ブラウザの部品と字体を入れる十数秒。web の組だけ（static・database・unit・spec は 0 秒）。回の時間は画面の範囲を含む回が十数分に対して小さい |",
+    "表の住所": "- 新しい口・エラー番号・migration は無い",
+    "外に影響する手順": "- なし — リポジトリの中の CI の作り手と自己試験だけ。台の apt から lsof を入れる段は、使い捨ての台の中だけ（DB に書かない・外へ送らない・錠を作らない）",
+    "テスト仕様と確認の結果": "`scripts/ci/k641_hosted_tools_test.py`（unittest・CI の定義と `ticket-flow.yaml` を読む。命令は偽の sudo・lsof を PATH に置いて本物の bash で流す）。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 台に lsof が在る（像の Mac の箱） | web の組 | PM | sudo も apt も呼ばず、段は緑 | このチケット | K641-CI-002 |\n| 台に lsof が無い（GitHub の台） | web の組 | PM | 更新 → 入れるの順に呼び、段は緑 | このチケット | K641-CI-002 |\n| 更新・入れるが落ちる | web の組 | PM | 段が赤（更新が落ちたら入れるに進まない） | このチケット | K641-CI-003 |\n| lsof を呼ぶ組 | 定義 | — | 呼ぶ前に道具の段が在る。web のほかの組は apt・sudo を呼ばない | このチケット | K641-CI-001・005 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K641-CI-001 | 入口 | web の組の段の並びとブラウザの命令 | 道具の段が web の組にちょうど 1 つ・lsof を最初に呼ぶ段より前。lsof を呼ぶ組はどれも、呼ぶ前に道具の段を持つ。ブラウザの用意は 1 つで `playwright install --with-deps chromium`。像の温め（vm.warm）も `--with-deps chromium` で、命令の後ろが同じ |\n| K641-CI-002 | 入力 | lsof が在る／無い | 在れば終了 0 で sudo に何も渡らない。無ければ終了 0 で sudo に渡るのは 2 つだけ：`apt-get update …`・`apt-get install -y … lsof`（この順） |\n| K641-CI-003 | 失敗 | apt の更新が落ちる／入れるが落ちる | どちらも終了が 0 以外（段が赤）。更新が落ちたら install を呼ばない（sudo に渡った命令が 1 つ） |\n| K641-CI-004 | 守り | 入れる物と道 | `apt-get install` で入れる物は lsof だけ。段の命令に curl・wget・`\\| sh`・`\\| bash`・pip・npm・pnpm・brew・`${{` が無い（外から取って流す形・外から来る値を命令に入れる形にしない） |\n| K641-CI-005 | 守り | ほかの組 | web 以外の組（static・database・unit・spec・task-gate など）の段の命令に `apt-get`・`sudo` が無い。道具の段があるのは web の組だけ |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：この葉が読む・足すファイルの名前に日本語は無い（段の名前の日本語は定義の中の字） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 受ける：K641-CI-002 は在る・無いの両方、K641-CI-003 は落ちる 2 通りを流す。K641-CI-001 は web の組の段を数え、0 件の緑にしない |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 受ける：K641-CI-001（像の温めと定義のブラウザの命令を突き合わせる）。台の違い（lsof・日本語の字体）は GitHub の台で実際に流して確かめる（PM が回で確かめる・確かめたこと） |\n\nほかの観点：時間の流れ・操作の揺れ・利用者の状態は無い（定義の段）。G-11（外のリソース）：台の apt の配布元に届くこと — 届かなければ段が赤で止まる（K641-CI-003）。G-12〜G-16 は該当なし。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 13 本（K-640 と同じ作り手）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files 05_flow/build_testplan.py\n13\n```\n\n- 替えない — 13 本とも、K-640 の替えを足した版で使い捨ての作業場所で流し、今のまま緑（段の数・G の番号は変わらない：この段には G の番号を付けない。ticket_process_test は元の写しでも赤で、この葉と無関係）。定義を読む k173・k174・k175・k177・k186・k195・k204 も今のまま緑。k175 は `playwright install( --with-deps)? chromium\\b` を許す形、k195 は定義に Chrome を入れる命令が無いことを見る（この葉は Chrome を入れない）",
+    "決定ログ": "足さない。D-128.147 の当てはめ（同じ定義が Mac の箱でも GitHub の台でも動く）",
+    "決める人・PM に聞くこと": "1. （PM に）**公開の側の変数 CI_RUNNER の値は `\"ubuntu-24.04\"`（x64）を勧める**。arm（`ubuntu-24.04-arm`）は Chrome が無く、G73 が落ちる（無料の範囲は両方同じ）。Mac の VM は arm64 なので、x64 に載ると architecture が変わる：ネイティブの部品（esbuild・Playwright・squawk）は pnpm・npm が台に合う物を入れるので問題は見つかっていない（この葉では試せない）。最初の公開の回で確かめる\n2. （PM に・この葉の範囲の外）Docker Hub の `pgvector/pgvector:pg16` を GitHub の台が毎回引く（11 組が各 1 回）。個人の公開イメージは匿名の引き数の制限に当たりうる。当たったら、同じイメージを公開の側の ghcr.io に写して差し替えるか、Docker Hub の読み取り専用の鍵を公開側の秘密に置く（定義の DB を立てる段の変更になる別の葉）。最初の回で確かめてから決める"
+   },
+   "file": "11_tickets/K-641.md"
   }
  ]
 }
