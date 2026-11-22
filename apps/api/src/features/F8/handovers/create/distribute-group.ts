@@ -34,7 +34,7 @@ export const createDistributeGroup: CreateKind = async (c): Promise<HookReply> =
   if (v.ok !== true || !v.handover || !v.handover_id) return down(where, "答えの形が違う");
   await sendHandoverMails(
     c.d,
-    { tenantId: c.a.ctx.tenantId, userId: c.a.ctx.userId },
+    { tenantId: c.a.ctx.tenantId!, userId: c.a.ctx.userId! },
     v.mails ?? [],
     `distribute-group:${v.handover_id}`,
   );

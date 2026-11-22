@@ -62,7 +62,7 @@ export function claimHandover(d: HandoverDeps) {
     if (v.ok !== true || !v.handover_id || !v.assignee_member_id) return down(where, "答えの形が違う");
     await sendHandoverMails(
       d,
-      { tenantId: a.ctx.tenantId, userId: a.ctx.userId },
+      { tenantId: a.ctx.tenantId!, userId: a.ctx.userId! },
       v.mails ?? [],
       `claim:${handoverId}`,
     );

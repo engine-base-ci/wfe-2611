@@ -25,7 +25,7 @@ export const answerDistribute: AnswerKind = async (c) => {
   if ("error" in v) return replyOf(v, "配ったものに答える");
   await sendHandoverMails(
     c.d,
-    { tenantId: c.a.ctx.tenantId, userId: c.a.ctx.userId },
+    { tenantId: c.a.ctx.tenantId!, userId: c.a.ctx.userId! },
     v.mails ?? [],
     `answer-distribute:${c.handoverId}`,
   );

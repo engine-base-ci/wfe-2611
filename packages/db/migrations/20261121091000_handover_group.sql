@@ -25,13 +25,17 @@ $$;
 
 -- ---------------------------------------------------------------- メールの宛て（無ければ null）
 create or replace function app.handover_group_email(p_member uuid) returns text
-language sql stable security definer set search_path = public, app, pg_temp as $$
-  select u.email::text
+language plpgsql stable security definer set search_path = public, app, pg_temp as $$
+declare v_email text;
+begin
+  -- plpgsql にして kaname_auth の表は呼ぶときに引く（migration を当てる時点で認証の表が無くても作れる・handover_dist_email と同じ）
+  select u.email::text into v_email
     from members mm
     left join tenant_memberships tm on tm.tenant_id = mm.tenant_id and tm.member_id = mm.id
     join kaname_auth."user" u on u.id = coalesce(mm.auth_user_id, tm.auth_user_id)
-   where mm.id = p_member and mm.tenant_id = app.tenant_id() limit 1
-$$;
+   where mm.id = p_member and mm.tenant_id = app.tenant_id() limit 1;
+  return v_email;
+end $$;
 
 -- ---------------------------------------------------------------- ① グループに配る
 create or replace function app.handover_distribute_group(p_ticket uuid, p jsonb) returns jsonb

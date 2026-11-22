@@ -1576,6 +1576,9 @@ PERMS = {
     "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
 }
 
+# 成功の状態コード（既定は POST 201・それ以外 200）。POST でも「作らず決めるだけ」で 200 を返す口だけ書く（K-410）。チケットごとの分は screen_api.d に書く
+SUCCESS_STATUS: dict[str, int] = {}
+
 # チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
 import sys as _sys  # noqa: E402
 from pathlib import Path as _Path  # noqa: E402
