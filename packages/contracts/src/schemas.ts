@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:fbcf64a636ffb5d4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:3d8a090a55d46a95
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3634,8 +3634,8 @@ export const InvitationAcceptInput = z.strictObject({
   password: z.string().nullable().optional(),
 });
 export const TicketCompleteInput = z.strictObject({
-  todo_checked: z.array(z.unknown()).optional(),
-  todo_version: z.number().int().optional(),
+  todo_checked: z.array(z.unknown()).nullable().optional(),
+  todo_version: z.number().int().nullable().optional(),
   conditions_confirmed: z.boolean().optional(),
 });
 export const InvitationResendInput = z.strictObject({
@@ -3764,6 +3764,7 @@ export const TicketCompletion = z.strictObject({
   ticket: z.record(z.string(), z.unknown()).optional(),
   knowledge_candidates: z.array(z.unknown()).optional(),
   skipped_reason: z.string().optional(),
+  unchecked: z.record(z.string(), z.unknown()).optional(),
 });
 export const BulkResult = z.strictObject({
   updated: z.array(z.unknown()).optional(),

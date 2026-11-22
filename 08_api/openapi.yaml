@@ -9985,8 +9985,10 @@ components:
           items:
             type: integer
             minimum: 0
+          nullable: true
         todo_version:
           type: integer
+          nullable: true
           minimum: 0
         conditions_confirmed:
           type: boolean
@@ -9995,8 +9997,6 @@ components:
       additionalProperties: false
       x-operation: completeTicket
       required:
-      - todo_checked
-      - todo_version
       - conditions_confirmed
       x-required-by: hooks
     InvitationResendInput:
@@ -10645,6 +10645,8 @@ components:
             type: object
         skipped_reason:
           type: string
+        unchecked:
+          type: object
       x-operation: completeTicket
     BulkResult:
       type: object
