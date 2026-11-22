@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-22",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -136651,11 +136651,11 @@
     "tickets"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "500",
-   "ears_text": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
+   "http_code": "503",
+   "ears_text": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
    "test_file": "apps/api/test/generated/patch_tickets_id.test.ts",
-   "test_function": "test_patch_tickets_id_server_error",
-   "test_level": "unit（途中の失敗・全部戻す）",
+   "test_function": "test_patch_tickets_id_unavailable",
+   "test_level": "結合（届かない・止める側に倒す・G-15）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []
@@ -136677,7 +136677,7 @@
    "http_code": "503",
    "ears_text": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
    "test_file": "apps/api/test/generated/patch_tickets_id.test.ts",
-   "test_function": "test_patch_tickets_id_unavailable",
+   "test_function": "test_patch_tickets_id_unavailable_2",
    "test_level": "結合（届かない・止める側に倒す・G-15）",
    "gate": "backend-coverage",
    "ladder": "L1",

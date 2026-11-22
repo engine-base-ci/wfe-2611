@@ -2471,7 +2471,7 @@ K-440,updateTicket の優先度（高は理由つき）・親の組（K-387 の�
 - [ ] 下の表の道具の 2 行（K440-SHAPE-001・002）が緑：`python3 scripts/ci/k440_ears_merge_test.py`（`scripts/ci/g65.d/K-440.txt` で G65 に登録する）
 - [ ] 生成の試験 `apps/api/test/generated/patch_tickets_id.test.ts` の `it.todo` が `na` を除いて増えない（409 の 4 名前 conflict_6〜9 が K440-API-008〜011 に結ばれる）
 - [ ] 道具の直しの後も、前からの `python3 scripts/ci/k325_registries_test.py`（K325-REG-011・013・014・015・019・020・022）が変えずに緑
-- [ ] 契約の `updateTicket` の入力に 3 欄（priority・priority_reason・parent_ticket_id）が足され、K-387 の試験 `progress.test.ts`（段・実績・保留）は **K387-API-018 の 1 行（優先度の分）を替えた以外は変えずに緑**（下の「前からの試験を替えた所」）
+- [ ] 契約の `updateTicket` の入力に 3 欄（priority・priority_reason・parent_ticket_id）が足され、K-387 の試験 `progress.test.ts`（段・実績・保留）は **K387-API-018 の 1 行（優先度の分）と K387-API-029 の期待（500 → 503・11-22 18:30 の決め）の 2 か所を替えた以外は変えずに緑**（下の「前からの試験を替えた所」）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"

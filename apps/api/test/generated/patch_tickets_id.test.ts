@@ -94,12 +94,12 @@ describe("PATCH /api/v1/tickets/:id", () => {
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-028」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-028");
   });
-  it("test_patch_tickets_id_server_error", () => {
-    // UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す
+  it("test_patch_tickets_id_unavailable", () => {
+    // UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-029」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-029");
   });
-  it("test_patch_tickets_id_unavailable", () => {
+  it("test_patch_tickets_id_unavailable_2", () => {
     // UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-024」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-024");
