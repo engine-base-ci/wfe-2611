@@ -5,6 +5,7 @@
 //   形は ProseMirror の JSON と同じ並び（type・attrs・content・text・marks）。画面の編集の核がそのまま読み書きできる。
 //   上限（DOC_MAX_*）は DB の app.ticket_body_valid と同じ数。変えるときは両方を同じ葉で直す。
 //   画面に出す入力欄の「/」「#」「@」「注意の枠」は作らない（D-150.48）。画像は置き場だけ（押せない形・D-150.57）。
+import { isUuid } from "./index.js";
 
 /** 文書全体の大きさ（JSON の UTF-8 の長さ）の上限 */
 export const DOC_MAX_BYTES = 1_048_576;
@@ -198,10 +199,7 @@ function checkAttrs(type: string, attrs: unknown): string | null {
     case "image": {
       const cap = attrs["caption"];
       const id = attrs["attachment_id"];
-      const idOk =
-        id === null ||
-        (typeof id === "string" &&
-          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id));
+      const idOk = id === null || (typeof id === "string" && isUuid(id)); // 入口と同じ確かめ（index.ts の isUuid）
       return only(["caption", "attachment_id"]) &&
         typeof cap === "string" &&
         !cap.includes(NUL) &&
