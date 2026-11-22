@@ -6,7 +6,7 @@
 //   updateTicket  PATCH /api/v1/tickets/:id   body：estimate_minutes = 整数 0〜100000（分）か null（空にする）
 //     200 { data: { ticket: { id, number, updated_at, estimate_minutes }, changed, message_id } }（送った組の列だけ ticket に載る）
 //     422（契約に書ける形の誤り・欄 estimate_minutes）：整数でない（1.5・"60"・true・並び）・0 未満・100000 より大きい
-//     403 FORBIDDEN（書けない人）／404 E-PAGE-001（無い・見えない・消した・別の会社のチケット）／500 E-PAGE-003（書く所の DB の失敗）
+//     403 FORBIDDEN（書けない人）／404 E-PAGE-001（無い・見えない・消した・別の会社のチケット）／503 E-PAGE-003（書く所の DB の失敗）
 //     完了したチケットでも・仕組みの段（承認待ち）の間でも変えられる（K-387 の実績と同じ。段を変えるのだけが断られる）
 //     同じ値は何も書かず changed false。1 回の要求は全部通るか全部戻る（ほかの組が断られたら予定時間も書かない）
 //   やり取りの変更の 1 行（ticket_messages の kind change・1 回の要求に 1 行）：
@@ -396,7 +396,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect((await notesOf(t.id)).length, "同じ値は知らせない").toBe(1);
   });
 
-  it("K583-API-011 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 500・E-PAGE-003・予定時間と変更の 1 行が前のまま・答えに値の字が出ない", async () => {
+  it("K583-API-011 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 503・E-PAGE-003・予定時間と変更の 1 行が前のまま・答えに値の字が出ない", async () => {
     const w = await world();
     const t = await mk(w, { estimate: 30 });
     await failingInsert(
@@ -405,7 +405,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
       async () => {
         const r = await patch(w.boss, t.id, { estimate_minutes: 999 });
         const text = await r.text();
-        expect(r.status).toBe(500);
+        expect(r.status).toBe(503);
         expect(JSON.parse(text).code).toBe("E-PAGE-003");
         expect(text).not.toContain("わざと落とした");
       },
@@ -415,7 +415,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect((await audits(w.tenantId)).length).toBe(0);
   });
 
-  it("K583-API-012 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 500・E-PAGE-003・取引ごと戻る（予定時間・変更の 1 行・証跡・知らせが前のまま）", async () => {
+  it("K583-API-012 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 503・E-PAGE-003・取引ごと戻る（予定時間・変更の 1 行・証跡・知らせが前のまま）", async () => {
     const w = await world();
     const t = await mk(w, { assignee: w.mate.id, estimate: 30 });
     await failingInsert(
@@ -424,7 +424,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
       async () => {
         const r = await patch(w.boss, t.id, { estimate_minutes: 999 });
         const text = await r.text();
-        expect(r.status).toBe(500);
+        expect(r.status).toBe(503);
         expect(JSON.parse(text).code).toBe("E-PAGE-003");
         expect(text).not.toContain("わざと落とした");
       },
@@ -498,7 +498,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect((await row(t.id)).estimate_minutes).toBe(180);
   });
 
-  it("K583-API-017 契約：updateTicket の入力に estimate_minutes（0〜100000 の整数か null）があり、openapi・registry の入力の形が一致する。断りの番号の置き場 errors.d/K-583.json は無い（422・403・404・500 だけ）", () => {
+  it("K583-API-017 契約：updateTicket の入力に estimate_minutes（0〜100000 の整数か null）があり、openapi・registry の入力の形が一致する。断りの番号の置き場 errors.d/K-583.json は無い（422・403・404・503 だけ）", () => {
     const yaml = readFileSync(join(ROOT, "08_api", "openapi.yaml"), "utf-8");
     const at = yaml.indexOf("x-operation: updateTicket");
     expect(at, "openapi.yaml に updateTicket の入力の形が在る").toBeGreaterThan(0);
