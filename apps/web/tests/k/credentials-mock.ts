@@ -305,9 +305,9 @@ export const addDialog = (page: Page) => page.getByRole("dialog", { name: "ロ�
 export const checkDialog = (page: Page) => page.getByRole("dialog", { name: "本人か確かめます" });
 export const save = (page: Page) => addDialog(page).getByRole("button", { name: "本人確認して保存" });
 export async function choose(page: Page, label: string, option: string) {
-  await addDialog(page).getByRole("combobox", { name: label }).click();
+  await addDialog(page).getByRole("combobox", { name: label, exact: true }).click();
   await page.getByRole("option", { name: option, exact: true }).click();
-  await expect(addDialog(page).getByRole("combobox", { name: label })).toContainText(option);
+  await expect(addDialog(page).getByRole("combobox", { name: label, exact: true })).toContainText(option);
 }
 /** 預ける小窓に、ログイン情報の 1 件を入れる（モック cred-add-login と同じ値） */
 export async function fillLogin(page: Page, o: { name?: string; destinations?: string; expires?: string } = {}) {

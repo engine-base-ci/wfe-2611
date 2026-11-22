@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:28f1e2d31f84198f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:36f019aa48f7fe13
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -25,6 +25,7 @@ export interface Ops {
   getInvitation: { params: { token: string }; query: never; body: never; data: T.InvitationPreview };
   acceptInvitation: { params: { token: string }; query: never; body: T.InvitationAcceptInput; data: T.InvitationAccepted };
   requestInvitationResend: { params: { token: string }; query: never; body: T.InvitationResendInput; data: T.InvitationResendResult };
+  confirmInvitationJoin: { params: never; query: never; body: T.InvitationJoinConfirmInput; data: T.InvitationJoinConfirmed };
   requestPasswordReset: { params: never; query: never; body: T.PasswordForgotInput; data: T.PasswordForgotAccepted };
   resetPassword: { params: never; query: never; body: T.PasswordResetInput; data: T.PasswordResetDone };
   requestAdminRecovery: { params: never; query: never; body: T.AdminRecoveryInput; data: T.AdminRecoveryResult };
@@ -39,12 +40,14 @@ export interface Ops {
   consentToTerms: { params: never; query: never; body: T.TermsConsentInput; data: T.TermsConsented };
   getCurrentTerms: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.CurrentTerms[] };
   verifySignInCode: { params: never; query: never; body: T.SignInCodeInput; data: T.SignInCodeResult };
+  setBridgeBrowser: { params: never; query: never; body: T.BridgeBrowserInput; data: T.BridgeBrowser };
   claimPairingCode: { params: never; query: never; body: T.BridgeClaimInput; data: T.BridgeClaim };
-  reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
+  reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialCheckReportInput; data: T.CredentialCheckReport };
   resolveCredential: { params: never; query: never; body: T.CredentialsInput; data: T.ResolvedCredential };
   listMyDevices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.BridgeDevice[] };
   updateMyDevice: { params: { id: string }; query: never; body: T.DeviceBrowserInput; data: T.DeviceBrowser };
-  revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.Sessions };
+  revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.RevokedDevice };
+  checkMyDeviceBrowser: { params: { id: string }; query: never; body: T.DeviceBrowserCheckInput; data: T.DeviceBrowserCheck };
   getFileForBridge: { params: { ref: string }; query: never; body: never; data: T.Attachments };
   sendHeartbeat: { params: never; query: never; body: T.BridgeHeartbeatInput; data: T.BridgeHeartbeat };
   putArtifactFromBridge: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
@@ -104,8 +107,8 @@ export interface Ops {
   createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };
   updateCredential: { params: { id: string }; query: never; body: T.CredentialUpdateInput; data: T.Credential };
   deleteCredential: { params: { id: string }; query: never; body: never; data: T.CredentialDeleted };
-  checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
-  answerCredentialLoginCheck: { params: { id: string }; query: never; body: T.CredentialsInput; data: T.Credentials };
+  checkCredentialLogin: { params: { id: string }; query: never; body: T.CredentialLoginCheckInput; data: T.CredentialLoginCheck };
+  answerCredentialLoginCheck: { params: { id: string }; query: never; body: T.CredentialLoginAnswerInput; data: T.CredentialLoginAnswer };
   createExport: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };
   getExport: { params: { id: string }; query: never; body: never; data: T.ExportStatus };
   listHandoverRules: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.HandoverRules[] };
@@ -118,7 +121,7 @@ export interface Ops {
   createInvitations: { params: never; query: never; body: T.InvitationsCreateInput; data: T.InvitationsSent };
   revokeInvitation: { params: { id: string }; query: never; body: never; data: T.Invitations };
   resendInvitation: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
-  createInvitationLink: { params: never; query: never; body: T.InvitationsInput; data: T.InvitationLink };
+  createInvitationLink: { params: never; query: never; body: T.InvitationLinkCreateInput; data: T.InvitationLink };
   downloadInvoicePdf: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   askKnowledge: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgeAnswer };
   sendKnowledgeAnswerFeedback: { params: never; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
@@ -334,7 +337,7 @@ export interface Ops {
   createTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
   lintTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecLint };
   suggestTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
-  listTicketTimeline: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TimelineItem[] };
+  listTicketTimeline: { params: { id: string }; query: { "filter"?: string | number; "before_at"?: string | number; "before_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TimelineItem[] };
   listTicketVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketSectionVersions[] };
   restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.TicketSectionVersionsInput; data: T.TicketSectionVersions };
   listWorkTypeCandidates: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Skills[] };

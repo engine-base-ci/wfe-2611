@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-19",
+ "created_at": "2026-11-20",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -99,13 +99,16 @@
     "E-002 scopes",
     "E-001 tenants",
     "E-131 terms_consents",
-    "E-080 notifications"
+    "E-080 notifications",
+    "E-061 sessions"
    ],
    "related_apis": [
     "GET /api/auth/invitations/:token",
     "POST /api/auth/invitations/:token/accept",
     "POST /api/auth/invitations/:token/accept",
-    "POST /api/auth/invitations/:token/resend-request"
+    "POST /api/auth/invitations/:token/resend-request",
+    "POST /api/auth/invitations/confirm",
+    "POST /api/auth/invitations/confirm"
    ],
    "access_roles": [
     "R3",
@@ -366,6 +369,8 @@
     "POST /api/bridge/credentials/resolve",
     "POST /api/bridge/credentials/:id/check-result",
     "GET /api/bridge/files/:ref",
+    "POST /api/bridge/devices/:id/browser-check",
+    "POST /api/bridge/browser",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -3500,6 +3505,18 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/auth/invitations/:token/resend-request"
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
     }
    ]
   },
@@ -3872,6 +3889,18 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/bridge/files/:ref"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/devices/:id/browser-check"
+    },
+    {
+     "act": "A09",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/bridge/browser"
     },
     {
      "role": "transition",
@@ -12894,6 +12923,7 @@
    "entity_name": "sessions",
    "used_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -12915,6 +12945,7 @@
    ],
    "used_by_features": [
     "F-001",
+    "F-002",
     "F-003",
     "F-004",
     "F-005",
@@ -14619,6 +14650,7 @@
     "E-004",
     "E-055",
     "E-058",
+    "E-061",
     "E-080",
     "E-091",
     "E-129",
