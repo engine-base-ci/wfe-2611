@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:45a9f00c157112c4
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:016d075d52d1cc42
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1998,6 +1998,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       409,
       422,
+      404,
       413,
       429,
       502,
@@ -16882,7 +16883,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "TicketDecisions",
+    "output": "TicketDecision",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -16933,9 +16934,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createTicketDecision",
     "table": "ticket_decisions",
     "kind": "create",
-    "input": "TicketDecisionsInput",
+    "input": "TicketDecisionInput",
     "success": 201,
-    "output": "TicketDecisions",
+    "output": "TicketDecisionCreated",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -16955,6 +16956,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       403,
@@ -18032,6 +18034,65 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A107"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "true"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/tickets/:id/timeline/seen",
+    "operationId": "markTicketTimelineSeen",
+    "table": "ticket_messages",
+    "kind": "create",
+    "input": "TicketTimelineSeenInput",
+    "success": 201,
+    "output": "TicketTimelineSeen",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C6"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      503,
+      413,
       429,
       403,
       403,
@@ -19877,4 +19938,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "45a9f00c157112c4";
+export const OPENAPI_HASH = "016d075d52d1cc42";
