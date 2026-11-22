@@ -11,7 +11,7 @@
 //           マスタで決まる断りは 404／409（体は { error, code } だけ・field・details・detail なし）：
 //             無い・消した・別の会社の項目 → 404 E-PAGE-001／その種別に出ない項目 → 409 E-FLD-001／選択肢に無い値 → 409 E-FLD-002／
 //             項目の型と合わない値（数でない・日付でない・真偽でない など）→ 409 E-FLD-003／必須の項目を空にする → 409 E-FLD-004
-//           403 FORBIDDEN（書けない人）／404 E-PAGE-001（無い・見えない・消した・別の会社のチケット）／500 E-PAGE-003（書く所の DB の失敗）
+//           403 FORBIDDEN（書けない人）／404 E-PAGE-001（無い・見えない・消した・別の会社のチケット）／503 E-PAGE-003（書く所の DB の失敗）
 //     1 回の要求は全部通るか全部戻る（どれか 1 つが断られたら、同じ要求の別の組の欄も書かない）
 //     空にする＝null・空の文字・空白だけ・空の並び（行は deleted_at を入れて消す。入れ直せる）。同じ値は何も書かず changed false
 //     必須の「チェック」の項目は、チェックが付いていない（false・null）と必須を満たさない（409 E-FLD-004）
@@ -689,7 +689,7 @@ describe("K-564 会社の項目の値（updateTicket の fields）", () => {
     ]);
   });
 
-  it("K564-API-017 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 500・E-PAGE-003・値・変更の 1 行・証跡が前のまま・答えにもログにも値の字が出ない", async () => {
+  it("K564-API-017 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 503・E-PAGE-003・値・変更の 1 行・証跡が前のまま・答えにもログにも値の字が出ない", async () => {
     const w = await world();
     const cust = await fld(w);
     const t = await mk(w);
@@ -698,7 +698,7 @@ describe("K-564 会社の項目の値（updateTicket の fields）", () => {
     await failingAudit(w.tenantId, async () => {
       const r = await set(w.boss, t.id, { [cust.id]: "秘密の値XYZ" });
       const text = await r.text();
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(JSON.parse(text).code).toBe("E-PAGE-003");
       expect(text).not.toContain("XYZ");
       expect(text).not.toContain("わざと落とした");
@@ -707,14 +707,14 @@ describe("K-564 会社の項目の値（updateTicket の fields）", () => {
     expect((await lines(t.id)).length).toBe(before);
   });
 
-  it("K564-API-018 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 500・E-PAGE-003・取引ごと戻る（値・変更の 1 行・証跡・知らせが前のまま）", async () => {
+  it("K564-API-018 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 503・E-PAGE-003・取引ごと戻る（値・変更の 1 行・証跡・知らせが前のまま）", async () => {
     const w = await world();
     const cust = await fld(w);
     const t = await mk(w, { assignee: w.mate.id });
     await failingNote(w.tenantId, async () => {
       const r = await set(w.boss, t.id, { [cust.id]: "秘密の値XYZ" });
       const text = await r.text();
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(JSON.parse(text).code).toBe("E-PAGE-003");
       expect(text).not.toContain("XYZ");
     });

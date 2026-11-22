@@ -7,7 +7,7 @@
 //   updateTicket  PATCH /api/v1/tickets/:id   body：priority・priority_reason・parent_ticket_id（送った欄だけ変える）
 //     200 { data: { ticket: { id, number, updated_at, + 送った組の列 }, changed, message_id } }（stage は段・実績・保留の組の鍵が送られたときだけ付く）
 //     断る：404 E-PAGE-001（無い・見えない・消した・別の会社・親が見つからない）／403 FORBIDDEN／409 E-TKT-001（自分自身）・002（子孫）・003（3 段超）・004（親を決めるとき親の期限より後）／
-//          422 理由の欠け・知らない優先度・E-VAL-018（組に無い欄）／500 E-PAGE-003（書く所の DB の失敗）
+//          422 理由の欠け・知らない優先度・E-VAL-018（組に無い欄）／503 E-PAGE-003（書く所の DB の失敗）
 //   やり取りの変更の 1 行：ticket_messages の kind change。優先度＝「<名前> が優先度を 中 → 高 に変えた（理由：…）」・
 //     親＝「<名前> が親を LA-1 に決めた」「親を LA-1 → LA-2 に変えた」「親を外した（LA-1）」。2 つは「・」
 //     changes は [{field: "priority"|"parent", from, to, note?}]（この順）。証跡 audit_events の action は ticket.sort（payload は { fields: […] }）
@@ -654,7 +654,7 @@ describe("K-440 優先度・親", () => {
     expect(parents.filter((p) => p !== null).length).toBe(1);
   });
 
-  it("K440-API-021 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 500・E-PAGE-003・優先度・親・変更の 1 行が前のまま", async () => {
+  it("K440-API-021 失敗（手順 S1・書く所）：証跡を書く所で DB が落ちる → 503・E-PAGE-003・優先度・親・変更の 1 行が前のまま", async () => {
     const w = await world();
     const p = await mk(w, w.g1, { due: jst(9) });
     const t = await mk(w, w.g1);
@@ -665,7 +665,7 @@ describe("K-440 優先度・親", () => {
         parent_ticket_id: p.id,
       });
       const text = await r.text();
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(JSON.parse(text).code).toBe("E-PAGE-003");
       expect(text).not.toContain("わざと落とした");
       expect(text).not.toContain("急ぎ");
@@ -763,13 +763,13 @@ describe("K-440 優先度・親", () => {
     expect((await notesOf(same.id)).length).toBe(1);
   });
 
-  it("K440-API-026 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 500・E-PAGE-003・取引ごと戻る（優先度・変更の 1 行・証跡が前のまま）", async () => {
+  it("K440-API-026 失敗（手順 S2・知らせ）：担当者の受け箱の行を書く所で DB が落ちる → 503・E-PAGE-003・取引ごと戻る（優先度・変更の 1 行・証跡が前のまま）", async () => {
     const w = await world();
     const t = await mk(w, w.g1, { assignee: w.e1.id });
     await failingNote(w.tenantId, async () => {
       const r = await patch(w.boss, t.id, { priority: "high", priority_reason: "理由の字" });
       const text = await r.text();
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(JSON.parse(text).code).toBe("E-PAGE-003");
       expect(text).not.toContain("わざと落とした");
       expect(text).not.toContain("理由の字");

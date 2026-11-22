@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:33de502e3934ab84
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0b9af7ea45edfc51
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1307,6 +1307,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "errors": [
       422,
       410,
+      409,
       500,
       413,
       429,
@@ -2082,7 +2083,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "resolveCredential",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialResolveInput",
     "success": 201,
     "output": "ResolvedCredential",
     "outputList": false,
@@ -2102,6 +2103,12 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      403,
+      403,
+      404,
+      502,
+      503,
+      503,
       413,
       429,
       503
@@ -15630,7 +15637,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "TicketLinks",
+    "output": "TicketLinkDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -15649,6 +15656,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -15668,10 +15676,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "ticket_links",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(from_ticket_id) AND app.ticket_visible(to_ticket_id)"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -16094,7 +16099,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       409,
       422,
-      500,
+      503,
       503,
       413,
       429,
@@ -17104,7 +17109,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "TicketLinks",
+    "output": "TicketLink",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -17121,6 +17126,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      404,
+      503,
       429,
       403,
       403,
@@ -17155,9 +17162,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createTicketLink",
     "table": "ticket_links",
     "kind": "create",
-    "input": "TicketLinksInput",
+    "input": "TicketLinkInput",
     "success": 201,
-    "output": "TicketLinks",
+    "output": "TicketLink",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17177,6 +17184,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      404,
+      503,
       413,
       429,
       403,
@@ -17494,7 +17503,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "TestSpecs",
+    "output": "TestSpecItem",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -17546,9 +17555,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createTestSpec",
     "table": "test_specs",
     "kind": "create",
-    "input": "TestSpecsInput",
+    "input": "TestSpecCreateInput",
     "success": 201,
-    "output": "TestSpecs",
+    "output": "TestSpecItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17569,6 +17578,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -19588,4 +19598,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "33de502e3934ab84";
+export const OPENAPI_HASH = "0b9af7ea45edfc51";
