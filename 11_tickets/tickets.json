@@ -19745,6 +19745,83 @@
    "file": "11_tickets/K-434.md"
   },
   {
+   "id": "K-561",
+   "title": "DB：本文 1 枚の持ち方（ticket_sections の鍵 body・種別のひな形 ticket_kinds.body_template・app.ticket_create に本文 1 枚の道を足す）と、文書の木の型と doc → text（K-59 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "チケット",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 9 の K-405（DB の関数を作り直す 1 本・migration 1 本・試験 23 行・見込み 1 時間）と段 4 の K-351（migration 1 本・試験 20 行・見込み 1 時間）から引いた：migration（列 1・形の守り 2・ひな形の関数と引き金・app.ticket_create の作り直し）25 分・文書の木の型と確かめと doc → text 15 分・自分の確かめ 15 分・試験 22 行は切る段で書いた（DB 16 行・文書の木 6 行）。見込みの根拠になる実測が無いので、最初の 1 本の後で引き直す",
+   "decisions": [
+    "D-150.35",
+    "D-150.48",
+    "D-150.49",
+    "D-150.50",
+    "D-150.57",
+    "D-128.115"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "packages/db/test/ticket_body.test.ts",
+    "packages/db/test/ticket_body_legacy_sections.test.ts",
+    "packages/contracts/test/doc.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-430"
+   ],
+   "acts": [
+    "A99",
+    "A101"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（DB の表・関数と、文書の木の型・確かめ・doc → text だけ）。画面の部品は K-567・K-568、作る面は K-442、詳細は K-571・K-447 が持つ。口は作らない",
+   "affects": [
+    "@kaname/contracts",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261122090100_ticket_body.sql",
+    "packages/db/src/migrations.generated.ts",
+    "packages/contracts/src/doc.ts",
+    "packages/contracts/src/index.ts"
+   ],
+   "flow": "チケットの中身を書く・直す",
+   "sections": {
+    "目的": "チケットの本文を「自由な 1 枚の文書」として持つ置き場を DB に作る（決定 D-150.35・D-150.50）。区画ごとの入力欄はやめ、`ticket_sections` に鍵 `body` の 1 行（列 `body` ＝ `{ doc, text }`・版は `ticket_section_versions`）で持つ。種別を選んだときに入るひな形は `ticket_kinds.body_template`。作る関数 `app.ticket_create` に「本文 1 枚の道」を足す。\n\nあわせて、本文の中身の形（文書の木 `doc`）と「doc → text」の関数を、口（K-432・K-437）と画面（K-567・K-568）が同じ物を使えるよう `packages/contracts` に置く。DB は text を作らない（口が作って渡す）。\n\n**前の道は壊さない**：入力に `sections` が来たら今までどおり区画の行を書く。作る口 K-437・読む口 K-560・F5 の K-565・K-566 が入るまで、前の作る面・「AI に任せる」・完了が壊れないようにするため。前の道を消すのは最後の葉 K-578（今ある区画の中身を本文に移すのは K-575。K-578 が区画の入力を受けるのをやめ・`kind_sections` に凍結の印を付ける）。`kind_sections` はこの葉では触らない。",
+    "完了の条件": "- [ ] 下の表の DB の 17 行（K561-DB-001〜017）が緑：`packages/db/test/ticket_body.test.ts`（008・009 以外の 15 行）と、前の道（sections）を見る `packages/db/test/ticket_body_legacy_sections.test.ts`（008・009・K-578 がファイルごと消す。本文の試験は区画の道が在っても無くても通る形）\n- [ ] 下の表の文書の木の 6 行（K561-DOC-001〜006）が緑：`packages/contracts/test/doc.test.ts`\n- [ ] migration が空の DB に全部当たり、`MIGRATIONS` の一覧（K327-DB-008）が最新（`packages/db/src/migrations.generated.ts` は作り手 `scripts/ci/gen_migrations.py` の生成物）\n- [ ] 前からの試験は「前からの試験を替えた所」のとおり替えずに緑（前の道 `sections` の試験は今のまま）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- 関門は C2（DB）。口は作らない（`apis: []`・`canvas: []`）。読む口 `getTicket` の答えに本文を載せるのは K-560、書く口は K-432・K-437\n- **text は口が doc から作って渡す**（DB の関数に doc → text を書かない）。理由：SQL にも同じ変換を書くと、2 つの実装が少しずつずれる（L-002 と同じ形）。DB が守るのは、形（doc は type が doc で content が配列・text は文字）と上限だけ。口の入口の確かめ `validateDoc` と同じ数にする（下の「受け持ちをまたぐ名前」）。画面から text は受けない（口が `docToText` で作る・K-432・K-437 の仕事）\n- 上限（DB の `app.ticket_body_valid` と `packages/contracts/src/doc.ts` の `DOC_MAX_*` が同じ数）：doc の長さ 1,048,576 バイト・text 1,048,576 バイト・入れ子 12（入れ子は口の入口だけで見る。DB は大きさで頭打ち）。リンクは http・https・mailto だけ・長さ 2,048\n- **文書の木の形**（ProseMirror の JSON と同じ並び）：節は 段落・見出し（level 2 か 3）・箇条書き（bulletList・listItem）・チェックの箱の並び（taskList・taskItem の `attrs.checked`）・表（table・tableRow・tableHeader・tableCell）・引用・コード・画像の置き場（`attrs.caption`・`attrs.attachment_id`＝今は null）・改行。印は 太字・斜体・文字の色（red・teal・amber）・線で強調（highlight・下絵の `<mark>`）・リンク。**薄い字の説明（ひな形の説明）は `attrs.ghost: true`**（書き始めると消える。素の文字には入れない）。「/」「#」「@」「注意の枠」は作らない（D-150.48）。画像は押せない形（D-150.57）\n- 種別のひな形は、既定の 4 種別（タスク・課題・QA・会議）に同じ物を入れる（下絵 `apps/web/features/F4/doc/views.tsx` の `Template`：目的・完了の条件・実施事項・前提と制約・参考の見出しと薄い字の説明）。会社が種別ごとに直す画面は段 10。会社が直した物は、入れ直す関数が上書きしない\n- 新しい会社の種まき：`app.ticket_basics`（0071）は作り直さず、`tenants` の引き金 `tenants_ticket_body_template` で入れる（引き金は名前の順に走るので `tenants_ticket_basics` の後。K561-DB-001 が会社を作った直後に入っていることを見る）。理由：`ticket_basics` の 80 行を丸ごと写すと、後の葉がそこを直したときにぶつかる\n- migration の名前：番号の下 2 桁の決め（`2026112209NN00`）だと K-561 は `20261122096100` になるが、分が 61 で時刻の形（`isTimeName`・分は 59 まで）を通らない。そこで **`20261122090100_ticket_body.sql`**（09:01:00）にした。K-561 → K-437（093700）→ K-438（093800）の順は名前の順で守れる（K-432〜K-435 の 0932〜0935 より前）。同じ形の問題は K-563（63）にもある（まとめ役に頼むこと）\n- `app.ticket_create` は 0090 の作り直し（`create or replace`）。入力の鍵・答えの形・断りの code は前のまま（`FORBIDDEN`・`KIND_GONE`・`ASSIGNEE_GONE`・`PARENT_NOT_FOUND`・`PARENT_DEPTH`・`NOTIFY_GONE`・`SECTION_REQUIRED`）。足すのは入力 `body` と断りの code `BODY_INVALID`（422・field `body`）だけ。口が先に形を確かめるので、`BODY_INVALID` に届くのは口をすり抜けた物だけ（最後の砦）\n- 入力に `body` が在れば：必須の区画の確かめ（`kind_sections.mode = required`）はしない（D-150.49：必須の区画は無い）。`body` と `sections` が両方来たら `body` だけを書く（区画の行は書かない）。`body` に `doc`・`text` 以外の鍵が在れば捨てる\n- 本文が空（節 0 個・text 空）でも作れる。`body` が無く `sections` も無ければ、前のとおり必須の区画で断る（K-437 が入って口が `sections` を送らなくなるまで）\n- 別の会社・書けない人：前のとおり 403 `FORBIDDEN`（グループの確かめ）で、何も書かない。本文の行は作ったチケットの子の行で、読める人は前のとおりチケットに従う（RLS・`app.ticket_child_same_tenant`）\n- **本文の道具の決め（代表 2026-11-22・出来合いの部品の機能を絞らずに使う）は、この葉に当たらない**：この葉が決める文書の木（節と印・色は red・teal・amber）は変えない。足す節と印（番号つきの並び・区切りの線・見出しの段 4・寄せ・セルの結合・下線・取り消し線・行の中のコード・上付き・下付き・`#rrggbb` の色）は、この葉の後に切る別の葉（文書の木に足す節と印の葉。番号は切ったときに範囲の文書 `07_functional/段5-F4/切り方.md` に書く）が `validateDoc`・`docToText` を広げて受ける（この葉で通る文書は、その葉の後も全部そのまま通る）。この葉の行・試験・表は変えない",
+    "依存の理由": "- K-430: 要る — この葉の decisions: の D-150.35・48・49・50・57 を決定ログ §150 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる",
+    "目録で探した結果": "- 使う：`ticket_sections`・`ticket_section_versions`・`ticket_kinds`（0071）・`app.ticket_create`・`app.ticket_member_ok`（0090）・`app.ticket_visible`（0072）・`app.ticket_basics`（0071・作り直さない）・K-327 の時刻の名前の migration・試験の土台の置き方（`packages/db/test/tickets.test.ts` の beforeAll と `seedAccessMatrix`）\n- 作る：`app.ticket_body_valid`・`app.ticket_body_template`・`app.ticket_body_template_basics`・`app.ticket_body_template_on_tenant`・列 `ticket_kinds.body_template`・表の守り `ticket_sections_body_ok`・`ticket_kinds_body_template_ok`・`packages/contracts/src/doc.ts`（型・`validateDoc`・`docToText`・`toTicketBody`・`DOC_MAX_*`）。探したが同じ物は無かった（文書の木を持つ列・型は 0 件。`ticket_sections.body` は前は `{text}` だけ。HTML を文字で持つ案は、XSS（HTML を出す面が要る）と text の作り直しが要るので使わない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| migration（1 本・時刻の名前） | `packages/db/migrations/20261122090100_ticket_body.sql`：① `app.ticket_body_valid(jsonb)`（stable・形と上限）② 表の守り `ticket_sections_body_ok`（鍵 body の行だけ）③ 列 `ticket_kinds.body_template jsonb` と守り `ticket_kinds_body_template_ok` ④ `app.ticket_body_template()`（製品のひな形・見出し 5＋説明 5）⑤ `app.ticket_body_template_basics(uuid)`（既定の種別で空の物にだけ入れる）と引き金 `tenants_ticket_body_template`・前からある会社への入れ直し ⑥ `app.ticket_create` の作り直し（本文 1 枚の道） |\n| 生成物 | `packages/db/src/migrations.generated.ts`（作り手 `scripts/ci/gen_migrations.py`）。列を足すので contracts の `TicketKinds` の型・openapi・目録も作り直しになる（まとめ役が作り直す） |\n| 文書の木 | `packages/contracts/src/doc.ts` を足し、`packages/contracts/src/index.ts` から出す（`@kaname/contracts` から `Doc`・`validateDoc`・`docToText`・`toTicketBody`・`DOC_MAX_*`・`emptyDoc`） |\n| 試験 | `packages/db/test/ticket_body.test.ts`・`packages/db/test/ticket_body_legacy_sections.test.ts`・`packages/contracts/test/doc.test.ts` |",
+    "受け持ちをまたぐ名前": "この葉が決める。K-432（本文を書き終える口）・K-437（作る口）・K-567／K-568（本文の部品）・K-560（読む口）はこの名前をそのまま使う（変えない）。\n\n| 名前 | どこ | 使う葉 |\n|---|---|---|\n| 型 `Doc`・`Block`・`Inline`・`Mark`・`TicketBody`（`{ doc, text }`） | `@kaname/contracts`（`packages/contracts/src/doc.ts`） | K-432・K-437・K-560・K-567・K-568 |\n| `validateDoc(input: unknown): DocCheck`（通れば同じ物を返す・直さない） | 同上 | 口の入口（K-432・K-437）・画面の保存の前（K-567） |\n| `docToText(doc: Doc): string`・`toTicketBody(doc: Doc): TicketBody` | 同上 | 口（K-432・K-437）が text を作る。画面は呼ばない |\n| `DOC_MAX_BYTES`（1,048,576）・`DOC_MAX_DEPTH`（12）・`DOC_TEXT_MAX_BYTES`（1,048,576）・`DOC_COLORS` | 同上 | 口・画面の数の表示 |\n| 本文の行 | `ticket_sections.section_key = 'body'`・`position 0`・`body = {doc, text}`・版は `ticket_section_versions`（K-432 が書き終えるたびに版を足す） | K-432・K-433・K-560 |\n| ひな形 | `ticket_kinds.body_template`（`doc` の形・薄い字は `attrs.ghost: true`） | K-560（listTicketKinds に載せる）・K-442・K-567 |\n| 作る関数の入力・断り | `app.ticket_create(p)` の `p.body = { doc, text }`・断りは 422 `BODY_INVALID`（field `body`） | K-437（口が `body` を渡し、`BODY_INVALID` を契約の 422 の欄つきの形に直す） |\n| 形と上限の DB の関数 | `app.ticket_body_valid(jsonb)`（鍵 body の行の形の守り `ticket_sections_body_ok` が使う） | K-432（書き込むとき同じ守りに当たる） |",
+    "外に影響する手順": "- S1: DB に書く：`app.ticket_create` が tickets・本文の行（`ticket_sections` の鍵 body）・版 1（`ticket_section_versions`）を 1 つの取引で書く（関門 C2）。途中で失敗すれば全部戻る（K561-DB-017）\n- なし — 知らせ（担当者と知らせる人の受け箱の行・関門 C6）は前からの道で、この葉は変えない・本文は入れない\n- なし — 証跡はこの葉は足さない（作る関数の前からの道。本文の行は作ったチケットの子の行で、別に証跡の行を持たない）",
+    "テスト仕様と確認の結果": "`packages/db/test/ticket_body.test.ts`・`packages/db/test/ticket_body_legacy_sections.test.ts`（008・009 だけ。前の道を見る・本物の DB・`kaname_app` の接続）と `packages/contracts/test/doc.test.ts`（DB は使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作るとき `body` が在る（形が合う） | `app.ticket_create`（口 K-437 から） | 書ける人 | チケット＋鍵 body の行（版 1）＋版の行が書かれる | このチケット | K561-DB-004・005・006・007 |\n| 作るとき `body` が無く `sections` が在る | `app.ticket_create`（前の作る面・AI に任せる） | 書ける人 | 前のとおり区画の行（鍵 body の行は無い） | このチケット | K561-DB-008 |\n| 作るとき `body` も `sections` も無い | `app.ticket_create` | 書ける人 | 前のとおり 422 `SECTION_REQUIRED`・何も書かない | このチケット | K561-DB-009 |\n| 作るとき両方在る | `app.ticket_create` | 書ける人 | `body` だけ書く | このチケット | K561-DB-010 |\n| `body` の形・上限が違う | `app.ticket_create`（口をすり抜けた） | 書ける人 | 422 `BODY_INVALID`・何も書かない | このチケット | K561-DB-012・013 |\n| 鍵 body の行に壊れた中身 | 直に insert（管理者の接続） | — | 表の守りで止まる（前の区画の行は止まらない） | このチケット | K561-DB-014 |\n| 新しい会社・前からある会社 | tenants の insert・入れ直す関数 | — | 既定の 4 種別にひな形が入る・会社が直した物は上書きしない | このチケット | K561-DB-001・002 |\n| 種別のひな形の形が違う | 管理者の更新 | — | 表の守りで止まる | このチケット | K561-DB-003 |\n| 別の会社の本文・グループ・種別 | 読む・作る | 別の会社の人 | 読めない（0 件）・作れない（403・何も書かない） | このチケット | K561-DB-015 |\n| 書く権限が無い | `app.ticket_create` | グループの外の人 | 403 `FORBIDDEN`・何も書かない | このチケット | K561-DB-016 |\n| 作る途中で書く所が落ちる | `app.ticket_create` | 書ける人 | 例外・取引ごと戻る（チケットも本文の行も残らない） | このチケット | K561-DB-017 |\n| 文書の木（口・画面が使う型と確かめ） | `validateDoc`・`docToText` | — | 規則どおり（形・上限・text） | このチケット | K561-DOC-001〜006 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K561-DB-001 | 入力 | 会社を作った直後のひな形 | 既定の 4 種別（タスク・課題・QA・会議）に `body_template` が入り、節が 10（見出し 5・説明 5）・見出しが 目的・完了の条件・実施事項・前提と制約・参考 の順・全部 `attrs.ghost` が true・`validateDoc` が通り・`docToText` が空の文字 |\n| K561-DB-002 | 対象の状態 | ひな形を入れる関数の入れ直し | 入っている種別は上書きしない・既定でない種別と消した種別には入れない・`ticket_basics` をもう一度呼んでも種別は 4 つのまま・ひな形が空の種別には入る |\n| K561-DB-003 | 守り | ひな形の形の守り | type が doc でない・content が配列でない・1MB 超の更新は `ticket_kinds_body_template_ok` で止まり、ふつうの doc は通る |\n| K561-DB-004 | 入力 | `body` で作る | チケットが 1 つ・`ticket_sections` に鍵 body の 1 行（position 0・version 1・`{doc, text}` が渡した物と同じ）・`ticket_section_versions` に version 1 の行が 1 つ・区画の行は 0 |\n| K561-DB-005 | 入力 | 別の接続から読み直す | 別の文脈で `ticket_sections` を読むと、鍵 body の行の `{doc, text}` と version 1 が作ったときと同じ（作った答えだけで合格にしない） |\n| K561-DB-006 | 入力 | 本文が空 | 節 0 個・text 空の `body` でも作れて、鍵 body の行ができる（必須の区画で止まらない） |\n| K561-DB-007 | 入力 | `body` に余分な鍵 | `doc` と `text` 以外の鍵（`extra`・入れ子の `sections`）は捨てられ、行の `body` は `{doc, text}` だけ |\n| K561-DB-008 | 失敗 | `sections` の道（前のまま） | タスクの必須 3 つ（purpose・done・todo）を渡すと区画の行が 3（鍵 body の行は無い・version 1）・版の行が 3 |\n| K561-DB-009 | 失敗 | `body` も `sections` も無い | 422 `SECTION_REQUIRED`（field sections・detail が purpose・done・todo）で、チケットの数が増えない |\n| K561-DB-010 | 操作の揺れ | `body` と `sections` が両方 | 鍵 body の行だけが書かれ、区画の行は 0・必須の区画で止めない |\n| K561-DB-011 | 守り | `kind_sections` は触らない | タスクは 10 行・必須 3 つのまま |\n| K561-DB-012 | 入力 | 形が違う本文（文字列・doc が無い・text が無い・text が文字でない・doc の type が違う・content が配列でない の 6 つ） | どれも 422 `BODY_INVALID`（field body）で、チケットの数が増えない |\n| K561-DB-013 | 入力 | 上限（節の数に上限は無い） | 段落 6,000 個でも通る・doc が 1MB を超える（UTF-8 で約 1.2MB）・text が 1,048,577 バイトは `BODY_INVALID` |\n| K561-DB-014 | 守り | 直に入れる道の最後の砦 | 鍵 body の行に壊れた中身（doc が無い）を直に insert すると `ticket_sections_body_ok` で止まり、前の区画の行（`{text}`）は入る |\n| K561-DB-015 | 守り | 別の会社 | 別の会社の人は会社 a の本文の行を読めず（0 件）、会社 a のグループ・種別で作ろうとすると 403 `FORBIDDEN` でチケットの数が増えない・会社 b の種別のひな形は会社 b のもの |\n| K561-DB-016 | 守り | 書く権限が無い | グループの外の人が `body` で作ろうとすると 403 `FORBIDDEN`（field scope_id）で、チケットの数が増えない |\n| K561-DB-017 | 失敗 | S1 DB に書く：チケットを書いた後、版 1 の行を書く所で落ちる（この試験の本文の字にだけ反応する引き金で故意に落とす） | 例外（K561-BOOM）が呼んだ側へ返り、取引ごと戻って、チケットの数が増えず・同じ題名のチケットも本文の行も残らない |\n| K561-DOC-001 | 入力 | doc → text の規則 | 節ごとに行・箇条書きは「- 」・チェックは「[x] 」「[ ] 」・表は行ごとに「 | 」・引用は「> 」・コードはそのまま・画像は説明の字・印・色は入れない・薄い字（ghost）は入れない |\n| K561-DOC-002 | 対象の状態 | 同じ doc から同じ text | 同じ doc を複写しても同じ text・空の doc は空の文字・`toTicketBody` は `{doc, docToText(doc)}` |\n| K561-DOC-003 | 入力 | 形が合う doc | `validateDoc` が通り、渡した物と同じ物を返す・空の doc も通る |\n| K561-DOC-004 | 入力 | 形が違う doc（doc でない・content が無い・知らない節・知らない鍵・見出しの level が 4・段落の中に表・空の字・知らない印・知らない色・javascript: のリンク・字の中の NUL の 11 つ） | どれも止まり、理由に原因の言葉（doc・content・知らない節・知らない鍵・heading・置けない・text・印・color・link・NUL）が入る |\n| K561-DOC-005 | 入力 | 節の数に上限は持たない | 段落 6,000 個も、字 3,000 個に印を付けた段落も通る（守りは大きさと深さだけ・節の数は契約に書けない） |\n| K561-DOC-006 | 入力 | 深さと大きさの上限 | 入れ子 12 まで（箇条書きの入れ子 2 組は通り、7 組は「深い」で止まる）・大きさ 1,048,576 バイトを超えると「大きさ」で止まる |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 作る・読み直す（別の取得で反映を見る） | K561-DB-004・005 |\n| 入力の形・境界・空 | K561-DB-006・012・013・K561-DOC-003〜006 |\n| 別の会社・権限 | K561-DB-015・016 |\n| 失敗（S1 の書く所が落ちる・何も残らない） | K561-DB-017 |\n| 前の道を壊さない | K561-DB-008・009・010・011 |\n| 守りを何層で守るか（口の入口＝`validateDoc`／`app.ticket_create`／表の守り） | K561-DB-012・013・014（口の入口は K561-DOC-004〜006・口自身の試験は K-437） |",
+    "速さ（今の値と目標の値）": "| 見る所 | 今の値 | 目標の値 |\n|---|---|---|\n| 作る関数の中の文の数 | 本文なしの道は前と同じ | `body` の道は 区画の道の 1 + 3×区画数 より少ない（本文の行 1・版 1 を書くだけ）。読む口は変えない・口の数も増えない |\n| 本文の形の守り（`app.ticket_body_valid`） | なし | 本文 1 行につき 1 回（長さ 3 つ・文字列の置き換え 1 回）。1MB の本文でも 1 回の書き込みの中で終わる |",
+    "前からの試験を替えた所": "migration で `app.ticket_create` を作り直し、`ticket_kinds` に列を足し、`tenants` に引き金を足す。前の道（`sections`）の振る舞いは変えないので、前からの試験は替えずに済む。探した命令（表・列・関数の名前で探す）：\n\n```search\ngit grep -l \"app\\.ticket_create\" -- apps/api/test packages/db/test\n6\ngit grep -l \"ticket_basics\\|tenants_ticket_basics\" -- apps/api/test packages/db/test apps/web/tests\n2\ngit grep -l \"insert into ticket_kinds\\|from ticket_kinds\" -- packages/db/test\n10\ngit grep -l \"MIGRATIONS\" -- packages/db/test\n2\n```\n\n- apps/api/test/features/F4/create-ticket.test.ts: 替えない — `app.ticket_create` を `sections` の道で呼ぶ前からの試験で、前の道は同じ答え（必須の区画の確かめ・区画の行・版 1）。K561-DB-008・009 が同じ形を DB で見る\n- apps/api/test/features/F4/create-ticket-defaults.test.ts: 替えない — 同じ。作る関数の入力・答えの形は前のまま（足したのは `body` と `BODY_INVALID` だけ）\n- apps/api/test/features/F1/service-status.test.ts: 替えない — 会社の消した印を付けるとき `ticket_basics` の引き金が初めの行を入れることを説明する文だけ。引き金を 1 つ足しても数えない\n- packages/db/test/tickets.test.ts: 替えない — 「ワークスペースの初めの行」の試験は区画の数・必須の数・種別の名前を数える。列 `body_template` と引き金を足しても数は変わらない\n- packages/db/test/approvals_clone.test.ts・knowledge_clients.test.ts・people_clone_ops.test.ts・permissions_bundle.test.ts・ticket_around.test.ts: 替えない — 種別の id を引いて使うだけ（列を指定して選ぶ）\n- packages/db/test/k327-migration-names.test.ts: 替えない — 新しい migration の名前は時刻の形を通る（20261122090100）。一覧が最新かは生成物の作り直しで合う\n- packages/db/test/credential_service_tenant.test.ts: 替えない — `MIGRATIONS` の中の自分の migration の位置を見るだけで、新しい名前は後ろに並ぶ\n- apps/api/test/features/F4/create-ticket-links.test.ts: 替えない — 持ち主は K-581 の試験（作るときにつなぐ `links`）。作る口の字に当たるだけで、この葉の変更はそのファイルの口・表・名前の使い方を変えない\n- apps/api/test/features/F4/sections-retire.test.ts: 替えない — 持ち主は K-578 の試験（口と契約から区画を外す葉）。この葉の変更はそのファイルの口・表・名前の使い方を変えないので、検索の語に当たるだけ（持ち主の葉が自分の試験で扱う）\n- packages/db/test/test_spec_check_ai.test.ts: 替えない — 持ち主は K-435 の試験（機械・AI がチェックを付ける関数）。この葉の変更はそのファイルの口・表・名前の使い方を変えないので、検索の語に当たるだけ（持ち主の葉が自分の試験で扱う）\n- packages/db/test/ticket_body_move.test.ts: 替えない — 持ち主は K-575 の試験（区画の中身を本文に移す）。この葉の変更はそのファイルの口・表・名前の使い方を変えないので、検索の語に当たるだけ（持ち主の葉が自分の試験で扱う）",
+    "表の住所": "- migration は時刻の名前 `packages/db/migrations/20261122090100_ticket_body.sql`（K-327。番号の下 2 桁の決めの `096100` は分が 61 で通らないので、09:01:00 にした）。生成物 `packages/db/src/migrations.generated.ts` は作り手の生成\n- 作る関数 `app.ticket_create` は K-561 → K-437 → K-581 → K-578 の順で作り直す（依存の順・migration は葉ごとに別のファイル。K-438 は呼ぶだけで作り直さない）。K-437 は 100800 の migration で `body` の道を引き継いで作り直す（この葉の入力 `body`・答えの code `BODY_INVALID` を残す）\n- 文書の木の型と関数は `packages/contracts/src/doc.ts`（手で持つ物）。`packages/contracts/src/index.ts` に 1 行足す（手で持つ物・changes: に書いた）。`registry.ts`・`types.ts` は生成物（列 `body_template` を足すと `TicketKinds` の型が変わるので作り直す）\n- 口・画面・契約の登録先（`.d/`）は持たない（口を作らない）。本文を読む口 K-560・書く口 K-432・K-437 が、この葉の名前を使う\n- 前の区画の行を本文 1 枚に移すのは K-575。`kind_sections` の凍結・区画の入力を受けるのをやめる・前の道を消すのは K-578",
+    "成果物": "- migration 1 本・`packages/contracts/src/doc.ts`・試験 2 本（DB 17 行・文書の木 6 行）",
+    "決定ログ": "- 2026-11-21 PM の決め：text は口が doc から作って渡し、DB は形と上限だけを守る（SQL に同じ変換を書かない）\n- 2026-11-21 PM の決め：ひな形の入れ方は、`app.ticket_basics` を作り直さず `tenants` の引き金で入れる（名前の順で後に走る）\n- 2026-11-21 PM の決め：migration の名前は `20261122090100`（番号の下 2 桁の決めが分 61 で時刻の形を通らないため）",
+    "代表に聞くこと": "- なし — 正本（すり合わせ・下絵・決定ログ）に無い製品のふるまい・権限・画面の文は決めていない（上の決めは作り方）。既定の 4 種別に同じひな形を入れる点は、会社が種別ごとに直す段 10 まで同じで足りるので PM の決め",
+    "リスクと懸念": "- 節の数の上限は持たない（つなぎで決まった：木全体の数は契約の言葉で書けず、検査の例外も足さないため。守りは入口の体の大きさ 1MB と、契約に書ける深さ 12・形だけ）。DB の `app.ticket_body_valid` も節を数えない\n- 前の道（`sections`）は K-578 まで残る。`body` と `sections` が両方来たら、K-437 の口は `body` だけを DB へ渡し（`sections` は捨てる）、DB も `body` を優先する\n- 大きさの境目：DB の `app.ticket_body_valid` は `jsonb::text` の長さ、口の `validateDoc` は JS で数えた長さで見る。jsonb が整形で空白を入れるぶん、境目（`DOC_MAX_BYTES`）のごく近くでは数がずれ、口が通した木を DB が断る（422・`BODY_INVALID`）ことがありうる。K561-DB-013・DOC-006 は境目から遠い値で見る。ずれは断る側（DB）に倒れるので、通さない向きの誤りで、書けてしまう向きの誤りは無い（最後の砦の口が 422・欄 body に直す）",
+    "見本（切る段の書き手が書いた実装の下書き・枝には入れていない）": "`.ticket-flow/side-notes/段5-見本/K-561/doc.ts`（文書の木の型と docToText）・`20261122090100_ticket_body.sql`（migration）。試験は流していない下書きなので、実装の担当はそのまま信じず、この葉の行と試験を正にして作る。"
+   },
+   "file": "11_tickets/K-561.md"
+  },
+  {
    "id": "K-563",
    "title": "会社が足す項目の表（custom_fields・custom_field_kinds・ticket_field_values）と読む口（listTicketFields）・分類の軸の中身を「1 つ選ぶ」の項目に移して凍結・listClassAxes を外す（K-59 の葉）",
    "kind": "タスク",
@@ -20154,6 +20231,69 @@
     "申し送り": "- 段 5・8・10 は画面の絵を持たない（開発用のモックが正）。それらの画面を flow.json に足す葉は、canvas-screens.json の mock_only に理由つきで足す必要がある（足さないと D6 が『作っていない画面』で赤になる・canvas_gate の CV4 も同じ）"
    },
    "file": "11_tickets/K-624.md"
+  },
+  {
+   "id": "K-627",
+   "title": "spec-sync の L（層の棚卸し G21）の DB の層が、手元の古い kaname_test（migration が 0075 で止まった残り物）で偽の赤になる：手元では使い捨ての DB を作って試験を流し、終わったら必ず捨てる道具 db_fresh_run.mjs を足す（CI では渡された DB をそのまま使う）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-120",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-376（検査の道具 1 つ・0.75 時間）より重い：道具（Node・DB の作成と破棄）を作る 25 分・層の check の文を替える 5 分・repository.test.ts の名前の決め打ちを直す 5 分・試験 10 行を流して直す 25 分（vitest を使い捨ての DB で流す行は 1 分前後）",
+   "decisions": [
+    "D-128.125",
+    "D-128.149",
+    "D-133.7",
+    "D-133.6"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の道具・台帳・設定と自己試験だけ。外へ送らない・秘密に触らない・DB に書かない（K-627 だけ使い捨ての DB を作って捨てる）",
+   "tests": [
+    "scripts/ci/k627_db_fresh_run_test.py"
+   ],
+   "carry": [
+    "packages/db/test/repository.test.ts"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（検査の道具・台帳・設定の中身だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "ci",
+    "shared"
+   ],
+   "changes": [
+    "scripts/ci/db_fresh_run.mjs",
+    "spec-dependencies.yaml",
+    "scripts/ci/g65.d/K-627.txt"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "spec-sync の L は `layer_audit.py --run` で、層ごとの check を実際に流す。その中の `packages/db/migrations/*.sql` の層（D-145・D-133.6 の db: true）は `pnpm exec vitest run packages/db/test` を流す。PM の実行では **29 件が赤**（32 秒）だった。原因を調べた（実測）：\n\n1. この Mac の `kaname_test`（`127.0.0.1:55433`）は、`app.schema_migrations` が `0075_workspace_people.sql` で止まった**古い残り物**（tenants 2 行・migration が 128 本ある今の木に追いついていない）。vitest は DATABASE_URL が無いとここにつなぐ。\n2. 残り物の上で今の migration を当てると、`0076_clone_ops.sql` の `insert into operations … app.ops_tenant_id()` が `operations_tenant_id_fkey` で落ちる → 18 のファイルが起動で落ちて 29 件が赤。\n3. **使い捨ての新しい DB（`kaname_tmp_pmsync`）で同じ vitest を流すと、181 本のうち 180 が緑**（実測：169 秒）。残る 1 本（`repository.test.ts`「init は表が無いと落ちる」）は、`URL.replace(/\\/kaname_test$/, \"/postgres\")` が **DB の名前が `kaname_test` のときだけ**管理 DB に替わる書き方で、別の名前だと同じ DB のまま「表が在る」になり赤になる。これは試験の誤り（名前の決め打ち）。\n\n判断：\n\n| 赤 | 判断 |\n|---|---|\n| 29 件（古い kaname_test） | **検査の設定の抜け**：製品の食い違いではなく、手元の DB が古い。CI は毎回まっさらな DB なので出ない。手元の `kaname_test` を作り直す（Docker に触る・本人の DB を壊す）のではなく、**層の検査が自分で使い捨ての DB を作って捨てる**ようにする（memory の「DATABASE_URL_ADMIN=…/kaname_tmp_<番号>（使い捨て）」と同じ運用を道具にする） |\n| 1 件（repository.test.ts） | **本当の食い違い（試験の誤り）**：名前を決め打ちしない書き方に直す（`/\\/[^/?]+$/`）。carry: で切る段が直した版を運ぶ |\n\n検査は緩めない：vitest は今のまま全部流す（`packages/db/test` 全部）。DB を黙って切り替えるのではなく、DATABASE_URL が env に在れば（CI）そのまま使い、無いときだけ使い捨てを作る。",
+    "完了の条件": "- [ ] 下の表の 12 行（K627-FRESH-001〜012）が緑：`python3 scripts/ci/k627_db_fresh_run_test.py`（手元の PG（55433）が立っているときに流す。行 004・005・009・011 は DB を作って捨てる）\n- [ ] `packages/db/test/repository.test.ts` が名前を決め打ちせず、使い捨ての DB でも緑（行 008・009）\n- [ ] 層の検査 `packages/db/migrations/*.sql` が、手元で `python3 scripts/ci/layer_audit.py --run --db-range true` の中で緑（古い kaname_test のままでも）\n- [ ] G65 の置き場 `scripts/ci/g65.d/K-627.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 新しい道具 `scripts/ci/db_fresh_run.mjs`（Node・`pg` は packages/db が使っている版を使う）。使い方・動き・捨て方は試験 `scripts/ci/k627_db_fresh_run_test.py` の頭の説明が正（`node scripts/ci/db_fresh_run.mjs [--dry-run | --list-tmp] -- <命令…>`）\n- 管理者の接続：`DATABASE_URL_ADMIN` の道を `/postgres` に替えた物、無ければ `postgres://postgres:postgres@127.0.0.1:55433/postgres`。DB の名前は `kaname_tmp_` ＋ 英数 8 字（乱数）。**捨てる前に名前が `kaname_tmp_` で始まることを必ず見る**（`kaname_dev`・`kaname_test` を絶対に捨てない）\n- 命令が成功でも失敗でも・中断（SIGINT・SIGTERM）でも DB を捨てる。命令の終わりの値をそのまま返す（捨てるのに失敗したら名前を標準エラーに出して 1）。`drop database … with (force)` で残った接続を切って捨てる\n- spec-dependencies.yaml の `packages/db/migrations/*.sql` の層の check：`ci:rls-enabled`・`ci:no-vendor-sql` は今のまま残し、最後の `pnpm exec vitest run packages/db/test --no-file-parallelism --reporter=dot` を `node scripts/ci/db_fresh_run.mjs -- pnpm exec vitest run packages/db/test --no-file-parallelism --reporter=dot` に包む。`db: true` は外さない（ci_lean_test の規則・D-133.6）\n- `packages/db/test/repository.test.ts` の 1 行（`URL.replace(/\\/kaname_test$/, \"/postgres\")`）を `URL.replace(/\\/[^/?]+$/, \"/postgres\")` にする（切る段が直した版を `carry:` で運ぶ。ほかの行は変えない）\n- ほかの `kaname_test` を名前で決め打ちする試験が無いかは、下の search の件数で数えた（0 件）\n- 道具の知らせ（名前・失敗の訳）は**標準エラー**に出す。標準出力には命令の出力だけを流す（試験 004・005 は命令の出力が標準出力の最後の行であることに頼る）。`--dry-run`・`--list-tmp` の出力だけは標準出力\n- 管理者の接続は `DATABASE_URL_ADMIN`（CI の組は別の番号の DB を渡す）。試験の後片付け（行 011）も同じ接続を使う（口を決め打ちしない）\n- 手元の `kaname_dev`・`kaname_test` には書かない・消さない・作り直さない。Docker は止めない・起動し直さない",
+    "依存の理由": "- K-626：触らない — 同じファイル spec-dependencies.yaml を変えるが別の節（K-627 は layer_checks の 1 つの層の check の文だけ）で、overlap_ok に入れてあるので待たない\n- 後ろの葉：K-629 の記録の L はこの葉が要る（手元の古い kaname_test で L が赤にならない）\n\n```search\ngit grep -n 'kaname_test\\$' -- packages apps scripts ':!scripts/ci/k627_db_fresh_run_test.py'\n0\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 道具 | 新しい `scripts/ci/db_fresh_run.mjs`：env に DATABASE_URL が在れば `--dry-run` は『既存の接続先：<道>』を出し、無ければ `kaname_tmp_<英数 8 字>` を選んで出す。`--list-tmp` は管理 DB の `pg_database` から `kaname_tmp_%` を 1 行ずつ。実行は 作る → DATABASE_URL をそれにして命令を流す → 必ず捨てる（名前を見てから） |\n| 層の check | `spec-dependencies.yaml`：`packages/db/migrations/*.sql` の行の check の最後の vitest を `node scripts/ci/db_fresh_run.mjs -- …` に包む |\n| 試験の誤り | `packages/db/test/repository.test.ts` の 90 行目を名前に依らない書き方に（carry:） |\n| G65 の置き場 | 新しい `scripts/ci/g65.d/K-627.txt` に 1 行 `python3 scripts/ci/k627_db_fresh_run_test.py`。作り手を流し直す |\n| 目録で探した結果 | 使う：`packages/db/test/global-lock.ts`（DB ごとの勧告ロック・使い捨ての DB でも各自が自分の名前で取る）・`@kaname/config` の `adminDatabaseUrl`（使えれば）・vitest.config.ts の既定（DATABASE_URL が無ければ kaname_test）。作る：db_fresh_run.mjs。似た物：`packages/db/src/cli.ts` の `fresh-migrate`（まっさらな DB に migration を当てて捨てる・G12）は migration の確かめで、vitest を流す枠ではない |",
+    "外に影響する手順": "- 1. 管理 DB に接続して使い捨ての DB `kaname_tmp_<8 字>` を作る（DB に書く）\n- 2. DATABASE_URL をその DB にして命令（vitest）を流す\n- 3. 使い捨ての DB を捨てる（後片付け：名前が `kaname_tmp_` で始まることを見てから `drop database … with (force)`）\n\n失敗の行（行の表）：手順 1＝K627-FRESH-012・手順 2＝K627-FRESH-005・手順 3＝K627-FRESH-011。手順 2 が失敗しても手順 3 は必ず流れる（K627-FRESH-005）。残り物は `kaname_tmp_` の名前だけで、`--list-tmp` で見つけて手で捨てられる",
+    "テスト仕様と確認の結果": "`scripts/ci/k627_db_fresh_run_test.py`（unittest。道具を `node` の子プロセスで流す（`--dry-run`・`--list-tmp`・本当に作って捨てる行）。行 009 は使い捨ての DB で vitest の repository.test.ts を流す（手元の PG が要る））\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K627-FRESH-001 | 入口 | env に DATABASE_URL を渡して `--dry-run` | 渡した DB の名前が出る・`kaname_tmp_` は出ない（何も作らない） |\n| K627-FRESH-002 | 入口 | DATABASE_URL を外して `--dry-run` | `kaname_tmp_` ＋ 英数 8 字の名前が出る |\n| K627-FRESH-003 | 操作の揺れ | DATABASE_URL を外して `--dry-run` を 3 回 | 3 回とも違う名前（同時に走っても名前がぶつからない） |\n| K627-FRESH-004 | 失敗 | 本当に流す：DATABASE_URL を外し、DATABASE_URL を 1 行出す命令を流す | 終わりの値 0・命令が受けた DATABASE_URL の DB 名は `kaname_tmp_…`・流した後の `--list-tmp` にその名前が無い（捨てた） |\n| K627-FRESH-005 | 失敗 | 手順 2 の失敗：命令が DATABASE_URL を出して終わりの値 7 で終わる | 道具の終わりの値も 7・手順 3 が流れて DB は捨てられている（失敗しても後片付けする） |\n| K627-FRESH-006 | 守り | 道具の字を読む | 捨てる前に名前が `kaname_tmp_` で始まるかを見る字が在り、`kaname_dev`・`kaname_test` を捨てる字が無い |\n| K627-FRESH-007 | 守り | spec-dependencies.yaml の `packages/db/migrations/*.sql` の層 | check に `ci:rls-enabled`・`ci:no-vendor-sql`・`db_fresh_run.mjs -- pnpm exec vitest run packages/db/test` が在り、`db: true` を持つ（検査を緩めていない） |\n| K627-FRESH-008 | 入力 | packages/db/test/repository.test.ts の字 | `kaname_test$` の決め打ちが無く、`/[^/?]+$/` の書き方になっている |\n| K627-FRESH-009 | 入口 | 使い捨ての DB で `vitest run packages/db/test/repository.test.ts` を流す | 終わりの値 0（名前が kaname_test でなくても『表が無いと落ちる』が通る） |\n| K627-FRESH-011 | 失敗 | 手順 3 の失敗：命令が使い捨ての DB を雛形の DB にして、捨てられなくする（後片付けが失敗する） | 終わりの値 1・標準エラーにその名前が出る・`--list-tmp` に `kaname_tmp_` の名前で残る（試験は自分で作った残り物を最後に捨てる） |\n| K627-FRESH-012 | 失敗 | 手順 1 の失敗：DATABASE_URL_ADMIN が着かない口（127.0.0.1:1）を指す | 終わりの値 1・命令は流れない（標準出力に RAN が出ない）・DB は作られない |\n| K627-FRESH-010 | 守り | `scripts/ci/g65.d/` を探す | この試験の命令を持つファイルは K-627.txt のちょうど 1 つ（CI から回る） |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K627-FRESH-008・K627-FRESH-007（日本語のファイルは読まない道具。パスは ASCII）。層の名前 `packages/db/migrations/*.sql` と決定ログの日本語は K627-FRESH-007 が地図で読む |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K627-FRESH-004（本当に作って捨てる）と K627-FRESH-001（作らない）の組で、道具が env を見ていることを確かめる。K627-FRESH-009（本物の vitest が通る） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K627-FRESH-004・005・009（手元の PG と容れ物の PG で同じ動き。env の DATABASE_URL が在る容れ物では何も作らない＝K627-FRESH-001） |\n\nほかの観点：利用者の状態・画面の入口は無い（道具）。失敗は K627-FRESH-005（命令が落ちる）・011（捨てられない）・012（管理 DB に着かない）が受ける。中断（SIGINT・SIGTERM）でも捨てる道は道具の字に入れる（名前の守りは K627-FRESH-006 が見る）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 3 件。\n\n```search\npython3 scripts/ci/cut_check.py prior --files spec-dependencies.yaml\n3\n```\n\n- scripts/ci/ci_lean_test.py: 替えない — L の DB の層の check を包むだけで、『check に packages/db/test を持つ層は db: true』の規則は満たしたまま（行 007 が db: true を見る）\n- scripts/ci/k245_g27_reach_test.py: 替えない — 層のファイル（packages/db/migrations/*.sql）と読み先は変えない・新しい道具 scripts/ci/** は gates の 27 の `scripts/ci/**` に当たる\n- scripts/ci/k343_test_timeout_test.py: 替えない — vitest の上限（hookTimeout・testTimeout）を命令で上書きしない（包む命令は今と同じ引数）",
+    "速さ（今の値と目標の値）": "画面も口も変えない。手元の層の検査：使い捨ての DB の作成と破棄は 1 秒未満。vitest は今と同じ（使い捨ての新しい DB で 169 秒の実測。古い kaname_test では 28 秒で 29 件が起動で落ちて赤）。CI：この試験 `k627_db_fresh_run_test.py` が G65 に入るので、spec の組で使い捨ての DB の作成と破棄 5 回（1 回 1 秒未満）と、使い捨ての DB で `repository.test.ts` を流す行 009（実測 15 秒）が増える（G65 の時間が 20〜30 秒増える見込み・実測は TS が書く）。層の検査（G27）は DATABASE_URL が在るので何も作らず、今のまま。",
+    "成果物": "- `scripts/ci/db_fresh_run.mjs`・spec-dependencies.yaml の層の check の文・packages/db/test/repository.test.ts の 1 行・G65 の置き場の 1 行\n- 自己試験 `scripts/ci/k627_db_fresh_run_test.py`（切る段が書いた）",
+    "決定ログ": "- 2026-11-21 PM の依頼：spec-sync の監査が本線の木で緑になり、K-621 の印つきの記録を運べるようにする。検査を緩める・黙って外す直しはしない（各類は「本当の食い違い（直す）」「検査の設定の抜け（設定を足す）」「正しい例外（台帳に理由・期限・代替案つき）」のどれかに決めた）\n- 2026-11-21 切る段の決め：L の DB の層の赤は、手元の kaname_test が古いという『検査の設定の抜け』と、repository.test.ts の名前の決め打ちという『試験の誤り』の 2 つ。製品は壊れていない（使い捨ての新しい DB で 181 本中 180 本が緑・残る 1 本が試験の誤り）\n- 2026-11-21 切る段の決め：手元の kaname_test を作り直さない（Docker・他の人の DB に触る）。層の検査が自分で使い捨ての DB を作って捨てる（CI は今まで通り渡された DB を使う）\n- D-128.125：テストはチケットを切る人が書き、実装する人は変えない",
+    "リスクと懸念": "- 使い捨ての DB は DB のロール（kaname_app・kaname_auth など）をクラスタで共有する。migration が同じ名前のロールの作成を 2 回目に当てる動きは、既存の試験（`role_password.test.ts`・実測で緑）が受けている。同時に 2 本が走って同じロールのパスワードを変える試験があれば干渉する → 使い捨ての DB の vitest は `--no-file-parallelism` で、各 DB に 1 本ずつ。2 つの層の検査を同時に流さない（PM の決まり：重い検査は 1 本ずつ）\n- 中断された回に `kaname_tmp_` の DB が残る：`--list-tmp` で見え、手で捨てる。手元の本人の DB は名前が違うので巻き込まない",
+    "申し送り": "- **PM に**：手元の `kaname_test`（0075 で止まっている）は、この葉の後も古いまま残る（Docker に触らない決まり）。これを使うほかの試験（`pnpm exec vitest run` で DATABASE_URL を渡さない TS の試験）は、同じ偽の赤になる。作り直す（`drop database kaname_test` → `create database kaname_test`）かは PM が決める"
+   },
+   "file": "11_tickets/K-627.md"
   },
   {
    "id": "K-630",
