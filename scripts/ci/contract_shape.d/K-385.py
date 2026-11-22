@@ -3,10 +3,5 @@ REQUIRED_INPUTS = {"createTicketMessage": {"body"}}
 NO_REQUIRED_INPUTS = {}
 PATH_PATTERNS = {}
 VALUE_RANGES = {"createTicketMessage": {"body": {"pattern": "\\S"}}}
-UNEXPRESSIBLE_422 = {
-    "createTicketMessage": [
-        "本文が全角の空白・改行だけ（E-VAL-027）",
-        "@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）",
-    ],
-}
+UNEXPRESSIBLE_422 = {}
 AGENT_ANSWERS = {}

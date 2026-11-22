@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 367（作った 62・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 200・部品 56・設定 41
+API 369（作った 72・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 213・部品 56・設定 41
 
 ## 共通の処理
 
@@ -59,7 +59,7 @@ API 367（作った 62・後のフェーズの行為だけ 20）・前の道す�
 | `attachments` | skeleton | F11,F12,F4,F9 | F5 | ○ |
 | `audit_events` | skeleton |  | F10 |  |
 | `bridge_job_events` | skeleton | F5 |  |  |
-| `bridge_jobs` | skeleton | F5 |  |  |
+| `bridge_jobs` | skeleton | F3,F5 |  | ○ |
 | `bridge_pairing_codes` | skeleton | F3 |  |  |
 | `checks` | skeleton | F5 | F4 | ○ |
 | `class_axes` | skeleton |  | F4 |  |
@@ -165,7 +165,7 @@ API 367（作った 62・後のフェーズの行為だけ 20）・前の道す�
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
 | `getExport` | GET /api/v1/exports/:id | 取得（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
-| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
+| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-419 |
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
@@ -197,7 +197,7 @@ API 367（作った 62・後のフェーズの行為だけ 20）・前の道す�
 | `requestWorkspaceDeletion` | POST /api/v1/workspace/deletion | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `cancelWorkspaceDeletion` | DELETE /api/v1/workspace/deletion | 削除（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `uploadWorkspaceLogo` | POST /api/v1/workspace/logo | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
-| `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
+| `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 作った | K-419 |
 | `updateWorkspacePermissions` | PATCH /api/v1/workspace/permissions | 更新（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `remindAcceptance` | POST /api/v1/acceptances/:id/remind | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） |  |
 | `updateClientContact` | PATCH /api/v1/client_contacts/:id | 更新（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |
@@ -301,22 +301,24 @@ API 367（作った 62・後のフェーズの行為だけ 20）・前の道す�
 | `listWorkspacePlans` | GET /api/v1/workspace/plans | 取得（workspace）— プラン・利用量・請求書を見る | F12 | 契約だけ（501） |  |
 | `getInvitation` | GET /api/v1/auth/invitations/:token | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 作った | K-331 |
 | `requestInvitationResend` | POST /api/v1/auth/invitations/:token/resend-request | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも） | F2 | 作った | K-334 |
+| `setBridgeBrowser` | POST /api/v1/bridge/browser | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-366 |
 | `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
-| `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
+| `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
 | `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
 | `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 作った | K-364 |
-| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 契約だけ（501） | K-91 |
+| `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 作った | K-362 |
+| `checkMyDeviceBrowser` | POST /api/v1/bridge/devices/:id/browser-check | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-365 |
 | `sendHeartbeat` | POST /api/v1/bridge/heartbeat | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `createPairingCode` | POST /api/v1/bridge/pairing-codes | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `downloadBridgeRelease` | GET /api/v1/bridge/releases/:name/file | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 預けたログイン情報を名前の順に見る（自分の個人とワークスペース） | F3 | 作った | K-351 |
 | `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-352 |
-| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
-| `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
+| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-353 |
+| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-353 |
+| `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
+| `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
 | `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 作った | K-60 |
 | `getArtifactVersion` | GET /api/v1/artifact_versions/:id | 取得（artifact_versions）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listClassAxes` | GET /api/v1/class_axes | 取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
