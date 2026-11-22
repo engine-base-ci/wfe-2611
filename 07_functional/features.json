@@ -91,7 +91,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -812,7 +817,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -1799,7 +1809,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -2285,7 +2300,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -3588,7 +3608,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -5223,7 +5248,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -6608,6 +6638,7 @@
     "E-CRED-008",
     "E-CRED-009",
     "E-CRED-015",
+    "E-CRED-016",
     "E-CRED-010",
     "E-CRED-011",
     "E-CRED-012",
@@ -7457,7 +7488,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7818,7 +7854,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2"
@@ -8108,7 +8149,12 @@
     "E-SPEC-001",
     "E-SPEC-020",
     "E-SPEC-021",
-    "E-SPEC-022"
+    "E-SPEC-022",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
