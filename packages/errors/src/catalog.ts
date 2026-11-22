@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。228 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。229 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3140,7 +3140,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CONN-013": {
     "id": "E-CONN-013",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
     "action": "画面の新しいコードを入れ直す",
     "undo": false,
@@ -4134,6 +4134,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-DEL-001": {
+    "id": "E-DEL-001",
+    "cls": "permission",
+    "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
+    "action": "作った人か権限のある人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };

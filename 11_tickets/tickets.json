@@ -18477,6 +18477,83 @@
    "file": "11_tickets/K-372.md"
   },
   {
+   "id": "K-375",
+   "title": "Bridge が古い PC の行に「Bridge を入れ直す」一手（Mac 用／Windows 用を受け取る・受け取った後の知らせと OS の警告の越え方・スマホでは開く場所だけ）を出す（K-56 の葉・代表の答え 7cf148a79dc9 ②）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-28",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-368（PC の行に K-369 の部品をつなぎ口を呼ぶ・行ごとに持つ値・見た目の突き合わせ・見込み 1 時間）から、口が 1 本（受け取り）で待ちの読み直しが無い分を引いた：行ごとの入れ物 bridge-reinstall.tsx（受け取り中・受け取った OS・失敗の文）20 分・行に差す所の出し分け（古い行は入れ直す区画だけ）5 分・見た目の突き合わせ 10 分（4 状態 × 3 幅・共通の道具 matchMock）・自分の確かめ 10 分（押す・失敗・2 回押し・スマホの UA・キーボード）。試験 16 行は切る段が書いた",
+   "decisions": [
+    "D-015.7",
+    "D-109",
+    "D-128.125",
+    "D-128.137",
+    "D-128.153",
+    "D-145.9",
+    "D-146.1"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。受け取りの口 downloadBridgeRelease（C4 は口の側・K-57）を今ある呼び方（getInstaller）で呼ぶだけ。新しい口・DB は無い",
+   "tests": [
+    "apps/web/tests/k/k375-bridge-reinstall.spec.ts"
+   ],
+   "carry": [
+    "apps/web/test/_fake/secrets.ts"
+   ],
+   "depends_on": [
+    "K-369",
+    "K-361",
+    "K-368",
+    "K-349"
+   ],
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup"
+   ],
+   "apis": [],
+   "mock": [
+    "pc-bridge-outdated",
+    "pc-bridge-reinstalling",
+    "pc-bridge-reinstall-error",
+    "pc-bridge-outdated-phone"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F3/connect-pc/pc-row-extra.tsx",
+    "apps/web/features/F3/connect-pc/bridge-reinstall.tsx",
+    "scripts/ci/ci_scope.d/K-375.json"
+   ],
+   "flow": "古い Bridge を入れ直す",
+   "sections": {
+    "目的": "「PC と使った量」（/setup/bridge・`features/F3/connect-pc`）の「つないでいる PC」の行で、その PC の Bridge が古い（Kaname と話す約束の版より前。口が自己診断に足す `fix: \"update\"` の ✗ の行・E-CONN-012）ときに、行の中に「入れ直す」区画を出す。\n\n- 題は目録の E-CONN-012 の文「この PC の Bridge が古いので、自分のAI に仕事を渡せません。Bridge を入れ直してください」、その下に「書いたことは溜めておき、入れ直した後に順に片づけます。」\n- 「Mac 用を受け取る」「Windows 用を受け取る」を押すと、受け取りの口 downloadBridgeRelease を 1 回呼ぶ。受け取れたら行に知らせ「受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます」と、受け取った OS の分の OS の警告の越え方（閉じた形）\n- 受け取れなかったら行に口の文（まだ配布していない＝E-CONN-014 など）。もう一度押せる\n- 入れ直した Bridge が知らせを返すと、次の一覧の読みで自己診断から古いの行が消え、区画も自分で消える（読み直さない）\n- Bridge を入れられない端末（スマホ・タブレット）では受け取るボタンを出さず、「その PC でこの画面を開いて、入れ直してください」だけを出す（PC をつなぐのは PC だけ・代表の決め 2026-11-19）\n- 古い行には入れ直す区画だけを出す：Claude Code の直し方（K-361）・AI が使うブラウザを選ぶ欄とその場の一手（K-368）は、入れ直した後に出る（古い Bridge には仕事を渡さないので、先に直す物だけ・代表の答え A-3 と同じ考え）\n\n会話の画面の帯（E-CONN-012・`components/ai/agent-chat.tsx` の「PC の状態を見る」）はこの画面へ来る。前の画面 /setup/bridge/legacy にだけあった入れ直す口を、K-367 が前の画面を消す前に新しい画面へ移す（代表の答え answer=7cf148a79dc9・2026-11-19「入れ直す一手を足す」）。前の画面の行（正本の SCR-BRIDGE-SETUP-105・106・109）の置き換え先はこの葉の行（K-367 が正本を運ぶ）。",
+    "完了の条件": "- [ ] 下の表の 16 行（K375-UI-001〜016・001 はモック 4 つ × 幅 3 つ）が緑：`apps/web/tests/k/k375-bridge-reinstall.spec.ts`（実 Chrome・口は網の手前で差し替え）\n- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑。K-361・K-368 の試験（k361-claude-code.spec.ts・k368-pc-browser.spec.ts）も緑のまま（古くない行の出し方は変えない）\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: EXT, PERM\n\n- **正の絵（モック）**：/dev/mock/f3-pc の pc-bridge-outdated（古い行・受け取る前）・pc-bridge-reinstalling（Mac 用を受け取った・越え方つき）・pc-bridge-reinstall-error（受け取れなかった・E-CONN-014）・pc-bridge-outdated-phone（スマホで開いた・開く場所だけ）。本番と同じ部品 `BridgeReinstall`・`OsWarning` で描いてある（K-369 が本線に入れる）。キャンバス MePC に古い行の絵は無い。代表は 7 つの足した状態（この 4 つと K-374 の 3 つ）をまだ見ていない（K-369 の K369-UI-017・人が確かめる）\n- 部品：`apps/web/features/F3/connect-pc/pc-row-parts.tsx` の `BridgeReinstall({ canInstall, taken, busy, error, onTake })`（`section[data-part=\"bridge-reinstall\"]`・ボタンは `[data-reinstall=\"mac\"]`・`\"win\"`・知らせと失敗は `RowNote`）と定数 `REINSTALL_TEXT`・`REINSTALL_ON_PC_TEXT`・`REINSTALL_TAKEN_TEXT`。見せるだけの部品で、口は呼ばない。この葉は部品も CSS も変えない\n- 「古い」の見分け：一覧の口 listMyDevices の行の `health`（K-361 が型に足す・並びでなければ無いのと同じ）に、`fix` が `\"update\"` で `ok` が false の行が 1 つでも在る（会話の帯 agent-chat.tsx の outdated と同じ見分け）。口が足す行は `apps/api/src/features/F3/connect-pc/hooks.ts` の `OUTDATED_CHECK`（K-57）。行の state（生きている・眠っている）は見ない：眠っている PC の古い報告でも出す（起きても古いまま・K375-UI-011）\n- 受け取りは今ある `lib/bridge-presence.ts` の `getInstaller(os)`（K-57・置き場が外なら署名 URL・手元なら中身）。失敗の文は目録から引く：答えの code が目録に在ればその文、無ければ E-PAGE-007。401 は共通の決まり（入り直しへ）：受け取りの呼び手 `lib/api/call.ts` の `fetchFile` が 401 で入り直しへ送るので、この葉では足さない（実施事項「行の入れ物」）\n- この端末に Bridge を入れられるかは、K-369 が運ぶ `pair-device.ts` の `canPairHere(pairHintsOf(navigator))`（画面の幅でなく端末の OS）。開いたときに 1 回読む（読むまでは true・描き直しの食い違いを出さない）。読む所は、行に差す区画の出し分けの置き場 `pc-row-extra.tsx` の hook `usePcRowExtra` の中（この葉）。後の葉 K-373 が、読む所を画面の hook `use-connect-pc.ts` に移して、同じ値を見出しの行の「＋ PC をつなぐ」にも使う（読む所は 1 つのまま）\n- 置き場（K-349 が運ぶ）：`pc-row-extra.tsx` の `usePcRowExtra(ctx: PcRowCtx): ((d: Device) => ReactNode) | undefined`（ctx は `{ devices, where, bridge, reload }`）。並べる所 `connect-pc.tsx` がこの hook を呼び、返った関数を `<PcList renderExtra={…} />` に渡してある（行の本文 `.k-pc-main` の中・補足の行の下に出る）。この hook に K-361（Claude Code の直し方）→ K-368（ブラウザの欄）→ この葉（古い行の分かれ道）の順に足す。この葉は connect-pc.tsx・pc-cards.tsx・use-connect-pc.ts を変えない\n- 受け取った事実（知らせと越え方）は行ごとに画面の中にだけ持つ。画面を読み込み直すと受け取る前の形に戻る（区画そのものは、Bridge が新しくなるまで出続ける）\n- 見た目は K-369 の部品と正本のトークンだけ。生の色・大きさを書かない\n- 試験を書いた後は変えない（D-128.125）",
+    "依存の理由": "- K-369: 要る — 部品とモック：部品 `BridgeReinstall`・`OsWarning`・見分けの関数 pair-device.ts・正の絵 /dev/mock/f3-pc の pc-bridge-* を本線に入れる葉\n- K-361: 要る — 同じファイル pc-row-extra.tsx を順に変える（K-361 → K-368 → この葉）。行に差す区画の出し分け（usePcRowExtra が返す関数・Claude Code の直し方）と一覧の型の health（devices.ts）を K-361 が作り、この葉はその出し分けの先頭に古い行の分かれ道を足す。health の型が無いと、古いの見分け isOutdated(d.health) を行に当てられない\n- K-368: 要る — 製品の決まり：古い行には入れ直す区画だけを出し、K-368 のブラウザの欄（BrowserRow）は入れ直した後に出す（行の意味。K375-UI-002・010 が、古くない行と入れ直した後の行に `[data-browser-pick]` が 1 つ出て、古い行には 0 個なのを見る）。K-368 が出し分けにブラウザの欄を足した後でないと、分かれ道を置く所が決まらず、この 2 行が通らない。同じファイル pc-row-extra.tsx も順に変える（2026-11-19 夜・PM の決め：K-349 の後も、この葉は今までどおり K-368 を待つ）\n- K-349: 要る — 置き場：行に差す区画の出し分けの置き場 pc-row-extra.tsx（usePcRowExtra・PcRowCtx）と、行の差す所（pc-cards.tsx の PcList の renderExtra）・並べる所 connect-pc.tsx のつなぎを作る葉。無いと、この葉が変えるファイルが無い\n- （依存にしない）K-374 — 前は同じファイル connect-pc.tsx を順に変えるので待っていた（K-374 → この葉）。K-349 の後は、K-374 は小窓に差す物の置き場 take-help.tsx だけ・この葉は pc-row-extra.tsx と bridge-reinstall.tsx で、重ならない。越え方の部品 OsWarning は K-369 が運ぶ（K-374 の物は使わない）ので、製品の決まりでも待たない（2026-11-19 夜・PM の決め）",
+    "実施事項": "K-349・K-361・K-368 が入った後の形（pc-row-extra.tsx の `usePcRowExtra` が返す関数は、K-361 の Claude Code の直し方と K-368 のブラウザの欄を出し分ける）に足す。K-363（行の「…」・pc-row-more.tsx）と K-374（小窓に差す物・take-help.tsx）とは変えるファイルが重ならないので、どちらが先でもよい。\n\n| 何を | どこ・どう |\n|---|---|\n| 古いの見分け | 新しい `apps/web/features/F3/connect-pc/bridge-reinstall.tsx`（\"use client\"）に `export function isOutdated(health: unknown): boolean`：並びで、`fix === \"update\"` かつ `ok === false` の行（オブジェクト）が 1 つでも在れば true。並びでない・空・`ok` が true・`fix` が update でない ✗ だけ、は false |\n| 行の入れ物 | 同じファイルの `BridgeReinstallRow({ canInstall }: { canInstall: boolean })`。行ごとに持つ値：受け取り中の OS（busy）・受け取った OS（taken）・失敗の文（error）。「受け取る」：busy があれば何もしない（2 回押し・もう 1 つのボタンでも口は 1 回）。error を消し busy にして `getInstaller(os)`。ok → taken にその OS・error なし。失敗 → status が 401 のときは、この葉では何も足さない（入り直しは共通の決まりに任せる：`getInstaller` が使う受け取りの呼び手 `lib/api/call.ts` の `fetchFile` が 401 で `notifyUnauthorized()` を呼び、`lib/api/query.tsx` の ApiProvider が `/login?next=<今の道>` へ送る。/setup/bridge で開いていれば /login?next=%2Fsetup%2Fbridge＝K375-UI-008 の期待と同じ。葉で `window.location.replace` を足すと二重に飛ぶ）。401 では error の文も出さない（移る前に行に失敗の文をちらつかせない）。ほかは error に目録の文（`errorText(code が目録に在れば code、無ければ PAGE_ERROR.loadFailed).entry.message`・画面の hook use-connect-pc.ts の download と同じ引き方。K-349 の前は connect-pc.tsx に在った）で、taken は変えない（前に受け取れていれば知らせは残してよいが、失敗の後に受け取れたら error を消す＝K375-UI-007）。最後に busy を外す。描くのは K-369 の `<BridgeReinstall canInstall={canInstall} taken={taken} busy={busy} error={error} onTake={…} />` だけ（見た目を足さない） |\n| 行に差す所の出し分け | `apps/web/features/F3/connect-pc/pc-row-extra.tsx` の `usePcRowExtra(ctx)` が返す関数（K-361 が作り K-368 が足した形）の先頭に：`isOutdated(d.health)` なら `<BridgeReinstallRow key={d.id} canInstall={canPair} />` だけを返す（Claude Code の直し方も BrowserRow も返さない）。そうでなければ今のまま（返す関数を useCallback・useMemo で持つ形なら、依存に canPair を足す）。区画は一覧の読み（5 秒ごと・pollDevices）のたびに見分け直す（一覧が替わると並べる所が描き直し、返した関数が行ごとに呼ばれる）ので、自己診断から古いの行が消えた次の読みで区画が消え、同じ行にブラウザの欄が出る（読み直さない・ctx.reload も呼ばない）。並べる所 connect-pc.tsx と行 pc-cards.tsx は変えない（差す所 renderExtra は K-349 が入れてある） |\n| この端末で入れられるか | 同じファイル（pc-row-extra.tsx）の hook `usePcRowExtra` の中で、開いたときに 1 回 `canPairHere(pairHintsOf(navigator))`（`./pair-device`）を読んで state `canPair` に持つ（読むまでは true・行ごとに読まない）。後の葉 K-373 が、この読む所を画面の hook use-connect-pc.ts に移し、並べる所から `ctx.canPair` と PcList の見出しの行の両方に渡す形に替える（K-373 の実施事項・読む所は 1 つのまま） |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-375.json`：reads_ok に `\"apps/web/tests/k/k375-bridge-reinstall.spec.ts\": \"文言の正本 07_qa/test-specs/errors.json と、会話の帯の行き先を見るために apps/web/components/ai/agent-chat.tsx を読む。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-375\"`（K-340 の断片と同じ形）。`python3 scripts/ci/build_registries.py` で `scripts/ci/ci_scope.json`（生成物）に足し合わせる。無いと ci_scope_test.py の「ファイルを読むのに地図に無い試験」が赤になる |\n| 変えない物 | 部品（pc-row-parts.tsx・pc-row-parts.css）・行（pc-cards.tsx）・並べる所（connect-pc.tsx）・画面の hook（use-connect-pc.ts）・K-361 の claude-code.tsx・K-368 の browser-row.tsx・会話の帯（agent-chat.tsx・行き先は今も /setup/bridge）・口（自己診断に古いの行を足すのは今の sendHeartbeat） |\n| 使う部品と版 | Next.js ^15.5.28・React ^19.1.0・Playwright ^1.63.0。新しい部品は入れない |\n| 目録で探した結果 | 使う：K-369 の `pc-row-parts.tsx`（BridgeReinstall・OsWarning・REINSTALL_*）・`pair-device.ts`、`lib/bridge-presence.ts` の getInstaller、`components/k/error-of` の errorText・PAGE_ERROR、K-349 の置き場 `pc-row-extra.tsx`（usePcRowExtra・PcRowCtx）と行の差す所 renderExtra、K-361 の出し分けと Device の health、試験の道具 `tests/k/stage2-match.ts`。前の画面 `apps/web/app/(wizard)/setup/bridge/legacy/page.tsx` の `[data-bridge-reinstall]`（動きの元）。作る：bridge-reinstall.tsx（見分けと行ごとの入れ物）。目録に無い。似た物：K-361 の claude-code.tsx（直し方の区画）は Claude Code の入れ方で、口も文も別なので使わない |\n\n「古い」を見分けている所（同じ見分けにそろえる）：\n\n```search\ngit grep -n 'fix === \"update\"' -- apps/web ':!apps/web/tests/k/k349*' ':!apps/web/tests/k/k35*' ':!apps/web/tests/k/k36*' ':!apps/web/tests/k/k37*'\n2\n```\n\n（2 件：会話の帯 apps/web/components/ai/agent-chat.tsx と、前の画面 apps/web/app/(wizard)/setup/bridge/legacy/page.tsx。この葉の isOutdated は同じ条件（fix が update で ok でない）。除いた apps/web/tests/k/k349*・k35*・k36*・k37* は段 4 の兄弟の葉（k349 は K-349）とこの葉の新しい試験で、件数が作る段の木で変わらないように道で除いた（依存の葉 K-349・K-361・K-368・K-369 の試験は木に在る））",
+    "外に影響する手順": "画面は口を呼ぶだけ（書く口は呼ばない）。呼んだ口が失敗したときの画面：\n\n- 1: 受け取りの口 downloadBridgeRelease を呼ぶ。失敗したら行に口の文を出し、知らせと越え方は出さず、もう一度押せる（まだ配布していない＝K375-UI-006・口の調子が悪い＝K375-UI-007）。ログインが切れていたら入り直しへ（K375-UI-008）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k375-bridge-reinstall.spec.ts`（実 Chrome。Kaname の口は網の手前で差し替え、この PC の口 127.0.0.1:38617 は 404＝この PC に Bridge は無い）。固定の待ちは使わない：答えを待たせる行は約束で止めて放し、一覧の次の読みは読みの回数で待つ（15 秒まで）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| Bridge が古い・つながっている PC | PC のブラウザで開いた画面 | ログイン中 | 入れ直す区画だけ（題・文・受け取るボタン 2 つ）。Claude Code の直し方・ブラウザの欄は出ない | このチケット | K375-UI-002 |\n| 古くない PC（health が空・update の行が ok・update でない ✗ だけ） | 同じ | ログイン中 | 区画は出ない（今のまま） | このチケット | K375-UI-003 |\n| 古い PC・受け取る | 「Mac 用を受け取る」「Windows 用を受け取る」・キーボード | ログイン中 | 口 1 回・知らせ・受け取った OS の越え方（閉じた形） | このチケット | K375-UI-004・005・015 |\n| 古い PC・受け取れない | 同じ | ログイン中 | 行に口の文・もう一度押せる | このチケット | K375-UI-006・007 |\n| 古い PC・受け取る | 同じ | ログインが切れた | 入り直しへ | このチケット（共通の決まり） | K375-UI-008 |\n| 古い PC・答えを待つ間 | 2 回押し・もう 1 つのボタン | ログイン中 | 2 つとも押せない・口は 1 回 | このチケット | K375-UI-009 |\n| 古い → 入れ直して新しくなった | 一覧の次の読み（切り替わりの直後） | ログイン中 | 区画が消え、ブラウザの欄が出る | このチケット | K375-UI-010 |\n| 古い・眠っている PC | PC のブラウザで開いた画面 | ログイン中 | 区画を出す。「Bridge を起こす」と直し方の箱はそのまま | このチケット | K375-UI-011 |\n| 古い PC | スマホ（iPhone）で開いた画面 | ログイン中 | 受け取るボタンなし・「その PC でこの画面を開いて、入れ直してください」・口を呼ばない | このチケット | K375-UI-012 |\n| 2 台とも古い | 2 台目で受け取る | ログイン中 | 知らせと越え方は 2 台目の行だけ | このチケット | K375-UI-013 |\n| 古い PC | 会話の帯の「PC の状態を見る」から来た | ログイン中 | 行き先は /setup/bridge・区画が出る | このチケット | K375-UI-014 |\n| 古い PC・受け取って越え方を開いた | 幅 320〜1440 | ログイン中 | 横のはみ出し 0・ボタンは 24px 以上 | このチケット | K375-UI-016 |\n| 古い PC（Bridge の窓の中で開いた・この PC に Bridge が入っている） | Bridge の窓・この PC のブラウザ | ログイン中 | 同じ区画（見分けは一覧の health だけ。入れ直す入れ物は同じ受け取りの口） | このチケット | K375-UI-002（入口で分けない） |\n| ほかの人の PC | 一覧 | ログイン中 | 一覧に来ない | K-360 | K360-API-010 |\n| どれでも | 画面を開く | ログインしていない・取引先・運営・セッション切れ | ログインへ・入れない・入り直し | K-57 | K57-UI-009・010・011 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K375-UI-001 | 入力 | 見た目：/dev/mock/f3-pc の pc-bridge-outdated・pc-bridge-reinstalling・pc-bridge-reinstall-error・pc-bridge-outdated-phone を、本番の画面を同じ状態（古い行／Mac 用を受け取った／受け取りが 404・E-CONN-014／スマホの見分けの値で開いた）にして幅 375・768・1440 で比べる（共通の道具 matchMock） | 1 行目の補足の字（「11/02 につないだ ・ Kaname の常駐アプリ v0.8.1」）・入れ直す区画の箱（幅・高さ・横の位置・地と線の色・角丸）・題・文・開く場所の 1 行・2 つのボタン・知らせ・越え方の見出しの、横の位置・色・字の大きさと太さ・行の高さ・字がモックと同じ（px は ±2）。縦の位置は 1 行目の上端から比べる。当たった数も同じ |\n| K375-UI-002 | 対象の状態 | PC 2 台：1 台目は自己診断に fix=update の ✗（と Claude Code が無い・Chrome とつながらないの ✗）、2 台目は古くない | 1 台目の行に `[data-part=\"bridge-reinstall\"]` が 1 つ。題は E-CONN-012 の文・「書いたことは溜めておき、入れ直した後に順に片づけます。」・`[data-reinstall=\"mac\"]`「Mac 用を受け取る」と `[data-reinstall=\"win\"]`「Windows 用を受け取る」が押せる。同じ行に `[data-part=\"claude-fix\"]`・`[data-browser-pick]`・`[data-part=\"browser-fix\"]` は 0 個。2 台目の行に区画は 0 個で `[data-browser-pick]` が 1 つ |\n| K375-UI-003 | 入力 | 古くない 3 台（health が空／fix=update の行が ok true／fix の無い ✗ だけ） | 行は 3 つで、`[data-part=\"bridge-reinstall\"]` は 0 個 |\n| K375-UI-004 | 対象の状態 | 「Mac 用を受け取る」を押す | 口 GET /api/v1/bridge/releases/mac/file がちょうど 1 回。行に role=status「受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます」。区画に `[data-os-warning]` が 1 つで閉じた形・見出し「「開いていません」「PC が保護されました」と出たとき」・中は mac が 1 つで win は 0。2 つのボタンはまた押せる |\n| K375-UI-005 | 対象の状態 | 「Windows 用を受け取る」を押して越え方を開く | 口（win）がちょうど 1 回・知らせ。越え方の手順は「「詳細情報」を押す」「「実行」を押す」の 2 つだけで、Mac の分は 0 |\n| K375-UI-006 | 失敗 | 手順 1 の失敗：受け取りの口が 404・E-CONN-014（まだ配布していない） | 行の role=alert に E-CONN-014 の文。受け取りの知らせは 0 個・越え方は 0 個。「Mac 用を受け取る」は押せる |\n| K375-UI-007 | 失敗 | 手順 1 の失敗：受け取りの口が 503・E-PAGE-007 → もう一度押して受け取れた | 1 回目は role=alert に E-PAGE-007 の文。2 回目で知らせが出て、role=alert は 0 個。口は mac が 2 回 |\n| K375-UI-008 | 利用者の状態 | 手順 1 の失敗：受け取りの口が 401（ログインが切れた） | URL が /login?next=%2Fsetup%2Fbridge（受け取りの呼び手 fetchFile の共通の決まりが送る。この葉は足さない） |\n| K375-UI-009 | 操作の揺れ | 答えを待つ間（口を止めている）に、押したボタンともう 1 つのボタンを押す | 待つ間は 2 つのボタンとも押せない（disabled）。口は 1 回のまま。答えが来たら知らせが出て「Mac 用を受け取る」は押せる |\n| K375-UI-010 | 時間の流れ | 受け取った後、次の一覧の読みで自己診断から fix=update の行が消えた（入れ直した直後・G-12） | 読み直さずに、その行の区画が 0 個になり、`[data-browser-pick]` が 1 つ出る。行の補足に「v0.9.4」 |\n| K375-UI-011 | 対象の状態 | 眠っている PC の自己診断に fix=update が残っている（1 台目は古くない） | 眠っている行に区画が 1 つで「Mac 用を受け取る」が押せる。同じ行の `[data-act=\"wake\"]`（Bridge を起こす）が見える。1 台目の行に区画は 0 個 |\n| K375-UI-012 | 守り | スマホ（iPhone の UA・幅 375・触れる端末）で開く・1 台目が古い | 区画の題は E-CONN-012 の文・「その PC でこの画面を開いて、入れ直してください」。区画の中のボタンは 0 個。受け取りの口は 0 回 |\n| K375-UI-013 | 守り | 2 台とも古い。2 台目の「Windows 用を受け取る」を押す | 口（win）が 1 回。知らせと `[data-os-warning]` は 2 台目の行だけ。1 台目の行に role=status は 0 個・`[data-os-warning]` は 0 個 |\n| K375-UI-014 | 入口 | 会話の帯（agent-chat.tsx の `[data-bridge-outdated]`）の「PC の状態を見る」の行き先 | リンクの href は /setup/bridge。そこを開くと 200 で、古い行に区画が 1 つ・「Mac 用を受け取る」が押せる |\n| K375-UI-015 | 入口 | キーボード：「Mac 用を受け取る」に焦点 → Enter。越え方の見出しに焦点 → Enter | Enter で口（mac）が 1 回・知らせ。見出しの Enter で越え方が開く（open） |\n| K375-UI-016 | 入力 | 幅 320・375・768・1024・1440 で、受け取って越え方を開いた形（5 回開き直すので、試験の時間の上限は 180 秒） | どの幅も横のはみ出し 0（scrollWidth − clientWidth）。2 つのボタンは幅も高さも 24px 以上 |\n\n### テストの型の受け（分類 EXT・PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-EXT-01 外が落ちた・遅い・時間切れ | K375-UI-006（まだ配布していない）・007（口の調子が悪い → もう一度）・009（答えが遅い間） |\n| TP-EXT-02 外が想定外の形を返す | K375-UI-003（update の行が ok・fix の無い ✗・空の health を古いと見ない） |\n| TP-EXT-03 同じ通知が 2 回届く | K375-UI-009（2 回押しでも口は 1 回） |\n| TP-PERM-01 役が合わない人 | K375-UI-012（Bridge を入れられない端末では受け取らせない）。取引先・運営は K-57 の画面の入口で止まる |\n\n要らない: TP-PERM-02 受け取りは Kaname の権限で変わらない（ログインしていれば誰でも受け取れる・K-57）。押せる・押せないは端末の OS で決まる\n要らない: TP-PERM-03 他の会社の ID を扱わない（一覧に他の人の PC は来ない・K360-API-010。受け取りの口は PC の id を取らない）\n要らない: TP-PERM-04 一覧・数をこの葉で変えない（行の数は K-57・K-361）\n要らない: TP-PERM-05 付けた直後に効く権限が無い",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）は、changes: を使う前からの試験を 0 件と出す（pc-row-extra.tsx は K-349 が作る置き場・bridge-reinstall.tsx はこの葉が作る物で、どちらも今の木にまだ無いので照らしていない。ci_scope.d/K-375.json は共通の入口で照らさない）。前は connect-pc.tsx を changes: に持っていたので 2 件出ていた（2026-11-19 夜・K-349 の決めで、この葉は connect-pc.tsx を変えなくなった）。古い Bridge の行・入れ直す口を見る前からの試験は検索で出した。替える物は無い。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F3/connect-pc/pc-row-extra.tsx apps/web/features/F3/connect-pc/bridge-reinstall.tsx scripts/ci/ci_scope.d/K-375.json\n0\n```\n\n- apps/web/tests/k/k349-connect-pc-split.spec.ts: 替えない — K-349 の試験。実ブラウザの行は自己診断を持たない一覧を使うので、古い行の区画は出ない。字で見る行は名前とつなぎまで\n- apps/web/tests/k/k363-*.spec.ts・k374-*.spec.ts（K-363・K-374・順の無い兄弟の葉の試験）: 替えない — どちらも古い行（自己診断に update の行）を作らないので、この葉の区画は出ない\n\n前は検査に出ていた 2 件（今は出ない・訳は残す）：\n\n- apps/web/tests/k/k230-bridge-content.spec.ts: 替えない — 一覧の行は health を持たない作り物（古くない）なので、区画は出ない。行の形は今のまま\n- scripts/ci/k257_canvas_boards_test.py: 替えない — キャンバスの絵と作り手を見る（この葉は絵を変えない）\n\n```search\ngit grep -ln \"bridge-reinstall\\|data-bridge-outdated\\|E-CONN-012\" -- apps/web/tests apps/e2e ':!apps/web/tests/k/k349*' ':!apps/web/tests/k/k35*' ':!apps/web/tests/k/k36*' ':!apps/web/tests/k/k37*'\n1\n```\n\n（1 件。除いた apps/web/tests/k/k349*・k35*・k36*・k37* は段 4 の兄弟の葉（k349 は K-349）とこの葉の新しい試験で、今の本線には無い。K-349 の試験は上の仮置きの行で見る）\n\n- apps/web/tests/screens/qa-a2-chat-errors.spec.ts: 替えない — E-CONN-012-A〜C は会話の画面の帯（出る・出ない・文）を見る。PC の画面の自己診断の行と入れ直す口を見ていた所は、K-367 が切る段の 2 周目で外した版を運ぶ（この葉は会話の帯を変えない・帯の行き先は K375-UI-014 が見る）\n\n兄弟の葉の試験（その葉が運ぶ・この葉の後も緑）：\n\n- apps/web/tests/k/k361-claude-code.spec.ts: 替えない — 段 4 の葉 K-361 の試験。作り物の自己診断に fix=update の行が無いので、Claude Code の直し方の出し方は変わらない\n- apps/web/tests/k/k368-pc-browser.spec.ts: 替えない — 段 4 の葉 K-368 の試験。同じく古い行を作らない\n- apps/web/tests/k/k373-pc-row-phone-match.spec.ts: 替えない — 段 4 の葉 K-373 の試験（この葉の後に入る）。古い行を作らない",
+    "速さ（今の値と目標の値）": "測り方：c/段4 の先頭（441865b0）の connect-pc.tsx・pc-cards.tsx を読んで数えた（K-349 の後は、connect-pc.tsx の中身が画面の hook use-connect-pc.ts に在る。K-349 は動きを変えないので、口の数は同じ）。\n\n| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの Kaname の口の数（開いたとき） | listMyDevices 1 本（5 秒ごと）＋外枠の口 | 同じ（古いの見分けは一覧の答えを読むだけ・口を足さない） |\n| 入れ直す 1 回の口の数 | — | downloadBridgeRelease 1（2 回押しでも 1） |\n| 直列の段・二重 | 1 段・二重 0 | 同じ |\n| この PC の口（127.0.0.1） | /ping 3 秒ごと（K-361 の分を含む） | 同じ（この葉は呼ばない） |\n| 新しい住所 | 無い | 無い |\n| 認証の要る答えの Cache-Control | 契約の口の入口が付ける（変えない） | 同じ |\n| staging の答えの時間 | 測っていない | 前後で同じ（開いたときの口を増やさない） |",
+    "成果物": "- 古いの見分けと行ごとの入れ物（bridge-reinstall.tsx）・行に差す所の出し分けと端末の見分け（pc-row-extra.tsx の usePcRowExtra）・CI の範囲の地図の断片\n- 画面の試験 `apps/web/tests/k/k375-bridge-reinstall.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 代表の答え answer=7cf148a79dc9（2026-11-19）：新しい PC の画面には Bridge が古いときに入れ直す口が無い → 入れ直す一手を足す\n- 代表の決め 2026-11-19（会話・PM の決定の控え）：PC をつなぐのは PC でしかできない。スマホはリモコン → スマホでは受け取るボタンを出さず、開く場所だけを言う（在る物は隠さず理由を出す・answer=78cb822fc1f1）\n- 2026-11-19 切る段の決め：古い行には入れ直す区画だけを出す（代表の答え A-3「先に直す物だけ」と同じ考え）。部品とモックは K-369 が先に運ぶ（部品先行）\n- 2026-11-19 切る段の決め：前の画面を消す K-367 は、この葉が入ってから（前の画面にだけある入れ直す口を、先に新しい画面へ移す）。順は K-368 → この葉 → K-367 → K-373（K-374 → この葉の順は、下の PM の決めで外した）\n- 2026-11-19 夜・PM の決め（K-349）：同じ画面のファイル connect-pc.tsx を 7 本の葉が順に変えるのをやめ、新しい葉 K-349 が中身を区画ごとのファイルに分けて「差す所」を先に置く。この葉は pc-row-extra.tsx（出し分けと端末の見分け）と bridge-reinstall.tsx を変え、K-374 を待たない（依存は K-369・K-361・K-368・K-349）。K-368 は今までどおり待つ（「古い行ではブラウザの欄を出さない」の行の意味を保つ）。動き・見た目・試験の行の意味は変えない（試験 k375-bridge-reinstall.spec.ts はそのまま）\n- 2026-11-19 夜・2 回目の精査の直し：K375-UI-016 に試験の時間の上限 180 秒（幅 5 つを開き直す）・401 の入り直しは受け取りの呼び手の共通の決まりに任せ、葉では足さないと実施事項に書いた（lib/api/call.ts の fetchFile を読んで確かめた）・申し送りの置き換え先を正本と同じ 001・002・004・005 にそろえた\n- D-015.7：署名が済むまでは OS の警告が出る。越え方だけを案内する\n- D-109：古い Bridge には仕事を渡さない。入れ直しを案内する\n- D-128.137：PC はアカウントのもの。スマホからも PC の様子は見える\n- D-128.153：受け取りは、置き場が外なら署名 URL・手元なら中身\n- D-145.9：値の無い物を勝手に作らない\n- D-146.1：正の絵は本番と同じ部品のモック（design-system.md §8）",
+    "リスクと懸念": "- 代表はまだこの 4 つの状態の下絵を見ていない（K-369 の K369-UI-017）。見て形が変わったら、切る段で部品・モック・写しとこの葉の行を直す（作る段ではしない）\n- 受け取るボタンは、開いている端末の OS に合わせず 2 つとも出す（ほかの PC のために受け取る人もいる・前の画面と同じ）\n- 突き合わせ（K375-UI-001）は 12 本を流すので、台が混むと時間がかかる（見える・移るの待ちは 15 秒まで・固定の待ちは使わない）",
+    "申し送り": "- K-367：正本の SCR-BRIDGE-SETUP-105・106・109 の置き換え先は、この葉の K375-UI-001・002・004・005（正本 07_qa/test-specs/screens/bridge-setup.md と同じ：109＝状態の見た目 → K375-UI-001・002、105・106＝受け取るボタン → K375-UI-004・005）\n- K-373：端末の見分けの値（pc-row-extra.tsx の usePcRowExtra の中の canPair）はこの葉が作る。K-373 は、読む所を画面の hook use-connect-pc.ts に移し、並べる所 connect-pc.tsx から `ctx.canPair`（この葉の `<BridgeReinstallRow canInstall={…} />` に渡す値）と PcList の見出しの行の両方に渡す形に替える（読む所は 1 つのまま・この葉の試験はそのまま緑）",
+    "表の住所（2026-11-19）": "- CI の範囲の地図は `scripts/ci/ci_scope.d/K-375.json`（K-325 の .d/・reads_ok の 1 行）。新しい口・エラー・ears・契約の形は無いので、ほかの .d/ は足さない\n- K-325〜K-327 は本線に入った（口の登録は葉ごとの hooks のファイルの register・migration は時刻の名前で一覧は生成物）。この葉は口も migration も足さないので、その形で直す所は無い\n- K-328 の形：試験の作り物の秘密の値（k375-bridge-reinstall.spec.ts のログインの札 \"k375-web-token\"（K375_WEB_TOKEN））は `apps/web/test/_fake/secrets.ts` の「K-375」の区切りに置き、試験から import する（.gitleaks.toml がこの置き場だけを外す）。置き場は carry: で切る段の版を運ぶ（作る段では変えない）。置き場は overlap_ok なので、同じ置き場に足す葉どうしは依存にしない"
+   },
+   "file": "11_tickets/K-375.md"
+  },
+  {
    "id": "K-376",
    "title": "CI の段の命令の並び（G65・G47）をチケットごとのファイル（scripts/ci/g65.d・g47.d）から作る（K-324 の葉）",
    "kind": "タスク",
@@ -20308,6 +20385,99 @@
    "file": "11_tickets/K-468.md"
   },
   {
+   "id": "K-487",
+   "title": "消す前の下見の口（previewTicketDelete）：子・孫・添付・成果物に、承認待ち・つながり・走っている AI の実行の件数と、「一緒に消す」で子・孫の分も取り下げ・止まる件数を足す。見えない子も数える。消せる人の判定を作った人かグループの edit に（K-67 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-67",
+   "milestone": "F7",
+   "area": "消す・戻す",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仕様の仮。形の近い段 4 の K-351（読む口 1 本・葉ごとの hooks のファイル・契約の形と登録先・試験 20 行・見込み 1 時間）と K-92（一覧の口・行の守りの中で読む作り）から引いた：読む口 1 本（1 文で件数 7 つを数える）15 分・共通の小さな部品（30 日・断りの形）と行の決まり 10 分・契約の形と登録先 20 分・自分の確かめ 15 分。migration 1 本（子・孫を数える DB の関数 1 つ）10 分（精査の直しで足した）。試験 20 行と土台（ticket-delete.harness.ts）は切る段で書いた",
+   "decisions": [
+    "D-125.62",
+    "D-128.84",
+    "D-128.116",
+    "D-129.43",
+    "D-130.4",
+    "D-136.2",
+    "D-151.14",
+    "D-151.15",
+    "D-151.16",
+    "D-151.20"
+   ],
+   "split": "",
+   "choke_none": "読むだけの GET（DB を読むだけで書かず、外に出ない・証跡も書かない。足す DB の関数も読むだけ）",
+   "tests": [
+    "apps/api/test/features/F7/ticket-delete-preview.test.ts",
+    "apps/api/test/generated/get_tickets_id_delete_preview.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/F7/ticket-delete.harness.ts",
+    "apps/api/test/features/contract/k144.d/K-487.ts",
+    "apps/api/test/row_rules.test.ts"
+   ],
+   "depends_on": [
+    "K-601"
+   ],
+   "acts": [
+    "A116"
+   ],
+   "screens": [],
+   "apis": [
+    "previewTicketDelete"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（読む口だけ）。消す前の確認の小窓（一緒に起きること・理由・やめる／消す）の見た目は画面の葉 K-590 が持つ（正は /dev/mock/f7 の f7-delete-confirm）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261123088700_ticket_delete_preview.sql",
+    "packages/db/src/migrations.generated.ts",
+    "apps/api/src/hooks/ticket-delete-preview.ts",
+    "apps/api/src/features/F7/ticket-delete/preview.ts",
+    "apps/api/src/features/F7/ticket-delete/shared.ts",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-487.py",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/contract_shape.d/K-487.py",
+    "07_qa/test-plan/ears-elsewhere.d/K-487.json",
+    "scripts/ci/ci_scope.d/K-487.json",
+    "07_qa/test-specs/errors.d/K-487.json",
+    "08_api/phase1/01_チケット.md",
+    "11_tickets/K-67.md"
+   ],
+   "flow": "チケットを消して戻す",
+   "sections": {
+    "目的": "チケットの「…」→「消す」で開く確認の小窓（K-590）が呼ぶ契約の口 `previewTicketDelete`（GET /api/v1/tickets/:id/delete-preview・今は 501）を作る。小窓の「一緒に起きること」に出す件数を返す：\n\n- 子・孫（どう扱うかを選ぶ段を出すかの元）：`children`（直接の子）・`descendants`（子と孫の合計）\n- 添付・成果物：`attachments`・`artifacts`（消えて見えなくなるが、戻すときにそのまま見える）\n- **承認待ちから取り下げられる件数**：`pending_approvals`（PM の決め P6・D-151.15）\n- **外れるつながり**：`links`（関連・派生元。外れるだけで相手は残る）\n- **止まる AI の実行**：`running_runs`（待っている・動いている・コードを待っている実行。消すと止まる・D-151.14）\n- **「一緒に消す」を選んだときだけ増える分**：`descendant_pending_approvals`（子・孫の承認待ち＝一緒に取り下げられる件数）・`descendant_running_runs`（子・孫の走っている AI の実行＝一緒に止まる件数）。消す口 K-488 は「一緒に消す」（cascade）のとき子・孫の承認も取り下げ・実行も止める（K488-API-020）ので、画面は選ぶ前に自分の分（`pending_approvals`・`running_runs`）を、「一緒に消す」を選んだときだけ子・孫の分を足して出す（move・detach のときは子・孫の分は起きない）\n- `restorable_until`：今から 30 日後（D-128.84・D-128.116）\n\n契約の答え `TicketDeletePreview`（children・attachments・artifacts・restorable_until）に、`descendants`・`pending_approvals`・`links`・`running_runs`・`descendant_pending_approvals`・`descendant_running_runs` を足す（鍵は 10 個）。消す口は K-488、戻す口は K-489、画面は K-590。\n\n消せる人は「作った人か、そのグループで tickets の edit を持つ人」（D-125.62・P14）。下見も同じ人だけが読める（読めない人に消せない訳を出すため。権限が無ければ 403・E-DEL-001）。",
+    "完了の条件": "- [ ] 下の表の 20 行（K487-API-001〜020）が緑：`apps/api/test/features/F7/ticket-delete-preview.test.ts`（土台 `ticket-delete.harness.ts`）\n- [ ] 契約の口 `previewTicketDelete` が 501 でない。生成の試験 `apps/api/test/generated/get_tickets_id_delete_preview.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-487.json` の covers）\n- [ ] 共有の試験 k144 の葉の行 K144-API-887（`k144.d/K-487.ts`・carry）が緑\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（apps/api/test/row_rules.test.ts の 1 つの it を替える・carry）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: LIST\n\n- 消すのは `deleted_at` を立てるだけ（論理削除・0102）。添付・成果物には何も書かない（戻すときそのまま見えるように）。「消える」の表示は、チケットが見えなくなれば一緒に見えなくなる（D-129.43）ことを言う\n- 数える物と条件（どれも消していない物だけ。承認待ち・添付・成果物・つながり・走っている実行は、そのチケット自身の物。子・孫の物は下の 2 つの別の欄）：\n  - children：`parent_ticket_id = そのチケット` で `deleted_at is null`。descendants：再帰（3 段まで・D-125.51）で子と孫の合計\n  - descendant_pending_approvals・descendant_running_runs：子・孫（上の再帰で引いた物）の、決まっていない承認と、待っている・動いている・コードを待っている実行（そのチケット自身の分の式と同じ）。K-488 の cascade が取り下げる・止める物と同じ数え方\n  - attachments：`attachments` の `owner_type = 'ticket'` かつ `owner_id = そのチケット`（段 5 が貼り付けの口を作るときも同じ値にそろえる。今はほかの口が書かないので試験は管理の接続で置く）\n  - artifacts：`artifacts.source_job_id` が、そのチケットの実行（`action_runs.ticket_id`）の仕事（`bridge_job_id`）のもの\n  - pending_approvals：`approvals.ticket_id` が一致し、`decision is null and withdrawn_at is null and deleted_at is null`（K-163・0095 の「待っている」と同じ式）\n  - links：`ticket_links` の from・to のどちらかがそのチケットで、`deleted_at is null` かつ相手が消えていないもの\n  - running_runs：`action_runs.ticket_id` が一致し、`status_id in ('queued','running','asking')` かつ `deleted_at is null`\n- **子・孫の数え方は消す口 K-488 と同じ（見えない子も数える）**：K-488 の DB の関数 `app.ticket_delete` は定義者の権限で子を全部数え、扱いを選ばなければ 409・E-DEL-010 を返す。下見が呼んだ人の行の守りの中で子を数えると、見えないグループにいる子が children・descendants に入らず、画面は 3 択の小窓を出さないまま消す口で E-DEL-010 になり、消せなくなる（K-590 が下見を読み直しても 0 のまま）。そこで子・孫（children・descendants・descendant_pending_approvals・descendant_running_runs）は **定義者の DB の関数 `app.ticket_descendant_counts`**（migration 1 本・読むだけ）で数える。関数は呼んだ人にそのチケットが見えるときだけ答え（`app.member_ok()` で `app.ticket_visible(p_ticket)`・見えなければ `{ok:false, code:'NOT_FOUND'}`）、数えるのは件数だけで題名・中身は返さない（数だけが見えない子の分も出る・K-489 の `restored_count` と同じ許容）\n- 承認待ち・添付・成果物・つながり・走っている実行（そのチケット自身の分）は呼んだ人の行の守りの中で数える（withTenant）。グループが見える人は承認待ち・つながり・添付も読める（approvals_read の `visible_scopes`）ので、作った人と edit の人で同じ件数になる（K487-API-016。**つながり先を同じグループに置いたときの話**：`ticket_links` は両側が見えるときだけ読める（`ticket_links_both_read`）ので、見えないグループの相手とのつながりは `links` に入らず、見える人ごとに少なくなる＝K487-API-019）\n- 1 文で全部数える（スカラーの副問い合わせと、子・孫の関数 1 回。行ごとに引かない）。失敗したら一部だけを返さず 503・E-PAGE-003（K-62 の `down` と同じ・ログに本文を出さない）\n- 消せる人の判定は、入口（row_rules.mjs の OP_RULES）では「そのチケットが見える」だけ（`true`・K-353 の updateCredential と同じ作り）で、**作った人か edit か（403・E-DEL-001）は口の SQL が持つ**（`created_by = app.user_id() or has_permission(app.user_id(), 'tickets', scope_id, 'edit')`）。そうしないと、E-DEL-001 の文（消せない訳）が入口の汎用の 403 に奪われる。前のチケット契約の文「担当者・作成者・マネージャー」は、前の契約の写しで P14 とずれていたので、この葉が PERMS の文を P14 に直す\n- 見えない・別の会社・無い・もう消えたチケットは 404（D-129.43）。担当者だけ・見るだけ・マネージャー・管理者でも、作った人でも edit でもなければ 403（マネージャー・管理者は役割の束で edit を持つのが普通。持たない人は消せない）\n- 共通の小さな部品 `apps/api/src/features/F7/ticket-delete/shared.ts`（`RESTORE_DAYS = 30`・`restorableUntil(now)`・断りの形 `forbidden()`・`notFound()`・`down(where, e)`）を作る。K-488・K-489 が同じ部品を使う（その 2 本はこの葉に依存）。**`restorableUntil` は `Date` のミリ秒に足して切り捨てた ISO を返す（`new Date(t.getTime() + RESTORE_DAYS * 86400_000).toISOString()` だけ・四捨五入など別の丸めを入れない）**：K-488 の試験 K488-API-001 は消した時刻（DB の行の時刻をミリ秒に切り捨てた物）の 30 日後を「ミリ秒まで同じ」で比べる。その旨を `shared.ts` の注に 1 文残す\n- `previewTicketDelete` は GET だが、読む前に走る要求の取引のまとめ（`ONE_TX_HOOKS`・K-234）には入れない（hooks を持つ口は今のまま）\n- 関門の宣言は無し（読むだけ）。口の登録は葉ごとの hooks のファイル（K-326）：`ticket-delete-preview.ts`。材料は `d.appPool` だけ",
+    "依存の理由": "- K-601: 要る — この葉の decisions: は D-151.x を持つ。切る段の持ち込みの作り手 build_index.py の K4（決定が決定ログに無い）は始める時点の本線の決定ログを見るので、決定ログだけを運ぶ K-601（依存なし・文書だけ）が先に取り込まれること（段 9 の K-425 と同じ形）\n\n- K-92（本線）：要る — 消したものを外す行の守り（`app.ticket_visible`・0102）と `tickets.deleted_at`・親子の 3 段の守り。もう本線に在る\n- K-62（本線）・K-63（本線）：要る — `action_runs`（`status_id`・`ticket_id`）と `approvals` の列を読むだけ（0092・0095・0100）。もう本線に在る\n- K-488・K-489：この葉の上に乗る（共通の部品 `shared.ts`・土台 `ticket-delete.harness.ts` を持ち込むのはこの葉）。この葉は待たない\n- 段 5（K-59・複製・移すなど）・段 7・段 9：触らない — 添付の貼り付けの口は段 5 の持ち物。この葉は読むだけ（owner_type の値だけをそろえる）",
+    "目録で探した結果": "- 使う：`withTenant`（packages/db/src/context.ts）・`app.ticket_visible`（0102）・`has_permission`（0080）・`kanameError`・K-62 の `down` の形（`apps/api/src/features/F5/delegate/people.ts`）・試験の土台 `F5/delegate-kit.ts`・`F3/leaf-hooks.ts`\n- 作る：`apps/api/src/features/F7/ticket-delete/preview.ts`・`shared.ts`・hooks のファイル `apps/api/src/hooks/ticket-delete-preview.ts`・DB の関数 `app.ticket_descendant_counts`（migration 1 本）。探したが同じ物は無かった（前の `previewTicketDelete` は契約だけで 501。`app.ticket_soft_delete`（0102）は消すだけで数えない。子孫を数える関数は無く、深さの引き金（0071）は数えない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前・K-327） | `packages/db/migrations/20261123088700_ticket_delete_preview.sql`：`app.ticket_descendant_counts(p_ticket uuid) returns jsonb`。`language plpgsql security definer stable set search_path = public, app, pg_temp`・`revoke all … from public`・`grant execute … to kaname_app`。`app.member_ok()` でない・`app.ticket_visible(p_ticket)` でない → `{ok:false, code:'NOT_FOUND'}`。ほかは子孫（再帰・`parent_ticket_id`・`deleted_at is null`・子と孫の 2 段下まで）を引き、`{ok:true, children, descendants, pending_approvals, running_runs}`（子孫の決まっていない承認・走っている実行の件数。式は「前提と制約」のとおり）。書かない（読むだけ）。K-488 の `app.ticket_delete` の cascade は子孫を同じ再帰・同じ条件で引く |\n| 口 | `apps/api/src/features/F7/ticket-delete/preview.ts`：`withTenant(pool, a.ctx, …)` の中で 1 文：`select t.id, (t.created_by = app.user_id() or has_permission(app.user_id(), 'tickets', t.scope_id, 'edit')) as deletable, app.ticket_descendant_counts(t.id) as d, (添付) as attachments, (成果物) as artifacts, (承認待ち) as pending_approvals, (つながり) as links, (実行) as running_runs from tickets t where t.id = $1 and t.deleted_at is null and app.ticket_visible(t.id)`。行が無い → 404。`deletable` が偽 → 403・E-DEL-001。ほかは 200 `{ data: { children, descendants, attachments, artifacts, pending_approvals, links, running_runs, descendant_pending_approvals, descendant_running_runs, restorable_until } }`（`children`・`descendants`・`descendant_*` は関数 `d` から。関数が `{ok:false}` を返したら 404）（件数は整数に直す・`restorable_until` は `restorableUntil(now)` の ISO・`Cache-Control: private, no-store`）。例外は 503・E-PAGE-003 |\n| 共通の部品 | `apps/api/src/features/F7/ticket-delete/shared.ts`（K-488・K-489 も使う）：`RESTORE_DAYS`・`restorableUntil(deletedAt: Date): string`（`deletedAt + RESTORE_DAYS 日` の ISO・UTC）・`forbidden()`（403・E-DEL-001）・`notFound()`・`down(where, e)`（503・E-PAGE-003・ログは例外の種類だけ） |\n| 口の登録（K-326） | `apps/api/src/hooks/ticket-delete-preview.ts`：`export function ticketDeletePreviewHooks(d: HookDeps): Record<string, Hook>`（previewTicketDelete の before）と `export const register = defineHooks({ name: \"ticketDeletePreviewHooks\", make: (d) => ticketDeletePreviewHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的は直さない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧に入れる） |\n| 行の決まり | `scripts/ci/row_rules.mjs` の OP_RULES に 2 行：`previewTicketDelete: \"true\"`・`deleteTicket: \"true\"`（注：「入口は見えるだけ。作った人か edit か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）」。deleteTicket の行は K-488 の口が入るまで 501 が先に返る）。前からの行は直さない |\n| 契約の形 | `05_flow/screen_api.py`（前からある行を直すので本体）：① RESPONSES の `previewTicketDelete` に `\"descendants\": \"integer\", \"pending_approvals\": \"integer\", \"links\": \"integer\", \"running_runs\": \"integer\", \"descendant_pending_approvals\": \"integer\", \"descendant_running_runs\": \"integer\"` を足す ② PERMS の `previewTicketDelete` の説明を「作った人か、そのグループで tickets の edit を持つ人（D-125.62）」に。`05_flow/screen_api.d/K-487.py`：`ERRORS_4XX[\"previewTicketDelete\"]`（403 E-DEL-001・404 NOT_FOUND・503 E-PAGE-003・下）→ `python3 05_flow/build_api.py` で作り直す。`scripts/ci/contract_shape.d/K-487.py` は体を受けない GET なので空の 6 つの表（登録先の決まりが住所を求めるので置く） |\n| エラー | `07_qa/test-specs/errors.d/K-487.json`：E-DEL-001（下）。`python3 scripts/ci/build_registries.py` |\n| 登録先（touch_rules） | hooks のファイルの register・screen_api.d・contract_shape.d・ears-elsewhere.d・ci_scope.d の K-487。`python3 scripts/ci/build_registries.py`・`gen_ts_registries.py`・`gen_migrations.py` で生成物を作り直す |\n| 文書 | `08_api/phase1/01_チケット.md` の previewTicketDelete の行：答えの欄 6 つ（子・孫の分の 2 つを含む）と「作った人か edit を持つ人」 |\n| 親 | `11_tickets/K-67.md` の apis から previewTicketDelete を、tests から `get_tickets_id_delete_preview.test.ts` を外す |\n\n### エラーの対応（errors.d/K-487.json・文は画面に出す字）\n\n| 番号 | 状態 | いつ | 文 | 次の一手 |\n|---|---|---|---|---|\n| E-DEL-001 | 403 | 作った人でも、そのグループで edit を持つ人でもない人が、消す前の下見・消す | このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です | 作った人か権限のある人に頼む |\n\n`ERRORS_4XX[\"previewTicketDelete\"]`：403 `{\"error\": \"permission\", \"code\": \"E-DEL-001\"}`（errors: E-DEL-001）・404 NOT_FOUND・503 `{\"error\": \"dependency\", \"code\": \"E-PAGE-003\"}`。\n\n### 生成の試験（ears-elsewhere.d/K-487.json）\n\n```json\n{\"ops\": {\"previewTicketDelete\": {\"file\": \"apps/api/test/features/F7/ticket-delete-preview.test.ts\",\n  \"reason\": \"消す前の下見は、そのチケットの子・承認待ち・つながり・実行の件数と、作った人か edit かの判定で答えが変わる。生成の試験の種ではその組を作れない（K-487）\",\n  \"covers\": {\"test_get_tickets_id_delete_preview_ok\": \"K487-API-001\", \"test_get_tickets_id_delete_preview_shape\": \"K487-API-001\",\n             \"test_get_tickets_id_delete_preview_rejected_401\": \"K487-API-012\", \"test_get_tickets_id_delete_preview_rejected_403\": \"K487-API-010\",\n             \"test_get_tickets_id_delete_preview_not_found\": \"K487-API-011\", \"test_get_tickets_id_delete_preview_rate_limited\": \"K487-API-012\",\n             \"test_get_tickets_id_delete_preview_rejected_422\": {\"file\": \"apps/api/test/features/contract/k144.d/K-487.ts\", \"mark\": \"K144-API-887\"},\n             \"test_get_tickets_id_delete_preview_terms_pending\": {\"file\": \"apps/api/test/features/F1/terms.test.ts\", \"mark\": \"K53-API-005\"},\n             \"test_get_tickets_id_delete_preview_session_unresolved\": {\"file\": \"apps/api/test/features/contract/k144-contract.test.ts\", \"mark\": \"K144-API-032\"}},\n  \"na\": {}}}}\n```\n\n契約を作り直したら生成の試験の名前が変わることがある（作り手 gen_ears_tests.mjs が出す名前に covers の鍵を合わせる）。mfa_pending は生成の試験が自分で見る（K-321）。\n\n### 範囲の地図（ci_scope.d/K-487.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/hooks/ticket-delete-preview.ts\", \"apps/api/src/features/F7/ticket-delete/**\", \"packages/db/migrations/20261123088700_ticket_delete_preview.sql\"],\n   \"tests\": [\"apps/api/test/features/F7/ticket-delete-preview.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"]},\n  {\"paths\": [\"apps/api/test/features/F7/ticket-delete-preview.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\", \"apps/api/test/features/F1/terms.test.ts\"],\n   \"tests\": [\"apps/api/test/generated/get_tickets_id_delete_preview.test.ts\"]}\n ],\n \"reads_ok\": {\n  \"apps/api/test/features/contract/k144.d/K-487.ts\": \"k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）\",\n  \"apps/api/test/features/F3/leaf-hooks.ts\": \"葉の hooks のファイル apps/api/src/hooks/ticket-delete*.ts・ticket-restore.ts を動的 import で読む（在る物だけ）。読む物と使う試験は data_links で結ぶ・K-487\",\n  \"apps/api/test/features/F7/ticket-delete.harness.ts\": \"土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487\"\n }\n}\n```\n\nK-488・K-489 の試験が土台を使うので、その 2 本は自分の断片の data_links に「自分の hooks のファイルと口のコード → 自分の試験」の 1 行を足す。",
+    "外に影響する手順": "- S1: DB を読む（件数を 1 文で数える・子・孫の分は読むだけの DB の関数 1 回・書かない）。失敗したら一部だけを返さず 503・E-PAGE-003（K487-API-014）\n- なし — DB に書く：下見は何も書かない（チケットの更新時刻・証跡・承認・実行が変わらない・K487-API-013）\n- なし — 知らせ（受け箱の行）：下見は誰にも知らせない\n- なし — 証跡：読むだけなので書かない（消す・戻すの証跡は K-488・K-489）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F7/ticket-delete-preview.test.ts`（本物の DB・本物の行の守り・口の入口は createApp と契約の op・偽の画面のログイン。土台 `ticket-delete.harness.ts`）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 何も付いていない | 「…」→「消す」の確認を開く | 作った人 | 200・件数は全部 0・30 日後 | このチケット | K487-API-001 |\n| 子・孫・添付・成果物・承認待ち・つながり・走っている実行が付いている | 同じ | 作った人 | 200・それぞれの件数 | このチケット | K487-API-002〜008 |\n| 子・孫に承認待ち・走っている実行が付いている | 「一緒に消す」を選ぶ前に開く | 作った人 | 200・子・孫の分の件数（descendant_*） | このチケット | K487-API-018 |\n| 見えないグループの子がいる | 同じ | 作った人 | 200・見えない子も children・descendants に入る | このチケット | K487-API-019 |\n| 付いている物（同じ） | 同じ | edit を持つ別の人 | 200・同じ件数 | このチケット | K487-API-009・016 |\n| 作った人（edit なし） | 同じ | 作った人 | 200 | このチケット | K487-API-009 |\n| どれでも | 同じ | 見るだけ・担当者だけ・マネージャー・管理者（edit なし・作った人でない） | 403・E-DEL-001 | このチケット | K487-API-010 |\n| どれでも | 同じ | 別の会社・見えないグループ | 404 | このチケット | K487-API-011 |\n| もう消えた・無い id | 同じ | 作った人 | 404 | このチケット | K487-API-011 |\n| どれでも | 同じ | ログインしていない・同意し直しが要る | 401・403（E-AUTH-010） | このチケット・入口の共通（K-53） | K487-API-012・K53-API-005 |\n| どれでも | 開き直す・別のタブ | 作った人 | その時の件数（貯めない） | このチケット | K487-API-015 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K487-API-001 | 対象の状態 | 何も付いていないチケットを作った人が下見 | 200・鍵は 10 個ちょうど（children・descendants・attachments・artifacts・pending_approvals・links・running_runs・descendant_pending_approvals・descendant_running_runs・restorable_until）・件数は全部 0・restorable_until は今から 30 日後（±0.01 日）・Cache-Control に private と no-store |\n| K487-API-002 | 対象の状態 | 親（子 2・孫 1・消した子 1） | 親は children 2・descendants 3。子は children 1・descendants 1。子の子の無い子は 0・0。消した子は数えない |\n| K487-API-003 | 対象の状態 | 添付（生きている 2・消した 1・別のチケットに 1） | attachments 2。別のチケットは 1 |\n| K487-API-004 | 対象の状態 | 成果物（そのチケットの実行が作った 1 と消した 1・別のチケットは 0） | artifacts 1・別のチケットは 0 |\n| K487-API-005 | 対象の状態 | 承認（待っている 1・決まった 1・取り下げた 1・消した 1） | pending_approvals 1 |\n| K487-API-006 | 対象の状態 | つながり（自分から 1・相手から 1・消えたチケットとの 1・消したつながり 1） | links 2 |\n| K487-API-007 | 対象の状態 | 走っている実行 → 止まる | 動いている間 running_runs 1。PC が止まったと返した後は 0 |\n| K487-API-008 | 対象の状態 | 子に付いた添付・承認・つながり | 親の attachments・pending_approvals には入らない（links は親と子の間の 1 が両方に出る）。子は自分の分だけ |\n| K487-API-009 | 守り | 消せる人 | edit を持つ別の人も 200。作った人（edit なし）も 200・edit のある人は作った人でなくても 200 |\n| K487-API-010 | 守り | 消せない人 | 見るだけ・担当者だけ・マネージャー・管理者（どれも edit なし・作った人でない）は 403・E-DEL-001・チケットは消えない |\n| K487-API-011 | 守り | 見えない・無い | 別の会社・見えないグループ・無い id・もう消えたチケットは 404 |\n| K487-API-012 | 守り | ログイン・上限 | ログインしていないと 401。1 分に 61 回目は 429・retry_after_sec は 1〜60 の整数 |\n| K487-API-013 | 操作の揺れ | 何度下見しても | 何も書かない：チケットの更新時刻・証跡の行数・取り下げた承認が変わらない |\n| K487-API-014 | 失敗 | 手順 S1「DB を読む」が失敗（つながりの表を読めない） | 503・E-PAGE-003・data が無い（一部だけの件数を返さない）。読めるようになれば 200 |\n| K487-API-015 | 時間の流れ | 下見の後に子・承認が足される | 次の下見は新しい件数（children 1・descendants 1・pending_approvals 1）。貯めない |\n| K487-API-016 | 守り | 見える人によらない件数 | 作った人と edit の別の人で、承認待ち・添付・つながりの件数が同じ（restorable_until を除いて同じ答え。つながり先は同じグループに置く。別グループの相手とのつながりは見える人ごとに数が変わる＝K487-API-019） |\n| K487-API-017 | 入力 | restorable_until の字 | 日付と時刻の ISO（UTC・Z か +00:00）。画面が日本時間に直す |\n| K487-API-018 | 対象の状態 | 子・孫の分（親・子・孫に決まっていない承認と、子に動いている実行） | 親は pending_approvals 1（自分の分）・running_runs 0・descendant_pending_approvals 2（子と孫）・descendant_running_runs 1。子は自分の子孫の分だけ（決まった承認は数えない）。PC が止まったと返した後は descendant_running_runs 0（K-488 の cascade が取り下げる・止める物と同じ数え方） |\n| K487-API-019 | 利用者の状態 | 見えない子：見えないグループにいる子・孫（作った人でも見えない）がいる親を作った人が下見 | children・descendants・descendant_pending_approvals に見えない子・孫も入る（子 2・descendants 3・子孫の承認待ち 2）。見えない子とのつながりは links に入らない（0）。見えない子の下見は 404。→ 画面は 3 択の小窓を出せて、消す口の E-DEL-010 のあと読み直しても 0 にならない |\n| K487-API-020 | 守り | DB の関数の守り（2 層目） | `app.ticket_descendant_counts` は security definer・search_path に pg_temp・public から外し kaname_app だけに渡す。別の会社の文脈で直に呼ぶと `{ok:false}`・見える人の文脈は件数を返し、何も書かない（消えない） |\n\n[残る] の手順は無い（読むだけ・書かない）ので、後片付けが失敗する行は無い。\n\n### テストの型の受け（分類 LIST）\n\n| 型 | どこで受けるか |\n|---|---|\n| 0 件・1 件・たくさん | K487-API-001（0）・002（子 2・孫 1）・006（つながり 2） |\n| 見える範囲 | K487-API-009・010・011・016・019 |\n| 消した物 | K487-API-002・003・005・006・011 |\n| 並び・絞り込み・ページ・探す語 | 要らない：件数を 1 つ返す口（並ぶ物も絞る問い合わせも無い）。TP-LIST-01 の 0 件・1 件・境目は K487-API-001・002、TP-LIST-02 の同じ値の並び・TP-LIST-03 の絞り込みの URL・TP-LIST-04 の探す語は要らない: 並びも絞りも探す語も持たない口 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（消す前の確認を開く） | 0（口が無い・501） | 1 本（previewTicketDelete）。開く前には読まず、確認を開いたときだけ 1 本 |\n| 直列の段 | — | 1 |\n| 口ごとの文の数・取引の数 | — | 1 取引（withTenant）・文 1 つ（件数を副問い合わせと、子・孫の DB の関数 1 回で）。子・添付ごとに引かない |\n| 認証の要る答えの Cache-Control | — | private, no-store（K487-API-001） |\n| 新しい住所 | — | 増えない（/api/v1/tickets/:id/delete-preview は契約に在る） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した物と、消す・消したチケット・下見を使う試験を手で探した物。件数は作る段の木（本線＋この葉が運ぶ物）で数える。この葉の新しい試験（F7/ticket-delete-preview.test.ts）と carry の土台・k144.d/K-487.ts は、命令のパスで外した。\n\n```search\ngit grep -l \"previewTicketDelete\\|TicketDeletePreview\\|delete-preview\\|delete_preview\\|ticket_soft_delete\" -- 'apps/api/test/*.ts' 'apps/api/test/**/*.ts' 'packages/db/test/*.ts' 'apps/web/tests/**/*.ts' ':!apps/api/test/generated/*' ':!apps/api/test/features/F7/*' ':!apps/api/test/features/contract/k144.d/*'\n5\n```\n\n- apps/api/test/features/F4/ticket-list.test.ts: 替えない — K92-API-014 は DB の関数 `app.ticket_soft_delete` を直に呼んで、edit を持つ人は消え権限の無い人は消えないことを見る。この葉は `ticket_soft_delete` を直さない（K-488 も包む新しい関数を足すだけ）ので結果は変わらない\n- apps/web/tests/k/delete-mock.ts: 替えない — 画面の葉 K-590 の試験の道具（口の答えを網の手前で差し替える）。この葉の試験ではなく K-590 が持つ。下見の答えの形（鍵 10 個）は K-590 が道具に写している\n- apps/web/tests/k/k599-f7-slots.spec.ts: 替えない — 区画の READY が false のあいだだけ下見・戻す口を呼ばないことを見る（`ready(\"delete/more-menu-slot\")`）。この葉は口を作るだけで差し込み口の入口は変えない\n- apps/web/tests/skeleton/k595-delete-restore.spec.ts: 替えない — 画面から下見を読む道を通す中間の試験（K-595）。下見の答えの欄が増えても `status` が 200 を見るだけで、欄の集まりを固定していない\n- apps/api/test/row_rules.test.ts: 替える — 「チケットを消す：担当者・作成者・マネージャー（管理者）は通り、関わりの無い人は止まる」（deleteTicket の入口の式を `TICKET_PEOPLE` と確かめる 1 つの it）は、入口の式を `true`（見えるだけ）に変えるので落ちる。切る段で、deleteTicket・previewTicketDelete の 2 口の式が `true` であること・見える人が通ること・無い行は missing（404）であることを見る形に書き替えた（carry で運ぶ。中の判定そのものは K487-API-010・K488-API-003 が本物の DB で見る）。ほかの it は変えない\n- apps/api/test/authz_rows.test.ts・apps/api/src/contract/authz.test.ts: 替えない — 契約に出た行の決まりを全部本物の表・偽の行の答えで動かす。deleteTicket・previewTicketDelete の `true` もその中に入り、式の中身を書き並べていない（authz.test.ts の行に結ぶ口の除外の表は K-489 が足す）\n- scripts/ci/contract.test.mjs: 替えない — 契約の破壊的変更を見る。この葉は答えの欄を足すだけ（消す・変える欄は無い）\n- scripts/ci/k327_migrations_gen_test.py・packages/db/test の migration の一覧・本物の DB に migration を全部当てる試験: 替えない — migration を 1 本足すので一覧は作り手 `gen_migrations.py` が作り直す。関数は読むだけで、前の表・関数は変えない（`app.ticket_visible`・`app.member_ok` は呼ぶだけ）",
+    "決定ログ": "- 2026-11-20 切る段の決め（P6・P14）：下見に承認待ち・つながり・走っている実行の件数を足す。`descendants`（子と孫の合計）も足す（子・孫の扱いを選ぶ段を出すかの元・「子 2 件・孫 3 件も消える」の表示）。件数はそのチケット自身の物だけ（子・孫の物は数えない）\n- 2026-11-20 切る段の決め：消せる人の判定の文（E-DEL-001）を出すため、入口の行の決まりは「見えるだけ」にして、作った人か edit かは口と DB の関数が持つ（K-353 の updateCredential と同じ作り）\n- 2026-11-20 切る段の決め（2026-11-21 の精査の直しで、子・孫を数える DB の関数 1 本の migration を足した。下の 2026-11-21 の行）：添付は `attachments.owner_type = 'ticket'` で数える（段 5 が貼り付けを作るときに同じ値にそろえる）。成果物は実行の仕事に結ぶ\n- 2026-11-20 切る段の決め：消すと、承認待ちは取り下げ・つながりは外れるだけで相手は残る・添付と成果物には何も書かない（戻すときそのまま見える）。アーカイブは作らない（D-151.20・代表に聞く）\n\n- 2026-11-21 精査の直し（PM の決め）：下見は cascade で子・孫の分の取り下げ・止める件数も数える（`descendant_pending_approvals`・`descendant_running_runs`・鍵は 10 個）。子・孫は消す口と同じく定義者の DB の関数で数え、見えない子も入れる（migration 1 本を足した）。決定 P6（「子・孫の物は数えない」）は、自分の分の欄（`pending_approvals`・`running_runs`）についてのまま。子・孫の分は別の欄",
+    "PM に確かめたいこと": "- 代表に聞く：範囲 7.1 の 2（アーカイブ）。この葉は勧め（作らない）で切った",
+    "リスクと懸念": "- `attachments.owner_type = 'ticket'` は段 5（貼り付けの口）がまだ書かない値。段 5 が別の値（例 `ticket_section`）で作ると、添付が 0 件に見える。段 5 を切るときに「owner_type は ticket」と申し送る\n- 自分の分の件数は行の守りの中で読める分。グループが見える人はどれも読めるので、作った人と edit の人で食い違わない（K487-API-016）。edit は持つがグループが見えない、という形は作れない（edit は view を含む）。つながり（`links`）だけは、見えない相手との分が入らない（両側が見えるときだけ読める）ので、見える人によって少なく出ることがある（数が小窓の「外れるつながり」の字だけで、消す・外す動きには影響しない）\n- 子・孫の件数は見えない子の分も出る（件数だけ・題名は出さない）。見えないグループの子の数が、そのチケットを消せる人に分かる",
+    "申し送り": "- K-488：`shared.ts` の `RESTORE_DAYS`・`restorableUntil`・`forbidden()`・`notFound()`・`down()` を使う。消せる人の判定は同じ式（作った人か edit）を DB の関数にも書く。答えの restorable_until は `deleted_at` から数える（下見は今から数える）。cascade が引く子孫は、この葉の `app.ticket_descendant_counts` と同じ再帰・同じ条件（`deleted_at is null`・子と孫の 2 段下まで）にそろえる（下見の descendant_* と消す口の withdrawn_approvals・stopped_runs が同じ数になる）\n- K-590（画面）：確認の小窓の「一緒に起きること」は、この答えの件数が 0 の行は出さない。承認待ちは「承認待ちから取り下げられる」・走っている実行は「動いている AI は止まる」。自分の分（`pending_approvals`・`running_runs`）を出し、子・孫の 3 択の小窓で「一緒に消す」を選んだときだけ子・孫の分（`descendant_pending_approvals`・`descendant_running_runs`）を足して出す。消す口が E-DEL-010 を返したときは下見を読み直す：下見の children は見えない子も数える（この葉の決め）ので、読み直しは必ず 1 以上になり、3 択の小窓へ進める（抜けられなくなることは無い）\n- 段 5：チケットの添付を貼る口は `attachments.owner_type = 'ticket'`・`owner_id = チケット` で書く",
+    "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-487.*`）に書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので直に書かない\n- migration は時刻の名前 `packages/db/migrations/20261123088700_ticket_delete_preview.sql`（K-327）。一覧 packages/db/src/migrations.generated.ts は作り手 `gen_migrations.py` の生成物\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/ticket-delete-preview.ts` の `export const register = defineHooks({…})`（K-326）。server.ts と fuzz の的は直に書かない（作り手 `gen_ts_registries.py` が一覧を作る）\n- `05_flow/screen_api.py`・`scripts/ci/row_rules.mjs`・`08_api/phase1/01_チケット.md`・`11_tickets/K-67.md` は同じ段のほかの葉も別の行を直す（overlap_ok）"
+   },
+   "file": "11_tickets/K-487.md"
+  },
+  {
    "id": "K-561",
    "title": "DB：本文 1 枚の持ち方（ticket_sections の鍵 body・種別のひな形 ticket_kinds.body_template・app.ticket_create に本文 1 枚の道を足す）と、文書の木の型と doc → text（K-59 の葉）",
    "kind": "タスク",
@@ -21147,6 +21317,89 @@
    "file": "11_tickets/K-638.md"
   },
   {
+   "id": "K-639",
+   "title": "直し：記憶（作る・直す）・PC の引き取りの口が、契約どおりの形の入力を 422 で断る借りを返す（契約 fuzz G36 の ST202・覚えることの null・外部キー・使えない接続コードは 422 → 404 E-CONN-013）（K-56 の葉・PM の直し。チケットを作るの分は K-437 へ移した）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "契約",
+   "assignee": "実装",
+   "due": "2026-11-22",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（直しの葉の実測はまだ無い）。形の近い K-638（口 5 本・16 行・1 時間）より小さい：契約の足し分（screen_api の表の直し・断片 1 つ）15 分・エラーの類 1 つと結び 5 分・引き取りの口の 1 行 5 分・記憶を作る口が決めない欄を渡さない 15 分・作り手を回して生成の試験の結び 5 分・自分の確かめ 10 分。試験は 13 行（API 9・契約 4）。前の遅れは足さない",
+   "decisions": [
+    "D-089",
+    "D-128.138",
+    "D-128.125",
+    "D-128.143",
+    "D-130.2",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "口の答えの番号・契約の形・記憶を作る口が受ける欄だけ。引き取り・記憶の DB の関数と書き込み先は前のまま（外への送り出し・秘密に触らない）",
+   "tests": [
+    "apps/api/test/features/contract/k639-pm-fuzz.test.ts",
+    "scripts/ci/k639_contract_test.py"
+   ],
+   "carry": [
+    "scripts/ci/contract_shape_test.py",
+    "apps/api/test/features/F3/connect-pc.test.ts",
+    "apps/bridge/test/pairing.test.ts"
+   ],
+   "depends_on": [
+    "K-638"
+   ],
+   "acts": [
+    "A09",
+    "A30",
+    "A98"
+   ],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口の答えの番号と契約の形だけ。画面を触らない）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/bridge",
+    "@kaname/contracts",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "ci",
+    "shared"
+   ],
+   "changes": [
+    "05_flow/screen_api.d/K-639.py",
+    "scripts/ci/contract_shape.d/K-639.py",
+    "05_flow/screen_api.py",
+    "07_qa/test-specs/errors.d/_base.json",
+    "07_qa/test-plan/ears-elsewhere.d/_base.json",
+    "scripts/ci/ci_scope.d/K-639.json",
+    "scripts/ci/g65.d/K-639.txt",
+    "apps/api/src/features/F3/connect-pc/hooks.ts",
+    "apps/api/src/hooks/agent.ts"
+   ],
+   "flow": "F3-自分の PC をつなぐ・AI に覚えてもらう",
+   "sections": {
+    "目的": "K-638 と同じ借り（K-424 が入口の上限 429 を外して出た契約 fuzz G36 の ST202：形どおりの入力が断られた）の、記憶・PC の引き取りの分。**チケットを作る（期限の暦・今日より前・開始が期限より後・優先度「高」の理由・画面の create-ticket.tsx）は PM の決め（2026-11-21 05:50）で段 5 の K-437 が持つ**。この葉は hooks.ts（チケット）と create-ticket.tsx を触らない。\n\n| 口 | 今の断り | 断られた入力 | 直し方 |\n|---|---|---|---|\n| PATCH /memories/{id} | 422「覚えることが空です」 | body が null（実物） | 契約に書く（body は文字。null は外す） |\n| POST /memories | 422「入力内容を確認してください」（欄 body） | body が null（実物：回 G36 の UCuQ6w。同じ体に承認した人・要約・持ち主などの乱数の uuid と承認の時刻も入っていた） | 契約に書く（PATCH と同じに body は文字。null は外す・無いのは通す）。本人が決めない欄は受けて入れない（口）。種類・確かさは同じ類の先回り（下の訳） |\n| POST /bridge/claim | 422 E-CONN-013 | 形どおりだが DB 上は使えないコード | **404 E-CONN-013**（欄なし・どれかを見分けさせない） |\n\nPM の決め（控え帳 2026-11-20 16:51・pm-decisions 2026-11-21 01:55）：**形の誤りは契約に書き、DB の中身・今日の日付で決まる断りは 422 にしない（404・409）。検査の例外は足さない**。\n\n- K-638 が入れる契約の足し分と生成物の上に重ねる（同じファイル `05_flow/screen_api.py`・`07_qa/test-plan/ears-elsewhere.d/_base.json` を触るので K-638 の後）\n- 前からの鍵 signInWithPassword・verifySignInCode の `UNEXPRESSIBLE_422`（K-638 が INPUT_RULES で契約に書いた分）の行を、表の写しと一緒にここで消す",
+    "完了の条件": "- [ ] 下の表の 13 行（K639-API-001〜008・013・K639-SHAPE-001〜003・007）が緑\n- [ ] 替えた前からの試験（connect-pc.test.ts・pairing.test.ts・contract_shape_test.py）と、替えない前からの試験が緑\n- [ ] 契約 fuzz（G36）で、この葉の 4 本に ST202 が出ない\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- **記憶を直す（updateMemory）**：契約は body を文字だけにする（INPUT_RULES の allOf）。口は前のまま（null・空白だけは 422 欄 body「覚えることが空です」）。入口の zod は変えない（null を通し、口が断る：K144-SHAPE-023 の決まり）\n- **記憶を作る（createMemory・表の素の書き込み）**：覚えること body は文字（INPUT_RULES の allOf・PATCH と同じ）。**null は契約に合わず 422（欄 body）**、無いのは 201（`{}` も 201 のまま）。実物の失敗（K-424 の G36・手元の記録 `.ticket-flow/side-notes/PM-fuzz-契約の見本/memories-fuzz-実物.md`）は POST も PATCH も body が null だけだった。以下の外部キー・種類・確かさは、**実物の体が乱数の uuid（承認した人・要約・持ち主・置き換え先）を含んでいた**ので、body を直した次に同じ 422（DB の外部キー）が出る類の先回りとして残す（確かさ・種類は実物では通っていた値で、DB の桁・外部キーが断る値を契約に書く先回り。外すと G36 が 1 つ縮んだ例で出し直しになる）：種類 kind_id は `rule`・`preference`・`example` か null（契約の enum・DB の memory_kinds の 3 行と同じ）。確かさ confidence は numeric(3,2) の桁と**同じ**（四捨五入で 10 以上になる 9.995 以上は契約に合わない・9.994 は合う）。承認した人・承認の時刻・要約・置き換え先・持ち主は本人が決めない欄で、**送っても受けて、入れない**（持ち主は本人・ほかは空のまま）。契約の入力の形は変えない（表の形から欄を外すと、手書きの入力の `_id` は uuid の決まり K144-SHAPE-004 に当たる）\n- **引き取り（claimPairingCode）**：形どおりのコード（英数字 6 けた・表記ゆらぎを直した後）が DB で使えない（違う・期限切れ・使い終わった・出し直す前）は **404 E-CONN-013**・正本の文。欄・details は付けず detail は空。形の誤り（5 文字・空・33 文字・使わない字）は 422 欄 code のまま。1 分に 5 回の上限（429）・コードの 1 回だけ・期限・PC の印の渡し方は前のまま。Bridge は body の文を窓に出すので状態コードが変わっても動く（claimReply は状態で分けない）\n- エラーの類：E-CONN-013 を `validation` → `not_found`（`errors.d/_base.json`）。口は `new KanameError(code).status` で番号を決めているので、口の状態の番号は類から出る（E-CONN-013 → 404）\n- 契約 fuzz の期待：契約に合う入力を口が 422 で断らない／契約に合わない値は 4xx で断る\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない",
+    "確かめたこと（切る段・2026-11-21）": "- 本線（1f20555a）の口：引き取りは `connect-pc/hooks.ts` の `claimPairingCode`（`fromCatalog(\"E-CONN-013\", { field: \"code\" })`）、記憶を直すのは `hooks/agent.ts` の `updateMemory`、記憶を作るのは口に振る舞いが無く `contract/op.ts` の表の素の書き込み（`withOwner` が持ち主を本人にする・DB の外部キー・桁の断りは 422 `DB_INPUT_REPLY`）\n- **契約と口を実際に作り直して確かめた**：見本（`.ticket-flow/side-notes/PM-fuzz-契約の見本/`）を使い捨ての作業場所に当て、作り手を回すと、契約の試験 `contract_shape_test.py`（27 本・この葉が運ぶ写しで）・この葉の `k639_contract_test.py`・G34 が緑。生成の試験は `test_post_bridge_claim_not_found`・`test_post_tickets_conflict` が増え、`test_post_tickets_rejected_422_2` が `rejected_422` に詰まる（結びは下の実施事項）\n- 確かさの式は numeric(3,2) の四捨五入（0.005 を絶対値で切り上げ）と 2 万通りの値で突き合わせ済み\n- 契約 fuzz は断られた入力を 1 つ（縮めた例）しか出さない。この葉で先に読んで直した：メモ（body null）・記憶を作る（外部キー・桁）・引き取り（使えないコード）。チケットを作るの分は K-437 へ移した（PM の決め 05:50）。**POST /memories の実物が取れた**：POST も PATCH も body が null の 422 だった（外部キー・桁ではなかった）。契約の body を両方の口で null 不可にした。外部キー・種類・確かさの行は、実物の体が乱数の uuid を含んでいたことからの先回りとして残した。作る段の CI（G36）で残りが出たら、その欄は契約か口で直す（例外は足さない）\n- 同じ形の箇所を全部出した（口が 422 で断る DB の外部キー・桁を持つ生の書き込み）：\n\n```search\ngit grep -n -e '\"createMemory\": ' -- 05_flow/screen_api.py\n3\n```\n\n  - `screen_api.py` の `createMemory` の 3 行（`VALUE_RANGES`・`UNEXPRESSIBLE_422`・権限の表）。この葉で触るのは前の 2 つ。ほかの表の素の書き込みの口（会話など）はこの葉の口でない",
+    "依存の理由": "- K-638: 要る — 同じファイル（`05_flow/screen_api.py`・`07_qa/test-plan/ears-elsewhere.d/_base.json`・`scripts/ci/pm_fuzz_contract.py`）の上に重ねる。K-638 が決める契約の足し分と、signInWithPassword・verifySignInCode の `UNEXPRESSIBLE_422` を消すのがこの葉。K-424 はこの葉の後",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 契約の表の直し | `05_flow/screen_api.py`：`VALUE_RANGES`（createMemory の confidence の式と kind_id の enum）・`UNEXPRESSIBLE_422`（claimPairingCode の E-CONN-013・updateMemory・createMemory・signInWithPassword・verifySignInCode の行を消す。createTicket の行は K-437 が持つので触らない）。本文は見本の `変える物.diff`（reset の 409 の hunk は K-638 の分で、本線に入っている） |\n| 契約の足し分 | `05_flow/screen_api.d/K-639.py`（新しい）：`INPUT_RULES`（updateMemory・createMemory の body は文字）・`ERRORS_4XX[\"claimPairingCode\"]`（404 E-CONN-013）。見本の `screen_api.d-K-639.py` と同じ |\n| 表の写し | `scripts/ci/contract_shape_test.py`（切る段で替えて運ぶ。上の `screen_api.py` の表の直しと同じ言葉） |\n| エラーの類 | `07_qa/test-specs/errors.d/_base.json`：E-CONN-013 の class を `not_found`（E-VAL-012・E-DUE-004 は K-437） |\n| EARS の結び | `07_qa/test-plan/ears-elsewhere.d/_base.json`：`claimPairingCode.covers` に `test_post_bridge_claim_not_found` → K639-API-005（見本の差分どおり。作り手を回して出た名前） |\n| 引き取りの口 | `apps/api/src/features/F3/connect-pc/hooks.ts`：`fromCatalog(\"E-CONN-013\", { field: \"code\" })` から `{ field: \"code\" }` を外す（番号は類から 404）。注（422・同じ返事）を 404 に直す |\n| 記憶を作る口 | `apps/api/src/hooks/agent.ts` に `createMemory.before`：承認した人・承認の時刻・要約・置き換え先・持ち主を入力から除いて表の書き込みに渡す（続きの合図は何も返さない `before` の既存の形）。ほかの欄はそのまま |\n| 運ぶ物 | 切る段で替えた試験（`contract_shape_test.py`・`connect-pc.test.ts`・`pairing.test.ts`）は carry: |\n| 登録先 | `scripts/ci/contract_shape.d/K-639.py`（空の 6 つの表。体を足す新しい鍵は無く、前からの鍵の直しは運ぶ `contract_shape_test.py` に在る・K-351 と同じ）・`scripts/ci/ci_scope.d/K-639.json`（data_links：`apps/api/src/features/F3/connect-pc/**`・`apps/api/src/hooks/agent.ts` → `k639-pm-fuzz.test.ts`／`05_flow/screen_api.d/K-639.py` → `k639_contract_test.py`。同じ道を前の断片が持っていれば止まるので、その行は足さず前の行の tests に足す）・`scripts/ci/g65.d/K-639.txt`（1 行：`python3 scripts/ci/k639_contract_test.py`） |\n| 作り手 | `python3 scripts/tickets/regen_all.py`（生成物は changes: に書かない） |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 口ごとの文の数・取引の数 | 引き取り 1 文・記憶を作る 1 文 | 同じ（判定を足さない） |\n| 新しい住所・Cache-Control | 対象なし | 対象なし（口は増えない） |",
+    "表の住所": "- 新しい口・migration は無い。エラーの番号は前のまま（E-CONN-013）で類だけ変える。契約の 404（引き取り）の項目が足される。CI の範囲の地図に足す物は無い",
+    "外に影響する手順": "- なし — DB に書く手順・外を呼ぶ手順・セッションや錠を作る手順を足さない（記憶を作る口は書く欄を減らすだけ・引き取りは断る番号だけ）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/contract/k639-pm-fuzz.test.ts`（本物の DB・makeFixture の土台）／`scripts/ci/k639_contract_test.py`（契約の形・jsonschema）。固定の待ちは使わない（期限切れは DB の時刻を進める）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 記憶（自分の） | 画面・直に API で直す | 本人 | body が文字なら 200・null・空白だけは 422（作る口の null は次の行） | このチケット | K639-API-001 |\n| 記憶を作る：body・種類・確かさ・決めない欄 | 直に API | 本人 | body が null は 422・形どおり（実物の体を含む）は 201（決めない欄は入らない）・形の誤りは 422 | このチケット | K639-API-001・002・003・004・013 |\n| 接続コード：使えない（違う・期限切れ・使い終わった・出し直す前） | Bridge の窓から引き取る | 印の無い PC | 404 E-CONN-013（どれも同じ答え・PC は増えない・正しいコードはそのまま使える） | このチケット | K639-API-005・006・008 |\n| 接続コード：形の誤り | 同じ | 同じ | 422 欄 code（変えない） | このチケット | K639-API-007 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K639-API-001 | 入力 | 記憶を直す・作る：body が null（直す口は題だけ直して null も・作る口は題つきも）／直す口の空白だけ／文字 | null は 422・欄 body（作る口は記憶が増えない・直す口は記憶が変わらない）。直す口の空白だけも 422／文字は 200 で入る |\n| K639-API-002 | 入力 | 記憶を作る：種類が rule・preference・example・無し／知らない種類 | 前者は 201 で種類が入る／知らない種類は 422・記憶は増えない |\n| K639-API-003 | 守り | 記憶を作る：承認した人・承認の時刻・要約・置き換え先に乱数・持ち主に別の人を送る | 201。DB の行は承認した人・時刻・要約・置き換え先が空・持ち主は本人 |\n| K639-API-004 | 入力 | 記憶を作る：確かさ 9.994・9.99・-9.99・0／9.995・-9.995・9.9951・10 | 前者は 201（9.99・9.99・-9.99・0.00 で入る）／後者は 422 |\n| K639-API-005 | 入力 | 引き取り：形どおりで使えないコード（ZZZZZZ） | 404・E-CONN-013・正本の文・error not_found・欄／details なし・detail は空。PC は 1 台もできない（本人は別の接続コードを出しているだけ） |\n| K639-API-006 | 時間の流れ | 引き取り：違う・出し直す前・使い終わった・期限切れ（11 分前）のコード | どれも違うコードと同じ 404 の答え。出し直した新しいコードは 201 |\n| K639-API-007 | 入力 | 引き取り：5 文字・空・33 文字・使わない字（ABC10O） | どれも 422・欄 code |\n| K639-API-008 | 操作の揺れ | 引き取り：使えないコードを入れた後に正しいコード | 正しいコードは 201（コードは使ったことにならない）・PC は 1 台 |\n| K639-SHAPE-001 | 守り | 契約：記憶を直す・作る | 直す口：body が文字は合う／null・無い・空・空白だけ・数は合わない。作る口：無い・文字は合う／null・数は合わない |\n| K639-API-013 | 入力 | 記憶を作る：実物の体（覚えることは文字・承認の時刻・乱数の uuid の承認した人・要約・持ち主・参照元・置き換え先・種類 null・確かさ 0） | 201。覚えることは入り、承認した人・要約・置き換え先は空・持ち主は本人 |\n| K639-SHAPE-002 | 守り | 契約：記憶を作る | 種類 rule・preference・example・null は合う／知らない種類は合わない。確かさ 0・9.99・9.994・-9.99 は合う／9.995・-9.995・10・abc・空は合わない |\n| K639-SHAPE-003 | 守り | 契約：引き取りの応答 | 404 が在り E-CONN-013 を言う／422 の説明は E-CONN-013 を言わず、書けない決まりに E-CONN-013 が無い |\n| K639-SHAPE-007 | 守り | 契約：書けない決まりの掃除 | 記憶を直す・作る・sign-in・verify の 422 に x-unexpressible-422 が無い |\n\n### K-437 へ移した行（PM の決め 2026-11-21 05:50・この葉では持たない）\n\nチケットを作る（createTicket）の分。行の中身は K-437 が自分の行として持つ（試験・契約の見本・画面の試験は PM の側に残してある）。この葉の行の番号は詰めない（欠番）。\n\n- 旧 API-009：期限・開始が暦に無い日付（0000-00-00・2026-02-30・2026-13-01）は 422・欄 due_on／start_on。うるう日・開始が空は 201 — K-437 へ移した\n- 旧 API-010：期限が今日より前は 409・E-VAL-012・details なし（期限の断りが先・今日は 201） — K-437 へ移した\n- 旧 API-011：優先度「高」で理由が空は 422・欄 priority_reason — K-437 へ移した\n- 旧 API-012：開始が期限より後は 409・E-DUE-004（欄なし）— K-437 へ移した\n- 旧 SHAPE-004・005・006：契約のチケットの期限・開始の暦／優先度の理由／409 の宣言 — K-437 へ移した\n- 旧 UI-001・002：画面の欄の位置（口が 409・欄なし → 期限／開始日の欄に出す）— K-437 へ移した\n- E-DUE-004 の定義（errors.d）と E-VAL-012 の類の替え（conflict）・K60-API-022・023 と K-60.md の替え・createTicket の `UNEXPRESSIBLE_422` の行の整理 — K-437 へ移した\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない：版の確かめは変えない（記憶の直しは後の勝ち・この葉は入力の形だけ） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | 要らない：K144 の記憶の行（無い記憶は 404）・前のまま |\n| TP-CRUD-03 消す → 戻す、子のあるものを消す | 要らない：消す・戻すを扱わない |\n| TP-CRUD-04 2 回押し | 要らない：冪等キーの振る舞いは変えない。引き取りは 1 回だけ（K639-API-008・K57-API-007・036） |\n| TP-CRUD-05 保存の途中で失敗 | 要らない：書く手順を足さない（記憶は 1 文のまま）。K639-API-001・002 は増えないことを見る |\n| TP-CRUD-06 書きかけで戻る・再読み込み | 要らない：画面の書きかけの扱いを変えない |\n\n### G-11〜G-16 の判定\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外のリソースを足さない |\n| G-12 切り替わりの瞬間 | 該当 | コードの期限切れ 11 分前（K639-API-006） |\n| G-13 機能の組み合わせ | 該当 | 出し直す前のコード × 使い終わったコード（K639-API-006） |\n| G-14 口座状態の波及 | N/A | 口座状態を読まない |\n| G-15 信号なし終了 | N/A | 外のプロセスを待たない |\n| G-16 有限資源の枯渇 | N/A | 資源の取り方を変えない（引き取りの上限 5 回／分は前のまま） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 4 本（この葉の自分の試験を除く）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/api/src/features/F3/connect-pc/hooks.ts apps/api/src/hooks/agent.ts\n4\n```\n\n- scripts/ci/contract_shape_test.py: 替える — 表の写し（`VALUE_RANGES`・`UNEXPRESSIBLE_422`）を、契約の直し（createMemory・claimPairingCode・updateMemory・signInWithPassword・verifySignInCode）と同じ言葉に替えた。carry: で運ぶ（K144-SHAPE-023・024 が契約と 1 対 1 で突き合わせる）。createTicket の行は触らない（K-437）\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 記憶を作るの外部キー・桁の行（22P02・22003・23503・23514）は契約に合わない値（知らない種類・桁あふれ）の 422 で、前のまま 422。RANGE_CASES（createMemory の確かさ）の値も、契約の判定と口の答えが同じまま\n- apps/api/test/agent_hooks.test.ts: 替えない — 記憶を直すの body が空は 422（前のまま）\n- apps/api/test/authz_rows.test.ts: 替えない — 口の権限の表を見るだけで、状態コードを見ない\n\n口の状態コード・番号を見ていて機械の照らしに出ない試験を検索で出した物：\n\n```search\ngit grep -l -e \"bridge/claim\" -e \"claimPairingCode\" -e \"E-CONN-013\" -- apps/api/test apps/bridge/test apps/web/tests apps/e2e scripts/dev ':!apps/api/test/generated/*' ':!apps/api/test/features/contract/k639-pm-fuzz.test.ts'\n15\n```\n\n- apps/api/test/features/F3/connect-pc.test.ts: 替える — `sameAsWrongCode` を 422 → 404、K57-API-038 の「5 回まで」の 5 回を 404、K57-API-035 の同時の 2 台（201 と負けた側）を `[201, 404]` に替えた（この直しそのもの）。K-57 のチケットの行は状態コードを言わないので、運ぶのは試験だけ\n- apps/bridge/test/pairing.test.ts: 替える — K57-BR-002 の `claimReply(422, E-CONN-013)` を 404 に替えた（Bridge は状態でなく body の文を読むので結果は同じ）\n- apps/api/test/features/F1/terms.test.ts・F3/ai-browser-bridge.test.ts・ai-browser-check.test.ts・ai-browser-pick.test.ts・credential-device.harness.ts・device-health.test.ts・remove-pc.test.ts・F4/setup-tasks.test.ts・F5/delegate-kit.ts・apps/web/tests/_lib/api.ts・scripts/dev/fake-bridge.mjs: 替えない — 正しいコードで PC をつなぐ（201）だけ\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 余計な項目（strict）の 422 の行で、使えないコードの 422 でない（「422 の後もコードは使える」はその 422）\n- apps/web/tests/skeleton/m2-bridge-ticket.spec.ts: 替えない — 窓に出る文（body の message）を見る。状態コードを見ない\n\n```search\ngit grep -l -e \"/memories\" -e \"createMemory\" -e \"updateMemory\" -- apps/api/test apps/web/tests apps/e2e ':!apps/api/test/generated/*' ':!apps/api/test/features/contract/k639-pm-fuzz.test.ts'\n4\n```\n\n- apps/api/test/agent_hooks.test.ts・features/contract/k144-contract.test.ts・features/contract/k144-leaves.test.ts・qa-d.test.ts: 替えない — 上と同じ（記憶の直し・作るの前の答えが同じ。k144-leaves・qa-d は口の表・uuid の行）",
+    "決定ログ": "足さない。この葉は控え帳（2026-11-20 16:51「422＝形の誤り／404／409・検査の例外は足さない」）と pm-decisions（2026-11-21 01:55）の当てはめ。引き取りの 404 の控え帳への 1 行は PM が足す（チケットを作るの 409 は K-437）",
+    "決める人・PM に聞くこと": "PM の決め：2026-11-21 04:30 ③は memories の実物で解決（下の 1）。**05:50：チケットを作る（createTicket）の契約の借り（期限の暦・今日より前の期限 409 E-VAL-012・開始が期限より後 409 E-DUE-004・優先度「高」の理由・画面 create-ticket.tsx）は全部、段 5 の K-437 が持つ**。この葉は hooks.ts（チケット）・create-ticket.tsx・E-DUE-004 と E-VAL-012 の類の替えを持たない。④reset の 410 などは別の葉。\n\n1. （解決）POST /memories の断りの実物：PM が出した記録（上の「前提」）で、POST も PATCH も body が null と分かった。行 K639-API-001・013・SHAPE-001 を実物に合わせた。外部キー・種類・確かさの行は先回りとして残した（訳は前提）。\n2. （参考）記憶を作るの「決めない欄」は、受けて入れない形（この葉）。契約の入力から外す形は手書きの入力の `_id` は uuid の決まり（K144-SHAPE-004）に当たるので、別の葉で",
+    "見込み": "1 時間（頭の欄の estimate_basis のとおり）。試験 13 行（API 9・契約 4）"
+   },
+   "file": "11_tickets/K-639.md"
+  },
+  {
    "id": "K-640",
    "title": "直し：CI の定義の全部の組の台（runs-on）を、リポジトリの変数 CI_RUNNER で替えられる形にする（変数が無ければ今までの Mac の VM・GitHub の台でも同じ定義が動く入口・K-56 の葉・PM の直し）",
    "kind": "タスク",
@@ -21386,6 +21639,104 @@
    "file": "11_tickets/K-644.md"
   },
   {
+   "id": "K-673",
+   "title": "段 10 の決定：決定ログの新しい節 §152（代表の決め 1〜13＋PM の決め・D-152.1〜37）と答えの記録を本線に入れるだけ（文書だけ・依存なし・流れの直しは K-727・K-69 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-69",
+   "milestone": "F9",
+   "area": "文書",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い段 5 の K-430・段 9 の K-425（決定ログの節と答えの記録を carry で写す・見込み 0.5）から引いた：carry で写す 5 分・作り手（regen_all.py → trace_gate.py --index）10 分・試験 4 行を流して直す 5 分・CI 10 分",
+   "decisions": [
+    "D-152.1",
+    "D-152.2",
+    "D-152.3",
+    "D-152.4",
+    "D-152.5",
+    "D-152.6",
+    "D-152.7",
+    "D-152.8",
+    "D-152.9",
+    "D-152.10",
+    "D-152.11",
+    "D-152.12",
+    "D-152.13",
+    "D-152.14",
+    "D-152.15",
+    "D-152.16",
+    "D-152.17",
+    "D-152.18",
+    "D-152.19",
+    "D-152.20",
+    "D-152.21",
+    "D-152.22",
+    "D-152.23",
+    "D-152.24",
+    "D-152.25",
+    "D-152.26",
+    "D-152.27",
+    "D-152.28",
+    "D-152.29",
+    "D-152.30",
+    "D-152.31",
+    "D-152.32",
+    "D-152.33",
+    "D-152.34",
+    "D-152.35",
+    "D-152.36",
+    "D-152.37"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "決定ログ（文書）と答えの記録と、それを読む試験だけ。口・DB・外への送り出し・秘密・画面のコードに触らない",
+   "tests": [
+    "scripts/ci/k673_decision_log_test.py"
+   ],
+   "carry": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "scripts/ci/g65.d/K-673.txt"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "文書だけ。画面のコードを変えない",
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "scripts/ci/k673_decision_log_test.py",
+    "scripts/ci/g65.d/K-673.txt"
+   ],
+   "flow": "ナレッジを書いて貯める",
+   "sections": {
+    "目的": "段 10 を新しい形で切り直した決め（代表の決め 1〜13 と PM の決め）を、決定ログの新しい節 §152 として本線に入れる。段 10 の葉はどれも `decisions:` に D-152.n を持ち、作り手（build_index の K4）が本線の決定ログに在ることを求めるので、**依存なしで一番先に入れる**（段 5 の K-430・段 9 の K-425 と同じ形）。流れの正本の直しは K-727 に分けた。\n\n- **決定ログ §152（切る段で書いた・carry で写す）**：D-152.1〜13＝代表の決め 1〜13（番号は決めの番号と同じ。1〜8 は問い合わせの答えの記録つき・9〜13 は代表の言葉 2026-11-22）／D-152.14〜22＝正本から導いた PM の決め／D-152.23〜37＝決められないが勧めで切り進めた物（PM の決め。代表の言葉 2026-11-22 18:55「おっけいで進めて」で勧めのまま確定）",
+    "完了の条件": "- [ ] 下の表の 4 行（K673-DC-001〜004）が緑：`scripts/ci/k673_decision_log_test.py`\n- [ ] **答えの記録は枝に足してある・この葉が運ぶ**：`01_hearing/decider-answers.jsonl` に決め 1〜8 の 6 つの答え（6d11a514116f・bc3c857621bc・836b911fcf82・233756b2891a・e053d5507686・08a63df0368c）が入っている（追記だけ・前の答えを消さない・id で和を取る。bc3c857621bc と 08a63df0368c は段 5 の K-430 も運ぶので、同じ id の行は 1 つにする）。決定の検査 G60（`decision_source_gate.py --label 高本さん --since D-130`）が緑（切る段の枝で確かめ済み）\n- [ ] 決定の検査（trace_gate の T1・T3・T6・T7・T8・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。切る段の枝では赤）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- **決定ログの節は切る段の枝 c/段10 で書いた**（`07_functional/段10-F9/` の控えではなく、`01_hearing/決定ログ_進行中.md` の末尾 `## 152.` がそのまま正本）。この葉は carry でそれを写すだけ。表は D-152.1 から順に 1 行ずつ・抜けなしで 37 行（trace_gate は「### 決めたこと」の表の何行目かで番号を数える）。**統合の前に本線を取り込むとき、本線の節を全部残し、自分の節（§152）を番号の順に末尾へ足す（上書きしない）**。段 5（§150・K-430）・段 8（§151）・段 7（§149）・段 9（§148）が同じ時に末尾へ節を足す。並びがぶつかったら番号どおりに並べ直す\n- **答えの記録の運び方**（段 5 の K-430 と同じ）：切る段で、`.ticket-flow/decider-answers.pending.jsonl` と主の作業場所の `01_hearing/decider-answers.jsonl` から、6 つの id の行を和で `01_hearing/decider-answers.jsonl` に足した（今は 141 行）。**決め 9〜13 は答えの記録の番号がまだ無い**（「代表の言葉 2026-11-22」で書いた行は高本さん・answer= を持たない）。番号が付いたら、その行を「2026-11-22 高本さん（代表の決め）・問い合わせの答え answer=<印>」に直し、記録の行を足す（試験 K673-DC-001 の REP_WORD_ONLY を空にしてから。まとめ役に頼む）\n- 行は 3 種類：D-152.1〜13 代表の決め（1〜8 は「高本さん」・日付・answer= を持つ。9〜13 は「代表の言葉 2026-11-22」だけ）／D-152.14〜22 正本から導いた PM の決め（「PM の決め」・高本さん・answer= を持たない）／D-152.23〜37 勧めで切った PM の決め（同じ＋「代表の言葉 2026-11-22 18:55」＝勧めのまま確定）。1 つの行に PM の決めと高本さんを混ぜない（G60）\n- **段 5 の K-563 の md が指す「D-152.11」**（前の形の節の「軸と値の凍結」）は、この節では **D-152.20**（無くす物・凍結）に読み替える。D-152.11 は「画面の言葉はグループ」。まとめ役が段 5 の持ち主に知らせる（申し送り）\n- **段 5 の K-430（§150）は本線に入っている**ので、trace_gate の T3（K-410 の「E-HND-150」を決定 ID と読む誤検出）は起きない",
+    "依存の理由": "- なし — 文書だけ。本線の決定ログの末尾に §152 を足し、答えの記録に和で足す（段 5 の §150・段 8 の §151 は本線に在る）",
+    "目録で探した結果": "- 使う：`scripts/ci/trace_gate.py`・`scripts/ci/decision_source_gate.py`・`scripts/tickets/regen_all.py`・段 5 の K-430 の試験の形\n- 作る：決定ログの §152（切る段で書いた）・試験 1 本・G65 の段 1 つ。探したが同じ形の物は無い（K-430・K-425 は別の節）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）：決定ログの §152・答えの記録・G65 の段 |\n| 作り直す | `python3 scripts/tickets/regen_all.py` → `python3 scripts/ci/trace_gate.py --index`（要件一覧の作り直し）。生成物は手で書かない |\n| 試験 | `scripts/ci/k673_decision_log_test.py`（切る段が書いた） |\n| G65 の段 | `scripts/ci/g65.d/K-673.txt`：1 つの命令（carry で写る） |",
+    "外に影響する手順": "- なし — 文書だけ。DB・外・セッションに触らない",
+    "テスト仕様と確認の結果": "`scripts/ci/k673_decision_log_test.py`（python の unittest・ファイルと検査の道具を読む）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち・テスト |\n|---|---|---|---|---|\n| 決定ログに §152 が在る | 決定の検査 | — | T3・T6・T8・G60 が緑 | K673-DC-001〜004 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K673-DC-001 | 守り | 決定の行 | §152 の「### 決めたこと」の表に D-152.1〜D-152.37 が順にちょうど 1 回ずつ（37 行・表の n 行目が D-152.n）在り、1〜8 は「高本さん」・日付・answer=<12 桁>（1＝6d11a514116f・2〜4＝bc3c857621bc・5＝836b911fcf82・6＝233756b2891a・7＝e053d5507686・8＝08a63df0368c）を持ち、9〜13 は「代表の言葉 2026-11-22」を持って高本さん・answer= を持たず、14〜37 は「PM の決め」を持って高本さん・answer= を持たず、23〜37 は「代表の言葉 2026-11-22 18:55」（勧めのまま確定）も持つ |\n| K673-DC-002 | 守り | 決定の検査（T3・T6・T8） | trace_gate.py が 0 で終わり、出力に D-152.n の T3・T8 の赤が無い |\n| K673-DC-003 | 守り | この葉の decisions | K-673.md の頭の decisions: に D-152.1〜D-152.37 が全部在る（T8 の導出物） |\n| K673-DC-004 | 守り | 答えの記録と G60 | 答えの記録に決め 1〜8 の 6 つの印が在り、decision_source_gate（label 高本さん・since D-130）が 0 で終わる |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K673-DC-001（決定ログ_進行中.md） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K673-DC-001（行がちょうど 37 で並びが D-152.1〜37） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：CI の static の段と同じ引数で検査の道具を呼ぶ |\n| G-11〜G-16 | G-11：N/A（外の資源を使わない）。G-12〜G-15：N/A（文書だけ）。G-16：N/A（消費する有限の資源が無い） |",
+    "前からの試験を替えた所": "- なし — 決定ログの節を読む前からの試験は、自分の節の番号を数える物（k425・k430 の decision_log_test）だけで、§152 を足しても数は変わらない",
+    "表の住所": "- 決定ログの置き場：`01_hearing/`。表（DB）・画面のコードは触らない",
+    "決定ログ（足す行）": "- 決定ログの新しい節 §152 そのもの（D-152.1〜37）がこの葉の中身（carry で運ぶ）",
+    "リスク": "- 決定ログの末尾はほかの段も足す → 統合の前の取り込みで、本線の節を全部残し §152 を番号の順に足す（上書きしない）",
+    "申し送り": "- まとめ役（段 5）：K-563 の md の「決定ログ D-152.11」は **D-152.20** に、「K-496・K-505・K-509 の軸の葉」は **K-706・K-717** に読み替える。K-430 と K-673 は答えの記録の同じ id（bc3c857621bc・08a63df0368c）を運ぶので、同じ id の行は 1 つにして取り込む\n- まとめ役（段 10）：葉の `decisions:` に D-152.n を足す（K-682〜K-684 の「なし」の行・K-704〜K-706・K-717 の「K-673 が運ぶ」の行を、番号つきに）。決め 9〜13 の答えの記録の番号が付いたら K-673 の行を直す\n- K-727：流れの正本の直し（この葉から分けた）",
+    "代表に聞くこと": "- なし（D-152.23〜37 は代表の言葉 2026-11-22 18:55 で勧めのまま確定。決め 9〜13 の答えの記録の番号だけ後で付ける）",
+    "見込み": "0.5 時間（実測なし・仮）。試験の行は 4 行（上限 30）。"
+   },
+   "file": "11_tickets/K-673.md"
+  },
+  {
    "id": "K-780",
    "title": "段 6 の決定ログ §153（D-153.1〜33）と答えの記録を本線に入れる（文書だけ・K-61 の葉・段 6 の最初・依存なし）",
    "kind": "タスク",
@@ -21463,14 +21814,14 @@
    ],
    "flow": "AI に任せて、確かめて、終える",
    "sections": {
-    "目的": "段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。\n\n段 6 のほかの葉は `decisions:` に D-153.n を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。前は口と DB の最初の葉 K-731 が決定ログも運んでいたので、依存の無い葉（K-741・K-761 など）が先に始まると止まった。だから決定ログだけを先に本線へ入れる、この葉を分けた（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ。PM の決め 2026-11-23）。K-731 は決定ログを運ばなくなり、この葉に依存する。\n\n- **決定ログ §153（切る段の枝 c/段6 で足した・carry で写す）**：D-153.1〜14・16・17・24・26・30・33＝代表の決め（問い合わせの答えの記録つき）／D-153.15＝代表の言葉（答えの記録の無い 2026-11-22 19:50）／ほか＝正本から導いた物と作り方の PM の決め\n- **答えの記録 `01_hearing/decider-answers.jsonl`**：§153 の代表の決めの行が持つ answer=<印> の答え（19 件）を枝に足してある。追記だけ・前の答えを消さない（id で和を取る）",
+    "目的": "段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。\n\n段 6 のほかの葉は `decisions:` に D-153.n を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。前は口と DB の最初の葉 K-731 が決定ログも運んでいたので、依存の無い葉（K-741・K-761 など）が先に始まると止まった。だから決定ログだけを先に本線へ入れる、この葉を分けた（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ。PM の決め 2026-11-23）。K-731 は決定ログを運ばなくなり、この葉に依存する。\n\n- **決定ログ §153（切る段の枝 c/段6 で足した・carry で写す）**：D-153.1〜14・16・17・24・30・33＝代表の決め（問い合わせの答えの記録つき）／D-153.15＝代表の言葉（答えの記録の無い 2026-11-22 19:50）／ほか（26 を含む。26＝止められるのは承認する人だけ・2026-11-23 に根拠を「PM の決め（代表に朝に確かめる）」に直した）＝正本から導いた物と作り方の PM の決め\n- **答えの記録 `01_hearing/decider-answers.jsonl`**：§153 の代表の決めの行が持つ answer=<印> の答え（19 件）を枝に足してある。追記だけ・前の答えを消さない（id で和を取る）",
     "完了の条件": "- [ ] 下の表の 4 行（K780-DC-001〜004）が緑：`scripts/ci/k780_decision_log_test.py`\n- [ ] 決定の検査（trace_gate・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。作る段で `regen_all.py` を流してから）\n- [ ] 段 6 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない\n- [ ] 手元の CI（このチケットの範囲）が緑",
     "前提と制約": "分類: TOOL\n\n- 決定ログの §153 は切る段の枝 c/段6 で、もう実物を足した（`07_functional/段6-F5/決定ログに足す行.md` の 経緯・表 33 行のとおり）。この葉は carry でそれを写すだけ（start の持ち込みで先に写るので、この葉の K4 は通る）\n- 表は D-153.1 から順に 1 行ずつ・抜けなしで 33 行（trace_gate は「### 決めたこと」の表の何行目かで文の番号を数える）。代表の決めの行は 2026-11-22 高本さん・answer=<印>、D-153.15 は「2026-11-22 19:50 代表の言葉」、ほかは「PM の決め」（K780-DC-001 が行ごとに見る）。決める人の決定の行は、決める人への問い合わせの答えの記録と結びつく（decision_source_gate・K780-DC-004）。答えが変わって決定の行を直すのは、この葉ではなく変わった決定を持つ葉と一緒に PM が決める\n- 決定の検査 trace_gate の T1・T6・T8 と T7（要件一覧が正本より古い・`01_hearing/要件一覧.md` も同じ regen_all で作り直る）は、`11_tickets/tickets.json`（生成物・changes_ignore）にこの葉の decisions が載って初めて緑になる。切る段の枝では tickets.json を作り直していないので、今 K780-DC-002 を流すと T1・T6・T7・T8 で赤になることがある。作る段で `python3 scripts/tickets/regen_all.py` を流してから試験を流す。DC-001・003・004 は切る段の枝で緑\n- 決定ログの末尾に、段 9 の §148（K-425）・段 7 の §149（K-382）・段 5 の §150（K-430）・段 8 の §151（K-601）・段 10 の §152（K-673）も節を足す。末尾の足し合わせはぶつかる。取り込みの順は PM が決め、ぶつかったら**番号どおりに並べ直す**（この葉の §153 は字を変えない）。試験 DC-001 は「題が `## 153.` の節がちょうど 1 つ」を見るので、ほかの節が前後に在っても通る\n- K-731 は決定ログを運ばなくなった（K-731 の carry・本文から外し、depends_on にこの葉を足した）。K-731 の決定ログの試験（DC の 3 行）はこの葉の DC-001〜003 に移し、答えの記録の結びつきの行 DC-004 を足した\n- 控えの文書 `決定ログに足す行.md` は試験 DC-001 が行ごとに字を比べるので、carry で運ぶ（K-601 と同じ）",
     "依存の理由": "- なし — 文書だけの葉。決定ログの末尾に新しい節を足すだけで、ほかの葉の物を使わない\n- K-731（決定ログの節 §153 が先に在ること・この葉の depends_on に足した）と、頭の `decisions:` に D-153.n を持つ段 6 のほかの葉（K-732〜K-779）が、この葉に依存する（種類「要る」：始める時点の本線の決定ログに D-153.n が在ること）。画面の葉は口の葉を通してこの葉に依存する",
     "目録で探した結果": "- 使う：段 8 の K-601・段 10 の K-673（同じ形の葉・`git show c/段8:11_tickets/K-601.md`・`git show c/段10:11_tickets/K-673.md`）・`scripts/ci/trace_gate.py`・`scripts/ci/decision_source_gate.py`\n- 作る：決定ログの §153 と答えの記録は切る段の枝に在る物を写す。試験 `scripts/ci/k780_decision_log_test.py`（K-731 の `k731_decision_log_test.py` の DC の 3 行を移して番号を K780 に直し、答えの記録の結びつきの行を足した）",
     "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作る段の最初 | `python3 scripts/tickets/regen_all.py` を**最初に**流して `11_tickets/tickets.json` と `01_hearing/要件一覧.md` を作り直す（生成物・changes_ignore）。流す前に試験 DC-002 を流すと T1・T6・T7・T8 で赤になる |\n| 決定ログ | `01_hearing/決定ログ_進行中.md` の末尾の `## 153. 段 6 AI に任せて、確かめて、終える：…（2026-11-22）`（切る段の枝で足した・carry で写す）。字を変えない |\n| 答えの記録 | `01_hearing/decider-answers.jsonl`（切る段の枝で 20 件足した・carry で写す・追記だけ）。同じ id の行は 1 つにする |\n| 下ごしらえの文書 | `07_functional/段6-F5/決定ログに足す行.md`（切る段の枝で書いた・carry で写す。試験 DC-001 が決定ログの行と 1 行ずつ字を比べる） |\n| 試験 | `scripts/ci/k780_decision_log_test.py`（K-731 の DC の 3 行を移した） |\n| G65 の置き場 | `scripts/ci/g65.d/K-780.txt`：1 行 `python3 scripts/ci/k780_decision_log_test.py`（自己試験の置き場・touch_rules） |\n| 範囲の地図 | 足さない（試験が読む決定ログ・下ごしらえの文書・trace_gate・decision_source_gate は試験のファイルから辿れる） |",
     "外に影響する手順": "- なし — 文書だけ。DB・外・セッションに触らない",
-    "テスト仕様と確認の結果": "`scripts/ci/k780_decision_log_test.py`（python の unittest・ファイルと決定の検査の道具を読む）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 決定ログに §153 が在る | 決定の検査 | — | T3・T6・T8・G60 が緑 | このチケット | K780-DC-001〜004 |\n| 段 6 のほかの葉を始める | build_index.py の K4 | — | 止まらない | このチケット（依存は各葉） | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K780-DC-001 | 守り | 決定の行 | 決定ログの §153 の「### 決めたこと」の表に D-153.1〜D-153.33 が順にちょうど 1 回ずつ（33 行・表の n 行目が D-153.n）。代表の決めの行（1〜14・16・17・24・26・30・33）は 2026-11-22 高本さん・answer=<印>、15 は「2026-11-22 19:50 代表の言葉」、ほかは「PM の決め」で高本さん・answer= なし・「代表に確認中」の行は無い。決定ログに足す行.md と字が同じ |\n| K780-DC-002 | 守り | 決定の検査（T3・T6・T8） | trace_gate.py が 0 で終わり、出力に D-153.n の赤（T3・T8）が無い |\n| K780-DC-003 | 守り | この葉の decisions | K-780.md の頭の decisions: に D-153.1〜D-153.33 が全部在る（T8 の導出物） |\n| K780-DC-004 | 守り | 決める人の決定（G60） | decision_source_gate.py（--label 高本さん --since D-130）が 0 で終わる＝代表の決めの行の answer=<印> が答えの記録に在る |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K780-DC-001（決定ログ_進行中.md・決定ログに足す行.md） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K780-DC-001（行がちょうど 33 で並びが D-153.1〜33）・DC-003（decisions の被覆を数える） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：CI の static の段と同じ引数で検査の道具を呼ぶ |",
+    "テスト仕様と確認の結果": "`scripts/ci/k780_decision_log_test.py`（python の unittest・ファイルと決定の検査の道具を読む）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 決定ログに §153 が在る | 決定の検査 | — | T3・T6・T8・G60 が緑 | このチケット | K780-DC-001〜004 |\n| 段 6 のほかの葉を始める | build_index.py の K4 | — | 止まらない | このチケット（依存は各葉） | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K780-DC-001 | 守り | 決定の行 | 決定ログの §153 の「### 決めたこと」の表に D-153.1〜D-153.33 が順にちょうど 1 回ずつ（33 行・表の n 行目が D-153.n）。代表の決めの行（1〜14・16・17・24・30・33）は 2026-11-22 高本さん・answer=<印>、15 は「2026-11-22 19:50 代表の言葉」、ほかは「PM の決め」で高本さん・answer= なし・「代表に確認中」の行は無い。決定ログに足す行.md と字が同じ |\n| K780-DC-002 | 守り | 決定の検査（T3・T6・T8） | trace_gate.py が 0 で終わり、出力に D-153.n の赤（T3・T8）が無い |\n| K780-DC-003 | 守り | この葉の decisions | K-780.md の頭の decisions: に D-153.1〜D-153.33 が全部在る（T8 の導出物） |\n| K780-DC-004 | 守り | 決める人の決定（G60） | decision_source_gate.py（--label 高本さん --since D-130）が 0 で終わる＝代表の決めの行の answer=<印> が答えの記録に在る |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K780-DC-001（決定ログ_進行中.md・決定ログに足す行.md） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K780-DC-001（行がちょうど 33 で並びが D-153.1〜33）・DC-003（decisions の被覆を数える） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：CI の static の段と同じ引数で検査の道具を呼ぶ |",
     "前からの試験を替えた所": "決定ログの末尾に新しい節を足すので、決定ログを読む前からの試験を探した。\n\n```search\ngit grep -l \"決定ログ_進行中\" -- 'scripts/ci/*_test.py' 'scripts/ci/*.test.mjs' 'apps/web/tests/**'\n12\n```\n\n- scripts/ci/k780_decision_log_test.py：この葉の試験（前の `k731_decision_log_test.py` を移した物。K-731 は `tests:` から外し、`git rm` する）\n- apps/web/tests/k/k350-stage4-mock.spec.ts・k382-stage7-mock.spec.ts：替えない — 段 4 の §147・段 7 の §149 の行を読むだけで、末尾の新しい節 §153 は両方を変えない\n- scripts/ci/k425_decision_log_test.py・k430_decision_log_test.py：替えない — 段 9 の §148・段 5 の §150 の行を数えるだけで、末尾に足す §153 は変えない\n- scripts/ci/contract.test.mjs：替えない — 作り物の決定ログ（D-900.1 の 1 行）を書いて読むだけ\n- scripts/ci/k210_gate_holes_test.py・k213_design_parent_test.py・k624_d6_mock_only_test.py：替えない — 検査の道具の穴・DESIGN の親・モックだけの決定を読むだけで、§153 の行を数えない\n- scripts/ci/k622_spec_sync_tools_test.py：替えない — 決定ログが正本の集まりに入っているかを見るだけ\n- scripts/ci/k623_decisions_registered_test.py：替えない — D-129〜D-148 の決定を数える（D-153 は数えない）\n- scripts/ci/ticket_process_test.py：替えない — 聞くことの頁の答えの決定が決定ログに在るかを見るだけ。前の決定の行は変えない",
     "成果物": "- 決定ログの §153（33 行）・答えの記録 20 件・下ごしらえの文書 1 つ・試験 1 本",
     "決定ログ": "- 2026-11-23 PM の決め：段 6 の決定ログ §153 は、K-731 から外して新しい葉 K-780（依存なし・文書だけ）で先に本線に入れる。段 6 のほかの葉はこの葉に依存する（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ）。K-731 は flow.json の 2 行（A104・A106）だけを運ぶ"
