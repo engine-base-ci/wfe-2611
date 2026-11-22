@@ -5,30 +5,29 @@ import { down, invalid, kindOf, replyOf } from "../errors.js";
 import type { AnswerKind } from "../kinds.js";
 import { sendHandoverMails, type MailRow } from "../notify.js";
 
-type OfferAnswer = { ok?: boolean; error?: string; handover?: unknown; mails?: MailRow[]; [k: string]: unknown } | null;
+type OfferAnswer = { ok: true; handover: unknown; mails: MailRow[] } | { error: string; [k: string]: unknown };
 
 export const answerOffer: AnswerKind = async (c) => {
   const where = "申し出に答える";
   if (c.input.switch !== null) return invalid("switch", "申し出に答えるときは一緒に切り替える物を選べません");
-  let v: OfferAnswer;
+  let v: OfferAnswer | null;
   try {
     v = await withTenant(c.d.appPool, c.a.ctx, async (cl) => {
-      const r = await cl.query<{ v: OfferAnswer }>("select app.handover_answer_offer($1, $2::jsonb) as v", [
+      const r = await cl.query<{ v: OfferAnswer | null }>("select app.handover_answer_offer($1, $2::jsonb) as v", [
         c.handoverId,
         JSON.stringify(c.input),
       ]);
-      return r.rows[0]?.v ?? null;
+      return r.rows[0]!.v; // 行が無ければ例外 → 下の catch で止める側に倒す
     });
   } catch (e) {
     return down(where, `例外（${kindOf(e)}）`);
   }
   if (!v) return down(where, "答えが無い");
-  if (typeof v.error === "string") return replyOf(v as { error: string }, where);
-  if (v.ok !== true || !v.handover) return down(where, "知らない答え");
+  if ("error" in v) return replyOf(v, where);
   await sendHandoverMails(
     c.d,
-    { tenantId: c.a.ctx.tenantId ?? "", userId: c.a.ctx.userId ?? "" },
-    v.mails ?? [],
+    { tenantId: c.a.ctx.tenantId!, userId: c.a.ctx.userId! },
+    v.mails,
     `answer-offer:${c.handoverId}`,
   );
   return { status: 200, body: { data: v.handover } };
