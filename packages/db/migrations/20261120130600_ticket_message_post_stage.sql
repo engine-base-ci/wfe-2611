@@ -59,7 +59,7 @@ begin
     insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
       values (v_tenant, v_notify, 'inapp', 'ticket.stage_changed',
               jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_id,
-                                 'stage', r->'stage' - 'id'),
+                                 'stage', (r->'stage') - 'id'),
               'ticket.stage_changed:' || v_id::text, now(), v_me);
   end if;
   select s.seen_at into v_seen from app.ticket_thread_seen s where s.tenant_id = v_tenant and s.ticket_id = p_ticket and s.member_id = v_me;
