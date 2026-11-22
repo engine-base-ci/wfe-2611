@@ -8,7 +8,7 @@ INPUTS = {
 }
 REQUIRED_INPUTS = {"updateTicketBody": ["version", "doc"]}
 VALUE_RANGES = {
-    "updateTicketBody": {"version": {"minimum": 0}, "doc": _DS.doc_schema()},
+    "updateTicketBody": {"version": {"minimum": 0, "maximum": 2147483647}, "doc": _DS.doc_schema()},
 }
 RESPONSES = {
     "updateTicketBody": ("BodySaved", {"version": "integer", "changed": "boolean", "edited_at": "string"}),
@@ -31,7 +31,7 @@ ERRORS_4XX = {
          "trigger": "完了したチケット（完了の時刻が入っているか段が done）",
          "ears_form": "UNWANTED: IF 完了したチケットの本文を直そうとしたなら、Kaname は 409 と E-SEC-005 を返し、本文も版も変えない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []},
-         "trigger": "version が無い・負・整数でない／doc が無い・形が違う（節・印・見出しの段・リンクの形・入れ子の深さ）／知らない欄（text を含む）",
+         "trigger": "version が無い・負・2147483647 より大きい・整数でない／doc が無い・形が違う（節・印・見出しの段・リンクの形・入れ子の深さ）／知らない欄（text を含む）",
          "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、本文も版も変えない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "dependency", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "本文の行・版の行・やり取りの 1 行・証跡のどれかを書く DB が落ちた（1 つの取引で戻す）",

@@ -198,12 +198,13 @@ describe("K-432 本文を書き終える（updateTicketBody）", () => {
     expect((await h.bodyRow(id))!.version).toBe(2);
   });
 
-  it("K432-API-011 契約に書ける形の誤り：version が無い・-1・文字・doc が無い・文字・配列・type が doc でない・content が配列でない・知らない欄（number・section_id）は 422・何も書かない", async () => {
+  it("K432-API-011 契約に書ける形の誤り：version が無い・-1・2147483648（int の上限超え）・文字・doc が無い・文字・配列・type が doc でない・content が配列でない・知らない欄（number・section_id）は 422・何も書かない", async () => {
     const id = await withBody();
     const cases: [unknown, string][] = [
       [{ doc: NEXT }, "version"],
       [{ version: -1, doc: NEXT }, "version"],
       [{ version: "1", doc: NEXT }, "version"],
+      [{ version: 2147483648, doc: NEXT }, "version"],
       [{ version: 1 }, "doc"],
       [{ version: 1, doc: "本文" }, "doc"],
       [{ version: 1, doc: [] }, "doc"],

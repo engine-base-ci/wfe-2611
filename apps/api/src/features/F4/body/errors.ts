@@ -19,7 +19,7 @@ export function bodyReply(kind: string): HookReply {
     case "not_writable":
       return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
     case "not_found":
-      return { status: 404, body: { error: "not_found", code: "E-PAGE-001" } };
+      return { status: 404, body: { error: "not_found", code: "NOT_FOUND" } };
     case "conflict":
       return conflict("E-SEC-004");
     case "done":
