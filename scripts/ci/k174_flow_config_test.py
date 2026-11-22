@@ -12,6 +12,9 @@ import re
 import unittest
 
 import yaml
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 CFG = yaml.safe_load((ROOT / "ticket-flow.yaml").read_text(encoding="utf-8"))
@@ -29,7 +32,7 @@ class FlowConfig(unittest.TestCase):
         n = 0
         for wf, doc in WFS.items():
             for job, j in doc["jobs"].items():
-                ro = j.get("runs-on")
+                ro = default_of(j.get("runs-on"))   # 変数 CI_RUNNER が無いときの台（K-640）
                 self.assertTrue(isinstance(ro, list) and len(ro) == 2 and ro[0] == "self-hosted", f"{wf} {job}：runs-on の形 {ro!r}")
                 self.assertEqual(ro[1], vm["label"], f"{wf} {job}")
                 n += 1

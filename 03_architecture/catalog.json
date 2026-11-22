@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 65,
+  "api_built": 68,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 144,
+  "db": 145,
   "ui": 19,
   "packages": 13,
-  "errors": 207,
+  "errors": 212,
   "stack": 56,
   "env": 41
  },
@@ -1890,9 +1890,10 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-70"
+    "K-70",
+    "K-419"
    ]
   },
   {
@@ -5407,7 +5408,7 @@
    "op": "listTicketTimeline",
    "method": "GET",
    "path": "/api/v1/tickets/:id/timeline",
-   "what": "取得（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "what": "取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）",
    "flows": [
     "F6"
    ],
@@ -5415,9 +5416,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-383"
    ]
   },
   {
@@ -5801,9 +5802,10 @@
    "tables": [
     "members"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-70"
+    "K-70",
+    "K-419"
    ]
   },
   {
@@ -7294,6 +7296,14 @@
    "reads": [
     "F4"
    ],
+   "boundary": false
+  },
+  {
+   "table": "ticket_thread_seen",
+   "class": "internal",
+   "why": "人ごと・チケットごとの最後にやり取りを開いた時刻（app スキーマ・アプリの役は直に触れない）。やり取りを読む口が関門 C2 の関数 app.ticket_timeline で読み（「新しい」の印と数）、K-384 の口が書く（K-383）",
+   "writes": [],
+   "reads": [],
    "boundary": false
   },
   {

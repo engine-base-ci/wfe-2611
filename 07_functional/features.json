@@ -3525,7 +3525,11 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-INV-009",
+    "E-INV-010",
+    "E-INV-011",
+    "E-INV-012"
    ],
    "policies": [
     "C2",
@@ -6531,6 +6535,7 @@
     "E-CRED-007",
     "E-CRED-008",
     "E-CRED-009",
+    "E-CRED-015",
     "E-CRED-010",
     "E-CRED-011",
     "E-CRED-012",
