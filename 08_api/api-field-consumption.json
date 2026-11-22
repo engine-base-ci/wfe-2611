@@ -11143,6 +11143,58 @@
    "reason": null
   },
   {
+   "entity": "ticket_messages",
+   "field": "notify_member_ids",
+   "consumed_by_screens": [
+    "approvals",
+    "tickets",
+    "masters",
+    "clients",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_messages",
+   "field": "quote_text",
+   "consumed_by_screens": [
+    "approvals",
+    "tickets",
+    "masters",
+    "clients",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_messages",
+   "field": "edited_at",
+   "consumed_by_screens": [
+    "approvals",
+    "tickets",
+    "masters",
+    "clients",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_messages",
+   "field": "deleted_by",
+   "consumed_by_screens": [
+    "approvals",
+    "tickets",
+    "masters",
+    "clients",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "reference_logs",
    "field": "<common>",
    "consumed_by_screens": [],

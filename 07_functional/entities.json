@@ -11977,6 +11977,22 @@
     {
      "name": "reactions",
      "note": "jsonb"
+    },
+    {
+     "name": "notify_member_ids",
+     "note": "uuid[]（知らせる人に選ばれた人"
+    },
+    {
+     "name": "quote_text",
+     "note": "引用した元の頭の 2 行の写し"
+    },
+    {
+     "name": "edited_at",
+     "note": "本文を直した時刻・☆ では変えない"
+    },
+    {
+     "name": "deleted_by",
+     "note": "消した人"
     }
    ],
    "relations": [
@@ -12044,7 +12060,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド",
+   "note": "**★新設（D-125.29・D-125.131・D-128.45）。**チケットのスレッド。足した 4 列は K-383",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
