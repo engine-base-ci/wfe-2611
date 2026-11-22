@@ -3,10 +3,5 @@ REQUIRED_INPUTS = {"updateTicketMessage": {"body"}}
 NO_REQUIRED_INPUTS = {"starTicketMessage": "体は空の形（K-386）。{} で 200。知らない欄は 422（契約の strict）"}
 PATH_PATTERNS = {}
 VALUE_RANGES = {"updateTicketMessage": {"body": {"pattern": "\\S"}}}
-UNEXPRESSIBLE_422 = {
-    "updateTicketMessage": [
-        "本文が全角の空白・改行だけ（E-VAL-027）",
-        "@ する人がそのチケットを見られない人・抜けた人・止められた人（E-VAL-014）",
-    ],
-}
+UNEXPRESSIBLE_422 = {}
 AGENT_ANSWERS = {}

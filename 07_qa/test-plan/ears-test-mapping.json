@@ -133029,11 +133029,11 @@
     "tickets"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "422",
-   "ears_text": "UNWANTED: IF @ する人が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も変えない",
+   "http_code": "404",
+   "ears_text": "UNWANTED: IF @ する人が選べないなら、Kaname は 404 と E-PAGE-001 を返し、欄の名前も明細も付けず、何も変えない",
    "test_file": "apps/api/test/generated/patch_ticket_messages_id.test.ts",
-   "test_function": "test_patch_ticket_messages_id_rejected_422_2",
-   "test_level": "unit（検証・表記ゆらぎ）",
+   "test_function": "test_patch_ticket_messages_id_not_found_2",
+   "test_level": "unit",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []

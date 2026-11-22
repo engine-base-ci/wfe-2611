@@ -50721,17 +50721,17 @@
      "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、何も変えない"
     },
     {
-     "status": 422,
-     "code": "E-VAL-014",
+     "status": 404,
+     "code": "E-PAGE-001",
      "body": {
-      "error": "validation",
-      "code": "E-VAL-014"
+      "error": "not_found",
+      "code": "E-PAGE-001"
      },
      "errors": [
-      "E-VAL-014"
+      "E-PAGE-001"
      ],
-     "trigger": "@ する人が選べない（見られない・抜けた・止められた）",
-     "ears_form": "UNWANTED: IF @ する人が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も変えない"
+     "trigger": "@ する人が選べない（見られない・抜けた・止められた）。在るかを漏らさないので 404（欄・details・detail なし・控え帳 2026-11-21 01:15）",
+     "ears_form": "UNWANTED: IF @ する人が選べないなら、Kaname は 404 と E-PAGE-001 を返し、欄の名前も明細も付けず、何も変えない"
     },
     {
      "status": 503,
@@ -50816,7 +50816,7 @@
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 書き込みが無い・見えない・消した・チケットを消したなら、Kaname は 404 と NOT_FOUND を返し、何も変えない",
     "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、何も変えない",
-    "UNWANTED: IF @ する人が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も変えない",
+    "UNWANTED: IF @ する人が選べないなら、Kaname は 404 と E-PAGE-001 を返し、欄の名前も明細も付けず、何も変えない",
     "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない（止める側に倒す）",
     "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、書き込みを前のまま残す",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",

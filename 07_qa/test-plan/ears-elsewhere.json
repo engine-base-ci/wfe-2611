@@ -1581,7 +1581,7 @@
     "test_patch_ticket_messages_id_rejected_403": "K386-API-003",
     "test_patch_ticket_messages_id_not_found": "K386-API-003",
     "test_patch_ticket_messages_id_rejected_422": "K386-API-004",
-    "test_patch_ticket_messages_id_rejected_422_2": "K386-API-004",
+    "test_patch_ticket_messages_id_not_found_2": "K386-API-004",
     "test_patch_ticket_messages_id_shape": "K386-API-001",
     "test_patch_ticket_messages_id_rate_limited": "K386-API-016",
     "test_patch_ticket_messages_id_too_large": {

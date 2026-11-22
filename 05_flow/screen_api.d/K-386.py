@@ -14,12 +14,7 @@ REQUIRED_INPUTS = {"updateTicketMessage": ["body"]}
 # 本文は空白だけでない（全角の空白・改行も）。入口の形の確かめでは言い表せないので、口が E-VAL-027 で断る
 VALUE_RANGES = {"updateTicketMessage": {"body": {"pattern": "\\S"}}}
 
-UNEXPRESSIBLE_422 = {
-    "updateTicketMessage": [
-        "本文が全角の空白・改行だけ（E-VAL-027）",
-        "@ する人がそのチケットを見られない人・抜けた人・止められた人（E-VAL-014）",
-    ],
-}
+UNEXPRESSIBLE_422 = {}
 
 RESPONSES = {
     "updateTicketMessage": ("TimelineItem", _ITEM),
@@ -37,11 +32,11 @@ ERRORS_4XX = {
         {"status": 422, "code": "E-VAL-027", "body": {"error": "validation", "code": "E-VAL-027"}, "errors": ["E-VAL-027"],
          "trigger": "本文が無い・空・空白だけ（全角の空白・改行も）",
          "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、何も変えない"},
-        {"status": 422, "code": "E-VAL-014", "body": {"error": "validation", "code": "E-VAL-014"}, "errors": ["E-VAL-014"],
-         "trigger": "@ する人が選べない（見られない・抜けた・止められた）",
-         "ears_form": "UNWANTED: IF @ する人が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も変えない"},
         {**_NF, "trigger": "書き込みが無い・見えない・消した・チケットを消した",
          "ears_form": "UNWANTED: IF 書き込みが無い・見えない・消した・チケットを消したなら、Kaname は 404 と NOT_FOUND を返し、何も変えない"},
+        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
+         "trigger": "@ する人が選べない（見られない・抜けた・止められた）。在るかを漏らさないので 404（欄・details・detail なし・控え帳 2026-11-21 01:15）",
+         "ears_form": "UNWANTED: IF @ する人が選べないなら、Kaname は 404 と E-PAGE-001 を返し、欄の名前も明細も付けず、何も変えない"},
         {**_DOWN, "trigger": "守りの判定で例外・関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない（止める側に倒す）"},
         {**_BROKE, "trigger": "書く所で DB が落ちた（1 つの処理なので何も変わらない・ログは場所と例外の種類だけ）",

@@ -29,8 +29,8 @@ describe("PATCH /api/v1/ticket_messages/:id", () => {
     // 本物の試験：apps/api/test/features/F6/thread-edit.test.ts の「K386-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-edit.test.ts", "utf8")).toContain("K386-API-004");
   });
-  it("test_patch_ticket_messages_id_rejected_422_2", () => {
-    // UNWANTED: IF @ する人が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も変えない
+  it("test_patch_ticket_messages_id_not_found_2", () => {
+    // UNWANTED: IF @ する人が選べないなら、Kaname は 404 と E-PAGE-001 を返し、欄の名前も明細も付けず、何も変えない
     // 本物の試験：apps/api/test/features/F6/thread-edit.test.ts の「K386-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-edit.test.ts", "utf8")).toContain("K386-API-004");
   });

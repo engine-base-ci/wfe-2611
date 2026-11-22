@@ -8,7 +8,7 @@ import { withTenant } from "@kaname/db/context";
 import { KanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { uniqueIds } from "./input.js";
-import { inputPost } from "./post.js";
+import { inputPost, pageNotFound } from "./post.js";
 import { broke, down, notFound } from "./reply.js";
 
 /** 正本のエラーを 4xx の答えにする（欄の名前つき。文言は正本から引く） */
@@ -67,7 +67,8 @@ function answer(v: EditResult, where: string, okBody: (v: EditResult) => unknown
   if (v.error === "not_found") return notFound();
   if (v.error === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
   if (v.error === "empty") return refused("E-VAL-027", "body");
-  if (v.error === "not_selectable" && v.field) return refused("E-VAL-014", v.field);
+  // @ に選べない人（見られない・抜けた・止められた）は見えない物：404 E-PAGE-001（欄・details・detail なし・控え帳 2026-11-21 01:15・K-385 の post.ts と同じ）
+  if (v.error === "not_selectable") return pageNotFound();
   return down(`${where}（知らない答え）`, new Error("unknown"));
 }
 

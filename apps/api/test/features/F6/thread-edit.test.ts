@@ -90,7 +90,7 @@ describe("K-386 直す", () => {
     expect((await msg(gone)).body).toBe("消した");
   });
 
-  it("K386-API-004 直す入力：本文が空・空白だけ・無いは 422・E-VAL-027（欄 body）。@ に見られない人は 422・E-VAL-014（欄 mention_member_ids）。知らせる人・種類など入れさせない欄は 422。どれも変わらず、知らせも出ない", async () => {
+  it("K386-API-004 直す入力：本文が空・空白だけ・無いは 422・E-VAL-027（欄 body）。@ に見られない人は 404・E-PAGE-001（欄・details・detail なし）。知らせる人・種類など入れさせない欄は 422。どれも変わらず、知らせも出ない", async () => {
     const t = await h.ticket();
     const id = await h.post(t, h.writer, { body: "元の文" });
     for (const body of [{}, { body: "" }, { body: "　 " }]) {
@@ -99,8 +99,12 @@ describe("K-386 直す", () => {
       expect((await h.json(r))["code"]).toBe("E-VAL-027");
     }
     const bad = await edit(h.writer, id, { body: "@伊藤", mention_member_ids: [h.stranger.id] });
-    expect(bad.status).toBe(422);
-    expect((await h.json(bad))["code"]).toBe("E-VAL-014");
+    expect(bad.status).toBe(404);
+    const bj = await h.json(bad);
+    expect(bj["code"]).toBe("E-PAGE-001");
+    expect(bj["field"]).toBeUndefined();
+    expect(bj["details"]).toBeUndefined();
+    expect(bj["detail"]).toBeUndefined();
     for (const extra of [{ notify_member_ids: [h.boss.id] }, { kind: "system" }, { author_member_id: h.boss.id }])
       expect((await edit(h.writer, id, { body: "x", ...extra })).status, JSON.stringify(extra)).toBe(422);
     const m = await msg(id);
