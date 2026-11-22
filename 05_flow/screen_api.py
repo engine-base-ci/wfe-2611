@@ -66,8 +66,8 @@ SCREEN_API = {
         ("GET", "/tickets/:id/decisions", "A108", "ticket_decisions", "listTicketDecisions", []),
         ("POST", "/tickets/:id/decisions", "A108", "ticket_decisions", "createTicketDecision", []),
         ("PATCH", "/ticket_decisions/:id", "A108", "ticket_decisions", "updateTicketDecision", ["policies"]),
-        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", [T, "notifications", "audit_events"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
+        ("POST", "/tickets/:id/handovers", "A51|A48|A111|A112", "ticket_handovers", "createTicketHandover", ["notifications"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T]),
         # つながり・成果物・検収
         ("GET", "/tickets/:id/links", "A103", "ticket_links", "listTicketLinks", []),
         ("POST", "/tickets/:id/links", "A103", "ticket_links", "createTicketLink", []),
@@ -105,7 +105,7 @@ SCREEN_API = {
         ("POST", "/approvals/bulk/preview", "A15", "approvals", "previewBulkApproval", ["checks"]),
         ("POST", "/approvals/bulk", "A15", "approvals", "bulkApprove", ["action_runs", "audit_events"]),
         ("GET", "/approvals/history", "A15", "approvals", "listApprovalHistory", ["tickets"]),
-        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", [T, "notifications", "audit_events"]),
+        ("PATCH", "/ticket_handovers/:id", "A110", "ticket_handovers", "answerTicketHandover", ["tickets"]),
     ],
     # ---------------------------------------------------------------- 分身の部屋（08_api/phase1/03_分身の部屋.md）
     "clone-chat": [
@@ -944,8 +944,8 @@ VALUE_RANGES = {
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・6 けたでないは 422 欄 code・K-311）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72
     "completeTicket": {   # apps/api/src/features/F5/approve-complete/complete.ts と app.ticket_complete（0100）。負の番号は 422 E-VAL-022・false は 422 E-VAL-023
-        "todo_checked": {"items": {"type": "integer", "minimum": 0}},
-        "todo_version": {"minimum": 0},
+        "todo_checked": {"items": {"type": "integer", "minimum": 0, "maximum": 2147483647}},   # 口は int4 の範囲の外を 422（complete.ts の INT_MAX）
+        "todo_version": {"minimum": 0, "maximum": 2147483647},
         "conditions_confirmed": {"enum": [True]},
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
@@ -1050,7 +1050,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean", "device_id": "string"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
@@ -1194,7 +1194,7 @@ PERMS = {
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
-    "updateTicket": ("write", "そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人", False),
+    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
@@ -1233,8 +1233,8 @@ PERMS = {
     "listTicketDecisions": ("read", "そのチケットを見られる人", False),
     "createTicketDecision": ("write", "そのグループの人", False),
     "updateTicketDecision": ("write", "そのグループの人。取引先のルールにするのは取引先の担当とマネージャー", False),
-    "createTicketHandover": ("write", "渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・取引先・止まっている人はできない（D-148.3・D-148.18）", False),
-    "answerTicketHandover": ("recipient", "答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）", False),
+    "createTicketHandover": ("write", "渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者", False),
+    "answerTicketHandover": ("recipient", "渡された・判断を仰がれた相手だけ", False),
     "listTicketLinks": ("read", "両方のチケットを見られる人（片方が見えないときは番号だけ）", False),
     "createTicketLink": ("write", "両方のチケットに書ける人", False),
     "deleteTicketLink": ("write", "そのグループの人", False),
