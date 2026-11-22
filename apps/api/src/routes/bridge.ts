@@ -4,12 +4,14 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
+  app.post("/api/v1/bridge/browser", op(deps, "setBridgeBrowser"));
   app.post("/api/v1/bridge/claim", op(deps, "claimPairingCode"));
   app.post("/api/v1/bridge/credentials/resolve", op(deps, "resolveCredential"));
   app.post("/api/v1/bridge/credentials/:id/check-result", op(deps, "reportCredentialCheck"));
   app.get("/api/v1/bridge/devices", op(deps, "listMyDevices"));
   app.patch("/api/v1/bridge/devices/:id", op(deps, "updateMyDevice"));
   app.delete("/api/v1/bridge/devices/:id", op(deps, "revokeMyDevice"));
+  app.post("/api/v1/bridge/devices/:id/browser-check", op(deps, "checkMyDeviceBrowser"));
   app.get("/api/v1/bridge/files/:ref", op(deps, "getFileForBridge"));
   app.post("/api/v1/bridge/heartbeat", op(deps, "sendHeartbeat"));
   app.post("/api/v1/bridge/jobs/take", op(deps, "takeBridgeJob"));

@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 367,
-  "api_built": 59,
+  "api": 369,
+  "api_built": 71,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 145,
+  "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 200,
+  "errors": 220,
   "stack": 56,
   "env": 41
  },
@@ -623,6 +623,23 @@
    ]
   },
   {
+   "op": "setBridgeBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/browser",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "sessions"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-366"
+   ]
+  },
+  {
    "op": "claimPairingCode",
    "method": "POST",
    "path": "/api/v1/bridge/claim",
@@ -651,9 +668,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -719,9 +736,26 @@
    "tables": [
     "sessions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-91"
+    "K-362"
+   ]
+  },
+  {
+   "op": "checkMyDeviceBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "bridge_jobs"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-365"
    ]
   },
   {
@@ -1020,23 +1054,6 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-61"
-   ]
-  },
-  {
-   "op": "listClassAxes",
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "what": "取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "class_axes"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
    ]
   },
   {
@@ -1651,9 +1668,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-353"
    ]
   },
   {
@@ -1668,9 +1685,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-353"
    ]
   },
   {
@@ -1685,9 +1702,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1702,9 +1719,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1856,8 +1873,10 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "revokeInvitation",
@@ -4576,6 +4595,23 @@
    ]
   },
   {
+   "op": "listTicketFields",
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "what": "取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-563"
+   ]
+  },
+  {
    "op": "updateTicketDecision",
    "method": "PATCH",
    "path": "/api/v1/ticket_decisions/:id",
@@ -4876,9 +4912,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-387"
    ]
   },
   {
@@ -5755,8 +5791,10 @@
    "tables": [
     "members"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "updateWorkspacePermissions",
@@ -6089,10 +6127,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "bridge_pairing_codes",
@@ -6126,12 +6165,10 @@
   },
   {
    "table": "class_axes",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない",
    "writes": [],
-   "reads": [
-    "F4"
-   ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -6220,6 +6257,24 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_field_kinds",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_fields",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false
   },
   {
@@ -7159,6 +7214,14 @@
    "table": "ticket_drafts_used",
    "class": "internal",
    "why": "作るときに使った下書きの id（app スキーマ・アプリの役は直に触れない）。作った後に届いた保存を残さないために app.ticket_create が書き、app.ticket_draft_save が読む（K-60）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "ticket_field_values",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
    "writes": [],
    "reads": [],
    "boundary": false
