@@ -410,7 +410,7 @@ function Detail({ theme, viewer = "takamoto", band, assignee, approvals = 1, dia
     >
       <div className="k-detail">
         <section className="k-root k-page" aria-labelledby="ticket-title">
-          <article className="k-detail-card k-hnd-head">
+          <article className="k-detail-card">
             <DetailMeta ticket={TICKET} kind={KIND} stage={STAGE} />
             <DetailTitle title={TICKET.title} me={VIEWER[viewer].name} />
             {band ? <div className="k-detail-bands">{band}</div> : null}
