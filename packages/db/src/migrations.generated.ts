@@ -126,6 +126,7 @@ export const MIGRATIONS = [
   "20261119120400_credentials_layer.sql",
   "20261119120500_credential_soft_delete.sql",
   "20261119120600_credential_login_check.sql",
+  "20261119120700_credential_resolve.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120130000_ticket_timeline.sql",
   "20261120130400_ticket_progress.sql",
@@ -138,4 +139,5 @@ export const MIGRATIONS = [
   "20261122090100_ticket_body.sql",
   "20261122090300_custom_fields.sql",
   "20261122093400_test_spec_create.sql",
+  "20261122094100_ticket_links.sql",
 ] as const;
