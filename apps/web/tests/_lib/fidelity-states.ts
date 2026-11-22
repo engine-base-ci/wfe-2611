@@ -7,7 +7,6 @@
 //     後から届く口の値（承認待ちの数の印・自分の札・グループ・PC）が描かれるまで待ってから返す（届く前の値で比べない）
 import { expect, type Page, type Route } from "@playwright/test";
 import { TICKET, executedBand, jst, mockApi, qrow, type Band } from "../features/F5/approve-complete.harness";
-import { mockCreate } from "../k/create-mock";
 
 export { routeCanvasFonts } from "../../../../scripts/ci/fidelity_compare.mjs";
 
@@ -257,7 +256,8 @@ const CANVAS_TODO = [
 async function openBandModal(page: Page, path: string, button: string, title: string, done = false): Promise<void> {
   await (done ? mockApi(page, { ...executedBand, todo: CANVAS_TODO }) : mockApi(page));
   await page.goto(path.replace("{ticket}", TICKET));
-  await page.getByRole("region", { name: "承認と実行" }).getByRole("button", { name: button, exact: true }).click();
+  // 「完了にする」は題の行（K-572）・「承認して送る」などは帯の中。名前はどちらも画面に 1 つだけなので、頁全体で探す
+  await page.getByRole("button", { name: button, exact: true }).click();
   await expect(page.locator(".k-dialog .k-dialog-title")).toHaveText(title);
 }
 
@@ -373,72 +373,7 @@ async function localBridgeOtherAccount(route: Route): Promise<void> {
   return route.fulfill({ status: 404, headers: cors, body: "" });
 }
 
-/** チケットの詳細（K-226・キャンバス TicketDetail）：外枠の口に、承認待ちのチケット 1 件と実行 1 件・承認の中身を足す（キャンバスと同じ人とデータ） */
-const DETAIL_ID = "0193c5a0-0000-7000-8000-00000000d226";
-const DETAIL_APPROVAL = "0193c5a0-0000-7000-8000-0000000ad226";
-async function detailApi(page: Page): Promise<string> {
-  await shellApi(page, 2);
-  const json = (route: Route, data: unknown, meta: Record<string, unknown> = {}) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ data, meta }) });
-  await page.route(`**/api/v1/tickets/${DETAIL_ID}`, (route) =>
-    json(route, {
-      ticket: {
-        id: DETAIL_ID,
-        number: "EG-128",
-        title: "セイコー様へ 11月分の請求書を送る",
-        scope_id: "22222222-0000-4000-8000-000000000001",
-        created_at: "2026-10-30T08:44:00Z",
-        start_on: "2026-10-30",
-        due_on: "2026-11-01",
-        priority: "mid",
-      },
-      sections: [
-        {
-          key: "purpose",
-          label: "目的",
-          body: { text: "セイコー様に 11 月分の保守費を請求し、11/30 までに入金してもらう。" },
-          version: 3,
-        },
-        { key: "done", label: "完了の条件", body: { text: "金額が見積の月額と一致している" }, version: 3 },
-        {
-          key: "todo",
-          label: "実施事項",
-          body: { text: "見積 EG-097 の月額を確かめる\n請求書 PDF を作る" },
-          version: 3,
-        },
-      ],
-      kind: { id: "k1", name: "タスク", color: "#186F69" },
-      stage: { id: "s1", key: "awaiting_approval", name: "承認待ち" },
-      assignee: { id: ME, display_name: "高本" },
-      approval: { id: DETAIL_APPROVAL, can_decide: true, irreversible: true, note: null, approver_name: "高本" },
-      can: { complete: false, delegate: false },
-      completed: null,
-    }),
-  );
-  await page.route(`**/api/v1/tickets/${DETAIL_ID}/runs`, (route) =>
-    json(
-      route,
-      [
-        {
-          id: "0193c5a0-0000-7000-8000-0000000ed226",
-          ticket_id: DETAIL_ID,
-          phase: "make",
-          status: "done",
-          by: { member_id: ME, display_name: "高本" },
-          pc: "live",
-          silent: false,
-          progress: null,
-          stopped_reason: null,
-          started_at: "2026-11-01T00:00:00Z",
-          finished_at: "2026-11-01T00:12:00Z",
-          checks: { state: "none" },
-        },
-      ],
-      { limit: 50 },
-    ),
-  );
-  return DETAIL_ID;
-}
+// 詳細の突き合わせの状態 ticket-detail（K-226）は K-571 が外した（詳細は新しい形になり、キャンバス TicketDetail と比べない。正の絵は下絵 v2 /dev/mock/f4v2）。組を外すのはまとめ役
 
 export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promise<void>> = {
   // 鍵は "<鍵>": の字で探される（scripts/ci/fidelity_config.py）。整形が引用符を外さないようにする
@@ -562,13 +497,6 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.getByRole("button", { name: "この PC の Bridge につなぐ" }).click();
     await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
   },
-  // チケットの詳細（K-226・キャンバス TicketDetail）：承認待ちのチケットを開き、題名と右のパネルが描かれるまで待つ
-  "ticket-detail": async (page, path) => {
-    const id = await detailApi(page);
-    await page.goto(path.replace("{ticket}", id));
-    await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
-    await expect(page.locator('.k-detail-meta [data-part="stage"]')).toHaveText("承認待ち");
-  },
   // 承認待ちの帯（K-227・キャンバス TicketDetail の main article [role="status"]）：承認待ち・決められる人・取り消せない承認を開き、
   //   帯の箱の題と要約（承認の 1 件の答えの後に出る）と成果物のカードが描かれるまで待つ
   "band-approval": async (page, path) => {
@@ -664,19 +592,6 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.goto(path);
     await expect(page.locator("tbody tr[data-ticket]")).toHaveCount(6);
   },
-  // 作る面（K-224・キャンバス Create）：書けるグループのある人が開いた・下書きなし。続きの下書きを読み終えて題名の欄が出るまで待つ
-  "tickets-new": async (page, path) => {
-    await shellApi(page, 3);
-    await page.goto(path);
-    await expect(page.locator('input[name="title"]')).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
-  // 作る面の本文の箱の区画（K-225・キャンバス Create の本文の箱）：種別はタスク（区画 4 つ）・下書きなし。区画の見出しが出るまで待つ。
-  //   種別の区画は作る画面の試験の差し替え（tests/k/create-mock.ts）の口で出す（外枠の差し替えの種別は空）
-  "tickets-new-sections": async (page, path) => {
-    await mockCreate(page);
-    await page.goto(path);
-    await expect(page.locator('section[aria-label="本文"] .k-create-doc h2').first()).toBeVisible();
-    await expect(page.locator('.k-create-foot button[type="submit"]')).toBeEnabled();
-  },
+  // 作る面（組 tickets-new・tickets-new-sections）は K-442 が外した（2026-11-21：作る面は新しい並びになり、キャンバス Create と比べない。正の絵は下絵 v2 /dev/mock/f4v2）。
+  //   04_design/fidelity.json・scripts/ci/fidelity_config.py・k216 の試験からの外しはまとめ役が持つ
 };
