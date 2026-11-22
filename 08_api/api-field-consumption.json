@@ -10708,23 +10708,29 @@
   {
    "entity": "ticket_field_values",
    "field": "ticket_id",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "tickets"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "ticket_field_values",
    "field": "field_id",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "tickets"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "ticket_field_values",
    "field": "value",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "tickets"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "handover_rules",
@@ -13410,9 +13416,5 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
- "unconsumed": [
-  "ticket_field_values.ticket_id",
-  "ticket_field_values.field_id",
-  "ticket_field_values.value"
- ]
+ "unconsumed": []
 }

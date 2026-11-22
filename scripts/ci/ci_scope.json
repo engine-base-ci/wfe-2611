@@ -1180,11 +1180,23 @@
   {
    "paths": [
     "apps/api/src/hooks/ticket-fields-read.ts",
-    "apps/api/src/features/F4/ticket-fields/**"
+    "apps/api/src/features/F4/ticket-fields/**",
+    "03_architecture/db-catalog.json"
    ],
    "tests": [
     "apps/api/test/features/F4/ticket-fields.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144.d/K-563.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ticket_fields.test.ts"
    ]
   }
  ],

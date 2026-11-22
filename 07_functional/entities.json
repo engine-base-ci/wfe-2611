@@ -11528,7 +11528,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "チケットごとの会社の項目の値。読めるのは元のチケットを読める人（K-563）",
+   "note": "チケットごとの会社の項目の値（子表。項目の定義はマスタ `custom_fields`）。読めるのは元のチケットを読める人（K-563）",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [

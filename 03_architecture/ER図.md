@@ -432,7 +432,7 @@ erDiagram
 | **`ticket_class_values`** | `<common>` / `ticket_id` / `value_id` | チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）。**凍結（K-563・会社の項目へ移した）** |
 | **`custom_fields`** | `<common>` / `name` / `field_type`（短い文字・長い文章・数・日付・1 つ選ぶ・複数選ぶ・チェック）/ `required` / `description` / `options jsonb`（選ぶ型だけ `[{id, name, position}]`）/ `position` | **★新設（K-563・D-150.36・D-150.37）。**会社が足す項目。分類の軸は「1 つ選ぶ」の項目に移した（項目の id＝軸の id）。数に上限なし |
 | **`custom_field_kinds`** | `<common>` / `field_id` / `kind_id` | どの種別で出すか。行が無い項目は全部の種別（K-563） |
-| **`ticket_field_values`** | `<common>` / `ticket_id` / `field_id` / `value jsonb`（null 不可） | チケットごとの会社の項目の値。読めるのは元のチケットを読める人（K-563） |
+| **`ticket_field_values`** | `<common>` / `ticket_id` / `field_id` / `value jsonb`（null 不可） | チケットごとの会社の項目の値（子表。項目の定義はマスタ `custom_fields`）。読めるのは元のチケットを読める人（K-563） |
 | **`handover_rules`** | `<common>` / `target`（子・孫のチケット／派生・関連のチケット／所属グループ／会社が足した軸の値 ← D-125.70）/ `axis_id`（target が軸のとき）/ `mode`（毎回聞く・いつも・しない） | **★新設（D-125.70・D-125.71）。**渡すときに一緒に切り替えるもの |
 | **`test_specs`** | `<common>` / `ticket_id` / `check_kind`（① 機械・② AI・③ 人）/ `title` / `judge_type` / `params jsonb` / `version` / `off_reason`（OFF にした理由） | **★新設（D-125.17・D-125.79）** |
 | **`checks`** | `<common>` / `ticket_id`（行の守りのため元のチケットを持つ）/ `test_spec_id` / `spec_version` / `artifact_version_id` / `attempt` / `result`（通過・落ちた・不確か）/ `evidence jsonb`（根拠の引用）/ `runner`（server・bridge・human）/ `checked_by_member_id` | **★新設（D-125.18・D-126.24）。**① はサーバー、② は本人の PC（Bridge）、③ は人 |

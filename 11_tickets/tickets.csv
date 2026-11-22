@@ -2364,7 +2364,7 @@ K-430,段 5 の決定ログ §150（D-150.1〜60・新しい形）を本線に�
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-563,会社が足す項目の表（custom_fields・custom_field_kinds・ticket_field_values）と読む口（listTicketFields）・分類の軸の中身を「1 つ選ぶ」の項目に移して凍結・listClassAxes を外す（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・会社が足す項目,"詳細と作る面の「項目の表」に、会社が足した項目を、用意してある項目と同じ表に同じ形で並べる（D-150.36・D-150.37）。この葉は **表と読む口と、分類の軸からの移し**まで（マスタを作る・直す口と画面は段 10・値を書く口は K-564・K-437）。
 
-- **表 3 つ**（新設）：`custom_fields`（会社の項目：名前・型・必須・説明・選択肢・並び）・`custom_field_kinds`（どの種別で出すか。行が無ければ全部の種別）・`ticket_field_values`（チケットごとの値）
+- **表 3 つ**（新設）：`custom_fields`（会社の項目：名前・型・必須・説明・選択肢・並び）・`custom_field_kinds`（どの種別で出すか。行が 1 つも無ければ全部の種別・消した行しか無ければどの種別にも出ない）・`ticket_field_values`（チケットごとの値）
 - **読む口** `listTicketFields`（GET /api/v1/ticket-fields?kind_id=<uuid>）：その種別で出す項目を並びの順に、必須・説明・型・選択肢つきで返す。読めるのはワークスペースのメンバー（読むだけの人も、チケットが見えない人も。マスタを読む口なので `listTicketKinds` と同じ線）
 - **分類の軸の移し**（D-150.46）：`class_axes`（作り付けでない物）を「1 つ選ぶ」の項目に、`class_values` を選択肢に、`ticket_class_values` を `ticket_field_values` に移す。3 つの表は**凍結**（消さない・コードが読まない）。作り付けの軸 `priority`（優先度）は移さない（優先度は `tickets.priority` の列）。`handover_rules.axis_id`（段 9 の渡すの決まり）は触らない
 - **`listClassAxes`（GET /class_axes）は外す**。道・契約・生成の試験・目録の行をなくす

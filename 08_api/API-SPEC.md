@@ -390,10 +390,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1049 ／ 内部専用 277 ／ どの画面にも出ない 3
-  - ★ ticket_field_values.ticket_id
-  - ★ ticket_field_values.field_id
-  - ★ ticket_field_values.value
+- 検査したフィールド 1049 ／ 内部専用 277 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

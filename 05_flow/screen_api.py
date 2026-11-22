@@ -88,7 +88,7 @@ SCREEN_API = {
         ("POST", "/notifications/read-all", "A109", "notifications", "readAllNotifications", []),
         ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
         ("GET", "/ticket_stages", "A103", "ticket_stages", "listTicketStages", []),
-        ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds"]),
+        ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
         ("GET", "/clients", "A103", "clients", "listClients", []),

@@ -39444,7 +39444,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-144",
-      "E-145"
+      "E-145",
+      "E-146"
      ],
      "choke_points": [
       "C2"
@@ -41410,7 +41411,8 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-144",
-      "E-145"
+      "E-145",
+      "E-146"
      ],
      "choke_points": [
       "C2"
@@ -41526,6 +41528,7 @@
     "E-075",
     "E-144",
     "E-145",
+    "E-146",
     "E-115"
    ],
    "mock_path": null,

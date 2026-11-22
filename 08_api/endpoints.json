@@ -48688,7 +48688,8 @@
    ],
    "related_entities": [
     "E-144",
-    "E-145"
+    "E-145",
+    "E-146"
    ],
    "choke_points": [],
    "source": [
@@ -48710,7 +48711,9 @@
     "custom_fields_tenant_read",
     "custom_fields_ops_read_with_grant",
     "custom_field_kinds_tenant_read",
-    "custom_field_kinds_ops_read_with_grant"
+    "custom_field_kinds_ops_read_with_grant",
+    "ticket_field_values_ticket_read",
+    "ticket_field_values_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
