@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 69,
+  "api_built": 74,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 144,
+  "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 211,
+  "errors": 223,
   "stack": 56,
   "env": 41
  },
@@ -1057,23 +1057,6 @@
    ]
   },
   {
-   "op": "listClassAxes",
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "what": "取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "class_axes"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "updateClientContact",
    "method": "PATCH",
    "path": "/api/v1/client_contacts/:id",
@@ -1890,8 +1873,10 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "revokeInvitation",
@@ -4610,6 +4595,23 @@
    ]
   },
   {
+   "op": "listTicketFields",
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "what": "取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-563"
+   ]
+  },
+  {
    "op": "updateTicketDecision",
    "method": "PATCH",
    "path": "/api/v1/ticket_decisions/:id",
@@ -4910,9 +4912,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-387"
    ]
   },
   {
@@ -5337,6 +5339,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-59",
     "K-434"
    ]
   },
@@ -5354,6 +5357,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-59",
     "K-434"
    ]
   },
@@ -5395,7 +5399,7 @@
    "op": "listTicketTimeline",
    "method": "GET",
    "path": "/api/v1/tickets/:id/timeline",
-   "what": "取得（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "what": "取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人）",
    "flows": [
     "F6"
    ],
@@ -5403,9 +5407,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-383"
    ]
   },
   {
@@ -5789,8 +5793,10 @@
    "tables": [
     "members"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-419"
+   ]
   },
   {
    "op": "updateWorkspacePermissions",
@@ -6161,12 +6167,10 @@
   },
   {
    "table": "class_axes",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない",
    "writes": [],
-   "reads": [
-    "F4"
-   ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -6255,6 +6259,24 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_field_kinds",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_fields",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false
   },
   {
@@ -7199,6 +7221,14 @@
    "boundary": false
   },
   {
+   "table": "ticket_field_values",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
    "table": "ticket_handovers",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
@@ -7280,6 +7310,14 @@
    "reads": [
     "F4"
    ],
+   "boundary": false
+  },
+  {
+   "table": "ticket_thread_seen",
+   "class": "internal",
+   "why": "人ごと・チケットごとの最後にやり取りを開いた時刻（app スキーマ・アプリの役は直に触れない）。やり取りを読む口が関門 C2 の関数 app.ticket_timeline で読み（「新しい」の印と数）、K-384 の口が書く（K-383）",
+   "writes": [],
+   "reads": [],
    "boundary": false
   },
   {

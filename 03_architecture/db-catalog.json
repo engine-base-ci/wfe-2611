@@ -86,8 +86,8 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
   },
   "class_axes": {
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない"
   },
   "class_values": {
    "class": "frozen",
@@ -124,6 +124,14 @@
   "credentials": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "custom_field_kinds": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
+  },
+  "custom_fields": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
   },
   "daily_plans": {
    "class": "frozen",
@@ -533,6 +541,10 @@
    "class": "internal",
    "why": "作るときに使った下書きの id（app スキーマ・アプリの役は直に触れない）。作った後に届いた保存を残さないために app.ticket_create が書き、app.ticket_draft_save が読む（K-60）"
   },
+  "ticket_field_values": {
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）"
+  },
   "ticket_handovers": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
@@ -564,6 +576,10 @@
   "ticket_stages": {
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）"
+  },
+  "ticket_thread_seen": {
+   "class": "internal",
+   "why": "人ごと・チケットごとの最後にやり取りを開いた時刻（app スキーマ・アプリの役は直に触れない）。やり取りを読む口が関門 C2 の関数 app.ticket_timeline で読み（「新しい」の印と数）、K-384 の口が書く（K-383）"
   },
   "tickets": {
    "class": "skeleton",
