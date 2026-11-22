@@ -1,5 +1,5 @@
 // やり取りの口（段 7：K-383 読む・K-384 最後に開いた時刻・K-385 書く・K-386 直す・消す・☆）が共通で使う答え。
-//   書く所の DB の失敗（500・E-PAGE-003）は、それを使う葉（K-385・K-386）が自分の試験と一緒にここへ足す
+//   書く所の DB の失敗（500・E-PAGE-003）は、それを使う葉（K-384 が先に足した。K-385・K-386 もこれを使う）
 //   （読む口だけでは通らない道で、試験の無い関数を先に置かない）
 //   文言はコードに書かず正本（errors.json）から引く（K-165 の approve-complete/errors.ts と同じ形）。
 //   ログには場所と例外の種類だけを出す（本文・人の id・例外の文を出さない・D-136.1）
@@ -29,6 +29,9 @@ function pageDown(status: number, where: string, what: string, e: unknown): Hook
 
 /** 守りの判定・読む所で例外になった：止める側に倒して 503・E-PAGE-003（fail-closed・D-136.1） */
 export const down = (where: string, e: unknown): HookReply => pageDown(503, where, "止める側に倒した", e);
+
+/** 書く所で DB が失敗した：500・E-PAGE-003（K-384 が使う。K-385・K-386 も使う） */
+export const broke = (where: string, e: unknown): HookReply => pageDown(500, where, "書けなかった", e);
 
 /** 入力の形違い（422・欄つき）。入口（op.ts）と同じ形。理由のある欄を全部まとめて返すときは issues に足す */
 export const invalid = (
