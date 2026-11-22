@@ -3202,7 +3202,6 @@
     "readAllNotifications",
     "readNotification",
     "restoreTicket",
-    "retryActionRun",
     "search",
     "takeoverActionRun",
     "updateSavedView"
@@ -3218,7 +3217,6 @@
     "apps/api/test/generated/get_tickets_id_delete_preview.test.ts",
     "apps/api/test/generated/patch_notifications_id.test.ts",
     "apps/api/test/generated/patch_saved_views_id.test.ts",
-    "apps/api/test/generated/post_action_runs_id_retry.test.ts",
     "apps/api/test/generated/post_action_runs_id_takeover.test.ts",
     "apps/api/test/generated/post_notifications_read_all.test.ts",
     "apps/api/test/generated/post_saved_views.test.ts",
