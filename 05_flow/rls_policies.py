@@ -69,6 +69,9 @@ POLICIES: dict[str, list[dict]] = {
     "class_axes": workspace_master("class_axes"),
     "class_values": workspace_master("class_values"),
     "handover_rules": workspace_master("handover_rules"),
+    "custom_fields": workspace_master("custom_fields"),
+    "custom_field_kinds": workspace_master("custom_field_kinds"),
+    "ticket_field_values": child_of_ticket("ticket_field_values"),
     # ---- チケットのまわり（K-4）
     "test_specs": child_of_ticket("test_specs"),
     "checks": child_of_ticket("checks", "insert"),                       # 検査の結果は追記だけ
