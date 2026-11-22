@@ -2357,35 +2357,12 @@ K-387,段・実績・保留を変える口（updateTicket の段と実績の分�
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑。K234-API-004（詳細の文の数 16 以下・begin 1）も緑のまま
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
-K-401,渡しの口の置き場（口の登録・種類ごとのファイルの空の形・入力の作り直し・共通の確かめ・答える人を決める関数・知らせとメールの送り方）と、渡す前の下見の口（previewTicketHandover）・決まりを読む口（listHandoverRules）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-23,F8・渡す・配る,"段 9（F8 渡す・配る）の口の葉（K-402〜K-410）が乗る **置き場** を 1 回だけ作る（切り方.md 1 章「先頭の葉が置き場を 1 回だけ作り、後ろの葉は自分のファイルだけを触る」）。
-あわせて、利用者の 1 操作として **渡す前の下見**（詳細の右の「担当者 ▾」を押して相手を選ぶ小窓が開くとき・D-148.2）の口 `previewTicketHandover` を作る。
+K-388,完了したチケットを開き直す（updateTicket の段の欄で 完了 → 作業中。完了の時刻と押した人を消し、やり取りに「開き直した」）（K-66 の葉）,タスク,K-66,未着手,実装,2026-11-26,F6・自分で進める,"間違えて完了にしたときに戻す手が今は無い。代表の答え ⑤（answer=eaa451436670）：完了のチケットの段のメニューに「作業中（開き直す）」を入れる。
+開き直すと、段は作業中に戻り、**完了の時刻と押した人（tickets.completed_at・completed_by）は消え**、やり取りの更新の記録に「開き直した」が残る。
 
-置き場に入る物：
-
-- 口の登録 `apps/api/src/hooks/handovers.ts`（K-326 の register）：createTicketHandover・answerTicketHandover・listHandoverRules・previewTicketHandover の 4 本。**足す口（listTicketHandovers・withdraw・remind・claim）は、その葉が自分の hooks のファイルを作る**（K-405・K-406・K-410。このファイルに足さない）
-- 渡す口・答える口の **振り分け**：入力の確かめ → 共通の確かめ（見えるか・その人ができる種類か・止まり・相手・一緒に切り替えるもの）→ 種類ごとのファイルへ。種類ごとのファイルは、この葉では全部「まだ使えません」（422・E-HND-001）の空の形で、各葉が自分の 1 ファイルだけを本物にする
-- 入力の作り直し：今の契約の入力は表の写し（TicketHandoversInput：ticket_id・from_member_id・state・decided_at まで送れる）。渡すは `kind・to_member_id・to_scope_id・reason・ask・reply_due・switch・notify_managers・replaces`（replaces は「別の人にする」：待っている自分の渡しの id。在ればその渡しを取り消してから新しく渡すのを 1 取引で・中身は K-402・K-413）、答えるは `decision・decline_reason・switch` だけにする
-- 共通の判定の DB の関数（答える人・その人ができる種類・止まり・返事の期限の既定・一緒に移す物・決まりで整えた切り替え）と、読める人の関数 `app.ticket_involved` の作り直し（グループ宛て・申し出でも、答える人が答えるまでチケットを読める・D-128.115）
-- 知らせとメールの送り方（関門 C6）：DB の関数が返したメールの宛てを送り、送れた／送れなかった印を知らせの行に書く部品と、渡しのメールの文（D-148.19：理由とお願いは書かない）
-- 答える口の行の決まり：今は「相手（to_member_id）だけ」（scripts/ci/row_rules.mjs の recipient）。申し出（答えるのは担当者）・グループ宛て（答えるのはそのグループを管理する人）でも入口を通るように、`OP_RULES.answerTicketHandover` を `app.handover_answerer(id, app.user_id())` にする
-
-上へ上げる（kind escalate）は段 9 では作らない（D-148.1）。振り分けで 422・E-HND-001 を返し続ける。","- [ ] 下の表の 30 行（K401-API-001〜025・K401-DB-026〜030）が緑：`apps/api/test/features/F8/handover-base.test.ts`（土台 `handover.harness.ts`）
-- [ ] 共有の試験 k144 の入口の uuid の行 K144-API-900〜902（`apps/api/test/features/contract/k144.d/K-401.ts`）が緑
-- [ ] 契約の口 4 本が 501 でない。生成の試験（post_tickets_id_handovers・patch_ticket_handovers_id・get_handover_rules と、作り手が新しく出す get_tickets_id_handover_preview）の it.todo は、na（理由つき）と「種類の葉が持つ ok（下の生成の試験の節）」を除いて 0
-- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
-- [ ] 手元の CI（このチケットの範囲）が緑"
-K-405,渡されたものを承認待ちに並べる（app.approval_queue・app.approval_queue_count の作り直し）と、詳細で渡しの今を getTicket に載せ（app.ticket_handover_current）、記録を読む口（listTicketHandovers）を作る（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-24,F8・渡す・配る,"渡された人が承認待ちを開いたときに、**答えるのが自分の、待っている渡し**を、AI の成果物と同じ表に並べる（D-128.34・D-128.89「渡されたものは承認待ちに並べ、行の右端でその場で決める」）。
-承認待ちを読む口 `listApprovalQueue`（K-161）のコードは変えず、DB の関数 `app.approval_queue`・`app.approval_queue_count`（0095）を作り直す。種類（渡す・申し出・配る）に関わらず、
-答える人の判定は K-401 の `app.handover_answerer` に任せるので、後ろの葉（K-408 申し出・K-409／K-410 配る）は行を入れれば勝手に並ぶ（切り方.md 1 章「承認待ちを読む DB の関数は 9-A5 の 1 本だけが作り直す」）。
-
-あわせて、詳細を開いたときの**渡しの今**（帯と担当者の下の「→ 〇〇（返事待ち）」）を、詳細の答え `getTicket` に `handover`（1 件か null）として載せる（PM の決め 2026-11-20：詳細を開いたときの口は 6 本のまま・速さの台帳 perf_budget.json と k237 は替えない）。前の渡し（記録）は、記録を開いたときだけ読む口 `listTicketHandovers`（GET /api/v1/tickets/:id/handovers・契約に無い口・PM に知らせ済みの 4 本の 1 つ）で読む。
-1 件の形は、画面の葉の道具 `apps/web/tests/k/handover-mock.ts` の `HView`（K-400 が切る段で決めた入れ子：from・to・to_scope・ticket_scope・switch・can）にそろえる。帯を 1 回だけ出す・断られた帯を閉じる（D-148.7・D-148.34・D-148.35）の覚えは画面の手元（K-400 の use-handovers.ts の localStorage）で持ち、この口は書かない。
-
-渡す口は K-402、答える口は K-403、取り消す・催促は K-406、期限切れの知らせは K-407、申し出は K-408、配るは K-409・K-410、画面は K-411〜K-415。","- [ ] 下の表の 24 行（K405-API-001〜024）が緑：`apps/api/test/features/F8/handover-queue-read.test.ts`（土台は K-63 の `apps/api/test/features/F5/approve-complete.harness.ts`・変えない）
-- [ ] 契約の口 `listTicketHandovers` が在り、生成の試験 `apps/api/test/generated/get_tickets_id_handovers.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-405.json` の covers）
-- [ ] 共有の試験 `k144-contract.test.ts` の葉の行 K144-API-950（`k144.d/K-405.ts`・carry・k144 の番号は葉ごとの枠：K-405＝950）が緑
-- [ ] 詳細を開いたときの口の数は 6 本のまま（速さの台帳 `scripts/ci/perf_budget.json` と k237 の試験は替えず緑）。getTicket の文の数も増えない（K234-API-004 が今のまま緑）
-- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑。特に K-161 の承認待ちの試験（approve-complete-queue・guard）と K-234／K-236（文の数・片付けの文）が今のまま
+開き直せるのはそのチケットを書ける人（② と同じ）。担当者でない人が開き直したら、担当者に知らせる（⑦ と同じ・段を変えたので）。","- [ ] 下の表の 6 行（K388-API-001〜006）が緑：`apps/api/test/features/F6/progress-reopen.test.ts`
+- [ ] K-387 の試験 progress.test.ts が緑のまま（完了 → 未着手・保留は 409 のまま・K387-API-012）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-419,招く（口と DB）：メンバーの並びを読む getWorkspaceMembers・メールで招く createInvitations（招待の入力にグループの欄・何人でも・管理者として招くときは本人確認の取り直し）（K-70 の葉・段 9 の前に出す）,タスク,K-70,未着手,実装,2026-11-23,F10・人とアカウント,"段 9（F8 渡す・配る）を人が画面で確かめるには 2 人目が要るが、今の本線には「人を招く」側が無い（範囲.md 0 章）。代表の答え（answer=56812da22008）で、F10 の「人を招く」を段 9 の前に出す。この葉はその口と DB：
 
@@ -2449,6 +2426,34 @@ K-430,段 5 の決定ログ §150（D-150.1〜60・新しい形）を本線に�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑（trace_gate の T7 は要件一覧の作り直し後）
 - [ ] 段 5 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-434,確認項目を読む・足す口（listTestSpecs・createTestSpec：行は文とチェックと並びと出どころ・足すのは文だけ・足すとやり取りに 1 行・完了後は足せない）と表の形（check_kind 任意・チェックの列・出どころの列・tickets.no_spec_reason）（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・確認項目,"詳細の項目の表の「確認項目」の行（画面は K-450）が開いたとき・項目を足したときに呼ぶ契約の口 2 本を作る（今はどちらも 501）：
+`listTestSpecs`（GET /api/v1/tickets/:id/test-specs）と `createTestSpec`（POST /api/v1/tickets/:id/test-specs）。あわせて、確認項目の表の形を新しい形（D-150.39）に直す。
+
+- 確認項目の行は **文（title）とチェックだけ**（D-150.39）。種類（機械・AI・人）・判定の型・設定値は足すときに決めない・口の入力にも答えにも出ない（列 `check_kind`・`judge_type`・`params`・`off_reason` は表に残るが使わない）
+- 足す入力は `title` だけ。前後の空白を落として 1〜200 字（D-150.28）。足したときはチェック無し・出どころ `manual`（人が口から足した）
+- **足したら、同じ取引でやり取りに 1 行**（`ticket_messages` の kind `change`・「〈名前〉が確認項目を足しました：〈文〉」。D-150.40・D-128.45）。人が足したので `author_member_id`＝その人。記録の表は別に作らない
+- 完了した・消されたチケットの扱い：読むのは完了後も 200（`meta.can_edit` が false）・足すのは完了後 409・E-SPEC-001（D-150.33・D-150.56）・消されたチケットは読むも足すも 404
+- 画面が出し分ける物は口の答えで決める：`meta.can_edit`（書けて、完了していない）
+
+**表の形（この葉が作る。後の葉が使う名前は「受け持ちをまたぐ名前」の表）**：
+`test_specs` に ① `check_kind` を任意に（not null を外す）② `checked_at`・`checked_by_member_id`・`checked_by_ai`（チェックの印と付けた人。付けるのは K-435）③ `source`（`manual`・`knowledge`・`ai` の 3 つ・既定 `manual`）と `source_ref_id`（uuid・任意・出どころのページなど）。`tickets` に `no_spec_reason`（text・任意。K-565 が「AI に任せる」の 0 件のとき使う）。
+**`source` と `source_ref_id` はこの葉では列と既定だけ**（ナレッジの「必ず守る」のページから入れる仕組みは段 10 か AI の段が作る）。`createTestSpec` の入力では受けない。`listTestSpecs` の答えには `source` を入れる（`source_ref_id` は答えに出さない）。
+
+直す（文・チェックの付け外し）・外すは K-435、作るとき `specs[]` から足すは K-437、使わない理由を書くのは K-565、画面は K-450。","- [ ] 下の表の 21 行（K434-API-001〜021）が緑：`apps/api/test/features/F4/test-spec-create.test.ts`（土台 `test-spec.harness.ts`）
+- [ ] 契約の口 2 本が 501 でない。生成の試験 `get_tickets_id_test_specs`・`post_tickets_id_test_specs` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-434.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-520・521（2 口の道の値 :id）が通る（葉のファイル `k144.d/K-434.ts`・carry）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-561,DB：本文 1 枚の持ち方（ticket_sections の鍵 body・種別のひな形 ticket_kinds.body_template・app.ticket_create に本文 1 枚の道を足す）と、文書の木の型と doc → text（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・チケット,"チケットの本文を「自由な 1 枚の文書」として持つ置き場を DB に作る（決定 D-150.35・D-150.50）。区画ごとの入力欄はやめ、`ticket_sections` に鍵 `body` の 1 行（列 `body` ＝ `{ doc, text }`・版は `ticket_section_versions`）で持つ。種別を選んだときに入るひな形は `ticket_kinds.body_template`。作る関数 `app.ticket_create` に「本文 1 枚の道」を足す。
+
+あわせて、本文の中身の形（文書の木 `doc`）と「doc → text」の関数を、口（K-432・K-437）と画面（K-567・K-568）が同じ物を使えるよう `packages/contracts` に置く。DB は text を作らない（口が作って渡す）。
+
+**前の道は壊さない**：入力に `sections` が来たら今までどおり区画の行を書く。作る口 K-437・読む口 K-560・F5 の K-565・K-566 が入るまで、前の作る面・「AI に任せる」・完了が壊れないようにするため。前の道を消すのは最後の葉 K-578（今ある区画の中身を本文に移すのは K-575。K-578 が区画の入力を受けるのをやめ・`kind_sections` に凍結の印を付ける）。`kind_sections` はこの葉では触らない。","- [ ] 下の表の DB の 17 行（K561-DB-001〜017）が緑：`packages/db/test/ticket_body.test.ts`（008・009 以外の 15 行）と、前の道（sections）を見る `packages/db/test/ticket_body_legacy_sections.test.ts`（008・009・K-578 がファイルごと消す。本文の試験は区画の道が在っても無くても通る形）
+- [ ] 下の表の文書の木の 6 行（K561-DOC-001〜006）が緑：`packages/contracts/test/doc.test.ts`
+- [ ] migration が空の DB に全部当たり、`MIGRATIONS` の一覧（K327-DB-008）が最新（`packages/db/src/migrations.generated.ts` は作り手 `scripts/ci/gen_migrations.py` の生成物）
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり替えずに緑（前の道 `sections` の試験は今のまま）
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-563,会社が足す項目の表（custom_fields・custom_field_kinds・ticket_field_values）と読む口（listTicketFields）・分類の軸の中身を「1 つ選ぶ」の項目に移して凍結・listClassAxes を外す（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・会社が足す項目,"詳細と作る面の「項目の表」に、会社が足した項目を、用意してある項目と同じ表に同じ形で並べる（D-150.36・D-150.37）。この葉は **表と読む口と、分類の軸からの移し**まで（マスタを作る・直す口と画面は段 10・値を書く口は K-564・K-437）。
 
 - **表 3 つ**（新設）：`custom_fields`（会社の項目：名前・型・必須・説明・選択肢・並び）・`custom_field_kinds`（どの種別で出すか。行が 1 つも無ければ全部の種別・消した行しか無ければどの種別にも出ない）・`ticket_field_values`（チケットごとの値）
@@ -2461,6 +2466,28 @@ K-563,会社が足す項目の表（custom_fields・custom_field_kinds・ticket_
 - [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-530（`listTicketFields` の問い合わせ kind_id）が通る
 - [ ] `listClassAxes` を使う所が 0（下の「前からの試験を替えた所」の検索と同じ命令で、外す所以外に残らない）
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-584,文書の木に足す節と印（validateDoc・docToText を広げる：番号つきの並び・区切りの線・見出しの段 4・文字の寄せ・表のセルの結合・下線・取り消し線・行の中のコード・上付き・下付き・#rrggbb の色と背景）と、決定ログ D-150.61（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・チケット,"代表の決め（2026-11-22・D-150.61「出来合いの編集の部品が持つ機能を、こちらで絞らずに使う。色は自由・表の操作・下線・取り消し線・見出しの段・番号つき・寄せ・区切りの線など」）に合わせて、K-561 が作る文書の木（`packages/contracts/src/doc.ts`）の `validateDoc` と `docToText` を広げる。保存する文書が「節と印」を足しても、口（K-432・K-437）と画面（K-567・K-568・K-587・K-577）が同じ決まりで受ける・出せるようにするための葉。
+
+足す物（決め `.ticket-flow/side-notes/段5-書き/v3-本文の道具-決め.md` の表）：
+
+| 種類 | 足す物 | 形 |
+|---|---|---|
+| 節 | 番号つきの並び `orderedList` | 中身は `listItem`。`attrs.start` は任意（整数 1〜9999）。`listItem` の中にも入れ子にできる |
+| 節 | 区切りの線 `horizontalRule` | 中身なし・attrs なし。doc の直下だけ |
+| 節 | 見出しの段 | `heading` の `level` は 2・3・**4**（頁の h1 は題名なので 1 は使わない） |
+| 節の attr | 文字の寄せ `textAlign` | 段落と見出しに任意。`left`・`center`・`right`・`justify` |
+| 節の attr | 表のセルの結合 | `tableCell`・`tableHeader` に `colspan`・`rowspan`（任意・整数 1〜50）と `colwidth`（任意・整数 1〜2000 の並び・長さは colspan。colspan が無ければ 1）。見出しのセル `tableHeader` はどの行・列にも置ける |
+| 印 | 下線 `underline`・取り消し線 `strike`・行の中のコード `code`・上付き `superscript`・下付き `subscript` | attrs なし |
+| 印 | 文字の色 `color` | `attrs.color` は前の 3 つ（red・teal・amber）**か** `#rrggbb`（`^#[0-9a-f]{6}$`） |
+| 印 | 背景の色 `highlight` | `attrs` は任意。あれば `{ color }` だけで、`color` は `#rrggbb`。無ければ前のまま（正本の黄） |
+
+`docToText`：番号つきの並びは箇条書きと同じ扱い（「- 」・start の数は字に出さない）・区切りの線は字を出さない・印と寄せと結合は字に関わらない。
+
+**K-561 で通る文書は全部そのまま通り、同じ text になる**（足すだけ。K584-DOC-013）。","- [ ] 下の表の 23 行（K584-DOC-001〜023）が緑：`packages/contracts/test/doc_extra.test.ts`
+- [ ] K-561 の試験 `packages/contracts/test/doc.test.ts`（この葉の作る段が、下の「作る段で当てる差分」で 004 の 3 つの値を替えた版）が緑
+- [ ] 決定ログ §150 に D-150.61 の行が在り、D-150.48 が「改めた（2026-11-22 → D-150.61）」になって、`python3 scripts/ci/k430_decision_log_test.py`（COUNT 61 に替えた版）の DC-001・DC-003 が緑・`python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` が PASS
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり、替える物以外は替えずに緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-601,段 8 の決定ログ §151（D-151.1〜20）を本線に入れる（文書だけ・K-67 の葉）,タスク,K-67,未着手,実装,2026-11-23,F7・文書,"段 8（K-67・F7 毎日見る・探す・片付ける）の決定 D-151.1〜20（範囲・お知らせの読んだ・探す・保存した検索条件・期限・止まった一手・消す／戻す ほか）を、決定ログの新しい節 §151 として本線に入れる。
 
@@ -2521,6 +2548,24 @@ K-624,spec-sync の D6（モック ↔ 画面）が、キャンバスの絵が�
 これは **検査の設定の抜け**（食い違いではない）。しかも段 2 以降は絵ではなく開発用のモックが正になる（D-143・「段 2 からモックは本番の部品で作る」）ので、画面が増えるたびに D6 が赤になる。D6 を外す・件数を決め打ちで許す直しはしない。**D6 の「作っている」を、キャンバスの絵が在る画面 ＋ mock_only に理由つきで載せた画面にする**。実在・二重（絵と mock_only の両方）・flow の第 1 フェーズにあるかは、今までどおり canvas_gate.py の CV4 が見る（D6 は数えるだけで、検査を緩めない）。","- [ ] 下の表の 7 行（K624-D6-001〜007）が緑：`python3 scripts/ci/k624_d6_mock_only_test.py`
 - [ ] `python3 scripts/spec-sync/tier_d.py --project-root . --json` の failures に D6 の行が無い（本物の木・help を数える）
 - [ ] G65 の置き場 `scripts/ci/g65.d/K-624.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-627,spec-sync の L（層の棚卸し G21）の DB の層が、手元の古い kaname_test（migration が 0075 で止まった残り物）で偽の赤になる：手元では使い捨ての DB を作って試験を流し、終わったら必ず捨てる道具 db_fresh_run.mjs を足す（CI では渡された DB をそのまま使う）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の L は `layer_audit.py --run` で、層ごとの check を実際に流す。その中の `packages/db/migrations/*.sql` の層（D-145・D-133.6 の db: true）は `pnpm exec vitest run packages/db/test` を流す。PM の実行では **29 件が赤**（32 秒）だった。原因を調べた（実測）：
+
+1. この Mac の `kaname_test`（`127.0.0.1:55433`）は、`app.schema_migrations` が `0075_workspace_people.sql` で止まった**古い残り物**（tenants 2 行・migration が 128 本ある今の木に追いついていない）。vitest は DATABASE_URL が無いとここにつなぐ。
+2. 残り物の上で今の migration を当てると、`0076_clone_ops.sql` の `insert into operations … app.ops_tenant_id()` が `operations_tenant_id_fkey` で落ちる → 18 のファイルが起動で落ちて 29 件が赤。
+3. **使い捨ての新しい DB（`kaname_tmp_pmsync`）で同じ vitest を流すと、181 本のうち 180 が緑**（実測：169 秒）。残る 1 本（`repository.test.ts`「init は表が無いと落ちる」）は、`URL.replace(/\/kaname_test$/, ""/postgres"")` が **DB の名前が `kaname_test` のときだけ**管理 DB に替わる書き方で、別の名前だと同じ DB のまま「表が在る」になり赤になる。これは試験の誤り（名前の決め打ち）。
+
+判断：
+
+| 赤 | 判断 |
+|---|---|
+| 29 件（古い kaname_test） | **検査の設定の抜け**：製品の食い違いではなく、手元の DB が古い。CI は毎回まっさらな DB なので出ない。手元の `kaname_test` を作り直す（Docker に触る・本人の DB を壊す）のではなく、**層の検査が自分で使い捨ての DB を作って捨てる**ようにする（memory の「DATABASE_URL_ADMIN=…/kaname_tmp_<番号>（使い捨て）」と同じ運用を道具にする） |
+| 1 件（repository.test.ts） | **本当の食い違い（試験の誤り）**：名前を決め打ちしない書き方に直す（`/\/[^/?]+$/`）。carry: で切る段が直した版を運ぶ |
+
+検査は緩めない：vitest は今のまま全部流す（`packages/db/test` 全部）。DB を黙って切り替えるのではなく、DATABASE_URL が env に在れば（CI）そのまま使い、無いときだけ使い捨てを作る。","- [ ] 下の表の 12 行（K627-FRESH-001〜012）が緑：`python3 scripts/ci/k627_db_fresh_run_test.py`（手元の PG（55433）が立っているときに流す。行 004・005・009・011 は DB を作って捨てる）
+- [ ] `packages/db/test/repository.test.ts` が名前を決め打ちせず、使い捨ての DB でも緑（行 008・009）
+- [ ] 層の検査 `packages/db/migrations/*.sql` が、手元で `python3 scripts/ci/layer_audit.py --run --db-range true` の中で緑（古い kaname_test のままでも）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-627.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-630,直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-21,F3・画面,"本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：
 
