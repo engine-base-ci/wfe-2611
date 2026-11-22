@@ -1,7 +1,7 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-21",
+ "frozen_at": "2026-11-22",
  "summary": {
   "total_screens": 37,
   "total_apis": 370,
@@ -2655,7 +2655,7 @@
     },
     {
      "role": "data_fetch",
-     "endpoint": "GET /api/v1/class_axes",
+     "endpoint": "GET /api/v1/ticket-fields",
      "act": "A103"
     },
     {
