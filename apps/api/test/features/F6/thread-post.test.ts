@@ -353,4 +353,13 @@ describe("K-385 書き込む：段・二度押し・守り・失敗", () => {
     expect(x.message!.is_new).toBe(true);
     expect(x.message!.mentions.map((m) => m.member_id)).toEqual([h.boss.id]);
   });
+
+  it("K385-API-019 本文に対にならないサロゲートがあっても書ける：201・本文の片割れの字は U+FFFD になる（jsonb に入らず 503 にしない・K-387 の口と同じ置き換え）", async () => {
+    const t = await h.ticket();
+    const r = await send(h.writer, t, { body: "片割れ\uD800です" });
+    expect(r.status, await r.clone().text()).toBe(201);
+    const id = ((await h.json(r)).data as Item).id;
+    const list = ((await h.json(await h.req(h.boss, "GET", `/tickets/${t.id}/timeline`))).data ?? []) as Item[];
+    expect(list.find((x) => x.id === id)!.message!.body).toBe("片割れ\uFFFDです");
+  });
 });
