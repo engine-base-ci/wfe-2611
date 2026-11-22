@@ -2327,6 +2327,19 @@ K-382,段 7 の見た目の部品（進める・やり取り・決定ログ）�
 - [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑
 - [ ] 決定の検査（T6・T8・G60）と canvas_field_gate が緑（足した決定の行の reflect_in と、モックの状態の持ち主 K-382・K-392〜K-398 の mock:）
 - [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑"
+K-383,やり取りを読む口（listTicketTimeline）と、最後にやり取りを開いた時刻の表（新しい方から 20 件・前を見る・絞り込み・消した跡・☆・「新しい」の数・候補の人）（K-66 の葉）,タスク,K-66,未着手,実装,2026-11-25,F6・やり取り,"チケットの詳細の右のパネルのタブ「やり取り」（画面は K-392）が開いたときに呼ぶ契約の口 `listTicketTimeline`（GET /api/v1/tickets/:id/timeline）を作る（今は 501）。
+書き込み・変更の 1 行・仕組みの行・AI の実行 1 回＝1 枚を、1 本の時系列で返す（D-128.45）。
+
+- 新しい方から 20 件だけを返し、画面は古い順に並べる。前は「いちばん古い行の時刻と id」（before_at・before_id）で同じ件数ずつ読む。答えに「この前にあと何件か」（older_count）を持たせる（代表の下絵の直し answer=fabd031f9b37 の 2）
+- 絞り込み：すべて／話だけ／自分あて（⑮1）。消した書き込みは 1 行の跡（⑪）・☆ の数と自分が押したか（⑫）・直した印（⑩）・引用の字（⑮3）
+- 「新しい」（⑬）：人ごと・チケットごとに「最後にやり取りを開いた時刻」を覚える表 `app.ticket_thread_seen` を足す。この口は読むだけ（書くのは K-384 の口）
+- @ と知らせる人の候補（⑨「候補はそのチケットを見られる人だけ」）を、最初の 1 回の答えの meta.people で返す（画面がもう 1 本の口を呼ばない）
+
+答えの形は、画面の試験の道具 `apps/web/tests/k/thread-mock.ts`（K-392 が持つ・切る段で合わせた）と同じにする。書く口 K-385・直す口 K-386 も同じ 1 件の形を返す（1 件の形を作る DB の関数をこの葉が作り、後の葉が使う）。","- [ ] 下の表の 22 行（K383-API-001〜022）が緑：`apps/api/test/features/F6/thread-timeline.test.ts`（土台 `thread.harness.ts`）
+- [ ] 契約の口 `listTicketTimeline` が 501 でない。生成の試験 `apps/api/test/generated/get_tickets_id_timeline.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-383.json` の covers）
+- [ ] 共有の試験 k144 の入口の uuid の行 K144-API-700・701（葉のファイル `k144.d/K-383.ts`）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 出す前に Squawk（G58）を手元で流して緑（段 4 の学び）・手元の CI（このチケットの範囲）が緑"
 K-401,渡しの口の置き場（口の登録・種類ごとのファイルの空の形・入力の作り直し・共通の確かめ・答える人を決める関数・知らせとメールの送り方）と、渡す前の下見の口（previewTicketHandover）・決まりを読む口（listHandoverRules）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-23,F8・渡す・配る,"段 9（F8 渡す・配る）の口の葉（K-402〜K-410）が乗る **置き場** を 1 回だけ作る（切り方.md 1 章「先頭の葉が置き場を 1 回だけ作り、後ろの葉は自分のファイルだけを触る」）。
 あわせて、利用者の 1 操作として **渡す前の下見**（詳細の右の「担当者 ▾」を押して相手を選ぶ小窓が開くとき・D-148.2）の口 `previewTicketHandover` を作る。
 
@@ -2352,11 +2365,62 @@ K-407,返事の期限が過ぎたら、渡した人が Kaname を開いたとき
 帯（f8-overdue）は K-405 が getTicket に載せる今の渡し（`handover.overdue`・待っていて返事の期限が今より前）で出る。この葉は知らせだけを持つ。","- [ ] 下の表の 11 行（K407-API-001〜011）が緑：`apps/api/test/features/F8/handover-overdue.test.ts`（土台は K-63 の `approve-complete.harness.ts`・変えない）
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑。特に K-236（片付けの文は 1 本・savepoint 0 本・片付けが例外でも 200）と K-234（承認待ちの文は 9 以下・begin 1）と K-237（承認待ちの文の数の台帳 8・begin 1）が今のまま
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-419,招く（口と DB）：メンバーの並びを読む getWorkspaceMembers・メールで招く createInvitations（招待の入力にグループの欄・何人でも・管理者として招くときは本人確認の取り直し）（K-70 の葉・段 9 の前に出す）,タスク,K-70,未着手,実装,2026-11-23,F10・人とアカウント,"段 9（F8 渡す・配る）を人が画面で確かめるには 2 人目が要るが、今の本線には「人を招く」側が無い（範囲.md 0 章）。代表の答え（answer=56812da22008）で、F10 の「人を招く」を段 9 の前に出す。この葉はその口と DB：
+
+- `getWorkspaceMembers`（GET /api/v1/workspace/members）：メンバーの画面（キャンバス WsPeople・D-148.28）の並び。グループごとの人（名前・メール・役割・グループの役割・止めているか・PC の様子）と、招待中の行
+- `createInvitations`（POST /api/v1/invitations）：メールで招く（何人でも・グループ・役割・ひとこと・D-148.29）。招待の入力に **グループの欄を足す**（D-148.23）。管理者として招くときは本人確認を取り直す（契約の step_up ""admin_role""・D-128.97）
+
+画面（メンバーの画面・招くの小窓・本人確認の小窓・グレーの物）は K-420。役割を変える ▾・「⋯」・＋ グループ・送り直す・このグループに招く・決まり／記録／設定は F10 の残り（D-148.22・この葉は作らない）。","- [ ] 下の表の 23 行（K419-API-001〜023）が緑：`apps/api/test/features/F10/invite-create.test.ts`
+- [ ] 契約の口 getWorkspaceMembers・createInvitations が 501 でない。生成の試験 2 本の it.todo が、na（理由つき）を除いて 0（ears-elsewhere.d/K-419.json の covers）
+- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線に入れる（文書だけ・K-68 の葉）,タスク,K-68,未着手,実装,2026-11-23,F8・文書,"段 9（K-68・F8）の決定 D-148.1〜51（代表の答え 0〜33・下絵の直し・知らせの消え方）を、決定ログの新しい節 §148 として本線に入れる。あわせて、その答えの記録（answer=3d444fc8d59f）を `01_hearing/decider-answers.jsonl` に入れる。
 
 段 9 のほかの葉は decisions: に D-148.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（PM の決め 2026-11-20・前は K-400 が作る段で足す形だった）。段 9 のほかの葉はこの葉に依存する（依存はまとめ役が張る）。","- [ ] 下の表の 4 行（K425-DC-001〜004）が緑：`scripts/ci/k425_decision_log_test.py`
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-428,場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-24,F3・DB,"場合表の種 `seedAccessMatrix`（`packages/db/src/seeds.ts`）は、表ごとの種を `seedGenericRows`（`packages/db/src/seed_generic.ts`）に任せ、その最初に **外部キーの一覧を information_schema の 3 つのビュー（table_constraints・key_column_usage・constraint_column_usage）の結合で引いている**。この結合は、表が増えるほど急に遅くなる（constraint_column_usage は、各制約ごとに権限を確かめながら列を引き直すビュー）。
+
+- 手元の開発の試験 DB（kaname_test・表 134・外部キー 370 本）で、この 1 文だけ **約 2.7 秒**。CI の台が混むと、表 138 で約 20 秒になる
+- 種を呼ぶ DB の試験の準備（`beforeAll`・上限 33 秒＝vitest.config.ts の hookTimeout）が、混んだ CI で時間切れになって赤になった（K-402・K-404 の CI）。種を呼ぶ試験は 30 ファイル（`git grep -l seedAccessMatrix` の 32 件から、種の本体 seeds.ts・cli.ts を除く。うち 2 つ（apps/api/test/harness.ts・packages/db/test/global-lock.ts）は試験の補助のファイル）なので、表が増えるほど全部の DB の試験に効く
+
+この葉は **同じ行の集合を、目録（pg_constraint・pg_class・pg_attribute）で引き直す**。切る段で手元の DB（kaname_test）に当てた結果：前の文と新しい文の行の集合が同じ（370 行・差 0）、2.7 秒が 0.23 秒（約 12 倍）。
+
+結果が変わる所は 1 つだけ：**2 列以上の外部キー**。前の文は元の列と先の列を組にせず全部の組み合わせを出す（2 列なら 4 行）。新しい文は列の順に組にする（2 行）。今の DB に 2 列の外部キーは 0 本（`select count(*) from pg_constraint where contype='f' and array_length(conkey,1)>1` が 0）なので今は差が出ない。種は `fkOf(table, col)` で「その列の先」を 1 つ探すので、組にする方が正しい（前の出し方は先の列を取り違える元になる）。これは切る段の決め（下の決定ログ）。","- [ ] 下の表の 6 行（K428-DB-001〜005・007）が緑：`packages/db/test/k428_seed_fk_catalog.test.ts`（K428-DB-006 は人が確かめる）
+- [ ] 種を使う前からの試験（packages/db/test と apps/api/test の DB を使う物の全部・この葉の範囲 ci_wide shared）が全部緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-429,fuzz が見つけた前からの口の食い違い（K-62）を契約の形に合わせる（実行の 1 件・一覧は phase・status が空の行を返さず、一覧の limit／cursor／sort は契約の形だけを受けて 422）・契約 fuzz G36 の揺れを根から止める,タスク,K-62,未着手,実装,2026-11-24,F5・API,"契約の fuzz（Schemathesis・CI の G36）が、K-62 の 2 つの口で契約と口の食い違いを見つけ、どの葉の CI でも G36 が揺れて赤になる（K-401・K-407 の CI で出た。GitHub の回 44728943303）。食い違いは 2 つ。
+
+1. **答えの phase・status が空になる**（ST108）：契約（`ActionRunView`）は phase・status を「文字（空を許さない）」としているが、DB は `action_runs.phase`・`status_id` の空を許す（0011・0092 の check は「空か make・execute」）。fuzz の種（`seedGenericRows`）は表の列を埋めるだけなので、チケットに結んだ実行の行を phase・status 空のまま作る。読む関数（`app.action_run_view`・`app.ticket_runs_view`）はそれをそのまま返し、契約違反の答えになる
+2. **一覧が契約外の sort を受け付ける**（ST201）：契約の `listTicketRuns` は sort を「表の列名 27 個の enum」・limit を 1〜200・cursor を数 1〜9 桁としているのに、口（`apps/api/src/features/F5/delegate/people.ts`）は問い合わせを見ない。`sort=-58800` が 200 で通る。共通の入口（op.ts）が一覧の問い合わせを確かめるのは `kind: list` の口だけで、この口は `kind: get`（答えが配列）なので素通りする
+
+
+決め（控え帳 `.ticket-flow/drift.md`・answer=f0f290e785a9）：**422 は契約に書ける形の誤りだけ・検査の例外は足さない**。なので契約と口のどちらかを、実際の振る舞いに正しく合わせる。K-62 のチケットと決定ログで確かめた結果：
+
+- phase・status：K-62 のチケットは「ticket_id・phase は口が必ず入れる」（契約の NOT_NULL_ANSWERS）と決めている。実行の行を作る道は 4 つ（`app.ticket_delegate`〔0092〕・`approvals` の承認〔0096〕・差し戻し〔0097〕・完了〔0100〕）で、どれも phase と status_id を入れる（`git grep ""insert into action_runs""` で確かめた）。**空は「AI に任せた実行」の姿ではなく、種が作る生の行だけ**。なので **契約は変えず、読む関数が空の行を実行として返さない**（1 件は 404・一覧は外す）
+- sort：契約はすでに enum（表の列名）を書いている。**口が契約と同じ形だけを受ける**（契約の形から外れたら 422・欄 sort）。limit・cursor も同じ型の誤りなので同じ確かめを通す（fuzz は同じ口に limit・cursor も当てる）","- [ ] 下の表の 11 行（K429-API-001〜010・K429-DB-001）が緑：`apps/api/test/features/F5/k429_runs_shape.test.ts`
+- [ ] 前からの試験（K-62 の delegate.test.ts・k144-contract.test.ts・k234_one_transaction.test.ts など）が全部緑（この葉の範囲 ci_wide db）
+- [ ] 手元の CI（このチケットの範囲）が緑。契約の fuzz の G36 が、この 2 つの口で赤にならない"
+K-430,段 5 の決定ログ §150（D-150.1〜60・新しい形）を本線に入れる（文書だけ・K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・文書,"段 5（K-59・F4）の決定 D-150.1〜60 を、決定ログの節 §150 として本線に入れる。2026-11-21 に代表と 13 個すり合わせてチケットの形が変わったので、D-150.1〜34（2026-11-20 の PM の決め）のうち改める行（番号は残して中身を書き換える）と、足す行 D-150.35〜60（代表の決め 35〜45・PM の決め 46〜59・代表の決め 60＝2026-11-22 に業務の型を物として無くした）を書き直した節を運ぶ。
+
+段 5 のほかの葉は decisions: に D-150.x を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。だから決定ログを先に本線へ入れる、この葉を分けた（段 9 の K-425 と同じ形）。段 5 のほかの葉はこの葉に依存する（依存はまとめ役が張る）。","- [ ] 下の表の 3 行（K430-DC-001〜003）が緑：`scripts/ci/k430_decision_log_test.py`
+- [ ] **答えの記録は枝に足してある・この葉が運ぶ**：`01_hearing/decider-answers.jsonl` に 2026-11-21 の代表の答えと、2026-11-22 の答え（answer=08a63df0368c・D-150.60）が入っている（carry: に入れた。追記だけ・前の答えを消さない）。決定の検査 G60（`decision_source_gate.py --label 高本さん --since D-130`）は「高本さん」と書いた行の最初の `answer=<印>` を記録と結ぶ（日付が行の日付と同じであること。D-150.60 は 2026-11-22）。記録が運ばれるまで G60 は赤
+- [ ] 決定の検査（trace_gate・decision_source_gate）が緑（trace_gate の T7 は要件一覧の作り直し後）
+- [ ] 段 5 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-563,会社が足す項目の表（custom_fields・custom_field_kinds・ticket_field_values）と読む口（listTicketFields）・分類の軸の中身を「1 つ選ぶ」の項目に移して凍結・listClassAxes を外す（K-59 の葉）,タスク,K-59,未着手,実装,2026-11-23,F4・会社が足す項目,"詳細と作る面の「項目の表」に、会社が足した項目を、用意してある項目と同じ表に同じ形で並べる（D-150.36・D-150.37）。この葉は **表と読む口と、分類の軸からの移し**まで（マスタを作る・直す口と画面は段 10・値を書く口は K-564・K-437）。
+
+- **表 3 つ**（新設）：`custom_fields`（会社の項目：名前・型・必須・説明・選択肢・並び）・`custom_field_kinds`（どの種別で出すか。行が 1 つも無ければ全部の種別・消した行しか無ければどの種別にも出ない）・`ticket_field_values`（チケットごとの値）
+- **読む口** `listTicketFields`（GET /api/v1/ticket-fields?kind_id=<uuid>）：その種別で出す項目を並びの順に、必須・説明・型・選択肢つきで返す。読めるのはワークスペースのメンバー（読むだけの人も、チケットが見えない人も。マスタを読む口なので `listTicketKinds` と同じ線）
+- **分類の軸の移し**（D-150.46）：`class_axes`（作り付けでない物）を「1 つ選ぶ」の項目に、`class_values` を選択肢に、`ticket_class_values` を `ticket_field_values` に移す。3 つの表は**凍結**（消さない・コードが読まない）。作り付けの軸 `priority`（優先度）は移さない（優先度は `tickets.priority` の列）。`handover_rules.axis_id`（段 9 の渡すの決まり）は触らない
+- **`listClassAxes`（GET /class_axes）は外す**。道・契約・生成の試験・目録の行をなくす
+
+値の形（K-564・K-437 が書き、K-569 が読む。この葉の表の約束）：`ticket_field_values.value` は jsonb で null でない。型ごとに 短い文字・長い文章＝文字／数＝数／日付＝`YYYY-MM-DD` の文字／1 つ選ぶ＝選択肢の id の文字／複数選ぶ＝選択肢の id の文字の配列／チェック＝真偽。**値の形と必須・選択肢に在るかの確かめは書く口（K-564・K-437）が持つ**。この葉の表は null だけ断る。","- [ ] 下の表の 17 行（K563-API-001〜017）が緑：`apps/api/test/features/F4/ticket-fields.test.ts`
+- [ ] 契約の口 `listTicketFields` が 501 でない。生成の試験 `get_ticket_fields` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-563.json` の covers）
+- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-530（`listTicketFields` の問い合わせ kind_id）が通る
+- [ ] `listClassAxes` を使う所が 0（下の「前からの試験を替えた所」の検索と同じ命令で、外す所以外に残らない）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-620,直し：題名の下の帯の順の器 useBandOrder が「AI に任せる」の任せる前の箱や「完了にする」の箱も approve と数え、渡しの帯・保留の帯が出ず担当者の欄に「AI の実行が終わってから渡してください」が出る（AI が動いている・承認待ちの帯だけを data-busy で数える）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-22,F8・画面,"段 9 の中間テスト K-416（M1-01・M1-06）が見つけた不具合を直す。
 
@@ -2378,6 +2442,40 @@ F5 の帯は、AI が動いていない・承認待ちでもない間も出て�
 - [ ] 替えた前からの試験 K380-UI-003（`apps/web/tests/k/k380-detail-slots.spec.ts`）と、替えない K-380 の残りの行が緑
 - [ ] 替えない前からの試験（下の「前からの試験を替えた所」）が緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-622,spec-sync の監査を、リポジトリの写し（scripts/spec-sync）だけで全段そろえて回せる形にする（組織のスキルの置き場の版で回すと、Kaname の書き方を直した D・G・H が使われず偽の赤が出る・P の project_audit.py の写しが無く「実在しない」で赤）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の監査（A・B・C・D・F・G・H・L・P・T）を、2026-11-21 に組織のスキル（`~/.claude/skills/spec-sync-orchestrator/assets/scripts/spec-validator.py`）の版で回したら、本線の木で次の赤が出た。原因を調べると、**大半は製品の食い違いではなく、使った道具の版が違っただけ**だった：
+
+| 段 | 赤の中身 | 原因（調べた結果） | 判断 |
+|---|---|---|---|
+| D | `AD-012` ほかの線が html を指して JSON として読めず落ちる | 組織のスキルの tier_d.py は、しまった画面の見本（.html）を指す追跡の行を読めない。リポジトリの写し `scripts/spec-sync/tier_d.py` は K-34・K-45 で直してあり、同じ地図で落ちない（実測：写しの版は最後まで走る） | **設定の抜け（道具の版）**：写しで回す |
+| F | `screen_to_mock` ほか 7 つが「id_source.file 未指定」 | 組織の版は古い `id_source` の形だけを読む。写しの `spec-validator.py` は `command` で書いた行を流して終わりの値で判定する（K-34）。実測：写しで F は緑 | 同上 |
+| G | `vendor_sql` ほか 3 つが「検査が用意されていない」 | 組織の版は `command` を読まない。写しの `tier_g.py` は読んで流す。実測：node の部品をそろえて流すと G は緑（4 件とも OK） | 同上 |
+| H | 関門 C2 が 2 件・C4 が 3 件の迂回 | 組織の版は例外台帳の `packages/auth/` のようなバッククォートのフォルダを読めない。写しの `tier_h.py` は読む。**台帳には既に登録がある**：X-003（packages/auth/・C2）・X-004（packages/db/・C4 の migration と policy の SQL を起動時に読む）。写しで H は緑 | **正しい例外（登録済み）**：新しい例外は足さない |
+| P | 「project_audit.py が実在しない」 | 写しのフォルダに project_audit.py だけ無い（K-34 の写しが D・G・H・F だけだった）。組織の版で回すと P が走る | **設定の抜け**：この葉で写しに足す |
+
+この葉は、写しのフォルダに project_audit.py を足して、audit-manifest.yaml が名指しする全段の実体がリポジトリの中にそろうようにする。組織のスキルの版は直さない（PM がスキルの側へ K-34 の差分を戻す・申し送り）。","- [ ] 下の表の 7 行（K622-TOOL-001〜007）が緑：`python3 scripts/ci/k622_spec_sync_tools_test.py`
+- [ ] `scripts/spec-sync/project_audit.py` が在り、`python3 scripts/spec-sync/project_audit.py --project-root . --json` が終わりの値 0 か 2 で JSON を出す（この葉では P が赤のまま 2 でよい・緑にするのは K-625・K-626）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-622.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義（生成物）に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-623,決定ログの D-129〜D-148 の確定済みの決定 19 件を、spec-dependencies.yaml の alignment_decisions に本当に確かめられる線つきで登録する（spec-sync の D0・D8 が赤・登録を機械生成するだけでは「11_tickets が 1 件も無い」で空回りする）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の D0（分母）は、決定ログで `status: confirmed` かつ `reflect_in` を持つ決定が、全部 alignment_decisions に登録されているかを見る。2026-11-07 の記録の後に決定ログへ D-129〜D-148 が足されたが、地図に登録されていない（19 件：D-129〜D-136・D-138〜D-148）。D8 の「未判定 26 組」も、この 19 件の反映先に確かめ方が無いことから出る。これは **本当の食い違い（直す）**。
+
+登録は `tier_d.py --register` が機械で書けるが、**そのまま使うと空回りする**（実測：19 件を足すと 28 件が赤に変わる）。理由は、生成される線が `file: 11_tickets`（フォルダ名だけ）・`file: 要件一覧`（節の名前）のように、実在しないファイルを指すため。決定ログの `reflect_in` は実ファイルの道（`11_tickets/tickets.json`・`11_tickets/K-156.md`・`03_architecture/共通の決まり.md`・`04_design/DESIGN-kaname.md` など）で書いてあるので、**線の file にはその道をそのまま使い、marker に決定の ID を置く**（実測：この形で書くと残る赤は下の 4 つだけ）：
+
+| 残る赤 | 中身 | 判断 |
+|---|---|---|
+| AD-129 | reflect_in が `要件一覧`（節の名前）で、道ではない | **設定の抜け**：線の file を `01_hearing/要件一覧.md` にする（要件一覧は T7 が決定ログから機械生成するので、D-129 の印が在る） |
+| AD-133 | 「全部」の語で『どこでも効く』と読まれ、画面の線が要る。だが D-133 は CI の範囲の決め（画面の決定ではない） | **正しい例外**：`not_applicable: <理由>`（K-156・K-160 の CI の決めで、画面に当たらない）を書く。画面の線を偽って足さない |
+| AD-145 | 「全画面の決まり：キャンバスに在る物は機能がまだでも出し、使えない物はグレーにして押せない形にする」。画面の線が無い | **本当の食い違いではなく線の抜け**：`gate: python3 scripts/ci/k219_canvas_states_test.py`（キャンバスの区画に使える形と使えない形＝aria-disabled と不透明度 0.55 が在ることを見る・D-145.9。実測：4 秒で緑）を画面の線にする |
+| AD-147 | 反映先 `04_design/canvas` を `*` で数えると README と canvas.json も数に入り 181/185 になる。実際は 183 枚の絵のうち 2 枚（MobileList・MobileDetail）は上の帯が別の名前（kn-mbar）で、D-147 の印の文字が無い | **線の書き方の抜け**：`marker` で数えず、`gate`：全部の `04_design/canvas/*.dc.html` が `kn-mobile-bar` か `kn-mbar` を持つ（実測：183 枚全部が持つ）を画面の線にする。印の文字を絵に足さない（絵は正の絵の側で、この葉の持ち物ではない） |","- [ ] 下の表の 8 行（K623-REG-001〜008）が緑：`python3 scripts/ci/k623_decisions_registered_test.py`
+- [ ] 手元で `python3 scripts/spec-sync/tier_d.py --project-root .` が、D0・D8 と AD-129〜AD-148 の線で 1 つも赤を出さない（D6 は K-624 の持ち物で、この葉では赤のまま。本物の木全体のこの確かめは試験でなく、K-629 の完了の条件が見る）
+- [ ] 本物の絵 183 枚が全部、上の帯（`kn-mobile-bar` か `kn-mbar`）を持つ（D-147 の gate を手元で流して 0）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-623.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-624,spec-sync の D6（モック ↔ 画面）が、キャンバスの絵が無く「本番と同じ部品で作った開発用のモック」を正にした画面（canvas-screens.json の mock_only・理由つき）を『作っている画面』に数える（help が「作っていない画面」で赤・段 2 以降は画面が増えるたびに赤になる）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の D6 は「flow.json の第 1 フェーズの画面が、全部モックに在るか（と逆）」を見る。Kaname のモックの正はキャンバスの絵（`04_design/canvas/*.dc.html`・対応表 `04_design/canvas-screens.json`）だが、K-315 で **キャンバスに絵が無く、正が本番と同じ部品で作った開発用のモック（/dev/mock）の画面**（help）ができ、対応表の `mock_only`（理由つき）に載せた。canvas_gate.py（CV4）はこれを知っているが、**tier_d.py の D6 は知らず、help を「作っていない画面」と赤にしている**（実測：D6 作っていない画面 1 / 37: help）。
+
+これは **検査の設定の抜け**（食い違いではない）。しかも段 2 以降は絵ではなく開発用のモックが正になる（D-143・「段 2 からモックは本番の部品で作る」）ので、画面が増えるたびに D6 が赤になる。D6 を外す・件数を決め打ちで許す直しはしない。**D6 の「作っている」を、キャンバスの絵が在る画面 ＋ mock_only に理由つきで載せた画面にする**。実在・二重（絵と mock_only の両方）・flow の第 1 フェーズにあるかは、今までどおり canvas_gate.py の CV4 が見る（D6 は数えるだけで、検査を緩めない）。","- [ ] 下の表の 7 行（K624-D6-001〜007）が緑：`python3 scripts/ci/k624_d6_mock_only_test.py`
+- [ ] `python3 scripts/spec-sync/tier_d.py --project-root . --json` の failures に D6 の行が無い（本物の木・help を数える）
+- [ ] G65 の置き場 `scripts/ci/g65.d/K-624.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-630,直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-21,F3・画面,"本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：
 
 `./features/F3/credentials/check-credential.tsx:84:9 … Type '{ approved: boolean; request_ref?: undefined; }' is not assignable to type 'CredentialLoginAnswerInput'. Type 'undefined' is not assignable to type 'string'.`
@@ -2388,3 +2486,30 @@ K-630,直し：コードを渡す小窓が、頼みの印（request_ref）が無
 - [ ] 替えない前からの試験 `apps/web/tests/k/k357-credentials-edit-check.spec.ts` が緑のまま
 - [ ] `pnpm --filter @kaname/web build:test`（next build）が通る
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-631,直し：チケットの CI が画面の試験を後回しにする回（web=defer）でも、画面の組み立ての型の確かめ（next typegen ＋ tsc）を流す（K-357 の型のずれが本線に素通りした穴・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-22,F3・CI,"設定 `ci.web_defer` のとき、チケットの CI は workflow に `web=defer` を渡す。画面の組（web）は `if: … && inputs.web != 'defer'` で組ごと流れず、その中の `pnpm --filter @kaname/web build:test`（next build）も流れない。next build は画面の型の確かめを兼ねているので、**画面の型のずれがチケットの CI を素通りする**。実際に K-357 が、K-355 が契約で必須にした `request_ref` を送らない画面（`apps/web/features/F3/credentials/check-credential.tsx`）を本線に入れ、本線の画面の組み立てが壊れた（K-630 が直している）。
+
+スキル ticket-flow の約束（references/ci-contract.md の `web` の入力・design.md「画面の試験を後回しにする」）：**defer の回に流さないのは画面の試験（ブラウザで動かす行）だけで、画面の組み立て（build・型の確かめ）は defer の回も必ず流す**。この葉は CI の定義をこの約束に合わせる。
+
+- 画面の範囲を含むチケットの CI（static の出力 `web` が true）で、`web=defer` の回に、画面の型の確かめを **static の組の 1 段**として流す：`NEXT_DIST_DIR=.next-prod pnpm --filter @kaname/web exec next typegen && pnpm --filter @kaname/web exec tsc --noEmit`
+- **next build が見る型と同じ物を見る**：`NEXT_DIST_DIR=.next-prod` で typegen（route の型：`link.d.ts`＝typedRoutes の `Link` の型・`validator.ts`＝ページの props の型）を作ってから tsc。**出力先を build:test と同じ `.next-prod` にする理由**：`apps/web/tsconfig.json` は `.next` を exclude し `.next-prod/types/**` だけを include しているので、typegen の既定の出力先（`.next/types`）だと tsc に入るのは `next-env.d.ts` が参照する `routes.d.ts` だけで、`link.d.ts` と `validator.ts` が数えられず、next build より弱い確かめになる（きれいな木で `tsc --listFiles` を見て確かめた：既定の出力先は `.next/types/routes.d.ts` 1 件・`NEXT_DIST_DIR=.next-prod` なら `routes.d.ts`・`link.d.ts`・`validator.ts` の 3 件。K-357 の型のずれは素の tsc でも出るが、`Link` と props の型の誤りは後者でないと出ない）
+- **時間を測って選んだ**（このチケットを切るとき・同じ Mac の木・負荷 8）：typegen ＋ tsc は **11 秒**、`build:test`（next build）は本線の木で **1 分 35 秒**かかって型の誤りで止まった（コンパイルのあと型の確かめ。web の組はその前に DB・API・Chrome の準備が要る）。速い方の typegen ＋ tsc にする
+- **web=run の回では流さない**（web の組の next build が同じ型を見る・二重にしない）。条件は `inputs.web != 'run'`
+- **出す前の手元の検査（preflight）でも流れる**：手元の検査は static を流し（`ticket-flow.yaml` の `preflight_jobs`）、web の入力を渡さない（空）。空は `!= 'run'` なので流れる。画面の組は手元の検査に入っていないので、二重にならない","- [ ] 下の表の K631-CI-001〜004 が緑：`python3 scripts/ci/k631_web_types_test.py`
+- [ ] 替えた前からの試験（k258_web_defer_test.py）と、替えない前からの試験 12 本が緑
+- [ ] 作り手を流し直した生成物（CI の定義 .github/workflows/v3-gate.yml・試験計画 07_qa/test-plan/test-plan.*）が最新（`python3 scripts/tickets/regen_all.py`）
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 型のずれがあれば赤になることを、壊した写しで 1 回確かめた結果が「確かめたこと」に書いてある"
+K-640,直し：CI の定義の全部の組の台（runs-on）を、リポジトリの変数 CI_RUNNER で替えられる形にする（変数が無ければ今までの Mac の VM・GitHub の台でも同じ定義が動く入口・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-23,F3・CI,"CI の箱が自分の Mac の使い捨ての VM 4 台だけで、1 本 30〜70 分かかって詰まっている（代表の決め 2026-11-22）。そこで「CI を回すためだけの公開のリポジトリ」を別に作り、GitHub の台でも回す。**本体のリポジトリは非公開のまま、今の Mac の箱（self-hosted・ラベル linux-vm）も今までどおり使える形を保つ**。スキル ticket-flow の側（CI の枝を上げる先・回を出す先を別のリポジトリにする設定）は PM が直す。この葉は、CI の定義の台の書き方だけ。
+
+今は CI の定義 3 つ（v3-gate.yml 16 組・staging-e2e.yml 1 組・release-gate.yml 1 組）の全部が `runs-on: [self-hosted, linux-vm]` と直書きで、GitHub の台では 1 つの組も始まらない（self-hosted の箱が無いと待ち続ける）。
+
+- 全部の組を `runs-on: ${{ fromJSON(vars.CI_RUNNER || '[""self-hosted"",""linux-vm""]') }}` にする。**変数 CI_RUNNER が無い（非公開の側）なら今までと同じ台**。公開の側は変数 CI_RUNNER に GitHub の台の名前（例 `""ubuntu-24.04""`）を入れるだけで、同じ定義がそのまま動く
+- 式は**作り手（05_flow/build_testplan.py）に定数 `RUNS_ON` を 1 つだけ**置き、12 か所の `runs-on:` の行はどれも `{RUNS_ON}` を差す。生成物（3 つの定義・試験計画）は作り手を流し直して作る（手で書かない）
+- **台の式が読むのは変数 CI_RUNNER だけ**。入力（inputs）・秘密（secrets）・github・env を読ませない（外から来る値で台を選べてしまうのを塞ぐ。`inputs` で台を選ぶと、手で起こした回の入力で別の台に載せられる）
+- staging-e2e.yml と release-gate.yml も同じ式にする（変数は 1 つで全部の定義の台が決まる）。staging-e2e の `environment: staging`・`if: github.ref == 'refs/heads/main'`・secrets の書き方は変えない（公開の側にその Environment が無ければ、その定義は起こしても動かない。それでよい）
+- 台の名前（`ubuntu-24.04` など）は定義にも作り手にも**書かない**。変数にだけ置く（K-204 の「GitHub の台を使わない」の試験は、台の名前を書かない形に言い換えて残す）
+- 前からの試験 6 本（K-172・K-173・K-174・K-204・K-258・K-323 の自己試験）が `runs-on` を配列と直に比べていたのを、「変数が無いときの台」を読む `default_of`（k640 の試験が持つ）で比べる形に替える（carry）。比べる値（`[""self-hosted"",""linux-vm""]`）は変えない＝検査を緩めない","- [ ] 下の表の K640-CI-001〜007 が緑：`python3 scripts/ci/k640_runs_on_test.py`
+- [ ] 替えた前からの試験 6 本が緑（k172・k173・k174・k204・k258・k323）。替えない前からの試験（k175・k176・k177・k186・k195・k245・k248・k237 の 2 本・k376・k191・ci_scope_test・contract_shape_test）が緑
+- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・`staging-e2e.yml`・`release-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。作り手を流すと `07_qa/test-plan/access-matrix.json` の 1 行が変わることがある（この葉と無関係の前からの揺れ）：それは取り込まず、元の版のままにする
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 変数が無い回で、組が今までと同じ台（self-hosted・linux-vm）に載ることを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
