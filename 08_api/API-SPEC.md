@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-21 凍結）
+# Kaname API 設計書 v1.0（2026-11-22 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -113,8 +113,8 @@
 | EP-098 | POST | `/api/v1/conversations/:id/stop` | 作成・実行（conversations）— 自分の AI に指示する・相 | A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-099 | GET | `/api/v1/conversations/:id/stream` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
 | EP-100 | GET | `/api/v1/credentials` | 取得（credentials）— 預けたログイン情報を名前の順に見る（自 | A10 | 1 | member | C8 | 401 403 422 429 403 403 503 |
-| EP-101 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 502 503 413 429 403 403 503 |
-| EP-102 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 502 503 413 429 403 403 503 |
+| EP-101 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 409 502 503 413 429 403 403 503 |
+| EP-102 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 409 409 502 503 413 429 403 403 503 |
 | EP-103 | DELETE | `/api/v1/credentials/:id` | 削除（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 503 429 403 403 503 |
 | EP-104 | POST | `/api/v1/credentials/:id/login-check` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 409 409 503 413 429 403 403 503 |
 | EP-105 | POST | `/api/v1/credentials/:id/login-check/answer` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 404 503 413 429 403 403 503 |
@@ -127,7 +127,7 @@
 | EP-112 | POST | `/api/v1/inquiries/:id/messages` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-113 | POST | `/api/v1/inquiries/:id/resolve` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-114 | POST | `/api/v1/inquiries/attachments` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-116 | DELETE | `/api/v1/invitations/:id` | 削除（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 422 429 403 403 503 |
 | EP-117 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-118 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
@@ -346,7 +346,7 @@
 | EP-331 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-332 | POST | `/api/v1/tickets/:id/test-specs/lint` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-333 | POST | `/api/v1/tickets/:id/test-specs/suggest` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-334 | GET | `/api/v1/tickets/:id/timeline` | 取得（tickets）— チケットのスレッドで話す（@ で知らせる） | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-334 | GET | `/api/v1/tickets/:id/timeline` | 取得（ticket_messages）— やり取りを新しい方から読む（前 | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-335 | GET | `/api/v1/tickets/:id/versions` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-336 | POST | `/api/v1/tickets/:id/versions/:v/restore` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-337 | GET | `/api/v1/tickets/:id/work-type-candidates` | 取得（tickets）— 業務の型を選ぶ（候補が 1 つなら自動・複数な | A130 | 1 | member |  | 401 403 404 422 429 403 403 503 |
@@ -390,7 +390,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1036 ／ 内部専用 274 ／ どの画面にも出ない 0
+- 検査したフィールド 1040 ／ 内部専用 274 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-21 凍結（endpoints 369）
+- v1.0 2026-11-22 凍結（endpoints 369）
