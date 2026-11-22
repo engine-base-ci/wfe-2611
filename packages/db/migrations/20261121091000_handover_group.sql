@@ -92,7 +92,7 @@ end $$;
 
 -- ---------------------------------------------------------------- ② 引き取る（自分が持つ・人を決める）
 --   答え {ok, handover_id, handover, assignee_member_id, mails} か {error: 言葉, …}。言葉：K-401 の物（not_found・forbidden・decided）に、
---   claim_group（グループ［と下のグループ］の外の人・別の会社の人）・claim_state（止まっている人・招待中・閲覧のみ・依頼する側）。
+--   claim_missing（無い人・別の会社の人・抜けた人。404 にする）・claim_group（同じ会社でグループ［と下のグループ］の外の人。409）・claim_state（止まっている人・招待中・閲覧のみ・依頼する側）。
 --   人宛ての渡し（to_member_id が在る）は 42501（口が 403・E-HND-002 にする）
 create or replace function app.handover_claim(p_handover uuid, p_member uuid) returns jsonb
 language plpgsql security definer set search_path = public, app, pg_temp as $$
@@ -110,7 +110,7 @@ begin
   v_to := coalesce(p_member, v_me);
   if v_to <> v_me then
     v_state := app.handover_member_state(v_to);
-    if v_state = 'gone' then return jsonb_build_object('error', 'claim_group'); end if;
+    if v_state = 'gone' then return jsonb_build_object('error', 'claim_missing'); end if;
     if not exists (select 1 from members x where x.id = v_to and x.tenant_id = v_tenant and x.scope_id in (select app.scope_tree(h.to_scope_id)))
        and not exists (select 1 from scope_memberships sm
                         where sm.member_id = v_to and sm.tenant_id = v_tenant and sm.deleted_at is null

@@ -22,17 +22,17 @@ RESPONSES = {
     "claimTicketHandover": ("TicketHandoverClaimed", {"id": "uuid", "state": "string", "ticket_id": "uuid", "assignee_member_id": "uuid"}),
 }
 
-# 答える人でない（403）・無い／別の会社（404）・もう決まった（409）・グループの外／止まっている人を選んだ（409）・入力（422）
+# 答える人でない（403）・無い／別の会社（無い人・別の会社の人を選んだときも 404）・もう決まった（409）・グループの外／止まっている人を選んだ（409）・入力（422）
 ERRORS_4XX = {
     "claimTicketHandover": [
         {"status": 403, "code": "E-HND-002", "body": {"error": "permission", "code": "E-HND-002"}, "errors": ["E-HND-002"],
          "trigger": "答える人でない（渡した人・関係ない人・閲覧のみ・グループを管理しない人）・人宛ての渡し（グループ宛てでない）",
          "ears_form": "UNWANTED: IF 答える人でないか、グループ宛てでない渡しなら、Kaname は 403 と E-HND-002 を返し、何も書かない"},
         {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "無い・別の会社・見えない渡し（有ることも漏らさない）",
-         "ears_form": "UNWANTED: IF 無い渡しの人を決めようとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"},
+         "trigger": "無い・別の会社・見えない渡し、または決める人に選んだ人が無い人・別の会社の人（有ることも漏らさない・欄なし）",
+         "ears_form": "UNWANTED: IF 無い渡し、または無い人・別の会社の人を決める人に選んだなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"},
         {"status": 409, "code": "E-HND-005", "body": {"error": "conflict", "code": "E-HND-005"}, "errors": ["E-HND-005", "E-HND-150", "E-HND-151"],
-         "trigger": "もう決まった渡し（E-HND-005）・グループ（と下のグループ）の外の人・別の会社の人を選んだ（E-HND-150）・止まっている人・招待中・閲覧のみ・依頼する側の人を選んだ（E-HND-151）",
+         "trigger": "もう決まった渡し（E-HND-005）・同じ会社でグループ（と下のグループ）の外の人を選んだ（E-HND-150）・止まっている人・招待中・閲覧のみ・依頼する側の人を選んだ（E-HND-151）",
          "ears_form": "UNWANTED: IF その渡しがもう決まっているか、選んだ人が担当者にできないなら、Kaname は 409 と E-HND-005／E-HND-150／E-HND-151 を返し、何も書かない"},
     ],
 }
