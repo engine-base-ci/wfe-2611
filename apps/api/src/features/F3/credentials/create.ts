@@ -89,15 +89,16 @@ const isNameTaken = (e: unknown): boolean => {
 function check(input: Record<string, unknown>, rawBody: Record<string, unknown>): Checked | HookReply {
   const lk = parseLayerKind(input);
   if (isReply(lk)) return lk;
-  const name = parseName(input["name"]);
+  const name = parseName(input["name"], rawBody["name"]);
   if (isReply(name)) return name;
-  const destinations = parseDestinations(input["destinations"]);
+  const destinations = parseDestinations(input["destinations"], rawBody["destinations"]);
   if (isReply(destinations)) return destinations;
-  const expires = parseExpiresOn(input["expires_on"]);
+  const expires = parseExpiresOn(input["expires_on"], undefined, rawBody["expires_on"]);
   if (isReply(expires)) return expires;
   const content = parseContent(lk.kind, input, rawBody);
   if (isReply(content)) return content;
-  const totpSecret = content.kind === "login" ? parseTotpSecret(content.twoFactor, input["totp_secret"]) : null;
+  const totpSecret =
+    content.kind === "login" ? parseTotpSecret(content.twoFactor, input["totp_secret"], rawBody["totp_secret"]) : null;
   if (isReply(totpSecret)) return totpSecret;
   return {
     layer: lk.layer,
