@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:9475fd96653500af
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b9f9102f6a0bbdc5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -42,7 +42,7 @@ export interface Ops {
   setBridgeBrowser: { params: never; query: never; body: T.BridgeBrowserInput; data: T.BridgeBrowser };
   claimPairingCode: { params: never; query: never; body: T.BridgeClaimInput; data: T.BridgeClaim };
   reportCredentialCheck: { params: { id: string }; query: never; body: T.CredentialCheckReportInput; data: T.CredentialCheckReport };
-  resolveCredential: { params: never; query: never; body: T.CredentialsInput; data: T.ResolvedCredential };
+  resolveCredential: { params: never; query: never; body: T.CredentialResolveInput; data: T.ResolvedCredential };
   listMyDevices: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.BridgeDevice[] };
   updateMyDevice: { params: { id: string }; query: never; body: T.DeviceBrowserInput; data: T.DeviceBrowser };
   revokeMyDevice: { params: { id: string }; query: never; body: never; data: T.RevokedDevice };
@@ -299,7 +299,7 @@ export interface Ops {
   makeKindTemplateFromTicket: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
   listKindTemplateUpdates: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TenantDistributions[] };
   applyKindTemplateUpdate: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
-  deleteTicketLink: { params: { id: string }; query: never; body: never; data: T.TicketLinks };
+  deleteTicketLink: { params: { id: string }; query: never; body: never; data: T.TicketLinkDeleted };
   updateTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
   deleteTicketMessage: { params: { id: string }; query: never; body: never; data: T.TicketMessages };
   starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
@@ -326,8 +326,8 @@ export interface Ops {
   previewTicketHandover: { params: { id: string }; query: never; body: never; data: T.HandoverPreview };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverCreateInput; data: T.TicketHandoverCreated };
   previewTicketKindChange: { params: { id: string }; query: never; body: never; data: T.TicketKindChangePreview };
-  listTicketLinks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketLinks[] };
-  createTicketLink: { params: { id: string }; query: never; body: T.TicketLinksInput; data: T.TicketLinks };
+  listTicketLinks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketLink[] };
+  createTicketLink: { params: { id: string }; query: never; body: T.TicketLinkInput; data: T.TicketLink };
   createTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
   listTicketReferences: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ReferenceLogs[] };
   restoreTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };

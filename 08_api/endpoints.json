@@ -4207,11 +4207,23 @@
       "error": "gone"
      },
      "errors": [
-      "E-AUTH-006",
+      "E-AUTH-006"
+     ],
+     "trigger": "リンクが期限切れ（30 分）・使い終わった・新しく頼んだ後の前のリンク（E-AUTH-006）",
+     "ears_form": "UNWANTED: IF リンクが期限切れ・使用済み・前のリンクなら、Kaname は 410 と次の一手を返し、パスワードを変えない"
+    },
+    {
+     "status": 409,
+     "code": "E-PAGE-006",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-006"
+     },
+     "errors": [
       "E-PAGE-006"
      ],
-     "trigger": "リンクが期限切れ（30 分）・使い終わった・新しく頼んだ後の前のリンク（E-AUTH-006）・無い（でたらめ・空・24 時間を過ぎた・E-PAGE-006）",
-     "ears_form": "UNWANTED: IF リンクが期限切れ・使用済み・前のリンク・無いなら、Kaname は 410 と次の一手を返し、パスワードを変えない"
+     "trigger": "リンクが無い（でたらめ・空・空白だけ）。形どおりの入力が DB の中身で断られる所なので 422・410 にしない（K-638）",
+     "ears_form": "UNWANTED: IF リンクが無い（でたらめ・空）なら、Kaname は 409 と E-PAGE-006 を返し、パスワードを変えない"
     },
     {
      "status": 500,
@@ -4260,7 +4272,8 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/password/reset が「メールを入れて届いたリンクから新しいパスワードを決める」として呼ばれたとき THEN Kaname は「全部のセッション（Bridge も）を失効」を行い 2xx を返す",
     "UNWANTED: IF 新しいパスワードが 12 文字より短いか 128 文字を超えるか漏れたものなら、Kaname は 422 と欄 new_password の理由を返し、端末を切らずパスワードを変えない",
-    "UNWANTED: IF リンクが期限切れ・使用済み・前のリンク・無いなら、Kaname は 410 と次の一手を返し、パスワードを変えない",
+    "UNWANTED: IF リンクが期限切れ・使用済み・前のリンクなら、Kaname は 410 と次の一手を返し、パスワードを変えない",
+    "UNWANTED: IF リンクが無い（でたらめ・空）なら、Kaname は 409 と E-PAGE-006 を返し、パスワードを変えない",
     "UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 500 と E-PAGE-003 を返し、リンクを使えるまま残す",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -6726,12 +6739,16 @@
     },
     {
      "status": 403,
-     "code": "FORBIDDEN",
+     "code": "E-CRED-010",
      "body": {
-      "error": "forbidden"
+      "error": "gate",
+      "code": "E-CRED-010"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [
+      "E-CRED-010"
+     ],
+     "trigger": "仕事がまだ取られていない・終わった・止まった（running・asking でない）",
+     "ears_form": "UNWANTED: IF 仕事が動いていないなら、Kaname は 403 と E-CRED-010 を返し、預かり先から読まず使った記録も残さない"
     },
     {
      "status": 409,
@@ -6749,8 +6766,85 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "job_id・credential_id・destination・executor_key が無い・destination が空か空白だけ・X25519 の公開の鍵の形（SPKI の base64）でない・本文に知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、預かり先から読まず使った記録も残さない"
+    },
+    {
+     "status": 403,
+     "code": "E-CRED-011",
+     "body": {
+      "error": "dependency",
+      "code": "E-CRED-011"
+     },
+     "errors": [
+      "E-CRED-011"
+     ],
+     "trigger": "失効した・期限が過ぎた・預かり先が断った・預かった中身が読めない（預け直す）",
+     "ears_form": "UNWANTED: IF 失効したか期限が過ぎたか預かり先の物が読めないなら、Kaname は 403 と E-CRED-011 を返し、封を返さず使った記録も残さない"
+    },
+    {
+     "status": 403,
+     "code": "E-CRED-016",
+     "body": {
+      "error": "gate",
+      "code": "E-CRED-016"
+     },
+     "errors": [
+      "E-CRED-016"
+     ],
+     "trigger": "入れる場所の名前が使える場所の外（*. の印は下の名前だけ・名前は入口が字をそろえる前の字で取り出す）・名前に読めない入れる場所・253 文字を超える名前（使える場所に入りようが無いので外と同じ。名前が取れないので知らせと証跡は残さない）",
+     "ears_form": "UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-016 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "errors": [],
+     "trigger": "その PC の仕事でない（ほかのアカウント）・情報が無い・ほかのワークスペース・消した・確かめの仕事に結んでいない・個人の物を持ち主でない人の仕事で",
+     "ears_form": "UNWANTED: IF その PC の仕事でないか、仕事の人が取り出せる情報でないなら、Kaname は 404 を返し、在るかを漏らさず預かり先から読まない"
+    },
+    {
+     "status": 502,
+     "code": "E-SEC-001",
+     "body": {
+      "error": "upstream_failed",
+      "code": "E-SEC-001"
+     },
+     "errors": [
+      "E-SEC-001"
+     ],
+     "trigger": "預かり先に届かない",
+     "ears_form": "UNWANTED: IF 預かり先に届かないなら、Kaname は 502 と E-SEC-001 を返し、封を返さず使った記録も残さない"
+    },
+    {
+     "status": 503,
+     "code": "E-SEC-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-SEC-003"
+     },
+     "errors": [
+      "E-SEC-003"
+     ],
+     "trigger": "預かり先の上限に当たった（retry_after_sec を付ける）",
+     "ears_form": "UNWANTED: IF 預かり先の上限に当たったなら、Kaname は 503 と E-SEC-003 と retry_after_sec を返し、封を返さず使った記録も残さない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "判定・使った記録の DB の関数が使えない",
+     "ears_form": "UNWANTED: IF 使った記録を残せないなら、Kaname は 503 と E-PAGE-003 を返し、封を返さない（記録できない取り出しはしない）"
     },
     {
      "status": 413,
@@ -6786,9 +6880,15 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/credentials/resolve が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 仕事が動いていないなら、Kaname は 403 と E-CRED-010 を返し、預かり先から読まず使った記録も残さない",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、預かり先から読まず使った記録も残さない",
+    "UNWANTED: IF 失効したか期限が過ぎたか預かり先の物が読めないなら、Kaname は 403 と E-CRED-011 を返し、封を返さず使った記録も残さない",
+    "UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-016 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）",
+    "UNWANTED: IF その PC の仕事でないか、仕事の人が取り出せる情報でないなら、Kaname は 404 を返し、在るかを漏らさず預かり先から読まない",
+    "UNWANTED: IF 預かり先に届かないなら、Kaname は 502 と E-SEC-001 を返し、封を返さず使った記録も残さない",
+    "UNWANTED: IF 預かり先の上限に当たったなら、Kaname は 503 と E-SEC-003 と retry_after_sec を返し、封を返さず使った記録も残さない",
+    "UNWANTED: IF 使った記録を残せないなら、Kaname は 503 と E-PAGE-003 を返し、封を返さない（記録できない取り出しはしない）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
@@ -50447,19 +50547,24 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "つながりの両端のどちらにも書けない（見える人）・会社の人でない",
+     "ears_form": "UNWANTED: IF つながりの両端のどちらにも書けないなら、Kaname は 403 を返し、行も証跡も変えない"
     },
     {
      "status": 404,
-     "code": "NOT_FOUND",
+     "code": "E-PAGE-001",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "E-PAGE-001"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "つながりが無い・外した・別の会社・両端のどちらも見えない（在るかを漏らさない）",
+     "ears_form": "UNWANTED: IF つながりが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も変えない"
     },
     {
      "status": 422,
@@ -50470,6 +50575,19 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "行を消して証跡を書く DB が落ちた・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF つながりを外す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、行は生きたまま・証跡も増やさない"
     },
     {
      "status": 429,
@@ -50515,9 +50633,10 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN DELETE /api/v1/ticket_links/:id が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF つながりの両端のどちらにも書けないなら、Kaname は 403 を返し、行も証跡も変えない",
+    "UNWANTED: IF つながりが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も変えない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF つながりを外す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、行は生きたまま・証跡も増やさない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -55415,10 +55534,11 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "チケットが無い・消した・別の会社・自分に見えない（入口の行の確かめ・在るかを漏らさない）",
+     "ears_form": "UNWANTED: IF チケットが見えないなら、Kaname は 404 を返し、つながりも子も返さない"
     },
     {
      "status": 422,
@@ -55429,6 +55549,32 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "入口の確かめを通った後でチケットが消えた・見えなくなった（競合・口の答え）",
+     "ears_form": "UNWANTED: IF 入口の確かめの後でチケットが見えなくなったなら、Kaname は 404 と E-PAGE-001 を返し、つながりも子も返さない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "つながりを読む DB が落ちた・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF つながりを読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も返さず何も書かない"
     },
     {
      "status": 429,
@@ -55475,8 +55621,10 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/links が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF チケットが見えないなら、Kaname は 404 を返し、つながりも子も返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 入口の確かめの後でチケットが見えなくなったなら、Kaname は 404 と E-PAGE-001 を返し、つながりも子も返さない",
+    "UNWANTED: IF つながりを読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も返さず何も書かない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -55488,7 +55636,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
+   "description": "取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children",
    "implementation_path": "apps/api/src/routes/ticket_links.ts::listTicketLinks",
    "permission": {
     "who": "read",
@@ -55504,11 +55652,15 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "scope_id",
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: TicketLinks[], meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketLinks[], meta: { limit, children } }"
    },
    "id": "EP-324",
    "feature_id": "F-004"
@@ -55560,28 +55712,36 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "足す側（:id）のチケットに書けない（入口の行の確かめ・欄なし）・相手のチケットに書けない（欄 other_ticket_id）・会社の人でない",
+     "ears_form": "UNWANTED: IF 足す側か相手のチケットに書けないなら、Kaname は 403 を返し（相手に書けないときは欄 other_ticket_id つき）、行も証跡も書かない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "足す側（:id）のチケットが無い・消した・別の会社・自分に見えない（入口の行の確かめ・在るかを漏らさない）",
+     "ears_form": "UNWANTED: IF 足す側のチケットが見えないなら、Kaname は 404 を返し、行も証跡も書かない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-LNK-001",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-LNK-001"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-LNK-001",
+      "E-LNK-002",
+      "E-LNK-003"
+     ],
+     "trigger": "同じチケットとつなごうとした（E-LNK-001）・もうつながっている（同じ向き・関連の逆向きを含む・E-LNK-002）・派生元が輪になる（E-LNK-003）",
+     "ears_form": "UNWANTED: IF 自分自身とつなごうとしたか、もうつながっているか、派生元が輪になるなら、Kaname は 409 とその理由（E-LNK-001・002・003）を返し、行も証跡も書かない"
     },
     {
      "status": 422,
@@ -55590,8 +55750,35 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "other_ticket_id が uuid でない・無い／kind が related・derived_from でない・無い／本文に知らない欄",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も証跡も書かない"
+    },
+    {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "相手のチケットが無い・消した・別の会社・自分に見えない（口の答え・在るかを漏らさない）",
+     "ears_form": "UNWANTED: IF 相手のチケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "つながりと証跡を書く DB が落ちた・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF つながりを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、行も証跡も残さない"
     },
     {
      "status": 413,
@@ -55647,10 +55834,12 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/links が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 足す側か相手のチケットに書けないなら、Kaname は 403 を返し（相手に書けないときは欄 other_ticket_id つき）、行も証跡も書かない",
+    "UNWANTED: IF 足す側のチケットが見えないなら、Kaname は 404 を返し、行も証跡も書かない",
+    "UNWANTED: IF 自分自身とつなごうとしたか、もうつながっているか、派生元が輪になるなら、Kaname は 409 とその理由（E-LNK-001・002・003）を返し、行も証跡も書かない",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も証跡も書かない",
+    "UNWANTED: IF 相手のチケットが見えないなら、Kaname は 404 と E-PAGE-001 を返し、行も証跡も書かない",
+    "UNWANTED: IF つながりを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、行も証跡も残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
