@@ -28,21 +28,24 @@ REQUIRED_INPUTS = {"createSavedView": ["name"]}   # apps/api/src/features/F7/sav
 # 名前：見える字が 1 つ以上・途中に制御文字（C0・DEL・C1）が無い・前後は空白（改行・タブも）でよい。長さは入口の normalize（NFKC と前後の空白）の後の字で数える
 _VISIBLE = r"[^\s\u0000-\u001f\u007f-\u009f]"
 _NO_CTRL = r"[^\u0000-\u001f\u007f-\u009f]"
-_NAME = rf"^\s*{_VISIBLE}(?:{_NO_CTRL}*{_VISIBLE})?\s*$"
+_NAME = rf"^\s*{_VISIBLE}(?:{_NO_CTRL}{{0,58}}{_VISIBLE})?\s*$"   # 前後の空白を除いた長さ 60 字まで（maxLength は空白込みで数えるので使わず、pattern で書く）
 def _key(): return {"pattern": "^[A-Za-z0-9_]{1,40}$"}
 def _leaf(): return [{"type": "string", "maxLength": 500}, {"type": "number"}, {"type": "boolean"}]
 # filters：欄 8 個まで・欄の名前は英数字と _ の 1〜40 字・値は 500 字までの文字か数か真偽か、同じ決まりの値だけを持つ入れ物 1 段（32 欄まで）
 def _filters(): return {"maxProperties": 8, "propertyNames": _key(),
                         "additionalProperties": {"anyOf": _leaf() + [{"type": "object", "maxProperties": 32, "propertyNames": _key(), "additionalProperties": {"anyOf": _leaf()}}]}}
 VALUE_RANGES = {"createSavedView": {
-    "name": {"minLength": 1, "maxLength": 60, "pattern": _NAME},
+    "name": {"minLength": 1, "pattern": _NAME},
     "share": {"enum": ["self", "group"]},
     "density": {"enum": ["normal", "compact"]},
     "filters": _filters(),
     "columns": {"maxItems": 50, "items": {"type": "string", "maxLength": 40}},
 }}
 
-UNEXPRESSIBLE_422: dict = {}   # 決まりは全部 VALUE_RANGES と INPUT_RULES で契約に書いた（控え帳 2026-11-20 16:51）
+# 条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）は OpenAPI 3.0 に書く場所が無い（propertyNames は 3.1 から）ので、口の振る舞いのまま 422・E-VWS-007
+UNEXPRESSIBLE_422 = {
+    "createSavedView": ["条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）"],
+}
 
 # group に見せるなら scope_id（null でない）が要る。share が無いか self のときは scope_id は何でもよい（null も）
 INPUT_RULES = {"createSavedView": {"anyOf": [
