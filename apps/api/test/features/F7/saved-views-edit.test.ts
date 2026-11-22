@@ -477,12 +477,18 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
       "create trigger k476_boom before insert on audit_events for each row execute function public.k476_boom()",
     );
     try {
-      const out: number[] = [];
+      const out: unknown[] = [];
       const logs = await captureLogs(async () => {
-        out.push((await patchView(c, upd, { name: "BOOM-UPD-2", filters: { q: "秘密の言葉" } })).status);
-        out.push((await deleteView(c, del)).status);
+        for (const r of [
+          await patchView(c, upd, { name: "BOOM-UPD-2", filters: { q: "秘密の言葉" } }),
+          await deleteView(c, del),
+        ])
+          out.push([r.status, ((await r.json()) as { code?: string }).code]);
       });
-      expect(out).toEqual([503, 503]);
+      expect(out).toEqual([
+        [503, "E-PAGE-003"],
+        [503, "E-PAGE-003"],
+      ]);
       expect(logs).not.toContain("秘密の言葉");
       expect((await viewRow(upd))["name"]).toBe("BOOM-UPD");
       expect((await viewRow(del))["deleted_at"]).toBeNull();
@@ -507,12 +513,15 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
       "create trigger k476_boom_row before update on saved_views for each row execute function public.k476_boom_row()",
     );
     try {
-      const out: number[] = [];
+      const out: unknown[] = [];
       await captureLogs(async () => {
-        out.push((await patchView(c, upd, { density: "compact" })).status);
-        out.push((await deleteView(c, del)).status);
+        for (const r of [await patchView(c, upd, { density: "compact" }), await deleteView(c, del)])
+          out.push([r.status, ((await r.json()) as { code?: string }).code]);
       });
-      expect(out).toEqual([503, 503]);
+      expect(out).toEqual([
+        [503, "E-PAGE-003"],
+        [503, "E-PAGE-003"],
+      ]);
       expect((await viewRow(upd))["density"]).toBe("normal");
       expect((await viewRow(del))["deleted_at"]).toBeNull();
       expect(await audits("saved_views.update", upd)).toBe(0);
