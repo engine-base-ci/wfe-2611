@@ -75,7 +75,7 @@ beforeAll(async () => {
         if (mode === "plain") return send(201, { data: { ...VALUE, service_name: "発注ナビ" } });
         if (mode === "403")
           return send(403, {
-            code: "E-CRED-015",
+            code: "E-CRED-016",
             message: "使える場所の外には入れません",
             handoff: "使える場所を見直す",
           });

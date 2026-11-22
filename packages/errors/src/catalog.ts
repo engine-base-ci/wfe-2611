@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。208 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。213 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3518,7 +3518,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CRED-004": {
     "id": "E-CRED-004",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "期限は今日以降の日付にしてください",
     "action": "期限を直すか空にする",
     "undo": false,
@@ -3620,12 +3620,29 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CRED-015": {
     "id": "E-CRED-015",
+    "cls": "conflict",
+    "message": "この預けた物の種類や 2 段階の設定に合わない中身です。開き直して、合う欄だけを入れてください",
+    "action": "開き直して合う欄だけを入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-016": {
+    "id": "E-CRED-016",
     "cls": "gate",
     "message": "使える場所の外には入れません。必要なら、預けたログイン情報の使える場所に足してください",
     "action": "預けたログイン情報の使える場所に足す（持ち主に知らせる）",
     "undo": false,
     "severity": "medium",
-    "support_code": "E-CRED-015",
+    "support_code": "E-CRED-016",
     "must_not": false,
     "layers": [
       "API",
@@ -3773,6 +3790,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-INV-009": {
+    "id": "E-INV-009",
+    "cls": "validation",
+    "message": "メールの形ではありません",
+    "action": "宛てを直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-009",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-010": {
+    "id": "E-INV-010",
+    "cls": "conflict",
+    "message": "もうこのワークスペースに入っています",
+    "action": "その宛てを外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-011": {
+    "id": "E-INV-011",
+    "cls": "not_found",
+    "message": "このグループには招けません",
+    "action": "グループを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-012": {
+    "id": "E-INV-012",
+    "cls": "validation",
+    "message": "一度に招けるのは 50 人までです",
+    "action": "宛てを分けて招く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
     }
   }
 };

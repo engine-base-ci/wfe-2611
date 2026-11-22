@@ -32,7 +32,7 @@ describe("POST /api/v1/bridge/credentials/resolve", () => {
     expect(readFileSync("apps/api/test/features/F3/credential-resolve.test.ts", "utf8")).toContain("K354-API-011");
   });
   it("test_post_bridge_credentials_resolve_rejected_403_3", () => {
-    // UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-015 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）
+    // UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-016 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）
     // 本物の試験：apps/api/test/features/F3/credential-resolve.test.ts の「K354-API-010」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/credential-resolve.test.ts", "utf8")).toContain("K354-API-010");
   });

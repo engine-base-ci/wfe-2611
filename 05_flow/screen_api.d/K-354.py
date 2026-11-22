@@ -11,15 +11,15 @@ REQUIRED_INPUTS = {
 
 VALUE_RANGES = {
     "resolveCredential": {
-        "destination": {"pattern": "\\S", "maxLength": 2048},   # 空・空白だけは 422（名前に読めない・253 字超は口の 403 E-CRED-015）
+        "destination": {"pattern": "\\S", "maxLength": 2048},   # 空・空白だけは 422（名前に読めない・253 字超は口の 403 E-CRED-016）
         "executor_key": {"maxLength": 200, "pattern": "^MCowBQYDK2VuAyEA[A-Za-z0-9+/]{42}[AEIMQUYcgkosw048]=$"},   # X25519 の SPKI の DER 44 バイト（頭の 12 バイトは決まった字）の base64
     },
 }
 
-UNEXPRESSIBLE_422: dict = {}   # 形の決まりは VALUE_RANGES に書いた。名前に読めない宛先は形でなく使える場所の外（403 E-CRED-015・代表の答え answer=431fc50df51b・f0f290e785a9）
+UNEXPRESSIBLE_422: dict = {}   # 形の決まりは VALUE_RANGES に書いた。名前に読めない宛先は形でなく使える場所の外（403 E-CRED-016・代表の答え answer=431fc50df51b・f0f290e785a9）
 
 # 取り出し（PC）：外した PC の印（401・入口）・動いていない仕事（403・E-CRED-010）・失効・期限切れ・預かり先が断った／読めない（403・E-CRED-011）・
-#   使える場所の外（403・E-CRED-015・持ち主に知らせる）・その PC の仕事でない・情報が無い・持ち主でない（404・在るかを漏らさない）・
+#   使える場所の外（403・E-CRED-016・持ち主に知らせる）・その PC の仕事でない・情報が無い・持ち主でない（404・在るかを漏らさない）・
 #   入力（422）・預かり先に届かない（502・E-SEC-001）・預かり先の上限（503・E-SEC-003）・記録の関数が使えない（503・E-PAGE-003）
 ERRORS_4XX = {
     "resolveCredential": [
@@ -29,9 +29,9 @@ ERRORS_4XX = {
         {"status": 403, "code": "E-CRED-011", "body": {"error": "dependency", "code": "E-CRED-011"}, "errors": ["E-CRED-011"],
          "trigger": "失効した・期限が過ぎた・預かり先が断った・預かった中身が読めない（預け直す）",
          "ears_form": "UNWANTED: IF 失効したか期限が過ぎたか預かり先の物が読めないなら、Kaname は 403 と E-CRED-011 を返し、封を返さず使った記録も残さない"},
-        {"status": 403, "code": "E-CRED-015", "body": {"error": "gate", "code": "E-CRED-015"}, "errors": ["E-CRED-015"],
+        {"status": 403, "code": "E-CRED-016", "body": {"error": "gate", "code": "E-CRED-016"}, "errors": ["E-CRED-016"],
          "trigger": "入れる場所の名前が使える場所の外（*. の印は下の名前だけ・名前は入口が字をそろえる前の字で取り出す）・名前に読めない入れる場所・253 文字を超える名前（使える場所に入りようが無いので外と同じ。名前が取れないので知らせと証跡は残さない）",
-         "ears_form": "UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-015 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）"},
+         "ears_form": "UNWANTED: IF 入れる場所が使える場所の外なら、Kaname は 403 と E-CRED-016 を返し、預かり先から読まず、証跡を残して持ち主に知らせる（同じ情報・同じ場所は 1 時間に 1 つ）"},
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}, "errors": [],
          "trigger": "その PC の仕事でない（ほかのアカウント）・情報が無い・ほかのワークスペース・消した・確かめの仕事に結んでいない・個人の物を持ち主でない人の仕事で",
          "ears_form": "UNWANTED: IF その PC の仕事でないか、仕事の人が取り出せる情報でないなら、Kaname は 404 を返し、在るかを漏らさず預かり先から読まない"},

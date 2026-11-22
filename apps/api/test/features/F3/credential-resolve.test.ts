@@ -19,7 +19,7 @@ const PASSWORD = K355_PASSWORD;
 
 /** 宛先の判定の表（Bridge の試験 apps/bridge/test/k354-credential-bridge.test.ts の K354-BRG-005 と同じ 1 つのファイルを字として読む。
  *  片方だけ直って、口と Bridge の判定がずれる事を止める）。target＝送る宛先、host＝ブラウザが読む行き先の名前（名前として読めない宛先は null）、
- *  allowed＝使える場所 destinations に入るか。口は allowed なら 201（K354-API-005）、host が在って外なら 403（K354-API-010）、host が null（名前に読めない・253 字超）でも 403・E-CRED-015（K354-API-013。使える場所に入りようが無い。名前が無いので知らせと証跡は残さない）。
+ *  allowed＝使える場所 destinations に入るか。口は allowed なら 201（K354-API-005）、host が在って外なら 403（K354-API-010）、host が null（名前に読めない・253 字超）でも 403・E-CRED-016（K354-API-013。使える場所に入りようが無い。名前が無いので知らせと証跡は残さない）。
  *  入口は体の字を先に NFKC にする（apps/api/src/contract/op.ts の normalize）ので、口は宛先だけ、その前の字で名前を取り出す。
  *  NFKC の後の字で読むと、全角の区切り（／ ＃ ？ ＼）を @ の前に置いた宛先が、ブラウザの行き先と違う名前で使える場所に当たる */
 type HostCase = { target: string; host: string | null; allowed: boolean; note: string };
@@ -269,7 +269,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
   );
 
   it(
-    "K354-API-010 使える場所の外（Bridge の試験と同じ表 credential-host-cases.json の「外」の宛先：別のドメイン・名前の後ろに足した偽物・前に字を足した偽物・URL の @ の前に名前を置いた偽物・道や問い合わせや断片にだけ名前がある URL・全角の区切り ／ ＃ ？ ＼ と小さい形 ﹖ ﹟ ﹨ を @ の前に置いた偽物。それと *.example.com の名前そのもの）：403・E-CRED-015。持ち主に知らせ（credential.wrong_destination・取り出した名前あり・値は無い）は同じ情報・同じ場所なら 1 時間に 1 つにまとめる（全角の区切りの偽物は @ の後ろの名前 evil.test になる）。証跡（理由 wrong_destination）は毎回。*.example.com の下の名前（login.example.com）は通る",
+    "K354-API-010 使える場所の外（Bridge の試験と同じ表 credential-host-cases.json の「外」の宛先：別のドメイン・名前の後ろに足した偽物・前に字を足した偽物・URL の @ の前に名前を置いた偽物・道や問い合わせや断片にだけ名前がある URL・全角の区切り ／ ＃ ？ ＼ と小さい形 ﹖ ﹟ ﹨ を @ の前に置いた偽物。それと *.example.com の名前そのもの）：403・E-CRED-016。持ち主に知らせ（credential.wrong_destination・取り出した名前あり・値は無い）は同じ情報・同じ場所なら 1 時間に 1 つにまとめる（全角の区切りの偽物は @ の後ろの名前 evil.test になる）。証跡（理由 wrong_destination）は毎回。*.example.com の下の名前（login.example.com）は通る",
     async () => {
       const w = await h.who("wrong");
       const id = await h.cred(w, { destinations: HOST_CASES.destinations });
@@ -357,7 +357,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
   );
 
   it(
-    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空か空白だけ、job_id が無いのは 422（契約の形）。名前に読めない宛先（Bridge の試験と同じ表 credential-host-cases.json の「名前として読めない」宛先：全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）と 253 文字を超える名前は、使える場所に入りようが無いので 403・E-CRED-015（知らせも証跡も残さない）。use_count はそのまま",
+    "K354-API-013 入力：PC の鍵が base64 でない・長さが違う・X25519 でない（Ed25519）、場所が空か空白だけ、job_id が無いのは 422（契約の形）。名前に読めない宛先（Bridge の試験と同じ表 credential-host-cases.json の「名前として読めない」宛先：全角の区切りや全角の ＠ が @ 無しで名前の中・途中に空白・http(s) でない）と 253 文字を超える名前は、使える場所に入りようが無いので 403・E-CRED-016（知らせも証跡も残さない）。use_count はそのまま",
     async () => {
       const { w, p, id } = await setup("input");
       const job = await chatTaken(p, w.user.memberId, w.user.tenantId);
@@ -455,7 +455,7 @@ describe("K-354 resolveCredential：取り出せないとき", () => {
   );
 
   it(
-    "K354-API-018 失敗 S4：使える場所の外の知らせの関数が使えない → それでも 403・E-CRED-015（止める側に倒す）。知らせは 0",
+    "K354-API-018 失敗 S4：使える場所の外の知らせの関数が使えない → それでも 403・E-CRED-016（止める側に倒す）。知らせは 0",
     async () => {
       const { w, p, id } = await setup("s4");
       const job = await checkJob(w, p, id);

@@ -204,14 +204,14 @@ export function createResolveCredential(d: ResolveDeps): (a: HookArgs) => Promis
     if (typeof v.vault_ref !== "string" || typeof v.tenant_id !== "string" || typeof v.member !== "string")
       return unavailable();
     // ③ 使える場所の合わせ（入口の前の字の宛先で）。外なら止めて持ち主に知らせる（知らせが残せなくても止める）
-    if (p.host === null) return forbidden("E-CRED-015"); // 名前に読めない宛先：名前が無いので知らせも証跡も残さない
+    if (p.host === null) return forbidden("E-CRED-016"); // 名前に読めない宛先：名前が無いので知らせも証跡も残さない
     if (!hostAllowed(p.destination, Array.isArray(v.destinations) ? v.destinations : [])) {
       try {
         await d.appPool.query("select app.credential_wrong_place($1, $2, $3, $4)", [sid, p.job, p.credential, p.host]);
       } catch (e) {
         console.error(`[credentials] 使える場所の外の知らせを残せなかった（情報 ${p.credential}・${kindOf(e)}）`);
       }
-      return forbidden("E-CRED-015");
+      return forbidden("E-CRED-016");
     }
     const kind: "login" | "key" = v.kind_id === "api_key" ? "key" : "login";
     // ④ 預かり先から読む（関門 C8・実行器として）
