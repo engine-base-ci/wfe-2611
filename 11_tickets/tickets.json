@@ -19447,7 +19447,10 @@
     "apps/api/test/generated/post_invitations_link.test.ts",
     "apps/api/test/generated/get_auth_invitations_token.test.ts"
    ],
-   "carry": [],
+   "carry": [
+    "apps/api/test/features/F1/admin-recovery.test.ts",
+    "apps/api/test/features/F1/login-gate.test.ts"
+   ],
    "depends_on": [
     "K-419",
     "K-425"
@@ -19473,6 +19476,7 @@
     "shared"
    ],
    "changes": [
+    "packages/db/migrations/20261122100000_owner_is_admin.sql",
     "packages/db/migrations/20261121092100_invitation_link.sql",
     "packages/db/src/migrations.generated.ts",
     "apps/api/src/hooks/workspace-invitation-link.ts",
