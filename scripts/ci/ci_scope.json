@@ -1280,6 +1280,18 @@
     "apps/api/test/features/F4/ticket-field-values.test.ts",
     "apps/api/test/features/F4/ticket-sort.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F4/ticket-estimate/**",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/hooks/ticket-update.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-estimate.test.ts",
+    "apps/api/test/features/F4/ticket-sort.test.ts",
+    "apps/api/test/features/F4/ticket-field-values.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1410,6 +1422,7 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/F4/ticket-field-values.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-564",
+  "apps/api/test/features/F4/ticket-estimate.test.ts": "口 updateTicket の hooks のファイル apps/api/src/hooks/ticket-update.ts（K-387 のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ。また 08_api/openapi.yaml と packages/contracts/src/registry.ts を readFileSync で読む（契約の updateTicket の入力に estimate_minutes が在ること・K583-API-017）・K-583",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"
  },
  "web_select": {

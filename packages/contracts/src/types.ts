@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:a01e8664347f8676
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:33de502e3934ab84
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -332,7 +332,7 @@ export type CredentialCheckReportInput = { job_id: string; state: string; detail
 export type DeviceBrowserInput = { browser: string };
 export type DeviceBrowserCheckInput = Record<string, never>;
 export type BridgeBrowserInput = { browser: string };
-export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string | null; fields?: Record<string, unknown> };
+export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string | null; fields?: Record<string, unknown>; estimate_minutes?: number | null };
 export type InvitationsCreateInput = { emails: string[]; scope_id: string; role_key: string; message?: string | null };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
