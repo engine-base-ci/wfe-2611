@@ -4,7 +4,7 @@ import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HandoverDeps } from "./deps.js";
 import { isUuid } from "@kaname/contracts";
-import { down, fromCatalog, invalid, kindOf, replyOf } from "./errors.js";
+import { down, fromCatalog, invalid, kindOf, notFound, replyOf } from "./errors.js";
 import { isReply } from "./input.js";
 import { sendHandoverMails, type MailRow } from "./notify.js";
 
@@ -18,8 +18,10 @@ export type ClaimAnswer = {
   [k: string]: unknown;
 } | null;
 
-/** 引き取る DB の関数の答え → 断る答え（ok でなければ）。この葉の言葉は E-HND-150・151 */
+/** 引き取る DB の関数の答え → 断る答え（ok でなければ）。この葉の言葉は claim_missing（404）・E-HND-150・151 */
 export function claimReply(v: { error: string; [k: string]: unknown }, where: string): HookReply {
+  // 無い人・別の会社の人は見えない物：在らない id と同じ 404 E-PAGE-001（欄なし・控え帳 2026-11-20 16:51）
+  if (v.error === "claim_missing") return notFound();
   if (v.error === "claim_group") return fromCatalog("E-HND-150", 409);
   if (v.error === "claim_state") return fromCatalog("E-HND-151", 409);
   return replyOf(v, where);
