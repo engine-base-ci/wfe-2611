@@ -7,15 +7,18 @@
 //                                                               invitations: [{ id, email, scope_id, role, expires_at, left_days }], alerts: [], count } }
 //     createInvitations    POST /invitations ← { emails: string[]（1〜50）, scope_id, role_key, message? } → 201 { data: { invitations: [{ id, email, expires_at, mail }] } }
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）。
+import { execFileSync } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { EMAIL_RE, normalizeEmail } from "@kaname/auth/signup";
 import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
 import { createDeviceResolver } from "@kaname/auth/resolver";
 import { createApp } from "../../../src/app.js";
+import { INVITE_EMAIL_MAX_LENGTH, INVITE_EMAIL_PATTERN } from "../../../src/features/F10/invite/patterns.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
 import type { Hook } from "../../../src/contract/deps.js";
 import type { HookDeps, HookModule } from "../../../src/hooks/registry.js";
@@ -397,7 +400,10 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect(r.status).toBe(409);
     const j = await json(r);
     expect(j["code"]).toBe("E-INV-010");
-    expect(j.details?.[0]).toMatchObject({ field: "emails", email: member.email, code: "E-INV-010" });
+    // 控え帳 20:50 の形（PM の決め 2026-11-21 03:00）：409 は field・details を付けず、入っている宛ては detail（単数）で返す
+    expect(j["detail"]).toEqual({ already: [member.email] });
+    expect(j.details).toBeUndefined();
+    expect(j["field"]).toBeUndefined();
     expect(await invRows(member.email)).toHaveLength(0);
     expect(mails.length).toBe(before);
   });
@@ -440,7 +446,12 @@ describe("K-419 メールで招く（createInvitations）", () => {
       const e = fresh("scope");
       const r = await invite(admin, base([e], { scope_id: s }));
       expect(r.status, s).toBe(404);
-      expect((await json(r))["code"]).toBe("E-INV-011");
+      const j = await json(r);
+      expect(j["code"]).toBe("E-INV-011");
+      // 無いグループと見えないグループは同じ答え：field・details を付けない（PM の決め 2026-11-21 03:00）
+      expect(j.details).toBeUndefined();
+      expect(j["field"]).toBeUndefined();
+      expect(j["detail"]).toEqual({});
       expect(await invRows(e)).toHaveLength(0);
     }
   });
@@ -453,6 +464,160 @@ describe("K-419 メールで招く（createInvitations）", () => {
     expect((await json(r))["code"]).toBe("E-INV-012");
     expect(await n("select count(*) as n from invitations where email = any($1)", [many])).toBe(0);
     expect((await invite(admin, base(many.slice(0, 50)))).status).toBe(201);
+  });
+
+  it("K419-API-024 口が打ったとおりに照らす宛ての pattern（patterns.ts の INVITE_EMAIL_PATTERN）と人数（INVITE_MAX）は、契約（08_api/openapi.yaml の InvitationsCreateInput の emails）の items の pattern・maxLength（320）・maxItems・minItems と 1 字も違わない", () => {
+    const py =
+      "import yaml,json,sys;d=yaml.safe_load(open(sys.argv[1]));" +
+      "e=d['components']['schemas']['InvitationsCreateInput']['properties']['emails'];" +
+      "print(json.dumps({'pattern':e['items']['pattern'],'max':e['maxItems'],'min':e['minItems'],'len':e['items']['maxLength']}))";
+    const yamlPath = join(ROOT, "08_api/openapi.yaml");
+    const got = JSON.parse(execFileSync("python3", ["-c", py, yamlPath], { encoding: "utf8" })) as {
+      pattern: string;
+      max: number;
+      min: number;
+      len: number;
+    };
+    expect(got.pattern).toBe(INVITE_EMAIL_PATTERN);
+    expect(got.len).toBe(INVITE_EMAIL_MAX_LENGTH);
+    expect(INVITE_EMAIL_MAX_LENGTH).toBe(320);
+    expect(got.max).toBe(50);
+    expect(got.min).toBe(1);
+  });
+
+  it("K419-API-025 人数は送られた並びの数（重なりを落とす前）で数える：同じ宛てを重ねた 51 個（そろえると 2 つ）は 422・E-INV-012・招待 0。重ねて 50 個（そろえると 25 人）は 201・25 人", async () => {
+    await ready();
+    const two = [fresh("dup-a"), fresh("dup-b")];
+    const over = Array.from({ length: 51 }, (_, i) => two[i % 2]!);
+    const r = await invite(admin, base(over));
+    expect(r.status).toBe(422);
+    expect((await json(r))["code"]).toBe("E-INV-012");
+    expect(await n("select count(*) as n from invitations where email = any($1)", [two])).toBe(0);
+    const uniq = Array.from({ length: 25 }, (_, i) => fresh(`dd${i}`));
+    const ok = await invite(admin, base([...uniq, ...uniq]));
+    expect(ok.status).toBe(201);
+    expect(((await json(ok)).data as { invitations: unknown[] }).invitations).toHaveLength(25);
+  });
+
+  it("K419-API-026 宛ては、そろえる前の字を契約の pattern で照らす：@ が全角で 2 つ・ドメインに点が無い・@ が無い字は 422・E-INV-009（details の字はそろえた後の字）・招待 0・メール 0。中に空白（半角・全角）・前後の全角の空白・全角の @ と点・小さい @ と点は、そろえて 201（前の口と同じ・PM の決め 2026-11-21 02:45）", async () => {
+    await ready();
+    const before = mails.length;
+    const id = randomUUID().slice(0, 6);
+    const r = await invite(
+      admin,
+      base([`kimura${id}＠＠engine-base.example`, `kimura${id}@engine-base`, `kimura${id}engine-base.example`]),
+    );
+    expect(r.status).toBe(422);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    expect((j.details ?? []).map((d) => [d.email, d.code])).toEqual([
+      [`kimura${id}@@engine-base.example`, "E-INV-009"],
+      [`kimura${id}@engine-base`, "E-INV-009"],
+      [`kimura${id}engine-base.example`, "E-INV-009"],
+    ]);
+    expect(mails.length).toBe(before);
+    const e = (tag: string) => `${tag}${id}@engine-base.example`;
+    const forms: [string, string][] = [
+      [e("sp"), `sp ${id}@engine-base.example`.replace("sp ", "s p")],
+      [e("fw"), `\u3000${e("fw").replace("@", "＠").replace(".", "．")}\u3000`],
+      [e("mid"), `mi\u3000d${id} @ engine-base . example`],
+      [e("sm"), `${e("sm").replace("@", "﹫").replace(".", "․")}`],
+    ];
+    for (const [want, typed] of forms) {
+      const ok = await invite(admin, base([typed]));
+      expect(ok.status, typed).toBe(201);
+      expect(await invRows(want.replace(/\s/g, ""))).toHaveLength(1);
+    }
+  });
+
+  it("K419-API-027 前の口（normalizeEmail でそろえてから EMAIL_RE で見る）が受けていた形は今も受け、断っていた形は今も断る：全 BMP の 1 字を宛ての 7 か所に入れて、前の判定と契約の pattern の判定が同じ。例外は NFKC で 2 字以上に開いて点か @ を含む 27 字だけ（PM の決め 2026-11-21 03:00・前は受けたが今は断る）で、名指しして断ることを確かめる", () => {
+    const re = new RegExp(INVITE_EMAIL_PATTERN);
+    // 例外の 27 字：‥ … ⒈〜⒛ ㏂ ㏇ ㏘ ︙ ︰
+    const REFUSED = [
+      0x2025,
+      0x2026,
+      ...Array.from({ length: 20 }, (_, i) => 0x2488 + i),
+      0x33c2,
+      0x33c7,
+      0x33d8,
+      0xfe19,
+      0xfe30,
+    ];
+    const spots = [
+      (c: string) => `a${c}@b.co`,
+      (c: string) => `a@b${c}.co`,
+      (c: string) => `a@b.${c}co`,
+      (c: string) => `${c}a@b.co`,
+      (c: string) => `a@b.co${c}`,
+      (c: string) => `a@${c}b.co`,
+      (c: string) => `a@b${c}c`,
+    ];
+    const diff: string[] = [];
+    const opened: number[] = [];
+    for (let c = 0; c <= 0xffff; c++) {
+      if (c >= 0xd800 && c <= 0xdfff) continue;
+      const ch = String.fromCharCode(c);
+      const nfkc = ch.normalize("NFKC");
+      if (nfkc.length > 1 && /[@.]/.test(nfkc)) {
+        opened.push(c);
+        continue;
+      }
+      for (const at of spots) {
+        const typed = at(ch);
+        if (EMAIL_RE.test(normalizeEmail(typed)) !== re.test(typed))
+          diff.push(`U+${c.toString(16)} ${JSON.stringify(typed)}`);
+      }
+    }
+    expect(diff).toEqual([]);
+    // 例外は名指しの 27 字だけ（増えても減っても気づく）
+    expect(opened).toEqual(REFUSED);
+    // 前の口は受け、今は断る（点と数えると、前は断っていた形を新しく受けてしまうため）
+    for (const c of REFUSED) {
+      const typed = `a@b${String.fromCharCode(c)}c`;
+      expect(EMAIL_RE.test(normalizeEmail(typed)), `U+${c.toString(16)} は前の口は受けた`).toBe(true);
+      expect(re.test(typed), `U+${c.toString(16)} は今は断る`).toBe(false);
+    }
+  });
+
+  it("K419-API-028 宛て 1 つの長さは打ったとおりの字（コードポイント）で 320 字まで：321 字は 422・E-INV-009・招待 0・メール 0・details に字は載せず欄・順番・訳だけ。320 字ちょうど（サロゲート対の字を混ぜても）は 201（PM の決め 2026-11-21 03:40・03:55）", async () => {
+    await ready();
+    const before = mails.length;
+    const tail = "@engine-base.example";
+    const ok = `${"a".repeat(INVITE_EMAIL_MAX_LENGTH - tail.length - 8)}${randomUUID().slice(0, 8)}${tail}`;
+    expect(ok).toHaveLength(INVITE_EMAIL_MAX_LENGTH);
+    const over = `${"b".repeat(INVITE_EMAIL_MAX_LENGTH + 1 - tail.length)}${tail}`;
+    expect(over).toHaveLength(INVITE_EMAIL_MAX_LENGTH + 1);
+    const r = await invite(admin, base([fresh("first"), over]));
+    expect(r.status).toBe(422);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    // 長すぎる宛ては字を返さない（切ると黙って切ることになる・K144-SHAPE-027）：欄・順番・訳だけ
+    expect(j.details).toEqual([{ field: "emails", index: 1, code: "E-INV-009", message: msg("E-INV-009") }]);
+    expect(JSON.stringify(j)).not.toContain("bbbbbbbb");
+    expect(await invRows(over)).toHaveLength(0);
+    expect(mails.length).toBe(before);
+    expect((await invite(admin, base([ok]))).status).toBe(201);
+    expect(await invRows(ok)).toHaveLength(1);
+    // サロゲート対（1 字が UTF-16 で 2 つ）を混ぜた 320 字：数え方はコードポイント（契約の maxLength と同じ）なので通る
+    const smile = "\u{1F600}".repeat(10);
+    const pairs = `${smile}${"c".repeat(INVITE_EMAIL_MAX_LENGTH - 10 - tail.length - 8)}${randomUUID().slice(0, 8)}${tail}`;
+    expect(Array.from(pairs)).toHaveLength(INVITE_EMAIL_MAX_LENGTH);
+    expect(pairs.length).toBeGreaterThan(INVITE_EMAIL_MAX_LENGTH);
+    expect((await invite(admin, base([pairs]))).status).toBe(201);
+    expect(await invRows(pairs)).toHaveLength(1);
+  });
+
+  it("K419-API-029 pattern が二乗の時間になる長い入力（a@ + 「b.」の 64000 回 + @・pattern だけを当てると約 19 秒）は、pattern を当てる前に長さで断る：3 秒の内に 422・E-INV-009・招待 0", async () => {
+    await ready();
+    const evil = `a@${"b.".repeat(64000)}@`;
+    const t0 = Date.now();
+    const r = await invite(admin, base([evil]));
+    expect(Date.now() - t0).toBeLessThan(3000);
+    expect(r.status).toBe(422);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-INV-009");
+    expect(j.details).toEqual([{ field: "emails", index: 0, code: "E-INV-009", message: msg("E-INV-009") }]);
+    expect(await n("select count(*) as n from invitations where email like 'a@b.b.%'")).toBe(0);
   });
 
   it("K419-API-016 ひとことが 501 文字：422・招待 0。500 文字は 201・そのまま残る", async () => {
