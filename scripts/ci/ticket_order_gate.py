@@ -243,6 +243,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     mentioned = {k for _, s in rows for k in TICKET.findall(s)}
     impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と、依存を裁く番号（持ち主・owners_of）
     credit: dict[str, set[str]] = {}       # 依存を満たす側に数える番号（件名の全部の番号・前と同じ。満たす側を狭めて過去の取り込みを赤にしない）
+    merge_owners: set[str] = set()         # 取り込みの件名の持ち主：コミットごとには裁かないが、枝の先頭の検査には入れる（中身を取り込みの中だけに持つチケットが外れないように）
     merges: list[str] = []                 # 取り込みのコミット：実装に数えず裁かないが、依存を満たす側には数える（K-643）
     for sha, subj, files, parents in log:
         # 親が 2 つ以上＝取り込みのコミット（ほかの枝の物を持ち込むだけ・変えたファイルは空）。そのチケットの実装に数えず、依存を裁かない（K-643）。
@@ -252,6 +253,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
             if not _not_impl(files, gen):
                 credit[sha] = set(TICKET.findall(subj))
                 merges.append(sha)
+                merge_owners |= owners_of(subj)
         elif not _not_impl(files, gen):
             impl.append((sha, owners_of(subj)))
             credit[sha] = set(TICKET.findall(subj))
@@ -349,7 +351,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
     def has_impl_head(x: str) -> bool:
         return any(x in credit[c] for c in [c for c, _ in impl] + merges)
-    for tid in sorted({k for _, ids in impl for k in ids}):
+    for tid in sorted({k for _, ids in impl for k in ids} | merge_owners):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
             if (tid, dep) in reported:
                 continue

@@ -47,14 +47,15 @@ class Case(unittest.TestCase):
 class MergeNotImplTest(Case):
     def test_K643_CI_001_merge_commit_is_not_the_impl_of_its_subject_ticket(self):
         """K643-CI-001 入力：K-2（K-1 に依存）の件名の取り込みのコミットが、K-1 の実装を祖先に持たない形（K-392 merge: … の形）
-        → 緑。取り込みのコミットは実装に数えないので、見た実装のコミットは取り込みを除いた 2 本（前は 3 本で、K-2 が赤だった）"""
+        → 緑。取り込みのコミットは実装に数えないので、K-1 を取り込みの後に作る。コミットごとの裁きは緑・見た実装のコミットは取り込みを除いた 3 本（前は 4 本で、K-2 が赤だった）"""
         self.side("side", "K-5 feat: 別の枝の物", {"apps/other.ts": "o"})
         self.r.commit("K-9 feat: 本線の物", {"apps/main.ts": "m"})
         m = self.merge("side", "K-2 merge: 取り込みの列の前の木 t/K-5 を取り込む")
         self.assertEqual(len(self.r.git("rev-list", "--parents", "-n1", m).split()), 3, "親が 2 つの取り込み")
+        self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})   # 枝の先頭では K-1 が入っている（先頭の検査は緑）
         bad, _, n = self.check()
         self.assertEqual(bad, [], bad)
-        self.assertEqual(n, 2)   # K-5 と K-9 の 2 本だけ（取り込みの 1 本は数えない）
+        self.assertEqual(n, 3)   # K-5 と K-9 の 2 本だけ（取り込みの 1 本は数えない）
 
     def test_K643_CI_002_single_parent_commit_still_counts(self):
         """K643-CI-002 守り：同じ件名・同じ依存でも、親が 1 つのコミットなら今までどおり実装に数え、K-1 が祖先に無ければ赤
@@ -111,15 +112,30 @@ class MergeNotImplTest(Case):
         self.assertEqual(n, 3)
 
     def test_K643_CI_006_octopus_merge_with_three_parents_is_not_impl(self):
-        """K643-CI-006 入力：親が 3 つの取り込み（2 つ以上）も実装に数えない。K-2 の件名で K-1 の実装を持たない → 緑・見た本数は取り込みを除いた 3 本"""
+        """K643-CI-006 入力：親が 3 つの取り込み（2 つ以上）も実装に数えない。K-2 の件名で K-1 の実装を持たない → 緑（K-1 は取り込みの後に作る）・見た本数は取り込みを除いた 4 本"""
         self.side("s1", "K-5 feat: 枝 1", {"apps/o1.ts": "1"})
         self.side("s2", "K-6 feat: 枝 2", {"apps/o2.ts": "2"})
         self.r.commit("K-9 feat: 本線の物", {"apps/main.ts": "m"})
         self.r.git("merge", "-q", "--no-ff", "-m", "K-2 merge: 2 つの枝を取り込む", "s1", "s2")
         self.assertEqual(len(self.r.git("rev-list", "--parents", "-n1", "HEAD").split()), 4, "親が 3 つ")
+        self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
         bad, _, n = self.check()
         self.assertEqual(bad, [], bad)
-        self.assertEqual(n, 3)
+        self.assertEqual(n, 4)
+
+    def test_K643_CI_007_ticket_with_only_a_merge_is_judged_at_the_head(self):
+        """K643-CI-007 守り：中身を取り込みのコミットの中だけに持つチケット（K-2 は K-1 に依存・K-2 の番号は取り込みの件名にだけある）は、
+        コミットごとには裁かれないが、枝の先頭の検査に入る。K-1 の実装が枝に無ければ赤（「枝の先頭」と「K-2 は K-1」を含む）。K-1 が枝に入れば緑"""
+        self.side("side", "K-5 feat: 別の枝の物", {"apps/other.ts": "o"})
+        self.r.commit("K-9 feat: 本線の物", {"apps/main.ts": "m"})
+        self.merge("side", "K-2 merge: 取り込みの列の前の木 t/K-5 を取り込む")
+        bad, _, _ = self.check()
+        self.assertEqual(len(bad), 1, bad)
+        self.assertIn("枝の先頭", bad[0])
+        self.assertIn("K-2 は K-1", bad[0])
+        self.r.commit("K-1 feat: 依存を作る", {"apps/b.ts": "b"})
+        bad2, _, _ = self.check()
+        self.assertEqual(bad2, [], bad2)
 
 
 if __name__ == "__main__":
