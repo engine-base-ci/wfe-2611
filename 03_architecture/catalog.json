@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
-  "api_built": 69,
+  "api": 370,
+  "api_built": 70,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 212,
+  "errors": 215,
   "stack": 56,
   "env": 41
  },
@@ -382,6 +382,24 @@
    "status": "作った",
    "owner_tickets": [
     "K-334"
+   ]
+  },
+  {
+   "op": "confirmInvitationJoin",
+   "method": "POST",
+   "path": "/api/v1/auth/invitations/confirm",
+   "what": "作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る）",
+   "flows": [
+    "F1",
+    "F2"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "invitations"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-422"
    ]
   },
   {
@@ -1920,7 +1938,7 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-421"
    ]

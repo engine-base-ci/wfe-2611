@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:411e3ab7b6dccb19
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:72c1aab15d17b03e
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -25,6 +25,7 @@ export interface Ops {
   getInvitation: { params: { token: string }; query: never; body: never; data: T.InvitationPreview };
   acceptInvitation: { params: { token: string }; query: never; body: T.InvitationAcceptInput; data: T.InvitationAccepted };
   requestInvitationResend: { params: { token: string }; query: never; body: T.InvitationResendInput; data: T.InvitationResendResult };
+  confirmInvitationJoin: { params: never; query: never; body: T.InvitationJoinConfirmInput; data: T.InvitationJoinConfirmed };
   requestPasswordReset: { params: never; query: never; body: T.PasswordForgotInput; data: T.PasswordForgotAccepted };
   resetPassword: { params: never; query: never; body: T.PasswordResetInput; data: T.PasswordResetDone };
   requestAdminRecovery: { params: never; query: never; body: T.AdminRecoveryInput; data: T.AdminRecoveryResult };
@@ -119,7 +120,7 @@ export interface Ops {
   createInvitations: { params: never; query: never; body: T.InvitationsCreateInput; data: T.InvitationsSent };
   revokeInvitation: { params: { id: string }; query: never; body: never; data: T.Invitations };
   resendInvitation: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
-  createInvitationLink: { params: never; query: never; body: T.InvitationsInput; data: T.InvitationLink };
+  createInvitationLink: { params: never; query: never; body: T.InvitationLinkCreateInput; data: T.InvitationLink };
   downloadInvoicePdf: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   askKnowledge: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgeAnswer };
   sendKnowledgeAnswerFeedback: { params: never; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
