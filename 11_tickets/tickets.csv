@@ -2536,7 +2536,7 @@ K-564,updateTicket の組「会社の項目の値」（fields：型ごとの形�
 - **担当者でない人が変えたときは、担当者の受け箱に知らせる**（D-150.32・自分で変えたら知らせない・担当者がいないか抜けた・止められた人なら知らせない）。1 回の要求は 1 通。メールは出さない
 - **完了したチケットでも変えられる**（K-387 の実績・K-440 の優先度と親と同じ。段を変えるのだけが完了後は 409。下の「代表に聞くこと」）
 
-マスタを作る・直す口と画面は段 10、確認項目は K-434・K-435、作るとき書くのは K-437、読む口 `getTicket` の `fields` は K-560。","- [ ] 下の表の 22 行（K564-API-001〜022）が緑：`apps/api/test/features/F4/ticket-field-values.test.ts`
+マスタを作る・直す口と画面は段 10、確認項目は K-434・K-435、作るとき書くのは K-437、読む口 `getTicket` の `fields` は K-560。","- [ ] 下の表の 23 行（K564-API-001〜023）が緑：`apps/api/test/features/F4/ticket-field-values.test.ts`
 - [ ] 生成の試験 `patch_tickets_id` の it.todo が、この葉が足す 409 の 4 つを含めて 0（`07_qa/test-plan/ears-elsewhere.d/K-564.json` の covers）
 - [ ] 契約の `updateTicket` の入力に `fields` が足され、前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
