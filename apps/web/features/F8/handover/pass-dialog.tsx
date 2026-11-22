@@ -131,7 +131,7 @@ export function readPreview(raw: unknown): Preview | null {
   const waitTo = rec(w?.["to"]);
   const waitScope = rec(w?.["to_scope"]);
   const count = (v: unknown) => ({ mine: num(rec(v)?.["mine"]), others: num(rec(v)?.["others"]) });
-  const rules = (Array.isArray(o["rules"]) ? o["rules"] : []).flatMap((r) => {
+  const rules = (Array.isArray(o["rules"]) ? o["rules"] : []).flatMap((r): { target: string; mode: RuleMode }[] => {
     const x = rec(r);
     const target = str(x?.["target"]);
     const mode = x?.["mode"];
