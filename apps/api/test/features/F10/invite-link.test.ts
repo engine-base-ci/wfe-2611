@@ -8,6 +8,9 @@
 //     acceptInvitation      POST /api/v1/auth/invitations/:token/accept ← ログイン中の人は体なし。ログインしていない人のリンクの参加は K-422 まで 401・後は 202（K-422）
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。実装の前に流して赤を確かめない（D-128.143）
 import { randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { failMailTo, mails } from "../F1/login.harness.js";
 import { PW, setupInvite, sha256, type User } from "../F2/invite.harness.js";
@@ -403,5 +406,54 @@ describe("K-421 DB の関数・並び・送り直しの頼み", () => {
     expect(m.text).toContain("招待のリンクを開いた人から");
     expect(m.text).not.toContain("開いた人 さん");
     expect(m.text + m.subject).not.toMatch(/null|undefined/);
+  });
+  it("K421-API-018 会社を作った人は管理者の束を全部持つ（代表の答え answer=ac95454ce2aa）：新しい会社の owner に admin の所属の行ができ、招く・書き出す・プランと支払い・ワークスペースを消すの束が付く／埋め戻しは何度流しても増えない／作りかけの会社の片付けがその行も消す", async () => {
+    const o = await h.owner("o018");
+    const memberOf = async (u: User) =>
+      (
+        await h.admin.query<{ id: string }>("select id from members where tenant_id = $1 and auth_user_id = $2", [
+          u.tenantId,
+          u.userId,
+        ])
+      ).rows[0]!.id;
+    const mid = await memberOf(o);
+    const rows = (tenantId: string, memberId: string) =>
+      n(
+        "select count(*) as n from tenant_memberships where tenant_id = $1 and member_id = $2 and role = 'admin' and status = 'active'",
+        [tenantId, memberId],
+      );
+    const bundle = (tenantId: string, memberId: string) =>
+      n(
+        `select count(*) as n from permissions where tenant_id = $1 and grantee_member_id = $2 and bundle_role = 'admin'
+            and ((target_kind_id = 'tenants' and ability_id in ('billing', 'export', 'delete_workspace'))
+              or (target_kind_id = 'members' and ability_id = 'invite'))`,
+        [tenantId, memberId],
+      );
+    expect(await rows(o.tenantId, mid), "新しい会社の owner に admin の行").toBe(1);
+    expect(await bundle(o.tenantId, mid), "束の 4 つの権限").toBe(4);
+    // 埋め戻し：所属の行を消した owner に戻る・何度流しても 1 行のまま
+    const here = dirname(fileURLToPath(import.meta.url));
+    const sql = readFileSync(
+      join(here, "..", "..", "..", "..", "..", "packages", "db", "migrations", "20261122100000_owner_is_admin.sql"),
+      "utf8",
+    );
+    const backfill = /\ninsert into tenant_memberships[\s\S]*?on conflict \(tenant_id, member_id\) do nothing;/.exec(
+      sql,
+    )?.[0];
+    expect(backfill, "migration に埋め戻しの文が在る").toBeTruthy();
+    await h.admin.query("delete from tenant_memberships where tenant_id = $1 and member_id = $2", [o.tenantId, mid]);
+    expect(await bundle(o.tenantId, mid), "所属を消せば束も消える").toBe(0);
+    await h.admin.query(backfill!);
+    await h.admin.query(backfill!);
+    expect(await rows(o.tenantId, mid), "埋め戻しは何度流しても増えない").toBe(1);
+    expect(await bundle(o.tenantId, mid)).toBe(4);
+    // 作りかけの会社の片付けが、所属の行（と束の権限）も消す
+    const dropped = await h.admin.query<{ r: number }>("select kaname_auth.drop_half_made_company($1::uuid, $2) as r", [
+      o.tenantId,
+      o.userId,
+    ]);
+    expect(dropped.rows[0]!.r).toBe(1);
+    expect(await n("select count(*) as n from tenant_memberships where tenant_id = $1", [o.tenantId])).toBe(0);
+    expect(await n("select count(*) as n from members where tenant_id = $1", [o.tenantId])).toBe(0);
   });
 });
