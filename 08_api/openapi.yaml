@@ -2990,6 +2990,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        target_session_id:
+          type: string
+          format: uuid
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -9992,6 +9996,11 @@ components:
       required:
       - browser
       x-required-by: hooks
+    DeviceBrowserCheckInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: checkMyDeviceBrowser
     BridgeBrowserInput:
       type: object
       properties:
@@ -11944,6 +11953,13 @@ components:
         browser:
           type: string
       x-operation: updateMyDevice
+    DeviceBrowserCheck:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+      x-operation: checkMyDeviceBrowser
     BridgeBrowser:
       type: object
       properties:
@@ -16339,6 +16355,128 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/bridge/devices/{id}/browser-check:
+    post:
+      operationId: checkMyDeviceBrowser
+      summary: 作成・実行（bridge）— 自分の PC をつなぐ
+      tags:
+      - bridge_jobs
+      x-acts:
+      - A09
+      x-screens:
+      - bridge-setup
+      x-choke-points:
+      - C1
+      - C2
+      - C4
+      x-source:
+      - D-004
+      - D-004.1
+      - D-015
+      - D-015.1
+      - D-015.6
+      - D-019.1
+      - D-040.4
+      - D-055
+      - D-055.1
+      - D-055.2
+      - D-055.3
+      - D-109.3
+      - D-119.1
+      - D-119.2
+      - D-119.4
+      - D-120.1
+      - D-120.2
+      - D-120.3
+      - D-120.4
+      - D-125.142
+      - D-125.143
+      - D-125.146
+      - D-125.167
+      x-permission: self
+      x-permission-scope: 自分のアカウントの PC だけ。その PC に宛てた確かめの仕事を 1 つ積む（本人のサブスクを少し使うので 1 分 10 回）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceBrowserCheckInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DeviceBrowserCheck'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-CONN-018
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:

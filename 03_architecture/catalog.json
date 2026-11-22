@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
-  "api_built": 69,
+  "api": 371,
+  "api_built": 70,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 144,
   "ui": 18,
   "packages": 13,
-  "errors": 225,
+  "errors": 226,
   "stack": 56,
   "env": 41
  },
@@ -739,6 +739,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-362"
+   ]
+  },
+  {
+   "op": "checkMyDeviceBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "bridge_jobs"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-365"
    ]
   },
   {
@@ -6140,10 +6157,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "bridge_pairing_codes",
