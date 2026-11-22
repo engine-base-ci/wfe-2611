@@ -8,7 +8,7 @@
   {"_doc": …, "groups": [{"id", "kind", "canvas"（04_design/canvas の名前）, "app"（画面の道）, "state"（画面を整える道具の鍵）,
     "widths", "pairs"（[{name, role, canvas, app, props}]）, "owner"（直すチケット）, "enrolled"（突き合わせに入れたか）}]}
   ・組の種類（kind）ごとに要る役（role）がそろい、役ごとに要る値（props）がそろう（下の KINDS・ROLES は K-216.md の表と同じ）
-  ・段 1 の組（下の GROUPS の 21 組）が全部在る（入れていなくても在る。持ち主の画面のチケットが直して enrolled にする）
+  ・段 1 の組（下の GROUPS の 18 組）が全部在る（入れていなくても在る。持ち主の画面のチケットが直して enrolled にする）
   ・enrolled の組は、画面を整える道具（apps/web/tests/_lib/fidelity-states.ts）に鍵が在る
   ・本線との分かれ目で enrolled だった組は、消せない・enrolled を戻せない・比べる（役×値×幅）を減らせない・セレクタも state も替えられない
 作りものの設定は tempfile の中に作る。git には GIT_ で始まる環境の値を除いて渡す。
@@ -65,8 +65,8 @@ GROUPS = {
     "signup": ("auth", "AuthSignup", "K-255"), "signup-waiting": ("auth-msg", "AuthVerify", "K-255"),
     "login": ("auth", "AuthLogin", "K-221"), "login-2fa": ("auth", "Auth2FA", "K-221"), "legal": ("doc", "LegalPage", "K-232"),
     "tickets-first": ("page", "OnHome", "K-251"), "tickets-main": ("page", "Main", "K-251"), "tickets-list": ("page", "List", "K-252"),
-    "tickets-new": ("form", "Create", "K-224"), "tickets-new-sections": ("form", "Create", "K-225"),
-    "ticket-detail": ("page", "TicketDetail", "K-226"), "band-approval": ("band", "TicketDetail", "K-227"),
+    # 作る面と詳細の 3 組（tickets-new・tickets-new-sections・ticket-detail）は段 5 で下絵 v2 が正になり外した（K-431）
+    "band-approval": ("band", "TicketDetail", "K-227"),
     "band-running": ("band", "StRunning", "K-228"), "band-failed": ("band", "StFailed", "K-228"),
     # 承認の小窓は 1 枚の絵に移した（3 つを並べた見本 StModal は幅 375 で潰れる）
     "approve-modal": ("dialog", "StApproveModal", "K-229"), "approvals": ("page", "Approvals", "K-231"),
@@ -255,7 +255,7 @@ class ReviewTest(unittest.TestCase):
 
 class RealTest(unittest.TestCase):
     def test_K216_VF_015_real_config_green(self) -> None:
-        """K216-VF-015 本物の設定（04_design/fidelity.json）は 0 で終わり、段 1 の 21 組が全部在り、組の種類・絵・持ち主が下の表どおり"""
+        """K216-VF-015 本物の設定（04_design/fidelity.json）は 0 で終わり、段 1 の 18 組が全部在り、組の種類・絵・持ち主が下の表どおり"""
         r = subprocess.run([sys.executable, str(GATE), "--no-base"], cwd=ROOT, capture_output=True, text=True, env=clean_env())
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         got = {g["id"]: (g["kind"], g["canvas"], g["owner"]) for g in json.loads(CONFIG.read_text(encoding="utf-8"))["groups"]}
@@ -264,7 +264,7 @@ class RealTest(unittest.TestCase):
             self.assertTrue((CANVAS / f"{want[1]}.dc.html").exists(), gid)
 
     def test_K216_VF_016_default_required_is_the_same(self) -> None:
-        """K216-VF-016 検査の既定の段 1 の組（--print-required）が、この試験の 21 組と同じ（一覧を 2 か所でずらさない）"""
+        """K216-VF-016 検査の既定の段 1 の組（--print-required）が、この試験の 18 組と同じ（一覧を 2 か所でずらさない）"""
         r = subprocess.run([sys.executable, str(GATE), "--print-required"], cwd=ROOT, capture_output=True, text=True, env=clean_env())
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual(set(r.stdout.split()), set(GROUPS))

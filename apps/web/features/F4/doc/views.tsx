@@ -1,5 +1,5 @@
 "use client";
-// 段 5 の作り直した下絵の部品（項目＋目的＋完了の条件＋自由な本文）。見た目だけ・値は props・口は呼ばない。
+// 段 5 の作り直した下絵の部品（項目の表＋自由な本文＋確認項目）。見た目だけ・値は props・口は呼ばない。
 //   本番では段 5 の葉が本物のデータと動きをつなぐ。色・字・余白は doc.css（正本のトークンだけ）
 import type { ReactNode } from "react";
 import { Button, Select, TextArea, TextField } from "@/components/k";

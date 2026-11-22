@@ -25,7 +25,7 @@
 .k-f4d-talk-day::after {
   content: "";
   flex: 1;
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
 }
 .k-f4d-talk-avatar {
   flex: none;
@@ -100,7 +100,7 @@
   flex-direction: column;
   gap: var(--k-s-sm);
   padding: var(--k-s-sm) var(--k-s-md) var(--k-s-md);
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
 }
 .k-f4d-talk-send {
   display: flex;

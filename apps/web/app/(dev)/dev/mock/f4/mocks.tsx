@@ -18,23 +18,12 @@ export interface MockEntry {
   leaf: string;
 }
 
+// prettier-ignore
 export const MOCKS: readonly MockEntry[] = [
   // 作る面に重なる小窓と空の一覧
   { id: "f4-parent-dialog", screen: "tickets", label: "親を決める小窓", ticket: "K-443", leaf: "K-443" },
-  {
-    id: "f4-parent-none",
-    screen: "tickets",
-    label: "親を決める小窓：合うチケットが無い",
-    ticket: "K-443",
-    leaf: "K-443",
-  },
-  {
-    id: "f4-parent-limit",
-    screen: "tickets",
-    label: "親を決める小窓：3 段目は選べない",
-    ticket: "K-443",
-    leaf: "K-443",
-  },
+  { id: "f4-parent-none", screen: "tickets", label: "親を決める小窓：合うチケットが無い", ticket: "K-443", leaf: "K-443" },
+  { id: "f4-parent-limit", screen: "tickets", label: "親を決める小窓：3 段目は選べない", ticket: "K-443", leaf: "K-443" },
   { id: "f4-due-dialog", screen: "tickets", label: "期限を決める小窓（作る面）", ticket: "K-444", leaf: "K-444" },
   { id: "f4-due-past", screen: "tickets", label: "期限を決める小窓：過去は選べない", ticket: "K-444", leaf: "K-444" },
   { id: "f4-dup-pick", screen: "tickets", label: "過去のチケットから複製：元を選ぶ", ticket: "K-446", leaf: "K-446" },
@@ -42,30 +31,12 @@ export const MOCKS: readonly MockEntry[] = [
   { id: "f4-dup-error", screen: "tickets", label: "複製できなかった", ticket: "K-446", leaf: "K-446" },
   { id: "f4-home-empty", screen: "tickets", label: "空の一覧のおすすめ 3 つ", ticket: "K-453", leaf: "K-453" },
   // 詳細まわり
-  {
-    id: "f4-more-menu",
-    screen: "tickets",
-    label: "詳細の「…」（使える物と押せない物）",
-    ticket: "K-458",
-    leaf: "K-458",
-  },
-  {
-    id: "f4-links-collapsed",
-    screen: "tickets",
-    label: "子・つながり：閉じた形（件数と「開く」）",
-    ticket: "K-452",
-    leaf: "K-452",
-  },
+  { id: "f4-more-menu", screen: "tickets", label: "詳細の「…」（使える物と押せない物）", ticket: "K-458", leaf: "K-458" },
+  { id: "f4-links-collapsed", screen: "tickets", label: "子・つながり：閉じた形（件数と「開く」）", ticket: "K-452", leaf: "K-452" },
   { id: "f4-links", screen: "tickets", label: "子・つながり", ticket: "K-452", leaf: "K-452" },
   { id: "f4-links-empty", screen: "tickets", label: "子・つながり：どちらも無い", ticket: "K-452", leaf: "K-452" },
   { id: "f4-link-remove", screen: "tickets", label: "つながりを外す確かめ", ticket: "K-452", leaf: "K-452" },
-  {
-    id: "f4-links-variants",
-    screen: "tickets",
-    label: "子・つながり：派生先と見えない相手",
-    ticket: "K-452",
-    leaf: "K-452",
-  },
+  { id: "f4-links-variants", screen: "tickets", label: "子・つながり：派生先と見えない相手", ticket: "K-452", leaf: "K-452" },
   { id: "f4-link-add", screen: "tickets", label: "つながりを足す小窓", ticket: "K-452", leaf: "K-452" },
 ];
 

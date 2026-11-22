@@ -37,7 +37,7 @@
 }
 .k-f4d-line {
   border: 0;
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   margin: 0;
 }
 .k-f4d-multi {
@@ -77,7 +77,7 @@
 
 /* ---- 本文：道具の帯＋文書 ---- */
 .k-f4d-editor {
-  border: 1px solid var(--k-line-strong);
+  border: var(--k-c-f4d-rule-strong-border);
   border-radius: var(--k-r-md);
   background: var(--k-card);
   overflow: hidden;
@@ -90,7 +90,7 @@
   gap: var(--k-s-xs);
   padding: var(--k-s-xs) var(--k-s-sm);
   background: var(--k-table-head);
-  border-bottom: 1px solid var(--k-line);
+  border-bottom: var(--k-c-f4d-rule-border);
 }
 /* 狭い幅（スマホ）は帯の中で横に送る。送れる側にだけ影（local の覆いが端で影を隠す） */
 @media (max-width: 767px) {
@@ -116,7 +116,7 @@
 }
 .k-f4d-bar-group + .k-f4d-bar-group {
   padding-left: var(--k-s-xs);
-  border-left: 1px solid var(--k-line);
+  border-left: var(--k-c-f4d-rule-border);
 }
 .k-f4d-bar button {
   display: inline-flex;
@@ -139,8 +139,8 @@
   background: var(--k-select);
 }
 .k-f4d-bar button:focus-visible {
-  outline: 2px solid var(--k-primary);
-  outline-offset: -2px;
+  outline: var(--k-c-f4d-ring-border);
+  outline-offset: var(--k-c-f4d-ring-in-width);
 }
 .k-f4d-bar b {
   font-weight: 700;
@@ -177,7 +177,7 @@
   margin: 0;
   padding: var(--k-s-xs) var(--k-s-md);
   text-align: right;
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
@@ -195,7 +195,7 @@
 .k-f4d-doc h3 {
   margin: var(--k-s-md) 0 var(--k-s-sm);
   padding-bottom: var(--k-s-xs);
-  border-bottom: 1px solid var(--k-line);
+  border-bottom: var(--k-c-f4d-rule-border);
   font-size: var(--k-text-section-title);
   line-height: var(--k-lh-section-title);
   font-weight: 700;
@@ -266,7 +266,7 @@
 }
 .k-f4d-doc th,
 .k-f4d-doc td {
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   padding: var(--k-s-xs) var(--k-s-sm);
   text-align: left;
   vertical-align: top;
@@ -287,7 +287,7 @@
   justify-content: center;
   aspect-ratio: 16 / 9;
   max-width: calc(var(--k-s-2xl) * 4);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-md);
   background: var(--k-surface-variant);
   color: var(--k-on-surface-variant);
@@ -300,14 +300,14 @@
 .k-f4d-quote {
   margin: 0;
   padding-left: var(--k-s-md);
-  border-left: 3px solid var(--k-line-strong);
+  border-left: var(--k-c-f4d-quote-border);
   color: var(--k-on-surface-variant);
 }
 .k-f4d-caret {
   display: inline-block;
-  width: 2px;
-  height: 1em;
-  margin-left: 1px;
+  width: var(--k-c-f4d-caret-width);
+  height: var(--k-c-f4d-caret-height);
+  margin: var(--k-c-f4d-caret-margin);
   vertical-align: text-bottom;
   background: var(--k-primary);
 }
@@ -324,7 +324,7 @@
   align-items: center;
   gap: var(--k-s-sm);
   padding: var(--k-s-md) var(--k-s-lg) 0;
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   font-size: var(--k-text-body-sm);
   color: var(--k-on-surface-variant);
 }
@@ -340,7 +340,7 @@
   flex-direction: column;
   gap: var(--k-s-sm);
   padding: var(--k-s-md) var(--k-s-lg);
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
 }
 .k-f4d-result h2 {
   margin: 0;
@@ -362,7 +362,7 @@
   align-items: center;
   gap: var(--k-s-sm);
   padding: var(--k-s-sm) var(--k-s-md);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-field);
   font-size: var(--k-text-body);
 }
@@ -374,16 +374,16 @@
 .k-f4d-log {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--k-c-f4d-log-gap);
   padding-left: var(--k-s-md);
-  border-left: 3px solid var(--k-primary-line);
+  border-left: var(--k-c-f4d-log-border);
   font-size: var(--k-text-body);
 }
 .k-f4d-handoff {
   padding: var(--k-s-sm) var(--k-s-md);
   border-radius: var(--k-r-field);
   background: var(--k-st-warning-soft);
-  border: 1px solid var(--k-st-warning-line);
+  border: var(--k-c-f4d-rule-warning-border);
   font-size: var(--k-text-body);
 }
 
@@ -393,7 +393,7 @@
   flex-direction: column;
   gap: var(--k-s-xs);
   padding: var(--k-s-md) var(--k-s-lg);
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
 }
 .k-f4d-fieldview h2 {
   margin: 0;
@@ -409,7 +409,7 @@
 }
 .k-f4d-body-wrap {
   padding: var(--k-s-md) var(--k-s-lg);
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   display: flex;
   flex-direction: column;
   gap: var(--k-s-sm);
@@ -465,7 +465,7 @@
 .k-f4d-pick button {
   height: var(--k-c-dialog-button-height);
   padding: 0 var(--k-s-md);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-full);
   background: var(--k-card);
   color: var(--k-on-surface);
@@ -479,8 +479,8 @@
   color: var(--k-on-primary);
 }
 .k-f4d-pick button:focus-visible {
-  outline: 2px solid var(--k-primary);
-  outline-offset: 2px;
+  outline: var(--k-c-f4d-ring-border);
+  outline-offset: var(--k-c-f4d-ring-out-width);
 }
 .k-f4d-vlist {
   margin: 0;
@@ -492,7 +492,7 @@
 }
 .k-f4d-vlist li {
   padding: var(--k-s-sm) var(--k-s-md);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-field);
   font-size: var(--k-text-body);
 }
@@ -510,7 +510,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-field);
   overflow: hidden;
   font-size: var(--k-text-body);
@@ -552,7 +552,7 @@
 
 /* ---- ほかの項目（畳む） ---- */
 .k-f4d-more {
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   padding-top: var(--k-s-sm);
 }
 .k-f4d-more-sum {
@@ -562,8 +562,8 @@
   font-weight: 500;
 }
 .k-f4d-more-sum:focus-visible {
-  outline: 2px solid var(--k-primary);
-  outline-offset: 2px;
+  outline: var(--k-c-f4d-ring-border);
+  outline-offset: var(--k-c-f4d-ring-out-width);
 }
 .k-f4d-more-body {
   display: flex;
@@ -601,7 +601,7 @@
   gap: var(--k-s-sm);
   padding: var(--k-s-md);
   background: var(--k-card);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-card);
   min-width: 0;
 }
@@ -616,7 +616,7 @@
   align-items: center;
   gap: var(--k-s-sm);
   padding: var(--k-s-sm) var(--k-s-md);
-  border: 1px solid var(--k-line);
+  border: var(--k-c-f4d-rule-border);
   border-radius: var(--k-r-md);
   background: var(--k-table-head);
   color: var(--k-on-surface);
@@ -626,8 +626,8 @@
   cursor: pointer;
 }
 .k-f4d-addlink:focus-visible {
-  outline: 2px solid var(--k-primary);
-  outline-offset: 2px;
+  outline: var(--k-c-f4d-ring-border);
+  outline-offset: var(--k-c-f4d-ring-out-width);
 }
 .k-f4d-grid {
   display: grid;
@@ -641,7 +641,7 @@
   gap: var(--k-s-sm);
   align-items: start;
   padding: var(--k-s-sm) 0;
-  border-bottom: 1px solid var(--k-line-soft);
+  border-bottom: var(--k-c-f4d-rule-soft-border);
   min-width: 0;
 }
 .k-f4d-pair[data-full="true"] {
@@ -660,10 +660,10 @@
 .k-f4d-cell .k-field > .k-label-row,
 .k-f4d-sr {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--k-c-f4d-sr-width);
+  height: var(--k-c-f4d-sr-height);
   overflow: hidden;
-  clip-path: inset(50%);
+  clip: rect(0 0 0 0);
   white-space: nowrap;
 }
 .k-f4d-cell .k-select-trigger,
@@ -687,7 +687,7 @@
 .k-f4d-custom-h {
   margin: var(--k-s-sm) 0 0;
   padding-bottom: var(--k-s-xs);
-  border-bottom: 1px solid var(--k-line);
+  border-bottom: var(--k-c-f4d-rule-border);
   font-size: var(--k-text-body-md);
   font-weight: 700;
 }
@@ -717,7 +717,7 @@
   align-items: center;
   gap: var(--k-s-sm);
   padding: var(--k-s-xs) 0;
-  border-bottom: 1px solid var(--k-line-soft);
+  border-bottom: var(--k-c-f4d-rule-soft-border);
   font-size: var(--k-text-body);
 }
 .k-f4d-spec-text {
@@ -762,8 +762,8 @@
   border-color: var(--k-st-on-success-container);
 }
 .k-btn.k-f4d-done:focus-visible {
-  outline: 2px solid var(--k-st-success);
-  outline-offset: 2px;
+  outline: var(--k-c-f4d-ring-done-border);
+  outline-offset: var(--k-c-f4d-ring-out-width);
 }
 
 /* 確認項目の結果 */
@@ -787,7 +787,7 @@
 /* 記録 */
 .k-f4d-logwrap {
   padding: var(--k-s-md) var(--k-s-lg);
-  border-top: 1px solid var(--k-line-soft);
+  border-top: var(--k-c-f4d-rule-soft-border);
   display: flex;
   flex-direction: column;
   gap: var(--k-s-sm);
@@ -829,7 +829,7 @@
   padding: var(--k-s-xs) var(--k-s-sm);
   border-radius: var(--k-r-field);
   background: var(--k-table-head);
-  border: 1px solid var(--k-line-soft);
+  border: var(--k-c-f4d-rule-soft-border);
   overflow-wrap: anywhere;
 }
 
@@ -924,4 +924,8 @@
 }
 .k-f4d-specs[data-compact="true"] .k-f4d-spec-list li > .k-btn:last-child {
   margin-left: 0;
+}
+/* 作る面の親を決める入口の入れ物（K-443 の試験がここを入口として選ぶ） */
+.k-f4d-parent {
+  display: block;
 }

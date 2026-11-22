@@ -86,11 +86,12 @@ KINDS: dict[str, dict[str, list[Any]]] = {
 KIND_OPTIONAL: dict[str, dict[str, list[str]]] = {
     "doc": {"h1": ["y"]},
 }
-# 段 1 の組（11_tickets/K-216.md の「段 1 の組」と同じ 21 組）
+# 段 1 の組（11_tickets/K-216.md の「段 1 の組」の 21 組から、段 5 で下絵 v2 が正になった作る面と詳細の 3 組
+#   tickets-new・tickets-new-sections・ticket-detail を外した 18 組・K-431）
 REQUIRED: list[str] = [
     "signup", "signup-waiting", "login", "login-2fa", "legal",
-    "tickets-first", "tickets-main", "tickets-list", "tickets-new", "tickets-new-sections",
-    "ticket-detail", "band-approval", "band-running", "band-failed", "approve-modal", "approvals",
+    "tickets-first", "tickets-main", "tickets-list",
+    "band-approval", "band-running", "band-failed", "approve-modal", "approvals",
     "bridge-code", "bridge-connected", "bridge-shell", "shell-nav", "shell-tabs",
 ]
 
@@ -592,7 +593,7 @@ def selftest() -> int:
     assert check_ratchet(base, [dict(base[0], pairs=[dict(good, app="body")])])
     assert check_ratchet(base, [])
     assert check_ratchet([dict(base[0], state="s1")], [dict(base[0], state="s2")])
-    assert sorted(set(REQUIRED)) == sorted(REQUIRED) and len(REQUIRED) == 21
+    assert sorted(set(REQUIRED)) == sorted(REQUIRED) and len(REQUIRED) == 18
     print("fidelity_config：自己試験 OK")
     return 0
 
