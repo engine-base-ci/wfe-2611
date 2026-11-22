@@ -535,13 +535,12 @@ describe("K-92 一覧の口：入力・守り", () => {
     }
   });
 
-  it("K92-API-024 絞り込みの 13 欄（kind_id・stage_id・assignee_id・client_id・due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）は、口の欄の表にあるか「まだ使えない」のどちらか 1 つ：まだの欄は 422・E-VAL-018（黙って無視しない）、表にある欄は空の値で 200（指定なし）。知らない名前は 422・VALIDATION_ERROR", async () => {
+  it("K92-API-024 絞り込みの 12 欄（kind_id・stage_id・assignee_id・due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）は、口の欄の表にあるか「まだ使えない」のどちらか 1 つ：まだの欄は 422・E-VAL-018（黙って無視しない）、表にある欄は空の値で 200（指定なし）。知らない名前は 422・VALIDATION_ERROR", async () => {
     const w = await world();
     const all = [
       "kind_id",
       "stage_id",
       "assignee_id",
-      "client_id",
       "due_from",
       "due_to",
       "start_from",
@@ -561,9 +560,9 @@ describe("K-92 一覧の口：入力・守り", () => {
         expect(r.status, `${name}（表にある・空は指定なし）`).toBe(200);
       }
     }
-    // まだの表は 13 欄の中だけ（知らない名前を混ぜない）。K-472 が入れた 4 欄（種別・段・担当者・取引先）は表にある
+    // まだの表は 12 欄の中だけ（知らない名前を混ぜない）。K-472 が入れた 3 欄（種別・段・担当者）は表にある
     for (const name of NOT_YET) expect(all, name).toContain(name);
-    for (const name of ["kind_id", "stage_id", "assignee_id", "client_id"])
+    for (const name of ["kind_id", "stage_id", "assignee_id"])
       expect(NOT_YET.has(name), `${name} は K-472 で使えるようになった`).toBe(false);
     // 知らない名前は受け付けない（黙って無視しない）
     const unknown = await list(w.me, "no_such_filter=1");

@@ -41037,12 +41037,6 @@ paths:
         schema:
           type: string
           format: uuid
-      - name: client_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
       - name: done
         in: query
         allowEmptyValue: true

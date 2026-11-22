@@ -1,5 +1,5 @@
-// K-472「一覧の絞り込みの受け皿（13 欄の表）と、人・段・種別・取引先・完了で絞る」の単体の試験（口・本物の DB）。名前の頭の行 ID（K472-API-…）は 11_tickets/K-472.md の行の表と 1 対 1。
-// 口：GET /api/v1/tickets（listTickets・K-92 が作った口）。新しく受ける欄：assignee_id・stage_id・kind_id・client_id（どれも uuid・空の値は指定なし）と done（true＝完了だけ・false＝完了以外）。
+// K-472「一覧の絞り込みの受け皿（12 欄の表）と、人・段・種別・完了で絞る」の単体の試験（口・本物の DB）。名前の頭の行 ID（K472-API-…）は 11_tickets/K-472.md の行の表と 1 対 1。
+// 口：GET /api/v1/tickets（listTickets・K-92 が作った口）。新しく受ける欄：assignee_id・stage_id・kind_id（どれも uuid・空の値は指定なし）と done（true＝完了だけ・false＝完了以外）。
 //   絞り込みは全部 AND で、見える範囲（行の守り）・自分に関わるもの（view=mine）・題名か番号（q）・グループ（scope_id）と重ねて使える。
 //   ほかの欄（期限・開始日・期限切れ・炎・親・並び・見せる欄）は K-473。「受け付ける欄の表と、まだの表」の分かれ方は K-92 の試験の行 K92-API-024（この葉が替えた版）が見る。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
@@ -35,7 +35,7 @@ afterAll(async () => {
   await f?.close();
 });
 
-describe("K-472 一覧の絞り込み：人・段・種別・取引先・完了", () => {
+describe("K-472 一覧の絞り込み：人・段・種別・完了", () => {
   it("K472-API-001 assignee_id：その人が担当のチケットだけ（view=all）。ほかの人のものは出ない", async () => {
     const w = await world();
     const mine = await make(w);
@@ -79,25 +79,14 @@ describe("K-472 一覧の絞り込み：人・段・種別・取引先・完了"
     expect(ids(await L(w, `view=all&kind_id=${other.id}`))).toEqual([b.id]);
   });
 
-  it("K472-API-005 client_id：その取引先のチケットだけ", async () => {
+  it("K472-API-005 client_id（取引先で絞る）は無い：付けたら 422・VALIDATION_ERROR・欄 client_id（知らない名前・取引先を持たない・answer=4961f0280e9a）", async () => {
     const w = await world();
-    const c1 = (
-      await f.admin.query<{ id: string }>("insert into clients (tenant_id, name) values ($1, '甲社') returning id", [
-        w.tenantId,
-      ])
-    ).rows[0]!.id;
-    const c2 = (
-      await f.admin.query<{ id: string }>("insert into clients (tenant_id, name) values ($1, '乙社') returning id", [
-        w.tenantId,
-      ])
-    ).rows[0]!.id;
-    const a = await make(w);
-    const b = await make(w);
     await make(w);
-    await setCols(f, a.id, { client_id: c1 });
-    await setCols(f, b.id, { client_id: c2 });
-    expect(ids(await L(w, `view=all&client_id=${c1}`))).toEqual([a.id]);
-    expect(ids(await L(w, `view=all&client_id=${c2}`))).toEqual([b.id]);
+    const r = await list(f, w.me, "view=all&client_id=0193c5a0-0000-7000-8000-0000000a4720");
+    expect(r.status).toBe(422);
+    const body = (await r.json()) as { code?: string; details?: { field: string }[] };
+    expect(body.code).toBe("VALIDATION_ERROR");
+    expect((body.details ?? []).map((d) => d.field)).toContain("client_id");
   });
 
   it("K472-API-006 done：true は完了だけ・false は完了以外（「完了以外」で隠す・D-151.20）。付けなければ両方", async () => {
@@ -119,18 +108,18 @@ describe("K-472 一覧の絞り込み：人・段・種別・取引先・完了"
     }
   });
 
-  it("K472-API-008 空の値（?kind_id=）は指定なしと同じ：5 つの欄とも、付けなくても付けても同じ答え", async () => {
+  it("K472-API-008 空の値（?kind_id=）は指定なしと同じ：4 つの欄とも、付けなくても付けても同じ答え", async () => {
     const w = await world();
     await make(w);
     await make(w, { assignee: w.mate });
     const base = ids(await L(w, "view=all"));
-    for (const name of ["kind_id", "stage_id", "assignee_id", "client_id", "done"])
+    for (const name of ["kind_id", "stage_id", "assignee_id", "done"])
       expect(ids(await L(w, `view=all&${name}=`)), name).toEqual(base);
   });
 
-  it("K472-API-009 uuid でない値（4 つの *_id）は 422・欄の名前つき・VALIDATION_ERROR（404 や 500 にしない）", async () => {
+  it("K472-API-009 uuid でない値（3 つの *_id）は 422・欄の名前つき・VALIDATION_ERROR（404 や 500 にしない）", async () => {
     const w = await world();
-    for (const name of ["kind_id", "stage_id", "assignee_id", "client_id"]) {
+    for (const name of ["kind_id", "stage_id", "assignee_id"]) {
       const r = await list(f, w.me, `${name}=not-a-uuid`);
       expect(r.status, name).toBe(422);
       expect(await fieldsOf(r), name).toContain(name);
@@ -149,7 +138,6 @@ describe("K-472 一覧の絞り込み：人・段・種別・取引先・完了"
       ["assignee_id", o.me.id],
       ["stage_id", theirStage],
       ["kind_id", o.task.id],
-      ["client_id", "0193c5a0-0000-7000-8000-0000000a4720"],
     ] as const) {
       const r = await list(f, w.me, `view=all&${name}=${value}`);
       expect(r.status, name).toBe(200);
