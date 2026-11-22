@@ -17148,7 +17148,8 @@
     "apps/bridge/test/login-check-2fa.test.ts",
     "apps/api/test/_fake/secrets.ts",
     "apps/bridge/test/_fake/secrets.ts",
-    "apps/api/test/features/F3/credential-host-cases.json"
+    "apps/api/test/features/F3/credential-host-cases.json",
+    "apps/api/test/features/F10/invite-create.test.ts"
    ],
    "depends_on": [
     "K-352",
