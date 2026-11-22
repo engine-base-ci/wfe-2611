@@ -24,7 +24,12 @@ export function remindHandover(d: HandoverDeps) {
     if (no) return no;
     const id = String(v?.["id"] ?? "");
     const mails = Array.isArray(v?.["mails"]) ? (v?.["mails"] as MailRow[]) : [];
-    const r = await sendHandoverMails(d, { tenantId: a.ctx.tenantId!, userId: a.ctx.userId! }, mails, `remind:${id}`);
+    const r = await sendHandoverMails(
+      d,
+      { tenantId: a.ctx.tenantId ?? "", userId: a.ctx.userId ?? "" },
+      mails,
+      `remind:${id}`,
+    );
     const mail = mails.length > 0 && r.failed.length === 0 ? "sent" : "failed";
     return { status: 201, body: { data: { id, reminded_at: v?.["reminded_at"] }, meta: { mail } } };
   };
