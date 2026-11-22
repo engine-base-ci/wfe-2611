@@ -10342,12 +10342,54 @@ components:
           maximum: 100000
         hold_reason:
           type: string
-          pattern: '[^\s\u0000-\u001f\u007f]'
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
         resume_condition:
           type: string
-          pattern: '[^\s\u0000-\u001f\u007f]'
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
       additionalProperties: false
       x-operation: updateTicket
+      allOf:
+      - not:
+          required:
+          - stage_id
+          - stage_key
+      - anyOf:
+        - required:
+          - stage_id
+        - required:
+          - stage_key
+        - required:
+          - actual_minutes
+        - required:
+          - hold_reason
+        - required:
+          - resume_condition
+      - anyOf:
+        - not:
+            required:
+            - stage_key
+        - properties:
+            stage_key:
+              enum:
+              - todo
+              - doing
+        - required:
+          - hold_reason
+          - resume_condition
+      - anyOf:
+        - not:
+            required:
+            - stage_key
+        - properties:
+            stage_key:
+              enum:
+              - hold
+        - not:
+            anyOf:
+            - required:
+              - hold_reason
+            - required:
+              - resume_condition
     TicketHandoverCreateInput:
       type: object
       properties:
@@ -41358,17 +41400,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-018／VALIDATION_ERROR（契約に書けない値の決まり：stage_id と stage_key の両方・stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）・stage_key todo・doing に保留の理由か再開の条件を付けた・ほかの欄（E-VAL-018・前処理）・空の体）
+          description: E-VAL-018／VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - stage_id と stage_key の両方
-          - stage_key hold で保留の理由か再開の条件が無い（E-VAL-041・E-VAL-047）
-          - stage_key todo・doing に保留の理由か再開の条件を付けた
-          - ほかの欄（E-VAL-018・前処理）
-          - 空の体
         '409':
           description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036
           content:
