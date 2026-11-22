@@ -53,6 +53,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   "security.admin_recovery_requested": settingKind(null), // 管理者が受け取る知らせ。本人の 2 段階認証の設定の道では用が足りない
   "bridge.connected": settingKind("/setup/bridge"),
   invitation_resend_requested: settingKind(null), // 開く画面がまだ無い
+  // 秘密の置き場（K-354・20261119120700）：使える場所の外で渡そうとして止まったことを持ち主に知らせる。開く画面がまだ無い（K-357 が決めるまで押せない行）
+  "credential.wrong_destination": settingKind(null),
 };
 
 /** 鈴に出してよい種類（表の鍵） */
