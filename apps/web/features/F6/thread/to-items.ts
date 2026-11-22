@@ -109,7 +109,7 @@ function bodyOf(m: MessageView): ReactNode {
   const names = [...new Set(m.mentions.map(callOf))].sort((a, b) => b.length - a.length);
   if (!names.length) return m.body;
   const re = new RegExp(`(${names.map((n) => escapeRe(`@${n}`)).join("|")})`);
-  return m.body.split(re).map((seg, i) => (i % 2 === 1 ? h(Mention, { key: i }, seg) : h(Fragment, { key: i }, seg)));
+  return m.body.split(re).map((seg, i) => (i % 2 === 1 ? h(Mention, { key: i, children: seg }) : h(Fragment, { key: i }, seg)));
 }
 
 // ---------------------------------------------------------------- 変更
