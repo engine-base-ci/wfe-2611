@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。227 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。220 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3975,133 +3975,14 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "invite"
     }
   },
-  "E-SRC-001": {
-    "id": "E-SRC-001",
-    "cls": "validation",
-    "message": "探す言葉は 100 文字までにしてください",
-    "action": "探す言葉を短くする",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-SRC-001",
-    "must_not": false,
-    "layers": [
-      "API"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "search"
-    }
-  },
-  "E-SRC-002": {
-    "id": "E-SRC-002",
-    "cls": "validation",
-    "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
-    "action": "種類を選び直す",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-SRC-002",
-    "must_not": false,
-    "layers": [
-      "API"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "search"
-    }
-  },
-  "E-DEL-001": {
-    "id": "E-DEL-001",
-    "cls": "permission",
-    "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
-    "action": "作った人か権限のある人に頼む",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-DEL-001",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
-  "E-DEL-010": {
-    "id": "E-DEL-010",
+  "E-SPEC-001": {
+    "id": "E-SPEC-001",
     "cls": "conflict",
-    "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
-    "action": "扱いを選ぶ",
+    "message": "このチケットは完了しています。完了したチケットの確認項目は変えられません",
+    "action": "新しいチケットで確かめる",
     "undo": false,
     "severity": "low",
-    "support_code": "E-DEL-010",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
-  "E-DEL-011": {
-    "id": "E-DEL-011",
-    "cls": "conflict",
-    "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
-    "action": "別の親を選ぶ",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-DEL-011",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
-  "E-DEL-012": {
-    "id": "E-DEL-012",
-    "cls": "conflict",
-    "message": "その親に移すと、親子が 3 段を超えます",
-    "action": "浅い親を選ぶ",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-DEL-012",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
-  "E-DEL-013": {
-    "id": "E-DEL-013",
-    "cls": "permission",
-    "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
-    "action": "別の扱いを選ぶか、そのグループの人に頼む",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-DEL-013",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API"
-    ],
-    "where": {
-      "screen": "tickets"
-    }
-  },
-  "E-DEL-014": {
-    "id": "E-DEL-014",
-    "cls": "not_found",
-    "message": "子の移し先のチケットが見つかりませんでした",
-    "action": "親を選び直す",
-    "undo": false,
-    "severity": "low",
-    "support_code": "E-DEL-014",
+    "support_code": "E-SPEC-001",
     "must_not": false,
     "layers": [
       "UI",

@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 73,
+  "api_built": 72,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 227,
+  "errors": 220,
   "stack": 56,
   "env": 41
  },
@@ -5332,7 +5332,7 @@
    "op": "listTestSpecs",
    "method": "GET",
    "path": "/api/v1/tickets/:id/test-specs",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
+   "what": "取得（test_specs）— チケットの確認項目を作った順に見る（文・チェック・出どころ）",
    "flows": [
     "F4"
    ],
@@ -5340,9 +5340,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5357,9 +5358,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {

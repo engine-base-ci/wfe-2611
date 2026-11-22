@@ -88,14 +88,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",
@@ -813,14 +806,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",
@@ -1804,14 +1790,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C1",
@@ -2294,14 +2273,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C1",
@@ -3601,14 +3573,7 @@
     "E-INV-010",
     "E-INV-011",
     "E-INV-012",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",
@@ -5240,14 +5205,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",
@@ -7478,14 +7436,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",
@@ -7843,14 +7794,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2"
@@ -8137,14 +8081,7 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
-    "E-SRC-001",
-    "E-SRC-002",
-    "E-DEL-001",
-    "E-DEL-010",
-    "E-DEL-011",
-    "E-DEL-012",
-    "E-DEL-013",
-    "E-DEL-014"
+    "E-SPEC-001"
    ],
    "policies": [
     "C2",

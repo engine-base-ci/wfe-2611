@@ -6649,7 +6649,7 @@
     "state": "progress"
    },
    "when": "完了したチケットの段を、作業中への開き直し以外（未着手・保留・会社が足した段）に変えようとした（K-387）",
-   "false_when": "完了していないチケット。完了したチケットでも実績だけの変更はできる",
+   "false_when": "完了していないチケット。完了したチケットでも、作業中を選んで開き直す（K-388）か実績だけの変更はできる",
    "message": "完了したチケットは、開き直してから状態を変えてください",
    "action": "「作業中（開き直す）」で開き直してから状態を変える",
    "undo": false,
@@ -6944,101 +6944,15 @@
    ]
   },
   {
-   "id": "E-SRC-001",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "search"
-   },
-   "when": "探す言葉（q）が、送られたままの文字で 100 文字を超える（前後の空白も数える）",
-   "false_when": "送られたままの文字で 100 文字まで（全角も 1 文字・正規化で伸びる字も送られた字の数）。空と空白だけは探さない",
-   "message": "探す言葉は 100 文字までにしてください",
-   "action": "探す言葉を短くする",
-   "undo": false,
-   "layers": [
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
-    "steps": [
-     "q に 101 文字を入れて GET /api/v1/search を呼ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-128.157",
-    "D-151.8"
-   ]
-  },
-  {
-   "id": "E-SRC-002",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "search"
-   },
-   "when": "kinds が決まった形でない（ticket・decision・conversation・knowledge の小文字の名前を空白なしでコンマでつないだ形でない：知らない種類・空の項目・大文字・全角・空白）",
-   "false_when": "小文字の決まった名前を空白なしでコンマでつないだ形。空は全部",
-   "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
-   "action": "種類を選び直す",
-   "undo": false,
-   "layers": [
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
-    "steps": [
-     "kinds に foo を入れて GET /api/v1/search を呼ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-151.8"
-   ]
-  },
-  {
-   "id": "E-DEL-001",
-   "class": "permission",
-   "where": {
-    "screen": "tickets"
-   },
-   "when": "作った人でも、そのグループで tickets の edit を持つ人でもない人が、消す前の下見・消すを開いた",
-   "false_when": "作った人か、そのグループで tickets の edit を持つ人",
-   "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
-   "action": "作った人か権限のある人に頼む",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "見るだけの権限の人で、チケットの詳細を開く",
-    "steps": [
-     "「…」から「消す」を選ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.62",
-    "D-151.16"
-   ]
-  },
-  {
-   "id": "E-DEL-010",
+   "id": "E-SPEC-001",
    "class": "conflict",
    "where": {
     "screen": "tickets"
    },
-   "when": "子・孫がいるチケットを、扱いを選ばずに消した（確かめた後に子が足された場合も）",
-   "false_when": "子・孫がいない、または扱い（別の親へ移す・一緒に消す・親を外して残す）を選んだ",
-   "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
-   "action": "扱いを選ぶ",
+   "when": "完了したチケットの確認項目を足す・外す・直す・チェックを付け外しする",
+   "false_when": "まだ完了していないチケット（読むのは完了後もできる）",
+   "message": "このチケットは完了しています。完了したチケットの確認項目は変えられません",
+   "action": "新しいチケットで確かめる",
    "undo": false,
    "layers": [
     "UI",
@@ -7046,137 +6960,16 @@
    ],
    "must_not": false,
    "reproduce": {
-    "setup": "子のチケットがあるチケットの詳細を開く",
+    "setup": "完了したチケットの詳細を開き、確認項目の欄を見る",
     "steps": [
-     "「…」から「消す」を選ぶ",
-     "扱いを選ばずに消す（確かめの後で別の人が子を足した状態）"
+     "開いたまま別の画面でそのチケットを完了にし、元の画面で「項目を足す」を押す"
     ],
     "needs": "なし"
    },
    "severity": "low",
    "source": [
-    "D-125.62",
-    "D-151.14"
-   ]
-  },
-  {
-   "id": "E-DEL-011",
-   "class": "conflict",
-   "where": {
-    "screen": "tickets"
-   },
-   "when": "子の移し先に、消すチケット自身かその子・孫を選んだ",
-   "false_when": "移し先がそれ以外のチケット",
-   "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
-   "action": "別の親を選ぶ",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "子・孫のあるチケットの詳細を開く",
-    "steps": [
-     "「…」から「消す」を選ぶ",
-     "「別の親へ移す」で移し先に自分の子を選ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.51",
-    "D-125.62"
-   ]
-  },
-  {
-   "id": "E-DEL-012",
-   "class": "conflict",
-   "where": {
-    "screen": "tickets"
-   },
-   "when": "子を移し先に移すと、親子が 3 段を超える",
-   "false_when": "移した後も親子が 3 段までに収まる",
-   "message": "その親に移すと、親子が 3 段を超えます",
-   "action": "浅い親を選ぶ",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "孫のいる子を持つチケットの詳細を開く",
-    "steps": [
-     "「…」から「消す」を選ぶ",
-     "「別の親へ移す」で 2 段目のチケットを移し先に選ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.51",
-    "D-125.62"
-   ]
-  },
-  {
-   "id": "E-DEL-013",
-   "class": "permission",
-   "where": {
-    "screen": "tickets"
-   },
-   "when": "一緒に消す子・孫に、自分が消せない物がある（別のグループで編集の権限が無く、作った人でもない）",
-   "false_when": "一緒に消す子・孫が全部、作った人か編集の権限のある物",
-   "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
-   "action": "別の扱いを選ぶか、そのグループの人に頼む",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "別のグループの子を持つチケットの詳細を開く",
-    "steps": [
-     "「…」から「消す」を選ぶ",
-     "「一緒に消す」を選ぶ"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.62",
-    "D-151.16"
-   ]
-  },
-  {
-   "id": "E-DEL-014",
-   "class": "not_found",
-   "where": {
-    "screen": "tickets"
-   },
-   "when": "子の移し先のチケットが見つからない（無い・消えている・見えない・別の会社・移し先を指していない）",
-   "false_when": "移し先が見える・消えていないチケット",
-   "message": "子の移し先のチケットが見つかりませんでした",
-   "action": "親を選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "子のチケットがあるチケットの詳細を開く",
-    "steps": [
-     "「…」から「消す」を選ぶ",
-     "「別の親へ移す」で移し先を選ばずに（または見えない物を指して）消す"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.62",
-    "D-129.43"
+    "D-150.33",
+    "D-150.56"
    ]
   }
  ],
