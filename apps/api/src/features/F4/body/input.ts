@@ -18,7 +18,8 @@ const isVersion = (v: unknown): v is number =>
 export function checkBodyUpdate(input: Record<string, unknown>): BodyChecked {
   const details: Detail[] = [];
   const version = input["version"];
-  if (!isVersion(version)) details.push({ field: "version", message: "版は 0 以上 2147483647 以下の整数で送ってください" });
+  if (!isVersion(version))
+    details.push({ field: "version", message: "版は 0 以上 2147483647 以下の整数で送ってください" });
   const checked = validateDoc(input["doc"]);
   if (!checked.ok) details.push({ field: "doc", message: checked.reason });
   if (details.length || !isVersion(version) || !checked.ok) return { ok: false, details };
