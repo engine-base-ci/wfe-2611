@@ -19258,11 +19258,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "updateTicket",
-    "getTicket",
-    "completeTicket"
-   ],
+   "apis": [],
    "mock": [
     "prog-menu",
     "prog-hold-dialog",
@@ -19277,7 +19273,9 @@
     "@kaname/web",
     "@kaname/errors"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/web/features/F6/progress/",
     "07_qa/test-specs/errors.d/K-395.json",
