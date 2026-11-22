@@ -16,13 +16,13 @@ RESPONSES = {
 # 値域は K-475（screen_api.d/K-475.py）と同じ字。直すだけの違いは、name を必須にしない（REQUIRED_INPUTS は書かない）ことと、INPUT_RULES が 2 つあること
 _VISIBLE = r"[^\s\u0000-\u001f\u007f-\u009f]"
 _NO_CTRL = r"[^\u0000-\u001f\u007f-\u009f]"
-_NAME = rf"^\s*{_VISIBLE}(?:{_NO_CTRL}*{_VISIBLE})?\s*$"
+_NAME = rf"^\s*{_VISIBLE}(?:{_NO_CTRL}{{0,58}}{_VISIBLE})?\s*$"   # 前後の空白を除いた長さ 60 字まで（maxLength は空白込みで数えるので使わず、pattern で書く）
 def _key(): return {"pattern": "^[A-Za-z0-9_]{1,40}$"}
 def _leaf(): return [{"type": "string", "maxLength": 500}, {"type": "number"}, {"type": "boolean"}]
 def _filters(): return {"maxProperties": 8, "propertyNames": _key(),
                         "additionalProperties": {"anyOf": _leaf() + [{"type": "object", "maxProperties": 32, "propertyNames": _key(), "additionalProperties": {"anyOf": _leaf()}}]}}
 VALUE_RANGES = {"updateSavedView": {
-    "name": {"minLength": 1, "maxLength": 60, "pattern": _NAME},
+    "name": {"minLength": 1, "pattern": _NAME},
     "share": {"enum": ["self", "group"]},
     "density": {"enum": ["normal", "compact"]},
     "filters": _filters(),
@@ -60,4 +60,9 @@ ERRORS_4XX = {
          "trigger": "名前が空・空白だけ（E-VWS-001）／61 文字以上（E-VWS-002）／グループの全員に見せるのに見せるグループが無い・null（E-VWS-003）／条件・列の形か大きさが決まりの外（E-VWS-007）／名前の途中に制御文字（E-VWS-008）",
          "ears_form": f"UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、{_NOTHING}"},
     ],
+}
+
+# 条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）は OpenAPI 3.0 に書く場所が無い（propertyNames は 3.1 から）ので、口の振る舞いのまま 422・E-VWS-007
+UNEXPRESSIBLE_422 = {
+    "updateSavedView": ["条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）"],
 }

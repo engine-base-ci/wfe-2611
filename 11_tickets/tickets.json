@@ -19740,7 +19740,8 @@
     "scripts/ci/ci_scope.d/K-476.json",
     "08_api/phase1/01_チケット.md",
     "03_architecture/ER図.md",
-    "11_tickets/K-67.md"
+    "11_tickets/K-67.md",
+    "scripts/ci/schemathesis.toml"
    ],
    "flow": "探して絞った条件を保存して、開き直す",
    "sections": {

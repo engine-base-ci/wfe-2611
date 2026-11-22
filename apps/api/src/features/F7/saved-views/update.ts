@@ -30,6 +30,17 @@ const SAME_NAME_SQL = `select exists (
 const LIVE_SQL = "select exists (select 1 from saved_views where id = $1 and deleted_at is null) as seen";
 const READ_LIVE_SQL = `${SAVED_VIEW_SELECT} where v.id = $1 and v.deleted_at is null`;
 const READ_SQL = `${SAVED_VIEW_SELECT} where v.id = $1`;
+// 直す欄は固定の 1 文（欄ごとに「変えるか」の真偽と新しい値を渡す。文字列をつなぐ組み立てはしない・G10 の動的クエリの連結）。
+//   欄の順は FIELDS と同じ（name・share・scope_id・filters・columns・density）。変えない欄は今の値のまま
+const UPDATE_SQL = `update saved_views set
+  name = case when $2::boolean then $3 else name end,
+  share = case when $4::boolean then $5 else share end,
+  scope_id = case when $6::boolean then $7::uuid else scope_id end,
+  filters = case when $8::boolean then $9::jsonb else filters end,
+  columns = case when $10::boolean then $11::jsonb else columns end,
+  density = case when $12::boolean then $13 else density end,
+  updated_by = app.user_id()
+  where id = $1 and deleted_at is null`;
 const AUDIT_SQL = "select app.record_audit('saved_views.update', 'saved_views', $1, 'C2', $2::jsonb)";
 
 const FORBIDDEN: HookReply = { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
@@ -87,7 +98,6 @@ const isNameTaken = (e: unknown): boolean => {
 const isGuardStop = (e: unknown): boolean => (e as { code?: unknown } | null)?.code === GUARD_ERRCODE;
 
 const param = (k: Field, v: unknown): unknown => (k === "filters" || k === "columns" ? JSON.stringify(v) : v);
-const cast = (k: Field): string => (k === "filters" || k === "columns" ? "::jsonb" : "");
 
 async function run(cl: pg.PoolClient, id: string, i: Record<string, unknown>): Promise<HookReply> {
   const row = (await cl.query<SavedViewRow>(READ_LIVE_SQL, [id])).rows[0];
@@ -110,12 +120,8 @@ async function run(cl: pg.PoolClient, id: string, i: Record<string, unknown>): P
     const taken = (await cl.query<{ taken: boolean }>(SAME_NAME_SQL, [row.member_id, id, i["name"]])).rows[0]?.taken;
     if (taken === true) return fail("E-VWS-005", "name");
   }
-  const sets = changed.map((k, n) => `${k} = $${n + 2}${cast(k)}`);
-  const args = [id, ...changed.map((k) => param(k, i[k]))];
-  const done = await cl.query(
-    `update saved_views set ${sets.join(", ")}, updated_by = app.user_id() where id = $1 and deleted_at is null`,
-    args,
-  );
+  const args = [id, ...FIELDS.flatMap((k) => (changed.includes(k) ? [true, param(k, i[k])] : [false, null]))];
+  const done = await cl.query(UPDATE_SQL, args);
   if (done.rowCount === 0) {
     const seen = (await cl.query<{ seen: boolean }>(LIVE_SQL, [id])).rows[0]?.seen === true;
     return seen ? FORBIDDEN : fail("E-PAGE-001");
