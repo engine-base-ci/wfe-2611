@@ -19340,19 +19340,15 @@
    "screens": [],
    "canvas": [],
    "canvas_none": "見た目を変えないチケット（再設定の画面の「口が返した番号で出し分ける」1 行だけ。文・箱・並びは変えない）。正の絵の組は持たない",
-   "apis": [
-    "requestPasswordReset",
-    "signInWithPassword",
-    "requestAdminRecovery",
-    "verifySignInCode",
-    "resetPassword"
-   ],
+   "apis": [],
    "affects": [
     "@kaname/api",
-    "@kaname/web"
+    "@kaname/web",
+    "@kaname/contracts"
    ],
    "ci_wide": [
-    "ci"
+    "ci",
+    "shared"
    ],
    "changes": [
     "05_flow/screen_api.d/K-638.py",
