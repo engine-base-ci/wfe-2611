@@ -19867,8 +19867,7 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F4/ticket-field-values.test.ts",
-    "apps/api/test/generated/patch_tickets_id.test.ts"
+    "apps/api/test/features/F4/ticket-field-values.test.ts"
    ],
    "carry": [],
    "depends_on": [
