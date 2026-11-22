@@ -19956,8 +19956,7 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F4/ticket-estimate.test.ts",
-    "apps/api/test/generated/patch_tickets_id.test.ts"
+    "apps/api/test/features/F4/ticket-estimate.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F6/progress.test.ts"
