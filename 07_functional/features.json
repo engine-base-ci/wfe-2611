@@ -102,7 +102,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
@@ -834,7 +837,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
@@ -1832,7 +1838,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C1",
@@ -2329,7 +2338,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C1",
@@ -3643,7 +3655,10 @@
     "E-INV-010",
     "E-INV-011",
     "E-INV-012",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
@@ -5289,7 +5304,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
@@ -6674,6 +6692,7 @@
     "E-CRED-008",
     "E-CRED-009",
     "E-CRED-015",
+    "E-CRED-016",
     "E-CRED-010",
     "E-CRED-011",
     "E-CRED-012",
@@ -7534,7 +7553,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
@@ -7906,7 +7928,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2"
@@ -8207,7 +8232,10 @@
     "E-HND-012",
     "E-HND-013",
     "E-HND-014",
-    "E-SPEC-001"
+    "E-SPEC-001",
+    "E-LNK-001",
+    "E-LNK-002",
+    "E-LNK-003"
    ],
    "policies": [
     "C2",
