@@ -236,15 +236,16 @@ describe("K-409 人に配る", () => {
     expect(h.mails.slice(before).filter((m) => m.to === P().suzuki.email)).toHaveLength(1);
   });
 
-  it("K409-API-016 管理者（どのグループでも配る権限）は配れる・下のグループのマネージャーは上のグループのチケットを配れない（403・E-HND-002）", async () => {
+  it("K409-API-016 管理者（どのグループでも配る権限）は配れる・下のグループのマネージャーは上のグループのチケットが見えない（404・E-PAGE-001・K401-DB-027）", async () => {
     await h.ready();
     const t1 = await h.ticket({ assignee: P().boss });
     expect((await h.distribute(P().admin, t1.id, body(P().suzuki.id))).status).toBe(201);
     expect(await h.assigneeOf(t1.id)).toBe(P().suzuki.id);
     const t2 = await h.ticket({ assignee: P().boss });
     const r = await h.distribute(P().jdMgr, t2.id, body(P().jdMember.id));
-    expect(r.status).toBe(403);
-    expect((await h.json(r))["code"]).toBe("E-HND-002");
+    expect(r.status).toBe(404);
+    expect((await h.json(r))["code"]).toBe("E-PAGE-001");
+    expect(await h.assigneeOf(t2.id)).toBe(P().boss.id);
   });
 
   it("K409-API-017 グループをまたいで配れる：受託開発の人へ配ると 201・担当者が中村（チケットのグループは変えない）", async () => {
