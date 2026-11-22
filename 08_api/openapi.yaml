@@ -9951,9 +9951,11 @@ components:
           items:
             type: integer
             minimum: 0
+            maximum: 2147483647
         todo_version:
           type: integer
           minimum: 0
+          maximum: 2147483647
         conditions_confirmed:
           type: boolean
           enum:
@@ -10355,7 +10357,6 @@ components:
           - pass
           - offer
           - distribute
-          - escalate
         to_member_id:
           type: string
           format: uuid
@@ -10366,16 +10367,32 @@ components:
           nullable: true
         reason:
           type: string
-          nullable: true
+          nullable: false
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f\ufeff][^\u0000]*$
         ask:
           type: string
           nullable: true
+          pattern: ^[^\u0000]*$
         reply_due:
           type: string
           nullable: true
+          format: date-time
         switch:
           type: object
           nullable: true
+          additionalProperties: false
+          properties:
+            children:
+              type: boolean
+            links:
+              type: boolean
+            group:
+              type: boolean
+            axes:
+              type: array
+              items:
+                type: string
+                format: uuid
         notify_managers:
           type: boolean
           nullable: true
@@ -10387,7 +10404,94 @@ components:
       x-operation: createTicketHandover
       required:
       - kind
+      - reason
       x-required-by: hooks
+      allOf:
+      - not:
+          allOf:
+          - required:
+            - to_member_id
+            properties:
+              to_member_id:
+                type: string
+          - required:
+            - to_scope_id
+            properties:
+              to_scope_id:
+                type: string
+      - anyOf:
+        - not:
+            required:
+            - kind
+            properties:
+              kind:
+                enum:
+                - offer
+        - properties:
+            to_member_id:
+              nullable: true
+              enum:
+              - null
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
+            reply_due:
+              nullable: true
+              enum:
+              - null
+      - anyOf:
+        - not:
+            required:
+            - kind
+            properties:
+              kind:
+                enum:
+                - pass
+        - properties:
+            to_scope_id:
+              nullable: true
+              enum:
+              - null
+      - anyOf:
+        - not:
+            required:
+            - replaces
+            properties:
+              replaces:
+                type: string
+        - required:
+          - kind
+          properties:
+            kind:
+              enum:
+              - pass
+      - anyOf:
+        - not:
+            anyOf:
+            - required:
+              - kind
+              properties:
+                kind:
+                  enum:
+                  - pass
+            - required:
+              - kind
+              properties:
+                kind:
+                  enum:
+                  - distribute
+        - anyOf:
+          - required:
+            - to_member_id
+            properties:
+              to_member_id:
+                type: string
+          - required:
+            - to_scope_id
+            properties:
+              to_scope_id:
+                type: string
     TicketHandoverAnswerInput:
       type: object
       properties:
@@ -10399,14 +10503,43 @@ components:
         decline_reason:
           type: string
           nullable: true
+          pattern: ^[^\u0000]*$
         switch:
           type: object
           nullable: true
+          additionalProperties: false
+          properties:
+            children:
+              type: boolean
+            links:
+              type: boolean
+            group:
+              type: boolean
+            axes:
+              type: array
+              items:
+                type: string
+                format: uuid
       additionalProperties: false
       x-operation: answerTicketHandover
       required:
       - decision
       x-required-by: hooks
+      allOf:
+      - anyOf:
+        - not:
+            required:
+            - decision
+            properties:
+              decision:
+                enum:
+                - decline
+        - required:
+          - decline_reason
+          properties:
+            decline_reason:
+              type: string
+              pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f\ufeff][^\u0000]*$
     InvitationsCreateInput:
       type: object
       properties:
@@ -39724,7 +39857,7 @@ paths:
       - D-125.88
       - D-125.90
       x-permission: recipient
-      x-permission-scope: 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）
+      x-permission-scope: 渡された・判断を仰がれた相手だけ
       x-step-up: false
       security:
       - session: []
@@ -39772,15 +39905,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：断る理由が空（E-HND-007）・一緒に切り替えるものの形（E-HND-011）・上へ上げるの渡し（E-HND-001））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 断る理由が空（E-HND-007）
-          - 一緒に切り替えるものの形（E-HND-011）
-          - 上へ上げるの渡し（E-HND-001）
         '409':
           description: E-HND-005
           content:
@@ -42943,7 +43072,7 @@ paths:
       - D-125.96
       - D-125.97
       x-permission: write
-      x-permission-scope: 渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・取引先・止まっている人はできない（D-148.3・D-148.18）
+      x-permission-scope: 渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者
       x-step-up: false
       security:
       - session: []
@@ -42997,18 +43126,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：上へ上げる（escalate）は段 9 では作らない（E-HND-001）・理由が空・空白だけ（E-HND-007）・返事の期限が日時の形でない・今より後でない（E-HND-008）・相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）・一緒に切り替えるものの形・決まりと合わない（E-HND-011）・申し出に相手・期限を付けた・人とグループの両方）
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 上へ上げる（escalate）は段 9 では作らない（E-HND-001）
-          - 理由が空・空白だけ（E-HND-007）
-          - 返事の期限が日時の形でない・今より後でない（E-HND-008）
-          - 相手がいない・自分・止まっている・招待中・見つからない（E-HND-013・010・006・014）・グループが見つからない（E-HND-012）
-          - 一緒に切り替えるものの形・決まりと合わない（E-HND-011）
-          - 申し出に相手・期限を付けた・人とグループの両方
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
