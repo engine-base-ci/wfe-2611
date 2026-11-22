@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-22",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -608,8 +608,7 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals",
-    "E-080 notifications"
+    "E-030 memory_proposals"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -13274,7 +13273,6 @@
     "mfa-setup",
     "login",
     "bridge-setup",
-    "approvals",
     "clone-chat",
     "members",
     "ops-support",
