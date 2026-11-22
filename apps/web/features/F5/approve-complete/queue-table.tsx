@@ -3,8 +3,10 @@
 //   キャンバスに在ってまだ使えない物（絞り込みの札 6 つ・まとめて承認・決めた履歴・選ぶのチェック）は出し、押せない（D-145.9）。
 //   本当の値が無い字は空（種別：口がチケットの種別を返さない・期限なし）。札の件数は「すべて」だけ（種類ごとの数を返す口が無い）。
 //   区切りの名前と並びは前からの決め（D-128.36）。名前と件数は別の span（ちょうどの字で探す前からの試験とぶつけない）
+//   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380・今は行をそのまま返す。承認でない種類の行は段 9 の K-412 が描き分ける）
 import { Fragment, type ReactNode } from "react";
 import { Button } from "@/components/k";
+import * as F8 from "@/features/F8/handover/detail-slots";
 import { DUE_GROUPS, dueGroupOf, jstDay, type DueGroup } from "./due";
 import type { QueueRow } from "./queue";
 
@@ -61,7 +63,9 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
                   </td>
                 </tr>
                 {rs.map((r) => (
-                  <Row key={r.id} row={r} acts={acts} />
+                  <F8.QueueRowSlot key={r.id} row={r} acts={acts}>
+                    <Row row={r} acts={acts} />
+                  </F8.QueueRowSlot>
                 ))}
               </Fragment>
             ))}
