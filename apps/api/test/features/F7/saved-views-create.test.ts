@@ -542,7 +542,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
     expect(await num("select count(*) as n from audit_events where actor_member_id = $1", [p.id])).toBe(before + 1);
   });
 
-  it("K475-API-028 失敗（手順 S2：証跡を書く）：証跡を書く所で DB が落ちると 500。条件の行は 1 つも残らない（1 つの取引）。戻れば同じ名前でもう一度保存できる", async () => {
+  it("K475-API-028 失敗（手順 S2：証跡を書く）：証跡を書く所で DB が落ちると 503。条件の行は 1 つも残らない（1 つの取引）。戻れば同じ名前でもう一度保存できる", async () => {
     const p = await freshPerson("壊れる人");
     await f.admin.query(`create or replace function public.k475_boom() returns trigger language plpgsql as $$
       begin
@@ -559,7 +559,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
       const logs = await captureLogs(async () => {
         status = (await createView(p, { name: "壊れる", filters: { q: "秘密の言葉" } })).status;
       });
-      expect(status).toBe(500);
+      expect(status).toBe(503);
       expect(logs).not.toContain("秘密の言葉");
       expect(await viewsOf(p)).toBe(0);
     } finally {
@@ -569,7 +569,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
     expect((await createView(p, { name: "壊れる" })).status).toBe(201);
   });
 
-  it("K475-API-029 失敗（手順 S1：DB に書く）：条件の行を入れる所で DB が落ちると 500。行も証跡も 1 つも残らない。戻れば同じ名前でもう一度保存できる", async () => {
+  it("K475-API-029 失敗（手順 S1：DB に書く）：条件の行を入れる所で DB が落ちると 503。行も証跡も 1 つも残らない。戻れば同じ名前でもう一度保存できる", async () => {
     const p = await freshPerson("入れる所が壊れる人");
     await f.admin.query(`create or replace function public.k475_boom_row() returns trigger language plpgsql as $$
       begin
@@ -584,7 +584,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
       await captureLogs(async () => {
         status = (await createView(p, { name: "入らない" })).status;
       });
-      expect(status).toBe(500);
+      expect(status).toBe(503);
       expect(await viewsOf(p)).toBe(0);
       expect(await num("select count(*) as n from audit_events where actor_member_id = $1", [p.id])).toBe(0);
     } finally {

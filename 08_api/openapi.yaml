@@ -10591,8 +10591,7 @@ components:
         name:
           type: string
           minLength: 1
-          maxLength: 60
-          pattern: ^\s*[^\s\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]*[^\s\u0000-\u001f\u007f-\u009f])?\s*$
+          pattern: ^\s*[^\s\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]{0,58}[^\s\u0000-\u001f\u007f-\u009f])?\s*$
         share:
           type: string
           enum:
@@ -38804,13 +38803,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR／E-VWS-001
+          description: VALIDATION_ERROR／E-VWS-001（契約に書けない値の決まり：条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）
         '404':
           description: E-VWS-004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -38823,12 +38830,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

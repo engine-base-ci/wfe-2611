@@ -1870,6 +1870,7 @@
    "reason": "保存は、見えるグループ・同じ名前・50 件の数・同時の 2 回の組み合わせで答えが変わる。生成の試験の種ではグループの席を作れない（K-475）",
    "covers": {
     "test_post_saved_views_ok": "K475-API-012",
+    "test_post_saved_views_unavailable": "K475-API-029",
     "test_post_saved_views_shape": "K475-API-012",
     "test_post_saved_views_rejected_401": "K475-API-024",
     "test_post_saved_views_not_found": "K475-API-018",
