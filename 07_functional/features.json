@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
+  "created_at": "2026-11-22",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -107,7 +107,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -844,7 +846,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -1847,7 +1851,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -2349,7 +2355,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -3668,7 +3676,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -5319,7 +5329,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7570,7 +7582,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7947,7 +7961,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2"
@@ -8253,7 +8269,9 @@
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
-    "E-LNK-003"
+    "E-LNK-003",
+    "E-SRC-001",
+    "E-SRC-002"
    ],
    "policies": [
     "C2",

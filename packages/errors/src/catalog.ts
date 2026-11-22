@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。240 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。242 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4336,6 +4336,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "links"
+    }
+  },
+  "E-SRC-001": {
+    "id": "E-SRC-001",
+    "cls": "validation",
+    "message": "探す言葉は 100 文字までにしてください",
+    "action": "探す言葉を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SRC-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "search"
+    }
+  },
+  "E-SRC-002": {
+    "id": "E-SRC-002",
+    "cls": "validation",
+    "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
+    "action": "種類を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SRC-002",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "search"
     }
   }
 };
