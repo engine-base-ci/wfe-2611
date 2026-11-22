@@ -15,9 +15,9 @@
 //   deleteTestSpec  DELETE /api/v1/test_specs/:id  200 { data: SpecItem（外す前の姿・position は外す前の番号） }。論理削除（deleted_at）。体も版も受けない
 //   やり取りの変更の 1 行（ticket_messages の kind change・どの操作も同じ取引で 1 行・app.test_spec_log が書く）:
 //     付ける「〈名前〉が確認項目『〈文〉』にチェックを付けました」changes [{field: test_spec, from: false, to: true, note: 〈文〉}]（どの行も note に確認項目の文を入れる＝画面 K-574 が文を作れる）
-//     外す　「〈名前〉が確認項目『〈文〉』のチェックを外しました」changes [{…from: true, to: false, note: 〈文〉}]
-//     直す　「〈名前〉が確認項目『〈新しい文〉』を直しました」changes [{…from: 前の文, to: 新しい文, note: 新しい文}]
-//     消す　「〈名前〉が確認項目『〈文〉』を外しました」changes [{…from: 文, to: null, note: 文}]
+//     外す\u3000「〈名前〉が確認項目『〈文〉』のチェックを外しました」changes [{…from: true, to: false, note: 〈文〉}]
+//     直す\u3000「〈名前〉が確認項目『〈新しい文〉』を直しました」changes [{…from: 前の文, to: 新しい文, note: 新しい文}]
+//     消す\u3000「〈名前〉が確認項目『〈文〉』を外しました」changes [{…from: 文, to: null, note: 文}]
 //     author_member_id は人が操作したらその人。機械・AI がチェックを付ける道（DB の関数）は author が空で名前は「AI」（packages/db/test/test_spec_check_ai.test.ts）
 //   証跡：test_spec.update（payload { ticket_id, changed: ["checked"] か ["title"] }）・test_spec.delete（payload { ticket_id }）。題名の文は入れない
 //   404・409 の答えの体は { error, code } だけ（field・details・detail を付けない・控え帳 2026-11-21 01:15 K-385）。422 だけが details を持つ
