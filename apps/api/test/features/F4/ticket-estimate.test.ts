@@ -503,8 +503,11 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect(at, "openapi.yaml に updateTicket の入力の形が在る").toBeGreaterThan(0);
     const around = yaml.slice(Math.max(0, at - 3000), at + 3000);
     expect(around).toContain("estimate_minutes");
-    const reg = readFileSync(join(ROOT, "packages", "contracts", "src", "registry.ts"), "utf-8");
-    expect(reg).toMatch(/estimate_minutes/);
+    const schemas = readFileSync(join(ROOT, "packages", "contracts", "src", "schemas.ts"), "utf-8");
+    const inputAt = schemas.indexOf("export const TicketUpdateInput = ");
+    expect(inputAt, "schemas.ts に TicketUpdateInput が在る").toBeGreaterThan(0);
+    const input = schemas.slice(inputAt, schemas.indexOf("});", inputAt));
+    expect(input).toMatch(/estimate_minutes/);
     expect(
       existsSync(join(ROOT, "07_qa", "test-specs", "errors.d", "K-583.json")),
       "この葉は断りの番号を足さない（置き場を作らない）",
