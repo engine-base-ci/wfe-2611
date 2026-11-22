@@ -38823,6 +38823,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -38831,12 +38837,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
