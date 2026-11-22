@@ -2,6 +2,7 @@
 //   ここは本文の空の判定と、人の並びの整え（重なりを落とす・知らせる人から自分を外す）。DB の関数（app.ticket_message_post）も同じ整えをする（2 層）
 //   本文は入口の normalize（NFKC と前後の空白を落とす）を通った後の字を、それ以上は落とさず・切らずに使う（D-130.4・字数の上限なし D-130.1）
 import type { Row } from "@kaname/db/repository";
+import { wellFormed } from "../well-formed.js";
 
 /** 空白だけ：JS の \s は全角の空白（U+3000）・改行・タブも含む（NFKC の後は全角の空白も半角になっている） */
 const BLANK = /^\s*$/;
@@ -35,7 +36,7 @@ const idList = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is 
 export function toPostPayload(input: Row, me: string): PostPayload {
   const quote = input["quote_of_id"];
   return {
-    body: String(input["body"] ?? ""),
+    body: wellFormed(String(input["body"] ?? "")),
     mention_member_ids: uniqueIds(idList(input["mention_member_ids"])),
     notify_member_ids: withoutMe(uniqueIds(idList(input["notify_member_ids"])), me),
     quote_of_id: typeof quote === "string" && quote !== "" ? quote : null,
