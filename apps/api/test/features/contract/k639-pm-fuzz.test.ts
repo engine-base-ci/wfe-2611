@@ -33,6 +33,7 @@ const claim = (code: string) =>
 const bridgeRows = (memberId: string) =>
   count("select count(*) as n from sessions where member_id = $1 and kind_id = 'bridge'", [memberId]);
 
+
 beforeAll(async () => {
   f = await makeFixture([agentHooks]);
   for (const op of ["createMemory", "updateMemory", "createPairingCode"]) f.limits[op] = 10_000;
