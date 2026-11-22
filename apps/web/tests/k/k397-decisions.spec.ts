@@ -399,8 +399,9 @@ test("K397-UI-017 手順 S2 の失敗 404（決めた人の欄の断り E-PAGE-0
     body: {
       error: "not_found",
       code: "E-PAGE-001",
-      message: MSG.byInvalid,
-      detail: { field: "decided_by_member_id" },
+      message: "見つかりません",
+      field: "decided_by_member_id",
+      details: [{ field: "decided_by_member_id", message: MSG.byInvalid }],
     },
   });
   await sendBtn(page).click();
