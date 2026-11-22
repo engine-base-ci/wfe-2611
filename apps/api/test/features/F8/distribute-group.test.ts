@@ -330,7 +330,15 @@ describe("K-410 グループに来たものを引き取る（自分が持つ＝�
     const r1 = await h.claim(P().jdMgr, id, { member_id: P().suzuki.id });
     expect(r1.status).toBe(409);
     expect((await h.json(r1))["code"]).toBe("E-HND-150");
-    for (const m of [P().outsider.id, randomUUID()]) {
+    // 受託開発の中でも、会社から抜けた人・消した人は「無い人」と同じ 404
+    const left = await h.f.person(h.T.tenantId, h.JD, { name: "k410-left", ticketAbility: "edit" });
+    await h.f.admin.query(
+      "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'member', 'left')",
+      [h.T.tenantId, left.id],
+    );
+    const gone = await h.f.person(h.T.tenantId, h.JD, { name: "k410-gone", ticketAbility: "edit" });
+    await h.f.admin.query("update members set deleted_at = now() where id = $1", [gone.id]);
+    for (const m of [P().outsider.id, randomUUID(), left.id, gone.id]) {
       const r = await h.claim(P().jdMgr, id, { member_id: m });
       expect(r.status, m).toBe(404);
       const j = await h.json(r);

@@ -1,5 +1,5 @@
 // グループに配られた渡しを引き取る（K-410・D-125.118・D-148.19）。自分が持つ（answer/distribute-group.ts）と人を決める（claimTicketHandover）が同じ DB の関数
-//   app.handover_claim を呼ぶ。言葉は K-401 の replyOf に、この葉の 2 つ（claim_group・claim_state）を足して返す。ログに人の名前・メールを出さない
+//   app.handover_claim を呼ぶ。言葉は K-401 の replyOf に、この葉の 3 つ（claim_missing＝無い人・別の会社の人・抜けた人は 404、claim_group・claim_state は 409）を足して返す。ログに人の名前・メールを出さない
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import type { HandoverDeps } from "./deps.js";
@@ -18,7 +18,7 @@ export type ClaimAnswer = {
   [k: string]: unknown;
 } | null;
 
-/** 404 E-PAGE-001（field・details・detail を付けない＝在るかを漏らさない・K-401 の 404 の形）。正本の体の空の detail も外す */
+/** 404 E-PAGE-001（field・details・detail を付けない＝在るかを漏らさない・控え帳 2026-11-20 16:51）。K-401 の notFound() の体には空の detail が付くので、この口は外して返す */
 function missing(): HookReply {
   const body = { ...(notFound().body as Record<string, unknown>) };
   delete body["detail"];
