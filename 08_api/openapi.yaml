@@ -5945,6 +5945,7 @@ components:
       properties:
         email: &id517
           type: string
+          nullable: true
         scope_id:
           type: string
           format: uuid
@@ -10401,6 +10402,25 @@ components:
       - scope_id
       - role_key
       x-required-by: hooks
+    InvitationLinkCreateInput:
+      type: object
+      properties:
+        scope_id:
+          type: string
+          format: uuid
+        role_key:
+          type: string
+          enum:
+          - member
+          - manager
+          - viewer
+          - admin
+      additionalProperties: false
+      x-operation: createInvitationLink
+      required:
+      - scope_id
+      - role_key
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -12023,6 +12043,7 @@ components:
           nullable: true
         email:
           type: string
+          nullable: true
         expires_at:
           type: string
         account_exists:
@@ -14448,6 +14469,12 @@ paths:
           - ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）
           - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
           - 漏れたことのあるパスワード（E-VAL-011）
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: E-AUTH-012／E-INV-005
           content:
@@ -23738,7 +23765,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InvitationsInput'
+              $ref: '#/components/schemas/InvitationLinkCreateInput'
       responses:
         '201':
           description: 成功
@@ -23758,19 +23785,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
+          description: STEP_UP_REQUIRED／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-011
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -23783,12 +23816,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

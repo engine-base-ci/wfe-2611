@@ -117,7 +117,7 @@ describe("K-421 招待のリンクを作る（createInvitationLink）", () => {
     expect(JSON.stringify(ev.rows[0]!.payload)).not.toContain(token);
   });
 
-  it("K421-API-002 グループが別の会社・在らない・消したグループ：422・E-INV-011・招待 0", async () => {
+  it("K421-API-002 グループが別の会社・在らない・消したグループ：404・E-INV-011・招待 0", async () => {
     const host = await h.owner("host002");
     const other = await h.owner("other002");
     const t = await h.tokenOf(host);
@@ -129,13 +129,13 @@ describe("K-421 招待のリンクを作る（createInvitationLink）", () => {
     ).rows[0]!.id;
     for (const scope of [await topOf(other), randomUUID(), gone]) {
       const r = await makeLink(t, { scope_id: scope, role_key: "member" });
-      expect(r.status, await r.clone().text()).toBe(422);
+      expect(r.status, await r.clone().text()).toBe(404);
       expect(JSON.stringify(await h.json(r))).toContain("E-INV-011");
     }
     expect((await linkRows(host.tenantId)).rows).toHaveLength(0);
   });
 
-  it("K421-API-003 管理者として入るリンク（role_id admin）：取り直し無し・16 分前は 403・STEP_UP_REQUIRED・招待 0。1 分前は 201・role_id admin", async () => {
+  it("K421-API-003 管理者として入るリンク（role_key admin）：取り直し無し・16 分前は 403・STEP_UP_REQUIRED・招待 0。1 分前は 201・role_id admin", async () => {
     const host = await h.owner("host003");
     const t = await h.tokenOf(host);
     const top = await topOf(host);

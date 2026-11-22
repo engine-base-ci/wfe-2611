@@ -33,7 +33,7 @@
 | EP-018 | PATCH | `/api/v1/artifacts/:id` | 更新（artifacts）— 自分のAIの返事を成果物に書き出し、会話の | A95 | 1 | member | C2 C4 | 401 403 404 422 413 429 403 403 503 |
 | EP-019 | GET | `/api/v1/audit_events` | 取得（audit_events）— 何をしたか追う（記録） | A33 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-020 | GET | `/api/v1/auth/invitations/:token` | 取得（auth）— 招待を受けて参加する（今のアカウントで別のテナントに | A03 | 1 | public |  | 422 404 503 429 503 |
-| EP-021 | POST | `/api/v1/auth/invitations/:token/accept` | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナ | A03 A96 | 1 | public | C2 | 422 403 403 404 409 409 410 503 413 429 503 |
+| EP-021 | POST | `/api/v1/auth/invitations/:token/accept` | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナ | A03 A96 | 1 | public | C2 | 422 401 403 403 404 409 409 410 503 413 429 503 |
 | EP-022 | POST | `/api/v1/auth/invitations/:token/resend-request` | 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナ | A03 | 1 | public | C2 C6 | 409 422 404 410 503 413 429 503 |
 | EP-023 | POST | `/api/v1/auth/password/forgot` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 413 429 503 |
 | EP-024 | POST | `/api/v1/auth/password/reset` | 作成・実行（auth）— パスワードを再設定する | A31 | 1 | public | C2 C6 | 422 410 500 413 429 503 |
@@ -129,7 +129,7 @@
 | EP-114 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-115 | DELETE | `/api/v1/invitations/:id` | 削除（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 422 429 403 403 503 |
 | EP-116 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-117 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-117 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 422 404 503 413 429 403 403 503 |
 | EP-118 | GET | `/api/v1/invoices/:id/pdf` | 取得（invoices）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-119 | POST | `/api/v1/knowledge/ask` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-120 | POST | `/api/v1/knowledge/ask/feedback` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
