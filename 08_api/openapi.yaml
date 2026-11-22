@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-22 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9009,19 +9009,19 @@ components:
           type: string
           format: date-time
           nullable: true
-        notify_managers: &id821
+        notify_managers: &id827
           type: boolean
-        reminded_at: &id822
+        reminded_at: &id828
           type: string
           format: date-time
           nullable: true
-        overdue_notified_at: &id823
+        overdue_notified_at: &id829
           type: string
           format: date-time
           nullable: true
-        switch_applied: &id824
+        switch_applied: &id830
           nullable: true
-        answered_by: &id825
+        answered_by: &id831
           type: string
           format: uuid
           nullable: true
@@ -9072,24 +9072,29 @@ components:
         state: *id824
         decline_reason: *id825
         decided_at: *id826
+        notify_managers: *id827
+        reminded_at: *id828
+        overdue_notified_at: *id829
+        switch_applied: *id830
+        answered_by: *id831
       additionalProperties: false
     SavedViews:
       type: object
       properties:
-        member_id: &id827
+        member_id: &id832
           type: string
           format: uuid
-        name: &id828
+        name: &id833
           type: string
-        share: &id829
+        share: &id834
           type: string
         scope_id:
           type: string
           format: uuid
           nullable: true
-        filters: &id830 {}
-        columns: &id831 {}
-        density: &id832
+        filters: &id835 {}
+        columns: &id836 {}
+        density: &id837
           type: string
         id:
           type: string
@@ -9125,31 +9130,31 @@ components:
     SavedViewsInput:
       type: object
       properties:
-        member_id: *id827
-        name: *id828
-        share: *id829
-        filters: *id830
-        columns: *id831
-        density: *id832
+        member_id: *id832
+        name: *id833
+        share: *id834
+        filters: *id835
+        columns: *id836
+        density: *id837
       additionalProperties: false
     TicketImports:
       type: object
       properties:
-        uploaded_by: &id833
+        uploaded_by: &id838
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        source: &id834
+        source: &id839
           type: string
-        mapping: &id835 {}
-        rows: &id836
+        mapping: &id840 {}
+        rows: &id841
           type: integer
-        errors: &id837 {}
-        state: &id838
+        errors: &id842 {}
+        state: &id843
           type: string
-        committed_at: &id839
+        committed_at: &id844
           type: string
           format: date-time
           nullable: true
@@ -9189,42 +9194,42 @@ components:
     TicketImportsInput:
       type: object
       properties:
-        uploaded_by: *id833
-        source: *id834
-        mapping: *id835
-        rows: *id836
-        errors: *id837
-        state: *id838
-        committed_at: *id839
+        uploaded_by: *id838
+        source: *id839
+        mapping: *id840
+        rows: *id841
+        errors: *id842
+        state: *id843
+        committed_at: *id844
       additionalProperties: false
     LearningCandidates:
       type: object
       properties:
-        owner_member_id: &id840
+        owner_member_id: &id845
           type: string
           format: uuid
-        trigger: &id841
+        trigger: &id846
           type: string
-        proposed_as: &id842
+        proposed_as: &id847
           type: string
-        text: &id843
+        text: &id848
           type: string
-        evidence: &id844 {}
-        check_result: &id845 {}
-        decided_by: &id846
+        evidence: &id849 {}
+        check_result: &id850 {}
+        decided_by: &id851
           type: string
           format: uuid
           nullable: true
-        state: &id847
+        state: &id852
           type: string
-        decided_at: &id848
+        decided_at: &id853
           type: string
           format: date-time
           nullable: true
-        result_type: &id849
+        result_type: &id854
           type: string
           nullable: true
-        result_id: &id850
+        result_id: &id855
           type: string
           format: uuid
           nullable: true
@@ -9265,34 +9270,34 @@ components:
     LearningCandidatesInput:
       type: object
       properties:
-        owner_member_id: *id840
-        trigger: *id841
-        proposed_as: *id842
-        text: *id843
-        evidence: *id844
-        check_result: *id845
-        decided_by: *id846
-        state: *id847
-        decided_at: *id848
-        result_type: *id849
-        result_id: *id850
+        owner_member_id: *id845
+        trigger: *id846
+        proposed_as: *id847
+        text: *id848
+        evidence: *id849
+        check_result: *id850
+        decided_by: *id851
+        state: *id852
+        decided_at: *id853
+        result_type: *id854
+        result_id: *id855
       additionalProperties: false
     BridgePairingCodes:
       type: object
       properties:
-        member_id: &id851
+        member_id: &id856
           type: string
           format: uuid
-        code_hash: &id852
+        code_hash: &id857
           type: string
-        expires_at: &id853
+        expires_at: &id858
           type: string
           format: date-time
-        used_at: &id854
+        used_at: &id859
           type: string
           format: date-time
           nullable: true
-        used_session_id: &id855
+        used_session_id: &id860
           type: string
           format: uuid
           nullable: true
@@ -9330,11 +9335,11 @@ components:
     BridgePairingCodesInput:
       type: object
       properties:
-        member_id: *id851
-        code_hash: *id852
-        expires_at: *id853
-        used_at: *id854
-        used_session_id: *id855
+        member_id: *id856
+        code_hash: *id857
+        expires_at: *id858
+        used_at: *id859
+        used_session_id: *id860
       additionalProperties: false
     NotificationSettings:
       type: object
@@ -9373,41 +9378,41 @@ components:
     OpsPlanProposals:
       type: object
       properties:
-        plan_id: &id856
+        plan_id: &id861
           type: string
           format: uuid
-        from_version: &id857
+        from_version: &id862
           type: integer
           nullable: true
-        to_version: &id858
+        to_version: &id863
           type: integer
           nullable: true
-        changes: &id859 {}
-        existing_policy: &id860
+        changes: &id864 {}
+        existing_policy: &id865
           type: string
-        notice_days: &id861
+        notice_days: &id866
           type: integer
           nullable: true
-        new_from: &id862
+        new_from: &id867
           type: string
           format: date
           nullable: true
-        reason: &id863
+        reason: &id868
           type: string
-        proposed_by: &id864
+        proposed_by: &id869
           type: string
           format: uuid
-        decided_by: &id865
+        decided_by: &id870
           type: string
           format: uuid
           nullable: true
-        state: &id866
+        state: &id871
           type: string
-        decided_at: &id867
+        decided_at: &id872
           type: string
           format: date-time
           nullable: true
-        return_reason: &id868
+        return_reason: &id873
           type: string
           nullable: true
         id:
@@ -9444,37 +9449,37 @@ components:
     OpsPlanProposalsInput:
       type: object
       properties:
-        plan_id: *id856
-        from_version: *id857
-        to_version: *id858
-        changes: *id859
-        existing_policy: *id860
-        notice_days: *id861
-        new_from: *id862
-        reason: *id863
-        proposed_by: *id864
-        decided_by: *id865
-        state: *id866
-        decided_at: *id867
-        return_reason: *id868
+        plan_id: *id861
+        from_version: *id862
+        to_version: *id863
+        changes: *id864
+        existing_policy: *id865
+        notice_days: *id866
+        new_from: *id867
+        reason: *id868
+        proposed_by: *id869
+        decided_by: *id870
+        state: *id871
+        decided_at: *id872
+        return_reason: *id873
       additionalProperties: false
     ScopeMemberships:
       type: object
       properties:
-        member_id: &id869
+        member_id: &id874
           type: string
           format: uuid
         scope_id:
           type: string
           format: uuid
-        is_primary: &id870
+        is_primary: &id875
           type: boolean
-        role: &id871
+        role: &id876
           type: string
-        since: &id872
+        since: &id877
           type: string
           format: date
-        changed_by: &id873
+        changed_by: &id878
           type: string
           format: uuid
           nullable: true
@@ -9513,22 +9518,22 @@ components:
     ScopeMembershipsInput:
       type: object
       properties:
-        member_id: *id869
-        is_primary: *id870
-        role: *id871
-        since: *id872
-        changed_by: *id873
+        member_id: *id874
+        is_primary: *id875
+        role: *id876
+        since: *id877
+        changed_by: *id878
       additionalProperties: false
     RoleBundleDefaults:
       type: object
       properties:
-        role: &id874
+        role: &id879
           type: string
-        target_kind_id: &id875
+        target_kind_id: &id880
           type: string
-        ability_id: &id876
+        ability_id: &id881
           type: string
-        scope_kind: &id877
+        scope_kind: &id882
           type: string
         id:
           type: string
@@ -9553,10 +9558,10 @@ components:
     RoleBundleDefaultsInput:
       type: object
       properties:
-        role: *id874
-        target_kind_id: *id875
-        ability_id: *id876
-        scope_kind: *id877
+        role: *id879
+        target_kind_id: *id880
+        ability_id: *id881
+        scope_kind: *id882
       additionalProperties: false
     StepUpInput:
       type: object
