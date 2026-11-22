@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
-  "api_built": 70,
+  "api": 370,
+  "api_built": 82,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 145,
+  "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 215,
+  "errors": 229,
   "stack": 56,
   "env": 41
  },
@@ -685,9 +685,10 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-56",
+    "K-354"
    ]
   },
   {
@@ -1054,23 +1055,6 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-61"
-   ]
-  },
-  {
-   "op": "listClassAxes",
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "what": "取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "class_axes"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
    ]
   },
   {
@@ -1687,6 +1671,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -1704,6 +1689,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -3163,7 +3149,7 @@
    "tables": [
     "memories"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-69"
    ]
@@ -4613,6 +4599,23 @@
    ]
   },
   {
+   "op": "listTicketFields",
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "what": "取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-563"
+   ]
+  },
+  {
    "op": "updateTicketDecision",
    "method": "PATCH",
    "path": "/api/v1/ticket_decisions/:id",
@@ -4773,9 +4776,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -4913,9 +4917,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-387"
    ]
   },
   {
@@ -5092,7 +5096,7 @@
    "op": "listTicketDecisions",
    "method": "GET",
    "path": "/api/v1/tickets/:id/decisions",
-   "what": "取得（tickets）— 決定を記録する（AI の候補を確定・直接書く）",
+   "what": "取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した）",
    "flows": [
     "F6"
    ],
@@ -5100,9 +5104,9 @@
    "tables": [
     "ticket_decisions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-390"
    ]
   },
   {
@@ -5117,9 +5121,9 @@
    "tables": [
     "ticket_decisions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-390"
    ]
   },
   {
@@ -5211,7 +5215,7 @@
    "op": "listTicketLinks",
    "method": "GET",
    "path": "/api/v1/tickets/:id/links",
-   "what": "取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
+   "what": "取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children",
    "flows": [
     "F4"
    ],
@@ -5219,9 +5223,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5236,9 +5241,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5330,7 +5336,7 @@
    "op": "listTestSpecs",
    "method": "GET",
    "path": "/api/v1/tickets/:id/test-specs",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
+   "what": "取得（test_specs）— チケットの確認項目を作った順に見る（文・チェック・出どころ）",
    "flows": [
     "F4"
    ],
@@ -5338,9 +5344,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5355,9 +5362,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5409,6 +5417,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-383"
+   ]
+  },
+  {
+   "op": "markTicketTimelineSeen",
+   "method": "POST",
+   "path": "/api/v1/tickets/:id/timeline/seen",
+   "what": "作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる）",
+   "flows": [
+    "F6"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_messages"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-384"
    ]
   },
   {
@@ -6166,12 +6191,10 @@
   },
   {
    "table": "class_axes",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない",
    "writes": [],
-   "reads": [
-    "F4"
-   ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -6260,6 +6283,24 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_field_kinds",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_fields",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false
   },
   {
@@ -7199,6 +7240,14 @@
    "table": "ticket_drafts_used",
    "class": "internal",
    "why": "作るときに使った下書きの id（app スキーマ・アプリの役は直に触れない）。作った後に届いた保存を残さないために app.ticket_create が書き、app.ticket_draft_save が読む（K-60）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "ticket_field_values",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
    "writes": [],
    "reads": [],
    "boundary": false

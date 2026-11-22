@@ -10236,6 +10236,28 @@
    "reason": null
   },
   {
+   "entity": "tickets",
+   "field": "no_spec_reason",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "ticket_sections",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -10529,7 +10551,6 @@
    "entity": "class_axes",
    "field": "key",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10539,7 +10560,6 @@
    "entity": "class_axes",
    "field": "name",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10549,7 +10569,6 @@
    "entity": "class_axes",
    "field": "is_builtin",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10559,7 +10578,6 @@
    "entity": "class_axes",
    "field": "position",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10576,7 +10594,6 @@
    "entity": "class_values",
    "field": "axis_id",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10586,7 +10603,6 @@
    "entity": "class_values",
    "field": "label",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10596,7 +10612,6 @@
    "entity": "class_values",
    "field": "color",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10606,7 +10621,6 @@
    "entity": "class_values",
    "field": "position",
    "consumed_by_screens": [
-    "tickets",
     "masters"
    ],
    "internal": false,
@@ -10645,6 +10659,126 @@
     "tickets",
     "masters",
     "requests"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "custom_fields",
+   "field": "name",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "field_type",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "required",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "description",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "options",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_fields",
+   "field": "position",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "field_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "custom_field_kinds",
+   "field": "kind_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "<common>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "field_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_field_values",
+   "field": "value",
+   "consumed_by_screens": [
+    "tickets"
    ],
    "internal": false,
    "reason": null
@@ -10748,6 +10882,51 @@
   {
    "entity": "test_specs",
    "field": "off_reason",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_member_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_ai",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source_ref_id",
    "consumed_by_screens": [
     "tickets"
    ],
@@ -10942,6 +11121,42 @@
   {
    "entity": "ticket_decisions",
    "field": "promoted_to",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "decided_note",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_by",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancel_reason",
    "consumed_by_screens": [
     "tickets"
    ],
