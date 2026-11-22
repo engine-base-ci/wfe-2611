@@ -98,17 +98,17 @@ class MergeNotImplTest(Case):
         self.assertEqual(bad, [], bad)
         self.assertEqual(n, 3)   # K-1・K-9・K-2（取り込みは数えない）
 
-    def test_K643_CI_005_dependency_whose_only_commit_is_a_merge_is_red(self):
-        """K643-CI-005 守り：依存 K-1 の番号を持つコミットが取り込みのコミット（K-1 merge: …）だけで、K-1 の実装の（親 1 つの）コミットが
-        祖先に無い → K-2 の実装は赤（取り込みは依存を満たす側にも数えない）。件名に番号が残るので「決まりの前に入った」の逃げ道も使わない"""
+    def test_K643_CI_005_dependency_whose_only_commit_is_a_merge_still_satisfies(self):
+        """K643-CI-005 守り：依存 K-1 の番号が件名にあるのが取り込みのコミット（K-1 merge: …）だけでも、その後の K-2 の実装は依存を満たす側で緑
+        （取り込みは裁かないが、満たす側に数える＝前からの数え方を狭めない。本線の履歴には K-63 のように取り込みの件名にだけ番号がある依存があり、
+        外すと K-64 が赤になる）。見た実装のコミットは取り込みを除いた 3 本"""
         self.side("side", "K-5 feat: 別の枝の物", {"apps/other.ts": "o"})
         self.r.commit("K-9 feat: 本線の物", {"apps/main.ts": "m"})
         self.merge("side", "K-1 merge: 取り込みの列の前の木 t/K-5 を取り込む")
-        c = self.r.commit("K-2 feat: 作る", {"apps/a.ts": "a"})
-        bad, _, _ = self.check()
-        self.assertEqual(len(bad), 1, bad)
-        self.assertTrue(bad[0].startswith(c[:10]), bad)
-        self.assertIn("K-2 は K-1", bad[0])
+        self.r.commit("K-2 feat: 作る", {"apps/a.ts": "a"})
+        bad, _, n = self.check()
+        self.assertEqual(bad, [], bad)
+        self.assertEqual(n, 3)
 
     def test_K643_CI_006_octopus_merge_with_three_parents_is_not_impl(self):
         """K643-CI-006 入力：親が 3 つの取り込み（2 つ以上）も実装に数えない。K-2 の件名で K-1 の実装を持たない → 緑・見た本数は取り込みを除いた 3 本"""

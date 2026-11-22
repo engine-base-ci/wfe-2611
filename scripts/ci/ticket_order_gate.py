@@ -243,8 +243,16 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     mentioned = {k for _, s in rows for k in TICKET.findall(s)}
     impl: list[tuple[str, set[str]]] = []  # 実装のコミット（古い順）と、依存を裁く番号（持ち主・owners_of）
     credit: dict[str, set[str]] = {}       # 依存を満たす側に数える番号（件名の全部の番号・前と同じ。満たす側を狭めて過去の取り込みを赤にしない）
-    for sha, subj, files, _ in log:
-        if not _not_impl(files, gen):
+    merges: list[str] = []                 # 取り込みのコミット：実装に数えず裁かないが、依存を満たす側には数える（K-643）
+    for sha, subj, files, parents in log:
+        # 親が 2 つ以上＝取り込みのコミット（ほかの枝の物を持ち込むだけ・変えたファイルは空）。そのチケットの実装に数えず、依存を裁かない（K-643）。
+        # ぶつかりを直した中身は取り込みの後の自分の番号の親 1 つのコミットで出るので、数え漏れにならない。
+        # ただし依存を満たす側には前と同じに数える（件名の番号。狭めて、取り込みの件名にだけ番号がある過去の依存を赤にしない）
+        if len(parents) >= 2:
+            if not _not_impl(files, gen):
+                credit[sha] = set(TICKET.findall(subj))
+                merges.append(sha)
+        elif not _not_impl(files, gen):
             impl.append((sha, owners_of(subj)))
             credit[sha] = set(TICKET.findall(subj))
     start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
@@ -320,7 +328,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     # 先祖かは git に 1 本ずつ聞かず、一覧の親から作ったビットで見る（K-341）。「前の実装のコミット impl[:i]」は一覧で前の物（ビットの番号が小さい）
     pos, anc_bits = _ancestor_bits(log)
     credit_bits: dict[str, int] = {}
-    for c, _ in impl:
+    for c in [c for c, _ in impl] + merges:
         for x in credit[c]:
             credit_bits[x] = credit_bits.get(x, 0) | (1 << pos[c])
     bad, legacy = [], []
@@ -340,7 +348,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
                 bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
     # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
     def has_impl_head(x: str) -> bool:
-        return any(x in credit[c] for c, _ in impl)
+        return any(x in credit[c] for c in [c for c, _ in impl] + merges)
     for tid in sorted({k for _, ids in impl for k in ids}):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
             if (tid, dep) in reported:
