@@ -482,7 +482,9 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     const before = await h.num("select count(*) as n from notifications where tenant_id = $1", [w.co.tenantId]);
     const r = await h.answer(w.sato, gid, { decision: "accept" });
     expect(r.status, await r.clone().text()).toBe(404);
-    expect((await h.json(r)).code).toBe("E-PAGE-001");
+    const gj = await h.json(r);
+    expect(gj.code).toBe("E-PAGE-001");
+    for (const key of ["field", "details"]) expect(gj, `404 に ${key} を付けない`).not.toHaveProperty(key);
     expect(await h.assigneeOf(gone.id)).toBe(w.boss.id);
     expect((await h.handover(gid))!["state"]).toBe("waiting");
     expect(await h.num("select count(*) as n from notifications where tenant_id = $1", [w.co.tenantId])).toBe(before);
