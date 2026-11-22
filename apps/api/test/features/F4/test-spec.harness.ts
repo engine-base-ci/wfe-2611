@@ -174,7 +174,12 @@ export function setupSpecs(files: readonly string[]): SpecHarness {
       const c = await f.company(`${label} ${Math.random().toString(36).slice(2, 7)}`, "EG");
       const writer = await f.person(c.tenantId, c.rootScope, { name: "高本", ticketAbility: "edit" });
       const viewer = await f.person(c.tenantId, c.rootScope, { name: "山田", ticketAbility: "view" });
-      const stranger = await f.person(c.tenantId, c.rootScope, { name: "見えない人", ticketAbility: null });
+      // 見えない人は、根の下の別のグループの席に置く（根の席の人は権限が無くても根のチケットが見える＝visible_scopes は席のグループとその下を見せる。2026-11-22 K-434・K-563 の作る段で出た誤り）
+      const otherScope = await one(
+        "insert into scopes (tenant_id, name, ticket_prefix, parent_id) values ($1, '別のグループ', 'OT', $2) returning id",
+        [c.tenantId, c.rootScope],
+      );
+      const stranger = await f.person(c.tenantId, otherScope, { name: "見えない人", ticketAbility: null });
       const kindId = await one(
         "select id from ticket_kinds where tenant_id = $1 and name = 'タスク' and deleted_at is null",
         [c.tenantId],
@@ -190,7 +195,10 @@ export function setupSpecs(files: readonly string[]): SpecHarness {
     },
     ticket: async (w, o = {}) => {
       const jst = new Date(Date.now() + 9 * 3600_000 + 3 * 86400_000).toISOString().slice(0, 10);
-      const stage = await one("select id from ticket_stages where tenant_id = $1 and key = 'todo' and deleted_at is null", [w.tenantId]);
+      const stage = await one(
+        "select id from ticket_stages where tenant_id = $1 and key = 'todo' and deleted_at is null",
+        [w.tenantId],
+      );
       const r = await f.admin.query<{ id: string; number: string }>(
         `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, due_on, created_by, updated_by)
          values ($1, $2, '', $3, $4, $5, $6, $7, $8, $8) returning id, number`,
@@ -199,10 +207,12 @@ export function setupSpecs(files: readonly string[]): SpecHarness {
       return { id: r.rows[0]!.id, number: r.rows[0]!.number };
     },
     seed: async (ticketId, o = {}) => {
-      const t = (await f.admin.query<{ tenant_id: string; assignee_member_id: string }>(
-        "select tenant_id, assignee_member_id from tickets where id = $1",
-        [ticketId],
-      )).rows[0]!;
+      const t = (
+        await f.admin.query<{ tenant_id: string; assignee_member_id: string }>(
+          "select tenant_id, assignee_member_id from tickets where id = $1",
+          [ticketId],
+        )
+      ).rows[0]!;
       const who = (o.by?.id ?? t.assignee_member_id) as string;
       const id = await one(
         `insert into test_specs (tenant_id, ticket_id, check_kind, title, source, source_ref_id, checked_at, checked_by_member_id, checked_by_ai, created_by, updated_by, deleted_at)
@@ -223,8 +233,7 @@ export function setupSpecs(files: readonly string[]): SpecHarness {
       );
       return (await h.row(id))!;
     },
-    row: async (id) =>
-      (await f.admin.query<SpecRow>(`select ${COLS} from test_specs where id = $1`, [id])).rows[0],
+    row: async (id) => (await f.admin.query<SpecRow>(`select ${COLS} from test_specs where id = $1`, [id])).rows[0],
     rows: async (ticketId) =>
       (
         await f.admin.query<SpecRow>(`select ${COLS} from test_specs where ticket_id = $1 order by created_at, id`, [

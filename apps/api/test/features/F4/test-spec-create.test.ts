@@ -199,7 +199,9 @@ describe("K-434 確認項目を足す（createTestSpec）", () => {
     expect(msgs.length).toBe(1);
     expect(msgs[0]!.author_member_id).toBe(w.writer.id);
     expect(msgs[0]!.body).toBe(`${await h.name(w.writer)}が確認項目を足しました：目的が空でない`);
-    expect(msgs[0]!.changes).toEqual([{ field: "test_spec", from: null, to: "目的が空でない", note: "目的が空でない" }]);
+    expect(msgs[0]!.changes).toEqual([
+      { field: "test_spec", from: null, to: "目的が空でない", note: "目的が空でない" },
+    ]);
     expect(await h.audits(w.tenantId, "test_spec.create", d.id)).toBe(1);
     const got = (await h.json(await h.call(w.writer, "GET", listPath(t.id)))).data as Item[];
     expect(got.map((x) => x.id)).toEqual([d.id]);
@@ -211,7 +213,16 @@ describe("K-434 確認項目を足す（createTestSpec）", () => {
     expect(ok.status).toBe(201);
     expect(((await h.json(ok)).data as Item).title).toBe("前後に空白");
     expect((await add(w.writer, t.id, spec("あ".repeat(200)))).status).toBe(201);
-    for (const body of [spec("あ".repeat(201)), spec(""), spec("   "), spec("　\t　"), {}, { title: 1 }, { title: null }, { title: ["a"] }]) {
+    for (const body of [
+      spec("あ".repeat(201)),
+      spec(""),
+      spec("   "),
+      spec("　\t　"),
+      {},
+      { title: 1 },
+      { title: null },
+      { title: ["a"] },
+    ]) {
       const r = await add(w.writer, t.id, body);
       expect(r.status, JSON.stringify(body).slice(0, 30)).toBe(422);
       const j = await h.json(r);
@@ -369,10 +380,18 @@ describe("K-434 確認項目を足す（createTestSpec）", () => {
   it("K434-API-017 DB の守り（口を通さずに書く）：チェックの時刻が無いのに付けた人がいる・人と AI の両方・出どころが 3 つの外は DB が断る。種類なし・時刻と人・時刻と AI は入る", async () => {
     const t = await h.ticket(w);
     const ins = (cols: string, vals: string) =>
-      h.f.admin.query(`insert into test_specs (tenant_id, ticket_id, title, ${cols}) values ($1, $2, 'DB の守り', ${vals})`, [w.tenantId, t.id]);
-    await expect(ins("checked_by_member_id", `'${w.writer.id}'`), "時刻なしで人").rejects.toMatchObject({ code: "23514" });
+      h.f.admin.query(
+        `insert into test_specs (tenant_id, ticket_id, title, ${cols}) values ($1, $2, 'DB の守り', ${vals})`,
+        [w.tenantId, t.id],
+      );
+    await expect(ins("checked_by_member_id", `'${w.writer.id}'`), "時刻なしで人").rejects.toMatchObject({
+      code: "23514",
+    });
     await expect(ins("checked_by_ai", "true"), "時刻なしで AI").rejects.toMatchObject({ code: "23514" });
-    await expect(ins("checked_at, checked_by_member_id, checked_by_ai", `now(), '${w.writer.id}', true`), "人と AI の両方").rejects.toMatchObject({ code: "23514" });
+    await expect(
+      ins("checked_at, checked_by_member_id, checked_by_ai", `now(), '${w.writer.id}', true`),
+      "人と AI の両方",
+    ).rejects.toMatchObject({ code: "23514" });
     await expect(ins("source", "'robot'"), "出どころの外").rejects.toMatchObject({ code: "23514" });
     expect((await h.rows(t.id)).length).toBe(0);
     await ins("check_kind", "null");
@@ -399,10 +418,16 @@ describe("K-434 確認項目を足す（createTestSpec）", () => {
 
   it("K434-API-020 AI に任せるときの使わない理由の列（tickets.no_spec_reason）：既定は空・文は入る・空白だけは DB が断る（使うのは K-565）", async () => {
     const t = await h.ticket(w);
-    const get = async () => (await h.f.admin.query<{ r: string | null }>("select no_spec_reason as r from tickets where id = $1", [t.id])).rows[0]!.r;
+    const get = async () =>
+      (await h.f.admin.query<{ r: string | null }>("select no_spec_reason as r from tickets where id = $1", [t.id]))
+        .rows[0]!.r;
     expect(await get()).toBeNull();
-    await expect(h.f.admin.query("update tickets set no_spec_reason = '   ' where id = $1", [t.id])).rejects.toMatchObject({ code: "23514" });
-    await h.f.admin.query("update tickets set no_spec_reason = '見て分かるのでチェックは要らない' where id = $1", [t.id]);
+    await expect(
+      h.f.admin.query("update tickets set no_spec_reason = '   ' where id = $1", [t.id]),
+    ).rejects.toMatchObject({ code: "23514" });
+    await h.f.admin.query("update tickets set no_spec_reason = '見て分かるのでチェックは要らない' where id = $1", [
+      t.id,
+    ]);
     expect(await get()).toBe("見て分かるのでチェックは要らない");
   });
 });
