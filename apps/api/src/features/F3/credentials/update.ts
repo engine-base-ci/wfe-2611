@@ -13,6 +13,7 @@ import { withTenant, type TenantContext } from "@kaname/db/context";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import {
+  conflict409,
   fail,
   invalid,
   isReply,
@@ -112,15 +113,15 @@ class Gone extends Error {}
 const has = (input: Record<string, unknown>, k: string): boolean => input[k] !== undefined;
 
 /** ① 中身の外の欄を整える。通れば欄、通らなければ 422 の答え */
-function checkFields(input: Record<string, unknown>): Fields | HookReply {
+function checkFields(input: Record<string, unknown>, rawBody: Record<string, unknown>): Fields | HookReply {
   let out: Fields = {};
   if (has(input, "destinations")) {
-    const d = parseDestinations(input["destinations"]);
+    const d = parseDestinations(input["destinations"], rawBody["destinations"]);
     if (isReply(d)) return d;
     out = { ...out, destinations: d };
   }
   if (has(input, "expires_on")) {
-    const e = parseExpiresOn(input["expires_on"]);
+    const e = parseExpiresOn(input["expires_on"], undefined, rawBody["expires_on"]);
     if (isReply(e)) return e;
     out = { ...out, expiresAt: e.expiresAt };
   }
@@ -134,6 +135,9 @@ function checkFields(input: Record<string, unknown>): Fields | HookReply {
   return out;
 }
 
+/** 預けた物の種類・2 段階の状態と合わない中身の混ざり（DB の中身で決まるので 409・欄なし） */
+const mixed = (): HookReply => conflict409("E-CRED-015");
+
 /** ④ 種類ごとの中身。中身を替えないなら null、替えるなら新しい中身、欠け・混ざりなら 422 の答え */
 function checkContent(
   cur: Current,
@@ -144,18 +148,20 @@ function checkContent(
   const isLogin = cur.kind_id !== null && LOGIN_KINDS.includes(cur.kind_id);
   if (!isLogin) {
     // 鍵：値だけを替えられる。ログインの欄と 2 段階の種類は付けない（E-CRED-005）
-    for (const k of ["login", "password", "two_factor", "totp_secret"]) if (has(input, k)) return fail("E-CRED-005", k);
+    for (const k of ["login", "password", "two_factor", "totp_secret"]) if (has(input, k)) return mixed();
     if (!has(input, "value")) return null;
-    const content = parseContent("key", input, rawBody);
+    const content = parseContent("key", input, rawBody, mixed);
     return isReply(content) ? content : { content, totpSecret: null };
   }
   const twoFactor = fields.twoFactor ?? cur.two_factor_id;
   const totpMoved = (twoFactor === "totp") !== (cur.two_factor_id === "totp");
   if (!CONTENT_KEYS.some((k) => has(input, k)) && !totpMoved) return null;
   // ログイン情報の値を変えるときは ID とパスワードを両方（代表の答え answer=e34268dbfbac）。認証アプリなら鍵も
-  const content = parseContent("login", { ...input, two_factor: twoFactor }, rawBody);
+  // 認証アプリに替える・外すのに中身（login と password）が無い：預けた物の 2 段階の状態で決まるので 409
+  if (totpMoved && !has(input, "login") && !has(input, "password")) return mixed();
+  const content = parseContent("login", { ...input, two_factor: twoFactor }, rawBody, mixed);
   if (isReply(content)) return content;
-  const totpSecret = parseTotpSecret(twoFactor, input["totp_secret"]);
+  const totpSecret = parseTotpSecret(twoFactor, input["totp_secret"], rawBody["totp_secret"], mixed);
   return isReply(totpSecret) ? totpSecret : { content, totpSecret };
 }
 
@@ -281,7 +287,7 @@ export function createUpdateCredential(d: UpdateCredentialDeps): (a: HookArgs) =
     const raw = (await a.c.req.json().catch(() => ({}))) as unknown;
     const rawBody = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
     if (changedNames(a.input).length === 0) return fail("E-CRED-008");
-    const fields = checkFields(a.input);
+    const fields = checkFields(a.input, rawBody);
     if (isReply(fields)) return fields;
 
     let cur: Current | undefined;
