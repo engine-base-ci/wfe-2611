@@ -2521,3 +2521,14 @@ K-640,直し：CI の定義の全部の組の台（runs-on）を、リポジト�
 - [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・`staging-e2e.yml`・`release-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。作り手を流すと `07_qa/test-plan/access-matrix.json` の 1 行が変わることがある（この葉と無関係の前からの揺れ）：それは取り込まず、元の版のままにする
 - [ ] 手元の CI（このチケットの範囲）が緑
 - [ ] 変数が無い回で、組が今までと同じ台（self-hosted・linux-vm）に載ることを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
+K-641,直し：GitHub の台（ubuntu-24.04）に無い道具を、画面の組の中で入れる（lsof を入っていなければ入れる・ブラウザは --with-deps で日本語の字体と部品をそろえる・Mac の箱の像では何も増えない・K-56 の葉・PM の直し）,タスク,K-56,未着手,実装,2026-11-23,F3・CI,"K-640 で CI の定義の台を変数 CI_RUNNER で替えられる形にした。公開の側で GitHub の台（ubuntu-24.04）に載せたとき、**Mac の箱の像（tf-golden）に入っていて GitHub の台に入っていない物**で組が落ちる、あるいは静かに別の結果になる所を、段の中で入れて塞ぐ。調べた全部の道具の表は `.ticket-flow/side-notes/CI-GitHubの台-調べ.md`。要るのは 2 つだけ（それ以外は台に在る・または定義が自分で入れている）。
+
+- **lsof**：web の組の「画面と口の番号が空いているか」「立てた API と画面を止める」が `lsof -ti tcp:<番号>` を呼ぶ。像には apt で入れてあるが、GitHub の台（Ubuntu 24.04 の runner-images・2026-11-16 版の apt の一覧）には無い。無いと `lsof` が見つからず、番号の確かめが「空いている」と読んで素通りする（`lsof … >/dev/null 2>&1` の戻りが 127 で「使われていない」側に倒れる）か、止めた後の確かめが空振りする。**段の中で、入っていなければ入れる**（`command -v lsof` で見て、無ければ `sudo apt-get update` の後に `sudo apt-get install -y -qq lsof`）。入っていれば何もしない（像の Mac の箱では sudo も apt も呼ばない）
+- **ブラウザの部品と字体**：web の組は `playwright install chromium`（--with-deps なし）。像は温めのとき `playwright install --with-deps chromium` を流していて、`--with-deps` は Chromium が動く部品に加え、日本語の字体（fonts-ipafont-gothic・fonts-wqy-zenhei。本線の Playwright 1.63 の `nativeDeps` で確かめた）を入れる。GitHub の台には日本語の字体が無く、**日本語の画面の文字の幅が像と違う**（折り返し・溢れの測りと見た目の突き合わせ G48・G70 が像と別の結果になりうる）。像と同じ命令（`--with-deps`）にそろえる。像の Mac の箱では部品も字体も入っているので、実際に入れる物は無い（apt の更新に数秒）
+
+- 道具の段は **web の組だけ**に置く（lsof を呼ぶのは web の組だけ。ほかの組の時間を増やさない）。入れる物は lsof 1 つだけで、入れる道は台の apt だけ（外から取って流さない・版は台の Ubuntu の配布の版）
+- 台の選び（K-640）には触らない。Docker・Postgres・Python・Node・pnpm・Chrome・jq・git・curl・sudo は GitHub の台（x64）に在る、または定義が自分で入れている（actions/setup-python・setup-node・pnpm/action-setup・ci_venv.sh）ので何もしない（表のとおり）","- [ ] 下の表の K641-CI-001〜005 が緑：`python3 scripts/ci/k641_hosted_tools_test.py`
+- [ ] 替えない前からの試験が緑（k172・k175・k176 の基準・k177・k195・k258・k323・k376・k191・ci_scope_test。k175 は `playwright install( --with-deps)? chromium` を許し、k195 は Chrome を入れる命令が定義に無いことを見る）
+- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。`access-matrix.json` の揺れは取り込まない（K-640 と同じ）
+- [ ] 手元の CI（このチケットの範囲）が緑
+- [ ] 公開の側で GitHub の台に載せた回で、web の組の番号の確かめが lsof を見つけ、ブラウザが日本語を描くことを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある"
