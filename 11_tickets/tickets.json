@@ -2405,7 +2405,6 @@
     "getTicketImport",
     "lintTestSpecs",
     "listChecks",
-    "listClassAxes",
     "listClients",
     "listTestSpecs",
     "listTicketArtifacts",
@@ -2426,7 +2425,6 @@
     "apps/api/test/generated/delete_test_specs_id.test.ts",
     "apps/api/test/generated/delete_ticket_links_id.test.ts",
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
-    "apps/api/test/generated/get_class_axes.test.ts",
     "apps/api/test/generated/get_clients.test.ts",
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
     "apps/api/test/generated/get_ticket_stages.test.ts",
@@ -19627,9 +19625,12 @@
     "getShell"
    ],
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/contracts"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/api/src/hooks/shell.ts",
     "apps/api/src/features/F7/shell/read.ts",
