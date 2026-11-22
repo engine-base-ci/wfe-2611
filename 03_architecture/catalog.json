@@ -1875,6 +1875,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-70",
     "K-419"
    ]
   },
@@ -1891,7 +1892,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "resendInvitation",
@@ -1906,7 +1909,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "createInvitationLink",
@@ -1921,7 +1926,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "downloadInvoicePdf",
@@ -3025,7 +3032,9 @@
     "notifications"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "updateMemberPermissions",
@@ -3085,7 +3094,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "suspendMember",
@@ -5878,6 +5889,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-70",
     "K-419"
    ]
   },
