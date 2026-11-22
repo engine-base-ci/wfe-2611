@@ -52,6 +52,8 @@ export interface CredentialItem {
   state: CheckState;
   /** 状態の補足（期限の日・止まった理由 など） */
   note?: string | null;
+  /** 書ける（上書き・消すを押せる）。false は灰色（ワークスペースの物で書けない人）。既定は書ける */
+  canEdit?: boolean;
 }
 
 export interface CredentialsBodyProps {
@@ -65,8 +67,10 @@ export interface CredentialsBodyProps {
   failed?: boolean;
   /** タブを替えた（入れ物がタブを持つ。口は呼び直さない） */
   onTab?: (tab: "workspace" | "personal") => void;
-  /** 行の操作（上書き・消す・コードを入れる・もう一度確かめる）を押せる。既定は押せない灰色（押せるようにするのは上書きと確かめの葉） */
+  /** 行の操作（上書き・消す・コードを入れる・もう一度確かめる）を押せる。既定は押せない灰色 */
   rowActionsReady?: boolean;
+  /** 「もう一度確かめる」を送っている行（答えまで押せない） */
+  recheckingId?: string | null;
   onAdd?: () => void;
   onEdit?: (id: string) => void;
   onRemove?: (id: string) => void;
@@ -87,8 +91,12 @@ export function CredentialsHead({ onAdd, addReady = false }: { onAdd?: () => voi
   );
 }
 
+/** もう一度確かめるを出す札（ログイン情報だけ。鍵は確かめる物が無い） */
+const RECHECKABLE: readonly CheckState[] = ["bad_password", "captcha", "stopped", "unchecked"];
+
 function rowActions(it: CredentialItem, p: CredentialsBodyProps): ReactNode {
   const off = !p.rowActionsReady;
+  const locked = off || it.canEdit === false;
   return (
     <>
       {it.state === "needs_code" ? (
@@ -96,15 +104,15 @@ function rowActions(it: CredentialItem, p: CredentialsBodyProps): ReactNode {
           コードを入れる
         </RowButton>
       ) : null}
-      {it.state === "bad_password" || it.state === "captcha" ? (
-        <RowButton disabled={off} onClick={() => p.onRecheck?.(it.id)}>
+      {it.kind === "login" && RECHECKABLE.includes(it.state) ? (
+        <RowButton disabled={off || p.recheckingId === it.id} onClick={() => p.onRecheck?.(it.id)}>
           もう一度確かめる
         </RowButton>
       ) : null}
-      <RowButton disabled={off} onClick={() => p.onEdit?.(it.id)}>
+      <RowButton disabled={locked} onClick={() => p.onEdit?.(it.id)}>
         上書き
       </RowButton>
-      <RowButton disabled={off} onClick={() => p.onRemove?.(it.id)}>
+      <RowButton disabled={locked} onClick={() => p.onRemove?.(it.id)}>
         消す
       </RowButton>
     </>
@@ -344,109 +352,169 @@ export function AddCredentialDialog({
   );
 }
 
-/** 上書き（小窓）：新しい値（ログイン情報は新しいログイン ID と新しいパスワードの両方）・使える場所・期限・なぜ上書きするか */
+/** 上書きの小窓に入れた値（入れたままの字。直し方と送る形は入れ物が持つ） */
+export interface EditCredentialValues {
+  login: string;
+  password: string;
+  value: string;
+  destinations: string;
+  expires_on: string;
+  reason: string;
+}
+export type EditCredentialField = keyof EditCredentialValues;
+export type EditCredentialErrors = Partial<Record<EditCredentialField, string>>;
+
+/** 上書き（小窓）：新しい値（ログイン情報は新しいログイン ID と新しいパスワードの両方）・使える場所・期限・なぜ上書きするか。
+ *  値と押す関数は入れ物（本番は edit-credential・モックは mocks.tsx）が渡す。error は小窓の赤の知らせ（口の文） */
 export function EditCredentialDialog({
   open,
   item,
+  values,
+  errors,
+  error,
+  busy = false,
+  onValue,
+  onSubmit,
   onOpenChange,
 }: {
   open: boolean;
   item: CredentialItem;
+  values: EditCredentialValues;
+  errors?: EditCredentialErrors;
+  error?: string | null;
+  busy?: boolean;
+  onValue?: (patch: Partial<EditCredentialValues>) => void;
+  onSubmit?: () => void;
   onOpenChange?: (o: boolean) => void;
 }) {
+  const text = (k: EditCredentialField) => ({
+    value: values[k],
+    onChange: (e: ChangeEvent<HTMLInputElement>) => onValue?.({ [k]: e.target.value }),
+    error: errors?.[k],
+  });
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 送っている間は閉じない
+        onOpenChange?.(o);
+      }}
       title={`${item.name} を上書きする`}
       subtitle="前の値は消え、戻せない。見ることもできない"
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             やめる
           </Button>
-          <Button>本人確認して上書き</Button>
+          <Button loading={busy} onClick={onSubmit}>
+            本人確認して上書き
+          </Button>
         </>
       }
     >
+      {error ? <ResultBox tone="bad">{error}</ResultBox> : null}
       {item.kind === "login" ? (
         <>
           <TextField
             label="新しいログイン ID"
             name="login"
             hint="パスワードだけを替えるときも、ID とパスワードを両方入れる"
+            autoComplete="off"
+            {...text("login")}
           />
-          <PasswordField label="新しいパスワード" name="password" />
+          <PasswordField label="新しいパスワード" name="password" autoComplete="new-password" {...text("password")} />
         </>
       ) : (
-        <PasswordField label="新しい値" name="value" />
+        <PasswordField label="新しい値" name="value" autoComplete="new-password" {...text("value")} />
       )}
-      <TextField label="使える場所" name="destinations" defaultValue={item.destinations.join(", ")} />
-      <TextField label="期限（任意）" name="expires_at" defaultValue="2027/11/10" />
-      <TextField
-        label="なぜ上書きするか（任意・記録に残る）"
-        name="reason"
-        defaultValue={item.kind === "login" ? "サービスの側でパスワードを変えたため" : "会計ソフトで作り直したため"}
-      />
+      <TextField label="使える場所" name="destinations" {...text("destinations")} />
+      <TextField label="期限（任意）" name="expires_on" {...text("expires_on")} />
+      <TextField label="なぜ上書きするか（任意・記録に残る）" name="reason" {...text("reason")} />
       <NoteBox>このあと実行される分から新しい値を使います。上書きしたら、PC がもう一度ログインして確かめます</NoteBox>
     </Dialog>
   );
 }
 
-/** 消す（確かめ） */
+/** 消す（確かめ）。error は確かめの小窓の赤の知らせ（口の文・閉じない） */
 export function RemoveCredentialConfirm({
   open,
   name,
+  error,
+  busy = false,
+  onConfirm,
   onOpenChange,
 }: {
   open: boolean;
   name: string;
+  error?: string | null;
+  busy?: boolean;
+  onConfirm?: () => void;
   onOpenChange: (o: boolean) => void;
 }) {
   return (
     <Confirm
       open={open}
       onOpenChange={onOpenChange}
-      onConfirm={() => onOpenChange(false)}
+      onConfirm={onConfirm ?? (() => onOpenChange(false))}
+      busy={busy}
       title={`${name} を消しますか？`}
       description="分身はこの名前を使えなくなります。いま実行中のものも、次に使う時点で止まります"
       confirmLabel="消す"
       tone="danger"
       caution={["消した値は戻せません。同じ名前でもう一度預けられます"]}
-    />
+    >
+      {error ? <ResultBox tone="bad">{error}</ResultBox> : null}
+    </Confirm>
   );
 }
 
-/** 確かめの途中で PC がコードを頼んでいる（SMS・メール）。コードは PC にだけ渡る（D-117） */
+/** 確かめの途中で PC がコードを頼んでいる（SMS・メール・スマホ）。コードは PC にだけ渡る（D-117）。
+ *  error はコードの欄の下の文（形の誤り）、alert は小窓の赤の知らせ（ほかの失敗） */
 export function CheckCodeDialog({
   open,
   name,
   via,
+  code = "",
   error,
+  alert,
+  busy = false,
+  onCode,
+  onSubmit,
   onOpenChange,
 }: {
   open: boolean;
   name: string;
   via: "sms" | "email" | "push";
+  code?: string;
   error?: string | null;
+  alert?: string | null;
+  busy?: boolean;
+  onCode?: (code: string) => void;
+  onSubmit?: () => void;
   onOpenChange?: (o: boolean) => void;
 }) {
   const how = via === "sms" ? "SMS で届いた" : via === "email" ? "メールで届いた" : "スマホのアプリの";
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(o) => {
+        if (!o && busy) return; // 送っている間は閉じない
+        onOpenChange?.(o);
+      }}
       title={`${name} のコードを入れる`}
       subtitle={`PC がログインの途中で止まっています。${how}コードを入れてください`}
       actions={
         <>
-          <Button variant="outlined" onClick={() => onOpenChange?.(false)}>
+          <Button variant="outlined" disabled={busy} onClick={() => onOpenChange?.(false)}>
             あとで
           </Button>
-          <Button>PC に渡す</Button>
+          <Button loading={busy} onClick={onSubmit}>
+            PC に渡す
+          </Button>
         </>
       }
     >
+      {alert ? <ResultBox tone="bad">{alert}</ResultBox> : null}
       {via === "push" ? (
         <NoteBox>スマホのアプリで「承認」を押してから、「PC に渡す」を押してください</NoteBox>
       ) : (
@@ -455,6 +523,8 @@ export function CheckCodeDialog({
           name="code"
           inputMode="numeric"
           autoComplete="one-time-code"
+          value={code}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onCode?.(e.target.value)}
           error={error ?? undefined}
         />
       )}
