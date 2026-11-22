@@ -19586,7 +19586,8 @@
    "choke_points": [],
    "choke_none": "読むだけ（DB の読む関数を作り直し、読む口を 1 本足す）。DB に書かず、知らせ・外のサービスを呼ばない",
    "tests": [
-    "apps/api/test/features/F8/handover-queue-read.test.ts"
+    "apps/api/test/features/F8/handover-queue-read.test.ts",
+    "apps/api/test/generated/get_tickets_id_handovers.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-405.ts"
