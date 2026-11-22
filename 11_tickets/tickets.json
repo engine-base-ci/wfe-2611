@@ -20997,6 +20997,62 @@
     "決める人・PM に聞くこと": "1. （PM に）**公開の側の変数 CI_RUNNER の値は `\"ubuntu-24.04\"`（x64）を勧める**。arm（`ubuntu-24.04-arm`）は Chrome が無く、G73 が落ちる（無料の範囲は両方同じ）。Mac の VM は arm64 なので、x64 に載ると architecture が変わる：ネイティブの部品（esbuild・Playwright・squawk）は pnpm・npm が台に合う物を入れるので問題は見つかっていない（この葉では試せない）。最初の公開の回で確かめる\n2. （PM に・この葉の範囲の外）Docker Hub の `pgvector/pgvector:pg16` を GitHub の台が毎回引く（11 組が各 1 回）。個人の公開イメージは匿名の引き数の制限に当たりうる。当たったら、同じイメージを公開の側の ghcr.io に写して差し替えるか、Docker Hub の読み取り専用の鍵を公開側の秘密に置く（定義の DB を立てる段の変更になる別の葉）。最初の回で確かめてから決める"
    },
    "file": "11_tickets/K-641.md"
+  },
+  {
+   "id": "K-644",
+   "title": "直し：kaname_auth の表に触る口の試験が、試験の準備で migrateAuth を呼ぶ（共有の土台 makeFixture で呼ぶ形に 1 か所で直し・口の試験の突き合わせを足す・組み分けで赤になる元・K-56 の葉・PM の直し）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮（試験の準備に 1 行ずつ足す直し。形の近い K-643 と同じ 0.5 時間）。試験の準備 2 か所の直し 5 分・機械の突き合わせの自己試験 2 行の確かめ 10 分・整形 5 分・余裕 10 分。DB の試験は手元で流さない（CI が流す）",
+   "decisions": [
+    "D-128.147"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "口の試験の準備（beforeAll）に migrateAuth の呼び出しを足すだけ。製品のコード・口・DB の形・外には触らない",
+   "tests": [
+    "scripts/ci/k644_migrate_auth_test.py",
+    "apps/api/test/features/fixture.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（試験の準備の直し）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/g65.d/K-644.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-419 の試験 `apps/api/test/features/F10/invite-create.test.ts` は、`migrateAuth` を呼ばずに `kaname_auth.\"user\"` へ直に insert している。本線では、組み分けで先に流れる別の試験が表を作るので緑になっている。migration を触った葉は DB の試験を全部流す範囲になり、組み分けが変わって `relation \"kaname_auth.user\" does not exist` で赤になる（K-433）。ほかの F10・F1・F4 の試験と同じように、試験の準備で `migrateAuth` を呼ぶ形に直す。\n\n- 同じ形（`migrateAuth` を呼ばずに `kaname_auth` に触る試験）を全部出して、まとめて直す（下の検索）。見つかったのは 2 か所：`invite-create.test.ts`（直に insert・K-354 が先に本線で直した。本線の版を使う）と `F5/approve-complete.harness.ts`（`pairMemberForTest`＝`bridge_pair.ts` が `kaname_auth.\"user\"` を引く。F5 の approve-complete 6 本・bridge-take-guard・k236_read_sweep が土台を通して同じ穴を持つ）\n- 戻らないように、機械で突き合わせる自己試験を 1 本足す：口の試験が読み込む土台まで含めて `kaname_auth` に触るなら、どこかで `migrateAuth(` を呼ぶ",
+    "完了の条件": "- [ ] K644-CI-001・002 が緑：`python3 scripts/ci/k644_migrate_auth_test.py`\n- [ ] 直した共有の土台（features/fixture.ts）が整形・型で緑（DB の試験そのものは CI が流す）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 直し方（PM の決め 2026-11-23・K-401 の fd7627704 と同じ）：共有の土台 `apps/api/test/features/fixture.ts` の `makeFixture` で、`migrate`（本体の migration）の**直後**に `await migrateAuth(DB_URL)` を 1 か所で呼ぶ。試験 1 本ずつには足さない（土台を使う全部の試験が同じ穴を持つので、1 か所で塞ぐ）。以前の案は `makeFixture()` の後に各試験が呼ぶ形（F1 の login.harness・F4 の me-workspace と同じ順・冪等。kaname_auth のスキーマとロールは本体の migration が作るので、前に呼ぶと組み分けで最初に流れたとき別の理由で赤になる）\n- 「試験のファイルを変える葉」：変えた共有の土台（features/fixture.ts）は tests: に入れる。直した後は、この葉の中で変えない\n- 試験を流して赤を確かめない（D-128.143）",
+    "確かめたこと（切る段・2026-11-23）": "- 同じ形の全部出し：下の検索（`kaname_auth` に触る試験の木で `migrateAuth(` の呼び出しが無い物）を、直す前の写しに流すと 9 本が出る：invite-create（K-354 が直した）・F5 の approve-complete 6 本・bridge-take-guard・k236_read_sweep。F5 の 8 本は土台 `approve-complete.harness.ts` が `makeFixture()` の後に `pairMemberForTest` を呼ぶので、土台に 1 行足せば全部直る。直した後は 0 本\n- 前の案（各試験の準備に 1 行ずつ）は取りやめ：`makeFixture` を使う試験は 40 本以上で、どれが表を要るかを 1 本ずつ見るより、土台で 1 回当てるほうが漏れない（`migrateAuth` は冪等・数百 ms）。K-401 の担当が同じ直しを作ってあるので同じ中身にする",
+    "依存の理由": "無い（depends_on は空）。K-419・K-62・K-63・K-354 は取り込み済みで、この葉はそれらの試験の準備に 1 行ずつ足すだけ",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 土台の準備 | `apps/api/test/features/fixture.ts`：`import { migrateAuth } from \"@kaname/auth/migrate\"` を足し、`makeFixture` の `await migrate(DB_URL, DB_PKG)` の直後に `await migrateAuth(DB_URL)`（切る段で入れた・K-401 の fd7627704 と同じ）。invite-create・F5 の土台は各自の呼び出しを持たなくなるが、K-354 の invite-create の呼び出しは冪等なので残してよい |\n| 機械の突き合わせ | `scripts/ci/k644_migrate_auth_test.py`（切る段で置いた）。登録先 `scripts/ci/g65.d/K-644.txt` |\n| 自分の確かめ | ① `python3 scripts/ci/k644_migrate_auth_test.py` ② `prettier --check` と型の読み合わせ（DB の試験は CI） |\n| 使う部品と版 | `@kaname/auth/migrate` の `migrateAuth`（今の版）・Python 3.14。新しい部品は入れない |\n| 目録で探した結果 | 使う：F4・F1 の試験が持つ `migrateAuth` の呼び出しの形。作らない |\n\n```search\ngit grep -ln \"kaname_auth\" -- apps/api/test\n62\n```\n\n62 件：kaname_auth の字を持つファイル（コメントだけの物・土台を含む）。この中で、土台を通して試験が触る物を、機械の突き合わせ（K644-CI-001）が木をたどって migrateAuth の呼び出しと突き合わせる。\n\n```search\ngit grep -ln \"migrateAuth\" -- apps/api/test\n45\n```\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 口の試験の準備 | migrateAuth を呼ばない 8 本（F5 の土台を通る物）が組み分けの運で緑 | makeFixture を使う全部の試験で migrateAuth（冪等・数百 ms）を 1 回呼ぶ。組の時間はほぼ変わらない |",
+    "表の住所": "- 新しい口・エラー番号・migration は無い",
+    "外に影響する手順": "- なし — 試験の準備に冪等の migrateAuth を足すだけ（試験用の DB の中だけ）。DB に書く・外を呼ぶ・錠を作るのは試験の準備の中で、製品のコードは変えない",
+    "テスト仕様と確認の結果": "`scripts/ci/k644_migrate_auth_test.py`（unittest・apps/api/test の TypeScript を読む。字の中の `//` はコメントにしない読み手）。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 口の試験が kaname_auth に触る（土台を含む）・migrateAuth を呼ぶ | CI（組み分けがどう変わっても） | PM | 表を自分で作るので緑 | このチケット | K644-CI-001 |\n| 呼ばない試験・呼ばない土台を読む試験 | 機械の突き合わせ | PM | 赤で名指し | このチケット | K644-CI-002 |\n| コメントだけに kaname_auth が出る試験（字の中の // はコメントにしない） | 機械の突き合わせ | PM | 数えない（緑）。SQL の字の中の kaname_auth は数える | このチケット | K644-CI-002 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K644-CI-001 | 守り | 本物の apps/api/test の全部の *.test.ts | kaname_auth に触る木で migrateAuth を呼ばない試験が 0 本。見た試験は 30 本以上・kaname_auth に触る試験は 10 本以上（0 本の緑にしない） |\n| K644-CI-002 | 失敗 | 偽の木 7 通り | migrateAuth を呼ばず直に入れる試験・呼ばない土台を読む試験は名指しで赤。土台が呼ぶ・試験自身が呼ぶ・コメントだけの試験は緑。字の中の `//` の後ろにある本物の kaname_auth（SQL の字）は数えて赤 |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：この葉が読む・足すファイルの名前に日本語は無い |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 受ける：K644-CI-001 は見た本数の下限・K644-CI-002 は赤になる偽の木を持つ |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：ファイルを読むだけの検査で、台の設定・版に依らない |\n\nほかの観点：G-11〜G-16 は該当なし。\n\n機械の突き合わせの限界（直さない）：木にある `migrateAuth(` は呼ばれない関数の中でも「呼ぶ」と数える／相対の文字列の import だけをたどる（`@kaname/…` の別名・動的 import・`vi.mock` は追わない）／`apps/api/src` に入る経路は見ない（kaname_auth の字が試験の木に無い試験は対象外）／正規表現の中の引用符で読みが狂う余地（今は 0 件）／見るのは `apps/api/test` の `*.test.ts` だけ。",
+    "前からの試験を替えた所": "changes: は台帳（g65.d）だけで、使う前からの試験は無い。変えた共有の土台（features/fixture.ts）は tests: に入れ、この葉で直す。\n\n```search\npython3 scripts/ci/cut_check.py prior --files scripts/ci/g65.d/K-644.txt\n0\n```",
+    "決定ログ": "足さない。",
+    "決める人・PM に聞くこと": "なし",
+    "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 2 行"
+   },
+   "file": "11_tickets/K-644.md"
   }
  ]
 }
