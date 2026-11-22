@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 69・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 18・共通の処理 13・エラー 214・部品 56・設定 41
+API 369（作った 70・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 18・共通の処理 13・エラー 214・部品 56・設定 41
 
 ## 共通の処理
 
@@ -344,7 +344,7 @@ API 369（作った 69・後のフェーズの行為だけ 20）・前の道す�
 | `applyTicketAgentProposal` | POST /api/v1/tickets/:id/agent-session/apply | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listTicketArtifacts` | GET /api/v1/tickets/:id/artifacts | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
-| `updateTicketBody` | PATCH /api/v1/tickets/:id/body | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-432 |
+| `updateTicketBody` | PATCH /api/v1/tickets/:id/body | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-59,K-432 |
 | `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
