@@ -136,4 +136,5 @@ export const MIGRATIONS = [
   "20261121090300_handover_answer_pass.sql",
   "20261121090500_handover_queue.sql",
   "20261121091900_workspace_invitations.sql",
+  "20261122090300_custom_fields.sql",
 ] as const;
