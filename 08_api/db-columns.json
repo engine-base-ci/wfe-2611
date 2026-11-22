@@ -1737,6 +1737,98 @@
     "nullable": true
    }
   },
+  "custom_field_kinds": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "field_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "kind_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
+  "custom_fields": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "description": {
+    "type": "text",
+    "nullable": true
+   },
+   "field_type": {
+    "type": "text",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "name": {
+    "type": "text",
+    "nullable": false
+   },
+   "options": {
+    "type": "jsonb",
+    "nullable": false
+   },
+   "position": {
+    "type": "integer",
+    "nullable": false
+   },
+   "required": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   }
+  },
   "daily_plans": {
    "capacity_minutes": {
     "type": "integer",
@@ -6908,7 +7000,19 @@
   "test_specs": {
    "check_kind": {
     "type": "text",
+    "nullable": true
+   },
+   "checked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "checked_by_ai": {
+    "type": "boolean",
     "nullable": false
+   },
+   "checked_by_member_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "created_at": {
     "type": "timestamp with time zone",
@@ -6937,6 +7041,14 @@
    "params": {
     "type": "jsonb",
     "nullable": false
+   },
+   "source": {
+    "type": "text",
+    "nullable": false
+   },
+   "source_ref_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
@@ -7061,6 +7173,48 @@
    "updated_by": {
     "type": "uuid",
     "nullable": true
+   }
+  },
+  "ticket_field_values": {
+   "created_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "created_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "deleted_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "field_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "tenant_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "ticket_id": {
+    "type": "uuid",
+    "nullable": false
+   },
+   "updated_at": {
+    "type": "timestamp with time zone",
+    "nullable": false
+   },
+   "updated_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "value": {
+    "type": "jsonb",
+    "nullable": false
    }
   },
   "ticket_handovers": {
@@ -7204,6 +7358,10 @@
    }
   },
   "ticket_kinds": {
+   "body_template": {
+    "type": "jsonb",
+    "nullable": true
+   },
    "color": {
     "type": "text",
     "nullable": true
@@ -7599,6 +7757,10 @@
    "kind_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "no_spec_reason": {
+    "type": "text",
+    "nullable": true
    },
    "number": {
     "type": "text",
