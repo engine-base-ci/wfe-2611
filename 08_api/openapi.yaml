@@ -1649,6 +1649,11 @@ components:
         kind_id:
           type: string
           nullable: true
+          enum:
+          - rule
+          - preference
+          - example
+          - null
         owner_member_id:
           type: string
           format: uuid
@@ -1661,7 +1666,7 @@ components:
           nullable: true
         confidence:
           type: string
-          pattern: ^-?[0-9](?:\.[0-9]+)?$
+          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
           nullable: true
         source_type_id:
           type: string
@@ -1687,6 +1692,10 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
+      allOf:
+      - properties:
+          body:
+            type: string
     MemoryDigests:
       type: object
       properties:
@@ -12924,6 +12933,11 @@ components:
         kind_id:
           type: string
           nullable: true
+          enum:
+          - rule
+          - preference
+          - example
+          - null
         owner_member_id:
           type: string
           format: uuid
@@ -12937,7 +12951,7 @@ components:
           pattern: \S
         confidence:
           type: string
-          pattern: ^-?[0-9](?:\.[0-9]+)?$
+          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
           nullable: true
         source_type_id:
           type: string
@@ -12963,6 +12977,10 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
+      allOf:
+      - properties:
+          body:
+            type: string
       x-operation: updateMemory
       required:
       - body
@@ -15557,13 +15575,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR／E-VAL-008／E-VAL-004（契約に書けない値の決まり：メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定））
+          description: VALIDATION_ERROR／E-VAL-008／E-VAL-004
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）
         '401':
           description: E-AUTH-001
           content:
@@ -16289,13 +16305,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR／E-VAL-009（契約に書けない値の決まり：code と backup_code の両方・どちらも無い（どちらか 1 つ））
+          description: VALIDATION_ERROR／E-VAL-009
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - code と backup_code の両方・どちらも無い（どちらか 1 つ）
         '401':
           description: E-AUTH-004／E-AUTH-013
           content:
@@ -16510,14 +16524,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）・NFKC で英数字になる字（① など））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：NFKC で英数字になる字（① など））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）
           - NFKC で英数字になる字（① など）
+        '404':
+          description: E-CONN-013
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -31458,14 +31477,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）・確かさが四捨五入で 10 以上になる（9.995 など））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）
-          - 確かさが四捨五入で 10 以上になる（9.995 など）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -31559,13 +31575,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：覚えることが null（空と同じ））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 覚えることが null（空と同じ）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
