@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 70,
+  "api_built": 76,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 219,
+  "errors": 224,
   "stack": 56,
   "env": 41
  },
@@ -685,9 +685,10 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-56",
+    "K-354"
    ]
   },
   {
@@ -1670,6 +1671,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -1687,6 +1689,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -4772,9 +4775,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5210,7 +5214,7 @@
    "op": "listTicketLinks",
    "method": "GET",
    "path": "/api/v1/tickets/:id/links",
-   "what": "取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
+   "what": "取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children",
    "flows": [
     "F4"
    ],
@@ -5218,9 +5222,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5235,9 +5240,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5329,7 +5335,7 @@
    "op": "listTestSpecs",
    "method": "GET",
    "path": "/api/v1/tickets/:id/test-specs",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
+   "what": "取得（test_specs）— チケットの確認項目を作った順に見る（文・チェック・出どころ）",
    "flows": [
     "F4"
    ],
@@ -5337,9 +5343,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5354,9 +5361,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {

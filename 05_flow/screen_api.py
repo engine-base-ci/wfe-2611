@@ -1074,7 +1074,9 @@ RESPONSES = {
     "listTicketRuns": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                           "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
                                           "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "checks": "object"}),
-    "resolveCredential": ("ResolvedCredential", {"ref": "string", "ciphertext_for_executor": "string", "destinations": "array", "expires_at": "string?"}),
+    # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
+    "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
+                                                 "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
     "getWorkTypeUpload": ("WorkTypeUploadCheck", {"package": "object", "checks": "array", "passed": "boolean", "test_scenarios": "integer", "changelog": "string?"}),
     "getPlanProposalImpact": ("PlanProposalImpact", {"tenants": "integer", "monthly_revenue_diff": "integer", "existing_from": "string", "new_from": "string?", "by_workspace": "array"}),
     "checkRule": ("RuleCheck", {"conflicts": "array", "similar": "array", "needs_approval_from": "string", "warnings": "array"}),
