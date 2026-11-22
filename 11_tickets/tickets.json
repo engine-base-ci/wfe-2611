@@ -19060,7 +19060,8 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F6/thread-seen.test.ts"
+    "apps/api/test/features/F6/thread-seen.test.ts",
+    "apps/api/test/generated/post_tickets_id_timeline_seen.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-384.ts"
