@@ -33,8 +33,8 @@ SCREEN_API = {
         ("POST", "/ticket_imports", "A99", "ticket_imports", "createTicketImport", []),
         ("GET", "/ticket_imports/:id", "A99", "ticket_imports", "getTicketImport", []),
         ("POST", "/ticket_imports/:id/commit", "A99", "ticket_imports", "commitTicketImport", [T]),
-        # 本文（区画）と版
-        ("PATCH", "/tickets/:id/sections/:key", "A101", "ticket_sections", "updateTicketSection", ["ticket_section_versions"]),
+        # 本文（1 枚の文書）と版
+        ("PATCH", "/tickets/:id/body", "A101", "ticket_sections", "updateTicketBody", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
         ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_section_versions", "restoreTicketVersion", ["ticket_sections"]),
         ("POST", "/ticket_kinds/:id/template-from-ticket", "A101", "kind_sections", "makeKindTemplateFromTicket", [T]),
@@ -1207,7 +1207,7 @@ PERMS = {
     "createTicketImport": ("write", "取り込む先のグループに書ける人", False),
     "getTicketImport": ("self", "取り込んだ本人", False),
     "commitTicketImport": ("self", "取り込んだ本人（確定のときに取り込む先の権限をもう一度確かめる）", False),
-    "updateTicketSection": ("write", "そのグループの人", False),
+    "updateTicketBody": ("write", "そのグループの人", False),
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
     "makeKindTemplateFromTicket": ("admin", "チケットの形を直せる人（D-128.48・D-128.83）", False),

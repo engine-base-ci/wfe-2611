@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:411e3ab7b6dccb19
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fb220c04eda2b45a
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -315,6 +315,7 @@ export interface Ops {
   sendTicketAgentMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   listTicketArtifacts: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Artifacts[] };
   createTicketAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
+  updateTicketBody: { params: { id: string }; query: never; body: T.TicketBodyInput; data: T.BodySaved };
   listChecks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Checks[] };
   updateTicketClientShare: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
   completeTicket: { params: { id: string }; query: never; body: T.TicketCompleteInput; data: T.TicketCompletion };
@@ -331,7 +332,6 @@ export interface Ops {
   listTicketReferences: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ReferenceLogs[] };
   restoreTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
   listTicketRuns: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActionRunView[] };
-  updateTicketSection: { params: { id: string; key: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
   listTestSpecs: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TestSpecs[] };
   createTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
   lintTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecLint };

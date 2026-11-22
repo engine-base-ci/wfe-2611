@@ -80,7 +80,9 @@
     "E-INV-006",
     "E-INV-005",
     "E-INV-007",
-    "E-INV-008"
+    "E-INV-008",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",
@@ -790,7 +792,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",
@@ -1766,7 +1770,9 @@
     "E-TO-005",
     "E-CONN-018",
     "E-CONN-016",
-    "E-CONN-017"
+    "E-CONN-017",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C1",
@@ -2241,7 +2247,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C1",
@@ -3533,7 +3541,9 @@
     "E-INV-009",
     "E-INV-010",
     "E-INV-011",
-    "E-INV-012"
+    "E-INV-012",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",
@@ -5157,7 +5167,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",
@@ -7380,7 +7392,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",
@@ -7730,7 +7744,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2"
@@ -8009,7 +8025,9 @@
     "E-CONF-013",
     "E-CONF-014",
     "E-SIG-004",
-    "E-TO-005"
+    "E-TO-005",
+    "E-SEC-004",
+    "E-SEC-005"
    ],
    "policies": [
     "C2",

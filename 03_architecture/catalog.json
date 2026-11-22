@@ -12,7 +12,7 @@
   "db": 148,
   "ui": 18,
   "packages": 13,
-  "errors": 212,
+  "errors": 214,
   "stack": 56,
   "env": 41
  },
@@ -5037,6 +5037,23 @@
    ]
   },
   {
+   "op": "updateTicketBody",
+   "method": "PATCH",
+   "path": "/api/v1/tickets/:id/body",
+   "what": "更新（tickets）— チケットの中身（区画）を書く・直す",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_sections"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-432"
+   ]
+  },
+  {
    "op": "listChecks",
    "method": "GET",
    "path": "/api/v1/tickets/:id/checks",
@@ -5306,23 +5323,6 @@
    "status": "作った",
    "owner_tickets": [
     "K-62"
-   ]
-  },
-  {
-   "op": "updateTicketSection",
-   "method": "PATCH",
-   "path": "/api/v1/tickets/:id/sections/:key",
-   "what": "更新（tickets）— チケットの中身（区画）を書く・直す",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "ticket_sections"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
    ]
   },
   {

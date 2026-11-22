@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:411e3ab7b6dccb19
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:fb220c04eda2b45a
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -16513,6 +16513,66 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "PATCH",
+    "path": "/api/v1/tickets/:id/body",
+    "operationId": "updateTicketBody",
+    "table": "ticket_sections",
+    "kind": "update",
+    "input": "TicketBodyInput",
+    "success": 200,
+    "output": "BodySaved",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      404,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A101"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "write",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "tickets",
+        "sql": "app.ticket_writable(id)"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "GET",
     "path": "/api/v1/tickets/:id/checks",
     "operationId": "listChecks",
@@ -17408,62 +17468,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "row": {
         "table": "tickets",
         "sql": "true"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "PATCH",
-    "path": "/api/v1/tickets/:id/sections/:key",
-    "operationId": "updateTicketSection",
-    "table": "ticket_sections",
-    "kind": "update",
-    "input": "TicketSectionsInput",
-    "success": 200,
-    "output": "TicketSections",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A101"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "write",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "app.ticket_writable(id)"
       }
     },
     "termsOpen": false,
@@ -19572,4 +19576,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "411e3ab7b6dccb19";
+export const OPENAPI_HASH = "fb220c04eda2b45a";
