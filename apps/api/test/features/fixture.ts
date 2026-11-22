@@ -71,7 +71,7 @@ export type HookFactory = (appPool: pg.Pool) => Record<string, Hook>;
 
 export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
   await migrate(DB_URL, DB_PKG);
-  // 認証の表（kaname_auth.user）は別の道の migration。土台を使う試験が自分の足し込みで書くので、ほかの試験が先に流れた DB でだけ在る状態にしない
+  // 認証の表（kaname_auth.user）は別の道の migration。土台を使う試験が自分の足し込みで書くので、ほかの試験が先に流れた DB でだけ在る状態にしない（K-644・K-433）
   await migrateAuth(DB_URL);
   const admin = new pg.Pool({ connectionString: DB_URL, max: 3 });
   const pool = createPool({ databaseUrl: APP_URL, max: 6 });
