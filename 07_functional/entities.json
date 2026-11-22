@@ -10452,6 +10452,10 @@
     {
      "to": "ticket_class_values",
      "label": "分類"
+    },
+    {
+     "to": "ticket_field_values",
+     "label": "会社の項目の値"
     }
    ],
    "soft_delete": true,
@@ -11082,7 +11086,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.67）。**会社が足す軸は上限 5",
+   "note": "**★新設（D-125.67）。**会社が足す軸は上限 5。**凍結（K-563・会社の項目へ移した）**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
@@ -11168,7 +11172,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "値の並び・色",
+   "note": "値の並び・色。**凍結（K-563・会社の項目へ移した）**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
@@ -11248,13 +11252,277 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）",
+   "note": "チケットに付けた分類。読めるのは元のチケットを読める人（D-128.115）。**凍結（K-563・会社の項目へ移した）**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
     "D-125",
     "D-128",
     "D-128.115"
+   ]
+  },
+  {
+   "id": "E-144",
+   "name": "custom_fields",
+   "table_name": "custom_fields",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "name",
+     "note": null
+    },
+    {
+     "name": "field_type",
+     "note": "短い文字・長い文章・数・日付・1 つ選ぶ・複数選ぶ・チェック"
+    },
+    {
+     "name": "required",
+     "note": null
+    },
+    {
+     "name": "description",
+     "note": null
+    },
+    {
+     "name": "options",
+     "note": "jsonb（選ぶ型だけ [{id, name, position}]"
+    },
+    {
+     "name": "position",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "to": "custom_field_kinds",
+     "label": "出す種別"
+    },
+    {
+     "to": "ticket_field_values",
+     "label": "値"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "custom_fields_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
+     "source": [
+      "D-125.67"
+     ]
+    },
+    {
+     "name": "custom_fields_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'custom_fields', NULL, 'edit')",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
+     "source": [
+      "D-125.66",
+      "D-128.97"
+     ]
+    },
+    {
+     "name": "custom_fields_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = custom_fields.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "**★新設（K-563・D-150.36・D-150.37）。**会社が足す項目。分類の軸は「1 つ選ぶ」の項目に移した（項目の id＝軸の id）。数に上限なし",
+   "status": "decided",
+   "decided_at": "2026-11-22",
+   "source": [
+    "D-125",
+    "D-128",
+    "D-150.36",
+    "D-150.37"
+   ]
+  },
+  {
+   "id": "E-145",
+   "name": "custom_field_kinds",
+   "table_name": "custom_field_kinds",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "field_id",
+     "note": null
+    },
+    {
+     "name": "kind_id",
+     "note": null
+    }
+   ],
+   "relations": [
+    {
+     "from": "custom_fields",
+     "label": "出す種別"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "custom_field_kinds_tenant_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid",
+     "rationale": "ワークスペースのメンバーは読む（チケットを作る・絞る・渡すときに使う）",
+     "source": [
+      "D-125.67"
+     ]
+    },
+    {
+     "name": "custom_field_kinds_permission_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND has_permission(current_setting('app.user_id', true)::uuid, 'custom_field_kinds', NULL, 'edit')",
+     "rationale": "決まりを直せる人（ワークスペース全体の edit・既定は管理者）",
+     "source": [
+      "D-125.66",
+      "D-128.97"
+     ]
+    },
+    {
+     "name": "custom_field_kinds_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = custom_field_kinds.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "どの種別で出すか。行が無い項目は全部の種別（K-563）",
+   "status": "decided",
+   "decided_at": "2026-11-22",
+   "source": [
+    "D-125",
+    "D-128"
+   ]
+  },
+  {
+   "id": "E-146",
+   "name": "ticket_field_values",
+   "table_name": "ticket_field_values",
+   "section": "16. 第1フェーズの表",
+   "fields": [
+    {
+     "name": "<common>",
+     "note": null
+    },
+    {
+     "name": "ticket_id",
+     "note": null
+    },
+    {
+     "name": "field_id",
+     "note": null
+    },
+    {
+     "name": "value",
+     "note": "jsonb（null 不可"
+    }
+   ],
+   "relations": [
+    {
+     "from": "custom_fields",
+     "label": "値"
+    },
+    {
+     "from": "tickets",
+     "label": "会社の項目の値"
+    }
+   ],
+   "soft_delete": true,
+   "timestamps": true,
+   "tenant_field": "tenant_id",
+   "indexes": [],
+   "computed": [],
+   "tenant_isolation": {
+    "type": "account_scoped",
+    "column": "tenant_id",
+    "fk_table": "tenants"
+   },
+   "access_control_policies": [
+    {
+     "name": "ticket_field_values_ticket_read",
+     "operation": "select",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_visible(ticket_id)",
+     "rationale": "元のチケットを読める人だけ（グループの外の人・他の会社には見せない）",
+     "source": [
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
+     ]
+    },
+    {
+     "name": "ticket_field_values_ticket_write",
+     "operation": "insert,update,delete",
+     "role": "member",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.ticket_writable(ticket_id)",
+     "rationale": "元のチケットに書ける人だけ",
+     "source": [
+      "D-128.115",
+      "D-073.1",
+      "D-128.88"
+     ]
+    },
+    {
+     "name": "ticket_field_values_ops_read_with_grant",
+     "operation": "select",
+     "role": "ops",
+     "predicate": "current_setting('app.role', true) = 'ops' AND EXISTS (SELECT 1 FROM support_access_grants g WHERE g.tenant_id = ticket_field_values.tenant_id AND g.expires_at > now() AND g.revoked_at IS NULL)",
+     "rationale": "運営は理由つき・1 時間・見るだけの許可があるときだけ（D-128.68）",
+     "source": [
+      "D-128.68"
+     ]
+    }
+   ],
+   "legacy_drift_notes": null,
+   "note": "チケットごとの会社の項目の値（子表。項目の定義はマスタ `custom_fields`）。読めるのは元のチケットを読める人（K-563）",
+   "status": "decided",
+   "decided_at": "2026-11-22",
+   "source": [
+    "D-125",
+    "D-128"
    ]
   },
   {

@@ -1480,6 +1480,42 @@
    },
    "na": {}
   },
+  "updateTicket": {
+   "file": "apps/api/test/features/F6/progress.test.ts",
+   "reason": "段・実績・保留の変更は、今の段・行き先の段・走っている実行・担当者の組み合わせで答えが変わる。生成の試験の種では作れない（K-387）",
+   "covers": {
+    "test_patch_tickets_id_ok": "K387-API-001",
+    "test_patch_tickets_id_ok_2": "K387-API-002",
+    "test_patch_tickets_id_ok_3": "K387-API-014",
+    "test_patch_tickets_id_ok_4": "K387-API-010",
+    "test_patch_tickets_id_rejected_401": "K387-API-020",
+    "test_patch_tickets_id_rejected_403": "K387-API-020",
+    "test_patch_tickets_id_not_found": "K387-API-020",
+    "test_patch_tickets_id_rejected_422": "K387-API-018",
+    "test_patch_tickets_id_rejected_422_2": "K387-API-028",
+    "test_patch_tickets_id_conflict": "K387-API-011",
+    "test_patch_tickets_id_conflict_2": "K387-API-012",
+    "test_patch_tickets_id_conflict_3": "K387-API-007",
+    "test_patch_tickets_id_conflict_4": "K387-API-005",
+    "test_patch_tickets_id_conflict_5": "K387-API-006",
+    "test_patch_tickets_id_unavailable": "K387-API-024",
+    "test_patch_tickets_id_server_error": "K387-API-029",
+    "test_patch_tickets_id_rate_limited": "K387-API-025",
+    "test_patch_tickets_id_shape": "K387-API-001",
+    "test_patch_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_tickets_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
   "getWorkspaceMembers": {
    "file": "apps/api/test/features/F10/invite-create.test.ts",
    "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",
@@ -1629,6 +1665,33 @@
    },
    "na": {
     "test_post_saved_views_rejected_403": "役が合わない人の止めは入口の共通（op.ts）。見えないグループは 403 でなく 404 E-VWS-004（K475-API-018）"
+   }
+  },
+  "listTicketFields": {
+   "file": "apps/api/test/features/F4/ticket-fields.test.ts",
+   "reason": "会社の項目の一覧は、種別の指定・消した項目・別の会社の行で答えが変わる。生成の試験の偽のセッションでは項目も種別も作れない（K-563）",
+   "covers": {
+    "test_get_ticket_fields_ok": "K563-API-001",
+    "test_get_ticket_fields_shape": "K563-API-001",
+    "test_get_ticket_fields_rejected_401": "K563-API-008",
+    "test_get_ticket_fields_not_found": "K563-API-006",
+    "test_get_ticket_fields_rate_limited": "K563-API-009",
+    "test_get_ticket_fields_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_ticket_fields_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_ticket_fields_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-563.ts",
+     "mark": "K144-API-530"
+    }
+   },
+   "na": {
+    "test_get_ticket_fields_rejected_403": "読むだけの口で、会社のメンバーなら誰でも読める（行の守りの外の人は入口が 401・404 で止める。受けは K563-API-005・008）",
+    "test_get_ticket_fields_upstream_failed": "外を呼ばない（AI も PC も呼ばない）"
    }
   }
  }
