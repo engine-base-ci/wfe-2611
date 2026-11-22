@@ -19327,7 +19327,8 @@
     "@kaname/errors"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "apps/api/src/features/F8/handovers/create/distribute.ts",
