@@ -14514,7 +14514,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-INV-006／E-INV-007／E-INV-013
+          description: E-INV-006／E-INV-007／E-INV-016
           content:
             application/json:
               schema:

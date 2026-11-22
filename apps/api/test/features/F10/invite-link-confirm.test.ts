@@ -146,7 +146,7 @@ describe("K-422 リンクで参加を押す（利用者も所属も作らず、�
     expect(m.text + m.subject).not.toMatch(/null|undefined/);
   });
 
-  it("K422-API-003 メールの形：空の字・空白だけ・メールの形でない → 422・E-INV-013・欄 email（契約の pattern と同じ決まり）。メールが送られていない → 409・E-INV-013（欄・details なし・招待の行で決まる断り）。保留の行 0・メール 0", async () => {
+  it("K422-API-003 メールの形：空の字・空白だけ・メールの形でない → 422・E-INV-013・欄 email（契約の pattern と同じ決まり）。メールが送られていない → 409・E-INV-016（欄・details なし・招待の行で決まる断り）。保留の行 0・メール 0", async () => {
     const host = await h.owner("host003");
     const tk = await linkOf(host);
     const before = mails.length;
@@ -165,7 +165,8 @@ describe("K-422 リンクで参加を押す（利用者も所属も作らず、�
     const none = await h.accept(tk, { name: NAME, password: PW });
     expect(none.status).toBe(409);
     const nj = JSON.stringify(await h.json(none));
-    expect(nj).toContain("E-INV-013");
+    expect(nj).toContain("E-INV-016");
+    expect(nj).not.toContain("E-INV-013");
     expect(nj).not.toContain("field");
     expect(nj).not.toContain("details");
     expect(mails.length - before).toBe(0);

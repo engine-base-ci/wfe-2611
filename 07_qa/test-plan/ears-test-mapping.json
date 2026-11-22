@@ -9398,7 +9398,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "409",
-   "ears_text": "UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-013 を返し、保留の行もメールも作らない",
+   "ears_text": "UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない",
    "test_file": "apps/api/test/generated/post_auth_invitations_token_accept.test.ts",
    "test_function": "test_post_auth_invitations_token_accept_conflict_3",
    "test_level": "unit（冪等）",
