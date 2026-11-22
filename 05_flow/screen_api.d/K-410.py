@@ -36,3 +36,6 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF その渡しがもう決まっているか、選んだ人が担当者にできないなら、Kaname は 409 と E-HND-005／E-HND-150／E-HND-151 を返し、何も書かない"},
     ],
 }
+
+# 人を決める口は新しい行を作らず、渡しの行の決めた人を書くだけなので 200（試験 K410-API-013・自分が持つと同じ）
+SUCCESS_STATUS = {"claimTicketHandover": 200}

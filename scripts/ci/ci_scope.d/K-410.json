@@ -12,6 +12,15 @@
     "apps/api/test/features/F8/distribute-group.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts"
+   ]
   }
  ],
  "reads_ok": {

@@ -49453,7 +49453,7 @@
     "query": []
    },
    "outputs_2xx": {
-    "status": 201,
+    "status": 200,
     "body": "{ data: TicketHandovers, meta?: { cursor, limit, total } }"
    },
    "id": "EP-290",

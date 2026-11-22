@@ -19388,7 +19388,8 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F8/distribute-group.test.ts"
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-410.ts"
@@ -19410,7 +19411,8 @@
    "affects": [
     "@kaname/api",
     "@kaname/contracts",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",

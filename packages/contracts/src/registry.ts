@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c470e6bf2aeafc2f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:5eff36629ccb84f4
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15266,7 +15266,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "table": "ticket_handovers",
     "kind": "create",
     "input": "TicketHandoverClaimInput",
-    "success": 201,
+    "success": 200,
     "output": "TicketHandoverClaimed",
     "outputList": false,
     "generic": false,
@@ -19694,4 +19694,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "c470e6bf2aeafc2f";
+export const OPENAPI_HASH = "5eff36629ccb84f4";
