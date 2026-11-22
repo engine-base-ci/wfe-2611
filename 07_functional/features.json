@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
+  "created_at": "2026-11-23",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -88,6 +88,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -97,7 +100,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",
@@ -815,6 +820,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -824,7 +832,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",
@@ -1808,6 +1818,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -1817,7 +1830,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C1",
@@ -2300,6 +2315,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -2309,7 +2327,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C1",
@@ -3605,6 +3625,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-INV-009",
     "E-INV-010",
     "E-INV-011",
@@ -3618,7 +3641,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",
@@ -5250,6 +5275,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -5259,7 +5287,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",
@@ -7491,6 +7521,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -7500,7 +7533,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",
@@ -7858,6 +7893,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -7867,7 +7905,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2"
@@ -8154,6 +8194,9 @@
     "E-CONF-036",
     "E-VAL-041",
     "E-VAL-047",
+    "E-VAL-042",
+    "E-CONF-037",
+    "E-VAL-046",
     "E-SPEC-001",
     "E-TKT-001",
     "E-TKT-002",
@@ -8163,7 +8206,9 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-LST-001",
+    "E-DEL-001"
    ],
    "policies": [
     "C2",

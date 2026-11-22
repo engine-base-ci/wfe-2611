@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。230 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。235 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3140,7 +3140,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CONN-013": {
     "id": "E-CONN-013",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
     "action": "画面の新しいコードを入れ直す",
     "undo": false,
@@ -3920,6 +3920,59 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "progress"
     }
   },
+  "E-VAL-042": {
+    "id": "E-VAL-042",
+    "cls": "validation",
+    "message": "決めたことを書いてください",
+    "action": "決めたことを書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-CONF-037": {
+    "id": "E-CONF-037",
+    "cls": "conflict",
+    "message": "取引先の画面ができてから使えます",
+    "action": "このチケットの決定として残す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-037",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-VAL-046": {
+    "id": "E-VAL-046",
+    "cls": "validation",
+    "message": "時間と分は 0 以上の整数で入れてください（分は 0〜59）",
+    "action": "時間と分を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-046",
+    "must_not": false,
+    "layers": [
+      "UI"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
   "E-INV-009": {
     "id": "E-INV-009",
     "cls": "validation",
@@ -4174,6 +4227,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-LST-001": {
+    "id": "E-LST-001",
+    "cls": "conflict",
+    "message": "一覧の続きを読めませんでした。最初から読み直してください",
+    "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LST-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "list"
+    }
+  },
+  "E-DEL-001": {
+    "id": "E-DEL-001",
+    "cls": "permission",
+    "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
+    "action": "作った人か権限のある人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
