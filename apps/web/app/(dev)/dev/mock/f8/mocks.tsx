@@ -410,7 +410,7 @@ function Detail({ theme, viewer = "takamoto", band, assignee, approvals = 1, dia
     >
       <div className="k-detail">
         <section className="k-root k-page" aria-labelledby="ticket-title">
-          <article className="k-detail-card k-hnd-head">
+          <article className="k-detail-card">
             <DetailMeta ticket={TICKET} kind={KIND} stage={STAGE} />
             <DetailTitle title={TICKET.title} me={VIEWER[viewer].name} />
             {band ? <div className="k-detail-bands">{band}</div> : null}
@@ -727,6 +727,8 @@ const INVITE_VALUES = {
   message: "営業の問い合わせをいっしょに回してもらいます",
 };
 
+// 第 2 ナビの「メンバー N」の N は人の数（2 つのグループに入っている人は 1 人・パネルの行の総数ではない・PM の決め 2026-11-20）。
+//   今のモックでは 5（招いた後の inv-sent は 6）
 function Members({
   theme,
   invited = false,
@@ -755,7 +757,7 @@ function Members({
     >
       <WsHead name="株式会社ENGINE BASE" initial="E" />
       <div className="k-me-wrap">
-        <WsSub members={groups.reduce((n, g) => n + g.rows.length, 0)} />
+        <WsSub members={new Set(groups.flatMap((g) => g.rows.map((r) => r.email))).size} />
         <MembersBody groups={groups} />
       </div>
     </Frame>
@@ -850,7 +852,9 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       return (
         <Detail
           theme={theme}
-          assignee={<AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行が終わってから渡してください" />}
+          assignee={
+            <AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行（承認）が終わってから渡してください" />
+          }
           dialog={
             <PickDialog
               open
