@@ -1,6 +1,6 @@
 // やり取りに書き込む口（K-385）：createTicketMessage（POST /api/v1/tickets/:id/messages）。
 //   入口は「そのチケットを見られる人」（閲覧のみの人も書ける・⑧）。入口の後、取引の中でもう一度「見えるか」を引いてから（守りの 2 層・判定の例外は 503）、
-//   DB の関数 app.ticket_message_post を 1 回呼ぶ。書き込み 1 行と受け箱の行は 1 つの取引。書く所の例外は 500・E-PAGE-003（何も残らない）。
+//   DB の関数 app.ticket_message_post を 1 回呼ぶ。書き込み 1 行と受け箱の行は 1 つの取引。書く所の例外は 503・E-PAGE-003（何も残らない・11-22 の決め）。
 //   ログに本文・人の名前・例外の文を出さない（reply.ts が場所と例外の種類だけを出す）。答えは K-383 と同じ 1 件の形（kind post）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
