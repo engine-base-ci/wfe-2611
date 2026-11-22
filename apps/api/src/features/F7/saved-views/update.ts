@@ -5,12 +5,13 @@
 //   edit の無い人の行を「無い」に見せてしまうため）② 変わる欄だけ残す ③ 見せる相手を変えるのが作った人か ④ グループの全員向けでグループを外していないか（409 E-VWS-021）
 //   ⑤ 見せるグループが同じ会社・消していない・作った人に見えるか（404 E-VWS-004）⑥ 名前が変わるなら作った人ごとの助言ロックを取り、重ならないか（409 E-VWS-005）
 //   ⑦ 1 文の update（0 行なら見えれば 403・見えなければ 404）⑧ 証跡 saved_views.update（C2・中身は直した欄の名前だけ。値は残さない）。
-//   最後の砦：一意の索引 saved_views_name_uq の 23505 は 409 E-VWS-005。引き金 saved_views_guard の 42501 は 403。書く所で DB が落ちたら例外のまま 500。
+//   最後の砦：一意の索引 saved_views_name_uq の 23505 は 409 E-VWS-005。引き金 saved_views_guard の 42501 は 403。書く所で DB が落ちたら 503 E-PAGE-003（down.ts・1 つの取引なので何も残らない・11-22 18:30 の決め）。
 //   知らせは出さない。ログに名前と条件を出さない。確かめの関数は input.ts（K-475）と同じ物を使う
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { Row } from "@kaname/db/repository";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
+import { writeDown } from "./down.js";
 import { checkColumns, checkDensity, checkFilters, checkName, checkShare, fail, invalid } from "./input.js";
 import { SAVED_VIEW_SELECT, toSavedView, type SavedViewRow } from "./shape.js";
 
@@ -140,7 +141,7 @@ export function createUpdateSavedView(appPool: pg.Pool): (a: HookArgs) => Promis
     } catch (e) {
       if (isNameTaken(e)) return fail("E-VWS-005", "name");
       if (isGuardStop(e)) return FORBIDDEN;
-      throw e;
+      return writeDown("保存した条件を直す", e);
     }
   };
 }

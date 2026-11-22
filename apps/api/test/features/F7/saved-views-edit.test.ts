@@ -462,7 +462,7 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
     }
   });
 
-  it("K476-API-024 失敗（手順 S2：証跡を書く）：直す・消すの証跡を書く所で DB が落ちると 500。名前も消した印も前のまま（1 つの取引）・ログに条件の字は無い。戻れば同じ操作が通る", async () => {
+  it("K476-API-024 失敗（手順 S2：証跡を書く）：直す・消すの証跡を書く所で DB が落ちると 503・E-PAGE-003。名前も消した印も前のまま（1 つの取引）・ログに条件の字は無い。戻れば同じ操作が通る", async () => {
     const c = await maker("壊れる人");
     const upd = await seedView({ by: c, name: "BOOM-UPD" });
     const del = await seedView({ by: c, name: "BOOM-DEL" });
@@ -482,7 +482,7 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
         out.push((await patchView(c, upd, { name: "BOOM-UPD-2", filters: { q: "秘密の言葉" } })).status);
         out.push((await deleteView(c, del)).status);
       });
-      expect(out).toEqual([500, 500]);
+      expect(out).toEqual([503, 503]);
       expect(logs).not.toContain("秘密の言葉");
       expect((await viewRow(upd))["name"]).toBe("BOOM-UPD");
       expect((await viewRow(del))["deleted_at"]).toBeNull();
@@ -494,7 +494,7 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
     expect((await deleteView(c, del)).status).toBe(200);
   });
 
-  it("K476-API-025 失敗（手順 S1：DB に書く）：行を更新する所で DB が落ちると 500。名前も消した印も証跡も残らない。戻れば同じ操作が通る", async () => {
+  it("K476-API-025 失敗（手順 S1：DB に書く）：行を更新する所で DB が落ちると 503・E-PAGE-003。名前も消した印も証跡も残らない。戻れば同じ操作が通る", async () => {
     const c = await maker("更新が壊れる人");
     const upd = await seedView({ by: c, name: "BOOM-ROW-UPD" });
     const del = await seedView({ by: c, name: "BOOM-ROW-DEL" });
@@ -512,7 +512,7 @@ describe("K-476 DB の守り・失敗・揺れ・入口（本物の DB）", () =
         out.push((await patchView(c, upd, { density: "compact" })).status);
         out.push((await deleteView(c, del)).status);
       });
-      expect(out).toEqual([500, 500]);
+      expect(out).toEqual([503, 503]);
       expect((await viewRow(upd))["density"]).toBe("normal");
       expect((await viewRow(del))["deleted_at"]).toBeNull();
       expect(await audits("saved_views.update", upd)).toBe(0);
