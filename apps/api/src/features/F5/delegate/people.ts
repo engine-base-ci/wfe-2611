@@ -22,7 +22,6 @@ const noDetail = (r: HookReply): HookReply => ({
   ...r,
   body: Object.fromEntries(Object.entries(r.body as Record<string, unknown>).filter(([k]) => k !== "detail")),
 });
-};
 const down = (where: string, e: unknown): HookReply => {
   console.error(`[delegate] ${where}：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
   return fromCatalog("E-PAGE-003", 503);
