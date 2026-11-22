@@ -44182,6 +44182,12 @@ paths:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
           - seen_at が日時として読めない（空・字・暦に無い日）
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
