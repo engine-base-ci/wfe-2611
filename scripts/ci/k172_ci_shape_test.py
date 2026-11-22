@@ -25,6 +25,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE))
 import ci_scope  # noqa: E402
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 WF_TEXT = (ROOT / ".github" / "workflows" / "v3-gate.yml").read_text(encoding="utf-8")
 WF = yaml.safe_load(WF_TEXT)
@@ -51,7 +52,7 @@ class Shape(unittest.TestCase):
     def test_K172_CI_001_all_jobs_on_self_hosted_mac(self):   # K-173 で台を組ごとの Linux の VM に変えた
         for name, job in list(JOBS.items()) + [(f"release-gate/{k}", v) for k, v in RELEASE.items()]:
             with self.subTest(name):
-                self.assertEqual(job["runs-on"], ["self-hosted", "linux-vm"])
+                self.assertEqual(default_of(job["runs-on"]), ["self-hosted", "linux-vm"], "変数 CI_RUNNER が無ければ今までの台（K-640）")
 
     def test_K172_CI_002_db_in_job_free_port_waited_and_always_removed(self):
         self.assertIsNone(re.search(r"localhost:54\d\d", WF_TEXT), "DB の番号を直書きしない")
