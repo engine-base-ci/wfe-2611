@@ -7,6 +7,7 @@
 --   ③ app.invitation_preview2 を作り直す（形は 0114 のまま）：宛てが空なら account_exists は false・ログイン中の email_matches は true
 --   ④ app.join_invitation を作り直す（形は 20261119070749 のまま）：宛ての照らし合わせ（wrong_email）は宛てのメールが在る招待だけ
 
+-- squawk-ignore ban-drop-not-null
 alter table invitations alter column email drop not null;
 comment on column invitations.email is '宛てのメール。空＝招待のリンク（K-421）';
 

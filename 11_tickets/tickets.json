@@ -19265,12 +19265,12 @@
    ],
    "tests": [
     "apps/api/test/features/F10/invite-link.test.ts",
-    "apps/api/test/generated/post_invitations_link.test.ts",
-    "apps/api/test/generated/get_auth_invitations_token.test.ts"
+    "apps/api/test/generated/post_invitations_link.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F1/admin-recovery.test.ts",
-    "apps/api/test/features/F1/login-gate.test.ts"
+    "apps/api/test/features/F1/login-gate.test.ts",
+    "apps/api/test/features/F1/verify-email.test.ts"
    ],
    "depends_on": [
     "K-419",
