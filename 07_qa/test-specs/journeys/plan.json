@@ -189,7 +189,7 @@
    "name": "P1 はじめの設定 ── PCをつないで、自分のAIと作る（初日〜3日）",
    "act": "A10",
    "role": "R1/R2",
-   "step": "使うサービスを選びログイン情報を入れる",
+   "step": "預けたログイン情報の画面で「預ける」→ 名前・ログイン ID・パスワード・使える場所を入れて「本人確認して保存」（取り直しは求められたときだけパスワードで通す）→ 行が並ぶ。段 4 を通し、段の帯は無いので 5 テストは直に開く",
    "expected": "vaultに暗号化保管。AIには参照IDのみ。資格情報は会社ごとの鍵で暗号化して Infisical の会社の置き場へ（AI には参照 ID だけ）。Bridge は Infisical に入らず、実行の間だけ値を受け取って捨てる",
    "screen": "credentials",
    "depends_on": [
@@ -199,10 +199,10 @@
     "T-A-07",
     "T-U-10"
    ],
-   "result": "PASS（apps/e2e/journeys・実 Chrome・2026-10-04）",
+   "result": "",
    "task": "T-U-12",
-   "status": "PASS",
-   "note": "apps/e2e/journeys・実 Chrome・2026-10-04"
+   "status": "BLOCKED",
+   "note": "K-372 で手順を新しい預けたログイン情報の画面（預ける小窓・取り直しは求められたときだけ）に替えた。流れの試験は staging で流す（ローカルでは流さない）ので、staging で流すまで BLOCKED・2026-11-20"
   },
   {
    "id": "J02-06",

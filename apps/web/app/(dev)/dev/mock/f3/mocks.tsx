@@ -7,12 +7,15 @@ import type { ReactNode } from "react";
 import { Shell, MeSub, Toaster } from "@/components/k";
 import {
   AddCredentialDialog,
+  EMPTY_CREDENTIAL,
   CheckCodeDialog,
   CredentialsBody,
   CredentialsHead,
   EditCredentialDialog,
   RemoveCredentialConfirm,
+  type AddCredentialValues,
   type CredentialItem,
+  type EditCredentialValues,
 } from "@/features/F3/credentials/views";
 import { StepUpDialog } from "@/features/F1/security/views";
 import type { Theme } from "@/lib/theme";
@@ -61,6 +64,35 @@ const ITEMS: CredentialItem[] = [
     note: "11/18 10:20 に確かめた",
   },
 ];
+
+/** 上書きの小窓の見本の値（ログイン情報 SEIKO_PORTAL の上書き・部品の既定から外した物・モックの見た目は前と同じ） */
+const EDIT_VALUES: EditCredentialValues = {
+  login: "",
+  password: "",
+  value: "",
+  destinations: "portal.seiko.example",
+  expires_on: "2027/11/10",
+  reason: "サービスの側でパスワードを変えたため",
+};
+
+/** 預ける小窓の見本の値（部品の既定から外した物・モックの見た目は前と同じ） */
+const ADD_LOGIN: AddCredentialValues = {
+  ...EMPTY_CREDENTIAL,
+  name: "HACCHU_NAVI_LOGIN",
+  description: "発注ナビのログイン",
+  login: "takamoto@engine-base.example",
+  two_factor: "sms",
+  destinations: "hacchu-navi.example",
+  expires_on: "2027/11/10",
+};
+const ADD_KEY: AddCredentialValues = {
+  ...EMPTY_CREDENTIAL,
+  kind: "key",
+  name: "FREEE_API_KEY",
+  description: "会計ソフトの API キー",
+  destinations: "api.freee.co.jp",
+  expires_on: "2027/11/10",
+};
 
 export interface MockEntry {
   id: string;
@@ -182,9 +214,9 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
         />
       );
     case "cred-add-login":
-      return <Page theme={theme} dialog={<AddCredentialDialog open kind="login" workspaceName={WS} />} />;
+      return <Page theme={theme} dialog={<AddCredentialDialog open values={ADD_LOGIN} workspaceName={WS} />} />;
     case "cred-add-key":
-      return <Page theme={theme} dialog={<AddCredentialDialog open kind="key" workspaceName={WS} />} />;
+      return <Page theme={theme} dialog={<AddCredentialDialog open values={ADD_KEY} workspaceName={WS} />} />;
     case "cred-add-error":
       return (
         <Page
@@ -192,7 +224,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
           dialog={
             <AddCredentialDialog
               open
-              kind="key"
+              values={ADD_KEY}
               workspaceName={WS}
               errors={{ name: "名前は英大文字と _ だけ。この名前は、このワークスペースにもうあります" }}
             />
@@ -207,7 +239,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
         />
       );
     case "cred-edit":
-      return <Page theme={theme} dialog={<EditCredentialDialog open item={ITEMS[3]!} />} />;
+      return <Page theme={theme} dialog={<EditCredentialDialog open item={ITEMS[3]!} values={EDIT_VALUES} />} />;
     case "cred-remove":
       return (
         <Page
