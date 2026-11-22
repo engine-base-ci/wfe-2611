@@ -1,7 +1,7 @@
 // やり取りの書き込みを直す・消す・☆ の口（K-386）：updateTicketMessage（PATCH /api/v1/ticket_messages/:id）・
 //   deleteTicketMessage（DELETE 同）・starTicketMessage（POST /api/v1/ticket_messages/:id/star）。
 //   入口の後、取引の中で先に「そのチケットが見えるか」を 1 回引いてから（守りの 2 層・判定の例外は 503）、DB の関数を 1 回だけ呼ぶ。
-//   書く所の例外は 500・E-PAGE-003（何も変わらない）。ログに本文・人の名前・例外の文を出さない（reply.ts が場所と例外の種類だけを出す）。
+//   書く所の例外も 503・E-PAGE-003（何も変わらない）。ログに本文・人の名前・例外の文を出さない（reply.ts が場所と例外の種類だけを出す）。
 //   直す・消すの答えは K-383 と同じ 1 件の形、☆ の答えは { id, stars, starred }
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -29,7 +29,7 @@ interface EditResult {
 /** 直す：本文が空・無いは入口の前処理で断る（E-VAL-027）。ほかの形は入口の確かめに回す */
 export const inputEdit = inputPost;
 
-/** 関数 1 回を、守りの判定の後に呼ぶ。守りの例外は 503、書く所の例外は 500 */
+/** 関数 1 回を、守りの判定の後に呼ぶ。守りの例外は 503、書く所の例外も 503 */
 /** 呼ぶ DB の関数ごとの文（関数の名前を文に埋め込まない・G10） */
 const CALL_SQL = {
   ticket_message_edit: "select app.ticket_message_edit($1, $2::jsonb) as v",

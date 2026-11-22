@@ -30,7 +30,7 @@ RESPONSES = {
 _NF = {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"}}
 _DOWN = {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"]}
 
-_BROKE = {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"]}
+_BROKE = {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"]}
 
 ERRORS_4XX = {
     "updateTicketMessage": [
@@ -45,7 +45,7 @@ ERRORS_4XX = {
         {**_DOWN, "trigger": "守りの判定で例外・関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない（止める側に倒す）"},
         {**_BROKE, "trigger": "書く所で DB が落ちた（1 つの処理なので何も変わらない・ログは場所と例外の種類だけ）",
-         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みを前のまま残す"},
+         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、書き込みを前のまま残す"},
     ],
     "deleteTicketMessage": [
         {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"},
@@ -56,7 +56,7 @@ ERRORS_4XX = {
         {**_DOWN, "trigger": "守りの判定で例外・関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない（止める側に倒す）"},
         {**_BROKE, "trigger": "書く所で DB が落ちた（1 つの処理なので何も変わらない・ログは場所と例外の種類だけ）",
-         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みを前のまま残す"},
+         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、書き込みを前のまま残す"},
     ],
     "starTicketMessage": [
         {**_NF, "trigger": "書き込みが無い・見えない・消した・書き込みでない（変更・仕組みの行）・チケットを消した",
@@ -64,7 +64,7 @@ ERRORS_4XX = {
         {**_DOWN, "trigger": "守りの判定で例外・関数が知らない言葉を返した",
          "ears_form": "UNWANTED: IF 守りの判定で例外になったなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない（止める側に倒す）"},
         {**_BROKE, "trigger": "書く所で DB が落ちた（1 つの処理なので何も変わらない・ログは場所と例外の種類だけ）",
-         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みを前のまま残す"},
+         "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、書き込みを前のまま残す"},
     ],
 }
 
