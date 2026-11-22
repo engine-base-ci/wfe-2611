@@ -27,6 +27,7 @@ import { afterAll, beforeAll, vi } from "vitest";
 import type pg from "pg";
 import { createRepository } from "@kaname/db/repository";
 import { withTenant, type TenantContext } from "@kaname/db/context";
+import { migrateAuth } from "@kaname/auth/migrate";
 import { createDeviceResolver } from "@kaname/auth/resolver";
 import { createApp } from "../../../src/app.js";
 import { withDevice } from "../../../src/middleware/tenant.js";
@@ -203,6 +204,8 @@ export function setupHandover(prefix = "K401"): HandoverHarness {
 
   beforeAll(async () => {
     const f = await makeFixture();
+    // 認証の表（kaname_auth.user）は migration の別の道。ほかの試験が先に流れた DB でだけ在ると順に左右されるので、自分で当てる
+    await migrateAuth(process.env["DATABASE_URL"]!);
     h.f = f;
     const web = async (hd: Headers) => {
       const m = /^Bearer fake:(member|ops|client):([0-9a-f-]{36}):([0-9a-f-]{36})$/.exec(hd.get("authorization") ?? "");
