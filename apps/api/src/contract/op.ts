@@ -50,7 +50,11 @@ export function nulIssues(v: unknown, path: string): { field: string; message: s
       x.forEach((e, i) => stack.push([e, `${at}.${i}`]));
     } else if (x && typeof x === "object") {
       for (const [k, e] of Object.entries(x as Record<string, unknown>)) {
-        if (k.includes("\u0000")) out.push({ field: at, message: "使えない文字" });
+        // キーに NUL があれば、キーを出さず親の道で 1 件だけ。その下には降りない（下の道にキーの NUL が入るため）
+        if (k.includes("\u0000")) {
+          out.push({ field: at, message: "使えない文字" });
+          continue;
+        }
         stack.push([e, at === "body" ? k : `${at}.${k}`]);
       }
     }
@@ -261,7 +265,9 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     // 3.0b) 入口の NUL（K-427）：道の値・問い合わせの値のどれかに NUL があれば、uuid と同じ所で 422（送った字は答えに出さない）
     const badNul = [
       ...Object.entries(c.req.param()).flatMap(([k, v]) => nulIssues(v, k)),
-      ...Object.entries(c.req.queries()).flatMap(([k, vs]) => vs.flatMap((v) => nulIssues(v, k))),
+      ...Object.entries(c.req.queries()).flatMap(([k, vs]) =>
+        k.includes("\u0000") ? [{ field: "query", message: "使えない文字" }] : vs.flatMap((v) => nulIssues(v, k)),
+      ),
     ];
     if (badNul.length) return err(c, 422, "validation_failed", "VALIDATION_ERROR", { details: badNul });
     // 3.1) 権限の言葉の段（K-14）：admin の能力・運営のできること など。行に結ぶ言葉は 4.1 で :id の行を読んで確かめる（K-15）
