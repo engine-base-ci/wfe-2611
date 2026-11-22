@@ -41098,12 +41098,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '500':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
           content:

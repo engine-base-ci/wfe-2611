@@ -9890,7 +9890,7 @@
     "UNWANTED: IF 親子が 3 段を超える親を決めようとしたなら、Kaname は 409 と E-TKT-003 を返し、何も書かない",
     "UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない",
     "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない",
-    "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
+    "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
