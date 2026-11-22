@@ -213,11 +213,24 @@ begin
   --   本文はチケットの id・番号・リンク・変更の 1 行の id・変えた項目の印だけ（題名・値の字は入れない）。1 回の要求が何を変えても行は 1 つ
   if t.assignee_member_id is not null and t.assignee_member_id <> v_me and app.ticket_member_ok(t.tenant_id, t.assignee_member_id) then
     v_notify := t.assignee_member_id;
-    insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
-      values (t.tenant_id, v_notify, 'inapp', 'ticket.sort_changed',
-              jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
-                                 'fields', (select to_jsonb(array_agg('field:' || i order by i)) from unnest(v_ids) i)),
-              'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    -- 1 回の要求は 1 人に 1 通（代表の答え ⑮7・PM の決め 2026-11-23）：同じ取引で、この人・このチケットの受け箱の行が既に在れば
+    --   （段・優先度・親の組が先に書いた行）、新しく書かず、その行の fields に変えた項目の印を足す。無ければ新しく書く
+    update notifications n
+       set payload = n.payload || jsonb_build_object('fields', coalesce(n.payload -> 'fields', '[]'::jsonb)
+                       || (select to_jsonb(array_agg('field:' || i order by i)) from unnest(v_ids) i))
+     where n.id = (select n2.id from notifications n2
+                    where n2.tenant_id = t.tenant_id and n2.member_id = v_notify and n2.channel_id = 'inapp'
+                      and n2.event_kind_id in ('ticket.stage_changed', 'ticket.sort_changed')
+                      and n2.payload ->> 'ticket_id' = t.id::text
+                      and n2.xmin = pg_current_xact_id()::xid
+                    order by n2.created_at desc, n2.id desc limit 1);   -- 1 行だけに足す（先の組の insert は exception ブロックの外なので xmin は取引の id と一致する・段 20261120130400 の 192 行・優先度 20261122094000 の insert）
+    if not found then
+      insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
+        values (t.tenant_id, v_notify, 'inapp', 'ticket.sort_changed',
+                jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
+                                   'fields', (select to_jsonb(array_agg('field:' || i order by i)) from unnest(v_ids) i)),
+                'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    end if;
   end if;
   -- 証跡（関門 C2）。中身は変えた項目の id だけ（値の字を残さない）
   insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, choke_point_id, payload, created_by)
