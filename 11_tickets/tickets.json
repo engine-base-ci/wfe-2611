@@ -19530,10 +19530,13 @@
    ],
    "affects": [
     "@kaname/api",
-    "@kaname/db"
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261123086100_notifications_read_at.sql",
