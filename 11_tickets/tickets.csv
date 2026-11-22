@@ -2333,6 +2333,48 @@ K-425,段 9 の決定ログ §148（D-148.1〜51）と答えの記録を本線�
 - [ ] 決定の検査（trace_gate・decision_source_gate）が緑
 - [ ] 段 9 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-428,場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）,タスク,K-56,未着手,実装,2026-11-24,F3・DB,"場合表の種 `seedAccessMatrix`（`packages/db/src/seeds.ts`）は、表ごとの種を `seedGenericRows`（`packages/db/src/seed_generic.ts`）に任せ、その最初に **外部キーの一覧を information_schema の 3 つのビュー（table_constraints・key_column_usage・constraint_column_usage）の結合で引いている**。この結合は、表が増えるほど急に遅くなる（constraint_column_usage は、各制約ごとに権限を確かめながら列を引き直すビュー）。
+
+- 手元の開発の試験 DB（kaname_test・表 134・外部キー 370 本）で、この 1 文だけ **約 2.7 秒**。CI の台が混むと、表 138 で約 20 秒になる
+- 種を呼ぶ DB の試験の準備（`beforeAll`・上限 33 秒＝vitest.config.ts の hookTimeout）が、混んだ CI で時間切れになって赤になった（K-402・K-404 の CI）。種を呼ぶ試験は 30 ファイル（`git grep -l seedAccessMatrix` の 32 件から、種の本体 seeds.ts・cli.ts を除く。うち 2 つ（apps/api/test/harness.ts・packages/db/test/global-lock.ts）は試験の補助のファイル）なので、表が増えるほど全部の DB の試験に効く
+
+この葉は **同じ行の集合を、目録（pg_constraint・pg_class・pg_attribute）で引き直す**。切る段で手元の DB（kaname_test）に当てた結果：前の文と新しい文の行の集合が同じ（370 行・差 0）、2.7 秒が 0.23 秒（約 12 倍）。
+
+結果が変わる所は 1 つだけ：**2 列以上の外部キー**。前の文は元の列と先の列を組にせず全部の組み合わせを出す（2 列なら 4 行）。新しい文は列の順に組にする（2 行）。今の DB に 2 列の外部キーは 0 本（`select count(*) from pg_constraint where contype='f' and array_length(conkey,1)>1` が 0）なので今は差が出ない。種は `fkOf(table, col)` で「その列の先」を 1 つ探すので、組にする方が正しい（前の出し方は先の列を取り違える元になる）。これは切る段の決め（下の決定ログ）。","- [ ] 下の表の 6 行（K428-DB-001〜005・007）が緑：`packages/db/test/k428_seed_fk_catalog.test.ts`（K428-DB-006 は人が確かめる）
+- [ ] 種を使う前からの試験（packages/db/test と apps/api/test の DB を使う物の全部・この葉の範囲 ci_wide shared）が全部緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-429,fuzz が見つけた前からの口の食い違い（K-62）を契約の形に合わせる（実行の 1 件・一覧は phase・status が空の行を返さず、一覧の limit／cursor／sort は契約の形だけを受けて 422）・契約 fuzz G36 の揺れを根から止める,タスク,K-62,未着手,実装,2026-11-24,F5・API,"契約の fuzz（Schemathesis・CI の G36）が、K-62 の 2 つの口で契約と口の食い違いを見つけ、どの葉の CI でも G36 が揺れて赤になる（K-401・K-407 の CI で出た。GitHub の回 44728943303）。食い違いは 2 つ。
+
+1. **答えの phase・status が空になる**（ST108）：契約（`ActionRunView`）は phase・status を「文字（空を許さない）」としているが、DB は `action_runs.phase`・`status_id` の空を許す（0011・0092 の check は「空か make・execute」）。fuzz の種（`seedGenericRows`）は表の列を埋めるだけなので、チケットに結んだ実行の行を phase・status 空のまま作る。読む関数（`app.action_run_view`・`app.ticket_runs_view`）はそれをそのまま返し、契約違反の答えになる
+2. **一覧が契約外の sort を受け付ける**（ST201）：契約の `listTicketRuns` は sort を「表の列名 27 個の enum」・limit を 1〜200・cursor を数 1〜9 桁としているのに、口（`apps/api/src/features/F5/delegate/people.ts`）は問い合わせを見ない。`sort=-58800` が 200 で通る。共通の入口（op.ts）が一覧の問い合わせを確かめるのは `kind: list` の口だけで、この口は `kind: get`（答えが配列）なので素通りする
+
+
+決め（控え帳 `.ticket-flow/drift.md`・answer=f0f290e785a9）：**422 は契約に書ける形の誤りだけ・検査の例外は足さない**。なので契約と口のどちらかを、実際の振る舞いに正しく合わせる。K-62 のチケットと決定ログで確かめた結果：
+
+- phase・status：K-62 のチケットは「ticket_id・phase は口が必ず入れる」（契約の NOT_NULL_ANSWERS）と決めている。実行の行を作る道は 4 つ（`app.ticket_delegate`〔0092〕・`approvals` の承認〔0096〕・差し戻し〔0097〕・完了〔0100〕）で、どれも phase と status_id を入れる（`git grep ""insert into action_runs""` で確かめた）。**空は「AI に任せた実行」の姿ではなく、種が作る生の行だけ**。なので **契約は変えず、読む関数が空の行を実行として返さない**（1 件は 404・一覧は外す）
+- sort：契約はすでに enum（表の列名）を書いている。**口が契約と同じ形だけを受ける**（契約の形から外れたら 422・欄 sort）。limit・cursor も同じ型の誤りなので同じ確かめを通す（fuzz は同じ口に limit・cursor も当てる）","- [ ] 下の表の 11 行（K429-API-001〜010・K429-DB-001）が緑：`apps/api/test/features/F5/k429_runs_shape.test.ts`
+- [ ] 前からの試験（K-62 の delegate.test.ts・k144-contract.test.ts・k234_one_transaction.test.ts など）が全部緑（この葉の範囲 ci_wide db）
+- [ ] 手元の CI（このチケットの範囲）が緑。契約の fuzz の G36 が、この 2 つの口で赤にならない"
+K-620,直し：題名の下の帯の順の器 useBandOrder が「AI に任せる」の任せる前の箱や「完了にする」の箱も approve と数え、渡しの帯・保留の帯が出ず担当者の欄に「AI の実行が終わってから渡してください」が出る（AI が動いている・承認待ちの帯だけを data-busy で数える）（K-68 の葉）,タスク,K-68,未着手,実装,2026-11-22,F8・画面,"段 9 の中間テスト K-416（M1-01・M1-06）が見つけた不具合を直す。
+
+チケットの詳細の題名の下の帯は、順を 1 か所（K-380 の `apps/web/features/F4/create-ticket/detail-slots.ts` の `BAND_ORDER`：承認・実行 → 渡し → 保留）で決め、後ろの帯は前に出ている帯に譲る（`bandYieldTo`）。前に出ているかを決める帯の順の器 `useBandOrder` は、**帯の入れ物 `.k-detail-bands` の直下に F5 の帯（`section.k62-band`）が 1 つでも在れば approve と数えていた**。
+
+F5 の帯は、AI が動いていない・承認待ちでもない間も出ている：
+
+- 「AI に任せる」の帯（`delegate-band.tsx`）の **任せる前の白い箱**（直せる人なら誰にでも出る・D-128.138）
+- 「承認と実行」の帯（`band.tsx`）の **⑥「完了にする」の箱**（作業中で走っている実行が無ければ、会社の人なら誰にでも出る・`app.ticket_band` の can_complete）・**⑤ 実行が止まった箱**・**⑦ 完了の箱**
+- 「AI に任せる」の帯の **作る段の止まった箱**（stopped・cancelled）
+
+そのため、作業中のチケットでは渡した人・受けた担当者・ほとんどの member で、
+
+1. 段 9 の `HandoverBandSlot`（K-400 の slot-dispatch.tsx）が `yieldTo` を受けて何も描かない（渡しの帯「返事を待っています」「頼まれています」などが出ない）
+2. 段 9 の `AssigneeSlot` が `blocked={ticket.bands.has(""approve"")}` で、AI が動いていないのに担当者の欄に「AI の実行が終わってから渡してください」を出す（D-148.24 の「AI が動いているとき」の形）
+3. 段 7 の `HoldBandSlot`（K-395）の保留の帯も同じく譲って出ない
+
+**直し方**：F5 の 2 つの帯は、**AI が動いている（queued・running・asking）か承認待ち**を出している間だけ、帯の `section` に印の属性 `data-busy` を付ける。帯の順の器は `:scope > section.k62-band[data-busy]` が在るときだけ approve と数える。帯の section は状態が替わっても同じ要素のまま（React は作り直さない）なので、器は直下の子の出入りに加えて `data-busy` の付け外しも見張る。","- [ ] 下の表の 13 行（K620-UI-001〜013）が緑：`apps/web/tests/k/k620-band-busy.spec.ts`
+- [ ] 替えた前からの試験 K380-UI-003（`apps/web/tests/k/k380-detail-slots.spec.ts`）と、替えない K-380 の残りの行が緑
+- [ ] 替えない前からの試験（下の「前からの試験を替えた所」）が緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-627,spec-sync の L（層の棚卸し G21）の DB の層が、手元の古い kaname_test（migration が 0075 で止まった残り物）で偽の赤になる：手元では使い捨ての DB を作って試験を流し、終わったら必ず捨てる道具 db_fresh_run.mjs を足す（CI では渡された DB をそのまま使う）,タスク,K-120,未着手,実装,2026-11-24,基盤・CI,"spec-sync の L は `layer_audit.py --run` で、層ごとの check を実際に流す。その中の `packages/db/migrations/*.sql` の層（D-145・D-133.6 の db: true）は `pnpm exec vitest run packages/db/test` を流す。PM の実行では **29 件が赤**（32 秒）だった。原因を調べた（実測）：
 
 1. この Mac の `kaname_test`（`127.0.0.1:55433`）は、`app.schema_migrations` が `0075_workspace_people.sql` で止まった**古い残り物**（tenants 2 行・migration が 128 本ある今の木に追いついていない）。vitest は DATABASE_URL が無いとここにつなぐ。
@@ -2350,4 +2392,14 @@ K-627,spec-sync の L（層の棚卸し G21）の DB の層が、手元の古い
 - [ ] `packages/db/test/repository.test.ts` が名前を決め打ちせず、使い捨ての DB でも緑（行 008・009）
 - [ ] 層の検査 `packages/db/migrations/*.sql` が、手元で `python3 scripts/ci/layer_audit.py --run --db-range true` の中で緑（古い kaname_test のままでも）
 - [ ] G65 の置き場 `scripts/ci/g65.d/K-627.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-630,直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）,タスク,K-56,未着手,実装,2026-11-21,F3・画面,"本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：
+
+`./features/F3/credentials/check-credential.tsx:84:9 … Type '{ approved: boolean; request_ref?: undefined; }' is not assignable to type 'CredentialLoginAnswerInput'. Type 'undefined' is not assignable to type 'string'.`
+
+元：K-355 が契約で `answerCredentialLoginCheck` の `request_ref` を必須にした（`05_flow/screen_api.d/K-355.py` の REQUIRED_INPUTS）のに、K-357 の画面（check-credential.tsx の submit）は `target.requestRef` が無いとき `request_ref` を送らない形のまま本線に入った（チケットの CI が画面の組を後回しにしていたので素通りした）。
+
+**直し方（PM の決め）**：画面を契約に合わせる。`request_ref` が無い（null・空の字）ときは**口を呼ばない**（口は必ず 422 で断るので呼んでも意味が無い）。そのときは小窓の中の赤の知らせ（前からの `alert`）に「コードの頼みが見つかりません。もう一度確かめてください」を出す。小窓は閉じず、入れた字は残す。ほかの動き（印があるときの { request_ref, code }・{ request_ref, approved: true }・422・404・網の切れ）は変えない。","- [ ] 下の表の 6 行（K630-UI-001〜006）が緑：`apps/web/tests/k/k630-request-ref.spec.ts`
+- [ ] 替えない前からの試験 `apps/web/tests/k/k357-credentials-edit-check.spec.ts` が緑のまま
+- [ ] `pnpm --filter @kaname/web build:test`（next build）が通る
 - [ ] 手元の CI（このチケットの範囲）が緑"
