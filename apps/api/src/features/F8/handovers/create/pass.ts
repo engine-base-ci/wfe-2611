@@ -23,16 +23,16 @@ export const createPass: CreateKind = async (c): Promise<HookReply> => {
         c.ticketId,
         JSON.stringify(c.input),
       ]);
-      return r.rows[0]?.v ?? null;
+      return r.rows[0]!.v;
     });
   } catch (e) {
     return down(where, `例外（${kindOf(e)}）`);
   }
-  if (!v) return down(where, "答えが無い");
-  if (typeof v.error === "string") return replyOf(v as { error: string }, where);
-  if (v.ok !== true || !v.handover) return down(where, "答えの形が違う");
+  if (typeof v?.error === "string") return replyOf(v as { error: string }, where);
+  // 答えの形が違う・会社か人が無い・知らせの表が無い：どれも止める側に倒す（1 つの確かめ）
   const { tenantId, userId } = c.a.ctx;
-  if (!tenantId || !userId) return down(where, "会社か人が無い");
-  await sendHandoverMails(c.d, { tenantId, userId }, v.mails ?? [], `pass:${v.handover.id}`);
+  if (!v || v.ok !== true || !v.handover || !Array.isArray(v.mails) || !tenantId || !userId)
+    return down(where, "答えの形が違う（か会社・人が無い）");
+  await sendHandoverMails(c.d, { tenantId, userId }, v.mails, `pass:${v.handover.id}`);
   return { status: 201, body: { data: v.handover } };
 };
