@@ -297,7 +297,7 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
         return guardDown(c, operationId, "行の守り", ex);
       }
       if (r === "missing") {
-        const m = hook?.rowMissing?.();
+        const m = deps.hooks[operationId]?.rowMissing?.();
         return m ? c.json(m.body as ErrBody, m.status as 400) : err(c, 404, "not_found", "NOT_FOUND");
       }
       if (r === "denied" || r === "gone") return err(c, 403, "forbidden", "FORBIDDEN"); // gone：会社から抜けた人（D-131.7）
