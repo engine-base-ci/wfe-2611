@@ -101,6 +101,12 @@ async function update(pool: pg.Pool, a: HookArgs, groups: readonly TicketFieldGr
   try {
     data = await withTenant(pool, a.ctx, async (cl) => {
       const parts: Row[] = [];
+      // 親を決める要求は、どの組より先に会社の錠を取る（組の中で先に行の錠を取ると、親だけの要求と錠の順が逆になって行き詰まる・K-440・PM の決め 2026-11-23 04:55）
+      if (sent.includes("parent_ticket_id")) {
+        await cl.query("select pg_advisory_xact_lock(hashtextextended('ticket_sort_parent:' || $1::text, 0))", [
+          a.ctx.tenantId,
+        ]);
+      }
       for (const g of todo) {
         const part = Object.fromEntries(g.fields.filter((f) => sent.includes(f)).map((f) => [f, a.input[f]]));
         const r = await g.apply(cl, a.id!, part);
