@@ -60,7 +60,6 @@ const KEYS = [
   "ticket_id",
   "title",
 ];
-const DAY = 86_400_000;
 const bridge = (label = "仕事用の PC") => ({ device_id: "dev-1", device_label: label });
 
 /** 本番の画面の道（apps/web/app の page.tsx）の集まり。(group) は道に出ない・[x] は動く部分 */
