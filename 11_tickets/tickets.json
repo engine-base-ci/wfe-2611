@@ -19621,10 +19621,12 @@
    "apis": [],
    "affects": [
     "@kaname/api",
+    "@kaname/contracts",
     "@kaname/db"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261123086300_notify_approval_requested.sql",
