@@ -522,10 +522,17 @@ describe("K-51 入力", () => {
     expect(sent.toUpperCase()).not.toContain(sha1(LEAKED_PW).slice(5));
   });
 
-  it("K51-API-018 入力に HTML や制御文字：500 にならず、保存は無害化（制御文字を除く・HTML は文字のまま）", async () => {
+  it("K51-API-018 入力に HTML や制御文字：500 にならず、保存は無害化（制御文字を除く・HTML は文字のまま）。NUL（\\u0000）だけは入口が 422（K-427）", async () => {
     const e = email("html");
+    // K-427：NUL（Postgres の text に入らない字）は入口が 422・欄 name で断る（前は黙って取り除いて 201 にしていた）。登録の行は増えない
+    const nul = await signup(okBody("html-nul", { name: "高本\u0000" }));
+    expect(nul.status, await nul.clone().text()).toBe(422);
+    const nulBody = (await nul.json()) as { code?: string; details?: { field: string }[] };
+    expect(nulBody.code).toBe("VALIDATION_ERROR");
+    expect((nulBody.details ?? []).map((d) => d.field)).toEqual(["name"]);
+    expect(await pending(email("html-nul"))).toHaveLength(0);
     const r = await signup(
-      okBody("html", { name: "<img src=x onerror=alert(1)>\u0000高本\u0007", company_name: "<b>社</b>\u001b" }),
+      okBody("html", { name: "<img src=x onerror=alert(1)>\u0001高本\u0007", company_name: "<b>社</b>\u001b" }),
     );
     expect(r.status, await r.clone().text()).toBe(201);
     const row = (await pending(e))[0]!;
