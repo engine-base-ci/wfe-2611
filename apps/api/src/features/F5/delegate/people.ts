@@ -18,9 +18,10 @@ const fromCatalog = (code: string, status: number, extra: Record<string, unknown
   body: { ...kanameError(code).toJSON(), ...extra },
 });
 /** 体から detail を外す（E-CONF-020 は {error, code, message, action, undo, support_code} だけ） */
-const noDetail = (r: HookReply): HookReply => {
-  const { detail: _detail, ...rest } = r.body as Record<string, unknown>;
-  return { ...r, body: rest };
+const noDetail = (r: HookReply): HookReply => ({
+  ...r,
+  body: Object.fromEntries(Object.entries(r.body as Record<string, unknown>).filter(([k]) => k !== "detail")),
+});
 };
 const down = (where: string, e: unknown): HookReply => {
   console.error(`[delegate] ${where}：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
