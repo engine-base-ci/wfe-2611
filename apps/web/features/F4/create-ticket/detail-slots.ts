@@ -1,8 +1,9 @@
 "use client";
 // チケットの詳細と承認待ちの差し込み口の約束（K-380・段 7〔F6〕と段 9〔F8〕が後から中身を足す）。
-//   題名の下の帯は 1 つだけ（D-128.178・D-129.10）。並びの順はここ 1 か所 BAND_ORDER で決める：
+//   AI が動いている・承認待ちの帯（承認・実行）は 1 つだけ（D-128.178・D-129.10）。任せる前・完了にする・止まった・完了の箱は数えず、渡し・保留の帯と並ぶ（K-620）。
+//   並びの順はここ 1 か所 BAND_ORDER で決める：
 //     承認・実行（F5 の帯・ApproveBand と DelegateBand）→ 渡し（段 9）→ 保留（段 7）。代表の答え ㉓
-//   後ろの帯は、前に出ている帯があれば譲る（bandYieldTo）。差し込み口の先は yieldTo が null でなければ描かない。
+//   後ろの帯は、前に出ている帯があれば譲る（bandYieldTo）。譲るのは承認・実行の帯が data-busy を持つ間だけ。差し込み口の先は yieldTo が null でなければ描かない。
 //   差し込み口に渡す値はどれも SlotTicket。getTicket の答えは detail にそのまま入れる（後の段が欄を足しても F4 の型を直さない）。
 //   import は react だけ（試験が Playwright の中でこのファイルを直に読む・@/ の道を使わない）
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState, type RefCallback } from "react";
@@ -56,8 +57,16 @@ export interface BandOrder {
 
 /** 画面の外（組み立ての時）では useEffect（useLayoutEffect は描いた直後の DOM を読むためだけ） */
 const useDomEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-/** F5 の帯（ApproveBand・DelegateBand。どちらも section.k62-band）が入れ物の直下に在るか */
-const F5_BAND = ":scope > section.k62-band";
+/** F5 の帯（ApproveBand・DelegateBand。どちらも section.k62-band）のうち、AI が動いている・承認待ちを出している間だけ付く印 data-busy を持つ帯が
+ *  入れ物の直下に在るか（任せる前・完了にする・止まった・完了の箱は印が無く数えない・K-620。印を付ける側は F5 で、このファイルを import しない） */
+const F5_BAND = ":scope > section.k62-band[data-busy]";
+/** 見張る範囲：帯の出入りと、帯の section は状態が替わっても同じ要素なので data-busy の付け外し（K-620） */
+const BAND_WATCH: MutationObserverInit = {
+  childList: true,
+  subtree: true,
+  attributes: true,
+  attributeFilter: ["data-busy"],
+};
 
 /** 帯の順の器：F5 の帯を見張って approve を、onWant で handover・hold を数える。値が変わらなければ描き直さない */
 export function useBandOrder(): BandOrder {
@@ -74,7 +83,7 @@ export function useBandOrder(): BandOrder {
     const check = () => setApprove(el.querySelector(F5_BAND) !== null);
     check();
     const mo = new MutationObserver(check);
-    mo.observe(el, { childList: true });
+    mo.observe(el, BAND_WATCH);
     return () => mo.disconnect();
   }, [el]);
   const wantHandover = useCallback((w: boolean) => setWants((p) => (p.handover === w ? p : { ...p, handover: w })), []);
