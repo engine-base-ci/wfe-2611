@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-20",
-  "frozen_at": "2026-11-20",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -6144,6 +6144,182 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/bridge/browser",
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup"
+   ],
+   "related_entities": [
+    "E-061"
+   ],
+   "choke_points": [
+    "C1",
+    "C2",
+    "C4"
+   ],
+   "source": [
+    "D-004",
+    "D-004.1",
+    "D-015",
+    "D-015.1",
+    "D-015.6",
+    "D-019.1",
+    "D-040.4",
+    "D-055",
+    "D-055.1",
+    "D-055.2",
+    "D-055.3",
+    "D-109.3",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4",
+    "D-125.142",
+    "D-125.143",
+    "D-125.146",
+    "D-125.167"
+   ],
+   "features": [
+    "F-005"
+   ],
+   "table": "sessions",
+   "operation_id": "setBridgeBrowser",
+   "auth": {
+    "role": "device",
+    "scheme": "device（PC の印。本人の sessions に結ばれ、本人が切られたら止まる）"
+   },
+   "rate_limit": "60/min/user",
+   "access_control_policies": [
+    "sessions_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated",
+      "code": "UNAUTHENTICATED"
+     },
+     "trigger": "PC の印が無い・知らない・外した PC の印（書く関数が false を返した直後も）",
+     "ears_form": "UNWANTED: IF PC の印が無いか知らないか外した PC の印なら、Kaname は 401 と UNAUTHENTICATED を返し、どの PC のブラウザも変えない"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 409,
+     "code": "CONFLICT",
+     "body": {
+      "error": "conflict"
+     },
+     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
+     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "errors": [],
+     "trigger": "browser が無い・文字でない・chrome／dedicated／off のどれでもない（NFKC と前後の空白を落とした後）・知らない欄（strict）",
+     "ears_form": "UNWANTED: IF browser が 3 つのどれでもないか知らない欄があるなら、Kaname は 422 と欄 browser の理由を返し、PC のブラウザを変えない"
+    },
+    {
+     "status": 413,
+     "code": "PAYLOAD_TOO_LARGE",
+     "body": {
+      "error": "payload_too_large",
+      "code": "PAYLOAD_TOO_LARGE"
+     },
+     "trigger": "1 回に送る内容が 1MB を超えた（送る量の守り・D-130.1）",
+     "ears_form": "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）",
+     "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/browser が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
+    "UNWANTED: IF PC の印が無いか知らないか外した PC の印なら、Kaname は 401 と UNAUTHENTICATED を返し、どの PC のブラウザも変えない",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF browser が 3 つのどれでもないか知らない欄があるなら、Kaname は 422 と欄 browser の理由を返し、PC のブラウザを変えない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/bridge/browser の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "terms_open": false,
+   "mfa_open": false,
+   "list_ignores_scope": false,
+   "outward_side_effects": [
+    "ネットワーク",
+    "ファイル / オブジェクト"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "implementation_path": "apps/api/src/routes/sessions.ts::setBridgeBrowser",
+   "permission": {
+    "who": "device",
+    "scope": "その人の PC（その PC 自身の AI が使うブラウザだけ。Kaname が正本で、画面で変えたのと同じ値・D-120）",
+    "step_up": false
+   },
+   "path_params": [],
+   "returns_list": false,
+   "inputs": {
+    "path": [],
+    "body": "sessions の入力（types.ts の SessionsInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 201,
+    "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-037",
+   "feature_id": "F-005"
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/bridge/claim",
    "acts": [
     "A09"
@@ -6295,7 +6471,7 @@
     "status": 201,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-037",
+   "id": "EP-038",
    "feature_id": "F-005"
   },
   {
@@ -6369,19 +6545,25 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "ほかの PC が取った仕事・ほかのアカウントの仕事・道の id と仕事の情報が違う・確かめでない仕事",
+     "ears_form": "UNWANTED: IF その PC の確かめの仕事でないなら、Kaname は 404 を返し、行も仕事も変えない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CRED-010",
      "body": {
-      "error": "conflict"
+      "error": "gate",
+      "code": "E-CRED-010"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CRED-010"
+     ],
+     "trigger": "仕事がもう終わった・止まった（動いていない）",
+     "ears_form": "UNWANTED: IF 仕事が動いていないなら、Kaname は 409 と E-CRED-010 を返し、行を変えない"
     },
     {
      "status": 422,
@@ -6390,8 +6572,22 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "知らない state・401 字以上の detail・301 字以上の text・asking と waiting で request_ref が無い・ask_kind が code／approve でない・本文に知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も仕事も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "結果を書く DB の関数が使えない",
+     "ears_form": "UNWANTED: IF 結果を書けないなら、Kaname は 503 と E-PAGE-003 を返し、行・仕事・証跡を変えない（PC は次の問い合わせでもう一度送れる）"
     },
     {
      "status": 413,
@@ -6428,9 +6624,10 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/credentials/:id/check-result が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF その PC の確かめの仕事でないなら、Kaname は 404 を返し、行も仕事も変えない",
+    "UNWANTED: IF 仕事が動いていないなら、Kaname は 409 と E-CRED-010 を返し、行を変えない",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、行も仕事も変えない",
+    "UNWANTED: IF 結果を書けないなら、Kaname は 503 と E-PAGE-003 を返し、行・仕事・証跡を変えない（PC は次の問い合わせでもう一度送れる）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
@@ -6465,7 +6662,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-038",
+   "id": "EP-039",
    "feature_id": "F-017"
   },
   {
@@ -6622,7 +6819,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-039",
+   "id": "EP-040",
    "feature_id": "F-017"
   },
   {
@@ -6803,7 +7000,7 @@
     "status": 200,
     "body": "{ data: Sessions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-040",
+   "id": "EP-041",
    "feature_id": "F-005"
   },
   {
@@ -7005,7 +7202,7 @@
     "status": 200,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-041",
+   "id": "EP-042",
    "feature_id": "F-005"
   },
   {
@@ -7197,7 +7394,225 @@
     "status": 200,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-042",
+   "id": "EP-043",
+   "feature_id": "F-005"
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup"
+   ],
+   "related_entities": [
+    "E-044",
+    "E-061"
+   ],
+   "choke_points": [
+    "C1",
+    "C2",
+    "C4"
+   ],
+   "source": [
+    "D-004",
+    "D-004.1",
+    "D-015",
+    "D-015.1",
+    "D-015.6",
+    "D-019.1",
+    "D-040.4",
+    "D-055",
+    "D-055.1",
+    "D-055.2",
+    "D-055.3",
+    "D-109.3",
+    "D-119.1",
+    "D-119.2",
+    "D-119.4",
+    "D-120.1",
+    "D-120.2",
+    "D-120.3",
+    "D-120.4",
+    "D-125.142",
+    "D-125.143",
+    "D-125.146",
+    "D-125.167"
+   ],
+   "features": [
+    "F-005"
+   ],
+   "table": "bridge_jobs",
+   "operation_id": "checkMyDeviceBrowser",
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "10/min/user",
+   "access_control_policies": [
+    "bridge_jobs_self_only_write",
+    "sessions_permission_write"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "trigger": "自分のアカウントの PC でない（他の人の PC・外した PC・消した PC・無い PC）",
+     "ears_form": "UNWANTED: IF 自分のアカウントの PC でないなら、Kaname は 404 と NOT_FOUND を返し、確かめの仕事を積まない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONN-018",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONN-018"
+     },
+     "errors": [
+      "E-CONN-018"
+     ],
+     "trigger": "PC の Bridge が動いていない（返事がまだ・最後の知らせが 75 秒より前）",
+     "ears_form": "UNWANTED: IF PC の Bridge が動いていない（状態 browser_check_asleep）なら、Kaname は 409 と E-CONN-018 を返し、確かめの仕事を積まない"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "errors": [],
+     "trigger": "体に知らない欄がある（prompt など・strict）・:id が uuid でない",
+     "ears_form": "UNWANTED: IF 体に知らない欄があるか :id が uuid でないなら、Kaname は 422 を返し、確かめの仕事を積まない"
+    },
+    {
+     "status": 413,
+     "code": "PAYLOAD_TOO_LARGE",
+     "body": {
+      "error": "payload_too_large",
+      "code": "PAYLOAD_TOO_LARGE"
+     },
+     "trigger": "1 回に送る内容が 1MB を超えた（送る量の守り・D-130.1）",
+     "ears_form": "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "10/min/user",
+     "ears_form": "UNWANTED: IF 10/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    },
+    {
+     "status": 403,
+     "code": "E-AUTH-010",
+     "body": {
+      "error": "forbidden",
+      "code": "E-AUTH-010"
+     },
+     "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）",
+     "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"
+    },
+    {
+     "status": 403,
+     "code": "MFA_REQUIRED",
+     "body": {
+      "error": "forbidden",
+      "code": "MFA_REQUIRED"
+     },
+     "trigger": "パスキーも 2 段階認証も無い人のセッション（付けるまで進めないの印が立ったセッション・E-AUTH-019）",
+     "ears_form": "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）",
+     "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/devices/:id/browser-check が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 自分のアカウントの PC でないなら、Kaname は 404 と NOT_FOUND を返し、確かめの仕事を積まない",
+    "UNWANTED: IF PC の Bridge が動いていない（状態 browser_check_asleep）なら、Kaname は 409 と E-CONN-018 を返し、確かめの仕事を積まない",
+    "UNWANTED: IF 体に知らない欄があるか :id が uuid でないなら、Kaname は 422 を返し、確かめの仕事を積まない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 10/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/bridge/devices/:id/browser-check の副作用は関門 C1・C2・C4 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "terms_open": false,
+   "mfa_open": false,
+   "list_ignores_scope": false,
+   "outward_side_effects": [
+    "ネットワーク",
+    "ファイル / オブジェクト"
+   ],
+   "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
+   "description": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "implementation_path": "apps/api/src/routes/bridge_jobs.ts::checkMyDeviceBrowser",
+   "permission": {
+    "who": "self",
+    "scope": "自分のアカウントの PC だけ。その PC に宛てた確かめの仕事を 1 つ積む（本人のサブスクを少し使うので 1 分 10 回）",
+    "step_up": false
+   },
+   "path_params": [
+    "id"
+   ],
+   "returns_list": false,
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": "bridge_jobs の入力（types.ts の BridgeJobsInput）",
+    "query": []
+   },
+   "outputs_2xx": {
+    "status": 201,
+    "body": "{ data: BridgeJobs, meta?: { cursor, limit, total } }"
+   },
+   "id": "EP-044",
    "feature_id": "F-005"
   },
   {
@@ -7338,7 +7753,7 @@
     "status": 200,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-043",
+   "id": "EP-045",
    "feature_id": "F-005"
   },
   {
@@ -7512,7 +7927,7 @@
     "status": 201,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-044",
+   "id": "EP-046",
    "feature_id": "F-005"
   },
   {
@@ -7677,7 +8092,7 @@
     "status": 201,
     "body": "{ data: Artifacts, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-045",
+   "id": "EP-047",
    "feature_id": "F-004"
   },
   {
@@ -7849,7 +8264,7 @@
     "status": 201,
     "body": "{ data: BridgeJobEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-046",
+   "id": "EP-048",
    "feature_id": "F-005"
   },
   {
@@ -7995,7 +8410,7 @@
     "status": 200,
     "body": "{ data: BridgeJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-047",
+   "id": "EP-049",
    "feature_id": "F-005"
   },
   {
@@ -8207,7 +8622,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-048",
+   "id": "EP-050",
    "feature_id": "F-024"
   },
   {
@@ -8383,7 +8798,7 @@
     "status": 201,
     "body": "{ data: BridgeJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-049",
+   "id": "EP-051",
    "feature_id": "F-005"
   },
   {
@@ -8557,7 +8972,7 @@
     "status": 201,
     "body": "{ data: BridgeJobEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-050",
+   "id": "EP-052",
    "feature_id": "F-005"
   },
   {
@@ -8725,7 +9140,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-051",
+   "id": "EP-053",
    "feature_id": "F-006"
   },
   {
@@ -8869,7 +9284,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-052",
+   "id": "EP-054",
    "feature_id": "F-006"
   },
   {
@@ -9044,7 +9459,7 @@
     "status": 201,
     "body": "{ data: ActionRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-053",
+   "id": "EP-055",
    "feature_id": "F-005"
   },
   {
@@ -9202,7 +9617,7 @@
     "status": 201,
     "body": "{ data: BridgeJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-054",
+   "id": "EP-056",
    "feature_id": "F-005"
   },
   {
@@ -9384,7 +9799,7 @@
     "status": 200,
     "body": "{ data: Conversations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-055",
+   "id": "EP-057",
    "feature_id": "F-024"
   },
   {
@@ -9578,7 +9993,7 @@
     "status": 201,
     "body": "{ data: BridgePairingCodes, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-056",
+   "id": "EP-058",
    "feature_id": "F-005"
   },
   {
@@ -9800,7 +10215,7 @@
     "status": 200,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-057",
+   "id": "EP-059",
    "feature_id": "F-005"
   },
   {
@@ -9993,7 +10408,7 @@
     "status": 200,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-058",
+   "id": "EP-060",
    "feature_id": "F-005"
   },
   {
@@ -10130,7 +10545,7 @@
     "status": 201,
     "body": "{ data: AgentUsageSnapshots, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-059",
+   "id": "EP-061",
    "feature_id": "F-004"
   },
   {
@@ -10319,155 +10734,8 @@
     "status": 201,
     "body": "{ data: Checks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-060",
+   "id": "EP-062",
    "feature_id": "F-006"
-  },
-  {
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "acts": [
-    "A103"
-   ],
-   "screens": [
-    "tickets"
-   ],
-   "related_entities": [
-    "E-112",
-    "E-113"
-   ],
-   "choke_points": [],
-   "source": [
-    "D-125.167",
-    "D-125.7",
-    "D-125.98"
-   ],
-   "features": [
-    "F-004"
-   ],
-   "table": "class_axes",
-   "operation_id": "listClassAxes",
-   "auth": {
-    "role": "member",
-    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
-   },
-   "rate_limit": "120/min/user",
-   "access_control_policies": [
-    "class_axes_tenant_read",
-    "class_axes_ops_read_with_grant",
-    "class_values_tenant_read",
-    "class_values_ops_read_with_grant"
-   ],
-   "outputs_4xx": [
-    {
-     "status": 401,
-     "code": "UNAUTHENTICATED",
-     "body": {
-      "error": "unauthenticated"
-     },
-     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
-     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
-    },
-    {
-     "status": 403,
-     "code": "FORBIDDEN",
-     "body": {
-      "error": "forbidden"
-     },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
-    },
-    {
-     "status": 422,
-     "code": "VALIDATION_ERROR",
-     "body": {
-      "error": "validation_failed",
-      "details": []
-     },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
-    },
-    {
-     "status": 429,
-     "code": "RATE_LIMITED",
-     "body": {
-      "error": "rate_limited",
-      "retry_after_sec": 60
-     },
-     "trigger": "120/min/user",
-     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
-    },
-    {
-     "status": 403,
-     "code": "E-AUTH-010",
-     "body": {
-      "error": "forbidden",
-      "code": "E-AUTH-010"
-     },
-     "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）",
-     "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"
-    },
-    {
-     "status": 403,
-     "code": "MFA_REQUIRED",
-     "body": {
-      "error": "forbidden",
-      "code": "MFA_REQUIRED"
-     },
-     "trigger": "パスキーも 2 段階認証も無い人のセッション（付けるまで進めないの印が立ったセッション・E-AUTH-019）",
-     "ears_form": "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない"
-    },
-    {
-     "status": 503,
-     "code": "E-PAGE-003",
-     "body": {
-      "error": "unavailable",
-      "code": "E-PAGE-003"
-     },
-     "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）",
-     "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
-    }
-   ],
-   "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/class_axes が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）",
-    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
-    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
-    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
-    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/class_axes の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
-   ],
-   "terms_open": false,
-   "mfa_open": false,
-   "list_ignores_scope": false,
-   "outward_side_effects": [],
-   "side_effect_ordering": null,
-   "description": "取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
-   "implementation_path": "apps/api/src/routes/class_axes.ts::listClassAxes",
-   "permission": {
-    "who": "read",
-    "scope": "同上",
-    "step_up": false
-   },
-   "path_params": [],
-   "returns_list": true,
-   "inputs": {
-    "path": [],
-    "body": null,
-    "query": [
-     "scope_id",
-     "cursor",
-     "limit",
-     "sort"
-    ]
-   },
-   "outputs_2xx": {
-    "status": 200,
-    "body": "{ data: ClassAxes[], meta?: { cursor, limit, total } }"
-   },
-   "id": "EP-061",
-   "feature_id": "F-004"
   },
   {
    "method": "PATCH",
@@ -10634,7 +10902,7 @@
     "status": 200,
     "body": "{ data: ClientContacts, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-062",
+   "id": "EP-063",
    "feature_id": "F-021"
   },
   {
@@ -10797,7 +11065,7 @@
     "status": 200,
     "body": "{ data: ClientContacts, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-063",
+   "id": "EP-064",
    "feature_id": "F-021"
   },
   {
@@ -10978,7 +11246,7 @@
     "status": 201,
     "body": "{ data: Invitations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-064",
+   "id": "EP-065",
    "feature_id": "F-021"
   },
   {
@@ -11143,7 +11411,7 @@
     "status": 200,
     "body": "{ data: ClientRequests[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-065",
+   "id": "EP-066",
    "feature_id": "F-021"
   },
   {
@@ -11321,7 +11589,7 @@
     "status": 200,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-066",
+   "id": "EP-067",
    "feature_id": "F-021"
   },
   {
@@ -11500,7 +11768,7 @@
     "status": 200,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-067",
+   "id": "EP-068",
    "feature_id": "F-021"
   },
   {
@@ -11695,7 +11963,7 @@
     "status": 201,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-068",
+   "id": "EP-069",
    "feature_id": "F-021"
   },
   {
@@ -11887,7 +12155,7 @@
     "status": 201,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-069",
+   "id": "EP-070",
    "feature_id": "F-021"
   },
   {
@@ -12079,7 +12347,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-070",
+   "id": "EP-071",
    "feature_id": "F-021"
   },
   {
@@ -12250,7 +12518,7 @@
     "status": 200,
     "body": "{ data: Clients[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-071",
+   "id": "EP-072",
    "feature_id": "F-004"
   },
   {
@@ -12416,7 +12684,7 @@
     "status": 201,
     "body": "{ data: Clients, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-072",
+   "id": "EP-073",
    "feature_id": "F-021"
   },
   {
@@ -12596,7 +12864,7 @@
     "status": 200,
     "body": "{ data: Clients, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-073",
+   "id": "EP-074",
    "feature_id": "F-021"
   },
   {
@@ -12765,7 +13033,7 @@
     "status": 200,
     "body": "{ data: Clients, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-074",
+   "id": "EP-075",
    "feature_id": "F-021"
   },
   {
@@ -12930,7 +13198,7 @@
     "status": 200,
     "body": "{ data: TicketMessages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-075",
+   "id": "EP-076",
    "feature_id": "F-021"
   },
   {
@@ -13113,7 +13381,7 @@
     "status": 201,
     "body": "{ data: ClientContacts, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-076",
+   "id": "EP-077",
    "feature_id": "F-021"
   },
   {
@@ -13280,7 +13548,7 @@
     "status": 200,
     "body": "{ data: Clients, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-077",
+   "id": "EP-078",
    "feature_id": "F-021"
   },
   {
@@ -13449,7 +13717,7 @@
     "status": 200,
     "body": "{ data: Clients, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-078",
+   "id": "EP-079",
    "feature_id": "F-021"
   },
   {
@@ -13599,7 +13867,7 @@
     "status": 200,
     "body": "{ data: Tickets[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-079",
+   "id": "EP-080",
    "feature_id": "F-021"
   },
   {
@@ -13806,7 +14074,7 @@
     "status": 200,
     "body": "{ data: Clones, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-080",
+   "id": "EP-081",
    "feature_id": "F-024"
   },
   {
@@ -13972,7 +14240,7 @@
     "status": 200,
     "body": "{ data: Clones, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-081",
+   "id": "EP-082",
    "feature_id": "F-006"
   },
   {
@@ -14128,7 +14396,7 @@
     "status": 200,
     "body": "{ data: ActionRuns[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-082",
+   "id": "EP-083",
    "feature_id": "F-023"
   },
   {
@@ -14297,7 +14565,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-083",
+   "id": "EP-084",
    "feature_id": "F-023"
   },
   {
@@ -14453,7 +14721,7 @@
     "status": 200,
     "body": "{ data: ActionRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-084",
+   "id": "EP-085",
    "feature_id": "F-023"
   },
   {
@@ -14615,7 +14883,7 @@
     "status": 200,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-085",
+   "id": "EP-086",
    "feature_id": "F-013"
   },
   {
@@ -14772,7 +15040,7 @@
     "status": 200,
     "body": "{ data: ActionRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-086",
+   "id": "EP-087",
    "feature_id": "F-023"
   },
   {
@@ -14914,7 +15182,7 @@
     "status": 200,
     "body": "{ data: Conversations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-087",
+   "id": "EP-088",
    "feature_id": "F-004"
   },
   {
@@ -15091,7 +15359,7 @@
     "status": 201,
     "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-088",
+   "id": "EP-089",
    "feature_id": "F-004"
   },
   {
@@ -15242,7 +15510,7 @@
     "status": 200,
     "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-089",
+   "id": "EP-090",
    "feature_id": "F-004"
   },
   {
@@ -15407,7 +15675,7 @@
     "status": 200,
     "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-090",
+   "id": "EP-091",
    "feature_id": "F-004"
   },
   {
@@ -15559,7 +15827,7 @@
     "status": 200,
     "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-091",
+   "id": "EP-092",
    "feature_id": "F-004"
   },
   {
@@ -15747,7 +16015,7 @@
     "status": 201,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-092",
+   "id": "EP-093",
    "feature_id": "F-004"
   },
   {
@@ -15957,7 +16225,7 @@
     "status": 200,
     "body": "{ data: Messages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-093",
+   "id": "EP-094",
    "feature_id": "F-024"
   },
   {
@@ -16197,7 +16465,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-094",
+   "id": "EP-095",
    "feature_id": "F-004"
   },
   {
@@ -16386,7 +16654,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-095",
+   "id": "EP-096",
    "feature_id": "F-006"
   },
   {
@@ -16620,7 +16888,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-096",
+   "id": "EP-097",
    "feature_id": "F-024"
   },
   {
@@ -16830,7 +17098,7 @@
     "status": 200,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-097",
+   "id": "EP-098",
    "feature_id": "F-024"
   },
   {
@@ -16994,7 +17262,7 @@
     "status": 200,
     "body": "{ data: Credentials[] }"
    },
-   "id": "EP-098",
+   "id": "EP-099",
    "feature_id": "F-017"
   },
   {
@@ -17093,11 +17361,10 @@
       "E-CRED-001",
       "E-CRED-002",
       "E-CRED-003",
-      "E-CRED-004",
       "E-CRED-005",
       "E-VAL-003"
      ],
-     "trigger": "名前の形（E-CRED-001）・使える場所の形と数（E-CRED-002）・使える場所が無い（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）・層／種類／2 段階の種類が決まった値の外・本文に知らない欄（strict）",
+     "trigger": "名前の形（E-CRED-001）・使える場所の形と数（E-CRED-002）・使える場所が無い（E-CRED-003）・期限の形（暦に無い・年-月-日でない）・種類ごとの中身（E-CRED-005）・認証アプリの鍵（E-VAL-003）・層／種類／2 段階の種類が決まった値の外・本文に知らない欄（strict）",
      "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も作らない"
     },
     {
@@ -17109,6 +17376,19 @@
      },
      "trigger": "本人確認の取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎている",
      "ears_form": "UNWANTED: IF 取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎているなら、Kaname は 403 と STEP_UP_REQUIRED を返し、金庫に置かず行も作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-CRED-004",
+     "body": {
+      "error": "conflict",
+      "code": "E-CRED-004"
+     },
+     "errors": [
+      "E-CRED-004"
+     ],
+     "trigger": "期限が日本の今日より前（時刻で決まる）",
+     "ears_form": "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も作らない"
     },
     {
      "status": 502,
@@ -17196,6 +17476,7 @@
     "UNWANTED: IF 同じ層に同じ名前の物が預けてあるなら、Kaname は 409 と E-CRED-006 を返し、金庫に物を残さず行も作らない",
     "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も作らない",
     "UNWANTED: IF 取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎているなら、Kaname は 403 と STEP_UP_REQUIRED を返し、金庫に置かず行も作らない",
+    "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も作らない",
     "UNWANTED: IF 預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行を作らない",
     "UNWANTED: IF 預かれない・預かり先が混んでいる・行を書く DB が落ちたなら、Kaname は 503 と E-SEC-002／E-SEC-003／E-PAGE-003 を返し、行を作らず金庫の物を生かしたまま残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
@@ -17230,7 +17511,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-099",
+   "id": "EP-100",
    "feature_id": "F-017"
   },
   {
@@ -17325,12 +17606,11 @@
      "errors": [
       "E-CRED-002",
       "E-CRED-003",
-      "E-CRED-004",
       "E-CRED-005",
       "E-CRED-008",
       "E-VAL-003"
      ],
-     "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限（E-CRED-004）・種類ごとの中身（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
+     "trigger": "使える場所の形と数（E-CRED-002）・空の並び（E-CRED-003）・期限の形（暦に無い・年-月-日でない）・中身の欠け（E-CRED-005）・変える物が無い（E-CRED-008）・認証アプリの鍵（E-VAL-003）・2 段階の種類が決まった値の外・名前／層／種類や知らない欄（strict）",
      "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も変えない"
     },
     {
@@ -17355,6 +17635,32 @@
      ],
      "trigger": "同じ物の中身を、ほかの画面が先に上書きした（値の入れ替えがぶつかった）",
      "ears_form": "UNWANTED: IF 同じ物の中身をほかの画面が先に上書きしたなら、Kaname は 409 と E-CRED-009 を返し、置いた金庫の物を失効させて行は先の上書きのままにする"
+    },
+    {
+     "status": 409,
+     "code": "E-CRED-004",
+     "body": {
+      "error": "conflict",
+      "code": "E-CRED-004"
+     },
+     "errors": [
+      "E-CRED-004"
+     ],
+     "trigger": "期限が日本の今日より前（時刻で決まる）",
+     "ears_form": "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も変えない"
+    },
+    {
+     "status": 409,
+     "code": "E-CRED-015",
+     "body": {
+      "error": "conflict",
+      "code": "E-CRED-015"
+     },
+     "errors": [
+      "E-CRED-015"
+     ],
+     "trigger": "預けた物の種類や 2 段階の状態と合わない中身（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・認証アプリの鍵の有無が合わない）",
+     "ears_form": "UNWANTED: IF 預けた物の種類や 2 段階の状態と合わない中身なら、Kaname は 409 と E-CRED-015 を返し、金庫に置かず行も変えない"
     },
     {
      "status": 502,
@@ -17443,6 +17749,8 @@
     "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、金庫に置かず行も変えない",
     "UNWANTED: IF 取り直しが直前 15 分の内に無く、ログインからも 15 分を過ぎているなら、Kaname は 403 と STEP_UP_REQUIRED を返し、金庫に置かず行も変えない",
     "UNWANTED: IF 同じ物の中身をほかの画面が先に上書きしたなら、Kaname は 409 と E-CRED-009 を返し、置いた金庫の物を失効させて行は先の上書きのままにする",
+    "UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も変えない",
+    "UNWANTED: IF 預けた物の種類や 2 段階の状態と合わない中身なら、Kaname は 409 と E-CRED-015 を返し、金庫に置かず行も変えない",
     "UNWANTED: IF 新しい中身を預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行は前の中身のままにする",
     "UNWANTED: IF 預かれない・預かり先が混んでいる・行を書く DB が落ちたなら、Kaname は 503 と E-SEC-002／E-SEC-003／E-PAGE-003 を返し、行は前の中身のままにして新しい金庫の物を生かしたまま残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
@@ -17481,7 +17789,7 @@
     "status": 200,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-100",
+   "id": "EP-101",
    "feature_id": "F-017"
   },
   {
@@ -17672,7 +17980,7 @@
     "status": 200,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-101",
+   "id": "EP-102",
    "feature_id": "F-017"
   },
   {
@@ -17739,28 +18047,36 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [],
+     "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+     "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "預けたログイン情報が無い・ほかのワークスペースの人の物・同じワークスペースのほかの人の個人の物・自分の消した物（読み取りの守りで見えない物・同じワークスペースのほかの人が預けたワークスペースの物は 403）",
+     "ears_form": "UNWANTED: IF 見えない物（無い・ほかのワークスペースの物・ほかの人の個人の物・自分の消した物）なら、Kaname は 404 を返し、在るかを漏らさず確かめの仕事を積まない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CRED-012",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CRED-012"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CRED-012"
+     ],
+     "trigger": "同じ物の確かめの仕事が待ち・動いている・コード待ち",
+     "ears_form": "UNWANTED: IF いま確かめているなら、Kaname は 409 と E-CRED-012 を返し、仕事を増やさない"
     },
     {
      "status": 422,
@@ -17771,6 +18087,45 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 409,
+     "code": "E-CRED-013",
+     "body": {
+      "error": "conflict",
+      "code": "E-CRED-013"
+     },
+     "errors": [
+      "E-CRED-013"
+     ],
+     "trigger": "API キー・値（ログインでない物）",
+     "ears_form": "UNWANTED: IF ログインでない物なら、Kaname は 409 と E-CRED-013 を返し、確かめの仕事を積まない"
+    },
+    {
+     "status": 409,
+     "code": "E-CRED-011",
+     "body": {
+      "error": "dependency",
+      "code": "E-CRED-011"
+     },
+     "errors": [
+      "E-CRED-011"
+     ],
+     "trigger": "失効した・期限が過ぎた",
+     "ears_form": "UNWANTED: IF 失効したか期限が過ぎたなら、Kaname は 409 と E-CRED-011 を返し、確かめの仕事を積まない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "確かめを積む DB の関数が使えない",
+     "ears_form": "UNWANTED: IF 確かめを積めないなら、Kaname は 503 と E-PAGE-003 を返し、仕事も行の状態も変えない"
     },
     {
      "status": 413,
@@ -17826,10 +18181,13 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/credentials/:id/login-check が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、確かめの仕事を積まない",
+    "UNWANTED: IF 見えない物（無い・ほかのワークスペースの物・ほかの人の個人の物・自分の消した物）なら、Kaname は 404 を返し、在るかを漏らさず確かめの仕事を積まない",
+    "UNWANTED: IF いま確かめているなら、Kaname は 409 と E-CRED-012 を返し、仕事を増やさない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF ログインでない物なら、Kaname は 409 と E-CRED-013 を返し、確かめの仕事を積まない",
+    "UNWANTED: IF 失効したか期限が過ぎたなら、Kaname は 409 と E-CRED-011 を返し、確かめの仕事を積まない",
+    "UNWANTED: IF 確かめを積めないなら、Kaname は 503 と E-PAGE-003 を返し、仕事も行の状態も変えない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -17866,7 +18224,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-102",
+   "id": "EP-103",
    "feature_id": "F-017"
   },
   {
@@ -17933,19 +18291,23 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [],
+     "trigger": "同じワークスペースのほかの人が預けたワークスペースの物（入口の行の守り：見えるが預けた人でない・代表の答え answer=431fc50df51b）",
+     "ears_form": "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、答えの行を作らない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "預けたログイン情報が無い・ほかのワークスペースの人の物・同じワークスペースのほかの人の個人の物・自分の消した物（読み取りの守りで見えない物・同じワークスペースのほかの人が預けたワークスペースの物は 403）",
+     "ears_form": "UNWANTED: IF 見えない物（無い・ほかのワークスペースの物・ほかの人の個人の物・自分の消した物）なら、Kaname は 404 を返し、答えの行を作らない"
     },
     {
      "status": 409,
@@ -17963,8 +18325,37 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-009"
+     ],
+     "trigger": "code と approved の両方・どちらも無い・request_ref が無いか 100 字を超える・コードが区切りを挟んだ英数字 1〜64 個でない（E-VAL-009）・本文に知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない"
+    },
+    {
+     "status": 404,
+     "code": "E-CRED-014",
+     "body": {
+      "error": "not_found",
+      "code": "E-CRED-014"
+     },
+     "errors": [
+      "E-CRED-014"
+     ],
+     "trigger": "その頼み（request_ref）を PC が出していない・確かめが終わった・止まった",
+     "ears_form": "UNWANTED: IF いまコードを頼まれていないなら、Kaname は 404 と E-CRED-014 を返し、答えの行を作らない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "答えを置く DB の関数が使えない",
+     "ears_form": "UNWANTED: IF 答えを置けないなら、Kaname は 503 と E-PAGE-003 を返し、答えの行も仕事の段も変えない"
     },
     {
      "status": 413,
@@ -18020,10 +18411,12 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/credentials/:id/login-check/answer が「名前を付けて値を入れる。秘密は保存後に見えない」として呼ばれたとき THEN Kaname は「秘密は金庫へ（AI に見せない）。値は層つきで保存」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 同じワークスペースのほかの人が預けた物なら、Kaname は 403 を返し、答えの行を作らない",
+    "UNWANTED: IF 見えない物（無い・ほかのワークスペースの物・ほかの人の個人の物・自分の消した物）なら、Kaname は 404 を返し、答えの行を作らない",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、答えの行を作らない",
+    "UNWANTED: IF いまコードを頼まれていないなら、Kaname は 404 と E-CRED-014 を返し、答えの行を作らない",
+    "UNWANTED: IF 答えを置けないなら、Kaname は 503 と E-PAGE-003 を返し、答えの行も仕事の段も変えない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -18060,7 +18453,7 @@
     "status": 201,
     "body": "{ data: Credentials, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-103",
+   "id": "EP-104",
    "feature_id": "F-017"
   },
   {
@@ -18228,7 +18621,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-104",
+   "id": "EP-105",
    "feature_id": "F-012"
   },
   {
@@ -18386,7 +18779,7 @@
     "status": 200,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-105",
+   "id": "EP-106",
    "feature_id": "F-012"
   },
   {
@@ -18532,7 +18925,7 @@
     "status": 200,
     "body": "{ data: HandoverRules[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-106",
+   "id": "EP-107",
    "feature_id": "F-010"
   },
   {
@@ -18679,7 +19072,7 @@
     "status": 200,
     "body": "{ data: Inquiries[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-107",
+   "id": "EP-108",
    "feature_id": "F-015"
   },
   {
@@ -18852,7 +19245,7 @@
     "status": 201,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-108",
+   "id": "EP-109",
    "feature_id": "F-015"
   },
   {
@@ -19011,7 +19404,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-109",
+   "id": "EP-110",
    "feature_id": "F-015"
   },
   {
@@ -19196,7 +19589,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-110",
+   "id": "EP-111",
    "feature_id": "F-015"
   },
   {
@@ -19376,7 +19769,7 @@
     "status": 201,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-111",
+   "id": "EP-112",
    "feature_id": "F-015"
   },
   {
@@ -19541,7 +19934,7 @@
     "status": 201,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-112",
+   "id": "EP-113",
    "feature_id": "F-015"
   },
   {
@@ -19601,31 +19994,54 @@
     },
     {
      "status": 403,
-     "code": "FORBIDDEN",
+     "code": "STEP_UP_REQUIRED",
      "body": {
-      "error": "forbidden"
+      "error": "step_up_required",
+      "code": "STEP_UP_REQUIRED"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "管理者として招くのに、本人確認の取り直しが直前 15 分の内に無い",
+     "ears_form": "UNWANTED: IF 管理者として招くのに取り直しが直前 15 分の内に無いなら、Kaname は 403 と STEP_UP_REQUIRED を返し、招待もメールも作らない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-INV-010",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-INV-010"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-INV-010"
+     ],
+     "trigger": "宛てがもうこのワークスペースに入っている人（E-INV-010。止めている人も）",
+     "ears_form": "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と入っている宛ての一覧（detail）を返し、どの宛ても招かずメールも送らない"
     },
     {
      "status": 422,
-     "code": "VALIDATION_ERROR",
+     "code": "E-INV-009",
      "body": {
-      "error": "validation_failed",
+      "error": "validation",
+      "code": "E-INV-009",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-INV-009",
+      "E-INV-012"
+     ],
+     "trigger": "メールの形でない宛て（E-INV-009）・51 人以上（E-INV-012）・役割が決まった値の外・ひとこと 501 文字・宛てが空・知らない欄（strict）",
+     "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない"
+    },
+    {
+     "status": 404,
+     "code": "E-INV-011",
+     "body": {
+      "error": "not_found",
+      "code": "E-INV-011"
+     },
+     "errors": [
+      "E-INV-011"
+     ],
+     "trigger": "選んだグループがこの会社に無い・消した（E-INV-011）",
+     "ears_form": "UNWANTED: IF 選んだグループがこの会社に無い、または消してあるなら、Kaname は 404 と E-INV-011 を返し、どの宛ても招かずメールも送らない"
     },
     {
      "status": 413,
@@ -19681,9 +20097,10 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/invitations が「メールと層と権限の束を選んで招く」として呼ばれたとき THEN Kaname は「招待（7 日）を送る」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 管理者として招くのに取り直しが直前 15 分の内に無いなら、Kaname は 403 と STEP_UP_REQUIRED を返し、招待もメールも作らない",
+    "UNWANTED: IF 宛てにもうこのワークスペースに入っている人がいるなら、Kaname は 409 と E-INV-010 と入っている宛ての一覧（detail）を返し、どの宛ても招かずメールも送らない",
+    "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と宛てごとの理由を返し、どの宛ても招かずメールも送らない",
+    "UNWANTED: IF 選んだグループがこの会社に無い、または消してあるなら、Kaname は 404 と E-INV-011 を返し、どの宛ても招かずメールも送らない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -19716,7 +20133,7 @@
     "status": 201,
     "body": "{ data: Invitations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-113",
+   "id": "EP-114",
    "feature_id": "F-010"
   },
   {
@@ -19881,7 +20298,7 @@
     "status": 200,
     "body": "{ data: Invitations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-114",
+   "id": "EP-115",
    "feature_id": "F-010"
   },
   {
@@ -20069,7 +20486,7 @@
     "status": 201,
     "body": "{ data: Invitations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-115",
+   "id": "EP-116",
    "feature_id": "F-010"
   },
   {
@@ -20241,7 +20658,7 @@
     "status": 201,
     "body": "{ data: Invitations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-116",
+   "id": "EP-117",
    "feature_id": "F-010"
   },
   {
@@ -20400,7 +20817,7 @@
     "status": 200,
     "body": "{ data: Invoices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-117",
+   "id": "EP-118",
    "feature_id": "F-015"
   },
   {
@@ -20565,7 +20982,7 @@
     "status": 201,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-118",
+   "id": "EP-119",
    "feature_id": "F-011"
   },
   {
@@ -20724,7 +21141,7 @@
     "status": 201,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-119",
+   "id": "EP-120",
    "feature_id": "F-011"
   },
   {
@@ -20874,7 +21291,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-120",
+   "id": "EP-121",
    "feature_id": "F-011"
   },
   {
@@ -21025,7 +21442,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-121",
+   "id": "EP-122",
    "feature_id": "F-011"
   },
   {
@@ -21173,7 +21590,7 @@
     "status": 200,
     "body": "{ data: KnowledgePageVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-122",
+   "id": "EP-123",
    "feature_id": "F-011"
   },
   {
@@ -21351,7 +21768,7 @@
     "status": 201,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-123",
+   "id": "EP-124",
    "feature_id": "F-011"
   },
   {
@@ -21524,7 +21941,7 @@
     "status": 201,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-124",
+   "id": "EP-125",
    "feature_id": "F-011"
   },
   {
@@ -21671,7 +22088,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-125",
+   "id": "EP-126",
    "feature_id": "F-011"
   },
   {
@@ -21821,7 +22238,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-126",
+   "id": "EP-127",
    "feature_id": "F-011"
   },
   {
@@ -21984,7 +22401,7 @@
     "status": 201,
     "body": "{ data: Imports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-127",
+   "id": "EP-128",
    "feature_id": "F-011"
   },
   {
@@ -22137,7 +22554,7 @@
     "status": 200,
     "body": "{ data: Imports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-128",
+   "id": "EP-129",
    "feature_id": "F-011"
   },
   {
@@ -22316,7 +22733,7 @@
     "status": 201,
     "body": "{ data: Imports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-129",
+   "id": "EP-130",
    "feature_id": "F-011"
   },
   {
@@ -22466,7 +22883,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-130",
+   "id": "EP-131",
    "feature_id": "F-011"
   },
   {
@@ -22629,7 +23046,7 @@
     "status": 201,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-131",
+   "id": "EP-132",
    "feature_id": "F-011"
   },
   {
@@ -22793,7 +23210,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-132",
+   "id": "EP-133",
    "feature_id": "F-011"
   },
   {
@@ -22956,7 +23373,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-133",
+   "id": "EP-134",
    "feature_id": "F-011"
   },
   {
@@ -23132,7 +23549,7 @@
     "status": 201,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-134",
+   "id": "EP-135",
    "feature_id": "F-011"
   },
   {
@@ -23307,7 +23724,7 @@
     "status": 201,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-135",
+   "id": "EP-136",
    "feature_id": "F-011"
   },
   {
@@ -23473,7 +23890,7 @@
     "status": 200,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-136",
+   "id": "EP-137",
    "feature_id": "F-011"
   },
   {
@@ -23625,7 +24042,7 @@
     "status": 200,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-137",
+   "id": "EP-138",
    "feature_id": "F-011"
   },
   {
@@ -23789,7 +24206,7 @@
     "status": 200,
     "body": "{ data: KnowledgeLinks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-138",
+   "id": "EP-139",
    "feature_id": "F-011"
   },
   {
@@ -23965,7 +24382,7 @@
     "status": 201,
     "body": "{ data: KnowledgeLinks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-139",
+   "id": "EP-140",
    "feature_id": "F-011"
   },
   {
@@ -24118,7 +24535,7 @@
     "status": 200,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-140",
+   "id": "EP-141",
    "feature_id": "F-011"
   },
   {
@@ -24271,7 +24688,7 @@
     "status": 200,
     "body": "{ data: Messages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-141",
+   "id": "EP-142",
    "feature_id": "F-011"
   },
   {
@@ -24449,7 +24866,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-142",
+   "id": "EP-143",
    "feature_id": "F-011"
   },
   {
@@ -24629,7 +25046,7 @@
     "status": 201,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-143",
+   "id": "EP-144",
    "feature_id": "F-011"
   },
   {
@@ -24802,7 +25219,7 @@
     "status": 201,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-144",
+   "id": "EP-145",
    "feature_id": "F-011"
   },
   {
@@ -24962,7 +25379,7 @@
     "status": 200,
     "body": "{ data: ReferenceLogs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-145",
+   "id": "EP-146",
    "feature_id": "F-011"
   },
   {
@@ -25135,7 +25552,7 @@
     "status": 201,
     "body": "{ data: KnowledgePages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-146",
+   "id": "EP-147",
    "feature_id": "F-011"
   },
   {
@@ -25288,7 +25705,7 @@
     "status": 200,
     "body": "{ data: KnowledgePageVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-147",
+   "id": "EP-148",
    "feature_id": "F-011"
   },
   {
@@ -25464,7 +25881,7 @@
     "status": 201,
     "body": "{ data: KnowledgePageVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-148",
+   "id": "EP-149",
    "feature_id": "F-011"
   },
   {
@@ -25626,7 +26043,7 @@
     "status": 201,
     "body": "{ data: Layers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-149",
+   "id": "EP-150",
    "feature_id": "F-011"
   },
   {
@@ -25792,7 +26209,7 @@
     "status": 200,
     "body": "{ data: Layers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-150",
+   "id": "EP-151",
    "feature_id": "F-011"
   },
   {
@@ -25953,7 +26370,7 @@
     "status": 200,
     "body": "{ data: LearningCandidates[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-151",
+   "id": "EP-152",
    "feature_id": "F-013"
   },
   {
@@ -26150,7 +26567,7 @@
     "status": 201,
     "body": "{ data: LearningCandidates, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-152",
+   "id": "EP-153",
    "feature_id": "F-013"
   },
   {
@@ -26342,7 +26759,7 @@
     "status": 201,
     "body": "{ data: LearningCandidates, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-153",
+   "id": "EP-154",
    "feature_id": "F-013"
   },
   {
@@ -26524,7 +26941,7 @@
     "status": 201,
     "body": "{ data: Approvals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-154",
+   "id": "EP-155",
    "feature_id": "F-011"
   },
   {
@@ -26709,7 +27126,7 @@
     "status": 201,
     "body": "{ data: LearningCandidates, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-155",
+   "id": "EP-156",
    "feature_id": "F-013"
   },
   {
@@ -26843,7 +27260,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-156",
+   "id": "EP-157",
    "feature_id": "F-017"
   },
   {
@@ -26999,7 +27416,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-157",
+   "id": "EP-158",
    "feature_id": "F-017"
   },
   {
@@ -27167,7 +27584,7 @@
     "status": 201,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-158",
+   "id": "EP-159",
    "feature_id": "F-017"
   },
   {
@@ -27327,7 +27744,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-159",
+   "id": "EP-160",
    "feature_id": "F-012"
   },
   {
@@ -27491,7 +27908,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-160",
+   "id": "EP-161",
    "feature_id": "F-017"
   },
   {
@@ -27658,7 +28075,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-161",
+   "id": "EP-162",
    "feature_id": "F-017"
   },
   {
@@ -27809,7 +28226,7 @@
     "status": 200,
     "body": "{ data: NotificationSettings, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-162",
+   "id": "EP-163",
    "feature_id": "F-017"
   },
   {
@@ -27967,7 +28384,7 @@
     "status": 200,
     "body": "{ data: NotificationSettings, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-163",
+   "id": "EP-164",
    "feature_id": "F-017"
   },
   {
@@ -28135,7 +28552,7 @@
     "status": 201,
     "body": "{ data: NotificationSettings, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-164",
+   "id": "EP-165",
    "feature_id": "F-017"
   },
   {
@@ -28302,7 +28719,7 @@
     "status": 200,
     "body": "{ data: Passkeys, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-165",
+   "id": "EP-166",
    "feature_id": "F-012"
   },
   {
@@ -28474,7 +28891,7 @@
     "status": 200,
     "body": "{ data: Passkeys, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-166",
+   "id": "EP-167",
    "feature_id": "F-012"
   },
   {
@@ -28646,7 +29063,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-167",
+   "id": "EP-168",
    "feature_id": "F-012"
   },
   {
@@ -28821,7 +29238,7 @@
     "status": 200,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-168",
+   "id": "EP-169",
    "feature_id": "F-012"
   },
   {
@@ -28966,7 +29383,7 @@
     "status": 200,
     "body": "{ data: Passkeys, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-169",
+   "id": "EP-170",
    "feature_id": "F-012"
   },
   {
@@ -29115,7 +29532,7 @@
     "status": 200,
     "body": "{ data: Sessions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-170",
+   "id": "EP-171",
    "feature_id": "F-017"
   },
   {
@@ -29275,7 +29692,7 @@
     "status": 200,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-171",
+   "id": "EP-172",
    "feature_id": "F-017"
   },
   {
@@ -29442,7 +29859,7 @@
     "status": 201,
     "body": "{ data: Sessions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-172",
+   "id": "EP-173",
    "feature_id": "F-017"
   },
   {
@@ -29598,7 +30015,7 @@
     "status": 200,
     "body": "{ data: Members[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-173",
+   "id": "EP-174",
    "feature_id": "F-017"
   },
   {
@@ -29764,7 +30181,7 @@
     "status": 201,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-174",
+   "id": "EP-175",
    "feature_id": "F-017"
   },
   {
@@ -29909,7 +30326,7 @@
     "status": 200,
     "body": "{ data: TenantMemberships[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-175",
+   "id": "EP-176",
    "feature_id": "F-004"
   },
   {
@@ -30071,7 +30488,7 @@
     "status": 201,
     "body": "{ data: TenantMemberships, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-176",
+   "id": "EP-177",
    "feature_id": "F-004"
   },
   {
@@ -30199,7 +30616,7 @@
     "status": 200,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-177",
+   "id": "EP-178",
    "feature_id": "F-012"
   },
   {
@@ -30348,7 +30765,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-178",
+   "id": "EP-179",
    "feature_id": "F-012"
   },
   {
@@ -30497,7 +30914,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-179",
+   "id": "EP-180",
    "feature_id": "F-012"
   },
   {
@@ -30641,7 +31058,7 @@
     "status": 200,
     "body": "{ data: AgentUsageSnapshots, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-180",
+   "id": "EP-181",
    "feature_id": "F-004"
   },
   {
@@ -30804,7 +31221,7 @@
     "status": 200,
     "body": "{ data: TenantMemberships, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-181",
+   "id": "EP-182",
    "feature_id": "F-017"
   },
   {
@@ -30948,7 +31365,7 @@
     "status": 200,
     "body": "{ data: Members[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-182",
+   "id": "EP-183",
    "feature_id": "F-004"
   },
   {
@@ -31134,7 +31551,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-183",
+   "id": "EP-184",
    "feature_id": "F-010"
   },
   {
@@ -31314,7 +31731,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-184",
+   "id": "EP-185",
    "feature_id": "F-010"
   },
   {
@@ -31490,7 +31907,7 @@
     "status": 200,
     "body": "{ data: ScopeMemberships, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-185",
+   "id": "EP-186",
    "feature_id": "F-010"
   },
   {
@@ -31678,7 +32095,7 @@
     "status": 201,
     "body": "{ data: Notifications, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-186",
+   "id": "EP-187",
    "feature_id": "F-010"
   },
   {
@@ -31856,7 +32273,7 @@
     "status": 200,
     "body": "{ data: Permissions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-187",
+   "id": "EP-188",
    "feature_id": "F-010"
   },
   {
@@ -32033,7 +32450,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-188",
+   "id": "EP-189",
    "feature_id": "F-010"
   },
   {
@@ -32219,7 +32636,7 @@
     "status": 201,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-189",
+   "id": "EP-190",
    "feature_id": "F-010"
   },
   {
@@ -32399,7 +32816,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-190",
+   "id": "EP-191",
    "feature_id": "F-010"
   },
   {
@@ -32589,7 +33006,7 @@
     "status": 201,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-191",
+   "id": "EP-192",
    "feature_id": "F-010"
   },
   {
@@ -32771,7 +33188,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-192",
+   "id": "EP-193",
    "feature_id": "F-012"
   },
   {
@@ -32925,7 +33342,7 @@
     "status": 200,
     "body": "{ data: Memories[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-193",
+   "id": "EP-194",
    "feature_id": "F-013"
   },
   {
@@ -33098,7 +33515,7 @@
     "status": 201,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-194",
+   "id": "EP-195",
    "feature_id": "F-013"
   },
   {
@@ -33273,7 +33690,7 @@
     "status": 200,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-195",
+   "id": "EP-196",
    "feature_id": "F-013"
   },
   {
@@ -33437,7 +33854,7 @@
     "status": 200,
     "body": "{ data: Memories, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-196",
+   "id": "EP-197",
    "feature_id": "F-013"
   },
   {
@@ -33630,7 +34047,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-197",
+   "id": "EP-198",
    "feature_id": "F-011"
   },
   {
@@ -33817,7 +34234,7 @@
     "status": 201,
     "body": "{ data: Artifacts, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-198",
+   "id": "EP-199",
    "feature_id": "F-004"
   },
   {
@@ -33968,7 +34385,7 @@
     "status": 200,
     "body": "{ data: Notices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-199",
+   "id": "EP-200",
    "feature_id": "F-015"
   },
   {
@@ -34150,7 +34567,7 @@
     "status": 201,
     "body": "{ data: NoticeDeliveries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-200",
+   "id": "EP-201",
    "feature_id": "F-015"
   },
   {
@@ -34293,7 +34710,7 @@
     "status": 200,
     "body": "{ data: Notifications[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-201",
+   "id": "EP-202",
    "feature_id": "F-004"
   },
   {
@@ -34459,7 +34876,7 @@
     "status": 200,
     "body": "{ data: Notifications, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-202",
+   "id": "EP-203",
    "feature_id": "F-004"
   },
   {
@@ -34621,7 +35038,7 @@
     "status": 201,
     "body": "{ data: Notifications, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-203",
+   "id": "EP-204",
    "feature_id": "F-004"
   },
   {
@@ -34775,7 +35192,7 @@
     "status": 200,
     "body": "{ data: Inquiries[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-204",
+   "id": "EP-205",
    "feature_id": "F-016"
   },
   {
@@ -34947,7 +35364,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-205",
+   "id": "EP-206",
    "feature_id": "F-016"
   },
   {
@@ -35119,7 +35536,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-206",
+   "id": "EP-207",
    "feature_id": "F-016"
   },
   {
@@ -35302,7 +35719,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-207",
+   "id": "EP-208",
    "feature_id": "F-016"
   },
   {
@@ -35489,7 +35906,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-208",
+   "id": "EP-209",
    "feature_id": "F-016"
   },
   {
@@ -35647,7 +36064,7 @@
     "status": 200,
     "body": "{ data: Invoices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-209",
+   "id": "EP-210",
    "feature_id": "F-016"
   },
   {
@@ -35832,7 +36249,7 @@
     "status": 201,
     "body": "{ data: Payments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-210",
+   "id": "EP-211",
    "feature_id": "F-016"
   },
   {
@@ -36000,7 +36417,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-211",
+   "id": "EP-212",
    "feature_id": "F-016"
   },
   {
@@ -36175,7 +36592,7 @@
     "status": 201,
     "body": "{ data: Invoices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-212",
+   "id": "EP-213",
    "feature_id": "F-016"
   },
   {
@@ -36320,7 +36737,7 @@
     "status": 200,
     "body": "{ data: OpsMembers[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-213",
+   "id": "EP-214",
    "feature_id": "F-016"
   },
   {
@@ -36485,7 +36902,7 @@
     "status": 201,
     "body": "{ data: OpsMembers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-214",
+   "id": "EP-215",
    "feature_id": "F-016"
   },
   {
@@ -36651,7 +37068,7 @@
     "status": 200,
     "body": "{ data: OpsMembers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-215",
+   "id": "EP-216",
    "feature_id": "F-016"
   },
   {
@@ -36809,7 +37226,7 @@
     "status": 200,
     "body": "{ data: OpsMembers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-216",
+   "id": "EP-217",
    "feature_id": "F-016"
   },
   {
@@ -36956,7 +37373,7 @@
     "status": 200,
     "body": "{ data: Notices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-217",
+   "id": "EP-218",
    "feature_id": "F-016"
   },
   {
@@ -37122,7 +37539,7 @@
     "status": 201,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-218",
+   "id": "EP-219",
    "feature_id": "F-016"
   },
   {
@@ -37282,7 +37699,7 @@
     "status": 200,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-219",
+   "id": "EP-220",
    "feature_id": "F-016"
   },
   {
@@ -37451,7 +37868,7 @@
     "status": 200,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-220",
+   "id": "EP-221",
    "feature_id": "F-016"
   },
   {
@@ -37638,7 +38055,7 @@
     "status": 201,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-221",
+   "id": "EP-222",
    "feature_id": "F-016"
   },
   {
@@ -37819,7 +38236,7 @@
     "status": 201,
     "body": "{ data: StatusIncidents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-222",
+   "id": "EP-223",
    "feature_id": "F-016"
   },
   {
@@ -37977,7 +38394,7 @@
     "status": 200,
     "body": "{ data: Operations[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-223",
+   "id": "EP-224",
    "feature_id": "F-020"
   },
   {
@@ -38140,7 +38557,7 @@
     "status": 200,
     "body": "{ data: SupportAccessGrants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-224",
+   "id": "EP-225",
    "feature_id": "F-016"
   },
   {
@@ -38286,7 +38703,7 @@
     "status": 200,
     "body": "{ data: OpsAuditEvents[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-225",
+   "id": "EP-226",
    "feature_id": "F-016"
   },
   {
@@ -38431,7 +38848,7 @@
     "status": 200,
     "body": "{ data: OpsPlanProposals[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-226",
+   "id": "EP-227",
    "feature_id": "F-016"
   },
   {
@@ -38595,7 +39012,7 @@
     "status": 201,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-227",
+   "id": "EP-228",
    "feature_id": "F-016"
   },
   {
@@ -38762,7 +39179,7 @@
     "status": 200,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-228",
+   "id": "EP-229",
    "feature_id": "F-016"
   },
   {
@@ -38944,7 +39361,7 @@
     "status": 201,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-229",
+   "id": "EP-230",
    "feature_id": "F-016"
   },
   {
@@ -39105,7 +39522,7 @@
     "status": 200,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-230",
+   "id": "EP-231",
    "feature_id": "F-016"
   },
   {
@@ -39286,7 +39703,7 @@
     "status": 201,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-231",
+   "id": "EP-232",
    "feature_id": "F-016"
   },
   {
@@ -39467,7 +39884,7 @@
     "status": 201,
     "body": "{ data: OpsPlanProposals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-232",
+   "id": "EP-233",
    "feature_id": "F-016"
   },
   {
@@ -39618,7 +40035,7 @@
     "status": 200,
     "body": "{ data: Plans[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-233",
+   "id": "EP-234",
    "feature_id": "F-016"
   },
   {
@@ -39768,7 +40185,7 @@
     "status": 200,
     "body": "{ data: Inquiries, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-234",
+   "id": "EP-235",
    "feature_id": "F-016"
   },
   {
@@ -39914,7 +40331,7 @@
     "status": 200,
     "body": "{ data: Distributions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-235",
+   "id": "EP-236",
    "feature_id": "F-020"
   },
   {
@@ -40069,7 +40486,7 @@
     "status": 200,
     "body": "{ data: Distributions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-236",
+   "id": "EP-237",
    "feature_id": "F-020"
   },
   {
@@ -40251,7 +40668,7 @@
     "status": 201,
     "body": "{ data: Distributions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-237",
+   "id": "EP-238",
    "feature_id": "F-020"
   },
   {
@@ -40429,7 +40846,7 @@
     "status": 201,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-238",
+   "id": "EP-239",
    "feature_id": "F-020"
   },
   {
@@ -40599,7 +41016,7 @@
     "status": 200,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-239",
+   "id": "EP-240",
    "feature_id": "F-020"
   },
   {
@@ -40764,7 +41181,7 @@
     "status": 200,
     "body": "{ data: Skills[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-240",
+   "id": "EP-241",
    "feature_id": "F-020"
   },
   {
@@ -40939,7 +41356,7 @@
     "status": 200,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-241",
+   "id": "EP-242",
    "feature_id": "F-020"
   },
   {
@@ -41136,7 +41553,7 @@
     "status": 201,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-242",
+   "id": "EP-243",
    "feature_id": "F-020"
   },
   {
@@ -41332,7 +41749,7 @@
     "status": 201,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-243",
+   "id": "EP-244",
    "feature_id": "F-020"
   },
   {
@@ -41494,7 +41911,7 @@
     "status": 200,
     "body": "{ data: Tenants[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-244",
+   "id": "EP-245",
    "feature_id": "F-016"
   },
   {
@@ -41669,7 +42086,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-245",
+   "id": "EP-246",
    "feature_id": "F-016"
   },
   {
@@ -41828,7 +42245,7 @@
     "status": 200,
     "body": "{ data: OpsAuditEvents[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-246",
+   "id": "EP-247",
    "feature_id": "F-016"
   },
   {
@@ -41998,7 +42415,7 @@
     "status": 200,
     "body": "{ data: Invoices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-247",
+   "id": "EP-248",
    "feature_id": "F-016"
   },
   {
@@ -42160,7 +42577,7 @@
     "status": 200,
     "body": "{ data: Inquiries[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-248",
+   "id": "EP-249",
    "feature_id": "F-016"
   },
   {
@@ -42329,7 +42746,7 @@
     "status": 200,
     "body": "{ data: Members[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-249",
+   "id": "EP-250",
    "feature_id": "F-016"
   },
   {
@@ -42519,7 +42936,7 @@
     "status": 201,
     "body": "{ data: SecurityEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-250",
+   "id": "EP-251",
    "feature_id": "F-016"
   },
   {
@@ -42706,7 +43123,7 @@
     "status": 201,
     "body": "{ data: Notices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-251",
+   "id": "EP-252",
    "feature_id": "F-016"
   },
   {
@@ -42894,7 +43311,7 @@
     "status": 201,
     "body": "{ data: SupportAccessGrants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-252",
+   "id": "EP-253",
    "feature_id": "F-016"
   },
   {
@@ -43084,7 +43501,7 @@
     "status": 201,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-253",
+   "id": "EP-254",
    "feature_id": "F-016"
   },
   {
@@ -43266,7 +43683,7 @@
     "status": 201,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-254",
+   "id": "EP-255",
    "feature_id": "F-016"
   },
   {
@@ -43450,7 +43867,7 @@
     "status": 201,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-255",
+   "id": "EP-256",
    "feature_id": "F-016"
   },
   {
@@ -43617,7 +44034,7 @@
     "status": 201,
     "body": "{ data: ExportJobs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-256",
+   "id": "EP-257",
    "feature_id": "F-016"
   },
   {
@@ -43772,7 +44189,7 @@
     "status": 200,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-257",
+   "id": "EP-258",
    "feature_id": "F-022"
   },
   {
@@ -43930,7 +44347,7 @@
     "status": 200,
     "body": "{ data: Acceptances, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-258",
+   "id": "EP-259",
    "feature_id": "F-022"
   },
   {
@@ -44111,7 +44528,7 @@
     "status": 201,
     "body": "{ data: Acceptances, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-259",
+   "id": "EP-260",
    "feature_id": "F-022"
   },
   {
@@ -44275,7 +44692,7 @@
     "status": 201,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-260",
+   "id": "EP-261",
    "feature_id": "F-022"
   },
   {
@@ -44415,7 +44832,7 @@
     "status": 200,
     "body": "{ data: Notices[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-261",
+   "id": "EP-262",
    "feature_id": "F-022"
   },
   {
@@ -44587,7 +45004,7 @@
     "status": 201,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-262",
+   "id": "EP-263",
    "feature_id": "F-022"
   },
   {
@@ -44746,7 +45163,7 @@
     "status": 200,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-263",
+   "id": "EP-264",
    "feature_id": "F-022"
   },
   {
@@ -44928,7 +45345,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-264",
+   "id": "EP-265",
    "feature_id": "F-022"
   },
   {
@@ -45093,7 +45510,7 @@
     "status": 201,
     "body": "{ data: ClientRequests, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-265",
+   "id": "EP-266",
    "feature_id": "F-022"
   },
   {
@@ -45251,7 +45668,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-266",
+   "id": "EP-267",
    "feature_id": "F-022"
   },
   {
@@ -45410,7 +45827,7 @@
     "status": 200,
     "body": "{ data: Policies[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-267",
+   "id": "EP-268",
    "feature_id": "F-011"
   },
   {
@@ -45581,7 +45998,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-268",
+   "id": "EP-269",
    "feature_id": "F-011"
   },
   {
@@ -45738,7 +46155,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-269",
+   "id": "EP-270",
    "feature_id": "F-011"
   },
   {
@@ -45904,7 +46321,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-270",
+   "id": "EP-271",
    "feature_id": "F-011"
   },
   {
@@ -46059,7 +46476,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-271",
+   "id": "EP-272",
    "feature_id": "F-011"
   },
   {
@@ -46230,7 +46647,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-272",
+   "id": "EP-273",
    "feature_id": "F-011"
   },
   {
@@ -46377,7 +46794,7 @@
     "status": 200,
     "body": "{ data: SavedViews[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-273",
+   "id": "EP-274",
    "feature_id": "F-004"
   },
   {
@@ -46540,7 +46957,7 @@
     "status": 201,
     "body": "{ data: SavedViews, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-274",
+   "id": "EP-275",
    "feature_id": "F-004"
   },
   {
@@ -46707,7 +47124,7 @@
     "status": 200,
     "body": "{ data: SavedViews, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-275",
+   "id": "EP-276",
    "feature_id": "F-004"
   },
   {
@@ -46863,7 +47280,7 @@
     "status": 200,
     "body": "{ data: SavedViews, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-276",
+   "id": "EP-277",
    "feature_id": "F-004"
   },
   {
@@ -47013,7 +47430,7 @@
     "status": 200,
     "body": "{ data: Scopes[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-277",
+   "id": "EP-278",
    "feature_id": "F-011"
   },
   {
@@ -47179,7 +47596,7 @@
     "status": 201,
     "body": "{ data: Scopes, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-278",
+   "id": "EP-279",
    "feature_id": "F-011"
   },
   {
@@ -47347,7 +47764,7 @@
     "status": 200,
     "body": "{ data: Scopes, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-279",
+   "id": "EP-280",
    "feature_id": "F-011"
   },
   {
@@ -47510,7 +47927,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-280",
+   "id": "EP-281",
    "feature_id": "F-004"
   },
   {
@@ -47665,7 +48082,7 @@
     "status": 200,
     "body": "{ data: Tickets[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-281",
+   "id": "EP-282",
    "feature_id": "F-004"
   },
   {
@@ -47812,7 +48229,7 @@
     "status": 200,
     "body": "{ data: StatusIncidents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-282",
+   "id": "EP-283",
    "feature_id": "F-015"
   },
   {
@@ -47972,7 +48389,7 @@
     "status": 200,
     "body": "{ data: Notifications, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-283",
+   "id": "EP-284",
    "feature_id": "F-004"
   },
   {
@@ -48152,7 +48569,7 @@
     "status": 200,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-284",
+   "id": "EP-285",
    "feature_id": "F-006"
   },
   {
@@ -48321,8 +48738,168 @@
     "status": 200,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-285",
+   "id": "EP-286",
    "feature_id": "F-006"
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "acts": [
+    "A103"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "related_entities": [
+    "E-144",
+    "E-145",
+    "E-146"
+   ],
+   "choke_points": [],
+   "source": [
+    "D-125.167",
+    "D-125.7",
+    "D-125.98"
+   ],
+   "features": [
+    "F-004"
+   ],
+   "table": "custom_fields",
+   "operation_id": "listTicketFields",
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "120/min/user",
+   "access_control_policies": [
+    "custom_fields_tenant_read",
+    "custom_fields_ops_read_with_grant",
+    "custom_field_kinds_tenant_read",
+    "custom_field_kinds_ops_read_with_grant",
+    "ticket_field_values_ticket_read",
+    "ticket_field_values_ops_read_with_grant"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "trigger": "kind_id の種別が無い・消された・別の会社",
+     "ears_form": "UNWANTED: IF kind_id の種別が無い・消された・別の会社なら、Kaname は 404 と NOT_FOUND を返し、項目を返さない"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "120/min/user",
+     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 403,
+     "code": "E-AUTH-010",
+     "body": {
+      "error": "forbidden",
+      "code": "E-AUTH-010"
+     },
+     "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）",
+     "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"
+    },
+    {
+     "status": 403,
+     "code": "MFA_REQUIRED",
+     "body": {
+      "error": "forbidden",
+      "code": "MFA_REQUIRED"
+     },
+     "trigger": "パスキーも 2 段階認証も無い人のセッション（付けるまで進めないの印が立ったセッション・E-AUTH-019）",
+     "ears_form": "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）",
+     "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/ticket-fields が「責任者・期限・分類・親を決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：振り分けの案を出す）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF kind_id の種別が無い・消された・別の会社なら、Kaname は 404 と NOT_FOUND を返し、項目を返さない",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: GET /api/v1/ticket-fields の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "terms_open": false,
+   "mfa_open": false,
+   "list_ignores_scope": false,
+   "outward_side_effects": [],
+   "side_effect_ordering": null,
+   "description": "取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::listTicketFields",
+   "permission": {
+    "who": "read",
+    "scope": "そのワークスペースのメンバー",
+    "step_up": false
+   },
+   "path_params": [],
+   "returns_list": true,
+   "inputs": {
+    "path": [],
+    "body": null,
+    "query": [
+     "kind_id",
+     "cursor",
+     "limit"
+    ]
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: CustomFields[] }"
+   },
+   "id": "EP-287",
+   "feature_id": "F-004"
   },
   {
    "method": "PATCH",
@@ -48488,7 +49065,7 @@
     "status": 200,
     "body": "{ data: TicketDecisions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-286",
+   "id": "EP-288",
    "feature_id": "F-023"
   },
   {
@@ -48656,7 +49233,7 @@
     "status": 200,
     "body": "{ data: TicketHandovers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-287",
+   "id": "EP-289",
    "feature_id": "F-010"
   },
   {
@@ -48819,7 +49396,7 @@
     "status": 201,
     "body": "{ data: TicketImports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-288",
+   "id": "EP-290",
    "feature_id": "F-004"
   },
   {
@@ -48973,7 +49550,7 @@
     "status": 200,
     "body": "{ data: TicketImports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-289",
+   "id": "EP-291",
    "feature_id": "F-004"
   },
   {
@@ -49148,7 +49725,7 @@
     "status": 201,
     "body": "{ data: TicketImports, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-290",
+   "id": "EP-292",
    "feature_id": "F-004"
   },
   {
@@ -49295,7 +49872,7 @@
     "status": 200,
     "body": "{ data: TicketKinds[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-291",
+   "id": "EP-293",
    "feature_id": "F-004"
   },
   {
@@ -49471,7 +50048,7 @@
     "status": 201,
     "body": "{ data: KindSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-292",
+   "id": "EP-294",
    "feature_id": "F-004"
   },
   {
@@ -49615,7 +50192,7 @@
     "status": 200,
     "body": "{ data: TenantDistributions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-293",
+   "id": "EP-295",
    "feature_id": "F-011"
   },
   {
@@ -49793,7 +50370,7 @@
     "status": 201,
     "body": "{ data: KindSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-294",
+   "id": "EP-296",
    "feature_id": "F-011"
   },
   {
@@ -49947,7 +50524,7 @@
     "status": 200,
     "body": "{ data: TicketLinks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-295",
+   "id": "EP-297",
    "feature_id": "F-004"
   },
   {
@@ -50113,7 +50690,7 @@
     "status": 200,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-296",
+   "id": "EP-298",
    "feature_id": "F-010"
   },
   {
@@ -50268,7 +50845,7 @@
     "status": 200,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-297",
+   "id": "EP-299",
    "feature_id": "F-010"
   },
   {
@@ -50444,7 +51021,7 @@
     "status": 201,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-298",
+   "id": "EP-300",
    "feature_id": "F-010"
   },
   {
@@ -50588,7 +51165,7 @@
     "status": 200,
     "body": "{ data: TicketStages[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-299",
+   "id": "EP-301",
    "feature_id": "F-004"
   },
   {
@@ -50760,7 +51337,7 @@
     "status": 200,
     "body": "{ data: Tickets[], meta: { next_cursor } }"
    },
-   "id": "EP-300",
+   "id": "EP-302",
    "feature_id": "F-004"
   },
   {
@@ -50948,7 +51525,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-301",
+   "id": "EP-303",
    "feature_id": "F-001"
   },
   {
@@ -51115,7 +51692,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-302",
+   "id": "EP-304",
    "feature_id": "F-004"
   },
   {
@@ -51186,12 +51763,98 @@
     },
     {
      "status": 404,
-     "code": "NOT_FOUND",
+     "code": "E-PAGE-001",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "E-PAGE-001"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "チケットが無い・別の会社・消した（入口の行の守り）か、段の id（stage_id）が指す段が無い・別の会社の段・消した段（欄 stage_id）",
+     "ears_form": "UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
+    },
+    {
+     "status": 422,
+     "code": "E-VAL-018",
+     "body": {
+      "error": "validation",
+      "code": "E-VAL-018",
+      "details": []
+     },
+     "errors": [
+      "E-VAL-018"
+     ],
+     "trigger": "まだ変えられない欄（題名・期限・担当者・優先度・見込み・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
+     "ears_form": "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-030",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-030"
+     },
+     "errors": [
+      "E-CONF-030"
+     ],
+     "trigger": "今の段が仕組みの段（確認中・承認待ち・実行中）か、走っている実行（待ち・実行中・聞いている）・決まっていない承認待ちがあるのに段を変えた（busy）。実績と保留の理由だけならこの間も変えられる",
+     "ears_form": "UNWANTED: IF AI が動いている間か承認待ちの間に段を変えようとしたら、Kaname は 409 と E-CONF-030 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-032",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-032"
+     },
+     "errors": [
+      "E-CONF-032"
+     ],
+     "trigger": "今の段が完了なのに、未着手・保留・会社が足した段に変えた（done。作業中への開き直しは K-388）",
+     "ears_form": "UNWANTED: IF 完了したチケットの段を開き直さずに変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-034",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-034",
+      "details": []
+     },
+     "errors": [
+      "E-CONF-034"
+     ],
+     "trigger": "段の id（stage_id）で、仕組みの段（確認中・承認待ち・実行中）か完了の段を行き先にした（段の口では移せない・欄 stage_id）",
+     "ears_form": "UNWANTED: IF 段の口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-035",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-035",
+      "details": []
+     },
+     "errors": [
+      "E-CONF-035"
+     ],
+     "trigger": "段の id（stage_id）で保留の段を選んだのに、保留の理由か再開の条件を送っていない（足りない欄ごとの明細）",
+     "ears_form": "UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-036",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-036",
+      "details": []
+     },
+     "errors": [
+      "E-CONF-036"
+     ],
+     "trigger": "保留でないチケットで段を送らずに保留の理由か再開の条件を送った、または段の id で保留でない段を選んで理由か条件を付けた（欄ごとの明細）",
+     "ears_form": "UNWANTED: IF 保留でないのに保留の理由か条件を書こうとしたら、Kaname は 409 と E-CONF-036 を返し、何も書かない"
     },
     {
      "status": 422,
@@ -51200,8 +51863,38 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-041",
+      "E-VAL-047"
+     ],
+     "trigger": "形の誤り：保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
+     "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない"
+    },
+    {
+     "status": 500,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "internal",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "書く所（段・保留の列・変更の 1 行・担当者の受け箱の行・証跡）で DB が落ちた（1 つの処理なので何も残らない・ログは場所と例外の種類だけ）",
+     "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "守りの判定（今のメンバーか・書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"
     },
     {
      "status": 413,
@@ -51261,8 +51954,16 @@
     "EVENT-DRIVEN: WHEN PATCH /api/v1/tickets/:id が「作業の段を動かす」として呼ばれたとき THEN Kaname は「実績時間を記録」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない",
+    "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない",
+    "UNWANTED: IF AI が動いている間か承認待ちの間に段を変えようとしたら、Kaname は 409 と E-CONF-030 を返し、何も書かない",
+    "UNWANTED: IF 完了したチケットの段を開き直さずに変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない",
+    "UNWANTED: IF 段の口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、何も書かない",
+    "UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、何も書かない",
+    "UNWANTED: IF 保留でないのに保留の理由か条件を書こうとしたら、Kaname は 409 と E-CONF-036 を返し、何も書かない",
+    "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない",
+    "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
+    "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -51279,7 +51980,7 @@
    "implementation_path": "apps/api/src/routes/tickets.ts::updateTicket",
    "permission": {
     "who": "write",
-    "scope": "そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人",
+    "scope": "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）",
     "step_up": false
    },
    "path_params": [
@@ -51297,7 +51998,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-303",
+   "id": "EP-305",
    "feature_id": "F-004"
   },
   {
@@ -51449,7 +52150,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-304",
+   "id": "EP-306",
    "feature_id": "F-004"
   },
   {
@@ -51630,7 +52331,7 @@
     "status": 201,
     "body": "{ data: Acceptances, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-305",
+   "id": "EP-307",
    "feature_id": "F-021"
   },
   {
@@ -51843,7 +52544,7 @@
     "status": 200,
     "body": "{ data: Conversations, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-306",
+   "id": "EP-308",
    "feature_id": "F-024"
   },
   {
@@ -52022,7 +52723,7 @@
     "status": 201,
     "body": "{ data: TicketSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-307",
+   "id": "EP-309",
    "feature_id": "F-004"
   },
   {
@@ -52265,7 +52966,7 @@
     "status": 201,
     "body": "{ data: Messages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-308",
+   "id": "EP-310",
    "feature_id": "F-006"
   },
   {
@@ -52421,7 +53122,7 @@
     "status": 200,
     "body": "{ data: Artifacts[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-309",
+   "id": "EP-311",
    "feature_id": "F-004"
   },
   {
@@ -52599,7 +53300,7 @@
     "status": 201,
     "body": "{ data: Attachments, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-310",
+   "id": "EP-312",
    "feature_id": "F-004"
   },
   {
@@ -52772,7 +53473,7 @@
     "status": 200,
     "body": "{ data: Checks[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-311",
+   "id": "EP-313",
    "feature_id": "F-006"
   },
   {
@@ -52938,7 +53639,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-312",
+   "id": "EP-314",
    "feature_id": "F-021"
   },
   {
@@ -53158,7 +53859,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-313",
+   "id": "EP-315",
    "feature_id": "F-013"
   },
   {
@@ -53315,7 +54016,7 @@
     "status": 200,
     "body": "{ data: TicketDecisions[], meta: { can_write } }"
    },
-   "id": "EP-314",
+   "id": "EP-316",
    "feature_id": "F-023"
   },
   {
@@ -53536,7 +54237,7 @@
     "status": 201,
     "body": "{ data: TicketDecisions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-315",
+   "id": "EP-317",
    "feature_id": "F-023"
   },
   {
@@ -53737,7 +54438,7 @@
     "status": 201,
     "body": "{ data: ActionRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-316",
+   "id": "EP-318",
    "feature_id": "F-005"
   },
   {
@@ -53896,7 +54597,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-317",
+   "id": "EP-319",
    "feature_id": "F-004"
   },
   {
@@ -54086,7 +54787,7 @@
     "status": 201,
     "body": "{ data: ActionRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-318",
+   "id": "EP-320",
    "feature_id": "F-006"
   },
   {
@@ -54292,7 +54993,7 @@
     "status": 201,
     "body": "{ data: TicketHandovers, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-319",
+   "id": "EP-321",
    "feature_id": "F-010"
   },
   {
@@ -54452,7 +55153,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-320",
+   "id": "EP-322",
    "feature_id": "F-004"
   },
   {
@@ -54605,7 +55306,7 @@
     "status": 200,
     "body": "{ data: TicketLinks[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-321",
+   "id": "EP-323",
    "feature_id": "F-004"
   },
   {
@@ -54780,7 +55481,7 @@
     "status": 201,
     "body": "{ data: TicketLinks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-322",
+   "id": "EP-324",
    "feature_id": "F-004"
   },
   {
@@ -54961,7 +55662,7 @@
     "status": 201,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-323",
+   "id": "EP-325",
    "feature_id": "F-010"
   },
   {
@@ -55114,7 +55815,7 @@
     "status": 200,
     "body": "{ data: ReferenceLogs[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-324",
+   "id": "EP-326",
    "feature_id": "F-004"
   },
   {
@@ -55288,7 +55989,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-325",
+   "id": "EP-327",
    "feature_id": "F-004"
   },
   {
@@ -55456,7 +56157,7 @@
     "status": 200,
     "body": "{ data: ActionRuns[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-326",
+   "id": "EP-328",
    "feature_id": "F-005"
   },
   {
@@ -55625,7 +56326,7 @@
     "status": 200,
     "body": "{ data: TicketSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-327",
+   "id": "EP-329",
    "feature_id": "F-004"
   },
   {
@@ -55792,7 +56493,7 @@
     "status": 200,
     "body": "{ data: TestSpecs[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-328",
+   "id": "EP-330",
    "feature_id": "F-006"
   },
   {
@@ -55982,7 +56683,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-329",
+   "id": "EP-331",
    "feature_id": "F-006"
   },
   {
@@ -56172,7 +56873,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-330",
+   "id": "EP-332",
    "feature_id": "F-006"
   },
   {
@@ -56364,7 +57065,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-331",
+   "id": "EP-333",
    "feature_id": "F-006"
   },
   {
@@ -56528,7 +57229,7 @@
     "status": 200,
     "body": "{ data: TicketMessages[], meta: { limit, older_count, new_count, mine_count, post_count, people? } }"
    },
-   "id": "EP-332",
+   "id": "EP-334",
    "feature_id": "F-010"
   },
   {
@@ -56704,7 +57405,7 @@
     "status": 201,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-333",
+   "id": "EP-335",
    "feature_id": "F-010"
   },
   {
@@ -56857,7 +57558,7 @@
     "status": 200,
     "body": "{ data: TicketSectionVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-334",
+   "id": "EP-336",
    "feature_id": "F-004"
   },
   {
@@ -57036,7 +57737,7 @@
     "status": 201,
     "body": "{ data: TicketSectionVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-335",
+   "id": "EP-337",
    "feature_id": "F-004"
   },
   {
@@ -57189,7 +57890,7 @@
     "status": 200,
     "body": "{ data: Skills[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-336",
+   "id": "EP-338",
    "feature_id": "F-005"
   },
   {
@@ -57353,7 +58054,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-337",
+   "id": "EP-339",
    "feature_id": "F-004"
   },
   {
@@ -57513,7 +58214,7 @@
     "status": 200,
     "body": "{ data: Skills[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-338",
+   "id": "EP-340",
    "feature_id": "F-011"
   },
   {
@@ -57691,7 +58392,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-339",
+   "id": "EP-341",
    "feature_id": "F-011"
   },
   {
@@ -57863,7 +58564,7 @@
     "status": 200,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-340",
+   "id": "EP-342",
    "feature_id": "F-011"
   },
   {
@@ -58055,7 +58756,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-341",
+   "id": "EP-343",
    "feature_id": "F-011"
   },
   {
@@ -58236,7 +58937,7 @@
     "status": 200,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-342",
+   "id": "EP-344",
    "feature_id": "F-011"
   },
   {
@@ -58428,7 +59129,7 @@
     "status": 201,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-343",
+   "id": "EP-345",
    "feature_id": "F-011"
   },
   {
@@ -58621,7 +59322,7 @@
     "status": 201,
     "body": "{ data: Approvals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-344",
+   "id": "EP-346",
    "feature_id": "F-011"
   },
   {
@@ -58814,7 +59515,7 @@
     "status": 201,
     "body": "{ data: SkillTestRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-345",
+   "id": "EP-347",
    "feature_id": "F-011"
   },
   {
@@ -58981,7 +59682,7 @@
     "status": 200,
     "body": "{ data: SkillVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-346",
+   "id": "EP-348",
    "feature_id": "F-011"
   },
   {
@@ -59139,7 +59840,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-347",
+   "id": "EP-349",
    "feature_id": "F-011"
   },
   {
@@ -59294,7 +59995,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-348",
+   "id": "EP-350",
    "feature_id": "F-011"
   },
   {
@@ -59450,7 +60151,7 @@
     "status": 200,
     "body": "{ data: Invoices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-349",
+   "id": "EP-351",
    "feature_id": "F-015"
   },
   {
@@ -59609,7 +60310,7 @@
     "status": 200,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-350",
+   "id": "EP-352",
    "feature_id": "F-015"
   },
   {
@@ -59781,7 +60482,7 @@
     "status": 201,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-351",
+   "id": "EP-353",
    "feature_id": "F-011"
   },
   {
@@ -59915,7 +60616,7 @@
     "status": 200,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-352",
+   "id": "EP-354",
    "feature_id": "F-011"
   },
   {
@@ -60079,7 +60780,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-353",
+   "id": "EP-355",
    "feature_id": "F-011"
   },
   {
@@ -60247,7 +60948,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-354",
+   "id": "EP-356",
    "feature_id": "F-011"
   },
   {
@@ -60404,7 +61105,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-355",
+   "id": "EP-357",
    "feature_id": "F-011"
   },
   {
@@ -60569,7 +61270,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-356",
+   "id": "EP-358",
    "feature_id": "F-011"
   },
   {
@@ -60735,7 +61436,7 @@
     "status": 201,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-357",
+   "id": "EP-359",
    "feature_id": "F-011"
   },
   {
@@ -60806,10 +61507,11 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "メンバーを見る権限（members の view・会社全体）が無い",
+     "ears_form": "UNWANTED: IF メンバーを見る権限が無いなら、Kaname は 403 を返し、並びを返さない"
     },
     {
      "status": 422,
@@ -60865,7 +61567,7 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/workspace/members が「メールと層と権限の束を選んで招く」として呼ばれたとき THEN Kaname は「招待（7 日）を送る」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF メンバーを見る権限が無いなら、Kaname は 403 を返し、並びを返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -60903,7 +61605,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-358",
+   "id": "EP-360",
    "feature_id": "F-010"
   },
   {
@@ -61060,7 +61762,7 @@
     "status": 200,
     "body": "{ data: Permissions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-359",
+   "id": "EP-361",
    "feature_id": "F-011"
   },
   {
@@ -61235,7 +61937,7 @@
     "status": 201,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-360",
+   "id": "EP-362",
    "feature_id": "F-015"
   },
   {
@@ -61389,7 +62091,7 @@
     "status": 200,
     "body": "{ data: Plans[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-361",
+   "id": "EP-363",
    "feature_id": "F-015"
   },
   {
@@ -61543,7 +62245,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-362",
+   "id": "EP-364",
    "feature_id": "F-011"
   },
   {
@@ -61707,7 +62409,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-363",
+   "id": "EP-365",
    "feature_id": "F-011"
   },
   {
@@ -61875,7 +62577,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-364",
+   "id": "EP-366",
    "feature_id": "F-011"
   },
   {
@@ -62032,7 +62734,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-365",
+   "id": "EP-367",
    "feature_id": "F-011"
   },
   {
@@ -62193,7 +62895,7 @@
     "status": 200,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-366",
+   "id": "EP-368",
    "feature_id": "F-011"
   },
   {
@@ -62362,7 +63064,7 @@
     "status": 200,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-367",
+   "id": "EP-369",
    "feature_id": "F-011"
   },
   {
@@ -62528,7 +63230,7 @@
     "status": 201,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-368",
+   "id": "EP-370",
    "feature_id": "F-011"
   }
  ],

@@ -39,6 +39,10 @@ describe("PATCH /api/v1/credentials/:id", () => {
     // 本物の試験：apps/api/test/features/F3/credentials-update-delete.test.ts の「K353-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/credentials-update-delete.test.ts", "utf8")).toContain("K353-API-016");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F3/credentials-update-delete.test.ts）：UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も変えない
+  it.todo("test_patch_credentials_id_conflict_2");
+  // 本物の試験はまだ無い（apps/api/test/features/F3/credentials-update-delete.test.ts）：UNWANTED: IF 預けた物の種類や 2 段階の状態と合わない中身なら、Kaname は 409 と E-CRED-015 を返し、金庫に置かず行も変えない
+  it.todo("test_patch_credentials_id_conflict_3");
   it("test_patch_credentials_id_upstream_failed", () => {
     // UNWANTED: IF 新しい中身を預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行は前の中身のままにする
     // 本物の試験：apps/api/test/features/F3/credentials-update-delete.test.ts の「K353-API-012」（同じ CI の G3 で流れる）
