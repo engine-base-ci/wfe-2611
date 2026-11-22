@@ -168,7 +168,7 @@ describe("K-390 決定を足す", () => {
     expect(Date.parse(gone.at)).toBe(at.getTime());
   });
 
-  it("K390-API-007 元の書き込みが別のチケット・変更の 1 行・消した書き込み・無い uuid：422 E-VAL-044・欄 source_message_id・何も書かない", async () => {
+  it("K390-API-007 元の書き込みが別のチケット・変更の 1 行・消した書き込み・無い uuid：404 E-PAGE-001・欄 source_message_id・何も書かない", async () => {
     const t = await ticket();
     const other = await ticket();
     const elsewhere = await post(other, writer);
@@ -183,7 +183,7 @@ describe("K-390 決定を足す", () => {
     const before = await snapshot(t.id);
     for (const id of [elsewhere, changeLine, deleted, "5f0c1d2e-3a4b-4c5d-8e6f-7a8b9c0d1e2f"]) {
       const r = await add(boss, t.id, { text: "決めた", source_message_id: id });
-      expect(r.status, id).toBe(422);
+      expect(r.status, id).toBe(404);
       const j = await json(r);
       expect(j["code"], id).toBe(VAL_SOURCE);
       expect(fields(j), id).toEqual(["source_message_id"]);
@@ -227,7 +227,7 @@ describe("K-390 決定を足す", () => {
     expect(row.reason).toBe(reason);
   });
 
-  it("K390-API-010 決めた人が別の会社の人・外された人・止められた人・無い uuid：422 E-VAL-043・欄 decided_by_member_id・何も書かない", async () => {
+  it("K390-API-010 決めた人が別の会社の人・外された人・止められた人・無い uuid：404 E-PAGE-001・欄 decided_by_member_id・何も書かない", async () => {
     const t = await ticket();
     const removed = await f.person(T.tenantId, T.rootScope, { name: "外された人" });
     await f.admin.query("update members set deleted_at = now() where id = $1", [removed.id]);
@@ -239,7 +239,7 @@ describe("K-390 決定を足す", () => {
     const before = await snapshot(t.id);
     for (const id of [outsider.id, removed.id, stopped.id, "6a1b2c3d-4e5f-4a6b-9c7d-8e9f0a1b2c3d"]) {
       const r = await add(boss, t.id, { text: "決めた", decided_by_member_id: id });
-      expect(r.status, id).toBe(422);
+      expect(r.status, id).toBe(404);
       const j = await json(r);
       expect(j["code"], id).toBe(VAL_DECIDER);
       expect(fields(j)).toEqual(["decided_by_member_id"]);
@@ -247,11 +247,11 @@ describe("K-390 決定を足す", () => {
     expect(await snapshot(t.id)).toEqual(before);
   });
 
-  it("K390-API-011 どこまで効かせる：取引先のルール（client_rule）は 422 E-VAL-018「取引先の画面ができてから使えます」・このチケット（ticket）は 201・ほかの値は 422", async () => {
+  it("K390-API-011 どこまで効かせる：取引先のルール（client_rule）は 409 E-CONF-037「取引先の画面ができてから使えます」・このチケット（ticket）は 201・ほかの値は 422", async () => {
     const t = await ticket();
     const before = await snapshot(t.id);
     const r = await add(boss, t.id, { text: "請求書は PDF", promoted_to: "client_rule" });
-    expect(r.status).toBe(422);
+    expect(r.status).toBe(409);
     const j = await json(r);
     expect(j["code"]).toBe(VAL_NOT_YET);
     expect(j.details).toEqual([{ field: "promoted_to", message: CLIENT_RULE_LATER }]);

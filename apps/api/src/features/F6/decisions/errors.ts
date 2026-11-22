@@ -19,10 +19,14 @@ export const fromCatalog = (code: string, status: number, o: { field?: string; m
 /** 取引先のルールにするのは取引先の画面ができてから（段 12・代表の答え ㉒） */
 export const CLIENT_RULE_LATER = "取引先の画面ができてから使えます";
 
+/** 指した人・書き込みが見つからないときの details の文（欄ごと） */
+export const DECIDER_NOT_FOUND = "決めた人は、この会社のメンバーから選んでください";
+export const SOURCE_NOT_FOUND = "元の書き込みが見つかりません。やり取りを読み直してください";
+
 /** 止める側に倒す（fail-closed・503・E-PAGE-003）。ログには場所と言葉の種類だけ */
-export const down = (where: string, word: string): HookReply => {
+export const decisionsDown = (where: string, word: string): HookReply => {
   console.error(`[decisions] ${where}：止める側に倒した（${word}）`);
-  return fromCatalog("E-PAGE-003", 503);
+  return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
 };
 
 /** DB の関数の答え { error: <言葉>, field? } → 答え。知らない言葉は止める側（503・言葉は記録にだけ残す） */
@@ -33,10 +37,13 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
   if (word === "not_member" || word === "not_writable")
     return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
   if (word === "text_empty") return fromCatalog("E-VAL-042", 422, { field: "text" });
-  if (word === "bad_decider") return fromCatalog("E-VAL-043", 422, { field: "decided_by_member_id" });
-  if (word === "bad_source") return fromCatalog("E-VAL-044", 422, { field: "source_message_id" });
-  // 取引先のルールにする（段 12 まで断る）。答えの頭の文は絞り込みの文のまま、details は決めた文
-  if (word === "not_yet") return fromCatalog("E-VAL-018", 422, { field: "promoted_to", message: CLIENT_RULE_LATER });
+  // 指した人・書き込みが無い・見えない（同じ会社の今のメンバーでない・このチケットの消していない書き込みでない）は 404（形の誤りではない・代表の答え answer=431fc50df51b・f0f290e785a9）
+  if (word === "bad_decider")
+    return fromCatalog("E-PAGE-001", 404, { field: "decided_by_member_id", message: DECIDER_NOT_FOUND });
+  if (word === "bad_source")
+    return fromCatalog("E-PAGE-001", 404, { field: "source_message_id", message: SOURCE_NOT_FOUND });
+  // 取引先のルールにする：段 12 の取引先の画面ができるまで、今の状態ではできない（409・PM の決め）。details は決めた文
+  if (word === "not_yet") return fromCatalog("E-CONF-037", 409, { field: "promoted_to", message: CLIENT_RULE_LATER });
   if (word === "bad_promoted")
     return {
       status: 422,
@@ -47,5 +54,5 @@ export function replyOf(r: { error?: unknown }, where: string): HookReply {
       },
     };
   // 守りの判定で例外（guard_failed）と知らない言葉は止める側
-  return down(where, word);
+  return decisionsDown(where, word);
 }

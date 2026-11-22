@@ -6642,26 +6642,25 @@
    "support_code": "VAL-042"
   },
   {
-   "id": "E-VAL-043",
-   "class": "validation",
+   "id": "E-CONF-037",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "decisions"
    },
-   "when": "決定を足すとき、決めた人が同じ会社の今のメンバーでない（別の会社の人・外された人・止められた人・無い id・K-390）",
-   "false_when": "決めた人を送らない（本人になる）か、同じ会社の今のメンバー",
-   "message": "決めた人は、この会社のメンバーから選んでください",
-   "action": "決めた人を選び直す",
+   "when": "決定を足すとき、取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・K-390・K-391。断る番号の役割は代表の答え answer=f0f290e785a9）",
+   "false_when": "このチケットの決定にする（promoted_to が ticket か送らない）",
+   "message": "取引先の画面ができてから使えます",
+   "action": "このチケットの決定として残す",
    "undo": false,
    "layers": [
-    "API",
-    "DB"
+    "API"
    ],
    "must_not": false,
    "reproduce": {
     "setup": "作業中のチケット",
     "steps": [
-     "決めた人に別の会社の人の id を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
+     "promoted_to に client_rule を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
     ],
     "needs": "なし"
    },
@@ -6669,38 +6668,7 @@
    "source": [
     "D-125.40"
    ],
-   "support_code": "VAL-043"
-  },
-  {
-   "id": "E-VAL-044",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "decisions"
-   },
-   "when": "書き込みから決定にするとき、元の書き込みがこのチケットの消していない書き込みでない（別のチケット・変更の 1 行・仕組みの行・消した書き込み・無い id・K-390）",
-   "false_when": "元の書き込みを送らない（直接書く）か、このチケットの消していない書き込み",
-   "message": "元の書き込みが見つかりません。やり取りを読み直してください",
-   "action": "やり取りを読み直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "作業中のチケットで、やり取りの書き込みを決定にする画面を開いたまま、別の人がその書き込みを消す",
-    "steps": [
-     "開いたままの画面で決定を足す"
-    ],
-    "needs": "なし"
-   },
-   "severity": "low",
-   "source": [
-    "D-125.40"
-   ],
-   "support_code": "VAL-044"
+   "support_code": "CONF-037"
   },
   {
    "id": "E-INV-009",
