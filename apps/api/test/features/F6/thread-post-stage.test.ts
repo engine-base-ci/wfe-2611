@@ -218,7 +218,7 @@ describe("K-389 書き込みと一緒に段を変える", () => {
     expect(await row(h.id)).toMatchObject({ hold_reason: "先方の返事待ち", resume_condition: "先方の返事が来たら" });
   });
 
-  it("K389-API-013 S1 の失敗（段を書いた後、受け箱の行を書く所で DB が落ちた）：500・E-PAGE-003。1 つの取引なので段・保留の列・書き込み・知らせが前のまま", async () => {
+  it("K389-API-013 S1 の失敗（段を書いた後、受け箱の行を書く所で DB が落ちた）：503・E-PAGE-003。1 つの取引なので段・保留の列・書き込み・知らせが前のまま", async () => {
     const t = await ticket({ title: "K389 受け箱が書けない" });
     await f.admin.query(`create or replace function public.k389_break() returns trigger language plpgsql as $$
       begin raise exception 'K389 の試験で書けなくした'; end $$`);
@@ -228,7 +228,7 @@ describe("K-389 書き込みと一緒に段を変える", () => {
     try {
       // 担当者（boss）でない人が @ 付きで段を変えて書く＝段を書いた後、受け箱の行を書く所で落ちる
       const r = await say(writer, t.id, { body: "始めます", mention_member_ids: [boss.id], stage_key: "doing" });
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(JSON.stringify(j)).not.toContain("書けなくした");
