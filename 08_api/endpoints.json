@@ -48157,7 +48157,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（search）— 探す（チケット・ナレッジのページ・決定・会話）",
+   "description": "取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない",
    "implementation_path": "apps/api/src/routes/tickets.ts::search",
    "permission": {
     "who": "read",
@@ -48170,15 +48170,15 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "q",
+     "kinds",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Tickets[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Tickets[] }"
    },
    "id": "EP-282",
    "feature_id": "F-004"
