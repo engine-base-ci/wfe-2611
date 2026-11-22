@@ -338,6 +338,8 @@ components:
     gap: "12px"
   dialog-select:        # 小窓の中の選ぶ欄の高さ（StReturnModal「どこを直すか」35）
     height: "35px"
+  search-focus:         # 探す欄の型（components/k/search-field・段 9）：焦点が中に入ったら枠全体（虫眼鏡ごと）に紺の輪 2px（入力だけに輪を付けない・代表の直し 2026-11-20）
+    border: "2px solid {colors.primary}"
   dialog-textarea:      # 小窓の中の複数行の欄の高さ（StReturnModal「理由」64）
     height: "64px"
   field-required:       # 必須の印（StReturnModal「必須」）
