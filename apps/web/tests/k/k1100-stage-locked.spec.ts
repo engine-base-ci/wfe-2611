@@ -14,7 +14,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const CSS = join(HERE, "../../features/F6/progress/progress.css");
 
 /** 鍵の札の幅と、同じ字の鍵の無い札（同じ親に置いた .k-detail-stage の複製）の幅・印が札の箱の中か */
-async function lockedVsPlain(page: Page): Promise<{ locked: number; plain: number; iconInside: boolean; hasIcon: boolean }> {
+async function lockedVsPlain(
+  page: Page,
+): Promise<{ locked: number; plain: number; iconInside: boolean; hasIcon: boolean }> {
   return page.evaluate(async () => {
     await document.fonts.ready;
     const el = document.querySelector<HTMLElement>(".k-prog-stage-locked")!;
