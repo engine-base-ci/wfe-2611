@@ -1,0 +1,1 @@
+python3 scripts/ci/k622_spec_sync_tools_test.py
