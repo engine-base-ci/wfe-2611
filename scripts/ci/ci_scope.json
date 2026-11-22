@@ -1317,6 +1317,17 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F4/test-spec-update.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_test_specs_id.test.ts",
+    "apps/api/test/generated/patch_test_specs_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-links.ts",
     "apps/api/src/features/F4/ticket-links/**"
    ],
