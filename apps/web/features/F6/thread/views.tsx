@@ -19,7 +19,18 @@ export interface Person {
   tone?: Tone;
 }
 
-export function Avatar({ who, small }: { who: Person; small?: boolean }) {
+/** glyph="css"：頭の字を文字として置かず、CSS の ::before で描く（変更の 1 行の字が「佐佐藤」と二重にならないように・K392-UI-024） */
+export function Avatar({ who, small, glyph }: { who: Person; small?: boolean; glyph?: "css" }) {
+  if (glyph === "css")
+    return (
+      <span
+        className="k-talk-avatar"
+        data-tone={who.tone}
+        data-size={small ? "sm" : undefined}
+        data-glyph={who.initial}
+        aria-hidden="true"
+      />
+    );
   return (
     <span className="k-talk-avatar" data-tone={who.tone} data-size={small ? "sm" : undefined} aria-hidden="true">
       {who.initial}
@@ -355,7 +366,7 @@ export function EditingPost({
 export function Line({ who, text, time }: { who: Person; text: ReactNode; time: string }) {
   return (
     <div className="k-talk-line">
-      <Avatar who={who} small />
+      <Avatar who={who} small glyph="css" />
       <span>{text}</span>
       <time className="k-talk-sub">{time}</time>
     </div>
