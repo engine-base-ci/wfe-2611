@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:7e0980b3c9ab61b9
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:15683a723859f9a7
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -332,8 +332,8 @@ export interface Ops {
   restoreTicket: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
   listTicketRuns: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActionRunView[] };
   updateTicketSection: { params: { id: string; key: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
-  listTestSpecs: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TestSpecs[] };
-  createTestSpec: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
+  listTestSpecs: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TestSpecItem[] };
+  createTestSpec: { params: { id: string }; query: never; body: T.TestSpecCreateInput; data: T.TestSpecItem };
   lintTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecLint };
   suggestTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
   listTicketTimeline: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TimelineItem[] };

@@ -2395,7 +2395,6 @@
     "bulkUpdateTickets",
     "commitTicketImport",
     "createConversation",
-    "createTestSpec",
     "createTicketAttachment",
     "createTicketImport",
     "createTicketLink",
@@ -2407,7 +2406,6 @@
     "listChecks",
     "listClassAxes",
     "listClients",
-    "listTestSpecs",
     "listTicketArtifacts",
     "listTicketLinks",
     "listTicketReferences",
@@ -2435,7 +2433,6 @@
     "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
     "apps/api/test/generated/get_tickets_id_links.test.ts",
     "apps/api/test/generated/get_tickets_id_references.test.ts",
-    "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
     "apps/api/test/generated/get_tickets_id_versions.test.ts",
     "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts",
     "apps/api/test/generated/patch_test_specs_id.test.ts",
@@ -2449,7 +2446,6 @@
     "apps/api/test/generated/post_tickets_id_agent_session_apply.test.ts",
     "apps/api/test/generated/post_tickets_id_attachments.test.ts",
     "apps/api/test/generated/post_tickets_id_links.test.ts",
-    "apps/api/test/generated/post_tickets_id_test_specs.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs_lint.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts",
     "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts"
@@ -19309,7 +19305,8 @@
    ],
    "split": "",
    "choke_points": [
-    "C2"
+    "C2",
+    "C3"
    ],
    "tests": [
     "apps/api/test/features/F4/test-spec-create.test.ts",
