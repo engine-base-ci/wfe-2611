@@ -6175,11 +6175,11 @@
   },
   {
    "id": "E-CRED-004",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "credentials"
    },
-   "when": "期限が日本の今日より前・暦に無い・年-月-日の形でない",
+   "when": "期限が日本の今日より前（今日が過ぎると同じ日付でも通らなくなる・時刻で決まる）",
    "false_when": "期限が今日以降の日付か、空（期限なし）",
    "message": "期限は今日以降の日付にしてください",
    "action": "期限を直すか空にする",
@@ -6337,6 +6337,35 @@
     "setup": "預けたログイン情報の画面を 2 つ開く",
     "steps": [
      "2 つの画面で同じ物の上書きの小窓を開き、両方で新しい値を入れてほぼ同時に上書きする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.151",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-015",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "預けた物の種類や 2 段階の状態と合わない中身を送った（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・認証アプリの鍵の有無が 2 段階と合わない）",
+   "false_when": "その物の種類と 2 段階の状態に合う中身",
+   "message": "この預けた物の種類や 2 段階の設定に合わない中身です。開き直して、合う欄だけを入れてください",
+   "action": "開き直して合う欄だけを入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けた API キー・値の上書きの小窓を開く",
+    "steps": [
+     "別の画面で種類を確かめてから、API キー・値の物にログインの欄を付けて上書きする"
     ],
     "needs": "なし"
    },
@@ -6793,6 +6822,126 @@
     "D-125.33"
    ],
    "support_code": "VAL-047"
+  },
+  {
+   "id": "E-INV-009",
+   "class": "validation",
+   "where": {
+    "screen": "members",
+    "state": "invite"
+   },
+   "when": "宛てがメールの形でない（@ が 1 つ・前と後ろに字・後ろにドットがある形でない。全角・大文字・空白は直した後で見る）",
+   "false_when": "メールの形の宛て（全角・大文字・空白は直して通す）",
+   "message": "メールの形ではありません",
+   "action": "宛てを直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面で「招く」の小窓を開く",
+    "steps": [
+     "宛てに「kimura@engine-base」と入れて招く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.29",
+    "D-148.31"
+   ]
+  },
+  {
+   "id": "E-INV-010",
+   "class": "conflict",
+   "where": {
+    "screen": "members",
+    "state": "invite"
+   },
+   "when": "宛てがもうこのワークスペースに入っている人のメール（止めている人も）",
+   "false_when": "まだ入っていない宛て・招待中の宛て（重ねて招くと前の招待を取り消して新しく送る）",
+   "message": "もうこのワークスペースに入っています",
+   "action": "その宛てを外す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面で「招く」の小窓を開く",
+    "steps": [
+     "もう入っている人のメールを宛てに入れて招く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.29",
+    "D-148.31"
+   ]
+  },
+  {
+   "id": "E-INV-011",
+   "class": "not_found",
+   "where": {
+    "screen": "members",
+    "state": "invite"
+   },
+   "when": "選んだグループがこのワークスペースに無い・消した",
+   "false_when": "このワークスペースの消していないグループ",
+   "message": "このグループには招けません",
+   "action": "グループを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面で「招く」の小窓を開く",
+    "steps": [
+     "グループの id を別のワークスペースの物にして、口を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.29",
+    "D-148.31"
+   ]
+  },
+  {
+   "id": "E-INV-012",
+   "class": "validation",
+   "where": {
+    "screen": "members",
+    "state": "invite"
+   },
+   "when": "一度に招く宛てが 51 人以上（そろえて同じになる宛ては 1 つに数える）",
+   "false_when": "50 人まで",
+   "message": "一度に招けるのは 50 人までです",
+   "action": "宛てを分けて招く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "メンバーの画面で「招く」の小窓を開く",
+    "steps": [
+     "宛てを 51 人入れて招く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.29",
+    "D-148.31"
+   ]
   }
  ],
  "meta": {
