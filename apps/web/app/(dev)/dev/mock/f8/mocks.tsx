@@ -410,7 +410,7 @@ function Detail({ theme, viewer = "takamoto", band, assignee, approvals = 1, dia
     >
       <div className="k-detail">
         <section className="k-root k-page" aria-labelledby="ticket-title">
-          <article className="k-detail-card k-hnd-head">
+          <article className="k-detail-card">
             <DetailMeta ticket={TICKET} kind={KIND} stage={STAGE} />
             <DetailTitle title={TICKET.title} me={VIEWER[viewer].name} />
             {band ? <div className="k-detail-bands">{band}</div> : null}
@@ -852,7 +852,9 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       return (
         <Detail
           theme={theme}
-          assignee={<AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行が終わってから渡してください" />}
+          assignee={
+            <AssigneeValue name="高本 聖斗" mode="blocked" reason="AI の実行（承認）が終わってから渡してください" />
+          }
           dialog={
             <PickDialog
               open

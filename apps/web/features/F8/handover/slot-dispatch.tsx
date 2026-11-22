@@ -90,6 +90,7 @@ export function AssigneeSlot({ ticket, children }: Wrap): ReactNode {
       ticket={ticket}
       entry={entry}
       note={waitingNoteOf(handover, meId)}
+      // approve は AI が動いている・承認待ちの帯（data-busy）だけが数えられる（K-620）。渡せない（D-148.6）の判定にそのまま使う
       blocked={ticket.bands.has("approve")}
       fallback={children}
     />
@@ -101,15 +102,14 @@ export function HandoverBandSlot({ ticket, yieldTo, onWant }: BandSlotProps): Re
   const meId = useMeId();
   const { handover, kinds, invalid } = useMemo(() => handoverOf(ticket.detail), [ticket.detail]);
   const assignee = assigneeIdOf(ticket.detail);
-  // 出し方の覚え（この画面にいる間）：取り消された帯は「待っているのを見ていた人」だけ・1 回だけの帯は開いた時点の手元の覚えで決める
-  const memo = useRef({ receiving: new Set<string>(), seen: new Map<string, boolean>() });
+  // 出し方の覚え（この画面にいる間）：1 回だけの帯（取り消された帯を含む）は、開いた時点の手元の覚えで決める
+  //   （出した帯は開いている間は出続け、開き直すと出ない）
+  const seenAtOpen = useRef(new Map<string, boolean>());
   let kind: HandoverBandKind | null = invalid ? "read-failed" : bandKindOf(handover, meId);
   if (handover && kind) {
-    const m = memo.current;
-    if (kind === "receiving") m.receiving.add(handover.id);
-    if (!m.seen.has(handover.id)) m.seen.set(handover.id, wasSeen(handover.id));
-    if (kind === "gone" && !m.receiving.has(handover.id)) kind = null;
-    else if (ONCE_KINDS.has(kind) && m.seen.get(handover.id)) kind = null;
+    const seen = seenAtOpen.current;
+    if (!seen.has(handover.id)) seen.set(handover.id, wasSeen(handover.id));
+    if (ONCE_KINDS.has(kind) && seen.get(handover.id)) kind = null;
     else if (kind === "declined" && wasClosed(handover.id)) kind = null;
   }
   const offerEntry = kind === null && entryOf(kinds, assignee !== null && assignee === meId) === "offer";
