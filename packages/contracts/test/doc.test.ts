@@ -1,5 +1,6 @@
 // K-561 の試験（本文 1 枚の文書の木）：形の確かめ・上限・doc → text。DB は使わない。行 ID は K561-DOC-NNN（11_tickets/K-561.md の表と 1 対 1）。
 //   テストはチケットを作る人が書き、実装する人は変えない。
+//   K-584（文書の木に足す節と印）が 004 の 3 つの値を替えた：前は orderedList・level 4・下線を「知らない」としていたが、K-584 が受ける形になったので、K-561 でも K-584 でも断る値（details・level 5・fontSize）にした。
 import { describe, expect, it } from "vitest";
 import { DOC_MAX_BYTES, DOC_MAX_DEPTH, docToText, emptyDoc, toTicketBody, validateDoc, type Doc } from "../src/doc.js";
 
@@ -70,12 +71,12 @@ describe("本文の文書の木（packages/contracts/src/doc.ts）", () => {
   it.each([
     ["doc でない", { type: "paragraph", content: [] }, "doc"],
     ["content が無い", { type: "doc" }, "content"],
-    ["知らない節", doc({ type: "orderedList", content: [] }), "知らない節"],
+    ["知らない節", doc({ type: "details", content: [] }), "知らない節"],
     ["知らない鍵", doc({ type: "paragraph", style: "x" }), "知らない鍵"],
-    ["見出しの level が 4", doc({ type: "heading", attrs: { level: 4 }, content: [t("x")] }), "heading"],
+    ["見出しの level が 5", doc({ type: "heading", attrs: { level: 5 }, content: [t("x")] }), "heading"],
     ["段落の中に表", doc(p({ type: "table", content: [] })), "置けない"],
     ["空の字", doc(p(t(""))), "text"],
-    ["知らない印", doc(p(t("x", [{ type: "underline" }]))), "印"],
+    ["知らない印", doc(p(t("x", [{ type: "fontSize" }]))), "印"],
     ["知らない色", doc(p(t("x", [{ type: "color", attrs: { color: "pink" } }]))), "color"],
     ["javascript: のリンク", doc(p(t("x", [{ type: "link", attrs: { href: "javascript:alert(1)" } }]))), "link"],
     ["字の中の NUL", doc(p(t("a\u0000b"))), "NUL"],
