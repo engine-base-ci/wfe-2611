@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。238 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。242 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3920,6 +3920,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "progress"
     }
   },
+  "E-VAL-042": {
+    "id": "E-VAL-042",
+    "cls": "validation",
+    "message": "決めたことを書いてください",
+    "action": "決めたことを書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-CONF-037": {
+    "id": "E-CONF-037",
+    "cls": "conflict",
+    "message": "取引先の画面ができてから使えます",
+    "action": "このチケットの決定として残す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-037",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
   "E-HND-001": {
     "id": "E-HND-001",
     "cls": "validation",
@@ -4302,6 +4338,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "links"
+    }
+  },
+  "E-SRC-001": {
+    "id": "E-SRC-001",
+    "cls": "validation",
+    "message": "探す言葉は 100 文字までにしてください",
+    "action": "探す言葉を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SRC-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "search"
+    }
+  },
+  "E-SRC-002": {
+    "id": "E-SRC-002",
+    "cls": "validation",
+    "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
+    "action": "種類を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SRC-002",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "search"
     }
   }
 };
