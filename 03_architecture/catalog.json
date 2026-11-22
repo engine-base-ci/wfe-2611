@@ -1069,9 +1069,7 @@
     "class_axes"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
+   "owner_tickets": []
   },
   {
    "op": "updateClientContact",
