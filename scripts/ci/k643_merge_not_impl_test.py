@@ -55,7 +55,7 @@ class MergeNotImplTest(Case):
         self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})   # 枝の先頭では K-1 が入っている（先頭の検査は緑）
         bad, _, n = self.check()
         self.assertEqual(bad, [], bad)
-        self.assertEqual(n, 3)   # K-5 と K-9 の 2 本だけ（取り込みの 1 本は数えない）
+        self.assertEqual(n, 3)   # K-5・K-9・K-1 の 3 本（取り込みの 1 本は数えない）
 
     def test_K643_CI_002_single_parent_commit_still_counts(self):
         """K643-CI-002 守り：同じ件名・同じ依存でも、親が 1 つのコミットなら今までどおり実装に数え、K-1 が祖先に無ければ赤
