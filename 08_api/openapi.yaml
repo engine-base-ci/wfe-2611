@@ -10331,7 +10331,7 @@ components:
       properties:
         text:
           type: string
-          pattern: \S
+          pattern: '[^\s\u0000-\u001f\u007f]'
         reason:
           type: string
           nullable: true
@@ -10377,6 +10377,27 @@ components:
       required:
       - action
       x-required-by: hooks
+      oneOf:
+      - properties:
+          action:
+            enum:
+            - revise
+          text:
+            pattern: '[^\s\u0000-\u001f\u007f]'
+        required:
+        - text
+      - properties:
+          action:
+            enum:
+            - cancel
+          reason:
+            pattern: '[^\s\u0000-\u001f\u007f]'
+        required:
+        - reason
+      - properties:
+          action:
+            enum:
+            - promote
     InvitationsCreateInput:
       type: object
       properties:
@@ -39525,7 +39546,7 @@ paths:
       - D-125.40
       - D-125.63
       x-permission: write
-      x-permission-scope: そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-VAL-018）
+      x-permission-scope: そのチケットを書ける人（見るだけの人は変えられない・⑧）。取引先のルールにするのは取引先の担当とマネージャー（段 12 まで E-CONF-037）
       x-step-up: false
       security:
       - session: []
@@ -39573,13 +39594,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-042／E-VAL-018
+          description: E-VAL-042
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-CONF-031
+          description: E-CONF-031／E-CONF-037
           content:
             application/json:
               schema:
@@ -42369,19 +42390,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-037
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-042／E-VAL-043／E-VAL-018
+          description: E-VAL-042
           content:
             application/json:
               schema:
