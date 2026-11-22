@@ -16,6 +16,9 @@ import re
 import unittest
 
 import yaml
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
@@ -75,7 +78,7 @@ class Groups(unittest.TestCase):
         for j in GROUPS:
             with self.subTest(j):
                 job = JOBS[j]
-                self.assertEqual(job["runs-on"], ["self-hosted", "linux-vm"])
+                self.assertEqual(default_of(job["runs-on"]), ["self-hosted", "linux-vm"])
                 self.assertEqual(job.get("needs"), ["static"], "static の後に流す（act・GitHub とも static と並ばない・K-156）")
                 cond = str(job.get("if", ""))
                 self.assertIn("!cancelled()", cond, "static が赤でも飛ばさない（K-143）")
