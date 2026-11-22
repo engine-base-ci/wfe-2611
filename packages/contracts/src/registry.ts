@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c08d0f302b4f7ac7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6b93439366247b7e
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15179,7 +15179,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       409,
-      409,
       503,
       413,
       429,
@@ -19653,4 +19652,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "c08d0f302b4f7ac7";
+export const OPENAPI_HASH = "6b93439366247b7e";

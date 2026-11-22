@@ -24,8 +24,7 @@
     "test_patch_ticket_decisions_id_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
-    },
-    "test_patch_ticket_decisions_id_conflict_2": "K391-API-009"
+    }
    }
   }
  }
