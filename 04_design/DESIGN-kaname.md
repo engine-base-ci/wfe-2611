@@ -1486,6 +1486,10 @@ components:
     width: "2px"
     height: "1em"
     margin: "0 0 0 1px"
+  f4d-sample-ink:       # 下絵の本文の見本の字の色（利用者が付ける色の見本。正本の進行中の色から選ぶ・PM 2026-11-23）
+    textColor: "{state.progress}"
+  f4d-sample-mark:      # 下絵の本文の見本の背景の色（同上。正本の注意の淡い面から選ぶ）
+    backgroundColor: "{state.warning-container}"
 # 暗いテーマ（D-128.55 の「見た目：システム・明るい・暗い」・2026-11-03 高本さん了承・K-24）。明るいテーマと同じ名前を全部持つ。
 # 文字と地の組み合わせ 41 組を WCAG で確かめた（全部 AA 以上・最低 6.36:1）。値を変えたら 04_design/gen_tokens.py の確かめが赤になる
 dark:

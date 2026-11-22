@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import { Button, TextField } from "@/components/k";
 import { BillTable, DocBar } from "./views";
-import { BG_SWATCHES, TEXT_SWATCHES, type Swatch } from "./color-swatches";
+import { TEXT_SWATCHES, type Swatch } from "./color-swatches";
 import "./extra.css";
 
 export type EditorPiece = "base" | "link" | "link-error" | "color" | "table" | "paste-fail";
@@ -100,8 +100,7 @@ function Doc({ piece }: { piece: EditorPiece }) {
       <p>
         <b>支払期日は 12/15</b>。
         {piece === "color" ? sel("月末の締めを過ぎると翌月分になる") : "月末の締めを過ぎると翌月分になる"}ので、
-        <span style={{ color: TEXT_SWATCHES[7]!.value }}>今週中</span>に
-        <span style={{ background: BG_SWATCHES[3]!.value }}>送る</span>。
+        <span className="k-f4d-sample-ink">今週中</span>に<span className="k-f4d-sample-mark">送る</span>。
       </p>
       <BillTable caret={piece === "table"} />
       <h2>参考</h2>

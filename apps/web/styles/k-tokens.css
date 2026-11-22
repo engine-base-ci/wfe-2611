@@ -1212,6 +1212,8 @@
   --k-c-f4d-caret-width: 2px;
   --k-c-f4d-caret-height: 1em;
   --k-c-f4d-caret-margin: 0 0 0 1px;
+  --k-c-f4d-sample-ink-fg: var(--k-st-progress);
+  --k-c-f4d-sample-mark-bg: var(--k-st-warning-container);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {

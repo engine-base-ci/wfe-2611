@@ -323,3 +323,10 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+/* 本文の見本の色（下絵）：利用者が付ける色の見本を、正本の色のトークンで描く（生の値を書かない・PM 2026-11-23） */
+.k-f4d-sample-ink {
+  color: var(--k-c-f4d-sample-ink-fg);
+}
+.k-f4d-sample-mark {
+  background-color: var(--k-c-f4d-sample-mark-bg);
+}
