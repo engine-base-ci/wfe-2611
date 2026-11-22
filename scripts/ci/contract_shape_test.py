@@ -114,7 +114,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     },
     "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts:42〜43（改行を空白にして前後を落とし、空は 422）
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
-    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
         "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
         "name": {"pattern": "\\S", "maxLength": 100},
@@ -134,17 +134,13 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
                      "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
                      "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
-    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "claimPairingCode": ["NFKC で英数字になる字（① など）"],
     "updateConversation": ["名前が null（空と同じ）"],
-    "updateMemory": ["覚えることが null（空と同じ）"],
-    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
     "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],   # K-312
     "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],   # K-312
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
     "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
-    "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
-    "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
@@ -969,6 +965,40 @@ class ContractShapeTest(unittest.TestCase):
                 if missing:
                     bad.append(f"{o}: 422 の説明に無い理由 {missing}")
         self.assertEqual(bad, [], "契約に書けない値の決まりが 422 に書かれていない")
+
+    def test_K144_SHAPE_028_query_value_ranges_are_in_the_contract(self) -> None:
+        """口が値で断る問い合わせの欄のうち書けるもの（screen_api.py の QUERY_RANGES：operationId → 名前 → JSON Schema の言葉。チケットごとの分は screen_api.d）は、その口の問い合わせの欄に同じ言葉がある（enum・pattern・minLength・maxLength・format・anyOf）。
+        表に無い欄は、一覧の共通の形（cursor の pattern・sort の既定の enum・*_id の uuid）のほか値の言葉を持たない（書いたのに表に無い言葉を残さない）。
+        契約に書ける決まりは契約に書き、書けない決まりを x-unexpressible-422 で残さない：表の口は x-unexpressible-422 を持たない（K-468）"""
+        QUERY_RANGES = SA.QUERY_RANGES
+        words = ("enum", "pattern", "minLength", "maxLength", "anyOf", "oneOf")
+        generic = {("cursor", "pattern"), ("sort", "pattern"), ("sort", "enum")}
+        bad = []
+        for _path, methods in OA["paths"].items():
+            for _m, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                o = op["operationId"]
+                want = QUERY_RANGES.get(o, {})
+                params = {x["name"]: x["schema"] for x in op.get("parameters", []) if x["in"] == "query"}
+                for name, ws in want.items():
+                    if name not in params:
+                        bad.append(f"{o}: 問い合わせに {name} が無い")
+                        continue
+                    for key, val in ws.items():
+                        if params[name].get(key) != val:
+                            bad.append(f"{o}.{name}.{key}: 契約 {params[name].get(key)!r} ／ 表 {val!r}")
+                for name, sc in params.items():
+                    for key in (*words, "format"):
+                        if key not in sc or (name, key) in generic or (key == "format" and sc[key] == "uuid"):
+                            continue
+                        if key not in want.get(name, {}):
+                            bad.append(f"{o}.{name}.{key}: 契約にあるのに QUERY_RANGES に無い")
+                if want and "x-unexpressible-422" in op.get("responses", {}).get("422", {}):
+                    bad.append(f"{o}: 問い合わせの値域を契約に書いたのに x-unexpressible-422 が残っている")
+        known = {op["operationId"] for methods in OA["paths"].values() for op in methods.values() if isinstance(op, dict) and "operationId" in op}
+        bad += [f"{o}: 契約に無い口" for o in QUERY_RANGES if o not in known]
+        self.assertEqual(bad, [], "問い合わせの値域が契約と合わない")
 
     # ---- 会話と記憶の口の成功の答えの形（類 C/D の続き・回 9）
     def test_K144_SHAPE_025_agent_answers_are_the_shape_the_hooks_return(self) -> None:
