@@ -8,20 +8,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Globe, Repeat } from "lucide-react";
 import "./chat.css";
 import { Button } from "@/components/ui";
-import { agentBrowserCheck, agentSetBrowser, AuthExtError, bridgeState } from "@/lib/auth/ext";
+import {
+  checkDeviceBrowser,
+  CHROME_CHECK,
+  deviceBrowserErrorText,
+  firstDevice,
+  setDeviceBrowser,
+} from "@/lib/device-browser";
+
+const SCREEN_ID = "clone-chat";
 
 /** 公式の入口（2026-09-30 に code.claude.com/docs/en/chrome で確かめた） */
 export const CHROME_EXTENSION_URL = "https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn";
-/** 自己診断の Chrome の行の名前（apps/bridge/src/browser.ts の browserCheck と同じ） */
-export const CHROME_CHECK = "AI が Chrome を使える（Claude in Chrome）";
+/** 自己診断の Chrome の行の名前（lib/device-browser.ts に移した・前の画面が import しているので同じ名前で出し直す） */
+export { CHROME_CHECK };
 /** Bridge が会話に残す「ブラウザを使えなかった」の 1 行か（apps/bridge/src/loop.ts の BROWSER_OFF_NOTICE の書き出し） */
 export const isBrowserOffNotice = (text: string): boolean =>
   text.startsWith("AI が Chrome を使えませんでした") ||
   text.startsWith("AI が Bridge 専用のブラウザを開けませんでした");
-
-/** 確かめる仕事の結果を待つ上限（Claude Code の起動と Chrome への接続で 10〜40 秒） */
-const CHECK_WAIT_MS = 90_000;
-const CHECK_POLL_MS = 2_000;
 
 // 押した結果は部品の外に持つ。新しい会話で最初に送ると会話の部品が作り直されるので、中に持つと押した結果が消える（2026-09-30 実例）。
 // 確かめる仕事の待ちも部品の外で続ける（画面を離れても、戻ったら結果が出ている）
@@ -46,44 +50,59 @@ export function BrowserFix({ open = false }: { open?: boolean }) {
   const qc = useQueryClient();
   const { checking, msg } = useFix();
   const setMsg = (m: string | null) => setFix({ msg: m });
-  // もう一度確かめる：Bridge に小さな仕事を渡し、自己診断が新しくなるのを待って結果を言う
+  // もう一度確かめる：一覧の最初の生きている PC に確かめを頼み、自己診断が新しくなるのを待って結果を言う（K-368）
   const check = async () => {
     if (fixState.checking) return;
     setFix({ checking: true, msg: "確かめています（1 分ほどかかります）…" });
     try {
-      const before = (await bridgeState()).health_at ?? null;
-      await agentBrowserCheck();
-      const until = Date.now() + CHECK_WAIT_MS;
-      while (Date.now() < until) {
-        await new Promise((r) => setTimeout(r, CHECK_POLL_MS));
-        const st = await bridgeState();
-        if ((st.health_at ?? null) === before) continue;
-        const row = st.health?.find((h) => h.name === CHROME_CHECK);
-        if (!row || /まだ使っていません/.test(row.detail ?? "")) continue;
-        qc.setQueryData(["bridge-state"], st);
-        setMsg(
-          row.ok
-            ? "つながりました。AI は Chrome を使えます"
-            : "まだつながっていません。上の手順を見直してから、もう一度押してください",
-        );
+      const f = await firstDevice(SCREEN_ID);
+      if ("err" in f) {
+        setMsg(f.err.kind === "unauthenticated" ? null : deviceBrowserErrorText(f.err));
         return;
       }
-      setMsg("結果が返ってきませんでした。PC の Bridge が動いているか確かめてください");
-    } catch (e) {
-      setMsg(e instanceof AuthExtError ? e.message : "確かめられませんでした");
+      if (!f.device) {
+        setMsg("確かめられませんでした");
+        return;
+      }
+      const o = await checkDeviceBrowser(f.device.id, f.device.health_at, SCREEN_ID);
+      if (o.kind === "error") {
+        setMsg(o.err.kind === "unauthenticated" ? null : deviceBrowserErrorText(o.err));
+        return;
+      }
+      if (o.kind === "timeout") {
+        setMsg("結果が返ってきませんでした。PC の Bridge が動いているか確かめてください");
+        return;
+      }
+      setMsg(
+        o.kind === "ok"
+          ? "つながりました。AI は Chrome を使えます"
+          : "まだつながっていません。上の手順を見直してから、もう一度押してください",
+      );
     } finally {
       setFix({ checking: false });
+      void qc.invalidateQueries({ queryKey: ["bridge-state"] });
     }
   };
   const toDedicated = async () => {
     setMsg(null);
-    try {
-      await agentSetBrowser("dedicated");
-      await qc.invalidateQueries({ queryKey: ["bridge-state"] });
-      setMsg("Bridge 専用のブラウザに切り替えました。次の仕事から使います");
-    } catch (e) {
-      setMsg(e instanceof AuthExtError ? e.message : "切り替えられませんでした");
+    const f = await firstDevice(SCREEN_ID);
+    if ("err" in f || !f.device) {
+      setMsg(
+        "err" in f
+          ? f.err.kind === "unauthenticated"
+            ? null
+            : deviceBrowserErrorText(f.err)
+          : "切り替えられませんでした",
+      );
+      return;
     }
+    const r = await setDeviceBrowser(f.device.id, "dedicated", SCREEN_ID);
+    if (!r.ok) {
+      setMsg(r.kind === "unauthenticated" ? null : deviceBrowserErrorText(r));
+      return;
+    }
+    await qc.invalidateQueries({ queryKey: ["bridge-state"] });
+    setMsg("Bridge 専用のブラウザに切り替えました。次の仕事から使います");
   };
   return (
     <div className="bfix" data-browser-fix>

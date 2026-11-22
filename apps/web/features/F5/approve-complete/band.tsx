@@ -13,9 +13,12 @@
 //   ③〜⑤ はボタンなし（K-182）。止まったときも自動で戻さず、ボタンは「完了にする」だけ（K63-UI-035）。
 //   箱は components/k の Band（K-228・キャンバス StConfirmDone・StDone）：④ は淡い橙（題「実行待ち ・ PC が閉じています」・「PC をつなぐ」のリンク）、
 //   ③ は青（題が今の文）、⑤ は赤（role=alert・題「実行が止まりました」・理由の全文・完了にするを同じ箱に）、⑥ は白（完了にする）、⑦ は緑
+//   帯の section の印 data-busy（K-620）：AI が動いている・承認待ちの間だけ付ける（① 決める帯・担当者なしの箱・③ 実行が走っている・④ 実行待ち）。
+//   ⑤ 止まった・⑥ 完了にする・⑦ 完了・知らせだけのときは付けない。題名の下の帯の順の器（F4 の detail-slots.ts・属性の名前は両方の注に書く）が
+//   この印の付いた帯だけを「承認・実行の帯」と数え、渡し・保留の帯に譲らせる。帯の section は状態が替わっても同じ要素のまま
 //   文は全部文字として出す（HTML を作らない）。エラーの文は正本（errors.json）から引く。本人確認は取り直さない（D-128.177）
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Band, BandLine, Button, NoticeBox } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { isActive, type RunView } from "@/features/F5/delegate/use-run";
@@ -145,32 +148,35 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
   useEffect(() => {
     if (!complete) setCompleting(false);
   }, [complete]);
-  const body = (() => {
+  /** 帯の中身と、AI が動いている・承認待ちか（data-busy を付けるか・K-620） */
+  const { body, busy } = (() => {
+    const busyBody = (node: ReactNode) => ({ body: node, busy: true });
+    const idleBody = (node: ReactNode = null) => ({ body: node, busy: false });
     if (ticket.stage?.key === "done")
-      return ticket.completed ? <Band tone="ok" title={completedLine(ticket.completed)} /> : null; // ⑦
+      return idleBody(ticket.completed ? <Band tone="ok" title={completedLine(ticket.completed)} /> : null); // ⑦
     if (approval?.can_decide)
-      return (
+      return busyBody(
         <DecideBody
           approval={approval}
           onChanged={onChanged}
           onFailed={failed}
           onStart={() => setNotice(null)}
           {...(target ? { target } : {})}
-        />
+        />,
       );
-    if (approval && ticket.assignee === null) return <Band tone="approval" title={MSG.noAssignee} />; // 箱は 1 つ（K-62 の帯は出さない）
-    if (approval) return null; // 決められない人：K-62 の帯だけ（D-128.178）
+    if (approval && ticket.assignee === null) return busyBody(<Band tone="approval" title={MSG.noAssignee} />); // 箱は 1 つ（K-62 の帯は出さない）
+    if (approval) return idleBody(); // 決められない人：K-62 の帯だけ（D-128.178）
     const view = execute ? executeView(execute) : null; // 作る段の間・まだ任せていない：K-62 の帯だけ
     const completeButton = complete ? <Button onClick={() => setCompleting(true)}>完了にする</Button> : null;
     if (view?.kind === "stopped")
-      return (
+      return idleBody(
         <Band tone="danger" role="alert" title={MSG.stoppedTitle} {...(completeButton ? { acts: completeButton } : {})}>
           <BandLine>{view.reason}</BandLine>
-        </Band>
+        </Band>,
       );
-    if (view?.kind === "running") return <Band tone="info" title={view.title} />;
+    if (view?.kind === "running") return busyBody(<Band tone="info" title={view.title} />);
     if (view?.kind === "wait")
-      return (
+      return busyBody(
         <Band
           tone="wait"
           title={MSG.waitTitle}
@@ -181,16 +187,18 @@ export function ApproveBand<T extends BandTicket>({ ticketId, ticket, run, runKn
           }
         >
           <BandLine>{MSG.pcClosed}</BandLine>
-        </Band>
+        </Band>,
       );
-    if (!complete) return null;
-    return <CompleteHint todo={sectionOf(ticket, "todo", "実施事項").text} onOpen={() => setCompleting(true)} />;
+    if (!complete) return idleBody();
+    return idleBody(
+      <CompleteHint todo={sectionOf(ticket, "todo", "実施事項").text} onOpen={() => setCompleting(true)} />,
+    );
   })();
 
   const dialogOpen = completing && complete;
   if (!body && !notice && !dialogOpen) return null;
   return (
-    <section aria-label={BAND_LABEL} className="k62-band k-section">
+    <section aria-label={BAND_LABEL} className="k62-band k-section" data-busy={busy ? "" : undefined}>
       {notice ? <NoticeBox>{notice}</NoticeBox> : null}
       {body}
       {dialogOpen ? (
