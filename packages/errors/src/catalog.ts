@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。234 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。236 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3140,7 +3140,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CONN-013": {
     "id": "E-CONN-013",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
     "action": "画面の新しいコードを入れ直す",
     "undo": false,
@@ -3918,6 +3918,42 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "progress"
+    }
+  },
+  "E-VAL-042": {
+    "id": "E-VAL-042",
+    "cls": "validation",
+    "message": "決めたことを書いてください",
+    "action": "決めたことを書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-042",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-CONF-037": {
+    "id": "E-CONF-037",
+    "cls": "conflict",
+    "message": "取引先の画面ができてから使えます",
+    "action": "このチケットの決定として残す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-037",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
     }
   },
   "E-INV-009": {
