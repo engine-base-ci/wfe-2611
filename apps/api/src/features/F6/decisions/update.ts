@@ -1,6 +1,6 @@
 // 決定を改める・取り消す口（K-391）：updateTicketDecision（PATCH /api/v1/ticket_decisions/:id）。
 //   書くのは関門 C2 の app.ticket_decision_revise／app.ticket_decision_cancel（1 つの処理・関数の中でもう一度、今のメンバーか・書けるかを確かめる）だけ。
-//   action：revise（改める）・cancel（取り消す）は関数を 1 回。promote（取引先のルールにする）は関数を呼ばずに 422 E-VAL-018（段 12 まで）。
+//   action：revise（改める）・cancel（取り消す）は関数を 1 回。promote（取引先のルールにする）は関数を呼ばずに 409 E-CONF-037（段 12 まで・今の状態ではできない）。
 //   action が無い・知らない言葉は、関数を呼ぶ前に 422 VALIDATION_ERROR（入口の zod は enum を読まないので口が自分で断る）。
 //   字数の上限は置かない・切らない（D-130.1）。ログに決めたことの字・理由を出さない。
 //   守りの判定で例外 → 503・E-PAGE-003。書く所の DB の失敗は 500・E-PAGE-003（何も残らない）
@@ -16,7 +16,7 @@ const str = (v: unknown): string | null => (typeof v === "string" ? v : null);
 export function createUpdateTicketDecision(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs) => {
     const action = a.input["action"];
-    if (action === "promote") return fromCatalog("E-VAL-018", 422, { field: "action", message: CLIENT_RULE_LATER });
+    if (action === "promote") return fromCatalog("E-CONF-037", 409, { field: "action", message: CLIENT_RULE_LATER });
     if (action !== "revise" && action !== "cancel") return badAction();
     // text・reason が字でない（数・配列など）なら空として扱う（関数が空を断る）
     const text = str(a.input["text"]);

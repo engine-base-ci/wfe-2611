@@ -300,7 +300,7 @@
 | EP-285 | PATCH | `/api/v1/test_specs/:id` | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 413 429 502 403 403 503 |
 | EP-286 | DELETE | `/api/v1/test_specs/:id` | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 422 429 502 403 403 503 |
 | EP-287 | GET | `/api/v1/ticket-fields` | 取得（custom_fields）— その種別で出す会社の項目を並びの順 | A103 | 1 | member |  | 401 403 422 404 429 403 403 503 |
-| EP-288 | PATCH | `/api/v1/ticket_decisions/:id` | 更新（ticket_decisions）— 決定を記録する（AI の候補 | A108 | 1 | member | C2 | 401 403 404 422 409 422 503 413 429 403 403 503 |
+| EP-288 | PATCH | `/api/v1/ticket_decisions/:id` | 更新（ticket_decisions）— 決定を記録する（AI の候補 | A108 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
 | EP-289 | PATCH | `/api/v1/ticket_handovers/:id` | 更新（ticket_handovers）— 渡されたものを受ける／断る（ | A110 | 2 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
 | EP-290 | POST | `/api/v1/ticket_imports` | 作成・実行（ticket_imports）— チケットを作る（画面で・下 | A99 | 1 | member | C2 C4 | 401 403 409 422 413 429 403 403 503 |
 | EP-291 | GET | `/api/v1/ticket_imports/:id` | 取得（ticket_imports）— チケットを作る（画面で・下書きか | A99 | 1 | member |  | 401 403 404 422 429 403 403 503 |
@@ -329,7 +329,7 @@
 | EP-314 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
 | EP-315 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
 | EP-316 | GET | `/api/v1/tickets/:id/decisions` | 取得（ticket_decisions）— チケットの決定を見る（生きて | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-317 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 422 422 503 413 429 403 403 503 |
+| EP-317 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-318 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-319 | GET | `/api/v1/tickets/:id/delete-preview` | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-320 | POST | `/api/v1/tickets/:id/dry-run` | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確か | A105 | 1 | member | C1 C2 C6 | 401 403 404 409 422 413 429 502 403 403 503 |

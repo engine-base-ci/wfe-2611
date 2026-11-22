@@ -5,7 +5,7 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { down, replyOf } from "./errors.js";
+import { decisionsDown, fromCatalog } from "./errors.js";
 
 interface DecisionList {
   items: unknown[];
@@ -21,9 +21,9 @@ export function createListTicketDecisions(appPool: pg.Pool): (a: HookArgs) => Pr
         return r.rows[0]?.v ?? null;
       });
     } catch (e) {
-      return down("決定を読む", (e as Error)?.name ?? "Error");
+      return decisionsDown("決定を読む", (e as Error)?.name ?? "Error");
     }
-    if (!v) return replyOf({ error: "not_found" }, "決定を読む");
+    if (!v) return fromCatalog("E-PAGE-001", 404);
     return { status: 200, body: { data: v.items, meta: { can_write: v.can_write === true } } };
   };
 }
