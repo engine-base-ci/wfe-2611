@@ -19180,10 +19180,12 @@
    "apis": [],
    "affects": [
     "@kaname/api",
+    "@kaname/contracts",
     "@kaname/db"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261120130500_ticket_reopen.sql",
