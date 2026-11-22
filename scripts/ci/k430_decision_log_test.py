@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""K-430 の試験：段 5 の決定ログ §150（D-150.1〜34）と答えの記録。行 ID は K430-DC-NNN（11_tickets/K-430.md の表と 1 対 1）。
+"""K-430 の試験：段 5 の決定ログ §150（D-150.1〜59）。行 ID は K430-DC-NNN（11_tickets/K-430.md の表と 1 対 1）。
 段 9 の K-425 と同じ形（切る段の持ち込みの作り手 build_index.py の K4 が、始める時点の本線に §150 が無いと止まるため、決定ログを先に本線へ入れる葉を分けた）。
-見ること：§150 の表が D-150.1〜34 を順に 1 行ずつ持ち、どの行も PM の決めと書く（代表に聞くことは 0 個）・
+見ること：§150 の表が D-150.1〜59 を順に 1 行ずつ持ち、代表の決めの行（35〜45）と PM の決めの行（それ以外）を分けて見る・
 決定の検査（trace_gate の T3・T8）・この葉の decisions の被覆。テストはチケットを作る人が書き、実装する人は変えない（D-128.125）"""
 from __future__ import annotations
 
@@ -14,8 +14,13 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DECISIONS = ROOT / "01_hearing" / "決定ログ_進行中.md"
 SELF = ROOT / "11_tickets" / "K-430.md"
-COUNT = 34
-DAY_OF_LAST = "2026-11-21"  # D-150.34 は 2026-11-21 02:00 の PM の決め（ほかは 2026-11-20）
+COUNT = 60
+IMPROVED = {2, 3, 5, 8, 10, 12, 14, 15}  # 2026-11-21 に「改めた」に書き換えた行（番号は残す）
+IMPROVED_1122 = {11, 54}  # 2026-11-22 に D-150.60（業務の型を物として無くす）で改めた行
+REP_1122 = {60}  # 2026-11-22 の代表の決め（answer=08a63df0368c）
+REP_ANSWER = set(range(35, 46))  # 代表の決め：高本さん ＋ answer=<印> を持つ行（決め 10〜13 の行は answer=bc3c857621bc・2026-11-21 に 7 つまとめて確かめた）
+REP_WORD_ONLY: set[int] = set()  # 印の無い代表の言葉だけの行は無くなった
+ANSWER = re.compile(r"answer=([0-9a-f]{12})")
 
 
 def section_rows() -> tuple[dict[str, list[str]], list[str]]:
@@ -43,18 +48,37 @@ def run_py(*args: str) -> subprocess.CompletedProcess[str]:
 
 class DecisionLogTest(unittest.TestCase):
     def test_K430_DC_001_section_rows(self) -> None:
-        """§150 の表に D-150.1〜34 が順にちょうど 1 回ずつ（n 行目が D-150.n）在り、どの行も「PM の決め」と日付（D-150.34 は 2026-11-21・ほかは 2026-11-20）を持って「高本さん」を持たない（代表に聞くことは 0 個・答えの記録は要らない）"""
+        """§150 の表に D-150.1〜59 が順にちょうど 1 回ずつ（n 行目が D-150.n）在り、代表の決めの行（35〜45）と PM の決めの行（それ以外）を分けて見る：PM の決めの行は「PM の決め」（改めた行は「改めた（2026-11-21 → D-150.」）を持って高本さん・answer= を持たず、代表の決めの行は answer=<12 桁> つき（高本さんと一緒）か「代表の言葉 2026-11-21」（高本さん・answer= なし）のどちらか"""
         rows, order = section_rows()
         want = [f"D-150.{n}" for n in range(1, COUNT + 1)]
         self.assertEqual(order, want, "§150 の表の並び（trace_gate は表の何行目かで番号を数える）")
         bad = []
         for n in range(1, COUNT + 1):
             ln = rows[f"D-150.{n}"][0]
-            day = DAY_OF_LAST if n == COUNT else "2026-11-20"
-            if "PM の決め" not in ln or day not in ln:
-                bad.append(f"D-150.{n}：PM の決め・日付（{day}）が無い")
-            if "高本さん" in ln or "answer=" in ln:
-                bad.append(f"D-150.{n}：高本さん・answer= を書かない（PM の決め）")
+            has_rep = "高本さん" in ln or ANSWER.search(ln) is not None
+            if n in IMPROVED_1122:
+                if "改めた（2026-11-22 → D-150.60）" not in ln:
+                    bad.append(f"D-150.{n}：「改めた（2026-11-22 → D-150.60）」が無い")
+            elif n in REP_1122:
+                if not ("高本さん" in ln and "2026-11-22" in ln and "answer=08a63df0368c" in ln):
+                    bad.append(f"D-150.{n}：代表の決め（2026-11-22 高本さん・answer=08a63df0368c）が無い")
+            elif n in IMPROVED:
+                if "改めた（2026-11-21 → D-150." not in ln:
+                    bad.append(f"D-150.{n}：「改めた（2026-11-21 → D-150.」が無い")
+            elif n in REP_ANSWER:
+                if not ("高本さん" in ln and "2026-11-21" in ln and ANSWER.search(ln)):
+                    bad.append(f"D-150.{n}：代表の決め（2026-11-21 高本さん・answer=<12 桁>）が無い")
+            elif n in REP_WORD_ONLY:
+                if "代表の言葉 2026-11-21" not in ln or has_rep:
+                    bad.append(f"D-150.{n}：「代表の言葉 2026-11-21」を持ち高本さん・answer= を持たない形でない")
+            elif "PM の決め" not in ln:
+                bad.append(f"D-150.{n}：PM の決めが無い")
+            if (n not in REP_ANSWER) and (n not in REP_WORD_ONLY) and has_rep and n not in IMPROVED and n not in IMPROVED_1122 and n not in REP_1122:
+                bad.append(f"D-150.{n}：PM の決めの行に高本さん・answer= を書かない")
+            if 46 <= n <= 59 and n not in IMPROVED_1122 and "2026-11-21" not in ln:
+                bad.append(f"D-150.{n}：日付 2026-11-21 が無い")
+            if "PM の判断" in ln and "高本さん" in ln:
+                bad.append(f"D-150.{n}：PM の判断と高本さんを 1 つの行に混ぜない")
         self.assertEqual(bad, [])
 
     def test_K430_DC_002_trace_gate(self) -> None:
@@ -65,7 +89,7 @@ class DecisionLogTest(unittest.TestCase):
         self.assertEqual(p.returncode, 0, out)
 
     def test_K430_DC_003_self_decisions(self) -> None:
-        """この葉の頭の decisions: に D-150.1〜34 が全部在る（文の被覆 T8 の導出物）"""
+        """この葉の頭の decisions: に D-150.1〜59 が全部在る（文の被覆 T8 の導出物）"""
         head = SELF.read_text(encoding="utf-8").split("---")[1]
         m = re.search(r"^decisions:\s*\[(.*)\]$", head, re.M)
         dec = [x.strip() for x in (m.group(1) if m else "").split(",")]
