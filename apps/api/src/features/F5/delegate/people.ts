@@ -6,6 +6,7 @@ import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
+import { listQueryIssues } from "../../../contract/list_query.js";
 import { SWEEP_TICKET, sweepBeforeRead } from "../approve-complete/sweep.js";
 
 /** PC をつなぐ画面（E-CONN-001 の一手） */
@@ -61,6 +62,10 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
           a.id,
         ]);
         if (!v) return notFound();
+        // 形の誤り（422）は、権限（401・403）と見えない物（404）の後（契約の limit・cursor・sort の形だけを受ける・K-429）
+        const issues = listQueryIssues(a.c.req.query(), { table: "action_runs", repo: a.repo });
+        if (issues.length)
+          return { status: 422, body: { error: "validation_failed", code: "VALIDATION_ERROR", details: issues } };
         return { status: 200, body: { data: v.data, meta: { limit: RUNS_LIMIT, total: Number(v.total) } } };
       },
     },
