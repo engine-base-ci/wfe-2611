@@ -20,7 +20,9 @@ const rejected = (code: string, field: string): HookReply => {
 /** 見えない物（404・E-PAGE-001）。欄の名前も明細も付けない（前からある 404 E-PAGE-001 と同じ形） */
 const pageNotFound = (): HookReply => {
   const e = new KanameError("E-PAGE-001");
-  return { status: e.status, body: e.toJSON() };
+  const body: Record<string, unknown> = { ...e.toJSON() };
+  delete body["detail"]; // 空の detail も付けない（欄も明細も無い・試験 006〜008）
+  return { status: e.status, body };
 };
 
 interface PostResult {
