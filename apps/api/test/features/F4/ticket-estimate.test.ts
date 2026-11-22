@@ -224,7 +224,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     }
   });
 
-  it("K583-API-003 空にする：null で列が null・やり取りの行は「予定時間を 1 時間 30 分 → （空）に」で changes の to と raw_to が null（raw_from は前の値）。入れ直せる", async () => {
+  it("K583-API-003 空にする：null で列が null・やり取りの行は「予定時間を1 時間 30 分 → （空）に」で changes の to と raw_to が null（raw_from は前の値）。入れ直せる", async () => {
     const w = await world();
     const t = await mk(w, { estimate: 90 });
     const d = await patchOk(w.boss, t.id, { estimate_minutes: null });
@@ -232,7 +232,7 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect((d["ticket"] as Json)["estimate_minutes"]).toBeNull();
     expect((await row(t.id)).estimate_minutes).toBeNull();
     const ls = await lines(t.id);
-    expect(ls[0]!.body).toBe("高本が予定時間を 1 時間 30 分 → （空）に変えました");
+    expect(ls[0]!.body).toBe("高本が予定時間を1 時間 30 分 → （空）に変えました");
     expect(ls[0]!.changes).toEqual([
       { field: "estimate_minutes", from: "1 時間 30 分", to: null, raw_from: 90, raw_to: null },
     ]);
