@@ -7529,11 +7529,10 @@ components:
           type: boolean
         description: &id671
           type: string
-        options: &id672
-          type: object
-          additionalProperties: true
+          nullable: true
+        options: &id672 {}
         position: &id673
-          type: string
+          type: integer
         id:
           type: string
           format: uuid
@@ -7546,6 +7545,18 @@ components:
         updated_at:
           type: string
           format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
       required:
       - id
       x-table: custom_fields
@@ -7572,6 +7583,7 @@ components:
           format: uuid
         kind_id: &id675
           type: string
+          format: uuid
         id:
           type: string
           format: uuid
@@ -7584,6 +7596,18 @@ components:
         updated_at:
           type: string
           format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
       required:
       - id
       x-table: custom_field_kinds
@@ -7605,9 +7629,7 @@ components:
         field_id: &id677
           type: string
           format: uuid
-        value: &id678
-          type: object
-          additionalProperties: true
+        value: &id678 {}
         id:
           type: string
           format: uuid
@@ -7620,6 +7642,18 @@ components:
         updated_at:
           type: string
           format: date-time
+        created_by:
+          type: string
+          format: uuid
+          nullable: true
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_by:
+          type: string
+          format: uuid
+          nullable: true
       required:
       - id
       x-table: ticket_field_values

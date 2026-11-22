@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:fd51c9c0197d85a7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:62e83ddb7d538892
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2723,47 +2723,56 @@ export const CustomFields = z.strictObject({
   name: z.string().optional(),
   field_type: z.string().optional(),
   required: z.boolean().optional(),
-  description: z.string().optional(),
-  options: z.record(z.string(), z.unknown()).optional(),
-  position: z.string().optional(),
+  description: z.string().nullable().optional(),
+  options: z.unknown().optional(),
+  position: z.number().int().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
+  created_by: z.uuid().nullable().optional(),
+  deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  updated_by: z.uuid().nullable().optional(),
 });
 export const CustomFieldsInput = z.strictObject({
   name: z.string().optional(),
   field_type: z.string().optional(),
   required: z.boolean().optional(),
-  description: z.string().optional(),
-  options: z.record(z.string(), z.unknown()).optional(),
-  position: z.string().optional(),
+  description: z.string().nullable().optional(),
+  options: z.unknown().optional(),
+  position: z.number().int().optional(),
 });
 export const CustomFieldKinds = z.strictObject({
   field_id: z.uuid().optional(),
-  kind_id: z.string().optional(),
+  kind_id: z.uuid().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
+  created_by: z.uuid().nullable().optional(),
+  deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  updated_by: z.uuid().nullable().optional(),
 });
 export const CustomFieldKindsInput = z.strictObject({
   field_id: z.uuid().optional(),
-  kind_id: z.string().optional(),
+  kind_id: z.uuid().optional(),
 });
 export const TicketFieldValues = z.strictObject({
   ticket_id: z.uuid().optional(),
   field_id: z.uuid().optional(),
-  value: z.record(z.string(), z.unknown()).optional(),
+  value: z.unknown().optional(),
   id: z.uuid(),
   tenant_id: z.uuid().optional(),
   created_at: z.iso.datetime({ offset: true }).optional(),
   updated_at: z.iso.datetime({ offset: true }).optional(),
+  created_by: z.uuid().nullable().optional(),
+  deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
+  updated_by: z.uuid().nullable().optional(),
 });
 export const TicketFieldValuesInput = z.strictObject({
   ticket_id: z.uuid().optional(),
   field_id: z.uuid().optional(),
-  value: z.record(z.string(), z.unknown()).optional(),
+  value: z.unknown().optional(),
 });
 export const HandoverRules = z.strictObject({
   target: z.string().optional(),
