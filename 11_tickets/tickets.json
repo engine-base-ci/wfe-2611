@@ -20306,18 +20306,16 @@
    "screens": [],
    "canvas": [],
    "canvas_none": "見た目を変えないチケット（口の答えの番号と契約の形だけ。画面を触らない）。正の絵の組は持たない",
-   "apis": [
-    "updateMemory",
-    "createMemory",
-    "claimPairingCode"
-   ],
+   "apis": [],
    "affects": [
     "@kaname/api",
     "@kaname/bridge",
-    "@kaname/web"
+    "@kaname/contracts",
+    "@kaname/errors"
    ],
    "ci_wide": [
-    "ci"
+    "ci",
+    "shared"
    ],
    "changes": [
     "05_flow/screen_api.d/K-639.py",
