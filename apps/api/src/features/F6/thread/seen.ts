@@ -21,7 +21,7 @@ export function createMarkTicketTimelineSeen(appPool: pg.Pool): (a: HookArgs) =>
     if (raw !== undefined && (typeof raw !== "string" || !TIME_RE.test(raw) || Number.isNaN(Date.parse(raw))))
       return invalid("seen_at", "日時");
     const at = typeof raw === "string" ? raw : null;
-    let phase: Phase = "guard";
+    let phase = "guard" as Phase; // 取引の中で書き換わる（型の絞り込みを外す）
     let v: { ticket_id: string; seen_at: string } | null;
     try {
       v = await withTenant(appPool, a.ctx, async (cl) => {
