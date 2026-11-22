@@ -2398,7 +2398,6 @@
     "createTicketAttachment",
     "createTicketImport",
     "createTicketLink",
-    "deleteTestSpec",
     "deleteTicketLink",
     "getArtifactVersion",
     "getTicketImport",
@@ -2417,11 +2416,9 @@
     "restoreTicketVersion",
     "sendConversationMessage",
     "suggestTestSpecs",
-    "updateTestSpec",
     "updateTicketSection"
    ],
    "tests": [
-    "apps/api/test/generated/delete_test_specs_id.test.ts",
     "apps/api/test/generated/delete_ticket_links_id.test.ts",
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
     "apps/api/test/generated/get_class_axes.test.ts",
@@ -2435,7 +2432,6 @@
     "apps/api/test/generated/get_tickets_id_references.test.ts",
     "apps/api/test/generated/get_tickets_id_versions.test.ts",
     "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts",
-    "apps/api/test/generated/patch_test_specs_id.test.ts",
     "apps/api/test/generated/patch_tickets_id_sections_key.test.ts",
     "apps/api/test/generated/post_conversations.test.ts",
     "apps/api/test/generated/post_conversations_id_messages.test.ts",

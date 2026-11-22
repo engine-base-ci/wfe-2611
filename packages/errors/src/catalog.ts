@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。208 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。211 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3766,6 +3766,57 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-SPEC-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SPEC-020": {
+    "id": "E-SPEC-020",
+    "cls": "conflict",
+    "message": "別の人が先にこの確認項目を変えました。読み直してから、もう一度お試しください",
+    "action": "読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SPEC-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SPEC-021": {
+    "id": "E-SPEC-021",
+    "cls": "conflict",
+    "message": "チェックが付いている確認項目の文は直せません。チェックを外してから直してください",
+    "action": "チェックを外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SPEC-021",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SPEC-022": {
+    "id": "E-SPEC-022",
+    "cls": "conflict",
+    "message": "ナレッジの「必ず守る」から入った確認項目は、文を直したり外したりできません。チェックの付け外しだけできます",
+    "action": "チェックを付け外しする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SPEC-022",
     "must_not": false,
     "layers": [
       "UI",

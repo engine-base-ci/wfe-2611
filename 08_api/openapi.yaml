@@ -10027,6 +10027,28 @@ components:
       required:
       - title
       x-required-by: hooks
+    TestSpecUpdateInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        checked:
+          type: boolean
+        title:
+          type: string
+          pattern: \S
+          maxLength: 200
+      additionalProperties: false
+      x-operation: updateTestSpec
+      required:
+      - version
+      x-required-by: hooks
+      oneOf:
+      - required:
+        - checked
+      - required:
+        - title
     ScopeOverview:
       type: object
       properties:
@@ -11794,7 +11816,7 @@ components:
           type: string
         version:
           type: integer
-      x-operation: createTestSpec
+      x-operation: deleteTestSpec
     Error:
       type: object
       properties:
@@ -38897,7 +38919,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TestSpecsInput'
+              $ref: '#/components/schemas/TestSpecUpdateInput'
       responses:
         '200':
           description: 成功
@@ -38907,7 +38929,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TestSpecs'
+                    $ref: '#/components/schemas/TestSpecItem'
                   meta:
                     type: object
         '401':
@@ -38934,6 +38956,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-SPEC-020／E-SPEC-021／E-SPEC-001／E-SPEC-022
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -38948,12 +38982,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -38997,7 +39025,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TestSpecs'
+                    $ref: '#/components/schemas/TestSpecItem'
                   meta:
                     type: object
         '401':
@@ -39024,6 +39052,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-SPEC-001／E-SPEC-022
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -39032,12 +39072,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

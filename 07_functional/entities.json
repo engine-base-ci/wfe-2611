@@ -11466,7 +11466,7 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.17・D-125.79）。確認項目の形は K-434（D-150.39）で直した**",
+   "note": "**★新設（D-125.17・D-125.79）。確認項目の形は K-434（D-150.39）で直した。付ける・外す・直す・外すは関数 `app.test_spec_update`・`app.test_spec_delete`、機械・AI が付ける道は `app.test_spec_check_by_ai`（K-435）**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
