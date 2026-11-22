@@ -4197,7 +4197,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-HND-130": {
     "id": "E-HND-130",
     "cls": "conflict",
-    "message": "閲覧のみの人・取引先の人には配れません",
+    "message": "閲覧のみの人・ゲストには配れません",
     "action": "別の人を選ぶ",
     "undo": false,
     "severity": "low",
