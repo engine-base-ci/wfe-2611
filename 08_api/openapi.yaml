@@ -7224,6 +7224,8 @@ components:
         updated_at:
           type: string
           format: date-time
+        body_template:
+          nullable: true
         created_by:
           type: string
           format: uuid
@@ -39920,6 +39922,7 @@ paths:
         schema:
           type: string
           enum:
+          - body_template
           - color
           - created_at
           - created_by
