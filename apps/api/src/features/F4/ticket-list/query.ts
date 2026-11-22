@@ -1,6 +1,6 @@
 // チケットの一覧の口（K-92）の問い合わせの確かめと、次の分の鍵（keyset のカーソル）。DB に触らない純粋な関数だけ。
 //   問い合わせ：view（mine／all・既定 mine）・q（100 文字まで）・scope_id（uuid）・limit（1〜100・既定 50）・cursor（この口が出した鍵）。
-//   絞り込みの欄は欄ごとの表（FILTERS・K-472）：kind_id・stage_id・assignee_id・client_id・done。K-473・K-474 は表に 1 行ずつ足す。
+//   絞り込みの欄は欄ごとの表（FILTERS・K-472）：kind_id・stage_id・assignee_id・done。K-473・K-474 は表に 1 行ずつ足す。
 //   表に無い欄（LIST_FIELDS のうち FILTERS に無い物＝NOT_YET）は「まだ使えない」で 422・E-VAL-018（黙って無視しない・D-128.152）。sort の列名の形は入口（op.ts）が先に確かめる
 //   確かめる順：①まだの欄（422・E-VAL-018）→ ②形の誤り（422・VALIDATION_ERROR）→ ③q の長さ（422・E-VAL-017）→ ④鍵の中身（409・E-LST-001）
 import { isUuid } from "@kaname/contracts";
@@ -53,7 +53,6 @@ export const FILTERS: readonly FilterDef[] = [
   uuidFilter("kind_id", "kind_id"),
   uuidFilter("stage_id", "stage_id"),
   uuidFilter("assignee_id", "assignee_member_id"),
-  uuidFilter("client_id", "client_id"),
   {
     name: "done",
     parse: (raw) =>
@@ -61,12 +60,11 @@ export const FILTERS: readonly FilterDef[] = [
     sql: (value) => (value ? DONE_STAGE : `not ${DONE_STAGE}`),
   },
 ];
-/** 契約が 13 欄として持つ絞り込みの名前（done は入れない） */
+/** 契約が 12 欄として持つ絞り込みの名前（done は入れない） */
 export const LIST_FIELDS = [
   "kind_id",
   "stage_id",
   "assignee_id",
-  "client_id",
   "due_from",
   "due_to",
   "start_from",
