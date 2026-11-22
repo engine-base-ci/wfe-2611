@@ -234,9 +234,10 @@ describe("K-565 AI に任せる口の直し：AI に渡す中身（本文 1 枚�
     await setValue(t, fields.yes.id, true);
     await setValue(t, fields.no.id, false);
     const d = await delegateOk(k, p, t);
+    // 項目の行は「- 」で始まる。値の中の改行（長い文章）は行を割らずに値のまま読む
     const items = parts(await promptOfJob(d.job_id))
       .body("項目")!
-      .split("\n");
+      .split(/\n(?=- )/);
     expect(items.slice(4)).toEqual([
       `- ${fields.short.name}: セイコー商事`,
       `- ${fields.long.name}: 一行目\n二行目`,
