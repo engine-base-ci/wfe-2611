@@ -473,7 +473,7 @@ describe("K-387 入力と守り", () => {
     }
   });
 
-  it("K387-API-029 S1 の失敗（担当者への受け箱の行を書く所で DB が落ちた）：500・E-PAGE-003。1 つの処理なので段・保留の列・変更の 1 行・知らせが前のまま", async () => {
+  it("K387-API-029 S1 の失敗（担当者への受け箱の行を書く所で DB が落ちた）：503・E-PAGE-003。1 つの処理なので段・保留の列・変更の 1 行・知らせが前のまま", async () => {
     const t = await ticket({ title: "K387 受け箱が書けない" });
     const before = await snapshot(t.id);
     await f.admin.query(`create or replace function public.k387_break() returns trigger language plpgsql as $$
@@ -488,7 +488,7 @@ describe("K-387 入力と守り", () => {
         hold_reason: "先方の返事待ち",
         resume_condition: "返事が来たら",
       });
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(JSON.stringify(j)).not.toContain("書けなくした");

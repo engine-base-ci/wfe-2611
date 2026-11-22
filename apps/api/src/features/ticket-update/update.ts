@@ -2,7 +2,7 @@
 //   前処理（input）：表のどの組にも無い欄が 1 つでもあれば 422 E-VAL-018（欄ごとに「この欄はまだ変えられません」・鍵の名前の順）。
 //     空の体は 422（欄 body「変える欄がありません」）。組の形の決まり（inputIssues・契約に書ける物だけ）も 422。体が入れ物でなければ入口（契約の strict な形）に任せる。
 //   before：1 つの処理（withTenant）で、送られた欄を持つ組の apply を表の順に呼び、組の答えから答えを組み立てる。
-//     組が断ったら、その処理で書いた物を全部戻して（例外で rollback）組の答えを返す（段と優先度を一緒に送って段が断られたら、優先度も書かない・K-440）。書く所の DB の失敗は 500 E-PAGE-003（何も残らない）。
+//     組が断ったら、その処理で書いた物を全部戻して（例外で rollback）組の答えを返す（段と優先度を一緒に送って段が断られたら、優先度も書かない・K-440）。書く所の DB の失敗は 503 E-PAGE-003（何も残らない・11-22 の決め）。
 //   ログに理由の字・題名を出さない（場所と例外の種類だけ）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -113,7 +113,7 @@ async function update(pool: pg.Pool, a: HookArgs, groups: readonly TicketFieldGr
     if (e instanceof GroupStop) return e.reply;
     // 書く所の失敗（1 つの処理なので何も残らない・知らせも出さない）。中身を返さず、ログは場所と例外の種類だけ
     console.error(`[ticket-update] チケットを直す：書く所で失敗した（${(e as Error)?.name ?? "Error"}）`);
-    return { status: 500, body: kanameError("E-PAGE-003").toJSON() };
+    return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
   }
   return { status: 200, body: { data } };
 }
