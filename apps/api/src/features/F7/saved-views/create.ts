@@ -4,11 +4,12 @@
 //     ② 見せるグループ（scope_id・自分だけの保存に付けた物も）が同じ会社・消していない・自分に見えるかを確かめ、違えば 404 E-VWS-004（在るかを教えない）
 //     ③ 消していない自分の物が 50 件以上なら 409 E-VWS-006 ④ 同じ名前（大文字小文字を区別しない・消した物は数えない）があれば 409 E-VWS-005
 //     ⑤ 行を入れて同じ形で読む ⑥ 証跡 saved_views.create（C2・中身は share だけ。名前・条件は残さない）。
-//   最後の砦：一意の索引 saved_views_name_uq の 23505 は 409 E-VWS-005。書く所で DB が落ちたら例外のまま 500（1 つの取引なので何も残らない）。
+//   最後の砦：一意の索引 saved_views_name_uq の 23505 は 409 E-VWS-005。書く所で DB が落ちたら 503 E-PAGE-003（1 つの取引なので何も残らない・11-22 18:30 の決め）。
 //   知らせは出さない（受け箱にも書かず、メールも出さない）。ログに名前と条件を出さない
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
+import { kanameError } from "@kaname/errors";
 import { fail } from "./input.js";
 import { SAVED_VIEW_SELECT, toSavedView, type SavedViewRow } from "./shape.js";
 
@@ -86,7 +87,9 @@ export function createCreateSavedView(appPool: pg.Pool): (a: HookArgs) => Promis
       });
     } catch (e) {
       if (isNameTaken(e)) return fail("E-VWS-005", "name");
-      throw e;
+      // 書く所で DB が落ちた（1 つの取引なので何も残らない）：止める側に倒して 503 E-PAGE-003（11-22 18:30 の決め）。ログは場所と例外の種類だけ
+      console.error(`[saved-views] 保存した条件を保存する：書けなかった（${(e as Error)?.name ?? "Error"}）`);
+      return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
     }
   };
 }

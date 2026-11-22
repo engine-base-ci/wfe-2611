@@ -47065,6 +47065,19 @@
      "ears_form": "UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、条件も証跡も書かない"
     },
     {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "保存する取引（見えるグループの確かめ・行・証跡）の中で DB が落ちた（1 つの取引なので何も残らない・ログは場所と例外の種類だけ。名前と条件は出さない）",
+     "ears_form": "UNWANTED: IF 保存する所で DB が落ちたなら、Kaname は 503 を返し、条件の行も証跡も残さない（止める側に倒す）"
+    },
+    {
      "status": 413,
      "code": "PAYLOAD_TOO_LARGE",
      "body": {
@@ -47124,6 +47137,7 @@
     "UNWANTED: IF 見せるグループが無いか見えないなら、Kaname は 404 と E-VWS-004 を返し、保存した条件も証跡も書かない",
     "UNWANTED: IF 同じ人の消していない条件が 50 件あるなら、Kaname は 409 と E-VWS-006 を返し、条件も証跡も増やさない",
     "UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、条件も証跡も書かない",
+    "UNWANTED: IF 保存する所で DB が落ちたなら、Kaname は 503 を返し、条件の行も証跡も残さない（止める側に倒す）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
