@@ -69,4 +69,4 @@ ERRORS_4XX = {
 }
 
 # POST でも 200 を返す（押すたびに付く・外れる ☆。試験 K386-API-012）
-OK_STATUS = {"starTicketMessage": 200}
+SUCCESS_STATUS = {"starTicketMessage": 200}
