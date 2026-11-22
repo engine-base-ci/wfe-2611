@@ -43,7 +43,8 @@
      "file": "apps/api/test/features/F1/terms.test.ts",
      "mark": "K53-API-005"
     },
-    "test_post_tickets_id_test_specs_session_unresolved": {
+    "test_post_tickets_id_test_specs_session_unresolved": "K434-API-016",
+    "test_post_tickets_id_test_specs_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },

@@ -9,6 +9,18 @@
     "apps/api/test/features/F4/test-spec-create.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/test-spec-create.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-434.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs.test.ts"
+   ]
   }
  ],
  "reads_ok": {
