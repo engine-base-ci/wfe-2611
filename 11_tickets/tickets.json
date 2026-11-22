@@ -3455,18 +3455,26 @@
     "account",
     "audit",
     "company-settings",
-    "member-detail"
+    "member-detail",
+    "members"
    ],
    "apis": [
     "copyNotificationSettings",
+    "createInvitationLink",
+    "createInvitations",
     "getMe",
     "getNotificationSettings",
+    "getWorkspaceMembers",
     "leaveWorkspace",
     "listMySessions",
+    "nudgeMember",
     "requestEmailChange",
+    "resendInvitation",
+    "revokeInvitation",
     "revokeMySession",
     "revokeOtherSessions",
     "updateMe",
+    "updateMemberRole",
     "updateNotificationSettings",
     "uploadAvatar",
     "verifyEmailChange"
@@ -3485,6 +3493,7 @@
     "apps/api/test/generated/get_members_id.test.ts",
     "apps/api/test/generated/get_members_id_remove_preview.test.ts",
     "apps/api/test/generated/get_workspace.test.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/patch_me.test.ts",
     "apps/api/test/generated/patch_me_notification_settings.test.ts",
     "apps/api/test/generated/patch_members_id_groups.test.ts",
@@ -3493,7 +3502,9 @@
     "apps/api/test/generated/patch_workspace.test.ts",
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
+    "apps/api/test/generated/post_invitations_link.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
     "apps/api/test/generated/post_me_email_change.test.ts",
     "apps/api/test/generated/post_me_email_change_verify.test.ts",
@@ -19543,12 +19554,12 @@
    ],
    "tests": [
     "apps/api/test/features/F10/invite-link.test.ts",
-    "apps/api/test/generated/post_invitations_link.test.ts",
-    "apps/api/test/generated/get_auth_invitations_token.test.ts"
+    "apps/api/test/generated/post_invitations_link.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F1/admin-recovery.test.ts",
-    "apps/api/test/features/F1/login-gate.test.ts"
+    "apps/api/test/features/F1/login-gate.test.ts",
+    "apps/api/test/features/F1/verify-email.test.ts"
    ],
    "depends_on": [
     "K-419",
