@@ -1,0 +1,1 @@
+python3 scripts/ci/k624_d6_mock_only_test.py

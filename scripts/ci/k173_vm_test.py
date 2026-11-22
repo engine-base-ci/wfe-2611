@@ -11,6 +11,9 @@ import pathlib
 import unittest
 
 import yaml
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from k640_runs_on_test import default_of  # noqa: E402  変数 CI_RUNNER が無いときの台（K-640）
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 WFS = {n: yaml.safe_load((ROOT / ".github" / "workflows" / n).read_text(encoding="utf-8")) for n in ("v3-gate.yml", "release-gate.yml")}
@@ -23,7 +26,7 @@ class VmRunner(unittest.TestCase):
         for wf, doc in WFS.items():
             for job, j in doc["jobs"].items():
                 n += 1
-                self.assertEqual(j.get("runs-on"), ["self-hosted", "linux-vm"], f"{wf} {job}")
+                self.assertEqual(default_of(j.get("runs-on")), ["self-hosted", "linux-vm"], f"{wf} {job}")
         self.assertGreater(n, 0)
         self.assertNotIn("macOS", TEXT.replace("macOS の", ""), "Mac の runner の印を残さない")
 

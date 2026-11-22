@@ -88,7 +88,7 @@ SCREEN_API = {
         ("POST", "/notifications/read-all", "A109", "notifications", "readAllNotifications", []),
         ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
         ("GET", "/ticket_stages", "A103", "ticket_stages", "listTicketStages", []),
-        ("GET", "/class_axes", "A103", "class_axes", "listClassAxes", ["class_values"]),
+        ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
         ("GET", "/clients", "A103", "clients", "listClients", []),
@@ -950,6 +950,9 @@ VALUE_RANGES = {
     },
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・200000 字を超える結果は 422・K62-API-032）。その欄だけの上限（D-130.1 の外）
 }
+# 形全体の決まり（欄をまたぐ決まり・K-355）：operationId → JSON Schema の言葉（oneOf／anyOf／allOf／not だけ）。その口の入力の形にそのまま重ねる。
+#   中で使う欄の名前（properties・required）は入力の形に在る物だけ（作り手 05_flow/build_api.py が確かめて止める）。チケットごとの分は screen_api.d に書く
+INPUT_RULES: dict[str, dict] = {}
 # 契約に書けない値の決まり（口の振る舞いのまま 422）。その口の 422 の説明と x-unexpressible-422 に書く。fuzz での扱いは K-62 の受け持ち
 UNEXPRESSIBLE_422 = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
@@ -983,7 +986,7 @@ RESPONSES = {
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
-    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
+    "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
@@ -1248,7 +1251,7 @@ PERMS = {
     "readAllNotifications": ("self", "自分あてだけ", False),
     "listTicketKinds": ("read", "そのワークスペースのメンバー", False),
     "listTicketStages": ("read", "同上", False),
-    "listClassAxes": ("read", "同上", False),
+    "listTicketFields": ("read", "そのワークスペースのメンバー", False),
     "listMembers": ("read", "同上（メールは管理者と本人だけ）", False),
     "listClients": ("read", "見られる取引先だけ（担当グループだけの取引先・D-128.54）", False),
     # 承認待ち
@@ -1579,6 +1582,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
+import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
 
 _merge_py(globals(), _Path(__file__).resolve().parent / "screen_api.d", screen_lists=("SCREEN_API",),
-          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR})
+          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR, "_CP": _CP})
