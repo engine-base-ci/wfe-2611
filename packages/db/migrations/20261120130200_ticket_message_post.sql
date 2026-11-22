@@ -56,8 +56,8 @@ end $$;
 revoke all on function app.ticket_message_notify(uuid, uuid[], uuid[]) from public;
 
 -- ④ 書く。p の鍵：body・mention_member_ids・notify_member_ids・quote_of_id。
---   答え { item }（app.ticket_timeline_item の形・kind post）か { error, field? }（何も書いていない）。
---   error：not_found（見えない・無い・消した）／empty（本文が空）／not_selectable（@・知らせる人・引用元が選べない・field が欄の名前）
+--   答え { item }（app.ticket_timeline_item の形・kind post）か { error }（何も書いていない）。
+--   error：not_found（見えない・無い・消した）／empty（本文が空）／not_selectable（@・知らせる人・引用元が選べない。どの欄かは返さない＝在るかを漏らさない・口は 404 E-PAGE-001）
 --   見える・書けるの確かめ：呼んだ人が抜けていない・止められていない人で、app.ticket_visible（行の守りと同じ）でチケットが見えること（読める人は書ける・⑧）
 create or replace function app.ticket_message_post(p_ticket uuid, p jsonb) returns jsonb
 language plpgsql security definer set search_path = public, app, pg_temp as $$
@@ -83,15 +83,15 @@ begin
     from (select distinct on (x.id::uuid) x.id::uuid as id, x.n from jsonb_array_elements_text(coalesce(p->'notify_member_ids', '[]'::jsonb))
             with ordinality as x(id, n) where x.id::uuid <> v_me order by x.id::uuid, x.n) y;
   v_bad := app.ticket_message_people(p_ticket, v_mention);
-  if v_bad is not null then return jsonb_build_object('error', 'not_selectable', 'field', 'mention_member_ids'); end if;
+  if v_bad is not null then return jsonb_build_object('error', 'not_selectable'); end if;
   v_bad := app.ticket_message_people(p_ticket, v_notify);
-  if v_bad is not null then return jsonb_build_object('error', 'not_selectable', 'field', 'notify_member_ids'); end if;
+  if v_bad is not null then return jsonb_build_object('error', 'not_selectable'); end if;
   if v_quote is not null then
     -- 同じチケットの、消していない書き込み（kind post）だけ。元の頭の 2 行（改行で分けた最初の 2 行・行の中は切らない）を写す
     select array_to_string((string_to_array(m.body, E'\n'))[1:2], E'\n') into v_qtext
       from ticket_messages m
      where m.id = v_quote and m.tenant_id = v_tenant and m.ticket_id = p_ticket and m.kind = 'post' and m.deleted_at is null;
-    if not found then return jsonb_build_object('error', 'not_selectable', 'field', 'quote_of_id'); end if;
+    if not found then return jsonb_build_object('error', 'not_selectable'); end if;
   end if;
   insert into ticket_messages (tenant_id, ticket_id, author_member_id, kind, body, mentions, notify_member_ids, quote_of_id, quote_text, created_by, updated_by)
     values (v_tenant, p_ticket, v_me, 'post', v_body, v_mention, v_notify, v_quote, v_qtext, v_me, v_me)

@@ -9,7 +9,7 @@
 | tickets | 218 |
 | l1_rows | 5094 |
 | ears_endpoints | 369 |
-| ears_tests | 3990 |
+| ears_tests | 3991 |
 | entities | 145 |
 | policies | 419 |
 | access_cases | 1566 |
@@ -173,12 +173,12 @@ python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check
 - そのタスクの qa_rows.l1 が全行 PASS か理由つき BLOCKED（G32）
 - 連続 3 回失敗で高本さんへ（foundation_gates.retry_protocol）
 
-## EARS → test（3990 本・ears-test-mapping.json）
+## EARS → test（3991 本・ears-test-mapping.json）
 
 | 形 | 本数 |
 |---|---|
 | EVENT-DRIVEN | 396 |
-| UNWANTED | 3244 |
+| UNWANTED | 3245 |
 | UBIQUITOUS | 350 |
 
 ## RLS の場合表（1566 行・access-matrix.json）
