@@ -17302,6 +17302,89 @@
    "file": "11_tickets/K-356.md"
   },
   {
+   "id": "K-357",
+   "title": "預けたログイン情報の画面を口につなぐ：上書き・消す・確かめの結果（確かめている・PC が無い・規約で禁止）と読み直し・もう一度確かめる・コードを入れる（K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-318（行の操作の小窓 3 つ＋取り直し・30 行・見込み 1 時間）から引いた：行の操作を押せるようにし小窓 3 つ（上書き・消す・コード）を口につなぐ 30 分・読み直し（確かめている・コード待ち）10 分・見た目の突き合わせ 10 分・自分の確かめ 10 分",
+   "decisions": [
+    "D-117",
+    "D-125.139",
+    "D-125.151",
+    "D-128.55",
+    "D-128.57",
+    "D-128.125",
+    "D-128.162"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。上書き・消す（金庫の値を替える・消す・すぐ失効）と確かめの仕事を積む・コードを PC に渡すのは口の葉（K-353・K-355）の関門 C2・C8・C5 で、画面は契約の口（updateCredential・deleteCredential・checkCredentialLogin・answerCredentialLoginCheck・listCredentials・getMySecurity・stepUp）を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k357-credentials-edit-check.spec.ts"
+   ],
+   "carry": [
+    "apps/web/test/_fake/secrets.ts"
+   ],
+   "depends_on": [
+    "K-356",
+    "K-353",
+    "K-355",
+    "K-372"
+   ],
+   "acts": [
+    "A10"
+   ],
+   "screens": [
+    "credentials"
+   ],
+   "apis": [],
+   "mock": [
+    "cred-checking",
+    "cred-no-pc",
+    "cred-forbidden",
+    "cred-edit",
+    "cred-remove",
+    "cred-code"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F3/credentials/",
+    "apps/web/app/(dev)/dev/mock/f3/mocks.tsx",
+    "07_qa/test-specs/screens/credentials.md",
+    "11_tickets/K-56.md"
+   ],
+   "flow": "預けたログイン情報を預けて確かめる",
+   "sections": {
+    "目的": "預けたログイン情報の画面（`/settings/credentials`・K-356 が入れ物を作る）の行の操作を本物にする：**上書き・消す・もう一度確かめる・コードを入れる**と、**確かめの結果**（確かめている・PC がつながっていない・規約で禁止）の出し方と読み直し。\nD-117：預けた・上書きした後に PC が 1 回ログインして確かめ、SMS・メール・スマホのときは PC が止まって本人にコードを頼む。コードは PC にだけ渡る。\n正の絵はモック `/dev/mock/f3/cred-checking・cred-no-pc・cred-forbidden・cred-edit・cred-remove・cred-code`（代表 OK answer=0a262be577b2・answer=e34268dbfbac で cred-edit をログイン情報の上書き（ID とパスワード）にし、行の中身の字を表に在る値にそろえた）と、行の操作が押せる形の cred-list。",
+    "完了の条件": "- [ ] 下の表の行（K357-UI-001〜024）が緑：`apps/web/tests/k/k357-credentials-edit-check.spec.ts`\n- [ ] K-356・K-372 の試験（k356-credentials-list-add.spec.ts・k372-credentials-add.spec.ts）が緑のまま（行の操作が押せる形でも通る作り）\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD, AUTH, EXT\n\n- 画面は見た目の部品に値と押したときの関数を渡すだけ。部品に足すのは「値と押す関数を受ける口」「上書きと消すの小窓の赤の知らせ」だけ\n- 口の入出力は口の葉（K-353 上書き・消す、K-355 確かめ・コード）と同時に書いている。画面が送る値は下の「## 画面が送る値」。一覧の形は K-356 の「## 画面が読む値と送る値」\n- 取り直しは段 2 の StepUp（K-318）を K-372（預ける小窓・K-356 から分けた）と同じ組み方で使う（理由の文だけ替える）\n- 消すに本人確認は無い（K-353）。取り直しは上書きだけ\n- 上書きでパスワードだけ替えるときも ID とパスワードを両方入れ直す（代表の答え answer=e34268dbfbac・K-353 は両方を要る）。上書きの小窓の「新しいログイン ID」の欄は切る段で部品 views.tsx に足した（K-350 が carry で本線に運ぶ）。モック cred-edit はログイン情報（SEIKO_PORTAL）の上書きにして、ID の欄を正の絵に入れた（API キーの上書きの小窓は欄が「新しい値」1 つになるだけで、同じ部品）\n- コードを返す口（answerCredentialLoginCheck）は入力の欄 request_ref が要る。一覧の login_check の asking のときの request_id は K-351 が足す（toCredential・K351-API-019）\n- 規約で禁止・PC がつながっていない行には「もう一度確かめる」を出さない（PC が無いときは PC をつないだら口の側が確かめる・D-117）。PC をつないだ後に確かめを積むのは K-355（PC が初めて生きている知らせを送った時に、まだ確かめていない・PC がつながっていない行の確かめを積む・2026-11-19 まとめ役の決め・代表の答え answer=449e72553c59 で決まった）。この葉が持つのは画面の札の変わり方だけ（読み直さない・開き直すと一覧の答えで「確かめている」に替わる・K357-UI-024）（代表の答え answer=449e72553c59：PC をつないだら自動で 1 回確かめる）。出すのは パスワードが違う・画像の確認・止まった・まだ確かめていない のログインの行（API キーは確かめない・K-355 は 409 E-CRED-013）\n- 書けない行（can_edit が false：ワークスペースの物で edit が無い人）は上書き・消すを灰色で出す（押せない・口を呼ばない）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F3/credentials/views.tsx` の EditCredentialDialog・RemoveCredentialConfirm・CheckCodeDialog・行の操作（rowActions） | 値と押す関数を渡す |\n| 入れ物 | `features/F3/credentials/credentials-screen.tsx`（K-356） | 行の操作の押せる口（rowActionsReady）を true にし、小窓と読み直しを足す |\n| 取り直し | `features/F1/security/step-up.tsx` の StepUp | 上書き・消すが 403 のとき |\n| 知らせ | `components/k` の useNotify（Toaster） | もう一度確かめるの失敗・404・コード待ちの終わり |\n| 探したが無かった物 | 確かめ中の読み直し | 入れ物の中に 1 つ（setInterval でなく、答えが来てから次の 3 秒を待つ形・二重にしない） |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 行の操作 | 入れ物で rowActionsReady を true に。上書き・消す はどの行にも（can_edit が false なら灰色）、コードを入れる は needs_code（asking）の行、もう一度確かめる は bad_password・captcha・stopped・unchecked のログインの行（部品の rowActions に stopped・unchecked と can_edit を足す） |\n| 読み直し | 一覧に checking（pending・running・waiting）か needs_code（asking）の行がある間だけ、答えが来てから 3 秒後に listCredentials を読み直す（同時に 2 本出さない）。無くなったらやめる。読み直しが失敗しても前の行を出したまま次の 3 秒でまた読む（赤の箱にしない）。頁を離れたら止める |\n| もう一度確かめる | POST /api/v1/credentials/:id/login-check を 1 回（押した行は答えまで押せない）→ 201 {state, job_id} の後に一覧を読み直す。409（E-CRED-012 もう確かめている・E-CRED-011 失効）→ 一覧を読み直すだけ。ほかの失敗 → 口の文の赤の知らせ（useNotify error）、行はそのまま |\n| コードを入れる | CheckCodeDialog（via は行の two_factor：sms・email・push）。コード：NFKC → 空白を全部取る → 送る { request_ref, code }（request_ref の値は行の login_check.request_id。一覧で読む欄の名前は request_id のまま）。push は欄を出さず { request_ref, approved: true }。201 {accepted} → 閉じて読み直す。422（E-VAL-009）→ 欄の下に口の文（入れた字は残す）。404（E-CRED-014 もう頼んでいない）→ 閉じて口の文の知らせ・読み直す。ほかの失敗 → 小窓の中に口の文。「あとで」と Esc は何も送らない。送る間は「PC に渡す」を待ちの形 |\n| 上書き | EditCredentialDialog：鍵は「新しい値」、ログインは「新しいログイン ID」と「新しいパスワード」（代表の答え answer=e34268dbfbac・パスワードだけ替えるときも両方入れ直す。ID の欄と補足「パスワードだけを替えるときも、ID とパスワードを両方入れる」は切る段で部品に足し、K-350 が本線に運ぶ。この葉は値と押す関数をつなぐだけ。どちらかを入れたら両方を送り、片方なら口が 422 E-CRED-005 を欄の下に）。既定は今の使える場所（, でつなぐ）・期限（expires_on を YYYY/MM/DD）・理由は空（見本の値は部品から mocks.tsx へ移す）。体は下の形（値が空なら値を送らない・期限が空なら null・理由が空なら送らない・使える場所の直し方は K-356 と同じ）。成功 → 閉じて読み直す（ログインは口が確かめを積むので札は確かめている）。422 → 欄の下。409（E-CRED-009 ほかが先に替えた）→ 小窓の赤の知らせ。403 E-CRED-007（書けない）は 1 回目でも取り直しを開かず小窓の赤の知らせ（PATCH 1 回・K357-UI-023）。403 STEP_UP_REQUIRED（1 回目）→ 小窓を閉じ getMySecurity を 1 回読み StepUp（理由「ログイン情報を上書きする前に、本人か確かめます」）→ 通ったら同じ体で 1 回だけやり直す・やめたら上書きの小窓に戻る（値は残す）。やり直しの答えが 409・422・503 なら上書きの小窓に戻して 1 回目と同じ出し方（値は残す）・404 は閉じて知らせ・読み直す（K357-UI-022）。404 → 閉じて口の文の知らせ・読み直す。ほかの失敗 → 小窓に赤の知らせ |\n| 消す | RemoveCredentialConfirm → DELETE /api/v1/credentials/:id を 1 回（本人確認なし・K-353）→ 閉じて読み直す。404 → 閉じて読み直す。ほかの失敗 → 確かめの小窓に赤の知らせ（role=alert）・閉じない。「やめる」は何も送らない。部品に error を受ける口を足す（Confirm の caution の下） |\n| 正本 | `07_qa/test-specs/screens/credentials.md`：K-356 が置き換え先を K357 にした行（SCR-CREDENTIALS-052〜055）の置き換え先の行 ID を、この葉の行（K357-UI-008・011・012）に書き替える |\n| 親 | 11_tickets/K-56.md からこの葉の分を外す |",
+    "画面が送る値（口の葉 K-353・K-355 とそろえる）": "- 上書き `PATCH /api/v1/credentials/:id`（K-353）：`{login? と password?（ログイン・両方）| value?（鍵）, destinations, expires_on: \"YYYY-MM-DD\" | null, reason?}`。200 の data は一覧の 1 件。変える物が無い 422 E-CRED-008・ほかが先に替えた 409 E-CRED-009\n- 消す `DELETE /api/v1/credentials/:id`（K-353）：体なし。200。本人確認なし\n- もう一度確かめる `POST /api/v1/credentials/:id/login-check`（K-355）：体なし。201 `{state: pending | no_pc | forbidden, job_id}`。もう確かめていれば 409 E-CRED-012・鍵は 409 E-CRED-013・失効は 409 E-CRED-011\n- コードを渡す `POST /api/v1/credentials/:id/login-check/answer`（K-355）：`{request_ref, code}` か `{request_ref, approved: true}`。201 `{accepted: true}`。形が違えば 422 E-VAL-009（欄 code）、もう頼んでいなければ 404 E-CRED-014",
+    "外に影響する手順": "画面は口を呼ぶだけ（金庫の値を替える・消す・確かめの仕事を積む・コードを PC に渡すのは口の葉）。呼んだ口が失敗したときの画面：\n\n- S1: 上書きの口を呼ぶ。失敗（422・409・404・403 の取り直し）したら欄の下・小窓の知らせ・閉じて知らせと読み直し・取り直し（K357-UI-016・015）。取り直しが通った後の送り直しが 409・422・404・503 でも同じ出し方（上書きの小窓に戻す・404 は閉じて読み直し・K357-UI-022）。1 回目の 403 が E-CRED-007 なら取り直しを開かず赤の知らせ（K357-UI-023）\n- S2: 消すの口を呼ぶ。失敗（503・404）したら確かめの小窓に赤の知らせ・閉じて読み直し（K357-UI-018）\n- S3: もう一度確かめるの口を呼ぶ。失敗（503・409）したら赤の知らせ・読み直し（K357-UI-007）\n- S4: コードを渡す口を呼ぶ。失敗（422・404）したら欄の下・閉じて知らせと読み直し（K357-UI-009・010）\n- S5: 読み直しの口を呼ぶ。失敗（503）しても前の行のまま次でまた読む（K357-UI-021）",
+    "依存の理由": "- K-356: 要る — 同じファイル（features/F3/credentials/views.tsx・credentials-screen.tsx・mocks.tsx）を変える。入れ物と一覧と行の操作の口は K-356 が作る\n- K-353: 要る — 契約の口 updateCredential・deleteCredential の入出力（型）を決める葉。画面は call の型で合わせる\n- K-355: 要る — 契約の口 checkCredentialLogin・answerCredentialLoginCheck の入出力（型）と、一覧の check の値（確かめの結果）を決める葉\n- K-372: 要る — 同じファイル（features/F3/credentials/ の views.tsx・credentials-screen.tsx・mocks.tsx）を変える。預ける小窓は K-356 から分けた K-372 が持つ（2026-11-19 まとめ役）。小窓のつなぎ方（赤の知らせ・取り直し）を K-372 にそろえる\n- （依存にしない）同じ置き場 `apps/web/test/_fake/secrets.ts` に K-356・K-372・K-357・K-370 が作り物の秘密の値を足す。どの葉も自分の区切り（`// ---- K-357（…）----` から `// ---- K-357 ここまで ----`）だけを足すので、取り込みは足した区切りの和にできる（置き場を catch_up.union に足すのはまとめ役に頼んだ）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k357-credentials-edit-check.spec.ts`（実 Chrome・本物のログインと外枠・預けたログイン情報の口は網の手前で差し替え・読み直しは時計を進めて数える）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（check） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| ok | 画面を開く | 入っている | 使える・上書き・消す | このチケット | K357-UI-001・003 |\n| checking | 開く・預けた後・上書きの後・確かめの後 | 同じ | 確かめている・3 秒ごとに読み直し | このチケット | K357-UI-004・021 |\n| needs_code（sms・email・push） | 開く | 同じ | コードを入れる・読み直し | このチケット | K357-UI-008〜012 |\n| bad_password・captcha | 開く | 同じ | もう一度確かめる | このチケット | K357-UI-003・006・007 |\n| no_pc・forbidden | 開く | 同じ | 札と補足・確かめない | このチケット | K357-UI-005 |\n| no_pc → PC をつないだ後 | 開き直す | 同じ | 一覧の答え（K-355 が積んだ確かめ）で札が確かめている・読み直しが始まる | このチケット（確かめを積むのは K-355） | K357-UI-024 |\n| どれでも | 上書き | 取り直しが通った後の送り直しが 409・422・404・503 | 上書きの小窓に戻りその文（404 は閉じて読み直し） | このチケット | K357-UI-022 |\n| ワークスペースの物で書けない（見るだけの役・can_edit を古く持っていた） | 上書き | 同じ | 取り直しを開かず赤の知らせ（403 E-CRED-007） | このチケット | K357-UI-023 |\n| expiring | 開く | 同じ | 期限が近い | K-356 | K356-UI-005 |\n| どれでも | 上書き | 取り直しが要る | 取り直し → 1 回だけやり直す | このチケット | K357-UI-015 |\n| どれでも | 上書き・消す | 書けない（can_edit false） | 灰色 | このチケット | K357-UI-003 |\n| 消された（別のタブ） | 上書き・消す | 同じ | 閉じて読み直し | このチケット | K357-UI-016・018 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K357-UI-001 | 入口 | 幅 375・768・1440 × cred-list・cred-checking・cred-no-pc・cred-forbidden | 行の名前・中身の位置と字の大きさと字（「これまでに 22 回 ・ 最後 今日 ・ PC がログインして確かめている」など）・札・行の操作のボタン（薄さも）の値がモックと同じ |\n| K357-UI-002 | 入口 | 幅 × cred-edit（SEIKO_PORTAL の上書き・ログイン情報）・cred-remove・cred-code | 小窓の箱・題・補足・説明・注意・項目名（新しいログイン ID・新しいパスワード を含む）・欄・注の箱・ボタンの値が同じ |\n| K357-UI-003 | 対象の状態 | 8 つの行（can_edit false を含む） | 上書き・消す は書ける行で押せ、書けない行は灰色。コードを入れる は asking だけ、もう一度確かめる は bad_password・captcha・stopped・null のログインだけ。口は呼ばない |\n| K357-UI-004 | 時間の流れ | running → ok | 札と「PC がログインして確かめている」。3 秒ごとに読み直し、使えるが来たら替わり読み直しをやめる |\n| K357-UI-005 | 対象の状態 | no_bridge・forbidden | 札と補足の文・もう一度確かめるは無い・読み直さない |\n| K357-UI-006 | 操作の揺れ | もう一度確かめる・二度押し | POST …/c4/login-check が 1 回。201 の後に読み直して確かめている |\n| K357-UI-007 | 失敗 | 手順 S3 の失敗：503・409 E-CRED-012 | 503 は口の文の知らせ・札はそのまま。409 は読み直して確かめている |\n| K357-UI-008 | 対象の状態 | コード（SMS） | 小窓の題と「SMS で届いた」。{request_ref:\"rq-c2\", code:\"123456\"} が 1 回・閉じて確かめている |\n| K357-UI-009 | 入力 | 手順 S4 の失敗：422 E-VAL-009・全角と空白 | 送るのは 123456。欄の下に口の文・閉じない・字が残る |\n| K357-UI-010 | 時間の流れ | 手順 S4 の失敗：404 E-CRED-014（もう頼んでいない） | 閉じて口の文の知らせ・一覧を 1 回読み直す |\n| K357-UI-011 | 入力 | 2 段階が push | 欄が無い・{request_ref, approved:true} |\n| K357-UI-012 | 操作の揺れ | あとで → コード待ちの読み直し | 何も送らない。3 秒後の読み直しで札が「止まった」に替わる（no_answer） |\n| K357-UI-013 | 対象の状態 | 上書き（API キー） | 既定（使える場所・期限 2026/11/19・理由は空・ID の欄は無い）。体 {value, destinations, expires_on, reason}・閉じて一覧を 1 回読み直す・値の字は頁に残らない |\n| K357-UI-014 | 入力 | 上書き（ログイン情報・代表の答え answer=e34268dbfbac）・値が空・期限を空・表記ゆらぎ → ID とパスワードの両方 | 欄「新しいログイン ID」「新しいパスワード」。値が空なら体に login・password が無い・destinations 小文字 2 つ・expires_on null。両方入れると login と password を送り、読み直すと確かめている |\n| K357-UI-015 | 守り | 上書きの取り直し・やめる → もう一度 → 通す | 理由の文。やめると上書きの小窓に戻り値が残る。通ると同じ体で 1 回だけやり直す |\n| K357-UI-016 | 失敗 | 手順 S1 の失敗：422・409 E-CRED-009・404 | 欄の下に口の文。409 は小窓の赤の知らせ。404 は閉じて知らせ・読み直して行が消える |\n| K357-UI-017 | 対象の状態 | 消す | 確かめの文と注意。DELETE が 1 回（取り直しは無い）・読み直して行が消える |\n| K357-UI-018 | 失敗 | 手順 S2 の失敗：やめる・503・404 | やめるは何も送らない。503 は確かめの小窓に口の文・行は残る。404 は閉じて行は無い |\n| K357-UI-019 | 操作の揺れ | 二度押し（上書き・消す・PC に渡す） | それぞれの口は 1 回 |\n| K357-UI-020 | 入口 | 幅 320〜1440 の 3 つの小窓 | 横溢れ 0・小窓が画面の中・主ボタンが見える |\n| K357-UI-021 | 失敗 | 手順 S5 の失敗：読み直しが 503 | 前の札のまま・赤の箱にしない・次の読み直しで替わる |\n| K357-UI-022 | 失敗 | 手順 S1 の後：上書きの取り直しが通った後の送り直しが 409 E-CRED-009・422・404・503（4 本） | 取り直しの小窓が閉じる。409 → 上書きの小窓の赤の知らせに口の文・422 → 使える場所の欄の下に口の文・503 → 赤の知らせに口の文（3 つとも小窓は開いたまま・新しい値が残る）。404 → 小窓を閉じて口の文の知らせ・読み直して行が消える。PATCH 2 回（同じ体）・取り直し 1 回 |\n| K357-UI-023 | 守り | 上書きの 1 回目の 403 が E-CRED-007 | 取り直しを開かない（取り直し 0 回）・上書きの小窓の赤の知らせに口の文・PATCH 1 回・値が残る |\n| K357-UI-024 | 時間の流れ | no_pc の行 → PC をつないだ後に開き直す | no_pc の間は読み直さない（6 秒で一覧 1 回のまま）。開き直して一覧が running（K-355 が積んだ確かめ）なら札「確かめている」と補足「PC がログインして確かめている」・3 秒後に読み直す |\n\n### テストの型の受け（分類 CRUD・AUTH・EXT）\n\n| 型 | どこで受けるか |\n|---|---|\n| CRUD 直す（成功・入力の誤り・もう消えている・二度押し） | K357-UI-013〜016・019 |\n| CRUD 消す（確かめ・やめる・もう消えている・失敗） | K357-UI-017・018 |\n| AUTH 取り直し・書けない行 | K357-UI-015・003 |\n| EXT 外の結果を待つ（確かめ中・コード待ち・待つのが終わる・読み直しの失敗・信号なしで終わる） | K357-UI-004・010・012・021。PC が答えないまま終わるのは口の側（K-355 が 10 分で止めて bad の状態にする）、画面は来た状態を出すだけ |\n| 2 人が同時に | 要らない: TP-CRUD-01 同時の上書きは口の 409（K353-API-016）。画面は 409 の文を出すだけで、409 の文の出し方は K357-UI-013〜016 と同じ道 |\n| TP-CRUD-02 消したものを古いリンクで | K357-UI-016・018（もう消えている → 404 の文） |\n| 消す → 戻す | 要らない: TP-CRUD-03 戻す操作が無い（消すの確かめは K357-UI-017）。子は無い |\n| TP-CRUD-04 2 回押し | K357-UI-019（上書き・消す・PC に渡すの二度押し）・K357-UI-006 |\n| TP-CRUD-05 保存の途中で失敗 | K357-UI-017・018・019 |\n| TP-CRUD-06 書きかけで戻る | K357-UI-013〜016（やめると何も送らない）。セッション切れの 401 は K-372 と同じ道（K372-UI-015） |\n| TP-EXT-01 外の結果が来ない・遅い | K357-UI-004・010・012・021 |\n| 外が想定外の形 | 要らない: TP-EXT-02 画面は口の答え（契約の型）だけを読む。想定外の state は札「止まった」（K356-UI-029） |\n| 同じ通知が 2 回 | 要らない: TP-EXT-03 画面は読み直しで今の状態を出すだけで、知らせを数えない |\n| 誤ったパスワード | 要らない: TP-AUTH-01 ログインの画面ではない（上書きの取り直しで違うパスワードの扱いは取り直しの部品 StepUp・K-318 の試験と K372-UI-011 と同じ道） |\n| 続けて失敗 | 要らない: TP-AUTH-02 取り直しの回数の上限は口 stepUp（K-309）が持つ |\n| TP-AUTH-03 2 段階のコードの期限切れ・誤り | K357-UI-009（コードの形の誤り 422）・010（もう頼んでいない＝待つ時間が切れた 404 E-CRED-014）。サービスがコードを断ったのは PC の確かめの結果 bad_code（K356-UI-029） |\n| セッション切れ | 要らない: TP-AUTH-04 401 の扱いは入れ物が持ち、K356-UI-009（読むとき）・K372-UI-015（送るとき）と同じ道 |\n| ログアウトの後 | 要らない: TP-AUTH-05 ログアウトの後の入口は K-356 の前からの試験（shared USH-04-001） |\n| パスワード・端末 | 要らない: TP-AUTH-06 パスワードを変える・端末を外す操作が無い |\n| TP-AUTH-07 取り直しの期限 | K357-UI-015 |\n| 戻す先 | 要らない: TP-AUTH-08 ログインに移らない |\n| 国・端末 | 要らない: TP-AUTH-09 国・端末の変化はログインの側（段 2） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）は、この葉の changes: を import する試験を 0 件と出した（画面の試験は道で開くので import しない）。道 /settings/credentials を開く前からの試験は K-356 が替えた（K-356 の「## 前からの試験を替えた所」）。この葉で替わる振る舞いを見ている前からの試験：\n\n```search\ngit grep -ln \"上書き\\|コードを入れる\\|もう一度確かめる\" -- 'apps/web/tests/k/k356-*'\n1\n```\n\n- apps/web/tests/k/k356-credentials-list-add.spec.ts: 替えない — 行の操作は押せる・押せないのどちらでも通る形に書いてある（K356-UI-025 は出ていることだけ・K356-UI-001 は薄さを比べない）\n- apps/web/tests/k/k350-stage4-mock.spec.ts: 替えない — 同じ段 4 のほかの葉（K-350）の試験。この葉の部品・モックを見比べや差し替えに使うが、その葉が自分の行として持つ（この葉の変更はその葉の試験の前提になるだけで、行の期待は変わらない）。ただし K350-MK-004 は部品のファイル `apps/web/features/F3/credentials/views.tsx` を字で読む：`fetch(`・`lib/api`（型だけの import でも）・`useEffect`・`useRouter`・`from \"@/lib/auth`・`style={`・`#` と 16 進の 3〜6 字・数字と px・`import \"./x.css\"` のどれかが在ると赤。この葉が views.tsx に足すのは値と押す関数を受け取る口（props）だけにし、口の型は views.tsx の中に書く（lib/api の型を読み込まない）。試験は注を除かずにファイルを丸ごと読むので、注の字にも当たる（注に `lib/api`・`useEffect`・`#356` のような # と数字・`16px` を書かない）\n- apps/web/tests/k/k372-credentials-add.spec.ts: 替えない — 先に入る段 4 の葉 K-372 の試験（K-357 が K-372 に依存する）。この葉が足す行の操作（上書き・消す・確かめ・コード）は預ける小窓に触らないので、範囲に入って流れても緑のまま",
+    "速さ（今の値と目標の値）": "| 項目 | 今（前の画面） | 目標（この葉） |\n|---|---|---|\n| 確かめ中の読み直し | 2 秒ごと（前の道すじ） | 3 秒ごと・答えが来てから次を待つ（二重にしない）・確かめ中とコード待ちのときだけ |\n| 押した後の口 | — | 書く口 1 本＋読み直し 1 本（別 GET で反映を見る）。取り直しのときだけ getMySecurity・stepUp |\n| 新しい住所 | — | 増えない |",
+    "成果物": "- 入れ物の行の操作・小窓 3 つ・読み直し、部品の口の足し\n- 画面の試験 `apps/web/tests/k/k357-credentials-edit-check.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=ac0813ee7c21 ③（預けた後に PC が 1 回ログインして確かめる）・0a262be577b2（下絵 OK）\n- 2026-11-19 代表の答え answer=e34268dbfbac：上書きでパスワードだけ替えるときも ID とパスワードを両方入れ直す（部品の ID の欄は切る段で足した・K-350 が運ぶ）。期限が近いは期限の 1 日前から（試験の FREEE_API_KEY の期限を 2026-11-19 に）。行の中身の字は「これまでに N 回 ・ 最後 MM/DD」だけ（見た目の突き合わせで字も比べる）\n- 2026-11-19 精査 R1 の直し：取り直しの後の送り直しの失敗（K357-UI-022）・1 回目の 403 E-CRED-007（K357-UI-023）・no_pc の後の札の変わり方（K357-UI-024）を足した。PC をつないだ後に確かめを積むのは K-355（まとめ役の決め・代表の答え answer=449e72553c59 で決まった：PC をつないだら自動で 1 回確かめる）\n- 2026-11-19 切る段の決め：読み直しは 3 秒・確かめ中とコード待ちだけ。消すは本人確認なし（K-353）。もう一度確かめるは止まった・まだ確かめていない行にも出す",
+    "PM に確かめたいこと": "- （済み）一覧の login_check の asking のときの request_id は K-351 が足す（K351-API-019・2026-11-19 まとめ役）",
+    "リスクと懸念": "- 口の形（「## 画面が送る値」・一覧の check）が口の葉 K-353・K-355 と食い違うと、作る段の型の検査で止まる。切る段でそろえる（まとめ役）",
+    "申し送り": "- K-358：Bridge を通す前からの試験（qa-b-login-check・qa-b-two-factor）を、この葉の画面（札・コードの小窓）で書き直す",
+    "表の住所（2026-11-19）": "- K-325〜K-327 は本線に入った（口の登録は葉ごとの hooks のファイルの register・migration は時刻の名前で一覧は生成物）。この葉は口も migration も足さないので、その形で直す所は無い\n- K-328 の形に直した：試験の作り物の秘密の値（K357_FAKE_VALUE・K357_FAKE_PW・K357_STEP_PW（組み立てていた値））は `apps/web/test/_fake/secrets.ts` の「K-357」の区切りに置き、試験から import する（.gitleaks.toml がこの置き場だけを外す）。置き場は carry: で切る段の版を運ぶ（作る段では変えない）"
+   },
+   "file": "11_tickets/K-357.md"
+  },
+  {
    "id": "K-359",
    "title": "Bridge の側で Claude Code の自己診断と直し方を整える（無い・本体が落ちてきていない・ログインしていない／入れる作業の重なりと時間切れと途中の行・ログインの待ち・この PC の口）（K-89 の葉 ①）",
    "kind": "タスク",
@@ -17993,6 +18076,96 @@
    "file": "11_tickets/K-366.md"
   },
   {
+   "id": "K-368",
+   "title": "PC の行で AI が使うブラウザを選ぶ欄と、Chrome とつながらないときのその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を契約の口につなぐ。会話の 1 行の一手も同じ口へ（K-90 の葉 ④・画面）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-363（画面を口につなぐ・部品は K-369 の物をそのまま使う・18 行・見込み 1 時間）と段 2 の K-318（30 行・作る段の実測 54 分）から引いた：口を呼ぶ共通の処理 lib/device-browser.ts（選ぶ・確かめて 90 秒まで待つ）15 分・行の部品 browser-row.tsx（値と知らせを行ごとに持つ）15 分・出し分けの置き場 pc-row-extra.tsx（K-349 が置き、K-361 が直し方を書いた hook）に足す出し分け 5 分・会話の一手を同じ処理へ替える 5 分・自分の確かめ（押す・見た目の突き合わせ）20 分。試験 25 行と前からの試験 browser-notice.spec.ts の替えは切る段が書いた。2026-11-19 夜 PM の決め：出し分けの置き場と一覧の 1 回の読み直し（reload）は新しい葉 K-349 が先に入れ、この葉は connect-pc.tsx を触らず pc-row-extra.tsx に足す形に替えた（見込みの数は変えていない）",
+   "decisions": [
+    "D-119",
+    "D-120",
+    "D-128.125",
+    "D-128.137",
+    "D-128.143",
+    "D-128.150",
+    "D-128.156",
+    "D-146.1"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。呼ぶのは契約の口（listMyDevices・updateMyDevice・checkMyDeviceBrowser）で、書き込みと関門 C2 は口の葉 K-364・K-365 が持つ。外へ出すのは Chrome ウェブストアへのリンク（人が押す・新しいタブ）だけ",
+   "tests": [
+    "apps/web/tests/k/k368-pc-browser.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/screens/browser-notice.spec.ts",
+    "apps/web/test/_fake/secrets.ts"
+   ],
+   "depends_on": [
+    "K-361",
+    "K-365",
+    "K-369",
+    "K-349"
+   ],
+   "acts": [
+    "A09"
+   ],
+   "screens": [
+    "bridge-setup",
+    "clone-chat"
+   ],
+   "apis": [],
+   "mock": [
+    "pc-browser-pick",
+    "pc-browser-saved",
+    "pc-browser-fix",
+    "pc-browser-checking",
+    "pc-browser-ok",
+    "pc-browser-still",
+    "pc-browser-timeout",
+    "pc-browser-asleep"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F3/connect-pc/browser-row.tsx",
+    "apps/web/features/F3/connect-pc/pc-row-extra.tsx",
+    "apps/web/features/F3/connect-pc/devices.ts",
+    "apps/web/features/F3/connect-pc/claude-code.tsx",
+    "apps/web/lib/device-browser.ts",
+    "apps/web/components/ai/browser-fix.tsx",
+    "11_tickets/K-90.md",
+    "scripts/ci/ci_scope.d/K-368.json"
+   ],
+   "flow": "PC をつないで AI が使うブラウザを選ぶ",
+   "sections": {
+    "目的": "「PC と使った量」（/setup/bridge・K-57 の `features/F3/connect-pc`）の「つないでいる PC」の行に、**その PC で AI が使うブラウザ**を選ぶ欄（自分の Chrome（既定）／Bridge 専用のブラウザ／使わない・D-119・D-120）を出し、押すと口 `updateMyDevice`（K-364）をその PC の id で呼ぶ。今の値は一覧 `listMyDevices` の `browser`（K-364）。\n\nその PC の自己診断の Chrome の行が ✗ で、選んでいるのが自分の Chrome のときだけ、選ぶ欄の下にその場の一手（BrowserFix：つなぎ方を見る・もう一度確かめる・Bridge 専用に切り替える）を出す。「もう一度確かめる」は口 `checkMyDeviceBrowser`（K-365）をその PC の id で呼び、一覧のその PC の `health_at`（K-360）が新しくなるのを待って（上限 90 秒）結果を出す。\n\n会話の 1 行の一手（`components/ai/browser-fix.tsx`・自分のAIと話す）も同じ処理（`lib/device-browser.ts`）に替え、前の道すじ `/api/auth-ext/agent/browser`・`/agent/browser-check` を呼ばなくする（L-008：同じ処理は 1 つ。前の道すじを消すのは K-367）。会話の一手の見た目と字は変えない。\n\n代表の答え（2026-11-19・下絵 /dev/mock/f3-pc の OK と A の 1〜8）：ラジオ 3 つを常に出す（A-2 ①）・Claude Code が無い／ログインしていない間はブラウザの欄を出さない（A-3）・眠っている PC の文は下絵どおり（A-8）。決めた中身は下絵の字が正。",
+    "完了の条件": "- [ ] 下の表の 25 行（K368-UI-001〜025・001 はモック 8 つ × 幅 3 つ）が緑：`apps/web/tests/k/k368-pc-browser.spec.ts`\n- [ ] 前からの試験 `apps/web/tests/screens/browser-notice.spec.ts`（切る段で新しい画面と口に替えて carry で運ぶ）が緑\n- [ ] 下の「前からの試験を替えた所」で「替えない」とした試験が替えずに緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD, EXT\n\n- **正の絵（モック）**：キャンバス（MePC・EdPC・MePCInstalled）に選ぶ欄と一手の絵は無い。まとめ役が c/段4 の `/dev/mock/f3-pc` に本番と同じ部品（`apps/web/features/F3/connect-pc/pc-row-parts.tsx` の `BrowserChoice`・`BrowserFix`）で作り、代表が OK した（2026-11-19・会話で）。K-369 が本線に入れる。mock: の 8 つ（pick・saved・fix・checking・ok・still・timeout・asleep）。見た目の突き合わせはこのモックと本番の画面を同じ幅で比べる（K368-UI-001）\n- 部品は `BrowserChoice`・`BrowserFix`・`RowNote` をそのまま使う（新しい見た目・値は書かない。足す CSS は無い）。前の部品 `components/bridge/browser-pick.tsx`（前の画面だけが使う）は使わず消さない（消すのは K-367）\n- 依存の K-349 が、行に部品を差す所（`PcList` の `renderExtra`）・出し分けの置き場 `pc-row-extra.tsx`（hook `usePcRowExtra(ctx)`）・一覧の 1 回の読み直し（`ctx.reload`）を作る。依存の K-361 が、一覧の型の `health`・`health_at`・Claude Code の直し方の部品（`claude-code.tsx`）と、同じ hook の中の直し方の出し分けを作る。この葉はその上に足す（並べる所 connect-pc.tsx と pc-cards.tsx は触らない）。「…」と外す（K-363）は別の置き場（pc-row-more.tsx）で、この葉と順は無い\n- 口の失敗の文は目録（errors.json）から引く：404 は E-PAGE-001・503 ほかは E-PAGE-003・429 は E-LIM-005（`waitText`）・眠っている PC の 409 は K-365 が足す where.state `browser_check_asleep` の文（`errorText(r.code)`）・401 は共通の決まり（入り直しへ）\n- 「つなぎ方を見る」は閉じた形で出す（会話の一手と同じ・下絵の checking・still・timeout は閉じた形。fix の絵は押して開いた形）。前の画面は開いた形で出していたが、下絵に合わせる（切る段の決め）\n- 試験はこの葉を作る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "依存の理由": "- K-361: 要る — 同じファイル apps/web/features/F3/connect-pc/pc-row-extra.tsx（出し分けの hook に Claude Code の直し方を書く）・devices.ts（Device に health・health_at）・claude-code.tsx（直し方を選ぶ処理）を変える。この葉は、K-361 が書いた直し方の出し分けの後に選ぶ欄を足し、その行に直し方が出ているかを K-361 の処理で決める（K368-UI-019）。順は K-361 → K-368 → K-375（2026-11-19 夜 PM の決め）\n- K-349: 要る — 製品のコードの形：行に差す所（`PcList` の `renderExtra`）・出し分けの置き場 `pc-row-extra.tsx`（hook `usePcRowExtra(ctx)`）・一覧の 1 回の読み直し `ctx.reload` を K-349 が作る。この葉の `BrowserRow` の `onReload` はこの reload を使う（選んだ後・確かめて直った後に一覧を 1 回読み直す）。K-349 が先に無いと、足す先のファイルも読み直しも無い（2026-11-19 夜 PM の決め）\n- K-363（依存にしない）— 前は、外した後の一覧の 1 回の読み直しを K-363 が connect-pc.tsx に作り、この葉が同じ読み直しを使うので先にしていた。読み直しは K-349 が出し、K-363 は別の置き場（pc-row-more.tsx）を使うので、ファイルが重ならない。依存から外した（2026-11-19 夜 PM の決め）\n- K-365: 要る — 本物の口 checkMyDeviceBrowser（POST /api/v1/bridge/devices/:id/browser-check）と、眠っている PC の 409 の文（errors.d/K-365.json）を K-365 が作る。前からの試験 browser-notice.spec.ts（carry）は本物の口と Bridge の輪を通す。K-365 は K-364（updateMyDevice・一覧の browser）に依存するので、この葉が入るときには両方の口がある\n- K-369: 要る — 正の絵（/dev/mock/f3-pc の pc-browser-* 8 つ）と部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx（と pc-row-parts.css）を本線に入れる葉。見た目の突き合わせ K368-UI-001 はこのモックと比べる",
+    "目録で探した結果": "| 使うもの | どこ | 使い方 |\n|---|---|---|\n| 選ぶ欄・一手・行の知らせの部品 | `features/F3/connect-pc/pc-row-parts.tsx` の `BrowserChoice`・`BrowserFix`・`RowNote`・`AgentBrowser`（K-369） | そのまま使う（値と押した結果を props で渡す） |\n| 口の呼び手 | `lib/api/call.ts` の `call`（listMyDevices・updateMyDevice・checkMyDeviceBrowser） | 道すじを書かずに口の名前で呼ぶ |\n| 自己診断の Chrome の行の名前 | `components/ai/browser-fix.tsx` の `CHROME_CHECK`（apps/bridge/src/browser.ts の browserCheck と同じ） | `lib/device-browser.ts` に移し、browser-fix.tsx から同じ名前で出し直す（前の画面 legacy が import している） |\n| 確かめて待つ動き | `components/ai/browser-fix.tsx` の `check`（前の道すじ・人に宛てる・bridgeState の health_at を 2 秒ごとに 90 秒まで） | 同じ動き（2 秒ごと・90 秒・「まだ使っていません」は数えない）を PC の id に宛てる形で `lib/device-browser.ts` に移す |\n| 待つ秒の文 | `features/F1/sign-up/wait-text.ts` の `waitText` | 429 |\n| 目録の文 | `components/k/error-of.ts` の `errorText`・`PAGE_ERROR` | 404・503・409 |\n| 探したが無かったもの | PC の id で選ぶ・確かめる画面の処理 | 前の道すじの `agentSetBrowser`・`agentBrowserCheck`（lib/auth/ext.ts）は人に宛てる（PC を選べない）。新しく `lib/device-browser.ts` を作る |",
+    "実施事項": "行の番号は c/段4 の先頭（ee36d7e4）のもの。K-349・K-361 が入った後の形に足す（K-363 とは順が無い）。\n\n| 何を | どこ・どう |\n|---|---|\n| 口を呼ぶ共通の処理 | 新しい `apps/web/lib/device-browser.ts`：① `CHROME_CHECK`（components/ai/browser-fix.tsx から移す）② `setDeviceBrowser(id, browser, screenId)` → `call(\"updateMyDevice\", { params: { id }, body: { browser }, screenId })` の答えをそのまま返す ③ `checkDeviceBrowser(id, before, screenId, opts?)`：`call(\"checkMyDeviceBrowser\", { params: { id }, body: {}, screenId })`。失敗ならその答えを `{ kind: \"error\", err }` で返す。201 なら、始めた時刻から 90 秒（`Date.now()` で測る）まで 2 秒ごとに `listMyDevices` を読み、その id の行の `health_at` が `before` と違い、`health` に `CHROME_CHECK` の行があり、detail が「まだ使っていません」でなければ、ok なら `{ kind: \"ok\" }`・ok でなければ `{ kind: \"still\" }`。読みが 401 なら `{ kind: \"error\", err }`、ほかの失敗は数えずに読み続ける。90 秒を越えたら `{ kind: \"timeout\" }`（待つのは 1 回の確かめにつき 1 本・固定の回数でなく時刻で切る） ④ `firstDevice(screenId)`：`listMyDevices` の最初の生きている PC（無ければ最初の行・どちらも無ければ null）。会話の一手が使う（一覧の並びは最後に見えた順＝前の bridge_state が選んだ 1 台と同じ） |\n| 一覧の型 | `features/F3/connect-pc/devices.ts` の `Device` に `browser?: AgentBrowser`（K-364 の一覧の値。chrome・dedicated・off 以外・無いは無いのと同じ）を足す |\n| 行の部品 | 新しい `features/F3/connect-pc/browser-row.tsx`（\"use client\"）の `BrowserRow({ device, onReload })`。行ごとに持つ値：選んだ直後の値（一覧が追いつくまでの上書き）・選ぶ口を待つ間・選ぶ欄の知らせ・確かめ中・一手の結果。① 選ぶ：今の値と同じなら呼ばない。違えば押せなくし（`BrowserChoice` の busy）`setDeviceBrowser`。200 → 上書きにその値・選ぶ欄の知らせ ok「変えました。次の仕事から使います」・`onReload()`（一覧を 1 回読み直す）。失敗の文は下の「失敗」 ② 一手を出すか：選んでいる値（上書き→一覧の browser）が chrome で、`health` に `CHROME_CHECK` の行が在って ✗（ok でない）で、確かめの結果が ok でないとき。`CHROME_CHECK` の行が無い（health が空・つないだばかり）ときは出さない（✗ の行があるときだけ。K368-UI-002） ③ もう一度確かめる：確かめ中なら何もしない（2 回押しでも 1 回）。`checkDeviceBrowser(device.id, device.health_at)`。ok → 一手を消し選ぶ欄の知らせ ok「つながりました。AI は Chrome を使えます」・`onReload()`。still → 一手の結果 danger「まだつながっていません。上の手順を見直してから、もう一度押してください」。timeout → 一手の結果 danger「結果が返ってきませんでした。PC の Bridge が動いているか確かめてください」 ④ Bridge 専用に切り替える：① と同じ処理で dedicated（知らせは選ぶ欄に出る・一手は消える。① の `onReload()` で一覧を読み直す） ⑤ 失敗：401 は共通の決まり（入り直し）／404 は E-PAGE-001（読み直しは待たない・5 秒の読みで行が消える）／409 は `errorText(r.code)`（眠っている PC の文）／429 は `waitText(r.retryAfterSec)`／ほかは E-PAGE-003。選ぶ口の失敗は選ぶ欄の知らせ danger（印は前の値のまま）、確かめる口の失敗は一手の結果 danger。部品は `BrowserChoice`（deviceId・value・busy・note・onChange）と `BrowserFix`（checking・result・onCheck・onDedicated・openSteps は渡さない＝閉じた形） |\n| 出し分け | `features/F3/connect-pc/pc-row-extra.tsx` の `usePcRowExtra`（K-349 が置いた出し分けの hook・K-361 が直し方の出し分けを書いた）：Claude Code の直し方の部品の後に `BrowserRow` を置く。出さない行：一覧の `browser` が無い（今の値が分からない・嘘の印を付けない）／その行に Claude Code の直し方が出ている（代表の答え A-3：先に直す物だけ）。直し方が出るかは `claude-code.tsx` の直し方を選ぶ処理（install／repair／login／無し）を同じ入力で呼んで決める。K-361 がその処理を名前を付けて export していなければ、この葉が export する（中身は変えない）。`onReload` は `ctx.reload` を渡す（K-349 の use-connect-pc.ts が出す一覧の 1 回の読み直し：`listMyDevices` をその場で 1 回呼び、読めたら一覧に入れる。失敗は何もしない＝次の 5 秒の読みで追いつく。前は K-363 が作る読み直しだった）。並べる所 `connect-pc.tsx` と `pc-cards.tsx` は触らない：hook を呼んで `PcList` の `renderExtra` に渡す所は K-349 が入れてある |\n| 会話の一手 | `components/ai/browser-fix.tsx`：`bridgeState`・`agentBrowserCheck`・`agentSetBrowser` を使わない。もう一度確かめる：`firstDevice()` の PC で `checkDeviceBrowser(id, そのときの health_at)`、ok・still・timeout の文は今と同じ。無い PC・失敗は今の文（「確かめられませんでした」）か口の文（`errorText(code)`）。終わったら `[\"bridge-state\"]` を読み直す（会話の画面の PC の状態と前の画面の Chrome の行を新しくする）。切り替える：`firstDevice()` の PC で `setDeviceBrowser(id, \"dedicated\")`、文は今と同じ「Bridge 専用のブラウザに切り替えました。次の仕事から使います」。200 の後に `[\"bridge-state\"]` を読み直す（前の画面のラジオ・会話の画面の PC の状態を新しくする。SCR-BRIDGE-SETUP-102 は切り替えの後 15 秒以内にラジオが変わることを見る）。押した結果を部品の外に持つ形（fixState）・見た目・字・data-* は変えない。`CHROME_CHECK` は `lib/device-browser.ts` から出し直す |\n| 古い葉 K-90 から外す | `11_tickets/K-90.md`：この葉が受け持つ画面の行を古い葉 K-90 の表から外す（K-90 は split で子に配る・2026-11-19 まとめ役。K-90 の閉じ方と split の欄はまとめ役が書く。同じ md を兄弟の葉も直すので、overlap_ok にはまとめ役が足す） |\n| 使う部品と版 | Next.js ^15.5.28・React ^19.1.0・Playwright ^1.63.0。新しい部品は入れない |\n| CI の範囲の地図（2026-11-19 切る段で足した） | `scripts/ci/ci_scope.d/K-368.json`：reads_ok に `\"apps/web/tests/k/k368-pc-browser.spec.ts\": \"文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-368\"`（K-340 の断片と同じ形）。`python3 scripts/ci/build_registries.py` で `scripts/ci/ci_scope.json`（生成物）に足し合わせる。無いと ci_scope_test.py の「ファイルを読む・子プロセスを使うのに、範囲の地図（data_links・reads_ok）に無い試験」が赤になる（切る段で c/段4 の木に流して見つけた） |",
+    "外に影響する手順": "画面は口を呼ぶだけ（DB に書くのは K-364・K-365）。呼んだ口が失敗したときの画面：\n\n- 1: 選ぶ口（updateMyDevice）を呼ぶ。失敗（503）なら選ぶ欄に赤い知らせで印は前のまま（K368-UI-006）\n- 2: 確かめる口（checkMyDeviceBrowser）を呼ぶ。失敗（503）なら一手の中に赤い知らせで押し直せる（K368-UI-021）\n- 3: 結果を待つ（一覧を 2 秒ごとに読む・上限 90 秒）。失敗（時間切れ）なら一手の中に「結果が返ってきませんでした…」（K368-UI-013）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k368-pc-browser.spec.ts`（実 Chrome。口は網の手前で差し替える。口の振る舞いは K-364・K-365 の試験が本物の DB で持つ）\n\n### 状態 × 入口 × 利用者の状態\n\n状態の候補（一覧の列から）：`browser`（chrome／dedicated／off／無い）・`health` の Chrome の行（✓／✗／まだ使っていません／無い）・`state`（live／asleep／waiting）・Claude Code の直し方（要る／要らない）\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| browser あり・直し方が要らない | PC の行の選ぶ欄 | ログイン中 | 印・押すと選び直し | このチケット | K368-UI-002〜009 |\n| chrome・Chrome の行が無い（health が空・つないだばかり） | PC の行 | ログイン中 | 選ぶ欄だけ。一手は出さない | このチケット | K368-UI-002 |\n| chrome・Chrome の行 ✗ | PC の行の一手 | ログイン中 | 一手・確かめ・切り替え | このチケット | K368-UI-010〜017・021・022 |\n| chrome・まだ使っていません／dedicated・off で古い ✗ | PC の行 | ログイン中 | 一手は出さない | このチケット | K368-UI-018 |\n| Claude Code の直し方が要る | PC の行 | ログイン中 | ブラウザの欄も一手も出さない | このチケット（直し方は K-361） | K368-UI-019 |\n| browser が無い | PC の行 | ログイン中 | 選ぶ欄も一手も出さない | このチケット | K368-UI-020 |\n| asleep・✗ | もう一度確かめる | ログイン中 | 409 の文 | このチケット（口は K-365） | K368-UI-014 |\n| どれでも | 選ぶ・確かめる | ログインが切れた | 入り直しへ | このチケット（共通の決まり） | K368-UI-007 |\n| 外された PC | 古い画面で押す | ログイン中 | E-PAGE-001 | このチケット | K368-UI-008 |\n| どれでも | 選ぶ・確かめる | スマホ（PC はつなげない） | 押せる（リモコン） | このチケット | K368-UI-025 |\n| chrome・✗ | 会話の 1 行の一手 | ログイン中 | 確かめ・切り替えが最初の生きている PC に宛たる | このチケット | CHT-37-011・CHT-37-012（browser-notice.spec.ts・carry） |\n| chrome・✗ | 前の画面 /setup/bridge/legacy の一手 | ログイン中 | 同じ部品なので新しい口を呼ぶ | K-367（前の画面ごと消す） | — |\n| どれでも | Bridge の窓で選び直す | PC の印 | — | K-366 | — |\n\n### 行\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K368-UI-001 | 入口 | モック pc-browser-pick・saved・fix・checking・ok・still・timeout・asleep × 幅 375・768・1440 | 行の中の選ぶ欄・題・選ぶ行・説明・ラジオ・一手・題・手順・ボタン・知らせの値（箱・字・行の上端からの位置）がモックと同じ（共通の道具 matchMock・置き場 /dev/mock/f3-pc（K-369）・bad が空） |\n| K368-UI-002 | 対象の状態 | つないだばかりの PC（chrome）と使わないの PC | 補足の行の後に選ぶ欄（題「AI が使うブラウザ」・ラジオ 3 つ・「自分の Chrome（既定）」）。1 台目は chrome、2 台目は off に印。ラジオの組は行ごとに別。どちらの行も自己診断の Chrome の行が無い（health が空）ので一手（[data-part=browser-fix]）は無い。PATCH 0 回 |\n| K368-UI-003 | 対象の状態 | 「Bridge 専用のブラウザ」を押す | PATCH /api/v1/bridge/devices/<その PC> を体 { browser: \"dedicated\" } でちょうど 1 回。行の role=status に「変えました。次の仕事から使います」・印 dedicated。次の一覧の読みの後も、開き直しても dedicated |\n| K368-UI-004 | 操作の揺れ | 今と同じ値を押す | 次の一覧の読みの後も PATCH 0 回・知らせは出ない |\n| K368-UI-005 | 操作の揺れ | 答えを待つ間（PATCH を止める） | 3 つとも disabled・選ぶ欄に aria-busy=\"true\"。もう 1 つ押しても PATCH 1 回。答えが来たら押せて知らせ |\n| K368-UI-006 | 失敗 | 手順 1 の失敗：選ぶ口が 503・E-PAGE-003 | 行の role=alert に E-PAGE-003 の文。印は chrome のまま・知らせ ok は出ない |\n| K368-UI-007 | 利用者の状態 | 選ぶ口が 401・確かめる口が 401 | どちらも URL が /login?next=%2Fsetup%2Fbridge |\n| K368-UI-008 | 時間の流れ | もう外した PC で選ぶ・確かめる（404） | 行の role=alert に E-PAGE-001 の文。次の一覧の読みで行が消える |\n| K368-UI-009 | 守り | PC 2 台で 2 台目を「使わない」 | PATCH は 2 台目の id だけ（体 { browser: \"off\" }）。1 台目は chrome のまま・知らせも 2 台目の行だけ |\n| K368-UI-010 | 対象の状態 | Chrome の行が ✗（chrome） | 選ぶ欄の後に一手（題「AI が Chrome を使えません。」）。つなぎ方は閉じていて、押すと手順 3 つとリンク（href はウェブストア・target _blank・rel に noopener）。✓ の行には一手が無い |\n| K368-UI-011 | 対象の状態 | もう一度確かめる → ✓ が返る | POST …/<その PC>/browser-check を体 {} でちょうど 1 回。押すとボタンは「確かめています…」で disabled・role=status「確かめています（1 分ほどかかります）…」。新しい自己診断が来たら一手は消え、選ぶ欄の role=status に「つながりました。AI は Chrome を使えます」 |\n| K368-UI-012 | 対象の状態 | 確かめて、まだ ✗ | 一手の role=alert に「まだつながっていません。上の手順を見直してから、もう一度押してください」。ボタンは「もう一度確かめる」で押せる |\n| K368-UI-013 | 失敗 | 手順 3 の失敗：90 秒たっても自己診断が新しくならない（page.clock） | 60 秒ではまだ出ない。90 秒を越えると一手の role=alert に「結果が返ってきませんでした。PC の Bridge が動いているか確かめてください」・ボタンは押せる |\n| K368-UI-014 | 対象の状態 | 眠っている PC で押す（409） | その行の一手の role=alert に目録の where.state browser_check_asleep の文。「確かめています」は残らない・押し直せる。口はその PC の id で 1 回 |\n| K368-UI-015 | 操作の揺れ | 確かめの 2 回押し（答えを止める） | ボタンは disabled・POST はちょうど 1 回・答えの後に「つながりました」 |\n| K368-UI-016 | 対象の状態 | 一手の「Bridge 専用に切り替える」 | PATCH をその PC の id で { browser: \"dedicated\" } 1 回・確かめる口は 0 回。印 dedicated・「変えました。次の仕事から使います」・一手は消える |\n| K368-UI-017 | 守り | PC 2 台とも ✗ で 2 台目の行で確かめる | 確かめの口は 2 台目の id だけ。1 台目のボタンは押せて、1 台目に「確かめています」は出ない |\n| K368-UI-018 | 対象の状態 | まだ使っていない（✓）の chrome・古い ✗ が残る dedicated・off | 選ぶ欄は 3 行とも在り、一手はどの行にも無い |\n| K368-UI-019 | 対象の状態 | Claude Code が入っていない行（＋ Chrome ✗） | その行は Claude Code の直し方（[data-part=claude-fix]）だけで、選ぶ欄も一手も無い。Claude Code の済んだ行には両方が在る |\n| K368-UI-020 | 入力 | 一覧の行に browser が無い | その行は選ぶ欄も一手も無い。browser がある行には選ぶ欄が在る |\n| K368-UI-021 | 失敗 | 手順 2 の失敗：確かめる口が 503・E-PAGE-003 | 一手の role=alert に E-PAGE-003 の文・「確かめています」は消える。もう一度押すと（✓ が返る）「つながりました」・口は 2 回 |\n| K368-UI-022 | 守り | 確かめる口が 429（retry_after_sec 30） | 一手の role=alert に E-LIM-005 の文（{秒} が 30）・ボタンは押せる |\n| K368-UI-023 | 入口 | キーボード | 一手の「もう一度確かめる」にフォーカスして Enter で確かめ（2 台目の id）・「つながりました」。自分の Chrome のラジオで ↓ を押すと Bridge 専用に移り PATCH 1 回（dedicated）・知らせ |\n| K368-UI-024 | 入口 | 幅 320・375・768・1024・1440 でつなぎ方を開きまだ ✗ の知らせを出した形 | どの幅も scrollWidth − clientWidth が 0 |\n| K368-UI-025 | 利用者の状態 | スマホ（iPhone の端末・幅 375） | 選ぶ欄は押せて PATCH（off）がその PC の id で 1 回。もう一度確かめるも押せて、確かめの口がその PC の id で 1 回・「つながりました」 |\n\n### テストの型の受け（分類 CRUD・EXT）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: TP-CRUD-01 値は 3 つから選ぶ 1 つの列で、後から選んだ方が残る（版のずれを持たない・K-364 の K364-API-018 が口で受ける）。画面は答えの値と次の読みの値を出すだけ |\n| TP-CRUD-02 消したものを古いリンクで | K368-UI-008（外した PC で選ぶ・確かめる） |\n| TP-CRUD-03 消す → 戻す | 要らない: TP-CRUD-03 選び直しは消すものが無い（PC を外すのは K-363） |\n| TP-CRUD-04 2 回押し | K368-UI-004・005・015 |\n| TP-CRUD-05 保存の途中で失敗 | K368-UI-006（印は前のまま） |\n| TP-CRUD-06 書きかけで戻る・セッション切れ | K368-UI-007（書きかけは無い・入り直しへ） |\n| TP-EXT-01 外（PC の Bridge）が落ちた・遅い・時間切れ | K368-UI-013（90 秒の上限）・014（眠っている PC） |\n| TP-EXT-02 外が想定外の形を返す | K368-UI-018（Chrome の行が「まだ使っていません」は結果に数えない）・020（browser が無い一覧の行） |\n| TP-EXT-03 同じ通知が 2 回届く | K368-UI-015（確かめの 2 回押しでも口は 1 回） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験と、選ぶ欄・一手の印（data-browser-*）を見る前からの試験と、会話の一手の部品を使う所（検索で出した）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F3/connect-pc/browser-row.tsx apps/web/features/F3/connect-pc/pc-row-extra.tsx apps/web/features/F3/connect-pc/devices.ts apps/web/features/F3/connect-pc/claude-code.tsx apps/web/lib/device-browser.ts apps/web/components/ai/browser-fix.tsx 11_tickets/K-90.md scripts/ci/ci_scope.d/K-368.json\n1\n```\n\n（1 件：apps/web/tests/k/k368-pc-browser.spec.ts＝この葉の試験（この葉が運ぶ・前からの試験ではない）。prior の道具は除くパスを取らないので、出る件数のまま書いた。2026-11-19 夜に、新しい changes: で流し直した：前は connect-pc.tsx が changes: に在って 3 件（ほかに k230-bridge-content.spec.ts・k257_canvas_boards_test.py）出ていた。この葉は connect-pc.tsx を触らなくなったが、同じ画面を見る試験なので下の行は残す。まだ無いファイル browser-row.tsx・pc-row-extra.tsx・claude-code.tsx・lib/device-browser.ts・ci_scope.d/K-368.json は照らされない）\n\n```search\ngit grep -ln \"data-browser-pick\\|data-browser-fix\\|data-browser-check\\|data-browser-dedicated\\|data-browser-off\\|browser-fix-msg\" -- apps/web/tests ':!apps/web/tests/k/k368-pc-browser.spec.ts' ':!apps/web/tests/k/k375-bridge-reinstall.spec.ts'\n3\n```\n\n（除いた k375-bridge-reinstall.spec.ts は後に入る段 4 の葉 K-375 の試験で、作る段の木には無い。古い行に選ぶ欄が出ないことを見る）\n\n```search\ngit grep -ln \"components/ai/browser-fix\\|from \\\"./browser-fix\\\"\" -- apps/web ':!apps/web/tests/k/k368-pc-browser.spec.ts'\n3\n```\n\n（除いたのは、この葉の試験 k368-pc-browser.spec.ts。前からの試験ではなく、この葉が運ぶ）\n\n（3 件：前の画面 legacy/page.tsx・会話 conversation.tsx・部品 pc-row-parts.tsx の注の 1 行。どれも替えない：前の 2 つは同じ部品のまま呼ぶ口だけが替わる・注は字だけ）\n\n- apps/web/tests/screens/browser-notice.spec.ts: 替える — PC の画面の分（CHT-37-005・006・009・010・011・012 の後半）は前の画面の形（tr[data-check]・[data-browser-off]・[data-browser-pick-msg]・「自分の Chrome（Claude in Chrome）」）を見ていて、今の /setup/bridge には無い。新しい PC の行（[data-browser-pick] の印・[data-part=\"browser-fix\"] の一手・選ぶ欄の role=status・「自分の Chrome」・つなぎ方は閉じた形で押すと開く）に替えた（替えた版を carry: で運ぶ・2026-11-19 まとめ役の決め）。会話の分（会話の 1 行・[data-browser-fix-msg] の文）は変えない\n- apps/web/tests/screens/qa-a1-chat.spec.ts: 替えない — 会話の 1 行の一手（SCR-CLONE-CHAT-287〜290）を見る。部品の見た目・字・data-* は変えず、呼ぶ口だけが替わる（つないでいる PC は 1 台なので宛先も同じ）\n- apps/web/tests/screens/qa-b-bridge-setup.spec.ts: 替えない — 前の画面 /setup/bridge/legacy を開く。前の画面の一手は会話と同じ部品（components/ai/browser-fix.tsx）で、呼ぶ口が新しい口に替わっても字と動きは同じ（終わりに bridge-state を読み直すので Chrome の行も新しくなる）。前の画面の選ぶ欄（BrowserPick）は変えない。前の画面ごと消すのは K-367\n- apps/web/tests/k/k230-bridge-content.spec.ts: 替えない — 偽の一覧の行に browser が無いので、選ぶ欄も一手も出さない（K368-UI-020 の形）。行の形・高さ・「Bridge を起こす」の位置（K230-UI-019 のキャンバス MePC との突き合わせ）は変わらない\n- scripts/ci/k257_canvas_boards_test.py: 替えない — キャンバスの絵の操作を見る。この葉は絵を変えない\n- apps/web/tests/_lib/fidelity-states.ts と、それを使う apps/web/tests/fidelity/fidelity.spec.ts（bridge-connected・bridge-installed の組）: 替えない — 偽の一覧（BRIDGE_TWO）の行に browser が無いので、選ぶ欄は出ない（上と同じ）\n- apps/web/tests/features/F3/connect-pc.spec.ts: 替えない — 偽の一覧の行に browser が無い（上と同じ）\n- apps/web/tests/k/k361-claude-code.spec.ts・k363-remove-pc.spec.ts: 替えない — 偽の一覧の行に browser が無い（選ぶ欄は出ず、K-361・K-363 の見た目の突き合わせは変わらない）。K-363 とは順が無いので、k363 の試験は作る段の木に在ることも無いこともある（在っても同じ訳で通る）\n- apps/web/tests/k/k349-connect-pc-split.spec.ts: 替えない — K-349 の試験。実ブラウザの行は browser を持たない一覧を使うので、この葉のブラウザの欄は出ない。字で見る行は名前とつなぎまで",
+    "速さ（今の値と目標の値）": "| 見る物 | 今 | 目標 |\n|---|---|---|\n| 画面を開いたときの口の数 | listMyDevices 1（5 秒ごと） | 変えない（選ぶ欄は一覧の browser を読むだけ） |\n| 選ぶ 1 回の口の数・直列の段 | — | updateMyDevice 1・listMyDevices 1（読み直し）。2 段（読み直しは選んだ答えの後） |\n| 確かめ 1 回の口の数 | 前の道すじ 1 ＋ bridge_state を 2 秒ごと（最大 45） | checkMyDeviceBrowser 1 ＋ listMyDevices を 2 秒ごと（最大 45・結果が来たら止める）。5 秒ごとの読みはそのまま |\n| 二重 | — | 2 回押しでも口は 1 回（K368-UI-005・015） |\n| 新しい住所 | — | 増えない（契約の口だけ） |",
+    "成果物": "- `lib/device-browser.ts`・`features/F3/connect-pc/browser-row.tsx` と、出し分けの置き場 pc-row-extra.tsx・devices.ts の小さな足し・会話の一手の口の替え。並べる所（connect-pc.tsx）と PcList（pc-cards.tsx）は K-349 の物で、この葉は触らない\n- 画面の試験 `apps/web/tests/k/k368-pc-browser.spec.ts`（切る段が書いた）と browser-notice.spec.ts の替え（切る段が替えた）",
+    "決定ログ": "- 2026-11-18 代表の答え answer=0a262be577b2（PM 経由）①：もう一度確かめる仕事はその PC に宛てる（口 checkMyDeviceBrowser・K-365）\n- 2026-11-19 代表の答え（会話で）：PC の行の下絵 OK。A の 1〜8 は勧めの形のまま（ラジオ 3 つを常に出す・Claude Code が無い／ログインしていない間はブラウザの欄を出さない・眠っている PC の文は下絵どおり）\n- 2026-11-19 切る段の決め：一覧の行に browser が無いときは選ぶ欄も一手も出さない（今の値が分からないのに印を付けない）\n- 2026-11-19 切る段の決め：つなぎ方は閉じた形で出す（下絵の checking・still・timeout と会話の一手に合わせる）\n- 2026-11-19 切る段の決め：会話の一手は一覧の最初の生きている PC に宛てる（会話の 1 行は PC の id を持たない。前の道すじが選んでいた 1 台と同じ）",
+    "リスクと懸念": "- 2026-11-19 下絵の側を直した：モックの見出しの行に「＋ PC をつなぐ」（つながっている PC があるとき）、眠っている行に「Bridge を起こす」を足し、選ぶ欄を PC ごとにいつも出す形（A-2。Claude Code に足りない物がある行は出さない A-3）にした。K368-UI-001 の偽の一覧も、どの行も browser を持つ形（モックと同じ）に替えた。K-363 の突き合わせ（K363-UI-018）は 1 行目だけを高さ抜きで比べる形に替えた\n- 出し分けの置き場の形（`usePcRowExtra(ctx)` の引数と返す物・`ctx.reload`）は K-349 の md が正。食い違う所が在れば、この葉で並べる所（connect-pc.tsx・pc-cards.tsx）を触らずに、止まって切る段に戻す\n- キャンバス MePC には選ぶ欄が無い。前からの突き合わせ（K-230・fidelity）は偽の一覧に browser が無いので通るが、絵は決めに追いついていない（MeSecrets と同じ。後でキャンバスを決めに合わせる小さなチケットの候補）",
+    "申し送り": "- K-367：前の道すじ /agent/browser・/agent/browser-check と画面の口 agentSetBrowser・agentBrowserCheck を消す（この葉の後に呼ぶ所は前の画面の BrowserPick だけ）。前の画面の「AI が使うブラウザを選ぶ…は前の設定の画面で行えます」の文を消す",
+    "表の住所（2026-11-19）": "- K-328 の形に直した（2026-11-19 PM の決め）：試験の作り物の秘密の値（k368-pc-browser.spec.ts のログインの札 \"k368-web-token\"（K368_WEB_TOKEN））は `apps/web/test/_fake/secrets.ts` の「K-368」の区切りに置き、試験から import する（.gitleaks.toml がこの置き場だけを外す）。置き場は carry: で切る段の版を運ぶ（作る段では変えない）。置き場は K-328 で本線に在り、overlap_ok なので、同じ置き場に足す葉どうし（K-356・K-372・K-357・K-370・K-361・K-363・K-367・K-368）は依存にしない"
+   },
+   "file": "11_tickets/K-368.md"
+  },
+  {
    "id": "K-369",
    "title": "段 4 の PC の行の部品（Claude Code の直し方・AI が使うブラウザ・その場の一手・「…」のメニュー・外す小窓・OS の警告の越え方・Bridge を入れ直す一手）とモック（/dev/mock/f3-pc の 31 の状態）を本線に入れる（K-56 の葉・W0 と同じ形）",
    "kind": "タスク",
@@ -18589,6 +18762,171 @@
     "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 10 行"
    },
    "file": "11_tickets/K-381.md"
+  },
+  {
+   "id": "K-382",
+   "title": "段 7 の見た目の部品（進める・やり取り・決定ログ）とモック（/dev/mock/f6 の 26 の状態）を本線に入れ、詳細の差し込み口の先に区画ごとの「まだ」の入れ物をつなぐ。段 7 の決定の行を決定ログに足す（K-66 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-369（切る段の枝で作り終えた部品とモックを carry で運ぶ・状態 31・見込み 0.5）と K-350（決定ログの節を足す 10 分）から引いた：写す 5 分（carry）・差し込み口の先の配り分け（detail-slots.tsx の 9 つを区画の 5 ファイルへ）と「まだ」の入れ物 10 ファイル 15 分・道の一覧を作り手で作り直す 2 分・決定ログに段 7 の行を PM の番号で足す 10 分・CI の範囲の地図 3 分・試験 16 行を流して直す 10 分。部品とモックの持ち主の欄・避け方を消す・知らせる人の直しは切る段で済ませた（この見込みに入れない）",
+   "decisions": [
+    "D-128.125",
+    "D-128.178",
+    "D-143.5",
+    "D-144.7",
+    "D-145.9",
+    "D-146.1",
+    "D-149.1",
+    "D-149.2",
+    "D-149.3",
+    "D-149.4",
+    "D-149.5",
+    "D-149.6",
+    "D-149.7",
+    "D-149.8",
+    "D-149.9",
+    "D-149.10",
+    "D-149.11",
+    "D-149.12",
+    "D-149.13",
+    "D-149.14",
+    "D-149.15",
+    "D-149.16",
+    "D-149.17",
+    "D-149.18",
+    "D-149.19",
+    "D-149.20",
+    "D-149.21",
+    "D-149.22",
+    "D-149.23",
+    "D-149.24",
+    "D-149.25",
+    "D-149.26",
+    "D-149.27"
+   ],
+   "split": "",
+   "prior_impl": "c/段7（1e9c26c7・79b90464。部品先行の下絵。代表の OK answer=fabd031f9b37「基本的にはいい」と直し 4 つ）",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・道の一覧（生成物）・決定ログと段 7 の下ごしらえの文書だけ。差し込み口の先の入れ物は口を呼ばない（この葉ではまだ何も出さないか、今の要素をそのまま返す）。DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k382-stage7-mock.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F6/progress/views.tsx",
+    "apps/web/features/F6/progress/progress.css",
+    "apps/web/features/F6/thread/views.tsx",
+    "apps/web/features/F6/thread/thread.css",
+    "apps/web/features/F6/decisions/views.tsx",
+    "apps/web/features/F6/decisions/decisions.css",
+    "apps/web/app/(dev)/dev/mock/f6/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f6/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f6/[id]/page.tsx",
+    "07_functional/段7-F6/機能分解.md",
+    "07_functional/段7-F6/切り方.md",
+    "07_functional/段7-F6/代表に聞くこと.md",
+    "07_functional/段7-F6/mock-shots.mjs",
+    "07_functional/段7-F6/下絵の頁の作り手.py",
+    "07_functional/段7-F6/下絵-手描き.html",
+    "07_functional/段7-F6/下絵-手描きの作り手.py",
+    "07_functional/段7-F6/決定ログに足す行.md",
+    "01_hearing/決定ログ_進行中.md"
+   ],
+   "depends_on": [
+    "K-380",
+    "K-381"
+   ],
+   "acts": [
+    "A17",
+    "A107",
+    "A108"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "prog-overview",
+    "prog-menu",
+    "prog-hold-dialog",
+    "prog-hold-band",
+    "prog-locked",
+    "prog-time",
+    "prog-readonly",
+    "prog-reopen",
+    "prog-hold-reason",
+    "talk-list",
+    "talk-empty",
+    "talk-loading-failed",
+    "talk-compose",
+    "talk-compose-stage",
+    "talk-edit",
+    "talk-delete",
+    "talk-send",
+    "talk-cannot",
+    "talk-narrow",
+    "dec-log",
+    "dec-empty",
+    "dec-from-message",
+    "dec-add",
+    "dec-revise",
+    "dec-cancel",
+    "dec-conflict"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/progress/views.tsx",
+    "apps/web/features/F6/progress/progress.css",
+    "apps/web/features/F6/thread/views.tsx",
+    "apps/web/features/F6/thread/thread.css",
+    "apps/web/features/F6/decisions/views.tsx",
+    "apps/web/features/F6/decisions/decisions.css",
+    "apps/web/features/F6/detail-slots.tsx",
+    "apps/web/features/F6/scope.tsx",
+    "apps/web/features/F6/progress/slot.tsx",
+    "apps/web/features/F6/decisions/slot.tsx",
+    "apps/web/features/F6/thread/panel.tsx",
+    "apps/web/features/F6/thread/composer.tsx",
+    "apps/web/features/F6/thread/message-menu.tsx",
+    "apps/web/features/F6/thread/from-message.tsx",
+    "apps/web/features/F6/thread/composer-stage.tsx",
+    "apps/web/features/F6/prefetch.ts",
+    "apps/web/features/F6/thread/prefetch.ts",
+    "apps/web/features/F6/decisions/prefetch.ts",
+    "apps/web/app/(dev)/dev/mock/f6/",
+    "apps/web/lib/built-routes.ts",
+    "07_functional/段7-F6/",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "01_hearing/要件一覧.md",
+    "scripts/ci/ci_scope.d/K-382.json"
+   ],
+   "sections": {
+    "目的": "段 7（K-66・F6 自分で進める・話す・決める）の切る段の枝 `c/段7` で作った見た目の部品と、それを並べた開発用の置き場 `/dev/mock/f6`（26 の状態）を本線に入れる（W0。段 4 の K-350・K-369 と同じ形の、部品先行の葉）。\n\n- 部品（見た目だけ・値は props で受け、口は呼ばない）：\n  - `features/F6/progress/views.tsx`（と progress.css）：段の札のメニュー StageMenu（選ぶ物は色つきの札 StageTag）・保留にする小窓 HoldDialog・保留中の帯 HoldBand・帯が譲っている間の「理由を見る」HoldReason（㉓・切る段で足した）・実績 ActualTime／ActualTimeEdit → K-395\n  - `features/F6/thread/views.tsx`（と thread.css）：パネルのタブ TalkTabs（数の札）・絞り込み・時系列（書き込み・変更の 1 行・AI の実行の 1 枚・消した跡・日付の区切り・「前の書き込みを見る（あと N 件）」）・書く欄 Composer（知らせる人・@ の候補・状態 ▾・送れなかった）・直す・消す確かめ・スマホの飛び先 TalkJump → K-392・K-393・K-394・K-396\n  - `features/F6/decisions/views.tsx`（と decisions.css）：決定ログの区画 DecisionLog・決定にする／足す小窓 DecisionDialog・改める ReviseDialog・取り消す確かめ → K-397・K-398\n- モック `/dev/mock/f6`：本番と同じ部品（features/F6・features/F4/create-ticket/detail-head.tsx・components/k）を決めた値で並べた 26 の状態（代表が下絵で見た 25 と、切る段で足した prog-hold-reason「理由を見る」）。画面の葉 K-392〜K-398 はこのモックを正の絵として本番の画面をつなぐ（見た目の突き合わせはこのモックと比べる・design-system.md §8）\n- **差し込み口の先の入れ物**：K-380 が置いた `features/F6/detail-slots.tsx`（9 つ・何も出さない。8 つの差し込み口（予定の `EstimateSlot` を含む）と、詳細の本体が詳細と同時に呼ぶ先読みの口 `usePrefetchDetail`）を、区画ごとのファイルから書き出す形にする。先読みは `features/F6/prefetch.ts`（この葉が持ち、後ろの葉は触らない）が、やり取りの `thread/prefetch.ts`（K-392 が中身）と決定の一覧の `decisions/prefetch.ts`（K-397 が中身）を両方呼ぶ形（まとめ役の決め）。区画のファイルはこの葉では「まだ」（今の要素をそのまま返すか null）。後ろの画面の葉は自分の区画のファイルだけを直す（`detail-slots.tsx` と見た目の台帳は触らない）\n- 段 7 の代表の答え（answer=eaa451436670・f5cd1647389f・56812da22008 の段 7 の分・fabd031f9b37）を決定ログに新しい節 §149（D-149.1〜D-149.27）として足す（節の字はまとめ役が `07_functional/段7-F6/決定ログに足す行.md` に書いた・carry で運ぶ。番号は PM の訂正 2026-11-20 12:07：表の行の位置で数えるので段ごとに新しい節）\n\n本番の詳細の見た目と操作は、この葉では変えない（やり取りのタブは「まだ使えません」の押せない形のまま・D-145.9。押せるようにするのは K-392。この葉の試験 K382-UI-008 はタブの名前だけを見るので、K-392 の後も替えずに緑）。",
+    "完了の条件": "- [ ] 下の表の行（K382-MK-001〜005・K382-SL-001・K382-DS-001・K382-DC-001・K382-UI-001〜008）が緑：`apps/web/tests/k/k382-stage7-mock.spec.ts`\n- [ ] 前からの試験（下の「前からの試験を替えた所」）が替えずに緑\n- [ ] 決定の検査（T6・T8・G60）と canvas_field_gate が緑（足した決定の行の reflect_in と、モックの状態の持ち主 K-382・K-392〜K-398 の mock:）\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: TOOL\n\n- **代表の OK（下絵・answer=fabd031f9b37「基本的にはいい」）と直し 4 つ（書く欄の字と高さ・やり取りは新しい方から 20 件と「前の書き込みを見る」・段のメニューは色つきの札・スマホの頭の行を横に）を入れた下絵**。下絵の字と形が正\n- 部品は段 1〜4 の部品（components/k・features/F4/create-ticket/detail-head.tsx の InertButton・F5 の completedLine）と正本のトークン（`--k-*`）だけで組んである。新しいトークンは足していない（K382-DS-001・K382-MK-003）。キャンバス TdTalk の細かな px（顔 28・余白 10／12）には寄せない（正はモック・design-system §8 のモックを本番の部品で作る決め・代表が下絵で OK answer=fabd031f9b37。まとめ役の決め・下の「PM に確かめたいこと」は閉じた）\n- 見た目の台帳（fidelity.json・fidelity-states.ts・design-gate.json・DESIGN-kaname.md・canvas-screens.json）を段 7 で触るのはこの葉だけ。この葉は、正の絵をモックにした（突き合わせはモックと本番の写し）ので fidelity.json・fidelity-states.ts に組を足さず、新しいトークンも無いので DESIGN-kaname.md・design-gate.json も触らない。tickets の画面は canvas-screens.json に在る（TdTalk・TdDecision・MbTalk）ので足さない\n- モックの一覧は 1 つのファイル（mocks.tsx）のまま運ぶ（切り方.md の案「区画ごとの 3 つに分ける」はやめた：canvas_field_gate が読むのは `mock/<置き場>/mocks.tsx` の MOCKS だけで、持ち主の欄は切る段で全部入れた。後ろの画面の葉はモックを直さない＝直したくなったら切る段の漏れ）\n- 本番の詳細の部品（ticket-detail.tsx・detail-panel.tsx）はモックで使わない。詳細の並びはモックの中で同じクラスで組んである（差し込み口と入れ物を通さない）\n- モックの置き場は `(dev)` の中（本番では notFound）\n- 作る画面の知らせる人の欄（`features/F4/create-ticket/notify-picker.tsx` の NotifyPicker）の見出しと案内の字を差し替える口（`label?`・`placeholder?`）は、使う側の K-393 が持つ（まとめ役の決め）。この葉は notify-picker.tsx を触らない\n- 新しい口・DB は無い",
+    "確かめたこと（切る段・2026-11-20）": "- 切る段の枝で直した（carry で運ぶ版に入っている）：\n  - mocks.tsx の 25 の状態の持ち主 `ticket` を、流れのまとめ K-66 から画面の葉の番号に替え、仮の名前の欄 `leaf` を消した（K-382：prog-overview／K-395：prog-* の 7 つ（のちに prog-hold-reason を足して 8 つ）／K-392：talk-list・talk-empty・talk-loading-failed・talk-narrow／K-393：talk-compose・talk-send・talk-cannot／K-394：talk-edit・talk-delete／K-396：talk-compose-stage／K-397：dec-log・dec-empty・dec-add／K-398：dec-from-message・dec-revise・dec-cancel・dec-conflict）\n  - 完了したチケットの書く欄（prog-reopen・talk-cannot）の「知らせる人」に、最初から担当者と承認する人（鈴木・佐藤）を入れた（代表の答え ⑨）\n  - progress.css・thread.css から、メニューの箱の置き場を狙う避け方（`[role=\"presentation\"]:has(> .k-prog-menu)`・`:has(> .k-talk-menu)`）を消した（K-381 がメニューの型の置き場に重なりの順を持たせる）\n  - progress.css から幅 767 以下の頭の行の写し（`.k-detail-meta-side.k-prog-meta-side`）を、mocks.tsx の MockMeta から印のクラス `k-prog-meta-side` を消した（K-380 が ticket-detail.css の 1 か所で持つ・同じ物を 2 つ持たない）\n  - 部品の頭の注の仮の名前（S7-A1・S7-W1 など）を番号（K-383〜K-398）に替えた\n  - 「理由を見る」（代表の答え ㉓：保留の帯が承認と実行の帯に譲っている間、段の札の横）の状態がモックに無かったので、部品 `progress/views.tsx` に HoldReason（メニューの型の箱・理由・再開の条件・保留にした人と時刻）と progress.css の `.k-prog-reason*`（正本のトークンだけ）を足し、mocks.tsx に状態 `prog-hold-reason`（PS2・持ち主 K-395）を足した。**この状態は代表が下絵で見ていない**（下の「## 代表に聞くこと」に、写しで見せる項目として入れた）\n- 上の 3 つ目・4 つ目は K-380・K-381 が本線に入って初めて効く。だから**切る段の枝のモック（K-380・K-381 の前の本線の上）は、幅 375 の頭の行が 2 列の格子のまま・段のメニューの箱が本文の道具の帯の下に潜る**。下絵を撮り直すときは K-380・K-381 を取り込んでから撮る\n- 写しの台本 `07_functional/段7-F6/mock-shots.mjs` は 3447 で置き場を開き、375・768・1440 を測る（写しは版に入れていない。下絵の頁は `.ticket-flow/side-notes/段7-下絵.html`）。撮った結果（2026-11-20）：25 の状態 × 3 幅で横のはみ出し 0（後で足した prog-hold-reason はまだ撮っていない。作る段の K382-UI-002〜004 が 3 幅を測る）\n- design_gate・class_gate は切る段の枝で緑（色・字・余白は今ある正本のトークンだけ）\n- **切る段の枝（c/段7）の決定ログには §149 がまだ無い**（足すのはこの葉の作る段）。だから切る段の枝でそのまま `trace_gate.py` を流すと、この葉の decisions: の D-149.1〜.27 が T3（存在しない決定）で赤になる。cut-review の検査で決定の検査を流すときは「§149 は作る段で足す（K382-DC-001 と実施事項「決定ログ」）・下の写しの木では緑」と記録に書く（赤のまま進めてよい訳）\n- 決定の検査（2026-11-20・まとめ役）：切る段の枝の写しの木に、決定ログへ §149 を足し・答えの記録に 4 行を足し・tickets.json にこの葉の decisions: を入れ・`trace_gate.py --index` を 2 回流して、`trace_gate.py` が PASS（T1〜T12・文の被覆 1347/1347）、`decision_source_gate.py --label 高本さん --since D-130` が PASS。D-147.60〜（前の枠の番号）のままだと表の行の位置と合わず T3 で赤になる（PM の訂正 12:07 のとおり）",
+    "依存の理由": "- K-380: 要る — 同じファイル `apps/web/features/F6/detail-slots.tsx` を K-380 が置き、この葉が区画のファイルへ配る形に直す。あわせて、運ぶ progress.css は頭の行の幅 767 以下の写しを消してあり、K-380 の ticket-detail.css の直しが本線に無いと、モックの 375 の頭の行が 3 段になる（K382-UI-002 の前提）\n- K-381: 要る — 運ぶ progress.css・thread.css はメニューの箱の置き場を狙う避け方を消してあり、K-381 のメニューの型の重なりの順が本線に無いと、段のメニューの箱が本文の道具の帯の下に潜る（K382-UI-007 が赤）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）。`07_functional/段7-F6/__pycache__/` は運ばない（版に入れない） |\n| 差し込み口の先を配る | `features/F6/detail-slots.tsx`（K-380 が置いた）の中身を、区画のファイルからの書き出しだけにする：`export { DetailScope } from \"./scope\"`・`export { StageSlot, HoldBandSlot, ActualTimeSlot, EstimateSlot } from \"./progress/slot\"`・`export { SectionSlot } from \"./decisions/slot\"`・`export { PanelTabsSlot, TitleSlot } from \"./thread/panel\"`・`export { usePrefetchDetail } from \"./prefetch\"`。名前と受ける物（props・引数）は K-380 の「差し込み口の名前と形」のまま変えない（K380-SL-002 が `export { … } from` の名前も数える） |\n| 区画の入れ物（まだ） | 新しい `features/F6/scope.tsx`：`DetailScope({ ticket, children })` は、区画をまたぐ 1 つの状態「パネルのタブ（attr \\| talk）」の Context を配って children を返す（DOM を足さない・この葉では誰も読まない。K-392 がタブと飛び先で使う）。区画をまたぐ読み直しは問い合わせの鍵（react-query）で行い、この Context に欄を足さない（後ろの葉が同じファイルを取り合わないため）。新しい `features/F6/progress/slot.tsx`：`StageSlot`・`ActualTimeSlot`・`EstimateSlot` は children を返す、`HoldBandSlot` は null（onWant を呼ばない）→ K-395 が本物に。新しい `features/F6/decisions/slot.tsx`：`SectionSlot` は children を返す → K-397。新しい `features/F6/thread/panel.tsx`：`PanelTabsSlot` は children を返す、`TitleSlot` は null → K-392。新しい `features/F6/prefetch.ts`（持ち主はこの葉・後ろの葉は触らない）：`import { usePrefetchThread } from \"./thread/prefetch\"`・`import { usePrefetchDecisions } from \"./decisions/prefetch\"` と `export function usePrefetchDetail(id: string, enabled: boolean): void { usePrefetchThread(id, enabled); usePrefetchDecisions(id, enabled); }`（引数の名前は id・enabled。React の決まりどおり毎回同じ順に 2 つを呼ぶ・自分では口を呼ばない）。新しい `features/F6/thread/prefetch.ts`：`export function usePrefetchThread(_id: string, _enabled: boolean): void {}`（何もしない・import は無い）→ K-392 が中身（やり取りの最初の 20 件を react-query の prefetchQuery で詳細と同時に読む）を作る。新しい `features/F6/decisions/prefetch.ts`：`export function usePrefetchDecisions(_id: string, _enabled: boolean): void {}`（同じ）→ K-397 が中身（決定の一覧を詳細と同時に読む）を作る |\n| 後ろの葉の入れ物（まだ） | 新しい `features/F6/thread/composer.tsx`（`export function TalkComposer(props: { ticket: SlotTicket }): null` → K-393）・`thread/message-menu.tsx`（`MessageMenu(props: { ticket: SlotTicket; messageId: string }): null` → K-392 が受ける物を `{ ticket; item; post; people; onQuote(); decideSlot }` に広げ、K-394 が中身）・`thread/from-message.tsx`（`FromMessageAction(props: { ticket: SlotTicket; messageId: string }): null` → K-392 が受ける物を `{ ticket; item; post }`（書き込みの 1 件と部品の値）に広げ、K-398 がその形で中身を作る。この葉の `messageId` の形は K-392 が入るまでの仮で、誰も描かない）・`thread/composer-stage.tsx`（`ComposerStage(props: { ticket: SlotTicket }): null` → K-396）。どれも null を返すだけ（この葉では誰も描かない。K-392 がパネルの中に置き、各葉が自分のファイルを本物にする）。型は `import type { SlotTicket } from \"@/features/F4/create-ticket/detail-slots\"` |\n| 道の一覧（生成物） | `python3 scripts/ci/gen_built_routes.py --app apps/web/app --out apps/web/lib/built-routes.ts` で作り直す（/dev/mock/f6・/dev/mock/f6/:id の 2 行が足される）。手で書かない（前からの USH-00-028 が見る） |\n| 決定ログ | `01_hearing/決定ログ_進行中.md` の最後に、`07_functional/段7-F6/決定ログに足す行.md` の「## 149.」から表の終わりまで（節の見出し・decision の印・経緯・決めたことの表 D-149.1〜.27）をそのまま足す（字を変えない・K382-DC-001 が 1 行ずつ比べる）。decision の印は `status: confirmed`・`decided_at: 2026-11-20`・`reflect_in: [11_tickets/tickets.json]`（T6 は層を導出物の道で引くのでコードの置き場は書かない・K-350 の学び）。各行の終わりは「（2026-11-20 高本さん・answer=…）」。この葉の頭の欄 decisions: に D-149.1〜.27 を全部書いた（T8 の文ごとの参照・tickets.json は作り手が頭の欄から作る）。§148（段 9）が先に入っていなくても通る |\n| 答えの記録 | 4 つの答え（answer=56812da22008・eaa451436670・f5cd1647389f・fabd031f9b37・どれも 2026-11-20）を `.ticket-flow/decider-answers.pending.jsonl` から `01_hearing/decider-answers.jsonl` に**和で**足す（前の行を消さない・answers_merge の形・catch_up.union の台帳）。足さないと G60（decision_source_gate・--since D-130）が「高本さん」の行の答えを見つけられず赤 |\n| 要件一覧（生成物） | `python3 scripts/ci/trace_gate.py --index` で `01_hearing/要件一覧.md` を作り直す。**2 回流す**（1 回目で要件一覧が D-149 を参照すると参照の集まりが変わるので、2 回目で落ち着く。G59 の段は 1 回作り直して cmp で比べるので、落ち着いた版を入れる。切る段の写しの木で 2 回目の後に変わらないことを確かめた）。そのあと `python3 scripts/ci/trace_gate.py`（T1〜T12）と `python3 scripts/ci/decision_source_gate.py --log 01_hearing/決定ログ_進行中.md --answers 01_hearing/decider-answers.jsonl --label 高本さん --since D-130` を流して緑 |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-382.json`：data_links に `{\"paths\": [\"07_functional/段7-F6/mock-shots.mjs\", \"07_functional/段7-F6/決定ログに足す行.md\", \"01_hearing/決定ログ_進行中.md\", \"01_hearing/decider-answers.jsonl\", \"scripts/ci/design_gate.py\", \"scripts/ci/gen_built_routes.py\"], \"tests\": [\"apps/web/tests/k/k382-stage7-mock.spec.ts\"]}`、reads_ok に試験が読む物（モックの置き場 mocks.tsx・F6 の部品と CSS と区画のファイル・道の一覧 built-routes.ts・写しの台本・決定ログ・決定ログに足す行.md・答えの記録 decider-answers.jsonl）と子プロセスの design_gate.py を書く（K-369 の行と同じ形）。`python3 scripts/ci/build_registries.py` で足し合わせる |\n| 試験を流して緑にする | 画面の試験は手元のブラウザで（`/dev/mock/f6` を開ける置き場・下絵の口は 3447） |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 詳細の口の数 | 4（getTicket・runs・me・scopes） | 同じ（入れ物は口を呼ばない） |\n| 直列の段・二重の要求 | 変わらない | 変わらない |\n| 新しい住所 | /dev/mock/f6・/dev/mock/f6/:id（開発用・本番では notFound） | 本番の住所は増えない |\n| 認証の要る答えの Cache-Control | 口を足さないので対象なし | 対象なし |",
+    "表の住所": "- CI の範囲の地図は `scripts/ci/ci_scope.d/K-382.json`（K-325 の .d/）。口・エラー・ears・契約の形は無いので、ほかの .d/ は足さない\n- 区画のファイルの持ち主（後ろの葉が直すファイル）：progress/slot.tsx → K-395／decisions/slot.tsx・decisions/prefetch.ts → K-397（K-398 は decisions の小窓のファイルを足す）／thread/panel.tsx・scope.tsx・thread/prefetch.ts → K-392／F6 の prefetch.ts と detail-slots.tsx → この葉だけ（後ろの葉は触らない）／thread/composer.tsx → K-393／thread/message-menu.tsx → K-394／thread/composer-stage.tsx → K-396／thread/from-message.tsx → K-398",
+    "外に影響する手順": "- なし — 画面の見た目の部品・開発用のモック・道の一覧（生成物）・文書だけ。DB に書かない・外を呼ばない・セッションや錠を作らない",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k382-stage7-mock.spec.ts`（実 Chrome と、ファイル・検査の道具を読む試験）。モックは網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。本番の詳細は前からの土台（`tests/features/F5/approve-complete.harness.ts` の mockApi）。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| モックの 26 の状態 | 索引・直に開く・幅 375／768／1440 | （開発用の置き場） | どれも描け、h1 は題名 1 つ、横のはみ出し 0、描き直しの誤り 0 | このチケット | K382-UI-001〜005 |\n| 完了したチケットの書く欄 | prog-reopen・talk-cannot | （同上） | 知らせる人に担当者と承認する人 | このチケット（見た目）／K-393（本物） | K382-UI-006 |\n| 段のメニューが開いている | prog-menu（1440・375） | （同上） | 箱は題名・本文の道具の帯の上 | このチケット／K-381（型）・K-395（本物） | K382-UI-007 |\n| 本番の詳細・作業中 | /tickets/<id>（1440） | ログイン中 | 今のまま（入れ物は何も出さない） | このチケット | K382-UI-008 |\n| 段・やり取り・決定の本物の口の答え | 本番の詳細 | ログイン中・閲覧のみ ほか | モックの状態ごとの見た目 | K-392〜K-398 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K382-MK-001 | 入力 | モックの状態の数 | mocks.tsx の MOCKS が 26 個で重なり無し、画面の葉 K-382（1）・K-395（8）・K-392（4）・K-393（3）・K-394（2）・K-396（1）・K-397（3）・K-398（4）の和とちょうど同じ |\n| K382-MK-002 | 守り | 状態の持ち主 | 26 個のどれも ticket が K-<数> の字だけでその状態を本物にする画面の葉・screen は tickets・ps は PS0 か PS2・leaf の欄が無い。mocks.tsx（注を除く）に leaf・\"K-66\"・S7-〈字〉〈数〉が無い |\n| K382-MK-003 | 守り | 見た目だけの部品 | F6 の views.tsx 3 つ（注を除く）に fetch・lib/api・useEffect・useRouter・lib/auth の import・style=・#色（`#` と 3〜8 字の 16 進で、後ろに `-` や字が続かない物）・px が無い。F6 の CSS 3 つ（注と `@media …{` の区切りの行を除く）に #色・rgb()・hsl()・px が無く var(--k-*) を使い、`[role=\"presentation\"]` と `k-prog-meta-side` が無い。mocks.tsx に `k-prog-meta-side` が無い |\n| K382-MK-004 | 入力 | 写しの台本 | mock-shots.mjs が `app/(dev)/dev/mock/f6/mocks.tsx`・`PORT = 3447`・`[375, 768, 1440]` を持つ |\n| K382-MK-005 | 入口 | 道の一覧 | isBuilt(\"/dev/mock/f6\") と isBuilt(\"/dev/mock/f6/prog-overview\") が true |\n| K382-SL-001 | 守り | 差し込み口の先の配り分け | detail-slots.tsx（注を除く）が ./scope から DetailScope、./progress/slot から StageSlot・HoldBandSlot・ActualTimeSlot・EstimateSlot、./decisions/slot から SectionSlot、./thread/panel から PanelTabsSlot・TitleSlot、./prefetch から usePrefetchDetail を書き出す。prefetch.ts が usePrefetchDetail を export function し、./thread/prefetch から usePrefetchThread・./decisions/prefetch から usePrefetchDecisions を import して `(id, enabled)` で呼び、自分では fetch・lib/api・useQuery・useMutation・prefetchQuery を使わない。thread/prefetch.ts が usePrefetchThread、decisions/prefetch.ts が usePrefetchDecisions を export function する（中身の字は見ない：K-392・K-397 が口を呼ぶ形にする）。scope.tsx・progress/slot.tsx・decisions/slot.tsx・thread/panel.tsx・thread/composer.tsx（TalkComposer）・thread/message-menu.tsx（MessageMenu）・thread/from-message.tsx（FromMessageAction）・thread/composer-stage.tsx（ComposerStage）が在り、それぞれの名前を export function し、fetch・lib/api・useQuery・useMutation を使わない |\n| K382-DS-001 | 守り | 正本の値 | design_gate.py（--part --scales --usage）の出力に FAIL が無い |\n| K382-DC-001 | 守り | 決定ログ | 決定ログに「## 149.」が在り、D-149 の行が `決定ログに足す行.md` の 27 行（D-149.1〜.27 の順）とちょうど同じ。`D-147.x7`・`D-147.60〜.99` が無い。answer=eaa451436670・f5cd1647389f・56812da22008・fabd031f9b37 のどれもが「\\| D-〈数〉 \\|」で始まる行に書かれ、`01_hearing/decider-answers.jsonl` に在る |\n| K382-UI-001 | 入口 | 索引 | /dev/mock/f6 に h2「tickets」と、`section[aria-label=\"tickets\"]` の中の 26 のリンク（/dev/mock/f6/<状態>） |\n| K382-UI-002 | 入力 | 幅 375 | 26 の状態が 200 で開き、「この状態はありません」が無く、main の h1 がちょうど 1 つで「セイコー様へ 11 月分の請求書を送る」、横のはみ出し 0 |\n| K382-UI-003 | 入力 | 幅 768 | 同上 |\n| K382-UI-004 | 入力 | 幅 1440 | 同上 |\n| K382-UI-005 | 失敗 | 描き直し | 26 の状態（1440）で pageerror と hydration の知らせが 0 |\n| K382-UI-006 | 対象の状態 | 完了したチケットの書く欄（⑨） | prog-reopen と talk-cannot で、一覧「知らせる人」の li.k-talk-notify-who が 2 つで、1 つ目に「鈴木」・2 つ目に「佐藤」 |\n| K382-UI-007 | 守り | 段のメニューの重なり（1440・375） | prog-menu の開いた箱の項目（menuitem・1 つ以上）の真ん中の点で、いちばん上はどれも項目の中 |\n| K382-UI-008 | 入口 | 本番の詳細は今のまま（1440・作業中） | 段の札は「作業中」の span（押せる形でない）・タブは 属性／やり取り／高本のAI で「やり取り」のタブがちょうど 1 つ（押せるかは見ない：押せる形にする K-392 の行が見る。同じ試験のファイルを 2 つの葉の版で持たない）・実績は空・帯の入れ物の子 0・`.k-talk-jump` が 0・pageerror 0 |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K382-MK-004（07_functional/段7-F6/mock-shots.mjs）・K382-DC-001（01_hearing/決定ログ_進行中.md） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K382-MK-001・002（MOCKS がちょうど 26 個でなければ赤）・K382-SL-001（ファイルが無ければ赤）・K382-DC-001（答えの記録 4 つを 1 つずつ探す）・K382-UI-007（項目が 0 なら赤） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：K382-DS-001 の design_gate.py は CI の static の段と同じ引数。手元だけの道具を使わない |\n\nほかの観点：入口（索引・幅・本番の詳細）・対象の状態（完了の書く欄）・失敗（描き直しの誤り）・守り（見た目だけの部品・持ち主・入れ物・正本の値・決定）。時間の流れ・操作の揺れは見る物が無い（口も期限も無い。押した結果は K-392〜K-398 の行）。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 8 本。どれも替えない。\n\n```search\npython3 scripts/ci/cut_check.py prior --files <この葉の changes:>\n8\n```\n\n- apps/web/tests/reachability.spec.ts: 替えない — USH-00-028 は道の一覧（built-routes.ts）が実ファイルと同じかを見る。この葉が作り手で作り直すので緑。ほかの行は /today などの本番の道\n- apps/web/tests/k/k138-shell.spec.ts: 替えない — 外枠と道の一覧の一部（built-routes の今の道）を見る。足すのは開発用の /dev/mock/f6 だけ\n- apps/web/tests/k/k315-help.spec.ts・k350-stage4-mock.spec.ts・k369-pc-row-mock.spec.ts: 替えない — 自分のモックの置き場（/dev/mock/f1・f3・f3-pc）の状態の数と道を見る。f6 は別の置き場で、索引のリンクの数に響かない\n- scripts/ci/contract.test.mjs・scripts/ci/ticket_process_test.py: 替えない — 決定ログの節の形（decision の印）を読む。足す節は同じ形\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手の一覧（built-routes.ts は変わらない回は書かない作り手）を見る。中身は見ない\n\n本番の詳細を見る試験（k226-ticket-detail.spec.ts・detail-kit.ts・_lib/f5-flow.ts・skeleton/m3-delegate-approve-complete.spec.ts ほか）を検索で出した物（段 7 の切る段の新しい試験と道具は除く）：\n\n```search\ngit grep -l -e \"/tickets/\" -- apps/web/tests apps/e2e ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts' ':!apps/web/tests/k/decisions-mock.ts' ':!apps/web/tests/skeleton/k399*' | xargs grep -l -e \"k-detail\" -e \"チケットのパネル\" -e \"承認と実行\" -e \"AI に任せる\" -e \"やり取り\"\n12\n```\n\n- apps/web/tests/k/k235-first-load.spec.ts: 替えない — 詳細の最初の口の数を見る。この葉は口を足さない（入れ物は口を呼ばない）。やり取りの読む口を足して数を替えるのは K-392（K-392 の carry・切る段の枝で同時に書いている）\n- 残りの 11 本とも替えない — この葉は本番の詳細の見た目と操作を変えない（入れ物は今の要素をそのまま返すか null・やり取りのタブは押せないまま）。K226-UI-008・013 の「やり取りは押せない」と detail-kit.ts の DETAIL_INERT の「やり取り」は、タブを押せるようにする K-392 が替える（K-392 の carry）。_lib/f5-flow.ts は詳細の帯と承認待ちを押して進み、やり取りの仕組みの 1 行は DB から読むだけ（画面のやり取り・段の札・決定ログを見ない）\n\n```search\ngit grep -l -e \"_lib/f5-flow\" -e \"f5-flow\" -- apps/web/tests ':!apps/web/tests/skeleton/k399*'\n1\n```\n\n- apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts（f5-flow を読む 1 本）: 替えない — 任せる → 承認 → 完了の帯を押して進む。やり取りの 1 行は f5-flow の DB の読みで見る（画面のやり取りのタブを開かない）・段の札を押さない",
+    "決定ログ": "この葉が足す（上の実施事項）。節の字はまとめ役の `07_functional/段7-F6/決定ログに足す行.md`（§149・D-149.1〜.27）。この葉の decisions: には D-149.1〜.27 を書いた。ほかの葉（K-380・K-383〜K-399）の decisions: には、この葉が本線に入るまで足さない（本線に無い決定を指すと T3 で赤になる）。この葉が入った後に、その葉の作る段で足す",
+    "PM に確かめたいこと": "- （閉じた）キャンバス TdTalk の細かな px（顔 28・余白 10／12）に寄せるか → **寄せない**（まとめ役の決め・2026-11-20）。訳：正の絵はモック（design-system §8：モックは本番と同じ部品で作り、正はコードの部品）で、代表は下絵（このモック）で OK を出した（answer=fabd031f9b37・D-149.26「下絵のとおり」）。キャンバスの TdTalk は見た目の突き合わせの組（fidelity.json）に入れていないので、寄せなくても検査は赤にならない",
+    "代表に聞くこと": "- **「理由を見る」の形（モックの状態 prog-hold-reason）を見てもらう**（写しで見せる）。代表の答え ㉓（保留の帯が承認と実行の帯に譲っている間は、段の札の横に「理由を見る」）の形を、切る段で部品 HoldReason とモックの 26 番目の状態に足した。ほかの 25 の状態は下絵で OK 済みだが、この 1 つは代表が見ていない。箱の中の字（「理由：…」「再開の条件：…」「11/01 10:41 佐藤 が保留にした」）も問い ㉒ の表に無い。\n  - 選ぶ物：(a) この形でよい ／ (b) 形か字を直す（直す所を書いてもらう）\n  - 勧め：(a)。訳：保留の帯（④ a・代表 OK 済み）と同じ 3 つの字（理由・再開の条件・保留にした人と時刻）を、メニューの型の小さな箱に入れただけで、新しい字や操作を足していない\n  - (b) なら、この葉の部品 views.tsx の HoldReason・progress.css・mocks.tsx と、K-395 の行（K395-UI-001・011）を切る段で直してから作る段に入る",
+    "見込み": "0.75 時間（頭の欄の estimate_basis のとおり）。試験 16 行"
+   },
+   "file": "11_tickets/K-382.md"
   },
   {
    "id": "K-387",
@@ -20098,11 +20436,11 @@
    "choke_points": [],
    "choke_none": "画面のコードだけ。帯の section に印の属性を足し、帯の順の器の数え方を替えるだけで、口を呼ばない・DB・外への送り出し・秘密に触らない",
    "tests": [
-    "apps/web/tests/k/k620-band-busy.spec.ts",
-    "apps/web/tests/k/k380-detail-slots.spec.ts"
+    "apps/web/tests/k/k620-band-busy.spec.ts"
    ],
    "carry": [
-    "11_tickets/K-380.md"
+    "11_tickets/K-380.md",
+    "apps/web/tests/k/k380-detail-slots.spec.ts"
    ],
    "depends_on": [],
    "acts": [
@@ -20112,8 +20450,9 @@
     "tickets"
    ],
    "apis": [],
-   "canvas": [],
-   "canvas_none": "見た目を変えない直し（帯の section に属性を足すだけ・どの箱を出すかは変えない）。帯の順で後ろの帯が出るようになる見た目は、渡しの帯（K-411・K-412）と保留の帯（K-395）の葉の絵が持つ",
+   "canvas": [
+    "全部の組"
+   ],
    "flow": "仕事を人に渡して、受けてもらう",
    "affects": [
     "@kaname/web"
@@ -20140,6 +20479,71 @@
     "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 13 行と替える 1 行"
    },
    "file": "11_tickets/K-620.md"
+  },
+  {
+   "id": "K-630",
+   "title": "直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮（直しの葉の実測はまだ無い）。形の近い K-620（画面の数行の直し・試験 13 行・見込み 30 分）から引いた：check-credential.tsx の submit の分かれ道を 1 つ足す 5 分・試験 6 行を手元のブラウザで流す 15 分・next build と tsc 10 分。前の遅れは足さない",
+   "decisions": [
+    "D-117",
+    "D-128.125",
+    "D-128.57"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面のコードだけ。小窓の submit の前に分かれ道を 1 つ足すだけで、口を呼ぶ回数が減る方向の直し。DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k630-request-ref.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [
+    "A10"
+   ],
+   "screens": [
+    "credentials"
+   ],
+   "apis": [],
+   "mock": [
+    "cred-checking",
+    "cred-no-pc",
+    "cred-forbidden",
+    "cred-edit",
+    "cred-remove",
+    "cred-code"
+   ],
+   "flow": "預けたログイン情報を預けて確かめる",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F3/credentials/check-credential.tsx",
+    "apps/web/app/(dev)/dev/mock/f3/mocks.tsx",
+    "scripts/ci/ci_scope.d/K-630.json"
+   ],
+   "sections": {
+    "目的": "本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：\n\n`./features/F3/credentials/check-credential.tsx:84:9 … Type '{ approved: boolean; request_ref?: undefined; }' is not assignable to type 'CredentialLoginAnswerInput'. Type 'undefined' is not assignable to type 'string'.`\n\n元：K-355 が契約で `answerCredentialLoginCheck` の `request_ref` を必須にした（`05_flow/screen_api.d/K-355.py` の REQUIRED_INPUTS）のに、K-357 の画面（check-credential.tsx の submit）は `target.requestRef` が無いとき `request_ref` を送らない形のまま本線に入った（チケットの CI が画面の組を後回しにしていたので素通りした）。\n\n**直し方（PM の決め）**：画面を契約に合わせる。`request_ref` が無い（null・空の字）ときは**口を呼ばない**（口は必ず 422 で断るので呼んでも意味が無い）。そのときは小窓の中の赤の知らせ（前からの `alert`）に「コードの頼みが見つかりません。もう一度確かめてください」を出す。小窓は閉じず、入れた字は残す。ほかの動き（印があるときの { request_ref, code }・{ request_ref, approved: true }・422・404・網の切れ）は変えない。",
+    "完了の条件": "- [ ] 下の表の 6 行（K630-UI-001〜006）が緑：`apps/web/tests/k/k630-request-ref.spec.ts`\n- [ ] 替えない前からの試験 `apps/web/tests/k/k357-credentials-edit-check.spec.ts` が緑のまま\n- [ ] `pnpm --filter @kaname/web build:test`（next build）が通る\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 文は正本のエラー一覧（errors.d・CATALOG）に番号を足さず、この画面の定数 `NO_REQUEST_REF_TEXT`（check-credential.tsx）に置く。同じ F3 の画面（connect-pc の STILL_TEXT・REMOVED_PC_TEXT）が画面ごとの文の定数を持つ前からの作法に合わせる。K-357 の正本にも近い文は無い（E-CRED-014「いまはコードを頼まれていません…」は口が 404 で返す別の失敗で、こちらは口を呼ぶ前の画面の止め）\n- 印の有る無しは `target.requestRef` の真偽（null・\"\" は無い）。押す前ではなく「PC に渡す」を押した時に見る（K-357 のコードを入れる小窓は印が読み直しで付くことがあるので、開いた時に決めない。読み直しで印が付けば、開き直したときの CodeTarget が新しい印を持つ）\n- 二度押しの守り（`answering`）は変えない。口を呼ばないときは busy にしない\n- 契約・口・エラー一覧・部品 views.tsx・K-357 のチケットは変えない\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 小窓の部品 | `features/F3/credentials/views.tsx` の CheckCodeDialog（alert の置き場を前から持つ） | 変えない。`setAlert(文)` を呼ぶだけ |\n| 入れ物 | `check-credential.tsx` の submit | 分かれ道を 1 つ足す |\n\n同じ形の箇所（request_ref を条件付きで送る）を全部出した：\n\n```search\ngit grep -n -e \"request_ref\" -- apps/web/features\n3\n```\n\ncheck-credential.tsx の頭の注 1 か所と submit の 1 か所、to-item.ts の注 1 か所（読むだけ）。ほかの画面は answerCredentialLoginCheck を呼ばない。",
+    "外に影響する手順": "- なし — 画面のコードだけ。DB に書かない・外を呼ばない・セッションや錠を作らない（口を呼ばない側の直し）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k630-request-ref.spec.ts`（実 Chrome・幅 1440）。口は網の手前で差し替える。固定の待ちは使わない（K630-UI-005 は読み直しを時計を進めて数える）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| コード待ち・印あり・SMS | 小窓「PC に渡す」 | 書ける人 | 口に { request_ref, code } | このチケット（前からの動き） | K630-UI-001 |\n| コード待ち・印なし・SMS | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-002 |\n| コード待ち・印が null・push | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-003 |\n| コード待ち・印が空の字 | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-004 |\n| 印なし → 読み直しで印あり | 開き直す | 書ける人 | 口に新しい印 | このチケット | K630-UI-005 |\n| 型 | next build・tsc | — | 型の誤り 0 | このチケット | K630-UI-006 |\n| 上書き・消す・もう一度確かめる・404・422 | 前の動き | 書ける人 | 変えない | K-357 | k357 の行 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K630-UI-001 | 入力 | 印あり（rq-c2）・SMS・コード 123456 | answer の口が 1 回で本体は { request_ref: \"rq-c2\", code: \"123456\" }・小窓が閉じる |\n| K630-UI-002 | 入力 | 印が一覧に無い・SMS | 「PC に渡す」で answer の口は 0 回・小窓の中に「コードの頼みが見つかりません。もう一度確かめてください」・小窓は開いたまま・入れた字（123456）が残る |\n| K630-UI-003 | 入力 | 印が null・push | コードの欄は無い・「PC に渡す」で口は 0 回・同じ文が小窓の中に出る |\n| K630-UI-004 | 入力 | 印が空の字 | 口は 0 回・同じ文が出る（空は無いのと同じ） |\n| K630-UI-005 | 時間の流れ | 印なしで断られ「あとで」→ 読み直しで印（rq-new）が付く → 開き直して 654321 | 開き直した小窓に前の文は無く、口に { request_ref: \"rq-new\", code: \"654321\" } が 1 回届く |\n| K630-UI-006 | 守り | 型 | `tsc --noEmit` の出力に features/F3/credentials の誤りが 0 行 |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：試験はファイルを読まない（tsc の行を読むだけ） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 印なしの行（K630-UI-002〜004）は先に小窓と文が見えることを確かめ、口の回数 0 を見る。K630-UI-006 は tsc を実際に流して出力の行を見る（流れなければ r.error で落ちる） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：手元だけの道具を使わない（pnpm exec tsc は容れ物の中でも同じ） |\n\nほかの観点：権限・別の会社は口の葉（K-355）が持つ。二度押しは K-357 の行（answering は変えない）。古い入口は K630-UI-005。\n\n### G-11〜G-16 の判定\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 | N/A | 画面のコードだけ |\n| G-12 | 該当 | 読み直しで印が付いた直後の開き直し（K630-UI-005） |\n| G-13 | 該当 | コード（SMS）× push（K630-UI-002・003） |\n| G-14 | N/A | 役・権限を読まない |\n| G-15 | N/A | 外のプロセスを待たない（口を呼ばない側の直し） |\n| G-16 | N/A | 口を足さない（呼ぶ回数が減る） |",
+    "前からの試験を替えた所": "```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F3/credentials/check-credential.tsx\n0\n```\n\n機械の照らしには出ない（試験は check-credential.tsx の名前を書かない）が、同じ画面を見る前からの試験を開いた：\n\n- apps/web/tests/k/k357-credentials-edit-check.spec.ts: 替えない — 印がある行（C2 の request_id=rq-c2）だけで answer の口を見ているので、印の有る側の動き（K357-UI-008・009・010・011）は変わらない。印が無い側はこの葉が持つ",
+    "決定ログ": "足さない。K-357 の当てはめを契約（K-355）に合わせ直すだけ。",
+    "依存の理由": "無い（depends_on は空）。K-355（契約で request_ref を必須にした葉）・K-357（画面）はどちらも本線に入っている。",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 印が無いときは口を呼ばない | `apps/web/features/F3/credentials/check-credential.tsx`：`const NO_REQUEST_REF_TEXT = \"コードの頼みが見つかりません。もう一度確かめてください\";` を足し、submit の `answering.current = true` の前（`if (answering.current \\|\\| !target) return;` の後）で `if (!target.requestRef) { setFieldError(null); setAlert(NO_REQUEST_REF_TEXT); return; }`。以降は `request_ref: target.requestRef` を必ず付ける（`ref` の空のオブジェクトの形をやめる）。頭の注に「印が無いときは口を呼ばず文を出す（K-630・契約で request_ref が必須）」 |\n| 確かめる | 手元で `pnpm --filter @kaname/web build:test` と k630・k357 の試験 |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数・直列の段・二重 | K-357 のまま | 同じ（印が無いときは口が 1 つ減る） |\n| 新しい住所・Cache-Control | 対象なし | 対象なし |",
+    "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 6 行"
+   },
+   "file": "11_tickets/K-630.md"
   }
  ]
 }
