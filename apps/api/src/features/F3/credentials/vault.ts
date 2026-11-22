@@ -8,6 +8,7 @@ import { kanameError } from "@kaname/errors";
 import type { SecretsGateway } from "@kaname/secrets";
 import type { HookReply } from "../../../contract/deps.js";
 import { fail, type SecretContent, type TwoFactor } from "./input.js";
+import { TOTP_RE_RAW } from "./patterns.js";
 
 /** 認証アプリの鍵の形：Base32（A〜Z・2〜7）の 16 文字以上 */
 const TOTP_RE = /^[A-Z2-7]{16,}=*$/;
@@ -25,8 +26,17 @@ const withStatus = (status: number, code: string, extra: Record<string, unknown>
 export const unavailable = (): HookReply => withStatus(503, "E-PAGE-003");
 
 /** ⑥ 認証アプリの鍵：2 段階が認証アプリのときだけ要る。空白と小文字は直す。無い・Base32 でない・認証アプリでないのに付ける → 422・E-VAL-003 */
-export function parseTotpSecret(twoFactor: TwoFactor, v: unknown): string | null | HookReply {
-  if (twoFactor !== "totp") return v === undefined ? null : fail("E-VAL-003", "totp_secret");
+export function parseTotpSecret(
+  twoFactor: TwoFactor,
+  v: unknown,
+  raw: unknown = v,
+  mixed: () => HookReply = () => fail("E-VAL-003", "totp_secret"),
+): string | null | HookReply {
+  // 2 段階の種類と鍵の有無が合わない（預ける口は契約が書く・上書きの口は預けた物の状態で決まる）
+  if (twoFactor !== "totp") return v === undefined ? null : mixed();
+  if (v === undefined) return mixed();
+  // 打ったとおりが契約と同じ pattern（Base32 の 16 字以上・空白と小文字・全角は直す）に合うこと
+  if (typeof raw !== "string" || !TOTP_RE_RAW.test(raw)) return fail("E-VAL-003", "totp_secret");
   const secret = typeof v === "string" ? v.normalize("NFKC").replace(/\s+/g, "").toUpperCase() : "";
   return TOTP_RE.test(secret) ? secret : fail("E-VAL-003", "totp_secret");
 }

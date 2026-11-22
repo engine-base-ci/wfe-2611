@@ -4,5 +4,5 @@ import type { Vars } from "../middleware/tenant.js";
 import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
-  app.get("/api/v1/class_axes", op(deps, "listClassAxes"));
+  app.get("/api/v1/ticket-fields", op(deps, "listTicketFields"));
 }
