@@ -36,7 +36,6 @@ const MSG = {
   cancelDesc: "取り消した印と理由が残ります（消えません）", // モック dec-cancel
   conflict: "この決定は、いま別の人が改めました。読み直してから、もう一度お試しください", // ㉒・E-CONF-031（K-391）
   conflictCancelled: "この決定は、いま別の人が取り消しました。読み直してから、もう一度お試しください", // E-CONF-033（K-391・仮）
-  clientLater: "取引先の画面ができてから使えます", // ㉒
   aiInert: "AI が一文にまとめた案 ── AI の案は、自分の AI と話す画面ができてから使えます", // ⑯
   newReq: "決めたことを書いてください", // E-VAL-042（K-390・K-391 の改めるで新しい決定が空のときも同じ番号）
   cancelReq: "取り消す理由を書いてください", // E-VAL-045（K-391・モック dec-cancel と同じ）
@@ -239,7 +238,7 @@ for (const [id, go] of Object.entries(DRIVE)) {
 
 // ---------------------------------------------------------------- 書き込みを決定にする
 
-test("K398-UI-002 鈴木の書き込みの「決定にする」：小窓の題・説明・元の箱（名前と時刻と本文）・決めたことは本文で始まる・グレーの箱 2 つ・取引先のルールは押せない", async ({
+test("K398-UI-002 鈴木の書き込みの「決定にする」：小窓の題・説明・元の箱（名前と時刻と本文）・決めたことは本文で始まる・グレーの箱 2 つ・取引先の選び肢は無い・取引先のルールは押せない", async ({
   page,
 }) => {
   await ready(page, [D2]);
@@ -257,8 +256,8 @@ test("K398-UI-002 鈴木の書き込みの「決定にする」：小窓の題�
   await expect(inert).toHaveCount(2);
   await expect(inert.first()).toHaveText(MSG.aiInert);
   for (const i of await inert.all()) await expect(i).toHaveAttribute("aria-disabled", "true");
-  await expect(dlg.getByRole("radio", { name: /取引先のルールにする/ })).toBeDisabled();
-  await expect(dlg.locator('label[aria-disabled="true"]')).toHaveAttribute("title", MSG.clientLater);
+  // 取引先を持たない（answer=4961f0280e9a）：「取引先」の選び肢は無い
+  await expect(dlg.getByRole("radio", { name: /取引先/ })).toHaveCount(0);
 });
 
 test("K398-UI-003 決定にする：体（source_message_id つき・promoted_to なし）で 1 回・小窓が閉じ、決定の一覧とやり取りを 1 回ずつ読み直す。書き込みに「✓ 決定にした」・区画の 1 件目に元のリンク", async ({
@@ -505,16 +504,14 @@ test("K398-UI-020 改める・取り消すで 409 E-CONF-033（開いている�
   expect(d.patches).toHaveLength(2);
 });
 
-test("K398-UI-013 決定にする小窓の「取引先のこれから」は押せない：選ばれず、体に promoted_to が無い", async ({
+test("K398-UI-013 決定にする小窓に「取引先」の選び肢は無い：選べるのは「このチケットだけ」で、体に promoted_to が無い", async ({
   page,
 }) => {
   const { d } = await ready(page, [D2]);
   await openDetail(page);
   await openTalk(page);
   await decideOn(page, "鈴木 一郎");
-  const client = fromDialog(page).getByRole("radio", { name: /取引先のルールにする/ });
-  await client.click({ force: true });
-  await expect(client).not.toBeChecked();
+  await expect(fromDialog(page).getByRole("radio", { name: /取引先/ })).toHaveCount(0);
   await expect(fromDialog(page).getByRole("radio", { name: "このチケットだけ" })).toBeChecked();
   await fromDialog(page).getByRole("button", { name: "決定にする" }).click();
   await expect(fromDialog(page)).toHaveCount(0);
