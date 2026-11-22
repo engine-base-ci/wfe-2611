@@ -1,6 +1,6 @@
 {
  "data_links": [
   {"paths": ["apps/api/src/features/F3/connect-pc/**", "apps/api/src/hooks/agent.ts"], "tests": ["apps/api/test/features/contract/k639-pm-fuzz.test.ts"]},
-  {"paths": ["05_flow/screen_api.d/K-639.py", "scripts/ci/contract_shape.d/K-639.py"], "tests": ["scripts/ci/k639_contract_test.py"]}
+  {"paths": ["05_flow/screen_api.d/K-639.py", "scripts/ci/contract_shape.d/K-639.py"], "tests": ["apps/api/test/features/contract/k639-pm-fuzz.test.ts"]}
  ]
 }

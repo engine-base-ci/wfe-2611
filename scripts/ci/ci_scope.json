@@ -1301,7 +1301,7 @@
     "scripts/ci/contract_shape.d/K-639.py"
    ],
    "tests": [
-    "scripts/ci/k639_contract_test.py"
+    "apps/api/test/features/contract/k639-pm-fuzz.test.ts"
    ]
   }
  ],
