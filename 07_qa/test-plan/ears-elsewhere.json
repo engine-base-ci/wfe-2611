@@ -1494,7 +1494,7 @@
     "test_post_tickets_id_messages_too_large": "K385-API-010",
     "test_post_tickets_id_messages_rate_limited": "K385-API-015",
     "test_post_tickets_id_messages_shape": "K385-API-001",
-    "test_post_tickets_id_messages_server_error": "K385-API-017",
+    "test_post_tickets_id_messages_unavailable": "K385-API-017",
     "test_post_tickets_id_messages_terms_pending": {
      "file": "apps/api/test/features/F1/terms.test.ts",
      "mark": "K53-API-005"
