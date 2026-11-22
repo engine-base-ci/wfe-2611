@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。222 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。221 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3922,37 +3922,17 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "decisions"
     }
   },
-  "E-VAL-043": {
-    "id": "E-VAL-043",
-    "cls": "validation",
-    "message": "決めた人は、この会社のメンバーから選んでください",
-    "action": "決めた人を選び直す",
+  "E-CONF-037": {
+    "id": "E-CONF-037",
+    "cls": "conflict",
+    "message": "取引先の画面ができてから使えます",
+    "action": "このチケットの決定として残す",
     "undo": false,
     "severity": "low",
-    "support_code": "VAL-043",
+    "support_code": "CONF-037",
     "must_not": false,
     "layers": [
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "decisions"
-    }
-  },
-  "E-VAL-044": {
-    "id": "E-VAL-044",
-    "cls": "validation",
-    "message": "元の書き込みが見つかりません。やり取りを読み直してください",
-    "action": "やり取りを読み直す",
-    "undo": false,
-    "severity": "low",
-    "support_code": "VAL-044",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
+      "API"
     ],
     "where": {
       "screen": "tickets",
