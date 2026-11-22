@@ -147,6 +147,8 @@ SPEC_GATES.append({"id": 72, "name": "画面の CSS の生の長さ（大きさ�
 # 試験の結果の欄は CI の記録から機械で書く。印の無い PASS は台帳の行だけ・台帳は本線との分かれ目（static の G0 が出す base）と比べて減らすだけ（K-143・D-129.51）。
 #   base は組の出力なので run の命令の文字に入れず env で渡す（CS-034・命令の注入を防ぐ）
 SPEC_GATES.append({"id": 61, "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）", "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"", "env": "          CI_LEDGER_BASE: ${{ steps.scope.outputs.base }}\n          CI_TARGET_REF: ${{ inputs.target || github.event.repository.default_branch }}\n", "job": "spec", "blocking": True})
+# CI の台。変数 CI_RUNNER が無ければ今までの Mac の VM（K-640）
+RUNS_ON = "${{ fromJSON(vars.CI_RUNNER || '[\"self-hosted\",\"linux-vm\"]') }}"
 # spec の組を 3 つに分けて static の後に同時に流す（K-323）。段の名前・命令・if は変えず、置く組だけを変える。
 #   実測（2026-11-18 の緑の 3 回の中央値・秒）：G56 281・G67 147・G65 110・G57 41・G27 10・ほか 21 段は合計 約 50・組の準備 約 40。
 #   いちばん重い G56 を 1 組（spec-2）、次の G67 を 1 組（spec-3）、残りは spec（前からの試験が spec の組に置くと決めている段は全部ここ）。
@@ -184,6 +186,13 @@ SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.output
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
                f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
                "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
+# 画面の組み立ての型の確かめ（K-631）：チケットの CI が画面の試験を後回しにする回（web=defer）でも、next build が見る型（route の型＋tsc）は流す。
+#   web=run の回は web の組の next build（build:test）が同じ型を見るので流さない（二重にしない）。出す前の手元の検査は web の入力を渡さない（空）ので、
+#   ここ（static）で流れる。DB もブラウザも要らない軽い段（11 秒ほど）。typegen の出力先は build:test と同じ .next-prod：
+#   tsconfig は .next を除き .next-prod/types だけを数えるので、揃えないと Link の型（link.d.ts）とページの型（validator.ts）が tsc に入らない。G0（id: scope）より後ろに置く
+WEB_TYPES_STEP = ('      - name: "画面の型の確かめ（next typegen ＋ tsc・web=defer の回も画面の組み立ての型は流す。web=run の回は web の組の next build が同じ型を見る・K-631）"\n'
+                  "        if: ${{ !cancelled() && steps.scope.outputs.web == 'true' && inputs.web != 'run' }}\n"
+                  "        run: NEXT_DIST_DIR=.next-prod pnpm --filter @kaname/web exec next typegen && pnpm --filter @kaname/web exec tsc --noEmit\n")
 def unit_if(i): return f"!cancelled() && {SO}.unit == 'true'" + (f" && fromJSON({SO}.unit_shards) >= {i}" if i > 1 else "")
 ALL_GATES = [{**g, "job": "unit" if g["id"] == 3 else ("database" if g["id"] in (4, 6, 12) else ("e2e" if g["id"] == 15 else "static"))} for g in FG["merge_gates"]] + SPEC_GATES
 ALL_GATES = [{**g, "script": UNIT_MERGE, "env": UNIT_ENV + f"          CI_FULL: ${{{{ {SO}.full }}}}\n", "name": g["name"] + f"（分けて流した結果を合わせ、閾値を当て、決めた試験が全部流れたかを見る）"} if g["id"] == 3 else g for g in ALL_GATES]
@@ -234,7 +243,7 @@ def junit_up(job): return f"""      - uses: actions/upload-artifact@v4
 NODE = "      - uses: actions/checkout@v4\n        with: { fetch-depth: 0 }\n      - uses: pnpm/action-setup@v4\n        with: { dest: '${{ runner.tool_cache }}/setup-pnpm' }   # 置き場は runner ごと（同じ台の runner が同時に ~/setup-pnpm を取り合う・K-172）\n      - uses: actions/setup-node@v4\n        with: { node-version: '${{ env.NODE_VERSION }}' }   # 自分の台は部品が台に残る：GitHub の cache に上げ下ろししない（K-172）\n      - run: pnpm install --frozen-lockfile\n" + VENV
 PYS = "      - uses: actions/checkout@v4\n" + VENV
 UNIT_JOBS = "".join(f"""  unit-{i}:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # 単体の試験の {i}/{UNIT_SHARDS}（自分の Postgres の上で。結果は unit が合わせる・D-128.140）。組の数・流す試験は static の G0 が決める（K-107）
     needs: [static]
     if: ${{{{ {unit_if(i)} }}}}
@@ -247,7 +256,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
         if: ${{{{ !cancelled() }}}}
         with: {{ name: vitest-blob-{i}, path: {UNIT_DIR}/, include-hidden-files: true, retention-days: 1 }}
 {hook_note()}{junit_up(f"unit-{i}")}{DB_STOP}""" for i in range(1, UNIT_SHARDS + 1)) + f"""  unit:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # 分けた単体の試験の結果を合わせ、coverage の閾値（vitest.config.ts）を合わせた結果に当てる（DB は要らない）
     needs: [static, {", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}]
     if: ${{{{ !cancelled() }}}}
@@ -259,7 +268,7 @@ UNIT_JOBS = "".join(f"""  unit-{i}:
 # spec-2・spec-3（K-323）：spec と同じ準備と分かれ目の段・自分の検査の段・DB を消す段。Python の試験・JUnit は spec の組だけ（この組は JUnit を書かない）
 SPEC_MORE = "".join(f"""
   {job}:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # spec の組を分けた 1 つ（K-323）。待ち方と準備は spec と同じ（static の後・static が赤でも飛ばさない・本線との分かれ目は自分で出す）
     needs: [static]
     if: ${{{{ !cancelled() }}}}
@@ -305,17 +314,17 @@ env:
   PNPM_VERSION: '10'
 jobs:
   static:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
 {SCOPE_OUTPUTS}    steps:
-{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}
+{NODE}{SCOPE_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'static')}{WEB_TYPES_STEP}
   database:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     needs: [static]
     if: ${{{{ !cancelled() && {SO}.database == 'true' }}}}
     steps:
 {NODE}{DB_START}{SQUAWK_STEP}{''.join(step(g) for g in ALL_GATES if g['job'] == 'database')}{hook_note()}{DB_STOP}
 {UNIT_JOBS}  spec:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # static の後に流す（act は needs の無い組を 1 段目にまとめて段ごとに流すので、needs が無いと spec が static と並び、
     #   database・unit・web が spec の終わりまで待つ・K-156）。static が赤でも飛ばさない（K-143）のは if の !cancelled() で守る。
     #   G61 が要る本線との分かれ目（base）は、この段の中で同じ scope の台本を流して自分で出す（static の G0 と同じ入力・PM の判断 2026-11-08 17:40）
@@ -330,7 +339,7 @@ jobs:
         run: python3 scripts/ci/junit_unittest.py --out junit/spec-py.xml --files-json "$CI_PY_TESTS"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'spec')}{hook_note('"$RUNNER_TEMP/gate-logs"')}{junit_up("spec")}{DB_STOP}{SPEC_MORE}
   task-gate:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'task/')
     needs: [{', '.join(SPEC_GROUPS)}]
     steps:
@@ -338,7 +347,7 @@ jobs:
         run: echo "TASK_ID=${{{{ github.head_ref }}}}" | sed 's#task/##' >> "$GITHUB_ENV"
 {''.join(step(g) for g in ALL_GATES if g['job'] == 'task-gate')}
   web:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # 新しい画面（apps/web/components/k の上）の実ブラウザの試験。staging も札も要らない：CI の中で本番の形に組み立てて立ち上げる（K-36）
     needs: [static]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
@@ -401,7 +410,7 @@ jobs:
           # 始める前に空いていた番号なので、今いるのはこの回の残り。残れば赤（次の回が古いサーバーに当たらないように）
           for port in 3011 3124 3191; do if lsof -ti tcp:$port >/dev/null 2>&1; then echo "★ 止めた後も番号 $port が使われている"; exit 1; fi; done
 {DB_STOP}  junit:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     # 試験の組の JUnit を 1 つの artifact「junit」にまとめる（ticket-flow の ci.py が読む・K-172）。落ちた組があってもまとめる
     needs: [{", ".join(f"unit-{i}" for i in range(1, UNIT_SHARDS + 1))}, {", ".join(SPEC_GROUPS)}, web]
     if: always()
@@ -409,7 +418,7 @@ jobs:
       - uses: actions/upload-artifact/merge@v4
         with: {{ name: junit, pattern: junit-*, delete-merged: false }}
   auto-merge:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     needs: [static, database, unit, {', '.join(SPEC_GROUPS)}, task-gate]
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'no-auto-merge')
     permissions: {{ contents: write, pull-requests: write }}
@@ -450,7 +459,7 @@ jobs:
   e2e:
     if: github.ref == 'refs/heads/main'
     environment: staging
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     timeout-minutes: 30
     steps:
 {NODE}      - name: "Bridge を組み立てる（配布と同じ build・K-97）"
@@ -503,7 +512,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   release-gate:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: {RUNS_ON}
     steps:
 {NODE}      - name: "ゼロトラストの実装の残りが 0（--strict）"
         run: pnpm ci:zt:strict
