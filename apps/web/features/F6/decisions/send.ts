@@ -14,7 +14,8 @@ export type Failure =
 
 export function failureOf(r: CallErr): Failure {
   if (r.status === 401) return { kind: "login" };
-  if (r.status === 422) {
+  // 決めた人が今のメンバーでない（404 E-PAGE-001・欄つき・drift 2026-11-20 16:51）も 422 と同じく小窓の中の欄の下に出す
+  if (r.status === 422 || (r.status === 404 && r.fields["decided_by_member_id"])) {
     const text = r.fields["text"];
     const by = r.fields["decided_by_member_id"];
     const reason = r.fields["reason"];
