@@ -88,7 +88,7 @@ SCREEN_API = {
         ("POST", "/notifications/read-all", "A109", "notifications", "readAllNotifications", []),
         ("GET", "/ticket_kinds", "A103", "ticket_kinds", "listTicketKinds", ["kind_sections"]),
         ("GET", "/ticket_stages", "A103", "ticket_stages", "listTicketStages", []),
-        ("GET", "/class_axes", "A103", "class_axes", "listClassAxes", ["class_values"]),
+        ("GET", "/ticket-fields", "A103", "custom_fields", "listTicketFields", ["custom_field_kinds", "ticket_field_values"]),
         ("GET", "/handover_rules", "A110", "handover_rules", "listHandoverRules", []),
         ("GET", "/members", "A103", "members", "listMembers", []),
         ("GET", "/clients", "A103", "clients", "listClients", []),
@@ -986,7 +986,7 @@ RESPONSES = {
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
     "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
-    "listTicketTimeline": ("TimelineItem", {"kind": "string", "at": "string", "actor_member_id": "string", "message": "object", "changes": "array?", "run": "object"}),
+    "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
     "completeTicket": ("TicketCompletion", {"ticket": "object", "knowledge_candidates": "array", "skipped_reason": "string"}),
     "bulkUpdateTickets": ("BulkResult", {"updated": "array", "skipped": "array"}),
@@ -1251,7 +1251,7 @@ PERMS = {
     "readAllNotifications": ("self", "自分あてだけ", False),
     "listTicketKinds": ("read", "そのワークスペースのメンバー", False),
     "listTicketStages": ("read", "同上", False),
-    "listClassAxes": ("read", "同上", False),
+    "listTicketFields": ("read", "そのワークスペースのメンバー", False),
     "listMembers": ("read", "同上（メールは管理者と本人だけ）", False),
     "listClients": ("read", "見られる取引先だけ（担当グループだけの取引先・D-128.54）", False),
     # 承認待ち
@@ -1582,6 +1582,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
+import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
 
 _merge_py(globals(), _Path(__file__).resolve().parent / "screen_api.d", screen_lists=("SCREEN_API",),
-          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR})
+          helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR, "_CP": _CP})
