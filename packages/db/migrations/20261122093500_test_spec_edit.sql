@@ -1,5 +1,5 @@
 -- 20261122093500 確認項目にチェックを付ける・外す・文を直す・行を外す（K-435・契約の口 updateTestSpec・deleteTestSpec・D-150.39・D-150.40・D-150.55・D-150.56・D-128.45・D-130.1・関門 C2・C3）
---   列は足さない。app.test_spec_log（K-434・5 引数の最終の形）は作り直さず呼ぶだけ。呼んだ人は app.user_id() で引き、引数で人を受けない。
+--   列は足さない。app.test_spec_log（K-434・5 引数の最終の形）は、AI の名前の書き方（「AI が…」・AI の後に空白）だけを直して同じ形で作り直す。呼んだ人は app.user_id() で引き、引数で人を受けない。
 --   security definer・search_path に pg_temp・public から外し kaname_app だけに渡す。チケットの行は for share・確認項目の行は for update の順
 --   （完了の確定 app.ticket_complete の for update と順番になる。K-434 の足すと同じ）。
 -- ① app.test_spec_update(p_id, p)：付ける・外す（checked）か文を直す（title）のどちらか 1 つと版（version）。何かが変わったときだけ版 +1
@@ -132,6 +132,46 @@ begin
 end $$;
 revoke all on function app.test_spec_delete(uuid) from public;
 grant execute on function app.test_spec_delete(uuid) to kaname_app;
+
+-- ②b やり取りの 1 行の名前：AI のときは「AI が…」（AI の後に空白を 1 つ。K-434 の関数に同じ形で作り直す・人の名前の書き方は変えない）
+create or replace function app.test_spec_log(p_ticket uuid, p_action text, p_title text, p_by_ai boolean default false, p_from text default null) returns uuid
+language plpgsql security definer set search_path = public, app, pg_temp as $$
+declare
+  v_me uuid := app.user_id();
+  v_name text;
+  v_body text;
+  v_from jsonb;
+  v_to jsonb;
+  v_tenant uuid;
+  v_id uuid;
+begin
+  if p_action is null or p_action not in ('added', 'checked', 'unchecked', 'edited', 'removed') then
+    raise exception 'test_spec_log: 知らない動き' using errcode = '22023';
+  end if;
+  select t.tenant_id into v_tenant from tickets t where t.id = p_ticket and t.tenant_id = app.tenant_id();
+  if v_tenant is null then raise exception 'test_spec_log: チケットが無い' using errcode = '22023'; end if;
+  v_name := case when coalesce(p_by_ai, false) then 'AI ' else app.member_name(v_me) end;   -- AI は「AI が…」（AI の後に空白・K435-DB-001・002）
+  if p_action = 'added' then
+    v_body := v_name || 'が確認項目を足しました：' || p_title; v_from := 'null'::jsonb; v_to := to_jsonb(p_title);
+  elsif p_action = 'checked' then
+    v_body := v_name || 'が確認項目『' || p_title || '』にチェックを付けました'; v_from := 'false'::jsonb; v_to := 'true'::jsonb;
+  elsif p_action = 'unchecked' then
+    v_body := v_name || 'が確認項目『' || p_title || '』のチェックを外しました'; v_from := 'true'::jsonb; v_to := 'false'::jsonb;
+  elsif p_action = 'edited' then
+    v_body := v_name || 'が確認項目『' || p_title || '』を直しました'; v_from := to_jsonb(p_from); v_to := to_jsonb(p_title);
+  else
+    v_body := v_name || 'が確認項目『' || p_title || '』を外しました'; v_from := to_jsonb(p_title); v_to := 'null'::jsonb;
+  end if;
+  insert into ticket_messages (tenant_id, ticket_id, author_member_id, kind, body, changes, created_by, updated_by)
+  values (v_tenant, p_ticket, case when coalesce(p_by_ai, false) then null else v_me end, 'change', v_body,
+          jsonb_build_array(jsonb_build_object('field', 'test_spec', 'from', coalesce(v_from, 'null'::jsonb), 'to', coalesce(v_to, 'null'::jsonb), 'note', p_title)),
+          case when coalesce(p_by_ai, false) then null else v_me end,
+          case when coalesce(p_by_ai, false) then null else v_me end)
+  returning id into v_id;
+  return v_id;
+end $$;
+revoke all on function app.test_spec_log(uuid, text, text, boolean, text) from public;
+grant execute on function app.test_spec_log(uuid, text, text, boolean, text) to kaname_app;
 
 -- ③ 機械・AI がチェックを付ける・外す。人の文脈（app.user_id）を要らず、会社の文脈だけで動く。付けた人は空・checked_by_ai を true に。
 --    やり取りは author が空で名前は「AI」。updated_by は変えない（機械なので空のまま）
