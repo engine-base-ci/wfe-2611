@@ -1,9 +1,9 @@
 # K-472 チケットの一覧（listTickets・GET /api/v1/tickets）の絞り込みの受け皿
 #   本体 05_flow/screen_api.py にあった listTickets の 3 行（QUERIES・META・LIST_DETAILS）をここへ移した（同じ鍵を 2 つの断片が持てないので、前からの行を直す葉はこの葉だけ）。
 #   この断片の行を K-473（QUERIES・LIST_DETAILS の sort・QUERY_RANGES の行）・K-474（META と meta）が直す。
-#   絞り込みの欄は apps/api/src/features/F4/ticket-list/query.ts の FILTERS（K-472：kind_id・stage_id・assignee_id・client_id・done／K-473：due_from・due_to・start_from・start_to・overdue・fire・parent・fields・due・delegated・approving と並び sort）。*_id は契約で uuid（入口が uuid でない値を口の前に断る）
+#   絞り込みの欄は apps/api/src/features/F4/ticket-list/query.ts の FILTERS（K-472：kind_id・stage_id・assignee_id・done／K-473：due_from・due_to・start_from・start_to・overdue・fire・parent・fields・due・delegated・approving と並び sort）。*_id は契約で uuid（入口が uuid でない値を口の前に断る）
 QUERIES = {
-    "listTickets": ["view", "q", "scope_id", "kind_id", "stage_id", "assignee_id", "client_id", "done",
+    "listTickets": ["view", "q", "scope_id", "kind_id", "stage_id", "assignee_id", "done",
                     "due", "delegated", "approving", "due_from", "due_to", "start_from", "start_to", "overdue", "fire", "parent", "fields"],
 }
 META = {

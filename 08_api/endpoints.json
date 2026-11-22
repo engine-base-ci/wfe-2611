@@ -51465,7 +51465,6 @@
      "kind_id",
      "stage_id",
      "assignee_id",
-     "client_id",
      "done",
      "due",
      "delegated",
