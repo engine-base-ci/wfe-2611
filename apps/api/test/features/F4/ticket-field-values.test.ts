@@ -835,4 +835,26 @@ describe("K-564 会社の項目の値（updateTicket の fields）", () => {
     const t2 = await mk(w);
     expect(await fieldsSet(w.boss, t2.id, { [optional.id]: "メモ" })).toMatchObject({ changed: true });
   });
+  it("K564-API-023 知らせは 1 回の要求で 1 人に 1 通：担当者でない人が項目の値を段・優先度と一緒に変えても、担当者の受け箱の行は 1 つで、変えた欄の名前が全部入る（代表の答え ⑮7）", async () => {
+    const w = await world();
+    const cust = await fld(w, { name: "顧客名" });
+    const t = await mk(w, { assignee: w.mate.id });
+    await patchOk(w.boss, t.id, {
+      stage_key: "doing",
+      priority: "high",
+      priority_reason: "一緒に",
+      fields: { [cust.id]: "秘密の値その二" },
+    });
+    const all = (
+      await f.admin.query(
+        "select event_kind_id, payload from notifications where payload->>'ticket_id' = $1 and member_id = $2 order by created_at, id",
+        [t.id, w.mate.id],
+      )
+    ).rows as { event_kind_id: string; payload: { fields?: string[] } }[];
+    expect(all.length, "受け箱の行は 1 つ").toBe(1);
+    expect(all[0]!.event_kind_id, "段の組が先に書いた行に足される").toBe("ticket.stage_changed");
+    expect(all[0]!.payload).toHaveProperty("stage");
+    expect(all[0]!.payload.fields).toEqual(["priority", `field:${cust.id}`]);
+    expect(JSON.stringify(all[0]!.payload)).not.toContain("秘密の値");
+  });
 });

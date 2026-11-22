@@ -11,6 +11,7 @@ import { isUuid } from "@kaname/contracts";
 import type { Row } from "@kaname/db/repository";
 import type { HookReply } from "../../../contract/deps.js";
 import type { GroupResult, TicketFieldGroup } from "../../ticket-update/fields.js";
+import { replaceLoneSurrogates } from "../../ticket-update/text.js";
 import {
   PARENT_MESSAGE,
   PRIORITIES,
@@ -55,7 +56,10 @@ async function apply(cl: pg.PoolClient, ticketId: string, input: Row): Promise<G
   const r = (
     await cl.query<{ v: Sorted | null }>("select app.ticket_sort_set($1, $2::jsonb) as v", [
       ticketId,
-      JSON.stringify(input),
+      JSON.stringify({
+        ...input,
+        ...("priority_reason" in input ? { priority_reason: replaceLoneSurrogates(input["priority_reason"]) } : {}),
+      }),
     ])
   ).rows[0]?.v;
   if (!r) return { ok: false, reply: replyOf({ error: "empty" }, where) };
