@@ -264,6 +264,15 @@ textarea.k-input {
   cursor: pointer;
   text-align: left;
 }
+/* 開いた箱（メニュー・選ぶ欄）の置き場の重なりの順は正本の popup-layer（K-381）。
+   層の並び：本文の帯 1・上の帯 20・右のパネル 30・下のタブ 40・引き出し 45・前の外枠 50〜60・成果物の板 61 ＜ 浮く箱 ＜ 小窓の幕 80 */
+.k-popup-layer {
+  z-index: var(--k-c-popup-layer-z);
+}
+/* 選ぶ欄の一覧は、小窓（.k-dialog・81）の中の選ぶ欄でも小窓より上に出す（小窓の裏に隠れて押せなかった・K-372）。メニューは小窓の中では開かない */
+.k-popup-layer:has(> .k-select-field) {
+  z-index: var(--k-c-popup-layer-field-z);
+}
 .k-select-popup {
   min-width: var(--anchor-width);
   max-height: var(--available-height);

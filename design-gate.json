@@ -31,6 +31,8 @@
       "selector": ".k-field[data-size=\"lg\"] .k-label",
       "shape": ".k-label"
     },
+    "popup-layer": ".k-popup-layer",
+    "popup-layer-field": ".k-popup-layer:has(> .k-select-field)",
     "dialog": ".k-dialog",
     "dialog-title": ".k-dialog-title",
     "state-empty": ".k-state[data-state=\"empty\"]",

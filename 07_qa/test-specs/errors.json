@@ -6175,11 +6175,11 @@
   },
   {
    "id": "E-CRED-004",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "credentials"
    },
-   "when": "期限が日本の今日より前・暦に無い・年-月-日の形でない",
+   "when": "期限が日本の今日より前（今日が過ぎると同じ日付でも通らなくなる・時刻で決まる）",
    "false_when": "期限が今日以降の日付か、空（期限なし）",
    "message": "期限は今日以降の日付にしてください",
    "action": "期限を直すか空にする",
@@ -6347,6 +6347,209 @@
    ]
   },
   {
+   "id": "E-CRED-015",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "預けた物の種類や 2 段階の状態と合わない中身を送った（鍵にログインの欄・ログインに value・2 段階を認証アプリに替える／外すのに中身が無い・認証アプリの鍵の有無が 2 段階と合わない）",
+   "false_when": "その物の種類と 2 段階の状態に合う中身",
+   "message": "この預けた物の種類や 2 段階の設定に合わない中身です。開き直して、合う欄だけを入れてください",
+   "action": "開き直して合う欄だけを入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けた API キー・値の上書きの小窓を開く",
+    "steps": [
+     "別の画面で種類を確かめてから、API キー・値の物にログインの欄を付けて上書きする"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.151",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-010",
+   "class": "gate",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "PC が、動いていない（終わった・止まった）仕事について知らせた・取り出そうとした",
+   "false_when": "その PC が取って動いている確かめの仕事",
+   "message": "動いている仕事のためにだけ使えます",
+   "action": "PC の Bridge を新しい版にする（次の仕事を待つ）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "預けたログイン情報の確かめが終わった後",
+    "steps": [
+     "PC が同じ仕事の結果をもう一度送る"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "low",
+   "source": [
+    "D-117",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-011",
+   "class": "dependency",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "預けたログイン情報が失効しているか、期限が過ぎている",
+   "false_when": "失効しておらず、期限の内（期限なしを含む）",
+   "message": "このログイン情報は失効しているか、期限が過ぎています。預け直してください",
+   "action": "預け直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "失効したか期限が過ぎた預けたログイン情報",
+    "steps": [
+     "「もう一度確かめる」を押す"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-117",
+    "D-128.57"
+   ]
+  },
+  {
+   "id": "E-CRED-012",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "同じ物の確かめが、待ち・動いている・コード待ちの間にもう一度確かめようとした",
+   "false_when": "確かめていない・終わった物",
+   "message": "いま確かめています。終わるまで待ってください",
+   "action": "終わるまで待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC で確かめている最中の預けたログイン情報",
+    "steps": [
+     "「もう一度確かめる」を続けて押す"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "low",
+   "source": [
+    "D-117"
+   ]
+  },
+  {
+   "id": "E-CRED-013",
+   "class": "conflict",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "API キー・値（ログインでない物）を確かめようとした",
+   "false_when": "ログイン（ログイン名とパスワード）の物",
+   "message": "API キー・値はログインして確かめません",
+   "action": "なし（確かめは要らない）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "API キーを預けた",
+    "steps": [
+     "その行で確かめの口を呼ぶ"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "low",
+   "source": [
+    "D-117"
+   ]
+  },
+  {
+   "id": "E-CRED-014",
+   "class": "not_found",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "PC が頼んでいない・もう答えた・止まった確かめのコードに答えた",
+   "false_when": "PC がいまコードを頼んでいる",
+   "message": "いまはコードを頼まれていません（もう答えたか、確かめが止まりました）",
+   "action": "一覧を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "PC がコードを頼んだ確かめ",
+    "steps": [
+     "PC が確かめを止める",
+     "コードを入れて送る"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "low",
+   "source": [
+    "D-117"
+   ]
+  },
+  {
+   "id": "E-CONN-018",
+   "class": "conflict",
+   "where": {
+    "screen": "bridge-setup",
+    "state": "browser_check_asleep"
+   },
+   "when": "PC の Bridge が動いていない（眠っている・返事がまだ）ときに、もう一度確かめるを押した",
+   "false_when": "PC の Bridge が生きている",
+   "message": "PC の Bridge が動いていないので確かめられません。Bridge を起こしてから押してください",
+   "action": "Bridge を起こす",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "Bridge をつないだ PC があり、その Bridge を止めて 75 秒より長く待つ",
+    "steps": [
+     "「PC と使った量」の画面で、その PC の行の「もう一度確かめる」を押す"
+    ],
+    "needs": "Bridge をつないだ PC"
+   },
+   "severity": "medium",
+   "source": [
+    "D-120",
+    "D-128.156"
+   ]
+  },
+  {
    "id": "E-CONN-016",
    "class": "auth",
    "where": {
@@ -6438,7 +6641,7 @@
   },
   {
    "id": "E-INV-010",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "members",
     "state": "invite"
@@ -6468,7 +6671,7 @@
   },
   {
    "id": "E-INV-011",
-   "class": "validation",
+   "class": "not_found",
    "where": {
     "screen": "members",
     "state": "invite"
