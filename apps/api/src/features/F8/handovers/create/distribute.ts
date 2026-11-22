@@ -34,7 +34,7 @@ export const createDistribute: CreateKind = async (c) => {
   if ("error" in v) return reply(v);
   await sendHandoverMails(
     c.d,
-    { tenantId: c.a.ctx.tenantId, userId: c.a.ctx.userId },
+    { tenantId: c.a.ctx.tenantId!, userId: c.a.ctx.userId! },
     v.mails ?? [],
     `distribute:${v.handover_id}`,
   );
