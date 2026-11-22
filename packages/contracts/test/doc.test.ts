@@ -1,15 +1,7 @@
 // K-561 の試験（本文 1 枚の文書の木）：形の確かめ・上限・doc → text。DB は使わない。行 ID は K561-DOC-NNN（11_tickets/K-561.md の表と 1 対 1）。
 //   テストはチケットを作る人が書き、実装する人は変えない。
 import { describe, expect, it } from "vitest";
-import {
-  DOC_MAX_BYTES,
-  DOC_MAX_DEPTH,
-  docToText,
-  emptyDoc,
-  toTicketBody,
-  validateDoc,
-  type Doc,
-} from "../src/doc.js";
+import { DOC_MAX_BYTES, DOC_MAX_DEPTH, docToText, emptyDoc, toTicketBody, validateDoc, type Doc } from "../src/doc.js";
 
 const t = (text: string, marks?: unknown[]) => ({ type: "text", text, ...(marks ? { marks } : {}) });
 const p = (...c: unknown[]) => ({ type: "paragraph", content: c });
@@ -21,14 +13,21 @@ const reason = (v: unknown) => {
 
 const sample = doc(
   { type: "heading", attrs: { level: 2 }, content: [t("目的")] },
-  p(t("請求を送る", [{ type: "bold" }, { type: "color", attrs: { color: "red" } }]), { type: "hardBreak" }, t("二行目")),
+  p(
+    t("請求を送る", [{ type: "bold" }, { type: "color", attrs: { color: "red" } }]),
+    { type: "hardBreak" },
+    t("二行目"),
+  ),
   { type: "paragraph", attrs: { ghost: true }, content: [t("薄い説明")] },
   {
     type: "bulletList",
     content: [
       {
         type: "listItem",
-        content: [p(t("明細を集める")), { type: "taskList", content: [{ type: "taskItem", attrs: { checked: true }, content: [p(t("済んだ"))] }] }],
+        content: [
+          p(t("明細を集める")),
+          { type: "taskList", content: [{ type: "taskItem", attrs: { checked: true }, content: [p(t("済んだ"))] }] },
+        ],
       },
     ],
   },
@@ -51,7 +50,9 @@ const sample = doc(
 
 describe("本文の文書の木（packages/contracts/src/doc.ts）", () => {
   it("K561-DOC-001 doc → text：節ごとに行・箇条書きは「- 」・チェックは「[x] 」・表は「 | 」・引用は「> 」・画像は説明・印は入れない・薄い字は入れない", () => {
-    expect(docToText(sample)).toBe("目的\n請求を送る\n二行目\n- 明細を集める\n  [x] 済んだ\n項目 | 数量\n> 引用\nx=1\ny=2\n図");
+    expect(docToText(sample)).toBe(
+      "目的\n請求を送る\n二行目\n- 明細を集める\n  [x] 済んだ\n項目 | 数量\n> 引用\nx=1\ny=2\n図",
+    );
   });
 
   it("K561-DOC-002 同じ doc から必ず同じ text／空の doc は空の文字／toTicketBody は doc と docToText を組にする", () => {

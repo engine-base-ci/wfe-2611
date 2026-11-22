@@ -20,7 +20,15 @@ let boss: TenantContext, staff: TenantContext, other: TenantContext;
 let kindA: string;
 let kindB: string;
 
-type Result = { ok: boolean; status?: number; code?: string; field?: string; id?: string; number?: string; detail?: string[] };
+type Result = {
+  ok: boolean;
+  status?: number;
+  code?: string;
+  field?: string;
+  id?: string;
+  number?: string;
+  detail?: string[];
+};
 const q = async <T = Record<string, unknown>>(ctx: TenantContext, sql: string, p: unknown[] = []) =>
   withTenant(app, ctx, async (c) => (await c.query(sql, p)).rows as T[]);
 const one = async (sql: string, p: unknown[] = []) => (await admin.query<{ id: string }>(sql, p)).rows[0]!.id;
@@ -40,15 +48,28 @@ const create = async (ctx: TenantContext, extra: Record<string, unknown> = {}, s
 };
 const sections = async (ticket: string) =>
   (
-    await admin.query<{ section_key: string; position: number; version: number; body: { doc?: unknown; text?: string } }>(
+    await admin.query<{
+      section_key: string;
+      position: number;
+      version: number;
+      body: { doc?: unknown; text?: string };
+    }>(
       "select section_key, position, version, body from ticket_sections where ticket_id = $1 order by position, section_key",
       [ticket],
     )
   ).rows;
 const versions = async (ticket: string) =>
-  (await admin.query<{ version: number; body: unknown }>("select version, body from ticket_section_versions where ticket_id = $1", [ticket])).rows;
+  (
+    await admin.query<{ version: number; body: unknown }>(
+      "select version, body from ticket_section_versions where ticket_id = $1",
+      [ticket],
+    )
+  ).rows;
 const ticketCount = async () =>
-  Number((await admin.query<{ n: string }>("select count(*) as n from tickets where tenant_id = $1", [S.tenantA])).rows[0]!.n);
+  Number(
+    (await admin.query<{ n: string }>("select count(*) as n from tickets where tenant_id = $1", [S.tenantA])).rows[0]!
+      .n,
+  );
 
 beforeAll(async () => {
   await migrate(DB_URL, join(here, ".."));
@@ -74,12 +95,14 @@ afterAll(async () => {
 
 describe("種別のひな形（ticket_kinds.body_template）", () => {
   it("K561-DB-001 会社を作った直後に、既定の 4 種別（タスク・課題・QA・会議）へ製品のひな形が入る（見出し 5・薄い字の説明 5・文書の木の形に合う）", async () => {
-    const t = await one("insert into tenants (id, tenant_id, name) select u, u, '会社 c' from gen_random_uuid() u returning id");
+    const t = await one(
+      "insert into tenants (id, tenant_id, name) select u, u, '会社 c' from gen_random_uuid() u returning id",
+    );
     const kinds = (
-      await admin.query<{ name: string; body_template: { content: { type: string; attrs: { ghost?: boolean }; content: { text: string }[] }[] } }>(
-        "select name, body_template from ticket_kinds where tenant_id = $1 and is_builtin order by position",
-        [t],
-      )
+      await admin.query<{
+        name: string;
+        body_template: { content: { type: string; attrs: { ghost?: boolean }; content: { text: string }[] }[] };
+      }>("select name, body_template from ticket_kinds where tenant_id = $1 and is_builtin order by position", [t])
     ).rows;
     expect(kinds.map((k) => k.name)).toEqual(["タスク", "課題", "QA", "会議"]);
     for (const k of kinds) {
@@ -112,12 +135,20 @@ describe("種別のひな形（ticket_kinds.body_template）", () => {
     await admin.query("select app.ticket_body_template_basics($1)", [S.tenantA]);
     await admin.query("select app.ticket_basics($1)", [S.tenantA]); // 初めの行をもう一度入れても種別は増えず、ひな形も消えない
     const get = async (id: string) =>
-      (await admin.query<{ body_template: unknown }>("select body_template from ticket_kinds where id = $1", [id])).rows[0]!.body_template;
+      (await admin.query<{ body_template: unknown }>("select body_template from ticket_kinds where id = $1", [id]))
+        .rows[0]!.body_template;
     expect(await get(kindA)).toEqual(mine);
     expect(await get(custom)).toBeNull();
     expect(await get(gone)).toBeNull();
     expect(
-      Number((await admin.query<{ n: string }>("select count(*) n from ticket_kinds where tenant_id = $1 and is_builtin and deleted_at is null", [S.tenantA])).rows[0]!.n),
+      Number(
+        (
+          await admin.query<{ n: string }>(
+            "select count(*) n from ticket_kinds where tenant_id = $1 and is_builtin and deleted_at is null",
+            [S.tenantA],
+          )
+        ).rows[0]!.n,
+      ),
     ).toBe(4);
     // ひな形が空の既定の種別には入る（前からある会社への入れ直し）
     await admin.query("update ticket_kinds set body_template = null where id = $1", [kindA]);
@@ -128,7 +159,10 @@ describe("種別のひな形（ticket_kinds.body_template）", () => {
   it("K561-DB-003 ひな形の形の守り：type が doc でない・content が配列でない・1MB を超える更新は止まる", async () => {
     const tryset = async (v: unknown) => {
       try {
-        await admin.query("update ticket_kinds set body_template = $2::jsonb where id = $1", [kindA, JSON.stringify(v)]);
+        await admin.query("update ticket_kinds set body_template = $2::jsonb where id = $1", [
+          kindA,
+          JSON.stringify(v),
+        ]);
         return null;
       } catch (e) {
         return String((e as Error).message);
@@ -136,14 +170,19 @@ describe("種別のひな形（ticket_kinds.body_template）", () => {
     };
     expect(await tryset({ type: "paragraph", content: [] })).toContain("ticket_kinds_body_template_ok");
     expect(await tryset({ type: "doc", content: "x" })).toContain("ticket_kinds_body_template_ok");
-    expect(await tryset({ type: "doc", content: [para("x".repeat(1_048_600))] })).toContain("ticket_kinds_body_template_ok");
+    expect(await tryset({ type: "doc", content: [para("x".repeat(1_048_600))] })).toContain(
+      "ticket_kinds_body_template_ok",
+    );
     expect(await tryset({ type: "doc", content: [para("ふつう")] })).toBeNull();
   });
 });
 
 describe("本文 1 枚の道（app.ticket_create の body）", () => {
   it("K561-DB-004 body を渡して作ると、鍵 body の 1 行（位置 0・版 1・{doc, text}）と版 1 の行が 1 つずつ書かれ、前の区画の行は書かれない", async () => {
-    const d = doc({ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "目的" }] }, para("請求を届ける"));
+    const d = doc(
+      { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "目的" }] },
+      para("請求を届ける"),
+    );
     const text = "目的\n請求を届ける";
     const r = await create(boss, { body: { doc: d, text } });
     expect(r.ok, JSON.stringify(r)).toBe(true);
@@ -267,13 +306,17 @@ describe("別の会社・権限", () => {
   it("K561-DB-017 失敗 S1 DB に書く：チケットを書いた後、版 1 の行を書く所で落ちたら、取引ごと戻ってチケットも本文の行も残らない", async () => {
     const title = "K561-017-途中で落ちる";
     // この試験の本文の字だけに反応する引き金（ほかの試験の作りを巻き込まない）。終わったら必ず消す
-    await admin.query("create or replace function public.k561_boom() returns trigger language plpgsql as $$ begin raise exception 'K561-BOOM'; end $$");
+    await admin.query(
+      "create or replace function public.k561_boom() returns trigger language plpgsql as $$ begin raise exception 'K561-BOOM'; end $$",
+    );
     await admin.query(
       "create trigger k561_boom_t before insert on ticket_section_versions for each row when (new.body->>'text' = 'K561-BOOM') execute function public.k561_boom()",
     );
     try {
       const before = await ticketCount();
-      await expect(create(boss, { title, body: { doc: doc(para("K561-BOOM")), text: "K561-BOOM" } })).rejects.toThrow(/K561-BOOM/);
+      await expect(create(boss, { title, body: { doc: doc(para("K561-BOOM")), text: "K561-BOOM" } })).rejects.toThrow(
+        /K561-BOOM/,
+      );
       expect(await ticketCount()).toBe(before);
       const left = await admin.query("select 1 from tickets where tenant_id = $1 and title = $2", [S.tenantA, title]);
       expect(left.rowCount).toBe(0);
