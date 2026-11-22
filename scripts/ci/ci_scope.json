@@ -1179,6 +1179,26 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-timeline.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_timeline.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-update.ts",
     "apps/api/src/features/ticket-update/**",
     "apps/api/src/features/F6/progress/**"
@@ -1337,6 +1357,47 @@
    "tests": [
     "apps/web/tests/k/k413-sender-actions.spec.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-invitations.ts",
+    "apps/api/src/features/F10/invite/**",
+    "packages/db/migrations/20261121091900_workspace_invitations.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-fields-read.ts",
+    "apps/api/src/features/F4/ticket-fields/**",
+    "03_architecture/db-catalog.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144.d/K-563.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ticket_fields.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1457,6 +1518,8 @@
   "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）",
   "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
   "apps/web/tests/k/k382-stage7-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f6/mocks.tsx・F6 の部品と CSS と区画のファイル（apps/web/features/F6）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しの台本 07_functional/段7-F6/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・決定ログに足す行.md・答えの記録 01_hearing/decider-answers.jsonl を読み、scripts/ci/design_gate.py を子プロセスで流す（K-382）",
+  "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
+  "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
   "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
   "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/web/tests/k/k400-stage9-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f8/mocks.tsx・部品 apps/web/features/F8/handover/（views.tsx・handover.css・detail-slots.tsx・slot-dispatch.tsx・use-handovers.ts・区画のファイル 10 個）と apps/web/features/F10/invite/views.tsx・探す欄の型 apps/web/components/k/search-field.tsx・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段9-F8/mock-shots.mjs・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-400）",
@@ -1467,6 +1530,10 @@
   "apps/api/test/features/F8/handover-sender.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-sender.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-406",
   "apps/api/test/features/contract/k144.d/K-406.ts": "準備（setup）で apps/api/src/hooks/handovers-sender.ts を動的 import で読む・K-406",
   "apps/api/test/features/F8/handover-overdue.test.ts": "承認待ちの口の hooks のファイル apps/api/src/hooks/approve-complete.ts を it の中で動的 import で読み、メールの偽を持つ材料で作り直す（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-407",
+  "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
+  "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
+  "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"
  },
  "web_select": {

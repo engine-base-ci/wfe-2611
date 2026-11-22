@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:0029844d3d7b1207
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:30cf9b5164af8f8a
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -3290,53 +3290,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "GET",
-    "path": "/api/v1/class_axes",
-    "operationId": "listClassAxes",
-    "table": "class_axes",
-    "kind": "list",
-    "input": null,
-    "success": 200,
-    "output": "ClassAxes",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A103"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "PATCH",
     "path": "/api/v1/client_contacts/:id",
     "operationId": "updateClientContact",
@@ -5360,6 +5313,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       403,
+      409,
       502,
       503,
       413,
@@ -5417,6 +5371,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       403,
+      409,
+      409,
       409,
       502,
       503,
@@ -6108,9 +6064,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createInvitations",
     "table": "invitations",
     "kind": "create",
-    "input": "InvitationsInput",
+    "input": "InvitationsCreateInput",
     "success": 201,
-    "output": "Invitations",
+    "output": "InvitationsSent",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -6128,6 +6084,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      404,
       413,
       429,
       403,
@@ -15138,6 +15095,56 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/ticket-fields",
+    "operationId": "listTicketFields",
+    "table": "custom_fields",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketField",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "kind_id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      404,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A103"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "PATCH",
     "path": "/api/v1/ticket_decisions/:id",
     "operationId": "updateTicketDecision",
@@ -17948,7 +17955,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "key": "user"
     },
     "uuidParams": [
-      "id"
+      "id",
+      "before_id"
     ],
     "chokePoints": [],
     "errors": [
@@ -19801,4 +19809,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "0029844d3d7b1207";
+export const OPENAPI_HASH = "30cf9b5164af8f8a";

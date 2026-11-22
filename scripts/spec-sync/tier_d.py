@@ -291,8 +291,12 @@ def main() -> int:
     MOCKDIR, MOCKPRE, MOCKS = resolve_mocks(root, M, SCREENS)
     # 画面とモック（Kaname ではキャンバスの絵）の対応表を地図が名指ししていれば、ファイル名で探さずにそれを読む（K-45）
     smi = M.get("screen_mock_index") or {}
+    MOCK_ONLY: set = set()
     if smi.get("file") and os.path.exists(os.path.join(root, smi["file"])):
         idx = json.load(open(os.path.join(root, smi["file"]), encoding="utf-8"))
+        # 絵が無く、本番と同じ部品で作った開発用のモックを正にした画面（mock_only・画面 ID → 理由）。
+        # 理由が空（空白だけも）の物は数えない。実在・二重は canvas_gate.py（CV4）が見る（K-624）
+        MOCK_ONLY = {sid for sid, why in (idx.get("mock_only") or {}).items() if str(why or "").strip()}
         MOCKDIR = os.path.join(root, smi.get("dir", ""))
         MOCKPRE = ""
         MOCKS = {sid: os.path.join(MOCKDIR, bs[0] + smi.get("ext", ".html"))
@@ -567,7 +571,7 @@ def main() -> int:
     if SCREENS:
         want = {s2["id"] for s2 in SCREENS
                 if str(s2.get("release", "")) in ("", "v1") or not s2.get("release")}
-        made = set(MOCKS)
+        made = set(MOCKS) | MOCK_ONLY
         rows.append({"id": "D6", "file": f"モック（{MOCKDIR or '見つからない'}）",
                      "want": len(want), "found": len(want), "hit": len(want & made)})
         if not MOCKDIR:

@@ -127,8 +127,10 @@ export const MIGRATIONS = [
   "20261119120500_credential_soft_delete.sql",
   "20261119120600_credential_login_check.sql",
   "20261119120800_credential_service_tenant.sql",
+  "20261120130000_ticket_timeline.sql",
   "20261120130400_ticket_progress.sql",
   "20261120143736_bridge_set_browser_acl.sql",
+  "20261120215500_runs_view_real_runs_only.sql",
   "20261121090100_handover_base.sql",
   "20261121090200_handover_pass.sql",
   "20261121090300_handover_answer_pass.sql",
@@ -136,4 +138,6 @@ export const MIGRATIONS = [
   "20261121090500_handover_queue.sql",
   "20261121090600_handover_sender.sql",
   "20261121090700_handover_overdue.sql",
+  "20261121091900_workspace_invitations.sql",
+  "20261122090300_custom_fields.sql",
 ] as const;
