@@ -1,8 +1,8 @@
 "use client";
 // 親を決める小窓（K-443・段 5 の下絵・部品先行）。値と押したときの関数を受け取って描くだけで、口は呼ばない。
 //   決め（代表に聞くことのおすすめ）：親は 3 段まで（3 段目の子は選べない）・親の期限より後にはできない（小窓に注意）・
-//   「親の担当・取引先・節目を写す」のチェックは既定で入っている・合うチケットが無くても親なしで作れる。
-//   探して 1 つ選ぶ並び（PickList・PickSearch）は、業務の型を選ぶ小窓と複製の元を選ぶ小窓も使う
+//   「親の担当・節目を写す」のチェックは既定で入っている・合うチケットが無くても親なしで作れる。
+//   探して 1 つ選ぶ並び（PickList・PickSearch）は、複製の元を選ぶ小窓も使う
 import { Check, X } from "lucide-react";
 import { Button, Callout, Dialog, TextField } from "@/components/k";
 import "./parent.css";
@@ -88,7 +88,7 @@ export interface ParentDialogProps {
   parentDue?: string;
   /** この子の今の期限が親の期限より後のときの注意（そのまま出す） */
   lateNote?: string;
-  /** 「親の担当・取引先・節目を写す」のチェック */
+  /** 「親の担当・節目を写す」のチェック */
   copyChecked: boolean;
   onQuery?: (v: string) => void;
   onPick?: (id: string) => void;
@@ -144,7 +144,7 @@ export function ParentDialog(p: ParentDialogProps) {
             readOnly={!p.onCopy}
             onChange={(e) => p.onCopy?.(e.target.checked)}
           />
-          親の担当・取引先・節目を写す
+          親の担当・節目を写す
         </label>
       </div>
     </Dialog>

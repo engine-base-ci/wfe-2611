@@ -363,9 +363,6 @@ export function ItemsTable({
       <Pair name="親">
         <ParentEntry parent={null} onOpen={noop} />
       </Pair>
-      <Pair name="取引先">
-        <Select label="取引先" name="client" value="c1" options={[{ value: "c1", label: "セイコー商事" }]} />
-      </Pair>
       {customSlot ?? <CustomPairs all={all} errors={errors} />}
       <Pair name="確認項目" full>
         {specsSlot ?? <SpecsItem lines={specs} />}

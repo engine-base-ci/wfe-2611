@@ -85,7 +85,6 @@ export function ItemsPanel({
             <h2>関連</h2>
             <dl className="k-detail-fields">
               {group ? <Item k="グループ" v="営業（EG）" /> : null}
-              <Item k="取引先" v={V("取引先", "セイコー商事")} />
               <Item k="節目" v={V("節目", "11 月の締め")} />
               <Item k="親" v={V("親", "")} />
               <Item k="PJコード" v={V("PJコード", "SK-2026-11")} />

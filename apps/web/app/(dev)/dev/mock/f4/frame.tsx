@@ -72,8 +72,6 @@ export function Toast({ title }: { title: string }) {
 }
 
 export interface PanelValues {
-  /** 業務の型の行の中身（空なら空の字） */
-  workType?: ReactNode;
   /** 期限の行の中身（作る面の小窓・詳細の小窓を開く物） */
   due?: ReactNode;
   /** 親の行の中身 */
@@ -84,7 +82,6 @@ export interface PanelValues {
 export function Panel({ values = {} }: { values?: PanelValues }) {
   const rows: [string, ReactNode][] = [
     ["担当者", ME.full],
-    ["業務の型", values.workType ?? ""],
     ["承認する人", ME.full],
   ];
   return (
