@@ -1283,7 +1283,7 @@
     "scripts/ci/contract_shape.d/K-638.py"
    ],
    "tests": [
-    "scripts/ci/k638_contract_test.py"
+    "apps/api/test/features/F1/pm-fuzz-auth.test.ts"
    ]
   },
   {
