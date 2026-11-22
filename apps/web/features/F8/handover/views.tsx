@@ -538,7 +538,7 @@ export function DistributeDialog({
         <p className="k-hnd-note">
           {toGroup
             ? `${to}の人が「自分が持つ」か「人を決める」を押すまで、担当者はあなたのままです。`
-            : `配るとすぐ${to}さんが担当者になり、知らせが届きます。`}
+            : `配るとすぐ${to}さんが担当者になり、お知らせが届きます。`}
         </p>
       </div>
     </Dialog>
@@ -733,7 +733,7 @@ function BandOf({ kind, who, at, reason, ask, due, carry, acts }: Omit<HandoverB
           acts={acts ?? [btn("催促する"), btn("取り消す"), btn("別の人にする")]}
         >
           <BandLine>{`理由：${reason ?? ""}`}</BandLine>
-          <BandLine>完了にする・消すと、この渡しは取り消され、相手に知らせが届きます</BandLine>
+          <BandLine>完了にする・消すと、この渡しは取り消され、相手にお知らせが届きます</BandLine>
         </Band>
       );
     case "receiving":
