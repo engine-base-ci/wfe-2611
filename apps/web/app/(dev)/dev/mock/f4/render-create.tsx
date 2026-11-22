@@ -179,7 +179,7 @@ const BUILDERS: Record<string, Builder> = {
         month: "2026-11",
         selected: "2026-11-30",
         target: `${DUP_TARGET} ・ いまの期限 ${mmddWeek(TICKET.due_on)}`,
-        notice: "期限を延ばすと、承認する人（高本）に知らせが出る",
+        notice: "期限を延ばすと、承認する人（高本）にお知らせが出る",
         reason: "先方の返事が来週になると連絡があったため",
       })}
     />

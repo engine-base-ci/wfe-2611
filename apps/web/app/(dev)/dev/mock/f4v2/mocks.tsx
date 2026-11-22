@@ -69,7 +69,7 @@ export const MOCKS: readonly MockEntry[] = [
   { id: "f4v2-editor-link-error", screen: "tickets", label: "本文の道具：リンクの入力（使えない値）", ticket: "K-567", leaf: "K-567" },
   { id: "f4v2-editor-color", screen: "tickets", label: "本文の道具：文字の色の小さな画面", ticket: "K-568", leaf: "K-568" },
   { id: "f4v2-editor-table", screen: "tickets", label: "本文の道具：表のメニュー", ticket: "K-568", leaf: "K-568" },
-  { id: "f4v2-editor-paste-fail", screen: "tickets", label: "本文の道具：Markdown を貼れなかったときの知らせ", ticket: "K-568", leaf: "K-568" },
+  { id: "f4v2-editor-paste-fail", screen: "tickets", label: "本文の道具：Markdown を貼れなかったときのお知らせ", ticket: "K-568", leaf: "K-568" },
 ];
 
 const CRUMBS = [{ label: "チケット", href: "/tickets" }, { label: "チケットを作る" }];
