@@ -339,6 +339,36 @@ describe("K-583 予定時間の組（updateTicket・本物の DB）", () => {
     expect((await row(u.id)).estimate_minutes).toBeNull();
   });
 
+  it("K583-API-019 知らせは 1 回の要求で 1 人に 1 通：担当者でない人が予定時間を優先度・段と一緒に変えても、担当者の受け箱の行は 1 つで、変えた欄の名前が全部入る（代表の答え ⑮7）", async () => {
+    const w = await world();
+    const t = await mk(w, { assignee: w.mate.id });
+    await patchOk(w.boss, t.id, {
+      estimate_minutes: 90,
+      priority: "high",
+      priority_reason: "先方が急ぐ",
+      stage_key: "doing",
+    });
+    const all = (
+      await f.admin.query(
+        "select event_kind_id, payload from notifications where payload->>'ticket_id' = $1 and member_id = $2 order by created_at, id",
+        [t.id, w.mate.id],
+      )
+    ).rows as { event_kind_id: string; payload: { fields?: string[] } }[];
+    expect(all.length, "受け箱の行は 1 つ").toBe(1);
+    expect(all[0]!.payload.fields).toEqual(["priority", "estimate_minutes"]);
+    expect(JSON.stringify(all[0]!.payload)).not.toContain("先方が急ぐ");
+    const alone = await mk(w, { assignee: w.mate.id });
+    await patchOk(w.boss, alone.id, { estimate_minutes: 30 });
+    const one = (
+      await f.admin.query("select payload from notifications where payload->>'ticket_id' = $1 and member_id = $2", [
+        alone.id,
+        w.mate.id,
+      ])
+    ).rows as { payload: { fields?: string[] } }[];
+    expect(one.length).toBe(1);
+    expect(one[0]!.payload.fields).toEqual(["estimate_minutes"]);
+  });
+
   it("K583-API-009 変えられない人：読むだけ 403・見えない・別の会社・無い・消されたチケットは 404（体は error と code だけ）・ログインなし 401。値は書かれない", async () => {
     const w = await world();
     const other = await world();

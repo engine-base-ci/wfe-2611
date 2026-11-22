@@ -85,11 +85,23 @@ begin
   -- 担当者でない人が変えたときだけ、担当者（今のメンバー：抜けた・止められた人は除く）の受け箱に知らせる（画面の中だけ・メールは出さない・D-150.32）。
   --   本文はチケットの id・番号・リンク・変更の 1 行の id・変えた欄の名前だけ（値の字・題名は入れない）
   if t.assignee_member_id is not null and t.assignee_member_id <> v_me and app.ticket_member_ok(t.tenant_id, t.assignee_member_id) then
-    insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
-      values (t.tenant_id, t.assignee_member_id, 'inapp', 'ticket.sort_changed',
-              jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
-                                 'fields', jsonb_build_array('estimate_minutes')),
-              'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    -- 1 回の要求は 1 人に 1 通（代表の答え ⑮7・PM の決め 2026-11-23 04:55）：同じ取引で、この人・このチケットの受け箱の行が既に在れば
+    --   （段・優先度・親の組が先に書いた行）、新しく書かず、その行の fields に estimate_minutes を足す。無ければ新しく書く
+    update notifications n
+       set payload = n.payload || jsonb_build_object('fields', coalesce(n.payload -> 'fields', '[]'::jsonb) || jsonb_build_array('estimate_minutes'))
+     where n.id = (select n2.id from notifications n2
+                    where n2.tenant_id = t.tenant_id and n2.member_id = t.assignee_member_id and n2.channel_id = 'inapp'
+                      and n2.event_kind_id in ('ticket.stage_changed', 'ticket.sort_changed')
+                      and n2.payload ->> 'ticket_id' = t.id::text
+                      and n2.xmin = pg_current_xact_id()::xid
+                    order by n2.created_at desc, n2.id desc limit 1);   -- 1 行だけに足す（同じ取引に行が複数あっても全部には足さない）
+    if not found then
+      insert into notifications (tenant_id, member_id, channel_id, event_kind_id, payload, dedupe_key, sent_at, created_by)
+        values (t.tenant_id, t.assignee_member_id, 'inapp', 'ticket.sort_changed',
+                jsonb_build_object('ticket_id', t.id, 'number', t.number, 'url', '/tickets/' || t.id::text, 'message_id', v_msg,
+                                   'fields', jsonb_build_array('estimate_minutes')),
+                'ticket.sort_changed:' || v_msg::text, now(), v_me);
+    end if;
   end if;
   -- 証跡（関門 C2）。中身は変えた欄の名前だけ（値の字を残さない）
   insert into audit_events (tenant_id, actor_member_id, actor_role, action, target_type, target_id, choke_point_id, payload, created_by)
