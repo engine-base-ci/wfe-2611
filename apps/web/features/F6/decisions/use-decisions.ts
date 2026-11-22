@@ -140,7 +140,8 @@ export function useAddDecision(
         return;
       }
       if (r.status === 401) return; // 入り直し（共通の扱い）
-      if (r.status === 422) {
+      // 決めた人が今のメンバーでない（404 E-PAGE-001・欄つき・drift 2026-11-20 16:51）も 422 と同じく小窓の中に出す
+      if (r.status === 422 || (r.status === 404 && r.fields["decided_by_member_id"])) {
         const text = r.fields["text"];
         const by = r.fields["decided_by_member_id"];
         if (text || by) return setErrors({ ...(text ? { text } : {}), ...(by ? { by } : {}) });

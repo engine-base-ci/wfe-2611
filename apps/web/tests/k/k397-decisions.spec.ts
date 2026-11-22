@@ -33,7 +33,7 @@ const MSG = {
   empty: "まだ決定はありません。決めたことと理由を残すと、あとから根拠として引けます", // モック dec-empty
   failed: "決定を読み込めませんでした", // モック（talk と同じ形の読めない箱）
   textReq: "決めたことを書いてください", // E-VAL-042（口の葉 K-390 が正本に足す・モック dec-add と同じ）
-  byInvalid: "決めた人は、この会社のメンバーから選んでください", // E-VAL-043（K-390）
+  byInvalid: "決めた人は、この会社のメンバーから選んでください", // 404 E-PAGE-001 の欄 decided_by_member_id の文（K-390）
   aiInert: "AI が一文にまとめた案 ── AI の案は、自分の AI と話す画面ができてから使えます", // ⑯
   clientLater: "取引先の画面ができてから使えます", // ㉒
   peopleFailed: "ほかのメンバーを読み込めませんでした（自分を選べます）", // 切る段の仮
@@ -387,7 +387,7 @@ test("K397-UI-016 答えを止めたまま「決定を足す」を 2 回：口�
 
 // ---------------------------------------------------------------- 失敗
 
-test("K397-UI-017 手順 S2 の失敗 422（決めた人の欄の断り E-VAL-043）・403（書く権限が外れた）：422 は小窓の中の決めた人の欄の下、403 は閉じて区画の中の頭の知らせ・読み直しで「＋ 決定を足す」が消える", async ({
+test("K397-UI-017 手順 S2 の失敗 404（決めた人の欄の断り E-PAGE-001・欄 decided_by_member_id）・403（書く権限が外れた）：404（欄つき）は小窓の中の決めた人の欄の下、403 は閉じて区画の中の頭の知らせ・読み直しで「＋ 決定を足す」が消える", async ({
   page,
 }) => {
   const d = await decisionsApi(page);
@@ -395,10 +395,10 @@ test("K397-UI-017 手順 S2 の失敗 422（決めた人の欄の断り E-VAL-04
   await openAdd(page);
   await textOf(page).fill("見積は税込");
   d.failWrite.push({
-    status: 422,
+    status: 404,
     body: {
-      error: "validation_error",
-      code: "E-VAL-043",
+      error: "not_found",
+      code: "E-PAGE-001",
       message: MSG.byInvalid,
       detail: { field: "decided_by_member_id" },
     },
