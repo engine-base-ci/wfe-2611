@@ -19144,6 +19144,127 @@
    "file": "11_tickets/K-425.md"
   },
   {
+   "id": "K-428",
+   "title": "場合表の種の外部キーの問い合わせを、information_schema の 3 つのビューの結合から目録（pg_catalog）に引き直して速くする（表 138 で約 20 秒・DB の試験の準備が混む CI で時間切れになる・結果は同じ・K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "DB",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い K-426（DB の目録だけを変える葉・0.75 時間）より小さい：問い合わせ 1 つを書き換える 10 分（書き換え先の文は下の実施事項に全文書いた）・種を使う DB の試験の全部を手元の使い捨ての DB で流して確かめる 20 分（切る段で同じ形の文を手元の DB に当てて、前の文と行の集合が同じ・2.7 秒が 0.23 秒になることを確かめ済み）。migration も口も画面も触らない",
+   "decisions": [
+    "D-128.125",
+    "D-128.143",
+    "D-133.2"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "試験の種（管理者の接続で DB の目録を読むだけ）の読み方を変える。書き込み・外への送信・口の経路は変えない",
+   "tests": [
+    "packages/db/test/k428_seed_fk_catalog.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（試験の種の中の問い合わせ 1 つ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "packages/db/src/seed_generic.ts"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "場合表の種 `seedAccessMatrix`（`packages/db/src/seeds.ts`）は、表ごとの種を `seedGenericRows`（`packages/db/src/seed_generic.ts`）に任せ、その最初に **外部キーの一覧を information_schema の 3 つのビュー（table_constraints・key_column_usage・constraint_column_usage）の結合で引いている**。この結合は、表が増えるほど急に遅くなる（constraint_column_usage は、各制約ごとに権限を確かめながら列を引き直すビュー）。\n\n- 手元の開発の試験 DB（kaname_test・表 134・外部キー 370 本）で、この 1 文だけ **約 2.7 秒**。CI の台が混むと、表 138 で約 20 秒になる\n- 種を呼ぶ DB の試験の準備（`beforeAll`・上限 33 秒＝vitest.config.ts の hookTimeout）が、混んだ CI で時間切れになって赤になった（K-402・K-404 の CI）。種を呼ぶ試験は 30 ファイル（`git grep -l seedAccessMatrix` の 32 件から、種の本体 seeds.ts・cli.ts を除く。うち 2 つ（apps/api/test/harness.ts・packages/db/test/global-lock.ts）は試験の補助のファイル）なので、表が増えるほど全部の DB の試験に効く\n\nこの葉は **同じ行の集合を、目録（pg_constraint・pg_class・pg_attribute）で引き直す**。切る段で手元の DB（kaname_test）に当てた結果：前の文と新しい文の行の集合が同じ（370 行・差 0）、2.7 秒が 0.23 秒（約 12 倍）。\n\n結果が変わる所は 1 つだけ：**2 列以上の外部キー**。前の文は元の列と先の列を組にせず全部の組み合わせを出す（2 列なら 4 行）。新しい文は列の順に組にする（2 行）。今の DB に 2 列の外部キーは 0 本（`select count(*) from pg_constraint where contype='f' and array_length(conkey,1)>1` が 0）なので今は差が出ない。種は `fkOf(table, col)` で「その列の先」を 1 つ探すので、組にする方が正しい（前の出し方は先の列を取り違える元になる）。これは切る段の決め（下の決定ログ）。",
+    "完了の条件": "- [ ] 下の表の 6 行（K428-DB-001〜005・007）が緑：`packages/db/test/k428_seed_fk_catalog.test.ts`（K428-DB-006 は人が確かめる）\n- [ ] 種を使う前からの試験（packages/db/test と apps/api/test の DB を使う物の全部・この葉の範囲 ci_wide shared）が全部緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 関門：試験の種が DB の目録を読むだけ（C2 の書き込みの経路は変えない）\n- **変えるのは `seed_generic.ts` の外部キーを引く 1 文だけ**。主キーの文（同じ情報源の `table_constraints` と `key_column_usage` の結合・0.2 秒）・列の文（`information_schema.columns`・0.6 秒）・CHECK の文（すでに pg_constraint）は変えない（切る段で 4 つの文を手元の DB で測った：外部キーの文だけが遅い）。種の他の部分・`seeds.ts`・`matrix.ts`・`cli.ts`・`repository.ts` の information_schema の引きも変えない\n- **列の別名は変えない**：読む側（`Fk` 型・`fkOf`・依存順の計算）が `table`・`col`・`refTable`・`refCol` を使う。表の名前は `pg_class.relname`（修飾も引用符も付かない）で出す。`regclass::text` は接続の探す道（search_path）で形が変わる（public 以外なら修飾が付く）ので使わない\n- 文は **引数なし・1 回だけ**引く（今と同じ）。表ごとに引かない\n- 対象は public のスキーマの表から public のスキーマの表への外部キー（`c.connamespace` と `fr.relnamespace` の両方が public）。前の文は先の表が別のスキーマにある外部キーを返さない（結合が `ccu.table_schema = tc.table_schema` のため・切る段で別のスキーマに作って確かめた）ので、新しい文も返さない（返すと種が public に無い表を先に持つ列を、先の種を探して失敗する）\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）。切る段では、準備の誤りだけを見るために 1 回流した（K428-DB-002・003 が実装が無いからの赤・001・004・005 は前の文でも緑になる「同じ結果」の行）\n- 試験の DB は本物の Postgres。手元の共通の `kaname_test` には他の葉の種が残っていて migration が落ちることがある（operations の外部キー）ので、切る段では使い捨ての DB（`kaname_tmp_k428`・切る段で作って流した）を使った",
+    "依存の理由": "なし：`seed_generic.ts` のこの 1 文だけを変える。同じファイルを変える先の葉は無い（呼ぶ側のコードは `seeds.ts` だけ（下の search））。\n\n```search\ngit grep -ln \"seed_generic\" -- 'packages/*/src' apps\n1\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 外部キーの文を書き換える | `packages/db/src/seed_generic.ts` の `fks` を引く 1 文（`information_schema.table_constraints` の結合）を、次の全文に置き換える。読む側の型 `Fk` と `c.query<Fk>(...)` の呼び方は変えない |\n| 使う部品と版 | 新しい部品は入れない（pg ^8.23.0・PostgreSQL の目録だけ） |\n| 目録で探した結果 | 使う：`seed_generic.ts` の `Fk` 型・`fkOf`・依存順の計算、DB の目録 pg_constraint・pg_class・pg_attribute。作る物は無い（置き換えるだけ）。探したが他に外部キーを information_schema から引く所は無い（下の search）。似た物：`seed_generic.ts` の CHECK の文がすでに `pg_constraint ... connamespace = 'public'::regnamespace` で引いている（この葉の引き方と同じ形） |\n\n書き換え先の文（切る段で手元の DB に当てて、前の文と行の集合が同じ・2 列でも組になることを確かめた）：\n\n```sql\nselect r.relname::text as \"table\", a.attname::text as col, fr.relname::text as \"refTable\", ra.attname::text as \"refCol\"\nfrom pg_constraint c\njoin pg_class r on r.oid = c.conrelid\njoin pg_class fr on fr.oid = c.confrelid\ncross join lateral unnest(c.conkey, c.confkey) as k(attnum, refattnum)\njoin pg_attribute a on a.attrelid = c.conrelid and a.attnum = k.attnum\njoin pg_attribute ra on ra.attrelid = c.confrelid and ra.attnum = k.refattnum\nwhere c.contype = 'f' and c.connamespace = 'public'::regnamespace\n  and fr.relnamespace = 'public'::regnamespace\n```\n\n外部キーを information_schema から引いている所（今は 1 件・この葉が消す）：\n\n```search\ngit grep -ln \"constraint_column_usage\" -- packages apps scripts ':!packages/db/test/k428_seed_fk_catalog.test.ts'\n1\n```\n\n（1 件：`packages/db/src/seed_generic.ts`。ほかの information_schema の引き `cli.ts`・`matrix.ts`・`repository.ts`・`seed_generic.ts` の主キーと列の文は `constraint_column_usage` を使わず、測って速かったので触らない）",
+    "外に影響する手順": "なし（DB の目録を読むだけ。書かない・外へ出さない）。",
+    "テスト仕様と確認の結果": "`packages/db/test/k428_seed_fk_catalog.test.ts`（本物の Postgres・migration を全部当てた DB）。種を流している間に出た文を、種の中身を変えずに覗いて集める（`Proxy` で `query` を包む）。固定の待ちは使わない。時間そのものは台で揺れるので比べない（使う系と結果で見る）。\n\n### 状態 × 入口 × 利用者の状態\n\n要らない：状態を持つ物を作らない。入口は種の呼び出し 1 つ（管理者の接続）だけ。\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K428-DB-001 | 入力 | 種が使う外部キーの文と、前の文（information_schema の結合・試験に写しておく）を、同じ DB に流す | 2 つの行の集合（`表.列>先の表.先の列`）が同じ。空でなく、数が DB の目録の外部キーの本数（1 列の物）と同じ（何も見ていないのに緑にならない）。2 列の外部キーを持つ表は両側から外して比べる |\n| K428-DB-002 | 守り | 種を 1 回流している間に出た文を全部見る | 外部キーを引く文（列の別名 refTable を持つ文）はちょうど 1 つ・文に `pg_constraint` があり `information_schema` と `constraint_column_usage` が無い。種の中のどの文にも `constraint_column_usage` と、`information_schema` と `FOREIGN KEY` を一緒に持つ文は無い。引数（`$1`）は無い |\n| K428-DB-003 | 入力 | 1 つの取引で、2 列の外部キーを持つ表（k428_child の a・b → k428_parent の a・b）と 1 列の外部キー（one_id → k428_one の id）を作り、種が使う文を流す | k428_child の行がちょうど 3 つ：a→a・b→b・one_id→id（元の列と先の列が組になる・4 行にならない）。取引を戻した後、`k428_` の表の行は 0 |\n| K428-DB-004 | 失敗 | 取引の中で `search_path` を `pg_catalog` だけにして流す | 行の集合は変えない前と同じ。表の名前は全部 `[a-z0-9_]+`（修飾も引用符も付かない） |\n| K428-DB-005 | 操作の揺れ | 種を同じ DB に続けて 2 回流す（1 回目は準備で・2 回目はこの行の中で流す＝準備の上限 33 秒に 2 回分を乗せない） | どちらも落ちない。種が返す表の集合（`rows` のキー）は 2 回で同じ・100 より多い。外部キーを持つ表の半分より多くに種がある・`tickets` と `members` に種がある |\n| K428-DB-007 | 入力 | 1 つの取引で、別のスキーマ（k428_other）に表を作り、public の表（k428_x）からそこへ外部キーを張って、前の文と種が使う文を流す | 前の文は k428_x の行を返さない（基準）。種が使う文も k428_x の行を返さない（0 行・別のスキーマの先を足して種を壊さない）。外部キーが 0 本の DB の形は、種が 1 回流れて落ちないこと（準備と K428-DB-005）で見える |\n| K428-DB-006 | 守り | 人が確かめる：作る段の TS が、実装の前と後の同じ DB で、外部キーを引く文だけを `explain (analyze, buffers)` で流し、実行時間の前後と、種を使う試験 1 本（`packages/db/test/tickets.test.ts`）の準備（beforeAll）の時間の前後を、チケットの CI の記録の回の番号とあわせて報告に貼る | 文の実行時間が前の 1/3 以下。tickets.test.ts の準備が短くなる（台の揺れは別に書く） |\n\n```judge-skip\n- K428-DB-006: 時間そのものは台の混み方で揺れる（手元の測りでは 2.7 秒が 0.23 秒・CI の混んだ台では 20 秒の元の数字）ので、機械の判定には使わない。使う系の違い（K428-DB-002）と結果の同じさ（001・003・004・005）を機械で見て、時間は作る段の TS が前後を測って報告に貼る（人が確かめる）\n```\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：この葉が読み書きするのは DB の目録（表・列の名前は英数と下線だけ・migration の表の名前に日本語は無い）。K428-DB-004 が表の名前の形（`[a-z0-9_]+`）を見る |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K428-DB-001（空でなく、数が目録の外部キーの本数と同じ）・K428-DB-003・007（本物の表を足して行が出る）・K428-DB-002（文を覗く仕掛けが外部キーの文を 1 つ見つける。見つからなければ赤） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K428-DB-004（接続の探す道が違っても同じ結果）。CI の VM と手元は同じ PostgreSQL の目録なので、版の違いは文の中の関数（unnest の複数引数・lateral）が PostgreSQL 9.4 以上で使えることだけ（この DB は 16.13） |",
+    "前からの試験を替えた所": "切る段の検査（`python3 scripts/ci/cut_check.py prior --files <changes:>`）が出した、changes: を使う前からの試験。\n\n```search\npython3 scripts/ci/cut_check.py prior --files packages/db/src/seed_generic.ts\n0\n```\n\n0 件。種 `seedAccessMatrix` を呼ぶ前からの試験は 30 ファイルあるが、どれも種の返す形（`Seeded`）を使うだけで、外部キーの文を直に見ない。種の結果は同じ（K428-DB-001・005）なので、替えない。\n\n```search\ngit grep -ln \"seedAccessMatrix\" -- packages apps ':!packages/db/test/k428_seed_fk_catalog.test.ts'\n32\n```",
+    "速さ（今の値と目標の値）": "口も画面も変えない。種の準備の中の文の数も変えない（外部キーの文は今も 1 回）。文 1 つの時間だけが変わる。\n\n| | 今の値 | 目標の値 |\n|---|---|---|\n| 外部キーを引く文（手元の使い捨て DB・表 134・外部キー 370） | 約 2.7 秒 | 0.5 秒以下（切る段で 0.23 秒） |\n| 種を 1 回流す間に出る外部キーの文 | 1 | 1（増やさない） |\n| 準備（beforeAll）の上限 | 33 秒（vitest.config.ts・変えない） | 変えない（上限を上げて逃げない） |",
+    "成果物": "- `packages/db/src/seed_generic.ts` の外部キーの文（置き換え 1 か所）\n- 単体の試験 `packages/db/test/k428_seed_fk_catalog.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：直す場所は依頼にあった `seeds.ts` ではなく `seed_generic.ts`（外部キーの文が書いてあるのはここ・`seeds.ts` は呼ぶだけ）。changes: は `seed_generic.ts` だけにした\n- 2026-11-20 切る段の決め：直すのは外部キーの文だけ。主キーの文と列の文は information_schema のまま（測って 0.2 秒・0.6 秒で、列の文は型の名前の写し（data_type・udt_name の対応）が前と食い違う恐れが大きい割に得が小さい）\n- 2026-11-20 切る段の決め：2 列以上の外部キーは、新しい文では列の順に組にする（前は全部の組み合わせで行が増えた）。今の DB に 2 列の外部キーは無く、種は列ごとに「先」を 1 つ探すので、組の方が正しい。試験は 2 列の物を作って 3 行になることを見る（K428-DB-003）。前との比べ（001）は 2 列の外部キーを持つ表を両側から外すので、将来 2 列の外部キーが増えても偽の赤にならない\n- 2026-11-20 切る段の決め：時間の上限の数字で試験を赤にしない（台で揺れる）。使う系（information_schema を引かない・1 回）と結果の同じさで見て、時間は人が確かめる行（K428-DB-006）にした。準備の上限（33 秒）は上げない\n- 代表に聞くことは無い（製品のふるまい・画面・権限に触らない・試験の種の中の 1 文）",
+    "リスクと懸念": "- 新しい文は PostgreSQL の目録の列（`conkey`・`confkey`）を直に使う。目録の形が変わるのは PostgreSQL の大きな版が上がるときだけで、そのとき K428-DB-001・003 が赤になる\n- information_schema は「自分が持つ権限で見える表」だけを返すが、目録は全部を返す。種を流す役は管理者（superuser）なので結果は同じ（切る段で確かめ済み・K428-DB-001）。管理者でない役でこの種を流す作りは今無い\n- 同じ形の遅い引き（`information_schema.columns` と主キーの結合）は残る。表が 300 を超えて 1 秒を越えるようになったら別の葉で直す（今は 0.6 秒・0.2 秒）",
+    "申し送り": "- 実装は文 1 つの置き換えだけ。実装の前後で `K428-DB-006` の時間を測って報告に貼る\n- ほかの葉：種を使う DB の試験の準備が時間切れになったら、準備の上限（hookTimeout）を上げる前に、準備の中で遅い文を測る（この葉と同じ手）"
+   },
+   "file": "11_tickets/K-428.md"
+  },
+  {
+   "id": "K-429",
+   "title": "fuzz が見つけた前からの口の食い違い（K-62）を契約の形に合わせる（実行の 1 件・一覧は phase・status が空の行を返さず、一覧の limit／cursor／sort は契約の形だけを受けて 422）・契約 fuzz G36 の揺れを根から止める",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-62",
+   "milestone": "F5",
+   "area": "API",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い K-428（DB の目録を読む文 1 つを変える葉・0.5 時間）より少し大きい：migration 1 本（読む関数 2 つに条件を足す・全文を下の実施事項に書いた）10 分・一覧の問い合わせの確かめの関数（新しい小さなファイル・op.ts の一覧の確かめと同じ決まり）15 分・口に 1 か所足す 5 分・試験 11 件を本物の DB で流して確かめる 15 分。口の形・契約・画面は触らない",
+   "decisions": [
+    "D-128.125",
+    "D-128.143",
+    "D-129.43"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/k429_runs_shape.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [
+    "A104"
+   ],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口の答えの対象と問い合わせの確かめだけ・契約の形は変えない）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "changes": [
+    "packages/db/migrations/20261120215500_runs_view_real_runs_only.sql",
+    "packages/db/src/migrations.generated.ts",
+    "apps/api/src/contract/list_query.ts",
+    "apps/api/src/features/F5/delegate/people.ts"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "契約の fuzz（Schemathesis・CI の G36）が、K-62 の 2 つの口で契約と口の食い違いを見つけ、どの葉の CI でも G36 が揺れて赤になる（K-401・K-407 の CI で出た。GitHub の回 44728943303）。食い違いは 2 つ。\n\n1. **答えの phase・status が空になる**（ST108）：契約（`ActionRunView`）は phase・status を「文字（空を許さない）」としているが、DB は `action_runs.phase`・`status_id` の空を許す（0011・0092 の check は「空か make・execute」）。fuzz の種（`seedGenericRows`）は表の列を埋めるだけなので、チケットに結んだ実行の行を phase・status 空のまま作る。読む関数（`app.action_run_view`・`app.ticket_runs_view`）はそれをそのまま返し、契約違反の答えになる\n2. **一覧が契約外の sort を受け付ける**（ST201）：契約の `listTicketRuns` は sort を「表の列名 27 個の enum」・limit を 1〜200・cursor を数 1〜9 桁としているのに、口（`apps/api/src/features/F5/delegate/people.ts`）は問い合わせを見ない。`sort=-58800` が 200 で通る。共通の入口（op.ts）が一覧の問い合わせを確かめるのは `kind: list` の口だけで、この口は `kind: get`（答えが配列）なので素通りする\n\n\n決め（控え帳 `.ticket-flow/drift.md`・answer=f0f290e785a9）：**422 は契約に書ける形の誤りだけ・検査の例外は足さない**。なので契約と口のどちらかを、実際の振る舞いに正しく合わせる。K-62 のチケットと決定ログで確かめた結果：\n\n- phase・status：K-62 のチケットは「ticket_id・phase は口が必ず入れる」（契約の NOT_NULL_ANSWERS）と決めている。実行の行を作る道は 4 つ（`app.ticket_delegate`〔0092〕・`approvals` の承認〔0096〕・差し戻し〔0097〕・完了〔0100〕）で、どれも phase と status_id を入れる（`git grep \"insert into action_runs\"` で確かめた）。**空は「AI に任せた実行」の姿ではなく、種が作る生の行だけ**。なので **契約は変えず、読む関数が空の行を実行として返さない**（1 件は 404・一覧は外す）\n- sort：契約はすでに enum（表の列名）を書いている。**口が契約と同じ形だけを受ける**（契約の形から外れたら 422・欄 sort）。limit・cursor も同じ型の誤りなので同じ確かめを通す（fuzz は同じ口に limit・cursor も当てる）",
+    "完了の条件": "- [ ] 下の表の 11 行（K429-API-001〜010・K429-DB-001）が緑：`apps/api/test/features/F5/k429_runs_shape.test.ts`\n- [ ] 前からの試験（K-62 の delegate.test.ts・k144-contract.test.ts・k234_one_transaction.test.ts など）が全部緑（この葉の範囲 ci_wide db）\n- [ ] 手元の CI（このチケットの範囲）が緑。契約の fuzz の G36 が、この 2 つの口で赤にならない",
+    "前提と制約": "分類: CRUD, TOOL\n\n- 関門：読む関数は C2（DB を読む経路）の中。口から外へ送らない・書かない\n- **新しい口は作らない**：直す口は前からある getActionRun・listTicketRuns の 2 つ。頭の欄 `apis:` は空にした（新しい口の登録先〔hooks の register・契約の形の表・EARS の対応・範囲の地図・契約の .d〕を求める設定 `touch_rules` に当てないため・K-427 と同じ扱い。この 2 つの口の持ち主は K-62 のまま）\n- **契約（08_api/openapi.yaml）・型・生成物は変えない**。変えるのは読む関数と口の確かめだけ（作り手 `regen_all.py` を流しても契約の生成物に差は出ない）\n- **migration は新しい 1 本**（`packages/db/migrations/20261120215500_runs_view_real_runs_only.sql`）。0092 は変えない（流した後の migration は書き換えない）。`create or replace function` で 2 つの関数を作り直す。**作り直すと `set search_path` の設定は文に書かないと消える**ので、0092 と同じ `security definer set search_path = public, app, pg_temp` を必ず書く（K429-DB-001 が見る）。`revoke … from public`・`grant execute … to kaname_app` も同じに書く。新しい migration は `python3 scripts/ci/gen_migrations.py` で `packages/db/src/migrations.generated.ts` の一覧に入れる（一覧は作り手の生成物）\n- 条件を足すのは **`r.phase is not null and r.status_id is not null`**（読む関数の where）。`action_run_json`（実行 1 件の形を組む関数）は変えない（K-63 など他の関数も呼ぶ）。一覧の件数と枠（50 件）は、空の行を外した後に数える（空の行が 50 件の枠を埋めて本物が出ない形にしない・K429-API-005）\n- **問い合わせの確かめは新しい小さなファイル 1 つ**：`apps/api/src/contract/list_query.ts` に関数 `listQueryIssues(...)` を書き、`people.ts` の `listTicketRuns` が呼ぶ。決まりは op.ts の `kind: list` の中の limit・cursor・scope_id・sort の確かめ（288〜305 行）と**同じ**（limit 1〜200・cursor は数 1〜9 桁・sort は `^[a-z_][a-z0-9_]{0,62}$` で `repo.hasColumn(\"action_runs\", …)`）。**op.ts は変えない**（同時に走る K-427 が op.ts の入口の NUL の確かめを変えるので、ファイルの重なりを作らない・依存にもしない）。op.ts の直書きをこの関数に寄せるのは、同じ型の残り 17 個の口を洗う葉（申し送り）で 1 回にまとめる。空の値（`?sort=`）は指定なしと同じ（op.ts と同じ・K-35）。**`.slice(0, …)` を書かない**（`contract_shape_test.py` の K144-SHAPE-027 が入口の切り捨てを数える）\n- 並べ方は今までどおり新しい順に固定：契約の sort の enum に入る値（`cost` など）は、形として受けて並べ方は変えない。limit も meta.limit は 50 のまま（受けた値で枠を変えない）。今の決めの外（並べ替えを実際に効かせる）は別の葉（申し送り）\n- 順番：権限の確かめ（401・403）が先・見えない物（404・入口の行の守り）が次・形の誤り（422）が最後（入口の行の守りは hooks の前に走る）。セッション無しは形の違う sort でも 401・PC の印は 403・別の会社の人は 404（K429-API-009）\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "依存の理由": "なし：同じ読む関数・同じ口の部品を変える先の葉は無い（読む関数を定義する migration は 0092 だけ・口は people.ts だけ・下の search）。op.ts は変えない（K-427 と同じファイルを触らない）。\n\n```search\ngit grep -ln \"action_run_view\\|ticket_runs_view\" -- apps packages ':!packages/db/migrations' ':!apps/api/test/features/F5/k429_runs_shape.test.ts'\n2\n```\n\n```search\ngit grep -n 'q\\[\"sort\"\\]' -- apps/api/src\n3\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| migration を足す | `packages/db/migrations/20261120215500_runs_view_real_runs_only.sql`（全文は下）。足したら `python3 scripts/ci/gen_migrations.py`（`packages/db/src/migrations.generated.ts` の一覧に入る） |\n| 問い合わせの確かめの関数を作る | `apps/api/src/contract/list_query.ts` を新しく作り `listQueryIssues(q, { table, repo })` を書く。返すのは `{ field, message }[]`（op.ts の 288〜305 行と同じ決まり・同じ message：limit は `1〜200`・cursor は `不正`・scope_id は `uuid`・sort は `列名`）。limit の上限 200・cursor の形（数 1〜9 桁）はこのファイルの定数にする。op.ts は変えない |\n| 口に確かめを足す | `apps/api/src/features/F5/delegate/people.ts` の `listTicketRuns.before` の先頭で、`a.c.req.query()` から空の値を除いた物を `listQueryIssues` に渡し、1 件でもあれば 422・`VALIDATION_ERROR`・`details`（op.ts と同じ形：`{ error: \"validation_failed\", code: \"VALIDATION_ERROR\", details }`）を返す。その後は今のまま（`app.ticket_runs_view` を呼ぶ） |\n| 使う部品と版 | 新しい部品は入れない（pg ^8.23.0・Hono・zod は今のまま） |\n| 目録で探した結果 | 使う：`app.action_run_view`・`app.ticket_runs_view`（0092）・`app.action_run_json`・`repo.hasColumn`（packages/db/src/repository.ts）・op.ts の一覧の確かめ。作るのは `list_query.ts` だけ（探したが hooks から呼べる一覧の問い合わせの確かめは無い：op.ts の 1 か所に直書きで、今は変えられない・`apps/api/src/features/F4/ticket-list/query.ts` は一覧の絞り込み専用で別物） |\n| 作り手を流す | `PATH=/opt/homebrew/bin:$PATH python3 scripts/tickets/regen_all.py`（チケットの表・目録）。契約の生成物に差は出ない |\n\nmigration の全文（0092 の 2 つの関数に、実行の行の条件を足すだけ）：\n\n```sql\n-- 20261120215500_runs_view_real_runs_only 実行の 1 件・一覧は「AI に任せた実行」だけを返す（K-429・関門 C2・読むだけ）\n--   実行の行を作る 4 つの道（任せる 0092・承認 0096・差し戻し 0097・完了 0100）はどれも phase と status_id を入れる。\n--   phase か status_id が空の行は実行ではない（種が作る生の行）ので、契約（phase・status は文字）を破る答えにせず、読む関数が外す\ncreate or replace function app.action_run_view(p_run uuid) returns jsonb\nlanguage sql stable security definer set search_path = public, app, pg_temp as $$\n  select app.action_run_json(r.id) from action_runs r\n   where r.id = p_run and r.ticket_id is not null and r.deleted_at is null\n     and r.phase is not null and r.status_id is not null\n     and app.member_ok() and r.tenant_id = app.tenant_id() and app.ticket_visible(r.ticket_id)\n     and exists (select 1 from tickets t where t.id = r.ticket_id and t.deleted_at is null)\n$$;\nrevoke all on function app.action_run_view(uuid) from public;\ngrant execute on function app.action_run_view(uuid) to kaname_app;\n\ncreate or replace function app.ticket_runs_view(p_ticket uuid) returns jsonb\nlanguage sql stable security definer set search_path = public, app, pg_temp as $$\n  select case when app.member_ok() and app.ticket_visible(p_ticket)\n                   and exists (select 1 from tickets t where t.id = p_ticket and t.deleted_at is null) then\n    jsonb_build_object(\n      'data', coalesce((select jsonb_agg(app.action_run_json(x.id) order by x.created_at desc, x.id desc)\n                          from (select r.id, r.created_at from action_runs r\n                                 where r.ticket_id = p_ticket and r.deleted_at is null\n                                   and r.phase is not null and r.status_id is not null\n                                 order by r.created_at desc, r.id desc limit 50) x), '[]'::jsonb),\n      'total', (select count(*) from action_runs r\n                 where r.ticket_id = p_ticket and r.deleted_at is null\n                   and r.phase is not null and r.status_id is not null))\n  end\n$$;\nrevoke all on function app.ticket_runs_view(uuid) from public;\ngrant execute on function app.ticket_runs_view(uuid) to kaname_app;\n```",
+    "外に影響する手順": "なし（DB を読むだけ。書かない・外へ出さない）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F5/k429_runs_shape.test.ts`（本物の Postgres・K-62 の delegate-kit.ts の口）。種の形の行（phase か status が空の実行）は、管理者の接続で直に作る。fuzz の揺れには頼らない。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 状態 | 入口 | 利用者 | 結果 | 受け持ち・試験 |\n|---|---|---|---|---|\n| 本物の実行（phase・status が入っている） | 実行の 1 件・一覧 | 直せる人 | 200・phase・status は文字 | この葉 K429-API-001・003 |\n| phase が空の行 | 実行の 1 件 | 直せる人 | 404（空の行は実行ではない） | この葉 K429-API-001 |\n| status が空の行・両方空の行 | 実行の 1 件 | 直せる人 | 404 | この葉 K429-API-002 |\n| 空の行が混ざるチケット | 一覧 | 直せる人 | 本物だけが出る・total は本物の数 | この葉 K429-API-003・005 |\n| 空の行しか無いチケット | 一覧 | 直せる人 | 200・空の配列・total 0（チケットは見える） | この葉 K429-API-004 |\n| どの状態でも | 一覧 | セッション無し・PC の印 | 401・403（形の違う sort でも先に返す） | この葉 K429-API-009（本物の PC の印の 403 は K-62 の API-028） |\n| どの状態でも | 一覧 | 別の会社の人 | 404（形の違う sort でも 422 でなく 404・存在を漏らさない） | この葉 K429-API-009 |\n| 消したチケット・見えないチケット | 実行の 1 件・一覧 | 見えない人 | 404 | K-62 の API-026・027（前から） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K429-API-001 | 入力 | チケットに本物の実行 1 件と、phase が空の行を作り、実行の 1 件を読む | 空の行は 404・体に data が無い。本物は 200・phase は make・status は queued（どちらも文字） |\n| K429-API-002 | 入力 | status が空（phase はある）の行・両方空の行を、実行の 1 件で読む | どちらも 404・体に data が無い |\n| K429-API-003 | 入力 | 本物 1 件と、phase が空・status が空・両方空の行 3 件を持つチケットの一覧 | 200。出る実行は本物の 1 件だけ。どの項目も phase・status は文字。meta.total は 1 |\n| K429-API-004 | 状態 | 空の行しか無いチケットの一覧 | 200・data は空の配列・meta.total は 0 |\n| K429-API-005 | 操作の揺れ | 空の行が新しい側に 55 件（50 件の枠より多い）と本物 1 件の一覧 | 本物の 1 件が出る（枠から押し出されない）。meta.total は 1 |\n| K429-API-006 | 入力 | sort が契約の列名でない：`-58800`・`nope`・`ID`・`created_at desc`・`id;drop`・`-created_at`・64 字・`1`・全角 | どれも 422・code は VALIDATION_ERROR・details に欄 sort。action_runs の行数は変わらない |\n| K429-API-007 | 入力 | sort が契約の enum の列名 27 個（契約の文字から試験が読む）と、空の sort | どれも 200（契約が許す形を断らない）。契約の enum を読めた数は 27 |\n| K429-API-008 | 入力 | limit が 0・201・abc・-1・1.5、cursor が abc・-1・10 桁。契約の形（limit 1・200、cursor 0・123456789、空の limit・cursor・sort） | 形の誤りは 422・欄 limit か cursor。契約の形は 200 |\n| K429-API-009 | 守り | 形の違う sort（`-58800`）の一覧を、セッション無し・PC の印・別の会社の人で呼ぶ。別の会社の人が契約の形（`sort=created_at`）でも呼ぶ | セッション無しは 401・PC の印は 403・別の会社の人は 404（422 を先に返さない）。どれも体に data が無い。契約の形でも別の会社の人は 404 |\n| K429-API-010 | 操作の揺れ | 形の違う問い合わせで 422 の直後、同じ人が契約の形で呼ぶ | 200・本物の 1 件・meta.limit は 50（断った 1 回が次に残らない） |\n| K429-DB-001 | 守り | 作り直した app.action_run_view・app.ticket_runs_view の権限・設定と、読んでも行が書き換わらないこと | 2 つとも security definer・search_path に pg_temp・public の実行権なし・kaname_app にある。読んだ前後で action_runs の更新の時刻が同じ |\n\n### テストの型の受け（分類 CRUD・TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD（一覧の形・並び・不正な問い合わせ・権限・別の会社） | K429-API-006・007・008（不正な問い合わせ）・009（権限・別の会社）・004（空）。並び（新しい順）は K-62 の API-027 が前から受ける（この葉は並べ方を変えない） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K429-API-007 が契約の enum を読めた数（27）を確かめる。K429-API-003・005 は本物の実行の id が出ることを見る（空の配列で緑にならない） |\n| 表記ゆらぎ（全角・大文字・空白・記号） | K429-API-006（`ID`・全角・空白・記号つきの sort を 422）。sort は識別子の入力で、契約の形は小文字の列名だけ |",
+    "前からの試験を替えた所": "切る段の検査（`python3 scripts/ci/cut_check.py prior --files <changes:>`）が出した、changes: を使う前からの試験 3 件。どれも替えない。op.ts は変えないので、op.ts を使う試験（authz.test.ts・k144-contract.test.ts など）は対象に入らない。\n\n- scripts/ci/ci_scope_test.py: 替えない — migration の一覧を範囲の地図の中身として読む（この葉は一覧に 1 行足すだけ）\n- scripts/ci/contract_shape_test.py: 替えない — K144-SHAPE-027 が入口の `.slice(0, …)` を数える。この葉は `.slice(0, …)` を書かない（上の制約）\n- scripts/ci/k327_migrations_gen_test.py: 替えない — 一覧の作り手の試験。この葉は作り手を流して一覧に足す\n\nK-62 の前からの試験で、実行の行を直に作る物（`insert into action_runs` を持つ試験）は、どれも phase と status_id を入れている（`git grep \"insert into action_runs\"` の 8 件のうち、ticket_id を持つ 6 件の中身を読んで確かめた）。読む関数の新しい条件で出なくなる行は無い。\n\n```search\ngit grep -n \"insert into action_runs\" -- apps packages scripts ':!packages/db/migrations' ':!apps/api/test/features/F5/k429_runs_shape.test.ts'\n8\n```",
+    "速さ（今の値と目標の値）": "口の数・直列の段・文の数は変えない（一覧・1 件とも読む関数 1 回・今と同じ）。問い合わせの確かめは口の中の計算だけ（DB を引く前・文は増えない）。\n\n| | 今の値 | 目標の値 |\n|---|---|---|\n| 一覧の口の中の DB の文 | 6 以下（K234-API-006） | 6 以下のまま（増やさない・K234-API-006 が見る） |\n| 読む関数の where | 条件 6 つ | 8 つ（phase・status の空でない 2 つを足す。同じ行の列なので引き増えは無い） |\n| 新しい住所 | — | 増えない（口の道は同じ） |\n| 認証の要る答えの Cache-Control | `private, no-store`（前から） | 変えない |",
+    "成果物": "- `packages/db/migrations/20261120215500_runs_view_real_runs_only.sql`・`packages/db/src/migrations.generated.ts`\n- `apps/api/src/contract/list_query.ts`（新しい）\n- `apps/api/src/features/F5/delegate/people.ts`（listTicketRuns の先頭に確かめを足す）\n- 単体の試験 `apps/api/test/features/F5/k429_runs_shape.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め（控え帳 answer=f0f290e785a9）：契約の fuzz の食い違いは、検査の例外を足さずに直す。422 は契約に書ける形（sort の列名の enum・limit の範囲・cursor の形）の誤りだけ\n- 2026-11-20 切る段の決め：phase・status は契約を変えず、読む関数が空の行を返さない。根拠は K-62 の決め（ticket_id・phase は口が必ず入れる）と、実行を作る 4 つの道がどれも両方を入れること。契約を「空を許す」に変えると、K-62 の画面（帯）が空の phase を扱う分岐を持つことになり、決めた姿（実行は必ず作る段か実行の段のどちらか）が崩れる\n- 2026-11-20 切る段の決め：一覧の問い合わせの確かめは、op.ts の直書きと同じ決まりを新しい小さなファイルに書き、口から呼ぶ。op.ts は同時に走る K-427 と重ならないよう変えず、op.ts を関数に寄せるのは同じ型の残りの口を洗う葉で 1 回にまとめる（一時的に同じ決まりが 2 か所になる。K429-API-006・007・008 が口の側の決まりを固定する）。limit・cursor も同じ口に確かめを足す（fuzz が同じ口に当てる同じ型の誤り）\n- 2026-11-20 切る段の決め：並べ方（新しい順固定）と meta.limit（50）は変えない。sort の値は形だけ確かめる\n- 2026-11-20 切る段の決め（PM の追加への答え）：K-60 の下書きの保存（`POST /me/ticket-drafts`）の 500（体の大きな浮動小数）は、この葉に入れない。切る段で再現できず（手元の本物の DB で、1e116・-1e116・1e308・倍精度の最大と最小・入れ子と配列・117 桁の整数など 14 通りの体と、同じ人が 60 本同時の保存を試して、どれも 201 か契約どおりの 422）、失敗した要求の記録も手元に無い。再現できない物を直す葉は、実装が試験を変えられない決まり（D-128.125）と合わず、見張りの行は今のままでも緑になって何も守らない。失敗した要求が手に入ったら、別の葉として切る（申し送り）\n- 代表に聞くことは無い（口の形・権限・画面に出る文は変えない・控え帳の決めの範囲）",
+    "リスクと懸念": "- 読む関数の新しい条件で、phase か status が空の既存の行（本番に在れば）が一覧・1 件から消える。実行を作る道は 4 つとも両方を入れるので、本物の行は消えない。種の行は元から実行として扱われない\n- 同じ型の食い違いが他の口にもありうる。契約が `get` で答えが配列の口（`outputList` が真の `kind: get`）は 18 個ある（listClientActivity・listConversationMessages・listKnowledgeMessages・listKnowledgeVersions・listOpsWorkspaceAudit・listOpsWorkspaceInquiries・listOpsWorkspaceMembers・listTicketArtifacts・listChecks・listTicketDecisions・listTicketLinks・listTicketReferences・listTicketRuns・listTestSpecs・listTicketTimeline・listTicketVersions・listWorkTypeCandidates・listWorkTypeVersions）。この葉は listTicketRuns だけを直す（fuzz が赤にした口・控え帳の範囲）。残り 17 個の口が同じ問い合わせの素通りをしていないかは、`listQueryIssues` ができた後の別の葉で洗い、そのとき op.ts の直書きもこの関数に寄せる（申し送り）",
+    "申し送り": "- 実装は migration 1 本・小さなファイル 1 つ・口 1 か所。試験は変えない。試験が誤りなら止めて書く段へ戻す\n- 同じ型の残り 17 個の口の洗い出し：`listQueryIssues` が入った後に、`outputList` が真で `kind: get` の口ごとに「契約の limit・cursor・sort を口が確かめているか」を洗い、素通りしている口を 1 つの葉でまとめて直す。そのとき op.ts の一覧の直書き（288〜305 行）もこの関数に寄せて 1 か所にする（この葉の範囲外・K-427 が入った後）\n- K-60 の下書きの保存（`POST /me/ticket-drafts`）の 500：この葉に入れず、別の葉にする。**PM に、失敗した要求（CI の fuzz の記録・K-401 の手元の fuzz の出力）を求める**。それが届いたら、その形の体で落ちる試験を切る段で書いてから、直す口か関数の中身を全文で書く。参考に、切る段で試して 500 にならなかった体（1e116・1e308・倍精度の最大と最小・入れ子と配列・同時 60 本）と、`1e400`・`0.1e1000` が入口の読み取りで無限大になり保存のとき黙って `null` になること（201・契約の `body` が中身を決めない `object` なので契約に書ける形の誤りではない）を、別の葉の材料に残す\n- sort の値で並べ替えを実際に効かせるのは、使う画面が出てから別の葉で（今の画面は新しい順だけを使う）"
+   },
+   "file": "11_tickets/K-429.md"
+  },
+  {
    "id": "K-620",
    "title": "直し：題名の下の帯の順の器 useBandOrder が「AI に任せる」の任せる前の箱や「完了にする」の箱も approve と数え、渡しの帯・保留の帯が出ず担当者の欄に「AI の実行が終わってから渡してください」が出る（AI が動いている・承認待ちの帯だけを data-busy で数える）（K-68 の葉）",
    "kind": "タスク",
@@ -19209,6 +19330,71 @@
     "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 13 行と替える 1 行"
    },
    "file": "11_tickets/K-620.md"
+  },
+  {
+   "id": "K-630",
+   "title": "直し：コードを渡す小窓が、頼みの印（request_ref）が無い行でも口 answerCredentialLoginCheck を呼び、契約（request_ref 必須）に合わず next build が型の誤りで落ちる（印が無いときは口を呼ばず「もう一度確かめてください」を出す）（K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-21",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮（直しの葉の実測はまだ無い）。形の近い K-620（画面の数行の直し・試験 13 行・見込み 30 分）から引いた：check-credential.tsx の submit の分かれ道を 1 つ足す 5 分・試験 6 行を手元のブラウザで流す 15 分・next build と tsc 10 分。前の遅れは足さない",
+   "decisions": [
+    "D-117",
+    "D-128.125",
+    "D-128.57"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面のコードだけ。小窓の submit の前に分かれ道を 1 つ足すだけで、口を呼ぶ回数が減る方向の直し。DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k630-request-ref.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [
+    "A10"
+   ],
+   "screens": [
+    "credentials"
+   ],
+   "apis": [],
+   "mock": [
+    "cred-checking",
+    "cred-no-pc",
+    "cred-forbidden",
+    "cred-edit",
+    "cred-remove",
+    "cred-code"
+   ],
+   "flow": "預けたログイン情報を預けて確かめる",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F3/credentials/check-credential.tsx",
+    "apps/web/app/(dev)/dev/mock/f3/mocks.tsx",
+    "scripts/ci/ci_scope.d/K-630.json"
+   ],
+   "sections": {
+    "目的": "本線の取り込みの列の CI（GitHub の回 44782097789・web の組）で `pnpm --filter @kaname/web build:test`（next build）が型の誤りで落ちている：\n\n`./features/F3/credentials/check-credential.tsx:84:9 … Type '{ approved: boolean; request_ref?: undefined; }' is not assignable to type 'CredentialLoginAnswerInput'. Type 'undefined' is not assignable to type 'string'.`\n\n元：K-355 が契約で `answerCredentialLoginCheck` の `request_ref` を必須にした（`05_flow/screen_api.d/K-355.py` の REQUIRED_INPUTS）のに、K-357 の画面（check-credential.tsx の submit）は `target.requestRef` が無いとき `request_ref` を送らない形のまま本線に入った（チケットの CI が画面の組を後回しにしていたので素通りした）。\n\n**直し方（PM の決め）**：画面を契約に合わせる。`request_ref` が無い（null・空の字）ときは**口を呼ばない**（口は必ず 422 で断るので呼んでも意味が無い）。そのときは小窓の中の赤の知らせ（前からの `alert`）に「コードの頼みが見つかりません。もう一度確かめてください」を出す。小窓は閉じず、入れた字は残す。ほかの動き（印があるときの { request_ref, code }・{ request_ref, approved: true }・422・404・網の切れ）は変えない。",
+    "完了の条件": "- [ ] 下の表の 6 行（K630-UI-001〜006）が緑：`apps/web/tests/k/k630-request-ref.spec.ts`\n- [ ] 替えない前からの試験 `apps/web/tests/k/k357-credentials-edit-check.spec.ts` が緑のまま\n- [ ] `pnpm --filter @kaname/web build:test`（next build）が通る\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 文は正本のエラー一覧（errors.d・CATALOG）に番号を足さず、この画面の定数 `NO_REQUEST_REF_TEXT`（check-credential.tsx）に置く。同じ F3 の画面（connect-pc の STILL_TEXT・REMOVED_PC_TEXT）が画面ごとの文の定数を持つ前からの作法に合わせる。K-357 の正本にも近い文は無い（E-CRED-014「いまはコードを頼まれていません…」は口が 404 で返す別の失敗で、こちらは口を呼ぶ前の画面の止め）\n- 印の有る無しは `target.requestRef` の真偽（null・\"\" は無い）。押す前ではなく「PC に渡す」を押した時に見る（K-357 のコードを入れる小窓は印が読み直しで付くことがあるので、開いた時に決めない。読み直しで印が付けば、開き直したときの CodeTarget が新しい印を持つ）\n- 二度押しの守り（`answering`）は変えない。口を呼ばないときは busy にしない\n- 契約・口・エラー一覧・部品 views.tsx・K-357 のチケットは変えない\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 小窓の部品 | `features/F3/credentials/views.tsx` の CheckCodeDialog（alert の置き場を前から持つ） | 変えない。`setAlert(文)` を呼ぶだけ |\n| 入れ物 | `check-credential.tsx` の submit | 分かれ道を 1 つ足す |\n\n同じ形の箇所（request_ref を条件付きで送る）を全部出した：\n\n```search\ngit grep -n -e \"request_ref\" -- apps/web/features\n3\n```\n\ncheck-credential.tsx の頭の注 1 か所と submit の 1 か所、to-item.ts の注 1 か所（読むだけ）。ほかの画面は answerCredentialLoginCheck を呼ばない。",
+    "外に影響する手順": "- なし — 画面のコードだけ。DB に書かない・外を呼ばない・セッションや錠を作らない（口を呼ばない側の直し）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k630-request-ref.spec.ts`（実 Chrome・幅 1440）。口は網の手前で差し替える。固定の待ちは使わない（K630-UI-005 は読み直しを時計を進めて数える）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| コード待ち・印あり・SMS | 小窓「PC に渡す」 | 書ける人 | 口に { request_ref, code } | このチケット（前からの動き） | K630-UI-001 |\n| コード待ち・印なし・SMS | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-002 |\n| コード待ち・印が null・push | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-003 |\n| コード待ち・印が空の字 | 小窓「PC に渡す」 | 書ける人 | 口 0 回・文 | このチケット | K630-UI-004 |\n| 印なし → 読み直しで印あり | 開き直す | 書ける人 | 口に新しい印 | このチケット | K630-UI-005 |\n| 型 | next build・tsc | — | 型の誤り 0 | このチケット | K630-UI-006 |\n| 上書き・消す・もう一度確かめる・404・422 | 前の動き | 書ける人 | 変えない | K-357 | k357 の行 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K630-UI-001 | 入力 | 印あり（rq-c2）・SMS・コード 123456 | answer の口が 1 回で本体は { request_ref: \"rq-c2\", code: \"123456\" }・小窓が閉じる |\n| K630-UI-002 | 入力 | 印が一覧に無い・SMS | 「PC に渡す」で answer の口は 0 回・小窓の中に「コードの頼みが見つかりません。もう一度確かめてください」・小窓は開いたまま・入れた字（123456）が残る |\n| K630-UI-003 | 入力 | 印が null・push | コードの欄は無い・「PC に渡す」で口は 0 回・同じ文が小窓の中に出る |\n| K630-UI-004 | 入力 | 印が空の字 | 口は 0 回・同じ文が出る（空は無いのと同じ） |\n| K630-UI-005 | 時間の流れ | 印なしで断られ「あとで」→ 読み直しで印（rq-new）が付く → 開き直して 654321 | 開き直した小窓に前の文は無く、口に { request_ref: \"rq-new\", code: \"654321\" } が 1 回届く |\n| K630-UI-006 | 守り | 型 | `tsc --noEmit` の出力に features/F3/credentials の誤りが 0 行 |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：試験はファイルを読まない（tsc の行を読むだけ） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 印なしの行（K630-UI-002〜004）は先に小窓と文が見えることを確かめ、口の回数 0 を見る。K630-UI-006 は tsc を実際に流して出力の行を見る（流れなければ r.error で落ちる） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：手元だけの道具を使わない（pnpm exec tsc は容れ物の中でも同じ） |\n\nほかの観点：権限・別の会社は口の葉（K-355）が持つ。二度押しは K-357 の行（answering は変えない）。古い入口は K630-UI-005。\n\n### G-11〜G-16 の判定\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 | N/A | 画面のコードだけ |\n| G-12 | 該当 | 読み直しで印が付いた直後の開き直し（K630-UI-005） |\n| G-13 | 該当 | コード（SMS）× push（K630-UI-002・003） |\n| G-14 | N/A | 役・権限を読まない |\n| G-15 | N/A | 外のプロセスを待たない（口を呼ばない側の直し） |\n| G-16 | N/A | 口を足さない（呼ぶ回数が減る） |",
+    "前からの試験を替えた所": "```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F3/credentials/check-credential.tsx\n0\n```\n\n機械の照らしには出ない（試験は check-credential.tsx の名前を書かない）が、同じ画面を見る前からの試験を開いた：\n\n- apps/web/tests/k/k357-credentials-edit-check.spec.ts: 替えない — 印がある行（C2 の request_id=rq-c2）だけで answer の口を見ているので、印の有る側の動き（K357-UI-008・009・010・011）は変わらない。印が無い側はこの葉が持つ",
+    "決定ログ": "足さない。K-357 の当てはめを契約（K-355）に合わせ直すだけ。",
+    "依存の理由": "無い（depends_on は空）。K-355（契約で request_ref を必須にした葉）・K-357（画面）はどちらも本線に入っている。",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 印が無いときは口を呼ばない | `apps/web/features/F3/credentials/check-credential.tsx`：`const NO_REQUEST_REF_TEXT = \"コードの頼みが見つかりません。もう一度確かめてください\";` を足し、submit の `answering.current = true` の前（`if (answering.current \\|\\| !target) return;` の後）で `if (!target.requestRef) { setFieldError(null); setAlert(NO_REQUEST_REF_TEXT); return; }`。以降は `request_ref: target.requestRef` を必ず付ける（`ref` の空のオブジェクトの形をやめる）。頭の注に「印が無いときは口を呼ばず文を出す（K-630・契約で request_ref が必須）」 |\n| 確かめる | 手元で `pnpm --filter @kaname/web build:test` と k630・k357 の試験 |\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 画面ごとの口の数・直列の段・二重 | K-357 のまま | 同じ（印が無いときは口が 1 つ減る） |\n| 新しい住所・Cache-Control | 対象なし | 対象なし |",
+    "見込み": "0.5 時間（頭の欄の estimate_basis のとおり）。試験 6 行"
+   },
+   "file": "11_tickets/K-630.md"
   }
  ]
 }
