@@ -207,7 +207,7 @@ export function setupDistribute(prefix: string): DistHarness {
       mgr: await make("mgr", "佐藤", { scopeRole: "manager" }),
       suzuki: await make("suzuki", "鈴木", {}),
       viewer: await make("viewer", "山口", { role: "viewer", ability: "view" }),
-      requester: await make("requester", "取引先の人", { role: "requester", ability: "view" }),
+      requester: await make("requester", "ゲスト", { role: "requester", ability: "view" }),
       stopped: await make("stopped", "止めた人", { stopped: true }),
       jdMgr: await make("jdmgr", "田中", { scope: h.JD, scopeRole: "manager" }),
       jdMember: await make("jdmember", "中村", { scope: h.JD }),

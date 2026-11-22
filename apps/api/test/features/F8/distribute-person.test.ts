@@ -142,7 +142,7 @@ describe("K-409 人に配る", () => {
     }
   });
 
-  it("K409-API-008 相手が閲覧のみ・依頼する側（取引先）：409・E-HND-130（D-148.18）", async () => {
+  it("K409-API-008 相手が閲覧のみ・ゲスト：409・E-HND-130（D-148.18）", async () => {
     await h.ready();
     for (const to of [P().viewer.id, P().requester.id]) {
       const t = await h.ticket({ assignee: P().boss });
