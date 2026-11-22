@@ -152,6 +152,7 @@
   margin: 0;
   line-height: var(--k-lh-body);
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 .k-talk-mention {
   padding: 0 var(--k-s-xs);
