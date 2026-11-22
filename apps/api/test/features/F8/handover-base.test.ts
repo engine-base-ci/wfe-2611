@@ -384,6 +384,21 @@ describe("K-401 渡す口の振り分けの前の確かめ（createTicketHandove
       404,
       "E-HND-012",
     );
+    // 申し出（offer）の相手は今の担当者：止まった・招待中は 409・E-HND-006（渡すと同じ）／抜けた人は 404・E-HND-014。申し出は作らない
+    const offer = { kind: "offer", reason: "手が空いたので" };
+    const os = await refused(
+      await h.create(w.sato, (await h.ticket(w, { assignee: w.stopped })).id, offer),
+      409,
+      "E-HND-006",
+    );
+    expect(os.detail?.["訳"]).toBe("止まっています");
+    const oi = await refused(
+      await h.create(w.sato, (await h.ticket(w, { assignee: w.invited })).id, offer),
+      409,
+      "E-HND-006",
+    );
+    expect(oi.detail?.["訳"]).toBe("招待中です");
+    await refused(await h.create(w.sato, (await h.ticket(w, { assignee: w.left })).id, offer), 404, "E-HND-014");
     expect(await handoverCount(w)).toBe(0);
   });
 
@@ -460,6 +475,17 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     expect((await h.answer(w.sato, randomUUID(), { decision: "accept" })).status).toBe(404);
     expect((await h.answer(w.sato, hid, { decision: "accept" })).status).toBe(404);
     expect((await h.handover(hid))!["state"]).toBe("waiting");
+    // 待っている間にチケットが消された：答えは 404（欄なし）で、担当者は替わらず・渡しは待っているまま・知らせの行は増えない
+    const gone = await h.ticket(w);
+    const gid = await h.waiting(w, { ticketId: gone.id, to: w.sato });
+    await h.f.admin.query("update tickets set deleted_at = now() where id = $1", [gone.id]);
+    const before = await h.num("select count(*) as n from notifications where tenant_id = $1", [w.co.tenantId]);
+    const r = await h.answer(w.sato, gid, { decision: "accept" });
+    expect(r.status, await r.clone().text()).toBe(404);
+    expect((await h.json(r)).code).toBe("E-PAGE-001");
+    expect(await h.assigneeOf(gone.id)).toBe(w.boss.id);
+    expect((await h.handover(gid))!["state"]).toBe("waiting");
+    expect(await h.num("select count(*) as n from notifications where tenant_id = $1", [w.co.tenantId])).toBe(before);
   });
 
   it("K401-API-021 答える人でない：渡した人・同じグループの関係ない人・閲覧のみは 403。グループ宛てを管理する人は 403 にならない", async () => {
