@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
-  "frozen_at": "2026-11-22",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -6409,6 +6409,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 404,
+     "code": "E-CONN-013",
+     "body": {
+      "error": "not_found",
+      "code": "E-CONN-013"
+     },
+     "errors": [
+      "E-CONN-013"
+     ],
+     "trigger": "形どおりの接続コードが使えない（違う・期限切れ・使い終わった・出し直す前。どれかを見分けさせない・D-089）。欄・details は付けない",
+     "ears_form": "UNWANTED: IF 接続コードが使えないなら、Kaname は 404 と E-CONN-013 を返し、PC を作らず、どの理由かを漏らさない"
+    },
+    {
      "status": 413,
      "code": "PAYLOAD_TOO_LARGE",
      "body": {
@@ -6452,6 +6465,7 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/claim が「Bridge を入れてつなぐ」として呼ばれたとき THEN Kaname は「Bridge と本人を結ぶ。つながったら自分の AI が話せる」を行い 2xx を返す",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 接続コードが使えないなら、Kaname は 404 と E-CONN-013 を返し、PC を作らず、どの理由かを漏らさない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 5/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -51374,6 +51388,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 409,
+     "code": "CONFLICT",
+     "body": {
+      "error": "conflict",
+      "code": "E-LST-001"
+     },
+     "errors": [
+      "E-LST-001"
+     ],
+     "trigger": "続きの鍵が形（base64url の 1〜200 字）には合うが、今の状態では読めない（JSON でない・中身が合わない・古い形・別の view や並びの鍵）",
+     "ears_form": "UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-LST-001 を返し、最初から読み直すよう促す"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -51421,6 +51448,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-LST-001 を返し、最初から読み直すよう促す",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -51432,7 +51460,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）",
+   "description": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）",
    "implementation_path": "apps/api/src/routes/tickets.ts::listTickets",
    "permission": {
     "who": "read",
@@ -51448,6 +51476,10 @@
      "view",
      "q",
      "scope_id",
+     "kind_id",
+     "stage_id",
+     "assignee_id",
+     "done",
      "cursor",
      "limit"
     ]
@@ -54567,7 +54599,7 @@
     "role": "member",
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
-   "rate_limit": "120/min/user",
+   "rate_limit": "60/min/user",
    "access_control_policies": [
     "artifacts_tenant_read",
     "artifacts_ops_read_with_grant",
@@ -54589,21 +54621,26 @@
     },
     {
      "status": 403,
-     "code": "FORBIDDEN",
+     "code": "E-DEL-001",
      "body": {
-      "error": "forbidden"
+      "error": "permission",
+      "code": "E-DEL-001"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [
+      "E-DEL-001"
+     ],
+     "trigger": "作った人でも、そのグループで tickets の edit を持つ人でもない人が、消す前の下見を開いた",
+     "ears_form": "UNWANTED: IF 作った人でも、そのグループで編集の権限を持つ人でもない人が下見を開いたなら、Kaname は 403 と E-DEL-001 を返し、チケットも何も変えない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "見えない・別の会社・無い・もう消えたチケット（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF 見えない・別の会社・無い・もう消えたチケットの下見を開いたなら、Kaname は 404 を返し、チケットも何も変えない"
     },
     {
      "status": 422,
@@ -54616,14 +54653,27 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "件数を数える DB が落ちた",
+     "ears_form": "UNWANTED: IF 件数を数える DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、一部だけの件数を返さない"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
       "error": "rate_limited",
       "retry_after_sec": 60
      },
-     "trigger": "120/min/user",
-     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+     "trigger": "60/min/user",
+     "ears_form": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
     },
     {
      "status": 403,
@@ -54659,10 +54709,11 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/delete-preview が「子・孫の扱いを決めて消す／アーカイブする」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 作った人でも、そのグループで編集の権限を持つ人でもない人が下見を開いたなら、Kaname は 403 と E-DEL-001 を返し、チケットも何も変えない",
+    "UNWANTED: IF 見えない・別の会社・無い・もう消えたチケットの下見を開いたなら、Kaname は 404 を返し、チケットも何も変えない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 件数を数える DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、一部だけの件数を返さない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
@@ -54677,7 +54728,7 @@
    "implementation_path": "apps/api/src/routes/tickets.ts::previewTicketDelete",
    "permission": {
     "who": "assignee",
-    "scope": "担当者・作成者・マネージャー",
+    "scope": "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）",
     "step_up": false
    },
    "path_params": [

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:89c7c80a7106a6f3
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:101726a0aed7027f
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3749,8 +3749,14 @@ export const TicketKindChangePreview = z.strictObject({
 });
 export const TicketDeletePreview = z.strictObject({
   children: z.number().int().optional(),
+  descendants: z.number().int().optional(),
   attachments: z.number().int().optional(),
   artifacts: z.number().int().optional(),
+  pending_approvals: z.number().int().optional(),
+  links: z.number().int().optional(),
+  running_runs: z.number().int().optional(),
+  descendant_pending_approvals: z.number().int().optional(),
+  descendant_running_runs: z.number().int().optional(),
   restorable_until: z.string().optional(),
 });
 export const SearchHit = z.strictObject({
