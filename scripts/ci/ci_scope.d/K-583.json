@@ -1,6 +1,6 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/features/F4/ticket-estimate/**", "apps/api/src/features/ticket-update/**", "apps/api/src/hooks/ticket-update.ts"],
+  {"paths": ["apps/api/src/features/F4/ticket-estimate/**", "apps/api/src/features/ticket-update/**", "apps/api/src/hooks/ticket-update.ts", "packages/contracts/src/schemas.ts", "07_qa/test-specs/errors.d/K-583.json"],
    "tests": ["apps/api/test/features/F4/ticket-estimate.test.ts", "apps/api/test/features/F4/ticket-sort.test.ts", "apps/api/test/features/F4/ticket-field-values.test.ts"]}
  ],
  "reads_ok": {
