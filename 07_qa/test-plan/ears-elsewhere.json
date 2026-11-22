@@ -1612,6 +1612,72 @@
     "test_post_tickets_id_test_specs_upstream_failed": "外を呼ばない（C3 は契約の口の宣言に付いているだけ・AI も PC も呼ばない）"
    }
   },
+  "search": {
+   "file": "apps/api/test/features/F7/search-tickets.test.ts",
+   "reason": "探すは、見える範囲（行の守り）・消したもの・他の人の下書き・権限の付け外しの組み合わせで答えが変わる。生成の試験の種では会社・人・権限・チケットを作れない（K-468）",
+   "covers": {
+    "test_get_search_ok": "K468-API-002",
+    "test_get_search_rejected_401": "K468-API-016",
+    "test_get_search_rejected_403": "K468-API-016",
+    "test_get_search_rejected_422": "K468-API-009",
+    "test_get_search_rate_limited": "K468-API-017",
+    "test_get_search_terms_pending": "K468-API-016",
+    "test_get_search_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "previewTicketDelete": {
+   "file": "apps/api/test/features/F7/ticket-delete-preview.test.ts",
+   "reason": "消す前の下見は、そのチケットの子・承認待ち・つながり・実行の件数と、作った人か edit かの判定で答えが変わる。生成の試験の種ではその組を作れない（K-487）",
+   "covers": {
+    "test_get_tickets_id_delete_preview_ok": "K487-API-001",
+    "test_get_tickets_id_delete_preview_shape": "K487-API-001",
+    "test_get_tickets_id_delete_preview_rejected_401": "K487-API-012",
+    "test_get_tickets_id_delete_preview_rejected_403": "K487-API-010",
+    "test_get_tickets_id_delete_preview_not_found": "K487-API-011",
+    "test_get_tickets_id_delete_preview_rate_limited": "K487-API-012",
+    "test_get_tickets_id_delete_preview_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-487.ts",
+     "mark": "K144-API-887"
+    },
+    "test_get_tickets_id_delete_preview_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_delete_preview_session_unresolved": "K487-API-014",
+    "test_get_tickets_id_delete_preview_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "deleteTicket": {
+   "file": "apps/api/test/features/F7/ticket-delete.test.ts",
+   "reason": "消すは、作った人か edit・子・孫の扱い・承認の取り下げ・走っている AI の止めで答えが変わる。生成の試験の種ではその組を作れない（K-488）",
+   "covers": {
+    "test_delete_tickets_id_ok": "K488-API-001",
+    "test_delete_tickets_id_shape": "K488-API-001",
+    "test_delete_tickets_id_rejected_401": "K488-API-024",
+    "test_delete_tickets_id_rejected_403": "K488-API-003",
+    "test_delete_tickets_id_not_found": "K488-API-004",
+    "test_delete_tickets_id_conflict": "K488-API-007",
+    "test_delete_tickets_id_rejected_422": "K488-API-016",
+    "test_delete_tickets_id_rate_limited": "K488-API-024",
+    "test_delete_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_tickets_id_session_unresolved": "K488-API-025",
+    "test_delete_tickets_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
   "listTicketFields": {
    "file": "apps/api/test/features/F4/ticket-fields.test.ts",
    "reason": "会社の項目の一覧は、種別の指定・消した項目・別の会社の行で答えが変わる。生成の試験の偽のセッションでは項目も種別も作れない（K-563）",
