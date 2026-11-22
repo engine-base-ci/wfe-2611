@@ -7118,6 +7118,18 @@
    }
   },
   "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7132,6 +7144,10 @@
    },
    "decided_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
     "nullable": true
    },
    "deleted_at": {

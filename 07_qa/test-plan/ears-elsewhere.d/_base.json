@@ -195,6 +195,10 @@
     "test_post_bridge_claim_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
+    },
+    "test_post_bridge_claim_not_found": {
+     "file": "apps/api/test/features/contract/k639-pm-fuzz.test.ts",
+     "mark": "K639-API-005"
     }
    }
   },
