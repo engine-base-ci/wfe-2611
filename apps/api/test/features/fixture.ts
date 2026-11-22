@@ -12,7 +12,6 @@ import { tmpdir } from "node:os";
 import { ObjectStore, type ExternalSigner } from "@kaname/storage";
 import { localDriver } from "@kaname/storage/local";
 import { migrate } from "@kaname/db/migrate";
-import { migrateAuth } from "@kaname/auth/migrate";
 import { createPool } from "@kaname/db/pool";
 import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
@@ -71,8 +70,6 @@ export type HookFactory = (appPool: pg.Pool) => Record<string, Hook>;
 
 export async function makeFixture(extra: HookFactory[] = []): Promise<Fixture> {
   await migrate(DB_URL, DB_PKG);
-  // 認証の表（kaname_auth.user）は別の道の migration。土台を使う試験が自分の足し込みで書くので、ほかの試験が先に流れた DB でだけ在る状態にしない
-  await migrateAuth(DB_URL);
   const admin = new pg.Pool({ connectionString: DB_URL, max: 3 });
   const pool = createPool({ databaseUrl: APP_URL, max: 6 });
   const repo = await createRepository(pool);
