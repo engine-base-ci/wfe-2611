@@ -3,7 +3,7 @@
 //   もう一度確かめる：checkCredentialLogin を 1 回（答えまで同じ行は押せない）→ 201 のあと入れ物が一覧を読み直す（札が確かめている）。
 //     409（もう確かめている・失効）→ 読み直すだけ。ほかの失敗・網の切れ → 口の文の赤の知らせ（行はそのまま）。404 → 知らせて読み直す
 //   コードを入れる：見た目は部品 CheckCodeDialog（views.tsx）。コードは NFKC → 空白を全部取って { request_ref, code }。スマホの承認（push）は欄を出さず { request_ref, approved: true }。
-//     201 → 閉じて読み直す。422 → 欄の下に口の文（字は残す）。404（もう頼んでいない）→ 閉じて口の文の知らせ・読み直す。ほかの失敗 → 小窓の中の赤の知らせ。「あとで」は何も送らない
+//     印（request_ref）が無いときは口を呼ばず、小窓の中に「もう一度確かめてください」を出す（K-630・契約で必須）。201 → 閉じて読み直す。422 → 欄の下に口の文（字は残す）。404（もう頼んでいない）→ 閉じて口の文の知らせ・読み直す。ほかの失敗 → 小窓の中の赤の知らせ。「あとで」は何も送らない
 import { useRef, useState, type ReactNode } from "react";
 import { CATALOG } from "@kaname/errors/catalog";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
@@ -12,6 +12,8 @@ import type { CredentialRow } from "./to-item";
 import { CheckCodeDialog } from "./views";
 
 const SCREEN = "credentials";
+/** 頼みの印（request_ref）が無いときに小窓の中へ出す文。口は印が必須（K-355 の契約）で必ず 422 になるので呼ばない（K-630） */
+const NO_REQUEST_REF_TEXT = "コードの頼みが見つかりません。もう一度確かめてください";
 const textOf = (code: string): string => CATALOG[code]?.message ?? "";
 const messageOf = (r: CallErr): string => r.message ?? textOf(errorCodeOf(r));
 type Via = "sms" | "email" | "push";
@@ -72,13 +74,18 @@ export function useCheckCredential(d: CheckCredentialDeps): CheckCredentialFlow 
 
   const submit = async () => {
     if (answering.current || !target) return;
+    if (!target.requestRef) {
+      setFieldError(null);
+      setAlert(NO_REQUEST_REF_TEXT);
+      return;
+    }
     answering.current = true;
     setBusy(true);
     setFieldError(null);
     setAlert(null);
     try {
-      const ref = target.requestRef ? { request_ref: target.requestRef } : {};
-      const body = target.via === "push" ? { ...ref, approved: true } : { ...ref, code: normalizeCode(code) };
+      const request_ref = target.requestRef;
+      const body = target.via === "push" ? { request_ref, approved: true } : { request_ref, code: normalizeCode(code) };
       const r = await call("answerCredentialLoginCheck", {
         params: { id: target.id },
         body,
