@@ -54,7 +54,7 @@ INPUT_RULES = {"createSavedView": {"anyOf": [
     {"required": ["scope_id"], "properties": {"scope_id": {"type": "string"}}},
 ]}}
 
-# 保存（K-475）：見せるグループが見えない・無い（404・存在を教えない）／同じ名前・50 件まで（409）／形の誤り（422）
+# 保存（K-475）：見せるグループが見えない・無い（404・存在を教えない）／同じ名前・50 件まで（409）／形の誤り（422）／DB が落ちた（503・11-22 18:30 の決め）
 ERRORS_4XX = {
     "createSavedView": [
         {"status": 404, "code": "E-VWS-004", "body": {"error": "not_found", "code": "E-VWS-004"}, "errors": ["E-VWS-004"],
@@ -72,5 +72,8 @@ ERRORS_4XX = {
         {"status": 422, "code": "E-VWS-001", "body": {"error": "validation", "code": "E-VWS-001"}, "errors": ["E-VWS-001", "E-VWS-002", "E-VWS-003", "E-VWS-007", "E-VWS-008"],
          "trigger": "名前が空・空白だけ（E-VWS-001）／61 文字以上（E-VWS-002）／グループの全員に見せるのに見せるグループが無い・null（E-VWS-003）／条件・列の形か大きさが決まりの外（E-VWS-007）／名前の途中に制御文字（E-VWS-008）",
          "ears_form": "UNWANTED: IF 名前か条件か見せるグループの指定が決まりに合わないなら、Kaname は 422 と欄つきの番号を返し、条件も証跡も書かない"},
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "保存する取引（見えるグループの確かめ・行・証跡）の中で DB が落ちた（1 つの取引なので何も残らない・ログは場所と例外の種類だけ。名前と条件は出さない）",
+         "ears_form": "UNWANTED: IF 保存する所で DB が落ちたなら、Kaname は 503 を返し、条件の行も証跡も残さない（止める側に倒す）"},
     ],
 }
