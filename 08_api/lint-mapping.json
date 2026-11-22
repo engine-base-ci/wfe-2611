@@ -3726,6 +3726,17 @@
    ]
   },
   {
+   "method": "POST",
+   "path": "/api/v1/tickets/:id/timeline/seen",
+   "implementation_path": "apps/api/src/routes/ticket_messages.ts::markTicketTimelineSeen",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A107"
+   ]
+  },
+  {
    "method": "GET",
    "path": "/api/v1/tickets/:id/versions",
    "implementation_path": "apps/api/src/routes/ticket_section_versions.ts::listTicketVersions",
