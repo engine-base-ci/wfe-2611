@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-22 凍結）
+# Kaname API 設計書 v1.0（2026-11-23 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -343,8 +343,8 @@
 | EP-328 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-329 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
 | EP-330 | PATCH | `/api/v1/tickets/:id/sections/:key` | 更新（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-331 | GET | `/api/v1/tickets/:id/test-specs` | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類 | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-332 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-331 | GET | `/api/v1/tickets/:id/test-specs` | 取得（test_specs）— チケットの確認項目を作った順に見る（文・ | A102 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
+| EP-332 | POST | `/api/v1/tickets/:id/test-specs` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 503 413 429 502 403 403 503 |
 | EP-333 | POST | `/api/v1/tickets/:id/test-specs/lint` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-334 | POST | `/api/v1/tickets/:id/test-specs/suggest` | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検 | A102 | 1 | member | C2 C3 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-335 | GET | `/api/v1/tickets/:id/timeline` | 取得（ticket_messages）— やり取りを新しい方から読む（前 | A107 | 1 | member |  | 401 403 404 422 429 403 403 503 |
@@ -391,7 +391,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1058 ／ 内部専用 277 ／ どの画面にも出ない 0
+- 検査したフィールド 1064 ／ 内部専用 277 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 
@@ -401,4 +401,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-22 凍結（endpoints 370）
+- v1.0 2026-11-23 凍結（endpoints 370）
