@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
-  "frozen_at": "2026-11-22",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -54073,21 +54073,29 @@
     },
     {
      "status": 404,
-     "code": "NOT_FOUND",
+     "code": "E-PAGE-001",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "E-PAGE-001"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "チケットが無い・別の会社・消した・見えない／決めた人が同じ会社の今のメンバーでない（別の会社・外された・止められた・無い id・欄 decided_by_member_id）／元の書き込みがこのチケットの消していない書き込みでない（別のチケット・変更の 1 行・仕組みの行・消した物・無い id・欄 source_message_id）。在るかを漏らさない",
+     "ears_form": "UNWANTED: IF チケットか決めた人か元の書き込みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CONF-037",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-037"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-037"
+     ],
+     "trigger": "取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・details の文は「取引先の画面ができてから使えます」）",
+     "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）"
     },
     {
      "status": 422,
@@ -54099,35 +54107,8 @@
      "errors": [
       "E-VAL-042"
      ],
-     "trigger": "決めたことが無い・空・空白だけ・制御文字だけ（欄 text）。書いた人・決めた時刻・改めた先など知らない欄を送ると 422 VALIDATION_ERROR",
+     "trigger": "決めたことが無い・空・空白だけ・制御文字だけ（E-VAL-042・欄 text）。書いた人・決めた時刻・改めた先など知らない欄を送ると 422 VALIDATION_ERROR",
      "ears_form": "UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない"
-    },
-    {
-     "status": 422,
-     "code": "E-VAL-043",
-     "body": {
-      "error": "validation_failed",
-      "code": "E-VAL-043"
-     },
-     "errors": [
-      "E-VAL-043",
-      "E-VAL-044"
-     ],
-     "trigger": "決めた人が同じ会社の今のメンバーでない（別の会社・外された・止められた・無い id・E-VAL-043・欄 decided_by_member_id）／元の書き込みがこのチケットの消していない書き込みでない（別のチケット・変更の 1 行・仕組みの行・消した物・無い id・E-VAL-044・欄 source_message_id）",
-     "ears_form": "UNWANTED: IF 決めた人が同じ会社の今のメンバーでないか、元の書き込みがこのチケットの消していない書き込みでないなら、Kaname は 422（E-VAL-043・E-VAL-044）を返し、何も書かない"
-    },
-    {
-     "status": 422,
-     "code": "E-VAL-018",
-     "body": {
-      "error": "validation_failed",
-      "code": "E-VAL-018"
-     },
-     "errors": [
-      "E-VAL-018"
-     ],
-     "trigger": "取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで使えない・details の文は「取引先の画面ができてから使えます」）",
-     "ears_form": "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）"
     },
     {
      "status": 503,
@@ -54197,11 +54178,9 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/decisions が「決めたこと・理由を書く／AI の候補を確定する」として呼ばれたとき THEN Kaname は「決定と改めた先を残す」を行い 2xx を返す（自動側：スレッドから決定の候補を出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF チケットか決めた人か元の書き込みが無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない",
+    "UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）",
     "UNWANTED: IF 決めたことが空（空白だけ・制御文字だけを含む）なら、Kaname は 422 E-VAL-042 を返し、何も書かない",
-    "UNWANTED: IF 決めた人が同じ会社の今のメンバーでないか、元の書き込みがこのチケットの消していない書き込みでないなら、Kaname は 422（E-VAL-043・E-VAL-044）を返し、何も書かない",
-    "UNWANTED: IF 取引先のルールにしたなら、Kaname は 422 E-VAL-018 を返し、何も書かない（取引先の画面ができるまで）",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",

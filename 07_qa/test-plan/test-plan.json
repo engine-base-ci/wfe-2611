@@ -667,11 +667,11 @@
   "tickets": 218,
   "l1_rows": 5094,
   "ears_endpoints": 370,
-  "ears_tests": 4004,
+  "ears_tests": 4002,
   "entities": 145,
   "policies": 419,
   "access_cases": 1566,
-  "errors": 222,
+  "errors": 221,
   "journey_rows": 88,
   "critical_tasks": 88
  },

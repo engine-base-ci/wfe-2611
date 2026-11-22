@@ -14,10 +14,10 @@ import { makeFixture, type Fixture, type Person } from "../fixture.js";
 
 // ---- 決めた文と言葉（11_tickets/K-390.md・K-391.md の表・errors.d/K-390.json・K-391.json）----
 export const VAL_TEXT = "E-VAL-042"; // 決めたことを書いてください
-export const VAL_DECIDER = "E-VAL-043"; // 決めた人は、この会社のメンバーから選んでください
-export const VAL_SOURCE = "E-VAL-044"; // 元の書き込みが見つかりません
+export const VAL_DECIDER = "E-PAGE-001"; // 決めた人が無い・見えない（404・details の文は「決めた人は、この会社のメンバーから選んでください」）
+export const VAL_SOURCE = "E-PAGE-001"; // 元の書き込みが無い・見えない（404・details の文は「元の書き込みが見つかりません…」）
 export const VAL_CANCEL = "E-VAL-045"; // 取り消す理由を書いてください（K-391）
-export const VAL_NOT_YET = "E-VAL-018"; // まだ使えない（取引先のルールにする・F11 まで）
+export const VAL_NOT_YET = "E-CONF-037"; // 今の状態ではできない（取引先のルールにする・段 12 まで・409）
 export const CONF_REVISED = "E-CONF-031"; // この決定は、いま別の人が改めました。読み直してから、もう一度お試しください（㉒・K-391）
 export const CONF_CANCELLED = "E-CONF-033"; // この決定は、いま別の人が取り消しました（K-391・仮）
 export const DECISION_KIND = "ticket.decision"; // 決定を足した・改めた・取り消した知らせ（⑲）
