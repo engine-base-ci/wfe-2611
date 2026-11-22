@@ -1457,6 +1457,67 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "listTicketTimeline": {
+   "file": "apps/api/test/features/F6/thread-timeline.test.ts",
+   "reason": "やり取りの並び・続き・絞り込み・新しい数は、書き込みの時刻と書いた人・最後に開いた時刻・行の守り（チケットが見えるか）の組み合わせで答えが変わる。生成の試験の種では作れない（K-383）",
+   "covers": {
+    "test_get_tickets_id_timeline_ok": "K383-API-001",
+    "test_get_tickets_id_timeline_rejected_401": "K383-API-018",
+    "test_get_tickets_id_timeline_rejected_403": "K383-API-016",
+    "test_get_tickets_id_timeline_not_found": "K383-API-016",
+    "test_get_tickets_id_timeline_rejected_422": "K383-API-019",
+    "test_get_tickets_id_timeline_rate_limited": "K383-API-018",
+    "test_get_tickets_id_timeline_shape": "K383-API-001",
+    "test_get_tickets_id_timeline_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_timeline_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "getWorkspaceMembers": {
+   "file": "apps/api/test/features/F10/invite-create.test.ts",
+   "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",
+   "covers": {
+    "test_get_workspace_members_ok": "K419-API-001",
+    "test_get_workspace_members_shape": "K419-API-001",
+    "test_get_workspace_members_rejected_401": "K419-API-005",
+    "test_get_workspace_members_rejected_403": "K419-API-005",
+    "test_get_workspace_members_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_workspace_members_rejected_422": "入力を受けない GET"
+   }
+  },
+  "createInvitations": {
+   "file": "apps/api/test/features/F10/invite-create.test.ts",
+   "reason": "招く口は、宛ての形・もう入っている人・重ねた招待・本人確認の取り直し・メールの成否で答えが変わる（K-419）",
+   "covers": {
+    "test_post_invitations_ok": "K419-API-007",
+    "test_post_invitations_shape": "K419-API-007",
+    "test_post_invitations_rejected_401": "K419-API-019",
+    "test_post_invitations_rejected_403": "K419-API-018",
+    "test_post_invitations_rejected_422": "K419-API-010",
+    "test_post_invitations_conflict": "K419-API-011",
+    "test_post_invitations_not_found": "K419-API-014",
+    "test_post_invitations_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_invitations_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {}
   }
  }
 }
