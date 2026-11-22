@@ -147,10 +147,10 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
     expect((await approvalRow(d.approvalId))["return_reason"]).toBe(note);
     const remake = (await runsOf(t.id, "make")).at(-1)!;
     expect(String((await jobOf(remake.bridge_job_id!))["prompt"])).toContain(note);
-    // 制御文字：\t \n \r は文のまま。NUL（\u0000）と \u0001・\u001f は取り除く（Postgres の text に NUL は入らない・500 にしない）
+    // 制御文字：\t \n \r は文のまま。\u0001・\u001f は取り除く。NUL（\u0000）は入口が 422 で断る（K-427・Postgres の text に NUL は入らない・500 にしない）
     const t2 = await ticket();
     const d2 = await delegated(t2);
-    const raw = "宛名を\t直して\r\n日付も\u0000今日に\u0001\u001f";
+    const raw = "宛名を\t直して\r\n日付も\u0002今日に\u0001\u001f";
     const kept = "宛名を\t直して\r\n日付も今日に";
     const r = await giveBack(boss, d2.approvalId, raw);
     expect(r.status, await r.clone().text()).toBe(201);
@@ -160,9 +160,16 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
     // 制御文字だけなら、取り除いた後に空 → E-VAL-020
     const t3 = await ticket();
     const d3 = await delegated(t3);
-    const e = await giveBack(boss, d3.approvalId, "\u0000\u0001");
+    const e = await giveBack(boss, d3.approvalId, "\u0002\u0001");
     expect(e.status).toBe(422);
     expect(JSON.stringify(await json(e))).toContain(VAL_REASON_EMPTY);
+    // NUL は入口の 422（VALIDATION_ERROR・欄 note）。空になった理由の E-VAL-020 ではない
+    const nul = await giveBack(boss, d3.approvalId, "戻す\u0000");
+    expect(nul.status, await nul.clone().text()).toBe(422);
+    const nulBody = (await json(nul)) as { code?: string; details?: { field: string }[] };
+    expect(nulBody.code).toBe("VALIDATION_ERROR");
+    expect((nulBody.details ?? []).map((d) => d.field)).toEqual(["note"]);
+    expect(JSON.stringify(nulBody)).not.toContain(VAL_REASON_EMPTY);
   });
 
   it("K63-API-049 守り × 承認・差し戻しの答えの形：id・decision・decided_at・status_id・ticket_id・run_id・pc（live／asleep）だけ", async () => {

@@ -1267,6 +1267,28 @@
     "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/post_invitations.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-fields-read.ts",
+    "apps/api/src/features/F4/ticket-fields/**",
+    "03_architecture/db-catalog.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144.d/K-563.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ticket_fields.test.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1395,6 +1417,8 @@
   "apps/api/test/features/F6/thread-post-stage.test.ts": "書き込みの口の hooks のファイル（apps/api/src/hooks/ticket-message-post.ts・K-385）を最初の要求の前に動的 import で読む（K-389）",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
+  "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"
  },
  "web_select": {
