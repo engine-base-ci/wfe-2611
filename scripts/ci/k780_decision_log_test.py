@@ -23,7 +23,7 @@ REP_ANSWERED: dict[int, tuple[str, str]] = {
     10: ("2026-11-22", "4be39872256a"), 11: ("2026-11-22", "f493bd620f24"), 12: ("2026-11-22", "ec883ef22fb2"),
     13: ("2026-11-22", "0bbeefca6b65"), 14: ("2026-11-22", "cbd258bb993c"),
     16: ("2026-11-22", "bd8c684b9d3f"), 17: ("2026-11-22", "c3cceef74d52"), 24: ("2026-11-22", "c8c97228a730"),
-    26: ("2026-11-22", "233748ad7f36"), 30: ("2026-11-22", "233748ad7f36"), 33: ("2026-11-22", "3781e90d23e0"),
+    30: ("2026-11-22", "233748ad7f36"), 33: ("2026-11-22", "3781e90d23e0"),
 }
 # 代表の言葉（answer= がまだ無い行）：番号 → 行に書く字。高本さん・answer= は持たない。answer= が付いたら REP_ANSWERED へ移す（今は無い）
 REP_WORDS: dict[int, str] = {15: "2026-11-22 19:50 代表の言葉"}
@@ -52,7 +52,7 @@ def section_rows() -> tuple[dict[str, str], list[str]]:
 
 class DecisionLogTest(unittest.TestCase):
     def test_K780_DC_001_section_rows(self) -> None:
-        """§153 の表に D-153.1〜33 が順にちょうど 1 回ずつ（n 行目が D-153.n）在り、代表の決めの行（1〜14・16・17・24・26・30・33）は 2026-11-22 高本さん・answer=<印> を持ち、15 は「2026-11-22 19:50 代表の言葉」、ほかはどの行も「PM の決め」を持ち高本さん・answer= を持たない。「代表に確認中」の行は無い。決定ログに足す控えと字が同じ"""
+        """§153 の表に D-153.1〜33 が順にちょうど 1 回ずつ（n 行目が D-153.n）在り、代表の決めの行（1〜14・16・17・24・30・33）は 2026-11-22 高本さん・answer=<印> を持ち、15 は「2026-11-22 19:50 代表の言葉」、ほかはどの行も「PM の決め」を持ち高本さん・answer= を持たない。「代表に確認中」の行は無い。決定ログに足す控えと字が同じ"""
         rows, order = section_rows()
         self.assertEqual(order, [f"D-153.{n}" for n in range(1, COUNT + 1)], "表の並び（trace_gate は表の何行目かで番号を数える）")
         bad: list[str] = []
@@ -94,7 +94,7 @@ class DecisionLogTest(unittest.TestCase):
         self.assertEqual([f"D-153.{n}" for n in range(1, COUNT + 1) if f"D-153.{n}" not in dec], [])
 
     def test_K780_DC_004_decision_source_gate(self) -> None:
-        """K780-DC-004 決める人の決定の行（代表の決め 1〜14・16・17・24・26・30・33）の answer=<印> が、答えの記録 01_hearing/decider-answers.jsonl に在る（decision_source_gate が 0 で終わる）"""
+        """K780-DC-004 決める人の決定の行（代表の決め 1〜14・16・17・24・30・33）の answer=<印> が、答えの記録 01_hearing/decider-answers.jsonl に在る（decision_source_gate が 0 で終わる）"""
         g = subprocess.run(
             [sys.executable, "scripts/ci/decision_source_gate.py", "--log", "01_hearing/決定ログ_進行中.md", "--answers", "01_hearing/decider-answers.jsonl", "--label", "高本さん", "--since", "D-130"],
             cwd=ROOT, capture_output=True, text=True, timeout=300,
