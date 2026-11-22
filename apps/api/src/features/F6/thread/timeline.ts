@@ -30,7 +30,6 @@ function isTime(s: string): boolean {
 
 /** DB が日時の字を受け付けなかった（形・範囲・時差）。上の確かめを抜けた字も 422 にする（障害の 503 と分ける） */
 const BAD_TIME_CODES = new Set(["22007", "22008", "22009"]);
-const isBadTime = (e: unknown): boolean => BAD_TIME_CODES.has(String((e as { code?: unknown })?.code ?? ""));
 
 export interface TimelineQuery {
   limit: number;
@@ -85,7 +84,8 @@ export function createListTicketTimeline(appPool: pg.Pool): (a: HookArgs) => Pro
         return r.rows[0]?.v ?? null;
       });
     } catch (e) {
-      if (beforeAt !== null && isBadTime(e)) return invalid("before_at", "日時");
+      if (beforeAt !== null && BAD_TIME_CODES.has(String((e as { code?: unknown } | null)?.code ?? "")))
+        return invalid("before_at", "日時");
       return down("やり取りを読む", e);
     }
     if (!v) return notFound();
