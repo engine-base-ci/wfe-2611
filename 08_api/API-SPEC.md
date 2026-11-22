@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-21 凍結）
+# Kaname API 設計書 v1.0（2026-11-22 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -127,7 +127,7 @@
 | EP-112 | POST | `/api/v1/inquiries/:id/messages` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-113 | POST | `/api/v1/inquiries/:id/resolve` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-114 | POST | `/api/v1/inquiries/attachments` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-116 | DELETE | `/api/v1/invitations/:id` | 削除（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 422 429 403 403 503 |
 | EP-117 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-118 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-21 凍結（endpoints 369）
+- v1.0 2026-11-22 凍結（endpoints 369）

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。208 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。212 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3773,6 +3773,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-INV-009": {
+    "id": "E-INV-009",
+    "cls": "validation",
+    "message": "メールの形ではありません",
+    "action": "宛てを直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-009",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-010": {
+    "id": "E-INV-010",
+    "cls": "conflict",
+    "message": "もうこのワークスペースに入っています",
+    "action": "その宛てを外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-011": {
+    "id": "E-INV-011",
+    "cls": "not_found",
+    "message": "このグループには招けません",
+    "action": "グループを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-012": {
+    "id": "E-INV-012",
+    "cls": "validation",
+    "message": "一度に招けるのは 50 人までです",
+    "action": "宛てを分けて招く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
     }
   }
 };
