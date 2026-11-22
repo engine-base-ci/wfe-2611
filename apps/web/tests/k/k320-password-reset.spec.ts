@@ -133,7 +133,8 @@ test("K320-UI-003 正しいメール（前後の全角の空白つき）で送�
   expect(m.forgots).toEqual([{ email: EMAIL }]);
   await expect(root(page)).toContainText(SENT_TEXT(EMAIL));
   const again = root(page).getByRole("button", { name: /もう一度送る/ });
-  await expect(again).toHaveText("もう一度送る（60 秒あとから）");
+  await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（1 分あとから）"); // 60 秒は「1 分」（キャンバス AuthReset・K-638）
+  await expect(again).toHaveText("もう一度送る");
   await expect(again).toBeDisabled();
 });
 
@@ -148,7 +149,7 @@ test("K320-UI-004 送ってから 59 秒では押せない（1 秒あとから�
   await expect(root(page)).toHaveAttribute("data-state", "s");
   const again = root(page).getByRole("button", { name: /もう一度送る/ });
   await page.clock.fastForward(59_000);
-  await expect(again).toHaveText("もう一度送る（1 秒あとから）");
+  await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（1 秒あとから）");
   await expect(again).toBeDisabled();
   await page.clock.fastForward(1_000);
   await expect(again).toHaveText("もう一度送る");
@@ -460,7 +461,7 @@ const PROD: Record<string, (page: Page) => Promise<void>> = {
     await sendBtn(page).click();
     await expect(root(page)).toHaveAttribute("data-state", "s");
     await page.clock.fastForward(12_000); // モックは「48 秒あとから」
-    await expect(root(page).getByRole("button", { name: /もう一度送る/ })).toHaveText("もう一度送る（48 秒あとから）");
+    await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（48 秒あとから）");
   },
   "reset-signed-in": async (page) => {
     const m = await mockApi(page);

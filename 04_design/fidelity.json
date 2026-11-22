@@ -2147,7 +2147,7 @@
     375
    ],
    "owner": "K-638",
-   "enrolled": false,
+   "enrolled": true,
    "pairs": [
     {
      "name": "入口の箱",
