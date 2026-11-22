@@ -89,11 +89,11 @@
   },
   {
    "id": "E-CRED-004",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "credentials"
    },
-   "when": "期限が日本の今日より前・暦に無い・年-月-日の形でない",
+   "when": "期限が日本の今日より前（今日が過ぎると同じ日付でも通らなくなる・時刻で決まる）",
    "false_when": "期限が今日以降の日付か、空（期限なし）",
    "message": "期限は今日以降の日付にしてください",
    "action": "期限を直すか空にする",

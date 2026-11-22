@@ -192,7 +192,9 @@ function handler(deps: ContractDeps, operationId: string, def: EndpointDef, sche
     const ctx = c.get("ctx");
     const repo = c.get("repo");
     // 1) 上限
-    const key = def.rateLimit.key === "user" && ctx.userId ? ctx.userId : ipOf(c);
+    //    PC の印で来た要求は PC ごとに数える（同じ人の PC が何台あっても 1 台ずつの上限・代表の答え answer=431fc50df51b・K-355）
+    const who = ctx.role === "device" && ctx.sessionId ? ctx.sessionId : ctx.userId;
+    const key = def.rateLimit.key === "user" && who ? who : ipOf(c);
     if (!deps.limiter(operationId, perMinute).take(`${operationId}:${key}`))
       return err(c, 429, "rate_limited", "RATE_LIMITED", { retry_after_sec: 60 });
     // 2) 認証・3) 認可（役）
