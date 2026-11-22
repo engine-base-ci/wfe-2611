@@ -9,7 +9,7 @@
 //     @ と知らせる人：そのチケットを見られる、抜けていない・止められていない人だけ（ほかは 404・E-PAGE-001・欄も明細も付けない＝在るかを漏らさない・何も書かない。DB の中身で決まる断りは 422 にしない・控え帳 2026-11-21 01:15）。重なりは 1 つにし、知らせる人から自分を外す
 //     受け箱：(@ ∪ 知らせる人) − 自分 に 1 人 1 通（@ された人は ticket.mentioned、ほかは ticket.message）。本文は入れない。dedupe_key ticket.message:<書き込み>:<人>
 //     引用：同じチケットの、消していない書き込み（kind post）だけ。元の頭の 2 行を quote_text に写す（元を消しても字は残る・⑮3）
-//     書き込みと受け箱の行は 1 つの取引（app.ticket_message_post）。途中で落ちたら何も残らない（500・E-PAGE-003）
+//     書き込みと受け箱の行は 1 つの取引（app.ticket_message_post）。途中で落ちたら何も残らない（503・E-PAGE-003）
 //     本文が無い・空・空白だけ（全角の空白も）は 422（形の誤り・契約の pattern \S と必須。欄 body に E-VAL-027 の文・新しい番号・errors.d/K-385.json）
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
@@ -324,7 +324,7 @@ describe("K-385 書き込む：段・二度押し・守り・失敗", () => {
     expect(await inbox(t)).toHaveLength(0);
   });
 
-  it("K385-API-017 S1 の失敗（受け箱の行を書く所で DB が落ちた）：500・E-PAGE-003。1 つの取引なので書き込みも残らない（受け箱の行だけ・書き込みだけが残ることは無い）", async () => {
+  it("K385-API-017 S1 の失敗（受け箱の行を書く所で DB が落ちた）：503・E-PAGE-003。1 つの取引なので書き込みも残らない（受け箱の行だけ・書き込みだけが残ることは無い）", async () => {
     const t = await h.ticket({ title: "K385 受け箱が書けない" });
     await h.f.admin.query(`create or replace function public.k385_break() returns trigger language plpgsql as $$
       begin raise exception 'K385 の試験で書けなくした'; end $$`);
@@ -333,7 +333,7 @@ describe("K-385 書き込む：段・二度押し・守り・失敗", () => {
     );
     try {
       const r = await send(h.writer, t, { body: "知らせが書けない", mention_member_ids: [h.boss.id] });
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await h.json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(JSON.stringify(j)).not.toContain("書けなくした");

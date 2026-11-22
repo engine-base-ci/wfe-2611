@@ -39,8 +39,8 @@ describe("POST /api/v1/tickets/:id/messages", () => {
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-014");
   });
-  it("test_post_tickets_id_messages_server_error", () => {
-    // UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、書き込みも受け箱の行も残さない（1 つの取引）
+  it("test_post_tickets_id_messages_unavailable", () => {
+    // UNWANTED: IF 書き込みと受け箱の行を書く所で DB が落ちたなら、Kaname は 503 を返し、書き込みも受け箱の行も残さない（1 つの取引・止める側に倒す）
     // 本物の試験：apps/api/test/features/F6/thread-post.test.ts の「K385-API-017」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/thread-post.test.ts", "utf8")).toContain("K385-API-017");
   });
