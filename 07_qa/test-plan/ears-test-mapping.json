@@ -151023,11 +151023,11 @@
     "tickets"
    ],
    "ears_form": "UNWANTED",
-   "http_code": "500",
-   "ears_text": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、時刻を前のまま残す",
+   "http_code": "503",
+   "ears_text": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、時刻を前のまま残す（止める側に倒す）",
    "test_file": "apps/api/test/generated/post_tickets_id_timeline_seen.test.ts",
-   "test_function": "test_post_tickets_id_timeline_seen_server_error",
-   "test_level": "unit（途中の失敗・全部戻す）",
+   "test_function": "test_post_tickets_id_timeline_seen_unavailable",
+   "test_level": "結合（届かない・止める側に倒す・G-15）",
    "gate": "backend-coverage",
    "ladder": "L1",
    "tasks": []
