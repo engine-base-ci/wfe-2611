@@ -122,9 +122,16 @@ describe("K-384 最後に開いた時刻を書く", () => {
     }
   });
 
-  it("K384-API-009 入力：seen_at が日時でない（字・数・空）・知らない欄は 422 で、行を作らない", async () => {
+  it("K384-API-009 入力：seen_at が日時でない（字・数・空・暦に無い日・時差の範囲外）・知らない欄は 422 で、行を作らない", async () => {
     const t = await h.ticket();
-    for (const body of [{ seen_at: "きのう" }, { seen_at: 12345 }, { seen_at: "" }, { member_id: h.writer.id }]) {
+    for (const body of [
+      { seen_at: "きのう" },
+      { seen_at: 12345 },
+      { seen_at: "" },
+      { seen_at: "2026-02-30T00:00:00Z" },
+      { seen_at: "2026-11-22T10:00:00+16:00" },
+      { member_id: h.writer.id },
+    ]) {
       const r = await mark(h.boss, t, body);
       expect(r.status, JSON.stringify(body)).toBe(422);
     }
@@ -143,7 +150,7 @@ describe("K-384 最後に開いた時刻を書く", () => {
     expect(Number((await row(t, h.boss))!.n)).toBe(0);
   });
 
-  it("K384-API-011 S1 の失敗（行を書く所で DB が落ちた）：500・E-PAGE-003 で、行は前のまま（1 つの取引）", async () => {
+  it("K384-API-011 S1 の失敗（行を書く所で DB が落ちた）：503・E-PAGE-003 で、行は前のまま（1 つの取引）", async () => {
     const t = await h.ticket({ title: "K384 書けない" });
     await mark(h.boss, t, { seen_at: minutesAgo(60) });
     const before = (await row(t, h.boss))!.s.getTime();
@@ -154,7 +161,7 @@ describe("K-384 最後に開いた時刻を書く", () => {
     );
     try {
       const r = await mark(h.boss, t);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await h.json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(JSON.stringify(j)).not.toContain("書けなくした");

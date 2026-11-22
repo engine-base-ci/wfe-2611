@@ -10305,6 +10305,7 @@ components:
         seen_at:
           type: string
           nullable: true
+          pattern: ^(?:[1-9]\d{3}-(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|[1-9]\d{3}-(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|[1-9]\d{3}-02-(?:0[1-9]|1\d|2[0-8])|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,6})?(?:Z|[+-](?:0\d|1[0-5])(?::?[0-5]\d)?)$
       additionalProperties: false
       x-operation: markTicketTimelineSeen
     TicketUpdateInput:
@@ -44175,14 +44176,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：seen_at が日時として読めない（空・字・暦に無い日））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - seen_at が日時として読めない（空・字・暦に無い日）
-        '500':
+        '503':
           description: E-PAGE-003
           content:
             application/json:
@@ -44196,12 +44195,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
