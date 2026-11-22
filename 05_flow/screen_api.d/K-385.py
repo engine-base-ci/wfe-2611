@@ -15,12 +15,7 @@ _NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
 VALUE_RANGES = {"createTicketMessage": {"body": {"pattern": "\\S"}, "stage_key": {"enum": ["todo", "doing", "hold"]},
                                         "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK}}}
 
-UNEXPRESSIBLE_422 = {
-    "createTicketMessage": [
-        "本文が全角の空白・改行だけ（E-VAL-027）",
-        "@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）",
-    ],
-}
+UNEXPRESSIBLE_422: dict = {}   # 形の決まりは REQUIRED_INPUTS・VALUE_RANGES（fuzz の入力を絞る）で契約に書いた。本文の空は口の前処理が E-VAL-027 で断る（実装の答えが正）。DB の中身で決まる断りは 404（検査の例外は足さない）
 
 # 形全体の決まり（欄をまたぐ決まり・K-355 の INPUT_RULES の書き方・代表の答え answer=f0f290e785a9：検査の例外は足さない・K-389・K-387 と同じ）
 #   段は stage_id か stage_key の片方だけ／stage_key hold は理由と条件が要る／理由と条件は stage_key hold か stage_id（保留かは DB で見る・409 E-CONF-036）のときだけ付けられる
@@ -40,12 +35,12 @@ RESPONSES = {
 
 ERRORS_4XX = {
     "createTicketMessage": [
-        {"status": 422, "code": "E-VAL-027", "body": {"error": "validation", "code": "E-VAL-027"}, "errors": ["E-VAL-027"],
-         "trigger": "本文が無い・空・空白だけ（全角の空白・改行も）",
-         "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 を返し、書き込みも受け箱の行も作らない"},
-        {"status": 422, "code": "E-VAL-014", "body": {"error": "validation", "code": "E-VAL-014"}, "errors": ["E-VAL-014"],
-         "trigger": "@ する人・知らせる人・引用元が選べない（見られない・抜けた・止められた・別のチケットの書き込み・消した書き込み）",
-         "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 422 と E-VAL-014 と欄の名前を返し、何も書かない"},
+        {"status": 422, "code": "E-VAL-027", "body": {"error": "validation", "code": "E-VAL-027", "details": []}, "errors": ["E-VAL-027"],
+         "trigger": "本文が無い・空・空白だけ（全角の空白・改行も・口の前処理が断る・欄 body の明細 1 件）",
+         "ears_form": "UNWANTED: IF 本文が無い・空・空白だけなら、Kaname は 422 と E-VAL-027 と欄 body の明細を返し、書き込みも受け箱の行も作らない"},
+        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
+         "trigger": "@ する人・知らせる人・引用元が選べない（そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み・消した書き込み。DB の中身で決まるので 422 にしない・欄の名前も出さない）",
+         "ears_form": "UNWANTED: IF @ する人・知らせる人・引用元が選べないなら、Kaname は 404 と E-PAGE-001 を返し、在るかを漏らさず何も書かない"},
         # ---- K-389：書き込みと一緒に段を変えたときの断り（K-387 の updateTicket の行と同じ trigger・番号・文）
         {"status": 403, "code": "FORBIDDEN", "body": {"error": "forbidden", "code": "FORBIDDEN"},
          "trigger": "見るだけの人（書き込めるが段は変えられない）が段の欄を付けた",

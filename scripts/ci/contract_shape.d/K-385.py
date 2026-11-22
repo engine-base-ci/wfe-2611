@@ -6,10 +6,5 @@ PATH_PATTERNS = {}
 _NOT_BLANK = "[^\\s\\u0000-\\u001f\\u007f]"
 VALUE_RANGES = {"createTicketMessage": {"body": {"pattern": "\\S"}, "stage_key": {"enum": ["todo", "doing", "hold"]},
                                         "hold_reason": {"pattern": _NOT_BLANK}, "resume_condition": {"pattern": _NOT_BLANK}}}
-UNEXPRESSIBLE_422 = {
-    "createTicketMessage": [
-        "本文が全角の空白・改行だけ（E-VAL-027）",
-        "@ する人・知らせる人・引用元が、そのチケットを見られない人・抜けた人・止められた人・別のチケットの書き込み（E-VAL-014）",
-    ],
-}
+UNEXPRESSIBLE_422 = {}
 AGENT_ANSWERS = {}

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 68・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 215・部品 56・設定 41
+API 369（作った 70・後のフェーズの行為だけ 20）・前の道すじ 26・表 145・画面の部品 18・共通の処理 13・エラー 220・部品 56・設定 41
 
 ## 共通の処理
 
@@ -165,7 +165,7 @@ API 369（作った 68・後のフェーズの行為だけ 20）・前の道す�
 | `listAuditEvents` | GET /api/v1/audit_events | 取得（audit_events）— 何をしたか追う（記録） | F10 | 契約だけ（501） |  |
 | `createExport` | POST /api/v1/exports | 作成・実行（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
 | `getExport` | GET /api/v1/exports/:id | 取得（exports）— 記録を書き出す（本人確認） | F10 | 契約だけ（501） |  |
-| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
+| `createInvitations` | POST /api/v1/invitations | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 作った | K-419 |
 | `revokeInvitation` | DELETE /api/v1/invitations/:id | 削除（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `resendInvitation` | POST /api/v1/invitations/:id/resend | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
 | `createInvitationLink` | POST /api/v1/invitations/link | 作成・実行（invitations）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
@@ -197,7 +197,7 @@ API 369（作った 68・後のフェーズの行為だけ 20）・前の道す�
 | `requestWorkspaceDeletion` | POST /api/v1/workspace/deletion | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `cancelWorkspaceDeletion` | DELETE /api/v1/workspace/deletion | 削除（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `uploadWorkspaceLogo` | POST /api/v1/workspace/logo | 作成・実行（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
-| `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 契約だけ（501） |  |
+| `getWorkspaceMembers` | GET /api/v1/workspace/members | 取得（workspace）— 人を招く（層・権限の束） | F10 | 作った | K-419 |
 | `updateWorkspacePermissions` | PATCH /api/v1/workspace/permissions | 更新（workspace）— 会社の設定を決める | F10 | 契約だけ（501） |  |
 | `remindAcceptance` | POST /api/v1/acceptances/:id/remind | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼む） | F11 | 契約だけ（501） |  |
 | `updateClientContact` | PATCH /api/v1/client_contacts/:id | 更新（client_contacts）— 取引先を作り、担当者を招待する | F11 | 契約だけ（501） |  |

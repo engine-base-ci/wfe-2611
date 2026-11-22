@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-20 凍結）
+# Kaname API 設計書 v1.0（2026-11-22 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -113,8 +113,8 @@
 | EP-098 | POST | `/api/v1/conversations/:id/stop` | 作成・実行（conversations）— 自分の AI に指示する・相 | A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-099 | GET | `/api/v1/conversations/:id/stream` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
 | EP-100 | GET | `/api/v1/credentials` | 取得（credentials）— 預けたログイン情報を名前の順に見る（自 | A10 | 1 | member | C8 | 401 403 422 429 403 403 503 |
-| EP-101 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 502 503 413 429 403 403 503 |
-| EP-102 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 502 503 413 429 403 403 503 |
+| EP-101 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 409 502 503 413 429 403 403 503 |
+| EP-102 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 409 409 502 503 413 429 403 403 503 |
 | EP-103 | DELETE | `/api/v1/credentials/:id` | 削除（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 503 429 403 403 503 |
 | EP-104 | POST | `/api/v1/credentials/:id/login-check` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 409 409 503 413 429 403 403 503 |
 | EP-105 | POST | `/api/v1/credentials/:id/login-check/answer` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 404 409 422 404 503 413 429 403 403 503 |
@@ -127,7 +127,7 @@
 | EP-112 | POST | `/api/v1/inquiries/:id/messages` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-113 | POST | `/api/v1/inquiries/:id/resolve` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-114 | POST | `/api/v1/inquiries/attachments` | 作成・実行（inquiries）— 運営に問い合わせる | A67 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
-| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
+| EP-115 | POST | `/api/v1/invitations` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-116 | DELETE | `/api/v1/invitations/:id` | 削除（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 422 429 403 403 503 |
 | EP-117 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-118 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 409 422 413 429 403 403 503 |
@@ -337,7 +337,7 @@
 | EP-322 | GET | `/api/v1/tickets/:id/kind-change-preview` | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-323 | GET | `/api/v1/tickets/:id/links` | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-324 | POST | `/api/v1/tickets/:id/links` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-325 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 422 409 409 409 409 422 404 500 503 413 429 403 403 503 |
+| EP-325 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 404 409 409 409 409 422 404 500 503 413 429 403 403 503 |
 | EP-326 | GET | `/api/v1/tickets/:id/references` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-327 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-328 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-20 凍結（endpoints 369）
+- v1.0 2026-11-22 凍結（endpoints 369）
