@@ -56,6 +56,11 @@ INPUT_RULES = {"createSavedView": {"anyOf": [
 
 # 保存（K-475）：見せるグループが見えない・無い（404・存在を教えない）／同じ名前・50 件まで（409）／形の誤り（422）／DB が落ちた（503・11-22 18:30 の決め）
 ERRORS_4XX = {
+    "listSavedViews": [
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+         "trigger": "一覧を読む所で DB が落ちた（ログは場所と例外の種類だけ。名前と条件は出さない）",
+         "ears_form": "UNWANTED: IF 一覧を読む所で DB が落ちたなら、Kaname は 503 を返す（止める側に倒す）"},
+    ],
     "createSavedView": [
         {"status": 404, "code": "E-VWS-004", "body": {"error": "not_found", "code": "E-VWS-004"}, "errors": ["E-VWS-004"],
          "trigger": "見せるグループ（scope_id）が無い・別の会社のグループ・消したグループ・自分に見えないグループ（自分だけの保存に付けた scope_id も同じ。在るかを教えない）",

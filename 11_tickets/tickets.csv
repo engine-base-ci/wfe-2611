@@ -2404,7 +2404,7 @@ K-475,検索条件を保存する・開く口（listSavedViews・createSavedView
 - 見える人は 2 通り（D-128.83・D-128.119）：自分だけ（share `self`）／グループの全員（share `group`）。グループの全員に見せるときは、見せるグループ（`scope_id`）が要り、そのグループが見える人だけが保存できる。契約の入力 `SavedViewsInput` には `scope_id` が無かったので、入力を作り直す（`member_id` は受けない・呼んだ人に決める）
 - 並び・まとめ方・条件は `filters`・`columns` の jsonb に入れる（列は足さない・範囲 Q8）。口は形と大きさだけを確かめ、中の意味は見ない（意味を持つのは一覧の口 K-472〜K-474 と画面）
 - 「左のメニューに出す」「増えたら知らせる」は作らない（列が無い・時間で動く仕組みが無い・D-151.9）。画面は押せない形で置く
-- 同じ名前は 1 人 1 つ（大文字小文字・全角半角の違いも同じ）・1 人 50 件まで（仮）。画面の絵 f7-save-error（名前が空・同じ名前・上限・口が断った）の 4 つに、口の側の番号と文を決める","- [ ] 下の表の 29 行（K475-API-001〜029）が緑：`apps/api/test/features/F7/saved-views-create.test.ts`（土台 `saved-views.harness.ts`）
+- 同じ名前は 1 人 1 つ（大文字小文字・全角半角の違いも同じ）・1 人 50 件まで（仮）。画面の絵 f7-save-error（名前が空・同じ名前・上限・口が断った）の 4 つに、口の側の番号と文を決める","- [ ] 下の表の 30 行（K475-API-001〜030）が緑：`apps/api/test/features/F7/saved-views-create.test.ts`（土台 `saved-views.harness.ts`）
 - [ ] 契約の口 `listSavedViews`・`createSavedView` が 501 でない。生成の試験 `apps/api/test/generated/get_saved_views.test.ts`・`post_saved_views.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-475.json` の covers）
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
