@@ -19643,13 +19643,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "createTicketDecision",
-    "updateTicketDecision",
-    "listTicketDecisions",
-    "listTicketTimeline",
-    "listMembers"
-   ],
+   "apis": [],
    "mock": [
     "dec-from-message",
     "dec-revise",
