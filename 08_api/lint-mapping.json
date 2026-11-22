@@ -702,17 +702,6 @@
    ]
   },
   {
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "implementation_path": "apps/api/src/routes/class_axes.ts::listClassAxes",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A103"
-   ]
-  },
-  {
    "method": "PATCH",
    "path": "/api/v1/client_contacts/:id",
    "implementation_path": "apps/api/src/routes/client_contacts.ts::updateClientContact",
@@ -3192,6 +3181,17 @@
    ],
    "acts": [
     "A102"
+   ]
+  },
+  {
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::listTicketFields",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A103"
    ]
   },
   {
