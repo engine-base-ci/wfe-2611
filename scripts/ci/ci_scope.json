@@ -1250,6 +1250,25 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/handovers-read.ts",
+    "apps/api/src/features/F8/handovers/list.ts",
+    "apps/api/src/features/F4/create-ticket/hooks.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-queue-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/handover-queue-read.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_handovers.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitations.ts",
     "apps/api/src/features/F10/invite/**",
     "packages/db/migrations/20261121091900_workspace_invitations.sql"
@@ -1437,6 +1456,8 @@
   "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）",
   "apps/api/test/features/F8/handover.harness.ts": "口の hooks のファイル apps/api/src/hooks/handovers.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-401。後ろの葉（K-402〜K-404）は自分の断片に paths → 自分の試験の 1 行を足す",
   "apps/api/test/features/contract/k144.d/K-401.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handovers.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-401",
+  "apps/api/test/features/F8/handover-queue-read.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-read.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-405",
+  "apps/api/test/features/contract/k144.d/K-405.ts": "準備（setup）で apps/api/src/hooks/handovers-read.ts を動的 import で読む。読む物と試験は data_links で結ぶ・K-405",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
   "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
