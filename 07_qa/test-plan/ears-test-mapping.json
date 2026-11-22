@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "test-verification",
- "created_at": "2026-11-22",
+ "created_at": "2026-11-23",
  "_doc": "08_api/ears-ac-seed.json の 1 文 = 1 test。05_flow/build_testplan.py が生成。tickets の tier_2 と同じ文なので、実装者は tasks の列で自分の分を引く",
  "generator": "packages/api/test/generate_from_ears.ts（EARS の文 → vitest/jest の骨組み。EVENT-DRIVEN=正常・UNWANTED=異常・UBIQUITOUS=契約の形）",
  "counts": {
@@ -146171,6 +146171,126 @@
   },
   {
    "test_id": "TC-3509",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF 完了したチケットの段を開き直さずに変えて書こうとしたら、Kaname は 409 と E-CONF-032 を返し、書き込みも残さない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_conflict_2",
+   "test_level": "unit（冪等）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3510",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF 書き込みの口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、書き込みも残さない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_conflict_3",
+   "test_level": "unit（冪等）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3511",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、書き込みも残さない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_conflict_4",
+   "test_level": "unit（冪等）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3512",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "409",
+   "ears_text": "UNWANTED: IF 保留でない段を選んで保留の理由か条件を付けたなら、Kaname は 409 と E-CONF-036 を返し、書き込みも残さない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_conflict_5",
+   "test_level": "unit（冪等）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3513",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "422",
+   "ears_text": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も書かない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_rejected_422_2",
+   "test_level": "unit（検証・表記ゆらぎ）",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3514",
+   "endpoint": "POST /api/v1/tickets/:id/messages",
+   "feature_id": "F-010",
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "ears_form": "UNWANTED",
+   "http_code": "404",
+   "ears_text": "UNWANTED: IF チケットが無い・見えない・消したなら、Kaname は 404 と NOT_FOUND を返し、何も書かない",
+   "test_file": "apps/api/test/generated/post_tickets_id_messages.test.ts",
+   "test_function": "test_post_tickets_id_messages_not_found_3",
+   "test_level": "unit",
+   "gate": "backend-coverage",
+   "ladder": "L1",
+   "tasks": []
+  },
+  {
+   "test_id": "TC-3515",
    "endpoint": "POST /api/v1/tickets/:id/messages",
    "feature_id": "F-010",
    "acts": [
