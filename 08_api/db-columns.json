@@ -1024,6 +1024,10 @@
     "type": "uuid",
     "nullable": true
    },
+   "target_session_id": {
+    "type": "uuid",
+    "nullable": true
+   },
    "tenant_id": {
     "type": "uuid",
     "nullable": false
@@ -7316,6 +7320,14 @@
     "type": "timestamp with time zone",
     "nullable": true
    },
+   "deleted_by": {
+    "type": "uuid",
+    "nullable": true
+   },
+   "edited_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "id": {
     "type": "uuid",
     "nullable": false
@@ -7328,8 +7340,16 @@
     "type": "uuid[]",
     "nullable": false
    },
+   "notify_member_ids": {
+    "type": "uuid[]",
+    "nullable": false
+   },
    "quote_of_id": {
     "type": "uuid",
+    "nullable": true
+   },
+   "quote_text": {
+    "type": "text",
     "nullable": true
    },
    "reactions": {
