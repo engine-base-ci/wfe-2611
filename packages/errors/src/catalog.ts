@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。235 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。220 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4245,6 +4245,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "members",
       "state": "invite"
+    }
+  },
+  "E-SPEC-001": {
+    "id": "E-SPEC-001",
+    "cls": "conflict",
+    "message": "このチケットは完了しています。完了したチケットの確認項目は変えられません",
+    "action": "新しいチケットで確かめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SPEC-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
