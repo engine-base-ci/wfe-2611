@@ -20152,6 +20152,62 @@
     "見込み": "0.75 時間（頭の欄の estimate_basis のとおり）。試験 7 行（定義 5・作り手 1・読み手 1）"
    },
    "file": "11_tickets/K-640.md"
+  },
+  {
+   "id": "K-641",
+   "title": "直し：GitHub の台（ubuntu-24.04）に無い道具を、画面の組の中で入れる（lsof を入っていなければ入れる・ブラウザは --with-deps で日本語の字体と部品をそろえる・Mac の箱の像では何も増えない・K-56 の葉・PM の直し）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮（作り手に段を 1 つ足す直しの実測はまだ無い）。形の近い K-631（作り手に段を足す・自己試験 1 本・0.5 時間）より試験の行が 1 行多い：作り手に段 1 つと命令 1 つの置き換え 5 分・作り直し 3 分・自己試験（偽の sudo・lsof を置いて本物の bash で流す）の確かめ 5 分・手元の試験 10 分・出す前の手元の検査と自分の確かめ 7 分・余裕 15 分。試験は 5 行。前からの試験は替えない（k175・k195 は今の命令の形を許す）。前の遅れは足さない",
+   "decisions": [
+    "D-128.147",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の CI の作り手（05_flow/build_testplan.py）と、その自己試験だけ。製品のコード・口・DB・外には触らない。入れる道具は台の apt の lsof だけ",
+   "tests": [
+    "scripts/ci/k641_hosted_tools_test.py"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-640"
+   ],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（CI の定義の段を足すだけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "05_flow/build_testplan.py",
+    "scripts/ci/g65.d/K-641.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-640 で CI の定義の台を変数 CI_RUNNER で替えられる形にした。公開の側で GitHub の台（ubuntu-24.04）に載せたとき、**Mac の箱の像（tf-golden）に入っていて GitHub の台に入っていない物**で組が落ちる、あるいは静かに別の結果になる所を、段の中で入れて塞ぐ。調べた全部の道具の表は `.ticket-flow/side-notes/CI-GitHubの台-調べ.md`。要るのは 2 つだけ（それ以外は台に在る・または定義が自分で入れている）。\n\n- **lsof**：web の組の「画面と口の番号が空いているか」「立てた API と画面を止める」が `lsof -ti tcp:<番号>` を呼ぶ。像には apt で入れてあるが、GitHub の台（Ubuntu 24.04 の runner-images・2026-11-16 版の apt の一覧）には無い。無いと `lsof` が見つからず、番号の確かめが「空いている」と読んで素通りする（`lsof … >/dev/null 2>&1` の戻りが 127 で「使われていない」側に倒れる）か、止めた後の確かめが空振りする。**段の中で、入っていなければ入れる**（`command -v lsof` で見て、無ければ `sudo apt-get update` の後に `sudo apt-get install -y -qq lsof`）。入っていれば何もしない（像の Mac の箱では sudo も apt も呼ばない）\n- **ブラウザの部品と字体**：web の組は `playwright install chromium`（--with-deps なし）。像は温めのとき `playwright install --with-deps chromium` を流していて、`--with-deps` は Chromium が動く部品に加え、日本語の字体（fonts-ipafont-gothic・fonts-wqy-zenhei。本線の Playwright 1.63 の `nativeDeps` で確かめた）を入れる。GitHub の台には日本語の字体が無く、**日本語の画面の文字の幅が像と違う**（折り返し・溢れの測りと見た目の突き合わせ G48・G70 が像と別の結果になりうる）。像と同じ命令（`--with-deps`）にそろえる。像の Mac の箱では部品も字体も入っているので、実際に入れる物は無い（apt の更新に数秒）\n\n- 道具の段は **web の組だけ**に置く（lsof を呼ぶのは web の組だけ。ほかの組の時間を増やさない）。入れる物は lsof 1 つだけで、入れる道は台の apt だけ（外から取って流さない・版は台の Ubuntu の配布の版）\n- 台の選び（K-640）には触らない。Docker・Postgres・Python・Node・pnpm・Chrome・jq・git・curl・sudo は GitHub の台（x64）に在る、または定義が自分で入れている（actions/setup-python・setup-node・pnpm/action-setup・ci_venv.sh）ので何もしない（表のとおり）",
+    "完了の条件": "- [ ] 下の表の K641-CI-001〜005 が緑：`python3 scripts/ci/k641_hosted_tools_test.py`\n- [ ] 替えない前からの試験が緑（k172・k175・k176 の基準・k177・k195・k258・k323・k376・k191・ci_scope_test。k175 は `playwright install( --with-deps)? chromium` を許し、k195 は Chrome を入れる命令が定義に無いことを見る）\n- [ ] 作り手を流し直した生成物（`.github/workflows/v3-gate.yml`・試験計画 `07_qa/test-plan/test-plan.*`）が最新（`python3 scripts/tickets/regen_all.py`）。`access-matrix.json` の揺れは取り込まない（K-640 と同じ）\n- [ ] 手元の CI（このチケットの範囲）が緑\n- [ ] 公開の側で GitHub の台に載せた回で、web の組の番号の確かめが lsof を見つけ、ブラウザが日本語を描くことを、PM が 1 回の回で確かめた結果が「確かめたこと」に書いてある",
+    "前提と制約": "分類: TOOL\n\n- 依存：K-640（台の式）。同じ作り手 05_flow/build_testplan.py を触る（K-640 が runs-on の行・この葉が web の組の段）。K-631 も同じ作り手に static の組の段を足すが、変える場所は重ならない\n- **台は ubuntu-24.04（x64）を勧める**（PM に聞くこと 1）：arm（ubuntu-24.04-arm）には Google Chrome が無い（runner-images の arm の一覧の「Omitted software」に Chrome がある）。Bridge の通しの試験（G73）は `channel: \"chrome\"` で Google Chrome を使い、k195 の決まりで CI に Chrome が無ければ飛ばさず落ちる。x64 には Chrome 157 が入っている。この葉は台の名前を決めず、Chrome を入れる段も足さない（足すと台ごとに分かれる）\n- `playwright install --with-deps` は apt を使うので sudo が要る。GitHub の台の runner は sudo が通り、像の runner の利用者も sudoers に入っている（vm.py の像の作り方：`runner ALL=(ALL) NOPASSWD:ALL`）。どちらでも同じ命令が動く\n- 命令の置き方：道具の段は、番号の確かめ（lsof を最初に呼ぶ段）より前。ブラウザの段は今の位置のまま（命令だけ `--with-deps` に替える）\n- 「入っていれば飛ばす」は `command -v`。命令は `&&` でつなぎ、更新が落ちたら install に進まない。段は赤で止まる（`|| true` で握りつぶさない）\n- 試験を書いた後は変えない（D-128.125）。実装の前に試験を流して赤を確かめない",
+    "確かめたこと（切る段・2026-11-22）": "- GitHub の台の道具の一覧（actions/runner-images の Ubuntu 24.04・イメージ 20261116.376.1）を読んだ：Docker 28.0.4・Git 2.56.1・jq 1.7・Python 3.12.3（既定。3.14 は setup-python が入れる）・Node 22.23.5・Google Chrome 157・Chromium・PostgreSQL 16 が在る。apt の一覧に **lsof は無い**（`grep -c lsof` が 0）。sudo・unzip・zip・curl・xvfb は在る\n- 本線の Playwright（1.63.0）の `nativeDeps`（ubuntu24.04-x64）に、fonts-ipafont-gothic・fonts-wqy-zenhei・fonts-liberation・fonts-noto-color-emoji ほかが入っている。`--with-deps` の有る無しで入る字体が違う\n- 使い捨ての作業場所（本線の写し）で作り手に段 1 つと命令の置き換えを足して流し直し、web の組の段が「playwright install --with-deps chromium」→「台の道具をそろえる」→「番号が空いているか」の順になり、k641 の試験 5 行が緑。前からの試験（k172・k173・k174・k175・k177・k186・k195・k204・k237 の 2 本・k245・k248・k258・k323・k376・k191・ci_scope_test・contract_shape_test）は、K-640 の替えを足した版で全部緑\n- 命令は、偽の sudo・lsof を PATH に置いた本物の bash で、lsof あり（呼ぶ物なし）・無し（update → install の順）・更新が落ちる・install が落ちるの 4 通りを流して確かめた（k641 の K641-CI-002・003）",
+    "依存の理由": "K-640：この葉の試験は web の組の段を読み、台の式（変数）が先に決まっていてから、道具を決める。取り込みの順は K-640 の後",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作り手に定数 | `05_flow/build_testplan.py`：`VENV` の前に `TOOLS_STEP`（`DB_START` と同じ置き方の複数行の文字）。名前は `台の道具をそろえる（lsof・入っていれば飛ばす・K-641）`、命令は `command -v lsof >/dev/null 2>&1 \\|\\| { sudo apt-get update -qq && sudo apt-get install -y -qq lsof; }` |\n| web の組に置く | `{NODE}{DB_START}      - run: pnpm --filter @kaname/web exec playwright install --with-deps chromium` の直後に `{TOOLS_STEP}`。命令の `chromium` の前に `--with-deps` を足す（行末のコメントに「像の温めと同じ・字体と apt をそろえる・K-641」） |\n| 登録先 | `scripts/ci/g65.d/K-641.txt`（1 行：`python3 scripts/ci/k641_hosted_tools_test.py`・切る段で置いた）。置いたら作り手を流し直す |\n| 作り直し | `python3 scripts/tickets/regen_all.py`（定義と試験計画は生成物。手で書かない・changes: に書かない） |\n| 自分の確かめ | ① `python3 scripts/ci/k641_hosted_tools_test.py` ② 前からの試験（上の確かめたこと）③ 生成物の web の組の段の並びを目で見る ④ `ci.py recheck K-641` |\n| 使う部品と版 | Python 3.14・PyYAML（今の版）・bash。新しい部品は入れない。道具は台の apt の lsof（Ubuntu 24.04 の配布の版） |\n| 目録で探した結果 | 使う：作り手の段の定数の置き方（`DB_START`・`DB_STOP`・`VENV`）・像の温めの命令（ticket-flow.yaml の vm.warm）と同じ `--with-deps`。道具をそろえる既存の段は無い。無い物を作らない |\n\n```search\ngit grep -n \"lsof\" -- 05_flow/build_testplan.py .github/workflows\n4\n```\n\n4 件：作り手 2（番号の確かめ・止めた後の確かめ）・生成物 v3-gate.yml 2（同じ 2 か所）。ほかの組・ほかの定義・スクリプト（kill_tree.sh は pgrep）は lsof を呼ばない。`scripts/dev/up.sh` の lsof は手元の開発用で、CI の組では動かない。\n\n```search\ngit grep -n \"playwright install\" -- 05_flow/build_testplan.py ticket-flow.yaml\n3\n```\n\n3 件：web の組（作り手・この葉で `--with-deps` にする）・staging-e2e の組（すでに `--with-deps`）・像の温め（ticket-flow.yaml・`--with-deps`）。\n\n### 速さ（今の値と目標の値）\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| web の組の追加時間 | 0 秒 | Mac の箱の像：apt の更新だけで数秒増える（入れる物は無い）。GitHub の台：lsof 1 つ入れる数秒＋ブラウザの部品と字体を入れる十数秒。web の組だけ（static・database・unit・spec は 0 秒）。回の時間は画面の範囲を含む回が十数分に対して小さい |",
+    "表の住所": "- 新しい口・エラー番号・migration は無い",
+    "外に影響する手順": "- なし — リポジトリの中の CI の作り手と自己試験だけ。台の apt から lsof を入れる段は、使い捨ての台の中だけ（DB に書かない・外へ送らない・錠を作らない）",
+    "テスト仕様と確認の結果": "`scripts/ci/k641_hosted_tools_test.py`（unittest・CI の定義と `ticket-flow.yaml` を読む。命令は偽の sudo・lsof を PATH に置いて本物の bash で流す）。固定の待ちは使わない。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 台に lsof が在る（像の Mac の箱） | web の組 | PM | sudo も apt も呼ばず、段は緑 | このチケット | K641-CI-002 |\n| 台に lsof が無い（GitHub の台） | web の組 | PM | 更新 → 入れるの順に呼び、段は緑 | このチケット | K641-CI-002 |\n| 更新・入れるが落ちる | web の組 | PM | 段が赤（更新が落ちたら入れるに進まない） | このチケット | K641-CI-003 |\n| lsof を呼ぶ組 | 定義 | — | 呼ぶ前に道具の段が在る。web のほかの組は apt・sudo を呼ばない | このチケット | K641-CI-001・005 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K641-CI-001 | 入口 | web の組の段の並びとブラウザの命令 | 道具の段が web の組にちょうど 1 つ・lsof を最初に呼ぶ段より前。lsof を呼ぶ組はどれも、呼ぶ前に道具の段を持つ。ブラウザの用意は 1 つで `playwright install --with-deps chromium`。像の温め（vm.warm）も `--with-deps chromium` で、命令の後ろが同じ |\n| K641-CI-002 | 入力 | lsof が在る／無い | 在れば終了 0 で sudo に何も渡らない。無ければ終了 0 で sudo に渡るのは 2 つだけ：`apt-get update …`・`apt-get install -y … lsof`（この順） |\n| K641-CI-003 | 失敗 | apt の更新が落ちる／入れるが落ちる | どちらも終了が 0 以外（段が赤）。更新が落ちたら install を呼ばない（sudo に渡った命令が 1 つ） |\n| K641-CI-004 | 守り | 入れる物と道 | `apt-get install` で入れる物は lsof だけ。段の命令に curl・wget・`\\| sh`・`\\| bash`・pip・npm・pnpm・brew・`${{` が無い（外から取って流す形・外から来る値を命令に入れる形にしない） |\n| K641-CI-005 | 守り | ほかの組 | web 以外の組（static・database・unit・spec・task-gate など）の段の命令に `apt-get`・`sudo` が無い。道具の段があるのは web の組だけ |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない：この葉が読む・足すファイルの名前に日本語は無い（段の名前の日本語は定義の中の字） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | 受ける：K641-CI-002 は在る・無いの両方、K641-CI-003 は落ちる 2 通りを流す。K641-CI-001 は web の組の段を数え、0 件の緑にしない |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 受ける：K641-CI-001（像の温めと定義のブラウザの命令を突き合わせる）。台の違い（lsof・日本語の字体）は GitHub の台で実際に流して確かめる（PM が回で確かめる・確かめたこと） |\n\nほかの観点：時間の流れ・操作の揺れ・利用者の状態は無い（定義の段）。G-11（外のリソース）：台の apt の配布元に届くこと — 届かなければ段が赤で止まる（K641-CI-003）。G-12〜G-16 は該当なし。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 13 本（K-640 と同じ作り手）。\n\n```search\npython3 scripts/ci/cut_check.py prior --files 05_flow/build_testplan.py\n13\n```\n\n- 替えない — 13 本とも、K-640 の替えを足した版で使い捨ての作業場所で流し、今のまま緑（段の数・G の番号は変わらない：この段には G の番号を付けない。ticket_process_test は元の写しでも赤で、この葉と無関係）。定義を読む k173・k174・k175・k177・k186・k195・k204 も今のまま緑。k175 は `playwright install( --with-deps)? chromium\\b` を許す形、k195 は定義に Chrome を入れる命令が無いことを見る（この葉は Chrome を入れない）",
+    "決定ログ": "足さない。D-128.147 の当てはめ（同じ定義が Mac の箱でも GitHub の台でも動く）",
+    "決める人・PM に聞くこと": "1. （PM に）**公開の側の変数 CI_RUNNER の値は `\"ubuntu-24.04\"`（x64）を勧める**。arm（`ubuntu-24.04-arm`）は Chrome が無く、G73 が落ちる（無料の範囲は両方同じ）。Mac の VM は arm64 なので、x64 に載ると architecture が変わる：ネイティブの部品（esbuild・Playwright・squawk）は pnpm・npm が台に合う物を入れるので問題は見つかっていない（この葉では試せない）。最初の公開の回で確かめる\n2. （PM に・この葉の範囲の外）Docker Hub の `pgvector/pgvector:pg16` を GitHub の台が毎回引く（11 組が各 1 回）。個人の公開イメージは匿名の引き数の制限に当たりうる。当たったら、同じイメージを公開の側の ghcr.io に写して差し替えるか、Docker Hub の読み取り専用の鍵を公開側の秘密に置く（定義の DB を立てる段の変更になる別の葉）。最初の回で確かめてから決める"
+   },
+   "file": "11_tickets/K-641.md"
   }
  ]
 }
