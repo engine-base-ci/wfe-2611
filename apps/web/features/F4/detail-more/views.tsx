@@ -1,7 +1,7 @@
 "use client";
 // 詳細の「…」のメニューの見た目（段 5・K-431・キャンバス TdMore。枝 c/段5 の下絵・部品先行）。口とはまだつながず、押したときの関数を props で受けて描くだけ。
 //   代表に聞くことのおすすめ：使えるのは「複製する」と「版と差分を見る」だけ。ほかの項目（ほかのグループへ移す・種別を変える・ひな形にする・
-//   リンクをコピー・PDF にする・印刷・実行の記録を見る・消す）は隠さず、押せない形（薄く・まだ使えません）で出す（キャンバス UiDisabled）。
+//   リンクをコピー・実行の記録を見る・消す）は隠さず、押せない形（薄く・まだ使えません）で出す（キャンバス UiDisabled）。
 //   ⌘D・⌘L のキーの字は、動かないので出さない。
 import { Menu, MenuItem, MenuPopup, MenuTrigger } from "@/components/k";
 import "./more.css";
@@ -23,7 +23,6 @@ const ITEMS: readonly (Item | "—")[] = [
   { key: "template", label: "ひな形にする", sub: "この本文の形を次から使う" },
   "—",
   { key: "link", label: "リンクをコピー" },
-  { key: "pdf", label: "PDF にする・印刷" },
   { key: "versions", label: "版と差分を見る", usable: true },
   { key: "runs", label: "実行の記録を見る" },
   "—",
