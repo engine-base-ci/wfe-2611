@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。201 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。212 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3518,7 +3518,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CRED-004": {
     "id": "E-CRED-004",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "期限は今日以降の日付にしてください",
     "action": "期限を直すか空にする",
     "undo": false,
@@ -3618,6 +3618,127 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "screen": "credentials"
     }
   },
+  "E-CRED-015": {
+    "id": "E-CRED-015",
+    "cls": "conflict",
+    "message": "この預けた物の種類や 2 段階の設定に合わない中身です。開き直して、合う欄だけを入れてください",
+    "action": "開き直して合う欄だけを入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-015",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-010": {
+    "id": "E-CRED-010",
+    "cls": "gate",
+    "message": "動いている仕事のためにだけ使えます",
+    "action": "PC の Bridge を新しい版にする（次の仕事を待つ）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-010",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-011": {
+    "id": "E-CRED-011",
+    "cls": "dependency",
+    "message": "このログイン情報は失効しているか、期限が過ぎています。預け直してください",
+    "action": "預け直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CRED-011",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-012": {
+    "id": "E-CRED-012",
+    "cls": "conflict",
+    "message": "いま確かめています。終わるまで待ってください",
+    "action": "終わるまで待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-012",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-013": {
+    "id": "E-CRED-013",
+    "cls": "conflict",
+    "message": "API キー・値はログインして確かめません",
+    "action": "なし（確かめは要らない）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-013",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CRED-014": {
+    "id": "E-CRED-014",
+    "cls": "not_found",
+    "message": "いまはコードを頼まれていません（もう答えたか、確かめが止まりました）",
+    "action": "一覧を読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-CRED-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
+  "E-CONN-018": {
+    "id": "E-CONN-018",
+    "cls": "conflict",
+    "message": "PC の Bridge が動いていないので確かめられません。Bridge を起こしてから押してください",
+    "action": "Bridge を起こす",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CONN-018",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "bridge-setup",
+      "state": "browser_check_asleep"
+    }
+  },
   "E-CONN-016": {
     "id": "E-CONN-016",
     "cls": "auth",
@@ -3652,6 +3773,78 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "bridge-setup",
       "state": "e"
+    }
+  },
+  "E-INV-009": {
+    "id": "E-INV-009",
+    "cls": "validation",
+    "message": "メールの形ではありません",
+    "action": "宛てを直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-009",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-010": {
+    "id": "E-INV-010",
+    "cls": "conflict",
+    "message": "もうこのワークスペースに入っています",
+    "action": "その宛てを外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-011": {
+    "id": "E-INV-011",
+    "cls": "not_found",
+    "message": "このグループには招けません",
+    "action": "グループを選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
+    }
+  },
+  "E-INV-012": {
+    "id": "E-INV-012",
+    "cls": "validation",
+    "message": "一度に招けるのは 50 人までです",
+    "action": "宛てを分けて招く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-INV-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "members",
+      "state": "invite"
     }
   }
 };

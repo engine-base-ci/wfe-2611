@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:3b2f2425887f1d7f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d1fee170d6ee84a3
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -1922,6 +1922,58 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "POST",
+    "path": "/api/v1/bridge/browser",
+    "operationId": "setBridgeBrowser",
+    "table": "sessions",
+    "kind": "create",
+    "input": "BridgeBrowserInput",
+    "success": 201,
+    "output": "BridgeBrowser",
+    "outputList": false,
+    "generic": false,
+    "auth": "device",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      413,
+      429,
+      502,
+      503
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "device",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
     "path": "/api/v1/bridge/claim",
     "operationId": "claimPairingCode",
     "table": "sessions",
@@ -1976,9 +2028,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "reportCredentialCheck",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialCheckReportInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialCheckReport",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -1999,6 +2051,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       503
@@ -2228,6 +2281,63 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": "always",
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/bridge/devices/:id/browser-check",
+    "operationId": "checkMyDeviceBrowser",
+    "table": "bridge_jobs",
+    "kind": "create",
+    "input": "DeviceBrowserCheckInput",
+    "success": 201,
+    "output": "DeviceBrowserCheck",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 10,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C1",
+      "C2",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A09"
+    ],
+    "screens": [
+      "bridge-setup"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
       "row": null
     },
     "termsOpen": false,
@@ -3174,53 +3284,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
         "table": "checks",
         "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
       }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "GET",
-    "path": "/api/v1/class_axes",
-    "operationId": "listClassAxes",
-    "table": "class_axes",
-    "kind": "list",
-    "input": null,
-    "success": 200,
-    "output": "ClassAxes",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A103"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -5250,6 +5313,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       409,
       422,
       403,
+      409,
       502,
       503,
       413,
@@ -5307,6 +5371,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       422,
       403,
+      409,
+      409,
       409,
       502,
       503,
@@ -5402,9 +5468,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "checkCredentialLogin",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialLoginCheckInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialLoginCheck",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5425,6 +5491,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       403,
@@ -5460,9 +5529,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "answerCredentialLoginCheck",
     "table": "credentials",
     "kind": "create",
-    "input": "CredentialsInput",
+    "input": "CredentialLoginAnswerInput",
     "success": 201,
-    "output": "Credentials",
+    "output": "CredentialLoginAnswer",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -5483,6 +5552,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      404,
+      503,
       413,
       429,
       403,
@@ -5993,9 +6064,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createInvitations",
     "table": "invitations",
     "kind": "create",
-    "input": "InvitationsInput",
+    "input": "InvitationsCreateInput",
     "success": 201,
-    "output": "Invitations",
+    "output": "InvitationsSent",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -6013,6 +6084,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       409,
       422,
+      404,
       413,
       429,
       403,
@@ -15023,6 +15095,56 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
+    "method": "GET",
+    "path": "/api/v1/ticket-fields",
+    "operationId": "listTicketFields",
+    "table": "custom_fields",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketField",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [
+      "kind_id"
+    ],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      404,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A103"
+    ],
+    "screens": [
+      "tickets"
+    ],
+    "perm": {
+      "word": "read",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
     "method": "PATCH",
     "path": "/api/v1/ticket_decisions/:id",
     "operationId": "updateTicketDecision",
@@ -19508,4 +19630,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "3b2f2425887f1d7f";
+export const OPENAPI_HASH = "d1fee170d6ee84a3";
