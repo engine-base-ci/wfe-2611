@@ -142,4 +142,5 @@ export const MIGRATIONS = [
   "20261122093400_test_spec_create.sql",
   "20261122094100_ticket_links.sql",
   "20261123082700_ticket_delete_preview.sql",
+  "20261123100000_function_execute_private_after.sql",
 ] as const;
