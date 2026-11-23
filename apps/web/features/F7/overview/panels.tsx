@@ -89,7 +89,7 @@ export function UpdateFeed({ filters, days }: UpdateFeedProps) {
         </span>
       </div>
       {days.map((d) => (
-        <div key={d.label} className="k-f7-overview-day">
+        <div key={d.label}>
           <h3 className="k-f7-overview-day-label">{d.label}</h3>
           <ul className="k-f7-overview-events">
             {d.items.map((e) => (
@@ -133,14 +133,30 @@ export interface StatusBarProps {
   counts: readonly StatusCount[];
 }
 
+/** 棒の段（幅は合計を 100 とした割合・x は前の段の幅の和）。データで決まる幅は style でなく svg の rect の属性で書く */
+function barSegments(counts: readonly StatusCount[]) {
+  const total = counts.reduce((sum, c) => sum + Math.max(0, c.count), 0);
+  return counts.reduce<{ label: string; tone: StatusCount["tone"]; x: number; width: number }[]>((acc, c) => {
+    const last = acc[acc.length - 1];
+    const x = last ? last.x + last.width : 0;
+    const width = total > 0 ? (Math.max(0, c.count) / total) * 100 : 0;
+    return [...acc, { label: c.label, tone: c.tone, x, width }];
+  }, []);
+}
+
+/** 進みの割合を 0〜100 に収める */
+const clampPercent = (n: number) => Math.min(100, Math.max(0, n));
+
 /** 状態の内訳：1 本の棒と、状態ごとの件数 */
 export function StatusBar({ summary, counts }: StatusBarProps) {
   return (
     <Box id="k-f7-overview-status" title="状態" aside={summary}>
       <div className="k-f7-overview-bar" role="img" aria-label="状態の内訳">
-        {counts.map((c) => (
-          <span key={c.label} data-f7-tone={c.tone} style={{ flexGrow: c.count }} />
-        ))}
+        <svg className="k-f7-overview-svg" viewBox="0 0 100 1" preserveAspectRatio="none" aria-hidden="true">
+          {barSegments(counts).map((c) => (
+            <rect key={c.label} x={c.x} y="0" width={c.width} height="1" data-f7-tone={c.tone} />
+          ))}
+        </svg>
       </div>
       <dl className="k-f7-overview-counts">
         {counts.map((c) => (
@@ -198,7 +214,9 @@ export function MilestoneList({ items }: { items: readonly MilestoneRow[] }) {
                 aria-label={`${m.percent}% 完了`}
                 data-f7-tone={m.done ? "success" : "indigo"}
               >
-                <span style={{ inlineSize: `${m.percent}%` }} />
+                <svg className="k-f7-overview-svg" viewBox="0 0 100 1" preserveAspectRatio="none" aria-hidden="true">
+                  <rect x="0" y="0" width={clampPercent(m.percent)} height="1" />
+                </svg>
               </div>
               <div className="k-list-dim">{m.end}</div>
             </li>

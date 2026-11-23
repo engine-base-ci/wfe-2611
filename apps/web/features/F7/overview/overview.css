@@ -61,7 +61,7 @@
   .k-list-page:has(> .k-f7-overview-phone) {
     display: flex;
     flex-direction: column;
-    height: calc(100dvh - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
+    height: calc(var(--k-c-overview-phone-height) - var(--k-c-shell-bar-height) - var(--k-c-shell-tabs-height));
     overflow: hidden;
   }
   .k-list-page > .k-f7-overview-phone {
@@ -245,16 +245,20 @@
 
 /* ---- 状態の内訳 ---- */
 .k-f7-overview-bar {
-  display: flex;
   overflow: hidden;
   height: calc(var(--k-s-sm) + var(--k-s-xs));
   margin: var(--k-s-md) var(--k-s-md) var(--k-s-sm);
   border-radius: var(--k-r-full);
 }
-.k-f7-overview-bar > span {
-  flex: 1 1 0;
-  min-width: var(--k-s-xs);
-  background: var(--k-f7-tone);
+/* 棒と進みの中身は svg（幅はデータで決まるので rect の属性で書く）。色は段の濃い色 */
+.k-f7-overview-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.k-f7-overview-bar rect,
+.k-f7-overview-meter rect {
+  fill: var(--k-f7-tone);
 }
 .k-f7-overview-counts {
   display: grid;
@@ -326,11 +330,6 @@
   height: var(--k-c-list-progress-height);
   border-radius: var(--k-c-list-progress-radius);
   background: var(--k-c-list-progress-bg);
-}
-.k-f7-overview-meter > span {
-  display: block;
-  height: 100%;
-  background: var(--k-f7-tone);
 }
 
 /* ---- 空 ---- */

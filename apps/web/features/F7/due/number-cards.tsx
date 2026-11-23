@@ -74,7 +74,7 @@ export function MineChips({ chips, current }: { chips: readonly MineChip[]; curr
           {...(c.pending ? { "aria-disabled": true, tabIndex: -1, title: `${c.label}（準備中）` } : {})}
         >
           {c.label}
-          {c.count !== undefined ? <span className="k-f7-due-chip-count"> {c.count}</span> : null}
+          {c.count !== undefined ? <span> {c.count}</span> : null}
         </button>
       ))}
     </span>

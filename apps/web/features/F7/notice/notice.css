@@ -16,11 +16,11 @@
   top: calc(var(--k-c-shell-bar-height) + var(--k-s-sm));
   right: var(--k-s-lg);
   z-index: var(--k-c-popup-layer-z);
-  width: min(var(--k-c-dialog-form-width), calc(100vw - var(--k-s-lg)));
-  max-height: calc(100dvh - var(--k-c-shell-bar-height) - var(--k-s-xl));
+  width: min(var(--k-c-notice-panel-width), calc(100% - var(--k-s-lg)));
+  max-height: calc(100% - var(--k-c-shell-bar-height) - var(--k-s-xl));
 }
 .k-f7-notice[data-placement="inline"] {
-  width: min(var(--k-c-dialog-form-width), 100%);
+  width: min(var(--k-c-notice-panel-width), 100%);
 }
 @media (max-width: 767px) {
   .k-f7-notice {
@@ -127,8 +127,8 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: var(--k-c-detail-avatar-width);
-  height: var(--k-c-detail-avatar-height);
+  width: var(--k-c-notice-avatar-width);
+  height: var(--k-c-notice-avatar-height);
   border-radius: var(--k-r-full);
   background: var(--k-d-indigo);
   color: var(--k-on-primary);
@@ -316,4 +316,23 @@
 .k-f7-notice-sheet .k-f7-notice-filter {
   flex: none;
   margin-left: 0;
+}
+
+/* スマホのお知らせの頁の「戻る」（外枠の .k-icon-btn と同じ見た目を自前の名前で・正本のトークンだけ） */
+.k-f7-notice-sheet-back {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-notice-sheet-back-width);
+  height: var(--k-c-notice-sheet-back-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-f7-notice-sheet-back:hover {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
 }

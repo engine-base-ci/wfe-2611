@@ -92,7 +92,7 @@
 }
 .k-f7-calendar-cell {
   box-sizing: border-box;
-  height: calc(var(--k-s-xl) * 2 + var(--k-s-md));
+  height: var(--k-c-calendar-day-height);
   min-width: 0;
   padding: var(--k-s-xs);
   border-right: var(--k-c-list-td-border-bottom);
@@ -171,8 +171,8 @@
 }
 .k-f7-calendar-dot {
   flex: none;
-  width: calc(var(--k-s-xs) * 1.5);
-  height: calc(var(--k-s-xs) * 1.5);
+  width: var(--k-c-f7-dot-width);
+  height: var(--k-c-f7-dot-height);
   border-radius: var(--k-r-full);
   background: var(--k-f7-tone);
 }
@@ -221,8 +221,8 @@
   right: 0;
   z-index: 20;
   box-sizing: border-box;
-  width: calc(var(--k-s-xl) * 8);
-  max-width: calc(100vw - 2 * var(--k-s-md));
+  width: var(--k-c-calendar-tray-width);
+  max-width: 100%;
   padding: var(--k-c-list-columns-pad);
   border: var(--k-c-list-columns-border);
   border-radius: var(--k-c-list-columns-radius);
@@ -321,7 +321,7 @@
 /* ---- スマホ（絵無し・案）：件名を出さず点だけ。日を押すと小窓で見る ---- */
 @media (max-width: 767px) {
   .k-f7-calendar-cell {
-    height: calc(var(--k-s-xl) + var(--k-s-sm));
+    height: var(--k-c-calendar-day-compact-height);
     padding: var(--k-s-xs) 0;
     text-align: center;
   }

@@ -103,7 +103,7 @@
 .k-f7-gantt-body {
   position: relative;
   min-width: 0;
-  height: calc(var(--k-s-xl) * 13);
+  height: var(--k-c-gantt-body-height);
   overflow: hidden;
 }
 .k-f7-gantt-body .wx-willow-theme {
@@ -186,8 +186,15 @@
 .k-f7-gantt-body .wx-bar.wx-milestone .wx-content {
   display: none;
 }
-.k-f7-gantt-body .wx-bar.wx-milestone .wx-text-out {
+/* 旗の字の置き場（svar の .wx-text-out の置き方を自前の名前で写した：棒の上に重ね、押せない。左は日の位置から） */
+.k-f7-gantt-flag-label {
+  position: absolute;
   left: 0;
+  display: block;
+  padding: 0 calc(var(--k-s-xs) / 2);
+  line-height: normal;
+  color: var(--wx-color-font);
+  pointer-events: none;
 }
 .k-f7-gantt-flag {
   color: var(--k-st-warning);

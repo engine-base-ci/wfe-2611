@@ -5,9 +5,10 @@
 //   下絵では読むだけ（readonly）。葉が readonly を外し、update-task で期限を動かす確かめ（MoveImpactDialog）につなぐ
 import { Gantt, Willow, type IApi, type IColumnConfig, type IScaleConfig, type ITask } from "@svar-ui/react-gantt";
 import "@svar-ui/react-gantt/all.css";
-import { useCallback, useMemo } from "react";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { STAGE_TONE } from "../overview/head";
 import { GanttBar } from "./gantt-bar";
+import { readLen } from "./read-len";
 import "../overview/tones.css";
 import "./gantt.css";
 
@@ -29,7 +30,30 @@ const SCALES: Record<GanttScale, IScaleConfig[]> = {
     { unit: "month", step: 1, format: (d: Date) => `${d.getMonth() + 1}月` },
   ],
 };
-const CELL_WIDTH: Record<GanttScale, number> = { day: 32, week: 72, month: 96 };
+/** セルの幅の正本の名前（日・週・月）。左の表の列の幅は週のセルと同じ名前を使う（値が同じ 72・名前を増やさない） */
+const CELL_WIDTH_TOKEN: Record<GanttScale, string> = {
+  day: "--k-c-gantt-cell-day-width",
+  week: "--k-c-gantt-cell-week-width",
+  month: "--k-c-gantt-cell-month-width",
+};
+const COLUMN_WIDTH_TOKEN = "--k-c-gantt-cell-week-width";
+
+/** 正本から読んだ数（読めない物は入れない＝svar の既定） */
+interface GanttLens {
+  cellWidth?: number;
+  cellHeight?: number;
+  scaleHeight?: number;
+  columnWidth?: number;
+}
+function readLens(scale: GanttScale): GanttLens {
+  const lens: [keyof GanttLens, number | undefined][] = [
+    ["cellWidth", readLen(CELL_WIDTH_TOKEN[scale])],
+    ["cellHeight", readLen("--k-c-gantt-row-height")],
+    ["scaleHeight", readLen("--k-c-gantt-scale-height")],
+    ["columnWidth", readLen(COLUMN_WIDTH_TOKEN)],
+  ];
+  return Object.fromEntries(lens.filter(([, v]) => v !== undefined)) as GanttLens;
+}
 
 function StageCell({ row }: { row: Record<string, unknown> }) {
   const name = typeof row["stage"] === "string" ? row["stage"] : "";
@@ -41,10 +65,10 @@ function StageCell({ row }: { row: Record<string, unknown> }) {
   );
 }
 
-const COLUMNS: IColumnConfig[] = [
+const columnsOf = (width: number | undefined): IColumnConfig[] => [
   { id: "text", header: "件名", flexgrow: 1 },
-  { id: "owner", header: "担当者", width: 72 },
-  { id: "stage", header: "状態", width: 72, cell: StageCell },
+  { id: "owner", header: "担当者", ...(width ? { width } : {}) },
+  { id: "stage", header: "状態", ...(width ? { width } : {}), cell: StageCell },
 ];
 
 export interface GanttInnerProps {
@@ -64,6 +88,9 @@ const sameDay = (a: Date, b: Date): boolean =>
 
 export default function GanttInner({ tasks, scale, start, end, today, readonly, onMove }: GanttInnerProps) {
   const scales = useMemo(() => SCALES[scale], [scale]);
+  const [lens, setLens] = useState<GanttLens | null>(null);
+  useLayoutEffect(() => setLens(readLens(scale)), [scale]);
+  const columns = useMemo(() => columnsOf(lens?.columnWidth), [lens]);
   const highlightTime = useCallback(
     (date: Date, unit: "day" | "hour"): string => {
       if (unit !== "day") return "";
@@ -82,19 +109,21 @@ export default function GanttInner({ tasks, scale, start, end, today, readonly, 
     },
     [onMove],
   );
+  // 正本の数を読むまで描かない（読む前に既定の数で描くと、読んだ後に大きさが変わる）
+  if (!lens) return null;
   return (
     <Willow fonts={false}>
       <Gantt
         tasks={tasks}
         links={[]}
         scales={scales}
-        columns={COLUMNS}
+        columns={columns}
         start={start}
         end={end}
         lengthUnit={scale}
-        cellWidth={CELL_WIDTH[scale]}
-        cellHeight={36}
-        scaleHeight={28}
+        {...(lens.cellWidth ? { cellWidth: lens.cellWidth } : {})}
+        {...(lens.cellHeight ? { cellHeight: lens.cellHeight } : {})}
+        {...(lens.scaleHeight ? { scaleHeight: lens.scaleHeight } : {})}
         readonly={readonly}
         taskTemplate={GanttBar}
         highlightTime={highlightTime}

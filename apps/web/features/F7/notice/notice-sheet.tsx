@@ -53,7 +53,7 @@ export function NoticeSheet({
   return (
     <section className="k-f7-notice-sheet" aria-label="お知らせ">
       <header className="k-f7-notice-sheet-head">
-        <button type="button" className="k-icon-btn" aria-label="戻る" onClick={onBack}>
+        <button type="button" className="k-f7-notice-sheet-back" aria-label="戻る" onClick={onBack}>
           <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <h2>お知らせ</h2>

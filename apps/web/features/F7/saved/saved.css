@@ -286,7 +286,7 @@
   gap: var(--k-s-md);
   box-sizing: border-box;
   width: var(--k-c-list-columns-width);
-  max-width: calc(100vw - 2 * var(--k-s-md));
+  max-width: 100%;
   padding: var(--k-c-list-columns-pad);
   border: var(--k-c-list-columns-border);
   border-radius: var(--k-c-list-columns-radius);
@@ -384,6 +384,52 @@
   align-items: center;
   min-width: 0;
 }
+/* 行の見た目は外枠の .k-nav-item・.k-group-mark・.k-nav-label と同じ値（正本のトークンで写した・外枠の名前は借りない） */
+.k-f7-saved-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-button-primary-height);
+  padding: var(--k-c-saved-nav-group-pad);
+  border: 0;
+  border-radius: var(--k-r-md);
+  background: transparent;
+  color: var(--k-on-surface);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.k-f7-saved-nav-link:hover {
+  background: var(--k-surface-variant);
+  text-decoration: none;
+}
+.k-f7-saved-nav-link[aria-current="page"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-saved-nav-link[data-group] {
+  min-height: var(--k-c-saved-nav-group-height);
+}
+.k-f7-saved-nav-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-c-saved-nav-mark-width);
+  height: var(--k-c-saved-nav-mark-height);
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: var(--k-r-sm);
+  background: var(--k-f7-tone);
+  color: var(--k-card);
+  font-size: var(--k-text-label-xs);
+}
+.k-f7-saved-nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .k-f7-saved-nav-item {
   flex: 1 1 0;
   min-width: 0;
@@ -398,7 +444,7 @@
   color: var(--k-on-surface-variant);
   font-size: var(--k-text-label-xs);
 }
-.k-nav-item[aria-current="page"] .k-f7-saved-nav-share {
+.k-f7-saved-nav-link[aria-current="page"] .k-f7-saved-nav-share {
   background: var(--k-primary-hover);
   color: var(--k-on-primary);
 }

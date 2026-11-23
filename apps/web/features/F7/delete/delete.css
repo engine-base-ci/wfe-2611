@@ -11,9 +11,9 @@
 .k-f7-del-more:hover {
   background: var(--k-select);
 }
-/* 箱の幅の下限は PC の「…」の箱と同じ決まり（足す値：メニューの幅の正本の名前） */
+/* 箱の幅の下限は詳細の「…」の箱の幅（正本の more-menu-min） */
 .k-f7-del-menu {
-  min-width: var(--k-c-pc-menu-min-width);
+  min-width: var(--k-c-more-menu-min-width);
 }
 .k-f7-del-item[data-disabled] {
   opacity: var(--k-c-button-disabled-opacity);
@@ -58,17 +58,4 @@
   display: grid;
   gap: var(--k-s-xs);
   min-width: 0;
-}
-
-/* ---- 消した直後の知らせの「元に戻す」（知らせの箱は k.css の .k-toast：濃い地に明るい字） ---- */
-.k-f7-undo-btn {
-  margin-left: auto;
-  padding: 0 var(--k-s-xs);
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-weight: var(--k-fw-label-md);
-  text-decoration: underline;
-  cursor: pointer;
 }

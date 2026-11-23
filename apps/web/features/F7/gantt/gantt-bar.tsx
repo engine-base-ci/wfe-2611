@@ -10,7 +10,7 @@ import "./gantt.css";
 export function GanttBar({ data }: { data: ITask }) {
   if (data.type === "milestone") {
     return (
-      <div className="wx-text-out">
+      <div className="k-f7-gantt-flag-label">
         <MilestoneFlag name={typeof data.text === "string" ? data.text : ""} />
       </div>
     );

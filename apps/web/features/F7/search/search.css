@@ -14,12 +14,12 @@
 .k-f7-search[data-placement="overlay"] {
   position: fixed;
   /* ⌘K のパレットの置き方：横は画面の中央、上から少し下がった所。幅は読みやすい幅で固定（帯の探す欄の位置は読まない） */
-  top: calc(var(--k-c-shell-bar-height) + var(--k-s-2xl));
+  top: var(--k-c-search-panel-top);
   left: 0;
   right: 0;
   z-index: var(--k-c-popup-layer-z);
-  width: min(var(--k-c-dialog-connect-width), calc(100vw - var(--k-s-lg)));
-  max-height: calc(100dvh - var(--k-c-shell-bar-height) - var(--k-s-2xl) - var(--k-s-lg));
+  width: min(var(--k-c-search-panel-width), calc(100% - var(--k-s-lg)));
+  max-height: calc(100% - var(--k-c-search-panel-top) - var(--k-s-lg));
   margin-inline: auto;
 }
 /* 後ろの薄い幕（広い幅だけ）。枠の 1 つ下の層 */
@@ -30,7 +30,7 @@
   background: color-mix(in srgb, var(--k-on-surface) 20%, transparent);
 }
 .k-f7-search[data-placement="inline"] {
-  width: min(var(--k-c-dialog-connect-width), 100%);
+  width: min(var(--k-c-search-panel-width), 100%);
 }
 
 .k-f7-search-head {

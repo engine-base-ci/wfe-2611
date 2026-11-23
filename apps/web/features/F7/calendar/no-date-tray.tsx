@@ -22,7 +22,7 @@ export interface NoDateTrayProps {
 export function NoDateTray({ variant, items }: NoDateTrayProps) {
   if (variant === "calendar") {
     return (
-      <aside className="k-list-side k-f7-calendar-tray" aria-label="期限が決まっていないもの">
+      <aside className="k-list-side" aria-label="期限が決まっていないもの">
         <section className="k-f7-overview-box">
           <h2 className="k-f7-overview-box-title">
             期限が決まっていない

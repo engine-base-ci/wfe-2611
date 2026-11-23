@@ -1474,6 +1474,19 @@
   },
   {
    "paths": [
+    "04_design/DESIGN-kaname.md",
+    "design-gate.json",
+    "scripts/ci/design_gate.py",
+    "02_tech_stack/selected-stack.json",
+    "07_functional/段8-F7/カレンダーの部品.md",
+    "apps/web/styles/k-tokens.css"
+   ],
+   "tests": [
+    "apps/web/tests/k/k460-stage8-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/search.ts",
     "apps/api/src/features/F7/search/**"
    ],
@@ -1839,6 +1852,7 @@
   "apps/api/test/features/contract/k144.d/K-435.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-435",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
   "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
+  "apps/web/tests/k/k460-stage8-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f7/（mocks.tsx・types.ts・states/*.tsx）・部品 apps/web/features/F7/（区画の .tsx・.css・overview/tones.css・gantt/gantt-inner.tsx・delete/undo-toast.tsx・delete.css）・お知らせ apps/web/components/k/notice.tsx と k.css・道の一覧 apps/web/lib/built-routes.ts・中間の試験の道具 apps/web/tests/_lib/f7-flow.ts と skeleton の中間の試験・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json・apps/web/package.json・02_tech_stack/selected-stack.json・07_functional/段8-F7/カレンダーの部品.md を読み、scripts/ci/design_gate.py を子プロセスで流す（K-460）",
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
   "apps/api/test/features/F7/saved-views.harness.ts": "この段の hooks のファイル apps/api/src/hooks/saved-views.ts と saved-views-edit.ts（K-476）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-475）",
   "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
