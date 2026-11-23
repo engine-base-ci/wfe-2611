@@ -3546,6 +3546,30 @@
    "reason": null
   },
   {
+   "entity": "action_runs",
+   "field": "taken_over_at",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "credentials",
+    "onboard-testrun",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "ops-support",
+    "ops-home",
+    "account",
+    "services",
+    "ops-tenant",
+    "tickets",
+    "masters",
+    "rules",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "service_registry",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -7507,6 +7531,35 @@
   },
   {
    "entity": "notifications",
+   "field": "read_at",
+   "consumed_by_screens": [
+    "invite-accept",
+    "mfa-setup",
+    "login",
+    "bridge-setup",
+    "clone-chat",
+    "members",
+    "ops-support",
+    "company-settings",
+    "app-setup",
+    "ops-skills",
+    "inquiry",
+    "ops-notices",
+    "ops-billing",
+    "ops-tenant",
+    "member-detail",
+    "tickets",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "notifications",
    "field": "retry_count",
    "consumed_by_screens": [
     "invite-accept",
@@ -8931,7 +8984,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8948,7 +9000,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8965,7 +9016,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8982,7 +9032,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8999,7 +9048,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -9016,7 +9064,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -9033,7 +9080,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -10483,7 +10529,27 @@
   },
   {
    "entity": "ticket_stages",
+   "field": "key",
+   "consumed_by_screens": [
+    "tickets",
+    "masters"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_stages",
    "field": "name",
+   "consumed_by_screens": [
+    "tickets",
+    "masters"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_stages",
+   "field": "color_key",
    "consumed_by_screens": [
     "tickets",
     "masters"
@@ -10645,7 +10711,8 @@
    "entity": "custom_fields",
    "field": "name",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10654,7 +10721,8 @@
    "entity": "custom_fields",
    "field": "field_type",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10663,7 +10731,8 @@
    "entity": "custom_fields",
    "field": "required",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10672,7 +10741,8 @@
    "entity": "custom_fields",
    "field": "description",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10681,7 +10751,8 @@
    "entity": "custom_fields",
    "field": "options",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10690,7 +10761,8 @@
    "entity": "custom_fields",
    "field": "position",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10706,7 +10778,8 @@
    "entity": "custom_field_kinds",
    "field": "field_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10715,7 +10788,8 @@
    "entity": "custom_field_kinds",
    "field": "kind_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10731,7 +10805,8 @@
    "entity": "ticket_field_values",
    "field": "ticket_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10740,7 +10815,8 @@
    "entity": "ticket_field_values",
    "field": "field_id",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -10749,7 +10825,8 @@
    "entity": "ticket_field_values",
    "field": "value",
    "consumed_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "internal": false,
    "reason": null
@@ -11430,6 +11507,61 @@
   },
   {
    "entity": "knowledge_pages",
+   "field": "summary",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "is_must",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "copied_from_page_id",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "folder_id",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "position",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
    "field": "owner_member_id",
    "consumed_by_screens": [
     "tickets",
@@ -11706,6 +11838,58 @@
   {
    "entity": "knowledge_links",
    "field": "anchor",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "is_personal",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "owner_member_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "parent_folder_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "name",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "position",
    "consumed_by_screens": [
     "knowledge"
    ],
