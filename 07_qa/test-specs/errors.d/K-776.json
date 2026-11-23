@@ -2,7 +2,7 @@
  "errors": [
   {
    "id": "E-TALK-080",
-   "class": "forbidden",
+   "class": "permission",
    "where": {
     "screen": "tickets"
    },

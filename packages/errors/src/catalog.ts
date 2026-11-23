@@ -4401,7 +4401,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-TALK-080": {
     "id": "E-TALK-080",
-    "cls": "forbidden",
+    "cls": "permission",
     "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
     "action": "作った人に頼む",
     "undo": false,

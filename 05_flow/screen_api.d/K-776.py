@@ -43,3 +43,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 移す DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も変えない"},
     ],
 }
+
+# 答えの ticket_id は null にならない（conversations.ticket_id は null 可・K144-SHAPE-013）。DB の関数 app.draft_adopt が移した先のチケットの id を入れて返し、
+#   移せなければ error で断る（答えの 201 に null は出ない）
+NOT_NULL_ANSWERS = {
+    "adoptDraftConversation.ticket_id": "DB の関数 app.draft_adopt が移した先のチケットの id を入れて返し、移せなければ error で断る（conversations.ticket_id は null 可）",
+}
