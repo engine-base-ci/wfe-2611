@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
+  "created_at": "2026-11-23",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -95,6 +95,10 @@
     "E-CONF-033",
     "E-VAL-045",
     "E-VAL-046",
+    "E-INV-013",
+    "E-INV-016",
+    "E-INV-014",
+    "E-INV-015",
     "E-SEC-004",
     "E-SEC-005",
     "E-SPEC-001",
@@ -564,7 +568,11 @@
     "E-INV-006",
     "E-INV-005",
     "E-INV-007",
-    "E-INV-008"
+    "E-INV-008",
+    "E-INV-013",
+    "E-INV-016",
+    "E-INV-014",
+    "E-INV-015"
    ],
    "policies": [
     "C2"
@@ -587,6 +595,7 @@
     "E-004",
     "E-055",
     "E-058",
+    "E-061",
     "E-080",
     "E-091",
     "E-129",
