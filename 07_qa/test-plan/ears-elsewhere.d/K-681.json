@@ -53,7 +53,7 @@
     },
     "test_delete_knowledge_pages_id_conflict_2": "K681-API-012",
     "test_delete_knowledge_pages_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144.d/K-675.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-681.ts",
      "mark": "K144-API-109"
     },
     "test_delete_knowledge_pages_id_session_unresolved_2": {
