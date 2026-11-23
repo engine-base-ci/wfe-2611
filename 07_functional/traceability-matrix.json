@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-22",
+ "created_at": "2026-11-24",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 145,
+  "entities_count": 146,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -885,7 +885,6 @@
     "GET /api/clones/me/growth",
     "GET /api/clones/me/activity",
     "POST /api/clones/me/activity/export",
-    "POST /api/action_runs/:id/retry",
     "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
@@ -2928,7 +2927,7 @@
     "POST /api/ticket_imports",
     "GET /api/ticket_imports/:id",
     "POST /api/ticket_imports/:id/commit",
-    "PATCH /api/tickets/:id/sections/:key",
+    "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
     "POST /api/ticket_kinds/:id/template-from-ticket",
@@ -3019,7 +3018,10 @@
     "E-106 tickets",
     "E-114 ticket_class_values",
     "E-119 ticket_messages",
-    "E-067 tenant_distributions"
+    "E-067 tenant_distributions",
+    "E-144 custom_fields",
+    "E-145 custom_field_kinds",
+    "E-146 ticket_field_values"
    ],
    "related_apis": [
     "GET /api/workspace/rules",
@@ -3035,7 +3037,12 @@
     "POST /api/workspace/ticket-shape/preview",
     "PATCH /api/workspace/ticket-shape",
     "GET /api/ticket_kinds/template-updates",
-    "POST /api/ticket_kinds/template-updates/:id/apply"
+    "POST /api/ticket_kinds/template-updates/:id/apply",
+    "GET /api/ticket-field-master",
+    "POST /api/ticket-fields",
+    "PATCH /api/ticket-fields/:id",
+    "DELETE /api/ticket-fields/:id",
+    "POST /api/ticket-fields/order"
    ],
    "access_roles": [
     "R1",
@@ -3153,6 +3160,7 @@
     "E-121 knowledge_pages",
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
+    "E-147 knowledge_folders",
     "E-028 memories",
     "E-055 layers",
     "E-002 scopes",
@@ -5436,12 +5444,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/clones/me/activity/export"
-    },
-    {
-     "act": "A57",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/action_runs/:id/retry"
     },
     {
      "act": "A57",
@@ -10763,7 +10765,7 @@
      "act": "A101",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/tickets/:id/sections/:key"
+     "path_draft": "/api/tickets/:id/body"
     },
     {
      "act": "A101",
@@ -11196,6 +11198,36 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/ticket_kinds/template-updates/:id/apply"
+    },
+    {
+     "act": "A118",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/ticket-field-master"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket-fields"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket-fields/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket-fields/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket-fields/order"
     }
    ]
   },
@@ -13949,7 +13981,8 @@
    "entity_id": "E-144",
    "entity_name": "custom_fields",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -13957,6 +13990,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -13967,7 +14001,8 @@
    "entity_id": "E-145",
    "entity_name": "custom_field_kinds",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -13975,6 +14010,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -13985,7 +14021,8 @@
    "entity_id": "E-146",
    "entity_name": "ticket_field_values",
    "used_by_screens": [
-    "tickets"
+    "tickets",
+    "masters"
    ],
    "used_by_features": [
     "F-001",
@@ -13993,6 +14030,7 @@
     "F-005",
     "F-006",
     "F-010",
+    "F-011",
     "F-013",
     "F-021",
     "F-023",
@@ -14158,6 +14196,17 @@
   {
    "entity_id": "E-123",
    "entity_name": "knowledge_links",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
+   "entity_id": "E-147",
+   "entity_name": "knowledge_folders",
    "used_by_screens": [
     "knowledge"
    ],
@@ -15266,7 +15315,11 @@
     "E-126",
     "E-133",
     "E-134",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
@@ -15414,7 +15467,8 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
