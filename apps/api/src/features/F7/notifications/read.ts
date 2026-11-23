@@ -1,7 +1,7 @@
 // 知らせを読んだことにする口（K-462）：readNotification（PATCH /api/v1/notifications/:id・体は { read } だけ）と
 // readAllNotifications（POST /api/v1/notifications/read-all・体は空）。Cache-Control: private, no-store は入口（app.ts）が全部の答えに付ける。書くのは read_at だけ（メールの印 sent_at・failed_at・証跡 audit_events には触らない）。
 //   上限（1 分 60 回）・認証・同意し直しの止め・社内の外枠だけ（取引先・運営は 403）・:id の形（uuid）・体の形（strict・知らない欄は 422）は契約の入口（op.ts）が先に確かめる。
-//   入口の行の確かめは外している（scripts/ci/row_rules.mjs の ROW_EXEMPT・道 /api/v1/notifications）：別の人の行・行の守りを緩めたときの行が、入口では 404 の NOT_FOUND・403 になり、口の 404 とずれるため。
+//   入口の行の確かめは外している（scripts/ci/row_rules.mjs の ROW_EXEMPT_FIELDS・欄 readNotification.id を名指し。口ごと・道ごとには外さない）：別の人の行・行の守りを緩めたときの行が、入口では 404 の NOT_FOUND・403 になり、口の 404 とずれるため。
 //   対象は一覧に出る行と同じ（VISIBLE_SQL・K-461 の list.ts）：自分宛て・inapp・消していない・種類が表にある・チケットの種類は今そのチケットが見える・読んで 30 日以内か未読。
 //   それ以外（別の人・別の会社・無い・メールの印・消した・知らない種類・見えないチケット）は同じ 404・E-NTF-010（有ることも漏らさない）。
 //   守りは 2 層：行の守り（notifications_self_read・notifications_self_only_write_*）と、口の文の条件（VISIBLE_SQL の member_id = app.user_id()）。
