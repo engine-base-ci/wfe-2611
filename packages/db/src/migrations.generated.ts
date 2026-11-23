@@ -159,4 +159,5 @@ export const MIGRATIONS = [
   "20261123100000_function_execute_private_after.sql",
   "20261125023700_talk_conversations.sql",
   "20261125023800_talk_say.sql",
+  "20261125024100_job_browser_file.sql",
 ] as const;
