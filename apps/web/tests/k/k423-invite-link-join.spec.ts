@@ -44,6 +44,8 @@ const CATALOG = (
 const msgOf = (id: string) => CATALOG.find((e) => e.id === id)?.message ?? `(${id} が errors.json に無い)`;
 // メールの鍵が無い参加を口が断る文（K-422：409 E-INV-016・欄なし。空白だけ／形違いを送ったときの 422 E-INV-013 とは別の番号）
 const E_INV_016 = msgOf("E-INV-016");
+// 形違いのメールを送ったときの文（K-422：422 E-INV-013・欄 email。E-INV-016 と文が同じなので、体の email の鍵でどちらの答えかを分ける）
+const E_INV_013 = msgOf("E-INV-013");
 const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 async function openLinkInvite(
@@ -119,6 +121,22 @@ test("K423-UI-002 リンクの招待の参加を口が断る：メールが空�
   );
   await expect(acc.getByText("ログインして参加する")).toBeVisible();
   expect(bodies).toHaveLength(2);
+});
+
+test("K423-UI-015 メールに形でない字（abc）を入れて参加する：体に email「abc」（鍵が在る）を 1 回送り、口の 422 E-INV-013（欄 email・detail.field）でメールの欄の下に正本の文（名前の欄にはつながらない）・名前とメールの字は残る", async ({
+  page,
+}) => {
+  const bodies = await openLinkInvite(page, () => ({
+    status: 422,
+    body: { error: "validation", code: "E-INV-013", message: E_INV_013, detail: { field: "email" } },
+  }));
+  await fillNew(page, "abc");
+  await expect(inviteForm(page).getByLabel("メール")).toHaveAccessibleDescription(new RegExp(esc(E_INV_013)));
+  await expect(inviteForm(page).getByLabel("名前")).not.toHaveAccessibleDescription(new RegExp(esc(E_INV_013)));
+  await expect(inviteForm(page).getByLabel("名前")).toHaveValue("木村 誠");
+  await expect(inviteForm(page).getByLabel("メール")).toHaveValue("abc");
+  expect(bodies).toHaveLength(1);
+  expect(bodies[0]).toEqual({ name: "木村 誠", password: PW, email: "abc" });
 });
 
 test("K423-UI-003 ログイン中の人がリンクの招待を開く（下見の email が null・signed_in の email_matches が true）：メールの欄はログイン中のメール（読むだけ・空にしない）で、「今のアカウントで参加する」で体なし（{}）を 1 回送る", async ({
