@@ -10,7 +10,6 @@
   "approvals",
   "attachments",
   "bridge_jobs",
-  "checks",
   "clients",
   "conversations",
   "export_jobs",
@@ -160,18 +159,6 @@
    "boundary": false,
    "lines": []
   },
-  "checks": {
-   "writes": [
-    "F5"
-   ],
-   "reads": [
-    "F4"
-   ],
-   "boundary": true,
-   "lines": [
-    "F5→F4"
-   ]
-  },
   "client_contacts": {
    "writes": [
     "F11"
@@ -247,18 +234,13 @@
   "export_jobs": {
    "writes": [
     "F10",
-    "F12",
-    "F5"
+    "F12"
    ],
    "reads": [],
    "boundary": true,
    "lines": [
     "F10→F12",
-    "F10→F5",
-    "F12→F10",
-    "F12→F5",
-    "F5→F10",
-    "F5→F12"
+    "F12→F10"
    ]
   },
   "handover_rules": {

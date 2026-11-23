@@ -1772,6 +1772,122 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/run-stop.ts",
+    "apps/api/src/features/F5/stop/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/run-stop.test.ts",
+    "apps/api/test/features/F5/run-stop-execute.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/run-stop.test.ts",
+    "apps/api/test/features/F5/run-stop-execute.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_action_runs_id_stop.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/approval-stop.ts",
+    "apps/api/src/features/F5/more/stop.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/approval-stop.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/approval-stop.test.ts",
+    "apps/api/test/features/F5/approval-more.kit.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_approvals_id_stop.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F5/more/withdraw.ts",
+    "apps/api/src/hooks/approval-withdraw.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/approval-withdraw.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/approval-withdraw.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_approvals_id_withdraw.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "08_api/endpoints.json",
+    "08_api/openapi.yaml",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "08_api/phase1/01_チケット.md",
+    "08_api/phase1/03_分身の部屋.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "03_architecture/db-catalog.json",
+    "03_architecture/flow-lines.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "apps/api/src/routes/index.ts",
+    "apps/api/src/routes/tickets.ts",
+    "apps/api/src/routes/checks.ts",
+    "apps/api/test/generated/get_tickets_id_checks.test.ts",
+    "apps/api/test/generated/post_checks_id_human.test.ts",
+    "apps/api/test/generated/post_clones_me_activity_export.test.ts",
+    "11_tickets/K-59.md",
+    "11_tickets/K-61.md",
+    "11_tickets/K-435.md",
+    "scripts/ci/flow_db_gate.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/checks-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/clone-room.ts",
+    "apps/api/src/features/F5/clone-room/**",
+    "packages/db/migrations/20261125023300_clone_room_now.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/clone-room-now.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/clone-room-now.test.ts",
+    "apps/api/test/features/F5/clone-room.harness.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_clones_me.test.ts",
+    "apps/api/test/generated/get_clones_me_now.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F5/talk/read.ts",
     "apps/api/src/hooks/talk-read.ts"
    ],
@@ -1791,6 +1907,58 @@
     "apps/api/test/generated/get_conversations.test.ts",
     "apps/api/test/generated/get_conversations_id.test.ts",
     "apps/api/test/generated/get_conversations_id_messages.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/talk-stream.ts",
+    "apps/api/src/features/F5/talk/stream.ts",
+    "apps/api/src/auth/agent-stream.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/talk-stream.test.ts",
+    "apps/api/test/agent_stream.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/talk-stream.test.ts",
+    "apps/api/test/features/contract/k144.d/K-759.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_conversations_id_stream.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/talk-mirror.ts",
+    "apps/api/src/features/F5/talk/mirror.ts",
+    "packages/db/migrations/20261125024000_talk_mirror.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/talk-mirror.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/loop.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/loop-mirror.test.ts",
+    "apps/bridge/test/loop-browser-state.test.ts",
+    "apps/bridge/test/loop.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/talk-mirror.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts"
    ]
   },
   {
@@ -1996,8 +2164,19 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
+  "apps/api/test/features/contract/k144.d/K-731.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/run-stop-execute.test.ts": "葉の hooks のファイル apps/api/src/hooks/run-stop.ts を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-731",
+  "apps/api/test/features/F5/approval-more.kit.ts": "葉の hooks のファイル apps/api/src/hooks/approval-stop.ts（と K-733・K-742・K-750 の hooks のファイル）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-732（K-733・K-742・K-744・K-748・K-750 も同じ手助けを使う）",
+  "apps/api/test/features/contract/k144.d/K-732.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-733.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/checks-retire.test.ts": "契約・生成物・目録・親の md を readFileSync で読み、git grep と flow_db_gate.py を spawnSync で動かす（K741-API-002〜010）・K-741",
+  "apps/api/test/features/F5/clone-room.harness.ts": "hooks のファイル apps/api/src/hooks/clone-room.ts を動的 import で読む（準備で読まず最初の要求で 1 回）。読む物と使う試験は data_links で結ぶ・K-753",
+  "apps/api/test/features/F5/clone-room-now.test.ts": "契約の断片 05_flow/screen_api.d/K-753.py・screen_api.py と hooks のファイルを readFileSync で読む（K753-API-021）",
   "apps/api/test/features/F5/talk.harness.ts": "葉の hooks のファイルを動的 import で読んで土台の hooks に足す（まだ無いファイルで準備ごと落とさないため）・K-757",
   "apps/api/test/features/contract/k144.d/K-757.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/talk-stream.test.ts": "葉の hooks のファイル（talk-stream・talk-read）を最初の要求のときに動的 import する（準備で読まない・K-378 と同じ）",
+  "apps/api/test/features/contract/k144.d/K-759.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）",
+  "apps/api/test/features/contract/k144.d/K-760.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）",
   "apps/api/test/features/F5/talk-pc.kit.ts": "葉の hooks のファイルを最初の要求のときに動的 import する（準備で読まない・K-378 と同じ）",
   "apps/api/test/features/contract/k144.d/K-761.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
