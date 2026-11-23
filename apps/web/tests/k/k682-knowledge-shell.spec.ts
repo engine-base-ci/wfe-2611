@@ -361,14 +361,19 @@ test("K682-UI-015 ページが読めない（503・網の切れ）：本文の�
   expect(mk.count("tree")).toBe(1);
 });
 
-test("K682-UI-016 見られないページ（口が 404）：本文の場所に「見られない」旨（E-PAGE-002）と戻る一手・戻るで /knowledge に移る・木は読み直さない", async ({
+test("K682-UI-016 見られないページ（口が 404）：本文の場所に「見られない」旨（E-PAGE-002）と一手 2 つ（「マネージャーに頼む」は押せない形・「戻る」）・戻るで /knowledge に移る・木は読み直さない", async ({
   page,
 }) => {
   const mk = await mockKnowledge(page);
   await openAt(page, `/knowledge/${P_GONE}`);
   const box = page.locator(`${CARD} [data-code="E-PAGE-002"]`);
   await expect(box).toBeVisible();
-  await box.getByRole("button").first().click();
+  await expect(box.getByRole("button")).toHaveCount(2);
+  const ask = box.getByRole("button", { name: "マネージャーに頼む", exact: true });
+  await expect(ask).toHaveAttribute("aria-disabled", "true"); // 頼む口がまだ無い（代表の答え answer=21b765e5e0c8）
+  await ask.click({ force: true });
+  await expect(page).toHaveURL(new RegExp(`/knowledge/${P_GONE}$`)); // 押しても何も起きない
+  await box.getByRole("button", { name: "戻る", exact: true }).click();
   await expect(page).toHaveURL(/\/knowledge$/);
   expect(mk.count("tree")).toBe(1);
 });

@@ -7,7 +7,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Doc } from "@kaname/contracts";
-import { Button, Empty, Loading, NoAccess, Toaster, errorText, useNotify, type ErrorAct } from "@/components/k";
+import { Button, Empty, Loading, PAGE_ERROR, Toaster, errorText, useNotify } from "@/components/k";
 import { TicketShell } from "@/features/F4/create-ticket/ticket-shell";
 import { useMyRoles } from "@/lib/auth/role";
 import { NAV } from "@/lib/nav";
@@ -61,6 +61,30 @@ function LoadFailed({ code, onRetry }: { code: string; onRetry: () => void }) {
       <div className="k-state-actions">
         <Button variant="primary" onClick={onRetry} aria-label="もう一度読む">
           {t.actions[0] ?? "もう一度"}
+        </Button>
+      </div>
+      <p className="k-state-code">番号：{t.entry.support_code}</p>
+    </section>
+  );
+}
+
+/** 見られないページ（正本 E-PAGE-002・下絵 kn-noaccess と同じ形。どれかを知らせない）。一手は 2 つ（代表の答え answer=21b765e5e0c8）：
+ *  「マネージャーに頼む」は頼む口がまだ無いので押せない形・「戻る」は /knowledge へ */
+function PageNoAccess({ onBack }: { onBack: () => void }) {
+  const code = PAGE_ERROR.forbidden;
+  const t = errorText(code);
+  return (
+    <section className="k-state" data-state="error" data-code={code} role="alert" aria-labelledby={`k-err-${code}`}>
+      <h2 id={`k-err-${code}`} className="k-state-title">
+        {t.title}
+      </h2>
+      {t.body ? <p className="k-state-body">{t.body}</p> : null}
+      <div className="k-state-actions">
+        <Button variant="primary" aria-disabled>
+          {t.actions[0]}
+        </Button>
+        <Button variant="outlined" onClick={onBack}>
+          {t.actions[1]}
         </Button>
       </div>
       <p className="k-state-code">番号：{t.entry.support_code}</p>
@@ -308,11 +332,9 @@ function Main({ pageId, tree, page, merged, editing, setEditing, onBack, onRetry
   }
   if (page.isError && page.error) {
     if (page.error.noAccess) {
-      const acts: ErrorAct[] = [];
-      acts[1] = onBack; // 一手は「戻る」だけ（どれかを知らせない・マネージャーに頼むはこの画面に無い）
       return (
         <Card>
-          <NoAccess acts={acts} />
+          <PageNoAccess onBack={onBack} />
         </Card>
       );
     }
