@@ -762,6 +762,7 @@
     "E-044 bridge_jobs",
     "E-052 audit_events",
     "E-046 bridge_job_events",
+    "E-039 action_runs",
     "E-028 memories",
     "E-037 policies",
     "E-095 skills",
@@ -782,6 +783,10 @@
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/messages",
     "POST /api/conversations/:id/stop",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations",
+    "POST /api/ticket_draft_conversations/:id/messages",
+    "POST /api/ticket_draft_conversations/:id/messages",
     "POST /api/conversations/:id/attachments",
     "POST /api/conversations/:id/permissions/:pid",
     "POST /api/messages/:id/artifacts",
@@ -5017,6 +5022,30 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/conversations/:id/stop"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/messages"
     },
     {
      "act": "A90",
@@ -12478,6 +12507,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "ai-activity",
     "ops-support",
     "ops-home",

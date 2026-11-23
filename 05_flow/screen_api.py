@@ -120,6 +120,8 @@ SCREEN_API = {
         ("GET", "/conversations/:id/stream", "A20", "messages", "streamConversation", []),   # 書きながらの返事の流れ（D-104.8・D-128.122）
         ("POST", "/conversations/:id/messages", "A20|A100", "messages", "sendConversationMessage", ["conversations", "messages", "bridge_jobs", "audit_events"]),
         ("POST", "/conversations/:id/stop", "A20", "messages", "stopConversation", ["bridge_jobs", "bridge_job_events", "audit_events"]),
+        ("POST", "/ticket_draft_conversations", "A99|A20", "conversations", "startDraftConversation", []),
+        ("POST", "/ticket_draft_conversations/:id/messages", "A99|A20", "messages", "sendDraftMessage", ["conversations", "action_runs"]),
         ("POST", "/conversations/:id/attachments", "A90", "attachments", "createConversationAttachment", []),
         ("POST", "/conversations/:id/permissions/:pid", "A91", "messages", "answerAgentPermission", []),
         ("POST", "/messages/:id/artifacts", "A95", "artifacts", "createArtifactFromMessage", ["artifact_versions"]),
@@ -1283,6 +1285,8 @@ PERMS = {
     "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
     "sendConversationMessage": ("self", "自分の AI との会話（clone）だけ。言った字は本人の PC の AI が取りに来る（チケット・作る画面の会話は種類ごとの口）", False),
     "stopConversation": ("self", "自分の会話だけ（種類を問わない）。動いている仕事に止める合図・待っている仕事は取りやめ", False),
+    "startDraftConversation": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
+    "sendDraftMessage": ("self", "自分の会話だけ（作る画面の右の会話）。分身は本人の権限の中でだけ読む・動く", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),
     "answerAgentPermission": ("self", "自分の分身の許可だけ", False),
     "createArtifactFromMessage": ("self", "自分の会話の返事だけ", False),

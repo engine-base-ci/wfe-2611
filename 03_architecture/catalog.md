@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 89・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 240・部品 56・設定 41
+API 372（作った 89・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 242・部品 56・設定 41
 
 ## 共通の処理
 
@@ -68,7 +68,7 @@ API 370（作った 89・後のフェーズの行為だけ 20）・前の道す�
 | `client_requests` | skeleton | F11 |  |  |
 | `clients` | skeleton | F11 | F4 | ○ |
 | `clones` | skeleton |  | F5 |  |
-| `conversations` | skeleton | F4 | F5 | ○ |
+| `conversations` | skeleton | F4,F5 |  | ○ |
 | `credentials` | skeleton | F3 |  |  |
 | `custom_field_kinds` | skeleton |  |  |  |
 | `custom_fields` | skeleton |  | F4 |  |
@@ -332,6 +332,8 @@ API 370（作った 89・後のフェーズの行為だけ 20）・前の道す�
 | `updateTestSpec` | PATCH /api/v1/test_specs/:id | 更新（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `deleteTestSpec` | DELETE /api/v1/test_specs/:id | 削除（test_specs）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `listTicketFields` | GET /api/v1/ticket-fields | 取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢） | F4 | 作った | K-563 |
+| `startDraftConversation` | POST /api/v1/ticket_draft_conversations | 作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから） | F4,F5 | 契約だけ（501） | K-61,K-774 |
+| `sendDraftMessage` | POST /api/v1/ticket_draft_conversations/:id/messages | 作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから） | F4,F5 | 契約だけ（501） | K-61,K-774 |
 | `createTicketImport` | POST /api/v1/ticket_imports | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `getTicketImport` | GET /api/v1/ticket_imports/:id | 取得（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |

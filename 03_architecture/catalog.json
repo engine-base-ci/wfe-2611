@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
+  "api": 372,
   "api_built": 89,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 240,
+  "errors": 242,
   "stack": 56,
   "env": 41
  },
@@ -4649,6 +4649,44 @@
    ]
   },
   {
+   "op": "startDraftConversation",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "conversations"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-61",
+    "K-774"
+   ]
+  },
+  {
+   "op": "sendDraftMessage",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/messages",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "messages"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-61",
+    "K-774"
+   ]
+  },
+  {
    "op": "answerTicketHandover",
    "method": "PATCH",
    "path": "/api/v1/ticket_handovers/:id",
@@ -6279,11 +6317,10 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
-    "F4"
-   ],
-   "reads": [
+    "F4",
     "F5"
    ],
+   "reads": [],
    "boundary": true
   },
   {

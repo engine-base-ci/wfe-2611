@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-22",
+ "frozen_at": "2026-11-23",
  "summary": {
   "total_screens": 37,
-  "total_apis": 370,
+  "total_apis": 372,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -709,6 +709,26 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/conversations/:id/stop",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations",
+     "act": "A20"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
+     "act": "A99"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_draft_conversations/:id/messages",
      "act": "A20"
     },
     {

@@ -104,7 +104,9 @@
     "E-DEL-011",
     "E-DEL-012",
     "E-DEL-013",
-    "E-DEL-014"
+    "E-DEL-014",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
@@ -841,7 +843,9 @@
     "E-DEL-014",
     "E-TALK-010",
     "E-TALK-011",
-    "E-TALK-012"
+    "E-TALK-012",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
@@ -1843,7 +1847,9 @@
     "E-DEL-011",
     "E-DEL-012",
     "E-DEL-013",
-    "E-DEL-014"
+    "E-DEL-014",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C1",
@@ -2345,7 +2351,9 @@
     "E-DEL-014",
     "E-TALK-010",
     "E-TALK-011",
-    "E-TALK-012"
+    "E-TALK-012",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C1",
@@ -3663,7 +3671,9 @@
     "E-DEL-011",
     "E-DEL-012",
     "E-DEL-013",
-    "E-DEL-014"
+    "E-DEL-014",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
@@ -5314,7 +5324,9 @@
     "E-DEL-014",
     "E-TALK-010",
     "E-TALK-011",
-    "E-TALK-012"
+    "E-TALK-012",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
@@ -7563,7 +7575,9 @@
     "E-DEL-011",
     "E-DEL-012",
     "E-DEL-013",
-    "E-DEL-014"
+    "E-DEL-014",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
@@ -7937,7 +7951,9 @@
     "E-DEL-011",
     "E-DEL-012",
     "E-DEL-013",
-    "E-DEL-014"
+    "E-DEL-014",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2"
@@ -8243,7 +8259,9 @@
     "E-DEL-014",
     "E-TALK-010",
     "E-TALK-011",
-    "E-TALK-012"
+    "E-TALK-012",
+    "E-TALK-060",
+    "E-TALK-061"
    ],
    "policies": [
     "C2",
