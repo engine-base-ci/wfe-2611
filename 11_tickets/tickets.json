@@ -3447,8 +3447,7 @@
     "account",
     "audit",
     "company-settings",
-    "member-detail",
-    "members"
+    "member-detail"
    ],
    "apis": [
     "copyNotificationSettings",
