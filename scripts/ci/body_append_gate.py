@@ -9,13 +9,15 @@
   05_flow/screen_api.py の表の新しい鍵   → 05_flow/screen_api.d/K-<番号>.py（同じ名前の表で書く）
   08_api/phase1/<名前>.md の表の行       → 08_api/phase1/<名前>.d/K-<番号>.md（作り手 scripts/ci/api_doc_d.py が合わせる）
 
-見るのは、比べる元から先頭までのコミット 1 つずつ（件名は見ない。どのコミットも同じに見る）：
+見るのは、比べる元の木と今の先頭の木の差（K-1120）。比べる元の木に無く、今の先頭の木に在る物だけを数える。
+途中のコミットで足して後で戻した物は数えない（取り込む木に無いので、ぶつからない。葉の履歴は書き直せない）：
   - screen_api.py：頭の段の表に新しい鍵が増えた。SCREEN_API は operationId を鍵にする。{**X} も 1 つの鍵として数える。
     頭の段の、表に足す書き方の文（X[k] = …・X.update(…)・X |= …・for など、大文字の名前に代入する以外の文）も新しい物を数える。
     今ある鍵の値を直すのは見ない（.d は本体の鍵を上書きできないので）
   - 08_api/phase1/*.md（.d の中・合わせた写しは除く）：表の行で、どの親の同じ文書にも同じ字の行が無い物（足した・直した）。
     表の頭の行（次の行が |---| の行）は数えない（新しい表・節・文書の形は本体に作り、行は断片に書く）。見出しの字の直し・消した行は見ない
-  - 取り込みのコミットは、どの親にも無かった物だけを数える（ぶつかりを解くときに足した物）
+赤の文の頭のコミットは、比べる元から先頭までで、その鍵・行を最後に足したコミット（直す人が場所を探すための物。判定には使わない）。
+コミットを 1 つずつ見るとき（この文のコミット探しと、台帳の作り手 --ledger-now）、取り込みのコミットは、どの親にも無かった物だけを数える
 猶予：台帳 scripts/ci/body_append_grandfather.json の entries（この決まりの前に始めていた葉が、その枝で既に足していた鍵と行の鍵）は数えない。
 台帳は分かれ目より増やせない（減らすだけ）。比べる元が読めない・空なら赤（黙って比べずに緑にしない）。
 """
@@ -37,6 +39,7 @@ SCREEN_API = "05_flow/screen_api.py"
 DOCS = "08_api/phase1"
 LEDGER = "scripts/ci/body_append_grandfather.json"
 MAINLINE = "claude/modest-lamport-77ue02"
+UNKNOWN = "（足したコミットは分からない）"
 
 
 def git(root: Path, *args: str, check: bool = True) -> str:
@@ -150,7 +153,7 @@ def ledger(src: str | None) -> set[str]:
 
 
 def scan(root: Path, base: str, head: str = "HEAD") -> list[tuple[str, str, str]]:
-    """(コミット, 台帳の鍵, 説明) を、base..head のコミット 1 つずつから出す"""
+    """(コミット, 台帳の鍵, 説明) を、base..head のコミット 1 つずつから新しい順に出す（台帳の作り手と、赤の文のコミット探し）"""
     out = []
     for line in git(root, "log", "--format=%H%x09%P%x09%s", f"{base}..{head}").splitlines():
         sha, parents, subject = (line.split("\t", 2) + ["", ""])[:3]
@@ -170,9 +173,13 @@ def check(root: Path, base: str) -> list[str]:
             bad.append(f"{LEDGER}：分かれ目より猶予が {len(grown)} 増えた（{', '.join(grown)[:200]}・台帳は減らすだけ）")
     except (ValueError, KeyError, TypeError) as e:
         return [f"{LEDGER} が読めない（{e}）"]
-    for commit, key, text in scan(root, base):
-        if key not in now_l:
-            bad.append(f"{commit} が本体に直に足した：{text}")
+    net = [(key, text) for key, text in added(root, "HEAD", [base]) if key not in now_l]   # 比べる元の木に無く、今の先頭の木に在る物
+    who: dict[str, str] = {}
+    if net:   # 文に出すコミット：新しい順に見て最初に当たった物（＝最後に足したコミット）
+        for commit, key, _ in scan(root, base):
+            who.setdefault(key, commit)
+    for key, text in net:
+        bad.append(f"{who.get(key, UNKNOWN)} が本体に直に足した：{text}")
     return bad
 
 
