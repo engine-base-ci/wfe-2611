@@ -4,8 +4,8 @@
 /* ---------------------------------------------------------------- 骨組み */
 .k-f9-wrap {
   display: flex;
-  /* 画面いっぱいの高さ（正本の 100dvh のトークン）から上の帯を引いた高さ */
-  min-height: calc(var(--k-c-auth-status-page-height) - var(--k-c-shell-bar-height));
+  /* ナレッジの面の高さ（正本の部品 kn-pane）から上の帯を引いた高さ */
+  min-height: calc(var(--k-c-kn-pane-height) - var(--k-c-shell-bar-height));
   min-width: 0;
 }
 .k-f9-main {
@@ -66,7 +66,7 @@
   flex: none;
   box-sizing: border-box;
   width: var(--k-c-create-aside-width);
-  height: calc(var(--k-c-auth-status-page-height) - var(--k-c-shell-bar-height));
+  height: calc(var(--k-c-kn-pane-height) - var(--k-c-shell-bar-height));
   display: flex;
   flex-direction: column;
   gap: var(--k-s-sm);
@@ -561,7 +561,7 @@
   margin-right: var(--k-s-sm);
   font-weight: var(--k-fw-h3);
 }
-/* ページの本文（段 5 の DocView の読む形）を下絵 v4 に合わせる：カードの中では本文の外の余白を持たない（段 5 の本文の面の余白 24px を外す）・行の中のコードは灰色の箱 */
+/* ページの本文（段 5 の DocView の読む形）を下絵 v4 に合わせる：カードの中では本文の外の余白を持たない（段 5 の本文の面の余白 24px を外す）・行の中のコードは灰色の箱で本文と同じ 13px の段 */
 .k-f9-card .k-f4d-doc.k-f4d-read {
   padding: 0;
 }
@@ -569,6 +569,11 @@
   padding: 0 var(--k-s-xs);
   border-radius: var(--k-r-sm);
   background: var(--k-select);
+  font-size: var(--k-text-body);
+}
+/* 並び（・と 1. 2. 3.）の行の間を下絵 v4 に合わせる（1 行ごとに 4px あける） */
+.k-f9-card .k-f4d-read li + li {
+  margin-top: var(--k-s-xs);
 }
 .k-f9-pfoot {
   padding-top: var(--k-s-sm);
