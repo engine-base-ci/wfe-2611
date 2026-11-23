@@ -620,7 +620,7 @@ describe("K-437 断り・守り・前からの決め", () => {
       expect(op, code).toContain(code);
     expect(op).not.toContain("E-VAL-014");
     const yaml = readFileSync(`${root}08_api/openapi.yaml`, "utf8");
-    const m = /TicketCreateInput:[\s\S]*?(?=\n    [A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
+    const m = /TicketCreateInput:[\s\S]*?(?=\n {4}[A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
     for (const k of ["body:", "fields:", "specs:"]) expect(m, k).toContain(k);
     expect(m).toContain(`maxLength: ${TITLE_MAX}`);
     const errors = readFileSync(`${root}07_qa/test-specs/errors.json`, "utf8");
@@ -773,8 +773,8 @@ describe("K-437 断り・守り・前からの決め", () => {
     expect(rows[0]!.start_on).toBeNull();
     const root = fileURLToPath(new URL("../../../../../", import.meta.url));
     const yaml = readFileSync(`${root}08_api/openapi.yaml`, "utf8");
-    const input = /TicketCreateInput:[\s\S]*?(?=\n    [A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
-    const start = /\n        start_on:[\s\S]*?(?=\n        [a-z_]+:)/.exec(input)?.[0] ?? "";
+    const input = /TicketCreateInput:[\s\S]*?(?=\n {4}[A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
+    const start = /\n {8}start_on:[\s\S]*?(?=\n {8}[a-z_]+:)/.exec(input)?.[0] ?? "";
     expect(start).toMatch(/anyOf:\n\s+- maxLength: 0\n\s+- format: date/);
   });
 });
