@@ -3984,6 +3984,40 @@
   },
   {
    "entity": "conversations",
+   "field": "talk_kind",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "bridge-setup",
+    "clone-chat",
+    "ops-support",
+    "inquiry",
+    "member-detail",
+    "tickets",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
+   "field": "ticket_id",
+   "consumed_by_screens": [
+    "onboard-interview",
+    "bridge-setup",
+    "clone-chat",
+    "ops-support",
+    "inquiry",
+    "member-detail",
+    "tickets",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "conversations",
    "field": "deleted_at",
    "consumed_by_screens": [],
    "internal": true,

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 84・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 237・部品 56・設定 41
+API 370（作った 87・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 237・部品 56・設定 41
 
 ## 共通の処理
 
@@ -386,7 +386,7 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `exportCloneActivity` | POST /api/v1/clones/me/activity/export | 作成・実行（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
-| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順） | F5 | 契約だけ（501） | K-61,K-757 |
+| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順） | F5 | 作った | K-61,K-757 |
 | `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
@@ -502,8 +502,8 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `getBridgeQuestionAnswer` | GET /api/v1/bridge/jobs/:id/questions/:qid | 取得（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `reportUsage` | POST /api/v1/bridge/usage | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `updateMyClone` | PATCH /api/v1/clones/me | 更新（clones）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない） | （後のフェーズ） | 契約だけ（501） | K-73,K-757 |
-| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | K-73,K-757 |
+| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない） | （後のフェーズ） | 作った | K-61,K-757 |
+| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-61,K-757 |
 | `updateConversation` | PATCH /api/v1/conversations/:id | 更新（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-73 |
 | `deleteConversation` | DELETE /api/v1/conversations/:id | 削除（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-73 |
 | `createConversationAttachment` | POST /api/v1/conversations/:id/attachments | 作成・実行（conversations）— 資料や画像を付けて自分のAIに渡す | （後のフェーズ） | 契約だけ（501） | K-73 |
