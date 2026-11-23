@@ -54,8 +54,11 @@ describe("POST /api/v1/auth/invitations/:token/accept", () => {
     // 本物の試験：apps/api/test/features/F10/invite-link-confirm.test.ts の「K422-API-003」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-link-confirm.test.ts", "utf8")).toContain("K422-API-003");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F2/invitation-accept-new.test.ts）：UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない
-  it.todo("test_post_auth_invitations_token_accept_conflict_3");
+  it("test_post_auth_invitations_token_accept_conflict_3", () => {
+    // UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない
+    // 本物の試験：apps/api/test/features/F10/invite-link-confirm.test.ts の「K422-API-003」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/invite-link-confirm.test.ts", "utf8")).toContain("K422-API-003");
+  });
   it("test_post_auth_invitations_token_accept_session_unresolved", () => {
     // UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない
     // 本物の試験：apps/api/test/features/F2/invitation-accept-new.test.ts の「K332-API-017」（同じ CI の G3 で流れる）
