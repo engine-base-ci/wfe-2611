@@ -79,7 +79,9 @@
 .k-f4d-read [data-align="justify"] {
   text-align: justify;
 }
+/* 番号つきの並びは番号を出す（下地の初期化が ol の番号を消すので、ul の disc と同じく書く・下絵 v4） */
 .k-f4d-read ol {
+  list-style: decimal;
   margin: 0;
   padding-left: var(--k-s-lg);
 }
