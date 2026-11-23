@@ -561,6 +561,15 @@
   margin-right: var(--k-s-sm);
   font-weight: var(--k-fw-h3);
 }
+/* ページの本文（段 5 の DocView の読む形）を下絵 v4 に合わせる：カードの中では本文の外の余白を持たない（段 5 の本文の面の余白 24px を外す）・行の中のコードは灰色の箱 */
+.k-f9-card .k-f4d-doc.k-f4d-read {
+  padding: 0;
+}
+.k-f9-card .k-f4d-read :not(pre) > code {
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  background: var(--k-select);
+}
 .k-f9-pfoot {
   padding-top: var(--k-s-sm);
   border-top: var(--k-c-detail-rule-border-bottom);
