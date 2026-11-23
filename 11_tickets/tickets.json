@@ -3428,28 +3428,28 @@
     "audit",
     "company-settings",
     "member-detail",
-    "members"
+    "invite-accept"
    ],
    "apis": [
     "copyNotificationSettings",
-    "createInvitationLink",
-    "createInvitations",
     "getMe",
     "getNotificationSettings",
-    "getWorkspaceMembers",
     "leaveWorkspace",
     "listMySessions",
-    "nudgeMember",
     "requestEmailChange",
-    "resendInvitation",
-    "revokeInvitation",
     "revokeMySession",
     "revokeOtherSessions",
     "updateMe",
-    "updateMemberRole",
     "updateNotificationSettings",
     "uploadAvatar",
-    "verifyEmailChange"
+    "verifyEmailChange",
+    "createInvitationLink",
+    "createInvitations",
+    "getWorkspaceMembers",
+    "nudgeMember",
+    "resendInvitation",
+    "revokeInvitation",
+    "updateMemberRole"
    ],
    "tests": [
     "apps/api/test/generated/delete_invitations_id.test.ts",
@@ -3465,7 +3465,6 @@
     "apps/api/test/generated/get_members_id.test.ts",
     "apps/api/test/generated/get_members_id_remove_preview.test.ts",
     "apps/api/test/generated/get_workspace.test.ts",
-    "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/patch_me.test.ts",
     "apps/api/test/generated/patch_me_notification_settings.test.ts",
     "apps/api/test/generated/patch_members_id_groups.test.ts",
@@ -3474,7 +3473,6 @@
     "apps/api/test/generated/patch_workspace.test.ts",
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
-    "apps/api/test/generated/post_invitations.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
     "apps/api/test/generated/post_me_email_change.test.ts",
@@ -3485,7 +3483,11 @@
     "apps/api/test/generated/post_members_id_resume.test.ts",
     "apps/api/test/generated/post_members_id_suspend.test.ts",
     "apps/api/test/generated/post_workspace_deletion.test.ts",
-    "apps/api/test/generated/post_workspace_logo.test.ts"
+    "apps/api/test/generated/post_workspace_logo.test.ts",
+    "apps/api/test/generated/post_invitations_link.test.ts",
+    "apps/web/tests/k/k423-invite-link-join.spec.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -20530,6 +20532,77 @@
    "file": "11_tickets/K-402.md"
   },
   {
+   "id": "K-404",
+   "title": "受けたときに一緒に切り替える（DB の関数 app.handover_apply_switch を本物にする：子・孫／関連・派生元のうち前の担当者の物を移す・グループを移す）（K-68 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "渡す・配る",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い段 1 の K-165（完了の関数：子の木を辿って数える・DB の関数 1 本・試験は関数を直に呼ぶ）と K-401（同じ置き場の関数 app.handover_switch_targets を使う）から引いた：DB の関数 1 本（K-401 の移す物の一覧を使って 3 つの update・30 行ほど）20 分・範囲の地図 5 分・自分の確かめ 20 分。試験 10 行は切る段で書いた。口・画面を触らない",
+   "decisions": [
+    "D-125.60",
+    "D-125.70",
+    "D-125.71",
+    "D-128.95",
+    "D-148.11"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-switch.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-401",
+    "K-425"
+   ],
+   "acts": [
+    "A110"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（受けたときに呼ばれる DB の関数 1 本だけ）。「子チケット 2 件も一緒に移りました」の帯は画面の葉 K-412 が持つ（正は /dev/mock/f8）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db"
+   ],
+   "changes": [
+    "packages/db/migrations/20261121090400_handover_switch.sql",
+    "packages/db/src/migrations.generated.ts",
+    "scripts/ci/ci_scope.d/K-404.json"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "sections": {
+    "目的": "渡しが成り立った（受けた・申し出に渡した・配った）ときに、渡した人が選んだ「一緒に切り替えるもの」（D-125.70・D-148.11）を実際に移す DB の関数 `app.handover_apply_switch(p_handover, p_from, p_to)` を本物にする。\nK-401 が空の形（'{}' を返すだけ）で作り、受けるの関数（K-403）・申し出に渡すの関数（K-408）・配るの関数（K-409・K-410）が同じ取引の中で呼ぶ。この葉は関数の中身だけを書く。\n\n- 子・孫（3 段まで）：前の担当者（p_from）が担当で、まだ開いている物を新しい担当者（p_to）にする。ほかの人の物・完了した・消した物は移さない\n- 関連・派生元（ticket_links の両向き）：同じ決め\n- グループ：新しい担当者がチケットのグループにいないときだけ、チケットのグループを新しい担当者の主のグループにする。**番号は変えない**（D-125.60）\n- 軸：段 9 では受けない（K-401 の切り替えの整えが axes を空にしか通さない・K-401 の代表に聞くこと 1）。数は 0\n- 答え：実際に移した物 `{ \"children\": int, \"links\": int, \"group\": { \"from\": uuid, \"to\": uuid } | null, \"axes\": 0 }`。呼んだ側が渡しの行の switch_applied に書く（K-412 の帯「子チケット 2 件も一緒に移りました ・ グループは営業のまま」）\n\n「受けるを押すと切り替わる」の通し（口から）は中間テスト K-416 が持つ（切り方.md 3 章「9-A4 → 9-A3 は外した」）。この葉の試験は関数を直に呼ぶ。",
+    "完了の条件": "- [ ] 下の表の 10 行（K404-DB-001〜010）が緑：`apps/api/test/features/F8/handover-switch.test.ts`（土台 K-401 の `handover.harness.ts`）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- **移す物は K-401 の `app.handover_switch_targets(p_ticket, p_from)` だけを使う**（下見の数と移す物を 1 か所で決める＝下見に「子チケット 2 件も渡す」と出た 2 件がそのまま移る）。この葉で木の辿り方を書き直さない\n- 切り替える物は渡しの行の switch（K-401 の app.handover_switch_normalize で整えた物）を読む。決まり（handover_rules）はこの関数では読み直さない（渡した時点の決めで動く）\n- グループは、呼ばれた時点で p_to がチケットのグループにいない（`app.handover_in_group(p_to, scope)` が false）ときだけ移す。switch.group が true でも p_to がいれば移さない（守りの 2 層目：渡してから受けるまでの間に p_to がグループに入ったとき）。子・孫・関連のグループは移さない\n- 呼ばれるのは、担当者を書き換えた後（K-403）。チケット自身は移す物に入らない（switch_targets はチケット自身を返さない）\n- 無い渡し・別の会社の渡しなら例外（22023）を投げる（呼んだ側の取引ごと戻る）\n- 書き換えた行の updated_by は app.user_id()（答えた人）\n- kaname_app には渡さない（K-401 の決め・中だけで使う。呼ぶのは security definer の関数）",
+    "依存の理由": "- K-401: 要る — 空の形の関数（同じ名前・同じ引数）を create or replace で本物にする。移す物の一覧 app.handover_switch_targets・app.handover_in_group・列 switch の形（children・links・group・axes）は K-401 が作る\n- （K-403 には依存しない：この葉の試験は関数を直に呼ぶ。受けるの口から通すのは K-416）\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う（K-401）：`app.handover_switch_targets`・`app.handover_in_group`\n- 使う：子の木の辿り方は K-165 の完了の関数（0100）と同じ再帰（K-401 の switch_targets が持つ）\n- 作る：`app.handover_apply_switch` の中身。探したが同じ形の物は無かった",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本） | `packages/db/migrations/20261121090400_handover_switch.sql`：`create or replace function app.handover_apply_switch(p_handover uuid, p_from uuid, p_to uuid) returns jsonb`（security definer・search_path に pg_temp・revoke all from public・kaname_app に渡さない）。① 渡しの行とチケットを引く（`h.tenant_id = app.tenant_id()`）。無ければ `raise exception 'handover_not_found' using errcode = '22023'` ② `s := h.switch` ③ s.children が true なら `update tickets set assignee_member_id = p_to, updated_by = app.user_id() where id in (select ticket_id from app.handover_switch_targets(t.id, p_from) where target = 'children' and mine)`（数を取る）④ s.links も同じ（target 'links'）⑤ s.group が true で `not app.handover_in_group(p_to, t.scope_id)` なら、p_to の members.scope_id（消していない同じ会社のグループ）にチケットのグループを書き換える（number は触らない）⑥ `jsonb_build_object('children', n1, 'links', n2, 'group', case when 移した then jsonb_build_object('from', 前, 'to', 後) end, 'axes', 0)` を返す。一覧は作り手 gen_migrations.py の生成物 |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-404.json`：`{\"data_links\": [{\"paths\": [\"packages/db/migrations/20261121090400_handover_switch.sql\"], \"tests\": [\"apps/api/test/features/F8/handover-switch.test.ts\"]}]}`（migration は DB の組の決まりで DB の試験が全部流れる。名指しの 1 行は手元の確かめ用） |",
+    "外に影響する手順": "- S1: DB に書く（移す物のチケットの担当者・チケットのグループ。呼んだ関数の取引の中・関門 C2）。この関数だけで外に出ない（知らせ・証跡は呼んだ側が書く）。失敗したら例外で呼んだ側の取引ごと戻り、何も残らない（K404-DB-008）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F8/handover-switch.test.ts`（本物の DB。関数は持ち主の接続で会社の文脈を入れて直に呼んで確定し、後から読む＝土台の asOwnerCommit。渡しの行は DB に直に置く）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 待っている（子・孫あり・children true） | 受ける（関数を直に） | 渡された人 | 前の担当者の開いている子と孫が移る | このチケット | K404-DB-001 |\n| 待っている（children false） | 同じ | 同じ | 何も移らない | このチケット | K404-DB-002 |\n| 待っている（関連・派生元あり・links true） | 同じ | 同じ | 前の担当者の開いている物が移る | このチケット | K404-DB-003 |\n| 待っている（group true・相手がグループの外） | 同じ | 同じ | チケットのグループが相手の主のグループに・番号は変わらない | このチケット | K404-DB-004 |\n| 待っている（group true・相手がもうグループにいる） | 同じ | 同じ | グループは変わらない | このチケット | K404-DB-005 |\n| 無い・別の会社の渡し | 同じ | 同じ | 例外・何も変わらない | このチケット | K404-DB-008 |\n| 待っている | 受けるの口から | 渡された人 | 担当者と選んだ物が移る | K-416 | （中間テスト） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K404-DB-001 | 対象の状態 | 子と孫を移す | children true：高本が担当の開いている子 2 つと孫 1 つ（3 段目）が佐藤に。鈴木が担当の子・完了した子・消した子は担当者が変わらない。答えの children が 3 |\n| K404-DB-002 | 入力 | 子を移さない | children false：子と孫の担当者は高本のまま・答えの children が 0 |\n| K404-DB-003 | 対象の状態 | 関連と派生元 | links true：高本が担当の関連（向きが逆の物も）と派生元の 2 つが佐藤に。鈴木の関連・完了した関連は変わらない。子でもあり関連でもある 1 つは 1 回だけ数える（children に数え、links に数えない）。答えの links が 2 |\n| K404-DB-004 | 対象の状態 | グループを移す | group true で相手が受託開発の人：チケットのグループが受託開発に・番号は前のまま・子のグループは営業のまま。答えの group が {from: 営業, to: 受託開発} |\n| K404-DB-005 | 守り | 相手がもうグループにいる | group true でも相手が営業の人：グループは営業のまま・答えの group が null |\n| K404-DB-006 | 入力 | 答えの形 | 答えの鍵がちょうど 4（axes・children・group・links）・axes は 0（段 9 では軸を移さない） |\n| K404-DB-007 | 守り | 書いた人 | 移した子の updated_by が呼んだ人（会社の文脈の app.user_id）・移していない子の updated_by は変わらない |\n| K404-DB-008 | 失敗 | 手順 S1 失敗（無い渡し・別の会社の渡し） | でたらめの id・別の会社の渡しの id → 例外（SQLSTATE 22023）・子の担当者は変わらない |\n| K404-DB-009 | 守り | 直に呼べない | kaname_app から呼ぶと permission denied |\n| K404-DB-010 | 対象の状態 | 下見の数と同じ | 移す前の下見（K-401 の previewTicketHandover）の children.mine・links.mine と、答えの children・links が同じ |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 書いた物を読み直す | K404-DB-001・003・004・007（関数を確定した後に行を読む） |\n| 0 件・たくさん | K404-DB-002（0）・001（3） |\n| 別の会社 | K404-DB-008 |\n| 二度押し・同時 | 要らない: この関数は呼んだ側（K-403 など）の取引の中で、渡しの行を for update で取った後にだけ呼ばれる（同時は呼んだ側の K403-API-004・005） |",
+    "速さ（今の値と目標の値）": "画面と口を変えない葉なので、関数の中だけを書く。\n\n| 項目 | 今 | 目標 |\n|---|---|---|\n| 関数の中の文の数 | 空の形（0） | 移す物の一覧を 1 回ずつ（children・links）と update 2 つ・グループの update 1 つまで。行ごとに引かない |\n| 呼んだ口の取引の数 | — | 増えない（受けるの 1 取引の中） |",
+    "前からの試験を替えた所": "```search\ngit grep -l \"parent_ticket_id\\|ticket_links\" -- 'apps/api/test/*.ts' 'apps/api/test/**/*.ts' 'packages/db/test/*.ts' ':!apps/api/test/generated/*' ':!apps/api/test/features/F8/*'\n6\n```\n\nこの葉は空の形の関数（K-401）を同じ名前・同じ引数で作り直すだけで、表・守り・ほかの関数を変えない。6 本とも子とつながりの行を自分で作り、この関数を呼ばない（呼ぶのは段 9 の関数だけ）。\n\n- apps/api/test/features/F4/create-ticket.test.ts: 替えない — 親を選んでチケットを作る（K-60）。この関数を通らない\n- apps/api/test/features/F4/ticket-list.test.ts: 替えない — 一覧の並びと見え方。この関数を通らない\n- apps/api/test/features/F5/approve-complete.harness.ts: 替えない（試験の道具）— 完了の子の確かめのために親子を置くだけ\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — 入口の形の確かめ。この関数を通らない\n- packages/db/test/ticket_around.test.ts: 替えない — つながりの守り（同じ会社だけ）を見る。この葉は守りを変えない\n- packages/db/test/tickets.test.ts: 替えない — 親子の深さ（3 段）と輪の守りを見る。この葉は守りを変えない",
+    "成果物": "- migration 1 本（app.handover_apply_switch の中身）・範囲の地図の断片\n- 単体の試験 `handover-switch.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：グループは移すときに呼ばれた時点で相手がいないかを見直す（渡してから受けるまでに相手がグループに入ったら移さない）\n- 2026-11-20 切る段の決め：子でも関連でもあるチケットは子として 1 回だけ数える（K-401 の switch_targets と同じ）",
+    "代表に聞くこと（まとめ役が 1 回で聞く）": "無い（軸の扱いは K-401 の代表に聞くこと 1）",
+    "リスクと懸念": "- 引数を K-401 の空の形と 1 つでも違えると、create or replace が別の関数を作り、呼ぶ側は空の形を呼び続ける（試験は K404-DB-010 と K-416 の通しで気づく）",
+    "申し送り": "- K-403・K-408・K-409・K-410：担当者を書き換えた後に `app.handover_apply_switch(渡しの id, 前の担当者, 新しい担当者)` を呼び、答えを switch_applied に書く。申し出の渡すは切り替えを受けない（申し出た時点の決まりの always だけ。答える口に switch が来たら K-408 が番号なしの 422（VALIDATION_ERROR・欄 switch・形の誤り）で断る・K408-API-018）\n- K-412：帯の文は答えの children・group から組む",
+    "表の住所（2026-11-20）": "- migration は時刻の名前 `packages/db/migrations/20261121090400_handover_switch.sql`（K-327）。一覧は生成物\n- 範囲の地図は `scripts/ci/ci_scope.d/K-404.json`（K-325）"
+   },
+   "file": "11_tickets/K-404.md"
+  },
+  {
    "id": "K-405",
    "title": "渡されたものを承認待ちに並べる（app.approval_queue・app.approval_queue_count の作り直し）と、詳細で渡しの今を getTicket に載せ（app.ticket_handover_current）、記録を読む口（listTicketHandovers）を作る（K-68 の葉）",
    "kind": "タスク",
@@ -21090,6 +21163,98 @@
    "file": "11_tickets/K-419.md"
   },
   {
+   "id": "K-420",
+   "title": "メンバーの画面（/members）と「＋ 招く」の小窓を口につなぐ：並びを読む・メールで招く（グループ・役割・ひとこと）・招待のリンク・管理者として招く前の本人確認。役割の ▾・「⋯」・＋ グループ・送り直すはグレー（K-70 の葉・段 9 の前に出す）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-70",
+   "milestone": "F10",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-356（外枠の中の設定の画面を口につなぐ・一覧と空と読めない・見込み 1 時間）と段 2 の K-318（外枠の中の画面を口につなぐ・30 行・1 時間）から引いた：道と入れ物（読む・役で絞る）15 分・部品に値と押す関数を渡す口を足す 15 分・招くの小窓の動き（足す・外す・送る・失敗・取り直し）15 分・リンクの段（作る・取り直し・断り・二度押し）10 分・見た目の突き合わせと幅 10 分（参加の画面の 4 行は K-423 に移した・PM の決め 2026-11-20）。部品とモックは K-400 が運ぶ（この見込みに入れない）",
+   "decisions": [
+    "D-145.9",
+    "D-148.1",
+    "D-148.22",
+    "D-148.23",
+    "D-148.28",
+    "D-148.29",
+    "D-148.30",
+    "D-148.31",
+    "D-148.32",
+    "D-148.48",
+    "D-148.49",
+    "D-148.50",
+    "D-128.97"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書くのは口の葉 K-419（createInvitations・関門 C2・C6）と K-421（createInvitationLink・関門 C2）で、画面は契約の口を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k420-members-invite.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/k/k138-shell.spec.ts",
+    "apps/web/tests/k/showcase.spec.ts"
+   ],
+   "depends_on": [
+    "K-400",
+    "K-419",
+    "K-421",
+    "K-425"
+   ],
+   "acts": [
+    "A36"
+   ],
+   "screens": [
+    "members"
+   ],
+   "apis": [],
+   "mock": [
+    "inv-members",
+    "inv-dialog",
+    "inv-error",
+    "inv-link",
+    "inv-stepup",
+    "inv-sent"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/app/(work)/members/page.tsx",
+    "apps/web/features/F10/invite/members-page.tsx",
+    "apps/web/features/F10/invite/use-members.ts",
+    "apps/web/features/F10/invite/views.tsx",
+    "apps/web/features/F10/invite/invite.css",
+    "05_flow/phase1.py",
+    "05_flow/flow.json",
+    "scripts/ci/ci_scope.d/K-420.json",
+    "11_tickets/K-70.md"
+   ],
+   "flow": "人を招く",
+   "sections": {
+    "目的": "段 9 を人が画面で確かめるための 2 人目を、画面から招けるようにする（代表の答え answer=56812da22008・D-148.1）。キャンバス WsPeople（D-148.28）・WsInvite（D-148.29）のとおりに：\n\n- メンバーの画面 `/members`（flow.json の画面 members の道）：ワークスペースの管理の頭（WsHead）と第 2 ナビ（WsSub）・グループごとのカード・1 人 1 行（丸いアイコン・名前とメール・役割・状態・操作）・招待中の行。並びは口 getWorkspaceMembers（K-419）\n- 「＋ 招く」の小窓：メールを入れて「足す」・招く人の並び（× で外す）・グループと役割・「ひとこと・リンクで招く」を開くとひとことと招待のリンク。送るのは口 createInvitations（K-419）。管理者として招くときは本人確認の取り直し（段 2 の StepUp）の後に 1 回だけ送り直す\n- 招待のリンク：口 createInvitationLink（K-421・PM の決め 2026-11-20・代表の決め D-148.22 のとおりリンクまで範囲）。この葉の試験はリンクの口を網の手前で差し替える\n- まだ作らない物はキャンバスに在るのでグレーで押せない形で出す（D-145.9・answer=78cb822fc1f1・D-148.22）：役割の ▾・「⋯」・＋ グループ・＋ このグループに招く・送り直す・第 2 ナビの決まり／記録／設定",
+    "完了の条件": "- [ ] 下の表の 29 行（K420-UI-001〜022・025・028〜033。025 は人が確かめる・023・024・026・027 は K-423 に移した）が緑：`apps/web/tests/k/k420-members-invite.spec.ts`（画面の試験は取り込んだ後に流す・ticket-flow.yaml の web_defer）\n- [ ] モック /dev/mock/f8/inv-* の 6 つの状態と本番が幅 375・768・1440 で同じ（K420-UI-001・共通の道具 matchMock）\n- [ ] 前からの試験は「前からの試験を替えた所」のとおりで緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: LIST, INV\n\n- **部品は K-400 が運ぶ** `features/F10/invite/views.tsx`（見た目だけ・今は値を受けて描くだけで、欄は readOnly・ボタンに押す関数が無い）。この葉は部品に **押す関数と値を変える関数を受ける口（props）を足す**（モックは今の props のまま描けること・見た目を変えない）。入れ物 `members-page.tsx` が口を呼び、状態を持つ\n- 外枠は前からの `TicketShell`（screen=\"members\"・crumbs「ワークスペースの管理 › メンバー」）。道は `app/(work)/members/page.tsx`（チケット・承認待ちと同じ (work)＝はじめの設定の門の外：PC をつないでいなくても人は招ける・D-127.8 と同じ考え）。役は `RequireRole screen=\"members\"`（見られない人には「いまの権限では開けません」と導線・screen-derivation §6）\n- **左のバーの「ワークスペースの管理」の行き先**：今の flow.json は R1（自分で全部回している人）の画面に members を持たない。外枠は会社を作った人（owner・admin）を R1 として並べるので、今のままでは「ワークスペースの管理」は R1 の先頭の画面（layers・/workspace/members/groups・まだ無い）を指し、準備中のまま。1 人で使っている人が 2 人目を招く入口が無くなる。**決まった（D-148.49・answer=3d444fc8d59f）：会社を作った人もメンバーの画面に行ける**。flow.json の元 `05_flow/phase1.py` の行為 A36（人を招く）・A61（所属・権限を決める）・A62（抜ける人の依存を片付ける）の役に R1 を足す（画面 members・member-detail の役が R1 を含み、navigation.by_role.R1 にこの 2 つが出る・「ワークスペースの管理」の R1 の行き先が /members になる）。作り手で flow.json を作り直し、ナビの生成物（lib/nav.ts・changes_ignore）も作り直す（K420-UI-002）。この flow.json の変更はこの葉が運ぶ\n- 口の答えの形は 11_tickets/K-419.md（人ごとの pc・pc_days_away・primary・other_groups・self・招待中の left_days）。画面が字を決める：pc ok＝「分身 動いている」・away＝「PC <N> 日つながっていない」・none＝「分身なし（見るだけ）」・never＝「PC をまだつないでいない」（決まった：D-148.48・answer=3d444fc8d59f）。兼ねる人は主のグループの行に「<名前>も兼ねる」・兼ねる側の行に「兼ねている」・自分の行に「自分」。招待中は「招待中 ・ あと <N> 日」\n- **入力の確かめ**（D-148.32）：「足す」で宛てを `normalizeEmail` と同じ形でそろえ（NFKC・空白を消す・小文字・登録の画面と同じ部品があれば使う）、形の違う字は欄の下に「<字> はメールの形ではありません」で並びに入れない。カンマで分けて貼れる。同じ宛ては 1 つ。招く人が 0 人で欄も空なら「メールを 1 つ以上入れてください」（仮）。欄に字が残っていれば足してから送る\n- **ひとことの長さ**（PM の決め 2026-11-23・Q の指摘 6）：ひとことが 500 字を超えたら、「招く」を押しても口を呼ばず、ひとことの欄の下に「ひとことは 500 字までです」を出す（数は口の上限と同じ 500・定数で持つ）。中身は残す（K420-UI-033）\n- **口の失敗**（D-148.31・口が断る番号の決め answer=431fc50df51b）：招く口が 422 E-INV-009（形の違う宛て・details に宛てごとの文）か 409 E-INV-010（もう入っている人・details は付かず、入っている宛ては detail.already に並ぶ。create.ts・K419-API-011・PM の決め 2026-11-21 03:00 ②）なら、欄の下に宛てごとの文（E-INV-009 は details の各文、E-INV-010 は detail.already の宛てごとに「<宛て> は<正本の文>」）を「。」でつないだ 1 つの赤字（下絵 inv-error の字）。422 E-INV-012（51 人以上・details なし）は同じ欄の下に正本の文 1 つ（欄 emails の誤りなので。切る段の決め・PM に確認）。404 E-INV-011（グループが無い・別の会社・消した。details なし）・503 などは小窓の上の赤い箱（NoticeBox）に正本の文。出し分けは状態でなく答えの code と details・detail.already で決める。どれも書いた中身（並び・グループ・役割・ひとこと）は残し、押し直せる。形の違う宛てと入っている人が混じった回は口が 422 の E-INV-009 だけを返す（K-419）ので、画面は 1 回の答えに 2 つの番号が混じる形を受けない\n- **成功**（D-148.30）：小窓を閉じ、画面の下の小さな知らせ（useNotify・5 秒）「<宛て> に招待を送りました」（2 人以上は「<N> 人に招待を送りました」・仮）。送れなかった宛て（答えの mail failed）があれば「<宛て> にはメールが届きませんでした。もう一度招いてください」（仮）。並びを 1 回読み直す（招待中の行が出る）\n- 冪等の鍵：招くの口に Idempotency-Key を付け、答えを待つ間は「招く」を押せない（二度押しで 2 回送らない）\n- スマホ（767 以下）は 1 人 1 行（丸いアイコン・名前とメール・役割の札）で、状態の列と「⋯」は出さない（D-148.28・下絵の幅 375）\n- 読めないとき：本文に「メンバーを読み込めませんでした」（仮）と「もう一度読む」。読めるまで「＋ 招く」は押せない",
+    "依存の理由": "- K-400: 要る — 部品 views.tsx・invite.css とモック /dev/mock/f8/inv-* を本線に入れる（この葉はその部品に押す関数の口を足し、モックを正の絵にする）。同じファイル（views.tsx・invite.css）を触る\n- K-419: 要る — 画面が呼ぶ契約の口（getWorkspaceMembers・createInvitations の作り直した入力：グループの欄・何人でも）と答えの形は K-419 の契約から生まれる（契約の型 packages/contracts が無いと画面の型が組めない）。11_tickets/K-70.md の同じ所も触る\n- K-421: 要る — リンクの段（K420-UI-017・028〜030）が呼ぶ口 createInvitationLink は K-421。無いとリンクのボタンが押しても動かない（G-03）。リンクで参加する画面と確認の画面は K-423（K-421・K-422 に依存）\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う：`TicketShell`（features/F4/create-ticket/ticket-shell.tsx）・`RequireRole`（lib/auth/role.tsx）・`call`（lib/api/call.ts）・`useNotify`（components/k/notice.tsx）・`StepUp`（features/F1/security/step-up.tsx・取り直しの小窓と口 stepUp）・`Dialog`・`NoticeBox`・`Badge`（components/k）・K-400 の `WsHead`・`WsSub`・`MembersBody`・`InviteDialog`（features/F10/invite/views.tsx）\n- 使う（試験）：`signupViaApi`・`loginAs`・`viewerViaApi`（tests/_lib/api.ts）・`matchMock`（tests/k/stage2-match.ts）\n- 作る：入れ物 `members-page.tsx`（読む・小窓・送る・取り直し・リンク）・読む口の呼び出し `use-members.ts`（TanStack Query・1 画面 1 回）・道 `app/(work)/members/page.tsx`。探したが同じ形の物は無い（前の legacy の members 画面は無い）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 道 | `apps/web/app/(work)/members/page.tsx`：`<RequireRole screen=\"members\"><MembersPage /></RequireRole>`。道の一覧 built-routes.ts は作り手 `scripts/ci/gen_built_routes.py` で作り直す（生成物） |\n| 読む | `apps/web/features/F10/invite/use-members.ts`：`useQuery([\"k420\", \"members\"], () => call(\"getWorkspaceMembers\", { screenId: \"members\" }))`・retry しない・StrictMode でも 1 回（K420-UI-002）。招いた後に invalidate で 1 回読み直す |\n| 入れ物 | `apps/web/features/F10/invite/members-page.tsx`：TicketShell（screen \"members\"・crumbs）の中に WsHead（会社名は外枠の me の会社名）・WsSub（数＝count）・MembersBody（グループ → 行。上の字の決め方）。小窓の状態（typing・emails・group・role・message・more・link・errors・notice・busy）を持つ。送る：`call(\"createInvitations\", { body: { emails, scope_id, role_key, message? }, headers: { \"idempotency-key\" } })`。403・STEP_UP_REQUIRED → `<StepUp reason=\"管理者として招く前に、本人か確かめます\" withCode={…} withPasskey={…} onDone={1 回だけ送り直す} onCancel={小窓に戻る}>`（withCode・withPasskey の決め方は前からの security-screen.tsx と同じ）。リンク：`call(\"createInvitationLink\", { body: { scope_id, role_key } })` → 欄とコピー（navigator.clipboard.writeText）。送っている間は「招待のリンクを作る」を押せない形（2 本作らない・K420-UI-030）。403・STEP_UP_REQUIRED → 招くと同じ StepUp（同じ理由の字）→ 取り直したら 1 回だけ送り直す（K420-UI-028）。404 E-INV-011（K-421 の決め：グループが無い・消した）・503 E-PAGE-003・ほか → 小窓の上の赤い箱（NoticeBox）に正本の文で、リンクの欄は出さない・押し直せる（K420-UI-029） |\n| 部品に口を足す | `apps/web/features/F10/invite/views.tsx`：InviteDialog に `onTyping`・`onAdd`・`onRemove`・`onGroup`・`onRole`・`onMessage`・`onMore`・`onLink`・`onCopy`・`onSend`・`onCancel`・`busy`・`groups: { id, name }[]` を任意の props で足す（無ければ今の readOnly の形＝モックの描き方のまま）。MembersBody に `onInvite`・`inviteDisabled`・行の字を受ける形（MemberRow の state・note はそのまま）。グレーの物（inert）は今のまま。役割の選ぶ欄は値（member・manager・viewer・admin）と字（メンバー・マネージャー・閲覧のみ・管理者）を分ける |\n| 見た目 | `apps/web/features/F10/invite/invite.css`：幅 767 以下で `.k-inv-state`・`.k-inv-more` を出さない（下絵の幅 375 がそうなっていなければ部品の側を直す・正本に無い値は足さない） |\n| ナビ（D-148.49） | `05_flow/phase1.py` の行為 A36・A61・A62 の役 `[\"R2\"]` を `[\"R1\", \"R2\"]` にする → flow.json の作り手（`python3 05_flow/build_flow.py`・phase1 を読む物を作る段で確かめる）で `05_flow/flow.json` を作り直し、navigation.by_role.R1 に members・member-detail が入ることを確かめる → `python3 scripts/tickets/regen_all.py` でナビ（lib/nav.ts）などの生成物を作り直す（changes_ignore）。画面の導出の検査 `python3 scripts/ci/flow_gate.py --flow 05_flow/flow.json`（G1〜G10・G6 の役の被覆）を流して緑。前からの試験 k138-shell・showcase は切る段で替えた（carry） |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-420.json`：data_links `[\"apps/web/features/F10/invite/**\", \"apps/web/app/(work)/members/**\"]` → `apps/web/tests/k/k420-members-invite.spec.ts` |\n| 親 | `11_tickets/K-70.md` の screens から members を外す |",
+    "外に影響する手順": "- なし — 画面は契約の口を呼ぶだけ（招待の行とメールは口の葉 K-419 の手順・失敗の行は K-419 が持つ）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k420-members-invite.spec.ts`（実 Chrome・本物のログインと外枠と役と本人確認・メンバーと招く・リンクの口だけ網の手前で差し替え）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 人と招待中が在る | 左のバー「ワークスペースの管理」・直に /members | 会社を作った人（管理者） | 並びが出る・口は 1 回 | このチケット | K420-UI-001・002・003 |\n| 同じ | 直に /members | 閲覧のみの人 | 「いまの権限では開けません」・口を呼ばない | このチケット（RequireRole）・口も 403（K-419） | K420-UI-019 |\n| PC をつないでいない人がいる | 同じ | 管理者 | 「PC をまだつないでいない」 | このチケット | K420-UI-004 |\n| 読めない | 同じ | 管理者 | 「メンバーを読み込めませんでした」・もう一度読む | このチケット | K420-UI-020 |\n| 招く前 | 「＋ 招く」 | 管理者 | 小窓・足す・外す・入力の誤り（ひとことが 500 字を超える） | このチケット | K420-UI-006〜009・033 |\n| 送った | 小窓の「招く」 | 管理者 | 閉じる・知らせ・招待中の行 | このチケット | K420-UI-010・011 |\n| 口が断った | 同じ | 管理者 | 欄の下の赤字（409・422）・上の赤い箱（404・503）・中身は残る | このチケット | K420-UI-012・013・031・032 |\n| 役割が管理者 | 同じ | 管理者・取り直しが古い | 取り直しの小窓 → 1 回だけ送り直す／やめる | このチケット | K420-UI-014・015 |\n| 送っている途中 | もう一度押す | 管理者 | 押せない・口は 1 回 | このチケット | K420-UI-016 |\n| リンク | 「ひとこと・リンクで招く」 | 管理者 | リンクとコピー | このチケット（口は K-421） | K420-UI-017 |\n| リンク（管理者として入る） | 「招待のリンクを作る」 | 管理者・取り直しが古い | 取り直しの小窓 → 1 回だけ送り直してリンクが出る | このチケット | K420-UI-028 |\n| リンク（口が断る・落ちている） | 「招待のリンクを作る」 | 管理者 | 小窓の上の赤い箱・リンクの欄は出ない・押し直せる | このチケット | K420-UI-029 |\n| リンク（送っている途中） | もう一度押す | 管理者 | 押せない・口は 1 回 | このチケット | K420-UI-030 |\n| 招いたメールから参加する（本物の口） | メール → /invite/:token | 招かれた人 | 参加でき、メンバーの画面に出る | 人が確かめる | K420-UI-025 |\n| まだ作らない物 | グレーの物を押す | 管理者 | 何も起きない | このチケット | K420-UI-005 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K420-UI-001 | 見た目 | inv-members・inv-dialog・inv-error・inv-link・inv-stepup・inv-sent × 幅 375・768・1440 | 頭・第 2 ナビ・見出し・カード・行・小窓・知らせの位置と大きさと字がモックと同じ（matchMock の bad が 0） |\n| K420-UI-002 | 入口 | /members を開く | 並びの口 1 回・左のバーの「ワークスペースの管理」が押せて aria-current=\"page\" |\n| K420-UI-003 | 対象の状態 | 並びの字 | 営業 5 行（招待中を含む）・自分・受託開発も兼ねる・PC 3 日つながっていない・分身 動いている・招待中 ・ あと 7 日。受託開発は兼ねている・分身なし（見るだけ）・「3 人」 |\n| K420-UI-004 | 対象の状態 | PC をつないでいない人 | 状態の字「PC をまだつないでいない」 |\n| K420-UI-005 | 守り | グレーの物 8 つ | aria-disabled・押しても書く口を呼ばない・道も小窓も変わらない |\n| K420-UI-006 | 入口 | 「＋ 招く」 | 小窓・メールの欄に焦点・グループ 2 つ・役割 4 つ・既定は営業 |\n| K420-UI-007 | 入力（表記ゆらぎ） | 足す・カンマで 2 人・全角と大文字・× | 並びに 3 つ（そろえた字・重なり無し）・「招く人（3 人）」「3 人を招く」→ 2 つ外すと「招く」 |\n| K420-UI-008 | 入力 | 形の違う字を足す | 欄の下に「kimura@engine-base はメールの形ではありません」・並びに入らない・欄の字は残る・aria-invalid・直すと消える |\n| K420-UI-009 | 入力 | 0 人で招く・欄に字だけ | 口を呼ばず「メールを 1 つ以上入れてください」。欄に字があれば足して送る |\n| K420-UI-010 | 対象の状態 | 招く | 口の体が { emails, scope_id（受託開発の id）, role_key manager, message }・冪等の鍵あり・閉じる・知らせ・招待中の行・読み直し 1 回（合わせて 2 回） |\n| K420-UI-011 | 失敗（知らせ） | 2 人・1 人だけ送れなかった | 「2 人に招待を送りました」と「ito@… にはメールが届きませんでした。もう一度招いてください」 |\n| K420-UI-012 | 失敗 | 口が断る（409 E-INV-010 もう入っている人 2 人・宛ては detail.already → 並びを替えて 422 E-INV-009 画面の形の確かめは通った送った宛て 1 つを口が断った） | どちらも小窓は閉じず、欄の下に宛てごとの文（409 は 2 つを「。」でつないだ字・422 は「<字> はメールの形ではありません」）を 1 つの赤字で出す。小窓の上の赤い箱は出ない。その時の並び（1 回目は 2 人・2 回目は替えた 1 人）・グループ・役割は残る。口 2 回 |\n| K420-UI-013 | 失敗 | 口が 503 | 小窓の上の赤い箱（role=alert）・中身は残る・押し直すと送れる（口 2 回） |\n| K420-UI-014 | 守り | 管理者として招く → 403 STEP_UP_REQUIRED | 取り直しの小窓（理由の字）→ 本物のパスワードで stepUp が 2xx → 招くを 1 回だけ送り直す（口 2 回・2 回目の role_key admin）→ 知らせ |\n| K420-UI-015 | 操作の揺れ | 取り直しでやめる | 送り直さない（口 1 回）・招くの小窓に戻り並びが残る |\n| K420-UI-016 | 操作の揺れ | 二度押し | 答えを待つ間「招く」は disabled・口 1 回 |\n| K420-UI-017 | 対象の状態 | リンクを作る・コピー | 口の体が { scope_id, role_key viewer }・リンクの欄の値・クリップボードにリンクの字 |\n| K420-UI-018 | 操作の揺れ | やめる・Esc・開き直す | 口を呼ばない・焦点は「＋ 招く」に戻る・開き直すと空 |\n| K420-UI-019 | 利用者の状態 | 閲覧のみの人が直に開く | 「いまの権限では開けません」・並びの口 0 回・左のバーに「ワークスペースの管理」が無い |\n| K420-UI-020 | 失敗 | 並びが 503 | 「メンバーを読み込めませんでした」・「＋ 招く」は押せない・もう一度読むで並びが出る（口 2 回） |\n| K420-UI-021 | 見た目 | 幅 320・375・768・1024・1440 | 横のはみ出し 0（数値）・小窓を開いても 0・767 以下は状態の列と「⋯」が見えない |\n| K420-UI-022 | 守り（キーボード） | Tab・Enter | 「＋ 招く」から Enter で開きメールの欄へ・20 回 Tab しても小窓の外へ出ない |\n| K420-UI-025 | 利用者の状態 | 人が確かめる：招いたメールから参加する | 本物の口（K-419）で招いたメールが届き、そのリンクから 2 人目が参加でき、メンバーの画面に出る（招く → メール → 参加 → メンバーの画面）。用事「人を招く」。統合 K-418 でも通す |\n| K420-UI-028 | 守り | 管理者として入るリンク → 403 STEP_UP_REQUIRED | 本人確認の小窓（「管理者として招く前に、本人か確かめます」）→ 本物のパスワードで取り直す → リンクの口を 1 回だけ送り直し（口 2 回・2 回目も role_key admin）、リンクの欄が出る |\n| K420-UI-029 | 失敗 | リンクの口が 404 E-INV-011 → 503 E-PAGE-003 → 押し直す | 小窓の上の赤い箱（role=alert）に正本の文（E-INV-011・E-PAGE-003 の順）・その間リンクの欄は出ない。3 回目で通りリンクの欄が出る（口 3 回） |\n| K420-UI-030 | 操作の揺れ | リンクの二度押し | 答えを待つ間「招待のリンクを作る」は押せない（disabled）・口は 1 回・リンクは 1 本 |\n| K420-UI-031 | 失敗 | 招く口が 404 E-INV-011（グループが無い・別の会社・消した） | 小窓の上の赤い箱（role=alert）に正本の文（E-INV-011）・欄の下の赤字（.k-err）は出ない・並び・グループ・役割は残る・押し直せる（口 2 回） |\n| K420-UI-032 | 失敗 | 招く口が 422 E-INV-012（51 人以上・details なし） | 欄の下に正本の文（E-INV-012）・小窓の上の赤い箱は出ない・並び（51 人）・グループ・役割は残る |\n| K420-UI-033 | 入力 | ひとことに 501 字を入れて「招く」→ 500 字ちょうどに直して「招く」 | 1 回目は口を呼ばず、ひとことの欄の下に「ひとことは 500 字までです」・小窓は閉じず並び・ひとことは残る。2 回目は口 1 回で message に 500 字が届き小窓が閉じる（PM の決め 2026-11-23・口の上限 invitations_message_len 500 と同じ数） |\n\n```judge-skip\n- K420-UI-025: 人が確かめる（本物のメールの受け箱と 2 人目の操作が要る。staging の統合 K-418 の STG-01 で同じ道を機械で通す）\n```\n\n### テストの型の受け（分類 LIST・INV）\n\n| 型 | どこで受けるか |\n|---|---|\n| 0 件・1 件・たくさん | 要らない：会社を作った人は必ず 1 人いる（0 件は無い）。たくさん（数百人）は口の葉 K-419 が 1 回で返す形・画面はそのまま並べる |\n| 並び | K420-UI-003（グループの順・人の順は口のまま） |\n| 見える範囲 | K420-UI-019 |\n| 招待：入力・表記ゆらぎ・重なり | K420-UI-007・008・009・033（リンクの招待で参加する画面のメールは K-423） |\n| 招待：リンクの失敗・本人確認・二度押し | K420-UI-028・029・030 |\n| 招待：権限・本人確認 | K420-UI-014・015・019 |\n| 招待：送れなかった | K420-UI-011 |\n| 要らない: TP-INV-01 招待の期限切れ・取り消し・使い終わった招待を開くは参加する側の画面（F2・K-335） | — |\n| 要らない: TP-INV-02 違うアカウントで開くは参加する側の画面（F2・K-336） | — |\n| TP-INV-03 既にメンバーの人を招く | K420-UI-012（口の 409 E-INV-010 の文を出す） |\n| 要らない: TP-INV-04 招待した人が権限を失った後に開くは参加する側（F2）と人を外す（F10 の残り） | — |\n| TP-INV-05 同じ人を 2 回招待する | K420-UI-007（同じ宛ては 1 つにそろう）。招待中に重ねて招くのは口 K-419（K419-API-013） |\n| 要らない: TP-LIST-01 会社を作った人が必ず 1 人いる（0 件は無い）・ページを持たない（全部を並べる） | — |\n| TP-LIST-02 並び替えの値が同じものが多い | K420-UI-003（並びは口のまま・グループの順） |\n| 要らない: TP-LIST-03 絞り込みを持たない画面（URL に載せる絞り込みが無い） | — |\n| 要らない: TP-LIST-04 探す語を持たない画面（探す欄はメンバーの画面に無い・D-148.28） | — |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（/members を開いたとき） | 画面が無い | 外枠の口（me・scopes）＋並び 1 本。並びは外枠の口と同時に始める（並びが外枠の答えを待たない） |\n| 直列の段 | — | 1 |\n| 二重の口 | — | 無し（StrictMode でも並びは 1 回・K420-UI-002） |\n| 新しい住所 | — | 増えない（/members は flow.json の道・口は契約に在る） |\n| 認証の要る答えの Cache-Control | — | private, no-store（K-419） |",
+    "前からの試験を替えた所": "道 /members を足し（作った道の一覧が変わる）、flow.json の R1 のナビに members を足す（左のバーの「ワークスペースの管理」の行き先が変わる）ので、左のバーとメンバーの道を見る前からの試験を探した。\n\n```search\ngit grep -l \"ワークスペースの管理\\|/members\" -- apps/web/tests apps/web/test apps/web/components apps/web/lib 'scripts/ci/*_test.py' 'scripts/ci/*.test.mjs' ':!apps/web/tests/k/k400-stage9-mock.spec.ts' ':!apps/web/tests/k/handover-mock.ts' ':!apps/web/tests/k/k420-members-invite.spec.ts' | grep -E 'test|spec|/_lib/|mock\\.ts'\n13\n```\n\n（試験の外の物（ナビの部品・生成物）は grep で外した。13 件は test・spec の名前の物と試験の道具）\n\n- apps/web/tests/k/k138-shell.spec.ts: 替えた（D-148.49 で決まった・carry）— K138-SH-006 は「ワークスペースの管理」を作っていない項目として押せない形を見ていた。R1 の行き先が /members（作った道）になるので、名前の並びから「ワークスペースの管理」を外し（ナレッジ・取引先の 2 つ）、「ワークスペースの管理」が押せるリンクで href が /members であることを足した\n- apps/web/tests/k/showcase.spec.ts: 替えた（同じ・carry）— KSC-01-012 は R1 の「ワークスペースの管理」の行き先が /workspace/members/groups であることを見ていた。/members に替えた（仕様の表 07_qa/test-specs/k/showcase.md の行「役割 R1 が入れる画面へ行く」はそのまま成り立つので替えない）\n- apps/web/test/k-nav-model.test.ts: 替えない — R1 の行き先が R1 の入れる画面であることを見る（members を足しても成り立つ）。主ナビ・下・自分のメニューの並びは変わらない\n- apps/web/tests/k-shell.spec.ts: 替えない — 「ワークスペースの管理」が在ることと、R6 に無いことを見るだけ\n- apps/web/tests/_lib/fidelity-states.ts・features/F4/create-ticket.spec.ts・k/create-mock.ts・k/k217-page-parts.spec.ts・k/k235-first-load.spec.ts・k/list-mock.ts: 替えない — 口 /api/v1/members（listMembers・チケットを作る画面）を差し替えるだけ。道 /members と別の物\n- apps/web/tests/k/k316-login.spec.ts・k317-login-passkey.spec.ts: 替えない — 「ワークスペースの管理者」の字（ログインの断りの文）で、ナビと関わらない\n- scripts/ci/k237_perf_ledger_test.py: 替えない — 口 /api/v1/members?limit=200 の数の台帳。道 /members と別の物",
+    "成果物": "- 道・入れ物・読む口の呼び出し・部品に押す口・見た目の 1 か所・flow.json の 1 行（答えのとき）・範囲の地図・親の行\n- 画面の試験 `k420-members-invite.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：道は /members（flow.json の画面 members の route）。(work) の下（はじめの設定の門の外）\n- 2026-11-20 切る段の決め：招く口の 422・409 の文は宛てごとの文を「。」でつないで 1 つの赤字（下絵 inv-error の字）\n- 2026-11-20 切る段の直し（口が断る番号の決め answer=431fc50df51b・K-419・K-421 の最新に合わせた）：もう入っている人は 409 E-INV-010・グループが無いは 404 E-INV-011（招く口もリンクの口も）。形の違う宛てが混じる回は 422 E-INV-009 だけ。画面は答えの code と details で出し分け、404 E-INV-011 は赤い箱（K420-UI-031・029）。422 E-INV-012（details なし）は欄の下に正本の文（K420-UI-032・切る段の決め・PM に確認）\n- 2026-11-20 切る段の決め：画面で宛てをそろえて形を見る（口もそろえて見る・2 層）\n- 2026-11-20 PM の決め：招待のリンクは K-421（口と DB）。参加の画面のメールの欄は、のちに K-423 に移した\n- 2026-11-20 精査（2 回目）の直し：リンクを作る段の失敗と揺れ（取り直し・断り・二度押し）を行にした（参加の画面の行は K-423 に移した）\n- 2026-11-20 PM の決め：リンクで参加する画面と確認の画面は新しい葉 K-423。この葉はメンバーの画面と招くの小窓・リンクを作る段だけ",
+    "PM に確かめたいこと": "- 決まった（answer=3d444fc8d59f・D-148.48）：PC をまだつないでいない人の状態の字は「PC をまだつないでいない」\n- 決まった（answer=3d444fc8d59f・D-148.49）：会社を作った人もメンバーの画面に行ける。flow.json の変更（phase1.py の役と作り直し）はこの葉が運び、前からの試験 2 本（k138-shell・showcase）を替えた\n- 決まった（answer=3d444fc8d59f・D-148.50）：仮の文 4 つはそのまま\n- 決まった（answer=3d444fc8d59f・D-148.51）：招待のリンクで新しく入る人はメールを確かめる。リンクで参加する画面（/invite/:token の宛てが空の形）と確認のメールのリンクを開く画面（/invite/confirm/:token）は新しい葉 K-423 に移した（PM の決め 2026-11-20・この葉の行 023・024・026・027 は K-423 の 001〜004）\n- まとめ役：モック /dev/mock/f8/inv-members の並びの直し（下の「表の住所」）。K-400 の carry の mocks.tsx",
+    "表の住所": "- 部品 views.tsx・invite.css とモック mocks.tsx は K-400 が運ぶ（この葉は K-400 の後に views.tsx・invite.css を触る）\n- **モックの食い違い（直した・2026-11-20 まとめの直し）**：mocks.tsx の inv-members の並びで、田中（営業の行に「受託開発も兼ねる」）が受託開発のカードに出ず、佐藤は受託開発のカードに「兼ねている」で出るのに営業の行に「受託開発も兼ねる」が無かった。DEV に田中「兼ねている」を足し、SALES の佐藤に note「受託開発も兼ねる」を足した（兼ねる人は両方のカードに出て、主のグループの行に「<名前>も兼ねる」・兼ねる側に「兼ねている」）。この葉の試験（K420-UI-001・003）はこの形で書いてある\n- 招待のリンクの口は K-421。リンクで参加する画面と確認の画面は K-423（PM の決め 2026-11-20・行 023・024・026・027 を移した。この葉の行の番号は欠けたまま）\n- 道の一覧 built-routes.ts とナビ nav.ts は生成物で ticket-flow.yaml の changes_ignore に在るので、changes: にはどちらも書かない（そろえた・精査 2026-11-20）\n- 画面の試験は取り込んだ後に流す（-UI- の行・web_defer）"
+   },
+   "file": "11_tickets/K-420.md"
+  },
+  {
    "id": "K-421",
    "title": "招待のリンク（口と DB）：宛てのメールを持たない招待のリンクを作る createInvitationLink と、そのリンクの下見と、ログイン中の人が今のアカウントで参加できるようにする F2 の直し（新しい人の参加はメールを確かめる K-422）（K-70 の葉・段 9 の前に出す）",
    "kind": "タスク",
@@ -21192,6 +21357,191 @@
     "申し送り": "- K-420：リンクを作る口の形：`POST /api/v1/invitations/link` に `{ scope_id, role_key }` → 201 `{ data: { url, expires_at } }`。role_key admin は 403・STEP_UP_REQUIRED（取り直しの小窓を開いて 1 回だけ送り直す・K-419 と同じ）・**404** E-INV-011（このグループには招けません・K-419 の決め answer=431fc50df51b で 422 から変わった）・403 権限・503 E-PAGE-003。二度押しで 2 本できる（押せない形にしてから送る）\n- K-423：参加の画面（下見 getInvitation の email が null＝リンク）で、ログイン中の人は「今のアカウントで参加」（体なし・201 next \"/\"・もう入っていれば 409 E-INV-007）。ログインしていない人の参加は **K-422 の形**：押すと 202 `{ data: { state: \"sent\", email: <伏せたメール> } }` で、画面は「確認のメールを送りました。メールのリンクを押すと参加が決まります（<伏せたメール>・24 時間）」の形を出す（所属はまだ無い）。確認のリンク `/invite/confirm/<token>` を開く画面も K-423 が持つ（K-422 の申し送り）。この葉だけが入った間は、ログインしていない人の参加は 401（ログインしてから参加）\n- K-418：統合（招く → 参加）でリンクの道を通すなら、ログイン中の人の参加はこの葉の形のまま。新しい人をリンクで入れるなら確認のメールを読む手順が要る（K-422）。メールで招く道はそのまま\n- K-422：この葉が置いた accept.ts の「宛てのメールが空の招待・ログインしていない人は 401」の枝を、保留の行と確認のメールに替える。E-INV-013 は K-422 の errors.d に持つ"
    },
    "file": "11_tickets/K-421.md"
+  },
+  {
+   "id": "K-422",
+   "title": "招待のリンクで新しく入る人のメールを確かめる（口と DB）：ログインしていない人がリンクで参加すると、利用者も所属も作らずに保留の行と確認のメールだけを作り、確認のリンクを押したときに参加を決める（confirmInvitationJoin）（K-70 の葉・段 9 の前に出す）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-70",
+   "milestone": "F10",
+   "area": "招く",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 1 の K-51／K-52（保留の申し込みと確認のメール・押した時点で確定・同時の押しを 1 回にする・後片付け）と K-421（リンクの参加の分かれ・試験 17 行・見込み 1 時間）から引いた：migration 1 本（保留の表 1 つ・行の守りは認証の接続だけ）10 分・部品（保留を置く・印を付ける・戻す・包む）15 分・参加の口の分かれ（保留と確認のメール・202）10 分・確認の口と hooks のファイル 15 分・契約の .d と本体の 1 か所・登録先 5 分・自分の確かめ 10 分。試験 30 行は切る段で書いた（3 回目の精査で競り・セッション・同時の参加の 3 行を足して 30）。上限ちょうどなので、作る段で超えたら確認の口（K422-API-007〜018・024〜026・028・029）を別の葉に分ける（参加の口と保留の行・確認のメールはこの葉・確認の口と利用者を作る所は分けた葉。番号はまとめ役が決める）",
+   "decisions": [
+    "D-026",
+    "D-088",
+    "D-125.150",
+    "D-128.62",
+    "D-128.63",
+    "D-128.137",
+    "D-128.142",
+    "D-148.22",
+    "D-148.51"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-link-confirm.test.ts",
+    "apps/api/test/generated/post_auth_invitations_confirm.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-421",
+    "K-425"
+   ],
+   "acts": [
+    "A03",
+    "A96"
+   ],
+   "screens": [],
+   "apis": [
+    "confirmInvitationJoin"
+   ],
+   "canvas": [],
+   "canvas_none": "口と DB だけ。参加の画面の「確認のメールを送りました」の形と、確認のリンク /invite/confirm/<token> を開く画面は画面の葉 K-423（K-422 に依存）。apps/web を変えない",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/auth",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261121092200_invitation_link_joins.sql",
+    "packages/db/src/migrations.generated.ts",
+    "packages/auth/src/invitations.ts",
+    "packages/auth/src/pending.ts",
+    "apps/api/src/features/F2/invitations/accept.ts",
+    "apps/api/src/features/F2/invitations/confirm.ts",
+    "apps/api/src/features/F2/invitations/confirm-mail.ts",
+    "apps/api/src/features/F2/invitations/deps.ts",
+    "apps/api/src/hooks/invitation-confirm.ts",
+    "apps/api/src/hooks/invitations.ts",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-422.py",
+    "scripts/ci/contract_shape.d/K-422.py",
+    "07_qa/test-plan/ears-elsewhere.d/K-422.json",
+    "07_qa/test-plan/ears-elsewhere.d/K-332.json",
+    "07_qa/test-specs/errors.d/K-422.json",
+    "scripts/ci/ci_scope.d/K-422.json",
+    "08_api/phase1/04_ログイン.md",
+    "11_tickets/K-70.md"
+   ],
+   "flow": "人を招く",
+   "sections": {
+    "目的": "代表の答え（問い 33・answer=3d444fc8d59f・D-148.51）：**招待のリンクで新しく入る人のメールを確かめる。確認のメールを押すまで参加は決まらない**（勧め (a)「すぐ入れる」と違う）。K-421 が作った「宛てのメールを持たない招待（リンク）」で、ログインしていない新しい人が参加する道をこの葉が持つ：\n\n- 参加を押す（acceptInvitation・ログインしていない・体 `{ name, password, email }`）→ **その時点では認証の利用者も所属も作らない**。保留の行（`kaname_auth.invitation_link_joins`）を置き、入れたメールに確認のメールを 1 通送る（関門 C6）。答えは 202 `{ data: { state: \"sent\", email: <伏せたメール> } }`\n- 確認のリンク（`<webBaseUrl>/invite/confirm/<token>`）を開いた画面が確認の口（`POST /api/v1/auth/invitations/confirm`・`confirmInvitationJoin`・体 `{ token }`）を呼ぶと、そのときに認証の利用者（メールは確かめ済み）・所属・招待を使った印を作り、ログインの印を返す（201 `{ data: { token, workspace_id, next: \"/mfa-setup\" } }`・K-332 の acceptInvitation と同じ渡し方）\n\nこうすると、ほかの人のメールを入れて押しても、確認のメールを押すまでアカウントは無い。メールの本当の持ち主は後から自分で登録・参加できる（放っておかれた保留の行は持ち主を止めない）。ログイン中の人の参加（自分の確かめたメールのアカウント）は K-421 のまま。メールで招いた招待（宛てのメールが届いた）は K-332 のまま。",
+    "完了の条件": "- [ ] 下の表の 30 行（K422-API-001〜030）が緑：`apps/api/test/features/F10/invite-link-confirm.test.ts`（土台は F2 の invite.harness.ts）\n- [ ] 契約の口 confirmInvitationJoin が 501 でない。生成の試験 post_auth_invitations_confirm（作る段で作り手が新しく作る・下の「表の住所」）の it.todo が、na（理由つき）を除いて 0（生成の後に ears-elsewhere.d/K-422.json の covers を結ぶ）。作り直した acceptInvitation の生成の試験に出た新しい名前（422・E-INV-013・202）は、K-332 の断片 `ears-elsewhere.d/K-332.json` の covers にこの葉の行で結ぶ\n- [ ] K-421 の K421-API-012（押した時点で利用者・所属が 0）が、この葉が入った後も緑（202 の側）\n- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: INV, REG, MAIL, AUTH\n\n- **K-421 に依存**：K-421 が invitations.email の空を許し、accept.ts に「宛てのメールが空の招待・ログインしていない人は 401」の枝を置く。この葉はその枝を「保留の行と確認のメール・202」に替える（同じ accept.ts）\n- **保留の行**：`kaname_auth.invitation_link_joins`（認証の接続だけが触る・kaname_app には渡さない。前からの保留の申し込み `kaname_auth.pending_signup`・0022 と同じ置き場と形）。列：id・invitation_id（public.invitations）・tenant_id・email（normalizeEmail でそろえた物）・display_name・pw_iv／pw_tag／pw_data（パスワードを鍵で包んだ物）・token_hash（確認のリンクのトークンの sha256）・expires_at（24 時間）・sent_at・send_error・confirmed_at・deleted_at・created_at・updated_at。同じ招待・同じメールの待っている行は 1 つ（部分の一意の索引 `(invitation_id, email) where confirmed_at is null and deleted_at is null`）。押し直したら同じ行のトークンと期限を替えて送り直す（前の確認のリンクは使えなくなる）\n- **パスワードは平文で持たない**：前からの保留の申し込みと同じく、master key から導いた鍵で包む（packages/auth/src/pending.ts の `seal`・`open_`）。用途ごとに鍵を分けるため `seal`／`open_` に用途の引数（既定は今の \"pending-signup\"・この葉は \"invitation-link-join\"）を足す。**指示の「password_hash」にしなかった訳**：確認のときに作る利用者は前からの `createInvitedUser`（平文のパスワードを受けてハッシュにする）で作るので、ハッシュで預かると認証の部品に「ハッシュのまま利用者を作る」新しい口が要る。包む形は登録で使っている形のまま\n- **確認のメール**は関門 C6（F2 の deps の mailer・server.ts の 1 か所）で送る。件名「【Kaname】{ワークスペース名} への参加を確かめてください」。本文は名前・ワークスペース名・招いた人の名前・確認のリンク・「24 時間で切れます」・「心当たりが無ければ、このメールは捨ててください（何も起きません）」だけ。パスワード・リンクの招待のトークンは書かない。送れたか（sent_at）・送れなかったか（send_error）を保留の行に書く（G-15：送れていないのに「送りました」と出さない）\n- **答えのメールは伏せる**：202 の email は先頭 2 字・* を 4 つ・@ の後（`ki****@engine-base.example`。画面の葉 K-423 の試験の偽の答えと同じ形）。ログにメール・パスワード・トークンを出さない（宛先は mailTag の印・TP-REG-14）\n- 同じ招待・同じメールで参加を同時に 2 回押したとき：`putLinkJoin` は `insert … on conflict (invitation_id, email) where confirmed_at is null and deleted_at is null do update set token_hash = excluded.token_hash, expires_at = excluded.expires_at, pw_iv = …, pw_tag = …, pw_data = …, display_name = …, sent_at = null, send_error = null, updated_at = now()` の 1 文（select してから insert にしない・一意の違反の 503 を出さない）。2 本とも 202・保留の行は 1・確認のメールは 2 通で、行に残った新しい方のトークンだけが使える（K422-API-030）\n- 参加の順（ログインしていない・リンクの招待）：トークンの形 → 招待の様子（無い 404・取り消し／期限切れ／使われた 410）→ 止められたワークスペース 403・E-AUTH-012 → 名前（E-VAL-007）→ パスワード（E-VAL-005・026・漏れの照合）→ メール（空の字 \"\"・空白だけ・形違い → 422・E-INV-013 欄 email＝契約の pattern と同じ決まり／送られていない → 409・E-INV-016（conflict）・欄なし＝招待の行で決まる断り・控え帳 2026-11-20 16:51）→ そのメールにもうアカウントがある → 409・E-INV-006（ログインしてから参加）→ 保留の行を置く（S1）→ 確認のメール（S2）→ 送った印（S3）→ 202\n- 確認の順：トークン（無い・空・空白だけ → 422・VALIDATION_ERROR。前後の空白を落として見る。空白だけは契約の決まり VALUE_RANGES の pattern `\\S` で書く（K-355 の request_ref と同じ書き方）。UNEXPRESSIBLE_422 には足さない＝検査の例外を足さない・代表の答え answer=431fc50df51b）→ 保留の行に **印を付ける**（`update … set confirmed_at = now() where token_hash = $1 and confirmed_at is null and deleted_at is null and expires_at > now() returning …`。期限切れの行には印を付けない。同時に何回押しても 1 回だけ取れる）→ 0 行のときは同じ token_hash の行をもう 1 回読んで見分ける：行が無い・閉じた（deleted_at）→ 404・E-INV-001／もう印がある → 410・E-INV-015／期限切れ → 410・E-INV-014 → 招待の様子（使われた 410・E-INV-004・取り消し 410・E-INV-002・期限切れ 410・E-INV-003）・止められたワークスペース 403・E-AUTH-012・そのメールにもうアカウント（確認までの間に登録した）409・E-INV-006（どれも印を戻さずに保留の行を閉じる＝deleted_at）→ 包んだパスワードを開く → 利用者を作る（S4・createInvitedUser・メールは確かめ済み）→ 受諾（S5・app.accept_invitation の 1 取引）→ セッションを作る（S6）→ 201 `{ data: { token, workspace_id, next: \"/mfa-setup\" } }`\n- 確認の失敗の分け方：**受諾（S5）が「使われた／取り消し／期限切れ」で断ったら**（別々の 2 人が同時に確認した競りで、相手が先に招待を使った など）、作った利用者を id で消し、**印を戻さず保留の行を閉じて** 410（E-INV-004・002・003）。それ以外の S4・S5 の失敗だけ、作った利用者を消して印を戻し 503（もう一度押せる）。S6（セッション）が落ちたら K-332 と同じく参加は取り消さない：503・E-PAGE-003・利用者と所属は残り印も付いたまま（押し直すと 410・E-INV-015「ログインして入ってください」・パスワードでログインできる・K422-API-029）\n- **確認の口は冪等の器を使わない**（2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう・K-52 と同じ）。NO_GENERIC_409 に足す\n- 同じリンクに別々のメールの保留の行が何本あってもよい（リンクは「持っている人なら誰でも 1 回」）。最初に確認した 1 人が招待を使い、ほかの人の確認は 410・E-INV-004\n- 入った直後は今のまま「付けるまで進めない」（/mfa-setup・K-308）\n- F2 の deps の config に `secretsMasterKey` を足す（登録の deps と同じ値。`apps/api/src/hooks/invitations.ts` の deps を組む所で `d.config.secretsMasterKey`（HookDeps の config に在る）から渡す）",
+    "依存の理由": "- K-421: 要る — 同じ F2 の参加の口 `apps/api/src/features/F2/invitations/accept.ts`（K-421 が置いた「リンクの招待・ログインしていない人は 401」の枝をこの葉が替える）と、K-421 が空を許した invitations.email（宛てのメールが空＝リンク）と、K-421 のリンクを作る口（試験の準備でリンクを作る）を使う\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "目録で探した結果": "- 使う：保留の申し込みの形（packages/auth/src/pending.ts の `seal`・`open_`・`hashPendingToken`・0022 の kaname_auth.pending_signup と K-52 の印の付け方 `claimPendingByToken`・`releasePendingClaim`・`sealOffPending`）・`normalizeEmail`・`EMAIL_RE`・`mailTag`（packages/auth/src/signup.ts）・`createInvitedUser`・`acceptInvitationAgreeing`・`openSessionFor`・`deleteAuthUser`（後片付け）・`checkPwned`（F1 の登録・K-332 と同じ）・F2 の deps の mailer（関門 C6）・契約の入口 op.ts（422・429）\n- 使う：K-421 の accept.ts の枝（宛てのメールが空の招待）と app.invitation_preview2（下見は変えない）\n- 作る：`kaname_auth.invitation_link_joins`・部品 `putLinkJoin`・`claimLinkJoin`・`releaseLinkJoin`・`closeLinkJoin`（packages/auth/src/invitations.ts）・確認の口 `apps/api/src/features/F2/invitations/confirm.ts`・確認のメールの文 `confirm-mail.ts`・hooks のファイル `apps/api/src/hooks/invitation-confirm.ts`。探したが同じ形の物は無い（pending_signup は会社を作る登録の物で、招待と結ばない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前） | `packages/db/migrations/20261121092200_invitation_link_joins.sql`：上の「保留の行」の表 `kaname_auth.invitation_link_joins`（kaname_auth の所有・kaname_app には何も渡さない・0022 と同じ守り）と部分の一意の索引・token_hash の索引・expires_at の索引。一覧は作り手 `gen_migrations.py`（生成物） |\n| 部品 | `packages/auth/src/pending.ts`：`seal(masterKeyB64, plain, purpose = \"pending-signup\")`・`open_(…, purpose = \"pending-signup\")`（前からの呼び出しは変わらない）。`packages/auth/src/invitations.ts`：`putLinkJoin(authPool, masterKey, { invitationId, tenantId, email, name, password }) → { token, expiresAt, id }`（`insert … on conflict (invitation_id, email) where confirmed_at is null and deleted_at is null do update`（トークン・期限・包んだパスワード・名前を替え、送った印を空に）の 1 文。同時に押されても一意の違反にしない）・`markLinkJoinSent(id, error?)`・`claimLinkJoin(authPool, token) → { kind: \"ok\", row } \\| { kind: \"missing\" \\| \"used\" \\| \"expired\" }`（印を付ける 1 文が 0 行なら同じ token_hash の行を読み、無い・閉じた＝missing・印あり＝used・期限切れ＝expired）・`releaseLinkJoin(id)`（印を戻す）・`closeLinkJoin(id)`（deleted_at） |\n| 参加の口（リンク・ログインしていない人） | `apps/api/src/features/F2/invitations/accept.ts`：K-421 の 401 の枝を替える。入力は体の email を残す（前処理で消さない・使うのはリンクの招待のときだけ）。上の「参加の順」で、名前・パスワード・メールを見て、もうアカウントがあれば 409・E-INV-006。`putLinkJoin`（S1）→ `confirm-mail.ts` の文で mailer に送る（S2）→ `markLinkJoinSent`（S3）→ 202 `{ data: { state: \"sent\", email: 伏せた物 } }`。送れなければ `markLinkJoinSent(id, 種類)` → 202 `{ data: { state: \"failed\", email: 伏せた物 } }`（保留の行は残す・押し直せば同じ行のトークンを替えて送り直す）。S3 が落ちたら 1 回だけやり直し、それでも落ちたらログに `[invite-link] 送った印を書けなかった → <例外の種類>` の 1 行・答えは変えない。宛てのメールの在る招待は今のまま（体の email を読まない） |\n| 確認の口 | `apps/api/src/features/F2/invitations/confirm.ts`：上の「確認の順」。S4 の失敗の後片付け（作った利用者を消す）のログは `[invite-link] 作った利用者を消せなかった → <mailTag(体のメール)>: <例外の種類>`（メールの字そのものは出さない・K-421-R の指摘）。答え 201 `{ data: { token, workspace_id, next: \"/mfa-setup\" } }`（token はセッションの印・参加の口 K-332 と同じ渡し方）・Cache-Control private, no-store。受諾の断り（used・revoked・expired）は利用者を消して保留の行を閉じて 410、ほかの失敗は利用者を消して印を戻して 503、セッションの失敗は 503（参加は残す）|\n| 確認のメールの文 | `apps/api/src/features/F2/invitations/confirm-mail.ts`：`linkJoinMail({ name, workspaceName, inviterName, url, expiresAt })` → `{ subject, text }`（上の前提のとおり） |\n| 依存 | `apps/api/src/features/F2/invitations/deps.ts` の config に `secretsMasterKey: string`。`apps/api/src/hooks/invitations.ts` の deps を組む所で渡す（1 行） |\n| 口の登録 | `apps/api/src/hooks/invitation-confirm.ts`（新しい）：`confirmInvitationJoin: { input, before, noIdempotency: true }` と `export const register = defineHooks({ name: \"invitationConfirmHooks\", make, fuzz: \"same\" })` |\n| 契約（本体） | `05_flow/screen_api.py`（前からある行を直すので本体・別々の行・overlap_ok）：INPUTS の acceptInvitation に `\"email\": \"string?\"`（リンクの招待で新しく入るときだけ読む）／RESPONSES の acceptInvitation に `\"state\": \"string?\", \"email\": \"string?\"`（リンクの招待のときの 202）／ERRORS_4XX の acceptInvitation に 422・E-INV-013（trigger「送られたメールが空・空白だけ・形が違う」）と 409・E-INV-016（trigger「宛てのメールが無い招待でメールが送られていない」）／VALUE_RANGES の acceptInvitation の email に pattern（screen_api.d/K-422.py・K-638 の _EMAIL と同じ形）。UNEXPRESSIBLE には足さない（検査の例外を増やさない）／NO_GENERIC_409 に confirmInvitationJoin |\n| 契約（.d） | `05_flow/screen_api.d/K-422.py`：SCREEN_API `{\"invite-accept\": [(\"POST\", \"/auth/invitations/confirm\", \"A03\\|A96\", \"invitations\", \"confirmInvitationJoin\", [\"members\", \"tenant_memberships\", \"terms_consents\", \"sessions\"])]}`・PERMS `{\"confirmInvitationJoin\": (\"public\", \"確認のメールのリンクを持つ人。押した時点で参加が決まる（D-148.51）\", False)}`・INPUTS `{\"confirmInvitationJoin\": (\"InvitationJoinConfirmInput\", {\"token\": \"string\"})}`・REQUIRED_INPUTS `{\"confirmInvitationJoin\": [\"token\"]}`・RESPONSES `{\"confirmInvitationJoin\": (\"InvitationJoinConfirmed\", {\"token\": \"string\", \"workspace_id\": \"uuid\", \"next\": \"string\"})}`・ERRORS_4XX（404 E-INV-001・409 E-INV-006・410 E-INV-014・015・004・002・003・403 E-AUTH-012・422 VALIDATION_ERROR・503 E-PAGE-003）→ `python3 05_flow/build_api.py` |\n| 契約の形・登録先 | `scripts/ci/contract_shape.d/K-422.py`（REQUIRED_INPUTS `{\"token\"}`・VALUE_RANGES `{\"confirmInvitationJoin\": {\"token\": {\"pattern\": \"\\\\S\"}}}`（確認のトークンが空白だけは契約の決まりで書く。UNEXPRESSIBLE_422 には足さない）・acceptInvitation の 202 は契約に書けない訳を UNEXPRESSIBLE の欄に 1 行「リンクの招待で新しく参加するときの 202 { state, email }：作り手 build_api.py は POST の 2xx を 201 に決め打ちするので契約に書けない。答えの鍵 state・email は RESPONSES に string? で足す」）・`07_qa/test-plan/ears-elsewhere.d/K-422.json`（下）・`07_qa/test-plan/ears-elsewhere.d/K-332.json`（acceptInvitation の新しい名前を結ぶ・K-332 は取り込み済み・ほかに直す葉は無い）・`scripts/ci/ci_scope.d/K-422.json`（data_links：features/F2/invitations/**・hooks/invitation-confirm.ts・packages/auth/src/invitations.ts・packages/auth/src/pending.ts・migration → invite-link-confirm.test.ts・invite-link.test.ts と F2 の invitation-*.test.ts と F1 の登録の試験）。k144 の uuid の行は無い（道に id を持たない口） |\n| エラー | `07_qa/test-specs/errors.d/K-422.json`：E-INV-013（K-421 から移した・validation・where.screen invite-accept・「メールアドレスを入れてください」・when「招待のリンクで新しく参加する人が、メールを空・空白だけ・メールの形でないまま送った」・false_when「メールで招いた招待（宛てのメールを使う）・ログイン中の人」）・E-INV-016（conflict・where.screen invite-accept・「メールアドレスを入れてください」・when「宛てのメールが無い招待で、メールを送っていない」・招待の行で決まる断りなので形の誤りの E-INV-013 と分ける）・E-INV-014（gone・where.screen invite-accept・「確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください」）・E-INV-015（gone・where.screen invite-accept・「この確認のリンクはもう使われています。ログインして入ってください」）。文は仮（画面の葉の字と合わせる） |\n| 資料 | `08_api/phase1/04_ログイン.md` の招待で参加する口の行に「リンクの招待で新しく入る人は確認のメールを押すまで参加しない（202）」と確認の口の行 |\n| 親 | `11_tickets/K-70.md` に confirmInvitationJoin と試験の行を足す・外す（まとめ役が親の md を直すなら、この行は済み） |\n\n### 生成の試験（ears-elsewhere.d/K-422.json）\n\n```json\n{\"ops\": {\"confirmInvitationJoin\": {\"file\": \"apps/api/test/features/F10/invite-link-confirm.test.ts\",\n  \"reason\": \"確認の口は、保留の行（待っている・使われた・期限切れ）と招待の様子（使える・使われた・取り消し）と、その間に登録された同じメールのアカウントの組み合わせで答えが決まる。生成の試験の種では保留の行と確認のトークンを作れない（K-422）\",\n  \"covers\": {\"test_post_auth_invitations_confirm_ok\": \"K422-API-007\", \"test_post_auth_invitations_confirm_shape\": \"K422-API-007\",\n             \"test_post_auth_invitations_confirm_rejected_422\": \"K422-API-018\", \"test_post_auth_invitations_confirm_not_found\": \"K422-API-018\",\n             \"test_post_auth_invitations_confirm_conflict\": \"K422-API-016\", \"test_post_auth_invitations_confirm_gone\": \"K422-API-008\",\n             \"test_post_auth_invitations_confirm_unavailable\": \"K422-API-024\"},\n  \"na\": {}}}}\n```\n\n作り手が出す名前に covers の鍵を合わせ、余る名前（上限・大きすぎる体）は na に理由を書くか、K-351 の前例どおり受けの試験に結ぶ。acceptInvitation に出た新しい名前（422・E-INV-013・202）は、K-332 の断片の covers に `{\"file\": \"apps/api/test/features/F10/invite-link-confirm.test.ts\", \"mark\": \"K422-API-003\"}`（422）・`\"K422-API-001\"`（202）で結ぶ。409・E-INV-016（メールが送られていない・生成の名前 conflict_3）も同じ K422-API-003 に結ぶ。",
+    "外に影響する手順": "- S1: 保留の行を書く（認証の接続・1 文。失敗したら何も残らない・K422-API-021）\n- S2: 確認のメールを送る（関門 C6）[残る] — 送ったメールは取り消せない。送れなければ保留の行は残し、送れなかった印（send_error）を書いて 202・state failed（押し直せば同じ行のトークンを替えて送り直す・K422-API-022）\n- S3: 送った印を保留の行に書く（S2 の後片付け）。落ちたら 1 回だけやり直し、それでも落ちたらログに 1 行で答えは変えない（S3 の失敗と S2 の後片付けの失敗を 1 行で見る・K422-API-023）\n- S4: 確認のときに認証の利用者を作る（createInvitedUser）[残る] — 作った利用者は、続く受諾が落ちたら id で消す。S4 そのものが落ちたら印を戻して 503（何も残らない・K422-API-024）\n- S5: 受諾（所属・グループ・規約の同意・出来事・招待を使った印）を DB に書く（app.accept_invitation の 1 取引）。失敗したら S4 の利用者を消し、印を戻す（K422-API-025）。受諾が「使われた・取り消し・期限切れ」で断ったら利用者を消し保留の行を閉じて 410（競り・K422-API-028）。後片付けも落ちたらログに 1 行（K422-API-026）\n- S6: セッションを作る（kaname_auth.session と sessions に書く・openSessionFor）— 失敗しても参加は取り消さない（K-332 と同じ）。残る利用者と所属は確認で決まった正しい結果で、片付ける物ではない（後片付けは無いので [残る] は付けない）。503・E-PAGE-003・利用者と所属は残り、確認の印は付いたまま。押し直すと 410・E-INV-015（ログインして入ってください）で、パスワードでログインできる（K422-API-029）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F10/invite-link-confirm.test.ts`（本物の DB・本番と同じ bootApi・本物のログインの部品・メールは試験の偽 mails。土台は F2 の invite.harness.ts）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（保留の行・招待） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 保留なし・リンク（使える） | 参加（名前・パスワード・メール） | ログインしていない | 202・sent・確認のメール 1・利用者 0・所属 0 | このチケット | K422-API-001・002 |\n| 同じ | 同じ（メールが空・形違い／送られていない） | 同じ | 空・形違い 422・E-INV-013（欄 email）／送られていない 409・E-INV-016（欄なし） | このチケット | K422-API-003 |\n| 同じ | 同じ（そのメールにアカウントが在る） | 同じ | 409・E-INV-006 | このチケット | K422-API-004 |\n| 保留あり（待っている） | 確認のリンク | どれでも | 201・利用者 1（確かめ済み）・所属 1 | このチケット | K422-API-007 |\n| 保留あり（期限切れ） | 確認のリンク | どれでも | 410・E-INV-014 | このチケット | K422-API-008 |\n| 保留あり（使われた） | 確認のリンク（2 回目・同時） | どれでも | 410・E-INV-015（同時は 1 つだけ 201） | このチケット | K422-API-009・010 |\n| 保留あり（ほかの人のメール・押されない） | 持ち主の登録・持ち主の参加 | ログインしていない | 持ち主は登録でき、リンクでも参加できる | このチケット | K422-API-011 |\n| 保留あり（同じメールで押し直し） | 参加 | ログインしていない | 前の確認のリンクは使えない・新しい方で入れる | このチケット | K422-API-012 |\n| 保留あり（2 人ぶん）・1 人目が確認した | 2 人目の確認 | どれでも | 410・E-INV-004 | このチケット | K422-API-013 |\n| 保留あり（2 人ぶん） | 2 人が同時に確認 | どれでも | 201 は 1・もう 1 人は 410・E-INV-004・その人の利用者 0・保留の行は閉じる | このチケット | K422-API-028 |\n| 保留あり（閉じた・deleted_at。014・016 の後） | 確認のリンク | どれでも | 404・E-INV-001（印を付ける文は deleted_at is null の行だけを引く・閉じた行は無いのと同じ） | このチケット | K422-API-014 |\n| 保留あり・確認でセッションが作れなかった（印あり） | 確認のリンク（押し直し） | どれでも | 410・E-INV-015・ログインで入れる | このチケット | K422-API-029 |\n| 保留なし・リンク（使える） | 同じメールで参加を同時に 2 回 | ログインしていない | 202 が 2 つ・保留の行 1・確認のメール 2 通・新しい方だけ使える | このチケット | K422-API-030 |\n| メールの招待（使える） | 参加（空・空白だけ・形違いの email） | ログインしていない | 422・E-INV-013（欄 email）・利用者 0 | このチケット | K422-API-031 |\n| 保留あり・招待が取り消された／期限切れ | 確認 | どれでも | 410・E-INV-002／E-INV-003 | このチケット | K422-API-014 |\n| 保留あり・同じメールで登録された | 確認 | どれでも | 409・E-INV-006 | このチケット | K422-API-016 |\n| 保留あり・ワークスペースが止められた | 確認 | どれでも | 403・E-AUTH-012 | このチケット | K422-API-017 |\n| メールの招待（使える） | 参加 | ログインしていない（体に別のメール） | 201・宛てのメールで作る（K-332 のまま・確認のメールは送らない） | このチケット（K-332 のまま） | K422-API-015 |\n| リンク（使える） | 参加 | ログイン中 | 201・今のアカウント（K-421） | K-421 | K421-API-009 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K422-API-001 | 対象の状態 | ログインしていない人がリンクで参加（名前・パスワード・メール） | 202・data は state sent と伏せたメール（先頭 2 字・* 4 つ・@ の後＝`ne****@…`・入れたメールの字そのものは無い）。入れたメールに確認のメール 1 通。そのメールの利用者 0・その会社の所属 0・招待は使われない。保留の行 1（email はそろえた物・display_name・期限 24 時間・sent_at あり・パスワードの平文が列のどこにも無い） |\n| K422-API-002 | 入力（文） | 確認のメールの中身 | 件名に「参加を確かめてください」とワークスペース名・本文に名前・招いた人の名前・`/invite/confirm/<43 字>` のリンク・「24 時間」。本文と件名にパスワード・リンクの招待のトークン・null／undefined の字が無い |\n| K422-API-003 | 入力 | メールが空の字 \"\"・空白だけ・メールの形でない／メールが送られていない | 空・形違いは 422・E-INV-013・欄 email・文は errors.json のまま。送られていないのは 409・E-INV-016・欄と details なし。保留の行 0・メール 0 |\n| K422-API-004 | 入力 | 入れたメールにもうアカウントがある | 409・E-INV-006（ログインしてから参加）・保留の行 0・メール 0・その人の所属も増えない |\n| K422-API-005 | 入力（表記ゆらぎ） | 全角の＠・大文字・前後の空白のメール | 202・保留の行の email は小文字の半角 1 つ・確認のメールはそろえた宛てに届く。確認すると利用者のメールもそろえた 1 つ |\n| K422-API-006 | 入力 | 名前が空・パスワードが 11 文字 | 422・E-VAL-007／E-VAL-005（K-332 と同じ）・保留の行 0・メール 0 |\n| K422-API-007 | 対象の状態 | 確認のリンクを押す | 201・data は token（文字）と workspace_id と next \"/mfa-setup\"（鍵はこの 3 つ）・その token でログインできている。利用者 1（emailVerified true）・所属 1（リンクの役割・active）・招待は使われた・保留の行に confirmed_at・no-store |\n| K422-API-008 | 時間の流れ | 確認の期限（24 時間）が過ぎた | 410・E-INV-014・利用者 0・所属 0 |\n| K422-API-009 | 操作の揺れ | 確認を 2 回押す（二度押し） | 1 回目 201・2 回目 410・E-INV-015・ログインの印は 2 回目に渡さない・利用者 1 |\n| K422-API-010 | 操作の揺れ | 同時に 2 回確認する | 201 は 1 つ・もう 1 つは 410・E-INV-015・利用者 1・所属 1 |\n| K422-API-011 | 守り | ほかの人のメールで先に押された（確認されない） | 押されたメールの利用者 0。そのメールの本当の持ち主は、登録（createSignup）で 202 になり、保留の申し込みができる。同じリンクで持ち主が押すと同じ保留の行のトークンが替わり、持ち主に届いた確認のメールで入れる（前の確認のリンクは 404・E-INV-001：トークンが替わった・012 と同じ） |\n| K422-API-012 | 操作の揺れ | 同じメールで参加を押し直す | 保留の行は 1 のまま・確認のメール 2 通・前の確認のリンクは 404・E-INV-001（トークンが替わった）・新しい方で 201 |\n| K422-API-013 | 操作の揺れ | 同じリンクで 2 人（別々のメール）が押し、1 人目が確認した | 1 人目 201・2 人目の確認は 410・E-INV-004・2 人目の利用者 0 |\n| K422-API-014 | 時間の流れ | 確認の前に招待が取り消された・期限切れになった | 410・E-INV-002／E-INV-003・利用者 0・保留の行は閉じる（deleted_at）。閉じた後に同じ確認のリンクを押すと 404・E-INV-001 |\n| K422-API-015 | 入力 | メールで招いた招待（宛てのメールが在る）に体の email を送る | 201・宛てのメールで利用者ができる・体のメールの利用者は 0・確認のメールは送らない（K-332 のまま） |\n| K422-API-016 | 時間の流れ | 確認の前に同じメールのアカウントができた（その人が別に登録した） | 409・E-INV-006・利用者は 1 のまま（増えない・そのパスワードも変わらない）・保留の行は閉じる |\n| K422-API-017 | 利用者の状態 | 確認の前にワークスペースが止められた | 403・E-AUTH-012・利用者 0・招待は使われない |\n| K422-API-018 | 入力 | 確認のトークンが無い・空白だけ・でたらめ | 422（無い・空白だけ＝前後の空白を落として空）・404・E-INV-001（でたらめ）・利用者 0 |\n| K422-API-019 | 守り | ログに秘密を出さない | 参加と確認の間のログに、入れたメール・パスワード・確認のトークン・リンクの招待のトークンの字が無い |\n| K422-API-020 | 守り | 保留の表の守り | kaname_app から kaname_auth.invitation_link_joins を読む・書くと permission denied（認証の接続だけ） |\n| K422-API-021 | 失敗 | 手順 S1（保留の行を書く）の失敗 | 503・E-PAGE-003・保留の行 0・メール 0 |\n| K422-API-022 | 失敗 | 手順 S2（確認のメールを送る）の失敗 | 202・state failed・保留の行は残る（sent_at 空・send_error あり）。もう一度押すと確認のメール 1 通・state sent |\n| K422-API-023 | 失敗 | 手順 S3（送った印を書く）の失敗（S2 の後片付けの失敗） | 202・state sent・メールは 1 通届く・ログに「送った印を書けなかった」1 行（メールの字は無い）・sent_at は空のまま |\n| K422-API-024 | 失敗 | 手順 S4（確認のときに利用者を作る）の失敗 | 503・E-PAGE-003・利用者 0・所属 0・印は戻る（同じ確認のリンクでもう一度押すと 201） |\n| K422-API-025 | 失敗 | 手順 S5（受諾）の失敗（S4 の後片付けが走る） | 503・E-PAGE-003・S4 で作った利用者は消える・招待は使われない・印は戻る |\n| K422-API-026 | 失敗 | 手順 S5 の失敗の後片付け（S4 の利用者を消す）も失敗 | 503・ログに「作った利用者を消せなかった」1 行（mailTag の印だけ・メールの字は無い）・利用者は 1 人残る |\n| K422-API-028 | 操作の揺れ | 同じリンクで別々の 2 人が押し、2 人が同時に確認する（競り） | 201 は 1 つ・もう 1 人は 410・E-INV-004（受諾が「使われた」で断った）・その人の利用者 0（作った利用者は消す）・その人の保留の行は閉じる（deleted_at・印は戻さない）・所属は勝った人だけ（負けた人は 0） |\n| K422-API-029 | 失敗 | 手順 S6（セッションを作る）の失敗 | 503・E-PAGE-003・利用者 1 と所属 1 は残る（参加は取り消さない・K-332 と同じ）・招待は使われた・確認の印は付いたまま。同じ確認のリンクを押し直すと 410・E-INV-015。そのメールとパスワードでログインできる |\n| K422-API-030 | 操作の揺れ | 同じメールで参加を同時に 2 回押す | 2 回とも 202・保留の行（閉じていない物）は 1・確認のメールは 2 通・2 つの確認のリンクのうち 1 つだけが 201（もう 1 つは 404・E-INV-001） |\n| K422-API-027 | 守り | 包んだパスワード | 保留の行の pw_data を、登録の用途の鍵（\"pending-signup\"）で開けない（用途ごとの鍵）。確認して利用者ができた後、そのパスワードでログインできる |\n| K422-API-031 | 入力 | メールで招いた招待（宛てのメールが在る）に空の email・形違いの email を送る | 422・E-INV-013（欄 email）・利用者は作らない（送られたメールの形は招待の種類によらない契約の決まり） |\n\n### テストの型の受け（分類 INV・REG・MAIL・AUTH）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 期限切れ・取り消し・使い終わった招待を開く | K422-API-013・014（確認の前に招待が使われた・取り消された・期限切れ） |\n| TP-INV-02 招待されたメールと違うアカウントで開く | K422-API-015（メールの招待は宛てのまま）。リンクは宛てを照らさない（K-421） |\n| TP-INV-05 同じ人を 2 回招待する | K422-API-012（同じメールで押し直す）・013（同じリンクを 2 人）・028（2 人が同時に確認）・030（同じメールで同時に 2 回） |\n| TP-REG（確認のメール・二度押し・期限・表記ゆらぎ・秘密） | K422-API-001・002・005・008・009・010・019 |\n| TP-MAIL（届く・届かない・中身） | K422-API-002（中身）・022（届かない）・023（印） |\n| 別の人のメールで先にアカウントを作られない | K422-API-011・016 |\n| 権限・守り | K422-API-020（保留の表は認証の接続だけ）・027（用途ごとの鍵） |\n| 外のサービスが落ちる | K422-API-021〜026・029 |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（参加の画面・確認の画面） | 参加 1 本（K-421 の間は 401） | 参加を押したときに 1 本（acceptInvitation・202）。確認の画面を開いたときに 1 本（confirmInvitationJoin） |\n| 直列の段 | — | 1（どちらの画面も 1 本） |\n| 口ごとの文の数・取引の数 | — | 参加：招待を引く 1 文・保留の行を置く 1 文・送った印 1 文。確認：印を付ける 1 文・利用者を作る（認証の部品）・受諾 1 取引（前からの K-332 と同じ） |\n| 認証の要る答えの Cache-Control | — | private, no-store（確認の答え・K422-API-007） |\n| 新しい住所 | — | 1 つ増える（POST /api/v1/auth/invitations/confirm） |",
+    "前からの試験を替えた所": "保留の申し込みの包み方（pending.ts）と F2 の参加の口を直すので、それを読む前からの試験を探した。\n\n```search\ngit grep -lE \"seal\\(|open_\\(\" -- apps/api/test packages/auth packages/db/test scripts/ci\n1\ngit grep -l \"acceptInvitation\\|createInvitedUser\\|invitationForAccept\" -- apps/api/test packages/auth/test scripts/ci ':!apps/api/test/generated/*' ':!apps/api/test/features/F10/*'\n5\n```\n\n（2026-11-20 に c/段9 で数えた。1 つ目の 1 件は packages/auth/src/pending.ts そのもの（この葉が直す部品・試験は seal／open_ を直に呼ばず、登録の putPending を通して使う）。2 つ目の 5 件は F2 の参加の試験 2 本・道具 invite_join.ts・部品の試験 flows.test.ts・契約の断片 K-332.py）\n\n- packages/auth/src/pending.ts: 替えない（試験でない・この葉が直す部品）— seal／open_ の既定の用途は前のまま（\"pending-signup\"）なので、putPending を通す登録・確認の試験（apps/api/test/features/F1/sign-up.test.ts・verify-email.test.ts など）は替えない\n- packages/auth/test/flows.test.ts: 替えない — 部品の招待の流れ（宛てのメールを持つ招待）。この葉は app.accept_invitation と createInvitedUser を変えない\n- apps/api/test/features/F2/invitation-accept-new.test.ts: 替えない — メールで招いた招待で新しく作る道は変えない（K422-API-015 が同じことを見る）\n- apps/api/test/features/F2/invitation-accept-signed.test.ts・invitation-preview.test.ts: 替えない — ログイン中の参加と下見は変えない\n- apps/api/test/features/F2/invite.harness.ts・apps/api/test/invite_join.ts: 替えない（試験の道具）\n- apps/api/test/features/F10/invite-link.test.ts（K-421）: 替えない — K421-API-012 は「押した時点で利用者・所属が 0」と状態 401／202 のどちらかを見る形で、この葉の後も緑\n- scripts/ci/contract_shape.d/K-332.py: E-INV-013 の行を外した（形は契約の VALUE_RANGES に書き、UNEXPRESSIBLE に足さない・レビューの指摘）",
+    "成果物": "- migration 1 本（保留の表 1 つ）・部品（保留を置く・印・戻す・閉じる・用途ごとの鍵）・参加の口の分かれ（202）・確認の口と hooks のファイル・確認のメールの文・deps の 1 語・契約（本体 1 か所と .d）・登録先・エラー 3 つ（1 つは K-421 から移した）・資料\n- 単体の試験 `invite-link-confirm.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（問い 33・answer=3d444fc8d59f・D-148.51）：招待のリンクで新しく入る人のメールを確かめる。確認のメールを押すまで参加は決まらない。K-421 から新しい人の参加の行を移し、この葉を切った（PM の決め：K-421 に入れて 30 行・1 時間を超えるので K-422 に分けた）\n- 2026-11-20 切る段の決め：押した時点では認証の利用者も作らない（作ってから確かめ済みにする形だと、ほかの人のメールでアカウントが先にでき、持ち主が登録できなくなる）。保留の行と確認のメールだけを置き、確認の時点で作る（登録の K-51／K-52 と同じ形）\n- 2026-11-20 切る段の決め：パスワードは前からの保留の申し込みと同じく鍵で包んで預かる（ハッシュにしない・訳は前提と制約）。鍵は用途ごとに分ける\n- 2026-11-20 切る段の決め：確認の期限は 24 時間（リンクの招待は 7 日・メールを開くまでの間を見込む）。押し直すと同じ保留の行のトークンを替える（前のリンクは使えない）\n- 2026-11-20 切る段の決め：確認の口は冪等の器を使わない（2 回目にログインの印を渡さない・K-52 と同じ）",
+    "代表に聞くこと": "- なし（問い 33 の答え (b) のとおり書いた。確認の期限 24 時間と、確認のメールの文は仮で、画面の葉の字と合わせる）",
+    "表の住所": "- 生成の試験 `apps/api/test/generated/post_auth_invitations_confirm.test.ts` は作る段で作り手が新しく作る試験（生成物・changes_ignore）。まだ無いので tests: に入れない。生成の後に ears-elsewhere.d/K-422.json の covers を結ぶ（K-401・K-405・K-406・K-410 と同じ形・3477f1e7）\n- 口の登録はこの葉の hooks のファイル `apps/api/src/hooks/invitation-confirm.ts`（K-326）。F2 の invitations.ts は deps を組む所の 1 語（secretsMasterKey）だけを直す\n- migration は時刻の名前（K-327・`20261121092200_invitation_link_joins.sql`）。一覧は生成物\n- `05_flow/screen_api.py` は K-401・K-405・K-421 も触る：この葉は acceptInvitation の INPUTS・RESPONSES・ERRORS_4XX・UNEXPRESSIBLE と NO_GENERIC_409 の 1 語を直すだけ（K-421 は getInvitation の行と NO_GENERIC_409 の別の語。別々の行を直すだけ・overlap_ok を PM に頼む。NO_GENERIC_409 は同じ並びの別の語なので、K-421 の後に入る＝依存で順が決まる）\n- `apps/api/src/features/F2/invitations/accept.ts` は K-421 も触る（この葉は K-421 に依存・K-421 の枝を替える）\n- エラーは errors.d/K-422.json（E-INV-013 は K-421 から移した・016 を足す・014・015 を足す）\n- 生成の試験の acceptInvitation の新しい名前は K-332 の断片 `ears-elsewhere.d/K-332.json` に結ぶ（取り込み済みの葉の断片。K-421 からこの葉に移した・同時に直す葉は無い）",
+    "申し送り": "- **K-423（参加の画面・K-422 に依存）**：リンクの招待（下見 getInvitation の email が null）で、ログインしていない人は名前・パスワード・メールを入れて「参加する」を押す → 202 `{ data: { state: \"sent\", email: \"<伏せたメール>\" } }`。画面は所属のまだ無い形で、文の案「確認のメールを送りました。メールのリンクを押すと参加が決まります（<伏せたメール＝先頭 2 字・* 4 つ・@ の後>・24 時間で切れます）」を出す。`state: \"failed\"` なら「確認のメールを送れませんでした。もう一度押してください」の形（押し直すと送り直す）。422 E-INV-013（メールアドレスを入れてください・欄 email）は欄の下の赤い字・409 E-INV-006（このメールアドレスにはもうアカウントがあります。ログインしてから参加してください）は前からの案内。ログイン中の人は K-421 の形（体なし・201）\n- **確認のリンクを開く画面**（`/invite/confirm/<token>`・K-423）：開くと `POST /api/v1/auth/invitations/confirm` に `{ token }` を送る（押すボタンを 1 つ置き、開いただけでは送らない形でもよい・まとめ役と画面の葉が決める）。201 `{ data: { token, workspace_id, next } }` なら token を印として置き（setToken）/mfa-setup へ。410 E-INV-014（確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください）・410 E-INV-015（この確認のリンクはもう使われています。ログインして入ってください）・410 E-INV-004・002・003（前からの招待の文）・409 E-INV-006・404 E-INV-001・403 E-AUTH-012 の文を出す\n- **K-418（統合）**：招く → 参加をリンクで新しい人を入れて通すなら、確認のメール（件名「参加を確かめてください」）を Resend の記録から読み、確認のリンクを開く手順が要る。メールで招く道（宛てのメールが届く）はそのまま\n- **依存**：参加の画面と確認の画面は K-423（K-421・K-422 に依存）。統合 K-418 は K-422 に依存しない（メールで招く道で通す・リンクで新しい人を入れる道は通さない）",
+    "レビューの直し（2026-11-22）": "- 送れなかったときに保留の行（send_error）へ残すのは例外の種類（kindOf）だけ。例外の文は残さない（K422-API-022 が宛てのメールが入っていないことを見る）\n- 包んだパスワード（pw_iv・pw_tag・pw_data）は null を許し、参加が決まった後（S5 の後・sealOffLinkJoin）と保留の行を閉じた後（closeLinkJoin）に空にする（K422-API-005・近い閉じる行が見る）\n- 送られたメールの形（空・空白だけ・形違い）は招待の種類によらない契約の決まり：メールで招いた招待でも email が空・形違いなら 422・E-INV-013（読まないのは値だけ。K422-API-031 が見る・精査の指摘）\n- 送られていないメールの 409 は新しい番号 E-INV-016（conflict）。形の誤りの E-INV-013（validation・422）と分ける（PM の決め）"
+   },
+   "file": "11_tickets/K-422.md"
+  },
+  {
+   "id": "K-423",
+   "title": "招待のリンクで参加する画面（/invite/:token の宛てのメールが空の形：メールの欄・確認のメールを送りました・ログイン中のメール・E-INV-006 の宛て）と、確認のメールのリンクを開いて参加を決める画面（/invite/confirm/:token）を口につなぐ（K-70 の葉・段 9 の前に出す）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-70",
+   "milestone": "F10",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮（部品とモックは切る段で足して carry で運ぶ・この見込みに入れない）。形の近い段 3 の K-335（招待の画面を口につなぐ・新しく作って参加と使えない招待・見込み 1 時間）と K-420 から移した参加の画面の 4 行から引いた：参加の画面の宛てが空の 3 つの形（メールの欄・ログイン中のメール・E-INV-006 の宛て）と送りましたの形 20 分・確認の画面（道・押して送る・印を置いて /mfa-setup・断りの文の出し分け・二度押し）25 分・幅と自分の確かめ 15 分。行 13 は切る段で書いた",
+   "decisions": [
+    "D-145.9",
+    "D-148.22",
+    "D-148.29",
+    "D-148.31",
+    "D-148.32",
+    "D-148.51",
+    "D-128.97"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書くのは口の葉 K-421（下見とログイン中の参加・関門 C2）と K-422（リンクで新しく入る人の保留と確認のメール・確認で参加を決める・関門 C2・C6）で、画面は契約の口 getInvitation・acceptInvitation・confirmInvitationJoin を呼ぶだけ",
+   "tests": [
+    "apps/web/tests/k/k423-invite-link-join.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F2/invite/views.tsx",
+    "apps/web/app/(dev)/dev/mock/f2/mocks.tsx",
+    "apps/web/tests/k/k330-stage3-mock.spec.ts"
+   ],
+   "depends_on": [
+    "K-421",
+    "K-422",
+    "K-425"
+   ],
+   "acts": [
+    "A03"
+   ],
+   "screens": [
+    "invite-accept"
+   ],
+   "apis": [],
+   "mock": [
+    "inv-link-new",
+    "inv-link-error",
+    "inv-link-sent",
+    "inv-link-failed",
+    "inv-confirm",
+    "inv-confirm-expired",
+    "inv-confirm-used",
+    "inv-confirm-down"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F2/invite/invite-page.tsx",
+    "apps/web/features/F2/invite/views.tsx",
+    "apps/web/features/F2/invite/confirm-page.tsx",
+    "apps/web/app/(outside)/invite/confirm/[token]/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f2/mocks.tsx",
+    "scripts/ci/ci_scope.d/K-423.json",
+    "11_tickets/K-70.md"
+   ],
+   "flow": "人を招く",
+   "sections": {
+    "目的": "代表の答え D-148.51（answer=3d444fc8d59f）：**招待のリンクで新しく入る人は、確認のメールのリンクを押すまで参加が決まらない**。その画面の側を作る（口と DB は K-421・K-422）。PM の決め（2026-11-20）で、K-420 から参加の画面の 4 行を移し、確認のリンクを開く画面を足した新しい葉。\n\n- 参加の画面（F2 の /invite/:token・画面 invite-accept・行為 A03）：下見の email が null（宛てのメールを持たない＝招待のリンク）のときの 3 つの形と、確認のメールを送りましたの形（K-420 の K420-UI-023・024・026・027 → この葉の K423-UI-001〜004）\n- 確認の画面（`/invite/confirm/:token`・確認のメールのリンクの先）：開いただけでは口を呼ばず、「参加を決める」で確認の口 confirmInvitationJoin に `{ token }` を 1 回。201 で口が返したログインの印を置き、付けるまで進めない /mfa-setup へ（K-422 の申し送り）",
+    "完了の条件": "- [ ] 下の表の 15 行（K423-UI-001〜015）が緑：`apps/web/tests/k/k423-invite-link-join.spec.ts`（画面の試験は取り込んだ後に流す・ticket-flow.yaml の web_defer）\n- [ ] 前からの試験は「前からの試験を替えた所」のとおりで緑（宛てのメールの在る招待の画面と見た目は変わらない）\n- [ ] モック /dev/mock/f2 の 8 つの状態と本番が幅 375・768・1440 で同じ（K423-UI-014）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: INV, AUTH\n\n- リンクの招待で参加する画面（F2 の /invite/:token・画面 invite-accept・行為 A03・K-421 の申し送り）：下見 getInvitation の email が null（宛てのメールを持たない＝リンク）のとき、宛てのメールを使う 3 つの形を直す\n  - ログインしていない人（形 new）：「メール」の欄を書ける形で出し（今は宛てのメールを読むだけ）、acceptInvitation の体に `email`（前後の空白を除いた字）を入れる。**欄が空なら email の鍵を入れない**（口は鍵が無いと 409 E-INV-016（欄なし）を返す・K-422 の 5bf50ae34 の形にそろえた）。409 E-INV-016 はメールの欄の下の赤い字（正本の文）。空白だけ／形違いを送ったときの 422 E-INV-013（欄 email・本物の答えは detail.field）も同じ欄の下の赤い字（画面は前後の空白を除いて空なら鍵を入れないので、空白だけの 422 は画面からは来ない）。体なしの参加（ログイン中の形）は、ログインが切れていても口が名前の空（422 E-VAL-007）を先に断るので 409 E-INV-016 は来ない。来ても欄の無い形なので 422 と同じく下見を読み直す（念のための受け・行は要らない）。**参加はすぐ決まらない（D-148.51・answer=3d444fc8d59f・口は K-422）**：口は 202 `{ state: \"sent\", email: <伏せたメール> }` を返し、画面はログインの印を置かず移らずに「確認のメールを送りました。メールのリンクを押すと参加が決まります（<伏せたメール>・24 時間で切れます）」（K-422 の文の案）の形を出す。`state: \"failed\"` なら書いた中身を残して赤い箱に「確認のメールを送れませんでした。もう一度押してください」（押し直すと送り直す）\n  - ログイン中の人（形 signed・下見の signed_in.email_matches は K-421 でいつも true）：メールの欄は空にせず、ログイン中のメール（下見の signed_in.email）を読むだけで出す。「今のアカウントで参加する」は前からの体なし\n  - 入れたメールにもうアカウントがある（口が 409 E-INV-006 → 形 account）：文の宛てに、下見の空の宛てでなく入れたメールを入れる（「<入れたメール> には、もう Kaname のアカウントがあります。ログインしてから参加してください」・前からの字）\n- **確認の画面**（`apps/web/app/(outside)/invite/confirm/[token]/page.tsx` → `features/F2/invite/confirm-page.tsx`・外の画面の枠 AuthFrame・ログインの要らない画面）：\n  - 開いただけでは口を呼ばない（メールの下見や自動で開く道具に押されないため。K-422 の申し送りの「押すボタンを 1 つ置く形」）。題「参加を確かめる」・ボタン「参加を決める」（字は仮・D-148.21 と同じく仮の文）\n  - 印の形（43 字の英数と - _）が違えば口を呼ばず、正本 E-INV-001 の文（見つからない）を出してボタンを出さない\n  - 「参加を決める」→ `POST /api/v1/auth/invitations/confirm` に `{ token }`（noIdempotency・二度押しは押せない形で止める）→ 201 `{ data: { token, workspace_id, next: \"/mfa-setup\" } }`（data.token はログインの印。K-422 の契約の RESPONSES に token を足し、K422-API-007 で data.token が空でない字であることを見る直しを K-422 に頼んだ・まとめ役）：口が返したログインの印を `setToken` で置き（ログイン中の人が開いていても、確認したアカウントの印に替わる・口は今のログインを見ない・K-422）、`next`（/mfa-setup・同じ出どころの道だけ）へ移る\n  - 断りの出し分け（K-422 の申し送り）：410 E-INV-014（期限切れ）→ 文と、招待のリンクからやり直す案内／410 E-INV-015（使った後）→ 文と「ログインして入る」（/login）／404 E-INV-001・410 E-INV-002・003・004・409 E-INV-006・403 E-AUTH-012 → 正本の文。どれも「参加を決める」は消す（押し直しても通らない）。503 などは赤い箱（role=alert）に正本 E-PAGE-003 の文で、ボタンは残り押し直せる（D-148.31）\n- 口の形は 11_tickets/K-421.md・K-422.md の申し送り（違えば試験の頭の口の差し替えだけを合わせる）。文は errors.json の正本と K-422 の文の案\n- **正の絵は /dev/mock/f2/<id>（PM の決め 2026-11-20・案 (a)）**：新しく見える形を、本番の部品で f2 の置き場に 8 つの状態として足した（切る段の枝で・持ち主 K-423）：inv-link-new（書けるメールの欄・ヒント）・inv-link-error（メールが空・E-INV-016）・inv-link-sent（確認のメールを送りました）・inv-link-failed（送れなかった）・inv-confirm（確認の画面・押す前）・inv-confirm-expired（E-INV-014）・inv-confirm-used（E-INV-015・ログインして入る）・inv-confirm-down（調子が悪い・押し直せる）。部品は `features/F2/invite/views.tsx` に足した（InviteState の sent・InviteJoin.email・errors.email・sentEmail・INVITE_NOTICE.confirmFailed・新しい部品 InviteConfirm）。前からの部品とトークンだけで組み、新しい値・新しい CSS は足していない（design_gate の D8・class_gate で確かめた）。宛てのメールの在る招待の形（段 3 の 15 の状態）の見た目は変えない（new の欄は宛てが在れば今の readOnly のまま・signed は宛てが在れば今の値）。前からの試験 k330-stage3-mock（状態の数 15 → 23・持ち主）は替えて carry に入れた。モックの状態に時点の欄は無い（f2 の置き場の形のまま・どれもログインの前の外の画面）",
+    "目録で探した結果": "- 使う：`InviteAccept`・`InvitePreview`・`InviteJoin`（features/F2/invite/views.tsx）・`InvitePage`（invite-page.tsx）・`AuthFrame`（features/F1/sign-up/frame）・`NoteBox`・`ResultBox`（components/k/auth-parts）・`Button`（components/k）・`call`・`setToken`（lib/api）・`sameOriginPath`（invite-page.tsx の前からの物）\n- 使う（試験）：`PW`（tests/_lib/api.ts）・`ROOT`・`overflowX`（tests/k/kit.ts）\n- 作る：確認の画面の入れ物 `features/F2/invite/confirm-page.tsx` と道 `app/(outside)/invite/confirm/[token]/page.tsx`。探したが同じ形の物は無い（登録の確認のリンクの画面 F1 は口と形が違う・D-088）",
+    "依存の理由": "- K-421: 要る — 下見の email が空の形（リンクの招待）と、ログイン中の人が今のアカウントで参加する形（K423-UI-003）は K-421 の口\n- K-422: 要る — リンクで新しく入る人の参加（202 sent／failed・体の email・E-INV-016・E-INV-013・E-INV-006・K423-UI-001・002・004）と確認の口 confirmInvitationJoin（K423-UI-005〜012）は K-422。無いと「確認のメールを送りました」と確認の画面に届かない\n- K-400 は要らない：段 9 の部品とモック（f8）を使わない（F2 の部品と f2 の置き場だけ）\n- K-425: 要る — この葉の decisions: の D-148.n を決定ログ §148 に入れる葉。入る前に始めると、切る段の持ち込みの作り手（build_index の K4）が「決定ログに無い」で止まる（作る段では K-425 の上に重ねて始められる）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 参加の画面（リンクの招待） | **部品の足し（views.tsx）は切る段で済ませて carry で運ぶ**（下の字のとおりに足した・作る段は invite-page.tsx をつなぐ）。`apps/web/features/F2/invite/views.tsx`：`InviteJoin` に `email?: string`、`Errors`（InviteAcceptProps.errors）に `email?: string` を足す。new の形の「メール」の欄は、宛てのメールが空のときだけ制御しない欄にする（`value` でなく `defaultValue=\"\"`・readOnly を外す・name=\"email\"・autoComplete email・hint「このメールでアカウントを作ります」（仮）・`error={p.errors?.email}`）。submit は宛てが空のときだけ `f.get(\"email\")` を前後の空白を除いて読み、空でなければ `email` を onJoin に渡す（空なら鍵を入れない）。signed の形の「メール」の欄の値は `pv.email \\|\\| pv.signedInEmail`。宛てのメールが在る招待（モック /dev/mock/f2 の状態）の見た目は変えない。`apps/web/features/F2/invite/invite-page.tsx`：onJoin の体に `v.email` を足す（在るときだけ）。errorsOf に欄 email（`r.fields[\"email\"]` か code E-INV-013・E-INV-016）を足し、409 E-INV-016 も欄の誤りとして受ける（isFieldErr）。toChanged で形 account に替えるとき、下見の宛てが空なら下見の中身の email を入れたメールに替える（文の宛てが欠けない）。参加の口の 202 sent は部品の形 sent（`sentEmail` に伏せたメール）にし、`state: \"failed\"` は new の形のまま notice に `INVITE_NOTICE.confirmFailed` を出す |\n| 送りましたの文 | 参加の画面の送りましたの形の文は 1 つの NoteBox の字にする（伏せたメールを太字などの別の要素に分けない・試験が文ごと当てる） |\n| 確認の画面 | `apps/web/app/(outside)/invite/confirm/[token]/page.tsx`：`<InviteConfirmPage />`（ログインの要らない外の画面・/invite/[token] と同じ (outside)）。`apps/web/features/F2/invite/confirm-page.tsx`（\"use client\"）：切る段で views.tsx に足した部品 `InviteConfirm`（`div[data-auth=\"invite-confirm\"]`・題 h1「参加を確かめる」・ready は「参加を決める」と notice・closed は文と login のとき「ログインして入る」）に、口の答えで state・message・login・notice・busy・onConfirm を渡す。上の前提の順で口を呼び、201 は setToken して next へ、断りは上の出し分け（文は CATALOG の正本・E-INV-014／015 は K-422 が足す番号） |\n| 道の一覧 | built-routes.ts は作り手 `scripts/ci/gen_built_routes.py` で作り直す（生成物・changes_ignore） |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-423.json`：data_links `[\"apps/web/features/F2/invite/**\", \"apps/web/app/(outside)/invite/**\"]` → `apps/web/tests/k/k423-invite-link-join.spec.ts` |\n| 親 | `11_tickets/K-70.md` の screens・tests にこの葉の分を足す・外す |\n\n### 速さ（今の値と目標の値）\n\n| 項目 | 今 | 目標 |\n|---|---|---|\n| 参加の画面の口の数 | 下見 1 本 | 同じ（参加を押したときに参加の口 1 本） |\n| 確認の画面の口の数 | 画面が無い | 開いたときは 0 本・「参加を決める」で確認の口 1 本 |\n| 直列の段・二重の口 | — | 1・無し（二度押しは押せない形・K423-UI-009） |\n| 新しい住所 | — | 1 つ（/invite/confirm/:token・ログインの要らない外の画面） |\n| 認証の要る答えの Cache-Control | — | private, no-store（確認の口・K-422） |",
+    "外に影響する手順": "- なし — 画面は契約の口を呼ぶだけ（保留の行・確認のメール・利用者と所属を作るのは口の葉 K-422 の手順・失敗の行は K-422 が持つ）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k423-invite-link-join.spec.ts`（実 Chrome・下見・参加・確認の口だけ網の手前で差し替え・本人の Bridge は 404）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| リンクの招待（宛てのメールが空）・使える | /invite/:token | ログインしていない人 | メールの欄が書ける・体に email・202 sent で「確認のメールを送りました」（参加は決まらない・印を置かない） | このチケット（口は K-422） | K423-UI-001 |\n| 同じ | /invite/:token で参加する | ログインしていない人・メールが空／入れたメールにもうアカウントがある | 409 E-INV-016（鍵が無い）は欄の下の赤い字（空白だけ／形違いを送ったときの 422 E-INV-013 も同じ欄）・409 E-INV-006 は入れたメールの文と「ログインして参加する」 | このチケット（口は K-422） | K423-UI-002・015 |\n| 同じ | /invite/:token | ログイン中の人 | 今のアカウントで参加の形・メールの欄はログイン中のメール（空にしない）・体なし | このチケット（下見の枝は K-421） | K423-UI-003 |\n| 同じ | /invite/:token で参加する | ログインしていない人・確認のメールを送れなかった | 202 failed で赤い箱・中身は残る・押し直すと送り直す | このチケット（口は K-422） | K423-UI-004 |\n| 確認のリンク（使える） | /invite/confirm/:token を開く | だれでも | 口を呼ばず「参加を決める」だけ | このチケット | K423-UI-005 |\n| 確認のリンク（使える） | 「参加を決める」 | ログインしていない人・ログイン中の人 | 201 で印を置き（替え）/mfa-setup | このチケット（口は K-422） | K423-UI-006・010 |\n| 確認のリンク（期限切れ・使った後） | 「参加を決める」 | だれでも | 410 E-INV-014／015 の文・ボタンは消える | このチケット | K423-UI-007・008 |\n| 確認のリンク（押している途中） | もう一度押す | だれでも | 押せない・口は 1 回 | このチケット | K423-UI-009 |\n| 確認のリンク（印の形が違う） | 開く | だれでも | 口を呼ばず E-INV-001 の文 | このチケット | K423-UI-011 |\n| 確認のリンク（招待が使えない・アカウントが在る・止められた・調子が悪い） | 「参加を決める」 | だれでも | 正本の文・503 は押し直せる | このチケット | K423-UI-012 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K423-UI-001 | 入力 | リンクの招待で参加する（ログインしていない・下見の email が null） | /invite/<印> の「メール」の欄が書ける（readonly でない）。メール「 kimura@engine-base.example 」・名前・パスワードを入れて「参加する」：acceptInvitation の体が { name, password, email: \"kimura@engine-base.example\" }（前後の空白を除く）で 1 回。口の 202 `{ state: sent, email: ki****@engine-base.example }` で「確認のメールを送りました。メールのリンクを押すと参加が決まります（ki****@engine-base.example・24 時間で切れます）」が出て、道は /invite/<印> のまま・ログインの印（kaname.token）は置かない（D-148.51） |\n| K423-UI-002 | 失敗 | リンクの招待の参加を口が断る（メールが空 → もうアカウントが在る） | メールが空なら体に email の鍵を入れずに送り、409 E-INV-016（本物の答えの形・欄なし）：メールの欄の下に正本 E-INV-016 の文（メールの欄の説明 aria-describedby につながり、名前の欄にはつながらない）・名前の字は残る。続けてメールを入れて押すと 409 E-INV-006：形 account に替わり、文「kimura@engine-base.example には、もう Kaname のアカウントがあります。ログインしてから参加してください」（入れたメール）と「ログインして参加する」（口 2 回） |\n| K423-UI-003 | 利用者の状態 | ログイン中の人がリンクの招待を開く（下見の email が null・signed_in.email_matches true） | 形 signed。「メール」の欄はログイン中のメール「kimura@engine-base.example」（読むだけ・空にしない）。「今のアカウントで参加する」で acceptInvitation の体 {} が 1 回 |\n| K423-UI-004 | 失敗 | 確認のメールを送れなかった（口の 202 が state failed） | 赤い箱（role=alert）に「確認のメールを送れませんでした。もう一度押してください」・メールの欄の字は残る。押し直すと 2 回目を送り、sent で「確認のメールを送りました…」になる（口 2 回） |\n| K423-UI-005 | 入口 | 確認のリンクを開く | /invite/confirm/<43 字> を開くと、題「参加を確かめる」とボタン「参加を決める」（押せる）が出て、確認の口は 0 回（開いただけでは送らない） |\n| K423-UI-006 | 対象の状態 | 「参加を決める」 | 確認の口に `{ token: <43 字> }` が 1 回。201 で /mfa-setup へ移り、移った先の最初の口（getMySecurity）の Authorization が `Bearer <口が返したログインの印>`（印は localStorage でなく届いた頭で見る・移った先の口は差し替えて 200） |\n| K423-UI-007 | 時間の流れ | 確認の期限（24 時間）が過ぎた | 410 E-INV-014：正本の文が出て、「参加を決める」は消える。道は /invite/confirm/<印> のまま |\n| K423-UI-008 | 操作の揺れ | もう使った確認のリンク | 410 E-INV-015：正本の文と「ログインして入る」（href /login…）が出て、「参加を決める」は消える |\n| K423-UI-009 | 操作の揺れ | 二度押し | 答えを待つ間「参加を決める」は押せない（disabled）・確認の口は 1 回・答えの後に /mfa-setup |\n| K423-UI-010 | 利用者の状態 | ログイン中の人が開いて押す | 前の印（k423-old-session）を置いた画面でも、/mfa-setup の getMySecurity の Authorization は確認したアカウントの印（`Bearer <口が返した印>`）に替わっている |\n| K423-UI-011 | 入力 | 壊れた確認のリンク（印の形が違う） | 確認の口は 0 回・正本 E-INV-001 の文・「参加を決める」は出ない |\n| K423-UI-012 | 失敗 | ほかの断りと調子が悪い | 404 E-INV-001・410 E-INV-002／003／004・409 E-INV-006・403 E-AUTH-012 はどれも正本の文で「参加を決める」は消える。503 E-PAGE-003 は赤い箱（role=alert）に正本の文で、押し直すと 2 回目を送り 201 で /mfa-setup（口 2 回） |\n| K423-UI-013 | 入力 | 幅 375・768・1440 | 送りましたの形と確認の画面で、横のはみ出し 0 |\n| K423-UI-014 | 入力 | モックとの突き合わせ（8 の状態 × 幅 375・768・1440） | inv-link-new・inv-link-error・inv-link-sent・inv-link-failed・inv-confirm・inv-confirm-expired・inv-confirm-used・inv-confirm-down を本番で同じ形にして（値はモックの PV にそろえる）、共通の道具 matchMock（base /dev/mock/f2・役は AUTH_PAIRS）の値がモックと同じ（px は ±2） |\n| K423-UI-015 | 入力 | メールに形でない字（abc）を入れて参加する（ログインしていない・下見の email が null） | 体が { name, password, email: \"abc\" }（email の鍵が在る）で 1 回。口の 422 E-INV-013（本物の形 `{ error: \"validation\", code: \"E-INV-013\", message: 正本, detail: { field: \"email\" } }`）：メールの欄の説明（aria-describedby）に正本 E-INV-013 の文・名前の欄にはつながらない・名前の字は残る・メールの欄の字「abc」も残る（口 1 回） |\n\n### テストの型の受け（分類 INV・AUTH）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-INV-01 招待の期限切れ・取り消し・使い終わった | K423-UI-012（招待の 410 E-INV-002・003・004）・K423-UI-007・008（確認のリンクの期限切れ・使った後） |\n| TP-INV-02 違うアカウントで開く | K423-UI-003（ログイン中の人のリンク）・K423-UI-010（ログイン中の人が確認のリンクを押す） |\n| TP-INV-03 既にアカウントがある | K423-UI-002（409 E-INV-006）・K423-UI-012（確認までの間に登録した 409 E-INV-006） |\n| 要らない: TP-INV-04 招待した人が権限を失った後に開くは口の葉（K-421・K-422）が持つ | — |\n| TP-INV-05 同じ人を 2 回招待する（参加を押し直す） | K423-UI-004（送れなかった後に押し直す）。前の確認のリンクが使えなくなるのは K-422（K422-API-012） |\n| TP-AUTH 二度押し・印の扱い | K423-UI-009・006・010 |\n| 失敗と復旧 | K423-UI-004・012 |",
+    "前からの試験を替えた所": "参加の画面（F2 の /invite/:token・invite-page.tsx と views.tsx）を直し、道 /invite/confirm/:token を足すので、その画面と道を見る前からの試験を探した（K-420 から移した行の検索を、この葉の試験を除く形で数え直した）。\n\n```search\ngit grep -ln \"features/F2/invite\\|/invite/\" -- 'apps/web/tests/**' ':!apps/web/tests/k/k423-invite-link-join.spec.ts' ':!apps/web/tests/k/k400-stage9-mock.spec.ts'\n8\n```\n\n（下の 8 本は grep に当たった物。最後の reachability.spec.ts は grep の外で見た物）\n\n- apps/web/tests/k/k330-stage3-mock.spec.ts: 替えた（carry・PM の決め）— f2 の置き場にこの葉の 8 つの状態を足したので、K330-MK-001 の数を 15 → 23・葉の表 LEAVES に K-423 の 8 つを足し、MK-003（段 3 の切り方.md との比べ）は段 3 の葉 K-335・K-336 だけと比べる形にした。UI-001〜005（全部の状態を開く）は LEAVES から数えるので 23 を開く\n- apps/web/tests/k/k335-invite-new.spec.ts: 替えない — 宛てのメールを持つ招待の行を DB に直に入れて新しく作って参加を通す。体に email を足すのはリンクの招待（宛てのメールが空）のときだけ\n- apps/web/tests/k/k336-invite-signed.spec.ts: 替えない — ログイン中の人が宛ての在る招待を今のアカウントで参加する形。この葉が替えるのは宛てが空のときのメールの欄の値（ログイン中のメール）だけ\n- apps/web/tests/screens/invite-accept.spec.ts・qa-c-onboard.spec.ts: 替えない — 宛てのメールを持つ招待の道（前の段の画面の試験）\n- apps/web/tests/k/k259-open-redirect.spec.ts・k317-login-passkey.spec.ts: 替えない — /invite/ の道の字（next の行き先・ログインの戻り先）を見るだけで、参加の欄も /invite/confirm も見ない\n- apps/web/tests/k/k420-members-invite.spec.ts: 替えない — リンクの字（https://kaname.example/invite/…）を作る段の値として持つだけ（参加の画面を開かない）\n- （grep の外で見た物）apps/web/tests/reachability.spec.ts: 替えない — 作った道を全部開いて 404 が無いかを見る。/invite/confirm/:token は /invite/:token と同じく見本の印で 200（壊れた印の文）を返す",
+    "成果物": "- 参加の画面の宛てが空の形と送りましたの形（invite-page.tsx・views.tsx の直し）・確認の画面（confirm-page.tsx と道）・範囲の地図・親の行\n- 画面の試験 `k423-invite-link-join.spec.ts`（切る段が書いた・K-420 の 4 本を移して 10 本足した）\n- モックの 8 つの状態（f2 の mocks.tsx）と部品の足し（F2 の views.tsx）・前からの試験 k330 の替え（carry）",
+    "決定ログ": "- 2026-11-20 代表の答え（問い 33・answer=3d444fc8d59f・D-148.51）：招待のリンクで新しく入る人はメールを確かめる。確認のメールを押すまで参加は決まらない\n- 2026-11-20 PM の決め：確認の画面は新しい葉 K-423（親 K-70）。K-420 の参加の画面の 4 行（023・024・026・027）を移して 001〜004 に振り直した\n- 2026-11-20 PM の決め（案 (a)）：新しく見える形の正の絵は、本番の部品で f2 の置き場に状態として足す（8 つ）\n- 2026-11-20 切る段の決め（葉を書く人）：確認の画面は開いただけでは口を呼ばず、ボタン 1 つで送る（メールの下見・自動で開く道具に押されないため・K-422 の申し送りの案）",
+    "代表に聞くこと": "- 確認の画面の仮の字（題「参加を確かめる」・ボタン「参加を決める」）と、参加の画面の仮の字（ヒント「このメールでアカウントを作ります」・送りましたの文は K-422 の案）でよいか。勧め：このまま（D-148.50 の仮の文と同じ扱い）。まとめ役がほかの仮の文と一緒に 1 回で聞く",
+    "表の住所": "- 参加の画面の 4 行は K-420 から移した（K420-UI-023・024・026・027 → K423-UI-001〜004。K-420 の行の番号は欠けたまま）\n- 口の形と番号は K-421・K-422 の md の申し送りに合わせる（試験の頭の口の差し替えだけを直す）\n- 画面の試験は取り込んだ後に流す（-UI- の行・web_defer）"
+   },
+   "file": "11_tickets/K-423.md"
   },
   {
    "id": "K-425",
