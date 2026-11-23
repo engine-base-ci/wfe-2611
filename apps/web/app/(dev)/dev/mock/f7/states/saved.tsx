@@ -49,7 +49,7 @@ import type { Theme } from "@/lib/theme";
 import type { MockEntry } from "../types";
 
 // ---------------------------------------------------------------- 断りの字（正本の文）
-//   E-VWS-005・E-DUE-001・E-DUE-008 は errors.json にまだ無い（K-475・K-483 が errors.d に足す）ので、md に書かれた字をそのまま置く。
+//   E-VWS-005 と期限の断りの 2 つ（理由が空・同時に変えられた）は errors.json にまだ無い（K-475・K-483 が errors.d に足す）ので、md に書かれた字をそのまま置く。
 //   足されたら errorText(番号) に置き換える。E-VAL-012・E-PAGE-007 は今の正本から引く
 const TEXT_VWS_005 = "同じ名前の保存した条件が、もうあります。別の名前にしてください";
 const TEXT_DUE_001 = "期限を変える理由を書いてください";
