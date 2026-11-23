@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。228 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。237 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3140,7 +3140,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CONN-013": {
     "id": "E-CONN-013",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
     "action": "画面の新しいコードを入れ直す",
     "undo": false,
@@ -3792,6 +3792,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "e"
     }
   },
+  "E-VAL-027": {
+    "id": "E-VAL-027",
+    "cls": "validation",
+    "message": "書き込む文を書いてください",
+    "action": "文を書いてから送る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-027",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "talk"
+    }
+  },
   "E-CONF-030": {
     "id": "E-CONF-030",
     "cls": "conflict",
@@ -3954,6 +3973,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "decisions"
+    }
+  },
+  "E-VAL-046": {
+    "id": "E-VAL-046",
+    "cls": "validation",
+    "message": "時間と分は 0 以上の整数で入れてください（分は 0〜59）",
+    "action": "時間と分を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-046",
+    "must_not": false,
+    "layers": [
+      "UI"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
     }
   },
   "E-INV-009": {
@@ -4134,6 +4170,125 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-LST-001": {
+    "id": "E-LST-001",
+    "cls": "conflict",
+    "message": "一覧の続きを読めませんでした。最初から読み直してください",
+    "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LST-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "list"
+    }
+  },
+  "E-DEL-001": {
+    "id": "E-DEL-001",
+    "cls": "permission",
+    "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
+    "action": "作った人か権限のある人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-010": {
+    "id": "E-DEL-010",
+    "cls": "conflict",
+    "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
+    "action": "扱いを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-011": {
+    "id": "E-DEL-011",
+    "cls": "conflict",
+    "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
+    "action": "別の親を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-012": {
+    "id": "E-DEL-012",
+    "cls": "conflict",
+    "message": "その親に移すと、親子が 3 段を超えます",
+    "action": "浅い親を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-013": {
+    "id": "E-DEL-013",
+    "cls": "permission",
+    "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
+    "action": "別の扱いを選ぶか、そのグループの人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-014": {
+    "id": "E-DEL-014",
+    "cls": "not_found",
+    "message": "子の移し先のチケットが見つかりませんでした",
+    "action": "親を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
