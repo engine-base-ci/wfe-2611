@@ -23,7 +23,8 @@ interface Person {
 }
 interface GroupAnswer {
   id: string;
-  code: string;
+  /** scopes.ticket_prefix（会社のグループなどは null） */
+  code: string | null;
   name: string;
   members: Person[];
 }
@@ -54,6 +55,7 @@ const ROLE_LABEL: Record<string, string> = {
   member: "メンバー",
   staff: "メンバー",
   viewer: "閲覧のみ",
+  requester: "依頼する側",
 };
 const TONES: MemberGroup["tone"][] = ["teal", "plum", "amber", "indigo"];
 
@@ -108,7 +110,14 @@ export function toView(a: MembersAnswer): MembersView {
         stateTone: "none",
         invitedLeft: `${v.left_days} 日`,
       }));
-    return { code: g.code, name: g.name, tone: TONES[i % TONES.length]!, rows: [...g.members.map(toRow), ...invited] };
+    // 頭の字は左のバーと同じ決め方（ticket_prefix が無ければ名前の頭の 1 字・ticket-shell.tsx）
+    return {
+      id: g.id,
+      code: g.code || g.name.slice(0, 1),
+      name: g.name,
+      tone: TONES[i % TONES.length]!,
+      rows: [...g.members.map(toRow), ...invited],
+    };
   });
   return { groups, scopes: a.groups.map((g) => ({ id: g.id, name: g.name })), count: a.count };
 }
