@@ -22,6 +22,8 @@ async function open(page: Page, doc: string, width = 1440, mode: "edit" | "read"
   await page.evaluate(() => document.fonts.ready);
 }
 const body = (page: Page) => page.getByRole("textbox", { name: "本文", exact: true });
+/** 読むだけの編集の部品の根（#rrggbb の色を持つ文書だけ。色なしの読む形が先に出て、読み込めたら差し替わる） */
+const liveRoot = (page: Page) => page.getByTestId("doc-read").locator('.ProseMirror[contenteditable="false"]');
 const overflowX = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
@@ -121,6 +123,7 @@ test("K577-UI-006 幅 375・768・1440：読む形は広い表と長い字を含
     await expect(page.getByTestId("doc-read").getByRole("table")).toBeVisible();
     expect(await overflowX(page), `幅 ${w}・広い表`).toBe(0);
     await open(page, "rich", w, "read");
+    await expect(liveRoot(page)).toBeVisible();
     await expect(page.getByTestId("doc-read").getByRole("table")).toBeVisible();
     expect(await overflowX(page), `幅 ${w}・結合したセルの表`).toBe(0);
   }
@@ -131,6 +134,7 @@ test("K577-UI-007 足した節の描き：見出し 4 は h4 で中央寄せ・�
 }) => {
   await open(page, "rich", 1440, "read");
   const view = page.getByTestId("doc-read");
+  await expect(liveRoot(page)).toBeVisible();
   const h4 = view.getByRole("heading", { level: 4, name: "小さい見出し", exact: true });
   await expect(h4).toBeVisible();
   await expect(h4).toHaveCSS("text-align", "center");
@@ -153,6 +157,7 @@ test("K577-UI-008 足した印の描き：下線 u・取り消し線 s・行の�
 }) => {
   await open(page, "rich", 1440, "read");
   const view = page.getByTestId("doc-read");
+  await expect(liveRoot(page)).toBeVisible();
   await expect(view.locator("u")).toContainText("下線");
   await expect(view.locator("s")).toContainText("取り消し");
   await expect(view.locator("code").filter({ hasText: "x = 1" })).toHaveCount(1);
@@ -205,7 +210,7 @@ test("K577-UI-010 色のある文書だけ読むだけの編集の部品で描�
   });
   await open(page, "rich", 1440, "read");
   const view = page.getByTestId("doc-read");
-  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect(liveRoot(page)).toBeVisible();
   await expect.poll(async () => (await Promise.all([...bodies])).some((s) => EDITOR_CHUNK.test(s))).toBe(true);
   await expect(body(page)).toHaveCount(0);
   await expect(view.getByRole("textbox")).toHaveCount(0);
@@ -221,10 +226,11 @@ test("K577-UI-011 色のある文書のチェックの箱：取り扱いを渡�
 }) => {
   await open(page, "colortask", 1440, "read");
   const view = page.getByTestId("doc-read");
-  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect(liveRoot(page)).toBeVisible();
   await expect(view.getByText("色つきの字", { exact: true })).toHaveCSS("color", "rgb(220, 38, 38)");
   await expect(view.getByRole("checkbox")).toHaveCount(2);
   await expect(view.getByRole("checkbox", { name: "送った", exact: true })).toBeChecked();
+  await expect(view.getByRole("img", { name: "色のある文書の画像.png", exact: true })).toBeVisible();
   await expect(view.getByRole("checkbox").first()).toBeDisabled();
   await page.getByRole("button", { name: "箱を押せる読む形にする", exact: true }).click();
   const box = view.getByRole("checkbox", { name: "控える", exact: true });
@@ -240,7 +246,7 @@ test("K577-UI-012 色のある文書の守り：正しい #rrggbb の色と一�
 }) => {
   await open(page, "colorbad", 1440, "read");
   const view = page.getByTestId("doc-read");
-  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect(liveRoot(page)).toBeVisible();
   await expect(view.getByText("正しい赤", { exact: true })).toHaveCSS("color", "rgb(220, 38, 38)");
   for (const word of ["rgb の色", "大文字の色", "三桁の色", "名前の色", "url の背景", "不正な寄せ"]) {
     const el = view.getByText(word, { exact: true });
@@ -258,7 +264,7 @@ test("K577-UI-012 色のある文書の守り：正しい #rrggbb の色と一�
   ] as const) {
     const cell = view.getByText(word, { exact: true });
     await expect(cell, word).toBeVisible();
-    // 読むだけの編集の部品は結合していないセルに 1 を書く。外れた値（1.5・文字の "2"）がそのまま属性にならないことを見る
+    // 外れた値（1.5・文字の "2"）がそのまま属性にならないことを見る（結合していないセルは属性なしか 1）
     expect(["", "1"], `${word} ${attr}`).toContain(
       await cell.evaluate((e, a) => e.closest("td,th")?.getAttribute(a) ?? "", attr),
     );
