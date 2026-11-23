@@ -45,8 +45,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -3775,7 +3774,6 @@
    "rate_limit": "10/min/ip",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "invitations_permission_write"
    ],
    "outputs_4xx": [
@@ -4224,8 +4222,7 @@
    },
    "rate_limit": "10/min/ip",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -9003,8 +9000,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "messages_conversation_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -11097,7 +11093,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "invitations_permission_write"
    ],
    "outputs_4xx": [
@@ -11804,7 +11799,6 @@
    "access_control_policies": [
     "messages_conversation_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "ticket_sections_ticket_write"
    ],
    "outputs_4xx": [
@@ -11996,8 +11990,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "messages_conversation_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -12188,8 +12181,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "messages_conversation_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -13231,7 +13223,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "invitations_permission_write",
     "client_contacts_write"
    ],
@@ -19110,7 +19101,6 @@
     "inquiries_self_only_write",
     "inquiries_ops_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "attachments_permission_write"
    ],
    "outputs_4xx": [
@@ -19440,8 +19430,7 @@
     "messages_conversation_write",
     "inquiries_self_only_write",
     "inquiries_ops_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -19974,7 +19963,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "invitations_permission_write"
    ],
    "outputs_4xx": [
@@ -20337,7 +20325,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "invitations_permission_write"
    ],
    "outputs_4xx": [
@@ -21641,8 +21628,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -24739,8 +24725,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "messages_conversation_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -24919,7 +24904,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "knowledge_links_write"
    ],
    "outputs_4xx": [
@@ -26814,7 +26798,6 @@
    "access_control_policies": [
     "policies_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "learning_candidates_self_write"
    ],
    "outputs_4xx": [
@@ -31966,8 +31949,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "sessions_permission_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -33059,8 +33041,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "members_permission_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -34614,7 +34595,7 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "notifications_tenant_read",
+    "notifications_self_read",
     "notifications_ops_read_with_grant"
    ],
    "outputs_4xx": [
@@ -34645,6 +34626,19 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 409,
+     "code": "CONFLICT",
+     "body": {
+      "error": "conflict",
+      "code": "E-NTF-001"
+     },
+     "errors": [
+      "E-NTF-001"
+     ],
+     "trigger": "続きの鍵が形（base64url の 1〜200 字）には合うが、今の状態では読めない（JSON でない・時刻や id の形でない・古い・壊れた）",
+     "ears_form": "UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-NTF-001 を返し、最初から読み直すよう促す"
     },
     {
      "status": 429,
@@ -34692,6 +34686,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-NTF-001 を返し、最初から読み直すよう促す",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -34702,7 +34697,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（notifications）— 知らせを見てチケットへ行く",
+   "description": "取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分）",
    "implementation_path": "apps/api/src/routes/notifications.ts::listNotifications",
    "permission": {
     "who": "self",
@@ -34715,15 +34710,15 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "unread",
+     "actor_member_id",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Notifications[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Notifications[], meta: { next_cursor, actors } }"
    },
    "id": "EP-201",
    "feature_id": "F-004"
@@ -34759,8 +34754,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -34925,8 +34919,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -35777,8 +35770,7 @@
     "messages_conversation_write",
     "inquiries_self_only_write",
     "inquiries_ops_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -36477,7 +36469,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "plan_versions_ops_write",
     "subscriptions_permission_write",
     "invoices_permission_write"
@@ -37925,8 +37916,7 @@
    "access_control_policies": [
     "notice_deliveries_self_only_write",
     "notice_deliveries_permission_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -39573,8 +39563,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -39754,8 +39743,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -40539,8 +40527,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "tenant_distributions_permission_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -41423,7 +41410,6 @@
    "access_control_policies": [
     "tenant_distributions_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "skill_versions_ops_write"
    ],
    "outputs_4xx": [
@@ -42807,8 +42793,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -43556,7 +43541,6 @@
     "account_events_self_only_write",
     "account_events_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "subscriptions_permission_write"
    ],
    "outputs_4xx": [
@@ -43740,7 +43724,6 @@
     "account_events_permission_write",
     "sessions_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "subscriptions_permission_write"
    ],
    "outputs_4xx": [
@@ -44399,8 +44382,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -44889,7 +44871,6 @@
     "conversations_self_only_write",
     "bridge_jobs_self_only_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "attachments_permission_write"
    ],
    "outputs_4xx": [
@@ -45216,8 +45197,7 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "messages_conversation_write",
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -48369,7 +48349,7 @@
     "approvals_ops_read_with_grant",
     "sessions_tenant_read",
     "sessions_ops_read_with_grant",
-    "notifications_tenant_read",
+    "notifications_self_read",
     "notifications_ops_read_with_grant",
     "ticket_handovers_read",
     "ticket_handovers_ops_read_with_grant"
@@ -49180,13 +49160,44 @@
     },
     {
      "status": 422,
-     "code": "VALIDATION_ERROR",
+     "code": "E-VAL-042",
      "body": {
       "error": "validation_failed",
-      "details": []
+      "code": "E-VAL-042"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-042",
+      "E-VAL-045"
+     ],
+     "trigger": "改めるとき新しい決定が無い・空・空白だけ・制御文字だけ（E-VAL-042・欄 text）／取り消すとき理由が無い・空・空白だけ・制御文字だけ（E-VAL-045・欄 reason）。action が無い・知らない言葉は 422 VALIDATION_ERROR（欄 action）",
+     "ears_form": "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-CONF-031",
+     "body": {
+      "error": "conflict",
+      "code": "E-CONF-031"
+     },
+     "errors": [
+      "E-CONF-031",
+      "E-CONF-033"
+     ],
+     "trigger": "読んだ後にほかの人が先に改めた（改められた決定を改める・取り消す・E-CONF-031）／取り消した（取り消した決定を改める・取り消す・E-CONF-033）。読み直してからもう一度",
+     "ears_form": "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "守りの判定（今のメンバーか・書けるか）の所で例外になった・DB の関数が知らない言葉を返した",
+     "ears_form": "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）"
     },
     {
      "status": 413,
@@ -49244,7 +49255,9 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 改めるのに新しい決定が空か、取り消すのに理由が空なら、Kaname は 422（E-VAL-042・E-VAL-045）を返し、何も書かない",
+    "UNWANTED: IF 決定がすでに改められているか取り消されているなら、Kaname は 409（E-CONF-031・E-CONF-033）を返し、何も書かない",
+    "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -49261,7 +49274,7 @@
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
    "permission": {
     "who": "write",
-    "scope": "そのグループの人。取引先のルールにするのは取引先の担当とマネージャー",
+    "scope": "そのチケットを書ける人（見るだけの人は変えられない・⑧）",
     "step_up": false
    },
    "path_params": [
@@ -52545,7 +52558,6 @@
    "rate_limit": "60/min/user",
    "access_control_policies": [
     "notifications_self_only_write",
-    "notifications_permission_write",
     "client_contacts_write"
    ],
    "outputs_4xx": [
@@ -54285,12 +54297,11 @@
      },
      "errors": [
       "E-CONF-016",
-      "E-CONF-017",
       "E-CONF-018",
       "E-CONF-019"
      ],
-     "trigger": "承認待ち・実行中・確認中か、走っている実行・決まっていない承認待ちがある（E-CONF-016）・開いた後に実施事項が書き換わった（E-CONF-017）・もう完了している（E-CONF-018）・作業中でない（未着手・保留・E-CONF-019）",
-     "ears_form": "UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了・作業中でない）なら、Kaname は 409 とその理由（E-CONF-016・017・018・019）を返し、何も書かない"
+     "trigger": "承認待ち・実行中・確認中か、走っている実行・決まっていない承認待ちがある（E-CONF-016）・もう完了している（E-CONF-018）・作業中でない（未着手・保留・E-CONF-019）",
+     "ears_form": "UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・もう完了・作業中でない）なら、Kaname は 409 とその理由（E-CONF-016・018・019）を返し、何も書かない"
     },
     {
      "status": 422,
@@ -54300,11 +54311,10 @@
       "details": []
      },
      "errors": [
-      "E-VAL-022",
       "E-VAL-024"
      ],
-     "trigger": "チェックの入っていない実施事項が残っている・実施事項に無い番号を送った（E-VAL-022・欄 todo_checked に項目ごと）・終わっていない子がある（E-VAL-024・欄 children に子ごと）",
-     "ears_form": "UNWANTED: IF 実施事項が残っているか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022・E-VAL-024）を返し、何も書かない"
+     "trigger": "終わっていない子がある（E-VAL-024・欄 children に子ごと。チェックの箱・確認項目の未チェックでは止めない・K-566）",
+     "ears_form": "UNWANTED: IF 終わっていない子があるなら、Kaname は 422 と子ごとの理由（E-VAL-024）を返し、何も書かない"
     },
     {
      "status": 422,
@@ -54388,8 +54398,8 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・実施事項が変わった・もう完了・作業中でない）なら、Kaname は 409 とその理由（E-CONF-016・017・018・019）を返し、何も書かない",
-    "UNWANTED: IF 実施事項が残っているか、終わっていない子があるなら、Kaname は 422 と項目ごとの理由（E-VAL-022・E-VAL-024）を返し、何も書かない",
+    "UNWANTED: IF 完了にできない状態（承認待ち・実行中・確認中・もう完了・作業中でない）なら、Kaname は 409 とその理由（E-CONF-016・018・019）を返し、何も書かない",
+    "UNWANTED: IF 終わっていない子があるなら、Kaname は 422 と子ごとの理由（E-VAL-024）を返し、何も書かない",
     "UNWANTED: IF 完了の条件を確かめた印が無いか、入力の形が違うなら、Kaname は 422 と欄ごとの理由（E-VAL-023）を返し、何も書かない",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
@@ -55427,8 +55437,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -56169,8 +56178,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -59737,8 +59745,7 @@
    },
    "rate_limit": "60/min/user",
    "access_control_policies": [
-    "notifications_self_only_write",
-    "notifications_permission_write"
+    "notifications_self_only_write"
    ],
    "outputs_4xx": [
     {
@@ -60922,7 +60929,6 @@
     "account_events_self_only_write",
     "account_events_permission_write",
     "notifications_self_only_write",
-    "notifications_permission_write",
     "export_jobs_self_only_write",
     "export_jobs_permission_write"
    ],
