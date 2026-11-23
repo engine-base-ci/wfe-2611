@@ -40,3 +40,10 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "createSavedView"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-750：決めた履歴の一覧の「続きの印」（cursor）も、口が前の答えで渡した鍵の文字列（決めた時刻の字|id の base64url）だけを受ける。
+#   形（pattern）は合っていても、復号できない・2 つに分かれない・時刻や uuid でない印は 422（欄 cursor・K750-API-010）。
+#   K-161 の listApprovalQueue と同じく形だけでは書けない決まりなので、この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "listApprovalHistory"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
