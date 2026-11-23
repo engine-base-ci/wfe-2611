@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:e80df387f440dd7c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:8c23890fe861ef58
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
