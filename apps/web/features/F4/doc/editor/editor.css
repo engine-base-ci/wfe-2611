@@ -136,3 +136,20 @@
   border: 0;
   border-top: var(--k-c-f4d-rule-border);
 }
+
+/* ---- 色のある文書の読むだけの形（K-577・doc-view-live）：箱と済みの字を DocView の読む形にそろえる（トークンだけ） ---- */
+.k-f4d-read .k-f4d-pm ul[data-type="taskList"] li {
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+}
+.k-f4d-read .k-f4d-pm ul[data-type="taskList"] input {
+  margin-top: var(--k-s-xs);
+  accent-color: var(--k-primary);
+}
+.k-f4d-read .k-f4d-pm ul[data-type="taskList"] p {
+  margin: 0;
+}
+.k-f4d-read .k-f4d-pm ul[data-type="taskList"] li[data-checked="true"] > div {
+  color: var(--k-on-surface-variant);
+  text-decoration: line-through;
+}

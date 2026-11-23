@@ -2,7 +2,7 @@
 // 本文の道具の部品を、本物のまま 1 つ置く開発用の頁（K-567・試験の置き場。正の絵ではない＝正の絵は下絵 v2 の /dev/mock/f4v2）。
 //   置き方は下絵 v2 の作る面（f4v2-editor-link など）と同じ枠（Frame・CreateForm の本文の欄）。部品の出す文書の木を
 //   data-testid="doc-json"（JSON）・"doc-text"（docToText）・"doc-verdict"（validateDoc の結果。ok か ng:理由）に出す。
-//   最初の文書は ?doc=empty|plain|full|ghost|rich|badcolor・?mode=read|edit（既定 edit・読む形は DocView を data-testid="doc-read" で包む・K-577）。口は呼ばない
+//   最初の文書は ?doc=empty|plain|full|calm|ghost|rich|badcolor|colortask|colorbad・?mode=read|edit（既定 edit・読む形は DocView を data-testid="doc-read" で包む・K-577）。口は呼ばない
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { docToText, emptyDoc, validateDoc, type Doc } from "@kaname/contracts";
@@ -203,6 +203,69 @@ const BADCOLOR = {
     },
   ],
 } as unknown as Doc;
+type Raw = { marks?: { type: string; attrs?: { color?: unknown } }[]; content?: Raw[] };
+const isHexMark = (m: { attrs?: { color?: unknown } }) =>
+  typeof m.attrs?.color === "string" && m.attrs.color.startsWith("#");
+/** #rrggbb の色の印だけを外す（節と、ほかの印はそのまま） */
+const dropHex = (n: Raw): Raw => ({
+  ...n,
+  ...(n.marks ? { marks: n.marks.filter((m) => !isHexMark(m)) } : {}),
+  ...(n.content ? { content: n.content.map(dropHex) } : {}),
+});
+/** 全部の節を持ち #rrggbb の色を持たない文書（読む形が編集の部品を読まない道・K577-UI-001・003〜006） */
+const CALM = dropHex(FULL as unknown as Raw) as unknown as Doc;
+/** #rrggbb の色とチェックの箱・画像の置き場を持つ文書（読むだけの編集の部品が描く道・K577-UI-011） */
+const COLORTASK = {
+  type: "doc",
+  content: [
+    { type: "paragraph", content: [t("色つきの字", [{ type: "color", attrs: { color: "#dc2626" } }])] },
+    {
+      type: "taskList",
+      content: [
+        { type: "taskItem", attrs: { checked: true }, content: [p("送った")] },
+        { type: "taskItem", attrs: { checked: false }, content: [p("控える")] },
+      ],
+    },
+    { type: "image", attrs: { caption: "色のある文書の画像.png", attachment_id: null } },
+  ],
+} as unknown as Doc;
+/** 正しい #rrggbb の色 1 つと、形に合わない値・危ない href を持つ文書（K577-UI-012） */
+const COLORBAD = {
+  type: "doc",
+  content: [
+    { type: "paragraph", content: [t("正しい赤", [{ type: "color", attrs: { color: "#dc2626" } }])] },
+    { type: "paragraph", content: [t("rgb の色", [{ type: "color", attrs: { color: "rgb(255,0,0)" } }])] },
+    { type: "paragraph", content: [t("大文字の色", [{ type: "color", attrs: { color: "#FF0000" } }])] },
+    { type: "paragraph", content: [t("三桁の色", [{ type: "color", attrs: { color: "#f00" } }])] },
+    { type: "paragraph", content: [t("名前の色", [{ type: "color", attrs: { color: "pink" } }])] },
+    {
+      type: "paragraph",
+      content: [t("url の背景", [{ type: "highlight", attrs: { color: "url(javascript:alert(1))" } }])],
+    },
+    {
+      type: "paragraph",
+      attrs: { textAlign: "left;background:url(x)" },
+      content: [{ type: "text", text: "不正な寄せ" }],
+    },
+    {
+      type: "paragraph",
+      content: [t("悪いリンク", [{ type: "link", attrs: { href: "javascript:alert(1)" } }])],
+    },
+    { type: "orderedList", attrs: { start: 2.5 }, content: [{ type: "listItem", content: [p("不正な始まり")] }] },
+    {
+      type: "table",
+      content: [
+        {
+          type: "tableRow",
+          content: [
+            { type: "tableHeader", attrs: { colspan: 1.5 }, content: [p("不正な横結合")] },
+            { type: "tableCell", attrs: { rowspan: "2" }, content: [p("不正な縦結合")] },
+          ],
+        },
+      ],
+    },
+  ],
+} as unknown as Doc;
 /** 危ない href を持つ文書（K577-UI-005） */
 const DANGER = {
   type: "doc",
@@ -234,9 +297,12 @@ const START: Record<string, () => Doc> = {
   empty: emptyDoc,
   plain: () => PLAIN,
   full: () => FULL,
+  calm: () => CALM,
   ghost: () => GHOST,
   rich: () => RICH,
   badcolor: () => BADCOLOR,
+  colortask: () => COLORTASK,
+  colorbad: () => COLORBAD,
 };
 
 function Out({ doc }: { doc: Doc }) {
