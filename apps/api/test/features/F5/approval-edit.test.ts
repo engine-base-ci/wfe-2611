@@ -286,7 +286,8 @@ describe("K-742 自分で直す：状態 × 入口 × 利用者の状態", () =>
       await f.admin.query("drop function if exists public.k742_fail_audit()");
     }
     expect(await section(t.id)).toMatchObject({ version: s.version, text: ARTIFACT });
-    expect((await versionRows(s.id)).at(-1)!.version).toBe(s.version);
+    // 土台 delegated() は成果物の区画を版の履歴なしで置くので、新しい版の行が残っていないことを「今の版より大きい版の行が無い」で見る
+    expect((await versionRows(s.id)).filter((x) => x.version > s.version)).toEqual([]);
     expect(await lines(t.id)).toHaveLength(0);
   });
 
