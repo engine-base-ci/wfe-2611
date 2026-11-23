@@ -18,6 +18,7 @@
     "apps/api/test/features/contract/k144.d/K-705.ts"
    ],
    "tests": [
+    "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/post_ticket_stages.test.ts",
     "apps/api/test/generated/patch_ticket_stages_id.test.ts",
     "apps/api/test/generated/delete_ticket_stages_id.test.ts",
