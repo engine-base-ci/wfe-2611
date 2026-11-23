@@ -19914,9 +19914,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "createTicketMessage"
-   ],
+   "apis": [],
    "mock": [
     "talk-compose",
     "talk-send",
