@@ -24352,8 +24352,7 @@
    "tests": [
     "scripts/ci/k1117_portable_contract_test.py",
     "apps/api/test/features/F1/k1117-email-shape.test.ts",
-    "scripts/ci/contract_shape_test.py",
-    "scripts/ci/k1116_fuzz_contract_test.py"
+    "scripts/ci/contract_shape_test.py"
    ],
    "depends_on": [
     "K-1116"
