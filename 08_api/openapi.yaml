@@ -10628,6 +10628,17 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: stopConversation
+    TicketAgentMessageInput:
+      type: object
+      properties:
+        text:
+          type: string
+          pattern: \S
+      additionalProperties: false
+      x-operation: sendTicketAgentMessage
+      required:
+      - text
+      x-required-by: hooks
     DraftConversationStartInput:
       type: object
       properties: {}
@@ -12699,6 +12710,42 @@ components:
         state:
           type: string
       x-operation: stopConversation
+    TicketAgentSession:
+      type: object
+      properties:
+        conversation:
+          type: object
+          nullable: true
+        messages:
+          type: array
+          items:
+            type: object
+        has_more:
+          type: boolean
+        running_job_id:
+          type: string
+          format: uuid
+          nullable: true
+        work:
+          type: object
+          nullable: true
+        stopped:
+          type: object
+          nullable: true
+      x-operation: getTicketAgentSession
+    TicketAgentSent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+      x-operation: sendTicketAgentMessage
     DraftConversationStarted:
       type: object
       properties:
@@ -42220,7 +42267,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Conversations'
+                    $ref: '#/components/schemas/TicketAgentSession'
                   meta:
                     type: object
         '401':
@@ -42247,6 +42294,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -42255,12 +42308,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42440,7 +42487,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/TicketAgentMessageInput'
       responses:
         '201':
           description: 成功
@@ -42450,7 +42497,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/TicketAgentSent'
                   meta:
                     type: object
         '401':
@@ -42472,13 +42519,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-TALK-050／E-TALK-012
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42497,12 +42550,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
