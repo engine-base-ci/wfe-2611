@@ -54,3 +54,10 @@ ERRORS_4XX = {
         dict(_DOWN),
     ],
 }
+
+# 答えの conversation_id・job_id は null にならない（messages の列は null 可・K144-SHAPE-013）。DB の関数 app.draft_talk_say（中で app.talk_enqueue） が会話の id と作った仕事の id を入れて返し、
+#   作れなければ error で断る（答えの 201 に null は出ない）
+NOT_NULL_ANSWERS = {
+    "sendDraftMessage.conversation_id": "DB の関数 app.draft_talk_say（中で app.talk_enqueue） が会話の id を入れて返し、会話が無ければ error で断る（messages.conversation_id は null 可）",
+    "sendDraftMessage.job_id": "DB の関数 app.draft_talk_say（中で app.talk_enqueue） が作った仕事の id を返し、作れなければ no_pc ほかの error で断る（messages.job_id は null 可）",
+}
