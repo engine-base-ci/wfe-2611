@@ -12328,13 +12328,14 @@
      "name": "knowledge_pages_read",
      "operation": "select",
      "role": "member",
-     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND (CASE WHEN state = 'draft' THEN owner_member_id = current_setting('app.user_id', true)::uuid ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
-     "rationale": "まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない",
+     "predicate": "tenant_id = current_setting('app.tenant_id', true)::uuid AND deleted_at IS NULL AND (CASE WHEN state = 'draft' THEN owner_member_id = current_setting('app.user_id', true)::uuid ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
+     "rationale": "消したページは誰にも見せない（K-681・消すのは DB の関数 app.kn_page_soft_delete）。まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない",
      "source": [
       "D-128.50",
       "D-128.51",
       "D-152.1",
-      "D-152.3"
+      "D-152.3",
+      "D-152.14"
      ]
     },
     {

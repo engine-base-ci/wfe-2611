@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-24 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -12407,6 +12407,7 @@ components:
         position:
           type: integer
           minimum: 0
+          maximum: 2147483647
       additionalProperties: false
       x-operation: updateKnowledgeFolder
       anyOf:
@@ -12494,6 +12495,7 @@ components:
         position:
           type: integer
           minimum: 0
+          maximum: 2147483647
       additionalProperties: false
       x-operation: updateKnowledgePage
       anyOf:
@@ -13912,7 +13914,7 @@ components:
         acts:
           type: array
           items:
-            type: object
+            type: string
         body:
           type: object
           nullable: true
