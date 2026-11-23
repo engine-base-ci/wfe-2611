@@ -5,6 +5,7 @@
 //   想定外の例外は 503 E-PAGE-003。ログに項目の名前・説明・選ぶ物を出さない（口の名前と例外の種類だけ）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
+import { isUuid } from "@kaname/contracts";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { FIELD_TYPES } from "../../F4/ticket-fields/shape.js";
 import { cleanName, fieldErrorOf, invalid, kindOf, toFieldSetting, unavailable } from "./fields.js";
@@ -15,9 +16,8 @@ const EDIT_ERRORS: Record<string, string> = {
   options_not_allowed: "E-FMS-005",
 };
 const KEYS = ["name", "field_type", "required", "description", "options", "kind_ids"] as const;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isUuidList = (v: unknown): v is string[] =>
-  Array.isArray(v) && v.length > 0 && v.every((x) => typeof x === "string" && UUID.test(x));
+  Array.isArray(v) && v.length > 0 && v.every((x) => typeof x === "string" && isUuid(x));
 
 type Outcome = { data: unknown } | { error: string; field?: string };
 
@@ -29,7 +29,7 @@ const optionsOk = (v: unknown): boolean =>
     const r = o as Record<string, unknown>;
     if (Object.keys(r).some((k) => k !== "id" && k !== "name")) return false;
     if (cleanName(r["name"]) === null) return false;
-    return r["id"] === undefined || (typeof r["id"] === "string" && UUID.test(r["id"]));
+    return r["id"] === undefined || (typeof r["id"] === "string" && isUuid(r["id"]));
   });
 
 /** 直す入力の確かめ（送った欄だけ・1 つは要る）。通れば DB の関数へ渡す差分 */
