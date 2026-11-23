@@ -266,6 +266,10 @@
     "type": "text",
     "nullable": true
    },
+   "taken_over_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "task_id": {
     "type": "uuid",
     "nullable": true
@@ -2830,7 +2834,7 @@
    },
    "email": {
     "type": "text",
-    "nullable": false
+    "nullable": true
    },
    "expires_at": {
     "type": "timestamp with time zone",
@@ -4554,6 +4558,10 @@
    },
    "payload": {
     "type": "jsonb",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "retry_count": {
@@ -7114,6 +7122,18 @@
    }
   },
   "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7128,6 +7148,10 @@
    },
    "decided_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
     "nullable": true
    },
    "deleted_at": {
@@ -7583,6 +7607,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "restored_from": {
+    "type": "integer",
+    "nullable": true
    },
    "section_id": {
     "type": "uuid",
