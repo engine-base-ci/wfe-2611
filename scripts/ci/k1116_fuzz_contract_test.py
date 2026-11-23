@@ -142,7 +142,9 @@ SIGNIN_SAMPLES = [
 class FuzzContract(unittest.TestCase):
     def test_K1116_CT_001_update_memory_has_no_create_ranges(self):
         upd = _shape_of("updateMemory")
-        self.assertNotIn("pattern", upd["properties"]["confidence"], "updateMemory の confidence に createMemory の値域が残っている")
+        # confidence は表の型（numeric）の形に戻る（作る口の numeric(3,2) の値域ではない）。口はこの形で断る（K1116-API-001）
+        self.assertEqual(upd["properties"]["confidence"].get("pattern"), "^-?[0-9]+(\\.[0-9]+)?$", "updateMemory の confidence が表の型の形でない")
+        self.assertNotEqual(upd["properties"]["confidence"].get("pattern"), SA.VALUE_RANGES["createMemory"]["confidence"]["pattern"])
         self.assertNotIn("enum", upd["properties"]["kind_id"], "updateMemory の kind_id に createMemory の値域が残っている")
         self.assertEqual(upd["properties"]["body"].get("pattern"), "\\S")   # 自分の値域は残る
         crt = _shape_of("createMemory")
