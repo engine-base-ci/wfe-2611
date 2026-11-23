@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,7 @@ ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE))
 import ticket_order_gate as g  # noqa: E402
 
+NUM = re.compile(r"実装のコミット (\d+) 本")
 # 直す前の scripts/ci/ticket_order_gate.py（本線 c93019c7 の版・最後に変えたのは 8ae2be25）。比べる相手として git の中から読む
 OLD_BLOB = "c27ded84719384af0950160bcb17ddc4b607a409"
 GATE = HERE / "ticket_order_gate.py"
@@ -290,7 +292,11 @@ class SameAnswerTest(unittest.TestCase):
                 with self.subTest(repo=os.path.basename(repo), base=b):
                     want = run_gate(old_script, repo, s, b)
                     got = run_gate(str(GATE), repo, s, b)
-                    self.assertEqual(got, want)
+                    # K-643：直す前の版は取り込みのコミット（親 2 つ）も実装に数える。違うのは「実装のコミット N 本」の数だけ（取り込みの数ぶん少ない）
+                    merges = int(subprocess.run(["git", "rev-list", "--merges", "--count", f"{s}..HEAD"], cwd=repo, capture_output=True, text=True).stdout)
+                    self.assertEqual(got[0], want[0])
+                    self.assertEqual(NUM.sub("実装のコミット N 本", got[1]), NUM.sub("実装のコミット N 本", want[1]))
+                    self.assertEqual(int(NUM.search(want[1]).group(1)) - int(NUM.search(got[1]).group(1)), merges)
                     fails += want[0] == 1 and "★" in want[1] and "FAIL" in want[1]
                     passes += want[0] == 0 and "PASS" in want[1]
             self.assertGreaterEqual(fails, 6)
