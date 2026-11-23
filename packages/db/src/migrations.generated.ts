@@ -129,8 +129,10 @@ export const MIGRATIONS = [
   "20261119120700_credential_resolve.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120130000_ticket_timeline.sql",
+  "20261120130100_ticket_thread_seen_mark.sql",
   "20261120130400_ticket_progress.sql",
   "20261120130500_ticket_reopen.sql",
+  "20261120130700_ticket_decisions.sql",
   "20261120143736_bridge_set_browser_acl.sql",
   "20261120215500_runs_view_real_runs_only.sql",
   "20261121091900_workspace_invitations.sql",
@@ -140,4 +142,5 @@ export const MIGRATIONS = [
   "20261122094000_ticket_sort.sql",
   "20261122094100_ticket_links.sql",
   "20261122100400_ticket_field_values_set.sql",
+  "20261123082700_ticket_delete_preview.sql",
 ] as const;
