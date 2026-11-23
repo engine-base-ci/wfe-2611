@@ -18,7 +18,8 @@ const q = async <T extends Row>(sql: string, p: unknown[] = []): Promise<T[]> =>
 const code = async (r: Response) => (await h.json(r))["code"];
 const say = (who: Person | null, conv: string, body: unknown) =>
   h.call(who, "POST", `/conversations/${conv}/messages`, { body });
-const stop = (who: Person | null, conv: string) => h.call(who, "POST", `/conversations/${conv}/stop`);
+// 止める口は体の中身を見ないが、入口は POST の体を JSON で読む（体なしは 422 body）。画面と同じく空の体 {} を送る
+const stop = (who: Person | null, conv: string) => h.call(who, "POST", `/conversations/${conv}/stop`, { body: {} });
 const sent = async (who: Person, conv: string, text: string) => {
   const r = await say(who, conv, { text });
   expect(r.status, await r.clone().text()).toBe(201);
@@ -44,7 +45,11 @@ const shot = async (w: World) => ({
   audits: await h.count("select count(*) as n from audit_events where tenant_id = $1 and action like '%talk.%'", [
     w.tenantId,
   ]),
-  notices: await h.count("select count(*) as n from notifications where tenant_id = $1", [w.tenantId]),
+  // PC をつなぐ準備（h.pc）が受け箱に書く bridge.connected は数えない（言う・止める口が足したお知らせだけを見る）
+  notices: await h.count(
+    "select count(*) as n from notifications where tenant_id = $1 and event_kind_id not like 'bridge.%'",
+    [w.tenantId],
+  ),
 });
 const ready = async (label: string, o: { pc?: boolean } = {}) => {
   const w = await h.world(label);
@@ -82,7 +87,7 @@ describe("K-758 言う（sendConversationMessage）", () => {
   it("K758-API-002 字は書いたとおりに残る：前後の空白・全角・改行・HTML・絵文字・5 万字の文もそのまま（切らない・正規化しない）。NUL を含む字は 422 で何も変わらない", async () => {
     const w = await ready("k758-002");
     const c = await h.conversation(w, w.me);
-    const odd = `　全角の空白 ＡＢＣ\n<script>alert(1)</script> 😀 \n 末尾の空白 ${"長".repeat(50_000)} `;
+    const odd = `\u3000全角の空白 ＡＢＣ\n<script>alert(1)</script> 😀 \n 末尾の空白 ${"長".repeat(50_000)} `;
     const s = await sent(w.me, c, odd);
     expect((await msgsOf(c))[0]!.body).toBe(odd);
     expect((await jobsOf(c))[0]!.prompt).toBe(odd);
