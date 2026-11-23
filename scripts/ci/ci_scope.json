@@ -1555,6 +1555,17 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-page-read.ts",
+    "apps/api/src/features/F9/knowledge/read.ts",
+    "apps/api/src/features/F9/knowledge/versions.ts",
+    "apps/api/src/features/F9/knowledge/page-parts/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-page-read.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
