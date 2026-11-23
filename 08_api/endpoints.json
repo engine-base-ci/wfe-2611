@@ -49304,6 +49304,8 @@
     "tickets"
    ],
    "related_entities": [
+    "E-052",
+    "E-080",
     "E-106",
     "E-136"
    ],
@@ -49326,7 +49328,9 @@
     "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
    },
    "rate_limit": "60/min/user",
-   "access_control_policies": [],
+   "access_control_policies": [
+    "notifications_self_only_write"
+   ],
    "outputs_4xx": [
     {
      "status": 401,
@@ -49469,7 +49473,7 @@
    "implementation_path": "apps/api/src/routes/ticket_handovers.ts::answerTicketHandover",
    "permission": {
     "who": "recipient",
-    "scope": "渡された・判断を仰がれた相手だけ",
+    "scope": "答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）",
     "step_up": false
    },
    "path_params": [
@@ -56468,7 +56472,9 @@
     "tickets"
    ],
    "related_entities": [
+    "E-052",
     "E-080",
+    "E-106",
     "E-136"
    ],
    "choke_points": [
@@ -56666,7 +56672,7 @@
    "implementation_path": "apps/api/src/routes/ticket_handovers.ts::createTicketHandover",
    "permission": {
     "who": "write",
-    "scope": "渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者",
+    "scope": "渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・ゲスト・止まっている人はできない（D-148.3・D-148.18）",
     "step_up": false
    },
    "path_params": [
