@@ -232,6 +232,51 @@ class CutTake(unittest.TestCase):
         self.assertEqual((self.repo / SHARED).read_text(encoding="utf-8"), main_shared, "共有の試験を書き換えている")
         self.assertFalse((self.repo / "11_tickets/K-5.md").exists())
 
+    def stack_case(self, cut_lines: list[str], main_lines: list[str]) -> str:
+        """重ねた元 K-6 が分かれ目の後に本線へ入った形を作り、t/K-5 で本線の版を返す"""
+        git(self.repo, "checkout", "-q", "c/x")
+        put(self.repo, {SHARED: "\n".join(cut_lines)})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "cut: 重ねて切る")
+        git(self.repo, "checkout", "-q", "main")
+        main_shared = "\n".join(main_lines)
+        put(self.repo, {SHARED: main_shared})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "K-6 feat: 重ねた元が本線に入った")
+        git(self.repo, "checkout", "-q", "-B", "t/K-5", "main")
+        return main_shared
+
+    def assert_stops_untouched(self, main_shared: str, *words: str) -> None:
+        import cut_take
+        with self.assertRaises(SystemExit) as e:
+            cut_take.take(self.repo, "K-5", "c/x", shared=[SHARED], regenerate=False)
+        for w in words:
+            self.assertIn(w, str(e.exception))
+        self.assertEqual((self.repo / SHARED).read_text(encoding="utf-8"), main_shared, "共有の試験を書き換えている")
+        self.assertFalse((self.repo / "11_tickets/K-5.md").exists())
+
+    def test_K1115_CT_003_other_unmerged_range_is_left_out_without_stopping(self) -> None:
+        # 同じぶつかる並びに、まだのチケット K-7 の範囲が離れた所にある：範囲の中身は印の無い行として数えない
+        self.stack_case(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL[:-1],
+                         "// K-7 ここから", "const block7 = 7;", "// K-7 ここまで", ""],
+                        ["const A = 1;", "const s6 = 6; // K-6", *TAIL])
+        self.take()
+        s = (self.repo / SHARED).read_text(encoding="utf-8")
+        self.assertEqual(s, "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL]))
+
+    def test_K1115_CT_004_dropped_line_with_same_text_elsewhere_stops(self) -> None:
+        # 切る段で印の無い `});` を足したが本線の版に無い。ほかの所に同じ字面の `});` はある：数で比べて落ちたと見て止める
+        main_shared = self.stack_case(
+            ["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", "});", *TAIL[:-1], "});", ""],
+            ["const A = 1;", "const s6 = 6; // K-6", "});", *TAIL])
+        self.assert_stops_untouched(main_shared, "印の無い行が本線に無い：});")
+
+    def test_K1115_CT_005_second_merge_conflict_stops(self) -> None:
+        # 重ねた元の行を本線が別の字面に直して入れた：自分の印を外した版を元にしても、すぐ下の自分の行とぶつかるので止める
+        main_shared = self.stack_case(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL],
+                                      ["const A = 1;", "const s6 = 66; // K-6", *TAIL])
+        self.assert_stops_untouched(main_shared, "ぶつかる", SHARED)
+
     def test_K187_CT_011_unreadable_header_stops(self) -> None:
         git(self.repo, "checkout", "-q", "c/x")
         put(self.repo, {"11_tickets/K-8.md": "---\nid: K-8\ntests:\n  - t/k5.test.ts\n---\n本文\n"})
