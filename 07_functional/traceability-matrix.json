@@ -4,7 +4,7 @@
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 145,
+  "entities_count": 146,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -3038,6 +3038,10 @@
     "PATCH /api/workspace/ticket-shape",
     "GET /api/ticket_kinds/template-updates",
     "POST /api/ticket_kinds/template-updates/:id/apply",
+    "POST /api/ticket_stages",
+    "PATCH /api/ticket_stages/:id",
+    "DELETE /api/ticket_stages/:id",
+    "POST /api/ticket_stages/order",
     "GET /api/ticket-field-master",
     "POST /api/ticket-fields"
    ],
@@ -3157,6 +3161,7 @@
     "E-121 knowledge_pages",
     "E-122 knowledge_page_versions",
     "E-123 knowledge_links",
+    "E-147 knowledge_folders",
     "E-028 memories",
     "E-055 layers",
     "E-002 scopes",
@@ -11197,6 +11202,30 @@
     },
     {
      "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_stages"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/ticket_stages/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/ticket_stages/:id"
+    },
+    {
+     "act": "A118",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_stages/order"
+    },
+    {
+     "act": "A118",
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/ticket-field-master"
@@ -14183,6 +14212,17 @@
    ]
   },
   {
+   "entity_id": "E-147",
+   "entity_name": "knowledge_folders",
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
+  },
+  {
    "entity_id": "E-124",
    "entity_name": "clients",
    "used_by_screens": [
@@ -15285,7 +15325,8 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
@@ -15433,7 +15474,8 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:1f195c0546c33810
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:6b14243b26e0e720
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6570,7 +6570,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
     },
     "termsOpen": false,
@@ -6627,7 +6627,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
     },
     "termsOpen": false,
@@ -15935,7 +15935,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "TicketStages",
+    "output": "TicketStageSetting",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -15964,6 +15964,223 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "word": "read",
       "target": null,
       "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_stages",
+    "operationId": "createTicketStage",
+    "table": "ticket_stages",
+    "kind": "create",
+    "input": "TicketStageCreateInput",
+    "success": 201,
+    "output": "TicketStageSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/v1/ticket_stages/:id",
+    "operationId": "updateTicketStage",
+    "table": "ticket_stages",
+    "kind": "update",
+    "input": "TicketStageUpdateInput",
+    "success": 200,
+    "output": "TicketStageSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/v1/ticket_stages/:id",
+    "operationId": "deleteTicketStage",
+    "table": "ticket_stages",
+    "kind": "delete",
+    "input": null,
+    "success": 200,
+    "output": "TicketStageDeleted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      422,
+      409,
+      409,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket_stages/order",
+    "operationId": "reorderTicketStages",
+    "table": "ticket_stages",
+    "kind": "create",
+    "input": "TicketStageOrderInput",
+    "success": 200,
+    "output": "TicketStageSetting",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "ticket_stages",
+      "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
@@ -19745,4 +19962,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "1f195c0546c33810";
+export const OPENAPI_HASH = "6b14243b26e0e720";
