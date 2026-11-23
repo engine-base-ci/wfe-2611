@@ -162,7 +162,7 @@ class ApiDocD(unittest.TestCase):
         self.assertTrue(got[-2:] == ["文", ""])
 
     def test_k1112_ba_005_errors_stop(self) -> None:
-        """K1112-BA-005：無い見出し・鍵「同上」・本体で 2 つある鍵・2 つの断片が同じ鍵・見出しより前の行・表でない字は止める"""
+        """K1112-BA-005：無い見出し・鍵「同上」・本体で 2 つある鍵・2 つの断片が同じ鍵・見出しより前の行・表でない字・表の無い見出し・置けない名前は止める"""
         cases = {
             "無い見出し": ("## 9. 無い\n| a | b |\n", "見出し"),
             "同上": ("## 1. 表\n| 同上 | b |\n", "同上"),
@@ -186,6 +186,18 @@ class ApiDocD(unittest.TestCase):
             api_doc_d.merge(BODY, [x, y])
         self.assertIn("K-7.md", str(cm.exception))
         self.assertIn("K-8.md", str(cm.exception))
+        with self.assertRaises(RegistryConflict) as cm:   # 表の無い見出し（# 題）に足す
+            api_doc_d.merge(BODY, [frag(self.d, "K-9.md", "# 題\n| 新しい | 行 |\n")])
+        self.assertIn("表が無い", str(cm.exception))
+        for bad in ("extra.md", "K-01.md", "K-3.txt"):   # 置けない断片の名前
+            with self.subTest(name=bad):
+                d = self.d / f"n_{bad}"
+                d.mkdir()
+                (d / bad).write_text("## 1. 表\n", encoding="utf-8")
+                (d / "README.md").write_text("説明", encoding="utf-8")
+                with self.assertRaises(RegistryConflict) as cm:
+                    api_doc_d.fragments(d)
+                self.assertIn(bad, str(cm.exception))
 
     def test_k1112_ba_006_real_tree_copy_is_fresh(self) -> None:
         """K1112-BA-006：本物の木の合わせた写しは最新（--check が 0）で、断片が無い今は本体と 1 字も違わない（頭の 1 行を除く）"""
@@ -230,7 +242,7 @@ class Gate(unittest.TestCase):
         self.g("config", "user.name", "t")
         self.w("05_flow/screen_api.py", SA)
         self.w("08_api/phase1/01_x.md", DOC)
-        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": ["K-50"]}))
+        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/screen_api.py|LIST_OPS 'x'", "08_api/phase1/01_x.md|`GET /g`"]}))
         self.base = self.commit("K-1 chore: 元")
 
     def tearDown(self) -> None:
@@ -268,11 +280,11 @@ class Gate(unittest.TestCase):
         self.assertIn("赤 3 件", r.stdout)
 
     def test_k1112_ba_009_d_fragment_and_value_edit_are_green(self) -> None:
-        """K1112-BA-009：.d の断片で足す・本体の今ある鍵の値を直す・本体の文書の表でない字を直すのは緑"""
+        """K1112-BA-009：.d の断片で足す・本体の今ある鍵の値を直す・文書の見出しの字（表のある見出しも）を直す・新しい節と表の頭の行を作るのは緑"""
         self.w("05_flow/screen_api.d/K-7.py", 'PERMS = {"getB": ("read", "b", False)}\n')
         self.w("05_flow/screen_api.py", SA.replace('"誰でも"', '"誰でも（直した）"'))
-        self.w("08_api/phase1/01_x.md", DOC.replace("# 題", "# 題（直した）"))
-        self.w("08_api/phase1/01_x.d/K-7.md", "## 4. 誰が\n| `GET /b` | read |\n")
+        self.w("08_api/phase1/01_x.md", DOC.replace("# 題", "# 題（直した）").replace("## 4. 誰が", "## 5. 誰が呼べるか") + "\n## 6. 新しい節\n\n| API | 何 |\n|---|---|\n")
+        self.w("08_api/phase1/01_x.d/K-7.md", "## 5. 誰が呼べるか\n| `GET /b` | read |\n\n## 6. 新しい節\n| `GET /c` | 足す |\n")
         self.commit("K-7 feat: 断片で足す")
         self.assertEqual(self.red(), [])
         r = subprocess.run([PY, str(ROOT / "scripts/ci/body_append_gate.py"), "--root", str(self.r), "--base-ref", self.base], capture_output=True, text=True)
@@ -288,18 +300,61 @@ class Gate(unittest.TestCase):
         self.assertTrue(any("`GET /b`" in b for b in red) and any("`GET /a`" in b for b in red))
 
     def test_k1112_ba_011_grandfather_and_ledger_shrink_only(self) -> None:
-        """K1112-BA-011：猶予の台帳の葉（K-50）が直に足しても緑。台帳に葉を足すと赤・減らすのは緑"""
+        """K1112-BA-011：猶予の台帳の鍵（LIST_OPS 'x'・文書の行 `GET /g`）は件名に依らず緑・台帳に無い鍵は猶予の葉の件名でも赤・台帳を増やすと赤・減らすと消した鍵が赤"""
         self.w("05_flow/screen_api.py", SA.replace("LIST_OPS = {\"getA\"}", "LIST_OPS = {\"getA\", \"x\"}"))
+        self.w("08_api/phase1/01_x.md", DOC + "| `GET /g` | read |\n")
         self.commit("K-50 feat: 前から作っていた葉")
         self.assertEqual(self.red(), [])
-        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": ["K-50", "K-9"]}))
+        self.w("05_flow/screen_api.py", SA.replace("LIST_OPS = {\"getA\"}", "LIST_OPS = {\"getA\", \"x\", \"w\"}"))
+        self.commit("K-50 feat: 件名だけ猶予の葉にした")
+        red = self.red()
+        self.assertEqual(len(red), 1, red)
+        self.assertIn("'w'", red[0])
+        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/screen_api.py|LIST_OPS 'x'", "08_api/phase1/01_x.md|`GET /g`", "05_flow/screen_api.py|LIST_OPS 'w'"]}))
         self.commit("K-9 chore: 台帳に足す")
         red = self.red()
-        self.assertTrue(any("K-9" in b and "減らすだけ" in b for b in red), red)
-        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": []}))
+        self.assertTrue(any("減らすだけ" in b and "LIST_OPS 'w'" in b for b in red), red)
+        self.w(body_append_gate.LEDGER, json.dumps({"_doc": "", "tickets": [], "entries": []}))
         self.commit("K-9 chore: 台帳を減らす")
         red = self.red()
-        self.assertTrue(red and all("K-50" in b for b in red), red)   # 猶予を外せば K-50 の直の足しが出る
+        self.assertTrue(any("'x'" in b for b in red) and any("`GET /g`" in b for b in red), red)   # 猶予を外せば前の直の足しが出る
+
+    def test_k1112_ba_015_statement_forms_are_red(self) -> None:
+        """K1112-BA-015：表に足す書き方の文（X[k] = …・.update・|=・for）と {**X} で本体に足しても赤。件名に番号の無いコミットも見る"""
+        extra = ('PERMS["getC"] = ("read", "c", False)\nPERMS.update({"getD": ("read", "d", False)})\nLIST_OPS |= {"getE"}\n'
+                 'for _op in ("getF",):\n    LIST_OPS.add(_op)\n')
+        self.w("05_flow/screen_api.py", SA.replace("PERMS = {\n", "PERMS = {\n    **{\"getG\": (\"read\", \"g\", False)},\n") + extra)
+        self.commit("番号を書かないコミット")
+        red = self.red()
+        self.assertEqual(len(red), 5, red)
+        self.assertTrue(all("番号を書かない" in b for b in red))
+        for word in ("PERMS['getC']", "PERMS.update", "LIST_OPS |=", "for _op", "PERMS **"):
+            self.assertTrue(any(word in b for b in red), word)
+
+    def test_k1112_ba_016_doc_rows_only_new_lines(self) -> None:
+        """K1112-BA-016：文書の表の行を消す・並べ替えるのは緑。取り込みで両方の親が足した「同上」の行は、どれかの親に同じ字があれば数えない"""
+        self.w("08_api/phase1/01_x.d/K-4.md", "")
+        self.w("08_api/phase1/01_x.md", DOC.replace("| `GET /a` | read |\n", ""))
+        self.commit("K-4 chore: 行を消す")
+        self.assertEqual(self.red(), [])
+        D2 = DOC.replace("| `GET /a` | read |\n", "")
+        self.g("checkout", "-q", "-b", "left")
+        self.w("08_api/phase1/01_x.md", D2 + "| 同上 | L |\n")
+        left = self.commit("K-4 feat: 左")
+        self.g("checkout", "-q", "main")
+        self.w("08_api/phase1/01_x.md", D2 + "| 同上 | M |\n")
+        self.commit("K-1 chore: 本線")
+        self.base = self.g("rev-parse", "HEAD")
+        subprocess.run(["git", "merge", "-q", "--no-ff", left], cwd=self.r, capture_output=True)   # ぶつかる（同じ所に足した）
+        self.w("08_api/phase1/01_x.md", D2 + "| 同上 | M |\n| 同上 | L |\n")   # 両方を残して解く
+        self.commit("K-4 merge: 左を取り込む")
+        red = self.red()
+        self.assertEqual([b for b in red if "merge" in b], [], red)   # 取り込みのコミットは数えない
+        self.assertEqual(len(red), 1, red)   # 左のコミットの「同上 L」だけ
+        self.w("08_api/phase1/01_x.md", D2 + "| 同上 | M |\n| 同上 | L |\n| 同上 | N |\n")
+        self.g("add", "-A")
+        self.g("commit", "-q", "--amend", "--no-edit")
+        self.assertTrue(any("merge" in b and "同上" in b for b in self.red()))   # 解くときに足した行は数える
 
     def test_k1112_ba_012_merge_counts_only_new_in_resolution(self) -> None:
         """K1112-BA-012：取り込みのコミットは、どの親にも無かった鍵だけを数える（ぶつかりを解くときに足した物）"""
@@ -347,6 +402,8 @@ class Wiring(unittest.TestCase):
         led = json.loads((ROOT / body_append_gate.LEDGER).read_text(encoding="utf-8"))
         self.assertNotIn("K-1112", led["tickets"])
         self.assertTrue(all(t.startswith("K-") for t in led["tickets"]))
+        self.assertTrue(led["entries"] and all("|" in e for e in led["entries"]))
+        self.assertTrue(all(e.split("|", 1)[0] == body_append_gate.SCREEN_API or body_append_gate.is_body_doc(e.split("|", 1)[0]) for e in led["entries"]))
 
 
 if __name__ == "__main__":
