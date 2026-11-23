@@ -12552,7 +12552,7 @@ components:
       properties:
         name:
           type: string
-          pattern: \S
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           maxLength: 20
         color_key:
           type: string
@@ -12576,7 +12576,7 @@ components:
       properties:
         name:
           type: string
-          pattern: \S
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           maxLength: 20
         color_key:
           type: string
@@ -12615,7 +12615,7 @@ components:
       properties:
         name:
           type: string
-          pattern: \S
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           maxLength: 80
         field_type:
           type: string
@@ -12651,7 +12651,7 @@ components:
                 format: uuid
               name:
                 type: string
-                pattern: \S
+                pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
                 maxLength: 80
       additionalProperties: false
       x-operation: createTicketField
@@ -12685,7 +12685,7 @@ components:
       properties:
         name:
           type: string
-          pattern: \S
+          pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
           maxLength: 80
         field_type:
           type: string
@@ -12716,7 +12716,7 @@ components:
                 format: uuid
               name:
                 type: string
-                pattern: \S
+                pattern: '[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]'
                 maxLength: 80
         kind_ids:
           type: array
