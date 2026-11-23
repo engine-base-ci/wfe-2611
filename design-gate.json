@@ -104,6 +104,7 @@
     "detail-meta-side": ".k-detail-meta-side",
     "detail-kind": ".k-detail-kind",
     "detail-stage": ".k-detail-stage",
+    "detail-stage-locked": ".k-detail-stage.k-prog-stage-locked",
     "detail-head": ".k-detail-card > .k-page-head",
     "detail-title": ".k-detail-card > .k-page-head h1",
     "detail-doc": ".k-detail-doc",
@@ -578,6 +579,10 @@
     {
       "part": "f4d-caret",
       "reason": "段 5 の下絵 v2 の値だけの部品（K-431・features/F4/doc の doc.css・extra.css・thread.css）。線・輪郭・その離し・目に見えない名前・入力の印の値を、border・border-top・border-bottom・border-left・outline・outline-offset・width・height・margin・gap の多くの規則が var(--k-c-f4d-…) で読む。1 つの規則に結べないので D5 の比べる規則を持たない。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "search-focus",
+      "reason": "探す欄の型の部品（段 9・components/k/search-field.css の .k-search-field:focus-within）。値は 焦点の輪（outline） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10,
