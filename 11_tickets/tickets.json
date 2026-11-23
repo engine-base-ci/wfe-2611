@@ -23601,10 +23601,13 @@
    ],
    "split": "",
    "choke_points": [
-    "C2"
+    "C2",
+    "C4"
    ],
    "tests": [
-    "apps/api/test/features/F5/clone-room-now.test.ts"
+    "apps/api/test/features/F5/clone-room-now.test.ts",
+    "apps/api/test/generated/get_clones_me.test.ts",
+    "apps/api/test/generated/get_clones_me_now.test.ts"
    ],
    "carry": [
     "apps/api/test/features/F5/clone-room.harness.ts"
