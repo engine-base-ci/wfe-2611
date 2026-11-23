@@ -207,7 +207,10 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
   }
   // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・K-35）
   app.notFound((c) => {
-    const allow = [...new Set(CONTRACT_PATHS.filter((p) => p.re.test(c.req.path)).map((p) => p.method))];
+    // 変数の無い道にちょうど当たったら、その道のメソッドだけを Allow に書く（同じ深さの :id の道のメソッドを混ぜない・K-705・契約 fuzz ST205）
+    const allow = STATIC_PATHS.get(c.req.path) ?? [
+      ...new Set(CONTRACT_PATHS.filter((p) => p.re.test(c.req.path)).map((p) => p.method)),
+    ];
     if (allow.length)
       return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow: allow.join(", ") });
     return c.json({ error: "not_found", code: "NOT_FOUND" }, 404);
