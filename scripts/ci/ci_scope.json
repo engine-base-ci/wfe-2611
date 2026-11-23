@@ -1667,6 +1667,36 @@
   },
   {
    "paths": [
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
+    "08_api/endpoints.json",
+    "08_api/openapi.yaml",
+    "08_api/lint-mapping.json",
+    "08_api/retired-endpoints.json",
+    "08_api/phase1/01_チケット.md",
+    "08_api/phase1/03_分身の部屋.md",
+    "03_architecture/catalog.json",
+    "03_architecture/catalog.md",
+    "03_architecture/db-catalog.json",
+    "03_architecture/flow-lines.json",
+    "packages/contracts/src/registry.ts",
+    "packages/contracts/src/ops.ts",
+    "apps/api/src/routes/index.ts",
+    "apps/api/src/routes/tickets.ts",
+    "apps/api/src/routes/checks.ts",
+    "apps/api/test/generated/get_tickets_id_checks.test.ts",
+    "apps/api/test/generated/post_checks_id_human.test.ts",
+    "apps/api/test/generated/post_clones_me_activity_export.test.ts",
+    "11_tickets/K-59.md",
+    "11_tickets/K-61.md",
+    "scripts/ci/flow_db_gate.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/checks-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/clone-room.ts",
     "apps/api/src/features/F5/clone-room/**",
     "packages/db/migrations/20261125023300_clone_room_now.sql"
