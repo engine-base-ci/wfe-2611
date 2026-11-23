@@ -26,9 +26,11 @@ begin
   if j.kind = 'ticket' then
     select * into r from action_runs where bridge_job_id = j.id order by created_at desc limit 1 for update;
   end if;
-  -- K-731 ① 人が止めた仕事（止める合図が立っている）：PC が done・stopped・cancelled のどれを返しても、結果は使わず仕事だけ閉じる。
-  --   成果物の版・承認の行・実行・段・旗には触らない（もう一度任せ直した新しい実行を壊さない）。中身のある done のときだけやり取りに 1 行（D-153.20）
-  if j.kind = 'ticket' and j.stop_requested_at is not null then
+  -- K-731 ① 人が止めた仕事（止める合図が立っていて、実行がもう止まっている）：PC が done・stopped・cancelled のどれを返しても、結果は使わず仕事だけ閉じる。
+  --   成果物の版・承認の行・実行・段・旗には触らない（もう一度任せ直した新しい実行を壊さない）。中身のある done のときだけやり取りに 1 行（D-153.20）。
+  --   合図だけ立って実行が動いたままの仕事（止める口 app.run_stop を通らない道・会話の止める口 app.agent_stop に直に）は当てず、前の道で実行・段・旗を止まりに戻す（K731-API-024）
+  if j.kind = 'ticket' and j.stop_requested_at is not null
+     and (r.id is null or r.status_id not in ('queued', 'running', 'asking')) then
     update bridge_jobs set state_id = case when p_state = 'cancelled' then 'cancelled' else 'stopped' end, result = null,
            stopped_reason = coalesce(nullif(btrim(p_reason), ''), j.stopped_reason, 'PC に止める合図が届いて止まりました'),
            agent_session_id = coalesce(p_agent_session, agent_session_id), partial = null, finished_at = now()
