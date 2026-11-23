@@ -27,8 +27,9 @@ export interface ComposerStageState {
   reset(): void;
 }
 
-const KEEP: StageChoice = "変えない";
-const HOLD: StageChoice = "保留…";
+// 型はその字だけ（StageChoice に広げると、choice === KEEP の後でも KEY_OF の鍵に絞れない・tsc の TS7053）
+const KEEP = "変えない" satisfies StageChoice;
+const HOLD = "保留…" satisfies StageChoice;
 /** 選ぶ物 → 書く口の段の鍵（K-389） */
 const KEY_OF: Record<Exclude<StageChoice, "変えない">, string> = { 未着手: "todo", 作業中: "doing", "保留…": "hold" };
 /** 今の段の鍵 → 押せない選ぶ物（会社が足した段は何も押せなくしない） */
