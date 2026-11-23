@@ -138,6 +138,9 @@ const DECISION_NOTE: Record<string, string> = {
   cancel: "決定を取り消した",
 };
 
+/** どの規則にも当たらない欄の見せる名前が無いときの字（欄の鍵は出さない・K-574） */
+const UNKNOWN_FIELD = "項目";
+
 /** 段 5 の欄の名前の引き先が無いとき（会社の項目は「会社の項目」の字になる） */
 const NO_CTX: ChangeCtx = { fieldName: () => null };
 
@@ -172,7 +175,7 @@ function changeParts(changes: readonly ChangeView[], ctx: ChangeCtx): ReactNode[
       parts.push(c.to === null ? "実績を空にした" : `実績を ${c.to} に変えた`);
     } else if (c.field === "decision") {
       parts.push(DECISION_NOTE[c.note ?? ""] ?? "決定を変えた");
-    } else parts.push(`${c.field}を変えた`);
+    } else parts.push(`${ctx.fieldName(c.field) ?? UNKNOWN_FIELD}を変更しました`); // 欄の鍵は画面に出さない（answer=b810843ec17b・K-574）
   }
   return parts;
 }
