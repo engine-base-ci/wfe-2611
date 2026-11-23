@@ -744,7 +744,7 @@
   "tickets": 218,
   "l1_rows": 5094,
   "ears_endpoints": 369,
-  "ears_tests": 4036,
+  "ears_tests": 4049,
   "entities": 145,
   "policies": 418,
   "access_cases": 1562,
@@ -1664,6 +1664,14 @@
    "id": 72,
    "name": "画面の CSS の生の長さ（大きさ・余白・間・行の高さ・影・枠の太さが正本のトークンを通る・D8・台帳は減らすだけ・K-261）",
    "script": "python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref \"$CI_BASE\" && python3 scripts/ci/k261_raw_lengths_test.py",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
+   "job": "spec",
+   "blocking": true
+  },
+  {
+   "id": 74,
+   "name": "共通の台帳の本体に葉が直に行を足さない（足す分は葉ごとのファイル .d・猶予の台帳は減らすだけ・K-1112）",
+   "script": "python3 scripts/ci/body_append_gate.py --base-ref \"$CI_BASE\" && python3 scripts/ci/api_doc_d.py --check && python3 scripts/ci/k1112_body_append_test.py",
    "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
    "job": "spec",
    "blocking": true

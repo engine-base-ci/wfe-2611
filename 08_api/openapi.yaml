@@ -10456,11 +10456,79 @@ components:
           type: string
           format: uuid
           nullable: true
+        stage_key:
+          type: string
+          enum:
+          - todo
+          - doing
+          - hold
+        stage_id:
+          type: string
+          format: uuid
+        hold_reason:
+          type: string
+          pattern: '[^\s\u0000-\u001f\u007f]'
+        resume_condition:
+          type: string
+          pattern: '[^\s\u0000-\u001f\u007f]'
       additionalProperties: false
       x-operation: createTicketMessage
       required:
       - body
       x-required-by: hooks
+      allOf:
+      - not:
+          required:
+          - stage_id
+          - stage_key
+      - anyOf:
+        - not:
+            required:
+            - stage_key
+        - properties:
+            stage_key:
+              enum:
+              - todo
+              - doing
+        - required:
+          - hold_reason
+          - resume_condition
+      - anyOf:
+        - required:
+          - stage_id
+        - required:
+          - stage_key
+          properties:
+            stage_key:
+              enum:
+              - hold
+        - not:
+            anyOf:
+            - required:
+              - hold_reason
+            - required:
+              - resume_condition
+    TicketMessageEditInput:
+      type: object
+      properties:
+        body:
+          type: string
+          pattern: \S
+        mention_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      additionalProperties: false
+      x-operation: updateTicketMessage
+      required:
+      - body
+      x-required-by: hooks
+    TicketMessageStarInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: starTicketMessage
     TicketUpdateInput:
       type: object
       properties:
@@ -12304,7 +12372,7 @@ components:
         deleted:
           type: object
           nullable: true
-      x-operation: createTicketMessage
+      x-operation: deleteTicketMessage
     TestSpecLint:
       type: object
       properties:
@@ -14010,6 +14078,16 @@ components:
         seen_at:
           type: string
       x-operation: markTicketTimelineSeen
+    TicketMessageStar:
+      type: object
+      properties:
+        id:
+          type: string
+        stars:
+          type: integer
+        starred:
+          type: boolean
+      x-operation: starTicketMessage
     TicketUpdated:
       type: object
       properties:
@@ -42310,7 +42388,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketMessagesInput'
+              $ref: '#/components/schemas/TicketMessageEditInput'
       responses:
         '200':
           description: 成功
@@ -42320,7 +42398,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
         '401':
@@ -42336,13 +42414,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-027
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42355,12 +42439,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42381,8 +42459,8 @@ paths:
       - D-125.131
       - D-125.167
       - D-125.29
-      x-permission: self
-      x-permission-scope: 書いた本人（マネージャーは消した印を残して消せる）
+      x-permission: read
+      x-permission-scope: 書いた本人か、そのチケットのグループのマネージャー（口と DB の関数が確かめる）。消すと 1 行の跡が残る（⑪）
       x-step-up: false
       security:
       - session: []
@@ -42402,7 +42480,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
         '401':
@@ -42429,14 +42507,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -42475,9 +42553,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketMessagesInput'
+              $ref: '#/components/schemas/TicketMessageStarInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -42485,7 +42563,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TicketMessageStar'
                   meta:
                     type: object
         '401':
@@ -42518,6 +42596,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -42526,12 +42610,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -45280,13 +45358,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-027
+          description: E-VAL-027／VALIDATION_ERROR
           content:
             application/json:
               schema:
