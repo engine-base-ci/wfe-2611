@@ -43,11 +43,10 @@ interface Field {
   value_count: number;
 }
 let s: Settings;
-let A: World;
 let B: World;
 beforeAll(async () => {
   s = await startSettings(["ticket-fields-read", "ticket-fields-write"]);
-  A = await s.world("設定 項目 A");
+  await s.world("設定 項目 A"); // 別の会社 A も在る形で流す（A の物は読まない）
   B = await s.world("設定 項目 B");
 });
 afterAll(async () => {
@@ -196,7 +195,7 @@ describe("項目を足す", () => {
       expect(JSON.stringify((await s.json(r)).details)).toContain(field);
     }
     expect((await create(w, { name: "字".repeat(40), field_type: "date", kind_ids: w.kinds })).status).toBe(201);
-    const padded = await create(w, { name: `　${"あ".repeat(40)}　`, field_type: "date", kind_ids: w.kinds });
+    const padded = await create(w, { name: `\u3000${"あ".repeat(40)}\u3000`, field_type: "date", kind_ids: w.kinds });
     expect(padded.status).toBe(201);
     expect((await made(padded)).name).toBe("あ".repeat(40));
   });
