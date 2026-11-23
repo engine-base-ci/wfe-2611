@@ -1236,7 +1236,7 @@ PERMS = {
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
     "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
     "updateTicketMessage": ("self", "書いた本人", False),
-    "deleteTicketMessage": ("self", "書いた本人（マネージャーは消した印を残して消せる）", False),
+    "deleteTicketMessage": ("read", "書いた本人か、そのチケットのグループのマネージャー（口と DB の関数が確かめる）。消すと 1 行の跡が残る（⑪）", False),
     "starTicketMessage": ("read", "そのチケットを見られる人（自分の印だけ）", False),
     "listTicketDecisions": ("read", "そのチケットを見られる人（見るだけの人も読める）", False),
     "createTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は足せない・⑧）。決めた人は同じ会社の今のメンバー（既定は本人）", False),
@@ -1582,6 +1582,9 @@ PERMS = {
     "getServiceStatus": ("public", "誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）", False),
     "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
 }
+
+# 成功の状態コード（既定は POST 201・それ以外 200）。POST でも「作らず決めるだけ」で 200 を返す口だけ書く（K-410）。チケットごとの分は screen_api.d に書く
+SUCCESS_STATUS: dict[str, int] = {}
 
 # チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
 import sys as _sys  # noqa: E402

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e006e830cb5bed1a
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e7d1b7fa5b7a83da
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -299,9 +299,9 @@ export interface Ops {
   listKindTemplateUpdates: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TenantDistributions[] };
   applyKindTemplateUpdate: { params: { id: string }; query: never; body: T.KindSectionsInput; data: T.KindSections };
   deleteTicketLink: { params: { id: string }; query: never; body: never; data: T.TicketLinkDeleted };
-  updateTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
-  deleteTicketMessage: { params: { id: string }; query: never; body: never; data: T.TicketMessages };
-  starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
+  updateTicketMessage: { params: { id: string }; query: never; body: T.TicketMessageEditInput; data: T.TimelineItem };
+  deleteTicketMessage: { params: { id: string }; query: never; body: never; data: T.TimelineItem };
+  starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessageStarInput; data: T.TicketMessageStar };
   listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStages[] };
   listTickets: { params: never; query: { "view"?: string | number; "q"?: string | number; "scope_id"?: string | number; "kind_id"?: string | number; "stage_id"?: string | number; "assignee_id"?: string | number; "done"?: string | number; "due"?: string | number; "delegated"?: string | number; "approving"?: string | number; "due_from"?: string | number; "due_to"?: string | number; "start_from"?: string | number; "start_to"?: string | number; "overdue"?: string | number; "fire"?: string | number; "parent"?: string | number; "fields"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Tickets[] };
   createTicket: { params: never; query: never; body: T.TicketCreateInput; data: T.Tickets };
