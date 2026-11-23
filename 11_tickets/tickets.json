@@ -3435,34 +3435,29 @@
     "account",
     "audit",
     "company-settings",
-<<<<<<< HEAD
-    "invite-accept",
     "member-detail",
-    "members"
-=======
-    "member-detail"
->>>>>>> i/段9
+    "invite-accept"
    ],
    "apis": [
     "copyNotificationSettings",
-    "createInvitationLink",
-    "createInvitations",
     "getMe",
     "getNotificationSettings",
-    "getWorkspaceMembers",
     "leaveWorkspace",
     "listMySessions",
-    "nudgeMember",
     "requestEmailChange",
-    "resendInvitation",
-    "revokeInvitation",
     "revokeMySession",
     "revokeOtherSessions",
     "updateMe",
-    "updateMemberRole",
     "updateNotificationSettings",
     "uploadAvatar",
-    "verifyEmailChange"
+    "verifyEmailChange",
+    "createInvitationLink",
+    "createInvitations",
+    "getWorkspaceMembers",
+    "nudgeMember",
+    "resendInvitation",
+    "revokeInvitation",
+    "updateMemberRole"
    ],
    "tests": [
     "apps/api/test/generated/delete_invitations_id.test.ts",
@@ -3487,7 +3482,6 @@
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
-    "apps/api/test/generated/post_invitations_link.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
     "apps/api/test/generated/post_me_email_change.test.ts",
     "apps/api/test/generated/post_me_email_change_verify.test.ts",
@@ -3498,13 +3492,10 @@
     "apps/api/test/generated/post_members_id_suspend.test.ts",
     "apps/api/test/generated/post_workspace_deletion.test.ts",
     "apps/api/test/generated/post_workspace_logo.test.ts",
-<<<<<<< HEAD
-    "apps/web/tests/k/k423-invite-link-join.spec.ts"
-=======
+    "apps/api/test/generated/post_invitations_link.test.ts",
+    "apps/web/tests/k/k423-invite-link-join.spec.ts",
     "apps/api/test/generated/get_workspace_members.test.ts",
-    "apps/api/test/generated/post_invitations.test.ts",
-    "apps/api/test/generated/post_invitations_link.test.ts"
->>>>>>> i/段9
+    "apps/api/test/generated/post_invitations.test.ts"
    ],
    "depends_on": [],
    "sections": {
