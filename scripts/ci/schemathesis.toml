@@ -55,3 +55,14 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "answerCredentialLoginCheck"
 checks.ensure_resource_availability.enabled = false
+
+# K-424（G36 の回 45185794809 の ST202 2 件）：チケットを作る口の区画（sections）・会社の項目（fields）と、直す口の会社の項目（fields）の欄の名前の決まり
+#   （区画は英小文字で始まる 41 字まで・項目は uuid）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422・05_flow/screen_api.d/K-424.py）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない・K-475 と同じ）
+[[operations]]
+include-operation-id = "createTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "updateTicket"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]

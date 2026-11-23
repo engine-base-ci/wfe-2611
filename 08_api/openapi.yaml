@@ -44515,11 +44515,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-013
+          description: E-VAL-013（契約に書けない値の決まり：区画（sections）の欄の名前の決まり（英小文字で始まる英小文字・数字・_ の 41 字まで）・会社の項目（fields）の欄の名前の決まり（項目の id の uuid））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 区画（sections）の欄の名前の決まり（英小文字で始まる英小文字・数字・_ の 41 字まで）
+          - 会社の項目（fields）の欄の名前の決まり（項目の id の uuid）
         '404':
           description: E-PAGE-001
           content:
@@ -44695,11 +44698,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: E-VAL-018／VALIDATION_ERROR
+          description: E-VAL-018／VALIDATION_ERROR（契約に書けない値の決まり：会社の項目（fields）の欄の名前の決まり（項目の id の uuid））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 会社の項目（fields）の欄の名前の決まり（項目の id の uuid）
         '409':
           description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004／E-FLD-001／E-FLD-002／E-FLD-003／E-FLD-004
           content:
