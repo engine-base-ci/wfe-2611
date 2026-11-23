@@ -48,7 +48,7 @@ describe("K-57 Bridge が接続コードを渡す（POST /api/v1/bridge/claim）
   });
 
   it("K57-BR-002 その接続コードは使えない（E-CONN-013）・形が違う（422 の欄の理由）・続けて間違えた（429）を、そのまま窓に出せる文にする", () => {
-    expect(claimReply(422, { code: "E-CONN-013", message: "その接続コードは使えません。…" })).toEqual({
+    expect(claimReply(404, { code: "E-CONN-013", message: "その接続コードは使えません。…" })).toEqual({
       ok: false,
       message: "その接続コードは使えません。…",
     });
