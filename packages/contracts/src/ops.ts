@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e66ff42fce609d54
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e65c14ea5bb0a368
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -90,13 +90,13 @@ export interface Ops {
   getCloneGrowth: { params: never; query: never; body: never; data: T.CloneGrowth };
   countKnows: { params: never; query: never; body: never; data: T.KnowsCounts };
   getCloneNow: { params: never; query: never; body: never; data: T.CloneNow };
-  listConversations: { params: never; query: { "q"?: string | number; "starred"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
+  listConversations: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.ConversationRow[] };
   createConversation: { params: never; query: never; body: T.ConversationsInput; data: T.ConversationCreated };
-  getConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
+  getConversation: { params: { id: string }; query: never; body: never; data: T.ConversationView };
   updateConversation: { params: { id: string }; query: never; body: T.UpdateConversationInput; data: T.ConversationUpdated };
   deleteConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
   createConversationAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
-  listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Messages[] };
+  listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MessageView[] };
   sendConversationMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   answerAgentPermission: { params: { id: string; pid: string }; query: never; body: T.MessagesInput; data: T.Messages };
   stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };

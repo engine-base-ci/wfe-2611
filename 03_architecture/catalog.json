@@ -1451,7 +1451,7 @@
    "op": "listConversations",
    "method": "GET",
    "path": "/api/v1/conversations",
-   "what": "取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話",
+   "what": "取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない）",
    "flows": [],
    "only_later_phase": true,
    "tables": [
@@ -1545,7 +1545,7 @@
    "op": "listConversationMessages",
    "method": "GET",
    "path": "/api/v1/conversations/:id/messages",
-   "what": "取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（messages）— 会話の行の続き（これより古い分・各回は古い順）",
    "flows": [
     "F5"
    ],

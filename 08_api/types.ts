@@ -464,6 +464,9 @@ export type TicketLink = { id?: string; kind?: string; side?: string | null; oth
 export type TicketLinkDeleted = { id?: string };
 export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
 export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
+export type ConversationView = { conversation?: Record<string, unknown>; messages?: string[]; has_more?: boolean; running_job_id?: string | null; work?: Record<string, unknown> | null; stopped?: Record<string, unknown> | null };
+export type ConversationRow = { id?: string; title?: string; updated_at?: string; last_text?: string | null };
+export type MessageView = { id?: string; who?: string; text?: string; at?: string; job_id?: string | null; passed?: string[]; proposal?: Record<string, unknown> | null; took?: Record<string, unknown> | null };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 

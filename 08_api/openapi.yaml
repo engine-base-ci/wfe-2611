@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-22 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -12550,6 +12550,69 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    ConversationView:
+      type: object
+      properties:
+        conversation:
+          type: object
+        messages:
+          type: array
+          items:
+            type: object
+        has_more:
+          type: boolean
+        running_job_id:
+          type: string
+          format: uuid
+          nullable: true
+        work:
+          type: object
+          nullable: true
+        stopped:
+          type: object
+          nullable: true
+      x-operation: getConversation
+    ConversationRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        updated_at:
+          type: string
+        last_text:
+          type: string
+          nullable: true
+      x-operation: listConversations
+    MessageView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        who:
+          type: string
+        text:
+          type: string
+        at:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+          nullable: true
+        passed:
+          type: array
+          items:
+            type: object
+        proposal:
+          type: object
+          nullable: true
+        took:
+          type: object
+          nullable: true
+      x-operation: listConversationMessages
     Error:
       type: object
       properties:
@@ -21174,7 +21237,7 @@ paths:
   /api/v1/conversations:
     get:
       operationId: listConversations
-      summary: 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話
+      summary: 取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない）
       tags:
       - conversations
       x-acts:
@@ -21190,56 +21253,19 @@ paths:
       security:
       - session: []
       parameters:
-      - name: q
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-      - name: starred
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
       - name: cursor
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[0-9]{1,9}$
+          pattern: ^[A-Za-z0-9_-]{1,200}$
       - name: limit
         in: query
         allowEmptyValue: true
         schema:
           type: integer
           minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - agent_session_id
-          - area
-          - branched_from_message_id
-          - closed_at
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - incognito
-          - last_read_at
-          - owner_member_id
-          - parent_conversation_id
-          - participant_member_ids
-          - scope_id
-          - starred_at
-          - subject_type
-          - tenant_id
-          - title
-          - title_auto
-          - updated_at
-          - updated_by
+          maximum: 100
       responses:
         '200':
           description: 成功
@@ -21251,9 +21277,15 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Conversations'
+                      $ref: '#/components/schemas/ConversationRow'
                   meta:
                     type: object
+                    properties:
+                      limit:
+                        type: integer
+                      cursor:
+                        type: string
+                        nullable: true
         '401':
           description: UNAUTHENTICATED
           content:
@@ -21272,14 +21304,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -21387,7 +21419,7 @@ paths:
       x-source:
       - D-104.1
       x-permission: self
-      x-permission-scope: 自分の会話だけ
+      x-permission-scope: 自分の会話だけ（持ち主の判定は DB の関数 app.conversation_view も持つ・K-757）
       x-step-up: false
       security:
       - session: []
@@ -21407,7 +21439,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Conversations'
+                    $ref: '#/components/schemas/ConversationView'
                   meta:
                     type: object
         '401':
@@ -21434,14 +21466,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -21709,7 +21741,7 @@ paths:
   /api/v1/conversations/{id}/messages:
     get:
       operationId: listConversationMessages
-      summary: 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成
+      summary: 取得（messages）— 会話の行の続き（これより古い分・各回は古い順）
       tags:
       - messages
       x-acts:
@@ -21765,7 +21797,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: self
-      x-permission-scope: 自分の会話だけ
+      x-permission-scope: 自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）
       x-step-up: false
       security:
       - session: []
@@ -21781,7 +21813,7 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[0-9]{1,9}$
+          pattern: ^[A-Za-z0-9_-]{1,200}$
       - name: limit
         in: query
         allowEmptyValue: true
@@ -21789,36 +21821,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - action_run_id
-          - attachments
-          - body
-          - citations
-          - confidence
-          - conversation_id
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - job_id
-          - kind
-          - options
-          - parent_message_id
-          - quote
-          - read_at
-          - send_state
-          - sender_member_id
-          - tenant_id
-          - transcript_uuid
-          - undo_action_run_id
-          - updated_at
-          - updated_by
-          - work
       responses:
         '200':
           description: 成功
@@ -21830,9 +21832,15 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Messages'
+                      $ref: '#/components/schemas/MessageView'
                   meta:
                     type: object
+                    properties:
+                      limit:
+                        type: integer
+                      cursor:
+                        type: string
+                        nullable: true
         '401':
           description: UNAUTHENTICATED
           content:
@@ -21857,6 +21865,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -21865,12 +21879,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
