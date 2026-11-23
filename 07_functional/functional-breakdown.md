@@ -221,16 +221,16 @@
 | password-reset | パスワードの再設定 | A31 | 3 | 1 | 3 | 8 | R1 R2 R3 R4 |
 | onboard-interview | 自分のAIと話す | A06 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-draft | たたき台を確かめる | A07 A08 | 1 | 0 | 2 | 15 | R1 R2 |
-| bridge-setup | PC をつなぐ | A09 | 11 | 48 | 73 | 18 | R1 R2 R3 |
+| bridge-setup | PC をつなぐ | A09 | 11 | 48 | 73 | 17 | R1 R2 R3 |
 | credentials | 預けたログイン情報 | A10 | 5 | 48 | 54 | 7 | R1 R2 R3 |
 | onboard-testrun | テストで動かす | A11 | 1 | 0 | 1 | 6 | R1 R2 |
 | onboard-golive | 本番に切り替える | A12 | 1 | 0 | 1 | 10 | R1 R2 |
 | today | 今日 | A14 A55 A56 A92 | 1 | 0 | 4 | 6 | R1 R2 R3 R4 |
-| approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 15 | R1 R2 R3 |
+| approvals | 承認待ち | A15 A89 | 4 | 45 | 57 | 16 | R1 R2 R3 |
 | clone-thread | 自分のAIとAI社員のやりとり | A16 | 1 | 0 | 1 | 6 | R1 R2 R3 |
 | tasks | タスク | A50 | 1 | 0 | 1 | 10 | R1 R2 R3 |
 | clone-chat | 分身の部屋：会話と知っていること | A100 A20 A88 A90 A91 A95 | 21 | 45 | 78 | 22 | R1 R2 R3 R4 |
-| ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 50 | 17 | R1 R2 R3 |
+| ai-activity | 分身の部屋：やったこと | A53 A57 | 4 | 45 | 49 | 17 | R1 R2 R3 |
 | records | 台帳 | A24 A47 | 1 | 0 | 2 | 4 | R1 R2 R3 R4 |
 | record-detail | 台帳の1件 | A18 A19 | 1 | 0 | 2 | 7 | R1 R2 R3 R4 |
 | goals | 目標 | A22 A54 | 1 | 0 | 2 | 10 | R1 R2 R3 |
@@ -274,11 +274,11 @@
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
 | member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 85 | 44 | R1 R2 R3 R4 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 83 | 44 | R1 R2 R3 R4 |
 | masters | 決まり | A118 A120 | 1 | 0 | 14 | 18 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |
-| work-types | 業務の型 | A119 | 1 | 0 | 9 | 10 | R1 R2 R3 |
+| work-types | 業務の型 | A119 | 1 | 0 | 9 | 9 | R1 R2 R3 |
 | knowledge | ナレッジ | A114 A30 A93 | 1 | 0 | 31 | 19 | R1 R2 R3 |
 | clients | 取引先 | A121 | 1 | 0 | 15 | 18 | R1 R2 |
 | requests | 届いた依頼 | A122 | 1 | 0 | 6 | 16 | R1 R2 |

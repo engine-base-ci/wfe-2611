@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。267 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。270 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4835,6 +4835,58 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "running"
+    }
+  },
+  "E-TALK-020": {
+    "id": "E-TALK-020",
+    "cls": "connectivity",
+    "message": "いまは書きながらの返事を送れません。画面が少しずつ読み直します",
+    "action": "待つ（画面が自分で読み直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-030": {
+    "id": "E-TALK-030",
+    "cls": "conflict",
+    "message": "この仕事は会話の仕事ではないので、文を写せません",
+    "action": "写さない（PC は送り直さない）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-030",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "bridge-setup"
+    }
+  },
+  "E-TALK-040": {
+    "id": "E-TALK-040",
+    "cls": "external",
+    "message": "資料の場所を出せませんでした。少し待ってから、もう一度お試しください",
+    "action": "待ってやり直す（PC は取れなかった資料を名前と理由で文に添えて続ける）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-040",
+    "must_not": false,
+    "layers": [
+      "API",
+      "C4"
+    ],
+    "where": {
+      "screen": "clone-chat",
+      "choke_point": "C4"
     }
   }
 };

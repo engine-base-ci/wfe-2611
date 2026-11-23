@@ -2413,6 +2413,251 @@
     }
    },
    "na": {}
+  },
+  "getMyClone": {
+   "file": "apps/api/test/features/F5/clone-room-now.test.ts",
+   "reason": "分身の頭は呼んだ人の PC（生きている知らせの時刻）と名前の列で答えが変わる。生成の試験の種では PC の時刻を作れない（K-753）",
+   "covers": {
+    "test_get_clones_me_ok": "K753-API-001",
+    "test_get_clones_me_rejected_401": "K753-API-018",
+    "test_get_clones_me_rejected_403": "K753-API-019",
+    "test_get_clones_me_shape": "K753-API-001",
+    "test_get_clones_me_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_rejected_422": "入力を受けない GET",
+    "test_get_clones_me_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）",
+    "test_get_clones_me_upstream_failed": "この口はサーバーの外を呼ばない（DB の関数を 1 回読むだけ）"
+   }
+  },
+  "getCloneNow": {
+   "file": "apps/api/test/features/F5/clone-room-now.test.ts",
+   "reason": "いま・このあと・止まったは実行の並びと PC の時刻で答えが変わる。生成の試験の種では実行の並びを作れない（K-753）",
+   "covers": {
+    "test_get_clones_me_now_ok": "K753-API-006",
+    "test_get_clones_me_now_rejected_401": "K753-API-018",
+    "test_get_clones_me_now_rejected_403": "K753-API-019",
+    "test_get_clones_me_now_shape": "K753-API-006",
+    "test_get_clones_me_now_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_now_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_now_rejected_422": "入力を受けない GET",
+    "test_get_clones_me_now_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）"
+   }
+  },
+  "listConversations": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_ok": "K757-API-001",
+    "test_get_conversations_shape": "K757-API-001",
+    "test_get_conversations_rejected_401": "K757-API-020",
+    "test_get_conversations_rate_limited": "K757-API-020",
+    "test_get_conversations_rejected_422": "K757-API-004",
+    "test_get_conversations_session_unresolved": "K757-API-018",
+    "test_get_conversations_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_rejected_403": "自分の会話だけを返す一覧で、権限の 403 は無い（他人の会話は出ない・受けは K757-API-002）"
+   }
+  },
+  "getConversation": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_ok": "K757-API-006",
+    "test_get_conversations_id_shape": "K757-API-006",
+    "test_get_conversations_id_rejected_401": "K757-API-020",
+    "test_get_conversations_id_rate_limited": "K757-API-020",
+    "test_get_conversations_id_not_found": "K757-API-008",
+    "test_get_conversations_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-757.ts",
+     "mark": "K144-API-920"
+    },
+    "test_get_conversations_id_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）"
+   }
+  },
+  "listConversationMessages": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_messages_ok": "K757-API-013",
+    "test_get_conversations_id_messages_shape": "K757-API-013",
+    "test_get_conversations_id_messages_rejected_401": "K757-API-020",
+    "test_get_conversations_id_messages_rate_limited": "K757-API-020",
+    "test_get_conversations_id_messages_not_found": "K757-API-008",
+    "test_get_conversations_id_messages_rejected_422": "K757-API-014",
+    "test_get_conversations_id_messages_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_messages_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）",
+    "test_get_conversations_id_messages_upstream_failed": "外を呼ばない（C4 は契約の口の宣言に付いているだけ・会話の行を DB から読むだけ）"
+   }
+  },
+  "streamConversation": {
+   "file": "apps/api/test/features/F5/talk-stream.test.ts",
+   "reason": "流れは知らせの接続（偽を差す）と会話の持ち主で答えが変わる。生成の試験の種では流れを開けず、知らせの接続も差せない（K-759）",
+   "covers": {
+    "test_get_conversations_id_stream_ok": "K759-API-001",
+    "test_get_conversations_id_stream_shape": "K759-API-001",
+    "test_get_conversations_id_stream_rejected_401": "K759-API-010",
+    "test_get_conversations_id_stream_rejected_403": "K759-API-009",
+    "test_get_conversations_id_stream_not_found": "K759-API-009",
+    "test_get_conversations_id_stream_rate_limited": "K759-API-010",
+    "test_get_conversations_id_stream_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-759.ts",
+     "mark": "K144-API-924"
+    },
+    "test_get_conversations_id_stream_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_stream_session_unresolved": "K759-API-015",
+    "test_get_conversations_id_stream_unavailable": "K759-API-008",
+    "test_get_conversations_id_stream_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_stream_upstream_failed": "この口はサーバーの外を呼ばない（同じ API の中の知らせの接続の受け手を作るだけ。接続が無い・つなげない・落ちたは 503 E-TALK-020 と down＝K759-API-007・008）"
+   }
+  },
+  "mirrorConversationEntries": {
+   "file": "apps/api/test/features/F5/talk-mirror.test.ts",
+   "reason": "写しは仕事を受け取った PC・仕事の会話・同じ id の有無で答えが変わる。生成の試験の種では会話つきの動いている仕事を作れない（K-760）",
+   "covers": {
+    "test_post_bridge_jobs_id_conversation_entries_ok": "K760-API-001",
+    "test_post_bridge_jobs_id_conversation_entries_shape": "K760-API-001",
+    "test_post_bridge_jobs_id_conversation_entries_rejected_401": "K760-API-018",
+    "test_post_bridge_jobs_id_conversation_entries_rejected_403": "K760-API-008",
+    "test_post_bridge_jobs_id_conversation_entries_not_found": "K760-API-008",
+    "test_post_bridge_jobs_id_conversation_entries_conflict": "K760-API-009",
+    "test_post_bridge_jobs_id_conversation_entries_rate_limited": "K760-API-019",
+    "test_post_bridge_jobs_id_conversation_entries_rejected_422": "K760-API-007",
+    "test_post_bridge_jobs_id_conversation_entries_session_unresolved": "K760-API-012",
+    "test_post_bridge_jobs_id_conversation_entries_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_jobs_id_conversation_entries_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_conversation_entries_upstream_failed": "写しはサーバーの外を呼ばない（PC から届いた文を DB に写すだけ・D-112）。PC が完了信号を出さない・写しが遅れることは取り戻し（listMirrorTargets・K760-BR-003）が拾う"
+   }
+  },
+  "listMirrorTargets": {
+   "file": "apps/api/test/features/F5/talk-mirror.test.ts",
+   "reason": "取り戻す先は 14 日・session・消した会話で絞る。生成の試験の種では日付を動かせない（K-760）",
+   "covers": {
+    "test_get_bridge_mirror_targets_ok": "K760-API-014",
+    "test_get_bridge_mirror_targets_shape": "K760-API-014",
+    "test_get_bridge_mirror_targets_rejected_401": "K760-API-017",
+    "test_get_bridge_mirror_targets_rejected_403": "K760-API-017",
+    "test_get_bridge_mirror_targets_rejected_422": "K760-API-015",
+    "test_get_bridge_mirror_targets_rate_limited": "K760-API-017",
+    "test_get_bridge_mirror_targets_session_unresolved": "K760-API-017",
+    "test_get_bridge_mirror_targets_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_bridge_mirror_targets_upstream_failed": "取り戻す先を読むだけで、サーバーの外を呼ばない（D-112）"
+   }
+  },
+  "reportBrowserState": {
+   "file": "apps/api/test/features/F5/job-extra.test.ts",
+   "reason": "ブラウザの様子は仕事を受け取った PC と仕事の状態で答えが変わる。生成の試験の種では動いている仕事を作れない（K-761）",
+   "covers": {
+    "test_post_bridge_jobs_id_browser_ok": "K761-API-001",
+    "test_post_bridge_jobs_id_browser_shape": "K761-API-001",
+    "test_post_bridge_jobs_id_browser_rejected_401": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_rejected_403": "K761-API-004",
+    "test_post_bridge_jobs_id_browser_not_found": "K761-API-004",
+    "test_post_bridge_jobs_id_browser_rejected_422": "K761-API-003",
+    "test_post_bridge_jobs_id_browser_rejected_422_2": {
+     "file": "apps/api/test/features/contract/k144.d/K-761.ts",
+     "mark": "K144-API-926"
+    },
+    "test_post_bridge_jobs_id_browser_session_unresolved": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_jobs_id_browser_rate_limited": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_browser_upstream_failed": "外を呼ばない（出来事を DB に 1 行書くだけ。C2 の関数だけで、外のサービス・AI・置き場を呼ばない）"
+   }
+  },
+  "getFileForBridge": {
+   "file": "apps/api/test/features/F5/job-extra.test.ts",
+   "reason": "ファイルは仕事に付いた資料と仕事を受け取った PC で答えが変わる。生成の試験の種では資料を付けた仕事を作れない（K-761）",
+   "covers": {
+    "test_get_bridge_files_ref_ok": "K761-API-006",
+    "test_get_bridge_files_ref_shape": "K761-API-006",
+    "test_get_bridge_files_ref_rejected_401": "K761-API-008",
+    "test_get_bridge_files_ref_rejected_403": "K761-API-008",
+    "test_get_bridge_files_ref_rejected_422": "K761-API-009",
+    "test_get_bridge_files_ref_not_found": "K761-API-007",
+    "test_get_bridge_files_ref_upstream_failed": "K761-API-010",
+    "test_get_bridge_files_ref_session_unresolved": "K761-API-010",
+    "test_get_bridge_files_ref_rate_limited": "K761-API-010",
+    "test_get_bridge_files_ref_upstream_failed_2": "K761-API-010",
+    "test_get_bridge_files_ref_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
   }
  }
 }

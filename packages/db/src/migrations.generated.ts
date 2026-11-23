@@ -160,4 +160,8 @@ export const MIGRATIONS = [
   "20261125021100_run_stop.sql",
   "20261125021200_approval_stop.sql",
   "20261125021300_approval_withdraw.sql",
+  "20261125023300_clone_room_now.sql",
+  "20261125023700_talk_conversations.sql",
+  "20261125024000_talk_mirror.sql",
+  "20261125024100_job_browser_file.sql",
 ] as const;
