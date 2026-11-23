@@ -80,9 +80,9 @@ class FlowTest(unittest.TestCase):
         self.assertIn("必ず守る", e3["change"])
 
     def test_K727_FL_007_parents(self) -> None:
-        """親の入れ物：K-69 の screens は rules・work-types だけ（knowledge・masters・layers を持たない）・題が新しい形。K-70 の screens に layers が入る"""
+        """親の入れ物：K-69 の screens は knowledge・masters・rules・work-types（knowledge・masters は画面の葉が本線に入るまで親が持つ・layers は持たない）・題が新しい形。K-70 の screens に layers が入る"""
         h69 = heads("11_tickets/K-69.md")
-        self.assertEqual(h69["screens"], "[rules, work-types]")
+        self.assertEqual(h69["screens"], "[knowledge, masters, rules, work-types]")
         self.assertIn("ナレッジ", h69["title"])
         self.assertIn("layers", heads("11_tickets/K-70.md")["screens"])
 
