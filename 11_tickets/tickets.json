@@ -19874,6 +19874,92 @@
    "file": "11_tickets/K-392.md"
   },
   {
+   "id": "K-393",
+   "title": "やり取りに書き込む（書く欄・@ の候補はそのチケットを見られる人だけ・知らせる人（今の部品 NotifyPicker）・引用・送れなかった・二度押し・書きかけを端末に残す・担当 ▾ と 📎 はグレー）（K-66 の葉・S7-W2）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-372（預ける小窓：書く口・二度押し・失敗の文・字を残す・29 行・見込み 1 時間）と段 1 の K-224（作る画面の知らせる人 NotifyPicker）から引いた：書く欄の入れ物 composer.tsx と書く器 use-post.ts 20 分・@ の候補（字の拾い方・表記ゆらぎ・入れ方）15 分・知らせる人の小窓と NotifyPicker の字の口 10 分・引用と書きかけ 10 分・見た目の突き合わせ 5 分。部品 views.tsx の口は K-392 が先に足す（この葉は views.tsx を変えない）。試験 19 行は切る段で書いた",
+   "decisions": [
+    "D-128.45",
+    "D-125.131",
+    "D-128.81",
+    "D-125.130",
+    "D-130.1",
+    "D-144.7",
+    "D-145.9",
+    "D-127.8",
+    "D-128.58",
+    "D-128.125"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。書き込みと受け箱の行（@ された人・知らせる人）を書くのは口の葉 K-385（createTicketMessage・関門 C2 と C6）。画面は契約の口を呼ぶだけで、外には何も出さない（メールも出さない・D-125.130）",
+   "tests": [
+    "apps/web/tests/k/k393-thread-post.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-392",
+    "K-385"
+   ],
+   "acts": [
+    "A107"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [
+    "createTicketMessage"
+   ],
+   "mock": [
+    "talk-compose",
+    "talk-send",
+    "talk-cannot"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/create-ticket/notify-picker.tsx",
+    "apps/web/features/F6/thread/composer.tsx",
+    "apps/web/features/F6/thread/composer-stage.tsx",
+    "apps/web/features/F6/thread/use-post.ts",
+    "apps/web/features/F6/thread/use-mention.ts",
+    "apps/web/features/F6/thread/mention.ts",
+    "apps/web/features/F6/thread/notify-dialog.tsx",
+    "apps/web/features/F6/thread/draft.ts",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りのタブの下の書く欄から書き込めるようにする（行為 A107・D-128.45）。**読める人は書ける**（閲覧のみも・代表の答え ⑧）・**完了したチケットにも書ける**（⑭）。\n書く欄では、`@` で人を呼べ（候補は **そのチケットを見られる人だけ**・⑨）、**知らせる人** を選べる（最初から担当者と承認する人・自分は除く・外せる・⑨）。書き込みの「引用」で頭の 1〜2 行を付けられる（⑮3）。\n送っている間は二度押しで 2 通にしない。送れなかったときも書いた字は消さない。書きかけの字は送るまでその端末に残す（⑮5）。担当 ▾ と 📎 は押せない形で出す（⑮6・D-145.9）。\n\n状態 ▾ で段も一緒に変えるのは K-396（この葉では K-382 の「まだ」の形＝押せない形のまま）。直す・消す・☆ は K-394。",
+    "完了の条件": "- [ ] 下の表の行（K393-UI-001〜019）が緑：`apps/web/tests/k/k393-thread-post.spec.ts`（共通の道具 `apps/web/tests/k/thread-mock.ts`・K-392 が持つ）\n- [ ] 見た目の突き合わせ（モックの画面と本番の画面の写しを同じ幅で比べる・K393-UI-001）が緑\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD\n\n- 正の絵はモック `/dev/mock/f6/talk-compose`（@ の候補・知らせる人）・`talk-send`（送れなかった）・`talk-cannot`（完了したチケットの書く欄・状態 ▾ は押せない形）。部品は `features/F6/thread/views.tsx` の Composer（K-382 が本線に入れる・値と押す関数の口は K-392 が足す）。見た目の突き合わせは共通の道具 `stage2-match.ts` の matchMock（base /dev/mock/f6）で、パネルの中の書く欄の役（`thread-mock.ts` の COMPOSE_PAIRS）を比べる。talk-cannot の知らせる人は、K-382 がモックを答え ⑨ のとおり（担当者と承認する人が最初から入る）に直した後の形を正とする（段7-切る段-途中.md の「小さな直し残し」）\n- 書く欄の字（代表の直し 1・answer=fabd031f9b37・D-144.7）：1 行の高さから始まる。打った字は本文の書き込みと同じ 13px・幅 767 以下は 16px。薄い案内の字はどの幅も 13px（thread.css にもう在る・K-382 が運ぶ）。改行すると伸びる\n- 送る値は **本文・@ の人・知らせる人・引用元の 4 つだけ**（K-385 が入力を作り直す：書いた人・種類・☆ は入れさせない）。@ の人は、送る時点で本文に「@〈呼ばれ方〉」の字が残っている人だけ（候補で選んだ後に字を消した人は送らない）\n- @ の候補と知らせる人の候補は、読む口の最初の答えの meta.people（そのチケットを見られる人・K-383）だけ。**自分は出さない**（⑮7 自分に知らせない）。見られない人は口も断る（K-385・404 E-PAGE-001・欄と明細なし）。同じ人が @ と知らせる人の両方に入っていても知らせは 1 通（口の側・⑮7）\n- 知らせる人：最初は meta.people の担当者と承認する人（自分を除く）。× で外す。＋ で小窓「知らせる人を選ぶ」を開き、今の部品 `features/F4/create-ticket/notify-picker.tsx`（NotifyPicker・名前で絞り込む・NFKC と大小をそろえて比べる）で選ぶ（同じ物を 2 つ作らない）。今の NotifyPicker は見出し「作ったことを知らせる人」と案内「名前で絞り込む（担当者と承認する人には自動で届く）」を固く持ち、やり取りの小窓では字が違う（後ろの案内は、担当者と承認する人を外せる答え ⑨ と食い違う）。**この葉が NotifyPicker に `label?`・`placeholder?` を足す**（無ければ今の字＝作る画面は変えない・まとめ役の決め）。やり取りの小窓は見出し「知らせる人」・案内「名前で絞り込む」を渡す（**仮**・下の「代表に聞くこと」）。小窓は × で閉じる（選んだ時点で書く欄の並びに入る）\n- 書いた後：答えの行（K-385 の data・読む口と同じ 1 件の形）を一覧のいちばん下に足し（K-392 の appendItem）、見える所まで動かす。読み直さない。打つ所・引用は空に、知らせる人は最初の 2 人に戻す。書きかけは消す\n- 送れなかったとき：網の切れ・5xx（コードが正本に無い）は部品の字「送れませんでした。もう一度お試しください（書いた字は残っています）」（番号は無い・部品 views.tsx の Composer に直に在る）。正本の番号が返れば、その文（403 E-PAGE-002・404 E-PAGE-001・409 の番号 など）。422 は項目の理由の字。どれも書いた字・知らせる人・引用は残す。**409 のときは useComposerStage の afterPost を呼ぶ**（詳細を読み直すだけ・reset はしない：段を一緒に変えようとして断られたとき、K-396 の状態 ▾ を押せない形に替えるため・まとめ役の決め）。押し直しは同じ冪等キー（字・知らせる人・引用を変えたら新しいキー）。401 は前からの共通の扱い（入り直し・戻る先にこのチケット・書きかけは端末に残っている）\n- 空白だけ・何も書いていないときは「書き込む」を押せない（**仮**・下の「代表に聞くこと」）\n- かな漢字の変換中の Enter では候補を選ばない（isComposing）。全角の「＠」でも候補を出す（表記ゆらぎ）\n- 書きかけ：localStorage の鍵 `kaname.thread.draft.<チケットの id>` に字だけを置く（読めない・書けないときは置かない・try/catch で包む）。開いたら戻す。送れたら消す\n- 状態 ▾（K-396 まで押せない形）・担当 ▾・📎 は押せない形で、押しても何も起きない（D-145.9）\n- PC をつないでいなくても書ける（D-127.8・AI を使わない）\n- 区画のファイル composer.tsx・composer-stage.tsx には fetch・lib/api・useQuery・useMutation の字を書かない（K-382 の K382-SL-001）。口は use-post.ts に置く\n- 書いた後の一覧への足し方は K-392 の appendItem（react-query の同じ鍵の答えを書き替える・区画をまたぐのは問い合わせの鍵だけ）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/thread/views.tsx` の Composer（value・onText・notify・onRemoveNotify・onAddNotify・onSend・sendDisabled・error・quote・mentions・activeMention・onPickMention・textareaRef・onKeyDown・stageSlot・holdSlot は K-392 が足す） | 値と押す関数を渡す |\n| 書く欄の入れ物 | `features/F6/thread/composer.tsx`（K-382 が「まだ」の形で置く・panel.tsx から使われる） | この葉が中身を作る（書き出す名前は K-382 のまま） |\n| 一覧に足す | `features/F6/thread/use-timeline.ts` の appendItem・meta.people（K-392） | 書いた行を足す・候補と既定の知らせる人 |\n| 知らせる人を選ぶ部品 | `features/F4/create-ticket/notify-picker.tsx`（NotifyPicker・K-224） | 小窓の中で使う（作り直さない）。見出しと案内の字の口 `label?`・`placeholder?` はこの葉が足す |\n| 小窓 | `components/k` の Dialog | 「知らせる人を選ぶ」 |\n| 口を呼ぶ | `lib/api/call.ts` の call（idempotencyKey を渡せる） | createTicketMessage |\n| 文 | `components/k/error-of.ts`（errorCodeOf・errorText）・部品 views.tsx の失敗の字（番号は無い） | 失敗の知らせ |\n| 状態 ▾ の置き場 | `features/F6/thread/composer-stage.tsx`（K-382 の「まだ」の形） | この葉が器の口 useComposerStage を「まだ」の形で足し、slot・holdSlot を部品の stageSlot・holdSlot に置く。送る前に fields()、422 の項目は setErrors、届いたら afterPost と reset、409 なら afterPost だけ（中身は K-396） |\n| 探したが無かった物 | @ の字の拾い方・入れ方・送る人の集め方・書きかけの置き場 | `mention.ts`（純粋な関数）・`use-mention.ts`（K-394 の直す欄も使う）・`draft.ts`・`use-post.ts`・`notify-dialog.tsx` を作る |\n| 検索の型 | components/k に検索の欄の型は無い | NotifyPicker の絞り込む欄は今の TextField のまま（下の「## 受け持ちをまたぐ名前」） |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| @ の字の扱い（純粋な関数） | `features/F6/thread/mention.ts`：`mentionQuery(text, caret)`：打つ所の左にある最後の「@」か「＠」から打つ所までに空白が無ければ、その間の字（無ければ空）を返す。`filterPeople(people, q, me)`：自分を除き、NFKC・大小をそろえて呼ばれ方か正式な名前に q を含む人（q が空なら全員）・並びは people の順。`insertMention(text, caret, who)`：「@〈q〉」を「@〈呼ばれ方か正式な名前〉 」に置き換え、新しい字と打つ所を返す。`mentionIds(text, picked)`：選んだ人のうち、字に「@〈名前〉」が残っている人の id（重ねない・選んだ順）。「@〈名前〉」の後ろは空白・字の終わり・句読点（、。，．！？!?）のどれかであること（部分一致にしない：呼ばれ方「鈴木」が「@鈴木 健」の中に当たって、字を消した鈴木 一郎を送らないため）。`excerpt(body)`：頭の 2 行（3 行目からは「…」を付ける）|\n| @ の候補の器 | `features/F6/thread/use-mention.ts`：打つ所の字と打つ所の位置から候補（mention.ts）と選んでいる位置を持ち、↑↓ で移り Enter（変換中は除く）か押して選ぶと入れる。Esc で閉じる。選んだ人を持つ。K-394 の直す欄も使う |\n| 知らせる人の小窓 | `features/F6/thread/notify-dialog.tsx`：Dialog（題「知らせる人を選ぶ」）の中に NotifyPicker（people＝meta.people から自分を除いた人・chosen＝今の知らせる人・`label=\"知らせる人\"`・`placeholder=\"名前で絞り込む\"`） |\n| NotifyPicker の字の口 | `features/F4/create-ticket/notify-picker.tsx`：props に `label?: string`（絞る欄の見出し・無ければ「作ったことを知らせる人」）と `placeholder?: string`（無ければ「名前で絞り込む（担当者と承認する人には自動で届く）」）を足し、今の TextField の label・placeholder に渡す。ほか（候補・札・絞り方・読み上げ）は変えない。作る画面（tickets-page.tsx ほか）は渡さないので今の字のまま |\n| 書きかけ | `features/F6/thread/draft.ts`：鍵 `kaname.thread.draft.<id>` の字を読む・書く・消す（try/catch） |\n| 書く器 | `features/F6/thread/use-post.ts`：`call(\"createTicketMessage\", { params: { id }, body: { body, mention_member_ids, notify_member_ids, quote_of_id, ...stage.body }, idempotencyKey })`。送っている間は 2 本目を送らない（押せない形・Enter も捨てる）。冪等キーは送る中身が同じ間は同じ物を使う。送る前に useComposerStage の fields()（ok でなければ送らない・この葉では body は空）。成功で appendItem・afterPost・reset。**409 は afterPost だけ呼ぶ**（読み直すだけ・reset しない・字と知らせる人と引用は残る）。422 の項目のうち hold_reason・resume_condition・stage_key は setErrors に渡す。失敗の文の選び方は上の「前提と制約」 |\n| 書く欄の入れ物 | `features/F6/thread/composer.tsx`（K-382 の名前のまま中身を作る）：打つ所の字（開いたら書きかけを戻す・打つたびに書きかけに置く）・引用（panel.tsx から渡る「引用」の口で頭の 2 行を出し、「引用を外す」で消す・引用を付けたら打つ所に焦点）・知らせる人（最初は担当者と承認する人）・@ の候補・送る。担当 ▾・📎 は部品のまま押せない形 |\n| 親 | 11_tickets/K-66.md から apis の createTicketMessage・この葉の試験の行を外す（overlap_ok） |",
+    "書く口の入力と答え（正は口の葉 K-385）": "`POST /api/v1/tickets/:id/messages`（頭 idempotency-key）・体 `{ body: string, mention_member_ids: uuid[], notify_member_ids: uuid[], quote_of_id: uuid | null }`（段の欄は K-389・K-396）。答え 201 `{ data: <読む口と同じ 1 件の形・K-383> }`。名前は K-385 の md に合わせる。",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-385）。呼んだ口が失敗したときの画面：\n\n- S1: 書く口を呼ぶ。失敗（503・網の切れ）したら部品の失敗の文・書いた字は残る（K393-UI-005）。403・404 NOT_FOUND は正本の文（K393-UI-006）・404 E-PAGE-001（選べない人・引用元）は部品の字「選べない人がいます。選び直してください（書いた字は残っています）」を出して読む口を 1 回読み直し、候補と知らせる人の札から meta.people に居ない人を外す（K393-UI-006・K-385 の申し送り）・422 は項目の理由（K393-UI-006）・401 はログインへ（K393-UI-007）。二度押しは 1 回（K393-UI-004）\n\n（書きかけを端末の localStorage に置くのは外に影響しない。置けないときは何もしない・書くことは困らない）",
+    "依存の理由": "- K-392: 要る — 部品 views.tsx の Composer の値と押す関数の口・一覧に足す appendItem・meta.people（候補と既定の知らせる人）・共通の試験の道具 thread-mock.ts を作る葉。panel.tsx が composer.tsx を使う形もこの葉の前提\n- K-385: 要る — 契約の口 createTicketMessage の入力と答え（上の表）を作り直す葉。画面は call(\"createTicketMessage\") の型で口に合わせる\n- （K-382 は K-392 を通して入っている：composer.tsx・composer-stage.tsx の「まだ」の形）\n- NotifyPicker（`features/F4/create-ticket/notify-picker.tsx`）はこの葉が字の口を足す。この作業場所のほかの葉は触らない（下の検索。段 9 はまとめ役が照らす）\n- （後に入る葉）K-394：この葉の use-mention.ts・mention.ts を直す欄で使う（K-394 がこの葉に依存する）。K-396：この葉の composer.tsx が置く composer-stage.tsx の中身を作る（K-396 がこの葉に依存する）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k393-thread-post.spec.ts`（実 Chrome・詳細は前からの土台で開き、やり取りの口は共通の道具 thread-mock.ts で差し替える。書く口の答えは hold() で止めて二度押しを確かめる。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（チケットの段） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作業中・未着手・保留 | やり取りのタブの書く欄 | 書ける人 | 書ける | このチケット | K393-UI-003 |\n| 完了 | 同じ | 書ける人 | 書ける・状態 ▾ は押せない形 | このチケット | K393-UI-015 |\n| 作業中 | 同じ | 閲覧のみ（段は変えられない） | 書ける | このチケット | K393-UI-016 |\n| 確認中・承認待ち・実行中 | 同じ | 書ける人 | 書ける・状態 ▾ は押せない形 | K-396 | K396-UI-007 |\n| どれでも | 同じ | ログインが切れた | ログインへ・書きかけは残る | このチケット | K393-UI-007 |\n| 消したチケット・見えなくなった | 同じ | どれでも | 正本の文（404 NOT_FOUND → E-PAGE-001 の文） | このチケット | K393-UI-006 |\n| 書いている間に @ の人・知らせる人が抜けた・見られなくなった・引用元が消された | 同じ | どれでも | 「選べない人がいます。選び直してください（書いた字は残っています）」・読み直して候補と札から外す・字は残る・送り直さない（404 E-PAGE-001） | このチケット | K393-UI-006 |\n| どれでも | 一覧へ移って戻る・開き直す | どれでも | 書きかけが戻る | このチケット | K393-UI-014 |\n| どれでも | 同じ | 先方の人（ゲスト） | 社内のやり取りを書けない（口の行の守り） | K-385 | K385 の行 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K393-UI-001 | 入口 | 幅 375・768・1440 × talk-compose・talk-send・talk-cannot | モックと本番で、書く欄の箱・打つ所・道具の字・@ の候補の箱と字・知らせる人の札・書き込む・失敗の知らせ・補足の字の値が同じ（px ±2・上下はパネルの上端から） |\n| K393-UI-002 | 入力 | 幅 375・768・1440 | 薄い案内「書き込む（@ で人を呼べます）」・打った字は 375 で 16px・768／1440 で 13px・薄い案内の字はどれも 13px（ページに効いている CSS の規則のうち、打つ所に当たる `::placeholder` の font-size を読んで値に直す。getComputedStyle の ::placeholder は使わない）・高さは 2 行分より低い・知らせる人は「鈴木」「佐藤」（高本は無い）・担当 ▾ と 📎 は押せない形（aria-disabled・薄さ 0.55・押しても Enter でも何も起きない）・補足「状態を変えると、この書き込みと一緒に残る ・ @ で呼ぶ」 |\n| K393-UI-003 | 入力 | 手順 S1：佐藤を外して書く | 体はちょうど {body, mention_member_ids: [], notify_member_ids: [鈴木], quote_of_id: null}・冪等キーあり。答えの行（高本 聖斗 11:02・「知らせた：鈴木・佐藤」）がいちばん下に出る・打つ所は空・知らせる人は鈴木と佐藤に戻る・読む口は 1 回のまま |\n| K393-UI-004 | 操作の揺れ | 答えを止めて書き込むを 2 回押す・Enter | 「送っています…」で押せない・口は 1 回。答えの後も 1 回 |\n| K393-UI-005 | 失敗 | 手順 S1 の失敗：503・網の切れ → 押し直す | 「送れませんでした。もう一度お試しください（書いた字は残っています）」・字と知らせる人 2 人は残る。押し直して届くと知らせは消え、冪等キーは 1 回目と同じ |\n| K393-UI-006 | 失敗 | 手順 S1 の失敗：403・404・409・422 | 403 は E-PAGE-002 の文・404 NOT_FOUND（チケットが無い・見えない）は E-PAGE-001 の文・404 E-PAGE-001（選べない人・引用元）は「選べない人がいます。選び直してください（書いた字は残っています）」を出し（E-PAGE-001 の正本の文は出さない）、読む口を 1 回読み直して知らせる人の札から居なくなった人を外す（送り直さない）・409 はその番号の正本の文（この葉の時点の正本に在る番号で形を見る・afterPost を呼ぶのは K396-UI-008 が見る）・422（E-VAL-027・欄 body）は項目の理由「書き込む文を書いてください」。選べない人・引用元の断りは 404 E-PAGE-001 と同じ形（K-385）。どれも字は残る |\n| K393-UI-007 | 利用者の状態 | 手順 S1 の失敗：401 | /login?next=… へ。localStorage の書きかけに字が在り、開き直すと打つ所に戻る |\n| K393-UI-008 | 入力 | 空・空白と改行と全角の空白だけ | 書き込むは押せない・口は 0 回 |\n| K393-UI-009 | 入力 | 「@鈴」→ ↓ ↑ Enter・「と@」→ 押す・「@」→ Esc | 候補は「鈴木 一郎 担当者」「鈴木 健 経理グループ」（見られない人・自分は無い）・↓ で 2 つ目が選ばれた形・Enter で「了解です。@鈴木 」。「@」だけなら 鈴木 一郎・佐藤 花子・鈴木 健（高本は無い）・押すと「@鈴木 健 」。Esc で閉じる。送った mention_member_ids は [鈴木 一郎, 鈴木 健]・見られない人の id は体に無い |\n| K393-UI-010 | 入力 | 全角の「＠佐」・変換中の Enter | 候補「佐藤 花子」・変換中の Enter では選ばず字はそのまま・候補は開いたまま |\n| K393-UI-011 | 入力 | 選んだ後に「@鈴木」の字を消して送る | mention_member_ids は [] |\n| K393-UI-012 | 入力 | × で佐藤を外す・＋ で小窓・「ｹﾝ」「健」で絞る・選ぶ・× で閉じる | 小窓「知らせる人を選ぶ」の絞る欄の見出しは「知らせる人」（作る画面の「作ったことを知らせる人」ではない）・候補は 3 人（鈴木 一郎・佐藤 花子・鈴木 健。高本と見られない人は無い）・「ｹﾝ」は「合う人がいません」・「健」で鈴木 健を選ぶと並びに足される。送った notify_member_ids は [鈴木 一郎, 鈴木 健]（自分は無い） |\n| K393-UI-013 | 入力 | 3 行の書き込みの「引用」→ 書く → もう一度引用 → 外す → 書く | 書く欄の上に「1 行目の字 2 行目の字…」・打つ所に焦点・送ると quote_of_id＝その書き込みの id・送った後は引用が消える。「引用を外す」で消え、次は quote_of_id: null |\n| K393-UI-014 | 時間の流れ | 書きかけ → 一覧へ移って戻る → 開き直す → 送れない → 送れる | どれでも字が戻る・書きかけの鍵はこのチケットの 1 つだけ・送れないときは残る・送れたら消える |\n| K393-UI-015 | 対象の状態 | 完了したチケット | 状態 ▾ は押せない形（aria-disabled）・書ける・体に段の欄は無い |\n| K393-UI-016 | 利用者の状態 | can.progress が false（閲覧のみ） | 書き込むは押せる・書ける |\n| K393-UI-017 | 対象の状態 | 20 件の一覧で書く | 足した行がパネルの見える所に入る |\n| K393-UI-018 | 入力 | 幅 320・375・768・1024・1440 × 知らせる人 3 人・長い字 | 横溢れ 0 |\n| K393-UI-019 | 入口 | キーボード | 打つ所の次は、押せない物を飛ばして「鈴木 を外す」「佐藤 を外す」「知らせる人を足す」「書き込む」の順・書き込むは Enter で送る |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: TP-CRUD-01 書き込みは足すだけで、同じ行を 2 人が直すことは無い（直すのは書いた本人だけ・K-394） |\n| TP-CRUD-02 消したものを古いリンクで | K393-UI-006（チケットが消された・見えなくなった → 404 の正本の文） |\n| TP-CRUD-03 消す・戻す・子 | 要らない: TP-CRUD-03 この葉は消さない（消すのは K-394・戻せない・⑪） |\n| TP-CRUD-04 2 回押し | K393-UI-004（冪等キー・口は 1 回） |\n| TP-CRUD-05 保存の途中で失敗 | K393-UI-005（届かなければ一覧に足さない・字は残る。書き込みと受け箱の行を 1 つの取引で書くのは口の葉 K-385） |\n| TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | K393-UI-007・014 |\n\n知らせ（受け箱の行の宛先・重ねない・自分に送らない）は口の葉 K-385 の行。画面は候補から自分を除く（K393-UI-009・012）。",
+    "前からの試験を替えた所": "この葉の changes: は新しいファイルと K-382 が置くファイル（composer.tsx）だけで、切る段の検査（cut_check.py prior）が出す前からの試験は無い（composer.tsx はまだ無い）。書く欄の字・部品を見る前からの試験を検索で出した（段 7 の切る段の新しい試験を除く）。\n\n```search\ngit grep -ln 'k-talk-composer\\|書き込む（@ で人を呼べます）\\|kaname.thread.draft' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n```search\ngit grep -ln 'notify-picker\\|作ったことを知らせる人' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k393*'\n1\n```\n\n- apps/web/tests/k/k224-create-frame.spec.ts: 替えない — 既定の字は今のまま。この葉は NotifyPicker に `label?`・`placeholder?` を足すが、作る画面は渡さないので見出し「作ったことを知らせる人」と案内の字・候補・札は変わらない\n\nNotifyPicker を changes: に持つ葉を、この作業場所のチケットから出した（この葉と、部品を作った段 1 の K-224（部品は本線に在る）の 2 つ。段 7 の葉ではこの葉だけ。段 9 の葉は c/段9 に在るので、まとめ役が照らす）：\n\n```search\ngit grep -ln '^changes:.*notify-picker' -- '11_tickets/*.md'\n2\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K-382 の試験。この葉が直す composer.tsx・composer-stage.tsx の字を K382-SL-001 が読む（書き出す名前 TalkComposer・ComposerStage が在り、fetch・lib/api・useQuery・useMutation が無い）。名前を残し口は use-post.ts に置くので、行の期待は変わらない（K-382 が入った後は切る段の検査がこのファイルを出す）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 書いたときの口 | — | 書く口 1 本（読み直さない・答えの行を一覧に足す） |\n| 直列の段 | — | 1 |\n| 同じ口の二重 | — | 無い（二度押しも 1 回・K393-UI-004） |\n| @ の候補・知らせる人の候補 | — | 口を呼ばない（読む口の最初の答えの meta.people） |\n| 新しい住所 | — | 増えない（同じ /tickets/[id]） |\n| 認証の要る答えの Cache-Control | — | 口の葉が持つ（private, no-store・K-385） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 書く口の体の名前（body・mention_member_ids・notify_member_ids・quote_of_id）と答えの形（201・読む口と同じ 1 件）は K-385 の md と合わせた（K-385 は @ と知らせる人に見られない人・引用元の違いを 404 E-PAGE-001（欄・明細なし）で断る。控え帳 11-21 01:15 K-385）\n- 候補の元 meta.people（そのチケットを見られる人・担当者／承認する人の印・呼ばれ方）は K-383 に頼んだ物（K-392 の md の「画面が読む値」）\n- NotifyPicker の見出しと案内の字を差し替える口（`label?`・`placeholder?`）はこの葉が足す（まとめ役の決め・K-382 は触らない）。この葉は「知らせる人」「名前で絞り込む」を渡す\n- 書く欄の入れ物 `thread/composer.tsx` の `TalkComposer`（名前は K-382・受ける物 `{ ticket, people, quote, onClearQuote, onPosted }` は K-392 が広げる）\n- composer-stage.tsx（K-382 は `ComposerStage(props: { ticket }): null` で置く）に、この葉が器の口だけを足す（中身は「まだ」）：`useComposerStage(ticket: SlotTicket): { slot: ReactNode; holdSlot: ReactNode | null; fields(): { ok: true; body: Record<string, unknown> } | { ok: false }; setErrors(fields: Record<string, string>): void; afterPost(): Promise<void>; reset(): void }`。この葉の形は slot＝押せない形の「状態 変えない ▾」（読み上げ「状態 変えない（変えられません）」）・holdSlot＝null・fields は `{ ok: true, body: {} }`・ほかは何もしない。K-396 が中身を作る（K-396 はこの葉に依存するので同じファイルを取り合わない）。ComposerStage の名前は残す（K382-SL-001）\n- **検索の欄の型**：NotifyPicker の「名前で絞り込む」欄は検索の欄だが、components/k に検索の型（段 9 と同じ「焦点の輪を枠全体（虫眼鏡ごと）に付ける」形）が無い。この葉では作らず今の TextField のまま。**段 9 の切る段が作る検索の型と重なる**（型ができたら NotifyPicker を直すのは作る画面と同じ葉で 1 回に。この葉では変えない）\n- 書いた行を足す口 appendItem は K-392 の use-timeline.ts",
+    "代表に聞くこと（仮で書いた物）": "- 空白だけのときの「書き込む」：押せない形にする（勧め）か、押すと「書き込みを書いてください」と出すか（勧め：押せない形。文を足さずに済み、ブラウザの必須の確かめに奪われない）\n- 小窓「知らせる人を選ぶ」の見出しの字（勧め：題「知らせる人を選ぶ」・絞る欄の見出し「知らせる人」・案内「名前で絞り込む」。作る画面の案内「（担当者と承認する人には自動で届く）」は、やり取りでは外せるので付けない）",
+    "成果物": "- 書く欄の入れ物 composer.tsx の中身・書く器 use-post.ts・@ の候補 use-mention.ts と mention.ts・知らせる人の小窓 notify-dialog.tsx・書きかけ draft.ts\n- 画面の試験 `apps/web/tests/k/k393-thread-post.spec.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=eaa451436670・f5cd1647389f）：⑧ 読める人は書ける／⑨ 知らせる人の欄を残す（選んだ人と @ した人に知らせる・最初から担当者と承認する人・自分は除く・外せる・候補はそのチケットを見られる人だけ）／⑭ 完了したチケットにも書ける／⑮3 引用は頭の 1〜2 行・元を消しても字は残る／⑮4 補足は「状態を変えると、この書き込みと一緒に残る ・ @ で呼ぶ」（「# でチケット」は書かない）／⑮5 書きかけは送るまで端末に残す・送れなくても消えない／⑮6 担当 ▾ と 📎 はグレー／⑮7 自分に知らせない・同じ人に知らせは 1 通／㉒ 仮の文はそのまま\n- 2026-11-20 下絵の直し（answer=fabd031f9b37）：① 書く欄の字と高さ（1 行の高さから・13px・767 以下の打った字は 16px）\n- 2026-11-20 切る段の決め：知らせる人は書く欄の札の並び（モックのまま）に、＋ で今の部品 NotifyPicker の小窓を開く形（同じ物を 2 つ作らない・見出しと案内の字の口はこの葉が足す）\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す",
+    "リスクと懸念": "- 体と答えの名前が K-385 と食い違うと、作る段の型の検査で止まる（作る段の始めに K-385 の md を読み直す）\n- meta.people が K-383 の答えに入らない形になったら、候補の元を変える（listMembers の scope_id では「担当者・関わった人」まで含まないので、そのチケットを見られる人と合わない）",
+    "申し送り": "- K-394：use-mention.ts と mention.ts（mentionQuery・filterPeople・insertMention・mentionIds）を直す欄で使う\n- K-396：composer-stage.tsx の中身（useComposerStage の slot・holdSlot・fields・setErrors・afterPost・reset）を作る。use-post.ts は fields() の body を体に足し、ok でなければ送らない。422 の hold_reason・resume_condition・stage_key は setErrors へ。409 のときは afterPost だけ呼ぶ（reset しない）"
+   },
+   "file": "11_tickets/K-393.md"
+  },
+  {
    "id": "K-395",
    "title": "チケットの詳細で、頭の段の札から段を変える（未着手・作業中・保留・完了の小窓へ・開き直す）・保留の小窓と題名の下の保留の帯・右の属性の実績（人が使った時間）を入れる。閲覧のみと仕組みの段の間は変えられない形（K-66 の葉・S7-W4）",
    "kind": "タスク",
@@ -20347,6 +20433,67 @@
    "file": "11_tickets/K-425.md"
   },
   {
+   "id": "K-426",
+   "title": "DB の関数を、誰でも（PUBLIC）呼べる形から外す（migration を流す役の既定の権限から PUBLIC を外し、今ある関数は一度に外して、呼ぶ役に要る物だけを渡す・D-128.171 を関数ごとでなく根本で守る・K-56 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F3",
+   "area": "DB",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い K-366 の migration（関数 1 つの権限だけを直す 2 行・TS の実測は口の分と合わせて 0.75 時間）と同じくらい：migration 1 本（文 4 つと do の枠 1 つ・中身は下の実施事項に全部書いた）10 分・作り手で一覧を作り直す 1 分・この葉の試験 13 行と、DB を使う前からの試験の全部を手元の使い捨ての DB で流して確かめる 30 分（切る段で同じ形を当てた DB で、apps/api/test と packages/db/test を全部流して確かめ済み・下の「切る段で確かめたこと」）。関数ごとの revoke は書かないので、関数の数（250 余り）に比例しない",
+   "decisions": [
+    "D-128.171",
+    "D-128.125",
+    "D-128.143"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "packages/db/test/k426_function_execute_private.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（DB の関数の権限だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/db"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261120160000_function_execute_private.sql",
+    "packages/db/src/migrations.generated.ts"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "本線の migration を全部当てた DB で、**app のスキーマの security definer の関数 254 件のうち 146 件を、誰でも（PUBLIC）実行できる**（2026-11-20 切る段で数えた。数える SQL は下）。\nsecurity definer の関数は持ち主（migration を流す管理者）の権限で動くので、行の守り（RLS）を越えて読み書きできる。例：`app.agent_set_browser` は、呼べさえすれば、どの人の PC の値でも書ける。\n決まり D-128.171（security definer の関数は、呼んでよい役だけに execute を渡し public から外す）は前からあり、関数ごとに `revoke all … from public` を書いて守ってきたが、書き忘れた 146 件が残った（関数ごとに人が思い出す守りは必ず漏れる・L-004）。\n\nこの葉は関数ごとに revoke を並べず、**根本を消す**：\n\n1. **これから作る関数**：migration を流す役の既定の権限（`alter default privileges`）から PUBLIC の execute を外す。新しく作った関数は、初めから誰にも渡らない（呼ぶ役に渡すのは、今までどおり migration に `grant execute … to kaname_app` を書く）\n2. **今ある関数**：app のスキーマの関数全部と、public のスキーマの security definer の関数 2 つ（0002 の `visible_scopes`・`has_permission`）から、PUBLIC を一度に外す。あわせて、持ち主・kaname_app・kaname_auth のほかの役に明示で渡した実行権（staging／本番の Supabase の anon・authenticated・service_role・手で作った kaname_ci_read など）と、migration を流す役の既定の権限でほかの役に渡す行も外す（呼んでよい役を 3 つに決め、それ以外は名前を挙げずに全部外す。Supabase の役の名前を決め打ちしない）\n3. **呼ぶ役に要る物だけ渡す**：呼び手の権限で動く所（行の守り・呼び手の権限の関数と引き金の本文・アプリの文）が呼ぶ物で、まだ kaname_app に明示で渡していない 6 つだけを渡す\n4. **戻らないことを試験で守る**：「PUBLIC と、決めた 3 つのほかの役が実行できる関数は 0 件」を DB の試験の行にする（検査の台本は足さない）\n\n製品の振る舞いは変えない（今 kaname_app が呼んでいる関数は全部、後も呼べる）。",
+    "完了の条件": "- [ ] 下の表の 13 行（K426-DB-001〜011・013・014）が緑：`packages/db/test/k426_function_execute_private.test.ts`（K426-DB-012 は人が確かめる）\n- [ ] DB を使う前からの試験（apps/api/test・packages/db/test・この葉の範囲 ci_wide db・shared）が全部緑\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: PERM\n\n- 関門：DB の権限だけを変える（関門 C2 の中・DB の外に出ない）\n- **DB に繋ぐ役**（migration と接続の設定から全部洗った）：\n  - 持ち主（migration を流す管理者）：staging／本番は `DATABASE_ADMIN_URL`、手元と CI は superuser の `DATABASE_URL`（packages/config・packages/db/src/cli.ts）。関数は全部この役のもの\n  - `kaname_app`（業務の接続・`DATABASE_URL`・0002 で作る）：口・Bridge の口・ジョブ・行の守りを通る文。app のスキーマの usage を持つ\n  - `kaname_auth`（認証の接続・`AUTH_DATABASE_URL`・0004 で作る）：kaname_auth のスキーマの表と app.login_attempts だけ。**app のスキーマの usage を持たない**（K-52・signup_cleanup_grants.test.ts の K52-API-049）ので、今も app の関数は 1 つも呼べない。packages/auth が呼ぶ app の関数は全部 appPool（kaname_app）経由（resolver.ts・passkeys.ts・index.ts を読んで確かめた）\n  - ほかの役は migration に無い。ただし staging／本番には次が在る → ② の do の枠で外す・K426-DB-012 で staging を数える\n    - Supabase が作る役（anon・authenticated・service_role など）：Supabase は postgres が public に作る関数を、スキーマごとの既定の権限でこれらに渡す（PUBLIC と別の行なので、PUBLIC を外すだけでは残る）。製品のコードはどれも使わない（Supabase の口の鍵・supabase-js の DB の口は使わない）\n    - `kaname_ci_read`（staging の健康診断の読むだけの役・infra/STAGING.md「読むだけの役を作る」で手で作る・app のスキーマの usage を持つ）：今は PUBLIC 経由で app の security definer の関数を呼べる。読むのは `select name from app.schema_migrations`（scripts/ci/staging_db_migrations.mjs）だけで関数を使わないので、外しても壊れない\n- **今の権限の実測**（2026-11-20・本線 77207947・使い捨ての DB）：app の関数 272 件（security definer 254）。PUBLIC が実行できる物 162 件（security definer 146・そうでない物 16）。PUBLIC が実行できる security definer 146 件のうち 117 件は kaname_app に明示の権限が既に在る（PUBLIC を外しても kaname_app は呼べる）。残る 29 件は 引き金 19 件と、下の 10 件\n- **PostgreSQL の決まり**：スキーマを付けた `alter default privileges in schema app revoke … from public` は、全体の既定（関数は PUBLIC に execute）を外せない（スキーマごとの既定は全体の既定に足すだけ）。だから既定の権限はスキーマを付けずに書く（migration を流す役が作る全部のスキーマの関数に効く）\n- **引き金の関数**：引き金が動くときには execute の権限を見ない（引き金を作るときだけ見る）。だから引き金の関数は誰にも渡さなくても動く。ただし **呼び手の権限で動く引き金（security definer でない）の本文が呼ぶ関数** は、呼び手（kaname_app）に execute が要る：`app.agent_notify_job()`・`app.agent_notify_conversation()` が `app.agent_notify_member(uuid)` を呼ぶ → ③ で渡す\n- **行の守り（RLS）の式の中の関数** は、文を流した役（kaname_app）の権限で呼ばれる：`app.tenant_id()`・`app.user_id()`・`app.ops_grant_ok(uuid)`・`visible_scopes(uuid)`・`has_permission(…)` → ③ で渡す（ほかは明示の権限が在る）\n- **security definer の関数の中から呼ぶ関数** は持ち主の権限で呼ばれるので、kaname_app に渡さなくても動く\n- 試験はこのチケットを切る人が書き、実装する人は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）\n- migration の名前は時刻の形（K-327・作り手 gen_migrations.py は名前の順に並べる）。この葉は `20261120160000_function_execute_private.sql`（切る段で決めた）。先に作っている葉（K-354・K-355・K-365・K-366・K-371）の migration が後から入っても、名前の順に並ぶだけで、この葉と食い違わない：まっさらな DB では前の名前の物が先に当たり、この葉の ② が PUBLIC を外す。今ある DB では後に当たり、① の既定の権限で初めから PUBLIC に渡らない。どの葉の migration も新しい関数に `revoke all … from public` と `grant execute … to kaname_app` を書いている（切る段で 4 本を読んで確かめた）\n\n- **呼んでよい役は 3 つ**：持ち主・`kaname_app`・`kaname_auth`。kaname_auth の明示の権限（K-52 などが渡した 16 件）は触らない（app のスキーマの usage が無いので今も呼べないが、前のチケットの決めを変えない）",
+    "依存の理由": "依存は無い。変えるファイルは migration 1 本と作り手の一覧（`packages/db/src/migrations.generated.ts`・overlap_ok）だけで、ほかの葉と重ならない。DB を使う前からの試験は全部この葉の CI（ci_wide db）で流れるので、権限が足りない関数があれば取り込む前に赤になる。",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| migration | `packages/db/migrations/20261120160000_function_execute_private.sql`。中身は下の文だけ（関数ごとの revoke は書かない）。頭の注に、決まり D-128.171・PostgreSQL の決まり（スキーマを付けた revoke は全体の既定を外せない）・③ の 6 つを渡す訳（行の守り／呼び手の権限の本文）を書く |\n| 一覧 | `python3 scripts/ci/gen_migrations.py` で `packages/db/src/migrations.generated.ts` を作り直す（手で書かない） |\n| 試験 | この葉の試験（切る段が書いた）と、DB を使う前からの試験の全部を、手元の使い捨ての DB で流して緑を見る |\n\n```sql\n-- ① これから作る関数：migration を流す役の既定の権限から PUBLIC の execute を外す（スキーマを付けない）\nalter default privileges revoke execute on functions from public;\n-- ② 今ある関数：app の関数全部と、public のスキーマの security definer の関数 2 つから PUBLIC を外す\nrevoke execute on all functions in schema app from public;\nrevoke execute on function public.visible_scopes(uuid), public.has_permission(uuid, text, uuid, text) from public;\n-- ②b 持ち主・kaname_app・kaname_auth のほかの役に渡した実行権も外す（今ある関数と、migration を流す役の既定の権限の両方）。\n--     staging／本番の Supabase の役や手で作った役に当たる。手元と CI の DB には該当が無く何もしない\ndo $$\ndeclare r record;\nbegin\n  for r in\n    select distinct p.oid::regprocedure as f, a.grantee::regrole as g\n      from pg_proc p cross join lateral aclexplode(p.proacl) a\n     where (p.pronamespace = 'app'::regnamespace\n            or (p.pronamespace = 'public'::regnamespace and p.prosecdef\n                and not exists (select 1 from pg_depend d\n                                 where d.classid = 'pg_proc'::regclass and d.objid = p.oid and d.deptype = 'e')))\n       and a.grantee <> 0 and a.grantee <> p.proowner\n       and a.grantee not in ('kaname_app'::regrole, 'kaname_auth'::regrole)\n  loop\n    execute format('revoke execute on function %s from %s', r.f, r.g);\n  end loop;\n  for r in\n    select distinct d.defaclnamespace as ns, a.grantee::regrole as g\n      from pg_default_acl d cross join lateral aclexplode(d.defaclacl) a\n     where d.defaclrole = current_user::regrole and d.defaclobjtype = 'f'\n       and a.grantee <> 0 and a.grantee <> d.defaclrole\n       and a.grantee not in ('kaname_app'::regrole, 'kaname_auth'::regrole)\n  loop\n    if r.ns = 0 then\n      execute format('alter default privileges revoke execute on functions from %s', r.g);\n    else\n      execute format('alter default privileges in schema %s revoke execute on functions from %s', r.ns::regnamespace, r.g);\n    end if;\n  end loop;\nend $$;\n-- ③ 呼び手の権限で動く所が呼ぶ物で、まだ kaname_app に明示で渡していない物だけを渡す\ngrant execute on function app.tenant_id(), app.user_id(), app.ops_grant_ok(uuid), app.agent_notify_member(uuid),\n  public.visible_scopes(uuid), public.has_permission(uuid, text, uuid, text) to kaname_app;\n```\n\n### 渡さない物（今より狭くなる物）\n\nPUBLIC だけで呼べていた次の 12 件は、kaname_app にも渡さない。どれも、ほかの security definer の関数か引き金の中からだけ呼ばれ（持ち主の権限で動く）、口の文・行の守り・呼び手の権限の本文のどこにも出ない（切る段で DB の目録と `grep -rn` で確かめた）。K426-DB-008 が見る：\n\n- security definer：`app.bridge_pair_new(uuid, uuid)`・`app.bridge_dev_claim(uuid, text)`・`app.bridge_claim(text, text)`（呼ぶ所が無い・0089 で置き換わった前の形）・`app.memory_reviewer(uuid, uuid, uuid)`・`app.agent_tool_audit(…)`・`app.agent_unit(uuid, uuid, text)`・`app.ticket_basics(uuid)`・`app.refresh_role_bundle_defaults()`・`app.apply_role_bundles(uuid, uuid)`\n- security definer でない（呼び手の権限で動くので PUBLIC でも越える力は無いが、② で一緒に外れる）：`app.role()`・`app.scope_tree(uuid)`・`app.artifact_editable(text)`\n\n引き金の関数 19 件も誰にも渡さない（動くときに権限を見ない）。\n\n### 切る段で確かめたこと（2026-11-20・使い捨ての DB kaname_tmp_k426）\n\n- 本線 77207947 の migration を全部当て、上の文を流した → app と public の security definer で PUBLIC が実行できる物 0 件・新しく作った security definer の関数は PUBLIC も kaname_app も実行できない。上の SQL を一時の migration のファイルにして、この葉の試験 13 行を流すと 13 行とも緑（確かめた後、一時のファイルは消して一覧を作り直した）\n- 同じ DB で、口の文に出る app の関数（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src の業務の接続のファイル）192 件の名前の形 181 件が、どれも kaname_app で実行できる\n- 同じ DB で（②b の do の枠を足す前の 4 文の形で）、DB を使う前からの試験（apps/api/test・packages/db/test の全部・488 ファイル）を流した：179 ファイル緑・300 飛ばし・9 ファイル赤。赤の 9 つはどれもこの葉と関わらない：まだ作っていない葉の切る段の試験 8 つ（ai-browser-bridge・ai-browser-check・credential-login-check・credential-resolve・legacy-credential-routes・legacy-pc-routes・legacy_credential_functions・k144-contract の葉の hooks の読み込み）と、DB の名前が kaname_test であることを前にした repository.test.ts の 1 行。記録の中に `permission denied` は 0 件。②b は手元の DB に該当の行が無く何もしないので、結果は変わらない\n- 本線の migration だけを当てたまっさらな DB で（切る段の smoke）、この葉の試験は準備・後片付けの赤 0。本体は 001〜004・008・010・011・013・014 が赤（実装が無いから）、005〜007・009 は前から緑（今の形を壊さないことを見る行）",
+    "外に影響する手順": "- S1: DB の既定の権限を変える（① の 1 文）\n- S2: 今ある関数から PUBLIC を外す（② の 2 文）と、ほかの役に渡した実行権と既定の権限の行を外す（②b の do の枠）\n- S3: 要る物を kaname_app に渡す（③ の 1 文）\n\n3 つとも 1 つの migration の中で、migrate（packages/db/src/migrate.ts）が 1 つの取引で流す。どれかが落ちたら取引ごと戻り、何も残らない（半分だけ外した形・既定の権限だけ変えた形を残さない・K426-DB-011）。外の呼び出し・置き場・メールは無い。",
+    "テスト仕様と確認の結果": "`packages/db/test/k426_function_execute_private.test.ts`（本物の Postgres。管理者の接続と kaname_app の接続。作る関数・開く権限は試験の中で消す・戻す）\n\n### 状態 × 入口 × 利用者の状態\n\n対象は関数の権限の状態（DB の列から：`pg_proc.proacl` の PUBLIC の行の有無・`prosecdef`・`pg_default_acl` の関数の行）× 入口（関数を直に呼ぶ／行の守りを通る文／呼び手の権限の引き金）× 呼ぶ役（kaname_app／kaname_auth／ほかの役）\n\n| 対象の状態 | 入口 | 呼ぶ役 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 今ある app の security definer の関数 | 直に呼ぶ | ほかの役（PUBLIC） | 実行できない | このチケット | K426-DB-001 |\n| 今ある app の関数（security definer でない・引き金） | 直に呼ぶ | ほかの役（PUBLIC） | 実行できない | このチケット | K426-DB-002 |\n| public のスキーマの security definer の関数（拡張の物を除く） | 直に呼ぶ | ほかの役／kaname_app | PUBLIC は実行できない・kaname_app はできる | このチケット | K426-DB-003 |\n| これから作る関数（app・public・kaname_auth） | 直に呼ぶ | ほかの役／kaname_app | どちらも実行できない（渡すまで） | このチケット | K426-DB-004 |\n| 行の守り・列の既定・検査の制約・ビュー・呼び手の権限の本文が呼ぶ関数 | 文の中 | kaname_app | 実行できる | このチケット | K426-DB-005・006 |\n| 口の文に出る関数 | 直に呼ぶ | kaname_app | 実行できる（今と同じ） | このチケット | K426-DB-007 |\n| 中だけで使う関数 | 直に呼ぶ | kaname_app | 実行できない・行は増えない | このチケット | K426-DB-008 |\n| app の関数・kaname_auth の関数 | 直に呼ぶ | kaname_auth | app のスキーマを使えない（今と同じ）・kaname_auth の関数も PUBLIC に開いていない | このチケット | K426-DB-009 |\n| migration を当てた後 | もう一度当てる | 管理者 | 落ちない・同じ形 | このチケット | K426-DB-010 |\n| migration の途中 | 後ろの文で落ちる | 管理者 | 全部戻る | このチケット | K426-DB-011 |\n| 持ち主・kaname_app・kaname_auth のほかの役（superuser と組み込みの pg_ の役を除く）が今ある関数を | 直に呼ぶ | ほかの役 | 実行できない | このチケット | K426-DB-013 |\n| ほかの役に明示で渡した実行権・既定の権限（Supabase の anon などに当たる形） | migration を当てる | ほかの役 | 外れる・新しく作った関数も渡らない・kaname_app と kaname_auth の明示の権限は残る | このチケット | K426-DB-014 |\n| staging（Supabase）に当てた後 | 数える SQL・健康診断 | anon・authenticated・service_role・kaname_ci_read | 実行できる物 0 件・健康診断は緑のまま | このチケット（人が確かめる） | K426-DB-012 |\n| 呼び手の権限の引き金（agent_notify_job・agent_notify_conversation） | 会話・仕事の表に書く | kaname_app | 知らせが出る（今と同じ） | 前からの試験 agent_stream.test.ts の TRG-001 | — |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K426-DB-001 | 守り | app の security definer の関数を全部見る | PUBLIC が実行できる物（`has_function_privilege('public', …)`）の一覧がちょうど空。空でなければ名前を全部出して赤 |\n| K426-DB-002 | 守り | app の関数を security definer でない物・引き金まで全部見る | PUBLIC が実行できる物の一覧がちょうど空 |\n| K426-DB-003 | 守り | public のスキーマの security definer の関数（拡張の物を除く） | PUBLIC が実行できる物の一覧がちょうど空。`public.visible_scopes(uuid)`・`public.has_permission(uuid, text, uuid, text)` は kaname_app が実行できる |\n| K426-DB-004 | 時間の流れ | 管理者の接続（migration を流す役と同じ）が app・public・kaname_auth に security definer の関数を新しく作る | migration を流す役の、スキーマを付けない関数の既定の権限が在り、PUBLIC の行（`=X`）が無い。作った 3 つの関数は PUBLIC も kaname_app も実行できない。kaname_app の接続から呼ぶと `permission denied`。作った関数は消す |\n| K426-DB-005 | 守り | 行の守り・列の既定・検査の制約・ビュー・security definer でない関数と引き金の本文（sql・plpgsql）を DB の目録から読み、そこに `名前(` で出る app と public の関数（拡張の物を除く）を集める | kaname_app が実行できない物の一覧がちょうど空。③ の 6 つは kaname_app が実行できる |\n| K426-DB-006 | 利用者の状態 | kaname_app の接続で、会社と人の文脈（set_config）を入れ、行の守りが `tenant_id(`・`user_id(`・`ops_grant_ok(`・`visible_scopes(`・`has_permission(` を呼ぶ表で kaname_app が select できる物を全部 `select count(*)` | どの表も誤りにならない（読めなかった表の一覧がちょうど空）。表は 1 つ以上在る |\n| K426-DB-007 | 守り | 口の文（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src の .ts。管理者だけが使う cli.ts・matrix.ts・seeds.ts・migrate.ts・ci.ts を除く）に出る `app.<名前>(` の名前を集め、その名前の app の関数の全部の形を見る | 形が 50 より多く在り、kaname_app が実行できない物の一覧がちょうど空（今 kaname_app が呼んでいる関数は後も呼べる） |\n| K426-DB-008 | 守り | 中だけで使う 12 件（上の「渡さない物」） | どれも PUBLIC も kaname_app も実行できない。kaname_app の接続から `app.bridge_pair_new` を呼ぶと `permission denied` で、app.bridge_pairings の行の数は変わらない。`app.apply_role_bundles` も `permission denied` |\n| K426-DB-009 | 利用者の状態 | kaname_auth | app のスキーマの usage が無い（今と同じ）。kaname_auth のスキーマの関数で PUBLIC が実行できる物の一覧がちょうど空 |\n| K426-DB-010 | 操作の揺れ | migration のファイルを、当てた後の DB にもう一度流す | 落ちない。app の関数と public の security definer の関数で PUBLIC が実行できる物は空のまま。③ の 6 つは kaname_app が実行できる |\n| K426-DB-011 | 失敗 | 失敗 S1・S2・S3（どの手順の後で落ちても同じ 1 つの取引）：1 つの取引で、前の形（`app.role()` を PUBLIC に開き、既定の権限を PUBLIC に戻す）を作ってから、migration のファイルの後ろに無い関数を呼ぶ文を足して流す | 後ろの文で `does not exist` で落ちる。保存点まで戻すと `app.role()` は PUBLIC に開いたまま・既定の権限も前のまま（migration の前の文の効き目は残らない）。外の取引を戻した後は PUBLIC に開いていない |\n| K426-DB-012 | 守り | 人が確かめる：staging（Supabase）に取り込んだ版を当てた後、staging の SQL Editor で K426-DB-001・003・013 と同じ数える SQL を流し、役 `anon`・`authenticated`・`service_role`・`kaname_ci_read` ごとに「app の関数と public の security definer の関数（拡張の物を除く）で実行できる物」を数える。続けて staging の健康診断（staging_db_migrations）を 1 回流す | どの数も 0 件。健康診断は今までどおり緑（kaname_ci_read が app.schema_migrations を読める）。0 でない役が在れば、その役の名前と件数がこの葉の②b の漏れなので、この葉の直しとして戻す |\n| K426-DB-013 | 守り | 1 つの取引で、何も渡していない役を 1 つ作ってから、superuser でも組み込みの pg_ の役でもない役のうち、持ち主・kaname_app・kaname_auth のほかの役（作った役を含む・手元の DB に在る役は全部）について、app の関数と public の security definer の関数（拡張の物を除く）を実行できるかを全部見る | 実行できる（役・関数）の組の一覧がちょうど空。作った役は 1 つ以上数えた中に入る。取引を戻すと役も消える |\n| K426-DB-014 | 守り | 1 つの取引で、ほかの役を 1 つ作り（Supabase の anon の形）、`app.tenant_id()` と `public.visible_scopes(uuid)` に明示で実行権を渡し、migration を流す役の public のスキーマの既定の権限でもその役に関数を渡してから、migration のファイルを流す | その役は 2 つとも実行できない。その後 public に作った関数もその役は実行できない。kaname_app の `app.tenant_id()` と kaname_auth の `app.open_session(text, text, text, text, text)` の明示の権限は残る。取引を戻すと役も消える |\n\n```judge-skip\n- K426-DB-012: staging（Supabase）の権限は手元の CI の DB に無い役（anon・authenticated・service_role・kaname_ci_read）を含むので、人が staging で数える。CI では K426-DB-013・014 が同じ形を作って見る\n```\n\n### テストの型の受け（分類 PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-PERM-01 役が合わない人 | K426-DB-001〜004・008・009・013・014（PUBLIC・ほかの役・kaname_auth・渡していない関数を kaname_app） |\n| TP-PERM-02 権限を外した直後に押す | K426-DB-004（新しく作った直後の関数は誰も呼べない）・K426-DB-011 |\n| TP-PERM-03 他の会社の ID を直接 | 要らない：関数の execute の権限だけを変える。会社をまたぐ守りは各関数の中と行の守りのまま（変えない）。K426-DB-006 は行の守りの式が今までどおり動くことだけを見る |\n| TP-PERM-04 一覧・数 | K426-DB-001・002・003・005・007（一覧がちょうど空） |\n| TP-PERM-05 後から付ける権限 | K426-DB-004（渡すまで呼べない・渡すのは migration の grant） |",
+    "前からの試験を替えた所": "切る段の検査（`python3 scripts/ci/cut_check.py prior --files <changes:>`）が出した、changes: を使う前からの試験。\n\n```search\npython3 scripts/ci/cut_check.py prior --files packages/db/migrations/20261120160000_function_execute_private.sql packages/db/src/migrations.generated.ts\n3\n```\n\n- scripts/ci/ci_scope_test.py: 替えない — 範囲の地図（ci_scope.d/ から作る ci_scope.json）の形と結びを見る。migration は本体の地図で db の組（全部の DB の試験）に結んであり、この葉は地図を変えない\n- scripts/ci/contract_shape_test.py: 替えない — 作った口と契約の形を突き合わせる。この葉は口も契約も変えない\n- scripts/ci/k327_migrations_gen_test.py: 替えない — 一覧 migrations.generated.ts が migrations のフォルダと同じか（作り手の --check）を見る。この葉は時刻の名前の migration を 1 本足し、作り手で一覧を作り直す\n\nPUBLIC の権限を見ている前からの試験（この葉の試験を除く）も替えない。どれも「PUBLIC が実行できない」を見ていて、この葉の後も同じ結果になる：\n\n```search\ngrep -rlnE \"has_function_privilege\\('public'|grantee = 'PUBLIC'|=X/\" apps/api/test packages/db/test --exclude=k426_function_execute_private.test.ts\n7\n```\n\n- apps/api/test/k236_read_sweep.test.ts（K236-API-009）・apps/api/test/features/F5/delegate.test.ts（K62-API-046）・apps/api/test/features/F1/my-security.test.ts（K308-DB-009）・apps/api/test/features/F1/login-gate.test.ts（K303-DB-009）・apps/api/test/features/F1/admin-recovery.test.ts（K305-DB-001）・apps/api/test/features/F1/service-status.test.ts（K307-DB-001）・packages/db/test/signup_cleanup_grants.test.ts（K52-API-049〜051）: 替えない — どれも「PUBLIC は呼べない・kaname_app は呼べる」を見る。この葉は PUBLIC をさらに外すだけで、それらの関数の kaname_app の明示の権限は触らない。K52-API-049 の注の「public に execute が残る app の関数（app.bridge_pair_new）」はこの葉の後は古い言い方になるが、試験が見る「kaname_auth から呼ぶと permission denied」は変わらない（app のスキーマの usage が無いので）",
+    "速さ（今の値と目標の値）": "口も画面も変えない。関数の権限の確かめは、関数を呼ぶたびに PostgreSQL が今までどおり 1 回行う（PUBLIC の行が無くなるだけで、文の数・取引の数・住所は変わらない）。",
+    "成果物": "- migration 1 本（文 4 つ）と作り手の一覧\n- 単体の試験 `packages/db/test/k426_function_execute_private.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-20 切る段の決め：関数ごとの revoke（146 行）は書かず、既定の権限・スキーマ全体の revoke・要る物だけの grant の 3 つで直す（PM の方針「根本・1 つの形で・特例を足さない」）\n- 2026-11-20 切る段の決め：③ で渡す物は、DB の目録から機械で出した「呼び手の権限で動く所が呼ぶ物」だけ。今 PUBLIC だけで呼べていた中だけの関数 12 件は kaname_app にも渡さない（今より狭い）。どの口の文・行の守り・呼び手の権限の本文にも出ないことを確かめた\n- 2026-11-20 切る段の決め：public のスキーマの security definer の関数 2 つ（0002 の visible_scopes・has_permission）も同じ類なので、この葉で一緒に外す。public のスキーマの拡張の関数（vector・pgcrypto・pg_trgm・呼び手の権限で動く）は触らない\n- 2026-11-20 切る段の決め（精査の指摘から）：呼んでよい役を持ち主・kaname_app・kaname_auth の 3 つに決め、ほかの役に明示で渡した実行権と既定の権限の行もこの葉で外す（②b）。Supabase の役の名前は書かず、3 つのほかを全部外す形にした（staging の anon・authenticated・service_role・手で作った kaname_ci_read に当たる）\n- 2026-11-20 切る段の決め：PUBLIC で呼ぶことを意図した関数は見つからなかった（ログインの前の画面が使う関数も、どれも kaname_app の口から呼ぶ）ので、代表に聞くことは無い",
+    "リスクと懸念": "- **staging／本番（Supabase）の役**：Supabase は public のスキーマに作った関数を anon・authenticated・service_role に既定で渡す（Supabase の既定の権限・PUBLIC と別の行）。② の PUBLIC の revoke だけでは残り、public の `visible_scopes`・`has_permission` が Data API（PostgREST）から anon で呼べる恐れがあった。だから ②b で「持ち主・kaname_app・kaname_auth のほかの役」を名前を挙げずに全部外す。手元の CI の DB に Supabase の役は無いので、CI では K426-DB-013・014 が同じ形を作って見て、staging では K426-DB-012 で人が数える\n- ②b は migration を流す役（Supabase では postgres）の既定の権限から、ほかの役に関数を渡す行を外す。Supabase の画面（Studio）の SQL や Supabase の部品（Auth・Storage・Realtime）は自分の役（supabase_admin など）で動き、この葉の関数を使わない。製品は Supabase の Data API も supabase-js の DB の口も使わない\n- ① は migration を流す役が作る **全部のスキーマ** の関数に効く。今後 migration で拡張を足すと、その拡張の関数も初めは持ち主だけが呼べる（kaname_app で使うなら `grant` が要る）。足せば kaname_app の試験が `permission denied` で赤になるので、黙っては壊れない。共通の決まりへの 1 行（「関数の execute は既定で誰にも渡らない・呼ぶ役に migration で grant する」）はまとめ役に頼む\n- 同じ決まり D-128.171 の残り半分（security definer の関数の search_path に pg_temp を入れる）は、app と public の security definer 256 件のうち 149 件に無い（`search_path=public, app` のまま）。この葉の範囲の外（類は同じだが直しが別・関数ごとに作り直しが要る）。PM に出して別の葉にする",
+    "表の住所（2026-11-20）": "- migration は時刻の名前 `packages/db/migrations/20261120160000_function_execute_private.sql`（K-327）。一覧 packages/db/src/migrations.generated.ts は作り手 `python3 scripts/ci/gen_migrations.py` の生成物（手で書かない・touch_rules が changes: に求めるので載せた）\n- 口を足さないので、口の登録・契約の形・ears・範囲の地図の .d/ は足さない",
+    "申し送り": "- ほかの葉：これから migration で関数を作る葉は、`revoke all … from public` を書かなくても PUBLIC に渡らない（書いても害は無い）。呼ぶ役への `grant execute … to kaname_app` は今までどおり要る。書き忘れると、その葉の試験が `permission denied` で赤になる"
+   },
+   "file": "11_tickets/K-426.md"
+  },
+  {
    "id": "K-427",
    "title": "入口（op.ts）で NUL（U+0000）を含む入力を 422 で断る（道の値・問い合わせ・体の文字列とキー・Postgres の text は NUL を入れられず listTickets の q が 500 になっていた・DB の番号 22021・22P05 も 2 層目で 422・契約 fuzz は NUL を作らない設定に・K-56 の葉）",
    "kind": "タスク",
@@ -20647,6 +20794,200 @@
    "file": "11_tickets/K-430.md"
   },
   {
+   "id": "K-431",
+   "title": "段 5 の下絵 v2（項目の表・自由な本文・確認項目・本文の道具の小窓ほかの 41 の状態）と、残す前の下絵（親・期限・複製・つながり・おすすめ・「…」の 16 の状態）を本線に入れ、区画の入力・テスト仕様・業務の型・前の版と差分の下絵と部品を外す（K-59 の葉・W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-59",
+   "milestone": "F4",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1.2",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-350（切る段の枝で作り終えた部品とモックを carry で運ぶ・見込み 1）から引いた：運ぶ 5 分・持ち主の欄と古い字の直し 5 分・外す部品 4 つと描き分けの整理 15 分・道の一覧の作り直し 2 分・CI の範囲の地図 3 分・試験を流して直す 20 分。口・DB の足しは無い。2026-11-22 に下絵の CSS の生の長さ 23 種を正本のトークンにする 20 分を足した（合わせて 1 時間 10 分。葉の上限 1 時間を 10 分超えるが、同じ CSS を触る 1 つの作業なので分けない・PM に知らせた）。前の版の正本の値の足しは無い（前の版の「足す値 5 つ」「区画のファイル 14 個」は新しい形で要らなくなった）。作る面・詳細の前からのファイルには触らない（K-442・K-571 が持つ）",
+   "decisions": [
+    "D-125.51",
+    "D-128.25",
+    "D-128.125",
+    "D-145.9",
+    "D-150.1",
+    "D-150.4",
+    "D-150.6",
+    "D-150.7",
+    "D-150.9",
+    "D-150.16",
+    "D-150.17",
+    "D-150.18",
+    "D-150.22",
+    "D-150.23",
+    "D-150.25",
+    "D-150.35",
+    "D-150.36",
+    "D-150.37",
+    "D-150.38",
+    "D-150.39",
+    "D-150.40"
+   ],
+   "split": "",
+   "prior_impl": "c/段5（部品先行の下絵 v2・モックの置き場 /dev/mock/f4v2 と、残す前の下絵 /dev/mock/f4。代表の OK は下絵 v2 を見た会話・2026-11-21）",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・外す部品と描き分け・試験・下ごしらえの文書だけ。口・DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k431-stage5-mock.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F4/doc/views.tsx",
+    "apps/web/features/F4/doc/detail-views.tsx",
+    "apps/web/features/F4/doc/thread-views.tsx",
+    "apps/web/features/F4/doc/doc.css",
+    "apps/web/features/F4/doc/thread.css",
+    "apps/web/features/F4/parent/parent.css",
+    "apps/web/features/F4/parent/views.tsx",
+    "apps/web/features/F4/due/dates.ts",
+    "apps/web/features/F4/due/due.css",
+    "apps/web/features/F4/due/views.tsx",
+    "apps/web/features/F4/duplicate/duplicate.css",
+    "apps/web/features/F4/duplicate/views.tsx",
+    "apps/web/features/F4/home/home.css",
+    "apps/web/features/F4/home/views.tsx",
+    "apps/web/features/F4/links/links.css",
+    "apps/web/features/F4/links/views.tsx",
+    "apps/web/features/F4/detail-more/more.css",
+    "apps/web/features/F4/detail-more/views.tsx",
+    "apps/web/app/(dev)/dev/mock/f4v2/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f4v2/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f4v2/[id]/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/detail-samples.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/frame.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/[id]/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/render-create.tsx",
+    "apps/web/app/(dev)/dev/mock/f4/render-detail.tsx",
+    "apps/web/tests/_lib/fidelity-states.ts"
+   ],
+   "depends_on": [
+    "K-430"
+   ],
+   "acts": [
+    "A99",
+    "A101",
+    "A102",
+    "A103",
+    "A129",
+    "A130"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "f4v2-create-template",
+    "f4v2-create-free",
+    "f4v2-create-long",
+    "f4v2-create-blank",
+    "f4v2-create-head",
+    "f4v2-create-group",
+    "f4v2-create-custom",
+    "f4v2-create-missing",
+    "f4v2-create-missing-types",
+    "f4v2-detail-item-edit",
+    "f4v2-detail-item-error",
+    "f4v2-detail-new",
+    "f4v2-detail-worked",
+    "f4v2-detail-more",
+    "f4v2-detail-empty",
+    "f4v2-body-read",
+    "f4v2-detail-editing",
+    "f4v2-detail-edit-enter",
+    "f4v2-detail-edit-discard",
+    "f4v2-detail-edit-conflict",
+    "f4v2-detail-edit-session",
+    "f4v2-detail-edit-failed",
+    "f4v2-specs",
+    "f4v2-spec-add",
+    "f4v2-spec-edit",
+    "f4v2-spec-add-error",
+    "f4v2-create-specs",
+    "f4v2-detail-thread",
+    "f4v2-complete",
+    "f4v2-nospecs",
+    "f4v2-versions",
+    "f4v2-versions-items",
+    "f4v2-versions-items-restored",
+    "f4v2-create-links",
+    "f4v2-create-link-add",
+    "f4v2-editor-image-off",
+    "f4v2-editor-color",
+    "f4v2-editor-table",
+    "f4v2-editor-paste-fail",
+    "f4v2-editor-link",
+    "f4v2-editor-link-error",
+    "f4-parent-dialog",
+    "f4-parent-none",
+    "f4-parent-limit",
+    "f4-due-dialog",
+    "f4-due-past",
+    "f4-dup-pick",
+    "f4-dup-dialog",
+    "f4-dup-error",
+    "f4-home-empty",
+    "f4-more-menu",
+    "f4-links-collapsed",
+    "f4-links",
+    "f4-links-empty",
+    "f4-link-remove",
+    "f4-links-variants",
+    "f4-link-add"
+   ],
+   "flow": "チケットを作る",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F4/doc/",
+    "apps/web/features/F4/parent/",
+    "apps/web/features/F4/due/",
+    "apps/web/features/F4/duplicate/",
+    "apps/web/features/F4/home/",
+    "apps/web/features/F4/links/",
+    "apps/web/features/F4/detail-more/",
+    "apps/web/features/F4/sections/",
+    "apps/web/features/F4/test-spec/",
+    "apps/web/features/F4/work-type/",
+    "apps/web/features/F4/versions/",
+    "apps/web/app/(dev)/dev/mock/f4/",
+    "apps/web/app/(dev)/dev/mock/f4v2/",
+    "07_functional/段5-F4/",
+    "scripts/ci/ci_scope.d/K-431.json",
+    "04_design/fidelity.json",
+    "scripts/ci/fidelity_config.py",
+    "scripts/ci/k216_fidelity_config_test.py",
+    "scripts/ci/class_ledger.json",
+    "scripts/ci/raw_length_ledger.json",
+    "04_design/DESIGN-kaname.md",
+    "04_design/DESIGN-kaname-preview.html",
+    "apps/web/styles/k-tokens.css"
+   ],
+   "sections": {
+    "目的": "段 5（K-59・F4 チケットを作って中身を決める）の切る段の枝 `c/段5` で作り終えた下絵を本線に入れ、後ろの画面の葉（K-442・K-569・K-571・K-447・K-450・K-574・K-572・K-573・K-449・K-443・K-444・K-446・K-452・K-453・K-458）が「正の絵」として読める状態にする。中身は 4 つ：\n\n1. **下絵 v2**（代表が OK を出した物）：部品 `features/F4/doc/`（作る面・詳細・やり取り・版と差分）と、並べた開発用の置き場 `/dev/mock/f4v2`（41 の状態）。字・並び・見た目は変えない。直したのは、状態の持ち主（`ticket`・`leaf`）を画面の葉の番号にしたことと、古い説明の字（確認項目を足す小窓の「誰が確かめるか」・頭の注の「目的＋完了の条件」）、担当者と期限の必須の印（D-125.51・D-128.25・PM 23:10 に直した物）\n2. **残す前の下絵**：親を決める小窓（K-443）・期限を決める小窓（K-444）・複製（K-446）・子とつながり（K-452）・空の一覧のおすすめ（K-453）・詳細の「…」（K-458）の 16 の状態。作る面の背景は新しい作る面（下絵 v2 の `CreateForm`）にそろえ、複製の小窓の写す物の見本は D-150.6 の並び（本文・担当者と承認する人・項目・確認項目・つながり・子チケット）にした\n3. **外す物**：区画の入力と見出し・テスト仕様・業務の型・前の版と差分の下絵の状態（f4-create-text ほか 17）と、その部品（`features/F4/sections`・`test-spec`・`work-type`・前の `versions/views.tsx`・`versions.css`。**`versions/` の置き場そのものは K-449 が新しい物を置くので、K-431 の試験は置き場でなく前の 2 ファイルだけを見る**）と描き分け（`create-surface.tsx`・`render-create.tsx`・`render-detail.tsx`・`detail-samples.tsx` の当たる所）。業務の型は項目の表に出さない（保留・PM 23:10）\n3b. **取引先を持たない**（代表の答え answer=4961f0280e9a・2026-11-23）：詳細の項目「取引先」（`doc/detail-views.tsx` の Item・`doc/views.tsx` の Select）と、モック `f4/frame.tsx` に残っていた「業務の型」の行（`workType`）を外した。先方の人は権限の 1 つ（ゲストのグループ）で、画面に「取引先」の字を出さない。親から写す物は「親の担当・節目」\n4. **前からの試験の持ち主を決める**：区画・テスト仕様を前提にした前からの試験と道具を、どの葉が替えるかを下の表に書く（K-431 が持つのは下絵の頁を開く試験だけ）",
+    "完了の条件": "- [ ] 下の表の行（K431-MK-001〜005・RT-001・CG-001・UI-001〜013）が緑：`apps/web/tests/k/k431-stage5-mock.spec.ts`\n- [ ] `npx tsc --noEmit -p apps/web` が通る（外した部品を読む所が無い）\n- [ ] `design_gate.py` の D1〜D8（上の呼び方・`--raw-lengths` つき）と `class_gate.py --ledger-base-ref <本線>` が緑（下絵の CSS の生の長さ 0・定義の無いクラス 0。見本の色の `style` 3 か所は PM の決めの当て方で）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- **K-430 に依存**：decisions: の D-150.x は K-430 が本線へ入れる決定ログ §150 を指す\n- **作る面・詳細の前からのファイル**（`features/F4/create-ticket/*`・`ticket-list/*`・`ticket-detail.css`）には**触らない**。作る面は K-442、詳細は K-571 が作り直す。下絵 v2 の部品は `create-ticket/notify-picker.tsx`・`detail-head.tsx`・`mock/f4/frame.tsx`・`parent/views.tsx` を読むので、それらは残る\n- 部品は見た目だけ（値と関数を props で受けて描く・口を呼ばない）。口とのつなぎは後ろの葉が自分のファイルの中で書く\n- 範囲の外：道の一覧 `built-routes.ts` は機械生成（`scripts/ci/gen_built_routes.py`）。手で直さず作り手で作り直す\n- **K-431 の mock: の欄**：K-431 自身が持つ状態は無い（41＋16 の状態の持ち主は全部、画面の葉。2026-11-22 に葉を書く途中で足された 25 の状態も、持ち主の葉の `mock:` に載せた）。canvas_field_gate は mock: が空だと赤になるので、置き場を運ぶ葉として全部を並べた（運ぶ葉は他の葉の状態も書ける）。**ほかの葉が持たない状態は 0 件なので「残りだけ」にすると空になる**。持ち主の葉が取り込まれて `stage` が「確認中」「完了」になっても、運ぶ側の K-431 はそのまま残す（K-431 が先に入る葉で、逆向きの検査は持ち主の側だけが見る）\n- 外した状態の頁（`/dev/mock/f4/f4-create-text` など）は 404 でなく「この状態はまだありません」の 200（今の `MockView` の動き。f3 と同じ）",
+    "目録で探した結果": "- 使う：`features/F4/parent/views.tsx` の `ParentEntry`（下絵 v2 が読む）・`components/k`（Dialog・Select・TextField・Menu）・`mock/f4/frame.tsx` の `Frame`・`DetailFrame`（外枠と詳細の枠）\n- 探したが無かった：新しい下絵 v2 と同じ並びの作る面・詳細を出す部品は本線に無い（前の `create-ticket/*` は区画の並び）。似たものとの違いは、v2 は項目の表・自由な本文・確認項目を持つ点",
+    "実施事項": "- `apps/web/app/(dev)/dev/mock/f4v2/mocks.tsx`：MOCKS の `ticket`・`leaf` を葉の番号に（下の表）。ラベル「確認項目を足す小窓（誰が確かめるか）」→「確認項目を足す小窓」・頭の注を「項目の表＋自由な本文＋確認項目」に\n- `apps/web/features/F4/doc/detail-views.tsx`：`SpecAddDialog` の注の字を直すだけ（見た目は同じ）\n- `apps/web/app/(dev)/dev/mock/f4/mocks.tsx`：残す 16 の状態だけにし、頭の注を直す\n- `apps/web/app/(dev)/dev/mock/f4/render-create.tsx`：作る面に重なる小窓（親・期限・複製）と空の一覧だけ。背景は v2 の `CreateForm`。複製の見本 `COPIES` を D-150.6 の並びに\n- `apps/web/app/(dev)/dev/mock/f4/render-detail.tsx`：「…」とつながりの 7 つの状態だけ。`detail-samples.tsx` は子・つながりの見本だけ\n- 消すファイル（`git rm` はせず、まとめ役がコミット）：`features/F4/sections/`（6 ファイル）・`features/F4/test-spec/`（5）・`features/F4/work-type/`（2）・`features/F4/versions/`（2）・`mock/f4/create-surface.tsx`\n- 見た目の突き合わせ（キャンバスとの比べ）から、下絵 v2 が正になった 3 つの組を外す（K-442・K-571 が同じファイルを直すので W0 のここに寄せた）：`04_design/fidelity.json` の組 `tickets-new`（K-224）・`tickets-new-sections`（K-225）・`ticket-detail`（K-226）・`scripts/ci/fidelity_config.py` の名前の一覧・`scripts/ci/k216_fidelity_config_test.py` のその行・`scripts/ci/class_ledger.json` の作る面と詳細の行・`apps/web/tests/_lib/fidelity-states.ts` の状態 `tickets-new`・`tickets-new-sections`・`ticket-detail` と道具 `detailApi`（`band-approval` ほか帯の状態は前のまま。このファイルの今の版は組を外す前提で直してある）。`ci_scope.d/_base.json`・`ci_scope.json` の k224・k225・k226 の行は、その試験を替える K-442・K-571 が外す\n- **下絵の CSS の生の長さを正本のトークンにする**（精査 R-A 6 回目・2026-11-22）：`python3 scripts/ci/design_gate.py --design 04_design/DESIGN-kaname.md --mocks apps/web/components/k apps/web/features --css apps/web/styles/k-tokens.css --part --no-components --raw-lengths --ledger-base-ref <本線>`（D8・CI の G72 と同じ呼び方）は、切る段の枝で 69 件赤（`features/F4/doc/doc.css` 44・`extra.css` 20・`thread.css` 2・`editor-views.tsx` 3）。**台帳（`scripts/ci/raw_length_ledger.json`）は減らすだけで、足すと CI が赤**なので、台帳には載せず、値を `04_design/DESIGN-kaname.md` の `components:`（F3 の `pc-fix` と同じ書き方・名前の頭は `f4d-`）に足して `python3 04_design/gen_tokens.py --web` と `python3 04_design/gen_preview.py` で `apps/web/styles/k-tokens.css`・`DESIGN-kaname-preview.html` を作り直し、CSS は `var(--k-c-f4d-…)` で読む（見た目は 1px も変えない）。足す値は 23 種（CSS の 66 件）：枠 `1px solid` の線 4 色（line 11＋下 3＋上 1＋左 1・line-soft 上 11＋下 3＋全周 1・line-strong 2・st-warning-line 1）／引用の左の線 `3px solid`（line-strong・primary-line）／輪郭 `2px solid`（primary 9・st-success 1）と `outline-offset`（2px 5・-2px 3・1px 2）／目に見えない名前の `width: 1px`・`height: 1px`・`clip-path: inset(50%)`（各 2・`components/k` の sr-only の決まりが在ればそれを使う）／`width: 2px`・`margin-left: 1px`・`height: 1em`・`gap: 2px`（各 1）。外した前の部品（`sections/`・`test-spec/`・`work-type/`・前の `versions/`）の台帳の行は `--shrink-ledger` で減らす\n- **見本の色の `style` 属性 3 か所**（`features/F4/doc/editor-views.tsx` 49・99・100 行＝色の見本の四角と帯の色の印）は、D8 と `class_gate.py`（新しい層の `style={…}` は赤・台帳は減らすだけ）の両方で赤になる。**当て方は PM の決め待ち**（文書の中身の色＝利用者の中身を、検査を緩めずにどう当てるか。K-568 の見本の四角・K-577 の読む形の色と同じ問い。まとめ役が 2026-11-22 に PM に上げた）。決めが来たら、この葉と K-568・K-577 が同じ 1 つの当て方を使う\n- `features/F4/doc/views.tsx` 497 行の `k-f4d-parent` は CSS に定義が無い（`class_gate.py` の undefined）。`doc.css` に決まりを足す（K-443 の試験 K443-UI-001 が `.k-f4d-parent` を作る面の入口の入れ物として選ぶので、名前は替えない）\n- 帯の道具の並びと名前（`features/F4/doc/bar-tools.tsx` の `BAR_GROUPS`）と色の見本の値（`features/F4/doc/color-swatches.ts`）は、下絵と本物（K-567・K-587・K-568）が同じ物を読む。持ち主はこの葉（`changes:` の `features/F4/doc/`）\n- 画面を足す・消すので `scripts/ci/gen_built_routes.py` で `built-routes.ts` を作り直す（`/dev/mock/f4v2`・`/dev/mock/f4v2/:id` が足される）\n\n### MOCKS の持ち主（07_functional/段5-F4/切り方.md の画面の表のとおり）\n\n| 状態 | 持ち主 |\n|---|---|\n| f4v2-create-template・create-free・create-long・create-blank・create-head・create-group | K-442 |\n| f4v2-create-custom・create-missing・create-missing-types・detail-item-edit・detail-item-error | K-569 |\n| f4v2-detail-new・detail-worked・detail-more・detail-empty | K-571 |\n| f4v2-body-read | K-577 |\n| f4v2-detail-editing・detail-edit-enter・detail-edit-discard・detail-edit-conflict・detail-edit-session・detail-edit-failed | K-447 |\n| f4v2-specs・spec-add・spec-edit・spec-add-error・create-specs | K-450 |\n| f4v2-detail-thread | K-574 |\n| f4v2-complete | K-572 |\n| f4v2-nospecs | K-573 |\n| f4v2-versions・versions-items | K-449 |\n| f4v2-versions-items-restored | K-579 |\n| f4v2-create-links・create-link-add | K-580 |\n| f4v2-editor-link・editor-link-error | K-567 |\n| f4v2-editor-color・editor-table・editor-paste-fail | K-568 |\n| f4v2-editor-image-off | K-587 |\n| f4-parent-dialog・parent-none・parent-limit | K-443 |\n| f4-due-dialog・due-past | K-444 |\n| f4-dup-pick・dup-dialog・dup-error | K-446 |\n| f4-links-collapsed・links・links-empty・link-remove・links-variants・link-add | K-452 |\n| f4-home-empty | K-453 |\n| f4-more-menu | K-458 |",
+    "テスト仕様と確認の結果": "| 行 ID | 期待結果 | 確かめ方 | 段 |\n|---|---|---|---|\n| K431-MK-001 | 新しい下絵の状態が持ち主の表と同じ（余り・欠け・重なり 0）・ticket と leaf が同じ K-番号 | ファイルを読む | 単体 |\n| K431-MK-002 | 前の下絵に残る状態が残す表と同じで、外した状態の id が MOCKS に無い | ファイルを読む | 単体 |\n| K431-MK-003 | 外した部品（sections・test-spec・work-type の置き場と、前の versions/views.tsx・versions.css）と create-surface.tsx が無く、どこからも読まれない（`versions/` の置き場は K-449 が新しく置くので数えない） | ファイルを読む | 単体 |\n| K431-MK-004 | 残す部品と新しい下絵が読む前の部品が在り、部品が口（fetch・/api/v1）を呼ばない | ファイルを読む | 単体 |\n| K431-MK-005 | 2 つの MOCKS が機械の読み方で全行読める（書いた行数＝読めた行数） | ファイルを読む | 単体 |\n| K431-RT-001 | 道の一覧に /dev/mock/f4v2 と /:id が在る | ファイルを読む | 単体 |\n| K431-CG-001 | canvas_field_gate.py が 2 つの置き場を読める形で読む（読めない・重複の語が出ない） | 検査を流す | 単体 |\n| K431-UI-001 | 索引 /dev/mock/f4v2 が 41 件並び、押すと開く | 実ブラウザ | 単体 |\n| K431-UI-002 | 索引 /dev/mock/f4 が残す 16 件だけ並び、押すと開く | 実ブラウザ | 単体 |\n| K431-UI-003 | 新しい下絵 41 状態が幅 375・768・1440 で開き、横はみ出し 0（幅ごとに 1 本） | 実ブラウザ | 単体 |\n| K431-UI-004 | 残す前の下絵 16 状態が同じ 3 幅で開き、横はみ出し 0（幅ごとに 1 本） | 実ブラウザ | 単体 |\n| K431-UI-005 | 外した状態の id は「この状態はまだありません」・外枠なし | 実ブラウザ | 単体 |\n| K431-UI-006 | 作る面で担当者と期限に必須の印（＊）。優先度・開始日・親・予定時間には付かない | 実ブラウザ | 単体 |\n| K431-UI-007 | 必須が足りない状態で、3 つの誤りの文が欄の下に出る・作るボタンが在る | 実ブラウザ | 単体 |\n| K431-UI-008 | 詳細の右のパネル：項目・やり取りのタブ・AI のタブは押せない形・閉じる | 実ブラウザ | 単体 |\n| K431-UI-009 | 確認項目を足す小窓：確かめること 1 つだけ・「誰が確かめる」が無い | 実ブラウザ | 単体 |\n| K431-UI-010 | 親の小窓が新しい作る面の上に開き、前の区画の誤りが背景に出ない | 実ブラウザ | 単体 |\n| K431-UI-011 | 複製の小窓の写す物が D-150.6 の並び・添付は押せない | 実ブラウザ | 単体 |\n| K431-UI-012 | 「…」：複製と版と差分だけ押せて、ほかは押せない形 | 実ブラウザ | 単体 |\n| K431-UI-013 | つながり：子とつながりが並び、閉じた形は件数と「開く」だけ | 実ブラウザ | 単体 |",
+    "状態 × 入口 × 利用者の状態の表": "状態を持つ物（期限・使い終わった時刻・状態の列を持つ表）を扱わない（見た目の下絵だけ）。入口は開発用の頁 `/dev/mock/f4v2/<id>`・`/dev/mock/f4/<id>` だけで、本番の道は増えない（道の一覧に開発用の 2 本を足すだけ）。ログインの状態は見ない（口を呼ばない・網の手前で口を 599・Bridge を 404 にして確かめる）。",
+    "外に影響する手順": "- なし — 見た目の下絵と試験だけ（口・DB・知らせ・外への送り出しを持たない）",
+    "前からの試験を替えた所": "切る段の検査が出す、名前の決まった物（表・口・関数・部品の置き場）で探した前からの試験（2026-11-21・c/段5 の今の物）。\n\n```search\ngit grep -l -E \"ticket_sections|ticket_section_versions|updateTicketSection|listTestSpecs|createTestSpec|updateTestSpec|test_specs|F4/(sections|test-spec|work-type|versions)|mock/f4/f4-(create|edit|spec|add-section|remove-section|versions|wt)\" -- apps/web/tests apps/web/test apps/e2e\n12\n```\n- apps/web/tests/_lib/fidelity-states.ts: 替える — 状態 `tickets-new`・`tickets-new-sections`・`ticket-detail` と道具 `detailApi` を外した版を carry に入れた（上の実施事項のとおり。組を外す fidelity.json の直しと一緒に取り込む）\n\n名前に当たる試験が増えた分（全葉を書いた後の数え直し・2026-11-22）：\n- apps/web/tests/k/complete-mock.ts: 替えない — 持ち主は K-572。K-572 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない\n- apps/web/tests/k/k572-complete-notice.spec.ts: 替えない — 持ち主は K-572。K-572 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない\n- apps/web/tests/skeleton/k455-check-complete-links.spec.ts: 替えない — 持ち主は K-455。K-455 の試験・道具（切る段で書いた物）が、この葉の探す名前を含むだけで、この葉は替えない\n\nK-431 が替える前からの試験は無い（外した部品を読む試験は下の持ち主の葉が作り直して消す）。1 本ずつの持ち主：\n\n- apps/web/test/k442-section-codec.test.ts: 替えない — 区画の入力の読み書きの試験。持ち主は K-442。区画の入力をやめるので K-442 が消す\n- apps/web/tests/k/k442-create-sections.spec.ts: 替えない — 持ち主は K-442。作る面の試験を新しい並び（種別 → 題名 → 本文 → 項目の表）で作り直す。外した状態 f4-create-* は開かない\n- apps/web/tests/k/sections-mock.ts: （ファイルは K-447 の切る段のコミット 127737dd1 で消えている・今の木に無い）。区画の書き込みの口を差し替える道具だった。本文の書き終える口（`updateTicketBody`）の道具は K-447 が `detail-body-mock.ts` ほかに作り、`k447-body-edit.spec.ts` も K-447 の物\n- apps/web/tests/k/k447-body-edit.spec.ts: 替えない — 持ち主は K-447（上と同じ）。外した状態 f4-edit-* は開かない・開くのは f4v2-detail-editing\n- apps/web/tests/k/versions-mock.ts: 替えない — 持ち主は K-449。版の口の道具を本文の版・項目の変更の形に作り直す。**`more-mock.ts`（K-458）がこれを import している**\n- apps/web/tests/k/k449-versions.spec.ts: 替えない — 持ち主は K-449。外した状態 f4-versions・f4-versions-restore は開かない・開くのは f4v2-versions・versions-items\n- apps/web/tests/k/test-spec-mock.ts: 替えない — 持ち主は K-450。確認項目の口の道具（文・チェックだけ）に作り直す。**`links-mock.ts`（K-452）が `FORBIDDEN_TEXT`・`conflict`・`failed`・`forbidden`・`msg`・`matchTicket` を import している**ので、K-450 はその 6 つの名前と形を変えない\n- apps/web/tests/k/k450-test-spec.spec.ts: 替えない — 持ち主は K-450。外した状態 f4-spec* は開かない・開くのは f4v2-specs・spec-add\n- apps/web/tests/k/more-mock.ts: 替えない — 持ち主は K-458。`ALL = [\"body\",\"assignee\",\"test_specs\",\"references\",\"children\"]` は複製の口の写す物の名前なので、K-446・K-438 の決めに合わせて K-458 が直す\n- apps/web/tests/k/duplicate-mock.ts・apps/web/tests/k/k446-duplicate.spec.ts: 替えない — 持ち主は K-446。写す物の名前（`test_specs`・`references` → 確認項目・つながり）は K-438 の口の形に合わせて K-446 が直す\n- apps/web/tests/_lib/f4-flow.ts: 替えない — 持ち主は K-454。中間（M1）の道具（区画の書き直し・テスト仕様・版を戻す）。新しい形で作り直し、K-455 も読むので K-454 が先\n- apps/web/tests/_lib/f5-flow.ts: 替えない — 持ち主は K-575。成果物の区画・実施事項の区画を DB から読む。区画の中身を本文に移す葉が、読み方を替える（K-565・K-566 が入った後）\n- apps/e2e/staging/_lib/f4-steps.ts: 替えない — 持ち主は K-456（統合・staging）。新しい形の通しで作り直す\n\n名前に当たらないが `sections` の入力・`fillSection`・区画の見出しを前提にする前からの試験と道具（`git grep -l -E \"sections:|fillSection\" -- apps/web/tests apps/e2e` の物）の持ち主：\n\n- apps/web/tests/features/F4/create-ticket.spec.ts・apps/web/tests/k/create-mock.ts・k224-create-frame.spec.ts・k225-create-sections.spec.ts・k260-create-settle.spec.ts・apps/web/tests/skeleton/m2-bridge-ticket.spec.ts・apps/e2e/staging/_lib/steps.ts: 替えない — 持ち主は K-442。作る面を作り直す葉が、画面の道具（`fillRequired`・`fillSection`・`fillDue`）を新しい並びに替える。K-443・K-444・K-446・K-453 の試験が下書きに入れる `sections:` は、K-442 が `draft.ts` で古い鍵として読み捨てる形にして、その 1 行は替えない\n- apps/web/tests/k/k226-ticket-detail.spec.ts・detail-kit.ts・k380-detail-slots.spec.ts・list-mock.ts（`getTicket` の見本の `sections`）: 替えない — 持ち主は K-571。詳細（本文を読む形・右のパネルの項目）を作り直す葉が替える。K-569（項目の表の部品）は詳細の道具を替えない\n- apps/web/tests/features/F5/approve-complete.harness.ts・approve-complete-complete.spec.ts: 替えない — 持ち主は K-572。完了の帯が区画を読むのをやめる葉\n- apps/web/tests/features/F5/delegate.spec.ts: 替えない — 持ち主は K-573。AI に任せる小窓（確認項目 0 件）の葉\n- apps/web/tests/_lib/prep.ts（`ticketOf` の `sections` 引数）: 替えない — 持ち主は K-442（web だけを触り K-437 に依存する葉。K-437 は DB の組を触るので web の準備を持てない）。引数の形は変えず、中で 1 枚の本文に組み直して作る口へ送る（呼ぶ側の試験は替えない）\n- apps/web/tests/skeleton/m3-delegate-approve-complete.spec.ts・apps/e2e/staging/k65-walking-skeleton.spec.ts: 替えない — 持ち主は K-572。完了の小窓を変える葉が新しい形に替えて運ぶ\n- apps/web/tests/k/k217-page-parts.spec.ts・k138-shell.spec.ts・k315-help.spec.ts・k335-invite-new.spec.ts・k349-connect-pc-split.spec.ts・k361-claude-code.spec.ts・k369-pc-row-mock.spec.ts・claude-code-mock.ts・k219-canvas-boards.spec.ts・k257-canvas-boards.spec.ts・stage2-match.ts・apps/e2e/staging/_lib/bridge.ts: 替えない — 「区画」の語が別の意味（ページの見出しの部品・困ったときの区画・PC の行の区画・枠の数）。正の絵の部品の値だけ読む\n- apps/web/tests/k/k443-parent.spec.ts・k444-due.spec.ts・k452-links.spec.ts・k453-home-suggest.spec.ts・k458-more-menu.spec.ts・parent-mock.ts・due-create-mock.ts・links-mock.ts: 替えない — 各葉（K-443・K-444・K-452・K-453・K-458）の試験。開く状態は残した f4-* の 16 だけ",
+    "依存の理由": "- K-430: 要る — decisions: の D-150.x は K-430 が決定ログ §150 に書き直す",
+    "表の住所": "- 画面の状態の置き場：`apps/web/app/(dev)/dev/mock/f4v2/`（新しい下絵）・`apps/web/app/(dev)/dev/mock/f4/`（残す前の下絵）。表（DB）は触らない",
+    "速さの今の値と目標の値": "| 画面 | 今の値 | 目標の値 |\n|---|---|---|\n| 開発用の頁（/dev/mock/f4v2/<id>・/dev/mock/f4/<id>） | 口の数 0・直列の段 0・二重 0 | 同じ（口を呼ばない。K431-MK-004 が見る） |",
+    "見込み": "1 時間 10 分（実測なし・仮。下絵の CSS の生の長さをトークンにする 20 分を足した）。試験の行は 20 行（上限 30）。"
+   },
+   "file": "11_tickets/K-431.md"
+  },
+  {
    "id": "K-434",
    "title": "確認項目を読む・足す口（listTestSpecs・createTestSpec：行は文とチェックと並びと出どころ・足すのは文だけ・足すとやり取りに 1 行・完了後は足せない）と表の形（check_kind 任意・チェックの列・出どころの列・tickets.no_spec_reason）（K-59 の葉）",
    "kind": "タスク",
@@ -20943,6 +21284,72 @@
     "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-468.*`）に書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/search.ts` の `export const register = defineHooks({…})` に書く（K-326）。server.ts と fuzz の的は直に書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧 `apps/api/src/hooks/all.generated.ts` を作る・生成物）\n- migration は足さない"
    },
    "file": "11_tickets/K-468.md"
+  },
+  {
+   "id": "K-469",
+   "title": "探す：自分の会話（会話の名前と本文で当たる・本人のものだけ・消したものは出さない）（K-67 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-67",
+   "milestone": "F7",
+   "area": "毎日見る・探す・片付ける",
+   "assignee": "実装",
+   "due": "2026-11-25",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の葉 K-351（読む口・見える範囲を口と行の守りで守る）から引いたが、この葉は DB の関数 app.agent_conversations（0041・0061）をそのまま使うので小さい：会話の探し方 1 本（関数を 1 回呼んで答えを SearchHit に直す）15 分・範囲の地図 5 分・自分の確かめ 10 分。試験 12 行と土台は K-468 の物（search.harness.ts）。1 時間は余裕を含む",
+   "decisions": [
+    "D-127.4",
+    "D-151.8",
+    "D-151.18",
+    "D-128.157"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-conversations.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-601",
+    "K-468"
+   ],
+   "acts": [
+    "A21"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "口だけで見た目を変えない（探す欄の会話の行は画面の葉 K-471 が持つ。正の絵は /dev/mock/f7 の f7-search-results）。正の絵の組とモックの状態は持たない",
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/api/src/features/F7/search/conversations.ts",
+    "scripts/ci/ci_scope.d/K-469.json"
+   ],
+   "flow": "探す",
+   "sections": {
+    "目的": "探す口 `search`（K-468 が置き場を作った）の 4 つの種類のうち「会話」を本物にする。自分の会話を、名前と本文（人の書き込みも AI の返事も）で探す。見えるのは **本人の会話だけ**（会社の管理者も他人の会話は読めない・グループの権限には関係しない）。消した会話は出ない。\n\n口（`search`）の持ち主は K-468。この葉は種類ごとのファイル `apps/api/src/features/F7/search/conversations.ts` の中身だけを作る（index.ts・kinds.ts・query.ts・hooks のファイルは触らない）。DB の関数 `app.agent_conversations(p_member, p_q)`（0041・0061。表記ゆらぎ：NFKC・ハイフンの種類・途中の空白・大文字小文字をそろえ、`%` と `_` は文字として探す）を **そのまま使う**（作り直さない・migration を足さない）。",
+    "完了の条件": "- [ ] 下の表の 12 行（K469-API-001〜012）が緑：`apps/api/test/features/F7/search-conversations.test.ts`（土台 `search.harness.ts`）\n- [ ] K-468 の試験（search-tickets.test.ts）が、会話の探し方を本物にしても緑のまま（K-468 の試験は「会社にデータが無いから 0 件」の形でだけ確かめている）\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: LIST, PERM\n\n- 会話の 1 件：`{ kind: \"conversation\", id: 会話の id, title: 会話の名前（名前が無ければ「新しい会話」）, snippet: 当たった本文のまわり（名前だけで当たったときは空の字 \"\"）, url: \"/ai/chat?c=<id>\" }`（url の形は前からある `?c=<会話の id>`・apps/web/app/(app)/ai/chat/page.tsx）\n- snippet は関数の答えの `hit`（そろえた本文から語のまわりを切り出した物・語の前 60 字から 160 字＋語の長さまで）。関数が null を返したら空の字\n- 並びは関数のまま：星の付いた会話が先 → 更新の新しい順。種類ごとに上位 limit 件（既定 5・K-468 の入力 `input.limit`）。切るのは SQL の limit（`.slice(0, n)` で入力を切らない・K144-SHAPE-027）\n- 渡す人は **今のログインの人（`app.user_id()`）**。問い合わせから人を受けない\n- 探す言葉は `input.q`（K-468 がそろえた物）をそのまま関数に渡す。LIKE の逃がしは関数の中でするので、`input.titleLike` は使わない\n- 記憶に残さない会話（incognito）も本人の探すには出る（記憶に残さないだけで、本人の会話の一覧と同じ）。消した会話（deleted_at）・消した書き込みは出ない（関数が外す）\n- 関門：C2（DB を読む）だけ。関数は security definer で、`app.user_id()` で本人に結ぶ。外への送信・ファイル・プロセスに触らない\n- 試験を書いた後は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "依存の理由": "- K-601: 要る — この葉の decisions: は D-151.x を持つ。切る段の持ち込みの作り手 build_index.py の K4（決定が決定ログに無い）は始める時点の本線の決定ログを見るので、決定ログだけを運ぶ K-601（依存なし・文書だけ）が先に取り込まれること（段 9 の K-425 と同じ形）\n- K-468: 要る — K-468 が作る種類ごとのファイルの置き場（`features/F7/search/conversations.ts` の空の形・kinds.ts の型 `Searcher`・`SEARCHERS`）の中身を、この葉が本物にする。同じファイルを直す\n- 変えるファイルは `features/F7/search/conversations.ts` と `scripts/ci/ci_scope.d/K-469.json` だけで、K-470（decisions.ts・knowledge.ts）と重ならない。K-470 とは依存を結ばない（種類「触らない」）",
+    "目録で探した結果": "- 使う：`app.agent_conversations(p_member uuid, p_q text) returns jsonb`（0061_search_normalize.sql の最新の定義・security definer・kaname_app に grant 済み）と `app.search_norm`。前の道すじ `GET /agent/conversations`（apps/api/src/auth/agent.ts 85 行）が同じ関数を呼んでいる（別の口・この葉は触らない）\n- 使う：K-468 の `Searcher` の型・`SearchInput`・`SearchHit`・試験の土台 `search.harness.ts`\n- 作る：`searchConversations` の本体だけ。探したが、関数の答えを SearchHit に直す部品は無い",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 会話の探し方 | `apps/api/src/features/F7/search/conversations.ts`：`export const searchConversations: Searcher = async (cl, input) => { … }`。select は 1 本：`select e.x->>'id' as id, e.x->>'title' as title, e.x->>'hit' as hit from jsonb_array_elements(app.agent_conversations(app.user_id(), $1)) with ordinality as e(x, n) order by e.n limit $2`（$1＝`input.q`・$2＝`input.limit`。関数の並びを ordinality で保つ）。1 件を `{ kind: \"conversation\", id, title, snippet: hit ?? \"\", url: \\`/ai/chat?c=${id}\\` }` に。ログに名前・本文・探す言葉を出さない |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-469.json`（下の「範囲の地図」）。hooks と口のコードを変えたとき、この葉の試験が選ばれるようにする |\n\n### 範囲の地図（ci_scope.d/K-469.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/hooks/search.ts\", \"apps/api/src/features/F7/search/**\"],\n   \"tests\": [\"apps/api/test/features/F7/search-conversations.test.ts\"]}\n ]\n}\n```\n\n- 試験は土台 `F3/leaf-hooks.ts` で hooks のファイルを動的 import する（その読む物は K-364 の reads_ok に載っている）。import の地図では hooks → 試験が辿れないので、data_links で名指しで結ぶ（K-468・K-351 と同じ訳）\n- この葉の試験には動的 import が無い（reads_ok は書かない）",
+    "外に影響する手順": "- なし — 会話を探すのは読むだけで、DB に書かず、知らせ・証跡・外のサービスを呼ばない。関数は 1 回の select で、失敗したら何も残らない",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F7/search-conversations.test.ts`（本物の DB・本物の行の守り・口の入口は createApp と契約の op・偽の画面のログイン。土台 `search.harness.ts`）。会話と書き込みは、管理の接続で `app.agent_new_conversation` と messages への insert で置く（書き手は会話の口の試験が持つ）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 自分の会話・名前が当たる | 探す欄 | 本人 | 出る（snippet は空） | このチケット | K469-API-001 |\n| 自分の会話・本文が当たる（人・AI） | 探す欄 | 本人 | 出る（snippet は当たったまわり） | このチケット | K469-API-002 |\n| 同じ会社の別の人の会話 | 探す欄 | 本人・権限の強い別の人（チケットの編集の権限） | 出ない | このチケット | K469-API-003 |\n| 別の会社の会話 | 探す欄 | 同じ人が別の会社にもいる | 出ない（今の会社の物だけ） | このチケット | K469-API-004 |\n| 消した会話・消した書き込み | 探す欄 | 本人 | 出ない | このチケット | K469-API-005 |\n| 記憶に残さない会話 | 探す欄 | 本人 | 出る | このチケット | K469-API-010 |\n| チケットの権限が無い・外した直後 | 探す欄 | 本人 | 自分の会話は出る | このチケット | K469-API-010 |\n| 探す言葉が空 | 探す欄を開いただけ | 本人 | 200・空（会話の一覧を丸ごと返さない） | このチケット | K469-API-011 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K469-API-001 | 対象の状態 | 名前だけで当たる会話・当たらない会話 | 当たる 1 件だけ。鍵は 5 つ（id・kind・snippet・title・url）・kind conversation・title は名前・snippet は空の字・url は `/ai/chat?c=<id>` |\n| K469-API-002 | 対象の状態 | 本文で当たる：長い本文・名前の無い会話・AI の返事 | snippet は当たった所のまわり（語を含み、160 字＋語の長さ以内）。名前の無い会話の title は「新しい会話」。人の書き込みも AI の返事も当たる |\n| K469-API-003 | 守り | 同じ会社の別の人・権限の強い別の人（編集の権限）の会話に同じ語 | 本人の会話だけ（ほかの人の分は 1 件も出ない） |\n| K469-API-004 | 守り | 同じ人が別の会社にも入っている | 今の会社の会話だけ。別の会社の会話は出ない |\n| K469-API-005 | 対象の状態 | 消した会話・消した書き込みだけが当たる会話 | 出ない。生きている会話だけ出る |\n| K469-API-006 | 入力 | 表記ゆらぎ：全角の英字・半角と全角の混ざり・ハイフンの種類（‐ −）・途中の空白 | 名前も本文も同じ 1 件に当たる（関数 app.search_norm が直す物の範囲） |\n| K469-API-007 | 入力 | q の `%`・`_`・`\\` | 文字として探す（似た名前は出ない） |\n| K469-API-008 | 対象の状態 | 星・更新の新しさ・上限 | 星の付いた会話が先 → 更新の新しい順。既定 5 件・limit=2 は 2 件 |\n| K469-API-009 | 入力 | kinds：conversation だけ・ticket だけ・空・チケットと会話が同じ語に当たる・6 件ずつ | 選んだ種類だけ。空は チケット → 会話 の順。limit は種類ごとに数える（5 件ずつ） |\n| K469-API-010 | 利用者の状態 | 記憶に残さない会話・チケットの権限が無い人・権限を外した直後 | 本人には出る。チケットの権限に関わらず自分の会話は出続ける |\n| K469-API-011 | 入力 | q が無い・空・空白だけ | 200・data は空 |\n| K469-API-012 | 守り | ログ | 会話の名前・本文・探す言葉がログに出ない |\n\n### テストの型の受け（分類 LIST・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-01 0 件・1 件・ページの境目 | 001（1 件）・011（0 件）・008・009（上限 5 の境目） |\n| TP-LIST-02 並びの値が同じものが多い | 008（星と更新の新しさで決まる並び。同じ値の続きは関数の順＝更新の新しい順） |\n| TP-LIST-03 絞り込みを URL で開き直す・共有 | 要らない：URL に載せる絞り込みを持たない探す欄（画面は K-471） |\n| TP-LIST-04 表記ゆれ・記号・とても長い語 | 006・007（長い本文の snippet は 002） |\n| TP-PERM-01 役が合わない人 | K-468 の 016 が口の入口で受ける（この葉の関数は役を見ず、本人だけに結ぶ） |\n| TP-PERM-02 権限を外した直後 | 010 |\n| TP-PERM-03 他の会社の ID を直接 | 004（別の会社の会話は探しても出ない・ID を受ける入口が無い） |\n| TP-PERM-04 一覧・数・検索 | 003・004・005 |\n| TP-PERM-05 権限を付けた直後 | 要らない：会話は権限でなく本人のものなので、付けて増える物が無い |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 006・007・009・011 |\n| 対象の状態 | 該当 | 001・002・005・008 |\n| 時間の流れ | 要らない | 時間で決まる物が無い（更新の新しさは並びだけ・008） |\n| 入口 | 要らない | 入口は探す欄だけ（K-468 の 016 が口の入口の共通を受ける） |\n| 利用者の状態 | 該当 | 003・004・010 |\n| 失敗 | 要らない | 失敗の道は K-468 が持つ（種類の探し方が例外を投げたら全体 503・K468-API-020）。この関数が落ちたときも同じ道（index.ts の try）。読むだけで残る物が無い |\n| 操作の揺れ | 要らない | 読むだけで状態を変えない |\n| 守り | 該当 | 003・004・005・010・012 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外部リソースを使わない。使う関数は migration 0041・0061 の物（在ることは試験の土台が全部の migration を当てて確かめる） |\n| G-12 切り替わりの瞬間 | N/A | 時間・状態の切り替わりで答えが変わる物が無い（消した直後の会話は 005 が見る） |\n| G-13 機能の組み合わせ | 該当 | 探す × 会話の消す（005）・チケットと会話が同じ語に当たる（009） |\n| G-14 口座状態の波及 | 該当 | 権限を外した直後も自分の会話は出る（010）。会社から抜けた人・止められた人は入口の共通の確かめが 403 |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | 関数は 1 回の select・接続は K-468 の取引の 1 本を共有（増えない）。関数は 200 件で切る（0061）。limit は 5 まで |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | K-468 の探す 1 本 | 同じ（会話は同じ口の中・増えない） |\n| 直列の段 | 1 | 1 |\n| 口ごとの文の数・取引の数 | K-468：チケットの 1 文 | 会話の 1 文（関数 1 回）を足して最大 2 文・取引は 1 つのまま |\n| 認証の要る答えの Cache-Control | private, no-store（入口） | 同じ |\n| 新しい住所 | — | 増えない |\n| staging での答えの時間（前後） | K-468 の記録 | 会話の関数は会話と書き込みを全部そろえて比べる（本文を持つ会話が多いと重い）。取り込んだ後に staging で測って書く |",
+    "前からの試験を替えた所": "changes: のファイル（conversations.ts は K-468 が空の形で置く・ci_scope の断片）を使う前から在る試験は無い（K-468 の試験は「会社にデータが無いから 0 件」の形で確かめるので、本物にしても変わらない）。前の道すじ `/agent/conversations` を叩く前からの試験は、道すじも関数も変えないので替えない。\n\n```search\ngit grep -l \"agent_conversations\" -- apps/api/test packages/db/test\n0\ngit grep -l \"agent/conversations\" -- apps/api/test packages/db/test\n6\n```\n\n（件数は本線の前からの試験だけ。この葉が運ぶ自分の試験 `search-conversations.test.ts`〔関数 `agent_conversations` を名前で呼ぶ・手元の木では 1 つ目が 1 になる〕は数えない）\n\n- apps/api/test/agent_chat.test.ts・agent_artifacts.test.ts・agent_memory.test.ts・k145_fixture.ts・k145_pending_decisions.test.ts・k145_uuid_guard.test.ts: 替えない — 前の道すじ `/agent/conversations`（会話の作り・一覧）を叩く試験。関数も道すじもこの葉は変えない（関数を直接呼ぶ試験は 0 件）\n- apps/api/test/features/F7/search-tickets.test.ts: 替えない — K-468 の試験。会話の探し方が本物になっても、その試験の会社には会話が無いので 0 件のまま（会話の行は kinds=ticket 以外に当たらない）",
+    "成果物": "- 会話の探し方 `apps/api/src/features/F7/search/conversations.ts`（中身だけ・実装の役）・範囲の地図 `ci_scope.d/K-469.json`\n- 単体の試験 `search-conversations.test.ts`（切る段が書いた）と土台 `search.harness.ts`（K-468 が運ぶ物。この葉は運ばない：K-468 が先に本線に入るので、K-469 と K-470 が同じファイルを carry に入れる重なりを避けた）",
+    "決定ログ": "- D-127.4：探すは チケット・ナレッジのページ・決定・会話 をまとめて。D-151.8：自分の会話を今作る。D-151.18：社内の外枠だけ\n- 切る段が決めたこと（2026-11-20）：会話は本人のものだけ（権限・グループに関係しない）／snippet は関数の `hit`（無ければ空の字）／url は前からある `/ai/chat?c=<id>`／記憶に残さない会話も本人の探すには出る",
+    "PM に確かめたいこと": "- 下絵 B8（会話の行）の「日付」は `SearchHit` に無い（K-468 の「PM に確かめたいこと」と同じ）\n- 会話の画面（clone-chat）が本線にあるかぎり、url は押せる。段 8 の外枠の探す欄では「会話の画面が無い間は押せない形」（下絵 B8）の心配は要らない（画面は本線に在る）",
+    "リスクと懸念": "- 関数は会話ごとに本文をそろえて比べる（200 件まで）。会話と書き込みが非常に多い人は遅くなりうる（0061 の定義のまま・この葉では直さない）",
+    "申し送り": "- K-471：会話の行は「題・引用 1 行（snippet）」。日付は SearchHit に無い。url は `/ai/chat?c=<id>`。**引用はそろえた字で出る**：関数の `hit` は `app.search_norm` でそろえた本文（小文字・全角を半角）から切り出すので、画面の引用は元の字と大文字小文字・全角半角が変わる（例：「API」が「api」）。そのまま出す（K-471 が元の字に直そうとしない）\n- K-470：決定とナレッジは別のファイル（decisions.ts・knowledge.ts）。この葉と変えるファイルが重ならない",
+    "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-469.json`）に書く（K-325）。ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない\n- 口の登録・契約・エラーは K-468 が持つ（この葉は足さない）。migration は足さない"
+   },
+   "file": "11_tickets/K-469.md"
   },
   {
    "id": "K-470",
@@ -21943,6 +22350,64 @@
     "申し送り": "- 段 5・8・10 は画面の絵を持たない（開発用のモックが正）。それらの画面を flow.json に足す葉は、canvas-screens.json の mock_only に理由つきで足す必要がある（足さないと D6 が『作っていない画面』で赤になる・canvas_gate の CV4 も同じ）"
    },
    "file": "11_tickets/K-624.md"
+  },
+  {
+   "id": "K-625",
+   "title": "spec-sync の P2「検査の穴」のうち、台帳・登録の断片（.d）・設定の層 58 件に、その層を本当に読む検査（layer_checks）を結ぶ（K-325 の断片・K-237 の台帳などが、増えたのに layer_checks に行が無い）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-120",
+   "milestone": "基盤",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い K-621（0.5 時間）より重い：層ごとの検査を決める 25 分・layer_checks に行を足す 15 分・G27 の範囲と W5 を確かめる 10 分・試験 7 行を流して直す 10 分",
+   "decisions": [
+    "D-128.125",
+    "D-128.149",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "リポジトリの中の検査の道具・台帳・設定と自己試験だけ。外へ送らない・秘密に触らない・DB に書かない（K-627 だけ使い捨ての DB を作って捨てる）",
+   "tests": [
+    "scripts/ci/k625_layer_ledgers_test.py"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-622"
+   ],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（検査の道具・台帳・設定の中身だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "spec-dependencies.yaml",
+    "scripts/ci/g65.d/K-625.txt"
+   ],
+   "flow": "",
+   "sections": {
+    "目的": "spec-sync の P2 は「地図が参照しているのに、機械の検査も『手で見る＋理由』も無い成果物」を出す（実測：150 件）。内訳を調べた：\n\n| 層 | 件数 | 判断 |\n|---|---|---|\n| `11_tickets/_old/*`・`07_qa/ci-results/*`・`聞くこと_K-146.md` | 92（83 + 8 + 1） | 保管・証拠：K-626 が理由つきで『見ない』と宣言する（この葉は触らない） |\n| 台帳・断片・設定（この葉の持ち物） | **58** | **本当の食い違い（layer_checks に行が無い）**：K-325・K-237・K-206 ほかが足した台帳と `.d` の断片が、増えたのに layer_checks に足されなかった |\n\nこの葉は、台帳・断片・設定の層ごとに、**その層の名前を実際に読む検査**を結ぶ。実在する検査は全部ある（実測）：\n\n| 層 | 結ぶ検査（候補・実測で在る物） |\n|---|---|\n| `scripts/ci/ci_scope.json`・`ci_scope.d/` | `ci_scope_test.py`・`k325_registries_test.py` |\n| `07_qa/test-plan/ears-elsewhere.d/` | `k325_registries_test.py` |\n| `scripts/ci/contract_shape.d/` | `contract_shape_test.py` |\n| `scripts/ci/g47.d/`・`g65.d/` | `k376_gate_lists_test.py` |\n| `author_gate.json` | `k206_author_gate_test.py` |\n| `canvas_field_ledger.json` | `k215_canvas_field_test.py` |\n| `canvas_layout_ledger.json` | `k254_canvas_values_test.py`（k215 はこの名前を読まない） |\n| `class_ledger.json` | `k214_class_gate_test.py` |\n| `lock_dates.json` | `stack_gate.py`（読むのは既に `deprecated_baseline.json` の行で使っている） |\n| `perf_budget.json` | `k237_perf_ledger_test.py` |\n| `raw_length_ledger.json` | `design_gate.py --raw-lengths`（置き場は design-gate.json の raw_lengths が名指し） |\n| `runner_tools.json` | `k195_runner_chrome_test.py` |\n| `staging_region.json`・`apps/web/vercel.json` | `k212_function_region_test.py` |\n| `07_qa/test-plan/result-ledger.json` | `ci_results_ledger_test.py` |\n| `ticket-flow.yaml` | `k174_flow_config_test.py` |\n| `ai-team.yaml`・`ci-gates.yaml` | 旧い進め方（ai-team-delivery）の設定：manual（今の進め方は ticket-flow.yaml・どの検査も読まない・理由を書く） |\n| `*.d/README.md`（断片の置き方の説明） | manual（理由：断片は <読む検査> が読んで使う） |\n\n候補は実測した物で、決めるのは実装の担当（置き場の名前を本当に読む検査だけ。試験 004 が名前を読むかを見る）。",
+    "完了の条件": "- [ ] 下の表の 7 行（K625-LAY-001〜007）が緑：`python3 scripts/ci/k625_layer_ledgers_test.py`\n- [ ] `python3 scripts/spec-sync/project_audit.py --project-root . --json` の P2 に、この葉の層（台帳・断片・設定）が 1 件も無い（`11_tickets/_old`・`07_qa/ci-results`・`聞くこと_K-146` は K-626）\n- [ ] 手元で `python3 scripts/ci/layer_audit.py`（--run なし）と `python3 scripts/ci/ci_wiring_gate.py` が緑（elsewhere の印が本当に流れている。全体のこの確かめは試験でなく完了の条件で、K-629 も見る）\n- [ ] G65 の置き場 `scripts/ci/g65.d/K-625.txt` にこの試験の命令が 1 行在り、作り手を流し直した CI の定義に入っている\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 足すのは `spec-dependencies.yaml` の `layer_checks` の行だけ（`file`・`check`・必要なら `elsewhere`・`manual`）。検査の道具・台帳の中身は変えない\n- **検査は実際に層を読む物だけ**：check が指す道具の字に、層のファイル名が在ること（`.d` の断片の置き場だけは置き場の名前でよい。`ci`・`web` のような上のフォルダの名前では通さない）。design-gate.json の字も数えるのは、check が design_gate.py を呼ぶ行だけ（試験 004）。名前を読まない検査を結ぶのは「検査があるふり」で、赤にする\n- **G27 で重ねて流さない**：別の段（G65 など）が既に流している試験は `elsewhere: G<番号>` を付ける（K-156）。G27 が自分で流す層は軽い検査（数秒）だけ。印が本当に段で流れているかは ci_wiring_gate の W5 が見る。段の番号は `grep -n \"<試験の名前>\" .github/workflows/v3-gate.yml` で探す\n- G27 が自分で流す層（check があり elsewhere が無い）のファイルは、範囲の地図（`scripts/ci/ci_scope.json` の gates の 27）に当たらなければならない（K-245 の 011）。当たらない層（`ticket-flow.yaml`・`ai-team.yaml`・`ci-gates.yaml` は今は当たらない）は、`elsewhere` にするか manual にする。**共通の入口 `scripts/ci/ci_scope.d/_base.json` の gates は変えない**（共通の入口なので PM が見る）\n- manual は README（断片の置き方の説明）と ai-team.yaml・ci-gates.yaml だけで、理由は 15 字以上。それ以外の層を manual にしない\n- layer_audit 自身を check に書かない（無限に回る）",
+    "依存の理由": "- K-622：要る — この葉の試験は `scripts/spec-sync/project_audit.py`（K-622 が写す）で P2 を数える。K-622 が無いと試験が動かない\n- K-623：触らない — 同じファイル spec-dependencies.yaml を変えるが別の節（alignment_decisions と layer_checks）で、overlap_ok に入れてあるので待たない（試験もこの葉の層だけを見て K-623 の中身に頼らない）\n\n```search\ngit grep -n \"layer_checks\" -- scripts ':!scripts/ci/k62*'\n18\n```",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| layer_checks の行 | `spec-dependencies.yaml` の `layer_checks:` に、上の表の層ごとに 1 行：`file: <層>`・`check: python3 scripts/ci/<試験>`（別の段が流しているなら `elsewhere: G<番号>`）。`.d` の置き場は `file: <置き場>/`（README も覆う） |\n| manual の行 | `*.d/README.md`・ai-team.yaml・ci-gates.yaml だけ：`manual: <15 字以上の理由>` |\n| 範囲 | `ticket-flow.yaml` を check で結ぶなら `elsewhere`（G27 の範囲に当たらないため）。`python3 scripts/ci/k245_g27_reach_test.py` が緑のまま（011・012） |\n| G65 の置き場 | 新しい `scripts/ci/g65.d/K-625.txt` に 1 行 `python3 scripts/ci/k625_layer_ledgers_test.py`。作り手を流し直す |\n| 目録で探した結果 | 使う：既存の layer_checks の行の形（`elsewhere`・`db`・`manual`）・K-156 の elsewhere。作る：層の行。似た物：K-245 が足した行の形 |",
+    "外に影響する手順": "- なし — spec-dependencies.yaml の中の行と自己試験だけ。check の検査は読むだけの道具（G27 が流すのは軽い物だけ）",
+    "テスト仕様と確認の結果": "`scripts/ci/k625_layer_ledgers_test.py`（unittest。本物の木の spec-dependencies.yaml・project_audit.py の JSON・各検査の道具の字を読む。1 行（005）は作りものの根に台帳を 1 つ足して P に出るかを見る）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K625-LAY-001 | 入口 | `project_audit.py --json` の P2 を見る | この葉の層（台帳・断片・設定）が 1 件も残っていない（`_old`・`ci-results`・`聞くこと_K-146` は数えない） |\n| K625-LAY-002 | 守り | この葉の層に結んだ check を見る | check は実在する `scripts/…` の道具を呼ぶ・layer_audit を check に書いていない |\n| K625-LAY-003 | 守り | check が無い層（manual）を見る | manual は README と ai-team.yaml・ci-gates.yaml だけ・理由は 15 字以上（ほかの層は check を持つ） |\n| K625-LAY-004 | 守り | check が呼ぶ道具の字（と design-gate.json）を読む | 層のファイル名か置き場の名前が字の中に在る（名前を読まない検査は赤） |\n| K625-LAY-005 | 失敗 | 作りものの根に、layer_checks に無い台帳 `scripts/ci/zz_new_ledger.json` を足して P を流す | P1 か P2 にその台帳が出る（足し忘れを機械が止める仕組みが生きている） |\n| K625-LAY-006 | 守り | G27 が自分で流す層のファイルを、範囲の地図 gates の 27 に当てる | 全部が当たる（当たらない層は G27 が読む物を変えても G27 が流れない） |\n| K625-LAY-007 | 守り | `scripts/ci/g65.d/` を探す | この試験の命令を持つファイルは K-625.txt のちょうど 1 つ（CI から回る） |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K625-LAY-003（日本語のファイル名 `聞くこと…` は K-626。README の理由は日本語）・K625-LAY-004（層の名前を字で読む） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K625-LAY-004（検査が層の名前を読まないのに緑、を赤にする）・K625-LAY-005（足し忘れが P に出る） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | K625-LAY-006（G27 の範囲が手元と容れ物で同じ）・K625-LAY-005（作りものの根でも同じ道具が P に出す）。W5（elsewhere の印）は K-629 の完了の条件 |\n\nほかの観点：利用者の状態・画面の入口は無い（道具）。失敗（台帳を足して layer_checks を足し忘れる）は K625-LAY-005 が受ける。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験は 3 件。\n\n```search\npython3 scripts/ci/cut_check.py prior --files spec-dependencies.yaml\n3\n```\n\n- scripts/ci/ci_lean_test.py: 替えない — layer_checks に行を足すだけで、『check に packages/db/test を持つ層は db: true』の規則の対象は増えない（K-627 だけが DB の層を触る）\n- scripts/ci/k245_g27_reach_test.py: 替えない — 読む規則は『G27 が自分で流す層のファイルが gates の 27 に当たる』と『reach の数』。この葉の行は elsewhere か当たる層だけにする（試験 006 が同じ決まりを見る）\n- scripts/ci/k343_test_timeout_test.py: 替えない — check の命令に試験の上限を上書きする引数を足さない（足すのは python3 の道具の呼び出しだけ）",
+    "速さ（今の値と目標の値）": "画面も口も変えない。G27 が自分で流す行は軽い物（数秒）だけにする。G65 などが既に流している試験は elsewhere で重ねて流さない（G27 の時間は増えない）。",
+    "成果物": "- spec-dependencies.yaml の layer_checks の行（台帳・断片・設定の層）・G65 の置き場の 1 行\n- 自己試験 `scripts/ci/k625_layer_ledgers_test.py`（切る段が書いた）",
+    "決定ログ": "- 2026-11-21 PM の依頼：spec-sync の監査が本線の木で緑になり、K-621 の印つきの記録を運べるようにする。検査を緩める・黙って外す直しはしない（各類は「本当の食い違い（直す）」「検査の設定の抜け（設定を足す）」「正しい例外（台帳に理由・期限・代替案つき）」のどれかに決めた）\n- 2026-11-21 切る段の決め：P2 の台帳・断片・設定の層は『本当の食い違い（行の足し忘れ）』。『見ない』で済ませず、層を読む検査を結ぶ。ai-team.yaml・ci-gates.yaml は旧い進め方の設定で、読む検査が無いので、理由つきの manual（正しい手で見る）\n- 2026-11-21 切る段の決め：検査があるふり（名前を読まない検査）を結ばない（試験 004）\n- D-128.125：テストはチケットを切る人が書き、実装する人は変えない",
+    "リスクと懸念": "- 層に結ぶ検査が実際は別の物を見ているのを、試験は『字に名前が在る』までしか見ない。結んだ検査が層の中身の食い違いを本当に捕まえるかは、層ごとの検査の質で、この葉では上げない\n- `elsewhere` の段の番号が将来ずれると W5 が赤になる（検査が止める）\n- **全体の状態は G65 で見ない（PM の決め 2026-11-21 04:10）**：『今のプロジェクト全体』を見る行は、作った小さな木で道具を確かめる行に替えるか、K-629 の完了の条件（記録を書いて運ぶ確かめ・CI の G27＝G21 が見る）へ移した。消さずに移してある",
+    "申し送り": "- 結ぶ検査は『実在・名前を読む』を満たす候補を調べてある。実装の担当は候補どおりでなくてもよいが、試験 004 を満たすこと"
+   },
+   "file": "11_tickets/K-625.md"
   },
   {
    "id": "K-627",

@@ -1368,6 +1368,15 @@
   },
   {
    "paths": [
+    "scripts/ci/canvas_field_gate.py",
+    "scripts/ci/gen_built_routes.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k431-stage5-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/test-specs-*.ts",
     "apps/api/src/features/F4/test-spec/**"
    ],
@@ -1427,6 +1436,15 @@
    ],
    "tests": [
     "apps/api/test/generated/get_search.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-conversations.test.ts"
    ]
   },
   {
@@ -1698,7 +1716,9 @@
   "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）",
   "apps/web/tests/k/k400-stage9-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f8/mocks.tsx・部品 apps/web/features/F8/handover/（views.tsx・handover.css・detail-slots.tsx・slot-dispatch.tsx・use-handovers.ts・区画のファイル 10 個）と apps/web/features/F10/invite/views.tsx・探す欄の型 apps/web/components/k/search-field.tsx・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段9-F8/mock-shots.mjs・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-400）",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
+  "packages/db/test/k426_function_execute_private.test.ts": "この葉の migration のファイルを読み、取引の中でもう一度当てる（migration の道で db の組に当たる）と、口の文（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src）を読んで app の関数の名前を集める（DB の試験なので db の組で流れる）・K-426",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/web/tests/k/k431-stage5-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f4v2/mocks.tsx・apps/web/app/(dev)/dev/mock/f4/mocks.tsx・F4 の部品の置き場（apps/web/features/F4 の doc・parent・due・duplicate・links・home・detail-more・create-ticket）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）を読み、scripts/ci/canvas_field_gate.py を子プロセスで流す（K-431）",
   "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
