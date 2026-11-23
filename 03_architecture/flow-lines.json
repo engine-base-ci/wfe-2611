@@ -329,6 +329,14 @@
     "F9→F4"
    ]
   },
+  "knowledge_folders": {
+   "writes": [
+    "F9"
+   ],
+   "reads": [],
+   "boundary": false,
+   "lines": []
+  },
   "knowledge_links": {
    "writes": [
     "F9"

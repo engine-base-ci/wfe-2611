@@ -393,17 +393,17 @@ SCREEN_API = {
     "knowledge": [
         # ホーム・置き場・探す
         ("GET", "/knowledge/home", "A114", "knowledge_pages", "getKnowledgeHome", ["knowledge_page_versions", "reference_logs"]),
-        ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["scopes"]),
+        ("GET", "/knowledge/tree", "A114", "knowledge_pages", "getKnowledgeTree", ["knowledge_folders", "scopes"]),
         ("GET", "/knowledge_pages", "A114", "knowledge_pages", "listKnowledgePages", ["reference_logs", "members"]),
         ("POST", "/knowledge/ask", "A114", "knowledge_pages", "askKnowledge", ["bridge_jobs", "policies", "clients"]),
         ("POST", "/knowledge/ask/feedback", "A114", "knowledge_page_versions", "sendKnowledgeAnswerFeedback", []),
         # 1 ページ・書く・下書き・公開
-        ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_links", "policies", "skills"]),
-        ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "bridge_jobs"]),
+        ("GET", "/knowledge_pages/:id", "A114", "knowledge_pages", "getKnowledgePage", ["knowledge_page_versions", "knowledge_folders", "reference_logs"]),
+        ("POST", "/knowledge_pages", "A114", "knowledge_pages", "createKnowledgePage", ["knowledge_page_versions", "knowledge_folders"]),
         ("PATCH", "/knowledge_pages/:id", "A114", "knowledge_pages", "updateKnowledgePage", []),
-        ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_links"]),
-        ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", []),
-        ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_links", "notifications"]),
+        ("PATCH", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "saveKnowledgeDraft", ["knowledge_page_versions"]),
+        ("DELETE", "/knowledge_pages/:id/draft", "A114", "knowledge_page_versions", "discardKnowledgeDraft", ["knowledge_page_versions"]),
+        ("POST", "/knowledge_pages/:id/publish", "A114", "knowledge_page_versions", "publishKnowledgePage", ["knowledge_pages", "knowledge_page_versions"]),
         ("POST", "/knowledge_pages/:id/attachments", "A114", "attachments", "uploadKnowledgeAttachment", []),
         ("GET", "/knowledge_pages/:id/versions", "A114", "knowledge_page_versions", "listKnowledgeVersions", []),
         ("POST", "/knowledge_pages/:id/versions/:v/restore", "A114", "knowledge_page_versions", "restoreKnowledgeVersion", ["knowledge_pages"]),
@@ -863,6 +863,10 @@ ERRORS_4XX = {
 EARS_OK = {
     "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
 }
+# 成功の状態の番号の差し替え（operationId → 番号・K-705）。無い口は POST が 201・ほかは 200。新しい物を作らない POST（並べ直す）は 200
+SUCCESS_STATUS: dict = {}
+# 一覧の口（GET の list・search）でないのに答えの data が並びの口（operationId の集まり・K-705）。並べ直した全部の並びを返す POST など
+LIST_RESULT_OPS: dict = {}   # operationId → 訳
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
 NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
@@ -1103,9 +1107,9 @@ RESPONSES = {
     "getPortalTicket": ("PortalTicket", {"title": "string", "stage": "string", "due_on": "string?", "artifacts": "array", "messages": "array", "sections": "array"}),
     "getPortalAcceptance": ("PortalAcceptance", {"acceptance": "object", "artifact": "object", "preview_url": "string", "message": "string?", "due_on": "string?"}),
     "getKnowledgeHome": ("KnowledgeHome", {"to_verify": "array", "proposals": "array", "recent": "array", "popular": "array", "count": "integer"}),
-    "getKnowledgeTree": ("KnowledgeTree", {"places": "array", "topics": "array", "archived": "integer"}),
+    "getKnowledgeTree": ("KnowledgeTree", {"company_name": "string", "company_nodes": "array", "groups": "array", "my_nodes": "array", "can_write": "object", "admin_counts": "object?", "truncated": "boolean"}),   # K-675（土台 3.1）
     "askKnowledge": ("KnowledgeAnswer", {"mode": "string", "answer": "string", "citations": "array", "hits": "array"}),
-    "getKnowledgePage": ("KnowledgePageDetail", {"page": "object", "body": "object", "toc": "array", "children": "array", "backlinks": "array", "related_rules": "array", "proposal_marks": "array", "draft": "object"}),
+    "getKnowledgePage": ("KnowledgePageDetail", {"id": "uuid", "title": "string", "desc": "string", "state": "string", "must": "boolean", "must_blocked": "string?", "place": "object", "acts": "array", "body": "object?", "draft": "object?", "request": "object?", "copied_from": "object?", "shared_from": "object?", "raise_to": "object?", "foot": "object"}),   # K-675（土台 3.1）
     "getKnowledgeUsage": ("KnowledgeUsage", {"reads_3m": "integer", "returns": "integer", "recent_tickets": "array", "hot_sections": "array"}),
     "getKnowledgeLinks": ("KnowledgeLinks", {"nodes": "array", "edges": "array", "unlinked_mentions": "array"}),
     "searchKnowledgeLinkTargets": ("KnowledgeLinkTarget", {"kind": "string", "id": "string", "title": "string", "place": "string"}),
@@ -1499,18 +1503,18 @@ PERMS = {
     "answerAcceptance": ("client", "確かめてもらう相手だけ。OK がチケットの完了の条件になる（D-125.124）", False),
     # ナレッジ（D-128.50〜.52・D-128.105・.106）
     "getKnowledgeHome": ("read", "見られるページだけ（置き場の権限・自分のページは本人）", False),
-    "getKnowledgeTree": ("read", "同上", False),
+    "getKnowledgeTree": ("self", "社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）", False),
     "listKnowledgePages": ("read", "同上。しまったページは書ける人だけ", False),
     "askKnowledge": ("read", "見られる公開のページだけから答える。PC がつながっていれば本人の分身が出典つきで答え、なければ当てはまるページと行を出す（D-128.105）", False),
     "sendKnowledgeAnswerFeedback": ("read", "答えを見た本人。「いいえ」は持ち主への直す案になる", False),
-    "getKnowledgePage": ("read", "見られるページだけ。下書きは書いている本人と書ける人", False),
-    "createKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）", False),
-    "updateKnowledgePage": ("write", "同上（置き場・親・持ち主・確かめの間隔・話題）", False),
-    "saveKnowledgeDraft": ("write", "同上。下書きは公開するまで知らせない・分身も読まない", False),
-    "discardKnowledgeDraft": ("write", "下書きを書いた本人", False),
-    "publishKnowledgePage": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる", False),
+    "getKnowledgePage": ("read", "見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675", False),
+    "createKnowledgePage": ("write", "社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）", False),
+    "updateKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675", False),
+    "saveKnowledgeDraft": ("write", "そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675", False),
+    "discardKnowledgeDraft": ("write", "そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675", False),
+    "publishKnowledgePage": ("write", "そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675", False),
     "uploadKnowledgeAttachment": ("write", "同上。ファイルは検査してから置く（関門 C4）", False),
-    "listKnowledgeVersions": ("read", "見られるページだけ", False),
+    "listKnowledgeVersions": ("read", "見えるページだけ（行の守り）。公開した版を新しい順に・K-675", False),
     "restoreKnowledgeVersion": ("write", "書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）（新しい版として戻す）", False),
     "exportKnowledgeMarkdown": ("read", "見られるページだけ（期限つきの署名 URL）", False),
     "getKnowledgeUsage": ("read", "見られるページだけ。読んだチケットは見られるものだけ出す", False),

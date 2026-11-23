@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
+  "api": 378,
   "api_built": 84,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 149,
   "ui": 19,
   "packages": 13,
-  "errors": 237,
+  "errors": 254,
   "stack": 56,
   "env": 41
  },
@@ -1979,6 +1979,51 @@
    "owner_tickets": []
   },
   {
+   "op": "createKnowledgeFolder",
+   "method": "POST",
+   "path": "/api/v1/knowledge/folders",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
+   "op": "updateKnowledgeFolder",
+   "method": "PATCH",
+   "path": "/api/v1/knowledge/folders/:id",
+   "what": "更新（knowledge）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
+   "op": "deleteKnowledgeFolder",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge/folders/:id",
+   "what": "削除（knowledge）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_folders"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
    "op": "getKnowledgeHome",
    "method": "GET",
    "path": "/api/v1/knowledge/home",
@@ -2049,6 +2094,21 @@
    "only_later_phase": false,
    "tables": [
     "knowledge_page_versions"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
+   "op": "findSimilarKnowledge",
+   "method": "POST",
+   "path": "/api/v1/knowledge/similar",
+   "what": "作成・実行（knowledge）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
    ],
    "status": "契約だけ（501）",
    "owner_tickets": []
@@ -2189,6 +2249,21 @@
    "owner_tickets": []
   },
   {
+   "op": "deleteKnowledgePage",
+   "method": "DELETE",
+   "path": "/api/v1/knowledge_pages/:id",
+   "what": "削除（knowledge_pages）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
    "op": "archiveKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/archive",
@@ -2214,6 +2289,21 @@
    "only_later_phase": false,
    "tables": [
     "attachments"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
+   "op": "copyKnowledgePage",
+   "method": "POST",
+   "path": "/api/v1/knowledge_pages/:id/copy",
+   "what": "作成・実行（knowledge_pages）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
    ],
    "status": "契約だけ（501）",
    "owner_tickets": []
@@ -2324,6 +2414,21 @@
    "owner_tickets": []
   },
   {
+   "op": "setKnowledgeMust",
+   "method": "PUT",
+   "path": "/api/v1/knowledge_pages/:id/must",
+   "what": "置き換え（knowledge_pages）— ナレッジのページを書く・直す",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_pages"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
    "op": "publishKnowledgePage",
    "method": "POST",
    "path": "/api/v1/knowledge_pages/:id/publish",
@@ -2387,6 +2492,21 @@
    "op": "listKnowledgeVersions",
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/versions",
+   "what": "取得（knowledge_page_versions）— ページの公開した版を新しい順に見る",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "knowledge_page_versions"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": []
+  },
+  {
+   "op": "getKnowledgePageVersion",
+   "method": "GET",
+   "path": "/api/v1/knowledge_pages/:id/versions/:v",
    "what": "取得（knowledge_pages）— ナレッジのページを書く・直す",
    "flows": [
     "F9"
@@ -6527,7 +6647,9 @@
    "table": "knowledge_folders",
    "class": "skeleton",
    "why": "ナレッジの口が使う（K-674）",
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [],
    "boundary": false
   },

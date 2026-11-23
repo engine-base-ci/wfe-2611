@@ -25,6 +25,8 @@ export const ROW_EXEMPT = {
   "/api/v1/me/passkeys": "パスキーは認証の側の表（auth スキーマ・D-128.119）。本人の分だけを認証の仕組みが引く。入口は役（member）と本人確認の取り直しまで",
   "/api/v1/bridge/devices":
     "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
+  "/api/v1/knowledge/folders":
+    "ナレッジのフォルダの行の見える・書けるは、口が DB の関数 app.kfolder_visible（見えなければ 404）・app.kfolder_writable（見えて書けなければ 403）で決める。表を packages/db/src/repository.ts の TABLES に足すと、それを読む前からの試験が動くので入口では行を読まない（K-675）",
 };
 /** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
  *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
@@ -72,7 +74,8 @@ export const RULES = {
   read: {},
   write: {
     tickets: `app.ticket_writable(id)`,
-    knowledge_pages: `app.kpage_writable(id)`,
+    // 消したページは入口を通し、口が deleted_at is null つきの読みで 404 にする（入口で 403 にすると「消した → 404」が口に届かない・K-675）
+    knowledge_pages: `(deleted_at is not null or app.kpage_writable(id))`,
     // 残りは 07_functional/entities.json の update の条件をそのまま使う（RLS と同じ式）
   },
   assignee: {

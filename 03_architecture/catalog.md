@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 84・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 237・部品 56・設定 41
+API 378（作った 84・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 254・部品 56・設定 41
 
 ## 共通の処理
 
@@ -82,7 +82,7 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `invoices` | skeleton | F12 |  |  |
 | `kaname_auth` | internal |  |  |  |
 | `kind_sections` | skeleton | F4,F9 |  | ○ |
-| `knowledge_folders` | skeleton |  |  |  |
+| `knowledge_folders` | skeleton | F9 |  |  |
 | `knowledge_links` | skeleton | F9 |  |  |
 | `knowledge_page_versions` | skeleton | F9 |  |  |
 | `knowledge_pages` | skeleton | F9 |  |  |
@@ -426,11 +426,15 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `createKnowledgeFolder` | POST /api/v1/knowledge/folders | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `updateKnowledgeFolder` | PATCH /api/v1/knowledge/folders/:id | 更新（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `deleteKnowledgeFolder` | DELETE /api/v1/knowledge/folders/:id | 削除（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeHome` | GET /api/v1/knowledge/home | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `searchKnowledgeLinkTargets` | GET /api/v1/knowledge/link-targets | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgeProposals` | GET /api/v1/knowledge/proposals | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createKnowledgeImport` | POST /api/v1/knowledge_imports | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -440,8 +444,10 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `deleteKnowledgePage` | DELETE /api/v1/knowledge_pages/:id | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `archiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/archive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `uploadKnowledgeAttachment` | POST /api/v1/knowledge_pages/:id/attachments | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `copyKnowledgePage` | POST /api/v1/knowledge_pages/:id/copy | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeLinks` | GET /api/v1/knowledge_pages/:id/links | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
@@ -449,11 +455,13 @@ API 370（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgeMessages` | GET /api/v1/knowledge_pages/:id/messages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `postKnowledgeMessage` | POST /api/v1/knowledge_pages/:id/messages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `setKnowledgeMust` | PUT /api/v1/knowledge_pages/:id/must | 置き換え（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `publishKnowledgePage` | POST /api/v1/knowledge_pages/:id/publish | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `unarchiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/unarchive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeUsage` | GET /api/v1/knowledge_pages/:id/usage | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `verifyKnowledgePage` | POST /api/v1/knowledge_pages/:id/verify | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `listKnowledgeVersions` | GET /api/v1/knowledge_pages/:id/versions | 取得（knowledge_page_versions）— ページの公開した版を新しい順に見る | F9 | 契約だけ（501） |  |
+| `getKnowledgePageVersion` | GET /api/v1/knowledge_pages/:id/versions/:v | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `restoreKnowledgeVersion` | POST /api/v1/knowledge_pages/:id/versions/:v/restore | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createLayer` | POST /api/v1/layers | 作成・実行（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `updateLayer` | PATCH /api/v1/layers/:id | 更新（layers）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |

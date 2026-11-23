@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d6e2878b185cdbc7
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:919fe8611dcd638c
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -123,34 +123,42 @@ export interface Ops {
   downloadInvoicePdf: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   askKnowledge: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgeAnswer };
   sendKnowledgeAnswerFeedback: { params: never; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  createKnowledgeFolder: { params: never; query: never; body: T.KnowledgeFolderCreateInput; data: T.KnowledgeFolder };
+  updateKnowledgeFolder: { params: { id: string }; query: never; body: T.KnowledgeFolderUpdateInput; data: T.KnowledgeFolder };
+  deleteKnowledgeFolder: { params: { id: string }; query: never; body: never; data: T.KnowledgeFolderDeleted };
   getKnowledgeHome: { params: never; query: never; body: never; data: T.KnowledgeHome };
   searchKnowledgeLinkTargets: { params: never; query: { "q"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeLinkTarget[] };
   listKnowledgeProposals: { params: never; query: { "mine"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgePageVersions[] };
   acceptKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   declineKnowledgeProposal: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  findSimilarKnowledge: { params: never; query: never; body: T.KnowledgeSimilarInput; data: T.KnowledgeSimilar };
   getKnowledgeTree: { params: never; query: never; body: never; data: T.KnowledgeTree };
   listKnowledgeVerifications: { params: never; query: { "mine"?: string | number; "soon"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgeVerification[] };
   createKnowledgeImport: { params: never; query: never; body: T.ImportsInput; data: T.Imports };
   getKnowledgeImport: { params: { id: string }; query: never; body: never; data: T.KnowledgeImportPreview };
   commitKnowledgeImport: { params: { id: string }; query: never; body: T.ImportsInput; data: T.Imports };
   listKnowledgePages: { params: never; query: { "scope_id"?: string | number; "parent_id"?: string | number; "topic"?: string | number; "owner_id"?: string | number; "state"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.KnowledgePages[] };
-  createKnowledgePage: { params: never; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
+  createKnowledgePage: { params: never; query: never; body: T.KnowledgePageCreateInput; data: T.KnowledgePageStub };
   getKnowledgePage: { params: { id: string }; query: never; body: never; data: T.KnowledgePageDetail };
-  updateKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
+  updateKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePageMoveInput; data: T.KnowledgePageStub };
+  deleteKnowledgePage: { params: { id: string }; query: never; body: never; data: T.KnowledgePageDeleted };
   archiveKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
   uploadKnowledgeAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
-  saveKnowledgeDraft: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
-  discardKnowledgeDraft: { params: { id: string }; query: never; body: never; data: T.KnowledgePageVersions };
+  copyKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgeCopyInput; data: T.KnowledgePageStub };
+  saveKnowledgeDraft: { params: { id: string }; query: never; body: T.KnowledgeDraftInput; data: T.KnowledgeDraftSaved };
+  discardKnowledgeDraft: { params: { id: string }; query: never; body: never; data: T.KnowledgeDraftDiscarded };
   getKnowledgeLinks: { params: { id: string }; query: never; body: never; data: T.KnowledgeLinks };
   linkKnowledgeMention: { params: { id: string }; query: never; body: T.KnowledgeLinksInput; data: T.KnowledgeLinks };
   exportKnowledgeMarkdown: { params: { id: string }; query: never; body: never; data: T.SignedUrl };
   listKnowledgeMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Messages[] };
   postKnowledgeMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  publishKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
+  setKnowledgeMust: { params: { id: string }; query: never; body: T.KnowledgeMustInput; data: T.KnowledgeMustSet };
+  publishKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePublishInput; data: T.KnowledgePublished };
   unarchiveKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
   getKnowledgeUsage: { params: { id: string }; query: never; body: never; data: T.KnowledgeUsage };
   verifyKnowledgePage: { params: { id: string }; query: never; body: T.KnowledgePagesInput; data: T.KnowledgePages };
-  listKnowledgeVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.KnowledgePageVersions[] };
+  listKnowledgeVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.KnowledgeVersionItem[] };
+  getKnowledgePageVersion: { params: { id: string; v: string }; query: never; body: never; data: T.KnowledgeVersion };
   restoreKnowledgeVersion: { params: { id: string; v: string }; query: never; body: T.KnowledgePageVersionsInput; data: T.KnowledgePageVersions };
   createLayer: { params: never; query: never; body: T.LayersInput; data: T.Layers };
   updateLayer: { params: { id: string }; query: never; body: T.LayersInput; data: T.Layers };

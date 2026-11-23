@@ -3158,16 +3158,16 @@
     "E-002 scopes",
     "E-142 scope_memberships",
     "E-120 reference_logs",
+    "E-147 knowledge_folders",
     "E-004 members",
     "E-044 bridge_jobs",
     "E-037 policies",
     "E-124 clients",
-    "E-095 skills",
-    "E-080 notifications",
     "E-094 attachments",
     "E-106 tickets",
     "E-039 action_runs",
     "E-049 messages",
+    "E-080 notifications",
     "E-089 imports"
    ],
    "related_apis": [
@@ -3201,7 +3201,15 @@
     "POST /api/knowledge/proposals/:id/decline",
     "POST /api/knowledge_imports",
     "GET /api/knowledge_imports/:id",
-    "POST /api/knowledge_imports/:id/commit"
+    "POST /api/knowledge_imports/:id/commit",
+    "GET /api/knowledge_pages/:id/versions/:v",
+    "POST /api/knowledge/folders",
+    "PATCH /api/knowledge/folders/:id",
+    "DELETE /api/knowledge/folders/:id",
+    "DELETE /api/knowledge_pages/:id",
+    "PUT /api/knowledge_pages/:id/must",
+    "POST /api/knowledge/similar",
+    "POST /api/knowledge_pages/:id/copy"
    ],
    "access_roles": [
     "R1",
@@ -11526,6 +11534,54 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/knowledge_imports/:id/commit"
+    },
+    {
+     "act": "A114",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/knowledge_pages/:id/versions/:v"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/folders"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PATCH",
+     "path_draft": "/api/knowledge/folders/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge/folders/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "DELETE",
+     "path_draft": "/api/knowledge_pages/:id"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "PUT",
+     "path_draft": "/api/knowledge_pages/:id/must"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge/similar"
+    },
+    {
+     "act": "A114",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/knowledge_pages/:id/copy"
     }
    ]
   },
@@ -13603,7 +13659,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "used_by_features": [
@@ -14169,8 +14224,13 @@
   {
    "entity_id": "E-147",
    "entity_name": "knowledge_folders",
-   "used_by_screens": [],
-   "used_by_features": []
+   "used_by_screens": [
+    "knowledge"
+   ],
+   "used_by_features": [
+    "F-011",
+    "F-013"
+   ]
   },
   {
    "entity_id": "E-124",
@@ -15272,7 +15332,8 @@
     "E-126",
     "E-133",
     "E-134",
-    "E-142"
+    "E-142",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/policies",
@@ -15420,7 +15481,8 @@
     "E-142",
     "E-144",
     "E-145",
-    "E-146"
+    "E-146",
+    "E-147"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",

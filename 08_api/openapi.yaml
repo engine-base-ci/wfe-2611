@@ -10684,6 +10684,185 @@ components:
       - other_ticket_id
       - kind
       x-required-by: hooks
+    KnowledgeFolderCreateInput:
+      type: object
+      properties:
+        shelf:
+          type: string
+          enum:
+          - company
+          - group
+          - me
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        name:
+          type: string
+          pattern: \S
+          maxLength: 100
+      additionalProperties: false
+      x-operation: createKnowledgeFolder
+      required:
+      - shelf
+      - name
+      x-required-by: hooks
+      anyOf:
+      - properties:
+          shelf:
+            enum:
+            - company
+            - me
+      - required:
+        - group_id
+    KnowledgeFolderUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: \S
+          maxLength: 100
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+      x-operation: updateKnowledgeFolder
+      anyOf:
+      - required:
+        - name
+      - required:
+        - parent_folder_id
+      - required:
+        - position
+    KnowledgePageCreateInput:
+      type: object
+      properties:
+        shelf:
+          type: string
+          enum:
+          - company
+          - group
+          - me
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          pattern: \S
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+      additionalProperties: false
+      x-operation: createKnowledgePage
+      required:
+      - shelf
+      - title
+      x-required-by: hooks
+      anyOf:
+      - properties:
+          shelf:
+            enum:
+            - company
+            - me
+      - required:
+        - group_id
+    KnowledgeDraftInput:
+      type: object
+      properties:
+        title:
+          type: string
+          pattern: \S
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+        doc:
+          type: object
+      additionalProperties: false
+      x-operation: saveKnowledgeDraft
+      anyOf:
+      - required:
+        - title
+      - required:
+        - desc
+      - required:
+        - doc
+    KnowledgePublishInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: publishKnowledgePage
+    KnowledgePageMoveInput:
+      type: object
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+      x-operation: updateKnowledgePage
+      anyOf:
+      - required:
+        - folder_id
+      - required:
+        - position
+    KnowledgeMustInput:
+      type: object
+      properties:
+        must:
+          type: boolean
+      additionalProperties: false
+      x-operation: setKnowledgeMust
+      required:
+      - must
+      x-required-by: hooks
+    KnowledgeSimilarInput:
+      type: object
+      properties:
+        title:
+          type: string
+          pattern: \S
+          maxLength: 200
+        desc:
+          type: string
+          maxLength: 200
+        text:
+          type: string
+          maxLength: 10000
+        exclude_page_id:
+          type: string
+          format: uuid
+      additionalProperties: false
+      x-operation: findSimilarKnowledge
+      required:
+      - title
+      x-required-by: hooks
+    KnowledgeCopyInput:
+      type: object
+      properties:
+        folder_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: copyKnowledgePage
     ScopeOverview:
       type: object
       properties:
@@ -11987,16 +12166,27 @@ components:
     KnowledgeTree:
       type: object
       properties:
-        places:
+        company_name:
+          type: string
+        company_nodes:
           type: array
           items:
             type: object
-        topics:
+        groups:
           type: array
           items:
             type: object
-        archived:
-          type: integer
+        my_nodes:
+          type: array
+          items:
+            type: object
+        can_write:
+          type: object
+        admin_counts:
+          type: object
+          nullable: true
+        truncated:
+          type: boolean
       x-operation: getKnowledgeTree
     KnowledgeAnswer:
       type: object
@@ -12017,31 +12207,45 @@ components:
     KnowledgePageDetail:
       type: object
       properties:
-        page:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        desc:
+          type: string
+        state:
+          type: string
+        must:
+          type: boolean
+        must_blocked:
+          type: string
+          nullable: true
+        place:
           type: object
+        acts:
+          type: array
+          items:
+            type: object
         body:
           type: object
-        toc:
-          type: array
-          items:
-            type: object
-        children:
-          type: array
-          items:
-            type: object
-        backlinks:
-          type: array
-          items:
-            type: object
-        related_rules:
-          type: array
-          items:
-            type: object
-        proposal_marks:
-          type: array
-          items:
-            type: object
+          nullable: true
         draft:
+          type: object
+          nullable: true
+        request:
+          type: object
+          nullable: true
+        copied_from:
+          type: object
+          nullable: true
+        shared_from:
+          type: object
+          nullable: true
+        raise_to:
+          type: object
+          nullable: true
+        foot:
           type: object
       x-operation: getKnowledgePage
     KnowledgeUsage:
@@ -12630,6 +12834,136 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    KnowledgeVersionItem:
+      type: object
+      properties:
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        by_name:
+          type: string
+          nullable: true
+      x-operation: listKnowledgeVersions
+    KnowledgeVersion:
+      type: object
+      properties:
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+        by_name:
+          type: string
+          nullable: true
+        body:
+          type: object
+      x-operation: getKnowledgePageVersion
+    KnowledgeFolder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shelf:
+          type: string
+        group_id:
+          type: string
+          format: uuid
+          nullable: true
+        parent_folder_id:
+          type: string
+          format: uuid
+          nullable: true
+        position:
+          type: integer
+      x-operation: updateKnowledgeFolder
+    KnowledgeFolderDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteKnowledgeFolder
+    KnowledgePageStub:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        desc:
+          type: string
+        state:
+          type: string
+        must:
+          type: boolean
+        place:
+          type: object
+      x-operation: copyKnowledgePage
+    KnowledgeDraftSaved:
+      type: object
+      properties:
+        saved_at:
+          type: string
+        title:
+          type: string
+        desc:
+          type: string
+      x-operation: saveKnowledgeDraft
+    KnowledgeDraftDiscarded:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        page_deleted:
+          type: boolean
+      x-operation: discardKnowledgeDraft
+    KnowledgePublished:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        published_at:
+          type: string
+          nullable: true
+      x-operation: publishKnowledgePage
+    KnowledgePageDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteKnowledgePage
+    KnowledgeMustSet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        must:
+          type: boolean
+        used:
+          type: integer
+        limit:
+          type: integer
+      x-operation: setKnowledgeMust
+    KnowledgeSimilar:
+      type: object
+      properties:
+        pages:
+          type: array
+          items:
+            type: object
+      x-operation: findSimilarKnowledge
     Error:
       type: object
       properties:
@@ -24487,6 +24821,268 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/folders:
+    post:
+      operationId: createKnowledgeFolder
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: write
+      x-permission-scope: 社内の人。その棚に書ける人だけ作れる（口が app.kfolder_writable・棚を決める。見えない棚は 404・書けない棚は 403）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeFolderCreateInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolder'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-020／E-KNW-021
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/folders/{id}:
+    patch:
+      operationId: updateKnowledgeFolder
+      summary: 更新（knowledge）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: write
+      x-permission-scope: そのフォルダに書ける人（口が app.kfolder_visible で 404・app.kfolder_writable で 403）。同じ棚の中だけ
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeFolderUpdateInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolder'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-020／E-KNW-021／E-KNW-022／E-KNW-023
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteKnowledgeFolder
+      summary: 削除（knowledge）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_folders
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: write
+      x-permission-scope: 同上。中が空で、共有していないフォルダだけ
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeFolderDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-024／E-KNW-051
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge/home:
     get:
       operationId: getKnowledgeHome
@@ -24962,6 +25558,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge/similar:
+    post:
+      operationId: findSimilarKnowledge
+      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: self
+      x-permission-scope: 社内の人（見える棚の公開済みのページだけから探す）
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeSimilarInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeSimilar'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge/tree:
     get:
       operationId: getKnowledgeTree
@@ -24977,8 +25648,8 @@ paths:
       - D-125.113
       - D-125.167
       - D-125.34
-      x-permission: read
-      x-permission-scope: 同上
+      x-permission: self
+      x-permission-scope: 社内の人（自分の見える棚の木だけ。棚ごとの見える人は行の守りと口が決める・K-675）
       x-step-up: false
       security:
       - session: []
@@ -25548,7 +26219,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: write
-      x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）
+      x-permission-scope: 社内の人。棚ごとの書ける人（会社・グループ・自分）は行の守りと口が決める（見えない棚は 404・書けない棚は 403・K-675）
       x-step-up: false
       security:
       - session: []
@@ -25557,7 +26228,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePagesInput'
+              $ref: '#/components/schemas/KnowledgePageCreateInput'
       responses:
         '201':
           description: 成功
@@ -25567,7 +26238,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePages'
+                    $ref: '#/components/schemas/KnowledgePageStub'
                   meta:
                     type: object
         '401':
@@ -25594,6 +26265,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -25602,12 +26285,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -25628,7 +26305,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: read
-      x-permission-scope: 見られるページだけ。下書きは書いている本人と書ける人
+      x-permission-scope: 見えるページだけ（行の守り）。下書きは書いている本人だけ・K-675
       x-step-up: false
       security:
       - session: []
@@ -25675,14 +26352,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -25703,7 +26380,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: write
-      x-permission-scope: 同上（置き場・親・持ち主・確かめの間隔・話題）
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。同じ棚の中で動かす・K-675
       x-step-up: false
       security:
       - session: []
@@ -25719,7 +26396,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePagesInput'
+              $ref: '#/components/schemas/KnowledgePageMoveInput'
       responses:
         '200':
           description: 成功
@@ -25729,7 +26406,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePages'
+                    $ref: '#/components/schemas/KnowledgePageStub'
                   meta:
                     type: object
         '401':
@@ -25756,6 +26433,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-011／E-KNW-052
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -25768,8 +26457,83 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteKnowledgePage
+      summary: 削除（knowledge_pages）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: write
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。必ず守る・共有・承認待ちのページは消せない
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgePageDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-011／E-KNW-050／E-KNW-051
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -25962,6 +26726,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/copy:
+    post:
+      operationId: copyKnowledgePage
+      summary: 作成・実行（knowledge_pages）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: read
+      x-permission-scope: 見えるページを自分の棚へ写す（写す先は自分の棚だけ）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeCopyInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgePageStub'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-080
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge_pages/{id}/draft:
     patch:
       operationId: saveKnowledgeDraft
@@ -25979,7 +26837,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: write
-      x-permission-scope: 同上。下書きは公開するまで知らせない・分身も読まない
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。下書きは書き終えるまでほかの人に見せない・K-675
       x-step-up: false
       security:
       - session: []
@@ -25995,7 +26853,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePageVersionsInput'
+              $ref: '#/components/schemas/KnowledgeDraftInput'
       responses:
         '200':
           description: 成功
@@ -26005,7 +26863,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgeDraftSaved'
                   meta:
                     type: object
         '401':
@@ -26032,6 +26890,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -26040,12 +26910,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -26066,7 +26930,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: write
-      x-permission-scope: 下書きを書いた本人
+      x-permission-scope: そのページに書ける人（下書きを書いた本人の分だけ捨てる）・K-675
       x-step-up: false
       security:
       - session: []
@@ -26086,7 +26950,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgeDraftDiscarded'
                   meta:
                     type: object
         '401':
@@ -26113,14 +26977,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-KNW-030
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -26581,6 +27451,100 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/must:
+    put:
+      operationId: setKnowledgeMust
+      summary: 置き換え（knowledge_pages）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_pages
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: write
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。棚ごとの上限まで
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeMustInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeMustSet'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-KNW-010／E-KNW-011／E-KNW-060／E-KNW-061
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/knowledge_pages/{id}/publish:
     post:
       operationId: publishKnowledgePage
@@ -26598,7 +27562,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: write
-      x-permission-scope: 書ける人：ワークスペース全体のページはメンバー以上・グループのページはそのグループのメンバー以上・自分のページは本人（D-128.106）。公開すると版が増え、持ち主に知らせる
+      x-permission-scope: そのページに書ける人（app.kpage_writable）。書き終えると版が 1 つ増える（お知らせは出さない）・K-675
       x-step-up: false
       security:
       - session: []
@@ -26614,9 +27578,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/KnowledgePageVersionsInput'
+              $ref: '#/components/schemas/KnowledgePublishInput'
       responses:
-        '201':
+        '200':
           description: 成功
           content:
             application/json:
@@ -26624,7 +27588,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/KnowledgePageVersions'
+                    $ref: '#/components/schemas/KnowledgePublished'
                   meta:
                     type: object
         '401':
@@ -26646,13 +27610,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-KNW-040／E-KNW-041
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -26665,12 +27635,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -26941,7 +27905,7 @@ paths:
   /api/v1/knowledge_pages/{id}/versions:
     get:
       operationId: listKnowledgeVersions
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      summary: 取得（knowledge_page_versions）— ページの公開した版を新しい順に見る
       tags:
       - knowledge_page_versions
       x-acts:
@@ -26954,7 +27918,7 @@ paths:
       - D-125.167
       - D-125.34
       x-permission: read
-      x-permission-scope: 見られるページだけ
+      x-permission-scope: 見えるページだけ（行の守り）。公開した版を新しい順に・K-675
       x-step-up: false
       security:
       - session: []
@@ -26978,33 +27942,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - author_member_id
-          - body
-          - created_at
-          - created_by
-          - decided_at
-          - decided_by
-          - decision
-          - decline_reason
-          - deleted_at
-          - id
-          - kind
-          - note
-          - page_id
-          - proposed_by_clone
-          - proposed_from_ticket_id
-          - published_at
-          - published_by
-          - tenant_id
-          - updated_at
-          - updated_by
-          - version
       responses:
         '200':
           description: 成功
@@ -27016,7 +27953,91 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/KnowledgePageVersions'
+                      $ref: '#/components/schemas/KnowledgeVersionItem'
+                  meta:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/knowledge_pages/{id}/versions/{v}:
+    get:
+      operationId: getKnowledgePageVersion
+      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す
+      tags:
+      - knowledge_page_versions
+      x-acts:
+      - A114
+      x-screens:
+      - knowledge
+      x-choke-points: []
+      x-source:
+      - D-125.113
+      - D-125.167
+      - D-125.34
+      x-permission: read
+      x-permission-scope: 見えるページだけ（行の守り）。公開した版の本文
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: v
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[1-9][0-9]{0,8}$
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KnowledgeVersion'
                   meta:
                     type: object
         '401':
@@ -27043,14 +28064,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:

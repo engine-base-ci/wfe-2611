@@ -8931,7 +8931,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8948,7 +8947,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8965,7 +8963,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8982,7 +8979,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -8999,7 +8995,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -9016,7 +9011,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -9033,7 +9027,6 @@
     "tickets",
     "masters",
     "work-types",
-    "knowledge",
     "requests"
    ],
    "internal": false,
@@ -11777,37 +11770,47 @@
   {
    "entity": "knowledge_folders",
    "field": "is_personal",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "knowledge"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "knowledge_folders",
    "field": "owner_member_id",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "knowledge"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "knowledge_folders",
    "field": "parent_folder_id",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "knowledge"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "knowledge_folders",
    "field": "name",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "knowledge"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "knowledge_folders",
    "field": "position",
-   "consumed_by_screens": [],
+   "consumed_by_screens": [
+    "knowledge"
+   ],
    "internal": false,
-   "reason": "★ どの画面にも出ない"
+   "reason": null
   },
   {
    "entity": "clients",
@@ -13668,11 +13671,5 @@
    "reason": "マスタ。label は各画面の札・選択肢として出る"
   }
  ],
- "unconsumed": [
-  "knowledge_folders.is_personal",
-  "knowledge_folders.owner_member_id",
-  "knowledge_folders.parent_folder_id",
-  "knowledge_folders.name",
-  "knowledge_folders.position"
- ]
+ "unconsumed": []
 }

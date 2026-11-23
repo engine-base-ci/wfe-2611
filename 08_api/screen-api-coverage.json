@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-22",
+ "frozen_at": "2026-11-23",
  "summary": {
   "total_screens": 37,
-  "total_apis": 370,
+  "total_apis": 378,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -3041,6 +3041,46 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/knowledge_imports/:id/commit",
+     "act": "A114"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/knowledge_pages/:id/versions/:v",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/folders",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge/folders/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/knowledge_pages/:id",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "PUT /api/v1/knowledge_pages/:id/must",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge/similar",
+     "act": "A114"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/knowledge_pages/:id/copy",
      "act": "A114"
     }
    ],

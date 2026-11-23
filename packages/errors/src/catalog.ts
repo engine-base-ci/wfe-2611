@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。237 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。254 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4289,6 +4289,295 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-KNW-010": {
+    "id": "E-KNW-010",
+    "cls": "conflict",
+    "message": "このページはまだ書き終えていません。書き終えてから使ってください",
+    "action": "書き終える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-011": {
+    "id": "E-KNW-011",
+    "cls": "conflict",
+    "message": "このページを上の棚へ上げる（共有する）頼みが承認待ちです。決まるまでは変えられません",
+    "action": "頼みを取り下げる／決まるのを待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-012": {
+    "id": "E-KNW-012",
+    "cls": "conflict",
+    "message": "ほかの人がこのページを書いています。書き終えるまで待ってください",
+    "action": "少し待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-020": {
+    "id": "E-KNW-020",
+    "cls": "conflict",
+    "message": "同じ場所に同じ名前のフォルダがあります",
+    "action": "名前を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-021": {
+    "id": "E-KNW-021",
+    "cls": "conflict",
+    "message": "フォルダは 6 つ入れ子までです",
+    "action": "浅い所に置く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-021",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-022": {
+    "id": "E-KNW-022",
+    "cls": "conflict",
+    "message": "フォルダを自分の中には動かせません",
+    "action": "別の場所を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-022",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-023": {
+    "id": "E-KNW-023",
+    "cls": "conflict",
+    "message": "フォルダは別の棚には動かせません",
+    "action": "同じ棚の中で動かす",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-023",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-024": {
+    "id": "E-KNW-024",
+    "cls": "conflict",
+    "message": "中にページかフォルダがあるので消せません",
+    "action": "先に動かすか消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-024",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-030": {
+    "id": "E-KNW-030",
+    "cls": "conflict",
+    "message": "捨てる下書きがありません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-030",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-040": {
+    "id": "E-KNW-040",
+    "cls": "conflict",
+    "message": "書き終える下書きがありません",
+    "action": "画面を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-040",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-041": {
+    "id": "E-KNW-041",
+    "cls": "conflict",
+    "message": "「必ず守る」のページは本文を 2,000 字までにしてください",
+    "action": "本文を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-050": {
+    "id": "E-KNW-050",
+    "cls": "conflict",
+    "message": "「必ず守る」が付いているので消せません",
+    "action": "先に外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-050",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-051": {
+    "id": "E-KNW-051",
+    "cls": "conflict",
+    "message": "ほかのグループに共有しているので消せません",
+    "action": "先に共有をやめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-051",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-052": {
+    "id": "E-KNW-052",
+    "cls": "conflict",
+    "message": "ページは別の棚には動かせません。上の棚へは「上げる」を使ってください",
+    "action": "「上げる」を使う",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-052",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-060": {
+    "id": "E-KNW-060",
+    "cls": "conflict",
+    "message": "「必ず守る」の上限に届きました",
+    "action": "今付いているページから外す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-060",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-061": {
+    "id": "E-KNW-061",
+    "cls": "conflict",
+    "message": "本文が 2,000 字を超えているので、「必ず守る」は付けられません",
+    "action": "本文を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-061",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
+    }
+  },
+  "E-KNW-080": {
+    "id": "E-KNW-080",
+    "cls": "conflict",
+    "message": "自分の棚のページは写せません",
+    "action": "上の棚のページを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-KNW-080",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "knowledge"
     }
   }
 };
