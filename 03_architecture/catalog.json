@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 369,
-  "api_built": 94,
+  "api_built": 95,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
@@ -61,7 +61,7 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-61",
     "K-731"
@@ -5098,7 +5098,7 @@
    "op": "completeTicket",
    "method": "POST",
    "path": "/api/v1/tickets/:id/complete",
-   "what": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
+   "what": "作成・実行（tickets）— 完了にする",
    "flows": [
     "F5"
    ],

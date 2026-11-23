@@ -14515,6 +14515,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ
       x-step-up: false
@@ -18600,6 +18603,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その仕事に付いたファイルだけ（期限つきの署名 URL）
       x-step-up: false
@@ -18888,6 +18894,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）
       x-step-up: false
@@ -18989,6 +18998,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上（止める・割り込みの指示を受け取る）
       x-step-up: false
@@ -19219,6 +19231,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上
       x-step-up: false
@@ -19323,6 +19338,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その仕事を受け取った PC だけ
       x-step-up: false
@@ -19613,6 +19631,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上。分身は本人の権限の中でだけ Kaname の道具を呼べる
       x-step-up: false
@@ -19729,6 +19750,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す
       x-step-up: false
@@ -44258,7 +44282,7 @@ paths:
   /api/v1/tickets/{id}/complete:
     post:
       operationId: completeTicket
-      summary: 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す
+      summary: 作成・実行（tickets）— 完了にする
       tags:
       - tickets
       x-acts:
@@ -44273,6 +44297,7 @@ paths:
       - D-125.167
       - D-125.55
       - D-125.59
+      - D-153.15
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ
       x-step-up: false
@@ -44582,6 +44607,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）
       x-step-up: false
@@ -45553,6 +45581,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人
       x-step-up: false
