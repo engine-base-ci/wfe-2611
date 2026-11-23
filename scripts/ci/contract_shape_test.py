@@ -78,7 +78,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
     "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
-    "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
+    "delegateTicket": "使わない理由 no_spec_reason は無くてよい（K-565）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
@@ -114,7 +114,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     },
     "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts:42〜43（改行を空白にして前後を落とし、空は 422）
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts:62〜63
-    "createMemory": {"confidence": {"pattern": "^-?[0-9](?:\\.[0-9]+)?$"}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
+    "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
     "createSignup": {   # apps/api/src/features/F1/sign-up/input.ts:37〜47
         "email": {"pattern": "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"},
         "name": {"pattern": "\\S", "maxLength": 100},
@@ -126,6 +126,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
+    "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # apps/api/src/features/F5/delegate/people.ts・app.ticket_delegate（使わない理由・1〜500 字・K-565）
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
@@ -134,17 +135,13 @@ UNEXPRESSIBLE_422: dict[str, list[str]] = {
     "createTicket": ["期限が今日より前（E-VAL-012・今日は日本時間）", "暦に無い日付の期限・開始", "開始が期限より後", "優先度が高で理由が空",
                      "種別の必須の区画が空（E-VAL-013）", "グループ・種別・担当者・知らせる人がその会社に無いか書けない（E-VAL-014）",
                      "親のチケットが深すぎる（E-VAL-015）", "前後の空白・NFKC で長さが変わる題名"],
-    "claimPairingCode": ["違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）", "NFKC で英数字になる字（① など）"],
+    "claimPairingCode": ["NFKC で英数字になる字（① など）"],
     "updateConversation": ["名前が null（空と同じ）"],
-    "updateMemory": ["覚えることが null（空と同じ）"],
-    "createMemory": ["種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）", "確かさが四捨五入で 10 以上になる（9.995 など）"],
     "changePassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）", "今のパスワードが違う（欄 current_password）"],   # K-312
     "setMyPassword": ["漏れたことのあるパスワード（E-VAL-011）", "12 文字より短い・128 文字を超える新しいパスワード（E-VAL-005・E-VAL-026・文字の数で数える）"],   # K-312
     "createSignup": ["漏れたことのあるパスワード（E-VAL-011）", "制御文字・NFKC で形や長さが変わるメール・名前・会社名"],
     "stepUp": ["2 段階を使う人のコードが空（条件つき）", "password も passkey も無い・password が空（どちらか 1 つ・K-309）", "passkey が object でない"],
     "renamePasskey": ["NFKC と前後の空白を除いて 41 文字以上の名前", "制御文字（改行・タブ・NUL など）を含む名前"],
-    "signInWithPassword": ["メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）"],
-    "verifySignInCode": ["code と backup_code の両方・どちらも無い（どちらか 1 つ）"],
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
 }
@@ -1077,6 +1074,8 @@ class ContractShapeTest(unittest.TestCase):
     # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
     #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
     SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
+        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
         "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
         "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
         "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],

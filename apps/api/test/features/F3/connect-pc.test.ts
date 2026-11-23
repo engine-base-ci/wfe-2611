@@ -73,7 +73,8 @@ const fields = (j: Record<string, unknown>) =>
   ((j["details"] as { field: string }[] | undefined) ?? []).map((d) => d.field);
 const newPerson = (o: Parameters<Fixture["person"]>[2] = {}) => f.person(T1.tenantId, T1.rootScope, o);
 const sameAsWrongCode = async (r: Response) => {
-  expect(r.status).toBe(422);
+  // 形どおりのコードが DB で使えない（違う・期限切れ・使い終わった・出し直す前）は 404・E-CONN-013（K-639：422 にしない・欄は付けない）
+  expect(r.status).toBe(404);
   const j = await json(r);
   expect(j["code"]).toBe("E-CONN-013");
   return j;
@@ -780,7 +781,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
     const p = await newPerson();
     const c = await pair(p);
     const rs = await Promise.all([claim(c.code, "PC A"), claim(c.code, "PC B")]);
-    expect(rs.map((r) => r.status).sort()).toEqual([201, 422]);
+    expect(rs.map((r) => r.status).sort()).toEqual([201, 404]);
     expect(await devices(p)).toHaveLength(1);
   });
 
@@ -808,7 +809,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
 
   it("K57-API-038 守り：引き取りを 1 分に 6 回：429・待つ秒数（D-089：5 回まで）", async () => {
     const ip = nextIp();
-    for (let i = 0; i < 5; i++) expect((await claim("ZZZZZZ", "PC", ip)).status).toBe(422);
+    for (let i = 0; i < 5; i++) expect((await claim("ZZZZZZ", "PC", ip)).status).toBe(404);
     const r = await claim("ZZZZZZ", "PC", ip);
     expect(r.status).toBe(429);
     expect((await json(r))["retry_after_sec"]).toBeGreaterThan(0);
