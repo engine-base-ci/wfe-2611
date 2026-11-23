@@ -7574,6 +7574,36 @@
     "D-153.16",
     "D-153.17"
    ]
+  },
+  {
+   "id": "E-TALK-050",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "つながっている自分の PC が無い（まだつないでいない・外した）のに、チケットの右のパネルで自分の AI に言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がまだつながっていません。PC をつなぐと、このチケットのことを話せます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "書けるチケットを開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "右のパネルの「〇〇のAI」タブで言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16"
+   ]
   }
  ],
  "meta": {

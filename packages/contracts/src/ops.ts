@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:3c0965b9dbffcd81
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:47bb0562e67c251c
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -310,9 +310,9 @@ export interface Ops {
   updateTicket: { params: { id: string }; query: never; body: T.TicketUpdateInput; data: T.TicketUpdated };
   deleteTicket: { params: { id: string }; query: { "children"?: string | number; "parent_id"?: string | number; "reason"?: string | number }; body: never; data: T.TicketDeleted };
   requestAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
-  getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.Conversations };
+  getTicketAgentSession: { params: { id: string }; query: never; body: never; data: T.TicketAgentSession };
   applyTicketAgentProposal: { params: { id: string }; query: never; body: T.TicketSectionsInput; data: T.TicketSections };
-  sendTicketAgentMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  sendTicketAgentMessage: { params: { id: string }; query: never; body: T.TicketAgentMessageInput; data: T.TicketAgentSent };
   listTicketArtifacts: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Artifacts[] };
   createTicketAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listChecks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Checks[] };

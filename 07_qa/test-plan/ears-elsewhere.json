@@ -2069,6 +2069,66 @@
    "na": {
     "test_post_conversations_id_stop_upstream_failed": "この口はサーバーの外を呼ばない（DB に止める合図と取りやめを書くだけ。止めるのは合図を見る本人の PC・D-097）"
    }
+  },
+  "getTicketAgentSession": {
+   "file": "apps/api/test/features/F5/talk-ticket.test.ts",
+   "reason": "チケットの会話は、会話の有無・人・チケットの権限で答えが変わる。生成の試験の種では会話と PC を作れない（K-763）",
+   "covers": {
+    "test_get_tickets_id_agent_session_ok": "K763-API-002",
+    "test_get_tickets_id_agent_session_shape": "K763-API-002",
+    "test_get_tickets_id_agent_session_rejected_401": "K763-API-018",
+    "test_get_tickets_id_agent_session_rate_limited": "K763-API-018",
+    "test_get_tickets_id_agent_session_not_found": "K763-API-006",
+    "test_get_tickets_id_agent_session_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-763.ts",
+     "mark": "K144-API-927"
+    },
+    "test_get_tickets_id_agent_session_session_unresolved": "K763-API-019",
+    "test_get_tickets_id_agent_session_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_agent_session_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_agent_session_rejected_403": "読む口はチケットが見えれば通り、見えなければ 404（行の守り・在るかを漏らさない）。見えるのに読めない 403 は無い（受けは K763-API-006・007）",
+    "test_get_tickets_id_agent_session_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書く／読むだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "sendTicketAgentMessage": {
+   "file": "apps/api/test/features/F5/talk-ticket.test.ts",
+   "reason": "チケットの会話に言うのは、チケットの権限・PC・会話の有無で答えが変わる。生成の試験の種では作れない（K-763）",
+   "covers": {
+    "test_post_tickets_id_agent_session_messages_ok": "K763-API-008",
+    "test_post_tickets_id_agent_session_messages_shape": "K763-API-008",
+    "test_post_tickets_id_agent_session_messages_rejected_401": "K763-API-018",
+    "test_post_tickets_id_agent_session_messages_rejected_403": "K763-API-014",
+    "test_post_tickets_id_agent_session_messages_not_found": "K763-API-014",
+    "test_post_tickets_id_agent_session_messages_rejected_422": "K763-API-012",
+    "test_post_tickets_id_agent_session_messages_conflict": "K763-API-013",
+    "test_post_tickets_id_agent_session_messages_conflict_2": "K763-API-027",
+    "test_post_tickets_id_agent_session_messages_rate_limited": "K763-API-018",
+    "test_post_tickets_id_agent_session_messages_session_unresolved": "K763-API-019",
+    "test_post_tickets_id_agent_session_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_agent_session_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_agent_session_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_agent_session_messages_ok_2": "許可に答える・許可のモードを選ぶ道はこの口に作らない（体は text だけ・D-153.16）。許可の答えは承認の口（K-162）が持つ",
+    "test_post_tickets_id_agent_session_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に会話・人の言葉の行・待っている仕事を書く／読むだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
   }
  }
 }

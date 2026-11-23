@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。240 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。241 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4343,6 +4343,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "clone-chat"
+    }
+  },
+  "E-TALK-050": {
+    "id": "E-TALK-050",
+    "cls": "conflict",
+    "message": "PC がまだつながっていません。PC をつなぐと、このチケットのことを話せます",
+    "action": "PC をつなぐ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-050",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };

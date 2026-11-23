@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:3c0965b9dbffcd81
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:47bb0562e67c251c
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -342,6 +342,7 @@ export type TestSpecCreateInput = { title: string };
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
 export type ConversationSay = { text: string };
 export type ConversationStopInput = Record<string, never>;
+export type TicketAgentMessageInput = { text: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
@@ -471,6 +472,8 @@ export type ConversationRow = { id?: string; title?: string; updated_at?: string
 export type MessageView = { id?: string; who?: string; text?: string; at?: string; job_id?: string | null; passed?: string[]; proposal?: Record<string, unknown> | null; took?: Record<string, unknown> | null };
 export type ConversationSaid = { id?: string; conversation_id?: string; job_id?: string };
 export type ConversationStopped = { state?: string };
+export type TicketAgentSession = { conversation?: Record<string, unknown> | null; messages?: string[]; has_more?: boolean; running_job_id?: string | null; work?: Record<string, unknown> | null; stopped?: Record<string, unknown> | null };
+export type TicketAgentSent = { id?: string; conversation_id?: string; job_id?: string };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null; talk_kind?: string; ticket_id?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 
