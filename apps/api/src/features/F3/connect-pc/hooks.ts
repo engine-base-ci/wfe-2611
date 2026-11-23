@@ -138,8 +138,9 @@ export function connectPcHooks(d: ConnectPcDeps): Record<string, Hook> {
           [sha256(c.code), label, sha256(token), m.machineId],
         );
         const row = r.rows[0];
-        // 違う・期限切れ・使い終わり・出し直した前のコードは、同じ返事（どれかを見分けさせない・D-089）
-        if (!row) return fromCatalog("E-CONN-013", { field: "code" });
+        // 違う・期限切れ・使い終わり・出し直した前のコードは、同じ返事（どれかを見分けさせない・D-089）。
+        //   形どおりのコードが DB で使えないだけなので 422 でなく 404（番号は類 not_found から出る・欄・details は付けない・K-639）
+        if (!row) return fromCatalog("E-CONN-013");
         return {
           status: 201,
           body: {
