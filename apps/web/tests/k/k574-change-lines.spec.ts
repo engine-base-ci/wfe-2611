@@ -159,14 +159,18 @@ test("K574-UI-006 1 つの行に変更が 2 つ以上：名前は頭に 1 回・
   ]);
 });
 
-test("K574-UI-007 段 7 の欄（実績・保留）は前のままの字・知らない欄は「〈欄の鍵〉を変えた」に落ちる（段 5 の差し込みが段 7 の字を奪わない）", async ({
+test("K574-UI-007 段 7 の欄（実績・保留）は前のままの字・知らない欄は「項目を変更しました」（欄の鍵を出さない・answer=b810843ec17b）（段 5 の差し込みが段 7 の字を奪わない）", async ({
   page,
 }) => {
   await open(page, [
     change(SATO_W, "2025-11-21 15:00", [{ field: "actual_minutes", from: null, to: "1 時間" }]),
     change(TAKA_W, "2025-11-21 15:05", [{ field: "zzz_new_field", from: "a", to: "b" }]),
   ]);
-  await expect(lines(page)).toHaveText([/佐藤\s?が実績を 1 時間 に変えた/, /高本\s?がzzz_new_fieldを変えた/]);
+  await expect(lines(page)).toHaveText([
+    /佐藤\s?が実績を 1 時間 に変えた/,
+    /^\s*高本\s?が項目を変更しました\s*15:05\s*$/,
+  ]);
+  await expect(page.getByText("zzz_new_field")).toHaveCount(0);
 });
 
 test("K574-UI-008 口の数：更新の行の文を作るために口は増えない（やり取りを読む口 1 回・詳細 1 回・先読みの二重なし）。文は画面が changes と詳細の fields から作る", async ({
