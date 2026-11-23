@@ -14,6 +14,7 @@ import {
   DUE_PAST,
   HND,
   HND_PAIRS,
+  ME,
   SATO,
   SUZUKI,
   WHY,
@@ -275,8 +276,26 @@ test("K413-UI-015 渡し中に別の人にする：渡す口に 1 回で replace
   page,
 }) => {
   const { h } = await asSender(page);
+  // 本物の下見の口は、今待っている渡しを blocked waiting・waiting.id で返す（K-401）。replaces の渡し自身は止まりに数えない
+  h.on.preview = () =>
+    ok(
+      preview({
+        blocked: "waiting",
+        waiting: {
+          id: HND,
+          kind: "pass",
+          from: { id: ME, name: "高本 聖斗" },
+          to: { id: SATO, name: "佐藤 花子" },
+          to_scope: null,
+          reply_due: DUE,
+        },
+      }),
+    );
   await openDetail(page);
   await band(page, SENDING).getByRole("button", { name: "別の人にする" }).click();
+  await expect(pickDialog(page).locator(".k-hnd-pick-item").filter({ hasText: "鈴木 一郎" })).toBeVisible();
+  // 止まりの文（E-HND-004 の後ろの文・名前の穴の無い所）が小窓に出ない
+  await expect(pickDialog(page)).not.toContainText(msg("E-HND-004").slice(msg("E-HND-004").indexOf("。") + 1));
   await pickDialog(page).locator(".k-hnd-pick-item").filter({ hasText: "鈴木 一郎" }).click();
   await passDialog(page).locator("textarea").first().fill("営業の会議で話が出たため");
   await passDialog(page).getByRole("button", { name: "引き継いでもらう" }).click();
