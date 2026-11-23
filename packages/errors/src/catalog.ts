@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。216 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。231 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3140,7 +3140,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-CONN-013": {
     "id": "E-CONN-013",
-    "cls": "validation",
+    "cls": "not_found",
     "message": "その接続コードは使えません。Kaname の「PC をつなぐ」の画面に出ている、新しいコードを入れてください",
     "action": "画面の新しいコードを入れ直す",
     "undo": false,
@@ -3635,6 +3635,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "screen": "credentials"
     }
   },
+  "E-CRED-016": {
+    "id": "E-CRED-016",
+    "cls": "gate",
+    "message": "使える場所の外には入れません。必要なら、預けたログイン情報の使える場所に足してください",
+    "action": "預けたログイン情報の使える場所に足す（持ち主に知らせる）",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-CRED-016",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "credentials"
+    }
+  },
   "E-CRED-010": {
     "id": "E-CRED-010",
     "cls": "gate",
@@ -3775,6 +3792,134 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "e"
     }
   },
+  "E-CONF-030": {
+    "id": "E-CONF-030",
+    "cls": "conflict",
+    "message": "AI が動いている間と承認待ちの間は、状態を変えられません",
+    "action": "今の実行・承認が終わるのを待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-030",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-032": {
+    "id": "E-CONF-032",
+    "cls": "conflict",
+    "message": "完了したチケットは、開き直してから状態を変えてください",
+    "action": "「作業中（開き直す）」で開き直してから状態を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-032",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-034": {
+    "id": "E-CONF-034",
+    "cls": "conflict",
+    "message": "この状態には、ここから変えられません",
+    "action": "ほかの状態を選ぶ（完了は「完了にする」から）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-034",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-035": {
+    "id": "E-CONF-035",
+    "cls": "conflict",
+    "message": "保留にするときは、保留の理由と再開の条件を書いてください",
+    "action": "保留の理由と再開の条件を書いてから、もう一度保留にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-035",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-CONF-036": {
+    "id": "E-CONF-036",
+    "cls": "conflict",
+    "message": "保留にしていないチケットには、保留の理由と再開の条件を書けません",
+    "action": "保留にしてから理由と条件を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-036",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-041": {
+    "id": "E-VAL-041",
+    "cls": "validation",
+    "message": "保留の理由を書いてください",
+    "action": "保留の理由を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-041",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
+  "E-VAL-047": {
+    "id": "E-VAL-047",
+    "cls": "validation",
+    "message": "再開の条件を書いてください",
+    "action": "再開の条件を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-047",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
+    }
+  },
   "E-VAL-042": {
     "id": "E-VAL-042",
     "cls": "validation",
@@ -3809,6 +3954,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "decisions"
+    }
+  },
+  "E-VAL-046": {
+    "id": "E-VAL-046",
+    "cls": "validation",
+    "message": "時間と分は 0 以上の整数で入れてください（分は 0〜59）",
+    "action": "時間と分を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-046",
+    "must_not": false,
+    "layers": [
+      "UI"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "progress"
     }
   },
   "E-INV-009": {
@@ -3883,6 +4045,80 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "invite"
     }
   },
+  "E-SPEC-001": {
+    "id": "E-SPEC-001",
+    "cls": "conflict",
+    "message": "このチケットは完了しています。完了したチケットの確認項目は変えられません",
+    "action": "新しいチケットで確かめる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SPEC-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-LNK-001": {
+    "id": "E-LNK-001",
+    "cls": "conflict",
+    "message": "同じチケットとはつなげられません",
+    "action": "ほかのチケットを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
+    }
+  },
+  "E-LNK-002": {
+    "id": "E-LNK-002",
+    "cls": "conflict",
+    "message": "このチケットとは、もうつながっています",
+    "action": "つながりの一覧を見る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
+    }
+  },
+  "E-LNK-003": {
+    "id": "E-LNK-003",
+    "cls": "conflict",
+    "message": "派生元が輪になるので、つなげられません",
+    "action": "ほかのチケットを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LNK-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "links"
+    }
+  },
   "E-SRC-001": {
     "id": "E-SRC-001",
     "cls": "validation",
@@ -3915,6 +4151,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "search"
+    }
+  },
+  "E-LST-001": {
+    "id": "E-LST-001",
+    "cls": "conflict",
+    "message": "一覧の続きを読めませんでした。最初から読み直してください",
+    "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-LST-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "list"
+    }
+  },
+  "E-DEL-001": {
+    "id": "E-DEL-001",
+    "cls": "permission",
+    "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
+    "action": "作った人か権限のある人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
     }
   }
 };
