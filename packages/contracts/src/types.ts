@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:be34da2acadf9d84
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:fca22673876a88db
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -311,7 +311,7 @@ export type TermsConsentInput = { agree: boolean; terms_version_id: string; priv
 export type PairingCodeInput = Record<string, never>;
 export type BridgeClaimInput = { code: string; device_label?: string; machine_id?: string | null };
 export type BridgeHeartbeatInput = { health?: unknown; protocol?: unknown; version?: string };
-export type TicketCreateInput = { scope_id: string; kind_id: string; title: string; assignee_member_id: string; due_on: string; start_on?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string; estimate_minutes?: unknown | null; sections?: Record<string, unknown>; notify_member_ids?: string[]; draft_id?: string; source_draft_id?: string; body?: Record<string, unknown>; fields?: Record<string, unknown>; specs?: string[] };
+export type TicketCreateInput = { scope_id: string; kind_id: string; title: string; assignee_member_id: string; due_on: string; start_on?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string; estimate_minutes?: unknown | null; sections?: Record<string, unknown>; notify_member_ids?: string[]; draft_id?: string; source_draft_id?: string; body?: Record<string, unknown>; fields?: Record<string, unknown>; specs?: string[]; links?: string[] };
 export type TicketDraftInput = { draft_id: string; body?: Record<string, unknown>; discard?: boolean };
 export type DismissSetupTasksInput = { key?: string };
 export type TicketDelegateInput = { no_spec_reason?: string };

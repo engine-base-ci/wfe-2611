@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:be34da2acadf9d84
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:fca22673876a88db
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -3601,6 +3601,7 @@ export const TicketCreateInput = z.strictObject({
   body: z.record(z.string(), z.unknown()).optional(),
   fields: z.record(z.string(), z.unknown()).optional(),
   specs: z.array(z.string()).optional(),
+  links: z.array(z.unknown()).optional(),
 });
 export const TicketDraftInput = z.strictObject({
   draft_id: z.uuid().optional(),

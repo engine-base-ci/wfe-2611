@@ -154,6 +154,7 @@ export const MIGRATIONS = [
   "20261122100500_ticket_delegate_body.sql",
   "20261122100600_ticket_complete_unchecked.sql",
   "20261122100800_ticket_create_fields.sql",
+  "20261122101100_ticket_create_links.sql",
   "20261123080100_notifications_read_at.sql",
   "20261123081500_saved_views_name.sql",
   "20261123082700_ticket_delete_preview.sql",

@@ -115,6 +115,8 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},   # K-581：payload.ts の checkLinks
         "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）

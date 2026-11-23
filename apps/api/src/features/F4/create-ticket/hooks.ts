@@ -1,7 +1,8 @@
 // チケットを作る（K-60）の契約の口の振る舞い。
 //   createTicket：入口で形を確かめ（題名・期限・優先度・見込み・本文 body・会社の項目 fields・確認項目 specs の形）、app.ticket_create（関門 C2・K-437 で作り直し）が
 //     グループに書けるか・種別・担当者・親・知らせる人が同じ会社か・会社の項目の値（K-564 の app.ticket_fields_set）・確認項目の文を確かめ、
-//     チケット・本文の行と版 1・項目の値・確認項目・受け箱の知らせ・下書きの片付けを 1 つの処理で書く（K-437）。
+//     チケット・本文の行と版 1・項目の値・確認項目・つながり（K-581・K-441 の app.ticket_link_add）・受け箱の知らせ・下書きの片付けを 1 つの処理で書く（K-437）。
+//     つなぐ相手が無い・見えないは 404 E-PAGE-001・相手に書けないは 403（欄なし）。
 //     断り：選べない選び先（種別・担当者・知らせる人・親・項目の id）は 404 E-PAGE-001／親子が 3 段を超える 409 E-VAL-015／期限が今日より前 409 E-VAL-012／
 //     開始が期限より後 409 E-VAL-028／会社の項目の 409 E-FLD-001〜004（どれも欄・details・detail を付けない＝在るかを漏らさない）。422 は契約に書ける形の誤りだけ（欄つき）。
 //     sections だけで来た作り方（前の道）の必須の区画が空は 422 E-VAL-013（K-578 まで）。DB が落ちたら口の中で 503 E-PAGE-003（何も残らない・D-136.1）
@@ -23,7 +24,8 @@ const fail = (status: number, error: string, code: string, extra: Record<string,
 });
 
 /** DB の答えの言葉 → 404 E-PAGE-001 になるもの（選べない・見えない選び先・欄なし・在るかを漏らさない） */
-const GONE = new Set(["KIND_GONE", "ASSIGNEE_GONE", "NOTIFY_GONE", "PARENT_NOT_FOUND"]);
+//   LINK_GONE（K-581）：つなぐ相手が無い・消した・見えない・別の会社
+const GONE = new Set(["KIND_GONE", "ASSIGNEE_GONE", "NOTIFY_GONE", "PARENT_NOT_FOUND", "LINK_GONE"]);
 
 /** 画面が送ったままの題名・本文・確認項目の文（入口の NFKC・前後の空白の揃えを当てない）。読めなければ入口が揃えた値を使う */
 async function sentParts(a: HookArgs): Promise<{ title?: unknown; raw: RawParts }> {
@@ -43,7 +45,8 @@ async function sentParts(a: HookArgs): Promise<{ title?: unknown; raw: RawParts 
 /** app.ticket_create の断りの答え → 口の答え。知らない言葉は例外にする（口の中で 503 にする・既定の答えは置かない） */
 function refusal(r: Record<string, unknown>): HookReply {
   const code = String(r["code"]);
-  if (code === "FORBIDDEN") return fail(403, "forbidden", "FORBIDDEN");
+  // LINK_FORBIDDEN（K-581）：つなぐ相手が見えるが書けない（欄なし）
+  if (code === "FORBIDDEN" || code === "LINK_FORBIDDEN") return fail(403, "forbidden", "FORBIDDEN");
   if (GONE.has(code)) return bare("E-PAGE-001", 404);
   if (code === "PARENT_DEPTH") return bare("E-VAL-015", 409);
   if (code === "FIELD") {

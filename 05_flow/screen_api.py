@@ -536,7 +536,7 @@ INPUTS = {
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
                                            "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
                                            "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid",
-                                           "body": "object", "fields": "object", "specs": "string[]"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）
+                                           "body": "object", "fields": "object", "specs": "string[]", "links": "array"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）。links：作るときにつなぐ相手（K-581）
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
@@ -965,6 +965,9 @@ VALUE_RANGES = {
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
+        # K-581：作るときにつなぐ相手（payload.ts の checkLinks・0〜20 件・同じ組なし・要素は kind と other_ticket_id の 2 つだけ）。相手が選べるかは DB（K-441 の app.ticket_link_add）
+        "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
+                                                                 "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},

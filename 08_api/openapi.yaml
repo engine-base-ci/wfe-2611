@@ -11347,6 +11347,24 @@ components:
           items:
             type: string
           maxItems: 50
+        links:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: object
+            required:
+            - kind
+            - other_ticket_id
+            additionalProperties: false
+            properties:
+              kind:
+                enum:
+                - related
+                - derived_from
+              other_ticket_id:
+                type: string
+                format: uuid
       additionalProperties: false
       x-operation: createTicket
       required:

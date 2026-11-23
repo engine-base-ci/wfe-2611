@@ -1,9 +1,10 @@
 // チケットを作る（K-60・K-437）の入力の形の確かめ。同じ会社か・書けるか・会社の項目の値・確認項目の文の長さは DB（app.ticket_create）が確かめる。
 //   題名は NFKC で整えず前後の空白だけ落とす（D-150.34）：入口（op.ts の normalize）が直す前の生の題名を 3 つ目の引数で受け、長さは生の字で数える（契約の maxLength と同じ TITLE_MAX）。
 //   期限が今日より前は E-VAL-012・開始が期限より後は E-VAL-028（どちらも 409・欄なし。hooks.ts が E-VAL-012 → E-VAL-028 の順に先に返す）。
+//   つなぐ相手 links（K-581）は形だけを確かめて value に載せる（無い・空なら鍵ごと載せない）。相手が選べるかは DB の app.ticket_link_add（K-441）
 //   本文 body があれば body だけを使い sections は載せない／body が無く sections だけなら前の区画の道（K-578 まで）／どちらも無ければ空の本文
 import { isUuid } from "@kaname/contracts";
-import { checkBody, checkFields, checkSpecs } from "./payload.js";
+import { checkBody, checkFields, checkLinks, checkSpecs } from "./payload.js";
 export const TITLE_MAX = 200;
 export const NOTIFY_MAX = 20;
 /** 正式な uuid の形（契約の入口と同じ isUuid＝z.uuid()・版と variant の桁まで見る・K-145） */
@@ -112,7 +113,10 @@ export function checkCreate(
   if (!fieldsPart.ok) d.push(...fieldsPart.details);
   const specsPart = checkSpecs("specs" in raw ? raw.specs : input["specs"]);
   if (!specsPart.ok) d.push(...specsPart.details);
-  if (d.length || (bodyPart && !bodyPart.ok) || !fieldsPart.ok || !specsPart.ok) return { ok: false, details: d };
+  const linksPart = checkLinks(input["links"]);
+  if (!linksPart.ok) d.push(...linksPart.details);
+  if (d.length || (bodyPart && !bodyPart.ok) || !fieldsPart.ok || !specsPart.ok || !linksPart.ok)
+    return { ok: false, details: d };
   const bodyValue = bodyPart && bodyPart.ok ? bodyPart.value : null;
   return {
     ok: true,
@@ -130,6 +134,7 @@ export function checkCreate(
       ...(bodyValue ? { body: bodyValue } : { sections }),
       fields: fieldsPart.value,
       specs: specsPart.value,
+      ...(linksPart.value.length ? { links: linksPart.value } : {}),
       notify_member_ids: notify,
       draft_id: draft || null,
       source_draft_id: source || null,
