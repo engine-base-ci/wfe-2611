@@ -6,6 +6,7 @@ import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
+import { listQueryIssues } from "../../../contract/list_query.js";
 import { SWEEP_TICKET, sweepBeforeRead } from "../approve-complete/sweep.js";
 
 /** PC をつなぐ画面（E-CONN-001 の一手） */
@@ -15,6 +16,11 @@ const RUNS_LIMIT = 50;
 const fromCatalog = (code: string, status: number, extra: Record<string, unknown> = {}): HookReply => ({
   status,
   body: { ...kanameError(code).toJSON(), ...extra },
+});
+/** 体から detail を外す（E-CONF-020 は {error, code, message, action, undo, support_code} だけ） */
+const noDetail = (r: HookReply): HookReply => ({
+  ...r,
+  body: Object.fromEntries(Object.entries(r.body as Record<string, unknown>).filter(([k]) => k !== "detail")),
 });
 const down = (where: string, e: unknown): HookReply => {
   console.error(`[delegate] ${where}：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
@@ -31,7 +37,10 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
       before: async (a: HookArgs) => {
         let r: Record<string, unknown> | undefined;
         try {
-          r = await inTenant<Record<string, unknown>>(a, "select app.ticket_delegate($1) as v", [a.id]);
+          r = await inTenant<Record<string, unknown>>(a, "select app.ticket_delegate($1, $2) as v", [
+            a.id,
+            typeof a.input["no_spec_reason"] === "string" ? a.input["no_spec_reason"] : null,
+          ]);
         } catch (e) {
           return down("任せる", e);
         }
@@ -48,6 +57,13 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
             return fromCatalog("E-CONF-014", 409);
           case "NO_PC":
             return fromCatalog("E-CONN-001", 409, { href: SETUP_BRIDGE });
+          case "NO_SPEC":
+            return noDetail(fromCatalog("E-CONF-020", 409));
+          case "REASON_INVALID":
+            return {
+              status: 422,
+              body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field: "no_spec_reason" }] },
+            };
           case "NOT_FOUND":
             return notFound();
           default:
@@ -61,6 +77,10 @@ export function peopleHooks(pool: pg.Pool, base: Record<string, Hook>): Record<s
           a.id,
         ]);
         if (!v) return notFound();
+        // 形の誤り（422）は、権限（401・403）と見えない物（404）の後（契約の limit・cursor・sort の形だけを受ける・K-429）
+        const issues = listQueryIssues(a.c.req.query(), { table: "action_runs", repo: a.repo });
+        if (issues.length)
+          return { status: 422, body: { error: "validation_failed", code: "VALIDATION_ERROR", details: issues } };
         return { status: 200, body: { data: v.data, meta: { limit: RUNS_LIMIT, total: Number(v.total) } } };
       },
     },
