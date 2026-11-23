@@ -10719,6 +10719,10 @@ components:
             - me
       - required:
         - group_id
+        properties:
+          group_id:
+            type: string
+            format: uuid
     KnowledgeFolderUpdateInput:
       type: object
       properties:
@@ -10780,6 +10784,10 @@ components:
             - me
       - required:
         - group_id
+        properties:
+          group_id:
+            type: string
+            format: uuid
     KnowledgeDraftInput:
       type: object
       properties:

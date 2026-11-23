@@ -51,7 +51,7 @@ VALUE_RANGES = {
 #   グループの棚は group_id が要る（会社・自分の棚は group_id を使わない＝あっても通す）／更新の 3 つは欄が 1 つは要る
 _GROUP_NEEDS_ID = {"anyOf": [
     {"properties": {"shelf": {"enum": ["company", "me"]}}},
-    {"required": ["group_id"]},
+    {"required": ["group_id"], "properties": {"group_id": {"type": "string", "format": "uuid"}}},   # null は通さない（K675-API-003）
 ]}
 INPUT_RULES = {
     "createKnowledgeFolder": _GROUP_NEEDS_ID,
