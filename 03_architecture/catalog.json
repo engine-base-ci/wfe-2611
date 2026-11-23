@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 372,
-  "api_built": 85,
+  "api_built": 87,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 242,
+  "errors": 245,
   "stack": 56,
   "env": 41
  },
@@ -3160,7 +3160,7 @@
    "tables": [
     "memories"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-69"
    ]
@@ -4864,7 +4864,7 @@
    "op": "listTickets",
    "method": "GET",
    "path": "/api/v1/tickets",
-   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）",
+   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）",
    "flows": [
     "F4",
     "F7"
@@ -5165,9 +5165,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-487"
    ]
   },
   {
