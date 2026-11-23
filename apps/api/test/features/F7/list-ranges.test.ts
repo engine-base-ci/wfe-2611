@@ -6,7 +6,7 @@
 //   sort（due_on・start_on＝近い順で日の無いものは最後／updated_at・created_at＝新しい順。同じ値は更新の新しい順 → id）
 //   fields（start_on・priority・estimate_minutes・actual_minutes・scope をコンマで。付けた欄だけ 1 件の鍵に足す）
 //   due（none＝期限の無いものだけ）・delegated（true＝自分が AI に任せているもの＝担当が自分で delegated_to_clone／false＝それ以外）・
-//   approving（true＝自分が承認する決めていないもの／false＝それ以外）。13 欄の外の 3 欄（K-472 の done と同じ）。数の札 ai・approve（K-474）と同じ定義
+//   approving（true＝自分が承認する決めていないもの／false＝それ以外）。12 欄の外の 3 欄（K-472 の done と同じ）。数の札 ai・approve（K-474）と同じ定義
 //   絞り込みは全部 AND で、K-472 の欄・見える範囲・自分に関わるもの（view）・q・scope_id と重ねて使える。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -376,7 +376,7 @@ describe("K-473 親・並び・見せる欄", () => {
   });
 });
 
-describe("K-473 重ねて使う・見える範囲・13 欄", () => {
+describe("K-473 重ねて使う・見える範囲・12 欄", () => {
   it("K473-API-018 全部 AND：期限の範囲（遠い先の日付で、試験を流す日に期限切れにならない形）・期限切れでない・親なし・担当者（K-472）を重ねると、全部に合うものだけ", async () => {
     const w = await world();
     const hit = await dated(w, "2099-12-03", null, { title: "合う" });
@@ -406,14 +406,13 @@ describe("K-473 重ねて使う・見える範囲・13 欄", () => {
     expect(ids(await listOk(f, acct, `view=all&${range}`))).toContain(secret.id);
   });
 
-  it("K473-API-020 13 欄ぜんぶ使えるようになった：どの欄も空の値で 200（まだ使えない欄は残らない）。13 欄の外の 4 欄（done・due・delegated・approving）も空の値で 200。K-92 の 12 の鍵・並び・view の既定は変わらない", async () => {
+  it("K473-API-020 12 欄ぜんぶ使えるようになった（取引先で絞る client_id は K-472 で外れた）：どの欄も空の値で 200（まだ使えない欄は残らない）。12 欄の外の 4 欄（done・due・delegated・approving）も空の値で 200。K-92 の 12 の鍵・並び・view の既定は変わらない", async () => {
     const w = await world();
     await make(w);
     for (const name of [
       "kind_id",
       "stage_id",
       "assignee_id",
-      "client_id",
       "due_from",
       "due_to",
       "start_from",
