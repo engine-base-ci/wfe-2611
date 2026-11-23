@@ -133,29 +133,42 @@ POLICIES: dict[str, list[dict]] = {
          "rationale": "確定・やめるは取り込んだ人だけ", "source": ["D-128.85", "D-128.119"]},
         ops_read("ticket_imports"),
     ],
-    # ---- ナレッジ（K-5・D-128.50〜.52）
+    # ---- ナレッジ（K-5・D-128.50〜.52。K-674 で棚の決めに作り直した・D-152.1・D-152.3）
+    #   棚は会社・グループ・自分の 3 つ。読める・書けるは app.kn_shelf_readable・app.kn_shelf_writable が唯一の正本（権限の束は使わない）。
+    #   自分の表の守りは列で書く（id で自分の表を引く関数を使わない＝INSERT … RETURNING が弾かれる）。update は using と with check が同じ式なので、
+    #   変えた後の行（下書き → 公開）でも通る形にしている
     "knowledge_pages": [
         {"name": "knowledge_pages_read", "operation": "select", "role": "member",
-         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR (NOT is_personal AND scope_id = ANY(visible_scopes({U})) AND (state <> 'draft' OR has_permission({U}, 'knowledge_pages', scope_id, 'edit'))))",
-         "rationale": "置き場が見える人（自分の置き場は持ち主だけ）。下書きは持ち主とその置き場で書ける人だけ（下書きは知らせない）", "source": ["D-128.50", "D-128.51"]},
+         "predicate": f"tenant_id = {T} AND (CASE WHEN state = 'draft' THEN owner_member_id = {U} ELSE (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_visible(id)) END)",
+         "rationale": "まだ書き終えていないページは持ち主だけ。公開済みは棚が読める人（会社＝社内の全員・グループ＝そのグループの人・自分＝本人）と共有先（K-689）。管理者でも入っていないグループの棚は読めない", "source": ["D-128.50", "D-128.51", "D-152.1", "D-152.3"]},
         {"name": "knowledge_pages_create", "operation": "insert", "role": "member",
-         "predicate": f"tenant_id = {T} AND owner_member_id = {U} AND (is_personal OR has_permission({U}, 'knowledge_pages', scope_id, 'edit'))",
-         "rationale": "自分を持ち主にして作る。自分の置き場か、その置き場で書ける人", "source": ["D-128.51"]},
+         "predicate": f"tenant_id = {T} AND owner_member_id = {U} AND state = 'draft' AND app.kn_shelf_writable(scope_id, is_personal, owner_member_id)",
+         "rationale": "自分を持ち主にして下書きで作る。その棚に書ける人（会社＝管理者・グループ＝そのグループのマネージャー・自分＝本人）", "source": ["D-128.51", "D-152.3"]},
         {"name": "knowledge_pages_update", "operation": "update", "role": "member",
-         "predicate": f"tenant_id = {T} AND (owner_member_id = {U} OR (NOT is_personal AND has_permission({U}, 'knowledge_pages', scope_id, 'edit')))",
-         "rationale": "持ち主か、その置き場で書ける人（しまう・戻すも同じ。行は消さない）", "source": ["D-128.51"]},
+         "predicate": f"tenant_id = {T} AND (CASE WHEN state = 'draft' THEN owner_member_id = {U} ELSE app.kn_shelf_writable(scope_id, is_personal, owner_member_id) END)",
+         "rationale": "下書きは持ち主だけ・公開済みはその棚に書ける人（変えた後の行も同じ棚に書けること。行は消さない）", "source": ["D-128.51", "D-152.3"]},
         ops_read("knowledge_pages"),
     ],
     "knowledge_page_versions": [
         {"name": "knowledge_page_versions_read", "operation": "select", "role": "member",
-         "predicate": f"tenant_id = {T} AND ((kind = 'published' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
-         "rationale": "公開した版はページを読める人。下書きと直す案は書ける人だけ", "source": ["D-128.50", "D-128.51"]},
+         "predicate": f"tenant_id = {T} AND ((kind = 'published' AND app.kpage_visible(page_id)) OR (kind = 'draft' AND author_member_id = {U}))",
+         "rationale": "公開した版はページを読める人。直している下書きの版は書いた人だけ", "source": ["D-128.50", "D-128.51", "D-152.3"]},
         {"name": "knowledge_page_versions_add", "operation": "insert", "role": "member",
-         "predicate": f"tenant_id = {T} AND ((kind = 'proposal' AND app.kpage_visible(page_id)) OR app.kpage_writable(page_id))",
-         "rationale": "直す案はページを読める人が出せる（チケットの完了から）。下書き・公開は書ける人", "source": ["D-128.50"]},
-        {"name": "knowledge_page_versions_decide", "operation": "update", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_writable(page_id)",
-         "rationale": "直す案を 入れる／直して入れる／入れない（理由）は書ける人", "source": ["D-128.50"]},
+         "predicate": f"tenant_id = {T} AND kind = 'draft' AND author_member_id = {U} AND app.kpage_writable(page_id)",
+         "rationale": "下書きの版をページに書ける人が自分として足す（公開は下書きの行を更新する）", "source": ["D-128.50", "D-152.3"]},
+        {"name": "knowledge_page_versions_decide", "operation": "update", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = {U})",
+         "rationale": "下書きの版を直す・公開に更新するのは書いた人で、ページに書ける人（変えた後の公開の版も同じ式で通る）", "source": ["D-128.50", "D-152.3"]},
         ops_read("knowledge_page_versions"),
+    ],
+    "knowledge_folders": [
+        {"name": "knowledge_folders_read", "operation": "select", "role": "member",
+         "predicate": f"tenant_id = {T} AND (app.kn_shelf_readable(scope_id, is_personal, owner_member_id) OR app.kn_shared_folder_visible(id))",
+         "rationale": "棚が読める人と共有先（K-689）", "source": ["D-152.1", "D-152.3"]},
+        {"name": "knowledge_folders_write", "operation": "insert,update", "role": "member",
+         "predicate": f"tenant_id = {T} AND app.kn_shelf_writable(scope_id, is_personal, owner_member_id)",
+         "rationale": "その棚に書ける人（グループの棚は誰が作っても同じ・自分の棚は本人）。行は消さない（deleted_at）", "source": ["D-152.3"]},
+        ops_read("knowledge_folders"),
     ],
     "knowledge_links": [
         {"name": "knowledge_links_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND app.kpage_visible(from_page_id)",
@@ -257,6 +270,16 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "notification_settings_self", "operation": "select,insert,update", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
          "rationale": "知らせの設定は本人だけ（ワークスペースごと）", "source": ["D-128.92"]},
         ops_read("notification_settings"),
+    ],
+    # ---- 知らせ（K-461・D-151.3）：鈴の行は本人だけが読む・書く（権限のある人も他人宛ての行に触れない。題名入りの行が同じ会社の他の人に読めてしまうのを止める）。
+    #      守りの名前 notifications_self_only_write は前のまま残す（場合表の「本人のもの」の行 RLS-D11-010 を動かさない）。読む守りだけ新しい名前 notifications_self_read。
+    #      書き手（security definer の関数）は守りの外で入れるので変わらない
+    "notifications": [
+        {"name": "notifications_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "自分宛ての知らせだけ（同じ会社の他の人宛ては、権限のある人にも見せない）", "source": ["D-151.3", "D-073.1"]},
+        {"name": "notifications_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "自分宛ての知らせだけ書く・読んだ印を付ける（他人宛てを足せない・直せない）", "source": ["D-151.3", "D-073.1"]},
+        ops_read("notifications"),
     ],
     "bridge_pairing_codes": [
         {"name": "bridge_pairing_codes_self", "operation": "select,insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
