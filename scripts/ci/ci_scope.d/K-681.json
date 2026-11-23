@@ -14,6 +14,17 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F9/knowledge/draft-discard.ts",
+    "packages/db/migrations/20261125012700_knowledge_page_hide_deleted.sql",
+    "packages/db/policies/20261125012700_knowledge_page_hide_deleted.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-page-edit.test.ts",
+    "apps/api/test/features/F9/knowledge-draft.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/test/features/F9/knowledge-page-edit.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts",
     "apps/api/test/features/F1/terms.test.ts",
