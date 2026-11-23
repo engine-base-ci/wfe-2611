@@ -81,7 +81,6 @@ const DEC_PAIRS: FidelityPair[] = (
     ["dialog-input", '[role="dialog"] .k-input', BOX],
     ["dialog-err", '[role="dialog"] .k-err', ["x", "y", ...TEXT]],
     ["dialog-inert", '[role="dialog"] .k-dec-inert', [...BOX, ...TEXT]],
-    ["dialog-scope", '[role="dialog"] .k-dec-scope', [...BOX, "texts"]],
     ["dialog-btn", '[role="dialog"] .k-dialog-actions button', [...BOX, "font-size", "color", "texts"]],
   ] as [string, string, string[]][]
 ).map(([role, sel, props]) => ({ name: role, role, canvas: sel, app: sel, props }));
@@ -234,7 +233,7 @@ test("K397-UI-008 閲覧のみ（meta.can_write false）：一覧と作るとき
 
 // ---------------------------------------------------------------- 足す
 
-test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレーの箱（押せない）・決めた人の既定は本人・候補 3 人・取引先の選び肢は無い・本文と食い違う箱は無い・焦点は決めたこと", async ({
+test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレーの箱（押せない）・決めた人の既定は本人・候補 3 人・「どこまで効かせる」の欄は無い・本文と食い違う箱は無い・焦点は決めたこと", async ({
   page,
 }) => {
   await decisionsApi(page);
@@ -251,9 +250,9 @@ test("K397-UI-009 「＋ 決定を足す」の小窓：欄・AI の案のグレ�
   await byOf(page).click();
   await expect(page.getByRole("option")).toHaveText(["高本 聖斗", "鈴木 一郎", "佐藤 花子"]);
   await page.keyboard.press("Escape");
-  await expect(dlg.getByRole("radio", { name: "このチケットだけ" })).toBeChecked();
-  // 取引先を持たない（answer=4961f0280e9a）：「取引先のルールにする」の選び肢は無い
-  await expect(dlg.getByRole("radio", { name: /取引先/ })).toHaveCount(0);
+  // 「どこまで効かせる」の欄は持たない（取引先を持たず選び肢が 1 つになった・PM の決め 2026-11-23・answer=4961f0280e9a）
+  await expect(dlg.getByRole("radio")).toHaveCount(0);
+  await expect(dlg).not.toContainText("どこまで効かせる");
   await expect(dlg).not.toContainText("取引先");
   await expect(dlg).not.toContainText("本文と食い違う");
   await expect(dlg.getByRole("button", { name: "やめる" })).toBeVisible();
