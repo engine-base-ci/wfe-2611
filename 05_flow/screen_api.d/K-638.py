@@ -1,5 +1,6 @@
 # K-638 認証の口の契約の形に足す分（契約 fuzz G36 の ST202：形どおりの入力が断られた・K-424 が入口の上限 429 を外して出た）
 # 口の振る舞い（apps/api/src/features/F1/…）が 422 で断る形の誤りは、契約に書く。契約と口を同じ形にする（控え帳 2026-11-20 16:51）
+import email_patterns as _EP  # 登録・ログインのメールの形（scripts/ci/email_patterns.py・口は packages/auth/src/signup.ts の isLoginEmail・K-1117）
 _EMAIL = "^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"   # 登録（createSignup）と同じ。NFKC で直し空白を全部除いた後に EMAIL_RE で見る口より狭く書く（全角・途中の空白は契約の外）
 VALUE_RANGES = {
     "requestPasswordReset": {"email": {"pattern": _EMAIL}},   # apps/api/src/features/F1/password-reset/index.ts（形違いは 422 E-VAL-004）
