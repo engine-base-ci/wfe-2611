@@ -26,17 +26,6 @@
   },
   {
    "method": "POST",
-   "path": "/api/v1/action_runs/:id/retry",
-   "implementation_path": "apps/api/src/routes/action_runs.ts::retryActionRun",
-   "screen_ids_referencing": [
-    "ai-activity"
-   ],
-   "acts": [
-    "A57"
-   ]
-  },
-  {
-   "method": "POST",
    "path": "/api/v1/action_runs/:id/stop",
    "implementation_path": "apps/api/src/routes/action_runs.ts::stopActionRun",
    "screen_ids_referencing": [
@@ -687,17 +676,6 @@
    ],
    "acts": [
     "A15"
-   ]
-  },
-  {
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "implementation_path": "apps/api/src/routes/class_axes.ts::listClassAxes",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A103"
    ]
   },
   {
@@ -3183,6 +3161,17 @@
    ]
   },
   {
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::listTicketFields",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A103"
+   ]
+  },
+  {
    "method": "PATCH",
    "path": "/api/v1/ticket_decisions/:id",
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
@@ -3467,6 +3456,17 @@
    ]
   },
   {
+   "method": "PATCH",
+   "path": "/api/v1/tickets/:id/body",
+   "implementation_path": "apps/api/src/routes/ticket_sections.ts::updateTicketBody",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A101"
+   ]
+  },
+  {
    "method": "GET",
    "path": "/api/v1/tickets/:id/checks",
    "implementation_path": "apps/api/src/routes/checks.ts::listChecks",
@@ -3672,17 +3672,6 @@
    ]
   },
   {
-   "method": "PATCH",
-   "path": "/api/v1/tickets/:id/sections/:key",
-   "implementation_path": "apps/api/src/routes/ticket_sections.ts::updateTicketSection",
-   "screen_ids_referencing": [
-    "tickets"
-   ],
-   "acts": [
-    "A101"
-   ]
-  },
-  {
    "method": "GET",
    "path": "/api/v1/tickets/:id/test-specs",
    "implementation_path": "apps/api/src/routes/test_specs.ts::listTestSpecs",
@@ -3730,6 +3719,17 @@
    "method": "GET",
    "path": "/api/v1/tickets/:id/timeline",
    "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketTimeline",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A107"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/tickets/:id/timeline/seen",
+   "implementation_path": "apps/api/src/routes/ticket_messages.ts::markTicketTimelineSeen",
    "screen_ids_referencing": [
     "tickets"
    ],
