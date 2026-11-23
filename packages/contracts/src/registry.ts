@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:92508fd5bef2940c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2349d85f66140504
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -10746,9 +10746,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readNotification",
     "table": "notifications",
     "kind": "update",
-    "input": "NotificationsInput",
+    "input": "NotificationReadInput",
     "success": 200,
-    "output": "Notifications",
+    "output": "Notification",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -10787,10 +10787,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "adminOnly": false,
       "cap": null,
       "stepUp": null,
-      "row": {
-        "table": "notifications",
-        "sql": "member_id = app.user_id()"
-      }
+      "row": null
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -10802,9 +10799,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "readAllNotifications",
     "table": "notifications",
     "kind": "create",
-    "input": "NotificationsInput",
+    "input": "NotificationReadAllInput",
     "success": 201,
-    "output": "Notifications",
+    "output": "NotificationsRead",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -19663,4 +19660,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "92508fd5bef2940c";
+export const OPENAPI_HASH = "2349d85f66140504";

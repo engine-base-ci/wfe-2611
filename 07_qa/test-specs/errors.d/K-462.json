@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-NTF-010",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "notifications"
+   },
+   "when": "自分宛てで一覧に出る知らせでない（別の人・別の会社・もう無い・行き先のチケットが見えなくなった）",
+   "false_when": "自分宛ての一覧に出ている知らせ",
+   "message": "この知らせは見つかりませんでした",
+   "action": "一覧を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "鈴を押して知らせの一覧を開く",
+    "steps": [
+     "別の人宛ての知らせの id で PATCH /api/v1/notifications/:id を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.3"
+   ]
+  }
+ ]
+}

@@ -10610,6 +10610,21 @@ components:
       - other_ticket_id
       - kind
       x-required-by: hooks
+    NotificationReadInput:
+      type: object
+      properties:
+        read:
+          type: boolean
+      additionalProperties: false
+      x-operation: readNotification
+      required:
+      - read
+      x-required-by: hooks
+    NotificationReadAllInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: readAllNotifications
     ScopeOverview:
       type: object
       properties:
@@ -12554,7 +12569,13 @@ components:
           nullable: true
         created_at:
           type: string
-      x-operation: listNotifications
+      x-operation: readNotification
+    NotificationsRead:
+      type: object
+      properties:
+        read:
+          type: integer
+      x-operation: readAllNotifications
     TicketDeleted:
       type: object
       properties:
@@ -31998,7 +32019,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NotificationsInput'
+              $ref: '#/components/schemas/NotificationReadInput'
       responses:
         '200':
           description: 成功
@@ -32008,7 +32029,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notifications'
+                    $ref: '#/components/schemas/Notification'
                   meta:
                     type: object
         '401':
@@ -32024,7 +32045,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-NTF-010
           content:
             application/json:
               schema:
@@ -32079,7 +32100,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NotificationsInput'
+              $ref: '#/components/schemas/NotificationReadAllInput'
       responses:
         '201':
           description: 成功
@@ -32089,7 +32110,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Notifications'
+                    $ref: '#/components/schemas/NotificationsRead'
                   meta:
                     type: object
         '401':

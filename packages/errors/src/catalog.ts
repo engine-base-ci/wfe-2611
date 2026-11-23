@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。238 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。239 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4148,6 +4148,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "support_code": "E-NTF-001",
     "must_not": false,
     "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "notifications"
+    }
+  },
+  "E-NTF-010": {
+    "id": "E-NTF-010",
+    "cls": "not_found",
+    "message": "この知らせは見つかりませんでした",
+    "action": "一覧を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-NTF-010",
+    "must_not": false,
+    "layers": [
+      "UI",
       "API"
     ],
     "where": {

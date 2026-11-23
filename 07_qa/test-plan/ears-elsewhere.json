@@ -1862,6 +1862,62 @@
     "test_get_notifications_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
    }
   },
+  "readNotification": {
+   "file": "apps/api/test/features/F7/notifications-read.test.ts",
+   "reason": "既読にする口は、自分宛て・一覧に出る行という条件と行の守りの組み合わせで答えが変わる。生成の試験の種では知らせの行も人も作れない（K-462）",
+   "covers": {
+    "test_patch_notifications_id_ok": "K462-API-001",
+    "test_patch_notifications_id_rejected_401": "K462-API-013",
+    "test_patch_notifications_id_rejected_403": "K462-API-020",
+    "test_patch_notifications_id_rejected_422": "K462-API-007",
+    "test_patch_notifications_id_rate_limited": "K462-API-014",
+    "test_patch_notifications_id_not_found": "K462-API-004",
+    "test_patch_notifications_id_shape": "K462-API-001",
+    "test_patch_notifications_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_notifications_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_notifications_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_patch_notifications_id_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
+   }
+  },
+  "readAllNotifications": {
+   "file": "apps/api/test/features/F7/notifications-read.test.ts",
+   "reason": "全部既読は自分宛ての一覧に出る未読だけを動かす。生成の試験の種では知らせの行も人も作れない（K-462）",
+   "covers": {
+    "test_post_notifications_read_all_ok": "K462-API-008",
+    "test_post_notifications_read_all_rejected_401": "K462-API-013",
+    "test_post_notifications_read_all_rejected_403": "K462-API-020",
+    "test_post_notifications_read_all_rejected_422": "K462-API-011",
+    "test_post_notifications_read_all_rejected_422_2": "K462-API-011",
+    "test_post_notifications_read_all_rate_limited": "K462-API-014",
+    "test_post_notifications_read_all_shape": "K462-API-008",
+    "test_post_notifications_read_all_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_notifications_read_all_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_notifications_read_all_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_notifications_read_all_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
+   }
+  },
   "search": {
    "file": "apps/api/test/features/F7/search-tickets.test.ts",
    "reason": "探すは、見える範囲（行の守り）・消したもの・他の人の下書き・権限の付け外しの組み合わせで答えが変わる。生成の試験の種では会社・人・権限・チケットを作れない（K-468）",

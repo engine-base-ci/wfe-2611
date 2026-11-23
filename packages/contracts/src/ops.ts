@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:92508fd5bef2940c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2349d85f66140504
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -205,8 +205,8 @@ export interface Ops {
   listNotices: { params: never; query: { "kind"?: string | number; "unread"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Notices[] };
   markNoticeRead: { params: { id: string }; query: never; body: T.NoticeDeliveriesInput; data: T.NoticeDeliveries };
   listNotifications: { params: never; query: { "unread"?: string | number; "actor_member_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Notification[] };
-  readNotification: { params: { id: string }; query: never; body: T.NotificationsInput; data: T.Notifications };
-  readAllNotifications: { params: never; query: never; body: T.NotificationsInput; data: T.Notifications };
+  readNotification: { params: { id: string }; query: never; body: T.NotificationReadInput; data: T.Notification };
+  readAllNotifications: { params: never; query: never; body: T.NotificationReadAllInput; data: T.NotificationsRead };
   listOpsInquiries: { params: never; query: { "box"?: string | number; "kind"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Inquiries[] };
   getOpsInquiry: { params: { id: string }; query: never; body: never; data: T.OpsInquiryDetail };
   updateOpsInquiry: { params: { id: string }; query: never; body: T.InquiriesInput; data: T.Inquiries };
