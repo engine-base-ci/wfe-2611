@@ -107,7 +107,7 @@ describe("行に結ぶ言葉の条件（K-15）", () => {
 
   it("本人：自分の通知だけを直せる", async () => {
     const id = await h.freshRow("notifications");
-    // 既読にする口は入口の行の確かめから外した（row_rules.mjs の ROW_EXEMPT・K-462）ので、契約の perm.row には出ない。
+    // 既読にする口は入口の行の確かめから外した（row_rules.mjs の ROW_EXEMPT_FIELDS で欄 readNotification.id を名指し・K-462）ので、契約の perm.row には出ない。
     //   行の決まりの正本（RULES の self × notifications）を直に当てて、同じこと（自分宛てだけ通る）を確かめる
     const r = {
       table: "notifications",

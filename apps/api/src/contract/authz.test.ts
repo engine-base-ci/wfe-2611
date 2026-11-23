@@ -263,12 +263,12 @@ const ROW_WORDS = new Set(["self", "read", "write", "assignee", "approver", "rec
 describe("権限の試験：行に結ぶ言葉（K-15・ZT4）", () => {
   const withId = ENDPOINTS.filter((e) => ROW_WORDS.has(e.perm.word) && e.path.includes(":id"));
   // 除外（scripts/ci/row_rules.mjs の ROW_EXEMPT）：パスキー（認証の側の表）と、つないだ PC（アカウントのもの・D-128.156。
-  //   持ち主は口と DB の関数の 2 重で確かめる・D-128.166・K-364）と、知らせ（自分宛てだけ・持ち主は口の文と行の守りの 2 重・外れた行は口の 404・E-NTF-010・K-462）
-  const EXEMPT = ["/api/v1/me/passkeys", "/api/v1/bridge/devices/", "/api/v1/notifications/"];
+  //   持ち主は口と DB の関数の 2 重で確かめる・D-128.166・K-364）
+  const EXEMPT = ["/api/v1/me/passkeys", "/api/v1/bridge/devices/"];
   //   欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS・K-441）：口の名前と欄の名前と理由が要る。口ごとは外さない
   const FIELD_EXEMPT = ROW_EXEMPT_FIELDS as Record<string, Record<string, string> | undefined>;
   const fieldExempt = (e: { operationId: string }) => (FIELD_EXEMPT[e.operationId]?.["id"] ?? "").trim() !== "";
-  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーとつないだ PC と知らせと、欄で名指しして理由を書いた :id だけ）", () => {
+  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーとつないだ PC と、欄で名指しして理由を書いた :id だけ）", () => {
     expect(
       withId
         .filter((e) => !e.perm.row && !EXEMPT.some((x) => e.path.startsWith(x)) && !fieldExempt(e))
