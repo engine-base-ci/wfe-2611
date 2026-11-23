@@ -3,7 +3,7 @@
 //   戻せる人（消した本人・そのグループのマネージャー・管理者）・30 日の期限・親が消えていないか・一緒に消えた子・孫（親と同じ deleted_at・deleted_by）の巻き戻し・証跡 1 枚ごと。
 //   口は関数の答えを断りの番号に写すだけ。関数が例外（権限・DB・証跡の書き込み失敗）なら取引ごと戻り、503・E-PAGE-003。
 //   上限・認証・同意し直しの止め・uuid の形・体が空（知らない項目は 422）は契約の入口（op.ts）が先に確かめる。
-//   この口は入口の行の確かめを持たない（消したチケットは行の守りで見えず、入口で読むと必ず 404・scripts/ci/row_rules.mjs の OP_ROW_EXEMPT）。
+//   この口は入口の行の確かめを持たない（消したチケットは行の守りで見えず、入口で読むと必ず 404・scripts/ci/row_rules.mjs の ROW_EXEMPT_FIELDS で :id を名指しして外す）。
 //   Cache-Control: private, no-store は入口が全部の答えに付ける。ログに本文・人の id を出さない。
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";

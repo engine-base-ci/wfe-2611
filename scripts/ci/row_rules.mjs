@@ -26,14 +26,19 @@ export const ROW_EXEMPT = {
   "/api/v1/bridge/devices":
     "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
 };
-
-/**
- * 口ごとに入口で行を読まない口（理由が必須・K-489）。ROW_EXEMPT は道の頭（:id の前の段）で引く表で、同じ道の別の口には効かない。
- * 道の頭では書き分けられない口だけをここに置く（除外の表を継ぎ足さない。apps/api/src/contract/authz.test.ts の EXEMPT_OPS と口の名前が 1 対 1）。
- */
-export const OP_ROW_EXEMPT = {
-  restoreTicket:
-    "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる。戻せる人と見える・見えないは DB の関数 app.ticket_restore と口が持つ（K-489）",
+/** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
+ *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
+export const ROW_EXEMPT_FIELDS = {
+  deleteTicketLink: {
+    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
+  },
+  restoreTicket: {
+    id: "消したチケットは行の守りで読めず、入口で行を読むと必ず 404 になる（戻す口が成り立たない）。この欄の守り（戻せる人・見える・見えない・30 日）は DB の関数 app.ticket_restore と口が持つ（K-489）",
+  },
+};
+const exemptField = (op, field) => {
+  const why = ROW_EXEMPT_FIELDS[op]?.[field];
+  return typeof why === "string" && why.trim() !== "";
 };
 
 const ME = "app.user_id()";
@@ -112,6 +117,9 @@ export const OP_RULES = {
   //   口（features/F3/credentials/update.ts・delete.ts）と DB の関数（app.credential_soft_delete・app.credential_cancel_checks）が持つ（K-353）
   updateCredential: `true`,
   deleteCredential: `true`,
+  // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
+  //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
+  takeoverActionRun: `true`,
   // チケットを消す・消す前の下見：入口は「そのチケットが見える」だけ（行が見える＝tickets の行の守り・消した物は見えない）。
   //   作った人か、そのグループで tickets の edit を持つ人か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）。
   //   入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文（E-DEL-001）も入口の汎用の 403 に奪われる。
@@ -134,9 +142,9 @@ function updatePredicate(root, table) {
 /** 口 1 本の行の確かめ。null＝行を読まない（:id が無い・言葉が行に結ばない）。{error} は契約の生成で赤 */
 export function rowOf(root, e, word) {
   if (!ROW_WORDS.includes(word)) return null;
-  if (OP_ROW_EXEMPT[e.operationId]) return null;
   const m = /^(.*?)\/:id(\/|$)/.exec(e.path);
   if (!m) return null; // 一覧・作る：行の守り（RLS）が絞る。作る先の確かめは RLS の insert
+  if (exemptField(e.operationId, "id")) return null; // 欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS）
   const base = m[1];
   if (ROW_EXEMPT[base]) return null;
   const table = ID_TABLE[base] ?? base.split("/").pop();
