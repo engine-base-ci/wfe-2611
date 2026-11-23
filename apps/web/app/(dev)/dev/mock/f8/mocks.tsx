@@ -320,7 +320,6 @@ function Toast({ title }: { title: string }) {
 function Panel({ assignee, viewer }: { assignee: ReactNode; viewer: Viewer }) {
   const rows: [string, ReactNode][] = [
     ["担当者", assignee],
-    ["業務の型", ""],
     ["承認する人", ""],
   ];
   return (
@@ -410,7 +409,7 @@ function Detail({ theme, viewer = "takamoto", band, assignee, approvals = 1, dia
     >
       <div className="k-detail">
         <section className="k-root k-page" aria-labelledby="ticket-title">
-          <article className="k-detail-card k-hnd-head">
+          <article className="k-detail-card">
             <DetailMeta ticket={TICKET} kind={KIND} stage={STAGE} />
             <DetailTitle title={TICKET.title} me={VIEWER[viewer].name} />
             {band ? <div className="k-detail-bands">{band}</div> : null}
