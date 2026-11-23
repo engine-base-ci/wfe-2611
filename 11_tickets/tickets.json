@@ -20009,11 +20009,7 @@
    "screens": [
     "tickets"
    ],
-   "apis": [
-    "updateTicketMessage",
-    "deleteTicketMessage",
-    "starTicketMessage"
-   ],
+   "apis": [],
    "mock": [
     "talk-edit",
     "talk-delete"
