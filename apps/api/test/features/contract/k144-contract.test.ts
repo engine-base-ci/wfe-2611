@@ -911,6 +911,12 @@ export const RANGE_CASES: RangeCase[] = [
   ["createTicket", "estimate_minutes", true, false],
   ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施"}, true],
   ["createTicket", "sections", {"purpose": "目的", "done": "完了", "todo": "実施", "Bad": "a"}, false],
+  ["createTicket", "body", {"doc": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "本文"}]}]}}, true], // K-437
+  ["createTicket", "body", {"doc": {"type": "doc", "content": []}, "text": "x"}, false], // K-437
+  ["createTicket", "fields", {}, true], // K-437
+  ["createTicket", "fields", {"not-a-uuid": "x"}, false], // K-437
+  ["createTicket", "specs", ["確認 A", "確認 B"], true], // K-437
+  ["createTicket", "specs", ["確認 1", "確認 2", "確認 3", "確認 4", "確認 5", "確認 6", "確認 7", "確認 8", "確認 9", "確認 10", "確認 11", "確認 12", "確認 13", "確認 14", "確認 15", "確認 16", "確認 17", "確認 18", "確認 19", "確認 20", "確認 21", "確認 22", "確認 23", "確認 24", "確認 25", "確認 26", "確認 27", "確認 28", "確認 29", "確認 30", "確認 31", "確認 32", "確認 33", "確認 34", "確認 35", "確認 36", "確認 37", "確認 38", "確認 39", "確認 40", "確認 41", "確認 42", "確認 43", "確認 44", "確認 45", "確認 46", "確認 47", "確認 48", "確認 49", "確認 50", "確認 51"], false], // K-437
   ["createTicket", "notify_member_ids", [], true],
   ["createTicket", "notify_member_ids", Array.from({ length: 21 }, () => randomUUID()), false],
   ["claimPairingCode", "code", "@code:plain", true],
