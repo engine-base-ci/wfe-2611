@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 266・部品 56・設定 41
+API 369（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 266・部品 68・設定 41
 
 ## 共通の処理
 
@@ -650,3 +650,15 @@ API 369（作った 97・後のフェーズの行為だけ 20）・前の道す�
 | `ua-parser-js` | 記録にある名前のまま |
 | `vitest` | 記録にある名前のまま |
 | `zod` | 記録にある名前のまま |
+| `@tiptap/core` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/react` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/pm` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/starter-kit` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-highlight` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-table` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-task-list` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-task-item` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-text-align` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-text-style` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-superscript` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
+| `@tiptap/extension-subscript` | 本文を見たまま編集する部品（ProseMirror の包み・K-567） |
