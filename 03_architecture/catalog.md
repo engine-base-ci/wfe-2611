@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 378（作った 92・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 254・部品 56・設定 41
+API 378（作った 93・後のフェーズの行為だけ 20）・前の道すじ 26・表 150・画面の部品 19・共通の処理 13・エラー 254・部品 56・設定 41
 
 ## 共通の処理
 
@@ -83,6 +83,7 @@ API 378（作った 92・後のフェーズの行為だけ 20）・前の道す�
 | `kaname_auth` | internal |  |  |  |
 | `kind_sections` | skeleton | F4,F9 |  | ○ |
 | `knowledge_folders` | skeleton | F9 |  |  |
+| `knowledge_limits` | skeleton |  |  |  |
 | `knowledge_links` | skeleton | F9 |  |  |
 | `knowledge_page_versions` | skeleton | F9 |  |  |
 | `knowledge_pages` | skeleton | F9 |  |  |
@@ -455,7 +456,7 @@ API 378（作った 92・後のフェーズの行為だけ 20）・前の道す�
 | `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgeMessages` | GET /api/v1/knowledge_pages/:id/messages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `postKnowledgeMessage` | POST /api/v1/knowledge_pages/:id/messages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `setKnowledgeMust` | PUT /api/v1/knowledge_pages/:id/must | 置き換え（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-685 |
+| `setKnowledgeMust` | PUT /api/v1/knowledge_pages/:id/must | 置き換え（knowledge_pages）— ナレッジのページを書く・直す | F9 | 作った | K-685 |
 | `publishKnowledgePage` | POST /api/v1/knowledge_pages/:id/publish | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `unarchiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/unarchive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `getKnowledgeUsage` | GET /api/v1/knowledge_pages/:id/usage | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |

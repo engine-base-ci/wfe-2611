@@ -146,4 +146,5 @@ export const MIGRATIONS = [
   "20261125011400_knowledge_shelves.sql",
   "20261125011700_knowledge_page_read.sql",
   "20261125012100_knowledge_page_delete.sql",
+  "20261125012500_knowledge_must_limits.sql",
 ] as const;

@@ -3067,6 +3067,16 @@
     "nullable": true
    }
   },
+  "knowledge_limits": {
+   "must_max": {
+    "type": "integer",
+    "nullable": false
+   },
+   "shelf": {
+    "type": "text",
+    "nullable": false
+   }
+  },
   "knowledge_links": {
    "anchor": {
     "type": "text",
