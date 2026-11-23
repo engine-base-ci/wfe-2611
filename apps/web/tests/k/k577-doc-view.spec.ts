@@ -2,6 +2,8 @@
 //   的：開発用の置き場 /dev/mock/f4v2-editor/f4v2-editor-tools（K-567 が作った頁。K-577 が ?mode=edit|read と、読む形の取り扱い・危ない href の文書への切り替えのボタンを足す）。
 //     頁：読む形は data-testid="doc-read"・編集の入力欄は『本文』・チェックの箱を押した記録（[位置, 付いたか] の並び）は "task-log"。
 //   見ること：読む形は編集の部品を読み込まない・編集に入るときだけ読み込む・文書の木どおりに描く・チェックの箱の取り扱い・リンクの守り・幅。
+//   文書：?doc=calm は全部の節を持ち #rrggbb の色を持たない文書（編集の部品を読まない道）。#rrggbb の色を 1 つでも持つ文書（rich・colortask・colorbad）は、
+//     読むだけの編集の部品（Tiptap・editable: false・遅い読み込み）が描く（PM の決め 2026-11-23：利用者の色は style={…} でも <style> でも当てない）。
 //   画面に出す字と並びは下絵（features/F4/doc の FreeDoc・Checks・BillTable・Img）が正。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { expect, test, type Page } from "@playwright/test";
@@ -30,7 +32,7 @@ test("K577-UI-001 読む形は編集の部品を読み込まない：読む形�
   page.on("response", (r) => {
     if (r.request().resourceType() === "script") bodies.push(r.text().catch(() => ""));
   });
-  await open(page, "full", 1440, "read");
+  await open(page, "calm", 1440, "read");
   await expect(page.getByTestId("doc-read")).toBeVisible();
   await page.waitForLoadState("networkidle");
   const all = await Promise.all(bodies);
@@ -60,7 +62,7 @@ test("K577-UI-002 編集に入ると編集の部品を読み込む：『編集�
 test("K577-UI-003 読む形の描き：見出し・段落・箇条書き・チェックの箱・表・引用・コード・画像の置き場が文書の木どおりに出て、色は data-c・印は b／i／mark で出る。薄い字は薄い見た目", async ({
   page,
 }) => {
-  await open(page, "full", 1440, "read");
+  await open(page, "calm", 1440, "read");
   const view = page.getByTestId("doc-read");
   await expect(view.getByRole("heading", { level: 2, name: "目的", exact: true })).toBeVisible();
   await expect(view.locator("ul").first()).toContainText("明細を集める");
@@ -81,7 +83,7 @@ test("K577-UI-003 読む形の描き：見出し・段落・箇条書き・チ�
 test("K577-UI-004 読む形のチェックの箱：押したときの取り扱いを渡さない読む形では押せず（disabled）、渡した読む形では押すと [位置, 付いたか] が渡る。押しても文書は部品の中で書き換わらない", async ({
   page,
 }) => {
-  await open(page, "full", 1440, "read");
+  await open(page, "calm", 1440, "read");
   const view = page.getByTestId("doc-read");
   await expect(view.getByRole("checkbox").first()).toBeDisabled();
   await page.getByRole("button", { name: "箱を押せる読む形にする", exact: true }).click();
@@ -95,7 +97,7 @@ test("K577-UI-004 読む形のチェックの箱：押したときの取り扱�
 test("K577-UI-005 読む形のリンクの守り：http・https・mailto のリンクは rel に noopener noreferrer・target _blank の a になり、危ない href（javascript: など）を持つ文書でも a にならず字だけが出る", async ({
   page,
 }) => {
-  await open(page, "full", 1440, "read");
+  await open(page, "calm", 1440, "read");
   const view = page.getByTestId("doc-read");
   const a = view.getByRole("link", { name: "資料", exact: true });
   await expect(a).toHaveAttribute("href", "https://example.com/a");
@@ -112,7 +114,7 @@ test("K577-UI-006 幅 375・768・1440：読む形は広い表と長い字を含
   page,
 }) => {
   for (const w of WIDTHS) {
-    await open(page, "full", w, "read");
+    await open(page, "calm", w, "read");
     await expect(page.getByTestId("doc-read")).toBeVisible();
     expect(await overflowX(page), `幅 ${w}`).toBe(0);
     await page.getByRole("button", { name: "広い表と長い字の文書にする", exact: true }).click();
@@ -191,5 +193,78 @@ test("K577-UI-009 色の値の守り：形に合わない値（色の rgb()・�
       `${word} ${attr}`,
     ).toBeNull();
   }
+  expect(await page.locator('[style*="javascript" i], [style*="url(" i]').count()).toBe(0);
+});
+
+test("K577-UI-010 色のある文書だけ読むだけの編集の部品で描く：#rrggbb の色を持つ文書を読む形で開くと編集の部品の script が読まれ、本文の入力欄は無く書き換えられず、色は計算された色で出る。読む形の中に style の要素も data-k-ink／data-k-bg も無い", async ({
+  page,
+}) => {
+  const bodies: Promise<string>[] = [];
+  page.on("response", (r) => {
+    if (r.request().resourceType() === "script") bodies.push(r.text().catch(() => ""));
+  });
+  await open(page, "rich", 1440, "read");
+  const view = page.getByTestId("doc-read");
+  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect.poll(async () => (await Promise.all([...bodies])).some((s) => EDITOR_CHUNK.test(s))).toBe(true);
+  await expect(body(page)).toHaveCount(0);
+  await expect(view.getByRole("textbox")).toHaveCount(0);
+  await expect(view.locator('[contenteditable="true"]')).toHaveCount(0);
+  await expect(view.getByText("赤い字", { exact: true })).toHaveCSS("color", "rgb(220, 38, 38)");
+  await expect(view.getByText("黄の背景", { exact: true })).toHaveCSS("background-color", "rgb(253, 230, 138)");
+  await expect(view.locator("style")).toHaveCount(0);
+  await expect(view.locator("[data-k-ink], [data-k-bg]")).toHaveCount(0);
+});
+
+test("K577-UI-011 色のある文書のチェックの箱：取り扱いを渡さない読む形では押せず（disabled）、渡した読む形では押すと [位置, 付いたか] が渡る。押しても文書は部品の中で書き換わらない（色の無い文書と同じ結果）", async ({
+  page,
+}) => {
+  await open(page, "colortask", 1440, "read");
+  const view = page.getByTestId("doc-read");
+  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect(view.getByText("色つきの字", { exact: true })).toHaveCSS("color", "rgb(220, 38, 38)");
+  await expect(view.getByRole("checkbox")).toHaveCount(2);
+  await expect(view.getByRole("checkbox", { name: "送った", exact: true })).toBeChecked();
+  await expect(view.getByRole("checkbox").first()).toBeDisabled();
+  await page.getByRole("button", { name: "箱を押せる読む形にする", exact: true }).click();
+  const box = view.getByRole("checkbox", { name: "控える", exact: true });
+  await expect(box).toBeEnabled();
+  await box.click();
+  await expect(page.getByTestId("task-log")).toHaveText(JSON.stringify([[1, true]]));
+  await expect(box).not.toBeChecked();
+  await expect(view.getByRole("checkbox", { name: "送った", exact: true })).toBeChecked();
+});
+
+test("K577-UI-012 色のある文書の守り：正しい #rrggbb の色と一緒に、形に合わない値（色の rgb()・大文字・3 桁・名前・url()、4 つの値以外の寄せ、整数でない colspan・rowspan・start、javascript: の href）を持つ文書でも、正しい色だけが付き、外れた値は style にも属性にもならない（色の無い文書と同じ結果）", async ({
+  page,
+}) => {
+  await open(page, "colorbad", 1440, "read");
+  const view = page.getByTestId("doc-read");
+  await expect(view.locator('[contenteditable="false"]')).toBeVisible();
+  await expect(view.getByText("正しい赤", { exact: true })).toHaveCSS("color", "rgb(220, 38, 38)");
+  for (const word of ["rgb の色", "大文字の色", "三桁の色", "名前の色", "url の背景", "不正な寄せ"]) {
+    const el = view.getByText(word, { exact: true });
+    await expect(el, word).toBeVisible();
+    expect(await el.evaluate((e) => e.getAttribute("style") ?? ""), word).toBe("");
+    expect(await el.evaluate((e) => e.getAttribute("data-c")), word).toBeNull();
+    expect(await el.evaluate((e) => e.closest("mark, [data-c]") === null), word).toBe(true);
+  }
+  const start = view.getByText("不正な始まり", { exact: true });
+  await expect(start).toBeVisible();
+  expect(await start.evaluate((e) => e.closest("ol")?.getAttribute("start") ?? null)).toBeNull();
+  for (const [word, attr] of [
+    ["不正な横結合", "colspan"],
+    ["不正な縦結合", "rowspan"],
+  ] as const) {
+    const cell = view.getByText(word, { exact: true });
+    await expect(cell, word).toBeVisible();
+    // 読むだけの編集の部品は結合していないセルに 1 を書く。外れた値（1.5・文字の "2"）がそのまま属性にならないことを見る
+    expect(["", "1"], `${word} ${attr}`).toContain(
+      await cell.evaluate((e, a) => e.closest("td,th")?.getAttribute(a) ?? "", attr),
+    );
+  }
+  await expect(view).toContainText("悪いリンク");
+  await expect(view.getByRole("link", { name: "悪いリンク", exact: true })).toHaveCount(0);
+  expect(await view.locator('a[href^="javascript:" i]').count()).toBe(0);
   expect(await page.locator('[style*="javascript" i], [style*="url(" i]').count()).toBe(0);
 });
