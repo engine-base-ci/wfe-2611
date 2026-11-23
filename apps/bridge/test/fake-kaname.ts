@@ -32,6 +32,8 @@ export async function startFakeKaname(opts: {
   handler?: Handler;
 }): Promise<FakeKaname> {
   const seen: Seen[] = [];
+  // 同じ PC の鍵に同じ仕事は 1 回だけ渡す（本物の Kaname は受け取られた仕事を 2 度渡さない。何度も渡すと、輪が結末の直後に同じ仕事を回し直す）
+  const handed = new Set<string>();
   const server: Server = createServer((req, res) => {
     let raw = "";
     req.on("data", (c) => (raw += c));
@@ -49,16 +51,21 @@ export async function startFakeKaname(opts: {
       };
       const custom = opts.handler?.(s);
       if (custom) return send(custom.data ?? { ok: true }, custom.status ?? 200);
-      if (s.path === "/api/v1/bridge/jobs/take")
+      if (s.path === "/api/v1/bridge/jobs/take") {
+        const j = s.sid === opts.mine() ? opts.job() : null;
+        const key = j ? `${s.sid}:${String(j["job_id"])}` : "";
+        const give = j && !handed.has(key) ? j : null;
+        if (give) handed.add(key);
         return send(
           {
-            job: s.sid === opts.mine() ? opts.job() : null,
+            job: give,
             forbidden_domains: [],
             next_ms: 50,
             outdated: false,
           },
           201,
         );
+      }
       if (/^\/api\/v1\/bridge\/jobs\/[^/]+\/control$/.test(s.path)) return send({ stop: false });
       if (s.path === "/api/v1/bridge/mirror-targets") return send([]);
       return send({ ok: true }, s.method === "POST" ? 201 : 200);
