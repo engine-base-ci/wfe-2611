@@ -24277,7 +24277,8 @@
     "@kaname/web"
    ],
    "ci_wide": [
-    "ci"
+    "ci",
+    "shared"
    ],
    "changes": [
     "05_flow/phase1.py",
