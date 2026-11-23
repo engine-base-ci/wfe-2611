@@ -1956,7 +1956,7 @@
    },
    "na": {
     "test_get_knowledge_pages_id_rejected_403": "見えない物は 403 でなく 404（在るかを漏らさない・K677-API-012）",
-    "test_get_knowledge_pages_id_rejected_422": "道の id が uuid でない行は共有の試験 K144-API-100（K-675 の葉のファイル）が受ける"
+    "test_get_knowledge_pages_id_rejected_422": "道の id が uuid でない行は共有の試験 K144-API-100（この葉の葉のファイル k144.d/K-677.ts）が受ける"
    }
   },
   "listKnowledgeVersions": {
