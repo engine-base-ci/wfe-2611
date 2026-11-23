@@ -56,10 +56,10 @@
 | EP-041 | PATCH | `/api/v1/bridge/devices/:id` | 更新（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 422 413 429 502 403 403 503 |
 | EP-042 | DELETE | `/api/v1/bridge/devices/:id` | 削除（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 422 429 502 403 403 503 |
 | EP-043 | POST | `/api/v1/bridge/devices/:id/browser-check` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-044 | GET | `/api/v1/bridge/files/:ref` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 422 429 502 503 |
+| EP-044 | GET | `/api/v1/bridge/files/:ref` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 422 404 502 503 429 502 503 |
 | EP-045 | POST | `/api/v1/bridge/heartbeat` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | device | C1 C2 C4 | 401 403 409 422 413 429 502 503 |
 | EP-046 | POST | `/api/v1/bridge/jobs/:id/artifacts` | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の | A95 | 1 | device | C2 C4 | 401 403 404 409 422 413 429 503 |
-| EP-047 | POST | `/api/v1/bridge/jobs/:id/browser` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 413 429 502 503 |
+| EP-047 | POST | `/api/v1/bridge/jobs/:id/browser` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 503 413 429 502 503 |
 | EP-048 | GET | `/api/v1/bridge/jobs/:id/control` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 404 422 429 502 503 |
 | EP-049 | POST | `/api/v1/bridge/jobs/:id/conversation-entries` | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・ | A20 | 1 | device | C2 C3 C4 | 401 403 404 409 422 413 429 502 503 |
 | EP-050 | POST | `/api/v1/bridge/jobs/:id/finish` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 413 429 502 503 |
@@ -99,13 +99,13 @@
 | EP-084 | GET | `/api/v1/clones/me/growth` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-085 | GET | `/api/v1/clones/me/knows/counts` | 取得（clones）— 自分の AI に教える（覚えて） | A30 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-086 | GET | `/api/v1/clones/me/now` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-087 | GET | `/api/v1/conversations` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-087 | GET | `/api/v1/conversations` | 取得（conversations）— 自分の AI との会話の一覧（新し | A88 | 1 | member |  | 401 403 422 503 429 403 403 503 |
 | EP-088 | POST | `/api/v1/conversations` | 作成・実行（conversations）— 自分の AI と壁打ちしてチ | A100 A88 | 1 | member | C2 C3 | 401 403 409 422 413 429 502 403 403 503 |
-| EP-089 | GET | `/api/v1/conversations/:id` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-089 | GET | `/api/v1/conversations/:id` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 404 422 503 429 403 403 503 |
 | EP-090 | PATCH | `/api/v1/conversations/:id` | 更新（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-091 | DELETE | `/api/v1/conversations/:id` | 削除（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
 | EP-092 | POST | `/api/v1/conversations/:id/attachments` | 作成・実行（conversations）— 資料や画像を付けて自分のAI | A90 | 1 | member | C2 C4 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-093 | GET | `/api/v1/conversations/:id/messages` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
+| EP-093 | GET | `/api/v1/conversations/:id/messages` | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順 | A20 | 1 | member | C4 | 401 403 404 422 503 429 502 403 403 503 |
 | EP-094 | POST | `/api/v1/conversations/:id/messages` | 作成・実行（conversations）— 自分の AI と壁打ちしてチ | A100 A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-095 | POST | `/api/v1/conversations/:id/permissions/:pid` | 作成・実行（conversations）— 自分のAIの許可に答える・許 | A91 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-096 | POST | `/api/v1/conversations/:id/stop` | 作成・実行（conversations）— 自分の AI に指示する・相 | A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
@@ -309,9 +309,9 @@
 | EP-294 | GET | `/api/v1/ticket_kinds/template-updates` | 取得（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-295 | POST | `/api/v1/ticket_kinds/template-updates/:id/apply` | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | A120 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-296 | DELETE | `/api/v1/ticket_links/:id` | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親） | A103 | 1 | member | C2 | 401 403 404 422 503 429 403 403 503 |
-| EP-297 | PATCH | `/api/v1/ticket_messages/:id` | 更新（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
-| EP-298 | DELETE | `/api/v1/ticket_messages/:id` | 削除（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 429 403 403 503 |
-| EP-299 | POST | `/api/v1/ticket_messages/:id/star` | 作成・実行（ticket_messages）— チケットのスレッドで話す | A107 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-297 | PATCH | `/api/v1/ticket_messages/:id` | 更新（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 404 503 503 413 429 403 403 503 |
+| EP-298 | DELETE | `/api/v1/ticket_messages/:id` | 削除（ticket_messages）— チケットのスレッドで話す（@  | A107 | 1 | member | C2 C6 | 401 403 404 422 503 503 429 403 403 503 |
+| EP-299 | POST | `/api/v1/ticket_messages/:id/star` | 作成・実行（ticket_messages）— チケットのスレッドで話す | A107 | 1 | member | C2 C6 | 401 403 404 409 422 503 503 413 429 403 403 503 |
 | EP-300 | GET | `/api/v1/ticket_stages` | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親 | A103 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-301 | GET | `/api/v1/tickets` | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて | A113 A58 A99 | 1 | member |  | 401 403 422 409 429 403 403 503 |
 | EP-302 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 404 413 429 403 403 503 |
@@ -337,7 +337,7 @@
 | EP-322 | GET | `/api/v1/tickets/:id/kind-change-preview` | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-323 | GET | `/api/v1/tickets/:id/links` | 取得（ticket_links）— チケットのつながり（関連・派生元）を | A103 | 1 | member |  | 401 403 404 422 404 503 429 403 403 503 |
 | EP-324 | POST | `/api/v1/tickets/:id/links` | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。A | A103 | 1 | member | C2 | 401 403 404 409 422 404 503 413 429 403 403 503 |
-| EP-325 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 404 503 503 413 429 403 403 503 |
+| EP-325 | POST | `/api/v1/tickets/:id/messages` | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる | A107 | 1 | member | C2 C6 | 401 403 404 409 422 404 409 409 409 409 422 404 503 503 413 429 403 403 503 |
 | EP-326 | GET | `/api/v1/tickets/:id/references` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-327 | POST | `/api/v1/tickets/:id/restore` | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱 | A116 | 2 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-328 | GET | `/api/v1/tickets/:id/runs` | 取得（tickets）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
@@ -390,7 +390,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1065 ／ 内部専用 277 ／ どの画面にも出ない 0
+- 検査したフィールド 1067 ／ 内部専用 277 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

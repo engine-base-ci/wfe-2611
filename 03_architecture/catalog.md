@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 369（作った 95・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 264・部品 56・設定 41
+API 369（作った 103・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 265・部品 56・設定 41
 
 ## 共通の処理
 
@@ -371,8 +371,8 @@ API 369（作った 95・後のフェーズの行為だけ 20）・前の道す�
 | `previewBulkApproval` | POST /api/v1/approvals/bulk/preview | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `listApprovalHistory` | GET /api/v1/approvals/history | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `listApprovalQueue` | GET /api/v1/approvals/queue | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | F5 | 作った | K-161 |
-| `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 契約だけ（501） | K-61 |
-| `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 契約だけ（501） | K-61 |
+| `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 作った | K-761 |
+| `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `finishBridgeJob` | POST /api/v1/bridge/jobs/:id/finish | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
@@ -386,7 +386,7 @@ API 369（作った 95・後のフェーズの行為だけ 20）・前の道す�
 | `exportCloneActivity` | POST /api/v1/clones/me/activity/export | 作成・実行（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
-| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
+| `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順） | F5 | 作った | K-61,K-757 |
 | `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
@@ -396,9 +396,9 @@ API 369（作った 95・後のフェーズの行為だけ 20）・前の道す�
 | `dryRunTicket` | POST /api/v1/tickets/:id/dry-run | 作成・実行（tickets）— 試し打ちする（宛先を自分に差し替えて確かめる） | F5 | 契約だけ（501） | K-61 |
 | `listTicketRuns` | GET /api/v1/tickets/:id/runs | 取得（tickets）— AI に任せる | F5 | 作った | K-62 |
 | `updateTicketDecision` | PATCH /api/v1/ticket_decisions/:id | 更新（ticket_decisions）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-391 |
-| `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
-| `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
-| `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
+| `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
+| `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
+| `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-386 |
 | `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した） | F6 | 作った | K-390 |
 | `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-390 |
 | `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-385 |
@@ -501,8 +501,8 @@ API 369（作った 95・後のフェーズの行為だけ 20）・前の道す�
 | `getBridgeQuestionAnswer` | GET /api/v1/bridge/jobs/:id/questions/:qid | 取得（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `reportUsage` | POST /api/v1/bridge/usage | 作成・実行（bridge）— 自分のAIの使用量（サブスクの 5 時間の枠・週の枠とい | （後のフェーズ） | 契約だけ（501） | K-73 |
 | `updateMyClone` | PATCH /api/v1/clones/me | 更新（clones）— 自分のAIの許可に答える・許可のモードを選ぶ | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | K-73 |
-| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 契約だけ（501） | K-73 |
+| `listConversations` | GET /api/v1/conversations | 取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない） | （後のフェーズ） | 作った | K-61,K-757 |
+| `getConversation` | GET /api/v1/conversations/:id | 取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-61,K-757 |
 | `updateConversation` | PATCH /api/v1/conversations/:id | 更新（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-73 |
 | `deleteConversation` | DELETE /api/v1/conversations/:id | 削除（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話 | （後のフェーズ） | 作った | K-73 |
 | `createConversationAttachment` | POST /api/v1/conversations/:id/attachments | 作成・実行（conversations）— 資料や画像を付けて自分のAIに渡す | （後のフェーズ） | 契約だけ（501） | K-73 |

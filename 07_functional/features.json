@@ -898,7 +898,8 @@
     "E-DEL-014",
     "E-CONF-020",
     "E-RUN-001",
-    "E-RUN-002"
+    "E-RUN-002",
+    "E-TALK-040"
    ],
    "policies": [
     "C2",
@@ -2535,7 +2536,8 @@
     "E-DEL-014",
     "E-CONF-020",
     "E-RUN-001",
-    "E-RUN-002"
+    "E-RUN-002",
+    "E-TALK-040"
    ],
    "policies": [
     "C1",
@@ -5601,7 +5603,8 @@
     "E-DEL-014",
     "E-CONF-020",
     "E-RUN-001",
-    "E-RUN-002"
+    "E-RUN-002",
+    "E-TALK-040"
    ],
    "policies": [
     "C2",
@@ -8633,7 +8636,8 @@
     "E-DEL-014",
     "E-CONF-020",
     "E-RUN-001",
-    "E-RUN-002"
+    "E-RUN-002",
+    "E-TALK-040"
    ],
    "policies": [
     "C2",
@@ -9452,7 +9456,8 @@
     "E-DISC-001",
     "E-CHAT-002",
     "E-ART-001",
-    "E-ART-002"
+    "E-ART-002",
+    "E-TALK-040"
    ],
    "policies": [
     "権限（テナント・スコープ）",
