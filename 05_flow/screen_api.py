@@ -987,7 +987,7 @@ HEADERS = {
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
-    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
+    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "descendants": "integer", "attachments": "integer", "artifacts": "integer", "pending_approvals": "integer", "links": "integer", "running_runs": "integer", "descendant_pending_approvals": "integer", "descendant_running_runs": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
     "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
@@ -1134,7 +1134,6 @@ RESPONSES = {
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
 META = {
-    "listTickets": {"next_cursor": {"type": "string", "nullable": True}},   # 次の分の鍵（keyset・最後の分は null）。総数も数も返さない（D-144.3・K-92）
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
@@ -1149,11 +1148,9 @@ RATES = {
 }
 # 一覧の口の細目（K-92）：limit の上限・sort を受けない口・説明（行為から作る説明の代わり）・答えの meta の形（endpoints.json の outputs_2xx）
 LIST_DETAILS = {
-    "listTickets": {"limit_max": 100, "sort": False, "desc": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）", "meta": "{ next_cursor }"},
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く（sort は LIST_DETAILS で外せる）
 QUERIES = {
-    "listTickets": ["view", "q", "scope_id"],   # ほかの絞り込みは K-67 が作るまで 422・E-VAL-018（K-92・D-128.152）
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
@@ -1202,7 +1199,7 @@ PERMS = {
     "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
-    "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
+    "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
     "deleteTicket": ("assignee", "担当者・作成者・マネージャー（子の扱いを選ぶ）", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
