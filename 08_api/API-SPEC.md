@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-22 凍結）
+# Kaname API 設計書 v1.0（2026-11-23 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -391,7 +391,12 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1063 ／ 内部専用 277 ／ どの画面にも出ない 0
+- 検査したフィールド 1074 ／ 内部専用 278 ／ どの画面にも出ない 5
+  - ★ knowledge_folders.is_personal
+  - ★ knowledge_folders.owner_member_id
+  - ★ knowledge_folders.parent_folder_id
+  - ★ knowledge_folders.name
+  - ★ knowledge_folders.position
 
 ## 5. 共通仕様
 
@@ -401,4 +406,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-22 凍結（endpoints 370）
+- v1.0 2026-11-23 凍結（endpoints 370）

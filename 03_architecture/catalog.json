@@ -9,7 +9,7 @@
   "api_built": 84,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 148,
+  "db": 149,
   "ui": 19,
   "packages": 13,
   "errors": 237,
@@ -6522,6 +6522,14 @@
    ],
    "reads": [],
    "boundary": true
+  },
+  {
+   "table": "knowledge_folders",
+   "class": "skeleton",
+   "why": "ナレッジの口が使う（K-674）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "knowledge_links",
