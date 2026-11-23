@@ -1,0 +1,319 @@
+/* お知らせ（F7・段 8）の部品。値は正本のトークン（--k-*）だけを読む。生の大きさ・色・影を書かない（@media の区切りの幅だけは CSS の決まりで生の値）。
+   箱の形・札・空と失敗の箱は components/k の型のまま。ここは並べ方だけ。 */
+
+/* ---- ベルから重なって開く箱（右上・幅 767 以下は NoticeSheet に替わる） ---- */
+.k-f7-notice {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--k-card);
+  border-radius: var(--k-r-card);
+  box-shadow: var(--k-c-dialog-shadow);
+  overflow: hidden;
+}
+.k-f7-notice[data-placement="overlay"] {
+  position: fixed;
+  top: calc(var(--k-c-shell-bar-height) + var(--k-s-sm));
+  right: var(--k-s-lg);
+  z-index: var(--k-c-popup-layer-z);
+  width: min(var(--k-c-dialog-form-width), calc(100vw - var(--k-s-lg)));
+  max-height: calc(100dvh - var(--k-c-shell-bar-height) - var(--k-s-xl));
+}
+.k-f7-notice[data-placement="inline"] {
+  width: min(var(--k-c-dialog-form-width), 100%);
+}
+@media (max-width: 767px) {
+  .k-f7-notice {
+    display: none;
+  }
+}
+
+.k-f7-notice-head {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-page-head-border);
+}
+.k-f7-notice-head h2 {
+  margin: 0;
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+  font-weight: var(--k-fw-h2);
+}
+.k-f7-notice-count {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 絞り込み：未読だけ・人で絞る ---- */
+.k-f7-notice-filter {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  margin-left: auto;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-notice-only {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  min-height: var(--k-c-list-tool-height);
+  cursor: pointer;
+}
+.k-f7-notice-only input {
+  accent-color: var(--k-primary);
+}
+.k-f7-notice-people {
+  height: var(--k-c-list-tool-height);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-button-outlined-border);
+  border-radius: var(--k-r-md);
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  cursor: pointer;
+}
+.k-f7-notice-people:hover {
+  background: var(--k-select);
+}
+.k-f7-notice-check {
+  display: inline-grid;
+  place-items: center;
+  width: var(--k-s-md);
+  color: var(--k-primary);
+}
+
+/* ---- 一覧 ---- */
+.k-f7-notice-scroll {
+  min-height: 0;
+  overflow-y: auto;
+}
+.k-f7-notice-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-f7-notice-list > li + li {
+  border-top: var(--k-c-detail-rule-border-bottom);
+}
+.k-f7-notice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--k-s-sm);
+  width: 100%;
+  padding: var(--k-s-sm) var(--k-s-md);
+  border: 0;
+  background: var(--k-card);
+  color: var(--k-on-surface);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.k-f7-notice-row[data-unread] {
+  background: var(--k-st-warning-soft);
+}
+.k-f7-notice-row:hover {
+  background: var(--k-select);
+}
+.k-f7-notice-av {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-detail-avatar-width);
+  height: var(--k-c-detail-avatar-height);
+  border-radius: var(--k-r-full);
+  background: var(--k-d-indigo);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-notice-av[data-tone="ai"] {
+  background: var(--k-on-surface-variant);
+}
+.k-f7-notice-av[data-tone="operator"] {
+  background: var(--k-primary);
+}
+.k-f7-notice-av[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-f7-notice-av[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-f7-notice-av[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-f7-notice-av[data-tone="coral"] {
+  background: var(--k-d-coral);
+}
+.k-f7-notice-av[data-tone="sage"] {
+  background: var(--k-d-sage);
+}
+.k-f7-notice-av[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-f7-notice-av[data-tone="lavender"] {
+  background: var(--k-d-lavender);
+}
+.k-f7-notice-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.k-f7-notice-text {
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-f7-notice-row[data-unread] .k-f7-notice-text {
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-notice-meta {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  line-height: var(--k-lh-body-sm);
+}
+.k-f7-notice-tag {
+  flex: none;
+  align-self: flex-start;
+}
+.k-f7-notice-past-head {
+  margin: 0;
+  padding: var(--k-s-xs) var(--k-s-md);
+  border-top: var(--k-c-detail-rule-border-bottom);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+  background: var(--k-table-head);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-label-md);
+}
+.k-f7-notice-state {
+  padding: var(--k-s-md);
+}
+
+/* ---- 足（すべて既読にする・過去のお知らせ） ---- */
+.k-f7-notice-foot {
+  display: flex;
+  flex: none;
+  justify-content: space-between;
+  gap: var(--k-s-md);
+  padding: var(--k-s-xs) var(--k-s-md);
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-f7-notice-link {
+  min-height: var(--k-c-list-tool-height);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-primary);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  cursor: pointer;
+}
+.k-f7-notice-link:hover {
+  color: var(--k-primary-hover);
+  text-decoration: underline;
+}
+.k-f7-notice-link:disabled {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* ---- スマホ：お知らせの全面（上の帯と下のタブの間）。広い幅では出さない ---- */
+.k-f7-notice-sheet {
+  display: none;
+}
+@media (max-width: 767px) {
+  .k-f7-notice-sheet {
+    position: fixed;
+    top: var(--k-c-shell-bar-height);
+    bottom: var(--k-c-shell-tabs-height);
+    left: 0;
+    right: 0;
+    z-index: var(--k-c-popup-layer-z);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--k-page);
+  }
+}
+.k-f7-notice-sheet-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-xs) var(--k-s-md) var(--k-s-xs) var(--k-s-xs);
+  background: var(--k-card);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+}
+.k-f7-notice-sheet-head h2 {
+  flex: 1;
+  margin: 0;
+  font-size: var(--k-text-h3);
+  line-height: var(--k-lh-h3);
+  font-weight: var(--k-fw-h2);
+}
+.k-f7-notice-sheet-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  min-height: 0;
+  padding: var(--k-s-md);
+  overflow-y: auto;
+}
+.k-f7-notice-chips {
+  display: flex;
+  flex: none;
+  gap: var(--k-s-xs);
+  overflow-x: auto;
+}
+.k-f7-notice-chip {
+  flex: none;
+  height: var(--k-c-run-chip-height);
+  padding: 0 var(--k-s-md);
+  border: var(--k-c-button-outlined-border);
+  border-radius: var(--k-r-full);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-f7-notice-chip[aria-pressed="true"] {
+  border-color: var(--k-primary);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-f7-notice-card {
+  min-width: 0;
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-lg);
+  background: var(--k-card);
+  overflow: hidden;
+}
+/* スマホは読んだ行を淡い灰の面に、未読は白に（キャンバス MbNotify）。行の高さは押しやすさのため広げる */
+.k-f7-notice-sheet .k-f7-notice-row {
+  padding: var(--k-s-md);
+  background: var(--k-surface);
+}
+.k-f7-notice-sheet .k-f7-notice-row[data-unread] {
+  background: var(--k-card);
+}
+.k-f7-notice-sheet .k-f7-notice-text {
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+
+/* スマホの絞り（未読だけ・人で絞る）：札の下に左そろえで置く */
+.k-f7-notice-sheet .k-f7-notice-filter {
+  flex: none;
+  margin-left: 0;
+}
