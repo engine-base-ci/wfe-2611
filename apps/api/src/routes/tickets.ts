@@ -16,6 +16,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/tickets/:id/agent-session/messages", op(deps, "sendTicketAgentMessage"));
   app.get("/api/v1/tickets/:id/artifacts", op(deps, "listTicketArtifacts"));
   app.post("/api/v1/tickets/:id/attachments", op(deps, "createTicketAttachment"));
+  app.patch("/api/v1/tickets/:id/body", op(deps, "updateTicketBody"));
   app.get("/api/v1/tickets/:id/checks", op(deps, "listChecks"));
   app.patch("/api/v1/tickets/:id/client-share", op(deps, "updateTicketClientShare"));
   app.post("/api/v1/tickets/:id/complete", op(deps, "completeTicket"));
@@ -25,6 +26,7 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id/delete-preview", op(deps, "previewTicketDelete"));
   app.post("/api/v1/tickets/:id/dry-run", op(deps, "dryRunTicket"));
   app.post("/api/v1/tickets/:id/handovers", op(deps, "createTicketHandover"));
+  app.get("/api/v1/tickets/:id/item-changes", op(deps, "listTicketItemChanges"));
   app.get("/api/v1/tickets/:id/kind-change-preview", op(deps, "previewTicketKindChange"));
   app.get("/api/v1/tickets/:id/links", op(deps, "listTicketLinks"));
   app.post("/api/v1/tickets/:id/links", op(deps, "createTicketLink"));
@@ -32,7 +34,6 @@ export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/tickets/:id/references", op(deps, "listTicketReferences"));
   app.post("/api/v1/tickets/:id/restore", op(deps, "restoreTicket"));
   app.get("/api/v1/tickets/:id/runs", op(deps, "listTicketRuns"));
-  app.patch("/api/v1/tickets/:id/sections/:key", op(deps, "updateTicketSection"));
   app.get("/api/v1/tickets/:id/test-specs", op(deps, "listTestSpecs"));
   app.post("/api/v1/tickets/:id/test-specs", op(deps, "createTestSpec"));
   app.post("/api/v1/tickets/:id/test-specs/lint", op(deps, "lintTestSpecs"));
