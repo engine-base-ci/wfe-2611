@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:1f195c0546c33810
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:2963cb7bb881c1a7
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -6570,7 +6570,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
     },
     "termsOpen": false,
@@ -6627,7 +6627,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "knowledge_page_versions",
-        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id)"
+        "sql": "tenant_id = current_setting('app.tenant_id', true)::uuid AND app.kpage_writable(page_id) AND (kind <> 'draft' OR author_member_id = current_setting('app.user_id', true)::uuid)"
       }
     },
     "termsOpen": false,
@@ -19745,4 +19745,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "1f195c0546c33810";
+export const OPENAPI_HASH = "2963cb7bb881c1a7";
