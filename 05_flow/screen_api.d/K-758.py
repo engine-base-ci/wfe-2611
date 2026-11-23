@@ -50,3 +50,10 @@ ERRORS_4XX = {
         dict(_DOWN),
     ],
 }
+
+# 答えの conversation_id・job_id は null にならない（messages の列は null 可・K144-SHAPE-013）。DB の関数 app.talk_enqueue が見つけた会話の id と、
+#   作った仕事の id（作れなければ no_pc で断る）を入れて返す
+NOT_NULL_ANSWERS = {
+    "sendConversationMessage.conversation_id": "DB の関数 app.talk_enqueue が持ち主の会話を見つけたときだけその id を返し、無ければ not_found で断る（messages.conversation_id は null 可）",
+    "sendConversationMessage.job_id": "DB の関数 app.talk_enqueue が作った仕事の id を返し、作れなければ no_pc で断る（messages.job_id は null 可）",
+}
