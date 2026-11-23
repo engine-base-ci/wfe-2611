@@ -24812,12 +24812,12 @@
    "choke_none": "画面だけ。読むのは口の葉 K-676（getKnowledgeTree）と K-677（getKnowledgePage）で、画面は契約の口を呼ぶだけ。DB・外への送り出し・秘密に触らない",
    "tests": [
     "apps/web/tests/k/k682-knowledge-shell.spec.ts",
-    "apps/web/test/k682-knowledge-shape.test.ts",
-    "apps/web/tests/k/knowledge-mock.ts",
-    "apps/web/tests/k/f9-match.ts"
+    "apps/web/test/k682-knowledge-shape.test.ts"
    ],
    "carry": [
-    "apps/web/tests/k/k138-shell.spec.ts"
+    "apps/web/tests/k/k138-shell.spec.ts",
+    "apps/web/tests/k/knowledge-mock.ts",
+    "apps/web/tests/k/f9-match.ts"
    ],
    "depends_on": [
     "K-670",

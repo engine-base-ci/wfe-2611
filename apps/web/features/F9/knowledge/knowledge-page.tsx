@@ -3,6 +3,7 @@
 //   木とページを口から読み（use-knowledge.ts）、答えを部品の値に直して（shape.ts）、K-670 の部品に渡す。
 //   操作の動きは後ろの葉が page-slots.ts の PAGE_SLOTS に 1 行ずつ足す。動きの無い操作は押せない形で出す
 import { BookOpen } from "lucide-react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import type { Doc } from "@kaname/contracts";
@@ -196,7 +197,7 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
     return () => window.removeEventListener("keydown", onKey);
   }, [drawerOpen]);
 
-  const go = (href: string) => router.push(href);
+  const go = (href: string) => router.push(href as Route);
   const ctx: PageCtx = {
     page: page.data,
     tree: tree.data,
@@ -221,7 +222,7 @@ function KnowledgeBody({ pageId, ready }: { pageId: string | undefined; ready: b
       hrefOf,
       onOpenPage: (id) => {
         setDrawerOpen(false);
-        router.push(hrefOf(id));
+        router.push(hrefOf(id) as Route);
       },
       onToggleFolder: (id) =>
         setOpenFolders((cur) => {
