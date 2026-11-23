@@ -19,6 +19,14 @@
    "tests": [
     "apps/api/test/generated/get_approvals_history.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "05_flow/build_api.d/K-750.py"
+   ],
+   "tests": [
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
   }
  ],
  "reads_ok": {}

@@ -18,7 +18,11 @@ LIST_DETAILS = {
 META = {
     "listApprovalHistory": {"counts": "object"},
 }
-# 答えの 1 件（鍵はちょうど 11）
+# 上限：1 分に 60 回（K750-API-011。読む口の既定 120 でなく、承認の口と同じ数）
+RATES = {
+    "listApprovalHistory": "60/min/user",
+}
+# 答えの 1 件（鍵はちょうど 11）。ticket_id・decision・decided_at は表の列が null を許すので契約も null を許す（K144-SHAPE-013。履歴の行では決まった承認だけなので実際は入る）
 RESPONSES = {
-    "listApprovalHistory": ("ApprovalHistoryItem", {"id": "string", "ticket_id": "string", "ticket_number": "string", "title": "string", "decision": "string", "decided_at": "string", "reason": "string?", "next_actor": "string?", "withdrawn_at": "string?", "run_status": "string?", "can_withdraw": "boolean"}),
+    "listApprovalHistory": ("ApprovalHistoryItem", {"id": "string", "ticket_id": "string?", "ticket_number": "string", "title": "string", "decision": "string?", "decided_at": "string?", "reason": "string?", "next_actor": "string?", "withdrawn_at": "string?", "run_status": "string?", "can_withdraw": "boolean"}),
 }

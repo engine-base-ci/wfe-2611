@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:60cd3948101286b5
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:9762d8484f693472
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -4658,11 +4658,11 @@ export const ApprovalWithdrawn = z.strictObject({
 });
 export const ApprovalHistoryItem = z.strictObject({
   id: z.string().optional(),
-  ticket_id: z.string().optional(),
+  ticket_id: z.string().nullable().optional(),
   ticket_number: z.string().optional(),
   title: z.string().optional(),
-  decision: z.string().optional(),
-  decided_at: z.string().optional(),
+  decision: z.string().nullable().optional(),
+  decided_at: z.string().nullable().optional(),
   reason: z.string().nullable().optional(),
   next_actor: z.string().nullable().optional(),
   withdrawn_at: z.string().nullable().optional(),

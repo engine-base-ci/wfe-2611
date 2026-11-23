@@ -2638,7 +2638,6 @@
     "withdrawApproval"
    ],
    "tests": [
-    "apps/api/test/generated/get_approvals_history.test.ts",
     "apps/api/test/generated/get_bridge_files_ref.test.ts",
     "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
     "apps/api/test/generated/get_clones_me.test.ts",
@@ -24276,7 +24275,8 @@
    "choke_points": [],
    "choke_none": "読むだけ（DB の読む関数を 1 本足し、読む口を 1 本作る）。DB に書かず、知らせ・外のサービス・秘密を呼ばない",
    "tests": [
-    "apps/api/test/features/F5/approval-history.test.ts"
+    "apps/api/test/features/F5/approval-history.test.ts",
+    "apps/api/test/generated/get_approvals_history.test.ts"
    ],
    "carry": [],
    "depends_on": [

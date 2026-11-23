@@ -25,7 +25,7 @@ describe("GET /api/v1/approvals/history", () => {
     expect(readFileSync("apps/api/test/features/F5/approval-history.test.ts", "utf8")).toContain("K750-API-010");
   });
   it("test_get_approvals_history_rate_limited", () => {
-    // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
+    // UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F5/approval-history.test.ts の「K750-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F5/approval-history.test.ts", "utf8")).toContain("K750-API-011");
   });

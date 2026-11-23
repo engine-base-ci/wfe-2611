@@ -6190,7 +6190,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "429",
-   "ears_text": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+   "ears_text": "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
    "test_file": "apps/api/test/generated/get_approvals_history.test.ts",
    "test_function": "test_get_approvals_history_rate_limited",
    "test_level": "unit",

@@ -9,7 +9,8 @@ import type pg from "pg";
 import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { down, fromCatalog, invalid } from "../approve-complete/errors.js";
+import { kanameError } from "@kaname/errors";
+import { invalid } from "../approve-complete/errors.js";
 
 export const LIMIT_DEFAULT = 20;
 const DECISIONS: ReadonlySet<string> = new Set(["approve", "return", "stop"]);
@@ -82,6 +83,12 @@ interface HistoryAnswer {
 
 const isReply = (x: Query | HookReply): x is HookReply => "status" in x;
 
+/** 止める側に倒す（fail-closed・503・E-PAGE-003）。ログには場所と言葉の種類だけ（問い合わせの値・行の中身を出さない） */
+const unavailable = (why: string): HookReply => {
+  console.error(`[approval-history] 決めた履歴：止める側に倒した（${why}）`);
+  return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
+};
+
 export function createApprovalHistory(pool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs): Promise<HookReply> => {
     const read = readQuery(a.c.req.query());
@@ -105,13 +112,13 @@ export function createApprovalHistory(pool: pg.Pool): (a: HookArgs) => Promise<H
           ).rows[0]?.v,
       );
     } catch (e) {
-      console.error(`[approval-history] 決めた履歴：止める側に倒した（${(e as Error)?.name ?? "Error"}）`);
-      return fromCatalog("E-PAGE-003", 503);
+      return unavailable((e as Error)?.name ?? "Error");
     }
-    if (!v) return fromCatalog("E-PAGE-003", 503);
-    if (v.error !== undefined) return down("決めた履歴", String(v.error));
+    if (!v) return unavailable("答えが無い");
+    if (v.error !== undefined) return unavailable(`知らない答え ${String(v.error)}`);
     const rows = v.rows ?? [];
-    const data = rows.slice(0, limit);
+    // DB から limit+1 件取った行を、続きの有無を見た後に limit 件に戻す（入力でない・DB 側で絞った後の行）
+    const data = rows.filter((_, i) => i < limit);
     const last = data.at(-1);
     const more = rows.length > limit && last;
     return {
