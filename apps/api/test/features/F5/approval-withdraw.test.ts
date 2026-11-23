@@ -32,7 +32,6 @@ import {
   jobOf,
   messagesOf,
   snapshot,
-  team,
   breakWritable,
   type Ticket,
 } from "./approve-complete.harness.js";
@@ -137,10 +136,10 @@ describe("K-733 承認を取り下げる：状態 × 入口 × 利用者の状�
       const a = await approved(t);
       await lastSeen(a.pc.sid, 1);
       expect((await take(a.pc))?.id).toBe(a.execJobId);
+      // 終わりの口の体：使わない欄は付けない（null は契約の形で 422・K-164 の決め「理由は空か欄なし」）
       await finish(a.pc, a.execJobId, {
         state,
-        result: state === "done" ? "送りました" : null,
-        reason: state === "stopped" ? "止まりました" : null,
+        ...(state === "done" ? { result: "送りました" } : { reason: "止まりました" }),
         agent_session_id: a.agentSession,
       });
       const before = await snapshot(t);
