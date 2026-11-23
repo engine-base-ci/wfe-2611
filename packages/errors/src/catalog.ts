@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。262 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。267 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4155,6 +4155,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "screen": "tickets"
     }
   },
+  "E-SEC-020": {
+    "id": "E-SEC-020",
+    "cls": "conflict",
+    "message": "もう同じ中身です",
+    "action": "別の版を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-020",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
   "E-SPEC-001": {
     "id": "E-SPEC-001",
     "cls": "conflict",
@@ -4221,6 +4238,82 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-TKT-001": {
+    "id": "E-TKT-001",
+    "cls": "conflict",
+    "message": "自分自身は親にできません",
+    "action": "別のチケットを親に選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-002": {
+    "id": "E-TKT-002",
+    "cls": "conflict",
+    "message": "自分の下にあるチケットは親にできません（親子が輪になります）",
+    "action": "自分の下にないチケットを親に選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-003": {
+    "id": "E-TKT-003",
+    "cls": "conflict",
+    "message": "親子は 3 段までです。もっと上の段のチケットを親にしてください",
+    "action": "3 段に収まる親を選ぶ（または先に子の段を減らす）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
+    }
+  },
+  "E-TKT-004": {
+    "id": "E-TKT-004",
+    "cls": "conflict",
+    "message": "このチケットの期限が親の期限より後です。期限を親に合わせてから、親を決めてください",
+    "action": "期限を親の期限以前に直してから親を決める",
+    "undo": false,
+    "severity": "low",
+    "support_code": "TKT-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "detail"
     }
   },
   "E-LNK-001": {
