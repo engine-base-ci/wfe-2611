@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。264 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。266 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4778,6 +4778,43 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "running"
+    }
+  },
+  "E-APR-020": {
+    "id": "E-APR-020",
+    "cls": "conflict",
+    "message": "先にほかの人が成果物を直していました。開き直して、続きから直してください",
+    "action": "開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-020",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
+    }
+  },
+  "E-APR-021": {
+    "id": "E-APR-021",
+    "cls": "conflict",
+    "message": "成果物は変わっていません。直してから保存してください",
+    "action": "字を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-APR-021",
+    "must_not": true,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "awaiting_approval"
     }
   }
 };

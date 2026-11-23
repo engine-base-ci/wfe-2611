@@ -8303,6 +8303,66 @@
     "D-153.24",
     "D-153.25"
    ]
+  },
+  {
+   "id": "E-APR-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認する人が成果物を直して保存したが、直す前に読んだ版が古い（先にほかの人が成果物を直していた・別のタブで先に保存した）",
+   "false_when": "直す前に読んだ版が今の版と同じ",
+   "message": "先にほかの人が成果物を直していました。開き直して、続きから直してください",
+   "action": "開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちのチケットを承認する人が 2 つのタブで開き、両方で［自分で直す］を押す",
+    "steps": [
+     "片方のタブで字を直して［保存］を押す",
+     "もう片方のタブで字を直して［保存］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.28"
+   ]
+  },
+  {
+   "id": "E-APR-021",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "awaiting_approval"
+   },
+   "when": "承認する人が、今の成果物と同じ字のまま保存した（何も変えていない）",
+   "false_when": "字を 1 文字でも直して保存した",
+   "message": "成果物は変わっていません。直してから保存してください",
+   "action": "字を直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認待ちのチケットを承認する人が開き、［自分で直す］を押す",
+    "steps": [
+     "字を変えずに［保存］を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.28"
+   ]
   }
  ],
  "meta": {

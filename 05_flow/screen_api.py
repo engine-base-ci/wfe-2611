@@ -1266,7 +1266,7 @@ PERMS = {
     "listApprovalQueue": ("self", "自分が決めるものだけ", False),
     "getApproval": ("approver", "承認する人。担当者とマネージャーは読むだけ", False),
     "approveApproval": ("approver", "承認する人だけ。本人確認は取り直さない（D-128.177）", False),
-    "editApproval": ("approver", "承認する人", False),
+    "editApproval": ("approver", "承認する人（今の担当者）だけ。成果物の字を直して新しい版を作る（承認待ちのまま）", False),
     "returnApproval": ("approver", "承認する人（理由が必須）", False),
     "stopApproval": ("approver", "承認する人（今の担当者）だけ。成果物は使わずに止める", False),
     "withdrawApproval": ("approver", "承認した本人だけ・実行中になる前だけ（D-125.105）", False),
