@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/f9-knowledge-tree.ts", "apps/api/src/features/F9/knowledge/tree.ts", "apps/api/src/features/F9/knowledge/tree-parts/**"],
+   "tests": ["apps/api/test/features/F9/knowledge-tree.test.ts"]}
+ ]
+}

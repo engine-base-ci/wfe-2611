@@ -1555,6 +1555,16 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/f9-knowledge-tree.ts",
+    "apps/api/src/features/F9/knowledge/tree.ts",
+    "apps/api/src/features/F9/knowledge/tree-parts/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-tree.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
