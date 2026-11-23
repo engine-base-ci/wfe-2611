@@ -1,8 +1,9 @@
 // 本文の読む形（K-577）の印と行の中の描き。編集の部品（Tiptap・ProseMirror）を読まない。
 //   印：bold＝b・italic＝i・underline＝u・strike＝s・code＝code・superscript＝sup・subscript＝sub・
-//     文字の色＝前の 3 つの名前は span[data-c]（正本のトークン）、#rrggbb は span[data-k-ink]・背景の色＝属性の無い物は mark、#rrggbb は span[data-k-bg]・
+//     文字の色＝前の 3 つの名前は span[data-c]（正本のトークン）・背景の色＝属性の無い物は mark・
 //     link＝許された href（link-policy）のときだけ a（target _blank・rel noopener noreferrer）。許されない href・形に合わない色は印を付けずに字だけ出す。
-//   利用者の色は style 属性で当てない（PM の決め・class_gate）。読む形の頭に、確かめた #rrggbb だけを並べた <style> を 1 つ置き、data-k-ink／data-k-bg で当てる
+//   利用者が選んだ #rrggbb の色は、ここでは付けない（字だけ出す）。style 属性でも style の要素でも当てない決め（PM 2026-11-23・class_gate・D8）。
+//     #rrggbb の色を持つ文書は、DocView が読むだけの編集の部品（doc-view-color → doc-view-live）へ渡し、色はその部品が付ける。ここの描きは読み込みの間の形
 import type { ReactNode } from "react";
 import { DOC_COLORS, DOC_HEX_COLOR } from "@kaname/contracts";
 import { isAllowedHref } from "./link-policy";
@@ -36,22 +37,10 @@ function wrap(m: ViewMark, k: string, c: ReactNode): ReactNode {
           {c}
         </span>
       );
-    if (isHex(color))
-      return (
-        <span key={k} data-k-ink={color}>
-          {c}
-        </span>
-      );
     return c;
   }
   if (m.type === "highlight") {
     if (color === undefined) return <mark key={k}>{c}</mark>;
-    if (isHex(color))
-      return (
-        <span key={k} data-k-bg={color}>
-          {c}
-        </span>
-      );
     return c;
   }
   if (m.type === "link") {
@@ -80,21 +69,10 @@ export function renderInline(nodes: readonly ViewInline[] | undefined, key: stri
   });
 }
 
-/** 文書に出てくる #rrggbb の文字の色と背景の色を集める（確かめた値だけ） */
-export function collectColors(node: unknown, out = { ink: new Set<string>(), bg: new Set<string>() }) {
+/** 文書に、形を確かめた #rrggbb の色（文字の色か背景）の印が 1 つでも在るか */
+export function hasHexColor(node: unknown): boolean {
   const n = node as { content?: unknown[]; marks?: ViewMark[] } | null;
-  for (const m of n?.marks ?? []) {
-    const c = m.attrs?.["color"];
-    if (m.type === "color" && isHex(c)) out.ink.add(c);
-    if (m.type === "highlight" && isHex(c)) out.bg.add(c);
-  }
-  for (const c of n?.content ?? []) collectColors(c, out);
-  return out;
-}
-
-/** 確かめた #rrggbb だけで組む色の決まり（値は DOC_HEX_COLOR に完全一致した物だけなので、ほかの字は入らない） */
-export function colorRules(colors: { ink: Set<string>; bg: Set<string> }): string {
-  const ink = [...colors.ink].map((c) => `.k-f4d-read [data-k-ink="${c}"]{color:${c}}`);
-  const bg = [...colors.bg].map((c) => `.k-f4d-read [data-k-bg="${c}"]{background-color:${c}}`);
-  return [...ink, ...bg].join("");
+  if ((n?.marks ?? []).some((m) => (m.type === "color" || m.type === "highlight") && isHex(m.attrs?.["color"])))
+    return true;
+  return (n?.content ?? []).some(hasHexColor);
 }
