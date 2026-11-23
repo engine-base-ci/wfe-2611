@@ -266,6 +266,10 @@
     "type": "text",
     "nullable": true
    },
+   "taken_over_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "task_id": {
     "type": "uuid",
     "nullable": true
@@ -2830,7 +2834,7 @@
    },
    "email": {
     "type": "text",
-    "nullable": false
+    "nullable": true
    },
    "expires_at": {
     "type": "timestamp with time zone",
@@ -4554,6 +4558,10 @@
    },
    "payload": {
     "type": "jsonb",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "retry_count": {
@@ -7000,7 +7008,19 @@
   "test_specs": {
    "check_kind": {
     "type": "text",
+    "nullable": true
+   },
+   "checked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "checked_by_ai": {
+    "type": "boolean",
     "nullable": false
+   },
+   "checked_by_member_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "created_at": {
     "type": "timestamp with time zone",
@@ -7029,6 +7049,14 @@
    "params": {
     "type": "jsonb",
     "nullable": false
+   },
+   "source": {
+    "type": "text",
+    "nullable": false
+   },
+   "source_ref_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
@@ -7094,6 +7122,18 @@
    }
   },
   "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7108,6 +7148,10 @@
    },
    "decided_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
     "nullable": true
    },
    "deleted_at": {
@@ -7358,6 +7402,10 @@
    }
   },
   "ticket_kinds": {
+   "body_template": {
+    "type": "jsonb",
+    "nullable": true
+   },
    "color": {
     "type": "text",
     "nullable": true
@@ -7560,6 +7608,10 @@
     "type": "uuid",
     "nullable": false
    },
+   "restored_from": {
+    "type": "integer",
+    "nullable": true
+   },
    "section_id": {
     "type": "uuid",
     "nullable": false
@@ -7753,6 +7805,10 @@
    "kind_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "no_spec_reason": {
+    "type": "text",
+    "nullable": true
    },
    "number": {
     "type": "text",
