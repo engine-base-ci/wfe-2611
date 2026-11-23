@@ -147,4 +147,5 @@ export const MIGRATIONS = [
   "20261125023800_talk_say.sql",
   "20261125024300_ticket_talk.sql",
   "20261125025400_draft_talk.sql",
+  "20261125025600_draft_adopt.sql",
 ] as const;
