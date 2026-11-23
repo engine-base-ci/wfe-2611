@@ -49,8 +49,9 @@ class Box:
         f.write_text(json.dumps({"suites": suites}), encoding="utf-8")
         return str(f)
 
-    def gate(self, rep: str, *specs: str) -> subprocess.CompletedProcess:
-        args = [PY, GATE, "--spec", str(self.tmp / "spec"), "--tickets", str(self.tmp / "tickets.json"), "--report", rep]
+    def gate(self, rep: str | None, *specs: str) -> subprocess.CompletedProcess:
+        """rep が None なら --report を渡さない（本物の G48 と同じく spec/op-gate.json の reports から読む）"""
+        args = [PY, GATE, "--spec", str(self.tmp / "spec"), "--tickets", str(self.tmp / "tickets.json")] + (["--report", rep] if rep else [])
         for s in specs:
             args += ["--rows-in", s]
         return subprocess.run(args + ["--pending-from-report"], capture_output=True, text=True, cwd=self.tmp)
@@ -127,7 +128,9 @@ class Titles(unittest.TestCase):
 
     def test_K1122_OG_004_non_title_strings_not_checked(self):
         non_titles = {
-            "K9-UI-026": 'const RX = /^\\s*- (a|b) "((?:[^"\\\\]|\\\\.)*)"/; const s = "K9-UI-026";',
+            "K9-UI-026": 'const RX = /^\\s*- (a|b) "((?:[^"\\\\]|\\\\.)*)"/; const s = "K9-UI-026";\ntest("K1-UI-003 正規表現の後の題", async () => {});',
+            "K9-UI-028": 'const x = (a - b) / 2; const y = n / 3;\ntest("K1-UI-004 割り算の後の題", async () => {});',
+            "K9-UI-029": 'function f(s) { return /K9-UI-029/.test(s); }',
             "K9-UI-021": 'test("K1-UI-001 出る", async () => { expect(x).toBe("K9-UI-021"); });',
             "K9-UI-022": "if (/K9-UI-022/.test(s)) n++;",
             "K9-UI-023": 'if (re.test("K9-UI-023")) n++;',
@@ -135,14 +138,16 @@ class Titles(unittest.TestCase):
             "K9-UI-025": 'const T = `外す ${"K9-UI-025"} の後`;',
             "K9-UI-027": 'mytest("K9-UI-027 呼び名が違う", () => {});',
         }
-        b = self.box = Box([("K1-UI-001", "K-1", "")] + [(rid, "K-9", "PASS") for rid in non_titles])
+        # K1-UI-003・004 は正規表現・割り算の直ぐ後の題（報告に無い・BLOCKED で数にだけ入る）：読み違えると後ろを飲み込んで数えなくなる
+        b = self.box = Box([("K1-UI-001", "K-1", ""), ("K1-UI-003", "K-1", "BLOCKED（流さない）"), ("K1-UI-004", "K-1", "BLOCKED（流さない）")]
+                           + [(rid, "K-9", "PASS") for rid in non_titles])
         sp = b.spec_file("\n".join(non_titles.values()) + "\n")
         r = b.gate(b.report([suite("k/a.spec.ts", {"K1-UI-001": "passed"})]), sp)
         out = r.stdout + r.stderr
         self.assertEqual(r.returncode, 0, out)
         for rid in non_titles:
             self.assertNotIn(rid, out, f"題でない {non_titles[rid]!r} の ID を照らした")
-        self.assertIn("検査 1 行", out)
+        self.assertIn("検査 3 行", out, "正規表現・割り算の後の題 K1-UI-003・004 も照らす")
 
     def test_K1122_OG_005_dynamic_titles_from_report(self):
         b = self.box = Box([("K1-UI-007", "K-1", ""), ("K1-UI-008", "K-1", ""), ("K1-UI-009", "K-1", "PASS")])
@@ -158,6 +163,12 @@ class Titles(unittest.TestCase):
         self.assertIn("検査 1 行", out)
         ok = b.gate(b.report([suite("k/a.spec.ts", {"K1-UI-007": "passed"})]), sp)
         self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+        # 本物の G48（web_run.py）は --report を渡さず、op-gate.json の reports から読む。その道でも報告の題を引く
+        (b.tmp / "spec/op-gate.json").write_text(json.dumps({"reports": [b.report([suite("k/a.spec.ts", {"K1-UI-007": "failed"})])]}), encoding="utf-8")
+        cfg = b.gate(None, sp)
+        out = cfg.stdout + cfg.stderr
+        self.assertEqual(cfg.returncode, 1, out)
+        self.assertIn("K1-UI-007 [操作]: 結果が空で、今の回の報告ではテストは failed", out, "op-gate.json の報告の題も引く")
 
     def test_K1122_OG_007_broken_source_does_not_crash(self):
         b = self.box = Box([("K1-UI-001", "K-1", ""), ("K9-UI-030", "K-9", "PASS")])
