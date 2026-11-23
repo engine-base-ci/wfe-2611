@@ -1,6 +1,17 @@
 // ナレッジの下絵の見本の値（木・ページの本文・一覧）。画面に出る字は全部「仮」
-import type { ReactNode } from "react";
-import { Caret } from "./doc-temp";
+import type {
+  Block,
+  BlockquoteNode,
+  BulletListNode,
+  Doc,
+  HeadingNode,
+  Inline,
+  ListItemNode,
+  OrderedListNode,
+  ParagraphNode,
+  TableNode,
+  TextNode,
+} from "@kaname/contracts";
 import type {
   ApprovalItem,
   BrokenRow,
@@ -131,67 +142,62 @@ export const PLACE = {
   mine: { shelf: "me", shelfName: "自分", folders: [] },
 } as const satisfies Record<string, PagePlace>;
 
-// ---------------------------------------------------------------- ページの本文
+// ---------------------------------------------------------------- ページの本文（段 5 の文書の木 Doc の値・validateDoc が通す形だけ）
+type Inl = Inline | string;
+const inl = (x: Inl): Inline => (typeof x === "string" ? { type: "text", text: x } : x);
+const b = (text: string): TextNode => ({ type: "text", text, marks: [{ type: "bold" }] });
+const code = (text: string): TextNode => ({ type: "text", text, marks: [{ type: "code" }] });
+const red = (text: string): TextNode => ({ type: "text", text, marks: [{ type: "color", attrs: { color: "red" } }] });
+const hl = (text: string): TextNode => ({ type: "text", text, marks: [{ type: "highlight" }] });
+const p = (...xs: Inl[]): ParagraphNode => ({ type: "paragraph", content: xs.map(inl) });
+const h2 = (text: string): HeadingNode => ({ type: "heading", attrs: { level: 2 }, content: [{ type: "text", text }] });
+const li = (...xs: Inl[]): ListItemNode => ({ type: "listItem", content: [p(...xs)] });
+const ul = (...items: ListItemNode[]): BulletListNode => ({ type: "bulletList", content: items });
+const ol = (...items: ListItemNode[]): OrderedListNode => ({ type: "orderedList", content: items });
+const quote = (text: string): BlockquoteNode => ({ type: "blockquote", content: [p(text)] });
+const table = (head: readonly string[], rows: readonly (readonly string[])[]): TableNode => ({
+  type: "table",
+  content: [
+    { type: "tableRow", content: head.map((c) => ({ type: "tableHeader" as const, content: [p(c)] })) },
+    ...rows.map((r) => ({
+      type: "tableRow" as const,
+      content: r.map((c) => ({ type: "tableCell" as const, content: [p(c)] })),
+    })),
+  ],
+});
+const doc = (...content: Block[]): Doc => ({ type: "doc", content });
+
 export const INVOICE = {
   title: "請求書の送り方",
   desc: "請求書を取引先に送る前に確かめることと、送り方の順番。",
   foot: "最後に直した：高本 聖斗 11/18 ・ 版 4 ・ AI がこの 30 日に開いた：12 回",
 } as const;
 
-export function InvoiceDoc(): ReactNode {
-  return (
-    <>
-      <h2>送る前に確かめること</h2>
-      <ul>
-        <li>宛先が、取引先に登録してある経理の連絡先と合っている</li>
-        <li>金額が、見積もりか契約の額と合っている</li>
-        <li>
-          支払期日が入っている（決まりは<b>月末締め・翌月末払い</b>）
-        </li>
-      </ul>
-      <h2>送り方</h2>
-      <ol>
-        <li>
-          請求書は PDF にする。ファイル名は <code>請求書_取引先名_2026-11.pdf</code>
-        </li>
-        <li>メールの件名は「【請求書】11 月分（ENGINE BASE）」</li>
-        <li>CC に経理（keiri@engine-base.example）を入れる</li>
-      </ol>
-      <h2>取引先ごとの違い</h2>
-      <div className="k-f9d-tablewrap">
-        <table>
-          <thead>
-            <tr>
-              <th>取引先</th>
-              <th>締め</th>
-              <th>送り先</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>セイコー商事</td>
-              <td>月末</td>
-              <td>経理の山田様</td>
-            </tr>
-            <tr>
-              <td>ミナト工業</td>
-              <td>20 日</td>
-              <td>請求の窓口のアドレス</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <h2>してはいけないこと</h2>
-      <ul>
-        <li>
-          <span data-c="red">金額を確かめる前に送らない</span>
-        </li>
-        <li>取引先の担当者の、個人のアドレスに送らない</li>
-      </ul>
-      <blockquote>迷ったら、送る前に経理（佐藤）に聞く。</blockquote>
-    </>
-  );
-}
+export const INVOICE_DOC: Doc = doc(
+  h2("送る前に確かめること"),
+  ul(
+    li("宛先が、取引先に登録してある経理の連絡先と合っている"),
+    li("金額が、見積もりか契約の額と合っている"),
+    li("支払期日が入っている（決まりは", b("月末締め・翌月末払い"), "）"),
+  ),
+  h2("送り方"),
+  ol(
+    li("請求書は PDF にする。ファイル名は ", code("請求書_取引先名_2026-11.pdf")),
+    li("メールの件名は「【請求書】11 月分（ENGINE BASE）」"),
+    li("CC に経理（keiri@engine-base.example）を入れる"),
+  ),
+  h2("取引先ごとの違い"),
+  table(
+    ["取引先", "締め", "送り先"],
+    [
+      ["セイコー商事", "月末", "経理の山田様"],
+      ["ミナト工業", "20 日", "請求の窓口のアドレス"],
+    ],
+  ),
+  h2("してはいけないこと"),
+  ul(li(red("金額を確かめる前に送らない")), li("取引先の担当者の、個人のアドレスに送らない")),
+  quote("迷ったら、送る前に経理（佐藤）に聞く。"),
+);
 
 export const EXPENSE = {
   title: "経費の精算",
@@ -199,22 +205,15 @@ export const EXPENSE = {
   foot: "最後に直した：高本 聖斗 11/20 ・ 版 2 ・ AI がこの 30 日に開いた：3 回",
 } as const;
 
-export function ExpenseDoc(): ReactNode {
-  return (
-    <>
-      <h2>出し方</h2>
-      <ul>
-        <li>領収書の写真を付けて、月末までに「経費の精算」のチケットを作る</li>
-        <li>1 件 3 万円を超えるときは、使う前にマネージャーに聞く</li>
-      </ul>
-      <h2>精算できないもの</h2>
-      <ul>
-        <li>領収書の無いもの</li>
-        <li>2 か月より前のもの</li>
-      </ul>
-    </>
-  );
-}
+export const EXPENSE_DOC: Doc = doc(
+  h2("出し方"),
+  ul(
+    li("領収書の写真を付けて、月末までに「経費の精算」のチケットを作る"),
+    li("1 件 3 万円を超えるときは、使う前にマネージャーに聞く"),
+  ),
+  h2("精算できないもの"),
+  ul(li("領収書の無いもの"), li("2 か月より前のもの")),
+);
 
 export const MY_DISCOUNT = {
   title: "値引きを頼まれたときの返し方",
@@ -222,23 +221,19 @@ export const MY_DISCOUNT = {
   foot: "最後に直した：鈴木 一郎 11/21 ・ 版 3 ・ AI がこの 30 日に開いた：5 回",
 } as const;
 
-export function MyDiscountDoc({ writing = false }: { writing?: boolean }): ReactNode {
-  return (
-    <>
-      <h2>その場で返してよい範囲</h2>
-      <ul>
-        <li>5% までは、その場で「できます」と返してよい</li>
-        <li>端数を切るだけ（千円未満）は、値引きに数えない</li>
-      </ul>
-      <h2>持ち帰る範囲</h2>
-      <p>
-        5% を超えるときは「社内で確かめて、明日までに返事をします」と伝え、<mark>佐藤さんに聞いてから</mark>返す。
-        {writing ? <Caret /> : null}
-      </p>
-      {writing ? null : <blockquote>値引きの代わりに、納期を延ばす・範囲を減らす案を先に出す。</blockquote>}
-    </>
-  );
-}
+const MY_DISCOUNT_BLOCKS: readonly Block[] = [
+  h2("その場で返してよい範囲"),
+  ul(li("5% までは、その場で「できます」と返してよい"), li("端数を切るだけ（千円未満）は、値引きに数えない")),
+  h2("持ち帰る範囲"),
+  p("5% を超えるときは「社内で確かめて、明日までに返事をします」と伝え、", hl("佐藤さんに聞いてから"), "返す。"),
+];
+
+export const MY_DISCOUNT_DOC: Doc = doc(
+  ...MY_DISCOUNT_BLOCKS,
+  quote("値引きの代わりに、納期を延ばす・範囲を減らす案を先に出す。"),
+);
+/** 書いている途中の本文（終わりの引用はまだ書いていない） */
+export const MY_DISCOUNT_DRAFT_DOC: Doc = doc(...MY_DISCOUNT_BLOCKS);
 
 export const QUOTE = {
   title: "見積書の出し方",
@@ -246,23 +241,16 @@ export const QUOTE = {
   foot: "最後に直した：佐藤 花子 11/15 ・ 版 6 ・ AI がこの 30 日に開いた：21 回",
 } as const;
 
-export function QuoteDoc(): ReactNode {
-  return (
-    <>
-      <h2>順番</h2>
-      <ol>
-        <li>ひな形（営業 › 見積もり）から作る</li>
-        <li>金額は、単価の表（会社 › 経理）の額を使う</li>
-        <li>出す前に、マネージャーの承認をもらう</li>
-      </ol>
-      <h2>決まり</h2>
-      <ul>
-        <li>有効期限は、出した日から 30 日</li>
-        <li>消費税は別に書く</li>
-      </ul>
-    </>
-  );
-}
+export const QUOTE_DOC: Doc = doc(
+  h2("順番"),
+  ol(
+    li("ひな形（営業 › 見積もり）から作る"),
+    li("金額は、単価の表（会社 › 経理）の額を使う"),
+    li("出す前に、マネージャーの承認をもらう"),
+  ),
+  h2("決まり"),
+  ul(li("有効期限は、出した日から 30 日"), li("消費税は別に書く")),
+);
 
 // ---------------------------------------------------------------- 小窓・一覧の値
 /** 会社の棚で「必ず守る」が付いているページ（上限（30）に届いた形・並べるのは読める量だけで、数は MustFullDialog の count で渡す） */

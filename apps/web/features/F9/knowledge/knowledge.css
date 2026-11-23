@@ -4,7 +4,8 @@
 /* ---------------------------------------------------------------- 骨組み */
 .k-f9-wrap {
   display: flex;
-  min-height: calc(100dvh - var(--k-c-shell-bar-height));
+  /* 画面いっぱいの高さ（正本の 100dvh のトークン）から上の帯を引いた高さ */
+  min-height: calc(var(--k-c-auth-status-page-height) - var(--k-c-shell-bar-height));
   min-width: 0;
 }
 .k-f9-main {
@@ -65,7 +66,7 @@
   flex: none;
   box-sizing: border-box;
   width: var(--k-c-create-aside-width);
-  height: calc(100dvh - var(--k-c-shell-bar-height));
+  height: calc(var(--k-c-auth-status-page-height) - var(--k-c-shell-bar-height));
   display: flex;
   flex-direction: column;
   gap: var(--k-s-sm);
@@ -105,7 +106,8 @@
   align-items: center;
   justify-content: center;
   min-height: calc(var(--k-s-lg) + var(--k-s-xs));
-  border: 1px solid transparent;
+  border: var(--k-c-f4d-rule-border);
+  border-color: transparent;
   border-radius: var(--k-r-md);
   background: transparent;
   color: var(--k-on-surface-variant);
@@ -187,7 +189,7 @@
   gap: var(--k-s-xs);
   width: 100%;
   min-height: calc(var(--k-s-lg) + var(--k-s-sm));
-  padding: 0 var(--k-s-xs) 0 calc(var(--k-s-sm) + var(--k-s-md) * var(--k-f9-depth, 0));
+  padding: 0 var(--k-s-xs) 0 var(--k-s-sm);
   border: 0;
   border-radius: var(--k-r-md);
   background: transparent;
@@ -197,9 +199,28 @@
   text-decoration: none;
   cursor: pointer;
 }
+/* 字下げ：深さ（data-depth・0〜3）ごとに --k-s-md ずつ右へ */
+:is(.k-f9-node, .k-f9-group)[data-depth="1"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md));
+}
+:is(.k-f9-node, .k-f9-group)[data-depth="2"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * 2);
+}
+:is(.k-f9-node, .k-f9-group)[data-depth="3"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * 3);
+}
+/* ページの行は、フォルダの開け閉めの印の分だけ字を右にそろえる */
 .k-f9-node[data-page] {
-  /* ページの行は、フォルダの開け閉めの印の分だけ字を右にそろえる */
-  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * var(--k-f9-depth, 0) + var(--k-s-md) + var(--k-s-xs));
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) + var(--k-s-xs));
+}
+.k-f9-node[data-page][data-depth="1"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * 2 + var(--k-s-xs));
+}
+.k-f9-node[data-page][data-depth="2"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * 3 + var(--k-s-xs));
+}
+.k-f9-node[data-page][data-depth="3"] {
+  padding-left: calc(var(--k-s-sm) + var(--k-s-md) * 4 + var(--k-s-xs));
 }
 .k-f9-node svg,
 .k-f9-group svg {
@@ -303,10 +324,10 @@
   background: var(--k-surface-variant);
 }
 .k-f9-tree-skel span:nth-child(2n) {
-  width: 70%;
+  width: calc(100% - var(--k-s-xl));
 }
 .k-f9-tree-skel span:nth-child(3n) {
-  width: 55%;
+  width: calc(100% - var(--k-s-2xl));
 }
 
 /* 管理の面の入口（木の代わりに出る） */
@@ -358,8 +379,9 @@
     top: 0;
     left: 0;
     z-index: calc(var(--k-c-popup-layer-z) + 1);
-    width: min(calc(var(--k-s-2xl) * 3 + var(--k-s-lg)), 86vw);
-    height: 100dvh;
+    bottom: 0;
+    width: min(calc(var(--k-s-2xl) * 3 + var(--k-s-lg)), calc(100% - var(--k-s-xl)));
+    height: auto;
   }
   .k-f9-tree[data-open] .k-f9-drawer-close {
     display: grid;
@@ -514,7 +536,7 @@
   gap: var(--k-s-xs);
   margin: 0;
   padding: var(--k-s-xs) var(--k-s-sm);
-  border: 1px solid var(--k-primary-line);
+  border: var(--k-c-band-info-border);
   border-radius: var(--k-r-md);
   background: var(--k-primary-soft);
   color: var(--k-primary);

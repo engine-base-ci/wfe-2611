@@ -4,9 +4,13 @@
 import { ArrowUpToLine, Copy, MoreHorizontal, Pencil, Share2, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { Band, Button, Menu, MenuItem, MenuPopup, MenuTrigger, TextField } from "@/components/k";
-import { DocEditor, DocRead } from "./doc-temp";
+import type { Doc } from "@kaname/contracts";
+import { DocEditor, DocView } from "@/features/F4/doc/editor";
 import type { PagePlace } from "./types";
 import "./knowledge.css";
+
+/** 見た目だけなので、本文を打っても何もしない（口を呼ばない。つなぐのは画面の葉） */
+const noop = (): void => undefined;
 
 // ---------------------------------------------------------------- ページの頭（場所・印・操作）
 function Place({ place }: { place: PagePlace }) {
@@ -98,7 +102,8 @@ export interface PageViewProps {
   foot: string;
   /** 「…」メニューを開いた形（下絵 kn-more） */
   moreOpen?: boolean;
-  children: ReactNode;
+  /** 本文（段 5 の文書の木。読む形は DocView） */
+  doc: Doc;
 }
 
 export function PageView({
@@ -110,7 +115,7 @@ export function PageView({
   bands,
   foot,
   moreOpen = false,
-  children,
+  doc,
 }: PageViewProps) {
   return (
     <article className="k-f9-card" aria-labelledby="kn-title">
@@ -132,7 +137,7 @@ export function PageView({
         </p>
       ) : null}
       {bands ? <div className="k-f9-bands">{bands}</div> : null}
-      <DocRead>{children}</DocRead>
+      <DocView doc={doc} />
       <footer className="k-f9-pfoot">{foot}</footer>
     </article>
   );
@@ -144,11 +149,12 @@ export interface PageEditProps {
   title: string;
   desc: string;
   saved: string;
-  children: ReactNode;
+  /** 本文（段 5 の文書の木。書く形は DocEditor） */
+  doc: Doc;
 }
 
 /** 書いている所。枠に色は付けない。道具の帯・自動保存・「やめる」「書き終える」だけ（段 5 の本文と同じ書き心地） */
-export function PageEdit({ place, title, desc, saved, children }: PageEditProps) {
+export function PageEdit({ place, title, desc, saved, doc }: PageEditProps) {
   return (
     <article className="k-f9-card" aria-label="ページを書いている">
       <header className="k-f9-phead">
@@ -173,7 +179,7 @@ export function PageEdit({ place, title, desc, saved, children }: PageEditProps)
           description="AI は毎回、題名とこの 1 行だけを読み、要るときにページを開きます。何が書いてあるページかを 1 行で。"
         />
       </div>
-      <DocEditor note="Markdown を貼ると変換します">{children}</DocEditor>
+      <DocEditor doc={doc} onChange={noop} />
     </article>
   );
 }

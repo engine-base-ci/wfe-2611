@@ -10,14 +10,15 @@ import {
   BROKEN,
   CONFLICTS,
   EXPENSE,
-  ExpenseDoc,
+  EXPENSE_DOC,
   INVOICE,
-  InvoiceDoc,
+  INVOICE_DOC,
   MY_DISCOUNT,
-  MyDiscountDoc,
+  MY_DISCOUNT_DOC,
+  MY_DISCOUNT_DRAFT_DOC,
   PLACE,
   QUOTE,
-  QuoteDoc,
+  QUOTE_DOC,
   UNUSED,
   treeFor,
 } from "@/features/F9/knowledge/samples";
@@ -47,9 +48,8 @@ function invoice(theme: Theme, extra: { drawer?: boolean } = {}): ReactNode {
         acts={ACTS_ADMIN}
         must
         foot={INVOICE.foot}
-      >
-        <InvoiceDoc />
-      </PageView>
+        doc={INVOICE_DOC}
+      />
     </KnowledgeFrame>
   );
 }
@@ -70,9 +70,8 @@ export function expense(theme: Theme, o: { must: boolean; dialog?: ReactNode }):
         acts={o.must ? ACTS_ADMIN : ["must-off", "edit"]}
         must={o.must}
         foot={EXPENSE.foot}
-      >
-        <ExpenseDoc />
-      </PageView>
+        doc={EXPENSE_DOC}
+      />
     </KnowledgeFrame>
   );
 }
@@ -97,9 +96,8 @@ export function myDiscount(
         acts={o.mark === "waiting" ? ["must-off", "edit"] : ACTS_MINE}
         bands={o.bands}
         foot={MY_DISCOUNT.foot}
-      >
-        <MyDiscountDoc />
-      </PageView>
+        doc={MY_DISCOUNT_DOC}
+      />
     </KnowledgeFrame>
   );
 }
@@ -121,9 +119,8 @@ export function quote(theme: Theme, viewer: "sato" | "tana", dialog?: ReactNode)
         acts={shared ? ["copy"] : ["must-off", "raise", "share", "edit"]}
         bands={shared ? <SharedBand from="営業" writer="営業のマネージャー（佐藤 花子さん）" /> : undefined}
         foot={QUOTE.foot}
-      >
-        <QuoteDoc />
-      </PageView>
+        doc={QUOTE_DOC}
+      />
     </KnowledgeFrame>
   );
 }
@@ -144,9 +141,13 @@ export function writing(
       }
       dialog={o.dialog}
     >
-      <PageEdit place={PLACE.mine} title={o.title} desc={o.desc} saved="自動で保存しました（10:42）">
-        <MyDiscountDoc writing />
-      </PageEdit>
+      <PageEdit
+        place={PLACE.mine}
+        title={o.title}
+        desc={o.desc}
+        saved="自動で保存しました（10:42）"
+        doc={MY_DISCOUNT_DRAFT_DOC}
+      />
     </KnowledgeFrame>
   );
 }

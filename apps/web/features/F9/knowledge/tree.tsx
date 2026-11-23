@@ -18,12 +18,14 @@ import {
   Users,
   X,
 } from "lucide-react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/k";
 import type { AdminCounts, TreeData, TreeGroup, TreeNode, TreePage } from "./types";
 import "./knowledge.css";
 
-const depthStyle = (depth: number): CSSProperties => ({ "--k-f9-depth": depth }) as CSSProperties;
+/** 木の字下げの深さ（CSS は data-depth の 0〜3 の段で字下げする。4 段より深い所は 3 と同じ） */
+const MAX_DEPTH = 3;
+const depthAttr = (depth: number): { "data-depth": number } => ({ "data-depth": Math.min(depth, MAX_DEPTH) });
 
 function PageMarks({ p }: { p: TreePage }) {
   return (
@@ -58,7 +60,7 @@ function Nodes({ nodes, depth, current }: { nodes: readonly TreeNode[]; depth: n
       {nodes.map((n) =>
         n.kind === "folder" ? (
           <li key={n.id} role="treeitem" aria-expanded={Boolean(n.open)}>
-            <button type="button" className="k-f9-node" style={depthStyle(depth)}>
+            <button type="button" className="k-f9-node" {...depthAttr(depth)}>
               {n.open ? <ChevronDown size={14} aria-hidden="true" /> : <ChevronRight size={14} aria-hidden="true" />}
               {n.open ? <FolderOpen size={15} aria-hidden="true" /> : <Folder size={15} aria-hidden="true" />}
               <span className="k-f9-node-t">{n.name}</span>
@@ -71,7 +73,7 @@ function Nodes({ nodes, depth, current }: { nodes: readonly TreeNode[]; depth: n
               className="k-f9-node"
               data-page
               href={`#${n.id}`}
-              style={depthStyle(depth)}
+              {...depthAttr(depth)}
               aria-current={n.id === current ? "page" : undefined}
             >
               <FileText size={15} aria-hidden="true" />
@@ -110,7 +112,7 @@ function ShelfHead({ icon, name, sub, canAdd }: { icon: ReactNode; name: string;
 function GroupBlock({ d, current, canAdd }: { d: TreeGroup; current?: string | undefined; canAdd: boolean }) {
   return (
     <li role="treeitem" aria-expanded="true">
-      <div className="k-f9-group" style={depthStyle(0)}>
+      <div className="k-f9-group" {...depthAttr(0)}>
         <ChevronDown size={14} aria-hidden="true" />
         <span className="k-f9-code" data-tone={d.tone} aria-hidden="true">
           {d.code}
