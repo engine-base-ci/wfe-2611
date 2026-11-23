@@ -147,13 +147,14 @@ export function bandKindOf(handover: HandoverView | null, meId: string | null): 
   return isTo && !toGroup ? "gone" : null;
 }
 
-/** 1 回だけ出す帯（受けた側の「担当者になりました」・渡した側の「引き継ぎました」・配られた・申し出の結果）。端末ごとに 1 回（D-148.35・D-148.41） */
+/** 1 回だけ出す帯（受けた側の「担当者になりました」・渡した側の「引き継ぎました」・配られた・申し出の結果・取り消された）。端末ごとに 1 回（D-148.35・D-148.41） */
 export const ONCE_KINDS: ReadonlySet<HandoverBandKind> = new Set<HandoverBandKind>([
   "accepted",
   "taken",
   "distributed",
   "offer-accepted",
   "offer-declined",
+  "gone",
 ]);
 
 const SEEN_PREFIX = "kaname.hnd.seen.";

@@ -230,7 +230,7 @@ export function PickDialog({
           value={query}
           {...(onQueryChange ? { onChange: (e) => onQueryChange(e.target.value) } : { readOnly: true })}
         />
-        {none ? (
+        {none && query.trim() !== "" ? (
           <p className="k-hnd-empty" role="status">
             {`「${query.trim()}」に合う人がいません。名前かメールの一部で探してください（止まっている人・招待中の人も出ます）`}
           </p>
@@ -403,7 +403,7 @@ export interface HandoverDialogProps {
   busy?: boolean;
   /** 返事の期限の欄の type（既定 text。本物は日時の欄） */
   dueType?: string;
-  /** 小窓の上の橙の文（口が 409 で断ったときなど・E-HND-003）。無ければ出さない */
+  /** 小窓の上の橙の文（口が 409 で断ったときなど）。無ければ出さない */
   callout?: string;
   /** 頭の下の対象の行（既定はモックの字） */
   target?: ReactNode;
@@ -538,7 +538,7 @@ export function DistributeDialog({
         <p className="k-hnd-note">
           {toGroup
             ? `${to}の人が「自分が持つ」か「人を決める」を押すまで、担当者はあなたのままです。`
-            : `配るとすぐ${to}さんが担当者になり、知らせが届きます。`}
+            : `配るとすぐ${to}さんが担当者になり、お知らせが届きます。`}
         </p>
       </div>
     </Dialog>
@@ -733,7 +733,7 @@ function BandOf({ kind, who, at, reason, ask, due, carry, acts }: Omit<HandoverB
           acts={acts ?? [btn("催促する"), btn("取り消す"), btn("別の人にする")]}
         >
           <BandLine>{`理由：${reason ?? ""}`}</BandLine>
-          <BandLine>完了にする・消すと、この渡しは取り消され、相手に知らせが届きます</BandLine>
+          <BandLine>完了にする・消すと、この渡しは取り消され、相手にお知らせが届きます</BandLine>
         </Band>
       );
     case "receiving":
@@ -796,7 +796,12 @@ function BandOf({ kind, who, at, reason, ask, due, carry, acts }: Omit<HandoverB
       );
     case "offering":
       return (
-        <Band tone="wait" title={`${who}さんに、引き継ぎを申し出ています`} sub={at} acts={acts ?? [btn("取り消す")]}>
+        <Band
+          tone="wait"
+          title={`${who}さんに引き継ぎを申し出ています`}
+          sub={`担当者は返事が来るまで${who}さんのまま ・ ${at ?? ""}`}
+          acts={acts ?? [btn("取り消す")]}
+        >
           <BandLine>{`理由：${reason ?? ""}`}</BandLine>
         </Band>
       );

@@ -250,13 +250,13 @@ test("K380-UI-002 幅 1440・承認待ち（承認する人）：帯の入れ物
   await expect(bands(page)).toHaveAttribute("data-shown", "approve");
 });
 
-test("K380-UI-003 幅 1440・作業中で AI に任せられる：帯の入れ物の中は「AI に任せる」の帯 1 つだけで、data-shown は approve（F5 の 2 つの帯はどちらも順の先頭 approve）", async ({
+test("K380-UI-003 幅 1440・作業中で AI に任せられる：帯の入れ物の中は「AI に任せる」の帯 1 つだけで、data-shown は無い（任せる前の箱は approve に数えない・渡しと保留の帯に譲らせない・K-620）", async ({
   page,
 }) => {
   await openWith(page, { stage: "doing", can_delegate: true }, 1440, {}, "作業中");
   await expect(page.getByRole("region", { name: "AI に任せる" })).toBeVisible();
   await expect(bands(page).locator(":scope > *")).toHaveCount(1);
-  await expect(bands(page)).toHaveAttribute("data-shown", "approve");
+  await expect(bands(page)).not.toHaveAttribute("data-shown", /.*/);
 });
 
 test("K380-UI-004 承認待ちの一覧（幅 1440）：行は今のまま（3 行・題名の並び・1 行目は「承認する」・ほかは「中身を見る」・どの行も「差し戻す」）", async ({
