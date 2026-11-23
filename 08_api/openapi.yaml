@@ -9674,7 +9674,7 @@ components:
       allOf:
       - properties:
           email:
-            pattern: ^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$
+            pattern: ^[ \t\n\r]*(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}[ \t\n\r]*$
     SignInCodeInput:
       type: object
       properties:
@@ -14427,11 +14427,6 @@ components:
         kind_id:
           type: string
           nullable: true
-          enum:
-          - rule
-          - preference
-          - example
-          - null
         owner_member_id:
           type: string
           format: uuid
@@ -14445,7 +14440,7 @@ components:
           pattern: \S
         confidence:
           type: string
-          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
+          pattern: ^-?[0-9]+(\.[0-9]+)?$
           nullable: true
         source_type_id:
           type: string
@@ -14471,14 +14466,14 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
-      allOf:
-      - properties:
-          body:
-            type: string
       x-operation: updateMemory
       required:
       - body
       x-required-by: hooks
+      allOf:
+      - properties:
+          body:
+            type: string
 paths:
   /api/v1/acceptances/{id}/remind:
     post:
