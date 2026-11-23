@@ -10025,6 +10025,7 @@ components:
         email:
           type: string
           nullable: true
+          pattern: ^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$
       additionalProperties: false
       x-operation: acceptInvitation
     TicketCompleteInput:
@@ -16500,7 +16501,7 @@ paths:
                   meta:
                     type: object
         '422':
-          description: VALIDATION_ERROR／E-INV-013（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011）・リンクの招待で新しく参加するときのメールが無い・空・形が違う（E-INV-013））
+          description: VALIDATION_ERROR／E-INV-013（契約に書けない値の決まり：ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）・漏れたことのあるパスワード（E-VAL-011））
           content:
             application/json:
               schema:
@@ -16509,7 +16510,6 @@ paths:
           - ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）
           - パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）
           - 漏れたことのあるパスワード（E-VAL-011）
-          - リンクの招待で新しく参加するときのメールが無い・空・形が違う（E-INV-013）
         '403':
           description: E-AUTH-012／E-INV-005
           content:
@@ -16523,7 +16523,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-INV-006／E-INV-007
+          description: E-INV-006／E-INV-007／E-INV-016
           content:
             application/json:
               schema:

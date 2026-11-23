@@ -5,10 +5,10 @@
 //   順：① トークンの形 → 招待の様子（無い 404・取り消し／期限切れ／使われた 410）② ワークスペースが止められている 403
 //       ③ 名前 ④ パスワード（長さ・漏れ）⑤ 宛てに利用者がいれば 409 ⑥ 利用者を作る（外に影響する手順 1・［残る］）→ 受諾（手順 2）
 //       → 失敗したら作った利用者を id で消す（後片付け）⑦ セッションを作る（手順 3・失敗しても参加は取り消さない）⑧ 201。
-//   上限（10 回／分／IP）は契約の入口（op.ts）が先に確かめる。体の email は読まない（宛ては招待のもの）。
+//   上限（10 回／分／IP）は契約の入口（op.ts）が先に確かめる。体の email は読まない（宛ては招待のもの）。ただし送られた email の形は招待の種類によらず契約の決まり（空・形違いは 422・E-INV-013）。
 //   ログに宛てのメール・パスワード・トークンを出さない（宛先は mailTag の印・例外は種類だけ）
 // K-422 リンクの招待（宛てのメールが空）で、ログインしていない人が新しく入る：利用者も所属も作らない（D-148.51）。
-//   順：① ② ③ ④ は同じ → メール（無い・空・形違い 422・E-INV-013）→ そのメールにもうアカウント 409・E-INV-006
+//   順：① ② ③ ④ は同じ → メール（空・形違い 422・E-INV-013／送られていない 409・E-INV-016）→ そのメールにもうアカウント 409・E-INV-006
 //       → 保留の行を置く（S1）→ 確認のメールを送る（S2・関門 C6）→ 送った印（S3）→ 202 { state: "sent" | "failed", email: 伏せたメール }。
 //       確認のリンクを押したときの続きは confirm.ts（confirmInvitationJoin）。宛てのメールの在る招待は今のまま（体の email は読まない）
 // K-333 今のアカウントで参加する（ログイン中の人・D-125.150）：入口がセッションを解けたら（ctx.role が member）この分に入り、体は読まない。
@@ -72,8 +72,12 @@ const GONE: Record<Exclude<InvitationForAccept["state"], "ok">, string> = {
 export function invitationAcceptFeature(d: InvitationDeps) {
   /** 前処理：体の email は残す（読むのはリンクの招待で新しく入るときだけ・メールで招いた招待は体の email を読まない＝K332-API-009）。
    *  ほかの欄は契約の strict な形が確かめる */
-  const input = (raw: unknown): { input: Record<string, unknown> } => {
+  const input = (raw: unknown): { input: Record<string, unknown> } | { reply: HookReply } => {
     const b = raw && typeof raw === "object" && !Array.isArray(raw) ? { ...(raw as Record<string, unknown>) } : {};
+    // 送られたメールの形（空・空白だけ・形違い）は契約の VALUE_RANGES の pattern と同じ決まり：422・E-INV-013・欄 email。
+    //   メールが送られていないときは招待の行（宛てが無いか）で決まるので、ここでは見ない（linkJoin が 409）
+    const e = b["email"];
+    if (typeof e === "string" && !EMAIL_RE.test(normalizeEmail(e))) return { reply: reply(422, "E-INV-013", "email") };
     return { input: b };
   };
 
@@ -175,7 +179,8 @@ export function invitationAcceptFeature(d: InvitationDeps) {
   ): Promise<HookReply> => {
     const rawEmail = a.input["email"];
     const email = typeof rawEmail === "string" ? normalizeEmail(rawEmail) : "";
-    if (!email || !EMAIL_RE.test(email)) return reply(422, "E-INV-013", "email");
+    // 送られていない（宛てのメールが無い招待は体のメールが要る）：招待の行で決まる断りなので 409（欄・details は付けない）
+    if (!email) return reply(409, "E-INV-016");
     try {
       if (await authUserIdByEmail(d.authPool, email)) return reply(409, "E-INV-006");
     } catch (e) {
@@ -206,12 +211,12 @@ export function invitationAcceptFeature(d: InvitationDeps) {
       url: `${d.config.webBaseUrl}${CONFIRM_PATH}${put.token}`,
     });
     let sendError: string | null = null;
-    if (!d.mailer) sendError = "メールの送出先が設定されていない";
+    if (!d.mailer) sendError = "no_mailer";
     else {
       try {
         await d.mailer({ to: email, subject: mail.subject, text: mail.text });
       } catch (e) {
-        sendError = (e as Error).message || "送れませんでした";
+        sendError = kindOf(e); // 保留の行に残すのは例外の種類だけ（文には宛てのメールや外のサービスの中身が入りうる）
         console.error(`[invite-link] 確認のメールを送れなかった → ${mailTag(email)}: ${kindOf(e)}`);
       }
     }

@@ -763,8 +763,11 @@ ERRORS_4XX = {
          "trigger": "名前が空・100 文字を超える（E-VAL-007）・パスワードが 12 文字より短い（E-VAL-005）・128 文字を超える（E-VAL-026）・漏れたもの（E-VAL-011）・本文に知らない欄",
          "ears_form": "UNWANTED: IF 名前かパスワードが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、利用者を作らず招待も使わない"},
         {"status": 422, "code": "E-INV-013", "body": {"error": "validation", "code": "E-INV-013"}, "errors": ["E-INV-013"],
-         "trigger": "リンクの招待で新しく参加するのに、メールが無い・空・メールの形でない（K-422）",
-         "ears_form": "UNWANTED: IF リンクの招待で新しく参加する人のメールが無い・空・形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない"},
+         "trigger": "リンクの招待で新しく参加する人が送ったメールが空・空白だけ・メールの形でない（契約の VALUE_RANGES の pattern・K-422）",
+         "ears_form": "UNWANTED: IF 送られたメールが空か形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない"},
+        {"status": 409, "code": "E-INV-016", "body": {"error": "conflict", "code": "E-INV-016"}, "errors": ["E-INV-016"],
+         "trigger": "リンクの招待（宛てのメールが無い招待）で新しく参加するのに、メールが送られていない（招待の行で決まる・欄 details は付けない・K-422）",
+         "ears_form": "UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "招待を読む DB・利用者を作る所・受諾の関数・セッションを作る所が落ちた",
          "ears_form": "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない"},
@@ -983,7 +986,7 @@ UNEXPRESSIBLE_422 = {
     "consentToTerms": ["無い版の ID（版の ID の在りか）"],
     "dismissSetupTasks": ["任意でない項目・知らない key"],   # K-250：key は形（string）だけ契約に書け、任意の項目（credentials）かは口が決める
     # K-332：名前とパスワードはログインしていない人だけが要る（条件つきなので必須にしない）。口（features/F2/invitations/accept.ts）が断る
-    "acceptInvitation": ["ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）", "パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）", "漏れたことのあるパスワード（E-VAL-011）", "リンクの招待で新しく参加するときのメールが無い・空・形が違う（E-INV-013）"],
+    "acceptInvitation": ["ログインしていない人の名前が空・NFKC と前後の空白を落として 100 文字を超える（E-VAL-007）", "パスワードが 12 文字より短い・128 文字を超える（E-VAL-005・E-VAL-026）", "漏れたことのあるパスワード（E-VAL-011）"],
 }
 # 頭（header）で受ける値（operationId → 名前）。URL に載せるとアクセスの記録に残るものは頭で渡す（D-128.142）
 HEADERS = {
