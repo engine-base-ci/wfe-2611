@@ -7,6 +7,10 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Page, Request, Route } from "@playwright/test";
+import {
+  EXPENSE_DOC as SAMPLE_EXPENSE_DOC,
+  INVOICE_DOC as SAMPLE_INVOICE_DOC,
+} from "../../features/F9/knowledge/samples";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const ERRORS = (
@@ -28,6 +32,8 @@ export const P_MAIL = uid(0xa003);
 export const P_OUTBOUND = uid(0xa004);
 export const P_QUOTE = uid(0xa005);
 export const P_MEMO = uid(0xa006);
+export const P_MY_DISCOUNT = uid(0xa0c1);
+export const P_INVOICE_COPY = uid(0xa0c2);
 export const P_NEW = uid(0xa00f);
 export const P_GONE = uid(0xa0ff);
 
@@ -38,10 +44,13 @@ export const H2 = (text: string) => ({ type: "heading", attrs: { level: 2 }, con
 export const P = (text: string) => ({ type: "paragraph", content: [t(text)] });
 export const doc = (...content: unknown[]): Doc => ({ type: "doc", content });
 export const EMPTY_DOC: Doc = { type: "doc", content: [] };
-export const textOf = (d: Doc): string =>
-  d.content.map((n) => ((n as { content?: { text: string }[] }).content ?? []).map((x) => x.text).join("")).join("\n");
-export const INVOICE_DOC = doc(H2("送る前に確かめること"), P("宛先が、取引先に登録してある経理の連絡先と合っている。"));
-export const EXPENSE_DOC = doc(H2("出し方"), P("領収書の写真を付けて、月末までに精算する。"));
+type DocNode = { text?: string; content?: DocNode[] };
+const inlineText = (n: DocNode): string => n.text ?? (n.content ?? []).map(inlineText).join("");
+/** 本文の字（段落・見出しごとに 1 行。並び・表の中の字もたどる） */
+export const textOf = (d: Doc): string => (d.content as DocNode[]).map(inlineText).join("\n");
+// 本文は下絵の見本（samples.tsx）と同じ木（モックとの突き合わせ K682-UI-001 が本文の字まで比べる）
+export const INVOICE_DOC = SAMPLE_INVOICE_DOC as unknown as Doc;
+export const EXPENSE_DOC = SAMPLE_EXPENSE_DOC as unknown as Doc;
 export const NEW_DOC = doc(H2("目的"), P("書き始めたばかりの本文。"));
 
 // ---------------------------------------------------------------- 口の答えの形
@@ -131,6 +140,18 @@ export function treeTaka(): TreeAnswer {
     can_write: { company: true, group_ids: [], me: true },
     admin_counts: { approvals: 1, review: 8 },
     truncated: false,
+  };
+}
+/** 鈴木さん（担当者）の木：会社とグループは高本さんと同じ・自分の棚は鈴木さんのページ・会社には書けない・管理の数は無い（下絵 kn-noaccess） */
+export function treeSuzu(): TreeAnswer {
+  return {
+    ...treeTaka(),
+    my_nodes: [
+      pg(P_MY_DISCOUNT, "値引きを頼まれたときの返し方"),
+      { ...pg(P_INVOICE_COPY, "請求書の送り方（自分用）"), mark: "copy" },
+    ],
+    can_write: { company: false, group_ids: [], me: true },
+    admin_counts: null,
   };
 }
 export const treeEmpty = (): TreeAnswer => ({
@@ -400,7 +421,7 @@ export async function mockKnowledge(
         p.draft = null;
         if (gone) {
           mk.pages.delete(p.id);
-          removeNode(mk.tree.company_nodes, p.id) ?? removeNode(mk.tree.my_nodes, p.id);
+          if (!removeNode(mk.tree.company_nodes, p.id)) removeNode(mk.tree.my_nodes, p.id);
         }
         return send({ status: 200, body: { data: { id: p.id, page_deleted: gone } } });
       }
@@ -422,7 +443,7 @@ export async function mockKnowledge(
       case "delete": {
         if (!p) return send(err(404, "E-PAGE-001"));
         mk.pages.delete(p.id);
-        removeNode(mk.tree.company_nodes, p.id) ?? removeNode(mk.tree.my_nodes, p.id);
+        if (!removeNode(mk.tree.company_nodes, p.id)) removeNode(mk.tree.my_nodes, p.id);
         return send({ status: 200, body: { data: { id: p.id } } });
       }
     }

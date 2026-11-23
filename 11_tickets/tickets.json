@@ -3358,7 +3358,14 @@
     "deleteWorkspaceRule",
     "getTicketShape",
     "saveTicketShape",
-    "previewTicketShapeChange"
+    "previewTicketShapeChange",
+    "createKnowledgeFolder",
+    "updateKnowledgeFolder",
+    "deleteKnowledgeFolder",
+    "findSimilarKnowledge",
+    "deleteKnowledgePage",
+    "copyKnowledgePage",
+    "setKnowledgeMust"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",

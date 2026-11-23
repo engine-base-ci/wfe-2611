@@ -17,6 +17,7 @@ import {
   msg,
   pageInvoice,
   treeEmpty,
+  treeSuzu,
   treeTaka,
   type KMock,
   type PageAnswer,
@@ -47,11 +48,17 @@ async function openInvoice(page: Page, width = 1440): Promise<void> {
 }
 
 // ---------------------------------------------------------------- モックと本番の突き合わせ
+/** 下絵の木は「経理」「見積もり」を開いた形（features/F9/knowledge/samples.tsx の open）。本番の木は開いているページの親だけを開くので、
+ *  ほかの開いているフォルダを押して開く。幅 1023 以下は木が引き出しで隠れている（下絵も隠れている）ので、木が見える幅か引き出しを開いた後だけ押す */
+async function openLikeMock(page: Page, folders: readonly string[]): Promise<void> {
+  for (const name of folders) await page.locator(TREE).getByRole("button", { name, exact: true }).click();
+}
+const wide = (w: number): boolean => w >= 1024;
 const STATES: Record<string, (page: Page, width: number) => Promise<KMock>> = {
   "kn-tree": async (page, w) => {
     const mk = await mockKnowledge(page);
     await openInvoice(page, w);
-    await page.locator(TREE).getByRole("button", { name: "見積もり", exact: true }).click(); // モックは営業の「見積もり」が開いている
+    if (wide(w)) await openLikeMock(page, ["見積もり"]); // 経理は開いているページの親なので初めから開いている
     return mk;
   },
   "kn-empty": async (page, w) => {
@@ -73,25 +80,31 @@ const STATES: Record<string, (page: Page, width: number) => Promise<KMock>> = {
   },
   "kn-failed": async (page, w) => {
     const mk = await mockKnowledge(page);
+    mk.tree.admin_counts = { approvals: 0, review: 0 }; // 下絵 kn-failed の管理の数は 0
     mk.script("page", "network", "network"); // 下絵 kn-failed は網の切れ（E-PAGE-007）
     await openAt(page, `/knowledge/${P_INVOICE}`, w);
     await expect(page.locator(`${CARD} [data-state="error"]`)).toBeVisible();
+    if (wide(w)) await openLikeMock(page, ["見積もり"]);
     return mk;
   },
   "kn-noaccess": async (page, w) => {
-    const mk = await mockKnowledge(page);
+    const mk = await mockKnowledge(page, { tree: treeSuzu() }); // 下絵 kn-noaccess は鈴木さん（担当者）の木
     await openAt(page, `/knowledge/${P_GONE}`, w);
     await expect(page.locator(`${CARD} [data-code="E-PAGE-002"]`)).toBeVisible();
+    if (wide(w)) await openLikeMock(page, ["経理", "見積もり"]); // 見られないページには親が無いので、どれも初めは閉じている
     return mk;
   },
   "kn-drawer": async (page, w) => {
     const mk = await mockKnowledge(page);
     await openInvoice(page, w);
-    await page.locator(TREE).getByRole("button", { name: "見積もり", exact: true }).click();
-    if (w <= 1023) await page.getByRole("button", { name: "木を開く", exact: true }).click();
+    if (!wide(w)) await page.getByRole("button", { name: "木を開く", exact: true }).click();
+    await openLikeMock(page, ["見積もり"]);
     return mk;
   },
 };
+// 帯の操作は、動きを差し込む葉（K-691 ほか）が入るまで押せない形（aria-disabled・薄い）。下絵は動きを渡さない今の見た目なので、
+//   帯の先頭のボタンの濃さ（opacity）だけは比べない（位置・大きさ・字・色は比べる）
+const SKIP = ["acts:opacity"] as const;
 for (const [id, drive] of Object.entries(STATES)) {
   for (const w of F9_WIDTHS) {
     test(`K682-UI-001 ${id} 幅 ${w}：外枠の中の本文（木・ページの枠・題名・印・足元・状態の箱）の位置と大きさと字がモックと同じ`, async ({
@@ -99,9 +112,15 @@ for (const [id, drive] of Object.entries(STATES)) {
     }: {
       browser: Browser;
     }) => {
-      const { bad, rows } = await matchF9(browser, id, w, async (page) => {
-        await drive(page, w);
-      });
+      const { bad, rows } = await matchF9(
+        browser,
+        id,
+        w,
+        async (page) => {
+          await drive(page, w);
+        },
+        { skip: SKIP },
+      );
       expect(rows.length, "比べた役が 1 つも無い").toBeGreaterThan(1);
       expect(bad, bad.join("\n")).toEqual([]);
     });
@@ -124,7 +143,7 @@ test("K682-UI-003 左のバーの「ナレッジ」が押せて、押すと /kno
   page,
 }) => {
   await mockKnowledge(page);
-  await openAt(page, "/members");
+  await openAt(page, "/tickets"); // 左のバーがある作った画面（チケットの一覧）から入る
   const nav = page.getByRole("link", { name: "ナレッジ", exact: true });
   await expect(nav).not.toHaveAttribute("aria-disabled", "true");
   await nav.click();
