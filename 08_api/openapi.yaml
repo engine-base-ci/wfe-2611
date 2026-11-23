@@ -10666,9 +10666,21 @@ components:
       properties:
         children:
           type: integer
+        descendants:
+          type: integer
         attachments:
           type: integer
         artifacts:
+          type: integer
+        pending_approvals:
+          type: integer
+        links:
+          type: integer
+        running_runs:
+          type: integer
+        descendant_pending_approvals:
+          type: integer
+        descendant_running_runs:
           type: integer
         restorable_until:
           type: string
@@ -12532,6 +12544,21 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketLink
+    TicketDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deleted_count:
+          type: integer
+        withdrawn_approvals:
+          type: integer
+        stopped_runs:
+          type: integer
+        restorable_until:
+          type: string
+      x-operation: deleteTicket
     TicketField:
       type: object
       properties:
@@ -41026,7 +41053,7 @@ paths:
   /api/v1/tickets:
     get:
       operationId: listTickets
-      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）
+      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限切れの印）
       tags:
       - tickets
       x-acts:
@@ -41060,17 +41087,126 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - mine
+          - all
       - name: q
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          maxLength: 100
       - name: scope_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
           format: uuid
+      - name: kind_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: stage_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: assignee_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: done
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: due
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - none
+      - name: delegated
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: approving
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: due_from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: due_to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: start_from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: start_to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: overdue
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: fire
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: parent
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^(?:none|any|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      - name: fields
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^(?:start_on|priority|estimate_minutes|actual_minutes|scope)(?:,(?:start_on|priority|estimate_minutes|actual_minutes|scope))*$
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -41084,6 +41220,16 @@ paths:
           type: integer
           minimum: 1
           maximum: 100
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - due_on
+          - start_on
+          - updated_at
+          - created_at
       responses:
         '200':
           description: 成功
@@ -41116,6 +41262,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
           content:
             application/json:
               schema:
@@ -41434,7 +41586,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー（子の扱いを選ぶ）
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ
       x-step-up: false
       security:
       - session: []
@@ -41445,6 +41597,28 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: children
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - ''
+          - move
+          - cascade
+          - detach
+      - name: parent_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: reason
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          maxLength: 400
       responses:
         '200':
           description: 成功
@@ -41454,7 +41628,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketDeleted'
                   meta:
                     type: object
         '401':
@@ -41464,7 +41638,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41481,14 +41655,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-DEL-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -42803,7 +42983,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）
       x-step-up: false
       security:
       - session: []
@@ -42833,7 +43013,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -42850,14 +43030,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
