@@ -22353,7 +22353,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: self
-      x-permission-scope: 自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）
+      x-permission-scope: 自分の会話だけ。本人の会話が変わった合図を流す（会話の字は流さない・D-113）
       x-step-up: false
       security:
       - session: []
@@ -22376,6 +22376,9 @@ paths:
                     $ref: '#/components/schemas/Messages'
                   meta:
                     type: object
+            text/event-stream:
+              schema:
+                type: string
         '401':
           description: UNAUTHENTICATED
           content:
@@ -22400,6 +22403,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-TALK-020／E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -22408,12 +22417,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

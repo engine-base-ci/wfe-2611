@@ -868,6 +868,11 @@ NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation"}  
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
+    "streamConversation": {"type": "string"},   # 合図の流れ（text/event-stream・ready／change／down／end と ": alive"・K-759）
+}
+# RAW_200 の内容の種類（operationId → Content-Type）。ここに無い口は application/octet-stream（K-759）
+RAW_200_TYPES = {
+    "streamConversation": "text/event-stream",
 }
 # 答えの欄が、その口の表の null を許す列と同じ名前でも null を返さないもの（"op.欄" → 理由）。ここに無い欄は表のとおり null 可にする（K-144）
 NOT_NULL_ANSWERS = {
@@ -1280,7 +1285,7 @@ PERMS = {
     "updateConversation": ("self", "自分の会話だけ（名前・星・記憶に使わない・閉じる）", False),
     "deleteConversation": ("self", "自分の会話だけ", False),
     "listConversationMessages": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）", False),
-    "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
+    "streamConversation": ("self", "自分の会話だけ。本人の会話が変わった合図を流す（会話の字は流さない・D-113）", False),
     "sendConversationMessage": ("self", "自分の会話だけ。分身は本人の権限の中でだけ読む・動く", False),
     "stopConversation": ("self", "自分の会話だけ", False),
     "createConversationAttachment": ("self", "自分の会話だけ（大きさ・種類の上限）", False),

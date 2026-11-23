@@ -1,0 +1,19 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/talk-stream.ts",
+    "apps/api/src/features/F5/talk/stream.ts",
+    "apps/api/src/auth/agent-stream.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/talk-stream.test.ts",
+    "apps/api/test/agent_stream.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F5/talk-stream.test.ts": "葉の hooks のファイル（talk-stream・talk-read）を最初の要求のときに動的 import する（準備で読まない・K-378 と同じ）",
+  "apps/api/test/features/contract/k144.d/K-759.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）"
+ }
+}

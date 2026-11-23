@@ -7483,6 +7483,36 @@
     "D-125.62",
     "D-129.43"
    ]
+  },
+  {
+   "id": "E-TALK-020",
+   "class": "connectivity",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "書きながらの返事の流れを開こうとしたが、知らせの接続が無い・つなげない・ログインの確かめの手段が無い",
+   "false_when": "知らせの接続がつながっていて、ログインを確かめられる",
+   "message": "いまは書きながらの返事を送れません。画面が少しずつ読み直します",
+   "action": "待つ（画面が自分で読み直す）",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "知らせの接続（LISTEN の接続先）を設定しないまま API を立てる",
+     "話すの画面を開く"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-113",
+    "D-115"
+   ]
   }
  ],
  "meta": {

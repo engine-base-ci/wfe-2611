@@ -110,7 +110,7 @@
 | EP-095 | POST | `/api/v1/conversations/:id/messages` | 作成・実行（conversations）— 自分の AI と壁打ちしてチ | A100 A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-096 | POST | `/api/v1/conversations/:id/permissions/:pid` | 作成・実行（conversations）— 自分のAIの許可に答える・許 | A91 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-097 | POST | `/api/v1/conversations/:id/stop` | 作成・実行（conversations）— 自分の AI に指示する・相 | A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-098 | GET | `/api/v1/conversations/:id/stream` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
+| EP-098 | GET | `/api/v1/conversations/:id/stream` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 503 503 429 502 403 403 503 |
 | EP-099 | GET | `/api/v1/credentials` | 取得（credentials）— 預けたログイン情報を名前の順に見る（自 | A10 | 1 | member | C8 | 401 403 422 429 403 403 503 |
 | EP-100 | POST | `/api/v1/credentials` | 作成・実行（credentials）— 設定（ログイン情報・API キー | A10 | 1 | member | C2 C8 | 401 403 409 422 403 409 502 503 413 429 403 403 503 |
 | EP-101 | PATCH | `/api/v1/credentials/:id` | 更新（credentials）— 設定（ログイン情報・API キー・決ま | A10 | 1 | member | C2 C8 | 401 403 404 422 403 409 409 409 502 503 413 429 403 403 503 |
