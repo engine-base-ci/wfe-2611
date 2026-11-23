@@ -1028,6 +1028,14 @@
    "for": "会話の書式（数式）",
    "register": "stack.frontend.chat_rendering"
   },
+  "remark-parse": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
+  },
+  "unified": {
+   "for": "貼った Markdown の木（mdast）を作る・本文の部品が使う（K-568）",
+   "register": "stack.frontend.rich_text"
+  },
   "resend": {
    "for": "記録にある名前のまま",
    "register": "(本文)"

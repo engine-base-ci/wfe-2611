@@ -1,8 +1,9 @@
 // 編集の部品（Tiptap）に組む節と印（K-567）。K-561（K-584 が広げた形）の節・節の attr・印だけを組み、知らない節・印は作れない。
 //   節の中身は K-584 の validateDoc の置ける親と同じに絞る（引用・表のセル・チェックの項目は段落だけ・並びの項目は段落と並びだけ）。
 //   これで帯・キーボード・貼り付けのどの入口からも validateDoc が断る木を作れない（置けない場所では can() が偽になり、貼った物は置ける形に合わせられる）。
-//   「/」「#」「@」・注意の枠・文字の大きさ・書体・メンション・絵文字などは組まない（D-150.48）。表・色・寄せ・画像は読み込みと書き出しのために組む（道具は K-587・K-568）
-import { Extension, Node, mergeAttributes, type AnyExtension } from "@tiptap/core";
+//   「/」「#」「@」・注意の枠・文字の大きさ・書体・メンション・絵文字などは組まない（D-150.48）。表・色・寄せ・画像は読み込みと書き出しのために組む（道具は K-587・K-568）。
+//   表の中の Tab・Shift+Tab は次・前のセルの字の終わりへ移る（最後のセルの Tab は行を 1 つ足す・K-568）
+import { Extension, Node, mergeAttributes, type AnyExtension, type Editor } from "@tiptap/core";
 import { StarterKit } from "@tiptap/starter-kit";
 import { Highlight } from "@tiptap/extension-highlight";
 import { Subscript } from "@tiptap/extension-subscript";
@@ -96,6 +97,28 @@ const ImageNode = Node.create({
   ],
 });
 
+/** 表の中でとなりのセルへ移り、カーソルをそのセルの字の終わりに置く（部品の既定はセルの字を丸ごと選ぶので、続けて打つと字が消える）。
+ *  最後のセルから先へは行を 1 つ足して移る。表の外では何もしない（偽を返して、ほかの Tab の動きに渡す） */
+function moveCell(editor: Editor, forward: boolean): boolean {
+  const moved = forward ? editor.commands.goToNextCell() : editor.commands.goToPreviousCell();
+  if (!moved) {
+    if (!forward || !editor.can().addRowAfter()) return false;
+    editor.chain().addRowAfter().goToNextCell().run();
+  }
+  return editor.commands.setTextSelection(editor.state.selection.to);
+}
+const TableTab = Extension.create({
+  name: "kTableTab",
+  // 部品の表の Tab より先に見る
+  priority: 200,
+  addKeyboardShortcuts() {
+    return {
+      Tab: () => moveCell(this.editor, true),
+      "Shift-Tab": () => moveCell(this.editor, false),
+    };
+  },
+});
+
 /** 組む拡張の全部（毎回新しく作る） */
 export function buildExtensions(): AnyExtension[] {
   return [
@@ -120,6 +143,7 @@ export function buildExtensions(): AnyExtension[] {
     TableKit.configure({ table: { resizable: false }, tableCell: false, tableHeader: false }),
     TableCell.extend({ content: PARAS }),
     TableHeader.extend({ content: PARAS }),
+    TableTab,
     TextAlign.configure({ types: ["heading", "paragraph"], alignments: [...DOC_ALIGNS] }),
     TextStyle,
     Color,

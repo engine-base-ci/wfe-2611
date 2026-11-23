@@ -123,6 +123,10 @@
   color: var(--k-primary);
   font-weight: var(--k-fw-label-md);
 }
+/* ---- 表（K-568）：選んでいるセル（となり合うセルをまとめて選んだとき） ---- */
+.k-f4d-pm .selectedCell {
+  background: var(--k-select);
+}
 .k-f4d-pm h4 {
   margin: var(--k-s-sm) 0 var(--k-s-xs);
   font-size: var(--k-text-body-md);

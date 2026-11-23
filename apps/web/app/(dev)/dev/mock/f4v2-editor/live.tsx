@@ -12,8 +12,9 @@ import { CreateForm, SPEC_LINES } from "@/features/F4/doc/views";
 import { CreateHeadFull } from "@/features/F4/doc/create-views";
 import { Frame } from "../f4/frame";
 
-/** 置き場の状態の id（K-587 が f4v2-editor-format・K-568 が f4v2-editor-more を足す） */
-export const LIVE_PAGES = ["f4v2-editor-tools", "f4v2-editor-format"] as const;
+/** 置き場の状態の id（K-587 が f4v2-editor-format・K-568 が f4v2-editor-more を足す）。
+ *  f4v2-editor-more は頭を既定の形（題と『作る』だけ）にする：貼れなかった知らせ（role="status"）を、頭の『下書きの保存』（同じ役）と取り違えずに確かめるため */
+export const LIVE_PAGES = ["f4v2-editor-tools", "f4v2-editor-format", "f4v2-editor-more"] as const;
 export type LivePage = (typeof LIVE_PAGES)[number];
 export const isLivePage = (id: string): id is LivePage => (LIVE_PAGES as readonly string[]).includes(id);
 
@@ -308,7 +309,9 @@ function Live({ id, theme }: { id: LivePage; theme: Theme }) {
           titleValue="セイコー商事の 11 月分の請求書を送る"
           body="free"
           specs={SPEC_LINES}
-          head={<CreateHeadFull saved="下書きを自動で保存しました（10:42）" />}
+          {...(id === "f4v2-editor-more"
+            ? {}
+            : { head: <CreateHeadFull saved="下書きを自動で保存しました（10:42）" /> })}
           editor={read ? view : <DocEditor doc={doc} onChange={setDoc} />}
         />
         <Out doc={doc} />

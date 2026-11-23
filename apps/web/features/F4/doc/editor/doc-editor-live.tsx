@@ -3,7 +3,9 @@
 //   doc（K-561 を K-584 が広げた文書の木）を受けて編集させ、変えるたびに validateDoc を通った doc だけを onChange に渡す（通らなければ渡さず前のまま）。
 //   日本語の変換中（composition）は渡さず、確定したときに渡す。貼った HTML は sanitize-html で掃除してから読む。
 //   薄い字（ghost）の段落・見出しに打ち始めると、その節の薄い字を消して打った字だけを普通の字で残す（ghost の attr も外す）。
-//   外から渡された doc が変わったときだけ中身を入れ替える（自分の onChange で戻ってきた同じ物では入れ替えない）。口は呼ばない
+//   外から渡された doc が変わったときだけ中身を入れ替える（自分の onChange で戻ってきた同じ物では入れ替えない）。口は呼ばない。
+//   K-568：text/plain だけの Markdown を貼ると変換する（paste-markdown.ts）。貼れなかったときは本文の箱の下に role="status" で知らせ、
+//   次に何かを打つか 5 秒で消す。本文の箱の下の右に案内『Markdown を貼ると変換します』を出す
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import type { EditorView } from "@tiptap/pm/view";
@@ -13,11 +15,17 @@ import { buildExtensions } from "./extensions";
 import { fromEditorJson, toEditorContent } from "./convert";
 import { sanitizePastedHtml } from "./sanitize-html";
 import { DocBarLive } from "./doc-bar-live";
+import { PasteMarkdown } from "./paste-markdown";
 import { LinkDialog } from "./link-dialog";
 import { useLinkPopover } from "./bar/use-link-popover";
 import "../doc.css";
 import "../extra.css";
 import "./editor.css";
+
+const MD_NOTE = "Markdown を貼ると変換します";
+const PASTE_FAILED = "貼る文が大きすぎるか入れ子が深すぎるため、貼れませんでした";
+/** 貼れなかった知らせを出しておく長さ */
+const NOTICE_MS = 5000;
 
 export interface DocEditorLiveProps {
   doc: Doc;
@@ -46,6 +54,13 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
   changeRef.current = onChange;
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkBad, setLinkBad] = useState(false);
+  // 貼れなかった回数（0 は知らせなし）。続けて貼れなかったら、消すまでの時間を数え直す
+  const [pasteFailed, setPasteFailed] = useState(0);
+  useEffect(() => {
+    if (pasteFailed === 0) return;
+    const timer = window.setTimeout(() => setPasteFailed(0), NOTICE_MS);
+    return () => window.clearTimeout(timer);
+  }, [pasteFailed]);
 
   const emit = useCallback((editor: Editor) => {
     if (editor.view.composing) return;
@@ -57,7 +72,7 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
   }, []);
 
   const editor = useEditor({
-    extensions: buildExtensions(),
+    extensions: [...buildExtensions(), PasteMarkdown.configure({ onNotice: () => setPasteFailed((n) => n + 1) })],
     content: toEditorContent(doc),
     immediatelyRender: false,
     editorProps: {
@@ -79,7 +94,10 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
         },
       },
     },
-    onUpdate: ({ editor: e }) => emit(e),
+    onUpdate: ({ editor: e }) => {
+      setPasteFailed(0);
+      emit(e);
+    },
   });
 
   // 外から渡された doc が変わったときだけ入れ替える
@@ -137,6 +155,12 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
           ) : null}
         </div>
         <EditorContent editor={editor} className="k-f4d-doc k-f4d-big" />
+        <p className="k-f4d-md-note">{MD_NOTE}</p>
+        {pasteFailed > 0 ? (
+          <p role="status" className="k-f4d-editnote">
+            {PASTE_FAILED}
+          </p>
+        ) : null}
       </div>
     </div>
   );

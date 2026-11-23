@@ -3,17 +3,21 @@
 //   K-567 が動かす：戻す・やり直す・太字・斜体・下線・取り消し線・行の中のコード・リンク。
 //   K-587 が動かす：見出し・並び（メニュー bar-menu.tsx）・引用・コードの囲み・区切りの線・左寄せ・中央・右寄せ・両端・上付き・下付き。
 //     置けない場所（K-584 の置ける親の外）では押せない形（aria-disabled）。画像は押せない形のまま（ファイルを付ける仕組みが入るまで）。
-//   文字の色・背景の色・表は並びに置いて押せない形（隠さない・K-568 が動かす）。
+//   K-568 が動かす：文字の色・背景の色（小さな画面 color-popover.tsx を帯の下に開く）・表（メニュー table-menu.tsx）。
 //   Tab の停止点は 1 つ（最初は『太字』・押した後は最後にいた道具）で、← → で隣の道具へ移る（roving tabindex）。押された道具は aria-pressed
-import { useCallback, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import type { Editor } from "@tiptap/react";
 import { BAR_GROUPS, TOOL_NAMES, type BarTool } from "../bar-tools";
 import { BarMenu, type BarMenuItem } from "./bar-menu";
+import { COLOR_TOOL, ColorPopover, type ColorKind } from "./color-popover";
+import { TableMenu } from "./table-menu";
 import { focusNow, useBlockButton, type BlockKind } from "./bar/use-block-button";
+import { useColorHighlight } from "./bar/use-color-highlight";
 import { HEADING_LEVELS, useHeading } from "./bar/use-heading";
 import { LIST_TYPES, useList, type ListType } from "./bar/use-list";
 import { useMarkButton, type MarkType } from "./bar/use-mark-button";
 import { useTextAlign, type TextAlign } from "./bar/use-text-align";
+import { useTextColor } from "./bar/use-text-color";
 import { useUndoRedo, type UndoRedoAction } from "./bar/use-undo-redo";
 
 const WHY = "まだ使えません";
@@ -37,6 +41,8 @@ const SCRIPTS: Record<string, readonly [MarkType, MarkType]> = {
   下付き: ["subscript", "superscript"],
 };
 const LIST_NAMES: Record<ListType, string> = { bulletList: "箇条書き", orderedList: "番号つき", taskList: "チェック" };
+const COLORS: Record<string, ColorKind> = { [COLOR_TOOL.text]: "text", [COLOR_TOOL.background]: "background" };
+const TABLE = "表";
 const BODY = "本文";
 const FIRST_STOP = "太字";
 
@@ -175,6 +181,27 @@ function ListTool(p: ToolProps & { editor: Editor | null }) {
   return <MenuTool {...p} items={items} />;
 }
 
+/** 文字の色・背景の色：押すと小さな画面を開く・閉じる。色を付けられない場所（コードの囲みの中など）では押せない形 */
+function ColorTool(p: ToolProps & { editor: Editor | null; kind: ColorKind; open: boolean; onToggle: () => void }) {
+  const text = useTextColor(p.editor);
+  const background = useColorHighlight(p.editor);
+  const canSet = (p.kind === "text" ? text : background).canSet;
+  return <ToolButton {...p} off={!canSet} extra={{ "aria-expanded": p.open }} onAct={p.onToggle} />;
+}
+function TableTool({ tool, stop, onFocusTool, editor }: ToolProps & { editor: Editor | null }) {
+  return (
+    <TableMenu
+      label={tool.name}
+      editor={editor}
+      tabIndex={tool.name === stop ? 0 : -1}
+      onFocusTool={() => onFocusTool(tool.name)}
+    >
+      {tool.label}
+      <Chev tool={tool} />
+    </TableMenu>
+  );
+}
+
 export interface DocBarLiveProps {
   editor: Editor | null;
   /** リンクの小さな入力を開く・閉じる */
@@ -185,8 +212,25 @@ export interface DocBarLiveProps {
 
 export function DocBarLive({ editor, onLink, linkOpen, linkActive }: DocBarLiveProps) {
   const [stop, setStop] = useState(FIRST_STOP);
+  const [color, setColor] = useState<ColorKind | null>(null);
   const bar = useRef<HTMLDivElement>(null);
   const onFocusTool = useCallback((name: string) => setStop(name), []);
+  // リンクの小さな入力と色の小さな画面は同時に開かない
+  useEffect(() => {
+    if (linkOpen) setColor(null);
+  }, [linkOpen]);
+  const toggleColor = (kind: ColorKind): void => {
+    if (linkOpen) onLink();
+    setColor((now) => (now === kind ? null : kind));
+  };
+  const closeColor = useCallback(
+    (toTool: boolean) => {
+      if (toTool && color)
+        bar.current?.querySelector<HTMLButtonElement>(`button[data-tool="${COLOR_TOOL[color]}"]`)?.focus();
+      setColor(null);
+    },
+    [color],
+  );
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key !== "ArrowRight" && e.key !== "ArrowLeft" && e.key !== "Home" && e.key !== "End") return;
     // 開いたメニューの中のキー（React の木では帯の子だが、画面では帯の外に出している）は帯の動きにしない
@@ -220,6 +264,19 @@ export function DocBarLive({ editor, onLink, linkOpen, linkActive }: DocBarLiveP
     if (script) return <ScriptTool key={t.name} {...common} editor={editor} type={script[0]} other={script[1]} />;
     if (t.name === "見出し") return <HeadingTool key={t.name} {...common} editor={editor} />;
     if (t.name === "並び") return <ListTool key={t.name} {...common} editor={editor} />;
+    if (t.name === TABLE) return <TableTool key={t.name} {...common} editor={editor} />;
+    const kind = COLORS[t.name];
+    if (kind)
+      return (
+        <ColorTool
+          key={t.name}
+          {...common}
+          editor={editor}
+          kind={kind}
+          open={color === kind}
+          onToggle={() => toggleColor(kind)}
+        />
+      );
     if (t.name === "リンク")
       return (
         <ToolButton
@@ -234,12 +291,15 @@ export function DocBarLive({ editor, onLink, linkOpen, linkActive }: DocBarLiveP
     return <ToolButton key={t.name} {...common} off />;
   };
   return (
-    <div ref={bar} role="toolbar" aria-label="本文の道具" className="k-f4d-bar" onKeyDown={onKeyDown}>
-      {BAR_GROUPS.map((group, gi) => (
-        <span key={gi} className="k-f4d-bar-group" role="group">
-          {group.map(render)}
-        </span>
-      ))}
-    </div>
+    <>
+      <div ref={bar} role="toolbar" aria-label="本文の道具" className="k-f4d-bar" onKeyDown={onKeyDown}>
+        {BAR_GROUPS.map((group, gi) => (
+          <span key={gi} className="k-f4d-bar-group" role="group">
+            {group.map(render)}
+          </span>
+        ))}
+      </div>
+      {editor && color ? <ColorPopover key={color} kind={color} editor={editor} onClose={closeColor} /> : null}
+    </>
   );
 }
