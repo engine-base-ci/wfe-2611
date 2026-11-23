@@ -80,7 +80,7 @@ class ScreenApiD(unittest.TestCase):
         self.src = (ROOT / "05_flow" / "screen_api.py").read_text(encoding="utf-8")
         self.real = dump(ROOT)
 
-    def test_k1112_ba_001_move_last_entry_of_every_table_to_d(self) -> None:
+    def test_K1112_BA_001_move_last_entry_of_every_table_to_d(self) -> None:
         """K1112-BA-001：本体のどの表も、最後の 1 つを .d（K-1.py）へ移すと合わせた結果が今とちょうど同じ"""
         names = [n for n, _ in tables(self.src)]
         self.assertGreaterEqual(len(names), 24)
@@ -113,7 +113,7 @@ class ScreenApiD(unittest.TestCase):
                 moved += 1
         self.assertGreaterEqual(moved, 20)
 
-    def test_k1112_ba_002_empty_and_new_keys_are_addable(self) -> None:
+    def test_K1112_BA_002_empty_and_new_keys_are_addable(self) -> None:
         """K1112-BA-002：空の表（INPUT_RULES・QUERY_RANGES）にも、どの表にも、新しい鍵を .d だけで足せる"""
         frag = "".join(
             f"{n} = {{'k1112_new': 1}}\n" if isinstance(v, ast.Dict) and n != "SCREEN_API"
@@ -127,7 +127,7 @@ class ScreenApiD(unittest.TestCase):
         for name in ("INPUT_RULES", "QUERY_RANGES", "PERMS", "UNEXPRESSIBLE_422", "LIST_OPS", "RESPONSES"):
             self.assertIn("'k1112_new'", json.dumps(got[name], ensure_ascii=False), name)
 
-    def test_k1112_ba_003_every_body_table_is_mergeable(self) -> None:
+    def test_K1112_BA_003_every_body_table_is_mergeable(self) -> None:
         """K1112-BA-003：本体の頭の段の大文字の表は全部 dict・set・list の字（.d で足せる形）。T だけは手助けの字"""
         odd = [n for n, v in tables(self.src) if not isinstance(v, (ast.Dict, ast.Set, ast.List)) and n != "T"]
         self.assertEqual(odd, [], "dict・set・list の字でない表は .d で足せない")
@@ -150,7 +150,7 @@ class ApiDocD(unittest.TestCase):
     def tearDown(self) -> None:
         self.tmp.cleanup()
 
-    def test_k1112_ba_004_replace_and_append(self) -> None:
+    def test_K1112_BA_004_replace_and_append(self) -> None:
         """K1112-BA-004：同じ見出しと鍵の行は置き換え、無い鍵は見出しの表の最後に足す。断片は番号の順"""
         a = frag(self.d, "K-2.md", "## 1. 表\n| 詳細 | `GET /a/:id`（直した） |\n")
         b = frag(self.d, "K-10.md", "## 1. 表\n| 消す | `DELETE /a/:id` |\n\n## 2. 誰が\n<!-- 注 -->\n| `DELETE /a/:id` | write |\n")
@@ -161,7 +161,7 @@ class ApiDocD(unittest.TestCase):
         self.assertEqual(got.index("| `DELETE /a/:id` | write |"), got.index("| 同上 | y |") + 1)
         self.assertTrue(got[-2:] == ["文", ""])
 
-    def test_k1112_ba_005_errors_stop(self) -> None:
+    def test_K1112_BA_005_errors_stop(self) -> None:
         """K1112-BA-005：無い見出し・鍵「同上」・本体で 2 つある鍵・2 つの断片が同じ鍵・見出しより前の行・表でない字・表の無い見出し・置けない名前は止める"""
         cases = {
             "無い見出し": ("## 9. 無い\n| a | b |\n", "見出し"),
@@ -199,7 +199,7 @@ class ApiDocD(unittest.TestCase):
                     api_doc_d.fragments(d)
                 self.assertIn(bad, str(cm.exception))
 
-    def test_k1112_ba_006_real_tree_copy_is_fresh(self) -> None:
+    def test_K1112_BA_006_real_tree_copy_is_fresh(self) -> None:
         """K1112-BA-006：本物の木の合わせた写しは最新（--check が 0）で、断片が無い今は本体と 1 字も違わない（頭の 1 行を除く）"""
         r = subprocess.run([PY, "scripts/ci/api_doc_d.py", "--check"], cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout)
@@ -210,7 +210,7 @@ class ApiDocD(unittest.TestCase):
         if not frags:
             self.assertEqual(merged.split("\n", 1)[1], body)
 
-    def test_k1112_ba_007_check_stale_and_orphan(self) -> None:
+    def test_K1112_BA_007_check_stale_and_orphan(self) -> None:
         """K1112-BA-007：断片を足して作り直さないと --check が 1・置き場の無い写しも 1。作り直すと 0"""
         root = self.d / "r"
         docs = root / "08_api" / "phase1"
@@ -264,7 +264,7 @@ class Gate(unittest.TestCase):
     def red(self) -> list[str]:
         return body_append_gate.check(self.r, self.base)
 
-    def test_k1112_ba_008_body_key_added_is_red(self) -> None:
+    def test_K1112_BA_008_body_key_added_is_red(self) -> None:
         """K1112-BA-008：葉が本体の表に新しい鍵（PERMS・LIST_OPS・SCREEN_API の口）を足すと赤。文に葉の番号・表・鍵・置き場"""
         self.w("05_flow/screen_api.py", SA.replace('    "getA": ("read", "誰でも", False),\n', '    "getA": ("read", "誰でも", False),\n    "getB": ("read", "b", False),\n')
                .replace('{"getA"}', '{"getA", "getB"}')
@@ -279,7 +279,7 @@ class Gate(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("赤 3 件", r.stdout)
 
-    def test_k1112_ba_009_d_fragment_and_value_edit_are_green(self) -> None:
+    def test_K1112_BA_009_d_fragment_and_value_edit_are_green(self) -> None:
         """K1112-BA-009：.d の断片で足す・本体の今ある鍵の値を直す・文書の見出しの字（表のある見出しも）を直す・新しい節と表の頭の行を作るのは緑"""
         self.w("05_flow/screen_api.d/K-7.py", 'PERMS = {"getB": ("read", "b", False)}\n')
         self.w("05_flow/screen_api.py", SA.replace('"誰でも"', '"誰でも（直した）"'))
@@ -290,7 +290,7 @@ class Gate(unittest.TestCase):
         r = subprocess.run([PY, str(ROOT / "scripts/ci/body_append_gate.py"), "--root", str(self.r), "--base-ref", self.base], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout)
 
-    def test_k1112_ba_010_body_doc_row_added_or_changed_is_red(self) -> None:
+    def test_K1112_BA_010_body_doc_row_added_or_changed_is_red(self) -> None:
         """K1112-BA-010：本体の文書の表の行を足す・直すと赤（文に文書・見出し・鍵・置き場）"""
         self.w("08_api/phase1/01_x.md", DOC.replace("| read |", "| write |") + "| `GET /b` | read |\n")
         self.commit("K-8 feat: 文書に直に")
@@ -299,7 +299,7 @@ class Gate(unittest.TestCase):
         self.assertTrue(all("K-8" in b and "01_x.d/<番号>.md" in b for b in red))
         self.assertTrue(any("`GET /b`" in b for b in red) and any("`GET /a`" in b for b in red))
 
-    def test_k1112_ba_011_grandfather_and_ledger_shrink_only(self) -> None:
+    def test_K1112_BA_011_grandfather_and_ledger_shrink_only(self) -> None:
         """K1112-BA-011：猶予の台帳の鍵（LIST_OPS 'x'・文書の行 `GET /g`）は件名に依らず緑・台帳に無い鍵は猶予の葉の件名でも赤・台帳を増やすと赤・減らすと消した鍵が赤"""
         self.w("05_flow/screen_api.py", SA.replace("LIST_OPS = {\"getA\"}", "LIST_OPS = {\"getA\", \"x\"}"))
         self.w("08_api/phase1/01_x.md", DOC + "| `GET /g` | read |\n")
@@ -319,7 +319,7 @@ class Gate(unittest.TestCase):
         red = self.red()
         self.assertTrue(any("'x'" in b for b in red) and any("`GET /g`" in b for b in red), red)   # 猶予を外せば前の直の足しが出る
 
-    def test_k1112_ba_015_statement_forms_are_red(self) -> None:
+    def test_K1112_BA_015_statement_forms_are_red(self) -> None:
         """K1112-BA-015：表に足す書き方の文（X[k] = …・.update・|=・for）と {**X} で本体に足しても赤。件名に番号の無いコミットも見る"""
         extra = ('PERMS["getC"] = ("read", "c", False)\nPERMS.update({"getD": ("read", "d", False)})\nLIST_OPS |= {"getE"}\n'
                  'for _op in ("getF",):\n    LIST_OPS.add(_op)\n')
@@ -331,7 +331,7 @@ class Gate(unittest.TestCase):
         for word in ("PERMS['getC']", "PERMS.update", "LIST_OPS |=", "for _op", "PERMS **"):
             self.assertTrue(any(word in b for b in red), word)
 
-    def test_k1112_ba_016_doc_rows_only_new_lines(self) -> None:
+    def test_K1112_BA_016_doc_rows_only_new_lines(self) -> None:
         """K1112-BA-016：文書の表の行を消す・並べ替えるのは緑。取り込みで両方の親が足した「同上」の行は、どれかの親に同じ字があれば数えない"""
         self.w("08_api/phase1/01_x.d/K-4.md", "")
         self.w("08_api/phase1/01_x.md", DOC.replace("| `GET /a` | read |\n", ""))
@@ -356,7 +356,7 @@ class Gate(unittest.TestCase):
         self.g("commit", "-q", "--amend", "--no-edit")
         self.assertTrue(any("merge" in b and "同上" in b for b in self.red()))   # 解くときに足した行は数える
 
-    def test_k1112_ba_012_merge_counts_only_new_in_resolution(self) -> None:
+    def test_K1112_BA_012_merge_counts_only_new_in_resolution(self) -> None:
         """K1112-BA-012：取り込みのコミットは、どの親にも無かった鍵だけを数える（ぶつかりを解くときに足した物）"""
         self.g("checkout", "-q", "-b", "side")
         self.w("05_flow/screen_api.d/K-3.py", 'LIST_OPS = {"y"}\n')
@@ -376,7 +376,7 @@ class Gate(unittest.TestCase):
         self.assertIn("K-3", red[0])
         self.assertIn("'z'", red[0])
 
-    def test_k1112_ba_013_unreadable_base_is_red(self) -> None:
+    def test_K1112_BA_013_unreadable_base_is_red(self) -> None:
         """K1112-BA-013：比べる元が空・読めないなら赤（黙って比べずに緑にしない）"""
         for base in ("", "0" * 40):
             with self.subTest(base=base):
@@ -386,7 +386,7 @@ class Gate(unittest.TestCase):
 
 
 class Wiring(unittest.TestCase):
-    def test_k1112_ba_014_wired(self) -> None:
+    def test_K1112_BA_014_wired(self) -> None:
         """K1112-BA-014：G74 が CI の定義に在り base を env で渡す・作り手が目録に在る・写しが changes_ignore・猶予の台帳に K-1112 が無い"""
         plan = (ROOT / "05_flow/build_testplan.py").read_text(encoding="utf-8")
         self.assertIn('"id": 74', plan)
