@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
  "skill": "api-design",
- "frozen_at": "2026-11-22",
+ "frozen_at": "2026-11-23",
  "summary": {
   "total_screens": 37,
-  "total_apis": 373,
+  "total_apis": 374,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2662,6 +2662,11 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/clients",
      "act": "A103"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/tickets/:id/timeline/seen",
+     "act": "A107"
     },
     {
      "role": "data_fetch",
