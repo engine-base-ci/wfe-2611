@@ -160,10 +160,12 @@ describe("K-774 作る画面の会話を始める", () => {
     expect(await h.json(r)).toMatchObject({ error: "not_found", code: "NOT_FOUND" });
   });
 
-  it("K774-API-004 体の形：体なし・空の体は 201。知らない項目を付けると 422（何も作らない）", async () => {
+  it("K774-API-004 体の形：空の体 {} は 201。体なし（JSON として読めない）・知らない項目を付けると 422（何も作らない）", async () => {
     const w = await ready("k774-004");
-    expect((await h.call(w.me, "POST", "/ticket_draft_conversations", {})).status).toBe(201);
+    expect((await start(w.me, {})).status).toBe(201);
     const before = await shot(w);
+    // 体なしは入口が JSON として読めず 422（作る口の共通の入口・K-758 の止める口と同じ）
+    expect((await h.call(w.me, "POST", "/ticket_draft_conversations", {})).status).toBe(422);
     for (const body of [{ title: "x" }, { talk_kind: "ticket" }, { ticket_id: randomUUID() }]) {
       expect((await start(w.me, body)).status, JSON.stringify(body)).toBe(422);
     }
@@ -349,9 +351,10 @@ describe("K-774 作る画面の会話に言う", () => {
     const before = await shot(w);
     const r = await say(w.me, conv, { text: "PC が無いまま話す", draft: FILLED });
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe(PC_NONE);
-    expect(String((await h.json(r))["message"] ?? "")).toContain("PC をつなぐ");
-    expect((await h.json(r))["details"]).toBeUndefined();
+    const b = await h.json(r);
+    expect(b["code"]).toBe(PC_NONE);
+    expect(String(b["message"] ?? "")).toContain("PC をつなぐ");
+    expect(b["details"]).toBeUndefined();
     expect(await shot(w)).toEqual(before);
     const sid = await h.pc(w.me);
     await sent(w.me, conv, "つないだので話す");
@@ -397,8 +400,9 @@ describe("K-774 作る画面の会話に言う", () => {
     for (const id of [clone, moved]) {
       const r = await say(w.me, id, { text: "作る画面の言葉", draft: FILLED });
       expect(r.status).toBe(409);
-      expect(await code(r)).toBe(NOT_DRAFT);
-      expect((await h.json(r))["details"]).toBeUndefined();
+      const b = await h.json(r);
+      expect(b["code"]).toBe(NOT_DRAFT);
+      expect(b["details"]).toBeUndefined();
     }
     expect(await shot(w)).toEqual(before);
   });
@@ -546,7 +550,11 @@ describe("K-774 作る画面の会話に言う", () => {
   it("K774-API-021 停止・グループから外された人（利用者の状態）：停止された人は始めるも言うも 403、何も増えない。会話の行は残る", async () => {
     const w = await ready("k774-021");
     const conv = await started(w.me);
-    await h.f.admin.query("update members set suspended_at = now() where id = $1", [w.me.id]);
+    // 止めた人の列も入れる（members_suspended_ck：suspended_at と suspended_by は両方そろう）
+    await h.f.admin.query("update members set suspended_at = now(), suspended_by = $2 where id = $1", [
+      w.me.id,
+      w.other.id,
+    ]);
     const before = await shot(w);
     const a = await say(w.me, conv, { text: "停止した後の話", draft: FILLED });
     const b = await start(w.me);
@@ -587,8 +595,9 @@ describe("K-774 作る画面の会話に言う", () => {
     const before = await shot(w);
     const r = await say(w.me, conv, { text: "21 個目", draft: FILLED });
     expect(r.status).toBe(409);
-    expect(await code(r)).toBe(TOO_MANY);
-    expect((await h.json(r))["details"]).toBeUndefined();
+    const b = await h.json(r);
+    expect(b["code"]).toBe(TOO_MANY);
+    expect(b["details"]).toBeUndefined();
     expect(await shot(w)).toEqual(before);
     await h.f.admin.query(
       "update bridge_jobs set state_id = 'done' where id = (select id from bridge_jobs where conversation_id = $1 and state_id = 'queued' limit 1)",
