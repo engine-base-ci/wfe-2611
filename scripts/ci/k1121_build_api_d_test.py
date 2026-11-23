@@ -77,6 +77,14 @@ class Builder(unittest.TestCase):
     def consumption(self) -> list[dict]:
         return json.loads((self.r / "08_api/api-field-consumption.json").read_text(encoding="utf-8"))["fields"]
 
+    def screen_tables(self) -> dict:
+        """写した screen_api.py を流し、作り手が _sa から読む表を出す"""
+        import importlib.util  # noqa: PLC0415
+        spec = importlib.util.spec_from_file_location("k1121_sa", self.r / "05_flow/screen_api.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return {n: getattr(mod, n, {}) for n in ("REQUIRED_INPUTS", "VALUE_RANGES", "INPUT_RULES", "QUERIES")}
+
     def cursor_of(self, op_id: str) -> dict:
         for item in self.openapi()["paths"].values():
             for op in item.values():
@@ -135,9 +143,18 @@ class Builder(unittest.TestCase):
         self.ok()
         rows = self.consumption()
         cands = sorted({c["field"] for c in rows if not c["internal"]})
+        t = self.screen_tables()
+        used: set[str] = set()
+        for op_fields in t["REQUIRED_INPUTS"].values():
+            used |= set(op_fields)
+        for op_fields in t["VALUE_RANGES"].values():
+            used |= set(op_fields)
+        used |= set(re.findall(r"[a-z_][a-z0-9_]*", json.dumps(t["INPUT_RULES"])))
+        for qs in t["QUERIES"].values():
+            used |= set(qs)
         sc = self.openapi()["components"]["schemas"]
-        name, tbl = next((f, n) for f in cands for n, s in sorted(sc.items())
-                         if n.endswith("Input") and f in s.get("properties", {}) and s.get("additionalProperties") is False and n[:-5] in sc and "x-table" in sc[n[:-5]])
+        name, tbl = next((f, n) for f in cands if f not in used for n, s in sorted(sc.items())
+                         if n.endswith("Input") and "x-operation" not in s and f in s.get("properties", {}) and n[:-5] in sc and "x-table" in sc[n[:-5]])
         self.frag("K-9.py", f'INTERNAL = {{"{name}"}}\n')
         self.ok()
         mine = [c for c in self.consumption() if c["field"] == name]
@@ -149,23 +166,27 @@ class Builder(unittest.TestCase):
         """K1121-BD-004：断片の INTERNAL_TABLES の表は消費の行が全部 internal 真で、reason が断片の字"""
         self.ok()
         rows = self.consumption()
-        table = sorted({c["entity"] for c in rows if not c["internal"]})[0]
+        table = sorted({c["entity"] for c in rows if not c["internal"]})[0]   # internal が偽の行がある表＝マスタでない
         self.frag("K-9.py", f'INTERNAL_TABLES = {{"{table}": "訳の字"}}\n')
         self.ok()
         mine = [c for c in self.consumption() if c["entity"] == table]
         self.assertTrue(mine)
         for c in mine:
             self.assertTrue(c["internal"], c)
-        self.assertTrue(any(c["reason"] == "訳の字" for c in mine), mine[:3])
+        tables = {e["table_name"]: e for e in json.loads((self.r / "07_functional/entities.json").read_text(encoding="utf-8"))["entities"]}
+        if tables[table]["tenant_isolation"]["type"] != "none":
+            for c in mine:
+                self.assertEqual(c["reason"], "訳の字", c)
 
     def test_K1121_BD_005_duplicate_keys_stop(self) -> None:
         """K1121-BD-005：本体の鍵を断片が持つ／2 つの断片が同じ鍵を持つと止まり、生成物を書かない"""
         self.ok()
         self.frag("K-9.py", 'INTERNAL_TABLES = {"search_embeddings": "x"}\n')
         self.fails("元の表 と K-9.py が search_embeddings を両方持つ")
-        self.frag("K-9.py", 'INTERNAL_TABLES = {"x_tbl": "x"}\n')
-        self.frag("K-8.py", 'INTERNAL_TABLES = {"x_tbl": "y"}\n')
-        self.fails("K-8.py と K-9.py が x_tbl を両方持つ")
+        table = sorted({c["entity"] for c in self.consumption() if not c["internal"]})[0]
+        self.frag("K-9.py", f'INTERNAL_TABLES = {{"{table}": "x"}}\n')
+        self.frag("K-8.py", f'INTERNAL_TABLES = {{"{table}": "y"}}\n')
+        self.fails(f"K-8.py と K-9.py が {table} を両方持つ")
 
     def test_K1121_BD_006_wrong_table_name_or_shape_stops(self) -> None:
         """K1121-BD-006：足せない表の名前（screen_api.d の表・書き間違い）／dict の表を set で書くと止まる"""
@@ -185,6 +206,18 @@ class Builder(unittest.TestCase):
         self.frag("K-9.py", "KEY_CURSOR_OPS = {\n")
         self.fails("K-9.py", "読めない")
 
+    def test_K1121_BD_014_fragment_value_typos_stop(self) -> None:
+        """K1121-BD-014：契約に無い口・一覧でない口・無い表・無い列を断片に書くと止まる"""
+        self.ok()
+        eps = json.loads((self.r / "08_api/endpoints.json").read_text(encoding="utf-8"))["endpoints"]
+        single = sorted(e["operation_id"] for e in eps if e["method"] == "GET" and not e["returns_list"] and e.get("operation_id"))[0]
+        for text, table, value in (('KEY_CURSOR_OPS = {"listNoSuchOp"}\n', "KEY_CURSOR_OPS", "listNoSuchOp"),
+                                   (f'KEY_CURSOR_OPS = {{"{single}"}}\n', "KEY_CURSOR_OPS", single),
+                                   ('INTERNAL_TABLES = {"no_such_table": "x"}\n', "INTERNAL_TABLES", "no_such_table"),
+                                   ('INTERNAL = {"no_such_col"}\n', "INTERNAL", "no_such_col")):
+            self.frag("K-9.py", text)
+            self.fails(table, value, "05_flow/build_api.d")
+
 
 BA = ('import os\nROOT = os.getcwd()\nBASE = "/api/v1"\n'
       'INTERNAL_TABLES = {"search_embeddings": "内部の索引"}\n'
@@ -195,6 +228,7 @@ BA = ('import os\nROOT = os.getcwd()\nBASE = "/api/v1"\n'
       'def qtype(q):\n    return {"type": "string"}\n')
 SA = 'T = "tickets"\nLIST_OPS = {"getA"}\n'
 LEDGER0 = {"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/screen_api.py|LIST_OPS 'x'"]}
+MERGE_LINE = "KEY_CURSOR_OPS = KEY_CURSOR_OPS | _D['KEY_CURSOR_OPS']\n"
 LEDGERB = {"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/build_api.py|KEY_CURSOR_OPS 'listZ'"]}
 
 
@@ -252,7 +286,7 @@ class Gate(unittest.TestCase):
         self.assertIn("赤 3 件", r.stdout)
 
     def test_K1121_BD_009_append_statements_in_body_are_red(self) -> None:
-        """K1121-BD-009：本体の表に足す文（.add・|=・[k] =）は赤"""
+        """K1121-BD-009：3 つの表を書き換える文は、頭の段・for の中・関数の中のどこでも赤。合わせの文の 2 つ目も赤"""
         self.w(BUILD_API, BA + 'KEY_CURSOR_OPS.add("listY")\nINTERNAL |= {"y"}\nINTERNAL_TABLES["y_tbl"] = "y"\n')
         self.commit("K-7 feat: 文で足す")
         bad = self.red()
@@ -261,12 +295,21 @@ class Gate(unittest.TestCase):
             self.assertIn("文 ", b)
             self.assertIn("05_flow/build_api.d/<番号>.py", b)
         self.assertTrue(any("KEY_CURSOR_OPS.add('listY')" in b for b in bad), bad)
+        for extra in ('for k in ["y"]:\n    INTERNAL.add(k)\n',
+                      'def more():\n    KEY_CURSOR_OPS.update({"listU"})\nmore()\n',
+                      MERGE_LINE + MERGE_LINE):
+            self.w(BUILD_API, BA + extra)
+            self.commit("K-7 feat: 別の形で足す")
+            bad = self.red()
+            self.assertEqual(len(bad), 1, (extra, bad))
+            self.assertIn("05_flow/build_api.d/<番号>.py", bad[0])
 
     def test_K1121_BD_010_logic_edits_value_edits_and_fragments_are_green(self) -> None:
-        """K1121-BD-010：作り方の手順の直し・今ある鍵の値の直し・断片の足しは緑"""
+        """K1121-BD-010：作り方の手順の直し・3 つの外の表・今ある鍵の値の直し・合わせの文 1 回・断片の足しは緑"""
         self.w(BUILD_API, BA.replace("rows.append(e)", "rows.append(e * 2)").replace('return {"type": "string"}', 'return {"type": "integer"}')
                .replace("rows = []", "rows = [1]\nseen = set()\nseen.add(1)").replace('BASE = "/api/v1"', 'BASE = "/api/v2"')
-               .replace('"内部の索引"', '"内部の索引（直した）"') + 'for k in []:\n    INTERNAL.add(k)\n')
+               .replace('"内部の索引"', '"内部の索引（直した）"')
+               + 'OTHER = {"a": 1}\nOTHER["b"] = 2\nfor k in []:\n    seen.add(k)\n' + MERGE_LINE)
         self.w("05_flow/build_api.d/K-5.py", 'KEY_CURSOR_OPS = {"listW"}\n')
         self.commit("K-7 fix: 作り方を直す")
         self.assertEqual(self.red(), [])
@@ -275,7 +318,7 @@ class Gate(unittest.TestCase):
         self.assertIn("無い（緑）", r.stdout)
 
     def test_K1121_BD_011_two_ledgers(self) -> None:
-        """K1121-BD-011：新しい台帳の鍵は数えない・新しい台帳が増えたら赤・分かれ目に無ければ作る回・今の台帳は今まで通り"""
+        """K1121-BD-011：台帳の鍵は数えない・新しい台帳が増えたら赤・台帳が受けない頭の鍵は赤"""
         self.w(BUILD_API, BA.replace('{"listTickets"}', '{"listTickets", "listZ"}'))
         self.w("05_flow/screen_api.py", SA.replace('{"getA"}', '{"getA", "x"}'))
         self.commit("K-50 feat: 前から作っていた葉")
@@ -286,6 +329,27 @@ class Gate(unittest.TestCase):
         self.assertEqual(len(bad), 1, bad)
         self.assertIn("body_append_grandfather_build_api.json", bad[0])
         self.assertIn("減らすだけ", bad[0])
+        self.w(LEDGER_B, json.dumps(LEDGERB))
+        self.commit("K-7 chore: 戻す")
+        self.assertEqual(self.red(), [])
+        # 新しい台帳に screen_api.py の鍵（分かれ目に無い台帳を作る回でも見る）
+        self.g("rm", "-q", LEDGER_B)
+        self.base = self.commit("K-1 chore: 新しい台帳の前")
+        self.w(LEDGER_B, json.dumps({**LEDGERB, "entries": ["05_flow/screen_api.py|LIST_OPS 'w'"]}))
+        self.commit("K-7 chore: 違う頭")
+        bad = self.red()
+        self.assertEqual(len(bad), 1, bad)
+        self.assertIn("body_append_grandfather_build_api.json", bad[0])
+        self.assertIn("受けない鍵", bad[0])
+        self.assertIn("LIST_OPS 'w'", bad[0])
+        # 今の台帳に build_api.py の鍵
+        self.w(LEDGER_B, json.dumps(LEDGERB))
+        self.w(body_append_gate.LEDGER, json.dumps({**LEDGER0, "entries": LEDGER0["entries"] + ["05_flow/build_api.py|INTERNAL 'q'"]}))
+        self.commit("K-7 chore: 今の台帳に build の鍵")
+        bad = [b for b in self.red() if "受けない鍵" in b]
+        self.assertEqual(len(bad), 1, self.red())
+        self.assertIn("body_append_grandfather.json", bad[0])
+        self.assertNotIn("body_append_grandfather_build_api.json", bad[0])
 
     def test_K1121_BD_011b_new_ledger_absent_at_base(self) -> None:
         """K1121-BD-011：分かれ目に新しい台帳が無く、先頭で作った枝は緑（台帳を作る回）"""
@@ -296,25 +360,36 @@ class Gate(unittest.TestCase):
         self.commit("K-1121 chore: 台帳を作る")
         self.assertEqual(self.red(), [])
 
+    def ledger_now(self, *extra: str) -> None:
+        r = subprocess.run([PY, GATE, "--root", str(self.r), "--ledger-now", *extra], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
     def test_K1121_BD_012_ledger_now_splits_by_body(self) -> None:
-        """K1121-BD-012：--ledger-now は台帳ごとに見る本体の鍵だけを書く。新しい台帳が無ければ作らない"""
+        """K1121-BD-012：--ledger <台帳> はその台帳だけを、見る本体の鍵だけで書く。--ledger 無しは今の台帳だけ。段の枝の名前も読む"""
         self.g("checkout", "-q", "-b", "t/K-50")
         self.w(BUILD_API, BA.replace('{"listTickets"}', '{"listTickets", "listV"}'))
         self.w("05_flow/screen_api.py", SA.replace('{"getA"}', '{"getA", "v"}'))
         self.commit("K-50 feat: 両方に足す")
         self.g("checkout", "-q", body_append_gate.MAINLINE)
-        r = subprocess.run([PY, GATE, "--root", str(self.r), "--ledger-now"], capture_output=True, text=True)
-        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        a = json.loads((self.r / body_append_gate.LEDGER).read_text(encoding="utf-8"))
+        self.g("checkout", "-q", "-b", "i/段6")
+        self.w(BUILD_API, BA.replace('{"listTickets"}', '{"listTickets", "listS"}'))
+        self.commit("K-757 feat: 段の枝で足す")
+        self.g("checkout", "-q", body_append_gate.MAINLINE)
+        self.w(LEDGER_B, json.dumps({**LEDGERB, "tickets": ["K-50", "i/段6"]}))
+        self.commit("K-1121 chore: 台帳の tickets")
+        a0 = (self.r / body_append_gate.LEDGER).read_bytes()
+        self.ledger_now("--ledger", LEDGER_B)
         b = json.loads((self.r / LEDGER_B).read_text(encoding="utf-8"))
-        self.assertEqual(a["entries"], ["05_flow/screen_api.py|LIST_OPS 'v'"])
-        self.assertEqual(b["entries"], ["05_flow/build_api.py|KEY_CURSOR_OPS 'listV'"])
-        (self.r / LEDGER_B).unlink()
-        r = subprocess.run([PY, GATE, "--root", str(self.r), "--ledger-now"], capture_output=True, text=True)
-        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertFalse((self.r / LEDGER_B).exists())
+        self.assertEqual(b["entries"], ["05_flow/build_api.py|KEY_CURSOR_OPS 'listS'", "05_flow/build_api.py|KEY_CURSOR_OPS 'listV'"])
+        self.assertEqual((self.r / body_append_gate.LEDGER).read_bytes(), a0)
+        b0 = (self.r / LEDGER_B).read_bytes()
+        self.ledger_now()
         a = json.loads((self.r / body_append_gate.LEDGER).read_text(encoding="utf-8"))
         self.assertEqual(a["entries"], ["05_flow/screen_api.py|LIST_OPS 'v'"])
+        self.assertEqual((self.r / LEDGER_B).read_bytes(), b0)
+        (self.r / LEDGER_B).unlink()
+        self.ledger_now()
+        self.assertFalse((self.r / LEDGER_B).exists())
 
 
 class Wiring(unittest.TestCase):
