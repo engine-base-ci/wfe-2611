@@ -4,7 +4,7 @@
 //   前からの試験との約束（K-138 が持つ m2-bridge-ticket.spec.ts・staging の steps.ts と、K-220 が持つ connect-pc.spec.ts を壊さない）：
 //     本文の h1 はキャンバスどおり「PC と使った量」（K-220）・小窓の題「PC をつなぐ」も h1（小窓が開くと後ろは読み上げの木から外れるので、h1 は読み上げで 1 つ）・
 //     接続コードの data-testid="pairing-code" の innerText は 6 字のまま・「つながっています」で始まる role=status・region「切れています」・
-//     「Bridge を起こす」「新しいコード」「この PC の Bridge につなぐ」「このアカウントに切り替える」「戻る」「前の設定の画面」を残す。
+//     「Bridge を起こす」「新しいコード」「この PC の Bridge につなぐ」「このアカウントに切り替える」「戻る」を残す（「前の設定の画面」は K-367 で前の画面と一緒に消す）。
 //   口（API）とこの PC の中だけの口（127.0.0.1:38617）は網の手前で差し替える（本人の Bridge に届かせない）。
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
 import { readdirSync, readFileSync } from "node:fs";
@@ -267,7 +267,7 @@ test("K230-UI-004 受け取る：1 段目の説明の中の字のリンク「Mac
   await expect(page.getByText("ダウンロードを始めました")).toBeVisible();
 });
 
-test("K230-UI-005 足の帯：「あとで」（高さ 30・白地・線 #DDE2E9）と、橙の点（8px・#B45309）つきの「アプリからの返事を待っています…」", async ({
+test("K230-UI-005 足の帯：「あとで」（高さ 30・白地・線 #DDE2E9）。橙の点（8px・#B45309）つきの「アプリからの返事を待っています…」は小窓の中に 1 つ（置き場はコードの段の下・K-374・代表の答え answer=8d3ada64dcbd。置き場は K-374 の行が見る）", async ({
   page,
 }) => {
   await mockApi(page);
@@ -277,9 +277,11 @@ test("K230-UI-005 足の帯：「あとで」（高さ 30・白地・線 #DDE2E9
   expect(Math.round((await later.boundingBox())!.height)).toBe(30);
   expect(await color(later, "background-color")).toBe(WHITE);
   expect(await color(later, "border-top-color")).toBe(LINE);
-  const wait = foot.getByText("アプリからの返事を待っています…");
+  //   待っている印は足の帯から 2 段目の下へ移る（K-374）。この版は K-363・K-367 が carry で運び、K-374 の前でも後でも通る形にした
+  const wait = dialog(page).getByText("アプリからの返事を待っています…");
   await expect(wait).toBeVisible();
-  const dot = foot.locator(".k-wait-dot");
+  await expect(wait).toHaveCount(1);
+  const dot = dialog(page).locator(".k-wait-dot");
   expect(Math.round((await dot.boundingBox())!.width)).toBe(8);
   expect(await color(dot, "background-color")).toBe("rgb(180, 83, 9)");
 });
@@ -407,7 +409,7 @@ test("K230-UI-011 切れている：小窓は開かない。橙の札「切れ�
   await expect(page.locator('iframe[src="kaname-bridge://open"]')).toHaveCount(1);
 });
 
-test("K230-UI-012 つないでいる PC の一覧：カードの行は上に線 #EDF0F4 で区切り（点の並びではない）。行の「…」は使えない（aria-disabled・見た目の薄さ 0.55・押してもメニューが開かない）。札「いつも使う」は 2 台でも最初の行の 1 つだけ", async ({
+test("K230-UI-012 つないでいる PC の一覧：カードの行は上に線 #EDF0F4 で区切り（点の並びではない）。行の「…」は押せて、メニューに「この PC を外す」が出る（K-363）。札「いつも使う」は 2 台でも最初の行の 1 つだけ", async ({
   page,
 }) => {
   await mockApi(page, { devices: ["live", "asleep"] });
@@ -417,10 +419,12 @@ test("K230-UI-012 つないでいる PC の一覧：カードの行は上に線 
   for (let i = 0; i < 2; i += 1) {
     expect(await color(rows.nth(i), "border-top-color")).toBe(LINE_SOFT);
     expect(await color(rows.nth(i), "list-style-type")).not.toBe("disc");
+    // 「…」は K-363 から押せる（PC の操作のメニュー。いまの項目は「この PC を外す」）。開いたら Esc で閉じる
     const more = rows.nth(i).getByRole("button", { name: /^…/ });
-    await expect(more).toHaveAttribute("aria-disabled", "true");
-    expect(await seenOpacity(more), "先祖まで掛けた薄さ（二重にしない）").toBeCloseTo(0.55, 2);
-    await more.click({ force: true });
+    await expect(more).not.toHaveAttribute("aria-disabled", "true");
+    await more.click();
+    await expect(page.getByRole("menuitem", { name: "この PC を外す" })).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(page.getByRole("menu")).toHaveCount(0);
   }
   await expect(page.locator(`${BODY} ul:not([class])`)).toHaveCount(0);
@@ -430,7 +434,7 @@ test("K230-UI-012 つないでいる PC の一覧：カードの行は上に線 
   await expect(rows.nth(0).locator(".k-pc-pill", { hasText: "いつも使う" })).toHaveCount(1);
 });
 
-test("K230-UI-013 返事を待っている PC：一覧の行に灰の札「返事を待っています」と「高本の MacBook はつながりました」。小窓の足の帯は待っている印のまま", async ({
+test("K230-UI-013 返事を待っている PC：一覧の行に灰の札「返事を待っています」と「高本の MacBook はつながりました」。小窓の中は待っている印のまま（置き場はコードの段の下・K-374）", async ({
   page,
 }) => {
   await mockApi(page, { devices: ["waiting"] });
@@ -439,7 +443,7 @@ test("K230-UI-013 返事を待っている PC：一覧の行に灰の札「返�
   const pill = page.locator(`${BODY} .k-pc-pill`, { hasText: "返事を待っています" });
   await expect(pill).toBeAttached();
   expect(await color(pill, "color")).toBe(MUTED);
-  await expect(page.locator(".k-dialog-actions").getByText("アプリからの返事を待っています…")).toBeVisible();
+  await expect(dialog(page).getByText("アプリからの返事を待っています…")).toBeVisible();
 });
 
 test("K230-UI-014 この PC に Bridge が入っている：小窓は開かない。白いカード「この PC の Bridge」（角丸 10）に版つきの文と紺の小さなボタン「この PC の Bridge につなぐ」（高さ 30）。一覧のカードは「まだありません」", async ({
@@ -522,7 +526,7 @@ interface Group {
 const CFG = JSON.parse(readFileSync(join(ROOT, "04_design/fidelity.json"), "utf8")) as { groups: Group[] };
 const MINE = ["bridge-code", "bridge-connected", "bridge-installed"];
 
-test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・bridge-installed が enrolled・持ち主 K-230・bridge-code の足のボタンの組は両側とも「あとで」・描き足した 7 つの操作（新しいコード・Bridge を起こす・前の設定の画面 ×3・戻る・このアカウントに切り替える）の対が在る・前の設定の画面は縦の位置を比べない・戻るは ?from= つきで開く・鍵が在る", () => {
+test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・bridge-installed が enrolled・持ち主 K-230・bridge-code の足のボタンの組は両側とも「あとで」・描き足した 4 つの操作（新しいコード・Bridge を起こす・戻る・このアカウントに切り替える）の対が在る・戻るは ?from= つきで開く・鍵が在る", () => {
   for (const id of MINE) {
     const g = CFG.groups.find((x) => x.id === id);
     expect(g, id).toBeTruthy();
@@ -550,15 +554,13 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
     expect(pair!.canvas, `${name} の絵の側`).toBe(sel);
     expect(pair!.app, `${name} の画面の側`).toBe(sel);
   }
-  // K-257 が描き足した残りの 5 つ（前の設定の画面は 3 枚とも本文の最後・戻るは MePC の頭・切り替えるは MePCInstalled のつなぐの隣）
+  // K-257 が描き足した残りの 2 つ（戻るは MePC の頭・切り替えるは MePCInstalled のつなぐの隣）。
+  //   K-367：前の画面を消したので「前の設定の画面」の 3 つの対（[data-act="legacy"]）は見ない（fidelity.json から消すのは K-367 の作る段。
+  //   この版は K-363 と K-367 が carry で運ぶので、対が在っても無くても通る形にした）
   const byId = (id: string) => CFG.groups.find((x) => x.id === id)!;
-  const LEGACY = ["font-size", "font-weight", "color", "x"];
   const BACK = ["font-size", "font-weight", "color", "x", "y"];
   const PRIMARY = ["height", "background-color", "color", "font-size", "font-weight", "border-radius", "x", "y"];
   const more: [Group, string, string, string, string[]][] = [
-    [code, "前の設定の画面", '[data-act="legacy"]', "band-title", LEGACY],
-    [byId("bridge-connected"), "前の設定の画面", '[data-act="legacy"]', "band-title", LEGACY],
-    [byId("bridge-installed"), "前の設定の画面", '[data-act="legacy"]', "band-title", LEGACY],
     [byId("bridge-connected"), "戻る", '[data-act="back"]', "band-title", BACK],
     [byId("bridge-installed"), "このアカウントに切り替える", '[data-act="switch-account"]', "primary", PRIMARY],
   ];
@@ -569,8 +571,6 @@ test("K230-UI-018 突き合わせの設定：bridge-code・bridge-connected・br
     expect(pair!.app, `${g.id} の ${name} の画面の側`).toBe(sel);
     expect(pair!.role, `${g.id} の ${name} の役`).toBe(role);
     for (const prop of props) expect(pair!.props, `${g.id} の ${name} は ${prop} を比べる`).toContain(prop);
-    // 前の設定の画面は本文の最後の文の中で、上の中身の高さで縦の位置が変わるので y を比べない
-    if (name === "前の設定の画面") expect(pair!.props, `${g.id} の ${name}`).not.toContain("y");
   }
   // 戻るはほかの画面から開いたときだけ出るので、bridge-connected は ?from= つき（一覧から来た形）で開く
   expect(byId("bridge-connected").app).toBe("/setup/bridge?from=%2Ftickets");

@@ -1,3 +1,8 @@
+# K-427：NUL（U+0000）は契約の形（string）では書けないが、入口（op.ts）が必ず 422 で断る字。fuzz が「形どおりの入力」として作ると
+#   positive_data_acceptance が 422 を赤と数えるので、作らない。NUL を断ることは apps/api/test/k427_nul_input.test.ts が全部の置き場所で見る
+[generation]
+allow-x00 = false
+
 # 契約 fuzz（G36・scripts/ci/fuzz.sh）の設定。schemathesis 4.33 の既定に 413 だけを足す（K-62・テスター回 10 の #5）。
 #   入口（apps/api/src/contract/op.ts）は 1 回に送る内容が 1MB を超えたら 413・PAYLOAD_TOO_LARGE で断る（D-130.1・K-144）。
 #   欄の上限（例：finishBridgeJob の result 200000 字）を超える体は、字によっては 1MB も超えるので、口より先に入口が 413 で断る。
@@ -17,11 +22,6 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 #   この口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）
 [[operations]]
 include-operation-id = "listApprovalQueue"
-checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
-
-# K-92：チケットの一覧の「次の分の鍵」（cursor）も、口が前の答えで渡した鍵（base64url の JSON）だけを受け、復号できない印は 422（欄 cursor・K92-API-023）
-[[operations]]
-include-operation-id = "listTickets"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
 
 # K-312：パスワードを変える・決める口は、新しいパスワードが漏れたもの（E-VAL-011・外の照合）・128 を部品と同じ UTF-16 の長さで超える（E-VAL-026）・

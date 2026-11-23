@@ -300,6 +300,10 @@ components:
     height: "52px"
   auth-alt-col:         # 確認のコードの下の段（認証アプリが使えない・注）：縦に間 6px
     gap: "6px"
+  popup-layer:          # メニュー・選ぶ欄の開いた箱の置き場の重なりの順（K-381）。上に貼り付く帯（本文の道具の帯 1・上の帯 20・右のパネル 30・下のタブ 40・引き出し 45・前の外枠 50〜60・成果物の板 61）より上、小窓の後ろの幕（80）より下
+    zIndex: "70"
+  popup-layer-field:    # 選ぶ欄の開いた一覧の置き場の重なりの順（K-381・K-372 の値を正本へ）。小窓（81）の中の選ぶ欄が小窓の裏に隠れないよう、小窓より上
+    zIndex: "82"
   # 小窓（StModal：頭は題と右上の ×・下に線、足は上に線とボタン）
   dialog:
     backgroundColor: "{colors.card}"
@@ -334,6 +338,8 @@ components:
     gap: "12px"
   dialog-select:        # 小窓の中の選ぶ欄の高さ（StReturnModal「どこを直すか」35）
     height: "35px"
+  search-focus:         # 探す欄の型（components/k/search-field・段 9）：焦点が中に入ったら枠全体（虫眼鏡ごと）に紺の輪 2px（入力だけに輪を付けない・代表の直し 2026-11-20）
+    border: "2px solid {colors.primary}"
   dialog-textarea:      # 小窓の中の複数行の欄の高さ（StReturnModal「理由」64）
     height: "64px"
   field-required:       # 必須の印（StReturnModal「必須」）
@@ -498,6 +504,9 @@ components:
     lineHeight: 1.7
     rounded: "{rounded.full}"
     padding: "2px 12px"
+  detail-stage-locked:  # 鍵の印つきの段の札（仕組みの段の間）。印 11px と字の間 2px を左右の余白から引き、札の幅を鍵の無い札と同じにする（7＋2＋11＋4＝12＋12）
+    padding: "2px 4px 2px 7px"
+    gap: "2px"
   detail-copy:          # 番号をコピー（24 の四角・線）
     width: "24px"
     height: "24px"
@@ -1715,7 +1724,7 @@ Atelier と同じ書体になるが、製品の区別は色（紺 `#22345C`）�
 
 ## Elevation & Depth
 
-**影はほぼ使わない。** 構造は罫線 `line` と余白で出す。例外は 3 つだけ。
+**影はほぼ使わない。** 構造は罫線 `line` と余白で出す。例外は 3 つだけ。浮く箱（メニュー・選ぶ欄）は層の順 popup-layer（70）：帯より上・小窓の幕より下。
 
 | レベル | 影 | 用途 |
 |---|---|---|
