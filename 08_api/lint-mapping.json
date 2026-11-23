@@ -3206,6 +3206,39 @@
   },
   {
    "method": "PATCH",
+   "path": "/api/v1/ticket-fields/:id",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::updateTicketField",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "DELETE",
+   "path": "/api/v1/ticket-fields/:id",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::deleteTicketField",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket-fields/order",
+   "implementation_path": "apps/api/src/routes/custom_fields.ts::reorderTicketFields",
+   "screen_ids_referencing": [
+    "masters"
+   ],
+   "acts": [
+    "A118"
+   ]
+  },
+  {
+   "method": "PATCH",
    "path": "/api/v1/ticket_decisions/:id",
    "implementation_path": "apps/api/src/routes/ticket_decisions.ts::updateTicketDecision",
    "screen_ids_referencing": [

@@ -10674,6 +10674,92 @@ components:
             - check
           options:
             maxItems: 0
+    TicketFieldUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: \S
+          maxLength: 80
+        field_type:
+          type: string
+          enum:
+          - short_text
+          - long_text
+          - number
+          - date
+          - select
+          - multi_select
+          - check
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+            - name
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+                pattern: \S
+                maxLength: 80
+        kind_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      additionalProperties: false
+      x-operation: updateTicketField
+      allOf:
+      - anyOf:
+        - required:
+          - name
+        - required:
+          - field_type
+        - required:
+          - required
+        - required:
+          - description
+        - required:
+          - options
+        - required:
+          - kind_ids
+      - not:
+          required:
+          - field_type
+          - options
+          properties:
+            field_type:
+              enum:
+              - short_text
+              - long_text
+              - number
+              - date
+              - check
+    TicketFieldOrderInput:
+      type: object
+      properties:
+        field_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+      additionalProperties: false
+      x-operation: reorderTicketFields
+      required:
+      - field_ids
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -12650,7 +12736,14 @@ components:
           type: boolean
         value_count:
           type: integer
-      x-operation: createTicketField
+      x-operation: reorderTicketFields
+    TicketFieldDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteTicketField
     Error:
       type: object
       properties:
@@ -40026,6 +40119,267 @@ paths:
           - 前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）
         '404':
           description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket-fields/{id}:
+    patch:
+      operationId: updateTicketField
+      summary: 更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      x-permission: admin
+      x-permission-scope: 会社の項目を直せる人（custom_fields の edit・既定は管理者・D-125.66）。送った欄だけ直す。値が入っている項目の型は変えられない
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketFieldUpdateInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR（契約に書けない値の決まり：前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）・選ぶ型でない項目を選ぶ型に変えるのに選ぶ物を送らない（今の型で決まる・同じ選ぶ型のままなら選ぶ物を送らなくてよい））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 前後の空白を落とした名前・選ぶ物の名前が 40 字を超える（契約の長さは落とす前の余裕を持たせて 80）
+          - 選ぶ型でない項目を選ぶ型に変えるのに選ぶ物を送らない（今の型で決まる・同じ選ぶ型のままなら選ぶ物を送らなくてよい）
+        '409':
+          description: E-FMS-001／E-FMS-002／E-FMS-004／E-FMS-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: deleteTicketField
+      summary: 削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      x-permission: admin
+      x-permission-scope: 同上。値が入っていても消せる（値の行は残り、見えなくなるだけ）
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketFieldDeleted'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/ticket-fields/order:
+    post:
+      operationId: reorderTicketFields
+      summary: 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ
+      tags:
+      - custom_fields
+      x-acts:
+      - A118
+      x-screens:
+      - masters
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.66
+      - D-125.67
+      - D-125.70
+      - D-125.81
+      x-permission: admin
+      x-permission-scope: 同上。全部の項目の並びを渡す
+      x-step-up: false
+      security:
+      - session: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketFieldOrderInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketFieldSetting'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-FMS-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:

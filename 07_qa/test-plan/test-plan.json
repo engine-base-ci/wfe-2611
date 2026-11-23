@@ -742,12 +742,12 @@
  "inputs": {
   "tickets": 218,
   "l1_rows": 5094,
-  "ears_endpoints": 372,
-  "ears_tests": 4047,
+  "ears_endpoints": 375,
+  "ears_tests": 4086,
   "entities": 145,
   "policies": 419,
   "access_cases": 1566,
-  "errors": 239,
+  "errors": 242,
   "journey_rows": 88,
   "critical_tasks": 88
  },

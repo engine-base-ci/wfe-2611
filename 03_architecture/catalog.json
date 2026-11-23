@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 372,
+  "api": 375,
   "api_built": 86,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 239,
+  "errors": 242,
   "stack": 56,
   "env": 41
  },
@@ -4658,6 +4658,57 @@
    "status": "作った",
    "owner_tickets": [
     "K-706"
+   ]
+  },
+  {
+   "op": "updateTicketField",
+   "method": "PATCH",
+   "path": "/api/v1/ticket-fields/:id",
+   "what": "更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-717"
+   ]
+  },
+  {
+   "op": "deleteTicketField",
+   "method": "DELETE",
+   "path": "/api/v1/ticket-fields/:id",
+   "what": "削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-717"
+   ]
+  },
+  {
+   "op": "reorderTicketFields",
+   "method": "POST",
+   "path": "/api/v1/ticket-fields/order",
+   "what": "作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-717"
    ]
   },
   {

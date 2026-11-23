@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-23",
  "summary": {
   "total_screens": 37,
-  "total_apis": 372,
+  "total_apis": 375,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2756,6 +2756,21 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/ticket-fields",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "PATCH /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "DELETE /api/v1/ticket-fields/:id",
+     "act": "A118"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket-fields/order",
      "act": "A118"
     }
    ],

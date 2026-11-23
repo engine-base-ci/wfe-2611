@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 372（作った 86・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 239・部品 56・設定 41
+API 375（作った 86・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 242・部品 56・設定 41
 
 ## 共通の処理
 
@@ -475,6 +475,9 @@ API 372（作った 86・後のフェーズの行為だけ 20）・前の道す�
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `listTicketFieldMaster` | GET /api/v1/ticket-field-master | 取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数） | F9 | 作った | K-706 |
 | `createTicketField` | POST /api/v1/ticket-fields | 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-706 |
+| `updateTicketField` | PATCH /api/v1/ticket-fields/:id | 更新（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-717 |
+| `deleteTicketField` | DELETE /api/v1/ticket-fields/:id | 削除（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-717 |
+| `reorderTicketFields` | POST /api/v1/ticket-fields/order | 作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-717 |
 | `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
 | `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
 | `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |

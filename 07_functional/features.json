@@ -4354,7 +4354,10 @@
     "E-MOCK-013",
     "E-MOCK-021",
     "E-FMS-001",
-    "E-FMS-004"
+    "E-FMS-004",
+    "E-FMS-002",
+    "E-FMS-003",
+    "E-FMS-005"
    ],
    "policies": [
     "C2",
