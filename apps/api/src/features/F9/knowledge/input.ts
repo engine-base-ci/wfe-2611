@@ -2,12 +2,12 @@
 //   決まりの正本は契約（05_flow/screen_api.d/K-675.py の REQUIRED_INPUTS・VALUE_RANGES・INPUT_RULES）で、ここはそれを口の側で同じに確かめる。
 //   口の葉は before の最初に checkKnowledgeInput(操作 ID, a.input) を呼び、null でなければそのまま返す（422・欄の名前つき）。ログに値を出さない
 import type { HookReply } from "../../../contract/deps.js";
+import { isUuid } from "@kaname/contracts";
 import { invalid } from "./reply.js";
 
 type Input = Readonly<Record<string, unknown>>;
 type Rule = (v: Input) => string | null;
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SHELVES = ["company", "group", "me"];
 const len = (s: string): number => [...s].length;
 
@@ -27,13 +27,13 @@ const uuid =
     if (!has(v, k)) return null;
     const x = v[k];
     if (x === null) return o.nullable ? null : k;
-    return typeof x === "string" && UUID.test(x) ? null : k;
+    return typeof x === "string" && isUuid(x) ? null : k;
   };
 const shelf: Rule = (v) => (typeof v["shelf"] === "string" && SHELVES.includes(v["shelf"]) ? null : "shelf");
 /** グループの棚は group_id（uuid）が要る。会社・自分の棚は group_id を使わない（あっても通す） */
 const groupNeedsId: Rule = (v) => {
   if (v["shelf"] !== "group") return uuid("group_id", { nullable: true })(v);
-  return typeof v["group_id"] === "string" && UUID.test(v["group_id"]) ? null : "group_id";
+  return typeof v["group_id"] === "string" && isUuid(v["group_id"]) ? null : "group_id";
 };
 const position: Rule = (v) =>
   !has(v, "position") || (Number.isInteger(v["position"]) && (v["position"] as number) >= 0) ? null : "position";

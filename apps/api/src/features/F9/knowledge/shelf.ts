@@ -3,6 +3,7 @@
 //   グループ＝今の会社の、いちばん上でない消していないグループで、今の人が見られる物（app.kn_shelf_readable）。
 //   外れは null（口は 404＝在るかを漏らさない）。書けるか（403）は口が app.kn_shelf_writable などで決める。DB に書かない
 import type pg from "pg";
+import { isUuid } from "@kaname/contracts";
 import type { ShelfKind } from "./shape.js";
 
 export interface ShelfInput {
@@ -16,7 +17,6 @@ export interface ShelfRef {
   readonly groupId: string | null;
 }
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const COMPANY_SQL = "select app.kn_company_scope() as id";
 const ME_SQL = "select m.scope_id as id from members m where m.id = app.user_id() and m.deleted_at is null";
 const GROUP_SQL = `select s.id from scopes s
@@ -40,7 +40,7 @@ export async function resolveShelf(client: pg.PoolClient, input: ShelfInput): Pr
   }
   if (input.shelf !== "group") return null;
   const g = input.group_id;
-  if (typeof g !== "string" || !UUID.test(g)) return null;
+  if (typeof g !== "string" || !isUuid(g)) return null;
   const id = await one(client, GROUP_SQL, [g]);
   return id ? { kind: "group", scopeId: id, isPersonal: false, groupId: id } : null;
 }
