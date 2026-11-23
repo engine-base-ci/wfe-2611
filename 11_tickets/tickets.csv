@@ -3100,6 +3100,17 @@ K-733,承認を取り下げる口（withdrawApproval：承認した後・PC が�
 - [ ] 共有の試験 k144 の葉の行 K144-API-982（`k144.d/K-733.ts`・carry）が緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-750,決めた履歴を読む口（listApprovalHistory：自分が決めた AI の成果物の承認を決めた新しい順に・決めと期間で絞る・取り下げられるかの印）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・承認待ち,"自分が決めた承認を、あとから見返せるようにする（今は［決めた履歴］が押せない形・口は契約だけで 501）。`listApprovalHistory`（GET /api/v1/approvals/history）：
+
+- **読む物**：呼んだ人が**決めた**（承認した・差し戻した・止めた）AI の成果物の承認。決めた新しい順（決めた時刻・id の降順）。まだ決まっていない承認待ち・ほかの人が決めた物・別の会社の物・消したチケットの物は出ない。「渡された」を答えた記録（渡しの行）は出ない（渡しの記録は `listTicketHandovers`）
+- **絞り込み**：`decision`（`approve`・`return`・`stop`）と、期間 `from`・`to`（日本時間の日付 `YYYY-MM-DD`・両端を含む。どちらか片方だけでもよい）。期間の外・逆さま（from が to より後）はエラーにせず空。続きの鍵は決めた時刻と id（`limit` 1〜200・既定 20）
+- **答えの 1 件**（`ApprovalHistoryItem`・鍵はちょうど 11）：`id`・`ticket_id`・`ticket_number`・`title`・`decision`・`decided_at`・`reason`（差し戻しの理由・無ければ null）・`next_actor`（差し戻しの次は `clone`／`self`・差し戻し以外は null）・`withdrawn_at`（取り下げた時刻・無ければ null）・`run_status`（承認の後の実行の様子＝`queued`・`running`・`done`・`stopped`・`cancelled`・無ければ null）・`can_withdraw`（**［取り消す］＝承認の取り下げができるか**。承認で、取り下げの印が無く、承認の後の実行が待っていて、PC に渡した仕事もまだ待っている間だけ true＝K-733 の取り下げの条件と同じ判定）
+- **札の横の数** `meta.counts`：`{ total, approve, return, stop }`（期間で絞った数。`decision` の札では絞らない＝札を押しても数が変わらない）
+
+取り下げた承認は、決まった承認（decision approve）のまま `withdrawn_at` つきで履歴に残る。取り下げで新しくできた承認待ち（まだ決まっていない）は出ない（決めたら別の行として出る）。取り下げる口は K-733・画面は K-751。","- [ ] 下の表の 12 行（K750-API-001〜012）が緑：`apps/api/test/features/F5/approval-history.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`〔history・stopApproval・withdrawApproval〕・変えない）
+- [ ] 契約の口 `listApprovalHistory` が 501 でない。問い合わせ `decision`・`from`・`to` が決まった形だけ（`QUERY_RANGES`・K-468 の仕組み）で、それ以外は 422。生成の試験 `apps/api/test/generated/get_approvals_history.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-750.json` の covers）
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-780,段 6 の決定ログ §153（D-153.1〜33）と答えの記録を本線に入れる（文書だけ・K-61 の葉・段 6 の最初・依存なし）,タスク,K-61,未着手,実装,2026-11-27,F5・文書,"段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。
 
 段 6 のほかの葉は `decisions:` に D-153.n を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。前は口と DB の最初の葉 K-731 が決定ログも運んでいたので、依存の無い葉（K-741・K-761 など）が先に始まると止まった。だから決定ログだけを先に本線へ入れる、この葉を分けた（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ。PM の決め 2026-11-23）。K-731 は決定ログを運ばなくなり、この葉に依存する。
