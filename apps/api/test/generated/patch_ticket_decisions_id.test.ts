@@ -34,11 +34,6 @@ describe("PATCH /api/v1/ticket_decisions/:id", () => {
     // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/decision-update.test.ts", "utf8")).toContain("K391-API-004");
   });
-  it("test_patch_ticket_decisions_id_conflict_2", () => {
-    // UNWANTED: IF 取引先のルールにしたなら、Kaname は 409 と E-CONF-037 を返し、何も書かない（取引先の画面ができるまで）
-    // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-009」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F6/decision-update.test.ts", "utf8")).toContain("K391-API-009");
-  });
   it("test_patch_ticket_decisions_id_unavailable", () => {
     // UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）
     // 本物の試験：apps/api/test/features/F6/decision-update.test.ts の「K391-API-014」（同じ CI の G3 で流れる）
