@@ -32,6 +32,8 @@ export const KINDS: Readonly<Record<string, KindRule>> = {
   // 段 8（K-464・K-463）
   "ticket.stopped": ticketKind("stopped"),
   "approval.requested": ticketKind("approval"),
+  // 段 6（K-733）：承認待ちを取り下げた知らせ（表に足すのは K-731・D-153.7）
+  "approval.withdrawn": ticketKind("approval"),
   // 段 9（K-402・K-408・K-409・K-410・K-406）：受ける？の札
   "handover.requested": ticketKind("handover"),
   "handover.offered": ticketKind("handover"),

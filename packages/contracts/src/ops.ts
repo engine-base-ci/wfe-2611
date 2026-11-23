@@ -1,18 +1,18 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:3845aa5148795e67
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:540905c73ba40030
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
   remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
-  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunStopInput; data: T.ActionRunStopped };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunTakeoverInput; data: T.ActionRunView };
   getApproval: { params: { id: string }; query: never; body: never; data: T.ApprovalDetail };
   approveApproval: { params: { id: string }; query: never; body: T.ApprovalApproveInput; data: T.ApprovalDecided };
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
-  stopApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
-  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  stopApproval: { params: { id: string }; query: never; body: T.ApprovalStopInput; data: T.ApprovalStopped };
+  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalWithdrawInput; data: T.ApprovalWithdrawn };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };
   listApprovalHistory: { params: never; query: { "decision"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Approvals[] };
@@ -51,19 +51,18 @@ export interface Ops {
   putArtifactFromBridge: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
   reportBrowserState: { params: { id: string }; query: never; body: T.BridgeBrowserStateInput; data: T.BridgeBrowserReported };
   getJobControl: { params: { id: string }; query: never; body: never; data: T.JobControl };
-  mirrorConversationEntries: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  mirrorConversationEntries: { params: { id: string }; query: never; body: T.ConversationEntriesInput; data: T.ConversationEntriesMirrored };
   finishBridgeJob: { params: { id: string }; query: never; body: T.BridgeFinishInput; data: T.BridgeFinish };
   reportJobProgress: { params: { id: string }; query: never; body: T.BridgeProgressInput; data: T.BridgeJobEvents };
   askFromBridge: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   getBridgeQuestionAnswer: { params: { id: string; qid: string }; query: never; body: never; data: T.Messages };
   callKanameTool: { params: { id: string; name: string }; query: never; body: T.BridgeToolInput; data: T.BridgeToolResult };
   takeBridgeJob: { params: never; query: never; body: T.BridgeTakeInput; data: T.BridgeJob };
-  listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
+  listMirrorTargets: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MirrorTarget[] };
   createPairingCode: { params: never; query: never; body: T.PairingCodeInput; data: T.PairingCode };
   downloadBridgeRelease: { params: { name: string }; query: never; body: never; data: T.BridgeReleaseLink };
   getLatestBridgeRelease: { params: never; query: { "os"?: string | number; "arch"?: string | number }; body: never; data: T.BridgeRelease };
   reportUsage: { params: never; query: never; body: T.AgentUsageSnapshotsInput; data: T.AgentUsageSnapshots };
-  markHumanCheck: { params: { id: string }; query: never; body: T.ChecksInput; data: T.Checks };
   updateClientContact: { params: { id: string }; query: never; body: T.ClientContactsInput; data: T.ClientContacts };
   removeClientContact: { params: { id: string }; query: never; body: never; data: T.ClientContacts };
   inviteClientContact: { params: { id: string }; query: never; body: T.InvitationsInput; data: T.Invitations };
@@ -82,10 +81,9 @@ export interface Ops {
   getClientPortalPreview: { params: { id: string }; query: never; body: never; data: T.PortalHome };
   updateClientShare: { params: { id: string }; query: never; body: T.ClientsInput; data: T.Clients };
   listClientLinkCandidates: { params: never; query: { "name"?: string | number; "domain"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientLinkCandidate[] };
-  getMyClone: { params: never; query: never; body: never; data: T.Clones };
+  getMyClone: { params: never; query: never; body: never; data: T.MyClone };
   updateMyClone: { params: never; query: never; body: T.ClonesInput; data: T.Clones };
   listCloneActivity: { params: never; query: { "kind"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActivityItem[] };
-  exportCloneActivity: { params: never; query: never; body: T.ExportJobsInput; data: T.ExportJobs };
   getCloneGrowth: { params: never; query: never; body: never; data: T.CloneGrowth };
   countKnows: { params: never; query: never; body: never; data: T.KnowsCounts };
   getCloneNow: { params: never; query: never; body: never; data: T.CloneNow };
@@ -315,7 +313,6 @@ export interface Ops {
   listTicketArtifacts: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Artifacts[] };
   createTicketAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   updateTicketBody: { params: { id: string }; query: never; body: T.TicketBodyInput; data: T.BodySaved };
-  listChecks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Checks[] };
   updateTicketClientShare: { params: { id: string }; query: never; body: T.TicketsInput; data: T.Tickets };
   completeTicket: { params: { id: string }; query: never; body: T.TicketCompleteInput; data: T.TicketCompletion };
   listTicketDecisions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketDecision[] };
