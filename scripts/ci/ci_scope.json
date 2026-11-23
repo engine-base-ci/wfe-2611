@@ -1575,6 +1575,17 @@
   },
   {
    "paths": [
+    "07_qa/test-specs/screens/clone-chat.md",
+    "07_qa/test-specs/screens/clone-memory.md",
+    "07_qa/test-specs/screens/today.md",
+    "scripts/ci/raw_length_ledger.json"
+   ],
+   "tests": [
+    "apps/web/test/k725-memory-ui-retire.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
