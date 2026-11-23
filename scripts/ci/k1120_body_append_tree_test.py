@@ -194,6 +194,30 @@ class Tree(unittest.TestCase):
                 self.assertIn("読めない", red[0])
         self.assertEqual(body_append_gate.check(self.r, self.g("rev-parse", "HEAD")), [])
 
+    def test_K1120_CT_011_adder_commit_unknown(self) -> None:
+        """K1120-CT-011：鍵が在った時点から分かれた枝が、本体から鍵を消した元を取り込むときに鍵を残して解いた（足したコミットが比べる元から先頭までに無い）なら、赤 1 件で文に鍵と「足したコミットは分からない」。台本は終わりの番号 1"""
+        with_w = SA.replace('{"getA"}', '{"getA", "w"}')
+        self.w("05_flow/screen_api.py", with_w)
+        self.commit("K-401 fix: 元の葉が足していた")
+        self.g("checkout", "-q", "-b", "child")
+        self.w("別.txt", "x")
+        self.commit("K-402 feat: 子")
+        self.g("checkout", "-q", body_append_gate.MAINLINE)
+        self.w("05_flow/screen_api.py", SA)
+        self.base = self.commit("K-401 fix: 本体を戻す")
+        self.g("checkout", "-q", "child")
+        self.g("merge", "-q", "--no-ff", "-m", "K-402 merge: 元を取り込む", body_append_gate.MAINLINE)
+        self.w("05_flow/screen_api.py", with_w)   # 取り込みを「鍵を残す」で解いた（枝側の親と同じ字）
+        self.g("add", "-A")
+        self.g("commit", "-q", "--amend", "--no-edit")
+        red = self.red()
+        self.assertEqual(len(red), 1, red)
+        self.assertIn("LIST_OPS 'w'", red[0])
+        self.assertIn("足したコミットは分からない", red[0])
+        r = self.cli()
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("赤 1 件", r.stdout)
+
 
 class Wiring(unittest.TestCase):
     def test_K1120_CT_010_wired(self) -> None:
