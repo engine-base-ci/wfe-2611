@@ -115,6 +115,9 @@
 .k-f4d-pop.k-f4d-menu-live {
   position: static;
   max-width: none;
+  /* 置き場は .k-root の外（body の直下）に出るので、字の形と行の高さを本文に戻す（下絵は帯の中で .k-root の字を受ける・k.css の小窓と同じ） */
+  font-family: var(--k-font);
+  line-height: var(--k-lh-body);
 }
 /* キーボード・マウスでいま指している項目 */
 .k-f4d-menu-live button[data-highlighted] {

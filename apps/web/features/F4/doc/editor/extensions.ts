@@ -13,6 +13,8 @@ import { TaskItem } from "@tiptap/extension-task-item";
 import { TaskList } from "@tiptap/extension-task-list";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Color, TextStyle } from "@tiptap/extension-text-style";
+import { AllSelection, Plugin, Selection, TextSelection } from "@tiptap/pm/state";
+import type { EditorView } from "@tiptap/pm/view";
 import { DOC_ALIGNS } from "@kaname/contracts";
 import { isAllowedHref } from "./link-policy";
 
@@ -97,6 +99,43 @@ const ImageNode = Node.create({
   ],
 });
 
+/** 押した直後のキーは、ブラウザの選びの知らせ（selectionchange）より先に届くことがあり、そのときの編集欄の選びは押す前の所のまま
+ *  （続けて ⌘A・Backspace・Tab を押すと、押した所でなく前の所に効く）。画面の選びが編集欄の中の 1 点（字を選んでいない）で、
+ *  編集欄の選び（字の選び・全部の選び）と違うなら、キーを見る前にそこへ合わせる（部品が知らせを受けてからする読み直しを先にするだけ） */
+function syncCaretFromDom(view: EditorView): void {
+  const dom = (view.root as Document).getSelection?.();
+  if (view.composing || !dom || !dom.isCollapsed || !dom.anchorNode || !view.dom.contains(dom.anchorNode)) return;
+  const { selection } = view.state;
+  // 表のセルをまとめて選んでいるとき（CellSelection）・画像を選んでいるときは、画面の選びを読まない
+  if (!(selection instanceof TextSelection) && !(selection instanceof AllSelection)) return;
+  let pos: number;
+  try {
+    pos = view.posAtDOM(dom.anchorNode, dom.anchorOffset);
+  } catch {
+    return;
+  }
+  if (selection.empty && selection.from === pos) return;
+  const next = Selection.near(view.state.doc.resolve(pos));
+  if (!next.eq(selection)) view.dispatch(view.state.tr.setSelection(next));
+}
+const CaretSync = Extension.create({
+  name: "kCaretSync",
+  // どのキーの決まりより先に見る
+  priority: 1000,
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          handleKeyDown: (view) => {
+            syncCaretFromDom(view);
+            return false;
+          },
+        },
+      }),
+    ];
+  },
+});
+
 /** 表の中でとなりのセルへ移り、カーソルをそのセルの字の終わりに置く（部品の既定はセルの字を丸ごと選ぶので、続けて打つと字が消える）。
  *  最後のセルから先へは行を 1 つ足して移る。表の外では何もしない（偽を返して、ほかの Tab の動きに渡す） */
 function moveCell(editor: Editor, forward: boolean): boolean {
@@ -144,6 +183,7 @@ export function buildExtensions(): AnyExtension[] {
     TableCell.extend({ content: PARAS }),
     TableHeader.extend({ content: PARAS }),
     TableTab,
+    CaretSync,
     TextAlign.configure({ types: ["heading", "paragraph"], alignments: [...DOC_ALIGNS] }),
     TextStyle,
     Color,

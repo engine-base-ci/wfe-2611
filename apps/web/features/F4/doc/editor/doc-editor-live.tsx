@@ -5,7 +5,7 @@
 //   薄い字（ghost）の段落・見出しに打ち始めると、その節の薄い字を消して打った字だけを普通の字で残す（ghost の attr も外す）。
 //   外から渡された doc が変わったときだけ中身を入れ替える（自分の onChange で戻ってきた同じ物では入れ替えない）。口は呼ばない。
 //   K-568：text/plain だけの Markdown を貼ると変換する（paste-markdown.ts）。貼れなかったときは本文の箱の下に role="status" で知らせ、
-//   次に何かを打つか 5 秒で消す。本文の箱の下の右に案内『Markdown を貼ると変換します』を出す
+//   次に何かを打つか 5 秒で消す。本文の箱の下の右に案内『Markdown を貼ると変換します』を出す。貼った HTML の中の Markdown の記号は字のまま残す
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import type { EditorView } from "@tiptap/pm/view";
@@ -48,6 +48,12 @@ function typeIntoGhost(view: EditorView, from: number, to: number, text: string)
   return true;
 }
 
+/** 空の文書（content が空）は、編集の部品には空の段落 1 つで渡す。段が 1 つも無いと選びが段の外（深さ 0）になり、
+ *  本文に入っても帯の道具（表を入れる・太字 など）が押せない。出すときは fromEditorJson が空の段落 1 つを content の空に戻す */
+function editorContent(doc: Doc): ReturnType<typeof toEditorContent> {
+  return doc.content.length === 0 ? { type: "doc", content: [{ type: "paragraph" }] } : toEditorContent(doc);
+}
+
 export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: DocEditorLiveProps) {
   const sent = useRef<string>(JSON.stringify(doc));
   const changeRef = useRef(onChange);
@@ -73,8 +79,11 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
 
   const editor = useEditor({
     extensions: [...buildExtensions(), PasteMarkdown.configure({ onNotice: () => setPasteFailed((n) => n + 1) })],
-    content: toEditorContent(doc),
+    content: editorContent(doc),
     immediatelyRender: false,
+    // 部品の印の貼り付けの決まり（**a** を太字にする など）は、貼った HTML の中の字にも効いてしまう（html は Markdown と読まない・K-568）。
+    //   Markdown は text/plain だけのときに paste-markdown.ts が変換するので、部品の決まりは使わない（打つときの決まりは残す）
+    enablePasteRules: false,
     editorProps: {
       attributes: {
         role: "textbox",
@@ -106,7 +115,7 @@ export default function DocEditorLive({ doc, onChange, ariaLabel = "本文" }: D
     const key = JSON.stringify(doc);
     if (key === sent.current) return;
     sent.current = key;
-    editor.commands.setContent(toEditorContent(doc), { emitUpdate: false });
+    editor.commands.setContent(editorContent(doc), { emitUpdate: false });
   }, [doc, editor]);
 
   const link = useLinkPopover(editor);
