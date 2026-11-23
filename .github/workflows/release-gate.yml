@@ -12,7 +12,7 @@ env:
   PNPM_VERSION: '10'
 jobs:
   release-gate:
-    runs-on: [self-hosted, linux-vm]
+    runs-on: ${{ fromJSON(vars.CI_RUNNER || '["self-hosted","linux-vm"]') }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }

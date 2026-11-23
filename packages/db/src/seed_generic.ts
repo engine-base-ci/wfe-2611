@@ -32,7 +32,15 @@ export async function seedGenericRows(
   ).rows;
   const fks = (
     await c.query<Fk>(
-      "select tc.table_name as table, kcu.column_name as col, ccu.table_name as \"refTable\", ccu.column_name as \"refCol\" from information_schema.table_constraints tc join information_schema.key_column_usage kcu on kcu.constraint_name = tc.constraint_name and kcu.table_schema = tc.table_schema join information_schema.constraint_column_usage ccu on ccu.constraint_name = tc.constraint_name and ccu.table_schema = tc.table_schema where tc.table_schema = 'public' and tc.constraint_type = 'FOREIGN KEY'",
+      `select r.relname::text as "table", a.attname::text as col, fr.relname::text as "refTable", ra.attname::text as "refCol"
+from pg_constraint c
+join pg_class r on r.oid = c.conrelid
+join pg_class fr on fr.oid = c.confrelid
+cross join lateral unnest(c.conkey, c.confkey) as k(attnum, refattnum)
+join pg_attribute a on a.attrelid = c.conrelid and a.attnum = k.attnum
+join pg_attribute ra on ra.attrelid = c.confrelid and ra.attnum = k.refattnum
+where c.contype = 'f' and c.connamespace = 'public'::regnamespace
+  and fr.relnamespace = 'public'::regnamespace`,
     )
   ).rows;
   const pks = new Map<string, string>();

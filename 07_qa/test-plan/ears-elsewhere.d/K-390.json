@@ -32,8 +32,6 @@
     "test_post_tickets_id_decisions_rejected_403": "K390-API-014",
     "test_post_tickets_id_decisions_not_found": "K390-API-014",
     "test_post_tickets_id_decisions_rejected_422": "K390-API-008",
-    "test_post_tickets_id_decisions_rejected_422_2": "K390-API-010",
-    "test_post_tickets_id_decisions_rejected_422_3": "K390-API-011",
     "test_post_tickets_id_decisions_unavailable": "K390-API-016",
     "test_post_tickets_id_decisions_rate_limited": "K390-API-019",
     "test_post_tickets_id_decisions_shape": "K390-API-004",
@@ -44,10 +42,12 @@
     "test_post_tickets_id_decisions_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_decisions_conflict": "K390-API-011",
+    "test_post_tickets_id_decisions_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
-   },
-   "na": {
-    "test_post_tickets_id_decisions_too_large": "入口の共通の 1MB（D-130.1）"
    }
   }
  }

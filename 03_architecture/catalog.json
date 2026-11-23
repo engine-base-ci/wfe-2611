@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 368,
-  "api_built": 65,
+  "api": 369,
+  "api_built": 97,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
-  "db": 145,
-  "ui": 18,
+  "db": 148,
+  "ui": 19,
   "packages": 13,
-  "errors": 207,
+  "errors": 262,
   "stack": 56,
   "env": 41
  },
@@ -50,23 +50,6 @@
    ]
   },
   {
-   "op": "retryActionRun",
-   "method": "POST",
-   "path": "/api/v1/action_runs/:id/retry",
-   "what": "作成・実行（action_runs）— 止まった理由を見て一手を打つ（PC が閉じている・壊れた",
-   "flows": [
-    "F7"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "action_runs"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-67"
-   ]
-  },
-  {
    "op": "stopActionRun",
    "method": "POST",
    "path": "/api/v1/action_runs/:id/stop",
@@ -95,9 +78,10 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-485"
    ]
   },
   {
@@ -623,6 +607,23 @@
    ]
   },
   {
+   "op": "setBridgeBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/browser",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "sessions"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-366"
+   ]
+  },
+  {
    "op": "claimPairingCode",
    "method": "POST",
    "path": "/api/v1/bridge/claim",
@@ -651,9 +652,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -668,9 +669,10 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-56",
+    "K-354"
    ]
   },
   {
@@ -722,6 +724,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-362"
+   ]
+  },
+  {
+   "op": "checkMyDeviceBrowser",
+   "method": "POST",
+   "path": "/api/v1/bridge/devices/:id/browser-check",
+   "what": "作成・実行（bridge）— 自分の PC をつなぐ",
+   "flows": [
+    "F3"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "bridge_jobs"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-365"
    ]
   },
   {
@@ -1020,23 +1039,6 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-61"
-   ]
-  },
-  {
-   "op": "listClassAxes",
-   "method": "GET",
-   "path": "/api/v1/class_axes",
-   "what": "取得（class_axes）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "class_axes"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
    ]
   },
   {
@@ -1653,6 +1655,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -1670,6 +1673,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-56",
     "K-353"
    ]
   },
@@ -1685,9 +1689,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1702,9 +1706,9 @@
    "tables": [
     "credentials"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-56"
+    "K-355"
    ]
   },
   {
@@ -1856,8 +1860,11 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-70",
+    "K-419"
+   ]
   },
   {
    "op": "revokeInvitation",
@@ -1872,7 +1879,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "resendInvitation",
@@ -1887,7 +1896,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "createInvitationLink",
@@ -1901,8 +1912,11 @@
    "tables": [
     "invitations"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-70",
+    "K-421"
+   ]
   },
   {
    "op": "downloadInvoicePdf",
@@ -3007,7 +3021,9 @@
     "notifications"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "updateMemberPermissions",
@@ -3067,7 +3083,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "suspendMember",
@@ -3128,7 +3146,7 @@
    "tables": [
     "memories"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-69"
    ]
@@ -3233,7 +3251,7 @@
    "op": "listNotifications",
    "method": "GET",
    "path": "/api/v1/notifications",
-   "what": "取得（notifications）— 知らせを見てチケットへ行く",
+   "what": "取得（notifications）— 自分宛ての知らせを新しい順に見る（未読だけ・人で絞る・20 件ずつ・読んだものは 30 日分）",
    "flows": [
     "F7"
    ],
@@ -3241,9 +3259,9 @@
    "tables": [
     "notifications"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-461"
    ]
   },
   {
@@ -4365,7 +4383,7 @@
    "op": "listSavedViews",
    "method": "GET",
    "path": "/api/v1/saved_views",
-   "what": "取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "what": "取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）",
    "flows": [
     "F7"
    ],
@@ -4373,9 +4391,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-475"
    ]
   },
   {
@@ -4390,9 +4409,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-475"
    ]
   },
   {
@@ -4488,16 +4508,17 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-477"
    ]
   },
   {
    "op": "search",
    "method": "GET",
    "path": "/api/v1/search",
-   "what": "取得（search）— 探す（チケット・ナレッジのページ・決定・会話）",
+   "what": "取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない",
    "flows": [
     "F7"
    ],
@@ -4505,9 +4526,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-468"
    ]
   },
   {
@@ -4554,9 +4576,9 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-435"
    ]
   },
   {
@@ -4571,9 +4593,26 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-435"
+   ]
+  },
+  {
+   "op": "listTicketFields",
+   "method": "GET",
+   "path": "/api/v1/ticket-fields",
+   "what": "取得（custom_fields）— その種別で出す会社の項目を並びの順に見る（型・必須・説明・選択肢）",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-563"
    ]
   },
   {
@@ -4737,9 +4776,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -4754,9 +4794,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4771,9 +4811,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4788,9 +4828,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-386"
    ]
   },
   {
@@ -4814,7 +4854,7 @@
    "op": "listTickets",
    "method": "GET",
    "path": "/api/v1/tickets",
-   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）",
+   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限",
    "flows": [
     "F4",
     "F7"
@@ -4878,9 +4918,9 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-387"
    ]
   },
   {
@@ -4895,9 +4935,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-488"
    ]
   },
   {
@@ -5000,6 +5041,24 @@
    "status": "契約だけ（501）",
    "owner_tickets": [
     "K-59"
+   ]
+  },
+  {
+   "op": "updateTicketBody",
+   "method": "PATCH",
+   "path": "/api/v1/tickets/:id/body",
+   "what": "更新（tickets）— チケットの中身（区画）を書く・直す",
+   "flows": [
+    "F4"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_sections"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-59",
+    "K-432"
    ]
   },
   {
@@ -5118,9 +5177,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-487"
    ]
   },
   {
@@ -5178,7 +5238,7 @@
    "op": "listTicketLinks",
    "method": "GET",
    "path": "/api/v1/tickets/:id/links",
-   "what": "取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても",
+   "what": "取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children",
    "flows": [
     "F4"
    ],
@@ -5186,9 +5246,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5203,9 +5264,10 @@
    "tables": [
     "ticket_links"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-441"
    ]
   },
   {
@@ -5220,9 +5282,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-385"
    ]
   },
   {
@@ -5277,27 +5339,10 @@
    ]
   },
   {
-   "op": "updateTicketSection",
-   "method": "PATCH",
-   "path": "/api/v1/tickets/:id/sections/:key",
-   "what": "更新（tickets）— チケットの中身（区画）を書く・直す",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "ticket_sections"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "listTestSpecs",
    "method": "GET",
    "path": "/api/v1/tickets/:id/test-specs",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
+   "what": "取得（test_specs）— チケットの確認項目を作った順に見る（文・チェック・出どころ）",
    "flows": [
     "F4"
    ],
@@ -5305,9 +5350,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5322,9 +5368,10 @@
    "tables": [
     "test_specs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-59"
+    "K-59",
+    "K-434"
    ]
   },
   {
@@ -5375,8 +5422,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
-    "K-383",
-    "K-392"
+    "K-383"
    ]
   },
   {
@@ -5393,8 +5439,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
-    "K-384",
-    "K-392"
+    "K-384"
    ]
   },
   {
@@ -5778,8 +5823,11 @@
    "tables": [
     "members"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-70",
+    "K-419"
+   ]
   },
   {
    "op": "updateWorkspacePermissions",
@@ -6112,10 +6160,11 @@
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "bridge_pairing_codes",
@@ -6149,12 +6198,10 @@
   },
   {
    "table": "class_axes",
-   "class": "skeleton",
-   "why": "第1フェーズの口が使う（08_api/endpoints.json）",
+   "class": "frozen",
+   "why": "会社が足す項目に移した（K-563・D-150.46）。コードは使わない",
    "writes": [],
-   "reads": [
-    "F4"
-   ],
+   "reads": [],
    "boundary": false
   },
   {
@@ -6243,6 +6290,24 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_field_kinds",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
+   "table": "custom_fields",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false
   },
   {
@@ -7187,6 +7252,14 @@
    "boundary": false
   },
   {
+   "table": "ticket_field_values",
+   "class": "skeleton",
+   "why": "第1フェーズの口が使う（K-563）",
+   "writes": [],
+   "reads": [],
+   "boundary": false
+  },
+  {
    "table": "ticket_handovers",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
@@ -7478,6 +7551,13 @@
     "DOC_TOOL_ITEMS"
    ],
    "what": "本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。"
+  },
+  {
+   "file": "apps/web/components/k/search-field",
+   "exports": [
+    "SearchField"
+   ],
+   "what": "探す欄の型（段 9・代表の直し 2026-11-20）。虫眼鏡と入力を 1 つの枠に入れ、焦点が中に入ったら枠全体に輪を出す（:focus-within）。"
   }
  ],
  "common": {
