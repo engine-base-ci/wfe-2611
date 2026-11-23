@@ -129032,7 +129032,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "404",
-   "ears_text": "UNWANTED: IF 無い渡しの人を決めようとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
+   "ears_text": "UNWANTED: IF 無い渡し、または無い人・別の会社の人を決める人に選んだなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
    "test_file": "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts",
    "test_function": "test_post_ticket_handovers_id_claim_not_found",
    "test_level": "unit",
