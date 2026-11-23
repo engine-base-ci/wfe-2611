@@ -746,12 +746,12 @@
  "inputs": {
   "tickets": 218,
   "l1_rows": 5094,
-  "ears_endpoints": 370,
-  "ears_tests": 4062,
+  "ears_endpoints": 371,
+  "ears_tests": 4075,
   "entities": 145,
   "policies": 418,
   "access_cases": 1562,
-  "errors": 276,
+  "errors": 280,
   "journey_rows": 88,
   "critical_tasks": 88
  },
