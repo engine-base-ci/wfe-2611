@@ -14,6 +14,13 @@ RESPONSES = {
     "mirrorConversationEntries": ("ConversationEntriesMirrored", {"inserted": "integer"}),
     "listMirrorTargets": ("MirrorTarget", {"conversation_id": "uuid", "agent_session_id": "string", "job_id": "uuid"}),
 }
+NOT_NULL_ANSWERS = {
+    "listMirrorTargets.agent_session_id": "DB の関数 app.talk_mirror_targets は agent_session_id is not null の仕事だけを拾って返す（conversations.agent_session_id は null 可だが、この答えの値は仕事の側の session）",
+}
+# 問い合わせは limit だけ（cursor は形だけ受けて読まない）。scope_id は受けない（口が「受け付けない問い合わせ」で 422）
+QUERIES = {
+    "listMirrorTargets": [],
+}
 LIST_DETAILS = {
     "listMirrorTargets": {"limit_max": 50, "sort": False, "desc": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）", "meta": "{ limit }"},
 }

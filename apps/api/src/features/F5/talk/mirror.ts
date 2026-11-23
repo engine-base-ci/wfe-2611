@@ -24,7 +24,8 @@ const invalid = (details: Issue[]): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details },
 });
-const fromCatalog = (code: string, status: number): HookReply => ({ status, body: kanameError(code).toJSON() });
+// 状態コードを先に取る（契約の形の検査 K144-SHAPE-010 は、正本の ID を最初に受ける関数を「正本の種類の状態コードを返す」と読む）
+const fromCatalog = (status: number, code: string): HookReply => ({ status, body: kanameError(code).toJSON() });
 const kindOf = (e: unknown): string => {
   const x = e as { code?: unknown; name?: unknown } | null;
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
@@ -91,12 +92,12 @@ export function talkMirrorHooks(pool: pg.Pool): Record<string, Hook> {
           a.id,
           JSON.stringify(p.entries),
         ]);
-        if (v === "down") return fromCatalog("E-PAGE-003", 503);
+        if (v === "down") return fromCatalog(503, "E-PAGE-003");
         if (!v) return gone();
         const r = v as Row;
         if (r["error"] === "not_found") return notFound();
-        if (r["error"] === "no_conversation") return fromCatalog("E-TALK-030", 409);
-        if (r["error"] !== undefined) return fromCatalog("E-PAGE-003", 503);
+        if (r["error"] === "no_conversation") return fromCatalog(409, "E-TALK-030");
+        if (r["error"] !== undefined) return fromCatalog(503, "E-PAGE-003");
         return { status: 201, body: { data: { inserted: Number(r["inserted"] ?? 0) } } };
       },
     },
@@ -107,7 +108,7 @@ export function talkMirrorHooks(pool: pg.Pool): Record<string, Hook> {
         const p = parseLimit(a.c.req.query());
         if (!p.ok) return invalid(p.details);
         const v = await call("listMirrorTargets", "select app.talk_mirror_targets($1, $2) as v", [sid, p.limit]);
-        if (v === "down") return fromCatalog("E-PAGE-003", 503);
+        if (v === "down") return fromCatalog(503, "E-PAGE-003");
         if (!v) return gone();
         return { status: 200, body: { data: Array.isArray(v) ? v : [], meta: { limit: p.limit } } };
       },

@@ -24230,11 +24230,15 @@
    ],
    "split": "",
    "choke_points": [
-    "C2"
+    "C2",
+    "C3",
+    "C4"
    ],
    "tests": [
     "apps/api/test/features/F5/talk-mirror.test.ts",
-    "apps/bridge/test/loop-mirror.test.ts"
+    "apps/bridge/test/loop-mirror.test.ts",
+    "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-760.ts"

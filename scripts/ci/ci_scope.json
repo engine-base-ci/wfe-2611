@@ -1814,6 +1814,16 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F5/talk-mirror.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
+    "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/bridge-job-extra.ts",
     "apps/api/src/features/F5/delegate/browser-state.ts",
     "apps/api/src/features/F5/delegate/job-file.ts",

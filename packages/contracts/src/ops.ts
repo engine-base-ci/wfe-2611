@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:0165fe325a52d2d0
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b3b8c5d98a0696e5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -58,7 +58,7 @@ export interface Ops {
   getBridgeQuestionAnswer: { params: { id: string; qid: string }; query: never; body: never; data: T.Messages };
   callKanameTool: { params: { id: string; name: string }; query: never; body: T.BridgeToolInput; data: T.BridgeToolResult };
   takeBridgeJob: { params: never; query: never; body: T.BridgeTakeInput; data: T.BridgeJob };
-  listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.MirrorTarget[] };
+  listMirrorTargets: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MirrorTarget[] };
   createPairingCode: { params: never; query: never; body: T.PairingCodeInput; data: T.PairingCode };
   downloadBridgeRelease: { params: { name: string }; query: never; body: never; data: T.BridgeReleaseLink };
   getLatestBridgeRelease: { params: never; query: { "os"?: string | number; "arch"?: string | number }; body: never; data: T.BridgeRelease };

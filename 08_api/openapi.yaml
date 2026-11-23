@@ -20079,12 +20079,6 @@ paths:
       security:
       - session: []
       parameters:
-      - name: scope_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -20098,35 +20092,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 50
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - agent_session_id
-          - area
-          - branched_from_message_id
-          - closed_at
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - incognito
-          - last_read_at
-          - owner_member_id
-          - parent_conversation_id
-          - participant_member_ids
-          - scope_id
-          - starred_at
-          - subject_type
-          - talk_kind
-          - tenant_id
-          - ticket_id
-          - title
-          - title_auto
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
