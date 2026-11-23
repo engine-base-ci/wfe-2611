@@ -310,7 +310,8 @@ test("K568-UI-007 表を入れる・打つ：『表を入れる』で見出し�
   await page.keyboard.type("単価");
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.type("!");
-  await expect.poll(() => outText(page)).toBe("項目 | 数量! | 単価");
+  // 素の文字は行ごと（docToText）：字の無い本文の行 2 つも「 | 」でつなぐ行として出る（行の終わりの空白は落ちる）
+  await expect.poll(() => outText(page)).toBe("項目 | 数量! | 単価\n |  |\n |  |");
   const before = rows(await outDoc(page)).length;
   await body(page).locator("td").last().click();
   await page.keyboard.press("Tab");
@@ -349,13 +350,14 @@ test("K568-UI-009 セルをつなぐ・分ける：となり合う 2 つのセ�
 }) => {
   await open(page, "empty");
   await insertTable(page);
-  const cells = body(page).locator("tbody tr").first().locator("td");
+  // 表の行は全部 tbody の中で、1 行目は見出しの行（th）。本文の最初の行（2 行目）のセルを選ぶ
+  const cells = body(page).locator("tr").nth(1).locator("td");
   await cells.nth(0).dragTo(cells.nth(1));
   await table(page, "セルをつなぐ");
   await expect.poll(async () => rows(await outDoc(page))[1]?.content?.length).toBe(2);
   expect(rows(await outDoc(page))[1]!.content![0]!.attrs?.["colspan"]).toBe(2);
   await expect(page.getByTestId("doc-verdict")).toHaveText("ok");
-  await body(page).locator("tbody tr").first().locator("td").first().click();
+  await body(page).locator("tr").nth(1).locator("td").first().click();
   await table(page, "セルを分ける");
   await expect.poll(async () => rows(await outDoc(page))[1]?.content?.length).toBe(3);
   expect(JSON.stringify(await outDoc(page))).not.toMatch(/colspan|colwidth/);
@@ -399,6 +401,8 @@ test("K568-UI-011 表を消す：『表を消す』で表ごと消え、前後�
   await tool(page, "表").click();
   expect(await isOff(titem(page, "表を消す"))).toBe(true);
   await page.keyboard.press("Escape");
+  // Esc の後の焦点は『表』の道具に在る（K568-UI-006）。編集欄に戻ってから戻す
+  await body(page).click();
   await page.keyboard.press("ControlOrMeta+z");
   await expect.poll(async () => find(await outDoc(page), (n) => n.type === "table").length).toBe(1);
 });
@@ -432,7 +436,9 @@ test("K568-UI-012 Markdown を貼る：# 見出し（level 2）・## （level 3�
   expect(
     find(d, (n) => !!n.marks?.some((m) => m.type === "link" && m.attrs?.["href"] === "https://example.com/a")).length,
   ).toBe(1);
-  expect(await outText(page)).not.toMatch(/[#*`>~]|\| --- \||^---/m);
+  // 素の文字（docToText）は引用の行を「> 」で始めるので、「>」は画面の本文の字で見る
+  expect(await outText(page)).not.toMatch(/[#*`~]|\| --- \||^---/m);
+  expect(await body(page).innerText()).not.toMatch(/[#*`>~]/);
   await expect(page.getByTestId("doc-verdict")).toHaveText("ok");
 });
 
