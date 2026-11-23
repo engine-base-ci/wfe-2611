@@ -119,7 +119,7 @@ function MobileSub({ current }: { current: MeSubKey }) {
           自分の設定 › {now?.label ?? ""} ▾
         </M.Trigger>
         <M.Portal>
-          <M.Positioner sideOffset={6} align="start">
+          <M.Positioner className="k-popup-layer" sideOffset={6} align="start">
             <M.Popup className="k-select-popup k-menu">
               {SECTIONS.map((s) => (
                 <Fragment key={s.head}>
