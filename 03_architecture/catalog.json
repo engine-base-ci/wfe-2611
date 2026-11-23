@@ -1961,7 +1961,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "sendKnowledgeAnswerFeedback",
@@ -1976,7 +1978,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeHome",
@@ -1991,7 +1995,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "searchKnowledgeLinkTargets",
@@ -2006,7 +2012,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeProposals",
@@ -2021,7 +2029,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "acceptKnowledgeProposal",
@@ -2036,7 +2046,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "declineKnowledgeProposal",
@@ -2051,7 +2063,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeTree",
@@ -2066,7 +2080,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeVerifications",
@@ -2081,7 +2097,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createKnowledgeImport",
@@ -2096,7 +2114,9 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeImport",
@@ -2111,7 +2131,9 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "commitKnowledgeImport",
@@ -2126,7 +2148,9 @@
     "imports"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgePages",
@@ -2141,7 +2165,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createKnowledgePage",
@@ -2156,7 +2182,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgePage",
@@ -2171,7 +2199,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "updateKnowledgePage",
@@ -2186,7 +2216,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "archiveKnowledgePage",
@@ -2201,7 +2233,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "uploadKnowledgeAttachment",
@@ -2216,7 +2250,9 @@
     "attachments"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "saveKnowledgeDraft",
@@ -2231,7 +2267,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "discardKnowledgeDraft",
@@ -2246,7 +2284,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeLinks",
@@ -2261,7 +2301,9 @@
     "knowledge_links"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "linkKnowledgeMention",
@@ -2276,7 +2318,9 @@
     "knowledge_links"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "exportKnowledgeMarkdown",
@@ -2291,7 +2335,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeMessages",
@@ -2306,7 +2352,9 @@
     "messages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "postKnowledgeMessage",
@@ -2321,7 +2369,9 @@
     "messages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "publishKnowledgePage",
@@ -2336,7 +2386,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "unarchiveKnowledgePage",
@@ -2351,7 +2403,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "getKnowledgeUsage",
@@ -2366,7 +2420,9 @@
     "reference_logs"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "verifyKnowledgePage",
@@ -2381,7 +2437,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "listKnowledgeVersions",
@@ -2396,7 +2454,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "restoreKnowledgeVersion",
@@ -2411,7 +2471,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-69"
+   ]
   },
   {
    "op": "createLayer",
