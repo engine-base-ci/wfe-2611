@@ -1,0 +1,5 @@
+{
+ "reads_ok": {
+  "apps/api/test/features/F5/checks-retire.test.ts": "契約・生成物・目録・親の md を readFileSync で読み、git grep と flow_db_gate.py を spawnSync で動かす（K741-API-002〜010）・K-741"
+ }
+}
