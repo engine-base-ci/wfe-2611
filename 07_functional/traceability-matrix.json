@@ -807,6 +807,8 @@
     "POST /api/learning_candidates/:id/dismiss",
     "POST /api/learning_candidates/:id/later",
     "POST /api/learning_candidates/:id/exception-request",
+    "POST /api/ticket_draft_conversations/:id/adopt",
+    "POST /api/ticket_draft_conversations/:id/adopt",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -5166,6 +5168,18 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/learning_candidates/:id/exception-request"
+    },
+    {
+     "act": "A99",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt"
+    },
+    {
+     "act": "A20",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_draft_conversations/:id/adopt"
     },
     {
      "role": "transition",

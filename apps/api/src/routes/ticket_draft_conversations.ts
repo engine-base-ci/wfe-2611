@@ -5,5 +5,6 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.post("/api/v1/ticket_draft_conversations", op(deps, "startDraftConversation"));
+  app.post("/api/v1/ticket_draft_conversations/:id/adopt", op(deps, "adoptDraftConversation"));
   app.post("/api/v1/ticket_draft_conversations/:id/messages", op(deps, "sendDraftMessage"));
 }

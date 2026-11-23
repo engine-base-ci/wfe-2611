@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 372,
+  "api": 373,
   "api_built": 93,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 243,
+  "errors": 247,
   "stack": 56,
   "env": 41
  },
@@ -4665,6 +4665,25 @@
    "owner_tickets": [
     "K-61",
     "K-774"
+   ]
+  },
+  {
+   "op": "adoptDraftConversation",
+   "method": "POST",
+   "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+   "what": "作成・実行（ticket_draft_conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成／チケットを作る（画面で・下書きから）",
+   "flows": [
+    "F4",
+    "F5"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "conversations"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-61",
+    "K-776"
    ]
   },
   {

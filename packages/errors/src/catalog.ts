@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。243 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。247 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4392,6 +4392,74 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "must_not": false,
     "layers": [
       "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-080": {
+    "id": "E-TALK-080",
+    "cls": "forbidden",
+    "message": "作る時の会話を移せるのは、そのチケットを作った人だけです",
+    "action": "作った人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-080",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-081": {
+    "id": "E-TALK-081",
+    "cls": "conflict",
+    "message": "この会話は、チケットに移せません",
+    "action": "—",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-081",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-082": {
+    "id": "E-TALK-082",
+    "cls": "conflict",
+    "message": "この会話は、もうチケットに移しています",
+    "action": "チケットの右のパネルで続ける",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-082",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-TALK-083": {
+    "id": "E-TALK-083",
+    "cls": "conflict",
+    "message": "このチケットの会話が、すでにあります。作る時の会話は、そのまま残ります",
+    "action": "チケットの右のパネルで話す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-083",
+    "must_not": false,
+    "layers": [
       "API",
       "DB"
     ],

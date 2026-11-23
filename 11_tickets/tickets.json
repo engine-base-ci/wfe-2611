@@ -2615,6 +2615,7 @@
     "approvals"
    ],
    "apis": [
+    "adoptDraftConversation",
     "bulkApprove",
     "dryRunTicket",
     "editApproval",

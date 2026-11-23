@@ -1632,6 +1632,26 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F5/talk/adopt.ts",
+    "apps/api/src/hooks/draft-adopt.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/draft-adopt.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/draft-adopt.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_draft_conversations_id_adopt.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -1790,6 +1810,8 @@
   "apps/api/test/features/contract/k144.d/K-758.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-763.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/contract/k144.d/K-774.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/draft-adopt.test.ts": "葉の hooks のファイル draft-adopt.ts を動的 import で読んで土台の hooks に足す（まだ無いファイルで準備ごと落とさないため）・K-776",
+  "apps/api/test/features/contract/k144.d/K-776.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {

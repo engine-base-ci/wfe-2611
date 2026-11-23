@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:9abe100d98d2021c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:d81c3289acf536ef
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15273,6 +15273,70 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "POST",
+    "path": "/api/v1/ticket_draft_conversations/:id/adopt",
+    "operationId": "adoptDraftConversation",
+    "table": "conversations",
+    "kind": "create",
+    "input": "ConversationAdoptInput",
+    "success": 201,
+    "output": "ConversationAdopted",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 60,
+      "key": "user"
+    },
+    "uuidParams": [
+      "id"
+    ],
+    "chokePoints": [
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "errors": [
+      401,
+      403,
+      404,
+      409,
+      422,
+      409,
+      409,
+      503,
+      413,
+      429,
+      502,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A20",
+      "A99"
+    ],
+    "screens": [
+      "clone-chat"
+    ],
+    "perm": {
+      "word": "self",
+      "target": null,
+      "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": {
+        "table": "conversations",
+        "sql": "owner_member_id = app.user_id()"
+      }
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
     "path": "/api/v1/ticket_draft_conversations/:id/messages",
     "operationId": "sendDraftMessage",
     "table": "messages",
@@ -19792,4 +19856,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "9abe100d98d2021c";
+export const OPENAPI_HASH = "d81c3289acf536ef";
