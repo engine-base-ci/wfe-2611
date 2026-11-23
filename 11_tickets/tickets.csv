@@ -2887,7 +2887,7 @@ K-758,自分の AI に言う・止める口（sendConversationMessage・stopConv
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-774,作る画面の会話の口（startDraftConversation・sendDraftMessage：チケットの無い会話を始める・言うたびに欄の今の中身と人が直した欄を付けて仕事を積む）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-08,F5・話す,"チケットを作る画面の右の AI との会話（D-153.17）の口を作る。人は欄に自分で書いてもよく、AI は**言うたびに、その時の欄の中身と人が直した欄を受け取ってから答える**。口は新しい（契約に無かったので `screen_api.py` に行を足す）。
 
-- `startDraftConversation`（POST /api/v1/ticket_draft_conversations・体なし）：チケットの無い会話を 1 つ始める（種類 `draft`・チケットに結ばない・人ごとに 50 まで：51 個目を始めるときは一番古い作る画面の会話を片付けてから始める）。会話の行・仕事は作らない
+- `startDraftConversation`（POST /api/v1/ticket_draft_conversations・体は空の `{}` だけ。体なし・知らない項目は入口が 422。画面は空の体 `{}` を送る・K-758 の止める口と同じ）：チケットの無い会話を 1 つ始める（種類 `draft`・チケットに結ばない・人ごとに 50 まで：51 個目を始めるときは一番古い作る画面の会話を片付けてから始める）。会話の行・仕事は作らない
 - `sendDraftMessage`（POST /api/v1/ticket_draft_conversations/:id/messages・体は `{ text, draft: { title, body, checks[] }, edited?: (""title""|""body""|""checks"")[] }`）：自分の作る画面の会話に言う。言った字は人の言葉の行に**書いたとおり**残し、人の言葉の行に「人が直した欄」`edited` を `options.passed` として残す（会話を読む口の `passed` に出る＝画面の「…を AI に渡しました」の印）。AI への仕事の頭に、欄の今の中身と「人が直した欄は上書きしない・案は `draft_propose` の道具で出す」の指示を付ける。仕事は共通の関数 `app.talk_enqueue`（K-758）で積む
 
 作る口 `createTicket`（K-437）は変えない。AI の案の道具 `draft_propose` は K-775・作った後の会話の移しは K-776・画面は K-767・K-777。","- [ ] 下の表の 23 行（K774-API-001〜023）が緑：`apps/api/test/features/F5/talk-draft.test.ts`（土台は K-757 の `F5/talk.harness.ts`・変えない）
