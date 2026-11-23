@@ -249,7 +249,7 @@ SCREEN_API = {
         ("POST", "/bridge/jobs/:id/questions", "A91", "messages", "askFromBridge", ["notifications"]),
         ("GET", "/bridge/jobs/:id/questions/:qid", "A91", "messages", "getBridgeQuestionAnswer", []),
         ("GET", "/bridge/jobs/:id/control", "A104", "bridge_jobs", "getJobControl", []),
-        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", ["attachments"]),
+        ("POST", "/bridge/jobs/:id/browser", "A104", "bridge_job_events", "reportBrowserState", []),   # 写真・画面の写しは送らない（K-761）
         ("POST", "/bridge/jobs/:id/conversation-entries", "A20", "messages", "mirrorConversationEntries", ["conversations"]),
         ("GET", "/bridge/mirror-targets", "A20", "conversations", "listMirrorTargets", ["messages"]),   # 写しを取り戻す先（D-112・D-128.122）
         ("POST", "/bridge/jobs/:id/artifacts", "A95", "artifacts", "putArtifactFromBridge", ["artifact_versions"]),
@@ -1164,7 +1164,7 @@ QUERIES = {
     "listSavedViews": ["share"],
     "listApprovalQueue": ["kind", "sort"],
     "listApprovalHistory": ["decision", "from", "to"],
-    "listConversations": ["q", "starred"],
+    "listConversations": [],   # 探す（q）・星（starred）は作らない（D-153.16・K-757）。cursor と limit はいつも付く
     "listMemories": ["kind", "since"],
     "listLearningCandidates": ["trigger", "target"],
     "listRules": ["scope", "client_id"],
@@ -1236,7 +1236,7 @@ PERMS = {
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
     "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
     "updateTicketMessage": ("self", "書いた本人", False),
-    "deleteTicketMessage": ("self", "書いた本人（マネージャーは消した印を残して消せる）", False),
+    "deleteTicketMessage": ("read", "書いた本人か、そのチケットのグループのマネージャー（口と DB の関数が確かめる）。消すと 1 行の跡が残る（⑪）", False),
     "starTicketMessage": ("read", "そのチケットを見られる人（自分の印だけ）", False),
     "listTicketDecisions": ("read", "そのチケットを見られる人（見るだけの人も読める）", False),
     "createTicketDecision": ("write", "そのチケットを書ける人（見るだけの人は足せない・⑧）。決めた人は同じ会社の今のメンバー（既定は本人）", False),
@@ -1282,10 +1282,10 @@ PERMS = {
     "updateMyClone": ("self", "自分の分身だけ（許可のモード・自動で覚える）。全部許可にするのは本人が選んだときだけ", False),
     "listConversations": ("self", "自分の会話だけ（管理者も運営も中身は見ない。運営が中を見る 1 時間の許可のときだけ）", False),
     "createConversation": ("self", "自分の分身とだけ", False),
-    "getConversation": ("self", "自分の会話だけ", False),
+    "getConversation": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_view も持つ・K-757）", False),
     "updateConversation": ("self", "自分の会話だけ（名前・星・記憶に使わない・閉じる）", False),
     "deleteConversation": ("self", "自分の会話だけ", False),
-    "listConversationMessages": ("self", "自分の会話だけ", False),
+    "listConversationMessages": ("self", "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）", False),
     "streamConversation": ("self", "自分の会話だけ。書きながらの返事・何をしているか・手順を流す（D-104.8）", False),
     "sendConversationMessage": ("self", "自分の会話だけ。分身は本人の権限の中でだけ読む・動く", False),
     "stopConversation": ("self", "自分の会話だけ", False),
@@ -1396,14 +1396,14 @@ PERMS = {
     "askFromBridge": ("device", "同上（本人に聞く）", False),
     "getBridgeQuestionAnswer": ("device", "同上", False),
     "getJobControl": ("device", "同上（止める・割り込みの指示を受け取る）", False),
-    "reportBrowserState": ("device", "同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）", False),
+    "reportBrowserState": ("device", "同上。仕事の間のブラウザの様子（使う・使えない）だけ。写真・画面の写しは送らない（K-761）", False),
     "mirrorConversationEntries": ("device", "同上（会話の記録の写し。正は本人の PC・D-112）", False),
     "listMirrorTargets": ("device", "同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）", False),
     "putArtifactFromBridge": ("device", "同上", False),
     "callKanameTool": ("device", "同上。分身は本人の権限の中でだけ Kaname の道具を呼べる", False),
     "resolveCredential": ("device", "その人の PC の実行器だけ。持ち主と使える場所が合うときだけ・その仕事の間だけ。AI と画面には返さない（D-128.57）", False),
     "reportCredentialCheck": ("device", "その人の PC", False),
-    "getFileForBridge": ("device", "その仕事に付いたファイルだけ（期限つきの署名 URL）", False),
+    "getFileForBridge": ("device", "その仕事に付いた資料だけ（期限つきの署名 URL）。動いている仕事の間だけ（K-761）", False),
     # 運営：配るもの（運営の人で、そのできることを持つ人だけ・D-128.70）
     "listOpsWorkTypes": ("ops:distribute", "配るものを持つ運営の人", False),
     "getOpsWorkType": ("ops:distribute", "同上。どのワークスペースがどの版を使っているかは数だけ（中身は見ない）", False),
@@ -1582,6 +1582,9 @@ PERMS = {
     "getServiceStatus": ("public", "誰でも（稼働状況とメンテの予定だけ。どのワークスペースのことも出さない）", False),
     "listPortalNotices": ("client", "取引先の人（全部向けの障害・メンテだけ）", False),
 }
+
+# 成功の状態コード（既定は POST 201・それ以外 200）。POST でも「作らず決めるだけ」で 200 を返す口だけ書く（K-410）。チケットごとの分は screen_api.d に書く
+SUCCESS_STATUS: dict[str, int] = {}
 
 # チケットごとのファイル（screen_api.d/K-xxx.py）の分を足す（K-325）。同じ鍵・同じ operationId が 2 つあれば止まる
 import sys as _sys  # noqa: E402

@@ -1276,6 +1276,28 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-message-edit.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-edit.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ticket_messages_id.test.ts",
+    "apps/api/test/generated/delete_ticket_messages_id.test.ts",
+    "apps/api/test/generated/post_ticket_messages_id_star.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-update.ts",
     "apps/api/src/features/ticket-update/**",
     "apps/api/src/features/F6/progress/**"
@@ -1302,6 +1324,17 @@
    ],
    "tests": [
     "apps/api/test/features/F6/progress-reopen.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261120130600_ticket_message_post_stage.sql",
+    "apps/api/src/features/F6/thread/post.ts",
+    "apps/api/src/features/F6/thread/input.ts",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-post-stage.test.ts"
    ]
   },
   {
@@ -1781,6 +1814,61 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F5/talk/read.ts",
+    "apps/api/src/hooks/talk-read.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/talk-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/talk-read.test.ts",
+    "apps/api/test/features/F5/talk.harness.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_conversations.test.ts",
+    "apps/api/test/generated/get_conversations_id.test.ts",
+    "apps/api/test/generated/get_conversations_id_messages.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/bridge-job-extra.ts",
+    "apps/api/src/features/F5/delegate/browser-state.ts",
+    "apps/api/src/features/F5/delegate/job-file.ts",
+    "packages/db/migrations/20261125024100_job_browser_file.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/job-extra.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/loop.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/loop-browser-state.test.ts",
+    "apps/bridge/test/loop.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/job-extra.test.ts",
+    "apps/api/test/features/F5/talk-pc.kit.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_jobs_id_browser.test.ts",
+    "apps/api/test/generated/get_bridge_files_ref.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -1915,9 +2003,11 @@
   "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
   "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
   "apps/api/test/features/contract/k144.d/K-385.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-385",
+  "apps/api/test/features/contract/k144.d/K-386.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-386",
   "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
   "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）",
+  "apps/api/test/features/F6/thread-post-stage.test.ts": "書き込みの口の hooks のファイル（apps/api/src/hooks/ticket-message-post.ts・K-385）を最初の要求の前に動的 import で読む（K-389）",
   "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
   "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）",
   "apps/api/test/features/F6/decision-update.test.ts": "改める口の hooks のファイル（apps/api/src/hooks/ticket-decision-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-391）",
@@ -1952,6 +2042,10 @@
   "apps/api/test/features/F5/run-stop-execute.test.ts": "葉の hooks のファイル apps/api/src/hooks/run-stop.ts を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-731",
   "apps/api/test/features/F5/approval-more.kit.ts": "葉の hooks のファイル apps/api/src/hooks/approval-stop.ts（と K-733・K-742・K-750 の hooks のファイル）を動的 import で読む。読む物と使う試験は data_links で結ぶ・K-732（K-733・K-742・K-744・K-748・K-750 も同じ手助けを使う）",
   "apps/api/test/features/contract/k144.d/K-732.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/talk.harness.ts": "葉の hooks のファイルを動的 import で読んで土台の hooks に足す（まだ無いファイルで準備ごと落とさないため）・K-757",
+  "apps/api/test/features/contract/k144.d/K-757.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F5/talk-pc.kit.ts": "葉の hooks のファイルを最初の要求のときに動的 import する（準備で読まない・K-378 と同じ）",
+  "apps/api/test/features/contract/k144.d/K-761.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {
