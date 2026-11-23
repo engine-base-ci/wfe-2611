@@ -84,7 +84,7 @@ describe("K-725 web の前の記憶の画面と呼び出しを外す", () => {
     const b = read("apps/web/lib/built-routes.ts");
     expect(b).not.toContain('"/dev/memory"');
     expect(b).toContain('"/dev/ai-settings"');
-    expect(b).toContain('"/dev/mock/f9"');
+    expect(b, "ほかの道は巻き込まない（本線に前から在る下絵の道）").toContain('"/dev/mock/f8"');
   });
 
   it("K725-API-008 守り：生の長さの台帳と会話の部品の検査の許す一覧から、消した 2 ファイルが消える", () => {
