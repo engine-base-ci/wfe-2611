@@ -141,6 +141,7 @@ export const MIGRATIONS = [
   "20261120160000_function_execute_private.sql",
   "20261120215500_runs_view_real_runs_only.sql",
   "20261121090100_handover_base.sql",
+  "20261121090900_handover_distribute.sql",
   "20261121091900_workspace_invitations.sql",
   "20261121092100_invitation_link.sql",
   "20261122090100_ticket_body.sql",
