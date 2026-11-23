@@ -52,9 +52,9 @@ describe("K-1116 記憶を直す口は確かさの形の外を断る", () => {
     }
   });
 
-  it('K1116-API-002 確かさが数の形（"0.9"・"-3"・"12.345"）：200 で中身を直し、確かさは使わない（DB は 0.50 のまま）', async () => {
+  it('K1116-API-002 確かさが数の形（"0.9"・"-3"・"12.345"・末に改行 1 つの "1\\n"）：200 で中身を直し、確かさは使わない（DB は 0.50 のまま）', async () => {
     const id = await memory();
-    for (const [i, c] of ["0.9", "-3", "12.345"].entries()) {
+    for (const [i, c] of ["0.9", "-3", "12.345", "1\n"].entries()) {
       const r = await patch(id, { body: `中身 ${i}`, confidence: c });
       expect(r.status, `${c} ${await r.clone().text()}`).toBe(200);
       expect(await row(id)).toEqual({ body: `中身 ${i}`, confidence: "0.50" });
