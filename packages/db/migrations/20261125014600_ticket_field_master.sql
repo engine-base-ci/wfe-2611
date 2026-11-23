@@ -79,6 +79,10 @@ create or replace function app.ticket_field_kinds_set(p_field uuid, p_kind_ids u
 language plpgsql security definer set search_path = public, app, pg_temp as $$
 declare v_tenant uuid := app.tenant_id();
 begin
+  -- security definer で行の守りを通らないので、渡された項目が今の会社の生きている物かを先に確かめる（別の会社の種別の行を消させない）
+  if v_tenant is null or not exists (select 1 from custom_fields f where f.id = p_field and f.tenant_id = v_tenant and f.deleted_at is null) then
+    return jsonb_build_object('error', 'field_not_found');
+  end if;
   if p_kind_ids is null or coalesce(array_length(p_kind_ids, 1), 0) = 0 then return jsonb_build_object('error', 'invalid', 'field', 'kind_ids'); end if;
   if exists (select 1 from unnest(p_kind_ids) k
              where not exists (select 1 from ticket_kinds t where t.id = k and t.tenant_id = v_tenant and t.deleted_at is null)) then
@@ -140,8 +144,9 @@ end $$;
 
 revoke all on function app.ticket_field_settings(uuid), app.ticket_field_kinds_set(uuid, uuid[]), app.ticket_field_can_edit(),
   app.ticket_field_create(text, text, jsonb, boolean, text, uuid[]) from public;
+-- app.ticket_field_kinds_set は中（ticket_field_create・K-717 の ticket_field_update）から呼ぶだけ。アプリの役には渡さない
 grant execute on function app.ticket_field_clean_name(text), app.ticket_field_settings(uuid), app.ticket_field_options_build(jsonb, jsonb),
-  app.ticket_field_kinds_set(uuid, uuid[]), app.ticket_field_can_edit(), app.ticket_field_create(text, text, jsonb, boolean, text, uuid[])
+  app.ticket_field_can_edit(), app.ticket_field_create(text, text, jsonb, boolean, text, uuid[])
   to kaname_app;
 
 insert into app.schema_migrations (name) values ('20261125014600_ticket_field_master.sql') on conflict do nothing;
