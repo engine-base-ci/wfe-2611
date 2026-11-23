@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 386,
-  "api_built": 108,
+  "api_built": 111,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 149,
@@ -2244,9 +2244,10 @@
    "tables": [
     "knowledge_pages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-69"
+    "K-69",
+    "K-677"
    ]
   },
   {
@@ -2544,9 +2545,10 @@
    "tables": [
     "knowledge_page_versions"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-69"
+    "K-69",
+    "K-677"
    ]
   },
   {
@@ -2561,8 +2563,10 @@
    "tables": [
     "knowledge_page_versions"
    ],
-   "status": "契約だけ（501）",
-   "owner_tickets": []
+   "status": "作った",
+   "owner_tickets": [
+    "K-677"
+   ]
   },
   {
    "op": "restoreKnowledgeVersion",
