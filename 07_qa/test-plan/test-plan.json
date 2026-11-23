@@ -1671,6 +1671,14 @@
    "blocking": true
   },
   {
+   "id": 74,
+   "name": "共通の台帳の本体に葉が直に行を足さない（足す分は葉ごとのファイル .d・猶予の台帳は減らすだけ・K-1112）",
+   "script": "python3 scripts/ci/body_append_gate.py --base-ref \"$CI_BASE\" && python3 scripts/ci/api_doc_d.py --check && python3 scripts/ci/k1112_body_append_test.py",
+   "env": "          CI_BASE: ${{ steps.scope.outputs.base }}\n",
+   "job": "spec",
+   "blocking": true
+  },
+  {
    "id": 61,
    "name": "試験の結果の欄の PASS は CI の記録から書いたものだけ（手で書いた PASS は赤・印の無い古い PASS は台帳に載った行だけ・台帳は減らすだけ・K-143・D-129.51）",
    "script": "python3 scripts/ci/ci_results_test.py && python3 scripts/ci/ci_results_ledger_test.py && python3 scripts/ci/ci_results.py check --specs '07_qa/test-specs/**/*.md' --records 07_qa/ci-results --ledger 07_qa/test-plan/result-ledger.json --ledger-base-ref \"$CI_LEDGER_BASE\" --target-ref \"$CI_TARGET_REF\"",
