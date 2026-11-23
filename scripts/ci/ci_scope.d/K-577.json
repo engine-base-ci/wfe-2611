@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F4/doc/editor/", "apps/web/app/(dev)/dev/mock/f4v2-editor/", "apps/web/features/F4/doc/doc.css", "apps/web/features/F4/doc/extra.css"],
+   "tests": ["apps/web/tests/k/k577-doc-view.spec.ts"]}
+ ]
+}

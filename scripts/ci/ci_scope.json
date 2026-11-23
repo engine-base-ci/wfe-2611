@@ -1533,6 +1533,17 @@
   },
   {
    "paths": [
+    "apps/web/features/F4/doc/editor/",
+    "apps/web/app/(dev)/dev/mock/f4v2-editor/",
+    "apps/web/features/F4/doc/doc.css",
+    "apps/web/features/F4/doc/extra.css"
+   ],
+   "tests": [
+    "apps/web/tests/k/k577-doc-view.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F1/password-reset/**",
     "apps/api/src/hooks/password-reset.ts",
     "apps/api/src/features/F1/admin-recovery/**"
