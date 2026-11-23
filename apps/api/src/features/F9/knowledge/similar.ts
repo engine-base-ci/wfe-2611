@@ -32,8 +32,6 @@ interface SimilarRow {
   folders: string[];
 }
 
-const kindOf = (e: unknown): string => (e instanceof Error ? e.name : typeof e);
-
 export function createFindSimilarKnowledge(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs): Promise<HookReply> => {
     const bad = checkKnowledgeInput("findSimilarKnowledge", a.input);
@@ -50,7 +48,8 @@ export function createFindSimilarKnowledge(appPool: pg.Pool): (a: HookArgs) => P
           (await cl.query<SimilarRow>(SIMILAR_SQL, [head, body, input.exclude_page_id ?? null, SIMILAR_MIN])).rows,
       );
     } catch (e) {
-      console.error(`[knowledge] 似たページを探せなかった（${kindOf(e)}）`);
+      // ログには例外の種類だけ（題名・本文を出さない）
+      console.error(`[knowledge] 似たページを探せなかった（${e instanceof Error ? e.name : typeof e}）`);
       return unavailable();
     }
     const pages: PageBrief[] = rows.slice(0, SIMILAR_LIMIT).map((r) => ({
