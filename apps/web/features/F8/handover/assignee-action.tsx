@@ -21,7 +21,7 @@ export interface AssigneeActionProps {
   fallback: ReactNode;
 }
 
-const BLOCKED_REASON = "AI の実行が終わってから渡してください";
+const BLOCKED_REASON = "AI の実行（承認）が終わってから渡してください";
 
 /** getTicket の担当者の名前（無い・読めなければ null） */
 function assigneeNameOf(detail: SlotTicket["detail"]): string | null {
