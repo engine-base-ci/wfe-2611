@@ -158,7 +158,6 @@ const DLG_PAIRS: FidelityPair[] = (
     ["dialog-input", ".k-dialog .k-input", BOX],
     ["dialog-err", ".k-dialog .k-err", ["x", "y", ...TEXT]],
     ["dialog-inert", ".k-dialog .k-dec-inert", [...BOX, ...TEXT]],
-    ["dialog-scope", ".k-dialog .k-dec-scope", [...BOX, "texts"]],
     ["dialog-callout", ".k-dialog .k-callout", [...BOX, ...TEXT]],
     ["dialog-btn", ".k-dialog .k-dialog-actions button", [...BOX, "font-size", "color", "texts"]],
   ] as [string, string, string[]][]
@@ -504,15 +503,16 @@ test("K398-UI-020 改める・取り消すで 409 E-CONF-033（開いている�
   expect(d.patches).toHaveLength(2);
 });
 
-test("K398-UI-013 決定にする小窓に「取引先」の選び肢は無い：選べるのは「このチケットだけ」で、体に promoted_to が無い", async ({
+test("K398-UI-013 決定にする小窓に「どこまで効かせる」の欄は無い：ラジオが 0 個・「取引先」の字も無く、体に promoted_to が無い", async ({
   page,
 }) => {
   const { d } = await ready(page, [D2]);
   await openDetail(page);
   await openTalk(page);
   await decideOn(page, "鈴木 一郎");
-  await expect(fromDialog(page).getByRole("radio", { name: /取引先/ })).toHaveCount(0);
-  await expect(fromDialog(page).getByRole("radio", { name: "このチケットだけ" })).toBeChecked();
+  await expect(fromDialog(page).getByRole("radio")).toHaveCount(0);
+  await expect(fromDialog(page)).not.toContainText("どこまで効かせる");
+  await expect(fromDialog(page)).not.toContainText("取引先");
   await fromDialog(page).getByRole("button", { name: "決定にする" }).click();
   await expect(fromDialog(page)).toHaveCount(0);
   expect(Object.keys(d.posts[0]!)).not.toContain("promoted_to");
