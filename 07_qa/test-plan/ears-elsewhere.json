@@ -2307,6 +2307,27 @@
     }
    },
    "na": {}
+  },
+  "listApprovalHistory": {
+   "file": "apps/api/test/features/F5/approval-history.test.ts",
+   "reason": "決めた履歴は、決めた人・決めと期間・取り下げの状態で答えが変わる。生成の試験の種では決めた承認の組を作れない（K-750）",
+   "covers": {
+    "test_get_approvals_history_ok": "K750-API-001",
+    "test_get_approvals_history_shape": "K750-API-001",
+    "test_get_approvals_history_rejected_401": "K750-API-011",
+    "test_get_approvals_history_rejected_403": "K750-API-011",
+    "test_get_approvals_history_rejected_422": "K750-API-010",
+    "test_get_approvals_history_rate_limited": "K750-API-011",
+    "test_get_approvals_history_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_approvals_history_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
   }
  }
 }

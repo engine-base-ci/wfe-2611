@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
-  "frozen_at": "2026-11-23",
+  "created_at": "2026-11-24",
+  "frozen_at": "2026-11-24",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -2581,7 +2581,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（approvals）— 承認する／自分で直す／差し戻す／止める",
+   "description": "取得（approvals）— 自分が決めた AI の成果物の承認を、決めた新しい順に読む（決めと期間で絞る・取り下げられるかの印）",
    "implementation_path": "apps/api/src/routes/approvals.ts::listApprovalHistory",
    "permission": {
     "who": "self",
@@ -2594,15 +2594,16 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "decision",
+     "from",
+     "to",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Approvals[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Approvals[], meta: { limit, counts } }"
    },
    "id": "EP-013",
    "feature_id": "F-006"

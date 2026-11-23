@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:f9c08483d5eb1d4b
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:60cd3948101286b5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -15,7 +15,7 @@ export interface Ops {
   withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalWithdrawInput; data: T.ApprovalWithdrawn };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };
-  listApprovalHistory: { params: never; query: { "decision"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Approvals[] };
+  listApprovalHistory: { params: never; query: { "decision"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.ApprovalHistoryItem[] };
   listApprovalQueue: { params: never; query: { "kind"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.ApprovalQueueItem[] };
   getArtifactVersion: { params: { id: string }; query: never; body: never; data: T.ArtifactVersions };
   restoreArtifactVersion: { params: { id: string }; query: never; body: T.ArtifactVersionsInput; data: T.ArtifactVersions };

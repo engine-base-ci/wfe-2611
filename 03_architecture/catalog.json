@@ -227,7 +227,7 @@
    "op": "listApprovalHistory",
    "method": "GET",
    "path": "/api/v1/approvals/history",
-   "what": "取得（approvals）— 承認する／自分で直す／差し戻す／止める",
+   "what": "取得（approvals）— 自分が決めた AI の成果物の承認を、決めた新しい順に読む（決めと期間で絞る・取り下げられるかの印）",
    "flows": [
     "F5"
    ],

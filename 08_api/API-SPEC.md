@@ -1,4 +1,4 @@
-# Kaname API 設計書 v1.0（2026-11-23 凍結）
+# Kaname API 設計書 v1.0（2026-11-24 凍結）
 
 > 信頼源は `08_api/endpoints.json` と `openapi.yaml`（05_flow/build_api.py が機械生成）。
 
@@ -25,7 +25,7 @@
 | EP-010 | POST | `/api/v1/approvals/:id/withdraw` | 作成・実行（approvals）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 409 409 503 413 429 502 403 403 503 |
 | EP-011 | POST | `/api/v1/approvals/bulk` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-012 | POST | `/api/v1/approvals/bulk/preview` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-013 | GET | `/api/v1/approvals/history` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-013 | GET | `/api/v1/approvals/history` | 取得（approvals）— 自分が決めた AI の成果物の承認を、決め | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-014 | GET | `/api/v1/approvals/queue` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-015 | GET | `/api/v1/artifact_versions/:id` | 取得（artifact_versions）— チケットの中身（区画）を書 | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-016 | POST | `/api/v1/artifact_versions/:id/restore` | 作成・実行（artifact_versions）— 自分のAIの返事を成 | A95 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
@@ -400,4 +400,4 @@
 
 ## 6. 変更履歴
 
-- v1.0 2026-11-23 凍結（endpoints 369）
+- v1.0 2026-11-24 凍結（endpoints 369）
