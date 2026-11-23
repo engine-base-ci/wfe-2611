@@ -121,7 +121,7 @@ export function MockView({ id }: { id: string }) {
           state="new"
           preview={LINK}
           loginHref={LOGIN}
-          errors={{ email: msg("E-INV-013", "メールアドレスを入れてください") }}
+          errors={{ email: msg("E-INV-016", "メールアドレスを入れてください") }}
         />
       );
     case "inv-link-sent":

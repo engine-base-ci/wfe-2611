@@ -72,7 +72,7 @@ export interface InvitePreview {
 export interface InviteJoin {
   name: string;
   password: string;
-  /** 招待のリンク（宛てのメールが空）で新しく入るときだけ。欄が空なら入れない（K-422 が 422 E-INV-013 で返す） */
+  /** 招待のリンク（宛てのメールが空）で新しく入るときだけ。欄が空なら入れない（K-422 が 409 E-INV-016 で返す） */
   email?: string;
 }
 
