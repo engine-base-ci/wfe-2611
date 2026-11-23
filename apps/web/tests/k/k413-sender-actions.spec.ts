@@ -13,7 +13,9 @@ import {
   DUE,
   DUE_PAST,
   HND,
+  HND_OLD,
   HND_PAIRS,
+  ME,
   SATO,
   SUZUKI,
   WHY,
@@ -59,6 +61,26 @@ async function asSender(page: Page, o: HOptions = {}) {
   r.h.on.preview = () => ok(preview());
   return r;
 }
+
+/** 本物の下見の口の形：待っている渡し（id・相手は佐藤）があれば blocked waiting と waiting を返す（K-401。replaces を知らない） */
+const waitingPreview = (id: string) =>
+  ok(
+    preview({
+      blocked: "waiting",
+      waiting: {
+        id,
+        kind: "pass",
+        from: { id: ME, name: "高本 聖斗" },
+        to: { id: SATO, name: "佐藤 花子" },
+        to_scope: null,
+        reply_due: DUE,
+      },
+    }),
+  );
+/** 止まりの文の後ろ（名前の穴の無い所）と、名前を入れた全体（E-HND-004） */
+const HND004_TAIL = msg("E-HND-004").slice(msg("E-HND-004").indexOf("。") + 1);
+const HND004_SATO = msg("E-HND-004").replace("{名前}", "佐藤");
+const suzukiItem = (p: Page) => pickDialog(p).locator(".k-hnd-pick-item").filter({ hasText: "鈴木 一郎" });
 
 test("K413-UI-001 渡し中の帯のボタン：催促する・取り消す・別の人にする がこの順で、どれも押せる outlined", async ({
   page,
@@ -275,9 +297,14 @@ test("K413-UI-015 渡し中に別の人にする：渡す口に 1 回で replace
   page,
 }) => {
   const { h } = await asSender(page);
+  // 本物の下見の口は、今待っている渡しを blocked waiting・waiting.id で返す（K-401）。replaces の渡し自身は止まりに数えない
+  h.on.preview = () => waitingPreview(HND);
   await openDetail(page);
   await band(page, SENDING).getByRole("button", { name: "別の人にする" }).click();
-  await pickDialog(page).locator(".k-hnd-pick-item").filter({ hasText: "鈴木 一郎" }).click();
+  await expect(suzukiItem(page)).toBeVisible();
+  // 止まりの文（E-HND-004 の後ろの文・名前の穴の無い所）が小窓に出ない
+  await expect(pickDialog(page)).not.toContainText(HND004_TAIL);
+  await suzukiItem(page).click();
   await passDialog(page).locator("textarea").first().fill("営業の会議で話が出たため");
   await passDialog(page).getByRole("button", { name: "引き継いでもらう" }).click();
   await expect(passDialog(page)).toHaveCount(0);
@@ -286,6 +313,45 @@ test("K413-UI-015 渡し中に別の人にする：渡す口に 1 回で replace
   await expect(band(page, "鈴木さんの返事を待っています（渡し中）")).toBeVisible();
   await expect(assigneeOf(page)).toContainText("→ 鈴木 一郎（返事待ち）");
 });
+
+test("K413-UI-019 返事が無い帯から別の人にする（下見は blocked waiting・waiting.id が今の渡し）：小窓は止まらず鈴木を選べ、渡す口に 1 回で replaces が今の渡しの id・withdraw は呼ばない", async ({
+  page,
+}) => {
+  const { h } = await asSender(page, { list: [hview({ overdue: true, reply_due: DUE_PAST })] });
+  h.on.preview = () => waitingPreview(HND);
+  await openDetail(page);
+  await band(page, OVERDUE).getByRole("button", { name: "別の人にする" }).click();
+  await expect(suzukiItem(page)).toBeVisible();
+  await expect(pickDialog(page)).not.toContainText(HND004_TAIL);
+  await suzukiItem(page).click();
+  await passDialog(page).locator("textarea").first().fill("営業の会議で話が出たため");
+  await passDialog(page).getByRole("button", { name: "引き継いでもらう" }).click();
+  await expect(passDialog(page)).toHaveCount(0);
+  expect(h.passes.map((x) => [x.body.to_member_id, x.body.replaces])).toEqual([[SUZUKI, HND]]);
+  expect(h.withdraws).toEqual([]);
+});
+
+for (const [label, list, title] of [
+  [
+    "(a) replaces の無い開き方（断られた帯）",
+    [hview({ state: "declined", decided_at: AT, decline_reason: WHY })],
+    DECLINED,
+  ],
+  ["(b) replaces は今の渡し・下見の waiting は別の渡し（渡し中の帯）", [hview()], SENDING],
+] as const) {
+  test(`K413-UI-020 別の渡しが待っているときは止める ${label}：小窓に名前つきの E-HND-004・鈴木の行は押せない・渡す口は 0 回`, async ({
+    page,
+  }) => {
+    const { h } = await asSender(page, { list: [...list] });
+    h.on.preview = () => waitingPreview(HND_OLD);
+    await openDetail(page);
+    await band(page, title).getByRole("button", { name: "別の人にする" }).click();
+    await expect(pickDialog(page)).toContainText(HND004_SATO);
+    await expect(suzukiItem(page)).toHaveAttribute("aria-disabled", "true");
+    await expect(passDialog(page)).toHaveCount(0);
+    expect(h.passes).toEqual([]);
+  });
+}
 
 for (const [who, me, list] of [
   ["渡された人（佐藤）", SATO, [incoming()]],
