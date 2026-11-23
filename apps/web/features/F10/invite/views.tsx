@@ -112,6 +112,8 @@ export interface MemberRow {
   invitedLeft?: string;
 }
 export interface MemberGroup {
+  /** 口のグループの id（カードの key と見出しの id に使う。頭の字は重なりうる・モックは無くてよい） */
+  id?: string;
   code: string;
   name: string;
   tone: "teal" | "plum" | "amber" | "indigo";
@@ -203,15 +205,16 @@ export function MembersBody({
           </Callout>
         ) : null}
         {(failure ? [] : groups).map((g) => {
+          const gid = g.id ?? g.code;
           const invited = g.rows.filter((r) => r.invitedLeft).length;
           const people = g.rows.length - invited;
           return (
-            <section key={g.code} className="k-inv-group" aria-labelledby={`grp-${g.code}`}>
+            <section key={gid} className="k-inv-group" aria-labelledby={`grp-${gid}`}>
               <div className="k-inv-group-head">
                 <span className="k-inv-code" data-tone={g.tone} aria-hidden="true">
                   {g.code}
                 </span>
-                <h2 id={`grp-${g.code}`} className="k-inv-group-name">
+                <h2 id={`grp-${gid}`} className="k-inv-group-name">
                   {g.name}
                 </h2>
                 <span className="k-inv-sub">{`${people} 人${invited ? ` ＋ 招待中 ${invited}` : ""}`}</span>
@@ -251,6 +254,8 @@ export interface InviteValues {
 }
 export interface InviteErrors {
   emails?: string;
+  /** ひとことの欄の下の字（500 字を超えた・K420-UI-033） */
+  message?: string;
 }
 export interface InviteGroup {
   id: string;
@@ -430,8 +435,10 @@ export function InviteDialog({
                 rows={2}
                 value={values.message}
                 readOnly={!onMessage}
+                aria-invalid={errors.message ? true : undefined}
                 onChange={(e) => onMessage?.(e.target.value)}
               />
+              {errors.message ? <span className="k-inv-note-err">{errors.message}</span> : null}
             </label>
             {link ? (
               <div className="k-field">
