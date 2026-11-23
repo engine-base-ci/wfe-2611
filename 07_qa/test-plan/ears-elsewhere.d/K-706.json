@@ -15,11 +15,11 @@
     "test_get_ticket_field_master_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_get_ticket_field_master_session_unresolved": "K706-API-012"
    },
    "na": {
     "test_get_ticket_field_master_rejected_422": "問い合わせは cursor・limit を形だけ受けて動きを変えない（入口の共通の確かめ・一覧の口と同じ op.ts）",
-    "test_get_ticket_field_master_session_unresolved": "読む関数の失敗は書く口と同じ 503 の道（callFn の例外 → 503 E-PAGE-003）。書く口の K706-API-012・013 が見る",
     "test_get_ticket_field_master_rate_limited": "上限は入口の共通（op.ts・120/min/user）。書く口の上限は K706-API-010 が見る",
     "test_get_ticket_field_master_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。apps/api/test/features/F1/mfa-gate.test.ts が見る"
    }
