@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:404117df573bdd17
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:af44042336c2aa52
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2360,7 +2360,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Attachments",
+    "output": "BridgeJobFile",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2368,12 +2368,17 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
-    "uuidParams": [],
+    "uuidParams": [
+      "job_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
       403,
       422,
+      404,
+      502,
+      503,
       429,
       502,
       503
@@ -2509,9 +2514,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "reportBrowserState",
     "table": "bridge_job_events",
     "kind": "create",
-    "input": "BridgeJobEventsInput",
+    "input": "BridgeBrowserStateInput",
     "success": 201,
-    "output": "BridgeJobEvents",
+    "output": "BridgeBrowserReported",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2533,6 +2538,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -19665,4 +19671,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "404117df573bdd17";
+export const OPENAPI_HASH = "af44042336c2aa52";
