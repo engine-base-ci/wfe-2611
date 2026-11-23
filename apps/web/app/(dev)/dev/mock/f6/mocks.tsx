@@ -811,6 +811,8 @@ function view(id: string, theme: Theme): ReactNode {
           theme={theme}
           ps="PS0"
           stage={menu(ST.doing!)}
+          // 一覧は 4 件全部（2 件だけだと「10/20 の決定を改めた」の元の決定が一覧に無く、口の答えから作れない形になる・K-397）
+          decisions={<DecisionLog intro="支払いは銀行振込" items={DECISIONS} canWrite />}
           dialog={<DecisionDialog open people={DECISION_PEOPLE} errors={{ text: "決めたことを書いてください" }} />}
         />
       );

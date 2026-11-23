@@ -89,7 +89,7 @@ const DRIVE: Record<string, { list: Decision[]; go: (page: Page) => Promise<void
   "dec-log": { list: [D1, D0, D3, D2], go: async (page) => void (await expect(items(page)).toHaveCount(4)) },
   "dec-empty": { list: [], go: async (page) => void (await expect(logSec(page)).toContainText(MSG.empty)) },
   "dec-add": {
-    list: [D3, D2],
+    list: [D1, D0, D3, D2],
     go: async (page) => {
       await openAdd(page);
       await sendBtn(page).click();
