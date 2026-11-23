@@ -51,5 +51,7 @@ export interface AnswerCtx {
   gate: AnswerGateOk;
 }
 export type AnswerKind = (c: AnswerCtx) => Promise<HookReply>;
-/** 種類の葉が入るまでの答え（422・E-HND-001） */
-export const notReady = (): HookReply => fromCatalog("E-HND-001", 422, { field: "kind" });
+/** 種類の葉が入るまで・上へ上げる渡しへの答え：今の状態ではできない（409・E-HND-001）。形の誤りではない（契約の形は kind を 3 つに絞る） */
+export const notReady = (): HookReply => fromCatalog("E-HND-001", 409);
+/** 種類ごとのファイルの空の形（各葉が自分の 1 ファイルを本物にするまで）。空の形に関数を 8 つ書くと、使われない関数として coverage の閾値（関数 80%）を割るので、ここの 1 つを共有する */
+export const notReadyKind = async (): Promise<HookReply> => notReady();
