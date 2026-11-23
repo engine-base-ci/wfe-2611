@@ -9,6 +9,7 @@
   "action_runs",
   "approvals",
   "attachments",
+  "bridge_jobs",
   "checks",
   "clients",
   "conversations",
@@ -141,11 +142,15 @@
   },
   "bridge_jobs": {
    "writes": [
+    "F3",
     "F5"
    ],
    "reads": [],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F3→F5",
+    "F5→F3"
+   ]
   },
   "bridge_pairing_codes": {
    "writes": [
@@ -166,14 +171,6 @@
    "lines": [
     "F5→F4"
    ]
-  },
-  "class_axes": {
-   "writes": [],
-   "reads": [
-    "F4"
-   ],
-   "boundary": false,
-   "lines": []
   },
   "client_contacts": {
    "writes": [
@@ -228,6 +225,14 @@
     "F3"
    ],
    "reads": [],
+   "boundary": false,
+   "lines": []
+  },
+  "custom_fields": {
+   "writes": [],
+   "reads": [
+    "F4"
+   ],
    "boundary": false,
    "lines": []
   },

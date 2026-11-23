@@ -34,6 +34,8 @@ describe("POST /api/v1/credentials", () => {
     // 本物の試験：apps/api/test/features/F3/credentials-create.test.ts の「K352-API-005」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/credentials-create.test.ts", "utf8")).toContain("K352-API-005");
   });
+  // 本物の試験はまだ無い（apps/api/test/features/F3/credentials-create.test.ts）：UNWANTED: IF 期限が日本の今日より前なら、Kaname は 409 と E-CRED-004 を返し、金庫に置かず行も作らない
+  it.todo("test_post_credentials_conflict_2");
   it("test_post_credentials_upstream_failed", () => {
     // UNWANTED: IF 預かり先に置けなかったなら、Kaname は 502 と E-SEC-001 を返し、行を作らない
     // 本物の試験：apps/api/test/features/F3/credentials-create.test.ts の「K352-API-017」（同じ CI の G3 で流れる）
