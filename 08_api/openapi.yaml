@@ -10047,6 +10047,7 @@ components:
         email:
           type: string
           nullable: true
+          pattern: ^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$
       additionalProperties: false
       x-operation: acceptInvitation
     TicketCompleteInput:
@@ -10935,6 +10936,17 @@ components:
       required:
       - scope_id
       - role_key
+      x-required-by: hooks
+    InvitationJoinConfirmInput:
+      type: object
+      properties:
+        token:
+          type: string
+          pattern: \S
+      additionalProperties: false
+      x-operation: confirmInvitationJoin
+      required:
+      - token
       x-required-by: hooks
     TicketBodyInput:
       type: object
@@ -14561,6 +14573,17 @@ components:
           items:
             type: object
       x-operation: createInvitations
+    InvitationJoinConfirmed:
+      type: object
+      properties:
+        token:
+          type: string
+        workspace_id:
+          type: string
+          format: uuid
+        next:
+          type: string
+      x-operation: confirmInvitationJoin
     BodySaved:
       type: object
       properties:
@@ -16845,7 +16868,7 @@ paths:
       responses:
         '201':
           description: 成功
-          content:
+          content: &id889
             application/json:
               schema:
                 type: object
@@ -16906,6 +16929,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '202':
+          description: 受け付けた（まだ決まっていない）
+          content: *id889
   /api/v1/auth/invitations/{token}/resend-request:
     post:
       operationId: requestInvitationResend
@@ -16975,6 +17001,98 @@ paths:
                 $ref: '#/components/schemas/Error'
         '410':
           description: E-INV-002
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/auth/invitations/confirm:
+    post:
+      operationId: confirmInvitationJoin
+      summary: 作成・実行（auth）— 招待を受けて参加する（今のアカウントで別のテナントにも）／規約に同意する（どの版に同意したかが残る）
+      tags:
+      - invitations
+      x-acts:
+      - A03
+      - A96
+      x-screens:
+      - invite-accept
+      x-choke-points:
+      - C2
+      x-source:
+      - D-026
+      - D-037
+      - D-125.121
+      - D-125.150
+      - D-125.152
+      - D-125.162
+      - D-125.167
+      - D-126.18
+      x-permission: public
+      x-permission-scope: 確認のメールのリンクを持つ人。押した時点で参加が決まる（D-148.51）
+      x-step-up: false
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationJoinConfirmInput'
+      responses:
+        '201':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/InvitationJoinConfirmed'
+                  meta:
+                    type: object
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: E-AUTH-012
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: E-INV-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-INV-006
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: E-INV-014
           content:
             application/json:
               schema:
