@@ -346,6 +346,7 @@ export type TestSpecUpdateInput = { version: number; checked?: boolean; title?: 
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
 export type SavedViewInput = { name: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string };
 export type ActionRunTakeoverInput = Record<string, never>;
+export type ActionRunStopInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
@@ -474,6 +475,7 @@ export type Notification = { id?: string; kind?: string; tag?: string; href?: st
 export type SavedView = { id?: string; name?: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string; member_id?: string; member_name?: string; mine?: boolean; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
 export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
+export type ActionRunStopped = { id?: string; ticket_id?: string; phase?: string; status?: string; stopped_reason?: string | null; stopped_at?: string | null };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 

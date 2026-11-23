@@ -2648,7 +2648,6 @@
     "apps/api/test/generated/get_conversations_id_messages.test.ts",
     "apps/api/test/generated/get_conversations_id_stream.test.ts",
     "apps/api/test/generated/get_tickets_id_agent_session.test.ts",
-    "apps/api/test/generated/post_action_runs_id_stop.test.ts",
     "apps/api/test/generated/post_approvals_bulk.test.ts",
     "apps/api/test/generated/post_approvals_bulk_preview.test.ts",
     "apps/api/test/generated/post_approvals_id_edit.test.ts",
@@ -23956,7 +23955,7 @@
    "assignee": "実装",
    "due": "2026-11-28",
    "estimate_hours": "1",
-   "estimate_basis": "実測なし・仮。形の近い段 8 の K-485（口 1 本・migration 1 本・DB の関数 1 本・hooks のファイル・契約の形と登録先・試験 30 行・見込み 1 時間）・段 10 の K-673（flow.json の行為の文を直して作り手で作り直す 15 分）から引いた：migration 1 本（app.run_stop・app.bridge_finish_job の作り直し・app.dry_run_job_end。お知らせは書かないので受け箱の書き込みは無い）25 分・口 1 本と hooks 10 分・契約の形と登録先 15 分・phase1.py の 2 行と作り手 10 分・自分の確かめ 5 分（決定ログを運ぶ仕事は K-780 に分けた）。試験 26 行は切る段で書いた（試し打ちの実行を止める行 K731-API-022 は K-746 が持つ。超えたら承認の後の実行 3 行 K731-API-007・008・013 を別の葉に分ける）",
+   "estimate_basis": "実測なし・仮。形の近い段 8 の K-485（口 1 本・migration 1 本・DB の関数 1 本・hooks のファイル・契約の形と登録先・試験 30 行・見込み 1 時間）・段 10 の K-673（flow.json の行為の文を直して作り手で作り直す 15 分）から引いた：migration 1 本（app.run_stop・app.bridge_finish_job の作り直し・app.dry_run_job_end。お知らせは書かないので受け箱の書き込みは無い）25 分・口 1 本と hooks 10 分・契約の形と登録先 15 分・phase1.py の 2 行と作り手 10 分・自分の確かめ 5 分（決定ログを運ぶ仕事は K-780 に分けた）。試験 26 行は切る段で書いた（試し打ちの実行を止める行（K-731 の API-022）は K-746 が持つ。超えたら承認の後の実行 3 行 K731-API-007・008・013 を別の葉に分ける）",
    "decisions": [
     "D-125.103",
     "D-128.20",
@@ -24007,7 +24006,8 @@
    "tests": [
     "apps/api/test/features/F5/run-stop.test.ts",
     "apps/api/test/features/F5/run-stop-execute.test.ts",
-    "scripts/ci/k731_flow_test.py"
+    "scripts/ci/k731_flow_test.py",
+    "apps/api/test/generated/post_action_runs_id_stop.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-731.ts",

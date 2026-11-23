@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|---|---|---|
 | EP-001 | POST | `/api/v1/acceptances/:id/remind` | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼 | A123 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-002 | GET | `/api/v1/action_runs/:id` | 取得（action_runs）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-003 | POST | `/api/v1/action_runs/:id/stop` | 作成・実行（action_runs）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-003 | POST | `/api/v1/action_runs/:id/stop` | 作成・実行（action_runs）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 503 413 429 502 403 403 503 |
 | EP-004 | POST | `/api/v1/action_runs/:id/takeover` | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（P | A57 | 1 | member | C2 | 401 403 404 409 422 409 409 503 413 429 403 403 503 |
 | EP-005 | GET | `/api/v1/approvals/:id` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-006 | POST | `/api/v1/approvals/:id/approve` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 404 409 422 422 503 413 429 403 403 503 |

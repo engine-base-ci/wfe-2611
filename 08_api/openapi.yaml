@@ -12204,6 +12204,11 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    ActionRunStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopActionRun
     ScopeOverview:
       type: object
       properties:
@@ -14253,6 +14258,24 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    ActionRunStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        ticket_id:
+          type: string
+        phase:
+          type: string
+        status:
+          type: string
+        stopped_reason:
+          type: string
+          nullable: true
+        stopped_at:
+          type: string
+          nullable: true
+      x-operation: stopActionRun
     Error:
       type: object
       properties:
@@ -14578,7 +14601,7 @@ paths:
       - D-125.105
       - D-125.167
       x-permission: assignee
-      x-permission-scope: 担当者・承認する人・マネージャー
+      x-permission-scope: そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる
       x-step-up: false
       security:
       - session: []
@@ -14594,7 +14617,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/ActionRunStopInput'
       responses:
         '201':
           description: 成功
@@ -14604,7 +14627,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/ActionRunStopped'
                   meta:
                     type: object
         '401':
@@ -14614,7 +14637,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-RUN-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -14626,13 +14649,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-RUN-002
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -14651,12 +14680,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

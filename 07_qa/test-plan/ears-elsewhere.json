@@ -2213,6 +2213,35 @@
     "test_get_ticket_fields_rejected_403": "読むだけの口で、会社のメンバーなら誰でも読める（行の守りの外の人は入口が 401・404 で止める。受けは K563-API-005・008）",
     "test_get_ticket_fields_upstream_failed": "外を呼ばない（AI も PC も呼ばない）"
    }
+  },
+  "stopActionRun": {
+   "file": "apps/api/test/features/F5/run-stop.test.ts",
+   "reason": "止めるは、実行の状態・担当者かどうか・PC の仕事の状態で答えが変わる。生成の試験の種では動いている実行と担当者の組を作れない（K-731）",
+   "covers": {
+    "test_post_action_runs_id_stop_ok": "K731-API-001",
+    "test_post_action_runs_id_stop_shape": "K731-API-001",
+    "test_post_action_runs_id_stop_rejected_401": "K731-API-015",
+    "test_post_action_runs_id_stop_rejected_403": "K731-API-003",
+    "test_post_action_runs_id_stop_not_found": "K731-API-004",
+    "test_post_action_runs_id_stop_conflict": "K731-API-005",
+    "test_post_action_runs_id_stop_rejected_422": "K731-API-014",
+    "test_post_action_runs_id_stop_rate_limited": "K731-API-015",
+    "test_post_action_runs_id_stop_upstream_failed": "K731-API-016",
+    "test_post_action_runs_id_stop_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_action_runs_id_stop_session_unresolved": "K731-API-016",
+    "test_post_action_runs_id_stop_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_action_runs_id_stop_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
   }
  }
 }
