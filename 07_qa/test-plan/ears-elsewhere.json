@@ -1584,6 +1584,112 @@
    },
    "na": {}
   },
+  "updateTicketMessage": {
+   "file": "apps/api/test/features/F6/thread-edit.test.ts",
+   "reason": "直すのは書いた本人だけで、新しく @ した人にだけ知らせる。書いた人・前の @・チケットの見え方の組み合わせは生成の試験の種では作れない（K-386）",
+   "covers": {
+    "test_patch_ticket_messages_id_ok": "K386-API-001",
+    "test_patch_ticket_messages_id_rejected_401": "K386-API-016",
+    "test_patch_ticket_messages_id_rejected_403": "K386-API-003",
+    "test_patch_ticket_messages_id_not_found": "K386-API-003",
+    "test_patch_ticket_messages_id_rejected_422": "K386-API-004",
+    "test_patch_ticket_messages_id_not_found_2": "K386-API-004",
+    "test_patch_ticket_messages_id_shape": "K386-API-001",
+    "test_patch_ticket_messages_id_rate_limited": "K386-API-016",
+    "test_patch_ticket_messages_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_ticket_messages_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_ticket_messages_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_ticket_messages_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_ticket_messages_id_session_unresolved_3": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "deleteTicketMessage": {
+   "file": "apps/api/test/features/F6/thread-edit.test.ts",
+   "reason": "消せるのは書いた本人かそのグループのマネージャーで、跡と証跡が残る。役とグループの組み合わせは生成の試験の種では作れない（K-386）",
+   "covers": {
+    "test_delete_ticket_messages_id_ok": "K386-API-007",
+    "test_delete_ticket_messages_id_rejected_401": "K386-API-016",
+    "test_delete_ticket_messages_id_rejected_403": "K386-API-009",
+    "test_delete_ticket_messages_id_not_found": "K386-API-010",
+    "test_delete_ticket_messages_id_shape": "K386-API-008",
+    "test_delete_ticket_messages_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-386.ts",
+     "mark": "K144-API-731"
+    },
+    "test_delete_ticket_messages_id_rate_limited": "K386-API-016",
+    "test_delete_ticket_messages_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ticket_messages_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_ticket_messages_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_ticket_messages_id_session_unresolved_3": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
+  "starTicketMessage": {
+   "file": "apps/api/test/features/F6/thread-edit.test.ts",
+   "reason": "☆ は押した人ごとの印で、押すたびに付く・外れる。同時に押す人・見え方の組み合わせは生成の試験の種では作れない（K-386）",
+   "covers": {
+    "test_post_ticket_messages_id_star_ok": "K386-API-012",
+    "test_post_ticket_messages_id_star_rejected_401": "K386-API-016",
+    "test_post_ticket_messages_id_star_rejected_403": "K386-API-015",
+    "test_post_ticket_messages_id_star_not_found": "K386-API-014",
+    "test_post_ticket_messages_id_star_rejected_422": "K386-API-013",
+    "test_post_ticket_messages_id_star_rate_limited": "K386-API-016",
+    "test_post_ticket_messages_id_star_shape": "K386-API-012",
+    "test_post_ticket_messages_id_star_rejected_422_2": {
+     "file": "apps/api/test/features/contract/k144.d/K-386.ts",
+     "mark": "K144-API-732"
+    },
+    "test_post_ticket_messages_id_star_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_messages_id_star_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_messages_id_star_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_messages_id_star_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_messages_id_star_session_unresolved_3": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
   "updateTicket": {
    "file": "apps/api/test/features/F6/progress.test.ts",
    "reason": "段・実績・保留の変更は、今の段・行き先の段・走っている実行・担当者の組み合わせで答えが変わる。生成の試験の種では作れない（K-387）",
@@ -2304,6 +2410,131 @@
     "test_post_approvals_id_withdraw_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
+    }
+   },
+   "na": {}
+  },
+  "listConversations": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_ok": "K757-API-001",
+    "test_get_conversations_shape": "K757-API-001",
+    "test_get_conversations_rejected_401": "K757-API-020",
+    "test_get_conversations_rate_limited": "K757-API-020",
+    "test_get_conversations_rejected_422": "K757-API-004",
+    "test_get_conversations_session_unresolved": "K757-API-018",
+    "test_get_conversations_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_rejected_403": "自分の会話だけを返す一覧で、権限の 403 は無い（他人の会話は出ない・受けは K757-API-002）"
+   }
+  },
+  "getConversation": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_ok": "K757-API-006",
+    "test_get_conversations_id_shape": "K757-API-006",
+    "test_get_conversations_id_rejected_401": "K757-API-020",
+    "test_get_conversations_id_rate_limited": "K757-API-020",
+    "test_get_conversations_id_not_found": "K757-API-008",
+    "test_get_conversations_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-757.ts",
+     "mark": "K144-API-920"
+    },
+    "test_get_conversations_id_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）"
+   }
+  },
+  "listConversationMessages": {
+   "file": "apps/api/test/features/F5/talk-read.test.ts",
+   "reason": "会話を読む口は、会話の種類・持ち主・行の種類・動いている仕事で答えが変わる。生成の試験の偽のセッションでは会話も行も仕事も作れない（K-757）",
+   "covers": {
+    "test_get_conversations_id_messages_ok": "K757-API-013",
+    "test_get_conversations_id_messages_shape": "K757-API-013",
+    "test_get_conversations_id_messages_rejected_401": "K757-API-020",
+    "test_get_conversations_id_messages_rate_limited": "K757-API-020",
+    "test_get_conversations_id_messages_not_found": "K757-API-008",
+    "test_get_conversations_id_messages_rejected_422": "K757-API-014",
+    "test_get_conversations_id_messages_session_unresolved": "K757-API-018",
+    "test_get_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_conversations_id_messages_rejected_403": "会話は本人の物だけで、持ち主でない人は 404（行の守り・在るかを漏らさない）。権限の 403 は無い（受けは K757-API-008）",
+    "test_get_conversations_id_messages_upstream_failed": "外を呼ばない（C4 は契約の口の宣言に付いているだけ・会話の行を DB から読むだけ）"
+   }
+  },
+  "reportBrowserState": {
+   "file": "apps/api/test/features/F5/job-extra.test.ts",
+   "reason": "ブラウザの様子は仕事を受け取った PC と仕事の状態で答えが変わる。生成の試験の種では動いている仕事を作れない（K-761）",
+   "covers": {
+    "test_post_bridge_jobs_id_browser_ok": "K761-API-001",
+    "test_post_bridge_jobs_id_browser_shape": "K761-API-001",
+    "test_post_bridge_jobs_id_browser_rejected_401": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_rejected_403": "K761-API-004",
+    "test_post_bridge_jobs_id_browser_not_found": "K761-API-004",
+    "test_post_bridge_jobs_id_browser_rejected_422": "K761-API-003",
+    "test_post_bridge_jobs_id_browser_rejected_422_2": {
+     "file": "apps/api/test/features/contract/k144.d/K-761.ts",
+     "mark": "K144-API-926"
+    },
+    "test_post_bridge_jobs_id_browser_session_unresolved": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_jobs_id_browser_rate_limited": "K761-API-005",
+    "test_post_bridge_jobs_id_browser_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_bridge_jobs_id_browser_upstream_failed": "外を呼ばない（出来事を DB に 1 行書くだけ。C2 の関数だけで、外のサービス・AI・置き場を呼ばない）"
+   }
+  },
+  "getFileForBridge": {
+   "file": "apps/api/test/features/F5/job-extra.test.ts",
+   "reason": "ファイルは仕事に付いた資料と仕事を受け取った PC で答えが変わる。生成の試験の種では資料を付けた仕事を作れない（K-761）",
+   "covers": {
+    "test_get_bridge_files_ref_ok": "K761-API-006",
+    "test_get_bridge_files_ref_shape": "K761-API-006",
+    "test_get_bridge_files_ref_rejected_401": "K761-API-008",
+    "test_get_bridge_files_ref_rejected_403": "K761-API-008",
+    "test_get_bridge_files_ref_rejected_422": "K761-API-009",
+    "test_get_bridge_files_ref_not_found": "K761-API-007",
+    "test_get_bridge_files_ref_upstream_failed": "K761-API-010",
+    "test_get_bridge_files_ref_session_unresolved": "K761-API-010",
+    "test_get_bridge_files_ref_rate_limited": "K761-API-010",
+    "test_get_bridge_files_ref_upstream_failed_2": "K761-API-010",
+    "test_get_bridge_files_ref_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {}

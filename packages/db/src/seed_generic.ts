@@ -186,6 +186,8 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       const o = colsOf(t).find((x) => x.col === pr.other);
       if (v === pr.val && o && row[pr.other] == null)
         row[pr.other] = o.type.startsWith("timestamp") ? new Date() : o.udt === "uuid" ? null : "seed";
+      // 等しさの決まりは逆も言う：その値でないなら、その列は空（例：会話の種類が ticket でないなら ticket_id は空・K-757）
+      else if (v !== pr.val && o && o.nullable) row[pr.other] = null;
     }
     return row;
   };
