@@ -5,7 +5,7 @@
 //   本文は段 5 の DocEditor／DocView（境界 B10）・部品は口を呼ばない・デザインの検査（G37・G72）が緑。
 //   画面に出す字と並びは下絵が正。テストはチケットを作る人が書き、実装する人は変えない
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
 import { BUILT_ROUTES } from "../../lib/built-routes";
@@ -111,7 +111,7 @@ test("K670-DS-001 デザインの検査 G37（D1〜D7）が緑：features の色
 });
 
 test("K670-DS-002 デザインの検査 G72（D8 生の長さ）で、knowledge の部品と mock/f9 に台帳に無い生の値が 0 件（トークンを通す）", () => {
-  let out = "";
+  let out: string;
   try {
     out = execFileSync(
       "python3",
