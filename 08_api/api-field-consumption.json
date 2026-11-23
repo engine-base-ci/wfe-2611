@@ -11494,6 +11494,61 @@
   },
   {
    "entity": "knowledge_pages",
+   "field": "summary",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "is_must",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "copied_from_page_id",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "folder_id",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
+   "field": "position",
+   "consumed_by_screens": [
+    "tickets",
+    "knowledge",
+    "clients"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_pages",
    "field": "owner_member_id",
    "consumed_by_screens": [
     "tickets",
@@ -11770,6 +11825,58 @@
   {
    "entity": "knowledge_links",
    "field": "anchor",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "<scoped>",
+   "consumed_by_screens": [],
+   "internal": true,
+   "reason": "共通列・参照 ID・秘密の実体は画面に出さない"
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "is_personal",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "owner_member_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "parent_folder_id",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "name",
+   "consumed_by_screens": [
+    "knowledge"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "knowledge_folders",
+   "field": "position",
    "consumed_by_screens": [
     "knowledge"
    ],
