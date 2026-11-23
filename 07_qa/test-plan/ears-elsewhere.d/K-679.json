@@ -1,0 +1,93 @@
+{
+ "ops": {
+  "createKnowledgePage": {
+   "file": "apps/api/test/features/F9/knowledge-draft.test.ts",
+   "reason": "ページを作れるかは棚（会社・グループ・自分）と役・フォルダの棚で変わる。生成の試験の偽のセッションでは棚も所属も作れない（K-679）",
+   "covers": {
+    "test_post_knowledge_pages_ok": "K679-API-001",
+    "test_post_knowledge_pages_shape": "K679-API-001",
+    "test_post_knowledge_pages_rejected_401": "K679-API-021",
+    "test_post_knowledge_pages_rejected_403": "K679-API-003",
+    "test_post_knowledge_pages_rejected_422": "K675-API-003",
+    "test_post_knowledge_pages_rejected_422_2": "K675-API-004",
+    "test_post_knowledge_pages_rate_limited": "K679-API-016",
+    "test_post_knowledge_pages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_pages_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_pages_not_found": "K679-API-004",
+    "test_post_knowledge_pages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_knowledge_pages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "saveKnowledgeDraft": {
+   "file": "apps/api/test/features/F9/knowledge-draft.test.ts",
+   "reason": "下書きの保存は役・別の人の下書き・本文の形で答えが変わる。生成の試験の偽のセッションでは版も所属も作れない（K-679）",
+   "covers": {
+    "test_patch_knowledge_pages_id_draft_ok": "K679-API-007",
+    "test_patch_knowledge_pages_id_draft_shape": "K679-API-007",
+    "test_patch_knowledge_pages_id_draft_rejected_401": "K679-API-021",
+    "test_patch_knowledge_pages_id_draft_rejected_403": "K679-API-013",
+    "test_patch_knowledge_pages_id_draft_not_found": "K679-API-013",
+    "test_patch_knowledge_pages_id_draft_rejected_422": "K679-API-012",
+    "test_patch_knowledge_pages_id_draft_conflict": "K679-API-011",
+    "test_patch_knowledge_pages_id_draft_rate_limited": "K679-API-016",
+    "test_patch_knowledge_pages_id_draft_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_knowledge_pages_id_draft_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_knowledge_pages_id_draft_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_knowledge_pages_id_draft_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "discardKnowledgeDraft": {
+   "file": "apps/api/test/features/F9/knowledge-draft.test.ts",
+   "reason": "下書きをやめるかは役・下書きの有無・書き終えたことがあるかで答えが変わる。生成の試験の偽のセッションでは版も所属も作れない（K-679）",
+   "covers": {
+    "test_delete_knowledge_pages_id_draft_ok": "K679-API-017",
+    "test_delete_knowledge_pages_id_draft_shape": "K679-API-017",
+    "test_delete_knowledge_pages_id_draft_rejected_401": "K679-API-021",
+    "test_delete_knowledge_pages_id_draft_rejected_403": "K679-API-020",
+    "test_delete_knowledge_pages_id_draft_not_found": "K679-API-018",
+    "test_delete_knowledge_pages_id_draft_conflict": "K679-API-019",
+    "test_delete_knowledge_pages_id_draft_rate_limited": "K679-API-016",
+    "test_delete_knowledge_pages_id_draft_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_knowledge_pages_id_draft_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_knowledge_pages_id_draft_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-675.ts",
+     "mark": "K144-API-106"
+    },
+    "test_delete_knowledge_pages_id_draft_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  }
+ }
+}

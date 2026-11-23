@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/f9-knowledge-draft.ts", "apps/api/src/features/F9/knowledge/page-create.ts", "apps/api/src/features/F9/knowledge/draft-*.ts"],
+   "tests": ["apps/api/test/features/F9/knowledge-draft.test.ts"]}
+ ]
+}
