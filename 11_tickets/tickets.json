@@ -3327,14 +3327,18 @@
     "checkRule",
     "countKnows",
     "createMemory",
+    "createTicketStage",
     "deleteMemory",
+    "deleteTicketStage",
     "dismissLearningCandidate",
     "listLearningCandidates",
     "listMemories",
     "postponeLearningCandidate",
     "promoteMemoryToRule",
+    "reorderTicketStages",
     "requestRuleException",
-    "updateMemory"
+    "updateMemory",
+    "updateTicketStage"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
@@ -22587,6 +22591,7 @@
    ],
    "tests": [
     "apps/api/test/features/F9/ticket-stages-write.test.ts",
+    "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/post_ticket_stages.test.ts",
     "apps/api/test/generated/patch_ticket_stages_id.test.ts",
     "apps/api/test/generated/delete_ticket_stages_id.test.ts",
@@ -22639,7 +22644,7 @@
    ],
    "flow": "チケットの種別・状態・項目を会社に合わせる",
    "sections": {
-    "目的": "会社の管理者が「チケットの設定 › 状態」で、チケットの状態（作業の段）を足す・直す（名前・色）・並べる・消すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-stages）。**始めの状態（key が `todo`）と終わりの状態（key が `done`）と仕組みの状態（確認中・承認待ち・実行中）は消せない**。始めと終わりは名前と色を直せる（key は変えないので、作る・完了にする仕組みが探せる）。仕組みの状態は色だけ直せる。\n\n状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。\n\n設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は状態の書く 4 本と `listTicketStages` の答えを持つ（`listTicketStages` の口の持ち主は K-59 のまま：頭の `apis:` には書かず、生成の試験 `get_ticket_stages.test.ts` も `tests:` に書かない。土台-settings.md のとおり）。",
+    "目的": "会社の管理者が「チケットの設定 › 状態」で、チケットの状態（作業の段）を足す・直す（名前・色）・並べる・消すための口と DB の関数を作る（切り方 0.13・下絵 v2 の set-stages）。**始めの状態（key が `todo`）と終わりの状態（key が `done`）と仕組みの状態（確認中・承認待ち・実行中）は消せない**。始めと終わりは名前と色を直せる（key は変えないので、作る・完了にする仕組みが探せる）。仕組みの状態は色だけ直せる。\n\n状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。\n\n設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は状態の書く 4 本と `listTicketStages` の答えを持つ（`listTicketStages` の口の持ち主は K-59 のまま：頭の `apis:` には書かない。生成の試験 `get_ticket_stages.test.ts` は、この葉の `ears-elsewhere.d` で結ぶと作り手が作り直すので、作る段の初めに `tests:` に足した）。",
     "完了の条件": "- [ ] 下の表の 25 行（K705-API-001〜022・K705-DB-001〜003）が緑：`apps/api/test/features/F9/ticket-stages-write.test.ts`\n- [ ] 契約の口 4 本が 501 でない。`listTicketStages` の答えが `TicketStageSetting`（鍵 6）で、生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-705.json` の covers）\n- [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-972・973（`updateTicketStage`・`deleteTicketStage` の道の id）が通る\n- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
     "前提と制約": "分類: CRUD, PERM, LIST\n\n- **口は書く 4 本＋読む 1 本**。道・入力・答え・上限・権限は土台-settings.md の 3・4 章のとおり（足す POST /ticket_stages・直す PATCH /ticket_stages/:id・消す DELETE /ticket_stages/:id・並べる POST /ticket_stages/order〔PUT の前例が契約に 0 件のため POST〕・読む GET /ticket_stages）\n- **入力の形（契約に書く＝422）**：足す＝`name`（前後の空白〔全角・タブ・改行〕を落として 1〜20 字・NUL は入口が 422。今の `ticket_stages.name` の check と同じ）と `color_key`（8 つの字のどれか）が要る。直す＝`name`・`color_key` のうち 1 つ以上（空の体は 422）。並べる＝`stage_ids`（uuid の並び・1 つ以上）。知らない鍵は 422\n- **断る番号**（土台-settings.md の 3 章）：同じ名前（仕組みの状態の名前も含む）409 E-STG-001／作業の状態（仕組みの状態を除く）が 9 つ目 409 E-STG-002（`ticket_limits` の 23514 を関数が先に数えて返す）／始め・終わり・仕組みの状態を消す 409 E-STG-003／仕組みの状態の名前を変える 409 E-STG-004（同じ名前を送り直すだけなら通る）／使っているチケットが在る 409 E-STG-005（`detail: { ticket_count }`・消したチケットも数える）／並びが今と合わない 409 E-STG-006／始めが先頭・終わりが最後でない 409 E-STG-007／無い・消した・別の会社 404 E-PAGE-001（欄・details なし）／権限なし 403／ログインなし 401／上限 429／DB の失敗 503 E-PAGE-003\n- **足したとき**：key は無し（null）・仕組みの状態でない・並びは**終わりの状態の直前**（そのあと並びを全部 10 刻みで振り直す）・色は選んだ鍵\n- **直すとき**：送った欄だけ変える。key・仕組みの印・並びは変えない。始め（key が todo）・終わり（key が done）は名前も色も直せる。仕組みの状態は色だけ（名前を変えると 409。今の `app.ticket_stage_fixed` の守りはそのまま。色の更新は名前・key を変えないので通る）\n- **消すとき**：始め・終わり・仕組みの状態は消せない。使っているチケット（`tickets.stage_id` がその状態の行。**消したチケットも数える**）が 1 枚でも在れば消せない。そうでなければ `deleted_at` を入れ（行は残す）、並びを 10 刻みで振り直す。名前は消した後なら使い回せる\n- **並べる**：`stage_ids` が今の生きている状態の全部と過不足なく一致し（仕組みの状態も含む）、先頭が始め（todo）・最後が終わり（done）のときだけ。仕組みの状態は始めと終わりの間のどこでもよい。違えば何も変えずに 409（過不足は E-STG-006・始め・終わりの位置は E-STG-007）\n- **読む口 `listTicketStages`**：消していない状態を並び（position・id）の順に返す。鍵ちょうど 6（`id・key・name・color_key・position・lock`）。`lock` は `start`（key が todo）・`end`（key が done）・`system`（`is_fixed`）・null。`{ data, meta: { limit } }`・全部を 1 度に返す（cursor・limit・sort は形だけ受けて動きを変えない）。会社のメンバー全員が読める（前から同じ）\n- 外へ出ない：メールもお知らせも出さない。AI も PC も呼ばない\n- ログに状態の名前を出さない\n- **共有の試験 `k144-contract.test.ts` をこの葉は変えない**（運ぶのは葉のファイル `k144.d/K-705.ts` だけ）\n- **生成の試験は切る段の枝に無い**（口が契約に入るまで作れない）。**作る段の最初に**、契約の断片（`05_flow/screen_api.d/K-705.py`・`scripts/ci/contract_shape.d/K-705.py`）を足して作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成の試験を作り、**実装より先に 1 つのコミットにする**（その後は変えない）。**先の葉の契約を前提にした前からの試験は、この葉の carry に入れない**",
     "依存の理由": "- K-673: 要る — 決定ログの節 §152 の運び手。この葉の `decisions:` の D-152.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\n- そのほかの依存は なし — 状態の表（0071）と行の守り・守りの引き金（`ticket_stage_fixed`・`ticket_stage_insert`・`ticket_limits`）は本線に在り、段 5 の葉の物（種別のひな形・項目の表）を使わない。`settings.harness.ts`（carry）は K-704 の葉と共有する物で、K-704 が先に入っても後に入っても読み込みは同じ（同じ内容を両方が carry で運ぶ・重なりは `overlap_ok`）",

@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 374（作った 84・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 244・部品 56・設定 41
+API 374（作った 89・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 244・部品 56・設定 41
 
 ## 共通の処理
 
@@ -338,7 +338,7 @@ API 374（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-60 |
 | `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
-| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
+| `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限 | F4,F7 | 作った | K-92 |
 | `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
 | `updateTicket` | PATCH /api/v1/tickets/:id | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても／期限間近・炎・詰まりを片付ける | F4,F6,F7 | 作った | K-387 |
@@ -475,10 +475,10 @@ API 374（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `updateScope` | PATCH /api/v1/scopes/:id | 更新（scopes）— グループを作る・直す（メンバーの中） | F9 | 契約だけ（501） |  |
 | `listKindTemplateUpdates` | GET /api/v1/ticket_kinds/template-updates | 取得（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
 | `applyKindTemplateUpdate` | POST /api/v1/ticket_kinds/template-updates/:id/apply | 作成・実行（ticket_kinds）— ひな形の新しい版を取り込む | F9 | 契約だけ（501） |  |
-| `createTicketStage` | POST /api/v1/ticket_stages | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-705 |
-| `updateTicketStage` | PATCH /api/v1/ticket_stages/:id | 更新（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-705 |
-| `deleteTicketStage` | DELETE /api/v1/ticket_stages/:id | 削除（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-705 |
-| `reorderTicketStages` | POST /api/v1/ticket_stages/order | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 契約だけ（501） | K-705 |
+| `createTicketStage` | POST /api/v1/ticket_stages | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-69,K-705 |
+| `updateTicketStage` | PATCH /api/v1/ticket_stages/:id | 更新（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-69,K-705 |
+| `deleteTicketStage` | DELETE /api/v1/ticket_stages/:id | 削除（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-69,K-705 |
+| `reorderTicketStages` | POST /api/v1/ticket_stages/order | 作成・実行（ticket_stages）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ | F9 | 作った | K-69,K-705 |
 | `listWorkTypes` | GET /api/v1/work_types | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `createWorkType` | POST /api/v1/work_types | 作成・実行（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |
 | `getWorkType` | GET /api/v1/work_types/:id | 取得（work_types）— 業務の型を作る・広げる | F9 | 契約だけ（501） |  |

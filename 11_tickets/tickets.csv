@@ -2866,7 +2866,7 @@ K-705,状態（作業の段）を足す・直す（名前・色）・並べる�
 
 状態に色の列は無かったので `color_key`（見分けの色 8 つの鍵・土台-settings.md の 2 章）を足し、今ある行には key から初めの色を入れる。読む口 `listTicketStages`（今は表の行をそのまま返し、画面はまだ使っていない）の答えを、画面が使う形（`TicketStageSetting`）に決める。
 
-設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は状態の書く 4 本と `listTicketStages` の答えを持つ（`listTicketStages` の口の持ち主は K-59 のまま：頭の `apis:` には書かず、生成の試験 `get_ticket_stages.test.ts` も `tests:` に書かない。土台-settings.md のとおり）。","- [ ] 下の表の 25 行（K705-API-001〜022・K705-DB-001〜003）が緑：`apps/api/test/features/F9/ticket-stages-write.test.ts`
+設計の全体は **`07_functional/段10-F9/土台-settings.md`**。この葉は状態の書く 4 本と `listTicketStages` の答えを持つ（`listTicketStages` の口の持ち主は K-59 のまま：頭の `apis:` には書かない。生成の試験 `get_ticket_stages.test.ts` は、この葉の `ears-elsewhere.d` で結ぶと作り手が作り直すので、作る段の初めに `tests:` に足した）。","- [ ] 下の表の 25 行（K705-API-001〜022・K705-DB-001〜003）が緑：`apps/api/test/features/F9/ticket-stages-write.test.ts`
 - [ ] 契約の口 4 本が 501 でない。`listTicketStages` の答えが `TicketStageSetting`（鍵 6）で、生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-705.json` の covers）
 - [ ] 共有の試験 k144-contract.test.ts の回で、入口の uuid の行 K144-API-972・973（`updateTicketStage`・`deleteTicketStage` の道の id）が通る
 - [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑

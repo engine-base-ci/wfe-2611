@@ -10483,7 +10483,27 @@
   },
   {
    "entity": "ticket_stages",
+   "field": "key",
+   "consumed_by_screens": [
+    "tickets",
+    "masters"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_stages",
    "field": "name",
+   "consumed_by_screens": [
+    "tickets",
+    "masters"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_stages",
+   "field": "color_key",
    "consumed_by_screens": [
     "tickets",
     "masters"

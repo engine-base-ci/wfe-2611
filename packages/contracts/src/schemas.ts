@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:345737c92b8df538
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml components）。手で直さない。openapi:7830f7fa0c1cdd6c
 import { z } from "zod";
 
 export const Tenants = z.strictObject({
@@ -2652,7 +2652,9 @@ export const KindSectionsInput = z.strictObject({
   default_test_specs: z.unknown().nullable().optional(),
 });
 export const TicketStages = z.strictObject({
+  key: z.string().nullable().optional(),
   name: z.string().optional(),
+  color_key: z.string().optional(),
   position: z.number().int().optional(),
   is_fixed: z.boolean().optional(),
   id: z.uuid(),
@@ -2661,11 +2663,12 @@ export const TicketStages = z.strictObject({
   updated_at: z.iso.datetime({ offset: true }).optional(),
   created_by: z.uuid().nullable().optional(),
   deleted_at: z.iso.datetime({ offset: true }).nullable().optional(),
-  key: z.string().nullable().optional(),
   updated_by: z.uuid().nullable().optional(),
 });
 export const TicketStagesInput = z.strictObject({
+  key: z.string().nullable().optional(),
   name: z.string().optional(),
+  color_key: z.string().optional(),
   position: z.number().int().optional(),
   is_fixed: z.boolean().optional(),
 });
