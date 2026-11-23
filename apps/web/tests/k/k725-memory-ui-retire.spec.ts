@@ -1,9 +1,9 @@
 // K-725：web の前の記憶の画面を外した後の、実ブラウザでの確かめ（ファイルと字の確かめは test/k725-memory-ui-retire.test.ts）。
 // 本物の API と DB につなぐ。Bridge は使わない（本人の Bridge に触れない）。行 ID は md の行の表（K725-UI-）
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { loginAs, setupStep, signupViaApi } from "../_lib/api";
 
-async function ready(page: import("@playwright/test").Page) {
+async function ready(page: Page) {
   const u = await signupViaApi();
   await setupStep(u.memberId, 6);
   await loginAs(page, u.token);

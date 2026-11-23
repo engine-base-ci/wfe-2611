@@ -1569,7 +1569,7 @@
    ],
    "tests": [
     "apps/web/tests/screens/clone-chat.spec.ts",
-    "apps/web/tests/screens/k725-memory-ui-retire.spec.ts",
+    "apps/web/tests/k/k725-memory-ui-retire.spec.ts",
     "apps/web/test/k725-memory-ui-retire.test.ts"
    ]
   },

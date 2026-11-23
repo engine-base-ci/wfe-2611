@@ -1,4 +1,4 @@
-// K-725：web の前の記憶の画面と呼び出しを外す（K-69 の葉）。ファイルと字を読んで確かめる（ブラウザで動く確かめは tests/screens/k725-memory-ui-retire.spec.ts）。
+// K-725：web の前の記憶の画面と呼び出しを外す（K-69 の葉）。ファイルと字を読んで確かめる（ブラウザで動く確かめは tests/k/k725-memory-ui-retire.spec.ts）。
 // 行 ID は md の行の表（K725-API-001〜010）。消した名前が「0」だけを見ると探す先が空でも緑になるので、残す名前が「在る」ことも必ず見る（TP-TOOL-02）
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -30,7 +30,7 @@ function grepFiles(pattern: string, extra: string[] = []): string[] {
     throw e;
   }
 }
-const SELF = ["apps/web/test/k725-memory-ui-retire.test.ts", "apps/web/tests/screens/k725-memory-ui-retire.spec.ts"];
+const SELF = ["apps/web/test/k725-memory-ui-retire.test.ts", "apps/web/tests/k/k725-memory-ui-retire.spec.ts"];
 /** 「もう無い行」の節より前（今の行）と後（もう無い行）に分ける */
 function rowsOf(rel: string): { now: string; gone: string } {
   const t = read(rel);
