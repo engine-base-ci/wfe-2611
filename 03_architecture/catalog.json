@@ -5,7 +5,7 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 369,
+  "api": 366,
   "api_built": 90,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
@@ -1025,23 +1025,6 @@
    ]
   },
   {
-   "op": "markHumanCheck",
-   "method": "POST",
-   "path": "/api/v1/checks/:id/human",
-   "what": "作成・実行（checks）— 承認する／自分で直す／差し戻す／止める",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
-   ]
-  },
-  {
    "op": "updateClientContact",
    "method": "PATCH",
    "path": "/api/v1/client_contacts/:id",
@@ -1357,23 +1340,6 @@
    "only_later_phase": false,
    "tables": [
     "action_runs"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-61"
-   ]
-  },
-  {
-   "op": "exportCloneActivity",
-   "method": "POST",
-   "path": "/api/v1/clones/me/activity/export",
-   "what": "作成・実行（clones）— 分身がやったことを見る → チケットへ戻る",
-   "flows": [
-    "F5"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "export_jobs"
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
@@ -5060,23 +5026,6 @@
    ]
   },
   {
-   "op": "listChecks",
-   "method": "GET",
-   "path": "/api/v1/tickets/:id/checks",
-   "what": "取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か",
-   "flows": [
-    "F4"
-   ],
-   "only_later_phase": false,
-   "tables": [
-    "checks"
-   ],
-   "status": "契約だけ（501）",
-   "owner_tickets": [
-    "K-59"
-   ]
-  },
-  {
    "op": "updateTicketClientShare",
    "method": "PATCH",
    "path": "/api/v1/tickets/:id/client-share",
@@ -6184,13 +6133,9 @@
    "table": "checks",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
-   "writes": [
-    "F5"
-   ],
-   "reads": [
-    "F4"
-   ],
-   "boundary": true
+   "writes": [],
+   "reads": [],
+   "boundary": false
   },
   {
    "table": "class_axes",
@@ -6378,8 +6323,7 @@
    "why": "第1フェーズの口が使う（08_api/endpoints.json）",
    "writes": [
     "F10",
-    "F12",
-    "F5"
+    "F12"
    ],
    "reads": [],
    "boundary": true
