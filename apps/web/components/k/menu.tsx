@@ -3,6 +3,7 @@
 //   キーボード（Enter・Space で開く・↑↓ で項目を移る・Esc で閉じて焦点が開くボタンに戻る）と読み上げ（menu・menuitem）は Base UI に任せる。
 //   箱と項目の見た目は選ぶ欄と同じ決まり（k.css の .k-select-popup・.k-select-item）。開くボタン・箱・項目に足すクラスは使う側が className で渡す
 //   （幅・色などは、その部品の CSS が正本のトークンで決める）。画面の部品（features）は Base UI を直に読まず、この型を使う。
+//   開いた箱の置き場は k-popup-layer（重なりの順は正本の popup-layer）。使う側で置き場を狙わない。
 //   並べ方：<Menu><MenuTrigger>…</MenuTrigger><MenuPopup><MenuItem>…</MenuItem></MenuPopup></Menu>
 import { Menu as M } from "@base-ui/react/menu";
 import type { ReactNode } from "react";
@@ -26,16 +27,26 @@ export interface MenuTriggerProps {
   label?: string;
   /** 開くボタンの形（使う側の部品の CSS が決める） */
   className?: string;
+  /** 押せない形（送っている間など）。aria-disabled を付け、押しても開かない（焦点は落とさない） */
+  disabled?: boolean;
   children: ReactNode;
 }
 
 /** 開くボタン */
-export function MenuTrigger({ label, className, children }: MenuTriggerProps) {
+export function MenuTrigger({ label, className, disabled = false, children }: MenuTriggerProps) {
+  // native の disabled は渡さない（Base UI が付けると焦点がボタンから落ちる）。開く手は Base UI の手前で止める
+  const stop = disabled
+    ? { onClick: stopBase, onMouseDown: stopBase, onPointerDown: stopBase, onKeyDown: stopBase }
+    : {};
   return (
-    <M.Trigger className={className} aria-label={label}>
+    <M.Trigger className={className} aria-label={label} aria-disabled={disabled ? "true" : undefined} {...stop}>
       {children}
     </M.Trigger>
   );
+}
+
+function stopBase(event: { preventBaseUIHandler: () => void }) {
+  event.preventBaseUIHandler();
 }
 
 export interface MenuPopupProps {
@@ -50,7 +61,7 @@ export interface MenuPopupProps {
 export function MenuPopup({ align = "end", className, children }: MenuPopupProps) {
   return (
     <M.Portal>
-      <M.Positioner sideOffset={MENU_SIDE_OFFSET} align={align}>
+      <M.Positioner className="k-popup-layer" sideOffset={MENU_SIDE_OFFSET} align={align}>
         <M.Popup className={className ? `k-select-popup ${className}` : "k-select-popup"}>{children}</M.Popup>
       </M.Positioner>
     </M.Portal>
