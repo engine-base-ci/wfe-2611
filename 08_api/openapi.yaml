@@ -1649,6 +1649,11 @@ components:
         kind_id:
           type: string
           nullable: true
+          enum:
+          - rule
+          - preference
+          - example
+          - null
         owner_member_id:
           type: string
           format: uuid
@@ -1661,7 +1666,7 @@ components:
           nullable: true
         confidence:
           type: string
-          pattern: ^-?[0-9](?:\.[0-9]+)?$
+          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
           nullable: true
         source_type_id:
           type: string
@@ -1687,6 +1692,10 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
+      allOf:
+      - properties:
+          body:
+            type: string
     MemoryDigests:
       type: object
       properties:
@@ -10827,9 +10836,21 @@ components:
       properties:
         children:
           type: integer
+        descendants:
+          type: integer
         attachments:
           type: integer
         artifacts:
+          type: integer
+        pending_approvals:
+          type: integer
+        links:
+          type: integer
+        running_runs:
+          type: integer
+        descendant_pending_approvals:
+          type: integer
+        descendant_running_runs:
           type: integer
         restorable_until:
           type: string
@@ -12993,6 +13014,11 @@ components:
         kind_id:
           type: string
           nullable: true
+          enum:
+          - rule
+          - preference
+          - example
+          - null
         owner_member_id:
           type: string
           format: uuid
@@ -13006,7 +13032,7 @@ components:
           pattern: \S
         confidence:
           type: string
-          pattern: ^-?[0-9](?:\.[0-9]+)?$
+          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
           nullable: true
         source_type_id:
           type: string
@@ -13032,6 +13058,10 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
+      allOf:
+      - properties:
+          body:
+            type: string
       x-operation: updateMemory
       required:
       - body
@@ -15626,13 +15656,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR／E-VAL-008／E-VAL-004（契約に書けない値の決まり：メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定））
+          description: VALIDATION_ERROR／E-VAL-008／E-VAL-004
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - メールアドレスの形が違う（E-VAL-004・NFKC で直し空白を除いた後で判定）
         '401':
           description: E-AUTH-001
           content:
@@ -16358,13 +16386,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR／E-VAL-009（契約に書けない値の決まり：code と backup_code の両方・どちらも無い（どちらか 1 つ））
+          description: VALIDATION_ERROR／E-VAL-009
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - code と backup_code の両方・どちらも無い（どちらか 1 つ）
         '401':
           description: E-AUTH-004／E-AUTH-013
           content:
@@ -16579,14 +16605,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）・NFKC で英数字になる字（① など））
+          description: VALIDATION_ERROR（契約に書けない値の決まり：NFKC で英数字になる字（① など））
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           x-unexpressible-422:
-          - 違う・期限切れ・使い終わった・出し直す前の接続コード（E-CONN-013）
           - NFKC で英数字になる字（① など）
+        '404':
+          description: E-CONN-013
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -31527,14 +31558,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）・確かさが四捨五入で 10 以上になる（9.995 など））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 種類・承認した人・要約・置き換え先がその会社に無い（外部キーの在りか）
-          - 確かさが四捨五入で 10 以上になる（9.995 など）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -31628,13 +31656,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR（契約に書けない値の決まり：覚えることが null（空と同じ））
+          description: VALIDATION_ERROR
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          x-unexpressible-422:
-          - 覚えることが null（空と同じ）
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -41375,7 +41401,7 @@ paths:
   /api/v1/tickets:
     get:
       operationId: listTickets
-      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）
+      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）
       tags:
       - tickets
       x-acts:
@@ -41409,17 +41435,47 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - mine
+          - all
       - name: q
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          maxLength: 100
       - name: scope_id
         in: query
         allowEmptyValue: true
         schema:
           type: string
           format: uuid
+      - name: kind_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: stage_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: assignee_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: done
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -41465,6 +41521,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: CONFLICT
           content:
             application/json:
               schema:
@@ -43152,7 +43214,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）
       x-step-up: false
       security:
       - session: []
@@ -43182,7 +43244,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -43199,14 +43261,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
