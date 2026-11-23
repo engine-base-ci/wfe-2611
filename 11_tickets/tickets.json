@@ -2407,7 +2407,6 @@
     "getArtifactVersion",
     "getTicketImport",
     "lintTestSpecs",
-    "listChecks",
     "listClients",
     "listTestSpecs",
     "listTicketArtifacts",
@@ -2430,13 +2429,13 @@
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
     "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/get_tickets_id_artifacts.test.ts",
-    "apps/api/test/generated/get_tickets_id_checks.test.ts",
     "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
     "apps/api/test/generated/get_tickets_id_links.test.ts",
     "apps/api/test/generated/get_tickets_id_references.test.ts",
     "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
     "apps/api/test/generated/get_tickets_id_versions.test.ts",
     "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts",
+    "apps/api/test/generated/patch_tickets_id_body.test.ts",
     "apps/api/test/generated/post_conversations.test.ts",
     "apps/api/test/generated/post_conversations_id_messages.test.ts",
     "apps/api/test/generated/post_ticket_imports.test.ts",
@@ -2449,8 +2448,7 @@
     "apps/api/test/generated/post_tickets_id_test_specs.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs_lint.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts",
-    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts",
-    "apps/api/test/generated/patch_tickets_id_body.test.ts"
+    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -2616,7 +2614,6 @@
     "bulkApprove",
     "dryRunTicket",
     "editApproval",
-    "exportCloneActivity",
     "getCloneGrowth",
     "getCloneNow",
     "getMyClone",
@@ -2624,7 +2621,6 @@
     "listApprovalHistory",
     "listCloneActivity",
     "listConversationMessages",
-    "markHumanCheck",
     "previewBulkApproval",
     "sendTicketAgentMessage",
     "stopActionRun",
@@ -2646,9 +2642,6 @@
     "apps/api/test/generated/post_approvals_bulk.test.ts",
     "apps/api/test/generated/post_approvals_bulk_preview.test.ts",
     "apps/api/test/generated/post_approvals_id_edit.test.ts",
-    "apps/api/test/generated/post_approvals_id_withdraw.test.ts",
-    "apps/api/test/generated/post_checks_id_human.test.ts",
-    "apps/api/test/generated/post_clones_me_activity_export.test.ts",
     "apps/api/test/generated/post_conversations_id_stop.test.ts",
     "apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts",
     "apps/api/test/generated/post_tickets_id_dry_run.test.ts"
@@ -24320,6 +24313,168 @@
     "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-732.*`）に書く（K-325）。ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので直に書かない\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/approval-stop.ts` の `export const register = defineHooks({…})`（K-326）。server.ts と fuzz の的は直に書かない（作り手 `gen_ts_registries.py` が一覧を作る）\n- migration は時刻の名前 `packages/db/migrations/20261125021200_approval_stop.sql`（K-327）。一覧 packages/db/src/migrations.generated.ts は作り手 `gen_migrations.py` の生成物\n- `05_flow/screen_api.py`・`scripts/ci/row_rules.mjs` は同じ段のほかの葉も別の行を直す（overlap_ok）"
    },
    "file": "11_tickets/K-732.md"
+  },
+  {
+   "id": "K-733",
+   "title": "承認を取り下げる口（withdrawApproval：承認した後・PC が仕事を受け取る前だけ。承認待ちに戻す）（K-61 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-61",
+   "milestone": "F5",
+   "area": "止める",
+   "assignee": "実装",
+   "due": "2026-11-30",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。形の近い段 1 の K-164（承認の後の仕事を片付けて聞き直しの承認待ちの行を作る DB の関数・試験 10 行ほど）とこの段の K-732（止める口・お知らせ・証跡・契約の形と登録先）から引いた：migration 1 本（app.approval_withdraw 1 本）20 分・口 1 本（口のファイル withdraw.ts と hooks のファイル）10 分・エラー 2 つと契約の形と登録先 10 分・自分の確かめ 10 分。試験 18 行は切る段で書いた",
+   "decisions": [
+    "D-125.105",
+    "D-128.25",
+    "D-128.98",
+    "D-131.14",
+    "D-153.7",
+    "D-153.21",
+    "D-153.27"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C5"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/approval-withdraw.test.ts",
+    "apps/api/test/generated/post_approvals_id_withdraw.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/contract/k144.d/K-733.ts"
+   ],
+   "depends_on": [
+    "K-732"
+   ],
+   "acts": [
+    "A89"
+   ],
+   "screens": [],
+   "apis": [
+    "withdrawApproval"
+   ],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（口と DB と契約だけ）。実行待ちの帯の［承認を取り下げる］と確かめ・間に合わなかったときの文は画面の葉 K-735、決めた履歴の［取り消す］は K-751 が持つ（正は /dev/mock/f5 の withdraw-*・history-undo-*）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261125021300_approval_withdraw.sql",
+    "packages/db/src/migrations.generated.ts",
+    "apps/api/src/hooks/approval-withdraw.ts",
+    "apps/api/src/features/F5/more/withdraw.ts",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-733.py",
+    "scripts/ci/row_rules.mjs",
+    "scripts/ci/contract_shape.d/K-733.py",
+    "07_qa/test-plan/ears-elsewhere.d/K-733.json",
+    "scripts/ci/ci_scope.d/K-733.json",
+    "07_qa/test-specs/errors.d/K-733.json"
+   ],
+   "flow": "AI を止める",
+   "sections": {
+    "目的": "承認した後、**PC がまだ仕事を受け取っていない間だけ**、承認を取り下げて承認待ちに戻せるようにする（D-125.105・D-131.14。今は［承認を取り下げる］が押せない形・口は契約だけで 501）。\n\n`withdrawApproval`（POST /api/v1/approvals/:id/withdraw・体は空）：承認した本人が押す。決まった承認は変えられない（0063）ので、**決まった承認の行に取り下げの印（withdrawn_at）を付け**（decision approve のまま履歴に残る）、**同じ成果物の新しい承認待ちの行**を作る（承認する人は今の担当者・取り消せないの印と人が見る項目は前のまま。承認の後の 24 時間の聞き直し〔0098〕と同じ作り）。承認の後の実行（待っていた仕事と実行の記録）は取り消し（cancelled・仕事の cancelled は人が承認を取り下げたときだけ・D-131.14）、チケットは承認待ちに戻り、「AI に任せている」の旗は下り、やり取りに「〈名〉が承認を取り下げました（承認待ちに戻りました）」を 1 行、証跡 1 行。お知らせ（受け箱）はそのチケットの今の担当者だけに 1 件で、取り下げた本人が担当者なら自分あては出さない（任せた人には出さない。D-153.7）。担当者が替わった後に前の承認者が取り下げたときだけ、今の担当者に届く。答えは `ApprovalWithdrawn`（id・withdrawn_at・ticket_id・approval_id＝新しい承認待ちの行の 4 つ）。\n\n**間に合わなかったとき**は 3 つに分ける。PC がもう受け取って動かしている（running・asking）は 409・E-APR-010「もう実行が始まっています。止めるには［止める］を押してください」（止めるのは K-731 の口）。実行がもう終わった・PC が受け取った後に止まった（done・taken 後の stopped）は 409・E-APR-012「もう実行が終わっています」（止めると言うのは言い過ぎなので文を分けた）。取り下げられない承認（まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた〔24 時間・人が止めた・止められた〕）は 409・E-APR-011。\n\n承認する・差し戻す（K-162・K-163）と承認待ちを止める（K-732）は触らない。画面は K-735。",
+    "完了の条件": "- [ ] 下の表の 18 行（K733-API-001〜018）が緑：`apps/api/test/features/F5/approval-withdraw.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）\n- [ ] 契約の口 `withdrawApproval` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_id_withdraw.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-733.json` の covers）\n- [ ] 共有の試験 k144 の葉の行 K144-API-982（`k144.d/K-733.ts`・carry）が緑\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, PERM, JOB\n\n- **K-732 が先に入る**：試験の手助け `F5/approval-more.kit.ts`（`withdrawApproval`・`loadHook`）と、止める口 `stopApproval`（この葉の試験が止めた承認を作る）は K-732 が置く。この葉は**自分の hooks のファイル `apps/api/src/hooks/approval-withdraw.ts` と口のファイル `apps/api/src/features/F5/more/withdraw.ts` を作る**（まとめ役の決め・touch_rules）\n- 取り下げられる承認：**承認した本人**（`approvals.approver_member_id`＝承認を決めたときの担当者・D-153.21）が、**決まった承認（decision approve）で、取り下げの印が無く、承認の後の実行（phase execute）が待っている（queued）うちで、PC に渡した仕事もまだ待っている（queued）とき**だけ。仕事の取り（`app.bridge_take_job`）は `for update skip locked` で取るので、関数は実行と仕事の行を先に `for update` で取り、取った後に状態をもう一度見る（取りと取り下げが同時なら、どちらか一方だけが勝つ）\n- 守りの判定は承認する・止めると同じ書き方：今のメンバー（`app.approval_member_now()`）・承認を決めた人が自分・チケットを書ける（`app.ticket_writable`）。例外なら何も書かずに `guard_failed`（503・E-PAGE-003）。担当者が替わった後でも、承認した本人は取り下げられる。新しい承認待ちの承認する人は**今の担当者**\n- 決まった承認は変えられない（0063 の approvals_once：`status_id`・`resolved_at`・`approver_member_id` を決まった後に変えない）。変えるのは取り下げの印（`withdrawn_at`・`updated_by`）だけで、これは 0063 の守りに触れない（0098 が 24 時間の聞き直しで承認を変えずに新しい行を作るのと同じ）\n- 新しい承認待ちの行：`tenant_id・scope_id・ticket_id・kind artifact・action_run_id（元の行と同じ＝作る段の実行）・requested_by（元の行と同じ）・approver_member_id（今の担当者）・status_id pending・subject_type・subject_id（元の行と同じ＝同じ成果物）・irreversible（元の行と同じ）・human_checks（元の行と同じ）・created_by（元の行の requested_by）`。note は付けない\n- 実行と仕事を取り消す順：**実行の記録を先に cancelled にしてから仕事を cancelled にする**（仕事を閉じた引き金 `app.ticket_execute_job_end`〔0100〕は、実行が動いている・待っているときだけ段・旗・やり取りを書くので、先に実行を閉じて空振りさせ、行が二重に出ないようにする）\n- 関門の宣言は [C2]。外には出ない（C1・C3・C5・C6 は無い。まだ PC が受け取っていない仕事なので PC に止める合図を送る手順は無い）。口の登録はこの葉の hooks のファイル（K-326）。材料は `d.appPool` だけを使う\n- 送る量・uuid・上限の入口の共通の確かめ（K-144）と同意し直しの止め（K-53）はそのまま",
+    "依存の理由": "- K-461（段 8）: 要る（K-731 経由）— お知らせの種類 `approval.withdrawn` は鈴の種類の表 `kinds.ts` に要る。**表の行は K-731 がまとめて足した**ので、この葉は表を触らない\n- K-463（段 8）: 触らない — 引き金 `approvals_notify_requested` が、取り下げで足す新しい承認待ちにも反応する（下の決定ログ）。引き金は直さない\n- K-732: 要る — 試験の手助け approval-more.kit.ts（この葉の試験が読む）・止める口 stopApproval（K733-API-007 が止めた承認を作る）と、決定ログの節 §153（K-780 が運ぶ・K-732 の依存の K-731 が K-780 に依存する）\n- K-164（段 1・本線）：要る — `app.ticket_execute_job_end`（0100）・承認の後の仕事の片付け（0098）・24 時間の聞き直しの新しい承認待ちの作り方・harness の `approved`。もう本線に在る\n- K-731（止める口）：触らない — 実行が始まった後の止めるは K-731 の口。この葉は仕事を取り消すだけで止める合図を使わない（K-732 の依存として先に入る）",
+    "目録で探した結果": "- 使う：`withTenant`・`app.approval_member_now`・`app.ticket_writable`・`app.ticket_stage_to`・`app.ticket_system_line`・`app.member_name`・`audit_events` への書き方（0100 の `app.approval_decide`）・`app.ticket_execute_job_end`（0100・直さない）・`app.bridge_take_job`（0099・直さない）・K-63 の `features/F5/approve-complete/errors.ts`（`fromCatalog`・`replyOf`・`down`）・`approve-complete.harness.ts`・`F5/approval-more.kit.ts`\n- 作る：DB の関数 `app.approval_withdraw`、`apps/api/src/features/F5/more/withdraw.ts`、hooks のファイル `apps/api/src/hooks/approval-withdraw.ts`。探したが同じ物は無かった（承認を取り下げる道は無く、`withdrawn_at` の列を読む所だけが在る。24 時間の聞き直し〔0098〕は PC が受け取る前の仕事を片付けて新しい承認待ちの行を作る別の道で、人の取り下げではない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本・時刻の名前・K-327） | `packages/db/migrations/20261125021300_approval_withdraw.sql`：`app.approval_withdraw(p_approval uuid) returns jsonb`（`language plpgsql security definer set search_path = public, app, pg_temp`・`revoke all … from public`・`grant execute … to kaname_app`）。中身は下の「app.approval_withdraw」。列は足さない |\n| app.approval_withdraw | 呼んだ人は `app.user_id()`・会社は `app.tenant_id()`。どちらかが無ければ `{error:'not_member'}`。承認の行を `for update`（無い・消えた・`ticket_id` が無い・kind が artifact でない → `not_found`）、チケットを `for update`（無い・消えた → `not_found`）。**守りの判定は例外を捕まえて `guard_failed`**：今のメンバーでなければ `not_member`・`a.approver_member_id` が自分でなければ `not_approver`・`app.ticket_writable` が偽なら `not_writable`。`a.decision` が approve でない・`withdrawn_at` が在る → `not_withdrawable`。承認の後の実行（`action_runs` の `approval_id = a.id and phase='execute'` の一番新しい行）を `for update`：無い → `not_withdrawable`。仕事（`bridge_job_id`）を `for update`。**3 つに分ける判定を 1 つで決める**：実行が running・asking → `late`／実行が done → `ended`／実行が stopped・cancelled で、仕事を PC が一度でも受け取っている（`bridge_jobs.taken_session_id` か `started_at` が在る）→ `ended`／実行が stopped・cancelled で PC が一度も受け取っていない（24 時間の片付け・待っている間に人が止めた・止められた）→ `not_withdrawable`／実行が queued で仕事が queued でない（取りの途中）→ `late`／実行も仕事も queued → 取り下げる。**取り下げ**：実行を `status_id='cancelled'・error_summary='承認が取り下げられました'・finished_at=now()・updated_by=自分`、仕事を `state_id='cancelled'・stopped_reason='承認が取り下げられました'・finished_at=now()・partial=null`、承認の行に `withdrawn_at=now()・updated_by=自分`、新しい承認待ちの行を insert（上の列）。`app.ticket_stage_to(チケット, 'awaiting_approval', 自分)`・`delegated_to_clone=false`。やり取り `app.ticket_system_line(チケット, 自分, 名前‖'が承認を取り下げました（承認待ちに戻りました）')`。チケットの今の担当者（`assignee_member_id`）が自分でなく今のメンバー（`deleted_at`・`suspended_at` が無い人）なら、受け箱に 1 行（`notifications`・channel `inapp`・event `approval.withdrawn`・宛先は今の担当者・payload は ticket_id・番号・url だけ・dedupe_key `approval_withdrawn:`‖承認の id・`sent_at=now()`）。証跡 `insert into audit_events … 'approval.withdraw','approvals',承認の id,'C2', {ticket_id, new_approval_id}`。答え `{id, withdrawn_at, ticket_id, approval_id}` |\n| 口 | `apps/api/src/features/F5/more/withdraw.ts`（この葉が作る）：withTenant の中で `select app.approval_withdraw($1) as v`。`error` が無ければ 201 `{ data: {id, withdrawn_at, ticket_id, approval_id} }`（`Cache-Control: private, no-store`）。`error` あり → `late` は 409・E-APR-010、`ended` は 409・E-APR-012、`not_withdrawable` は 409・E-APR-011、それ以外は K-63 の `replyOf`（`not_found` 404・`not_member`・`not_approver`・`not_writable` 403・`guard_failed` と知らない言葉 503 E-PAGE-003）。関数が例外（DB・証跡・受け箱の書き込み失敗）は 503・E-PAGE-003（ログに本文を出さない・取引ごと戻る）。体は空の形（`INPUTS` の `ApprovalWithdrawInput`・strict・入口が 422） |\n| 口の登録（K-326） | `apps/api/src/hooks/approval-withdraw.ts`：`export function approvalWithdrawHooks(d: HookDeps): Record<string, Hook>`（withdrawApproval だけ）と `export const register = defineHooks({ name: \"approvalWithdrawHooks\", make: (d) => approvalWithdrawHooks(d), fuzz: \"same\" })`。server.ts・fuzz の的は直さない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧に入れる）。**新しい口を足す葉の手順（生成の試験は作る段の最初に契約を足して作り手で作り、先にコミットする）**：`screen_api.d/K-733.py` と契約の形の表を足して `python3 05_flow/build_api.py` で作り直し、生成の試験を `gen_ears_tests.mjs` で作り、先にコミットしてから実装に入る |\n| 行の決まり | `scripts/ci/row_rules.mjs` の OP_RULES に 1 行：`withdrawApproval: \"approver_member_id = ME\"`（承認を決めた人が自分。`ME` は同じファイルの定数。理由の注：「入口は承認した本人だけ。今のメンバー・書けるかの判定（403）と、消した・無い（404）は DB の関数 app.approval_withdraw と口が持つ（K-733・守りは 2 層）」）。前からの行は直さない |\n| 契約の形 | `05_flow/screen_api.py`（前からある行を直すので本体・overlap_ok）：PERMS の `withdrawApproval` の説明を「承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す」に直す。`05_flow/screen_api.d/K-733.py`：`INPUTS = {\"withdrawApproval\": (\"ApprovalWithdrawInput\", {})}`・`RESPONSES = {\"withdrawApproval\": (\"ApprovalWithdrawn\", {\"id\": \"string\", \"withdrawn_at\": \"string\", \"ticket_id\": \"string\", \"approval_id\": \"string\"})}`・`ERRORS_4XX`（403 FORBIDDEN・404 NOT_FOUND・409 E-APR-010〔`{\"error\": \"conflict\", \"code\": \"E-APR-010\"}`〕・409 E-APR-011・409 E-APR-012・422 VALIDATION_ERROR・503 E-PAGE-003）→ `python3 05_flow/build_api.py`。`scripts/ci/contract_shape.d/K-733.py`：体は空の形なので 6 つの表は空＋`NO_REQUIRED_INPUTS = {\"withdrawApproval\": \"体は空（どの欄も無い）\"}` の 1 行 |\n| エラー | `07_qa/test-specs/errors.d/K-733.json`：E-APR-010〜012（下）→ `python3 scripts/ci/build_registries.py` |\n| 登録先（touch_rules） | hooks のファイルの register・screen_api.d・contract_shape.d・ears-elsewhere.d・ci_scope.d の K-733。`python3 scripts/ci/build_registries.py`・`gen_migrations.py` で生成物を作り直す |\n\n### エラーの対応（errors.d/K-733.json・文は画面に出す字）\n\n| 番号 | 状態 | いつ | 文 | 次の一手 |\n|---|---|---|---|---|\n| E-APR-010 | 409 | PC がもう受け取って動かしている（running・asking）承認の後の実行を取り下げる | もう実行が始まっています。止めるには［止める］を押してください | ［止める］を押す |\n| E-APR-011 | 409 | まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた（24 時間・人が止めた）承認を取り下げる | この承認は取り下げられません（まだ承認していない・もう取り下げた・片付けられたのどれかです） | 画面を読み直す |\n| E-APR-012 | 409 | 承認の後の実行がもう終わった（done）・PC が受け取った後に止まった承認を取り下げる | もう実行が終わっています。画面を読み直してください | 画面を読み直す |\n\n`ERRORS_4XX[\"withdrawApproval\"]` は上のとおり。体の形は strict で契約に書けるので、契約に書けない決まりの例外は持たない。問い合わせを持たない口なので `QUERY_RANGES` に足す物も無い（K-468 に依存しない）。\n\n### 生成の試験（ears-elsewhere.d/K-733.json）\n\n```json\n{\"ops\": {\"withdrawApproval\": {\"file\": \"apps/api/test/features/F5/approval-withdraw.test.ts\",\n  \"reason\": \"取り下げは、承認の状態・承認した本人・PC の仕事の状態で答えが変わる。生成の試験の種では承認した後の待っている実行を作れない（K-733）\",\n  \"covers\": {\"test_post_approvals_id_withdraw_ok\": \"K733-API-001\", \"test_post_approvals_id_withdraw_shape\": \"K733-API-001\",\n             \"test_post_approvals_id_withdraw_rejected_401\": \"K733-API-013\", \"test_post_approvals_id_withdraw_rejected_403\": \"K733-API-005\",\n             \"test_post_approvals_id_withdraw_not_found\": \"K733-API-006\", \"test_post_approvals_id_withdraw_conflict\": \"K733-API-003\",\n             \"test_post_approvals_id_withdraw_conflict_2\": \"K733-API-007\", \"test_post_approvals_id_withdraw_conflict_3\": \"K733-API-004\",\n             \"test_post_approvals_id_withdraw_rejected_422\": \"K733-API-012\",\n             \"test_post_approvals_id_withdraw_rejected_422_2\": {\"file\": \"apps/api/test/features/contract/k144.d/K-733.ts\", \"mark\": \"K144-API-982\"},\n             \"test_post_approvals_id_withdraw_rate_limited\": \"K733-API-013\", \"test_post_approvals_id_withdraw_upstream_failed\": \"K733-API-014\",\n             \"test_post_approvals_id_withdraw_terms_pending\": {\"file\": \"apps/api/test/features/F1/terms.test.ts\", \"mark\": \"K53-API-005\"},\n             \"test_post_approvals_id_withdraw_session_unresolved\": \"K733-API-014\",\n             \"test_post_approvals_id_withdraw_session_unresolved_2\": {\"file\": \"apps/api/test/features/contract/k144-contract.test.ts\", \"mark\": \"K144-API-032\"},\n             \"test_post_approvals_id_withdraw_too_large\": {\"file\": \"apps/api/test/features/contract/k144-contract.test.ts\", \"mark\": \"K144-API-042\"}},\n  \"na\": {}}}}\n```\n\n409 は `ERRORS_4XX` の E-APR-010・011・012 の 3 行がそれぞれ `_conflict`・`_conflict_2`・`_conflict_3`（1 行目は汎用の 409 を置き換える・build_api.py）になるので、3 つとも covers に書いた（010 は 003、011 は 007、012 は 004 を指す）。契約を作り直したら生成の試験の名前が変わることがある（作り手が出す名前に covers の鍵を合わせ、余る名前は na に理由を書く）。mfa_pending は口ごとの止めを生成の試験が自分で見る（K-321）ので covers に書かない。\n\n### 範囲の地図（ci_scope.d/K-733.json）\n\n```json\n{\n \"data_links\": [\n  {\"paths\": [\"apps/api/src/features/F5/more/withdraw.ts\", \"apps/api/src/hooks/approval-withdraw.ts\"],\n   \"tests\": [\"apps/api/test/features/F5/approval-withdraw.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"]},\n  {\"paths\": [\"apps/api/test/features/F5/approval-withdraw.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\", \"apps/api/test/features/F1/terms.test.ts\"],\n   \"tests\": [\"apps/api/test/generated/post_approvals_id_withdraw.test.ts\"]}\n ],\n \"reads_ok\": {\n  \"apps/api/test/features/contract/k144.d/K-733.ts\": \"k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）\"\n }\n}\n```",
+    "外に影響する手順": "- S1: DB に書く（承認の行の取り下げの印・新しい承認待ちの行・実行と仕事の取り消し・チケットの段と旗・やり取りの 1 行。DB の関数 `app.approval_withdraw` の 1 取引・関門 C2）。失敗したら取引ごと戻り何も残らない・口は 503・E-PAGE-003（K733-API-014・017）\n- S2: 証跡を書く（`approval.withdraw`・同じ取引の中）。書けなければ S1 ごと戻る・口は 503・E-PAGE-003（K733-API-015）\n- S3: お知らせ（今の担当者が取り下げた人と違うときだけ、今の担当者の受け箱に 1 行・同じ取引の中）。書けなければ S1 ごと戻る・口は 503・E-PAGE-003（K733-API-016）\n（上の手順は同じ 1 取引で、失敗したら全部戻る。後片付けが要るものは無い）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F5/approval-withdraw.test.ts`（本物の DB・本物の行の守り・口の入口は createApp と契約の op・偽の画面のログイン・本物の PC の印。土台 `F5/approve-complete.harness.ts`・`F5/approval-more.kit.ts`）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（承認と実行） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 承認した後・PC がまだ受け取っていない | 実行待ちの帯の［承認を取り下げる］ | 承認した本人 | 201・取り下げの印・新しい承認待ち 1・実行と仕事は取り消し・段は承認待ち・旗 false・やり取り 1・証跡 1 | このチケット | K733-API-001 |\n| 取り下げた後 | PC が取りに来る・もう一度承認・もう一度取り下げ | PC・承認する人 | 仕事は渡らない・新しい実行ができる・取り下げ直せる | このチケット | K733-API-002 |\n| PC が受け取って動かしている | 同じ | 承認した本人 | 409・E-APR-010・何も変わらない | このチケット | K733-API-003 |\n| 終わった・PC が受け取った後に止まった | 同じ | 承認した本人 | 409・E-APR-012・何も変わらない | このチケット | K733-API-004 |\n| 待っている | 同じ | 承認した本人でない人／担当者が替わった後の承認した本人 | 403／201（新しい承認待ちの承認する人は今の担当者） | このチケット | K733-API-005 |\n| どれでも | 同じ | 別の会社の人・無い id・成果物でない承認・消したチケット | 404 | このチケット | K733-API-006 |\n| まだ承認していない・差し戻し済み・止め済み・取り下げ済み・24 時間で片付けられた | 同じ | 承認した本人 | 409・E-APR-011 | このチケット | K733-API-007・011 |\n| 待っている | 二度押し・別のタブ・PC が取るのと同時 | 承認した本人・PC | 二度押しは 409・1 つだけ通る・取りと同時は一方だけが勝つ | このチケット | K733-API-008・009・010 |\n| どれでも | 同じ | ログインしていない・同意し直しが要る | 401・403（E-AUTH-010） | このチケット・入口の共通（K-53） | K733-API-013・K53-API-005 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K733-API-001 | 対象の状態 | 承認した後・PC がまだ受け取っていない承認を、承認した本人が取り下げる | 201・答えの鍵はちょうど 4 つ・古い承認は decision approve のまま withdrawn_at が入る・新しい承認待ち 1（decision null・approver は担当者・irreversible true・同じ成果物・同じ作る段の実行）・承認の後の実行は cancelled・仕事は cancelled・段 awaiting_approval・旗 false・やり取りに「高本が承認を取り下げました（承認待ちに戻りました）」1 行・証跡 approval.withdraw 1・Cache-Control に private と no-store・承認待ちの一覧は新しい行だけ |\n| K733-API-002 | 操作の揺れ | 取り下げた後に PC が取りに来る・新しい承認待ちをもう一度承認・もう一度取り下げる | 仕事は渡らない（null）・承認すると新しい実行が queued で 2 つ目ができる・取り下げ直せて承認待ちは 1 つ |\n| K733-API-003 | 失敗 | PC がもう受け取って動かしている | 409・E-APR-010・承認・実行（running）・仕事（running）・段・やり取りは変わらない |\n| K733-API-004 | 失敗 | 実行が done で終わった・PC が受け取った後に stopped で止まった | 409・E-APR-012・何も変わらない |\n| K733-API-005 | 守り | 承認した本人でない書ける人・任せた人・マネージャー／担当者が替わった後の承認した本人 | 403・何も変わらない・証跡 0／201・新しい承認待ちの承認する人は新しい担当者 |\n| K733-API-006 | 守り | 別の会社の人・無い id・成果物でない承認（kind が policy_exception）・消したチケットの承認 | どれも 404・取り下げの印は付かない |\n| K733-API-007 | 対象の状態 | まだ承認していない・差し戻し済み・止め済み・もう取り下げた承認 | どれも 409・E-APR-011・何も変わらない |\n| K733-API-008 | 操作の揺れ | 二度押し | 2 回目は 409・E-APR-011・承認待ちに戻った行・やり取り・証跡は 1 つのまま |\n| K733-API-009 | 操作の揺れ | 同時に 2 回（別のタブ） | [201, 409]・承認待ちに戻った行 1・証跡 1 |\n| K733-API-010 | 操作の揺れ | PC が取るのと取り下げが同時 | どちらか一方だけが勝つ：取り下げが先なら 201・PC に何も渡らず実行も仕事も cancelled／PC が先なら 409・E-APR-010・仕事も実行も running |\n| K733-API-011 | 時間 | 承認から 24 時間を過ぎて片付けられた承認（実行は PC が受け取る前に stopped・聞き直しの承認待ちが 1 つ）を取り下げる | 409・E-APR-011・聞き直しの承認待ちはそのまま 1 つ・段は承認待ち |\n| K733-API-012 | 入力 | 体に知らない項目・空の体 | 知らない項目は 422・何も変わらない。{} は 201 |\n| K733-API-013 | 守り | ログインしていない・上限 | 401・1 分に 61 回目は 429・retry_after_sec は 1〜60 の整数 |\n| K733-API-014 | 失敗 | 手順 S1「DB に書く」が失敗（関数が使えない） | 503・E-PAGE-003・承認・実行（queued）・仕事（queued）・段・やり取り・証跡のどれも変わらない |\n| K733-API-015 | 失敗 | 手順 S2「証跡」が失敗（証跡の書き込みが例外） | 503・E-PAGE-003・取り下げの印も新しい承認待ちも残らず・仕事は queued のまま・やり取りの行も無い |\n| K733-API-016 | 守り・失敗 | 手順 S3「お知らせ」：取り下げた人が今の担当者と違う（担当者が替わった後）／同じ／受け箱が書けない | 違うときだけ今の担当者の受け箱に approval.withdrawn が 1 件（payload に成果物の中身を入れない）・任せた人には出さない・取り下げた人が担当者なら増えない・書けなければ 503・E-PAGE-003 で全部戻る |\n| K733-API-017 | 失敗 | 守りの判定で例外（ticket_writable が壊れた）・DB の関数の守り（2 層目） | 503・E-PAGE-003・何も書かない。`app.approval_withdraw` は security definer・search_path に pg_temp・public から外し kaname_app だけ。承認した本人でない文脈で直に呼ぶと `{error:'not_approver'}` |\n| K733-API-018 | 対象の状態 | 取り下げた後の見え方 | 古い承認は一覧に出ず getApproval で decision approve・can_decide false。新しい承認待ちは can_decide true・成果物の版と本文は同じ |\n\n### テストの型の受け（分類 CRUD・PERM・JOB）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | K733-API-009・010（同時に取り下げる・PC が取るのと同時） |\n| TP-CRUD-02 消したものを古いリンクで開く・直す | K733-API-006（消したチケットの承認・404） |\n| 要らない: TP-CRUD-03 消す → 戻す、子のあるものを消す | 取り下げは消す操作でなく、取り下げた承認を戻す口も作らない（承認待ちに戻るのは新しい行で、もう一度承認するのは K-162 の口） |\n| TP-CRUD-04 2 回押し | K733-API-008・009 |\n| TP-CRUD-05 保存の途中で失敗 | K733-API-014〜017（途中で落ちたら取引ごと戻る） |\n| 要らない: TP-CRUD-06 書きかけで戻る・再読み込み・セッション切れ | 書きかけを持たない（確かめの小窓で押す 1 回の操作）。セッション切れは K733-API-013（401）が受ける |\n| TP-PERM-01 役が合わない人 | K733-API-005 |\n| TP-PERM-02 権限を外した直後に、開いていた画面で押す | K733-API-005（担当者が替わった後でも承認した本人は取り下げられる／書ける・メンバーの判定が壊れたら 503 は K733-API-017） |\n| TP-PERM-03 他の会社の ID を直接指定する | K733-API-006 |\n| TP-PERM-04 一覧・数・検索 | K733-API-001・018（取り下げた古い承認は一覧に出ず、新しい承認待ちが出る） |\n| TP-PERM-05 権限を付けた直後 | K733-API-005（新しい担当者が新しい承認待ちの承認する人になる） |\n| TP-JOB-01 途中で止まった・再起動・やり直し | K733-API-002（取り下げた後にもう一度承認・もう一度取り下げ）・K733-API-010（取りと同時） |\n| TP-JOB-02 日付の変わり目・月末・タイムゾーン | K733-API-011（承認から 24 時間は時刻の差で数える・日付やタイムゾーンを使わない） |\n| TP-JOB-03 処理の途中で対象が消えた | K733-API-006（消したチケット）・K733-API-010（取りと同時） |\n| 入口の uuid（道の値 id） | K144-API-982（k144.d/K-733.ts） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数（実行待ちの帯） | チケットの詳細 1 回の読み（K-162・帯を読む文 1 本） | 増えない（押したときだけ withdraw を 1 本呼び、そのあと読み直し 1 本） |\n| 直列の段 | 1 | 2（押す → 取り下げる口 → 読み直し。押した後だけ） |\n| 口ごとの文の数・取引の数 | — | 取り下げる：1 取引・関数 1 回（中で承認・チケット・実行・仕事・新しい承認・やり取り・受け箱・証跡を各 1 回ずつ読み書き） |\n| 認証の要る答えの Cache-Control | — | `private, no-store`（K733-API-001） |\n| 新しい住所 | — | 増えない（/api/v1/approvals/:id/withdraw は契約に在る） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した物と、承認の行・取り下げの印・承認の後の実行を使う試験を手で探した物。件数は作る段の木（本線＋この葉が運ぶ物）で数える。この葉の新しい試験（F5/approval-withdraw.test.ts）と carry の k144.d/K-733.ts・approval-more.kit.ts は、命令のパスで外した。\n\n```search\ngit grep -l \"withdrawApproval\\|withdrawn_at\\|approvals/.*/withdraw\" -- 'apps/api/test/*.ts' 'apps/api/test/**/*.ts' 'packages/db/test/*.ts' 'scripts/ci/*test*' ':!apps/api/test/generated/*' ':!apps/api/test/features/F5/approval-withdraw.test.ts' ':!apps/api/test/features/F5/approval-more.kit.ts' ':!apps/api/test/features/contract/k144.d/*'\n6\n```\n\n- apps/api/test/features/F5/approve-complete-complete.test.ts・approve-complete-guard.test.ts・approve-complete-return.test.ts・approve-complete.harness.ts・delegate-bridge.test.ts: 替えない — `withdrawn_at is null` を決まっていない承認の数え方（`openApprovals`）に使うだけ。取り下げの印が付いた行は、この葉の口でしか作られず（今は作る道が無い）、数え方は変えない。承認・差し戻し・完了の振る舞いは触らない\n- apps/api/test/features/F4/ticket-list.test.ts: 替えない — 一覧の「承認待ちあり」の判定の行（`withdrawn_at is null`）。この葉は判定を変えない（取り下げた承認は判定から外れ、新しい承認待ちの行が数えられる）\n- apps/api/test/generated/post_approvals_id_withdraw.test.ts: 替える（作り手が作り直す）— it.todo を作り手 gen_ears_tests.mjs が作る。手で書かない\n- apps/api/test/features/contract/k144-contract.test.ts・k144-leaves.test.ts・apps/api/test/row_rules.test.ts・scripts/ci/contract_shape_test.py・ci_scope_test.py・ci_lean_test.py・contract.test.mjs・fuzz_targets_test.py: 替えない — 口の一覧・行の決まりの式・契約の形の表・範囲の地図が作り手の出力と合うかを見る。この葉は断片（.d）を足し、作り手で作り直す。K-733 が足す行は carry の k144.d/K-733.ts（K144-API-982）",
+    "決定ログ": "- 2026-11-22 切る段の決め（受け入れる）：段 8 の K-463 の引き金（承認待ちの行が足されると承認する人に `approval.requested`「承認待ちです」を書く）は、取り下げで足す新しい承認待ちにも反応する。承認する人は今の担当者（取り下げた本人のことが多い）なので、本人の鈴にも出る。引き金は段 8 の持ち物なので直さず、出る形で受け入れる（24 時間の聞き直しと同じで、K-463 も許している）。K733-API-016 は `approval.withdrawn` の数だけを見る\n- 2026-11-22 切る段の決め：間に合わなかった 409 を 3 つに分けた（動いている＝E-APR-010・終わった／受け取った後に止まった＝E-APR-012・受け取る前に片付けられた／止めた＝E-APR-011）。「止めるには［止める］を押して」は動いている間だけ。受け取った後かの判定は仕事の `taken_session_id`・`started_at`\n- 2026-11-22 切る段の決め（D-153.27）：取り下げは、決まった承認の行を変えずに取り下げの印を付け、同じ成果物の新しい承認待ちの行を作る（決まった承認は変えられない・0063。承認の後の 24 時間の聞き直しと同じ作り）。取り下げた承認は履歴に approve のまま残る\n- 2026-11-22 切る段の決め（D-153.21）：取り下げられるのは承認した本人・PC がまだ仕事を受け取っていない間だけ。間に合わなかった（受け取った・終わった・止まった）は 409・E-APR-010。取り下げられない承認（承認していない・差し戻し済み・止め済み・取り下げ済み・24 時間で片付けられた）は 409・E-APR-011\n- 2026-11-22 切る段の決め：実行の記録を先に取り消し、そのあと仕事を取り消す（仕事を閉じた引き金 0100 を空振りさせて、やり取りの行を二重にしない）\n- 2026-11-22 切る段の決め：エラーの番号は E-APR-010〜011（取り下げる）。E-APR-001〜009 は止める・承認の運びの共通に空けた",
+    "PM に確かめたいこと": "- 代表の答えは来ている（お知らせは担当者だけ・answer=0fa9ccaf6b20）。聞くことは無い（取り下げの決まりは決定ログ D-125.105・D-131.14 に在る）",
+    "リスクと懸念": "- 仕事を取り消す（cancelled）道は、人が承認を取り下げたときだけ（D-131.14）。ほかの葉が仕事を cancelled にしないこと\n- 取り下げた後に新しい承認待ちが増えるので、承認待ちの数・チケット一覧の「承認待ちあり」は新しい行で数える。取り下げた古い承認は `withdrawn_at` が入るので数えない（今の本線の数え方）",
+    "申し送り": "- K-735（画面）：実行待ちの帯の［承認を取り下げる］→ 確かめ → 201 の答えの `approval_id`（新しい承認待ち）で帯を承認待ちの形に替える。409・E-APR-010 は「もう実行が始まっています。止めるには［止める］を押してください」を帯の外に出し、実行中の帯（［止める］が押せる）に読み直す\n- K-751（決めた履歴の画面）：［取り消す］はこの口を呼ぶ。取り消せるかの印は K-750 の `can_withdraw`\n- K-750（決めた履歴の口）：取り下げた承認（`withdrawn_at` あり）は履歴に「取り下げ済み」として出せる（decision は approve のまま）。取り下げられるかの印は、この葉の取り下げの条件と同じ判定を読む側で出す",
+    "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-733.*`）に書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので直に書かない\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/approval-withdraw.ts` の `export const register = defineHooks({…})`（K-326）。server.ts と fuzz の的は直に書かない\n- migration は時刻の名前 `packages/db/migrations/20261125021300_approval_withdraw.sql`（K-327）。一覧 packages/db/src/migrations.generated.ts は作り手 `gen_migrations.py` の生成物\n- `05_flow/screen_api.py`・`scripts/ci/row_rules.mjs` は同じ段のほかの葉も別の行を直す（overlap_ok）"
+   },
+   "file": "11_tickets/K-733.md"
+  },
+  {
+   "id": "K-741",
+   "title": "使わない口と表を片付ける（markHumanCheck・listChecks・exportCloneActivity を契約・生成物・親の apis から外し、checks の表に凍結の印を付ける。表と行は消さない）（K-61 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-61",
+   "milestone": "F5",
+   "area": "契約",
+   "assignee": "実装",
+   "due": "2026-12-04",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い段 5 の K-582（契約の口 1 本を外す・列の注・試験 10 行・見込み 0.5）と段 10 の K-711（契約の口を外す葉・試験 14 行・見込み 1）から引いた：口 2 本を契約の表（SCREEN_API 2 行・PERMS 2 行・表の欄の checks 6 か所）から消して作り手を回す 10 分・外す口の記録と親の md 2 つ 5 分・目録の凍結の印 5 分・自分の確かめ（試験 12 行・目録の検査）10 分で合わせて 30 分。migration も口のコードも無い（書くコードが 1 行も無い）。試験 12 行は切る段で書いた",
+   "decisions": [
+    "D-150.39",
+    "D-150.40",
+    "D-128.127",
+    "D-128.77",
+    "D-153.33"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "契約・目録・親の md を直すだけ。データを書かず、外へも出さず、DB・秘密・お知らせに触らない（関門を通る物が無い）。外す 2 つの口は今どちらも契約だけで 501 を返す",
+   "tests": [
+    "apps/api/test/features/F5/checks-retire.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-780"
+   ],
+   "acts": [
+    "A15",
+    "A102"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "口・契約・目録だけで見た目を変えない葉（changes に apps/web/ の道が無い）。画面が markHumanCheck・listChecks を呼ぶことは無い（承認の確かめの小窓の「チェックの無い確認項目」は K-740 が口 getApproval の checks を数える）",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "05_flow/screen_api.py",
+    "08_api/retired-endpoints.json",
+    "03_architecture/db-catalog.json",
+    "08_api/phase1/01_チケット.md",
+    "08_api/phase1/03_分身の部屋.md",
+    "11_tickets/K-59.md",
+    "11_tickets/K-61.md",
+    "scripts/ci/ci_scope.d/K-741.json"
+   ],
+   "flow": "AI に任せて、確かめて、終える",
+   "sections": {
+    "目的": "代表が「確認項目は文とチェックだけ（機械・AI・人の種類と判定の型は持たない）。だれがチェックしたかは記録を別に作らず、やり取りに 1 行」と決めた（D-150.39・.40）。前の形のまま契約に残っている次の 2 本を、契約・生成物・親チケットの `apis:` から外し、使わない表に凍結の印を付ける。\n\n| 操作 ID | 方法・道 | 前の役割 | 今の代わり |\n|---|---|---|---|\n| `markHumanCheck` | POST /checks/:id/human | ③ 人の確認を割り当てられた人が「確かめた」の印を付ける | 人がチェックを付ける口は段 5 の `updateTestSpec`（K-435） |\n| `exportCloneActivity` | POST /clones/me/activity/export | 分身がやったことを書き出す（持ち出す） | 作らない。書き出しは作らない（代表の決め 2026-11-22・D-153.33）。やったことの［書き出す］は画面に出さない |\n| `listChecks` | GET /tickets/:id/checks | 検査の結果（`checks` の行）を読む | 確認項目と付けた人は `listTestSpecs`（K-434）・承認のカードは `getApproval` の `checks`（K-739） |\n\n3 本とも今は契約だけで 501 を返す口（作ってはいない）なので、外しても動いている物は変わらない。表 `checks`（0072・検査の結果の追記専用の表）は**書くコードが 1 行も無い**ので、消さずに目録で凍結する（D-128.127 の決まり）。確認の数と行は、新しい形で K-739 が `test_specs` から出す。",
+    "完了の条件": "- [ ] 下の表の 12 行（K741-API-001〜012）が緑：`apps/api/test/features/F5/checks-retire.test.ts`\n- [ ] `markHumanCheck`・`listChecks`・`exportCloneActivity` が `05_flow/screen_api.py の全部の表（SCREEN_API・PERMS ほか）に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 3 本（`get_tickets_id_checks.test.ts`・`post_checks_id_human.test.ts`・`post_clones_me_activity_export.test.ts`）が消えている（作り手 `gen_ears_tests.mjs` が消す）\n- [ ] `08_api/retired-endpoints.json` に 3 本が 1 行ずつある。契約の検査（`node scripts/ci/contract.mjs check`・`python3 scripts/ci/contract_shape_test.py`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑\n- [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- **口の置き場は 1 か所**：`05_flow/screen_api.py`（前からある行を直すので本体・`.d` に書かない）。2026-11-22 の c/段6 での行：SCREEN_API は 48（`listChecks`）・49（`markHumanCheck`）・PERMS は 1220・1221。行番号は別の葉も直すとずれるので、**操作 ID の名前で探す**。消す前に `git grep -n -w -E \"markHumanCheck|listChecks\" 05_flow/screen_api.py` で全部出し、消した後に 0 件であることを見る\n- **口の行の「使う表」の欄から `checks` を外す**（検査の結果の表を使う口が 0 になる）：`applyTicketAgentProposal`（59 行・`ticket_section_versions` は残す）・`listApprovalQueue`（98 行）・`getApproval`（99 行）・`previewBulkApproval`（105 行）・`tryWorkType`（155 行）・`finishBridgeJob`（249 行）。承認の一覧・詳細の「確認」は K-739 が確認項目から出すので、`listApprovalQueue`・`getApproval` の欄は `checks` を **`test_specs` に替える**（足す）。ほかは外すだけ。**応答の欄の名前としての `checks`（承認の詳細・実行の 1 件）はそのまま残す**（画面が読む欄の名前で、表の名前ではない）。`tryWorkType` の行は段 10 の K-711 が行ごと消す（先に入った方が前提）\n- **`exportCloneActivity`（D-153.33）**：`05_flow/screen_api.py` の SCREEN_API（163 行）・PERMS（1322 行）から消す。`08_api/retired-endpoints.json` に `{ \"method\": \"POST\", \"path\": \"/api/v1/clones/me/activity/export\", \"decision\": \"D-153.33\", \"reason\": \"書き出し（持ち出し）は作らない（代表の決め 2026-11-22）\" }` を足す。手書きの文書 `08_api/phase1/03_分身の部屋.md` の 70 行（書き出す）を消す（K-754 が同じ文書の 68・69 行を直す＝別の行・overlap_ok）。`11_tickets/K-61.md` の `apis:` から `exportCloneActivity` を、`tests:` から `post_clones_me_activity_export.test.ts` を外す。**`export_jobs` の表は凍結しない**（`createExport`・`exportOpsWorkspaces`・`exportOpsInvoices`・`requestWorkspaceDeletion` の口の表の欄にまだ在り、それらの扱いは別の決め〔ほかの葉〕。この葉は表の欄から `exportCloneActivity` の行が消えるだけ）。ほかの書き出しの口（`createExport` ほか）は代表の同じ決めの対象だが、段 6 の持ち主はこの 1 本だけ（残りはまとめ役の判断・申し送り）\n- **作り手で作り直す（手で書かない）**：`python3 05_flow/build_api.py`・`node scripts/ci/contract.mjs gen`・`node scripts/ci/gen_ears_tests.mjs`・`python3 scripts/ci/build_registries.py`・`python3 scripts/ci/build_catalog.py`・`python3 scripts/ci/gen_ts_registries.py`・`python3 scripts/ci/flow_db_gate.py --lines`（流れの線）。出る物＝`08_api/*`・`packages/contracts/src/{ops,registry,schemas,types}.ts`・`apps/api/src/routes/*`（`checks.ts` は丸ごと消え、`tickets.ts` の 1 行が減り、`index.ts` の読み込みが減る）・`apps/api/test/generated/*`（2 本が消える）・`03_architecture/catalog.*`・`03_architecture/flow-lines.json`。作り手の出力に外した名前が 1 つでも残れば、その表の行を消し忘れている\n- **道の外し方**：外した道は、入口が道ごと持たないので 404（501 でない）\n- **外す口の記録（契約の破壊的変更の検査 G11・`node scripts/ci/contract.mjs check`）**：`08_api/retired-endpoints.json` に 2 本を 1 行ずつ足す（書かずに消すと赤）。`{ \"method\": \"GET\", \"path\": \"/api/v1/tickets/{id}/checks\", \"decision\": \"D-150.39\", \"reason\": \"確認項目は文とチェックだけにした。検査の結果の表を読む口は無くした。確認項目と付けた人は listTestSpecs と承認の詳細で読む（代表の決め）\" }`・`{ \"method\": \"POST\", \"path\": \"/api/v1/checks/{id}/human\", \"decision\": \"D-150.40\", \"reason\": \"人が確かめた印の口は無くした。人がチェックを付けるのは updateTestSpec（確認項目の口）。だれが付けたかはやり取りに載る（代表の決め）\" }`（道は契約の書き方のとおり `{id}`）。根拠の決定 D-150.39・.40 は決定ログに在る（段 5 の K-434 が運ぶ）\n- **凍結の印**：`03_architecture/db-catalog.json` の `checks` を `skeleton` から `frozen` に。理由は「確認項目は文とチェックだけで、種類・判定の型・検査の結果の表は持たない（D-150.39・D-150.40）。口は無く、コードも書かない。表と行は消さない（K-741）」。`test_specs` は骨格のまま（確認項目の口が使う）。`python3 scripts/ci/flow_db_gate.py --lines` で `flow-lines.json` を作り直す（`checks` の書く・読む流れが無くなる）。凍結した表をコードが使い始めると FD3 で赤（`git grep` で 0 件）\n- **親の md**：`11_tickets/K-59.md` の `apis:` から `listChecks` を、`tests:` から `apps/api/test/generated/get_tickets_id_checks.test.ts` を外す。`11_tickets/K-61.md` の `apis:` から `markHumanCheck` を、`tests:` から `apps/api/test/generated/post_checks_id_human.test.ts` を外す。K-61 の `apis:`・`tests:` は段 6 の口の葉が全部 1 行ずつ直す（`overlap_ok` に K-61 を足してもらう＝申し送り）\n- **表と行は消さない・列は変えない**：`checks`（0072）は追記専用（アプリの接続は更新・削除できない）のまま。行の守り（`05_flow/rls_policies.py` の `checks`・`scripts/ci/row_rules.mjs` の表の規則）も変えない（凍結の表にも守りは残す）\n- 断る番号（控え帳）：外した道は 404。この葉は番号を足さない・消さない。外のサービス・メール・PC・AI は呼ばない。データを書かない",
+    "依存の理由": "- K-780: 要る — 決定ログの節 §153 の運び手。この葉の `decisions:` の D-153.n を本線の決定ログに入れる葉（先に入らないと、決定の番号が決定ログに無いとして始められない）\nそのほかの依存は無い。\n\n（依存にしない）K-739：確認を `test_specs` から出す葉で、`screen_api.py` も `checks` の表も触らない。この葉は `listApprovalQueue`・`getApproval` の表の欄を `test_specs` に直すだけで、K-739 の前でも後でも入る。K-711（段 10）：`tryWorkType` の行を消す。先でも後でも入り、後から入る方は行が無ければ飛ばす（操作 ID の名前で探すので）。",
+    "目録で探した結果": "- 使う：`05_flow/screen_api.py`・作り手（`build_api.py`・`contract.mjs`・`gen_ears_tests.mjs`・`build_registries.py`・`build_catalog.py`・`gen_ts_registries.py`・`flow_db_gate.py --lines`）・段 5 の K-582 と段 10 の K-711 の「口を外す」の置き方・K-711 の試験の読み方（契約・生成物・文書のファイルを読む・字を歩いて探す）・段 5 の K-563 と K-578 の凍結の印の付け方・試験の土台 `makeFixture`\n- 作る：`apps/api/test/features/F5/checks-retire.test.ts`。探したが同じ形の物は無かった（2 つの口と 1 つの表の凍結をまとめた葉は無い）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 契約の表を消す | `05_flow/screen_api.py`：前提と制約の 2 つの操作 ID を SCREEN_API・PERMS から消す。口の行の「使う表」の欄の `checks` を外す・替える（前提と制約） |\n| 生成物 | 作り手を前提と制約の順に回す。`apps/api/src/routes/checks.ts` が消えること・`routes/tickets.ts` から `listChecks` の行が消えること・`routes/index.ts` の読み込みが消えること・`apps/api/test/generated/*` の 2 本が消えることを見る（手で消さない） |\n| 外す口の記録 | `08_api/retired-endpoints.json` に 2 行（前提と制約） |\n| 凍結の印 | `03_architecture/db-catalog.json`：`checks` を `frozen`・理由つき。`03_architecture/flow-lines.json` は作り手で作り直す |\n| 親の md | `11_tickets/K-59.md`・`11_tickets/K-61.md` の `apis:`・`tests:`（前提と制約） |\n| 文書 | `08_api/phase1/01_チケット.md`：54 行（確認の結果・落ちた）と 148・149 行（権限の表の 2 口）の 3 行を消す（手書きの文書・作り手の出力でない。K-736 も同じ文書に自分の段落を足すが別の行なので git が合わせる＝overlap_ok の対象） |\n| 範囲の地図 | `scripts/ci/ci_scope.d/K-741.json`：`{\"reads_ok\": {\"apps/api/test/features/F5/checks-retire.test.ts\": \"契約・生成物・目録・親の md を readFileSync で読み、git grep と flow_db_gate.py を spawnSync で動かす（K741-API-002〜010）・K-741\"}}`（動的に読む試験は import の地図で辿れず、無いと ci_scope_test.py の K107-CS-032 が赤） |\n| **生成の試験は作る段の最初に** | 新しい口は足さない（外すだけ）ので、新しい生成の試験は出ない。**作る段の最初に、契約の表を消して作り手を回し、生成物と消えた生成の試験 2 本を先にコミットする**。そのあと外す口の記録・目録・親の md。先の葉の契約を前提にした前からの試験を、この葉の carry に入れない |",
+    "外に影響する手順": "なし — 契約・生成物・目録・親の md を直すだけ（データを書かず、お知らせも外のサービスも AI も呼ばず、証跡も残さない。外す 2 つの口は今どちらも 501 で動いていない）。",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F5/checks-retire.test.ts`（本物の入口を 1 つ立て、外した道を直に呼んで 404 を見る・契約と生成物と目録と親の md のファイルを読む・`git grep` で字を探す・目録の検査 `flow_db_gate.py` を直に動かす・DB には表が残ることだけを見る）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 外した 2 つの道 | 直に呼ぶ | 書ける人 | 404（501 でない） | このチケット | K741-API-001 |\n| 契約・目録・生成物・口の道の登録 | ファイルを読む | — | 2 つの操作 ID が無い・残す口は在る・routes/checks.ts が無い | このチケット | K741-API-002・003 |\n| 生成の試験 | ファイルの有無 | — | 2 本が消えている | このチケット | K741-API-004 |\n| 外す口の記録 | ファイルを読む | — | 2 本が 1 行ずつ・根拠の決定・理由つき | このチケット | K741-API-005 |\n| 口の行の「使う表」の欄 | ファイルを読む | — | checks を挙げた行が 0・応答の欄の名前は残る | このチケット | K741-API-006 |\n| 凍結の印・流れの線・目録の検査 | ファイル・検査 | — | frozen・理由つき・書く読む流れ無し・FD1〜FD5 が緑 | このチケット | K741-API-007 |\n| コード | 字を探す | — | checks の表を使う文が 0 件 | このチケット | K741-API-008 |\n| 表 | DB を読む | — | 表と列が在り・追記だけ | このチケット | K741-API-009 |\n| 親の md | ファイルを読む | — | listChecks・markHumanCheck が外れ、ほかは残る | このチケット | K741-API-010 |\n| 書き出す口 | 直に呼ぶ・ファイル | 書ける人 | 404・契約などに無い・記録 1 行 | このチケット | K741-API-011・012 |\n| 確認の数と行を出す | 口 | 承認する人 | K-739 | K-739 | — |\n| 人がチェックを付ける | 口 | 人 | K-435 | K-435 | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K741-API-001 | 入口 | POST /checks/:id/human・GET /tickets/:id/checks を直に呼ぶ | どちらも 404（501 でなく、道ごと無い） |\n| K741-API-002 | 守り | 契約と目録の 9 つのファイル（screen_api.py・endpoints.json・openapi.yaml・types.ts・lint-mapping.json・registry.ts・ops.ts・catalog.json・catalog.md）と文書 01_チケット.md | どれも読めて（空でない）、2 つの操作 ID が 1 つも出てこず、文書に 2 つの道の行が無い。確認項目の口 listTestSpecs と承認の口 getApproval は残る |\n| K741-API-003 | 守り | 口の道の登録 | routes/checks.ts が無く、routes/index.ts がそれを読まず、routes/tickets.ts に listChecks が出てこない |\n| K741-API-004 | 守り | 生成の試験 | get_tickets_id_checks.test.ts・post_checks_id_human.test.ts のファイルが 2 本とも消える |\n| K741-API-005 | 守り | 外す口の記録 | retired-endpoints.json に GET /api/v1/tickets/{id}/checks と POST /api/v1/checks/{id}/human が 1 行ずつ・根拠は D-150.39 か D-150.40・理由は 16 字以上 |\n| K741-API-006 | 守り | screen_api.py の口の行（SCREEN_API）の「使う表」の欄 | checks を表として挙げた口の行が 0（読めた行は 100 より多い）。応答の欄の名前 checks（ApprovalDetail）は残る |\n| K741-API-007 | 守り | 目録・流れの線・目録の検査 | db-catalog.json で checks が frozen・理由に D-150.39・test_specs は skeleton のまま。flow-lines.json の境目に checks が無く書く・読む流れが空。flow_db_gate.py が終了 0 |\n| K741-API-008 | 守り | apps/*/src・packages/*/src の字 | from・into・update・join の後ろに checks を置いた文が 0 件 |\n| K741-API-009 | 失敗 | 表の状態 | checks の表が在り、列（id・tenant_id・ticket_id・test_spec_id・result・runner）が残り、アプリの接続は更新も削除もできない |\n| K741-API-011 | 入口 | POST /clones/me/activity/export を直に呼ぶ・契約と生成物と文書・生成の試験・外す口の記録 | 404（501 でない）・契約と目録と生成物と phase1 の 03 に exportCloneActivity が無い・生成の試験 post_clones_me_activity_export.test.ts が無い・retired-endpoints.json に D-153.33 の 1 行（理由つき）・ほかの書き出しの口（createExport）は残る |\n| K741-API-012 | 守り | 表 export_jobs と K-61.md | export_jobs は db-catalog.json で凍結にしていない（skeleton のまま・ほかの口が使う）・K-61.md の apis に exportCloneActivity・tests に post_clones_me_activity_export.test.ts が無い |\n| K741-API-010 | 守り | 親の md | K-59 の apis に listChecks が無く tests に get_tickets_id_checks が無い（createTestSpec は残る。deleteTestSpec は本線の形のとおり持ち主の K-435 の apis に在る）・K-61 の apis に markHumanCheck が無く tests に post_checks_id_human が無い |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K741-API-007（`03_architecture/db-catalog.json`・`flow-lines.json`）・010（`11_tickets/K-59.md` ほか）。名前が日本語のファイルは無いが、`git grep` は出た名前を行で分けて読む（K741-API-008） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K741-API-002（読めた字の長さを見てから「無い」を見る）・006（読めた行の数を見る）・007（flow_db_gate.py を直に動かす）。外したことだけを見る検査は、読むファイルが空でも緑になるので、読めていることも同じ行で見る |\n| 要らない: TP-TOOL-03 容れ物の中と手元で設定・証明書・版が違う | 試験は git・python3・node だけで動き、容れ物ごとの設定を読まない |\n| G-11〜G-16 | G-11：N/A（外の資源を使わない）。G-12：N/A（切り替わりの瞬間に当たる状態が無い）。G-13：K741-API-006（確認の口 K-739 が表の欄を使う組み合わせ）。G-14：N/A。G-15：N/A。G-16：N/A（資源を増やさない） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | 画面は 2 つの口を呼ばない | 変わらない |\n| 口ごとの文の数・取引の数 | — | 無い（口を外すだけ） |\n| 新しい住所 | — | 増えない（2 つ減る） |\n| 認証の要る答えの Cache-Control | — | 変わらない |\n| staging での答えの時間の前後 | — | 変わらない（読む口が増えも減りも変わりもしない） |",
+    "前からの試験を替えた所": "```search\ngit grep -l -w -E \"markHumanCheck|listChecks\" -- . ':!11_tickets' ':!07_functional' ':!01_hearing' ':!apps/api/test/features/F5/checks-retire.test.ts'\n12\n```\n\n```search\ngit grep -l -w \"checks\" -- 'apps/*/test/*.ts' 'apps/*/test/**/*.ts' 'packages/*/test/*.ts' 'scripts/ci/*test*.py' 'scripts/ci/*.mjs' ':!apps/api/test/generated/*' ':!apps/api/test/features/F5/checks-retire.test.ts'\n7\n```\n\n- 上の 1 つ目の 12 件：契約の表（`05_flow/screen_api.py`）と作り手の出力（`03_architecture/catalog.*`・`08_api/*`・`packages/contracts/src/*`・`apps/api/src/routes/*`）。作り手が作り直すので手で直さない。残りは `scripts/tickets/cut_m1.py`（K-63 を孫に切った昔の台本の字。道具の名前を字で持つだけで、契約を読まない。**替えない** — 道具として今は使わず、字が残っても動きが変わらない）\n- apps/api/test/features/F5/approve-complete-queue.test.ts・approve-complete.harness.ts・delegate-bridge.test.ts・delegate-kit.ts：替えない — 応答の欄の名前としての `checks`（承認の詳細・実行の 1 件）を見る。表の名前ではない（K-739 が中身を変える）\n- apps/api/test/golive.test.ts：替えない — 別の物の `checks`（立ち上げの点検の配列）\n- packages/db/test/ticket_around.test.ts：替えない — 表 `checks` の追記専用・行の守りを DB に直に見る。表と行は消さない（凍結しても残る）\n- scripts/ci/row_rules.mjs：替えない — 表 `checks` の行の規則（承認する人だけが読める）。凍結の表にも守りは残す\n- `apps/api/test/qa-d.test.ts`・`scripts/ci/contract.test.mjs`：替えない — 外す口の記録（`08_api/retired-endpoints.json`）を読んで、外した口の行を「決定で外した」として扱う仕組みの試験。足す 2 行も同じ形で通る\n- `apps/api/test/generated/get_tickets_id_checks.test.ts`・`post_checks_id_human.test.ts`（生成物）：作り手が作らなくなる（消える）",
+    "成果物": "- 契約の表と作り手の出力・外す口の記録 2 行・目録の凍結の印・親の md 2 つ\n- 単体の試験 `checks-retire.test.ts`（切る段が書いた）",
+    "決定ログ": "- 2026-11-22 切る段の決め（まとめ役の決め）：`markHumanCheck`・`listChecks` は作らずに契約から外す。表 `checks` は凍結（消さない）。人が付ける口は `updateTestSpec`（K-435）\n- 2026-11-22 切る段の決め：`listApprovalQueue`・`getApproval` の「使う表」の欄は `checks` を外して `test_specs` に替える（確認項目の読みが実態。K-739 の読みと合わせる）\n- 2026-11-22 切る段の決め：依存は置かない（K-739 と触るファイルが重ならない）。切り方 1 章の「K-739 の後」は順の目安で、機械の依存にしない\n- 2026-11-22 代表の決め（D-153.33・2026-11-22 18:25 answer=3781e90d23e0）：書き出し（持ち出し）は作らない。`exportCloneActivity` を契約から外す（この葉）。決定ログの行は K-780 が運ぶ\n- 2026-11-22 切る段の決め：`export_jobs` は凍結しない（ほかの書き出し・削除の口の表の欄が使う）",
+    "リスクと懸念": "- **`05_flow/screen_api.py` は段 6 の口の葉・段 10 の K-711 も直す**：行を消す・欄を替えるだけで、離れた行なので git が合わせる。同じ行（`tryWorkType`）は K-711 が行ごと消すので、先に入った方の後は「無ければ飛ばす」\n- **K-59・K-61 の `apis:`・`tests:` の行は段 6 の口の葉が全部 1 行ずつ直す**：同じ行を直す（`overlap_ok` の K-61 の追加が要る・K-59 は在る）\n- **凍結した表の行の守り・試験が残る**：表を後で消す判断（段 10 以降）の時に、`rls_policies.py`・`row_rules.mjs`・`packages/db/test/ticket_around.test.ts` も一緒に直す\n- **画面に「確認の結果を読む」道が無いことの確かめ**：`git grep -n \"listChecks\\|markHumanCheck\" apps/web` が 0 件（K741-API-002 の 9 つのファイルには入れていないが、apps/web が呼ぶ口の一覧は契約から作る生成物 `apps/web/lib/routes.ts` で、作り直しで外れる）",
+    "申し送り": "- K-739・K-740：確認の数と行は `getApproval` の `checks`・`check_summary`（K-739）。承認の確かめの小窓の「チェックの無い確認項目」は `checks` の `who` が null の行（K-740 が数える）。`listChecks` は無い\n- K-59（段 5 の親）・K-61（段 6 の親）の持ち主：この 2 つの口を自分の `apis:` に戻さない\n- 段 10 の K-722：`checks` が凍結になったので、記憶・業務の型の凍結と合わせて「凍結の表の一覧」に載せる\n- まとめ役へ：ほかの書き出しの口（`createExport`・`getExport`・`exportOpsWorkspaces`・`exportOpsInvoices`・`requestWorkspaceDeletion` の書き出し部分）も代表の決めの対象。段 6 の持ち主ではないので別の葉で（`export_jobs` の凍結もその時に決める）／`overlap_ok` に `11_tickets/K-61.md` を足す（段 6 の口の葉が全部 `apis:`・`tests:` を直す）／切り方 1 章の K-741 の依存の欄を「—」に（K-739 は目安）",
+    "まとめ役が決めた事（代表に聞くことは無い）": "- 確認の「種類（機械・AI・人）」と人が確かめた印を付ける口・検査の記録を読む口・検査の表は使わない（まとめ役が決めた事・報告だけ）。実例：ほかに検査の結果を読む口を作る予定は無い。違えば、確認項目の口の答えにだれが付けたかを足す（K-435 の `checked_by_member_id`）"
+   },
+   "file": "11_tickets/K-741.md"
   },
   {
    "id": "K-757",

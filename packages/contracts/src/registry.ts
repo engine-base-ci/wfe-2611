@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:aad719dd606acfa2
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c9b0ceff0c164608
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -567,9 +567,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "withdrawApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalWithdrawInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalWithdrawn",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -590,6 +590,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       502,
@@ -3196,63 +3199,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "POST",
-    "path": "/api/v1/checks/:id/human",
-    "operationId": "markHumanCheck",
-    "table": "checks",
-    "kind": "create",
-    "input": "ChecksInput",
-    "success": 201,
-    "output": "Checks",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A15"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "approver",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "checks",
-        "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "PATCH",
     "path": "/api/v1/client_contacts/:id",
     "operationId": "updateClientContact",
@@ -4365,57 +4311,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A53"
-    ],
-    "screens": [
-      "ai-activity"
-    ],
-    "perm": {
-      "word": "self",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/clones/me/activity/export",
-    "operationId": "exportCloneActivity",
-    "table": "export_jobs",
-    "kind": "create",
-    "input": "ExportJobsInput",
-    "success": 201,
-    "output": "ExportJobs",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      409,
-      422,
-      413,
       429,
       403,
       403,
@@ -16575,60 +16470,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "GET",
-    "path": "/api/v1/tickets/:id/checks",
-    "operationId": "listChecks",
-    "table": "checks",
-    "kind": "get",
-    "input": null,
-    "success": 200,
-    "output": "Checks",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      404,
-      422,
-      429,
-      502,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A102"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "true"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "PATCH",
     "path": "/api/v1/tickets/:id/client-share",
     "operationId": "updateTicketClientShare",
@@ -19654,4 +19495,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "aad719dd606acfa2";
+export const OPENAPI_HASH = "c9b0ceff0c164608";

@@ -369,6 +369,7 @@
   "D-128.71",
   "D-128.72",
   "D-128.75",
+  "D-128.77",
   "D-128.78",
   "D-128.80",
   "D-128.81",
@@ -753,12 +754,12 @@
  "inputs": {
   "tickets": 218,
   "l1_rows": 5094,
-  "ears_endpoints": 369,
-  "ears_tests": 4060,
+  "ears_endpoints": 366,
+  "ears_tests": 4029,
   "entities": 145,
   "policies": 418,
   "access_cases": 1562,
-  "errors": 266,
+  "errors": 269,
   "journey_rows": 88,
   "critical_tasks": 88
  },

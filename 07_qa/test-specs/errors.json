@@ -8305,6 +8305,106 @@
    ]
   },
   {
+   "id": "E-APR-010",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "PC がもう仕事を受け取って動かしている（running・asking）承認の後の実行を、承認した本人が取り下げようとした",
+   "false_when": "PC がまだ仕事を受け取っていない間に、承認した本人が取り下げた",
+   "message": "もう実行が始まっています。止めるには［止める］を押してください",
+   "action": "［止める］を押す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを開き、PC に仕事を受け取らせる",
+    "steps": [
+     "実行待ちの帯の「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
+   "id": "E-APR-011",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた（24 時間・人が止めた）承認を取り下げようとした（二度押し・別のタブ）",
+   "false_when": "承認した後・PC がまだ受け取っていない承認を、承認した本人が 1 回だけ取り下げた",
+   "message": "この承認は取り下げられません（まだ承認していない・もう取り下げた・片付けられたのどれかです）",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを 2 つのタブで開く",
+    "steps": [
+     "片方のタブで「承認を取り下げる」を押す",
+     "もう片方のタブで「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
+   "id": "E-APR-012",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "running"
+   },
+   "when": "承認の後の実行がもう終わった（done）・PC が受け取った後に止まった承認を取り下げようとした",
+   "false_when": "PC がまだ仕事を受け取っていない間に、承認した本人が取り下げた",
+   "message": "もう実行が終わっています。画面を読み直してください",
+   "action": "画面を読み直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": true,
+   "reproduce": {
+    "setup": "承認した後のチケットを開いたまま、PC に実行を終わらせる",
+    "steps": [
+     "開いていた画面で「承認を取り下げる」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.105",
+    "D-131.14",
+    "D-153.21",
+    "D-153.27"
+   ]
+  },
+  {
    "id": "E-TALK-030",
    "class": "conflict",
    "where": {
