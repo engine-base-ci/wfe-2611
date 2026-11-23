@@ -16,6 +16,8 @@ insert into knowledge_limits (shelf, must_max) values ('company', 30), ('group',
 
 -- ---------------------------------------------------------------- ③ 権限と行の守り（読むだけ・書けない）
 grant select on knowledge_limits to kaname_app;
+-- 既定の権限（0002 の alter default privileges）で付いた書く権限を外す。書く道は migration と管理者の接続だけ（K685-DB-001）
+revoke insert, update, delete, truncate on knowledge_limits from kaname_app;
 alter table knowledge_limits enable row level security;
 alter table knowledge_limits force row level security;
 
