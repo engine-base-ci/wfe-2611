@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。266 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。268 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4484,6 +4484,41 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "must_not": false,
     "layers": [
       "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-020": {
+    "id": "E-VWS-020",
+    "cls": "permission",
+    "message": "見せる相手を変えられるのは、作った人だけです",
+    "action": "名前や条件だけを直す（見せる相手は作った人に頼む）",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-VWS-020",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-021": {
+    "id": "E-VWS-021",
+    "cls": "conflict",
+    "message": "グループの全員に見せている条件から、見せるグループは外せません。先に「自分だけ」に変えてください",
+    "action": "先に「自分だけ」に変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-021",
+    "must_not": false,
+    "layers": [
       "API"
     ],
     "where": {
