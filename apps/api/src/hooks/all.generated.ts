@@ -2,6 +2,7 @@
 import type { HookModule } from "./registry.js";
 import { register as adminRecovery } from "./admin-recovery.js";
 import { register as agent } from "./agent.js";
+import { register as approvalStop } from "./approval-stop.js";
 import { register as approveComplete } from "./approve-complete.js";
 import { register as auth } from "./auth.js";
 import { register as bridgeBrowser } from "./bridge-browser.js";
@@ -49,4 +50,4 @@ import { register as twoFactor } from "./two-factor.js";
 import { register as verifyEmail } from "./verify-email.js";
 import { register as workspaceInvitationLink } from "./workspace-invitation-link.js";
 import { register as workspaceInvitations } from "./workspace-invitations.js";
-export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approveComplete, auth, bridgeBrowser, bridge, changePassword, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, credentialsResolve, delegate, deviceBrowserCheck, deviceBrowser, deviceRevoke, invitations, login, mySecurity, notificationsList, passkeys, passwordReset, runStop, savedViews, scopeOverview, search, serviceStatus, setupTasks, signup, stopped, testSpecsCreate, testSpecsEdit, ticketBody, ticketDecisionUpdate, ticketDecisions, ticketDeletePreview, ticketDelete, ticketFieldsRead, ticketLinks, ticketMessagePost, ticketTimelineSeen, ticketTimeline, ticketUpdate, tickets, twoFactor, verifyEmail, workspaceInvitationLink, workspaceInvitations];
+export const HOOK_MODULES: readonly HookModule[] = [adminRecovery, agent, approvalStop, approveComplete, auth, bridgeBrowser, bridge, changePassword, consentTerms, credentialsCheck, credentialsCreate, credentialsEdit, credentialsList, credentialsResolve, delegate, deviceBrowserCheck, deviceBrowser, deviceRevoke, invitations, login, mySecurity, notificationsList, passkeys, passwordReset, runStop, savedViews, scopeOverview, search, serviceStatus, setupTasks, signup, stopped, testSpecsCreate, testSpecsEdit, ticketBody, ticketDecisionUpdate, ticketDecisions, ticketDeletePreview, ticketDelete, ticketFieldsRead, ticketLinks, ticketMessagePost, ticketTimelineSeen, ticketTimeline, ticketUpdate, tickets, twoFactor, verifyEmail, workspaceInvitationLink, workspaceInvitations];
