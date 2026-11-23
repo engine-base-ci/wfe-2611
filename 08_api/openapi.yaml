@@ -10612,6 +10612,18 @@ components:
       - other_ticket_id
       - kind
       x-required-by: hooks
+    ConversationEntriesInput:
+      type: object
+      properties:
+        entries:
+          type: array
+          minItems: 1
+          maxItems: 500
+      additionalProperties: false
+      x-operation: mirrorConversationEntries
+      required:
+      - entries
+      x-required-by: hooks
     BridgeBrowserStateInput:
       type: object
       properties:
@@ -12640,6 +12652,24 @@ components:
           type: object
           nullable: true
       x-operation: listConversationMessages
+    ConversationEntriesMirrored:
+      type: object
+      properties:
+        inserted:
+          type: integer
+      x-operation: mirrorConversationEntries
+    MirrorTarget:
+      type: object
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+        agent_session_id:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+      x-operation: listMirrorTargets
     BridgeBrowserReported:
       type: object
       properties:
@@ -17615,7 +17645,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: device
-      x-permission-scope: 同上（会話の記録の写し。正は本人の PC・D-112）
+      x-permission-scope: 同上（その仕事を受け取った PC だけ。会話は仕事から決める・記録と同じ id の文だけ写す・D-112）
       x-step-up: false
       security:
       - session: []
@@ -17631,7 +17661,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/ConversationEntriesInput'
       responses:
         '201':
           description: 成功
@@ -17641,7 +17671,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/ConversationEntriesMirrored'
                   meta:
                     type: object
         '401':
@@ -17663,13 +17693,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-TALK-030
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -17688,12 +17724,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -18302,7 +18332,7 @@ paths:
   /api/v1/bridge/mirror-targets:
     get:
       operationId: listMirrorTargets
-      summary: 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成
+      summary: 取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）
       tags:
       - conversations
       x-acts:
@@ -18358,7 +18388,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: device
-      x-permission-scope: 同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）
+      x-permission-scope: 同上（直近 14 日の本人の会話と、そこで使った Claude Code の session と最新の仕事の id）
       x-step-up: false
       security:
       - session: []
@@ -18381,7 +18411,7 @@ paths:
         schema:
           type: integer
           minimum: 1
-          maximum: 200
+          maximum: 50
       - name: sort
         in: query
         allowEmptyValue: true
@@ -18422,7 +18452,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Conversations'
+                      $ref: '#/components/schemas/MirrorTarget'
                   meta:
                     type: object
         '401':
@@ -18443,6 +18473,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -18451,12 +18487,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

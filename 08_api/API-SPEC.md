@@ -62,14 +62,14 @@
 | EP-047 | POST | `/api/v1/bridge/jobs/:id/artifacts` | 作成・実行（bridge）— 自分のAIの返事を成果物に書き出し、会話の | A95 | 1 | device | C2 C4 | 401 403 404 409 422 413 429 503 |
 | EP-048 | POST | `/api/v1/bridge/jobs/:id/browser` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 503 413 429 502 503 |
 | EP-049 | GET | `/api/v1/bridge/jobs/:id/control` | 取得（bridge）— AI に任せる | A104 | 1 | device |  | 401 403 404 422 429 502 503 |
-| EP-050 | POST | `/api/v1/bridge/jobs/:id/conversation-entries` | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・ | A20 | 1 | device | C2 C3 C4 | 401 403 404 409 422 413 429 502 503 |
+| EP-050 | POST | `/api/v1/bridge/jobs/:id/conversation-entries` | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・ | A20 | 1 | device | C2 C3 C4 | 401 403 404 409 422 503 413 429 502 503 |
 | EP-051 | POST | `/api/v1/bridge/jobs/:id/finish` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 413 429 502 503 |
 | EP-052 | POST | `/api/v1/bridge/jobs/:id/progress` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 413 429 502 503 |
 | EP-053 | POST | `/api/v1/bridge/jobs/:id/questions` | 作成・実行（bridge）— 自分のAIの許可に答える・許可のモードを選 | A91 | 1 | device | C2 C5 | 401 403 404 409 422 413 429 502 503 |
 | EP-054 | GET | `/api/v1/bridge/jobs/:id/questions/:qid` | 取得（bridge）— 自分のAIの許可に答える・許可のモードを選ぶ | A91 | 1 | device |  | 401 403 404 422 429 502 503 |
 | EP-055 | POST | `/api/v1/bridge/jobs/:id/tools/:name` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 404 409 422 413 429 502 503 |
 | EP-056 | POST | `/api/v1/bridge/jobs/take` | 作成・実行（bridge）— AI に任せる | A104 | 1 | device | C2 C3 C5 | 401 403 409 422 413 429 502 503 |
-| EP-057 | GET | `/api/v1/bridge/mirror-targets` | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・ | A20 | 1 | device | C4 | 401 403 422 429 502 503 |
+| EP-057 | GET | `/api/v1/bridge/mirror-targets` | 取得（conversations）— PC が写し漏れを取り戻す先を読む | A20 | 1 | device | C4 | 401 403 422 503 429 502 503 |
 | EP-058 | POST | `/api/v1/bridge/pairing-codes` | 作成・実行（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C1 C2 C4 | 401 403 409 422 413 429 502 403 403 503 |
 | EP-059 | GET | `/api/v1/bridge/releases/:name/file` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 404 404 503 429 502 403 403 503 |
 | EP-060 | GET | `/api/v1/bridge/releases/latest` | 取得（bridge）— 自分の PC をつなぐ | A09 | 1 | member | C4 | 401 403 422 503 429 502 403 403 503 |

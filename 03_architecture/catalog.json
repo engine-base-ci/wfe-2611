@@ -12,7 +12,7 @@
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 238,
+  "errors": 239,
   "stack": 56,
   "env": 41
  },
@@ -856,7 +856,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61",
     "K-760"
    ]
   },
@@ -962,7 +961,7 @@
    "op": "listMirrorTargets",
    "method": "GET",
    "path": "/api/v1/bridge/mirror-targets",
-   "what": "取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）",
    "flows": [
     "F5"
    ],
@@ -972,7 +971,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61",
     "K-760"
    ]
   },

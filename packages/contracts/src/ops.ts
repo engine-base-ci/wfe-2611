@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:af44042336c2aa52
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:8eb3f9bbc7d22505
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -52,14 +52,14 @@ export interface Ops {
   putArtifactFromBridge: { params: { id: string }; query: never; body: T.ArtifactsInput; data: T.Artifacts };
   reportBrowserState: { params: { id: string }; query: never; body: T.BridgeBrowserStateInput; data: T.BridgeBrowserReported };
   getJobControl: { params: { id: string }; query: never; body: never; data: T.JobControl };
-  mirrorConversationEntries: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  mirrorConversationEntries: { params: { id: string }; query: never; body: T.ConversationEntriesInput; data: T.ConversationEntriesMirrored };
   finishBridgeJob: { params: { id: string }; query: never; body: T.BridgeFinishInput; data: T.BridgeFinish };
   reportJobProgress: { params: { id: string }; query: never; body: T.BridgeProgressInput; data: T.BridgeJobEvents };
   askFromBridge: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   getBridgeQuestionAnswer: { params: { id: string; qid: string }; query: never; body: never; data: T.Messages };
   callKanameTool: { params: { id: string; name: string }; query: never; body: T.BridgeToolInput; data: T.BridgeToolResult };
   takeBridgeJob: { params: never; query: never; body: T.BridgeTakeInput; data: T.BridgeJob };
-  listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
+  listMirrorTargets: { params: never; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.MirrorTarget[] };
   createPairingCode: { params: never; query: never; body: T.PairingCodeInput; data: T.PairingCode };
   downloadBridgeRelease: { params: { name: string }; query: never; body: never; data: T.BridgeReleaseLink };
   getLatestBridgeRelease: { params: never; query: { "os"?: string | number; "arch"?: string | number }; body: never; data: T.BridgeRelease };

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:af44042336c2aa52
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:8eb3f9bbc7d22505
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -2619,9 +2619,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "mirrorConversationEntries",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "ConversationEntriesInput",
     "success": 201,
-    "output": "Messages",
+    "output": "ConversationEntriesMirrored",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2643,6 +2643,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -2997,7 +2998,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "MirrorTarget",
     "outputList": true,
     "generic": false,
     "auth": "device",
@@ -3015,6 +3016,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       429,
       502,
       503
@@ -19671,4 +19673,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "af44042336c2aa52";
+export const OPENAPI_HASH = "8eb3f9bbc7d22505";
