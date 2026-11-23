@@ -444,7 +444,7 @@ describe("K-685 必ず守るを付ける・外す", () => {
     const id = await fresh(w.g1, w.mgr1, { title: "秘密の題名" });
     await h.ready();
     const fix = await breakWrites("knowledge_pages", w.co.tenantId);
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         const r = await on(w.mgr1, id);
