@@ -26,8 +26,11 @@ describe("DELETE /api/v1/ticket-fields/:id", () => {
   });
   // 当てはまらない（道の id の形は入口の共通の uuid の確かめ（共有の試験 k144 の K144-API-975 が見る））：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_delete_ticket_fields_id_rejected_422");
-  // 当てはまらない（消す関数の失敗は直す口と同じ 503 の道（withTenant の例外 → 503 E-PAGE-003）。直す口の K717-API-012・013 が見る）：UNWANTED: IF 書けないなら、Kaname は 503 と E-PAGE-003 を返し、項目も種別の行も証跡も前のまま残す
-  it.todo("test_delete_ticket_fields_id_session_unresolved");
+  it("test_delete_ticket_fields_id_session_unresolved", () => {
+    // UNWANTED: IF 書けないなら、Kaname は 503 と E-PAGE-003 を返し、項目も種別の行も証跡も前のまま残す
+    // 本物の試験：apps/api/test/features/F9/ticket-fields-edit.test.ts の「K717-API-012」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/ticket-fields-edit.test.ts", "utf8")).toContain("K717-API-012");
+  });
   // 当てはまらない（上限は口の共通の仕組み（op.ts・30/min/user）。書く口の上限は足す口の K706-API-010 が同じ仕組みで見る）：UNWANTED: IF 30/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_delete_ticket_fields_id_rate_limited");
   it("test_delete_ticket_fields_id_terms_pending", () => {

@@ -49,11 +49,11 @@
     "test_delete_ticket_fields_id_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_delete_ticket_fields_id_session_unresolved": "K717-API-012"
    },
    "na": {
     "test_delete_ticket_fields_id_rejected_422": "道の id の形は入口の共通の uuid の確かめ（共有の試験 k144 の K144-API-975 が見る）",
-    "test_delete_ticket_fields_id_session_unresolved": "消す関数の失敗は直す口と同じ 503 の道（withTenant の例外 → 503 E-PAGE-003）。直す口の K717-API-012・013 が見る",
     "test_delete_ticket_fields_id_rate_limited": "上限は口の共通の仕組み（op.ts・30/min/user）。書く口の上限は足す口の K706-API-010 が同じ仕組みで見る",
     "test_delete_ticket_fields_id_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。apps/api/test/features/F1/mfa-gate.test.ts が見る"
    }
@@ -79,10 +79,10 @@
     "test_post_ticket_fields_order_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_post_ticket_fields_order_session_unresolved": "K717-API-012"
    },
    "na": {
-    "test_post_ticket_fields_order_session_unresolved": "並べる関数の失敗は直す口と同じ 503 の道（withTenant の例外 → 503 E-PAGE-003）。直す口の K717-API-012・013 が見る",
     "test_post_ticket_fields_order_rate_limited": "上限は口の共通の仕組み（op.ts・30/min/user）。書く口の上限は足す口の K706-API-010 が同じ仕組みで見る",
     "test_post_ticket_fields_order_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。apps/api/test/features/F1/mfa-gate.test.ts が見る"
    }

@@ -6,6 +6,7 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { isUuid } from "@kaname/contracts";
+import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { FIELD_TYPES } from "../../F4/ticket-fields/shape.js";
 import { cleanName, fieldErrorOf, invalid, kindOf, toFieldSetting, unavailable } from "./fields.js";
@@ -92,13 +93,33 @@ export function createDeleteTicketField(appPool: pg.Pool): (a: HookArgs) => Prom
   };
 }
 
+/** 並べるの形の誤り（欄つきの 422） */
+function orderInvalid(field: string): HookReply {
+  return {
+    status: 422,
+    body: {
+      error: "validation_failed",
+      code: "VALIDATION_ERROR",
+      details: [{ field, message: "入力内容を確認してください" }],
+    },
+  };
+}
+/** 並べるの断り：対象を指さない口なので 404 は無い（403・422・409 E-FMS-003。知らない言葉は 503） */
+function rejectOrder(v: { error: string; field?: string }): HookReply {
+  if (v.error === "forbidden") return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
+  if (v.error === "invalid") return orderInvalid(v.field ?? "field_ids");
+  if (v.error !== "order_mismatch") return unavailable();
+  const e = kanameError("E-FMS-003");
+  return { status: e.status, body: { error: e.entry.cls, code: e.code } };
+}
+
 export function createReorderTicketFields(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs): Promise<HookReply> => {
     const ids = a.input["field_ids"];
-    if (!isUuidList(ids)) return invalid("field_ids");
+    if (!isUuidList(ids)) return orderInvalid("field_ids");
     const v = await callFn(appPool, a, REORDER_SQL, [ids], "並べられなかった");
     if (!v) return unavailable();
-    if ("error" in v) return reject(v);
+    if ("error" in v) return rejectOrder(v);
     const rows = Array.isArray(v.data) ? (v.data as Parameters<typeof toFieldSetting>[0][]) : [];
     return { status: 200, body: { data: rows.map(toFieldSetting) } };
   };
