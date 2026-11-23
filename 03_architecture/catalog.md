@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 378（作った 84・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 254・部品 56・設定 41
+API 378（作った 85・後のフェーズの行為だけ 20）・前の道すじ 26・表 149・画面の部品 19・共通の処理 13・エラー 254・部品 56・設定 41
 
 ## 共通の処理
 
@@ -434,7 +434,7 @@ API 378（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `listKnowledgeProposals` | GET /api/v1/knowledge/proposals | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `acceptKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/accept | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `declineKnowledgeProposal` | POST /api/v1/knowledge/proposals/:id/decline | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-686 |
+| `findSimilarKnowledge` | POST /api/v1/knowledge/similar | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 作った | K-686 |
 | `getKnowledgeTree` | GET /api/v1/knowledge/tree | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgeVerifications` | GET /api/v1/knowledge/verifications | 取得（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `createKnowledgeImport` | POST /api/v1/knowledge_imports | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
