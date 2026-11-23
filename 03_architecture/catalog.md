@@ -325,7 +325,7 @@ API 370（作った 87・後のフェーズの行為だけ 20）・前の道す�
 | `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 作った | K-60 |
 | `getArtifactVersion` | GET /api/v1/artifact_versions/:id | 取得（artifact_versions）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `createConversation` | POST /api/v1/conversations | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分のAIとの会話を分けて始める・一覧から選んで続きを話 | F4 | 作った | K-59 |
-| `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | K-59 |
+| `sendConversationMessage` | POST /api/v1/conversations/:id/messages | 作成・実行（conversations）— 自分の AI と壁打ちしてチケットの案を作る／自分の AI に指示する・相談する（会話・添付・許可・成 | F4,F5 | 契約だけ（501） | K-59,K-758 |
 | `listMyTicketDrafts` | GET /api/v1/me/ticket-drafts | 取得（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
 | `saveMyTicketDraft` | POST /api/v1/me/ticket-drafts | 作成・実行（me）— チケットを作る（画面で・下書きから） | F4 | 作った | K-60 |
 | `listMembers` | GET /api/v1/members | 取得（members）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-60 |
@@ -387,7 +387,7 @@ API 370（作った 87・後のフェーズの行為だけ 20）・前の道す�
 | `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
 | `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順） | F5 | 作った | K-61,K-757 |
-| `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
+| `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61,K-758 |
 | `streamConversation` | GET /api/v1/conversations/:id/stream | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getTicketAgentSession` | GET /api/v1/tickets/:id/agent-session | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `sendTicketAgentMessage` | POST /api/v1/tickets/:id/agent-session/messages | 作成・実行（tickets）— 自分の AI に指示する・相談する（会話・添付・許可・成／自分のAIの許可に答える・許可のモードを選ぶ | F5 | 契約だけ（501） | K-61 |
