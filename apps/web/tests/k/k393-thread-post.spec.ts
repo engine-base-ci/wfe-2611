@@ -27,6 +27,7 @@ import {
   mockThread,
   openThread,
   overflowX,
+  pair,
   panel,
   post,
   postOf,
@@ -49,17 +50,25 @@ const candidates = (page: Page) =>
 const composerAlert = (page: Page) => panel(page).locator(".k-talk-composer").getByRole("alert");
 
 // ---------------------------------------------------------------- モックと本番の突き合わせ
+/** matchMock がモックを開く画面の大きさ（stage2-match.ts と同じ）。openThread（土台の openTicket）は高さを 1000 にするので、比べる前に戻す
+ *  （書く欄はパネルの下に付くので、高さが違うとパネルの上端からの y がずれる） */
+const matchViewport = (page: Page, w: number) => page.setViewportSize({ width: w, height: w === 375 ? 812 : 900 });
 const DRIVE: Record<string, (page: Page, w: number) => Promise<void>> = {
   "talk-compose": async (page, w) => {
     await mockThread(page, { items: [CREATED()] });
     await openThread(page, w);
+    await matchViewport(page, w);
     await box(page).fill("了解です。@鈴");
+    await expect(candidates(page)).toBeVisible();
+    // モックは打つ所に焦点が無い（箱の線は焦点の色でない）。候補は字と打つ所で決まるので、焦点を外しても開いたまま
+    await box(page).blur();
     await expect(candidates(page)).toBeVisible();
   },
   "talk-send": async (page, w) => {
     const t = await mockThread(page, { items: [CREATED()] });
     t.on.post = () => err(503, "SERVICE_UNAVAILABLE");
     await openThread(page, w);
+    await matchViewport(page, w);
     await box(page).fill("了解です。10/19 分を外して今日中に送ります");
     await send(page).click();
     await expect(composerAlert(page)).toContainText(FAILED);
@@ -67,15 +76,25 @@ const DRIVE: Record<string, (page: Page, w: number) => Promise<void>> = {
   "talk-cannot": async (page, w) => {
     await mockThread(page, { band: { stage: "done", completed: { at: "2026-11-02T06:30:00Z", by: "高本 聖斗" } } });
     await openThread(page, w);
+    await matchViewport(page, w);
   },
 };
+/** 道具の並びの比べ方：talk-compose・talk-send のモックは状態 ▾ が押せる形（K-396 の後の形・12px）。この葉は押せない形（K-382 の「まだ」の形）なので、
+ *  状態 ▾ を除いた担当 ▾ と 📎 の y・字・大きさを比べる（x は状態 ▾ の幅で動く。状態 ▾ の形と x は K-396 の突き合わせが見る）。talk-cannot はどちらも押せない形なのでそのまま */
+const TOOLS_WITHOUT_STAGE = pair(
+  "talk-tools",
+  'aside.k-detail-panel .k-talk-tools button[aria-label$="（まだ使えません）"]',
+  ["y", "font-size", "texts"],
+);
+const pairsOf = (id: string) =>
+  id === "talk-cannot" ? COMPOSE_PAIRS : COMPOSE_PAIRS.map((p) => (p.name === "talk-tools" ? TOOLS_WITHOUT_STAGE : p));
 for (const [id, drive] of Object.entries(DRIVE)) {
   for (const w of MATCH_WIDTHS) {
     test(`K393-UI-001 ${id} 幅 ${w}：書く欄（箱・打つ所・道具・@ の候補・知らせる人・書き込む・失敗の知らせ・補足）の値がモックと同じ`, async ({
       browser,
     }) => {
       const { rows, bad } = await matchMock(browser, id, w, (page) => drive(page, w), {
-        pairs: COMPOSE_PAIRS,
+        pairs: pairsOf(id),
         base: MOCK_BASE,
       });
       expect(new Set(rows.map((r) => r.part)), "書く欄で比べた").toContain("talk-box");
@@ -119,9 +138,13 @@ for (const w of [375, 768, 1440]) {
       return v ? getComputedStyle(el).getPropertyValue(v[1]!).trim() : last;
     });
     expect(ph, "打つ所に当たる ::placeholder の font-size の規則").toBe("13px");
+    // 箱の高さから上下の余白を引いた中身の高さが 2 行分より低い（K-382 の thread.css の min-height は余白込み 40px・行の高さは 13px で 19.5px）
     const lh = Number.parseFloat(await cssOf(box(page), "line-height"));
+    const pad =
+      Number.parseFloat(await cssOf(box(page), "padding-top")) +
+      Number.parseFloat(await cssOf(box(page), "padding-bottom"));
     const h = (await box(page).boundingBox())!.height;
-    expect(h, "1 行の高さ（2 行分より低い）").toBeLessThan(lh * 2);
+    expect(h - pad, "1 行の高さ（中身は 2 行分より低い）").toBeLessThan(lh * 2);
     await expect(notifyList(page).locator(".k-talk-notify-who")).toHaveText([/鈴木/, /佐藤/]);
     await expect(notifyList(page)).not.toContainText("高本");
     await expectInert(
