@@ -391,12 +391,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1074 ／ 内部専用 278 ／ どの画面にも出ない 5
-  - ★ knowledge_folders.is_personal
-  - ★ knowledge_folders.owner_member_id
-  - ★ knowledge_folders.parent_folder_id
-  - ★ knowledge_folders.name
-  - ★ knowledge_folders.position
+- 検査したフィールド 1074 ／ 内部専用 278 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 
