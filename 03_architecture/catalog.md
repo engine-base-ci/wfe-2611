@@ -33,7 +33,7 @@ API 369（作った 92・後のフェーズの行為だけ 20）・前の道す�
 | `apps/web/components/k/table` | Table | 表（K-24）。1 行 36px（D-128.13）。見出しの行は th（scope 付き）、表の名前は caption（読み上げが表の中身を言える） |
 | `apps/web/components/k/badge` | Badge | 札（K-24・D-052）。状態は淡い面と濃い文字の対。色だけで意味を伝えない（文字を必ず持つ） |
 | `apps/web/components/k/tabs` | Tabs | タブ（K-24・Base UI Tabs）。←→ で移り、選んだタブの中身だけを出す（読み上げは tablist / tab / tabpanel） |
-| `apps/web/components/k/notice` | Callout, Toaster, useNotify | 知らせ（K-24）。2 つ： |
+| `apps/web/components/k/notice` | Callout, Toaster, dismissNotify, notify, useNotify | 知らせ（K-24）。2 つ： |
 | `apps/web/components/k/dialog` | Dialog, Confirm | ダイアログ（K-24・Base UI Dialog）。開くと中に動き、Esc で閉じ、閉じると押した所に戻る（Base UI が持つ） |
 | `apps/web/components/k/theme` | ThemeSwitch, applyTheme | 見た目の切り替え（D-128.55）。押すとその場で <html data-theme> を替え、cookie に残す（次に開いたときもサーバーが同じ見た目で出す） |
 | `apps/web/components/k/shell` | Shell | 外枠（K-25・キャンバスの左のバー・上の帯・右のパネル・スマホの下のタブ）。新しい画面は全部この中に置く |

@@ -7455,6 +7455,8 @@
    "exports": [
     "Callout",
     "Toaster",
+    "dismissNotify",
+    "notify",
     "useNotify"
    ],
    "what": "知らせ（K-24）。2 つ："
