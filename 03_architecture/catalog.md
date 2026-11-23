@@ -441,15 +441,15 @@ API 378（作った 84・後のフェーズの行為だけ 20）・前の道す�
 | `getKnowledgeImport` | GET /api/v1/knowledge_imports/:id | 取得（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `commitKnowledgeImport` | POST /api/v1/knowledge_imports/:id/commit | 作成・実行（knowledge_imports）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `listKnowledgePages` | GET /api/v1/knowledge_pages | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `createKnowledgePage` | POST /api/v1/knowledge_pages | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
 | `getKnowledgePage` | GET /api/v1/knowledge_pages/:id | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `updateKnowledgePage` | PATCH /api/v1/knowledge_pages/:id | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `deleteKnowledgePage` | DELETE /api/v1/knowledge_pages/:id | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `archiveKnowledgePage` | POST /api/v1/knowledge_pages/:id/archive | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `uploadKnowledgeAttachment` | POST /api/v1/knowledge_pages/:id/attachments | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `copyKnowledgePage` | POST /api/v1/knowledge_pages/:id/copy | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
-| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
+| `saveKnowledgeDraft` | PATCH /api/v1/knowledge_pages/:id/draft | 更新（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
+| `discardKnowledgeDraft` | DELETE /api/v1/knowledge_pages/:id/draft | 削除（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） | K-679 |
 | `getKnowledgeLinks` | GET /api/v1/knowledge_pages/:id/links | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `linkKnowledgeMention` | POST /api/v1/knowledge_pages/:id/links | 作成・実行（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `exportKnowledgeMarkdown` | GET /api/v1/knowledge_pages/:id/markdown | 取得（knowledge_pages）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
