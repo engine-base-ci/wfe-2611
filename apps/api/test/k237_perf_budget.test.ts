@@ -26,6 +26,7 @@ import { delegateHooks } from "../src/hooks/delegate.js";
 import { approveHooks } from "../src/hooks/approve-complete.js";
 import { bridgeHooks } from "../src/hooks/bridge.js";
 import { setupTaskHooks } from "../src/hooks/setup-tasks.js";
+import type { Hook } from "../src/contract/deps.js";
 import { ticketTimelineHooks } from "../src/hooks/ticket-timeline.js";
 import { ticketDecisionHooks } from "../src/hooks/ticket-decisions.js";
 import { keepAuth, verifiedUser } from "./_pending.js";
@@ -103,6 +104,13 @@ beforeAll(async () => {
   admin = new pg.Pool({ connectionString: ADMIN, max: 2 });
   appPool = createPool({ databaseUrl: APP_URL, max: 4 });
   const repo = await createRepository(appPool);
+  // 外枠の口 getShell（K-465）の振る舞い：葉ごとの hooks のファイル apps/api/src/hooks/shell.ts（K-326）を読んで差す。台帳に /api/v1/shell の行を足す葉（K-466）が
+  //   200 で測れるようにするため（差さないと 501 になる）。段 7 の timeline・decisions の口の差しは、その口を足す段 7 の葉（K-392・K-397）が同じ並びに足す
+  const shellHooks = (
+    (await import(join(HERE, "..", "src", "hooks", "shell.ts"))) as {
+      shellHooks: (pool: pg.Pool) => Record<string, Hook>;
+    }
+  ).shellHooks(appPool);
   const made = keepAuth(
     createAuth({
       authDatabaseUrl: AUTH_URL,
@@ -148,6 +156,7 @@ beforeAll(async () => {
         ...delegateHooks(appPool),
         ...approveHooks(appPool),
         ...setupTaskHooks(appPool),
+        ...shellHooks,
         ...ticketTimelineHooks(appPool),
         ...ticketDecisionHooks(appPool),
       },
