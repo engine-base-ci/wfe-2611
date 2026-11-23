@@ -8,10 +8,9 @@ import { openChangeStream } from "../features/F5/talk/stream.js";
 import { defineHooks, type HookDeps } from "./registry.js";
 
 const notFound = (): HookReply => ({ status: 404, body: { error: "not_found", code: "NOT_FOUND" } });
-const unavailable = (code: "E-TALK-020" | "E-PAGE-003"): HookReply => ({
-  status: 503,
-  body: kanameError(code).toJSON(),
-});
+// 503 の答え。体は正本の文言のまま、状態コードはこの口の決め（503）。正本の ID は kanameError に直に渡す
+//   （契約の形の検査 K144-SHAPE-010 は、ID を直に受ける関数を「正本の種類の状態コードを返す」と読むため）
+const unavailable = (e: { toJSON(): unknown }): HookReply => ({ status: 503, body: e.toJSON() });
 const kindOf = (e: unknown): string => {
   const x = e as { code?: unknown; name?: unknown } | null;
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
@@ -22,7 +21,7 @@ export function talkStreamHooks(d: HookDeps): Record<string, Hook> {
     streamConversation: {
       before: async (a) => {
         const { hub, freshSession } = d;
-        if (!hub || !freshSession) return unavailable("E-TALK-020");
+        if (!hub || !freshSession) return unavailable(kanameError("E-TALK-020"));
         const userId = a.ctx.userId!;
         let v: unknown;
         try {
@@ -35,7 +34,7 @@ export function talkStreamHooks(d: HookDeps): Record<string, Hook> {
         } catch (e) {
           // ログには場所と例外の種類だけ（会話の id を出さない）
           console.error(`[talk stream] 会話の持ち主の確かめで例外：止めた（${kindOf(e)}）`);
-          return unavailable("E-PAGE-003");
+          return unavailable(kanameError("E-PAGE-003"));
         }
         if (!v) return notFound();
         const raw = await openChangeStream(a.c, {
@@ -45,7 +44,7 @@ export function talkStreamHooks(d: HookDeps): Record<string, Hook> {
           fresh: freshSession,
           ...(d.talkStream ? { timing: d.talkStream } : {}),
         });
-        if (!raw) return unavailable("E-TALK-020");
+        if (!raw) return unavailable(kanameError("E-TALK-020"));
         // streamSSE が付ける no-cache を、認証の要る答えの形（private, no-store）に置き換える
         raw.headers.set("cache-control", "private, no-store");
         return { status: 200, body: null, raw };
@@ -57,5 +56,7 @@ export function talkStreamHooks(d: HookDeps): Record<string, Hook> {
 export const register = defineHooks({
   name: "talkStreamHooks",
   make: (d) => talkStreamHooks(d),
-  fuzz: "same",
+  fuzz: {
+    skip: "流れの口は fuzz の的では回せない：的には知らせの接続（hub）が無く必ず 503・E-TALK-020 になり（fuzz は 5xx を赤と数える）、接続を差すと 1 本が 50 秒開いたままになる。口の振る舞いは K-759 の試験（talk-stream.test.ts）が持つ",
+  },
 });

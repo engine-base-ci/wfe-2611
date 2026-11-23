@@ -1805,6 +1805,17 @@
   },
   {
    "paths": [
+    "apps/api/test/features/F5/talk-stream.test.ts",
+    "apps/api/test/features/contract/k144.d/K-759.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_conversations_id_stream.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
