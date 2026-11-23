@@ -10,7 +10,10 @@
   "static_screens": [
    "legal"
   ],
-  "acts_without_endpoint": []
+  "acts_without_endpoint": [
+   "A136",
+   "A137"
+  ]
  },
  "screens": [
   {
@@ -2670,7 +2673,7 @@
   },
   {
    "screen_id": "masters",
-   "screen_name": "決まり",
+   "screen_name": "チケットの設定",
    "mock_path": null,
    "required_apis": [
     {

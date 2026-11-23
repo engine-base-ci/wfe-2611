@@ -130,36 +130,36 @@
 | EP-115 | POST | `/api/v1/invitations/:id/resend` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-116 | POST | `/api/v1/invitations/link` | 作成・実行（invitations）— 人を招く（層・権限の束） | A36 | 1 | member | C2 C6 | 401 403 422 404 503 413 429 403 403 503 |
 | EP-117 | GET | `/api/v1/invoices/:id/pdf` | 取得（invoices）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-118 | POST | `/api/v1/knowledge/ask` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-119 | POST | `/api/v1/knowledge/ask/feedback` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-120 | GET | `/api/v1/knowledge/home` | 取得（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-121 | GET | `/api/v1/knowledge/link-targets` | 取得（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-122 | GET | `/api/v1/knowledge/proposals` | 取得（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-123 | POST | `/api/v1/knowledge/proposals/:id/accept` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-124 | POST | `/api/v1/knowledge/proposals/:id/decline` | 作成・実行（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-125 | GET | `/api/v1/knowledge/tree` | 取得（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-126 | GET | `/api/v1/knowledge/verifications` | 取得（knowledge）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-118 | POST | `/api/v1/knowledge/ask` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-119 | POST | `/api/v1/knowledge/ask/feedback` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-120 | GET | `/api/v1/knowledge/home` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-121 | GET | `/api/v1/knowledge/link-targets` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-122 | GET | `/api/v1/knowledge/proposals` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-123 | POST | `/api/v1/knowledge/proposals/:id/accept` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-124 | POST | `/api/v1/knowledge/proposals/:id/decline` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-125 | GET | `/api/v1/knowledge/tree` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-126 | GET | `/api/v1/knowledge/verifications` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-127 | POST | `/api/v1/knowledge_imports` | 作成・実行（knowledge_imports）— ナレッジのページを書 | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-128 | GET | `/api/v1/knowledge_imports/:id` | 取得（knowledge_imports）— ナレッジのページを書く・直 | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-129 | POST | `/api/v1/knowledge_imports/:id/commit` | 作成・実行（knowledge_imports）— ナレッジのページを書 | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-130 | GET | `/api/v1/knowledge_pages` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-130 | GET | `/api/v1/knowledge_pages` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-131 | POST | `/api/v1/knowledge_pages` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-132 | GET | `/api/v1/knowledge_pages/:id` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-133 | PATCH | `/api/v1/knowledge_pages/:id` | 更新（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-132 | GET | `/api/v1/knowledge_pages/:id` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-133 | PATCH | `/api/v1/knowledge_pages/:id` | 更新（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-134 | POST | `/api/v1/knowledge_pages/:id/archive` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-135 | POST | `/api/v1/knowledge_pages/:id/attachments` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-136 | PATCH | `/api/v1/knowledge_pages/:id/draft` | 更新（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-137 | DELETE | `/api/v1/knowledge_pages/:id/draft` | 削除（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-138 | GET | `/api/v1/knowledge_pages/:id/links` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-136 | PATCH | `/api/v1/knowledge_pages/:id/draft` | 更新（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-137 | DELETE | `/api/v1/knowledge_pages/:id/draft` | 削除（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
+| EP-138 | GET | `/api/v1/knowledge_pages/:id/links` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-139 | POST | `/api/v1/knowledge_pages/:id/links` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-140 | GET | `/api/v1/knowledge_pages/:id/markdown` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-141 | GET | `/api/v1/knowledge_pages/:id/messages` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-140 | GET | `/api/v1/knowledge_pages/:id/markdown` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-141 | GET | `/api/v1/knowledge_pages/:id/messages` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-142 | POST | `/api/v1/knowledge_pages/:id/messages` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-143 | POST | `/api/v1/knowledge_pages/:id/publish` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-144 | POST | `/api/v1/knowledge_pages/:id/unarchive` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-145 | GET | `/api/v1/knowledge_pages/:id/usage` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-145 | GET | `/api/v1/knowledge_pages/:id/usage` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-146 | POST | `/api/v1/knowledge_pages/:id/verify` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-147 | GET | `/api/v1/knowledge_pages/:id/versions` | 取得（knowledge_pages）— ナレッジのページを書く・直す | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-147 | GET | `/api/v1/knowledge_pages/:id/versions` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-148 | POST | `/api/v1/knowledge_pages/:id/versions/:v/restore` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-149 | POST | `/api/v1/layers` | 作成・実行（layers）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-150 | PATCH | `/api/v1/layers/:id` | 更新（layers）— グループを作る・直す（メンバーの中） | A117 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
@@ -284,7 +284,7 @@
 | EP-269 | GET | `/api/v1/rules/:id` | 取得（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-270 | PATCH | `/api/v1/rules/:id` | 更新（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-271 | DELETE | `/api/v1/rules/:id` | 削除（rules）— ルールを置く（会社・層・個人・取引先） | A131 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-272 | POST | `/api/v1/rules/check` | 作成・実行（rules）— 決まりを整える（守ること・承認を回すとき・や | A118 A131 | 2 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-272 | POST | `/api/v1/rules/check` | 作成・実行（rules）— チケットの設定を整える（種別・状態・項目）／ | A118 A131 | 2 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-273 | GET | `/api/v1/saved_views` | 取得（saved_views）— 保存した検索条件を名前の順に開く（自分 | A58 | 1 | member |  | 401 403 422 503 429 403 403 503 |
 | EP-274 | POST | `/api/v1/saved_views` | 作成・実行（saved_views）— 見え方を切り替える（一覧と詳細・ | A58 | 1 | member | C2 | 401 403 409 422 404 409 422 503 413 429 403 403 503 |
 | EP-275 | PATCH | `/api/v1/saved_views/:id` | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレン | A58 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
@@ -366,27 +366,27 @@
 | EP-351 | PATCH | `/api/v1/workspace/billing-contact` | 更新（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
 | EP-352 | POST | `/api/v1/workspace/deletion` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-353 | DELETE | `/api/v1/workspace/deletion` | 削除（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 429 403 403 503 |
-| EP-354 | POST | `/api/v1/workspace/escalation-rules` | 作成・実行（workspace）— 決まりを整える（守ること・承認を回す | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-355 | PATCH | `/api/v1/workspace/escalation-rules/:id` | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-356 | DELETE | `/api/v1/workspace/escalation-rules/:id` | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-357 | POST | `/api/v1/workspace/escalation-rules/preview` | 作成・実行（workspace）— 決まりを整える（守ること・承認を回す | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-354 | POST | `/api/v1/workspace/escalation-rules` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-355 | PATCH | `/api/v1/workspace/escalation-rules/:id` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-356 | DELETE | `/api/v1/workspace/escalation-rules/:id` | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
+| EP-357 | POST | `/api/v1/workspace/escalation-rules/preview` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-358 | POST | `/api/v1/workspace/logo` | 作成・実行（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-359 | GET | `/api/v1/workspace/members` | 取得（workspace）— 人を招く（層・権限の束） | A36 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-360 | PATCH | `/api/v1/workspace/permissions` | 更新（workspace）— 会社の設定を決める | A75 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
 | EP-361 | POST | `/api/v1/workspace/plan` | 作成・実行（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-362 | GET | `/api/v1/workspace/plans` | 取得（workspace）— プラン・利用量・請求書を見る | A69 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-363 | GET | `/api/v1/workspace/rules` | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-364 | POST | `/api/v1/workspace/rules` | 作成・実行（workspace）— 決まりを整える（守ること・承認を回す | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
-| EP-365 | PATCH | `/api/v1/workspace/rules/:id` | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
-| EP-366 | DELETE | `/api/v1/workspace/rules/:id` | 削除（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
-| EP-367 | GET | `/api/v1/workspace/ticket-shape` | 取得（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-368 | PATCH | `/api/v1/workspace/ticket-shape` | 更新（workspace）— 決まりを整える（守ること・承認を回すとき・ | A118 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
-| EP-369 | POST | `/api/v1/workspace/ticket-shape/preview` | 作成・実行（workspace）— 決まりを整える（守ること・承認を回す | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-363 | GET | `/api/v1/workspace/rules` | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-364 | POST | `/api/v1/workspace/rules` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
+| EP-365 | PATCH | `/api/v1/workspace/rules/:id` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-366 | DELETE | `/api/v1/workspace/rules/:id` | 削除（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
+| EP-367 | GET | `/api/v1/workspace/ticket-shape` | 取得（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-368 | PATCH | `/api/v1/workspace/ticket-shape` | 更新（workspace）— チケットの設定を整える（種別・状態・項目） | A118 | 1 | member | C2 | 401 403 422 413 429 403 403 503 |
+| EP-369 | POST | `/api/v1/workspace/ticket-shape/preview` | 作成・実行（workspace）— チケットの設定を整える（種別・状態・ | A118 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 
 ## 3. 画面 ↔ API カバレッジ
 
 - 画面 37 ／ OK 36 ／ 未カバー ['legal']
-- endpoint の無い行為（v1）[]
+- endpoint の無い行為（v1）['A136', 'A137']
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 

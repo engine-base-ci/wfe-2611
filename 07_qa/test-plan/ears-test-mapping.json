@@ -49954,7 +49954,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_ask.test.ts",
    "test_function": "test_post_knowledge_ask_ok",
    "test_level": "contract+integration",
@@ -50419,7 +50419,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask/feedback が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/ask/feedback が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_ask_feedback.test.ts",
    "test_function": "test_post_knowledge_ask_feedback_ok",
    "test_level": "contract+integration",
@@ -50884,7 +50884,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/home が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/home が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_home.test.ts",
    "test_function": "test_get_knowledge_home_ok",
    "test_level": "contract+integration",
@@ -51309,7 +51309,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/link-targets が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/link-targets が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_link_targets.test.ts",
    "test_function": "test_get_knowledge_link_targets_ok",
    "test_level": "contract+integration",
@@ -51734,7 +51734,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_proposals.test.ts",
    "test_function": "test_get_knowledge_proposals_ok",
    "test_level": "contract+integration",
@@ -52159,7 +52159,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_proposals_id_accept.test.ts",
    "test_function": "test_post_knowledge_proposals_id_accept_ok",
    "test_level": "contract+integration",
@@ -52644,7 +52644,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_proposals_id_decline.test.ts",
    "test_function": "test_post_knowledge_proposals_id_decline_ok",
    "test_level": "contract+integration",
@@ -53129,7 +53129,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/tree が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/tree が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_tree.test.ts",
    "test_function": "test_get_knowledge_tree_ok",
    "test_level": "contract+integration",
@@ -53554,7 +53554,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/verifications が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/verifications が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_verifications.test.ts",
    "test_function": "test_get_knowledge_verifications_ok",
    "test_level": "contract+integration",
@@ -53979,7 +53979,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_imports.test.ts",
    "test_function": "test_post_knowledge_imports_ok",
    "test_level": "contract+integration",
@@ -54444,7 +54444,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_imports/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_imports/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_imports_id.test.ts",
    "test_function": "test_get_knowledge_imports_id_ok",
    "test_level": "contract+integration",
@@ -54889,7 +54889,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports/:id/commit が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_imports/:id/commit が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_imports_id_commit.test.ts",
    "test_function": "test_post_knowledge_imports_id_commit_ok",
    "test_level": "contract+integration",
@@ -55374,7 +55374,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages.test.ts",
    "test_function": "test_get_knowledge_pages_ok",
    "test_level": "contract+integration",
@@ -55799,7 +55799,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages.test.ts",
    "test_function": "test_post_knowledge_pages_ok",
    "test_level": "contract+integration",
@@ -56264,7 +56264,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id.test.ts",
    "test_function": "test_get_knowledge_pages_id_ok",
    "test_level": "contract+integration",
@@ -56709,7 +56709,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_knowledge_pages_id.test.ts",
    "test_function": "test_patch_knowledge_pages_id_ok",
    "test_level": "contract+integration",
@@ -57174,7 +57174,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/archive が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/archive が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_archive.test.ts",
    "test_function": "test_post_knowledge_pages_id_archive_ok",
    "test_level": "contract+integration",
@@ -57659,7 +57659,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/attachments が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/attachments が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_attachments.test.ts",
    "test_function": "test_post_knowledge_pages_id_attachments_ok",
    "test_level": "contract+integration",
@@ -58144,7 +58144,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id/draft が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/knowledge_pages/:id/draft が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_knowledge_pages_id_draft.test.ts",
    "test_function": "test_patch_knowledge_pages_id_draft_ok",
    "test_level": "contract+integration",
@@ -58609,7 +58609,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id/draft が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/knowledge_pages/:id/draft が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
    "test_function": "test_delete_knowledge_pages_id_draft_ok",
    "test_level": "contract+integration",
@@ -59054,7 +59054,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/links が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/links が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id_links.test.ts",
    "test_function": "test_get_knowledge_pages_id_links_ok",
    "test_level": "contract+integration",
@@ -59499,7 +59499,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/links が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/links が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_links.test.ts",
    "test_function": "test_post_knowledge_pages_id_links_ok",
    "test_level": "contract+integration",
@@ -59984,7 +59984,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/markdown が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/markdown が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id_markdown.test.ts",
    "test_function": "test_get_knowledge_pages_id_markdown_ok",
    "test_level": "contract+integration",
@@ -60429,7 +60429,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/messages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/messages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id_messages.test.ts",
    "test_function": "test_get_knowledge_pages_id_messages_ok",
    "test_level": "contract+integration",
@@ -60874,7 +60874,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/messages が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/messages が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_messages.test.ts",
    "test_function": "test_post_knowledge_pages_id_messages_ok",
    "test_level": "contract+integration",
@@ -61359,7 +61359,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/publish が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/publish が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts",
    "test_function": "test_post_knowledge_pages_id_publish_ok",
    "test_level": "contract+integration",
@@ -61844,7 +61844,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/unarchive が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/unarchive が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_unarchive.test.ts",
    "test_function": "test_post_knowledge_pages_id_unarchive_ok",
    "test_level": "contract+integration",
@@ -62329,7 +62329,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id_usage.test.ts",
    "test_function": "test_get_knowledge_pages_id_usage_ok",
    "test_level": "contract+integration",
@@ -62774,7 +62774,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/verify が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/verify が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_verify.test.ts",
    "test_function": "test_post_knowledge_pages_id_verify_ok",
    "test_level": "contract+integration",
@@ -63259,7 +63259,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/versions が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts",
    "test_function": "test_get_knowledge_pages_id_versions_ok",
    "test_level": "contract+integration",
@@ -63704,7 +63704,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/versions/:v/restore が「層ごとのページを書く・直す」として呼ばれたとき THEN Kaname は「版を残す」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/knowledge_pages/:id/versions/:v/restore が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_knowledge_pages_id_versions_v_restore.test.ts",
    "test_function": "test_post_knowledge_pages_id_versions_v_restore_ok",
    "test_level": "contract+integration",
@@ -65110,7 +65110,7 @@
   {
    "test_id": "TC-1622",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65131,7 +65131,7 @@
   {
    "test_id": "TC-1623",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65141,7 +65141,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/learning_candidates が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/learning_candidates が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
    "test_file": "apps/api/test/generated/get_learning_candidates.test.ts",
    "test_function": "test_get_learning_candidates_ok_2",
    "test_level": "contract+integration",
@@ -65152,7 +65152,7 @@
   {
    "test_id": "TC-1624",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65367,7 +65367,7 @@
   {
    "test_id": "TC-1625",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65439,7 +65439,7 @@
   {
    "test_id": "TC-1626",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65460,7 +65460,7 @@
   {
    "test_id": "TC-1627",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65481,7 +65481,7 @@
   {
    "test_id": "TC-1628",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65502,7 +65502,7 @@
   {
    "test_id": "TC-1629",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65523,7 +65523,7 @@
   {
    "test_id": "TC-1630",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65544,7 +65544,7 @@
   {
    "test_id": "TC-1631",
    "endpoint": "GET /api/v1/learning_candidates",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65565,7 +65565,7 @@
   {
    "test_id": "TC-1632",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65586,7 +65586,7 @@
   {
    "test_id": "TC-1633",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65596,7 +65596,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/accept が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/accept が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
    "test_file": "apps/api/test/generated/post_learning_candidates_id_accept.test.ts",
    "test_function": "test_post_learning_candidates_id_accept_ok_2",
    "test_level": "contract+integration",
@@ -65607,7 +65607,7 @@
   {
    "test_id": "TC-1634",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65822,7 +65822,7 @@
   {
    "test_id": "TC-1635",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65894,7 +65894,7 @@
   {
    "test_id": "TC-1636",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65915,7 +65915,7 @@
   {
    "test_id": "TC-1637",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65936,7 +65936,7 @@
   {
    "test_id": "TC-1638",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65957,7 +65957,7 @@
   {
    "test_id": "TC-1639",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65978,7 +65978,7 @@
   {
    "test_id": "TC-1640",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -65999,7 +65999,7 @@
   {
    "test_id": "TC-1641",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66020,7 +66020,7 @@
   {
    "test_id": "TC-1642",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66041,7 +66041,7 @@
   {
    "test_id": "TC-1643",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66062,7 +66062,7 @@
   {
    "test_id": "TC-1644",
    "endpoint": "POST /api/v1/learning_candidates/:id/accept",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66083,7 +66083,7 @@
   {
    "test_id": "TC-1645",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66104,7 +66104,7 @@
   {
    "test_id": "TC-1646",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66114,7 +66114,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/dismiss が「上がってきた候補を確かめて決める」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/learning_candidates/:id/dismiss が「管理の一覧で見直すページを開き、直す・外す・書き方を直す」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：使われていない・食い違い・破られた数を数えて出す）",
    "test_file": "apps/api/test/generated/post_learning_candidates_id_dismiss.test.ts",
    "test_function": "test_post_learning_candidates_id_dismiss_ok_2",
    "test_level": "contract+integration",
@@ -66125,7 +66125,7 @@
   {
    "test_id": "TC-1647",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66340,7 +66340,7 @@
   {
    "test_id": "TC-1648",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66412,7 +66412,7 @@
   {
    "test_id": "TC-1649",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66433,7 +66433,7 @@
   {
    "test_id": "TC-1650",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66454,7 +66454,7 @@
   {
    "test_id": "TC-1651",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66475,7 +66475,7 @@
   {
    "test_id": "TC-1652",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66496,7 +66496,7 @@
   {
    "test_id": "TC-1653",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66517,7 +66517,7 @@
   {
    "test_id": "TC-1654",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66538,7 +66538,7 @@
   {
    "test_id": "TC-1655",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66559,7 +66559,7 @@
   {
    "test_id": "TC-1656",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -66580,7 +66580,7 @@
   {
    "test_id": "TC-1657",
    "endpoint": "POST /api/v1/learning_candidates/:id/dismiss",
-   "feature_id": "F-013",
+   "feature_id": "F-011",
    "acts": [
     "A30",
     "A93"
@@ -120968,7 +120968,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/rules/check が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_rules_check.test.ts",
    "test_function": "test_post_rules_check_ok",
    "test_level": "contract+integration",
@@ -159826,7 +159826,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_workspace_escalation_rules.test.ts",
    "test_function": "test_post_workspace_escalation_rules_ok",
    "test_level": "contract+integration",
@@ -160291,7 +160291,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/escalation-rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/escalation-rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_workspace_escalation_rules_id.test.ts",
    "test_function": "test_patch_workspace_escalation_rules_id_ok",
    "test_level": "contract+integration",
@@ -160756,7 +160756,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/escalation-rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/escalation-rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/delete_workspace_escalation_rules_id.test.ts",
    "test_function": "test_delete_workspace_escalation_rules_id_ok",
    "test_level": "contract+integration",
@@ -161201,7 +161201,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules/preview が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/escalation-rules/preview が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_workspace_escalation_rules_preview.test.ts",
    "test_function": "test_post_workspace_escalation_rules_preview_ok",
    "test_level": "contract+integration",
@@ -163820,7 +163820,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/workspace/rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/workspace/rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_workspace_rules.test.ts",
    "test_function": "test_get_workspace_rules_ok",
    "test_level": "contract+integration",
@@ -164245,7 +164245,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/rules が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/rules が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_workspace_rules.test.ts",
    "test_function": "test_post_workspace_rules_ok",
    "test_level": "contract+integration",
@@ -164710,7 +164710,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_workspace_rules_id.test.ts",
    "test_function": "test_patch_workspace_rules_id_ok",
    "test_level": "contract+integration",
@@ -165175,7 +165175,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/rules/:id が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN DELETE /api/v1/workspace/rules/:id が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/delete_workspace_rules_id.test.ts",
    "test_function": "test_delete_workspace_rules_id_ok",
    "test_level": "contract+integration",
@@ -165620,7 +165620,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/workspace/ticket-shape が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN GET /api/v1/workspace/ticket-shape が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/get_workspace_ticket_shape.test.ts",
    "test_function": "test_get_workspace_ticket_shape_ok",
    "test_level": "contract+integration",
@@ -166045,7 +166045,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/ticket-shape が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN PATCH /api/v1/workspace/ticket-shape が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/patch_workspace_ticket_shape.test.ts",
    "test_function": "test_patch_workspace_ticket_shape_ok",
    "test_level": "contract+integration",
@@ -166490,7 +166490,7 @@
    ],
    "ears_form": "EVENT-DRIVEN",
    "http_code": "",
-   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/ticket-shape/preview が「タブごとに値を足す・直す」として呼ばれたとき THEN Kaname は「使われている値を消すときは置き換え先を決める」を行い 2xx を返す",
+   "ears_text": "EVENT-DRIVEN: WHEN POST /api/v1/workspace/ticket-shape/preview が「種別・状態・項目を、タブごとに足す・直す・並べる・消す」として呼ばれたとき THEN Kaname は「使っているチケットがある種別・状態は消せない。消した項目の値は見えなくなる」を行い 2xx を返す",
    "test_file": "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts",
    "test_function": "test_post_workspace_ticket_shape_preview_ok",
    "test_level": "contract+integration",
