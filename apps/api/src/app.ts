@@ -32,17 +32,9 @@ export interface Health {
 
 const CONTRACT_PATHS = ENDPOINTS.map((e) => ({
   method: e.method,
+  literal: !/:[a-z_]/i.test(e.path),
   re: new RegExp(`^${e.path.replace(/:[a-z_]+/gi, "[^/]+")}$`),
 }));
-
-/** 変数の無い契約の道 → そのメソッド（K-705）。/ticket_stages/order のような道は、同じ深さの /ticket_stages/:id にも当たってしまうので、
- *  変数の無い道にちょうど当たったら、その道のメソッドだけで答える（ほかのメソッドは 405。:id の口の 422 にしない） */
-const STATIC_PATHS: ReadonlyMap<string, readonly string[]> = new Map(
-  [...new Set(ENDPOINTS.filter((e) => !e.path.includes(":")).map((e) => e.path))].map((path): [string, string[]] => [
-    path,
-    ENDPOINTS.filter((e) => e.path === path).map((e) => e.method),
-  ]),
-);
 
 /** 閉じた再設定の部品の道（K-320）。disabledPaths が当たらない /reset-password/… と末尾の「/」もここで 404（/api/auth を外した道） */
 const AUTH_RESET_CLOSED = /^\/(request-password-reset|reset-password)(\/.*)?$/;
@@ -195,22 +187,23 @@ export function createApp(o: AppOptions | string = {}): Hono<Vars> {
         }
       : undefined;
   if (opts.repo) app.use("/api/*", tenantContext(opts.repo, resolver));
-  if (opts.repo && opts.contract !== false) {
-    // 変数の無い契約の道に、その道に無いメソッドで来たら 405（:id の道の口に渡さない・K-705）。OPTIONS・HEAD は前の処理のまま
-    app.use("/api/*", async (c, next) => {
-      const allow = STATIC_PATHS.get(c.req.path);
-      if (allow && !allow.includes(c.req.method) && c.req.method !== "OPTIONS" && c.req.method !== "HEAD")
-        return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow: allow.join(", ") });
-      await next();
-    });
-    registerAll(app, defaultDeps(opts.contract ?? {}));
-  }
+  // 決まった名前の道（/invitations/link）に、その名前が持たないメソッドで来たら、「:id」の道に当てず 405 を返す（契約の外のメソッド・K-421。/ticket_stages/order も同じ形・K-705 の契約 fuzz ST204・ST205）
+  app.use("/api/*", async (c, next) => {
+    const m = c.req.method;
+    if (m === "OPTIONS" || m === "HEAD") return next();
+    const lit = CONTRACT_PATHS.filter((p) => p.literal && p.re.test(c.req.path));
+    if (lit.length && !lit.some((p) => p.method === m)) {
+      const allow = [...new Set(lit.map((p) => p.method))].join(", ");
+      return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow });
+    }
+    return next();
+  });
+  if (opts.repo && opts.contract !== false) registerAll(app, defaultDeps(opts.contract ?? {}));
   // 契約にある道すじに、契約に無いメソッド（TRACE など）で来たら 405 と使えるメソッド（Allow）を返す（404 にしない・K-35）
   app.notFound((c) => {
-    // 変数の無い道にちょうど当たったら、その道のメソッドだけを Allow に書く（同じ深さの :id の道のメソッドを混ぜない・K-705・契約 fuzz ST205）
-    const allow = STATIC_PATHS.get(c.req.path) ?? [
-      ...new Set(CONTRACT_PATHS.filter((p) => p.re.test(c.req.path)).map((p) => p.method)),
-    ];
+    // 道すじが「/invitations/link」のように決まった名前と「/invitations/:id」の両方に当たるときは、決まった名前の方の使えるメソッドだけを返す（契約はその道すじを別の道として書く・K-421）
+    const hit = CONTRACT_PATHS.filter((p) => p.re.test(c.req.path));
+    const allow = [...new Set((hit.some((p) => p.literal) ? hit.filter((p) => p.literal) : hit).map((p) => p.method))];
     if (allow.length)
       return c.json({ error: "method_not_allowed", code: "METHOD_NOT_ALLOWED" }, 405, { allow: allow.join(", ") });
     return c.json({ error: "not_found", code: "NOT_FOUND" }, 404);
