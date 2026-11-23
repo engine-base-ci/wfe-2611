@@ -2100,6 +2100,51 @@
     "test_get_ticket_fields_rejected_403": "読むだけの口で、会社のメンバーなら誰でも読める（行の守りの外の人は入口が 401・404 で止める。受けは K563-API-005・008）",
     "test_get_ticket_fields_upstream_failed": "外を呼ばない（AI も PC も呼ばない）"
    }
+  },
+  "getMyClone": {
+   "file": "apps/api/test/features/F5/clone-room-now.test.ts",
+   "reason": "分身の頭は呼んだ人の PC（生きている知らせの時刻）と名前の列で答えが変わる。生成の試験の種では PC の時刻を作れない（K-753）",
+   "covers": {
+    "test_get_clones_me_ok": "K753-API-001",
+    "test_get_clones_me_rejected_401": "K753-API-018",
+    "test_get_clones_me_rejected_403": "K753-API-019",
+    "test_get_clones_me_shape": "K753-API-001",
+    "test_get_clones_me_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_rejected_422": "入力を受けない GET",
+    "test_get_clones_me_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）",
+    "test_get_clones_me_upstream_failed": "この口はサーバーの外を呼ばない（DB の関数を 1 回読むだけ）"
+   }
+  },
+  "getCloneNow": {
+   "file": "apps/api/test/features/F5/clone-room-now.test.ts",
+   "reason": "いま・このあと・止まったは実行の並びと PC の時刻で答えが変わる。生成の試験の種では実行の並びを作れない（K-753）",
+   "covers": {
+    "test_get_clones_me_now_ok": "K753-API-006",
+    "test_get_clones_me_now_rejected_401": "K753-API-018",
+    "test_get_clones_me_now_rejected_403": "K753-API-019",
+    "test_get_clones_me_now_shape": "K753-API-006",
+    "test_get_clones_me_now_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_now_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_now_rejected_422": "入力を受けない GET",
+    "test_get_clones_me_now_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）"
+   }
   }
  }
 }

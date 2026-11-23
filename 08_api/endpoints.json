@@ -14530,6 +14530,7 @@
    "related_entities": [
     "E-038",
     "E-039",
+    "E-061",
     "E-106"
    ],
    "choke_points": [],
@@ -14560,6 +14561,8 @@
     "approvals_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
+    "sessions_tenant_read",
+    "sessions_ops_read_with_grant",
     "tickets_read",
     "tickets_client_read",
     "tickets_ops_read_with_grant"

@@ -875,6 +875,7 @@
     "E-097 skill_test_runs",
     "E-098 skill_attachments",
     "E-038 approvals",
+    "E-061 sessions",
     "E-108 ticket_section_versions",
     "E-028 memories",
     "E-139 learning_candidates"
@@ -12892,6 +12893,7 @@
     "bridge-setup",
     "onboard-golive",
     "clone-chat",
+    "ai-activity",
     "automation-repair",
     "members",
     "security-brief",

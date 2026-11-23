@@ -12361,8 +12361,11 @@ components:
     CloneNow:
       type: object
       properties:
+        pc:
+          type: object
         current:
           type: object
+          nullable: true
         next:
           type: array
           items:
@@ -14139,6 +14142,18 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    MyClone:
+      type: object
+      properties:
+        name:
+          type: string
+        full_name:
+          type: string
+        since:
+          type: string
+        pc:
+          type: object
+      x-operation: getMyClone
     Error:
       type: object
       properties:
@@ -22007,7 +22022,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Clones'
+                    $ref: '#/components/schemas/MyClone'
                   meta:
                     type: object
         '401':

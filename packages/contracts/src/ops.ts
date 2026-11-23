@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:d73b5df1f9d48f87
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2ea8a39dc6b603ec
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -81,7 +81,7 @@ export interface Ops {
   getClientPortalPreview: { params: { id: string }; query: never; body: never; data: T.PortalHome };
   updateClientShare: { params: { id: string }; query: never; body: T.ClientsInput; data: T.Clients };
   listClientLinkCandidates: { params: never; query: { "name"?: string | number; "domain"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientLinkCandidate[] };
-  getMyClone: { params: never; query: never; body: never; data: T.Clones };
+  getMyClone: { params: never; query: never; body: never; data: T.MyClone };
   updateMyClone: { params: never; query: never; body: T.ClonesInput; data: T.Clones };
   listCloneActivity: { params: never; query: { "kind"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActivityItem[] };
   getCloneGrowth: { params: never; query: never; body: never; data: T.CloneGrowth };
