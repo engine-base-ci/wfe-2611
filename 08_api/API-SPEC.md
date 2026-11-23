@@ -15,14 +15,14 @@
 |---|---|---|---|---|---|---|---|---|
 | EP-001 | POST | `/api/v1/acceptances/:id/remind` | 作成・実行（acceptances）— 成果物を確認してもらう（検収を頼 | A123 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-002 | GET | `/api/v1/action_runs/:id` | 取得（action_runs）— AI に任せる | A104 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
-| EP-003 | POST | `/api/v1/action_runs/:id/stop` | 作成・実行（action_runs）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-003 | POST | `/api/v1/action_runs/:id/stop` | 作成・実行（action_runs）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 503 413 429 502 403 403 503 |
 | EP-004 | POST | `/api/v1/action_runs/:id/takeover` | 作成・実行（action_runs）— 止まった理由を見て一手を打つ（P | A57 | 1 | member | C2 | 401 403 404 409 422 409 409 503 413 429 403 403 503 |
 | EP-005 | GET | `/api/v1/approvals/:id` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-006 | POST | `/api/v1/approvals/:id/approve` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 404 409 422 422 503 413 429 403 403 503 |
 | EP-007 | POST | `/api/v1/approvals/:id/edit` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-008 | POST | `/api/v1/approvals/:id/return` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
-| EP-009 | POST | `/api/v1/approvals/:id/stop` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 A89 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-010 | POST | `/api/v1/approvals/:id/withdraw` | 作成・実行（approvals）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
+| EP-009 | POST | `/api/v1/approvals/:id/stop` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 A89 | 1 | member | C2 C5 | 401 403 404 409 422 503 413 429 502 403 403 503 |
+| EP-010 | POST | `/api/v1/approvals/:id/withdraw` | 作成・実行（approvals）— AI を止める・承認を取り下げる | A89 | 1 | member | C2 C5 | 401 403 404 409 422 409 409 503 413 429 502 403 403 503 |
 | EP-011 | POST | `/api/v1/approvals/bulk` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-012 | POST | `/api/v1/approvals/bulk/preview` | 作成・実行（approvals）— 承認する／自分で直す／差し戻す／止め | A15 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-013 | GET | `/api/v1/approvals/history` | 取得（approvals）— 承認する／自分で直す／差し戻す／止める | A15 | 1 | member |  | 401 403 422 429 403 403 503 |
@@ -97,13 +97,13 @@
 | EP-082 | GET | `/api/v1/clones/me/growth` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-083 | GET | `/api/v1/clones/me/knows/counts` | 取得（clones）— 自分の AI に教える（覚えて） | A30 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-084 | GET | `/api/v1/clones/me/now` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-085 | GET | `/api/v1/conversations` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-085 | GET | `/api/v1/conversations` | 取得（conversations）— 自分の AI との会話の一覧（新し | A88 | 1 | member |  | 401 403 422 503 429 403 403 503 |
 | EP-086 | POST | `/api/v1/conversations` | 作成・実行（conversations）— 自分の AI と壁打ちしてチ | A100 A88 | 1 | member | C2 C3 | 401 403 409 422 413 429 502 403 403 503 |
-| EP-087 | GET | `/api/v1/conversations/:id` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-087 | GET | `/api/v1/conversations/:id` | 取得（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member |  | 401 403 404 422 503 429 403 403 503 |
 | EP-088 | PATCH | `/api/v1/conversations/:id` | 更新（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
 | EP-089 | DELETE | `/api/v1/conversations/:id` | 削除（conversations）— 自分のAIとの会話を分けて始める・ | A88 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
 | EP-090 | POST | `/api/v1/conversations/:id/attachments` | 作成・実行（conversations）— 資料や画像を付けて自分のAI | A90 | 1 | member | C2 C4 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
-| EP-091 | GET | `/api/v1/conversations/:id/messages` | 取得（conversations）— 自分の AI に指示する・相談する | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |
+| EP-091 | GET | `/api/v1/conversations/:id/messages` | 取得（messages）— 会話の行の続き（これより古い分・各回は古い順 | A20 | 1 | member | C4 | 401 403 404 422 503 429 502 403 403 503 |
 | EP-092 | POST | `/api/v1/conversations/:id/messages` | 作成・実行（conversations）— 自分の AI と壁打ちしてチ | A100 A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-093 | POST | `/api/v1/conversations/:id/permissions/:pid` | 作成・実行（conversations）— 自分のAIの許可に答える・許 | A91 | 1 | member | C2 C5 | 401 403 404 409 422 413 429 502 403 403 503 |
 | EP-094 | POST | `/api/v1/conversations/:id/stop` | 作成・実行（conversations）— 自分の AI に指示する・相 | A20 | 1 | member | C2 C3 C4 | 401 403 404 409 422 413 429 502 403 403 503 |
@@ -324,7 +324,7 @@
 | EP-309 | POST | `/api/v1/tickets/:id/attachments` | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 C4 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-310 | PATCH | `/api/v1/tickets/:id/body` | 更新（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member | C2 | 401 403 404 422 409 409 503 413 429 403 403 503 |
 | EP-311 | PATCH | `/api/v1/tickets/:id/client-share` | 更新（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 422 413 429 403 403 503 |
-| EP-312 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作 | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
+| EP-312 | POST | `/api/v1/tickets/:id/complete` | 作成・実行（tickets）— 完了にする | A106 | 1 | member | C2 C6 | 401 403 404 409 422 422 503 413 429 403 403 503 |
 | EP-313 | GET | `/api/v1/tickets/:id/decisions` | 取得（ticket_decisions）— チケットの決定を見る（生きて | A108 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-314 | POST | `/api/v1/tickets/:id/decisions` | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接 | A108 | 1 | member | C2 | 401 403 404 409 422 503 413 429 403 403 503 |
 | EP-315 | POST | `/api/v1/tickets/:id/delegate` | 作成・実行（tickets）— AI に任せる | A104 | 1 | member | C2 C3 C5 | 401 403 404 409 422 409 413 429 502 403 403 503 |
@@ -387,7 +387,7 @@
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 
-- 検査したフィールド 1065 ／ 内部専用 277 ／ どの画面にも出ない 0
+- 検査したフィールド 1067 ／ 内部専用 277 ／ どの画面にも出ない 0
 
 ## 5. 共通仕様
 

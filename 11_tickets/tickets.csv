@@ -3087,6 +3087,40 @@ K-673,段 10 の決定：決定ログの新しい節 §152（代表の決め 1�
 - [ ] **答えの記録は枝に足してある・この葉が運ぶ**：`01_hearing/decider-answers.jsonl` に決め 1〜8 の 6 つの答え（6d11a514116f・bc3c857621bc・836b911fcf82・233756b2891a・e053d5507686・08a63df0368c）が入っている（追記だけ・前の答えを消さない・id で和を取る。bc3c857621bc と 08a63df0368c は段 5 の K-430 も運ぶので、同じ id の行は 1 つにする）。決定の検査 G60（`decision_source_gate.py --label 高本さん --since D-130`）が緑（切る段の枝で確かめ済み）
 - [ ] 決定の検査（trace_gate の T1・T3・T6・T7・T8・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。切る段の枝では赤）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-731,動いている AI の実行を止める口（stopActionRun）と、止めた後に PC から届く「終わった」を承認待ちにしない（app.bridge_finish_job の作り直しはこの葉だけ・試し打ちの結末の呼び口 app.dry_run_job_end を空の形で先に置く）。flow.json の A104・A106 の古い文も運ぶ（決定ログの節 §153 は先に K-780 が運ぶ・K-61 の葉・段 6）,タスク,K-61,未着手,実装,2026-11-28,F5・止める,"動いている AI の実行を、人が止められるようにする（今は［止める］が押せない形・口は契約だけで 501）。あわせて、**止めた仕事に PC から「終わった」が届いても承認待ちにしない**（K-61 の完了の条件 4）。段 6 の最初の口の葉なので、段 6 全体の文書のうち flow.json の古い文もこの葉が運ぶ（決定ログの新しい節 §153 は K-780 が先に運ぶ）。
+
+1. **止める** `stopActionRun`（POST /api/v1/action_runs/:id/stop・体は空）：実行の記録はその場で止まりにし、チケットを作業中に戻し、「AI に任せている」の旗を下ろし、やり取りに「〈名〉が AI を止めました」を 1 行、証跡 1 行。仕事（PC に渡した物）は 2 通り：**まだ PC が取っていない（queued）**ならその場で止まりにする（PC が取りに来ても渡らない）／**PC が動かしている（running・asking）**なら止める合図（`bridge_jobs.stop_requested_at`）を立てるだけで、仕事は PC が合図を読んで返すまで動いたまま（PC には `getJobControl` で stop が届く）。承認の後の実行（phase execute）も同じ口で止められる（D-153.25）。止められる人は**担当者だけ**（担当の AI だから・任せた人もマネージャーも止められない。D-153.24）。お知らせ（受け箱）は書かない：お知らせはそのチケットの担当者だけに 1 件で、止めた本人が担当者なら自分あてには出さない（D-153.7）。止められるのは担当者だけなので、止める口が書くお知らせは無い（止まったことは担当者の鈴に段 8 の引き金 K-464 の `ticket.stopped` が出す）。答えは `ActionRunStopped`（id・ticket_id・phase・status・stopped_reason・stopped_at の 6 つ。段 8 の K-485 が `ActionRunView` に足す欄と食い違わないよう、実行の見え方とは別の小さな形にした）。
+2. **止めた後に届く「終わった」を使わない** `app.bridge_finish_job`（0092）を作り直す：仕事に止める合図が立っていて（`stop_requested_at`）、**その実行がもう止まっている**（queued・running・asking でない。この葉の止める口は実行を先に止める）チケットの仕事は、PC が done・stopped・cancelled のどれを返しても、成果物の版も承認の行も作らず、実行の記録・段・旗にも触らず（もう一度任せ直した新しい実行を壊さない）、仕事だけ閉じる（結果は残さない）。結果のある done が届いたときだけ、やり取りに「止めたので、届いた結果は使いませんでした」を 1 行（D-153.20）。この関数を作り直すのは**この葉だけ**（段 6 の試し打ち・AI のチェックの葉は触らない）。
+3. **試し打ちの結末の呼び口を先に置く**：`app.bridge_finish_job` に「実行の phase が dry_run なら `app.dry_run_job_end(仕事, 結末, 結果, 理由, 続きの id)` を呼び、null でなければその答えを返す」分かれ道を足す。`app.dry_run_job_end` は**空の形**（何もせず null を返す＝前の道を通す・誰にも execute を渡さない）で置く。本物にするのは K-746（試し打ち）。
+4. **文書を運ぶ**：flow.json の行為 A104（AI に任せる）・A106（完了にする）の古い文（業務の型・ナレッジ更新の候補）を新しい形に直す。
+
+「自分で直す」（止まった後に人が引き取る）は段 8 の K-485。承認待ちを止める（stopApproval）は K-732。画面は K-734。","- [ ] 下の表の 27 行（K731-API-001〜021・023・024・K731-DB-001〜002・K731-FL-001〜002）が緑：`apps/api/test/features/F5/run-stop.test.ts`・`run-stop-execute.test.ts`（土台は段 1 の `F5/delegate-kit.ts`・`F3/leaf-hooks.ts`・`F5/approve-complete.harness.ts`・変えない）・`scripts/ci/k731_flow_test.py`
+- [ ] 契約の口 `stopActionRun` が 501 でない。生成の試験 `apps/api/test/generated/post_action_runs_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-731.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-980（`k144.d/K-731.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑。特に `app.bridge_finish_job` を使う K-62 の試験（delegate・delegate-bridge）と前の道すじの試験（agent_chat・bridge_orphans ほか）が今のまま緑
+- [ ] 決定の検査（trace_gate の T1〜T12・decision_source_gate）と画面の導出の検査（flow_gate・flow_db_gate）が緑（§153 は K-780 が先に運ぶ。T1・T6・T8 は作る段で tickets.json を作り直してから）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-732,承認待ちを使わずに止める口（stopApproval：成果物は残し、チケットは作業中に戻す）と、承認の残りの口の試験の手助け（approval-more.kit.ts）（K-61 の葉）,タスク,K-61,未着手,実装,2026-11-29,F5・止める,"承認待ちの成果物を、送らずに止められるようにする（今は承認の帯の［止める］が押せない形・口は契約だけで 501）。
+
+1. **承認待ちを止める** `stopApproval`（POST /api/v1/approvals/:id/stop・体は空）：承認の行を「止めた」（decision stop・status stopped）で決め、**成果物は使わず残し**（区画の版・本文は変えない）、チケットを承認待ちから作業中に戻し、「AI に任せている」の旗を下ろし、やり取りに「〈名〉が承認待ちを止めました（成果物の版 N は残っています）」を 1 行、証跡 1 行。止められるのは承認する人（今の担当者）だけ（D-153.26・承認する・差し戻すと同じ）。お知らせ（受け箱）は書かない：お知らせはそのチケットの担当者だけに 1 件で、止めた本人が担当者なら自分あてには出さない（D-153.7）。止められるのは承認する人（今の担当者）だけなので、止める口が書くお知らせは無い。止めた後は、もう一度「AI に任せる」を押せる。答えは `ApprovalStopped`（id・decision・decided_at・status_id・ticket_id の 5 つ。差し戻しの答え `ApprovalDecided` と違い、新しい実行が無いので run_id・pc を持たない）。
+2. **承認の残りの口の試験の手助け** `apps/api/test/features/F5/approval-more.kit.ts`（carry）：K-733・K-742・K-744・K-748・K-750 の試験が使う（口を叩く関数と、葉の hooks のファイルを最初に叩くときに 1 回だけ読む `loadHook`）。**口の登録は葉ごとの hooks のファイル**：この葉は `apps/api/src/hooks/approval-stop.ts`（stopApproval だけ）。取り下げる・自分で直す・決めた履歴は K-733・K-742・K-750 が自分の hooks のファイルと口のファイルを作る。
+
+承認する・差し戻す（K-162・K-163）の口と、承認の後の実行を止める口（K-731）は触らない。画面は K-734。","- [ ] 下の表の 17 行（K732-API-001〜014・K732-API-016〜018）が緑：`apps/api/test/features/F5/approval-stop.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
+- [ ] 契約の口 `stopApproval` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_id_stop.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-732.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-981（`k144.d/K-732.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおりで緑（替えるのは row_rules の試験が見る式 1 行だけ）
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-733,承認を取り下げる口（withdrawApproval：承認した後・PC が仕事を受け取る前だけ。承認待ちに戻す）（K-61 の葉）,タスク,K-61,未着手,実装,2026-11-30,F5・止める,"承認した後、**PC がまだ仕事を受け取っていない間だけ**、承認を取り下げて承認待ちに戻せるようにする（D-125.105・D-131.14。今は［承認を取り下げる］が押せない形・口は契約だけで 501）。
+
+`withdrawApproval`（POST /api/v1/approvals/:id/withdraw・体は空）：承認した本人が押す。決まった承認は変えられない（0063）ので、**決まった承認の行に取り下げの印（withdrawn_at）を付け**（decision approve のまま履歴に残る）、**同じ成果物の新しい承認待ちの行**を作る（承認する人は今の担当者・取り消せないの印と人が見る項目は前のまま。承認の後の 24 時間の聞き直し〔0098〕と同じ作り）。承認の後の実行（待っていた仕事と実行の記録）は取り消し（cancelled・仕事の cancelled は人が承認を取り下げたときだけ・D-131.14）、チケットは承認待ちに戻り、「AI に任せている」の旗は下り、やり取りに「〈名〉が承認を取り下げました（承認待ちに戻りました）」を 1 行、証跡 1 行。お知らせ（受け箱）はそのチケットの今の担当者だけに 1 件で、取り下げた本人が担当者なら自分あては出さない（任せた人には出さない。D-153.7）。担当者が替わった後に前の承認者が取り下げたときだけ、今の担当者に届く。答えは `ApprovalWithdrawn`（id・withdrawn_at・ticket_id・approval_id＝新しい承認待ちの行の 4 つ）。
+
+**間に合わなかったとき**は 3 つに分ける。PC がもう受け取って動かしている（running・asking）は 409・E-APR-010「もう実行が始まっています。止めるには［止める］を押してください」（止めるのは K-731 の口）。実行がもう終わった・PC が受け取った後に止まった（done・taken 後の stopped）は 409・E-APR-012「もう実行が終わっています」（止めると言うのは言い過ぎなので文を分けた）。取り下げられない承認（まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた〔24 時間・人が止めた・止められた〕）は 409・E-APR-011。
+
+承認する・差し戻す（K-162・K-163）と承認待ちを止める（K-732）は触らない。画面は K-735。","- [ ] 下の表の 18 行（K733-API-001〜018）が緑：`apps/api/test/features/F5/approval-withdraw.test.ts`（土台は K-63 の `F5/approve-complete.harness.ts`・K-732 が持ち込む `F5/approval-more.kit.ts`・変えない）
+- [ ] 契約の口 `withdrawApproval` が 501 でない。生成の試験 `apps/api/test/generated/post_approvals_id_withdraw.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-733.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-982（`k144.d/K-733.ts`・carry）が緑
+- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-741,使わない口と表を片付ける（markHumanCheck・listChecks・exportCloneActivity を契約・生成物・親の apis から外し、checks の表に凍結の印を付ける。表と行は消さない）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-04,F5・契約,"代表が「確認項目は文とチェックだけ（機械・AI・人の種類と判定の型は持たない）。だれがチェックしたかは記録を別に作らず、やり取りに 1 行」と決めた（D-150.39・.40）。前の形のまま契約に残っている次の 2 本を、契約・生成物・親チケットの `apis:` から外し、使わない表に凍結の印を付ける。
 
 | 操作 ID | 方法・道 | 前の役割 | 今の代わり |
@@ -3099,6 +3133,19 @@ K-741,使わない口と表を片付ける（markHumanCheck・listChecks・expor
 - [ ] `markHumanCheck`・`listChecks`・`exportCloneActivity` が `05_flow/screen_api.py の全部の表（SCREEN_API・PERMS ほか）に無く、作り手で作り直した `08_api/*`・`packages/contracts/src/*`・`03_architecture/catalog.*`・`apps/api/src/routes/*` にも無い。生成の試験 3 本（`get_tickets_id_checks.test.ts`・`post_checks_id_human.test.ts`・`post_clones_me_activity_export.test.ts`）が消えている（作り手 `gen_ears_tests.mjs` が消す）
 - [ ] `08_api/retired-endpoints.json` に 3 本が 1 行ずつある。契約の検査（`node scripts/ci/contract.mjs check`・`python3 scripts/ci/contract_shape_test.py`）・目録の検査（`python3 scripts/ci/flow_db_gate.py`）が緑
 - [ ] 前からの試験は「前からの試験を替えた所」のとおり（替える物は無い）で緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
+K-757,会話の置き場（conversations に種類 talk_kind とチケット ticket_id・前の道すじの「開いている会話」を自分の AI の会話だけに絞る）と、会話を読む 3 つの口（getConversation・listConversations・listConversationMessages）の作り直し（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-05,F5・自分のAIと話す,"段 6 の束 G「自分の AI と話す」の土台。会話の**置き場**（3 つの種類を 1 つの表で分ける）と、会話を**読む** 3 つの口を、前の道すじ（`/api/auth-ext/agent/*`・`apps/api/src/auth/agent.ts`・`ext.ts`）から契約の口（`/api/v1/conversations…`）へ移す。言う・止める（K-758）・流す（K-759）・チケットの中で話す（K-763）・作る画面の会話（K-774〜K-776）は、ここで決める置き場と答えの形（ConversationView・MessageView）をそのまま使う。
+
+1. **置き場**：`conversations` に種類 `talk_kind`（`clone`＝自分の AI との会話・`ticket`＝チケットの右のパネルの会話・`draft`＝チケットを作る画面の会話）と `ticket_id` を足す。前から在る会話は全部 `clone`（列の既定値）。`ticket` は人 × チケットで 1 つだけ（一意の索引）。
+2. **前の道すじの守り**：前の道すじの関数が「いま開いている会話」「会話の一覧」「新しい会話で閉じる」を選ぶとき、`ticket`・`draft` の会話を拾わないように 4 つの DB の関数（`app.agent_state`・`app.agent_open_conversation`・`app.agent_conversations`・`app.agent_close_conversation`）を作り直す（種類が `clone` の物だけ）。
+3. **読む口 3 つ**（画面が使う答えの形はこの葉が決める）：
+   - `listConversations`（GET /conversations）：自分の `clone` の会話の一覧。新しい順・続きの鍵つき。**探す（q）・星（starred）は作らない**（D-153.16）ので契約の問い合わせから外す
+   - `getConversation`（GET /conversations/:id）：1 つの会話の今（ConversationView）。自分の会話なら種類を問わず読める
+   - `listConversationMessages`（GET /conversations/:id/messages）：会話の行の続き（上へ戻って古い分を読む）","- [ ] 下の表の 20 行（K757-API-001〜020）が緑：`apps/api/test/features/F5/talk-read.test.ts`（土台は同じ葉が運ぶ `F5/talk.harness.ts`）
+- [ ] 契約の口 `getConversation`・`listConversations`・`listConversationMessages` が 501 でない。生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-757.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-920・921（`k144.d/K-757.ts`・carry）が緑
+- [ ] 前の道すじの会話の試験（`agent_chat.test.ts` ほか）は「前からの試験を替えた所」のとおり緑（作り直した 4 つの関数は clone の会話では今までと同じ答え）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
 - [ ] 手元の CI（このチケットの範囲）が緑"
 K-761,PC の側：ブラウザの様子と仕事に付いたファイル（reportBrowserState：仕事の間のブラウザの様子を残す／getFileForBridge：仕事に付いたファイルの署名 URL）（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-06,F5・自分のAIと話す,"PC（Bridge）が仕事の間に呼ぶ契約の口 2 本を作る（今はどちらも契約だけで 501）。Bridge の呼び先も契約の道に替える。
 

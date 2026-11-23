@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:b717a7aab45e8ed8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:fa80e1b1be139be5
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -159,9 +159,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "stopActionRun",
     "table": "action_runs",
     "kind": "create",
-    "input": "ActionRunsInput",
+    "input": "ActionRunStopInput",
     "success": 201,
-    "output": "ActionRuns",
+    "output": "ActionRunStopped",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -182,6 +182,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -205,7 +206,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "action_runs",
-        "sql": "(created_by = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from approvals a join tickets t on t.id = a.ticket_id where a.action_run_id = action_runs.id and t.assignee_member_id = app.user_id()))"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -505,9 +506,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "stopApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalStopInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalStopped",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -528,6 +529,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -552,7 +554,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "approvals",
-        "sql": "(approver_member_id = app.user_id() or app.manages_scope(scope_id) or exists (select 1 from tickets t where t.id = ticket_id and (t.assignee_member_id = app.user_id() or t.created_by = app.user_id() or app.manages_scope(t.scope_id))))"
+        "sql": "app.ticket_assignee_is_me(ticket_id)"
       }
     },
     "termsOpen": false,
@@ -565,9 +567,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "withdrawApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalWithdrawInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalWithdrawn",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -588,6 +590,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       502,
@@ -4480,7 +4485,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "ConversationRow",
     "outputList": true,
     "generic": true,
     "auth": "member",
@@ -4494,6 +4499,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       429,
       403,
       403,
@@ -4581,7 +4587,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "ConversationView",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -4598,6 +4604,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -4805,7 +4812,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Messages",
+    "output": "MessageView",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -4824,6 +4831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       502,
       403,
@@ -19487,4 +19495,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "b717a7aab45e8ed8";
+export const OPENAPI_HASH = "fa80e1b1be139be5";

@@ -1,18 +1,18 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:b717a7aab45e8ed8
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fa80e1b1be139be5
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
 export interface Ops {
   remindAcceptance: { params: { id: string }; query: never; body: T.AcceptancesInput; data: T.Acceptances };
   getActionRun: { params: { id: string }; query: never; body: never; data: T.ActionRunView };
-  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
+  stopActionRun: { params: { id: string }; query: never; body: T.ActionRunStopInput; data: T.ActionRunStopped };
   takeoverActionRun: { params: { id: string }; query: never; body: T.ActionRunTakeoverInput; data: T.ActionRunView };
   getApproval: { params: { id: string }; query: never; body: never; data: T.ApprovalDetail };
   approveApproval: { params: { id: string }; query: never; body: T.ApprovalApproveInput; data: T.ApprovalDecided };
   editApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
   returnApproval: { params: { id: string }; query: never; body: T.ApprovalReturnInput; data: T.ApprovalDecided };
-  stopApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
-  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalsInput; data: T.Approvals };
+  stopApproval: { params: { id: string }; query: never; body: T.ApprovalStopInput; data: T.ApprovalStopped };
+  withdrawApproval: { params: { id: string }; query: never; body: T.ApprovalWithdrawInput; data: T.ApprovalWithdrawn };
   bulkApprove: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkResult };
   previewBulkApproval: { params: never; query: never; body: T.ApprovalsInput; data: T.BulkApprovalPreview };
   listApprovalHistory: { params: never; query: { "decision"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Approvals[] };
@@ -87,13 +87,13 @@ export interface Ops {
   getCloneGrowth: { params: never; query: never; body: never; data: T.CloneGrowth };
   countKnows: { params: never; query: never; body: never; data: T.KnowsCounts };
   getCloneNow: { params: never; query: never; body: never; data: T.CloneNow };
-  listConversations: { params: never; query: { "q"?: string | number; "starred"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Conversations[] };
+  listConversations: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.ConversationRow[] };
   createConversation: { params: never; query: never; body: T.ConversationsInput; data: T.ConversationCreated };
-  getConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
+  getConversation: { params: { id: string }; query: never; body: never; data: T.ConversationView };
   updateConversation: { params: { id: string }; query: never; body: T.UpdateConversationInput; data: T.ConversationUpdated };
   deleteConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
   createConversationAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
-  listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Messages[] };
+  listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MessageView[] };
   sendConversationMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
   answerAgentPermission: { params: { id: string; pid: string }; query: never; body: T.MessagesInput; data: T.Messages };
   stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
