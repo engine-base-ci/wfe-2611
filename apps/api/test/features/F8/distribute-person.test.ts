@@ -126,23 +126,23 @@ describe("K-409 人に配る", () => {
     await unchanged(t.id, P().mgr.id, before);
   });
 
-  it("K409-API-007 相手が止まっている人は 422・E-HND-006、別の会社の人・在らない id は 422・E-HND-014（K-401 の共通の確かめ）・何も変わらない", async () => {
+  it("K409-API-007 相手が止まっている人は 409・E-HND-006、別の会社の人・在らない id は 404・E-HND-014（K-401 の共通の確かめ・DB の中身で決まる断りは 404／409）・何も変わらない", async () => {
     await h.ready();
-    for (const [to, code] of [
-      [P().stopped.id, "E-HND-006"],
-      [P().outsider.id, "E-HND-014"],
-      [randomUUID(), "E-HND-014"],
+    for (const [to, code, status] of [
+      [P().stopped.id, "E-HND-006", 409],
+      [P().outsider.id, "E-HND-014", 404],
+      [randomUUID(), "E-HND-014", 404],
     ] as const) {
       const t = await h.ticket({ assignee: P().boss });
       const before = h.mails.length;
       const r = await h.distribute(P().mgr, t.id, body(to));
-      expect(r.status, to).toBe(422);
+      expect(r.status, to).toBe(status);
       expect((await h.json(r))["code"]).toBe(code);
       await unchanged(t.id, P().boss.id, before);
     }
   });
 
-  it("K409-API-008 相手が閲覧のみ・依頼する側（取引先）：409・E-HND-130（D-148.18）", async () => {
+  it("K409-API-008 相手が閲覧のみ・ゲスト：409・E-HND-130（D-148.18）", async () => {
     await h.ready();
     for (const to of [P().viewer.id, P().requester.id]) {
       const t = await h.ticket({ assignee: P().boss });
@@ -236,15 +236,16 @@ describe("K-409 人に配る", () => {
     expect(h.mails.slice(before).filter((m) => m.to === P().suzuki.email)).toHaveLength(1);
   });
 
-  it("K409-API-016 管理者（どのグループでも配る権限）は配れる・下のグループのマネージャーは上のグループのチケットを配れない（403・E-HND-002）", async () => {
+  it("K409-API-016 管理者（どのグループでも配る権限）は配れる・下のグループのマネージャーは上のグループのチケットが見えない（404・E-PAGE-001・K401-DB-027）", async () => {
     await h.ready();
     const t1 = await h.ticket({ assignee: P().boss });
     expect((await h.distribute(P().admin, t1.id, body(P().suzuki.id))).status).toBe(201);
     expect(await h.assigneeOf(t1.id)).toBe(P().suzuki.id);
     const t2 = await h.ticket({ assignee: P().boss });
     const r = await h.distribute(P().jdMgr, t2.id, body(P().jdMember.id));
-    expect(r.status).toBe(403);
-    expect((await h.json(r))["code"]).toBe("E-HND-002");
+    expect(r.status).toBe(404);
+    expect((await h.json(r))["code"]).toBe("E-PAGE-001");
+    expect(await h.assigneeOf(t2.id)).toBe(P().boss.id);
   });
 
   it("K409-API-017 グループをまたいで配れる：受託開発の人へ配ると 201・担当者が中村（チケットのグループは変えない）", async () => {
