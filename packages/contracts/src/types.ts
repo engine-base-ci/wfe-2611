@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:b3b8c5d98a0696e5
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:aad719dd606acfa2
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -348,6 +348,8 @@ export type TestSpecUpdateInput = { version: number; checked?: boolean; title?: 
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
 export type SavedViewInput = { name: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string };
 export type ActionRunTakeoverInput = Record<string, never>;
+export type ActionRunStopInput = Record<string, never>;
+export type ApprovalStopInput = Record<string, never>;
 export type ConversationEntriesInput = { entries: string[] };
 export type BridgeBrowserStateInput = { browser: string; state: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
@@ -479,6 +481,8 @@ export type Notification = { id?: string; kind?: string; tag?: string; href?: st
 export type SavedView = { id?: string; name?: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string; member_id?: string; member_name?: string; mine?: boolean; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
 export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
+export type ActionRunStopped = { id?: string; ticket_id?: string; phase?: string; status?: string; stopped_reason?: string | null; stopped_at?: string | null };
+export type ApprovalStopped = { id?: string; decision?: string | null; decided_at?: string | null; status_id?: string | null; ticket_id?: string | null };
 export type ConversationView = { conversation?: Record<string, unknown>; messages?: string[]; has_more?: boolean; running_job_id?: string | null; work?: Record<string, unknown> | null; stopped?: Record<string, unknown> | null };
 export type ConversationRow = { id?: string; title?: string; updated_at?: string; last_text?: string | null };
 export type MessageView = { id?: string; who?: string; text?: string; at?: string; job_id?: string | null; passed?: string[]; proposal?: Record<string, unknown> | null; took?: Record<string, unknown> | null };

@@ -12280,6 +12280,16 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    ActionRunStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopActionRun
+    ApprovalStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopApproval
     ConversationEntriesInput:
       type: object
       properties:
@@ -14370,6 +14380,42 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    ActionRunStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        ticket_id:
+          type: string
+        phase:
+          type: string
+        status:
+          type: string
+        stopped_reason:
+          type: string
+          nullable: true
+        stopped_at:
+          type: string
+          nullable: true
+      x-operation: stopActionRun
+    ApprovalStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        decision:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        status_id:
+          type: string
+          nullable: true
+        ticket_id:
+          type: string
+          nullable: true
+      x-operation: stopApproval
     ConversationView:
       type: object
       properties:
@@ -14717,6 +14763,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ
       x-step-up: false
@@ -14803,7 +14852,7 @@ paths:
       - D-125.105
       - D-125.167
       x-permission: assignee
-      x-permission-scope: 担当者・承認する人・マネージャー
+      x-permission-scope: そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる
       x-step-up: false
       security:
       - session: []
@@ -14819,7 +14868,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/ActionRunStopInput'
       responses:
         '201':
           description: 成功
@@ -14829,7 +14878,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/ActionRunStopped'
                   meta:
                     type: object
         '401':
@@ -14839,7 +14888,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-RUN-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -14851,13 +14900,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-RUN-002
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -14876,12 +14931,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15437,7 +15486,7 @@ paths:
       - D-125.85
       - D-126.18
       x-permission: approver
-      x-permission-scope: 承認する人・担当者・マネージャー
+      x-permission-scope: 承認する人（今の担当者）だけ。成果物は使わずに止める
       x-step-up: false
       security:
       - session: []
@@ -15453,7 +15502,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalStopInput'
       responses:
         '201':
           description: 成功
@@ -15463,7 +15512,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalStopped'
                   meta:
                     type: object
         '401':
@@ -15485,13 +15534,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15510,12 +15565,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -18802,6 +18851,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その仕事に付いた資料だけ（期限つきの署名 URL）。動いている仕事の間だけ（K-761）
       x-step-up: false
@@ -19103,6 +19155,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上。仕事の間のブラウザの様子（使う・使えない）だけ。写真・画面の写しは送らない（K-761）
       x-step-up: false
@@ -19204,6 +19259,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上（止める・割り込みの指示を受け取る）
       x-step-up: false
@@ -19434,6 +19492,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上
       x-step-up: false
@@ -19538,6 +19599,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その仕事を受け取った PC だけ
       x-step-up: false
@@ -19828,6 +19892,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上。分身は本人の権限の中でだけ Kaname の道具を呼べる
       x-step-up: false
@@ -19944,6 +20011,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す
       x-step-up: false
@@ -44385,7 +44455,7 @@ paths:
   /api/v1/tickets/{id}/complete:
     post:
       operationId: completeTicket
-      summary: 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す
+      summary: 作成・実行（tickets）— 完了にする
       tags:
       - tickets
       x-acts:
@@ -44400,6 +44470,7 @@ paths:
       - D-125.167
       - D-125.55
       - D-125.59
+      - D-153.15
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ
       x-step-up: false
@@ -44709,6 +44780,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）
       x-step-up: false
@@ -45680,6 +45754,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人
       x-step-up: false
