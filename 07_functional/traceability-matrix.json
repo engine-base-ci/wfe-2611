@@ -1,10 +1,10 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-20",
+ "created_at": "2026-11-23",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
-  "entities_count": 142,
+  "entities_count": 145,
   "uncovered_screens": [],
   "static_screens": [
    {
@@ -608,7 +608,8 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals"
+    "E-030 memory_proposals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -885,7 +886,6 @@
     "GET /api/clones/me/growth",
     "GET /api/clones/me/activity",
     "POST /api/clones/me/activity/export",
-    "POST /api/action_runs/:id/retry",
     "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
@@ -2895,8 +2895,9 @@
     "E-126 client_contacts",
     "E-061 sessions",
     "E-075 notices",
-    "E-112 class_axes",
-    "E-113 class_values",
+    "E-144 custom_fields",
+    "E-145 custom_field_kinds",
+    "E-146 ticket_field_values",
     "E-115 handover_rules"
    ],
    "related_apis": [
@@ -2927,7 +2928,7 @@
     "POST /api/ticket_imports",
     "GET /api/ticket_imports/:id",
     "POST /api/ticket_imports/:id/commit",
-    "PATCH /api/tickets/:id/sections/:key",
+    "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
     "POST /api/ticket_kinds/:id/template-from-ticket",
@@ -2980,10 +2981,11 @@
     "POST /api/notifications/read-all",
     "GET /api/ticket_kinds",
     "GET /api/ticket_stages",
-    "GET /api/class_axes",
+    "GET /api/ticket-fields",
     "GET /api/handover_rules",
     "GET /api/members",
     "GET /api/clients",
+    "POST /api/tickets/:id/timeline/seen",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
@@ -5444,12 +5446,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/clones/me/activity/export"
-    },
-    {
-     "act": "A57",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/action_runs/:id/retry"
     },
     {
      "act": "A57",
@@ -10771,7 +10767,7 @@
      "act": "A101",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/tickets/:id/sections/:key"
+     "path_draft": "/api/tickets/:id/body"
     },
     {
      "act": "A101",
@@ -11089,7 +11085,7 @@
      "act": "A103",
      "role": "data_fetch",
      "method": "GET",
-     "path_draft": "/api/class_axes"
+     "path_draft": "/api/ticket-fields"
     },
     {
      "act": "A110",
@@ -11108,6 +11104,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen"
     },
     {
      "act": "A51",
@@ -13321,6 +13323,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",
@@ -13966,40 +13969,20 @@
    "entity_id": "E-112",
    "entity_name": "class_axes",
    "used_by_screens": [
-    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-001",
-    "F-004",
-    "F-005",
-    "F-006",
-    "F-010",
-    "F-011",
-    "F-013",
-    "F-021",
-    "F-023",
-    "F-024"
+    "F-011"
    ]
   },
   {
    "entity_id": "E-113",
    "entity_name": "class_values",
    "used_by_screens": [
-    "tickets",
     "masters"
    ],
    "used_by_features": [
-    "F-001",
-    "F-004",
-    "F-005",
-    "F-006",
-    "F-010",
-    "F-011",
-    "F-013",
-    "F-021",
-    "F-023",
-    "F-024"
+    "F-011"
    ]
   },
   {
@@ -14021,6 +14004,60 @@
     "F-006",
     "F-010",
     "F-011",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-144",
+   "entity_name": "custom_fields",
+   "used_by_screens": [
+    "tickets"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-145",
+   "entity_name": "custom_field_kinds",
+   "used_by_screens": [
+    "tickets"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
+    "F-013",
+    "F-021",
+    "F-023",
+    "F-024"
+   ]
+  },
+  {
+   "entity_id": "E-146",
+   "entity_name": "ticket_field_values",
+   "used_by_screens": [
+    "tickets"
+   ],
+   "used_by_features": [
+    "F-001",
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-010",
     "F-013",
     "F-021",
     "F-023",
@@ -14657,8 +14694,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -14679,7 +14714,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/invitations",
@@ -14788,8 +14826,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -14811,7 +14847,10 @@
     "E-139",
     "E-140",
     "E-141",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "DELETE /api/messages/:id",
@@ -14885,8 +14924,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -14905,7 +14942,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-140"
+    "E-140",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -14974,8 +15014,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -14993,7 +15031,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -15175,8 +15216,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -15196,7 +15235,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "DELETE /api/members/:id",
@@ -15413,8 +15455,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -15436,7 +15476,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/conversations",
@@ -15775,8 +15818,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -15794,7 +15835,10 @@
     "E-135",
     "E-136",
     "E-137",
-    "E-138"
+    "E-138",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/client_requests",
@@ -15870,8 +15914,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -15889,7 +15931,10 @@
     "E-137",
     "E-138",
     "E-139",
-    "E-142"
+    "E-142",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/action_runs",
@@ -15933,8 +15978,6 @@
     "E-109",
     "E-110",
     "E-111",
-    "E-112",
-    "E-113",
     "E-114",
     "E-115",
     "E-116",
@@ -15951,7 +15994,10 @@
     "E-136",
     "E-137",
     "E-138",
-    "E-139"
+    "E-139",
+    "E-144",
+    "E-145",
+    "E-146"
    ],
    "api_endpoints_draft": [
     "GET /api/tickets",
