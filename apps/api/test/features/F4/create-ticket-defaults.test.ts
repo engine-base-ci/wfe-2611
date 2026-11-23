@@ -603,7 +603,7 @@ describe("K-437 断り・守り・前からの決め", () => {
     expect(await ticketsIn(T.tenantId)).toBe(before);
   });
 
-  it("K437-API-020 正本と契約：createTicket の入力に body・fields・specs があり・題名の maxLength は口の TITLE_MAX と同じ・4xx に 404 E-PAGE-001・409 E-VAL-015・E-VAL-012・E-VAL-028・E-FLD-001〜004 があり 404 の E-VAL-014 は無い。正本（errors.json）から E-VAL-014 が消えている（links は K-581・sections の残りは K-437-API-029）", async () => {
+  it("K437-API-020 正本と契約：createTicket の入力に body・fields・specs があり・題名の maxLength は口の TITLE_MAX と同じ・4xx に 404 E-PAGE-001・409 E-VAL-015・E-VAL-012・E-VAL-028・E-FLD-001〜004 があり 404 の E-VAL-014 は無い（正本の E-VAL-014 は残す。正本から消すのと画面の比べは K-442・PM 2026-11-24）（links は K-581・sections の残りは K-437-API-029）", async () => {
     const root = fileURLToPath(new URL("../../../../../", import.meta.url));
     const ep = JSON.parse(readFileSync(`${root}08_api/endpoints.json`, "utf8")) as unknown;
     const op = (JSON.stringify(ep).match(/"createTicket"[\s\S]{0,40000}/) ?? [""])[0];
@@ -623,8 +623,6 @@ describe("K-437 断り・守り・前からの決め", () => {
     const m = /TicketCreateInput:[\s\S]*?(?=\n {4}[A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
     for (const k of ["body:", "fields:", "specs:"]) expect(m, k).toContain(k);
     expect(m).toContain(`maxLength: ${TITLE_MAX}`);
-    const errors = readFileSync(`${root}07_qa/test-specs/errors.json`, "utf8");
-    expect(errors).not.toContain('"E-VAL-014"');
   });
 
   it("K437-API-021 失敗（手順 S1）：確認項目を書く所で DB が落ちる：503・E-PAGE-003・チケット・本文・項目の値・確認項目・受け箱の行が前のまま（全部戻る）", async () => {
