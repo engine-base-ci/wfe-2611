@@ -1760,15 +1760,6 @@
   },
   {
    "paths": [
-    "05_flow/phase1.py",
-    "05_flow/flow.json"
-   ],
-   "tests": [
-    "scripts/ci/k731_flow_test.py"
-   ]
-  },
-  {
-   "paths": [
     "apps/api/src/hooks/approval-stop.ts",
     "apps/api/src/features/F5/more/stop.ts"
    ],
