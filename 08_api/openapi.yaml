@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-22 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -9674,7 +9674,7 @@ components:
       allOf:
       - properties:
           email:
-            pattern: ^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$
+            pattern: ^[ \t\n\r]*(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}[ \t\n\r]*$
     SignInCodeInput:
       type: object
       properties:
@@ -12040,6 +12040,11 @@ components:
               items:
                 type: string
             nullable: true
+        estimate_minutes:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100000
       additionalProperties: false
       x-operation: updateTicket
       allOf:
@@ -12066,6 +12071,8 @@ components:
           - parent_ticket_id
         - required:
           - fields
+        - required:
+          - estimate_minutes
       - anyOf:
         - not:
             required:
@@ -13663,6 +13670,17 @@ components:
       required:
       - version
       - doc
+      x-required-by: hooks
+    BodyRestoreInput:
+      type: object
+      properties:
+        current_version:
+          type: integer
+          minimum: 1
+      additionalProperties: false
+      x-operation: restoreTicketVersion
+      required:
+      - current_version
       x-required-by: hooks
     TestSpecCreateInput:
       type: object
@@ -15695,6 +15713,47 @@ components:
         edited_at:
           type: string
       x-operation: updateTicketBody
+    TicketVersionsView:
+      type: object
+      properties:
+        versions:
+          type: array
+          items:
+            type: object
+        from:
+          type: object
+          nullable: true
+        to:
+          type: object
+          nullable: true
+      x-operation: listTicketVersions
+    BodyRestored:
+      type: object
+      properties:
+        version:
+          type: integer
+        changed:
+          type: boolean
+        edited_at:
+          type: string
+      x-operation: restoreTicketVersion
+    TicketItemChangesView:
+      type: object
+      properties:
+        points:
+          type: array
+          items:
+            type: object
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+        diff:
+          type: array
+          items:
+            type: object
+      x-operation: listTicketItemChanges
     TestSpecItem:
       type: object
       properties:
@@ -15921,11 +15980,6 @@ components:
         kind_id:
           type: string
           nullable: true
-          enum:
-          - rule
-          - preference
-          - example
-          - null
         owner_member_id:
           type: string
           format: uuid
@@ -15939,7 +15993,7 @@ components:
           pattern: \S
         confidence:
           type: string
-          pattern: ^-?(?:[0-8](?:\.[0-9]+)?|9(?:\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$
+          pattern: ^-?[0-9]+(\.[0-9]+)?$
           nullable: true
         source_type_id:
           type: string
@@ -15965,14 +16019,14 @@ components:
           format: uuid
           nullable: true
       additionalProperties: false
-      allOf:
-      - properties:
-          body:
-            type: string
       x-operation: updateMemory
       required:
       - body
       x-required-by: hooks
+      allOf:
+      - properties:
+          body:
+            type: string
 paths:
   /api/v1/acceptances/{id}/remind:
     post:
@@ -46514,6 +46568,106 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/item-changes:
+    get:
+      operationId: listTicketItemChanges
+      summary: 取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る
+      tags:
+      - ticket_messages
+      x-acts:
+      - A101
+      x-screens:
+      - tickets
+      x-choke-points: []
+      x-source:
+      - D-125.167
+      - D-125.27
+      - D-125.58
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: cursor
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^[0-9]{1,9}$
+      - name: limit
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketItemChangesView'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND／E-PAGE-001
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/tickets/{id}/kind-change-preview:
     get:
       operationId: previewTicketKindChange
@@ -47856,7 +48010,7 @@ paths:
   /api/v1/tickets/{id}/versions:
     get:
       operationId: listTicketVersions
-      summary: 取得（tickets）— チケットの中身（区画）を書く・直す
+      summary: 取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない）
       tags:
       - ticket_section_versions
       x-acts:
@@ -47880,6 +48034,16 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+      - name: to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -47893,27 +48057,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - body
-          - created_at
-          - created_by
-          - deleted_at
-          - edited_at
-          - edited_by
-          - edited_by_clone
-          - id
-          - restored_from
-          - section_id
-          - tenant_id
-          - ticket_id
-          - updated_at
-          - updated_by
-          - version
       responses:
         '200':
           description: 成功
@@ -47925,9 +48068,16 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/TicketSectionVersions'
+                      $ref: '#/components/schemas/TicketVersionsView'
                   meta:
                     type: object
+                    properties:
+                      limit:
+                        type: integer
+                      truncated:
+                        type: boolean
+                      can_restore:
+                        type: boolean
         '401':
           description: UNAUTHENTICATED
           content:
@@ -47941,7 +48091,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-PAGE-001
           content:
             application/json:
               schema:
@@ -47952,14 +48102,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -47969,7 +48119,7 @@ paths:
       operationId: restoreTicketVersion
       summary: 作成・実行（tickets）— チケットの中身（区画）を書く・直す
       tags:
-      - ticket_section_versions
+      - ticket_sections
       x-acts:
       - A101
       x-screens:
@@ -48002,7 +48152,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketSectionVersionsInput'
+              $ref: '#/components/schemas/BodyRestoreInput'
       responses:
         '201':
           description: 成功
@@ -48012,7 +48162,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketSectionVersions'
+                    $ref: '#/components/schemas/BodyRestored'
                   meta:
                     type: object
         '401':
@@ -48028,19 +48178,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: NOT_FOUND／E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-SEC-004／E-SEC-020／E-SEC-005
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -48053,12 +48209,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
