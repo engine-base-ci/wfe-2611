@@ -19,6 +19,11 @@ describe("POST /api/v1/bridge/claim", () => {
     // 本物の試験：apps/api/test/features/F3/connect-pc.test.ts の「K57-API-028」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F3/connect-pc.test.ts", "utf8")).toContain("K57-API-028");
   });
+  it("test_post_bridge_claim_not_found", () => {
+    // UNWANTED: IF 接続コードが使えないなら、Kaname は 404 と E-CONN-013 を返し、PC を作らず、どの理由かを漏らさない
+    // 本物の試験：apps/api/test/features/contract/k639-pm-fuzz.test.ts の「K639-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k639-pm-fuzz.test.ts", "utf8")).toContain("K639-API-005");
+  });
   it("test_post_bridge_claim_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）
