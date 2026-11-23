@@ -29,8 +29,8 @@ export interface Counts {
 
 const COUNT_KEYS = ["overdue", "today", "assigned", "ai", "approve"] as const;
 /** 答えの meta.counts が 5 つの整数の組ならその組、それ以外（無い・形が違う）は null */
-function countsOf(meta: { counts?: unknown }): Counts | null {
-  const c = meta.counts;
+function countsOf(meta: Record<string, unknown>): Counts | null {
+  const c = meta["counts"];
   if (typeof c !== "object" || c === null) return null;
   const rec = c as Record<string, unknown>;
   if (!COUNT_KEYS.every((k) => Number.isInteger(rec[k]))) return null;
