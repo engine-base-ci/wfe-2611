@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 366,
-  "api_built": 101,
+  "api_built": 109,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 263,
+  "errors": 269,
   "stack": 56,
   "env": 41
  },
@@ -61,9 +61,10 @@
    "tables": [
     "action_runs"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-731"
    ]
   },
   {
@@ -164,9 +165,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-732"
    ]
   },
   {
@@ -181,9 +183,10 @@
    "tables": [
     "approvals"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-733"
    ]
   },
   {
@@ -838,9 +841,9 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -945,7 +948,7 @@
    "op": "listMirrorTargets",
    "method": "GET",
    "path": "/api/v1/bridge/mirror-targets",
-   "what": "取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）",
    "flows": [
     "F5"
    ],
@@ -953,9 +956,9 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-760"
    ]
   },
   {
@@ -1401,15 +1404,16 @@
    "op": "listConversations",
    "method": "GET",
    "path": "/api/v1/conversations",
-   "what": "取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話",
+   "what": "取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない）",
    "flows": [],
    "only_later_phase": true,
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-73"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -1439,9 +1443,10 @@
    "tables": [
     "conversations"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-73"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -1493,7 +1498,7 @@
    "op": "listConversationMessages",
    "method": "GET",
    "path": "/api/v1/conversations/:id/messages",
-   "what": "取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "what": "取得（messages）— 会話の行の続き（これより古い分・各回は古い順）",
    "flows": [
     "F5"
    ],
@@ -1501,9 +1506,10 @@
    "tables": [
     "messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-61"
+    "K-61",
+    "K-757"
    ]
   },
   {
@@ -5046,7 +5052,7 @@
    "op": "completeTicket",
    "method": "POST",
    "path": "/api/v1/tickets/:id/complete",
-   "what": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
+   "what": "作成・実行（tickets）— 完了にする",
    "flows": [
     "F5"
    ],

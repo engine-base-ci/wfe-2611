@@ -210,7 +210,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -317,7 +320,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/action_runs/:id が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/action_runs/:id が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -410,30 +413,39 @@
     },
     {
      "status": 403,
-     "code": "FORBIDDEN",
+     "code": "E-RUN-001",
      "body": {
-      "error": "forbidden"
+      "error": "permission",
+      "code": "E-RUN-001"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "errors": [
+      "E-RUN-001"
+     ],
+     "trigger": "担当者でない人（任せた人・マネージャー・担当者のいないチケットの誰でも）が AI の実行を止めようとした",
+     "ears_form": "UNWANTED: IF 担当者でない人か担当者のいないチケットで AI の実行を止めようとしたなら、Kaname は 403 と E-RUN-001 を返し、実行も仕事も段もやり取りも変えない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "別の会社・見えないグループ・無い id・消したチケットの実行（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF 見えない実行・無い実行・消したチケットの実行を止めようとしたなら、Kaname は 404 を返し、何も変えない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-RUN-002",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-RUN-002"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-RUN-002"
+     ],
+     "trigger": "もう止まった・作り終えた・取り消した実行を止めようとした（二度押し・別のタブ・同時に 2 つの負けた方）",
+     "ears_form": "UNWANTED: IF もう止まった・作り終えた・取り消した実行を止めようとしたなら、Kaname は 409 と E-RUN-002 を返し、やり取りの行も証跡も増やさない"
     },
     {
      "status": 422,
@@ -442,8 +454,22 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "体に知らない項目（strict）",
+     "ears_form": "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "止める DB の関数が使えない・証跡が書けない・DB が落ちた（取引ごと戻る）",
+     "ears_form": "UNWANTED: IF 止める関数か証跡の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、実行も仕事もチケットもやり取りも変えない"
     },
     {
      "status": 413,
@@ -508,10 +534,11 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/action_runs/:id/stop が「止める／取り下げる」として呼ばれたとき THEN Kaname は「止めた記録を残す」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 担当者でない人か担当者のいないチケットで AI の実行を止めようとしたなら、Kaname は 403 と E-RUN-001 を返し、実行も仕事も段もやり取りも変えない",
+    "UNWANTED: IF 見えない実行・無い実行・消したチケットの実行を止めようとしたなら、Kaname は 404 を返し、何も変えない",
+    "UNWANTED: IF もう止まった・作り終えた・取り消した実行を止めようとしたなら、Kaname は 409 と E-RUN-002 を返し、やり取りの行も証跡も増やさない",
+    "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない",
+    "UNWANTED: IF 止める関数か証跡の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、実行も仕事もチケットもやり取りも変えない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -531,7 +558,7 @@
    "implementation_path": "apps/api/src/routes/action_runs.ts::stopActionRun",
    "permission": {
     "who": "assignee",
-    "scope": "担当者・承認する人・マネージャー",
+    "scope": "そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる",
     "step_up": false
    },
    "path_params": [
@@ -1663,28 +1690,34 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "承認する人（今の担当者）でない人・今のメンバーでない人・チケットを書けない人が承認待ちを止めようとした",
+     "ears_form": "UNWANTED: IF 承認する人でない人が承認待ちを止めようとしたなら、Kaname は 403 を返し、承認の行も段もやり取りも変えない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "別の会社・見えない・無い id・成果物でない承認（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF 見えない承認・無い承認・成果物でない承認を止めようとしたなら、Kaname は 404 を返し、何も変えない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-CONF-003",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-CONF-003"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-CONF-003"
+     ],
+     "trigger": "もう承認・差し戻し・止め・取り下げで決まった承認を止めようとした（二度押し・別のタブ・承認と同時の負けた方）",
+     "ears_form": "UNWANTED: IF もう決まった承認を止めようとしたなら、Kaname は 409 と E-CONF-003 を返し、やり取りの行も証跡も増やさない"
     },
     {
      "status": 422,
@@ -1693,8 +1726,22 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "体に知らない項目（strict）",
+     "ears_form": "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "止める DB の関数が使えない・守りの判定が例外・証跡が書けない・DB が落ちた（取引ごと戻る）",
+     "ears_form": "UNWANTED: IF 止める関数か守りの判定か証跡の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、承認の行もチケットもやり取りも変えない"
     },
     {
      "status": 413,
@@ -1760,10 +1807,11 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/stop が「承認カードで中身と検査の結果を見て押す」として呼ばれたとき THEN Kaname は「承認を記録（本人確認は取り直さない・D-128.177）。PC が閉じていれば実行待ち、24 時間を過ぎたら聞き直す」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/stop が「止める／取り下げる」として呼ばれたとき THEN Kaname は「止めた記録を残す」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 承認する人でない人が承認待ちを止めようとしたなら、Kaname は 403 を返し、承認の行も段もやり取りも変えない",
+    "UNWANTED: IF 見えない承認・無い承認・成果物でない承認を止めようとしたなら、Kaname は 404 を返し、何も変えない",
+    "UNWANTED: IF もう決まった承認を止めようとしたなら、Kaname は 409 と E-CONF-003 を返し、やり取りの行も証跡も増やさない",
+    "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない",
+    "UNWANTED: IF 止める関数か守りの判定か証跡の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、承認の行もチケットもやり取りも変えない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -1783,7 +1831,7 @@
    "implementation_path": "apps/api/src/routes/approvals.ts::stopApproval",
    "permission": {
     "who": "approver",
-    "scope": "承認する人・担当者・マネージャー",
+    "scope": "承認する人（今の担当者）だけ。成果物は使わずに止める",
     "step_up": false
    },
    "path_params": [
@@ -1855,28 +1903,34 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "承認した本人でない人・今のメンバーでない人・チケットを書けない人が承認を取り下げようとした",
+     "ears_form": "UNWANTED: IF 承認した本人でない人が承認を取り下げようとしたなら、Kaname は 403 を返し、承認の行も実行も段も変えない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "別の会社・見えない・無い id・成果物でない承認・消したチケットの承認（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF 見えない承認・無い承認・成果物でない承認を取り下げようとしたなら、Kaname は 404 を返し、何も変えない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-APR-010",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-APR-010"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-APR-010"
+     ],
+     "trigger": "PC がもう仕事を受け取って動かしている（running・asking）承認の後の実行を取り下げようとした（PC が取るのと同時の負けた方を含む）",
+     "ears_form": "UNWANTED: IF PC がもう受け取って動かしている承認を取り下げようとしたなら、Kaname は 409 と E-APR-010 を返し、承認も実行も仕事も変えない"
     },
     {
      "status": 422,
@@ -1885,8 +1939,48 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [],
+     "trigger": "体に知らない項目（strict）",
+     "ears_form": "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない"
+    },
+    {
+     "status": 409,
+     "code": "E-APR-011",
+     "body": {
+      "error": "conflict",
+      "code": "E-APR-011"
+     },
+     "errors": [
+      "E-APR-011"
+     ],
+     "trigger": "まだ承認していない・差し戻し済み・止め済み・もう取り下げた・PC が受け取る前に片付けられた承認を取り下げようとした（二度押し・別のタブの負けた方を含む）",
+     "ears_form": "UNWANTED: IF 取り下げられない承認を取り下げようとしたなら、Kaname は 409 と E-APR-011 を返し、何も変えない"
+    },
+    {
+     "status": 409,
+     "code": "E-APR-012",
+     "body": {
+      "error": "conflict",
+      "code": "E-APR-012"
+     },
+     "errors": [
+      "E-APR-012"
+     ],
+     "trigger": "承認の後の実行がもう終わった（done）・PC が受け取った後に止まった承認を取り下げようとした",
+     "ears_form": "UNWANTED: IF 承認の後の実行がもう終わった承認を取り下げようとしたなら、Kaname は 409 と E-APR-012 を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "取り下げる DB の関数が使えない・守りの判定が例外・証跡か受け箱が書けない・DB が落ちた（取引ごと戻る）",
+     "ears_form": "UNWANTED: IF 取り下げる関数か守りの判定か証跡か受け箱の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、承認もチケットも実行も変えない"
     },
     {
      "status": 413,
@@ -1951,10 +2045,13 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/approvals/:id/withdraw が「止める／取り下げる」として呼ばれたとき THEN Kaname は「止めた記録を残す」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 承認した本人でない人が承認を取り下げようとしたなら、Kaname は 403 を返し、承認の行も実行も段も変えない",
+    "UNWANTED: IF 見えない承認・無い承認・成果物でない承認を取り下げようとしたなら、Kaname は 404 を返し、何も変えない",
+    "UNWANTED: IF PC がもう受け取って動かしている承認を取り下げようとしたなら、Kaname は 409 と E-APR-010 を返し、承認も実行も仕事も変えない",
+    "UNWANTED: IF 体に知らない項目があるなら、Kaname は 422 と項目ごとの理由を返し、何も変えない",
+    "UNWANTED: IF 取り下げられない承認を取り下げようとしたなら、Kaname は 409 と E-APR-011 を返し、何も変えない",
+    "UNWANTED: IF 承認の後の実行がもう終わった承認を取り下げようとしたなら、Kaname は 409 と E-APR-012 を返し、何も変えない",
+    "UNWANTED: IF 取り下げる関数か守りの判定か証跡か受け箱の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、承認もチケットも実行も変えない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -1974,7 +2071,7 @@
    "implementation_path": "apps/api/src/routes/approvals.ts::withdrawApproval",
    "permission": {
     "who": "approver",
-    "scope": "承認した本人だけ・実行中になる前だけ（D-125.105）",
+    "scope": "承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す",
     "step_up": false
    },
    "path_params": [
@@ -7622,7 +7719,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -7735,7 +7835,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/bridge/files/:ref が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/bridge/files/:ref が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -8146,7 +8246,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -8264,7 +8367,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/browser が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/browser が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF その PC が受け取っていない・動いていない仕事の様子を送ったなら、Kaname は 404 を返し、何も残さない",
@@ -8328,7 +8431,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -8413,7 +8519,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/bridge/jobs/:id/control が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/bridge/jobs/:id/control が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -8558,19 +8664,25 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "ほかの PC・人の仕事・無い仕事・消した会話（欄も details も付けない）",
+     "ears_form": "UNWANTED: IF 受け取っていない仕事か消した会話に写そうとしたなら、Kaname は 404 を返し、在るかを漏らさず何も写さない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-TALK-030",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-TALK-030"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-TALK-030"
+     ],
+     "trigger": "写す仕事に会話が無い（記憶のまとめ・チケットの仕事）",
+     "ears_form": "UNWANTED: IF 写す仕事に会話が無いなら、Kaname は 409 と E-TALK-030 を返し、何も写さない"
     },
     {
      "status": 422,
@@ -8581,6 +8693,19 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "写しを書く DB が落ちた",
+     "ears_form": "UNWANTED: IF 写しを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も写さない"
     },
     {
      "status": 413,
@@ -8626,9 +8751,10 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/conversation-entries が「話す・資料を付ける・許可に答える」として呼ばれたとき THEN Kaname は「会話を残す」を行い 2xx を返す（自動側：答える・成果物を書き出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
+    "UNWANTED: IF 受け取っていない仕事か消した会話に写そうとしたなら、Kaname は 404 を返し、在るかを漏らさず何も写さない",
+    "UNWANTED: IF 写す仕事に会話が無いなら、Kaname は 409 と E-TALK-030 を返し、何も写さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 写しを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も写さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
@@ -8647,7 +8773,7 @@
    "implementation_path": "apps/api/src/routes/messages.ts::mirrorConversationEntries",
    "permission": {
     "who": "device",
-    "scope": "同上（会話の記録の写し。正は本人の PC・D-112）",
+    "scope": "同上（その仕事を受け取った PC だけ。会話は仕事から決める・記録と同じ id の文だけ写す・D-112）",
     "step_up": false
    },
    "path_params": [
@@ -8692,7 +8818,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -8797,7 +8926,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/finish が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/finish が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -8866,7 +8995,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -8971,7 +9103,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/progress が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/progress が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -9351,7 +9483,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -9455,7 +9590,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/tools/:name が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/:id/tools/:name が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -9525,7 +9660,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -9620,7 +9758,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/take が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/bridge/jobs/take が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
@@ -9769,6 +9907,19 @@
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
     },
     {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "取り戻す先を読む DB が落ちた",
+     "ears_form": "UNWANTED: IF 取り戻す先を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す"
+    },
+    {
      "status": 429,
      "code": "RATE_LIMITED",
      "body": {
@@ -9803,6 +9954,7 @@
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 取り戻す先を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
@@ -9816,11 +9968,11 @@
     "ファイル / オブジェクト"
    ],
    "side_effect_ordering": null,
-   "description": "取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "description": "取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）",
    "implementation_path": "apps/api/src/routes/conversations.ts::listMirrorTargets",
    "permission": {
     "who": "device",
-    "scope": "同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）",
+    "scope": "同上（直近 14 日の本人の会話と、そこで使った Claude Code の session と最新の仕事の id）",
     "step_up": false
    },
    "path_params": [],
@@ -9829,15 +9981,13 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Conversations[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Conversations[], meta: { limit } }"
    },
    "id": "EP-056",
    "feature_id": "F-024"
@@ -14777,10 +14927,23 @@
      "code": "VALIDATION_ERROR",
      "body": {
       "error": "validation_failed",
-      "details": []
+      "code": "VALIDATION_ERROR"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "trigger": "limit が範囲の外・整数でない／cursor が壊れた鍵／契約に無い問い合わせ（q・starred・before ほか）",
+     "ears_form": "UNWANTED: IF 問い合わせの形が契約に合わないなら、Kaname は 422 と欄の名前を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "会話を読む DB の関数が落ちた（使えない・例外）",
+     "ears_form": "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"
     },
     {
      "status": 429,
@@ -14827,7 +14990,8 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 問い合わせの形が契約に合わないなら、Kaname は 422 と欄の名前を返し、何も変えない",
+    "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -14839,7 +15003,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（conversations）— 自分のAIとの会話を分けて始める・一覧から選んで続きを話",
+   "description": "取得（conversations）— 自分の AI との会話の一覧（新しい順・続きの鍵つき・探す・星は作らない）",
    "implementation_path": "apps/api/src/routes/conversations.ts::listConversations",
    "permission": {
     "who": "self",
@@ -14852,15 +15016,13 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Conversations[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Conversations[], meta: { limit, cursor } }"
    },
    "id": "EP-085",
    "feature_id": "F-004"
@@ -15095,10 +15257,12 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "自分の会話でない（同じグループの別の人・別の会社）・無い・消した会話（欄も details も付けない）",
+     "ears_form": "UNWANTED: IF 自分の会話でないか無い会話を開いたなら、Kaname は 404 を返し、在るかを漏らさない"
     },
     {
      "status": 422,
@@ -15109,6 +15273,19 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "会話を読む DB の関数が落ちた（使えない・例外）",
+     "ears_form": "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"
     },
     {
      "status": 429,
@@ -15155,8 +15332,9 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations/:id が「会話を分けて始める・一覧から戻る」として呼ばれたとき THEN Kaname は「conversations に 1 行（agent_session_id は最初の返事で決まる）。一覧・探す（本文の PGroonga）・星・名前を直す・消す・記憶に使わない会話（毎朝のまとめから外す）」を行い 2xx を返す（自動側：新しい会話は Claude Code の新しいセッション。名前は最初の一言から自分のAIが付ける）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF 自分の会話でないか無い会話を開いたなら、Kaname は 404 を返し、在るかを漏らさない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -15172,7 +15350,7 @@
    "implementation_path": "apps/api/src/routes/conversations.ts::getConversation",
    "permission": {
     "who": "self",
-    "scope": "自分の会話だけ",
+    "scope": "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_view も持つ・K-757）",
     "step_up": false
    },
    "path_params": [
@@ -15797,20 +15975,35 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "errors": [],
+     "trigger": "自分の会話でない（同じグループの別の人・別の会社）・無い・消した会話（欄も details も付けない）",
+     "ears_form": "UNWANTED: IF 自分の会話でないか無い会話を開いたなら、Kaname は 404 を返し、在るかを漏らさない"
     },
     {
      "status": 422,
      "code": "VALIDATION_ERROR",
      "body": {
       "error": "validation_failed",
-      "details": []
+      "code": "VALIDATION_ERROR"
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "trigger": "limit が範囲の外・整数でない／cursor が壊れた鍵／契約に無い問い合わせ（q・starred・before ほか）",
+     "ears_form": "UNWANTED: IF 問い合わせの形が契約に合わないなら、Kaname は 422 と欄の名前を返し、何も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "会話を読む DB の関数が落ちた（使えない・例外）",
+     "ears_form": "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない"
     },
     {
      "status": 429,
@@ -15866,8 +16059,9 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/conversations/:id/messages が「話す・資料を付ける・許可に答える」として呼ばれたとき THEN Kaname は「会話を残す」を行い 2xx を返す（自動側：答える・成果物を書き出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 自分の会話でないか無い会話を開いたなら、Kaname は 404 を返し、在るかを漏らさない",
+    "UNWANTED: IF 問い合わせの形が契約に合わないなら、Kaname は 422 と欄の名前を返し、何も変えない",
+    "UNWANTED: IF 会話を読む DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、何も変えない",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -15883,11 +16077,11 @@
     "ファイル / オブジェクト"
    ],
    "side_effect_ordering": null,
-   "description": "取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成",
+   "description": "取得（messages）— 会話の行の続き（これより古い分・各回は古い順）",
    "implementation_path": "apps/api/src/routes/messages.ts::listConversationMessages",
    "permission": {
     "who": "self",
-    "scope": "自分の会話だけ",
+    "scope": "自分の会話だけ（持ち主の判定は DB の関数 app.conversation_messages も持つ・K-757）",
     "step_up": false
    },
    "path_params": [
@@ -15899,11 +16093,14 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: Messages[], meta?: { cursor, limit, total } }"
+    "body": "{ data: Messages[], meta: { limit, cursor } }"
    },
    "id": "EP-091",
    "feature_id": "F-024"
@@ -53813,7 +54010,8 @@
     "D-125.110",
     "D-125.167",
     "D-125.55",
-    "D-125.59"
+    "D-125.59",
+    "D-153.15"
    ],
    "features": [
     "F-013"
@@ -53962,7 +54160,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：ナレッジ更新の候補を出す・実行後の確認の結果を添える）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/complete が「完了の条件と申し送りを確かめて完了にする」として呼ばれたとき THEN Kaname は「完了を記録・知らせる・セッションを閉じる」を行い 2xx を返す（自動側：実行後の確認の結果を添える）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -53984,7 +54182,7 @@
     "通知送出"
    ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す",
+   "description": "作成・実行（tickets）— 完了にする",
    "implementation_path": "apps/api/src/routes/tickets.ts::completeTicket",
    "permission": {
     "who": "write",
@@ -54389,7 +54587,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -54533,7 +54734,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/delegate が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/delegate が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -56377,7 +56578,10 @@
     "D-125.157",
     "D-125.167",
     "D-125.42",
-    "D-126.15"
+    "D-126.15",
+    "D-153.18",
+    "D-153.19",
+    "D-153.2"
    ],
    "features": [
     "F-005"
@@ -56482,7 +56686,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/runs が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、選んだ業務の型とルールで成果物を作る。①機械の検査はサーバー、②AI の判定は別のセッションで 2 回）",
+    "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/runs が「「AI に任せる」を押す」として呼ばれたとき THEN Kaname は「チケットのセッションを開く・実行を記録する」を行い 2xx を返す（自動側：責任者の自分の AI が、確認項目を 1 つずつ確かめながら成果物を作り、確かめられた物にだけチェックを付けて終わりを知らせる。守らせ方は 4 つの重ね（別の AI の突き合わせは入れない））",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
