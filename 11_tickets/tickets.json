@@ -21724,9 +21724,13 @@
     "readAllNotifications"
    ],
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/errors"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/api/src/hooks/notifications-read.ts",
     "scripts/ci/row_rules.mjs",
