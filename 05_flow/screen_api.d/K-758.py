@@ -4,6 +4,8 @@
 #   言う口の体は text だけ（引用・添付・許可のモード・分岐・場所の文脈は受けない・D-153.16）。字は書いたとおりに残す（長さの上限は書かない・D-130.3）
 INPUTS = {
     "sendConversationMessage": ("ConversationSay", {"text": "string"}),
+    # 止める口は中身を受けない：空の体 {} だけ（体なしは入口が 422 body・欄を付けると strict で 422）
+    "stopConversation": ("ConversationStopInput", {}),
 }
 VALUE_RANGES = {
     "sendConversationMessage": {"text": {"pattern": "\\S"}},   # 前後の空白（全角の空白を含む）だけの字は 422
@@ -40,5 +42,11 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 言う体の形が契約に合わないなら、Kaname は 422 と欄の名前を返し、何も変えない"},
         dict(_DOWN),
     ],
-    "stopConversation": [dict(_NOT_FOUND), dict(_DOWN)],
+    "stopConversation": [
+        dict(_NOT_FOUND),
+        {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "code": "VALIDATION_ERROR"},
+         "trigger": "体が無い・JSON でない・空の体 {} でない（欄を付けた）",
+         "ears_form": "UNWANTED: IF 止める口の体が空の {} でないなら、Kaname は 422 を返し、何も止めない"},
+        dict(_DOWN),
+    ],
 }

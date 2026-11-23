@@ -18,7 +18,7 @@ const q = async <T extends Row>(sql: string, p: unknown[] = []): Promise<T[]> =>
 const code = async (r: Response) => (await h.json(r))["code"];
 const say = (who: Person | null, conv: string, body: unknown) =>
   h.call(who, "POST", `/conversations/${conv}/messages`, { body });
-// 止める口は体の中身を見ないが、入口は POST の体を JSON で読む（体なしは 422 body）。画面と同じく空の体 {} を送る
+// 止める口は空の体 {} だけを受ける（体なし・欄つきは 422・K758-API-012）。画面と同じく空の体 {} を送る
 const stop = (who: Person | null, conv: string) => h.call(who, "POST", `/conversations/${conv}/stop`, { body: {} });
 const sent = async (who: Person, conv: string, text: string) => {
   const r = await say(who, conv, { text });
@@ -47,7 +47,7 @@ const shot = async (w: World) => ({
   ]),
   // PC をつなぐ準備（h.pc）が受け箱に書く bridge.connected は数えない（言う・止める口が足したお知らせだけを見る）
   notices: await h.count(
-    "select count(*) as n from notifications where tenant_id = $1 and event_kind_id not like 'bridge.%'",
+    "select count(*) as n from notifications where tenant_id = $1 and coalesce(event_kind_id, '') not like 'bridge.%'",
     [w.tenantId],
   ),
 });
@@ -228,11 +228,12 @@ describe("K-758 言う（sendConversationMessage）", () => {
 });
 
 describe("K-758 止める（stopConversation）", () => {
-  it("K758-API-010 動いている仕事を止める：201・state は stopping。止める合図（stop_requested_at）と止めた出来事 1 つ・証跡 1。待っている仕事だけなら cancelled（その場で取りやめ）。動いている物と待っている物が両方あれば、両方止まる（待っている物は取りやめ）", async () => {
+  it("K758-API-010 動いている仕事を止める：201・state は stopping。止める合図（stop_requested_at）と止めた出来事 1 つ・証跡 1・お知らせ 0。待っている仕事だけなら cancelled（その場で取りやめ）。動いている物と待っている物が両方あれば、両方止まる（待っている物は取りやめ）", async () => {
     const w = await ready("k758-010");
     const c = await h.conversation(w, w.me);
     const run = await h.job(w, w.me, c, { state: "running" });
     const wait = await h.job(w, w.me, c, { state: "queued" });
+    const noticesBefore = (await shot(w)).notices;
     const r = await stop(w.me, c);
     expect(r.status, await r.clone().text()).toBe(201);
     expect(r.headers.get("cache-control") ?? "").toMatch(/no-store/);
@@ -245,6 +246,7 @@ describe("K-758 止める（stopConversation）", () => {
       await h.count("select count(*) as n from bridge_job_events where job_id = $1 and kind = 'stop'", [run]),
     ).toBe(1);
     expect(await audits(w, "talk.stop")).toBe(1);
+    expect((await shot(w)).notices).toBe(noticesBefore);
     const c2 = await h.conversation(w, w.me);
     const only = await h.job(w, w.me, c2, { state: "queued" });
     expect(((await h.json(await stop(w.me, c2))).data as Row)["state"]).toBe("cancelled");
@@ -263,10 +265,16 @@ describe("K-758 止める（stopConversation）", () => {
     expect(await shot(w)).toEqual(before);
   });
 
-  it("K758-API-012 二度押し・同時に押す：どちらも 201 で stopping。止めた出来事と証跡は 1 つだけ（2 回目は何も足さない）", async () => {
+  it("K758-API-012 二度押し・同時に押す：どちらも 201 で stopping。止めた出来事と証跡は 1 つだけ（2 回目は何も足さない）。体なし・欄を付けた体は 422 で何も止めない", async () => {
     const w = await ready("k758-012");
     const c = await h.conversation(w, w.me);
     const run = await h.job(w, w.me, c, { state: "running" });
+    const before = await shot(w);
+    for (const o of [{}, { body: { text: "止めて" } }]) {
+      const bad = await h.call(w.me, "POST", `/conversations/${c}/stop`, o);
+      expect(bad.status, JSON.stringify(o)).toBe(422);
+    }
+    expect(await shot(w)).toEqual(before);
     const rs = await Promise.all([stop(w.me, c), stop(w.me, c)]);
     expect(rs.map((r) => r.status)).toEqual([201, 201]);
     expect(await stop(w.me, c)).toHaveProperty("status", 201);

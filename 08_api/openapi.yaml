@@ -10623,6 +10623,11 @@ components:
       required:
       - text
       x-required-by: hooks
+    ConversationStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopConversation
     ScopeOverview:
       type: object
       properties:
@@ -22254,7 +22259,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/ConversationStopInput'
       responses:
         '201':
           description: 成功

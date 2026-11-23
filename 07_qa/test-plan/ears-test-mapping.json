@@ -40729,7 +40729,7 @@
    ],
    "ears_form": "UNWANTED",
    "http_code": "422",
-   "ears_text": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+   "ears_text": "UNWANTED: IF 止める口の体が空の {} でないなら、Kaname は 422 を返し、何も止めない",
    "test_file": "apps/api/test/generated/post_conversations_id_stop.test.ts",
    "test_function": "test_post_conversations_id_stop_rejected_422_2",
    "test_level": "unit（検証・表記ゆらぎ）",

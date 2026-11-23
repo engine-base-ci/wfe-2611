@@ -2056,10 +2056,7 @@
      "mark": "K53-API-005"
     },
     "test_post_conversations_id_stop_session_unresolved": "K758-API-015",
-    "test_post_conversations_id_stop_rejected_422_2": {
-     "file": "apps/api/test/features/contract/k144.d/K-758.ts",
-     "mark": "K144-API-923"
-    },
+    "test_post_conversations_id_stop_rejected_422_2": "K758-API-012",
     "test_post_conversations_id_stop_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"

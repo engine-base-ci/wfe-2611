@@ -341,6 +341,7 @@ export type InvitationsCreateInput = { emails: string[]; scope_id: string; role_
 export type TestSpecCreateInput = { title: string };
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
 export type ConversationSay = { text: string };
+export type ConversationStopInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
 export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };

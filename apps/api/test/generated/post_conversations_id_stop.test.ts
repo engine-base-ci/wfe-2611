@@ -30,9 +30,9 @@ describe("POST /api/v1/conversations/:id/stop", () => {
     expect(readFileSync("apps/api/test/features/F5/talk-say.test.ts", "utf8")).toContain("K758-API-012");
   });
   it("test_post_conversations_id_stop_rejected_422_2", () => {
-    // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-    // 本物の試験：apps/api/test/features/contract/k144.d/K-758.ts の「K144-API-923」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/contract/k144.d/K-758.ts", "utf8")).toContain("K144-API-923");
+    // UNWANTED: IF 止める口の体が空の {} でないなら、Kaname は 422 を返し、何も止めない
+    // 本物の試験：apps/api/test/features/F5/talk-say.test.ts の「K758-API-012」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F5/talk-say.test.ts", "utf8")).toContain("K758-API-012");
   });
   it("test_post_conversations_id_stop_session_unresolved", () => {
     // UNWANTED: IF 言う・止める DB の関数が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、取引ごと戻して何も変えない
