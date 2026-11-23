@@ -266,6 +266,10 @@
     "type": "text",
     "nullable": true
    },
+   "taken_over_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "task_id": {
     "type": "uuid",
     "nullable": true
@@ -2838,7 +2842,7 @@
    },
    "email": {
     "type": "text",
-    "nullable": false
+    "nullable": true
    },
    "expires_at": {
     "type": "timestamp with time zone",
@@ -4562,6 +4566,10 @@
    },
    "payload": {
     "type": "jsonb",
+    "nullable": true
+   },
+   "read_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "retry_count": {
@@ -7587,6 +7595,10 @@
    "id": {
     "type": "uuid",
     "nullable": false
+   },
+   "restored_from": {
+    "type": "integer",
+    "nullable": true
    },
    "section_id": {
     "type": "uuid",
