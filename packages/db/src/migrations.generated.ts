@@ -157,4 +157,5 @@ export const MIGRATIONS = [
   "20261123100000_function_execute_private_after.sql",
   "20261125021100_run_stop.sql",
   "20261125021200_approval_stop.sql",
+  "20261125022200_approval_self_edit.sql",
 ] as const;
