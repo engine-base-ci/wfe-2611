@@ -3,7 +3,7 @@
 //   口はまだつながない（読む・足す・改める・取り消す口は K-390・K-391、画面の結線は K-397・K-398）。ここは値を受け取って描くだけ。
 //   代表の答え（2026-11-20）：⑯ 段 7 は人が書く所まで（AI の案の欄と本文を直す案はグレーで出す）／⑰ 取り消しは印と理由を付けて残す（消さない）／
 //   ⑱ 決めた人は既定が本人・ほかの人とひとことを選べる／⑲ 担当者と承認する人に知らせ、やり取りにも 1 行／⑳ 作るときに書いた字は上に残し、下に一覧
-//   取引先を持たないので「取引先のルールにする」の選び肢は無い（answer=4961f0280e9a）
+//   「どこまで効かせる」の欄は持たない：取引先を持たず（answer=4961f0280e9a）、選び肢が「このチケットだけ」1 つになったため外した（PM の決め 2026-11-23）
 import { useEffect, useState, type ReactNode, type Ref } from "react";
 import { Button, Callout, Confirm, Dialog, Select, TextArea, TextField } from "@/components/k";
 import "./decisions.css";
@@ -263,12 +263,6 @@ export function DecisionDialog({
         placeholder="例：先方と合意"
       />
       <TextField label="理由" name="decision_reason" value={v.reason} onChange={(e) => set("reason")(e.target.value)} />
-      <fieldset className="k-dec-scope">
-        <legend>どこまで効かせる</legend>
-        <label>
-          <input type="radio" name="decision_scope" defaultChecked /> このチケットだけ
-        </label>
-      </fieldset>
       {from ? (
         <div className="k-dec-inert" aria-disabled="true">
           本文と食い違う所を AI が見つけて、直す案を出す（まだ使えません）

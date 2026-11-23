@@ -19,7 +19,18 @@ export interface Person {
   tone?: Tone;
 }
 
-export function Avatar({ who, small }: { who: Person; small?: boolean }) {
+/** glyph="css"：頭の字を文字として置かず、CSS の ::before で描く（変更の 1 行の字が「佐佐藤」と二重にならないように・K392-UI-024） */
+export function Avatar({ who, small, glyph }: { who: Person; small?: boolean; glyph?: "css" }) {
+  if (glyph === "css")
+    return (
+      <span
+        className="k-talk-avatar"
+        data-tone={who.tone}
+        data-size={small ? "sm" : undefined}
+        data-glyph={who.initial}
+        aria-hidden="true"
+      />
+    );
   return (
     <span className="k-talk-avatar" data-tone={who.tone} data-size={small ? "sm" : undefined} aria-hidden="true">
       {who.initial}
@@ -355,7 +366,7 @@ export function EditingPost({
 export function Line({ who, text, time }: { who: Person; text: ReactNode; time: string }) {
   return (
     <div className="k-talk-line">
-      <Avatar who={who} small />
+      <Avatar who={who} small glyph="css" />
       <span>{text}</span>
       <time className="k-talk-sub">{time}</time>
     </div>
@@ -510,8 +521,8 @@ export type StageChoice = (typeof STAGE_CHOICES)[number];
 
 export interface ComposerProps {
   text?: string;
-  /** 知らせる人（最初から担当者と承認する人。自分は入れない） */
-  notify?: readonly string[];
+  /** 知らせる人（最初から担当者と承認する人。自分は入れない）。名前の並びだけでも、id つきの並びでも受ける */
+  notify?: readonly (string | { id: string; name: string })[];
   /** 書き込みと一緒に変える段（「状態 ▾」）。保留…を選ぶと理由と再開の条件の欄が開く */
   stage?: StageChoice;
   /** 状態 ▾ を押せない（仕組みの段の間・完了・閲覧のみ） */
@@ -529,8 +540,6 @@ export interface ComposerProps {
   onText?: (s: string) => void;
   textareaRef?: Ref<HTMLTextAreaElement>;
   onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
-  /** 知らせる人（id つき。名前の並びだけでも受ける） */
-  notifyWho?: readonly { id: string; name: string }[];
   onRemoveNotify?: (id: string) => void;
   onAddNotify?: () => void;
   onSend?: () => void;
@@ -651,7 +660,6 @@ export function Composer({
   onText,
   textareaRef,
   onKeyDown,
-  notifyWho,
   onRemoveNotify,
   onAddNotify,
   onSend,
@@ -663,7 +671,7 @@ export function Composer({
   stageSlot,
   holdSlot,
 }: ComposerProps) {
-  const who = notifyWho ?? notify.map((n) => ({ id: n, name: n }));
+  const who = notify.map((n) => (typeof n === "string" ? { id: n, name: n } : n));
   const failText = error ?? (failed ? "送れませんでした。もう一度お試しください（書いた字は残っています）" : null);
   return (
     <div className="k-talk-composer">

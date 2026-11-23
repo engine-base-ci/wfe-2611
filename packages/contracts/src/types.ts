@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6b93439366247b7e
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:68fec44e74811cd7
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -334,6 +334,7 @@ export type DeviceBrowserInput = { browser: string };
 export type DeviceBrowserCheckInput = Record<string, never>;
 export type BridgeBrowserInput = { browser: string };
 export type TicketTimelineSeenInput = { seen_at?: string | null };
+export type TicketMessageInput = { body: string; mention_member_ids?: string[]; notify_member_ids?: string[]; quote_of_id?: string | null };
 export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string };
 export type TicketDecisionInput = { text: string; reason?: string | null; decided_by_member_id?: string | null; decided_note?: string | null; source_message_id?: string | null; promoted_to?: string | null };
 export type TicketDecisionUpdateInput = { action: string; text?: string | null; reason?: string | null };
@@ -342,7 +343,7 @@ export type TestSpecCreateInput = { title: string };
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
-export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
+export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
 export type SearchHit = { kind?: string; id?: string; title?: string; snippet?: string; url?: string };
 export type TimelineItem = { id?: string; kind?: string; at?: string; actor?: Record<string, unknown> | null; message?: Record<string, unknown> | null; changes?: string[] | null; run?: Record<string, unknown> | null; deleted?: Record<string, unknown> | null };
 export type TestSpecLint = { missing?: string[]; warnings?: string[] };
@@ -463,6 +464,7 @@ export type InvitationsSent = { invitations?: string[] };
 export type TestSpecItem = { id?: string; title?: string; checked?: boolean; position?: number; source?: string; version?: number };
 export type TicketLink = { id?: string; kind?: string; side?: string | null; other?: Record<string, unknown>; can_remove?: boolean; created_at?: string };
 export type TicketLinkDeleted = { id?: string };
+export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
 export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
