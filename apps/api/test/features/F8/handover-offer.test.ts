@@ -459,6 +459,88 @@ describe("K-408 申し出に答える（answerTicketHandover の offer・本物�
     expect((await handoversOf(gone.t.id))[0]).toMatchObject({ state: "waiting" });
   });
 
+  it("K408-API-019 申し出た人の書く権限が外れた後 × 「渡す」（G-14・D-148.18）：409 E-HND-006（訳「申し出られなくなっています」）。担当者は替わらず・渡しは待ったまま・申し出た人の受け箱に結末が出ない。権限が戻れば渡せる", async () => {
+    await ready();
+    const a = await human("高本 019");
+    const b = await human("鈴木 019");
+    const { t, id } = await offered(a, b);
+    await f.admin.query(
+      "update permissions set ability_id = 'view' where grantee_member_id = $1 and target_kind_id = 'tickets'",
+      [b.id],
+    );
+    const r = await give(a, id);
+    expect(r.status, await r.clone().text()).toBe(409);
+    const j = await json(r);
+    expect(j["code"]).toBe("E-HND-006");
+    expect((j["detail"] as Record<string, unknown>)["訳"]).toBe("申し出られなくなっています");
+    expect(await assigneeOf(t.id)).toBe(a.id);
+    expect((await handoversOf(t.id))[0]).toMatchObject({ state: "waiting" });
+    expect(await notes(b.id, "handover.accepted")).toHaveLength(0);
+    await f.admin.query(
+      "update permissions set ability_id = 'edit' where grantee_member_id = $1 and target_kind_id = 'tickets'",
+      [b.id],
+    );
+    expect((await give(a, id)).status).toBe(200);
+    expect(await assigneeOf(t.id)).toBe(b.id);
+  });
+
+  it("K408-API-020 担当者が止まった・招待中・抜けた人のチケットに申し出る（K-401 の共通の確かめ）：止まった・招待中は 409 E-HND-006・抜けた人は 404 E-HND-014。申し出の行も受け箱の行もメールも出ない", async () => {
+    await ready();
+    const b = await human("鈴木 020");
+    const before = mails.length;
+    const cases: [string, (m: Human) => Promise<unknown>, number, string][] = [
+      [
+        "止まった",
+        (m) => f.admin.query("update members set suspended_at = now(), suspended_by = id where id = $1", [m.id]),
+        409,
+        "E-HND-006",
+      ],
+      [
+        "招待中",
+        (m) => f.admin.query("update tenant_memberships set status = 'invited' where member_id = $1", [m.id]),
+        409,
+        "E-HND-006",
+      ],
+      [
+        "抜けた",
+        (m) => f.admin.query("update tenant_memberships set status = 'left' where member_id = $1", [m.id]),
+        404,
+        "E-HND-014",
+      ],
+    ];
+    for (const [name, apply, status, code] of cases) {
+      const a = await human(`担当 020 ${name}`);
+      const t = await ticket({ assignee: a });
+      await apply(a);
+      const r = await offer(b, t.id);
+      expect(r.status, name).toBe(status);
+      expect((await json(r))["code"], name).toBe(code);
+      expect(await handoversOf(t.id), name).toHaveLength(0);
+      expect(await notes(a.id, "handover.offered"), name).toHaveLength(0);
+    }
+    expect(mails.length).toBe(before);
+  });
+
+  it("K408-API-021 申し出が待っている間にチケットが消された × 渡す・断る：どちらも 404 E-PAGE-001（欄なし）。担当者は替わらず・渡しは待ったまま・申し出た人の受け箱とメールは増えない", async () => {
+    await ready();
+    const a = await human("高本 021");
+    const b = await human("鈴木 021");
+    const { t, id } = await offered(a, b);
+    await f.admin.query("update tickets set deleted_at = now() where id = $1", [t.id]);
+    const before = mails.length;
+    for (const r of [await give(a, id), await decline(a, id, "消したので")]) {
+      expect(r.status, await r.clone().text()).toBe(404);
+      const j = await json(r);
+      expect(j["code"]).toBe("E-PAGE-001");
+      for (const key of ["field", "details", "detail"]) expect(j, `404 に ${key} を付けない`).not.toHaveProperty(key);
+    }
+    expect(await assigneeOf(t.id)).toBe(a.id);
+    expect((await handoversOf(t.id))[0]).toMatchObject({ state: "waiting" });
+    expect(await notes(b.id, "handover.accepted")).toHaveLength(0);
+    expect(await notes(b.id, "handover.declined")).toHaveLength(0);
+    expect(mails.length).toBe(before);
+  });
+
   it("K408-API-011 「渡す」と「断る」を同時に押す（2 つのタブ）：1 つが 200・もう 1 つは 409 E-HND-005。渡しの決まり方は 1 つ・申し出た人の受け箱の結末は 1 行", async () => {
     await ready();
     const a = await human("高本 011");

@@ -71,6 +71,10 @@ begin
     if v_state <> 'active' then
       return jsonb_build_object('error', 'target', 'reason', v_state, '名前', coalesce(v_applicant, ''));
     end if;
+    -- 申し出た後に書く権限が外れた人・ゲストにした人は、もう申し出られない（申し出の抜け道を塞ぐ・D-148.18）。今も申し出られるかを渡すときに DB で見る
+    if not ('offer' = any (app.handover_kinds(t.id, h.from_member_id))) then
+      return jsonb_build_object('error', 'target', 'reason', 'no_offer', '名前', coalesce(v_applicant, ''));
+    end if;
     update tickets set assignee_member_id = h.from_member_id, updated_by = v_me where id = t.id and tenant_id = app.tenant_id();
     v_applied := app.handover_apply_switch(p_handover, v_me, h.from_member_id);
     update ticket_handovers
