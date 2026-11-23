@@ -4158,7 +4158,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   "E-NTF-010": {
     "id": "E-NTF-010",
     "cls": "not_found",
-    "message": "この知らせは見つかりませんでした",
+    "message": "このお知らせは見つかりませんでした",
     "action": "一覧を開き直す",
     "undo": false,
     "severity": "low",
