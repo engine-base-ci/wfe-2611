@@ -324,13 +324,28 @@ describe("K-410 グループに来たものを引き取る（自分が持つ＝�
     expect(of(t.id)(await h.notes(P().mgr.id, EV.claimed))).toHaveLength(1);
   });
 
-  it("K410-API-014 人を決める相手が受託開発の人でない（営業の鈴木）・別の会社の人：409・E-HND-150・waiting のまま", async () => {
+  it("K410-API-014 人を決める相手：同じ会社でグループの外（営業の鈴木）は 409・E-HND-150／別の会社の人・無い id は 404・E-PAGE-001（欄・details・detail なし）。waiting のまま", async () => {
     await h.ready();
     const { t, id } = await grouped();
-    for (const m of [P().suzuki.id, P().outsider.id]) {
+    const r1 = await h.claim(P().jdMgr, id, { member_id: P().suzuki.id });
+    expect(r1.status).toBe(409);
+    expect((await h.json(r1))["code"]).toBe("E-HND-150");
+    // 受託開発の中でも、会社から抜けた人・消した人は「無い人」と同じ 404
+    const left = await h.f.person(h.T.tenantId, h.JD, { name: "k410-left", ticketAbility: "edit" });
+    await h.f.admin.query(
+      "insert into tenant_memberships (tenant_id, member_id, role, status) values ($1, $2, 'member', 'left')",
+      [h.T.tenantId, left.id],
+    );
+    const gone = await h.f.person(h.T.tenantId, h.JD, { name: "k410-gone", ticketAbility: "edit" });
+    await h.f.admin.query("update members set deleted_at = now() where id = $1", [gone.id]);
+    for (const m of [P().outsider.id, randomUUID(), left.id, gone.id]) {
       const r = await h.claim(P().jdMgr, id, { member_id: m });
-      expect(r.status, m).toBe(409);
-      expect((await h.json(r))["code"]).toBe("E-HND-150");
+      expect(r.status, m).toBe(404);
+      const j = await h.json(r);
+      expect(j["code"]).toBe("E-PAGE-001");
+      expect(j["field"]).toBeUndefined();
+      expect(j["details"]).toBeUndefined();
+      expect(j["detail"]).toBeUndefined();
     }
     expect((await h.handover(id))!["state"]).toBe("waiting");
     expect(await h.assigneeOf(t.id)).toBe(P().mgr.id);

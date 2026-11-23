@@ -20,7 +20,7 @@ describe("POST /api/v1/ticket_handovers/:id/claim", () => {
     expect(readFileSync("apps/api/test/features/F8/distribute-group.test.ts", "utf8")).toContain("K410-API-016");
   });
   it("test_post_ticket_handovers_id_claim_not_found", () => {
-    // UNWANTED: IF 無い渡しの人を決めようとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
+    // UNWANTED: IF 無い渡し、または無い人・別の会社の人を決める人に選んだなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F8/distribute-group.test.ts の「K410-API-022」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F8/distribute-group.test.ts", "utf8")).toContain("K410-API-022");
   });

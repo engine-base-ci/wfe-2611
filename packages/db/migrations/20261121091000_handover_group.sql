@@ -25,13 +25,17 @@ $$;
 
 -- ---------------------------------------------------------------- メールの宛て（無ければ null）
 create or replace function app.handover_group_email(p_member uuid) returns text
-language sql stable security definer set search_path = public, app, pg_temp as $$
-  select u.email::text
+language plpgsql stable security definer set search_path = public, app, pg_temp as $$
+declare v_email text;
+begin
+  -- plpgsql にして kaname_auth の表は呼ぶときに引く（migration を当てる時点で認証の表が無くても作れる・handover_dist_email と同じ）
+  select u.email::text into v_email
     from members mm
     left join tenant_memberships tm on tm.tenant_id = mm.tenant_id and tm.member_id = mm.id
     join kaname_auth."user" u on u.id = coalesce(mm.auth_user_id, tm.auth_user_id)
-   where mm.id = p_member and mm.tenant_id = app.tenant_id() limit 1
-$$;
+   where mm.id = p_member and mm.tenant_id = app.tenant_id() limit 1;
+  return v_email;
+end $$;
 
 -- ---------------------------------------------------------------- ① グループに配る
 create or replace function app.handover_distribute_group(p_ticket uuid, p jsonb) returns jsonb
@@ -88,7 +92,7 @@ end $$;
 
 -- ---------------------------------------------------------------- ② 引き取る（自分が持つ・人を決める）
 --   答え {ok, handover_id, handover, assignee_member_id, mails} か {error: 言葉, …}。言葉：K-401 の物（not_found・forbidden・decided）に、
---   claim_group（グループ［と下のグループ］の外の人・別の会社の人）・claim_state（止まっている人・招待中・閲覧のみ・依頼する側）。
+--   claim_missing（無い人・別の会社の人・抜けた人。404 にする）・claim_group（同じ会社でグループ［と下のグループ］の外の人。409）・claim_state（止まっている人・招待中・閲覧のみ・依頼する側）。
 --   人宛ての渡し（to_member_id が在る）は 42501（口が 403・E-HND-002 にする）
 create or replace function app.handover_claim(p_handover uuid, p_member uuid) returns jsonb
 language plpgsql security definer set search_path = public, app, pg_temp as $$
@@ -106,7 +110,7 @@ begin
   v_to := coalesce(p_member, v_me);
   if v_to <> v_me then
     v_state := app.handover_member_state(v_to);
-    if v_state = 'gone' then return jsonb_build_object('error', 'claim_group'); end if;
+    if v_state = 'gone' then return jsonb_build_object('error', 'claim_missing'); end if;
     if not exists (select 1 from members x where x.id = v_to and x.tenant_id = v_tenant and x.scope_id in (select app.scope_tree(h.to_scope_id)))
        and not exists (select 1 from scope_memberships sm
                         where sm.member_id = v_to and sm.tenant_id = v_tenant and sm.deleted_at is null
