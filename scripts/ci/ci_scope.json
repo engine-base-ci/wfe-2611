@@ -1545,6 +1545,26 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/bridge-job-extra.ts",
+    "apps/api/src/features/F5/delegate/browser-state.ts",
+    "apps/api/src/features/F5/delegate/job-file.ts",
+    "packages/db/migrations/20261125024100_job_browser_file.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/job-extra.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/loop.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/loop-browser-state.test.ts",
+    "apps/bridge/test/loop.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/web/features/F6/progress/progress.css",
     "04_design/DESIGN-kaname.md",
     "apps/web/styles/k-tokens.css"
@@ -1698,6 +1718,8 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
+  "apps/api/test/features/F5/talk-pc.kit.ts": "葉の hooks のファイルを最初の要求のときに動的 import する（準備で読まない・K-378 と同じ）",
+  "apps/api/test/features/contract/k144.d/K-761.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む（K-378）",
   "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {
