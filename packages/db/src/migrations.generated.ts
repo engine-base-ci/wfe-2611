@@ -160,4 +160,7 @@ export const MIGRATIONS = [
   "20261125011400_knowledge_shelves.sql",
   "20261125011900_knowledge_page_other_draft.sql",
   "20261125012700_knowledge_page_hide_deleted.sql",
+  "20261125014500_ticket_stage_settings.sql",
+  "20261125014600_ticket_field_master.sql",
+  "20261125015700_ticket_field_edit.sql",
 ] as const;
