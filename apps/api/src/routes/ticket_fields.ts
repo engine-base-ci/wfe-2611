@@ -5,4 +5,5 @@ import { op, type ContractDeps } from "../contract/op.js";
 
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.get("/api/v1/ticket-fields", op(deps, "listTicketFields"));
+  app.post("/api/v1/ticket-fields", op(deps, "createTicketField"));
 }

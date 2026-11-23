@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。237 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。239 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4289,6 +4289,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-FMS-001": {
+    "id": "E-FMS-001",
+    "cls": "conflict",
+    "message": "同じ名前の項目がすでにあります",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-FMS-004": {
+    "id": "E-FMS-004",
+    "cls": "conflict",
+    "message": "同じ名前の選ぶ物があります",
+    "action": "選ぶ物の名前を変える",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-FMS-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
     }
   }
 };

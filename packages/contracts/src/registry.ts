@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e66ff42fce609d54
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:26d70b35cf172d9f
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -15104,6 +15104,54 @@ export const ENDPOINTS: readonly EndpointDef[] = [
   },
   {
     "method": "GET",
+    "path": "/api/v1/ticket-field-master",
+    "operationId": "listTicketFieldMaster",
+    "table": "custom_fields",
+    "kind": "list",
+    "input": null,
+    "success": 200,
+    "output": "TicketFieldSetting",
+    "outputList": true,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 120,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [],
+    "errors": [
+      401,
+      403,
+      422,
+      503,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "view",
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "GET",
     "path": "/api/v1/ticket-fields",
     "operationId": "listTicketFields",
     "table": "custom_fields",
@@ -15142,6 +15190,60 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "word": "read",
       "target": null,
       "ability": null,
+      "scope": "workspace",
+      "adminOnly": false,
+      "cap": null,
+      "stepUp": null,
+      "row": null
+    },
+    "termsOpen": false,
+    "mfaOpen": false,
+    "ignoresScope": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/v1/ticket-fields",
+    "operationId": "createTicketField",
+    "table": "custom_fields",
+    "kind": "create",
+    "input": "TicketFieldCreateInput",
+    "success": 201,
+    "output": "TicketFieldSetting",
+    "outputList": false,
+    "generic": false,
+    "auth": "member",
+    "rateLimit": {
+      "perMinute": 30,
+      "key": "user"
+    },
+    "uuidParams": [],
+    "chokePoints": [
+      "C2"
+    ],
+    "errors": [
+      401,
+      403,
+      409,
+      422,
+      404,
+      409,
+      503,
+      413,
+      429,
+      403,
+      403,
+      503
+    ],
+    "acts": [
+      "A118"
+    ],
+    "screens": [
+      "masters"
+    ],
+    "perm": {
+      "word": "admin",
+      "target": "custom_fields",
+      "ability": "edit",
       "scope": "workspace",
       "adminOnly": false,
       "cap": null,
@@ -19662,4 +19764,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "e66ff42fce609d54";
+export const OPENAPI_HASH = "26d70b35cf172d9f";

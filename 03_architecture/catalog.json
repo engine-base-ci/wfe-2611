@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
+  "api": 372,
   "api_built": 84,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 237,
+  "errors": 239,
   "stack": 56,
   "env": 41
  },
@@ -4610,6 +4610,23 @@
    ]
   },
   {
+   "op": "listTicketFieldMaster",
+   "method": "GET",
+   "path": "/api/v1/ticket-field-master",
+   "what": "取得（custom_fields）— 会社の項目を並びの順に全部見る（型・必須・説明・選ぶ物・どの種別で出すか・値の数）",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-706"
+   ]
+  },
+  {
    "op": "listTicketFields",
    "method": "GET",
    "path": "/api/v1/ticket-fields",
@@ -4624,6 +4641,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-563"
+   ]
+  },
+  {
+   "op": "createTicketField",
+   "method": "POST",
+   "path": "/api/v1/ticket-fields",
+   "what": "作成・実行（ticket-fields）— 決まりを整える（守ること・承認を回すとき・やり方・チケッ",
+   "flows": [
+    "F9"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "custom_fields"
+   ],
+   "status": "契約だけ（501）",
+   "owner_tickets": [
+    "K-706"
    ]
   },
   {
@@ -6311,11 +6345,13 @@
    "table": "custom_fields",
    "class": "skeleton",
    "why": "第1フェーズの口が使う（K-563）",
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false
+   "boundary": true
   },
   {
    "table": "daily_plans",
