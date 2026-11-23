@@ -948,7 +948,7 @@ VALUE_RANGES = {
     "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
         "title": {"pattern": "\\S", "maxLength": 200},   # 口の TITLE_MAX（生の字で数える・NFKC で整えない・D-150.34）
         "due_on": {"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "format": "date"},   # 暦に在る日（K-437）。今日より前は 409 E-VAL-012（時刻で決まるので契約に書かない）
-        "start_on": {"pattern": "^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$"},
+        "start_on": {"anyOf": [{"maxLength": 0}, {"format": "date"}]},   # 空か暦に在る日（K-437・K-1116 の調べ：0000-00-00 を口が 422 で断るので format: date で書く）
         "priority": {"enum": ["", "mid", "high"]},
         "estimate_minutes": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 100000},
                                        {"type": "string", "pattern": "^(?:0*(?:[0-9]{1,5}|100000))?$"}], "nullable": True},

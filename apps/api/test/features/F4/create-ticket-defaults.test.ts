@@ -755,4 +755,26 @@ describe("K-437 断り・守り・前からの決め", () => {
     ).rows;
     expect(inner).toHaveLength(0);
   });
+  it("K437-API-031 開始 start_on が暦に無い日（0000-00-00・2026-02-30）は 422・欄 start_on・何も作られない／空の文字は 201・開始は null。契約の start_on の値域は anyOf [{maxLength: 0}, {format: date}]（期限と同じ format: date）", async () => {
+    const before = await ticketsIn(T.tenantId);
+    for (const start_on of ["0000-00-00", "2026-02-30"]) {
+      const r = await create(writer, body({ start_on }));
+      expect(r.status, start_on).toBe(422);
+      expect(fieldsOf(await json(r)), start_on).toContain("start_on");
+    }
+    expect(await ticketsIn(T.tenantId)).toBe(before);
+    const t = await createOk(writer, body({ start_on: "" }));
+    const rows = (
+      await f.admin.query<{ start_on: string | null }>("select start_on::text as start_on from tickets where id = $1", [
+        t["id"],
+      ])
+    ).rows;
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.start_on).toBeNull();
+    const root = fileURLToPath(new URL("../../../../../", import.meta.url));
+    const yaml = readFileSync(`${root}08_api/openapi.yaml`, "utf8");
+    const input = /TicketCreateInput:[\s\S]*?(?=\n    [A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
+    const start = /\n        start_on:[\s\S]*?(?=\n        [a-z_]+:)/.exec(input)?.[0] ?? "";
+    expect(start).toMatch(/anyOf:\n\s+- maxLength: 0\n\s+- format: date/);
+  });
 });
