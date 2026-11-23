@@ -89,6 +89,26 @@ describe("PATCH /api/v1/tickets/:id", () => {
     // 本物の試験：apps/api/test/features/F4/ticket-sort.test.ts の「K440-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-sort.test.ts", "utf8")).toContain("K440-API-011");
   });
+  it("test_patch_tickets_id_conflict_10", () => {
+    // UNWANTED: IF そのチケットの種別に出ない項目に値を入れようとしたなら、Kaname は 409 と E-FLD-001 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-field-values.test.ts の「K564-API-007」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-field-values.test.ts", "utf8")).toContain("K564-API-007");
+  });
+  it("test_patch_tickets_id_conflict_11", () => {
+    // UNWANTED: IF 選択肢に無い値を項目に入れようとしたなら、Kaname は 409 と E-FLD-002 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-field-values.test.ts の「K564-API-008」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-field-values.test.ts", "utf8")).toContain("K564-API-008");
+  });
+  it("test_patch_tickets_id_conflict_12", () => {
+    // UNWANTED: IF 項目の型と合わない値を入れようとしたなら、Kaname は 409 と E-FLD-003 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-field-values.test.ts の「K564-API-009」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-field-values.test.ts", "utf8")).toContain("K564-API-009");
+  });
+  it("test_patch_tickets_id_conflict_13", () => {
+    // UNWANTED: IF 必須の項目を空にしようとしたなら、Kaname は 409 と E-FLD-004 を返し、何も書かない
+    // 本物の試験：apps/api/test/features/F4/ticket-field-values.test.ts の「K564-API-005」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-field-values.test.ts", "utf8")).toContain("K564-API-005");
+  });
   it("test_patch_tickets_id_rejected_422_2", () => {
     // UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-028」（同じ CI の G3 で流れる）

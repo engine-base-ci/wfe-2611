@@ -5,6 +5,8 @@
 import type pg from "pg";
 import type { Row } from "@kaname/db/repository";
 import type { HookReply } from "../../contract/deps.js";
+import { ticketEstimateFields } from "../F4/ticket-estimate/fields.js";
+import { ticketFieldsFields } from "../F4/ticket-fields/fields.js";
 import { ticketSortFields } from "../F4/ticket-sort/fields.js";
 import { progressFields } from "../F6/progress/fields.js";
 
@@ -20,5 +22,10 @@ export interface TicketFieldGroup {
   apply: (cl: pg.PoolClient, ticketId: string, input: Row) => Promise<GroupResult>;
 }
 
-/** 欄の組の並び（この順に apply を呼ぶ）。K-387：段・実績・保留（F6/progress）／K-440：優先度・親（F4/ticket-sort） */
-export const TICKET_FIELD_GROUPS: readonly TicketFieldGroup[] = [progressFields, ticketSortFields];
+/** 欄の組の並び（この順に apply を呼ぶ）。K-387：段・実績・保留（F6/progress）／K-440：優先度・親（F4/ticket-sort）／K-564：会社の項目の値（F4/ticket-fields）／K-583：予定時間（F4/ticket-estimate） */
+export const TICKET_FIELD_GROUPS: readonly TicketFieldGroup[] = [
+  progressFields,
+  ticketSortFields,
+  ticketFieldsFields,
+  ticketEstimateFields,
+];
