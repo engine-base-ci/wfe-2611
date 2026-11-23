@@ -2862,6 +2862,19 @@ K-673,段 10 の決定：決定ログの新しい節 §152（代表の決め 1�
 - [ ] **答えの記録は枝に足してある・この葉が運ぶ**：`01_hearing/decider-answers.jsonl` に決め 1〜8 の 6 つの答え（6d11a514116f・bc3c857621bc・836b911fcf82・233756b2891a・e053d5507686・08a63df0368c）が入っている（追記だけ・前の答えを消さない・id で和を取る。bc3c857621bc と 08a63df0368c は段 5 の K-430 も運ぶので、同じ id の行は 1 つにする）。決定の検査 G60（`decision_source_gate.py --label 高本さん --since D-130`）が緑（切る段の枝で確かめ済み）
 - [ ] 決定の検査（trace_gate の T1・T3・T6・T7・T8・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。切る段の枝では赤）
 - [ ] 手元の CI（このチケットの範囲）が緑"
+K-757,会話の置き場（conversations に種類 talk_kind とチケット ticket_id・前の道すじの「開いている会話」を自分の AI の会話だけに絞る）と、会話を読む 3 つの口（getConversation・listConversations・listConversationMessages）の作り直し（K-61 の葉）,タスク,K-61,未着手,実装,2026-12-05,F5・自分のAIと話す,"段 6 の束 G「自分の AI と話す」の土台。会話の**置き場**（3 つの種類を 1 つの表で分ける）と、会話を**読む** 3 つの口を、前の道すじ（`/api/auth-ext/agent/*`・`apps/api/src/auth/agent.ts`・`ext.ts`）から契約の口（`/api/v1/conversations…`）へ移す。言う・止める（K-758）・流す（K-759）・チケットの中で話す（K-763）・作る画面の会話（K-774〜K-776）は、ここで決める置き場と答えの形（ConversationView・MessageView）をそのまま使う。
+
+1. **置き場**：`conversations` に種類 `talk_kind`（`clone`＝自分の AI との会話・`ticket`＝チケットの右のパネルの会話・`draft`＝チケットを作る画面の会話）と `ticket_id` を足す。前から在る会話は全部 `clone`（列の既定値）。`ticket` は人 × チケットで 1 つだけ（一意の索引）。
+2. **前の道すじの守り**：前の道すじの関数が「いま開いている会話」「会話の一覧」「新しい会話で閉じる」を選ぶとき、`ticket`・`draft` の会話を拾わないように 4 つの DB の関数（`app.agent_state`・`app.agent_open_conversation`・`app.agent_conversations`・`app.agent_close_conversation`）を作り直す（種類が `clone` の物だけ）。
+3. **読む口 3 つ**（画面が使う答えの形はこの葉が決める）：
+   - `listConversations`（GET /conversations）：自分の `clone` の会話の一覧。新しい順・続きの鍵つき。**探す（q）・星（starred）は作らない**（D-153.16）ので契約の問い合わせから外す
+   - `getConversation`（GET /conversations/:id）：1 つの会話の今（ConversationView）。自分の会話なら種類を問わず読める
+   - `listConversationMessages`（GET /conversations/:id/messages）：会話の行の続き（上へ戻って古い分を読む）","- [ ] 下の表の 20 行（K757-API-001〜020）が緑：`apps/api/test/features/F5/talk-read.test.ts`（土台は同じ葉が運ぶ `F5/talk.harness.ts`）
+- [ ] 契約の口 `getConversation`・`listConversations`・`listConversationMessages` が 501 でない。生成の試験の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-757.json` の covers）
+- [ ] 共有の試験 k144 の葉の行 K144-API-920・921（`k144.d/K-757.ts`・carry）が緑
+- [ ] 前の道すじの会話の試験（`agent_chat.test.ts` ほか）は「前からの試験を替えた所」のとおり緑（作り直した 4 つの関数は clone の会話では今までと同じ答え）
+- [ ] migration の lint（Squawk・G58）を作る段で出す前に流して緑
+- [ ] 手元の CI（このチケットの範囲）が緑"
 K-780,段 6 の決定ログ §153（D-153.1〜33）と答えの記録を本線に入れる（文書だけ・K-61 の葉・段 6 の最初・依存なし）,タスク,K-61,未着手,実装,2026-11-27,F5・文書,"段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。
 
 段 6 のほかの葉は `decisions:` に D-153.n を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。前は口と DB の最初の葉 K-731 が決定ログも運んでいたので、依存の無い葉（K-741・K-761 など）が先に始まると止まった。だから決定ログだけを先に本線へ入れる、この葉を分けた（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ。PM の決め 2026-11-23）。K-731 は決定ログを運ばなくなり、この葉に依存する。
