@@ -19,6 +19,18 @@
     "apps/bridge/test/loop-browser-state.test.ts",
     "apps/bridge/test/loop.test.ts"
    ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/job-extra.test.ts",
+    "apps/api/test/features/F5/talk-pc.kit.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_jobs_id_browser.test.ts",
+    "apps/api/test/generated/get_bridge_files_ref.test.ts"
+   ]
   }
  ],
  "reads_ok": {
