@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/f9-knowledge-page-edit.ts", "apps/api/src/features/F9/knowledge/page-move.ts", "apps/api/src/features/F9/knowledge/page-delete.ts", "apps/api/src/features/F9/knowledge/page-guards/**"],
+   "tests": ["apps/api/test/features/F9/knowledge-page-edit.test.ts"]}
+ ]
+}
