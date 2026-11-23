@@ -12209,6 +12209,11 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: stopActionRun
+    ApprovalStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopApproval
     ScopeOverview:
       type: object
       properties:
@@ -14276,6 +14281,24 @@ components:
           type: string
           nullable: true
       x-operation: stopActionRun
+    ApprovalStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        decision:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        status_id:
+          type: string
+          nullable: true
+        ticket_id:
+          type: string
+          nullable: true
+      x-operation: stopApproval
     Error:
       type: object
       properties:
@@ -15238,7 +15261,7 @@ paths:
       - D-125.85
       - D-126.18
       x-permission: approver
-      x-permission-scope: 承認する人・担当者・マネージャー
+      x-permission-scope: 承認する人（今の担当者）だけ。成果物は使わずに止める
       x-step-up: false
       security:
       - session: []
@@ -15254,7 +15277,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalStopInput'
       responses:
         '201':
           description: 成功
@@ -15264,7 +15287,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalStopped'
                   meta:
                     type: object
         '401':
@@ -15286,13 +15309,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15311,12 +15340,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
