@@ -21526,8 +21526,7 @@
     "apps/api/test/k234_one_transaction.test.ts",
     "apps/api/test/k237_perf_budget.test.ts",
     "apps/api/test/qa-d.test.ts",
-    "apps/api/test/generated/post_tickets.test.ts",
-    "apps/web/tests/features/F4/create-ticket.spec.ts"
+    "apps/api/test/generated/post_tickets.test.ts"
    ],
    "depends_on": [
     "K-561",
@@ -21550,8 +21549,7 @@
     "@kaname/api",
     "@kaname/contracts",
     "@kaname/db",
-    "@kaname/errors",
-    "@kaname/web"
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",
