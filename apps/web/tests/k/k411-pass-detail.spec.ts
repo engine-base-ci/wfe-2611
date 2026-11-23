@@ -372,7 +372,7 @@ test("K411-UI-016 AI が動いている：▾ は押せ（aria-disabled なし�
   await openDetail(page);
   const btn = page.getByRole("button", { name: BTN });
   await expect(btn).not.toHaveAttribute("aria-disabled", "true");
-  await expect(assigneeOf(page)).toContainText("AI の実行が終わってから渡してください");
+  await expect(assigneeOf(page)).toContainText("AI の実行（承認）が終わってから渡してください");
   await btn.click();
   await expect(pickDialog(page).locator(".k-callout")).toHaveText(BLOCKED);
   await expect(pickDialog(page).getByText(BLOCKED_INTRO)).toBeVisible();
