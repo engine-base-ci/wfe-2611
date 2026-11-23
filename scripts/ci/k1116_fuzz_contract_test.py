@@ -24,7 +24,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "scripts" / "ci"))
 import email_patterns  # noqa: E402  登録・ログインのメールの形（K-1117）
-from portable_regex import portable  # noqa: E402  作り手が契約に書くときの直し（K-1117）
+from portable_regex import portable, walk  # noqa: E402  作り手が契約に書くときの直し（K-1117）
 OA = yaml.safe_load((ROOT / "08_api" / "openapi.yaml").read_text(encoding="utf-8"))
 SCHEMAS = OA["components"]["schemas"]
 EPS = json.loads((ROOT / "08_api" / "endpoints.json").read_text(encoding="utf-8"))["endpoints"]
@@ -64,7 +64,8 @@ def _shape_of(op: str) -> dict:
 
 def _leaks() -> list[str]:
     """形を分け合うほかの口 P の値域・必須・決まりが、口 O の形に入っていれば並べる（O 自身が同じ物を持つなら漏れではない）"""
-    ranges, req, rules = SA.VALUE_RANGES, SA.REQUIRED_INPUTS, getattr(SA, "INPUT_RULES", {})
+    # 表の字は作り手が契約に書くときと同じに直してから比べる（\s \S \d を JS と同じ字に・K-1117。直さないと \S の値域の漏れが見えない）
+    ranges, req, rules = walk(SA.VALUE_RANGES), SA.REQUIRED_INPUTS, walk(getattr(SA, "INPUT_RULES", {}))
     out = []
     for o, base in BODY_OPS.items():
         s = _shape_of(o)
