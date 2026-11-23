@@ -132,11 +132,15 @@ function noticeOf(r: CallErr): string {
   return INVITE_NOTICE.down;
 }
 
-/** 422 の文を欄に分ける（口はいまは誤りを 1 つずつ返す。2 つ返ってきたら 2 つとも出す）。欄が分からなければ null */
+/** 欄の誤りの答えか：422 と、招待のリンクでメールの鍵が無いときの 409 E-INV-016（K-422） */
+const isFieldErr = (r: CallErr): boolean => r.status === 422 || (r.status === 409 && r.code === "E-INV-016");
+
+/** 欄の誤りの文を欄に分ける（口はいまは誤りを 1 つずつ返す。2 つ返ってきたら 2 つとも出す）。欄が分からなければ null */
 function errorsOf(r: CallErr): Errors | null {
   const text = r.message ?? catalogText(r.code);
   const name = r.fields["name"] ?? (r.code === "E-VAL-007" ? text : undefined);
-  const email = r.fields["email"] ?? (r.code === "E-INV-013" ? text : undefined); // 招待のリンク：メールの欄が空（K-422）
+  // 招待のリンク（K-422）：メールの鍵が無い参加は 409 E-INV-016（欄なし）・空白だけ／形違いを送ったら 422 E-INV-013（欄 email）
+  const email = r.fields["email"] ?? (r.code === "E-INV-013" || r.code === "E-INV-016" ? text : undefined);
   const password = r.fields["password"] ?? (/^E-VAL-(005|011|026)$/.test(r.code) ? text : undefined);
   if (!name && !password && !email) return null;
   return { ...(name ? { name } : {}), ...(password ? { password } : {}), ...(email ? { email } : {}) };
@@ -249,13 +253,13 @@ export function InvitePage() {
         return "leave";
       }
       if (toDead(r) || (await toChanged(r, v?.email))) return "stay";
-      if (r.status === 422 && !v) {
+      if (isFieldErr(r) && !v) {
         // 体なしの参加に欄の誤りが返った＝押す前にログインが切れて、口がログインしていない人として受けた。
         // この形には欄が無いので、下見を読み直して今の形（ログインして参加 など）を出す
         await load(token);
         return "stay";
       }
-      const byField = r.status === 422 ? errorsOf(r) : null;
+      const byField = isFieldErr(r) ? errorsOf(r) : null;
       if (byField) setErrors(byField);
       else setNotice(noticeOf(r));
       return "stay";
