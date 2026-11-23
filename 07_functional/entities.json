@@ -3965,11 +3965,12 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**`choke_point_id` を記録**（どの関門を通ったか）",
+   "note": "**`choke_point_id` を記録**（どの関門を通ったか）。**`status_id` が stopped になると、チケットの担当者の受け箱に「止まりました」の知らせ（`ticket.stopped`）を書く（引き金 `action_runs_ticket_stopped_notice`・`app.notify_ai_stopped()`・K-464・D-151.6。cancelled は書かない）**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
-    "D-062"
+    "D-062",
+    "D-151.6"
    ]
   },
   {
