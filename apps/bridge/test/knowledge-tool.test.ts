@@ -46,8 +46,14 @@ afterAll(async () => {
   upstream.close();
 });
 
+/** 道具のサーバーの答え（JSON-RPC の 1 通）。試験が読む鍵だけ */
+interface RpcReply {
+  id: number;
+  result: { tools: { name: string }[]; isError?: boolean; content?: unknown[] };
+}
+
 /** 道具のサーバーを子として動かし、JSON-RPC を 1 通ずつ送って答えを集める */
-const rpc = async (kind: "ticket" | "chat", calls: object[]): Promise<Record<string, any>[]> => {
+const rpc = async (kind: "ticket" | "chat", calls: object[]): Promise<RpcReply[]> => {
   const dir = mkdtempSync(join(tmpdir(), "k718-"));
   const file = join(dir, "server.js");
   writeFileSync(file, MCP_SERVER_SOURCE);
@@ -58,7 +64,7 @@ const rpc = async (kind: "ticket" | "chat", calls: object[]): Promise<Record<str
     env: { PATH: process.env["PATH"] ?? "", KANAME_API_BASE: relay.url, KANAME_TOOL_TOKEN: TOKEN, KANAME_TOOLS: names },
     stdio: ["pipe", "pipe", "ignore"],
   });
-  const out: Record<string, any>[] = [];
+  const out: RpcReply[] = [];
   let buf = "";
   child.stdout.on("data", (c) => {
     buf += String(c);
