@@ -1,7 +1,9 @@
 "use client";
 // PC をつなぐの小窓（K-230・キャンバス EdPC）。小窓の型（components/k/dialog.tsx）を使う：置き場（上から 60px）・影・余白は型のまま、
 //   幅は size="connect"（580）・題は h1（小窓が開くと後ろが読み上げの木から外れ、読み上げの h1 を小窓の題 1 つにする）・頭の補足は subtitle。
-//   本文は 3 段（丸・題・説明）と共用の PC の注意、足は「あとで」と待っている印。開いたときのフォーカスは足の最初のボタン（「あとで」）。
+//   本文は 3 段（丸・題・説明）と共用の PC の注意、足は「あとで」だけ。開いたときのフォーカスは足の最初のボタン（「あとで」）。
+//   待っている印（橙の点と「アプリからの返事を待っています…」）は 2 段目（コードの段）の「10 分で切れる…新しいコード」の下に状態の 1 行で出す
+//   （代表の答え answer=8d3ada64dcbd・2026-11-20：足の帯ではない。待っているのはアプリがこのコードを受け取ること・K-374）
 //   接続コードの 1 字ずつの箱は inline の箱で並べる（innerText を改行の無い 6 字にする・staging と m2 が読む）
 //   takeHelp：受け取る段（1 段目）の中、受け取るの字のリンクの下に差す物（K-374 が受け取った後に OS の警告の越え方 OsWarning を渡す）。渡さなければ今の絵のまま
 import type { KeyboardEvent, ReactNode } from "react";
@@ -69,6 +71,16 @@ export interface ConnectDialogProps {
   takeHelp?: ReactNode;
 }
 
+/** 橙の点つきの「アプリからの返事を待っています…」 */
+function Wait() {
+  return (
+    <span className="k-pc-wait">
+      <span className="k-wait-dot" aria-hidden="true" />
+      アプリからの返事を待っています…
+    </span>
+  );
+}
+
 export function ConnectDialog({
   open,
   onOpenChange,
@@ -93,10 +105,6 @@ export function ConnectDialog({
           <Button variant="outlined" className="k-pc-btn" onClick={() => onOpenChange(false)}>
             あとで
           </Button>
-          <span className="k-pc-wait">
-            <span className="k-wait-dot" aria-hidden="true" />
-            アプリからの返事を待っています…
-          </span>
         </>
       }
     >
@@ -128,6 +136,9 @@ export function ConnectDialog({
             >
               新しいコード
             </button>
+          </span>
+          <span className="k-pc-wait-line">
+            <Wait />
           </span>
         </Step>
         <Step n={3} state="todo" title="試しに動かす">

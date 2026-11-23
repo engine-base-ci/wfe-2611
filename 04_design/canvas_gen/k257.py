@@ -374,6 +374,25 @@ def connect_typed(ed):
     return head + tail
 
 
+# つなぐ小窓の待っている印（橙の点と「アプリからの返事を待っています…」）を、足の帯から 2 段目（コードの段）の
+#   「10 分で切れる…新しいコード」の下の 1 行へ移す（代表の答え answer=8d3ada64dcbd・2026-11-20・K-374）。何度流しても同じ
+WAIT = ('<span style="font-size: 12px; color: #4A5563; display: inline-flex; align-items: center; gap: 6px">'
+        '<span style="width: 8px; height: 8px; border-radius: 9999px; background: #B45309"></span>アプリからの返事を待っています…</span>')
+WAIT_LINE = '<span style="display: flex; align-items: center; margin-top: 6px">%s</span>' % WAIT
+
+
+def wait_in_code_step(ed):
+    if WAIT_LINE in ed:
+        return ed
+    i = ed.index('<div role="dialog" aria-label="PC をつなぐ"')
+    foot = ed.rindex("border-top: 1px solid #DDE2E9", i)
+    w = ed.index(WAIT, foot)
+    ed = ed[:w] + ed[w + len(WAIT):]
+    anchor = "新しいコード</button></span>"
+    k = ed.index(anchor, i) + len(anchor)
+    return ed[:k] + WAIT_LINE + ed[k:]
+
+
 def pc_boards():
     me = load("MePC.dc.html")
     if 'data-act="back"' not in me:
@@ -390,7 +409,7 @@ def pc_boards():
     if 'data-act="new-code"' not in ed:
         ed = ed.replace("<br>" + CODE_LINE + "</div>",
                         '<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px"><span>%s</span>%s</span></div>' % (CODE_LINE, NEW_CODE), 1)
-    save("EdPC", "PC をつなぐ", with_legacy(connect_typed(ed)))
+    save("EdPC", "PC をつなぐ", with_legacy(wait_in_code_step(connect_typed(ed))))
     ins = load("MePCInstalled.dc.html")
     if 'data-act="switch-account"' not in ins:
         btn = ins.index(">この PC の Bridge につなぐ</button>") + len(">この PC の Bridge につなぐ</button>")
