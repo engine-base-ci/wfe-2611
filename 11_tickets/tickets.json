@@ -24532,10 +24532,12 @@
    "canvas_none": "見た目を変えない口の葉。木の「…」メニューの画面は K-684、部品は K-670 が持つ（正は /dev/mock/f9 の木の「…」メニューと消す確かめの状態）",
    "affects": [
     "@kaname/api",
+    "@kaname/contracts",
     "@kaname/db"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "apps/api/src/hooks/f9-knowledge-page-edit.ts",
