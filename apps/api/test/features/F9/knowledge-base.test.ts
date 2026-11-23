@@ -19,6 +19,7 @@ const lib = {
   shelf: () => import("../../../src/features/F9/knowledge/shelf.js"),
   body: () => import("../../../src/features/F9/knowledge/body.js"),
   shape: () => import("../../../src/features/F9/knowledge/shape.js"),
+  input: () => import("../../../src/features/F9/knowledge/input.js"),
 };
 
 /** K-675 が契約を宣言する 16 本（土台 2 章の表）：[操作 ID, 方法, 道, 成功, 入力の名前, 答えの名前, 一覧か, 権限の言葉, 道の uuid の名前] */
@@ -203,6 +204,18 @@ const VALID_INPUT: Record<string, unknown> = {
   KnowledgeSimilarInput: { title: "題名" },
   KnowledgeCopyInput: {},
 };
+/** 口ごとの入力の見本（口の入力の確かめを通る最小の体） */
+const VALID_BY_OP: Record<string, Record<string, unknown>> = {
+  createKnowledgeFolder: { shelf: "me", name: "メモ" },
+  updateKnowledgeFolder: { name: "新しい名前" },
+  createKnowledgePage: { shelf: "me", title: "題名" },
+  saveKnowledgeDraft: { title: "題名" },
+  publishKnowledgePage: {},
+  updateKnowledgePage: { position: 0 },
+  setKnowledgeMust: { must: true },
+  findSimilarKnowledge: { title: "題名" },
+  copyKnowledgePage: {},
+};
 const PLACE = { shelf: "company", shelf_name: "会社", group_id: null, folder_id: null, folders: [] };
 /** 答えの見本（土台 3 章の鍵） */
 const SAMPLE_OUTPUT: Record<string, Record<string, unknown>> = {
@@ -322,55 +335,67 @@ describe("K-675 ナレッジの口の置き場", () => {
     }
   });
 
-  it("K675-API-003 必須の欄と「1 つは要る」「グループの棚は group_id が要る」：欠けると断る", () => {
-    const bad = (name: string, v: unknown) => SCHEMAS[name]!.safeParse(v).success;
-    expect(bad("KnowledgeFolderCreateInput", { shelf: "me" })).toBe(false); // name が無い
-    expect(bad("KnowledgeFolderCreateInput", { name: "x" })).toBe(false); // shelf が無い
-    expect(bad("KnowledgeFolderCreateInput", { shelf: "group", name: "x" })).toBe(false); // group_id が要る
-    expect(bad("KnowledgeFolderCreateInput", { shelf: "group", group_id: randomUUID(), name: "x" })).toBe(true);
-    expect(bad("KnowledgeFolderCreateInput", { shelf: "company", name: "x", group_id: randomUUID() })).toBe(true); // company・me は group_id を使わない（あっても通す）
-    expect(bad("KnowledgePageCreateInput", { shelf: "me" })).toBe(false); // title が無い
-    expect(bad("KnowledgePageCreateInput", { shelf: "group", title: "x" })).toBe(false);
-    expect(bad("KnowledgeMustInput", {})).toBe(false);
-    expect(bad("KnowledgeSimilarInput", {})).toBe(false);
-    for (const name of ["KnowledgeFolderUpdateInput", "KnowledgeDraftInput", "KnowledgePageMoveInput"])
-      expect(bad(name, {}), `${name} は 1 つは要る`).toBe(false);
+  it("K675-API-003 必須の欄と「1 つは要る」「グループの棚は group_id が要る」：口の入力の確かめ（input.ts）が欠けると 422 と欄の名前を返す", async () => {
+    const { checkKnowledgeInput } = await lib.input();
+    const field = (op: string, v: Record<string, unknown>) => {
+      const r = checkKnowledgeInput(op, v);
+      if (!r) return null;
+      expect(r.status, `${op} ${JSON.stringify(v)}`).toBe(422);
+      return ((r.body as { details: { field: string }[] }).details[0] ?? { field: "" }).field;
+    };
+    expect(field("createKnowledgeFolder", { shelf: "me" })).toBe("name");
+    expect(field("createKnowledgeFolder", { name: "x" })).toBe("shelf");
+    expect(field("createKnowledgeFolder", { shelf: "group", name: "x" })).toBe("group_id");
+    expect(field("createKnowledgeFolder", { shelf: "group", group_id: randomUUID(), name: "x" })).toBeNull();
+    expect(field("createKnowledgeFolder", { shelf: "company", name: "x", group_id: randomUUID() })).toBeNull(); // company・me は group_id を使わない（あっても通す）
+    expect(field("createKnowledgePage", { shelf: "me" })).toBe("title");
+    expect(field("createKnowledgePage", { shelf: "group", title: "x" })).toBe("group_id");
+    expect(field("setKnowledgeMust", {})).toBe("must");
+    expect(field("findSimilarKnowledge", {})).toBe("title");
+    for (const op of ["updateKnowledgeFolder", "saveKnowledgeDraft", "updateKnowledgePage"])
+      expect(field(op, {}), `${op} は 1 つは要る`).toBe("body");
+    for (const [op, ok] of Object.entries(VALID_BY_OP)) expect(field(op, ok), `${op} の見本`).toBeNull();
   });
 
-  it("K675-API-004 値の形：名前 100 字・題名 200 字・1 行の説明 200 字・text 10,000 字の境目と、空白だけ・uuid でない・知らない棚・object でない doc を断る", () => {
-    const ok = (name: string, v: unknown) => SCHEMAS[name]!.safeParse(v).success;
-    expect(ok("KnowledgeFolderCreateInput", { shelf: "me", name: "あ".repeat(100) })).toBe(true);
-    expect(ok("KnowledgeFolderCreateInput", { shelf: "me", name: "あ".repeat(101) })).toBe(false);
-    expect(ok("KnowledgeFolderCreateInput", { shelf: "me", name: "   " })).toBe(false);
-    expect(ok("KnowledgeFolderCreateInput", { shelf: "dept", name: "x" })).toBe(false);
-    expect(ok("KnowledgeFolderCreateInput", { shelf: "group", group_id: "x", name: "x" })).toBe(false);
-    expect(ok("KnowledgeFolderUpdateInput", { parent_folder_id: null })).toBe(true);
-    expect(ok("KnowledgeFolderUpdateInput", { parent_folder_id: "x" })).toBe(false);
-    expect(ok("KnowledgeFolderUpdateInput", { position: -1 })).toBe(false);
-    expect(ok("KnowledgePageCreateInput", { shelf: "me", title: "あ".repeat(200) })).toBe(true);
-    expect(ok("KnowledgePageCreateInput", { shelf: "me", title: "あ".repeat(201) })).toBe(false);
-    expect(ok("KnowledgePageCreateInput", { shelf: "me", title: "x", desc: "あ".repeat(200) })).toBe(true);
-    expect(ok("KnowledgePageCreateInput", { shelf: "me", title: "x", desc: "あ".repeat(201) })).toBe(false);
-    expect(ok("KnowledgeDraftInput", { doc: { type: "doc", content: [] } })).toBe(true);
-    expect(ok("KnowledgeDraftInput", { doc: "x" })).toBe(false);
-    expect(ok("KnowledgeDraftInput", { doc: { type: "doc", content: [] }, text: "x" })).toBe(false); // text は画面から受けない
-    expect(ok("KnowledgeSimilarInput", { title: "x", text: "あ".repeat(10_000) })).toBe(true);
-    expect(ok("KnowledgeSimilarInput", { title: "x", text: "あ".repeat(10_001) })).toBe(false);
-    expect(ok("KnowledgeSimilarInput", { title: "x", exclude_page_id: "x" })).toBe(false);
-    expect(ok("KnowledgeMustInput", { must: "yes" })).toBe(false);
-    expect(ok("KnowledgeCopyInput", { folder_id: "x" })).toBe(false);
+  it("K675-API-004 値の形：名前 100 字・題名 200 字・1 行の説明 200 字・text 10,000 字の境目と、空白だけ・uuid でない・知らない棚・object でない doc を、口の入力の確かめ（input.ts）が 422 と欄の名前で断る", async () => {
+    const { checkKnowledgeInput } = await lib.input();
+    const field = (op: string, v: Record<string, unknown>) =>
+      ((checkKnowledgeInput(op, v)?.body as { details?: { field: string }[] } | undefined)?.details ?? [])[0]?.field ??
+      null;
+    expect(field("createKnowledgeFolder", { shelf: "me", name: "あ".repeat(100) })).toBeNull();
+    expect(field("createKnowledgeFolder", { shelf: "me", name: "あ".repeat(101) })).toBe("name");
+    expect(field("createKnowledgeFolder", { shelf: "me", name: "   " })).toBe("name");
+    expect(field("createKnowledgeFolder", { shelf: "dept", name: "x" })).toBe("shelf");
+    expect(field("createKnowledgeFolder", { shelf: "group", group_id: "x", name: "x" })).toBe("group_id");
+    expect(field("updateKnowledgeFolder", { parent_folder_id: null })).toBeNull();
+    expect(field("updateKnowledgeFolder", { parent_folder_id: "x" })).toBe("parent_folder_id");
+    expect(field("updateKnowledgeFolder", { position: -1 })).toBe("position");
+    expect(field("createKnowledgePage", { shelf: "me", title: "あ".repeat(200) })).toBeNull();
+    expect(field("createKnowledgePage", { shelf: "me", title: "あ".repeat(201) })).toBe("title");
+    expect(field("createKnowledgePage", { shelf: "me", title: "x", desc: "あ".repeat(200) })).toBeNull();
+    expect(field("createKnowledgePage", { shelf: "me", title: "x", desc: "あ".repeat(201) })).toBe("desc");
+    expect(field("saveKnowledgeDraft", { doc: { type: "doc", content: [] } })).toBeNull();
+    expect(field("saveKnowledgeDraft", { doc: "x" })).toBe("doc");
+    expect(SCHEMAS["KnowledgeDraftInput"]!.safeParse({ doc: { type: "doc", content: [] }, text: "x" }).success).toBe(
+      false,
+    ); // text は画面から受けない（入口の strict）
+    expect(field("findSimilarKnowledge", { title: "x", text: "あ".repeat(10_000) })).toBeNull();
+    expect(field("findSimilarKnowledge", { title: "x", text: "あ".repeat(10_001) })).toBe("text");
+    expect(field("findSimilarKnowledge", { title: "x", exclude_page_id: "x" })).toBe("exclude_page_id");
+    expect(field("setKnowledgeMust", { must: "yes" })).toBe("must");
+    expect(field("copyKnowledgePage", { folder_id: "x" })).toBe("folder_id");
+    const r = checkKnowledgeInput("createKnowledgeFolder", { shelf: "me", name: "あ".repeat(101) });
+    expect(r).toMatchObject({ status: 422, body: { error: "validation_failed", code: "VALIDATION_ERROR" } });
   });
 
-  it("K675-API-005 答えの見本（土台 3 章の鍵）は契約の形に合い、鍵が 1 つ欠けると合わない", () => {
+  it("K675-API-005 答えの見本（土台 3 章の鍵）は契約の答えの形と鍵の集まりがちょうど同じで、見本は形に合い、鍵を 1 つ足すと合わない", () => {
     for (const [name, sample] of Object.entries(SAMPLE_OUTPUT)) {
-      const s = SCHEMAS[name];
+      const s = SCHEMAS[name] as unknown as
+        { shape: Record<string, unknown>; safeParse: (v: unknown) => { success: boolean } } | undefined;
       expect(s, name).toBeDefined();
+      expect(Object.keys(s!.shape).sort(), `${name} の鍵（契約）`).toEqual(Object.keys(sample).sort());
       expect(s!.safeParse(sample).success, `${name} の見本`).toBe(true);
-      for (const key of Object.keys(sample)) {
-        const rest = { ...sample };
-        delete rest[key];
-        expect(s!.safeParse(rest).success, `${name} から ${key} を抜く`).toBe(false);
-      }
+      expect(s!.safeParse({ ...sample, extra_key: 1 }).success, `${name} に知らない鍵`).toBe(false);
     }
   });
 
