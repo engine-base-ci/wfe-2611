@@ -129,7 +129,7 @@ const ticketBody = (extra: Record<string, unknown> = {}) => ({
   title: "契約の形を確かめる",
   assignee_member_id: mate.id,
   due_on: jst(3),
-  sections: { purpose: "目的", done: "完了の条件", todo: "実施事項" },
+  body: { doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "目的" }] }] } },
   ...extra,
 });
 const create = (b: unknown) => f.req("POST", "/tickets", { body: b, headers: writer.auth });
@@ -1084,17 +1084,37 @@ describe("K-144 ㉑ 長さの数え方（精査 R1 回 10 追加-2・D-130.1）�
     const named = async (r: Response, field: string) =>
       r.status === 422 && fields(await json(r)).some((x) => x === field || x.startsWith(`${field}.`));
     for (const [label, extra, field, ok] of [
-      ["区画 20000 字", { sections: { purpose: E.repeat(20000), done: "完了", todo: "実施" } }, "sections", true],
       [
-        "区画 20001 字（D-130.3 で上限を外した）",
-        { sections: { purpose: E.repeat(20001), done: "完了", todo: "実施" } },
-        "sections",
+        "本文 20000 字",
+        {
+          body: {
+            doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: E.repeat(20000) }] }] },
+          },
+        },
+        "body",
         true,
       ],
       [
-        "区画 50000 字（D-130.3）",
-        { sections: { purpose: "あ".repeat(50000), done: "完了", todo: "実施" } },
-        "sections",
+        "本文 20001 字（D-130.3 で上限を外した）",
+        {
+          body: {
+            doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: E.repeat(20001) }] }] },
+          },
+        },
+        "body",
+        true,
+      ],
+      [
+        "本文 50000 字（D-130.3）",
+        {
+          body: {
+            doc: {
+              type: "doc",
+              content: [{ type: "paragraph", content: [{ type: "text", text: "あ".repeat(50000) }] }],
+            },
+          },
+        },
+        "body",
         true,
       ],
       ["自由に書く欄 10001 字（😀）", { priority_reason: E.repeat(10001) }, "priority_reason", true],
@@ -1322,13 +1342,17 @@ describe("K-144 ㉔ 自由に書く欄の上限を外す（D-130.3・D-130.4・�
     const bad: string[] = [];
     // 区画（チケットの本文）
     const section = noisy(30000);
-    const t = await create(ticketBody({ sections: { purpose: section, done: "完了", todo: "実施" } }));
+    const t = await create(
+      ticketBody({
+        body: { doc: { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: section }] }] } },
+      }),
+    );
     if (t.status !== 201) bad.push(`区画 30000 字：${t.status} ${(await t.clone().text()).slice(0, 200)}`);
     else {
       const tid = ((await json(t)).data as { id: string }).id;
       const got = (
         await f.admin.query<{ v: string | null }>(
-          "select body->>'text' as v from ticket_sections where ticket_id = $1 and section_key = 'purpose'",
+          "select body->>'text' as v from ticket_sections where ticket_id = $1 and section_key = 'body'",
           [tid],
         )
       ).rows[0]?.v;
