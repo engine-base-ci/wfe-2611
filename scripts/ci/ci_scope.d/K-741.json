@@ -3,9 +3,9 @@
   {
    "paths": [
     "05_flow/screen_api.py",
+    "05_flow/screen_api.d/**",
     "08_api/endpoints.json",
     "08_api/openapi.yaml",
-    "08_api/types.ts",
     "08_api/lint-mapping.json",
     "08_api/retired-endpoints.json",
     "08_api/phase1/01_チケット.md",
