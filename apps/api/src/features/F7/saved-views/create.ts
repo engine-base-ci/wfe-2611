@@ -66,7 +66,7 @@ export function createCreateSavedView(appPool: pg.Pool): (a: HookArgs) => Promis
         await cl.query(LOCK_SQL);
         if (v.scopeId !== null) {
           const seen = (await cl.query<{ ok: boolean }>(SCOPE_SQL, [v.scopeId])).rows[0]?.ok === true;
-          if (!seen) return fail("E-VWS-004", "scope_id");
+          if (!seen) return fail("E-VWS-004");
         }
         const count = (await cl.query<{ n: number }>(COUNT_SQL)).rows[0]?.n ?? 0;
         if (count >= MAX_PER_PERSON) return fail("E-VWS-006");
