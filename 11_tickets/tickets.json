@@ -3316,7 +3316,20 @@
     "postponeLearningCandidate",
     "promoteMemoryToRule",
     "requestRuleException",
-    "updateMemory"
+    "updateMemory",
+    "listKindTemplateUpdates",
+    "applyKindTemplateUpdate",
+    "createEscalationRule",
+    "updateEscalationRule",
+    "deleteEscalationRule",
+    "previewEscalationRule",
+    "getWorkspaceRules",
+    "createWorkspaceRule",
+    "updateWorkspaceRule",
+    "deleteWorkspaceRule",
+    "getTicketShape",
+    "saveTicketShape",
+    "previewTicketShapeChange"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
@@ -24167,7 +24180,8 @@
    "affects": [
     "@kaname/api",
     "@kaname/contracts",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",
