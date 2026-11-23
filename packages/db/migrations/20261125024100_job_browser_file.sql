@@ -2,6 +2,7 @@
 --   ① 仕事の出来事の種類に browser を足す（0056 の 15 種を全部写して 1 つ足す。同じ check を作り直す葉は、後に入る方がこの 16 種を含める）
 --   ② app.bridge_browser_report：その仕事を受け取った PC だけ・動いている仕事だけ。同じ（ブラウザ・様子）は 1 行だけ（二重送信・同時の 2 つでも）
 --   ③ app.bridge_job_file：その仕事に付いた資料（消していない）の置き場の場所と、署名の主語（会社・仕事の持ち主）。前の道すじの app.bridge_attachment（0042）の中身を移した
+-- squawk-ignore ban-drop-constraint
 alter table bridge_job_events drop constraint if exists bridge_job_events_kind_check;
 alter table bridge_job_events add constraint bridge_job_events_kind_check
   check (kind in ('init', 'progress', 'ask', 'answer', 'tool', 'usage', 'status', 'plan', 'steer', 'stop', 'question', 'limit', 'reply', 'blocked', 'notice', 'browser'));
