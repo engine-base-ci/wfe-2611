@@ -3125,3 +3125,22 @@ PM の決め（作り方）：
 4. 種類 4 は fuzz の設定。口の 404 は変えない","- [ ] 下の表の行（K1116-CT-001〜007）が緑
 - [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている
 - [ ] チケットの範囲の CI が緑。K-424 の CI の G36 で種類 1・2・4 が出ない（PM が確かめる）"
+K-1117,直し：契約の形を口の受け方と同じ字の集まりにする（登録のメールを部品の z.email() に合わせる・\s \S \d \w を Python と JS で同じ字にする）・PM の直し,タスク,K-56,未着手,実装,2026-11-23,F6・CI,"K-1116 の申し送り（前からある別の場所の問題 c）の 3 つを直す。本線の先頭 14896746c（K-1116 の枝 t/K-1116 の土台と同じ口）で 3 つとも起きることを確かめた。
+
+| 種類 | 起きること（本線で確かめた） | どちらが正か | 直し |
+|---|---|---|---|
+| 1 | 登録（createSignup）・再設定（requestPasswordReset）の契約のメールの形 `^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$` に、""a﹫b@example.com""・""a＠b@example.com""・""﻿@example.com"" が合う（Python の re で True）。口は normalizeEmail（NFKC・空白を全部除く・小文字）の後の EMAIL_RE で 3 つとも断る（﹫・＠ は NFKC で @ になり @ が 2 つ・BOM は JS の \s なので除かれてローカル部が空）。契約 fuzz の ST202 の種 | 口の正規化が正。契約が広すぎる | 登録の契約のメールの形を、ログインの口（K-1116）と同じ「部品の z.email() の形を前後の空白 `[ \t\n\r]*` で挟んだ物」にする（1 つの置き場 scripts/ci/email_patterns.py からログインと登録が引く）。再設定はこのチケットでは口を変えられない（下の「再設定を外した訳」）。BOM の分だけは種類 2 の直しで契約の外になる |
+| 2 | 契約の `\s` `\S`（と `\d`）は、schemathesis（Python）と口（JS の trim・正規表現）で字の集まりが違う。updateMemory の body `\S` に ""\x1c""・""\x85"" は Python では形の外なのに口の trim は残して 200（ST201 の種）、""﻿"" は Python では形どおりなのに口の trim が除いて 422（ST202 の種）。`\d` は Python では全部の国の数字（""٣""）に当たり、JS は 0〜9 だけ。契約の pattern のうち 38 か所がこの字を使う | 口（JS）が正 | 作り手 05_flow/build_api.py が契約（08_api/openapi.yaml）を書く前に、pattern の `\s` `\S` `\d` `\D` `\w` `\W` を JS と同じ字を並べた形に直す（scripts/ci/portable_regex.py の portable）。元の表（screen_api.py・screen_api.d・contract_shape.d の写し）は今の字のまま。JS が同じ pattern の字を使う預けたログインの login（patterns.ts の LOGIN_PATTERN）だけは元の字を変換の後の字にそろえる（JS での意味は同じ） |
+| 3 | 登録の口は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る（better-auth 1.7.15 の sign-up.mjs:151）。""日本@例.jp"" は EMAIL_RE を通り z.email() で落ちる（tsx で確かめた）：登録の申し込みとメールはできるのに、リンクを押すと確定できない | 部品の z.email() が正 | 登録の口は、正規化の後に EMAIL_RE と部品の z.email() の両方で見て、外なら 422 E-VAL-004（欄 email）。今の断り方（番号・文言・申し込みを作らない・メールを送らない）のまま |
+
+PM の決め（作り方・頼まれた向き：部品の z.email() と口の正規化（NFKC・trim）を正にする）：
+1. 種類 1・3 は、登録の口に部品の確かめ（isLoginEmail）を足し、契約は部品の形を前後の空白で挟んだ物（口より狭く書く）
+2. 種類 2 は、作り手の出口で 1 回だけ直す（元の表を 20 か所以上書き換えない・これから足す pattern も同じに直る）。`[\s\S]`（どの字でも）は両方で同じなのでそのまま。直せない形（字の組の中の `\S` など）は作り手が止める
+3. `$`（Python は末の改行の前でも当たる）と `.` の違いは、このチケットでは変えない（K-1116 の口が末の改行 1 つを受ける形で合わせている・申し送り）
+
+### 再設定を外した訳
+
+再設定の口（apps/api/src/features/F1/password-reset/index.ts）は、いま作っている K-1106（実装済み・DB の失敗を 503 にする）が同じファイルを変える。同時に作れない（start が止めた）うえ、K-1106 と K-1116 の枝は合わせるとぶつかる（08_api/phase1/01_チケット.md・start が止めた）ので重ねても始められない。
+再設定の契約だけを狭めると、口が受ける形の外の入力を 201 で受ける（fuzz の ST201 の種）ので、口と契約は同じ葉で変える。K-1106 が本線に入った後の葉に回す（申し送り）。","- [ ] 下の表の行（K1117-CT-001〜007・K1117-API-001〜002）が緑
+- [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている
+- [ ] チケットの範囲の CI が緑（前からの試験 contract_shape_test.py・k1116・k638・k639・credentials-create の K352-API-026 も）"
