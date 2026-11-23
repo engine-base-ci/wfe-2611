@@ -27,21 +27,23 @@ const ITEMS = {
   },
 } as const;
 
-interface StateRow {
+export interface StateRow {
   dismissed: boolean;
   skipped: string[];
   pc_done: boolean;
   credentials_done: boolean;
 }
 
-// 自分の今の会社の行（行の守りの中で読む）と 3 つの済みを 1 本の select で。行が無ければ 0 行（＝今の会社のメンバーでない）
-const STATE_SQL = `
-select m.setup_dismissed_at is not null as dismissed,
+// 自分の今の会社の行（行の守りの中で読む）と 3 つの済みを 1 本の select で。行が無ければ 0 行（＝今の会社のメンバーでない）。
+//   列だけを STATE_COLS に出す（外枠の口 getShell・K-465 が同じ列を自分の select に入れて、同じ数え方を使う。表 members は別名 m）
+export const STATE_COLS = `m.setup_dismissed_at is not null as dismissed,
        m.setup_skipped_keys as skipped,
        app.setup_pc_done(m.id) as pc_done,
        exists (select 1 from credentials c
                 where c.tenant_id = app.tenant_id() and c.owner_member_id = m.id
-                  and c.revoked_at is null and c.deleted_at is null) as credentials_done
+                  and c.revoked_at is null and c.deleted_at is null) as credentials_done`;
+const STATE_SQL = `
+select ${STATE_COLS}
   from members m
  where m.id = app.user_id() and m.tenant_id = app.tenant_id() and m.deleted_at is null`;
 
@@ -52,7 +54,7 @@ const invalidKey = (message: string): HookReply => ({
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field: "key", message }] },
 });
 
-const toItems = (s: StateRow) => {
+export const toItems = (s: StateRow) => {
   const skipped = new Set(s.skipped);
   return [
     { key: "passkey", ...ITEMS.passkey, done: false, available: false, optional: false, skipped: false },
@@ -67,6 +69,10 @@ const toItems = (s: StateRow) => {
     },
   ];
 };
+
+/** はじめにやることの残り（外枠の数・K-465）：箱を閉じていれば 0。そうでなければ、使えて・済んでいなくて・飛ばしていない項目の数 */
+export const setupLeft = (s: StateRow): number =>
+  s.dismissed ? 0 : toItems(s).filter((i) => i.available && !i.done && !i.skipped).length;
 
 /** 飛ばす key を表記ゆらぎをそろえて読む（入口が NFKC と前後の空白を済ませている。ここでも同じにしてから小文字にする） */
 export function normalizeKey(v: unknown): string | null {

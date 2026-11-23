@@ -7,13 +7,41 @@
 //   K-252：一覧（全部）とグループの一覧は、言葉（q・打った字のまま）とグループ（scope_id）を口に渡す。言葉を替えたときは
 //     読んだ行を残したまま読み直し（言葉の欄を消さない）、遅れて届いた前の言葉の答えでは描かない。言葉かグループで 0 件なら はじめて にしない
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import { call, type CallResult } from "@/lib/api/call";
 import type { OpName } from "@kaname/contracts";
 import { APPROVALS_KEY, ONCE, readApprovals, type ApprovalsAnswer } from "../create-ticket/ticket-shell";
 
-export type ListView = "mine" | "all";
+export type ListView = "mine" | "all" | "overview" | "calendar" | "gantt";
+
+/** 一覧の口の問い合わせにそのまま足す欄の組（URL の問い合わせから読む・K-600。名前は K-472・K-473 の欄の表の名前だけ） */
+export type ListExtra = Readonly<Record<string, string>>;
+
+/** 自分に関わるものの数（一覧の答えの meta.counts・K-474 の形） */
+export interface Counts {
+  overdue: number;
+  today: number;
+  assigned: number;
+  ai: number;
+  approve: number;
+}
+
+const COUNT_KEYS = ["overdue", "today", "assigned", "ai", "approve"] as const;
+/** 答えの meta.counts が 5 つの整数の組ならその組、それ以外（無い・形が違う）は null */
+function countsOf(meta: Record<string, unknown>): Counts | null {
+  const c = meta["counts"];
+  if (typeof c !== "object" || c === null) return null;
+  const rec = c as Record<string, unknown>;
+  if (!COUNT_KEYS.every((k) => Number.isInteger(rec[k]))) return null;
+  return {
+    overdue: rec["overdue"] as number,
+    today: rec["today"] as number,
+    assigned: rec["assigned"] as number,
+    ai: rec["ai"] as number,
+    approve: rec["approve"] as number,
+  };
+}
 
 /** 一覧の口の 1 件（K-92 の答えの形） */
 export interface ListItem {
@@ -71,25 +99,58 @@ export interface TicketList {
   reloading: boolean;
   reload: () => void;
   loadMore: () => void;
+  /** 一覧の答えの meta.counts（最初の答えで決める・次の分では持ち直さない）。無ければ null */
+  counts: Counts | null;
 }
 
 /** 一覧の口に足す絞り（K-252）。q は打った字のまま（そろえるのは口・K-92） */
 export interface ListFilter {
   q?: string;
   scopeId?: string | null;
+  /** 問い合わせにそのまま足す欄の組（値は文字のまま。誤りは口が 422 で返す・画面で捨てない） */
+  extra?: Readonly<Record<string, string>>;
 }
 
-type ListQuery = { view: ListView; limit: number; q?: string; scope_id?: string; cursor?: string };
+/** 口に渡す見え方（一覧の口が知るのは mine と all だけ。概要・カレンダー・ガントのときは一覧の口を読まない） */
+type ApiView = "mine" | "all";
+const apiViewOf = (view: ListView): ApiView => (view === "all" ? "all" : "mine");
+
+type ListQuery = Record<string, string | number> & { view: ApiView; limit: number };
 const queryOf = (view: ListView, f: ListFilter): ListQuery => ({
-  view,
+  ...(f.extra ?? {}),
+  view: apiViewOf(view),
   limit: PAGE_SIZE,
   ...(f.q ? { q: f.q } : {}),
   ...(f.scopeId ? { scope_id: f.scopeId } : {}),
 });
+/** 絞りの組の印（問い合わせの印に含める。並びが違っても同じ組なら同じ印） */
+const extraKey = (extra: ListExtra | undefined): string =>
+  extra
+    ? Object.keys(extra)
+        .sort()
+        .map((k) => `${k}=${extra[k]}`)
+        .map(encodeURIComponent)
+        .join("&")
+    : "";
+/** 印から組に戻す（印の組は空なら undefined） */
+const extraOf = (sig: string): ListExtra | undefined => {
+  if (!sig) return undefined;
+  return Object.fromEntries(
+    sig.split("&").map((part) => {
+      const kv = decodeURIComponent(part);
+      const at = kv.indexOf("=");
+      return [kv.slice(0, at), kv.slice(at + 1)];
+    }),
+  );
+};
 
 export function useTicketList(view: ListView, enabled: boolean, filter: ListFilter = {}): TicketList {
   const q = filter.q ?? "";
   const scopeId = filter.scopeId ?? null;
+  // 絞りの組は印で見る（呼ぶ側が毎回新しい組を渡しても、同じ組なら読み直さない）
+  const extraSig = extraKey(filter.extra);
+  const extra = useMemo(() => extraOf(extraSig), [extraSig]);
+  const [counts, setCounts] = useState<Counts | null>(null);
   const [list, setList] = useState<ListState>({ state: "loading" });
   /** 今の見え方とグループ（言葉だけを替えたときは、読んだ行を残して読み直す） */
   const shown = useRef<string | null>(null);
@@ -97,7 +158,7 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
   const [reloading, setReloading] = useState(false);
   /** 今の問い合わせ（見え方・言葉・グループ）。続きの答えは、始めた時と今が同じときだけ描く */
   const asked = useRef("");
-  asked.current = `${view}|${q}|${scopeId ?? ""}`;
+  asked.current = `${view}|${q}|${scopeId ?? ""}|${extraSig}`;
   const [loadingMore, setLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState<string | null>(null);
   const seq = useRef(0);
@@ -115,7 +176,7 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
     setReloading(keep);
     void (async () => {
       const r = await safeCall(() =>
-        call("listTickets", { query: queryOf(view, { q, scopeId }), screenId: "tickets" }),
+        call("listTickets", { query: queryOf(view, { q, scopeId, ...(extra ? { extra } : {}) }), screenId: "tickets" }),
       );
       if (mine !== seq.current) return; // 後から切り替えた見え方の答えだけを描く
       setReloading(false);
@@ -125,14 +186,15 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
       }
       const rows = listOf(r.data);
       const next = nextOf(r.meta);
+      setCounts(countsOf(r.meta));
       // 0 件なら、会社にチケットが在るかを確かめる（はじめては会社に 0 件のときだけ・PM の決め 2026-11-17）
       //   言葉かグループで絞ったときは、0 件でも はじめて にしない（条件に合うものが無いだけ・K252-UI-014）
-      const filtered = q !== "" || scopeId !== null;
+      const filtered = q !== "" || scopeId !== null || extraSig !== "";
       const first = rows.length === 0 && !filtered && (view === "all" || (await companyIsEmpty()));
       if (mine !== seq.current || first === null) return;
       setList({ state: "ok", rows, next, first });
     })();
-  }, [view, q, scopeId]);
+  }, [view, q, scopeId, extra, extraSig]);
 
   useEffect(() => {
     okNow.current = list.state === "ok";
@@ -156,7 +218,7 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
     setMoreError(null);
     void safeCall(() =>
       call("listTickets", {
-        query: { ...queryOf(view, { q, scopeId }), cursor },
+        query: { ...queryOf(view, { q, scopeId, ...(extra ? { extra } : {}) }), cursor },
         screenId: "tickets",
       }),
     ).then((r) => {
@@ -169,9 +231,9 @@ export function useTicketList(view: ListView, enabled: boolean, filter: ListFilt
         setList((cur) => (cur.state === "ok" ? { ...cur, rows: [...cur.rows, ...more], next: nextOf(r.meta) } : cur));
       } else if (r?.kind !== "unauthenticated") setMoreError(codeOf(r));
     });
-  }, [list, reloading, view, q, scopeId]);
+  }, [list, reloading, view, q, scopeId, extra]);
 
-  return { list, loadingMore, moreError, reloading, reload, loadMore };
+  return { list, loadingMore, moreError, reloading, reload, loadMore, counts };
 }
 
 /** はじめにやることの 1 件（K-250 の答えの形） */

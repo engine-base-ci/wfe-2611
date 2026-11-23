@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-24 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -2572,6 +2572,7 @@ components:
       x-table: action_runs
       x-source:
       - D-062
+      - D-151.6
     ActionRunsInput:
       type: object
       properties:
@@ -12269,11 +12270,94 @@ components:
         properties:
           scope_id:
             type: string
+    SavedViewUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          pattern: ^[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*[^ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]{0,58}[^
+            \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff\u0000-\u001f\u007f-\u009f])?[ \t\n\r\v\f\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*$
+        share:
+          type: string
+          enum:
+          - self
+          - group
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+          maxProperties: 8
+          propertyNames:
+            pattern: ^[A-Za-z0-9_]{1,40}$
+          additionalProperties:
+            anyOf:
+            - type: string
+              maxLength: 500
+            - type: number
+            - type: boolean
+            - type: object
+              maxProperties: 32
+              propertyNames:
+                pattern: ^[A-Za-z0-9_]{1,40}$
+              additionalProperties:
+                anyOf:
+                - type: string
+                  maxLength: 500
+                - type: number
+                - type: boolean
+        columns:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 50
+        density:
+          type: string
+          enum:
+          - normal
+          - compact
+      additionalProperties: false
+      x-operation: updateSavedView
+      allOf:
+      - anyOf:
+        - required:
+          - name
+        - required:
+          - share
+        - required:
+          - scope_id
+        - required:
+          - filters
+        - required:
+          - columns
+        - required:
+          - density
+      - anyOf:
+        - not:
+            required:
+            - share
+        - properties:
+            share:
+              enum:
+              - self
+        - required:
+          - scope_id
+          properties:
+            scope_id:
+              type: string
     ActionRunTakeoverInput:
       type: object
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    TicketRestoreInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: restoreTicket
     ScopeOverview:
       type: object
       properties:
@@ -13797,6 +13881,8 @@ components:
     Shell:
       type: object
       properties:
+        member:
+          type: object
         approvals_waiting:
           type: integer
         notifications_unread:
@@ -13813,6 +13899,11 @@ components:
           type: object
         workspace:
           type: object
+        saved_views:
+          type: array
+          items:
+            type: object
+          nullable: true
       x-operation: getShell
     OpsShell:
       type: object
@@ -14295,7 +14386,14 @@ components:
           type: string
         updated_at:
           type: string
-      x-operation: createSavedView
+      x-operation: updateSavedView
+    SavedViewDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+      x-operation: deleteSavedView
     TicketDeleted:
       type: object
       properties:
@@ -14311,6 +14409,15 @@ components:
         restorable_until:
           type: string
       x-operation: deleteTicket
+    TicketRestored:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        restored_count:
+          type: integer
+      x-operation: restoreTicket
     TicketField:
       type: object
       properties:
@@ -40447,7 +40554,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: 作った本人
+      x-permission-scope: 作った人と、グループの全員向けの物は見せているグループのマネージャー（名前・条件・列・詰め方だけ。見せる相手を変えられるのは作った人だけ）
       x-step-up: false
       security:
       - session: []
@@ -40463,7 +40570,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SavedViewsInput'
+              $ref: '#/components/schemas/SavedViewUpdateInput'
       responses:
         '200':
           description: 成功
@@ -40473,7 +40580,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -40483,19 +40590,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-VWS-020／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-VWS-004
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VWS-001（契約に書けない値の決まり：条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）
+        '409':
+          description: E-VWS-005／E-VWS-021
           content:
             application/json:
               schema:
@@ -40538,7 +40653,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: 作った本人
+      x-permission-scope: 作った人と、グループの全員向けの物は見せているグループのマネージャー
       x-step-up: false
       security:
       - session: []
@@ -40558,7 +40673,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedViewDeleted'
                   meta:
                     type: object
         '401':
@@ -41129,7 +41244,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: 本人の数だけ（承認待ち・知らせ・星を付けたグループの件数・PC のつながり・はじめにやることの残り・帯）
+      x-permission-scope: 本人の数だけ（自分・会社・承認待ち・未読の知らせ・見えるグループの件数・PC のつながり・はじめにやることの残り・障害の帯・保存した検索条件）
       x-step-up: false
       security:
       - session: []
@@ -42904,6 +43019,19 @@ paths:
                       next_cursor:
                         type: string
                         nullable: true
+                      counts:
+                        type: object
+                        properties:
+                          overdue:
+                            type: integer
+                          today:
+                            type: integer
+                          assigned:
+                            type: integer
+                          ai:
+                            type: integer
+                          approve:
+                            type: integer
         '401':
           description: UNAUTHENTICATED
           content:
@@ -45511,7 +45639,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 消した本人と、そのグループのマネージャー・管理者（D-128.84）
+      x-permission-scope: 消した本人と、そのグループのマネージャー・管理者（D-128.84）。30 日以内・cascade で一緒に消えた子・孫も戻る
       x-step-up: false
       security:
       - session: []
@@ -45527,7 +45655,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketRestoreInput'
       responses:
         '201':
           description: 成功
@@ -45537,7 +45665,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketRestored'
                   meta:
                     type: object
         '401':
@@ -45547,7 +45675,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-040／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -45559,13 +45687,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-DEL-041
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -45578,12 +45712,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

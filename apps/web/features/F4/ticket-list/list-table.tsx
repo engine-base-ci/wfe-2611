@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Fragment, type MouseEvent, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import { errorText } from "@/components/k/error-of";
+import * as F7 from "@/features/F7/list-slots";
 import { COLUMN_LABEL, type ColumnKey } from "./list-columns";
 import type { ListItem } from "./use-ticket-list";
 
@@ -142,11 +143,13 @@ function cellOf(
         body: (
           <>
             {mmdd(row.due_on)}
-            {row.overdue ? (
-              <span className="k-list-late" role="img" aria-label="期限切れ">
-                <Flame aria-hidden="true" />
-              </span>
-            ) : null}
+            <F7.DueMarkSlot row={row}>
+              {row.overdue ? (
+                <span className="k-list-late" role="img" aria-label="期限切れ">
+                  <Flame aria-hidden="true" />
+                </span>
+              ) : null}
+            </F7.DueMarkSlot>
           </>
         ),
       };
