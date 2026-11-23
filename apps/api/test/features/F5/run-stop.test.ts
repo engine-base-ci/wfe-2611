@@ -418,6 +418,27 @@ describe("K-731 入力・守り・手順の失敗", () => {
     const again = await k.delegate(p, s.t);
     expect(again.status, await again.clone().text()).toBe(201);
   });
+
+  it("K731-API-024 止める口を通らずに止める合図だけ立った仕事（会話の止める口と同じ app.agent_stop を、任せた人がチケットの仕事の id で呼ぶ・実行は動いたまま）に PC が「止まった」を返す：前のとおり実行は止まり、段は作業中に戻り、旗は下り、やり取りに「AI が止まりました」が 1 行（仕事だけ閉じて実行・段・旗が動いたまま残らない）", async () => {
+    const { p, pc } = await fresh("合図だけの人");
+    const s = await running(p, pc);
+    const sig = (await k.q<{ s: string | null }>("select app.agent_stop($1, $2) as s", [p.id, s.jobId]))[0]!.s;
+    expect(sig).toBe("stopping");
+    expect((await jobRow(s.jobId))["stop_requested_at"]).not.toBeNull();
+    expect(await runRow(s.runId)).toMatchObject({ status_id: "running" });
+    expect(await flagOf(s.t)).toBe(true);
+    const why = "PC が止める合図を受け取って止めました";
+    const r = await k.finish(pc, s.jobId, { state: "stopped", reason: why });
+    expect(r.status, await r.clone().text()).toBe(201);
+    expect((await json(r))["data"]).toMatchObject({ ok: true, outcome: "stopped" });
+    expect(await runRow(s.runId)).toMatchObject({ status_id: "stopped", error_summary: why });
+    expect(await jobRow(s.jobId)).toMatchObject({ state_id: "stopped" });
+    expect(await k.stageOf(s.t)).toBe("doing");
+    expect(await flagOf(s.t)).toBe(false);
+    expect(await lineCount(s.t, `合図だけの人のAI が止まりました（${why}）`)).toBe(1);
+    expect(await lineCount(s.t, IGNORED)).toBe(0);
+    expect(await approvalsOf(s.t)).toBe(0);
+  });
 });
 
 // ---------------------------------------------------------------- DB の呼び口（試し打ちの結末）
