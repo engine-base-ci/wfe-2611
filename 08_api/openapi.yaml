@@ -26131,26 +26131,22 @@ paths:
   /api/v1/knowledge/proposals:
     get:
       operationId: listKnowledgeProposals
-      summary: 取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      summary: 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
-      - D-152.1
-      - D-152.14
-      - D-152.15
-      - D-152.16
-      - D-152.28
-      - D-152.3
-      - D-152.33
-      - D-152.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: read
       x-permission-scope: 見られるページへの案だけ
       x-step-up: false
@@ -26249,27 +26245,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/accept:
     post:
       operationId: acceptKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
-      - D-152.1
-      - D-152.14
-      - D-152.15
-      - D-152.16
-      - D-152.28
-      - D-152.3
-      - D-152.33
-      - D-152.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 持ち主と、その置き場のマネージャー・管理者。自分のページへの案は確かめずに入る
       x-step-up: false
@@ -26351,27 +26344,24 @@ paths:
   /api/v1/knowledge/proposals/{id}/decline:
     post:
       operationId: declineKnowledgeProposal
-      summary: 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      summary: 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し
       tags:
       - knowledge_page_versions
       x-acts:
-      - A114
+      - A136
       x-screens:
       - knowledge
       x-choke-points:
       - C2
+      - C6
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
-      - D-152.1
-      - D-152.14
-      - D-152.15
-      - D-152.16
-      - D-152.28
-      - D-152.3
-      - D-152.33
-      - D-152.34
+      - D-152.13
+      - D-152.2
+      - D-152.26
+      - D-152.27
+      - D-152.6
+      - D-152.7
       x-permission: write
       x-permission-scope: 同上（理由を残す）
       x-step-up: false
@@ -28410,26 +28400,23 @@ paths:
   /api/v1/knowledge_pages/{id}/usage:
     get:
       operationId: getKnowledgeUsage
-      summary: 取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。
+      summary: 取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項
       tags:
       - reference_logs
       x-acts:
-      - A114
+      - A137
       x-screens:
       - knowledge
       x-choke-points: []
       x-source:
-      - D-125.113
       - D-125.167
-      - D-125.34
-      - D-152.1
-      - D-152.14
-      - D-152.15
-      - D-152.16
-      - D-152.28
-      - D-152.3
-      - D-152.33
-      - D-152.34
+      - D-152.12
+      - D-152.17
+      - D-152.23
+      - D-152.24
+      - D-152.29
+      - D-152.4
+      - D-152.5
       x-permission: read
       x-permission-scope: 見られるページだけ。読んだチケットは見られるものだけ出す
       x-step-up: false
@@ -28480,6 +28467,12 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '502':
+          description: EXTERNAL_FAILED
           content:
             application/json:
               schema:

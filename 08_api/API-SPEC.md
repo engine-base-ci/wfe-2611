@@ -134,9 +134,9 @@
 | EP-119 | POST | `/api/v1/knowledge/ask/feedback` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
 | EP-120 | GET | `/api/v1/knowledge/home` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-121 | GET | `/api/v1/knowledge/link-targets` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-122 | GET | `/api/v1/knowledge/proposals` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
-| EP-123 | POST | `/api/v1/knowledge/proposals/:id/accept` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-124 | POST | `/api/v1/knowledge/proposals/:id/decline` | 作成・実行（knowledge）— ナレッジのページを書く・直す（会社・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-122 | GET | `/api/v1/knowledge/proposals` | 取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで | A136 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-123 | POST | `/api/v1/knowledge/proposals/:id/accept` | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを | A136 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
+| EP-124 | POST | `/api/v1/knowledge/proposals/:id/decline` | 作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを | A136 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-125 | GET | `/api/v1/knowledge/tree` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-126 | GET | `/api/v1/knowledge/verifications` | 取得（knowledge）— ナレッジのページを書く・直す（会社・グルー | A114 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-127 | POST | `/api/v1/knowledge_imports` | 作成・実行（knowledge_imports）— ナレッジのページを書 | A114 | 1 | member | C2 | 401 403 409 422 413 429 403 403 503 |
@@ -157,7 +157,7 @@
 | EP-142 | POST | `/api/v1/knowledge_pages/:id/messages` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-143 | POST | `/api/v1/knowledge_pages/:id/publish` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-144 | POST | `/api/v1/knowledge_pages/:id/unarchive` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
-| EP-145 | GET | `/api/v1/knowledge_pages/:id/usage` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
+| EP-145 | GET | `/api/v1/knowledge_pages/:id/usage` | 取得（knowledge_pages）— AI がナレッジを読んで守る（ | A137 | 1 | member |  | 401 403 404 422 429 502 403 403 503 |
 | EP-146 | POST | `/api/v1/knowledge_pages/:id/verify` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-147 | GET | `/api/v1/knowledge_pages/:id/versions` | 取得（knowledge_pages）— ナレッジのページを書く・直す（ | A114 | 1 | member |  | 401 403 404 422 429 403 403 503 |
 | EP-148 | POST | `/api/v1/knowledge_pages/:id/versions/:v/restore` | 作成・実行（knowledge_pages）— ナレッジのページを書く・ | A114 | 1 | member | C2 | 401 403 404 409 422 413 429 403 403 503 |
@@ -386,7 +386,7 @@
 ## 3. 画面 ↔ API カバレッジ
 
 - 画面 37 ／ OK 36 ／ 未カバー ['legal']
-- endpoint の無い行為（v1）['A136', 'A137']
+- endpoint の無い行為（v1）[]
 
 ## 4. 逆カバレッジ（フィールド → 画面）
 

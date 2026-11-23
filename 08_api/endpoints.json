@@ -21496,7 +21496,7 @@
    "method": "GET",
    "path": "/api/v1/knowledge/proposals",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -21507,17 +21507,13 @@
    ],
    "choke_points": [],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34",
-    "D-152.1",
-    "D-152.14",
-    "D-152.15",
-    "D-152.16",
-    "D-152.28",
-    "D-152.3",
-    "D-152.33",
-    "D-152.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -21607,7 +21603,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge/proposals が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
@@ -21615,14 +21611,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/knowledge/proposals の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/knowledge/proposals の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": null,
-   "description": "取得（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "description": "取得（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::listKnowledgeProposals",
    "permission": {
     "who": "read",
@@ -21652,7 +21650,7 @@
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/accept",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -21663,20 +21661,17 @@
     "E-122"
    ],
    "choke_points": [
-    "C2"
+    "C2",
+    "C6"
    ],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34",
-    "D-152.1",
-    "D-152.14",
-    "D-152.15",
-    "D-152.16",
-    "D-152.28",
-    "D-152.3",
-    "D-152.33",
-    "D-152.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -21791,7 +21786,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/accept が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -21802,14 +21797,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/accept の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/accept の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "description": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::acceptKnowledgeProposal",
    "permission": {
     "who": "write",
@@ -21838,7 +21835,7 @@
    "method": "POST",
    "path": "/api/v1/knowledge/proposals/:id/decline",
    "acts": [
-    "A114"
+    "A136"
    ],
    "screens": [
     "knowledge"
@@ -21847,20 +21844,17 @@
     "E-122"
    ],
    "choke_points": [
-    "C2"
+    "C2",
+    "C6"
    ],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34",
-    "D-152.1",
-    "D-152.14",
-    "D-152.15",
-    "D-152.16",
-    "D-152.28",
-    "D-152.3",
-    "D-152.33",
-    "D-152.34"
+    "D-152.13",
+    "D-152.2",
+    "D-152.26",
+    "D-152.27",
+    "D-152.6",
+    "D-152.7"
    ],
    "features": [
     "F-011"
@@ -21972,7 +21966,7 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
@@ -21983,14 +21977,16 @@
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "通知送出"
+   ],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
-   "description": "作成・実行（knowledge）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "description": "作成・実行（knowledge）— ナレッジを上の棚に上げる・グループを選んで共有する・写し",
    "implementation_path": "apps/api/src/routes/knowledge_page_versions.ts::declineKnowledgeProposal",
    "permission": {
     "who": "write",
@@ -25457,7 +25453,7 @@
    "method": "GET",
    "path": "/api/v1/knowledge_pages/:id/usage",
    "acts": [
-    "A114"
+    "A137"
    ],
    "screens": [
     "knowledge"
@@ -25469,20 +25465,17 @@
    ],
    "choke_points": [],
    "source": [
-    "D-125.113",
     "D-125.167",
-    "D-125.34",
-    "D-152.1",
-    "D-152.14",
-    "D-152.15",
-    "D-152.16",
-    "D-152.28",
-    "D-152.3",
-    "D-152.33",
-    "D-152.34"
+    "D-152.12",
+    "D-152.17",
+    "D-152.23",
+    "D-152.24",
+    "D-152.29",
+    "D-152.4",
+    "D-152.5"
    ],
    "features": [
-    "F-011"
+    "F-005"
    ],
    "table": "reference_logs",
    "operation_id": "getKnowledgeUsage",
@@ -25549,6 +25542,15 @@
      "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
     },
     {
+     "status": 502,
+     "code": "EXTERNAL_FAILED",
+     "body": {
+      "error": "external_failed"
+     },
+     "trigger": "外部サービス・モデル・プロセスが失敗した／合図を出さずに終わった",
+     "ears_form": "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す"
+    },
+    {
      "status": 403,
      "code": "E-AUTH-010",
      "body": {
@@ -25580,23 +25582,26 @@
     }
    ],
    "ears_ac_seed": [
-    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN GET /api/v1/knowledge_pages/:id/usage が「『このチケットで守る物』を見る。必ず守るから入った確認項目にチェックが付くまで完了にできない」として呼ばれたとき THEN Kaname は「開いた記録と破られた数を残す」を行い 2xx を返す（自動側：必ず守るを毎回全部渡す・目次から要るページを開く・確認項目に自動で入れる）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
     "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 外部が失敗したか完了信号が無いなら、Kaname は成功扱いにせず 502 と次の一手（人へのハンドオフ）を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
     "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
-    "UBIQUITOUS: GET /api/v1/knowledge_pages/:id/usage の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+    "UBIQUITOUS: GET /api/v1/knowledge_pages/:id/usage の副作用は関門 C2・C3 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
    ],
    "terms_open": false,
    "mfa_open": false,
    "list_ignores_scope": false,
-   "outward_side_effects": [],
+   "outward_side_effects": [
+    "モデル呼び出し"
+   ],
    "side_effect_ordering": null,
-   "description": "取得（knowledge_pages）— ナレッジのページを書く・直す（会社・グループ・自分の棚。",
+   "description": "取得（knowledge_pages）— AI がナレッジを読んで守る（必ず守るを毎回渡す・確認項",
    "implementation_path": "apps/api/src/routes/reference_logs.ts::getKnowledgeUsage",
    "permission": {
     "who": "read",
@@ -25619,7 +25624,7 @@
     "body": "{ data: ReferenceLogs, meta?: { cursor, limit, total } }"
    },
    "id": "EP-145",
-   "feature_id": "F-011"
+   "feature_id": "F-005"
   },
   {
    "method": "POST",
@@ -64067,10 +64072,7 @@
    "feature_id": "F-011"
   }
  ],
- "acts_without_endpoint": [
-  "A136",
-  "A137"
- ],
+ "acts_without_endpoint": [],
  "deferred_screens": [
   "account-close",
   "ai-staff",

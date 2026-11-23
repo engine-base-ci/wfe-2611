@@ -3,7 +3,7 @@
 import { describe, it } from "vitest";
 
 describe("POST /api/v1/knowledge/proposals/:id/decline", () => {
-  // EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「木からページを選び、書く・書き終える・やめる・動かす・消す。必ず守るを付ける・外す」として呼ばれたとき THEN Kaname は「下書きは自動で保存・書き終えると版を残す・必ず守るは上限まで」を行い 2xx を返す
+  // EVENT-DRIVEN: WHEN POST /api/v1/knowledge/proposals/:id/decline が「上げる・共有を頼む。承認する・断る（理由）。上の棚のページを自分の棚に写して直す」として呼ばれたとき THEN Kaname は「承認されたらページが上の棚に移る。頼み・承認・断りをお知らせに出す」を行い 2xx を返す（自動側：書くとき・上げるときに似たページを出す）
   it.todo("test_post_knowledge_proposals_id_decline_ok");
   // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
   it.todo("test_post_knowledge_proposals_id_decline_rejected_401");
@@ -25,6 +25,6 @@ describe("POST /api/v1/knowledge/proposals/:id/decline", () => {
   it.todo("test_post_knowledge_proposals_id_decline_mfa_pending");
   // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
   it.todo("test_post_knowledge_proposals_id_decline_session_unresolved");
-  // UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+  // UBIQUITOUS: POST /api/v1/knowledge/proposals/:id/decline の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
   it.todo("test_post_knowledge_proposals_id_decline_shape");
 });

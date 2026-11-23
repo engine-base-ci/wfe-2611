@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6cfad16d2d338895
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:6280e8850fc8b144
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -1821,7 +1821,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge/proposals",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1832,7 +1832,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/accept",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -1843,7 +1843,7 @@ export const ENDPOINTS = [
   "method": "POST",
   "path": "/api/v1/knowledge/proposals/:id/decline",
   "acts": [
-   "A114"
+   "A136"
   ],
   "screens": [
    "knowledge"
@@ -2074,7 +2074,7 @@ export const ENDPOINTS = [
   "method": "GET",
   "path": "/api/v1/knowledge_pages/:id/usage",
   "acts": [
-   "A114"
+   "A137"
   ],
   "screens": [
    "knowledge"

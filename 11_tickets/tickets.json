@@ -23826,7 +23826,11 @@
    "apis": [],
    "canvas": [],
    "canvas_none": "文書と流れの正本だけ。画面のコードを変えない",
-   "affects": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/web"
+   ],
    "ci_wide": [
     "ci"
    ],
