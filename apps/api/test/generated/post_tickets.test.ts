@@ -71,6 +71,16 @@ describe("POST /api/v1/tickets", () => {
     // 本物の試験：apps/api/test/features/F4/create-ticket-defaults.test.ts の「K437-API-006」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/create-ticket-defaults.test.ts", "utf8")).toContain("K437-API-006");
   });
+  it("test_post_tickets_not_found_2", () => {
+    // UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない
+    // 本物の試験：apps/api/test/features/F4/ticket-duplicate.test.ts の「K438-API-017」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-duplicate.test.ts", "utf8")).toContain("K438-API-017");
+  });
+  it("test_post_tickets_conflict_8", () => {
+    // UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない
+    // 本物の試験：apps/api/test/features/F4/ticket-duplicate-children.test.ts の「K438-API-015」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F4/ticket-duplicate-children.test.ts", "utf8")).toContain("K438-API-015");
+  });
   it("test_post_tickets_too_large", () => {
     // UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-042」（同じ CI の G3 で流れる）

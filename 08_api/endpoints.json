@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
-  "frozen_at": "2026-11-23",
+  "created_at": "2026-11-24",
+  "frozen_at": "2026-11-24",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -51904,6 +51904,32 @@
      "ears_form": "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない"
     },
     {
+     "status": 404,
+     "code": "E-DUP-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-DUP-001"
+     },
+     "errors": [
+      "E-DUP-001"
+     ],
+     "trigger": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+     "ears_form": "UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-DUP-002",
+     "body": {
+      "error": "conflict",
+      "code": "E-DUP-002"
+     },
+     "errors": [
+      "E-DUP-002"
+     ],
+     "trigger": "子チケットを写すと親子が 3 段を超える",
+     "ears_form": "UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない"
+    },
+    {
      "status": 413,
      "code": "PAYLOAD_TOO_LARGE",
      "body": {
@@ -51969,6 +51995,8 @@
     "UNWANTED: IF 会社の項目の選択肢に無い値を付けたなら、Kaname は 409 と E-FLD-002 を返し、チケットを作らない",
     "UNWANTED: IF 会社の項目の型と合わない値を付けたなら、Kaname は 409 と E-FLD-003 を返し、チケットを作らない",
     "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない",
+    "UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない",
+    "UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",

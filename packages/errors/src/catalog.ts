@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。270 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。272 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4220,6 +4220,44 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "create"
+    }
+  },
+  "E-DUP-001": {
+    "id": "E-DUP-001",
+    "cls": "not_found",
+    "message": "複製の元のチケットが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+    "action": "元を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUP-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "duplicate"
+    }
+  },
+  "E-DUP-002": {
+    "id": "E-DUP-002",
+    "cls": "conflict",
+    "message": "子チケットを写すと、親子が 3 段を超えます。子を写さないか、別の親を選んでください",
+    "action": "子を写さずに作る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "DUP-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "duplicate"
     }
   },
   "E-TKT-001": {

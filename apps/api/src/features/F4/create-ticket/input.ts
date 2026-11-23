@@ -2,8 +2,11 @@
 //   題名は NFKC で整えず前後の空白だけ落とす（D-150.34）：入口（op.ts の normalize）が直す前の生の題名を 3 つ目の引数で受け、長さは生の字で数える（契約の maxLength と同じ TITLE_MAX）。
 //   期限が今日より前は E-VAL-012・開始が期限より後は E-VAL-028（どちらも 409・欄なし。hooks.ts が E-VAL-012 → E-VAL-028 の順に先に返す）。
 //   つなぐ相手 links（K-581）は形だけを確かめて value に載せる（無い・空なら鍵ごと載せない）。相手が選べるかは DB の app.ticket_link_add（K-441）
+//   複製（K-438）：duplicate_of（元の id・uuid）と copy（写す物の名前 6 つの並び・重複なし）を形だけ確かめて value に載せる。
+//     空文字・null・uuid でない字・知らない名前・重複は入口が先に 422 にするので、ここは二重の守り。duplicate_of が無いのに copy があれば 422（欄 copy）
 //   本文 body があれば body だけを使い sections は載せない／body が無く sections だけなら前の区画の道（K-578 まで）／どちらも無ければ空の本文
 import { isUuid } from "@kaname/contracts";
+import { isCopyName } from "./duplicate.js";
 import { checkBody, checkFields, checkLinks, checkSpecs } from "./payload.js";
 export const TITLE_MAX = 200;
 export const NOTIFY_MAX = 20;
@@ -115,6 +118,18 @@ export function checkCreate(
   if (!specsPart.ok) d.push(...specsPart.details);
   const linksPart = checkLinks(input["links"]);
   if (!linksPart.ok) d.push(...linksPart.details);
+  const dup = input["duplicate_of"];
+  if (dup !== undefined && (typeof dup !== "string" || !UUID.test(dup)))
+    d.push({ field: "duplicate_of", message: "複製の元を選び直してください" });
+  const copy = input["copy"];
+  if (copy !== undefined) {
+    if (!Array.isArray(copy) || copy.some((x) => !isCopyName(x)) || new Set(copy).size !== copy.length)
+      d.push({
+        field: "copy",
+        message: "写す物は本文・担当者・項目・確認項目・つながり・子チケットから重ねずに選んでください",
+      });
+    else if (dup === undefined) d.push({ field: "copy", message: "写す物は複製の元と一緒に送ってください" });
+  }
   if (d.length || (bodyPart && !bodyPart.ok) || !fieldsPart.ok || !specsPart.ok || !linksPart.ok)
     return { ok: false, details: d };
   const bodyValue = bodyPart && bodyPart.ok ? bodyPart.value : null;
@@ -138,6 +153,7 @@ export function checkCreate(
       notify_member_ids: notify,
       draft_id: draft || null,
       source_draft_id: source || null,
+      ...(typeof dup === "string" ? { duplicate_of: dup, copy: Array.isArray(copy) ? copy : [] } : {}),
     },
   };
 }

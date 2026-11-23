@@ -536,7 +536,8 @@ INPUTS = {
                                            "due_on": "string", "start_on": "string", "priority": "string", "priority_reason": "string",
                                            "parent_ticket_id": "uuid", "estimate_minutes": "any", "sections": "object",
                                            "notify_member_ids": "uuid[]", "draft_id": "uuid", "source_draft_id": "uuid",
-                                           "body": "object", "fields": "object", "specs": "string[]", "links": "array"}),   # source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）。links：作るときにつなぐ相手（K-581）
+                                           "body": "object", "fields": "object", "specs": "string[]", "links": "array",
+                                           "duplicate_of": "uuid", "copy": "string[]"}),   # duplicate_of・copy：複製の元と写す物（K-438）。source_draft_id：続きとして出した元の下書き（作ったら消す・K-60)。body・fields・specs：本文 1 枚・会社の項目・確認項目（K-437。sections は K-578 が外す）。links：作るときにつなぐ相手（K-581）
     "saveMyTicketDraft": ("TicketDraftInput", {"draft_id": "uuid", "body": "object", "discard": "boolean"}),
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
@@ -886,6 +887,13 @@ ERRORS_4XX = {
         {"status": 409, "code": "E-FLD-004", "body": {"error": "conflict", "code": "E-FLD-004"}, "errors": ["E-FLD-004"],
          "trigger": "会社が必須にした項目が空（渡さない・空の文字・空の並び・null・必須のチェックが付いていない）",
          "ears_form": "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない"},
+        # K-438：複製（duplicate_of・copy）
+        {"status": 404, "code": "E-DUP-001", "body": {"error": "not_found", "code": "E-DUP-001"}, "errors": ["E-DUP-001"],
+         "trigger": "複製の元のチケットが無い・消えた・見えない（別の会社・他の人の取り込み中の下書き・見えないグループ）",
+         "ears_form": "UNWANTED: IF 複製の元のチケットが無いか見えないなら、Kaname は 404 と E-DUP-001 を返し、チケットを作らない"},
+        {"status": 409, "code": "E-DUP-002", "body": {"error": "conflict", "code": "E-DUP-002"}, "errors": ["E-DUP-002"],
+         "trigger": "子チケットを写すと親子が 3 段を超える",
+         "ears_form": "UNWANTED: IF 子チケットを写すと親子が 3 段を超えるなら、Kaname は 409 と E-DUP-002 を返し、チケットを作らない"},
         {"status": 422, "code": "E-VAL-013", "body": {"error": "validation_failed", "code": "E-VAL-013", "details": []}, "errors": ["E-VAL-013"],
          "trigger": "本文 body を送らず区画 sections だけで作り、種別の必須の区画が空（前の道・K-578 が外すまで）",
          "ears_form": "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない"},
@@ -977,6 +985,8 @@ VALUE_RANGES = {
         # K-581：作るときにつなぐ相手（payload.ts の checkLinks・0〜20 件・同じ組なし・要素は kind と other_ticket_id の 2 つだけ）。相手が選べるかは DB（K-441 の app.ticket_link_add）
         "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
                                                                  "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},
+        # K-438：複製で写す物（duplicate.ts の COPY_NAMES・6 つ・重複なし。添付と参照は 422）
+        "copy": {"maxItems": 6, "uniqueItems": True, "items": {"enum": ["body", "assignee", "fields", "specs", "links", "children"]}},
     },
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},

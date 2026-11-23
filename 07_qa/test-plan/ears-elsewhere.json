@@ -333,6 +333,14 @@
     "test_post_tickets_conflict_7": {
      "file": "apps/api/test/features/F4/create-ticket-defaults.test.ts",
      "mark": "K437-API-006"
+    },
+    "test_post_tickets_not_found_2": {
+     "file": "apps/api/test/features/F4/ticket-duplicate.test.ts",
+     "mark": "K438-API-017"
+    },
+    "test_post_tickets_conflict_8": {
+     "file": "apps/api/test/features/F4/ticket-duplicate-children.test.ts",
+     "mark": "K438-API-015"
     }
    }
   },

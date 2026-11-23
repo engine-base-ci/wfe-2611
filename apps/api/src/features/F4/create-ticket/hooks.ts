@@ -6,6 +6,9 @@
 //     断り：選べない選び先（種別・担当者・知らせる人・親・項目の id）は 404 E-PAGE-001／親子が 3 段を超える 409 E-VAL-015／期限が今日より前 409 E-VAL-012／
 //     開始が期限より後 409 E-VAL-028／会社の項目の 409 E-FLD-001〜004（どれも欄・details・detail を付けない＝在るかを漏らさない）。422 は契約に書ける形の誤りだけ（欄つき）。
 //     sections だけで来た作り方（前の道）の必須の区画が空は 422 E-VAL-013（K-578 まで）。DB が落ちたら口の中で 503 E-PAGE-003（何も残らない・D-136.1）
+//   複製（K-438・A129）：duplicate_of があれば同じ取引で ①app.ticket_duplicate_read（元を止めて材料を読む）→ ②app.ticket_create（材料から組んだ体）→
+//     ③app.ticket_duplicate_apply（確認項目・つながり・子・派生元の線・知らせ・証跡）。元が見えない 404 E-DUP-001・子を写すと 3 段を超える 409 E-DUP-002（欄なし）。
+//     ② の断りは K-437 の振り分けのまま（何も書かれていない）。③ の途中で落ちたら取引ごと戻して 503 E-PAGE-003
 //   listTicketKinds：種別と、その種別の区画（必須か）を一緒に返す ／ listScopes：グループの一覧と、チケットを書けるグループ（meta.writable）
 //   getTicket：読むだけの詳細（属性・区画・種別・段・担当者） ／ listMyTicketDrafts・saveMyTicketDraft：書きかけの下書き（サーバーに残す・D-128.138）
 // ログに題名と本文を出さない（共通の決まり）
@@ -16,6 +19,7 @@ import type { Row } from "@kaname/db/repository";
 import { KanameError } from "@kaname/errors";
 import type { Hook, HookArgs, HookReply } from "../../../contract/deps.js";
 import { bare, FIELD_CODES } from "../ticket-fields/errors.js";
+import { buildDuplicate, type CopyName, type DuplicateRead } from "./duplicate.js";
 import { checkCreate, todayJst, type RawParts } from "./input.js";
 
 const fail = (status: number, error: string, code: string, extra: Record<string, unknown> = {}): HookReply => ({
@@ -117,6 +121,33 @@ function detailExtras(x: DetailExtras | undefined, t: Row): Row {
   };
 }
 
+/** 作る（duplicate_of が無ければ K-437 の道のまま 1 文）か、複製の 3 文（①→②→③）を同じ取引で。
+ *  ① の断りは { dup: 言葉 }・② の断りはその答えのまま（どちらも何も書いていないので取引を閉じて返す）。③ の断りは例外（取引ごと戻る） */
+async function createOrDuplicate(cl: pg.PoolClient, value: Record<string, unknown>): Promise<Record<string, unknown>> {
+  const { duplicate_of: source, copy, ...input } = value;
+  const create = async (v: Record<string, unknown>) =>
+    (await cl.query<{ v: Record<string, unknown> }>("select app.ticket_create($1::jsonb) as v", [JSON.stringify(v)]))
+      .rows[0]!.v;
+  if (typeof source !== "string") return create(input);
+  const names = (copy as CopyName[] | undefined) ?? [];
+  const read = (
+    await cl.query<{ v: Record<string, unknown> }>(
+      "select app.ticket_duplicate_read($1::uuid, $2::text[], $3::uuid, $4::uuid) as v",
+      [source, names, input["kind_id"], input["parent_ticket_id"] ?? null],
+    )
+  ).rows[0]!.v;
+  if (read["ok"] !== true) {
+    const word = String(read["error"]);
+    if (word === "gone" || word === "depth" || word === "not_member") return { dup: word };
+    throw new Error(`app.ticket_duplicate_read の知らない答え（${word}）`);
+  }
+  const plan = buildDuplicate(input, source, names, read as unknown as DuplicateRead);
+  const r = await create(plan.create);
+  if (r["ok"] !== true) return r;
+  await cl.query("select app.ticket_duplicate_apply($1::uuid, $2::jsonb)", [r["id"], JSON.stringify(plan.apply)]);
+  return r;
+}
+
 export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
     createTicket: {
@@ -133,16 +164,10 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
         }
         let r: Record<string, unknown>;
         try {
-          r = await withTenant(
-            appPool,
-            a.ctx,
-            async (cl) =>
-              (
-                await cl.query<{ v: Record<string, unknown> }>("select app.ticket_create($1::jsonb) as v", [
-                  JSON.stringify(checked.value),
-                ])
-              ).rows[0]!.v,
-          );
+          r = await withTenant(appPool, a.ctx, (cl) => createOrDuplicate(cl, checked.value));
+          if (r["dup"] === "gone") return bare("E-DUP-001", 404);
+          if (r["dup"] === "depth") return bare("E-DUP-002", 409);
+          if (r["dup"] === "not_member") return fail(403, "forbidden", "FORBIDDEN");
           if (r["ok"] !== true) return refusal(r);
         } catch (ex) {
           // 取引の途中で落ちた（1 つの取引なので何も残らない）。ログは場所と例外の種類だけ（題名・本文・値を出さない）
