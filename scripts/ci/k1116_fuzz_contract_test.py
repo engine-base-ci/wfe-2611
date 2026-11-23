@@ -96,12 +96,19 @@ def _contract_accepts(pats: list[str], s: str) -> bool:
     return all(re.search(p, s) for p in pats)
 
 
-def _api_accepts(samples: list[str]) -> list[bool]:
-    """口が受けるか：本物の normalizeEmail・EMAIL_RE と、部品 better-auth の確かめ z.email() を tsx で流す"""
+def _api_accepts(samples: list[str]) -> tuple[list[bool], str]:
+    """口が受けるか：本物の normalizeEmail・EMAIL_RE と、ログインの部品 better-auth が自分で引く zod の z.email() を tsx で流す。
+    better-auth の z.email() の正規表現の字（source）も返す（部品の版が上がって形が変われば CT-004 が赤になる）"""
     code = (
-        'import { normalizeEmail, EMAIL_RE } from "./src/signup.ts"; import { z } from "zod";'
-        "const s = JSON.parse(process.argv[process.argv.length - 1]);"
-        "console.log(JSON.stringify(s.map((x) => { const e = normalizeEmail(x); return EMAIL_RE.test(e) && z.email().safeParse(e).success; })));"
+        "(async () => {"
+        ' const { createRequire } = await import("node:module");'
+        ' const req = createRequire(process.cwd() + "/package.json");'
+        ' const zz = await import(createRequire(req.resolve("better-auth")).resolve("zod"));'
+        ' const { normalizeEmail, EMAIL_RE } = await import("./src/signup.ts");'
+        " const s = JSON.parse(process.argv[process.argv.length - 1]);"
+        " const ok = s.map((x) => { const e = normalizeEmail(x); return EMAIL_RE.test(e) && zz.z.email().safeParse(e).success; });"
+        " console.log(JSON.stringify({ ok, source: zz.z.email()._zod.def.pattern.source }));"
+        "})()"
     )
     tsx = ROOT / "node_modules" / ".bin" / "tsx"
     r = subprocess.run(
@@ -110,7 +117,8 @@ def _api_accepts(samples: list[str]) -> list[bool]:
     )
     if r.returncode != 0:
         raise AssertionError(f"tsx が落ちた: {r.stderr[-800:]}")
-    return json.loads(r.stdout.strip().splitlines()[-1])
+    out = json.loads(r.stdout.strip().splitlines()[-1])
+    return out["ok"], out["source"]
 
 
 SIGNIN_SAMPLES = [
@@ -153,7 +161,9 @@ class FuzzContract(unittest.TestCase):
 
     def test_K1116_CT_004_contract_email_is_accepted_by_api(self):
         pats = _contract_patterns(_shape_of("signInWithPassword"), "email")
-        api = _api_accepts(SIGNIN_SAMPLES)
+        api, source = _api_accepts(SIGNIN_SAMPLES)
+        self.assertTrue(source.startswith("^") and source.endswith("$"), source)
+        self.assertIn("^[ \\t\\n\\r]*" + source[1:-1] + "[ \\t\\n\\r]*$", pats, "契約のメールの形が部品の z.email() の形（前後の空白つき）と字まで同じでない")
         self.assertEqual(api[0], False)   # 口は回のメールを断る（422 E-VAL-004 の元）
         self.assertEqual(api[1], True)
         wrong = [repr(s) for s, ok in zip(SIGNIN_SAMPLES, api) if _contract_accepts(pats, s) and not ok]
