@@ -995,6 +995,84 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**",
+    "apps/api/test/features/F3/credential-device.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/credentials/host.ts",
+    "apps/bridge/src/host.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-host-cases.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**",
+    "apps/api/test/features/F3/credential-device.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-login-check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-login-check.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-355.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_credentials_id_login_check.test.ts",
+    "apps/api/test/generated/post_credentials_id_login_check_answer.test.ts",
+    "apps/api/test/generated/post_bridge_credentials_id_check_result.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/remove-pc/**",
+    "apps/api/src/hooks/device-revoke.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/remove-pc.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/remove-pc.test.ts",
+    "apps/api/test/features/contract/k144.d/K-362.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "packages/db/migrations/**",
     "apps/api/src/features/F3/ai-browser/**",
     "apps/api/src/hooks/device-*.ts",
@@ -1011,6 +1089,61 @@
    ],
    "tests": [
     "apps/api/test/generated/patch_bridge_devices_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**",
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/device-*.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/bridge-take-guard.test.ts",
+    "apps/api/test/features/F5/delegate-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-check.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_devices_id_browser_check.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/ai-browser/**",
+    "apps/api/src/hooks/bridge-browser.ts",
+    "packages/db/migrations/20261120143736_bridge_set_browser_acl.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/ai-browser-bridge.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_browser.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/bridge/src/browser-choice.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/browser-choice.test.ts"
    ]
   },
   {
@@ -1044,12 +1177,606 @@
   },
   {
    "paths": [
+    "04_design/canvas_gen/k257.py",
+    "04_design/canvas/TicketDetail.dc.html",
+    "04_design/canvas/StRunning.dc.html",
+    "04_design/canvas/StFailed.dc.html",
+    "04_design/canvas/StBefore.dc.html",
+    "04_design/canvas/StConfirmDone.dc.html",
+    "04_design/canvas/StDone.dc.html",
+    "04_design/canvas/StDelegated.dc.html"
+   ],
+   "tests": [
+    "apps/web/tests/k/k380-detail-slots.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "04_design/DESIGN-kaname.md",
+    "04_design/gen_tokens.py",
+    "scripts/ci/design_gate.py",
+    "design-gate.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k381-popup-layer.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/段7-F6/mock-shots.mjs",
+    "07_functional/段7-F6/決定ログに足す行.md",
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/gen_built_routes.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k382-stage7-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-timeline.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-timeline.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_timeline.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-timeline-seen.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-seen.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-seen.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_tickets_id_timeline_seen.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-message-post.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-post.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-post.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_tickets_id_messages.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-message-edit.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-edit.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-edit.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ticket_messages_id.test.ts",
+    "apps/api/test/generated/delete_ticket_messages_id.test.ts",
+    "apps/api/test/generated/post_ticket_messages_id_star.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-update.ts",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261120130500_ticket_reopen.sql",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress-reopen.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261120130600_ticket_message_post_stage.sql",
+    "apps/api/src/features/F6/thread/post.ts",
+    "apps/api/src/features/F6/thread/input.ts",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-post-stage.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-decisions.ts",
+    "apps/api/src/features/F6/decisions/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-decision-update.ts",
+    "apps/api/src/features/F6/decisions/update.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decision-update.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/decision-update.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_ticket_decisions_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_functional/段9-F8/mock-shots.mjs",
+    "04_design/DESIGN-kaname.md",
+    "design-gate.json",
+    "scripts/ci/design_gate.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k400-stage9-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitations.ts",
     "apps/api/src/features/F10/invite/**",
     "packages/db/migrations/20261121091900_workspace_invitations.sql"
    ],
    "tests": [
     "apps/api/test/features/F10/invite-create.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-create.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/get_workspace_members.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/workspace-invitation-link.ts",
+    "apps/api/src/features/F10/invite/link.ts",
+    "apps/api/src/features/F2/invitations/**",
+    "packages/auth/src/invitations.ts",
+    "packages/db/migrations/20261121092100_invitation_link.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/features/F2/invitation-accept-signed.test.ts",
+    "apps/api/test/features/F2/invitation-preview.test.ts",
+    "apps/api/test/features/F2/invitation-resend-request.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-link.test.ts"
+   ],
+   "readers": [
+    "apps/api/test/generated/post_invitations_link.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "scripts/ci/canvas_field_gate.py",
+    "scripts/ci/gen_built_routes.py"
+   ],
+   "tests": [
+    "apps/web/tests/k/k431-stage5-mock.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-body.ts",
+    "apps/api/src/features/F4/body/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-body-update.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-body-update.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id_body.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/test-specs-*.ts",
+    "apps/api/src/features/F4/test-spec/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/test-spec-create.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/test-spec-create.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-434.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/test-specs-*.ts",
+    "apps/api/src/features/F4/test-spec/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/test-spec-update.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/test-spec-update.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_test_specs_id.test.ts",
+    "apps/api/test/generated/patch_test_specs_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-links.ts",
+    "apps/api/src/features/F4/ticket-links/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_links.test.ts",
+    "apps/api/test/generated/post_tickets_id_links.test.ts",
+    "apps/api/test/generated/delete_ticket_links_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/notifications-*.ts",
+    "apps/api/src/hooks/shell.ts",
+    "apps/api/src/features/F7/notifications/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261123080100_notifications_read_at.sql",
+    "05_flow/rls_policies.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/notifications-list.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/notifications-list.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_notifications.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_search.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-conversations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-decisions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/list-filters.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/saved-views*.ts",
+    "apps/api/src/features/F7/saved-views/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/saved-views-create.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/saved-views-create.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_saved_views.test.ts",
+    "apps/api/test/generated/post_saved_views.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/scope-overview.ts",
+    "apps/api/src/features/F7/overview/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/scope-overview.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/scope-overview.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_scopes_id_overview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/stopped.ts",
+    "apps/api/src/features/F7/stopped/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/stopped-takeover.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/stopped-takeover.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_action_runs_id_takeover.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-delete-preview.ts",
+    "apps/api/src/features/F7/ticket-delete/**",
+    "packages/db/migrations/20261123082700_ticket_delete_preview.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/ticket-delete-preview.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/ticket-delete-preview.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_delete_preview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-delete.ts",
+    "apps/api/src/features/F7/ticket-delete/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/ticket-delete.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/ticket-delete.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_tickets_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-fields-read.ts",
+    "apps/api/src/features/F4/ticket-fields/**",
+    "03_architecture/db-catalog.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-fields.test.ts",
+    "apps/api/test/features/contract/k144.d/K-563.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_ticket_fields.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F1/password-reset/**",
+    "apps/api/src/hooks/password-reset.ts",
+    "apps/api/src/features/F1/admin-recovery/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/pm-fuzz-auth.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F1/password-reset/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k638-reset-gone.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-638.py",
+    "scripts/ci/contract_shape.d/K-638.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/pm-fuzz-auth.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/connect-pc/**",
+    "apps/api/src/hooks/agent.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/contract/k639-pm-fuzz.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-639.py",
+    "scripts/ci/contract_shape.d/K-639.py"
+   ],
+   "tests": [
+    "apps/api/test/features/contract/k639-pm-fuzz.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F6/progress/progress.css",
+    "04_design/DESIGN-kaname.md",
+    "apps/web/styles/k-tokens.css"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1100-stage-locked.spec.ts"
    ]
   }
  ],
@@ -1157,14 +1884,63 @@
   "apps/web/tests/k/k350-stage4-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3/mocks.tsx・部品 apps/web/features/F3/credentials/views.tsx・画面のコード apps/web/{components,features,app}（鈴を外した後に名前が残っていないか）・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段4-F3/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・正本 04_design/DESIGN-kaname.md・キャンバスの絵 04_design/canvas/*.dc.html（作り手 shellfix.py・mb.py を data_links で結ぶ）・11_tickets/K-57.md・秘密の検査の設定 .gitleaks.toml・作り物の秘密の置き場（apps/{api,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts）を読み、scripts/ci/design_gate.py を子プロセスで流す（K-350）",
   "apps/api/test/features/F3/credentials.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/credentials-*.ts を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-351",
   "apps/api/test/features/contract/k144.d/K-353.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/F3/credential-resolve.test.ts": "宛先の表 credential-host-cases.json を字として読む（Bridge の試験と同じ 1 つの表・K-354）",
+  "apps/bridge/test/k354-credential-bridge.test.ts": "宛先の表 credential-host-cases.json と、口と Bridge の host.ts を字として読む（同じ表と同じ字で両方を試す・K-354）",
+  "apps/api/test/features/contract/k144.d/K-355.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/credentials-mock.ts": "試験の共通の道具。文言の正本 07_qa/test-specs/errors.json を読む（口の差し替えの答えの文）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-356",
   "apps/bridge/test/k359-claude-setup.test.ts": "一時のフォルダ（mkdtemp）に作り物の claude の台本と記録を書いて読み、子プロセスで動かす（Bridge の入れる・ログインの処理が呼ぶ相手）。リポジトリの中の物は読まない・K-359",
+  "apps/web/tests/k/k363-remove-pc.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-363",
   "apps/api/test/features/F3/leaf-hooks.ts": "葉の hooks のファイル apps/api/src/hooks/<名>.ts を動的 import で読む（K-326 の register を試験の土台に足す・K-364）",
   "apps/api/test/features/contract/k144.d/K-364.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-365.ts": "k144 の置き場の葉のファイル。準備の中で手助け leaf-hooks.ts（K-364 が運ぶ）を動的 import する。ファイルは読まない（K-378）",
+  "apps/web/tests/k/k368-pc-browser.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文）。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-368",
   "apps/web/tests/k/k369-pc-row-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3-pc/mocks.tsx・部品 apps/web/features/F3/connect-pc/pc-row-parts.tsx と pc-row-parts.css・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しと測り 07_functional/段4-F3/shots-pc（measure.json を data_links で結ぶ）・文言の正本 07_qa/test-specs/errors.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-369）",
+  "apps/web/tests/k/k375-bridge-reinstall.spec.ts": "文言の正本 07_qa/test-specs/errors.json と、会話の帯の行き先を見るために apps/web/components/ai/agent-chat.tsx を読む。stage2-match.ts を通してモックの頁を開き scripts/ci/fidelity_compare.mjs を読む。どれも jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-375",
   "apps/api/test/features/contract/k144-leaves.ts": "置き場 apps/api/test/features/contract/k144.d の葉のファイル（K-<番号>.ts）を番号の順に動的 import し、行 ID の重なりを見るために本体と葉のファイルの字を読む（data_links で結ぶ・K-378）",
   "apps/web/tests/bridge/k379-bridge-chrome.spec.ts": "組み立てた Bridge（apps/bridge/dist・リポジトリに入れない生成物）が在るかを見て読み込み、自分で作った一時の置き場を見る。リポジトリの文書は読まない。Bridge の src と台本は jobs.web.paths に在り、変えると web の組と専用の段 73 が流れる・K-379",
-  "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419"
+  "apps/web/tests/k/k380-detail-slots.spec.ts": "差し込み口の器 apps/web/features/F4/create-ticket/detail-slots.ts を import し、F4 の ticket-detail.tsx・detail-panel.tsx・detail-head.tsx・ticket-detail.css、F5 の queue-table.tsx、F6 の detail-slots.tsx・F8 の handover/detail-slots.tsx を文字で読む。キャンバスの絵 7 枚と作り手 04_design/canvas_gen/k257.py も文字で読む（data_links で結ぶ・K-380）",
+  "apps/web/tests/k/k381-popup-layer.spec.ts": "部品 apps/web/components/k の menu・select・shell・me-sub の .tsx と k.css・画面の apps/web の components・features・app の .tsx と .css・apps/web/styles/k-tokens.css・正本 04_design/DESIGN-kaname.md を読み、04_design/gen_tokens.py と scripts/ci/design_gate.py を子プロセスで流す（K-381）",
+  "apps/web/tests/k/k382-stage7-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f6/mocks.tsx・F6 の部品と CSS と区画のファイル（apps/web/features/F6）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しの台本 07_functional/段7-F6/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・決定ログに足す行.md・答えの記録 01_hearing/decider-answers.jsonl を読み、scripts/ci/design_gate.py を子プロセスで流す（K-382）",
+  "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
+  "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
+  "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
+  "apps/api/test/features/contract/k144.d/K-385.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-385",
+  "apps/api/test/features/contract/k144.d/K-386.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-386",
+  "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
+  "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）",
+  "apps/api/test/features/F6/thread-post-stage.test.ts": "書き込みの口の hooks のファイル（apps/api/src/hooks/ticket-message-post.ts・K-385）を最初の要求の前に動的 import で読む（K-389）",
+  "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
+  "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）",
+  "apps/api/test/features/F6/decision-update.test.ts": "改める口の hooks のファイル（apps/api/src/hooks/ticket-decision-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-391）",
+  "apps/api/test/features/contract/k144.d/K-391.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-391）",
+  "apps/web/tests/k/k400-stage9-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f8/mocks.tsx・部品 apps/web/features/F8/handover/（views.tsx・handover.css・detail-slots.tsx・slot-dispatch.tsx・use-handovers.ts・区画のファイル 10 個）と apps/web/features/F10/invite/views.tsx・探す欄の型 apps/web/components/k/search-field.tsx・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段9-F8/mock-shots.mjs・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-400）",
+  "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
+  "packages/db/test/k426_function_execute_private.test.ts": "この葉の migration のファイルを読み、取引の中でもう一度当てる（migration の道で db の組に当たる）と、口の文（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src）を読んで app の関数の名前を集める（DB の試験なので db の組で流れる）・K-426",
+  "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/web/tests/k/k431-stage5-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f4v2/mocks.tsx・apps/web/app/(dev)/dev/mock/f4/mocks.tsx・F4 の部品の置き場（apps/web/features/F4 の doc・parent・due・duplicate・links・home・detail-more・create-ticket）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）を読み、scripts/ci/canvas_field_gate.py を子プロセスで流す（K-431）",
+  "apps/api/test/features/F4/ticket-body.harness.ts": "入っている葉の hooks のファイル（ticket-body.ts・ticket-versions.ts）を動的 import で読む（最初の要求の前に 1 回・まだ入っていない葉の物は読まない）。読む物と使う試験は data_links で結ぶ・K-432",
+  "apps/api/test/features/contract/k144.d/K-432.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
+  "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
+  "apps/api/test/features/contract/k144.d/K-435.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-435",
+  "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
+  "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
+  "apps/api/test/features/contract/k144.d/K-461.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（notify.harness.ts）を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/F7/notify.harness.ts": "入っている葉の hooks のファイル（notifications-*.ts・shell.ts）を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-461",
+  "apps/api/test/features/F7/notifications-list.test.ts": "本線の migration（packages/db/migrations/*.sql）と画面の道（apps/web/app の page.tsx）を読んで、種類の表と行き先を照らす（K461-API-015・016）。読む物は apps/web/app と packages/db/migrations の変更で、試験の対象は同じ試験",
+  "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
+  "apps/api/test/features/F7/saved-views.harness.ts": "この段の hooks のファイル apps/api/src/hooks/saved-views.ts と saved-views-edit.ts（K-476）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-475）",
+  "apps/api/test/features/F7/scope-overview.test.ts": "この葉の hooks のファイル（apps/api/src/hooks/scope-overview.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-477）",
+  "apps/api/test/features/contract/k144.d/K-477.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-477）",
+  "apps/api/test/features/contract/k144.d/K-485.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F7/ticket-delete.harness.ts": "土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487",
+  "apps/api/test/features/contract/k144.d/K-488.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
+  "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
+  "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
