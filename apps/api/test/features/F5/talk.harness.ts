@@ -172,7 +172,7 @@ export function setupTalk(files: string[], ops: string[] = []): TalkHarness {
       const r = await f.admin.query<{ id: string; number: string }>(
         `insert into tickets (tenant_id, scope_id, number, kind_id, stage_id, title, assignee_member_id, due_on, created_by, updated_by,
                               completed_at, completed_by, deleted_at)
-         values ($1, $2, '', $3, $4, $5, $6, $7, $6, $6, case when $8 then now() end, case when $8 then $6 end, case when $9 then now() end)
+         values ($1, $2, '', $3, $4, $5, $6::uuid, $7, $6::uuid, $6::uuid, case when $8 then now() end, case when $8 then $6::uuid end, case when $9 then now() end)
          returning id, number`,
         [w.tenantId, o.scope ?? w.scopeA, w.kindId, stage, title, who, jst, o.completed === true, o.deleted === true],
       );
@@ -195,7 +195,7 @@ export function setupTalk(files: string[], ops: string[] = []): TalkHarness {
       return one(
         `insert into conversations (tenant_id, scope_id, owner_member_id, title, title_auto, talk_kind, ticket_id, created_by,
                                    updated_at, closed_at, deleted_at, last_read_at)
-         values ($1, $2, $3, $4, $4 is null, $5, $6, $3, $7, case when $8 then now() end, case when $9 then now() end,
+         values ($1, $2, $3, $4::text, $4::text is null, $5, $6, $3, $7, case when $8 then now() end, case when $9 then now() end,
                  case when $10::int is null then null else $11::timestamptz end)
          returning id`,
         [

@@ -154,7 +154,7 @@ describe("K-757 1 つの会話（getConversation）", () => {
       ["ai", "はい"],
     ]);
     for (const m of v.messages)
-      expect(Object.keys(m).sort()).toEqual(["at", "id", "job_id", "passed", "proposal", "took", "text", "who"]);
+      expect(Object.keys(m).sort()).toEqual(["at", "id", "job_id", "passed", "proposal", "text", "took", "who"]);
     expect(v.messages[0]).toMatchObject({ passed: [], proposal: null, took: null, job_id: null });
     expect([v.has_more, v.running_job_id, v.work, v.stopped]).toEqual([false, null, null, null]);
     const empty = await h.conversation(w, w.me);
