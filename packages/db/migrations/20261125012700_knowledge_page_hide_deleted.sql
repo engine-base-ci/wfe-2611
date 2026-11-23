@@ -5,7 +5,7 @@
 -- app.kn_page_soft_delete(p, draft_only)：ページに消した印を入れる。消せたら true。
 --   行の守りが消したページを見せないので、アプリの接続の update … set deleted_at は「書いた後の行が見えない」で断られる。ここで消す。
 --   呼んだ人の会社（app.tenant_id）のページだけ・呼んだ人がそのページに書ける（app.kpage_writable・消した後は偽）ときだけ消す。書けなければ何もしない（false）。
---   生きている下書きの版（だれの物でも）にも消した印を入れる（app.kn_page_drop_drafts と同じ）。公開の版は触らない（履歴として残す）。
+--   生きている下書きの版（だれの物でも）にも消した印を入れる。公開の版は触らない（履歴として残す）。
 --   draft_only が真なら、まだ 1 度も書き終えていないページ（state draft）だけを消す（下書きをやめる口・K-679）。
 create or replace function app.kn_page_soft_delete(p uuid, draft_only boolean default false) returns boolean
 language plpgsql security definer set search_path = public, app, pg_temp as $$
