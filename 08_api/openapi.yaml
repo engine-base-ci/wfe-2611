@@ -10737,6 +10737,7 @@ components:
         position:
           type: integer
           minimum: 0
+          maximum: 2147483647
       additionalProperties: false
       x-operation: updateKnowledgeFolder
       anyOf:
@@ -10824,6 +10825,7 @@ components:
         position:
           type: integer
           minimum: 0
+          maximum: 2147483647
       additionalProperties: false
       x-operation: updateKnowledgePage
       anyOf:
@@ -12234,7 +12236,7 @@ components:
         acts:
           type: array
           items:
-            type: object
+            type: string
         body:
           type: object
           nullable: true
