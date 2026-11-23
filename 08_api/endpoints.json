@@ -51549,29 +51549,38 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "そのグループにチケットを書く権限が無い（見るだけの人・別の会社のグループ）",
+     "ears_form": "UNWANTED: IF そのグループにチケットを書けないなら、Kaname は 403 と FORBIDDEN を返し、チケットを作らない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-VAL-015",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-VAL-015"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-VAL-015"
+     ],
+     "trigger": "親に選んだチケットの下に入れると親子が 3 段を超える",
+     "ears_form": "UNWANTED: IF 親子が 3 段を超えるなら、Kaname は 409 と E-VAL-015 を返し、チケットを作らない"
     },
     {
      "status": 422,
-     "code": "VALIDATION_ERROR",
+     "code": "E-VAL-013",
      "body": {
       "error": "validation_failed",
+      "code": "E-VAL-013",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "errors": [
+      "E-VAL-013"
+     ],
+     "trigger": "本文 body を送らず区画 sections だけで作り、種別の必須の区画が空（前の道・K-578 が外すまで）",
+     "ears_form": "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない"
     },
     {
      "status": 404,
@@ -51583,8 +51592,86 @@
      "errors": [
       "E-PAGE-001"
      ],
-     "trigger": "親のチケットが無い・消えた・見えない",
-     "ears_form": "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"
+     "trigger": "選んだ種別・担当者・知らせる人・親のチケット・会社の項目が無い・消えた・抜けた・別の会社（書いている間に選べなくなったも同じ）",
+     "ears_form": "UNWANTED: IF 選んだ種別・担当者・知らせる人・親・会社の項目が無いか選べないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-VAL-012",
+     "body": {
+      "error": "conflict",
+      "code": "E-VAL-012"
+     },
+     "errors": [
+      "E-VAL-012"
+     ],
+     "trigger": "期限が今日（日本時間）より前",
+     "ears_form": "UNWANTED: IF 期限が今日より前なら、Kaname は 409 と E-VAL-012 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-VAL-028",
+     "body": {
+      "error": "conflict",
+      "code": "E-VAL-028"
+     },
+     "errors": [
+      "E-VAL-028"
+     ],
+     "trigger": "開始日が期限より後",
+     "ears_form": "UNWANTED: IF 開始日が期限より後なら、Kaname は 409 と E-VAL-028 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-001",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-001"
+     },
+     "errors": [
+      "E-FLD-001"
+     ],
+     "trigger": "その種別に出ない会社の項目に値を付けた",
+     "ears_form": "UNWANTED: IF その種別に出ない会社の項目に値を付けたなら、Kaname は 409 と E-FLD-001 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-002",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-002"
+     },
+     "errors": [
+      "E-FLD-002"
+     ],
+     "trigger": "会社の項目の選択肢に無い値を付けた",
+     "ears_form": "UNWANTED: IF 会社の項目の選択肢に無い値を付けたなら、Kaname は 409 と E-FLD-002 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-003",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-003"
+     },
+     "errors": [
+      "E-FLD-003"
+     ],
+     "trigger": "会社の項目の型と合わない値を付けた（型はマスタで決まる）",
+     "ears_form": "UNWANTED: IF 会社の項目の型と合わない値を付けたなら、Kaname は 409 と E-FLD-003 を返し、チケットを作らない"
+    },
+    {
+     "status": 409,
+     "code": "E-FLD-004",
+     "body": {
+      "error": "conflict",
+      "code": "E-FLD-004"
+     },
+     "errors": [
+      "E-FLD-004"
+     ],
+     "trigger": "会社が必須にした項目が空（渡さない・空の文字・空の並び・null・必須のチェックが付いていない）",
+     "ears_form": "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない"
     },
     {
      "status": 413,
@@ -51642,10 +51729,16 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets が「見本（自分宛にメールを送る など）を開いて AI に任せてみる」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す（自動側：見本のチケットを最初から並べる）",
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets が「種別を選び、題名・責任者・期限・目的・完了の条件を書く」として呼ばれたとき THEN Kaname は「番号（グループの頭文字＋連番）を振る・版を残す」を行い 2xx を返す（自動側：ルールを当てて既定値を入れる）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
-    "UNWANTED: IF 親のチケットが無いか見えないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない",
+    "UNWANTED: IF そのグループにチケットを書けないなら、Kaname は 403 と FORBIDDEN を返し、チケットを作らない",
+    "UNWANTED: IF 親子が 3 段を超えるなら、Kaname は 409 と E-VAL-015 を返し、チケットを作らない",
+    "UNWANTED: IF 区画 sections だけで作り必須の区画が空なら、Kaname は 422 と E-VAL-013 を返し、チケットを作らない",
+    "UNWANTED: IF 選んだ種別・担当者・知らせる人・親・会社の項目が無いか選べないなら、Kaname は 404 と E-PAGE-001 を返し、チケットを作らない",
+    "UNWANTED: IF 期限が今日より前なら、Kaname は 409 と E-VAL-012 を返し、チケットを作らない",
+    "UNWANTED: IF 開始日が期限より後なら、Kaname は 409 と E-VAL-028 を返し、チケットを作らない",
+    "UNWANTED: IF その種別に出ない会社の項目に値を付けたなら、Kaname は 409 と E-FLD-001 を返し、チケットを作らない",
+    "UNWANTED: IF 会社の項目の選択肢に無い値を付けたなら、Kaname は 409 と E-FLD-002 を返し、チケットを作らない",
+    "UNWANTED: IF 会社の項目の型と合わない値を付けたなら、Kaname は 409 と E-FLD-003 を返し、チケットを作らない",
+    "UNWANTED: IF 会社が必須にした項目が空なら、Kaname は 409 と E-FLD-004 を返し、チケットを作らない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",

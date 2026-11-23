@@ -1662,6 +1662,7 @@
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
   "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
   "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
+  "apps/api/test/features/F4/create-ticket-defaults.test.ts": "08_api/endpoints.json・08_api/openapi.yaml・07_qa/test-specs/errors.json を readFileSync で読む（K437-API-020）",
   "apps/api/test/features/F4/ticket-sort.test.ts": "この葉が足す組の口 apps/api/src/hooks/ticket-update.ts（K-387 の hooks のファイル）を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。また契約 08_api/openapi.yaml の updateTicket の入力の oneOf を readFileSync で読む（K440-API-002）。読む物と使う試験はどれも data_links で結ぶ・K-440",
   "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
   "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",

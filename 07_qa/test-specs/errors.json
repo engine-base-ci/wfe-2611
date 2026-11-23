@@ -5591,7 +5591,7 @@
   },
   {
    "id": "E-VAL-012",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -5654,42 +5654,8 @@
    "support_code": "VAL-013"
   },
   {
-   "id": "E-VAL-014",
-   "class": "validation",
-   "where": {
-    "screen": "tickets",
-    "state": "create"
-   },
-   "when": "選んだ担当者・種別・知らせる人が、書いている間に選べなくなった（抜けた・止められた・種別が消された）",
-   "false_when": "選べる人・種別",
-   "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-   "action": "選び直す",
-   "undo": false,
-   "layers": [
-    "UI",
-    "API",
-    "DB"
-   ],
-   "must_not": false,
-   "reproduce": {
-    "setup": "チケットを作る",
-    "steps": [
-     "担当者を選ぶ",
-     "別の画面でその人を止める",
-     "作る"
-    ],
-    "needs": "2 人"
-   },
-   "severity": "medium",
-   "source": [
-    "D-125.41",
-    "D-125.30"
-   ],
-   "support_code": "VAL-014"
-  },
-  {
    "id": "E-VAL-015",
-   "class": "validation",
+   "class": "conflict",
    "where": {
     "screen": "tickets",
     "state": "create"
@@ -7089,6 +7055,36 @@
     "D-150.33",
     "D-150.56"
    ]
+  },
+  {
+   "id": "E-VAL-028",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "create"
+   },
+   "when": "チケットの開始日が、最終期限より後の日だった",
+   "false_when": "開始日が期限と同じ日か、それより前（開始は入れなくてもよい）",
+   "message": "開始日は期限より前の日にしてください",
+   "action": "開始日か期限を入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットを作る",
+    "steps": [
+     "開始に期限より後の日を入れて作る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.34"
+   ],
+   "support_code": "VAL-028"
   },
   {
    "id": "E-TKT-001",

@@ -3176,7 +3176,7 @@ export const CATALOG: Record<string, CatalogEntry> = {
   },
   "E-VAL-012": {
     "id": "E-VAL-012",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "期限は今日か、それより後の日にしてください",
     "action": "期限を入れ直す",
     "undo": false,
@@ -3211,28 +3211,9 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "create"
     }
   },
-  "E-VAL-014": {
-    "id": "E-VAL-014",
-    "cls": "validation",
-    "message": "選んだものが、いまは選べなくなりました。選び直してください。書いたものは残っています",
-    "action": "選び直す",
-    "undo": false,
-    "severity": "medium",
-    "support_code": "VAL-014",
-    "must_not": false,
-    "layers": [
-      "UI",
-      "API",
-      "DB"
-    ],
-    "where": {
-      "screen": "tickets",
-      "state": "create"
-    }
-  },
   "E-VAL-015": {
     "id": "E-VAL-015",
-    "cls": "validation",
+    "cls": "conflict",
     "message": "チケットの親子は 3 段までです。ほかの親を選んでください",
     "action": "親を選び直す",
     "undo": false,
@@ -4060,6 +4041,24 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-VAL-028": {
+    "id": "E-VAL-028",
+    "cls": "conflict",
+    "message": "開始日は期限より前の日にしてください",
+    "action": "開始日か期限を入れ直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-028",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "create"
     }
   },
   "E-TKT-001": {
