@@ -22796,8 +22796,7 @@
     "@kaname/db"
    ],
    "ci_wide": [
-    "db",
-    "shared"
+    "db"
    ],
    "changes": [
     "packages/db/migrations/20261125011700_knowledge_page_read.sql",
@@ -23063,10 +23062,12 @@
    "canvas_none": "見た目を変えない口の葉。「必ず守る」を押す画面と上限の小窓は K-691、部品は K-671 が持つ（正は /dev/mock/f9 の「必ず守る：付けた所」「必ず守る：上限に届いた」）",
    "affects": [
     "@kaname/api",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/contracts"
    ],
    "ci_wide": [
-    "db"
+    "db",
+    "shared"
    ],
    "changes": [
     "packages/db/migrations/20261125012500_knowledge_must_limits.sql",

@@ -2199,11 +2199,14 @@
     "test_put_knowledge_pages_id_must_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_put_knowledge_pages_id_must_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
     }
    },
    "na": {
-    "test_put_knowledge_pages_id_must_conflict_2": "承認待ちの頼み（E-KNW-011）は頼みの置き場（K-687）が入ってから。K-687 が page-guards/pending-request.ts を差し替え、自分の試験に行を足す",
-    "test_put_knowledge_pages_id_must_too_large": "体の大きさの上限は入口の共通（K-144・この口の体は 1 欄）"
+    "test_put_knowledge_pages_id_must_conflict_2": "承認待ちの頼み（E-KNW-011）は頼みの置き場（K-687）が入ってから。K-687 が page-guards/pending-request.ts を差し替え、自分の試験に行を足す"
    }
   }
  }

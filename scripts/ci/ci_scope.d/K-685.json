@@ -7,7 +7,8 @@
     "apps/api/src/features/F9/knowledge/page-parts/act-must.ts"
    ],
    "tests": [
-    "apps/api/test/features/F9/knowledge-must.test.ts"
+    "apps/api/test/features/F9/knowledge-must.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
    ]
   },
   {
@@ -20,5 +21,8 @@
     "apps/api/test/generated/put_knowledge_pages_id_must.test.ts"
    ]
   }
- ]
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-685.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-685"
+ }
 }

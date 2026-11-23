@@ -5,6 +5,10 @@
 import type { K144Leaf } from "./_base.js";
 
 export const leaf: K144Leaf = {
+  setup: async (f) => {
+    // 必ず守るを付ける・外す口（setKnowledgeMust）は、葉の hooks のファイルの register（K-326）を葉ごとの 1 行が自分の分だけ足す。最初の要求の前に 1 回だけ読む（足さないと口が無く 501）// K-685
+    (await import("../../F3/leaf-hooks.js")).leafHooks(f, ["f9-knowledge-must"]); // K-685
+  },
   UUID_PARAM_CASES: [
     ["K144-API-110", "setKnowledgeMust", "path", "id"], // K-685
   ],
