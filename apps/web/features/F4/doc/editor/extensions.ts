@@ -85,7 +85,13 @@ const ImageNode = Node.create({
   parseHTML: () => [{ tag: "figure[data-k-image]" }],
   renderHTML: ({ node, HTMLAttributes }) => [
     "figure",
-    mergeAttributes(HTMLAttributes, { "data-k-image": "", class: "k-f4d-figure" }),
+    // 読み上げは「画像」＋名前（読む形 DocView の置き場と同じ role="img"・K-587）
+    mergeAttributes(HTMLAttributes, {
+      "data-k-image": "",
+      class: "k-f4d-figure",
+      role: "img",
+      "aria-label": String(node.attrs["caption"] ?? ""),
+    }),
     ["figcaption", {}, String(node.attrs["caption"] ?? "")],
   ],
 });

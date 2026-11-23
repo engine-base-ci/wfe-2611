@@ -13,7 +13,7 @@ import { CreateHeadFull } from "@/features/F4/doc/create-views";
 import { Frame } from "../f4/frame";
 
 /** 置き場の状態の id（K-587 が f4v2-editor-format・K-568 が f4v2-editor-more を足す） */
-export const LIVE_PAGES = ["f4v2-editor-tools"] as const;
+export const LIVE_PAGES = ["f4v2-editor-tools", "f4v2-editor-format"] as const;
 export type LivePage = (typeof LIVE_PAGES)[number];
 export const isLivePage = (id: string): id is LivePage => (LIVE_PAGES as readonly string[]).includes(id);
 
