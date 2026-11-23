@@ -20745,7 +20745,9 @@
     "C6"
    ],
    "tests": [
-    "apps/api/test/features/F8/handover-sender.test.ts"
+    "apps/api/test/features/F8/handover-sender.test.ts",
+    "apps/api/test/generated/post_ticket_handovers_id_withdraw.test.ts",
+    "apps/api/test/generated/post_ticket_handovers_id_remind.test.ts"
    ],
    "carry": [
     "apps/api/test/features/contract/k144.d/K-406.ts"
