@@ -22760,8 +22760,9 @@
     "D-152.35"
    ],
    "split": "",
-   "choke_points": [],
-   "choke_none": "読むだけの口で DB に書かず、お知らせも外のサービスも AI も呼ばない（外界に影響する出口を通らない）",
+   "choke_points": [
+    "C2"
+   ],
    "tests": [
     "apps/api/test/features/F9/knowledge-similar.test.ts",
     "apps/api/test/generated/post_knowledge_similar.test.ts"

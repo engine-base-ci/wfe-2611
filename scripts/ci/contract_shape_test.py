@@ -1086,6 +1086,9 @@ class ContractShapeTest(unittest.TestCase):
         "apps/api/src/features/F3/credentials/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
         # K-92：チケットの一覧も同じ形（DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す）
         "apps/api/src/features/F4/ticket-list/hooks.ts": [("const page = rows.slice(0, q.limit);", "DB から limit+1 件取った行を、次の分の有無を見た後に limit 件に戻す（入力でない）")],
+        # K-686：似たページを探す口（読むだけ・書かない）。本文は比べるための頭 500 字だけを関数に渡す（保存しない）。答えは上位 3 件
+        "apps/api/src/features/F9/knowledge/similar.ts": [("slice(0, BODY_HEAD)", "似ているかを比べるためだけに本文の頭 500 字を渡す（チケットの決め・どこにも書かない・入力を黙って切って残すのではない）"),
+                                                         ("rows.slice(0, SIMILAR_LIMIT)", "DB の関数が返した似ている順の行を、上位 3 件に戻す（入力でない）")],
         # K-62：Bridge（PC）が送る途中の様子の形。人が書く欄でない。返事（reply）は契約の上限（REPLY_MAX 200000）と同じ、1 行の文は 400 字（D-129.46 の要約と同じ大きさ）
         "apps/api/src/features/F5/delegate/records.ts": [("slice(0, 30)", "Bridge が送る todo の並びの数（人が書く欄でない）"),
                                                           ("slice(0, 4)", "Bridge が送る開いている窓の並びの数（人が書く欄でない）"),
