@@ -744,11 +744,11 @@
   "tickets": 218,
   "l1_rows": 5094,
   "ears_endpoints": 369,
-  "ears_tests": 4049,
+  "ears_tests": 4053,
   "entities": 145,
   "policies": 418,
   "access_cases": 1562,
-  "errors": 262,
+  "errors": 268,
   "journey_rows": 88,
   "critical_tasks": 88
  },
