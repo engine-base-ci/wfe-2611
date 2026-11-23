@@ -1,5 +1,5 @@
 // 答える口の振り分け（answerTicketHandover・PATCH /ticket_handovers/:id・入口の行の言葉は recipient＝app.handover_answerer(id, 呼んだ人, false)・K-401）。
-//   1 入力 → 2 共通の確かめ（無い 404・答える人でない 403・もう決まった 409）→ 3 上へ上げるは 422・E-HND-001、ほかは種類ごとのファイルへ。
+//   1 入力 → 2 共通の確かめ（無い 404・答える人でない 403・もう決まった 409）→ 3 上へ上げるは 409・E-HND-001、ほかは種類ごとのファイルへ。
 //   種類ごとのファイルは各葉（K-403 pass・K-408 offer・K-409 distribute・K-410 グループ宛て）が本物にする。振り分けはこのファイルだけが書く
 import type { HookArgs, HookReply } from "../../../../contract/deps.js";
 import type { HandoverDeps } from "../deps.js";
