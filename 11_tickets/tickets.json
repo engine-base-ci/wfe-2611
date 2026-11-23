@@ -22768,7 +22768,8 @@
    "tests": [
     "apps/api/test/features/F9/knowledge-page-read.test.ts",
     "apps/api/test/generated/get_knowledge_pages_id.test.ts",
-    "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts"
+    "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_versions_v.test.ts"
    ],
    "carry": [],
    "depends_on": [
