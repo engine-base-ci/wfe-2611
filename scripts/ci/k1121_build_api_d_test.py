@@ -228,6 +228,7 @@ BA = ('import os\nROOT = os.getcwd()\nBASE = "/api/v1"\n'
       'def qtype(q):\n    return {"type": "string"}\n')
 SA = 'T = "tickets"\nLIST_OPS = {"getA"}\n'
 LEDGER0 = {"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/screen_api.py|LIST_OPS 'x'"]}
+MERGE_DEF = "_D = {'INTERNAL_TABLES': INTERNAL_TABLES, 'INTERNAL': INTERNAL, 'KEY_CURSOR_OPS': set()}\n"
 MERGE_LINE = "KEY_CURSOR_OPS = KEY_CURSOR_OPS | _D['KEY_CURSOR_OPS']\n"
 LEDGERB = {"_doc": "", "tickets": ["K-50"], "entries": ["05_flow/build_api.py|KEY_CURSOR_OPS 'listZ'"]}
 
@@ -297,7 +298,8 @@ class Gate(unittest.TestCase):
         self.assertTrue(any("KEY_CURSOR_OPS.add('listY')" in b for b in bad), bad)
         for extra in ('for k in ["y"]:\n    INTERNAL.add(k)\n',
                       'def more():\n    KEY_CURSOR_OPS.update({"listU"})\nmore()\n',
-                      MERGE_LINE + MERGE_LINE):
+                      MERGE_LINE + MERGE_LINE, MERGE_DEF + MERGE_DEF,
+                      '_D["INTERNAL"].add("y")\n', '_D["KEY_CURSOR_OPS"].add("listY")\n', '_D["INTERNAL_TABLES"]["y_tbl"] = "y"\n'):
             self.w(BUILD_API, BA + extra)
             self.commit("K-7 feat: 別の形で足す")
             bad = self.red()
@@ -309,7 +311,7 @@ class Gate(unittest.TestCase):
         self.w(BUILD_API, BA.replace("rows.append(e)", "rows.append(e * 2)").replace('return {"type": "string"}', 'return {"type": "integer"}')
                .replace("rows = []", "rows = [1]\nseen = set()\nseen.add(1)").replace('BASE = "/api/v1"', 'BASE = "/api/v2"')
                .replace('"内部の索引"', '"内部の索引（直した）"')
-               + 'OTHER = {"a": 1}\nOTHER["b"] = 2\nfor k in []:\n    seen.add(k)\n' + MERGE_LINE)
+               + 'OTHER = {"a": 1}\nOTHER["b"] = 2\nfor k in []:\n    seen.add(k)\n' + MERGE_DEF + '_D0 = {k: set(v) for k, v in _D.items()}\n' + MERGE_LINE)
         self.w("05_flow/build_api.d/K-5.py", 'KEY_CURSOR_OPS = {"listW"}\n')
         self.commit("K-7 fix: 作り方を直す")
         self.assertEqual(self.red(), [])
@@ -348,8 +350,7 @@ class Gate(unittest.TestCase):
         self.commit("K-7 chore: 今の台帳に build の鍵")
         bad = [b for b in self.red() if "受けない鍵" in b]
         self.assertEqual(len(bad), 1, self.red())
-        self.assertIn("body_append_grandfather.json", bad[0])
-        self.assertNotIn("body_append_grandfather_build_api.json", bad[0])
+        self.assertTrue(bad[0].startswith("scripts/ci/body_append_grandfather.json："), bad[0])
 
     def test_K1121_BD_011b_new_ledger_absent_at_base(self) -> None:
         """K1121-BD-011：分かれ目に新しい台帳が無く、先頭で作った枝は緑（台帳を作る回）"""
