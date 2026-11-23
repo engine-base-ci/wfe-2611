@@ -28,7 +28,7 @@ test("K671-MK-002 小窓と管理の部品（dialogs.tsx・admin-views.tsx）は
 });
 
 test("K671-DS-001 G72（D8 生の長さ）で、dialogs・admin-views・admin.css に台帳に無い生の値が 0 件", () => {
-  let out = "";
+  let out: string;
   try {
     out = execFileSync(
       "python3",
