@@ -894,6 +894,8 @@ export const RANGE_CASES: RangeCase[] = [
   ["createTicket", "start_on", "", true],
   ["createTicket", "start_on", "@today", true],
   ["createTicket", "start_on", "2026/01/01", false],
+  ["createTicket", "start_on", "0000-00-00", false], // K-437
+  ["createTicket", "start_on", "2026-02-30", false], // K-437
   ["createTicket", "priority", "", true],
   ["createTicket", "priority", "mid", true],
   ["createTicket", "priority", "high", true],

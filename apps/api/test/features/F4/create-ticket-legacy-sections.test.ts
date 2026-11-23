@@ -73,7 +73,7 @@ describe("K-437 作る口の前の道（sections）：K-578 が外すまで", ()
     const j = await json(r);
     expect(r.status).toBe(422);
     expect(j["code"]).toBe("E-VAL-013");
-    expect(fieldsOf(j)).toContain("sections");
+    expect(fieldsOf(j)).toEqual(["sections.done", "sections.todo"]);
     expect(await ticketsIn(T.tenantId)).toBe(before);
     const ok = await createOk(
       writer,
@@ -118,7 +118,7 @@ describe("K-437 作る口の前の道（sections）：K-578 が外すまで", ()
     const op = (JSON.stringify(ep).match(/"createTicket"[\s\S]{0,40000}/) ?? [""])[0];
     expect(op).toContain("E-VAL-013");
     const yaml = readFileSync(`${root}08_api/openapi.yaml`, "utf8");
-    const m = /TicketCreateInput:[\s\S]*?(?=\n    [A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
+    const m = /TicketCreateInput:[\s\S]*?(?=\n {4}[A-Z][A-Za-z]*:)/.exec(yaml)?.[0] ?? "";
     expect(m).toContain("sections:");
     expect(readFileSync(`${root}07_qa/test-specs/errors.json`, "utf8")).toContain('"E-VAL-013"');
   });

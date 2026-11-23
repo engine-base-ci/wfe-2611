@@ -1,7 +1,7 @@
 // K-92「チケットの一覧の口」の単体の試験（口・本物の DB）。名前の頭の行 ID（K92-API-…）は 11_tickets/K-92.md の行の表と 1 対 1。
 // 口：GET /api/v1/tickets（listTickets）。問い合わせ view（mine／all・既定 mine）・q・scope_id・limit（1〜100・既定 50）・cursor（keyset）。
 //   答え：{ data: [{ id, number, title, kind:{id,name}, stage:{id,name,key}, assignee:{id,display_name}|null, delegated_to_clone,
-//                   due_on, overdue, updated_at, parent_ticket_id, depth, scope:{id,name,code}（K-560 が足した）}], meta: { next_cursor, counts? } }（総数を返さない・足せる鍵は counts だけ＝K-474）
+//                   due_on, overdue, updated_at, parent_ticket_id, depth }], meta: { next_cursor } }（総数を返さない）
 // 試験ごとに別の会社を作り、ほかの試験のチケットを混ぜない。チケットは作る口（K-60）で作り、並びの値（期限・更新・段）は管理の接続で直す。
 // テストはチケットを作る人が書き、実装する人は変えない（D-128.125）。
 import { readFileSync } from "node:fs";
@@ -267,7 +267,7 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
     expect(p.data.find((x) => x.id === done.id)?.overdue).toBe(false);
   });
 
-  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 13 個（12 個＋ K-560 が足した scope。区画の本文・作った人・消した印を返さない）・meta は next_cursor（と counts だけ・総数を返さない）", async () => {
+  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 12 個（区画の本文・作った人・消した印を返さない）・meta は next_cursor（と counts だけ・総数を返さない）", async () => {
     const w = await world();
     const parent = await make(w);
     await make(w, { parent: parent.id });
@@ -284,7 +284,6 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
           "number",
           "overdue",
           "parent_ticket_id",
-          "scope",
           "stage",
           "title",
           "updated_at",
@@ -412,7 +411,7 @@ describe("K-92 一覧の口：見える範囲（口と行の守りの 2 重）",
       expect(ids(await listOk(w.me, q)), q).toEqual([]);
   });
 
-  it("K92-API-020 先方の人（ゲスト）・運営の人（預かりの許可なし）は 403。ログインなしは 401・同意し直しが要るセッションは 403・E-AUTH-010", async () => {
+  it("K92-API-020 取引先の人・運営の人（預かりの許可なし）は 403。ログインなしは 401・同意し直しが要るセッションは 403・E-AUTH-010", async () => {
     const w = await world();
     await make(w);
     for (const role of ["client", "ops"] as const) {
