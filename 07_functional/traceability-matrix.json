@@ -888,7 +888,6 @@
     "GET /api/clones/me/growth",
     "GET /api/clones/me/activity",
     "POST /api/clones/me/activity/export",
-    "POST /api/action_runs/:id/retry",
     "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
@@ -1435,6 +1434,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2835,6 +2835,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2931,7 +2932,7 @@
     "POST /api/ticket_imports",
     "GET /api/ticket_imports/:id",
     "POST /api/ticket_imports/:id/commit",
-    "PATCH /api/tickets/:id/sections/:key",
+    "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
     "POST /api/ticket_kinds/:id/template-from-ticket",
@@ -2987,7 +2988,8 @@
     "GET /api/ticket-fields",
     "GET /api/handover_rules",
     "GET /api/members",
-    "GET /api/clients"
+    "GET /api/clients",
+    "POST /api/tickets/:id/timeline/seen"
    ],
    "access_roles": [
     "R1",
@@ -5450,12 +5452,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/clones/me/activity/export"
-    },
-    {
-     "act": "A57",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/action_runs/:id/retry"
     },
     {
      "act": "A57",
@@ -10777,7 +10773,7 @@
      "act": "A101",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/tickets/:id/sections/:key"
+     "path_draft": "/api/tickets/:id/body"
     },
     {
      "act": "A101",
@@ -11114,6 +11110,12 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/clients"
+    },
+    {
+     "act": "A107",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/tickets/:id/timeline/seen"
     }
    ]
   },

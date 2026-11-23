@@ -55,9 +55,9 @@ const joinsOf = (email: string) =>
     id: string;
     email: string;
     display_name: string;
-    pw_data: string;
-    pw_iv: string;
-    pw_tag: string;
+    pw_data: string | null;
+    pw_iv: string | null;
+    pw_tag: string | null;
     hours: number;
     sent_at: string | null;
     send_error: string | null;
@@ -146,12 +146,11 @@ describe("K-422 リンクで参加を押す（利用者も所属も作らず、�
     expect(m.text + m.subject).not.toMatch(/null|undefined/);
   });
 
-  it("K422-API-003 メールが無い・空の字・空白だけ・メールの形でない：422・E-INV-013・欄 email（文は errors.json のまま）。保留の行 0・メール 0", async () => {
+  it("K422-API-003 メールの形：空の字・空白だけ・メールの形でない → 422・E-INV-013・欄 email（契約の pattern と同じ決まり）。メールが送られていない → 409・E-INV-016（欄・details なし・招待の行で決まる断り）。保留の行 0・メール 0", async () => {
     const host = await h.owner("host003");
     const tk = await linkOf(host);
     const before = mails.length;
     for (const body of [
-      { name: NAME, password: PW },
       { name: NAME, password: PW, email: "" },
       { name: NAME, password: PW, email: "   " },
       { name: NAME, password: PW, email: "メールではない" },
@@ -163,6 +162,13 @@ describe("K-422 リンクで参加を押す（利用者も所属も作らず、�
       expect(j).toContain('"field":"email"');
       expect(j).toContain(msg("E-INV-013"));
     }
+    const none = await h.accept(tk, { name: NAME, password: PW });
+    expect(none.status).toBe(409);
+    const nj = JSON.stringify(await h.json(none));
+    expect(nj).toContain("E-INV-016");
+    expect(nj).not.toContain("E-INV-013");
+    expect(nj).not.toContain("field");
+    expect(nj).not.toContain("details");
     expect(mails.length - before).toBe(0);
     expect(await n("select count(*) as n from kaname_auth.invitation_link_joins where email = 'メールではない'")).toBe(
       0,
@@ -192,6 +198,9 @@ describe("K-422 リンクで参加を押す（利用者も所属も作らず、�
     const ok = await confirm(confirmTokenOf(email));
     expect(ok.status, await ok.clone().text()).toBe(201);
     expect(await n('select count(*) as n from kaname_auth."user" where email = $1', [email.toLowerCase()])).toBe(1);
+    // 参加が決まった後は、包んだパスワードを保留の行から消す
+    const done = (await joinsOf(email)).rows[0]!;
+    expect([done.pw_iv, done.pw_tag, done.pw_data]).toEqual([null, null, null]);
   });
 
   it("K422-API-006 名前が空・パスワードが 11 文字：422・E-VAL-007／E-VAL-005（K-332 と同じ）・保留の行 0・メール 0", async () => {
@@ -353,7 +362,9 @@ describe("K-422 確認のリンクを押す（confirmInvitationJoin）", () => {
       expect(r.status, tag).toBe(410);
       expect(JSON.stringify(await h.json(r))).toContain(code);
       expect(await h.authUsers(email)).toBe(0);
-      expect((await joinsOf(email)).rows[0]!.deleted_at).not.toBeNull();
+      const closed = (await joinsOf(email)).rows[0]!;
+      expect(closed.deleted_at).not.toBeNull();
+      expect([closed.pw_iv, closed.pw_tag, closed.pw_data]).toEqual([null, null, null]); // 閉じた後は包んだパスワードも消す
     }
   });
 
@@ -367,6 +378,17 @@ describe("K-422 確認のリンクを押す（confirmInvitationJoin）", () => {
     expect(await h.authUsers(other)).toBe(0);
     expect(lastMailTo(other)).toBeUndefined();
     expect((await joinsOf(other)).rows).toHaveLength(0);
+  });
+
+  it("K422-API-031 送られたメールの形は招待の種類によらず契約の決まり：メールで招いた招待でも email が空・形違いなら 422・E-INV-013（欄 email）。利用者は作らない", async () => {
+    const host = await h.owner("host015b");
+    const inv = await h.invite(host);
+    for (const email of ["", "x"]) {
+      const r = await h.accept(inv.token, { name: NAME, password: PW, email });
+      expect(r.status, JSON.stringify(email)).toBe(422);
+      expect(JSON.stringify(await h.json(r))).toContain("E-INV-013");
+    }
+    expect(await h.authUsers(inv.email)).toBe(0);
   });
 
   it("K422-API-016 確認の前に同じメールのアカウントができた：409・E-INV-006・利用者は 1 のまま（増えない）・保留の行は閉じる", async () => {
@@ -479,6 +501,9 @@ describe("K-422 失敗の道", () => {
     const row = (await joinsOf(email)).rows[0]!;
     expect(row.sent_at).toBeNull();
     expect(row.send_error).not.toBeNull();
+    // 残すのは例外の種類だけ（文には宛てのメールが入りうる）
+    expect(row.send_error).not.toContain(email.toLowerCase());
+    expect(row.send_error).not.toContain("@");
     const before = mails.length;
     const again = await join(tk, email);
     expect((await h.json(again)).data!["state"]).toBe("sent");
@@ -571,7 +596,7 @@ describe("K-422 失敗の道", () => {
     const { open_ } = await import("@kaname/auth/pending");
     // 試験の api に渡している master key（F1 の login.harness.ts の MASTER_KEY と同じ値）
     const key = Buffer.alloc(32, 7).toString("base64");
-    expect(() => open_(key, { iv: row.pw_iv, tag: row.pw_tag, data: row.pw_data })).toThrow();
+    expect(() => open_(key, { iv: row.pw_iv!, tag: row.pw_tag!, data: row.pw_data! })).toThrow();
     expect((await confirm(confirmTokenOf(email))).status).toBe(201);
     const signIn = await h.req("POST", "/api/v1/auth/sign-in", { email, password: PW });
     expect(signIn.status, await signIn.clone().text()).toBeLessThan(300);

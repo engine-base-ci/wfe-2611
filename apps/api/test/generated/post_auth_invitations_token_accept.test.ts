@@ -50,7 +50,12 @@ describe("POST /api/v1/auth/invitations/:token/accept", () => {
     expect(readFileSync("apps/api/test/features/F2/invitation-accept-new.test.ts", "utf8")).toContain("K332-API-006");
   });
   it("test_post_auth_invitations_token_accept_rejected_422_2", () => {
-    // UNWANTED: IF リンクの招待で新しく参加する人のメールが無い・空・形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない
+    // UNWANTED: IF 送られたメールが空か形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない
+    // 本物の試験：apps/api/test/features/F10/invite-link-confirm.test.ts の「K422-API-003」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F10/invite-link-confirm.test.ts", "utf8")).toContain("K422-API-003");
+  });
+  it("test_post_auth_invitations_token_accept_conflict_3", () => {
+    // UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない
     // 本物の試験：apps/api/test/features/F10/invite-link-confirm.test.ts の「K422-API-003」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F10/invite-link-confirm.test.ts", "utf8")).toContain("K422-API-003");
   });
