@@ -11,13 +11,13 @@ export const fromCatalog = (
   o: { field?: string; detail?: Record<string, unknown>; message?: string } = {},
 ): HookReply => {
   const e = kanameError(code, o.detail ?? {});
-  return {
-    status,
-    body: {
-      ...e.toJSON(),
-      ...(o.field ? { field: o.field, details: [{ field: o.field, message: o.message ?? e.entry.message }] } : {}),
-    },
+  const body: Record<string, unknown> = {
+    ...e.toJSON(),
+    ...(o.field ? { field: o.field, details: [{ field: o.field, message: o.message ?? e.entry.message }] } : {}),
   };
+  // 404 には field・details・detail を付けない（在るかを漏らさない・控え帳 2026-11-20 16:51）：正本の体の空の detail も外す
+  if (status === 404) delete body["detail"];
+  return { status, body };
 };
 
 /** 入力の形違い（422・欄つき）。入口（op.ts）と同じ形 */
@@ -48,14 +48,11 @@ const asText = (v: unknown): string => (typeof v === "string" ? v : "");
 function targetReply(v: Record<string, unknown>): HookReply | null {
   const reason = asText(v["reason"]);
   if (Object.hasOwn(TARGET_SUSPENDED, reason))
-    return fromCatalog("E-HND-006", 422, {
-      field: "to_member_id",
-      detail: { 名前: asText(v["名前"]), 訳: TARGET_SUSPENDED[reason] },
-    });
-  if (reason === "gone") return fromCatalog("E-HND-014", 422, { field: "to_member_id" });
-  if (reason === "self") return fromCatalog("E-HND-010", 422, { field: "to_member_id" });
-  if (reason === "missing") return fromCatalog("E-HND-013", 422, { field: "to_member_id" });
-  if (reason === "scope") return fromCatalog("E-HND-012", 422, { field: "to_scope_id" });
+    return fromCatalog("E-HND-006", 409, { detail: { 名前: asText(v["名前"]), 訳: TARGET_SUSPENDED[reason] } });
+  if (reason === "gone") return fromCatalog("E-HND-014", 404);
+  if (reason === "self") return fromCatalog("E-HND-010", 409);
+  if (reason === "missing") return fromCatalog("E-HND-013", 422, { field: "to_member_id" }); // 契約の形（pass・distribute は相手かグループが要る）の外の入力
+  if (reason === "scope") return fromCatalog("E-HND-012", 404);
   return null;
 }
 
@@ -71,11 +68,10 @@ export function replyOf(v: { error: string; [k: string]: unknown }, where = "答
     const r = targetReply(v);
     if (r) return r;
   }
-  // 一緒に切り替えるもの：欄は switch（DB の関数が返した鍵 switch.<鍵> は理由の文に入れる）
-  if (word === "switch")
-    return fromCatalog("E-HND-011", 422, { field: "switch", message: asText(v["field"]) || "switch" });
+  // 一緒に切り替えるもの：ワークスペースの決まり（DB の中身）と合わない＝今の状態ではできない（409）。形の誤りは入口（input.ts）の 422
+  if (word === "switch") return fromCatalog("E-HND-011", 409);
   if (word === "replaces_decided" || word === "decided")
     return fromCatalog("E-HND-005", 409, { detail: { 状態: asText(v["state"]) } });
-  if (word === "due") return fromCatalog("E-HND-008", 422, { field: "reply_due" });
+  if (word === "due") return fromCatalog("E-HND-008", 409);
   return down(where, `知らない答え（${word}）`);
 }
