@@ -27,7 +27,14 @@ const DOC = join(ROOT, "07_functional/段8-F7");
 const LEAVES: Record<string, readonly string[]> = {
   "K-466": ["f7-shell-badges"],
   "K-467": ["f7-bell-open", "f7-bell-past", "f7-bell-filter", "f7-bell-empty", "f7-bell-failed", "f7-bell-mobile"],
-  "K-471": ["f7-search-start", "f7-search-results", "f7-search-empty", "f7-search-wait", "f7-search-failed", "f7-search-mobile"],
+  "K-471": [
+    "f7-search-start",
+    "f7-search-results",
+    "f7-search-empty",
+    "f7-search-wait",
+    "f7-search-failed",
+    "f7-search-mobile",
+  ],
   "K-478": [
     "f7-mine",
     "f7-mine-mobile",
