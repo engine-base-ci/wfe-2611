@@ -47,3 +47,14 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "listApprovalHistory"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-757：会話の一覧と会話の行の「続きの印」（cursor）も、口が前の答えで渡した鍵の文字列（base64url）だけを受ける。形（pattern）は合っていても、
+#   復号できない・時刻と id の 2 つに分かれない印は 422（欄 cursor）で断る（K757-API-004・K757-API-014）。形だけでは書けない決まりなので、
+#   この 2 つの口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない・K-161 の listApprovalQueue と同じ）
+[[operations]]
+include-operation-id = "listConversations"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+[[operations]]
+include-operation-id = "listConversationMessages"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
