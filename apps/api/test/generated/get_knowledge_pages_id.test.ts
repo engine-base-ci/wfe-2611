@@ -21,7 +21,7 @@ describe("GET /api/v1/knowledge_pages/:id", () => {
     // 本物の試験：apps/api/test/features/F9/knowledge-page-read.test.ts の「K677-API-012」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F9/knowledge-page-read.test.ts", "utf8")).toContain("K677-API-012");
   });
-  // 当てはまらない（道の id が uuid でない行は共有の試験 K144-API-100（K-675 の葉のファイル）が受ける）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
+  // 当てはまらない（道の id が uuid でない行は共有の試験 K144-API-100（この葉の葉のファイル k144.d/K-677.ts）が受ける）：UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
   it.todo("test_get_knowledge_pages_id_rejected_422");
   it("test_get_knowledge_pages_id_session_unresolved", () => {
     // UNWANTED: IF DB が使えないなら、Kaname は 503 と E-PAGE-003 を返し、ページもフォルダも変えない
