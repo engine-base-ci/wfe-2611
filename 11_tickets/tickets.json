@@ -21637,11 +21637,11 @@
    ],
    "tests": [
     "apps/api/test/features/F4/ticket-duplicate.test.ts",
-    "apps/api/test/features/F4/ticket-duplicate-children.test.ts",
-    "apps/api/test/generated/post_tickets.test.ts"
+    "apps/api/test/features/F4/ticket-duplicate-children.test.ts"
    ],
    "carry": [
-    "apps/api/test/features/F4/ticket-duplicate.harness.ts"
+    "apps/api/test/features/F4/ticket-duplicate.harness.ts",
+    "apps/api/test/generated/post_tickets.test.ts"
    ],
    "depends_on": [
     "K-437",
