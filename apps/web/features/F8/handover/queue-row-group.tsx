@@ -133,7 +133,7 @@ function AssignFlow({ row, groupName, onClose, onRefresh }: AssignFlowProps) {
     <PickDialog
       open={loaded}
       members={members}
-      intro={`グループ「${groupName}」の人から担当者を選びます。選ぶとすぐその人が担当者になり、知らせが届きます`}
+      intro={`グループ「${groupName}」の人から担当者を選びます。選ぶとすぐその人が担当者になり、お知らせが届きます`}
       query={query}
       onQueryChange={setQuery}
       onPick={(id) => void pick(id)}
