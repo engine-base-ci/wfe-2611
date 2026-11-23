@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-23",
  "summary": {
   "total_screens": 37,
-  "total_apis": 369,
+  "total_apis": 366,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -880,11 +880,6 @@
     {
      "role": "data_fetch",
      "endpoint": "GET /api/v1/clones/me/activity",
-     "act": "A53"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/clones/me/activity/export",
      "act": "A53"
     },
     {
@@ -2422,16 +2417,6 @@
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/test-specs/lint",
      "act": "A102"
-    },
-    {
-     "role": "data_fetch",
-     "endpoint": "GET /api/v1/tickets/:id/checks",
-     "act": "A102"
-    },
-    {
-     "role": "action",
-     "endpoint": "POST /api/v1/checks/:id/human",
-     "act": "A15"
     },
     {
      "role": "action",

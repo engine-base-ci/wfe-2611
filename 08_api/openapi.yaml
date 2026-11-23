@@ -12280,6 +12280,52 @@ components:
       properties: {}
       additionalProperties: false
       x-operation: takeoverActionRun
+    ActionRunStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopActionRun
+    ApprovalStopInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: stopApproval
+    ApprovalWithdrawInput:
+      type: object
+      properties: {}
+      additionalProperties: false
+      x-operation: withdrawApproval
+    ConversationEntriesInput:
+      type: object
+      properties:
+        entries:
+          type: array
+          minItems: 1
+          maxItems: 500
+      additionalProperties: false
+      x-operation: mirrorConversationEntries
+      required:
+      - entries
+      x-required-by: hooks
+    BridgeBrowserStateInput:
+      type: object
+      properties:
+        browser:
+          type: string
+          enum:
+          - chrome
+          - dedicated
+        state:
+          type: string
+          enum:
+          - using
+          - 'off'
+      additionalProperties: false
+      x-operation: reportBrowserState
+      required:
+      - browser
+      - state
+      x-required-by: hooks
     ScopeOverview:
       type: object
       properties:
@@ -12503,8 +12549,11 @@ components:
     CloneNow:
       type: object
       properties:
+        pc:
+          type: object
         current:
           type: object
+          nullable: true
         next:
           type: array
           items:
@@ -14339,6 +14388,66 @@ components:
         position:
           type: integer
       x-operation: listTicketFields
+    ActionRunStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        ticket_id:
+          type: string
+        phase:
+          type: string
+        status:
+          type: string
+        stopped_reason:
+          type: string
+          nullable: true
+        stopped_at:
+          type: string
+          nullable: true
+      x-operation: stopActionRun
+    ApprovalStopped:
+      type: object
+      properties:
+        id:
+          type: string
+        decision:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          nullable: true
+        status_id:
+          type: string
+          nullable: true
+        ticket_id:
+          type: string
+          nullable: true
+      x-operation: stopApproval
+    ApprovalWithdrawn:
+      type: object
+      properties:
+        id:
+          type: string
+        withdrawn_at:
+          type: string
+        ticket_id:
+          type: string
+        approval_id:
+          type: string
+      x-operation: withdrawApproval
+    MyClone:
+      type: object
+      properties:
+        name:
+          type: string
+        full_name:
+          type: string
+        since:
+          type: string
+        pc:
+          type: object
+      x-operation: getMyClone
     ConversationView:
       type: object
       properties:
@@ -14402,6 +14511,45 @@ components:
           type: object
           nullable: true
       x-operation: listConversationMessages
+    ConversationEntriesMirrored:
+      type: object
+      properties:
+        inserted:
+          type: integer
+      x-operation: mirrorConversationEntries
+    MirrorTarget:
+      type: object
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+        agent_session_id:
+          type: string
+        job_id:
+          type: string
+          format: uuid
+      x-operation: listMirrorTargets
+    BridgeBrowserReported:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      x-operation: reportBrowserState
+    BridgeJobFile:
+      type: object
+      properties:
+        url:
+          type: string
+        name:
+          type: string
+          nullable: true
+        mime:
+          type: string
+          nullable: true
+        size:
+          type: integer
+          nullable: true
+      x-operation: getFileForBridge
     Error:
       type: object
       properties:
@@ -14647,6 +14795,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人。ブラウザの様子の写しは担当者と承認する人だけ
       x-step-up: false
@@ -14733,7 +14884,7 @@ paths:
       - D-125.105
       - D-125.167
       x-permission: assignee
-      x-permission-scope: 担当者・承認する人・マネージャー
+      x-permission-scope: そのチケットの担当者だけ（任せた人・マネージャーは止められない）。承認の後の実行も止められる
       x-step-up: false
       security:
       - session: []
@@ -14749,7 +14900,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ActionRunsInput'
+              $ref: '#/components/schemas/ActionRunStopInput'
       responses:
         '201':
           description: 成功
@@ -14759,7 +14910,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/ActionRuns'
+                    $ref: '#/components/schemas/ActionRunStopped'
                   meta:
                     type: object
         '401':
@@ -14769,7 +14920,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-RUN-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -14781,13 +14932,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-RUN-002
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -14806,12 +14963,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15367,7 +15518,7 @@ paths:
       - D-125.85
       - D-126.18
       x-permission: approver
-      x-permission-scope: 承認する人・担当者・マネージャー
+      x-permission-scope: 承認する人（今の担当者）だけ。成果物は使わずに止める
       x-step-up: false
       security:
       - session: []
@@ -15383,7 +15534,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalStopInput'
       responses:
         '201':
           description: 成功
@@ -15393,7 +15544,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalStopped'
                   meta:
                     type: object
         '401':
@@ -15415,13 +15566,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-CONF-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15440,12 +15597,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15470,7 +15621,7 @@ paths:
       - D-125.105
       - D-125.167
       x-permission: approver
-      x-permission-scope: 承認した本人だけ・実行中になる前だけ（D-125.105）
+      x-permission-scope: 承認した本人だけ・PC がまだ仕事を受け取る前だけ（D-125.105）。承認待ちに戻す
       x-step-up: false
       security:
       - session: []
@@ -15486,7 +15637,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApprovalsInput'
+              $ref: '#/components/schemas/ApprovalWithdrawInput'
       responses:
         '201':
           description: 成功
@@ -15496,7 +15647,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Approvals'
+                    $ref: '#/components/schemas/ApprovalWithdrawn'
                   meta:
                     type: object
         '401':
@@ -15518,13 +15669,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-APR-010／E-APR-011／E-APR-012
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -15543,12 +15700,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -18732,8 +18883,11 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
-      x-permission-scope: その仕事に付いたファイルだけ（期限つきの署名 URL）
+      x-permission-scope: その仕事に付いた資料だけ（期限つきの署名 URL）。動いている仕事の間だけ（K-761）
       x-step-up: false
       security:
       - session: []
@@ -18743,6 +18897,13 @@ paths:
         required: true
         schema:
           type: string
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      - name: job_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
       responses:
         '200':
           description: 成功
@@ -18752,7 +18913,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Attachments'
+                    $ref: '#/components/schemas/BridgeJobFile'
                   meta:
                     type: object
         '401':
@@ -18773,20 +18934,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '404':
+          description: NOT_FOUND
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '502':
-          description: EXTERNAL_FAILED
+          description: E-TALK-040／EXTERNAL_FAILED
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -19020,8 +19187,11 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
-      x-permission-scope: 同上。写しに預けたログイン情報が写り込んだら隠してから送る（D-128.57）
+      x-permission-scope: 同上。仕事の間のブラウザの様子（使う・使えない）だけ。写真・画面の写しは送らない（K-761）
       x-step-up: false
       security:
       - session: []
@@ -19037,7 +19207,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BridgeJobEventsInput'
+              $ref: '#/components/schemas/BridgeBrowserStateInput'
       responses:
         '201':
           description: 成功
@@ -19047,7 +19217,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/BridgeJobEvents'
+                    $ref: '#/components/schemas/BridgeBrowserReported'
                   meta:
                     type: object
         '401':
@@ -19080,6 +19250,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '413':
           description: PAYLOAD_TOO_LARGE
           content:
@@ -19094,12 +19270,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -19121,6 +19291,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上（止める・割り込みの指示を受け取る）
       x-step-up: false
@@ -19248,7 +19421,7 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: device
-      x-permission-scope: 同上（会話の記録の写し。正は本人の PC・D-112）
+      x-permission-scope: 同上（その仕事を受け取った PC だけ。会話は仕事から決める・記録と同じ id の文だけ写す・D-112）
       x-step-up: false
       security:
       - session: []
@@ -19264,7 +19437,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MessagesInput'
+              $ref: '#/components/schemas/ConversationEntriesInput'
       responses:
         '201':
           description: 成功
@@ -19274,7 +19447,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Messages'
+                    $ref: '#/components/schemas/ConversationEntriesMirrored'
                   meta:
                     type: object
         '401':
@@ -19296,13 +19469,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-TALK-030
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -19321,12 +19500,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -19351,6 +19524,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上
       x-step-up: false
@@ -19455,6 +19631,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その仕事を受け取った PC だけ
       x-step-up: false
@@ -19745,6 +19924,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: 同上。分身は本人の権限の中でだけ Kaname の道具を呼べる
       x-step-up: false
@@ -19861,6 +20043,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: device
       x-permission-scope: その人の PC に渡された仕事だけ。使えない道具と止めるサイト（D-107）を一緒に渡す
       x-step-up: false
@@ -19935,7 +20120,7 @@ paths:
   /api/v1/bridge/mirror-targets:
     get:
       operationId: listMirrorTargets
-      summary: 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成
+      summary: 取得（conversations）— PC が写し漏れを取り戻す先を読む（直近 14 日の本人の会話と、そこで使った Claude Code の session）
       tags:
       - conversations
       x-acts:
@@ -19991,17 +20176,11 @@ paths:
       - D-125.167
       - D-126.18
       x-permission: device
-      x-permission-scope: 同上（取り戻す先：直近の本人の会話と、そこで使った Claude Code の session・D-112）
+      x-permission-scope: 同上（直近 14 日の本人の会話と、そこで使った Claude Code の session と最新の仕事の id）
       x-step-up: false
       security:
       - session: []
       parameters:
-      - name: scope_id
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          format: uuid
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -20014,36 +20193,7 @@ paths:
         schema:
           type: integer
           minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - agent_session_id
-          - area
-          - branched_from_message_id
-          - closed_at
-          - created_at
-          - created_by
-          - deleted_at
-          - id
-          - incognito
-          - last_read_at
-          - owner_member_id
-          - parent_conversation_id
-          - participant_member_ids
-          - scope_id
-          - starred_at
-          - subject_type
-          - talk_kind
-          - tenant_id
-          - ticket_id
-          - title
-          - title_auto
-          - updated_at
-          - updated_by
+          maximum: 50
       responses:
         '200':
           description: 成功
@@ -20055,7 +20205,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Conversations'
+                      $ref: '#/components/schemas/MirrorTarget'
                   meta:
                     type: object
         '401':
@@ -20076,6 +20226,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
           content:
@@ -20084,12 +20240,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -20454,114 +20604,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '403':
           description: FORBIDDEN
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/checks/{id}/human:
-    post:
-      operationId: markHumanCheck
-      summary: 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める
-      tags:
-      - checks
-      x-acts:
-      - A15
-      x-screens:
-      - tickets
-      x-choke-points:
-      - C2
-      x-source:
-      - D-008.2
-      - D-012
-      - D-012.1
-      - D-013.10
-      - D-013.8
-      - D-037
-      - D-037.5
-      - D-040
-      - D-042.9
-      - D-060.3
-      - D-066.3
-      - D-125.103
-      - D-125.152
-      - D-125.167
-      - D-125.19
-      - D-125.85
-      - D-126.18
-      x-permission: approver
-      x-permission-scope: ③ 人の確認を割り当てられた人（承認する人）
-      x-step-up: false
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ChecksInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/Checks'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -22386,7 +22428,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Clones'
+                    $ref: '#/components/schemas/MyClone'
                   meta:
                     type: object
         '401':
@@ -22623,94 +22665,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '422':
           description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/clones/me/activity/export:
-    post:
-      operationId: exportCloneActivity
-      summary: 作成・実行（clones）— 分身がやったことを見る → チケットへ戻る
-      tags:
-      - export_jobs
-      x-acts:
-      - A53
-      x-screens:
-      - ai-activity
-      x-choke-points:
-      - C2
-      x-source:
-      - D-037
-      - D-037.5
-      - D-042
-      - D-062
-      - D-062.6
-      - D-125.106
-      - D-125.107
-      - D-125.152
-      - D-125.167
-      - D-126.18
-      x-permission: self
-      x-permission-scope: 自分の分身がやったことだけ
-      x-step-up: false
-      security:
-      - session: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportJobsInput'
-      responses:
-        '201':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ExportJobs'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '409':
-          description: CONFLICT
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
           content:
             application/json:
               schema:
@@ -44129,126 +44083,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/tickets/{id}/checks:
-    get:
-      operationId: listChecks
-      summary: 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か
-      tags:
-      - checks
-      x-acts:
-      - A102
-      x-screens:
-      - tickets
-      x-choke-points: []
-      x-source:
-      - D-125.167
-      - D-125.17
-      - D-125.79
-      - D-125.82
-      - D-125.83
-      x-permission: read
-      x-permission-scope: そのチケットを見られる人
-      x-step-up: false
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: cursor
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          pattern: ^[0-9]{1,9}$
-      - name: limit
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - artifact_version_id
-          - attempt
-          - checked_by_member_id
-          - created_at
-          - created_by
-          - deleted_at
-          - evidence
-          - id
-          - result
-          - runner
-          - spec_version
-          - tenant_id
-          - test_spec_id
-          - ticket_id
-          - updated_at
-          - updated_by
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Checks'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '502':
-          description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/v1/tickets/{id}/client-share:
     patch:
       operationId: updateTicketClientShare
@@ -44340,7 +44174,7 @@ paths:
   /api/v1/tickets/{id}/complete:
     post:
       operationId: completeTicket
-      summary: 作成・実行（tickets）— 完了にする（ナレッジ更新の候補を確定・作らない理由も残す
+      summary: 作成・実行（tickets）— 完了にする
       tags:
       - tickets
       x-acts:
@@ -44355,6 +44189,7 @@ paths:
       - D-125.167
       - D-125.55
       - D-125.59
+      - D-153.15
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ
       x-step-up: false
@@ -44664,6 +44499,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: write
       x-permission-scope: そのチケットを直せる人なら誰でも（D-128.138）。動くのは押した人の AI（その人の PC）
       x-step-up: false
@@ -45635,6 +45473,9 @@ paths:
       - D-125.167
       - D-125.42
       - D-126.15
+      - D-153.18
+      - D-153.19
+      - D-153.2
       x-permission: read
       x-permission-scope: そのチケットを見られる人
       x-step-up: false
