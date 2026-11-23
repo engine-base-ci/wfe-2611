@@ -2248,7 +2248,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-681"
+   ]
   },
   {
    "op": "deleteKnowledgePage",
@@ -2263,7 +2265,9 @@
     "knowledge_pages"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-681"
+   ]
   },
   {
    "op": "archiveKnowledgePage",
