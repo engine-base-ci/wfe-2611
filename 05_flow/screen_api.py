@@ -949,6 +949,13 @@ PATH_PATTERNS = {
 #   type・format・nullable は変えない（入口の zod は値域の言葉を読まない＝今のエラー ID と文言のまま）。値域は口が受ける値の集合より狭く書かない
 _CODE_SEP = "\\s\\-‐‑‒–—―ー−－"
 _CODE_CHAR = "2-9A-HJKMNP-Za-hjkmnp-z２-９Ａ-ＨＪＫＭＮＰ-Ｚａ-ｈｊｋｍｎｐ-ｚ"
+# K-437：作る口の本文 body の木の形（doc_shape）を下の値域の字に書くため、scripts/ci を import の道に入れる（下の断片を足す前の行と同じ文）
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
+import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432 と同じ定義・K-437）
+
 VALUE_RANGES = {
     "createTicket": {   # apps/api/src/features/F4/create-ticket/input.ts の checkCreate
         "title": {"pattern": "\\S", "maxLength": 200},   # 口の TITLE_MAX（生の字で数える・NFKC で整えない・D-150.34）
@@ -960,11 +967,13 @@ VALUE_RANGES = {
         "sections": {"propertyNames": {"pattern": "^[a-z][a-z0-9_]{0,40}$"},
                      "additionalProperties": {"type": "string"}},   # 区画の中身の上限は置かない（D-130.3）。守りは送る量 1MB だけ
         "notify_member_ids": {"maxItems": 20},
-        # K-437：会社の項目（鍵は項目の id・値は文字・数・真偽・文字の並び・null）と確認項目（文字の並び・50 件まで）。本文 body の木は下（doc_shape・scripts/ci が import の道に入ってから足す）
+        # K-437：会社の項目（鍵は項目の id・値は文字・数・真偽・文字の並び・null）と確認項目（文字の並び・50 件まで）
         "fields": {"propertyNames": {"pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"},
                    "additionalProperties": {"anyOf": [{"type": "string"}, {"type": "number"}, {"type": "boolean"},
                                                       {"type": "array", "items": {"type": "string"}}], "nullable": True}},
         "specs": {"maxItems": 50},
+        # K-437：本文 body は { doc } だけ（text・知らない鍵は 422）。木の形は updateTicketBody の doc と同じ定義（K-561・K-584 の validateDoc）
+        "body": {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}},
         # K-581：作るときにつなぐ相手（payload.ts の checkLinks・0〜20 件・同じ組なし・要素は kind と other_ticket_id の 2 つだけ）。相手が選べるかは DB（K-441 の app.ticket_link_add）
         "links": {"maxItems": 20, "uniqueItems": True, "items": {"type": "object", "required": ["kind", "other_ticket_id"], "additionalProperties": False,
                                                                  "properties": {"kind": {"enum": ["related", "derived_from"]}, "other_ticket_id": {"type": "string", "format": "uuid"}}}},
@@ -997,11 +1006,7 @@ VALUE_RANGES = {
 }
 # 形全体の決まり（欄をまたぐ決まり・K-355）：operationId → JSON Schema の言葉（oneOf／anyOf／allOf／not だけ）。その口の入力の形にそのまま重ねる。
 #   中で使う欄の名前（properties・required）は入力の形に在る物だけ（作り手 05_flow/build_api.py が確かめて止める）。チケットごとの分は screen_api.d に書く
-INPUT_RULES: dict[str, dict] = {
-    # K-437：優先度が高なら理由（空白だけでない字）が要る（無ければ口が 422・欄 priority_reason）。中・空・優先度なしなら理由は問わない
-    "createTicket": {"anyOf": [{"not": {"properties": {"priority": {"enum": ["high"]}}, "required": ["priority"]}},
-                               {"properties": {"priority_reason": {"type": "string", "pattern": "\\S"}}, "required": ["priority_reason"]}]},
-}
+INPUT_RULES: dict[str, dict] = {}
 # 問い合わせの値域（K-468）：operationId → 問い合わせの名前 → JSON Schema の言葉（enum・pattern・minLength・maxLength・format・anyOf だけ）。
 #   その口の問い合わせの欄に重ねる（作り手 05_flow/build_api.py の qparams）。口が 422 にするのは、契約に書けるこの形に合わない値だけ（書けない決まりの例外の表は足さない）。
 #   名前が *_id・*_ids で終わる欄には書けない（uuid の形を壊さない）。チケットごとの分は screen_api.d の断片が同じ名前の表で足す
@@ -1630,10 +1635,6 @@ from pathlib import Path as _Path  # noqa: E402
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "scripts" / "ci"))
 from registry_d import merge_py as _merge_py  # noqa: E402
 import credential_patterns as _CP  # noqa: E402  預けたログイン情報の口が打ったとおりを照らす pattern（K-383・口は apps/api/src/features/F3/credentials/patterns.ts）
-import doc_shape as _DS  # noqa: E402  本文 1 枚の文書の木の形（K-432 と同じ定義・K-437）
-
-# K-437：作る口の本文 body は { doc } だけ（text・知らない鍵は 422）。木の形は updateTicketBody の doc と同じ定義（K-561・K-584 の validateDoc）
-VALUE_RANGES["createTicket"]["body"] = {"required": ["doc"], "propertyNames": {"pattern": "^doc$"}, "properties": {"doc": _DS.doc_schema()}}
 
 _merge_py(globals(), _Path(__file__).resolve().parent / "screen_api.d", screen_lists=("SCREEN_API",),
           helpers={"T": T, "_CODE_SEP": _CODE_SEP, "_CODE_CHAR": _CODE_CHAR, "_CP": _CP})
