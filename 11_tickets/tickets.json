@@ -22601,7 +22601,8 @@
    "canvas": [],
    "canvas_none": "見た目を変えない（Bridge の道具の定義だけ）。本人の画面には出ない",
    "affects": [
-    "@kaname/bridge"
+    "@kaname/bridge",
+    "@kaname/api"
    ],
    "ci_wide": [],
    "changes": [
