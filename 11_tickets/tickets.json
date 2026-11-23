@@ -2414,7 +2414,6 @@
     "listTicketArtifacts",
     "listTicketLinks",
     "listTicketReferences",
-    "listTicketStages",
     "listTicketVersions",
     "listWorkTypeCandidates",
     "makeKindTemplateFromTicket",
@@ -2431,7 +2430,6 @@
     "apps/api/test/generated/get_artifact_versions_id.test.ts",
     "apps/api/test/generated/get_clients.test.ts",
     "apps/api/test/generated/get_ticket_imports_id.test.ts",
-    "apps/api/test/generated/get_ticket_stages.test.ts",
     "apps/api/test/generated/get_tickets_id_artifacts.test.ts",
     "apps/api/test/generated/get_tickets_id_checks.test.ts",
     "apps/api/test/generated/get_tickets_id_kind_change_preview.test.ts",
@@ -3327,18 +3325,27 @@
     "checkRule",
     "countKnows",
     "createMemory",
-    "createTicketStage",
     "deleteMemory",
-    "deleteTicketStage",
     "dismissLearningCandidate",
     "listLearningCandidates",
     "listMemories",
     "postponeLearningCandidate",
     "promoteMemoryToRule",
-    "reorderTicketStages",
     "requestRuleException",
     "updateMemory",
-    "updateTicketStage"
+    "listKindTemplateUpdates",
+    "applyKindTemplateUpdate",
+    "createEscalationRule",
+    "updateEscalationRule",
+    "deleteEscalationRule",
+    "previewEscalationRule",
+    "getWorkspaceRules",
+    "createWorkspaceRule",
+    "updateWorkspaceRule",
+    "deleteWorkspaceRule",
+    "getTicketShape",
+    "saveTicketShape",
+    "previewTicketShapeChange"
    ],
    "tests": [
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
@@ -22614,14 +22621,16 @@
     "createTicketStage",
     "updateTicketStage",
     "deleteTicketStage",
-    "reorderTicketStages"
+    "reorderTicketStages",
+    "listTicketStages"
    ],
    "canvas": [],
    "canvas_none": "見た目を変えない口と DB の葉。状態の画面は K-708 が持つ（正は /dev/mock/f9 の set-stages）",
    "affects": [
     "@kaname/api",
     "@kaname/contracts",
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/errors"
    ],
    "ci_wide": [
     "db",

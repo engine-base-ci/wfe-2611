@@ -49,52 +49,49 @@ const CONFLICT: Record<string, string> = {
   order_ends: "E-STG-007",
 };
 
-const invalid = (field: string): HookReply => ({
-  status: 422,
-  body: {
-    error: "validation_failed",
-    code: "VALIDATION_ERROR",
-    details: [{ field, message: "入力内容を確認してください" }],
-  },
-});
-const notFound = (): HookReply => ({ status: 404, body: { error: "not_found", code: "E-PAGE-001" } });
-const forbidden = (): HookReply => ({ status: 403, body: { error: "forbidden", code: "FORBIDDEN" } });
-const unavailable = (): HookReply => ({ status: 503, body: kanameError("E-PAGE-003").toJSON() });
-const conflict = (code: string, detail?: Record<string, unknown>): HookReply => {
+function invalid(field: string): HookReply {
+  return {
+    status: 422,
+    body: {
+      error: "validation_failed",
+      code: "VALIDATION_ERROR",
+      details: [{ field, message: "入力内容を確認してください" }],
+    },
+  };
+}
+function notFound(): HookReply {
+  return { status: 404, body: { error: "not_found", code: "E-PAGE-001" } };
+}
+function forbidden(): HookReply {
+  return { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } };
+}
+function unavailable(): HookReply {
+  return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
+}
+function conflict(code: string, detail?: Record<string, unknown>): HookReply {
   const e = kanameError(code);
   return { status: e.status, body: { error: e.entry.cls, code: e.code, ...(detail ? { detail } : {}) } };
-};
-const kindOf = (e: unknown): string => {
+}
+function kindOf(e: unknown): string {
   const x = e as { code?: unknown; name?: unknown } | null;
   return typeof x?.code === "string" ? x.code : typeof x?.name === "string" ? x.name : "Error";
-};
+}
 
-/** 関数の答え → 口の答え（ok は okStatus） */
-const reply = (v: Outcome | undefined, okStatus: number): HookReply => {
+/** 関数の答え → 口の答え（ok は okStatus）。対象を指さない口（足す・並べる）用：404 は返さない */
+function settle(v: Outcome | undefined, okStatus: number): HookReply {
   if (!v) return unavailable();
   if ("data" in v) return { status: okStatus, body: { data: v.data } };
   if (v.error === "forbidden") return forbidden();
-  if (v.error === "not_found") return notFound();
   if (v.error === "invalid") return invalid(v.field ?? "body");
   const code = CONFLICT[v.error];
   if (!code) return unavailable();
   return v.error === "in_use" ? conflict(code, { ticket_count: v.ticket_count ?? 0 }) : conflict(code);
-};
-
-/** 関数を 1 つの取引で呼ぶ。例外は 503（何も残らない） */
-const callFn =
-  (appPool: pg.Pool, where: string, sql: string, params: (a: HookArgs) => unknown[] | HookReply, okStatus: number) =>
-  async (a: HookArgs): Promise<HookReply> => {
-    const p = params(a);
-    if (!Array.isArray(p)) return p;
-    try {
-      const v = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<{ v: Outcome }>(sql, p)).rows[0]?.v);
-      return reply(v, okStatus);
-    } catch (e) {
-      console.error(`[ticket-stages] ${where}できなかった（${kindOf(e)}）`);
-      return unavailable();
-    }
-  };
+}
+/** 対象（:id）を指す口（直す・消す）用：無い・見えない状態は 404 */
+function settleTarget(v: Outcome | undefined, okStatus: number): HookReply {
+  if (v && "error" in v && v.error === "not_found") return notFound();
+  return settle(v, okStatus);
+}
 
 const LIST_SQL =
   "select id, key, name, color_key, position, is_fixed from ticket_stages where deleted_at is null order by position, id";
@@ -115,6 +112,27 @@ export function createListTicketStages(appPool: pg.Pool): (a: HookArgs) => Promi
   };
 }
 
+/** 関数を 1 つの取引で呼ぶ。例外は 503（何も残らない）。答えの形は口ごとに answer が決める */
+function callFn(
+  appPool: pg.Pool,
+  where: string,
+  sql: string,
+  params: (a: HookArgs) => unknown[] | HookReply,
+  answer: (v: Outcome | undefined) => HookReply,
+): (a: HookArgs) => Promise<HookReply> {
+  return async (a: HookArgs): Promise<HookReply> => {
+    const p = params(a);
+    if (!Array.isArray(p)) return p;
+    try {
+      const v = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<{ v: Outcome }>(sql, p)).rows[0]?.v);
+      return answer(v);
+    } catch (e) {
+      console.error(`[ticket-stages] ${where}できなかった（${kindOf(e)}）`);
+      return unavailable();
+    }
+  };
+}
+
 export const createCreateTicketStage = (appPool: pg.Pool) =>
   callFn(
     appPool,
@@ -125,7 +143,7 @@ export const createCreateTicketStage = (appPool: pg.Pool) =>
       if (typeof a.input["color_key"] !== "string") return invalid("color_key");
       return [a.input["name"], a.input["color_key"]];
     },
-    201,
+    (v) => settle(v, 201),
   );
 
 export const createUpdateTicketStage = (appPool: pg.Pool) =>
@@ -140,11 +158,17 @@ export const createUpdateTicketStage = (appPool: pg.Pool) =>
       if (!Object.keys(patch).length) return invalid("body");
       return [a.id, JSON.stringify(patch)];
     },
-    200,
+    (v) => settleTarget(v, 200),
   );
 
 export const createDeleteTicketStage = (appPool: pg.Pool) =>
-  callFn(appPool, "消す", "select app.ticket_stage_delete($1) as v", (a) => [a.id], 200);
+  callFn(
+    appPool,
+    "消す",
+    "select app.ticket_stage_delete($1) as v",
+    (a) => [a.id],
+    (v) => settleTarget(v, 200),
+  );
 
 export const createReorderTicketStages = (appPool: pg.Pool) =>
   callFn(
@@ -156,5 +180,5 @@ export const createReorderTicketStages = (appPool: pg.Pool) =>
       if (!Array.isArray(ids) || !ids.length) return invalid("stage_ids");
       return [ids];
     },
-    200,
+    (v) => settle(v, 200),
   );
