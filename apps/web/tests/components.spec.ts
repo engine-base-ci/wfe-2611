@@ -86,7 +86,7 @@ test("KN104-006 知らせ：帯は role=status／alert。小さな知らせは�
   await page.getByRole("button", { name: "失敗の知らせ" }).click();
   const err = page.locator(".k-toast").filter({ hasText: "保存できませんでした" });
   await expect(err).toBeVisible();
-  const region = page.getByRole("region", { name: /^知らせ alt\+T$/ });
+  const region = page.getByRole("region", { name: /^お知らせ alt\+T$/ });
   await expect(region).toBeAttached();
   // 閉じるはいつも出ている（マウスでもキーボードでも閉じられる）
   await err.getByRole("button", { name: "閉じる" }).click();

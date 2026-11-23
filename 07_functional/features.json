@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
+  "created_at": "2026-11-23",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -116,6 +116,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -129,6 +131,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -879,6 +885,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -892,6 +900,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -1948,6 +1960,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -1961,6 +1975,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -2480,6 +2498,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -2493,6 +2513,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -3829,6 +3853,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -3842,6 +3868,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -5526,6 +5556,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -5539,6 +5571,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -7803,6 +7839,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -7816,6 +7854,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -8206,6 +8248,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -8219,6 +8263,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
@@ -8542,6 +8590,8 @@
     "E-VWS-006",
     "E-VWS-007",
     "E-VWS-008",
+    "E-VWS-020",
+    "E-VWS-021",
     "E-STP-001",
     "E-STP-002",
     "E-STP-003",
@@ -8555,6 +8605,10 @@
     "E-DEL-012",
     "E-DEL-013",
     "E-DEL-014",
+    "E-DEL-040",
+    "E-DEL-041",
+    "E-DEL-042",
+    "E-DEL-043",
     "E-CONF-020"
    ],
    "policies": [
