@@ -1,6 +1,8 @@
 // AI が使うブラウザ（T-B-37・D-119・D-120）を画面から通しで確かめる。画面 → API → 本物の Bridge の輪 → CLI（偽物）→ API → 画面。
 //   Chrome を選んだ仕事にだけ Claude in Chrome が渡り、拡張機能とつながっていなければ会話に 1 行出て、PC の状態にも赤で出る。
 //   その 1 行と PC の画面から、つなぎ方・もう一度確かめる・専用のブラウザに切り替える がその場でできる。選ぶのは Kaname の PC の画面。
+//   PC の画面は K-57 の新しい画面（/setup/bridge・features/F3/connect-pc）の PC の行：選ぶ欄 [data-browser-pick]・その場の一手 [data-part="browser-fix"]
+//   （K-368 が契約の口 updateMyDevice・checkMyDeviceBrowser につないだ。前の画面の自己診断の表 tr[data-check] は新しい画面に無い）
 //   テストの名前に正本の行 ID を持つ（op_gate.py）。本人の本物の Bridge は止めない（hideRealBridge）
 import { expect, test, type Page } from "@playwright/test";
 import { admin, hideRealBridge, loginAs, setupStep, signupViaApi } from "../_lib/api";
@@ -47,8 +49,10 @@ async function say(page: Page, text: string) {
   await box.press("Enter");
 }
 const offLine = (page: Page) => page.locator('[data-notice="browser-off"]');
-const chromeRow = (page: Page) =>
-  page.locator("tr[data-check]", { hasText: "AI が Chrome を使える（Claude in Chrome）" });
+/** PC の画面の PC の行（試験の Bridge は 1 台）・選ぶ欄・その場の一手（K-368） */
+const pcRow = (page: Page) => page.locator('section[aria-labelledby="pc-list-title"] .k-pc-row').first();
+const pcPick = (page: Page) => pcRow(page).locator("[data-browser-pick]");
+const pcFix = (page: Page) => pcRow(page).locator('[data-part="browser-fix"]');
 const browserOf = async (memberId: string) =>
   (
     await admin<{ b: string }>(
@@ -101,9 +105,9 @@ test("CHT-37-006 SCR-CLONE-CHAT-294 Chrome の拡張機能とつながってい�
     .toContain('"ok":false');
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  await expect(chromeRow(page)).toHaveAttribute("data-check", "ng", { timeout: 15_000 });
-  await expect(chromeRow(page)).toContainText("できません");
-  await expect(page.locator("[data-browser-off]"), "PC の画面にも、その場でやる一手が出る").toBeVisible();
+  await expect(pcFix(page), "PC の画面にも、その場でやる一手が出る").toBeVisible({ timeout: 15_000 });
+  await expect(pcFix(page).locator(".k-pc-part-title")).toHaveText("AI が Chrome を使えません。");
+  await expect(pcPick(page).locator('input[value="chrome"]')).toBeChecked();
 });
 
 test("CHT-37-010 SCR-CLONE-CHAT-288 会話の 1 行と PC の画面の「つなぎ方を見る」で、3 つの手順と公式の入口が出る", async ({
@@ -122,13 +126,14 @@ test("CHT-37-010 SCR-CLONE-CHAT-288 会話の 1 行と PC の画面の「つな�
   const link = fix.locator("[data-browser-install]");
   await expect(link).toHaveAttribute("href", CWS);
   await expect(link).toHaveAttribute("target", "_blank");
-  // PC の画面は最初から開いている
+  // PC の画面の行の一手も、閉じた形で出て押すと開く（K-368・下絵 pc-browser-fix）
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  const pcFix = page.locator("[data-browser-off] [data-browser-fix]");
-  await expect(pcFix.locator("ol li")).toHaveCount(3, { timeout: 15_000 });
-  await expect(pcFix.locator("ol")).toBeVisible();
-  await expect(pcFix.locator("[data-browser-install]")).toHaveAttribute("href", CWS);
+  await expect(pcFix(page)).toBeVisible({ timeout: 15_000 });
+  await expect(pcFix(page).locator("ol")).toBeHidden();
+  await pcFix(page).getByText("つなぎ方を見る").click();
+  await expect(pcFix(page).locator("ol li")).toHaveCount(3);
+  await expect(pcFix(page).locator("[data-browser-install]")).toHaveAttribute("href", CWS);
 });
 
 test("CHT-37-011 「もう一度確かめる」で Bridge が小さな仕事で試し、つながれば「つながりました」と出て、PC の画面の行が「できる」になる。会話には出ない", async ({
@@ -149,8 +154,8 @@ test("CHT-37-011 「もう一度確かめる」で Bridge が小さな仕事で�
   await expect(page.locator(".msg"), "会話に吹き出しは増えない").toHaveCount(bubbles);
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  await expect(chromeRow(page)).toHaveAttribute("data-check", "ok", { timeout: 15_000 });
-  await expect(page.locator("[data-browser-off]"), "つながったら一手の帯は消える").toHaveCount(0);
+  await expect(pcPick(page).locator('input[value="chrome"]')).toBeChecked({ timeout: 15_000 });
+  await expect(pcFix(page), "つながったら PC の行の一手は消える").toHaveCount(0);
 });
 
 test("CHT-37-012 「Bridge 専用のブラウザに切り替える」で PC の選択が専用のブラウザになり、PC の画面にもその印が付く", async ({
@@ -167,7 +172,8 @@ test("CHT-37-012 「Bridge 専用のブラウザに切り替える」で PC の�
   expect(await browserOf(u.memberId)).toBe("dedicated");
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  await expect(page.locator('[data-browser-pick] input[value="dedicated"]')).toBeChecked({ timeout: 15_000 });
+  await expect(pcPick(page).locator('input[value="dedicated"]')).toBeChecked({ timeout: 15_000 });
+  await expect(pcFix(page), "自分の Chrome でない PC には一手を出さない").toHaveCount(0);
 });
 
 test("CHT-37-005 「使わない」の PC の仕事にはブラウザが渡らず、知らせも出ず、PC の状態は「使わない設定」と出る", async ({
@@ -181,12 +187,8 @@ test("CHT-37-005 「使わない」の PC の仕事にはブラウザが渡ら�
   await expect(offLine(page)).toHaveCount(0);
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  await expect(page.locator("tr[data-check]", { hasText: "AI はブラウザを使わない設定です" })).toHaveAttribute(
-    "data-check",
-    "ok",
-    { timeout: 15_000 },
-  );
-  await expect(page.locator('[data-browser-pick] input[value="off"]')).toBeChecked();
+  await expect(pcPick(page).locator('input[value="off"]')).toBeChecked({ timeout: 15_000 });
+  await expect(pcFix(page), "使わないの PC には一手を出さない").toHaveCount(0);
 });
 
 test("CHT-37-009 PC の画面で「使わない」から「自分の Chrome」に選び直すと、次の仕事に Chrome が渡る", async ({
@@ -195,10 +197,10 @@ test("CHT-37-009 PC の画面で「使わない」から「自分の Chrome」�
   const u = await ready(page, "off");
   await localBridgeIsHere(page);
   await page.goto("/setup/bridge");
-  const pick = page.locator("[data-browser-pick]");
+  const pick = pcPick(page);
   await expect(pick.locator('input[value="off"]')).toBeChecked({ timeout: 15_000 });
-  await pick.getByText("自分の Chrome（Claude in Chrome）").click();
-  await expect(page.locator("[data-browser-pick-msg]")).toHaveText("変えました。次の仕事から使います");
+  await pick.locator(".k-pc-choice", { hasText: "自分の Chrome" }).click();
+  await expect(pick.getByRole("status")).toHaveText("変えました。次の仕事から使います");
   await expect(pick.locator('input[value="chrome"]')).toBeChecked();
   expect(await browserOf(u.memberId)).toBe("chrome");
   // 次の仕事には Chrome が渡る（偽の CLI は --chrome のときだけ Chrome の道具を使い、拡張機能とつながっていない で失敗する）

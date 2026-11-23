@@ -26,6 +26,17 @@ export const ROW_EXEMPT = {
   "/api/v1/bridge/devices":
     "PC はアカウントのもの（D-128.137・D-128.156）。行の守り（sessions は今のワークスペースだけ見える）の中で読むと、別のワークスペースでつないだ自分の PC が 404 になる。持ち主の確かめは口の中（app.bridge_devices）と DB の関数（app.device_set_browser など・account_members）の 2 重（D-128.166・K-364）",
 };
+/** 入口の行の確かめから外す欄（口の名前 → 欄の名前 → 理由。理由が空なら外さない）。外すのは、道の :id の行を行の守り（RLS）の中で読む確かめだけ。
+ *  口ごと外さない：ほかの口の :id と、ほかの欄の確かめは入口のまま。外した欄の守りは DB の関数が持つ（その口の実施事項に書く） */
+export const ROW_EXEMPT_FIELDS = {
+  deleteTicketLink: {
+    id: "つながりの行は両端のチケットが両方見える人にしか見えない（行の守り ticket_links_both_read）ので、入口の行の確かめでは決めの「相手が見えなくても外せる」（外せるのは両端のどちらか 1 つに書ける人・K-441・PM の決め）が成り立たない。この欄の守りは DB の関数 app.ticket_link_remove（見える・書けるを確かめる）と契約の uuid の確かめの 1 層になる",
+  },
+};
+const exemptField = (op, field) => {
+  const why = ROW_EXEMPT_FIELDS[op]?.[field];
+  return typeof why === "string" && why.trim() !== "";
+};
 
 const ME = "app.user_id()";
 const TICKET_PEOPLE = (t) => `(${t}.assignee_member_id = ${ME} or ${t}.created_by = ${ME} or app.manages_scope(${t}.scope_id))`;
@@ -109,8 +120,21 @@ export const OP_RULES = {
   answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
 
   // 段9:K-406 取り消す・催促するの行はこの下
+  // 渡した人だけ（申し出は申し出た人・配るは配った人・K-406）。状態は見ない（決まった渡しは口が 409 にする）。関数 app.handover_withdraw・app.handover_remind も中で同じ判定をする（守りは 2 層）
+  withdrawTicketHandover: `from_member_id = ${ME}`,
+  remindTicketHandover: `from_member_id = ${ME}`,
 
   // 段9:K-410 人を決めるの行はこの下
+
+  // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
+  //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）
+  takeoverActionRun: `true`,
+  // チケットを消す・消す前の下見：入口は「そのチケットが見える」だけ（行が見える＝tickets の行の守り・消した物は見えない）。
+  //   作った人か、そのグループで tickets の edit を持つ人か（403・E-DEL-001）は口と DB の関数が持つ（K-487・K-488・P14）。
+  //   入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文（E-DEL-001）も入口の汎用の 403 に奪われる。
+  //   deleteTicket の行は K-488 の口が入るまで 501 が先に返る
+  previewTicketDelete: `true`,
+  deleteTicket: `true`,
 };
 
 let ENT = null;
@@ -129,6 +153,7 @@ export function rowOf(root, e, word) {
   if (!ROW_WORDS.includes(word)) return null;
   const m = /^(.*?)\/:id(\/|$)/.exec(e.path);
   if (!m) return null; // 一覧・作る：行の守り（RLS）が絞る。作る先の確かめは RLS の insert
+  if (exemptField(e.operationId, "id")) return null; // 欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS）
   const base = m[1];
   if (ROW_EXEMPT[base]) return null;
   const table = ID_TABLE[base] ?? base.split("/").pop();
