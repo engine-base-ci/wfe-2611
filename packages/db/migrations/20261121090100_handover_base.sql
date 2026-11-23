@@ -253,6 +253,13 @@ begin
   end if;
   -- 相手（引き継いでもらう・配る）。申し出の相手は今の担当者
   if v_kind = 'offer' then
+    -- 答えるのは今の担当者。担当者が止まった・招待中・抜けた・いない・AI 社員のときは申し出を作らない（答える人がいないまま待ちが残るため・K-408 のレビュー）。番号は渡す（pass）の相手と同じ
+    v_state := app.handover_member_state(t.assignee_member_id);
+    if v_state = 'gone' then return jsonb_build_object('error', 'target', 'reason', 'gone'); end if;
+    if v_state in ('suspended', 'invited') then
+      select m.display_name into v_name from members m where m.id = t.assignee_member_id;
+      return jsonb_build_object('error', 'target', 'reason', v_state, '名前', v_name);
+    end if;
     v_receiver := t.assignee_member_id;
   else
     v_to := nullif(p ->> 'to_member_id', '')::uuid;
@@ -293,6 +300,10 @@ begin
   end if;
   select * into h from ticket_handovers x where x.id = p_handover and x.tenant_id = app.tenant_id() and x.deleted_at is null;
   if not found then return jsonb_build_object('error', 'not_found'); end if;
+  -- 待っている間にチケットが消された：答える側からは無いものとして 404（答えても担当者を替えず・知らせも出さない）
+  if not exists (select 1 from tickets x where x.id = h.ticket_id and x.tenant_id = h.tenant_id and x.deleted_at is null) then
+    return jsonb_build_object('error', 'not_found');
+  end if;
   if not app.handover_answerer(h.id, v_me, false) then
     if h.from_member_id = v_me or app.ticket_visible(h.ticket_id) then return jsonb_build_object('error', 'forbidden'); end if;
     return jsonb_build_object('error', 'not_found');
