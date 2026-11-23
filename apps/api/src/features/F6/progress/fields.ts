@@ -10,8 +10,8 @@ import type pg from "pg";
 import type { Row } from "@kaname/db/repository";
 import type { HookReply } from "../../../contract/deps.js";
 import type { GroupResult, TicketFieldGroup } from "../../ticket-update/fields.js";
-import { replaceLoneSurrogates } from "../../ticket-update/text.js";
 import { HOLD_ONLY_MESSAGE, MINUTES_MESSAGE, STAGE_BOTH_MESSAGE, holdMissing, invalid, replyOf } from "./errors.js";
+import { cleanString } from "../well-formed.js";
 
 /** この組が受ける欄（段は stage_id か stage_key のどちらか 1 つ） */
 export const PROGRESS_FIELDS = ["stage_id", "stage_key", "actual_minutes", "hold_reason", "resume_condition"] as const;
@@ -48,8 +48,8 @@ export function progressIssues(raw: Row): HookReply | null {
 
 type Progress = Row & { error?: unknown; fields?: unknown };
 
-/** jsonb に入らない対にならないサロゲートを U+FFFD にする（共通の置き換え・NUL は前処理が 422 にするのでここへ来ない） */
-const clean = replaceLoneSurrogates;
+/** jsonb に入らない対にならないサロゲートを U+FFFD にする（F6 の口の共通の置き換え・../well-formed.ts） */
+const clean = cleanString;
 const cleaned = (input: Row): Row =>
   Object.fromEntries(
     Object.entries(input).map(([k, v]) => [k, (HOLD_FIELDS as readonly string[]).includes(k) ? clean(v) : v]),
