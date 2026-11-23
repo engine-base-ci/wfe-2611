@@ -374,12 +374,12 @@ API 370（作った 89・後のフェーズの行為だけ 20）・前の道す�
 | `getFileForBridge` | GET /api/v1/bridge/files/:ref | 取得（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `reportBrowserState` | POST /api/v1/bridge/jobs/:id/browser | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-761 |
 | `getJobControl` | GET /api/v1/bridge/jobs/:id/control | 取得（bridge）— AI に任せる | F5 | 作った | K-62 |
-| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
+| `mirrorConversationEntries` | POST /api/v1/bridge/jobs/:id/conversation-entries | 作成・実行（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61,K-760 |
 | `finishBridgeJob` | POST /api/v1/bridge/jobs/:id/finish | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `reportJobProgress` | POST /api/v1/bridge/jobs/:id/progress | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `callKanameTool` | POST /api/v1/bridge/jobs/:id/tools/:name | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `takeBridgeJob` | POST /api/v1/bridge/jobs/take | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
-| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
+| `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61,K-760 |
 | `markHumanCheck` | POST /api/v1/checks/:id/human | 作成・実行（checks）— 承認する／自分で直す／差し戻す／止める | F5 | 契約だけ（501） | K-61 |
 | `getMyClone` | GET /api/v1/clones/me | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
