@@ -140,6 +140,7 @@ export const MIGRATIONS = [
   "20261120215500_runs_view_real_runs_only.sql",
   "20261121090100_handover_base.sql",
   "20261121090200_handover_pass.sql",
+  "20261121090300_handover_answer_pass.sql",
   "20261121090500_handover_queue.sql",
   "20261121091900_workspace_invitations.sql",
   "20261121092100_invitation_link.sql",

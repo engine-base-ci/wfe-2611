@@ -1389,6 +1389,16 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F8/handovers/answer/pass.ts",
+    "apps/api/src/features/F8/handovers/notify.ts",
+    "apps/api/src/features/F8/handovers/mail.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-answer-pass.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/handovers-read.ts",
     "apps/api/src/features/F8/handovers/list.ts",
     "apps/api/src/features/F4/create-ticket/hooks.ts"
@@ -1412,6 +1422,18 @@
    ],
    "tests": [
     "apps/web/tests/k/k411-pass-detail.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F8/handover/",
+    "apps/web/features/F5/approve-complete/queue-table.tsx",
+    "apps/web/features/F5/approve-complete/queue-card.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k412-answer-handover.spec.ts",
+    "apps/web/tests/k/k231-approvals.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-queue.spec.ts"
    ]
   },
   {
