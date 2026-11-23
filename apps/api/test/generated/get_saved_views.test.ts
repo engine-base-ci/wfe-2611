@@ -21,6 +21,11 @@ describe("GET /api/v1/saved_views", () => {
     // 本物の試験：apps/api/test/features/F7/saved-views-create.test.ts の「K475-API-007」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F7/saved-views-create.test.ts", "utf8")).toContain("K475-API-007");
   });
+  it("test_get_saved_views_unavailable", () => {
+    // UNWANTED: IF 一覧を読む所で DB が落ちたなら、Kaname は 503 を返す（止める側に倒す）
+    // 本物の試験：apps/api/test/features/F7/saved-views-create.test.ts の「K475-API-030」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/saved-views-create.test.ts", "utf8")).toContain("K475-API-030");
+  });
   it("test_get_saved_views_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F7/saved-views-create.test.ts の「K475-API-025」（同じ CI の G3 で流れる）

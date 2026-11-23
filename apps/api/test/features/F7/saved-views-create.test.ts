@@ -316,7 +316,7 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
     expect(await viewsOf(p)).toBe(0);
   });
 
-  it("K475-API-018 見せるグループが見えない・無い：別のグループの席の人／別の会社のグループ／無い uuid／消したグループは 404 E-VWS-004（欄 scope_id・自分だけの保存に付けた scope_id も同じ）。何も書かない", async () => {
+  it("K475-API-018 見せるグループが見えない・無い：別のグループの席の人／別の会社のグループ／無い uuid／消したグループは 404 E-VWS-004（欄なし・scope_id・自分だけの保存に付けた scope_id も同じ）。何も書かない", async () => {
     const p = await freshPerson("g2 の席の人", W.g2);
     const gone = (
       await one<{ id: string }>(
@@ -331,7 +331,10 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
         expect(r.status, `${share} ${scope_id}`).toBe(404);
         const j = await json(r);
         expect([j["code"], j["message"]]).toEqual([VWS_NO_SCOPE, TEXT[VWS_NO_SCOPE]]);
-        expect(fields(j)).toEqual(["scope_id"]);
+        // 404 は欄なし（在るかを漏らさない・控え帳 2026-11-20 20:50・2026-11-21 01:15）
+        expect(fields(j)).toEqual([]);
+        expect(j["details"]).toBeUndefined();
+        expect(j["field"]).toBeUndefined();
       }
     }
     const bad = await createView(p, { name: "形違い", scope_id: "not-a-uuid" });
@@ -592,5 +595,34 @@ describe("K-475 検索条件を保存する（createSavedView・本物の DB）"
       await f.admin.query("drop function if exists public.k475_boom_row()");
     }
     expect((await createView(p, { name: "入らない" })).status).toBe(201);
+  });
+
+  it("K475-API-030 失敗（一覧を読む所）：一覧を読む所で DB が落ちると 503・E-PAGE-003。ログに名前の字が無い。戻れば 200", async () => {
+    const p = await freshPerson("一覧が壊れる人");
+    expect((await createView(p, { name: "壊れる前の秘密の名前" })).status).toBe(201);
+    await f.admin.query(`create or replace function public.k475_list_boom() returns boolean language plpgsql as $$
+      begin
+        if current_setting('app.user_id', true) = '${p.id}' then raise exception 'K475 の試験で一覧を壊した'; end if;
+        return true;
+      end $$`);
+    await f.admin.query(
+      "create policy k475_list_boom on saved_views as restrictive for select using (public.k475_list_boom())",
+    );
+    try {
+      let status = 0;
+      let code = "";
+      const logs = await captureLogs(async () => {
+        const r = await listViews(p);
+        status = r.status;
+        code = String((await json(r))["code"]);
+      });
+      expect(status).toBe(503);
+      expect(code).toBe("E-PAGE-003");
+      expect(logs).not.toContain("壊れる前の秘密の名前");
+    } finally {
+      await f.admin.query("drop policy if exists k475_list_boom on saved_views");
+      await f.admin.query("drop function if exists public.k475_list_boom()");
+    }
+    expect((await listViews(p)).status).toBe(200);
   });
 });

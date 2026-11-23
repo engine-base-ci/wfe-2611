@@ -7,6 +7,7 @@
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
 import { isUuid } from "@kaname/contracts";
+import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
 import { invalid, SHARES } from "./input.js";
 import { SAVED_VIEW_SELECT, toSavedView, type SavedView, type SavedViewRow } from "./shape.js";
@@ -57,7 +58,13 @@ export function createListSavedViews(appPool: pg.Pool): (a: HookArgs) => Promise
   return async (a) => {
     const q = parseQuery(a.c.req.query());
     if ("status" in q) return q;
-    const data = await withTenant(appPool, a.ctx, (cl) => readSavedViews(cl, q.share, q.scopeId));
-    return { status: 200, body: { data, meta: { limit: LIST_MAX } } };
+    try {
+      const data = await withTenant(appPool, a.ctx, (cl) => readSavedViews(cl, q.share, q.scopeId));
+      return { status: 200, body: { data, meta: { limit: LIST_MAX } } };
+    } catch (e) {
+      // 一覧を読む所の DB の失敗：止める側に倒す（503・E-PAGE-003・D-136.1）。ログは場所と例外の種類だけ（名前と条件を出さない）
+      console.error(`[saved_views] 一覧を読む所で失敗した（${(e as Error)?.name ?? "Error"}）`);
+      return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
+    }
   };
 }
