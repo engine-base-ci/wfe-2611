@@ -81,15 +81,14 @@ export function checkCreate(
   const sections: Record<string, string> = {};
   const hasBody = input["body"] !== undefined;
   const rawSections = input["sections"] ?? {};
-  if (hasBody) {
-    // 本文があれば区画は捨てる（DB にも渡さない・K-561 の決め）
-  } else if (!rawSections || typeof rawSections !== "object" || Array.isArray(rawSections))
+  // 区画の形（名前・文字）は本文があっても契約どおり確かめる（K144-API-039）。本文があれば中身は捨てる（DB にも渡さない・K-561 の決め）
+  if (!rawSections || typeof rawSections !== "object" || Array.isArray(rawSections))
     d.push({ field: "sections", message: "区画の形が違います" });
   else
     for (const [k, v] of Object.entries(rawSections as Record<string, unknown>)) {
       if (!/^[a-z][a-z0-9_]{0,40}$/.test(k)) d.push({ field: `sections.${k}`, message: "区画の名前が違います" });
       else if (typeof v !== "string") d.push({ field: `sections.${k}`, message: "区画は文字で書いてください" });
-      else sections[k] = v.trim(); // 区画の中身に上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
+      else if (!hasBody) sections[k] = v.trim(); // 区画の中身に上限は置かない（D-130.3）。守りは入口の送る量 1MB だけ
     }
   const notify = input["notify_member_ids"] ?? [];
   if (

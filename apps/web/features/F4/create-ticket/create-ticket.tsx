@@ -222,13 +222,7 @@ export function CreateTicket({
     if (r.kind === "rate_limited") return setWait(r.retryAfterSec ?? 60);
     if (r.kind === "too_large") return setTooLarge(r.message ?? TOO_LARGE);
     const code = r.code;
-    if (
-      code === "E-VAL-014" ||
-      code === "E-VAL-015" ||
-      code === "E-VAL-012" ||
-      code === "E-VAL-013" ||
-      r.kind === "invalid"
-    ) {
+    if (code === "E-VAL-015" || code === "E-VAL-012" || code === "E-VAL-013" || r.kind === "invalid") {
       const f: Fields = {};
       for (const [k, v] of Object.entries(r.fields)) f[k] = v;
       setFields(f);
