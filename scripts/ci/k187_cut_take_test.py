@@ -197,6 +197,41 @@ class CutTake(unittest.TestCase):
         self.assertIn("cut の行", s)
         self.assertIn("本線の後からの行", s, "本線に後から入った変更が消えた")
 
+    def test_K187_CT_012_own_lines_right_below_a_later_merged_stack_base_are_added(self) -> None:
+        # 重ねた元（K-6）が分かれ目の後に本線へ入り、切る段では K-6 の行のすぐ下に自分（K-5）の行がある（K-581 の形）
+        git(self.repo, "checkout", "-q", "c/x")
+        put(self.repo, {SHARED: "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL])})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "cut: 重ねて切る")
+        git(self.repo, "checkout", "-q", "main")
+        put(self.repo, {SHARED: "\n".join(["const A = 1;", "const s6 = 6; // K-6", *TAIL])})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "K-6 feat: 重ねた元が本線に入った")
+        git(self.repo, "checkout", "-q", "-B", "t/K-5", "main")
+        self.take()
+        s = (self.repo / SHARED).read_text(encoding="utf-8")
+        self.assertEqual(s, "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL]))
+
+    def test_K187_CT_013_unmarked_cut_line_missing_from_mainline_stops(self) -> None:
+        # 重ねた元の行のすぐ下に自分の行があり、離れた所に印の無い行（切る段だけの行）もある。本線にはその印の無い行が無い：
+        # 自分の印を外した版を元にすると、印の無い行を本線が消したように見えて落ちるので、落とさずに止める
+        import cut_take
+        git(self.repo, "checkout", "-q", "c/x")
+        put(self.repo, {SHARED: "\n".join(["const A = 1;", "const s6 = 6; // K-6", "const s5 = 5; // K-5", *TAIL[:-1], "const x = 9;", ""])})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "cut: 印の無い行も足す")
+        git(self.repo, "checkout", "-q", "main")
+        main_shared = "\n".join(["const A = 1;", "const s6 = 6; // K-6", *TAIL])
+        put(self.repo, {SHARED: main_shared})
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-qm", "K-6 feat: 重ねた元が本線に入った")
+        git(self.repo, "checkout", "-q", "-B", "t/K-5", "main")
+        with self.assertRaises(SystemExit) as e:
+            cut_take.take(self.repo, "K-5", "c/x", shared=[SHARED], regenerate=False)
+        self.assertIn("印の無い行が本線に無い：const x = 9;", str(e.exception))
+        self.assertEqual((self.repo / SHARED).read_text(encoding="utf-8"), main_shared, "共有の試験を書き換えている")
+        self.assertFalse((self.repo / "11_tickets/K-5.md").exists())
+
     def test_K187_CT_011_unreadable_header_stops(self) -> None:
         git(self.repo, "checkout", "-q", "c/x")
         put(self.repo, {"11_tickets/K-8.md": "---\nid: K-8\ntests:\n  - t/k5.test.ts\n---\n本文\n"})
