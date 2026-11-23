@@ -41948,7 +41948,7 @@ paths:
       - D-125.88
       - D-125.90
       x-permission: recipient
-      x-permission-scope: 渡された・判断を仰がれた相手だけ
+      x-permission-scope: 答える人だけ：渡された人・申し出を受けた担当者・グループに配られたらそのグループを管理する人（app.handover_answerer）
       x-step-up: false
       security:
       - session: []
@@ -45637,7 +45637,7 @@ paths:
       - D-125.96
       - D-125.97
       x-permission: write
-      x-permission-scope: 渡すは担当者、配るはマネージャー、引き取りの申し出はメンバー、上へ上げるは担当者
+      x-permission-scope: 渡すは担当者、配るはそのグループを管理する人、申し出はそのグループで書ける人。閲覧のみ・ゲスト・止まっている人はできない（D-148.3・D-148.18）
       x-step-up: false
       security:
       - session: []
