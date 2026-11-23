@@ -4,7 +4,7 @@
 import type pg from "pg";
 import { withTenant, type TenantContext } from "@kaname/db/context";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
-import { notFound, unavailable } from "./reply.js";
+import { invalid, notFound, unavailable } from "./reply.js";
 import { VISIBLE_PAGE_WHERE } from "./read.js";
 
 /** 版の一覧で返す行の上限 */
@@ -39,8 +39,25 @@ const ifSeen = <T>(
 ): Promise<T | null> =>
   withTenant(appPool, ctx, async (cl) => ((await cl.query(SEEN_SQL, [id])).rows.length > 0 ? fn(cl) : null));
 
+/** 契約が書く問い合わせ（cursor・limit）の形。道に :id のある口は入口の一覧の確かめを通らないので、ここで同じ形を見る（契約 fuzz ST201）。
+ *  並びと上限は変えない（全部を新しい順に・VERSIONS_MAX 行で切る） */
+const badQuery = (a: HookArgs): HookReply | null => {
+  const limit = a.c.req.query("limit");
+  if (
+    limit !== undefined &&
+    limit !== "" &&
+    !(/^[0-9]{1,3}$/.test(limit) && Number(limit) >= 1 && Number(limit) <= VERSIONS_MAX)
+  )
+    return invalid("limit", `1〜${VERSIONS_MAX}`);
+  const cursor = a.c.req.query("cursor");
+  if (cursor !== undefined && cursor !== "" && !/^[0-9]{1,9}$/.test(cursor)) return invalid("cursor", "不正");
+  return null;
+};
+
 export function createListKnowledgeVersions(appPool: pg.Pool): (a: HookArgs) => Promise<HookReply> {
   return async (a: HookArgs): Promise<HookReply> => {
+    const bad = badQuery(a);
+    if (bad) return bad;
     let rows: VersionRow[] | null;
     try {
       rows = await ifSeen(
