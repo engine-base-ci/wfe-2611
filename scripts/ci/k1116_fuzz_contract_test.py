@@ -22,6 +22,9 @@ import unittest
 import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(ROOT / "scripts" / "ci"))
+import email_patterns  # noqa: E402  登録・ログインのメールの形（K-1117）
+from portable_regex import portable  # noqa: E402  作り手が契約に書くときの直し（K-1117）
 OA = yaml.safe_load((ROOT / "08_api" / "openapi.yaml").read_text(encoding="utf-8"))
 SCHEMAS = OA["components"]["schemas"]
 EPS = json.loads((ROOT / "08_api" / "endpoints.json").read_text(encoding="utf-8"))["endpoints"]
@@ -146,7 +149,7 @@ class FuzzContract(unittest.TestCase):
         self.assertEqual(upd["properties"]["confidence"].get("pattern"), "^-?[0-9]+(\\.[0-9]+)?$", "updateMemory の confidence が表の型の形でない")
         self.assertNotEqual(upd["properties"]["confidence"].get("pattern"), SA.VALUE_RANGES["createMemory"]["confidence"]["pattern"])
         self.assertNotIn("enum", upd["properties"]["kind_id"], "updateMemory の kind_id に createMemory の値域が残っている")
-        self.assertEqual(upd["properties"]["body"].get("pattern"), "\\S")   # 自分の値域は残る
+        self.assertEqual(upd["properties"]["body"].get("pattern"), portable("\\S"))   # 自分の値域は残る（作り手が JS と同じ字にして書く・K-1117）
         crt = _shape_of("createMemory")
         self.assertEqual(crt["properties"]["confidence"]["pattern"], SA.VALUE_RANGES["createMemory"]["confidence"]["pattern"])
         self.assertEqual(crt["properties"]["kind_id"]["enum"], ["rule", "preference", "example", None])
@@ -172,9 +175,9 @@ class FuzzContract(unittest.TestCase):
         self.assertEqual(wrong, [], "契約の形どおりなのに口が断るメール")
 
     def test_K1116_CT_005_other_email_ops_unchanged(self):
-        # 登録・再設定は部品の z.email() を通らない（EMAIL_RE だけ）ので今の形のまま
-        for op in ("createSignup", "requestPasswordReset"):
-            self.assertIn("^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$", _contract_patterns(_shape_of(op), "email"), op)
+        # 登録は K-1117 が部品の z.email() の形にした。再設定は前の形のまま（作り手が \\s を JS と同じ字にして書く・K-1117）
+        self.assertIn(email_patterns.LOGIN_EMAIL, _contract_patterns(_shape_of("createSignup"), "email"))
+        self.assertIn(portable("^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$"), _contract_patterns(_shape_of("requestPasswordReset"), "email"))
 
     def test_K1116_CT_006_answer_login_check_skips_resource_check(self):
         hits = [o for o in TOML.get("operations", []) if o.get("include-operation-id") == "answerCredentialLoginCheck"]
