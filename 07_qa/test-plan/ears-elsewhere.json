@@ -743,7 +743,7 @@
     "test_post_tickets_id_complete_ok": "K63-API-027",
     "test_post_tickets_id_complete_rejected_403": "K63-API-034",
     "test_post_tickets_id_complete_conflict": "K63-API-032",
-    "test_post_tickets_id_complete_rejected_422": "K63-API-028",
+    "test_post_tickets_id_complete_rejected_422": "K63-API-030",
     "test_post_tickets_id_complete_rejected_422_2": "K63-API-029",
     "test_post_tickets_id_complete_shape": "K63-API-027",
     "test_post_tickets_id_complete_session_unresolved": {
@@ -1670,6 +1670,33 @@
     }
    }
   },
+  "updateTicketDecision": {
+   "file": "apps/api/test/features/F6/decision-update.test.ts",
+   "reason": "改める・取り消すは決定の今の状態（生きている・改められた・取り消した）と書けるかの組み合わせで答えが変わり、生成の試験の種では作れない（K-391）",
+   "covers": {
+    "test_patch_ticket_decisions_id_ok": "K391-API-001",
+    "test_patch_ticket_decisions_id_rejected_401": "K391-API-012",
+    "test_patch_ticket_decisions_id_rejected_403": "K391-API-012",
+    "test_patch_ticket_decisions_id_not_found": "K391-API-012",
+    "test_patch_ticket_decisions_id_rejected_422": "K391-API-002",
+    "test_patch_ticket_decisions_id_conflict": "K391-API-004",
+    "test_patch_ticket_decisions_id_unavailable": "K391-API-014",
+    "test_patch_ticket_decisions_id_rate_limited": "K391-API-016",
+    "test_patch_ticket_decisions_id_shape": "K391-API-001",
+    "test_patch_ticket_decisions_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_ticket_decisions_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_ticket_decisions_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
   "previewTicketHandover": {
    "file": "apps/api/test/features/F8/handover-base.test.ts",
    "reason": "渡す前の下見は、チケットの担当・グループ・役（管理する人・書ける人・閲覧のみ）・止まり（AI・承認・待っている渡し）・候補の人の状態（止まっている・招待中）と今週の件数の組み合わせで答えが変わる。生成の試験の種では作れない（K-401）",
@@ -2063,6 +2090,29 @@
    },
    "na": {
     "test_delete_ticket_links_id_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-543）"
+   }
+  },
+  "listNotifications": {
+   "file": "apps/api/test/features/F7/notifications-list.test.ts",
+   "reason": "知らせの一覧は、行の守り（自分宛て）と種類の表とチケットの見え方の組み合わせで答えが変わる。生成の試験の種では知らせの行も人も作れない（K-461）",
+   "covers": {
+    "test_get_notifications_ok": "K461-API-001",
+    "test_get_notifications_rejected_401": "K461-API-017",
+    "test_get_notifications_rejected_403": "K461-API-029",
+    "test_get_notifications_rejected_422": "K461-API-006",
+    "test_get_notifications_conflict": "K461-API-011",
+    "test_get_notifications_rate_limited": "K461-API-018",
+    "test_get_notifications_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_notifications_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_notifications_mfa_pending": "止めは全部の口で同じ 1 か所の入口（op.ts）。口ごとの止めは作った口の生成の試験 mfa_pending が見る（K-321）"
    }
   },
   "search": {
