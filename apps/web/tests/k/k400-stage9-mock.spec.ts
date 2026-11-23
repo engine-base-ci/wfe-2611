@@ -276,6 +276,7 @@ test("K400-DS-002 生の長さ（D8・design_gate --raw-lengths）に FAIL が�
     "--part",
     "--no-components",
     "--raw-lengths",
+    "--no-base",
   ]);
   expect(out).not.toMatch(/\bFAIL\b/);
 });

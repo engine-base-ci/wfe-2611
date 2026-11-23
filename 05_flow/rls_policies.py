@@ -69,6 +69,9 @@ POLICIES: dict[str, list[dict]] = {
     "class_axes": workspace_master("class_axes"),
     "class_values": workspace_master("class_values"),
     "handover_rules": workspace_master("handover_rules"),
+    "custom_fields": workspace_master("custom_fields"),
+    "custom_field_kinds": workspace_master("custom_field_kinds"),
+    "ticket_field_values": child_of_ticket("ticket_field_values"),
     # ---- チケットのまわり（K-4）
     "test_specs": child_of_ticket("test_specs"),
     "checks": child_of_ticket("checks", "insert"),                       # 検査の結果は追記だけ
@@ -254,6 +257,16 @@ POLICIES: dict[str, list[dict]] = {
         {"name": "notification_settings_self", "operation": "select,insert,update", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
          "rationale": "知らせの設定は本人だけ（ワークスペースごと）", "source": ["D-128.92"]},
         ops_read("notification_settings"),
+    ],
+    # ---- 知らせ（K-461・D-151.3）：鈴の行は本人だけが読む・書く（権限のある人も他人宛ての行に触れない。題名入りの行が同じ会社の他の人に読めてしまうのを止める）。
+    #      守りの名前 notifications_self_only_write は前のまま残す（場合表の「本人のもの」の行 RLS-D11-010 を動かさない）。読む守りだけ新しい名前 notifications_self_read。
+    #      書き手（security definer の関数）は守りの外で入れるので変わらない
+    "notifications": [
+        {"name": "notifications_self_read", "operation": "select", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "自分宛ての知らせだけ（同じ会社の他の人宛ては、権限のある人にも見せない）", "source": ["D-151.3", "D-073.1"]},
+        {"name": "notifications_self_only_write", "operation": "insert,update,delete", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",
+         "rationale": "自分宛ての知らせだけ書く・読んだ印を付ける（他人宛てを足せない・直せない）", "source": ["D-151.3", "D-073.1"]},
+        ops_read("notifications"),
     ],
     "bridge_pairing_codes": [
         {"name": "bridge_pairing_codes_self", "operation": "select,insert", "role": "member", "predicate": f"tenant_id = {T} AND member_id = {U}",

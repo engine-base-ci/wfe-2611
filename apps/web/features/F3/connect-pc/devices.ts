@@ -1,5 +1,6 @@
 // つないでいる PC を見続ける（K-57）。listMyDevices を 5 秒ごとに読み、画面に渡す。止めると読み続けない
 import { call, type CallErr } from "@/lib/api/call";
+import type { AgentBrowser } from "./pc-row-parts";
 
 export interface Device {
   id: string;
@@ -12,6 +13,8 @@ export interface Device {
   health?: unknown;
   /** 自己診断の報告の時刻（K-360）。眠っている PC の古い報告に添える */
   health_at?: string | null;
+  /** AI が使うブラウザ（K-364）。chrome・dedicated・off 以外・無いは、今の値が分からない（browser-row.tsx の browserOf） */
+  browser?: AgentBrowser;
 }
 export const POLL_MS = 5_000;
 
