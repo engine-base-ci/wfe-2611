@@ -349,6 +349,9 @@ describe("K-675 ナレッジの口の置き場", () => {
     expect(field("createKnowledgeFolder", { shelf: "group", group_id: randomUUID(), name: "x" })).toBeNull();
     expect(field("createKnowledgeFolder", { shelf: "company", name: "x", group_id: randomUUID() })).toBeNull(); // company・me は group_id を使わない（あっても通す）
     expect(field("createKnowledgePage", { shelf: "me" })).toBe("title");
+    expect(field("createKnowledgePage", { title: "x" })).toBe("shelf");
+    expect(field("createKnowledgeFolder", { shelf: "group", group_id: null, name: "x" })).toBe("group_id"); // グループの棚は group_id が null でも断る
+    expect(field("createKnowledgePage", { shelf: "group", group_id: null, title: "x" })).toBe("group_id");
     expect(field("createKnowledgePage", { shelf: "group", title: "x" })).toBe("group_id");
     expect(field("setKnowledgeMust", {})).toBe("must");
     expect(field("findSimilarKnowledge", {})).toBe("title");
@@ -384,6 +387,28 @@ describe("K-675 ナレッジの口の置き場", () => {
     expect(field("findSimilarKnowledge", { title: "x", exclude_page_id: "x" })).toBe("exclude_page_id");
     expect(field("setKnowledgeMust", { must: "yes" })).toBe("must");
     expect(field("copyKnowledgePage", { folder_id: "x" })).toBe("folder_id");
+    // 契約の値域（文字の欄の上限と「空白だけは断る」・棚・並び）を口ごとに全部：通る境目・断る境目・欄の名前
+    const LIMITS: [string, Record<string, unknown>, string, number, boolean][] = [
+      ["createKnowledgeFolder", { shelf: "me" }, "name", 100, true],
+      ["updateKnowledgeFolder", {}, "name", 100, true],
+      ["createKnowledgePage", { shelf: "me" }, "title", 200, true],
+      ["createKnowledgePage", { shelf: "me", title: "x" }, "desc", 200, false],
+      ["saveKnowledgeDraft", {}, "title", 200, true],
+      ["saveKnowledgeDraft", {}, "desc", 200, false],
+      ["findSimilarKnowledge", {}, "title", 200, true],
+      ["findSimilarKnowledge", { title: "x" }, "desc", 200, false],
+      ["findSimilarKnowledge", { title: "x" }, "text", 10_000, false],
+    ];
+    for (const [op, base, key, max, noBlank] of LIMITS) {
+      expect(field(op, { ...base, [key]: "あ".repeat(max) }), `${op}.${key} ${max} 字`).toBeNull();
+      expect(field(op, { ...base, [key]: "あ".repeat(max + 1) }), `${op}.${key} ${max + 1} 字`).toBe(key);
+      if (noBlank) expect(field(op, { ...base, [key]: " \t　" }), `${op}.${key} 空白だけ`).toBe(key);
+    }
+    expect(field("createKnowledgePage", { shelf: "dept", title: "x" }), "ページの知らない棚").toBe("shelf");
+    for (const op of ["updateKnowledgeFolder", "updateKnowledgePage"]) {
+      expect(field(op, { position: 0 }), `${op} position 0`).toBeNull();
+      expect(field(op, { position: -1 }), `${op} position -1`).toBe("position");
+    }
     const r = checkKnowledgeInput("createKnowledgeFolder", { shelf: "me", name: "あ".repeat(101) });
     expect(r).toMatchObject({ status: 422, body: { error: "validation_failed", code: "VALIDATION_ERROR" } });
   });
