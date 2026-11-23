@@ -52152,8 +52152,8 @@
      "errors": [
       "E-PAGE-001"
      ],
-     "trigger": "チケットが無い・別の会社・消した（入口の行の守り）か、段の id（stage_id）が指す段が無い・別の会社の段・消した段（欄 stage_id）",
-     "ears_form": "UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
+     "trigger": "チケットが無い・別の会社・消した（入口の行の守り）か、段の id（stage_id）が指す段が無い・別の会社の段・消した段（欄 stage_id）か、親（parent_ticket_id）が指すチケットが無い・別の会社・消した・自分に見えない（欄・明細なし）",
+     "ears_form": "UNWANTED: IF チケットか指した段・親が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない"
     },
     {
      "status": 422,
@@ -52166,7 +52166,7 @@
      "errors": [
       "E-VAL-018"
      ],
-     "trigger": "まだ変えられない欄（題名・期限・担当者・優先度・見込み・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
+     "trigger": "まだ変えられない欄（題名・期限・担当者・見込み・知らない欄）を送った（前処理・欄ごとに「この欄はまだ変えられません」・段を一緒に送っても何も書かない）",
      "ears_form": "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない"
     },
     {
@@ -52238,6 +52238,58 @@
      "ears_form": "UNWANTED: IF 保留でないのに保留の理由か条件を書こうとしたら、Kaname は 409 と E-CONF-036 を返し、何も書かない"
     },
     {
+     "status": 409,
+     "code": "E-TKT-001",
+     "body": {
+      "error": "conflict",
+      "code": "E-TKT-001"
+     },
+     "errors": [
+      "E-TKT-001"
+     ],
+     "trigger": "親（parent_ticket_id）に、そのチケット自身を決めた（欄・明細なし）",
+     "ears_form": "UNWANTED: IF チケット自身を親にしようとしたなら、Kaname は 409 と E-TKT-001 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-TKT-002",
+     "body": {
+      "error": "conflict",
+      "code": "E-TKT-002"
+     },
+     "errors": [
+      "E-TKT-002"
+     ],
+     "trigger": "親に、そのチケットの子・孫（下の段）を決めた＝親子が輪になる（欄・明細なし）。同時に A の親を B・B の親を A にしても、後の 1 本が断られる",
+     "ears_form": "UNWANTED: IF 自分の子孫を親にしようとしたなら、Kaname は 409 と E-TKT-002 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-TKT-003",
+     "body": {
+      "error": "conflict",
+      "code": "E-TKT-003"
+     },
+     "errors": [
+      "E-TKT-003"
+     ],
+     "trigger": "親を決めると、親子が 3 段を超える（親が 3 段目、または自分の下の段を数えて 3 段を超える・欄・明細なし）",
+     "ears_form": "UNWANTED: IF 親子が 3 段を超える親を決めようとしたなら、Kaname は 409 と E-TKT-003 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-TKT-004",
+     "body": {
+      "error": "conflict",
+      "code": "E-TKT-004"
+     },
+     "errors": [
+      "E-TKT-004"
+     ],
+     "trigger": "今の自分の期限が親の期限より後のチケットに、その親を決めた（どちらかの期限が空なら見ない・親の期限より後の期限にする側は期限の口 K-483・欄・明細なし）",
+     "ears_form": "UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない"
+    },
+    {
      "status": 422,
      "code": "VALIDATION_ERROR",
      "body": {
@@ -52248,21 +52300,21 @@
       "E-VAL-041",
       "E-VAL-047"
      ],
-     "trigger": "形の誤り：保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
+     "trigger": "形の誤り：優先度が mid・high でない・優先度が高で理由が無い（空・空白だけ・制御文字だけも）・中や優先度なしで理由を付けた・親の id が uuid か null でない（欄 priority・priority_reason・parent_ticket_id）。保留の理由（E-VAL-041）か再開の条件（E-VAL-047）が空・空白だけ・制御文字だけ、stage_key hold で理由か条件が無い。ほかに stage_id と stage_key の両方・stage_key が todo・doing・hold でない・stage_key todo・doing に理由か条件を付けた・実績が 0〜100000 の整数でない・空の体・本文の形違い（欄ごとの理由）",
      "ears_form": "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない"
     },
     {
-     "status": 500,
+     "status": 503,
      "code": "E-PAGE-003",
      "body": {
-      "error": "internal",
+      "error": "unavailable",
       "code": "E-PAGE-003"
      },
      "errors": [
       "E-PAGE-003"
      ],
-     "trigger": "書く所（段・保留の列・変更の 1 行・担当者の受け箱の行・証跡）で DB が落ちた（1 つの処理なので何も残らない・ログは場所と例外の種類だけ）",
-     "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す"
+     "trigger": "書く所（段・保留・優先度・親の列・変更の 1 行・担当者の受け箱の行・証跡）で DB が落ちた（1 つの処理なので何も残らない・ログは場所と例外の種類だけ）",
+     "ears_form": "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す"
     },
     {
      "status": 503,
@@ -52335,15 +52387,19 @@
     "EVENT-DRIVEN: WHEN PATCH /api/v1/tickets/:id が「作業の段を動かす」として呼ばれたとき THEN Kaname は「実績時間を記録」を行い 2xx を返す",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF チケットか指した段が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない",
+    "UNWANTED: IF チケットか指した段・親が無いか見えないなら、Kaname は 404 を返し、在るかを漏らさず何も書かない",
     "UNWANTED: IF まだ変えられない欄を送ったなら、Kaname は 422 と E-VAL-018 と欄ごとの理由を返し、何も書かない",
     "UNWANTED: IF AI が動いている間か承認待ちの間に段を変えようとしたら、Kaname は 409 と E-CONF-030 を返し、何も書かない",
     "UNWANTED: IF 完了したチケットの段を、作業中への開き直し以外に変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない",
     "UNWANTED: IF 段の口で移せない段を行き先にしたなら、Kaname は 409 と E-CONF-034 を返し、何も書かない",
     "UNWANTED: IF 段の id で保留の段を選んで理由か条件が無いなら、Kaname は 409 と E-CONF-035 と足りない欄を返し、何も書かない",
     "UNWANTED: IF 保留でないのに保留の理由か条件を書こうとしたら、Kaname は 409 と E-CONF-036 を返し、何も書かない",
+    "UNWANTED: IF チケット自身を親にしようとしたなら、Kaname は 409 と E-TKT-001 を返し、何も書かない",
+    "UNWANTED: IF 自分の子孫を親にしようとしたなら、Kaname は 409 と E-TKT-002 を返し、何も書かない",
+    "UNWANTED: IF 親子が 3 段を超える親を決めようとしたなら、Kaname は 409 と E-TKT-003 を返し、何も書かない",
+    "UNWANTED: IF 期限が親より後のチケットに親を決めようとしたなら、Kaname は 409 と E-TKT-004 を返し、何も書かない",
     "UNWANTED: IF 入力の形が決まりに合わないなら、Kaname は 422 と欄ごとの理由（E-VAL-041・E-VAL-047 を含む）を返し、何も書かない",
-    "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
+    "UNWANTED: IF 書く所の DB が落ちたなら、Kaname は 503 を返し、段・保留の列・変更の 1 行・知らせを前のまま残す",
     "UNWANTED: IF 守りの判定ができなかったなら、Kaname は 503 を返し、止める側に倒して何も書かない（守りの判定の例外）",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",

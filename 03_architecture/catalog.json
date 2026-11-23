@@ -12,8 +12,8 @@
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 263,
-  "stack": 56,
+  "errors": 267,
+  "stack": 68,
   "env": 41
  },
  "api": [
@@ -7864,6 +7864,54 @@
    {
     "package": "zod",
     "for": "記録にある名前のまま"
+   },
+   {
+    "package": "@tiptap/core",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/react",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/pm",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/starter-kit",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-highlight",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-table",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-task-list",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-task-item",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-text-align",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-text-style",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-superscript",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
+   },
+   {
+    "package": "@tiptap/extension-subscript",
+    "for": "本文を見たまま編集する部品（ProseMirror の包み・K-567）"
    }
   ],
   "env": [

@@ -10552,6 +10552,18 @@ components:
         resume_condition:
           type: string
           pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
+        priority:
+          type: string
+          enum:
+          - mid
+          - high
+        priority_reason:
+          type: string
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
+        parent_ticket_id:
+          type: string
+          format: uuid
+          nullable: true
       additionalProperties: false
       x-operation: updateTicket
       allOf:
@@ -10570,6 +10582,12 @@ components:
           - hold_reason
         - required:
           - resume_condition
+        - required:
+          - priority
+        - required:
+          - priority_reason
+        - required:
+          - parent_ticket_id
       - anyOf:
         - not:
             required:
@@ -10596,6 +10614,24 @@ components:
               - hold_reason
             - required:
               - resume_condition
+      oneOf:
+      - properties:
+          priority:
+            enum:
+            - high
+        required:
+        - priority
+        - priority_reason
+      - not:
+          anyOf:
+          - required:
+            - priority_reason
+          - properties:
+              priority:
+                enum:
+                - high
+            required:
+            - priority
     TicketDecisionInput:
       type: object
       properties:
@@ -14106,6 +14142,7 @@ components:
           type: object
         stage:
           type: object
+          nullable: true
         changed:
           type: boolean
         message_id:
@@ -43248,13 +43285,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: E-PAGE-003
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036／E-TKT-001／E-TKT-002／E-TKT-003／E-TKT-004
           content:
             application/json:
               schema:
