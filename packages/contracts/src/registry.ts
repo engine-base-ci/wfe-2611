@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:460b0c64c3490985
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:c90a063bec44ccfc
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -567,9 +567,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "withdrawApproval",
     "table": "approvals",
     "kind": "create",
-    "input": "ApprovalsInput",
+    "input": "ApprovalWithdrawInput",
     "success": 201,
-    "output": "Approvals",
+    "output": "ApprovalWithdrawn",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -590,6 +590,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      409,
+      409,
+      503,
       413,
       429,
       502,
@@ -2309,7 +2312,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Attachments",
+    "output": "BridgeJobFile",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2317,12 +2320,17 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
-    "uuidParams": [],
+    "uuidParams": [
+      "job_id"
+    ],
     "chokePoints": [],
     "errors": [
       401,
       403,
       422,
+      404,
+      502,
+      503,
       429,
       502,
       503
@@ -2458,9 +2466,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "reportBrowserState",
     "table": "bridge_job_events",
     "kind": "create",
-    "input": "BridgeJobEventsInput",
+    "input": "BridgeBrowserStateInput",
     "success": 201,
-    "output": "BridgeJobEvents",
+    "output": "BridgeBrowserReported",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2482,6 +2490,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -2562,9 +2571,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "mirrorConversationEntries",
     "table": "messages",
     "kind": "create",
-    "input": "MessagesInput",
+    "input": "ConversationEntriesInput",
     "success": 201,
-    "output": "Messages",
+    "output": "ConversationEntriesMirrored",
     "outputList": false,
     "generic": false,
     "auth": "device",
@@ -2586,6 +2595,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      503,
       413,
       429,
       502,
@@ -2940,7 +2950,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "MirrorTarget",
     "outputList": true,
     "generic": false,
     "auth": "device",
@@ -2948,9 +2958,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "perMinute": 120,
       "key": "user"
     },
-    "uuidParams": [
-      "scope_id"
-    ],
+    "uuidParams": [],
     "chokePoints": [
       "C4"
     ],
@@ -2958,6 +2966,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       429,
       502,
       503
@@ -3184,63 +3193,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "cap": null,
       "stepUp": null,
       "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/checks/:id/human",
-    "operationId": "markHumanCheck",
-    "table": "checks",
-    "kind": "create",
-    "input": "ChecksInput",
-    "success": 201,
-    "output": "Checks",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      404,
-      409,
-      422,
-      413,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A15"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "approver",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "checks",
-        "sql": "exists (select 1 from approvals a where a.ticket_id = checks.ticket_id and a.approver_member_id = app.user_id() and a.deleted_at is null)"
-      }
     },
     "termsOpen": false,
     "mfaOpen": false,
@@ -4243,7 +4195,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Clones",
+    "output": "MyClone",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -4359,57 +4311,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
-      429,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A53"
-    ],
-    "screens": [
-      "ai-activity"
-    ],
-    "perm": {
-      "word": "self",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": null
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
-    "method": "POST",
-    "path": "/api/v1/clones/me/activity/export",
-    "operationId": "exportCloneActivity",
-    "table": "export_jobs",
-    "kind": "create",
-    "input": "ExportJobsInput",
-    "success": 201,
-    "output": "ExportJobs",
-    "outputList": false,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 60,
-      "key": "user"
-    },
-    "uuidParams": [],
-    "chokePoints": [
-      "C2"
-    ],
-    "errors": [
-      401,
-      403,
-      409,
-      422,
-      413,
       429,
       403,
       403,
@@ -4584,7 +4485,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "list",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "ConversationRow",
     "outputList": true,
     "generic": true,
     "auth": "member",
@@ -4598,6 +4499,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       401,
       403,
       422,
+      503,
       429,
       403,
       403,
@@ -4685,7 +4587,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Conversations",
+    "output": "ConversationView",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -4702,6 +4604,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       403,
       403,
@@ -4909,7 +4812,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "get",
     "input": null,
     "success": 200,
-    "output": "Messages",
+    "output": "MessageView",
     "outputList": true,
     "generic": false,
     "auth": "member",
@@ -4928,6 +4831,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
       429,
       502,
       403,
@@ -5165,6 +5069,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      503,
+      503,
       429,
       502,
       403,
@@ -16566,60 +16472,6 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   },
   {
-    "method": "GET",
-    "path": "/api/v1/tickets/:id/checks",
-    "operationId": "listChecks",
-    "table": "checks",
-    "kind": "get",
-    "input": null,
-    "success": 200,
-    "output": "Checks",
-    "outputList": true,
-    "generic": false,
-    "auth": "member",
-    "rateLimit": {
-      "perMinute": 120,
-      "key": "user"
-    },
-    "uuidParams": [
-      "id"
-    ],
-    "chokePoints": [],
-    "errors": [
-      401,
-      403,
-      404,
-      422,
-      429,
-      502,
-      403,
-      403,
-      503
-    ],
-    "acts": [
-      "A102"
-    ],
-    "screens": [
-      "tickets"
-    ],
-    "perm": {
-      "word": "read",
-      "target": null,
-      "ability": null,
-      "scope": "workspace",
-      "adminOnly": false,
-      "cap": null,
-      "stepUp": null,
-      "row": {
-        "table": "tickets",
-        "sql": "true"
-      }
-    },
-    "termsOpen": false,
-    "mfaOpen": false,
-    "ignoresScope": false
-  },
-  {
     "method": "PATCH",
     "path": "/api/v1/tickets/:id/client-share",
     "operationId": "updateTicketClientShare",
@@ -19645,4 +19497,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "460b0c64c3490985";
+export const OPENAPI_HASH = "c90a063bec44ccfc";
