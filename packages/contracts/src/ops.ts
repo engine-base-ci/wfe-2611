@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:e66ff42fce609d54
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:345737c92b8df538
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -303,7 +303,11 @@ export interface Ops {
   updateTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
   deleteTicketMessage: { params: { id: string }; query: never; body: never; data: T.TicketMessages };
   starTicketMessage: { params: { id: string }; query: never; body: T.TicketMessagesInput; data: T.TicketMessages };
-  listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStages[] };
+  listTicketStages: { params: never; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketStageSetting[] };
+  createTicketStage: { params: never; query: never; body: T.TicketStageCreateInput; data: T.TicketStageSetting };
+  updateTicketStage: { params: { id: string }; query: never; body: T.TicketStageUpdateInput; data: T.TicketStageSetting };
+  deleteTicketStage: { params: { id: string }; query: never; body: never; data: T.TicketStageDeleted };
+  reorderTicketStages: { params: never; query: never; body: T.TicketStageOrderInput; data: T.TicketStageSetting[] };
   listTickets: { params: never; query: { "view"?: string | number; "q"?: string | number; "scope_id"?: string | number; "kind_id"?: string | number; "stage_id"?: string | number; "assignee_id"?: string | number; "done"?: string | number; "due"?: string | number; "delegated"?: string | number; "approving"?: string | number; "due_from"?: string | number; "due_to"?: string | number; "start_from"?: string | number; "start_to"?: string | number; "overdue"?: string | number; "fire"?: string | number; "parent"?: string | number; "fields"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Tickets[] };
   createTicket: { params: never; query: never; body: T.TicketCreateInput; data: T.Tickets };
   getTicket: { params: { id: string }; query: never; body: never; data: T.TicketDetail };

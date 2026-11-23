@@ -31,6 +31,7 @@
   "tenants",
   "ticket_kinds",
   "ticket_messages",
+  "ticket_stages",
   "tickets"
  ],
  "tables": {
@@ -806,12 +807,16 @@
    "lines": []
   },
   "ticket_stages": {
-   "writes": [],
+   "writes": [
+    "F9"
+   ],
    "reads": [
     "F4"
    ],
-   "boundary": false,
-   "lines": []
+   "boundary": true,
+   "lines": [
+    "F9→F4"
+   ]
   },
   "tickets": {
    "writes": [

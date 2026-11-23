@@ -4352,7 +4352,14 @@
     "E-MOCK-011",
     "E-MOCK-012",
     "E-MOCK-013",
-    "E-MOCK-021"
+    "E-MOCK-021",
+    "E-STG-001",
+    "E-STG-002",
+    "E-STG-003",
+    "E-STG-004",
+    "E-STG-005",
+    "E-STG-006",
+    "E-STG-007"
    ],
    "policies": [
     "C2",

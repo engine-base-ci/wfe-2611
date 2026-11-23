@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。237 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。244 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4289,6 +4289,125 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-STG-001": {
+    "id": "E-STG-001",
+    "cls": "conflict",
+    "message": "同じ名前の状態がすでにあります",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-001",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-002": {
+    "id": "E-STG-002",
+    "cls": "conflict",
+    "message": "状態は 8 つまで足せます",
+    "action": "使っていない状態を消してから足す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-002",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-003": {
+    "id": "E-STG-003",
+    "cls": "conflict",
+    "message": "この状態は仕組みが使うので、消せません",
+    "action": "消さずに名前や色を直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-003",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-004": {
+    "id": "E-STG-004",
+    "cls": "conflict",
+    "message": "この状態の名前は変えられません",
+    "action": "色だけを直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-004",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-005": {
+    "id": "E-STG-005",
+    "cls": "conflict",
+    "message": "この状態のチケットがあるので、消せません",
+    "action": "チケットを別の状態に移してから消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-005",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-006": {
+    "id": "E-STG-006",
+    "cls": "conflict",
+    "message": "並びが古くなっています。開き直してください",
+    "action": "開き直してから並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-006",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
+    }
+  },
+  "E-STG-007": {
+    "id": "E-STG-007",
+    "cls": "conflict",
+    "message": "始めの状態は先頭に、終わりの状態は最後に置きます",
+    "action": "始めを先頭・終わりを最後にして並べる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-STG-007",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "masters"
     }
   }
 };

@@ -1,0 +1,113 @@
+{
+ "ops": {
+  "createTicketStage": {
+   "file": "apps/api/test/features/F9/ticket-stages-write.test.ts",
+   "reason": "状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）",
+   "covers": {
+    "test_post_ticket_stages_ok": "K705-API-002",
+    "test_post_ticket_stages_shape": "K705-API-002",
+    "test_post_ticket_stages_rejected_401": "K705-API-017",
+    "test_post_ticket_stages_rejected_403": "K705-API-017",
+    "test_post_ticket_stages_rate_limited": "K705-API-019",
+    "test_post_ticket_stages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_stages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_stages_conflict": "K705-API-005",
+    "test_post_ticket_stages_conflict_2": "K705-API-006",
+    "test_post_ticket_stages_rejected_422": "K705-API-003",
+    "test_post_ticket_stages_session_unresolved": "K705-API-021",
+    "test_post_ticket_stages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "updateTicketStage": {
+   "file": "apps/api/test/features/F9/ticket-stages-write.test.ts",
+   "reason": "状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）",
+   "covers": {
+    "test_patch_ticket_stages_id_ok": "K705-API-007",
+    "test_patch_ticket_stages_id_shape": "K705-API-007",
+    "test_patch_ticket_stages_id_rejected_401": "K705-API-017",
+    "test_patch_ticket_stages_id_rejected_403": "K705-API-017",
+    "test_patch_ticket_stages_id_rate_limited": "K705-API-019",
+    "test_patch_ticket_stages_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_ticket_stages_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_ticket_stages_id_not_found": "K705-API-010",
+    "test_patch_ticket_stages_id_rejected_422": "K705-API-007",
+    "test_patch_ticket_stages_id_conflict": "K705-API-005",
+    "test_patch_ticket_stages_id_conflict_2": "K705-API-008",
+    "test_patch_ticket_stages_id_session_unresolved": "K705-API-022",
+    "test_patch_ticket_stages_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "deleteTicketStage": {
+   "file": "apps/api/test/features/F9/ticket-stages-write.test.ts",
+   "reason": "状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）",
+   "covers": {
+    "test_delete_ticket_stages_id_ok": "K705-API-011",
+    "test_delete_ticket_stages_id_shape": "K705-API-011",
+    "test_delete_ticket_stages_id_rejected_401": "K705-API-017",
+    "test_delete_ticket_stages_id_rejected_403": "K705-API-017",
+    "test_delete_ticket_stages_id_rate_limited": "K705-API-019",
+    "test_delete_ticket_stages_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ticket_stages_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_ticket_stages_id_not_found": "K705-API-010",
+    "test_delete_ticket_stages_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-705.ts",
+     "mark": "K144-API-973"
+    },
+    "test_delete_ticket_stages_id_conflict": "K705-API-012",
+    "test_delete_ticket_stages_id_conflict_2": "K705-API-013",
+    "test_delete_ticket_stages_id_session_unresolved": "K705-API-021"
+   }
+  },
+  "reorderTicketStages": {
+   "file": "apps/api/test/features/F9/ticket-stages-write.test.ts",
+   "reason": "状態を書く口は権限（ticket_stages の edit）・名前の一意・使っているチケットの数・仕組みの状態で答えが変わる。生成の試験の偽のセッションでは作れない（K-705）",
+   "covers": {
+    "test_post_ticket_stages_order_ok": "K705-API-014",
+    "test_post_ticket_stages_order_shape": "K705-API-014",
+    "test_post_ticket_stages_order_rejected_401": "K705-API-017",
+    "test_post_ticket_stages_order_rejected_403": "K705-API-017",
+    "test_post_ticket_stages_order_rate_limited": "K705-API-019",
+    "test_post_ticket_stages_order_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_stages_order_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_stages_order_conflict": "K705-API-015",
+    "test_post_ticket_stages_order_conflict_2": "K705-API-016",
+    "test_post_ticket_stages_order_rejected_422": "K705-API-015",
+    "test_post_ticket_stages_order_session_unresolved": "K705-API-021",
+    "test_post_ticket_stages_order_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  }
+ }
+}
