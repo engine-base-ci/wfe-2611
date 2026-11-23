@@ -1,0 +1,70 @@
+{
+ "ops": {
+  "sendConversationMessage": {
+   "file": "apps/api/test/features/F5/talk-say.test.ts",
+   "reason": "言うは、会話の持ち主・会話の種類・PC・待ちの数で答えが変わる。生成の試験の種では会話と PC の組を作れない（K-758）",
+   "covers": {
+    "test_post_conversations_id_messages_ok": "K758-API-001",
+    "test_post_conversations_id_messages_shape": "K758-API-001",
+    "test_post_conversations_id_messages_rejected_401": "K758-API-018",
+    "test_post_conversations_id_messages_rejected_403": "K758-API-006",
+    "test_post_conversations_id_messages_not_found": "K758-API-006",
+    "test_post_conversations_id_messages_conflict": "K758-API-004",
+    "test_post_conversations_id_messages_conflict_2": "K758-API-005",
+    "test_post_conversations_id_messages_conflict_3": "K758-API-008",
+    "test_post_conversations_id_messages_rejected_422": "K758-API-003",
+    "test_post_conversations_id_messages_rate_limited": "K758-API-018",
+    "test_post_conversations_id_messages_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_conversations_id_messages_session_unresolved": "K758-API-015",
+    "test_post_conversations_id_messages_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_conversations_id_messages_ok_2": "K758-API-007",
+    "test_post_conversations_id_messages_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_conversations_id_messages_upstream_failed": "この口はサーバーの外を呼ばない（DB に人の言葉の行と待っている仕事を書くだけ。AI を動かすのは仕事を取りに来る本人の PC・D-097）"
+   }
+  },
+  "stopConversation": {
+   "file": "apps/api/test/features/F5/talk-say.test.ts",
+   "reason": "止めるは、会話の持ち主と仕事の状態で答えが変わる。生成の試験の種では動いている仕事を作れない（K-758）",
+   "covers": {
+    "test_post_conversations_id_stop_ok": "K758-API-010",
+    "test_post_conversations_id_stop_shape": "K758-API-010",
+    "test_post_conversations_id_stop_rejected_401": "K758-API-018",
+    "test_post_conversations_id_stop_rejected_403": "K758-API-006",
+    "test_post_conversations_id_stop_not_found": "K758-API-006",
+    "test_post_conversations_id_stop_rejected_422": "K758-API-012",
+    "test_post_conversations_id_stop_rate_limited": "K758-API-018",
+    "test_post_conversations_id_stop_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_conversations_id_stop_session_unresolved": "K758-API-015",
+    "test_post_conversations_id_stop_rejected_422_2": {
+     "file": "apps/api/test/features/contract/k144.d/K-758.ts",
+     "mark": "K144-API-923"
+    },
+    "test_post_conversations_id_stop_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_conversations_id_stop_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_conversations_id_stop_upstream_failed": "この口はサーバーの外を呼ばない（DB に止める合図と取りやめを書くだけ。止めるのは合図を見る本人の PC・D-097）"
+   }
+  }
+ }
+}

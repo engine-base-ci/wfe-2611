@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。237 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。240 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4289,6 +4289,60 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-TALK-010": {
+    "id": "E-TALK-010",
+    "cls": "conflict",
+    "message": "PC がつながっていません。自分の PC をつなぐと話せます",
+    "action": "PC をつなぐ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-011": {
+    "id": "E-TALK-011",
+    "cls": "conflict",
+    "message": "この会話には、ここからは話せません。チケットの右のパネル、または作る画面から話してください",
+    "action": "会話を開き直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
+    }
+  },
+  "E-TALK-012": {
+    "id": "E-TALK-012",
+    "cls": "conflict",
+    "message": "返事を待っている言葉が多すぎます。いくつか返事が来てから、もう一度送ってください",
+    "action": "少し待つ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-TALK-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "clone-chat"
     }
   }
 };

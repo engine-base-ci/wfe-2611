@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-22",
+ "created_at": "2026-11-23",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -759,8 +759,9 @@
     "E-050 artifacts",
     "E-051 artifact_versions",
     "E-061 sessions",
-    "E-039 action_runs",
-    "E-120 reference_logs",
+    "E-044 bridge_jobs",
+    "E-052 audit_events",
+    "E-046 bridge_job_events",
     "E-028 memories",
     "E-037 policies",
     "E-095 skills",
@@ -12477,7 +12478,6 @@
     "credentials",
     "onboard-testrun",
     "approvals",
-    "clone-chat",
     "ai-activity",
     "ops-support",
     "ops-home",
@@ -12580,17 +12580,21 @@
    "used_by_screens": [
     "bridge-setup",
     "credentials",
+    "clone-chat",
     "member-detail",
     "knowledge",
     "portal"
    ],
    "used_by_features": [
+    "F-004",
     "F-005",
+    "F-006",
     "F-010",
     "F-011",
     "F-013",
     "F-017",
-    "F-022"
+    "F-022",
+    "F-024"
    ]
   },
   {
@@ -12603,10 +12607,15 @@
    "entity_id": "E-046",
    "entity_name": "bridge_job_events",
    "used_by_screens": [
-    "bridge-setup"
+    "bridge-setup",
+    "clone-chat"
    ],
    "used_by_features": [
-    "F-005"
+    "F-004",
+    "F-005",
+    "F-006",
+    "F-013",
+    "F-024"
    ]
   },
   {
@@ -12726,6 +12735,7 @@
     "credentials",
     "onboard-testrun",
     "approvals",
+    "clone-chat",
     "record-detail",
     "goals",
     "company-model",
@@ -14106,7 +14116,6 @@
    "entity_name": "reference_logs",
    "used_by_screens": [
     "bridge-setup",
-    "clone-chat",
     "tickets",
     "knowledge"
    ],
@@ -14737,6 +14746,8 @@
     "E-039",
     "E-042",
     "E-043",
+    "E-044",
+    "E-046",
     "E-048",
     "E-049",
     "E-050",
@@ -14919,6 +14930,8 @@
     "E-039",
     "E-040",
     "E-043",
+    "E-044",
+    "E-046",
     "E-047",
     "E-049",
     "E-050",
@@ -15370,6 +15383,7 @@
     "E-039",
     "E-043",
     "E-044",
+    "E-046",
     "E-049",
     "E-050",
     "E-051",
@@ -15895,6 +15909,8 @@
     "E-038",
     "E-039",
     "E-043",
+    "E-044",
+    "E-046",
     "E-049",
     "E-050",
     "E-051",

@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:404117df573bdd17
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:9341fe5c83d52421
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -97,9 +97,9 @@ export interface Ops {
   deleteConversation: { params: { id: string }; query: never; body: never; data: T.Conversations };
   createConversationAttachment: { params: { id: string }; query: never; body: T.AttachmentsInput; data: T.Attachments };
   listConversationMessages: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.MessageView[] };
-  sendConversationMessage: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  sendConversationMessage: { params: { id: string }; query: never; body: T.ConversationSay; data: T.ConversationSaid };
   answerAgentPermission: { params: { id: string; pid: string }; query: never; body: T.MessagesInput; data: T.Messages };
-  stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.Messages };
+  stopConversation: { params: { id: string }; query: never; body: T.MessagesInput; data: T.ConversationStopped };
   streamConversation: { params: { id: string }; query: never; body: never; data: T.Messages };
   listCredentials: { params: never; query: { "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Credential[] };
   createCredential: { params: never; query: never; body: T.CredentialCreateInput; data: T.Credential };

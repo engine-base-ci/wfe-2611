@@ -2420,7 +2420,6 @@
     "makeKindTemplateFromTicket",
     "previewTicketKindChange",
     "restoreTicketVersion",
-    "sendConversationMessage",
     "suggestTestSpecs",
     "updateTestSpec",
     "updateTicketSection"
@@ -2443,7 +2442,6 @@
     "apps/api/test/generated/patch_test_specs_id.test.ts",
     "apps/api/test/generated/patch_tickets_id_sections_key.test.ts",
     "apps/api/test/generated/post_conversations.test.ts",
-    "apps/api/test/generated/post_conversations_id_messages.test.ts",
     "apps/api/test/generated/post_ticket_imports.test.ts",
     "apps/api/test/generated/post_ticket_imports_id_commit.test.ts",
     "apps/api/test/generated/post_ticket_kinds_id_template_from_ticket.test.ts",
@@ -2636,6 +2634,7 @@
     "mirrorConversationEntries",
     "previewBulkApproval",
     "reportBrowserState",
+    "sendConversationMessage",
     "sendTicketAgentMessage",
     "stopActionRun",
     "stopApproval",
@@ -2666,6 +2665,7 @@
     "apps/api/test/generated/post_bridge_jobs_id_conversation_entries.test.ts",
     "apps/api/test/generated/post_checks_id_human.test.ts",
     "apps/api/test/generated/post_clones_me_activity_export.test.ts",
+    "apps/api/test/generated/post_conversations_id_messages.test.ts",
     "apps/api/test/generated/post_conversations_id_stop.test.ts",
     "apps/api/test/generated/post_tickets_id_agent_session_messages.test.ts",
     "apps/api/test/generated/post_tickets_id_dry_run.test.ts"

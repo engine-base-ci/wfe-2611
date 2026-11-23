@@ -7483,6 +7483,97 @@
     "D-125.62",
     "D-129.43"
    ]
+  },
+  {
+   "id": "E-TALK-010",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "つながっている自分の PC が無い（外した・まだつないでいない）のに、自分の AI に言った",
+   "false_when": "自分の PC が 1 つでもつながっている（別の人の PC は数えない）",
+   "message": "PC がつながっていません。自分の PC をつなぐと話せます",
+   "action": "PC をつなぐ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "自分の PC の印を外す",
+     "分身の部屋の「話す」で言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-011",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "自分の AI との会話でない会話（チケットの会話・作る画面の会話）に、自分の AI の口から言った",
+   "false_when": "自分の AI との会話（clone）に言った",
+   "message": "この会話には、ここからは話せません。チケットの右のパネル、または作る画面から話してください",
+   "action": "会話を開き直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの右のパネルの会話がある",
+    "steps": [
+     "チケットの会話の id を指して、自分の AI に言う口へ送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
+  },
+  {
+   "id": "E-TALK-012",
+   "class": "conflict",
+   "where": {
+    "screen": "clone-chat"
+   },
+   "when": "1 つの会話で返事を待っている言葉（待っている仕事）が 20 ある所へ、さらに言った",
+   "false_when": "待っている仕事が 20 より少ない（終わった・止まった・取りやめた仕事は数えない）",
+   "message": "返事を待っている言葉が多すぎます。いくつか返事が来てから、もう一度送ってください",
+   "action": "少し待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分の AI との会話を開く",
+    "steps": [
+     "PC を止めたまま、同じ会話に 21 回言葉を送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-153.16",
+    "D-153.17"
+   ]
   }
  ],
  "meta": {
