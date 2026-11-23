@@ -48,3 +48,8 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 直す関数か守りの判定か証跡の書き込みか DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、成果物の版もやり取りも証跡も変えない"},
     ],
 }
+
+# 承認の行の ticket_id は null 可だが、DB の関数 app.approval_self_edit は ticket_id の無い承認を not_found で断り、直せた時だけ答えを返す
+NOT_NULL_ANSWERS = {
+    "editApproval.ticket_id": "直せるのはチケットの成果物の承認だけ。DB の関数 app.approval_self_edit は ticket_id の無い承認を not_found（404）で断るので、答えの ticket_id は必ず入る（approvals.ticket_id は成果物でない承認のために null 可）",
+}
