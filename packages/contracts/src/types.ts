@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:4e23902819994d64
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:99496aa207ea0fb5
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -78,8 +78,8 @@ export type Policies = { subject_kind_id?: string | null; action_kind_id?: strin
 export type PoliciesInput = { subject_kind_id?: string | null; action_kind_id?: string | null; mode_id?: string | null; params?: unknown | null; is_locked?: boolean | null };
 export type Approvals = { action_run_id?: string | null; requested_by?: string | null; approver_member_id?: string | null; status_id?: string | null; resolved_at?: string | null; note?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; bulk_batch_id?: string | null; created_by?: string | null; decided_at?: string | null; decision?: string | null; deleted_at?: string | null; escalated_by_policy_id?: string | null; human_checks?: unknown; irreversible?: boolean; kind?: string; level?: number; memory_candidate?: boolean; next_actor?: string | null; parent_approval_id?: string | null; return_reason?: string | null; return_targets?: unknown | null; scope_id?: string; step_up_at?: string | null; subject_id?: string | null; subject_type?: string | null; ticket_id?: string | null; updated_by?: string | null; withdrawn_at?: string | null };
 export type ApprovalsInput = { action_run_id?: string | null; requested_by?: string | null; approver_member_id?: string | null; status_id?: string | null; resolved_at?: string | null; note?: string | null };
-export type ActionRuns = { task_id?: string | null; action_kind_id?: string | null; choke_point_id?: string | null; service_id?: string | null; procedure_id?: string | null; status_id?: string | null; started_at?: string | null; finished_at?: string | null; tokens_in?: number | null; tokens_out?: number | null; cost?: string | null; error_summary?: string | null; ai_employee_id?: string | null; duty_id?: string | null; mode_id?: string | null; bridge_job_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; approval_id?: string | null; created_by?: string | null; deleted_at?: string | null; phase?: string | null; scope_id?: string; ticket_id?: string | null; updated_by?: string | null };
-export type ActionRunsInput = { task_id?: string | null; action_kind_id?: string | null; choke_point_id?: string | null; service_id?: string | null; procedure_id?: string | null; status_id?: string | null; started_at?: string | null; finished_at?: string | null; tokens_in?: number | null; tokens_out?: number | null; cost?: string | null; error_summary?: string | null; ai_employee_id?: string | null; duty_id?: string | null; mode_id?: string | null; bridge_job_id?: string | null };
+export type ActionRuns = { task_id?: string | null; action_kind_id?: string | null; choke_point_id?: string | null; service_id?: string | null; procedure_id?: string | null; status_id?: string | null; started_at?: string | null; finished_at?: string | null; tokens_in?: number | null; tokens_out?: number | null; cost?: string | null; error_summary?: string | null; ai_employee_id?: string | null; duty_id?: string | null; mode_id?: string | null; bridge_job_id?: string | null; taken_over_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; approval_id?: string | null; created_by?: string | null; deleted_at?: string | null; phase?: string | null; scope_id?: string; ticket_id?: string | null; updated_by?: string | null };
+export type ActionRunsInput = { task_id?: string | null; action_kind_id?: string | null; choke_point_id?: string | null; service_id?: string | null; procedure_id?: string | null; status_id?: string | null; started_at?: string | null; finished_at?: string | null; tokens_in?: number | null; tokens_out?: number | null; cost?: string | null; error_summary?: string | null; ai_employee_id?: string | null; duty_id?: string | null; mode_id?: string | null; bridge_job_id?: string | null; taken_over_at?: string | null };
 export type ServiceRegistry = { name?: string | null; domain?: string | null; automation_verdict_id?: string | null; notes?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type ServiceRegistryInput = { name?: string | null; domain?: string | null; automation_verdict_id?: string | null; notes?: string | null };
 export type CredentialKinds = { key?: string; label?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -88,7 +88,7 @@ export type Credentials = { name?: string; description?: string | null; layer?: 
 export type CredentialsInput = { name?: string; description?: string | null; layer?: string; service_id?: string | null; service_name?: string | null; service_domain?: string | null; kind_id?: string | null; provider_id?: string; owner_member_id?: string | null; revoked_at?: string | null };
 export type Conversations = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null; deleted_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; scope_id?: string; updated_by?: string | null };
 export type ConversationsInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
-export type BridgeJobs = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; credential_id?: string | null; deleted_at?: string | null; kind?: string; resume_session_id?: string | null; scope_id?: string | null; stop_requested_at?: string | null; taken_session_id?: string | null; updated_by?: string | null };
+export type BridgeJobs = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; credential_id?: string | null; deleted_at?: string | null; kind?: string; resume_session_id?: string | null; scope_id?: string | null; stop_requested_at?: string | null; taken_session_id?: string | null; target_session_id?: string | null; updated_by?: string | null };
 export type BridgeJobsInput = { member_id?: string; conversation_id?: string | null; state_id?: string; prompt?: string; agent_session_id?: string | null; result?: string | null; partial?: string | null; stopped_reason?: string | null; permission_mode?: string; model?: string | null; effort?: string | null; tools?: string[] | null; attachment_ids?: string[] | null; steer_seq?: number; tool_token_hash?: string | null; browser?: string | null; started_at?: string | null; finished_at?: string | null };
 export type BridgeJobStates = { key?: string; label?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type BridgeJobStatesInput = { key?: string; label?: string };
@@ -158,8 +158,8 @@ export type StatusIncidents = { component_id?: string | null; service_id?: strin
 export type StatusIncidentsInput = { component_id?: string | null; service_id?: string | null; state_id?: string | null; started_at?: string | null; resolved_at?: string | null; note?: string | null };
 export type NotificationPreferences = { member_id?: string | null; event_kind_id?: string | null; channel_id?: string | null; enabled?: boolean | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type NotificationPreferencesInput = { member_id?: string | null; event_kind_id?: string | null; channel_id?: string | null; enabled?: boolean | null };
-export type Notifications = { member_id?: string | null; channel_id?: string | null; event_kind_id?: string | null; payload?: unknown | null; dedupe_key?: string | null; sent_at?: string | null; failed_at?: string | null; retry_count?: number | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
-export type NotificationsInput = { member_id?: string | null; channel_id?: string | null; event_kind_id?: string | null; payload?: unknown | null; sent_at?: string | null; failed_at?: string | null; retry_count?: number | null };
+export type Notifications = { member_id?: string | null; channel_id?: string | null; event_kind_id?: string | null; payload?: unknown | null; dedupe_key?: string | null; sent_at?: string | null; failed_at?: string | null; read_at?: string | null; retry_count?: number | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type NotificationsInput = { member_id?: string | null; channel_id?: string | null; event_kind_id?: string | null; payload?: unknown | null; sent_at?: string | null; failed_at?: string | null; read_at?: string | null; retry_count?: number | null };
 export type Plans = { key?: string; name?: string | null; price_monthly?: string | null; limits?: unknown | null; current_version?: number | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type PlansInput = { key?: string; name?: string | null; price_monthly?: string | null; limits?: unknown | null; current_version?: number | null };
 export type PlanVersions = { plan_id?: string | null; version?: number; snapshot?: unknown | null; released_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
@@ -180,8 +180,8 @@ export type Imports = { file_ref?: string | null; detected_kind_id?: string | nu
 export type ImportsInput = { file_ref?: string | null; detected_kind_id?: string | null; proposal?: unknown | null; status_id?: string | null; applied_at?: string | null; applied_by?: string | null };
 export type Integrations = { service_id?: string | null; kind_id?: string | null; credential_id?: string | null; scopes?: string[] | null; status_id?: string | null; connected_at?: string | null; revoked_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
 export type IntegrationsInput = { service_id?: string | null; kind_id?: string | null; credential_id?: string | null; scopes?: string[] | null; status_id?: string | null; connected_at?: string | null; revoked_at?: string | null };
-export type Invitations = { email?: string; scope_id?: string | null; role_id?: string | null; permission_preset?: unknown; token_hash?: string; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; message?: string | null; resend_requested_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
-export type InvitationsInput = { email?: string; role_id?: string | null; permission_preset?: unknown; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; message?: string | null; resend_requested_at?: string | null };
+export type Invitations = { email?: string | null; scope_id?: string | null; role_id?: string | null; permission_preset?: unknown; token_hash?: string; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; message?: string | null; resend_requested_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type InvitationsInput = { email?: string | null; role_id?: string | null; permission_preset?: unknown; expires_at?: string; accepted_member_id?: string | null; revoked_at?: string | null; message?: string | null; resend_requested_at?: string | null };
 export type PendingSignup = { email?: string; name?: string; company_name?: string; pw_iv?: string; token_hash?: string; expires_at?: string; sent_at?: string; send_error?: string; consumed_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string };
 export type PendingSignupInput = { email?: string; name?: string; company_name?: string; pw_iv?: string; expires_at?: string; sent_at?: string; send_error?: string; consumed_at?: string };
 export type ExportJobs = { requested_by?: string | null; kind_id?: string; storage_ref?: string | null; status_id?: string; expires_at?: string | null; downloaded_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
@@ -210,13 +210,13 @@ export type DisclosureVersions = { version?: number | null; generated_at?: strin
 export type DisclosureVersionsInput = { generated_at?: string | null; pdf_ref?: string | null; dpa_ref?: string | null; released_by?: string | null; notice_id?: string | null };
 export type Subprocessors = { name?: string | null; purpose?: string | null; region?: string | null; data_kinds?: string[] | null; effective_from?: string | null; announced_at?: string | null; retired_at?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type SubprocessorsInput = { name?: string | null; purpose?: string | null; region?: string | null; data_kinds?: string[] | null; effective_from?: string | null; announced_at?: string | null; retired_at?: string | null };
-export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; completed_at?: string | null; completed_by?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; created_by?: string | null; draft_import_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_share?: unknown; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
-export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; completed_at?: string | null; completed_by?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; draft_import_id?: string | null };
+export type Tickets = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; completed_at?: string | null; completed_by?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; created_by?: string | null; draft_import_id?: string | null; no_spec_reason?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_share?: unknown; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
+export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; completed_at?: string | null; completed_by?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; draft_import_id?: string | null; no_spec_reason?: string | null };
 export type TicketSections = { ticket_id?: string; section_key?: string; position?: number; body?: unknown; version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketSectionsInput = { ticket_id?: string; section_key?: string; position?: number; body?: unknown };
-export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; restored_from?: number | null; updated_by?: string | null };
 export type TicketSectionVersionsInput = { ticket_id?: string; section_id?: string; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean };
-export type TicketKinds = { name?: string; color?: string | null; position?: number; is_builtin?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; description?: string | null; updated_by?: string | null };
+export type TicketKinds = { name?: string; color?: string | null; position?: number; is_builtin?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; body_template?: unknown | null; created_by?: string | null; deleted_at?: string | null; description?: string | null; updated_by?: string | null };
 export type TicketKindsInput = { name?: string; color?: string | null; position?: number; is_builtin?: boolean };
 export type KindSections = { kind_id?: string; section_key?: string; label?: string; mode?: string; position?: number; default_test_specs?: unknown | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; client_visible?: boolean; content_type?: string; created_by?: string | null; deleted_at?: string | null; hint?: string | null; updated_by?: string | null; used_for_acceptance?: boolean };
 export type KindSectionsInput = { kind_id?: string; section_key?: string; label?: string; mode?: string; position?: number; default_test_specs?: unknown | null };
@@ -228,16 +228,22 @@ export type ClassValues = { axis_id?: string; label?: string; color?: string | n
 export type ClassValuesInput = { axis_id?: string; label?: string; color?: string | null; position?: number };
 export type TicketClassValues = { ticket_id?: string; value_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketClassValuesInput = { ticket_id?: string; value_id?: string };
+export type CustomFields = { name?: string; field_type?: string; required?: boolean; description?: string | null; options?: unknown; position?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type CustomFieldsInput = { name?: string; field_type?: string; required?: boolean; description?: string | null; options?: unknown; position?: number };
+export type CustomFieldKinds = { field_id?: string; kind_id?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type CustomFieldKindsInput = { field_id?: string; kind_id?: string };
+export type TicketFieldValues = { ticket_id?: string; field_id?: string; value?: unknown; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TicketFieldValuesInput = { ticket_id?: string; field_id?: string; value?: unknown };
 export type HandoverRules = { target?: string; axis_id?: string | null; mode?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type HandoverRulesInput = { target?: string; axis_id?: string | null; mode?: string };
-export type TestSpecs = { ticket_id?: string; check_kind?: string; title?: string; judge_type?: string | null; params?: unknown; version?: number; off_reason?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
-export type TestSpecsInput = { ticket_id?: string; check_kind?: string; title?: string; judge_type?: string | null; params?: unknown; off_reason?: string | null };
+export type TestSpecs = { ticket_id?: string; check_kind?: string | null; title?: string; judge_type?: string | null; params?: unknown; version?: number; off_reason?: string | null; checked_at?: string | null; checked_by_member_id?: string | null; checked_by_ai?: boolean; source?: string; source_ref_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TestSpecsInput = { ticket_id?: string; check_kind?: string | null; title?: string; judge_type?: string | null; params?: unknown; off_reason?: string | null; checked_at?: string | null; checked_by_member_id?: string | null; checked_by_ai?: boolean; source?: string; source_ref_id?: string | null };
 export type Checks = { ticket_id?: string; test_spec_id?: string; spec_version?: number; artifact_version_id?: string | null; attempt?: number; result?: string; evidence?: unknown; runner?: string; checked_by_member_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type ChecksInput = { ticket_id?: string; test_spec_id?: string; spec_version?: number; artifact_version_id?: string | null; attempt?: number; result?: string; evidence?: unknown; runner?: string; checked_by_member_id?: string | null };
-export type TicketDecisions = { ticket_id?: string; text?: string; reason?: string | null; decided_by?: string | null; decided_at?: string; source_message_id?: string | null; superseded_by_id?: string | null; promoted_to?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
-export type TicketDecisionsInput = { ticket_id?: string; text?: string; reason?: string | null; decided_by?: string | null; decided_at?: string; source_message_id?: string | null; superseded_by_id?: string | null; promoted_to?: string };
-export type TicketMessages = { ticket_id?: string; author_member_id?: string | null; kind?: string; body?: string | null; mentions?: string[]; changes?: unknown | null; quote_of_id?: string | null; reactions?: unknown; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
-export type TicketMessagesInput = { ticket_id?: string; author_member_id?: string | null; kind?: string; body?: string | null; mentions?: string[]; changes?: unknown | null; quote_of_id?: string | null; reactions?: unknown };
+export type TicketDecisions = { ticket_id?: string; text?: string; reason?: string | null; decided_by?: string | null; decided_at?: string; source_message_id?: string | null; superseded_by_id?: string | null; promoted_to?: string; decided_note?: string | null; cancelled_at?: string | null; cancelled_by?: string | null; cancel_reason?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TicketDecisionsInput = { ticket_id?: string; text?: string; reason?: string | null; decided_by?: string | null; decided_at?: string; source_message_id?: string | null; superseded_by_id?: string | null; promoted_to?: string; decided_note?: string | null; cancelled_at?: string | null; cancelled_by?: string | null; cancel_reason?: string | null };
+export type TicketMessages = { ticket_id?: string; author_member_id?: string | null; kind?: string; body?: string | null; mentions?: string[]; changes?: unknown | null; quote_of_id?: string | null; reactions?: unknown; notify_member_ids?: string[]; quote_text?: string | null; edited_at?: string | null; deleted_by?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TicketMessagesInput = { ticket_id?: string; author_member_id?: string | null; kind?: string; body?: string | null; mentions?: string[]; changes?: unknown | null; quote_of_id?: string | null; reactions?: unknown; notify_member_ids?: string[]; quote_text?: string | null; edited_at?: string | null; deleted_by?: string | null };
 export type ReferenceLogs = { ticket_id?: string; action_run_id?: string | null; ref_type?: string; ref_id?: string | null; url?: string | null; title?: string | null; seen_at?: string; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type ReferenceLogsInput = { ticket_id?: string; action_run_id?: string | null; ref_type?: string; ref_id?: string | null; url?: string | null; title?: string | null; seen_at?: string };
 export type KnowledgePages = { is_personal?: boolean; parent_page_id?: string | null; title?: string; owner_member_id?: string; state?: string; verify_interval_days?: number | null; verified_at?: string | null; verify_due_on?: string | null; topics?: string[]; current_version?: number; form?: string; archived_at?: string | null; archived_to_page_id?: string | null; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; scope_id?: string; updated_by?: string | null };
@@ -308,7 +314,7 @@ export type BridgeHeartbeatInput = { health?: unknown; protocol?: unknown; versi
 export type TicketCreateInput = { scope_id: string; kind_id: string; title: string; assignee_member_id: string; due_on: string; start_on?: string; priority?: string; priority_reason?: string; parent_ticket_id?: string; estimate_minutes?: unknown | null; sections?: Record<string, unknown>; notify_member_ids?: string[]; draft_id?: string; source_draft_id?: string };
 export type TicketDraftInput = { draft_id: string; body?: Record<string, unknown>; discard?: boolean };
 export type DismissSetupTasksInput = { key?: string };
-export type TicketDelegateInput = Record<string, never>;
+export type TicketDelegateInput = { no_spec_reason?: string };
 export type BridgeTakeInput = { wait_sec?: number; protocol?: number; idle?: boolean };
 export type BridgeProgressInput = { seq?: number; kind: string; text?: string; agent_session_id?: string; model?: string; tool?: unknown; usage?: unknown; todos?: unknown; windows?: unknown; blocked?: unknown };
 export type BridgeFinishInput = { state: string; result?: string; reason?: string; agent_session_id?: string };
@@ -316,20 +322,41 @@ export type BridgeToolInput = { input?: unknown };
 export type ApprovalApproveInput = Record<string, never>;
 export type ApprovalReturnInput = { note: string };
 export type InvitationAcceptInput = { name?: string | null; password?: string | null };
-export type TicketCompleteInput = { todo_checked: string[]; todo_version: number; conditions_confirmed: boolean };
+export type TicketCompleteInput = { todo_checked?: string[] | null; todo_version?: number | null; conditions_confirmed: boolean };
 export type InvitationResendInput = Record<string, never>;
 export type CredentialCreateInput = { layer: string; kind: string; name: string; description?: string | null; login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations: string[]; expires_on?: string | null };
 export type CredentialUpdateInput = { login?: string; password?: string; value?: string; two_factor?: string; totp_secret?: string; destinations?: string[]; expires_on?: string | null; description?: string | null; reason?: string };
+export type CredentialResolveInput = { job_id: string; credential_id: string; destination: string; executor_key: string };
+export type CredentialLoginCheckInput = Record<string, never>;
+export type CredentialLoginAnswerInput = { request_ref: string; code?: string; approved?: boolean };
+export type CredentialCheckReportInput = { job_id: string; state: string; detail?: string; request_ref?: string; ask_kind?: string; text?: string };
 export type DeviceBrowserInput = { browser: string };
+export type DeviceBrowserCheckInput = Record<string, never>;
+export type BridgeBrowserInput = { browser: string };
+export type TicketTimelineSeenInput = { seen_at?: string | null };
+export type TicketMessageInput = { body: string; mention_member_ids?: string[]; notify_member_ids?: string[]; quote_of_id?: string | null; stage_key?: string; stage_id?: string; hold_reason?: string; resume_condition?: string };
+export type TicketMessageEditInput = { body: string; mention_member_ids?: string[] };
+export type TicketMessageStarInput = Record<string, never>;
+export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string };
+export type TicketDecisionInput = { text: string; reason?: string | null; decided_by_member_id?: string | null; decided_note?: string | null; source_message_id?: string | null; promoted_to?: string | null };
+export type TicketDecisionUpdateInput = { action: string; text?: string | null; reason?: string | null };
 export type TicketHandoverCreateInput = { kind: string; to_member_id?: string | null; to_scope_id?: string | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown> | null; notify_managers?: boolean | null; replaces?: string | null };
 export type TicketHandoverAnswerInput = { decision: string; decline_reason?: string | null; switch?: Record<string, unknown> | null };
+export type InvitationsCreateInput = { emails: string[]; scope_id: string; role_key: string; message?: string | null };
+export type InvitationLinkCreateInput = { scope_id: string; role_key: string };
+export type TicketBodyInput = { version: number; doc: Record<string, unknown> };
+export type TestSpecCreateInput = { title: string };
+export type TestSpecUpdateInput = { version: number; checked?: boolean; title?: string };
+export type TicketLinkInput = { other_ticket_id: string; kind: string };
+export type SavedViewInput = { name: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string };
+export type ActionRunTakeoverInput = Record<string, never>;
 export type ScopeOverview = { by_stage?: string[]; milestones?: string[]; recent?: string[]; total?: number };
 export type TicketKindChangePreview = { added_sections?: string[]; removed_sections?: string[]; moved_to_body?: string[]; checks_reset?: boolean };
-export type TicketDeletePreview = { children?: number; attachments?: number; artifacts?: number; restorable_until?: string };
+export type TicketDeletePreview = { children?: number; descendants?: number; attachments?: number; artifacts?: number; pending_approvals?: number; links?: number; running_runs?: number; descendant_pending_approvals?: number; descendant_running_runs?: number; restorable_until?: string };
 export type SearchHit = { kind?: string; id?: string; title?: string; snippet?: string; url?: string };
-export type TimelineItem = { kind?: string; at?: string; actor_member_id?: string; message?: Record<string, unknown>; changes?: string[] | null; run?: Record<string, unknown> };
+export type TimelineItem = { id?: string; kind?: string; at?: string; actor?: Record<string, unknown> | null; message?: Record<string, unknown> | null; changes?: string[] | null; run?: Record<string, unknown> | null; deleted?: Record<string, unknown> | null };
 export type TestSpecLint = { missing?: string[]; warnings?: string[] };
-export type TicketCompletion = { ticket?: Record<string, unknown>; knowledge_candidates?: string[]; skipped_reason?: string };
+export type TicketCompletion = { ticket?: Record<string, unknown>; knowledge_candidates?: string[]; skipped_reason?: string; unchecked?: Record<string, unknown> };
 export type BulkResult = { updated?: string[]; skipped?: string[] };
 export type ApprovalQueueItem = { kind?: string; id?: string; ticket_id?: string | null; ticket_number?: string; title?: string; from_member_id?: string; from_name?: string; check_summary?: string; due_on?: string | null; decide_inline?: boolean; irreversible?: boolean; primary_action?: string; secondary_action?: string; note?: string | null; created_at?: string };
 export type ApprovalDetail = { approval?: Record<string, unknown>; ticket?: Record<string, unknown>; operation?: Record<string, unknown>; message_text?: string; artifact_version?: Record<string, unknown>; checks?: string[]; check_summary?: string; cautions?: string[]; irreversible?: boolean; can_decide?: boolean; chain?: string[] };
@@ -370,7 +397,7 @@ export type BridgeClaim = { device_token?: string; device_id?: string; member_id
 export type BridgeReleaseLink = { url?: string; expires_at?: string };
 export type BridgeHeartbeat = { ok?: boolean; browser?: string | null; outdated?: boolean; device_id?: string };
 export type BridgeDevice = { id?: string; device_label?: string | null; state?: string; last_seen_at?: string | null; connected_at?: string; version?: string | null; health?: string[]; health_at?: string | null; browser?: string; revoke_reason?: string | null };
-export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null; completed?: Record<string, unknown> | null };
+export type TicketDetail = { ticket?: Record<string, unknown>; sections?: string[]; kind?: Record<string, unknown> | null; stage?: Record<string, unknown> | null; assignee?: Record<string, unknown> | null; can?: Record<string, unknown>; approval?: Record<string, unknown> | null; completed?: Record<string, unknown> | null; time?: Record<string, unknown>; hold?: Record<string, unknown> | null };
 export type TicketKindChoice = { id?: string; name?: string; color?: string | null; position?: number; is_builtin?: boolean; sections?: string[] };
 export type TicketDraft = { draft_id?: string; body?: Record<string, unknown> | null; saved_at?: string | null };
 export type BridgeJob = { job?: Record<string, unknown> | null; forbidden_domains?: string[]; next_ms?: number; outdated?: boolean };
@@ -379,8 +406,8 @@ export type TicketDelegation = { run_id?: string; job_id?: string; status?: stri
 export type ApprovalDecided = { id?: string; decision?: string | null; decided_at?: string | null; status_id?: string | null; ticket_id?: string | null; run_id?: string; pc?: string };
 export type BridgeFinish = { ok?: boolean; outcome?: string };
 export type BridgeToolResult = { result?: Record<string, unknown> | null };
-export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; checks?: Record<string, unknown> };
-export type ResolvedCredential = { ref?: string; ciphertext_for_executor?: string; destinations?: string[]; expires_at?: string | null };
+export type ActionRunView = { id?: string; ticket_id?: string; phase?: string; status?: string; by?: Record<string, unknown>; pc?: string; silent?: boolean; last_event_at?: string | null; progress?: string | null; stopped_reason?: string | null; return_reason?: string | null; started_at?: string | null; finished_at?: string | null; taken_over_at?: string | null; reason_kind?: string | null; checks?: Record<string, unknown> };
+export type ResolvedCredential = { credential_id?: string; kind?: string; name?: string; destinations?: string[]; two_factor?: string; expires_at?: string | null; server_key?: string; iv?: string; tag?: string; ciphertext_for_executor?: string };
 export type WorkTypeUploadCheck = { package?: Record<string, unknown>; checks?: string[]; passed?: boolean; test_scenarios?: number; changelog?: string | null };
 export type PlanProposalImpact = { tenants?: number; monthly_revenue_diff?: number; existing_from?: string; new_from?: string | null; by_workspace?: string[] };
 export type RuleCheck = { conflicts?: string[]; similar?: string[]; needs_approval_from?: string; warnings?: string[] };
@@ -424,17 +451,38 @@ export type TicketShapeChangePreview = { removed?: string[]; needs_move_to?: str
 export type OpsInquiryDetail = { inquiry?: Record<string, unknown>; messages?: string[]; context?: Record<string, unknown>; workspace?: Record<string, unknown> };
 export type OpsNoticeDetail = { notice?: Record<string, unknown>; updates?: string[]; affects?: Record<string, unknown>; placements?: string[] };
 export type PublicServiceStatus = { incidents?: string[]; maintenance?: Record<string, unknown> | null };
-export type InvitationPreview = { state?: string; workspace_name?: string; inviter_name?: string | null; group_name?: string | null; role?: string; message?: string | null; email?: string; expires_at?: string; account_exists?: boolean; signed_in?: Record<string, unknown> | null };
+export type InvitationPreview = { state?: string; workspace_name?: string; inviter_name?: string | null; group_name?: string | null; role?: string; message?: string | null; email?: string | null; expires_at?: string; account_exists?: boolean; signed_in?: Record<string, unknown> | null };
 export type InvitationAccepted = { token?: string; workspace_id?: string; next?: string };
 export type ServiceStatus = { components?: string[]; banner?: Record<string, unknown>; maintenance?: Record<string, unknown> };
 export type InvitationResendResult = { result?: string };
 export type Credential = { id?: string; name?: string; description?: string | null; layer?: string; kind?: string; two_factor?: string; destinations?: string[]; expires_on?: string | null; use_count?: number; last_used_at?: string | null; login_check?: Record<string, unknown>; can_edit?: boolean; created_at?: string; updated_at?: string };
 export type CredentialDeleted = { id?: string };
+export type CredentialLoginCheck = { state?: string; job_id?: string | null };
+export type CredentialLoginAnswer = { accepted?: boolean };
+export type CredentialCheckReport = { accepted?: boolean; code?: string | null };
+export type RevokedDevice = { id?: string; device_label?: string | null; revoked_at?: string | null; revoke_reason?: string };
 export type DeviceBrowser = { id?: string; browser?: string };
+export type DeviceBrowserCheck = { job_id?: string };
+export type BridgeBrowser = { browser?: string };
+export type TicketTimelineSeen = { ticket_id?: string; seen_at?: string };
+export type TicketMessageStar = { id?: string; stars?: number; starred?: boolean };
+export type TicketUpdated = { ticket?: Record<string, unknown>; stage?: Record<string, unknown>; changed?: boolean; message_id?: string | null };
+export type TicketDecision = { id?: string; ticket_id?: string; text?: string; reason?: string | null; decided_by?: Record<string, unknown> | null; decided_note?: string | null; decided_at?: string; source?: Record<string, unknown> | null; revises_id?: string | null; superseded_by_id?: string | null; cancelled?: Record<string, unknown> | null; promoted_to?: string };
+export type TicketDecisionCreated = { decision?: Record<string, unknown>; message_id?: string };
+export type TicketDecisionChange = { decision?: Record<string, unknown>; previous?: Record<string, unknown> | null; message_id?: string };
 export type HandoverPreview = { kinds?: string[]; blocked?: string | null; waiting?: Record<string, unknown> | null; default_reply_due?: string; rules?: string[]; children?: Record<string, unknown>; links?: Record<string, unknown>; group?: Record<string, unknown>; candidates?: string[]; groups?: string[] };
 export type HandoverRule = { id?: string; target?: string; axis_id?: string | null; axis_name?: string | null; mode?: string };
 export type TicketHandoverCreated = { id?: string; ticket_id?: string; kind?: string; state?: string; from?: Record<string, unknown>; to?: Record<string, unknown> | null; to_scope?: Record<string, unknown> | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown>; switch_applied?: Record<string, unknown> | null; notify_managers?: boolean; decline_reason?: string | null; decided_at?: string | null; created_at?: string };
 export type TicketHandoverAnswered = { id?: string; ticket_id?: string; kind?: string; state?: string; from?: Record<string, unknown>; to?: Record<string, unknown> | null; to_scope?: Record<string, unknown> | null; reason?: string | null; ask?: string | null; reply_due?: string | null; switch?: Record<string, unknown>; switch_applied?: Record<string, unknown> | null; notify_managers?: boolean; decline_reason?: string | null; decided_at?: string | null; created_at?: string };
+export type InvitationsSent = { invitations?: string[] };
+export type BodySaved = { version?: number; changed?: boolean; edited_at?: string };
+export type TestSpecItem = { id?: string; title?: string; checked?: boolean; position?: number; source?: string; version?: number };
+export type TicketLink = { id?: string; kind?: string; side?: string | null; other?: Record<string, unknown>; can_remove?: boolean; created_at?: string };
+export type TicketLinkDeleted = { id?: string };
+export type Notification = { id?: string; kind?: string; tag?: string; href?: string | null; ticket_id?: string | null; number?: string | null; title?: string | null; actor?: Record<string, unknown> | null; params?: Record<string, unknown>; read?: boolean; read_at?: string | null; created_at?: string };
+export type SavedView = { id?: string; name?: string; share?: string; scope_id?: string | null; filters?: Record<string, unknown>; columns?: string[]; density?: string; member_id?: string; member_name?: string; mine?: boolean; can_edit?: boolean; created_at?: string; updated_at?: string };
+export type TicketDeleted = { id?: string; deleted_count?: number; withdrawn_approvals?: number; stopped_runs?: number; restorable_until?: string };
+export type TicketField = { id?: string; name?: string; field_type?: string; required?: boolean; description?: string | null; options?: string[]; position?: number };
 export type UpdateConversationInput = { title?: string | null; participant_member_ids?: string[] | null; area?: string | null; subject_type?: string | null; parent_conversation_id?: string | null; agent_session_id?: string | null; branched_from_message_id?: string | null; owner_member_id?: string | null; closed_at?: string | null; title_auto?: boolean; starred_at?: string | null; incognito?: boolean; last_read_at?: string | null };
 export type UpdateMemoryInput = { kind_id?: string | null; owner_member_id?: string | null; title?: string | null; body: string | null; confidence?: string | null; source_type_id?: string | null; source_ref_id?: string | null; approved_by?: string | null; approved_at?: string | null; digest_id?: string | null; superseded_by?: string | null };
 
@@ -464,17 +512,6 @@ export const ENDPOINTS = [
  {
   "id": "EP-003",
   "method": "POST",
-  "path": "/api/v1/action_runs/:id/retry",
-  "acts": [
-   "A57"
-  ],
-  "screens": [
-   "ai-activity"
-  ]
- },
- {
-  "id": "EP-004",
-  "method": "POST",
   "path": "/api/v1/action_runs/:id/stop",
   "acts": [
    "A89"
@@ -484,7 +521,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-005",
+  "id": "EP-004",
   "method": "POST",
   "path": "/api/v1/action_runs/:id/takeover",
   "acts": [
@@ -495,7 +532,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-006",
+  "id": "EP-005",
   "method": "GET",
   "path": "/api/v1/approvals/:id",
   "acts": [
@@ -506,7 +543,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-007",
+  "id": "EP-006",
   "method": "POST",
   "path": "/api/v1/approvals/:id/approve",
   "acts": [
@@ -517,7 +554,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-008",
+  "id": "EP-007",
   "method": "POST",
   "path": "/api/v1/approvals/:id/edit",
   "acts": [
@@ -528,7 +565,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-009",
+  "id": "EP-008",
   "method": "POST",
   "path": "/api/v1/approvals/:id/return",
   "acts": [
@@ -539,7 +576,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-010",
+  "id": "EP-009",
   "method": "POST",
   "path": "/api/v1/approvals/:id/stop",
   "acts": [
@@ -551,7 +588,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-011",
+  "id": "EP-010",
   "method": "POST",
   "path": "/api/v1/approvals/:id/withdraw",
   "acts": [
@@ -562,7 +599,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-012",
+  "id": "EP-011",
   "method": "POST",
   "path": "/api/v1/approvals/bulk",
   "acts": [
@@ -573,7 +610,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-013",
+  "id": "EP-012",
   "method": "POST",
   "path": "/api/v1/approvals/bulk/preview",
   "acts": [
@@ -584,7 +621,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-014",
+  "id": "EP-013",
   "method": "GET",
   "path": "/api/v1/approvals/history",
   "acts": [
@@ -595,7 +632,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-015",
+  "id": "EP-014",
   "method": "GET",
   "path": "/api/v1/approvals/queue",
   "acts": [
@@ -606,7 +643,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-016",
+  "id": "EP-015",
   "method": "GET",
   "path": "/api/v1/artifact_versions/:id",
   "acts": [
@@ -617,7 +654,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-017",
+  "id": "EP-016",
   "method": "POST",
   "path": "/api/v1/artifact_versions/:id/restore",
   "acts": [
@@ -628,7 +665,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-018",
+  "id": "EP-017",
   "method": "PATCH",
   "path": "/api/v1/artifacts/:id",
   "acts": [
@@ -639,7 +676,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-019",
+  "id": "EP-018",
   "method": "GET",
   "path": "/api/v1/audit_events",
   "acts": [
@@ -650,7 +687,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-020",
+  "id": "EP-019",
   "method": "GET",
   "path": "/api/v1/auth/invitations/:token",
   "acts": [
@@ -661,7 +698,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-021",
+  "id": "EP-020",
   "method": "POST",
   "path": "/api/v1/auth/invitations/:token/accept",
   "acts": [
@@ -673,7 +710,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-022",
+  "id": "EP-021",
   "method": "POST",
   "path": "/api/v1/auth/invitations/:token/resend-request",
   "acts": [
@@ -684,7 +721,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-023",
+  "id": "EP-022",
   "method": "POST",
   "path": "/api/v1/auth/password/forgot",
   "acts": [
@@ -695,7 +732,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-024",
+  "id": "EP-023",
   "method": "POST",
   "path": "/api/v1/auth/password/reset",
   "acts": [
@@ -706,7 +743,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-025",
+  "id": "EP-024",
   "method": "POST",
   "path": "/api/v1/auth/recovery/admin-request",
   "acts": [
@@ -717,7 +754,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-026",
+  "id": "EP-025",
   "method": "GET",
   "path": "/api/v1/auth/service-status",
   "acts": [
@@ -730,7 +767,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-027",
+  "id": "EP-026",
   "method": "POST",
   "path": "/api/v1/auth/sign-in",
   "acts": [
@@ -741,7 +778,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-028",
+  "id": "EP-027",
   "method": "POST",
   "path": "/api/v1/auth/sign-out",
   "acts": [
@@ -752,7 +789,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-029",
+  "id": "EP-028",
   "method": "POST",
   "path": "/api/v1/auth/sign-up",
   "acts": [
@@ -764,7 +801,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-030",
+  "id": "EP-029",
   "method": "POST",
   "path": "/api/v1/auth/sign-up/resend",
   "acts": [
@@ -775,7 +812,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-031",
+  "id": "EP-030",
   "method": "GET",
   "path": "/api/v1/auth/sign-up/status",
   "acts": [
@@ -786,7 +823,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-032",
+  "id": "EP-031",
   "method": "POST",
   "path": "/api/v1/auth/sign-up/verify",
   "acts": [
@@ -797,7 +834,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-033",
+  "id": "EP-032",
   "method": "POST",
   "path": "/api/v1/auth/step-up",
   "acts": [
@@ -808,7 +845,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-034",
+  "id": "EP-033",
   "method": "POST",
   "path": "/api/v1/auth/terms/consent",
   "acts": [
@@ -819,7 +856,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-035",
+  "id": "EP-034",
   "method": "GET",
   "path": "/api/v1/auth/terms/current",
   "acts": [
@@ -830,7 +867,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-036",
+  "id": "EP-035",
   "method": "POST",
   "path": "/api/v1/auth/two-factor/verify",
   "acts": [
@@ -838,6 +875,17 @@ export const ENDPOINTS = [
   ],
   "screens": [
    "login"
+  ]
+ },
+ {
+  "id": "EP-036",
+  "method": "POST",
+  "path": "/api/v1/bridge/browser",
+  "acts": [
+   "A09"
+  ],
+  "screens": [
+   "bridge-setup"
   ]
  },
  {
@@ -908,6 +956,17 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-043",
+  "method": "POST",
+  "path": "/api/v1/bridge/devices/:id/browser-check",
+  "acts": [
+   "A09"
+  ],
+  "screens": [
+   "bridge-setup"
+  ]
+ },
+ {
+  "id": "EP-044",
   "method": "GET",
   "path": "/api/v1/bridge/files/:ref",
   "acts": [
@@ -918,7 +977,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-044",
+  "id": "EP-045",
   "method": "POST",
   "path": "/api/v1/bridge/heartbeat",
   "acts": [
@@ -929,7 +988,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-045",
+  "id": "EP-046",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/artifacts",
   "acts": [
@@ -940,7 +999,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-046",
+  "id": "EP-047",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/browser",
   "acts": [
@@ -951,7 +1010,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-047",
+  "id": "EP-048",
   "method": "GET",
   "path": "/api/v1/bridge/jobs/:id/control",
   "acts": [
@@ -962,7 +1021,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-048",
+  "id": "EP-049",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/conversation-entries",
   "acts": [
@@ -973,7 +1032,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-049",
+  "id": "EP-050",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/finish",
   "acts": [
@@ -984,7 +1043,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-050",
+  "id": "EP-051",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/progress",
   "acts": [
@@ -995,7 +1054,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-051",
+  "id": "EP-052",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/questions",
   "acts": [
@@ -1006,7 +1065,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-052",
+  "id": "EP-053",
   "method": "GET",
   "path": "/api/v1/bridge/jobs/:id/questions/:qid",
   "acts": [
@@ -1017,7 +1076,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-053",
+  "id": "EP-054",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/:id/tools/:name",
   "acts": [
@@ -1028,7 +1087,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-054",
+  "id": "EP-055",
   "method": "POST",
   "path": "/api/v1/bridge/jobs/take",
   "acts": [
@@ -1039,7 +1098,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-055",
+  "id": "EP-056",
   "method": "GET",
   "path": "/api/v1/bridge/mirror-targets",
   "acts": [
@@ -1050,7 +1109,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-056",
+  "id": "EP-057",
   "method": "POST",
   "path": "/api/v1/bridge/pairing-codes",
   "acts": [
@@ -1061,7 +1120,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-057",
+  "id": "EP-058",
   "method": "GET",
   "path": "/api/v1/bridge/releases/:name/file",
   "acts": [
@@ -1072,7 +1131,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-058",
+  "id": "EP-059",
   "method": "GET",
   "path": "/api/v1/bridge/releases/latest",
   "acts": [
@@ -1083,7 +1142,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-059",
+  "id": "EP-060",
   "method": "POST",
   "path": "/api/v1/bridge/usage",
   "acts": [
@@ -1094,22 +1153,11 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-060",
+  "id": "EP-061",
   "method": "POST",
   "path": "/api/v1/checks/:id/human",
   "acts": [
    "A15"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-061",
-  "method": "GET",
-  "path": "/api/v1/class_axes",
-  "acts": [
-   "A103"
   ],
   "screens": [
    "tickets"
@@ -3599,6 +3647,17 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-286",
+  "method": "GET",
+  "path": "/api/v1/ticket-fields",
+  "acts": [
+   "A103"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-287",
   "method": "PATCH",
   "path": "/api/v1/ticket_decisions/:id",
   "acts": [
@@ -3609,7 +3668,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-287",
+  "id": "EP-288",
   "method": "PATCH",
   "path": "/api/v1/ticket_handovers/:id",
   "acts": [
@@ -3621,7 +3680,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-288",
+  "id": "EP-289",
   "method": "POST",
   "path": "/api/v1/ticket_imports",
   "acts": [
@@ -3632,7 +3691,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-289",
+  "id": "EP-290",
   "method": "GET",
   "path": "/api/v1/ticket_imports/:id",
   "acts": [
@@ -3643,7 +3702,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-290",
+  "id": "EP-291",
   "method": "POST",
   "path": "/api/v1/ticket_imports/:id/commit",
   "acts": [
@@ -3654,7 +3713,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-291",
+  "id": "EP-292",
   "method": "GET",
   "path": "/api/v1/ticket_kinds",
   "acts": [
@@ -3665,7 +3724,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-292",
+  "id": "EP-293",
   "method": "POST",
   "path": "/api/v1/ticket_kinds/:id/template-from-ticket",
   "acts": [
@@ -3676,7 +3735,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-293",
+  "id": "EP-294",
   "method": "GET",
   "path": "/api/v1/ticket_kinds/template-updates",
   "acts": [
@@ -3687,7 +3746,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-294",
+  "id": "EP-295",
   "method": "POST",
   "path": "/api/v1/ticket_kinds/template-updates/:id/apply",
   "acts": [
@@ -3698,7 +3757,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-295",
+  "id": "EP-296",
   "method": "DELETE",
   "path": "/api/v1/ticket_links/:id",
   "acts": [
@@ -3709,7 +3768,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-296",
+  "id": "EP-297",
   "method": "PATCH",
   "path": "/api/v1/ticket_messages/:id",
   "acts": [
@@ -3720,7 +3779,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-297",
+  "id": "EP-298",
   "method": "DELETE",
   "path": "/api/v1/ticket_messages/:id",
   "acts": [
@@ -3731,7 +3790,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-298",
+  "id": "EP-299",
   "method": "POST",
   "path": "/api/v1/ticket_messages/:id/star",
   "acts": [
@@ -3742,7 +3801,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-299",
+  "id": "EP-300",
   "method": "GET",
   "path": "/api/v1/ticket_stages",
   "acts": [
@@ -3753,7 +3812,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-300",
+  "id": "EP-301",
   "method": "GET",
   "path": "/api/v1/tickets",
   "acts": [
@@ -3766,7 +3825,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-301",
+  "id": "EP-302",
   "method": "POST",
   "path": "/api/v1/tickets",
   "acts": [
@@ -3779,7 +3838,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-302",
+  "id": "EP-303",
   "method": "GET",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -3790,7 +3849,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-303",
+  "id": "EP-304",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -3804,7 +3863,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-304",
+  "id": "EP-305",
   "method": "DELETE",
   "path": "/api/v1/tickets/:id",
   "acts": [
@@ -3815,7 +3874,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-305",
+  "id": "EP-306",
   "method": "POST",
   "path": "/api/v1/tickets/:id/acceptances",
   "acts": [
@@ -3826,7 +3885,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-306",
+  "id": "EP-307",
   "method": "GET",
   "path": "/api/v1/tickets/:id/agent-session",
   "acts": [
@@ -3837,7 +3896,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-307",
+  "id": "EP-308",
   "method": "POST",
   "path": "/api/v1/tickets/:id/agent-session/apply",
   "acts": [
@@ -3848,7 +3907,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-308",
+  "id": "EP-309",
   "method": "POST",
   "path": "/api/v1/tickets/:id/agent-session/messages",
   "acts": [
@@ -3860,7 +3919,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-309",
+  "id": "EP-310",
   "method": "GET",
   "path": "/api/v1/tickets/:id/artifacts",
   "acts": [
@@ -3871,7 +3930,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-310",
+  "id": "EP-311",
   "method": "POST",
   "path": "/api/v1/tickets/:id/attachments",
   "acts": [
@@ -3882,7 +3941,18 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-311",
+  "id": "EP-312",
+  "method": "PATCH",
+  "path": "/api/v1/tickets/:id/body",
+  "acts": [
+   "A101"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-313",
   "method": "GET",
   "path": "/api/v1/tickets/:id/checks",
   "acts": [
@@ -3893,7 +3963,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-312",
+  "id": "EP-314",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id/client-share",
   "acts": [
@@ -3904,7 +3974,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-313",
+  "id": "EP-315",
   "method": "POST",
   "path": "/api/v1/tickets/:id/complete",
   "acts": [
@@ -3915,7 +3985,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-314",
+  "id": "EP-316",
   "method": "GET",
   "path": "/api/v1/tickets/:id/decisions",
   "acts": [
@@ -3926,7 +3996,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-315",
+  "id": "EP-317",
   "method": "POST",
   "path": "/api/v1/tickets/:id/decisions",
   "acts": [
@@ -3937,7 +4007,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-316",
+  "id": "EP-318",
   "method": "POST",
   "path": "/api/v1/tickets/:id/delegate",
   "acts": [
@@ -3948,7 +4018,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-317",
+  "id": "EP-319",
   "method": "GET",
   "path": "/api/v1/tickets/:id/delete-preview",
   "acts": [
@@ -3959,7 +4029,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-318",
+  "id": "EP-320",
   "method": "POST",
   "path": "/api/v1/tickets/:id/dry-run",
   "acts": [
@@ -3970,7 +4040,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-319",
+  "id": "EP-321",
   "method": "GET",
   "path": "/api/v1/tickets/:id/handover-preview",
   "acts": [
@@ -3983,7 +4053,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-320",
+  "id": "EP-322",
   "method": "POST",
   "path": "/api/v1/tickets/:id/handovers",
   "acts": [
@@ -3997,7 +4067,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-321",
+  "id": "EP-323",
   "method": "GET",
   "path": "/api/v1/tickets/:id/kind-change-preview",
   "acts": [
@@ -4008,7 +4078,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-322",
+  "id": "EP-324",
   "method": "GET",
   "path": "/api/v1/tickets/:id/links",
   "acts": [
@@ -4019,7 +4089,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-323",
+  "id": "EP-325",
   "method": "POST",
   "path": "/api/v1/tickets/:id/links",
   "acts": [
@@ -4030,7 +4100,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-324",
+  "id": "EP-326",
   "method": "POST",
   "path": "/api/v1/tickets/:id/messages",
   "acts": [
@@ -4041,7 +4111,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-325",
+  "id": "EP-327",
   "method": "GET",
   "path": "/api/v1/tickets/:id/references",
   "acts": [
@@ -4052,7 +4122,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-326",
+  "id": "EP-328",
   "method": "POST",
   "path": "/api/v1/tickets/:id/restore",
   "acts": [
@@ -4064,7 +4134,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-327",
+  "id": "EP-329",
   "method": "GET",
   "path": "/api/v1/tickets/:id/runs",
   "acts": [
@@ -4075,30 +4145,8 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-328",
-  "method": "PATCH",
-  "path": "/api/v1/tickets/:id/sections/:key",
-  "acts": [
-   "A101"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-329",
-  "method": "GET",
-  "path": "/api/v1/tickets/:id/test-specs",
-  "acts": [
-   "A102"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
   "id": "EP-330",
-  "method": "POST",
+  "method": "GET",
   "path": "/api/v1/tickets/:id/test-specs",
   "acts": [
    "A102"
@@ -4110,7 +4158,7 @@ export const ENDPOINTS = [
  {
   "id": "EP-331",
   "method": "POST",
-  "path": "/api/v1/tickets/:id/test-specs/lint",
+  "path": "/api/v1/tickets/:id/test-specs",
   "acts": [
    "A102"
   ],
@@ -4121,7 +4169,7 @@ export const ENDPOINTS = [
  {
   "id": "EP-332",
   "method": "POST",
-  "path": "/api/v1/tickets/:id/test-specs/suggest",
+  "path": "/api/v1/tickets/:id/test-specs/lint",
   "acts": [
    "A102"
   ],
@@ -4131,6 +4179,17 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-333",
+  "method": "POST",
+  "path": "/api/v1/tickets/:id/test-specs/suggest",
+  "acts": [
+   "A102"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-334",
   "method": "GET",
   "path": "/api/v1/tickets/:id/timeline",
   "acts": [
@@ -4141,7 +4200,18 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-334",
+  "id": "EP-335",
+  "method": "POST",
+  "path": "/api/v1/tickets/:id/timeline/seen",
+  "acts": [
+   "A107"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-336",
   "method": "GET",
   "path": "/api/v1/tickets/:id/versions",
   "acts": [
@@ -4152,7 +4222,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-335",
+  "id": "EP-337",
   "method": "POST",
   "path": "/api/v1/tickets/:id/versions/:v/restore",
   "acts": [
@@ -4163,7 +4233,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-336",
+  "id": "EP-338",
   "method": "GET",
   "path": "/api/v1/tickets/:id/work-type-candidates",
   "acts": [
@@ -4174,7 +4244,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-337",
+  "id": "EP-339",
   "method": "POST",
   "path": "/api/v1/tickets/bulk",
   "acts": [
@@ -4186,31 +4256,9 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-338",
-  "method": "GET",
-  "path": "/api/v1/work_types",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
-  "id": "EP-339",
-  "method": "POST",
-  "path": "/api/v1/work_types",
-  "acts": [
-   "A119"
-  ],
-  "screens": [
-   "work-types"
-  ]
- },
- {
   "id": "EP-340",
   "method": "GET",
-  "path": "/api/v1/work_types/:id",
+  "path": "/api/v1/work_types",
   "acts": [
    "A119"
   ],
@@ -4221,7 +4269,7 @@ export const ENDPOINTS = [
  {
   "id": "EP-341",
   "method": "POST",
-  "path": "/api/v1/work_types/:id/copy",
+  "path": "/api/v1/work_types",
   "acts": [
    "A119"
   ],
@@ -4231,8 +4279,8 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-342",
-  "method": "PATCH",
-  "path": "/api/v1/work_types/:id/draft",
+  "method": "GET",
+  "path": "/api/v1/work_types/:id",
   "acts": [
    "A119"
   ],
@@ -4243,7 +4291,7 @@ export const ENDPOINTS = [
  {
   "id": "EP-343",
   "method": "POST",
-  "path": "/api/v1/work_types/:id/release",
+  "path": "/api/v1/work_types/:id/copy",
   "acts": [
    "A119"
   ],
@@ -4253,8 +4301,8 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-344",
-  "method": "POST",
-  "path": "/api/v1/work_types/:id/spread-requests",
+  "method": "PATCH",
+  "path": "/api/v1/work_types/:id/draft",
   "acts": [
    "A119"
   ],
@@ -4265,7 +4313,7 @@ export const ENDPOINTS = [
  {
   "id": "EP-345",
   "method": "POST",
-  "path": "/api/v1/work_types/:id/try",
+  "path": "/api/v1/work_types/:id/release",
   "acts": [
    "A119"
   ],
@@ -4275,6 +4323,28 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-346",
+  "method": "POST",
+  "path": "/api/v1/work_types/:id/spread-requests",
+  "acts": [
+   "A119"
+  ],
+  "screens": [
+   "work-types"
+  ]
+ },
+ {
+  "id": "EP-347",
+  "method": "POST",
+  "path": "/api/v1/work_types/:id/try",
+  "acts": [
+   "A119"
+  ],
+  "screens": [
+   "work-types"
+  ]
+ },
+ {
+  "id": "EP-348",
   "method": "GET",
   "path": "/api/v1/work_types/:id/versions",
   "acts": [
@@ -4285,7 +4355,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-347",
+  "id": "EP-349",
   "method": "GET",
   "path": "/api/v1/workspace",
   "acts": [
@@ -4296,7 +4366,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-348",
+  "id": "EP-350",
   "method": "PATCH",
   "path": "/api/v1/workspace",
   "acts": [
@@ -4307,7 +4377,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-349",
+  "id": "EP-351",
   "method": "GET",
   "path": "/api/v1/workspace/billing",
   "acts": [
@@ -4318,7 +4388,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-350",
+  "id": "EP-352",
   "method": "PATCH",
   "path": "/api/v1/workspace/billing-contact",
   "acts": [
@@ -4329,7 +4399,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-351",
+  "id": "EP-353",
   "method": "POST",
   "path": "/api/v1/workspace/deletion",
   "acts": [
@@ -4340,7 +4410,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-352",
+  "id": "EP-354",
   "method": "DELETE",
   "path": "/api/v1/workspace/deletion",
   "acts": [
@@ -4351,7 +4421,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-353",
+  "id": "EP-355",
   "method": "POST",
   "path": "/api/v1/workspace/escalation-rules",
   "acts": [
@@ -4362,7 +4432,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-354",
+  "id": "EP-356",
   "method": "PATCH",
   "path": "/api/v1/workspace/escalation-rules/:id",
   "acts": [
@@ -4373,7 +4443,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-355",
+  "id": "EP-357",
   "method": "DELETE",
   "path": "/api/v1/workspace/escalation-rules/:id",
   "acts": [
@@ -4384,7 +4454,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-356",
+  "id": "EP-358",
   "method": "POST",
   "path": "/api/v1/workspace/escalation-rules/preview",
   "acts": [
@@ -4395,7 +4465,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-357",
+  "id": "EP-359",
   "method": "POST",
   "path": "/api/v1/workspace/logo",
   "acts": [
@@ -4406,7 +4476,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-358",
+  "id": "EP-360",
   "method": "GET",
   "path": "/api/v1/workspace/members",
   "acts": [
@@ -4417,7 +4487,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-359",
+  "id": "EP-361",
   "method": "PATCH",
   "path": "/api/v1/workspace/permissions",
   "acts": [
@@ -4428,7 +4498,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-360",
+  "id": "EP-362",
   "method": "POST",
   "path": "/api/v1/workspace/plan",
   "acts": [
@@ -4439,7 +4509,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-361",
+  "id": "EP-363",
   "method": "GET",
   "path": "/api/v1/workspace/plans",
   "acts": [
@@ -4450,7 +4520,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-362",
+  "id": "EP-364",
   "method": "GET",
   "path": "/api/v1/workspace/rules",
   "acts": [
@@ -4461,7 +4531,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-363",
+  "id": "EP-365",
   "method": "POST",
   "path": "/api/v1/workspace/rules",
   "acts": [
@@ -4472,7 +4542,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-364",
+  "id": "EP-366",
   "method": "PATCH",
   "path": "/api/v1/workspace/rules/:id",
   "acts": [
@@ -4483,7 +4553,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-365",
+  "id": "EP-367",
   "method": "DELETE",
   "path": "/api/v1/workspace/rules/:id",
   "acts": [
@@ -4494,7 +4564,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-366",
+  "id": "EP-368",
   "method": "GET",
   "path": "/api/v1/workspace/ticket-shape",
   "acts": [
@@ -4505,7 +4575,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-367",
+  "id": "EP-369",
   "method": "PATCH",
   "path": "/api/v1/workspace/ticket-shape",
   "acts": [
@@ -4516,7 +4586,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-368",
+  "id": "EP-370",
   "method": "POST",
   "path": "/api/v1/workspace/ticket-shape/preview",
   "acts": [
